@@ -87,7 +87,7 @@ void blt()
     v_pos2 = a_pos.zw;
 
     v_min_pos = v_pos1;
-    v_max_pos = v_pos1 + abs_size;
+    v_max_pos = v_pos1 + abs_size - 1.0;
 
     v_size = a_size;
 
@@ -223,7 +223,6 @@ void rectb()
 void circ()
 {
     float dist = distance(pos, v_pos1);
-
     if (dist > v_size.x + 0.41) { discard; }
 
     gl_FragColor = indexToColor(v_col);
@@ -232,7 +231,6 @@ void circ()
 void circb()
 {
     float dist = distance(pos, v_pos1);
-
     if (dist > v_size.x + 0.4 || dist < v_size.x + 0.4 - 0.8) { discard; }
 
     gl_FragColor = indexToColor(v_col);
@@ -240,10 +238,17 @@ void circb()
 
 void blt()
 {
-    int tex_no = int(v_image);
-    vec2 uv = (v_pos2 + pos - v_min_pos) / u_texture_size[tex_no];
-    int col = int(texture2D(u_texture[tex_no], uv).r * 255.0);
+    if (pos.x < v_min_pos.x || pos.y < v_min_pos.y ||
+        pos.x > v_max_pos.x || pos.y > v_max_pos.y) { discard; }
 
+    int image = int(v_image);
+    vec2 offset = pos - v_min_pos;
+    vec2 uv = v_pos2;
+    uv.x += (v_size.x > 0.0) ? offset.x : -(v_size.x + 1.0 + offset.x);
+    uv.y += (v_size.y > 0.0) ? offset.y : -(v_size.y + 1.0 + offset.y);
+    uv /= u_texture_size[image];
+
+    int col = int(texture2D(u_texture[image], uv).r * 255.0);
     if (col == int(v_col)) { discard; }
 
     gl_FragColor = indexToColor(col);
