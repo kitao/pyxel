@@ -19,10 +19,8 @@ PALETTE = [
     0xff77a8,
     0xffccaa,
 ]
-
-BANK_SIZE = (256, 256)
-BANK_COUNT = 8
-DRAW_COUNT = 10000
+CLEAR_COLOR = 0x000000
+FPS = 30
 
 
 class Window(pyglet.window.Window):
@@ -30,10 +28,9 @@ class Window(pyglet.window.Window):
         super().__init__(app._width * app._scale, app._height * app._scale)
 
         self.app = app
-        self.renderer = Renderer(app._width, app._height, BANK_SIZE,
-                                 BANK_COUNT, DRAW_COUNT)
+        self.renderer = Renderer(app._width, app._height)
 
-        app.bank = self.renderer.bank
+        app.image = self.renderer.image
         app.clip = self.renderer.clip
         app.pal = self.renderer.pal
         app.cls = self.renderer.cls
@@ -64,7 +61,7 @@ class Window(pyglet.window.Window):
         bottom = (window_height - height) // 2
 
         self.renderer.render(left, bottom, width, height, self.app._palette,
-                             self.app._bg_color)
+                             self.app._clear_color)
 
     def on_key_press(self, key, modifiers):
         self.app.key_press(key, modifiers)
@@ -80,13 +77,13 @@ class App:
                  scale,
                  *,
                  palette=PALETTE,
-                 bg_color=0x000000,
-                 fps=60):
+                 clear_color=CLEAR_COLOR,
+                 fps=FPS):
         self._width = width
         self._height = height
         self._scale = scale
         self._palette = palette[:]
-        self._bg_color = bg_color
+        self._clear_color = clear_color
         self._fps = fps
         self._window = Window(self)
 
