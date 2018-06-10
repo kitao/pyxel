@@ -48,13 +48,36 @@ void pix()
 
 void line()
 {
-    v_pos1 = a_pos.xy;
-    v_pos2 = a_pos.zw;
-
     v_min_pos = min(a_pos.xy, a_pos.zw);
     v_max_pos = max(a_pos.xy, a_pos.zw);
 
     vec2 diff = v_max_pos - v_min_pos;
+
+    if (diff.x > diff.y)
+    {
+        if (a_pos.x < a_pos.z) {
+            v_pos1 = a_pos.xy;
+            v_pos2 = a_pos.zw;
+        }
+        else
+        {
+            v_pos1 = a_pos.zw;
+            v_pos2 = a_pos.xy;
+        }
+    }
+    else
+    {
+        if (a_pos.y < a_pos.w)
+        {
+            v_pos1 = a_pos.xy;
+            v_pos2 = a_pos.zw;
+        }
+        else
+        {
+            v_pos1 = a_pos.zw;
+            v_pos2 = a_pos.xy;
+        }
+    }
 
     gl_PointSize = max(diff.x, diff.y) + 1.0;
     gl_Position = pixelToScreen(v_min_pos + (gl_PointSize - 1.0) * 0.5);
@@ -176,27 +199,23 @@ void line()
     if (pos.x < v_min_pos.x || pos.y < v_min_pos.y ||
         pos.x > v_max_pos.x || pos.y > v_max_pos.y) { discard; }
 
-    if (v_pos1.x == v_pos2.x)
-    {
-        if (pos.x != v_pos1.x) { discard; }
-    }
-    else if (v_pos1.y == v_pos2.y)
-    {
-        if (pos.y != v_pos1.y) { discard; }
-    }
-    else
-    {
-        vec2 diff = v_pos2 - v_pos1;
+    vec2 diff = v_max_pos - v_min_pos;
 
-        if (abs(diff.x) > abs(diff.y))
+    if (diff.x != 0 || diff.y != 0)
+    {
+        if (diff.x > diff.y)
         {
-            float y = v_pos1.y + diff.y * abs((pos.y - v_pos1.y) / diff.x);
-            if (pos.y > int(y)) { discard; }
+            float d = (v_pos2.y - v_pos1.y) / diff.x;
+            float y = int((pos.x - v_pos1.x) * d + v_pos1.y + 0.5);
+
+            if (pos.y != y) { discard; }
         }
         else
         {
-            float x = v_pos1.x + diff.x * abs((pos.x - v_pos1.x) / diff.y);
-            if (pos.x > int(x)) { discard; }
+            float d = (v_pos2.x - v_pos1.x) / diff.y;
+            float x = int((pos.y - v_pos1.y) * d + v_pos1.x + 0.5);
+
+            if (pos.x != x) { discard; }
         }
     }
 

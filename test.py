@@ -33,8 +33,8 @@ class App(pyxel.App):
         self.circ(100, 100, 4, 7)
         self.circb(30, 100, 4, 7)
 
-        self.rect(30, 30, 10, 20, 0)
-        self.line(30, 30, 40, 50, 8)
+        self.rect(30, 30, 30, 50, 0)
+        self.line(29, 29, 20, 20, 8)
 
         self.x = (self.x + 1) % 160
         self.pix(self.x, 0, 7)
