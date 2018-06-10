@@ -6,7 +6,7 @@ class App(pyxel.App):
     def __init__(self):
         super().__init__(160, 120, 4)
 
-        data = self.bank(0).data
+        data = self.image(0).data
         data[0, 0] = 7
         data[0, 1] = 3
         data[0, 2] = 7
