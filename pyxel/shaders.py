@@ -1,4 +1,4 @@
-DRAWING_COMMAND_VERTEX_SHADER = """
+DRAWING_VERTEX_SHADER = """
 #version 120
 
 #define unpack_4ui_1(x) int(mod(x / 0x1, 0x10));
@@ -14,7 +14,7 @@ const int TYPE_CIRC = 4;
 const int TYPE_CIRCB = 5;
 const int TYPE_BLT = 6;
 
-uniform vec2 u_res;
+uniform vec2 u_framebuffer_size;
 
 attribute vec3 a_mode;
 attribute vec4 a_pos;
@@ -24,7 +24,7 @@ attribute vec4 a_pal;
 
 varying float v_type;
 varying float v_col;
-varying float v_bank;
+varying float v_image;
 varying vec2 v_pos1;
 varying vec2 v_pos2;
 varying vec2 v_min_pos;
@@ -36,7 +36,7 @@ varying float v_pal[16];
 
 vec4 pixelToScreen(vec2 pos)
 {
-    return vec4(pos * 2.0 / u_res - 1.0, 0.0, 1.0);
+    return vec4(pos * 2.0 / u_framebuffer_size - 1.0, 0.0, 1.0);
 }
 
 void pix()
@@ -99,7 +99,7 @@ void main()
 {
     v_type = a_mode.x;
     v_col = a_mode.y;
-    v_bank = a_mode.z;
+    v_image = a_mode.z;
 
     v_min_clip = a_clip.xy;
     v_max_clip = a_clip.xy + a_clip.zw - 1.0;
@@ -130,7 +130,7 @@ void main()
 }
 """
 
-DRAWING_COMMAND_FRAGMENT_SHADER = """
+DRAWING_FRAGMENT_SHADER = """
 #version 120
 
 const int TYPE_PIX = 0;
@@ -141,13 +141,13 @@ const int TYPE_CIRC = 4;
 const int TYPE_CIRCB = 5;
 const int TYPE_BLT = 6;
 
-uniform ivec3 u_color[16];
+uniform ivec3 u_palette[16];
 uniform sampler2D u_texture[8];
 uniform vec2 u_texture_size[8];
 
 varying float v_type;
 varying float v_col;
-varying float v_bank;
+varying float v_image;
 varying vec2 v_pos1;
 varying vec2 v_pos2;
 varying vec2 v_min_pos;
@@ -159,14 +159,14 @@ varying float v_pal[16];
 
 vec2 pos;
 
-vec4 attributeColor()
+vec4 indexToColor(float col)
 {
-    return vec4(u_color[int(v_pal[int(v_col)])] / 255.0, 1.0);
+    return vec4(u_palette[int(v_pal[int(col)])] / 255.0, 1.0);
 }
 
 void pix()
 {
-    gl_FragColor = attributeColor();
+    gl_FragColor = indexToColor(v_col);
 }
 
 void line()
@@ -198,7 +198,7 @@ void line()
         }
     }
 
-    gl_FragColor = attributeColor();
+    gl_FragColor = indexToColor(v_col);
 }
 
 void rect()
@@ -206,7 +206,7 @@ void rect()
     if (pos.x < v_min_pos.x || pos.y < v_min_pos.y ||
         pos.x > v_max_pos.x || pos.y > v_max_pos.y) { discard; }
 
-    gl_FragColor = attributeColor();
+    gl_FragColor = indexToColor(v_col);
 }
 
 void rectb()
@@ -217,7 +217,7 @@ void rectb()
     if (pos.x < v_min_pos.x || pos.y < v_min_pos.y ||
         pos.x > v_max_pos.x || pos.y > v_max_pos.y) { discard; }
 
-    gl_FragColor = attributeColor();
+    gl_FragColor = indexToColor(v_col);
 }
 
 void circ()
@@ -226,7 +226,7 @@ void circ()
 
     if (dist > v_size.x + 0.41) { discard; }
 
-    gl_FragColor = attributeColor();
+    gl_FragColor = indexToColor(v_col);
 }
 
 void circb()
@@ -235,18 +235,18 @@ void circb()
 
     if (dist > v_size.x + 0.4 || dist < v_size.x + 0.4 - 0.8) { discard; }
 
-    gl_FragColor = attributeColor();
+    gl_FragColor = indexToColor(v_col);
 }
 
 void blt()
 {
-    int tex_no = int(v_bank);
+    int tex_no = int(v_image);
     vec2 uv = (v_pos2 + pos - v_min_pos) / u_texture_size[tex_no];
-    int color = int(texture2D(u_texture[tex_no], uv).r * 255.0);
+    int col = int(texture2D(u_texture[tex_no], uv).r * 255.0);
 
-    if (color == int(v_col)) { discard; }
+    if (col == int(v_col)) { discard; }
 
-    gl_FragColor = vec4(u_color[color] / 255.0, 1.0);
+    gl_FragColor = indexToColor(col);
 }
 
 void main()
@@ -267,7 +267,7 @@ void main()
 }
 """
 
-DRAWING_COMMAND_ATTRIBUTE_INFO = [
+DRAWING_ATTRIBUTE_INFO = [
     ('a_mode', 0, 3),
     ('a_pos', 3, 4),
     ('a_size', 7, 2),
@@ -275,7 +275,7 @@ DRAWING_COMMAND_ATTRIBUTE_INFO = [
     ('a_pal', 13, 4),
 ]
 
-FRAMEBUFFER_VERTEX_SHADER = """
+SCALING_VERTEX_SHADER = """
 #version 120
 
 attribute vec2 a_pos;
@@ -291,7 +291,7 @@ void main()
 }
 """
 
-FRAMEBUFFER_FRAGMENT_SHADER = """
+SCALING_FRAGMENT_SHADER = """
 #version 120
 
 uniform sampler2D u_texture;
@@ -304,7 +304,7 @@ void main()
 }
 """
 
-FRAMEBUFFER_ATTRIBUTE_INFO = [
+SCALING_ATTRIBUTE_INFO = [
     ('a_pos', 0, 2),
     ('a_uv', 2, 2),
 ]
