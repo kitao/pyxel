@@ -1,6 +1,7 @@
+MIN_FONT_CODE = 32
+MAX_FONT_CODE = 127
 FONT_WIDTH = 4
 FONT_HEIGHT = 6
-
 FONT_DATA = [
     0x000000,
     0x444040,
@@ -101,14 +102,16 @@ FONT_DATA = [
 ]
 
 
-def hoge():
-    font = []
+def setup_font(image):
+    row_count = image.width // FONT_WIDTH
 
-    for data in FONT_DATA:
-        surface = Surface(FONT_WIDTH, FONT_HEIGHT)
+    for i, v in enumerate(FONT_DATA):
+        left = (i % row_count) * FONT_WIDTH
+        top = (i // row_count) * FONT_HEIGHT
+        data = image.data
 
-        for i in range(FONT_WIDTH * FONT_HEIGHT):
-            surface.data[i // 4, i % 4] = 1 if data & 0x800000 else 0
-            data <<= 1
-
-        font.append(surface)
+        for j in range(FONT_WIDTH * FONT_HEIGHT):
+            x = left + j % FONT_WIDTH
+            y = top + j // FONT_WIDTH
+            data[y, x] = 1 if v & 0x800000 else 0
+            v <<= 1

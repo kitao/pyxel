@@ -4,6 +4,8 @@ from .shaders import (DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER,
                       DRAWING_ATTRIBUTE_INFO, SCALING_VERTEX_SHADER,
                       SCALING_FRAGMENT_SHADER, SCALING_ATTRIBUTE_INFO)
 from .image import Image
+from .font import (MAX_FONT_CODE, MIN_FONT_CODE, FONT_WIDTH, FONT_HEIGHT,
+                   setup_font)
 import numpy as np
 
 IMAGE_SIZE = (256, 256)
@@ -17,6 +19,7 @@ TYPE_RECTB = 3
 TYPE_CIRC = 4
 TYPE_CIRCB = 5
 TYPE_BLT = 6
+TYPE_FONT = 7
 
 MODE_TYPE_INDEX = DRAWING_ATTRIBUTE_INFO[0][1]
 MODE_COL_INDEX = MODE_TYPE_INDEX + 1
@@ -33,15 +36,19 @@ SIZE_H_INDEX = SIZE_W_INDEX + 1
 CLIP_PAL_INDEX = DRAWING_ATTRIBUTE_INFO[3][1]
 CLIP_PAL_COUNT = 8
 
+FONT_ROW_COUNT = IMAGE_SIZE[0] // FONT_WIDTH
+
 
 class Renderer:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.image_list = [Image(*IMAGE_SIZE) for _ in range(IMAGE_COUNT)]
         self.max_draw_count = MAX_DRAW_COUNT
         self.cur_draw_count = 0
         self.need_to_refresh = True
+
+        self.image_list = [Image(*IMAGE_SIZE) for _ in range(IMAGE_COUNT)]
+        setup_font(self.image_list[-1])
 
         self.clip_pal_data = np.ndarray(8, np.float32)
         self.clip()
@@ -252,7 +259,7 @@ class Renderer:
 
         data[SIZE_W_INDEX] = r
 
-    def blt(self, x, y, w, h, image, sx, sy, colkey=-1):
+    def blt(self, x, y, image, sx, sy, w, h, colkey=-1):
         data = self._next_dc_data()
 
         data[MODE_TYPE_INDEX] = TYPE_BLT
@@ -267,8 +274,26 @@ class Renderer:
         data[SIZE_W_INDEX] = w
         data[SIZE_H_INDEX] = h
 
-    def text(self, x, y, str, col):
-        pass
+    def font(self, x, y, text, col):
+        for c in text:
+            code = min(max(ord(c), MIN_FONT_CODE),
+                       MAX_FONT_CODE) - MIN_FONT_CODE
+
+            data = self._next_dc_data()
+
+            data[MODE_TYPE_INDEX] = TYPE_FONT
+            data[MODE_COL_INDEX] = col
+            data[MODE_IMAGE_INDEX] = IMAGE_COUNT - 1
+
+            data[POS_X1_INDEX] = x
+            data[POS_Y1_INDEX] = y
+            data[POS_X2_INDEX] = (code % FONT_ROW_COUNT) * FONT_WIDTH
+            data[POS_Y2_INDEX] = (code // FONT_ROW_COUNT) * FONT_HEIGHT
+
+            data[SIZE_W_INDEX] = FONT_WIDTH
+            data[SIZE_H_INDEX] = FONT_HEIGHT
+
+            x += FONT_WIDTH
 
     @staticmethod
     def _int_to_rgb(color):

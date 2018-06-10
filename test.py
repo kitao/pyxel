@@ -26,10 +26,7 @@ class App(pyxel.App):
 
         # self.pal(7, 0)
 
-        for h in range(20):
-            for i in range(15):
-                for j in range(20):
-                    self.blt(80, 80, 8, 8, 0, 0, 0, 0)
+        self.blt(80, 80, 0, 0, 0, 50, 50, 7)
 
         self.rectb(50, 50, 30, 40, 3)
 
@@ -38,6 +35,9 @@ class App(pyxel.App):
 
         self.x = (self.x + 1) % 160
         self.pix(self.x, 0, 7)
+
+        self.font(11, 11, "Hello, I'm Gobliso. Nice to meet you!", 8)
+        self.font(10, 10, "Hello, I'm Gobliso. Nice to meet you!", 7)
 
         self.time += time.time() - start
         self.count += 1

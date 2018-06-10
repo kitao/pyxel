@@ -13,6 +13,7 @@ const int TYPE_RECTB = 3;
 const int TYPE_CIRC = 4;
 const int TYPE_CIRCB = 5;
 const int TYPE_BLT = 6;
+const int TYPE_FONT = 7;
 
 uniform vec2 u_framebuffer_size;
 
@@ -79,7 +80,7 @@ void circ_circb()
     gl_Position = pixelToScreen(v_pos1);
 }
 
-void blt()
+void blt_font()
 {
     vec2 abs_size = abs(a_size);
 
@@ -125,7 +126,7 @@ void main()
     else if (v_type == TYPE_LINE) { line(); }
     else if (v_type == TYPE_RECT || v_type == TYPE_RECTB) { rect_rectb(); }
     else if (v_type == TYPE_CIRC || v_type == TYPE_CIRCB) { circ_circb(); }
-    else if (v_type == TYPE_BLT) { blt(); }
+    else if (v_type == TYPE_BLT || v_type == TYPE_FONT) { blt_font(); }
     else { gl_Position = vec4(0.0, 0.0, 0.0, 1.0); }
 }
 """
@@ -140,6 +141,7 @@ const int TYPE_RECTB = 3;
 const int TYPE_CIRC = 4;
 const int TYPE_CIRCB = 5;
 const int TYPE_BLT = 6;
+const int TYPE_FONT = 7;
 
 uniform ivec3 u_palette[16];
 uniform sampler2D u_texture[8];
@@ -254,6 +256,20 @@ void blt()
     gl_FragColor = indexToColor(col);
 }
 
+void font()
+{
+    if (pos.x < v_min_pos.x || pos.y < v_min_pos.y ||
+        pos.x > v_max_pos.x || pos.y > v_max_pos.y) { discard; }
+
+    int image = int(v_image);
+    vec2 uv = (v_pos2 + pos - v_min_pos) / u_texture_size[image];
+
+    int col = int(texture2D(u_texture[image], uv).r * 255.0);
+    if (col != 1) { discard; }
+
+    gl_FragColor = indexToColor(v_col);
+}
+
 void main()
 {
     pos = floor(gl_FragCoord.xy);
@@ -268,6 +284,7 @@ void main()
     else if (v_type == TYPE_CIRC) { circ(); }
     else if (v_type == TYPE_CIRCB) { circb(); }
     else if (v_type == TYPE_BLT) { blt(); }
+    else if (v_type == TYPE_FONT) { font(); }
     else { gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); }
 }
 """
