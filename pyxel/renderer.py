@@ -1,4 +1,5 @@
 import OpenGL.GL as gl
+import numpy as np
 from .glwrapper import GLShader, GLAttribute, GLTexture
 from .shaders import (DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER,
                       DRAWING_ATTRIBUTE_INFO, SCALING_VERTEX_SHADER,
@@ -6,7 +7,6 @@ from .shaders import (DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER,
 from .image import Image
 from .font import (MAX_FONT_CODE, MIN_FONT_CODE, FONT_WIDTH, FONT_HEIGHT,
                    setup_font)
-import numpy as np
 
 IMAGE_SIZE = (256, 256)
 IMAGE_COUNT = 8

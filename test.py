@@ -22,7 +22,7 @@ class App(pyxel.App):
     def update(self):
         start = time.time()
 
-        self.cls(2)
+        self.cls(1)
 
         # self.pal(7, 0)
 
@@ -32,6 +32,9 @@ class App(pyxel.App):
 
         self.circ(100, 100, 4, 7)
         self.circb(30, 100, 4, 7)
+
+        self.rect(30, 30, 10, 20, 0)
+        self.line(30, 30, 40, 50, 8)
 
         self.x = (self.x + 1) % 160
         self.pix(self.x, 0, 7)
