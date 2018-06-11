@@ -211,21 +211,21 @@ void pix()
 
 void line()
 {
-    vec2 diff = v_max_pos - v_min_pos;
+    vec2 d = v_max_pos - v_min_pos;
 
-    if (diff.x != 0 || diff.y != 0)
+    if (d.x != 0.0 || d.y != 0.0)
     {
-        if (diff.x > diff.y)
+        if (d.x > d.y)
         {
-            float d = (v_pos2.y - v_pos1.y) / diff.x;
-            float y = floor((draw_pos.x - v_pos1.x) * d + v_pos1.y + 0.5);
+            float a = (v_pos2.y - v_pos1.y) / d.x;
+            float y = floor((draw_pos.x - v_pos1.x) * a + v_pos1.y + 0.5);
 
             if (draw_pos.y != y) { discard; }
         }
         else
         {
-            float d = (v_pos2.x - v_pos1.x) / diff.y;
-            float x = floor((draw_pos.y - v_pos1.y) * d + v_pos1.x + 0.5);
+            float a = (v_pos2.x - v_pos1.x) / d.y;
+            float x = floor((draw_pos.y - v_pos1.y) * a + v_pos1.x + 0.5);
 
             if (draw_pos.x != x) { discard; }
         }
@@ -249,17 +249,17 @@ void rectb()
 
 void circ()
 {
-    vec2 diff = draw_pos - v_pos1;
+    vec2 d = draw_pos - v_pos1;
 
-    if (abs(diff.x) > abs(diff.y))
+    if (abs(d.x) > abs(d.y))
     {
-        float x = floor(sqrt(v_size.x * v_size.x - diff.y * diff.y) + 0.5);
-        if (abs(diff.x) > x) { discard; }
+        float x = floor(sqrt(v_size.x * v_size.x - d.y * d.y) + 0.5);
+        if (abs(d.x) > x) { discard; }
     }
     else
     {
-        float y = floor(sqrt(v_size.x * v_size.x - diff.x * diff.x) + 0.5);
-        if (abs(diff.y) > y) { discard; }
+        float y = floor(sqrt(v_size.x * v_size.x - d.x * d.x) + 0.5);
+        if (abs(d.y) > y) { discard; }
     }
 
     gl_FragColor = indexToColor(v_col);
@@ -267,17 +267,17 @@ void circ()
 
 void circb()
 {
-    vec2 diff = draw_pos - v_pos1;
+    vec2 d = draw_pos - v_pos1;
 
-    if (abs(diff.x) > abs(diff.y))
+    if (abs(d.x) > abs(d.y))
     {
-        float x = floor(sqrt(v_size.x * v_size.x - diff.y * diff.y) + 0.5);
-        if (abs(diff.x) != x) { discard; }
+        float x = floor(sqrt(v_size.x * v_size.x - d.y * d.y) + 0.5);
+        if (abs(d.x) != x) { discard; }
     }
     else
     {
-        float y = floor(sqrt(v_size.x * v_size.x - diff.x * diff.x) + 0.5);
-        if (abs(diff.y) != y) { discard; }
+        float y = floor(sqrt(v_size.x * v_size.x - d.x * d.x) + 0.5);
+        if (abs(d.y) != y) { discard; }
     }
 
     gl_FragColor = indexToColor(v_col);
@@ -285,14 +285,14 @@ void circb()
 
 void blt()
 {
-    int image = int(v_image);
-    vec2 offset = draw_pos - v_min_pos;
+    int i = int(v_image);
+    vec2 p = draw_pos - v_min_pos;
     vec2 uv = v_pos2;
-    uv.x += (v_size.x > 0.0) ? offset.x : -(v_size.x + 1.0 + offset.x);
-    uv.y += (v_size.y > 0.0) ? offset.y : -(v_size.y + 1.0 + offset.y);
-    uv /= u_texture_size[image];
+    uv.x += (v_size.x > 0.0) ? p.x : -(v_size.x + 1.0 + p.x);
+    uv.y += (v_size.y > 0.0) ? p.y : -(v_size.y + 1.0 + p.y);
+    uv /= u_texture_size[i];
 
-    int col = int(texture2D(u_texture[image], uv).r * 255.0);
+    int col = int(texture2D(u_texture[i], uv).r * 255.0);
     if (col == v_col) { discard; }
 
     gl_FragColor = indexToColor(col);
@@ -300,10 +300,10 @@ void blt()
 
 void text()
 {
-    int image = int(v_image);
-    vec2 uv = (v_pos2 + draw_pos - v_min_pos) / u_texture_size[image];
+    int i = int(v_image);
+    vec2 uv = (v_pos2 + draw_pos - v_min_pos) / u_texture_size[i];
 
-    int col = int(texture2D(u_texture[image], uv).r * 255.0);
+    int col = int(texture2D(u_texture[i], uv).r * 255.0);
     if (col != 1) { discard; }
 
     gl_FragColor = indexToColor(v_col);

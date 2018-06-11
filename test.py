@@ -26,7 +26,7 @@ class App(pyxel.App):
 
         # self.pal(7, 0)
 
-        self.blt(80, 80, 0, 0, 0, 50, 50, 7)
+        self.blt(80, 80, 0, 0, 0, 8, 8, 0)
 
         self.rectb(50, 50, 30, 40, 3)
 
@@ -34,7 +34,7 @@ class App(pyxel.App):
         self.circb(100, 100, 30, 7)
         self.circ(30, 100, 4, 7)
 
-        self.rect(30, 30, 30, 50, 0)
+        self.rect(30, 30, 30, 10, 0)
         self.line(29, 29, 20, 20, 8)
 
         self.x = (self.x + 1) % 160
