@@ -19,7 +19,7 @@ TYPE_RECTB = 3
 TYPE_CIRC = 4
 TYPE_CIRCB = 5
 TYPE_BLT = 6
-TYPE_FONT = 7
+TYPE_TEXT = 7
 
 MODE_TYPE_INDEX = DRAWING_ATTRIBUTE_INFO[0][1]
 MODE_COL_INDEX = MODE_TYPE_INDEX + 1
@@ -57,7 +57,7 @@ class Renderer:
         self.draw_shader = GLShader(DRAWING_VERTEX_SHADER,
                                     DRAWING_FRAGMENT_SHADER)
         self.draw_att = GLAttribute(
-            DRAWING_ATTRIBUTE_INFO, MAX_DRAW_COUNT, integer=True, dynamic=True)
+            DRAWING_ATTRIBUTE_INFO, MAX_DRAW_COUNT, dynamic=True)
         self.draw_tex_list = [image._tex for image in self.image_list]
 
         self.scale_shader = GLShader(SCALING_VERTEX_SHADER,
@@ -274,14 +274,14 @@ class Renderer:
         data[SIZE_W_INDEX] = w
         data[SIZE_H_INDEX] = h
 
-    def font(self, x, y, text, col):
-        for c in text:
+    def text(self, x, y, s, col):
+        for c in s:
             code = min(max(ord(c), MIN_FONT_CODE),
                        MAX_FONT_CODE) - MIN_FONT_CODE
 
             data = self._next_dc_data()
 
-            data[MODE_TYPE_INDEX] = TYPE_FONT
+            data[MODE_TYPE_INDEX] = TYPE_TEXT
             data[MODE_COL_INDEX] = col
             data[MODE_IMAGE_INDEX] = IMAGE_COUNT - 1
 
