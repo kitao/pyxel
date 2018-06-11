@@ -30,7 +30,8 @@ class App(pyxel.App):
 
         self.rectb(50, 50, 30, 40, 3)
 
-        self.circ(100, 100, 4, 7)
+        self.rectb(90, 90, 21, 21, 8)
+        self.circ(100, 100, 0, 7)
         self.circb(30, 100, 4, 7)
 
         self.rect(30, 30, 30, 50, 0)
@@ -39,8 +40,8 @@ class App(pyxel.App):
         self.x = (self.x + 1) % 160
         self.pix(self.x, 0, 7)
 
-        self.font(11, 11, "Hello, I'm Gobliso. Nice to meet you!", 8)
-        self.font(10, 10, "Hello, I'm Gobliso. Nice to meet you!", 7)
+        self.text(11, 11, "Hello, I'm Gobliso. Nice to meet you!", 8)
+        self.text(10, 10, "Hello, I'm Gobliso. Nice to meet you!", 7)
 
         self.time += time.time() - start
         self.count += 1

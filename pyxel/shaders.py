@@ -13,7 +13,7 @@ const int TYPE_RECTB = 3;
 const int TYPE_CIRC = 4;
 const int TYPE_CIRCB = 5;
 const int TYPE_BLT = 6;
-const int TYPE_FONT = 7;
+const int TYPE_TEXT = 7;
 
 uniform vec2 u_framebuffer_size;
 
@@ -99,11 +99,14 @@ void circ_circb()
     v_pos1 = a_pos.xy;
     v_size.x = a_size.x;
 
+    v_min_pos = v_pos1 - v_size.x;
+    v_max_pos = v_pos1 + v_size.x;
+
     gl_PointSize = v_size.x * 2.0 + 1.0;
     gl_Position = pixelToScreen(v_pos1);
 }
 
-void blt_font()
+void blt_text()
 {
     vec2 abs_size = abs(a_size);
 
@@ -149,7 +152,7 @@ void main()
     else if (v_type == TYPE_LINE) { line(); }
     else if (v_type == TYPE_RECT || v_type == TYPE_RECTB) { rect_rectb(); }
     else if (v_type == TYPE_CIRC || v_type == TYPE_CIRCB) { circ_circb(); }
-    else if (v_type == TYPE_BLT || v_type == TYPE_FONT) { blt_font(); }
+    else if (v_type == TYPE_BLT || v_type == TYPE_TEXT) { blt_text(); }
     else { gl_Position = vec4(0.0, 0.0, 0.0, 1.0); }
 }
 """
@@ -164,7 +167,7 @@ const int TYPE_RECTB = 3;
 const int TYPE_CIRC = 4;
 const int TYPE_CIRCB = 5;
 const int TYPE_BLT = 6;
-const int TYPE_FONT = 7;
+const int TYPE_TEXT = 7;
 
 uniform ivec3 u_palette[16];
 uniform sampler2D u_texture[8];
@@ -243,16 +246,36 @@ void rectb()
 
 void circ()
 {
-    float dist = distance(pos, v_pos1);
-    if (dist > v_size.x + 0.41) { discard; }
+    vec2 diff = pos - v_pos1;
+
+    if (abs(diff.x) > abs(diff.y))
+    {
+        float x = sqrt(v_size.x * v_size.x - diff.y * diff.y);
+        if (abs(diff.x) > int(x + 0.5)) { discard; }
+    }
+    else
+    {
+        float y = sqrt(v_size.x * v_size.x - diff.x * diff.x);
+        if (abs(diff.y) > int(y + 0.5)) { discard; }
+    }
 
     gl_FragColor = indexToColor(v_col);
 }
 
 void circb()
 {
-    float dist = distance(pos, v_pos1);
-    if (dist > v_size.x + 0.4 || dist < v_size.x + 0.4 - 0.8) { discard; }
+    vec2 diff = pos - v_pos1;
+
+    if (abs(diff.x) > abs(diff.y))
+    {
+        float x = sqrt(v_size.x * v_size.x - diff.y * diff.y);
+        if (abs(diff.x) != int(x + 0.5)) { discard; }
+    }
+    else
+    {
+        float y = sqrt(v_size.x * v_size.x - diff.x * diff.x);
+        if (abs(diff.y) != int(y + 0.5)) { discard; }
+    }
 
     gl_FragColor = indexToColor(v_col);
 }
@@ -275,7 +298,7 @@ void blt()
     gl_FragColor = indexToColor(col);
 }
 
-void font()
+void text()
 {
     if (pos.x < v_min_pos.x || pos.y < v_min_pos.y ||
         pos.x > v_max_pos.x || pos.y > v_max_pos.y) { discard; }
@@ -303,7 +326,7 @@ void main()
     else if (v_type == TYPE_CIRC) { circ(); }
     else if (v_type == TYPE_CIRCB) { circb(); }
     else if (v_type == TYPE_BLT) { blt(); }
-    else if (v_type == TYPE_FONT) { font(); }
+    else if (v_type == TYPE_TEXT) { text(); }
     else { gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); }
 }
 """
