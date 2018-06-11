@@ -41,7 +41,7 @@ class Window(pyglet.window.Window):
         app.circ = self.renderer.circ
         app.circb = self.renderer.circb
         app.blt = self.renderer.blt
-        app.font = self.renderer.font
+        app.text = self.renderer.text
 
         pyglet.clock.schedule_interval(self.update, 1 / app._fps)
 
