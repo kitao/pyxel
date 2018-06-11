@@ -31,8 +31,8 @@ class App(pyxel.App):
         self.rectb(50, 50, 30, 40, 3)
 
         self.rectb(90, 90, 21, 21, 8)
-        self.circ(100, 100, 0, 7)
-        self.circb(30, 100, 4, 7)
+        self.circb(100, 100, 30, 7)
+        self.circ(30, 100, 4, 7)
 
         self.rect(30, 30, 30, 50, 0)
         self.line(29, 29, 20, 20, 8)

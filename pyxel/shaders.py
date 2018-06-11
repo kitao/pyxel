@@ -42,83 +42,95 @@ vec4 pixelToScreen(vec2 pos)
 
 void pix()
 {
+    vec2 p = floor(a_pos.xy + 0.5);
+
+    v_min_pos = v_max_pos = p;
+
     gl_PointSize = 1.0;
-    gl_Position = pixelToScreen(a_pos.xy);
+    gl_Position = pixelToScreen(p);
 }
 
 void line()
 {
-    v_min_pos = min(a_pos.xy, a_pos.zw);
-    v_max_pos = max(a_pos.xy, a_pos.zw);
+    vec2 p1 = floor(a_pos.xy + 0.5);
+    vec2 p2 = floor(a_pos.zw + 0.5);
 
-    vec2 diff = v_max_pos - v_min_pos;
+    v_min_pos = min(p1, p2);
+    v_max_pos = max(p1, p2);
 
-    if (diff.x > diff.y)
+    vec2 d = v_max_pos - v_min_pos;
+
+    if (d.x > d.y)
     {
-        if (a_pos.x < a_pos.z) {
-            v_pos1 = a_pos.xy;
-            v_pos2 = a_pos.zw;
+        if (p1.x < p2.x) {
+            v_pos1 = p1;
+            v_pos2 = p2;
         }
         else
         {
-            v_pos1 = a_pos.zw;
-            v_pos2 = a_pos.xy;
+            v_pos1 = p2;
+            v_pos2 = p1;
         }
     }
     else
     {
-        if (a_pos.y < a_pos.w)
+        if (p1.y < p2.y)
         {
-            v_pos1 = a_pos.xy;
-            v_pos2 = a_pos.zw;
+            v_pos1 = p1;
+            v_pos2 = p2;
         }
         else
         {
-            v_pos1 = a_pos.zw;
-            v_pos2 = a_pos.xy;
+            v_pos1 = p2;
+            v_pos2 = p1;
         }
     }
 
-    gl_PointSize = max(diff.x, diff.y) + 1.0;
+    gl_PointSize = max(d.x, d.y) + 1.0;
     gl_Position = pixelToScreen(v_min_pos + (gl_PointSize - 1.0) * 0.5);
 }
 
 void rect_rectb()
 {
-    v_min_pos = a_pos.xy;
-    v_max_pos = a_pos.xy + a_size - 1.0;
+    vec2 p = floor(a_pos.xy + 0.5);
+    vec2 s = floor(a_size + 0.5);
 
-    v_size = a_size;
+    v_min_pos = p;
+    v_max_pos = p + s - 1.0;
+    v_size = s;
 
-    gl_PointSize = max(a_size.x, a_size.y);
+    gl_PointSize = max(s.x, s.y);
     gl_Position = pixelToScreen(v_min_pos + (gl_PointSize - 1.0) * 0.5);
 }
 
 void circ_circb()
 {
-    v_pos1 = a_pos.xy;
-    v_size.x = a_size.x;
+    vec2 p = floor(a_pos.xy + 0.5);
+    float r = floor(a_size.x + 0.5);
 
-    v_min_pos = v_pos1 - v_size.x;
-    v_max_pos = v_pos1 + v_size.x;
+    v_pos1 = p;
+    v_min_pos = p - r;
+    v_max_pos = p + r;
+    v_size.x = r;
 
-    gl_PointSize = v_size.x * 2.0 + 1.0;
-    gl_Position = pixelToScreen(v_pos1);
+    gl_PointSize = r * 2.0 + 1.0;
+    gl_Position = pixelToScreen(p);
 }
 
 void blt_text()
 {
-    vec2 abs_size = abs(a_size);
+    vec2 p1 = floor(a_pos.xy + 0.5);
+    vec2 p2 = floor(a_pos.zw + 0.5);
+    vec2 s = floor(a_size + 0.5);
+    vec2 abs_s = abs(s);
 
-    v_pos1 = a_pos.xy;
-    v_pos2 = a_pos.zw;
+    v_pos1 = p1;
+    v_pos2 = p2;
+    v_min_pos = p1;
+    v_max_pos = p1 + abs_s - 1.0;
+    v_size = s;
 
-    v_min_pos = v_pos1;
-    v_max_pos = v_pos1 + abs_size - 1.0;
-
-    v_size = a_size;
-
-    gl_PointSize = max(abs_size.x, abs_size.y);
+    gl_PointSize = max(abs_s.x, abs_s.y);
     gl_Position = pixelToScreen(v_min_pos + (gl_PointSize - 1.0) * 0.5);
 }
 
@@ -127,9 +139,6 @@ void main()
     v_type = a_mode.x;
     v_col = a_mode.y;
     v_image = a_mode.z;
-
-    v_min_clip = a_clip.xy;
-    v_max_clip = a_clip.xy + a_clip.zw - 1.0;
 
     v_pal[0] = unpack_4ui_1(a_pal.x);
     v_pal[1] = unpack_4ui_2(a_pal.x);
@@ -154,6 +163,9 @@ void main()
     else if (v_type == TYPE_CIRC || v_type == TYPE_CIRCB) { circ_circb(); }
     else if (v_type == TYPE_BLT || v_type == TYPE_TEXT) { blt_text(); }
     else { gl_Position = vec4(0.0, 0.0, 0.0, 1.0); }
+
+    v_min_clip = max(floor(a_clip.xy + 0.5), v_min_pos);
+    v_max_clip = min(v_min_clip + floor(a_clip.zw + 0.5) - 1.0, v_max_pos);
 }
 """
 
@@ -185,7 +197,7 @@ varying vec2 v_min_clip;
 varying vec2 v_max_clip;
 varying float v_pal[16];
 
-vec2 pos;
+vec2 draw_pos;
 
 vec4 indexToColor(float col)
 {
@@ -199,9 +211,6 @@ void pix()
 
 void line()
 {
-    if (pos.x < v_min_pos.x || pos.y < v_min_pos.y ||
-        pos.x > v_max_pos.x || pos.y > v_max_pos.y) { discard; }
-
     vec2 diff = v_max_pos - v_min_pos;
 
     if (diff.x != 0 || diff.y != 0)
@@ -209,16 +218,16 @@ void line()
         if (diff.x > diff.y)
         {
             float d = (v_pos2.y - v_pos1.y) / diff.x;
-            float y = int((pos.x - v_pos1.x) * d + v_pos1.y + 0.5);
+            float y = floor((draw_pos.x - v_pos1.x) * d + v_pos1.y + 0.5);
 
-            if (pos.y != y) { discard; }
+            if (draw_pos.y != y) { discard; }
         }
         else
         {
             float d = (v_pos2.x - v_pos1.x) / diff.y;
-            float x = int((pos.y - v_pos1.y) * d + v_pos1.x + 0.5);
+            float x = floor((draw_pos.y - v_pos1.y) * d + v_pos1.x + 0.5);
 
-            if (pos.x != x) { discard; }
+            if (draw_pos.x != x) { discard; }
         }
     }
 
@@ -227,36 +236,30 @@ void line()
 
 void rect()
 {
-    if (pos.x < v_min_pos.x || pos.y < v_min_pos.y ||
-        pos.x > v_max_pos.x || pos.y > v_max_pos.y) { discard; }
-
     gl_FragColor = indexToColor(v_col);
 }
 
 void rectb()
 {
-    if (pos.x != v_min_pos.x && pos.y != v_min_pos.y &&
-        pos.x != v_max_pos.x && pos.y != v_max_pos.y) { discard; }
-
-    if (pos.x < v_min_pos.x || pos.y < v_min_pos.y ||
-        pos.x > v_max_pos.x || pos.y > v_max_pos.y) { discard; }
+    if (draw_pos.x < v_min_pos.x || draw_pos.y < v_min_pos.y ||
+        draw_pos.x > v_max_pos.x || draw_pos.y > v_max_pos.y) { discard; }
 
     gl_FragColor = indexToColor(v_col);
 }
 
 void circ()
 {
-    vec2 diff = pos - v_pos1;
+    vec2 diff = draw_pos - v_pos1;
 
     if (abs(diff.x) > abs(diff.y))
     {
-        float x = sqrt(v_size.x * v_size.x - diff.y * diff.y);
-        if (abs(diff.x) > int(x + 0.5)) { discard; }
+        float x = floor(sqrt(v_size.x * v_size.x - diff.y * diff.y) + 0.5);
+        if (abs(diff.x) > x) { discard; }
     }
     else
     {
-        float y = sqrt(v_size.x * v_size.x - diff.x * diff.x);
-        if (abs(diff.y) > int(y + 0.5)) { discard; }
+        float y = floor(sqrt(v_size.x * v_size.x - diff.x * diff.x) + 0.5);
+        if (abs(diff.y) > y) { discard; }
     }
 
     gl_FragColor = indexToColor(v_col);
@@ -264,17 +267,17 @@ void circ()
 
 void circb()
 {
-    vec2 diff = pos - v_pos1;
+    vec2 diff = draw_pos - v_pos1;
 
     if (abs(diff.x) > abs(diff.y))
     {
-        float x = sqrt(v_size.x * v_size.x - diff.y * diff.y);
-        if (abs(diff.x) != int(x + 0.5)) { discard; }
+        float x = floor(sqrt(v_size.x * v_size.x - diff.y * diff.y) + 0.5);
+        if (abs(diff.x) != x) { discard; }
     }
     else
     {
-        float y = sqrt(v_size.x * v_size.x - diff.x * diff.x);
-        if (abs(diff.y) != int(y + 0.5)) { discard; }
+        float y = floor(sqrt(v_size.x * v_size.x - diff.x * diff.x) + 0.5);
+        if (abs(diff.y) != y) { discard; }
     }
 
     gl_FragColor = indexToColor(v_col);
@@ -282,29 +285,23 @@ void circb()
 
 void blt()
 {
-    if (pos.x < v_min_pos.x || pos.y < v_min_pos.y ||
-        pos.x > v_max_pos.x || pos.y > v_max_pos.y) { discard; }
-
     int image = int(v_image);
-    vec2 offset = pos - v_min_pos;
+    vec2 offset = draw_pos - v_min_pos;
     vec2 uv = v_pos2;
     uv.x += (v_size.x > 0.0) ? offset.x : -(v_size.x + 1.0 + offset.x);
     uv.y += (v_size.y > 0.0) ? offset.y : -(v_size.y + 1.0 + offset.y);
     uv /= u_texture_size[image];
 
     int col = int(texture2D(u_texture[image], uv).r * 255.0);
-    if (col == int(v_col)) { discard; }
+    if (col == v_col) { discard; }
 
     gl_FragColor = indexToColor(col);
 }
 
 void text()
 {
-    if (pos.x < v_min_pos.x || pos.y < v_min_pos.y ||
-        pos.x > v_max_pos.x || pos.y > v_max_pos.y) { discard; }
-
     int image = int(v_image);
-    vec2 uv = (v_pos2 + pos - v_min_pos) / u_texture_size[image];
+    vec2 uv = (v_pos2 + draw_pos - v_min_pos) / u_texture_size[image];
 
     int col = int(texture2D(u_texture[image], uv).r * 255.0);
     if (col != 1) { discard; }
@@ -314,10 +311,10 @@ void text()
 
 void main()
 {
-    pos = floor(gl_FragCoord.xy);
+    draw_pos = floor(gl_FragCoord.xy);
 
-    if (pos.x < v_min_clip.x || pos.y < v_min_clip.y ||
-        pos.x > v_max_clip.x || pos.y > v_max_clip.y) { discard; }
+    if (draw_pos.x < v_min_clip.x || draw_pos.y < v_min_clip.y ||
+        draw_pos.x > v_max_clip.x || draw_pos.y > v_max_clip.y) { discard; }
 
     if (v_type == TYPE_PIX) { pix(); }
     else if (v_type == TYPE_LINE) { line(); }
