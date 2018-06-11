@@ -44,21 +44,14 @@ class GLShader:
 
 
 class GLAttribute:
-    def __init__(self, att_info, count, *, integer=False, dynamic=False):
+    def __init__(self, att_info, count, *, dynamic=False):
         self.att_info = att_info[:]
         self.size = sum(att[2] for att in att_info)
         self.stride = self.size * 4
         self.count = count
         self.usage = gl.GL_DYNAMIC_DRAW if dynamic else gl.GL_STATIC_DRAW
-
-        shape = (count, self.size)
-        if integer:
-            self.dtype = gl.GL_INT
-            self.data = np.zeros(shape, np.int32)
-        else:
-            self.dtype = gl.GL_FLOAT
-            self.data = np.zeros(shape, np.float32)
-
+        self.dtype = gl.GL_FLOAT
+        self.data = np.zeros((count, self.size), np.float32)
         self.buf = gl.glGenBuffers(1)
         self.need_to_refresh = True
 
