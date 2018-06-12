@@ -40,8 +40,8 @@ class App(pyxel.App):
         self.x = (self.x + 1) % 160
         self.pix(self.x, 0, 7)
 
-        self.text(11, 11, "Hello, I'm Gobliso. Nice to meet you!", 8)
-        self.text(10, 10, "Hello, I'm Gobliso. Nice to meet you!", 7)
+        self.text(11, 11, "Hello, Python!", 8)
+        self.text(10, 10, "Hello, Python!", 7)
 
         self.time += time.time() - start
         self.count += 1

@@ -249,17 +249,17 @@ void rectb()
 
 void circ()
 {
-    vec2 d = draw_pos - v_pos1;
+    vec2 d = abs(draw_pos - v_pos1);
 
-    if (abs(d.x) > abs(d.y))
+    if (d.x > d.y)
     {
         float x = floor(sqrt(v_size.x * v_size.x - d.y * d.y) + 0.5);
-        if (abs(d.x) > x) { discard; }
+        if (d.x > x) { discard; }
     }
     else
     {
         float y = floor(sqrt(v_size.x * v_size.x - d.x * d.x) + 0.5);
-        if (abs(d.y) > y) { discard; }
+        if (d.y > y) { discard; }
     }
 
     gl_FragColor = indexToColor(v_col);
@@ -267,17 +267,17 @@ void circ()
 
 void circb()
 {
-    vec2 d = draw_pos - v_pos1;
+    vec2 d = abs(draw_pos - v_pos1);
 
-    if (abs(d.x) > abs(d.y))
+    if (d.x > d.y)
     {
         float x = floor(sqrt(v_size.x * v_size.x - d.y * d.y) + 0.5);
-        if (abs(d.x) != x) { discard; }
+        if (d.x != x) { discard; }
     }
     else
     {
         float y = floor(sqrt(v_size.x * v_size.x - d.x * d.x) + 0.5);
-        if (abs(d.y) != y) { discard; }
+        if (d.y != y) { discard; }
     }
 
     gl_FragColor = indexToColor(v_col);
@@ -285,14 +285,14 @@ void circb()
 
 void blt()
 {
-    int i = int(v_image);
+    int img = int(v_image);
     vec2 p = draw_pos - v_min_pos;
     vec2 uv = v_pos2;
     uv.x += (v_size.x > 0.0) ? p.x : -(v_size.x + 1.0 + p.x);
     uv.y += (v_size.y > 0.0) ? p.y : -(v_size.y + 1.0 + p.y);
-    uv /= u_texture_size[i];
+    uv /= u_texture_size[img];
 
-    int col = int(texture2D(u_texture[i], uv).r * 255.0);
+    int col = int(texture2D(u_texture[img], uv).r * 255.0);
     if (col == v_col) { discard; }
 
     gl_FragColor = indexToColor(col);
@@ -300,10 +300,10 @@ void blt()
 
 void text()
 {
-    int i = int(v_image);
-    vec2 uv = (v_pos2 + draw_pos - v_min_pos) / u_texture_size[i];
+    int img = int(v_image);
+    vec2 uv = (v_pos2 + draw_pos - v_min_pos) / u_texture_size[img];
 
-    int col = int(texture2D(u_texture[i], uv).r * 255.0);
+    int col = int(texture2D(u_texture[img], uv).r * 255.0);
     if (col != 1) { discard; }
 
     gl_FragColor = indexToColor(v_col);
