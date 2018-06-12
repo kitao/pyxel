@@ -1,3 +1,5 @@
+import math
+import time
 import pyglet
 from .renderer import Renderer
 
@@ -29,6 +31,8 @@ class Window(pyglet.window.Window):
 
         self.app = app
         self.renderer = Renderer(app._width, app._height)
+        self.one_frame_time = 1 / app._fps
+        self.last_updated_time = time.time() - self.one_frame_time
 
         app.image = self.renderer.image
         app.clip = self.renderer.clip
@@ -43,12 +47,18 @@ class Window(pyglet.window.Window):
         app.blt = self.renderer.blt
         app.text = self.renderer.text
 
-        pyglet.clock.schedule_interval(self.update, 1 / app._fps)
+        pyglet.clock.set_fps_limit(self.app._fps)
+        pyglet.clock.schedule(self.update)
 
     def update(self, _):
-        self.renderer.begin()
-        self.app.update()
-        self.renderer.end()
+        elapsed_time = time.time() - self.last_updated_time
+        update_count = math.floor(elapsed_time / self.one_frame_time)
+
+        for _ in range(update_count):
+            self.renderer.begin()
+            self.app.update()
+            self.renderer.end()
+            self.last_updated_time += self.one_frame_time
 
     def on_draw(self):
         window_width, window_height = self.get_viewport_size()
