@@ -34,7 +34,7 @@ class Window(pyglet.window.Window):
         self.one_frame_time = 1 / app._fps
         self.last_updated_time = time.time() - self.one_frame_time
 
-        app.image = self.renderer.image
+        app.bank = self.renderer.bank
         app.clip = self.renderer.clip
         app.pal = self.renderer.pal
         app.cls = self.renderer.cls
@@ -55,9 +55,8 @@ class Window(pyglet.window.Window):
         update_count = math.floor(elapsed_time / self.one_frame_time)
 
         for _ in range(update_count):
-            self.renderer.begin()
+            self.renderer.reset_drawing_command()
             self.app.update()
-            self.renderer.end()
             self.last_updated_time += self.one_frame_time
 
     def on_draw(self):

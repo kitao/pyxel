@@ -5,11 +5,11 @@ from .shaders import (DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER,
                       DRAWING_ATTRIBUTE_INFO, SCALING_VERTEX_SHADER,
                       SCALING_FRAGMENT_SHADER, SCALING_ATTRIBUTE_INFO)
 from .image import Image
-from .font import (MAX_FONT_CODE, MIN_FONT_CODE, FONT_WIDTH, FONT_HEIGHT,
-                   setup_font)
+from .font import (MIN_FONT_CODE, MAX_FONT_CODE, FONT_WIDTH, FONT_HEIGHT,
+                   FONT_IMAGE_WIDTH, FONT_IMAGE_HEIGHT, FONT_IMAGE_ROW_COUNT,
+                   create_font_image)
 
-IMAGE_SIZE = (256, 256)
-IMAGE_COUNT = 8
+BANK_COUNT = 8
 MAX_DRAW_COUNT = 10000
 
 TYPE_PIX = 0
@@ -23,7 +23,7 @@ TYPE_TEXT = 7
 
 MODE_TYPE_INDEX = DRAWING_ATTRIBUTE_INFO[0][1]
 MODE_COL_INDEX = MODE_TYPE_INDEX + 1
-MODE_IMAGE_INDEX = MODE_TYPE_INDEX + 2
+MODE_BANK_INDEX = MODE_TYPE_INDEX + 2
 
 POS_X1_INDEX = DRAWING_ATTRIBUTE_INFO[1][1]
 POS_Y1_INDEX = POS_X1_INDEX + 1
@@ -36,8 +36,6 @@ SIZE_H_INDEX = SIZE_W_INDEX + 1
 CLIP_PAL_INDEX = DRAWING_ATTRIBUTE_INFO[3][1]
 CLIP_PAL_COUNT = 8
 
-FONT_ROW_COUNT = IMAGE_SIZE[0] // FONT_WIDTH
-
 
 class Renderer:
     def __init__(self, width, height):
@@ -45,10 +43,9 @@ class Renderer:
         self.height = height
         self.max_draw_count = MAX_DRAW_COUNT
         self.cur_draw_count = 0
-        self.need_to_refresh = True
 
-        self.image_list = [Image(*IMAGE_SIZE) for _ in range(IMAGE_COUNT)]
-        setup_font(self.image_list[-1])
+        self.bank_list = [None] * BANK_COUNT
+        self.bank_list[-1] = create_font_image()
 
         self.clip_pal_data = np.ndarray(8, np.float32)
         self.clip()
@@ -58,7 +55,6 @@ class Renderer:
                                     DRAWING_FRAGMENT_SHADER)
         self.draw_att = GLAttribute(
             DRAWING_ATTRIBUTE_INFO, MAX_DRAW_COUNT, dynamic=True)
-        self.draw_tex_list = [image._tex for image in self.image_list]
 
         self.scale_shader = GLShader(SCALING_VERTEX_SHADER,
                                      SCALING_FRAGMENT_SHADER)
@@ -78,12 +74,8 @@ class Renderer:
         data[2, :] = [1, 1, 1, 0]
         data[3, :] = [1, -1, 1, 1]
 
-    def begin(self):
+    def reset_drawing_command(self):
         self.cur_draw_count = 0
-        self.need_to_refresh = True
-
-    def end(self):
-        self.draw_att.refresh(self.cur_draw_count)
 
     def render(self, left, bottom, width, height, palette, clear_color):
         # clear screen
@@ -92,7 +84,7 @@ class Renderer:
         gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
         # drawing
-        if self.need_to_refresh:
+        if self.cur_draw_count > 0:
             # restore previous frame
             gl.glDisable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
             gl.glDisable(gl.GL_POINT_SPRITE)
@@ -107,7 +99,11 @@ class Renderer:
             gl.glEnable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
             gl.glEnable(gl.GL_POINT_SPRITE)
 
-            self.draw_shader.begin(self.draw_att, self.draw_tex_list)
+            draw_tex_list = [
+                image._tex if image else None for image in self.bank_list
+            ]
+            self.draw_att.refresh(self.cur_draw_count)
+            self.draw_shader.begin(self.draw_att, draw_tex_list)
             self.draw_shader.set_uniform('u_framebuffer_size', '2f',
                                          self.width, self.height)
 
@@ -116,7 +112,7 @@ class Renderer:
                 r, g, b = self._int_to_rgb(v)
                 self.draw_shader.set_uniform(name, '3i', r, g, b)
 
-            for i, v in enumerate(self.draw_tex_list):
+            for i, v in enumerate(draw_tex_list):
                 if v:
                     name = 'u_texture[{}]'.format(i)
                     self.draw_shader.set_uniform(name, '1i', i)
@@ -128,7 +124,7 @@ class Renderer:
             self.draw_shader.end()
             self.scale_tex.copy_screen(0, 0, self.width, self.height)
 
-            self.need_to_refresh = False
+            self.cur_draw_count = 0
 
         # scaling
         gl.glDisable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
@@ -150,8 +146,8 @@ class Renderer:
 
         return data
 
-    def image(self, index):
-        return self.image_list[index]
+    def bank(self, index, image):
+        self.bank_list[index] = image
 
     def clip(self, *args):
         if len(args) == 4:
@@ -259,12 +255,12 @@ class Renderer:
 
         data[SIZE_W_INDEX] = r
 
-    def blt(self, x, y, image, sx, sy, w, h, colkey=-1):
+    def blt(self, x, y, bank, sx, sy, w, h, colkey=-1):
         data = self._next_dc_data()
 
         data[MODE_TYPE_INDEX] = TYPE_BLT
         data[MODE_COL_INDEX] = colkey
-        data[MODE_IMAGE_INDEX] = image
+        data[MODE_BANK_INDEX] = bank
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
@@ -283,12 +279,12 @@ class Renderer:
 
             data[MODE_TYPE_INDEX] = TYPE_TEXT
             data[MODE_COL_INDEX] = col
-            data[MODE_IMAGE_INDEX] = IMAGE_COUNT - 1
+            data[MODE_BANK_INDEX] = BANK_COUNT - 1
 
             data[POS_X1_INDEX] = x
             data[POS_Y1_INDEX] = y
-            data[POS_X2_INDEX] = (code % FONT_ROW_COUNT) * FONT_WIDTH
-            data[POS_Y2_INDEX] = (code // FONT_ROW_COUNT) * FONT_HEIGHT
+            data[POS_X2_INDEX] = (code % FONT_IMAGE_ROW_COUNT) * FONT_WIDTH
+            data[POS_Y2_INDEX] = (code // FONT_IMAGE_ROW_COUNT) * FONT_HEIGHT
 
             data[SIZE_W_INDEX] = FONT_WIDTH
             data[SIZE_H_INDEX] = FONT_HEIGHT

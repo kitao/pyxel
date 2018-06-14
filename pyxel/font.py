@@ -1,7 +1,14 @@
+from .image import Image
+
 MIN_FONT_CODE = 32
 MAX_FONT_CODE = 127
+
 FONT_WIDTH = 4
 FONT_HEIGHT = 6
+FONT_IMAGE_WIDTH = FONT_WIDTH * 16
+FONT_IMAGE_HEIGHT = FONT_HEIGHT * 6
+FONT_IMAGE_ROW_COUNT = FONT_IMAGE_WIDTH // FONT_WIDTH
+
 FONT_DATA = [
     0x000000,
     0x444040,
@@ -102,8 +109,9 @@ FONT_DATA = [
 ]
 
 
-def setup_font(image):
-    row_count = image.width // FONT_WIDTH
+def create_font_image():
+    image = Image(FONT_IMAGE_WIDTH, FONT_IMAGE_HEIGHT)
+    row_count = FONT_IMAGE_WIDTH // FONT_WIDTH
 
     for i, v in enumerate(FONT_DATA):
         left = (i % row_count) * FONT_WIDTH
@@ -115,3 +123,5 @@ def setup_font(image):
             y = top + j // FONT_WIDTH
             data[y, x] = 1 if v & 0x800000 else 0
             v <<= 1
+
+    return image
