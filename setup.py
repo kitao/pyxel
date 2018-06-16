@@ -22,7 +22,10 @@ setuptools.setup(
         'Operating System :: POSIX :: Linux',
         'Topic :: Games/Entertainment',
     ),
-    packages=['pyxel'],
+    packages=['pyxel', 'pyxel.editor'],
     install_requires=['numpy', 'pyglet', 'PyOpenGL'],
     python_requires='>=3',
+    entry_points={
+        'console_scripts': ['pyxel=pyxel.editor:run'],
+    },
 )
