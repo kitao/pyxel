@@ -59,20 +59,8 @@ class App(pyxel.App):
             self.count = 0
 
     def key_press(self, key, mod):
-        if key == pyxel.key.ESCAPE or key == pyxel.key.Q:
+        if key == pyxel.key.Q:
             exit()
-
-        if key == pyxel.key.UP and (mod & pyxel.key.MOD_ALT
-                                    or mod & pyxel.key.MOD_OPTION):
-            self.scale += 1
-
-        if key == pyxel.key.DOWN and (mod & pyxel.key.MOD_ALT
-                                      or mod & pyxel.key.MOD_OPTION):
-            self.scale -= 1
-
-        if key == pyxel.key.ENTER and (mod & pyxel.key.MOD_ALT
-                                       or mod & pyxel.key.MOD_OPTION):
-            self.fullscreen = not self.fullscreen
 
 
 App().run()
