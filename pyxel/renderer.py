@@ -128,7 +128,7 @@ class Renderer:
 
             gl.glDrawArrays(gl.GL_POINTS, 0, self.cur_draw_count)
             self.draw_shader.end()
-            self.scale_tex.copy_screen(0, 0, self.width, self.height)
+            self.scale_tex.copy_screen(0, 0, 0, 0, self.width, self.height)
 
             self.cur_draw_count = 0
 

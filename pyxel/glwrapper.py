@@ -105,10 +105,10 @@ class GLTexture:
     def refresh(self):
         self.need_to_refresh = True
 
-    def copy_screen(self, x, y, width, height):
+    def copy_screen(self, x, y, left, bottom, width, height):
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.tex)
-        gl.glCopyTexImage2D(gl.GL_TEXTURE_2D, 0, self.format, x, y, width,
-                            height, 0)
+        gl.glCopyTexSubImage2D(gl.GL_TEXTURE_2D, 0, x, y, left, bottom, width,
+                               height, 0)
         gl.glBindTexture(gl.GL_TEXTURE_2D, 0)
 
     def _begin(self, i):
