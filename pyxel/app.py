@@ -14,61 +14,6 @@ BORDER_WIDTH = 0
 FPS = 30
 
 
-class Window(pyglet.window.Window):
-    def __init__(self, app):
-        window_width = app._width * app._scale + app._border_width
-        window_height = app._height * app._scale + app._border_width
-        super().__init__(window_width, window_height)
-
-        self.app = app
-        self.renderer = Renderer(app._width, app._height)
-        self.one_frame_time = 1 / app._fps
-        self.last_updated_time = time.time() - self.one_frame_time
-
-        app.bank = self.renderer.bank
-        app.clip = self.renderer.clip
-        app.pal = self.renderer.pal
-        app.cls = self.renderer.cls
-        app.pix = self.renderer.pix
-        app.line = self.renderer.line
-        app.rect = self.renderer.rect
-        app.rectb = self.renderer.rectb
-        app.circ = self.renderer.circ
-        app.circb = self.renderer.circb
-        app.blt = self.renderer.blt
-        app.text = self.renderer.text
-
-        pyglet.clock.set_fps_limit(self.app._fps)
-        pyglet.clock.schedule(self.update)
-
-    def update(self, _):
-        elapsed_time = time.time() - self.last_updated_time
-        update_count = math.floor(elapsed_time / self.one_frame_time)
-
-        for _ in range(update_count):
-            self.app.update()
-            self.last_updated_time += self.one_frame_time
-
-    def on_draw(self):
-        window_width, window_height = self.get_viewport_size()
-        scale_x = window_width // self.renderer.width
-        scale_y = window_height // self.renderer.height
-        scale = min(scale_x, scale_y)
-        width = self.renderer.width * scale
-        height = self.renderer.height * scale
-        left = (window_width - width) // 2
-        bottom = (window_height - height) // 2
-
-        self.renderer.render(left, bottom, width, height, self.app._palette,
-                             self.app._bg_color)
-
-    def on_key_press(self, key, modifiers):
-        self.app.key_press(key, modifiers)
-
-    def on_text(self, text):
-        self.app.text_input(text)
-
-
 class App:
     def __init__(self,
                  width,
@@ -86,7 +31,68 @@ class App:
         self._bg_color = bg_color
         self._border_width = border_width
         self._fps = fps
-        self._window = Window(self)
+        self._one_frame_time = 1 / fps
+        self._last_updated_time = time.time() - self._one_frame_time
+
+        self.mouse_x = 0
+        self.mouse_y = 0
+
+        # initialize window
+        self._window = pyglet.window.Window(width * scale + border_width,
+                                            height * scale + border_width)
+        self._window.on_key_press = self._on_key_press
+        self._window.on_mouse_motion = self._on_mouse_motion
+        self._window.on_draw = self._on_draw
+
+        # initialize renderer
+        self._renderer = Renderer(width, height)
+        self.bank = self._renderer.bank
+        self.clip = self._renderer.clip
+        self.pal = self._renderer.pal
+        self.cls = self._renderer.cls
+        self.pix = self._renderer.pix
+        self.line = self._renderer.line
+        self.rect = self._renderer.rect
+        self.rectb = self._renderer.rectb
+        self.circ = self._renderer.circ
+        self.circb = self._renderer.circb
+        self.blt = self._renderer.blt
+        self.text = self._renderer.text
+
+        pyglet.clock.set_fps_limit(fps)
+        pyglet.clock.schedule(self._on_update)
+
+    def _on_update(self, dt):
+        elapsed_time = time.time() - self._last_updated_time
+        update_count = math.floor(elapsed_time / self._one_frame_time)
+
+        for _ in range(update_count):
+            self.update()
+            self._last_updated_time += self._one_frame_time
+
+    def _on_draw(self):
+        window_width, window_height = self._window.get_viewport_size()
+        scale_x = window_width // self._renderer.width
+        scale_y = window_height // self._renderer.height
+        scale = min(scale_x, scale_y)
+        width = self._renderer.width * scale
+        height = self._renderer.height * scale
+        left = (window_width - width) // 2
+        bottom = (window_height - height) // 2
+
+        self._renderer.render(left, bottom, width, height, self._palette,
+                              self._bg_color)
+
+    def _on_key_press(self, key, modifiers):
+        self.key_press(key, modifiers)
+
+    def _on_mouse_motion(self, x, y, dx, dy):
+        self.mouse_x = x // self.scale
+        self.mouse_y = self._height - y // self.scale - 1
+
+    @staticmethod
+    def run():
+        pyglet.app.run()
 
     @property
     def scale(self):
@@ -112,10 +118,3 @@ class App:
 
     def key_press(self, key, mod):
         pass
-
-    def text_input(self, text):
-        pass
-
-    @staticmethod
-    def run():
-        pyglet.app.run()
