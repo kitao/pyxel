@@ -4,22 +4,9 @@ import pyglet
 from .renderer import Renderer
 
 PALETTE = [
-    0x000000,
-    0x1d2b53,
-    0x7e2553,
-    0x008751,
-    0xab5236,
-    0x5f574f,
-    0xc2c3c7,
-    0xfff1e8,
-    0xff004d,
-    0xffa300,
-    0xffec27,
-    0x00e436,
-    0x29adff,
-    0x83769c,
-    0xff77a8,
-    0xffccaa,
+    0x000000, 0x1d2b53, 0x7e2553, 0x008751, 0xab5236, 0x5f574f, 0xc2c3c7,
+    0xfff1e8, 0xff004d, 0xffa300, 0xffec27, 0x00e436, 0x29adff, 0x83769c,
+    0xff77a8, 0xffccaa
 ]
 
 BG_COLOR = 0x101018
@@ -101,10 +88,29 @@ class App:
         self._fps = fps
         self._window = Window(self)
 
+    @property
+    def scale(self):
+        return self._scale
+
+    @scale.setter
+    def scale(self, scale):
+        self._scale = max(scale, 1)
+        window_width = self._width * self._scale + self._border_width
+        window_height = self._height * self._scale + self._border_width
+        self._window.set_size(window_width, window_height)
+
+    @property
+    def fullscreen(self):
+        return self._window.fullscreen
+
+    @fullscreen.setter
+    def fullscreen(self, fullscreen):
+        self._window.set_fullscreen(fullscreen)
+
     def update(self):
         pass
 
-    def key_press(self, key, modifiers):
+    def key_press(self, key, mod):
         pass
 
     def text_input(self, text):

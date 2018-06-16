@@ -1,6 +1,6 @@
 import pyxel
 
-# import time
+import time
 
 
 class App(pyxel.App):
@@ -24,7 +24,7 @@ class App(pyxel.App):
         self.time = 0
 
     def update(self):
-        # start = time.time()
+        start = time.time()
 
         self.cls(2)
 
@@ -50,16 +50,28 @@ class App(pyxel.App):
         self.text(11, 11, "Hello, Pyxel!", 8)
         self.text(10, 10, "Hello, Pyxel!", 7)
 
-        # self.time += time.time() - start
-        # self.count += 1
-        # if self.count == 50:
-        #     print(self.time / self.count * 1000)
-        #     self.time = 0
-        #     self.count = 0
+        self.time += time.time() - start
+        self.count += 1
+        if self.count == 50:
+            print(self.time / self.count * 1000)
+            self.time = 0
+            self.count = 0
 
-    def key_press(self, key, modifiers):
+    def key_press(self, key, mod):
         if key == pyxel.key.ESCAPE or key == pyxel.key.Q:
             exit()
+
+        if key == pyxel.key.UP and (mod & pyxel.key.MOD_ALT
+                                    or mod & pyxel.key.MOD_OPTION):
+            self.scale += 1
+
+        if key == pyxel.key.DOWN and (mod & pyxel.key.MOD_ALT
+                                      or mod & pyxel.key.MOD_OPTION):
+            self.scale -= 1
+
+        if key == pyxel.key.ENTER and (mod & pyxel.key.MOD_ALT
+                                       or mod & pyxel.key.MOD_OPTION):
+            self.fullscreen = not self.fullscreen
 
 
 App().run()
