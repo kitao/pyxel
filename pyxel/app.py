@@ -21,7 +21,7 @@ PALETTE = [
     0xff77a8,
     0xffccaa,
 ]
-CLEAR_COLOR = 0x000000
+BG_COLOR = 0
 FPS = 30
 
 
@@ -55,7 +55,6 @@ class Window(pyglet.window.Window):
         update_count = math.floor(elapsed_time / self.one_frame_time)
 
         for _ in range(update_count):
-            self.renderer.reset_drawing_command()
             self.app.update()
             self.last_updated_time += self.one_frame_time
 
@@ -70,7 +69,7 @@ class Window(pyglet.window.Window):
         bottom = (window_height - height) // 2
 
         self.renderer.render(left, bottom, width, height, self.app._palette,
-                             self.app._clear_color)
+                             self.app._bg_color)
 
     def on_key_press(self, key, modifiers):
         self.app.key_press(key, modifiers)
@@ -86,13 +85,13 @@ class App:
                  scale,
                  *,
                  palette=PALETTE,
-                 clear_color=CLEAR_COLOR,
+                 bg_color=BG_COLOR,
                  fps=FPS):
         self._width = width
         self._height = height
         self._scale = scale
         self._palette = palette[:]
-        self._clear_color = clear_color
+        self._bg_color = bg_color
         self._fps = fps
         self._window = Window(self)
 
