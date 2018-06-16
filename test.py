@@ -46,7 +46,7 @@ class App(pyxel.App):
         self.x = (self.x + 1) % 160
         self.pix(self.x, 0, 7)
 
-        self.text(11, 11, 'Hello, Pyxel!', 8)
+        self.text(11, 10, 'Hello, Pyxel!', 8)
         self.text(10, 10, 'Hello, Pyxel!', 7)
 
         self.text(0, 0, '{},{}'.format(self.mouse_x, self.mouse_y), 7)

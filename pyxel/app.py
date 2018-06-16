@@ -39,7 +39,7 @@ class App:
         self.mouse_y = 0
 
         # initialize window
-        self._window = Window(*self._calc_window_size())
+        self._window = Window(*self._window_size())
         self._window.on_key_press = self._on_key_press
         self._window.on_mouse_motion = self._on_mouse_motion
         self._window.on_draw = self._on_draw
@@ -63,17 +63,13 @@ class App:
         pyglet.clock.set_fps_limit(fps)
         pyglet.clock.schedule(self._on_update)
 
-    @staticmethod
-    def run():
-        pyglet.app.run()
-
-    def _calc_window_size(self):
+    def _window_size(self):
         return (self._width * self._scale + self._border_width,
                 self._height * self._scale + self._border_width)
 
     def _set_scale(self, scale):
         self._scale = max(scale, 1)
-        self._window.set_size(*self._calc_window_size())
+        self._window.set_size(*self._window_size())
 
     def _on_update(self, dt):
         elapsed_time = time.time() - self._last_updated_time
@@ -115,11 +111,15 @@ class App:
         self.key_press(key_, modifiers)
 
     def _on_mouse_motion(self, x, y, dx, dy):
-        self.mouse_x = x // self.scale
-        self.mouse_y = self._height - y // self.scale - 1
+        self.mouse_x = x // self._scale
+        self.mouse_y = self._height - y // self._scale - 1
 
     def update(self):
         pass
 
     def key_press(self, key, mod):
         pass
+
+    @staticmethod
+    def run():
+        pyglet.app.run()
