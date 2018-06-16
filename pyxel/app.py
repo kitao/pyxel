@@ -21,13 +21,17 @@ PALETTE = [
     0xff77a8,
     0xffccaa,
 ]
-BG_COLOR = 0
+
+BG_COLOR = 0x101018
+BORDER_WIDTH = 0
 FPS = 30
 
 
 class Window(pyglet.window.Window):
     def __init__(self, app):
-        super().__init__(app._width * app._scale, app._height * app._scale)
+        window_width = app._width * app._scale + app._border_width
+        window_height = app._height * app._scale + app._border_width
+        super().__init__(window_width, window_height)
 
         self.app = app
         self.renderer = Renderer(app._width, app._height)
@@ -86,12 +90,14 @@ class App:
                  *,
                  palette=PALETTE,
                  bg_color=BG_COLOR,
+                 border_width=BORDER_WIDTH,
                  fps=FPS):
         self._width = width
         self._height = height
         self._scale = scale
         self._palette = palette[:]
         self._bg_color = bg_color
+        self._border_width = border_width
         self._fps = fps
         self._window = Window(self)
 

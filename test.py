@@ -1,5 +1,6 @@
 import pyxel
-import time
+
+# import time
 
 
 class App(pyxel.App):
@@ -23,9 +24,9 @@ class App(pyxel.App):
         self.time = 0
 
     def update(self):
-        start = time.time()
+        # start = time.time()
 
-        self.cls(0)
+        self.cls(2)
 
         self.pix(0, 0, 8)
         self.pix(159, 0, 8)
@@ -49,12 +50,12 @@ class App(pyxel.App):
         self.text(11, 11, "Hello, Pyxel!", 8)
         self.text(10, 10, "Hello, Pyxel!", 7)
 
-        self.time += time.time() - start
-        self.count += 1
-        if self.count == 50:
-            print(self.time / self.count * 1000)
-            self.time = 0
-            self.count = 0
+        # self.time += time.time() - start
+        # self.count += 1
+        # if self.count == 50:
+        #     print(self.time / self.count * 1000)
+        #     self.time = 0
+        #     self.count = 0
 
     def key_press(self, key, modifiers):
         if key == pyxel.key.ESCAPE or key == pyxel.key.Q:

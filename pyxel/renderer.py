@@ -90,12 +90,6 @@ class Renderer:
         self.cur_draw_count = 0
 
     def render(self, left, bottom, width, height, palette, bg_color):
-        # clear screen
-        r, g, b = int_to_rgb(palette[bg_color])
-        gl.glClearColor(r / 255, g / 255, b / 255, 1)
-        gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-
-        # drawing
         if self.cur_draw_count > 0:
             # restore previous frame
             gl.glDisable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
@@ -137,6 +131,11 @@ class Renderer:
             self.scale_tex.copy_screen(0, 0, self.width, self.height)
 
             self.cur_draw_count = 0
+
+        # clear screen
+        r, g, b = int_to_rgb(bg_color)
+        gl.glClearColor(r / 255, g / 255, b / 255, 1)
+        gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
         # scaling
         gl.glDisable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
