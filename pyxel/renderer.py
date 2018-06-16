@@ -4,10 +4,8 @@ from .glwrapper import GLShader, GLAttribute, GLTexture
 from .shaders import (DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER,
                       DRAWING_ATTRIBUTE_INFO, SCALING_VERTEX_SHADER,
                       SCALING_FRAGMENT_SHADER, SCALING_ATTRIBUTE_INFO)
-from .image import Image
 from .font import (MIN_FONT_CODE, MAX_FONT_CODE, FONT_WIDTH, FONT_HEIGHT,
-                   FONT_IMAGE_WIDTH, FONT_IMAGE_HEIGHT, FONT_IMAGE_ROW_COUNT,
-                   create_font_image)
+                   FONT_IMAGE_ROW_COUNT, create_font_image)
 
 BANK_COUNT = 8
 MAX_DRAW_COUNT = 10000
@@ -33,8 +31,22 @@ POS_Y2_INDEX = POS_X1_INDEX + 3
 SIZE_W_INDEX = DRAWING_ATTRIBUTE_INFO[2][1]
 SIZE_H_INDEX = SIZE_W_INDEX + 1
 
-CLIP_PAL_INDEX = DRAWING_ATTRIBUTE_INFO[3][1]
+CLIP_X_INDEX = DRAWING_ATTRIBUTE_INFO[3][1]
+CLIP_Y_INDEX = CLIP_X_INDEX + 1
+CLIP_W_INDEX = CLIP_X_INDEX + 2
+CLIP_H_INDEX = CLIP_X_INDEX + 3
+
+PAL_A_INDEX = DRAWING_ATTRIBUTE_INFO[4][1]
+PAL_B_INDEX = PAL_A_INDEX + 1
+PAL_C_INDEX = PAL_A_INDEX + 2
+PAL_D_INDEX = PAL_A_INDEX + 3
+
+CLIP_PAL_INDEX = CLIP_X_INDEX
 CLIP_PAL_COUNT = 8
+
+
+def int_to_rgb(color):
+    return ((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff)
 
 
 class Renderer:
@@ -77,9 +89,9 @@ class Renderer:
     def reset_drawing_command(self):
         self.cur_draw_count = 0
 
-    def render(self, left, bottom, width, height, palette, clear_color):
+    def render(self, left, bottom, width, height, palette, bg_color):
         # clear screen
-        r, g, b = self._int_to_rgb(clear_color)
+        r, g, b = int_to_rgb(palette[bg_color])
         gl.glClearColor(r / 255, g / 255, b / 255, 1)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
@@ -109,7 +121,7 @@ class Renderer:
 
             for i, v in enumerate(palette):
                 name = 'u_palette[{}]'.format(i)
-                r, g, b = self._int_to_rgb(v)
+                r, g, b = int_to_rgb(v)
                 self.draw_shader.set_uniform(name, '3i', r, g, b)
 
             for i, v in enumerate(draw_tex_list):
@@ -178,6 +190,8 @@ class Renderer:
             self.clip_pal_data[7] = 0xfedc
 
     def cls(self, col):
+        self.cur_draw_count = 0
+
         data = self._next_dc_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECT
@@ -188,6 +202,11 @@ class Renderer:
 
         data[SIZE_W_INDEX] = self.width
         data[SIZE_H_INDEX] = self.height
+
+        data[CLIP_X_INDEX] = 0
+        data[CLIP_Y_INDEX] = 0
+        data[CLIP_W_INDEX] = self.width
+        data[CLIP_H_INDEX] = self.height
 
     def pix(self, x, y, col):
         data = self._next_dc_data()
@@ -290,7 +309,3 @@ class Renderer:
             data[SIZE_H_INDEX] = FONT_HEIGHT
 
             x += FONT_WIDTH
-
-    @staticmethod
-    def _int_to_rgb(color):
-        return ((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff)
