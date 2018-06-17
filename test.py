@@ -51,16 +51,18 @@ class App(pyxel.App):
 
         self.text(0, 0, '{},{}'.format(self.mouse_x, self.mouse_y), 7)
 
+        if self.btnp(pyxel.key.Q):
+            exit()
+
+        if self.btnp(pyxel.key.A, 30, 15):
+            self.rect(10, 10, 10, 10, 8)
+
         self.time += time.time() - start
         self.count += 1
         if self.count == 50:
             print(self.time / self.count * 1000)
             self.time = 0
             self.count = 0
-
-    def key_press(self, key, mod):
-        if key == pyxel.key.Q:
-            exit()
 
 
 App().run()
