@@ -8,7 +8,7 @@ from .font import (MIN_FONT_CODE, MAX_FONT_CODE, FONT_WIDTH, FONT_HEIGHT,
                    FONT_IMAGE_ROW_COUNT, create_font_image)
 
 BANK_COUNT = 8
-MAX_DRAW_COUNT = 10000
+MAX_DRAW_COUNT = 100000
 
 TYPE_PIX = 0
 TYPE_LINE = 1
