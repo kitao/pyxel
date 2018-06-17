@@ -11,8 +11,9 @@ PALETTE = [
     0xff77a8, 0xffccaa
 ]
 
-BG_COLOR = 0x101018
+PIXEL_SCALE = 4
 BORDER_WIDTH = 0
+CLEAR_COLOR = 0x101018
 FPS = 30
 
 
@@ -20,18 +21,18 @@ class App:
     def __init__(self,
                  width,
                  height,
-                 scale,
                  *,
-                 palette=PALETTE,
-                 bg_color=BG_COLOR,
+                 pixel_scale=PIXEL_SCALE,
                  border_width=BORDER_WIDTH,
+                 clear_color=CLEAR_COLOR,
+                 palette=PALETTE,
                  fps=FPS):
         self._width = width
         self._height = height
-        self._scale = scale
-        self._palette = palette[:]
-        self._bg_color = bg_color
+        self._pixel_scale = pixel_scale
         self._border_width = border_width
+        self._clear_color = clear_color
+        self._palette = palette[:]
         self._fps = fps
         self._one_frame_time = 1 / fps
         self._last_updated_time = time.time() - self._one_frame_time
@@ -39,7 +40,7 @@ class App:
         self._mouse_y = 0
 
         # initialize window
-        self._window = Window(*self._window_size())
+        self._window = Window(*self._get_window_size())
         self._window.on_draw = self._on_draw
         self._window.on_key_press = self._on_key_press
         self._window.on_mouse_motion = self._on_mouse_motion
@@ -89,13 +90,13 @@ class App:
     def update(self):
         pass
 
-    def _window_size(self):
-        return (self._width * self._scale + self._border_width,
-                self._height * self._scale + self._border_width)
+    def _get_window_size(self):
+        return (self._width * self._pixel_scale + self._border_width,
+                self._height * self._pixel_scale + self._border_width)
 
-    def _set_scale(self, scale):
-        self._scale = max(scale, 1)
-        self._window.set_size(*self._window_size())
+    def _set_pixel_scale(self, pixel_scale):
+        self._pixel_scale = max(pixel_scale, 1)
+        self._window.set_size(*self._get_window_size())
 
     def _update_key_state(self):
         for k, v in self._key_state.items():
@@ -127,17 +128,17 @@ class App:
         bottom = (viewport_height - height) // 2
 
         self._renderer.render(left, bottom, width, height, self._palette,
-                              self._bg_color)
+                              self._clear_color)
 
     def _on_key_press(self, key, modifiers):
         alt_or_opt = (modifiers & pyglet_key.MOD_ALT
                       or modifiers & pyglet_key.MOD_OPTION)
 
         if key == pyglet_key.UP and alt_or_opt:
-            self._set_scale(self._scale + 1)
+            self._set_pixel_scale(self._pixel_scale + 1)
 
         if key == pyglet_key.DOWN and alt_or_opt:
-            self._set_scale(self._scale - 1)
+            self._set_pixel_scale(self._pixel_scale - 1)
 
         if key == pyglet_key.ENTER and alt_or_opt:
             self._window.set_fullscreen(not self._window.fullscreen)
@@ -146,5 +147,5 @@ class App:
             exit()
 
     def _on_mouse_motion(self, x, y, dx, dy):
-        self._mouse_x = x // self._scale
-        self._mouse_y = self._height - y // self._scale - 1
+        self._mouse_x = x // self._pixel_scale
+        self._mouse_y = self._height - y // self._pixel_scale - 1

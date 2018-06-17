@@ -4,7 +4,7 @@ import time
 
 class App(pyxel.App):
     def __init__(self):
-        super().__init__(160, 120, 4)
+        super().__init__(160, 120)
 
         self.image = pyxel.Image(16, 16)
 

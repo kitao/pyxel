@@ -89,7 +89,7 @@ class Renderer:
     def reset_drawing_command(self):
         self.cur_draw_count = 0
 
-    def render(self, left, bottom, width, height, palette, bg_color):
+    def render(self, left, bottom, width, height, palette, clear_color):
         if self.cur_draw_count > 0:
             # restore previous frame
             gl.glDisable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
@@ -133,7 +133,7 @@ class Renderer:
             self.cur_draw_count = 0
 
         # clear screen
-        r, g, b = int_to_rgb(bg_color)
+        r, g, b = int_to_rgb(clear_color)
         gl.glClearColor(r / 255, g / 255, b / 255, 1)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
