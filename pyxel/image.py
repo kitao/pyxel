@@ -21,6 +21,10 @@ class Image:
         self._tex.refresh()
         return self._data
 
+    def set(self, x, y, width, height, data):
+        self._data[y:y + height, x:x + width] = data
+        self._tex.refresh()
+
     def save(self):
         # todo
         pass
