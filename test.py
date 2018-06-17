@@ -1,5 +1,4 @@
 import pyxel
-import time
 
 
 class App(pyxel.App):
@@ -7,24 +6,22 @@ class App(pyxel.App):
         super().__init__(160, 120)
 
         self.image = pyxel.Image(16, 16)
-
-        data = self.image.data
-        data[0, 0] = 7
-        data[0, 1] = 3
-        data[0, 2] = 7
-        data[1, 0] = 8
-        data[2, 0] = 7
-        data[7, 7] = 7
+        image_data = [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 7, 0, 0, 7, 0, 0],
+            [0, 0, 7, 0, 0, 7, 0, 0],
+            [0, 0, 7, 0, 0, 7, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 7, 0, 0, 0, 0, 7, 0],
+            [0, 0, 7, 7, 7, 7, 0, 0],
+        ]
+        self.image.set(0, 0, 8, 8, image_data)
         self.bank(0, self.image)
 
         self.x = 0
 
-        self.count = 0
-        self.time = 0
-
     def update(self):
-        start = time.time()
-
         self.cls(2)
 
         self.pix(0, 0, 8)
@@ -33,6 +30,7 @@ class App(pyxel.App):
         self.pix(159, 119, 8)
 
         self.blt(80, 40, 7, 0, 0, 64, 64, 0)
+        self.blt(30, 60, 0, 0, 0, 8, 8)
 
         self.rectb(50, 50, 30, 40, 3)
 
@@ -49,20 +47,13 @@ class App(pyxel.App):
         self.text(11, 10, 'Hello, Pyxel!', 8)
         self.text(10, 10, 'Hello, Pyxel!', 7)
 
-        self.text(0, 0, '{},{}'.format(self.mouse_x, self.mouse_y), 7)
+        self.text(80, 0, '{},{}'.format(self.mouse_x, self.mouse_y), 7)
 
         if self.btnp(pyxel.key.Q):
             exit()
 
         if self.btnp(pyxel.key.A, 30, 15):
             self.rect(10, 10, 10, 10, 8)
-
-        self.time += time.time() - start
-        self.count += 1
-        if self.count == 50:
-            print(self.time / self.count * 1000)
-            self.time = 0
-            self.count = 0
 
 
 App().run()
