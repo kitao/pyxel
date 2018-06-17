@@ -8,7 +8,7 @@ from .font import (MIN_FONT_CODE, MAX_FONT_CODE, FONT_WIDTH, FONT_HEIGHT,
                    FONT_IMAGE_ROW_COUNT, create_font_image)
 
 BANK_COUNT = 8
-MAX_DRAW_COUNT = 100000
+MAX_DRAW_COUNT = 10000
 
 TYPE_PIX = 0
 TYPE_LINE = 1
@@ -53,7 +53,6 @@ class Renderer:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.max_draw_count = MAX_DRAW_COUNT
         self.cur_draw_count = 0
 
         self.bank_list = [None] * BANK_COUNT
@@ -147,12 +146,21 @@ class Renderer:
         gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, 4)
         self.scale_shader.end()
 
-    def _next_dc_data(self):
+    def _next_draw_data(self):
         data = self.draw_att.data[self.cur_draw_count]
         data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
              CLIP_PAL_COUNT] = self.clip_pal_data
 
-        if self.cur_draw_count < self.max_draw_count:
+        if self.cur_draw_count < MAX_DRAW_COUNT - 1:
+            self.cur_draw_count += 1
+
+        return data
+
+    def _copy_draw_data(self):
+        data = self.draw_att.data[self.cur_draw_count]
+        data[:] = self.draw_att.data[self.cur_draw_count - 1]
+
+        if self.cur_draw_count < MAX_DRAW_COUNT - 1:
             self.cur_draw_count += 1
 
         return data
@@ -191,7 +199,7 @@ class Renderer:
     def cls(self, col):
         self.cur_draw_count = 0
 
-        data = self._next_dc_data()
+        data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECT
         data[MODE_COL_INDEX] = col
@@ -208,7 +216,7 @@ class Renderer:
         data[CLIP_H_INDEX] = self.height
 
     def pix(self, x, y, col):
-        data = self._next_dc_data()
+        data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_PIX
         data[MODE_COL_INDEX] = col
@@ -217,7 +225,7 @@ class Renderer:
         data[POS_Y1_INDEX] = y
 
     def line(self, x1, y1, x2, y2, col):
-        data = self._next_dc_data()
+        data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_LINE
         data[MODE_COL_INDEX] = col
@@ -228,7 +236,7 @@ class Renderer:
         data[POS_Y2_INDEX] = y2
 
     def rect(self, x, y, w, h, col):
-        data = self._next_dc_data()
+        data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECT
         data[MODE_COL_INDEX] = col
@@ -240,7 +248,7 @@ class Renderer:
         data[SIZE_H_INDEX] = h
 
     def rectb(self, x, y, w, h, col):
-        data = self._next_dc_data()
+        data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECTB
         data[MODE_COL_INDEX] = col
@@ -252,7 +260,7 @@ class Renderer:
         data[SIZE_H_INDEX] = h
 
     def circ(self, x, y, r, col):
-        data = self._next_dc_data()
+        data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_CIRC
         data[MODE_COL_INDEX] = col
@@ -263,7 +271,7 @@ class Renderer:
         data[SIZE_W_INDEX] = r
 
     def circb(self, x, y, r, col):
-        data = self._next_dc_data()
+        data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_CIRCB
         data[MODE_COL_INDEX] = col
@@ -274,7 +282,7 @@ class Renderer:
         data[SIZE_W_INDEX] = r
 
     def blt(self, x, y, bank, sx, sy, w, h, colkey=-1):
-        data = self._next_dc_data()
+        data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_BLT
         data[MODE_COL_INDEX] = colkey
@@ -289,22 +297,26 @@ class Renderer:
         data[SIZE_H_INDEX] = h
 
     def text(self, x, y, s, col):
-        for c in s:
+        for i, c in enumerate(s):
             code = min(max(ord(c), MIN_FONT_CODE),
                        MAX_FONT_CODE) - MIN_FONT_CODE
 
-            data = self._next_dc_data()
+            if i == 0:
+                data = self._next_draw_data()
 
-            data[MODE_TYPE_INDEX] = TYPE_TEXT
-            data[MODE_COL_INDEX] = col
-            data[MODE_BANK_INDEX] = BANK_COUNT - 1
+                data[MODE_TYPE_INDEX] = TYPE_TEXT
+                data[MODE_COL_INDEX] = col
+                data[MODE_BANK_INDEX] = BANK_COUNT - 1
+
+                data[POS_Y1_INDEX] = y
+
+                data[SIZE_W_INDEX] = FONT_WIDTH
+                data[SIZE_H_INDEX] = FONT_HEIGHT
+            else:
+                data = self._copy_draw_data()
 
             data[POS_X1_INDEX] = x
-            data[POS_Y1_INDEX] = y
             data[POS_X2_INDEX] = (code % FONT_IMAGE_ROW_COUNT) * FONT_WIDTH
             data[POS_Y2_INDEX] = (code // FONT_IMAGE_ROW_COUNT) * FONT_HEIGHT
-
-            data[SIZE_W_INDEX] = FONT_WIDTH
-            data[SIZE_H_INDEX] = FONT_HEIGHT
 
             x += FONT_WIDTH
