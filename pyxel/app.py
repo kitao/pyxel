@@ -3,6 +3,7 @@ import time
 import pyglet
 from pyglet.window import Window
 from pyglet.window import key as pyglet_key
+from pyglet.window import mouse as pyglet_mouse
 from .renderer import Renderer
 
 PALETTE = [
@@ -15,6 +16,12 @@ PIXEL_SCALE = 4
 BORDER_WIDTH = 0
 CLEAR_COLOR = 0x101018
 FPS = 30
+
+PERF_SAMPLE_COUNT = 10
+
+pyglet_key.MOUSE_LEFT = 0x20001
+pyglet_key.MOUSE_MIDDLE = 0x20002
+pyglet_key.MOUSE_RIGHT = 0x20003
 
 
 class App:
@@ -34,8 +41,16 @@ class App:
         self._clear_color = clear_color
         self._palette = palette[:]
         self._fps = fps
+        self._frame_count = 0
         self._one_frame_time = 1 / fps
         self._last_updated_time = time.time() - self._one_frame_time
+        self._perf_update_time = 0
+        self._perf_update_count = 0
+        self._perf_fps_time = time.time()
+        self._perf_fps_count = 0
+        self._perf_monitor = False
+        self._cur_fps = 0
+        self._cur_update_time = 0
         self._mouse_x = 0
         self._mouse_y = 0
 
@@ -44,6 +59,8 @@ class App:
         self._window.on_draw = self._on_draw
         self._window.on_key_press = self._on_key_press
         self._window.on_mouse_motion = self._on_mouse_motion
+        self._window.on_mouse_press = self._on_mouse_press
+        self._window.on_mouse_release = self._on_mouse_release
 
         self._key_state = pyglet_key.KeyStateHandler()
         self._key_hold_time = {}
@@ -65,7 +82,6 @@ class App:
         self.text = self._renderer.text
 
         # start updating regulary
-        pyglet.clock.set_fps_limit(fps)
         pyglet.clock.schedule(self._on_update)
 
     def btn(self, key):
@@ -74,6 +90,10 @@ class App:
     def btnp(self, key, hold=0, period=0):
         t = self._key_hold_time.get(key, 0) - (hold + 1)
         return t == 0 or t > 0 and period > 0 and t % period == 0
+
+    @property
+    def frame_count(self):
+        return self._frame_count
 
     @property
     def mouse_x(self):
@@ -108,13 +128,47 @@ class App:
                 self._key_hold_time[k] = 1
 
     def _on_update(self, dt):
-        elapsed_time = time.time() - self._last_updated_time
+        cur_time = time.time()
+        elapsed_time = cur_time - self._last_updated_time
         update_count = math.floor(elapsed_time / self._one_frame_time)
 
+        # measure fps
+        if update_count > 0:
+            self._perf_fps_count += 1
+
+            if self._perf_fps_count >= PERF_SAMPLE_COUNT:
+                self._cur_fps = round(
+                    self._perf_fps_count / (cur_time - self._perf_fps_time), 2)
+                self._perf_fps_count = 0
+                self._perf_fps_time = cur_time
+
+        # update frame
         for _ in range(update_count):
+            start_time = time.time()
+
             self._update_key_state()
             self.update()
             self._last_updated_time += self._one_frame_time
+            self._frame_count += 1
+
+            # measure update time
+            self._perf_update_count += 1
+            self._perf_update_time += time.time() - start_time
+
+            if self._perf_update_count >= PERF_SAMPLE_COUNT:
+                self._cur_update_time = round(
+                    self._perf_update_time / self._perf_update_count * 1000, 2)
+                self._perf_update_time = 0
+                self._perf_update_count = 0
+
+            if self._perf_monitor:
+                fps = 'fps:{}'.format(self._cur_fps)
+                update = 'update:{}'.format(self._cur_update_time)
+
+                self.text(1, 0, fps, 1)
+                self.text(0, 0, fps, 9)
+                self.text(1, 6, update, 1)
+                self.text(0, 6, update, 9)
 
     def _on_draw(self):
         viewport_width, viewport_height = self._window.get_viewport_size()
@@ -131,17 +185,18 @@ class App:
                               self._clear_color)
 
     def _on_key_press(self, key, modifiers):
-        alt_or_opt = (modifiers & pyglet_key.MOD_ALT
-                      or modifiers & pyglet_key.MOD_OPTION)
+        if modifiers & pyglet_key.MOD_ALT or modifiers & pyglet_key.MOD_OPTION:
+            if key == pyglet_key.UP:
+                self._set_pixel_scale(self._pixel_scale + 1)
 
-        if key == pyglet_key.UP and alt_or_opt:
-            self._set_pixel_scale(self._pixel_scale + 1)
+            if key == pyglet_key.DOWN:
+                self._set_pixel_scale(self._pixel_scale - 1)
 
-        if key == pyglet_key.DOWN and alt_or_opt:
-            self._set_pixel_scale(self._pixel_scale - 1)
+            if key == pyglet_key.ENTER:
+                self._window.set_fullscreen(not self._window.fullscreen)
 
-        if key == pyglet_key.ENTER and alt_or_opt:
-            self._window.set_fullscreen(not self._window.fullscreen)
+            if key == pyglet_key.P:
+                self._perf_monitor = not self._perf_monitor
 
         if key == pyglet_key.ESCAPE:
             exit()
@@ -149,3 +204,23 @@ class App:
     def _on_mouse_motion(self, x, y, dx, dy):
         self._mouse_x = x // self._pixel_scale
         self._mouse_y = self._height - y // self._pixel_scale - 1
+
+    def _on_mouse_press(self, x, y, button, modifiers):
+        if button & pyglet_mouse.LEFT:
+            self._key_state[pyglet_key.MOUSE_LEFT] = True
+
+        if button & pyglet_mouse.MIDDLE:
+            self._key_state[pyglet_key.MOUSE_MIDDLE] = True
+
+        if button & pyglet_mouse.RIGHT:
+            self._key_state[pyglet_key.MOUSE_RIGHT] = True
+
+    def _on_mouse_release(self, x, y, button, modifiers):
+        if button & pyglet_mouse.LEFT:
+            self._key_state[pyglet_key.MOUSE_LEFT] = False
+
+        if button & pyglet_mouse.MIDDLE:
+            self._key_state[pyglet_key.MOUSE_MIDDLE] = False
+
+        if button & pyglet_mouse.RIGHT:
+            self._key_state[pyglet_key.MOUSE_RIGHT] = False
