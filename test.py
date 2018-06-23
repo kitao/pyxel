@@ -22,7 +22,20 @@ class App(pyxel.App):
         self.x = 0
 
     def update(self):
+        self.x = (self.x + 1) % 160
+
+        if self.btnp(pyxel.KEY_Q):
+            exit()
+
+        self.press_a = self.btnp(pyxel.KEY_A, 30, 15)
+
+    def draw(self):
         self.cls(2)
+
+        self.text(11, 10, 'Hello, Pyxel!', 8)
+        self.text(10, 10, 'Hello, Pyxel!', 7)
+
+        self.text(80, 0, '{},{}'.format(self.mouse_x, self.mouse_y), 7)
 
         self.pix(0, 0, 8)
         self.pix(159, 0, 8)
@@ -41,18 +54,9 @@ class App(pyxel.App):
         self.rect(30, 30, 30, 10, 0)
         self.line(29, 29, 60, 20, 8)
 
-        self.x = (self.x + 1) % 160
         self.pix(self.x, 0, 7)
 
-        self.text(11, 10, 'Hello, Pyxel!', 8)
-        self.text(10, 10, 'Hello, Pyxel!', 7)
-
-        self.text(80, 0, '{},{}'.format(self.mouse_x, self.mouse_y), 7)
-
-        if self.btnp(pyxel.key.Q):
-            exit()
-
-        if self.btnp(pyxel.key.A, 30, 15):
+        if self.press_a:
             self.rect(10, 10, 10, 10, 8)
 
 

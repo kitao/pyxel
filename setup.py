@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='pyxel',
-    version='0.0.2',
+    version='0.0.3',
     description='A fantasy retro gaming console in Python',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -23,7 +23,7 @@ setuptools.setup(
         'Topic :: Games/Entertainment',
     ),
     packages=['pyxel', 'pyxel.editor'],
-    install_requires=['numpy', 'pyglet', 'PyOpenGL'],
+    install_requires=['numpy', 'pygame', 'PyOpenGL'],
     python_requires='>=3',
     entry_points={
         'console_scripts': ['pyxel=pyxel.editor:run'],

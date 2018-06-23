@@ -1,9 +1,6 @@
 import math
 import time
-import pyglet
-from pyglet.window import Window
-from pyglet.window import key as pyglet_key
-from pyglet.window import mouse as pyglet_mouse
+import pygame
 from .renderer import Renderer
 
 PALETTE = [
@@ -18,10 +15,6 @@ CLEAR_COLOR = 0x101018
 FPS = 30
 
 PERF_SAMPLE_COUNT = 10
-
-pyglet_key.MOUSE_LEFT = 0x20001
-pyglet_key.MOUSE_MIDDLE = 0x20002
-pyglet_key.MOUSE_RIGHT = 0x20003
 
 
 class App:
@@ -41,6 +34,12 @@ class App:
         self._clear_color = clear_color
         self._palette = palette[:]
         self._fps = fps
+
+        self._quit = False
+        self._key_state = {}
+        self._mouse_x = 0
+        self._mouse_y = 0
+
         self._frame_count = 0
         self._one_frame_time = 1 / fps
         self._last_updated_time = time.time() - self._one_frame_time
@@ -51,20 +50,11 @@ class App:
         self._perf_monitor = False
         self._cur_fps = 0
         self._cur_update_time = 0
-        self._mouse_x = 0
-        self._mouse_y = 0
 
         # initialize window
-        self._window = Window(*self._get_window_size())
-        self._window.on_draw = self._on_draw
-        self._window.on_key_press = self._on_key_press
-        self._window.on_mouse_motion = self._on_mouse_motion
-        self._window.on_mouse_press = self._on_mouse_press
-        self._window.on_mouse_release = self._on_mouse_release
-
-        self._key_state = pyglet_key.KeyStateHandler()
-        self._key_hold_time = {}
-        self._window.push_handlers(self._key_state)
+        pygame.init()
+        pygame.display.set_mode(self._get_window_size(),
+                                pygame.OPENGL | pygame.DOUBLEBUF)
 
         # initialize renderer
         self._renderer = Renderer(width, height)
@@ -81,16 +71,6 @@ class App:
         self.blt = self._renderer.blt
         self.text = self._renderer.text
 
-        # start updating regulary
-        pyglet.clock.schedule(self._on_update)
-
-    def btn(self, key):
-        return self._key_hold_time.get(key, 0) > 0
-
-    def btnp(self, key, hold=0, period=0):
-        t = self._key_hold_time.get(key, 0) - (hold + 1)
-        return t == 0 or t > 0 and period > 0 and t % period == 0
-
     @property
     def frame_count(self):
         return self._frame_count
@@ -103,11 +83,30 @@ class App:
     def mouse_y(self):
         return self._mouse_y
 
-    @staticmethod
-    def run():
-        pyglet.app.run()
+    def btn(self, key):
+        return self._key_state.get(key, 0) > 0
+
+    def btnp(self, key, hold=0, period=0):
+        press_frame = self._key_state.get(key, 0)
+
+        return (press_frame == self._frame_count
+                or press_frame > 0 and period > 0 and
+                (self._frame_count - press_frame - hold) % period == 0)
+
+    def run(self):
+        while True:
+            self._update()
+            self._draw()
+
+            if self._quit:
+                break
+
+        pygame.quit()
 
     def update(self):
+        pass
+
+    def draw(self):
         pass
 
     def _get_window_size(self):
@@ -118,16 +117,9 @@ class App:
         self._pixel_scale = max(pixel_scale, 1)
         self._window.set_size(*self._get_window_size())
 
-    def _update_key_state(self):
-        for k, v in self._key_state.items():
-            if not v:
-                self._key_hold_time[k] = 0
-            elif k in self._key_hold_time:
-                self._key_hold_time[k] += 1
-            else:
-                self._key_hold_time[k] = 1
+    def _update(self):
+        time.sleep(0.001)
 
-    def _on_update(self, dt):
         cur_time = time.time()
         elapsed_time = cur_time - self._last_updated_time
         update_count = math.floor(elapsed_time / self._one_frame_time)
@@ -146,10 +138,13 @@ class App:
         for _ in range(update_count):
             start_time = time.time()
 
-            self._update_key_state()
-            self.update()
-            self._last_updated_time += self._one_frame_time
             self._frame_count += 1
+            self._process_event()
+            self._control()
+
+            self.update()
+
+            self._last_updated_time += self._one_frame_time
 
             # measure update time
             self._perf_update_count += 1
@@ -170,57 +165,62 @@ class App:
                 self.text(1, 6, update, 1)
                 self.text(0, 6, update, 9)
 
-    def _on_draw(self):
-        viewport_width, viewport_height = self._window.get_viewport_size()
-        scale_x = viewport_width // self._width
-        scale_y = viewport_height // self._height
+    def _process_event(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self._quit = True
+
+            elif event.type == pygame.KEYDOWN:
+                self._key_state[event.key] = self._frame_count
+
+            elif event.type == pygame.KEYUP:
+                self._key_state[event.key] = -self._frame_count
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                self._key_state[0x10000 + event.button] = self._frame_count
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                self._key_state[0x10000 + event.button] = -self._frame_count
+
+            elif event.type == pygame.MOUSEMOTION:
+                self._mouse_x = event.pos[0] // self._pixel_scale
+                self._mouse_y = event.pos[1] // self._pixel_scale
+
+    def _control(self):
+        if self.btn(pygame.K_LALT) or self.btn(pygame.K_RALT):
+            if self.btnp(pygame.K_UP):
+                self._set_pixel_scale(self._pixel_scale + 1)
+
+            if self.btnp(pygame.K_DOWN):
+                self._set_pixel_scale(self._pixel_scale - 1)
+
+            if self.btnp(pygame.K_RETURN):
+                pygame.display.set_mode(
+                    self._get_window_size(),
+                    pygame.OPENGL | pygame.DOUBLEBUF | pygame.FULLSCREEN)
+                self._renderer = Renderer(self._width, self._height)
+
+            if self.btnp(pygame.K_p):
+                self._perf_monitor = not self._perf_monitor
+
+        if self.btnp(pygame.K_ESCAPE):
+            self._quit = True
+
+    def _draw(self):
+        self.draw()
+
+        surface = pygame.display.get_surface()
+        surface_width, surface_height = surface.get_size()
+        scale_x = surface_width // self._width
+        scale_y = surface_height // self._height
         scale = min(scale_x, scale_y)
 
         width = self._width * scale
         height = self._height * scale
-        left = (viewport_width - width) // 2
-        bottom = (viewport_height - height) // 2
+        left = (surface_width - width) // 2
+        bottom = (surface_height - height) // 2
 
         self._renderer.render(left, bottom, width, height, self._palette,
                               self._clear_color)
 
-    def _on_key_press(self, key, modifiers):
-        if modifiers & pyglet_key.MOD_ALT or modifiers & pyglet_key.MOD_OPTION:
-            if key == pyglet_key.UP:
-                self._set_pixel_scale(self._pixel_scale + 1)
-
-            if key == pyglet_key.DOWN:
-                self._set_pixel_scale(self._pixel_scale - 1)
-
-            if key == pyglet_key.ENTER:
-                self._window.set_fullscreen(not self._window.fullscreen)
-
-            if key == pyglet_key.P:
-                self._perf_monitor = not self._perf_monitor
-
-        if key == pyglet_key.ESCAPE:
-            exit()
-
-    def _on_mouse_motion(self, x, y, dx, dy):
-        self._mouse_x = x // self._pixel_scale
-        self._mouse_y = self._height - y // self._pixel_scale - 1
-
-    def _on_mouse_press(self, x, y, button, modifiers):
-        if button & pyglet_mouse.LEFT:
-            self._key_state[pyglet_key.MOUSE_LEFT] = True
-
-        if button & pyglet_mouse.MIDDLE:
-            self._key_state[pyglet_key.MOUSE_MIDDLE] = True
-
-        if button & pyglet_mouse.RIGHT:
-            self._key_state[pyglet_key.MOUSE_RIGHT] = True
-
-    def _on_mouse_release(self, x, y, button, modifiers):
-        if button & pyglet_mouse.LEFT:
-            self._key_state[pyglet_key.MOUSE_LEFT] = False
-
-        if button & pyglet_mouse.MIDDLE:
-            self._key_state[pyglet_key.MOUSE_MIDDLE] = False
-
-        if button & pyglet_mouse.RIGHT:
-            self._key_state[pyglet_key.MOUSE_RIGHT] = False
+        pygame.display.flip()
