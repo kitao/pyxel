@@ -20,6 +20,7 @@ class App(pyxel.App):
         self.bank(0, self.image)
 
         self.x = 0
+        self.press_a = False
 
     def update(self):
         self.x = (self.x + 1) % 160
