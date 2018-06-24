@@ -3,7 +3,7 @@ import pyxel
 
 class Editor(pyxel.App):
     def __init__(self):
-        super().__init__(160, 120)
+        super().__init__(160, 120, caption='Pyxel')
 
     def update(self):
         self.text(9, 8, "Hello, Pyxel Editor!", 8)
