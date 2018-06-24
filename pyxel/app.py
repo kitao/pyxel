@@ -7,16 +7,16 @@ KEY_LBUTTON = 0x10001
 KEY_MBUTTON = 0x10002
 KEY_RBUTTON = 0x10003
 
+CAPTION = 'Pyxel Window'
+SCALE = 4
 PALETTE = [
     0x000000, 0x1d2b53, 0x7e2553, 0x008751, 0xab5236, 0x5f574f, 0xc2c3c7,
     0xfff1e8, 0xff004d, 0xffa300, 0xffec27, 0x00e436, 0x29adff, 0x83769c,
     0xff77a8, 0xffccaa
 ]
-
-PIXEL_SCALE = 4
+FPS = 30
 BORDER_WIDTH = 0
 BORDER_COLOR = 0x101018
-FPS = 30
 
 PERF_MEASURE_COUNT = 10
 
@@ -26,18 +26,20 @@ class App:
                  width,
                  height,
                  *,
-                 pixel_scale=PIXEL_SCALE,
-                 border_width=BORDER_WIDTH,
-                 border_color=BORDER_COLOR,
+                 caption=CAPTION,
+                 scale=SCALE,
                  palette=PALETTE,
-                 fps=FPS):
+                 fps=FPS,
+                 border_width=BORDER_WIDTH,
+                 border_color=BORDER_COLOR):
         self._width = width
         self._height = height
-        self._pixel_scale = pixel_scale
-        self._border_width = border_width
-        self._border_color = border_color
+        self._window_caption = caption
+        self._scale = scale
         self._palette = palette[:]
         self._fps = fps
+        self._border_width = border_width
+        self._border_color = border_color
 
         self._quit = False
         self._key_state = {}
@@ -61,6 +63,7 @@ class App:
 
         # initialize window
         pygame.init()
+        pygame.display.set_caption(caption)
         pygame.display.set_mode(self._get_window_size(),
                                 pygame.OPENGL | pygame.DOUBLEBUF)
 
@@ -125,11 +128,11 @@ class App:
         pass
 
     def _get_window_size(self):
-        return (self._width * self._pixel_scale + self._border_width,
-                self._height * self._pixel_scale + self._border_width)
+        return (self._width * self._scale + self._border_width,
+                self._height * self._scale + self._border_width)
 
-    def _set_pixel_scale(self, pixel_scale):
-        self._pixel_scale = max(pixel_scale, 1)
+    def _set_scale(self, scale):
+        self._scale = max(scale, 1)
         self._window.set_size(*self._get_window_size())
 
     def _update(self):
@@ -210,16 +213,16 @@ class App:
                     self._key_state[KEY_RBUTTON] = -self._frame_count
 
             elif event.type == pygame.MOUSEMOTION:
-                self._mouse_x = event.pos[0] // self._pixel_scale
-                self._mouse_y = event.pos[1] // self._pixel_scale
+                self._mouse_x = event.pos[0] // self._scale
+                self._mouse_y = event.pos[1] // self._scale
 
     def _check_special_input(self):
         if self.btn(pygame.K_LALT) or self.btn(pygame.K_RALT):
             if self.btnp(pygame.K_UP):
-                self._set_pixel_scale(self._pixel_scale + 1)
+                self._set_scale(self._scale + 1)
 
             if self.btnp(pygame.K_DOWN):
-                self._set_pixel_scale(self._pixel_scale - 1)
+                self._set_scale(self._scale - 1)
 
             if self.btnp(pygame.K_RETURN):
                 pygame.display.set_mode(
