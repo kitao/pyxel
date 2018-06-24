@@ -101,6 +101,9 @@ class App:
                 or press_frame > 0 and period > 0 and
                 (self._frame_count - press_frame - hold) % period == 0)
 
+    def btnr(self, key):
+        return self._key_state.get(key, 0) == -self.frame_count
+
     def run(self):
         self._next_update_time = self._perf_fps_start_time = time.time()
 
@@ -191,10 +194,20 @@ class App:
                 self._key_state[event.key] = -self._frame_count
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                self._key_state[0x10000 + event.button] = self._frame_count
+                if event.button == 1:
+                    self._key_state[KEY_LBUTTON] = self._frame_count
+                elif event.button == 2:
+                    self._key_state[KEY_MBUTTON] = self._frame_count
+                elif event.button == 3:
+                    self._key_state[KEY_RBUTTON] = self._frame_count
 
             elif event.type == pygame.MOUSEBUTTONUP:
-                self._key_state[0x10000 + event.button] = -self._frame_count
+                if event.button == 1:
+                    self._key_state[KEY_LBUTTON] = -self._frame_count
+                elif event.button == 2:
+                    self._key_state[KEY_MBUTTON] = -self._frame_count
+                elif event.button == 3:
+                    self._key_state[KEY_RBUTTON] = -self._frame_count
 
             elif event.type == pygame.MOUSEMOTION:
                 self._mouse_x = event.pos[0] // self._pixel_scale
