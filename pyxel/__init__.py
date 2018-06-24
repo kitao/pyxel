@@ -1,7 +1,7 @@
-from .app import App
+from .app import App, KEY_LBUTTON, KEY_MBUTTON, KEY_RBUTTON
 from .image import Image
 
-__all__ = ['App', 'Image']
+__all__ = ['App', 'KEY_LBUTTON', 'KEY_MBUTTON', 'KEY_RBUTTON', 'Image']
 
 import pygame
 
@@ -139,10 +139,4 @@ KEY_MENU = pygame.K_MENU
 KEY_POWER = pygame.K_POWER
 KEY_EURO = pygame.K_EURO
 
-KEY_LBUTTON = 0x10001
-KEY_MBUTTON = 0x10002
-KEY_RBUTTON = 0x10003
-
 del pygame
-
-__all__.extend([name for name in dir() if name.startswith('KEY_')])
