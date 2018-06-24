@@ -22,7 +22,9 @@ class Image:
         return self._data
 
     def set(self, x, y, width, height, data):
-        self._data[y:y + height, x:x + width] = data
+        self._data[y:y + height, x:x + width] = [
+            list(map(lambda x: int(x, 16), line)) for line in data
+        ]
         self._tex.refresh()
 
     def save(self):
