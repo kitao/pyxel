@@ -294,11 +294,28 @@ class Renderer:
         data[SIZE_H_INDEX] = h
 
     def text(self, x, y, str_, col):
-        for i, c in enumerate(str_):
-            code = min(max(ord(c), MIN_FONT_CODE),
-                       MAX_FONT_CODE) - MIN_FONT_CODE
+        left = x
+        first = True
 
-            if i == 0:
+        for c in str_:
+            code = ord(c)
+
+            if code == 10:  # new line
+                first = True
+                x = left
+                y += FONT_HEIGHT
+                continue
+
+            if code == 32:  # space
+                x += FONT_WIDTH
+                continue
+
+            if code < MIN_FONT_CODE or code > MAX_FONT_CODE:
+                continue
+
+            code -= MIN_FONT_CODE
+
+            if first:
                 data = self._next_draw_data()
 
                 data[MODE_TYPE_INDEX] = TYPE_TEXT
@@ -309,6 +326,8 @@ class Renderer:
 
                 data[SIZE_W_INDEX] = FONT_WIDTH
                 data[SIZE_H_INDEX] = FONT_HEIGHT
+
+                first = False
             else:
                 data = self._copy_draw_data()
 

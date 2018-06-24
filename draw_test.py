@@ -120,14 +120,12 @@ class App(pyxel.App):
 
         x += 4
         y += 8
-        text1 = 'Elapsed frame count is {}'.format(self.frame_count)
-        text2 = 'Current mouse position is ({},{})'.format(
-            self.mouse_x, self.mouse_y)
+        text = 'Elapsed frame count is {}\n' \
+               'Current mouse position is ({},{})'''.format(
+                   self.frame_count, self.mouse_x, self.mouse_y)
 
-        self.text(x + 1, y, text1, 1)
-        self.text(x, y, text1, 9)
-        self.text(x + 1, y + 6, text2, 1)
-        self.text(x, y + 6, text2, 9)
+        self.text(x + 1, y, text, 1)
+        self.text(x, y, text, 9)
 
 
 App().run()
