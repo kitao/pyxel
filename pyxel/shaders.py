@@ -245,8 +245,8 @@ void rect()
 
 void rectb()
 {
-    if (draw_pos.x < v_min_pos.x || draw_pos.y < v_min_pos.y ||
-        draw_pos.x > v_max_pos.x || draw_pos.y > v_max_pos.y) { discard; }
+    if (draw_pos.x != v_min_pos.x && draw_pos.x != v_max_pos.x &&
+        draw_pos.y != v_min_pos.y && draw_pos.y != v_max_pos.y) { discard; }
 
     gl_FragColor = indexToColor(v_col);
 }
