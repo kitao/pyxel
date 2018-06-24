@@ -92,12 +92,13 @@ void line()
 
 void rect_rectb()
 {
-    vec2 p = floor(a_pos.xy + 0.5);
-    vec2 s = floor(a_size + 0.5);
+    vec2 p1 = floor(a_pos.xy + 0.5);
+    vec2 p2 = floor(a_pos.zw + 0.5);
 
-    v_min_pos = p;
-    v_max_pos = p + s - 1.0;
-    v_size = s;
+    v_min_pos = min(p1, p2);
+    v_max_pos = max(p1, p2);
+
+    vec2 s = v_max_pos - v_min_pos + 1.0;
 
     gl_PointSize = max(s.x, s.y);
     gl_Position = pixelToScreen(v_min_pos + (gl_PointSize - 1.0) * 0.5);

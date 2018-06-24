@@ -46,19 +46,19 @@ class App(pyxel.App):
         self.blt(80, 40, 7, 0, 0, 64, 64, 0)
         self.blt(30, 60, 0, 0, 0, 8, 8)
 
-        self.rectb(50, 50, 30, 40, 3)
+        self.rectb(50, 50, 79, 89, 3)
 
-        self.rectb(90, 90, 21, 21, 8)
+        self.rectb(90, 90, 110, 110, 8)
         self.circb(100, 100, 30, 7)
         self.circ(30, 100, 4, 7)
 
-        self.rect(30, 30, 30, 10, 0)
+        self.rect(30, 30, 59, 39, 0)
         self.line(29, 29, 60, 20, 8)
 
         self.pix(self.x, 0, 7)
 
         if self.press_a:
-            self.rect(10, 10, 10, 10, 8)
+            self.rect(10, 10, 19, 19, 8)
 
 
 App().run()

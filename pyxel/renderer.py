@@ -206,9 +206,8 @@ class Renderer:
 
         data[POS_X1_INDEX] = 0
         data[POS_Y1_INDEX] = 0
-
-        data[SIZE_W_INDEX] = self.width
-        data[SIZE_H_INDEX] = self.height
+        data[POS_X2_INDEX] = self.width - 1
+        data[POS_Y2_INDEX] = self.height - 1
 
         data[CLIP_X_INDEX] = 0
         data[CLIP_Y_INDEX] = 0
@@ -235,29 +234,27 @@ class Renderer:
         data[POS_X2_INDEX] = x2
         data[POS_Y2_INDEX] = y2
 
-    def rect(self, x, y, w, h, col):
+    def rect(self, x1, y1, x2, y2, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECT
         data[MODE_COL_INDEX] = col
 
-        data[POS_X1_INDEX] = x
-        data[POS_Y1_INDEX] = y
+        data[POS_X1_INDEX] = x1
+        data[POS_Y1_INDEX] = y1
+        data[POS_X2_INDEX] = x2
+        data[POS_Y2_INDEX] = y2
 
-        data[SIZE_W_INDEX] = w
-        data[SIZE_H_INDEX] = h
-
-    def rectb(self, x, y, w, h, col):
+    def rectb(self, x1, y1, x2, y2, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECTB
         data[MODE_COL_INDEX] = col
 
-        data[POS_X1_INDEX] = x
-        data[POS_Y1_INDEX] = y
-
-        data[SIZE_W_INDEX] = w
-        data[SIZE_H_INDEX] = h
+        data[POS_X1_INDEX] = x1
+        data[POS_Y1_INDEX] = y1
+        data[POS_X2_INDEX] = x2
+        data[POS_Y2_INDEX] = y2
 
     def circ(self, x, y, r, col):
         data = self._next_draw_data()
