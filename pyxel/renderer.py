@@ -7,7 +7,6 @@ from .shaders import (DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER,
 from .font import (MIN_FONT_CODE, MAX_FONT_CODE, FONT_WIDTH, FONT_HEIGHT,
                    FONT_IMAGE_ROW_COUNT, create_font_image)
 
-DEFAULT_COLOR = 7
 BANK_COUNT = 8
 MAX_DRAW_COUNT = 10000
 
@@ -55,8 +54,6 @@ class Renderer:
         self.width = width
         self.height = height
         self.cur_draw_count = 0
-
-        self._color = DEFAULT_COLOR
 
         self.bank_list = [None] * BANK_COUNT
         self.bank_list[-1] = create_font_image()
@@ -168,9 +165,6 @@ class Renderer:
 
         return data
 
-    def color(self, color):
-        self._color = color
-
     def bank(self, index, image):
         self.bank_list[index] = image
 
@@ -202,13 +196,13 @@ class Renderer:
             self.clip_pal_data[6] = 0xba98
             self.clip_pal_data[7] = 0xfedc
 
-    def cls(self, col=None):
+    def cls(self, col):
         self.cur_draw_count = 0
 
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECT
-        data[MODE_COL_INDEX] = col if col is not None else self._color
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = 0
         data[POS_Y1_INDEX] = 0
@@ -220,64 +214,64 @@ class Renderer:
         data[CLIP_X2_INDEX] = self.width - 1
         data[CLIP_Y2_INDEX] = self.height - 1
 
-    def pix(self, x, y, col=None):
+    def pix(self, x, y, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_PIX
-        data[MODE_COL_INDEX] = col if col is not None else self._color
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
 
-    def line(self, x1, y1, x2, y2, col=None):
+    def line(self, x1, y1, x2, y2, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_LINE
-        data[MODE_COL_INDEX] = col if col is not None else self._color
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x1
         data[POS_Y1_INDEX] = y1
         data[POS_X2_INDEX] = x2
         data[POS_Y2_INDEX] = y2
 
-    def rect(self, x1, y1, x2, y2, col=None):
+    def rect(self, x1, y1, x2, y2, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECT
-        data[MODE_COL_INDEX] = col if col is not None else self._color
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x1
         data[POS_Y1_INDEX] = y1
         data[POS_X2_INDEX] = x2
         data[POS_Y2_INDEX] = y2
 
-    def rectb(self, x1, y1, x2, y2, col=None):
+    def rectb(self, x1, y1, x2, y2, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECTB
-        data[MODE_COL_INDEX] = col if col is not None else self._color
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x1
         data[POS_Y1_INDEX] = y1
         data[POS_X2_INDEX] = x2
         data[POS_Y2_INDEX] = y2
 
-    def circ(self, x, y, r, col=None):
+    def circ(self, x, y, r, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_CIRC
-        data[MODE_COL_INDEX] = col if col is not None else self._color
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
 
         data[SIZE_W_INDEX] = r
 
-    def circb(self, x, y, r, col=None):
+    def circb(self, x, y, r, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_CIRCB
-        data[MODE_COL_INDEX] = col if col is not None else self._color
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
@@ -299,7 +293,7 @@ class Renderer:
         data[SIZE_W_INDEX] = w
         data[SIZE_H_INDEX] = h
 
-    def text(self, x, y, str_, col=None):
+    def text(self, x, y, str_, col):
         left = x
         first = True
 
@@ -325,7 +319,7 @@ class Renderer:
                 data = self._next_draw_data()
 
                 data[MODE_TYPE_INDEX] = TYPE_TEXT
-                data[MODE_COL_INDEX] = col if col is not None else self._color
+                data[MODE_COL_INDEX] = col
                 data[MODE_BANK_INDEX] = BANK_COUNT - 1
 
                 data[POS_Y1_INDEX] = y

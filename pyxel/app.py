@@ -69,7 +69,6 @@ class App:
 
         # initialize renderer
         self._renderer = Renderer(width, height)
-        self.color = self._renderer.color
         self.bank = self._renderer.bank
         self.clip = self._renderer.clip
         self.pal = self._renderer.pal

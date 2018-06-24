@@ -25,21 +25,21 @@ class App(pyxel.App):
     def draw(self):
         self.test_cls(4, 6)
         self.test_pix(4, 20)
-        self.test_line(102, 6)
+        self.test_line(104, 6)
         self.test_rect(4, 40)
-        self.test_rectb(102, 40)
+        self.test_rectb(104, 40)
         self.test_circ(4, 64)
-        self.test_circ(102, 64)
+        self.test_circ(104, 64)
         self.test_blt(4, 94)
         self.test_text(4, 124)
 
     def test_cls(self, x, y):
         self.cls(2)
 
-        self.text(x, y, 'cls([col])', 7)
+        self.text(x, y, 'cls(col)', 7)
 
     def test_pix(self, x, y):
-        self.text(x, y, 'pix(x,y,[col])', 7)
+        self.text(x, y, 'pix(x,y,col)', 7)
 
         x += 4
         y += 10
@@ -48,7 +48,7 @@ class App(pyxel.App):
             self.pix(x + i * 2, y, i)
 
     def test_line(self, x, y):
-        self.text(x, y, 'line(x1,y1,x2,y2,[col])', 7)
+        self.text(x, y, 'line(x1,y1,x2,y2,col)', 7)
 
         x += 4
         y += 8
@@ -67,7 +67,7 @@ class App(pyxel.App):
             col += 1
 
     def test_rect(self, x, y):
-        self.text(x, y, 'rect(x1,y1,x2,y2,[col])', 7)
+        self.text(x, y, 'rect(x1,y1,x2,y2,col)', 7)
 
         x += 4
         y += 15
@@ -76,7 +76,7 @@ class App(pyxel.App):
             self.rect(x + i * 8, y, x + i * 9, y - i, i + 8)
 
     def test_rectb(self, x, y):
-        self.text(x, y, 'rectb(x1,y1,x2,y2,[col])', 7)
+        self.text(x, y, 'rectb(x1,y1,x2,y2,col)', 7)
 
         x += 4
         y += 15
@@ -85,7 +85,7 @@ class App(pyxel.App):
             self.rectb(x + i * 8, y, x + i * 9, y - i, i + 8)
 
     def test_circ(self, x, y):
-        self.text(x, y, 'circ(x,y,r,[col])', 7)
+        self.text(x, y, 'circ(x,y,r,col)', 7)
 
         x += 4
         y += 15
@@ -94,7 +94,7 @@ class App(pyxel.App):
             self.circ(x + i * 8, y, i, i + 8)
 
     def test_circb(self, x, y):
-        self.text(x, y, 'circb(x,y,r,[col])', 7)
+        self.text(x, y, 'circb(x,y,r,col)', 7)
 
         x += 4
         y += 15
@@ -116,7 +116,7 @@ class App(pyxel.App):
         self.blt(x + 80, y, 0, 0, 0, -16, -16, 3)
 
     def test_text(self, x, y):
-        self.text(x, y, 'text(x,y,str,[col])', 7)
+        self.text(x, y, 'text(x,y,str,col)', 7)
 
         x += 4
         y += 8
