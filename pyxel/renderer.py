@@ -293,8 +293,8 @@ class Renderer:
         data[SIZE_W_INDEX] = w
         data[SIZE_H_INDEX] = h
 
-    def text(self, x, y, s, col):
-        for i, c in enumerate(s):
+    def text(self, x, y, str_, col):
+        for i, c in enumerate(str_):
             code = min(max(ord(c), MIN_FONT_CODE),
                        MAX_FONT_CODE) - MIN_FONT_CODE
 
