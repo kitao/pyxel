@@ -34,12 +34,7 @@ class App(pyxel.App):
             self.pal()
 
         self.test_cls(4, 6)
-
-        self.clip()
-        if self.space:
-            self.rectb(31, 31, 168, 118, 14)
-            self.clip(32, 32, 167, 117)
-
+        self.test_clip(32, 24)
         self.test_pix(4, 20)
         self.test_line(104, 6)
         self.test_rect(4, 40)
@@ -53,6 +48,14 @@ class App(pyxel.App):
         self.cls(2)
 
         self.text(x, y, 'cls(col)', 7)
+
+    def test_clip(self, x, y):
+        self.clip()
+
+        if self.space:
+            self.text(x, y, 'clip(x1,y1,x2,y2)', 14)
+            self.rectb(31, 31, 168, 118, 14)
+            self.clip(32, 32, 167, 117)
 
     def test_pix(self, x, y):
         self.text(x, y, 'pix(x,y,col)', 7)
