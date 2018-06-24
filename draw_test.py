@@ -4,7 +4,7 @@ import pyxel
 
 class App(pyxel.App):
     def __init__(self):
-        super().__init__(200, 150, caption='Pyxel Test')
+        super().__init__(200, 150, caption='Pyxel Draw Test')
 
         self.image = pyxel.Image(16, 16)
         image_data = [
