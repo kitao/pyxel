@@ -18,12 +18,28 @@ class App(pyxel.App):
         self.image.set(0, 0, 16, 16, image_data)
         self.bank(0, self.image)
 
+        self.space = False
+
     def update(self):
+        self.space = self.btn(pyxel.KEY_SPACE)
+
         if self.btnp(pyxel.KEY_Q):
             exit()
 
     def draw(self):
+        if (self.frame_count // 30) % 10 >= 5:
+            self.pal(2, 3)
+            self.pal(7, 1)
+        else:
+            self.pal()
+
         self.test_cls(4, 6)
+
+        self.clip()
+        if self.space:
+            self.rectb(31, 31, 168, 118, 14)
+            self.clip(32, 32, 167, 117)
+
         self.test_pix(4, 20)
         self.test_line(104, 6)
         self.test_rect(4, 40)
