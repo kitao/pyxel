@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='pyxel',
-    version='0.0.3',
+    version='0.0.4',
     description='A fantasy retro gaming console in Python',
     long_description=long_description,
     long_description_content_type='text/markdown',
