@@ -165,8 +165,11 @@ void main()
     else if (v_type == TYPE_BLT || v_type == TYPE_TEXT) { blt_text(); }
     else { gl_Position = vec4(0.0, 0.0, 0.0, 1.0); }
 
-    v_min_clip = max(floor(a_clip.xy + 0.5), v_min_pos);
-    v_max_clip = min(v_min_clip + floor(a_clip.zw + 0.5) - 1.0, v_max_pos);
+    vec2 p1 = floor(a_clip.xy + 0.5);
+    vec2 p2 = floor(a_clip.zw + 0.5);
+
+    v_min_clip = max(min(p1, p2), v_min_pos);
+    v_max_clip = min(max(p1, p2), v_max_pos);
 }
 """
 

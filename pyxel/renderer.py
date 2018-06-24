@@ -31,17 +31,17 @@ POS_Y2_INDEX = POS_X1_INDEX + 3
 SIZE_W_INDEX = DRAWING_ATTRIBUTE_INFO[2][1]
 SIZE_H_INDEX = SIZE_W_INDEX + 1
 
-CLIP_X_INDEX = DRAWING_ATTRIBUTE_INFO[3][1]
-CLIP_Y_INDEX = CLIP_X_INDEX + 1
-CLIP_W_INDEX = CLIP_X_INDEX + 2
-CLIP_H_INDEX = CLIP_X_INDEX + 3
+CLIP_X1_INDEX = DRAWING_ATTRIBUTE_INFO[3][1]
+CLIP_Y1_INDEX = CLIP_X1_INDEX + 1
+CLIP_X2_INDEX = CLIP_X1_INDEX + 2
+CLIP_Y2_INDEX = CLIP_X1_INDEX + 3
 
 PAL_A_INDEX = DRAWING_ATTRIBUTE_INFO[4][1]
 PAL_B_INDEX = PAL_A_INDEX + 1
 PAL_C_INDEX = PAL_A_INDEX + 2
 PAL_D_INDEX = PAL_A_INDEX + 3
 
-CLIP_PAL_INDEX = CLIP_X_INDEX
+CLIP_PAL_INDEX = CLIP_X1_INDEX
 CLIP_PAL_COUNT = 8
 
 
@@ -170,11 +170,11 @@ class Renderer:
 
     def clip(self, *args):
         if len(args) == 4:
-            x, y, z, w = args
-            self.clip_pal_data[0] = x
-            self.clip_pal_data[1] = y
-            self.clip_pal_data[2] = z
-            self.clip_pal_data[3] = w
+            x1, y1, x2, y2 = args
+            self.clip_pal_data[0] = x1
+            self.clip_pal_data[1] = y1
+            self.clip_pal_data[2] = x2
+            self.clip_pal_data[3] = y2
         else:
             self.clip_pal_data[0] = 0
             self.clip_pal_data[1] = 0
@@ -209,10 +209,10 @@ class Renderer:
         data[POS_X2_INDEX] = self.width - 1
         data[POS_Y2_INDEX] = self.height - 1
 
-        data[CLIP_X_INDEX] = 0
-        data[CLIP_Y_INDEX] = 0
-        data[CLIP_W_INDEX] = self.width
-        data[CLIP_H_INDEX] = self.height
+        data[CLIP_X1_INDEX] = 0
+        data[CLIP_Y1_INDEX] = 0
+        data[CLIP_X2_INDEX] = self.width - 1
+        data[CLIP_Y2_INDEX] = self.height - 1
 
     def pix(self, x, y, col):
         data = self._next_draw_data()

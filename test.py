@@ -60,5 +60,9 @@ class App(pyxel.App):
         if self.press_a:
             self.rect(10, 10, 19, 19, 8)
 
+        self.clip(1, 1, 3, 4)
+        self.rect(0, 0, 10, 10, 9)
+        self.clip()
+
 
 App().run()
