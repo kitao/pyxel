@@ -3,6 +3,10 @@ import time
 import pygame
 from .renderer import Renderer
 
+KEY_LBUTTON = 0x10001
+KEY_MBUTTON = 0x10002
+KEY_RBUTTON = 0x10003
+
 PALETTE = [
     0x000000, 0x1d2b53, 0x7e2553, 0x008751, 0xab5236, 0x5f574f, 0xc2c3c7,
     0xfff1e8, 0xff004d, 0xffa300, 0xffec27, 0x00e436, 0x29adff, 0x83769c,
@@ -11,10 +15,10 @@ PALETTE = [
 
 PIXEL_SCALE = 4
 BORDER_WIDTH = 0
-CLEAR_COLOR = 0x101018
+BORDER_COLOR = 0x101018
 FPS = 30
 
-PERF_SAMPLE_COUNT = 10
+PERF_MEASURE_COUNT = 10
 
 
 class App:
@@ -24,14 +28,14 @@ class App:
                  *,
                  pixel_scale=PIXEL_SCALE,
                  border_width=BORDER_WIDTH,
-                 clear_color=CLEAR_COLOR,
+                 border_color=BORDER_COLOR,
                  palette=PALETTE,
                  fps=FPS):
         self._width = width
         self._height = height
         self._pixel_scale = pixel_scale
         self._border_width = border_width
-        self._clear_color = clear_color
+        self._border_color = border_color
         self._palette = palette[:]
         self._fps = fps
 
@@ -42,14 +46,18 @@ class App:
 
         self._frame_count = 0
         self._one_frame_time = 1 / fps
-        self._last_updated_time = time.time() - self._one_frame_time
-        self._perf_update_time = 0
-        self._perf_update_count = 0
-        self._perf_fps_time = time.time()
-        self._perf_fps_count = 0
+        self._next_update_time = 0
+
         self._perf_monitor = False
-        self._cur_fps = 0
-        self._cur_update_time = 0
+        self._perf_fps_count = 0
+        self._perf_fps_start_time = 0
+        self._perf_fps = 0
+        self._perf_update_count = 0
+        self._perf_update_total_time = 0
+        self._perf_update_time = 0
+        self._perf_draw_count = 0
+        self._perf_draw_total_time = 0
+        self._perf_draw_time = 0
 
         # initialize window
         pygame.init()
@@ -94,7 +102,11 @@ class App:
                 (self._frame_count - press_frame - hold) % period == 0)
 
     def run(self):
+        self._next_update_time = self._perf_fps_start_time = time.time()
+
         while True:
+            self._measure_fps()
+
             self._update()
             self._draw()
 
@@ -118,52 +130,54 @@ class App:
         self._window.set_size(*self._get_window_size())
 
     def _update(self):
-        time.sleep(0.001)
+        # wait for update time
+        while True:
+            cur_time = time.time()
+            wait_time = self._next_update_time - cur_time
 
-        cur_time = time.time()
-        elapsed_time = cur_time - self._last_updated_time
-        update_count = math.floor(elapsed_time / self._one_frame_time)
+            if wait_time > 0:
+                time.sleep(wait_time)
+            else:
+                break
 
-        # measure fps
-        if update_count > 0:
-            self._perf_fps_count += 1
-
-            if self._perf_fps_count >= PERF_SAMPLE_COUNT:
-                self._cur_fps = round(
-                    self._perf_fps_count / (cur_time - self._perf_fps_time), 2)
-                self._perf_fps_count = 0
-                self._perf_fps_time = cur_time
+        update_count = math.floor(-wait_time / self._one_frame_time) + 1
+        self._next_update_time += update_count * self._one_frame_time
 
         # update frame
         for _ in range(update_count):
-            start_time = time.time()
+            update_start_time = time.time()
 
             self._frame_count += 1
             self._process_event()
-            self._control()
+            self._check_special_input()
 
             self.update()
 
-            self._last_updated_time += self._one_frame_time
+            self._measure_update_time(update_start_time)
 
-            # measure update time
-            self._perf_update_count += 1
-            self._perf_update_time += time.time() - start_time
+    def _draw(self):
+        draw_start_time = time.time()
 
-            if self._perf_update_count >= PERF_SAMPLE_COUNT:
-                self._cur_update_time = round(
-                    self._perf_update_time / self._perf_update_count * 1000, 2)
-                self._perf_update_time = 0
-                self._perf_update_count = 0
+        self.draw()
 
-            if self._perf_monitor:
-                fps = 'fps:{}'.format(self._cur_fps)
-                update = 'update:{}'.format(self._cur_update_time)
+        self._draw_perf_monitor()
 
-                self.text(1, 0, fps, 1)
-                self.text(0, 0, fps, 9)
-                self.text(1, 6, update, 1)
-                self.text(0, 6, update, 9)
+        surface = pygame.display.get_surface()
+        surface_width, surface_height = surface.get_size()
+        scale_x = surface_width // self._width
+        scale_y = surface_height // self._height
+        scale = min(scale_x, scale_y)
+        width = self._width * scale
+        height = self._height * scale
+        left = (surface_width - width) // 2
+        bottom = (surface_height - height) // 2
+
+        self._renderer.render(left, bottom, width, height, self._palette,
+                              self._border_color)
+
+        self._measure_draw_time(draw_start_time)
+
+        pygame.display.flip()
 
     def _process_event(self):
         for event in pygame.event.get():
@@ -186,7 +200,7 @@ class App:
                 self._mouse_x = event.pos[0] // self._pixel_scale
                 self._mouse_y = event.pos[1] // self._pixel_scale
 
-    def _control(self):
+    def _check_special_input(self):
         if self.btn(pygame.K_LALT) or self.btn(pygame.K_RALT):
             if self.btnp(pygame.K_UP):
                 self._set_pixel_scale(self._pixel_scale + 1)
@@ -206,21 +220,47 @@ class App:
         if self.btnp(pygame.K_ESCAPE):
             self._quit = True
 
-    def _draw(self):
-        self.draw()
+    def _measure_fps(self):
+        cur_time = time.time()
+        self._perf_fps_count += 1
 
-        surface = pygame.display.get_surface()
-        surface_width, surface_height = surface.get_size()
-        scale_x = surface_width // self._width
-        scale_y = surface_height // self._height
-        scale = min(scale_x, scale_y)
+        if self._perf_fps_count == PERF_MEASURE_COUNT:
+            self._perf_fps = self._perf_fps_count / (
+                cur_time - self._perf_fps_start_time)
+            self._perf_fps_count = 0
+            self._perf_fps_start_time = cur_time
 
-        width = self._width * scale
-        height = self._height * scale
-        left = (surface_width - width) // 2
-        bottom = (surface_height - height) // 2
+    def _measure_update_time(self, update_start_time):
+        self._perf_update_count += 1
+        self._perf_update_total_time += time.time() - update_start_time
 
-        self._renderer.render(left, bottom, width, height, self._palette,
-                              self._clear_color)
+        if self._perf_update_count == PERF_MEASURE_COUNT:
+            self._perf_update_time = (
+                self._perf_update_total_time / self._perf_update_count) * 1000
+            self._perf_update_total_time = 0
+            self._perf_update_count = 0
 
-        pygame.display.flip()
+    def _measure_draw_time(self, draw_start_time):
+        self._perf_draw_count += 1
+        self._perf_draw_total_time += time.time() - draw_start_time
+
+        if self._perf_draw_count == PERF_MEASURE_COUNT:
+            self._perf_draw_time = (
+                self._perf_draw_total_time / self._perf_draw_count) * 1000
+            self._perf_draw_total_time = 0
+            self._perf_draw_count = 0
+
+    def _draw_perf_monitor(self):
+        if not self._perf_monitor:
+            return
+
+        fps = '{:.2f}'.format(self._perf_fps)
+        update = '{:.2f}'.format(self._perf_update_time)
+        draw = '{:.2f}'.format(self._perf_draw_time)
+
+        self.text(1, 0, fps, 1)
+        self.text(0, 0, fps, 9)
+        self.text(1, 6, update, 1)
+        self.text(0, 6, update, 9)
+        self.text(1, 12, draw, 1)
+        self.text(0, 12, draw, 9)
