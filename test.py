@@ -1,68 +1,133 @@
+import math
 import pyxel
 
 
 class App(pyxel.App):
     def __init__(self):
-        super().__init__(160, 120)
+        super().__init__(200, 150, caption='Pyxel Test')
 
         self.image = pyxel.Image(16, 16)
         image_data = [
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 7, 0, 0, 7, 0, 0],
-            [0, 0, 7, 0, 0, 7, 0, 0],
-            [0, 0, 7, 0, 0, 7, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 7, 0, 0, 0, 0, 7, 0],
-            [0, 0, 7, 7, 7, 7, 0, 0],
+            '3330333330333333', '3309033309033333', '309f00009f033303',
+            '30ffffffff033090', '09ffffffff9030f0', '0f0fffff0ff03090',
+            '0ffff0fffff030f0', '0fff0f0fff9000f0', '09ffffffff9f9ff0',
+            '309fffffff9f9ff0', '330fffffffffff90', '330fffffffffff90',
+            '330f99f999f99f03', '330f00f000f00f03', '3309009030900903',
+            '3330330333033033'
         ]
-        self.image.set(0, 0, 8, 8, image_data)
+        self.image.set(0, 0, 16, 16, image_data)
         self.bank(0, self.image)
 
-        self.x = 0
-        self.press_a = False
-
     def update(self):
-        self.x = (self.x + 1) % 160
-
         if self.btnp(pyxel.KEY_Q):
             exit()
 
-        self.press_a = self.btnp(pyxel.KEY_A, 30, 15)
-
     def draw(self):
+        self.test_cls(4, 6)
+        self.test_pix(4, 20)
+        self.test_line(102, 6)
+        self.test_rect(4, 40)
+        self.test_rectb(102, 40)
+        self.test_circ(4, 64)
+        self.test_circ(102, 64)
+        self.test_blt(4, 94)
+        self.test_text(4, 124)
+
+    def test_cls(self, x, y):
         self.cls(2)
 
-        self.text(11, 10, 'Hello, Pyxel!', 8)
-        self.text(10, 10, 'Hello, Pyxel!', 7)
+        self.text(x, y, 'cls([col])', 7)
 
-        self.text(80, 0, '{},{}'.format(self.mouse_x, self.mouse_y), 7)
+    def test_pix(self, x, y):
+        self.text(x, y, 'pix(x,y,[col])', 7)
 
-        self.pix(0, 0, 8)
-        self.pix(159, 0, 8)
-        self.pix(0, 119, 8)
-        self.pix(159, 119, 8)
+        x += 4
+        y += 10
 
-        self.blt(80, 40, 7, 0, 0, 64, 64, 0)
-        self.blt(30, 60, 0, 0, 0, 8, 8)
+        for i in range(16):
+            self.pix(x + i * 2, y, i)
 
-        self.rectb(50, 50, 79, 89, 3)
+    def test_line(self, x, y):
+        self.text(x, y, 'line(x1,y1,x2,y2,[col])', 7)
 
-        self.rectb(90, 90, 110, 110, 8)
-        self.circb(100, 100, 30, 7)
-        self.circ(30, 100, 4, 7)
+        x += 4
+        y += 8
+        col = 5
 
-        self.rect(30, 30, 59, 39, 0)
-        self.line(29, 29, 60, 20, 8)
+        for i in range(3):
+            self.line(x, y + i * 8, x + 48, y + i * 8, col)
+            col += 1
 
-        self.pix(self.x, 0, 7)
+        for i in range(4):
+            self.line(x + i * 16, y, x + i * 16, y + 16, col)
+            col += 1
 
-        if self.press_a:
-            self.rect(10, 10, 19, 19, 8)
+        for i in range(4):
+            self.line(x + i * 16, y, x + (3 - i) * 16, y + 16, col)
+            col += 1
 
-        self.clip(1, 1, 3, 4)
-        self.rect(0, 0, 10, 10, 9)
-        self.clip()
+    def test_rect(self, x, y):
+        self.text(x, y, 'rect(x1,y1,x2,y2,[col])', 7)
+
+        x += 4
+        y += 15
+
+        for i in range(8):
+            self.rect(x + i * 8, y, x + i * 9, y - i, i + 8)
+
+    def test_rectb(self, x, y):
+        self.text(x, y, 'rectb(x1,y1,x2,y2,[col])', 7)
+
+        x += 4
+        y += 15
+
+        for i in range(8):
+            self.rectb(x + i * 8, y, x + i * 9, y - i, i + 8)
+
+    def test_circ(self, x, y):
+        self.text(x, y, 'circ(x,y,r,[col])', 7)
+
+        x += 4
+        y += 15
+
+        for i in range(8):
+            self.circ(x + i * 8, y, i, i + 8)
+
+    def test_circb(self, x, y):
+        self.text(x, y, 'circb(x,y,r,[col])', 7)
+
+        x += 4
+        y += 15
+
+        for i in range(8):
+            self.circb(x + i * 8, y, i, i + 8)
+
+    def test_blt(self, x, y):
+        self.text(x, y, 'blt(x,y,bank,sx,sy,w,h,[colkey])', 7)
+
+        x += 4
+        y += 8
+        offset = math.sin(self.frame_count * 0.1) * 2
+
+        self.blt(x, y, 0, 0, 0, 16, 16)
+        self.blt(x + offset + 20, y, 0, 0, 0, 16, 16, 3)
+        self.blt(x + 40, y, 0, 0, 0, -16, 16, 3)
+        self.blt(x + 60, y, 0, 0, 0, 16, -16, 3)
+        self.blt(x + 80, y, 0, 0, 0, -16, -16, 3)
+
+    def test_text(self, x, y):
+        self.text(x, y, 'text(x,y,str,[col])', 7)
+
+        x += 4
+        y += 8
+        text1 = 'Elapsed frame count is {}'.format(self.frame_count)
+        text2 = 'Current mouse position is ({},{})'.format(
+            self.mouse_x, self.mouse_y)
+
+        self.text(x + 1, y, text1, 1)
+        self.text(x, y, text1, 9)
+        self.text(x + 1, y + 6, text2, 1)
+        self.text(x, y + 6, text2, 9)
 
 
 App().run()
