@@ -30,34 +30,34 @@ class App(pyxel.App):
 
     def draw(self):
         self.test_pal1()
-        self.test_cls(4, 6)
-        self.test_clip(32, 24)
-        self.test_pix(4, 20)
-        self.test_line(104, 6)
-        self.test_rect(4, 40)
-        self.test_rectb(104, 40)
-        self.test_circ(4, 64)
-        self.test_circ(104, 64)
-        self.test_blt(4, 94)
-        self.test_text(4, 124)
-        self.test_pal2(104, 124)
+        self.test_cls(6, 6)
+        self.test_clip()
+        self.test_pix(6, 20)
+        self.test_line(106, 6)
+        self.test_rect(6, 40)
+        self.test_rectb(106, 40)
+        self.test_circ(6, 64)
+        self.test_circ(106, 64)
+        self.test_blt(6, 94)
+        self.test_text(6, 124)
+        self.test_pal2(146, 124)
 
     def test_pal1(self):
         if self.is_pal:
             self.pal(2, 3)
+            self.pal(4, 7)
             self.pal(7, 1)
 
     def test_pal2(self, x, y):
-        if self.is_pal:
-            self.pal()
-            self.text(x, y, 'pal(c1,c2)', 7)
+        self.text(x, y, 'pal(c1,c2)', 4)
+        self.pal()
 
     def test_cls(self, x, y):
         self.cls(2)
 
         self.text(x, y, 'cls(c)', 7)
 
-    def test_clip(self, x, y):
+    def test_clip(self):
         self.clip()
 
         if not self.is_clip:
@@ -86,19 +86,19 @@ class App(pyxel.App):
 
         x += 4
         y += 8
-        col = 5
+        c = 5
 
         for i in range(3):
-            self.line(x, y + i * 8, x + 48, y + i * 8, col)
-            col += 1
+            self.line(x, y + i * 8, x + 48, y + i * 8, c)
+            c += 1
 
         for i in range(4):
-            self.line(x + i * 16, y, x + i * 16, y + 16, col)
-            col += 1
+            self.line(x + i * 16, y, x + i * 16, y + 16, c)
+            c += 1
 
         for i in range(4):
-            self.line(x + i * 16, y, x + (3 - i) * 16, y + 16, col)
-            col += 1
+            self.line(x + i * 16, y, x + (3 - i) * 16, y + 16, c)
+            c += 1
 
     def test_rect(self, x, y):
         self.text(x, y, 'rect(x1,y1,x2,y2,c)', 7)
