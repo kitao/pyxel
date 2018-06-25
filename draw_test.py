@@ -18,21 +18,18 @@ class App(pyxel.App):
         self.image.set(0, 0, 16, 16, image_data)
         self.bank(0, self.image)
 
-        self.space = False
+        self.is_clip = False
+        self.is_pal = False
 
     def update(self):
-        self.space = self.btn(pyxel.KEY_SPACE)
+        self.is_clip = self.btn(pyxel.KEY_SPACE)
+        self.is_pal = (self.frame_count // 30) % 10 >= 5
 
         if self.btnp(pyxel.KEY_Q):
             exit()
 
     def draw(self):
-        if (self.frame_count // 30) % 10 >= 5:
-            self.pal(2, 3)
-            self.pal(7, 1)
-        else:
-            self.pal()
-
+        self.test_pal1()
         self.test_cls(4, 6)
         self.test_clip(32, 24)
         self.test_pix(4, 20)
@@ -43,6 +40,17 @@ class App(pyxel.App):
         self.test_circ(104, 64)
         self.test_blt(4, 94)
         self.test_text(4, 124)
+        self.test_pal2(104, 124)
+
+    def test_pal1(self):
+        if self.is_pal:
+            self.pal(2, 3)
+            self.pal(7, 1)
+
+    def test_pal2(self, x, y):
+        if self.is_pal:
+            self.pal()
+            self.text(x, y, 'pal(c1,c2)', 7)
 
     def test_cls(self, x, y):
         self.cls(2)
@@ -52,10 +60,17 @@ class App(pyxel.App):
     def test_clip(self, x, y):
         self.clip()
 
-        if self.space:
-            self.text(x, y, 'clip(x1,y1,x2,y2)', 14)
-            self.rectb(31, 31, 168, 118, 14)
-            self.clip(32, 32, 167, 117)
+        if not self.is_clip:
+            return
+
+        x1 = math.sin(self.frame_count * 0.02) * 39 + 40
+        y1 = math.sin(self.frame_count * 0.03) * 29 + 30
+        x2 = x1 + 119
+        y2 = y1 + 89
+
+        self.text(x1, y1 - 8, 'clip(x1,y1,x2,y2)', 14)
+        self.rectb(x1 - 1, y1 - 1, x2 + 1, y2 + 1, 14)
+        self.clip(x1, y1, x2, y2)
 
     def test_pix(self, x, y):
         self.text(x, y, 'pix(x,y,col)', 7)
