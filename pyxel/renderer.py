@@ -168,41 +168,39 @@ class Renderer:
     def bank(self, index, image):
         self.bank_list[index] = image
 
-    def clip(self, *args):
-        if len(args) == 4:
-            x1, y1, x2, y2 = args
-            self.clip_pal_data[0] = x1
-            self.clip_pal_data[1] = y1
-            self.clip_pal_data[2] = x2
-            self.clip_pal_data[3] = y2
-        else:
+    def clip(self, x1=None, y1=None, x2=None, y2=None):
+        if x1 is None:
             self.clip_pal_data[0] = 0
             self.clip_pal_data[1] = 0
             self.clip_pal_data[2] = self.width
             self.clip_pal_data[3] = self.height
+        else:
+            self.clip_pal_data[0] = x1
+            self.clip_pal_data[1] = y1
+            self.clip_pal_data[2] = x2
+            self.clip_pal_data[3] = y2
 
-    def pal(self, *args):
-        if len(args) == 2:
-            c1, c2 = args
+    def pal(self, c1=None, c2=None):
+        if c1 is None:
+            self.clip_pal_data[4] = 0x3210
+            self.clip_pal_data[5] = 0x7654
+            self.clip_pal_data[6] = 0xba98
+            self.clip_pal_data[7] = 0xfedc
+        else:
             index = c1 // 4 + 4
             shift = (c1 % 4) * 4
             value = c2 << shift
             mask = 0xffff ^ (0xf << shift)
             base = int(self.clip_pal_data[index])
             self.clip_pal_data[index] = base & mask | value
-        else:
-            self.clip_pal_data[4] = 0x3210
-            self.clip_pal_data[5] = 0x7654
-            self.clip_pal_data[6] = 0xba98
-            self.clip_pal_data[7] = 0xfedc
 
-    def cls(self, col):
+    def cls(self, c):
         self.cur_draw_count = 0
 
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECT
-        data[MODE_COL_INDEX] = col
+        data[MODE_COL_INDEX] = c
 
         data[POS_X1_INDEX] = 0
         data[POS_Y1_INDEX] = 0
@@ -214,75 +212,75 @@ class Renderer:
         data[CLIP_X2_INDEX] = self.width - 1
         data[CLIP_Y2_INDEX] = self.height - 1
 
-    def pix(self, x, y, col):
+    def pix(self, x, y, c):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_PIX
-        data[MODE_COL_INDEX] = col
+        data[MODE_COL_INDEX] = c
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
 
-    def line(self, x1, y1, x2, y2, col):
+    def line(self, x1, y1, x2, y2, c):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_LINE
-        data[MODE_COL_INDEX] = col
+        data[MODE_COL_INDEX] = c
 
         data[POS_X1_INDEX] = x1
         data[POS_Y1_INDEX] = y1
         data[POS_X2_INDEX] = x2
         data[POS_Y2_INDEX] = y2
 
-    def rect(self, x1, y1, x2, y2, col):
+    def rect(self, x1, y1, x2, y2, c):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECT
-        data[MODE_COL_INDEX] = col
+        data[MODE_COL_INDEX] = c
 
         data[POS_X1_INDEX] = x1
         data[POS_Y1_INDEX] = y1
         data[POS_X2_INDEX] = x2
         data[POS_Y2_INDEX] = y2
 
-    def rectb(self, x1, y1, x2, y2, col):
+    def rectb(self, x1, y1, x2, y2, c):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECTB
-        data[MODE_COL_INDEX] = col
+        data[MODE_COL_INDEX] = c
 
         data[POS_X1_INDEX] = x1
         data[POS_Y1_INDEX] = y1
         data[POS_X2_INDEX] = x2
         data[POS_Y2_INDEX] = y2
 
-    def circ(self, x, y, r, col):
+    def circ(self, x, y, r, c):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_CIRC
-        data[MODE_COL_INDEX] = col
+        data[MODE_COL_INDEX] = c
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
 
         data[SIZE_W_INDEX] = r
 
-    def circb(self, x, y, r, col):
+    def circb(self, x, y, r, c):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_CIRCB
-        data[MODE_COL_INDEX] = col
+        data[MODE_COL_INDEX] = c
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
 
         data[SIZE_W_INDEX] = r
 
-    def blt(self, x, y, bank, sx, sy, w, h, colkey=None):
+    def blt(self, x, y, bank, sx, sy, w, h, ckey=None):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_BLT
-        data[MODE_COL_INDEX] = colkey if colkey is not None else -1
+        data[MODE_COL_INDEX] = -1 if ckey is None else ckey
         data[MODE_BANK_INDEX] = bank
 
         data[POS_X1_INDEX] = x
@@ -293,12 +291,12 @@ class Renderer:
         data[SIZE_W_INDEX] = w
         data[SIZE_H_INDEX] = h
 
-    def text(self, x, y, str_, col):
+    def text(self, x, y, s, c):
         left = x
         first = True
 
-        for c in str_:
-            code = ord(c)
+        for ch in s:
+            code = ord(ch)
 
             if code == 10:  # new line
                 first = True
@@ -319,7 +317,7 @@ class Renderer:
                 data = self._next_draw_data()
 
                 data[MODE_TYPE_INDEX] = TYPE_TEXT
-                data[MODE_COL_INDEX] = col
+                data[MODE_COL_INDEX] = c
                 data[MODE_BANK_INDEX] = BANK_COUNT - 1
 
                 data[POS_Y1_INDEX] = y
