@@ -180,27 +180,27 @@ class Renderer:
             self.clip_pal_data[2] = x2
             self.clip_pal_data[3] = y2
 
-    def pal(self, c1=None, c2=None):
-        if c1 is None:
+    def pal(self, col1=None, col2=None):
+        if col1 is None:
             self.clip_pal_data[4] = 0x3210
             self.clip_pal_data[5] = 0x7654
             self.clip_pal_data[6] = 0xba98
             self.clip_pal_data[7] = 0xfedc
         else:
-            index = c1 // 4 + 4
-            shift = (c1 % 4) * 4
-            value = c2 << shift
+            index = col1 // 4 + 4
+            shift = (col1 % 4) * 4
+            value = col2 << shift
             mask = 0xffff ^ (0xf << shift)
             base = int(self.clip_pal_data[index])
             self.clip_pal_data[index] = base & mask | value
 
-    def cls(self, c):
+    def cls(self, col):
         self.cur_draw_count = 0
 
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECT
-        data[MODE_COL_INDEX] = c
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = 0
         data[POS_Y1_INDEX] = 0
@@ -212,75 +212,75 @@ class Renderer:
         data[CLIP_X2_INDEX] = self.width - 1
         data[CLIP_Y2_INDEX] = self.height - 1
 
-    def pix(self, x, y, c):
+    def pix(self, x, y, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_PIX
-        data[MODE_COL_INDEX] = c
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
 
-    def line(self, x1, y1, x2, y2, c):
+    def line(self, x1, y1, x2, y2, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_LINE
-        data[MODE_COL_INDEX] = c
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x1
         data[POS_Y1_INDEX] = y1
         data[POS_X2_INDEX] = x2
         data[POS_Y2_INDEX] = y2
 
-    def rect(self, x1, y1, x2, y2, c):
+    def rect(self, x1, y1, x2, y2, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECT
-        data[MODE_COL_INDEX] = c
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x1
         data[POS_Y1_INDEX] = y1
         data[POS_X2_INDEX] = x2
         data[POS_Y2_INDEX] = y2
 
-    def rectb(self, x1, y1, x2, y2, c):
+    def rectb(self, x1, y1, x2, y2, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_RECTB
-        data[MODE_COL_INDEX] = c
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x1
         data[POS_Y1_INDEX] = y1
         data[POS_X2_INDEX] = x2
         data[POS_Y2_INDEX] = y2
 
-    def circ(self, x, y, r, c):
+    def circ(self, x, y, r, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_CIRC
-        data[MODE_COL_INDEX] = c
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
 
         data[SIZE_W_INDEX] = r
 
-    def circb(self, x, y, r, c):
+    def circb(self, x, y, r, col):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_CIRCB
-        data[MODE_COL_INDEX] = c
+        data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
 
         data[SIZE_W_INDEX] = r
 
-    def blt(self, x, y, bank, sx, sy, w, h, ckey=None):
+    def blt(self, x, y, bank, sx, sy, w, h, colkey=None):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_BLT
-        data[MODE_COL_INDEX] = -1 if ckey is None else ckey
+        data[MODE_COL_INDEX] = colkey if colkey is not None else -1
         data[MODE_BANK_INDEX] = bank
 
         data[POS_X1_INDEX] = x
@@ -291,11 +291,11 @@ class Renderer:
         data[SIZE_W_INDEX] = w
         data[SIZE_H_INDEX] = h
 
-    def text(self, x, y, s, c):
+    def text(self, x, y, str_, col):
         left = x
         first = True
 
-        for ch in s:
+        for ch in str_:
             code = ord(ch)
 
             if code == 10:  # new line
@@ -317,7 +317,7 @@ class Renderer:
                 data = self._next_draw_data()
 
                 data[MODE_TYPE_INDEX] = TYPE_TEXT
-                data[MODE_COL_INDEX] = c
+                data[MODE_COL_INDEX] = col
                 data[MODE_BANK_INDEX] = BANK_COUNT - 1
 
                 data[POS_Y1_INDEX] = y

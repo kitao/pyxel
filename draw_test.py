@@ -40,7 +40,7 @@ class App(pyxel.App):
         self.test_circ(106, 64)
         self.test_blt(6, 94)
         self.test_text(6, 124)
-        self.test_pal2(146, 124)
+        self.test_pal2(106, 124)
 
     def test_pal1(self):
         if self.is_pal:
@@ -49,13 +49,13 @@ class App(pyxel.App):
             self.pal(7, 1)
 
     def test_pal2(self, x, y):
-        self.text(x, y, 'pal(c1,c2)', 4)
+        self.text(x, y, 'pal(col1,col2)', 4)
         self.pal()
 
     def test_cls(self, x, y):
         self.cls(2)
 
-        self.text(x, y, 'cls(c)', 7)
+        self.text(x, y, 'cls(col)', 7)
 
     def test_clip(self):
         self.clip()
@@ -73,7 +73,7 @@ class App(pyxel.App):
         self.clip(x1, y1, x2, y2)
 
     def test_pix(self, x, y):
-        self.text(x, y, 'pix(x,y,c)', 7)
+        self.text(x, y, 'pix(x,y,col)', 7)
 
         x += 4
         y += 10
@@ -82,26 +82,26 @@ class App(pyxel.App):
             self.pix(x + i * 2, y, i)
 
     def test_line(self, x, y):
-        self.text(x, y, 'line(x1,y1,x2,y2,c)', 7)
+        self.text(x, y, 'line(x1,y1,x2,y2,col)', 7)
 
         x += 4
         y += 8
-        c = 5
+        col = 5
 
         for i in range(3):
-            self.line(x, y + i * 8, x + 48, y + i * 8, c)
-            c += 1
+            self.line(x, y + i * 8, x + 48, y + i * 8, col)
+            col += 1
 
         for i in range(4):
-            self.line(x + i * 16, y, x + i * 16, y + 16, c)
-            c += 1
+            self.line(x + i * 16, y, x + i * 16, y + 16, col)
+            col += 1
 
         for i in range(4):
-            self.line(x + i * 16, y, x + (3 - i) * 16, y + 16, c)
-            c += 1
+            self.line(x + i * 16, y, x + (3 - i) * 16, y + 16, col)
+            col += 1
 
     def test_rect(self, x, y):
-        self.text(x, y, 'rect(x1,y1,x2,y2,c)', 7)
+        self.text(x, y, 'rect(x1,y1,x2,y2,col)', 7)
 
         x += 4
         y += 15
@@ -110,7 +110,7 @@ class App(pyxel.App):
             self.rect(x + i * 8, y, x + i * 9, y - i, i + 8)
 
     def test_rectb(self, x, y):
-        self.text(x, y, 'rectb(x1,y1,x2,y2,c)', 7)
+        self.text(x, y, 'rectb(x1,y1,x2,y2,col)', 7)
 
         x += 4
         y += 15
@@ -119,7 +119,7 @@ class App(pyxel.App):
             self.rectb(x + i * 8, y, x + i * 9, y - i, i + 8)
 
     def test_circ(self, x, y):
-        self.text(x, y, 'circ(x,y,r,c)', 7)
+        self.text(x, y, 'circ(x,y,r,col)', 7)
 
         x += 4
         y += 15
@@ -128,7 +128,7 @@ class App(pyxel.App):
             self.circ(x + i * 8, y, i, i + 8)
 
     def test_circb(self, x, y):
-        self.text(x, y, 'circb(x,y,r,c)', 7)
+        self.text(x, y, 'circb(x,y,r,col)', 7)
 
         x += 4
         y += 15
@@ -137,7 +137,7 @@ class App(pyxel.App):
             self.circb(x + i * 8, y, i, i + 8)
 
     def test_blt(self, x, y):
-        self.text(x, y, 'blt(x,y,bank,sx,sy,w,h,[ckey])', 7)
+        self.text(x, y, 'blt(x,y,bank,sx,sy,w,h,[colkey])', 7)
 
         x += 4
         y += 8
@@ -150,7 +150,7 @@ class App(pyxel.App):
         self.blt(x + 80, y, 0, 0, 0, -16, -16, 3)
 
     def test_text(self, x, y):
-        self.text(x, y, 'text(x,y,s,c)', 7)
+        self.text(x, y, 'text(x,y,str,col)', 7)
 
         x += 4
         y += 8
