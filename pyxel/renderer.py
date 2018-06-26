@@ -107,7 +107,7 @@ class Renderer:
             draw_tex_list = [
                 image._tex if image else None for image in self.bank_list
             ]
-            self.draw_att.refresh(self.cur_draw_count)
+            self.draw_att.update(self.cur_draw_count)
             self.draw_shader.begin(self.draw_att, draw_tex_list)
             self.draw_shader.set_uniform('u_framebuffer_size', '2f',
                                          self.width, self.height)

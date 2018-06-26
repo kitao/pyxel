@@ -53,19 +53,19 @@ class GLAttribute:
         self.dtype = gl.GL_FLOAT
         self.data = np.zeros((count, self.size), np.float32)
         self.buf = gl.glGenBuffers(1)
-        self.need_to_refresh = True
+        self.should_update_data = True
 
-    def refresh(self, count=0):
+    def update(self, count=0):
         self.count = self.data.shape[0] if count == 0 else count
-        self.need_to_refresh = True
+        self.should_update_data = True
 
     def _begin(self, program):
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.buf)
 
-        if self.need_to_refresh:
+        if self.should_update_data:
             gl.glBufferData(gl.GL_ARRAY_BUFFER, self.stride * self.count,
                             self.data.tobytes(), self.usage)
-            self.need_to_refresh = False
+            self.should_update_data = False
 
         for att in self.att_info:
             loc = gl.glGetAttribLocation(program, att[0])
@@ -100,10 +100,10 @@ class GLTexture:
         self.filter = gl.GL_NEAREST if nearest else gl.GL_LINEAR
         self.data = np.zeros(shape, np.uint8)
         self.tex = gl.glGenTextures(1)
-        self.need_to_refresh = True
+        self.should_update_data = True
 
-    def refresh(self):
-        self.need_to_refresh = True
+    def update(self):
+        self.should_update_data = True
 
     def copy_screen(self, x, y, left, bottom, width, height):
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.tex)
@@ -115,11 +115,11 @@ class GLTexture:
         gl.glActiveTexture(gl.GL_TEXTURE0 + i)
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.tex)
 
-        if self.need_to_refresh:
+        if self.should_update_data:
             gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, self.format, self.width,
                             self.height, 0, self.format, gl.GL_UNSIGNED_BYTE,
                             self.data.tobytes())
-            self.need_to_refresh = False
+            self.should_update_data = False
 
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S,
                            gl.GL_CLAMP_TO_EDGE)
