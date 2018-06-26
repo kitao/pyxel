@@ -14,7 +14,7 @@ setuptools.setup(
     author_email='takashi.kitao@gmail.com',
     license='MIT',
     classifiers=(
-        'Development Status :: 1 - Planning',
+        'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
         'Operating System :: MacOS',
