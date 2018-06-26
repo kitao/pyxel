@@ -8,22 +8,22 @@ class App(pyxel.App):
 
         self.image = pyxel.Image(16, 16)
         image_data = [
-            '3330333330333333', '3309033309033333', '309f00009f033303',
-            '30ffffffff033090', '09ffffffff9030f0', '0f0fffff0ff03090',
-            '0ffff0fffff030f0', '0fff0f0fff9000f0', '09ffffffff9f9ff0',
-            '309fffffff9f9ff0', '330fffffffffff90', '330fffffffffff90',
-            '330f99f999f99f03', '330f00f000f00f03', '3309009030900903',
-            '3330330333033033'
+            '5550555550555555', '5509055509055555', '509f00009f055505',
+            '50ffffffff055090', '09ffffffff9050f0', '0f0fffff0ff05090',
+            '0ffff0fffff050f0', '0fff0f0fff9000f0', '09ffffffff9f9ff0',
+            '509fffffff9f9ff0', '550fffffffffff90', '550fffffffffff90',
+            '550f99f999f99f05', '550f00f000f00f05', '5509009050900905',
+            '5550550555055055'
         ]
         self.image.set(0, 0, 16, 16, image_data)
         self.bank(0, self.image)
 
-        self.is_pal = False
-        self.is_clip = False
+        self.pal_test_is_enabled = False
+        self.clip_test_is_enabled = False
 
     def update(self):
-        self.is_pal = (self.frame_count // 30) % 10 >= 5
-        self.is_clip = self.btn(pyxel.KEY_SPACE)
+        self.pal_test_is_enabled = (self.frame_count // 30) % 10 >= 5
+        self.clip_test_is_enabled = self.btn(pyxel.KEY_SPACE)
 
         if self.btnp(pyxel.KEY_Q):
             exit()
@@ -37,13 +37,13 @@ class App(pyxel.App):
         self.test_rect(6, 40)
         self.test_rectb(106, 40)
         self.test_circ(6, 64)
-        self.test_circ(106, 64)
+        self.test_circb(106, 64)
         self.test_blt(6, 94)
         self.test_text(6, 124)
         self.test_pal2(106, 124)
 
     def test_pal1(self):
-        if self.is_pal:
+        if self.pal_test_is_enabled:
             self.pal(2, 3)
             self.pal(4, 7)
             self.pal(7, 1)
@@ -60,7 +60,7 @@ class App(pyxel.App):
     def test_clip(self):
         self.clip()
 
-        if not self.is_clip:
+        if not self.clip_test_is_enabled:
             return
 
         x1 = math.sin(self.frame_count * 0.02) * 39 + 40
@@ -144,10 +144,10 @@ class App(pyxel.App):
         offset = math.sin(self.frame_count * 0.1) * 2
 
         self.blt(x, y, 0, 0, 0, 16, 16)
-        self.blt(x + offset + 20, y, 0, 0, 0, 16, 16, 3)
-        self.blt(x + 40, y, 0, 0, 0, -16, 16, 3)
-        self.blt(x + 60, y, 0, 0, 0, 16, -16, 3)
-        self.blt(x + 80, y, 0, 0, 0, -16, -16, 3)
+        self.blt(x + offset + 20, y, 0, 0, 0, 16, 16, 5)
+        self.blt(x + 40, y, 0, 0, 0, -16, 16, 5)
+        self.blt(x + 60, y, 0, 0, 0, 16, -16, 5)
+        self.blt(x + 80, y, 0, 0, 0, -16, -16, 5)
 
     def test_text(self, x, y):
         self.text(x, y, 'text(x,y,str,col)', 7)
@@ -155,7 +155,7 @@ class App(pyxel.App):
         x += 4
         y += 8
         text = 'Elapsed frame count is {}\n' \
-               'Current mouse position is ({},{})'''.format(
+               'Current mouse position is ({},{})'.format(
                    self.frame_count, self.mouse_x, self.mouse_y)
 
         self.text(x + 1, y, text, 1)
