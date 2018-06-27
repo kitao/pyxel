@@ -93,7 +93,7 @@ class Renderer:
             # restore previous frame
             gl.glDisable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
             gl.glDisable(gl.GL_POINT_SPRITE)
-            gl.glViewport(0, 0, self.width, self.height)
+            gl.glViewport(0, 0, int(self.width), int(self.height))
 
             self.scale_shader.begin(self.normal_scale_att, [self.scale_tex])
             self.scale_shader.set_uniform('u_texture', '1i', 0)
@@ -139,7 +139,7 @@ class Renderer:
         # scaling
         gl.glDisable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
         gl.glDisable(gl.GL_POINT_SPRITE)
-        gl.glViewport(left, bottom, width, height)
+        gl.glViewport(int(left), int(bottom), int(width), int(height))
 
         self.scale_shader.begin(self.inverse_scale_att, [self.scale_tex])
         self.scale_shader.set_uniform('u_texture', '1i', 0)
