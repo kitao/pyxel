@@ -1,11 +1,11 @@
 import math
 import time
-import pygame
+import glfw
 from .renderer import Renderer
 
-KEY_LBUTTON = 0x10001
-KEY_MBUTTON = 0x10002
-KEY_RBUTTON = 0x10003
+KEY_LEFT_BUTTON = 1001
+KEY_MIDDLE_BUTTON = 1002
+KEY_RIGHT_BUTTON = 1003
 
 CAPTION = 'Pyxel Window'
 SCALE = 4
@@ -41,16 +41,15 @@ class App:
         self._border_width = border_width
         self._border_color = border_color
 
-        self._quit = False
         self._key_state = {}
         self._mouse_x = 0
         self._mouse_y = 0
 
         self._frame_count = 0
-        self._one_frame_time = 1 / fps
         self._next_update_time = 0
+        self._one_frame_time = 1 / fps
 
-        self._perf_monitor = False
+        self._perf_monitor_is_enabled = False
         self._perf_fps_count = 0
         self._perf_fps_start_time = 0
         self._perf_fps = 0
@@ -62,10 +61,21 @@ class App:
         self._perf_draw_time = 0
 
         # initialize window
-        pygame.init()
-        pygame.display.set_caption(caption)
-        pygame.display.set_mode(self._get_window_size(),
-                                pygame.OPENGL | pygame.DOUBLEBUF)
+        if not glfw.init():
+            return
+
+        self._window = glfw.create_window(*self._get_window_size(), caption,
+                                          None, None)
+        if not self._window:
+            glfw.terminate()
+            return
+
+        glfw.make_context_current(self._window)
+
+        glfw.set_key_callback(self._window, self._key_callback)
+        glfw.set_cursor_pos_callback(self._window, self._cursor_pos_callback)
+        glfw.set_mouse_button_callback(self._window,
+                                       self._mouse_button_callback)
 
         # initialize renderer
         self._renderer = Renderer(width, height)
@@ -108,24 +118,48 @@ class App:
         return self._key_state.get(key, 0) == -self.frame_count
 
     def run(self):
+        self._frame_count = 1
         self._next_update_time = self._perf_fps_start_time = time.time()
 
-        while True:
+        while not glfw.window_should_close(self._window):
+            glfw.poll_events()
             self._measure_fps()
-
             self._update()
             self._draw()
+            glfw.swap_buffers(self._window)
 
-            if self._quit:
-                break
-
-        pygame.quit()
+        glfw.terminate()
 
     def update(self):
         pass
 
     def draw(self):
         pass
+
+    def _key_callback(self, window, key, scancode, action, mods):
+        if action == glfw.PRESS:
+            self._key_state[key] = self._frame_count
+        elif action == glfw.RELEASE:
+            self._key_state[key] = -self._frame_count
+
+    def _cursor_pos_callback(self, window, xpos, ypos):
+        self._mouse_x = int(xpos // self._scale)
+        self._mouse_y = int(ypos // self._scale)
+
+    def _mouse_button_callback(self, window, button, action, mods):
+        if button == glfw.MOUSE_BUTTON_LEFT:
+            button = KEY_LEFT_BUTTON
+        elif button == glfw.MOUSE_BUTTON_MIDDLE:
+            button = KEY_MIDDLE_BUTTON
+        elif button == glfw.MOUSE_BUTTON_RIGHT:
+            button = KEY_RIGHT_BUTTON
+        else:
+            return
+
+        if action == glfw.PRESS:
+            self._key_state[button] = self._frame_count
+        elif action == glfw.RELEASE:
+            self._key_state[button] = -self._frame_count
 
     def _get_window_size(self):
         return (self._width * self._scale + self._border_width,
@@ -153,11 +187,9 @@ class App:
         for _ in range(update_count):
             update_start_time = time.time()
 
-            self._frame_count += 1
-            self._process_event()
             self._check_special_input()
-
             self.update()
+            self._frame_count += 1
 
             self._measure_update_time(update_start_time)
 
@@ -168,73 +200,39 @@ class App:
 
         self._draw_perf_monitor()
 
-        surface = pygame.display.get_surface()
-        surface_width, surface_height = surface.get_size()
-        scale_x = surface_width // self._width
-        scale_y = surface_height // self._height
+        window_width, window_height = glfw.get_framebuffer_size(self._window)
+        scale_x = window_width // self._width
+        scale_y = window_height // self._height
         scale = min(scale_x, scale_y)
         width = self._width * scale
         height = self._height * scale
-        left = (surface_width - width) // 2
-        bottom = (surface_height - height) // 2
+        left = (window_width - width) // 2
+        bottom = (window_height - height) // 2
 
         self._renderer.render(left, bottom, width, height, self._palette,
                               self._border_color)
 
         self._measure_draw_time(draw_start_time)
 
-        pygame.display.flip()
-
-    def _process_event(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self._quit = True
-
-            elif event.type == pygame.KEYDOWN:
-                self._key_state[event.key] = self._frame_count
-
-            elif event.type == pygame.KEYUP:
-                self._key_state[event.key] = -self._frame_count
-
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    self._key_state[KEY_LBUTTON] = self._frame_count
-                elif event.button == 2:
-                    self._key_state[KEY_MBUTTON] = self._frame_count
-                elif event.button == 3:
-                    self._key_state[KEY_RBUTTON] = self._frame_count
-
-            elif event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:
-                    self._key_state[KEY_LBUTTON] = -self._frame_count
-                elif event.button == 2:
-                    self._key_state[KEY_MBUTTON] = -self._frame_count
-                elif event.button == 3:
-                    self._key_state[KEY_RBUTTON] = -self._frame_count
-
-            elif event.type == pygame.MOUSEMOTION:
-                self._mouse_x = event.pos[0] // self._scale
-                self._mouse_y = event.pos[1] // self._scale
+        # glfw.swap_buffers(self._window)
 
     def _check_special_input(self):
-        if self.btn(pygame.K_LALT) or self.btn(pygame.K_RALT):
-            if self.btnp(pygame.K_UP):
+        if self.btn(glfw.KEY_LEFT_ALT) or self.btn(glfw.KEY_RIGHT_ALT):
+            if self.btnp(glfw.KEY_UP):
                 self._set_scale(self._scale + 1)
 
-            if self.btnp(pygame.K_DOWN):
+            if self.btnp(glfw.KEY_DOWN):
                 self._set_scale(self._scale - 1)
 
-            if self.btnp(pygame.K_RETURN):
-                pygame.display.set_mode(
-                    self._get_window_size(),
-                    pygame.OPENGL | pygame.DOUBLEBUF | pygame.FULLSCREEN)
-                self._renderer = Renderer(self._width, self._height)
+            if self.btnp(glfw.KEY_ENTER):
+                pass
 
-            if self.btnp(pygame.K_p):
-                self._perf_monitor = not self._perf_monitor
+            if self.btnp(glfw.KEY_P):
+                self._perf_monitor_is_enabled = (
+                    not self._perf_monitor_is_enabled)
 
-        if self.btnp(pygame.K_ESCAPE):
-            self._quit = True
+        if self.btnp(glfw.KEY_ESCAPE):
+            glfw.set_window_should_close(self._window, True)
 
     def _measure_fps(self):
         cur_time = time.time()
@@ -267,7 +265,7 @@ class App:
             self._perf_draw_count = 0
 
     def _draw_perf_monitor(self):
-        if not self._perf_monitor:
+        if not self._perf_monitor_is_enabled:
             return
 
         fps = '{:.2f}'.format(self._perf_fps)

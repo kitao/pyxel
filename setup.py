@@ -23,7 +23,7 @@ setuptools.setup(
         'Topic :: Games/Entertainment',
     ),
     packages=['pyxel', 'pyxel.editor'],
-    install_requires=['numpy', 'pygame', 'PyOpenGL'],
+    install_requires=['numpy', 'glfw', 'PyOpenGL'],
     python_requires='>=3',
     entry_points={
         'console_scripts': ['pyxel=pyxel.editor:run'],
