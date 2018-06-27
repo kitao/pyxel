@@ -2,10 +2,7 @@ import math
 import time
 import glfw
 from .renderer import Renderer
-
-KEY_LEFT_BUTTON = 1001
-KEY_MIDDLE_BUTTON = 1002
-KEY_RIGHT_BUTTON = 1003
+from .key import KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON
 
 CAPTION = 'Pyxel Window'
 SCALE = 4
@@ -64,8 +61,9 @@ class App:
         if not glfw.init():
             exit()
 
-        self._window = glfw.create_window(*self._get_window_size(), caption,
-                                          None, None)
+        self._window = glfw.create_window(width * scale + border_width,
+                                          height * scale + border_width,
+                                          caption, None, None)
         if not self._window:
             glfw.terminate()
             exit()
@@ -73,6 +71,10 @@ class App:
         glfw.make_context_current(self._window)
         glfw.set_window_size_limits(self._window, width, height,
                                     glfw.DONT_CARE, glfw.DONT_CARE)
+        self._hidpi_scale = (glfw.get_framebuffer_size(self._window)[0] /
+                             glfw.get_window_size(self._window)[0])
+        self._update_viewport()
+
         glfw.set_key_callback(self._window, self._key_callback)
         glfw.set_cursor_pos_callback(self._window, self._cursor_pos_callback)
         glfw.set_mouse_button_callback(self._window,
@@ -92,6 +94,14 @@ class App:
         self.circb = self._renderer.circb
         self.blt = self._renderer.blt
         self.text = self._renderer.text
+
+    @property
+    def width(self):
+        return self._width
+
+    @property
+    def height(self):
+        return self._height
 
     @property
     def frame_count(self):
@@ -124,9 +134,12 @@ class App:
 
         while not glfw.window_should_close(self._window):
             glfw.poll_events()
+
             self._measure_fps()
-            self._update()
-            self._draw()
+            self._update_viewport()
+            self._update_frame()
+            self._draw_frame()
+
             glfw.swap_buffers(self._window)
 
         glfw.terminate()
@@ -144,8 +157,12 @@ class App:
             self._key_state[key] = -self._frame_count
 
     def _cursor_pos_callback(self, window, xpos, ypos):
-        self._mouse_x = int(xpos // self._scale)
-        self._mouse_y = int(ypos // self._scale)
+        left = self._viewport_left
+        top = self._viewport_top
+        scale = self._viewport_scale
+
+        self._mouse_x = int((xpos - left) / scale)
+        self._mouse_y = int((ypos - top) / scale)
 
     def _mouse_button_callback(self, window, button, action, mods):
         if button == glfw.MOUSE_BUTTON_LEFT:
@@ -162,15 +179,21 @@ class App:
         elif action == glfw.RELEASE:
             self._key_state[button] = -self._frame_count
 
-    def _get_window_size(self):
-        return (self._width * self._scale + self._border_width,
-                self._height * self._scale + self._border_width)
+    def _update_viewport(self):
+        win_width, win_height = glfw.get_window_size(self._window)
+        scale_x = win_width // self._width
+        scale_y = win_height // self._height
+        scale = min(scale_x, scale_y)
 
-    def _set_scale(self, scale):
-        self._scale = max(scale, 1)
-        self._window.set_size(*self._get_window_size())
+        self._viewport_scale = scale
+        self._viewport_width = self._width * scale
+        self._viewport_height = self._height * scale
+        self._viewport_left = (win_width - self._viewport_width) // 2
+        self._viewport_top = (win_height - self._viewport_height) // 2
+        self._viewport_bottom = (
+            win_height - self._viewport_height - self._viewport_top)
 
-    def _update(self):
+    def _update_frame(self):
         # wait for update time
         while True:
             cur_time = time.time()
@@ -194,46 +217,28 @@ class App:
 
             self._measure_update_time(update_start_time)
 
-    def _draw(self):
+    def _draw_frame(self):
         draw_start_time = time.time()
 
         self.draw()
 
         self._draw_perf_monitor()
 
-        window_width, window_height = glfw.get_framebuffer_size(self._window)
-        scale_x = window_width // self._width
-        scale_y = window_height // self._height
-        scale = min(scale_x, scale_y)
-
-        if scale > 0:
-            width = self._width * scale
-            height = self._height * scale
-            left = (window_width - width) // 2
-            bottom = (window_height - height) // 2
-        else:
-            width = self._width
-            height = self._height
-            left = 0
-            bottom = (window_height - height)
-
-        self._renderer.render(left, bottom, width, height, self._palette,
-                              self._border_color)
+        hs = self._hidpi_scale
+        self._renderer.render(
+            self._viewport_left * hs, self._viewport_bottom * hs,
+            self._viewport_width * hs, self._viewport_height * hs,
+            self._palette, self._border_color)
 
         self._measure_draw_time(draw_start_time)
 
-        # glfw.swap_buffers(self._window)
-
     def _check_special_input(self):
         if self.btn(glfw.KEY_LEFT_ALT) or self.btn(glfw.KEY_RIGHT_ALT):
-            if self.btnp(glfw.KEY_UP):
-                self._set_scale(self._scale + 1)
-
-            if self.btnp(glfw.KEY_DOWN):
-                self._set_scale(self._scale - 1)
-
             if self.btnp(glfw.KEY_ENTER):
-                pass
+                monitor = glfw.get_primary_monitor()
+                (width, height), _, _ = glfw.get_video_mode(monitor)
+                glfw.set_window_monitor(self._window, monitor, 0, 0, width,
+                                        height, 0)
 
             if self.btnp(glfw.KEY_P):
                 self._perf_monitor_is_enabled = (
