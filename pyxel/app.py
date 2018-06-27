@@ -34,7 +34,7 @@ class App:
                  border_color=BORDER_COLOR):
         self._width = width
         self._height = height
-        self._window_caption = caption
+        self._caption = caption
         self._scale = scale
         self._palette = palette[:]
         self._fps = fps
