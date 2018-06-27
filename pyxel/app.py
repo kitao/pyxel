@@ -62,16 +62,17 @@ class App:
 
         # initialize window
         if not glfw.init():
-            return
+            exit()
 
         self._window = glfw.create_window(*self._get_window_size(), caption,
                                           None, None)
         if not self._window:
             glfw.terminate()
-            return
+            exit()
 
         glfw.make_context_current(self._window)
-
+        glfw.set_window_size_limits(self._window, width, height,
+                                    glfw.DONT_CARE, glfw.DONT_CARE)
         glfw.set_key_callback(self._window, self._key_callback)
         glfw.set_cursor_pos_callback(self._window, self._cursor_pos_callback)
         glfw.set_mouse_button_callback(self._window,
@@ -204,10 +205,17 @@ class App:
         scale_x = window_width // self._width
         scale_y = window_height // self._height
         scale = min(scale_x, scale_y)
-        width = self._width * scale
-        height = self._height * scale
-        left = (window_width - width) // 2
-        bottom = (window_height - height) // 2
+
+        if scale > 0:
+            width = self._width * scale
+            height = self._height * scale
+            left = (window_width - width) // 2
+            bottom = (window_height - height) // 2
+        else:
+            width = self._width
+            height = self._height
+            left = 0
+            bottom = (window_height - height)
 
         self._renderer.render(left, bottom, width, height, self._palette,
                               self._border_color)
