@@ -47,7 +47,7 @@ CLIP_PAL_COUNT = 8
 
 
 def _largest_power_of_two(n):
-    return 2 ** math.ceil(math.log(n, 2))
+    return 2**math.ceil(math.log(n, 2))
 
 
 def _int_to_rgb(color):
@@ -56,91 +56,92 @@ def _int_to_rgb(color):
 
 class Renderer:
     def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.cur_draw_count = 0
+        self._width = width
+        self._height = height
+        self._cur_draw_count = 0
 
-        self.bank_list = [None] * BANK_COUNT
-        self.bank_list[-1] = create_font_image()
+        self._bank_list = [None] * BANK_COUNT
+        self._bank_list[-1] = create_font_image()
 
         self.clip_pal_data = np.ndarray(8, np.float32)
         self.clip()
         self.pal()
 
-        self.draw_shader = GLShader(DRAWING_VERTEX_SHADER,
-                                    DRAWING_FRAGMENT_SHADER)
-        self.draw_att = GLAttribute(
+        self._draw_shader = GLShader(DRAWING_VERTEX_SHADER,
+                                     DRAWING_FRAGMENT_SHADER)
+        self._draw_att = GLAttribute(
             DRAWING_ATTRIBUTE_INFO, MAX_DRAW_COUNT, dynamic=True)
 
-        self.scale_shader = GLShader(SCALING_VERTEX_SHADER,
-                                     SCALING_FRAGMENT_SHADER)
+        self._scale_shader = GLShader(SCALING_VERTEX_SHADER,
+                                      SCALING_FRAGMENT_SHADER)
 
         tex_width = _largest_power_of_two(width)
         tex_height = _largest_power_of_two(height)
-        self.scale_tex = GLTexture(tex_width, tex_height, 3, nearest=True)
+        self._scale_tex = GLTexture(tex_width, tex_height, 3, nearest=True)
 
         u = width / tex_width
         v = height / tex_height
 
-        self.normal_scale_att = GLAttribute(SCALING_ATTRIBUTE_INFO, 4)
-        data = self.normal_scale_att.data
+        self._normal_scale_att = GLAttribute(SCALING_ATTRIBUTE_INFO, 4)
+        data = self._normal_scale_att.data
         data[0, :] = [-1, 1, 0, v]
         data[1, :] = [-1, -1, 0, 0]
         data[2, :] = [1, 1, u, v]
         data[3, :] = [1, -1, u, 0]
 
-        self.inverse_scale_att = GLAttribute(SCALING_ATTRIBUTE_INFO, 4)
-        data = self.inverse_scale_att.data
+        self._inverse_scale_att = GLAttribute(SCALING_ATTRIBUTE_INFO, 4)
+        data = self._inverse_scale_att.data
         data[0, :] = [-1, 1, 0, 0]
         data[1, :] = [-1, -1, 0, v]
         data[2, :] = [1, 1, u, 0]
         data[3, :] = [1, -1, u, v]
 
     def reset_drawing_command(self):
-        self.cur_draw_count = 0
+        self._cur_draw_count = 0
 
     def render(self, left, bottom, width, height, palette, clear_color):
-        if self.cur_draw_count > 0:
+        if self._cur_draw_count > 0:
             # restore previous frame
             gl.glDisable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
             gl.glDisable(gl.GL_POINT_SPRITE)
-            gl.glViewport(0, 0, int(self.width), int(self.height))
+            gl.glViewport(0, 0, int(self._width), int(self._height))
 
-            self.scale_shader.begin(self.normal_scale_att, [self.scale_tex])
-            self.scale_shader.set_uniform('u_texture', '1i', 0)
+            self._scale_shader.begin(self._normal_scale_att, [self._scale_tex])
+            self._scale_shader.set_uniform('u_texture', '1i', 0)
             gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, 4)
-            self.scale_shader.end()
+            self._scale_shader.end()
 
             # render drawing commands
             gl.glEnable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
             gl.glEnable(gl.GL_POINT_SPRITE)
 
             draw_tex_list = [
-                image._tex if image else None for image in self.bank_list
+                image._tex if image else None for image in self._bank_list
             ]
-            self.draw_att.update(self.cur_draw_count)
-            self.draw_shader.begin(self.draw_att, draw_tex_list)
-            self.draw_shader.set_uniform('u_framebuffer_size', '2f',
-                                         self.width, self.height)
+            self._draw_att.update(self._cur_draw_count)
+            self._draw_shader.begin(self._draw_att, draw_tex_list)
+            self._draw_shader.set_uniform('u_framebuffer_size', '2f',
+                                          self._width, self._height)
 
             for i, v in enumerate(palette):
                 name = 'u_palette[{}]'.format(i)
                 r, g, b = _int_to_rgb(v)
-                self.draw_shader.set_uniform(name, '3i', r, g, b)
+                self._draw_shader.set_uniform(name, '3i', r, g, b)
 
             for i, v in enumerate(draw_tex_list):
                 if v:
                     name = 'u_texture[{}]'.format(i)
-                    self.draw_shader.set_uniform(name, '1i', i)
+                    self._draw_shader.set_uniform(name, '1i', i)
 
                     name = 'u_texture_size[{}]'.format(i)
-                    self.draw_shader.set_uniform(name, '2f', v.width, v.height)
+                    self._draw_shader.set_uniform(name, '2f', v.width,
+                                                  v.height)
 
-            gl.glDrawArrays(gl.GL_POINTS, 0, self.cur_draw_count)
-            self.draw_shader.end()
-            self.scale_tex.copy_screen(0, 0, 0, 0, self.width, self.height)
+            gl.glDrawArrays(gl.GL_POINTS, 0, self._cur_draw_count)
+            self._draw_shader.end()
+            self._scale_tex.copy_screen(0, 0, 0, 0, self._width, self._height)
 
-            self.cur_draw_count = 0
+            self._cur_draw_count = 0
 
         # clear screen
         r, g, b = _int_to_rgb(clear_color)
@@ -152,39 +153,39 @@ class Renderer:
         gl.glDisable(gl.GL_POINT_SPRITE)
         gl.glViewport(int(left), int(bottom), int(width), int(height))
 
-        self.scale_shader.begin(self.inverse_scale_att, [self.scale_tex])
-        self.scale_shader.set_uniform('u_texture', '1i', 0)
+        self._scale_shader.begin(self._inverse_scale_att, [self._scale_tex])
+        self._scale_shader.set_uniform('u_texture', '1i', 0)
         gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, 4)
-        self.scale_shader.end()
+        self._scale_shader.end()
 
     def _next_draw_data(self):
-        data = self.draw_att.data[self.cur_draw_count]
+        data = self._draw_att.data[self._cur_draw_count]
         data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
              CLIP_PAL_COUNT] = self.clip_pal_data
 
-        if self.cur_draw_count < MAX_DRAW_COUNT - 1:
-            self.cur_draw_count += 1
+        if self._cur_draw_count < MAX_DRAW_COUNT - 1:
+            self._cur_draw_count += 1
 
         return data
 
     def _copy_draw_data(self):
-        data = self.draw_att.data[self.cur_draw_count]
-        data[:] = self.draw_att.data[self.cur_draw_count - 1]
+        data = self._draw_att.data[self._cur_draw_count]
+        data[:] = self._draw_att.data[self._cur_draw_count - 1]
 
-        if self.cur_draw_count < MAX_DRAW_COUNT - 1:
-            self.cur_draw_count += 1
+        if self._cur_draw_count < MAX_DRAW_COUNT - 1:
+            self._cur_draw_count += 1
 
         return data
 
     def bank(self, index, image):
-        self.bank_list[index] = image
+        self._bank_list[index] = image
 
     def clip(self, x1=None, y1=None, x2=None, y2=None):
         if x1 is None:
             self.clip_pal_data[0] = 0
             self.clip_pal_data[1] = 0
-            self.clip_pal_data[2] = self.width
-            self.clip_pal_data[3] = self.height
+            self.clip_pal_data[2] = self._width
+            self.clip_pal_data[3] = self._height
         else:
             self.clip_pal_data[0] = x1
             self.clip_pal_data[1] = y1
@@ -206,7 +207,7 @@ class Renderer:
             self.clip_pal_data[index] = base & mask | value
 
     def cls(self, col):
-        self.cur_draw_count = 0
+        self._cur_draw_count = 0
 
         data = self._next_draw_data()
 
@@ -215,13 +216,13 @@ class Renderer:
 
         data[POS_X1_INDEX] = 0
         data[POS_Y1_INDEX] = 0
-        data[POS_X2_INDEX] = self.width - 1
-        data[POS_Y2_INDEX] = self.height - 1
+        data[POS_X2_INDEX] = self._width - 1
+        data[POS_Y2_INDEX] = self._height - 1
 
         data[CLIP_X1_INDEX] = 0
         data[CLIP_Y1_INDEX] = 0
-        data[CLIP_X2_INDEX] = self.width - 1
-        data[CLIP_Y2_INDEX] = self.height - 1
+        data[CLIP_X2_INDEX] = self._width - 1
+        data[CLIP_Y2_INDEX] = self._height - 1
 
     def pix(self, x, y, col):
         data = self._next_draw_data()
