@@ -83,6 +83,9 @@ class GLAttribute:
 
 class GLTexture:
     def __init__(self, width, height, size, *, nearest=False):
+        if width & (width - 1) or height & (height - 1):
+            raise ValueError('texture size is not power of two')
+
         if size == 1:
             self.format = gl.GL_LUMINANCE
             shape = (height, width)

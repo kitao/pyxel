@@ -1,5 +1,6 @@
-import OpenGL.GL as gl
+import math
 import numpy as np
+import OpenGL.GL as gl
 from .glwrapper import GLShader, GLAttribute, GLTexture
 from .shaders import (DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER,
                       DRAWING_ATTRIBUTE_INFO, SCALING_VERTEX_SHADER,
@@ -45,7 +46,11 @@ CLIP_PAL_INDEX = CLIP_X1_INDEX
 CLIP_PAL_COUNT = 8
 
 
-def int_to_rgb(color):
+def _largest_power_of_two(n):
+    return 2 ** math.ceil(math.log(n, 2))
+
+
+def _int_to_rgb(color):
     return ((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff)
 
 
@@ -69,21 +74,27 @@ class Renderer:
 
         self.scale_shader = GLShader(SCALING_VERTEX_SHADER,
                                      SCALING_FRAGMENT_SHADER)
-        self.scale_tex = GLTexture(width, height, 3, nearest=True)
+
+        tex_width = _largest_power_of_two(width)
+        tex_height = _largest_power_of_two(height)
+        self.scale_tex = GLTexture(tex_width, tex_height, 3, nearest=True)
+
+        u = width / tex_width
+        v = height / tex_height
 
         self.normal_scale_att = GLAttribute(SCALING_ATTRIBUTE_INFO, 4)
         data = self.normal_scale_att.data
-        data[0, :] = [-1, 1, 0, 1]
+        data[0, :] = [-1, 1, 0, v]
         data[1, :] = [-1, -1, 0, 0]
-        data[2, :] = [1, 1, 1, 1]
-        data[3, :] = [1, -1, 1, 0]
+        data[2, :] = [1, 1, u, v]
+        data[3, :] = [1, -1, u, 0]
 
         self.inverse_scale_att = GLAttribute(SCALING_ATTRIBUTE_INFO, 4)
         data = self.inverse_scale_att.data
         data[0, :] = [-1, 1, 0, 0]
-        data[1, :] = [-1, -1, 0, 1]
-        data[2, :] = [1, 1, 1, 0]
-        data[3, :] = [1, -1, 1, 1]
+        data[1, :] = [-1, -1, 0, v]
+        data[2, :] = [1, 1, u, 0]
+        data[3, :] = [1, -1, u, v]
 
     def reset_drawing_command(self):
         self.cur_draw_count = 0
@@ -114,7 +125,7 @@ class Renderer:
 
             for i, v in enumerate(palette):
                 name = 'u_palette[{}]'.format(i)
-                r, g, b = int_to_rgb(v)
+                r, g, b = _int_to_rgb(v)
                 self.draw_shader.set_uniform(name, '3i', r, g, b)
 
             for i, v in enumerate(draw_tex_list):
@@ -132,7 +143,7 @@ class Renderer:
             self.cur_draw_count = 0
 
         # clear screen
-        r, g, b = int_to_rgb(clear_color)
+        r, g, b = _int_to_rgb(clear_color)
         gl.glClearColor(r / 255, g / 255, b / 255, 1)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
