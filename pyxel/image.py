@@ -21,7 +21,10 @@ class Image:
         self._tex.update()
         return self._data
 
-    def set(self, x, y, width, height, data):
+    def set(self, x, y, data):
+        width = len(data[0])
+        height = len(data)
+
         self._data[y:y + height, x:x + width] = [
             list(map(lambda x: int(x, 16), line)) for line in data
         ]
