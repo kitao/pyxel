@@ -15,7 +15,7 @@ class App(pyxel.App):
             '550f99f999f99f05', '550f00f000f00f05', '5509009050900905',
             '5550550555055055'
         ]
-        self.image.set(0, 0, 16, 16, image_data)
+        self.image.set(0, 0, image_data)
         self.bank(0, self.image)
 
         self.pal_test_is_enabled = False
