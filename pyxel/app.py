@@ -4,7 +4,7 @@ import glfw
 from .renderer import Renderer
 from .key import KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON
 
-CAPTION = 'Pyxel Window'
+CAPTION = 'Pyxel'
 SCALE = 4
 PALETTE = [
     0x000000, 0x1d2b53, 0x7e2553, 0x008751, 0xab5236, 0x5f574f, 0xc2c3c7,
@@ -104,16 +104,16 @@ class App:
         return self._height
 
     @property
-    def frame_count(self):
-        return self._frame_count
-
-    @property
     def mouse_x(self):
         return self._mouse_x
 
     @property
     def mouse_y(self):
         return self._mouse_y
+
+    @property
+    def frame_count(self):
+        return self._frame_count
 
     def btn(self, key):
         return self._key_state.get(key, 0) > 0
@@ -210,11 +210,11 @@ class App:
         # update frame
         for _ in range(update_count):
             update_start_time = time.time()
-
             self._check_special_input()
-            self.update()
-            self._frame_count += 1
 
+            self.update()
+
+            self._frame_count += 1
             self._measure_update_time(update_start_time)
 
     def _draw_frame(self):
@@ -232,13 +232,23 @@ class App:
 
         self._measure_draw_time(draw_start_time)
 
+    def _toggle_fullscreen(self):
+        if glfw.get_window_monitor(self._window):  # fullscreen to window
+            glfw.set_window_monitor(self._window, None, *self._window_info, 0)
+        else:  # window to fullscreen
+            info = [0] * 4
+            info[0], info[1] = glfw.get_window_pos(self._window)
+            info[2], info[3] = glfw.get_window_size(self._window)
+            self._window_info = info
+
+            monitor = glfw.get_primary_monitor()
+            size = glfw.get_video_mode(monitor)[0]
+            glfw.set_window_monitor(self._window, monitor, 0, 0, *size, 0)
+
     def _check_special_input(self):
         if self.btn(glfw.KEY_LEFT_ALT) or self.btn(glfw.KEY_RIGHT_ALT):
-            if self.btnp(glfw.KEY_ENTER):
-                monitor = glfw.get_primary_monitor()
-                (width, height), _, _ = glfw.get_video_mode(monitor)
-                glfw.set_window_monitor(self._window, monitor, 0, 0, width,
-                                        height, 0)
+            if self.btnp(glfw.KEY_F):
+                self._toggle_fullscreen()
 
             if self.btnp(glfw.KEY_P):
                 self._perf_monitor_is_enabled = (
