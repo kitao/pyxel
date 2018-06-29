@@ -18,8 +18,9 @@ BORDER_COLOR = 0x101018
 PERF_MEASURE_COUNT = 10
 
 
-class App:
+class InnerApp:
     def __init__(self,
+                 app,
                  width,
                  height,
                  *,
@@ -29,6 +30,7 @@ class App:
                  fps=FPS,
                  border_width=BORDER_WIDTH,
                  border_color=BORDER_COLOR):
+        self._app = app
         self._width = width
         self._height = height
         self._caption = caption
@@ -82,38 +84,6 @@ class App:
 
         # initialize renderer
         self._renderer = Renderer(width, height)
-        self.bank = self._renderer.bank
-        self.clip = self._renderer.clip
-        self.pal = self._renderer.pal
-        self.cls = self._renderer.cls
-        self.pix = self._renderer.pix
-        self.line = self._renderer.line
-        self.rect = self._renderer.rect
-        self.rectb = self._renderer.rectb
-        self.circ = self._renderer.circ
-        self.circb = self._renderer.circb
-        self.blt = self._renderer.blt
-        self.text = self._renderer.text
-
-    @property
-    def width(self):
-        return self._width
-
-    @property
-    def height(self):
-        return self._height
-
-    @property
-    def mouse_x(self):
-        return self._mouse_x
-
-    @property
-    def mouse_y(self):
-        return self._mouse_y
-
-    @property
-    def frame_count(self):
-        return self._frame_count
 
     def btn(self, key):
         return self._key_state.get(key, 0) > 0
@@ -143,12 +113,6 @@ class App:
             glfw.swap_buffers(self._window)
 
         glfw.terminate()
-
-    def update(self):
-        pass
-
-    def draw(self):
-        pass
 
     def _key_callback(self, window, key, scancode, action, mods):
         if action == glfw.PRESS:
@@ -212,7 +176,7 @@ class App:
             update_start_time = time.time()
             self._check_special_input()
 
-            self.update()
+            self._app.update()
 
             self._frame_count += 1
             self._measure_update_time(update_start_time)
@@ -220,7 +184,7 @@ class App:
     def _draw_frame(self):
         draw_start_time = time.time()
 
-        self.draw()
+        self._app.draw()
 
         self._draw_perf_monitor()
 
@@ -295,9 +259,61 @@ class App:
         update = '{:.2f}'.format(self._perf_update_time)
         draw = '{:.2f}'.format(self._perf_draw_time)
 
-        self.text(1, 0, fps, 1)
-        self.text(0, 0, fps, 9)
-        self.text(1, 6, update, 1)
-        self.text(0, 6, update, 9)
-        self.text(1, 12, draw, 1)
-        self.text(0, 12, draw, 9)
+        self._renderer.text(1, 0, fps, 1)
+        self._renderer.text(0, 0, fps, 9)
+        self._renderer.text(1, 6, update, 1)
+        self._renderer.text(0, 6, update, 9)
+        self._renderer.text(1, 12, draw, 1)
+        self._renderer.text(0, 12, draw, 9)
+
+
+class App:
+    def __init__(self, *args, **kwargs):
+        inner_app = InnerApp(self, *args, **kwargs)
+        renderer = inner_app._renderer
+
+        self.btn = inner_app.btn
+        self.btnp = inner_app.btnp
+        self.btnr = inner_app.btnr
+        self.run = inner_app.run
+
+        self.bank = renderer.bank
+        self.clip = renderer.clip
+        self.pal = renderer.pal
+        self.cls = renderer.cls
+        self.pix = renderer.pix
+        self.line = renderer.line
+        self.rect = renderer.rect
+        self.rectb = renderer.rectb
+        self.circ = renderer.circ
+        self.circb = renderer.circb
+        self.blt = renderer.blt
+        self.text = renderer.text
+
+        self.__inner_app = inner_app
+
+    @property
+    def width(self):
+        return self.__inner_app._width
+
+    @property
+    def height(self):
+        return self.__inner_app._height
+
+    @property
+    def mouse_x(self):
+        return self.__inner_app._mouse_x
+
+    @property
+    def mouse_y(self):
+        return self.__inner_app._mouse_y
+
+    @property
+    def frame_count(self):
+        return self.__inner_app._frame_count
+
+    def update(self):
+        pass
+
+    def draw(self):
+        pass
