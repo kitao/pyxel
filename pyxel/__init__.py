@@ -1,6 +1,3 @@
-from .image import Image  # noqa: F401
-from .key import *  # noqa: F401, F403
-
 DEFAULT_CAPTION = 'Pyxel'
 DEFAULT_SCALE = 4
 DEFAULT_PALETTE = [
@@ -23,7 +20,16 @@ def init(width,
          border_width=DEFAULT_BORDER_WIDTH,
          border_color=DEFAULT_BORDER_COLOR):
     import sys
+    from .image import Image
+    from . import key
     from .app import App
 
-    App(sys.modules[__name__], width, height, caption, scale, palette, fps,
+    module = sys.modules[__name__]
+    module.Image = Image
+
+    for k, v in key.__dict__.items():
+        if k.startswith('KEY_'):
+            module.__dict__[k] = v
+
+    App(module, width, height, caption, scale, palette, fps,
         border_width, border_color)
