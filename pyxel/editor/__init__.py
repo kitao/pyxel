@@ -1,17 +1,19 @@
 import pyxel
 
 
-class Editor(pyxel.App):
+class Editor:
     def __init__(self):
-        super().__init__(160, 120, caption='Pyxel')
+        pyxel.init(160, 120, caption='Pyxel')
+        pyxel.run(self.update, self.draw)
 
     def update(self):
-        self.text(9, 8, "Hello, Pyxel Editor!", 8)
-        self.text(8, 8, "Hello, Pyxel Editor!", 7)
-
-        if self.btnp(pyxel.KEY_Q):
+        if pyxel.btnp(pyxel.KEY_Q):
             exit()
+
+    def draw(self):
+        pyxel.text(9, 8, "Hello, Pyxel Editor!", 8)
+        pyxel.text(8, 8, "Hello, Pyxel Editor!", 7)
 
 
 def run():
-    Editor().run()
+    Editor()
