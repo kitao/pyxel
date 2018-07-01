@@ -2,6 +2,7 @@ import math
 import time
 import glfw
 from .renderer import Renderer
+from .mixer import Mixer
 from .key import KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON
 
 PERF_MEASURE_COUNT = 10
@@ -66,12 +67,15 @@ class App:
         # initialize renderer
         self._renderer = Renderer(width, height)
 
+        # initialize mixer
+        self._mixer = Mixer()
+
         # export module functions
         module.btn = self.btn
         module.btnp = self.btnp
         module.btnr = self.btnr
         module.run = self.run
-
+        module.quit = self.quit
         module.bank = self._renderer.bank
         module.clip = self._renderer.clip
         module.pal = self._renderer.pal
@@ -84,6 +88,7 @@ class App:
         module.circb = self._renderer.circb
         module.blt = self._renderer.blt
         module.text = self._renderer.text
+        module.play = self._mixer.play
 
     def btn(self, key):
         return self._key_state.get(key, 0) > 0
@@ -105,17 +110,21 @@ class App:
         self._module.frame_count = 1
         self._next_update_time = self._perf_fps_start_time = time.time()
 
-        while not glfw.window_should_close(self._window):
-            glfw.poll_events()
+        with self._mixer.output_stream:
+            while not glfw.window_should_close(self._window):
+                glfw.poll_events()
 
-            self._measure_fps()
-            self._update_viewport()
-            self._update_frame()
-            self._draw_frame()
+                self._measure_fps()
+                self._update_viewport()
+                self._update_frame()
+                self._draw_frame()
 
-            glfw.swap_buffers(self._window)
+                glfw.swap_buffers(self._window)
 
-        glfw.terminate()
+            glfw.terminate()
+
+    def quit(self):
+        glfw.set_window_should_close(self._window, True)
 
     def _key_callback(self, window, key, scancode, action, mods):
         if action == glfw.PRESS:
@@ -222,7 +231,7 @@ class App:
                     not self._perf_monitor_is_enabled)
 
         if self.btnp(glfw.KEY_ESCAPE):
-            glfw.set_window_should_close(self._window, True)
+            self.quit()
 
     def _measure_fps(self):
         cur_time = time.time()
