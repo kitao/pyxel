@@ -4,8 +4,55 @@ TRACK_COUNT = 4
 
 SAMPLE_RATE = 22050
 BLOCK_SIZE = 220
-
 NOTE_PITCH = [440 * pow(2, (note - 69) / 12) for note in range(128)]
+
+
+def osc_triangle(x):
+    return (abs((x % 1) * 2 - 1) * 2 - 1) * 0.7
+
+
+def osc_tilted_saw(x):
+    x = x % 1
+    return (((x < 0.875) and (x * 16 / 7) or ((1 - x) * 16)) - 1) * 0.7
+
+
+def osc_saw(x):
+    return (x % 1 - 0.5) * 0.9
+
+
+def osc_square(x):
+    return (x % 1 < 0.5 and 1 or -1) / 3
+
+
+def osc_pulse(x):
+    return (x % 1 < 0.3125 and 1 or -1) / 3
+
+
+def osc_organ(x):
+    x *= 4
+    return (abs((x % 2) - 1) - 0.5 + (abs((
+        (x * 0.5) % 2) - 1) - 0.5) / 2 - 0.1) * 0.7
+
+
+def osc_noise(x):
+    osc_noise.reg >>= 1
+    osc_noise.reg |= ((osc_noise.reg ^ (osc_noise.reg >> 1)) & 1) << 15
+    return osc_noise.reg & 1
+
+
+osc_noise.reg = 0x8000
+
+
+def osc_phaser(x):
+    x = x * 2
+    return abs((x % 2) - 1.5 +
+               (abs((x * 127 / 128) % 2 - 1) - 0.5) / 2) - (1 / 4)
+
+
+OSCILLATOR = [
+    osc_triangle, osc_tilted_saw, osc_saw, osc_square, osc_pulse, osc_organ,
+    osc_noise, osc_phaser
+]
 
 
 class Track:
@@ -31,8 +78,7 @@ class Track:
 
         pitch = NOTE_PITCH[self._pattern[self._cur_note]]
 
-        data = self._osc_triangle(
-            pitch / SAMPLE_RATE * self._time) * self._volume
+        data = OSCILLATOR[0](pitch / SAMPLE_RATE * self._time) * self._volume
 
         self._time += 1
 
@@ -49,23 +95,8 @@ class Track:
         self._cur_note = 0
         self._time = 0
 
-    def _osc_triangle(self, x):
-        return (abs((x % 1) * 2 - 1) * 2 - 1) * 0.7
 
-    def _osc_square(self, x):
-        return 0.333 if x % 1 < 0.5 else -0.333
-
-    def _osc_saw(self, x):
-        return (x % 1 - 0.5) * 0.9
-
-    def _osc_noise(self, x):
-        self._noise_seed >>= 1
-        self._noise_seed |= ((self._noise_seed ^
-                              (self._noise_seed >> 1)) & 1) << 15  # todo
-        return self._noise_seed & 1
-
-
-class Mixer:
+class Sequencer:
     def __init__(self):
         self._step = 0
 
