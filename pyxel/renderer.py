@@ -8,7 +8,7 @@ from .shaders import (DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER,
 from .font import (MIN_FONT_CODE, MAX_FONT_CODE, FONT_WIDTH, FONT_HEIGHT,
                    FONT_IMAGE_ROW_COUNT, create_font_image)
 
-BANK_COUNT = 8
+BANK_COUNT = 5
 MAX_DRAW_COUNT = 10000
 
 TYPE_PIX = 0
@@ -95,9 +95,6 @@ class Renderer:
         data[1, :] = [-1, -1, 0, v]
         data[2, :] = [1, 1, u, 0]
         data[3, :] = [1, -1, u, v]
-
-    def reset_drawing_command(self):
-        self._cur_draw_count = 0
 
     def render(self, left, bottom, width, height, palette, clear_color):
         if self._cur_draw_count > 0:
