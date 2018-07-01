@@ -28,7 +28,7 @@ class App:
         self.clip_test_is_enabled = pyxel.btn(pyxel.KEY_SPACE)
 
         if pyxel.btnp(pyxel.KEY_Q):
-            exit()
+            pyxel.quit()
 
     def draw(self):
         self.test_pal1()

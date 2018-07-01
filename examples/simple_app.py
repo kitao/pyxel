@@ -9,7 +9,7 @@ class App():
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
-            exit()
+            pyxel.quit()
 
     def draw(self):
         pyxel.cls(2)

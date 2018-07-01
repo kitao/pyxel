@@ -3,7 +3,7 @@ import pyxel
 
 def update():
     if pyxel.btnp(pyxel.KEY_Q):
-        exit()
+        pyxel.quit()
 
 
 def draw():

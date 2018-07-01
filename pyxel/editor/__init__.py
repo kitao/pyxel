@@ -8,7 +8,7 @@ class Editor:
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
-            exit()
+            pyxel.quit()
 
     def draw(self):
         pyxel.text(9, 8, "Hello, Pyxel Editor!", 8)
