@@ -39,7 +39,7 @@ def create_font_image():
         for j in range(FONT_WIDTH * FONT_HEIGHT):
             x = left + j % FONT_WIDTH
             y = top + j // FONT_WIDTH
-            data[y, x] = 1 if v & 0x800000 else 0
+            data[y, x] = (v & 0x800000) and 1 or 0
             v <<= 1
 
     return image

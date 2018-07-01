@@ -49,7 +49,7 @@ class GLAttribute:
         self._size = sum(att[2] for att in att_info)
         self._stride = self._size * 4
         self._count = count
-        self._usage = gl.GL_DYNAMIC_DRAW if dynamic else gl.GL_STATIC_DRAW
+        self._usage = dynamic and gl.GL_DYNAMIC_DRAW or gl.GL_STATIC_DRAW
         self._dtype = gl.GL_FLOAT
         self._data = np.zeros((count, self._size), np.float32)
         self._buf = gl.glGenBuffers(1)
@@ -60,7 +60,7 @@ class GLAttribute:
         return self._data
 
     def update(self, count=0):
-        self._count = self._data.shape[0] if count == 0 else count
+        self._count = (count == 0) and self._data.shape[0] or count
         self._should_update_data = True
 
     def _begin(self, program):
@@ -104,7 +104,7 @@ class GLTexture:
 
         self._width = width
         self._height = height
-        self._filter = gl.GL_NEAREST if nearest else gl.GL_LINEAR
+        self._filter = nearest and gl.GL_NEAREST or gl.GL_LINEAR
         self._data = np.zeros(shape, np.uint8)
         self._tex = gl.glGenTextures(1)
         self._should_update_data = True

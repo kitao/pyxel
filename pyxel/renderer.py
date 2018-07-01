@@ -112,9 +112,8 @@ class Renderer:
             gl.glEnable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
             gl.glEnable(gl.GL_POINT_SPRITE)
 
-            draw_tex_list = [
-                image._tex if image else None for image in self._bank_list
-            ]
+            draw_tex_list = [(image and image._tex or None)
+                             for image in self._bank_list]
             self._draw_att.update(self._cur_draw_count)
             self._draw_shader.begin(self._draw_att, draw_tex_list)
             self._draw_shader.set_uniform('u_framebuffer_size', '2f',
@@ -289,7 +288,7 @@ class Renderer:
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = TYPE_BLT
-        data[MODE_COL_INDEX] = colkey if colkey is not None else -1
+        data[MODE_COL_INDEX] = colkey or -1
         data[MODE_BANK_INDEX] = bank
 
         data[POS_X1_INDEX] = x
