@@ -21,11 +21,13 @@ def init(width,
          border_color=DEFAULT_BORDER_COLOR):
     import sys
     from .image import Image
+    from .sound import Sound
     from . import key
     from .app import App
 
     module = sys.modules[__name__]
     module.Image = Image
+    module.Sound = Sound
 
     for k, v in key.__dict__.items():
         if k.startswith('KEY_'):
