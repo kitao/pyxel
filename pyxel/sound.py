@@ -3,9 +3,9 @@ class Sound:
         self.speed = max(speed, 1)
         self.note = self._parse_note(data[0])
         self.length = len(self.note)
-        self.tone = self._parse_tone(data[1])
-        self.volume = self._parse_tone(data[2])
-        self.effect = self._parse_tone(data[3])
+        self.inst = self._parse_param(data[1])
+        self.volume = self._parse_param(data[2])
+        self.effect = self._parse_param(data[3])
 
     def _parse_note(self, data):
         note = []
@@ -45,8 +45,8 @@ class Sound:
 
         return note
 
-    def _parse_tone(self, data):
-        tone = []
+    def _parse_param(self, data):
+        param = []
         data = data.replace(' ', '').upper()
 
         while data:
@@ -54,15 +54,15 @@ class Sound:
             data = data[1:]
 
             if c >= '0' and c <= '7':
-                tone.append(int(c))
+                param.append(int(c))
             else:
                 raise ValueError('invalid sound data')
 
-        diff = len(tone) - self.length
+        diff = len(param) - self.length
 
         if diff < 0:
-            tone += [tone[-1]] * -diff
+            param += [param[-1]] * -diff
         elif diff > 0:
-            tone = tone[:self._length]
+            param = param[:self._length]
 
-        return tone
+        return param
