@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import OpenGL.GL as gl
-from .glwrapper import GLShader, GLAttribute, GLTexture
+from .gl_wrapper import GLShader, GLAttribute, GLTexture
 from .shaders import (DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER,
                       DRAWING_ATTRIBUTE_INFO, SCALING_VERTEX_SHADER,
                       SCALING_FRAGMENT_SHADER, SCALING_ATTRIBUTE_INFO)
@@ -46,14 +46,6 @@ CLIP_PAL_INDEX = CLIP_X1_INDEX
 CLIP_PAL_COUNT = 8
 
 
-def _largest_power_of_two(n):
-    return 2**math.ceil(math.log(n, 2))
-
-
-def _int_to_rgb(color):
-    return ((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff)
-
-
 class Renderer:
     def __init__(self, width, height):
         self._width = width
@@ -75,8 +67,8 @@ class Renderer:
         self._scale_shader = GLShader(SCALING_VERTEX_SHADER,
                                       SCALING_FRAGMENT_SHADER)
 
-        tex_width = _largest_power_of_two(width)
-        tex_height = _largest_power_of_two(height)
+        tex_width = self._largest_power_of_two(width)
+        tex_height = self._largest_power_of_two(height)
         self._scale_tex = GLTexture(tex_width, tex_height, 3, nearest=True)
 
         u = width / tex_width
@@ -121,7 +113,7 @@ class Renderer:
 
             for i, v in enumerate(palette):
                 name = 'u_palette[{}]'.format(i)
-                r, g, b = _int_to_rgb(v)
+                r, g, b = self._int_to_rgb(v)
                 self._draw_shader.set_uniform(name, '3i', r, g, b)
 
             for i, v in enumerate(draw_tex_list):
@@ -140,7 +132,7 @@ class Renderer:
             self._cur_draw_count = 0
 
         # clear screen
-        r, g, b = _int_to_rgb(clear_color)
+        r, g, b = self._int_to_rgb(clear_color)
         gl.glClearColor(r / 255, g / 255, b / 255, 1)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
@@ -153,6 +145,14 @@ class Renderer:
         self._scale_shader.set_uniform('u_texture', '1i', 0)
         gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, 4)
         self._scale_shader.end()
+
+    @staticmethod
+    def _largest_power_of_two(n):
+        return 2**math.ceil(math.log(n, 2))
+
+    @staticmethod
+    def _int_to_rgb(color):
+        return ((color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff)
 
     def _next_draw_data(self):
         data = self._draw_att.data[self._cur_draw_count]
