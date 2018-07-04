@@ -1,4 +1,4 @@
-from .glwrapper import GLTexture
+from .gl_wrapper import GLTexture
 
 
 class Image:
