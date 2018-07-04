@@ -2,7 +2,7 @@ import math
 import time
 import glfw
 from .renderer import Renderer
-from .sequencer import Sequencer
+from .audio_player import AudioPlayer
 from .key import KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON
 
 PERF_MEASURE_COUNT = 10
@@ -67,8 +67,8 @@ class App:
         # initialize renderer
         self._renderer = Renderer(width, height)
 
-        # initialize sequencer
-        self._sequencer = Sequencer()
+        # initialize audio player
+        self._audio_player = AudioPlayer()
 
         # export module functions
         module.btn = self.btn
@@ -88,7 +88,7 @@ class App:
         module.circb = self._renderer.circb
         module.blt = self._renderer.blt
         module.text = self._renderer.text
-        module.play = self._sequencer.play
+        module.play = self._audio_player.play
 
     def btn(self, key):
         return self._key_state.get(key, 0) > 0
@@ -110,7 +110,7 @@ class App:
         self._module.frame_count = 1
         self._next_update_time = self._perf_fps_start_time = time.time()
 
-        with self._sequencer.output_stream:
+        with self._audio_player.output_stream:
             while not glfw.window_should_close(self._window):
                 glfw.poll_events()
 
