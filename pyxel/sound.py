@@ -1,13 +1,34 @@
 NOTE_TABLE = {'c': 0, 'd': 2, 'e': 4, 'f': 5, 'g': 7, 'a': 9, 'b': 11}
-TONE_TABLE = {'t': 0, 's': 1, 'p': 2, 'n': 3}
-EFFECT_TABLE = {'-': 0, 's': 1, 'v': 2, 'f': 3}
+
+TONE_TRIANGLE = 0
+TONE_SQUARE = 1
+TONE_PULSE = 2
+TONE_NOISE = 3
+
+TONE_TABLE = {
+    't': TONE_TRIANGLE,
+    's': TONE_SQUARE,
+    'p': TONE_PULSE,
+    'n': TONE_NOISE,
+}
+
+EFFECT_NONE = 0
+EFFECT_SLIDE = 1
+EFFECT_VIBRATO = 2
+EFFECT_FADEOUT = 3
+
+EFFECT_TABLE = {
+    '-': EFFECT_NONE,
+    's': EFFECT_SLIDE,
+    'v': EFFECT_VIBRATO,
+    'f': EFFECT_FADEOUT,
+}
 
 
 class Sound:
     def __init__(self, speed, data):
         self.speed = max(speed, 1)
         self.note = self._parse_note(data[0])
-        self.length = len(self.note)
         self.tone = self._parse_tone(data[1])
         self.volume = self._parse_volume(data[2])
         self.effect = self._parse_effect(data[3])
@@ -33,7 +54,7 @@ class Sound:
                     c = data[0]
                     data = data[1:]
 
-                if c >= '0' and c <= '9':
+                if c >= '0' and c <= '4':
                     param += int(c) * 12
                 else:
                     raise ValueError('invalid sound note')
@@ -65,13 +86,11 @@ class Sound:
 
             param_list.append(param)
 
-        param_list = self._complement_param_list(param_list)
-        return param_list
+        return self._complement_param_list(param_list)
 
     def _parse_volume(self, data):
         param_list = []
-        last_param = 0
-        data = data.replace(' ', '')
+        data = data.replace(' ', '').lower()
 
         while data:
             c = data[0]
@@ -79,15 +98,12 @@ class Sound:
 
             if c >= '0' and c <= '7':
                 param = int(c)
-            elif c == '.':
-                param = last_param
             else:
                 raise ValueError('invalid sound data')
 
             param_list.append(param)
 
-        param_list = self._complement_param_list(param_list)
-        return param_list
+        return self._complement_param_list(param_list)
 
     def _parse_effect(self, data):
         param_list = []
@@ -104,11 +120,10 @@ class Sound:
 
             param_list.append(param)
 
-        param_list = self._complement_param_list(param_list)
-        return param_list
+        return self._complement_param_list(param_list)
 
     def _complement_param_list(self, param_list):
-        diff = len(param_list) - self.length
+        diff = len(param_list) - len(self.note)
 
         if diff < 0:
             param_list += [param_list[-1]] * -diff

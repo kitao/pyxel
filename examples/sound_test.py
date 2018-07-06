@@ -5,7 +5,7 @@ class App:
     def __init__(self):
         pyxel.init(128, 128)
 
-        self.sound = pyxel.Sound(16, ['a5.....d5e5f5g5', 't', '7', '-'])
+        self.sound = pyxel.Sound(16, ['a2.....d0e0f4g4', 't', '765437', '-'])
 
         pyxel.run(self.update, self.draw)
 
