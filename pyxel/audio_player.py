@@ -4,8 +4,6 @@ SAMPLE_RATE = 44100
 BLOCK_SIZE = 441
 TRACK_COUNT = 4
 
-NOTE_TO_PITCH = [440 * pow(2, (note - 33) / 12) for note in range(128)]
-
 
 class Track:
     def __init__(self):
@@ -44,7 +42,7 @@ class Track:
             note = self._note = volume > 0 and sound.note[offset] or None
 
             if note:
-                self._pitch = NOTE_TO_PITCH[note]
+                self._pitch = self._note_to_pitch(note)
                 self._tone = self._tone_list[sound.tone[offset]]
                 self._effect = sound.effect[offset]
 
@@ -59,6 +57,10 @@ class Track:
             self._is_playing = False
 
         return data
+
+    @staticmethod
+    def _note_to_pitch(note):
+        return 440 * pow(2, (note - 33) / 12)
 
     def _triangle(self, pitch, time, volume):
         x = (time * pitch / SAMPLE_RATE) % 1
