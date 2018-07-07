@@ -5,7 +5,7 @@ class App:
     def __init__(self):
         pyxel.init(128, 128)
 
-        self.sound = pyxel.Sound(16, ['a2.....d0e0f4g4', 't', '765437', '-'])
+        self.sound = pyxel.Sound(60, ['c2.......', 't', '7', 'n'])
 
         pyxel.run(self.update, self.draw)
 
@@ -27,6 +27,13 @@ class App:
 
     def draw(self):
         pyxel.cls(4)
+
+        for i in range(128):
+            x = (i * 2 / 128 + 0.25) % 1
+            y = (abs(x * 4 - 2) - 1) * 0.7 * 40
+            pyxel.pix(i, y + 64, 7)
+
+        pyxel.line(0, 64, 128, 64, 7)
 
 
 App()
