@@ -35,6 +35,7 @@ class Track:
 
     def play(self, sound, loop):
         self._is_playing = True
+        self._is_loop = loop
         self._sound = sound
 
         self._time = 0
@@ -102,7 +103,10 @@ class Track:
         self._time += 1
 
         if self._time >= self._total_note_time:
-            self.stop()
+            if self._is_loop:
+                self._time = 0
+            else:
+                self.stop()
 
     @staticmethod
     def _note_to_pitch(note):
@@ -129,7 +133,7 @@ class AudioPlayer:
     def output_stream(self):
         return self._output_stream
 
-    def play(self, track, sound, loop=False):
+    def play(self, track, sound, *, loop=False):
         self._track_list[track].play(sound, loop)
 
     def stop(self, track):
