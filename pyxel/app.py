@@ -225,7 +225,7 @@ class App:
 
     def _check_special_input(self):
         if self.btn(glfw.KEY_LEFT_ALT) or self.btn(glfw.KEY_RIGHT_ALT):
-            if self.btnp(glfw.KEY_F):
+            if self.btnp(glfw.KEY_ENTER):
                 self._toggle_fullscreen()
 
             if self.btnp(glfw.KEY_P):
