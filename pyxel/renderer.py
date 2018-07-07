@@ -1,7 +1,7 @@
 import math
 import numpy as np
 import OpenGL.GL as gl
-from .gl_wrapper import GLShader, GLAttribute, GLTexture
+from .glwrapper import GLShader, GLAttribute, GLTexture
 from .shaders import (DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER,
                       DRAWING_ATTRIBUTE_INFO, SCALING_VERTEX_SHADER,
                       SCALING_FRAGMENT_SHADER, SCALING_ATTRIBUTE_INFO)
