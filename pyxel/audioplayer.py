@@ -1,5 +1,12 @@
 import sounddevice as sd
 
+from .oscillator import Oscillator
+from .sound import (
+    EFFECT_SLIDE,
+    EFFECT_VIBRATO,
+    EFFECT_FADEOUT,
+)
+
 SAMPLE_RATE = 44100
 BLOCK_SIZE = 441
 TRACK_COUNT = 4
@@ -7,139 +14,101 @@ TRACK_COUNT = 4
 
 class Track:
     def __init__(self):
+        self._oscillator = Oscillator()
+
         self._is_playing = False
         self._sound = None
+
         self._time = 0
-        self._note = None
+        self._one_note_time = 0
+        self._total_note_time = 0
+
+        self._tone = None
+        self._note = 0
         self._pitch = 1
-        self._period = 0
-        self._tone = 0
         self._volume = 0
         self._effect = 0
 
-        self._cur_phase = 0
-        self._cur_period = 0
-        self._cur_tone = None
-        self._cur_volume = 0
-
-        self._noise_seed = 0x8000
-        self._noise_last = 0
-
-        self._tone_list = [
-            self._triangle, self._square, self._pulse, self._noise
-        ]
+        self._effect_time = 0
+        self._effect_pitch = 0
+        self._effect_volume = 0
 
     def play(self, sound, loop):
         self._is_playing = True
         self._sound = sound
+
         self._time = 0
         self._one_note_time = int(sound.speed * SAMPLE_RATE / 120)
         self._total_note_time = self._one_note_time * len(sound.note)
 
-    def next_data(self):
-        self.update()
-        return self.output()
+    def output(self):
+        self._update()
+        return self._oscillator.output()
 
-    def update(self):
+    def _update(self):
         if not self._is_playing:
             return
 
         sound = self._sound
 
+        # forward note
         if self._time % self._one_note_time == 0:
             offset = int(self._time / self._one_note_time)
-            volume = sound.volume[offset]
-            note = self._note = sound.note[offset]
+            self._note = sound.note[offset]
+            self._volume = sound.volume[offset] * 1023
 
-            if note >= 0:
+            if self._note >= 0 and self._volume > 0:
                 last_pitch = self._pitch
+                self._tone = sound.tone[offset]
+                self._pitch = self._note_to_pitch(self._note)
                 self._effect = sound.effect[offset]
-                self._pitch = self._note_to_pitch(note)
 
-                self._tone = self._tone_list[sound.tone[offset]]
-                self._period = SAMPLE_RATE // self._pitch
-                self._volume = volume * 1023
+                self._oscillator.set_tone(self._tone)
+                self._oscillator.set_period(SAMPLE_RATE // self._pitch)
+                self._oscillator.set_volume(self._volume)
 
-                if self._effect == 1:  # EFFECT_SLIDE
+                if self._effect == EFFECT_SLIDE:
+                    self._effect_time = self._time
                     self._effect_pitch = last_pitch
-                    self._effect_start_time = self._time
-                elif self._effect == 2:  # EFFECT_VIBRATO
-                    self._effect_pitch = self._note_to_pitch(note + 0.5) - self._pitch
-                    self._effect_start_time = self._time
-                elif self._effect == 3:  # EFFECT_FADEOUT
+                elif self._effect == EFFECT_VIBRATO:
+                    self._effect_time = self._time
+                    self._effect_pitch = self._note_to_pitch(self._note +
+                                                             0.5) - self._pitch
+                elif self._effect == EFFECT_FADEOUT:
+                    self._effect_time = self._time
                     self._effect_volume = self._volume
-                    self._effect_start_time = self._time
             else:
-                self._tone = None
-                self._period = 0
-                self._volume = 0
+                self._pitch = 1
+                self._oscillator.stop()
 
+        # play note
         if self._note >= 0:
-            pitch = self._pitch
-            volume = self._volume * 1023
-
-            if self._effect == 1:  # EFFECT_SLIDE
-                alpha = ((self._time - self._effect_start_time) /
-                         self._one_note_time)
-                pitch = self._pitch * alpha + self._effect_pitch * (1 - alpha)
-                self._period = SAMPLE_RATE // pitch
-            elif self._effect == 2:  # EFFECT_VIBRATO
-                alpha = self._triangle(SAMPLE_RATE // 8, self._time)
-                pitch = self._pitch + self._effect_pitch * alpha
-                self._period = SAMPLE_RATE // pitch
-            elif self._effect == 3:  # EFFECT_FADEOUT
-                self._volume = self._effect_volume * (1 - (
-                    (self._time - self._effect_start_time) /
-                    self._one_note_time))
+            if self._effect == EFFECT_SLIDE:
+                a = ((self._time - self._effect_time) / self._one_note_time)
+                pitch = self._pitch * a + self._effect_pitch * (1 - a)
+                self._oscillator.set_period(SAMPLE_RATE // pitch)
+            elif self._effect == EFFECT_VIBRATO:
+                pitch = self._pitch + self._lfo(
+                    self._time) * self._effect_pitch
+                self._oscillator.set_period(SAMPLE_RATE // pitch)
+            elif self._effect == EFFECT_FADEOUT:
+                self._oscillator.set_volume(self._effect_volume * (1 - (
+                    (self._time - self._effect_time) / self._one_note_time)))
 
         self._time += 1
 
         if self._time >= self._total_note_time:
             self._is_playing = False
-
-            self._tone = None
-            self._period = 0
-            self._volume = 0
-
-    def output(self):
-        if self._cur_phase == 0:
-            self._cur_period = self._period
-            self._cur_tone = self._tone
-            self._cur_volume = self._volume
-
-        if self._cur_tone:
-            data = self._cur_tone(self._cur_period,
-                                  self._cur_phase) * self._cur_volume
-            self._cur_phase = (self._cur_phase + 1) % self._cur_period
-        else:
-            data = 0
-
-        return data
+            self._oscillator.stop()
 
     @staticmethod
     def _note_to_pitch(note):
         return 440 * pow(2, (note - 33) / 12)
 
-    def _triangle(self, period, phase):
-        x = (phase / period + 0.25) % 1
+    @staticmethod
+    def _lfo(time):
+        x = (time * 8 / SAMPLE_RATE + 0.25) % 1
         return (abs(x * 4 - 2) - 1) * 0.7
-
-    def _square(self, period, phase):
-        x = (phase / period) % 1
-        return (x < 0.5 and 1 or -1) / 3
-
-    def _pulse(self, period, phase):
-        x = (phase / period) % 1
-        return (x < 0.25 and 1 or -1) / 3
-
-    def _noise(self, period, phase):
-        if phase % (period // 4) == 0:
-            self._noise_seed >>= 1
-            self._noise_seed |= ((self._noise_seed ^
-                                  (self._noise_seed >> 1)) & 1) << 15
-            self._noise_last = self._noise_seed & 1
-
-        return self._noise_last
 
 
 class AudioPlayer:
@@ -165,6 +134,6 @@ class AudioPlayer:
             data = 0
 
             for track in self._track_list:
-                data += track.next_data()
+                data += track.output()
 
             outdata[i] = data
