@@ -26,12 +26,12 @@ EFFECT_TABLE = {
 
 
 class Sound:
-    def __init__(self, speed, data):
-        self.speed = max(speed, 1)
+    def __init__(self, data, speed):
         self.note = self._parse_note(data[0])
         self.tone = self._parse_tone(data[1])
         self.volume = self._parse_volume(data[2])
         self.effect = self._parse_effect(data[3])
+        self.speed = max(speed, 1)
 
     def _parse_note(self, data):
         param_list = []
