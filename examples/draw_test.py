@@ -6,16 +6,24 @@ class App:
     def __init__(self):
         pyxel.init(200, 150, caption='Pyxel Draw Test')
 
-        self.image = pyxel.Image(16, 16)
-        image_data = [
-            '5550555550555555', '5509055509055555', '509f00009f055505',
-            '50ffffffff055090', '09ffffffff9050f0', '0f0fffff0ff05090',
-            '0ffff0fffff050f0', '0fff0f0fff9000f0', '09ffffffff9f9ff0',
-            '509fffffff9f9ff0', '550fffffffffff90', '550fffffffffff90',
-            '550f99f999f99f05', '550f00f000f00f05', '5509009050900905',
-            '5550550555055055'
-        ]
-        self.image.set(0, 0, image_data)
+        self.image = pyxel.Image([
+            '5550555550555555',
+            '5509055509055555',
+            '509f00009f055505',
+            '50ffffffff055090',
+            '09ffffffff9050f0',
+            '0f0fffff0ff05090',
+            '0ffff0fffff050f0',
+            '0fff0f0fff9000f0',
+            '09ffffffff9f9ff0',
+            '509fffffff9f9ff0',
+            '550fffffffffff90',
+            '550fffffffffff90',
+            '550f99f999f99f05',
+            '550f00f000f00f05',
+            '5509009050900905',
+            '5550550555055055',
+        ])
         pyxel.bank(0, self.image)
 
         self.pal_test_is_enabled = False
