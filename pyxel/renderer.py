@@ -190,31 +190,37 @@ class Renderer:
     def bank(self, index, image):
         self._bank_list[index] = image
 
-    def clip(self, x1=None, y1=None, x2=None, y2=None):
-        if x1 is None:
+    def clip(self, *args):
+        if len(args) == 0:
             self.clip_pal_data[0] = 0
             self.clip_pal_data[1] = 0
             self.clip_pal_data[2] = self._width
             self.clip_pal_data[3] = self._height
-        else:
+        elif len(args) == 4:
+            x1, y1, x2, y2 = args
             self.clip_pal_data[0] = x1
             self.clip_pal_data[1] = y1
             self.clip_pal_data[2] = x2
             self.clip_pal_data[3] = y2
+        else:
+            raise ValueError('invalid clip argument')
 
-    def pal(self, col1=None, col2=None):
-        if col1 is None:
+    def pal(self, *args):
+        if len(args) == 0:
             self.clip_pal_data[4] = 0x3210
             self.clip_pal_data[5] = 0x7654
             self.clip_pal_data[6] = 0xba98
             self.clip_pal_data[7] = 0xfedc
-        else:
+        elif len(args) == 2:
+            col1, col2 = args
             index = col1 // 4 + 4
             shift = (col1 % 4) * 4
             value = col2 << shift
             mask = 0xffff ^ (0xf << shift)
             base = int(self.clip_pal_data[index])
             self.clip_pal_data[index] = base & mask | value
+        else:
+            raise ValueError('invalid pal argument')
 
     def cls(self, col):
         self._cur_draw_count = 0
