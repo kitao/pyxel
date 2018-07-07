@@ -35,7 +35,7 @@ class Sound:
 
     def _parse_note(self, data):
         param_list = []
-        last_param = None
+        last_param = 33
         data = data.replace(' ', '').lower()
 
         while data:
@@ -73,6 +73,7 @@ class Sound:
 
     def _parse_tone(self, data):
         param_list = []
+        last_param = TONE_TRIANGLE
         data = data.replace(' ', '').lower()
 
         while data:
@@ -82,14 +83,19 @@ class Sound:
             param = TONE_TABLE.get(c, None)
 
             if param is None:
-                raise ValueError('invalid sound data')
+                if c == '.':
+                    param = last_param
+                else:
+                    raise ValueError('invalid sound data')
 
             param_list.append(param)
+            last_param = param
 
         return self._complement_param_list(param_list)
 
     def _parse_volume(self, data):
         param_list = []
+        last_param = 7
         data = data.replace(' ', '').lower()
 
         while data:
@@ -98,15 +104,19 @@ class Sound:
 
             if c >= '0' and c <= '7':
                 param = int(c)
+            elif c == '.':
+                param = last_param
             else:
                 raise ValueError('invalid sound data')
 
             param_list.append(param)
+            last_param = param
 
         return self._complement_param_list(param_list)
 
     def _parse_effect(self, data):
         param_list = []
+        last_param = EFFECT_NONE
         data = data.replace(' ', '').lower()
 
         while data:
@@ -116,9 +126,13 @@ class Sound:
             param = EFFECT_TABLE.get(c, None)
 
             if param is None:
-                raise ValueError('invalid sound data')
+                if c == '.':
+                    param = last_param
+                else:
+                    raise ValueError('invalid sound data')
 
             param_list.append(param)
+            last_param = param
 
         return self._complement_param_list(param_list)
 
