@@ -7,8 +7,8 @@ from .sound import (
     EFFECT_FADEOUT,
 )
 
-SAMPLE_RATE = 44100
-BLOCK_SIZE = 441
+SAMPLE_RATE = 22050
+BLOCK_SIZE = 2200
 TRACK_COUNT = 4
 
 
@@ -111,7 +111,7 @@ class Track:
     @staticmethod
     def _lfo(time):
         x = (time * 8 / SAMPLE_RATE + 0.25) % 1
-        return (abs(x * 4 - 2) - 1) * 0.7
+        return abs(x * 4 - 2) - 1
 
 
 class AudioPlayer:
