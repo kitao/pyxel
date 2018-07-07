@@ -2,7 +2,7 @@ import math
 import time
 import glfw
 from .renderer import Renderer
-from .audio_player import AudioPlayer
+from .audioplayer import AudioPlayer
 from .key import KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON
 
 PERF_MEASURE_COUNT = 10
