@@ -43,6 +43,7 @@ class Track:
 
     def stop(self):
         self._is_playing = False
+        self._pitch = 0
         self._oscillator.stop()
 
     def output(self):
@@ -73,7 +74,7 @@ class Track:
 
                 if self._effect == EFFECT_SLIDE:
                     self._effect_time = self._time
-                    self._effect_pitch = last_pitch
+                    self._effect_pitch = last_pitch or self._pitch
                 elif self._effect == EFFECT_VIBRATO:
                     self._effect_time = self._time
                     self._effect_pitch = self._note_to_pitch(self._note +
@@ -82,7 +83,6 @@ class Track:
                     self._effect_time = self._time
                     self._effect_volume = self._volume
             else:
-                self._pitch = 1
                 self._oscillator.stop()
 
         # play note
