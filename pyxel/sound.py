@@ -18,7 +18,7 @@ EFFECT_VIBRATO = 2
 EFFECT_FADEOUT = 3
 
 EFFECT_TABLE = {
-    '-': EFFECT_NONE,
+    'n': EFFECT_NONE,
     's': EFFECT_SLIDE,
     'v': EFFECT_VIBRATO,
     'f': EFFECT_FADEOUT,
@@ -62,7 +62,7 @@ class Sound:
             elif c == '.':
                 param = last_param
             elif c == 'r':
-                param = None
+                param = -1
             else:
                 raise ValueError('invalid sound note')
 
@@ -128,6 +128,6 @@ class Sound:
         if diff < 0:
             param_list += [param_list[-1]] * -diff
         elif diff > 0:
-            param_list = param_list[:self._length]
+            param_list = param_list[:len(self.note)]
 
         return param_list
