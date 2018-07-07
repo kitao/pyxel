@@ -5,7 +5,7 @@ class App:
     def __init__(self):
         pyxel.init(128, 128)
 
-        self.sound = pyxel.Sound(60, ['c2.......', 't', '7', 'n'])
+        self.sound = pyxel.Sound(60, ['c2.d2.', 't', '7', 'n'])
 
         pyxel.run(self.update, self.draw)
 
@@ -24,6 +24,12 @@ class App:
 
         if pyxel.btnp(pyxel.KEY_4):
             pyxel.play(3, self.sound)
+
+        if pyxel.btnp(pyxel.KEY_5):
+            pyxel.stop(0)
+            pyxel.stop(1)
+            pyxel.stop(2)
+            pyxel.stop(3)
 
     def draw(self):
         pyxel.cls(4)

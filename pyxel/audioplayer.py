@@ -25,7 +25,7 @@ class Track:
 
         self._tone = None
         self._note = 0
-        self._pitch = 1
+        self._pitch = 0
         self._volume = 0
         self._effect = 0
 
@@ -40,6 +40,10 @@ class Track:
         self._time = 0
         self._one_note_time = int(sound.speed * SAMPLE_RATE / 120)
         self._total_note_time = self._one_note_time * len(sound.note)
+
+    def stop(self):
+        self._is_playing = False
+        self._oscillator.stop()
 
     def output(self):
         self._update()
@@ -98,8 +102,7 @@ class Track:
         self._time += 1
 
         if self._time >= self._total_note_time:
-            self._is_playing = False
-            self._oscillator.stop()
+            self.stop()
 
     @staticmethod
     def _note_to_pitch(note):
@@ -129,11 +132,12 @@ class AudioPlayer:
     def play(self, track, sound, loop=False):
         self._track_list[track].play(sound, loop)
 
+    def stop(self, track):
+        self._track_list[track].stop()
+
     def _output_stream_callback(self, outdata, frames, time, status):
         for i in range(frames):
-            data = 0
-
+            output = 0
             for track in self._track_list:
-                data += track.output()
-
-            outdata[i] = data
+                output += track.output()
+            outdata[i] = output

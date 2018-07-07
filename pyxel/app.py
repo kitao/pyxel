@@ -90,6 +90,7 @@ class App:
         module.blt = self._renderer.blt
         module.text = self._renderer.text
         module.play = self._audio_player.play
+        module.stop = self._audio_player.stop
 
     def btn(self, key):
         return self._key_state.get(key, 0) > 0
