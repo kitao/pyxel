@@ -1,12 +1,26 @@
 import math
 import numpy as np
 import OpenGL.GL as gl
+
 from .glwrapper import GLShader, GLAttribute, GLTexture
-from .shaders import (DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER,
-                      DRAWING_ATTRIBUTE_INFO, SCALING_VERTEX_SHADER,
-                      SCALING_FRAGMENT_SHADER, SCALING_ATTRIBUTE_INFO)
-from .font import (MIN_FONT_CODE, MAX_FONT_CODE, FONT_WIDTH, FONT_HEIGHT,
-                   FONT_IMAGE_ROW_COUNT, create_font_image)
+
+from .shaders import (
+    DRAWING_VERTEX_SHADER,
+    DRAWING_FRAGMENT_SHADER,
+    DRAWING_ATTRIBUTE_INFO,
+    SCALING_VERTEX_SHADER,
+    SCALING_FRAGMENT_SHADER,
+    SCALING_ATTRIBUTE_INFO,
+)
+
+from .font import (
+    MIN_FONT_CODE,
+    MAX_FONT_CODE,
+    FONT_WIDTH,
+    FONT_HEIGHT,
+    FONT_IMAGE_ROW_COUNT,
+    create_font_image,
+)
 
 BANK_COUNT = 5
 MAX_DRAW_COUNT = 10000
