@@ -48,8 +48,8 @@ class Sound:
                 c = data[0]
                 data = data[1:]
 
-                if c == '#':
-                    param += 1
+                if c == '#' or c == '-':
+                    param += c == '#' and 1 or -1
 
                     c = data[0]
                     data = data[1:]
