@@ -86,7 +86,7 @@ class Sound:
                 if c == '.':
                     param = last_param
                 else:
-                    raise ValueError('invalid sound data')
+                    raise ValueError('invalid sound tone')
 
             param_list.append(param)
             last_param = param
@@ -107,7 +107,7 @@ class Sound:
             elif c == '.':
                 param = last_param
             else:
-                raise ValueError('invalid sound data')
+                raise ValueError('invalid sound volume')
 
             param_list.append(param)
             last_param = param
@@ -129,7 +129,7 @@ class Sound:
                 if c == '.':
                     param = last_param
                 else:
-                    raise ValueError('invalid sound data')
+                    raise ValueError('invalid sound effect')
 
             param_list.append(param)
             last_param = param
