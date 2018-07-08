@@ -1,12 +1,17 @@
+import os
 import math
 import time
 import glfw
+import PIL.Image
+from datetime import datetime
 
 from .renderer import Renderer
 from .audioplayer import AudioPlayer
 from .key import KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON
 
 PERF_MEASURE_COUNT = 10
+SCREENSHOT_COUNT = 300
+SCREENSHOT_SCALE = 4
 
 
 class App:
@@ -22,6 +27,7 @@ class App:
         self._key_state = {}
         self._update = None
         self._draw = None
+        self._screenshots = [None] * SCREENSHOT_COUNT
 
         self._perf_monitor_is_enabled = False
         self._perf_fps_count = 0
@@ -203,10 +209,11 @@ class App:
         self._draw_perf_monitor()
 
         hs = self._hidpi_scale
-        self._renderer.render(
+        ss = self._renderer.render(
             self._viewport_left * hs, self._viewport_bottom * hs,
             self._viewport_width * hs, self._viewport_height * hs,
             self._palette, self._border_color)
+        self._screenshots[self._module.frame_count % SCREENSHOT_COUNT] = ss
 
         self._measure_draw_time(draw_start_time)
 
@@ -228,12 +235,44 @@ class App:
             if self.btnp(glfw.KEY_ENTER):
                 self._toggle_fullscreen()
 
-            if self.btnp(glfw.KEY_P):
+            if self.btnp(glfw.KEY_0):
                 self._perf_monitor_is_enabled = (
                     not self._perf_monitor_is_enabled)
 
+            if self.btnp(glfw.KEY_1):
+                self._save_screenshot()
+
+            if self.btnp(glfw.KEY_3):
+                self._save_gif_animation()
+
         if self.btnp(glfw.KEY_ESCAPE):
             self.quit()
+
+    @staticmethod
+    def _get_desktop_path():
+        if os.name == 'nt':
+            path = os.path.join(
+                os.path.join(os.environ['USERPROFILE']), 'Desktop')
+        else:
+            path = os.path.join(
+                os.path.join(os.path.expanduser('~')), 'Desktop')
+
+        return path
+
+    def _save_screenshot(self):
+        index = self._module.frame_count % SCREENSHOT_COUNT
+        image = PIL.Image.frombuffer(
+            'RGB', (self._module.width, self._module.height),
+            self._screenshots[index], 'raw', 'RGB', 0, 1)
+        image = image.resize((self._module.width * SCREENSHOT_SCALE,
+                              self._module.height * SCREENSHOT_SCALE))
+        filename = os.path.join(
+            self._get_desktop_path(),
+            datetime.now().strftime('pyxel-%y%m%d-%H%M%S.png'))
+        image.save(filename)
+
+    def _save_gif_animation(self):
+        pass
 
     def _measure_fps(self):
         cur_time = time.time()
