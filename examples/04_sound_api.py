@@ -6,7 +6,7 @@ class App:
         pyxel.init(128, 128)
 
         self.sound = pyxel.Sound(
-            ['c2c2g2g2a2a2g2. f2f2e2e2d2d2c2.', 'p', '7', 'ffffffvf ffffffvf'],
+            ['c2c2g2g2a2a2g2.', 'p', '7', 'ffffffvf ffffffvf'],
             60)
 
         pyxel.run(self.update, self.draw)
@@ -19,7 +19,7 @@ class App:
             pyxel.play(0, self.sound, loop=True)
 
         if pyxel.btnp(pyxel.KEY_2):
-            pyxel.play(1, self.sound)
+            pyxel.play(1, [self.sound, self.sound], loop=True)
 
         if pyxel.btnp(pyxel.KEY_3):
             pyxel.play(2, self.sound)

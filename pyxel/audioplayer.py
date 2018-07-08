@@ -10,6 +10,7 @@ from .sound import (
 SAMPLE_RATE = 22050
 BLOCK_SIZE = 2200
 CHANNEL_COUNT = 4
+ONE_SPEED_TIME = SAMPLE_RATE // 120
 
 
 class Channel:
@@ -17,7 +18,9 @@ class Channel:
         self._oscillator = Oscillator()
 
         self._is_playing = False
-        self._sound = None
+        self._is_loop = False
+        self._sound_list = None
+        self._sound_index = 0
 
         self._time = 0
         self._one_note_time = 0
@@ -33,14 +36,13 @@ class Channel:
         self._effect_pitch = 0
         self._effect_volume = 0
 
-    def play(self, sound, loop):
+    def play(self, sound_list, loop):
         self._is_playing = True
         self._is_loop = loop
-        self._sound = sound
+        self._sound_list = sound_list
+        self._sound_index = 0
 
-        self._time = 0
-        self._one_note_time = int(sound.speed * SAMPLE_RATE / 120)
-        self._total_note_time = self._one_note_time * len(sound.note)
+        self._play_sound()
 
     def stop(self):
         self._is_playing = False
@@ -51,23 +53,29 @@ class Channel:
         self._update()
         return self._oscillator.output()
 
+    def _play_sound(self):
+        sound = self._sound_list[self._sound_index]
+
+        self._time = 0
+        self._one_note_time = sound.speed * ONE_SPEED_TIME
+        self._total_note_time = self._one_note_time * len(sound.note)
+
     def _update(self):
         if not self._is_playing:
             return
 
-        sound = self._sound
-
         # forward note
         if self._time % self._one_note_time == 0:
-            index = int(self._time / self._one_note_time)
-            self._note = sound.note[index]
-            self._volume = sound.volume[index] * 1023
+            sound = self._sound_list[self._sound_index]
+            pos = int(self._time / self._one_note_time)
+            self._note = sound.note[pos]
+            self._volume = sound.volume[pos] * 1023
 
             if self._note >= 0 and self._volume > 0:
                 last_pitch = self._pitch
-                self._tone = sound.tone[index]
+                self._tone = sound.tone[pos]
                 self._pitch = self._note_to_pitch(self._note)
-                self._effect = sound.effect[index]
+                self._effect = sound.effect[pos]
 
                 self._oscillator.set_tone(self._tone)
                 self._oscillator.set_period(SAMPLE_RATE // self._pitch)
@@ -102,9 +110,14 @@ class Channel:
 
         self._time += 1
 
-        if self._time >= self._total_note_time:
-            if self._is_loop:
-                self._time = 0
+        if self._time == self._total_note_time:
+            self._sound_index += 1
+
+            if self._sound_index < len(self._sound_list):
+                self._play_sound()
+            elif self._is_loop:
+                self._sound_index = 0
+                self._play_sound()
             else:
                 self.stop()
 
@@ -134,6 +147,8 @@ class AudioPlayer:
         return self._output_stream
 
     def play(self, ch, sound, *, loop=False):
+        if not isinstance(sound, list):
+            sound = [sound]
         self._channel_list[ch].play(sound, loop)
 
     def stop(self, ch):
