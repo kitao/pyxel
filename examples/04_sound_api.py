@@ -22,7 +22,7 @@ class App:
             pyxel.play(1, [self.sound, self.sound], loop=True)
 
         if pyxel.btnp(pyxel.KEY_3):
-            pyxel.play(2, self.sound)
+            pyxel.play(2, [self.sound, self.sound])
 
         if pyxel.btnp(pyxel.KEY_4):
             pyxel.play(3, self.sound)
