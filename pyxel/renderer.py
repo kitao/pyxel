@@ -142,8 +142,8 @@ class Renderer:
             gl.glDrawArrays(gl.GL_POINTS, 0, self._cur_draw_count)
             self._draw_shader.end()
             self._scale_tex.copy_screen(0, 0, 0, 0, self._width, self._height)
-            screenshot = gl.glReadPixels(0, 0, self._width, self._height,
-                                         gl.GL_RGB, gl.GL_UNSIGNED_BYTE)
+            capture_image = gl.glReadPixels(0, 0, self._width, self._height,
+                                            gl.GL_RGB, gl.GL_UNSIGNED_BYTE)
 
             self._cur_draw_count = 0
 
@@ -162,7 +162,7 @@ class Renderer:
         gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, 4)
         self._scale_shader.end()
 
-        return screenshot
+        return capture_image
 
     @staticmethod
     def _largest_power_of_two(n):

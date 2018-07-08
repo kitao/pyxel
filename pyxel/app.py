@@ -9,9 +9,9 @@ from .renderer import Renderer
 from .audioplayer import AudioPlayer
 from .key import KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON
 
+CAPTURE_COUNT = 900
+CAPTURE_SCALE = 4
 PERF_MEASURE_COUNT = 10
-SCREENSHOT_COUNT = 300
-SCREENSHOT_SCALE = 4
 
 
 class App:
@@ -27,7 +27,9 @@ class App:
         self._key_state = {}
         self._update = None
         self._draw = None
-        self._screenshots = [None] * SCREENSHOT_COUNT
+        self._capture_start = 0
+        self._capture_index = 0
+        self._capture_images = [None] * CAPTURE_COUNT
 
         self._perf_monitor_is_enabled = False
         self._perf_fps_count = 0
@@ -209,11 +211,12 @@ class App:
         self._draw_perf_monitor()
 
         hs = self._hidpi_scale
-        ss = self._renderer.render(
+        image = self._renderer.render(
             self._viewport_left * hs, self._viewport_bottom * hs,
             self._viewport_width * hs, self._viewport_height * hs,
             self._palette, self._border_color)
-        self._screenshots[self._module.frame_count % SCREENSHOT_COUNT] = ss
+        self._capture_images[self._capture_index % CAPTURE_COUNT] = image
+        self._capture_index += 1
 
         self._measure_draw_time(draw_start_time)
 
@@ -240,16 +243,58 @@ class App:
                     not self._perf_monitor_is_enabled)
 
             if self.btnp(glfw.KEY_1):
-                self._save_screenshot()
+                self._save_capture_image()
+
+            if self.btnp(glfw.KEY_2):
+                self._capture_start = self._capture_index - 1
 
             if self.btnp(glfw.KEY_3):
-                self._save_gif_animation()
+                self._save_capture_animation()
 
         if self.btnp(glfw.KEY_ESCAPE):
             self.quit()
 
+    def _save_capture_image(self):
+        index = (self._capture_index - 1) % CAPTURE_COUNT
+        image = self._get_capture_image(index)
+        image.save(self._get_filename() + '.png')
+
+    def _save_capture_animation(self):
+        image_count = min(self._capture_index - self._capture_start,
+                          CAPTURE_COUNT)
+
+        if image_count <= 0:
+            return
+
+        start_index = self._capture_index - image_count
+        images = []
+
+        for i in range(image_count):
+            index = (start_index + i) % CAPTURE_COUNT
+            images.append(self._get_capture_image(index))
+
+        images[0].save(
+            self._get_filename() + '.gif',
+            save_all=True,
+            append_images=images[1:],
+            duration=self._one_frame_time * 1000,
+            loop=0)
+
+    def _get_capture_image(self, index):
+        image = PIL.Image.frombuffer(
+            'RGB', (self._module.width, self._module.height),
+            self._capture_images[index], 'raw', 'RGB', 0, 1)
+
+        image = image.convert(
+            'P', dither=PIL.Image.NONE, palette=PIL.Image.ADAPTIVE)
+
+        image = image.resize((self._module.width * CAPTURE_SCALE,
+                              self._module.height * CAPTURE_SCALE))
+
+        return image
+
     @staticmethod
-    def _get_desktop_path():
+    def _get_filename():
         if os.name == 'nt':
             path = os.path.join(
                 os.path.join(os.environ['USERPROFILE']), 'Desktop')
@@ -257,22 +302,8 @@ class App:
             path = os.path.join(
                 os.path.join(os.path.expanduser('~')), 'Desktop')
 
-        return path
-
-    def _save_screenshot(self):
-        index = self._module.frame_count % SCREENSHOT_COUNT
-        image = PIL.Image.frombuffer(
-            'RGB', (self._module.width, self._module.height),
-            self._screenshots[index], 'raw', 'RGB', 0, 1)
-        image = image.resize((self._module.width * SCREENSHOT_SCALE,
-                              self._module.height * SCREENSHOT_SCALE))
-        filename = os.path.join(
-            self._get_desktop_path(),
-            datetime.now().strftime('pyxel-%y%m%d-%H%M%S.png'))
-        image.save(filename)
-
-    def _save_gif_animation(self):
-        pass
+        return os.path.join(path,
+                            datetime.now().strftime('pyxel-%y%m%d-%H%M%S'))
 
     def _measure_fps(self):
         cur_time = time.time()
