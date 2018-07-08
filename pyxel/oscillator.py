@@ -57,15 +57,15 @@ class Oscillator:
 
     def _triangle(self, period, phase):
         x = (phase / period + 0.25) % 1
-        return (abs(x * 4 - 2) - 1) * 0.7
+        return (abs(x * 4 - 2) - 1)
 
     def _square(self, period, phase):
         x = (phase / period) % 1
-        return (x < 0.5 and 1 or -1) / 3
+        return (x < 0.5 and 1 or -1) * 0.2
 
     def _pulse(self, period, phase):
         x = (phase / period) % 1
-        return (x < 0.25 and 1 or -1) / 3
+        return (x < 0.25 and 1 or -1) * 0.2
 
     def _noise(self, period, phase):
         if phase % (period // 4) == 0:
@@ -74,4 +74,4 @@ class Oscillator:
                                   (self._noise_seed >> 1)) & 1) << 15
             self._noise_last = self._noise_seed & 1
 
-        return self._noise_last
+        return self._noise_last * 0.5
