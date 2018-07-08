@@ -9,10 +9,10 @@ from .sound import (
 
 SAMPLE_RATE = 22050
 BLOCK_SIZE = 2200
-TRACK_COUNT = 4
+CHANNEL_COUNT = 4
 
 
-class Track:
+class Channel:
     def __init__(self):
         self._oscillator = Oscillator()
 
@@ -59,15 +59,15 @@ class Track:
 
         # forward note
         if self._time % self._one_note_time == 0:
-            offset = int(self._time / self._one_note_time)
-            self._note = sound.note[offset]
-            self._volume = sound.volume[offset] * 1023
+            index = int(self._time / self._one_note_time)
+            self._note = sound.note[index]
+            self._volume = sound.volume[index] * 1023
 
             if self._note >= 0 and self._volume > 0:
                 last_pitch = self._pitch
-                self._tone = sound.tone[offset]
+                self._tone = sound.tone[index]
                 self._pitch = self._note_to_pitch(self._note)
-                self._effect = sound.effect[offset]
+                self._effect = sound.effect[index]
 
                 self._oscillator.set_tone(self._tone)
                 self._oscillator.set_period(SAMPLE_RATE // self._pitch)
@@ -127,21 +127,21 @@ class AudioPlayer:
             dtype='int16',
             callback=self._output_stream_callback)
 
-        self._track_list = [Track() for _ in range(TRACK_COUNT)]
+        self._channel_list = [Channel() for _ in range(CHANNEL_COUNT)]
 
     @property
     def output_stream(self):
         return self._output_stream
 
-    def play(self, track, sound, *, loop=False):
-        self._track_list[track].play(sound, loop)
+    def play(self, ch, sound, *, loop=False):
+        self._channel_list[ch].play(sound, loop)
 
-    def stop(self, track):
-        self._track_list[track].stop()
+    def stop(self, ch):
+        self._channel_list[ch].stop()
 
     def _output_stream_callback(self, outdata, frames, time, status):
         for i in range(frames):
             output = 0
-            for track in self._track_list:
-                output += track.output()
+            for channel in self._channel_list:
+                output += channel.output()
             outdata[i] = output
