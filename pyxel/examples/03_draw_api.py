@@ -6,8 +6,7 @@ class App:
     def __init__(self):
         pyxel.init(200, 150, caption='Pyxel Draw Test')
 
-        self.image = pyxel.Image(128, 128)
-        self.image.set(0, 0, [
+        self.image = pyxel.Image.fromstring([
             '5550555550555555',
             '5509055509055555',
             '509f00009f055505',

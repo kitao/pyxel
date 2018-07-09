@@ -3,11 +3,10 @@ import pyxel
 
 class App:
     def __init__(self):
-        pyxel.init(128, 128)
+        pyxel.init(200, 150)
 
-        self.sound = pyxel.Sound(
-            ['c2c2g2g2a2a2g2.', 'p', '7', 'ffffffvf ffffffvf'],
-            60)
+        self.sound = pyxel.Sound.fromstring(
+            ['c2c2g2g2a2a2g2.', 'p', '7', 'ffffffvf ffffffvf'], 60)
 
         pyxel.run(self.update, self.draw)
 
