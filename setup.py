@@ -1,11 +1,12 @@
 import setuptools
+from pyxel import VERSION
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name='pyxel',
-    version='0.4.0',
+    version=VERSION,
     description='A fantasy retro gaming console in Python',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -45,7 +46,7 @@ setuptools.setup(
     entry_points={
         'console_scripts': [
             'pyxel=pyxel.editor:run',
-            'pyxel_examples=pyxel.examples:copy',
+            'install_pyxel_examples=pyxel.examples:install',
         ],
     },
 )

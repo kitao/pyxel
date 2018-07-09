@@ -3,11 +3,11 @@ import glob
 import shutil
 
 
-def copy():
+def install():
     src_dir = os.path.dirname(__file__)
     dest_dir = os.path.join(os.getcwd(), 'pyxel_examples')
 
-    print('copy Pyxel examples to {} ...'.format(dest_dir))
+    print('Install Pyxel examples to {} ...'.format(dest_dir))
 
     shutil.rmtree(dest_dir, ignore_errors=True)
     os.makedirs(os.path.join(dest_dir, 'assets'))
@@ -23,3 +23,7 @@ def copy():
 
             print('    {}'.format(relpath))
             shutil.copyfile(src, dest)
+
+
+if __name__ == '__main__':
+    install()
