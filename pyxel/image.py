@@ -6,6 +6,20 @@ class Image:
         self._tex = GLTexture(width, height, 1, nearest=True)
         self._data = self._tex.data
 
+    @staticmethod
+    def fromstring(data):
+        width = len(data[0])
+        height = len(data)
+
+        image = Image(width, height)
+        image.set(0, 0, data)
+
+        return image
+
+    @staticmethod
+    def fromfile(filename):
+        pass
+
     @property
     def width(self):
         return self._tex.width
@@ -26,11 +40,3 @@ class Image:
         self._data[y:height + y, x:width + x] = [
             list(map(lambda x: int(x, 16), line)) for line in data
         ]
-
-    def save(self):
-        # todo
-        pass
-
-    def load(self):
-        self._tex.update()
-        # todo
