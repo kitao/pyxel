@@ -23,10 +23,29 @@ setuptools.setup(
         'Topic :: Multimedia :: Graphics',
         'Topic :: Multimedia :: Sound/Audio',
     ),
-    packages=['pyxel', 'pyxel.editor'],
-    install_requires=['numpy', 'glfw', 'PyOpenGL', 'sounddevice', 'Pillow'],
+    packages=[
+        'pyxel',
+        'pyxel.editor',
+        'pyxel.examples',
+    ],
+    package_data={
+        '': [
+            '*.png',
+            '*.gif',
+        ],
+    },
+    install_requires=[
+        'numpy',
+        'glfw',
+        'PyOpenGL',
+        'sounddevice',
+        'Pillow',
+    ],
     python_requires='>=3',
     entry_points={
-        'console_scripts': ['pyxel=pyxel.editor:run'],
+        'console_scripts': [
+            'pyxel=pyxel.editor:run',
+            'pyxel_examples=pyxel.examples:copy',
+        ],
     },
 )
