@@ -17,3 +17,7 @@ class Editor:
 
 def run():
     Editor()
+
+
+if __name__ == '__main__':
+    run()
