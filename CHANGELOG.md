@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.5.0
+- Added the version number constant
+- Renamed the examples copy script to install_pyxel_examples
+- Removed unnecessary scripts
+
 ## 0.4.0
 - Changed the key assigns of the special inputs
 - Added the screen capture functions (still image and video)
