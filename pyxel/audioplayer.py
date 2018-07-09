@@ -10,7 +10,8 @@ from .sound import (
 SAMPLE_RATE = 22050
 BLOCK_SIZE = 2200
 CHANNEL_COUNT = 4
-ONE_SPEED_TIME = SAMPLE_RATE // 120
+ONE_SPEED = SAMPLE_RATE // 120
+ONE_VOLUME = 0x7fff // (CHANNEL_COUNT * 7)
 
 
 class Channel:
@@ -57,7 +58,7 @@ class Channel:
         sound = self._sound_list[self._sound_index]
 
         self._time = 0
-        self._one_note_time = sound.speed * ONE_SPEED_TIME
+        self._one_note_time = sound.speed * ONE_SPEED
         self._total_note_time = self._one_note_time * len(sound.note)
 
     def _update(self):
@@ -69,7 +70,7 @@ class Channel:
             sound = self._sound_list[self._sound_index]
             pos = int(self._time / self._one_note_time)
             self._note = sound.note[pos]
-            self._volume = sound.volume[pos] * 1023
+            self._volume = sound.volume[pos] * ONE_VOLUME
 
             if self._note >= 0 and self._volume > 0:
                 last_pitch = self._pitch
