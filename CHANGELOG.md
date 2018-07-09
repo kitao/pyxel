@@ -6,7 +6,6 @@
 - Included the examples in the package and added the copy script
 - Added the fromstring method to the Image class
 - Added the fromstring method to the Sound class
-- Refined the example #1-4
 
 ## 0.3.0
 - Added the '-'(flat) syntax to the Sound class
