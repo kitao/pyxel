@@ -34,12 +34,12 @@ class Sound:
         self.speed = 1
 
     @staticmethod
-    def fromstring(data, speed):
+    def fromstring(note, tone, volume, effect, speed):
         sound = Sound()
-        sound.note = sound._parse_note(data[0])
-        sound.tone = sound._parse_tone(data[1])
-        sound.volume = sound._parse_volume(data[2])
-        sound.effect = sound._parse_effect(data[3])
+        sound.note = sound._parse_note(note)
+        sound.tone = sound._parse_tone(tone)
+        sound.volume = sound._parse_volume(volume)
+        sound.effect = sound._parse_effect(effect)
         sound.speed = speed
 
         return sound
