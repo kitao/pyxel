@@ -35,5 +35,7 @@ def init(width,
         if k.startswith('KEY_'):
             module.__dict__[k] = v
 
-    App(module, width, height, caption, scale, palette, fps,
-        border_width, border_color)
+    Image.set_palette(palette)
+
+    App(module, width, height, caption, scale, palette, fps, border_width,
+        border_color)
