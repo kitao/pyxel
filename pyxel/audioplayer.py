@@ -1,11 +1,6 @@
 import sounddevice as sd
-
 from .oscillator import Oscillator
-from .sound import (
-    EFFECT_SLIDE,
-    EFFECT_VIBRATO,
-    EFFECT_FADEOUT,
-)
+from .sound import EFFECT_SLIDE, EFFECT_VIBRATO, EFFECT_FADEOUT
 
 SAMPLE_RATE = 22050
 BLOCK_SIZE = 2200

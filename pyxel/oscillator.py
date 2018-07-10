@@ -1,9 +1,4 @@
-from .sound import (
-    TONE_TRIANGLE,
-    TONE_SQUARE,
-    TONE_PULSE,
-    TONE_NOISE,
-)
+from .sound import TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE
 
 
 class Oscillator:
