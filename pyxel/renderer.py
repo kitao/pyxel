@@ -1,9 +1,7 @@
 import math
 import numpy as np
 import OpenGL.GL as gl
-
 from .glwrapper import GLShader, GLAttribute, GLTexture
-
 from .shaders import (
     DRAWING_VERTEX_SHADER,
     DRAWING_FRAGMENT_SHADER,
@@ -12,7 +10,6 @@ from .shaders import (
     SCALING_FRAGMENT_SHADER,
     SCALING_ATTRIBUTE_INFO,
 )
-
 from .font import (
     MIN_FONT_CODE,
     MAX_FONT_CODE,
@@ -80,27 +77,21 @@ class Renderer:
 
         self._scale_shader = GLShader(SCALING_VERTEX_SHADER,
                                       SCALING_FRAGMENT_SHADER)
-
-        tex_width = self._largest_power_of_two(width)
-        tex_height = self._largest_power_of_two(height)
-        self._scale_tex = GLTexture(tex_width, tex_height, 3, nearest=True)
-
-        u = width / tex_width
-        v = height / tex_height
+        self._scale_tex = GLTexture(width, height, 3, nearest=True)
 
         self._normal_scale_att = GLAttribute(SCALING_ATTRIBUTE_INFO, 4)
         data = self._normal_scale_att.data
-        data[0, :] = [-1, 1, 0, v]
+        data[0, :] = [-1, 1, 0, 1]
         data[1, :] = [-1, -1, 0, 0]
-        data[2, :] = [1, 1, u, v]
-        data[3, :] = [1, -1, u, 0]
+        data[2, :] = [1, 1, 1, 1]
+        data[3, :] = [1, -1, 1, 0]
 
         self._inverse_scale_att = GLAttribute(SCALING_ATTRIBUTE_INFO, 4)
         data = self._inverse_scale_att.data
         data[0, :] = [-1, 1, 0, 0]
-        data[1, :] = [-1, -1, 0, v]
-        data[2, :] = [1, 1, u, 0]
-        data[3, :] = [1, -1, u, v]
+        data[1, :] = [-1, -1, 0, 1]
+        data[2, :] = [1, 1, 1, 0]
+        data[3, :] = [1, -1, 1, 1]
 
     def render(self, left, bottom, width, height, palette, clear_color):
         if self._cur_draw_count > 0:
