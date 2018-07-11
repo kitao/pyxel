@@ -1,4 +1,5 @@
 import os
+import inspect
 import PIL.Image
 from .glwrapper import GLTexture
 import pyxel
@@ -45,7 +46,7 @@ class Image:
         palette_image = PIL.Image.new('P', (1, 1), 0)
         palette_image.putpalette(palette)
 
-        dirname = os.path.dirname(__file__)
+        dirname = os.path.dirname(inspect.stack()[-1].filename)
         filename = os.path.join(dirname, filename)
 
         pil_image = PIL.Image.open(filename).convert('RGB')
