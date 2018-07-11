@@ -30,7 +30,6 @@ from .constants import (
     FONT_WIDTH,
     FONT_HEIGHT,
     FONT_IMAGE_ROW_COUNT,
-    FONT_IMAGE_DATA,
 )
 
 MODE_TYPE_INDEX = DRAWING_ATTRIBUTE_INFO[0][1]
@@ -187,8 +186,8 @@ class Renderer:
 
         return data
 
-    def image(self, index):
-        return self._image_list[index]
+    def image(self, img):
+        return self._image_list[img]
 
     def clip(self, *args):
         if len(args) == 0:
@@ -304,12 +303,12 @@ class Renderer:
 
         data[SIZE_W_INDEX] = r
 
-    def blt(self, x, y, image, sx, sy, w, h, colkey=None):
+    def blt(self, x, y, img, sx, sy, w, h, colkey=None):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_BLT
         data[MODE_COL_INDEX] = colkey or -1
-        data[MODE_IMAGE_INDEX] = image
+        data[MODE_IMAGE_INDEX] = img
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
