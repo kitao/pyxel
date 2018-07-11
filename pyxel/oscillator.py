@@ -1,4 +1,9 @@
-from .sound import TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE
+from .constants import (
+    SOUND_TONE_TRIANGLE,
+    SOUND_TONE_SQUARE,
+    SOUND_TONE_PULSE,
+    SOUND_TONE_NOISE,
+)
 
 
 class Oscillator:
@@ -16,10 +21,10 @@ class Oscillator:
         self._noise_last = 0
 
         self._tone_list = {
-            TONE_TRIANGLE: self._triangle,
-            TONE_SQUARE: self._square,
-            TONE_PULSE: self._pulse,
-            TONE_NOISE: self._noise,
+            SOUND_TONE_TRIANGLE: self._triangle,
+            SOUND_TONE_SQUARE: self._square,
+            SOUND_TONE_PULSE: self._pulse,
+            SOUND_TONE_NOISE: self._noise,
         }
 
     def set_tone(self, tone):
