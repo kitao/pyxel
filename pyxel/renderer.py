@@ -2,6 +2,7 @@ import math
 import numpy as np
 import OpenGL.GL as gl
 from .glwrapper import GLShader, GLAttribute, GLTexture
+from .image import Image
 from .shaders import (
     DRAWING_VERTEX_SHADER,
     DRAWING_FRAGMENT_SHADER,
@@ -10,30 +11,31 @@ from .shaders import (
     SCALING_FRAGMENT_SHADER,
     SCALING_ATTRIBUTE_INFO,
 )
-from .font import (
-    MIN_FONT_CODE,
-    MAX_FONT_CODE,
+from .font import create_font_image
+from .constants import (
+    RENDERER_IMAGE_COUNT,
+    RENDERER_IMAGE_WIDTH,
+    RENDERER_IMAGE_HEIGHT,
+    RENDERER_MAX_DRAW_COUNT,
+    DRAW_TYPE_PIX,
+    DRAW_TYPE_LINE,
+    DRAW_TYPE_RECT,
+    DRAW_TYPE_RECTB,
+    DRAW_TYPE_CIRC,
+    DRAW_TYPE_CIRCB,
+    DRAW_TYPE_BLT,
+    DRAW_TYPE_TEXT,
+    FONT_MIN_CODE,
+    FONT_MAX_CODE,
     FONT_WIDTH,
     FONT_HEIGHT,
     FONT_IMAGE_ROW_COUNT,
-    create_font_image,
+    FONT_IMAGE_DATA,
 )
-
-BANK_COUNT = 5
-MAX_DRAW_COUNT = 10000
-
-TYPE_PIX = 0
-TYPE_LINE = 1
-TYPE_RECT = 2
-TYPE_RECTB = 3
-TYPE_CIRC = 4
-TYPE_CIRCB = 5
-TYPE_BLT = 6
-TYPE_TEXT = 7
 
 MODE_TYPE_INDEX = DRAWING_ATTRIBUTE_INFO[0][1]
 MODE_COL_INDEX = MODE_TYPE_INDEX + 1
-MODE_BANK_INDEX = MODE_TYPE_INDEX + 2
+MODE_IMAGE_INDEX = MODE_TYPE_INDEX + 2
 
 POS_X1_INDEX = DRAWING_ATTRIBUTE_INFO[1][1]
 POS_Y1_INDEX = POS_X1_INDEX + 1
@@ -63,8 +65,11 @@ class Renderer:
         self._height = height
         self._cur_draw_count = 0
 
-        self._bank_list = [None] * BANK_COUNT
-        self._bank_list[-1] = create_font_image()
+        self._image_list = [
+            Image(RENDERER_IMAGE_WIDTH, RENDERER_IMAGE_HEIGHT)
+            for _ in range(RENDERER_IMAGE_COUNT - 1)
+        ]
+        self._image_list.append(create_font_image())
 
         self.clip_pal_data = np.ndarray(8, np.float32)
         self.clip()
@@ -73,7 +78,7 @@ class Renderer:
         self._draw_shader = GLShader(DRAWING_VERTEX_SHADER,
                                      DRAWING_FRAGMENT_SHADER)
         self._draw_att = GLAttribute(
-            DRAWING_ATTRIBUTE_INFO, MAX_DRAW_COUNT, dynamic=True)
+            DRAWING_ATTRIBUTE_INFO, RENDERER_MAX_DRAW_COUNT, dynamic=True)
 
         self._scale_shader = GLShader(SCALING_VERTEX_SHADER,
                                       SCALING_FRAGMENT_SHADER)
@@ -110,7 +115,7 @@ class Renderer:
             gl.glEnable(gl.GL_POINT_SPRITE)
 
             draw_tex_list = [(image and image._tex or None)
-                             for image in self._bank_list]
+                             for image in self._image_list]
             self._draw_att.update(self._cur_draw_count)
             self._draw_shader.begin(self._draw_att, draw_tex_list)
             self._draw_shader.set_uniform('u_framebuffer_size', '2f',
@@ -168,7 +173,7 @@ class Renderer:
         data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
              CLIP_PAL_COUNT] = self.clip_pal_data
 
-        if self._cur_draw_count < MAX_DRAW_COUNT - 1:
+        if self._cur_draw_count < RENDERER_MAX_DRAW_COUNT - 1:
             self._cur_draw_count += 1
 
         return data
@@ -177,13 +182,13 @@ class Renderer:
         data = self._draw_att.data[self._cur_draw_count]
         data[:] = self._draw_att.data[self._cur_draw_count - 1]
 
-        if self._cur_draw_count < MAX_DRAW_COUNT - 1:
+        if self._cur_draw_count < RENDERER_MAX_DRAW_COUNT - 1:
             self._cur_draw_count += 1
 
         return data
 
-    def bank(self, index, image):
-        self._bank_list[index] = image
+    def image(self, index):
+        return self._image_list[index]
 
     def clip(self, *args):
         if len(args) == 0:
@@ -222,7 +227,7 @@ class Renderer:
 
         data = self._next_draw_data()
 
-        data[MODE_TYPE_INDEX] = TYPE_RECT
+        data[MODE_TYPE_INDEX] = DRAW_TYPE_RECT
         data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = 0
@@ -238,7 +243,7 @@ class Renderer:
     def pix(self, x, y, col):
         data = self._next_draw_data()
 
-        data[MODE_TYPE_INDEX] = TYPE_PIX
+        data[MODE_TYPE_INDEX] = DRAW_TYPE_PIX
         data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x
@@ -247,7 +252,7 @@ class Renderer:
     def line(self, x1, y1, x2, y2, col):
         data = self._next_draw_data()
 
-        data[MODE_TYPE_INDEX] = TYPE_LINE
+        data[MODE_TYPE_INDEX] = DRAW_TYPE_LINE
         data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x1
@@ -258,7 +263,7 @@ class Renderer:
     def rect(self, x1, y1, x2, y2, col):
         data = self._next_draw_data()
 
-        data[MODE_TYPE_INDEX] = TYPE_RECT
+        data[MODE_TYPE_INDEX] = DRAW_TYPE_RECT
         data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x1
@@ -269,7 +274,7 @@ class Renderer:
     def rectb(self, x1, y1, x2, y2, col):
         data = self._next_draw_data()
 
-        data[MODE_TYPE_INDEX] = TYPE_RECTB
+        data[MODE_TYPE_INDEX] = DRAW_TYPE_RECTB
         data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x1
@@ -280,7 +285,7 @@ class Renderer:
     def circ(self, x, y, r, col):
         data = self._next_draw_data()
 
-        data[MODE_TYPE_INDEX] = TYPE_CIRC
+        data[MODE_TYPE_INDEX] = DRAW_TYPE_CIRC
         data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x
@@ -291,7 +296,7 @@ class Renderer:
     def circb(self, x, y, r, col):
         data = self._next_draw_data()
 
-        data[MODE_TYPE_INDEX] = TYPE_CIRCB
+        data[MODE_TYPE_INDEX] = DRAW_TYPE_CIRCB
         data[MODE_COL_INDEX] = col
 
         data[POS_X1_INDEX] = x
@@ -299,12 +304,12 @@ class Renderer:
 
         data[SIZE_W_INDEX] = r
 
-    def blt(self, x, y, bank, sx, sy, w, h, colkey=None):
+    def blt(self, x, y, image, sx, sy, w, h, colkey=None):
         data = self._next_draw_data()
 
-        data[MODE_TYPE_INDEX] = TYPE_BLT
+        data[MODE_TYPE_INDEX] = DRAW_TYPE_BLT
         data[MODE_COL_INDEX] = colkey or -1
-        data[MODE_BANK_INDEX] = bank
+        data[MODE_IMAGE_INDEX] = image
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
@@ -331,17 +336,17 @@ class Renderer:
                 x += FONT_WIDTH
                 continue
 
-            if code < MIN_FONT_CODE or code > MAX_FONT_CODE:
+            if code < FONT_MIN_CODE or code > FONT_MAX_CODE:
                 continue
 
-            code -= MIN_FONT_CODE
+            code -= FONT_MIN_CODE
 
             if first:
                 data = self._next_draw_data()
 
-                data[MODE_TYPE_INDEX] = TYPE_TEXT
+                data[MODE_TYPE_INDEX] = DRAW_TYPE_TEXT
                 data[MODE_COL_INDEX] = col
-                data[MODE_BANK_INDEX] = BANK_COUNT - 1
+                data[MODE_IMAGE_INDEX] = RENDERER_IMAGE_COUNT - 1
 
                 data[POS_Y1_INDEX] = y
 
