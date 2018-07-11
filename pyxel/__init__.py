@@ -1,4 +1,5 @@
 from .constants import (
+    VERSION,
     DEFAULT_CAPTION,
     DEFAULT_SCALE,
     DEFAULT_PALETTE,
