@@ -1,12 +1,17 @@
 import sounddevice as sd
 from .oscillator import Oscillator
-from .sound import EFFECT_SLIDE, EFFECT_VIBRATO, EFFECT_FADEOUT
-
-SAMPLE_RATE = 22050
-BLOCK_SIZE = 2200
-CHANNEL_COUNT = 4
-ONE_SPEED = SAMPLE_RATE // 120
-ONE_VOLUME = 0x7fff // (CHANNEL_COUNT * 7)
+from .sound import Sound
+from .constants import (
+    AUDIO_SAMPLE_RATE,
+    AUDIO_BLOCK_SIZE,
+    AUDIO_CHANNEL_COUNT,
+    AUDIO_SOUND_COUNT,
+    AUDIO_ONE_SPEED,
+    AUDIO_ONE_VOLUME,
+    SOUND_EFFECT_SLIDE,
+    SOUND_EFFECT_VIBRATO,
+    SOUND_EFFECT_FADEOUT,
+)
 
 
 class Channel:
@@ -53,8 +58,8 @@ class Channel:
         sound = self._sound_list[self._sound_index]
 
         self._time = 0
-        self._one_note_time = sound.speed * ONE_SPEED
-        self._total_note_time = self._one_note_time * len(sound.note)
+        self._one_note_time = sound._speed * AUDIO_ONE_SPEED
+        self._total_note_time = self._one_note_time * len(sound._note)
 
     def _update(self):
         if not self._is_playing:
@@ -64,27 +69,27 @@ class Channel:
         if self._time % self._one_note_time == 0:
             sound = self._sound_list[self._sound_index]
             pos = int(self._time / self._one_note_time)
-            self._note = sound.note[pos]
-            self._volume = sound.volume[pos] * ONE_VOLUME
+            self._note = sound._note[pos]
+            self._volume = sound._volume[pos] * AUDIO_ONE_VOLUME
 
             if self._note >= 0 and self._volume > 0:
                 last_pitch = self._pitch
-                self._tone = sound.tone[pos]
+                self._tone = sound._tone[pos]
                 self._pitch = self._note_to_pitch(self._note)
-                self._effect = sound.effect[pos]
+                self._effect = sound._effect[pos]
 
                 self._oscillator.set_tone(self._tone)
-                self._oscillator.set_period(SAMPLE_RATE // self._pitch)
+                self._oscillator.set_period(AUDIO_SAMPLE_RATE // self._pitch)
                 self._oscillator.set_volume(self._volume)
 
-                if self._effect == EFFECT_SLIDE:
+                if self._effect == SOUND_EFFECT_SLIDE:
                     self._effect_time = self._time
                     self._effect_pitch = last_pitch or self._pitch
-                elif self._effect == EFFECT_VIBRATO:
+                elif self._effect == SOUND_EFFECT_VIBRATO:
                     self._effect_time = self._time
                     self._effect_pitch = self._note_to_pitch(self._note +
                                                              0.5) - self._pitch
-                elif self._effect == EFFECT_FADEOUT:
+                elif self._effect == SOUND_EFFECT_FADEOUT:
                     self._effect_time = self._time
                     self._effect_volume = self._volume
             else:
@@ -92,15 +97,15 @@ class Channel:
 
         # play note
         if self._note >= 0:
-            if self._effect == EFFECT_SLIDE:
+            if self._effect == SOUND_EFFECT_SLIDE:
                 a = ((self._time - self._effect_time) / self._one_note_time)
                 pitch = self._pitch * a + self._effect_pitch * (1 - a)
-                self._oscillator.set_period(SAMPLE_RATE // pitch)
-            elif self._effect == EFFECT_VIBRATO:
+                self._oscillator.set_period(AUDIO_SAMPLE_RATE // pitch)
+            elif self._effect == SOUND_EFFECT_VIBRATO:
                 pitch = self._pitch + self._lfo(
                     self._time) * self._effect_pitch
-                self._oscillator.set_period(SAMPLE_RATE // pitch)
-            elif self._effect == EFFECT_FADEOUT:
+                self._oscillator.set_period(AUDIO_SAMPLE_RATE // pitch)
+            elif self._effect == SOUND_EFFECT_FADEOUT:
                 self._oscillator.set_volume(self._effect_volume * (1 - (
                     (self._time - self._effect_time) / self._one_note_time)))
 
@@ -123,29 +128,36 @@ class Channel:
 
     @staticmethod
     def _lfo(time):
-        x = (time * 8 / SAMPLE_RATE + 0.25) % 1
+        x = (time * 8 / AUDIO_SAMPLE_RATE + 0.25) % 1
         return abs(x * 4 - 2) - 1
 
 
 class AudioPlayer:
     def __init__(self):
         self._output_stream = sd.OutputStream(
-            samplerate=SAMPLE_RATE,
-            blocksize=BLOCK_SIZE,
+            samplerate=AUDIO_SAMPLE_RATE,
+            blocksize=AUDIO_BLOCK_SIZE,
             channels=1,
             dtype='int16',
             callback=self._output_stream_callback)
 
-        self._channel_list = [Channel() for _ in range(CHANNEL_COUNT)]
+        self._channel_list = [Channel() for _ in range(AUDIO_CHANNEL_COUNT)]
+        self._sound_list = [Sound() for _ in range(AUDIO_SOUND_COUNT)]
 
     @property
     def output_stream(self):
         return self._output_stream
 
+    def sound(self, index):
+        return self._sound_list[index]
+
     def play(self, ch, sound, *, loop=False):
-        if not isinstance(sound, list):
-            sound = [sound]
-        self._channel_list[ch].play(sound, loop)
+        if isinstance(sound, list):
+            sound_list = [self._sound_list[s] for s in sound]
+        else:
+            sound_list = [self._sound_list[sound]]
+
+        self._channel_list[ch].play(sound_list, loop)
 
     def stop(self, ch):
         self._channel_list[ch].stop()

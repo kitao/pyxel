@@ -1,59 +1,35 @@
-NOTE_TABLE = {'c': 0, 'd': 2, 'e': 4, 'f': 5, 'g': 7, 'a': 9, 'b': 11}
-
-TONE_TRIANGLE = 0
-TONE_SQUARE = 1
-TONE_PULSE = 2
-TONE_NOISE = 3
-
-TONE_TABLE = {
-    't': TONE_TRIANGLE,
-    's': TONE_SQUARE,
-    'p': TONE_PULSE,
-    'n': TONE_NOISE,
-}
-
-EFFECT_NONE = 0
-EFFECT_SLIDE = 1
-EFFECT_VIBRATO = 2
-EFFECT_FADEOUT = 3
-
-EFFECT_TABLE = {
-    'n': EFFECT_NONE,
-    's': EFFECT_SLIDE,
-    'v': EFFECT_VIBRATO,
-    'f': EFFECT_FADEOUT,
-}
+from .constants import (
+    SOUND_NOTE_TABLE,
+    SOUND_TONE_TABLE,
+    SOUND_EFFECT_TABLE,
+)
 
 
 class Sound:
     def __init__(self):
-        self.note = [0]
-        self.tone = [0]
-        self.volume = [0]
-        self.effect = [0]
-        self.speed = 1
+        self._note = [0]
+        self._tone = [0]
+        self._volume = [0]
+        self._effect = [0]
+        self._speed = 1
 
-    @staticmethod
-    def fromstring(note, tone, volume, effect, speed):
-        sound = Sound()
-        sound.note = sound._parse_note(note)
-        sound.tone = sound._parse_tone(tone)
-        sound.volume = sound._parse_volume(volume)
-        sound.effect = sound._parse_effect(effect)
-        sound.speed = speed
-
-        return sound
+    def set(self, note, tone, volume, effect, speed):
+        self._note = self._parse_note(note)
+        self._tone = self._parse_tone(tone)
+        self._volume = self._parse_volume(volume)
+        self._effect = self._parse_effect(effect)
+        self._speed = speed
 
     def _parse_note(self, data):
         param_list = []
-        last_param = 33
+        last_param = 0
         data = data.replace(' ', '').lower()
 
         while data:
             c = data[0]
             data = data[1:]
 
-            param = NOTE_TABLE.get(c, None)
+            param = SOUND_NOTE_TABLE.get(c, None)
 
             if param is not None:
                 c = data[0]
@@ -84,14 +60,14 @@ class Sound:
 
     def _parse_tone(self, data):
         param_list = []
-        last_param = TONE_TRIANGLE
+        last_param = 0
         data = data.replace(' ', '').lower()
 
         while data:
             c = data[0]
             data = data[1:]
 
-            param = TONE_TABLE.get(c, None)
+            param = SOUND_TONE_TABLE.get(c, None)
 
             if param is None:
                 if c == '.':
@@ -106,7 +82,7 @@ class Sound:
 
     def _parse_volume(self, data):
         param_list = []
-        last_param = 7
+        last_param = 0
         data = data.replace(' ', '').lower()
 
         while data:
@@ -127,14 +103,14 @@ class Sound:
 
     def _parse_effect(self, data):
         param_list = []
-        last_param = EFFECT_NONE
+        last_param = 0
         data = data.replace(' ', '').lower()
 
         while data:
             c = data[0]
             data = data[1:]
 
-            param = EFFECT_TABLE.get(c, None)
+            param = SOUND_EFFECT_TABLE.get(c, None)
 
             if param is None:
                 if c == '.':
@@ -148,11 +124,11 @@ class Sound:
         return self._complement_param_list(param_list)
 
     def _complement_param_list(self, param_list):
-        diff = len(param_list) - len(self.note)
+        diff = len(param_list) - len(self._note)
 
         if diff < 0:
             param_list += [param_list[-1]] * -diff
         elif diff > 0:
-            param_list = param_list[:len(self.note)]
+            param_list = param_list[:len(self._note)]
 
         return param_list
