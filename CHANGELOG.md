@@ -4,8 +4,9 @@
 - Added the version number constant
 - Renamed the examples copy script to install_pyxel_examples
 - Removed unnecessary scripts
-- Changed the arguments of the Sound fromstring method
-- Added the Image fromfile method
+- Separated the constant definitions
+- Added the image command
+- Added the sound command
 
 ## 0.4.0
 - Changed the key assigns of the special inputs
