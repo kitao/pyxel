@@ -5,8 +5,8 @@
 - Renamed the examples copy script to install_pyxel_examples
 - Removed unnecessary scripts
 - Separated the constant definitions
-- Added the image command
-- Added the sound command
+- Added the image command and renamed related APIs
+- Added the sound command and renamed related APIs
 
 ## 0.4.0
 - Changed the key assigns of the special inputs
