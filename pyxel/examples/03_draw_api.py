@@ -6,7 +6,7 @@ class App:
     def __init__(self):
         pyxel.init(200, 150, caption='Pyxel Draw Test')
 
-        self.image = pyxel.Image.fromstring([
+        pyxel.image(0).set(0, 0, [
             '5550555550555555',
             '5509055509055555',
             '509f00009f055505',
@@ -24,7 +24,6 @@ class App:
             '5509009050900905',
             '5550550555055055',
         ])
-        pyxel.bank(0, self.image)
 
         self.pal_test_is_enabled = False
         self.clip_test_is_enabled = False
