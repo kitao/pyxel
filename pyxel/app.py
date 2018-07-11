@@ -6,11 +6,14 @@ import PIL.Image
 from datetime import datetime
 from .renderer import Renderer
 from .audioplayer import AudioPlayer
-from .key import KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON
-
-CAPTURE_COUNT = 900
-CAPTURE_SCALE = 2
-PERF_MEASURE_COUNT = 10
+from .constants import (
+    SCREEN_CAPTURE_COUNT,
+    SCREEN_CAPTURE_SCALE,
+    MEASURE_FRAME_COUNT,
+    KEY_LEFT_BUTTON,
+    KEY_MIDDLE_BUTTON,
+    KEY_RIGHT_BUTTON,
+)
 
 
 class App:
@@ -28,7 +31,7 @@ class App:
         self._draw = None
         self._capture_start = 0
         self._capture_index = 0
-        self._capture_images = [None] * CAPTURE_COUNT
+        self._capture_images = [None] * SCREEN_CAPTURE_COUNT
 
         self._perf_monitor_is_enabled = False
         self._perf_fps_count = 0
@@ -84,7 +87,7 @@ class App:
         module.btnr = self.btnr
         module.run = self.run
         module.quit = self.quit
-        module.bank = self._renderer.bank
+        module.image = self._renderer.image
         module.clip = self._renderer.clip
         module.pal = self._renderer.pal
         module.cls = self._renderer.cls
@@ -96,6 +99,7 @@ class App:
         module.circb = self._renderer.circb
         module.blt = self._renderer.blt
         module.text = self._renderer.text
+        module.sound = self._audio_player.sound
         module.play = self._audio_player.play
         module.stop = self._audio_player.stop
 
@@ -214,7 +218,8 @@ class App:
             self._viewport_left * hs, self._viewport_bottom * hs,
             self._viewport_width * hs, self._viewport_height * hs,
             self._palette, self._border_color)
-        self._capture_images[self._capture_index % CAPTURE_COUNT] = image
+        self._capture_images[self._capture_index %
+                             SCREEN_CAPTURE_COUNT] = image
         self._capture_index += 1
 
         self._measure_draw_time(draw_start_time)
@@ -254,13 +259,13 @@ class App:
             self.quit()
 
     def _save_capture_image(self):
-        index = (self._capture_index - 1) % CAPTURE_COUNT
+        index = (self._capture_index - 1) % SCREEN_CAPTURE_COUNT
         image = self._get_capture_image(index)
         image.save(self._get_filename() + '.png')
 
     def _save_capture_animation(self):
         image_count = min(self._capture_index - self._capture_start,
-                          CAPTURE_COUNT)
+                          SCREEN_CAPTURE_COUNT)
 
         if image_count <= 0:
             return
@@ -269,7 +274,7 @@ class App:
         images = []
 
         for i in range(image_count):
-            index = (start_index + i) % CAPTURE_COUNT
+            index = (start_index + i) % SCREEN_CAPTURE_COUNT
             images.append(self._get_capture_image(index))
 
         images[0].save(
@@ -287,8 +292,8 @@ class App:
         image = image.convert(
             'P', dither=PIL.Image.NONE, palette=PIL.Image.ADAPTIVE)
 
-        image = image.resize((self._module.width * CAPTURE_SCALE,
-                              self._module.height * CAPTURE_SCALE))
+        image = image.resize((self._module.width * SCREEN_CAPTURE_SCALE,
+                              self._module.height * SCREEN_CAPTURE_SCALE))
 
         return image
 
@@ -308,7 +313,7 @@ class App:
         cur_time = time.time()
         self._perf_fps_count += 1
 
-        if self._perf_fps_count == PERF_MEASURE_COUNT:
+        if self._perf_fps_count == MEASURE_FRAME_COUNT:
             self._perf_fps = self._perf_fps_count / (
                 cur_time - self._perf_fps_start_time)
             self._perf_fps_count = 0
@@ -318,7 +323,7 @@ class App:
         self._perf_update_count += 1
         self._perf_update_total_time += time.time() - update_start_time
 
-        if self._perf_update_count == PERF_MEASURE_COUNT:
+        if self._perf_update_count == MEASURE_FRAME_COUNT:
             self._perf_update_time = (
                 self._perf_update_total_time / self._perf_update_count) * 1000
             self._perf_update_total_time = 0
@@ -328,7 +333,7 @@ class App:
         self._perf_draw_count += 1
         self._perf_draw_total_time += time.time() - draw_start_time
 
-        if self._perf_draw_count == PERF_MEASURE_COUNT:
+        if self._perf_draw_count == MEASURE_FRAME_COUNT:
             self._perf_draw_time = (
                 self._perf_draw_total_time / self._perf_draw_count) * 1000
             self._perf_draw_total_time = 0
