@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.6.0
+- Changed the properties of the Sound class to public
+- Added offset arguments to the Image load method
+
 ## 0.5.0
 - Added the version number constant
 - Renamed the examples copy script to install_pyxel_examples
