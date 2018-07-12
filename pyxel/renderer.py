@@ -1,4 +1,3 @@
-import math
 import numpy as np
 import OpenGL.GL as gl
 from .glwrapper import GLShader, GLAttribute, GLTexture
@@ -11,12 +10,11 @@ from .shaders import (
     SCALING_FRAGMENT_SHADER,
     SCALING_ATTRIBUTE_INFO,
 )
-from .font import create_font_image
 from .constants import (
-    RENDERER_IMAGE_COUNT,
-    RENDERER_IMAGE_WIDTH,
-    RENDERER_IMAGE_HEIGHT,
-    RENDERER_MAX_DRAW_COUNT,
+    IMAGE_COUNT,
+    IMAGE_WIDTH,
+    IMAGE_HEIGHT,
+    DRAW_MAX_COUNT,
     DRAW_TYPE_PIX,
     DRAW_TYPE_LINE,
     DRAW_TYPE_RECT,
@@ -29,7 +27,8 @@ from .constants import (
     FONT_MAX_CODE,
     FONT_WIDTH,
     FONT_HEIGHT,
-    FONT_IMAGE_ROW_COUNT,
+    FONT_ROW_COUNT,
+    FONT_DATA,
 )
 
 MODE_TYPE_INDEX = DRAWING_ATTRIBUTE_INFO[0][1]
@@ -65,10 +64,9 @@ class Renderer:
         self._cur_draw_count = 0
 
         self._image_list = [
-            Image(RENDERER_IMAGE_WIDTH, RENDERER_IMAGE_HEIGHT)
-            for _ in range(RENDERER_IMAGE_COUNT - 1)
+            Image(IMAGE_WIDTH, IMAGE_HEIGHT) for _ in range(IMAGE_COUNT)
         ]
-        self._image_list.append(create_font_image())
+        self._set_font_image(self._image_list[-1])
 
         self.clip_pal_data = np.ndarray(8, np.float32)
         self.clip()
@@ -77,7 +75,7 @@ class Renderer:
         self._draw_shader = GLShader(DRAWING_VERTEX_SHADER,
                                      DRAWING_FRAGMENT_SHADER)
         self._draw_att = GLAttribute(
-            DRAWING_ATTRIBUTE_INFO, RENDERER_MAX_DRAW_COUNT, dynamic=True)
+            DRAWING_ATTRIBUTE_INFO, DRAW_MAX_COUNT, dynamic=True)
 
         self._scale_shader = GLShader(SCALING_VERTEX_SHADER,
                                       SCALING_FRAGMENT_SHADER)
@@ -160,8 +158,19 @@ class Renderer:
         return capture_image
 
     @staticmethod
-    def _largest_power_of_two(n):
-        return 2**math.ceil(math.log(n, 2))
+    def _set_font_image(image):
+        row_count = image.width // FONT_WIDTH
+
+        for i, v in enumerate(FONT_DATA):
+            left = (i % row_count) * FONT_WIDTH
+            top = (i // row_count) * FONT_HEIGHT
+            data = image.data
+
+            for j in range(FONT_WIDTH * FONT_HEIGHT):
+                x = left + j % FONT_WIDTH
+                y = top + j // FONT_WIDTH
+                data[y, x] = (v & 0x800000) and 1 or 0
+                v <<= 1
 
     @staticmethod
     def _int_to_rgb(color):
@@ -172,7 +181,7 @@ class Renderer:
         data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
              CLIP_PAL_COUNT] = self.clip_pal_data
 
-        if self._cur_draw_count < RENDERER_MAX_DRAW_COUNT - 1:
+        if self._cur_draw_count < DRAW_MAX_COUNT - 1:
             self._cur_draw_count += 1
 
         return data
@@ -181,7 +190,7 @@ class Renderer:
         data = self._draw_att.data[self._cur_draw_count]
         data[:] = self._draw_att.data[self._cur_draw_count - 1]
 
-        if self._cur_draw_count < RENDERER_MAX_DRAW_COUNT - 1:
+        if self._cur_draw_count < DRAW_MAX_COUNT - 1:
             self._cur_draw_count += 1
 
         return data
@@ -345,7 +354,7 @@ class Renderer:
 
                 data[MODE_TYPE_INDEX] = DRAW_TYPE_TEXT
                 data[MODE_COL_INDEX] = col
-                data[MODE_IMAGE_INDEX] = RENDERER_IMAGE_COUNT - 1
+                data[MODE_IMAGE_INDEX] = IMAGE_COUNT - 1
 
                 data[POS_Y1_INDEX] = y
 
@@ -357,7 +366,7 @@ class Renderer:
                 data = self._copy_draw_data()
 
             data[POS_X1_INDEX] = x
-            data[POS_X2_INDEX] = (code % FONT_IMAGE_ROW_COUNT) * FONT_WIDTH
-            data[POS_Y2_INDEX] = (code // FONT_IMAGE_ROW_COUNT) * FONT_HEIGHT
+            data[POS_X2_INDEX] = (code % FONT_ROW_COUNT) * FONT_WIDTH
+            data[POS_Y2_INDEX] = (code // FONT_ROW_COUNT) * FONT_HEIGHT
 
             x += FONT_WIDTH
