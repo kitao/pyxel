@@ -195,8 +195,8 @@ class Renderer:
 
         return data
 
-    def image(self, img):
-        return self._image_list[img]
+    def image(self, no):
+        return self._image_list[no]
 
     def clip(self, *args):
         if len(args) == 0:
@@ -312,12 +312,12 @@ class Renderer:
 
         data[SIZE_W_INDEX] = r
 
-    def blt(self, x, y, img, sx, sy, w, h, colkey=None):
+    def blt(self, x, y, no, sx, sy, w, h, colkey=None):
         data = self._next_draw_data()
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_BLT
         data[MODE_COL_INDEX] = colkey or -1
-        data[MODE_IMAGE_INDEX] = img
+        data[MODE_IMAGE_INDEX] = no
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
@@ -327,11 +327,11 @@ class Renderer:
         data[SIZE_W_INDEX] = w
         data[SIZE_H_INDEX] = h
 
-    def text(self, x, y, str_, col):
+    def text(self, x, y, s, col):
         left = x
         first = True
 
-        for ch in str_:
+        for ch in s:
             code = ord(ch)
 
             if code == 10:  # new line

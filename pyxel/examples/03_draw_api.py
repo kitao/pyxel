@@ -146,7 +146,7 @@ class App:
             pyxel.circb(x + i * 8, y, i, i + 8)
 
     def test_blt(self, x, y):
-        pyxel.text(x, y, 'blt(x,y,img,sx,sy,w,h,[colkey])', 7)
+        pyxel.text(x, y, 'blt(x,y,no,sx,sy,w,h,[colkey])', 7)
 
         x += 4
         y += 8
