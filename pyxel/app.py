@@ -1,12 +1,14 @@
 import os
 import math
 import time
+import datetime
 import glfw
 import PIL.Image
-from datetime import datetime
 from .renderer import Renderer
 from .audioplayer import AudioPlayer
 from .constants import (
+    DEFAULT_PALETTE,
+    ICON_DATA,
     SCREEN_CAPTURE_COUNT,
     SCREEN_CAPTURE_SCALE,
     MEASURE_FRAME_COUNT,
@@ -75,6 +77,8 @@ class App:
         glfw.set_mouse_button_callback(self._window,
                                        self._mouse_button_callback)
 
+        glfw.set_window_icon(self._window, 1, [self._get_icon_image()])
+
         # initialize renderer
         self._renderer = Renderer(width, height)
 
@@ -99,6 +103,7 @@ class App:
         module.circb = self._renderer.circb
         module.blt = self._renderer.blt
         module.text = self._renderer.text
+        module.logo = self._renderer.logo
         module.sound = self._audio_player.sound
         module.play = self._audio_player.play
         module.stop = self._audio_player.stop
@@ -138,6 +143,31 @@ class App:
 
     def quit(self):
         glfw.set_window_should_close(self._window, True)
+
+    @staticmethod
+    def _get_icon_image():
+        width = len(ICON_DATA[0])
+        height = len(ICON_DATA)
+        color_list = list(map(lambda x: int(x, 16), ''.join(ICON_DATA)))
+
+        image = []
+        for color in color_list:
+            rgb = DEFAULT_PALETTE[color]
+            image.append((rgb >> 16) & 0xff)
+            image.append((rgb >> 8) & 0xff)
+            image.append(rgb & 0xff)
+
+        icon = PIL.Image.frombuffer('RGB', (width, height), bytes(image),
+                                    'raw', 'RGB', 0, 1).convert('RGBA')
+
+        pixels = icon.load()
+        for x in range(width):
+            for y in range(height):
+                r, g, b, a = pixels[x, y]
+                if (r, g, b) == (0, 0, 0):
+                    pixels[x, y] = (0, 0, 0, 0)
+
+        return icon
 
     def _key_callback(self, window, key, scancode, action, mods):
         if action == glfw.PRESS:
@@ -306,8 +336,9 @@ class App:
             path = os.path.join(
                 os.path.join(os.path.expanduser('~')), 'Desktop')
 
-        return os.path.join(path,
-                            datetime.now().strftime('pyxel-%y%m%d-%H%M%S'))
+        return os.path.join(
+            path,
+            datetime.datetime.now().strftime('pyxel-%y%m%d-%H%M%S'))
 
     def _measure_fps(self):
         cur_time = time.time()
