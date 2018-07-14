@@ -378,9 +378,10 @@ class Renderer:
 
         x += 18
         y += 6
+        title = 'Pyxel'
 
         for offset_y in range(-1, 2):
             for offset_x in range(-1, 2):
-                self.text(x + offset_x, y + offset_y, 'Pyxel', 1)
+                self.text(x + offset_x, y + offset_y, title, 1)
 
-        self.text(x, y, 'Pyxel', 7)
+        self.text(x, y, title, 7)
