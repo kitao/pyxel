@@ -31,6 +31,7 @@ class App:
         self.test_circ(6, 64)
         self.test_circb(106, 64)
         self.test_blt(6, 94)
+        self.test_logo(147, 94)
         self.test_text(6, 124)
         self.test_pal2(106, 124)
 
@@ -38,7 +39,7 @@ class App:
         if self.pal_test_is_enabled:
             pyxel.pal(2, 3)
             pyxel.pal(4, 7)
-            pyxel.pal(7, 1)
+            pyxel.pal(7, 10)
 
     def test_pal2(self, x, y):
         pyxel.text(x, y, 'pal(col1,col2)', 4)
@@ -140,6 +141,10 @@ class App:
         pyxel.blt(x + 40, y, 0, 0, 0, -16, 16, 5)
         pyxel.blt(x + 60, y, 0, 0, 0, 16, -16, 5)
         pyxel.blt(x + 80, y, 0, 0, 0, -16, -16, 5)
+
+    def test_logo(self, x, y):
+        pyxel.text(x, y, 'logo(x,y)', 7)
+        pyxel.logo(x, y + 8)
 
     def test_text(self, x, y):
         pyxel.text(x, y, 'text(x,y,str,col)', 7)
