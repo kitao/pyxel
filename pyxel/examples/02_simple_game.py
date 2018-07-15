@@ -17,7 +17,7 @@ HIT_PADDLE = 2
 
 class App():
     def __init__(self):
-        pyxel.init(160, 120, caption='Simple App')
+        pyxel.init(160, 120, caption='Simple Game')
 
         pyxel.sound(0).set('c2', 't', '7', 'f', 10)
         pyxel.sound(1).set('c3', 'p', '7', 'f', 15)
