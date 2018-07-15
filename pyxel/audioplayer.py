@@ -70,13 +70,14 @@ class Channel:
             sound = self._sound_list[self._sound_index]
             pos = int(self._time / self._one_note_time)
             self._note = sound.note[pos]
-            self._volume = sound.volume[pos] * AUDIO_ONE_VOLUME
+            self._volume = sound.volume[pos % len(
+                sound.volume)] * AUDIO_ONE_VOLUME
 
             if self._note >= 0 and self._volume > 0:
                 last_pitch = self._pitch
-                self._tone = sound.tone[pos]
+                self._tone = sound.tone[pos % len(sound.tone)]
                 self._pitch = self._note_to_pitch(self._note)
-                self._effect = sound.effect[pos]
+                self._effect = sound.effect[pos % len(sound.effect)]
 
                 self._oscillator.set_tone(self._tone)
                 self._oscillator.set_period(AUDIO_SAMPLE_RATE // self._pitch)

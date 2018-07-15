@@ -23,7 +23,8 @@ class Sound:
     def set_note(self, data):
         param_list = []
         last_param = 0
-        data = data.replace(' ', '').lower()
+        data = data.replace(' ', '').replace('\n', '').replace('\t',
+                                                               '').lower()
 
         while data:
             c = data[0]
@@ -78,7 +79,7 @@ class Sound:
             param_list.append(param)
             last_param = param
 
-        self.tone = self._complement_param_list(param_list)
+        self.tone = param_list
 
     def set_volume(self, data):
         param_list = []
@@ -99,7 +100,7 @@ class Sound:
             param_list.append(param)
             last_param = param
 
-        self.volume = self._complement_param_list(param_list)
+        self.volume = param_list
 
     def set_effect(self, data):
         param_list = []
@@ -121,14 +122,4 @@ class Sound:
             param_list.append(param)
             last_param = param
 
-        self.effect = self._complement_param_list(param_list)
-
-    def _complement_param_list(self, param_list):
-        diff = len(param_list) - len(self.note)
-
-        if diff < 0:
-            param_list += [param_list[-1]] * -diff
-        elif diff > 0:
-            param_list = param_list[:len(self.note)]
-
-        return param_list
+        self.effect = param_list
