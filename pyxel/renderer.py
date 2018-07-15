@@ -11,7 +11,6 @@ from .shaders import (
     SCALING_ATTRIBUTE_INFO,
 )
 from .constants import (
-    ICON_DATA,
     IMAGE_COUNT,
     IMAGE_WIDTH,
     IMAGE_HEIGHT,
@@ -68,7 +67,6 @@ class Renderer:
             Image(IMAGE_WIDTH, IMAGE_HEIGHT) for _ in range(IMAGE_COUNT)
         ]
         self._set_font_image(self._image_list[-1])
-        self._image_list[-1].set(0, IMAGE_HEIGHT - 16, ICON_DATA)
 
         self.clip_pal_data = np.ndarray(8, np.float32)
         self.clip()
@@ -372,16 +370,3 @@ class Renderer:
             data[POS_Y2_INDEX] = (code // FONT_ROW_COUNT) * FONT_HEIGHT
 
             x += FONT_WIDTH
-
-    def logo(self, x, y):
-        self.blt(x, y, IMAGE_COUNT - 1, 0, IMAGE_HEIGHT - 16, 16, 16, 0)
-
-        x += 18
-        y += 6
-        title = 'Pyxel'
-
-        for offset_y in range(-1, 2):
-            for offset_x in range(-1, 2):
-                self.text(x + offset_x, y + offset_y, title, 1)
-
-        self.text(x, y, title, 7)

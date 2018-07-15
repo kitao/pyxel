@@ -6,7 +6,7 @@ class App:
     def __init__(self):
         pyxel.init(200, 150, caption='Pyxel Draw API')
 
-        pyxel.image(0).load(0, 0, 'assets/cat.png')
+        pyxel.image(0).load(0, 0, 'assets/cat_16x16.png')
 
         self.pal_test_is_enabled = False
         self.clip_test_is_enabled = False
@@ -31,7 +31,6 @@ class App:
         self.test_circ(6, 64)
         self.test_circb(106, 64)
         self.test_blt(6, 94)
-        self.test_logo(147, 94)
         self.test_text(6, 124)
         self.test_pal2(106, 124)
 
@@ -141,10 +140,6 @@ class App:
         pyxel.blt(x + 40, y, 0, 0, 0, -16, 16, 5)
         pyxel.blt(x + 60, y, 0, 0, 0, 16, -16, 5)
         pyxel.blt(x + 80, y, 0, 0, 0, -16, -16, 5)
-
-    def test_logo(self, x, y):
-        pyxel.text(x, y, 'logo(x,y)', 7)
-        pyxel.logo(x, y + 8)
 
     def test_text(self, x, y):
         pyxel.text(x, y, 'text(x,y,s,col)', 7)

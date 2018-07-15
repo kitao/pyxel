@@ -103,7 +103,6 @@ class App:
         module.circb = self._renderer.circb
         module.blt = self._renderer.blt
         module.text = self._renderer.text
-        module.logo = self._renderer.logo
         module.sound = self._audio_player.sound
         module.play = self._audio_player.play
         module.stop = self._audio_player.stop

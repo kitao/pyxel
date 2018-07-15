@@ -4,6 +4,7 @@ import pyxel
 class App:
     def __init__(self):
         pyxel.init(128, 128, caption='Hello Pyxel')
+        pyxel.image(0).load(0, 0, 'assets/pyxel_logo_38x16.png')
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -13,7 +14,7 @@ class App:
     def draw(self):
         pyxel.cls(0)
         pyxel.text(40, 48, 'Hello, Pyxel!', pyxel.frame_count % 16)
-        pyxel.logo(46, 70)
+        pyxel.blt(46, 70, 0, 0, 0, 38, 16)
 
 
 App()
