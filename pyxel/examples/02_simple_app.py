@@ -19,6 +19,9 @@ class App():
     def __init__(self):
         pyxel.init(160, 120, caption='Simple App')
 
+        pyxel.sound(0).set('c2', 't', '7', 'f', 10)
+        pyxel.sound(1).set('c3', 'p', '7', 'f', 15)
+
         self.paddle_x = (pyxel.width - PADDLE_WIDTH) // 2
         self.paddle_y = pyxel.height - PADDLE_HEIGHT - 2
 
@@ -26,9 +29,6 @@ class App():
         self.orbit_y = [0] * ORBIT_COUNT
 
         self.reset_game()
-
-        pyxel.sound(0).set('c2', 't', '7', 'f', 10)
-        pyxel.sound(1).set('c3', 'p', '7', 'f', 15)
 
         pyxel.run(self.update, self.draw)
 
