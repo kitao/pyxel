@@ -2,11 +2,14 @@ import pyxel
 
 PADDLE_WIDTH = 32
 PADDLE_HEIGHT = 4
-PADDLE_SPEED = 4
+PADDLE_HIT_HEIGHT = 20
+PADDLE_SPEED = 5
+PADDLE_DECEL_RATE = 0.8
 
 BALL_RADIUS = 3
 BALL_SPEED_X = 1
 BALL_SPEED_Y = -6
+BALL_SPEED_UP = 0.1
 
 ORBIT_COUNT = 30
 
@@ -19,11 +22,12 @@ class App():
     def __init__(self):
         pyxel.init(160, 120, caption='Simple Game')
 
-        pyxel.sound(0).set('c2', 't', '7', 'f', 10)
-        pyxel.sound(1).set('c3', 'p', '7', 'f', 15)
+        pyxel.sound(0).set('g1', 't', '7', 'f', 10)
+        pyxel.sound(1).set('c2', 'p', '6', 'f', 12)
 
         self.paddle_x = (pyxel.width - PADDLE_WIDTH) // 2
         self.paddle_y = pyxel.height - PADDLE_HEIGHT - 2
+        self.paddle_vx = 0
 
         self.orbit_x = [0] * ORBIT_COUNT
         self.orbit_y = [0] * ORBIT_COUNT
@@ -46,10 +50,13 @@ class App():
 
         # update paddle
         if pyxel.btn(pyxel.KEY_LEFT):
-            self.paddle_x -= PADDLE_SPEED
+            self.paddle_vx = -PADDLE_SPEED
 
         if pyxel.btn(pyxel.KEY_RIGHT):
-            self.paddle_x += PADDLE_SPEED
+            self.paddle_vx = PADDLE_SPEED
+
+        self.paddle_x += self.paddle_vx
+        self.paddle_vx *= PADDLE_DECEL_RATE
 
         if self.paddle_x < 0:
             self.paddle_x = 0
@@ -75,7 +82,7 @@ class App():
         self.ball_vx = vx
         self.ball_vy = vy
 
-        if self.ball_y > pyxel.height + 200:
+        if self.ball_y > pyxel.height + 300:
             self.reset_game()
 
         # update orbits
@@ -103,12 +110,12 @@ class App():
             hit = HIT_WALL
 
         if (y + BALL_RADIUS >= self.paddle_y
-                and y - BALL_RADIUS <= self.paddle_y + PADDLE_HEIGHT
+                and y - BALL_RADIUS <= self.paddle_y + PADDLE_HIT_HEIGHT
                 and x + BALL_RADIUS >= self.paddle_x
                 and x - BALL_RADIUS <= self.paddle_x + PADDLE_WIDTH):
             vx = (x - (self.paddle_x + PADDLE_WIDTH // 2)) / 3
             y = self.paddle_y - BALL_RADIUS
-            vy = -abs(vy) - 0.01
+            vy = -abs(vy) - BALL_SPEED_UP
             hit = HIT_PADDLE
 
         return (x, y, vx, vy, hit)
