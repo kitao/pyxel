@@ -3,7 +3,7 @@ import pyxel
 
 class App:
     def __init__(self):
-        pyxel.init(200, 150)
+        pyxel.init(200, 150, caption='Pixel Sound API')
 
         pyxel.sound(0).set('c2c2g2g2a2a2g2.', 'p', '7', 'ffffffvf ffffffvf',
                            60)

@@ -4,7 +4,7 @@ import pyxel
 
 class App:
     def __init__(self):
-        pyxel.init(200, 150, caption='Pyxel Draw Test')
+        pyxel.init(200, 150, caption='Pyxel Draw API')
 
         pyxel.image(0).load(0, 0, 'assets/cat.png')
 
@@ -147,7 +147,7 @@ class App:
         pyxel.logo(x, y + 8)
 
     def test_text(self, x, y):
-        pyxel.text(x, y, 'text(x,y,str,col)', 7)
+        pyxel.text(x, y, 'text(x,y,s,col)', 7)
 
         x += 4
         y += 8
