@@ -8,7 +8,7 @@
 - Added the window icon
 - Added the logo command
 - Added the resize method to the Image class
-- Refined the example #1-3
+- Refined the example #1-4
 
 ## 0.5.0
 - Added the version number constant
