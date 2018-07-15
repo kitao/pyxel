@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.7.0
+- Modified the example #1 to use the App class
+- Renamed the example #2
+
 ## 0.6.0
 - Changed the properties of the Sound class to public
 - Added offset arguments to the Image load method
