@@ -3,6 +3,12 @@
 ## 0.6.0
 - Changed the properties of the Sound class to public
 - Added offset arguments to the Image load method
+- Added the copy method to the Image class
+- Renamed arguments of the image and sound command
+- Added the window icon
+- Added the logo command
+- Added the resize method to the Image class
+- Refined the example #1-3
 
 ## 0.5.0
 - Added the version number constant
