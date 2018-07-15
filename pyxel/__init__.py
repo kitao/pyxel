@@ -1,4 +1,5 @@
 from .constants import (
+    VERSION,
     DEFAULT_CAPTION,
     DEFAULT_SCALE,
     DEFAULT_PALETTE,
@@ -22,7 +23,7 @@ def init(width,
     from . import constants
 
     module = sys.modules[__name__]
-    module.VERSION = constants.VERSION
+    module.VERSION = VERSION  # to avoid 'unused' warning
 
     for k, v in constants.__dict__.items():
         if k.startswith('KEY_'):
