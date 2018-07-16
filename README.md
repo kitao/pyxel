@@ -14,9 +14,9 @@ Pyxel is a fantasy retro gaming console in Python.
 <img
 src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/01_hello_pyxel.gif" width="30%">
 </a>
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_simple_app.py" target="_blank">
+<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_simple_game.py" target="_blank">
 <img
-src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/02_simple_app.gif" width="30%">
+src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/02_simple_game.gif" width="30%">
 </a>
 <a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py" target="_blank">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/03_draw_api.gif" width="30%">
