@@ -19,12 +19,12 @@ class App:
 
         pyxel.sound(0).set(
             'e2e2c2g1 g1g1c2e2 d2d2d2g2 g2f2e2d2'
-            'c2c2a1e1 e1e1a1c2 b1b1b1e2 e2d2c2b1', 'p', '6',
-            'vffn fnff vffs fnff', 30)
+            'c2c2a1e1 e1e1a1c2 b1b1b1e2 e2e2rr', 'p', '6',
+            'vffn fnff vffs fnff vffn fnff vffs vfnn', 30)
 
         pyxel.sound(1).set(
             'r a1b1c2 b1b1c2d2 g2g2g2g2 c2c2d2e2'
-            'f2f2f2f2 f2e2d2c2 d2d2d2d2 g2g2r r ', 'p', '6',
+            'f2f2f2e2 f2e2d2c2 d2d2d2d2 g2g2r r ', 'p', '6',
             'nnff vfff vvvv sfff svff vfff vvvv svnn', 30)
 
         pyxel.sound(2).set(
