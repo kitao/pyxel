@@ -36,7 +36,7 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 ### Windows
 
-[Python3](https://www.python.org/)をインストールした後に、以下の`pip`コマンドでPyxelをインストールします。
+[Python3](https://www.python.org/)をインストールした後に、以下の`pip`コマンドでPyxelをインストールします。
 
 ```sh
 pip install pyxel
@@ -46,7 +46,7 @@ pip install pyxel
 
 [Python3](https://www.python.org/)と[glfw](http://www.glfw.org/)をインストールをした後に、`pip`コマンドでPyxelをインストールします。
 
-[Homebrew](https://brew.sh/)を導入している場合は、以下のコマンドで必要なパッケージを一通りインストールできます。
+[Homebrew](https://brew.sh/)を導入している場合は、以下のコマンドで必要なパッケージが一通りインストールされます。
 
 ```sh
 brew install python3 glfw
@@ -55,7 +55,7 @@ pip3 install pyxel
 
 ### サンプルのインストール
 
-Pyxelインストール後に、以下のコマンドでカレントディレクトリにPyxelのサンプルコード一式をコピーできます。
+Pyxelインストール後に、以下のコマンドでカレントディレクトリにPyxelのサンプルコード一式をコピーします。
 
 ```sh
 install_pyxel_examples
@@ -65,7 +65,7 @@ install_pyxel_examples
 
 ### アプリケーションの作成方法
 
-Pythonコード内でPyxelモジュールをインポートして、`init`関数でウィンドウサイズを指定した後に、`run`関数でPyxelアプリケーションを開始します。
+Pythonコード内でPyxelモジュールをインポートして、`init`関数でウィンドウサイズを指定した後に、`run`関数でPyxelアプリケーションを開始します。
 
 ```python
 import pyxel
@@ -85,7 +85,7 @@ pyxel.run(update, draw)
 
 `run`関数にはフレーム更新の処理を行う`update`関数と、描画処理を行う`draw`関数を指定します。
 
-実際のアプリケーションでは、以下のようにクラスでPyxelの処理をラップすることがおすすめです。
+実際のアプリケーションでは、以下のようにクラスでPyxelの処理をラップすることがおすすめです。
 
 ```python
 import pyxel
@@ -108,17 +108,17 @@ App()
 
 ### 特殊操作
 
-Pyxelアプリケーション実行中に、以下の特殊操作を行うことができます。
+Pyxelアプリケーション実行中に、以下の特殊操作を行うことができます。
 
-- `Alt`(`Option`)+`1`  
-スクリーンショットをデスクトップに保存する
-- `Alt`(`Option`)+`2`  
+- `Alt(Option)+1`  
+スクリーンショットをデスクトップに保存する
+- `Alt(Option)+2`  
 画面キャプチャ動画の開始時刻をリセットする
-- `Alt`(`Option`)+`3`  
+- `Alt(Option)+3`  
 画面キャプチャ動画(gif)をデスクトップに保存する(最大30秒)
-- `Alt`(`Option`)+`0`  
-パフォーマンスモニタ(fps、update時間、draw時間)の表示を切り替える
-- `Alt`(`Option`)+`Enter`  
+- `Alt(Option)+0`  
+パフォーマンスモニタ(fps、update時間、draw時間)の表示を切り替える
+- `Alt(Option)+Enter`  
 フルスクリーン表示を切り替える
 
 ## APIリファレンス
@@ -216,7 +216,7 @@ keyが押されていたらTrue、押されていなければFalseを返す([キ
 イメージのサイズを(width, height)に変更する
 
 - `set(x, y, data)`  
-(x, y)に文字列のリストでイメージを設定する   
+(x, y)に文字列のリストでイメージを設定する   
 例：`pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
 - `load(x, y, filename)`  
