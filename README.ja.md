@@ -36,20 +36,26 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 ### Windows
 
+[Python3](https://www.python.org/)をインストールした後に、以下の`pip`コマンドでPyxelをインストールします。
+
 ```sh
 pip install pyxel
 ```
 
 ### Mac
 
+[Python3](https://www.python.org/)と[glfw](http://www.glfw.org/)をインストールをした後に、`pip`コマンドでPyxelをインストールします。
+
+[Homebrew](https://brew.sh/)を導入している場合は、以下のコマンドで必要なパッケージを一通りインストールできます。
+
 ```sh
-brew install glfw
+brew install python3 glfw
 pip3 install pyxel
 ```
 
 ### サンプルのインストール
 
-カレントディレクトリにPyxelのサンプルをコピーする。
+Pyxelインストール後に、以下のコマンドでカレントディレクトリにPyxelのサンプルコード一式をコピーできます。
 
 ```sh
 install_pyxel_examples
@@ -57,7 +63,63 @@ install_pyxel_examples
 
 ## 使い方
 
-- 作成中
+### アプリケーションの作成方法
+
+Pythonコード内でPyxelモジュールをインポートして、`init`関数でウィンドウサイズを指定した後に、`run`関数でPyxelアプリケーションを開始します。
+
+```python
+import pyxel
+
+pyxel.init(160, 120)
+
+def update():
+    if pyxel.btnp(pyxel.KEY_Q):
+        pyxel.quit()
+
+def draw():
+    pyxel.cls(0)
+    pyxel.rect(10, 10, 20, 20, 11)
+
+pyxel.run(update, draw)
+```
+
+`run`関数にはフレーム更新の処理を行う`update`関数と、描画処理を行う`draw`関数を指定します。
+
+実際のアプリケーションでは、以下のようにクラスでPyxelの処理をラップすることがおすすめです。
+
+```python
+import pyxel
+
+class App:
+    def __init__(self):
+        pyxel.init(160, 120)
+        self.x = 0
+        pyxel.run(self.update, self.draw)
+
+    def update(self):
+        self.x = (self.x + 1) % pyxel.width
+
+    def draw(self):
+        pyxel.cls(0)
+        pyxel.rect(self.x, 0, self.x + 7, 7, 9)
+
+App()
+```
+
+### 特殊操作
+
+Pyxelアプリケーション実行中に、以下の特殊操作を行うことができます。
+
+- `Alt`(`Option`)+`1`  
+スクリーンショットをデスクトップに保存する
+- `Alt`(`Option`)+`2`  
+画面キャプチャ動画の開始時刻をリセットする
+- `Alt`(`Option`)+`3`  
+画面キャプチャ動画(gif)をデスクトップに保存する(最大30秒)
+- `Alt`(`Option`)+`0`  
+パフォーマンスモニタ(fps、update時間、draw時間)の表示を切り替える
+- `Alt`(`Option`)+`Enter`  
+フルスクリーン表示を切り替える
 
 ## APIリファレンス
 
@@ -73,7 +135,7 @@ install_pyxel_examples
 Pyxelアプリを画面サイズ(width, height)で初期化する
 
 - `run(update, draw)`  
-Pyxelアプリを開始し、フレーム更新時にupdate、描画時にdrawを呼ぶ
+Pyxelアプリを開始し、フレーム更新時にupdate関数、描画時にdraw関数を呼ぶ
 
 - `quit()`  
 現在フレーム終了時にPyxelアプリを終了する
@@ -83,10 +145,10 @@ Pyxelアプリを開始し、フレーム更新時にupdate、描画時にdraw�
 現在のマウスカーソル座標
 
 - `btn(key)`  
-keyが押されていたらTrue、押されていなければFalseを返す([キー定義一覧]())
+keyが押されていたらTrue、押されていなければFalseを返す([キー定義一覧](https://github.com/kitao/pyxel/blob/master/pyxel/constants.py))
 
 - `btnp(key, [hold], [period])`  
-そのフレームにキーが押されたらTrue、押されなければFalseを返す。holdとperiodを指定すると、holdフレーム以上ボタンを押し続けた際にもperiod周期でTrueが返る
+そのフレームにキーが押されたらTrue、押されなければFalseを返す。holdとperiodを指定すると、holdフレーム以上ボタンを押し続けた際にperiodフレーム間隔でTrueが返る
 
 - `btnr(key)`  
 そのフレームにキーが離されたらTrue、離されなければFalseを返す
@@ -98,13 +160,13 @@ keyが押されていたらTrue、押されていなければFalseを返す([キ
 例：`pyxel.image(0).load(0, 0, "title.png")`
 
 - `clip(x1, y1, x2, y2)`  
-画面の描画領域を(x1, y1)-(x2, y2)にする。clip()で描画領域をリセットする
+画面の描画領域を(x1, y1)-(x2, y2)にする。`clip()`で描画領域をリセットする
 
 - `pal(col1, col2)`  
-色col1をcol2として描画する。pal()で初期状態にリセットする
+描画時に色col1をcol2に置き換える。`pal()`で初期状態にリセットする
 
 - `cls(col)`  
-画面を色col1でクリアする
+画面を色colでクリアする
 
 - `pix(x, y, col)`  
 (x, y)に色colのピクセルを描画する
@@ -125,7 +187,7 @@ keyが押されていたらTrue、押されていなければFalseを返す([キ
 (x, y)に半径r、色colの円の輪郭を描画する
 
 - `blt(x, y, no, sx, sy, w, h, [colkey])`  
-(x, y)にイメージno(0-3)の(sx, sy)から(w, h)サイズの画像をコピーする。colkeyに色を設定すると透明色として扱われる
+(x, y)にイメージno(0-3)の(sx, sy)からサイズ(w, h)の画像をコピーする。colkeyに色を指定すると透明色として扱われる
 
 - `text(x, y, s, col)`  
 (x, y)に色colで文字列sを描画する
@@ -148,25 +210,25 @@ keyが押されていたらTrue、押されていなければFalseを返す([キ
 イメージの幅と高さ
 
 - `data`  
-イメージのデータ(Numpy配列)
+イメージのデータ(NumPy配列)
 
 - `resize(width, height)`  
 イメージのサイズを(width, height)に変更する
 
 - `set(x, y, data)`  
-(x, y)に文字列のリストでイメージを設定する  
+(x, y)に文字列のリストでイメージを設定する   
 例：`pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
-- `load(x, y, filenamse)`  
+- `load(x, y, filename)`  
 (x, y)にpngファイルを読み込む
 
-- `copy(x, y, no, width, height)`  
-(x, y)にイメージno(0-3)から(width, height)のサイズをコピーする
+- `copy(x, y, no, sx, sy, width, height)`  
+(x, y)にイメージno(0-3)の(sx, sy)からサイズ(width, height)の画像をコピーする
 
 ### サウンドクラス
 
 - `note`  
-音程(0-127)のリスト(33=A2=440Hz)
+音程(0-127)のリスト(33='A2'=440Hz)
 
 - `tone`  
 音色(0:Triagnle/1:Square/2:Pulse/3:Noise)のリスト
@@ -178,23 +240,23 @@ keyが押されていたらTrue、押されていなければFalseを返す([キ
 エフェクト(0:None/1:Slide/2:Vibrato/3:FadeOut)のリスト
 
 - `speed`  
-1音の長さ(120で1音1秒)
+1音の長さ(120=1音1秒)
 
 - `set(note, tone, volume, effect, speed)`  
-文字列で音程、音色、音量、エフェクトを設定する
+文字列で音程、音色、音量、エフェクトを設定する。音色、音量、エフェクトの長さが音程より短い場合は、先頭から繰り返される
 
 - `set_note(note)`  
-'CDEFGAB'+'#-'+'0123'または'R'の文字列で音程(0-127)を設定する  
+'CDEFGAB'+'#-'+'0123'または'R'の文字列で音程を設定する  
 例：`pyxel.sound(0).set_note('G2B-2RD3RF3')`
 
 - `set_tone(tone)`  
-'TSPN'の文字列で音色(0-3)を設定する
+'TSPN'の文字列で音色を設定する
 
 - `set_volume(volume)`  
-'01234567'の文字列で音量(0-7)を設定する
+'01234567'の文字列で音量を設定する
 
 - `set_effect(effect)`  
-'NSVF'の文字列でエフェクト(0-3)を設定する
+'NSVF'の文字列でエフェクトを設定する
 
 ## ライセンス
 
