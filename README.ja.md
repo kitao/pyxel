@@ -121,6 +121,18 @@ Pyxelアプリケーション実行中に、以下の特殊操作を行うこと
 - `Alt(Option)+Enter`  
 フルスクリーン表示を切り替える
 
+### 画像の作成方法
+
+Pyxel向けの画像を作成するには以下の方法があります。
+
+- `Image.set`命令で文字列のリストから作成する
+- `Image.load`命令でPyxel向け配色のpngファイルを読み込む
+- Pyxelエディタで作成する(将来サポート予定)
+
+`Image.set`、`Image.load`の使い方はAPIリファレンスを参照してください。
+
+Pyxelは[PICO-8](https://www.lexaloffle.com/pico-8.php)と同じパレットを使用しているため、Pyxel向け配色のpngファイルを作成する場合は、[Aseprite](https://www.aseprite.org/)をPICO-8パレット設定にして使用するのがおすすめです。
+
 ## APIリファレンス
 
 ### システム
