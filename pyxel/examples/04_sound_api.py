@@ -18,14 +18,14 @@ class App:
         ])
 
         pyxel.sound(0).set(
-            'e2e2c2g1 g1g1c2e2 d2d2d2g2 g2f2e2d2'
+            'e2e2c2g1 g1g1c2e2 d2d2d2g2 g2g2rr'
             'c2c2a1e1 e1e1a1c2 b1b1b1e2 e2e2rr', 'p', '6',
-            'vffn fnff vffs fnff vffn fnff vffs vfnn', 30)
+            'vffn fnff vffs vfnn', 30)
 
         pyxel.sound(1).set(
             'r a1b1c2 b1b1c2d2 g2g2g2g2 c2c2d2e2'
-            'f2f2f2e2 f2e2d2c2 d2d2d2d2 g2g2r r ', 'p', '6',
-            'nnff vfff vvvv sfff svff vfff vvvv svnn', 30)
+            'f2f2f2e2 f2e2d2c2 d2d2d2d2 g2g2r r ', 's', '6',
+            'nnff vfff vvvv vfff svff vfff vvvv svnn', 30)
 
         pyxel.sound(2).set(
             'c1g1c1g1 c1g1c1g1 b0g1b0g1 b0g1b0g1'
@@ -86,7 +86,7 @@ class App:
 
         pyxel.text(6, 6, 'sound(no).set(note,tone,volume,effect,speed)', 7)
         pyxel.rect(12, 16, 188, 52, 2)
-        pyxel.text(16, 20, 'note  :[CDEFGAB] + [ #-] + [0-4]', 9)
+        pyxel.text(16, 20, 'note  :[CDEFGAB] + [ #-] + [0-4] or [R]', 9)
         pyxel.text(16, 28, 'tone  :[T]riangle [S]quare [P]ulse [N]oise', 9)
         pyxel.text(16, 36, 'volume:[0-7]', 9)
         pyxel.text(16, 44, 'effect:[N]one [S]lide [V]ibrato [F]adeOut', 9)
