@@ -354,19 +354,14 @@ class Renderer:
 
                 data[MODE_TYPE_INDEX] = DRAW_TYPE_TEXT
                 data[MODE_COL_INDEX] = col
-                data[MODE_IMAGE_INDEX] = IMAGE_COUNT - 1
 
                 data[POS_Y1_INDEX] = y
-
-                data[SIZE_W_INDEX] = FONT_WIDTH
-                data[SIZE_H_INDEX] = FONT_HEIGHT
 
                 first = False
             else:
                 data = self._copy_draw_data()
 
             data[POS_X1_INDEX] = x
-            data[POS_X2_INDEX] = (code % FONT_ROW_COUNT) * FONT_WIDTH
-            data[POS_Y2_INDEX] = (code // FONT_ROW_COUNT) * FONT_HEIGHT
+            data[POS_X2_INDEX] = code
 
             x += FONT_WIDTH
