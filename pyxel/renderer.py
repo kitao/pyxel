@@ -96,18 +96,18 @@ class Renderer:
         data[3, :] = [1, -1, 1, 1]
 
     def render(self, left, bottom, width, height, palette, clear_color):
+        # restore previous frame
+        gl.glDisable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
+        gl.glDisable(gl.GL_POINT_SPRITE)
+        gl.glViewport(0, 0, int(self._width), int(self._height))
+
+        self._scale_shader.begin(self._normal_scale_att, [self._scale_tex])
+        self._scale_shader.set_uniform('u_texture', '1i', 0)
+        gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, 4)
+        self._scale_shader.end()
+
+        # render drawing commands
         if self._cur_draw_count > 0:
-            # restore previous frame
-            gl.glDisable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
-            gl.glDisable(gl.GL_POINT_SPRITE)
-            gl.glViewport(0, 0, int(self._width), int(self._height))
-
-            self._scale_shader.begin(self._normal_scale_att, [self._scale_tex])
-            self._scale_shader.set_uniform('u_texture', '1i', 0)
-            gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, 4)
-            self._scale_shader.end()
-
-            # render drawing commands
             gl.glEnable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
             gl.glEnable(gl.GL_POINT_SPRITE)
 
@@ -135,10 +135,12 @@ class Renderer:
             gl.glDrawArrays(gl.GL_POINTS, 0, self._cur_draw_count)
             self._draw_shader.end()
             self._scale_tex.copy_screen(0, 0, 0, 0, self._width, self._height)
-            capture_image = gl.glReadPixels(0, 0, self._width, self._height,
-                                            gl.GL_RGB, gl.GL_UNSIGNED_BYTE)
 
             self._cur_draw_count = 0
+
+        # capture screen
+        capture_image = gl.glReadPixels(0, 0, self._width, self._height,
+                                        gl.GL_RGB, gl.GL_UNSIGNED_BYTE)
 
         # clear screen
         r, g, b = self._int_to_rgb(clear_color)
