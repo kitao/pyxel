@@ -74,7 +74,8 @@ class Image:
         src_data = np.array(pil_image.getdata()).reshape(height, width)
         self._data[dest_y:dest_y + height, dest_x:dest_x + width] = src_data
 
-    def copy(self, x, y, no, width, height):
+    def copy(self, x, y, no, sx, sy, width, height):
+        # TODO: refrect sx and sy
         image = pyxel.image(no)
 
         rect = self._get_copy_rect(x, y, width, height)
