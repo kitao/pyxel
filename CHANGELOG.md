@@ -4,6 +4,7 @@
 - Modified the example #1 to use the App class
 - Renamed and modified the example #2
 - Remove the logo command and added the logo image
+- Improved the performance of the text command
 
 ## 0.6.0
 - Changed the properties of the Sound class to public
