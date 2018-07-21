@@ -8,7 +8,8 @@ import pyxel
 
 class Image:
     def __init__(self, width, height):
-        self.resize(width, height)
+        self._tex = GLTexture(width, height, 1, nearest=True)
+        self._data = self._tex.data
 
     @property
     def width(self):
@@ -22,10 +23,6 @@ class Image:
     def data(self):
         self._tex.update()
         return self._data
-
-    def resize(self, width, height):
-        self._tex = GLTexture(width, height, 1, nearest=True)
-        self._data = self._tex.data
 
     def set(self, x, y, data):
         width = len(data[0])
