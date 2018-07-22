@@ -147,7 +147,7 @@ Pyxelは[PICO-8](https://www.lexaloffle.com/pico-8.php)と同じパレットを�
 Pyxelアプリを画面サイズ(width, height)で初期化する
 
 - `run(update, draw)`  
-Pyxelアプリを開始し、フレーム更新時にupdate関数、描画時にdraw関数を呼ぶ
+Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時に`draw`関数を呼ぶ
 
 - `quit()`  
 現在フレーム終了時にPyxelアプリを終了する

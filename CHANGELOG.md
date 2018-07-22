@@ -5,6 +5,8 @@
 - Renamed and modified the example #2
 - Remove the logo command and added the logo image
 - Improved the performance of the text command
+- Updated the README.md and README.ja.md
+- Replaced the example #2
 
 ## 0.6.0
 - Changed the properties of the Sound class to public
