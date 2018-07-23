@@ -29,8 +29,8 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 - 16色固定パレット
 - 128x128サイズ、4画像バンク
 - 4音同時再生、定義可能な64サウンド
-- キーボード、マウス、ジョイスティック(予定)
-- 画像・サウンド編集ツール(予定)
+- キーボード、マウス、ジョイスティック (予定)
+- 画像・サウンド編集ツール (予定)
 
 ## インストール方法
 
@@ -46,7 +46,7 @@ pip install pyxel
 
 [Python3](https://www.python.org/)と[glfw](http://www.glfw.org/)をインストールをした後に、`pip`コマンドでPyxelをインストールします。
 
-[Homebrew](https://brew.sh/)を導入している場合は、以下のコマンドで必要なパッケージが一通りインストールされます。
+[Homebrew](https://brew.sh/)を導入している環境では、以下のコマンドで必要なパッケージが一通りインストールできます。
 
 ```sh
 brew install python3 glfw
@@ -55,7 +55,7 @@ pip3 install pyxel
 
 ### サンプルのインストール
 
-Pyxelインストール後に、以下のコマンドでカレントディレクトリにPyxelのサンプルコード一式をコピーします。
+Pyxelインストール後に、以下のコマンドでカレントディレクトリにPyxelのサンプルコード一式をコピーできます。
 
 ```sh
 install_pyxel_examples
@@ -83,9 +83,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-`run`関数にはフレーム更新の処理を行う`update`関数と、描画処理を行う`draw`関数を指定します。
+`run`関数の引数にはフレーム更新処理を行う`update`関数と、描画処理を行う`draw`関数を指定します。
 
-実際のアプリケーションでは、以下のようにクラスでPyxelの処理をラップすることがおすすめです。
+実際のアプリケーションでは、以下のようにクラスでPyxelの処理をラップするのがおすすめです。
 
 ```python
 import pyxel
@@ -113,21 +113,21 @@ Pyxelアプリケーション実行中に、以下の特殊操作を行うこと
 - `Alt(Option)+1`  
 スクリーンショットをデスクトップに保存する
 - `Alt(Option)+2`  
-画面キャプチャ動画の開始時刻をリセットする
+画面キャプチャ動画の録画開始時刻をリセットする
 - `Alt(Option)+3`  
-画面キャプチャ動画(gif)をデスクトップに保存する(最大30秒)
+画面キャプチャ動画 (gif) をデスクトップに保存する (最大30秒)
 - `Alt(Option)+0`  
-パフォーマンスモニタ(fps、update時間、draw時間)の表示を切り替える
+パフォーマンスモニタ (fps、update時間、draw時間) の表示を切り替える
 - `Alt(Option)+Enter`  
 フルスクリーン表示を切り替える
 
 ### 画像の作成方法
 
-Pyxel向けの画像を作成するには以下の方法があります。
+Pyxel用の画像を作成するには以下の方法があります。
 
-- `Image.set`命令で文字列のリストから作成する
-- `Image.load`命令でPyxel向け配色のpngファイルを読み込む
-- Pyxelエディタで作成する(将来サポート予定)
+- `Image.set`関数で文字列のリストから作成する
+- `Image.load`関数でPyxel向け配色のpngファイルを読み込む
+- Pyxelエディタで作成する (開発中)
 
 `Image.set`、`Image.load`の使い方はAPIリファレンスを参照してください。
 
@@ -144,7 +144,8 @@ Pyxelは[PICO-8](https://www.lexaloffle.com/pico-8.php)と同じパレットを�
 経過フレーム数
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color])`  
-Pyxelアプリを画面サイズ(width, height)で初期化する
+Pyxelアプリを画面サイズ (`width`, `height`) で初期化する  
+`caption`でウィンドウタイトル、`scale`で表示倍率、`palette`でパレット色、`fps`で動作フレームレート、`border_width`と`border_color`で画面外側のマージン幅と色を指定できる
 
 - `run(update, draw)`  
 Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時に`draw`関数を呼ぶ
@@ -157,64 +158,64 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 現在のマウスカーソル座標
 
 - `btn(key)`  
-keyが押されていたらTrue、押されていなければFalseを返す([キー定義一覧](https://github.com/kitao/pyxel/blob/master/pyxel/constants.py))
+`key`が押されていたら`True`、押されていなければ`False`を返す ([キー定義一覧](https://github.com/kitao/pyxel/blob/master/pyxel/constants.py))
 
 - `btnp(key, [hold], [period])`  
-そのフレームにキーが押されたらTrue、押されなければFalseを返す。holdとperiodを指定すると、holdフレーム以上ボタンを押し続けた際にperiodフレーム間隔でTrueが返る
+そのフレームに`key`が押されたら`True`、押されなければ`False`を返す。`hold`と`period`を指定すると、`hold`フレーム以上ボタンを押し続けた際に`period`フレーム間隔で`True`が返る
 
 - `btnr(key)`  
-そのフレームにキーが離されたらTrue、離されなければFalseを返す
+そのフレームに`key`が離されたら`True`、離されなければ`False`を返す
 
 ### グラフィックス
 
 - `image(no)`  
-イメージno(0-3)を操作する(イメージクラスを参照のこと)  
+イメージ`no` (0-3) を操作する (イメージクラスを参照のこと)  
 例：`pyxel.image(0).load(0, 0, "title.png")`
 
 - `clip(x1, y1, x2, y2)`  
-画面の描画領域を(x1, y1)-(x2, y2)にする。`clip()`で描画領域をリセットする
+画面の描画領域を (`x1`, `y1`)-(`x2`, `y2`) にする。`clip()`で描画領域をリセットする
 
 - `pal(col1, col2)`  
-描画時に色col1をcol2に置き換える。`pal()`で初期状態にリセットする
+描画時に色`col1`を`col2`に置き換える。`pal()`で初期状態にリセットする
 
 - `cls(col)`  
-画面を色colでクリアする
+画面を色`col`でクリアする
 
 - `pix(x, y, col)`  
-(x, y)に色colのピクセルを描画する
+(`x`, `y`) に色`col`のピクセルを描画する
 
 - `line(x1, y1, x2, y2, col)`  
-(x1, y1)-(x2, y2)に色colの直線を描画する
+色`col`の直線を (`x1`, `y1`)-(`x2`, `y2`) に描画する
 
 - `rect(x1, y1, x2, y2, col)`  
-(x1, y1)-(x2, y2)に色colの矩形を描画する
+色`col`の矩形を (`x1`, `y1`)-(`x2`, `y2`) に描画する
 
 - `rectb(x1, y1, x2, y2, col)`  
-(x1, y1)-(x2, y2)に色colの矩形の輪郭を描画する
+色`col`の矩形の輪郭線を (`x1`, `y1`)-(`x2`, `y2`) に描画する
 
 - `circ(x, y, r, col)`  
-(x, y)に半径r、色colの円を描画する
+半径`r`、色`col`の円を (`x`, `y`) に描画する
 
 - `circb(x, y, r, col)`  
-(x, y)に半径r、色colの円の輪郭を描画する
+半径`r`、色`col`の円の輪郭線を (`x`, `y`) に描画する
 
 - `blt(x, y, no, sx, sy, w, h, [colkey])`  
-(x, y)にイメージno(0-3)の(sx, sy)からサイズ(w, h)の画像をコピーする。colkeyに色を指定すると透明色として扱われる
+(`x`, `y`) にイメージ`no` (0-3) の (`sx`, `sy`) からサイズ (`w`, `h`) の画像をコピーする。`w`、`h`それぞれに負の値を設定すると水平、垂直方向に反転する。`colkey`に色を指定すると透明色として扱われる
 
 - `text(x, y, s, col)`  
-(x, y)に色colで文字列sを描画する
+色`col`の文字列`s`を (`x`, `y`) に描画する
 
 ### オーディオ
 
 - `sound(no)`  
-サウンドno(0-63)を操作する(サウンドクラスを参照のこと)  
+サウンド`no` (0-63) を操作する (サウンドクラスを参照のこと)  
 例：`pyxel.sound(0).speed = 60`
 
 - `play(ch, no, loop=False)`  
-チャンネルch(0-3)でサウンドno(0-63)を再生する。noがリストの場合順に再生する
+チャンネル`ch` (0-3) でサウンド`no` (0-63) を再生する。`no`がリストの場合順に再生する
 
 - `stop(ch)`  
-チャンネルch(0-3)の再生を停止する
+チャンネル`ch` (0-3) の再生を停止する
 
 ### イメージクラス
 
@@ -222,37 +223,37 @@ keyが押されていたらTrue、押されていなければFalseを返す([キ
 イメージの幅と高さ
 
 - `data`  
-イメージのデータ(NumPy配列)
+イメージのデータ (NumPy配列)
 
 - `resize(width, height)`  
-イメージのサイズを(width, height)に変更する
+イメージのサイズを (`width`, `height`) に変更する
 
 - `set(x, y, data)`  
-(x, y)に文字列のリストでイメージを設定する   
+(`x`, `y`) に文字列のリストでイメージを設定する   
 例：`pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
 - `load(x, y, filename)`  
-(x, y)にpngファイルを読み込む
+(`x`, `y`) にpngファイルを読み込む
 
 - `copy(x, y, no, sx, sy, width, height)`  
-(x, y)にイメージno(0-3)の(sx, sy)からサイズ(width, height)の画像をコピーする
+(`x`, `y`) にイメージ`no` (0-3) の (`sx`, `sy`) からサイズ (`width`, `height`) の画像をコピーする
 
 ### サウンドクラス
 
 - `note`  
-音程(0-127)のリスト(33='A2'=440Hz)
+音程 (0-127) のリスト (33='A2'=440Hz)
 
 - `tone`  
-音色(0:Triagnle/1:Square/2:Pulse/3:Noise)のリスト
+音色 (0:Triagnle/1:Square/2:Pulse/3:Noise) のリスト
 
 - `volume`  
-音量(0-7)のリスト
+音量 (0-7) のリスト
 
 - `effect`  
-エフェクト(0:None/1:Slide/2:Vibrato/3:FadeOut)のリスト
+エフェクト (0:None/1:Slide/2:Vibrato/3:FadeOut)のリスト
 
 - `speed`  
-1音の長さ(120=1音1秒)
+1音の長さ (120=1音1秒)
 
 - `set(note, tone, volume, effect, speed)`  
 文字列で音程、音色、音量、エフェクトを設定する。音色、音量、エフェクトの長さが音程より短い場合は、先頭から繰り返される
