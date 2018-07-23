@@ -250,7 +250,7 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 音量 (0-7) のリスト
 
 - `effect`  
-エフェクト (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)のリスト
+エフェクト (0:None / 1:Slide / 2:Vibrato / 3:FadeOut) のリスト
 
 - `speed`  
 1音の長さ (120 = 1音1秒)
