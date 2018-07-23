@@ -170,7 +170,7 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 
 - `image(no)`  
 イメージ`no` (0-3) を操作する (イメージクラスを参照のこと)  
-例：`pyxel.image(0).load(0, 0, "title.png")`
+例：`pyxel.image(0).load(0, 0, 'title.png')`
 
 - `clip(x1, y1, x2, y2)`  
 画面の描画領域を (`x1`, `y1`)-(`x2`, `y2`) にする。`clip()`で描画領域をリセットする
@@ -241,19 +241,19 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 ### サウンドクラス
 
 - `note`  
-音程 (0-127) のリスト (33='A2'=440Hz)
+音程 (0-127) のリスト (33 = 'A2' = 440Hz)
 
 - `tone`  
-音色 (0:Triagnle/1:Square/2:Pulse/3:Noise) のリスト
+音色 (0:Triagnle / 1:Square / 2:Pulse / 3:Noise) のリスト
 
 - `volume`  
 音量 (0-7) のリスト
 
 - `effect`  
-エフェクト (0:None/1:Slide/2:Vibrato/3:FadeOut)のリスト
+エフェクト (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)のリスト
 
 - `speed`  
-1音の長さ (120=1音1秒)
+1音の長さ (120 = 1音1秒)
 
 - `set(note, tone, volume, effect, speed)`  
 文字列で音程、音色、音量、エフェクトを設定する。音色、音量、エフェクトの長さが音程より短い場合は、先頭から繰り返される

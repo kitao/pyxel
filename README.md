@@ -109,7 +109,7 @@ App()
 
 ### Special Controls
 
-The following special controls can be performed while a Pyxel application is running:
+The following special controls can be performed while a Pyxel application is running:
 
 - `Alt(Option)+1`  
 Save the screenshot to the desktop
@@ -171,7 +171,7 @@ Return `True` if `key` is released at that frame, otherwise return `False`
 
 - `image(no)`  
 Operate the Image `no`(0-3) (see Image class)
-e.g. `pyxel.image(0).load(0, 0, "title.png")`
+e.g. `pyxel.image(0).load(0, 0, 'title.png')`
 
 - `clip(x1, y1, x2, y2)`  
 Set the drawing area of the screen to (`x1`, `y1`)-(`x2`, `y2`). Reset the drawing area with `clip()`
@@ -242,19 +242,19 @@ Copy the image of size (`width`, `height`) from (`sx`, `sy`) of the Image `no`(0
 ### Sound Class
 
 - `note`  
-List of note(0-127) (33='A2'=440Hz)
+List of note(0-127) (33 = 'A2' = 440Hz)
 
 - `tone`  
-List of tone(0:Triagnle/1:Square/2:Pulse/3:Noise)
+List of tone(0:Triagnle / 1:Square / 2:Pulse / 3:Noise)
 
 - `volume`  
 List of volume(0-7)
 
 - `effect`  
-List of effects(0:None/1:Slide/2:Vibrato/3:FadeOut)
+List of effects(0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
 
 - `speed`  
-The length of one note(120=1 note=1 second)
+The length of one note(120 = 1 second per tone)
 
 - `set(note, tone, volume, effect, speed)`  
 Set a note, tone, volume, and efffect with a string. If the tone, volume, and effect length are shorter than the note, it is repeated from the beginning
