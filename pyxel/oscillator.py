@@ -55,15 +55,18 @@ class Oscillator:
 
         return output
 
-    def _triangle(self, period, phase):
+    @staticmethod
+    def _triangle(period, phase):
         x = (phase / period + 0.25) % 1
         return (abs(x * 4 - 2) - 1)
 
-    def _square(self, period, phase):
+    @staticmethod
+    def _square(period, phase):
         x = (phase / period) % 1
         return (x < 0.5 and 1 or -1) * 0.2
 
-    def _pulse(self, period, phase):
+    @staticmethod
+    def _pulse(period, phase):
         x = (phase / period) % 1
         return (x < 0.25 and 1 or -1) * 0.2
 
