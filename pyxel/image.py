@@ -8,7 +8,8 @@ import pyxel
 
 class Image:
     def __init__(self, width, height):
-        self.resize(width, height)
+        self._tex = GLTexture(width, height, 1, nearest=True)
+        self._data = self._tex.data
 
     @property
     def width(self):
@@ -23,23 +24,20 @@ class Image:
         self._tex.update()
         return self._data
 
-    def resize(self, width, height):
-        self._tex = GLTexture(width, height, 1, nearest=True)
-        self._data = self._tex.data
-
     def set(self, x, y, data):
-        width = len(data[0])
-        height = len(data)
+        sw = len(data[0])
+        sh = len(data)
 
-        rect = self._get_copy_rect(x, y, width, height)
+        rect = self._get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height,
+                                   sw, sh)
         if not rect:
             return
-        src_x, src_y, dest_x, dest_y, width, height = rect
+        sx, sy, dx, dy, cw, ch = rect
 
         src_data = np.array(
             [list(map(lambda x: int(x, 16), line)) for line in data])
-        src_data = src_data[src_y:src_y + height, src_x:src_x + width]
-        self._data[dest_y:dest_y + height, dest_x:dest_x + width] = src_data
+        src_data = src_data[sy:sy + ch, sx:sx + cw]
+        self._data[dy:dy + ch, dx:dx + cw] = src_data
 
     def load(self, x, y, filename):
         dirname = os.path.dirname(inspect.stack()[-1].filename)
@@ -48,12 +46,13 @@ class Image:
         pil_image = PIL.Image.open(filename).convert('RGB')
         pil_image.load()
 
-        width, height = pil_image.size
+        sw, sh = pil_image.size
 
-        rect = self._get_copy_rect(x, y, width, height)
+        rect = self._get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height,
+                                   sw, sh)
         if not rect:
             return
-        src_x, src_y, dest_x, dest_y, width, height = rect
+        sx, sy, dx, dy, cw, ch = rect
 
         palette = []
         for color in pyxel._app._palette:
@@ -68,49 +67,56 @@ class Image:
 
         im = pil_image.im.convert('P', 0, palette_image.im)
         pil_image = pil_image._new(im)
-        pil_image = pil_image.crop((src_x, src_y, src_x + width,
-                                    src_y + height))
+        pil_image = pil_image.crop((sx, sy, sx + cw, sy + ch))
 
-        src_data = np.array(pil_image.getdata()).reshape(height, width)
-        self._data[dest_y:dest_y + height, dest_x:dest_x + width] = src_data
+        src_data = np.array(pil_image.getdata()).reshape(ch, cw)
+        self._data[dy:dy + ch, dx:dx + cw] = src_data
 
     def copy(self, x, y, no, sx, sy, width, height):
-        # TODO: refrect sx and sy
         image = pyxel.image(no)
 
-        rect = self._get_copy_rect(x, y, width, height)
+        rect = self._get_copy_rect(sx, sy, image.width, image.height, x, y,
+                                   self.width, self.height, width, height)
         if not rect:
             return
-        src_x, src_y, dest_x, dest_y, width, height = rect
+        sx, sy, dx, dy, cw, ch = rect
 
-        src_data = image._data[src_y:src_y + height, src_x:src_x + width]
-        self._data[dest_y:dest_y + height, dest_x:dest_x + width] = src_data
+        src_data = image._data[sy:sy + ch, sx:sx + cw]
+        self._data[dy:dy + ch, dx:dx + cw] = src_data
 
-    def _get_copy_rect(self, dest_x, dest_y, width, height):
-        dest_width = self._tex.width
-        dest_height = self._tex.height
+    @staticmethod
+    def _get_copy_rect(sx, sy, sw, sh, dx, dy, dw, dh, cw, ch):
+        over_sx = max(-sx, 0)
+        over_sy = max(-sy, 0)
+        over_dx = max(-dx, 0)
+        over_dy = max(-dy, 0)
 
-        if (dest_x >= dest_width or dest_y >= dest_height or dest_x + width < 0
-                or dest_y + height < 0):
+        if over_sx > 0 or over_dx > 0:
+            cw -= max(over_sx, over_dx)
+            if over_sx > 0:
+                sx = 0
+            if over_dx > 0:
+                dx = 0
+
+        if over_sy > 0 or over_dy > 0:
+            ch -= max(over_sy, over_dy)
+            if over_sy > 0:
+                sy = 0
+            if over_dy > 0:
+                dy = 0
+
+        over_sx = max(sx + cw - sw, 0)
+        over_sy = max(sx + ch - sh, 0)
+        over_dx = max(dx + cw - dw, 0)
+        over_dy = max(dx + ch - dh, 0)
+
+        if over_sx > 0 or over_dx > 0:
+            cw -= max(over_sx, over_dx)
+
+        if over_sy > 0 or over_dy > 0:
+            ch -= max(over_sy, over_dy)
+
+        if cw > 0 and ch > 0:
+            return sx, sy, dx, dy, cw, ch
+        else:
             return None
-
-        src_x = 0
-        src_y = 0
-
-        if dest_x < 0:
-            src_x = -dest_x
-            width += dest_x
-            dest_x = 0
-
-        if dest_y < 0:
-            src_y = -dest_y
-            height += dest_y
-            dest_y = 0
-
-        if dest_x + width > dest_width:
-            width -= dest_x + width - dest_width
-
-        if dest_y + height > dest_height:
-            height -= dest_y + height - dest_height
-
-        return (src_x, src_y, dest_x, dest_y, width, height)
