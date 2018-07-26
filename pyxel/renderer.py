@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import OpenGL.GL as gl
 from .glwrapper import GLShader, GLAttribute, GLTexture
@@ -11,9 +12,10 @@ from .shaders import (
     SCALING_ATTRIBUTE_INFO,
 )
 from .constants import (
-    IMAGE_COUNT,
-    IMAGE_WIDTH,
-    IMAGE_HEIGHT,
+    RENDERER_MIN_TEXTURE_SIZE,
+    RENDERER_IMAGE_COUNT,
+    RENDERER_IMAGE_WIDTH,
+    RENDERER_IMAGE_HEIGHT,
     DRAW_MAX_COUNT,
     DRAW_TYPE_PIX,
     DRAW_TYPE_LINE,
@@ -27,7 +29,6 @@ from .constants import (
     FONT_MAX_CODE,
     FONT_WIDTH,
     FONT_HEIGHT,
-    FONT_ROW_COUNT,
     FONT_DATA,
 )
 
@@ -64,11 +65,12 @@ class Renderer:
         self._cur_draw_count = 0
 
         self._image_list = [
-            Image(IMAGE_WIDTH, IMAGE_HEIGHT) for _ in range(IMAGE_COUNT)
+            Image(RENDERER_IMAGE_WIDTH, RENDERER_IMAGE_HEIGHT)
+            for _ in range(RENDERER_IMAGE_COUNT)
         ]
         self._set_font_image(self._image_list[-1])
 
-        self.clip_pal_data = np.ndarray(8, np.float32)
+        self._clip_pal_data = np.ndarray(8, np.float32)
         self.clip()
         self.pal()
 
@@ -79,21 +81,31 @@ class Renderer:
 
         self._scale_shader = GLShader(SCALING_VERTEX_SHADER,
                                       SCALING_FRAGMENT_SHADER)
-        self._scale_tex = GLTexture(width, height, 3, nearest=True)
+
+        def largest_power_of_two(n):
+            return max(2**math.ceil(math.log(n, 2)), RENDERER_MIN_TEXTURE_SIZE)
+
+        tex_width = largest_power_of_two(width)
+        tex_height = largest_power_of_two(height)
+
+        self._scale_tex = GLTexture(tex_width, tex_height, 3, nearest=True)
+
+        u = width / tex_width
+        v = height / tex_height
 
         self._normal_scale_att = GLAttribute(SCALING_ATTRIBUTE_INFO, 4)
         data = self._normal_scale_att.data
-        data[0, :] = [-1, 1, 0, 1]
+        data[0, :] = [-1, 1, 0, v]
         data[1, :] = [-1, -1, 0, 0]
-        data[2, :] = [1, 1, 1, 1]
-        data[3, :] = [1, -1, 1, 0]
+        data[2, :] = [1, 1, u, v]
+        data[3, :] = [1, -1, u, 0]
 
         self._inverse_scale_att = GLAttribute(SCALING_ATTRIBUTE_INFO, 4)
         data = self._inverse_scale_att.data
         data[0, :] = [-1, 1, 0, 0]
-        data[1, :] = [-1, -1, 0, 1]
-        data[2, :] = [1, 1, 1, 0]
-        data[3, :] = [1, -1, 1, 1]
+        data[1, :] = [-1, -1, 0, v]
+        data[2, :] = [1, 1, u, 0]
+        data[3, :] = [1, -1, u, v]
 
     def render(self, left, bottom, width, height, palette, clear_color):
         # restore previous frame
@@ -181,7 +193,7 @@ class Renderer:
     def _next_draw_data(self):
         data = self._draw_att.data[self._cur_draw_count]
         data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
-             CLIP_PAL_COUNT] = self.clip_pal_data
+             CLIP_PAL_COUNT] = self._clip_pal_data
 
         if self._cur_draw_count < DRAW_MAX_COUNT - 1:
             self._cur_draw_count += 1
@@ -202,33 +214,33 @@ class Renderer:
 
     def clip(self, *args):
         if len(args) == 0:
-            self.clip_pal_data[0] = 0
-            self.clip_pal_data[1] = 0
-            self.clip_pal_data[2] = self._width
-            self.clip_pal_data[3] = self._height
+            self._clip_pal_data[0] = 0
+            self._clip_pal_data[1] = 0
+            self._clip_pal_data[2] = self._width
+            self._clip_pal_data[3] = self._height
         elif len(args) == 4:
             x1, y1, x2, y2 = args
-            self.clip_pal_data[0] = x1
-            self.clip_pal_data[1] = y1
-            self.clip_pal_data[2] = x2
-            self.clip_pal_data[3] = y2
+            self._clip_pal_data[0] = x1
+            self._clip_pal_data[1] = y1
+            self._clip_pal_data[2] = x2
+            self._clip_pal_data[3] = y2
         else:
             raise ValueError('invalid clip argument')
 
     def pal(self, *args):
         if len(args) == 0:
-            self.clip_pal_data[4] = 0x3210
-            self.clip_pal_data[5] = 0x7654
-            self.clip_pal_data[6] = 0xba98
-            self.clip_pal_data[7] = 0xfedc
+            self._clip_pal_data[4] = 0x3210
+            self._clip_pal_data[5] = 0x7654
+            self._clip_pal_data[6] = 0xba98
+            self._clip_pal_data[7] = 0xfedc
         elif len(args) == 2:
             col1, col2 = args
             index = col1 // 4 + 4
             shift = (col1 % 4) * 4
             value = col2 << shift
             mask = 0xffff ^ (0xf << shift)
-            base = int(self.clip_pal_data[index])
-            self.clip_pal_data[index] = base & mask | value
+            base = int(self._clip_pal_data[index])
+            self._clip_pal_data[index] = base & mask | value
         else:
             raise ValueError('invalid pal argument')
 

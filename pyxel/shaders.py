@@ -1,5 +1,5 @@
 from .constants import (
-    IMAGE_COUNT,
+    RENDERER_IMAGE_COUNT,
     DRAW_TYPE_PIX,
     DRAW_TYPE_LINE,
     DRAW_TYPE_RECT,
@@ -206,7 +206,7 @@ void main()
     v_max_clip = min(max(p1, p2), v_max_pos);
 }}
 """.format(
-    IMAGE_COUNT,
+    RENDERER_IMAGE_COUNT,
     DRAW_TYPE_PIX,
     DRAW_TYPE_LINE,
     DRAW_TYPE_RECT,
