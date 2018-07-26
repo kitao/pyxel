@@ -7,6 +7,9 @@
 - Improved the performance of the text command
 - Updated the README.md and README.ja.md
 - Replaced the example #2
+- Removed the resize method of the Image class
+- Changed the size of the Image to 256x256
+- Fixed the copy method of the Image class
 
 ## 0.6.0
 - Changed the properties of the Sound class to public

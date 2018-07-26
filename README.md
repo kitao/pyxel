@@ -28,7 +28,7 @@ Pyxel is open souce and free to use. Let's start making a retro game with Pyxel!
 - Run on both Windows and Mac
 - Code writing with Python3
 - Fixed 16 color palette
-- 128x128 sized 4 image banks
+- 256x256 sized 4 image banks
 - 4 channels with 64 definable sounds
 - Keyboard, mouse, and joystick(WIP) inputs
 - Image and sound editor (WIP)
@@ -213,7 +213,7 @@ Operate the Sound `no`(0-63) (see Sound class)
 e.g. `pyxel.sound(0).speed = 60`
 
 - `play(ch, no, loop=False)`  
-Play the Sound `no`(0-3) on channel `ch`(0-3). Play in order when `no` is a list
+Play the Sound `no`(0-63) on channel `ch`(0-3). Play in order when `no` is a list
 
 - `stop(ch)`  
 Stop playback of channel `ch`(0-3)
@@ -225,9 +225,6 @@ The width and height of the Image
 
 - `data`  
 The data of the Image (NumPy array)
-
-- `resize(width, height)`  
-Resize the size of the Image to (`width`, `height`)
 
 - `set(x, y, data)`  
 Set the image as a list of strings at (`x`, `y`)   
