@@ -72,37 +72,31 @@ class DrawCommand:
 
         return data
 
-    def clip(self, *args):
-        if len(args) == 0:
+    def clip(self, x1=None, y1=None, x2=None, y2=None):
+        if x1 is None:
             self._clip_pal_data[0] = 0
             self._clip_pal_data[1] = 0
             self._clip_pal_data[2] = self._width - 1
             self._clip_pal_data[3] = self._height - 1
-        elif len(args) == 4:
-            x1, y1, x2, y2 = args
+        else:
             self._clip_pal_data[0] = x1
             self._clip_pal_data[1] = y1
             self._clip_pal_data[2] = x2
             self._clip_pal_data[3] = y2
-        else:
-            raise ValueError('invalid clip argument')
 
-    def pal(self, *args):
-        if len(args) == 0:
+    def pal(self, col1=None, col2=None):
+        if col1 is None:
             self._clip_pal_data[4] = 0x3210
             self._clip_pal_data[5] = 0x7654
             self._clip_pal_data[6] = 0xba98
             self._clip_pal_data[7] = 0xfedc
-        elif len(args) == 2:
-            col1, col2 = args
+        else:
             index = col1 // 4 + 4
             shift = (col1 % 4) * 4
             value = col2 << shift
             mask = 0xffff ^ (0xf << shift)
             base = int(self._clip_pal_data[index])
             self._clip_pal_data[index] = base & mask | value
-        else:
-            raise ValueError('invalid pal argument')
 
     def cls(self, col):
         self.draw_count = 0
