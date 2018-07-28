@@ -256,17 +256,20 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 文字列で音程、音色、音量、エフェクトを設定する。音色、音量、エフェクトの長さが音程より短い場合は、先頭から繰り返される
 
 - `set_note(note)`  
-'CDEFGAB'+'#-'+'0123'または'R'の文字列で音程を設定する  
-例：`pyxel.sound(0).set_note('G2B-2RD3RF3')`
+'CDEFGAB'+'#-'+'0123'または'R'の文字列で音程を設定する。大文字と小文字を区別せず、空白は無視される  
+例：`pyxel.sound(0).set_note('G2B-2D3R RF3F3F3')`
 
 - `set_tone(tone)`  
-'TSPN'の文字列で音色を設定する
+'TSPN'の文字列で音色を設定する。大文字と小文字を区別せず、空白は無視される  
+例：`pyxel.sound(0).set_tone('TTSS PPPN')`
 
 - `set_volume(volume)`  
-'01234567'の文字列で音量を設定する
+'01234567'の文字列で音量を設定する。大文字と小文字を区別せず、空白は無視される  
+例：`pyxel.sound(0).set_volume('7777 7531')`
 
 - `set_effect(effect)`  
-'NSVF'の文字列でエフェクトを設定する
+'NSVF'の文字列でエフェクトを設定する。大文字と小文字を区別せず、空白は無視される  
+例：`pyxel.sound(0).set_effect('NFNF NVVS')`
 
 ## ライセンス
 

@@ -257,17 +257,20 @@ The length of one note(120 = 1 second per tone)
 Set a note, tone, volume, and efffect with a string. If the tone, volume, and effect length are shorter than the note, it is repeated from the beginning
 
 - `set_note(note)`  
-Set the note with a string consists of 'CDEFGAB'+'#-'+'0123' or 'R'  
-例：`pyxel.sound(0).set_note('G2B-2RD3RF3')`
+Set the note with a string consists of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored  
+e.g. `pyxel.sound(0).set_note('G2B-2D3R RF3F3F3')`
 
 - `set_tone(tone)`  
-Set the tone with a string consists of 'TSPN'
+Set the tone with a string consists of 'TSPN'. Case-insensitive and whitespace is ignored  
+e.g. `pyxel.sound(0).set_tone('TTSS PPPN')`
 
 - `set_volume(volume)`  
-Set the volume with a string consists of '01234567'
+Set the volume with a string consists of '01234567'. Case-insensitive and whitespace is ignored  
+e.g. `pyxel.sound(0).set_volume('7777 7531')`
 
 - `set_effect(effect)`  
-Set the effect with a string consists of 'NSVF'
+Set the effect with a string consists of 'NSVF'. Case-insensitive and whitespace is ignored  
+e.g. `pyxel.sound(0).set_effect('NFNF NVVS')`
 
 ## License
 
