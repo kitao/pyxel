@@ -12,11 +12,29 @@ class App:
         self.player_x = 72
         self.player_y = -16
         self.player_vy = 0
+        self.player_is_alive = True
         self.far_cloud = [(-10, 75), (40, 65), (90, 60)]
         self.near_cloud = [(10, 25), (70, 35), (120, 15)]
-        self.floor = [(i * 60, randint(10, 110), 40, False) for i in range(4)]
-        self.fruit = [(i * 60, randint(10, 110), randint(0, 2), True)
+        self.floor = [(i * 60, randint(8, 104), True) for i in range(4)]
+        self.fruit = [(i * 60, randint(0, 104), randint(0, 2), True)
                       for i in range(4)]
+
+        # bgm
+        a = 'c3e2g2c3 e2g2c3e2'
+        b = 'c3d2g2c3 d2g2c3d2'
+        pyxel.sound(0).set(a * 3 + b * 1, 't', '3', 'f', 30)
+        pyxel.sound(1).set('c1c1f0f0a0a0g0g0', 's', '6', 'nf', 120)
+        pyxel.play(0, 0, loop=True)
+        pyxel.play(1, 1, loop=True)
+
+        # jump sound
+        pyxel.sound(2).set('g1a#1d#2b2', 's', '7654', 's', 9)
+
+        # eat sound
+        pyxel.sound(3).set('g1c2f2a2c#2f#3', 'p', '6', 's', 4)
+
+        # fall sound
+        pyxel.sound(4).set('a3d#3a#2f#2d2b1g1d#1', 's', '77654321', 's', 10)
 
         pyxel.run(self.update, self.draw)
 
@@ -43,44 +61,51 @@ class App:
         self.player_vy = min(self.player_vy + 1, 8)
 
         if self.player_y > pyxel.height:
-            pass
+            if self.player_is_alive:
+                self.player_is_alive = False
+                pyxel.play(2, 4)
 
-        if self.player_y > 500:
-            self.score = 0
-            self.player_x = 72
-            self.player_y = -16
-            self.player_vy = 0
+            if self.player_y > 500:
+                self.score = 0
+                self.player_x = 72
+                self.player_y = -16
+                self.player_vy = 0
+                self.player_is_alive = True
 
-    def update_floor(self, x, y, width, is_falling):
-        if is_falling:
+    def update_floor(self, x, y, is_active):
+        if is_active:
+            if (self.player_x + 16 >= x and self.player_x <= x + 40
+                    and self.player_y + 16 >= y and self.player_y <= y + 8
+                    and self.player_vy > 0):
+                is_active = False
+                self.score += 10
+                self.player_vy = -12
+                pyxel.play(2, 2)
+        else:
             y += 6
-
-        if (not is_falling and self.player_x + 16 >= x
-                and self.player_x <= x + width and self.player_y + 16 >= y
-                and self.player_y <= y + 8 and self.player_vy > 0):
-            self.player_vy = -12
-            is_falling = True
 
         x -= 4
 
         if x < -40:
             x += 240
-            y = randint(10, 110)
-            is_falling = False
+            y = randint(8, 104)
+            is_active = True
 
-        return (x, y, width, is_falling)
+        return (x, y, is_active)
 
     def update_fruit(self, x, y, kind, is_active):
         if (is_active and abs(x - self.player_x) < 12
                 and abs(y - self.player_y) < 12):
             is_active = False
             self.score += (kind + 1) * 100
+            self.player_vy = min(self.player_vy, -8)
+            pyxel.play(2, 3)
 
         x -= 2
 
         if x < -40:
             x += 240
-            y = randint(10, 110)
+            y = randint(0, 104)
             kind = randint(0, 2)
             is_active = True
 
@@ -112,8 +137,8 @@ class App:
                 pyxel.blt(x + i * 160 - offset, y, 0, 0, 32, 56, 8, 12)
 
         # draw floors
-        for x, y, width, is_falling in self.floor:
-            pyxel.blt(x, y, 0, 0, 16, width, 8, 12)
+        for x, y, is_active in self.floor:
+            pyxel.blt(x, y, 0, 0, 16, 40, 8, 12)
 
         # draw fruits
         for x, y, kind, is_active in self.fruit:
