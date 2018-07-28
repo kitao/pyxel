@@ -6,26 +6,17 @@ class App:
     def __init__(self):
         pyxel.init(160, 120, caption='Pyxel Jump Game')
 
-        pyxel.image(0).load(0, 0, 'assets/jump_game_128x128.png')
+        pyxel.image(0).load(0, 0, 'assets/jump_game_160x120.png')
 
-        def add_offset(l, interval):
-            return [(x + interval * i, y) for (i, (x, y)) in enumerate(l)]
-
-        self.cloud1 = add_offset(
-            [(randint(-15, 15), randint(10, 80)) for _ in range(6)] * 2, 40)
-        self.cloud2 = add_offset(
-            [(randint(-20, 20), randint(-10, 30)) for i in range(3)] * 2, 80)
-        self.hill1 = add_offset(
-            [(randint(-10, 10), randint(70, 100)) for i in range(8)] * 2, 30)
-        self.hill2 = add_offset(
-            [(randint(-30, 30), randint(50, 80)) for i in range(4)] * 2, 60)
-
-        self.floor = [(i * 60, randint(10, 110), 40, False) for i in range(4)]
-
-        self.player_x = 10
-        self.player_y = 30
-        self.player_vy = 1
         self.score = 0
+        self.player_x = 72
+        self.player_y = -16
+        self.player_vy = 0
+        self.far_cloud = [(-10, 75), (40, 65), (90, 60)]
+        self.near_cloud = [(10, 25), (70, 35), (120, 15)]
+        self.floor = [(i * 60, randint(10, 110), 40, False) for i in range(4)]
+        self.fruit = [(i * 60, randint(10, 110), randint(0, 2), True)
+                      for i in range(4)]
 
         pyxel.run(self.update, self.draw)
 
@@ -38,18 +29,27 @@ class App:
         for i, v in enumerate(self.floor):
             self.floor[i] = self.update_floor(*v)
 
+        for i, v in enumerate(self.fruit):
+            self.fruit[i] = self.update_fruit(*v)
+
     def update_player(self):
         if pyxel.btn(pyxel.KEY_LEFT):
-            self.player_x -= 2
+            self.player_x = max(self.player_x - 2, 0)
 
         if pyxel.btn(pyxel.KEY_RIGHT):
-            self.player_x += 2
+            self.player_x = min(self.player_x + 2, pyxel.width - 16)
 
         self.player_y += self.player_vy
         self.player_vy = min(self.player_vy + 1, 8)
 
-        if self.player_y > 104:
-            self.player_vy = -12
+        if self.player_y > pyxel.height:
+            pass
+
+        if self.player_y > 500:
+            self.score = 0
+            self.player_x = 72
+            self.player_y = -16
+            self.player_vy = 0
 
     def update_floor(self, x, y, width, is_falling):
         if is_falling:
@@ -70,35 +70,61 @@ class App:
 
         return (x, y, width, is_falling)
 
+    def update_fruit(self, x, y, kind, is_active):
+        if (is_active and abs(x - self.player_x) < 12
+                and abs(y - self.player_y) < 12):
+            is_active = False
+            self.score += (kind + 1) * 100
+
+        x -= 2
+
+        if x < -40:
+            x += 240
+            y = randint(10, 110)
+            kind = randint(0, 2)
+            is_active = True
+
+        return (x, y, kind, is_active)
+
     def draw(self):
         pyxel.cls(12)
 
-        for x, y in self.cloud1:
-            x -= (pyxel.frame_count // 16) % 240
-            pyxel.blt(x, y, 0, 96, 40, 28, 16, 1)
+        # draw sky
+        pyxel.blt(0, 88, 0, 0, 88, 160, 32)
 
-        for x, y in self.cloud2:
-            x -= (pyxel.frame_count // 8) % 240
-            pyxel.blt(x, y, 0, 40, 32, 52, 24, 1)
+        # draw mountain
+        pyxel.blt(0, 88, 0, 0, 64, 160, 24, 12)
 
-        for x, y in self.hill1:
-            x -= (pyxel.frame_count // 4) % 240
-            pyxel.blt(x, y, 0, 40, 77, 22, 51, 1)
+        # draw forest
+        offset = pyxel.frame_count % 160
+        for i in range(2):
+            pyxel.blt(i * 160 - offset, 104, 0, 0, 48, 160, 16, 12)
 
-        for x, y in self.hill2:
-            x -= (pyxel.frame_count // 2) % 240
-            pyxel.blt(x, y, 0, 0, 56, 33, 72, 1)
+        # draw clouds
+        offset = (pyxel.frame_count // 16) % 160
+        for i in range(2):
+            for x, y in self.far_cloud:
+                pyxel.blt(x + i * 160 - offset, y, 0, 64, 32, 32, 8, 12)
 
-        pyxel.blt(self.player_x, self.player_y, 0, 16
-                  if self.player_vy > 0 else 0, 0, 16, 16, 1)
+        offset = (pyxel.frame_count // 8) % 160
+        for i in range(2):
+            for x, y in self.near_cloud:
+                pyxel.blt(x + i * 160 - offset, y, 0, 0, 32, 56, 8, 12)
 
+        # draw floors
         for x, y, width, is_falling in self.floor:
-            pyxel.blt(x, y, 0, 0, 16, width, 8, 1)
+            pyxel.blt(x, y, 0, 0, 16, width, 8, 12)
 
-        pyxel.blt(100, 30, 0, 32, 0, 16, 16, 1)
-        pyxel.blt(120, 40, 0, 48, 0, 16, 16, 1)
-        pyxel.blt(120, 60, 0, 64, 0, 16, 16, 1)
+        # draw fruits
+        for x, y, kind, is_active in self.fruit:
+            if is_active:
+                pyxel.blt(x, y, 0, 32 + kind * 16, 0, 16, 16, 12)
 
+        # draw player
+        pyxel.blt(self.player_x, self.player_y, 0, 16
+                  if self.player_vy > 0 else 0, 0, 16, 16, 12)
+
+        # draw score
         s = 'SCORE {:>4}'.format(self.score)
         pyxel.text(5, 4, s, 1)
         pyxel.text(4, 4, s, 7)
