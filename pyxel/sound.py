@@ -22,7 +22,6 @@ class Sound:
 
     def set_note(self, data):
         param_list = []
-        last_param = 0
         data = data.replace(' ', '').replace('\n', '').replace('\t',
                                                                '').lower()
 
@@ -46,22 +45,17 @@ class Sound:
                     param += int(c) * 12
                 else:
                     raise ValueError('invalid sound note')
-
-            elif c == '.':
-                param = last_param
             elif c == 'r':
                 param = -1
             else:
                 raise ValueError('invalid sound note')
 
             param_list.append(param)
-            last_param = param
 
         self.note = param_list
 
     def set_tone(self, data):
         param_list = []
-        last_param = 0
         data = data.replace(' ', '').lower()
 
         while data:
@@ -71,19 +65,14 @@ class Sound:
             param = SOUND_TONE_TABLE.get(c, None)
 
             if param is None:
-                if c == '.':
-                    param = last_param
-                else:
-                    raise ValueError('invalid sound tone')
+                raise ValueError('invalid sound tone')
 
             param_list.append(param)
-            last_param = param
 
         self.tone = param_list
 
     def set_volume(self, data):
         param_list = []
-        last_param = 0
         data = data.replace(' ', '').lower()
 
         while data:
@@ -92,19 +81,15 @@ class Sound:
 
             if c >= '0' and c <= '7':
                 param = int(c)
-            elif c == '.':
-                param = last_param
             else:
                 raise ValueError('invalid sound volume')
 
             param_list.append(param)
-            last_param = param
 
         self.volume = param_list
 
     def set_effect(self, data):
         param_list = []
-        last_param = 0
         data = data.replace(' ', '').lower()
 
         while data:
@@ -114,12 +99,8 @@ class Sound:
             param = SOUND_EFFECT_TABLE.get(c, None)
 
             if param is None:
-                if c == '.':
-                    param = last_param
-                else:
-                    raise ValueError('invalid sound effect')
+                raise ValueError('invalid sound effect')
 
             param_list.append(param)
-            last_param = param
 
         self.effect = param_list
