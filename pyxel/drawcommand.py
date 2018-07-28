@@ -1,7 +1,6 @@
 import numpy as np
 from .shaders import DRAWING_ATTRIBUTE_INFO
 from .constants import (
-    DRAW_MAX_COUNT,
     DRAW_TYPE_PIX,
     DRAW_TYPE_LINE,
     DRAW_TYPE_RECT,
@@ -48,29 +47,11 @@ class DrawCommand:
         self._height = height
         self._draw_att_data = draw_att_data
         self._clip_pal_data = np.ndarray(8, np.float32)
+        self._max_draw_count = len(draw_att_data)
         self.draw_count = 0
 
         self.clip()
         self.pal()
-
-    def _next_draw_data(self):
-        data = self._draw_att_data[self.draw_count]
-        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
-             CLIP_PAL_COUNT] = self._clip_pal_data
-
-        if self.draw_count < DRAW_MAX_COUNT - 1:
-            self.draw_count += 1
-
-        return data
-
-    def _copy_draw_data(self):
-        data = self._draw_att_data[self.draw_count]
-        data[:] = self._draw_att_data[self.draw_count - 1]
-
-        if self.draw_count < DRAW_MAX_COUNT - 1:
-            self.draw_count += 1
-
-        return data
 
     def clip(self, x1=None, y1=None, x2=None, y2=None):
         if x1 is None:
@@ -101,7 +82,12 @@ class DrawCommand:
     def cls(self, col):
         self.draw_count = 0
 
-        data = self._next_draw_data()
+        if self.draw_count >= self._max_draw_count:
+            return
+        data = self._draw_att_data[self.draw_count]
+        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
+             CLIP_PAL_COUNT] = self._clip_pal_data
+        self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_RECT
         data[MODE_COL_INDEX] = col
@@ -117,7 +103,12 @@ class DrawCommand:
         data[CLIP_Y2_INDEX] = self._height - 1
 
     def pix(self, x, y, col):
-        data = self._next_draw_data()
+        if self.draw_count >= self._max_draw_count:
+            return
+        data = self._draw_att_data[self.draw_count]
+        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
+             CLIP_PAL_COUNT] = self._clip_pal_data
+        self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_PIX
         data[MODE_COL_INDEX] = col
@@ -126,7 +117,12 @@ class DrawCommand:
         data[POS_Y1_INDEX] = y
 
     def line(self, x1, y1, x2, y2, col):
-        data = self._next_draw_data()
+        if self.draw_count >= self._max_draw_count:
+            return
+        data = self._draw_att_data[self.draw_count]
+        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
+             CLIP_PAL_COUNT] = self._clip_pal_data
+        self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_LINE
         data[MODE_COL_INDEX] = col
@@ -137,7 +133,12 @@ class DrawCommand:
         data[POS_Y2_INDEX] = y2
 
     def rect(self, x1, y1, x2, y2, col):
-        data = self._next_draw_data()
+        if self.draw_count >= self._max_draw_count:
+            return
+        data = self._draw_att_data[self.draw_count]
+        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
+             CLIP_PAL_COUNT] = self._clip_pal_data
+        self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_RECT
         data[MODE_COL_INDEX] = col
@@ -148,7 +149,12 @@ class DrawCommand:
         data[POS_Y2_INDEX] = y2
 
     def rectb(self, x1, y1, x2, y2, col):
-        data = self._next_draw_data()
+        if self.draw_count >= self._max_draw_count:
+            return
+        data = self._draw_att_data[self.draw_count]
+        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
+             CLIP_PAL_COUNT] = self._clip_pal_data
+        self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_RECTB
         data[MODE_COL_INDEX] = col
@@ -159,7 +165,12 @@ class DrawCommand:
         data[POS_Y2_INDEX] = y2
 
     def circ(self, x, y, r, col):
-        data = self._next_draw_data()
+        if self.draw_count >= self._max_draw_count:
+            return
+        data = self._draw_att_data[self.draw_count]
+        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
+             CLIP_PAL_COUNT] = self._clip_pal_data
+        self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_CIRC
         data[MODE_COL_INDEX] = col
@@ -170,7 +181,12 @@ class DrawCommand:
         data[SIZE_W_INDEX] = r
 
     def circb(self, x, y, r, col):
-        data = self._next_draw_data()
+        if self.draw_count >= self._max_draw_count:
+            return
+        data = self._draw_att_data[self.draw_count]
+        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
+             CLIP_PAL_COUNT] = self._clip_pal_data
+        self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_CIRCB
         data[MODE_COL_INDEX] = col
@@ -181,7 +197,12 @@ class DrawCommand:
         data[SIZE_W_INDEX] = r
 
     def blt(self, x, y, no, sx, sy, w, h, colkey=None):
-        data = self._next_draw_data()
+        if self.draw_count >= self._max_draw_count:
+            return
+        data = self._draw_att_data[self.draw_count]
+        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
+             CLIP_PAL_COUNT] = self._clip_pal_data
+        self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_BLT
         data[MODE_COL_INDEX] = -1 if colkey is None else colkey
@@ -218,7 +239,12 @@ class DrawCommand:
             code -= FONT_MIN_CODE
 
             if first:
-                data = self._next_draw_data()
+                if self.draw_count >= self._max_draw_count:
+                    return
+                data = self._draw_att_data[self.draw_count]
+                data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
+                     CLIP_PAL_COUNT] = self._clip_pal_data
+                self.draw_count += 1
 
                 data[MODE_TYPE_INDEX] = DRAW_TYPE_TEXT
                 data[MODE_COL_INDEX] = col
@@ -227,7 +253,11 @@ class DrawCommand:
 
                 first = False
             else:
-                data = self._copy_draw_data()
+                if self.draw_count >= self._max_draw_count:
+                    return
+                data = self._draw_att_data[self.draw_count]
+                data[:] = self._draw_att_data[self.draw_count - 1]
+                self.draw_count += 1
 
             data[POS_X1_INDEX] = x
             data[POS_X2_INDEX] = code
