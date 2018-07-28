@@ -20,15 +20,17 @@ class Oscillator:
         self._noise_seed = 0x8000
         self._noise_last = 0
 
-        self._tone_list = {
-            SOUND_TONE_TRIANGLE: self._triangle,
-            SOUND_TONE_SQUARE: self._square,
-            SOUND_TONE_PULSE: self._pulse,
-            SOUND_TONE_NOISE: self._noise,
-        }
-
     def set_tone(self, tone):
-        self._next_tone = self._tone_list[tone] if tone is not None else None
+        if tone == SOUND_TONE_TRIANGLE:
+            self._next_tone = self._triangle
+        elif tone == SOUND_TONE_SQUARE:
+            self._next_tone = self._square
+        elif tone == SOUND_TONE_PULSE:
+            self._next_tone = self._pulse
+        elif tone == SOUND_TONE_NOISE:
+            self._next_tone = self._noise
+        else:
+            self._next_tone = None
 
     def set_period(self, period):
         self._next_period = period

@@ -39,7 +39,7 @@ class Renderer:
         self._draw_att = GLAttribute(
             DRAWING_ATTRIBUTE_INFO, DRAW_MAX_COUNT, dynamic=True)
 
-        self._draw_command = DrawCommand(width, height, self._draw_att.data)
+        self.draw_command = DrawCommand(width, height, self._draw_att.data)
 
         self._scale_shader = GLShader(SCALING_VERTEX_SHADER,
                                       SCALING_FRAGMENT_SHADER)
@@ -78,13 +78,13 @@ class Renderer:
         self._scale_shader.end()
 
         # render drawing commands
-        if self._draw_command.draw_count > 0:
+        if self.draw_command.draw_count > 0:
             gl.glEnable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
             gl.glEnable(gl.GL_POINT_SPRITE)
 
             draw_tex_list = [(image and image._tex or None)
                              for image in self._image_list]
-            self._draw_att.update(self._draw_command.draw_count)
+            self._draw_att.update(self.draw_command.draw_count)
             self._draw_shader.begin(self._draw_att, draw_tex_list)
             self._draw_shader.set_uniform('u_framebuffer_size', '2f',
                                           self._width, self._height)
@@ -103,11 +103,11 @@ class Renderer:
                     self._draw_shader.set_uniform(name, '2f', v.width,
                                                   v.height)
 
-            gl.glDrawArrays(gl.GL_POINTS, 0, self._draw_command.draw_count)
+            gl.glDrawArrays(gl.GL_POINTS, 0, self.draw_command.draw_count)
             self._draw_shader.end()
             self._scale_tex.copy_screen(0, 0, 0, 0, self._width, self._height)
 
-            self._draw_command.draw_count = 0
+            self.draw_command.draw_count = 0
 
         # capture screen
         capture_image = gl.glReadPixels(0, 0, self._width, self._height,
