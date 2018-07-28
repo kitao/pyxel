@@ -92,17 +92,17 @@ class App:
         module.run = self.run
         module.quit = self.quit
         module.image = self._renderer.image
-        module.clip = self._renderer.clip
-        module.pal = self._renderer.pal
-        module.cls = self._renderer.cls
-        module.pix = self._renderer.pix
-        module.line = self._renderer.line
-        module.rect = self._renderer.rect
-        module.rectb = self._renderer.rectb
-        module.circ = self._renderer.circ
-        module.circb = self._renderer.circb
-        module.blt = self._renderer.blt
-        module.text = self._renderer.text
+        module.clip = self._renderer._draw_command.clip
+        module.pal = self._renderer._draw_command.pal
+        module.cls = self._renderer._draw_command.cls
+        module.pix = self._renderer._draw_command.pix
+        module.line = self._renderer._draw_command.line
+        module.rect = self._renderer._draw_command.rect
+        module.rectb = self._renderer._draw_command.rectb
+        module.circ = self._renderer._draw_command.circ
+        module.circb = self._renderer._draw_command.circb
+        module.blt = self._renderer._draw_command.blt
+        module.text = self._renderer._draw_command.text
         module.sound = self._audio_player.sound
         module.play = self._audio_player.play
         module.stop = self._audio_player.stop
@@ -377,9 +377,10 @@ class App:
         update = '{:.2f}'.format(self._perf_update_time)
         draw = '{:.2f}'.format(self._perf_draw_time)
 
-        self._renderer.text(1, 0, fps, 1)
-        self._renderer.text(0, 0, fps, 9)
-        self._renderer.text(1, 6, update, 1)
-        self._renderer.text(0, 6, update, 9)
-        self._renderer.text(1, 12, draw, 1)
-        self._renderer.text(0, 12, draw, 9)
+        text = self._renderer._draw_command.text
+        text(1, 0, fps, 1)
+        text(0, 0, fps, 9)
+        text(1, 6, update, 1)
+        text(0, 6, update, 9)
+        text(1, 12, draw, 1)
+        text(0, 12, draw, 9)
