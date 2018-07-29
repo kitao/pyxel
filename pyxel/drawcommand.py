@@ -196,7 +196,7 @@ class DrawCommand:
 
         data[SIZE_W_INDEX] = r
 
-    def blt(self, x, y, no, sx, sy, w, h, colkey=None):
+    def blt(self, x, y, img, sx, sy, w, h, colkey=None):
         if self.draw_count >= self._max_draw_count:
             return
         data = self._draw_att_data[self.draw_count]
@@ -206,7 +206,7 @@ class DrawCommand:
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_BLT
         data[MODE_COL_INDEX] = -1 if colkey is None else colkey
-        data[MODE_IMAGE_INDEX] = no
+        data[MODE_IMAGE_INDEX] = img
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y

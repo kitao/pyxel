@@ -149,14 +149,14 @@ class AudioPlayer:
     def output_stream(self):
         return self._output_stream
 
-    def sound(self, no):
-        return self._sound_list[no]
+    def sound(self, snd):
+        return self._sound_list[snd]
 
-    def play(self, ch, no, *, loop=False):
-        if isinstance(no, list):
-            sound_list = [self._sound_list[s] for s in no]
+    def play(self, ch, snd, *, loop=False):
+        if isinstance(snd, list):
+            sound_list = [self._sound_list[s] for s in snd]
         else:
-            sound_list = [self._sound_list[no]]
+            sound_list = [self._sound_list[snd]]
 
         self._channel_list[ch].play(sound_list, loop)
 

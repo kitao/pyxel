@@ -130,8 +130,8 @@ class Renderer:
 
         return capture_image
 
-    def image(self, no):
-        return self._image_list[no]
+    def image(self, img):
+        return self._image_list[img]
 
     @staticmethod
     def _set_font_image(image):

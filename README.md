@@ -34,7 +34,7 @@ Pyxel is open souce and free to use. Let's start making a retro game with Pyxel!
 - Code writing with Python3
 - Fixed 16 color palette
 - 256x256 sized 4 image banks
-- 4 channels with 64 definable sounds
+- 4 channels with 64 definable sound banks
 - Keyboard, mouse, and joystick(WIP) inputs
 - Image and sound editor (WIP)
 
@@ -174,8 +174,8 @@ Return `True` if `key` is released at that frame, otherwise return `False`
 
 ### Graphics
 
-- `image(no)`  
-Operate the Image `no`(0-3) (see Image class)
+- `image(img)`  
+Operate the image bank `img`(0-3) (see the Image class)
 e.g. `pyxel.image(0).load(0, 0, 'title.png')`
 
 - `clip(x1, y1, x2, y2)`  
@@ -205,20 +205,20 @@ Draw a circle of radius `r` and color `col` at (`x`, `y`)
 - `circb(x, y, r, col)`  
 Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`)
 
-- `blt(x, y, no, sx, sy, w, h, [colkey])`  
-Copy the image of size (`w`, `h`) from (`sx`, `sy`) of the Image `no`(0-3) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is speficied, treated as transparent color
+- `blt(x, y, img, sx, sy, w, h, [colkey])`  
+Copy the region of size (`w`, `h`) from (`sx`, `sy`) of the image bank `img`(0-3) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is speficied, treated as transparent color
 
 - `text(x, y, s, col)`  
 Draw a string `s` of color `col` at (`x`, `y`)
 
 ### Audio
 
-- `sound(no)`  
-Operate the Sound `no`(0-63) (see Sound class)
+- `sound(snd)`  
+Operate the sound bank `snd`(0-63) (see the Sound class)
 e.g. `pyxel.sound(0).speed = 60`
 
-- `play(ch, no, loop=False)`  
-Play the Sound `no`(0-63) on channel `ch`(0-3). Play in order when `no` is a list
+- `play(ch, snd, loop=False)`  
+Play the sound bank `snd`(0-63) on channel `ch`(0-3). Play in order when `snd` is a list
 
 - `stop(ch)`  
 Stop playback of channel `ch`(0-3)
@@ -238,8 +238,8 @@ e.g. `pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 - `load(x, y, filename)`  
 Read png image at (`x`, `y`)
 
-- `copy(x, y, no, sx, sy, width, height)`  
-Copy the image of size (`width`, `height`) from (`sx`, `sy`) of the Image `no`(0-3) to (`x`, `y`)
+- `copy(x, y, img, sx, sy, width, height)`  
+Copy the region of size (`width`, `height`) from (`sx`, `sy`) of the image bank `img`(0-3) to (`x`, `y`)
 
 ### Sound Class
 
