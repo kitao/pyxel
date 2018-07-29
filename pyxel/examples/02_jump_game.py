@@ -23,19 +23,27 @@ class App:
         # bgm
         a = 'c3e2g2c3 e2g2c3e2'
         b = 'c3d2g2c3 d2g2c3d2'
-        pyxel.sound(0).set(a * 3 + b * 1, 't', '3', 'f', 30)
-        pyxel.sound(1).set('c1c1f0f0a0a0g0g0', 's', '6', 'nf', 120)
+        pyxel.sound(0).set(a * 3 + b * 1, 't', '2', 'f', 30)
+
+        a = 'g1c2d2e2 e2e2f2f2'
+        b = 'e2e2e2c2 c2c2c2c2'
+        c = 'g2g2g2d2 d2d2d2d2'
+        pyxel.sound(1).set(a + b + a + c, 's', '4', 'nnnn vvnn vvff nvvf', 30)
+
+        pyxel.sound(2).set('c1c1f0f0a0a0g0g0', 'p', '4', 'nf', 120)
+
         pyxel.play(0, 0, loop=True)
         pyxel.play(1, 1, loop=True)
+        pyxel.play(2, 2, loop=True)
 
         # jump sound
-        pyxel.sound(2).set('g1a#1d#2b2', 's', '7654', 's', 9)
+        pyxel.sound(3).set('g1a#1d#2b2', 's', '7654', 's', 9)
 
         # eat sound
-        pyxel.sound(3).set('g1c2f2a2c#2f#3', 'p', '6', 's', 4)
+        pyxel.sound(4).set('g1c2f2a2c#2f#3', 'p', '6', 's', 4)
 
         # fall sound
-        pyxel.sound(4).set('a3d#3a#2f#2d2b1g1d#1', 's', '77654321', 's', 10)
+        pyxel.sound(5).set('a3d#3a#2f#2d2b1g1d#1', 's', '77654321', 's', 10)
 
         pyxel.run(self.update, self.draw)
 
@@ -64,7 +72,7 @@ class App:
         if self.player_y > pyxel.height:
             if self.player_is_alive:
                 self.player_is_alive = False
-                pyxel.play(2, 4)
+                pyxel.play(3, 5)
 
             if self.player_y > 600:
                 self.score = 0
@@ -81,7 +89,7 @@ class App:
                 is_active = False
                 self.score += 10
                 self.player_vy = -12
-                pyxel.play(2, 2)
+                pyxel.play(3, 3)
         else:
             y += 6
 
@@ -100,7 +108,7 @@ class App:
             is_active = False
             self.score += (kind + 1) * 100
             self.player_vy = min(self.player_vy, -8)
-            pyxel.play(2, 3)
+            pyxel.play(3, 4)
 
         x -= 2
 
