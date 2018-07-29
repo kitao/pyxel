@@ -1,6 +1,6 @@
 # Change Log
 
-## 7.1.0
+## 0.7.1
 - Modified the bgm of the example #2
 - Renamed the argument 'no' of the image-related methods to 'img'
 - Renamed the argument 'no' of the sound-related methods to 'snd'
