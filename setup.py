@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name='pyxel',
     version=VERSION,
-    description='A fantasy retro gaming console in Python',
+    description='A retro game development environment in Python',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/kitao/pyxel',
