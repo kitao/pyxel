@@ -13,6 +13,7 @@ class App:
         self.player_y = -16
         self.player_vy = 0
         self.player_is_alive = True
+
         self.far_cloud = [(-10, 75), (40, 65), (90, 60)]
         self.near_cloud = [(10, 25), (70, 35), (120, 15)]
         self.floor = [(i * 60, randint(8, 104), True) for i in range(4)]
@@ -65,7 +66,7 @@ class App:
                 self.player_is_alive = False
                 pyxel.play(2, 4)
 
-            if self.player_y > 500:
+            if self.player_y > 600:
                 self.score = 0
                 self.player_x = 72
                 self.player_y = -16
