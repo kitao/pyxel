@@ -311,7 +311,7 @@ class App:
             save_all=True,
             append_images=images[1:],
             duration=self._one_frame_time * 1000,
-            loop=0)
+            loop=0, optimize=True)
 
     def _get_capture_image(self, index):
         image = PIL.Image.frombuffer(
