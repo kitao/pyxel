@@ -2,6 +2,8 @@
 
 ## 7.1.0
 - Modified the bgm of the example #2
+- Renamed the argument 'no' of the image-related methods to 'img'
+- Renamed the argument 'no' of the sound-related methods to 'snd'
 
 ## 0.7.0
 - Modified the example #1 to use the App class
