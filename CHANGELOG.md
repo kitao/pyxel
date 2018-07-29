@@ -1,8 +1,7 @@
 # Change Log
 
 ## 7.1.0
-- Changed the bgm of the example #2
-- Optimized the screen capturing
+- Modified the bgm of the example #2
 
 ## 0.7.0
 - Modified the example #1 to use the App class
