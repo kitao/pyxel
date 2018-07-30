@@ -2,7 +2,7 @@
 
 [ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [Japanese](https://github.com/kitao/pyxel/blob/master/README.ja.md) ]
 
-Pyxel (ピクセル) はPython向けのレトロゲーム開発環境です。
+**Pyxel (ピクセル)** はPython向けのレトロゲーム開発環境です。
 
 使える色は16色のみ、同時に再生できる音は4音までなど、レトロゲーム機を意識したシンプルな仕様で、Pythonでドット絵スタイルのゲームづくりが気軽に楽しめます。
 
