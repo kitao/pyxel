@@ -64,14 +64,14 @@ pip3 install pyxel
 
 各ディストリビューションに適した方法で必要なパッケージをインストールします。
 
-Arch:
+**Arch:**
 
 ```sh
 pacman -S python python-pip glfw portaudio
 pip install pyxel
 ```
 
-Debian:
+**Debian:**
 
 ```sh
 apt-get install python3 python3-pip glfw libportaudio2 libasound-dev
