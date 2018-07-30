@@ -16,10 +16,10 @@ from .constants import (
 DRAWING_VERTEX_SHADER = """
 #version 120
 
-#define unpack_4ui_1(x) int(mod(x / 0x1, 0x10));
-#define unpack_4ui_2(x) int(mod(x / 0x10, 0x10));
-#define unpack_4ui_3(x) int(mod(x / 0x100, 0x10));
-#define unpack_4ui_4(x) int(mod(x / 0x1000, 0x10));
+#define unpack_4ui_1(x) int(mod(x / 0x1, 0x10))
+#define unpack_4ui_2(x) int(mod(x / 0x10, 0x10))
+#define unpack_4ui_3(x) int(mod(x / 0x100, 0x10))
+#define unpack_4ui_4(x) int(mod(x / 0x1000, 0x10))
 
 const int TYPE_PIX = {1};
 const int TYPE_LINE = {2};
