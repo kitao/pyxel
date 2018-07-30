@@ -29,7 +29,6 @@ setuptools.setup(
         'pyxel.editor',
         'pyxel.examples',
         'pyxel.examples.assets',
-        'pyxel.examples.screenshots',
     ],
     package_data={
         '': [
