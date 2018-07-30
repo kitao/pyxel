@@ -23,6 +23,7 @@ class App:
                  border_width, border_color):
         self._module = module
         self._palette = palette[:]
+        self._pil_palette = self._get_pil_palette(palette)
         self._fps = fps
         self._border_width = border_width
         self._border_color = border_color
@@ -142,6 +143,10 @@ class App:
 
     def quit(self):
         glfw.set_window_should_close(self._window, True)
+
+    def palettize_pil_image(self, pil_image):
+        im = pil_image.im.convert('P', 0, self._pil_palette.im)
+        return pil_image._new(im)
 
     @staticmethod
     def _get_icon_image():
@@ -290,7 +295,7 @@ class App:
     def _save_capture_image(self):
         index = (self._capture_index - 1) % APP_SCREEN_CAPTURE_COUNT
         image = self._get_capture_image(index)
-        image.save(self._get_filename() + '.png')
+        image.save(self._get_capture_filename() + '.png')
 
     def _save_capture_animation(self):
         image_count = min(self._capture_index - self._capture_start,
@@ -307,19 +312,19 @@ class App:
             images.append(self._get_capture_image(index))
 
         images[0].save(
-            self._get_filename() + '.gif',
+            self._get_capture_filename() + '.gif',
             save_all=True,
             append_images=images[1:],
             duration=self._one_frame_time * 1000,
-            loop=0, optimize=True)
+            loop=0,
+            optimize=True)
 
     def _get_capture_image(self, index):
         image = PIL.Image.frombuffer(
             'RGB', (self._module.width, self._module.height),
             self._capture_images[index], 'raw', 'RGB', 0, 1)
 
-        image = image.convert(
-            'P', dither=PIL.Image.NONE, palette=PIL.Image.ADAPTIVE)
+        image = self.palettize_pil_image(image)
 
         image = image.resize((self._module.width * APP_SCREEN_CAPTURE_SCALE,
                               self._module.height * APP_SCREEN_CAPTURE_SCALE))
@@ -327,7 +332,24 @@ class App:
         return image
 
     @staticmethod
-    def _get_filename():
+    def _get_pil_palette(palette):
+        rgb_palette = []
+
+        for color in palette:
+            r = (color >> 16) & 0xff
+            g = (color >> 8) & 0xff
+            b = color & 0xff
+            rgb_palette.extend((r, g, b))
+
+        rgb_palette += [0] * 240 * 3
+
+        pil_palette = PIL.Image.new('P', (1, 1), 0)
+        pil_palette.putpalette(rgb_palette)
+
+        return pil_palette
+
+    @staticmethod
+    def _get_capture_filename():
         if os.name == 'nt':
             path = os.path.join(
                 os.path.join(os.environ['USERPROFILE']), 'Desktop')

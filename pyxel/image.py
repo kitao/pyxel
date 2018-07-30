@@ -54,19 +54,7 @@ class Image:
             return
         sx, sy, dx, dy, cw, ch = rect
 
-        palette = []
-        for color in pyxel._app._palette:
-            r = (color >> 16) & 0xff
-            g = (color >> 8) & 0xff
-            b = color & 0xff
-            palette.extend((r, g, b))
-        palette += [0] * 240 * 3
-
-        palette_image = PIL.Image.new('P', (1, 1), 0)
-        palette_image.putpalette(palette)
-
-        im = pil_image.im.convert('P', 0, palette_image.im)
-        pil_image = pil_image._new(im)
+        pil_image = pyxel._app.palettize_pil_image(pil_image)
         pil_image = pil_image.crop((sx, sy, sx + cw, sy + ch))
 
         src_data = np.array(pil_image.getdata()).reshape(ch, cw)
