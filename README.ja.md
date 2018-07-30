@@ -60,6 +60,22 @@ brew install python3 glfw
 pip3 install pyxel
 ```
 
+### Linux
+
+Arch:
+
+```sh
+pacman -S python python-pip glfw portaudio
+pip install pyxel
+```
+
+Debian:
+
+```sh
+apt-get install python3 python3-pip glfw libportaudio2 libasound-dev
+pip3 install pyxel
+```
+
 ### サンプルのインストール
 
 Pyxelインストール後に、以下のコマンドでカレントディレクトリにPyxelのサンプルコード一式をコピーできます。
