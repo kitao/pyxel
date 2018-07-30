@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.7.2
+- Changed not to include the screenshots in the PyPI package
+- Removed unnecessary semicolons in the shader to avoid compile errors
+- Changed the project description for PyPI
+- Added the description of installation on Linux to the README
+- Refactored the way to make a captured image and animation
+- Updated the screenshots of the example #3 and #4
+
 ## 0.7.1
 - Modified the bgm of the example #2
 - Renamed the argument 'no' of the image-related methods to 'img'
