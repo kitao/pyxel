@@ -61,6 +61,8 @@ pip3 install pyxel
 
 ### Linux
 
+Install the required packages in a way appropriate for each distribution.
+
 Arch:
 
 ```sh
