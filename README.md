@@ -210,7 +210,7 @@ Draw a pixel of color `col` at (`x`, `y`)
 Draw a line of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
 
 - `rect(x1, y1, x2, y2, col)`  
-Draw a rectanble of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
+Draw a rectangle of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
 
 - `rectb(x1, y1, x2, y2, col)`  
 Draw the outline of a rectangle of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
@@ -275,7 +275,7 @@ List of effects(0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
 The length of one note(120 = 1 second per tone)
 
 - `set(note, tone, volume, effect, speed)`  
-Set a note, tone, volume, and efffect with a string. If the tone, volume, and effect length are shorter than the note, it is repeated from the beginning
+Set a note, tone, volume, and effect with a string. If the tone, volume, and effect length are shorter than the note, it is repeated from the beginning
 
 - `set_note(note)`  
 Set the note with a string consists of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored  
