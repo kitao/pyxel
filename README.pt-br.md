@@ -183,7 +183,7 @@ A posição atual do cursor do mouse
 Retorna `True` se `key` é pressionada, caso contrário retorna `False` ([lista de definições de teclas](https://github.com/kitao/pyxel/blob/master/pyxel/constants.py))
 
 - `btnp(key, [hold], [period])`  
-Retorna `True` se `key` é pressionada naquele frame, caso contrário retorna`False`. Quando `hold` e `period` são especificados, `True` será retornado durante o intervalo de quadros `period` enquanto `key` estiver pressionada por mais que `hold` frames
+Retorna `True` se `key` for pressionada naquele frame, caso contrário retorna`False`. Quando `hold` e `period` são especificados, `True` será retornado durante o intervalo de quadros `period`, enquanto `key` estiver pressionada por mais que `hold` frames
 
 - `btnr(key)`  
 Retorna `True` se `key` for solta naquele frame, caso contrário retorna `False`
@@ -204,95 +204,95 @@ Substitui a cor `col1` com `col2` ao desenhar. Use `pal()` para resetar para a p
 Limpar a tela com a cor `col`
 
 - `pix(x, y, col)`  
-Draw a pixel of color `col` at (`x`, `y`)
+Desenha um pixel de cor `col` em (`x`, `y`)
 
 - `line(x1, y1, x2, y2, col)`  
-Draw a line of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
+Desenha uma linha da cor `col` de (`x1`, `y1`) até (`x2`, `y2`)
 
 - `rect(x1, y1, x2, y2, col)`  
-Draw a rectanble of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
+Desenha um retângulo da cor `col` de (`x1`, `y1`) até (`x2`, `y2`)
 
 - `rectb(x1, y1, x2, y2, col)`  
-Draw the outline of a rectangle of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
+Desenha o contorno de um retângulo da cor `col` de (`x1`, `y1`) até (`x2`, `y2`)
 
 - `circ(x, y, r, col)`  
-Draw a circle of radius `r` and color `col` at (`x`, `y`)
+Desenha um círculo de raio `r` e cor `col` em (`x`, `y`)
 
 - `circb(x, y, r, col)`  
-Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`)
+Desenha o contorno de um círculo de raio `r` e cor `col` em (`x`, `y`)
 
 - `blt(x, y, img, sx, sy, w, h, [colkey])`  
-Copy the region of size (`w`, `h`) from (`sx`, `sy`) of the image bank `img`(0-3) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is speficied, treated as transparent color
+Copia a região de tamanho (`w`, `h`) de (`sx`, `sy`) do banco de imagens `img`(0-3) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificado, será tratado como cor transparente.
 
 - `text(x, y, s, col)`  
-Draw a string `s` of color `col` at (`x`, `y`)
+Desenha uma string `s` de cor `col` em (`x`, `y`)
 
 ### Audio
 
 - `sound(snd)`  
-Operate the sound bank `snd`(0-63) (see the Sound class)
+Opera o banco de sons `snd`(0-63) (ver a classe Sound)
 e.g. `pyxel.sound(0).speed = 60`
 
 - `play(ch, snd, loop=False)`  
-Play the sound bank `snd`(0-63) on channel `ch`(0-3). Play in order when `snd` is a list
+Reproduz o banco de som `snd`(0-63) no canal `ch`(0-3). Tocar em ordem quandp `snd` for uma lista
 
 - `stop(ch)`  
-Stop playback of channel `ch`(0-3)
+Interrompe a reprodução do canal `ch`(0-3)
 
-### Image Class
+### Classe Image
 
 - `width`, `height`  
-The width and height of the Image
+Largura e altura da Image
 
 - `data`  
-The data of the Image (NumPy array)
+Os dados da Image (NumPy array)
 
 - `set(x, y, data)`  
-Set the image as a list of strings at (`x`, `y`)   
+Define a imagem como uma lista de strings em (`x`, `y`)
 e.g. `pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
 - `load(x, y, filename)`  
-Read png image at (`x`, `y`)
+Lê uma imagem png em (`x`, `y`)
 
 - `copy(x, y, img, sx, sy, width, height)`  
-Copy the region of size (`width`, `height`) from (`sx`, `sy`) of the image bank `img`(0-3) to (`x`, `y`)
+Copia a região de tamanho (`width`, `height`) de (`sx`, `sy`) do banco de imagens `img`(0-3) para (`x`, `y`)
 
-### Sound Class
+### Classe Sound
 
 - `note`  
-List of note(0-127) (33 = 'A2' = 440Hz)
+Lista de notas(0-127) (33 = 'A2' = 440Hz)
 
 - `tone`  
-List of tone(0:Triagnle / 1:Square / 2:Pulse / 3:Noise)
+Lista de tons(0:Triagnle / 1:Square / 2:Pulse / 3:Noise)
 
 - `volume`  
-List of volume(0-7)
+List de volume(0-7)
 
 - `effect`  
-List of effects(0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
+Lista de efeitos(0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
 
 - `speed`  
-The length of one note(120 = 1 second per tone)
+Duração de uma nota(120 = 1 second per tone)
 
 - `set(note, tone, volume, effect, speed)`  
-Set a note, tone, volume, and efffect with a string. If the tone, volume, and effect length are shorter than the note, it is repeated from the beginning
+Define uma nota, tom, volume e efeito com uma string. Se o tom, volume e duração do efeito forem mais curtas que a nota, será repetida do começo
 
 - `set_note(note)`  
-Set the note with a string consists of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored  
+Define a nota com uma string consistindo de 'CDEFGAB'+'#-'+'0123' ou 'R'. Case-insensitive e espaços são ignorados
 e.g. `pyxel.sound(0).set_note('G2B-2D3R RF3F3F3')`
 
 - `set_tone(tone)`  
-Set the tone with a string consists of 'TSPN'. Case-insensitive and whitespace is ignored  
+Define um tom com uma string consistindo de 'TSPN'. Case-insensitive e espaços são ignorados
 e.g. `pyxel.sound(0).set_tone('TTSS PPPN')`
 
 - `set_volume(volume)`  
-Set the volume with a string consists of '01234567'. Case-insensitive and whitespace is ignored  
+Define o volume com uma string consistindo de '01234567'. Case-insensitive e espaços são ignorados  
 e.g. `pyxel.sound(0).set_volume('7777 7531')`
 
 - `set_effect(effect)`  
-Set the effect with a string consists of 'NSVF'. Case-insensitive and whitespace is ignored  
+Define o efeito com uma string consistindo de 'NSVF'. Case-insensitive e espaços são ignorados  
 e.g. `pyxel.sound(0).set_effect('NFNF NVVS')`
 
-## License
+## Licença
 
 Pyxel is under [MIT license](http://en.wikipedia.org/wiki/MIT_License). It can be reused within proprietary software provided that all copies of the licensed software include a copy of the MIT License terms and the copyright notice.
