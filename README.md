@@ -77,7 +77,7 @@ pip3 install pyxel
 
 ### Install examples
 
-After installing Pyxel, the examples of Pyxel will be copied to the current directory with the folloing command:
+After installing Pyxel, the examples of Pyxel will be copied to the current directory with the following command:
 
 ```sh
 install_pyxel_examples
