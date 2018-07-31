@@ -119,7 +119,7 @@ class App:
                 (self._module.frame_count - press_frame - hold) % period == 0)
 
     def btnr(self, key):
-        return self._key_state.get(key, 0) == -self.module._frame_count
+        return self._key_state.get(key, 0) == -self._module.frame_count
 
     def run(self, update, draw):
         self._update = update
