@@ -1,8 +1,8 @@
 # <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [Japanese](https://github.com/kitao/pyxel/blob/master/README.ja.md) ]
+[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [Japanese](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [Português](https://github.com/kitao/pyxel/blob/master/RE) ]
 
-**Pyxel** é um ambiente de desenvolvimento de jogos retro em Python.
+**Pyxel** é um ambiente de desenvolvimento de jogos retrôs em Python.
 
 Graças às suas especificações simples inspiradas em consoles de jogos retrô, como apenas 16 cores poderem ser exibidas e apenas 4 sons podem ser reproduzidos ao mesmo tempo, você pode se sentir à vontade para fazer jogos em estilo pixel art.
 
@@ -22,9 +22,9 @@ Graças às suas especificações simples inspiradas em consoles de jogos retrô
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/04_sound_api.gif" width="48%">
 </a>
 
-As especificações do console de jogos, APIs e paletts do Pyxel estão se referindo ao incrível [PICO-8](https://www.lexaloffle.com/pico-8.php) e [TIC-80](https://tic.computer/).
+As especificações do console, APIs e paletas do Pyxel derivam dos incríveis [PICO-8](https://www.lexaloffle.com/pico-8.php) e [TIC-80](https://tic.computer/).
 
-Pyxel is open souce and free to use. Let's start making a retro game with Pyxel!
+Pyxel é open source e livre para utilização. Vamos fazer jogos retrôs com Pyxel!
 
 ## Specifications
 
