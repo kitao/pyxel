@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.7.3
+- Fixed the btnr command
+- Fixed a typo in the README.md
+
 ## 0.7.2
 - Changed not to include the screenshots in the PyPI package
 - Removed unnecessary semicolons in the shader to avoid compile errors
