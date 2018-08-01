@@ -128,7 +128,7 @@ class App:
         self._module.frame_count = 1
         self._next_update_time = self._perf_fps_start_time = time.time()
 
-        with self._audio_player.output_stream:
+        def main_loop():
             while not glfw.window_should_close(self._window):
                 glfw.poll_events()
 
@@ -138,8 +138,13 @@ class App:
                 self._draw_frame()
 
                 glfw.swap_buffers(self._window)
-
             glfw.terminate()
+
+        if self._audio_player.output_stream:
+            with self._audio_player.output_stream:
+                main_loop()
+        else:
+            main_loop()
 
     def quit(self):
         glfw.set_window_should_close(self._window, True)
