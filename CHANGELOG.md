@@ -3,13 +3,13 @@
 ## 0.7.3
 - Fixed the btnr command
 - Fixed a typo in the README.md
-- Added the Portuguese version of README
+- Added the Portuguese version of the README.md
 
 ## 0.7.2
 - Changed not to include the screenshots in the PyPI package
 - Removed unnecessary semicolons in the shader to avoid compile errors
 - Changed the project description for PyPI
-- Added the description of installation on Linux to the README
+- Added the description of installation on Linux to the READMEs
 - Refactored the way to make a captured image and animation
 - Updated the screenshots of the example #3 and #4
 
