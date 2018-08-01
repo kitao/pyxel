@@ -153,7 +153,7 @@ Existem os seguintes métodos para criar imagens para o Pyxel:
 
 Por favor, consulte a referência da API para uso das funções `Image.set` e` Image.load`.
 
-Como o Pyxel usa a mesma paleta do [PICO-8](https://www.lexaloffle.com/pico-8.php), ao criar imagens png para o Pyxel, é recomendável usar o [Aseprite](https: // www.aseprite.org/) no modo de paleta PICO-8.
+Como o Pyxel usa a mesma paleta do [PICO-8](https://www.lexaloffle.com/pico-8.php), ao criar imagens png para o Pyxel, é recomendável usar o [Aseprite](https://www.aseprite.org/) no modo de paleta PICO-8.
 
 ## Referência da API
 
