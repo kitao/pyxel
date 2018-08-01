@@ -3,6 +3,7 @@
 ## 0.7.3
 - Fixed the btnr command
 - Fixed a typo in the README.md
+- Added the title logo to the READMEs
 - Added the Portuguese version of the README.md
 
 ## 0.7.2
