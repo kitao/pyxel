@@ -3,6 +3,7 @@
 ## 0.7.3
 - Fixed the btnr command
 - Fixed a typo in the README.md
+- Added the Portuguese version of README
 
 ## 0.7.2
 - Changed not to include the screenshots in the PyPI package
