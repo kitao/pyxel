@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.7.4
+- Fixed to run without an audio card
+
 ## 0.7.3
 - Fixed the btnr command
 - Fixed a typo in the README.md

@@ -135,12 +135,15 @@ class Channel:
 
 class AudioPlayer:
     def __init__(self):
-        self._output_stream = sd.OutputStream(
-            samplerate=AUDIO_SAMPLE_RATE,
-            blocksize=AUDIO_BLOCK_SIZE,
-            channels=1,
-            dtype='int16',
-            callback=self._output_stream_callback)
+        try:
+            self._output_stream = sd.OutputStream(
+                samplerate=AUDIO_SAMPLE_RATE,
+                blocksize=AUDIO_BLOCK_SIZE,
+                channels=1,
+                dtype='int16',
+                callback=self._output_stream_callback)
+        except sd.PortAudioError:
+            self._output_stream = None
 
         self._channel_list = [Channel() for _ in range(AUDIO_CHANNEL_COUNT)]
         self._sound_list = [Sound() for _ in range(AUDIO_SOUND_COUNT)]
