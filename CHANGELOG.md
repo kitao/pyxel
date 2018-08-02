@@ -2,6 +2,7 @@
 
 ## 0.7.5
 - Fixed typos in the READMEs
+- Updated the Arch Linux installation in the READMEs
 
 ## 0.7.4
 - Fixed to run without an audio card
