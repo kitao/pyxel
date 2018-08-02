@@ -359,10 +359,7 @@ class App:
             path = os.path.join(
                 os.path.join(os.path.expanduser('~')), 'Desktop')
         else:
-            path = os.path.join(
-                os.path.join(os.path.expanduser('~')), 'Desktop')
-            if not os.path.exists(path):
-                path = os.path.expanduser('~')
+            path = os.popen('xdg-user-dir DESKTOP').read().split('\n')[0]
 
         return os.path.join(
             path,
