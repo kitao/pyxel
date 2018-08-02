@@ -1,26 +1,16 @@
 import math
+
 import OpenGL.GL as gl
-from .glwrapper import GLShader, GLAttribute, GLTexture
-from .image import Image
+
+from .constants import (DRAW_MAX_COUNT, FONT_DATA, FONT_HEIGHT, FONT_WIDTH,
+                        RENDERER_IMAGE_COUNT, RENDERER_IMAGE_HEIGHT,
+                        RENDERER_IMAGE_WIDTH, RENDERER_MIN_TEXTURE_SIZE)
 from .drawcommand import DrawCommand
-from .shaders import (
-    DRAWING_VERTEX_SHADER,
-    DRAWING_FRAGMENT_SHADER,
-    DRAWING_ATTRIBUTE_INFO,
-    SCALING_VERTEX_SHADER,
-    SCALING_FRAGMENT_SHADER,
-    SCALING_ATTRIBUTE_INFO,
-)
-from .constants import (
-    RENDERER_MIN_TEXTURE_SIZE,
-    RENDERER_IMAGE_COUNT,
-    RENDERER_IMAGE_WIDTH,
-    RENDERER_IMAGE_HEIGHT,
-    DRAW_MAX_COUNT,
-    FONT_WIDTH,
-    FONT_HEIGHT,
-    FONT_DATA,
-)
+from .glwrapper import GLAttribute, GLShader, GLTexture
+from .image import Image
+from .shaders import (DRAWING_ATTRIBUTE_INFO, DRAWING_FRAGMENT_SHADER,
+                      DRAWING_VERTEX_SHADER, SCALING_ATTRIBUTE_INFO,
+                      SCALING_FRAGMENT_SHADER, SCALING_VERTEX_SHADER)
 
 
 class Renderer:

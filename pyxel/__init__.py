@@ -1,12 +1,6 @@
-from .constants import (
-    VERSION,
-    DEFAULT_CAPTION,
-    DEFAULT_SCALE,
-    DEFAULT_PALETTE,
-    DEFAULT_FPS,
-    DEFAULT_BORDER_WIDTH,
-    DEFAULT_BORDER_COLOR,
-)
+from .constants import (VERSION, DEFAULT_CAPTION, DEFAULT_SCALE,
+                        DEFAULT_PALETTE, DEFAULT_FPS, DEFAULT_BORDER_WIDTH,
+                        DEFAULT_BORDER_COLOR)
 
 
 def init(width,

@@ -1,8 +1,4 @@
-from .constants import (
-    SOUND_NOTE_TABLE,
-    SOUND_TONE_TABLE,
-    SOUND_EFFECT_TABLE,
-)
+from .constants import SOUND_EFFECT_TABLE, SOUND_NOTE_TABLE, SOUND_TONE_TABLE
 
 
 class Sound:

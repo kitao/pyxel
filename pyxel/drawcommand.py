@@ -1,19 +1,10 @@
 import numpy as np
+
+from .constants import (DRAW_TYPE_BLT, DRAW_TYPE_CIRC, DRAW_TYPE_CIRCB,
+                        DRAW_TYPE_LINE, DRAW_TYPE_PIX, DRAW_TYPE_RECT,
+                        DRAW_TYPE_RECTB, DRAW_TYPE_TEXT, FONT_HEIGHT,
+                        FONT_MAX_CODE, FONT_MIN_CODE, FONT_WIDTH)
 from .shaders import DRAWING_ATTRIBUTE_INFO
-from .constants import (
-    DRAW_TYPE_PIX,
-    DRAW_TYPE_LINE,
-    DRAW_TYPE_RECT,
-    DRAW_TYPE_RECTB,
-    DRAW_TYPE_CIRC,
-    DRAW_TYPE_CIRCB,
-    DRAW_TYPE_BLT,
-    DRAW_TYPE_TEXT,
-    FONT_MIN_CODE,
-    FONT_MAX_CODE,
-    FONT_WIDTH,
-    FONT_HEIGHT,
-)
 
 MODE_TYPE_INDEX = DRAWING_ATTRIBUTE_INFO[0][1]
 MODE_COL_INDEX = MODE_TYPE_INDEX + 1
