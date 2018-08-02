@@ -3,6 +3,7 @@
 ## 0.7.4
 - Fixed to run without an audio card
 - Refactored import order of all files with isort
+- Fixed the way to capture screen on Linux
 
 ## 0.7.3
 - Fixed the btnr command
