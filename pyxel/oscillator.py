@@ -1,9 +1,5 @@
-from .constants import (
-    SOUND_TONE_TRIANGLE,
-    SOUND_TONE_SQUARE,
-    SOUND_TONE_PULSE,
-    SOUND_TONE_NOISE,
-)
+from .constants import (SOUND_TONE_NOISE, SOUND_TONE_PULSE, SOUND_TONE_SQUARE,
+                        SOUND_TONE_TRIANGLE)
 
 
 class Oscillator:

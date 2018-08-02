@@ -1,9 +1,12 @@
-import os
 import inspect
+import os
+
 import numpy as np
 import PIL.Image
-from .glwrapper import GLTexture
+
 import pyxel
+
+from .glwrapper import GLTexture
 
 
 class Image:
