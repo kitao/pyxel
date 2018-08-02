@@ -4,7 +4,7 @@
 
 **Pyxel** é um ambiente de desenvolvimento de jogos retrôs em Python.
 
-Graças às suas especificações simples inspiradas em consoles de jogos retrô, como apenas 16 cores poderem ser exibidas e apenas 4 sons podem ser reproduzidos ao mesmo tempo, você pode se sentir à vontade para fazer jogos em estilo pixel art.
+Graças às suas especificações simples inspiradas em consoles de jogos retrô, como apenas 16 cores podem ser exibidas e apenas 4 sons podem ser reproduzidos ao mesmo tempo, você pode se sentir à vontade para fazer jogos em estilo pixel art.
 
 <a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py" target="_blank">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
@@ -26,7 +26,7 @@ As especificações do console, APIs e paletas do Pyxel derivam dos incríveis [
 
 Pyxel é open source e livre para utilização. Vamos fazer jogos retrôs com Pyxel!
 
-## Specifications
+## Especificações
 
 - Executável no Windows, Mac e Linux
 - Código escrito em Python3
@@ -75,7 +75,7 @@ apt-get install python3 python3-pip glfw libportaudio2 libasound-dev
 pip3 install pyxel
 ```
 
-### Instalando exemplos
+### Instalando os exemplos
 
 Depois de instalar o Pyxel, os exemplos serão copiados para o atual diretório com o seguinte comando:
 
@@ -133,7 +133,7 @@ App()
 Os seguintes controles especiais podem ser executados quando uma aplicação Pyxel estiver sendo executada.
 
 - `Alt(Option)+1`  
-Salva uma printscreen para a área de trabalho
+Salva uma captura de tela para a área de trabalho
 - `Alt(Option)+2`  
 Reinicia o momento inicial do vídeo de captura de tela.
 - `Alt(Option)+3`  
@@ -151,7 +151,7 @@ Existem os seguintes métodos para criar imagens para o Pyxel:
 - Carregar um arquivo png na paleta de cores do Pyxel com a função `Image.load`
 - Criar imagens com o Pyxel Editor (WIP)
 
-Por favor, consulte a referência da API para uso das funções `Image.set` e` Image.load`.
+Por favor, consulte a referência do API para uso das funções `Image.set` e` Image.load`.
 
 Como o Pyxel usa a mesma paleta do [PICO-8](https://www.lexaloffle.com/pico-8.php), ao criar imagens png para o Pyxel, é recomendável usar o [Aseprite](https://www.aseprite.org/) no modo de paleta PICO-8.
 
@@ -173,7 +173,7 @@ Também é possível especificar o título da janela com `caption`, a ampliaçã
 Inicia a aplicação Pyxel e chama a função `update` para atualização de quadros e a função `draw` para desenhar
 
 - `quit()`  
-Encerra a aplicação Pyel no fim do frame atual
+Encerra a aplicação Pyxel no fim do quadro atual
 
 ### Entrada
 - `mouse_x`, `mouse_y`  
@@ -183,10 +183,10 @@ A posição atual do cursor do mouse
 Retorna `True` se `key` é pressionada, caso contrário retorna `False` ([lista de definições de teclas](https://github.com/kitao/pyxel/blob/master/pyxel/constants.py))
 
 - `btnp(key, [hold], [period])`  
-Retorna `True` se `key` for pressionada naquele frame, caso contrário retorna`False`. Quando `hold` e `period` são especificados, `True` será retornado durante o intervalo de quadros `period`, enquanto `key` estiver pressionada por mais que `hold` frames
+Retorna `True` se `key` for pressionada naquele quadro, caso contrário retorna`False`. Quando `hold` e `period` são especificados, `True` será retornado durante o intervalo de quadros `period`, enquanto `key` estiver pressionada por mais que `hold` quadros
 
 - `btnr(key)`  
-Retorna `True` se `key` for solta naquele frame, caso contrário retorna `False`
+Retorna `True` se `key` for solta naquele quadro, caso contrário retorna `False`
 
 ### Gráficos
 
@@ -278,19 +278,19 @@ Duração de uma nota(120 = 1 second per tone)
 Define uma nota, tom, volume e efeito com uma string. Se o tom, volume e duração do efeito forem mais curtas que a nota, será repetida do começo
 
 - `set_note(note)`  
-Define a nota com uma string consistindo de 'CDEFGAB'+'#-'+'0123' ou 'R'. Case-insensitive e espaços são ignorados
+Define a nota com uma string consistindo de 'CDEFGAB'+'#-'+'0123' ou 'R'. Indiferente a maiúsculas e minúsculas e espaços são ignorados
 e.g. `pyxel.sound(0).set_note('G2B-2D3R RF3F3F3')`
 
 - `set_tone(tone)`  
-Define um tom com uma string consistindo de 'TSPN'. Case-insensitive e espaços são ignorados
+Define um tom com uma string consistindo de 'TSPN'. Indiferente a maiúsculas e minúsculas e espaços são ignorados
 e.g. `pyxel.sound(0).set_tone('TTSS PPPN')`
 
 - `set_volume(volume)`  
-Define o volume com uma string consistindo de '01234567'. Case-insensitive e espaços são ignorados  
+Define o volume com uma string consistindo de '01234567'. Indiferente a maiúsculas e minúsculas e espaços são ignorados  
 e.g. `pyxel.sound(0).set_volume('7777 7531')`
 
 - `set_effect(effect)`  
-Define o efeito com uma string consistindo de 'NSVF'. Case-insensitive e espaços são ignorados  
+Define o efeito com uma string consistindo de 'NSVF'. Indiferente a maiúsculas e minúsculas e espaços são ignorados  
 e.g. `pyxel.sound(0).set_effect('NFNF NVVS')`
 
 ## Licença
