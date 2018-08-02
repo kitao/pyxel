@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.7.5
+- Fixed typos in the READMEs
+
 ## 0.7.4
 - Fixed to run without an audio card
 - Refactored import order of all files with isort

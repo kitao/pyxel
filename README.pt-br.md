@@ -263,7 +263,7 @@ Copia a região de tamanho (`width`, `height`) de (`sx`, `sy`) do banco de image
 Lista de notas(0-127) (33 = 'A2' = 440Hz)
 
 - `tone`  
-Lista de tons(0:Triagnle / 1:Square / 2:Pulse / 3:Noise)
+Lista de tons(0:Triangle / 1:Square / 2:Pulse / 3:Noise)
 
 - `volume`  
 List de volume(0-7)

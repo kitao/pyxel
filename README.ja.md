@@ -264,7 +264,7 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 音程 (0-127) のリスト (33 = 'A2' = 440Hz)
 
 - `tone`  
-音色 (0:Triagnle / 1:Square / 2:Pulse / 3:Noise) のリスト
+音色 (0:Triangle / 1:Square / 2:Pulse / 3:Noise) のリスト
 
 - `volume`  
 音量 (0-7) のリスト
