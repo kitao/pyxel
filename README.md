@@ -263,7 +263,7 @@ Copy the region of size (`width`, `height`) from (`sx`, `sy`) of the image bank 
 List of note(0-127) (33 = 'A2' = 440Hz)
 
 - `tone`  
-List of tone(0:Triagnle / 1:Square / 2:Pulse / 3:Noise)
+List of tone(0:Triangle / 1:Square / 2:Pulse / 3:Noise)
 
 - `volume`  
 List of volume(0-7)
