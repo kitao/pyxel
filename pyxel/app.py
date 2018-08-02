@@ -2,7 +2,7 @@ import datetime
 import math
 import os
 import time
-
+import platform
 import glfw
 import PIL.Image
 
@@ -350,12 +350,19 @@ class App:
 
     @staticmethod
     def _get_capture_filename():
-        if os.name == 'nt':
+        plat = platform.system()
+
+        if plat == 'Windows':
             path = os.path.join(
                 os.path.join(os.environ['USERPROFILE']), 'Desktop')
+        elif plat == 'Darwin':
+            path = os.path.join(
+                os.path.join(os.path.expanduser('~')), 'Desktop')
         else:
             path = os.path.join(
                 os.path.join(os.path.expanduser('~')), 'Desktop')
+            if not os.path.exists(path):
+                path = os.path.expanduser('~')
 
         return os.path.join(
             path,
