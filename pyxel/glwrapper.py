@@ -1,7 +1,8 @@
+import ctypes
+
+import numpy as np
 import OpenGL.GL as gl
 from OpenGL.GL import shaders
-import numpy as np
-import ctypes
 
 
 class GLShader:

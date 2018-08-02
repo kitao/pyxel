@@ -1,17 +1,11 @@
 import sounddevice as sd
+
+from .constants import (AUDIO_BLOCK_SIZE, AUDIO_CHANNEL_COUNT, AUDIO_ONE_SPEED,
+                        AUDIO_ONE_VOLUME, AUDIO_SAMPLE_RATE, AUDIO_SOUND_COUNT,
+                        SOUND_EFFECT_FADEOUT, SOUND_EFFECT_SLIDE,
+                        SOUND_EFFECT_VIBRATO)
 from .oscillator import Oscillator
 from .sound import Sound
-from .constants import (
-    AUDIO_SAMPLE_RATE,
-    AUDIO_BLOCK_SIZE,
-    AUDIO_CHANNEL_COUNT,
-    AUDIO_SOUND_COUNT,
-    AUDIO_ONE_SPEED,
-    AUDIO_ONE_VOLUME,
-    SOUND_EFFECT_SLIDE,
-    SOUND_EFFECT_VIBRATO,
-    SOUND_EFFECT_FADEOUT,
-)
 
 
 class Channel:

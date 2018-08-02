@@ -1,22 +1,16 @@
-import os
-import math
-import time
 import datetime
+import math
+import os
+import time
 import platform
 import glfw
 import PIL.Image
-from .renderer import Renderer
+
 from .audioplayer import AudioPlayer
-from .constants import (
-    DEFAULT_PALETTE,
-    ICON_DATA,
-    APP_SCREEN_CAPTURE_COUNT,
-    APP_SCREEN_CAPTURE_SCALE,
-    APP_MEASURE_FRAME_COUNT,
-    KEY_LEFT_BUTTON,
-    KEY_MIDDLE_BUTTON,
-    KEY_RIGHT_BUTTON,
-)
+from .constants import (APP_MEASURE_FRAME_COUNT, APP_SCREEN_CAPTURE_COUNT,
+                        APP_SCREEN_CAPTURE_SCALE, DEFAULT_PALETTE, ICON_DATA,
+                        KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON)
+from .renderer import Renderer
 
 
 class App:
