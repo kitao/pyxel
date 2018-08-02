@@ -63,9 +63,10 @@ Instale os pacotes necessários da maneira apropriada para cada distribuição.
 
 **Arch:**
 
+Instale [`python-pixel`](https://aur.archlinux.org/packages/python-pyxel/) usando o seu assistente AUR favorito:
+
 ```sh
-pacman -S python python-pip glfw portaudio
-pip install pyxel
+yay -S python-pyxel
 ```
 
 **Debian:**

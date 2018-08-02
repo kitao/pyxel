@@ -60,13 +60,14 @@ pip3 install pyxel
 
 ### Linux
 
-各ディストリビューションに適した方法で必要なパッケージをインストールします。
+各ディストリビューションに適した方法で必要なパッケージをインストールしてください。
 
 **Arch:**
 
+AURヘルパーで[`python-pixel`](https://aur.archlinux.org/packages/python-pyxel/)をインストールします。
+
 ```sh
-pacman -S python python-pip glfw portaudio
-pip install pyxel
+yay -S python-pyxel
 ```
 
 **Debian:**
