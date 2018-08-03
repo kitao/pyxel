@@ -4,6 +4,7 @@
 - Fixed typos in the READMEs
 - Updated the Arch Linux installation in the READMEs
 - Fixed the screen size bug
+- Updated the Debian Linux installation in the READMEs
 
 ## 0.7.4
 - Fixed to run without an audio card
