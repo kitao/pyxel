@@ -1,8 +1,10 @@
 import datetime
 import math
 import os
-import time
 import platform
+import subprocess
+import time
+
 import glfw
 import PIL.Image
 
@@ -359,7 +361,12 @@ class App:
             path = os.path.join(
                 os.path.join(os.path.expanduser('~')), 'Desktop')
         else:
-            path = os.popen('xdg-user-dir DESKTOP').read().split('\n')[0]
+            try:
+                path = subprocess.check_output(
+                    ["xdg-user-dir", "DESKTOP"],
+                    shell=True).decode('utf-8').split('\n')
+            except subprocess.CalledProcessError:
+                path = os.path.expanduser('~')
 
         return os.path.join(
             path,
