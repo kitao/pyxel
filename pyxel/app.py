@@ -361,12 +361,15 @@ class App:
             path = os.path.join(
                 os.path.join(os.path.expanduser('~')), 'Desktop')
         else:
-            try:
-                path = subprocess.check_output(
-                    ["xdg-user-dir", "DESKTOP"],
-                    shell=True).decode('utf-8').split('\n')
-            except subprocess.CalledProcessError:
-                path = os.path.expanduser('~')
+            path = os.path.join(
+                os.path.join(os.path.expanduser('~')), 'Desktop')
+            if not os.path.exists(path):
+                try:
+                    path = subprocess.check_output(
+                        ["xdg-user-dir DESKTOP"],
+                        shell=True).decode('utf-8').split('\n')[0]
+                except subprocess.CalledProcessError:
+                    path = os.path.expanduser('~')
 
         return os.path.join(
             path,
