@@ -5,6 +5,7 @@
 - Updated the Arch Linux installation in the READMEs
 - Updated the Debian Linux installation in the READMEs
 - Updated the way to capture screen on Linux
+- Fixed a shader compile error occurs in some environment
 
 ## 0.7.4
 - Fixed to run without an audio card
