@@ -73,7 +73,7 @@ yay -S python-pyxel
 **Debian:**
 
 ```sh
-apt-get install python3 python3-pip glfw libportaudio2 libasound-dev
+apt-get install python3 python3-pip libglfw3 libportaudio2 libasound-dev
 pip3 install pyxel
 ```
 
