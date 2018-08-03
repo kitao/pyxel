@@ -140,7 +140,7 @@ class Renderer:
 
     @staticmethod
     def largest_power_of_two(n):
-        return min(2**math.ceil(math.log(n, 2)), RENDERER_MIN_TEXTURE_SIZE)
+        return max(2**math.ceil(math.log(n, 2)), RENDERER_MIN_TEXTURE_SIZE)
 
     @staticmethod
     def _int_to_rgb(color):
