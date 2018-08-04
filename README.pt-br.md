@@ -171,7 +171,7 @@ A largura e a altura da tela.
 O número dos quadros decorridos
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color])`  
-Inicializa a aplicação Pyxel com o tamanho de tela (`width`, `height`)
+Inicializa a aplicação Pyxel com o tamanho de tela (`width`, `height`). A largura e a altura máximas da tela são 256  
 Também é possível especificar o título da janela com `caption`, a ampliação do display com `scale`, a cor da paleta com `palette`, a taxa de quadros com `fps` e a largura e cor da margem de fora da tela com `border_width `e` border_color`
 
 - `run(update, draw)`  
@@ -235,7 +235,7 @@ Desenha uma string `s` de cor `col` em (`x`, `y`)
 ### Audio
 
 - `sound(snd)`  
-Opera o banco de sons `snd`(0-63) (ver a classe Sound)
+Opera o banco de sons `snd`(0-63) (ver a classe Sound)  
 e.g. `pyxel.sound(0).speed = 60`
 
 - `play(ch, snd, loop=False)`  
@@ -253,7 +253,7 @@ Largura e altura da Image
 Os dados da Image (NumPy array)
 
 - `set(x, y, data)`  
-Define a imagem como uma lista de strings em (`x`, `y`)
+Define a imagem como uma lista de strings em (`x`, `y`)  
 e.g. `pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
 - `load(x, y, filename)`  
@@ -283,11 +283,11 @@ Duração de uma nota(120 = 1 second per tone)
 Define uma nota, tom, volume e efeito com uma string. Se o tom, volume e duração do efeito forem mais curtas que a nota, será repetida do começo
 
 - `set_note(note)`  
-Define a nota com uma string consistindo de 'CDEFGAB'+'#-'+'0123' ou 'R'. Indiferente a maiúsculas e minúsculas e espaços são ignorados
+Define a nota com uma string consistindo de 'CDEFGAB'+'#-'+'0123' ou 'R'. Indiferente a maiúsculas e minúsculas e espaços são ignorados  
 e.g. `pyxel.sound(0).set_note('G2B-2D3R RF3F3F3')`
 
 - `set_tone(tone)`  
-Define um tom com uma string consistindo de 'TSPN'. Indiferente a maiúsculas e minúsculas e espaços são ignorados
+Define um tom com uma string consistindo de 'TSPN'. Indiferente a maiúsculas e minúsculas e espaços são ignorados  
 e.g. `pyxel.sound(0).set_tone('TTSS PPPN')`
 
 - `set_volume(volume)`  

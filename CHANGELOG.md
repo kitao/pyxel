@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.7.7
+- Added the description of the screen size limitation to the READMEs
+
 ## 0.7.6
 - Specify the version of GLFW in the READMEs
 - Limited the window size to 256 because of OpenGL Point Sprite limitation

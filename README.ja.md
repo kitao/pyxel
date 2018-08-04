@@ -172,7 +172,7 @@ Pyxelは[PICO-8](https://www.lexaloffle.com/pico-8.php)と同じパレットを�
 経過フレーム数
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color])`  
-Pyxelアプリを画面サイズ (`width`, `height`) で初期化する  
+Pyxelアプリを画面サイズ (`width`, `height`) で初期化する。画面の最大の幅と高さは256  
 `caption`でウィンドウタイトル、`scale`で表示倍率、`palette`でパレット色、`fps`で動作フレームレート、`border_width`と`border_color`で画面外側のマージン幅と色を指定できる
 
 - `run(update, draw)`  
