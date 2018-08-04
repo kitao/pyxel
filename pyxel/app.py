@@ -372,7 +372,8 @@ class App:
                     path = subprocess.check_output(
                         ["xdg-user-dir DESKTOP"],
                         shell=True).decode('utf-8').split('\n')[0]
-                except subprocess.CalledProcessError:
+                    if not os.path.exists(path) : raise OSError
+                except (subprocess.CalledProcessError, OSError):
                     path = os.path.expanduser('~')
 
         return os.path.join(
