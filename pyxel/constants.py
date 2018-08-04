@@ -1,6 +1,6 @@
 import glfw
 
-VERSION = '0.7.5'
+VERSION = '0.7.6'
 
 DEFAULT_CAPTION = 'Pyxel'
 DEFAULT_SCALE = 4
