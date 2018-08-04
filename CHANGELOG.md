@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.7.6
+- Specify the version of GLFW in the READMEs
+
 ## 0.7.5
 - Fixed typos in the READMEs
 - Updated the Arch Linux installation in the READMEs

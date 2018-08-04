@@ -48,7 +48,7 @@ pip install pyxel
 
 ### Mac
 
-Após instalar o [Python3](https://www.python.org/) e [glfw](http://www.glfw.org/), instale Pyxel com o comando `pip`.
+Após instalar o [Python3](https://www.python.org/) e [glfw](http://www.glfw.org/) (versão 3.2.1 ou superior), instale Pyxel com o comando `pip`.
 
 Se o gerenciador de pacotes [Homebrew](https://brew.sh/) estiver instalado, o seguinte comando instala todos os pacotes necessários:
 
@@ -59,7 +59,7 @@ pip3 install pyxel
 
 ### Linux
 
-Instale os pacotes necessários da maneira apropriada para cada distribuição.
+Instale os pacotes necessários da maneira apropriada para cada distribuição. [glfw](http://www.glfw.org/) deve ser versão 3.2.1 ou superior.
 
 **Arch:**
 
