@@ -42,7 +42,7 @@ varying float v_pal[16];
 
 vec4 pixelToScreen(vec2 pos)
 {{
-    return vec4(pos * 2.0 / u_framebuffer_size - 1.0, 0.0, 1.0);
+    return vec4((pos + 0.5) * 2.0 / u_framebuffer_size - 1.0, 0.0, 1.0);
 }}
 
 void pix()
