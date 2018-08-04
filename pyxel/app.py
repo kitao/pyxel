@@ -9,15 +9,19 @@ import glfw
 import PIL.Image
 
 from .audioplayer import AudioPlayer
-from .constants import (APP_MEASURE_FRAME_COUNT, APP_SCREEN_CAPTURE_COUNT,
-                        APP_SCREEN_CAPTURE_SCALE, DEFAULT_PALETTE, ICON_DATA,
-                        KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON)
+from .constants import (APP_MAX_WINDOW_SIZE, APP_MEASURE_FRAME_COUNT,
+                        APP_SCREEN_CAPTURE_COUNT, APP_SCREEN_CAPTURE_SCALE,
+                        DEFAULT_PALETTE, ICON_DATA, KEY_LEFT_BUTTON,
+                        KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON)
 from .renderer import Renderer
 
 
 class App:
     def __init__(self, module, width, height, caption, scale, palette, fps,
                  border_width, border_color):
+        width = min(width, APP_MAX_WINDOW_SIZE)
+        height = min(height, APP_MAX_WINDOW_SIZE)
+
         self._module = module
         self._palette = palette[:]
         self._pil_palette = self._get_pil_palette(palette)
