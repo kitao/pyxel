@@ -36,6 +36,10 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 - Keyboard, mouse, and joystick(WIP) inputs
 - Image and sound editor (WIP)
 
+### Color Palette
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
+
 ## How to Install
 
 ### Windows

@@ -37,6 +37,10 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 - キーボード、マウス、ジョイスティック (予定)
 - 画像・サウンド編集ツール (予定)
 
+### カラーパレット
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
+
 ## インストール方法
 
 ### Windows
