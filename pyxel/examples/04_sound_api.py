@@ -1,9 +1,20 @@
+"""
+Audio example
+~~~~~~~~~~~~~
+
+Contains explainations about how the sound interface works.
+"""
 import math
 
 import pyxel
 
 
 class App:
+    """
+    Application class.
+     All methods accessible as `pyxel.method()` are loaded in the module by 
+     `app.App.__init__`, see `# export module functions` comment in there.
+    """
     def __init__(self):
         pyxel.init(200, 150, caption='Pixel Sound API')
 
@@ -18,10 +29,21 @@ class App:
             '01100000',
         ])
 
+        #
+        # ## Sounds system initialization
+        #
+        # initialize sounds banks
+        # see `audioplayer.AudioPlayer.set(self, note, tone, volume, effect, speed)`
+
+        # a list of `sound.Sound` is allocated in `AudioPlayer._sound_list`
+        #  from 0 to `constants.AUDIO_SOUND_COUNT`.
         pyxel.sound(0).set(
             'e2e2c2g1 g1g1c2e2 d2d2d2g2 g2g2rr'
-            'c2c2a1e1 e1e1a1c2 b1b1b1e2 e2e2rr', 'p', '6',
-            'vffn fnff vffs vfnn', 25)
+            'c2c2a1e1 e1e1a1c2 b1b1b1e2 e2e2rr',  # notes values from `constants.SOUND_NOTE_TABLE`
+            'p',                                  # value from `constants.SOUND_TONE_TABLE`
+            '6',                                  # volume 0-7
+            'vffn fnff vffs vfnn',                # values from `constants.SOUND_EFFECT_TABLE`
+            25)                                   # speed, used as `AUDIO_SAMPLE_RATE // 120 * speed`
 
         pyxel.sound(1).set(
             'r a1b1c2 b1b1c2d2 g2g2g2g2 c2c2d2e2'
@@ -46,9 +68,22 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def play_music(self, ch0, ch1, ch2):
+        """
+        Play sounds function that is called at every `update()`.
+
+         Audio stack:
+          * `audioplayer.Audioplayer.play`, higher-level interface
+          * `sound.Sound` (played values) and `audioplayer.Channel` (in-game streams)
+          * every channel is bound to an `oscillator.Oscillator`, see   `Channel.output`
+
+         For theory of oscillators, see:
+          * <en.wikibooks.org/wiki/Sound_Synthesis_Theory/Oscillators_and_Wavetables>
+        """
         self.is_playing = (ch0, ch1, ch2)
 
         if ch0:
+            # actual play sound event:
+            # `audioplayer.Audioplayer.play(self, ch, snd, *, loop=False)`
             pyxel.play(0, [0, 1], loop=True)
         else:
             pyxel.stop(0)
