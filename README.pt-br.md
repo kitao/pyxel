@@ -36,6 +36,10 @@ Pyxel é open source e livre para utilização. Vamos fazer jogos retrôs com Py
 - Entrada de teclado, mouse e joystick(WIP)
 - Editor de imagem e som (WIP)
 
+### Paleta de cores
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
+
 ## Como instalar
 
 ### Windows
