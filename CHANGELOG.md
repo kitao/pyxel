@@ -2,6 +2,9 @@
 
 ## 0.7.6
 - Specify the version of GLFW in the READMEs
+- Limited the window size to 256 because of OpenGL Point Sprite limitation
+- Fixed the element border lacks bug
+- Added the example #5
 
 ## 0.7.5
 - Fixed typos in the READMEs
