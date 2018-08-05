@@ -28,6 +28,7 @@ setuptools.setup(
     packages=[
         'pyxel',
         'pyxel.editor',
+        'pyxel.editor.assets',
         'pyxel.examples',
         'pyxel.examples.assets',
     ],
