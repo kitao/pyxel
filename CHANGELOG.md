@@ -2,6 +2,8 @@
 
 ## 0.7.7
 - Added the description of the screen size limitation to the READMEs
+- Added the Fedora Linux installation to the READMEs
+- Added another fallback to get the desktop folder name
 
 ## 0.7.6
 - Specify the version of GLFW in the READMEs

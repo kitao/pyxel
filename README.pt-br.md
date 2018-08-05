@@ -80,6 +80,13 @@ apt-get install python3 python3-pip libglfw3 libportaudio2 libasound-dev
 pip3 install pyxel
 ```
 
+**Fedora:**
+
+```sh
+dnf install glfw portaudio
+pip3 install pyxel
+```
+
 ### Instalando os exemplos
 
 Depois de instalar o Pyxel, os exemplos serão copiados para o atual diretório com o seguinte comando:
