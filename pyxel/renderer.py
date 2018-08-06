@@ -120,7 +120,11 @@ class Renderer:
 
         return capture_image
 
-    def image(self, img):
+    def image(self, img, *, system=False):
+        if not system and img == RENDERER_IMAGE_COUNT - 1:
+            raise ValueError(
+                'image bank {} is reserved for system'.format(img))
+
         return self._image_list[img]
 
     @staticmethod

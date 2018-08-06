@@ -202,8 +202,8 @@ Return `True` if `key` is released at that frame, otherwise return `False`
 
 ### Graphics
 
-- `image(img)`  
-Operate the image bank `img`(0-2) (see the Image class)
+- `image(img, [system])`  
+Operate the image bank `img`(0-2) (see the Image class). If `system` is `True`, the image bank 3 for system can be accessed  
 e.g. `pyxel.image(0).load(0, 0, 'title.png')`
 
 - `clip(x1, y1, x2, y2)`  
