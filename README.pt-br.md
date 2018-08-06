@@ -202,8 +202,8 @@ Retorna `True` se `key` for solta naquele quadro, caso contrário retorna `False
 
 ### Gráficos
 
-- `image(img)`  
-Opera o banco de imagens `img`(0-2) (veja a classe Image)
+- `image(img, [system])`  
+Opera o banco de imagens `img`(0-2) (veja a classe Image). Se `system` for` True`, o banco de imagens 3 do sistema pode ser acessado  
 e.g. `pyxel.image(0).load(0, 0, 'title.png')`
 
 - `clip(x1, y1, x2, y2)`  

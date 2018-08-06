@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.7.8
+- Added the system option to the image command
+
 ## 0.7.7
 - Added the description of the screen size limitation to the READMEs
 - Added the Fedora Linux installation to the READMEs
