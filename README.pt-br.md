@@ -31,7 +31,7 @@ Pyxel é open source e livre para utilização. Vamos fazer jogos retrôs com Py
 - Executável no Windows, Mac e Linux
 - Código escrito em Python3
 - Paleta fixa de 16 cores
-- 4 bancos de imagens de tamanho 256x256
+- 3 bancos de imagens de tamanho 256x256
 - 4 canais com 64 bancos de som definíveis
 - Entrada de teclado, mouse e joystick(WIP)
 - Editor de imagem e som (WIP)
@@ -203,7 +203,7 @@ Retorna `True` se `key` for solta naquele quadro, caso contrário retorna `False
 ### Gráficos
 
 - `image(img)`  
-Opera o banco de imagens `img`(0-3) (veja a classe Image)
+Opera o banco de imagens `img`(0-2) (veja a classe Image)
 e.g. `pyxel.image(0).load(0, 0, 'title.png')`
 
 - `clip(x1, y1, x2, y2)`  
@@ -234,7 +234,7 @@ Desenha um círculo de raio `r` e cor `col` em (`x`, `y`)
 Desenha o contorno de um círculo de raio `r` e cor `col` em (`x`, `y`)
 
 - `blt(x, y, img, sx, sy, w, h, [colkey])`  
-Copia a região de tamanho (`w`, `h`) de (`sx`, `sy`) do banco de imagens `img`(0-3) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificado, será tratado como cor transparente.
+Copia a região de tamanho (`w`, `h`) de (`sx`, `sy`) do banco de imagens `img`(0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificado, será tratado como cor transparente.
 
 - `text(x, y, s, col)`  
 Desenha uma string `s` de cor `col` em (`x`, `y`)
@@ -267,7 +267,7 @@ e.g. `pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 Lê uma imagem png em (`x`, `y`)
 
 - `copy(x, y, img, sx, sy, width, height)`  
-Copia a região de tamanho (`width`, `height`) de (`sx`, `sy`) do banco de imagens `img`(0-3) para (`x`, `y`)
+Copia a região de tamanho (`width`, `height`) de (`sx`, `sy`) do banco de imagens `img`(0-2) para (`x`, `y`)
 
 ### Classe Sound
 

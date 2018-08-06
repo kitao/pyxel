@@ -4,6 +4,7 @@
 - Added the description of the screen size limitation to the READMEs
 - Added the Fedora Linux installation to the READMEs
 - Added another fallback to get the desktop folder name
+- Changed the number of the image banks to 3
 
 ## 0.7.6
 - Specify the version of GLFW in the READMEs
