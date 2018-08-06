@@ -31,7 +31,7 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 - Run on Windows, Mac, and Linux
 - Code writing with Python3
 - Fixed 16 color palette
-- 256x256 sized 4 image banks
+- 256x256 sized 3 image banks
 - 4 channels with 64 definable sound banks
 - Keyboard, mouse, and joystick(WIP) inputs
 - Image and sound editor (WIP)
@@ -203,7 +203,7 @@ Return `True` if `key` is released at that frame, otherwise return `False`
 ### Graphics
 
 - `image(img)`  
-Operate the image bank `img`(0-3) (see the Image class)
+Operate the image bank `img`(0-2) (see the Image class)
 e.g. `pyxel.image(0).load(0, 0, 'title.png')`
 
 - `clip(x1, y1, x2, y2)`  
@@ -234,7 +234,7 @@ Draw a circle of radius `r` and color `col` at (`x`, `y`)
 Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`)
 
 - `blt(x, y, img, sx, sy, w, h, [colkey])`  
-Copy the region of size (`w`, `h`) from (`sx`, `sy`) of the image bank `img`(0-3) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is speficied, treated as transparent color
+Copy the region of size (`w`, `h`) from (`sx`, `sy`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is speficied, treated as transparent color
 
 - `text(x, y, s, col)`  
 Draw a string `s` of color `col` at (`x`, `y`)
@@ -267,7 +267,7 @@ e.g. `pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 Read png image at (`x`, `y`)
 
 - `copy(x, y, img, sx, sy, width, height)`  
-Copy the region of size (`width`, `height`) from (`sx`, `sy`) of the image bank `img`(0-3) to (`x`, `y`)
+Copy the region of size (`width`, `height`) from (`sx`, `sy`) of the image bank `img`(0-2) to (`x`, `y`)
 
 ### Sound Class
 
