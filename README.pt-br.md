@@ -263,8 +263,8 @@ Os dados da Image (NumPy array)
 Define a imagem como uma lista de strings em (`x`, `y`)  
 e.g. `pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
-- `load(x, y, filename)`  
-Lê uma imagem png em (`x`, `y`)
+- `load(x, y, filename, [dirname])`  
+Lê a imagem png do diretório do script de execução ou o `dirname` em (`x`, `y`)
 
 - `copy(x, y, img, sx, sy, width, height)`  
 Copia a região de tamanho (`width`, `height`) de (`sx`, `sy`) do banco de imagens `img`(0-2) para (`x`, `y`)
