@@ -4,7 +4,8 @@ import OpenGL.GL as gl
 
 from .constants import (DRAW_MAX_COUNT, FONT_DATA, FONT_HEIGHT, FONT_WIDTH,
                         RENDERER_IMAGE_COUNT, RENDERER_IMAGE_HEIGHT,
-                        RENDERER_IMAGE_WIDTH, RENDERER_MIN_TEXTURE_SIZE)
+                        RENDERER_IMAGE_WIDTH, RENDERER_MIN_TEXTURE_SIZE,
+                        DEFAULT_PALETTE)
 from .drawcommand import DrawCommand
 from .glwrapper import GLAttribute, GLShader, GLTexture
 from .image import Image
@@ -104,7 +105,7 @@ class Renderer:
                                         gl.GL_RGB, gl.GL_UNSIGNED_BYTE)
 
         # clear screen
-        r, g, b = self._int_to_rgb(clear_color)
+        r, g, b = self._int_to_rgb(DEFAULT_PALETTE[clear_color])
         gl.glClearColor(r / 255, g / 255, b / 255, 1)
         gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
