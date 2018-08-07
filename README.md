@@ -263,8 +263,8 @@ The data of the Image (NumPy array)
 Set the image as a list of strings at (`x`, `y`)   
 e.g. `pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
-- `load(x, y, filename)`  
-Read png image at (`x`, `y`)
+- `load(x, y, filename, [dirname])`  
+Read the png image from the directory of the execution script or `dirname` at (`x`, `y`)
 
 - `copy(x, y, img, sx, sy, width, height)`  
 Copy the region of size (`width`, `height`) from (`sx`, `sy`) of the image bank `img`(0-2) to (`x`, `y`)

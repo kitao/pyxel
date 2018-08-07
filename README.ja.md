@@ -261,11 +261,11 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 イメージのデータ (NumPy配列)
 
 - `set(x, y, data)`  
-(`x`, `y`) に文字列のリストでイメージを設定する   
+(`x`, `y`) に文字列のリストでイメージを設定する  
 例：`pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
-- `load(x, y, filename)`  
-(`x`, `y`) にpngファイルを読み込む
+- `load(x, y, filename, [dirname])`  
+(`x`, `y`) に実行スクリプトのディレクトリまたは`dirname`からpngファイルを読み込む
 
 - `copy(x, y, img, sx, sy, width, height)`  
 イメージバンク`img`(0-2) の (`sx`, `sy`) からサイズ (`width`, `height`) の領域を (`x`, `y`) にコピーする
