@@ -4,6 +4,7 @@
 - Added the system option to the image command
 - Fixed the color bug of the shader for some environments
 - Added the dirname option to the load method of the image class
+- Updated the description of the init command of the READMEs
 
 ## 0.7.7
 - Added the description of the screen size limitation to the READMEs
