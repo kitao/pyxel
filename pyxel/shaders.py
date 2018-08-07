@@ -324,7 +324,8 @@ void circb()
     gl_FragColor = indexToColor(v_col);
 }}
 
-#define texture_color(index) int(texture2D(u_texture[index], uv).r * 255.0)
+#define texture_color(index) \\
+    int(texture2D(u_texture[index], uv).r * 255.0 + 0.5)
 
 int getTextureColor(int index, vec2 uv)
 {{
@@ -359,7 +360,7 @@ void text()
     vec2 uv = (v_pos2 + draw_pos - v_min_pos) / u_texture_size[img];
 
     int col = getTextureColor(img, uv);
-    if (col != 1) {{ discard; }}
+    if (col == 0) {{ discard; }}
 
     gl_FragColor = indexToColor(v_col);
 }}

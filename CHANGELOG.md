@@ -2,6 +2,8 @@
 
 ## 0.7.8
 - Added the system option to the image command
+- Fixed the color bug of the shader for some environments
+- Added the dirname option to the load method of the image class
 
 ## 0.7.7
 - Added the description of the screen size limitation to the READMEs
