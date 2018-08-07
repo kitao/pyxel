@@ -179,7 +179,7 @@ O número dos quadros decorridos
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color])`  
 Inicializa a aplicação Pyxel com o tamanho de tela (`width`, `height`). A largura e a altura máximas da tela são 256  
-Também é possível especificar o título da janela com `caption`, a ampliação do display com `scale`, a cor da paleta com `palette`, a taxa de quadros com `fps` e a largura e cor da margem de fora da tela com `border_width `e` border_color`
+Também é possível especificar o título da janela com `caption`, a ampliação do display com `scale`, a cor da paleta com `palette`, a taxa de quadros com `fps` e a largura e cor da margem de fora da tela com `border_width `e` border_color`. `palette` é especificada como uma lista de 16 elementos de cor de 24 bits, ` border_color` como cor de 24 bits
 
 - `run(update, draw)`  
 Inicia a aplicação Pyxel e chama a função `update` para atualização de quadros e a função `draw` para desenhar
