@@ -139,7 +139,7 @@ class Renderer:
             for j in range(FONT_WIDTH * FONT_HEIGHT):
                 x = left + j % FONT_WIDTH
                 y = top + j // FONT_WIDTH
-                data[y, x] = (v & 0x800000) and 1 or 0
+                data[y, x] = (v & 0x800000) and 7 or 0
                 v <<= 1
 
     @staticmethod

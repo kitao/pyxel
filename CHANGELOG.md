@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.7.9
+- Changed the color of the system font texture to white
+
 ## 0.7.8
 - Added the system option to the image command
 - Fixed the color bug of the shader for some environments
