@@ -2,6 +2,7 @@
 
 ## 0.7.9
 - Changed the color of the system font texture to white
+- Fixed a typo in the README.md
 
 ## 0.7.8
 - Added the system option to the image command
