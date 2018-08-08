@@ -234,7 +234,7 @@ Draw a circle of radius `r` and color `col` at (`x`, `y`)
 Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`)
 
 - `blt(x, y, img, sx, sy, w, h, [colkey])`  
-Copy the region of size (`w`, `h`) from (`sx`, `sy`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is speficied, treated as transparent color
+Copy the region of size (`w`, `h`) from (`sx`, `sy`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color
 
 - `text(x, y, s, col)`  
 Draw a string `s` of color `col` at (`x`, `y`)
