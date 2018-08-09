@@ -6,7 +6,7 @@ import PIL.Image
 
 import pyxel
 
-from .glwrapper import GLTexture
+from .gl_wrapper import GLTexture
 
 
 class Image:

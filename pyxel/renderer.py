@@ -5,8 +5,8 @@ import OpenGL.GL as gl
 from .constants import (DRAW_MAX_COUNT, FONT_DATA, FONT_HEIGHT, FONT_WIDTH,
                         RENDERER_IMAGE_COUNT, RENDERER_IMAGE_HEIGHT,
                         RENDERER_IMAGE_WIDTH, RENDERER_MIN_TEXTURE_SIZE)
-from .drawcommand import DrawCommand
-from .glwrapper import GLAttribute, GLShader, GLTexture
+from .draw_command import DrawCommand
+from .gl_wrapper import GLAttribute, GLShader, GLTexture
 from .image import Image
 from .shaders import (DRAWING_ATTRIBUTE_INFO, DRAWING_FRAGMENT_SHADER,
                       DRAWING_VERTEX_SHADER, SCALING_ATTRIBUTE_INFO,
