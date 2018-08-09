@@ -1,28 +1,39 @@
 import pyxel
+from pyxel.editor.editor_constants import (EDITOR_IMAGE, EDITOR_MUSIC,
+                                           EDITOR_SOUND, EDITOR_TILEMAP)
+from pyxel.editor.image_editor import ImageEditor
+from pyxel.editor.music_editor import MusicEditor
+from pyxel.editor.sound_editor import SoundEditor
+from pyxel.editor.tilemap_editor import TileMapEditor
 
 
 class Editor:
     def __init__(self):
         pyxel.init(240, 180, caption='Pyxel')
+
+        self.editor_list = [
+            ImageEditor(),
+            TileMapEditor(),
+            SoundEditor(),
+            MusicEditor()
+        ]
+
+        self.cur_editor = EDITOR_IMAGE
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
+        for editor in self.editor_list:
+            editor.update()
+
     def draw(self):
-        self.draw_menu()
-        self.draw_help()
+        pyxel.cls(6)
 
-    def draw_menu(self):
-        pyxel.rect(0, 0, 239, 6, 6)
-        pyxel.text(2, 1, 'MENU', 0)
-
-        pyxel.rect(230, 1, 234, 5, 13)
-
-    def draw_help(self):
-        pyxel.rect(0, 173, 239, 179, 13)
-        pyxel.text(2, 174, 'Help Message', 0)
+        for editor in self.editor_list:
+            editor.draw()
 
 
 def run():
