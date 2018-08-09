@@ -8,7 +8,7 @@ import time
 import glfw
 import PIL.Image
 
-from .audioplayer import AudioPlayer
+from .audio_player import AudioPlayer
 from .constants import (APP_MAX_WINDOW_SIZE, APP_MEASURE_FRAME_COUNT,
                         APP_SCREEN_CAPTURE_COUNT, APP_SCREEN_CAPTURE_SCALE,
                         DEFAULT_PALETTE, ICON_DATA, KEY_LEFT_BUTTON,
