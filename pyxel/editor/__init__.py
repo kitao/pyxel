@@ -1,7 +1,6 @@
 import pyxel
-from pyxel.editor.editor_constants import (MODE_IMAGE, MODE_MONITOR,
-                                           MODE_MUSIC, MODE_SOUND,
-                                           MODE_TILEMAP)
+from pyxel.editor.editor_constants import (EDITOR_IMAGE, EDITOR_MUSIC,
+                                           EDITOR_SOUND, EDITOR_TILEMAP)
 from pyxel.editor.image_editor import ImageEditor
 from pyxel.editor.music_editor import MusicEditor
 from pyxel.editor.sound_editor import SoundEditor
@@ -19,7 +18,7 @@ class Editor:
             MusicEditor()
         ]
 
-        self.cur_mode = MODE_IMAGE
+        self.cur_editor = EDITOR_IMAGE
 
         pyxel.run(self.update, self.draw)
 
