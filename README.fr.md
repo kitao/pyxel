@@ -34,7 +34,7 @@ Avec **Pyxel**, il est facile de développer des jeux en style pixel art grâce 
 - Inclus 3 images en 256x256
 - Inclus 64 sons sur 4 canaux
 - Fonctionne avec clavier, souris et joystick (TEC)
-- Éditeur d'image et de sons (TEC)
+- Éditeur d'image et de son (TEC)
 
 ### Palette de couleurs
 
