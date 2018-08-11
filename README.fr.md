@@ -26,7 +26,7 @@ The specifications of the gaming console, APIs, and palettes of Pyxel are referr
 
 Pyxel is open source and free to use. Let's start making a retro game with Pyxel!
 
-## Specifications
+## Spécifications techniques
 
 - Run on Windows, Mac, and Linux
 - Code writing with Python3
@@ -36,11 +36,11 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 - Keyboard, mouse, and joystick(WIP) inputs
 - Image and sound editor (WIP)
 
-### Color Palette
+### Palette de couleurs
 
 <img src="pyxel/examples/screenshots/05_color_palette.png">
 
-## How to Install
+## Installation
 
 ### Windows
 
@@ -95,7 +95,7 @@ After installing Pyxel, the examples of Pyxel will be copied to the current dire
 install_pyxel_examples
 ```
 
-## How to Use
+## Utilisation
 
 ### Create Pyxel Application
 
@@ -167,7 +167,7 @@ Please refer to the API reference for usage of `Image.set` and `Image.load`.
 
 Because Pyxel uses the same palette as [PICO-8](https://www.lexaloffle.com/pico-8.php), when creating png images for Pyxel, it is recommended to use [Aseprite](https://www.aseprite.org/) in PICO-8 palette mode.
 
-## API Reference
+## Référence de l'API
 
 ### System
 
@@ -305,6 +305,6 @@ e.g. `pyxel.sound(0).set_volume('7777 7531')`
 Set the effect with a string consists of 'NSVF'. Case-insensitive and whitespace is ignored  
 e.g. `pyxel.sound(0).set_effect('NFNF NVVS')`
 
-## License
+## Licence
 
 Pyxel est sous [licence MIT](https://fr.wikipedia.org/wiki/Licence_MIT). La licence donne à toute personne recevant le logiciel le droit illimité de l'utiliser, le copier, le modifier, le fusionner, le publier, le distribuer, le vendre et de changer sa licence. La seule obligation est de mettre le nom des auteurs avec la notice de copyright.
