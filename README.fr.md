@@ -4,7 +4,7 @@
 
 **Pyxel** est un module Python pour développer des jeux rétro.
 
-Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games. 
+Avec **Pyxel**, il est facile de développer des jeux en style pixel art grâce à sa simple architecture inspirée des consoles rétro comme les images en 16 couleurs et les sons sur 4 canaux.
 
 <a href="pyxel/examples/01_hello_pyxel.py" target="_blank">
 <img src="pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
@@ -22,9 +22,9 @@ Thanks to its simple specifications inspired by retro gaming consoles, such as o
 <img src="pyxel/examples/screenshots/04_sound_api.gif" width="48%">
 </a>
 
-The specifications of the gaming console, APIs, and palettes of Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic.computer/).
+**Pyxel** s'inspire de [PICO-8](https://www.lexaloffle.com/pico-8.php) et [TIC-80](https://tic.computer/) pour la palette de couleurs et l'API.
 
-Pyxel is open source and free to use. Let's start making a retro game with Pyxel!
+**Pyxel** est open source et gratuit d'utilisation. Amusez-vous à développer des jeux rétro avec **Pyxel** !
 
 ## Spécifications techniques
 
