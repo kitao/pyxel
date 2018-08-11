@@ -1,6 +1,6 @@
 # <img src="pyxel/examples/assets/pyxel_logo_152x64.png">
 
-[ [English](README.md) | [French](README.fr.md) | [Japanese](README.ja.md) | [Português](README.pt-br.md) ]
+[ [English](README.md) | [Français](README.fr.md) | [日本語](README.ja.md) | [Português](README.pt-br.md) ]
 
 **Pyxel** est un module Python pour développer des jeux rétro.
 
