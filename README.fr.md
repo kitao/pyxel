@@ -2,7 +2,7 @@
 
 [ [English](README.md) | [French](README.fr.md) | [Japanese](README.ja.md) | [Português](README.pt-br.md) ]
 
-**Pyxel** is a retro game development environment in Python.
+**Pyxel** est un module Python pour développer des jeux rétro.
 
 Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games. 
 
