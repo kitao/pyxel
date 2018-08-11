@@ -11,14 +11,18 @@ import PIL.Image
 from .audio_player import AudioPlayer
 from .constants import (APP_MAX_WINDOW_SIZE, APP_MEASURE_FRAME_COUNT,
                         APP_SCREEN_CAPTURE_COUNT, APP_SCREEN_CAPTURE_SCALE,
-                        DEFAULT_PALETTE, ICON_DATA, KEY_LEFT_BUTTON,
-                        KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON)
+                        DEFAULT_PALETTE, GLFW_VERSION, ICON_DATA,
+                        KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON)
 from .renderer import Renderer
 
 
 class App:
     def __init__(self, module, width, height, caption, scale, palette, fps,
                  border_width, border_color):
+        if glfw.get_version() < tuple(map(int, GLFW_VERSION.split('.'))):
+            raise RuntimeError(
+                'glfw version is lower than {}'.format(GLFW_VERSION))
+
         width = min(width, APP_MAX_WINDOW_SIZE)
         height = min(height, APP_MAX_WINDOW_SIZE)
 

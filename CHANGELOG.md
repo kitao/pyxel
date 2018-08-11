@@ -4,6 +4,7 @@
 - Changed the color of the system font texture to white
 - Fixed a typo in the README.md
 - Renamed the modules to use snake case
+- Added glfw version check
 
 ## 0.7.8
 - Added the system option to the image command
