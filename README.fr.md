@@ -28,13 +28,13 @@ Avec **Pyxel**, il est facile de développer des jeux en style pixel art grâce 
 
 ## Spécifications techniques
 
-- Run on Windows, Mac, and Linux
-- Code writing with Python3
-- Fixed 16 color palette
-- 256x256 sized 3 image banks
-- 4 channels with 64 definable sound banks
-- Keyboard, mouse, and joystick(WIP) inputs
-- Image and sound editor (WIP)
+- Fonctionne sous Windows, Mac et Linux
+- Programmation en Python 3
+- Palette de 16 couleurs
+- Inclus 3 images en 256x256
+- Inclus 64 sons sur 4 canaux
+- Fonctionne avec clavier, souris et joystick (TEC)
+- Éditeur d'image et de sons (TEC)
 
 ### Palette de couleurs
 
