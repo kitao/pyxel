@@ -1,6 +1,6 @@
 # <img src="pyxel/examples/assets/pyxel_logo_152x64.png">
 
-[ [English](README.md) | [Japanese](README.ja.md) | [Português](README.pt-br.md) ]
+[ [English](README.md) | [French](README.fr.md) | [Japanese](README.ja.md) | [Português](README.pt-br.md) ]
 
 **Pyxel** is a retro game development environment in Python.
 
