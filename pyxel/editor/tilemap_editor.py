@@ -1,16 +1,14 @@
-import os.path
-
 import pyxel
 
-from .widget import Widget
+from .mode import Mode
 
 
-class TileMapEditor(Widget):
+class TileMapEditor(Mode):
     def __init__(self):
-        pass
+        super().__init__('tilemap_editor.png')
 
     def update(self):
-        pass
+        super().update()
 
     def draw(self):
-        pass
+        super().draw()

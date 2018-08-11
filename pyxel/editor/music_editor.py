@@ -1,16 +1,15 @@
-import os.path
-
 import pyxel
 
-from .widget import Widget
+from .mode import Mode
 
 
-class MusicEditor(Widget):
+class MusicEditor(Mode):
     def __init__(self):
-        pass
+        super().__init__('music_editor.png')
 
     def update(self):
+        super().update()
         pass
 
     def draw(self):
-        pass
+        super().draw()
