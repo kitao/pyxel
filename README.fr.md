@@ -307,4 +307,4 @@ e.g. `pyxel.sound(0).set_effect('NFNF NVVS')`
 
 ## License
 
-Pyxel is under [MIT license](http://en.wikipedia.org/wiki/MIT_License). It can be reused within proprietary software provided that all copies of the licensed software include a copy of the MIT License terms and the copyright notice.
+Pyxel est sous [licence MIT](https://fr.wikipedia.org/wiki/Licence_MIT). La licence donne à toute personne recevant le logiciel le droit illimité de l'utiliser, le copier, le modifier, le fusionner, le publier, le distribuer, le vendre et de changer sa licence. La seule obligation est de mettre le nom des auteurs avec la notice de copyright.
