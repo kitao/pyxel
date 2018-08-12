@@ -94,9 +94,9 @@ install_pyxel_examples
 
 ## Utilisation
 
-### Create Pyxel Application
+### Exemples d'utilisation
 
-After importing the Pyxel module in your python code, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
+Importer le module **Pyxel** avec l'instruction `import pyxel`. Initialiser le programme avec la fonction `init` et spécifier en paramètre la taille de la fenêtre. Lancer l'application avec la fonction `run`.
 
 ```python
 import pyxel
@@ -114,9 +114,11 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-The arguments of `run` function are `update` function to update each frame and `draw` function to draw screen when necessary.
+Les paramètres de la fonction `run` sont `update` et `draw`.
+`update` est la fonction qui rafraîchit chaque image.
+`draw` est la fonction qui dessine ce qu'il y a à l'écran lorsque cela est nécessaire.
 
-In an actual application, it is recommended to wrap pyxel code in a class as below:
+En pratique, il est recommandé d'utiliser **Pyxel** à l'intérieur d'une classe comme dans l'exemple ci-dessous.
 
 ```python
 import pyxel
@@ -137,7 +139,7 @@ class App:
 App()
 ```
 
-### Special Controls
+### Commandes spéciales
 
 The following special controls can be performed while a Pyxel application is running:
 
@@ -152,17 +154,17 @@ Toggle the performance monitor (fps, update time, and draw time)
 - `Alt(Option)+Enter`  
 Toggle full screen
 
-### Create Images
+### Créer des images
 
-There are the following methods to create images for Pyxel:
+Il y a trois manières différentes de créer des images pour **Pyxel**.
 
-- Create an image from a list of strings with `Image.set` function
-- Load a png file in Pyxel palette with `Image.load` function
-- Create images with Pyxel Editor (WIP)
+- Créer une image à partir d'une liste de chaînes de caractères avec la méthode `Image.set`.
+- Charger un fichier png avec la méthode `Image.load`.
+- Utiliser l'éditeur d'image inclus dans **Pyxel** (TEC).
 
-Please refer to the API reference for usage of `Image.set` and `Image.load`.
+Référez-vous à la section [Référence de l'API](#référence-de-lapi) pour utiliser les méthodes `Image.set` et `Image.load`.
 
-Because Pyxel uses the same palette as [PICO-8](https://www.lexaloffle.com/pico-8.php), when creating png images for Pyxel, it is recommended to use [Aseprite](https://www.aseprite.org/) in PICO-8 palette mode.
+Pour créer des images, **Pyxel** utilise la même palette que [PICO-8](https://www.lexaloffle.com/pico-8.php). Il est donc recommandé d'utiliser [Aseprite](https://www.aseprite.org/) avec le mode PICO-8.
 
 ## Référence de l'API
 
