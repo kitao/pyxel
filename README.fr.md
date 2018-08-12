@@ -44,7 +44,7 @@ Avec **Pyxel**, il est facile de développer des jeux en style pixel art grâce 
 
 ### Windows
 
-After installing [Python3](https://www.python.org/), the following `pip` command installs Pyxel:
+Après avoir installé [Python 3](https://www.python.org/), utilisez la commande `pip` suivante pour installer **Pyxel** :
 
 ```sh
 pip install pyxel
@@ -52,9 +52,8 @@ pip install pyxel
 
 ### Mac
 
-After installing [Python3](https://www.python.org/) and [glfw](http://www.glfw.org/) (version 3.2.1 or higher), install Pyxel with `pip` command.
-
-If [Homebrew](https://brew.sh/) package manager is ready, the following command installs all the necessary packages:
+[Python 3](https://www.python.org/) et [glfw](http://www.glfw.org/) (version 3.2.1 ou supérieur) sont requis pour utiliser **Pyxel**.
+Si vous utilisé [Homebrew](https://brew.sh/) comme gestionnaire de paquets, la commande `brew` ci-dessous installe tous les paquets nécessaires. Ensuite utilisez la commande `pip3` pour installer **Pyxel**.
 
 ```sh
 brew install python3 glfw
@@ -63,33 +62,31 @@ pip3 install pyxel
 
 ### Linux
 
-Install the required packages in a way appropriate for each distribution. [glfw](http://www.glfw.org/) must be version 3.2.1 or higher.
+[Python 3](https://www.python.org/) et [glfw](http://www.glfw.org/) (version 3.2.1 ou supérieur) sont requis pour utiliser **Pyxel**. Référez-vous à la section appropriée à votre distribution.
 
-**Arch:**
-
-Install [`python-pixel`](https://aur.archlinux.org/packages/python-pyxel/) by using your favorite AUR helper:
+**Arch :**
 
 ```sh
 yay -S python-pyxel
 ```
 
-**Debian:**
+**Debian :**
 
 ```sh
 apt-get install python3 python3-pip libglfw3 libportaudio2 libasound-dev
 pip3 install pyxel
 ```
 
-**Fedora:**
+**Fedora :**
 
 ```sh
 dnf install glfw portaudio
 pip3 install pyxel
 ```
 
-### Install examples
+### Installation des exemples
 
-After installing Pyxel, the examples of Pyxel will be copied to the current directory with the following command:
+Utiliser la commande ci-dessous pour installer les exemples. Les exemples seront copiés dans le dossier courant.
 
 ```sh
 install_pyxel_examples
