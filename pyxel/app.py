@@ -23,8 +23,9 @@ class App:
             raise RuntimeError(
                 'glfw version is lower than {}'.format(GLFW_VERSION))
 
-        width = min(width, APP_MAX_WINDOW_SIZE)
-        height = min(height, APP_MAX_WINDOW_SIZE)
+        if width > APP_MAX_WINDOW_SIZE or height > APP_MAX_WINDOW_SIZE:
+            raise ValueError('screen size is larger than {}x{}'.format(
+                APP_MAX_WINDOW_SIZE, APP_MAX_WINDOW_SIZE))
 
         self._module = module
         self._palette = palette[:]
