@@ -1,4 +1,4 @@
-from pyxel.editor.screen import Screen
+from .screen import Screen
 
 
 class TileMapEditor(Screen):
