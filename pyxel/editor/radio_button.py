@@ -1,5 +1,6 @@
 import pyxel
-from pyxel.editor.widget import Widget
+
+from .widget import Widget
 
 BUTTON_SIZE = 7
 
