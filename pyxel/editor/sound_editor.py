@@ -1,15 +1,6 @@
-import pyxel
-
-from .mode import Mode
+from pyxel.editor.screen import Screen
 
 
-class SoundEditor(Mode):
-    def __init__(self):
-        super().__init__('sound_editor.png')
-
-    def update(self):
-        super().update()
-        pass
-
-    def draw(self):
-        super().draw()
+class SoundEditor(Screen):
+    def __init__(self, parent):
+        super().__init__(parent, 'sound_editor.png')
