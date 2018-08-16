@@ -10,6 +10,7 @@ class Widget:
     _capture_last_pos = None
 
     def __init__(self, parent, x, y, width, height, *, is_visible=True):
+        self.parent = parent
         self.x = x
         self.y = y
         self.width = width
@@ -86,7 +87,11 @@ class Widget:
                 Widget._capture_time = pyxel.frame_count
                 Widget._capture_press_pos = (mx, my)
                 Widget._capture_last_pos = Widget._capture_press_pos
-                self.on_press(key, mx - self.x, my - self.y)
+
+                x = mx - self.x
+                y = my - self.y
+                self.on_press(key, x, y)
+                self.on_drag(key, x, y, 0, 0)
                 return True
 
             self.on_hover()
