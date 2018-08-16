@@ -1,6 +1,6 @@
 # <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [Japanese](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt-br.md) ]
+[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [Japanese](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [Other Languages](https://github.com/kitao/pyxel/wiki) ]
 
 **Pyxel (ピクセル)** はPython向けのレトロゲーム開発環境です。
 
@@ -305,6 +305,10 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 - `set_effect(effect)`  
 'NSVF'の文字列でエフェクトを設定する。大文字と小文字を区別せず、空白は無視される  
 例：`pyxel.sound(0).set_effect('NFNF NVVS')`
+
+## その他情報
+
+- [Pyxel Wiki](https://github.com/kitao/pyxel/wiki)
 
 ## ライセンス
 
