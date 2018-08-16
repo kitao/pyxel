@@ -1,17 +1,18 @@
 import pyxel
 
-from .widget import Widget
 from .console import Console
+from .editor_constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from .image_editor import ImageEditor
-from .tilemap_editor import TileMapEditor
-from .sound_editor import SoundEditor
 from .music_editor import MusicEditor
 from .radio_button import RadioButton
+from .sound_editor import SoundEditor
+from .tilemap_editor import TileMapEditor
+from .widget import Widget
 
 
 class EditorApp:
     def __init__(self, resoure_file, app_file):
-        pyxel.init(240, 180, caption='pyxel')
+        pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, caption='pyxel')
 
         self._root_widget = Widget(None, 0, 0, 0, 0)
 

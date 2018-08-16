@@ -3,7 +3,8 @@ import os
 import numpy as np
 
 import pyxel
-from .editor_constants import (SCREEN_HEIGHT, SCREEN_WIDTH)
+
+from .editor_constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from .widget import Widget
 
 
