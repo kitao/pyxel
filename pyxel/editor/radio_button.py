@@ -38,5 +38,4 @@ class RadioButton(Widget):
         pyxel.pal()
 
     def on_value_change(self, value):
-        print('value change')
         pass
