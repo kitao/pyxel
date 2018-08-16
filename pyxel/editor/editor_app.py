@@ -13,28 +13,28 @@ class EditorApp:
     def __init__(self, resoure_file, app_file):
         pyxel.init(240, 180, caption='pyxel')
 
-        self._root = Widget(None, 0, 0, 0, 0)
+        self._root_widget = Widget(None, 0, 0, 0, 0)
 
         self._screen_list = [
-            Console(self._root),
-            ImageEditor(self._root),
-            TileMapEditor(self._root),
-            SoundEditor(self._root),
-            MusicEditor(self._root),
+            Console(self._root_widget),
+            ImageEditor(self._root_widget),
+            TileMapEditor(self._root_widget),
+            SoundEditor(self._root_widget),
+            MusicEditor(self._root_widget),
         ]
-        self._screen = None
-        self._screen_button = RadioButton(self._root, 3, 1, 5, 1, 9)
+        self._screen_button = RadioButton(self._root_widget, 3, 1, 5, 1, 9)
 
         def on_value_change(value):
             self.set_screen(value)
-        self._screen_button.on_value_change = on_value_change
 
-        self.set_screen(0)
+        self._screen_button.on_value_change = on_value_change
+        self.set_screen(1)
 
         pyxel.run(self.update, self.draw)
 
     def set_screen(self, screen):
-        self._screen = self._screen_button.value = screen
+        self._screen_button.value = screen
+
         for i, widget in enumerate(self._screen_list):
             widget.set_visible(i == screen)
 
@@ -43,14 +43,17 @@ class EditorApp:
             pyxel.quit()
 
         if pyxel.btn(pyxel.KEY_LEFT_ALT) or pyxel.btn(pyxel.KEY_RIGHT_ALT):
-            if pyxel.btnp(pyxel.KEY_LEFT):
-                self.set_screen((self._screen - 1) % len(self._screen_list))
-            elif pyxel.btnp(pyxel.KEY_RIGHT):
-                self.set_screen((self._screen + 1) % len(self._screen_list))
+            screen = self._screen_button.value
+            screen_count = len(self._screen_list)
 
-        self._root.process_mouse_event()
-        self._root.update()
+            if pyxel.btnp(pyxel.KEY_LEFT):
+                self.set_screen((screen - 1) % screen_count)
+            elif pyxel.btnp(pyxel.KEY_RIGHT):
+                self.set_screen((screen + 1) % screen_count)
+
+        self._root_widget.process_mouse_event()
+        self._root_widget.update()
 
     def draw(self):
         pyxel.cls(6)
-        self._root.draw()
+        self._root_widget.draw()
