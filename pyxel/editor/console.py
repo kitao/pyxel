@@ -1,14 +1,6 @@
-import pyxel
-
-from .mode import Mode
+from .screen import Screen
 
 
-class Console(Mode):
-    def __init__(self):
-        super().__init__('console.png')
-
-    def update(self):
-        super().update()
-
-    def draw(self):
-        super().draw()
+class Console(Screen):
+    def __init__(self, parent):
+        super().__init__(parent, 'console.png')
