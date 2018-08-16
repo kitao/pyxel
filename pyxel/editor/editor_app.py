@@ -1,54 +1,56 @@
 import pyxel
-from pyxel.editor.console import Console
-from pyxel.editor.editor_constants import (BUTTON_SIZE, MODE_CONSOLE,
-                                           MODE_IMAGE_EDITOR,
-                                           MODE_MUSIC_EDITOR,
-                                           MODE_SOUND_EDITOR,
-                                           MODE_TILEMAP_EDITOR)
-from pyxel.editor.image_editor import ImageEditor
-from pyxel.editor.music_editor import MusicEditor
-from pyxel.editor.sound_editor import SoundEditor
-from pyxel.editor.tilemap_editor import TileMapEditor
+
+from .widget import Widget
+from .console import Console
+from .image_editor import ImageEditor
+from .tilemap_editor import TileMapEditor
+from .sound_editor import SoundEditor
+from .music_editor import MusicEditor
+from .radio_button import RadioButton
 
 
 class EditorApp:
     def __init__(self, resoure_file, app_file):
-        pyxel.init(240, 180, caption='Pyxel')
+        pyxel.init(240, 180, caption='pyxel')
 
-        self._mode_list = [
-            Console(),
-            ImageEditor(),
-            TileMapEditor(),
-            SoundEditor(),
-            MusicEditor(),
+        self._root = Widget(None, 0, 0, 0, 0)
+
+        self._screen_list = [
+            Console(self._root),
+            ImageEditor(self._root),
+            TileMapEditor(self._root),
+            SoundEditor(self._root),
+            MusicEditor(self._root),
         ]
+        self._screen = None
+        self._screen_button = RadioButton(self._root, 3, 1, 5, 1, 9)
 
-        self._mode = None
-        self._set_mode(MODE_CONSOLE)
+        def on_value_change(value):
+            self.set_screen(value)
+        self._screen_button.on_value_change = on_value_change
+
+        self.set_screen(0)
 
         pyxel.run(self.update, self.draw)
 
-    def _set_mode(self, mode):
-        if self._mode is not None:
-            self._mode_list[self._mode].hide()
-        self._mode_list[mode].show()
-        self._mode = mode
+    def set_screen(self, screen):
+        self._screen = self._screen_button.value = screen
+        for i, widget in enumerate(self._screen_list):
+            widget.set_visible(i == screen)
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        if pyxel.btnp(pyxel.KEY_LEFT_BUTTON):
-            y = 1
-            if pyxel.mouse_y >= y and pyxel.mouse_y < y + BUTTON_SIZE:
-                for i in range(5):
-                    x = i * 9 + 3
-                    if pyxel.mouse_x >= x and pyxel.mouse_x < x + BUTTON_SIZE:
-                        self._set_mode(i)
+        if pyxel.btn(pyxel.KEY_LEFT_ALT) or pyxel.btn(pyxel.KEY_RIGHT_ALT):
+            if pyxel.btnp(pyxel.KEY_LEFT):
+                self.set_screen((self._screen - 1) % len(self._screen_list))
+            elif pyxel.btnp(pyxel.KEY_RIGHT):
+                self.set_screen((self._screen + 1) % len(self._screen_list))
 
-        self._mode_list[self._mode].update()
+        self._root.process_mouse_event()
+        self._root.update()
 
     def draw(self):
         pyxel.cls(6)
-
-        self._mode_list[self._mode].draw()
+        self._root.draw()
