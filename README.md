@@ -1,6 +1,6 @@
 # <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [Japanese](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt-br.md) ]
+[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [Japanese](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [Other Languages](https://github.com/kitao/pyxel/wiki) ]
 
 **Pyxel** is a retro game development environment in Python.
 
@@ -304,6 +304,10 @@ e.g. `pyxel.sound(0).set_volume('7777 7531')`
 - `set_effect(effect)`  
 Set the effect with a string consists of 'NSVF'. Case-insensitive and whitespace is ignored  
 e.g. `pyxel.sound(0).set_effect('NFNF NVVS')`
+
+## Other Information
+
+- [Pyxel Wiki](https://github.com/kitao/pyxel/wiki)
 
 ## License
 
