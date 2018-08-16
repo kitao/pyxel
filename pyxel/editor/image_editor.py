@@ -9,6 +9,9 @@ class EditWindow(Widget):
     def __init__(self, parent):
         super().__init__(parent, 12, 17, 128, 128)
 
+        self.offset_x = 0
+        self.offset_y = 0
+
     def on_click(self, key, mx, my):
         if key == pyxel.KEY_RIGHT_BUTTON:
             img = self.parent._image_button.value
@@ -23,6 +26,23 @@ class EditWindow(Widget):
             y = self.parent.edit_y + my // 8
             col = self.parent._color_button.value
             pyxel.image(img).data[y, x] = col
+
+        elif key == pyxel.KEY_RIGHT_BUTTON:
+            self.offset_x -= dx
+            self.offset_y -= dy
+
+            if abs(self.offset_x) >= 8:
+                offset = (self.offset_x // 8) * 8
+                self.parent.edit_x += offset
+                self.offset_x -= offset
+
+            if abs(self.offset_y) >= 8:
+                offset = (self.offset_y // 8) * 8
+                self.parent.edit_y += offset
+                self.offset_y -= offset
+
+            self.parent.edit_x = min(max(self.parent.edit_x, 0), 240)
+            self.parent.edit_y = min(max(self.parent.edit_y, 0), 240)
 
     def on_draw(self):
         for i in range(16):
@@ -43,6 +63,7 @@ class PreviewWindow(Widget):
 
         self.preview_x = 0
         self.preview_y = 0
+
         self.offset_x = 0
         self.offset_y = 0
 
@@ -60,8 +81,8 @@ class PreviewWindow(Widget):
 
     def on_drag(self, key, mx, my, dx, dy):
         if key == pyxel.KEY_RIGHT_BUTTON:
-            self.offset_x -= dx
-            self.offset_y -= dy
+            self.offset_x -= dx * 2
+            self.offset_y -= dy * 2
 
             if abs(self.offset_x) >= 8:
                 offset = (self.offset_x // 8) * 8
