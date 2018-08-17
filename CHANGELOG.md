@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.7.11
+- Changed the Japanese link name in the READMEs
+
 ## 0.7.10
 - Added screen size error
 - Added the link to the Pyxel wiki to the READMEs
