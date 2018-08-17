@@ -19,6 +19,9 @@ class Screen(Widget):
         data = pyxel.image(3, system=True).data
         self._image_data = np.copy(data[16:SCREEN_HEIGHT + 16, 0:SCREEN_WIDTH])
 
+        self.add_event_handler('show', self.on_show)
+        self.add_event_handler('draw', self.on_draw)
+
     def on_show(self):
         data = pyxel.image(3, system=True).data
         data[16:16 + SCREEN_HEIGHT, 0:SCREEN_WIDTH] = self._image_data
