@@ -23,12 +23,10 @@ class EditorApp:
             SoundEditor(self._root_widget),
             MusicEditor(self._root_widget),
         ]
+
         self._screen_button = RadioButton(self._root_widget, 3, 1, 5, 1, 9)
-
-        def on_value_change(value):
-            self.set_screen(value)
-
-        self._screen_button.on_value_change = on_value_change
+        self._screen_button.add_event_handler(
+            'change', lambda index: self.set_screen(index))
         self.set_screen(1)
 
         pyxel.run(self.update, self.draw)
