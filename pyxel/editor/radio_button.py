@@ -26,7 +26,7 @@ class RadioButton(Widget):
 
             if self.index != index:
                 self.index = index
-                self.call_event_handler('change')
+                self.call_event_handler('change', index)
 
     def on_draw(self):
         pyxel.pal(13, 7)
