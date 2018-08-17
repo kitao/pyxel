@@ -11,28 +11,31 @@ class RadioButton(Widget):
         height = interval * (row - 1) + BUTTON_SIZE
         super().__init__(parent, x, y, width, height)
 
-        self.value = 0
+        self.index = 0
         self._col = col
         self._row = row
         self._interval = interval
 
+        self.add_event_handler('press', self.on_press)
+        self.add_event_handler('draw', self.on_draw)
+
     def on_press(self, key, mx, my):
         if (mx % self._interval < BUTTON_SIZE
                 and my % self._interval < BUTTON_SIZE):
-            value = (my // self._interval) * self._col + mx // self._interval
+            index = (my // self._interval) * self._col + mx // self._interval
 
-            if self.value != value:
-                self.value = value
-                self.on_value_change(value)
+            if self.index != index:
+                self.index = index
+                self.call_event_handler('change')
 
     def on_draw(self):
         pyxel.pal(13, 7)
 
-        x = self.x + self._interval * (self.value % self._col)
-        y = self.y + self._interval * (self.value // self._col)
+        x = self.x + self._interval * (self.index % self._col)
+        y = self.y + self._interval * (self.index // self._col)
         pyxel.blt(x, y, 3, x, y + 16, BUTTON_SIZE, BUTTON_SIZE)
 
         pyxel.pal()
 
-    def on_value_change(self, value):
+    def on_change(self, index):
         pass

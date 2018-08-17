@@ -52,7 +52,7 @@ class EditorApp:
             elif pyxel.btnp(pyxel.KEY_RIGHT):
                 self.set_screen((screen + 1) % screen_count)
 
-        self._root_widget.process_mouse_event()
+        self._root_widget.process_input_event()
         self._root_widget.update()
 
     def draw(self):

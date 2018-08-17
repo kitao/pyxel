@@ -12,19 +12,23 @@ class EditWindow(Widget):
         self.offset_x = 0
         self.offset_y = 0
 
+        self.add_event_handler('click', self.on_click)
+        self.add_event_handler('drag', self.on_drag)
+        self.add_event_handler('draw', self.on_draw)
+
     def on_click(self, key, mx, my):
         if key == pyxel.KEY_RIGHT_BUTTON:
-            img = self.parent._image_button.value
+            img = self.parent._image_button.index
             x = self.parent.edit_x + mx // 8
             y = self.parent.edit_y + my // 8
-            self.parent._color_button.value = pyxel.image(img).data[y, x]
+            self.parent._color_button.index = pyxel.image(img).data[y, x]
 
     def on_drag(self, key, mx, my, dx, dy):
         if key == pyxel.KEY_LEFT_BUTTON:
-            img = self.parent._image_button.value
+            img = self.parent._image_button.index
             x = self.parent.edit_x + mx // 8
             y = self.parent.edit_y + my // 8
-            col = self.parent._color_button.value
+            col = self.parent._color_button.index
             pyxel.image(img).data[y, x] = col
 
         elif key == pyxel.KEY_RIGHT_BUTTON:
@@ -49,7 +53,7 @@ class EditWindow(Widget):
             y = self.y + i * 8
             for j in range(16):
                 x = self.x + j * 8
-                data = pyxel.image(self.parent._image_button.value).data
+                data = pyxel.image(self.parent._image_button.index).data
                 col = data[self.parent.edit_y + i, self.parent.edit_x + j]
                 pyxel.rect(x, y, x + 7, y + 7, col)
 
@@ -66,6 +70,10 @@ class PreviewWindow(Widget):
 
         self.offset_x = 0
         self.offset_y = 0
+
+        self.add_event_handler('press', self.on_press)
+        self.add_event_handler('drag', self.on_drag)
+        self.add_event_handler('draw', self.on_draw)
 
     def on_press(self, key, mx, my):
         if key == pyxel.KEY_LEFT_BUTTON:
@@ -98,7 +106,7 @@ class PreviewWindow(Widget):
             self.preview_y = min(max(self.preview_y, 0), 128)
 
     def on_draw(self):
-        img = self.parent._image_button.value
+        img = self.parent._image_button.index
         pyxel.blt(self.x, self.y, img, self.preview_x, self.preview_y, 64, 128)
 
         pyxel.clip(self.x - 1, self.y - 1, self.x + self.width,
@@ -116,17 +124,18 @@ class ImageEditor(Screen):
         self.edit_x = 0
         self.edit_y = 0
 
-        self._color_button = RadioButton(self, 12, 157, 8, 2, 8)
-
         def on_draw():
             widget = self._color_button
-            x = widget.x + (widget.value % 8) * 8
-            y = widget.y + (widget.value // 8) * 8
-            col = 7 if widget.value < 6 else 0
+            x = widget.x + (widget.index % 8) * 8
+            y = widget.y + (widget.index // 8) * 8
+            col = 7 if widget.index < 6 else 0
             pyxel.text(x + 2, y + 1, '+', col)
 
-        self._color_button.on_draw = on_draw
-        self._color_button.value = 7
+        self._color_button = RadioButton(self, 12, 157, 8, 2, 8)
+        self._color_button.remove_event_handler('draw',
+                                                self._color_button.on_draw)
+        self._color_button.add_event_handler('draw', on_draw)
+        self._color_button.index = 7
 
         self._tool_button = RadioButton(self, 81, 161, 7, 1, 9)
         self._image_button = RadioButton(self, 191, 161, 3, 1, 10)

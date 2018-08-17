@@ -7,6 +7,8 @@ class RadioButton(Widget):
     def __init__(self, parent, x, y, width, height):
         super().__init__(parent, x, y, width, height)
 
+        self.add_event_handler('draw', self.on_draw)
+
     def on_draw(self):
         pyxel.pal(13, 7)
 
