@@ -2,6 +2,7 @@
 
 ## 0.7.11
 - Changed the Japanese link name in the READMEs
+- Added the script to format python code
 
 ## 0.7.10
 - Added screen size error
