@@ -85,9 +85,9 @@ class PreviewWindow(Widget):
             self.parent.edit_window.edit_y = self.preview_y + (
                 (my - 4) // 8) * 8
 
-            self.parent.edit_x = min(
+            self.parent.edit_window.edit_x = min(
                 max(self.parent.edit_window.edit_x, 0), 240)
-            self.parent.edit_y = min(
+            self.parent.edit_window.edit_y = min(
                 max(self.parent.edit_window.edit_y, 0), 240)
 
         if key == pyxel.KEY_RIGHT_BUTTON:
