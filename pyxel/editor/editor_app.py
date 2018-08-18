@@ -32,7 +32,7 @@ class EditorApp:
         pyxel.run(self.update, self.draw)
 
     def set_screen(self, screen):
-        self._screen_button.value = screen
+        self._screen_button.index = screen
 
         for i, widget in enumerate(self._screen_list):
             widget.set_visible(i == screen)
@@ -42,7 +42,7 @@ class EditorApp:
             pyxel.quit()
 
         if pyxel.btn(pyxel.KEY_LEFT_ALT) or pyxel.btn(pyxel.KEY_RIGHT_ALT):
-            screen = self._screen_button.value
+            screen = self._screen_button.index
             screen_count = len(self._screen_list)
 
             if pyxel.btnp(pyxel.KEY_LEFT):
@@ -50,7 +50,7 @@ class EditorApp:
             elif pyxel.btnp(pyxel.KEY_RIGHT):
                 self.set_screen((screen + 1) % screen_count)
 
-        self._root_widget.process_input_event()
+        self._root_widget.process_input()
         self._root_widget.update()
 
     def draw(self):
