@@ -66,7 +66,7 @@ class Widget:
         for handler in self._get_event_handler(event):
             handler(*args)
 
-    def process_input_event(self):
+    def process_input(self):
         if not self._is_visible:
             return False
 
@@ -99,7 +99,7 @@ class Widget:
             return True
 
         for widget in reversed(self.children):
-            if widget.process_input_event():
+            if widget.process_input():
                 return True
 
         mx = pyxel.mouse_x
@@ -150,19 +150,19 @@ class Widget:
     def on_hide(self):
         pass
 
-    def on_press(self, key, mx, my):
+    def on_press(self, key, x, y):
         pass
 
-    def on_release(self, key, mx, my):
+    def on_release(self, key, x, y):
         pass
 
-    def on_click(self, key, mx, my):
+    def on_click(self, key, x, y):
         pass
 
-    def on_drag(self, key, mx, my, dx, dy):
+    def on_drag(self, key, x, y, dx, dy):
         pass
 
-    def on_hover(self, mx, my):
+    def on_hover(self, x, y):
         pass
 
     def on_update(self):
