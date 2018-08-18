@@ -19,10 +19,10 @@ class RadioButton(Widget):
         self.add_event_handler('press', self.on_press)
         self.add_event_handler('draw', self.on_draw)
 
-    def on_press(self, key, mx, my):
-        if (mx % self._interval < BUTTON_SIZE
-                and my % self._interval < BUTTON_SIZE):
-            index = (my // self._interval) * self._col + mx // self._interval
+    def on_press(self, key, x, y):
+        if (x % self._interval < BUTTON_SIZE
+                and y % self._interval < BUTTON_SIZE):
+            index = (y // self._interval) * self._col + x // self._interval
 
             if self.index != index:
                 self.index = index
