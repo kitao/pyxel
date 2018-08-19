@@ -26,13 +26,13 @@ class EditorApp:
 
         self._screen_button = RadioButton(self._root_widget, 3, 1, 5, 1, 9)
         self._screen_button.add_event_handler(
-            'change', lambda index: self.set_screen(index))
+            'change', lambda value: self.set_screen(value))
         self.set_screen(1)
 
         pyxel.run(self.update, self.draw)
 
     def set_screen(self, screen):
-        self._screen_button.index = screen
+        self._screen_button.value = screen
 
         for i, widget in enumerate(self._screen_list):
             widget.set_visible(i == screen)
@@ -42,7 +42,7 @@ class EditorApp:
             pyxel.quit()
 
         if pyxel.btn(pyxel.KEY_LEFT_ALT) or pyxel.btn(pyxel.KEY_RIGHT_ALT):
-            screen = self._screen_button.index
+            screen = self._screen_button.value
             screen_count = len(self._screen_list)
 
             if pyxel.btnp(pyxel.KEY_LEFT):
