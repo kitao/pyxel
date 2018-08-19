@@ -11,14 +11,15 @@ class ScrollBar(Widget):
 
         self._numerator = numerator
         self._denominator = denominator
-        self.value = 0
         self._is_horizontal = width > height
-        self._is_dragging = False
+        self.value = 0
 
         self._bar_size = (width
                           if self._is_horizontal else height) - BUTTON_SIZE * 2
         self._slider_size = self._bar_size * numerator / denominator
-        self._press_pos = 0
+
+        self._press_offset = 0
+        self._is_dragging = False
         self._inc_blink_time = 0
         self._dec_blink_time = 0
 
@@ -31,13 +32,13 @@ class ScrollBar(Widget):
     def on_press(self, key, x, y):
         slider_pos = (
             BUTTON_SIZE + self._bar_size * self.value / self._denominator)
-        self._press_pos = (x if self._is_horizontal else y) - slider_pos
+        self._press_offset = (x if self._is_horizontal else y) - slider_pos
 
-        if self._press_pos < 0:
+        if self._press_offset < 0:
             self.value = max(self.value - 1, 0)
             self._dec_blink_time = 4
             self.call_event_handler('change', self.value)
-        elif self._press_pos >= self._slider_size:
+        elif self._press_offset >= self._slider_size:
             self.value = min(self.value + 1,
                              self._denominator - self._numerator)
             self._inc_blink_time = 4
@@ -53,7 +54,7 @@ class ScrollBar(Widget):
             return
 
         drag_pos = x if self._is_horizontal else y
-        self.value = (drag_pos - self._press_pos -
+        self.value = (drag_pos - self._press_offset -
                       BUTTON_SIZE) * self._denominator / self._bar_size
         self.value = int(
             min(max(self.value, 0), self._denominator - self._numerator))
