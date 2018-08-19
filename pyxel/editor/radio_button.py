@@ -29,12 +29,11 @@ class RadioButton(Widget):
                 self.call_event_handler('change', value)
 
     def on_draw(self):
-        pyxel.pal(13, 7)
-
         x = self.x + self._interval * (self.value % self._col)
         y = self.y + self._interval * (self.value // self._col)
-        pyxel.blt(x, y, 3, x, y + 16, BUTTON_SIZE, BUTTON_SIZE)
 
+        pyxel.pal(13, 7)
+        pyxel.blt(x, y, 3, x, y + 16, BUTTON_SIZE, BUTTON_SIZE)
         pyxel.pal()
 
     def on_change(self, value):
