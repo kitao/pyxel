@@ -115,11 +115,9 @@ class Widget:
 
             if key is not None:
                 self._capture_mouse(key)
-
                 x = mx - self.x
                 y = my - self.y
                 self.call_event_handler('press', key, x, y)
-                self.call_event_handler('drag', key, x, y, 0, 0)
                 return True
 
             self.call_event_handler('hover', mx - self.x, my - self.y)
