@@ -16,12 +16,21 @@ class EditWindow(Widget):
         self.offset_x = 0
         self.offset_y = 0
 
-        self.v_scroll_bar = ScrollBar(self, 140, 16, 7, 130, 2, 32)
         self.h_scroll_bar = ScrollBar(self, 11, 145, 130, 7, 2, 32)
+        self.h_scroll_bar.add_event_handler('change', self.on_change_x)
+
+        self.v_scroll_bar = ScrollBar(self, 140, 16, 7, 130, 2, 32)
+        self.v_scroll_bar.add_event_handler('change', self.on_change_y)
 
         self.add_event_handler('click', self.on_click)
         self.add_event_handler('drag', self.on_drag)
         self.add_event_handler('draw', self.on_draw)
+
+    def on_change_x(self, value):
+        self.edit_x = value * 8
+
+    def on_change_y(self, value):
+        self.edit_y = value * 8
 
     def on_click(self, key, mx, my):
         if key == pyxel.KEY_RIGHT_BUTTON:
@@ -55,6 +64,9 @@ class EditWindow(Widget):
             self.edit_x = min(max(self.edit_x, 0), 240)
             self.edit_y = min(max(self.edit_y, 0), 240)
 
+            self.h_scroll_bar.value = self.edit_x // 8
+            self.v_scroll_bar.value = self.edit_y // 8
+
     def on_draw(self):
         for i in range(16):
             y = self.y + i * 8
@@ -78,12 +90,21 @@ class PreviewWindow(Widget):
         self.offset_x = 0
         self.offset_y = 0
 
-        self.v_scroll_bar = ScrollBar(self, 222, 16, 7, 130, 16, 32)
         self.h_scroll_bar = ScrollBar(self, 157, 145, 66, 7, 8, 32)
+        self.h_scroll_bar.add_event_handler('change', self.on_change_x)
+
+        self.v_scroll_bar = ScrollBar(self, 222, 16, 7, 130, 16, 32)
+        self.v_scroll_bar.add_event_handler('change', self.on_change_y)
 
         self.add_event_handler('press', self.on_press)
         self.add_event_handler('drag', self.on_drag)
         self.add_event_handler('draw', self.on_draw)
+
+    def on_change_x(self, value):
+        self.preview_x = value * 8
+
+    def on_change_y(self, value):
+        self.preview_y = value * 8
 
     def on_press(self, key, mx, my):
         if key == pyxel.KEY_LEFT_BUTTON:
