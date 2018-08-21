@@ -4,6 +4,7 @@
 - Changed the Japanese link name in the READMEs
 - Added the script to format python code
 - Implemented the widget class for the resource editor
+- Added the example #6 by ttrkaya
 
 ## 0.7.10
 - Added screen size error
