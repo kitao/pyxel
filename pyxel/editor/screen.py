@@ -28,3 +28,8 @@ class Screen(Widget):
 
     def on_draw(self):
         pyxel.blt(0, 0, 3, 0, 16, SCREEN_WIDTH, SCREEN_HEIGHT, 6)
+
+    def draw_not_implemented_message(self):
+        pyxel.rect(78, 83, 163, 97, 11)
+        pyxel.rectb(78, 83, 163, 97, 1)
+        pyxel.text(84, 88, 'NOT IMPLEMENTED YET', 1)
