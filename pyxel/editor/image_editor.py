@@ -38,7 +38,7 @@ class EditWindow(Widget):
 
     def _draw_line(self, x1, y1, x2, y2, col):
         if x1 == x2 and y1 == y2:
-            if x1 >= 0 and x1 < 16 and y1 >= 0 and y1 <= 16:
+            if x1 >= 0 and x1 < 16 and y1 >= 0 and y1 < 16:
                 self._canvas[y1, x1] = col
             return
 
