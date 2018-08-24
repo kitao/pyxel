@@ -5,6 +5,7 @@
 - Added the script to format python code
 - Implemented the widget class for the resource editor
 - Added the example #6 by ttrkaya
+- Renamed the constant variable for the max screen size
 
 ## 0.7.10
 - Added screen size error
