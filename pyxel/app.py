@@ -9,7 +9,7 @@ import glfw
 import PIL.Image
 
 from .audio_player import AudioPlayer
-from .constants import (APP_MAX_WINDOW_SIZE, APP_MEASURE_FRAME_COUNT,
+from .constants import (APP_MAX_SCREEN_SIZE, APP_MEASURE_FRAME_COUNT,
                         APP_SCREEN_CAPTURE_COUNT, APP_SCREEN_CAPTURE_SCALE,
                         DEFAULT_PALETTE, GLFW_VERSION, ICON_DATA,
                         KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON)
@@ -23,9 +23,9 @@ class App:
             raise RuntimeError(
                 'glfw version is lower than {}'.format(GLFW_VERSION))
 
-        if width > APP_MAX_WINDOW_SIZE or height > APP_MAX_WINDOW_SIZE:
+        if width > APP_MAX_SCREEN_SIZE or height > APP_MAX_SCREEN_SIZE:
             raise ValueError('screen size is larger than {}x{}'.format(
-                APP_MAX_WINDOW_SIZE, APP_MAX_WINDOW_SIZE))
+                APP_MAX_SCREEN_SIZE, APP_MAX_SCREEN_SIZE))
 
         self._module = module
         self._palette = palette[:]
