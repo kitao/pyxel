@@ -1,5 +1,6 @@
 import pyxel
 
+from .editor_constants import BUTTON_BLINK_TIME
 from .widget import Widget
 
 BUTTON_SIZE = 7
@@ -30,18 +31,21 @@ class ScrollBar(Widget):
         self.add_event_handler('draw', self.on_draw)
 
     def on_press(self, key, x, y):
+        if key != pyxel.KEY_LEFT_BUTTON:
+            return
+
         slider_pos = (
             BUTTON_SIZE + self._bar_size * self.value / self._denominator)
         self._press_offset = (x if self._is_horizontal else y) - slider_pos
 
         if self._press_offset < 0:
             self.value = max(self.value - 1, 0)
-            self._dec_blink_time = 4
+            self._dec_blink_time = BUTTON_BLINK_TIME + 1
             self.call_event_handler('change', self.value)
         elif self._press_offset >= self._slider_size:
             self.value = min(self.value + 1,
                              self._denominator - self._numerator)
-            self._inc_blink_time = 4
+            self._inc_blink_time = BUTTON_BLINK_TIME + 1
             self.call_event_handler('change', self.value)
         else:
             self._is_dragging = True
