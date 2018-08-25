@@ -11,8 +11,9 @@ import PIL.Image
 from .audio_player import AudioPlayer
 from .constants import (APP_MAX_SCREEN_SIZE, APP_MEASURE_FRAME_COUNT,
                         APP_SCREEN_CAPTURE_COUNT, APP_SCREEN_CAPTURE_SCALE,
-                        DEFAULT_PALETTE, GLFW_VERSION, ICON_DATA,
-                        KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON)
+                        APP_SCREEN_SCALE_ADJUST, DEFAULT_PALETTE, GLFW_VERSION,
+                        ICON_DATA, KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON,
+                        KEY_RIGHT_BUTTON)
 from .renderer import Renderer
 
 
@@ -63,6 +64,14 @@ class App:
         if not glfw.init():
             exit()
 
+        monitor = glfw.get_primary_monitor()
+        display_width, display_height = glfw.get_video_mode(monitor)[0]
+
+        if scale == 0:
+            scale = max(
+                min((display_width // width) - APP_SCREEN_SCALE_ADJUST,
+                    (display_height // height) - APP_SCREEN_SCALE_ADJUST), 1)
+
         window_width = width * scale + border_width
         window_height = height * scale + border_width
         self._window = glfw.create_window(window_width, window_height, caption,
@@ -71,6 +80,9 @@ class App:
         if not self._window:
             glfw.terminate()
             exit()
+
+        glfw.set_window_pos(self._window, (display_width - window_width) // 2,
+                            (display_height - window_height) // 2)
 
         glfw.make_context_current(self._window)
         glfw.set_window_size_limits(self._window, width, height,
