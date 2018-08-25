@@ -2,10 +2,10 @@
 
 ## 0.7.11
 - Changed the Japanese link name in the READMEs
-- Added the script to format python code
 - Implemented the widget class for the resource editor
 - Added the example #6 by ttrkaya
 - Renamed the constant variable for the max screen size
+- Changed to set the defualt scale automatically
 
 ## 0.7.10
 - Added screen size error
