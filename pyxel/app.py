@@ -11,9 +11,8 @@ import PIL.Image
 from .audio_player import AudioPlayer
 from .constants import (APP_MAX_SCREEN_SIZE, APP_MEASURE_FRAME_COUNT,
                         APP_SCREEN_CAPTURE_COUNT, APP_SCREEN_CAPTURE_SCALE,
-                        APP_SCREEN_SCALE_ADJUST, DEFAULT_PALETTE, GLFW_VERSION,
-                        ICON_DATA, KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON,
-                        KEY_RIGHT_BUTTON)
+                        DEFAULT_PALETTE, GLFW_VERSION, ICON_DATA,
+                        KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON)
 from .renderer import Renderer
 
 
@@ -69,8 +68,8 @@ class App:
 
         if scale == 0:
             scale = max(
-                min((display_width // width) - APP_SCREEN_SCALE_ADJUST,
-                    (display_height // height) - APP_SCREEN_SCALE_ADJUST), 1)
+                min((display_width // width) - 1,
+                    (display_height // height) - 1), 1)
 
         window_width = width * scale + border_width
         window_height = height * scale + border_width
