@@ -1,5 +1,5 @@
 import pyxel
-from pyxel.editor.editor_constants import CLICK_DIST, CLICK_TIME
+from pyxel.editor.editor_constants import WIDGET_CLICK_DIST, WIDGET_CLICK_TIME
 
 
 class Widget:
@@ -88,9 +88,10 @@ class Widget:
                                           mx - widget.x, my - widget.y)
 
                 press_x, press_y = Widget._capture_press_pos
-                if (pyxel.frame_count <= Widget._capture_time + CLICK_TIME
-                        and abs(pyxel.mouse_x - press_x) <= CLICK_DIST
-                        and abs(pyxel.mouse_y - press_y) <= CLICK_DIST):
+                if (pyxel.frame_count <=
+                        Widget._capture_time + WIDGET_CLICK_TIME
+                        and abs(pyxel.mouse_x - press_x) <= WIDGET_CLICK_DIST
+                        and abs(pyxel.mouse_y - press_y) <= WIDGET_CLICK_DIST):
                     widget.call_event_handler('click', Widget._capture_key,
                                               mx - widget.x, my - widget.y)
 
