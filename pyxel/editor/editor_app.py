@@ -70,11 +70,13 @@ class EditorApp:
             if pyxel.btnp(pyxel.KEY_Z):
                 x = self._undo_button.x
                 y = self._undo_button.y
-                self._undo_button.on_press(pyxel.KEY_LEFT_BUTTON, x, y)
+                self._undo_button.call_event_handler(
+                    'press', pyxel.KEY_LEFT_BUTTON, x, y)
             elif pyxel.btnp(pyxel.KEY_Y):
                 x = self._redo_button.x
                 y = self._redo_button.y
-                self._redo_button.on_press(pyxel.KEY_LEFT_BUTTON, x, y)
+                self._redo_button.call_event_handler(
+                    'press', pyxel.KEY_LEFT_BUTTON, x, y)
 
         screen = self._screen_list[self._screen_button.value]
         self._undo_button.is_enabled = screen.can_undo
