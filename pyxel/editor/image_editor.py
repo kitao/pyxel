@@ -33,6 +33,7 @@ class EditWindow(Widget):
         self._drag_offset_x = 0
         self._drag_offset_y = 0
 
+        self._is_dragging = False
         self._is_line_mode = False
 
         self._canvas = np.ndarray((16, 16), np.int8)
@@ -48,6 +49,7 @@ class EditWindow(Widget):
         self.add_event_handler('release', self.on_release)
         self.add_event_handler('click', self.on_click)
         self.add_event_handler('drag', self.on_drag)
+        self.add_event_handler('update', self.on_update)
         self.add_event_handler('draw', self.on_draw)
 
     def _draw_line(self, x1, y1, x2, y2, col):
@@ -92,13 +94,14 @@ class EditWindow(Widget):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
-        self._is_line_mode = False
-
         x //= 8
         y //= 8
 
         self._press_x = x
         self._press_y = y
+
+        self._is_dragging = True
+        self._is_line_mode = False
 
         tool = self.parent.tool_button.value
 
@@ -113,6 +116,8 @@ class EditWindow(Widget):
     def on_release(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
+
+        self._is_dragging = False
 
         img = self.parent.image_button.value
         dest = pyxel.image(img).data[self.edit_y:self.edit_y +
@@ -139,10 +144,6 @@ class EditWindow(Widget):
 
     def on_drag(self, key, x, y, dx, dy):
         if key == pyxel.KEY_LEFT_BUTTON:
-            if (pyxel.btn(pyxel.KEY_LEFT_SHIFT)
-                    or pyxel.btn(pyxel.KEY_RIGHT_SHIFT)):
-                self._is_line_mode = True
-
             x //= 8
             y //= 8
 
@@ -162,7 +163,6 @@ class EditWindow(Widget):
                 pass
             elif tool == TOOL_PENCIL:
                 if self._is_line_mode:
-                    self._is_line_mode = True
                     self._canvas[:, :] = -1
                     self._draw_line(self._press_x, self._press_y, x, y, col)
                 else:
@@ -203,6 +203,15 @@ class EditWindow(Widget):
 
             self._h_scroll_bar.value = self.edit_x // 8
             self._v_scroll_bar.value = self.edit_y // 8
+
+    def on_update(self):
+        if (self.parent.tool_button.value == TOOL_PENCIL and self._is_dragging
+                and not self._is_line_mode and pyxel.btn(pyxel.KEY_LEFT_SHIFT)
+                or pyxel.btn(pyxel.KEY_RIGHT_SHIFT)):
+            self._is_line_mode = True
+            self._canvas[:, :] = -1
+            self._draw_line(self._press_x, self._press_y, self._last_x,
+                            self._last_y, self.parent.color_button.value)
 
     def on_draw(self):
         for i in range(16):
