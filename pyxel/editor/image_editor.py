@@ -33,6 +33,8 @@ class EditWindow(Widget):
         self._drag_offset_x = 0
         self._drag_offset_y = 0
 
+        self._is_line_mode = False
+
         self._canvas = np.ndarray((16, 16), np.int8)
         self._canvas[:, :] = -1
 
@@ -90,6 +92,8 @@ class EditWindow(Widget):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
+        self._is_line_mode = False
+
         x //= 8
         y //= 8
 
@@ -135,6 +139,10 @@ class EditWindow(Widget):
 
     def on_drag(self, key, x, y, dx, dy):
         if key == pyxel.KEY_LEFT_BUTTON:
+            if (pyxel.btn(pyxel.KEY_LEFT_SHIFT)
+                    or pyxel.btn(pyxel.KEY_RIGHT_SHIFT)):
+                self._is_line_mode = True
+
             x //= 8
             y //= 8
 
@@ -153,7 +161,12 @@ class EditWindow(Widget):
             if tool == TOOL_SELECT:
                 pass
             elif tool == TOOL_PENCIL:
-                self._draw_line(self._last_x, self._last_y, x, y, col)
+                if self._is_line_mode:
+                    self._is_line_mode = True
+                    self._canvas[:, :] = -1
+                    self._draw_line(self._press_x, self._press_y, x, y, col)
+                else:
+                    self._draw_line(self._last_x, self._last_y, x, y, col)
             elif tool == TOOL_RECTB:
                 self._canvas[:, :] = -1
                 self._canvas[y1:y1 + 1, x1:x2 + 1] = col
