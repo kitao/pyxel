@@ -8,6 +8,14 @@ from .screen import Screen
 from .scroll_bar import ScrollBar
 from .widget import Widget
 
+TOOL_SELECT = 0
+TOOL_PENCIL = 1
+TOOL_RECTB = 2
+TOOL_RECT = 3
+TOOL_CIRCB = 4
+TOOL_CIRC = 5
+TOOL_BUCKET = 6
+
 
 class EditWindow(Widget):
     def __init__(self, parent):
@@ -15,6 +23,9 @@ class EditWindow(Widget):
 
         self.edit_x = 0
         self.edit_y = 0
+
+        self._press_x = 0
+        self._press_y = 0
 
         self._last_x = 0
         self._last_y = 0
@@ -76,12 +87,24 @@ class EditWindow(Widget):
         self.edit_y = value * 8
 
     def on_press(self, key, x, y):
-        if key == pyxel.KEY_LEFT_BUTTON:
-            x //= 8
-            y //= 8
+        if key != pyxel.KEY_LEFT_BUTTON:
+            return
+
+        x //= 8
+        y //= 8
+
+        self._press_x = x
+        self._press_y = y
+
+        tool = self.parent.tool_button.value
+
+        if tool >= TOOL_PENCIL and tool <= TOOL_CIRC:
             self._canvas[y, x] = self.parent.color_button.value
-            self._last_x = x
-            self._last_y = y
+        elif tool == TOOL_BUCKET:
+            pass
+
+        self._last_x = x
+        self._last_y = y
 
     def on_release(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
@@ -114,8 +137,37 @@ class EditWindow(Widget):
         if key == pyxel.KEY_LEFT_BUTTON:
             x //= 8
             y //= 8
-            self._draw_line(self._last_x, self._last_y, x, y,
-                            self.parent.color_button.value)
+
+            tool = self.parent.tool_button.value
+            col = self.parent.color_button.value
+
+            x1, y1 = self._press_x, self._press_y
+            x2, y2 = min(max(x, 0), 15), min(max(y, 0), 15)
+
+            if x1 > x2:
+                x1, x2 = x2, x1
+
+            if y1 > y2:
+                y1, y2 = y2, y1
+
+            if tool == TOOL_SELECT:
+                pass
+            elif tool == TOOL_PENCIL:
+                self._draw_line(self._last_x, self._last_y, x, y, col)
+            elif tool == TOOL_RECTB:
+                self._canvas[:, :] = -1
+                self._canvas[y1:y1 + 1, x1:x2 + 1] = col
+                self._canvas[y2:y2 + 1, x1:x2 + 1] = col
+                self._canvas[y1:y2 + 1, x1:x1 + 1] = col
+                self._canvas[y1:y2 + 1, x2:x2 + 1] = col
+            elif tool == TOOL_RECT:
+                self._canvas[:, :] = -1
+                self._canvas[y1:y2 + 1, x1:x2 + 1] = col
+            elif tool == TOOL_CIRCB:
+                pass
+            elif tool == TOOL_CIRC:
+                pass
+
             self._last_x = x
             self._last_y = y
 
@@ -247,6 +299,7 @@ class ImageEditor(Screen):
         self.color_button.value = 7
 
         self.tool_button = RadioButton(self, 81, 161, 7, 1, 9)
+        self.tool_button.value = TOOL_PENCIL
         self.image_button = RadioButton(self, 191, 161, 3, 1, 10)
         self.edit_window = EditWindow(self)
         self.preview_window = PreviewWindow(self)
