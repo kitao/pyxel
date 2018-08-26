@@ -42,7 +42,7 @@ class EditorApp:
         self._screen_button.value = screen
 
         for i, widget in enumerate(self._screen_list):
-            widget.set_visible(i == screen)
+            widget.is_visible = (i == screen)
 
     def on_undo_press(self, key, x, y):
         print('undo')
@@ -78,9 +78,13 @@ class EditorApp:
                 y = self._redo_button.y
                 self._redo_button.on_press(pyxel.KEY_LEFT_BUTTON, x, y)
 
-        self._root_widget.process_input()
-        self._root_widget.update()
+        screen = self._screen_list[self._screen_button.value]
+        self._undo_button.is_enabled = screen.can_undo
+        self._redo_button.is_enabled = screen.can_redo
+
+        Widget.process_input(self._root_widget)
+        Widget.update(self._root_widget)
 
     def draw(self):
         pyxel.cls(6)
-        self._root_widget.draw()
+        Widget.draw(self._root_widget)
