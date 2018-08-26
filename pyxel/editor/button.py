@@ -23,8 +23,8 @@ class Button(Widget):
             self._blink_time -= 1
 
     def on_draw(self):
-        if self._blink_time > 0:
-            pyxel.pal(13, 7)
+        if not self.is_enabled or self._blink_time > 0:
+            pyxel.pal(13, 7 if self.is_enabled else 5)
 
             x = self.x
             y = self.y
