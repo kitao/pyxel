@@ -19,8 +19,41 @@ class Screen(Widget):
         data = pyxel.image(3, system=True).data
         self._image_data = np.copy(data[16:SCREEN_HEIGHT + 16, 0:SCREEN_WIDTH])
 
+        self._edit_history_list = []
+        self._edit_history_index = 0
+
         self.add_event_handler('show', self.on_show)
         self.add_event_handler('draw', self.on_draw)
+
+    @property
+    def can_undo(self):
+        return self._edit_history_index > 0
+
+    @property
+    def can_redo(self):
+        return self._edit_history_index < len(self._edit_history_list) - 1
+
+    def undo(self):
+        if not self.can_undo:
+            return
+
+        self._edit_history_index -= 1
+        self.call_event_handler(
+            'restore', self._edit_history_list[self._edit_history_index])
+
+    def redo(self):
+        if not self.can_redo:
+            return
+
+        self.call_event_handler(
+            'restore', self._edit_history_list[self._edit_history_index])
+        self._edit_history_index += 1
+
+    def add_edit_history(self, data):
+        self._edit_history_list = self._edit_history_list[:self.
+                                                          _edit_history_index]
+        self._edit_history_list.append(data)
+        self._edit_history_index += 1
 
     def on_show(self):
         data = pyxel.image(3, system=True).data
@@ -33,3 +66,6 @@ class Screen(Widget):
         pyxel.rect(78, 83, 163, 97, 11)
         pyxel.rectb(78, 83, 163, 97, 1)
         pyxel.text(84, 88, 'NOT IMPLEMENTED YET', 1)
+
+    def on_restore(self, data):
+        pass
