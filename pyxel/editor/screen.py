@@ -31,7 +31,7 @@ class Screen(Widget):
 
     @property
     def can_redo(self):
-        return self._edit_history_index < len(self._edit_history_list) - 1
+        return self._edit_history_index < len(self._edit_history_list)
 
     def undo(self):
         if not self.can_undo:
@@ -39,14 +39,14 @@ class Screen(Widget):
 
         self._edit_history_index -= 1
         self.call_event_handler(
-            'restore', self._edit_history_list[self._edit_history_index])
+            'undo', self._edit_history_list[self._edit_history_index])
 
     def redo(self):
         if not self.can_redo:
             return
 
         self.call_event_handler(
-            'restore', self._edit_history_list[self._edit_history_index])
+            'redo', self._edit_history_list[self._edit_history_index])
         self._edit_history_index += 1
 
     def add_edit_history(self, data):
@@ -67,5 +67,8 @@ class Screen(Widget):
         pyxel.rectb(78, 83, 163, 97, 1)
         pyxel.text(84, 88, 'NOT IMPLEMENTED YET', 1)
 
-    def on_restore(self, data):
+    def on_undo(self, data):
+        pass
+
+    def on_redo(self, data):
         pass

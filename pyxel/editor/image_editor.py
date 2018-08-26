@@ -1,6 +1,7 @@
 import numpy as np
 
 import pyxel
+from pyxel.constants import RENDERER_IMAGE_COUNT
 
 from .radio_button import RadioButton
 from .screen import Screen
@@ -68,14 +69,6 @@ class EditWindow(Widget):
                 if x >= 0 and x < 16 and y >= 0 and y < 16:
                     self._canvas[y, x] = col
 
-    def _copy_canvas(self):
-        img = self.parent.image_button.value
-        dest = pyxel.image(img).data[self.edit_y:self.edit_y +
-                                     16, self.edit_x:self.edit_x + 16]
-        index = self._canvas != -1
-        dest[index] = self._canvas[index]
-        self._canvas[:, :] = -1
-
     def on_change_x(self, value):
         self.edit_x = value * 8
 
@@ -87,12 +80,28 @@ class EditWindow(Widget):
             x //= 8
             y //= 8
             self._canvas[y, x] = self.parent.color_button.value
-            self._copy_canvas()
             self._last_x = x
             self._last_y = y
 
     def on_release(self, key, x, y):
-        self._copy_canvas()
+        if key != pyxel.KEY_LEFT_BUTTON:
+            return
+
+        img = self.parent.image_button.value
+        dest = pyxel.image(img).data[self.edit_y:self.edit_y +
+                                     16, self.edit_x:self.edit_x + 16]
+
+        data = {}
+        data['img'] = img
+        data['pos'] = (self.edit_x, self.edit_y)
+        data['before'] = dest.copy()
+
+        index = self._canvas != -1
+        dest[index] = self._canvas[index]
+        self._canvas[:, :] = -1
+
+        data['after'] = dest.copy()
+        self.parent.add_edit_history(data)
 
     def on_click(self, key, x, y):
         if key == pyxel.KEY_RIGHT_BUTTON:
@@ -107,7 +116,6 @@ class EditWindow(Widget):
             y //= 8
             self._draw_line(self._last_x, self._last_y, x, y,
                             self.parent.color_button.value)
-            self._copy_canvas()
             self._last_x = x
             self._last_y = y
 
@@ -242,3 +250,26 @@ class ImageEditor(Screen):
         self.image_button = RadioButton(self, 191, 161, 3, 1, 10)
         self.edit_window = EditWindow(self)
         self.preview_window = PreviewWindow(self)
+
+        self.add_event_handler('undo', self.on_undo)
+        self.add_event_handler('redo', self.on_redo)
+
+    def on_undo(self, data):
+        img = data['img']
+        x, y = data['pos']
+        dest = pyxel.image(img).data[y:y + 16, x:x + 16]
+        dest[:, :] = data['before']
+
+        self.edit_window.edit_x = x
+        self.edit_window.edit_y = y
+        self.image_button.value = img
+
+    def on_redo(self, data):
+        img = data['img']
+        x, y = data['pos']
+        dest = pyxel.image(img).data[y:y + 16, x:x + 16]
+        dest[:, :] = data['after']
+
+        self.edit_window.edit_x = x
+        self.edit_window.edit_y = y
+        self.image_button.value = img

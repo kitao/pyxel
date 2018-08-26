@@ -45,12 +45,10 @@ class EditorApp:
             widget.is_visible = (i == screen)
 
     def on_undo_press(self, key, x, y):
-        print('undo')
         if key == pyxel.KEY_LEFT_BUTTON:
             self._screen_list[self._screen_button.value].undo()
 
     def on_redo_press(self, key, x, y):
-        print('redo')
         if key == pyxel.KEY_LEFT_BUTTON:
             self._screen_list[self._screen_button.value].redo()
 
