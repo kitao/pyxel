@@ -11,8 +11,12 @@ import PIL.Image
 from .audio_player import AudioPlayer
 from .constants import (APP_MAX_SCREEN_SIZE, APP_MEASURE_FRAME_COUNT,
                         APP_SCREEN_CAPTURE_COUNT, APP_SCREEN_CAPTURE_SCALE,
-                        DEFAULT_PALETTE, GLFW_VERSION, ICON_DATA,
-                        KEY_LEFT_BUTTON, KEY_MIDDLE_BUTTON, KEY_RIGHT_BUTTON)
+                        DEFAULT_PALETTE, GLFW_VERSION, ICON_DATA, KEY_0, KEY_1,
+                        KEY_2, KEY_3, KEY_ALT, KEY_CONTROL, KEY_LEFT_ALT,
+                        KEY_LEFT_BUTTON, KEY_LEFT_CONTROL, KEY_LEFT_SHIFT,
+                        KEY_LEFT_SUPER, KEY_MIDDLE_BUTTON, KEY_RIGHT_ALT,
+                        KEY_RIGHT_BUTTON, KEY_RIGHT_CONTROL, KEY_RIGHT_SHIFT,
+                        KEY_RIGHT_SUPER, KEY_SHIFT, KEY_SUPER)
 from .renderer import Renderer
 
 
@@ -197,9 +201,22 @@ class App:
 
     def _key_callback(self, window, key, scancode, action, mods):
         if action == glfw.PRESS:
-            self._key_state[key] = self._module.frame_count
+            state = self._module.frame_count
         elif action == glfw.RELEASE:
-            self._key_state[key] = -self._module.frame_count
+            state = -self._module.frame_count
+        else:
+            return
+
+        self._key_state[key] = state
+
+        if key == KEY_LEFT_SHIFT or key == KEY_RIGHT_SHIFT:
+            self._key_state[KEY_SHIFT] = state
+        elif key == KEY_LEFT_CONTROL or key == KEY_RIGHT_CONTROL:
+            self._key_state[KEY_CONTROL] = state
+        elif key == KEY_LEFT_ALT or key == KEY_RIGHT_ALT:
+            self._key_state[KEY_ALT] = state
+        elif key == KEY_LEFT_SUPER or key == KEY_RIGHT_SUPER:
+            self._key_state[KEY_SUPER] = state
 
     def _cursor_pos_callback(self, window, xpos, ypos):
         left = self._viewport_left
@@ -294,21 +311,21 @@ class App:
             glfw.set_window_monitor(self._window, monitor, 0, 0, *size, 0)
 
     def _check_special_input(self):
-        if self.btn(glfw.KEY_LEFT_ALT) or self.btn(glfw.KEY_RIGHT_ALT):
+        if self.btn(KEY_ALT):
             if self.btnp(glfw.KEY_ENTER):
                 self._toggle_fullscreen()
 
-            if self.btnp(glfw.KEY_0):
+            if self.btnp(KEY_0):
                 self._perf_monitor_is_enabled = (
                     not self._perf_monitor_is_enabled)
 
-            if self.btnp(glfw.KEY_1):
+            if self.btnp(KEY_1):
                 self._save_capture_image()
 
-            if self.btnp(glfw.KEY_2):
+            if self.btnp(KEY_2):
                 self._capture_start = self._capture_index - 1
 
-            if self.btnp(glfw.KEY_3):
+            if self.btnp(KEY_3):
                 self._save_capture_animation()
 
         if self.btnp(glfw.KEY_ESCAPE):
