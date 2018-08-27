@@ -20,7 +20,7 @@ class ScrollBar(Widget):
         self._slider_size = self._bar_size * numerator / denominator
 
         self._press_offset = 0
-        self._is_dragging = False
+        self._is_dragged = False
         self._inc_blink_time = 0
         self._dec_blink_time = 0
 
@@ -48,13 +48,13 @@ class ScrollBar(Widget):
             self._inc_blink_time = BUTTON_BLINK_TIME + 1
             self.call_event_handler('change', self.value)
         else:
-            self._is_dragging = True
+            self._is_dragged = True
 
     def on_release(self, key, x, y):
-        self._is_dragging = False
+        self._is_dragged = False
 
     def on_drag(self, key, x, y, dx, dy):
-        if not self._is_dragging:
+        if not self._is_dragged:
             return
 
         drag_pos = x if self._is_horizontal else y
