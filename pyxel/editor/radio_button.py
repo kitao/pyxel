@@ -20,6 +20,9 @@ class RadioButton(Widget):
         self.add_event_handler('draw', self.on_draw)
 
     def on_press(self, key, x, y):
+        if key != pyxel.KEY_LEFT_BUTTON:
+            return
+
         if (x % self._interval < BUTTON_SIZE
                 and y % self._interval < BUTTON_SIZE):
             value = (y // self._interval) * self._col + x // self._interval
