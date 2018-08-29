@@ -2,6 +2,7 @@
 
 ## 0.8.0
 - Added new key definitions which integrates keys on both sides
+- Changed the description of the project
 
 ## 0.7.11
 - Changed the Japanese link name in the READMEs
