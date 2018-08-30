@@ -3,8 +3,8 @@ import random
 
 import pyxel
 
-SCREEN_W = 256
-SCREEN_H = 256
+SCREEN_W = 255
+SCREEN_H = 255
 
 BUBBLE_SPEED_MAX = 1.8
 
