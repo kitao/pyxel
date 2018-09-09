@@ -9,14 +9,15 @@ import glfw
 import PIL.Image
 
 from .audio_player import AudioPlayer
-from .constants import (APP_MAX_SCREEN_SIZE, APP_MEASURE_FRAME_COUNT,
-                        APP_SCREEN_CAPTURE_COUNT, APP_SCREEN_CAPTURE_SCALE,
-                        DEFAULT_PALETTE, GLFW_VERSION, ICON_DATA, KEY_0, KEY_1,
-                        KEY_2, KEY_3, KEY_ALT, KEY_CONTROL, KEY_LEFT_ALT,
-                        KEY_LEFT_BUTTON, KEY_LEFT_CONTROL, KEY_LEFT_SHIFT,
-                        KEY_LEFT_SUPER, KEY_MIDDLE_BUTTON, KEY_RIGHT_ALT,
-                        KEY_RIGHT_BUTTON, KEY_RIGHT_CONTROL, KEY_RIGHT_SHIFT,
-                        KEY_RIGHT_SUPER, KEY_SHIFT, KEY_SUPER)
+from .constants import (APP_GIF_CAPTURE_COUNT, APP_GIF_CAPTURE_SCALE,
+                        APP_MEASURE_FRAME_COUNT, APP_SCREEN_MAX_SIZE,
+                        APP_SCREEN_SCALE_ADJUST, DEFAULT_PALETTE, GLFW_VERSION,
+                        ICON_DATA, KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT,
+                        KEY_CONTROL, KEY_LEFT_ALT, KEY_LEFT_BUTTON,
+                        KEY_LEFT_CONTROL, KEY_LEFT_SHIFT, KEY_LEFT_SUPER,
+                        KEY_MIDDLE_BUTTON, KEY_RIGHT_ALT, KEY_RIGHT_BUTTON,
+                        KEY_RIGHT_CONTROL, KEY_RIGHT_SHIFT, KEY_RIGHT_SUPER,
+                        KEY_SHIFT, KEY_SUPER)
 from .renderer import Renderer
 
 
@@ -27,9 +28,9 @@ class App:
             raise RuntimeError(
                 'glfw version is lower than {}'.format(GLFW_VERSION))
 
-        if width > APP_MAX_SCREEN_SIZE or height > APP_MAX_SCREEN_SIZE:
+        if width > APP_SCREEN_MAX_SIZE or height > APP_SCREEN_MAX_SIZE:
             raise ValueError('screen size is larger than {}x{}'.format(
-                APP_MAX_SCREEN_SIZE, APP_MAX_SCREEN_SIZE))
+                APP_SCREEN_MAX_SIZE, APP_SCREEN_MAX_SIZE))
 
         self._module = module
         self._palette = palette[:]
@@ -44,7 +45,7 @@ class App:
         self._draw = None
         self._capture_start = 0
         self._capture_index = 0
-        self._capture_images = [None] * APP_SCREEN_CAPTURE_COUNT
+        self._capture_images = [None] * APP_GIF_CAPTURE_COUNT
 
         self._perf_monitor_is_enabled = False
         self._perf_fps_count = 0
@@ -72,8 +73,8 @@ class App:
 
         if scale == 0:
             scale = max(
-                min((display_width // width) - 1,
-                    (display_height // height) - 1), 1)
+                min((display_width // width) - APP_SCREEN_SCALE_ADJUST,
+                    (display_height // height) - APP_SCREEN_SCALE_ADJUST), 1)
 
         window_width = width * scale + border_width
         window_height = height * scale + border_width
@@ -300,7 +301,7 @@ class App:
             self._viewport_width * hs, self._viewport_height * hs,
             self._palette, self._border_color)
         self._capture_images[self._capture_index %
-                             APP_SCREEN_CAPTURE_COUNT] = image
+                             APP_GIF_CAPTURE_COUNT] = image
         self._capture_index += 1
 
         self._measure_draw_time(draw_start_time)
@@ -340,13 +341,13 @@ class App:
             self.quit()
 
     def _save_capture_image(self):
-        index = (self._capture_index - 1) % APP_SCREEN_CAPTURE_COUNT
+        index = (self._capture_index - 1) % APP_GIF_CAPTURE_COUNT
         image = self._get_capture_image(index)
         image.save(self._get_capture_filename() + '.png')
 
     def _save_capture_animation(self):
         image_count = min(self._capture_index - self._capture_start,
-                          APP_SCREEN_CAPTURE_COUNT)
+                          APP_GIF_CAPTURE_COUNT)
 
         if image_count <= 0:
             return
@@ -355,7 +356,7 @@ class App:
         images = []
 
         for i in range(image_count):
-            index = (start_index + i) % APP_SCREEN_CAPTURE_COUNT
+            index = (start_index + i) % APP_GIF_CAPTURE_COUNT
             images.append(self._get_capture_image(index))
 
         images[0].save(
@@ -373,8 +374,8 @@ class App:
 
         image = self.palettize_pil_image(image)
 
-        image = image.resize((self._module.width * APP_SCREEN_CAPTURE_SCALE,
-                              self._module.height * APP_SCREEN_CAPTURE_SCALE))
+        image = image.resize((self._module.width * APP_GIF_CAPTURE_SCALE,
+                              self._module.height * APP_GIF_CAPTURE_SCALE))
 
         return image
 
