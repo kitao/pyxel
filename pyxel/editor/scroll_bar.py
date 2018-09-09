@@ -8,7 +8,7 @@ BUTTON_SIZE = 7
 
 class ScrollBar(Widget):
     def __init__(self, parent, x, y, width, height, numerator, denominator):
-        super().__init__(parent, x, y, width, height)
+        super().__init__(parent, x, y, width, height, is_repeat=True)
 
         self._numerator = numerator
         self._denominator = denominator

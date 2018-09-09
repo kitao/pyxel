@@ -12,7 +12,15 @@ class Widget:
     _capture_press_pos = None
     _capture_last_pos = None
 
-    def __init__(self, parent, x, y, width, height, *, is_visible=True):
+    def __init__(self,
+                 parent,
+                 x,
+                 y,
+                 width,
+                 height,
+                 *,
+                 is_visible=True,
+                 is_repeat=False):
         self.x = x
         self.y = y
         self.width = width
@@ -22,6 +30,7 @@ class Widget:
         self._event_handler = {}
         self.is_enabled = True
         self._is_visible = False
+        self.is_repeat = is_repeat
 
         if is_visible:
             self.is_visible = True
@@ -121,13 +130,21 @@ class Widget:
 
         if (mx >= self.x and mx < self.x + self.width and my >= self.y
                 and my < self.y + self.height):
-            if self.is_enabled:
+            if self.is_enabled and (not Widget._capture_widget
+                                    or Widget._capture_widget == self):
                 key = None
-                if pyxel.btnp(pyxel.KEY_LEFT_BUTTON, WIDGET_KEY_HOLD_TIME,
-                              WIDGET_KEY_REPEAT_TIME):
+
+                if self.is_repeat:
+                    hold_time = WIDGET_KEY_HOLD_TIME
+                    repeat_time = WIDGET_KEY_REPEAT_TIME
+                else:
+                    hold_time = 0
+                    repeat_time = 0
+
+                if pyxel.btnp(pyxel.KEY_LEFT_BUTTON, hold_time, repeat_time):
                     key = pyxel.KEY_LEFT_BUTTON
-                elif pyxel.btnp(pyxel.KEY_RIGHT_BUTTON, WIDGET_KEY_HOLD_TIME,
-                                WIDGET_KEY_REPEAT_TIME):
+                elif pyxel.btnp(pyxel.KEY_RIGHT_BUTTON, hold_time,
+                                repeat_time):
                     key = pyxel.KEY_RIGHT_BUTTON
 
                 if key is not None:

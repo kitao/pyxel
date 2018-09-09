@@ -5,8 +5,8 @@ from .widget import Widget
 
 
 class Button(Widget):
-    def __init__(self, parent, x, y, width, height):
-        super().__init__(parent, x, y, width, height)
+    def __init__(self, parent, x, y, width, height, *, is_repeat=False):
+        super().__init__(parent, x, y, width, height, is_repeat=is_repeat)
 
         self._blink_time = 0
 
