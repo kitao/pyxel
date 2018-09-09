@@ -1,9 +1,13 @@
 # Change Log
 
-## 0.8.0
+## 0.7.12
 - Added new key definitions which integrates keys on both sides
 - Changed the description of the project
 - Changed the max scren size to 255
+- Fixed the key hold time of the btnp command
+- Fixed to work the btnp command correctly in the slow frame rate condtion
+- Changed the screen size of the example #5 and #6
+- Updated the screenshot of the example #5
 
 ## 0.7.11
 - Changed the Japanese link name in the READMEs
