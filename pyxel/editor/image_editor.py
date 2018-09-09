@@ -52,7 +52,10 @@ class EditWindow(Widget):
         self.add_event_handler('update', self.on_update)
         self.add_event_handler('draw', self.on_draw)
 
-    def _draw_line(self, x1, y1, x2, y2, col):
+    def _draw_line(self, x1, y1, x2, y2, col, is_clear):
+        if is_clear:
+            self._canvas[:, :] = -1
+
         if x1 == x2 and y1 == y2:
             if x1 >= 0 and x1 < 16 and y1 >= 0 and y1 < 16:
                 self._canvas[y1, x1] = col
@@ -83,6 +86,23 @@ class EditWindow(Widget):
 
                 if x >= 0 and x < 16 and y >= 0 and y < 16:
                     self._canvas[y, x] = col
+
+    def _draw_rectb(self, x1, y1, x2, y2, col):
+        self._canvas[:, :] = -1
+        self._canvas[y1:y1 + 1, x1:x2 + 1] = col
+        self._canvas[y2:y2 + 1, x1:x2 + 1] = col
+        self._canvas[y1:y2 + 1, x1:x1 + 1] = col
+        self._canvas[y1:y2 + 1, x2:x2 + 1] = col
+
+    def _draw_rect(self, x1, y1, x2, y2, col):
+        self._canvas[:, :] = -1
+        self._canvas[y1:y2 + 1, x1:x2 + 1] = col
+
+    def _draw_circb(self, x1, y1, x2, y2, col):
+        pass
+
+    def _draw_circ(self, x1, y1, x2, y2, col):
+        pass
 
     def on_change_x(self, value):
         self.edit_x = value * 8
@@ -163,23 +183,19 @@ class EditWindow(Widget):
                 pass
             elif tool == TOOL_PENCIL:
                 if self._is_guide_mode:
-                    self._canvas[:, :] = -1
-                    self._draw_line(self._press_x, self._press_y, x, y, col)
+                    self._draw_line(self._press_x, self._press_y, x, y, col,
+                                    True)
                 else:
-                    self._draw_line(self._last_x, self._last_y, x, y, col)
+                    self._draw_line(self._last_x, self._last_y, x, y, col,
+                                    False)
             elif tool == TOOL_RECTB:
-                self._canvas[:, :] = -1
-                self._canvas[y1:y1 + 1, x1:x2 + 1] = col
-                self._canvas[y2:y2 + 1, x1:x2 + 1] = col
-                self._canvas[y1:y2 + 1, x1:x1 + 1] = col
-                self._canvas[y1:y2 + 1, x2:x2 + 1] = col
+                self._draw_rectb(x1, y1, x2, y2, col)
             elif tool == TOOL_RECT:
-                self._canvas[:, :] = -1
-                self._canvas[y1:y2 + 1, x1:x2 + 1] = col
+                self._draw_rect(x1, y1, x2, y2, col)
             elif tool == TOOL_CIRCB:
-                pass
+                self._draw_circb(x1, y1, x2, y2, col)
             elif tool == TOOL_CIRC:
-                pass
+                self._draw_circ(x1, y1, x2, y2, col)
 
             self._last_x = x
             self._last_y = y
@@ -213,7 +229,8 @@ class EditWindow(Widget):
             if tool == TOOL_PENCIL:
                 self._canvas[:, :] = -1
                 self._draw_line(self._press_x, self._press_y, self._last_x,
-                                self._last_y, self.parent.color_button.value)
+                                self._last_y, self.parent.color_button.value,
+                                True)
 
     def on_draw(self):
         for i in range(16):
