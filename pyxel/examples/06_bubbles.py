@@ -3,10 +3,8 @@ import random
 
 import pyxel
 
-SCREEN_W = 255
-SCREEN_H = 255
-
 BUBBLE_SPEED_MAX = 1.8
+BUBBLE_COUNT = 50
 
 
 class Vec2:
@@ -23,8 +21,8 @@ class Bubble:
     def rand(self):
         self.r = random.uniform(3.0, 10.0)
         self.pos = Vec2()
-        self.pos.x = random.uniform(self.r, SCREEN_W - self.r)
-        self.pos.y = random.uniform(self.r, SCREEN_H - self.r)
+        self.pos.x = random.uniform(self.r, pyxel.width - self.r)
+        self.pos.y = random.uniform(self.r, pyxel.height - self.r)
         self.vel = Vec2()
         self.vel.x = random.uniform(-BUBBLE_SPEED_MAX, BUBBLE_SPEED_MAX)
         self.vel.y = random.uniform(-BUBBLE_SPEED_MAX, BUBBLE_SPEED_MAX)
@@ -36,11 +34,11 @@ class Bubble:
 
         if self.pos.x < self.r and self.vel.x < 0:
             self.vel.x *= -1
-        if self.pos.x > SCREEN_W - self.r and self.vel.x > 0:
+        if self.pos.x > pyxel.width - self.r and self.vel.x > 0:
             self.vel.x *= -1
         if self.pos.y < self.r and self.vel.y < 0:
             self.vel.y *= -1
-        if self.pos.y > SCREEN_H - self.r and self.vel.y > 0:
+        if self.pos.y > pyxel.height - self.r and self.vel.y > 0:
             self.vel.y *= -1
 
 
@@ -49,13 +47,13 @@ class App:
     first_exploded = False
 
     def __init__(self):
-        num_bubbles = 50
-        for i in range(0, num_bubbles):
+        pyxel.init(255, 255, caption='Pyxel Bubbles')
+
+        for i in range(0, BUBBLE_COUNT):
             new_bubble = Bubble()
             new_bubble.rand()
             self.bubbles.append(new_bubble)
 
-        pyxel.init(SCREEN_W, SCREEN_H, caption='Pyxel Bubbles')
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -70,11 +68,13 @@ class App:
                 dx = pyxel.mouse_x - exploder.pos.x
                 dy = pyxel.mouse_y - exploder.pos.y
                 d2 = dx * dx + dy * dy
+
                 if d2 < exploder.r * exploder.r:
                     self.first_exploded = True
                     NUM_NEW_BUBBLES = 11
                     new_r = math.sqrt(
                         exploder.r * exploder.r / NUM_NEW_BUBBLES)
+
                     for j in range(0, NUM_NEW_BUBBLES):
                         new_bubble = Bubble()
                         self.bubbles.append(new_bubble)
@@ -93,12 +93,14 @@ class App:
         for i in range(num_bubbles - 1, -1, -1):
             bi = self.bubbles[i]
             bi.update()
+
             for j in range(i - 1, -1, -1):
                 bj = self.bubbles[j]
                 total_r = bi.r + bj.r
                 dx = bi.pos.x - bj.pos.x
                 dy = bi.pos.y - bj.pos.y
                 d2 = dx * dx + dy * dy
+
                 if d2 < total_r * total_r:
                     new_bubble = Bubble()
                     new_bubble.rand()
@@ -119,8 +121,10 @@ class App:
 
     def draw(self):
         pyxel.cls(0)
+
         for bubble in self.bubbles:
             pyxel.circ(bubble.pos.x, bubble.pos.y, bubble.r, bubble.color)
+
         if (not self.first_exploded) and ((pyxel.frame_count // 10) % 2):
             pyxel.text(100, 50, "CLICK ON BUBBLES", pyxel.frame_count % 16)
 
