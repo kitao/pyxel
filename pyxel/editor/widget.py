@@ -1,5 +1,8 @@
 import pyxel
-from pyxel.editor.editor_constants import WIDGET_CLICK_DIST, WIDGET_CLICK_TIME
+from pyxel.editor.editor_constants import (WIDGET_CLICK_DIST,
+                                           WIDGET_CLICK_TIME,
+                                           WIDGET_KEY_HOLD_TIME,
+                                           WIDGET_KEY_REPEAT_TIME)
 
 
 class Widget:
@@ -120,9 +123,11 @@ class Widget:
                 and my < self.y + self.height):
             if self.is_enabled:
                 key = None
-                if pyxel.btnp(pyxel.KEY_LEFT_BUTTON):
+                if pyxel.btnp(pyxel.KEY_LEFT_BUTTON, WIDGET_KEY_HOLD_TIME,
+                              WIDGET_KEY_REPEAT_TIME):
                     key = pyxel.KEY_LEFT_BUTTON
-                elif pyxel.btnp(pyxel.KEY_RIGHT_BUTTON):
+                elif pyxel.btnp(pyxel.KEY_RIGHT_BUTTON, WIDGET_KEY_HOLD_TIME,
+                                WIDGET_KEY_REPEAT_TIME):
                     key = pyxel.KEY_RIGHT_BUTTON
 
                 if key is not None:
