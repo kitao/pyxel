@@ -11,13 +11,13 @@ import PIL.Image
 from .audio_player import AudioPlayer
 from .constants import (APP_GIF_CAPTURE_COUNT, APP_GIF_CAPTURE_SCALE,
                         APP_MEASURE_FRAME_COUNT, APP_SCREEN_MAX_SIZE,
-                        APP_SCREEN_SCALE_ADJUST, DEFAULT_PALETTE, GLFW_VERSION,
-                        ICON_DATA, KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT,
-                        KEY_CONTROL, KEY_LEFT_ALT, KEY_LEFT_BUTTON,
-                        KEY_LEFT_CONTROL, KEY_LEFT_SHIFT, KEY_LEFT_SUPER,
-                        KEY_MIDDLE_BUTTON, KEY_RIGHT_ALT, KEY_RIGHT_BUTTON,
-                        KEY_RIGHT_CONTROL, KEY_RIGHT_SHIFT, KEY_RIGHT_SUPER,
-                        KEY_SHIFT, KEY_SUPER)
+                        APP_SCREEN_SCALE_CUTDOWN, APP_SCREEN_SCALE_MINIMUM,
+                        DEFAULT_PALETTE, GLFW_VERSION, ICON_DATA, KEY_0, KEY_1,
+                        KEY_2, KEY_3, KEY_ALT, KEY_CONTROL, KEY_LEFT_ALT,
+                        KEY_LEFT_BUTTON, KEY_LEFT_CONTROL, KEY_LEFT_SHIFT,
+                        KEY_LEFT_SUPER, KEY_MIDDLE_BUTTON, KEY_RIGHT_ALT,
+                        KEY_RIGHT_BUTTON, KEY_RIGHT_CONTROL, KEY_RIGHT_SHIFT,
+                        KEY_RIGHT_SUPER, KEY_SHIFT, KEY_SUPER)
 from .renderer import Renderer
 
 
@@ -73,8 +73,9 @@ class App:
 
         if scale == 0:
             scale = max(
-                min((display_width // width) - APP_SCREEN_SCALE_ADJUST,
-                    (display_height // height) - APP_SCREEN_SCALE_ADJUST), 1)
+                min((display_width // width) - APP_SCREEN_SCALE_CUTDOWN,
+                    (display_height // height) - APP_SCREEN_SCALE_CUTDOWN),
+                APP_SCREEN_SCALE_MINIMUM)
 
         window_width = width * scale + border_width
         window_height = height * scale + border_width
