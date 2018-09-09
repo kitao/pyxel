@@ -130,14 +130,16 @@ class App:
         module.stop = self._audio_player.stop
 
     def btn(self, key):
-        return self._key_state.get(key, 0) > 0
+        press_frame = self._key_state.get(key, 0)
+        return press_frame > 0 or press_frame == -self._module.frame_count - 1
 
     def btnp(self, key, hold=0, period=0):
         press_frame = self._key_state.get(key, 0)
-
+        hold_frame = self._module.frame_count - press_frame - hold
         return (press_frame == self._module.frame_count
-                or press_frame > 0 and period > 0 and
-                (self._module.frame_count - press_frame - hold) % period == 0)
+                or press_frame == -self._module.frame_count - 1
+                or press_frame > 0 and period > 0 and hold_frame >= 0
+                and hold_frame % period == 0)
 
     def btnr(self, key):
         return self._key_state.get(key, 0) == -self._module.frame_count
@@ -203,7 +205,10 @@ class App:
         if action == glfw.PRESS:
             state = self._module.frame_count
         elif action == glfw.RELEASE:
-            state = -self._module.frame_count
+            if self._key_state[key] == self._module.frame_count:
+                state = -self._module.frame_count - 1
+            else:
+                state = -self._module.frame_count
         else:
             return
 
@@ -239,7 +244,10 @@ class App:
         if action == glfw.PRESS:
             self._key_state[button] = self._module.frame_count
         elif action == glfw.RELEASE:
-            self._key_state[button] = -self._module.frame_count
+            if self._key_state[button] == self._module.frame_count:
+                self._key_state[button] = -self._module.frame_count - 1
+            else:
+                self._key_state[button] = -self._module.frame_count
 
     def _update_viewport(self):
         win_width, win_height = glfw.get_window_size(self._window)
