@@ -3,7 +3,7 @@ import pyxel
 
 class App:
     def __init__(self):
-        pyxel.init(256, 81, caption='Pyxel Color Palette')
+        pyxel.init(255, 81, caption='Pyxel Color Palette')
         pyxel.run(self.update, self.draw)
 
     def update(self):
