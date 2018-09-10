@@ -3,6 +3,7 @@ import numpy as np
 import pyxel
 from pyxel.constants import RENDERER_IMAGE_COUNT
 
+from .draw_window import DrawWindow
 from .radio_button import RadioButton
 from .screen import Screen
 from .scroll_bar import ScrollBar
@@ -17,9 +18,9 @@ TOOL_CIRC = 5
 TOOL_BUCKET = 6
 
 
-class EditWindow(Widget):
+class EditWindow(DrawWindow):
     def __init__(self, parent):
-        super().__init__(parent, 12, 17, 128, 128)
+        super().__init__(parent)
 
         self.edit_x = 0
         self.edit_y = 0
@@ -36,9 +37,6 @@ class EditWindow(Widget):
         self._is_dragged = False
         self._is_guide_mode = False
 
-        self._canvas = np.ndarray((16, 16), np.int8)
-        self._canvas[:, :] = -1
-
         self._h_scroll_bar = ScrollBar(self, 11, 145, 130, 7, 2, 32)
         self._h_scroll_bar.add_event_handler('change', self.on_change_x)
 
@@ -51,58 +49,6 @@ class EditWindow(Widget):
         self.add_event_handler('drag', self.on_drag)
         self.add_event_handler('update', self.on_update)
         self.add_event_handler('draw', self.on_draw)
-
-    def _draw_line(self, x1, y1, x2, y2, col, is_clear):
-        if is_clear:
-            self._canvas[:, :] = -1
-
-        if x1 == x2 and y1 == y2:
-            if x1 >= 0 and x1 < 16 and y1 >= 0 and y1 < 16:
-                self._canvas[y1, x1] = col
-            return
-
-        dx = x2 - x1
-        dy = y2 - y1
-
-        if abs(dx) > abs(dy):
-            if dx < 0:
-                x1, y1 = x2, y2
-                dx, dy = -dx, -dy
-
-            for i in range(dx + 1):
-                x = x1 + i
-                y = int(y1 + i * dy / dx + 0.5)
-
-                if x >= 0 and x < 16 and y >= 0 and y < 16:
-                    self._canvas[y, x] = col
-        else:
-            if dy < 0:
-                x1, y1 = x2, y2
-                dx, dy = -dx, -dy
-
-            for i in range(dy + 1):
-                x = int(x1 + i * dx / dy + 0.5)
-                y = y1 + i
-
-                if x >= 0 and x < 16 and y >= 0 and y < 16:
-                    self._canvas[y, x] = col
-
-    def _draw_rectb(self, x1, y1, x2, y2, col):
-        self._canvas[:, :] = -1
-        self._canvas[y1:y1 + 1, x1:x2 + 1] = col
-        self._canvas[y2:y2 + 1, x1:x2 + 1] = col
-        self._canvas[y1:y2 + 1, x1:x1 + 1] = col
-        self._canvas[y1:y2 + 1, x2:x2 + 1] = col
-
-    def _draw_rect(self, x1, y1, x2, y2, col):
-        self._canvas[:, :] = -1
-        self._canvas[y1:y2 + 1, x1:x2 + 1] = col
-
-    def _draw_circb(self, x1, y1, x2, y2, col):
-        pass
-
-    def _draw_circ(self, x1, y1, x2, y2, col):
-        pass
 
     def on_change_x(self, value):
         self.edit_x = value * 8
@@ -126,7 +72,7 @@ class EditWindow(Widget):
         tool = self.parent.tool_button.value
 
         if tool >= TOOL_PENCIL and tool <= TOOL_CIRC:
-            self._canvas[y, x] = self.parent.color_button.value
+            self.overlay[y, x] = self.parent.color_button.value
         elif tool == TOOL_BUCKET:
             pass
 
@@ -148,9 +94,9 @@ class EditWindow(Widget):
         data['pos'] = (self.edit_x, self.edit_y)
         data['before'] = dest.copy()
 
-        index = self._canvas != -1
-        dest[index] = self._canvas[index]
-        self._canvas[:, :] = -1
+        index = self.overlay != -1
+        dest[index] = self.overlay[index]
+        self.clear_overlay()
 
         data['after'] = dest.copy()
         self.parent.add_edit_history(data)
@@ -183,19 +129,21 @@ class EditWindow(Widget):
                 pass
             elif tool == TOOL_PENCIL:
                 if self._is_guide_mode:
-                    self._draw_line(self._press_x, self._press_y, x, y, col,
-                                    True)
+                    self.clear_overlay()
+                    self.draw_line_on_overlay(self._press_x, self._press_y, x,
+                                              y, col)
                 else:
-                    self._draw_line(self._last_x, self._last_y, x, y, col,
-                                    False)
+                    self.draw_line_on_overlay(self._last_x, self._last_y, x, y,
+                                              col)
             elif tool == TOOL_RECTB:
-                self._draw_rectb(x1, y1, x2, y2, col)
+                self.clear_overlay()
+                self.draw_rectb_on_overlay(x1, y1, x2, y2, col)
             elif tool == TOOL_RECT:
-                self._draw_rect(x1, y1, x2, y2, col)
+                self.draw_rect_on_overlay(x1, y1, x2, y2, col)
             elif tool == TOOL_CIRCB:
-                self._draw_circb(x1, y1, x2, y2, col)
+                self.draw_circb_on_overlay(x1, y1, x2, y2, col)
             elif tool == TOOL_CIRC:
-                self._draw_circ(x1, y1, x2, y2, col)
+                self.draw_circ_on_overlay(x1, y1, x2, y2, col)
 
             self._last_x = x
             self._last_y = y
@@ -227,10 +175,10 @@ class EditWindow(Widget):
             tool = self.parent.tool_button.value
 
             if tool == TOOL_PENCIL:
-                self._canvas[:, :] = -1
-                self._draw_line(self._press_x, self._press_y, self._last_x,
-                                self._last_y, self.parent.color_button.value,
-                                True)
+                self.clear_overlay()
+                self.draw_line_on_overlay(self._press_x, self._press_y,
+                                          self._last_x, self._last_y,
+                                          self.parent.color_button.value)
 
     def on_draw(self):
         for i in range(16):
@@ -238,8 +186,8 @@ class EditWindow(Widget):
             for j in range(16):
                 x = self.x + j * 8
 
-                if self._canvas[i, j] >= 0:
-                    col = self._canvas[i, j]
+                if self.overlay[i, j] >= 0:
+                    col = self.overlay[i, j]
                 else:
                     data = pyxel.image(self.parent.image_button.value).data
                     col = data[self.edit_y + i, self.edit_x + j]
