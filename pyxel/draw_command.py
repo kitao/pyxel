@@ -1,9 +1,19 @@
 import numpy as np
 
-from .constants import (DRAW_TYPE_BLT, DRAW_TYPE_CIRC, DRAW_TYPE_CIRCB,
-                        DRAW_TYPE_LINE, DRAW_TYPE_PIX, DRAW_TYPE_RECT,
-                        DRAW_TYPE_RECTB, DRAW_TYPE_TEXT, FONT_HEIGHT,
-                        FONT_MAX_CODE, FONT_MIN_CODE, FONT_WIDTH)
+from .constants import (
+    DRAW_TYPE_BLT,
+    DRAW_TYPE_CIRC,
+    DRAW_TYPE_CIRCB,
+    DRAW_TYPE_LINE,
+    DRAW_TYPE_PIX,
+    DRAW_TYPE_RECT,
+    DRAW_TYPE_RECTB,
+    DRAW_TYPE_TEXT,
+    FONT_HEIGHT,
+    FONT_MAX_CODE,
+    FONT_MIN_CODE,
+    FONT_WIDTH,
+)
 from .shaders import DRAWING_ATTRIBUTE_INFO
 
 MODE_TYPE_INDEX = DRAWING_ATTRIBUTE_INFO[0][1]
@@ -76,8 +86,7 @@ class DrawCommand:
         if self.draw_count >= self._max_draw_count:
             return
         data = self._draw_att_data[self.draw_count]
-        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
-             CLIP_PAL_COUNT] = self._clip_pal_data
+        data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_RECT
@@ -97,8 +106,7 @@ class DrawCommand:
         if self.draw_count >= self._max_draw_count:
             return
         data = self._draw_att_data[self.draw_count]
-        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
-             CLIP_PAL_COUNT] = self._clip_pal_data
+        data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_PIX
@@ -111,8 +119,7 @@ class DrawCommand:
         if self.draw_count >= self._max_draw_count:
             return
         data = self._draw_att_data[self.draw_count]
-        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
-             CLIP_PAL_COUNT] = self._clip_pal_data
+        data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_LINE
@@ -127,8 +134,7 @@ class DrawCommand:
         if self.draw_count >= self._max_draw_count:
             return
         data = self._draw_att_data[self.draw_count]
-        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
-             CLIP_PAL_COUNT] = self._clip_pal_data
+        data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_RECT
@@ -143,8 +149,7 @@ class DrawCommand:
         if self.draw_count >= self._max_draw_count:
             return
         data = self._draw_att_data[self.draw_count]
-        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
-             CLIP_PAL_COUNT] = self._clip_pal_data
+        data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_RECTB
@@ -159,8 +164,7 @@ class DrawCommand:
         if self.draw_count >= self._max_draw_count:
             return
         data = self._draw_att_data[self.draw_count]
-        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
-             CLIP_PAL_COUNT] = self._clip_pal_data
+        data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_CIRC
@@ -175,8 +179,7 @@ class DrawCommand:
         if self.draw_count >= self._max_draw_count:
             return
         data = self._draw_att_data[self.draw_count]
-        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
-             CLIP_PAL_COUNT] = self._clip_pal_data
+        data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_CIRCB
@@ -191,8 +194,7 @@ class DrawCommand:
         if self.draw_count >= self._max_draw_count:
             return
         data = self._draw_att_data[self.draw_count]
-        data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
-             CLIP_PAL_COUNT] = self._clip_pal_data
+        data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
 
         data[MODE_TYPE_INDEX] = DRAW_TYPE_BLT
@@ -233,8 +235,9 @@ class DrawCommand:
                 if self.draw_count >= self._max_draw_count:
                     return
                 data = self._draw_att_data[self.draw_count]
-                data[CLIP_PAL_INDEX:CLIP_PAL_INDEX +
-                     CLIP_PAL_COUNT] = self._clip_pal_data
+                data[
+                    CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT
+                ] = self._clip_pal_data
                 self.draw_count += 1
 
                 data[MODE_TYPE_INDEX] = DRAW_TYPE_TEXT
