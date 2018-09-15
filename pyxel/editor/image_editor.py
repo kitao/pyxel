@@ -33,6 +33,12 @@ class EditWindow(Widget):
         self._drag_offset_x = 0
         self._drag_offset_y = 0
 
+        self._select_x1 = 0
+        self._select_y1 = 0
+        self._select_x2 = 0
+        self._select_y2 = 0
+        self._copy_buffer = None
+
         self._is_dragged = False
         self._is_guide_mode = False
 
@@ -49,8 +55,23 @@ class EditWindow(Widget):
         self.add_event_handler("update", self.on_update)
         self.add_event_handler("draw", self.on_draw)
 
+        self.parent.color_button.add_event_handler("change", self.on_color_change)
+        self.parent.tool_button.add_event_handler("change", self.on_tool_change)
+
         self.overlay = np.ndarray((16, 16), np.int8)
         self.clear_overlay()
+
+    @property
+    def tool(self):
+        return self.parent.tool_button.value
+
+    @tool.setter
+    def tool(self, value):
+        self.parent.tool_button.value = value
+
+    @property
+    def color(self):
+        return self.parent.color_button.value
 
     def clear_overlay(self):
         self.overlay[:, :] = -1
@@ -121,11 +142,12 @@ class EditWindow(Widget):
         self._is_dragged = True
         self._is_guide_mode = False
 
-        tool = self.parent.tool_button.value
-
-        if tool >= TOOL_PENCIL and tool <= TOOL_CIRC:
+        if self.tool == TOOL_SELECT:
+            self._select_x1 = self._select_x2 = x
+            self._select_y1 = self._select_y2 = y
+        elif self.tool >= TOOL_PENCIL and self.tool <= TOOL_CIRC:
             self.overlay[y, x] = self.parent.color_button.value
-        elif tool == TOOL_BUCKET:
+        elif self.tool == TOOL_BUCKET:
             pass
 
         self._last_x = x
@@ -166,9 +188,6 @@ class EditWindow(Widget):
             x //= 8
             y //= 8
 
-            tool = self.parent.tool_button.value
-            col = self.parent.color_button.value
-
             x1, y1 = self._press_x, self._press_y
             x2, y2 = min(max(x, 0), 15), min(max(y, 0), 15)
 
@@ -178,23 +197,30 @@ class EditWindow(Widget):
             if y1 > y2:
                 y1, y2 = y2, y1
 
-            if tool == TOOL_SELECT:
-                pass
-            elif tool == TOOL_PENCIL:
+            if self.tool == TOOL_SELECT:
+                self._select_x1 = x1
+                self._select_y1 = y1
+                self._select_x2 = x2
+                self._select_y2 = y2
+            elif self.tool == TOOL_PENCIL:
                 if self._is_guide_mode:
                     self.clear_overlay()
-                    self.draw_line_on_overlay(self._press_x, self._press_y, x, y, col)
+                    self.draw_line_on_overlay(
+                        self._press_x, self._press_y, x, y, self.color
+                    )
                 else:
-                    self.draw_line_on_overlay(self._last_x, self._last_y, x, y, col)
-            elif tool == TOOL_RECTB:
+                    self.draw_line_on_overlay(
+                        self._last_x, self._last_y, x, y, self.color
+                    )
+            elif self.tool == TOOL_RECTB:
                 self.clear_overlay()
-                self.draw_rectb_on_overlay(x1, y1, x2, y2, col)
-            elif tool == TOOL_RECT:
-                self.draw_rect_on_overlay(x1, y1, x2, y2, col)
-            elif tool == TOOL_CIRCB:
-                self.draw_circb_on_overlay(x1, y1, x2, y2, col)
-            elif tool == TOOL_CIRC:
-                self.draw_circ_on_overlay(x1, y1, x2, y2, col)
+                self.draw_rectb_on_overlay(x1, y1, x2, y2, self.color)
+            elif self.tool == TOOL_RECT:
+                self.draw_rect_on_overlay(x1, y1, x2, y2, self.color)
+            elif self.tool == TOOL_CIRCB:
+                self.draw_circb_on_overlay(x1, y1, x2, y2, self.color)
+            elif self.tool == TOOL_CIRC:
+                self.draw_circ_on_overlay(x1, y1, x2, y2, self.color)
 
             self._last_x = x
             self._last_y = y
@@ -222,9 +248,8 @@ class EditWindow(Widget):
     def on_update(self):
         if self._is_dragged and not self._is_guide_mode and pyxel.btn(pyxel.KEY_SHIFT):
             self._is_guide_mode = True
-            tool = self.parent.tool_button.value
 
-            if tool == TOOL_PENCIL:
+            if self.tool == TOOL_PENCIL:
                 self.clear_overlay()
                 self.draw_line_on_overlay(
                     self._press_x,
@@ -233,6 +258,34 @@ class EditWindow(Widget):
                     self._last_y,
                     self.parent.color_button.value,
                 )
+
+        if (
+            self.tool == TOOL_SELECT
+            and self._select_x1 >= 0
+            and pyxel.btn(pyxel.KEY_CONTROL)
+        ):
+            if pyxel.btnp(pyxel.KEY_C):
+                img = self.parent.image_button.value
+                src = pyxel.image(img).data[
+                    self.edit_y + self._select_y1 : self.edit_y + self._select_y2 + 1,
+                    self.edit_x + self._select_x1 : self.edit_x + self._select_x2 + 1,
+                ]
+
+                self._copy_buffer = src.copy()
+            elif self._copy_buffer is not None and pyxel.btnp(pyxel.KEY_V):
+                x1 = self.edit_x + self._select_x1
+                y1 = self.edit_y + self._select_y1
+                height, width = self._copy_buffer.shape
+
+                if x1 + width >= 256:
+                    width -= x1 + width - 256
+
+                if y1 + height >= 256:
+                    height -= y1 + height - 256
+
+                img = self.parent.image_button.value
+                dest = pyxel.image(img).data[y1 : y1 + height, x1 : x1 + width]
+                dest[:, :] = self._copy_buffer[:height, :width]
 
     def on_draw(self):
         for i in range(16):
@@ -250,6 +303,24 @@ class EditWindow(Widget):
 
         pyxel.line(self.x, self.y + 63, self.x + 127, self.y + 63, 1)
         pyxel.line(self.x + 63, self.y, self.x + 63, self.y + 127, 1)
+
+        if self.tool == TOOL_SELECT and self._select_x1 >= 0:
+            x1 = self._select_x1 * 8 + 12
+            y1 = self._select_y1 * 8 + 17
+            x2 = self._select_x2 * 8 + 19
+            y2 = self._select_y2 * 8 + 24
+
+            pyxel.rectb(x1, y1, x2, y2, 0)
+            pyxel.rectb(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 15)
+            pyxel.rectb(x1 + 2, y1 + 2, x2 - 2, y2 - 2, 0)
+
+    def on_color_change(self, value):
+        if self.tool == TOOL_SELECT:
+            self.tool = TOOL_PENCIL
+
+    def on_tool_change(self, value):
+        if self.tool == TOOL_SELECT:
+            self._select_x1 = -1
 
 
 class PreviewWindow(Widget):
@@ -327,6 +398,8 @@ class ImageEditor(Screen):
     def __init__(self, parent, is_tilemap_mode=False):
         super().__init__(parent, "image_editor.png")
 
+        self._is_tilemap_mode = is_tilemap_mode
+
         def on_draw():
             widget = self.color_button
             x = widget.x + (widget.value % 8) * 8
@@ -341,6 +414,7 @@ class ImageEditor(Screen):
 
         self.tool_button = RadioButton(self, 81, 161, 7, 1, 9)
         self.tool_button.value = TOOL_PENCIL
+
         self.image_button = RadioButton(self, 191, 161, 3, 1, 10)
         self.edit_window = EditWindow(self)
         self.preview_window = PreviewWindow(self)
