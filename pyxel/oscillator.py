@@ -1,5 +1,9 @@
-from .constants import (SOUND_TONE_NOISE, SOUND_TONE_PULSE, SOUND_TONE_SQUARE,
-                        SOUND_TONE_TRIANGLE)
+from .constants import (
+    SOUND_TONE_NOISE,
+    SOUND_TONE_PULSE,
+    SOUND_TONE_SQUARE,
+    SOUND_TONE_TRIANGLE,
+)
 
 
 class Oscillator:
@@ -56,7 +60,7 @@ class Oscillator:
     @staticmethod
     def _triangle(period, phase):
         x = (phase / period + 0.25) % 1
-        return (abs(x * 4 - 2) - 1)
+        return abs(x * 4 - 2) - 1
 
     @staticmethod
     def _square(period, phase):
@@ -71,8 +75,7 @@ class Oscillator:
     def _noise(self, period, phase):
         if phase % (period // 4) == 0:
             self._noise_seed >>= 1
-            self._noise_seed |= ((self._noise_seed ^
-                                  (self._noise_seed >> 1)) & 1) << 15
+            self._noise_seed |= ((self._noise_seed ^ (self._noise_seed >> 1)) & 1) << 15
             self._noise_last = self._noise_seed & 1
 
         return self._noise_last * 0.5
