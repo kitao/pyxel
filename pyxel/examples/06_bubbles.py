@@ -47,7 +47,7 @@ class App:
     first_exploded = False
 
     def __init__(self):
-        pyxel.init(255, 255, caption='Pyxel Bubbles')
+        pyxel.init(255, 255, caption="Pyxel Bubbles")
 
         for i in range(0, BUBBLE_COUNT):
             new_bubble = Bubble()
@@ -72,8 +72,7 @@ class App:
                 if d2 < exploder.r * exploder.r:
                     self.first_exploded = True
                     NUM_NEW_BUBBLES = 11
-                    new_r = math.sqrt(
-                        exploder.r * exploder.r / NUM_NEW_BUBBLES)
+                    new_r = math.sqrt(exploder.r * exploder.r / NUM_NEW_BUBBLES)
 
                     for j in range(0, NUM_NEW_BUBBLES):
                         new_bubble = Bubble()
@@ -82,9 +81,11 @@ class App:
                         angle = 2 * math.pi * j / NUM_NEW_BUBBLES
                         new_bubble.r = new_r
                         new_bubble.pos.x = exploder.pos.x + (
-                            exploder.r + new_r) * math.cos(angle)
+                            exploder.r + new_r
+                        ) * math.cos(angle)
                         new_bubble.pos.y = exploder.pos.y + (
-                            exploder.r + new_r) * math.sin(angle)
+                            exploder.r + new_r
+                        ) * math.sin(angle)
                         new_bubble.vel.x = math.cos(angle) * BUBBLE_SPEED_MAX
                         new_bubble.vel.y = math.sin(angle) * BUBBLE_SPEED_MAX
                     del self.bubbles[i]
@@ -105,14 +106,10 @@ class App:
                     new_bubble = Bubble()
                     new_bubble.rand()
                     new_bubble.r = math.sqrt(bi.r * bi.r + bj.r * bj.r)
-                    new_bubble.pos.x = (
-                        bi.pos.x * bi.r + bj.pos.x * bj.r) / total_r
-                    new_bubble.pos.y = (
-                        bi.pos.y * bi.r + bj.pos.y * bj.r) / total_r
-                    new_bubble.vel.x = (
-                        bi.vel.x * bi.r + bj.vel.x * bj.r) / total_r
-                    new_bubble.vel.y = (
-                        bi.vel.y * bi.r + bj.vel.y * bj.r) / total_r
+                    new_bubble.pos.x = (bi.pos.x * bi.r + bj.pos.x * bj.r) / total_r
+                    new_bubble.pos.y = (bi.pos.y * bi.r + bj.pos.y * bj.r) / total_r
+                    new_bubble.vel.x = (bi.vel.x * bi.r + bj.vel.x * bj.r) / total_r
+                    new_bubble.vel.y = (bi.vel.y * bi.r + bj.vel.y * bj.r) / total_r
                     self.bubbles.append(new_bubble)
                     del self.bubbles[i]
                     del self.bubbles[j]
