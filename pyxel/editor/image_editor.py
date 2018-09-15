@@ -38,17 +38,17 @@ class EditWindow(DrawWindow):
         self._is_guide_mode = False
 
         self._h_scroll_bar = ScrollBar(self, 11, 145, 130, 7, 2, 32)
-        self._h_scroll_bar.add_event_handler('change', self.on_change_x)
+        self._h_scroll_bar.add_event_handler("change", self.on_change_x)
 
         self._v_scroll_bar = ScrollBar(self, 140, 16, 7, 130, 2, 32)
-        self._v_scroll_bar.add_event_handler('change', self.on_change_y)
+        self._v_scroll_bar.add_event_handler("change", self.on_change_y)
 
-        self.add_event_handler('press', self.on_press)
-        self.add_event_handler('release', self.on_release)
-        self.add_event_handler('click', self.on_click)
-        self.add_event_handler('drag', self.on_drag)
-        self.add_event_handler('update', self.on_update)
-        self.add_event_handler('draw', self.on_draw)
+        self.add_event_handler("press", self.on_press)
+        self.add_event_handler("release", self.on_release)
+        self.add_event_handler("click", self.on_click)
+        self.add_event_handler("drag", self.on_drag)
+        self.add_event_handler("update", self.on_update)
+        self.add_event_handler("draw", self.on_draw)
 
     def on_change_x(self, value):
         self.edit_x = value * 8
@@ -86,19 +86,20 @@ class EditWindow(DrawWindow):
         self._is_dragged = False
 
         img = self.parent.image_button.value
-        dest = pyxel.image(img).data[self.edit_y:self.edit_y +
-                                     16, self.edit_x:self.edit_x + 16]
+        dest = pyxel.image(img).data[
+            self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
+        ]
 
         data = {}
-        data['img'] = img
-        data['pos'] = (self.edit_x, self.edit_y)
-        data['before'] = dest.copy()
+        data["img"] = img
+        data["pos"] = (self.edit_x, self.edit_y)
+        data["before"] = dest.copy()
 
         index = self.overlay != -1
         dest[index] = self.overlay[index]
         self.clear_overlay()
 
-        data['after'] = dest.copy()
+        data["after"] = dest.copy()
         self.parent.add_edit_history(data)
 
     def on_click(self, key, x, y):
@@ -130,11 +131,9 @@ class EditWindow(DrawWindow):
             elif tool == TOOL_PENCIL:
                 if self._is_guide_mode:
                     self.clear_overlay()
-                    self.draw_line_on_overlay(self._press_x, self._press_y, x,
-                                              y, col)
+                    self.draw_line_on_overlay(self._press_x, self._press_y, x, y, col)
                 else:
-                    self.draw_line_on_overlay(self._last_x, self._last_y, x, y,
-                                              col)
+                    self.draw_line_on_overlay(self._last_x, self._last_y, x, y, col)
             elif tool == TOOL_RECTB:
                 self.clear_overlay()
                 self.draw_rectb_on_overlay(x1, y1, x2, y2, col)
@@ -169,16 +168,19 @@ class EditWindow(DrawWindow):
             self._v_scroll_bar.value = self.edit_y // 8
 
     def on_update(self):
-        if (self._is_dragged and not self._is_guide_mode
-                and pyxel.btn(pyxel.KEY_SHIFT)):
+        if self._is_dragged and not self._is_guide_mode and pyxel.btn(pyxel.KEY_SHIFT):
             self._is_guide_mode = True
             tool = self.parent.tool_button.value
 
             if tool == TOOL_PENCIL:
                 self.clear_overlay()
-                self.draw_line_on_overlay(self._press_x, self._press_y,
-                                          self._last_x, self._last_y,
-                                          self.parent.color_button.value)
+                self.draw_line_on_overlay(
+                    self._press_x,
+                    self._press_y,
+                    self._last_x,
+                    self._last_y,
+                    self.parent.color_button.value,
+                )
 
     def on_draw(self):
         for i in range(16):
@@ -209,14 +211,14 @@ class PreviewWindow(Widget):
         self._drag_offset_y = 0
 
         self._h_scroll_bar = ScrollBar(self, 157, 145, 66, 7, 8, 32)
-        self._h_scroll_bar.add_event_handler('change', self.on_change_x)
+        self._h_scroll_bar.add_event_handler("change", self.on_change_x)
 
         self._v_scroll_bar = ScrollBar(self, 222, 16, 7, 130, 16, 32)
-        self._v_scroll_bar.add_event_handler('change', self.on_change_y)
+        self._v_scroll_bar.add_event_handler("change", self.on_change_y)
 
-        self.add_event_handler('press', self.on_press)
-        self.add_event_handler('drag', self.on_drag)
-        self.add_event_handler('draw', self.on_draw)
+        self.add_event_handler("press", self.on_press)
+        self.add_event_handler("drag", self.on_drag)
+        self.add_event_handler("draw", self.on_draw)
 
     def on_change_x(self, value):
         self.preview_x = value * 8
@@ -226,15 +228,15 @@ class PreviewWindow(Widget):
 
     def on_press(self, key, x, y):
         if key == pyxel.KEY_LEFT_BUTTON:
-            self.parent.edit_window.edit_x = self.preview_x + (
-                (x - 4) // 8) * 8
-            self.parent.edit_window.edit_y = self.preview_y + (
-                (y - 4) // 8) * 8
+            self.parent.edit_window.edit_x = self.preview_x + ((x - 4) // 8) * 8
+            self.parent.edit_window.edit_y = self.preview_y + ((y - 4) // 8) * 8
 
             self.parent.edit_window.edit_x = min(
-                max(self.parent.edit_window.edit_x, 0), 240)
+                max(self.parent.edit_window.edit_x, 0), 240
+            )
             self.parent.edit_window.edit_y = min(
-                max(self.parent.edit_window.edit_y, 0), 240)
+                max(self.parent.edit_window.edit_y, 0), 240
+            )
 
         if key == pyxel.KEY_RIGHT_BUTTON:
             self._drag_offset_x = 0
@@ -262,8 +264,7 @@ class PreviewWindow(Widget):
         img = self.parent.image_button.value
         pyxel.blt(self.x, self.y, img, self.preview_x, self.preview_y, 64, 128)
 
-        pyxel.clip(self.x - 1, self.y - 1, self.x + self.width,
-                   self.y + self.height)
+        pyxel.clip(self.x - 1, self.y - 1, self.x + self.width, self.y + self.height)
         x = self.x + self.parent.edit_window.edit_x - self.preview_x
         y = self.y + self.parent.edit_window.edit_y - self.preview_y
         pyxel.rectb(x - 1, y - 1, x + 16, y + 16, 7)
@@ -272,19 +273,18 @@ class PreviewWindow(Widget):
 
 class ImageEditor(Screen):
     def __init__(self, parent):
-        super().__init__(parent, 'image_editor.png')
+        super().__init__(parent, "image_editor.png")
 
         def on_draw():
             widget = self.color_button
             x = widget.x + (widget.value % 8) * 8
             y = widget.y + (widget.value // 8) * 8
             col = 7 if widget.value < 6 else 0
-            pyxel.text(x + 2, y + 1, '+', col)
+            pyxel.text(x + 2, y + 1, "+", col)
 
         self.color_button = RadioButton(self, 12, 157, 8, 2, 8)
-        self.color_button.remove_event_handler('draw',
-                                               self.color_button.on_draw)
-        self.color_button.add_event_handler('draw', on_draw)
+        self.color_button.remove_event_handler("draw", self.color_button.on_draw)
+        self.color_button.add_event_handler("draw", on_draw)
         self.color_button.value = 7
 
         self.tool_button = RadioButton(self, 81, 161, 7, 1, 9)
@@ -293,24 +293,24 @@ class ImageEditor(Screen):
         self.edit_window = EditWindow(self)
         self.preview_window = PreviewWindow(self)
 
-        self.add_event_handler('undo', self.on_undo)
-        self.add_event_handler('redo', self.on_redo)
+        self.add_event_handler("undo", self.on_undo)
+        self.add_event_handler("redo", self.on_redo)
 
     def on_undo(self, data):
-        img = data['img']
-        x, y = data['pos']
-        dest = pyxel.image(img).data[y:y + 16, x:x + 16]
-        dest[:, :] = data['before']
+        img = data["img"]
+        x, y = data["pos"]
+        dest = pyxel.image(img).data[y : y + 16, x : x + 16]
+        dest[:, :] = data["before"]
 
         self.edit_window.edit_x = x
         self.edit_window.edit_y = y
         self.image_button.value = img
 
     def on_redo(self, data):
-        img = data['img']
-        x, y = data['pos']
-        dest = pyxel.image(img).data[y:y + 16, x:x + 16]
-        dest[:, :] = data['after']
+        img = data["img"]
+        x, y = data["pos"]
+        dest = pyxel.image(img).data[y : y + 16, x : x + 16]
+        dest[:, :] = data["after"]
 
         self.edit_window.edit_x = x
         self.edit_window.edit_y = y
