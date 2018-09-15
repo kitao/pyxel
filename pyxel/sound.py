@@ -18,8 +18,7 @@ class Sound:
 
     def set_note(self, data):
         param_list = []
-        data = data.replace(' ', '').replace('\n', '').replace('\t',
-                                                               '').lower()
+        data = data.replace(" ", "").replace("\n", "").replace("\t", "").lower()
 
         while data:
             c = data[0]
@@ -31,20 +30,20 @@ class Sound:
                 c = data[0]
                 data = data[1:]
 
-                if c == '#' or c == '-':
-                    param += c == '#' and 1 or -1
+                if c == "#" or c == "-":
+                    param += c == "#" and 1 or -1
 
                     c = data[0]
                     data = data[1:]
 
-                if c >= '0' and c <= '4':
+                if c >= "0" and c <= "4":
                     param += int(c) * 12
                 else:
-                    raise ValueError('invalid sound note')
-            elif c == 'r':
+                    raise ValueError("invalid sound note")
+            elif c == "r":
                 param = -1
             else:
-                raise ValueError('invalid sound note')
+                raise ValueError("invalid sound note")
 
             param_list.append(param)
 
@@ -52,7 +51,7 @@ class Sound:
 
     def set_tone(self, data):
         param_list = []
-        data = data.replace(' ', '').lower()
+        data = data.replace(" ", "").lower()
 
         while data:
             c = data[0]
@@ -61,7 +60,7 @@ class Sound:
             param = SOUND_TONE_TABLE.get(c, None)
 
             if param is None:
-                raise ValueError('invalid sound tone')
+                raise ValueError("invalid sound tone")
 
             param_list.append(param)
 
@@ -69,16 +68,16 @@ class Sound:
 
     def set_volume(self, data):
         param_list = []
-        data = data.replace(' ', '').lower()
+        data = data.replace(" ", "").lower()
 
         while data:
             c = data[0]
             data = data[1:]
 
-            if c >= '0' and c <= '7':
+            if c >= "0" and c <= "7":
                 param = int(c)
             else:
-                raise ValueError('invalid sound volume')
+                raise ValueError("invalid sound volume")
 
             param_list.append(param)
 
@@ -86,7 +85,7 @@ class Sound:
 
     def set_effect(self, data):
         param_list = []
-        data = data.replace(' ', '').lower()
+        data = data.replace(" ", "").lower()
 
         while data:
             c = data[0]
@@ -95,7 +94,7 @@ class Sound:
             param = SOUND_EFFECT_TABLE.get(c, None)
 
             if param is None:
-                raise ValueError('invalid sound effect')
+                raise ValueError("invalid sound effect")
 
             param_list.append(param)
 

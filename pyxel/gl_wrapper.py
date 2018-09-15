@@ -9,7 +9,8 @@ class GLShader:
     def __init__(self, vertex_shader, fragment_shader):
         self._program = shaders.compileProgram(
             shaders.compileShader(vertex_shader, gl.GL_VERTEX_SHADER),
-            shaders.compileShader(fragment_shader, gl.GL_FRAGMENT_SHADER))
+            shaders.compileShader(fragment_shader, gl.GL_FRAGMENT_SHADER),
+        )
         self._att = None
         self._tex_list = []
 
@@ -41,7 +42,7 @@ class GLShader:
 
     def set_uniform(self, name, param_type, *params):
         loc = gl.glGetUniformLocation(self._program, name)
-        getattr(gl, 'glUniform' + param_type)(loc, *params)
+        getattr(gl, "glUniform" + param_type)(loc, *params)
 
 
 class GLAttribute:
@@ -68,14 +69,24 @@ class GLAttribute:
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self._buf)
 
         if self._should_update_data:
-            gl.glBufferData(gl.GL_ARRAY_BUFFER, self._stride * self._count,
-                            self._data.tobytes(), self._usage)
+            gl.glBufferData(
+                gl.GL_ARRAY_BUFFER,
+                self._stride * self._count,
+                self._data.tobytes(),
+                self._usage,
+            )
             self._should_update_data = False
 
         for att in self._att_info:
             loc = gl.glGetAttribLocation(program, att[0])
-            gl.glVertexAttribPointer(loc, att[2], self._dtype, gl.GL_FALSE,
-                                     self._stride, ctypes.c_void_p(att[1] * 4))
+            gl.glVertexAttribPointer(
+                loc,
+                att[2],
+                self._dtype,
+                gl.GL_FALSE,
+                self._stride,
+                ctypes.c_void_p(att[1] * 4),
+            )
             gl.glEnableVertexAttribArray(loc)
 
     def _end(self, program):
@@ -98,7 +109,7 @@ class GLTexture:
             self._format = gl.GL_RGBA
             shape = (height, width, 4)
         else:
-            raise ValueError('invalid texture format')
+            raise ValueError("invalid texture format")
 
         self._width = width
         self._height = height
@@ -124,8 +135,7 @@ class GLTexture:
 
     def copy_screen(self, x, y, left, bottom, width, height):
         gl.glBindTexture(gl.GL_TEXTURE_2D, self._tex)
-        gl.glCopyTexSubImage2D(gl.GL_TEXTURE_2D, 0, x, y, left, bottom, width,
-                               height)
+        gl.glCopyTexSubImage2D(gl.GL_TEXTURE_2D, 0, x, y, left, bottom, width, height)
         gl.glBindTexture(gl.GL_TEXTURE_2D, 0)
 
     def _begin(self, i):
@@ -133,19 +143,23 @@ class GLTexture:
         gl.glBindTexture(gl.GL_TEXTURE_2D, self._tex)
 
         if self._should_update_data:
-            gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, self._format, self._width,
-                            self._height, 0, self._format, gl.GL_UNSIGNED_BYTE,
-                            self._data.tobytes())
+            gl.glTexImage2D(
+                gl.GL_TEXTURE_2D,
+                0,
+                self._format,
+                self._width,
+                self._height,
+                0,
+                self._format,
+                gl.GL_UNSIGNED_BYTE,
+                self._data.tobytes(),
+            )
             self._should_update_data = False
 
-        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S,
-                           gl.GL_CLAMP_TO_EDGE)
-        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T,
-                           gl.GL_CLAMP_TO_EDGE)
-        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER,
-                           self._filter)
-        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER,
-                           self._filter)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, self._filter)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, self._filter)
         gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
 
     def _end(self, i):

@@ -1,7 +1,17 @@
-from .constants import (DRAW_TYPE_BLT, DRAW_TYPE_CIRC, DRAW_TYPE_CIRCB,
-                        DRAW_TYPE_LINE, DRAW_TYPE_PIX, DRAW_TYPE_RECT,
-                        DRAW_TYPE_RECTB, DRAW_TYPE_TEXT, FONT_HEIGHT,
-                        FONT_ROW_COUNT, FONT_WIDTH, RENDERER_IMAGE_COUNT)
+from .constants import (
+    DRAW_TYPE_BLT,
+    DRAW_TYPE_CIRC,
+    DRAW_TYPE_CIRCB,
+    DRAW_TYPE_LINE,
+    DRAW_TYPE_PIX,
+    DRAW_TYPE_RECT,
+    DRAW_TYPE_RECTB,
+    DRAW_TYPE_TEXT,
+    FONT_HEIGHT,
+    FONT_ROW_COUNT,
+    FONT_WIDTH,
+    RENDERER_IMAGE_COUNT,
+)
 
 DRAWING_VERTEX_SHADER = """
 #version 120
@@ -394,11 +404,11 @@ void main()
 )
 
 DRAWING_ATTRIBUTE_INFO = [
-    ('a_mode', 0, 3),
-    ('a_pos', 3, 4),
-    ('a_size', 7, 2),
-    ('a_clip', 9, 4),
-    ('a_pal', 13, 4),
+    ("a_mode", 0, 3),
+    ("a_pos", 3, 4),
+    ("a_size", 7, 2),
+    ("a_clip", 9, 4),
+    ("a_pal", 13, 4),
 ]
 
 SCALING_VERTEX_SHADER = """
@@ -430,7 +440,4 @@ void main()
 }
 """
 
-SCALING_ATTRIBUTE_INFO = [
-    ('a_pos', 0, 2),
-    ('a_uv', 2, 2),
-]
+SCALING_ATTRIBUTE_INFO = [("a_pos", 0, 2), ("a_uv", 2, 2)]
