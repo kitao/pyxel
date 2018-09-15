@@ -2,15 +2,27 @@ import math
 
 import OpenGL.GL as gl
 
-from .constants import (DRAW_MAX_COUNT, FONT_DATA, FONT_HEIGHT, FONT_WIDTH,
-                        RENDERER_IMAGE_COUNT, RENDERER_IMAGE_HEIGHT,
-                        RENDERER_IMAGE_WIDTH, RENDERER_MIN_TEXTURE_SIZE)
+from .constants import (
+    DRAW_MAX_COUNT,
+    FONT_DATA,
+    FONT_HEIGHT,
+    FONT_WIDTH,
+    RENDERER_IMAGE_COUNT,
+    RENDERER_IMAGE_HEIGHT,
+    RENDERER_IMAGE_WIDTH,
+    RENDERER_MIN_TEXTURE_SIZE,
+)
 from .draw_command import DrawCommand
 from .gl_wrapper import GLAttribute, GLShader, GLTexture
 from .image import Image
-from .shaders import (DRAWING_ATTRIBUTE_INFO, DRAWING_FRAGMENT_SHADER,
-                      DRAWING_VERTEX_SHADER, SCALING_ATTRIBUTE_INFO,
-                      SCALING_FRAGMENT_SHADER, SCALING_VERTEX_SHADER)
+from .shaders import (
+    DRAWING_ATTRIBUTE_INFO,
+    DRAWING_FRAGMENT_SHADER,
+    DRAWING_VERTEX_SHADER,
+    SCALING_ATTRIBUTE_INFO,
+    SCALING_FRAGMENT_SHADER,
+    SCALING_VERTEX_SHADER,
+)
 
 
 class Renderer:
@@ -24,15 +36,14 @@ class Renderer:
         ]
         self._set_font_image(self._image_list[-1])
 
-        self._draw_shader = GLShader(DRAWING_VERTEX_SHADER,
-                                     DRAWING_FRAGMENT_SHADER)
+        self._draw_shader = GLShader(DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER)
         self._draw_att = GLAttribute(
-            DRAWING_ATTRIBUTE_INFO, DRAW_MAX_COUNT, dynamic=True)
+            DRAWING_ATTRIBUTE_INFO, DRAW_MAX_COUNT, dynamic=True
+        )
 
         self.draw_command = DrawCommand(width, height, self._draw_att.data)
 
-        self._scale_shader = GLShader(SCALING_VERTEX_SHADER,
-                                      SCALING_FRAGMENT_SHADER)
+        self._scale_shader = GLShader(SCALING_VERTEX_SHADER, SCALING_FRAGMENT_SHADER)
 
         tex_width = self.largest_power_of_two(width)
         tex_height = self.largest_power_of_two(height)
@@ -63,7 +74,7 @@ class Renderer:
         gl.glViewport(0, 0, int(self._width), int(self._height))
 
         self._scale_shader.begin(self._normal_scale_att, [self._scale_tex])
-        self._scale_shader.set_uniform('u_texture', '1i', 0)
+        self._scale_shader.set_uniform("u_texture", "1i", 0)
         gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, 4)
         self._scale_shader.end()
 
@@ -72,26 +83,27 @@ class Renderer:
             gl.glEnable(gl.GL_VERTEX_PROGRAM_POINT_SIZE)
             gl.glEnable(gl.GL_POINT_SPRITE)
 
-            draw_tex_list = [(image and image._tex or None)
-                             for image in self._image_list]
+            draw_tex_list = [
+                (image and image._tex or None) for image in self._image_list
+            ]
             self._draw_att.update(self.draw_command.draw_count)
             self._draw_shader.begin(self._draw_att, draw_tex_list)
-            self._draw_shader.set_uniform('u_framebuffer_size', '2f',
-                                          self._width, self._height)
+            self._draw_shader.set_uniform(
+                "u_framebuffer_size", "2f", self._width, self._height
+            )
 
             for i, v in enumerate(palette):
-                name = 'u_palette[{}]'.format(i)
+                name = "u_palette[{}]".format(i)
                 r, g, b = self._int_to_rgb(v)
-                self._draw_shader.set_uniform(name, '3i', r, g, b)
+                self._draw_shader.set_uniform(name, "3i", r, g, b)
 
             for i, v in enumerate(draw_tex_list):
                 if v:
-                    name = 'u_texture[{}]'.format(i)
-                    self._draw_shader.set_uniform(name, '1i', i)
+                    name = "u_texture[{}]".format(i)
+                    self._draw_shader.set_uniform(name, "1i", i)
 
-                    name = 'u_texture_size[{}]'.format(i)
-                    self._draw_shader.set_uniform(name, '2f', v.width,
-                                                  v.height)
+                    name = "u_texture_size[{}]".format(i)
+                    self._draw_shader.set_uniform(name, "2f", v.width, v.height)
 
             gl.glDrawArrays(gl.GL_POINTS, 0, self.draw_command.draw_count)
             self._draw_shader.end()
@@ -100,8 +112,9 @@ class Renderer:
             self.draw_command.draw_count = 0
 
         # capture screen
-        capture_image = gl.glReadPixels(0, 0, self._width, self._height,
-                                        gl.GL_RGB, gl.GL_UNSIGNED_BYTE)
+        capture_image = gl.glReadPixels(
+            0, 0, self._width, self._height, gl.GL_RGB, gl.GL_UNSIGNED_BYTE
+        )
 
         # clear screen
         r, g, b = self._int_to_rgb(clear_color)
@@ -114,7 +127,7 @@ class Renderer:
         gl.glViewport(int(left), int(bottom), int(width), int(height))
 
         self._scale_shader.begin(self._inverse_scale_att, [self._scale_tex])
-        self._scale_shader.set_uniform('u_texture', '1i', 0)
+        self._scale_shader.set_uniform("u_texture", "1i", 0)
         gl.glDrawArrays(gl.GL_TRIANGLE_STRIP, 0, 4)
         self._scale_shader.end()
 
@@ -122,8 +135,7 @@ class Renderer:
 
     def image(self, img, *, system=False):
         if not system and img == RENDERER_IMAGE_COUNT - 1:
-            raise ValueError(
-                'image bank {} is reserved for system'.format(img))
+            raise ValueError("image bank {} is reserved for system".format(img))
 
         return self._image_list[img]
 
@@ -144,7 +156,7 @@ class Renderer:
 
     @staticmethod
     def largest_power_of_two(n):
-        return max(2**math.ceil(math.log(n, 2)), RENDERER_MIN_TEXTURE_SIZE)
+        return max(2 ** math.ceil(math.log(n, 2)), RENDERER_MIN_TEXTURE_SIZE)
 
     @staticmethod
     def _int_to_rgb(color):

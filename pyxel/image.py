@@ -31,28 +31,25 @@ class Image:
         sw = len(data[0])
         sh = len(data)
 
-        rect = self._get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height,
-                                   sw, sh)
+        rect = self._get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height, sw, sh)
         if not rect:
             return
         sx, sy, dx, dy, cw, ch = rect
 
-        src_data = np.array(
-            [list(map(lambda x: int(x, 16), line)) for line in data])
-        src_data = src_data[sy:sy + ch, sx:sx + cw]
-        self._data[dy:dy + ch, dx:dx + cw] = src_data
+        src_data = np.array([list(map(lambda x: int(x, 16), line)) for line in data])
+        src_data = src_data[sy : sy + ch, sx : sx + cw]
+        self._data[dy : dy + ch, dx : dx + cw] = src_data
 
     def load(self, x, y, filename, *, dirname=None):
         dirname = dirname or os.path.dirname(inspect.stack()[-1].filename)
         filename = os.path.join(dirname, filename)
 
-        pil_image = PIL.Image.open(filename).convert('RGB')
+        pil_image = PIL.Image.open(filename).convert("RGB")
         pil_image.load()
 
         sw, sh = pil_image.size
 
-        rect = self._get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height,
-                                   sw, sh)
+        rect = self._get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height, sw, sh)
         if not rect:
             return
         sx, sy, dx, dy, cw, ch = rect
@@ -61,19 +58,29 @@ class Image:
         pil_image = pil_image.crop((sx, sy, sx + cw, sy + ch))
 
         src_data = np.array(pil_image.getdata()).reshape(ch, cw)
-        self._data[dy:dy + ch, dx:dx + cw] = src_data
+        self._data[dy : dy + ch, dx : dx + cw] = src_data
 
     def copy(self, x, y, img, sx, sy, width, height):
         image = pyxel.image(img)
 
-        rect = self._get_copy_rect(sx, sy, image.width, image.height, x, y,
-                                   self.width, self.height, width, height)
+        rect = self._get_copy_rect(
+            sx,
+            sy,
+            image.width,
+            image.height,
+            x,
+            y,
+            self.width,
+            self.height,
+            width,
+            height,
+        )
         if not rect:
             return
         sx, sy, dx, dy, cw, ch = rect
 
-        src_data = image._data[sy:sy + ch, sx:sx + cw]
-        self._data[dy:dy + ch, dx:dx + cw] = src_data
+        src_data = image._data[sy : sy + ch, sx : sx + cw]
+        self._data[dy : dy + ch, dx : dx + cw] = src_data
 
     @staticmethod
     def _get_copy_rect(sx, sy, sw, sh, dx, dy, dw, dh, cw, ch):
