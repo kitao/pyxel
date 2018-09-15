@@ -1,9 +1,16 @@
 import sounddevice as sd
 
-from .constants import (AUDIO_BLOCK_SIZE, AUDIO_CHANNEL_COUNT, AUDIO_ONE_SPEED,
-                        AUDIO_ONE_VOLUME, AUDIO_SAMPLE_RATE, AUDIO_SOUND_COUNT,
-                        SOUND_EFFECT_FADEOUT, SOUND_EFFECT_SLIDE,
-                        SOUND_EFFECT_VIBRATO)
+from .constants import (
+    AUDIO_BLOCK_SIZE,
+    AUDIO_CHANNEL_COUNT,
+    AUDIO_ONE_SPEED,
+    AUDIO_ONE_VOLUME,
+    AUDIO_SAMPLE_RATE,
+    AUDIO_SOUND_COUNT,
+    SOUND_EFFECT_FADEOUT,
+    SOUND_EFFECT_SLIDE,
+    SOUND_EFFECT_VIBRATO,
+)
 from .oscillator import Oscillator
 from .sound import Sound
 
@@ -64,8 +71,7 @@ class Channel:
             sound = self._sound_list[self._sound_index]
             pos = int(self._time / self._one_note_time)
             self._note = sound.note[pos]
-            self._volume = sound.volume[pos % len(
-                sound.volume)] * AUDIO_ONE_VOLUME
+            self._volume = sound.volume[pos % len(sound.volume)] * AUDIO_ONE_VOLUME
 
             if self._note >= 0 and self._volume > 0:
                 last_pitch = self._pitch
@@ -82,8 +88,9 @@ class Channel:
                     self._effect_pitch = last_pitch or self._pitch
                 elif self._effect == SOUND_EFFECT_VIBRATO:
                     self._effect_time = self._time
-                    self._effect_pitch = self._note_to_pitch(self._note +
-                                                             0.5) - self._pitch
+                    self._effect_pitch = (
+                        self._note_to_pitch(self._note + 0.5) - self._pitch
+                    )
                 elif self._effect == SOUND_EFFECT_FADEOUT:
                     self._effect_time = self._time
                     self._effect_volume = self._volume
@@ -93,16 +100,17 @@ class Channel:
         # play note
         if self._note >= 0:
             if self._effect == SOUND_EFFECT_SLIDE:
-                a = ((self._time - self._effect_time) / self._one_note_time)
+                a = (self._time - self._effect_time) / self._one_note_time
                 pitch = self._pitch * a + self._effect_pitch * (1 - a)
                 self._oscillator.set_period(AUDIO_SAMPLE_RATE // pitch)
             elif self._effect == SOUND_EFFECT_VIBRATO:
-                pitch = self._pitch + self._lfo(
-                    self._time) * self._effect_pitch
+                pitch = self._pitch + self._lfo(self._time) * self._effect_pitch
                 self._oscillator.set_period(AUDIO_SAMPLE_RATE // pitch)
             elif self._effect == SOUND_EFFECT_FADEOUT:
-                self._oscillator.set_volume(self._effect_volume * (1 - (
-                    (self._time - self._effect_time) / self._one_note_time)))
+                self._oscillator.set_volume(
+                    self._effect_volume
+                    * (1 - ((self._time - self._effect_time) / self._one_note_time))
+                )
 
         self._time += 1
 
@@ -134,8 +142,9 @@ class AudioPlayer:
                 samplerate=AUDIO_SAMPLE_RATE,
                 blocksize=AUDIO_BLOCK_SIZE,
                 channels=1,
-                dtype='int16',
-                callback=self._output_stream_callback)
+                dtype="int16",
+                callback=self._output_stream_callback,
+            )
         except sd.PortAudioError:
             self._output_stream = None
 

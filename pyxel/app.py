@@ -9,28 +9,61 @@ import glfw
 import PIL.Image
 
 from .audio_player import AudioPlayer
-from .constants import (APP_GIF_CAPTURE_COUNT, APP_GIF_CAPTURE_SCALE,
-                        APP_MEASURE_FRAME_COUNT, APP_SCREEN_MAX_SIZE,
-                        APP_SCREEN_SCALE_CUTDOWN, APP_SCREEN_SCALE_MINIMUM,
-                        DEFAULT_PALETTE, GLFW_VERSION, ICON_DATA, KEY_0, KEY_1,
-                        KEY_2, KEY_3, KEY_ALT, KEY_CONTROL, KEY_LEFT_ALT,
-                        KEY_LEFT_BUTTON, KEY_LEFT_CONTROL, KEY_LEFT_SHIFT,
-                        KEY_LEFT_SUPER, KEY_MIDDLE_BUTTON, KEY_RIGHT_ALT,
-                        KEY_RIGHT_BUTTON, KEY_RIGHT_CONTROL, KEY_RIGHT_SHIFT,
-                        KEY_RIGHT_SUPER, KEY_SHIFT, KEY_SUPER)
+from .constants import (
+    APP_GIF_CAPTURE_COUNT,
+    APP_GIF_CAPTURE_SCALE,
+    APP_MEASURE_FRAME_COUNT,
+    APP_SCREEN_MAX_SIZE,
+    APP_SCREEN_SCALE_CUTDOWN,
+    APP_SCREEN_SCALE_MINIMUM,
+    DEFAULT_PALETTE,
+    GLFW_VERSION,
+    ICON_DATA,
+    KEY_0,
+    KEY_1,
+    KEY_2,
+    KEY_3,
+    KEY_ALT,
+    KEY_CONTROL,
+    KEY_LEFT_ALT,
+    KEY_LEFT_BUTTON,
+    KEY_LEFT_CONTROL,
+    KEY_LEFT_SHIFT,
+    KEY_LEFT_SUPER,
+    KEY_MIDDLE_BUTTON,
+    KEY_RIGHT_ALT,
+    KEY_RIGHT_BUTTON,
+    KEY_RIGHT_CONTROL,
+    KEY_RIGHT_SHIFT,
+    KEY_RIGHT_SUPER,
+    KEY_SHIFT,
+    KEY_SUPER,
+)
 from .renderer import Renderer
 
 
 class App:
-    def __init__(self, module, width, height, caption, scale, palette, fps,
-                 border_width, border_color):
-        if glfw.get_version() < tuple(map(int, GLFW_VERSION.split('.'))):
-            raise RuntimeError(
-                'glfw version is lower than {}'.format(GLFW_VERSION))
+    def __init__(
+        self,
+        module,
+        width,
+        height,
+        caption,
+        scale,
+        palette,
+        fps,
+        border_width,
+        border_color,
+    ):
+        if glfw.get_version() < tuple(map(int, GLFW_VERSION.split("."))):
+            raise RuntimeError("glfw version is lower than {}".format(GLFW_VERSION))
 
         if width > APP_SCREEN_MAX_SIZE or height > APP_SCREEN_MAX_SIZE:
-            raise ValueError('screen size is larger than {}x{}'.format(
-                APP_SCREEN_MAX_SIZE, APP_SCREEN_MAX_SIZE))
+            raise ValueError(
+                "screen size is larger than {}x{}".format(
+                    APP_SCREEN_MAX_SIZE, APP_SCREEN_MAX_SIZE
+                )
+            )
 
         self._module = module
         self._palette = palette[:]
@@ -73,33 +106,42 @@ class App:
 
         if scale == 0:
             scale = max(
-                min((display_width // width) - APP_SCREEN_SCALE_CUTDOWN,
-                    (display_height // height) - APP_SCREEN_SCALE_CUTDOWN),
-                APP_SCREEN_SCALE_MINIMUM)
+                min(
+                    (display_width // width) - APP_SCREEN_SCALE_CUTDOWN,
+                    (display_height // height) - APP_SCREEN_SCALE_CUTDOWN,
+                ),
+                APP_SCREEN_SCALE_MINIMUM,
+            )
 
         window_width = width * scale + border_width
         window_height = height * scale + border_width
-        self._window = glfw.create_window(window_width, window_height, caption,
-                                          None, None)
+        self._window = glfw.create_window(
+            window_width, window_height, caption, None, None
+        )
 
         if not self._window:
             glfw.terminate()
             exit()
 
-        glfw.set_window_pos(self._window, (display_width - window_width) // 2,
-                            (display_height - window_height) // 2)
+        glfw.set_window_pos(
+            self._window,
+            (display_width - window_width) // 2,
+            (display_height - window_height) // 2,
+        )
 
         glfw.make_context_current(self._window)
-        glfw.set_window_size_limits(self._window, width, height,
-                                    glfw.DONT_CARE, glfw.DONT_CARE)
-        self._hidpi_scale = (glfw.get_framebuffer_size(self._window)[0] /
-                             glfw.get_window_size(self._window)[0])
+        glfw.set_window_size_limits(
+            self._window, width, height, glfw.DONT_CARE, glfw.DONT_CARE
+        )
+        self._hidpi_scale = (
+            glfw.get_framebuffer_size(self._window)[0]
+            / glfw.get_window_size(self._window)[0]
+        )
         self._update_viewport()
 
         glfw.set_key_callback(self._window, self._key_callback)
         glfw.set_cursor_pos_callback(self._window, self._cursor_pos_callback)
-        glfw.set_mouse_button_callback(self._window,
-                                       self._mouse_button_callback)
+        glfw.set_mouse_button_callback(self._window, self._mouse_button_callback)
 
         glfw.set_window_icon(self._window, 1, [self._get_icon_image()])
 
@@ -138,10 +180,14 @@ class App:
     def btnp(self, key, hold=0, period=0):
         press_frame = self._key_state.get(key, 0)
         hold_frame = self._module.frame_count - press_frame - hold
-        return (press_frame == self._module.frame_count
-                or press_frame == -self._module.frame_count - 1
-                or press_frame > 0 and period > 0 and hold_frame >= 0
-                and hold_frame % period == 0)
+        return (
+            press_frame == self._module.frame_count
+            or press_frame == -self._module.frame_count - 1
+            or press_frame > 0
+            and period > 0
+            and hold_frame >= 0
+            and hold_frame % period == 0
+        )
 
     def btnr(self, key):
         return self._key_state.get(key, 0) == -self._module.frame_count
@@ -175,14 +221,14 @@ class App:
         glfw.set_window_should_close(self._window, True)
 
     def palettize_pil_image(self, pil_image):
-        im = pil_image.im.convert('P', 0, self._pil_palette.im)
+        im = pil_image.im.convert("P", 0, self._pil_palette.im)
         return pil_image._new(im)
 
     @staticmethod
     def _get_icon_image():
         width = len(ICON_DATA[0])
         height = len(ICON_DATA)
-        color_list = list(map(lambda x: int(x, 16), ''.join(ICON_DATA)))
+        color_list = list(map(lambda x: int(x, 16), "".join(ICON_DATA)))
 
         image = []
         for color in color_list:
@@ -191,8 +237,9 @@ class App:
             image.append((rgb >> 8) & 0xff)
             image.append(rgb & 0xff)
 
-        icon = PIL.Image.frombuffer('RGB', (width, height), bytes(image),
-                                    'raw', 'RGB', 0, 1).convert('RGBA')
+        icon = PIL.Image.frombuffer(
+            "RGB", (width, height), bytes(image), "raw", "RGB", 0, 1
+        ).convert("RGBA")
 
         pixels = icon.load()
         for x in range(width):
@@ -262,8 +309,7 @@ class App:
         self._viewport_height = self._module.height * scale
         self._viewport_left = (win_width - self._viewport_width) // 2
         self._viewport_top = (win_height - self._viewport_height) // 2
-        self._viewport_bottom = (
-            win_height - self._viewport_height - self._viewport_top)
+        self._viewport_bottom = win_height - self._viewport_height - self._viewport_top
 
     def _update_frame(self):
         # wait for update time
@@ -298,11 +344,14 @@ class App:
 
         hs = self._hidpi_scale
         image = self._renderer.render(
-            self._viewport_left * hs, self._viewport_bottom * hs,
-            self._viewport_width * hs, self._viewport_height * hs,
-            self._palette, self._border_color)
-        self._capture_images[self._capture_index %
-                             APP_GIF_CAPTURE_COUNT] = image
+            self._viewport_left * hs,
+            self._viewport_bottom * hs,
+            self._viewport_width * hs,
+            self._viewport_height * hs,
+            self._palette,
+            self._border_color,
+        )
+        self._capture_images[self._capture_index % APP_GIF_CAPTURE_COUNT] = image
         self._capture_index += 1
 
         self._measure_draw_time(draw_start_time)
@@ -326,8 +375,7 @@ class App:
                 self._toggle_fullscreen()
 
             if self.btnp(KEY_0):
-                self._perf_monitor_is_enabled = (
-                    not self._perf_monitor_is_enabled)
+                self._perf_monitor_is_enabled = not self._perf_monitor_is_enabled
 
             if self.btnp(KEY_1):
                 self._save_capture_image()
@@ -344,11 +392,12 @@ class App:
     def _save_capture_image(self):
         index = (self._capture_index - 1) % APP_GIF_CAPTURE_COUNT
         image = self._get_capture_image(index)
-        image.save(self._get_capture_filename() + '.png')
+        image.save(self._get_capture_filename() + ".png")
 
     def _save_capture_animation(self):
-        image_count = min(self._capture_index - self._capture_start,
-                          APP_GIF_CAPTURE_COUNT)
+        image_count = min(
+            self._capture_index - self._capture_start, APP_GIF_CAPTURE_COUNT
+        )
 
         if image_count <= 0:
             return
@@ -361,22 +410,33 @@ class App:
             images.append(self._get_capture_image(index))
 
         images[0].save(
-            self._get_capture_filename() + '.gif',
+            self._get_capture_filename() + ".gif",
             save_all=True,
             append_images=images[1:],
             duration=self._one_frame_time * 1000,
             loop=0,
-            optimize=True)
+            optimize=True,
+        )
 
     def _get_capture_image(self, index):
         image = PIL.Image.frombuffer(
-            'RGB', (self._module.width, self._module.height),
-            self._capture_images[index], 'raw', 'RGB', 0, 1)
+            "RGB",
+            (self._module.width, self._module.height),
+            self._capture_images[index],
+            "raw",
+            "RGB",
+            0,
+            1,
+        )
 
         image = self.palettize_pil_image(image)
 
-        image = image.resize((self._module.width * APP_GIF_CAPTURE_SCALE,
-                              self._module.height * APP_GIF_CAPTURE_SCALE))
+        image = image.resize(
+            (
+                self._module.width * APP_GIF_CAPTURE_SCALE,
+                self._module.height * APP_GIF_CAPTURE_SCALE,
+            )
+        )
 
         return image
 
@@ -392,7 +452,7 @@ class App:
 
         rgb_palette += [0] * 240 * 3
 
-        pil_palette = PIL.Image.new('P', (1, 1), 0)
+        pil_palette = PIL.Image.new("P", (1, 1), 0)
         pil_palette.putpalette(rgb_palette)
 
         return pil_palette
@@ -401,28 +461,27 @@ class App:
     def _get_capture_filename():
         plat = platform.system()
 
-        if plat == 'Windows':
-            path = os.path.join(
-                os.path.join(os.environ['USERPROFILE']), 'Desktop')
-        elif plat == 'Darwin':
-            path = os.path.join(
-                os.path.join(os.path.expanduser('~')), 'Desktop')
+        if plat == "Windows":
+            path = os.path.join(os.path.join(os.environ["USERPROFILE"]), "Desktop")
+        elif plat == "Darwin":
+            path = os.path.join(os.path.join(os.path.expanduser("~")), "Desktop")
         else:
-            path = os.path.join(
-                os.path.join(os.path.expanduser('~')), 'Desktop')
+            path = os.path.join(os.path.join(os.path.expanduser("~")), "Desktop")
             if not os.path.exists(path):
                 try:
-                    path = subprocess.check_output(
-                        ["xdg-user-dir DESKTOP"],
-                        shell=True).decode('utf-8').split('\n')[0]
+                    path = (
+                        subprocess.check_output(["xdg-user-dir DESKTOP"], shell=True)
+                        .decode("utf-8")
+                        .split("\n")[0]
+                    )
                     if not os.path.exists(path):
                         raise OSError
                 except (subprocess.CalledProcessError, OSError):
-                    path = os.path.expanduser('~')
+                    path = os.path.expanduser("~")
 
         return os.path.join(
-            path,
-            datetime.datetime.now().strftime('pyxel-%y%m%d-%H%M%S'))
+            path, datetime.datetime.now().strftime("pyxel-%y%m%d-%H%M%S")
+        )
 
     def _measure_fps(self):
         cur_time = time.time()
@@ -430,7 +489,8 @@ class App:
 
         if self._perf_fps_count == APP_MEASURE_FRAME_COUNT:
             self._perf_fps = self._perf_fps_count / (
-                cur_time - self._perf_fps_start_time)
+                cur_time - self._perf_fps_start_time
+            )
             self._perf_fps_count = 0
             self._perf_fps_start_time = cur_time
 
@@ -440,7 +500,8 @@ class App:
 
         if self._perf_update_count == APP_MEASURE_FRAME_COUNT:
             self._perf_update_time = (
-                self._perf_update_total_time / self._perf_update_count) * 1000
+                self._perf_update_total_time / self._perf_update_count
+            ) * 1000
             self._perf_update_total_time = 0
             self._perf_update_count = 0
 
@@ -450,7 +511,8 @@ class App:
 
         if self._perf_draw_count == APP_MEASURE_FRAME_COUNT:
             self._perf_draw_time = (
-                self._perf_draw_total_time / self._perf_draw_count) * 1000
+                self._perf_draw_total_time / self._perf_draw_count
+            ) * 1000
             self._perf_draw_total_time = 0
             self._perf_draw_count = 0
 
@@ -458,9 +520,9 @@ class App:
         if not self._perf_monitor_is_enabled:
             return
 
-        fps = '{:.2f}'.format(self._perf_fps)
-        update = '{:.2f}'.format(self._perf_update_time)
-        draw = '{:.2f}'.format(self._perf_draw_time)
+        fps = "{:.2f}".format(self._perf_fps)
+        update = "{:.2f}".format(self._perf_update_time)
+        draw = "{:.2f}".format(self._perf_draw_time)
 
         text = self._renderer.draw_command.text
         text(1, 0, fps, 1)

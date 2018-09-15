@@ -10,9 +10,9 @@ class Button(Widget):
 
         self._blink_time = 0
 
-        self.add_event_handler('press', self.on_press)
-        self.add_event_handler('update', self.on_update)
-        self.add_event_handler('draw', self.on_draw)
+        self.add_event_handler("press", self.on_press)
+        self.add_event_handler("update", self.on_update)
+        self.add_event_handler("draw", self.on_draw)
 
     def on_press(self, key, x, y):
         if key == pyxel.KEY_LEFT_BUTTON:
