@@ -1,14 +1,14 @@
 import pyxel
+from pyxel.ui import Widget
 
-from .button import Button
 from .console import Console
+from .editor_button import EditorButton
 from .editor_constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from .editor_radio_button import EditorRadioButton
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
-from .radio_button import RadioButton
 from .sound_editor import SoundEditor
 from .tilemap_editor import TileMapEditor
-from .widget import Widget
 
 
 class EditorApp:
@@ -25,16 +25,16 @@ class EditorApp:
             MusicEditor(self._root_widget),
         ]
 
-        self._screen_button = RadioButton(self._root_widget, 3, 1, 5, 1, 9)
+        self._screen_button = EditorRadioButton(self._root_widget, 3, 1, 5, 1, 9)
         self._screen_button.add_event_handler(
             "change", lambda value: self.set_screen(value)
         )
         self.set_screen(1)
 
-        self._undo_button = Button(self._root_widget, 57, 1, 7, 7)
+        self._undo_button = EditorButton(self._root_widget, 57, 1, 7, 7)
         self._undo_button.add_event_handler("press", self.on_undo_press)
 
-        self._redo_button = Button(self._root_widget, 66, 1, 7, 7)
+        self._redo_button = EditorButton(self._root_widget, 66, 1, 7, 7)
         self._redo_button.add_event_handler("press", self.on_redo_press)
 
         pyxel.run(self.update, self.draw)

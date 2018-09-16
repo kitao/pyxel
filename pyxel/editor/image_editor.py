@@ -2,11 +2,11 @@ import numpy as np
 
 import pyxel
 from pyxel.constants import RENDERER_IMAGE_COUNT
+from pyxel.ui import Widget
 
-from .radio_button import RadioButton
+from .editor_radio_button import EditorRadioButton
 from .screen import Screen
 from .scroll_bar import ScrollBar
-from .widget import Widget
 
 TOOL_SELECT = 0
 TOOL_PENCIL = 1
@@ -73,6 +73,10 @@ class EditWindow(Widget):
     def color(self):
         return self.parent.color_button.value
 
+    @color.setter
+    def color(self, value):
+        self.parent.color_button.value = value
+
     def clear_overlay(self):
         self.overlay[:, :] = -1
 
@@ -123,6 +127,41 @@ class EditWindow(Widget):
     def draw_circ_on_overlay(self, x1, y1, x2, y2, val):
         pass
 
+    def draw_with_bucket(self, x, y, val):
+        img = self.parent.image_button.value
+        dest = pyxel.image(img).data[
+            self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
+        ]
+
+        dest_val = dest[y, x]
+
+        if dest_val == val:
+            return
+
+        for i in range(x, -1, -1):
+            if dest[y, i] != dest_val:
+                break
+
+            dest[y, i] = val
+
+            if y > 0 and dest[y - 1, i] == dest_val:
+                self.draw_with_bucket(i, y - 1, val)
+
+            if y < 15 and dest[y + 1, i] == dest_val:
+                self.draw_with_bucket(i, y + 1, val)
+
+        for i in range(x + 1, 16):
+            if dest[y, i] != dest_val:
+                return
+
+            dest[y, i] = val
+
+            if y > 0 and dest[y - 1, i] == dest_val:
+                self.draw_with_bucket(i, y - 1, val)
+
+            if y < 15 and dest[y + 1, i] == dest_val:
+                self.draw_with_bucket(i, y + 1, val)
+
     def on_change_x(self, value):
         self.edit_x = value * 8
 
@@ -146,9 +185,22 @@ class EditWindow(Widget):
             self._select_x1 = self._select_x2 = x
             self._select_y1 = self._select_y2 = y
         elif self.tool >= TOOL_PENCIL and self.tool <= TOOL_CIRC:
-            self.overlay[y, x] = self.parent.color_button.value
+            self.overlay[y, x] = self.color
         elif self.tool == TOOL_BUCKET:
-            pass
+            img = self.parent.image_button.value
+            dest = pyxel.image(img).data[
+                self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
+            ]
+
+            data = {}
+            data["img"] = img
+            data["pos"] = (self.edit_x, self.edit_y)
+            data["before"] = dest.copy()
+
+            self.draw_with_bucket(x, y, self.color)
+
+            data["after"] = dest.copy()
+            self.parent.add_edit_history(data)
 
         self._last_x = x
         self._last_y = y
@@ -159,29 +211,30 @@ class EditWindow(Widget):
 
         self._is_dragged = False
 
-        img = self.parent.image_button.value
-        dest = pyxel.image(img).data[
-            self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
-        ]
+        if self.tool >= TOOL_PENCIL and self.tool <= TOOL_CIRC:
+            img = self.parent.image_button.value
+            dest = pyxel.image(img).data[
+                self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
+            ]
 
-        data = {}
-        data["img"] = img
-        data["pos"] = (self.edit_x, self.edit_y)
-        data["before"] = dest.copy()
+            data = {}
+            data["img"] = img
+            data["pos"] = (self.edit_x, self.edit_y)
+            data["before"] = dest.copy()
 
-        index = self.overlay != -1
-        dest[index] = self.overlay[index]
-        self.clear_overlay()
+            index = self.overlay != -1
+            dest[index] = self.overlay[index]
+            self.clear_overlay()
 
-        data["after"] = dest.copy()
-        self.parent.add_edit_history(data)
+            data["after"] = dest.copy()
+            self.parent.add_edit_history(data)
 
     def on_click(self, key, x, y):
         if key == pyxel.KEY_RIGHT_BUTTON:
             img = self.parent.image_button.value
             x = self.edit_x + x // 8
             y = self.edit_y + y // 8
-            self.parent.color_button.value = pyxel.image(img).data[y, x]
+            self.color = pyxel.image(img).data[y, x]
 
     def on_drag(self, key, x, y, dx, dy):
         if key == pyxel.KEY_LEFT_BUTTON:
@@ -252,11 +305,7 @@ class EditWindow(Widget):
             if self.tool == TOOL_PENCIL:
                 self.clear_overlay()
                 self.draw_line_on_overlay(
-                    self._press_x,
-                    self._press_y,
-                    self._last_x,
-                    self._last_y,
-                    self.parent.color_button.value,
+                    self._press_x, self._press_y, self._last_x, self._last_y, self.color
                 )
 
         if (
@@ -400,22 +449,15 @@ class ImageEditor(Screen):
 
         self._is_tilemap_mode = is_tilemap_mode
 
-        def on_draw():
-            widget = self.color_button
-            x = widget.x + (widget.value % 8) * 8
-            y = widget.y + (widget.value // 8) * 8
-            col = 7 if widget.value < 6 else 0
-            pyxel.text(x + 2, y + 1, "+", col)
-
-        self.color_button = RadioButton(self, 12, 157, 8, 2, 8)
-        self.color_button.remove_event_handler("draw", self.color_button.on_draw)
-        self.color_button.add_event_handler("draw", on_draw)
+        self.color_button = EditorRadioButton(
+            self, 12, 157, 8, 2, 1, is_color_button=True
+        )
         self.color_button.value = 7
 
-        self.tool_button = RadioButton(self, 81, 161, 7, 1, 9)
+        self.tool_button = EditorRadioButton(self, 81, 161, 7, 1, 2)
         self.tool_button.value = TOOL_PENCIL
 
-        self.image_button = RadioButton(self, 191, 161, 3, 1, 10)
+        self.image_button = EditorRadioButton(self, 191, 161, 3, 1, 3)
         self.edit_window = EditWindow(self)
         self.preview_window = PreviewWindow(self)
 
