@@ -1,14 +1,12 @@
 import pyxel
-
-from .editor_constants import BUTTON_BLINK_TIME
-from .widget import Widget
+from pyxel.ui import Button
 
 BUTTON_SIZE = 7
 
 
-class ScrollBar(Widget):
+class ScrollBar(Button):
     def __init__(self, parent, x, y, width, height, numerator, denominator):
-        super().__init__(parent, x, y, width, height, is_repeat=True)
+        super().__init__(parent, x, y, width, height, is_key_repeat=True)
 
         self._numerator = numerator
         self._denominator = denominator
@@ -38,11 +36,11 @@ class ScrollBar(Widget):
 
         if self._press_offset < 0:
             self.value = max(self.value - 1, 0)
-            self._dec_blink_time = BUTTON_BLINK_TIME + 1
+            # self._dec_blink_time = BUTTON_BLINK_TIME + 1
             self.call_event_handler("change", self.value)
         elif self._press_offset >= self._slider_size:
             self.value = min(self.value + 1, self._denominator - self._numerator)
-            self._inc_blink_time = BUTTON_BLINK_TIME + 1
+            # self._inc_blink_time = BUTTON_BLINK_TIME + 1
             self.call_event_handler("change", self.value)
         else:
             self._is_dragged = True
