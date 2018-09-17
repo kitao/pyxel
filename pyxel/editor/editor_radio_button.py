@@ -25,8 +25,8 @@ class EditorRadioButton(RadioButton):
             col = 7 if self.value < 6 else 0
             pyxel.text(x + 2, y + 1, "+", col)
         else:
-            x = self.x + (self._button_w + self._margin_x) * (self.value % self._col)
-            y = self.y + (self._button_h + self._margin_y) * (self.value // self._col)
+            x = self.x + (self.button_w + self.margin_x) * (self.value % self.col)
+            y = self.y + (self.button_h + self.margin_y) * (self.value // self.col)
 
             pyxel.pal(13, 7)
             pyxel.blt(x, y, 3, x, y + 16, BUTTON_SIZE, BUTTON_SIZE)

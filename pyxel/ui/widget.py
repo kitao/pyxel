@@ -151,12 +151,19 @@ class Widget:
 
         if mx != last_mx or my != last_my:
             self.call_event_handler(
-                "mouse_drag", capture_info.key, mx, my, mx - last_mx, my - last_my
+                "mouse_drag",
+                capture_info.key,
+                mx - self.x,
+                my - self.y,
+                mx - last_mx,
+                my - last_my,
             )
             capture_info.last_pos = (mx, my)
 
         if pyxel.btnr(capture_info.key):
-            self.call_event_handler("mouse_up", capture_info.key, mx, my)
+            self.call_event_handler(
+                "mouse_up", capture_info.key, mx - self.x, my - self.y
+            )
 
             press_x, press_y = capture_info.press_pos
             if (
@@ -164,9 +171,11 @@ class Widget:
                 and abs(pyxel.mouse_x - press_x) <= WIDGET_CLICK_DIST
                 and abs(pyxel.mouse_y - press_y) <= WIDGET_CLICK_DIST
             ):
-                self.call_event_handler("mouse_click", capture_info.key, mx, my)
+                self.call_event_handler(
+                    "mouse_click", capture_info.key, mx - self.x, my - self.y
+                )
 
-            widget._release_mouse()
+            self._release_mouse()
 
     def _process_input(self):
         if not self._is_visible:
@@ -199,9 +208,9 @@ class Widget:
 
             if key != None:
                 self._capture_mouse(key)
-                self.call_event_handler("mouse_down", key, mx, my)
+                self.call_event_handler("mouse_down", key, mx - self.x, my - self.y)
             else:
-                self.call_event_handler("mouse_hover", mx, my)
+                self.call_event_handler("mouse_hover", mx - self.x, my - self.y)
 
             return True
 
@@ -213,8 +222,8 @@ class Widget:
 
         self.call_event_handler("update")
 
-        for child in root.children:
-            child.update()
+        for child in self.children:
+            child._update()
 
     @staticmethod
     def draw(root):
