@@ -25,17 +25,17 @@ class EditorApp:
             MusicEditor(self._root_widget),
         ]
 
-        self._screen_button = EditorRadioButton(self._root_widget, 3, 1, 5, 1, 9)
+        self._screen_button = EditorRadioButton(self._root_widget, 3, 1, 5, 1, 2)
         self._screen_button.add_event_handler(
             "change", lambda value: self.set_screen(value)
         )
         self.set_screen(1)
 
         self._undo_button = EditorButton(self._root_widget, 57, 1, 7, 7)
-        self._undo_button.add_event_handler("press", self.on_undo_press)
+        self._undo_button.add_event_handler("mouse_down", self.on_undo_press)
 
         self._redo_button = EditorButton(self._root_widget, 66, 1, 7, 7)
-        self._redo_button.add_event_handler("press", self.on_redo_press)
+        self._redo_button.add_event_handler("mouse_down", self.on_redo_press)
 
         pyxel.run(self.update, self.draw)
 
@@ -84,7 +84,6 @@ class EditorApp:
         self._undo_button.is_enabled = screen.can_undo
         self._redo_button.is_enabled = screen.can_redo
 
-        Widget.process_input(self._root_widget)
         Widget.update(self._root_widget)
 
     def draw(self):

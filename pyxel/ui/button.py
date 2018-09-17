@@ -10,13 +10,12 @@ class Button(Widget):
         __on_press(key, x, y)
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, parent, x, y, width, height, **kwargs):
+        super().__init__(parent, x, y, width, height, **kwargs)
 
         self._is_down = False
         self._is_blinking = False
         self._blink_time = 0
-        self.is_down = False
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_drag", self.__on_mouse_drag)
@@ -33,19 +32,19 @@ class Button(Widget):
 
         self.call_event_handler("Press", key, x, y)
 
-    def __on_mouse_down(key, x, y):
+    def __on_mouse_down(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
         self._is_down = True
 
-    def __on_mouse_drag(key, x, y, dx, dy):
+    def __on_mouse_drag(self, key, x, y, dx, dy):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
         self._is_down = self.is_hit(x, y)
 
-    def __on_mouse_up(key, x, y):
+    def __on_mouse_up(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
