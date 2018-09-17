@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.8.0
+- Changed the formatter from yapf to black
+- Added the UI module
+
 ## 0.7.12
 - Added new key definitions which integrates keys on both sides
 - Changed the description of the project
