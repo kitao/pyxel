@@ -10,17 +10,18 @@ from .ui_constants import (
 
 class Widget:
     """
-    on_show()
-    on_hide()
-    on_enabled()
-    on_disables()
-    on_mouse_down(key, x, y)
-    on_mouse_up(key, x, y)
-    on_mouse_click(key, x, y)
-    on_mouse_hover(x, y)
-    on_mouse_drag(key, x, y, dx, dy)
-    on_update()
-    on_draw()
+    Events:
+        __on_show()
+        __on_hide()
+        __on_enabled()
+        __on_disables()
+        __on_mouse_down(key, x, y)
+        __on_mouse_up(key, x, y)
+        __on_mouse_drag(key, x, y, dx, dy)
+        __on_mouse_hover(x, y)
+        __on_mouse_click(key, x, y)
+        __on_update()
+        __on_draw()
     """
 
     class CaptureInfo:
@@ -109,97 +110,16 @@ class Widget:
 
         return self._event_handler[event]
 
-    @staticmethod
-    def process_input(root):
-        capture_info = Widget._capture_info
-        capture_widget = capture_info.widget
+    def is_hit(self, x, y):
+        x = int(x + 0.5)
+        y = int(y + 0.5)
 
-        if capture_widget:
-            cur_mx = pyxel.mouse_x
-            cur_my = pyxel.mouse_y
-            last_mx, last_my = capture_info.last_pos
-
-            if cur_mx != last_mx or cur_my != last_my:
-                capture_widget.call_event_handler(
-                    "drag",
-                    capture_info.key,
-                    cur_mx - capture_widget.x,
-                    cur_my - capture_widget.y,
-                    cur_mx - last_mx,
-                    cur_my - last_my,
-                )
-                capture_info.last_pos = (cur_mx, cur_my)
-
-            if pyxel.btnr(capture_info.key):
-                capture_widget.call_event_handler(
-                    "release",
-                    capture_info.key,
-                    cur_mx - capture_widget.x,
-                    cur_my - capture_widget.y,
-                )
-
-                press_x, press_y = capture_info.press_pos
-                if (
-                    pyxel.frame_count <= capture_info.time + WIDGET_CLICK_TIME
-                    and abs(pyxel.mouse_x - press_x) <= WIDGET_CLICK_DIST
-                    and abs(pyxel.mouse_y - press_y) <= WIDGET_CLICK_DIST
-                ):
-                    capture_widget.call_event_handler(
-                        "click",
-                        capture_info.key,
-                        cur_mx - capture_widget.x,
-                        cur_my - capture_widget.y,
-                    )
-
-                root._release_mouse()
-        else:
-            root._process_input()
-
-    def _process_input(self):
-        if not self._is_visible:
-            return False
-
-        if self._is_enabled:
-            for widget in reversed(self.children):
-                if widget._process_input():
-                    return True
-        else:
-            return False
-
-        mx = pyxel.mouse_x
-        my = pyxel.mouse_y
-
-        if (
-            mx >= self.x
-            and mx < self.x + self.width
-            and my >= self.y
-            and my < self.y + self.height
-        ):
-            key = None
-
-            if self.is_key_repeat:
-                hold_time = WIDGET_HOLD_TIME
-                repeat_time = WIDGET_REPEAT_TIME
-            else:
-                hold_time = 0
-                repeat_time = 0
-
-            if pyxel.btnp(pyxel.KEY_LEFT_BUTTON, hold_time, repeat_time):
-                key = pyxel.KEY_LEFT_BUTTON
-            elif pyxel.btnp(pyxel.KEY_RIGHT_BUTTON, hold_time, repeat_time):
-                key = pyxel.KEY_RIGHT_BUTTON
-
-            if key != None:
-                self._capture_mouse(key)
-                x = mx - self.x
-                y = my - self.y
-                self.call_event_handler("press", key, x, y)
-            else:
-                self.call_event_handler("hover", mx - self.x, my - self.y)
-
-            return True
-
-        return False
+        return (
+            x >= self.x
+            and x < self.x + self.width
+            and y >= self.y
+            and y < self.y + self.height
+        )
 
     def _capture_mouse(self, key):
         Widget._capture_info.widget = self
@@ -217,13 +137,87 @@ class Widget:
 
     @staticmethod
     def update(root):
-        if not root._is_visible:
+        capture_widget = Widget._capture_info.widget
+
+        if capture_widget:
+            capture_widget._process_capture()
+        else:
+            root._process_input()
+
+        root._update()
+
+    def _process_capture(self):
+        capture_info = Widget._capture_info
+        mx = pyxel.mouse_x
+        my = pyxel.mouse_y
+        last_mx, last_my = capture_info.last_pos
+
+        if mx != last_mx or my != last_my:
+            self.call_event_handler(
+                "mouse_drag", capture_info.key, mx, my, mx - last_mx, my - last_my
+            )
+            capture_info.last_pos = (mx, my)
+
+        if pyxel.btnr(capture_info.key):
+            self.call_event_handler("mouse_up", capture_info.key, mx, my)
+
+            press_x, press_y = capture_info.press_pos
+            if (
+                pyxel.frame_count <= capture_info.time + WIDGET_CLICK_TIME
+                and abs(pyxel.mouse_x - press_x) <= WIDGET_CLICK_DIST
+                and abs(pyxel.mouse_y - press_y) <= WIDGET_CLICK_DIST
+            ):
+                self.call_event_handler("mouse_click", capture_info.key, mx, my)
+
+            widget._release_mouse()
+
+    def _process_input(self):
+        if not self._is_visible:
+            return False
+
+        if self._is_enabled:
+            for widget in reversed(self.children):
+                if widget._process_input():
+                    return True
+        else:
+            return False
+
+        mx = pyxel.mouse_x
+        my = pyxel.mouse_y
+
+        if self.is_hit(mx, my):
+            if self.is_key_repeat:
+                hold_time = WIDGET_HOLD_TIME
+                repeat_time = WIDGET_REPEAT_TIME
+            else:
+                hold_time = 0
+                repeat_time = 0
+
+            key = None
+
+            if pyxel.btnp(pyxel.KEY_LEFT_BUTTON, hold_time, repeat_time):
+                key = pyxel.KEY_LEFT_BUTTON
+            elif pyxel.btnp(pyxel.KEY_RIGHT_BUTTON, hold_time, repeat_time):
+                key = pyxel.KEY_RIGHT_BUTTON
+
+            if key != None:
+                self._capture_mouse(key)
+                self.call_event_handler("mouse_down", key, mx, my)
+            else:
+                self.call_event_handler("mouse_hover", mx, my)
+
+            return True
+
+        return False
+
+    def _update(self):
+        if not self._is_visible:
             return
 
-        root.call_event_handler("update")
+        self.call_event_handler("update")
 
         for child in root.children:
-            Widget.update(child)
+            child.update()
 
     @staticmethod
     def draw(root):
