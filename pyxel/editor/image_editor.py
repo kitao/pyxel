@@ -5,8 +5,8 @@ from pyxel.constants import RENDERER_IMAGE_COUNT
 from pyxel.ui import Widget
 
 from .editor_radio_button import EditorRadioButton
+from .editor_scroll_bar import EditorScrollBar
 from .screen import Screen
-from .scroll_bar import ScrollBar
 
 TOOL_SELECT = 0
 TOOL_PENCIL = 1
@@ -42,16 +42,16 @@ class EditWindow(Widget):
         self._is_dragged = False
         self._is_guide_mode = False
 
-        self._h_scroll_bar = ScrollBar(self, 11, 145, 130, 7, 2, 32)
+        self._h_scroll_bar = EditorScrollBar(self, 11, 145, 130, 7, 2, 32)
         self._h_scroll_bar.add_event_handler("change", self.on_change_x)
 
-        self._v_scroll_bar = ScrollBar(self, 140, 16, 7, 130, 2, 32)
+        self._v_scroll_bar = EditorScrollBar(self, 140, 16, 7, 130, 2, 32)
         self._v_scroll_bar.add_event_handler("change", self.on_change_y)
 
-        self.add_event_handler("press", self.on_press)
-        self.add_event_handler("release", self.on_release)
-        self.add_event_handler("click", self.on_click)
-        self.add_event_handler("drag", self.on_drag)
+        self.add_event_handler("mouse_down", self.__on_mouse_down)
+        self.add_event_handler("mouse_up", self.__on_release)
+        self.add_event_handler("mouse_click", self.__on_mouse_click)
+        self.add_event_handler("mouse_drag", self.on_drag)
         self.add_event_handler("update", self.on_update)
         self.add_event_handler("draw", self.on_draw)
 
@@ -168,7 +168,7 @@ class EditWindow(Widget):
     def on_change_y(self, value):
         self.edit_y = value * 8
 
-    def on_press(self, key, x, y):
+    def __on_mouse_down(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
@@ -205,7 +205,7 @@ class EditWindow(Widget):
         self._last_x = x
         self._last_y = y
 
-    def on_release(self, key, x, y):
+    def __on_release(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
@@ -229,7 +229,7 @@ class EditWindow(Widget):
             data["after"] = dest.copy()
             self.parent.add_edit_history(data)
 
-    def on_click(self, key, x, y):
+    def __on_mouse_click(self, key, x, y):
         if key == pyxel.KEY_RIGHT_BUTTON:
             img = self.parent.image_button.value
             x = self.edit_x + x // 8
@@ -382,23 +382,23 @@ class PreviewWindow(Widget):
         self._drag_offset_x = 0
         self._drag_offset_y = 0
 
-        self._h_scroll_bar = ScrollBar(self, 157, 145, 66, 7, 8, 32)
-        self._h_scroll_bar.add_event_handler("change", self.on_change_x)
+        self._h_scroll_bar = EditorScrollBar(self, 157, 145, 66, 7, 8, 32)
+        self._h_scroll_bar.add_event_handler("change", self.__on_change_x)
 
-        self._v_scroll_bar = ScrollBar(self, 222, 16, 7, 130, 16, 32)
-        self._v_scroll_bar.add_event_handler("change", self.on_change_y)
+        self._v_scroll_bar = EditorScrollBar(self, 222, 16, 7, 130, 16, 32)
+        self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
 
-        self.add_event_handler("press", self.on_press)
-        self.add_event_handler("drag", self.on_drag)
-        self.add_event_handler("draw", self.on_draw)
+        self.add_event_handler("mouse_down", self.__on_mouse_down)
+        self.add_event_handler("mouse_drag", self.__on_mouse_drag)
+        self.add_event_handler("draw", self.__on_draw)
 
-    def on_change_x(self, value):
+    def __on_change_x(self, value):
         self.preview_x = value * 8
 
-    def on_change_y(self, value):
+    def __on_change_y(self, value):
         self.preview_y = value * 8
 
-    def on_press(self, key, x, y):
+    def __on_mouse_down(self, key, x, y):
         if key == pyxel.KEY_LEFT_BUTTON:
             self.parent.edit_window.edit_x = self.preview_x + ((x - 4) // 8) * 8
             self.parent.edit_window.edit_y = self.preview_y + ((y - 4) // 8) * 8
@@ -414,7 +414,7 @@ class PreviewWindow(Widget):
             self._drag_offset_x = 0
             self._drag_offset_y = 0
 
-    def on_drag(self, key, x, y, dx, dy):
+    def __on_mouse_drag(self, key, x, y, dx, dy):
         if key == pyxel.KEY_RIGHT_BUTTON:
             self._drag_offset_x -= dx * 2
             self._drag_offset_y -= dy * 2
@@ -432,7 +432,7 @@ class PreviewWindow(Widget):
             self.preview_x = min(max(self.preview_x, 0), 192)
             self.preview_y = min(max(self.preview_y, 0), 128)
 
-    def on_draw(self):
+    def __on_draw(self):
         img = self.parent.image_button.value
         pyxel.blt(self.x, self.y, img, self.preview_x, self.preview_y, 64, 128)
 
