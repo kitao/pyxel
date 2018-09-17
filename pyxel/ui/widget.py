@@ -111,9 +111,6 @@ class Widget:
         return self._event_handler[event]
 
     def is_hit(self, x, y):
-        x = int(x + 0.5)
-        y = int(y + 0.5)
-
         return (
             x >= self.x
             and x < self.x + self.width
