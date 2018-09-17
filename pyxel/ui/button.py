@@ -34,12 +34,21 @@ class Button(Widget):
         self.call_event_handler("Press", key, x, y)
 
     def __on_mouse_down(key, x, y):
+        if key != pyxel.KEY_LEFT_BUTTON:
+            return
+
         self._is_down = True
 
     def __on_mouse_drag(key, x, y, dx, dy):
+        if key != pyxel.KEY_LEFT_BUTTON:
+            return
+
         self._is_down = self.is_hit(x, y)
 
     def __on_mouse_up(key, x, y):
+        if key != pyxel.KEY_LEFT_BUTTON:
+            return
+
         self._is_down = False
 
         if self.is_hit(x, y):

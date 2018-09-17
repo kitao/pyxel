@@ -1,10 +1,11 @@
 import pyxel
-from pyxel.ui import Button
+from pyxel.ui import Widget
 
 
-class RadioButton(Button):
+class RadioButton(Widget):
     """
-    on_change(value)
+    Events:
+        __on_change(value)
     """
 
     def __init__(
@@ -14,17 +15,17 @@ class RadioButton(Button):
         height = button_h * row + margin_y * (row - 1)
         super().__init__(parent, x, y, width, height, **kwargs)
 
-        self.value = 0
         self._button_w = button_w
         self._button_h = button_h
         self._margin_x = margin_x
         self._margin_y = margin_y
         self._col = col
         self._row = row
+        self.value = 0
 
-        self.add_event_handler("press", self.__on_press)
+        self.add_event_handler("mouse_down", self.__on_mouse_down)
 
-    def __on_press(self, key, x, y):
+    def __on_mouse_down(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
