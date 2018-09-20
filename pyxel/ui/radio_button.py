@@ -30,6 +30,9 @@ class RadioButton(Widget):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
+        x -= self.x
+        y -= self.y
+
         for i in range(self.row):
             for j in range(self.col):
                 bx = (self.button_w + self.margin_x) * j
