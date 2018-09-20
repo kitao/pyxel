@@ -30,9 +30,8 @@ class EditorScrollBar(ScrollBar):
             y = self.y + self.slider_pos
             pyxel.rect(x, y, x + 2, y + self.slider_size - 1, 1)
 
-        """
-        if self._inc_blink_time > 0 or self._dec_blink_time > 0:
-            if self._dec_blink_time > 0:
+        if self.inc_button.is_lighting or self.dec_button.is_lighting:
+            if self.dec_button.is_lighting > 0:
                 x = self.x + 1
                 y = self.y + 1
             elif self.is_horizontal:
@@ -47,4 +46,3 @@ class EditorScrollBar(ScrollBar):
             pyxel.pal(6, 7)
             pyxel.blt(x, y, 3, x, y + 16, w, h)
             pyxel.pal()
-        """

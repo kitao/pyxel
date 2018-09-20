@@ -32,10 +32,10 @@ class EditorApp:
         self.set_screen(1)
 
         self._undo_button = EditorButton(self._root_widget, 57, 1, 7, 7)
-        self._undo_button.add_event_handler("mouse_down", self.on_undo_press)
+        self._undo_button.add_event_handler("press", self.on_undo_press)
 
         self._redo_button = EditorButton(self._root_widget, 66, 1, 7, 7)
-        self._redo_button.add_event_handler("mouse_down", self.on_redo_press)
+        self._redo_button.add_event_handler("press", self.on_redo_press)
 
         pyxel.run(self.update, self.draw)
 
@@ -45,13 +45,11 @@ class EditorApp:
         for i, widget in enumerate(self._screen_list):
             widget.is_visible = i == screen
 
-    def on_undo_press(self, key, x, y):
-        if key == pyxel.KEY_LEFT_BUTTON:
-            self._screen_list[self._screen_button.value].undo()
+    def on_undo_press(self):
+        self._screen_list[self._screen_button.value].undo()
 
-    def on_redo_press(self, key, x, y):
-        if key == pyxel.KEY_LEFT_BUTTON:
-            self._screen_list[self._screen_button.value].redo()
+    def on_redo_press(self):
+        self._screen_list[self._screen_button.value].redo()
 
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
@@ -66,23 +64,15 @@ class EditorApp:
             elif pyxel.btnp(pyxel.KEY_RIGHT):
                 self.set_screen((screen + 1) % screen_count)
 
-        if pyxel.btn(pyxel.KEY_LEFT_CONTROL) or pyxel.btn(pyxel.KEY_RIGHT_CONTROL):
-            if pyxel.btnp(pyxel.KEY_Z):
-                x = self._undo_button.x
-                y = self._undo_button.y
-                self._undo_button.call_event_handler(
-                    "press", pyxel.KEY_LEFT_BUTTON, x, y
-                )
-            elif pyxel.btnp(pyxel.KEY_Y):
-                x = self._redo_button.x
-                y = self._redo_button.y
-                self._redo_button.call_event_handler(
-                    "press", pyxel.KEY_LEFT_BUTTON, x, y
-                )
-
         screen = self._screen_list[self._screen_button.value]
         self._undo_button.is_enabled = screen.can_undo
         self._redo_button.is_enabled = screen.can_redo
+
+        if pyxel.btn(pyxel.KEY_CONTROL):
+            if screen.can_undo and pyxel.btnp(pyxel.KEY_Z):
+                self._undo_button.press()
+            elif screen.can_redo and pyxel.btnp(pyxel.KEY_Y):
+                self._redo_button.press()
 
         Widget.update(self._root_widget)
 
