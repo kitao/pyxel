@@ -1,9 +1,6 @@
-import math
-
 import numpy as np
 
 import pyxel
-from pyxel.constants import RENDERER_IMAGE_COUNT
 from pyxel.ui import Widget
 
 from .editor_radio_button import EditorRadioButton
@@ -44,10 +41,10 @@ class EditWindow(Widget):
         self._is_dragged = False
         self._is_guide_mode = False
 
-        self._h_scroll_bar = EditorScrollBar(self, 11, 145, 130, 7, 2, 32)
+        self._h_scroll_bar = EditorScrollBar(self, 11, 145, 130, 7, 32, 2)
         self._h_scroll_bar.add_event_handler("change", self.__on_change_x)
 
-        self._v_scroll_bar = EditorScrollBar(self, 140, 16, 7, 130, 2, 32)
+        self._v_scroll_bar = EditorScrollBar(self, 140, 16, 7, 130, 32, 2)
         self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
@@ -451,10 +448,10 @@ class PreviewWindow(Widget):
         self._drag_offset_x = 0
         self._drag_offset_y = 0
 
-        self._h_scroll_bar = EditorScrollBar(self, 157, 145, 66, 7, 8, 32)
+        self._h_scroll_bar = EditorScrollBar(self, 157, 145, 66, 7, 32, 8)
         self._h_scroll_bar.add_event_handler("change", self.__on_change_x)
 
-        self._v_scroll_bar = EditorScrollBar(self, 222, 16, 7, 130, 16, 32)
+        self._v_scroll_bar = EditorScrollBar(self, 222, 16, 7, 130, 32, 16)
         self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
