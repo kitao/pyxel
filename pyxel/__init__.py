@@ -1,3 +1,4 @@
+from .constants import VERSION  # noqa: F401
 from .constants import (
     DEFAULT_BORDER_COLOR,
     DEFAULT_BORDER_WIDTH,
@@ -5,7 +6,6 @@ from .constants import (
     DEFAULT_FPS,
     DEFAULT_PALETTE,
     DEFAULT_SCALE,
-    VERSION,
 )
 
 
@@ -25,7 +25,6 @@ def init(
     from . import constants
 
     module = sys.modules[__name__]
-    module.VERSION = VERSION  # to avoid 'unused' warning
 
     for k, v in constants.__dict__.items():
         if k.startswith("KEY_"):
