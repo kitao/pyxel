@@ -1,21 +1,13 @@
 import pyxel
 from pyxel.ui import ScrollBar
 
-BUTTON_SIZE = 7
-
 
 class EditorScrollBar(ScrollBar):
-    def __init__(self, parent, x, y, width, height, numerator, denominator, **kwargs):
+    def __init__(
+        self, parent, x, y, width, height, scroll_range, slider_range, **kwargs
+    ):
         super().__init__(
-            parent,
-            x,
-            y,
-            width,
-            height,
-            numerator,
-            denominator,
-            is_key_repeat=True,
-            **kwargs
+            parent, x, y, width, height, scroll_range, slider_range, **kwargs
         )
 
         self.add_event_handler("draw", self.__on_draw)
@@ -30,8 +22,8 @@ class EditorScrollBar(ScrollBar):
             y = self.y + self.slider_pos
             pyxel.rect(x, y, x + 2, y + self.slider_size - 1, 1)
 
-        if self.inc_button.is_lighting or self.dec_button.is_lighting:
-            if self.dec_button.is_lighting > 0:
+        if self.inc_button.is_pressed or self.dec_button.is_pressed:
+            if self.dec_button.is_pressed:
                 x = self.x + 1
                 y = self.y + 1
             elif self.is_horizontal:
