@@ -9,9 +9,20 @@ class EditorRadioButton(RadioButton):
     on_change(value)
     """
 
-    def __init__(self, parent, x, y, col, row, margin, is_color_button=False, **kwargs):
+    def __init__(
+        self, parent, x, y, column, row, margin, is_color_button=False, **kwargs
+    ):
         super().__init__(
-            parent, x, y, BUTTON_SIZE, BUTTON_SIZE, margin, margin, col, row, **kwargs
+            parent,
+            x,
+            y,
+            BUTTON_SIZE,
+            BUTTON_SIZE,
+            margin,
+            margin,
+            column,
+            row,
+            **kwargs
         )
 
         self._is_color_button = is_color_button
@@ -25,8 +36,8 @@ class EditorRadioButton(RadioButton):
             col = 7 if self.value < 6 else 0
             pyxel.text(x + 2, y + 1, "+", col)
         else:
-            x = self.x + (self.button_w + self.margin_x) * (self.value % self.col)
-            y = self.y + (self.button_h + self.margin_y) * (self.value // self.col)
+            x = self.x + (self.button_w + self.margin_x) * (self.value % self.column)
+            y = self.y + (self.button_h + self.margin_y) * (self.value // self.column)
 
             pyxel.pal(13, 7)
             pyxel.blt(x, y, 3, x, y + 16, BUTTON_SIZE, BUTTON_SIZE)
