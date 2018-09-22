@@ -8,21 +8,22 @@ class Button(Widget):
     """
     Events:
         __on_press()
+        __on_release()
     """
 
-    def __init__(self, parent, x, y, width, height, **kwargs):
-        super().__init__(parent, x, y, width, height, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-        self._lighting_time = 0
-        self._is_lighting = False
         self._is_pressed = False
+        self._is_lighting = False
+        self._lighting_time = 0
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_up", self.__on_mouse_up)
         self.add_event_handler("update", self.__on_update)
 
     @property
-    def is_lighting(self):
+    def is_pressed(self):
         return self._is_pressed or self._is_lighting
 
     def press(self):
@@ -42,6 +43,7 @@ class Button(Widget):
             return
 
         self._is_pressed = False
+        self.call_event_handler("release")
 
     def __on_update(self):
         if self._lighting_time > 0:
