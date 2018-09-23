@@ -412,8 +412,8 @@ class EditWindow(Widget):
                 y1 = self.edit_y + self._select_y1
 
                 height, width = self._copy_buffer.shape
-                width -= max(x1 + width - 256, 0)
-                height -= max(y1 + height - 256, 0)
+                width -= max(self._select_x1 + width - 16, 0)
+                height -= max(self._select_y1 + height - 16, 0)
 
                 img = self.parent.image_button.value
                 dest = pyxel.image(img).data[y1 : y1 + height, x1 : x1 + width]
