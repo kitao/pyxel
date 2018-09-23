@@ -2,7 +2,7 @@ import argparse
 import sys
 
 import pyxel
-from pyxel.editor.editor_app import EditorApp
+from pyxel.resource_editor.editor_app import EditorApp
 
 
 def run():
