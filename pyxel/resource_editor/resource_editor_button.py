@@ -2,7 +2,7 @@ import pyxel
 from pyxel.ui import Button
 
 
-class EditorButton(Button):
+class ResourceEditorButton(Button):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

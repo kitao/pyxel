@@ -3,9 +3,9 @@ import numpy as np
 import pyxel
 from pyxel.ui import Widget
 
-from .editor_radio_button import EditorRadioButton
-from .editor_scroll_bar import EditorScrollBar
-from .screen import Screen
+from .editor import Editor
+from .resource_editor_radio_button import ResourceEditorRadioButton
+from .resource_editor_scroll_bar import ResourceEditorScrollBar
 
 TOOL_SELECT = 0
 TOOL_PENCIL = 1
@@ -196,10 +196,10 @@ class EditWindow(Widget):
         self._is_dragged = False
         self._is_guide_mode = False
 
-        self._h_scroll_bar = EditorScrollBar(self, 11, 145, 130, 7, 32, 2)
+        self._h_scroll_bar = ResourceEditorScrollBar(self, 11, 145, 130, 7, 32, 2)
         self._h_scroll_bar.add_event_handler("change", self.__on_change_x)
 
-        self._v_scroll_bar = EditorScrollBar(self, 140, 16, 7, 130, 32, 2)
+        self._v_scroll_bar = ResourceEditorScrollBar(self, 140, 16, 7, 130, 32, 2)
         self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
@@ -468,10 +468,10 @@ class PreviewWindow(Widget):
         self._drag_offset_x = 0
         self._drag_offset_y = 0
 
-        self._h_scroll_bar = EditorScrollBar(self, 157, 145, 66, 7, 32, 8)
+        self._h_scroll_bar = ResourceEditorScrollBar(self, 157, 145, 66, 7, 32, 8)
         self._h_scroll_bar.add_event_handler("change", self.__on_change_x)
 
-        self._v_scroll_bar = EditorScrollBar(self, 222, 16, 7, 130, 32, 16)
+        self._v_scroll_bar = ResourceEditorScrollBar(self, 222, 16, 7, 130, 32, 16)
         self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
@@ -532,21 +532,21 @@ class PreviewWindow(Widget):
         pyxel.clip()
 
 
-class ImageEditor(Screen):
+class ImageEditor(Editor):
     def __init__(self, parent, is_tilemap_mode=False):
         super().__init__(parent, "image_editor.png")
 
         self._is_tilemap_mode = is_tilemap_mode
 
-        self.color_button = EditorRadioButton(
+        self.color_button = ResourceEditorRadioButton(
             self, 12, 157, 8, 2, 1, is_color_button=True
         )
         self.color_button.value = 7
 
-        self.tool_button = EditorRadioButton(self, 81, 161, 7, 1, 2)
+        self.tool_button = ResourceEditorRadioButton(self, 81, 161, 7, 1, 2)
         self.tool_button.value = TOOL_PENCIL
 
-        self.image_button = EditorRadioButton(self, 191, 161, 3, 1, 3)
+        self.image_button = ResourceEditorRadioButton(self, 191, 161, 3, 1, 3)
         self.edit_window = EditWindow(self)
         self.preview_window = PreviewWindow(self)
 
