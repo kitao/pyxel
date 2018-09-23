@@ -28,8 +28,8 @@ setuptools.setup(
     packages=[
         "pyxel",
         "pyxel.ui",
-        "pyxel.resource_editor",
-        "pyxel.resource_editor.assets",
+        "pyxel.editor",
+        "pyxel.editor.assets",
         "pyxel.examples",
         "pyxel.examples.assets",
     ],
@@ -38,7 +38,7 @@ setuptools.setup(
     python_requires=">=3",
     entry_points={
         "console_scripts": [
-            "pyxel=pyxel.resource_editor:run",
+            "pyxel=pyxel.editor:run",
             "install_pyxel_examples=pyxel.examples:install",
         ]
     },
