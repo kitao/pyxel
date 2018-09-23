@@ -5,7 +5,7 @@ import numpy as np
 import pyxel
 from pyxel.ui import Widget
 
-from .resource_editor_constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from .editor_constants import SCREEN_HEIGHT, SCREEN_WIDTH
 
 
 class Editor(Widget):
