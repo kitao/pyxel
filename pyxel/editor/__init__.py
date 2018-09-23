@@ -14,7 +14,7 @@ def run():
     )
     parser.add_argument("resource_file", help="Pyxel resource file")
     args = parser.parse_args()
-    EditorApp(args.resource_file, args.app_file)
+    EditorApp(args.resource_file)
 
 
 if __name__ == "__main__":
