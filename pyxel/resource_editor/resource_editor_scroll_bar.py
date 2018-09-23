@@ -2,7 +2,7 @@ import pyxel
 from pyxel.ui import ScrollBar
 
 
-class EditorScrollBar(ScrollBar):
+class ResourceEditorScrollBar(ScrollBar):
     def __init__(
         self, parent, x, y, width, height, scroll_range, slider_range, **kwargs
     ):

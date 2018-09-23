@@ -1,7 +1,7 @@
-from .screen import Screen
+from .editor import Editor
 
 
-class TileMapEditor(Screen):
+class TileMapEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent, "tilemap_editor.png")
 
