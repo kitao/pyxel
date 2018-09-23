@@ -11,9 +11,19 @@ from .tilemap_editor import TileMapEditor
 
 
 class ResourceEditorApp:
-    def __init__(self, resoure_file):
-        pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, caption="Pyxel Resource Editor")
+    def __init__(self, resource_file):
+        pyxel.init(
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT,
+            caption="Pyxel Resource Editor - {}".format(resource_file),
+        )
 
+        try:
+            pyxel.load(resource_file)
+        except FileNotFoundError:
+            pass
+
+        self._resource_file = resource_file
         self._root_widget = Widget(None, 0, 0, 0, 0)
 
         self._screen_list = [
@@ -37,9 +47,7 @@ class ResourceEditorApp:
         self._redo_button = ResourceEditorButton(self._root_widget, 57, 1, 7, 7)
         self._redo_button.add_event_handler("press", self.__on_redo_press)
 
-        self._save_button = ResourceEditorButton(
-            self._root_widget, 75, 1, 7, 7, is_enabled=False
-        )
+        self._save_button = ResourceEditorButton(self._root_widget, 75, 1, 7, 7)
         self._save_button.add_event_handler("press", self.__on_save_press)
 
         pyxel.run(self.update, self.draw)
@@ -86,4 +94,4 @@ class ResourceEditorApp:
         self._screen_list[self._screen_button.value].redo()
 
     def __on_save_press(self):
-        pass
+        pyxel.save(self._resource_file)
