@@ -188,6 +188,12 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 - `quit()`  
 現在フレーム終了時にPyxelアプリを終了する
 
+- `save(filename, [dirname])`  
+実行スクリプトのディレクトリまたは`dirname`にリソースファイル (.pyxel) を保存する
+
+- `load(filename, [dirname])`  
+実行スクリプトのディレクトリまたは`dirname`からリソースファイル (.pyxel) を読み込む
+
 ### 入力
 - `mouse_x`, `mouse_y`  
 現在のマウスカーソル座標
