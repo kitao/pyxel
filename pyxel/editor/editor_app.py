@@ -1,3 +1,5 @@
+import os
+
 import pyxel
 from pyxel.ui import Widget
 
@@ -12,14 +14,18 @@ from .tilemap_editor import TileMapEditor
 
 class EditorApp:
     def __init__(self, resource_file):
+        root, ext = os.path.splitext(resource_file)
+        if ext != ".pyxel":
+            resource_file += ".pyxel"
+
         pyxel.init(
             SCREEN_WIDTH,
             SCREEN_HEIGHT,
-            caption="Pyxel Resource Editor - {}".format(resource_file),
+            caption="Pyxel Editor - {}".format(resource_file),
         )
 
         try:
-            pyxel.load(resource_file)
+            pyxel.load(resource_file, dirname=os.getcwd())
         except FileNotFoundError:
             pass
 
