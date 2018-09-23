@@ -4,7 +4,7 @@ from pyxel.ui import RadioButton
 BUTTON_SIZE = 7
 
 
-class ResourceEditorRadioButton(RadioButton):
+class EditorRadioButton(RadioButton):
     """
     Events:
         __on_change(value)
