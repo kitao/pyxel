@@ -11,7 +11,7 @@ from .tilemap_editor import TileMapEditor
 
 
 class EditorApp:
-    def __init__(self, resoure_file, app_file):
+    def __init__(self, resoure_file):
         pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, caption="Pyxel Resource Editor")
 
         self._root_widget = Widget(None, 0, 0, 0, 0)
