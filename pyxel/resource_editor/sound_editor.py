@@ -1,7 +1,7 @@
-from .screen import Screen
+from .editor import Editor
 
 
-class SoundEditor(Screen):
+class SoundEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent, "sound_editor.png")
 

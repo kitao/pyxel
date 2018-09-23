@@ -2,7 +2,7 @@ import argparse
 import sys
 
 import pyxel
-from pyxel.resource_editor.editor_app import EditorApp
+from pyxel.resource_editor.resource_editor_app import ResourceEditorApp
 
 
 def run():
@@ -14,7 +14,7 @@ def run():
     )
     parser.add_argument("resource_file", help="Pyxel resource file")
     args = parser.parse_args()
-    EditorApp(args.resource_file)
+    ResourceEditorApp(args.resource_file)
 
 
 if __name__ == "__main__":

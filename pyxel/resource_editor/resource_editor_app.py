@@ -1,16 +1,16 @@
 import pyxel
 from pyxel.ui import Widget
 
-from .editor_button import EditorButton
-from .editor_constants import SCREEN_HEIGHT, SCREEN_WIDTH
-from .editor_radio_button import EditorRadioButton
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
+from .resource_editor_button import ResourceEditorButton
+from .resource_editor_constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from .resource_editor_radio_button import ResourceEditorRadioButton
 from .sound_editor import SoundEditor
 from .tilemap_editor import TileMapEditor
 
 
-class EditorApp:
+class ResourceEditorApp:
     def __init__(self, resoure_file):
         pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, caption="Pyxel Resource Editor")
 
@@ -23,19 +23,21 @@ class EditorApp:
             MusicEditor(self._root_widget),
         ]
 
-        self._screen_button = EditorRadioButton(self._root_widget, 3, 1, 4, 1, 2)
+        self._screen_button = ResourceEditorRadioButton(
+            self._root_widget, 3, 1, 4, 1, 2
+        )
         self._screen_button.add_event_handler(
             "change", lambda value: self.set_screen(value)
         )
         self.set_screen(0)
 
-        self._undo_button = EditorButton(self._root_widget, 48, 1, 7, 7)
+        self._undo_button = ResourceEditorButton(self._root_widget, 48, 1, 7, 7)
         self._undo_button.add_event_handler("press", self.__on_undo_press)
 
-        self._redo_button = EditorButton(self._root_widget, 57, 1, 7, 7)
+        self._redo_button = ResourceEditorButton(self._root_widget, 57, 1, 7, 7)
         self._redo_button.add_event_handler("press", self.__on_redo_press)
 
-        self._save_button = EditorButton(
+        self._save_button = ResourceEditorButton(
             self._root_widget, 75, 1, 7, 7, is_enabled=False
         )
         self._save_button.add_event_handler("press", self.__on_save_press)

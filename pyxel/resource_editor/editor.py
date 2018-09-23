@@ -5,13 +5,14 @@ import numpy as np
 import pyxel
 from pyxel.ui import Widget
 
-from .editor_constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from .resource_editor_constants import SCREEN_HEIGHT, SCREEN_WIDTH
 
 
-class Screen(Widget):
+class Editor(Widget):
     """
-        on_undo(data)
-        on_redo(data)
+    Events:
+        __on_undo(data)
+        __on_redo(data)
     """
 
     def __init__(self, parent, image_file):
