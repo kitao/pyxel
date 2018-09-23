@@ -1,11 +1,15 @@
 import datetime
+import gzip
+import inspect
 import math
 import os
+import pickle
 import platform
 import subprocess
 import time
 
 import glfw
+import numpy as np
 import PIL.Image
 
 from .audio_player import AudioPlayer
@@ -157,6 +161,8 @@ class App:
         module.btnr = self.btnr
         module.run = self.run
         module.quit = self.quit
+        module.save = self.save
+        module.load = self.load
         module.image = self._renderer.image
         module.clip = self._renderer.draw_command.clip
         module.pal = self._renderer.draw_command.pal
@@ -219,6 +225,41 @@ class App:
 
     def quit(self):
         glfw.set_window_should_close(self._window, True)
+
+    @staticmethod
+    def _get_resource_file(filename, dirname):
+        dirname = dirname or os.path.dirname(inspect.stack()[-1].filename)
+        filename = os.path.join(dirname, filename)
+        root, ext = os.path.splitext(os.path.join(dirname, filename))
+        if ext != ".pyxel":
+            filename += ".pyxel"
+
+        return filename
+
+    def save(self, filename, *, dirname=None):
+        filename = self._get_resource_file(filename, dirname)
+
+        data = {"version": self._module.VERSION}
+
+        image = [self._module.image(i).data.dumps() for i in range(3)]
+        data["image"] = image
+
+        pickled_data = pickle.dumps(data)
+
+        with gzip.open(filename, mode="wb") as fp:
+            fp.write(pickled_data)
+
+    def load(self, filename, *, dirname=None):
+        filename = self._get_resource_file(filename, dirname)
+
+        with gzip.open(filename, mode="rb") as fp:
+            pickled_data = fp.read()
+
+        data = pickle.loads(pickled_data)
+
+        image = data["image"]
+        for i in range(3):
+            self._module.image(i).data[:, :] = np.loads(image[i])
 
     def palettize_pil_image(self, pil_image):
         im = pil_image.im.convert("P", 0, self._pil_palette.im)
