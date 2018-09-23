@@ -3,6 +3,8 @@
 ## 0.8.0
 - Changed the formatter from yapf to black
 - Added the UI module
+- Added the save and load commands
+- Added the Image Editor as a part of the Pyxel Resource Editor
 
 ## 0.7.12
 - Added new key definitions which integrates keys on both sides
