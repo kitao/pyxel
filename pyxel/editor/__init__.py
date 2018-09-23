@@ -9,7 +9,7 @@ def run():
     parser = argparse.ArgumentParser(
         prog="pyxel",
         usage="pyxel resource_file [-h]",
-        description="Pyxel Resource Editor {}".format(pyxel.VERSION),
+        description="Pyxel Editor {}".format(pyxel.VERSION),
         add_help=True,
     )
     parser.add_argument("resource_file", help="Pyxel resource file")
