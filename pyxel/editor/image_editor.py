@@ -111,11 +111,14 @@ class OverlayCanvas:
 
         for y in range(max(y1, 0), min(y2 + 1, 16)):
             for x in range(max(x1, 0), min(x2 + 1, 16)):
-                if self._inner_ellipse(x - cx, y - cy, a, b) and (
-                    not self._inner_ellipse(x - cx - 1, y - cy, a, b)
-                    or not self._inner_ellipse(x - cx + 1, y - cy, a, b)
-                    or not self._inner_ellipse(x - cx, y - cy - 1, a, b)
-                    or not self._inner_ellipse(x - cx, y - cy + 1, a, b)
+                dx = x - cx
+                dy = y - cy
+
+                if self._inner_ellipse(dx, dy, a, b) and (
+                    not self._inner_ellipse(dx - 1, dy, a, b)
+                    or not self._inner_ellipse(dx + 1, dy, a, b)
+                    or not self._inner_ellipse(dx, dy - 1, a, b)
+                    or not self._inner_ellipse(dx, dy + 1, a, b)
                 ):
                     self.data[y, x] = val
 
@@ -547,10 +550,10 @@ class ImageEditor(Screen):
         self.edit_window = EditWindow(self)
         self.preview_window = PreviewWindow(self)
 
-        self.add_event_handler("undo", self.on_undo)
-        self.add_event_handler("redo", self.on_redo)
+        self.add_event_handler("undo", self.__on_undo)
+        self.add_event_handler("redo", self.__on_redo)
 
-    def on_undo(self, data):
+    def __on_undo(self, data):
         img = data["img"]
         x, y = data["pos"]
         dest = pyxel.image(img).data[y : y + 16, x : x + 16]
@@ -560,7 +563,7 @@ class ImageEditor(Screen):
         self.edit_window.edit_y = y
         self.image_button.value = img
 
-    def on_redo(self, data):
+    def __on_redo(self, data):
         img = data["img"]
         x, y = data["pos"]
         dest = pyxel.image(img).data[y : y + 16, x : x + 16]
