@@ -187,6 +187,12 @@ Start the Pyxel application and call `update` function for frame update and `dra
 - `quit()`  
 End the Pyxel application at the end of the current frame
 
+- `save(filename, [dirname])`  
+Save the resource file (.pyxel) to the directory of the execution script or `dirname`
+
+- `load(filename, [dirname])`  
+Read the resource file (.pyxel) from the directory of the execution script or `dirname`
+
 ### Input
 - `mouse_x`, `mouse_y`  
 The current position of the mouse cursor
