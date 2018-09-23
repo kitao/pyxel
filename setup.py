@@ -38,7 +38,7 @@ setuptools.setup(
     python_requires=">=3",
     entry_points={
         "console_scripts": [
-            "pyxel=pyxel.editor:run",
+            "pyxeleditor=pyxel.editor:run",
             "install_pyxel_examples=pyxel.examples:install",
         ]
     },
