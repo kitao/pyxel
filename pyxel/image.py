@@ -40,10 +40,7 @@ class Image:
         src_data = src_data[sy : sy + ch, sx : sx + cw]
         self._data[dy : dy + ch, dx : dx + cw] = src_data
 
-    def load(self, x, y, filename, *, dirname=None):
-        dirname = dirname or os.path.dirname(inspect.stack()[-1].filename)
-        filename = os.path.join(dirname, filename)
-
+    def load(self, x, y, filename):
         pil_image = PIL.Image.open(filename).convert("RGB")
         pil_image.load()
 

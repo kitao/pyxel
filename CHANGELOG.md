@@ -5,6 +5,7 @@
 - Added the UI module
 - Added the save and load commands
 - Added the Image Editor as a part of the Pyxel Resource Editor
+- Removed the dirname option of the save and load commands
 
 ## 0.7.12
 - Added new key definitions which integrates keys on both sides

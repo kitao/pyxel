@@ -187,11 +187,11 @@ Start the Pyxel application and call `update` function for frame update and `dra
 - `quit()`  
 End the Pyxel application at the end of the current frame
 
-- `save(filename, [dirname])`  
-Save the resource file (.pyxel) to the directory of the execution script or `dirname`
+- `save(filename)`  
+Save the resource file (.pyxel) to the directory of the execution script
 
-- `load(filename, [dirname])`  
-Read the resource file (.pyxel) from the directory of the execution script or `dirname`
+- `load(filename)`  
+Read the resource file (.pyxel) from the directory of the execution script
 
 ### Input
 - `mouse_x`, `mouse_y`  
@@ -269,8 +269,8 @@ The data of the Image (NumPy array)
 Set the image as a list of strings at (`x`, `y`)   
 e.g. `pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
-- `load(x, y, filename, [dirname])`  
-Read the png image from the directory of the execution script or `dirname` at (`x`, `y`)
+- `load(x, y, filename)`  
+Read the png image from the directory of the execution script at (`x`, `y`)
 
 - `copy(x, y, img, sx, sy, width, height)`  
 Copy the region of size (`width`, `height`) from (`sx`, `sy`) of the image bank `img`(0-2) to (`x`, `y`)
