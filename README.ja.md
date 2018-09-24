@@ -188,11 +188,11 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 - `quit()`  
 現在フレーム終了時にPyxelアプリを終了する
 
-- `save(filename, [dirname])`  
-実行スクリプトのディレクトリまたは`dirname`にリソースファイル (.pyxel) を保存する
+- `save(filename)`  
+実行スクリプトのディレクトリにリソースファイル (.pyxel) を保存する
 
-- `load(filename, [dirname])`  
-実行スクリプトのディレクトリまたは`dirname`からリソースファイル (.pyxel) を読み込む
+- `load(filename)`  
+実行スクリプトのディレクトリからリソースファイル (.pyxel) を読み込む
 
 ### 入力
 - `mouse_x`, `mouse_y`  
@@ -270,8 +270,8 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 (`x`, `y`) に文字列のリストでイメージを設定する  
 例：`pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
-- `load(x, y, filename, [dirname])`  
-(`x`, `y`) に実行スクリプトのディレクトリまたは`dirname`からpngファイルを読み込む
+- `load(x, y, filename)`  
+(`x`, `y`) に実行スクリプトのディレクトリからpngファイルを読み込む
 
 - `copy(x, y, img, sx, sy, width, height)`  
 イメージバンク`img`(0-2) の (`sx`, `sy`) からサイズ (`width`, `height`) の領域を (`x`, `y`) にコピーする

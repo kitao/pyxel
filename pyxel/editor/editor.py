@@ -18,8 +18,8 @@ class Editor(Widget):
     def __init__(self, parent, image_file):
         super().__init__(parent, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, is_visible=False)
 
-        dirname = os.path.join(os.path.dirname(__file__), "assets")
-        pyxel.image(3, system=True).load(0, 16, image_file, dirname=dirname)
+        image_file = os.path.join(os.path.dirname(__file__), "assets", image_file)
+        pyxel.image(3, system=True).load(0, 16, image_file)
 
         data = pyxel.image(3, system=True).data
         self._image_data = np.copy(data[16 : SCREEN_HEIGHT + 16, 0:SCREEN_WIDTH])
