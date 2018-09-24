@@ -14,6 +14,7 @@ from .tilemap_editor import TileMapEditor
 
 class EditorApp:
     def __init__(self, resource_file):
+        resource_file = os.path.join(os.getcwd(), resource_file)
         root, ext = os.path.splitext(resource_file)
         if ext != ".pyxel":
             resource_file += ".pyxel"
@@ -25,7 +26,7 @@ class EditorApp:
         )
 
         try:
-            pyxel.load(resource_file, dirname=os.getcwd())
+            pyxel.load(resource_file)
         except FileNotFoundError:
             pass
 

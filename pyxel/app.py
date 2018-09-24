@@ -226,10 +226,7 @@ class App:
     def quit(self):
         glfw.set_window_should_close(self._window, True)
 
-    def save(self, filename, *, dirname=None):
-        dirname = dirname or os.path.dirname(inspect.stack()[-1].filename)
-        filename = os.path.join(dirname, filename)
-
+    def save(self, filename):
         data = {"version": self._module.VERSION}
 
         image = [self._module.image(i).data.dumps() for i in range(3)]
@@ -240,10 +237,7 @@ class App:
         with gzip.open(filename, mode="wb") as fp:
             fp.write(pickled_data)
 
-    def load(self, filename, *, dirname=None):
-        dirname = dirname or os.path.dirname(inspect.stack()[-1].filename)
-        filename = os.path.join(dirname, filename)
-
+    def load(self, filename):
         with gzip.open(filename, mode="rb") as fp:
             pickled_data = fp.read()
 
