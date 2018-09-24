@@ -187,6 +187,8 @@ Start the Pyxel application and call `update` function for frame update and `dra
 - `quit()`  
 End the Pyxel application at the end of the current frame
 
+### Resource
+
 - `save(filename)`  
 Save the resource file (.pyxel) to the directory of the execution script
 
