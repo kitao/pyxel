@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.8.1
+- Added the run_with_profiler command
+
 ## 0.8.0
 - Changed the formatter from yapf to black
 - Added the UI module
