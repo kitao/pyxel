@@ -1,6 +1,5 @@
 import datetime
 import gzip
-import inspect
 import math
 import os
 import pickle
@@ -160,6 +159,7 @@ class App:
         module.btnp = self.btnp
         module.btnr = self.btnr
         module.run = self.run
+        module.run_with_profiler = self.run_with_profiler
         module.quit = self.quit
         module.save = self.save
         module.load = self.load
@@ -222,6 +222,28 @@ class App:
                 main_loop()
         else:
             main_loop()
+
+    def run_with_profiler(self, update, draw):
+        import cProfile
+        import pstats
+
+        profile = cProfile.Profile()
+        profile.enable()
+        profile.runcall(self.run, update, draw)
+        profile.disable()
+
+        stats = pstats.Stats(profile).strip_dirs().sort_stats("tottime")
+        frame_count = self._module.frame_count
+
+        for key in stats.stats:
+            cc, nc, tt, ct, callers = stats.stats[key]
+            cc = round(cc / frame_count, 3)
+            nc = round(nc / frame_count, 3)
+            tt *= 1000 / frame_count
+            ct *= 1000 / frame_count
+            stats.stats[key] = (cc, nc, tt, ct, callers)
+
+        stats.print_stats(30)
 
     def quit(self):
         glfw.set_window_should_close(self._window, True)
