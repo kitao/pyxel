@@ -68,7 +68,7 @@ class Widget:
     def parent(self, value):
         self._parent = value
 
-        if value:
+        if value and self not in value._children:
             value._children.append(self)
 
     @property
