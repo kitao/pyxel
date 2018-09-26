@@ -88,31 +88,32 @@ class EditWindow(Widget):
                     self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
                 ]
 
-                pass
+                data = {}
+                data["tilemap"] = self.parent.tilemap
+                data["pos"] = (self.edit_x, self.edit_y)
+                data["before"] = dest.copy()
 
                 dest = pyxel.tilemap(self.parent.tilemap).data[
                     self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
                 ]
-                self._overlay_canvas.paint(x, y, self.parent.color, dest)
-
-                pass
             else:
                 dest = pyxel.image(self.parent.image).data[
                     self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
                 ]
 
                 data = {}
-                data["img"] = self.parent.image
+                data["image"] = self.parent.image
                 data["pos"] = (self.edit_x, self.edit_y)
                 data["before"] = dest.copy()
 
                 dest = pyxel.image(self.parent.image).data[
                     self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
                 ]
-                self._overlay_canvas.paint(x, y, self.parent.color, dest)
 
-                data["after"] = dest.copy()
-                self.parent.add_edit_history(data)
+            self._overlay_canvas.paint(x, y, self.parent.color, dest)
+
+            data["after"] = dest.copy()
+            self.parent.add_edit_history(data)
 
         self._last_x = x
         self._last_y = y
@@ -129,20 +130,24 @@ class EditWindow(Widget):
                     self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
                 ]
 
-                pass
+                data = {}
+                data["tilemap"] = self.parent.tilemap
+                data["pos"] = (self.edit_x, self.edit_y)
+                data["before"] = dest.copy()
 
                 index = self._overlay_canvas.data != -1
                 dest[index] = self._overlay_canvas.data[index]
                 self._overlay_canvas.clear()
 
-                pass
+                data["after"] = dest.copy()
+                self.parent.add_edit_history(data)
             else:
                 dest = pyxel.image(self.parent.image).data[
                     self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
                 ]
 
                 data = {}
-                data["img"] = self.parent.image
+                data["image"] = self.parent.image
                 data["pos"] = (self.edit_x, self.edit_y)
                 data["before"] = dest.copy()
 
@@ -258,11 +263,15 @@ class EditWindow(Widget):
             and pyxel.btn(pyxel.KEY_CONTROL)
         ):
             if pyxel.btnp(pyxel.KEY_C):
-                src = pyxel.image(self.parent.image).data[
+                if self._is_tilemap_mode:
+                    data = pyxel.tilemap(self.parent.tilemap).data
+                else:
+                    data = pyxel.image(self.parent.image).data
+
+                src = data[
                     self.edit_y + self._select_y1 : self.edit_y + self._select_y2 + 1,
                     self.edit_x + self._select_x1 : self.edit_x + self._select_x2 + 1,
                 ]
-
                 self._copy_buffer = src.copy()
             elif self._copy_buffer is not None and pyxel.btnp(pyxel.KEY_V):
                 x1 = self.edit_x + self._select_x1
@@ -272,9 +281,12 @@ class EditWindow(Widget):
                 width -= max(self._select_x1 + width - 16, 0)
                 height -= max(self._select_y1 + height - 16, 0)
 
-                dest = pyxel.image(self.parent.image).data[
-                    y1 : y1 + height, x1 : x1 + width
-                ]
+                if self._is_tilemap_mode:
+                    data = pyxel.tilemap(self.parent.tilemap).data
+                else:
+                    data = pyxel.image(self.parent.image).data
+
+                dest = data[y1 : y1 + height, x1 : x1 + width]
                 dest[:, :] = self._copy_buffer[:height, :width]
 
     def __on_draw(self):
