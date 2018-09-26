@@ -45,8 +45,8 @@ class Widget:
         is_enabled=True,
         is_key_repeat=False
     ):
-        self.parent = parent
-        self.children = []
+        self._parent = None
+        self._children = []
         self.x = x
         self.y = y
         self.width = width
@@ -56,11 +56,20 @@ class Widget:
         self.is_key_repeat = is_key_repeat
         self._event_handler_lists = {}
 
-        if parent:
-            parent.children.append(self)
-
+        self.parent = parent
         self.is_visible = is_visible
         self.is_enabled = is_enabled
+
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, value):
+        self._parent = value
+
+        if value:
+            value._children.append(self)
 
     @property
     def is_visible(self):
@@ -179,7 +188,7 @@ class Widget:
             return False
 
         if self._is_enabled:
-            for widget in reversed(self.children):
+            for widget in reversed(self._children):
                 if widget._process_input():
                     return True
         else:
@@ -214,7 +223,7 @@ class Widget:
 
         self.call_event_handler("update")
 
-        for child in self.children:
+        for child in self._children:
             child._update()
 
     @staticmethod
@@ -224,5 +233,5 @@ class Widget:
 
         root.call_event_handler("draw")
 
-        for child in root.children:
+        for child in root._children:
             Widget.draw(child)
