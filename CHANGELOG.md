@@ -2,6 +2,8 @@
 
 ## 0.8.1
 - Added the run_with_profiler command
+- Added the bltmap command
+- Implemented the tilemap editor
 
 ## 0.8.0
 - Changed the formatter from yapf to black
