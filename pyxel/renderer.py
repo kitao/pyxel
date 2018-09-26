@@ -11,6 +11,9 @@ from .constants import (
     RENDERER_IMAGE_HEIGHT,
     RENDERER_IMAGE_WIDTH,
     RENDERER_MIN_TEXTURE_SIZE,
+    RENDERER_TILEMAP_COUNT,
+    RENDERER_TILEMAP_HEIGHT,
+    RENDERER_TILEMAP_WIDTH,
 )
 from .draw_command import DrawCommand
 from .gl_wrapper import GLAttribute, GLShader, GLTexture
@@ -23,6 +26,7 @@ from .shaders import (
     SCALING_FRAGMENT_SHADER,
     SCALING_VERTEX_SHADER,
 )
+from .tilemap import Tilemap
 
 
 class Renderer:
@@ -36,12 +40,17 @@ class Renderer:
         ]
         self._set_font_image(self._image_list[-1])
 
+        self._tilemap_list = [
+            Tilemap(RENDERER_TILEMAP_WIDTH, RENDERER_TILEMAP_HEIGHT)
+            for _ in range(RENDERER_TILEMAP_COUNT)
+        ]
+
         self._draw_shader = GLShader(DRAWING_VERTEX_SHADER, DRAWING_FRAGMENT_SHADER)
         self._draw_att = GLAttribute(
             DRAWING_ATTRIBUTE_INFO, DRAW_MAX_COUNT, dynamic=True
         )
 
-        self.draw_command = DrawCommand(width, height, self._draw_att.data)
+        self.draw_command = DrawCommand(self, width, height, self._draw_att.data)
 
         self._scale_shader = GLShader(SCALING_VERTEX_SHADER, SCALING_FRAGMENT_SHADER)
 
@@ -138,6 +147,9 @@ class Renderer:
             raise ValueError("image bank {} is reserved for system".format(img))
 
         return self._image_list[img]
+
+    def tilemap(self, tm):
+        return self._tilemap_list[tm]
 
     @staticmethod
     def _set_font_image(image):
