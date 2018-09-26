@@ -32,9 +32,19 @@ class RadioButton(Widget):
         self.margin_y = margin_y
         self.column = column
         self.row = row
-        self.value = 0
+        self._value = 0
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        if self._value != value:
+            self._value = value
+            self.call_event_handler("change", value)
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
@@ -58,8 +68,4 @@ class RadioButton(Widget):
             and y >= button_y
             and y < button_y + self.button_h
         ):
-            value = self.column * index_y + index_x
-
-            if self.value != value:
-                self.value = value
-                self.call_event_handler("change", value)
+            self.value = self.column * index_y + index_x
