@@ -164,6 +164,7 @@ class App:
         module.save = self.save
         module.load = self.load
         module.image = self._renderer.image
+        module.tilemap = self._renderer.tilemap
         module.clip = self._renderer.draw_command.clip
         module.pal = self._renderer.draw_command.pal
         module.cls = self._renderer.draw_command.cls
@@ -174,6 +175,7 @@ class App:
         module.circ = self._renderer.draw_command.circ
         module.circb = self._renderer.draw_command.circb
         module.blt = self._renderer.draw_command.blt
+        module.bltmap = self._renderer.draw_command.bltmap
         module.text = self._renderer.draw_command.text
         module.sound = self._audio_player.sound
         module.play = self._audio_player.play
