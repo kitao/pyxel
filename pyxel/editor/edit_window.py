@@ -14,8 +14,10 @@ TOOL_BUCKET = 6
 
 
 class EditWindow(Widget):
-    def __init__(self, parent):
+    def __init__(self, parent, *, is_tilemap_mode):
         super().__init__(parent, 12, 17, 128, 128)
+
+        self._is_tilemap_mode = is_tilemap_mode
 
         self.edit_x = 0
         self.edit_y = 0
@@ -45,11 +47,11 @@ class EditWindow(Widget):
         self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
-        self.add_event_handler("mouse_up", self.__on_release)
+        self.add_event_handler("mouse_up", self.__on_mouse_up)
         self.add_event_handler("mouse_click", self.__on_mouse_click)
         self.add_event_handler("mouse_drag", self.__on_drag)
-        self.add_event_handler("update", self.on_update)
-        self.add_event_handler("draw", self.on_draw)
+        self.add_event_handler("update", self.__on_update)
+        self.add_event_handler("draw", self.__on_draw)
 
         # self.parent.color_button.add_event_handler("change", self.on_color_change)
         # self.parent.tool_button.add_event_handler("change", self.on_tool_change)
@@ -101,28 +103,41 @@ class EditWindow(Widget):
         self._last_x = x
         self._last_y = y
 
-    def __on_release(self, key, x, y):
+    def __on_mouse_up(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
         self._is_dragged = False
 
         if self.parent.tool >= TOOL_PENCIL and self.parent.tool <= TOOL_CIRC:
-            dest = pyxel.image(self.parent.image).data[
-                self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
-            ]
+            if self._is_tilemap_mode:
+                dest = pyxel.tilemap(self.parent.tilemap).data[
+                    self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
+                ]
 
-            data = {}
-            data["img"] = self.parent.image
-            data["pos"] = (self.edit_x, self.edit_y)
-            data["before"] = dest.copy()
+                pass
 
-            index = self._overlay_canvas.data != -1
-            dest[index] = self._overlay_canvas.data[index]
-            self._overlay_canvas.clear()
+                index = self._overlay_canvas.data != -1
+                dest[index] = self._overlay_canvas.data[index]
+                self._overlay_canvas.clear()
 
-            data["after"] = dest.copy()
-            self.parent.add_edit_history(data)
+                pass
+            else:
+                dest = pyxel.image(self.parent.image).data[
+                    self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
+                ]
+
+                data = {}
+                data["img"] = self.parent.image
+                data["pos"] = (self.edit_x, self.edit_y)
+                data["before"] = dest.copy()
+
+                index = self._overlay_canvas.data != -1
+                dest[index] = self._overlay_canvas.data[index]
+                self._overlay_canvas.clear()
+
+                data["after"] = dest.copy()
+                self.parent.add_edit_history(data)
 
     def __on_mouse_click(self, key, x, y):
         if key == pyxel.KEY_RIGHT_BUTTON:
@@ -191,10 +206,10 @@ class EditWindow(Widget):
             self.edit_x = min(max(self.edit_x, 0), 240)
             self.edit_y = min(max(self.edit_y, 0), 240)
 
-            self._h_scroll_bar.value = self.edit_x // 8
-            self._v_scroll_bar.value = self.edit_y // 8
+    def __on_update(self):
+        self._h_scroll_bar.value = self.edit_x // 8
+        self._v_scroll_bar.value = self.edit_y // 8
 
-    def on_update(self):
         if self._is_dragged and not self._is_guide_mode and pyxel.btn(pyxel.KEY_SHIFT):
             self._is_guide_mode = True
 
@@ -244,19 +259,37 @@ class EditWindow(Widget):
                 ]
                 dest[:, :] = self._copy_buffer[:height, :width]
 
-    def on_draw(self):
-        for i in range(16):
-            y = self.y + i * 8
-            for j in range(16):
-                x = self.x + j * 8
+    def __on_draw(self):
+        if self._is_tilemap_mode:
+            pyxel.bltmap(
+                self.x, self.y, self.parent.tilemap, self.edit_x, self.edit_y, 16, 16
+            )
 
-                if self._overlay_canvas.data[i, j] >= 0:
-                    col = self._overlay_canvas.data[i, j]
-                else:
-                    data = pyxel.image(self.parent.image).data
-                    col = data[self.edit_y + i, self.edit_x + j]
+            for i in range(16):
+                y = self.y + i * 8
+                for j in range(16):
+                    x = self.x + j * 8
 
-                pyxel.rect(x, y, x + 7, y + 7, col)
+                    if self._overlay_canvas.data[i, j] >= 0:
+                        val = self._overlay_canvas.data[i, j]
+                        img = val // 1000
+                        s = val % 1000
+                        sx = (s % 8) * 8
+                        sy = (s // 8) * 8
+                        pyxel.blt(x, y, img, sx, sy, 8, 8)
+        else:
+            for i in range(16):
+                y = self.y + i * 8
+                for j in range(16):
+                    x = self.x + j * 8
+
+                    if self._overlay_canvas.data[i, j] >= 0:
+                        col = self._overlay_canvas.data[i, j]
+                    else:
+                        data = pyxel.image(self.parent.image).data
+                        col = data[self.edit_y + i, self.edit_x + j]
+
+                    pyxel.rect(x, y, x + 7, y + 7, col)
 
         pyxel.line(self.x, self.y + 63, self.x + 127, self.y + 63, 1)
         pyxel.line(self.x + 63, self.y, self.x + 63, self.y + 127, 1)

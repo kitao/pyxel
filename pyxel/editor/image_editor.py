@@ -10,8 +10,8 @@ class ImageEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent, "image_editor.png")
 
-        self._edit_window = EditWindow(self)
-        self._image_window = ImageWindow(self)
+        self._edit_window = EditWindow(self, is_tilemap_mode=False)
+        self._image_window = ImageWindow(self, is_tilemap_mode=False)
         self._color_button = EditorRadioButton(
             self, 12, 157, 8, 2, 1, is_color_button=True
         )
