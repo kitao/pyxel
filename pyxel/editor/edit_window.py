@@ -291,7 +291,7 @@ class EditWindow(Widget):
 
     def __on_draw(self):
         if self._is_tilemap_mode:
-            pyxel.bltmap(
+            pyxel.bltm(
                 self.x,
                 self.y,
                 self.parent.image,
