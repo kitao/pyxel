@@ -177,10 +177,11 @@ class App:
         module.circ = self._renderer.draw_command.circ
         module.circb = self._renderer.draw_command.circb
         module.blt = self._renderer.draw_command.blt
-        module.bltmap = self._renderer.draw_command.bltmap
+        module.bltm = self._renderer.draw_command.bltm
         module.text = self._renderer.draw_command.text
         module.sound = self._audio_player.sound
         module.play = self._audio_player.play
+        # module.playm = self._audio_player.playm
         module.stop = self._audio_player.stop
 
     def btn(self, key):

@@ -3,7 +3,7 @@
 ## 0.8.1
 - Added the run_with_profiler command
 - Added the Tilemap class
-- Added the bltmap command
+- Added the bltm command
 - Implemented the tilemap editor
 
 ## 0.8.0
