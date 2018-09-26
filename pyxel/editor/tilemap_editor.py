@@ -3,7 +3,7 @@ import pyxel
 from .edit_window import EditWindow
 from .editor import Editor
 from .editor_radio_button import EditorRadioButton
-from .image_window import ImageWindow
+from .select_window import SelectWindow
 
 
 class TileMapEditor(Editor):
@@ -11,7 +11,7 @@ class TileMapEditor(Editor):
         super().__init__(parent, "tilemap_editor.png")
 
         self._edit_window = EditWindow(self, is_tilemap_mode=True)
-        self._image_window = ImageWindow(self, is_tilemap_mode=True)
+        self._select_window = SelectWindow(self, is_tilemap_mode=True)
         self._tilemap_button = EditorRadioButton(self, 47, 161, 3, 1, 3)
         self._tool_button = EditorRadioButton(self, 81, 161, 7, 1, 2)
         self._image_button = EditorRadioButton(self, 191, 161, 3, 1, 3)
@@ -33,14 +33,13 @@ class TileMapEditor(Editor):
     @property
     def color(self):
         return (
-            self._tilemap_button.value * 1000
-            + (self._image_window.cursor_y // 8) * 32
-            + (self._image_window.cursor_x // 8) * 8
-        )
+            self._select_window.cursor_y // 8
+        ) * 32 + self._select_window.cursor_x // 8
 
     @color.setter
     def color(self, value):
-        self._tilemap_button.value = value // 1000
+        self._select_window.cursor_y = (value // 32) * 8
+        self._select_window.cursor_x = (value % 32) * 8
 
     @property
     def tool(self):
@@ -59,36 +58,12 @@ class TileMapEditor(Editor):
         self._image_button.value = value
 
     @property
-    def edit_x(self):
-        return self._edit_window.edit_x
-
-    @edit_x.setter
-    def edit_x(self, value):
-        self._edit_window.edit_x = value
+    def select_x(self):
+        return self._select_window.select_x
 
     @property
-    def edit_y(self):
-        return self._edit_window.edit_y
-
-    @edit_y.setter
-    def edit_y(self, value):
-        self._edit_window.edit_y = value
-
-    @property
-    def image_x(self):
-        return self._image_window.image_x
-
-    @image_x.setter
-    def image_x(self, value):
-        self._image_window.image_x = value
-
-    @property
-    def image_y(self):
-        return self._image_window.image_y
-
-    @image_y.setter
-    def image_y(self, value):
-        self._image_window.image_y = value
+    def select_y(self):
+        return self._select_window.select_y
 
     def __on_undo(self, data):
         img = data["img"]
