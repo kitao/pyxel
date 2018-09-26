@@ -65,7 +65,7 @@ class ImageEditor(Editor):
         self._edit_window.edit_y = value
 
     def __on_undo(self, data):
-        img = data["img"]
+        img = data["image"]
         x, y = data["pos"]
         dest = pyxel.image(img).data[y : y + 16, x : x + 16]
         dest[:, :] = data["before"]
@@ -75,7 +75,7 @@ class ImageEditor(Editor):
         self.parent.image = img
 
     def __on_redo(self, data):
-        img = data["img"]
+        img = data["image"]
         x, y = data["pos"]
         dest = pyxel.image(img).data[y : y + 16, x : x + 16]
         dest[:, :] = data["after"]
