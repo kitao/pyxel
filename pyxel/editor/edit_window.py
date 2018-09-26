@@ -83,22 +83,36 @@ class EditWindow(Widget):
         elif self.parent.tool >= TOOL_PENCIL and self.parent.tool <= TOOL_CIRC:
             self._overlay_canvas.pix(x, y, self.parent.color)
         elif self.parent.tool == TOOL_BUCKET:
-            dest = pyxel.image(self.parent.image).data[
-                self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
-            ]
+            if self._is_tilemap_mode:
+                dest = pyxel.tilemap(self.parent.tilemap).data[
+                    self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
+                ]
 
-            data = {}
-            data["img"] = self.parent.image
-            data["pos"] = (self.edit_x, self.edit_y)
-            data["before"] = dest.copy()
+                pass
 
-            dest = pyxel.image(self.parent.image).data[
-                self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
-            ]
-            self._overlay_canvas.paint(x, y, self.parent.color, dest)
+                dest = pyxel.tilemap(self.parent.tilemap).data[
+                    self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
+                ]
+                self._overlay_canvas.paint(x, y, self.parent.color, dest)
 
-            data["after"] = dest.copy()
-            self.parent.add_edit_history(data)
+                pass
+            else:
+                dest = pyxel.image(self.parent.image).data[
+                    self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
+                ]
+
+                data = {}
+                data["img"] = self.parent.image
+                data["pos"] = (self.edit_x, self.edit_y)
+                data["before"] = dest.copy()
+
+                dest = pyxel.image(self.parent.image).data[
+                    self.edit_y : self.edit_y + 16, self.edit_x : self.edit_x + 16
+                ]
+                self._overlay_canvas.paint(x, y, self.parent.color, dest)
+
+                data["after"] = dest.copy()
+                self.parent.add_edit_history(data)
 
         self._last_x = x
         self._last_y = y
@@ -143,7 +157,11 @@ class EditWindow(Widget):
         if key == pyxel.KEY_RIGHT_BUTTON:
             x = self.edit_x + (x - self.x) // 8
             y = self.edit_y + (y - self.y) // 8
-            self.parent.color = pyxel.image(self.parent.image).data[y, x]
+
+            if self._is_tilemap_mode:
+                self.parent.color = pyxel.tilemap(self.parent.tilemap).data[y, x]
+            else:
+                self.parent.color = pyxel.image(self.parent.image).data[y, x]
 
     def __on_drag(self, key, x, y, dx, dy):
         if key == pyxel.KEY_LEFT_BUTTON:
@@ -262,7 +280,14 @@ class EditWindow(Widget):
     def __on_draw(self):
         if self._is_tilemap_mode:
             pyxel.bltmap(
-                self.x, self.y, self.parent.tilemap, self.edit_x, self.edit_y, 16, 16
+                self.x,
+                self.y,
+                self.parent.image,
+                self.parent.tilemap,
+                self.edit_x,
+                self.edit_y,
+                16,
+                16,
             )
 
             for i in range(16):
@@ -270,20 +295,19 @@ class EditWindow(Widget):
                 for j in range(16):
                     x = self.x + j * 8
 
-                    if self._overlay_canvas.data[i, j] >= 0:
-                        val = self._overlay_canvas.data[i, j]
-                        img = val // 1000
-                        s = val % 1000
-                        sx = (s % 8) * 8
-                        sy = (s // 8) * 8
-                        pyxel.blt(x, y, img, sx, sy, 8, 8)
+                    val = self._overlay_canvas.data[i, j]
+                    if val >= 0:
+                        sx = (val % 32) * 8
+                        sy = (val // 32) * 8
+                        pyxel.blt(x, y, self.parent.image, sx, sy, 8, 8)
         else:
             for i in range(16):
                 y = self.y + i * 8
                 for j in range(16):
                     x = self.x + j * 8
 
-                    if self._overlay_canvas.data[i, j] >= 0:
+                    val = self._overlay_canvas.data[i, j]
+                    if val >= 0:
                         col = self._overlay_canvas.data[i, j]
                     else:
                         data = pyxel.image(self.parent.image).data
@@ -304,10 +328,10 @@ class EditWindow(Widget):
             pyxel.rectb(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 15)
             pyxel.rectb(x1 + 2, y1 + 2, x2 - 2, y2 - 2, 0)
 
-    def on_color_change(self, value):
+    def __on_color_change(self, value):
         if self.parent.tool == TOOL_SELECT:
             self.parent.tool = TOOL_PENCIL
 
-    def on_tool_change(self, value):
+    def __on_tool_change(self, value):
         if self.parent.tool == TOOL_SELECT:
             self._select_x1 = -1
