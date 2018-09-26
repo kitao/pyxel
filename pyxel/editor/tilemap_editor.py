@@ -66,21 +66,21 @@ class TileMapEditor(Editor):
         return self._select_window.select_y
 
     def __on_undo(self, data):
-        img = data["img"]
+        tm = data["tilemap"]
         x, y = data["pos"]
-        dest = pyxel.image(img).data[y : y + 16, x : x + 16]
+        dest = pyxel.tilemap(tm).data[y : y + 16, x : x + 16]
         dest[:, :] = data["before"]
 
-        self.edit_window.edit_x = x
-        self.edit_window.edit_y = y
-        self.image_button.value = img
+        self._edit_window.edit_x = x
+        self._edit_window.edit_y = y
+        self._tilemap_button.value = tm
 
     def __on_redo(self, data):
-        img = data["img"]
+        tm = data["tilemap"]
         x, y = data["pos"]
-        dest = pyxel.image(img).data[y : y + 16, x : x + 16]
+        dest = pyxel.tilemap(tm).data[y : y + 16, x : x + 16]
         dest[:, :] = data["after"]
 
-        self.edit_window.edit_x = x
-        self.edit_window.edit_y = y
-        self.image_button.value = img
+        self._edit_window.edit_x = x
+        self._edit_window.edit_y = y
+        self._tilemap_button.value = tm
