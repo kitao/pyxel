@@ -86,6 +86,7 @@ class DrawCommand:
 
         if self.draw_count >= self._max_draw_count:
             return
+
         data = self._draw_att_data[self.draw_count]
         data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
@@ -106,6 +107,7 @@ class DrawCommand:
     def pix(self, x, y, col):
         if self.draw_count >= self._max_draw_count:
             return
+
         data = self._draw_att_data[self.draw_count]
         data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
@@ -119,6 +121,7 @@ class DrawCommand:
     def line(self, x1, y1, x2, y2, col):
         if self.draw_count >= self._max_draw_count:
             return
+
         data = self._draw_att_data[self.draw_count]
         data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
@@ -134,6 +137,7 @@ class DrawCommand:
     def rect(self, x1, y1, x2, y2, col):
         if self.draw_count >= self._max_draw_count:
             return
+
         data = self._draw_att_data[self.draw_count]
         data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
@@ -149,6 +153,7 @@ class DrawCommand:
     def rectb(self, x1, y1, x2, y2, col):
         if self.draw_count >= self._max_draw_count:
             return
+
         data = self._draw_att_data[self.draw_count]
         data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
@@ -164,6 +169,7 @@ class DrawCommand:
     def circ(self, x, y, r, col):
         if self.draw_count >= self._max_draw_count:
             return
+
         data = self._draw_att_data[self.draw_count]
         data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
@@ -179,6 +185,7 @@ class DrawCommand:
     def circb(self, x, y, r, col):
         if self.draw_count >= self._max_draw_count:
             return
+
         data = self._draw_att_data[self.draw_count]
         data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
@@ -194,6 +201,7 @@ class DrawCommand:
     def blt(self, x, y, img, sx, sy, w, h, colkey=None):
         if self.draw_count >= self._max_draw_count:
             return
+
         data = self._draw_att_data[self.draw_count]
         data[CLIP_PAL_INDEX : CLIP_PAL_INDEX + CLIP_PAL_COUNT] = self._clip_pal_data
         self.draw_count += 1
