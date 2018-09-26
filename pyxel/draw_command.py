@@ -210,15 +210,13 @@ class DrawCommand:
         data[SIZE_W_INDEX] = w
         data[SIZE_H_INDEX] = h
 
-    def bltmap(self, x, y, tm, tx, ty, tw, th, colkey=None):
+    def bltmap(self, x, y, img, tm, tx, ty, tw, th, colkey=None):
         for dy in range(th):
             for dx in range(tw):
                 tilemap = self._renderer.tilemap(tm)
                 val = tilemap._data[ty + dy, tx + dx]
-                img = val // 1000
-                s = val % 1000
-                sx = (s % 8) * 8
-                sy = (s // 8) * 8
+                sx = (val % 32) * 8
+                sy = (val // 32) * 8
                 self.blt(x + dx * 8, y + dy * 8, img, sx, sy, 8, 8, colkey)
 
     def text(self, x, y, s, col):
