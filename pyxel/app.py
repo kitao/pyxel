@@ -41,6 +41,8 @@ from .constants import (
     KEY_RIGHT_SUPER,
     KEY_SHIFT,
     KEY_SUPER,
+    RENDERER_IMAGE_COUNT,
+    RENDERER_TILEMAP_COUNT,
 )
 from .renderer import Renderer
 
@@ -253,8 +255,15 @@ class App:
     def save(self, filename):
         data = {"version": self._module.VERSION}
 
-        image = [self._module.image(i).data.dumps() for i in range(3)]
+        image = [
+            self._module.image(i).data.dumps() for i in range(RENDERER_IMAGE_COUNT - 1)
+        ]
         data["image"] = image
+
+        tilemap = [
+            self._module.tilemap(i).data.dumps() for i in range(RENDERER_TILEMAP_COUNT)
+        ]
+        data["tilemap"] = tilemap
 
         pickled_data = pickle.dumps(data)
 
@@ -268,8 +277,12 @@ class App:
         data = pickle.loads(pickled_data)
 
         image = data["image"]
-        for i in range(3):
+        for i in range(RENDERER_IMAGE_COUNT - 1):
             self._module.image(i).data[:, :] = np.loads(image[i])
+
+        tilemap = data["tilemap"]
+        for i in range(RENDERER_TILEMAP_COUNT):
+            self._module.tilemap(i).data[:, :] = np.loads(tilemap[i])
 
     def palettize_pil_image(self, pil_image):
         im = pil_image.im.convert("P", 0, self._pil_palette.im)
