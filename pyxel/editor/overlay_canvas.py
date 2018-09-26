@@ -3,7 +3,7 @@ import numpy as np
 
 class OverlayCanvas:
     def __init__(self):
-        self.data = np.ndarray((16, 16), np.int8)
+        self.data = np.ndarray((16, 16), np.int16)
         self.clear()
 
     def clear(self):
