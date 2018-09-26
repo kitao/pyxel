@@ -19,7 +19,7 @@ class ScrollBar(Widget):
         self.slider_range = slider_range
         self._drag_offset = 0
         self._is_dragged = True
-        self.value = 0
+        self._value = 0
 
         if self.is_horizontal:
             self.dec_button = Button(
@@ -73,8 +73,18 @@ class ScrollBar(Widget):
     @property
     def slider_pos(self):
         return round(
-            self.button_size + self.scroll_size * self.value / self.scroll_range
+            self.button_size + self.scroll_size * self._value / self.scroll_range
         )
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        if self._value != value:
+            self._value = value
+            self.call_event_handler("change", value)
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
@@ -107,12 +117,8 @@ class ScrollBar(Widget):
         )
         self.value = int(min(max(value, 0), self.scroll_range - self.slider_range))
 
-        self.call_event_handler("change", self.value)
-
     def __on_dec_button_press(self):
-        self.value = max(self.value - 1, 0)
-        self.call_event_handler("change", self.value)
+        self.value = max(self._value - 1, 0)
 
     def __on_inc_button_press(self):
-        self.value = min(self.value + 1, self.scroll_range - self.slider_range)
-        self.call_event_handler("change", self.value)
+        self.value = min(self._value + 1, self.scroll_range - self.slider_range)
