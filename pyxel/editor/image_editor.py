@@ -1,17 +1,17 @@
 import pyxel
 
-from .edit_window import EditWindow
+from .edit_frame import EditFrame
 from .editor import Editor
 from .editor_radio_button import EditorRadioButton
-from .select_window import SelectWindow
+from .select_frame import SelectFrame
 
 
 class ImageEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent, "image_editor.png")
 
-        self._edit_window = EditWindow(self, is_tilemap_mode=False)
-        self._select_window = SelectWindow(self, is_tilemap_mode=False)
+        self._edit_frame = EditFrame(self, is_tilemap_mode=False)
+        self._select_frame = SelectFrame(self, is_tilemap_mode=False)
         self._color_button = EditorRadioButton(
             self, 12, 157, 8, 2, 1, is_color_button=True
         )
@@ -50,19 +50,19 @@ class ImageEditor(Editor):
 
     @property
     def edit_x(self):
-        return self._edit_window.edit_x
+        return self._edit_frame.edit_x
 
     @edit_x.setter
     def edit_x(self, value):
-        self._edit_window.edit_x = value
+        self._edit_frame.edit_x = value
 
     @property
     def edit_y(self):
-        return self._edit_window.edit_y
+        return self._edit_frame.edit_y
 
     @edit_y.setter
     def edit_y(self, value):
-        self._edit_window.edit_y = value
+        self._edit_frame.edit_y = value
 
     def __on_undo(self, data):
         img = data["image"]
