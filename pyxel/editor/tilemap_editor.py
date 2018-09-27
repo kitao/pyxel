@@ -1,17 +1,17 @@
 import pyxel
 
-from .edit_window import EditWindow
+from .edit_frame import EditFrame
 from .editor import Editor
 from .editor_radio_button import EditorRadioButton
-from .select_window import SelectWindow
+from .select_frame import SelectFrame
 
 
 class TileMapEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent, "tilemap_editor.png")
 
-        self._edit_window = EditWindow(self, is_tilemap_mode=True)
-        self._select_window = SelectWindow(self, is_tilemap_mode=True)
+        self._edit_frame = EditFrame(self, is_tilemap_mode=True)
+        self._select_frame = SelectFrame(self, is_tilemap_mode=True)
         self._tilemap_button = EditorRadioButton(self, 47, 161, 3, 1, 3)
         self._tool_button = EditorRadioButton(self, 81, 161, 7, 1, 2)
         self._image_button = EditorRadioButton(self, 191, 161, 3, 1, 3)
@@ -33,13 +33,13 @@ class TileMapEditor(Editor):
     @property
     def color(self):
         return (
-            self._select_window.cursor_y // 8
-        ) * 32 + self._select_window.cursor_x // 8
+            self._select_frame.cursor_y // 8
+        ) * 32 + self._select_frame.cursor_x // 8
 
     @color.setter
     def color(self, value):
-        self._select_window.cursor_y = (value // 32) * 8
-        self._select_window.cursor_x = (value % 32) * 8
+        self._select_frame.cursor_y = (value // 32) * 8
+        self._select_frame.cursor_x = (value % 32) * 8
 
     @property
     def tool(self):
@@ -59,11 +59,11 @@ class TileMapEditor(Editor):
 
     @property
     def select_x(self):
-        return self._select_window.select_x
+        return self._select_frame.select_x
 
     @property
     def select_y(self):
-        return self._select_window.select_y
+        return self._select_frame.select_y
 
     def __on_undo(self, data):
         tm = data["tilemap"]
@@ -71,8 +71,8 @@ class TileMapEditor(Editor):
         dest = pyxel.tilemap(tm).data[y : y + 16, x : x + 16]
         dest[:, :] = data["before"]
 
-        self._edit_window.edit_x = x
-        self._edit_window.edit_y = y
+        self._edit_frame.edit_x = x
+        self._edit_frame.edit_y = y
         self._tilemap_button.value = tm
 
     def __on_redo(self, data):
@@ -81,6 +81,6 @@ class TileMapEditor(Editor):
         dest = pyxel.tilemap(tm).data[y : y + 16, x : x + 16]
         dest[:, :] = data["after"]
 
-        self._edit_window.edit_x = x
-        self._edit_window.edit_y = y
+        self._edit_frame.edit_x = x
+        self._edit_frame.edit_y = y
         self._tilemap_button.value = tm

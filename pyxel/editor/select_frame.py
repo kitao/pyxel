@@ -4,7 +4,7 @@ from pyxel.ui import Widget
 from .editor_scroll_bar import EditorScrollBar
 
 
-class SelectWindow(Widget):
+class SelectFrame(Widget):
     def __init__(self, parent, *, is_tilemap_mode):
         super().__init__(parent, 158, 17, 64, 128)
 
