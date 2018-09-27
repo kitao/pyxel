@@ -13,7 +13,7 @@ TOOL_CIRC = 5
 TOOL_BUCKET = 6
 
 
-class EditWindow(Widget):
+class EditFrame(Widget):
     def __init__(self, parent, *, is_tilemap_mode):
         super().__init__(parent, 12, 17, 128, 128)
 
