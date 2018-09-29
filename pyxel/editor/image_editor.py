@@ -5,7 +5,7 @@ from .edit_frame import EditFrame
 from .editor import Editor
 from .editor_number_picker import EditorNumberPicker
 from .editor_radio_button import EditorRadioButton
-from .select_frame import SelectFrame
+from .image_frame import ImageFrame
 
 
 class ImageEditor(Editor):
@@ -13,7 +13,7 @@ class ImageEditor(Editor):
         super().__init__(parent, "image_editor.png")
 
         self._edit_frame = EditFrame(self, is_tilemap_mode=False)
-        self._select_frame = SelectFrame(self, is_tilemap_mode=False)
+        self._image_frame = ImageFrame(self, is_tilemap_mode=False)
         self._color_button = EditorRadioButton(
             self, 12, 157, 8, 2, 1, is_color_button=True
         )
@@ -48,25 +48,21 @@ class ImageEditor(Editor):
     def image(self):
         return self._image_number.value
 
-    @image.setter
-    def image(self, value):
-        self._image_button.value = value
-
     @property
     def edit_x(self):
-        return self._edit_frame.edit_x
+        return self._edit_frame.viewport_x
 
     @edit_x.setter
     def edit_x(self, value):
-        self._edit_frame.edit_x = value
+        self._edit_frame.viewport_x = value
 
     @property
     def edit_y(self):
-        return self._edit_frame.edit_y
+        return self._edit_frame.viewport_y
 
     @edit_y.setter
     def edit_y(self, value):
-        self._edit_frame.edit_y = value
+        self._edit_frame.viewport_y = value
 
     def __on_undo(self, data):
         img = data["image"]
