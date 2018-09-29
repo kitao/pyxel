@@ -47,11 +47,11 @@ class ImageFrame(Widget):
             y -= self.y
 
             if self._is_tilemap_mode:
-                self.select_x = min(max(self.viewport_x + (x // 8) * 8, 0), 248)
-                self.select_y = min(max(self.viewport_y + (y // 8) * 8, 0), 248)
+                self.select_x = self.viewport_x + min(max((x - 4) // 8, 0), 7) * 8
+                self.select_y = self.viewport_y + min(max((y - 4) // 8, 0), 7) * 8
             else:
-                self.select_x = min(max(self.viewport_x + ((x - 4) // 8) * 8, 0), 240)
-                self.select_y = min(max(self.viewport_y + ((y - 4) // 8) * 8, 0), 240)
+                self.select_x = self.viewport_x + min(max((x - 4) // 8, 0), 6) * 8
+                self.select_y = self.viewport_y + min(max((y - 4) // 8, 0), 14) * 8
 
                 self.parent.edit_x = self.select_x
                 self.parent.edit_y = self.select_y

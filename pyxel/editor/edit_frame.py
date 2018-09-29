@@ -222,15 +222,15 @@ class EditFrame(Widget):
             self._drag_offset_x -= dx
             self._drag_offset_y -= dy
 
-            if abs(self._drag_offset_x) >= 8:
-                offset = (self._drag_offset_x // 8) * 8
-                self.viewport_x += offset
-                self._drag_offset_x -= offset
+            if abs(self._drag_offset_x) >= 16:
+                offset = self._drag_offset_x // 16
+                self.viewport_x += offset * 8
+                self._drag_offset_x -= offset * 16
 
-            if abs(self._drag_offset_y) >= 8:
-                offset = (self._drag_offset_y // 8) * 8
-                self.viewport_y += offset
-                self._drag_offset_y -= offset
+            if abs(self._drag_offset_y) >= 16:
+                offset = self._drag_offset_y // 16
+                self.viewport_y += offset * 8
+                self._drag_offset_y -= offset * 16
 
             self.viewport_x = min(max(self.viewport_x, 0), 240)
             self.viewport_y = min(max(self.viewport_y, 0), 240)
