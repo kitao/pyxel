@@ -36,5 +36,5 @@ class EditorScrollBar(ScrollBar):
             w, h = (4, 5) if self.is_horizontal else (5, 4)
 
             pyxel.pal(6, 7)
-            pyxel.blt(x, y, 3, x, y + 16, w, h)
+            pyxel.blt(x, y, 3, x, y + 12, w, h)
             pyxel.pal()

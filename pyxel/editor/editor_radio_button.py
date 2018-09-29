@@ -41,5 +41,5 @@ class EditorRadioButton(RadioButton):
             y = self.y + (self.button_h + self.margin_y) * (self.value // self.column)
 
             pyxel.pal(13, 7)
-            pyxel.blt(x, y, 3, x, y + 16, BUTTON_SIZE, BUTTON_SIZE)
+            pyxel.blt(x, y, 3, x, y + 12, BUTTON_SIZE, BUTTON_SIZE)
             pyxel.pal()
