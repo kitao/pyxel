@@ -61,7 +61,9 @@ class ImageFrame(Widget):
             self._drag_offset_y = 0
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
-        if key == pyxel.KEY_RIGHT_BUTTON:
+        if key == pyxel.KEY_LEFT_BUTTON:
+            self.__on_mouse_down(key, x, y)
+        elif key == pyxel.KEY_RIGHT_BUTTON:
             self._drag_offset_x -= dx
             self._drag_offset_y -= dy
 
