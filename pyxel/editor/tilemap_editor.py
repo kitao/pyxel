@@ -5,7 +5,8 @@ from .edit_frame import EditFrame
 from .editor import Editor
 from .editor_number_picker import EditorNumberPicker
 from .editor_radio_button import EditorRadioButton
-from .select_frame import SelectFrame
+from .image_frame import ImageFrame
+from .tilemap_frame import TilemapFrame
 
 
 class TileMapEditor(Editor):
@@ -13,7 +14,8 @@ class TileMapEditor(Editor):
         super().__init__(parent, "tilemap_editor.png")
 
         self._edit_frame = EditFrame(self, is_tilemap_mode=True)
-        self._select_frame = SelectFrame(self, is_tilemap_mode=True)
+        self._tilemap_frame = TilemapFrame(self)
+        self._select_frame = ImageFrame(self, is_tilemap_mode=True)
         self._tilemap_number = EditorNumberPicker(
             self, 48, 161, 25, 7, 0, RENDERER_TILEMAP_COUNT - 1
         )
@@ -39,8 +41,8 @@ class TileMapEditor(Editor):
     @property
     def color(self):
         return (
-            self._select_frame.cursor_y // 8
-        ) * 32 + self._select_frame.cursor_x // 8
+            self._select_frame.select_y // 8
+        ) * 32 + self._select_frame.select_x // 8
 
     @color.setter
     def color(self, value):
@@ -64,12 +66,28 @@ class TileMapEditor(Editor):
         self._image_button.value = value
 
     @property
-    def select_x(self):
-        return self._select_frame.select_x
+    def edit_x(self):
+        return self._edit_frame.viewport_x
+
+    @edit_x.setter
+    def edit_x(self, value):
+        self._edit_frame.viewport_x = value
 
     @property
-    def select_y(self):
-        return self._select_frame.select_y
+    def edit_y(self):
+        return self._edit_frame.viewport_y
+
+    @edit_y.setter
+    def edit_y(self, value):
+        self._edit_frame.viewport_y = value
+
+    # @property
+    # def select_x(self):
+    #    return self._select_frame.select_x
+
+    # @property
+    # def select_y(self):
+    #    return self._select_frame.select_y
 
     def __on_undo(self, data):
         tm = data["tilemap"]
@@ -79,7 +97,7 @@ class TileMapEditor(Editor):
 
         self._edit_frame.edit_x = x
         self._edit_frame.edit_y = y
-        self._tilemap_button.value = tm
+        self._tilemap_number.value = tm
 
     def __on_redo(self, data):
         tm = data["tilemap"]
@@ -89,4 +107,4 @@ class TileMapEditor(Editor):
 
         self._edit_frame.edit_x = x
         self._edit_frame.edit_y = y
-        self._tilemap_button.value = tm
+        self._tilemap_number.value = tm
