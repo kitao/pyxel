@@ -4,7 +4,7 @@ import pyxel
 from pyxel.ui import Widget
 
 from .editor_button import EditorButton
-from .editor_constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from .editor_constants import EDITOR_HEIGHT, EDITOR_WIDTH
 from .editor_radio_button import EditorRadioButton
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
@@ -20,8 +20,8 @@ class EditorApp:
             resource_file += ".pyxel"
 
         pyxel.init(
-            SCREEN_WIDTH,
-            SCREEN_HEIGHT,
+            EDITOR_WIDTH,
+            EDITOR_HEIGHT,
             caption="Pyxel Editor - {}".format(resource_file),
         )
 

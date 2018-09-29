@@ -5,7 +5,7 @@ import numpy as np
 import pyxel
 from pyxel.ui import Widget
 
-from .editor_constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from .editor_constants import EDITOR_HEIGHT, EDITOR_WIDTH
 
 
 class Editor(Widget):
@@ -16,13 +16,13 @@ class Editor(Widget):
     """
 
     def __init__(self, parent, image_file):
-        super().__init__(parent, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, is_visible=False)
+        super().__init__(parent, 0, 0, EDITOR_WIDTH, EDITOR_HEIGHT, is_visible=False)
 
         image_file = os.path.join(os.path.dirname(__file__), "assets", image_file)
-        pyxel.image(3, system=True).load(0, 16, image_file)
+        pyxel.image(3, system=True).load(0, 12, image_file)
 
         data = pyxel.image(3, system=True).data
-        self._image_data = np.copy(data[16 : SCREEN_HEIGHT + 16, 0:SCREEN_WIDTH])
+        self._image_data = np.copy(data[12 : EDITOR_HEIGHT + 12, 0:EDITOR_WIDTH])
 
         self._edit_history_list = []
         self._edit_history_index = 0
@@ -63,10 +63,10 @@ class Editor(Widget):
 
     def __on_show(self):
         data = pyxel.image(3, system=True).data
-        data[16 : 16 + SCREEN_HEIGHT, 0:SCREEN_WIDTH] = self._image_data
+        data[12 : 12 + EDITOR_HEIGHT, 0:EDITOR_WIDTH] = self._image_data
 
     def __on_draw(self):
-        pyxel.blt(0, 0, 3, 0, 16, SCREEN_WIDTH, SCREEN_HEIGHT, 6)
+        pyxel.blt(0, 0, 3, 0, 12, EDITOR_WIDTH, EDITOR_HEIGHT, 6)
 
     def draw_not_implemented_message(self):
         pyxel.rect(78, 83, 163, 97, 11)
