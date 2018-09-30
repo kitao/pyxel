@@ -1,9 +1,8 @@
 import os
 
 import pyxel
-from pyxel.ui import Widget
+from pyxel.ui import ImageButton, Widget
 
-from .editor_button import EditorButton
 from .editor_constants import EDITOR_HEIGHT, EDITOR_WIDTH
 from .editor_radio_button import EditorRadioButton
 from .image_editor import ImageEditor
@@ -46,13 +45,13 @@ class EditorApp:
         )
         self.set_screen(0)
 
-        self._undo_button = EditorButton(self._root_widget, 48, 1, 7, 7)
+        self._undo_button = ImageButton(self._root_widget, 48, 1, 3, 48, 13)
         self._undo_button.add_event_handler("press", self.__on_undo_press)
 
-        self._redo_button = EditorButton(self._root_widget, 57, 1, 7, 7)
+        self._redo_button = ImageButton(self._root_widget, 57, 1, 3, 57, 13)
         self._redo_button.add_event_handler("press", self.__on_redo_press)
 
-        self._save_button = EditorButton(self._root_widget, 75, 1, 7, 7)
+        self._save_button = ImageButton(self._root_widget, 75, 1, 3, 75, 13)
         self._save_button.add_event_handler("press", self.__on_save_press)
 
         pyxel.run(self.update, self.draw)
