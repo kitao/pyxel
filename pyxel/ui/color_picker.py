@@ -44,7 +44,7 @@ class ColorPicker(Widget):
         x2 = x1 + 6
         y2 = x2 + 6
 
-        if x >= x1 and x < x2 and y >= y1 and y < y2:
+        if x >= x1 and x <= x2 and y >= y1 and y <= y2:
             self.value = index_y * 8 + index_x
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
