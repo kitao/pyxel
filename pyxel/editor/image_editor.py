@@ -1,10 +1,9 @@
 import pyxel
 from pyxel.constants import RENDERER_IMAGE_COUNT
-from pyxel.ui import ColorPicker
+from pyxel.ui import ColorPicker, NumberPicker
 
 from .edit_frame import EditFrame
 from .editor import Editor
-from .editor_number_picker import EditorNumberPicker
 from .editor_radio_button import EditorRadioButton
 from .image_frame import ImageFrame
 
@@ -17,9 +16,7 @@ class ImageEditor(Editor):
         self._image_frame = ImageFrame(self, is_tilemap_mode=False)
         self._color_picker = ColorPicker(self, 11, 156)
         self._tool_button = EditorRadioButton(self, 81, 161, 7, 1, 2)
-        self._image_number = EditorNumberPicker(
-            self, 192, 161, 25, 7, 0, RENDERER_IMAGE_COUNT - 2
-        )
+        self._image_number = NumberPicker(self, 192, 161, 0, RENDERER_IMAGE_COUNT - 2)
 
         self.color = 7
         self.tool = 1

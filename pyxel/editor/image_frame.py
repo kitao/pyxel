@@ -1,7 +1,5 @@
 import pyxel
-from pyxel.ui import Widget
-
-from .editor_scroll_bar import EditorScrollBar
+from pyxel.ui import ScrollBar, Widget
 
 
 class ImageFrame(Widget):
@@ -20,13 +18,13 @@ class ImageFrame(Widget):
         self._drag_offset_x = 0
         self._drag_offset_y = 0
 
-        self._h_scroll_bar = EditorScrollBar(self, 157, 145, 66, 7, 32, 8)
+        self._h_scroll_bar = ScrollBar(self, 157, 145, 66, "horizontal", 32, 8)
         self._h_scroll_bar.add_event_handler("change", self.__on_change_x)
 
         if is_tilemap_mode:
-            self._v_scroll_bar = EditorScrollBar(self, 222, 80, 7, 66, 32, 8)
+            self._v_scroll_bar = ScrollBar(self, 222, 80, 66, "vertical", 32, 8)
         else:
-            self._v_scroll_bar = EditorScrollBar(self, 222, 16, 7, 130, 32, 16)
+            self._v_scroll_bar = ScrollBar(self, 222, 16, 130, "vertical", 32, 16)
 
         self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
 
