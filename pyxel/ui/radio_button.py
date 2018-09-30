@@ -9,32 +9,20 @@ class RadioButton(Widget):
         __on_change(value)
     """
 
-    def __init__(
-        self,
-        parent,
-        x,
-        y,
-        button_w,
-        button_h,
-        margin_x,
-        margin_y,
-        column,
-        row,
-        **kwargs
-    ):
-        width = button_w * column + margin_x * (column - 1)
-        height = button_h * row + margin_y * (row - 1)
+    def __init__(self, parent, x, y, img, sx, sy, btn_count, **kwargs):
+        width = btn_count * 9 - 2
+        height = 7
         super().__init__(parent, x, y, width, height, **kwargs)
 
-        self.button_w = button_w
-        self.button_h = button_h
-        self.margin_x = margin_x
-        self.margin_y = margin_y
-        self.column = column
-        self.row = row
+        self._img = img
+        self._sx = sx
+        self._sy = sy
+        self._btn_count = btn_count
         self._value = 0
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
+        self.add_event_handler("mouse_drag", self.__on_mouse_drag)
+        self.add_event_handler("draw", self.__on_draw)
 
     @property
     def value(self):
@@ -53,19 +41,23 @@ class RadioButton(Widget):
         x -= self.x
         y -= self.y
 
-        interval_x = self.button_w + self.margin_x
-        interval_y = self.button_h + self.margin_y
+        index = x // 9
 
-        index_x = x // interval_x
-        index_y = y // interval_y
+        x1 = index * 9
+        y1 = 0
+        x2 = x1 + 6
+        y2 = y1 + 6
 
-        button_x = interval_x * index_x
-        button_y = interval_y * index_y
+        if x >= x1 and x <= x2 and y >= y1 and y <= y2:
+            self.value = index
 
-        if (
-            x >= button_x
-            and x < button_x + self.button_w
-            and y >= button_y
-            and y < button_y + self.button_h
-        ):
-            self.value = self.column * index_y + index_x
+    def __on_mouse_drag(self, key, x, y, dx, dy):
+        self.__on_mouse_down(key, x, y)
+
+    def __on_draw(self):
+        x = self.x + self.value * 9
+        y = self.y
+
+        pyxel.pal(13, 7)
+        pyxel.blt(x, y, 3, x, y + 12, 7, 7)
+        pyxel.pal()
