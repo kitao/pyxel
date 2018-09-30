@@ -1,5 +1,6 @@
 import pyxel
 
+from .ui_constants import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
 from .widget import Widget
 
 
@@ -41,7 +42,7 @@ class RadioButton(Widget):
         x -= self.x
         y -= self.y
 
-        index = x // 9
+        index = min(max(x // 9, 0), self._btn_count - 1)
 
         x1 = index * 9
         y1 = 0
@@ -55,9 +56,14 @@ class RadioButton(Widget):
         self.__on_mouse_down(key, x, y)
 
     def __on_draw(self):
-        x = self.x + self.value * 9
-        y = self.y
-
-        pyxel.pal(13, 7)
-        pyxel.blt(x, y, 3, x, y + 12, 7, 7)
+        pyxel.pal(BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR)
+        pyxel.blt(
+            self.x + self.value * 9,
+            self.y,
+            self._img,
+            self._sx + self.value * 9,
+            self._sy,
+            7,
+            7,
+        )
         pyxel.pal()
