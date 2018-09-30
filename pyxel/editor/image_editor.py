@@ -4,7 +4,6 @@ from pyxel.ui import ColorPicker, NumberPicker, RadioButton
 
 from .edit_frame import EditFrame
 from .editor import Editor
-from .editor_radio_button import EditorRadioButton
 from .image_frame import ImageFrame
 
 
