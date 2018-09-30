@@ -15,8 +15,8 @@ class ImageButton(Button):
         __on_release()
     """
 
-    def __init__(self, parent, x, y, img, sx, sy, w, h, **kwargs):
-        super().__init__(parent, x, y, w, h, **kwargs)
+    def __init__(self, parent, x, y, img, sx, sy, **kwargs):
+        super().__init__(parent, x, y, 7, 7, **kwargs)
 
         self._img = img
         self._sx = sx
