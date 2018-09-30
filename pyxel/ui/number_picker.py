@@ -1,6 +1,7 @@
 import pyxel
 
-from .button import Button
+from .text_button import TextButton
+from .ui_constants import WIDGET_INPUT_COLOR
 from .widget import Widget
 
 
@@ -10,31 +11,24 @@ class NumberPicker(Widget):
         __on_change(value)
     """
 
-    def __init__(self, parent, x, y, width, height, min_value, max_value, **kwargs):
+    def __init__(self, parent, x, y, min_value, max_value, **kwargs):
+        width = max(len(str(min_value)), len(str(max_value))) * 4 + 21
+        height = 7
         super().__init__(parent, x, y, width, height, **kwargs)
 
         self._min_value = min_value
         self._max_value = max_value
-        self._value = 0
+        self._value = None
 
-        self.dec_button = Button(
-            self, x, y, self.button_size, self.button_size, is_key_repeat=True
-        )
-        self.inc_button = Button(
-            self,
-            x + width - self.button_size,
-            y,
-            self.button_size,
-            self.button_size,
-            is_key_repeat=True,
-        )
+        self.dec_button = TextButton(self, x, y, "-")
+        self.inc_button = TextButton(self, x + width - 7, y, "+")
+
+        self.add_event_handler("draw", self.__on_draw)
 
         self.dec_button.add_event_handler("press", self.__on_dec_button_press)
         self.inc_button.add_event_handler("press", self.__on_inc_button_press)
 
-    @property
-    def button_size(self):
-        return min(self.width, self.height)
+        self.value = 0
 
     @property
     def value(self):
@@ -45,6 +39,19 @@ class NumberPicker(Widget):
         if self._value != value:
             self._value = value
             self.call_event_handler("change", value)
+
+            self.dec_button.is_enabled = self._value != self._min_value
+            self.inc_button.is_enabled = self._value != self._max_value
+
+    def __on_draw(self):
+        pyxel.rect(
+            self.x + 9,
+            self.y,
+            self.x + self.width - 10,
+            self.y + self.height - 1,
+            WIDGET_INPUT_COLOR,
+        )
+        pyxel.text(self.x + 11, self.y + 1, str(self.value), 1)
 
     def __on_dec_button_press(self):
         offset = 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
