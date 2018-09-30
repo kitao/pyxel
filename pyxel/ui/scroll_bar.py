@@ -1,7 +1,11 @@
 import pyxel
 
 from .button import Button
-from .ui_constants import WIDGET_BACKGROUND_COLOR, WIDGET_BASE_COLOR
+from .ui_constants import (
+    BUTTON_PRESSED_COLOR,
+    WIDGET_BACKGROUND_COLOR,
+    WIDGET_BASE_COLOR,
+)
 from .widget import Widget
 
 
@@ -138,10 +142,21 @@ class ScrollBar(Widget):
         pyxel.rect(x1 + 1, y1, x2 - 1, y2, WIDGET_BASE_COLOR)
         pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_BASE_COLOR)
 
+        inc_color = (
+            BUTTON_PRESSED_COLOR
+            if self.inc_button.is_pressed
+            else WIDGET_BACKGROUND_COLOR
+        )
+        dec_color = (
+            BUTTON_PRESSED_COLOR
+            if self.dec_button.is_pressed
+            else WIDGET_BACKGROUND_COLOR
+        )
+
         if self.is_horizontal:
-            pyxel.rect(x1 + 1, y1 + 1, x1 + 4, y2 - 1, WIDGET_BACKGROUND_COLOR)
+            pyxel.rect(x1 + 1, y1 + 1, x1 + 4, y2 - 1, dec_color)
             pyxel.rect(x1 + 6, y1 + 1, x2 - 6, y2 - 1, WIDGET_BACKGROUND_COLOR)
-            pyxel.rect(x2 - 1, y1 + 1, x2 - 4, y2 - 1, WIDGET_BACKGROUND_COLOR)
+            pyxel.rect(x2 - 1, y1 + 1, x2 - 4, y2 - 1, inc_color)
 
             pyxel.pix(x1 + 2, y1 + 3, WIDGET_BASE_COLOR)
             pyxel.line(x1 + 3, y1 + 2, x1 + 3, y2 - 2, WIDGET_BASE_COLOR)
@@ -149,9 +164,9 @@ class ScrollBar(Widget):
             pyxel.pix(x2 - 2, y2 - 3, WIDGET_BASE_COLOR)
             pyxel.line(x2 - 3, y1 + 2, x2 - 3, y2 - 2, WIDGET_BASE_COLOR)
         else:
-            pyxel.rect(x1 + 1, y1 + 1, x2 - 1, y1 + 4, WIDGET_BACKGROUND_COLOR)
+            pyxel.rect(x1 + 1, y1 + 1, x2 - 1, y1 + 4, dec_color)
             pyxel.rect(x1 + 1, y1 + 6, x2 - 1, y2 - 6, WIDGET_BACKGROUND_COLOR)
-            pyxel.rect(x1 + 1, y2 - 1, x2 - 1, y2 - 4, WIDGET_BACKGROUND_COLOR)
+            pyxel.rect(x1 + 1, y2 - 1, x2 - 1, y2 - 4, inc_color)
 
             pyxel.pix(x1 + 3, y1 + 2, WIDGET_BASE_COLOR)
             pyxel.line(x1 + 2, y1 + 3, x2 - 2, y1 + 3, WIDGET_BASE_COLOR)
@@ -167,23 +182,6 @@ class ScrollBar(Widget):
             x = self.x + 2
             y = self.y + self.slider_pos
             pyxel.rect(x, y, x + 2, y + self.slider_size - 1, 1)
-
-        if self.inc_button.is_pressed or self.dec_button.is_pressed:
-            if self.dec_button.is_pressed:
-                x = self.x + 1
-                y = self.y + 1
-            elif self.is_horizontal:
-                x = self.x + self.width - 5
-                y = self.y + 1
-            else:
-                x = self.x + 1
-                y = self.y + self.height - 5
-
-            w, h = (4, 5) if self.is_horizontal else (5, 4)
-
-            pyxel.pal(6, 7)
-            pyxel.blt(x, y, 3, x, y + 12, w, h)
-            pyxel.pal()
 
     def __on_dec_button_press(self):
         self.value = max(self._value - 1, 0)
