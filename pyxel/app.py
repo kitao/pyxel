@@ -300,9 +300,9 @@ class App:
         image = []
         for color in color_list:
             rgb = DEFAULT_PALETTE[color]
-            image.append((rgb >> 16) & 0xff)
-            image.append((rgb >> 8) & 0xff)
-            image.append(rgb & 0xff)
+            image.append((rgb >> 16) & 0xFF)
+            image.append((rgb >> 8) & 0xFF)
+            image.append(rgb & 0xFF)
 
         icon = PIL.Image.frombuffer(
             "RGB", (width, height), bytes(image), "raw", "RGB", 0, 1
@@ -512,9 +512,9 @@ class App:
         rgb_palette = []
 
         for color in palette:
-            r = (color >> 16) & 0xff
-            g = (color >> 8) & 0xff
-            b = color & 0xff
+            r = (color >> 16) & 0xFF
+            g = (color >> 8) & 0xFF
+            b = color & 0xFF
             rgb_palette.extend((r, g, b))
 
         rgb_palette += [0] * 240 * 3

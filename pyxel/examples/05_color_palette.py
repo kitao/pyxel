@@ -20,7 +20,7 @@ class App:
         col_val = pyxel.DEFAULT_PALETTE[col]
         hex_col = "#{:06X}".format(col_val)
         rgb_col = "{},{},{}".format(
-            col_val >> 16, (col_val >> 8) & 0xff, col_val & 0xff
+            col_val >> 16, (col_val >> 8) & 0xFF, col_val & 0xFF
         )
 
         pyxel.rect(x, y, x + 12, y + 12, col)

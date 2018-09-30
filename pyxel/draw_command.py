@@ -71,13 +71,13 @@ class DrawCommand:
         if col1 is None:
             self._clip_pal_data[4] = 0x3210
             self._clip_pal_data[5] = 0x7654
-            self._clip_pal_data[6] = 0xba98
-            self._clip_pal_data[7] = 0xfedc
+            self._clip_pal_data[6] = 0xBA98
+            self._clip_pal_data[7] = 0xFEDC
         else:
             index = col1 // 4 + 4
             shift = (col1 % 4) * 4
             value = col2 << shift
-            mask = 0xffff ^ (0xf << shift)
+            mask = 0xFFFF ^ (0xF << shift)
             base = int(self._clip_pal_data[index])
             self._clip_pal_data[index] = base & mask | value
 
