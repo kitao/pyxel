@@ -1,3 +1,5 @@
+import pyxel
+
 from .button import Button
 from .widget import Widget
 
@@ -45,7 +47,9 @@ class NumberPicker(Widget):
             self.call_event_handler("change", value)
 
     def __on_dec_button_press(self):
-        self.value = max(self._value - 1, self._min_value)
+        offset = 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
+        self.value = max(self._value - offset, self._min_value)
 
     def __on_inc_button_press(self):
-        self.value = min(self._value + 1, self._max_value)
+        offset = 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
+        self.value = min(self._value + offset, self._max_value)
