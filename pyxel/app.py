@@ -277,6 +277,8 @@ class App:
 
         data = pickle.loads(pickled_data)
 
+        # todo: version check
+
         image = data["image"]
         for i in range(RENDERER_IMAGE_COUNT - 1):
             self._module.image(i).data[:, :] = np.loads(image[i])
