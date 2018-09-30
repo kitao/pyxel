@@ -1,6 +1,6 @@
 import pyxel
 
-from .ui_constants import WIDGET_FRAME_COLOR
+from .ui_constants import WIDGET_BASE_COLOR
 from .widget import Widget
 
 
@@ -55,8 +55,8 @@ class ColorPicker(Widget):
         y1 = self.y
         x2 = x1 + self.width - 1
         y2 = y1 + self.height - 1
-        pyxel.rect(x1 + 1, y1, x2 - 1, y2, WIDGET_FRAME_COLOR)
-        pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_FRAME_COLOR)
+        pyxel.rect(x1 + 1, y1, x2 - 1, y2, WIDGET_BASE_COLOR)
+        pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_BASE_COLOR)
 
         for i in range(2):
             for j in range(8):
