@@ -11,10 +11,20 @@ class ScrollBar(Widget):
     """
 
     def __init__(
-        self, parent, x, y, width, height, scroll_range, slider_range, **kwargs
+        self, parent, x, y, size, direction, scroll_range, slider_range, **kwargs
     ):
+        if direction == "horizontal":
+            width = size
+            height = 7
+        elif direction == "vertical":
+            width = 7
+            height = size
+        else:
+            pass  # todo
+
         super().__init__(parent, x, y, width, height, **kwargs)
 
+        self._direction = direction
         self.scroll_range = scroll_range
         self.slider_range = slider_range
         self._drag_offset = 0
@@ -48,13 +58,14 @@ class ScrollBar(Widget):
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_drag", self.__on_mouse_drag)
+        self.add_event_handler("draw", self.__on_draw)
 
         self.dec_button.add_event_handler("press", self.__on_dec_button_press)
         self.inc_button.add_event_handler("press", self.__on_inc_button_press)
 
     @property
     def is_horizontal(self):
-        return self.width > self.height
+        return self._direction == "horizontal"
 
     @property
     def button_size(self):
@@ -116,6 +127,33 @@ class ScrollBar(Widget):
             / self.scroll_size
         )
         self.value = int(min(max(value, 0), self.scroll_range - self.slider_range))
+
+    def __on_draw(self):
+        if self.is_horizontal:
+            x = self.x + self.slider_pos
+            y = self.y + 2
+            pyxel.rect(x, y, x + self.slider_size - 1, y + 2, 1)
+        else:
+            x = self.x + 2
+            y = self.y + self.slider_pos
+            pyxel.rect(x, y, x + 2, y + self.slider_size - 1, 1)
+
+        if self.inc_button.is_pressed or self.dec_button.is_pressed:
+            if self.dec_button.is_pressed:
+                x = self.x + 1
+                y = self.y + 1
+            elif self.is_horizontal:
+                x = self.x + self.width - 5
+                y = self.y + 1
+            else:
+                x = self.x + 1
+                y = self.y + self.height - 5
+
+            w, h = (4, 5) if self.is_horizontal else (5, 4)
+
+            pyxel.pal(6, 7)
+            pyxel.blt(x, y, 3, x, y + 12, w, h)
+            pyxel.pal()
 
     def __on_dec_button_press(self):
         self.value = max(self._value - 1, 0)
