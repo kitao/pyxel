@@ -1,10 +1,9 @@
 import os
 
 import pyxel
-from pyxel.ui import ImageButton, Widget
+from pyxel.ui import ImageButton, RadioButton, Widget
 
 from .editor_constants import EDITOR_HEIGHT, EDITOR_WIDTH
-from .editor_radio_button import EditorRadioButton
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
 from .sound_editor import SoundEditor
@@ -39,7 +38,7 @@ class EditorApp:
             MusicEditor(self._root_widget),
         ]
 
-        self._screen_button = EditorRadioButton(self._root_widget, 3, 1, 4, 1, 2)
+        self._screen_button = RadioButton(self._root_widget, 3, 1, 3, 3, 13, 4)
         self._screen_button.add_event_handler(
             "change", lambda value: self.set_screen(value)
         )

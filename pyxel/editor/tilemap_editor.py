@@ -1,10 +1,9 @@
 import pyxel
 from pyxel.constants import RENDERER_IMAGE_COUNT, RENDERER_TILEMAP_COUNT
-from pyxel.ui import NumberPicker
+from pyxel.ui import NumberPicker, RadioButton
 
 from .edit_frame import EditFrame
 from .editor import Editor
-from .editor_radio_button import EditorRadioButton
 from .image_frame import ImageFrame
 from .tilemap_frame import TilemapFrame
 
@@ -19,7 +18,7 @@ class TileMapEditor(Editor):
         self._tilemap_number = NumberPicker(
             self, 48, 161, 0, RENDERER_TILEMAP_COUNT - 1
         )
-        self._tool_button = EditorRadioButton(self, 81, 161, 7, 1, 2)
+        self._tool_button = RadioButton(self, 81, 161, 3, 81, 173, 7)
         self._image_number = NumberPicker(self, 192, 161, 0, RENDERER_IMAGE_COUNT - 2)
 
         self.color = 0
