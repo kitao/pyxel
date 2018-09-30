@@ -5,12 +5,13 @@
 - Added the Tilemap class
 - Added the bltm command
 - Implemented the tilemap editor
+- Added the standard widgets
 
 ## 0.8.0
 - Changed the formatter from yapf to black
 - Added the UI module
 - Added the save and load commands
-- Added the Image Editor as a part of the Pyxel Resource Editor
+- Added the Image Editor as a part of the Pyxel Editor
 - Removed the dirname option of the save and load commands
 
 ## 0.7.12
