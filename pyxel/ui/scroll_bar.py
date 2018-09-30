@@ -1,6 +1,7 @@
 import pyxel
 
 from .button import Button
+from .ui_constants import WIDGET_BACKGROUND_COLOR, WIDGET_BASE_COLOR
 from .widget import Widget
 
 
@@ -129,6 +130,35 @@ class ScrollBar(Widget):
         self.value = int(min(max(value, 0), self.scroll_range - self.slider_range))
 
     def __on_draw(self):
+        x1 = self.x
+        y1 = self.y
+        x2 = x1 + self.width - 1
+        y2 = y1 + self.height - 1
+
+        pyxel.rect(x1 + 1, y1, x2 - 1, y2, WIDGET_BASE_COLOR)
+        pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_BASE_COLOR)
+
+        if self.is_horizontal:
+            pyxel.rect(x1 + 1, y1 + 1, x1 + 4, y2 - 1, WIDGET_BACKGROUND_COLOR)
+            pyxel.rect(x1 + 6, y1 + 1, x2 - 6, y2 - 1, WIDGET_BACKGROUND_COLOR)
+            pyxel.rect(x2 - 1, y1 + 1, x2 - 4, y2 - 1, WIDGET_BACKGROUND_COLOR)
+
+            pyxel.pix(x1 + 2, y1 + 3, WIDGET_BASE_COLOR)
+            pyxel.line(x1 + 3, y1 + 2, x1 + 3, y2 - 2, WIDGET_BASE_COLOR)
+
+            pyxel.pix(x2 - 2, y2 - 3, WIDGET_BASE_COLOR)
+            pyxel.line(x2 - 3, y1 + 2, x2 - 3, y2 - 2, WIDGET_BASE_COLOR)
+        else:
+            pyxel.rect(x1 + 1, y1 + 1, x2 - 1, y1 + 4, WIDGET_BACKGROUND_COLOR)
+            pyxel.rect(x1 + 1, y1 + 6, x2 - 1, y2 - 6, WIDGET_BACKGROUND_COLOR)
+            pyxel.rect(x1 + 1, y2 - 1, x2 - 1, y2 - 4, WIDGET_BACKGROUND_COLOR)
+
+            pyxel.pix(x1 + 3, y1 + 2, WIDGET_BASE_COLOR)
+            pyxel.line(x1 + 2, y1 + 3, x2 - 2, y1 + 3, WIDGET_BASE_COLOR)
+
+            pyxel.pix(x1 + 3, y2 - 2, WIDGET_BASE_COLOR)
+            pyxel.line(x1 + 2, y2 - 3, x2 - 2, y2 - 3, WIDGET_BASE_COLOR)
+
         if self.is_horizontal:
             x = self.x + self.slider_pos
             y = self.y + 2
