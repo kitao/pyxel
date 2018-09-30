@@ -29,6 +29,7 @@ class TileMapEditor(Editor):
 
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)
+        self.add_event_handler("update", self.__on_update)
 
     @property
     def tilemap(self):
@@ -81,14 +82,6 @@ class TileMapEditor(Editor):
     def edit_y(self, value):
         self._edit_frame.viewport_y = value
 
-    # @property
-    # def select_x(self):
-    #    return self._select_frame.select_x
-
-    # @property
-    # def select_y(self):
-    #    return self._select_frame.select_y
-
     def __on_undo(self, data):
         tm = data["tilemap"]
         x, y = data["pos"]
@@ -108,3 +101,13 @@ class TileMapEditor(Editor):
         self._edit_frame.edit_x = x
         self._edit_frame.edit_y = y
         self._tilemap_number.value = tm
+
+    def __on_update(self):
+        start_y = (pyxel.frame_count % 8) * 8
+        for y in range(start_y, start_y + 8):
+            for x in range(64):
+                val = pyxel.tilemap(self.tilemap).data[y * 4 + 1, x * 4 + 1]
+                col = pyxel.image(self.image).data[
+                    (val // 32) * 8 + 3, (val % 32) * 8 + 3
+                ]
+                pyxel.image(3, system=True).data[y + 192, x] = col
