@@ -2,9 +2,9 @@ import pyxel
 
 from .ui_constants import (
     WIDGET_CLICK_DIST,
-    WIDGET_CLICK_TIME,
-    WIDGET_HOLD_TIME,
-    WIDGET_REPEAT_TIME,
+    WIDGET_CLICK_FRAME,
+    WIDGET_HOLD_FRAME,
+    WIDGET_REPEAT_FRAME,
 )
 
 
@@ -166,7 +166,7 @@ class Widget:
             capture_info.last_pos = (mx, my)
 
         if self.is_key_repeat and pyxel.btnp(
-            capture_info.key, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+            capture_info.key, WIDGET_HOLD_FRAME, WIDGET_REPEAT_FRAME
         ):
             self.call_event_handler("mouse_down", capture_info.key, mx, my)
 
@@ -175,7 +175,7 @@ class Widget:
 
             press_x, press_y = capture_info.press_pos
             if (
-                pyxel.frame_count <= capture_info.time + WIDGET_CLICK_TIME
+                pyxel.frame_count <= capture_info.time + WIDGET_CLICK_FRAME
                 and abs(pyxel.mouse_x - press_x) <= WIDGET_CLICK_DIST
                 and abs(pyxel.mouse_y - press_y) <= WIDGET_CLICK_DIST
             ):
