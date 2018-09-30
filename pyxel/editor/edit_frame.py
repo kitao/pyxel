@@ -1,5 +1,5 @@
 import pyxel
-from pyxel.ui import Widget
+from pyxel.ui import ColorPicker, Widget
 
 from .editor_scroll_bar import EditorScrollBar
 from .overlay_canvas import OverlayCanvas
@@ -52,9 +52,6 @@ class EditFrame(Widget):
         self.add_event_handler("mouse_drag", self.__on_drag)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
-
-        # self.parent.color_button.add_event_handler("change", self.on_color_change)
-        # self.parent.tool_button.add_event_handler("change", self.on_tool_change)
 
         self._overlay_canvas = OverlayCanvas()
 
@@ -351,11 +348,3 @@ class EditFrame(Widget):
             pyxel.rectb(x1, y1, x2, y2, 0)
             pyxel.rectb(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 15)
             pyxel.rectb(x1 + 2, y1 + 2, x2 - 2, y2 - 2, 0)
-
-    def __on_color_change(self, value):
-        if self.parent.tool == TOOL_SELECT:
-            self.parent.tool = TOOL_PENCIL
-
-    def __on_tool_change(self, value):
-        if self.parent.tool == TOOL_SELECT:
-            self._select_x1 = -1
