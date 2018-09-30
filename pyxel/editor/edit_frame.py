@@ -1,7 +1,6 @@
 import pyxel
-from pyxel.ui import ColorPicker, Widget
+from pyxel.ui import ColorPicker, ScrollBar, Widget
 
-from .editor_scroll_bar import EditorScrollBar
 from .overlay_canvas import OverlayCanvas
 
 TOOL_SELECT = 0
@@ -40,10 +39,10 @@ class EditFrame(Widget):
         self._is_dragged = False
         self._is_guide_mode = False
 
-        self._h_scroll_bar = EditorScrollBar(self, 11, 145, 130, 7, 32, 2)
+        self._h_scroll_bar = ScrollBar(self, 11, 145, 130, "horizontal", 32, 2)
         self._h_scroll_bar.add_event_handler("change", self.__on_change_x)
 
-        self._v_scroll_bar = EditorScrollBar(self, 140, 16, 7, 130, 32, 2)
+        self._v_scroll_bar = ScrollBar(self, 140, 16, 130, "vertical", 32, 2)
         self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
