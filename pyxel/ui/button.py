@@ -8,6 +8,7 @@ class Button(Widget):
     """
     Events:
         __on_press()
+        __on_repeat()
         __on_release()
     """
 
@@ -19,6 +20,7 @@ class Button(Widget):
         self._lighting_time = 0
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
+        self.add_event_handler("mouse_repeat", self.__on_mouse_repeat)
         self.add_event_handler("mouse_up", self.__on_mouse_up)
         self.add_event_handler("update", self.__on_update)
 
@@ -37,6 +39,13 @@ class Button(Widget):
 
         self._is_pressed = True
         self.call_event_handler("press")
+
+    def __on_mouse_repeat(self, key, x, y):
+        if key != pyxel.KEY_LEFT_BUTTON:
+            return
+
+        self._is_pressed = True
+        self.call_event_handler("repeat")
 
     def __on_mouse_up(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
