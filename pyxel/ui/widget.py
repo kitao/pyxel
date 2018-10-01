@@ -15,7 +15,6 @@ class Widget:
         __on_hide()
         __on_enabled()
         __on_disabled()
-        __on_move(x, y)
         __on_mouse_down(key, x, y)
         __on_mouse_up(key, x, y)
         __on_mouse_drag(key, x, y, dx, dy)
@@ -40,8 +39,8 @@ class Widget:
     ):
         self._parent = None
         self._children = []
-        self._x = None
-        self._y = None
+        self._x = x
+        self._y = y
         self._width = width
         self._height = height
         self._is_visible = None
@@ -51,7 +50,6 @@ class Widget:
         self.parent = parent
         self.is_visible = is_visible
         self.is_enabled = is_enabled
-        self.move(x, y)
 
     @property
     def parent(self):
@@ -132,10 +130,17 @@ class Widget:
             handler(*args)
 
     def move(self, x, y):
-        if self._x != x or self._y != y:
-            self._x = x
-            self._y = y
-            self.call_event_handler("move", x, y)
+        dx = x - self._x
+        dy = y - self._y
+
+        self._move(dx, dy)
+
+    def _move_delta(self, dx, dy):
+        self._x += dx
+        self._y += dy
+
+        for child in self._children:
+            child._move_delta(dx, dy)
 
     def _capture_mouse(self, key):
         Widget._capture_info.widget = self
