@@ -69,11 +69,9 @@ class GLAttribute:
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self._buf)
 
         if self._should_update_data:
+            size = self._stride * self._count
             gl.glBufferData(
-                gl.GL_ARRAY_BUFFER,
-                self._stride * self._count,
-                self._data.tobytes(),
-                self._usage,
+                gl.GL_ARRAY_BUFFER, size, self._data[:size].tobytes(), self._usage
             )
             self._should_update_data = False
 

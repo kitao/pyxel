@@ -50,7 +50,9 @@ class Renderer:
             DRAWING_ATTRIBUTE_INFO, DRAW_MAX_COUNT, dynamic=True
         )
 
-        self.draw_command = DrawCommand(self, width, height, self._draw_att.data)
+        self.draw_command = DrawCommand(
+            width, height, self._draw_att.data, self._tilemap_list
+        )
 
         self._scale_shader = GLShader(SCALING_VERTEX_SHADER, SCALING_FRAGMENT_SHADER)
 
