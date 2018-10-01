@@ -37,28 +37,22 @@ class ScrollBar(Widget):
         self._value = 0
 
         if self.is_horizontal:
-            self.dec_button = Button(
-                self, x, y, self.button_size, self.button_size, is_key_repeat=True
-            )
+            self.dec_button = Button(self, x, y, self.button_size, self.button_size)
             self.inc_button = Button(
                 self,
                 x + width - self.button_size,
                 y,
                 self.button_size,
                 self.button_size,
-                is_key_repeat=True,
             )
         else:
-            self.dec_button = Button(
-                self, x, y, self.button_size, self.button_size, is_key_repeat=True
-            )
+            self.dec_button = Button(self, x, y, self.button_size, self.button_size)
             self.inc_button = Button(
                 self,
                 x,
                 y + height - self.button_size,
                 self.button_size,
                 self.button_size,
-                is_key_repeat=True,
             )
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
