@@ -15,11 +15,13 @@ class Widget:
         __on_hide()
         __on_enabled()
         __on_disabled()
+        __on_move(x, y)
         __on_mouse_down(key, x, y)
         __on_mouse_up(key, x, y)
         __on_mouse_drag(key, x, y, dx, dy)
-        __on_mouse_hover(x, y)
+        __on_mouse_repeat(key, x, y)
         __on_mouse_click(key, x, y)
+        __on_mouse_hover(x, y)
         __on_update()
         __on_draw()
     """
@@ -34,31 +36,22 @@ class Widget:
     _capture_info = CaptureInfo()
 
     def __init__(
-        self,
-        parent,
-        x,
-        y,
-        width,
-        height,
-        *,
-        is_visible=True,
-        is_enabled=True,
-        is_key_repeat=False
+        self, parent, x, y, width, height, *, is_visible=True, is_enabled=True
     ):
         self._parent = None
         self._children = []
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+        self._x = None
+        self._y = None
+        self._width = width
+        self._height = height
         self._is_visible = None
         self._is_enabled = None
-        self.is_key_repeat = is_key_repeat
         self._event_handler_lists = {}
 
         self.parent = parent
         self.is_visible = is_visible
         self.is_enabled = is_enabled
+        self.move(x, y)
 
     @property
     def parent(self):
@@ -66,10 +59,29 @@ class Widget:
 
     @parent.setter
     def parent(self, value):
+        if self._parent:
+            self._parent._children.remove(self)
+
         self._parent = value
 
-        if value and self not in value._children:
+        if value:
             value._children.append(self)
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+    @property
+    def width(self):
+        return self._width
+
+    @property
+    def height(self):
+        return self._height
 
     @property
     def is_visible(self):
@@ -119,13 +131,11 @@ class Widget:
         for handler in self._get_event_handler_list(event):
             handler(*args)
 
-    def is_hit(self, x, y):
-        return (
-            x >= self.x
-            and x < self.x + self.width
-            and y >= self.y
-            and y < self.y + self.height
-        )
+    def move(self, x, y):
+        if self._x != x or self._y != y:
+            self._x = x
+            self._y = y
+            self.call_event_handler("move", x, y)
 
     def _capture_mouse(self, key):
         Widget._capture_info.widget = self
@@ -165,10 +175,8 @@ class Widget:
             )
             capture_info.last_pos = (mx, my)
 
-        if self.is_key_repeat and pyxel.btnp(
-            capture_info.key, WIDGET_HOLD_FRAME, WIDGET_REPEAT_FRAME
-        ):
-            self.call_event_handler("mouse_down", capture_info.key, mx, my)
+        if pyxel.btnp(capture_info.key, WIDGET_HOLD_FRAME, WIDGET_REPEAT_FRAME):
+            self.call_event_handler("mouse_repeat", capture_info.key, mx, my)
 
         if pyxel.btnr(capture_info.key):
             self.call_event_handler("mouse_up", capture_info.key, mx, my)
@@ -197,7 +205,12 @@ class Widget:
         mx = pyxel.mouse_x
         my = pyxel.mouse_y
 
-        if self.is_hit(mx, my):
+        if (
+            mx >= self._x
+            and mx <= self._x + self._width - 1
+            and my >= self._y
+            and my <= self._y + self._height - 1
+        ):
             key = None
 
             if pyxel.btnp(pyxel.KEY_LEFT_BUTTON):
