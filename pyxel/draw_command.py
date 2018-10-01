@@ -43,11 +43,11 @@ CLIP_PAL_COUNT = 8
 
 
 class DrawCommand:
-    def __init__(self, renderer, width, height, draw_att_data):
-        self._renderer = renderer
+    def __init__(self, width, height, draw_att_data, tilemap_list):
         self._width = width
         self._height = height
         self._draw_att_data = draw_att_data
+        self._tilemap_list = tilemap_list
         self._clip_pal_data = np.ndarray(8, np.float32)
         self._max_draw_count = len(draw_att_data)
         self.draw_count = 0
@@ -219,9 +219,10 @@ class DrawCommand:
         data[SIZE_H_INDEX] = h
 
     def bltm(self, x, y, img, tm, tx, ty, tw, th, colkey=None):
+        tilemap = self._tilemap_list[tm]
+
         for dy in range(th):
             for dx in range(tw):
-                tilemap = self._renderer.tilemap(tm)
                 val = tilemap._data[ty + dy, tx + dx]
                 sx = (val % 32) * 8
                 sy = (val // 32) * 8
