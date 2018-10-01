@@ -129,6 +129,14 @@ class Widget:
         for handler in self._get_event_handler_list(event):
             handler(*args)
 
+    def is_hit(self, x, y):
+        return (
+            x >= self._x
+            and x <= self._x + self._width - 1
+            and y >= self._y
+            and y <= self._y + self._height - 1
+        )
+
     def move(self, x, y):
         dx = x - self._x
         dy = y - self._y
@@ -210,12 +218,7 @@ class Widget:
         mx = pyxel.mouse_x
         my = pyxel.mouse_y
 
-        if (
-            mx >= self._x
-            and mx <= self._x + self._width - 1
-            and my >= self._y
-            and my <= self._y + self._height - 1
-        ):
+        if self.is_hit(mx, my):
             key = None
 
             if pyxel.btnp(pyxel.KEY_LEFT_BUTTON):
