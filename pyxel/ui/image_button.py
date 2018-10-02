@@ -33,6 +33,13 @@ class ImageButton(Button):
 
         pyxel.pal(BUTTON_ENABLED_COLOR, color)
         pyxel.blt(
-            self.x, self.y, self._img, self._sx, self._sy, self.width, self.height, 0
+            self._x,
+            self._y,
+            self._img,
+            self._sx,
+            self._sy,
+            self._width,
+            self._height,
+            0,
         )
         pyxel.pal()
