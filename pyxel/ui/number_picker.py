@@ -1,7 +1,7 @@
 import pyxel
 
 from .text_button import TextButton
-from .ui_constants import WIDGET_INPUT_COLOR
+from .ui_constants import UI_INPUT_COLOR
 from .widget import Widget
 
 
@@ -45,13 +45,13 @@ class NumberPicker(Widget):
 
     def __on_draw(self):
         pyxel.rect(
-            self.x + 9,
-            self.y,
-            self.x + self.width - 10,
-            self.y + self.height - 1,
-            WIDGET_INPUT_COLOR,
+            self._x + 9,
+            self._y,
+            self._x + self._width - 10,
+            self._y + self._height - 1,
+            UI_INPUT_COLOR,
         )
-        pyxel.text(self.x + 11, self.y + 1, str(self.value), 1)
+        pyxel.text(self._x + 11, self._y + 1, str(self._value), 1)
 
     def __on_dec_button_press(self):
         offset = 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
