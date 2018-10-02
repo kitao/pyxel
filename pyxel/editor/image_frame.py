@@ -4,8 +4,8 @@ from pyxel.ui import ScrollBar, Widget
 
 class ImageFrame(Widget):
     def __init__(self, parent, *, is_tilemap_mode):
-        y, height = (81, 64) if is_tilemap_mode else (17, 128)
-        super().__init__(parent, 158, y, 64, height)
+        y, height = (80, 66) if is_tilemap_mode else (16, 130)
+        super().__init__(parent, 157, y, 66, height)
 
         self._is_tilemap_mode = is_tilemap_mode
 
@@ -41,8 +41,8 @@ class ImageFrame(Widget):
 
     def __on_mouse_down(self, key, x, y):
         if key == pyxel.KEY_LEFT_BUTTON:
-            x -= self.x
-            y -= self.y
+            x -= self.x + 1
+            y -= self.y + 1
 
             if self._is_tilemap_mode:
                 self.select_x = self.viewport_x + min(max(x // 8, 0), 7) * 8
@@ -85,24 +85,26 @@ class ImageFrame(Widget):
         self._v_scroll_bar.value = self.viewport_y // 8
 
     def __on_draw(self):
+        self._draw_frame()
+
         pyxel.blt(
-            self.x,
-            self.y,
+            self.x + 1,
+            self.y + 1,
             self.parent.image,
             self.viewport_x,
             self.viewport_y,
-            self.width,
-            self.height,
+            self.width - 2,
+            self.height - 2,
         )
 
-        pyxel.clip(self.x - 1, self.y - 1, self.x + self.width, self.y + self.height)
+        pyxel.clip(self.x, self.y, self.x + self.width, self.y + self.height)
 
         x = self.x + self.select_x - self.viewport_x
         y = self.y + self.select_y - self.viewport_y
 
         if self._is_tilemap_mode:
-            pyxel.rectb(x - 1, y - 1, x + 8, y + 8, 7)
+            pyxel.rectb(x, y, x + 9, y + 9, 7)
         else:
-            pyxel.rectb(x - 1, y - 1, x + 16, y + 16, 7)
+            pyxel.rectb(x, y, x + 17, y + 17, 7)
 
         pyxel.clip()
