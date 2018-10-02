@@ -1,5 +1,5 @@
 import pyxel
-from pyxel.ui import ColorPicker, ScrollBar, Widget
+from pyxel.ui import ScrollBar, Widget
 
 from .overlay_canvas import OverlayCanvas
 
@@ -14,7 +14,7 @@ TOOL_BUCKET = 6
 
 class EditFrame(Widget):
     def __init__(self, parent, *, is_tilemap_mode):
-        super().__init__(parent, 12, 17, 128, 128)
+        super().__init__(parent, 11, 16, 130, 130)
 
         self._is_tilemap_mode = is_tilemap_mode
 
@@ -64,8 +64,8 @@ class EditFrame(Widget):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
-        x = (x - self.x) // 8
-        y = (y - self.y) // 8
+        x = (x - self.x - 1) // 8
+        y = (y - self.y - 1) // 8
 
         self._press_x = x
         self._press_y = y
@@ -174,8 +174,8 @@ class EditFrame(Widget):
         if key == pyxel.KEY_LEFT_BUTTON:
             x1 = self._press_x
             y1 = self._press_y
-            x2 = (x - self.x) // 8
-            y2 = (y - self.y) // 8
+            x2 = (x - self.x - 1) // 8
+            y2 = (y - self.y - 1) // 8
 
             if self.parent.tool == TOOL_SELECT:
                 x2 = min(max(x2, 0), 15)
@@ -298,10 +298,12 @@ class EditFrame(Widget):
                 dest[:, :] = self._copy_buffer[:height, :width]
 
     def __on_draw(self):
+        self._draw_frame()
+
         if self._is_tilemap_mode:
             pyxel.bltm(
-                self.x,
-                self.y,
+                self.x + 1,
+                self.y + 1,
                 self.parent.image,
                 self.parent.tilemap,
                 self.viewport_x,
@@ -311,9 +313,9 @@ class EditFrame(Widget):
             )
 
             for i in range(16):
-                y = self.y + i * 8
+                y = self.y + i * 8 + 1
                 for j in range(16):
-                    x = self.x + j * 8
+                    x = self.x + j * 8 + 1
 
                     val = self._overlay_canvas.data[i, j]
                     if val >= 0:
@@ -322,9 +324,9 @@ class EditFrame(Widget):
                         pyxel.blt(x, y, self.parent.image, sx, sy, 8, 8)
         else:
             for i in range(16):
-                y = self.y + i * 8
+                y = self.y + i * 8 + 1
                 for j in range(16):
-                    x = self.x + j * 8
+                    x = self.x + j * 8 + 1
 
                     val = self._overlay_canvas.data[i, j]
                     if val >= 0:
@@ -335,14 +337,14 @@ class EditFrame(Widget):
 
                     pyxel.rect(x, y, x + 7, y + 7, col)
 
-        pyxel.line(self.x, self.y + 63, self.x + 127, self.y + 63, 1)
-        pyxel.line(self.x + 63, self.y, self.x + 63, self.y + 127, 1)
+        pyxel.line(self.x + 1, self.y + 64, self.x + 128, self.y + 64, 1)
+        pyxel.line(self.x + 64, self.y + 1, self.x + 64, self.y + 128, 1)
 
         if self.parent.tool == TOOL_SELECT and self._select_x1 >= 0:
-            x1 = self._select_x1 * 8 + 12
-            y1 = self._select_y1 * 8 + 17
-            x2 = self._select_x2 * 8 + 19
-            y2 = self._select_y2 * 8 + 24
+            x1 = self._select_x1 * 8 + 13
+            y1 = self._select_y1 * 8 + 18
+            x2 = self._select_x2 * 8 + 20
+            y2 = self._select_y2 * 8 + 25
 
             pyxel.rectb(x1, y1, x2, y2, 0)
             pyxel.rectb(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 15)
