@@ -39,8 +39,8 @@ class RadioButton(Widget):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
-        x -= self.x
-        y -= self.y
+        x -= self._x
+        y -= self._y
 
         index = min(max(x // 9, 0), self._btn_count - 1)
 
@@ -58,10 +58,10 @@ class RadioButton(Widget):
     def __on_draw(self):
         pyxel.pal(BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR)
         pyxel.blt(
-            self.x + self.value * 9,
-            self.y,
+            self._x + self._value * 9,
+            self._y,
             self._img,
-            self._sx + self.value * 9,
+            self._sx + self._value * 9,
             self._sy,
             7,
             7,

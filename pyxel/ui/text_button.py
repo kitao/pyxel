@@ -27,10 +27,10 @@ class TextButton(Button):
         self.add_event_handler("draw", self.__on_draw)
 
     def __on_draw(self):
-        x1 = self.x
-        y1 = self.y
-        x2 = x1 + self.width - 1
-        y2 = y1 + self.height - 1
+        x1 = self._x
+        y1 = self._y
+        x2 = x1 + self._width - 1
+        y2 = y1 + self._height - 1
         col = (
             BUTTON_PRESSED_COLOR
             if self.is_pressed
