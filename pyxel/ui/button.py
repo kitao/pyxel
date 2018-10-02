@@ -12,8 +12,8 @@ class Button(Widget):
         __on_release()
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, parent, x, y, width, height, **kwargs):
+        super().__init__(parent, x, y, width, height, **kwargs)
 
         self._is_pressed = False
         self._is_lighting = False
