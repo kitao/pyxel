@@ -1,6 +1,8 @@
 import pyxel
 
 from .ui_constants import (
+    UI_BASE_COLOR,
+    UI_SHADOW_COLOR,
     WIDGET_CLICK_DIST,
     WIDGET_CLICK_FRAME,
     WIDGET_HOLD_FRAME,
@@ -15,6 +17,8 @@ class Widget:
         __on_hide()
         __on_enabled()
         __on_disabled()
+        __on_move(x, y)
+        __on_resize(width, height)
         __on_mouse_down(key, x, y)
         __on_mouse_up(key, x, y)
         __on_mouse_drag(key, x, y, dx, dy)
@@ -39,10 +43,10 @@ class Widget:
     ):
         self._parent = None
         self._children = []
-        self._x = x
-        self._y = y
-        self._width = width
-        self._height = height
+        self._x = None
+        self._y = None
+        self._width = None
+        self._height = None
         self._is_visible = None
         self._is_enabled = None
         self._event_handler_lists = {}
@@ -50,6 +54,8 @@ class Widget:
         self.parent = parent
         self.is_visible = is_visible
         self.is_enabled = is_enabled
+        self.move(x, y)
+        self.resize(width, height)
 
     @property
     def parent(self):
@@ -138,17 +144,47 @@ class Widget:
         )
 
     def move(self, x, y):
+        if self._x == x and self._y == y:
+            return
+
+        if self._x is None or self._y is None:
+            self._x = x
+            self._y = y
+
         dx = x - self._x
         dy = y - self._y
 
-        self._move(dx, dy)
+        self._move_delta(dx, dy)
 
     def _move_delta(self, dx, dy):
         self._x += dx
         self._y += dy
 
+        self.call_event_handler("move", self._x, self._y)
+
         for child in self._children:
             child._move_delta(dx, dy)
+
+    def resize(self, width, height):
+        if self._width == width and self._height == height:
+            return
+
+        self._width = width
+        self._height = height
+        self.call_event_handler("resize", width, height)
+
+    def _draw_frame(self):
+        x1 = self._x
+        y1 = self._y
+        x2 = self._x + self._width - 1
+        y2 = self._y + self._height - 1
+
+        pyxel.rect(x1 + 1, y1, x2 - 1, y2, UI_BASE_COLOR)
+        pyxel.rect(x1, y1 + 1, x2, y2 - 1, UI_BASE_COLOR)
+
+        pyxel.line(x1 + 2, y2 + 1, x2, y2 + 1, UI_SHADOW_COLOR)
+        pyxel.line(x2 + 1, y1 + 2, x2 + 1, y2, UI_SHADOW_COLOR)
+        pyxel.pix(x2, y2, UI_SHADOW_COLOR)
 
     def _capture_mouse(self, key):
         Widget._capture_info.widget = self
