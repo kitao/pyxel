@@ -4,7 +4,7 @@ from pyxel.ui import Widget
 
 class TilemapFrame(Widget):
     def __init__(self, parent):
-        super().__init__(parent, 158, 17, 64, 63)
+        super().__init__(parent, 157, 16, 66, 65)
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_drag", self.__on_mouse_drag)
@@ -23,9 +23,11 @@ class TilemapFrame(Widget):
             self.__on_mouse_down(key, x, y)
 
     def __on_draw(self):
-        pyxel.blt(self.x, self.y, 3, 0, 192, 64, 63)
+        self._draw_frame()
 
-        x = self.x + self.parent.edit_x // 4
-        y = self.y + self.parent.edit_y // 4
+        pyxel.blt(self.x + 1, self.y + 1, 3, 0, 192, 64, 63)
+
+        x = self.x + self.parent.edit_x // 4 + 1
+        y = self.y + self.parent.edit_y // 4 + 1
         height = 4 if self.parent.edit_y < 240 else 3
         pyxel.rectb(x - 1, y - 1, x + 4, y + height, 7)
