@@ -1,6 +1,6 @@
 import pyxel
 
-from .ui_constants import WIDGET_BASE_COLOR
+from .ui_constants import UI_BASE_COLOR
 from .widget import Widget
 
 
@@ -10,8 +10,8 @@ class ColorPicker(Widget):
         __on_change(value)
     """
 
-    def __init__(self, parent, x, y, **kwargs):
-        super().__init__(parent, x, y, 65, 17, **kwargs)
+    def __init__(self, parent, x, y, *, with_shadow=False, **kwargs):
+        super().__init__(parent, x, y, 63, 15, **kwargs)
 
         self._value = 0
 
@@ -33,14 +33,14 @@ class ColorPicker(Widget):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
-        x -= self.x
-        y -= self.y
+        x -= self._x
+        y -= self._y
 
-        index_x = min(max((x + 1) // 8, 0), 7)
-        index_y = min(max((y + 1) // 8, 0), 1)
+        index_x = min(max(x // 8, 0), 7)
+        index_y = min(max(y // 8, 0), 1)
 
-        x1 = index_x * 8 + 1
-        y1 = index_y * 8 + 1
+        x1 = index_x * 8
+        y1 = index_y * 8
         x2 = x1 + 6
         y2 = x2 + 6
 
@@ -51,23 +51,24 @@ class ColorPicker(Widget):
         self.__on_mouse_down(key, x, y)
 
     def __on_draw(self):
-        x1 = self.x
-        y1 = self.y
-        x2 = x1 + self.width - 1
-        y2 = y1 + self.height - 1
-        pyxel.rect(x1 + 1, y1, x2 - 1, y2, WIDGET_BASE_COLOR)
-        pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_BASE_COLOR)
+        pyxel.rect(
+            self._x,
+            self.y,
+            self._x + self._width - 1,
+            self._y + self._height - 1,
+            UI_BASE_COLOR,
+        )
 
         for i in range(2):
             for j in range(8):
-                x1 = self.x + j * 8 + 1
-                y1 = self.y + i * 8 + 1
+                x1 = self._x + j * 8
+                y1 = self._y + i * 8
                 x2 = x1 + 6
                 y2 = y1 + 6
                 col = i * 8 + j
                 pyxel.rect(x1, y1, x2, y2, col)
 
-        x = self.x + (self.value % 8) * 8 + 3
-        y = self.y + (self.value // 8) * 8 + 2
-        col = 7 if self.value < 6 else 0
+        x = self._x + (self._value % 8) * 8 + 2
+        y = self._y + (self._value // 8) * 8 + 1
+        col = 7 if self._value < 6 else 0
         pyxel.text(x, y, "+", col)
