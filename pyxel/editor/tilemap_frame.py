@@ -23,7 +23,9 @@ class TilemapFrame(Widget):
             self.__on_mouse_down(key, x, y)
 
     def __on_draw(self):
-        self._draw_frame()
+        self.draw_frame(
+            self.x, self.y, self.x + self.width - 1, self.y + self.height - 1
+        )
 
         pyxel.blt(self.x + 1, self.y + 1, 3, 0, 192, 64, 63)
 
