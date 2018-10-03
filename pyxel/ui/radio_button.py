@@ -19,11 +19,13 @@ class RadioButton(Widget):
         self._sx = sx
         self._sy = sy
         self._btn_count = btn_count
-        self._value = 0
+        self._value = None
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_drag", self.__on_mouse_drag)
         self.add_event_handler("draw", self.__on_draw)
+
+        self.value = 0
 
     @property
     def value(self):
