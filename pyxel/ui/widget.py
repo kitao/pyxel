@@ -17,8 +17,8 @@ class Widget:
         __on_hide()
         __on_enabled()
         __on_disabled()
-        __on_move()
-        __on_resize()
+        __on_move(x, y)
+        __on_resize(width, height)
         __on_mouse_down(key, x, y)
         __on_mouse_up(key, x, y)
         __on_mouse_drag(key, x, y, dx, dy)
@@ -160,7 +160,7 @@ class Widget:
         self._x += dx
         self._y += dy
 
-        self.call_event_handler("move")
+        self.call_event_handler("move", self._x, self._y)
 
         for child in self._children:
             child._move_delta(dx, dy)
@@ -171,7 +171,7 @@ class Widget:
 
         self._width = width
         self._height = height
-        self.call_event_handler("resize")
+        self.call_event_handler("resize", width, height)
 
     def draw_frame(self, x1, y1, x2, y2):
         pyxel.line(x1 + 1, y1, x2 - 1, y1, WIDGET_FRAME_COLOR)
