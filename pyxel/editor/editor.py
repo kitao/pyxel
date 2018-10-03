@@ -5,7 +5,7 @@ import numpy as np
 import pyxel
 from pyxel.ui import Widget
 
-from .editor_constants import EDITOR_HEIGHT, EDITOR_WIDTH
+from .constants import EDITOR_HEIGHT, EDITOR_WIDTH
 
 
 class Editor(Widget):

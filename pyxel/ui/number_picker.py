@@ -1,7 +1,7 @@
 import pyxel
 
+from .constants import INPUT_FIELD_COLOR, INPUT_TEXT_COLOR
 from .text_button import TextButton
-from .ui_constants import INPUT_FIELD_COLOR, INPUT_TEXT_COLOR
 from .widget import Widget
 
 

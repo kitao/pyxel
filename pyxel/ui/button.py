@@ -1,6 +1,6 @@
 import pyxel
 
-from .ui_constants import BUTTON_LIGHTING_TIME
+from .constants import BUTTON_LIGHTING_TIME
 from .widget import Widget
 
 
