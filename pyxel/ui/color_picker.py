@@ -1,6 +1,6 @@
 import pyxel
 
-from .ui_constants import WIDGET_FRAME_COLOR
+from .constants import WIDGET_FRAME_COLOR
 from .widget import Widget
 
 

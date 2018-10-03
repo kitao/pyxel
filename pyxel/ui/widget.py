@@ -1,6 +1,6 @@
 import pyxel
 
-from .ui_constants import (
+from .constants import (
     WIDGET_CLICK_DIST,
     WIDGET_CLICK_FRAME,
     WIDGET_FRAME_COLOR,

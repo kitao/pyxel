@@ -1,11 +1,7 @@
 import pyxel
 
 from .button import Button
-from .ui_constants import (
-    BUTTON_DISABLED_COLOR,
-    BUTTON_ENABLED_COLOR,
-    BUTTON_PRESSED_COLOR,
-)
+from .constants import BUTTON_DISABLED_COLOR, BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
 
 
 class ImageButton(Button):

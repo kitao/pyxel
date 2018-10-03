@@ -1,11 +1,7 @@
 import pyxel
 
 from .button import Button
-from .ui_constants import (
-    BUTTON_PRESSED_COLOR,
-    WIDGET_BACKGROUND_COLOR,
-    WIDGET_FRAME_COLOR,
-)
+from .constants import BUTTON_PRESSED_COLOR, WIDGET_BACKGROUND_COLOR, WIDGET_FRAME_COLOR
 from .widget import Widget
 
 
