@@ -1,15 +1,16 @@
 import pyxel
 from pyxel.ui import ScrollBar, Widget
 
+from .constants import (
+    TOOL_BUCKET,
+    TOOL_CIRC,
+    TOOL_CIRCB,
+    TOOL_PENCIL,
+    TOOL_RECT,
+    TOOL_RECTB,
+    TOOL_SELECT,
+)
 from .overlay_canvas import OverlayCanvas
-
-TOOL_SELECT = 0
-TOOL_PENCIL = 1
-TOOL_RECTB = 2
-TOOL_RECT = 3
-TOOL_CIRCB = 4
-TOOL_CIRC = 5
-TOOL_BUCKET = 6
 
 
 class EditFrame(Widget):
