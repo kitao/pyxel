@@ -30,7 +30,7 @@ class ScrollBar(Widget):
         self.slider_range = slider_range
         self._drag_offset = 0
         self._is_dragged = True
-        self._value = 0
+        self._value = None
 
         if self.is_horizontal:
             self.dec_button = Button(self, x, y, self.button_size, self.button_size)
@@ -57,6 +57,8 @@ class ScrollBar(Widget):
 
         self.dec_button.add_event_handler("press", self.__on_dec_button_press)
         self.inc_button.add_event_handler("press", self.__on_inc_button_press)
+
+        self.value = 0
 
     @property
     def is_horizontal(self):
