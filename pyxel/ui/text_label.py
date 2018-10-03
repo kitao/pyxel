@@ -14,4 +14,4 @@ class TextLabel(Widget):
         self.add_event_handler("draw", self.__on_draw)
 
     def __on_draw(self):
-        pyxel.text(self._x, self._y, self._s, self._col)
+        pyxel.text(self.x, self.y, self._s, self._col)

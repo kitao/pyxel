@@ -16,12 +16,12 @@ class ImageLabel(Widget):
 
     def __on_draw(self):
         pyxel.blt(
-            self._x,
-            self._y,
+            self.x,
+            self.y,
             self._img,
             self._sx,
             self._sy,
-            self._width,
+            self.width,
             self.height,
             self._colkey,
         )

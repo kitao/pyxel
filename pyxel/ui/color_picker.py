@@ -1,6 +1,6 @@
 import pyxel
 
-from .ui_constants import UI_BASE_COLOR
+from .ui_constants import WIDGET_FRAME_COLOR
 from .widget import Widget
 
 
@@ -33,8 +33,8 @@ class ColorPicker(Widget):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
-        x -= self._x
-        y -= self._y
+        x -= self.x
+        y -= self.y
 
         index_x = min(max(x // 8, 0), 7)
         index_y = min(max(y // 8, 0), 1)
@@ -52,23 +52,23 @@ class ColorPicker(Widget):
 
     def __on_draw(self):
         pyxel.rect(
-            self._x,
+            self.x,
             self.y,
-            self._x + self._width - 1,
-            self._y + self._height - 1,
-            UI_BASE_COLOR,
+            self.x + self.width - 1,
+            self.y + self.height - 1,
+            WIDGET_FRAME_COLOR,
         )
 
         for i in range(2):
             for j in range(8):
-                x1 = self._x + j * 8
-                y1 = self._y + i * 8
+                x1 = self.x + j * 8
+                y1 = self.y + i * 8
                 x2 = x1 + 6
                 y2 = y1 + 6
                 col = i * 8 + j
                 pyxel.rect(x1, y1, x2, y2, col)
 
-        x = self._x + (self._value % 8) * 8 + 2
-        y = self._y + (self._value // 8) * 8 + 1
+        x = self.x + (self._value % 8) * 8 + 2
+        y = self.y + (self._value // 8) * 8 + 1
         col = 7 if self._value < 6 else 0
         pyxel.text(x, y, "+", col)
