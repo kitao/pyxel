@@ -14,12 +14,11 @@ class ImageEditor(Editor):
 
         self._edit_frame = EditFrame(self, is_tilemap_mode=False)
         self._image_frame = ImageFrame(self, is_tilemap_mode=False)
-        self._color_picker = ColorPicker(self, 12, 157)
-        self._tool_button = RadioButton(self, 81, 161, 3, 81, 173, 7)
-        self._image_number = NumberPicker(self, 192, 161, 0, RENDERER_IMAGE_COUNT - 2)
-
-        self.color = 7
-        self.tool = TOOL_PENCIL
+        self._color_picker = ColorPicker(self, 12, 157, 7)
+        self._tool_button = RadioButton(self, 81, 161, 3, 81, 173, 7, TOOL_PENCIL)
+        self._image_number = NumberPicker(
+            self, 192, 161, 0, RENDERER_IMAGE_COUNT - 2, 0
+        )
 
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)

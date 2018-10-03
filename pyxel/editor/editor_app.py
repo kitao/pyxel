@@ -10,6 +10,8 @@ from .music_editor import MusicEditor
 from .sound_editor import SoundEditor
 from .tilemap_editor import TileMapEditor
 
+EDITOR_IMAGE = 0
+
 
 class EditorApp(Widget):
     def __init__(self, resource_file):
@@ -40,7 +42,7 @@ class EditorApp(Widget):
             MusicEditor(self),
         ]
 
-        self._editor_button = RadioButton(self, 3, 1, 3, 3, 13, 4)
+        self._editor_button = RadioButton(self, 3, 1, 3, 3, 13, 4, EDITOR_IMAGE)
         self._undo_button = ImageButton(self, 48, 1, 3, 48, 13)
         self._redo_button = ImageButton(self, 57, 1, 3, 57, 13)
         self._save_button = ImageButton(self, 75, 1, 3, 75, 13)
