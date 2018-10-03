@@ -2,7 +2,7 @@ import pyxel
 from pyxel.constants import FONT_HEIGHT, FONT_WIDTH
 
 from .button import Button
-from .ui_constants import (
+from .constants import (
     BUTTON_DISABLED_COLOR,
     BUTTON_ENABLED_COLOR,
     BUTTON_PRESSED_COLOR,
