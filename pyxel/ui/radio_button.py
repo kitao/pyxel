@@ -10,7 +10,7 @@ class RadioButton(Widget):
         __on_change(value)
     """
 
-    def __init__(self, parent, x, y, img, sx, sy, btn_count, **kwargs):
+    def __init__(self, parent, x, y, img, sx, sy, btn_count, value, **kwargs):
         width = btn_count * 9 - 2
         height = 7
         super().__init__(parent, x, y, width, height, **kwargs)
@@ -25,7 +25,7 @@ class RadioButton(Widget):
         self.add_event_handler("mouse_drag", self.__on_mouse_drag)
         self.add_event_handler("draw", self.__on_draw)
 
-        self.value = 0
+        self.value = value
 
     @property
     def value(self):

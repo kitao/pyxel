@@ -11,7 +11,7 @@ class NumberPicker(Widget):
         __on_change(value)
     """
 
-    def __init__(self, parent, x, y, min_value, max_value, **kwargs):
+    def __init__(self, parent, x, y, min_value, max_value, value, **kwargs):
         width = max(len(str(min_value)), len(str(max_value))) * 4 + 21
         height = 7
         super().__init__(parent, x, y, width, height, **kwargs)
@@ -24,11 +24,10 @@ class NumberPicker(Widget):
         self.inc_button = TextButton(self, x + width - 7, y, "+")
 
         self.add_event_handler("draw", self.__on_draw)
-
         self.dec_button.add_event_handler("press", self.__on_dec_button_press)
         self.inc_button.add_event_handler("press", self.__on_inc_button_press)
 
-        self.value = 0
+        self.value = value
 
     @property
     def value(self):

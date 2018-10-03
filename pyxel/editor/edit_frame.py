@@ -40,10 +40,12 @@ class EditFrame(Widget):
         self._is_dragged = False
         self._is_guide_mode = False
 
-        self._h_scroll_bar = ScrollBar(self, 11, 145, 130, "horizontal", 32, 2)
+        self._overlay_canvas = OverlayCanvas()
+
+        self._h_scroll_bar = ScrollBar(self, 11, 145, 130, "horizontal", 32, 2, 0)
         self._h_scroll_bar.add_event_handler("change", self.__on_change_x)
 
-        self._v_scroll_bar = ScrollBar(self, 140, 16, 130, "vertical", 32, 2)
+        self._v_scroll_bar = ScrollBar(self, 140, 16, 130, "vertical", 32, 2, 0)
         self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
@@ -52,8 +54,6 @@ class EditFrame(Widget):
         self.add_event_handler("mouse_drag", self.__on_drag)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
-
-        self._overlay_canvas = OverlayCanvas()
 
     def __on_change_x(self, value):
         self.viewport_x = value * 8

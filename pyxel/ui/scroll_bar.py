@@ -12,7 +12,7 @@ class ScrollBar(Widget):
     """
 
     def __init__(
-        self, parent, x, y, size, direction, scroll_range, slider_range, **kwargs
+        self, parent, x, y, size, direction, scroll_range, slider_range, value, **kwargs
     ):
         if direction == "horizontal":
             width = size
@@ -54,11 +54,10 @@ class ScrollBar(Widget):
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_drag", self.__on_mouse_drag)
         self.add_event_handler("draw", self.__on_draw)
-
         self.dec_button.add_event_handler("press", self.__on_dec_button_press)
         self.inc_button.add_event_handler("press", self.__on_inc_button_press)
 
-        self.value = 0
+        self.value = value
 
     @property
     def is_horizontal(self):

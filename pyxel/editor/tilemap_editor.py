@@ -17,13 +17,12 @@ class TileMapEditor(Editor):
         self._tilemap_frame = TilemapFrame(self)
         self._select_frame = ImageFrame(self, is_tilemap_mode=True)
         self._tilemap_number = NumberPicker(
-            self, 48, 161, 0, RENDERER_TILEMAP_COUNT - 1
+            self, 48, 161, 0, RENDERER_TILEMAP_COUNT - 1, 0
         )
-        self._tool_button = RadioButton(self, 81, 161, 3, 81, 173, 7)
-        self._image_number = NumberPicker(self, 192, 161, 0, RENDERER_IMAGE_COUNT - 2)
-
-        self.color = 0
-        self.tool = TOOL_PENCIL
+        self._tool_button = RadioButton(self, 81, 161, 3, 81, 173, 7, TOOL_PENCIL)
+        self._image_number = NumberPicker(
+            self, 192, 161, 0, RENDERER_IMAGE_COUNT - 2, 0
+        )
 
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)
