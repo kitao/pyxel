@@ -2,9 +2,9 @@ import os
 
 import pyxel
 from pyxel.ui import ImageButton, RadioButton, Widget
-from pyxel.ui.ui_constants import WIDGET_BACKGROUND_COLOR
+from pyxel.ui.constants import WIDGET_BACKGROUND_COLOR
 
-from .editor_constants import EDITOR_HEIGHT, EDITOR_WIDTH
+from .constants import EDITOR_HEIGHT, EDITOR_WIDTH
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
 from .sound_editor import SoundEditor
@@ -33,7 +33,7 @@ class EditorApp(Widget):
 
         self._resource_file = resource_file
 
-        self._screen_list = [
+        self._editor_list = [
             ImageEditor(self),
             TileMapEditor(self),
             SoundEditor(self),
@@ -46,9 +46,9 @@ class EditorApp(Widget):
         self._save_button = ImageButton(self, 75, 1, 3, 75, 13)
 
         self._editor_button.add_event_handler(
-            "change", lambda value: self.set_screen(value)
+            "change", lambda value: self.set_editor(value)
         )
-        self.set_screen(0)
+        self.set_editor(0)
 
         self._undo_button.add_event_handler("press", self.__on_undo_press)
         self._redo_button.add_event_handler("press", self.__on_redo_press)
@@ -59,32 +59,32 @@ class EditorApp(Widget):
 
         pyxel.run(self.update_widgets, self.draw_widgets)
 
-    def set_screen(self, screen):
-        self._editor_button.value = screen
+    def set_editor(self, editor):
+        self._editor_button.value = editor
 
-        for i, widget in enumerate(self._screen_list):
-            widget.is_visible = i == screen
+        for i, widget in enumerate(self._editor_list):
+            widget.is_visible = i == editor
 
     def __on_update(self):
         if pyxel.btn(pyxel.KEY_LEFT_ALT) or pyxel.btn(pyxel.KEY_RIGHT_ALT):
-            screen = self._screen_button.value
-            screen_count = len(self._screen_list)
+            editor = self._editor_button.value
+            editor_count = len(self._editor_list)
 
             if pyxel.btnp(pyxel.KEY_LEFT):
-                self.set_screen((screen - 1) % screen_count)
+                self.set_editor((editor - 1) % editor_count)
             elif pyxel.btnp(pyxel.KEY_RIGHT):
-                self.set_screen((screen + 1) % screen_count)
+                self.set_editor((editor + 1) % editor_count)
 
-        screen = self._screen_list[self._editor_button.value]
-        self._undo_button.is_enabled = screen.can_undo
-        self._redo_button.is_enabled = screen.can_redo
+        editor = self._editor_list[self._editor_button.value]
+        self._undo_button.is_enabled = editor.can_undo
+        self._redo_button.is_enabled = editor.can_redo
 
         if pyxel.btn(pyxel.KEY_CONTROL):
-            if screen.can_undo and pyxel.btnp(pyxel.KEY_S):
+            if editor.can_undo and pyxel.btnp(pyxel.KEY_S):
                 self._save_button.press()
-            elif screen.can_undo and pyxel.btnp(pyxel.KEY_Z):
+            elif editor.can_undo and pyxel.btnp(pyxel.KEY_Z):
                 self._undo_button.press()
-            elif screen.can_redo and pyxel.btnp(pyxel.KEY_Y):
+            elif editor.can_redo and pyxel.btnp(pyxel.KEY_Y):
                 self._redo_button.press()
 
     def __on_draw(self):
@@ -92,10 +92,10 @@ class EditorApp(Widget):
         self.draw_frame(-2, 0, 241, 8)
 
     def __on_undo_press(self):
-        self._screen_list[self._screen_button.value].undo()
+        self._editor_list[self._editor_button.value].undo()
 
     def __on_redo_press(self):
-        self._screen_list[self._screen_button.value].redo()
+        self._editor_list[self._editor_button.value].redo()
 
     def __on_save_press(self):
         pyxel.save(self._resource_file)
