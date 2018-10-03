@@ -10,7 +10,7 @@ class ColorPicker(Widget):
         __on_change(value)
     """
 
-    def __init__(self, parent, x, y, *, with_shadow=False, **kwargs):
+    def __init__(self, parent, x, y, value, *, with_shadow=False, **kwargs):
         super().__init__(parent, x, y, 63, 15, **kwargs)
 
         self._value = None
@@ -19,7 +19,7 @@ class ColorPicker(Widget):
         self.add_event_handler("mouse_drag", self.__on_mouse_drag)
         self.add_event_handler("draw", self.__on_draw)
 
-        self.value = 0
+        self.value = value
 
     @property
     def value(self):
