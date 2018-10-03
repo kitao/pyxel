@@ -52,10 +52,10 @@ class Widget:
         self._event_handler_lists = {}
 
         self.parent = parent
-        self.is_visible = is_visible
-        self.is_enabled = is_enabled
         self.move(x, y)
         self.resize(width, height)
+        self.is_visible = is_visible
+        self.is_enabled = is_enabled
 
     @property
     def parent(self):
