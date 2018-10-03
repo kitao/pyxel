@@ -2,6 +2,7 @@ import pyxel
 from pyxel.constants import RENDERER_IMAGE_COUNT
 from pyxel.ui import ColorPicker, NumberPicker, RadioButton
 
+from .constants import TOOL_PENCIL
 from .edit_frame import EditFrame
 from .editor import Editor
 from .image_frame import ImageFrame
@@ -18,7 +19,7 @@ class ImageEditor(Editor):
         self._image_number = NumberPicker(self, 192, 161, 0, RENDERER_IMAGE_COUNT - 2)
 
         self.color = 7
-        self.tool = 1
+        self.tool = TOOL_PENCIL
 
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)
