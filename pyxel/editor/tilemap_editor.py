@@ -27,6 +27,7 @@ class TileMapEditor(Editor):
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)
         self.add_event_handler("update", self.__on_update)
+        self.add_event_handler("draw", self.__on_draw)
 
     @property
     def tilemap(self):
@@ -108,3 +109,10 @@ class TileMapEditor(Editor):
                     (val // 32) * 8 + 3, (val % 32) * 8 + 3
                 ]
                 pyxel.image(3, system=True).data[y + 192, x] = col
+
+    def __on_draw(self):
+        self.draw_frame(11, 156, 146, 172)
+        self.draw_frame(157, 156, 228, 172)
+        pyxel.text(18, 162, "TILEMAP", 6)
+        pyxel.text(18, 162, "TILEMAP", 6)
+        pyxel.text(170, 162, "IMAGE", 6)

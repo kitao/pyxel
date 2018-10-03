@@ -85,7 +85,9 @@ class ImageFrame(Widget):
         self._v_scroll_bar.value = self.viewport_y // 8
 
     def __on_draw(self):
-        self._draw_frame()
+        self.draw_frame(
+            self.x, self.y, self.x + self.width - 1, self.y + self.height - 1
+        )
 
         pyxel.blt(
             self.x + 1,
