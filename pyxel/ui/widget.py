@@ -1,12 +1,12 @@
 import pyxel
 
 from .ui_constants import (
-    UI_BASE_COLOR,
-    UI_SHADOW_COLOR,
     WIDGET_CLICK_DIST,
     WIDGET_CLICK_FRAME,
+    WIDGET_FRAME_COLOR,
     WIDGET_HOLD_FRAME,
     WIDGET_REPEAT_FRAME,
+    WIDGET_SHADOW_COLOR,
 )
 
 
@@ -17,8 +17,8 @@ class Widget:
         __on_hide()
         __on_enabled()
         __on_disabled()
-        __on_move(x, y)
-        __on_resize(width, height)
+        __on_move()
+        __on_resize()
         __on_mouse_down(key, x, y)
         __on_mouse_up(key, x, y)
         __on_mouse_drag(key, x, y, dx, dy)
@@ -160,7 +160,7 @@ class Widget:
         self._x += dx
         self._y += dy
 
-        self.call_event_handler("move", self._x, self._y)
+        self.call_event_handler("move")
 
         for child in self._children:
             child._move_delta(dx, dy)
@@ -171,20 +171,16 @@ class Widget:
 
         self._width = width
         self._height = height
-        self.call_event_handler("resize", width, height)
+        self.call_event_handler("resize")
 
-    def _draw_frame(self):
-        x1 = self._x
-        y1 = self._y
-        x2 = self._x + self._width - 1
-        y2 = self._y + self._height - 1
+    def draw_frame(self, x1, y1, x2, y2):
+        pyxel.line(x1 + 1, y1, x2 - 1, y1, WIDGET_FRAME_COLOR)
+        pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_FRAME_COLOR)
+        pyxel.line(x1 + 1, y2, x2 - 1, y2, WIDGET_FRAME_COLOR)
 
-        pyxel.rect(x1 + 1, y1, x2 - 1, y2, UI_BASE_COLOR)
-        pyxel.rect(x1, y1 + 1, x2, y2 - 1, UI_BASE_COLOR)
-
-        pyxel.line(x1 + 2, y2 + 1, x2, y2 + 1, UI_SHADOW_COLOR)
-        pyxel.line(x2 + 1, y1 + 2, x2 + 1, y2, UI_SHADOW_COLOR)
-        pyxel.pix(x2, y2, UI_SHADOW_COLOR)
+        pyxel.line(x1 + 2, y2 + 1, x2, y2 + 1, WIDGET_SHADOW_COLOR)
+        pyxel.line(x2 + 1, y1 + 2, x2 + 1, y2, WIDGET_SHADOW_COLOR)
+        pyxel.pix(x2, y2, WIDGET_SHADOW_COLOR)
 
     def _capture_mouse(self, key):
         Widget._capture_info.widget = self
@@ -200,16 +196,15 @@ class Widget:
         Widget._capture_info.press_pos = None
         Widget._capture_info.last_pos = None
 
-    @staticmethod
-    def update(root):
+    def update_widgets(self):
         capture_widget = Widget._capture_info.widget
 
         if capture_widget:
             capture_widget._process_capture()
         else:
-            root._process_input()
+            self._process_input()
 
-        root._update()
+        self._update()
 
     def _process_capture(self):
         capture_info = Widget._capture_info
@@ -283,12 +278,11 @@ class Widget:
         for child in self._children:
             child._update()
 
-    @staticmethod
-    def draw(root):
-        if not root._is_visible:
+    def draw_widgets(self):
+        if not self._is_visible:
             return
 
-        root.call_event_handler("draw")
+        self.call_event_handler("draw")
 
-        for child in root._children:
-            Widget.draw(child)
+        for child in self._children:
+            child.draw_widgets()
