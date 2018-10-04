@@ -42,10 +42,10 @@ class EditorApp(Widget):
             MusicEditor(self),
         ]
 
-        self._editor_button = RadioButton(self, 3, 1, 3, 3, 13, 4, EDITOR_IMAGE)
-        self._undo_button = ImageButton(self, 48, 1, 3, 48, 13)
-        self._redo_button = ImageButton(self, 57, 1, 3, 57, 13)
-        self._save_button = ImageButton(self, 75, 1, 3, 75, 13)
+        self._editor_button = RadioButton(self, 1, 1, 3, 0, 16, 4, EDITOR_IMAGE)
+        self._undo_button = ImageButton(self, 48, 1, 3, 36, 16)
+        self._redo_button = ImageButton(self, 57, 1, 3, 45, 16)
+        self._save_button = ImageButton(self, 75, 1, 3, 54, 16)
 
         self._editor_button.add_event_handler(
             "change", lambda value: self.set_editor(value)
@@ -58,6 +58,9 @@ class EditorApp(Widget):
 
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
+
+        image_file = os.path.join(os.path.dirname(__file__), "assets", "editor.png")
+        pyxel.image(3, system=True).load(0, 16, image_file)
 
         pyxel.run(self.update_widgets, self.draw_widgets)
 
