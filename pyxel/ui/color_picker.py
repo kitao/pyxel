@@ -1,6 +1,5 @@
 import pyxel
 
-from .constants import WIDGET_FRAME_COLOR
 from .widget import Widget
 
 
@@ -11,8 +10,9 @@ class ColorPicker(Widget):
     """
 
     def __init__(self, parent, x, y, value, *, with_shadow=False, **kwargs):
-        super().__init__(parent, x, y, 63, 15, **kwargs)
+        super().__init__(parent, x, y, 65, 17, **kwargs)
 
+        self._with_shadow = with_shadow
         self._value = None
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
@@ -35,8 +35,8 @@ class ColorPicker(Widget):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
-        x -= self.x
-        y -= self.y
+        x -= self.x + 1
+        y -= self.y + 1
 
         index_x = min(max(x // 8, 0), 7)
         index_y = min(max(y // 8, 0), 1)
@@ -53,24 +53,20 @@ class ColorPicker(Widget):
         self.__on_mouse_down(key, x, y)
 
     def __on_draw(self):
-        pyxel.rect(
-            self.x,
-            self.y,
-            self.x + self.width - 1,
-            self.y + self.height - 1,
-            WIDGET_FRAME_COLOR,
+        self.draw_frame(
+            self.x, self.y, self.right, self.bottom, with_shadow=self._with_shadow
         )
 
         for i in range(2):
             for j in range(8):
-                x1 = self.x + j * 8
-                y1 = self.y + i * 8
+                x1 = self.x + j * 8 + 1
+                y1 = self.y + i * 8 + 1
                 x2 = x1 + 6
                 y2 = y1 + 6
                 col = i * 8 + j
                 pyxel.rect(x1, y1, x2, y2, col)
 
-        x = self.x + (self._value % 8) * 8 + 2
-        y = self.y + (self._value // 8) * 8 + 1
+        x = self.x + (self._value % 8) * 8 + 3
+        y = self.y + (self._value // 8) * 8 + 2
         col = 7 if self._value < 6 else 0
         pyxel.text(x, y, "+", col)

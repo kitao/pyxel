@@ -19,7 +19,7 @@ class TileMapEditor(Editor):
         self._tilemap_number = NumberPicker(
             self, 48, 161, 0, RENDERER_TILEMAP_COUNT - 1, 0
         )
-        self._tool_button = RadioButton(self, 81, 161, 3, 81, 173, 7, TOOL_PENCIL)
+        self._tool_button = RadioButton(self, 81, 161, 3, 63, 16, 7, TOOL_PENCIL)
         self._image_number = NumberPicker(
             self, 192, 161, 0, RENDERER_IMAGE_COUNT - 2, 0
         )
