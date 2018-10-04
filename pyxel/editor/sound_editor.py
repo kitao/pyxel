@@ -17,10 +17,9 @@ class SoundEditor(Editor):
         )
 
         self.add_event_handler("draw", self.__on_draw)
-        self.add_event_handler("draw", self.draw_not_implemented_message)
 
     def __on_draw(self):
-        self.draw_frame(11, 16, 228, 172)
+        self.draw_frame(11, 16, 218, 157)
         pyxel.text(23, 18, "SOUND", 6)
         pyxel.text(83, 18, "SPEED", 6)
 
@@ -32,3 +31,5 @@ class SoundEditor(Editor):
         pyxel.text(17, 150, "TON", 6)
         pyxel.text(17, 158, "VOL", 6)
         pyxel.text(17, 166, "EFX", 6)
+
+        self.draw_not_implemented_message()

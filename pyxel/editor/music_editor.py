@@ -15,15 +15,16 @@ class MusicEditor(Editor):
         self._loop_button = ImageButton(self, 210, 17, 3, 144, 16)
 
         self.add_event_handler("draw", self.__on_draw)
-        self.add_event_handler("draw", self.draw_not_implemented_message)
 
     def __on_draw(self):
-        self.draw_frame(11, 16, 228, 24, with_shadow=False)
+        self.draw_frame(11, 16, 218, 9)
         pyxel.text(23, 18, "MUSIC", 6)
 
         for i in range(4):
             x = i * 59 + 11
-            self.draw_frame(x, 30, x + 40, 172)
+            self.draw_frame(x, 30, 41, 143)
             pyxel.text(x + 15, 32, "CH{}".format(i), 6)
 
             pyxel.blt(12 + i * 59, 39, 3, 67, 24, 39, 127)
+
+        self.draw_not_implemented_message()
