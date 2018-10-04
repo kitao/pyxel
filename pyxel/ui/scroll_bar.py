@@ -139,10 +139,10 @@ class ScrollBar(Widget):
     def __on_draw(self):
         x1 = self.x
         y1 = self.y
-        x2 = self.right
-        y2 = self.bottom
+        x2 = self.x + self.width - 1
+        y2 = self.y + self.height - 1
 
-        self.draw_frame(x1, y1, x2, y2, with_shadow=self._with_shadow)
+        self.draw_frame(x1, y1, self.width, self.height, with_shadow=self._with_shadow)
 
         pyxel.rect(x1 + 1, y1, x2 - 1, y2, WIDGET_FRAME_COLOR)
         pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_FRAME_COLOR)

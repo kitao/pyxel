@@ -29,8 +29,8 @@ class TextButton(Button):
     def __on_draw(self):
         x1 = self.x
         y1 = self.y
-        x2 = self.right
-        y2 = self.bottom
+        x2 = self.x + self.width - 1
+        y2 = self.y + self.height - 1
         col = (
             BUTTON_PRESSED_COLOR
             if self.is_pressed

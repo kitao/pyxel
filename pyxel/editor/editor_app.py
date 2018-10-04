@@ -2,7 +2,11 @@ import os
 
 import pyxel
 from pyxel.ui import ImageButton, RadioButton, Widget
-from pyxel.ui.constants import WIDGET_BACKGROUND_COLOR
+from pyxel.ui.constants import (
+    WIDGET_BACKGROUND_COLOR,
+    WIDGET_FRAME_COLOR,
+    WIDGET_SHADOW_COLOR,
+)
 
 from .constants import EDITOR_HEIGHT, EDITOR_WIDTH
 from .image_editor import ImageEditor
@@ -94,7 +98,8 @@ class EditorApp(Widget):
 
     def __on_draw(self):
         pyxel.cls(WIDGET_BACKGROUND_COLOR)
-        self.draw_frame(-2, 0, 241, 8)
+        pyxel.rect(0, 0, 239, 8, WIDGET_FRAME_COLOR)
+        pyxel.line(0, 9, 239, 9, WIDGET_SHADOW_COLOR)
 
     def __on_undo_press(self):
         self._editor_list[self._editor_button.value].undo()
