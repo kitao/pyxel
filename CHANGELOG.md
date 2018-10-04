@@ -6,6 +6,7 @@
 - Added the bltm command
 - Implemented the tilemap editor
 - Added the standard widgets
+- Changed the usage of the Pyxel Editor
 
 ## 0.8.0
 - Changed the formatter from yapf to black
