@@ -88,6 +88,14 @@ class Widget:
         return self._height
 
     @property
+    def right(self):
+        return self._x + self._width - 1
+
+    @property
+    def bottom(self):
+        return self._y + self._height - 1
+
+    @property
     def is_visible(self):
         return self._is_visible
 
@@ -173,14 +181,15 @@ class Widget:
         self._height = height
         self.call_event_handler("resize", width, height)
 
-    def draw_frame(self, x1, y1, x2, y2):
+    def draw_frame(self, x1, y1, x2, y2, *, with_shadow=True):
         pyxel.line(x1 + 1, y1, x2 - 1, y1, WIDGET_FRAME_COLOR)
         pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_FRAME_COLOR)
         pyxel.line(x1 + 1, y2, x2 - 1, y2, WIDGET_FRAME_COLOR)
 
-        pyxel.line(x1 + 2, y2 + 1, x2, y2 + 1, WIDGET_SHADOW_COLOR)
-        pyxel.line(x2 + 1, y1 + 2, x2 + 1, y2, WIDGET_SHADOW_COLOR)
-        pyxel.pix(x2, y2, WIDGET_SHADOW_COLOR)
+        if with_shadow:
+            pyxel.line(x1 + 2, y2 + 1, x2, y2 + 1, WIDGET_SHADOW_COLOR)
+            pyxel.line(x2 + 1, y1 + 2, x2 + 1, y2, WIDGET_SHADOW_COLOR)
+            pyxel.pix(x2, y2, WIDGET_SHADOW_COLOR)
 
     def _capture_mouse(self, key):
         Widget._capture_info.widget = self
