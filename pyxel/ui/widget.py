@@ -2,10 +2,10 @@ import pyxel
 
 from .constants import (
     WIDGET_CLICK_DIST,
-    WIDGET_CLICK_FRAME,
+    WIDGET_CLICK_TIME,
     WIDGET_FRAME_COLOR,
-    WIDGET_HOLD_FRAME,
-    WIDGET_REPEAT_FRAME,
+    WIDGET_HOLD_TIME,
+    WIDGET_REPEAT_TIME,
     WIDGET_SHADOW_COLOR,
 )
 
@@ -86,14 +86,6 @@ class Widget:
     @property
     def height(self):
         return self._height
-
-    @property
-    def right(self):
-        return self._x + self._width - 1
-
-    @property
-    def bottom(self):
-        return self._y + self._height - 1
 
     @property
     def is_visible(self):
@@ -181,7 +173,12 @@ class Widget:
         self._height = height
         self.call_event_handler("resize", width, height)
 
-    def draw_frame(self, x1, y1, x2, y2, *, with_shadow=True):
+    def draw_frame(self, x, y, width, height, *, with_shadow=True):
+        x1 = x
+        y1 = y
+        x2 = x + width - 1
+        y2 = y + height - 1
+
         pyxel.line(x1 + 1, y1, x2 - 1, y1, WIDGET_FRAME_COLOR)
         pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_FRAME_COLOR)
         pyxel.line(x1 + 1, y2, x2 - 1, y2, WIDGET_FRAME_COLOR)
@@ -228,7 +225,7 @@ class Widget:
             )
             capture_info.last_pos = (mx, my)
 
-        if pyxel.btnp(capture_info.key, WIDGET_HOLD_FRAME, WIDGET_REPEAT_FRAME):
+        if pyxel.btnp(capture_info.key, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             self.call_event_handler("mouse_repeat", capture_info.key, mx, my)
 
         if pyxel.btnr(capture_info.key):
@@ -236,7 +233,7 @@ class Widget:
 
             press_x, press_y = capture_info.press_pos
             if (
-                pyxel.frame_count <= capture_info.time + WIDGET_CLICK_FRAME
+                pyxel.frame_count <= capture_info.time + WIDGET_CLICK_TIME
                 and abs(pyxel.mouse_x - press_x) <= WIDGET_CLICK_DIST
                 and abs(pyxel.mouse_y - press_y) <= WIDGET_CLICK_DIST
             ):
