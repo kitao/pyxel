@@ -7,7 +7,7 @@ from .editor import Editor
 
 class SoundEditor(Editor):
     def __init__(self, parent):
-        super().__init__(parent, "sound_editor.png")
+        super().__init__(parent)
 
         self._sound_picker = NumberPicker(self, 45, 17, 0, AUDIO_SOUND_COUNT - 1, 0)
         self._speed_picker = NumberPicker(self, 105, 17, 0, 99, 0)

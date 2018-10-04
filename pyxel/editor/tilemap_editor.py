@@ -11,7 +11,7 @@ from .tilemap_frame import TilemapFrame
 
 class TileMapEditor(Editor):
     def __init__(self, parent):
-        super().__init__(parent, "tilemap_editor.png")
+        super().__init__(parent)
 
         self._edit_frame = EditFrame(self, is_tilemap_mode=True)
         self._tilemap_frame = TilemapFrame(self)
