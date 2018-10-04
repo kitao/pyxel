@@ -12,7 +12,18 @@ class ScrollBar(Widget):
     """
 
     def __init__(
-        self, parent, x, y, size, direction, scroll_range, slider_range, value, **kwargs
+        self,
+        parent,
+        x,
+        y,
+        size,
+        direction,
+        scroll_range,
+        slider_range,
+        value,
+        *,
+        with_shadow=True,
+        **kwargs
     ):
         if direction == "horizontal":
             width = size
@@ -28,6 +39,7 @@ class ScrollBar(Widget):
         self._direction = direction
         self.scroll_range = scroll_range
         self.slider_range = slider_range
+        self._with_shadow = with_shadow
         self._drag_offset = 0
         self._is_dragged = True
         self._value = None
@@ -127,10 +139,10 @@ class ScrollBar(Widget):
     def __on_draw(self):
         x1 = self.x
         y1 = self.y
-        x2 = x1 + self.width - 1
-        y2 = y1 + self.height - 1
+        x2 = self.right
+        y2 = self.bottom
 
-        self.draw_frame(x1, y1, x2, y2)
+        self.draw_frame(x1, y1, x2, y2, with_shadow=self._with_shadow)
 
         pyxel.rect(x1 + 1, y1, x2 - 1, y2, WIDGET_FRAME_COLOR)
         pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_FRAME_COLOR)

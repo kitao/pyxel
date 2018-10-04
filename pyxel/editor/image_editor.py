@@ -14,8 +14,8 @@ class ImageEditor(Editor):
 
         self._edit_frame = EditFrame(self, is_tilemap_mode=False)
         self._image_frame = ImageFrame(self, is_tilemap_mode=False)
-        self._color_picker = ColorPicker(self, 12, 157, 7)
-        self._tool_button = RadioButton(self, 81, 161, 3, 81, 173, 7, TOOL_PENCIL)
+        self._color_picker = ColorPicker(self, 11, 156, 7, with_shadow=False)
+        self._tool_button = RadioButton(self, 81, 161, 3, 63, 16, 7, TOOL_PENCIL)
         self._image_number = NumberPicker(
             self, 192, 161, 0, RENDERER_IMAGE_COUNT - 2, 0
         )

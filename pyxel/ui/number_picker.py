@@ -12,7 +12,8 @@ class NumberPicker(Widget):
     """
 
     def __init__(self, parent, x, y, min_value, max_value, value, **kwargs):
-        width = max(len(str(min_value)), len(str(max_value))) * 4 + 21
+        self._number_len = max(len(str(min_value)), len(str(max_value)))
+        width = self._number_len * 4 + 21
         height = 7
         super().__init__(parent, x, y, width, height, **kwargs)
 
@@ -43,14 +44,13 @@ class NumberPicker(Widget):
             self.inc_button.is_enabled = self._value != self._max_value
 
     def __on_draw(self):
-        pyxel.rect(
-            self.x + 9,
-            self.y,
-            self.x + self.width - 10,
-            self.y + self.height - 1,
-            INPUT_FIELD_COLOR,
+        pyxel.rect(self.x + 9, self.y, self.right - 9, self.bottom, INPUT_FIELD_COLOR)
+        pyxel.text(
+            self.x + 11,
+            self.y + 1,
+            ("{:>" + str(self._number_len) + "}").format(self._value),
+            INPUT_TEXT_COLOR,
         )
-        pyxel.text(self.x + 11, self.y + 1, str(self._value), INPUT_TEXT_COLOR)
 
     def __on_dec_button_press(self):
         offset = 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
