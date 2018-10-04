@@ -10,7 +10,7 @@ from .image_frame import ImageFrame
 
 class ImageEditor(Editor):
     def __init__(self, parent):
-        super().__init__(parent, "image_editor.png")
+        super().__init__(parent)
 
         self._edit_frame = EditFrame(self, is_tilemap_mode=False)
         self._image_frame = ImageFrame(self, is_tilemap_mode=False)
