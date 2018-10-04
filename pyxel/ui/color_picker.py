@@ -54,7 +54,7 @@ class ColorPicker(Widget):
 
     def __on_draw(self):
         self.draw_frame(
-            self.x, self.y, self.right, self.bottom, with_shadow=self._with_shadow
+            self.x, self.y, self.width, self.height, with_shadow=self._with_shadow
         )
 
         for i in range(2):

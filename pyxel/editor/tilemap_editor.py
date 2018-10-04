@@ -111,8 +111,8 @@ class TileMapEditor(Editor):
                 pyxel.image(3, system=True).data[y + 192, x] = col
 
     def __on_draw(self):
-        self.draw_frame(11, 156, 146, 172)
-        self.draw_frame(157, 156, 228, 172)
+        self.draw_frame(11, 156, 136, 17)
+        self.draw_frame(157, 156, 72, 17)
         pyxel.text(18, 162, "TILEMAP", 6)
         pyxel.text(18, 162, "TILEMAP", 6)
         pyxel.text(170, 162, "IMAGE", 6)

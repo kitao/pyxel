@@ -299,9 +299,7 @@ class EditFrame(Widget):
                 dest[:, :] = self._copy_buffer[:height, :width]
 
     def __on_draw(self):
-        self.draw_frame(
-            self.x, self.y, self.x + self.width - 1, self.y + self.height - 1
-        )
+        self.draw_frame(self.x, self.y, self.width, self.height)
 
         if self._is_tilemap_mode:
             pyxel.bltm(
