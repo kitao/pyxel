@@ -7,7 +7,7 @@ from .editor import Editor
 
 class MusicEditor(Editor):
     def __init__(self, parent):
-        super().__init__(parent, "music_editor.png")
+        super().__init__(parent)
 
         self._music_picker = NumberPicker(self, 45, 17, 0, AUDIO_MUSIC_COUNT - 1, 0)
         self._play_button = ImageButton(self, 190, 17, 3, 126, 16)

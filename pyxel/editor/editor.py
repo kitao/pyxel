@@ -15,11 +15,8 @@ class Editor(Widget):
         __on_redo(data)
     """
 
-    def __init__(self, parent, image_file):
+    def __init__(self, parent):
         super().__init__(parent, 0, 0, EDITOR_WIDTH, EDITOR_HEIGHT, is_visible=False)
-
-        image_file = os.path.join(os.path.dirname(__file__), "assets", image_file)
-        pyxel.image(3, system=True).load(0, 12, image_file)
 
         data = pyxel.image(3, system=True).data
         self._image_data = np.copy(data[12 : EDITOR_HEIGHT + 12, 0:EDITOR_WIDTH])
