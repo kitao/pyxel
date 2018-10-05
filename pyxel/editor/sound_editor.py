@@ -13,7 +13,7 @@ class SoundEditor(Editor):
         self._speed_picker = NumberPicker(self, 105, 17, 0, 99, 0)
 
         self._scroll_var = ScrollBar(
-            self, 222, 24, 125, "vertical", 100, 10, 0, with_shadow=False
+            self, 222, 24, 125, ScrollBar.VERTICAL, 100, 10, 0, with_shadow=False
         )
 
         self.add_event_handler("draw", self.__on_draw)
