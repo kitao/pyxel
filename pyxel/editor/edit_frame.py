@@ -42,10 +42,12 @@ class EditFrame(Widget):
 
         self._overlay_canvas = OverlayCanvas()
 
-        self._h_scroll_bar = ScrollBar(self, 11, 145, 130, "horizontal", 32, 2, 0)
+        self._h_scroll_bar = ScrollBar(
+            self, 11, 145, 130, ScrollBar.HORIZONTAL, 32, 2, 0
+        )
         self._h_scroll_bar.add_event_handler("change", self.__on_change_x)
 
-        self._v_scroll_bar = ScrollBar(self, 140, 16, 130, "vertical", 32, 2, 0)
+        self._v_scroll_bar = ScrollBar(self, 140, 16, 130, ScrollBar.VERTICAL, 32, 2, 0)
         self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)

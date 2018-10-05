@@ -18,13 +18,19 @@ class ImageFrame(Widget):
         self._drag_offset_x = 0
         self._drag_offset_y = 0
 
-        self._h_scroll_bar = ScrollBar(self, 157, 145, 66, "horizontal", 32, 8, 0)
+        self._h_scroll_bar = ScrollBar(
+            self, 157, 145, 66, ScrollBar.HORIZONTAL, 32, 8, 0
+        )
         self._h_scroll_bar.add_event_handler("change", self.__on_change_x)
 
         if is_tilemap_mode:
-            self._v_scroll_bar = ScrollBar(self, 222, 80, 66, "vertical", 32, 8, 0)
+            self._v_scroll_bar = ScrollBar(
+                self, 222, 80, 66, ScrollBar.VERTICAL, 32, 8, 0
+            )
         else:
-            self._v_scroll_bar = ScrollBar(self, 222, 16, 130, "vertical", 32, 16, 0)
+            self._v_scroll_bar = ScrollBar(
+                self, 222, 16, 130, ScrollBar.VERTICAL, 32, 16, 0
+            )
 
         self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
 
