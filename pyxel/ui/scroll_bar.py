@@ -11,6 +11,9 @@ class ScrollBar(Widget):
         __on_change(value)
     """
 
+    HORIZONTAL = 0
+    VERTICAL = 1
+
     def __init__(
         self,
         parent,
@@ -25,14 +28,14 @@ class ScrollBar(Widget):
         with_shadow=True,
         **kwargs
     ):
-        if direction == "horizontal":
+        if direction == ScrollBar.HORIZONTAL:
             width = size
             height = 7
-        elif direction == "vertical":
+        elif direction == ScrollBar.VERTICAL:
             width = 7
             height = size
         else:
-            pass  # todo
+            raise ValueError("invalid direction")
 
         super().__init__(parent, x, y, width, height, **kwargs)
 
@@ -44,7 +47,7 @@ class ScrollBar(Widget):
         self._is_dragged = True
         self._value = None
 
-        if self.is_horizontal:
+        if self._direction == ScrollBar.HORIZONTAL:
             self.dec_button = Button(self, x, y, self.button_size, self.button_size)
             self.inc_button = Button(
                 self,
@@ -72,17 +75,13 @@ class ScrollBar(Widget):
         self.value = value
 
     @property
-    def is_horizontal(self):
-        return self._direction == "horizontal"
-
-    @property
     def button_size(self):
-        return min(self.width, self.height)
+        return self.height if self._direction == ScrollBar.HORIZONTAL else self.width
 
     @property
     def scroll_size(self):
         return (
-            self.width if self.is_horizontal else self.height
+            self.width if self._direction == ScrollBar.HORIZONTAL else self.height
         ) - self.button_size * 2
 
     @property
@@ -112,7 +111,9 @@ class ScrollBar(Widget):
         x -= self.x
         y -= self.y
 
-        self._drag_offset = (x if self.is_horizontal else y) - self.slider_pos
+        self._drag_offset = (
+            x if self._direction == ScrollBar.HORIZONTAL else y
+        ) - self.slider_pos
 
         if self._drag_offset < 0:
             self.dec_button.press()
@@ -128,7 +129,7 @@ class ScrollBar(Widget):
         x -= self.x
         y -= self.y
 
-        drag_pos = x if self.is_horizontal else y
+        drag_pos = x if self._direction == ScrollBar.HORIZONTAL else y
         value = (
             (drag_pos - self._drag_offset - self.button_size)
             * self.scroll_range
@@ -144,9 +145,6 @@ class ScrollBar(Widget):
 
         self.draw_frame(x1, y1, self.width, self.height, with_shadow=self._with_shadow)
 
-        pyxel.rect(x1 + 1, y1, x2 - 1, y2, WIDGET_FRAME_COLOR)
-        pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_FRAME_COLOR)
-
         inc_color = (
             BUTTON_PRESSED_COLOR
             if self.inc_button.is_pressed
@@ -158,7 +156,7 @@ class ScrollBar(Widget):
             else WIDGET_BACKGROUND_COLOR
         )
 
-        if self.is_horizontal:
+        if self._direction == ScrollBar.HORIZONTAL:
             pyxel.rect(x1 + 1, y1 + 1, x1 + 4, y2 - 1, dec_color)
             pyxel.rect(x1 + 6, y1 + 1, x2 - 6, y2 - 1, WIDGET_BACKGROUND_COLOR)
             pyxel.rect(x2 - 1, y1 + 1, x2 - 4, y2 - 1, inc_color)
