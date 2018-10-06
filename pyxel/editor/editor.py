@@ -98,7 +98,7 @@ class Editor(Widget):
         tool_button.add_event_handler("mouse_hover", self.__tool_button_on_mouse_hover)
 
     def __tool_button_on_mouse_hover(self, x, y):
-        value = self._tool_button.hit_value(x, y)
+        value = self._tool_button.check_value(x, y)
 
         if value == TOOL_SELECT:
             s = "SELECT:S"

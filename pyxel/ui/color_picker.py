@@ -31,7 +31,7 @@ class ColorPicker(Widget):
             self._value = value
             self.call_event_handler("change", value)
 
-    def hit_value(self, x, y):
+    def check_value(self, x, y):
         x -= self.x + 1
         y -= self.y + 1
 
@@ -52,7 +52,7 @@ class ColorPicker(Widget):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
-        value = self.hit_value(x, y)
+        value = self.check_value(x, y)
 
         if value is not None:
             self.value = value
