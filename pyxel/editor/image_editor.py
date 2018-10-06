@@ -127,11 +127,11 @@ class ImageEditor(Editor):
         elif value == TOOL_RECTB:
             s = "RECTANGLE:R"
         elif value == TOOL_RECT:
-            s = "F.RECTANGLE:SHIFT+R"
+            s = "F-RECTANGLE:SHIFT+R"
         elif value == TOOL_CIRCB:
             s = "CIRCLE:C"
         elif value == TOOL_CIRC:
-            s = "F.CIRCLE:SHIFT+C"
+            s = "F-CIRCLE:SHIFT+C"
         elif value == TOOL_BUCKET:
             s = "BUCKET:B"
         else:
