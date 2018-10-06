@@ -1,11 +1,5 @@
-import os
-
-import numpy as np
-
 import pyxel
 from pyxel.ui import Widget
-
-from .constants import EDITOR_HEIGHT, EDITOR_WIDTH
 
 
 class Editor(Widget):
@@ -16,10 +10,7 @@ class Editor(Widget):
     """
 
     def __init__(self, parent):
-        super().__init__(parent, 0, 0, EDITOR_WIDTH, EDITOR_HEIGHT, is_visible=False)
-
-        data = pyxel.image(3, system=True).data
-        self._image_data = np.copy(data[12 : EDITOR_HEIGHT + 12, 0:EDITOR_WIDTH])
+        super().__init__(parent, 0, 0, 0, 0, is_visible=False)
 
         self._edit_history_list = []
         self._edit_history_index = 0
