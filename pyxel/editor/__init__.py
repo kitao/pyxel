@@ -1,12 +1,12 @@
 import sys
 
 import pyxel
-from pyxel.editor.editor_app import EditorApp
+from pyxel.editor.app import App
 
 
 def run():
     if len(sys.argv) == 2:
-        EditorApp(sys.argv[1])
+        App(sys.argv[1])
     else:
         print("usage: pyxeleditor pyxel_resource_file")
         print("\n")
