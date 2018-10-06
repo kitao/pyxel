@@ -1,6 +1,6 @@
 import pyxel
 
-from .constants import INPUT_FIELD_COLOR, INPUT_TEXT_COLOR
+from .constants import BUTTON_HEIGHT, INPUT_FIELD_COLOR, INPUT_TEXT_COLOR
 from .text_button import TextButton
 from .widget import Widget
 
@@ -14,7 +14,7 @@ class NumberPicker(Widget):
     def __init__(self, parent, x, y, min_value, max_value, value, **kwargs):
         self._number_len = max(len(str(min_value)), len(str(max_value)))
         width = self._number_len * 4 + 21
-        height = 7
+        height = BUTTON_HEIGHT
         super().__init__(parent, x, y, width, height, **kwargs)
 
         self._min_value = min_value

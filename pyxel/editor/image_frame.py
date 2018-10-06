@@ -40,6 +40,19 @@ class ImageFrame(Widget):
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
 
+    def _screen_to_view(self, x, y):
+        x -= self.x + 1
+        y -= self.y + 1
+
+        if self._is_tilemap_mode:
+            x = self.viewport_x + min(max(x // 8, 0), 7) * 8
+            y = self.viewport_y + min(max(y // 8, 0), 7) * 8
+        else:
+            x = self.viewport_x + min(max((x - 4) // 8, 0), 6) * 8
+            y = self.viewport_y + min(max((y - 4) // 8, 0), 14) * 8
+
+        return x, y
+
     def __on_change_x(self, value):
         self.viewport_x = value * 8
 
@@ -48,16 +61,9 @@ class ImageFrame(Widget):
 
     def __on_mouse_down(self, key, x, y):
         if key == pyxel.KEY_LEFT_BUTTON:
-            x -= self.x + 1
-            y -= self.y + 1
+            self.select_x, self.select_y = self._screen_to_view(x, y)
 
-            if self._is_tilemap_mode:
-                self.select_x = self.viewport_x + min(max(x // 8, 0), 7) * 8
-                self.select_y = self.viewport_y + min(max(y // 8, 0), 7) * 8
-            else:
-                self.select_x = self.viewport_x + min(max((x - 4) // 8, 0), 6) * 8
-                self.select_y = self.viewport_y + min(max((y - 4) // 8, 0), 14) * 8
-
+            if not self._is_tilemap_mode:
                 self.parent.edit_x = self.select_x
                 self.parent.edit_y = self.select_y
 
@@ -88,19 +94,8 @@ class ImageFrame(Widget):
             )
 
     def __on_mouse_hover(self, x, y):
-        # TODO
-        x -= self.x + 1
-        y -= self.y + 1
-
-        if self._is_tilemap_mode:
-            x = self.viewport_x + min(max(x // 8, 0), 7) * 8
-            y = self.viewport_y + min(max(y // 8, 0), 7) * 8
-            s = ""
-        else:
-            x = self.viewport_x + min(max((x - 4) // 8, 0), 6) * 8
-            y = self.viewport_y + min(max((y - 4) // 8, 0), 14) * 8
-            s = "MOVE:ARROW"
-
+        x, y = self._screen_to_view(x, y)
+        s = "" if self._is_tilemap_mode else "MOVE:ARROW"
         self.parent.help_message = s + " ({},{})".format(x, y)
 
     def __on_update(self):

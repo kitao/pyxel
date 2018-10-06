@@ -39,7 +39,7 @@ class EditFrame(Widget):
         self._copy_buffer = None
 
         self._is_dragged = False
-        self._is_guide_mode = False
+        self._is_assist_mode = False
 
         self._overlay_canvas = OverlayCanvas()
 
@@ -59,6 +59,12 @@ class EditFrame(Widget):
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
 
+    def _screen_to_view(self, x, y):
+        x = min(max((x - self.x - 1) // 8, 0), 15)
+        y = min(max((y - self.y - 1) // 8, 0), 15)
+
+        return (x, y)
+
     def __on_change_x(self, value):
         self.viewport_x = value * 8
 
@@ -69,14 +75,13 @@ class EditFrame(Widget):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
-        x = min(max((x - self.x - 1) // 8, 0), 15)
-        y = min(max((y - self.y - 1) // 8, 0), 15)
+        (x, y) = self._screen_to_view(x, y)
 
         self._press_x = x
         self._press_y = y
 
         self._is_dragged = True
-        self._is_guide_mode = False
+        self._is_assist_mode = False
 
         if self.parent.tool == TOOL_SELECT:
             self._select_x1 = self._select_x2 = x
@@ -188,7 +193,7 @@ class EditFrame(Widget):
                 self._select_x1, self._select_x2 = (x1, x2) if x1 < x2 else (x2, x1)
                 self._select_y1, self._select_y2 = (y1, y2) if y1 < y2 else (y2, y1)
             elif self.parent.tool == TOOL_PENCIL:
-                if self._is_guide_mode:
+                if self._is_assist_mode:
                     self._overlay_canvas.clear()
                     self._overlay_canvas.line(x1, y1, x2, y2, self.parent.color)
                 else:
@@ -198,22 +203,22 @@ class EditFrame(Widget):
             elif self.parent.tool == TOOL_RECTB:
                 self._overlay_canvas.clear()
                 self._overlay_canvas.rectb(
-                    x1, y1, x2, y2, self.parent.color, self._is_guide_mode
+                    x1, y1, x2, y2, self.parent.color, self._is_assist_mode
                 )
             elif self.parent.tool == TOOL_RECT:
                 self._overlay_canvas.clear()
                 self._overlay_canvas.rect(
-                    x1, y1, x2, y2, self.parent.color, self._is_guide_mode
+                    x1, y1, x2, y2, self.parent.color, self._is_assist_mode
                 )
             elif self.parent.tool == TOOL_CIRCB:
                 self._overlay_canvas.clear()
                 self._overlay_canvas.circb(
-                    x1, y1, x2, y2, self.parent.color, self._is_guide_mode
+                    x1, y1, x2, y2, self.parent.color, self._is_assist_mode
                 )
             elif self.parent.tool == TOOL_CIRC:
                 self._overlay_canvas.clear()
                 self._overlay_canvas.circ(
-                    x1, y1, x2, y2, self.parent.color, self._is_guide_mode
+                    x1, y1, x2, y2, self.parent.color, self._is_assist_mode
                 )
 
             self._last_x = x2
@@ -237,14 +242,21 @@ class EditFrame(Widget):
             self.viewport_y = min(max(self.viewport_y, 0), 240)
 
     def __on_mouse_hover(self, x, y):
-        # TODO
-        x = min(max((x - self.x - 1) // 8, 0), 15) + self.viewport_x
-        y = min(max((y - self.y - 1) // 8, 0), 15) + self.viewport_y
-        self.parent.help_message = "ASSIST:+SHIFT MOVE:ARROW ({},{})".format(x, y)
+        if self.parent.tool == TOOL_SELECT:
+            s = "COPY:CTRL+C PASTE:CTRL+V"
+        elif self._is_dragged:
+            s = "ASSIST:SHIFT"
+        else:
+            s = "MOVE:ARROW"
+
+        x, y = self._screen_to_view(x, y)
+        x += self.viewport_x
+        y += self.viewport_y
+        self.parent.help_message = s + " ({},{})".format(x, y)
 
     def __on_update(self):
-        if self._is_dragged and not self._is_guide_mode and pyxel.btn(pyxel.KEY_SHIFT):
-            self._is_guide_mode = True
+        if self._is_dragged and not self._is_assist_mode and pyxel.btn(pyxel.KEY_SHIFT):
+            self._is_assist_mode = True
 
             x1 = self._press_x
             y1 = self._press_y

@@ -11,22 +11,21 @@ class TilemapFrame(Widget):
         self.add_event_handler("mouse_hover", self.__on_mouse_hover)
         self.add_event_handler("draw", self.__on_draw)
 
+    def _screen_to_view(self, x, y):
+        x = min(max((x - self.x - 1) // 2, 0), 30) * 8
+        y = min(max((y - self.y - 1) // 2, 0), 30) * 8
+        return x, y
+
     def __on_mouse_down(self, key, x, y):
         if key == pyxel.KEY_LEFT_BUTTON:
-            x -= self.x
-            y -= self.y
-
-            self.parent.edit_x = min(max((x - 1) // 2, 0), 30) * 8
-            self.parent.edit_y = min(max((y - 1) // 2, 0), 30) * 8
+            self.parent.edit_x, self.parent.edit_y = self._screen_to_view(x, y)
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         if key == pyxel.KEY_LEFT_BUTTON:
             self.__on_mouse_down(key, x, y)
 
     def __on_mouse_hover(self, x, y):
-        # TODO
-        x = min(max((x - self.x - 1) // 2, 0), 30) * 8
-        y = min(max((y - self.y - 1) // 2, 0), 30) * 8
+        x, y = self._screen_to_view(x, y)
         self.parent.help_message = "MOVE:ARROW ({},{})".format(x, y)
 
     def __on_draw(self):
