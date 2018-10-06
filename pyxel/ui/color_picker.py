@@ -14,9 +14,11 @@ class ColorPicker(Widget):
 
         self._with_shadow = with_shadow
         self._value = None
+        self._hover_value = None
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_drag", self.__on_mouse_drag)
+        self.add_event_handler("mouse_hover", self.__on_mouse_hover)
         self.add_event_handler("draw", self.__on_draw)
 
         self.value = value
@@ -30,6 +32,10 @@ class ColorPicker(Widget):
         if self._value != value:
             self._value = value
             self.call_event_handler("change", value)
+
+    @property
+    def hover_value(self):
+        return self._hover_value
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
@@ -51,6 +57,24 @@ class ColorPicker(Widget):
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         self.__on_mouse_down(key, x, y)
+
+    def __on_mouse_hover(self, x, y):
+        # TODO
+        x -= self.x + 1
+        y -= self.y + 1
+
+        index_x = min(max(x // 8, 0), 7)
+        index_y = min(max(y // 8, 0), 1)
+
+        x1 = index_x * 8
+        y1 = index_y * 8
+        x2 = x1 + 6
+        y2 = x2 + 6
+
+        if x >= x1 and x <= x2 and y >= y1 and y <= y2:
+            self._hover_value = index_y * 8 + index_x
+        else:
+            self._hover_value = None
 
     def __on_draw(self):
         self.draw_frame(

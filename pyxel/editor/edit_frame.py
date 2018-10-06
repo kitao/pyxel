@@ -54,7 +54,8 @@ class EditFrame(Widget):
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_up", self.__on_mouse_up)
         self.add_event_handler("mouse_click", self.__on_mouse_click)
-        self.add_event_handler("mouse_drag", self.__on_drag)
+        self.add_event_handler("mouse_drag", self.__on_mouse_drag)
+        self.add_event_handler("mouse_hover", self.__on_mouse_hover)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
 
@@ -68,8 +69,8 @@ class EditFrame(Widget):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
-        x = (x - self.x - 1) // 8
-        y = (y - self.y - 1) // 8
+        x = min(max((x - self.x - 1) // 8, 0), 15)
+        y = min(max((y - self.y - 1) // 8, 0), 15)
 
         self._press_x = x
         self._press_y = y
@@ -174,7 +175,7 @@ class EditFrame(Widget):
             else:
                 self.parent.color = pyxel.image(self.parent.image).data[y, x]
 
-    def __on_drag(self, key, x, y, dx, dy):
+    def __on_mouse_drag(self, key, x, y, dx, dy):
         if key == pyxel.KEY_LEFT_BUTTON:
             x1 = self._press_x
             y1 = self._press_y
@@ -234,6 +235,12 @@ class EditFrame(Widget):
 
             self.viewport_x = min(max(self.viewport_x, 0), 240)
             self.viewport_y = min(max(self.viewport_y, 0), 240)
+
+    def __on_mouse_hover(self, x, y):
+        # TODO
+        x = min(max((x - self.x - 1) // 8, 0), 15) + self.viewport_x
+        y = min(max((y - self.y - 1) // 8, 0), 15) + self.viewport_y
+        self.parent.help_message = "SHIFT:ADJUST ARROW:MOVE ({},{})".format(x, y)
 
     def __on_update(self):
         if self._is_dragged and not self._is_guide_mode and pyxel.btn(pyxel.KEY_SHIFT):
