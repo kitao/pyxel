@@ -36,6 +36,7 @@ class ImageFrame(Widget):
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_drag", self.__on_mouse_drag)
+        self.add_event_handler("mouse_hover", self.__on_mouse_hover)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
 
@@ -85,6 +86,22 @@ class ImageFrame(Widget):
             self.viewport_y = min(
                 max(self.viewport_y, 0), 192 if self._is_tilemap_mode else 128
             )
+
+    def __on_mouse_hover(self, x, y):
+        # TODO
+        x -= self.x + 1
+        y -= self.y + 1
+
+        if self._is_tilemap_mode:
+            x = self.viewport_x + min(max(x // 8, 0), 7) * 8
+            y = self.viewport_y + min(max(y // 8, 0), 7) * 8
+            s = ""
+        else:
+            x = self.viewport_x + min(max((x - 4) // 8, 0), 6) * 8
+            y = self.viewport_y + min(max((y - 4) // 8, 0), 14) * 8
+            s = "ARROW:MOVE"
+
+        self.parent.help_message = s + " ({},{})".format(x, y)
 
     def __on_update(self):
         if not self._is_tilemap_mode:

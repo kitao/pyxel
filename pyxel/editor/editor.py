@@ -25,6 +25,14 @@ class Editor(Widget):
         self._edit_history_index = 0
 
     @property
+    def help_message(self):
+        return self.parent.help_message
+
+    @help_message.setter
+    def help_message(self, value):
+        self.parent.help_message = value
+
+    @property
     def can_undo(self):
         return self._edit_history_index > 0
 
@@ -54,6 +62,17 @@ class Editor(Widget):
         self._edit_history_list = self._edit_history_list[: self._edit_history_index]
         self._edit_history_list.append(data)
         self._edit_history_index += 1
+
+    def add_number_picker_help(self, number_picker):
+        number_picker.dec_button.add_event_handler(
+            "mouse_hover", self.__number_picker_on_mouse_hover
+        )
+        number_picker.inc_button.add_event_handler(
+            "mouse_hover", self.__number_picker_on_mouse_hover
+        )
+
+    def __number_picker_on_mouse_hover(self, x, y):
+        self.help_message = "SHIFT:x10"
 
     def draw_not_implemented_message(self):
         pyxel.rect(78, 83, 163, 97, 11)

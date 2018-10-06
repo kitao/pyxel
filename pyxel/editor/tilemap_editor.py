@@ -16,11 +16,11 @@ class TileMapEditor(Editor):
         self._edit_frame = EditFrame(self, is_tilemap_mode=True)
         self._tilemap_frame = TilemapFrame(self)
         self._select_frame = ImageFrame(self, is_tilemap_mode=True)
-        self._tilemap_number = NumberPicker(
+        self._tilemap_picker = NumberPicker(
             self, 48, 161, 0, RENDERER_TILEMAP_COUNT - 1, 0
         )
         self._tool_button = RadioButton(self, 81, 161, 3, 63, 16, 7, TOOL_PENCIL)
-        self._image_number = NumberPicker(
+        self._image_picker = NumberPicker(
             self, 192, 161, 0, RENDERER_IMAGE_COUNT - 2, 0
         )
 
@@ -28,10 +28,12 @@ class TileMapEditor(Editor):
         self.add_event_handler("redo", self.__on_redo)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
+        self.add_number_picker_help(self._tilemap_picker)
+        self.add_number_picker_help(self._image_picker)
 
     @property
     def tilemap(self):
-        return self._tilemap_number.value
+        return self._tilemap_picker.value
 
     @tilemap.setter
     def tilemap(self, value):
@@ -58,7 +60,7 @@ class TileMapEditor(Editor):
 
     @property
     def image(self):
-        return self._image_number.value
+        return self._image_picker.value
 
     @image.setter
     def image(self, value):
@@ -88,7 +90,7 @@ class TileMapEditor(Editor):
 
         self._edit_frame.edit_x = x
         self._edit_frame.edit_y = y
-        self._tilemap_number.value = tm
+        self._tilemap_picker.value = tm
 
     def __on_redo(self, data):
         tm = data["tilemap"]
@@ -98,7 +100,7 @@ class TileMapEditor(Editor):
 
         self._edit_frame.edit_x = x
         self._edit_frame.edit_y = y
-        self._tilemap_number.value = tm
+        self._tilemap_picker.value = tm
 
     def __on_update(self):
         start_y = (pyxel.frame_count % 8) * 8

@@ -225,6 +225,9 @@ class Widget:
             )
             capture_info.last_pos = (mx, my)
 
+        if self.is_hit(mx, my):
+            self.call_event_handler("mouse_hover", mx, my)
+
         if pyxel.btnp(capture_info.key, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             self.call_event_handler("mouse_repeat", capture_info.key, mx, my)
 
@@ -268,8 +271,8 @@ class Widget:
             if key is not None:
                 self._capture_mouse(key)
                 self.call_event_handler("mouse_down", key, mx, my)
-            else:
-                self.call_event_handler("mouse_hover", mx, my)
+
+            self.call_event_handler("mouse_hover", mx, my)
 
             return True
 
