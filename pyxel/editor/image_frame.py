@@ -87,6 +87,10 @@ class ImageFrame(Widget):
             )
 
     def __on_update(self):
+        if not self._is_tilemap_mode:
+            self.select_x = self.parent.edit_x
+            self.select_y = self.parent.edit_y
+
         self._h_scroll_bar.value = self.viewport_x // 8
         self._v_scroll_bar.value = self.viewport_y // 8
 
