@@ -1,6 +1,7 @@
 import pyxel
 from pyxel.constants import AUDIO_SOUND_COUNT
 from pyxel.ui import NumberPicker, ScrollBar
+from pyxel.ui.constants import WIDGET_FRAME_COLOR
 
 from .editor import Editor
 
@@ -27,6 +28,8 @@ class SoundEditor(Editor):
 
         for i in range(4):
             pyxel.blt(31 + i * 48, 25, 3, 19, 24, 48, 147)
+
+        pyxel.line(222, 149, 222, 171, WIDGET_FRAME_COLOR)
 
         pyxel.text(17, 150, "TON", 6)
         pyxel.text(17, 158, "VOL", 6)
