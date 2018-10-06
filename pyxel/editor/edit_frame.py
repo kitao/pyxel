@@ -1,5 +1,6 @@
 import pyxel
 from pyxel.ui import ScrollBar, Widget
+from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 from .constants import (
     TOOL_BUCKET,
@@ -235,9 +236,6 @@ class EditFrame(Widget):
             self.viewport_y = min(max(self.viewport_y, 0), 240)
 
     def __on_update(self):
-        self._h_scroll_bar.value = self.viewport_x // 8
-        self._v_scroll_bar.value = self.viewport_y // 8
-
         if self._is_dragged and not self._is_guide_mode and pyxel.btn(pyxel.KEY_SHIFT):
             self._is_guide_mode = True
 
@@ -299,6 +297,24 @@ class EditFrame(Widget):
 
                 dest = data[y1 : y1 + height, x1 : x1 + width]
                 dest[:, :] = self._copy_buffer[:height, :width]
+
+        if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            self.viewport_x -= 8
+
+        if pyxel.btnp(pyxel.KEY_RIGHT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            self.viewport_x += 8
+
+        if pyxel.btnp(pyxel.KEY_UP, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            self.viewport_y -= 8
+
+        if pyxel.btnp(pyxel.KEY_DOWN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            self.viewport_y += 8
+
+        self.viewport_x = min(max(self.viewport_x, 0), 240)
+        self.viewport_y = min(max(self.viewport_y, 0), 240)
+
+        self._h_scroll_bar.value = self.viewport_x // 8
+        self._v_scroll_bar.value = self.viewport_y // 8
 
     def __on_draw(self):
         self.draw_frame(self.x, self.y, self.width, self.height)
