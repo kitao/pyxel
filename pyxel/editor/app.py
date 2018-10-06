@@ -111,7 +111,7 @@ class App(Widget):
         pyxel.rect(0, 0, 239, 8, WIDGET_FRAME_COLOR)
         pyxel.line(0, 9, 239, 9, WIDGET_SHADOW_COLOR)
 
-        pyxel.text(100, 2, self.help_message, 5)
+        pyxel.text(93, 2, self.help_message, 5)
         self.help_message = ""
 
     def __on_undo_press(self):
@@ -124,13 +124,13 @@ class App(Widget):
         pyxel.save(self._resource_file)
 
     def __editor_button_on_mouse_hover(self, x, y):
-        self.help_message = "ALT+LEFT/RIGHT:SWITCH"
+        self.help_message = "SWITCH:ALT+LEFT/RIGHT"
 
     def __undo_button_on_mouse_hover(self, x, y):
-        self.help_message = "CTRL+Z:UNDO"
+        self.help_message = "UNDO:CTRL+Z"
 
     def __redo_button_on_mouse_hover(self, x, y):
-        self.help_message = "CTRL+Y:REDO"
+        self.help_message = "REDO:CTRL+Y"
 
     def __save_button_on_mouse_hover(self, x, y):
-        self.help_message = "CTRL+S:SAVE"
+        self.help_message = "SAVE:CTRL+S"
