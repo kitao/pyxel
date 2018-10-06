@@ -2,15 +2,7 @@ import pyxel
 from pyxel.constants import RENDERER_IMAGE_COUNT, RENDERER_TILEMAP_COUNT
 from pyxel.ui import NumberPicker, RadioButton
 
-from .constants import (
-    TOOL_BUCKET,
-    TOOL_CIRC,
-    TOOL_CIRCB,
-    TOOL_PENCIL,
-    TOOL_RECT,
-    TOOL_RECTB,
-    TOOL_SELECT,
-)
+from .constants import TOOL_PENCIL
 from .edit_frame import EditFrame
 from .editor import Editor
 from .image_frame import ImageFrame
@@ -38,9 +30,7 @@ class TileMapEditor(Editor):
         self.add_event_handler("draw", self.__on_draw)
         self.add_number_picker_help(self._tilemap_picker)
         self.add_number_picker_help(self._image_picker)
-        self._tool_button.add_event_handler(
-            "mouse_hover", self.__tool_button_on_mouse_hover
-        )
+        self.add_tool_button_help(self._tool_button)
 
     @property
     def tilemap(self):
@@ -123,23 +113,7 @@ class TileMapEditor(Editor):
                 ]
                 pyxel.image(3, system=True).data[y + 192, x] = col
 
-        if pyxel.btn(pyxel.KEY_CONTROL):
-            return
-
-        if pyxel.btnp(pyxel.KEY_S):
-            self._tool_button.value = TOOL_SELECT
-        elif pyxel.btnp(pyxel.KEY_P):
-            self._tool_button.value = TOOL_PENCIL
-        elif pyxel.btnp(pyxel.KEY_R):
-            self._tool_button.value = (
-                TOOL_RECT if pyxel.btn(pyxel.KEY_SHIFT) else TOOL_RECTB
-            )
-        elif pyxel.btnp(pyxel.KEY_C):
-            self._tool_button.value = (
-                TOOL_CIRC if pyxel.btn(pyxel.KEY_SHIFT) else TOOL_CIRCB
-            )
-        elif pyxel.btnp(pyxel.KEY_B):
-            self._tool_button.value = TOOL_BUCKET
+        self.check_tool_button_shortcuts()
 
     def __on_draw(self):
         self.draw_frame(11, 156, 136, 17)
@@ -147,25 +121,3 @@ class TileMapEditor(Editor):
         pyxel.text(18, 162, "TILEMAP", 6)
         pyxel.text(18, 162, "TILEMAP", 6)
         pyxel.text(170, 162, "IMAGE", 6)
-
-    def __tool_button_on_mouse_hover(self, x, y):
-        value = self._tool_button.hover_value
-
-        if value == TOOL_SELECT:
-            s = "SELECT:S"
-        elif value == TOOL_PENCIL:
-            s = "PENCIL:P"
-        elif value == TOOL_RECTB:
-            s = "RECTANGLE:R"
-        elif value == TOOL_RECT:
-            s = "F-RECTANGLE:SHIFT+R"
-        elif value == TOOL_CIRCB:
-            s = "CIRCLE:C"
-        elif value == TOOL_CIRC:
-            s = "F-CIRCLE:SHIFT+C"
-        elif value == TOOL_BUCKET:
-            s = "BUCKET:B"
-        else:
-            s = ""
-
-        self.help_message = s
