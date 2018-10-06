@@ -17,7 +17,7 @@ from .tilemap_editor import TileMapEditor
 EDITOR_IMAGE = 0
 
 
-class EditorApp(Widget):
+class App(Widget):
     def __init__(self, resource_file):
         resource_file = os.path.join(os.getcwd(), resource_file)
         root, ext = os.path.splitext(resource_file)
