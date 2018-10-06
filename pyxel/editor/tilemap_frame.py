@@ -27,7 +27,7 @@ class TilemapFrame(Widget):
         # TODO
         x = min(max((x - self.x - 1) // 2, 0), 30) * 8
         y = min(max((y - self.y - 1) // 2, 0), 30) * 8
-        self.parent.help_message = "ARROW:MOVE ({},{})".format(x, y)
+        self.parent.help_message = "MOVE:ARROW ({},{})".format(x, y)
 
     def __on_draw(self):
         self.draw_frame(self.x, self.y, self.width, self.height)
