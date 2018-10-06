@@ -99,7 +99,7 @@ class ImageFrame(Widget):
         else:
             x = self.viewport_x + min(max((x - 4) // 8, 0), 6) * 8
             y = self.viewport_y + min(max((y - 4) // 8, 0), 14) * 8
-            s = "ARROW:MOVE"
+            s = "MOVE:ARROW"
 
         self.parent.help_message = s + " ({},{})".format(x, y)
 

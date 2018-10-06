@@ -72,7 +72,7 @@ class Editor(Widget):
         )
 
     def __number_picker_on_mouse_hover(self, x, y):
-        self.help_message = "SHIFT:x10"
+        self.help_message = "x10:+SHIFT"
 
     def draw_not_implemented_message(self):
         pyxel.rect(78, 83, 163, 97, 11)

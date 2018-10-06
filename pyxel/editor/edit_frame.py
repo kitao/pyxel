@@ -240,7 +240,7 @@ class EditFrame(Widget):
         # TODO
         x = min(max((x - self.x - 1) // 8, 0), 15) + self.viewport_x
         y = min(max((y - self.y - 1) // 8, 0), 15) + self.viewport_y
-        self.parent.help_message = "SHIFT:ADJUST ARROW:MOVE ({},{})".format(x, y)
+        self.parent.help_message = "ASSIST:+SHIFT MOVE:ARROW ({},{})".format(x, y)
 
     def __on_update(self):
         if self._is_dragged and not self._is_guide_mode and pyxel.btn(pyxel.KEY_SHIFT):
