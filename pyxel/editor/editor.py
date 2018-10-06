@@ -1,6 +1,16 @@
 import pyxel
 from pyxel.ui import Widget
 
+from .constants import (
+    TOOL_BUCKET,
+    TOOL_CIRC,
+    TOOL_CIRCB,
+    TOOL_PENCIL,
+    TOOL_RECT,
+    TOOL_RECTB,
+    TOOL_SELECT,
+)
+
 
 class Editor(Widget):
     """
@@ -64,6 +74,50 @@ class Editor(Widget):
 
     def __number_picker_on_mouse_hover(self, x, y):
         self.help_message = "x10:SHIFT+CLICK"
+
+    def check_tool_button_shortcuts(self):
+        if pyxel.btn(pyxel.KEY_CONTROL):
+            return
+
+        if pyxel.btnp(pyxel.KEY_S):
+            self._tool_button.value = TOOL_SELECT
+        elif pyxel.btnp(pyxel.KEY_P):
+            self._tool_button.value = TOOL_PENCIL
+        elif pyxel.btnp(pyxel.KEY_R):
+            self._tool_button.value = (
+                TOOL_RECT if pyxel.btn(pyxel.KEY_SHIFT) else TOOL_RECTB
+            )
+        elif pyxel.btnp(pyxel.KEY_C):
+            self._tool_button.value = (
+                TOOL_CIRC if pyxel.btn(pyxel.KEY_SHIFT) else TOOL_CIRCB
+            )
+        elif pyxel.btnp(pyxel.KEY_B):
+            self._tool_button.value = TOOL_BUCKET
+
+    def add_tool_button_help(self, tool_button):
+        tool_button.add_event_handler("mouse_hover", self.__tool_button_on_mouse_hover)
+
+    def __tool_button_on_mouse_hover(self, x, y):
+        value = self._tool_button.hit_value(x, y)
+
+        if value == TOOL_SELECT:
+            s = "SELECT:S"
+        elif value == TOOL_PENCIL:
+            s = "PENCIL:P"
+        elif value == TOOL_RECTB:
+            s = "RECTANGLE:R"
+        elif value == TOOL_RECT:
+            s = "FILLED-RECT:SHIFT+R"
+        elif value == TOOL_CIRCB:
+            s = "CIRCLE:C"
+        elif value == TOOL_CIRC:
+            s = "FILLED-CIRC:SHIFT+C"
+        elif value == TOOL_BUCKET:
+            s = "BUCKET:B"
+        else:
+            s = ""
+
+        self.help_message = s
 
     def draw_not_implemented_message(self):
         pyxel.rect(78, 83, 163, 97, 11)
