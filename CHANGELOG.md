@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.8.3
+- Fixed the right click bug in the Tilemap Editor
+
 ## 0.8.2
 - Fixed the set, load, and copy methods of the image class
 - Fixed the starting directory of the save and load commands
