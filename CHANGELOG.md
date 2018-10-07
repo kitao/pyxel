@@ -7,6 +7,7 @@
 - Implemented the tilemap editor
 - Added the standard widgets
 - Changed the usage of the Pyxel Editor
+- Added the help messages to the PyxelEditor
 
 ## 0.8.0
 - Changed the formatter from yapf to black
