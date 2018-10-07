@@ -9,7 +9,7 @@ def run():
         App(sys.argv[1])
     else:
         print("usage: pyxeleditor pyxel_resource_file")
-        print("\n")
+        print("")
         print("Pyxel Editor {}".format(pyxel.VERSION))
         print("Please specify an arbitrary file name to run Pyxel Editor")
         print("e.g. pyxeleditor my_resource")

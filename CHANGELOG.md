@@ -3,6 +3,7 @@
 ## 0.8.2
 - Fixed the set, load, and copy methods of the image class
 - Fixed the starting directory of the save and load commands
+- Modified the usage of the Pyxel Editor
 
 ## 0.8.1
 - Added the run_with_profiler command
