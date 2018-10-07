@@ -42,6 +42,9 @@ class Image:
         self._tex.update()
 
     def load(self, x, y, filename):
+        dirname = os.path.dirname(inspect.stack()[-1].filename)
+        filename = os.path.join(dirname, filename)
+
         pil_image = PIL.Image.open(filename).convert("RGB")
         pil_image.load()
 
