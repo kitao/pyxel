@@ -119,14 +119,20 @@ class ImageFrame(Widget):
             self.height - 2,
         )
 
-        pyxel.clip(self.x, self.y, self.x + self.width, self.y + self.height)
+        pyxel.clip(
+            self.x + 1, self.y + 1, self.x + self.width - 2, self.y + self.height - 2
+        )
 
         x = self.x + self.select_x - self.viewport_x
         y = self.y + self.select_y - self.viewport_y
 
         if self._is_tilemap_mode:
-            pyxel.rectb(x, y, x + 9, y + 9, 7)
+            pyxel.rectb(x, y, x + 9, y + 9, 0)
+            pyxel.rectb(x - 1, y - 1, x + 10, y + 10, 7)
+            pyxel.rectb(x - 2, y - 2, x + 11, y + 11, 0)
         else:
-            pyxel.rectb(x, y, x + 17, y + 17, 7)
+            pyxel.rectb(x, y, x + 17, y + 17, 0)
+            pyxel.rectb(x - 1, y - 1, x + 18, y + 18, 7)
+            pyxel.rectb(x - 2, y - 2, x + 19, y + 19, 0)
 
         pyxel.clip()
