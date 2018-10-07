@@ -15,7 +15,7 @@ class TileMapEditor(Editor):
 
         self._edit_frame = EditFrame(self, is_tilemap_mode=True)
         self._tilemap_frame = TilemapFrame(self)
-        self._select_frame = ImageFrame(self, is_tilemap_mode=True)
+        self._image_frame = ImageFrame(self, is_tilemap_mode=True)
         self._tilemap_picker = NumberPicker(
             self, 48, 161, 0, RENDERER_TILEMAP_COUNT - 1, 0
         )
@@ -42,14 +42,12 @@ class TileMapEditor(Editor):
 
     @property
     def color(self):
-        return (
-            self._select_frame.select_y // 8
-        ) * 32 + self._select_frame.select_x // 8
+        return (self._image_frame.select_y // 8) * 32 + self._image_frame.select_x // 8
 
     @color.setter
     def color(self, value):
-        self._select_frame.cursor_y = (value // 32) * 8
-        self._select_frame.cursor_x = (value % 32) * 8
+        self._image_frame.select_y = (value // 32) * 8
+        self._image_frame.select_x = (value % 32) * 8
 
     @property
     def tool(self):
