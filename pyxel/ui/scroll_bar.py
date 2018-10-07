@@ -44,45 +44,33 @@ class ScrollBar(Widget):
         self.slider_range = slider_range
         self._with_shadow = with_shadow
         self._drag_offset = 0
-        self._is_dragged = True
+        self._is_dragged = False
         self._value = None
 
         if self._direction == ScrollBar.HORIZONTAL:
-            self.dec_button = Button(self, x, y, self.button_size, self.button_size)
-            self.inc_button = Button(
-                self,
-                x + width - self.button_size,
-                y,
-                self.button_size,
-                self.button_size,
-            )
+            self.dec_button = Button(self, x, y, 6, 7)
+            self.inc_button = Button(self, x + width - 6, y, 6, 7)
         else:
-            self.dec_button = Button(self, x, y, self.button_size, self.button_size)
-            self.inc_button = Button(
-                self,
-                x,
-                y + height - self.button_size,
-                self.button_size,
-                self.button_size,
-            )
+            self.dec_button = Button(self, x, y, 7, 6)
+            self.inc_button = Button(self, x, y + height - 6, 6, 7)
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
+        self.add_event_handler("mouse_up", self.__on_mouse_up)
         self.add_event_handler("mouse_drag", self.__on_mouse_drag)
+        self.add_event_handler("mouse_repeat", self.__on_mouse_repeat)
         self.add_event_handler("draw", self.__on_draw)
         self.dec_button.add_event_handler("press", self.__on_dec_button_press)
+        self.dec_button.add_event_handler("repeat", self.__on_dec_button_press)
         self.inc_button.add_event_handler("press", self.__on_inc_button_press)
+        self.inc_button.add_event_handler("repeat", self.__on_inc_button_press)
 
         self.value = value
-
-    @property
-    def button_size(self):
-        return self.height if self._direction == ScrollBar.HORIZONTAL else self.width
 
     @property
     def scroll_size(self):
         return (
             self.width if self._direction == ScrollBar.HORIZONTAL else self.height
-        ) - self.button_size * 2
+        ) - 14
 
     @property
     def slider_size(self):
@@ -90,9 +78,7 @@ class ScrollBar(Widget):
 
     @property
     def slider_pos(self):
-        return round(
-            self.button_size + self.scroll_size * self._value / self.scroll_range
-        )
+        return round(7 + self.scroll_size * self._value / self.scroll_range)
 
     @property
     def value(self):
@@ -116,11 +102,14 @@ class ScrollBar(Widget):
         ) - self.slider_pos
 
         if self._drag_offset < 0:
-            self.dec_button.press()
+            self.__on_dec_button_press()
         elif self._drag_offset >= self.slider_size:
-            self.inc_button.press()
+            self.__on_inc_button_press()
         else:
             self._is_dragged = True
+
+    def __on_mouse_up(self, key, x, y):
+        self._is_dragged = False
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         if not self._is_dragged:
@@ -131,11 +120,13 @@ class ScrollBar(Widget):
 
         drag_pos = x if self._direction == ScrollBar.HORIZONTAL else y
         value = (
-            (drag_pos - self._drag_offset - self.button_size)
-            * self.scroll_range
-            / self.scroll_size
+            (drag_pos - self._drag_offset - 6) * self.scroll_range / self.scroll_size
         )
         self.value = int(min(max(value, 0), self.scroll_range - self.slider_range))
+
+    def __on_mouse_repeat(self, key, x, y):
+        if not self._is_dragged:
+            self.__on_mouse_down(key, x, y)
 
     def __on_draw(self):
         x1 = self.x
