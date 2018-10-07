@@ -33,7 +33,14 @@ class TilemapFrame(Widget):
 
         pyxel.blt(self.x + 1, self.y + 1, 3, 0, 192, 64, 63)
 
-        x = self.x + self.parent.edit_x // 4 + 1
-        y = self.y + self.parent.edit_y // 4 + 1
-        height = 4 if self.parent.edit_y < 240 else 3
-        pyxel.rectb(x - 1, y - 1, x + 4, y + height, 7)
+        pyxel.clip(
+            self.x + 1, self.y + 1, self.x + self.width - 2, self.y + self.height - 2
+        )
+
+        x = self.x + self.parent.edit_x // 4
+        y = self.y + self.parent.edit_y // 4
+        pyxel.rectb(x, y, x + 5, y + 5, 0)
+        pyxel.rectb(x - 1, y - 1, x + 6, y + 6, 7)
+        pyxel.rectb(x - 2, y - 2, x + 7, y + 7, 0)
+
+        pyxel.clip()
