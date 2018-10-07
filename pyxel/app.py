@@ -1,5 +1,6 @@
 import datetime
 import gzip
+import inspect
 import math
 import os
 import pickle
@@ -268,10 +269,16 @@ class App:
 
         pickled_data = pickle.dumps(data)
 
+        dirname = os.path.dirname(inspect.stack()[-1].filename)
+        filename = os.path.join(dirname, filename)
+
         with gzip.open(filename, mode="wb") as fp:
             fp.write(pickled_data)
 
     def load(self, filename):
+        dirname = os.path.dirname(inspect.stack()[-1].filename)
+        filename = os.path.join(dirname, filename)
+
         with gzip.open(filename, mode="rb") as fp:
             pickled_data = fp.read()
 
