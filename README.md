@@ -32,9 +32,10 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 - Code writing with Python3
 - Fixed 16 color palette
 - 256x256 sized 3 image banks
+- 256x256 sized 8 tilemaps
 - 4 channels with 64 definable sound banks
 - Keyboard, mouse, and joystick(WIP) inputs
-- Image and sound editor (WIP)
+- Image and sound editor
 
 ### Color Palette
 
@@ -97,7 +98,7 @@ install_pyxel_examples
 
 ## How to Use
 
-### Create Pyxel Application
+### Create a Pyxel Application
 
 After importing the Pyxel module in your python code, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
 
@@ -155,17 +156,58 @@ Toggle the performance monitor (fps, update time, and draw time)
 - `Alt(Option)+Enter`  
 Toggle full screen
 
-### Create Images
+### Create a Pyxel resource
 
-There are the following methods to create images for Pyxel:
+The attached Pyxel Editor can create images and sounds used in a Pyxel application.
+
+Pyxel Editor runs with an arbitrary resource file name.
+
+```sh
+pyxeleditor pyxel_resource_file
+```
+
+The created resource file (.pyxel) can be loaded with the `load` function.
+
+Pyxel Editor has the following edit modes:
+
+#### Image Editor
+
+The mode to edit the image banks.
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.png">
+
+#### Tilemap Editor
+
+The mode to edit tilemaps in which images of the image banks are arranged in a tile pattern.
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.png">
+
+#### Sound Editor (WIP)
+
+The mode to edit sounds.
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.png">
+
+#### Music Editor (WIP)
+
+The mode to edit musics in which the sounds are arranged in order of playback.
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.png">
+
+#### Other resource creation methods
+
+Pyxel images and tilemaps can also be created in the following way:
 
 - Create an image from a list of strings with `Image.set` function
 - Load a png file in Pyxel palette with `Image.load` function
-- Create images with Pyxel Editor (WIP)
-
-Please refer to the API reference for usage of `Image.set` and `Image.load`.
 
 Because Pyxel uses the same palette as [PICO-8](https://www.lexaloffle.com/pico-8.php), when creating png images for Pyxel, it is recommended to use [Aseprite](https://www.aseprite.org/) in PICO-8 palette mode.
+
+Pyxel sounds can also be created in the following way:
+
+- Create a sound from strings with `Sound.set` function
+
+Please refer to the API reference for usage of these functions.
 
 ## API Reference
 
@@ -214,6 +256,9 @@ Return `True` if `key` is released at that frame, otherwise return `False`
 Operate the image bank `img`(0-2) (see the Image class). If `system` is `True`, the image bank 3 for system can be accessed  
 e.g. `pyxel.image(0).load(0, 0, 'title.png')`
 
+- `tilemap(tm)`  
+Operate the tilemap `tm`(0-7) (see the Tilemap class)
+
 - `clip(x1, y1, x2, y2)`  
 Set the drawing area of the screen to (`x1`, `y1`)-(`x2`, `y2`). Reset the drawing area with `clip()`
 
@@ -243,6 +288,9 @@ Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`)
 
 - `blt(x, y, img, sx, sy, w, h, [colkey])`  
 Copy the region of size (`w`, `h`) from (`sx`, `sy`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color
+
+- `bltm(x, y, img, tm, tx, ty, tw, th, [colkey])`  
+Copy the image bank `img`(0-2) to (`x`, `y`) according to the tile information of size (`tw`, `th`) from (`tx`, `ty`) of the tilemap `tm`(0-7). If negative value is set for `tw` and/or `th`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. A tile of the tilemap is drawn with a size of 8x8, and if the tile number is 0, indicates the region (0, 0)-(7, 7) of the image bank, if 1, indicates (8, 0)-(15, 0).
 
 - `text(x, y, s, col)`  
 Draw a string `s` of color `col` at (`x`, `y`)
@@ -276,6 +324,14 @@ Read the png image from the directory of the execution script at (`x`, `y`)
 
 - `copy(x, y, img, sx, sy, width, height)`  
 Copy the region of size (`width`, `height`) from (`sx`, `sy`) of the image bank `img`(0-2) to (`x`, `y`)
+
+### Tilemap Class
+
+- `width`, `height`  
+The width and height of the Tilemap
+
+- `data`  
+The data of the Tilemap (NumPy array)
 
 ### Sound Class
 
@@ -312,6 +368,10 @@ e.g. `pyxel.sound(0).set_volume('7777 7531')`
 - `set_effect(effect)`  
 Set the effect with a string consists of 'NSVF'. Case-insensitive and whitespace is ignored  
 e.g. `pyxel.sound(0).set_effect('NFNF NVVS')`
+
+### Music Class
+
+- WIP
 
 ## Other Information
 

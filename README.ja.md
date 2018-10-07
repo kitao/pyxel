@@ -33,9 +33,10 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 - Python3によるコード記述
 - 16色固定パレット
 - 256x256サイズ、3画像バンク
+- 256x256サイズ、8タイルマップ
 - 4音同時再生、定義可能な64サウンドバンク
 - キーボード、マウス、ジョイスティック (予定)
-- 画像・サウンド編集ツール (予定)
+- 画像・サウンド編集ツール
 
 ### カラーパレット
 
@@ -156,17 +157,58 @@ Pyxelアプリケーション実行中に、以下の特殊操作を行うこと
 - `Alt(Option)+Enter`  
 フルスクリーン表示を切り替える
 
-### 画像の作成方法
+### リソースの作成方法
 
-Pyxel用の画像を作成するには以下の方法があります。
+付属するPyxel EditorでPyxelアプリケーションで使用する画像やサウンドを作成することができます。
+
+Pyxel Editorは任意のリソースファイル名を指定して起動します。
+
+```sh
+pyxeleditor pyxel_resource_file
+```
+
+作成したリソースファイル(.pyxel)はPyxelアプリケーションから`load`関数で読み込めます。
+
+Pyxel Editorには以下の編集モードがあります。
+
+#### イメージエディタ
+
+イメージバンクの画像を編集する画面です。
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.png">
+
+#### タイルマップエディタ
+
+イメージバンクの画像をタイル状に並べたタイルマップを編集する画面です。
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.png">
+
+#### サウンドエディタ (作成中)
+
+サウンドを編集する画面です。
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.png">
+
+#### ミュージックエディタ (作成中)
+
+サウンドを再生順に並べたミュージックを編集する画面です。
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.png">
+
+#### その他のリソース作成方法
+
+Pyxel用の画像やタイルマップは次の方法で作成することもできます。
 
 - `Image.set`関数で文字列のリストから作成する
 - `Image.load`関数でPyxel向け配色のpngファイルを読み込む
-- Pyxelエディタで作成する (開発中)
-
-`Image.set`、`Image.load`の使い方はAPIリファレンスを参照してください。
 
 Pyxelは[PICO-8](https://www.lexaloffle.com/pico-8.php)と同じパレットを使用しているため、Pyxel向け配色のpngファイルを作成する場合は、[Aseprite](https://www.aseprite.org/)をPICO-8パレット設定にして使用するのがおすすめです。
+
+Pyxel用のサウンドやミュージックは次の方法で作成することもできます。
+
+- `Sound.set`関数で文字列から作成する
+
+各関数の使い方はAPIリファレンスを参照してください。
 
 ## APIリファレンス
 
@@ -215,6 +257,9 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 イメージバンク`img`(0-2) を操作する (イメージクラスを参照のこと)。`system`に`True`を指定すると、システム用のイメージバンク3にアクセスできる  
 例：`pyxel.image(0).load(0, 0, 'title.png')`
 
+- `tilemap(tm)`  
+タイルマップ`tm`(0-7)を操作する (タイルマップクラスを参照のこと)。
+
 - `clip(x1, y1, x2, y2)`  
 画面の描画領域を (`x1`, `y1`)-(`x2`, `y2`) にする。`clip()`で描画領域をリセットする
 
@@ -244,6 +289,9 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 
 - `blt(x, y, img, sx, sy, w, h, [colkey])`  
 イメージバンク`img`(0-2) の (`sx`, `sy`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーする。`w`、`h`それぞれに負の値を設定すると水平、垂直方向に反転する。`colkey`に色を指定すると透明色として扱われる
+
+- `bltm(x, y, img, tm, tx, ty, tw, th, [colkey])`  
+イメージバンク`img`(0-2) をタイルマップ`tm`(0-7) の (`tx`, `ty`) からサイズ (`tw`, `th`) のタイル情報に従って (`x`, `y`) にコピーする。`w`、`h`それぞれに負の値を設定すると水平、垂直方向に反転する。`colkey`に色を指定すると透明色として扱われる。タイルマップは1タイルが8x8のサイズで描画され、タイル番号が0ならイメージバンクの (0, 0)-(7, 7) の領域、1なら (8, 0)-(15, 0) の領域を表す
 
 - `text(x, y, s, col)`  
 色`col`の文字列`s`を (`x`, `y`) に描画する
@@ -277,6 +325,14 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 
 - `copy(x, y, img, sx, sy, width, height)`  
 イメージバンク`img`(0-2) の (`sx`, `sy`) からサイズ (`width`, `height`) の領域を (`x`, `y`) にコピーする
+
+### タイルマップクラス
+
+- `width`, `height`  
+タイルマップの幅と高さ
+
+- `data`  
+タイルマップのデータ (NumPy配列)
 
 ### サウンドクラス
 
@@ -313,6 +369,10 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 - `set_effect(effect)`  
 'NSVF'の文字列でエフェクトを設定する。大文字と小文字を区別せず、空白は無視される  
 例：`pyxel.sound(0).set_effect('NFNF NVVS')`
+
+### ミュージッククラス
+
+- 作成中
 
 ## その他情報
 
