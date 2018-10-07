@@ -379,8 +379,8 @@ class EditFrame(Widget):
         pyxel.line(self.x + 64, self.y + 1, self.x + 64, self.y + 128, 1)
 
         if self.parent.tool == TOOL_SELECT and self._select_x1 >= 0:
-            x1 = self._select_x1 * 8 + 13
-            y1 = self._select_y1 * 8 + 18
+            x1 = self._select_x1 * 8 + 11
+            y1 = self._select_y1 * 8 + 16
             x2 = self._select_x2 * 8 + 20
             y2 = self._select_y2 * 8 + 25
 
