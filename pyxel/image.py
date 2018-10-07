@@ -39,6 +39,7 @@ class Image:
         src_data = np.array([list(map(lambda x: int(x, 16), line)) for line in data])
         src_data = src_data[sy : sy + ch, sx : sx + cw]
         self._data[dy : dy + ch, dx : dx + cw] = src_data
+        self._tex.update()
 
     def load(self, x, y, filename):
         pil_image = PIL.Image.open(filename).convert("RGB")
@@ -56,6 +57,7 @@ class Image:
 
         src_data = np.array(pil_image.getdata()).reshape(ch, cw)
         self._data[dy : dy + ch, dx : dx + cw] = src_data
+        self._tex.update()
 
     def copy(self, x, y, img, sx, sy, width, height):
         image = pyxel.image(img)
@@ -78,6 +80,7 @@ class Image:
 
         src_data = image._data[sy : sy + ch, sx : sx + cw]
         self._data[dy : dy + ch, dx : dx + cw] = src_data
+        self._tex.update()
 
     @staticmethod
     def _get_copy_rect(sx, sy, sw, sh, dx, dy, dw, dh, cw, ch):

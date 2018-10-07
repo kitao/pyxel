@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.8.2
+- Fixed the set, load, and copy methods of the image class
+
 ## 0.8.1
 - Added the run_with_profiler command
 - Added the Tilemap class
