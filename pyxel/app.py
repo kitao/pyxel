@@ -367,7 +367,7 @@ class App:
         if action == glfw.PRESS:
             self._key_state[button] = self._module.frame_count
         elif action == glfw.RELEASE:
-            if self._key_state[button] == self._module.frame_count:
+            if self._key_state.get(button) == self._module.frame_count:
                 self._key_state[button] = -self._module.frame_count - 1
             else:
                 self._key_state[button] = -self._module.frame_count
