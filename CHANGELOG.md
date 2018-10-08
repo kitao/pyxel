@@ -3,11 +3,11 @@
 ## 0.8.3
 - Fixed the right click bug in the Tilemap Editor
 - Fixed the key callback bug
-- Fixed the description of the bltm command in the READMEs
 - Added the get method to the Image class
 - Changed the set method of the Image class to accept a number as data
 - Added the get and set methods to the Tilemap class
 - Added the bltm test to the example #3
+- Updated the descriptions of the READMEs
 
 ## 0.8.2
 - Fixed the set, load, and copy methods of the image class
