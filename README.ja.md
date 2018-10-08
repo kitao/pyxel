@@ -97,6 +97,20 @@ Pyxelインストール後に、以下のコマンドでカレントディレク
 install_pyxel_examples
 ```
 
+サンプルは通常のPythonコードと同様に実行できます。
+
+```sh
+cd pyxel_examples
+python 01_hello_pyxel.py
+```
+
+または
+
+```sh
+cd pyxel_examples
+python3 01_hello_pyxel.py
+```
+
 ## 使い方
 
 ### アプリケーションの作成方法
@@ -157,7 +171,7 @@ Pyxelアプリケーション実行中に、以下の特殊操作を行うこと
 - `Alt(Option)+Enter`  
 フルスクリーン表示を切り替える
 
-### リソースの作成方法
+### Pyxel Editor
 
 付属するPyxel EditorでPyxelアプリケーションで使用する画像やサウンドを作成することができます。
 
@@ -169,44 +183,44 @@ pyxeleditor pyxel_resource_file
 
 作成したリソースファイル(.pyxel)はPyxelアプリケーションから`load`関数で読み込めます。
 
-Pyxel Editorには以下の編集モードがあります。
+Pyxel Editorには次の編集モードがあります。
 
-#### イメージエディタ
+**イメージエディタ:**
 
 イメージバンクの画像を編集する画面です。
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.png">
 
-#### タイルマップエディタ
+**タイルマップエディタ:**
 
 イメージバンクの画像をタイル状に並べたタイルマップを編集する画面です。
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.png">
 
-#### サウンドエディタ (作成中)
+**サウンドエディタ:**
 
 サウンドを編集する画面です。
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.png">
 
-#### ミュージックエディタ (作成中)
+**ミュージックエディタ:**
 
 サウンドを再生順に並べたミュージックを編集する画面です。
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.png">
 
-#### その他のリソース作成方法
+### その他のリソース作成方法
 
-Pyxel用の画像やタイルマップは次の方法で作成することもできます。
+Pyxel用の画像やタイルマップは以下の方法で作成することもできます。
 
-- `Image.set`関数で文字列のリストから作成する
+- `Image.set`や`Tilemap.set`関数で文字列のリストから作成する
 - `Image.load`関数でPyxel向け配色のpngファイルを読み込む
 
 Pyxelは[PICO-8](https://www.lexaloffle.com/pico-8.php)と同じパレットを使用しているため、Pyxel向け配色のpngファイルを作成する場合は、[Aseprite](https://www.aseprite.org/)をPICO-8パレット設定にして使用するのがおすすめです。
 
-Pyxel用のサウンドやミュージックは次の方法で作成することもできます。
+Pyxel用のサウンドやミュージックは以下の方法で作成することもできます。
 
-- `Sound.set`関数で文字列から作成する
+- `Sound.set`や`Music.set`関数で文字列から作成する
 
 各関数の使い方はAPIリファレンスを参照してください。
 
@@ -316,15 +330,18 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 - `data`  
 イメージのデータ (NumPy配列)
 
+- `get(x, y)`  
+イメージの (`x`,`y`) のデータを取得する
+
 - `set(x, y, data)`  
-(`x`, `y`) に文字列のリストでイメージを設定する  
+(`x`, `y`) に値または文字列のリストでイメージのデータを設定する  
 例：`pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
 - `load(x, y, filename)`  
 (`x`, `y`) に実行スクリプトのディレクトリからpngファイルを読み込む
 
-- `copy(x, y, img, sx, sy, width, height)`  
-イメージバンク`img`(0-2) の (`sx`, `sy`) からサイズ (`width`, `height`) の領域を (`x`, `y`) にコピーする
+- `copy(x, y, img, sx, sy, w, h)`  
+イメージバンク`img`(0-2) の (`sx`, `sy`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーする
 
 ### タイルマップクラス
 
@@ -333,6 +350,16 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 
 - `data`  
 タイルマップのデータ (NumPy配列)
+
+- `get(x, y)`  
+タイルマップの (`x`,`y`) のデータを取得する
+
+- `set(x, y, data)`  
+(`x`, `y`) に値または文字列のリストでタイルマップのデータを設定する  
+e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'])`
+
+- `copy(x, y, tm, sx, sy, width, height)`  
+タイルマップ`tm`(0-7) の (`sx`, `sy`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーする
 
 ### サウンドクラス
 
