@@ -219,10 +219,10 @@ class DrawCommand:
         data[SIZE_H_INDEX] = h
 
     def bltm(self, x, y, img, tm, tx, ty, tw, th, colkey=None):
-        data = self._tilemap_list[tm]._data
+        data = self._tilemap_list[tm]._data[ty:, tx:]
         for i in range(th):
             for j in range(tw):
-                val = data[ty + i, tx + j]
+                val = data[i, j]
                 sx = (val % 32) * 8
                 sy = (val // 32) * 8
                 self.blt(x + j * 8, y + i * 8, img, sx, sy, 8, 8, colkey)
