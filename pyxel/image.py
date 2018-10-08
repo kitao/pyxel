@@ -39,7 +39,9 @@ class Image:
         sw = len(data[0])
         sh = len(data)
 
-        rect = self._get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height, sw, sh)
+        rect = pyxel._app._get_copy_rect(
+            0, 0, sw, sh, x, y, self.width, self.height, sw, sh
+        )
         if not rect:
             return
         sx, sy, dx, dy, cw, ch = rect
@@ -58,7 +60,9 @@ class Image:
 
         sw, sh = pil_image.size
 
-        rect = self._get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height, sw, sh)
+        rect = pyxel._app._get_copy_rect(
+            0, 0, sw, sh, x, y, self.width, self.height, sw, sh
+        )
         if not rect:
             return
         sx, sy, dx, dy, cw, ch = rect
@@ -73,7 +77,7 @@ class Image:
     def copy(self, x, y, img, sx, sy, w, h):
         image = pyxel.image(img)
 
-        rect = self._get_copy_rect(
+        rect = pyxel._app._get_copy_rect(
             sx, sy, image.width, image.height, x, y, self.width, self.height, w, h
         )
         if not rect:
@@ -83,40 +87,3 @@ class Image:
         src_data = image._data[sy : sy + ch, sx : sx + cw]
         self._data[dy : dy + ch, dx : dx + cw] = src_data
         self._tex.update()
-
-    @staticmethod
-    def _get_copy_rect(sx, sy, sw, sh, dx, dy, dw, dh, cw, ch):
-        over_sx = max(-sx, 0)
-        over_sy = max(-sy, 0)
-        over_dx = max(-dx, 0)
-        over_dy = max(-dy, 0)
-
-        if over_sx > 0 or over_dx > 0:
-            cw -= max(over_sx, over_dx)
-            if over_sx > 0:
-                sx = 0
-            if over_dx > 0:
-                dx = 0
-
-        if over_sy > 0 or over_dy > 0:
-            ch -= max(over_sy, over_dy)
-            if over_sy > 0:
-                sy = 0
-            if over_dy > 0:
-                dy = 0
-
-        over_sx = max(sx + cw - sw, 0)
-        over_sy = max(sx + ch - sh, 0)
-        over_dx = max(dx + cw - dw, 0)
-        over_dy = max(dx + ch - dh, 0)
-
-        if over_sx > 0 or over_dx > 0:
-            cw -= max(over_sx, over_dx)
-
-        if over_sy > 0 or over_dy > 0:
-            ch -= max(over_sy, over_dy)
-
-        if cw > 0 and ch > 0:
-            return sx, sy, dx, dy, cw, ch
-        else:
-            return None
