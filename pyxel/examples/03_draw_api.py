@@ -8,6 +8,9 @@ class App:
         pyxel.init(200, 150, caption="Pyxel Draw API")
 
         pyxel.image(0).load(0, 0, "assets/cat_16x16.png")
+        pyxel.image(1).load(0, 0, "assets/tileset_24x32.png")
+
+        pyxel.tilemap(0).set(0, 0, ["2200020401006061620040", "4203202122030001020360"])
 
         self.pal_test_is_enabled = False
         self.clip_test_is_enabled = False
@@ -27,11 +30,12 @@ class App:
         self.test_clip()
         self.test_pix(6, 20)
         self.test_line(106, 6)
-        self.test_rect(6, 40)
-        self.test_rectb(106, 40)
-        self.test_circ(6, 64)
-        self.test_circb(106, 64)
-        self.test_blt(6, 94)
+        self.test_rect(6, 38)
+        self.test_rectb(106, 38)
+        self.test_circ(6, 61)
+        self.test_circb(106, 61)
+        self.test_blt(6, 88)
+        self.test_bltm(106, 88)
         self.test_text(6, 124)
         self.test_pal2(106, 124)
 
@@ -78,7 +82,7 @@ class App:
         pyxel.text(x, y, "line(x1,y1,x2,y2,col)", 7)
 
         x += 4
-        y += 8
+        y += 9
         col = 5
 
         for i in range(3):
@@ -97,7 +101,7 @@ class App:
         pyxel.text(x, y, "rect(x1,y1,x2,y2,col)", 7)
 
         x += 4
-        y += 15
+        y += 16
 
         for i in range(8):
             pyxel.rect(x + i * 8, y, x + i * 9, y - i, i + 8)
@@ -106,7 +110,7 @@ class App:
         pyxel.text(x, y, "rectb(x1,y1,x2,y2,col)", 7)
 
         x += 4
-        y += 15
+        y += 16
 
         for i in range(8):
             pyxel.rectb(x + i * 8, y, x + i * 9, y - i, i + 8)
@@ -130,17 +134,23 @@ class App:
             pyxel.circb(x + i * 8, y, i, i + 8)
 
     def test_blt(self, x, y):
-        pyxel.text(x, y, "blt(x,y,img,sx,sy,w,h,[colkey])", 7)
+        pyxel.text(x, y, "blt(x,y,img,sx,sy,\n    w,h,[colkey])", 7)
 
-        x += 4
-        y += 8
+        y += 15
         offset = math.sin(pyxel.frame_count * 0.1) * 2
 
         pyxel.blt(x, y, 0, 0, 0, 16, 16)
-        pyxel.blt(x + offset + 20, y, 0, 0, 0, 16, 16, 5)
-        pyxel.blt(x + 40, y, 0, 0, 0, -16, 16, 5)
-        pyxel.blt(x + 60, y, 0, 0, 0, 16, -16, 5)
-        pyxel.blt(x + 80, y, 0, 0, 0, -16, -16, 5)
+        pyxel.blt(x + offset + 19, y, 0, 0, 0, 16, 16, 5)
+        pyxel.blt(x + 38, y, 0, 0, 0, -16, 16, 5)
+        pyxel.blt(x + 57, y, 0, 0, 0, 16, -16, 5)
+        pyxel.blt(x + 76, y, 0, 0, 0, -16, -16, 5)
+
+    def test_bltm(self, x, y):
+        pyxel.text(x, y, "bltm(x,y,img,tm,tx,ty,\n     tw,th,[colkey])", 7)
+
+        y += 15
+
+        pyxel.bltm(x, y, 1, 0, 0, 0, 11, 2, 2)
 
     def test_text(self, x, y):
         pyxel.text(x, y, "text(x,y,s,col)", 7)
