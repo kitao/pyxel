@@ -290,7 +290,7 @@ Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`)
 Copy the region of size (`w`, `h`) from (`sx`, `sy`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color
 
 - `bltm(x, y, img, tm, tx, ty, tw, th, [colkey])`  
-Copy the image bank `img`(0-2) to (`x`, `y`) according to the tile information of size (`tw`, `th`) from (`tx`, `ty`) of the tilemap `tm`(0-7). If negative value is set for `tw` and/or `th`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. A tile of the tilemap is drawn with a size of 8x8, and if the tile number is 0, indicates the region (0, 0)-(7, 7) of the image bank, if 1, indicates (8, 0)-(15, 0).
+Copy the image bank `img`(0-2) to (`x`, `y`) according to the tile information of size (`tw`, `th`) from (`tx`, `ty`) of the tilemap `tm`(0-7). If `colkey` is specified, treated as transparent color. A tile of the tilemap is drawn with a size of 8x8, and if the tile number is 0, indicates the region (0, 0)-(7, 7) of the image bank, if 1, indicates (8, 0)-(15, 0).
 
 - `text(x, y, s, col)`  
 Draw a string `s` of color `col` at (`x`, `y`)
