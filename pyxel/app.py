@@ -557,6 +557,43 @@ class App:
             path, datetime.datetime.now().strftime("pyxel-%y%m%d-%H%M%S")
         )
 
+    @staticmethod
+    def _get_copy_rect(sx, sy, sw, sh, dx, dy, dw, dh, cw, ch):
+        over_sx = max(-sx, 0)
+        over_sy = max(-sy, 0)
+        over_dx = max(-dx, 0)
+        over_dy = max(-dy, 0)
+
+        if over_sx > 0 or over_dx > 0:
+            cw -= max(over_sx, over_dx)
+            if over_sx > 0:
+                sx = 0
+            if over_dx > 0:
+                dx = 0
+
+        if over_sy > 0 or over_dy > 0:
+            ch -= max(over_sy, over_dy)
+            if over_sy > 0:
+                sy = 0
+            if over_dy > 0:
+                dy = 0
+
+        over_sx = max(sx + cw - sw, 0)
+        over_sy = max(sx + ch - sh, 0)
+        over_dx = max(dx + cw - dw, 0)
+        over_dy = max(dx + ch - dh, 0)
+
+        if over_sx > 0 or over_dx > 0:
+            cw -= max(over_sx, over_dx)
+
+        if over_sy > 0 or over_dy > 0:
+            ch -= max(over_sy, over_dy)
+
+        if cw > 0 and ch > 0:
+            return sx, sy, dx, dy, cw, ch
+        else:
+            return None
+
     def _measure_fps(self):
         cur_time = time.time()
         self._perf_fps_count += 1
