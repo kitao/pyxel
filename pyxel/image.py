@@ -27,7 +27,15 @@ class Image:
         self._tex.update()
         return self._data
 
+    def get(self, x, y):
+        return self._data[y, x]
+
     def set(self, x, y, data):
+        if type(data) is int:
+            self._data[y, x] = data
+            self._tex.update()
+            return
+
         sw = len(data[0])
         sh = len(data)
 
@@ -62,20 +70,11 @@ class Image:
         self._data[dy : dy + ch, dx : dx + cw] = src_data
         self._tex.update()
 
-    def copy(self, x, y, img, sx, sy, width, height):
+    def copy(self, x, y, img, sx, sy, w, h):
         image = pyxel.image(img)
 
         rect = self._get_copy_rect(
-            sx,
-            sy,
-            image.width,
-            image.height,
-            x,
-            y,
-            self.width,
-            self.height,
-            width,
-            height,
+            sx, sy, image.width, image.height, x, y, self.width, self.height, w, h
         )
         if not rect:
             return
