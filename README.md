@@ -96,6 +96,20 @@ After installing Pyxel, the examples of Pyxel will be copied to the current dire
 install_pyxel_examples
 ```
 
+The examples can be executed like normal Python code:
+
+```sh
+cd pyxel_examples
+python 01_hello_pyxel.py
+```
+
+or
+
+```sh
+cd pyxel_examples
+python3 01_hello_pyxel.py
+```
+
 ## How to Use
 
 ### Create a Pyxel Application
@@ -156,7 +170,7 @@ Toggle the performance monitor (fps, update time, and draw time)
 - `Alt(Option)+Enter`  
 Toggle full screen
 
-### Create a Pyxel resource
+### Pyxel Editor
 
 The attached Pyxel Editor can create images and sounds used in a Pyxel application.
 
@@ -168,44 +182,44 @@ pyxeleditor pyxel_resource_file
 
 The created resource file (.pyxel) can be loaded with the `load` function.
 
-Pyxel Editor has the following edit modes:
+Pyxel Editor has the following edit modes.
 
-#### Image Editor
+**Image Editor:**
 
 The mode to edit the image banks.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.png">
 
-#### Tilemap Editor
+**Tilemap Editor:**
 
 The mode to edit tilemaps in which images of the image banks are arranged in a tile pattern.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.png">
 
-#### Sound Editor (WIP)
+**Sound Editor:**
 
 The mode to edit sounds.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.png">
 
-#### Music Editor (WIP)
+**Music Editor:**
 
 The mode to edit musics in which the sounds are arranged in order of playback.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.png">
 
-#### Other resource creation methods
+### Other resource creation methods
 
 Pyxel images and tilemaps can also be created in the following way:
 
-- Create an image from a list of strings with `Image.set` function
+- Create an image from a list of strings with `Image.set` or `Tilemap.set` function
 - Load a png file in Pyxel palette with `Image.load` function
 
 Because Pyxel uses the same palette as [PICO-8](https://www.lexaloffle.com/pico-8.php), when creating png images for Pyxel, it is recommended to use [Aseprite](https://www.aseprite.org/) in PICO-8 palette mode.
 
 Pyxel sounds can also be created in the following way:
 
-- Create a sound from strings with `Sound.set` function
+- Create a sound from strings with `Sound.set` or `Music.set` function
 
 Please refer to the API reference for usage of these functions.
 
@@ -310,28 +324,41 @@ Stop playback of channel `ch`(0-3)
 ### Image Class
 
 - `width`, `height`  
-The width and height of the Image
+The width and height of the image
 
 - `data`  
-The data of the Image (NumPy array)
+The data of the image (NumPy array)
+
+- `get(x, y)`  
+Retrieve the data of the image at (`x`, `y`)
 
 - `set(x, y, data)`  
-Set the image as a list of strings at (`x`, `y`)   
+Set the data of the image at (`x`, `y`) by a value or a list of strings   
 e.g. `pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
 - `load(x, y, filename)`  
 Read the png image from the directory of the execution script at (`x`, `y`)
 
-- `copy(x, y, img, sx, sy, width, height)`  
-Copy the region of size (`width`, `height`) from (`sx`, `sy`) of the image bank `img`(0-2) to (`x`, `y`)
+- `copy(x, y, img, sx, sy, w, h)`  
+Copy the region of size (`w`, `h`) from (`sx`, `sy`) of the image bank `img`(0-2) to (`x`, `y`)
 
 ### Tilemap Class
 
 - `width`, `height`  
-The width and height of the Tilemap
+The width and height of the tilemap
 
 - `data`  
-The data of the Tilemap (NumPy array)
+The data of the tilemap (NumPy array)
+
+- `get(x, y)`  
+Retrieve the data of the tilemap at (`x`, `y`)
+
+- `set(x, y, data)`  
+Set the data of the tilemap at (`x`, `y`) by a value or a list of strings   
+e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'])`
+
+- `copy(x, y, tm, sx, sy, w, h)`  
+Copy the region of size (`w`, `h`) from (`sx`, `sy`) of the tilemap `tm`(0-7) to (`x`, `y`)
 
 ### Sound Class
 
