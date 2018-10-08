@@ -2,6 +2,7 @@
 
 ## 0.8.3
 - Fixed the right click bug in the Tilemap Editor
+- Fixed the key callback bug
 
 ## 0.8.2
 - Fixed the set, load, and copy methods of the image class
