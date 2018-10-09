@@ -7,7 +7,7 @@ import PIL.Image
 import pyxel
 
 from .gl_wrapper import GLTexture
-from .utilities import get_copy_rect
+from .utilities import get_copy_rect, palettize_pil_image
 
 
 class Image:
@@ -64,7 +64,7 @@ class Image:
             return
         sx, sy, dx, dy, cw, ch = rect
 
-        pil_image = pyxel._app.palettize_pil_image(pil_image)
+        pil_image = palettize_pil_image(pil_image)
         pil_image = pil_image.crop((sx, sy, sx + cw, sy + ch))
 
         src_data = np.array(pil_image.getdata()).reshape(ch, cw)

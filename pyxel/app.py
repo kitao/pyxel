@@ -43,7 +43,12 @@ from .constants import (
     RENDERER_TILEMAP_COUNT,
 )
 from .renderer import Renderer
-from .utilities import get_desktop_path, get_icon_image, get_pil_palette
+from .utilities import (
+    get_desktop_path,
+    get_icon_image,
+    init_palette,
+    palettize_pil_image,
+)
 
 
 class App:
@@ -73,7 +78,7 @@ class App:
         pyxel = self._module = module
 
         self._palette = palette[:]
-        self._pil_palette = get_pil_palette(palette)
+        init_palette(palette)
         self._fps = fps
         self._border_width = border_width
         self._border_color = border_color
@@ -311,10 +316,6 @@ class App:
             dest.effect = src.effect
             dest.speed = src.speed
 
-    def palettize_pil_image(self, pil_image):
-        im = pil_image.im.convert("P", 0, self._pil_palette.im)
-        return pil_image._new(im)
-
     def _key_callback(self, window, key, scancode, action, mods):
         if action == glfw.PRESS:
             state = pyxel.frame_count
@@ -495,7 +496,7 @@ class App:
             1,
         )
 
-        image = self.palettize_pil_image(image)
+        image = palettize_pil_image(image)
 
         image = image.resize(
             (pyxel.width * APP_GIF_CAPTURE_SCALE, pyxel.height * APP_GIF_CAPTURE_SCALE)
