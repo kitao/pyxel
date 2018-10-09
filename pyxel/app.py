@@ -505,7 +505,11 @@ class App:
         curr = np.asarray(curr.convert("RGBA"))
         alpha = np.any(prev!=curr, axis=-1, keepdims=True)
         new = alpha * curr
-        return PIL.Image.fromarray(new, "RGBA")
+        red, green, blue, alpha = new.T
+        trans_areas = (alpha == 0)
+        new[..., :-1][trans_areas.T] = (255, 0, 0)
+        return PIL.Image.fromarray(new, "RGBA").convert(
+            "P", palette=PIL.Image.ADAPTIVE)
 
     def _get_capture_image(self, index, palette=False):
         image = PIL.Image.frombuffer(
