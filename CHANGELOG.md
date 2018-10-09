@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.8.4
+- Changed to follow the mouse position outside the window
+
 ## 0.8.3
 - Fixed the right click bug in the Tilemap Editor
 - Fixed the key callback bug
