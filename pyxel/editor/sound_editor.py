@@ -11,7 +11,7 @@ class SoundEditor(Editor):
         super().__init__(parent)
 
         self._sound_picker = NumberPicker(self, 45, 17, 0, AUDIO_SOUND_COUNT - 1, 0)
-        self._speed_picker = NumberPicker(self, 105, 17, 0, 99, 0)
+        self._speed_picker = NumberPicker(self, 105, 17, 1, 99, 0)
 
         self._scroll_var = ScrollBar(
             self, 222, 24, 125, ScrollBar.VERTICAL, 100, 10, 0, with_shadow=False
