@@ -10,6 +10,7 @@ import glfw
 import numpy as np
 import PIL.Image
 
+from . import utilities
 from .audio_player import AudioPlayer
 from .constants import (
     APP_GIF_CAPTURE_COUNT,
@@ -43,12 +44,6 @@ from .constants import (
     RENDERER_TILEMAP_COUNT,
 )
 from .renderer import Renderer
-from .utilities import (
-    get_desktop_path,
-    get_icon_image,
-    init_palette,
-    palettize_pil_image,
-)
 
 
 class App:
@@ -75,10 +70,9 @@ class App:
             )
 
         global pyxel
-        pyxel = self._module = module
+        pyxel = module
 
         self._palette = palette[:]
-        init_palette(palette)
         self._fps = fps
         self._border_width = border_width
         self._border_color = border_color
@@ -103,6 +97,7 @@ class App:
         self._perf_draw_time = 0
 
         # exports variables
+        pyxel._app = self
         pyxel.width = width
         pyxel.height = height
         pyxel.mouse_x = 0
@@ -153,10 +148,9 @@ class App:
         self._update_viewport()
 
         glfw.set_key_callback(self._window, self._key_callback)
-        glfw.set_cursor_pos_callback(self._window, self._cursor_pos_callback)
         glfw.set_mouse_button_callback(self._window, self._mouse_button_callback)
 
-        glfw.set_window_icon(self._window, 1, [get_icon_image()])
+        glfw.set_window_icon(self._window, 1, [utilities.get_icon_image()])
         # glfw.set_input_mode(self._window, glfw.CURSOR, glfw.CURSOR_HIDDEN)
 
         # initialize renderer
@@ -338,13 +332,10 @@ class App:
         elif key == KEY_LEFT_SUPER or key == KEY_RIGHT_SUPER:
             self._key_state[KEY_SUPER] = state
 
-    def _cursor_pos_callback(self, window, xpos, ypos):
-        left = self._viewport_left
-        top = self._viewport_top
-        scale = self._viewport_scale
-
-        pyxel.mouse_x = int((xpos - left) / scale)
-        pyxel.mouse_y = int((ypos - top) / scale)
+    def _update_mouse_pos(self):
+        x, y = glfw.get_cursor_pos(self._window)
+        pyxel.mouse_x = int((x - self._viewport_left) / self._viewport_scale)
+        pyxel.mouse_y = int((y - self._viewport_top) / self._viewport_scale)
 
     def _mouse_button_callback(self, window, button, action, mods):
         if button == glfw.MOUSE_BUTTON_LEFT:
@@ -390,6 +381,8 @@ class App:
 
         update_count = math.floor(-wait_time / self._one_frame_time) + 1
         self._next_update_time += update_count * self._one_frame_time
+
+        self._update_mouse_pos()
 
         # update frame
         for _ in range(update_count):
@@ -496,7 +489,7 @@ class App:
             1,
         )
 
-        image = palettize_pil_image(image)
+        image = utilities.palettize_pil_image(image)
 
         image = image.resize(
             (pyxel.width * APP_GIF_CAPTURE_SCALE, pyxel.height * APP_GIF_CAPTURE_SCALE)
@@ -507,7 +500,8 @@ class App:
     @staticmethod
     def _get_capture_filename():
         return os.path.join(
-            get_desktop_path(), datetime.datetime.now().strftime("pyxel-%y%m%d-%H%M%S")
+            utilities.get_desktop_path(),
+            datetime.datetime.now().strftime("pyxel-%y%m%d-%H%M%S"),
         )
 
     def _measure_fps(self):
