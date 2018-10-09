@@ -469,7 +469,7 @@ class App:
 
     def _save_capture_image(self):
         index = (self._capture_index - 1) % APP_GIF_CAPTURE_COUNT
-        image = self._get_capture_image(index)
+        image = self._get_capture_image(index, palette=True)
         image.save(self._get_capture_filename() + ".png")
 
     def _save_capture_animation(self):
@@ -507,7 +507,7 @@ class App:
         new = alpha * curr
         return PIL.Image.fromarray(new, "RGBA")
 
-    def _get_capture_image(self, index):
+    def _get_capture_image(self, index, palette=False):
         image = PIL.Image.frombuffer(
             "RGB",
             (pyxel.width, pyxel.height),
