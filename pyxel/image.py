@@ -4,10 +4,8 @@ import os
 import numpy as np
 import PIL.Image
 
-import pyxel
-
+from . import utilities
 from .gl_wrapper import GLTexture
-from .utilities import get_copy_rect, palettize_pil_image
 
 
 class Image:
@@ -40,7 +38,9 @@ class Image:
         sw = len(data[0])
         sh = len(data)
 
-        rect = get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height, sw, sh)
+        rect = utilities.get_copy_rect(
+            0, 0, sw, sh, x, y, self.width, self.height, sw, sh
+        )
         if not rect:
             return
         sx, sy, dx, dy, cw, ch = rect
@@ -59,12 +59,14 @@ class Image:
 
         sw, sh = pil_image.size
 
-        rect = get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height, sw, sh)
+        rect = utilities.get_copy_rect(
+            0, 0, sw, sh, x, y, self.width, self.height, sw, sh
+        )
         if not rect:
             return
         sx, sy, dx, dy, cw, ch = rect
 
-        pil_image = palettize_pil_image(pil_image)
+        pil_image = utilities.palettize_pil_image(pil_image)
         pil_image = pil_image.crop((sx, sy, sx + cw, sy + ch))
 
         src_data = np.array(pil_image.getdata()).reshape(ch, cw)
@@ -72,9 +74,9 @@ class Image:
         self._tex.update()
 
     def copy(self, x, y, img, sx, sy, w, h):
-        image = pyxel.image(img)
+        image = utilities.image(img)
 
-        rect = get_copy_rect(
+        rect = utilities.get_copy_rect(
             sx, sy, image.width, image.height, x, y, self.width, self.height, w, h
         )
         if not rect:
