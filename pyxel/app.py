@@ -491,6 +491,10 @@ class App:
             )
             images.append(im)
 
+        palette = im.getpalette()
+        palette_colors = list(zip(palette[::3], palette[1::3], palette[2::3]))
+        index = palette_colors.index((255, 0, 0))
+
         images[0].save(
             self._get_capture_filename() + ".gif",
             save_all=True,
@@ -498,6 +502,7 @@ class App:
             duration=self._one_frame_time * 1000,
             loop=0,
             optimize=True,
+            transparency=index,
         )
 
     def _difference(self, prev, curr):
