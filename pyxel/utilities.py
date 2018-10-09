@@ -6,8 +6,10 @@ import PIL.Image
 
 from .constants import DEFAULT_PALETTE, ICON_DATA
 
+_pil_palette = None
 
-def get_pil_palette(palette):
+
+def init_palette(palette):
     rgb_palette = []
 
     for color in palette:
@@ -21,7 +23,13 @@ def get_pil_palette(palette):
     pil_palette = PIL.Image.new("P", (1, 1), 0)
     pil_palette.putpalette(rgb_palette)
 
-    return pil_palette
+    global _pil_palette
+    _pil_palette = pil_palette
+
+
+def palettize_pil_image(pil_image):
+    im = pil_image.im.convert("P", 0, _pil_palette.im)
+    return pil_image._new(im)
 
 
 def get_icon_image():
