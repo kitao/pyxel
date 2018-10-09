@@ -72,7 +72,9 @@ class App:
                 )
             )
 
-        self._module = module
+        global pyxel
+        pyxel = self._module = module
+
         self._palette = palette[:]
         self._pil_palette = self._get_pil_palette(palette)
         self._fps = fps
@@ -98,11 +100,13 @@ class App:
         self._perf_draw_total_time = 0
         self._perf_draw_time = 0
 
-        module.width = width
-        module.height = height
-        module.mouse_x = 0
-        module.mouse_y = 0
-        module.frame_count = 0
+        # exports variables
+        pyxel.width = width
+        pyxel.height = height
+        pyxel.mouse_x = 0
+        pyxel.mouse_y = 0
+        pyxel.mouse_cursor = False
+        pyxel.frame_count = 0
 
         # initialize window
         if not glfw.init():
@@ -151,6 +155,7 @@ class App:
         glfw.set_mouse_button_callback(self._window, self._mouse_button_callback)
 
         glfw.set_window_icon(self._window, 1, [self._get_icon_image()])
+        # glfw.set_input_mode(self._window, glfw.CURSOR, glfw.CURSOR_HIDDEN)
 
         # initialize renderer
         self._renderer = Renderer(width, height)
@@ -159,43 +164,43 @@ class App:
         self._audio_player = AudioPlayer()
 
         # export module functions
-        module.btn = self.btn
-        module.btnp = self.btnp
-        module.btnr = self.btnr
-        module.run = self.run
-        module.run_with_profiler = self.run_with_profiler
-        module.quit = self.quit
-        module.save = self.save
-        module.load = self.load
-        module.image = self._renderer.image
-        module.tilemap = self._renderer.tilemap
-        module.clip = self._renderer.draw_command.clip
-        module.pal = self._renderer.draw_command.pal
-        module.cls = self._renderer.draw_command.cls
-        module.pix = self._renderer.draw_command.pix
-        module.line = self._renderer.draw_command.line
-        module.rect = self._renderer.draw_command.rect
-        module.rectb = self._renderer.draw_command.rectb
-        module.circ = self._renderer.draw_command.circ
-        module.circb = self._renderer.draw_command.circb
-        module.blt = self._renderer.draw_command.blt
-        module.bltm = self._renderer.draw_command.bltm
-        module.text = self._renderer.draw_command.text
-        module.sound = self._audio_player.sound
-        module.play = self._audio_player.play
-        # module.playm = self._audio_player.playm
-        module.stop = self._audio_player.stop
+        pyxel.btn = self.btn
+        pyxel.btnp = self.btnp
+        pyxel.btnr = self.btnr
+        pyxel.run = self.run
+        pyxel.run_with_profiler = self.run_with_profiler
+        pyxel.quit = self.quit
+        pyxel.save = self.save
+        pyxel.load = self.load
+        pyxel.image = self._renderer.image
+        pyxel.tilemap = self._renderer.tilemap
+        pyxel.clip = self._renderer.draw_command.clip
+        pyxel.pal = self._renderer.draw_command.pal
+        pyxel.cls = self._renderer.draw_command.cls
+        pyxel.pix = self._renderer.draw_command.pix
+        pyxel.line = self._renderer.draw_command.line
+        pyxel.rect = self._renderer.draw_command.rect
+        pyxel.rectb = self._renderer.draw_command.rectb
+        pyxel.circ = self._renderer.draw_command.circ
+        pyxel.circb = self._renderer.draw_command.circb
+        pyxel.blt = self._renderer.draw_command.blt
+        pyxel.bltm = self._renderer.draw_command.bltm
+        pyxel.text = self._renderer.draw_command.text
+        pyxel.sound = self._audio_player.sound
+        pyxel.play = self._audio_player.play
+        pyxel.playm = None  # self._audio_player.playm
+        pyxel.stop = self._audio_player.stop
 
     def btn(self, key):
         press_frame = self._key_state.get(key, 0)
-        return press_frame > 0 or press_frame == -self._module.frame_count - 1
+        return press_frame > 0 or press_frame == -pyxel.frame_count - 1
 
     def btnp(self, key, hold=0, period=0):
         press_frame = self._key_state.get(key, 0)
-        hold_frame = self._module.frame_count - press_frame - hold
+        hold_frame = pyxel.frame_count - press_frame - hold
         return (
-            press_frame == self._module.frame_count
-            or press_frame == -self._module.frame_count - 1
+            press_frame == pyxel.frame_count
+            or press_frame == -pyxel.frame_count - 1
             or press_frame > 0
             and period > 0
             and hold_frame >= 0
@@ -203,13 +208,13 @@ class App:
         )
 
     def btnr(self, key):
-        return self._key_state.get(key, 0) == -self._module.frame_count
+        return self._key_state.get(key, 0) == -pyxel.frame_count
 
     def run(self, update, draw):
         self._update = update
         self._draw = draw
 
-        self._module.frame_count = 1
+        pyxel.frame_count = 1
         self._next_update_time = self._perf_fps_start_time = time.time()
 
         def main_loop():
@@ -240,7 +245,7 @@ class App:
         profile.disable()
 
         stats = pstats.Stats(profile).strip_dirs().sort_stats("tottime")
-        frame_count = self._module.frame_count
+        frame_count = pyxel.frame_count
 
         for key in stats.stats:
             cc, nc, tt, ct, callers = stats.stats[key]
@@ -256,19 +261,19 @@ class App:
         glfw.set_window_should_close(self._window, True)
 
     def save(self, filename):
-        data = {"version": self._module.VERSION}
+        data = {"version": pyxel.VERSION}
 
         image_list = [
-            self._module.image(i).data.dumps() for i in range(RENDERER_IMAGE_COUNT - 1)
+            pyxel.image(i).data.dumps() for i in range(RENDERER_IMAGE_COUNT - 1)
         ]
         data["image"] = image_list
 
         tilemap_list = [
-            self._module.tilemap(i).data.dumps() for i in range(RENDERER_TILEMAP_COUNT)
+            pyxel.tilemap(i).data.dumps() for i in range(RENDERER_TILEMAP_COUNT)
         ]
         data["tilemap"] = tilemap_list
 
-        sound_list = [self._module.sound(i) for i in range(AUDIO_SOUND_COUNT)]
+        sound_list = [pyxel.sound(i) for i in range(AUDIO_SOUND_COUNT)]
         data["sound"] = sound_list
 
         pickled_data = pickle.dumps(data)
@@ -292,16 +297,16 @@ class App:
 
         image_list = data["image"]
         for i in range(RENDERER_IMAGE_COUNT - 1):
-            self._module.image(i).data[:, :] = np.loads(image_list[i])
+            pyxel.image(i).data[:, :] = np.loads(image_list[i])
 
         tilemap_list = data["tilemap"]
         for i in range(RENDERER_TILEMAP_COUNT):
-            self._module.tilemap(i).data[:, :] = np.loads(tilemap_list[i])
+            pyxel.tilemap(i).data[:, :] = np.loads(tilemap_list[i])
 
         sound_list = data["sound"]
         for i in range(AUDIO_SOUND_COUNT):
             src = sound_list[i]
-            dest = self._module.sound(i)
+            dest = pyxel.sound(i)
 
             dest.note = src.note
             dest.tone = src.tone
@@ -341,12 +346,12 @@ class App:
 
     def _key_callback(self, window, key, scancode, action, mods):
         if action == glfw.PRESS:
-            state = self._module.frame_count
+            state = pyxel.frame_count
         elif action == glfw.RELEASE:
-            if self._key_state[key] == self._module.frame_count:
-                state = -self._module.frame_count - 1
+            if self._key_state[key] == pyxel.frame_count:
+                state = -pyxel.frame_count - 1
             else:
-                state = -self._module.frame_count
+                state = -pyxel.frame_count
         else:
             return
 
@@ -366,8 +371,8 @@ class App:
         top = self._viewport_top
         scale = self._viewport_scale
 
-        self._module.mouse_x = int((xpos - left) / scale)
-        self._module.mouse_y = int((ypos - top) / scale)
+        pyxel.mouse_x = int((xpos - left) / scale)
+        pyxel.mouse_y = int((ypos - top) / scale)
 
     def _mouse_button_callback(self, window, button, action, mods):
         if button == glfw.MOUSE_BUTTON_LEFT:
@@ -380,22 +385,22 @@ class App:
             return
 
         if action == glfw.PRESS:
-            self._key_state[button] = self._module.frame_count
+            self._key_state[button] = pyxel.frame_count
         elif action == glfw.RELEASE:
-            if self._key_state.get(button) == self._module.frame_count:
-                self._key_state[button] = -self._module.frame_count - 1
+            if self._key_state.get(button) == pyxel.frame_count:
+                self._key_state[button] = -pyxel.frame_count - 1
             else:
-                self._key_state[button] = -self._module.frame_count
+                self._key_state[button] = -pyxel.frame_count
 
     def _update_viewport(self):
         win_width, win_height = glfw.get_window_size(self._window)
-        scale_x = win_width // self._module.width
-        scale_y = win_height // self._module.height
+        scale_x = win_width // pyxel.width
+        scale_y = win_height // pyxel.height
         scale = min(scale_x, scale_y)
 
         self._viewport_scale = scale
-        self._viewport_width = self._module.width * scale
-        self._viewport_height = self._module.height * scale
+        self._viewport_width = pyxel.width * scale
+        self._viewport_height = pyxel.height * scale
         self._viewport_left = (win_width - self._viewport_width) // 2
         self._viewport_top = (win_height - self._viewport_height) // 2
         self._viewport_bottom = win_height - self._viewport_height - self._viewport_top
@@ -421,7 +426,7 @@ class App:
 
             self._update()
 
-            self._module.frame_count += 1
+            pyxel.frame_count += 1
             self._measure_update_time(update_start_time)
 
     def _draw_frame(self):
@@ -430,6 +435,7 @@ class App:
         self._draw()
 
         self._draw_perf_monitor()
+        # self._draw_mouse_cursor()
 
         hs = self._hidpi_scale
         image = self._renderer.render(
@@ -510,7 +516,7 @@ class App:
     def _get_capture_image(self, index):
         image = PIL.Image.frombuffer(
             "RGB",
-            (self._module.width, self._module.height),
+            (pyxel.width, pyxel.height),
             self._capture_images[index],
             "raw",
             "RGB",
@@ -521,10 +527,7 @@ class App:
         image = self.palettize_pil_image(image)
 
         image = image.resize(
-            (
-                self._module.width * APP_GIF_CAPTURE_SCALE,
-                self._module.height * APP_GIF_CAPTURE_SCALE,
-            )
+            (pyxel.width * APP_GIF_CAPTURE_SCALE, pyxel.height * APP_GIF_CAPTURE_SCALE)
         )
 
         return image
@@ -657,3 +660,7 @@ class App:
         text(0, 6, update, 9)
         text(1, 12, draw, 1)
         text(0, 12, draw, 9)
+
+    def _draw_mouse_cursor(self):
+        blt = self._renderer.draw_command.blt
+        blt(pyxel.mouse_x, pyxel.mouse_y, 3, 0, 0, 8, 8, 0)
