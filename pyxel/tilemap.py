@@ -2,6 +2,8 @@ import numpy as np
 
 import pyxel
 
+from .utilities import get_copy_rect
+
 
 class Tilemap:
     def __init__(self, width, height):
@@ -32,9 +34,7 @@ class Tilemap:
         sw = len(data[0]) // 2
         sh = len(data)
 
-        rect = pyxel._app._get_copy_rect(
-            0, 0, sw, sh, x, y, self.width, self.height, sw, sh
-        )
+        rect = get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height, sw, sh)
         if not rect:
             return
         sx, sy, dx, dy, cw, ch = rect
@@ -56,7 +56,7 @@ class Tilemap:
     def copy(self, x, y, tm, sx, sy, w, h):
         tilemap = pyxel.tilemap(tm)
 
-        rect = pyxel._app._get_copy_rect(
+        rect = get_copy_rect(
             sx, sy, tilemap.width, tilemap.height, x, y, self.width, self.height, w, h
         )
         if not rect:
