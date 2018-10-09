@@ -481,11 +481,15 @@ class App:
             return
 
         start_index = self._capture_index - image_count
-        images = []
+        images = [self._get_capture_image(start_index)]
 
-        for i in range(image_count):
+        for i in range(1, image_count):
             index = (start_index + i) % APP_GIF_CAPTURE_COUNT
-            images.append(self._get_capture_image(index))
+            im = self._difference(
+                self._get_capture_image(index-1),
+                self._get_capture_image(index)
+            )
+            images.append(im)
 
         images[0].save(
             self._get_capture_filename() + ".gif",
@@ -495,6 +499,13 @@ class App:
             loop=0,
             optimize=True,
         )
+
+    def _difference(self, prev, curr):
+        prev = np.asarray(prev.convert("RGBA"))
+        curr = np.asarray(curr.convert("RGBA"))
+        alpha = np.any(prev!=curr, axis=-1, keepdims=True)
+        new = alpha * curr
+        return PIL.Image.fromarray(new, "RGBA")
 
     def _get_capture_image(self, index):
         image = PIL.Image.frombuffer(
