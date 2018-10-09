@@ -4,32 +4,21 @@ import subprocess
 
 import PIL.Image
 
+import pyxel
+
 from .constants import DEFAULT_PALETTE, ICON_DATA
 
-_pil_palette = None
+
+def image(img):
+    return pyxel.image(img)
 
 
-def init_palette(palette):
-    rgb_palette = []
-
-    for color in palette:
-        r = (color >> 16) & 0xFF
-        g = (color >> 8) & 0xFF
-        b = color & 0xFF
-        rgb_palette.extend((r, g, b))
-
-    rgb_palette += [0] * 240 * 3
-
-    pil_palette = PIL.Image.new("P", (1, 1), 0)
-    pil_palette.putpalette(rgb_palette)
-
-    global _pil_palette
-    _pil_palette = pil_palette
+def tilemap(tm):
+    return pyxel.tilemap(tm)
 
 
-def palettize_pil_image(pil_image):
-    im = pil_image.im.convert("P", 0, _pil_palette.im)
-    return pil_image._new(im)
+def sound(snd):
+    return pyxel.sound(snd)
 
 
 def get_icon_image():
@@ -117,3 +106,26 @@ def get_copy_rect(sx, sy, sw, sh, dx, dy, dw, dh, cw, ch):
         return sx, sy, dx, dy, cw, ch
     else:
         return None
+
+
+def palettize_pil_image(pil_image):
+    global _pil_palette
+
+    if not hasattr(palettize_pil_image, "pil_palette"):
+        rgb_palette = []
+
+        for color in pyxel._app._palette:
+            r = (color >> 16) & 0xFF
+            g = (color >> 8) & 0xFF
+            b = color & 0xFF
+            rgb_palette.extend((r, g, b))
+
+        rgb_palette += [0] * 240 * 3
+
+        pil_palette = PIL.Image.new("P", (1, 1), 0)
+        pil_palette.putpalette(rgb_palette)
+
+        palettize_pil_image.pil_palette = pil_palette
+
+    im = pil_image.im.convert("P", 0, palettize_pil_image.pil_palette.im)
+    return pil_image._new(im)
