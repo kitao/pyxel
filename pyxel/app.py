@@ -20,6 +20,7 @@ from .constants import (
     APP_SCREEN_MAX_SIZE,
     APP_SCREEN_SCALE_CUTDOWN,
     APP_SCREEN_SCALE_MINIMUM,
+    AUDIO_SOUND_COUNT,
     DEFAULT_PALETTE,
     GLFW_VERSION,
     ICON_DATA,
@@ -257,15 +258,18 @@ class App:
     def save(self, filename):
         data = {"version": self._module.VERSION}
 
-        image = [
+        image_list = [
             self._module.image(i).data.dumps() for i in range(RENDERER_IMAGE_COUNT - 1)
         ]
-        data["image"] = image
+        data["image"] = image_list
 
-        tilemap = [
+        tilemap_list = [
             self._module.tilemap(i).data.dumps() for i in range(RENDERER_TILEMAP_COUNT)
         ]
-        data["tilemap"] = tilemap
+        data["tilemap"] = tilemap_list
+
+        sound_list = [self._module.sound(i) for i in range(AUDIO_SOUND_COUNT)]
+        data["sound"] = sound_list
 
         pickled_data = pickle.dumps(data)
 
@@ -286,13 +290,24 @@ class App:
 
         # todo: version check
 
-        image = data["image"]
+        image_list = data["image"]
         for i in range(RENDERER_IMAGE_COUNT - 1):
-            self._module.image(i).data[:, :] = np.loads(image[i])
+            self._module.image(i).data[:, :] = np.loads(image_list[i])
 
-        tilemap = data["tilemap"]
+        tilemap_list = data["tilemap"]
         for i in range(RENDERER_TILEMAP_COUNT):
-            self._module.tilemap(i).data[:, :] = np.loads(tilemap[i])
+            self._module.tilemap(i).data[:, :] = np.loads(tilemap_list[i])
+
+        sound_list = data["sound"]
+        for i in range(AUDIO_SOUND_COUNT):
+            src = sound_list[i]
+            dest = self._module.sound(i)
+
+            dest.note = src.note
+            dest.tone = src.tone
+            dest.volume = src.volume
+            dest.effect = src.effect
+            dest.speed = src.speed
 
     def palettize_pil_image(self, pil_image):
         im = pil_image.im.convert("P", 0, self._pil_palette.im)
