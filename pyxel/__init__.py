@@ -30,6 +30,4 @@ def init(
         if k.startswith("KEY_"):
             module.__dict__[k] = v
 
-    module._app = App(
-        module, width, height, caption, scale, palette, fps, border_width, border_color
-    )
+    App(module, width, height, caption, scale, palette, fps, border_width, border_color)
