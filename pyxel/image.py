@@ -7,6 +7,7 @@ import PIL.Image
 import pyxel
 
 from .gl_wrapper import GLTexture
+from .utilities import get_copy_rect
 
 
 class Image:
@@ -39,9 +40,7 @@ class Image:
         sw = len(data[0])
         sh = len(data)
 
-        rect = pyxel._app._get_copy_rect(
-            0, 0, sw, sh, x, y, self.width, self.height, sw, sh
-        )
+        rect = get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height, sw, sh)
         if not rect:
             return
         sx, sy, dx, dy, cw, ch = rect
@@ -60,9 +59,7 @@ class Image:
 
         sw, sh = pil_image.size
 
-        rect = pyxel._app._get_copy_rect(
-            0, 0, sw, sh, x, y, self.width, self.height, sw, sh
-        )
+        rect = get_copy_rect(0, 0, sw, sh, x, y, self.width, self.height, sw, sh)
         if not rect:
             return
         sx, sy, dx, dy, cw, ch = rect
@@ -77,7 +74,7 @@ class Image:
     def copy(self, x, y, img, sx, sy, w, h):
         image = pyxel.image(img)
 
-        rect = pyxel._app._get_copy_rect(
+        rect = get_copy_rect(
             sx, sy, image.width, image.height, x, y, self.width, self.height, w, h
         )
         if not rect:
