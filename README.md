@@ -264,6 +264,9 @@ Return `True` if `key` is pressed at that frame, otherwise return `False`. When 
 - `btnr(key)`  
 Return `True` if `key` is released at that frame, otherwise return `False`
 
+- `mouse(visible)`  
+If `visible` is `True`, show the mouse cursor. If `False`, hide it. Even if the mouse cursor is not displayed, its position is updated.
+
 ### Graphics
 
 - `image(img, [system])`  
