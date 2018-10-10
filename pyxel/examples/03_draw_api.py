@@ -15,6 +15,8 @@ class App:
         self.pal_test_is_enabled = False
         self.clip_test_is_enabled = False
 
+        pyxel.mouse(True)
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
