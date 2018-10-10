@@ -2,6 +2,7 @@ import pyxel
 from pyxel.constants import AUDIO_MUSIC_COUNT
 from pyxel.ui import ImageButton, NumberPicker
 
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
 from .editor import Editor
 
 
@@ -25,6 +26,8 @@ class MusicEditor(Editor):
             self.draw_frame(x, 30, 41, 143)
             pyxel.text(x + 15, 32, "CH{}".format(i), 6)
 
-            pyxel.blt(12 + i * 59, 39, 3, 67, 24, 39, 127)
+            pyxel.blt(
+                12 + i * 59, 39, 3, EDITOR_IMAGE_X + 67, EDITOR_IMAGE_Y + 8, 39, 127
+            )
 
         self.draw_not_implemented_message()
