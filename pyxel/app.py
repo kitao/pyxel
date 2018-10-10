@@ -40,6 +40,11 @@ from .constants import (
     KEY_RIGHT_SUPER,
     KEY_SHIFT,
     KEY_SUPER,
+    MOUSE_CURSOR_DATA,
+    MOUSE_CURSOR_HEIGHT,
+    MOUSE_CURSOR_IMAGE_X,
+    MOUSE_CURSOR_IMAGE_Y,
+    MOUSE_CURSOR_WIDTH,
     RENDERER_IMAGE_COUNT,
     RENDERER_TILEMAP_COUNT,
 )
@@ -79,6 +84,7 @@ class App:
         self._next_update_time = 0
         self._one_frame_time = 1 / fps
         self._key_state = {}
+        self._is_mouse_visible = False
         self._update = None
         self._draw = None
         self._capture_start = 0
@@ -151,7 +157,7 @@ class App:
         glfw.set_mouse_button_callback(self._window, self._mouse_button_callback)
 
         glfw.set_window_icon(self._window, 1, [utilities.get_icon_image()])
-        # glfw.set_input_mode(self._window, glfw.CURSOR, glfw.CURSOR_HIDDEN)
+        glfw.set_input_mode(self._window, glfw.CURSOR, glfw.CURSOR_HIDDEN)
 
         # initialize renderer
         self._renderer = Renderer(width, height)
@@ -163,6 +169,7 @@ class App:
         pyxel.btn = self.btn
         pyxel.btnp = self.btnp
         pyxel.btnr = self.btnr
+        pyxel.mouse = self.mouse
         pyxel.run = self.run
         pyxel.run_with_profiler = self.run_with_profiler
         pyxel.quit = self.quit
@@ -187,6 +194,11 @@ class App:
         pyxel.playm = None  # self._audio_player.playm
         pyxel.stop = self._audio_player.stop
 
+        # initialize mouse cursor
+        pyxel.image(3, system=True).set(
+            MOUSE_CURSOR_IMAGE_X, MOUSE_CURSOR_IMAGE_Y, MOUSE_CURSOR_DATA
+        )
+
     def btn(self, key):
         press_frame = self._key_state.get(key, 0)
         return press_frame > 0 or press_frame == -pyxel.frame_count - 1
@@ -205,6 +217,9 @@ class App:
 
     def btnr(self, key):
         return self._key_state.get(key, 0) == -pyxel.frame_count
+
+    def mouse(self, is_visible):
+        self._is_mouse_visible = is_visible
 
     def run(self, update, draw):
         self._update = update
@@ -291,24 +306,27 @@ class App:
 
         # todo: version check
 
-        image_list = data["image"]
-        for i in range(RENDERER_IMAGE_COUNT - 1):
-            pyxel.image(i).data[:, :] = np.loads(image_list[i])
+        image_list = data.get("image")
+        if image_list:
+            for i in range(RENDERER_IMAGE_COUNT - 1):
+                pyxel.image(i).data[:, :] = np.loads(image_list[i])
 
-        tilemap_list = data["tilemap"]
-        for i in range(RENDERER_TILEMAP_COUNT):
-            pyxel.tilemap(i).data[:, :] = np.loads(tilemap_list[i])
+        tilemap_list = data.get("tilemap")
+        if tilemap_list:
+            for i in range(RENDERER_TILEMAP_COUNT):
+                pyxel.tilemap(i).data[:, :] = np.loads(tilemap_list[i])
 
-        sound_list = data["sound"]
-        for i in range(AUDIO_SOUND_COUNT):
-            src = sound_list[i]
-            dest = pyxel.sound(i)
+        sound_list = data.get("sound")
+        if sound_list:
+            for i in range(AUDIO_SOUND_COUNT):
+                src = sound_list[i]
+                dest = pyxel.sound(i)
 
-            dest.note = src.note
-            dest.tone = src.tone
-            dest.volume = src.volume
-            dest.effect = src.effect
-            dest.speed = src.speed
+                dest.note = src.note
+                dest.tone = src.tone
+                dest.volume = src.volume
+                dest.effect = src.effect
+                dest.speed = src.speed
 
     def _key_callback(self, window, key, scancode, action, mods):
         if action == glfw.PRESS:
@@ -400,7 +418,7 @@ class App:
         self._draw()
 
         self._draw_perf_monitor()
-        # self._draw_mouse_cursor()
+        self._draw_mouse_cursor()
 
         hs = self._hidpi_scale
         image = self._renderer.render(
@@ -554,5 +572,16 @@ class App:
         text(0, 12, draw, 9)
 
     def _draw_mouse_cursor(self):
-        blt = self._renderer.draw_command.blt
-        blt(pyxel.mouse_x, pyxel.mouse_y, 3, 0, 0, 8, 8, 0)
+        if not self._is_mouse_visible:
+            return
+
+        pyxel.blt(
+            pyxel.mouse_x,
+            pyxel.mouse_y,
+            3,
+            MOUSE_CURSOR_IMAGE_X,
+            MOUSE_CURSOR_IMAGE_Y,
+            MOUSE_CURSOR_WIDTH,
+            MOUSE_CURSOR_HEIGHT,
+            1,
+        )
