@@ -218,8 +218,8 @@ class App:
     def btnr(self, key):
         return self._key_state.get(key, 0) == -pyxel.frame_count
 
-    def mouse(self, is_visible):
-        self._is_mouse_visible = is_visible
+    def mouse(self, visible):
+        self._is_mouse_visible = visible
 
     def run(self, update, draw):
         self._update = update
