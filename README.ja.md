@@ -265,6 +265,9 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 - `btnr(key)`  
 そのフレームに`key`が離されたら`True`、離されなければ`False`を返す
 
+- `mouse(visible)`  
+`visible`が`True`ならマウスカーソルを表示し、`False`なら非表示にする。マウスカーソルが非表示でも座標は更新される。
+
 ### グラフィックス
 
 - `image(img, [system])`  
