@@ -1,6 +1,13 @@
 import pyxel
 from pyxel.ui import Widget
 
+from .constants import (
+    TILEMAP_IMAGE_HEIGHT,
+    TILEMAP_IMAGE_WIDTH,
+    TILEMAP_IMAGE_X,
+    TILEMAP_IMAGE_Y,
+)
+
 
 class TilemapFrame(Widget):
     def __init__(self, parent):
@@ -31,7 +38,15 @@ class TilemapFrame(Widget):
     def __on_draw(self):
         self.draw_frame(self.x, self.y, self.width, self.height)
 
-        pyxel.blt(self.x + 1, self.y + 1, 3, 0, 192, 64, 63)
+        pyxel.blt(
+            self.x + 1,
+            self.y + 1,
+            3,
+            TILEMAP_IMAGE_X,
+            TILEMAP_IMAGE_Y,
+            TILEMAP_IMAGE_WIDTH,
+            TILEMAP_IMAGE_HEIGHT,
+        )
 
         pyxel.clip(
             self.x + 1, self.y + 1, self.x + self.width - 2, self.y + self.height - 2

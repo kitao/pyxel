@@ -2,7 +2,13 @@ import pyxel
 from pyxel.constants import RENDERER_IMAGE_COUNT, RENDERER_TILEMAP_COUNT
 from pyxel.ui import NumberPicker, RadioButton
 
-from .constants import TOOL_PENCIL
+from .constants import (
+    EDITOR_IMAGE_X,
+    EDITOR_IMAGE_Y,
+    TILEMAP_IMAGE_X,
+    TILEMAP_IMAGE_Y,
+    TOOL_PENCIL,
+)
 from .edit_frame import EditFrame
 from .editor import Editor
 from .image_frame import ImageFrame
@@ -19,7 +25,9 @@ class TileMapEditor(Editor):
         self._tilemap_picker = NumberPicker(
             self, 48, 161, 0, RENDERER_TILEMAP_COUNT - 1, 0
         )
-        self._tool_button = RadioButton(self, 81, 161, 3, 63, 16, 7, TOOL_PENCIL)
+        self._tool_button = RadioButton(
+            self, 81, 161, 3, EDITOR_IMAGE_X + 63, EDITOR_IMAGE_Y, 7, TOOL_PENCIL
+        )
         self._image_picker = NumberPicker(
             self, 192, 161, 0, RENDERER_IMAGE_COUNT - 2, 0
         )
@@ -109,7 +117,9 @@ class TileMapEditor(Editor):
                 col = pyxel.image(self.image).data[
                     (val // 32) * 8 + 3, (val % 32) * 8 + 3
                 ]
-                pyxel.image(3, system=True).data[y + 192, x] = col
+                pyxel.image(3, system=True).data[
+                    TILEMAP_IMAGE_Y + y, TILEMAP_IMAGE_X + x
+                ] = col
 
         self.check_tool_button_shortcuts()
 
