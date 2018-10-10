@@ -3,6 +3,7 @@ from pyxel.constants import AUDIO_SOUND_COUNT
 from pyxel.ui import NumberPicker, ScrollBar
 from pyxel.ui.constants import WIDGET_FRAME_COLOR
 
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
 from .editor import Editor
 
 
@@ -24,10 +25,12 @@ class SoundEditor(Editor):
         pyxel.text(23, 18, "SOUND", 6)
         pyxel.text(83, 18, "SPEED", 6)
 
-        pyxel.blt(12, 25, 3, 0, 24, 19, 123)
+        pyxel.blt(12, 25, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 8, 19, 123)
 
         for i in range(4):
-            pyxel.blt(31 + i * 48, 25, 3, 19, 24, 48, 147)
+            pyxel.blt(
+                31 + i * 48, 25, 3, EDITOR_IMAGE_X + 19, EDITOR_IMAGE_Y + 8, 48, 147
+            )
 
         pyxel.line(222, 149, 222, 171, WIDGET_FRAME_COLOR)
 

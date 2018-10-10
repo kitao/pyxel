@@ -8,13 +8,11 @@ from pyxel.ui.constants import (
     WIDGET_SHADOW_COLOR,
 )
 
-from .constants import EDITOR_HEIGHT, EDITOR_WIDTH
+from .constants import APP_HEIGHT, APP_WIDTH, EDITOR_IMAGE_X, EDITOR_IMAGE_Y
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
 from .sound_editor import SoundEditor
 from .tilemap_editor import TileMapEditor
-
-EDITOR_IMAGE = 0
 
 
 class App(Widget):
@@ -25,9 +23,7 @@ class App(Widget):
             resource_file += ".pyxel"
 
         pyxel.init(
-            EDITOR_WIDTH,
-            EDITOR_HEIGHT,
-            caption="Pyxel Editor - {}".format(resource_file),
+            APP_WIDTH, APP_HEIGHT, caption="Pyxel Editor - {}".format(resource_file)
         )
 
         try:
@@ -45,10 +41,18 @@ class App(Widget):
             MusicEditor(self),
         ]
         self._edit_count = 0
-        self._editor_button = RadioButton(self, 1, 1, 3, 0, 16, 4, EDITOR_IMAGE)
-        self._undo_button = ImageButton(self, 48, 1, 3, 36, 16)
-        self._redo_button = ImageButton(self, 57, 1, 3, 45, 16)
-        self._save_button = ImageButton(self, 75, 1, 3, 54, 16, is_enabled=False)
+        self._editor_button = RadioButton(
+            self, 1, 1, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y, 4, 0
+        )
+        self._undo_button = ImageButton(
+            self, 48, 1, 3, EDITOR_IMAGE_X + 36, EDITOR_IMAGE_Y
+        )
+        self._redo_button = ImageButton(
+            self, 57, 1, 3, EDITOR_IMAGE_X + 45, EDITOR_IMAGE_Y
+        )
+        self._save_button = ImageButton(
+            self, 75, 1, 3, EDITOR_IMAGE_X + 54, EDITOR_IMAGE_Y, is_enabled=False
+        )
         self.help_message = ""
 
         self._editor_button.add_event_handler(
@@ -74,8 +78,12 @@ class App(Widget):
 
         self.set_editor(0)
 
-        image_file = os.path.join(os.path.dirname(__file__), "assets", "editor.png")
-        pyxel.image(3, system=True).load(0, 16, image_file)
+        image_file = os.path.join(
+            os.path.dirname(__file__), "assets", "editor_160x160.png"
+        )
+        pyxel.image(3, system=True).load(EDITOR_IMAGE_X, EDITOR_IMAGE_Y, image_file)
+
+        pyxel.mouse(True)
 
         pyxel.run(self.update_widgets, self.draw_widgets)
 
