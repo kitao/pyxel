@@ -500,7 +500,7 @@ class App:
             append_images=images[1:],
             duration=self._one_frame_time * 1000,
             loop=0,
-            optimize=True,
+            optimize=False,
             transparency=index,
             disposal=1,
         )
