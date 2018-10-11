@@ -6,7 +6,7 @@ import PIL.Image
 
 import pyxel
 
-from .constants import DEFAULT_PALETTE, ICON_DATA
+from .constants import DEFAULT_PALETTE, ICON_DATA, GIF_TRANSPARENCY_COLOR
 
 
 def image(img):
@@ -120,7 +120,9 @@ def palettize_pil_image(pil_image):
             b = color & 0xFF
             rgb_palette.extend((r, g, b))
 
-        rgb_palette += [0] * 240 * 3
+        rgb_palette.extend(GIF_TRANSPARENCY_COLOR)
+
+        rgb_palette += [0] * 237 * 3
 
         pil_palette = PIL.Image.new("P", (1, 1), 0)
         pil_palette.putpalette(rgb_palette)

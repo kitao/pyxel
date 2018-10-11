@@ -21,6 +21,7 @@ from .constants import (
     APP_SCREEN_SCALE_MINIMUM,
     AUDIO_SOUND_COUNT,
     GLFW_VERSION,
+    GIF_TRANSPARENCY_COLOR,
     KEY_0,
     KEY_1,
     KEY_2,
