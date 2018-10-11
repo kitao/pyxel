@@ -492,9 +492,7 @@ class App:
             )
             images.append(im)
 
-        palette = im.getpalette()
-        palette_colors = list(zip(palette[::3], palette[1::3], palette[2::3]))
-        index = palette_colors.index((255, 0, 0))
+        index = self._get_color_palette_index(im, GIF_TRANSPARENCY_COLOR)
 
         images[0].save(
             self._get_capture_filename() + ".gif",
@@ -504,7 +502,13 @@ class App:
             loop=0,
             optimize=True,
             transparency=index,
+            disposal=1,
         )
+
+    def _get_color_palette_index(self, image, color):
+        palette = image.getpalette()
+        palette_colors = list(zip(palette[::3], palette[1::3], palette[2::3]))
+        return palette_colors.index(color)
 
     def _difference(self, prev, curr):
         prev = np.asarray(prev.convert("RGBA"))
@@ -513,11 +517,10 @@ class App:
         new = alpha * curr
         red, green, blue, alpha = new.T
         trans_areas = (alpha == 0)
-        new[..., :-1][trans_areas.T] = (255, 0, 0)
-        return PIL.Image.fromarray(new, "RGBA").convert(
-            "P", palette=PIL.Image.ADAPTIVE)
+        new[..., :-1][trans_areas.T] = GIF_TRANSPARENCY_COLOR
+        return utilities.palettize_pil_image(PIL.Image.fromarray(new))
 
-    def _get_capture_image(self, index, palette=False):
+    def _get_capture_image(self, index):
         image = PIL.Image.frombuffer(
             "RGB",
             (pyxel.width, pyxel.height),
