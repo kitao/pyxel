@@ -470,7 +470,7 @@ class App:
 
     def _save_capture_image(self):
         index = (self._capture_index - 1) % APP_GIF_CAPTURE_COUNT
-        image = self._get_capture_image(index, palette=True)
+        image = self._get_capture_image(index)
         image.save(self._get_capture_filename() + ".png")
 
     def _save_capture_animation(self):
