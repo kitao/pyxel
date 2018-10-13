@@ -79,7 +79,7 @@ class App(Widget):
         self.set_editor(0)
 
         image_file = os.path.join(
-            os.path.dirname(__file__), "assets", "editor_160x160.png"
+            os.path.dirname(__file__), "assets", "editor_160x140.png"
         )
         pyxel.image(3, system=True).load(EDITOR_IMAGE_X, EDITOR_IMAGE_Y, image_file)
 
