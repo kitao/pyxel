@@ -11,9 +11,15 @@ class MusicEditor(Editor):
         super().__init__(parent)
 
         self._music_picker = NumberPicker(self, 45, 17, 0, AUDIO_MUSIC_COUNT - 1, 0)
-        self._play_button = ImageButton(self, 190, 17, 3, 126, 16)
-        self._stop_button = ImageButton(self, 200, 17, 3, 135, 16)
-        self._loop_button = ImageButton(self, 210, 17, 3, 144, 16)
+        self._play_button = ImageButton(
+            self, 185, 17, 3, EDITOR_IMAGE_X + 126, EDITOR_IMAGE_Y
+        )
+        self._stop_button = ImageButton(
+            self, 195, 17, 3, EDITOR_IMAGE_X + 135, EDITOR_IMAGE_Y
+        )
+        self._loop_button = ImageButton(
+            self, 205, 17, 3, EDITOR_IMAGE_X + 144, EDITOR_IMAGE_Y
+        )
 
         self.add_event_handler("draw", self.__on_draw)
 
@@ -27,7 +33,7 @@ class MusicEditor(Editor):
             pyxel.text(x + 15, 32, "CH{}".format(i), 6)
 
             pyxel.blt(
-                12 + i * 59, 39, 3, EDITOR_IMAGE_X + 115, EDITOR_IMAGE_Y + 8, 39, 127
+                12 + i * 59, 39, 3, EDITOR_IMAGE_X + 112, EDITOR_IMAGE_Y + 8, 39, 127
             )
 
         self.draw_not_implemented_message()
