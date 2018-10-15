@@ -33,7 +33,7 @@ class MusicEditor(Editor):
             pyxel.text(x + 15, 32, "CH{}".format(i), 6)
 
             pyxel.blt(
-                12 + i * 59, 39, 3, EDITOR_IMAGE_X + 112, EDITOR_IMAGE_Y + 8, 39, 127
+                12 + i * 59, 39, 3, EDITOR_IMAGE_X + 120, EDITOR_IMAGE_Y + 8, 39, 127
             )
 
         self.draw_not_implemented_message()
