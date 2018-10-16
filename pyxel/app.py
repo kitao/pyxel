@@ -503,6 +503,7 @@ class App:
             optimize=False,
             transparency=index,
             disposal=1,
+            palette=utilities.get_palette(fill=False)
         )
 
     def _get_color_palette_index(self, image, color):
