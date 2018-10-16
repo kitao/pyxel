@@ -21,6 +21,7 @@ from .constants import (
     APP_SCREEN_SCALE_MINIMUM,
     AUDIO_SOUND_COUNT,
     GLFW_VERSION,
+    GIF_TRANSPARENCY_COLOR,
     KEY_0,
     KEY_1,
     KEY_2,
@@ -481,11 +482,17 @@ class App:
             return
 
         start_index = self._capture_index - image_count
-        images = []
+        images = [self._get_capture_image(start_index)]
 
-        for i in range(image_count):
+        for i in range(1, image_count):
             index = (start_index + i) % APP_GIF_CAPTURE_COUNT
-            images.append(self._get_capture_image(index))
+            im = self._difference(
+                self._get_capture_image(index-1),
+                self._get_capture_image(index)
+            )
+            images.append(im)
+
+        index = self._get_color_palette_index(im, GIF_TRANSPARENCY_COLOR)
 
         images[0].save(
             self._get_capture_filename() + ".gif",
@@ -493,8 +500,26 @@ class App:
             append_images=images[1:],
             duration=self._one_frame_time * 1000,
             loop=0,
-            optimize=True,
+            optimize=False,
+            transparency=index,
+            disposal=1,
+            palette=utilities.get_palette(fill=False)
         )
+
+    def _get_color_palette_index(self, image, color):
+        palette = image.getpalette()
+        palette_colors = list(zip(palette[::3], palette[1::3], palette[2::3]))
+        return palette_colors.index(color)
+
+    def _difference(self, prev, curr):
+        prev = np.asarray(prev.convert("RGBA"))
+        curr = np.asarray(curr.convert("RGBA"))
+        alpha = np.any(prev!=curr, axis=-1, keepdims=True)
+        new = alpha * curr
+        red, green, blue, alpha = new.T
+        trans_areas = (alpha == 0)
+        new[..., :-1][trans_areas.T] = GIF_TRANSPARENCY_COLOR
+        return utilities.palettize_pil_image(PIL.Image.fromarray(new))
 
     def _get_capture_image(self, index):
         image = PIL.Image.frombuffer(
