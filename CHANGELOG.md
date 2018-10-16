@@ -4,6 +4,7 @@
 - Changed to follow the mouse position outside the window
 - Changed to draw the self mouse cursor
 - Added the mouse command
+- Renamed arguments of the blt and bltm commands
 
 ## 0.8.3
 - Fixed the right click bug in the Tilemap Editor

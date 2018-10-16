@@ -198,7 +198,7 @@ class DrawCommand:
 
         data[SIZE_W_INDEX] = r
 
-    def blt(self, x, y, img, sx, sy, w, h, colkey=None):
+    def blt(self, x, y, img, u, v, w, h, colkey=None):
         if self.draw_count >= self._max_draw_count:
             return
 
@@ -212,14 +212,14 @@ class DrawCommand:
 
         data[POS_X1_INDEX] = x
         data[POS_Y1_INDEX] = y
-        data[POS_X2_INDEX] = sx
-        data[POS_Y2_INDEX] = sy
+        data[POS_X2_INDEX] = u
+        data[POS_Y2_INDEX] = v
 
         data[SIZE_W_INDEX] = w
         data[SIZE_H_INDEX] = h
 
-    def bltm(self, x, y, img, tm, tx, ty, tw, th, colkey=None):
-        data = self._tilemap_list[tm]._data[ty:, tx:]
+    def bltm(self, x, y, img, tm, tu, tv, tw, th, colkey=None):
+        data = self._tilemap_list[tm]._data[tv:, tu:]
         for i in range(th):
             for j in range(tw):
                 val = data[i, j]

@@ -136,7 +136,7 @@ class App:
             pyxel.circb(x + i * 8, y, i, i + 8)
 
     def test_blt(self, x, y):
-        pyxel.text(x, y, "blt(x,y,img,sx,sy,\n    w,h,[colkey])", 7)
+        pyxel.text(x, y, "blt(x,y,img,u,v,\n    w,h,[colkey])", 7)
 
         y += 15
         offset = math.sin(pyxel.frame_count * 0.1) * 2
@@ -148,7 +148,7 @@ class App:
         pyxel.blt(x + 76, y, 0, 0, 0, -16, -16, 5)
 
     def test_bltm(self, x, y):
-        pyxel.text(x, y, "bltm(x,y,img,tm,tx,ty,\n     tw,th,[colkey])", 7)
+        pyxel.text(x, y, "bltm(x,y,img,tm,tu,tv,\n     tw,th,[colkey])", 7)
 
         y += 15
 
