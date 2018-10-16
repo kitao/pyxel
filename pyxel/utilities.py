@@ -112,17 +112,7 @@ def palettize_pil_image(pil_image):
     global _pil_palette
 
     if not hasattr(palettize_pil_image, "pil_palette"):
-        rgb_palette = []
-
-        for color in pyxel._app._palette:
-            r = (color >> 16) & 0xFF
-            g = (color >> 8) & 0xFF
-            b = color & 0xFF
-            rgb_palette.extend((r, g, b))
-
-        rgb_palette.extend(GIF_TRANSPARENCY_COLOR)
-
-        rgb_palette += [0] * 237 * 3
+        rgb_palette = get_palette()
 
         pil_palette = PIL.Image.new("P", (1, 1), 0)
         pil_palette.putpalette(rgb_palette)
@@ -131,3 +121,20 @@ def palettize_pil_image(pil_image):
 
     im = pil_image.im.convert("P", 0, palettize_pil_image.pil_palette.im)
     return pil_image._new(im)
+
+
+def get_palette(fill=True):
+    rgb_palette = []
+
+    for color in pyxel._app._palette:
+        r = (color >> 16) & 0xFF
+        g = (color >> 8) & 0xFF
+        b = color & 0xFF
+        rgb_palette.extend((r, g, b))
+
+    rgb_palette.extend(GIF_TRANSPARENCY_COLOR)
+
+    if fill:
+        rgb_palette += [0] * 237 * 3
+
+    return rgb_palette
