@@ -62,8 +62,7 @@ class EditFrame(Widget):
     def _screen_to_view(self, x, y):
         x = min(max((x - self.x - 1) // 8, 0), 15)
         y = min(max((y - self.y - 1) // 8, 0), 15)
-
-        return (x, y)
+        return x, y
 
     def __on_change_x(self, value):
         self.viewport_x = value * 8
@@ -75,7 +74,7 @@ class EditFrame(Widget):
         if key != pyxel.KEY_LEFT_BUTTON:
             return
 
-        (x, y) = self._screen_to_view(x, y)
+        x, y = self._screen_to_view(x, y)
 
         self._press_x = x
         self._press_y = y
