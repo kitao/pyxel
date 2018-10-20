@@ -26,7 +26,7 @@ class PianoRoll(Widget):
         return x, y
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON:
+        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos > -1:
             return
 
         x, y = self._screen_to_view(x, y)
@@ -49,7 +49,7 @@ class PianoRoll(Widget):
         pass
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
-        if key != pyxel.KEY_LEFT_BUTTON:
+        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos > -1:
             return
 
         x, y = self._screen_to_view(x, y)
@@ -91,7 +91,7 @@ class PianoRoll(Widget):
     def __on_update(self):
         cursor_y = self.parent.cursor_y
 
-        if cursor_y > 0:
+        if cursor_y > 0 or self.parent.play_pos > -1:
             return
 
         edit_x = self.parent.edit_x
@@ -122,9 +122,15 @@ class PianoRoll(Widget):
     def __on_draw(self):
         pyxel.rect(self.x, self.y, self.x + self.width - 1, self.y + self.height - 1, 6)
 
-        if self.parent.cursor_y == 0:
-            x = self.parent.edit_x * 4 + 31
-            pyxel.rect(x, 25, x + 2, 147, 1)
+        play_pos = self.parent.play_pos
+
+        if play_pos > -1:
+            x = play_pos * 4 + 31
+            pyxel.rect(x, 25, x + 2, 147, 2)
+        else:
+            if self.parent.cursor_y == 0:
+                x = self.parent.edit_x * 4 + 31
+                pyxel.rect(x, 25, x + 2, 147, 1)
 
         pyxel.blt(
             self.x, self.y, 3, EDITOR_IMAGE_X + 16, EDITOR_IMAGE_Y + 8, 97, 123, 6
