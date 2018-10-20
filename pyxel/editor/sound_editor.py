@@ -1,3 +1,5 @@
+import time
+
 import pyxel
 from pyxel.constants import AUDIO_SOUND_COUNT, SOUND_MAX_LENGTH
 from pyxel.ui import ImageButton, NumberPicker
@@ -12,14 +14,23 @@ from .sound_input import SoundInput
 
 
 class SoundEditor(Editor):
+    class PlayInfo:
+        is_playing = False
+        is_looping = False
+        start_time = 0
+        speed = 0
+        length = 0
+
     def __init__(self, parent):
         super().__init__(parent)
 
         self.cursor_x = 0
         self.cursor_y = 0
 
+        self._play_info = SoundEditor.PlayInfo()
+
         self._sound_picker = NumberPicker(self, 45, 17, 0, AUDIO_SOUND_COUNT - 1, 0)
-        self._speed_picker = NumberPicker(self, 105, 17, 1, 99, 0)
+        self._speed_picker = NumberPicker(self, 105, 17, 1, 99, pyxel.sound(0).speed)
 
         self._play_button = ImageButton(
             self, 185, 17, 3, EDITOR_IMAGE_X + 126, EDITOR_IMAGE_Y
@@ -40,6 +51,8 @@ class SoundEditor(Editor):
 
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
+        self._sound_picker.add_event_handler("change", self.__on_sound_change)
+        self._speed_picker.add_event_handler("change", self.__on_speed_change)
         self._play_button.add_event_handler("press", self.__on_play_press)
         self._stop_button.add_event_handler("press", self.__on_stop_press)
 
@@ -74,7 +87,59 @@ class SoundEditor(Editor):
     def edit_x(self):
         return min(self.cursor_x, self.max_edit_x)
 
+    @property
+    def play_pos(self):
+        play_info = self._play_info
+
+        if not play_info.is_playing:
+            return -1
+
+        pos = int((time.time() - play_info.start_time) * 120 / play_info.speed)
+
+        if play_info.is_looping:
+            pos = pos % play_info.length
+        elif pos >= play_info.length:
+            pos = -1
+
+        return pos
+
+    def _play(self):
+        pyxel.play(0, self._sound_picker.value)
+
+        self._play_button.is_enabled = False
+        self._loop_button.is_enabled = False
+
+        sound = pyxel.sound(self._sound_picker.value)
+
+        play_info = self._play_info
+        play_info.is_playing = True
+        play_info.is_looping = False
+        play_info.start_time = time.time()
+        play_info.speed = sound.speed
+        play_info.length = len(sound.note)
+
+    def _stop(self):
+        pyxel.stop(0)
+
+        self._play_button.is_enabled = True
+        self._loop_button.is_enabled = True
+
+        play_info = self._play_info
+        play_info.is_playing = False
+
     def __on_update(self):
+        if pyxel.btnp(pyxel.KEY_SPACE):
+            if self._play_info.is_playing:
+                self._stop_button.press()
+            else:
+                self._play_button.press()
+
+        if self._play_info.is_playing and self.play_pos < 0:
+            self._stop()
+
+        if self._play_info.is_playing:
+            return
+
         if self.cursor_x > 0 and pyxel.btnp(
             pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
         ):
@@ -95,9 +160,6 @@ class SoundEditor(Editor):
         ):
             self.cursor_y += 1
 
-        if pyxel.btnp(pyxel.KEY_SPACE):
-            self._play_button.press()
-
     def __on_draw(self):
         self.draw_frame(11, 16, 218, 157)
         pyxel.text(23, 18, "SOUND", 6)
@@ -106,8 +168,16 @@ class SoundEditor(Editor):
         pyxel.text(17, 158, "VOL", 6)
         pyxel.text(17, 166, "EFX", 6)
 
+    def __on_sound_change(self, value):
+        sound = pyxel.sound(value)
+        self._speed_picker.value = sound.speed
+
+    def __on_speed_change(self, value):
+        sound = pyxel.sound(self._sound_picker.value)
+        sound.speed = value
+
     def __on_play_press(self):
-        pyxel.play(0, self._sound_picker.value)
+        self._play()
 
     def __on_stop_press(self):
-        pyxel.stop(0)
+        self._stop()

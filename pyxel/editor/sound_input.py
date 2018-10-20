@@ -11,7 +11,6 @@ class SoundInput(Widget):
         super().__init__(parent, 30, 149, 193, 23)
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
-        self.add_event_handler("mouse_up", self.__on_mouse_up)
         self.add_event_handler("mouse_hover", self.__on_mouse_hover)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
@@ -22,15 +21,12 @@ class SoundInput(Widget):
         return x, y
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON:
+        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos > -1:
             return
 
         x, y = self._screen_to_view(x, y)
         self.parent.cursor_x = x
         self.parent.cursor_y = y + 1
-
-    def __on_mouse_up(self, key, x, y):
-        pass
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
@@ -44,7 +40,7 @@ class SoundInput(Widget):
     def __on_update(self):
         cursor_y = self.parent.cursor_y
 
-        if cursor_y < 1:
+        if cursor_y < 1 or self.parent.play_pos > -1:
             return
 
         edit_x = self.parent.edit_x
