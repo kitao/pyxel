@@ -6,9 +6,6 @@ class OctaveBar(Widget):
     def __init__(self, parent, x, y):
         super().__init__(parent, x, y, 4, 123)
 
-        self.add_event_handler("mouse_down", self.__on_update)
-        self.add_event_handler("mouse_drag", self.__on_update)
-        self.add_event_handler("mouse_hover", self.__on_update)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
 
