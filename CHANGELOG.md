@@ -7,6 +7,7 @@
 - Renamed arguments of the blt and bltm commands
 - Reduced the size of PNG and animated GIF
 - Changed the max length of the sound to 48
+- Added the system option to the sound command
 
 ## 0.8.3
 - Fixed the right click bug in the Tilemap Editor
