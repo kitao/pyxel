@@ -66,14 +66,17 @@ class Editor(Widget):
 
     def add_number_picker_help(self, number_picker):
         number_picker.dec_button.add_event_handler(
-            "mouse_hover", self.__number_picker_on_mouse_hover
+            "mouse_hover", self.__on_number_picker_dec_mouse_hover
         )
         number_picker.inc_button.add_event_handler(
-            "mouse_hover", self.__number_picker_on_mouse_hover
+            "mouse_hover", self.__on_number_picker_inc_mouse_hover
         )
 
-    def __number_picker_on_mouse_hover(self, x, y):
-        self.help_message = "x10:SHIFT+CLICK"
+    def __on_number_picker_dec_mouse_hover(self, x, y):
+        self.help_message = "-10:SHIFT+CLICK"
+
+    def __on_number_picker_inc_mouse_hover(self, x, y):
+        self.help_message = "+10:SHIFT+CLICK"
 
     def check_tool_button_shortcuts(self):
         if pyxel.btn(pyxel.KEY_CONTROL):
@@ -95,9 +98,9 @@ class Editor(Widget):
             self._tool_button.value = TOOL_BUCKET
 
     def add_tool_button_help(self, tool_button):
-        tool_button.add_event_handler("mouse_hover", self.__tool_button_on_mouse_hover)
+        tool_button.add_event_handler("mouse_hover", self.__on_tool_button_mouse_hover)
 
-    def __tool_button_on_mouse_hover(self, x, y):
+    def __on_tool_button_mouse_hover(self, x, y):
         value = self._tool_button.check_value(x, y)
 
         if value == TOOL_SELECT:
