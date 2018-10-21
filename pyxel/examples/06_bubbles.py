@@ -48,6 +48,7 @@ class App:
 
     def __init__(self):
         pyxel.init(255, 255, caption="Pyxel Bubbles")
+        pyxel.mouse(True)
 
         for i in range(0, BUBBLE_COUNT):
             new_bubble = Bubble()
