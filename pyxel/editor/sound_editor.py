@@ -28,6 +28,7 @@ class SoundEditor(Editor):
         self.cursor_y = 0
         self.octave = 2
         self._play_info = SoundEditor.PlayInfo()
+        self._history_data = None
         self._sound_picker = NumberPicker(self, 45, 17, 0, AUDIO_SOUND_COUNT - 1, 0)
         self._speed_picker = NumberPicker(self, 105, 17, 1, 99, pyxel.sound(0).speed)
         self._play_button = ImageButton(
@@ -45,6 +46,8 @@ class SoundEditor(Editor):
         self._left_octave_bar = OctaveBar(self, 12, 25)
         self._right_octave_bar = OctaveBar(self, 224, 25)
 
+        self.add_event_handler("undo", self.__on_undo)
+        self.add_event_handler("redo", self.__on_redo)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
         self._sound_picker.add_event_handler("change", self.__on_sound_picker_change)
@@ -114,6 +117,18 @@ class SoundEditor(Editor):
 
         return pos
 
+    def add_edit_history_before(self):
+        self._history_data = data = {}
+        data["sound"] = self._sound_picker.value
+        data["cursor_before"] = (self.cursor_x, self.cursor_y)
+        data["before"] = self.sound_data.copy()
+
+    def add_edit_history_after(self):
+        data = self._history_data
+        data["cursor_after"] = (self.cursor_x, self.cursor_y)
+        data["after"] = self.sound_data.copy()
+        self.add_edit_history(self._history_data)
+
     def _play(self):
         sound = pyxel.sound(self._sound_picker.value)
 
@@ -139,6 +154,16 @@ class SoundEditor(Editor):
         self._loop_button.is_enabled = True
 
         pyxel.stop(0)
+
+    def __on_undo(self, data):
+        self._sound_picker.value = data["sound"]
+        self.cursor_x, self.cursor_y = data["cursor_before"]
+        self.sound_data[:] = data["before"]
+
+    def __on_redo(self, data):
+        self._sound_picker.value = data["sound"]
+        self.cursor_x, self.cursor_y = data["cursor_after"]
+        self.sound_data[:] = data["after"]
 
     def __on_update(self):
         if pyxel.btnp(pyxel.KEY_SPACE):
