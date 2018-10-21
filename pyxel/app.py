@@ -20,8 +20,8 @@ from .constants import (
     APP_SCREEN_SCALE_CUTDOWN,
     APP_SCREEN_SCALE_MINIMUM,
     AUDIO_SOUND_COUNT,
-    GLFW_VERSION,
     GIF_TRANSPARENCY_COLOR,
+    GLFW_VERSION,
     KEY_0,
     KEY_1,
     KEY_2,
@@ -285,7 +285,7 @@ class App:
         ]
         data["tilemap"] = tilemap_list
 
-        sound_list = [pyxel.sound(i) for i in range(AUDIO_SOUND_COUNT)]
+        sound_list = [pyxel.sound(i) for i in range(AUDIO_SOUND_COUNT - 1)]
         data["sound"] = sound_list
 
         pickled_data = pickle.dumps(data)
@@ -319,7 +319,7 @@ class App:
 
         sound_list = data.get("sound")
         if sound_list:
-            for i in range(AUDIO_SOUND_COUNT):
+            for i in range(AUDIO_SOUND_COUNT - 1):
                 src = sound_list[i]
                 dest = pyxel.sound(i)
 
@@ -487,8 +487,7 @@ class App:
         for i in range(1, image_count):
             index = (start_index + i) % APP_GIF_CAPTURE_COUNT
             im = self._difference(
-                self._get_capture_image(index-1),
-                self._get_capture_image(index)
+                self._get_capture_image(index - 1), self._get_capture_image(index)
             )
             images.append(im)
 
@@ -503,7 +502,7 @@ class App:
             optimize=False,
             transparency=index,
             disposal=1,
-            palette=utilities.get_palette(fill=False)
+            palette=utilities.get_palette(fill=False),
         )
 
     def _get_color_palette_index(self, image, color):
@@ -514,10 +513,10 @@ class App:
     def _difference(self, prev, curr):
         prev = np.asarray(prev.convert("RGBA"))
         curr = np.asarray(curr.convert("RGBA"))
-        alpha = np.any(prev!=curr, axis=-1, keepdims=True)
+        alpha = np.any(prev != curr, axis=-1, keepdims=True)
         new = alpha * curr
         red, green, blue, alpha = new.T
-        trans_areas = (alpha == 0)
+        trans_areas = alpha == 0
         new[..., :-1][trans_areas.T] = GIF_TRANSPARENCY_COLOR
         return utilities.palettize_pil_image(PIL.Image.fromarray(new))
 
