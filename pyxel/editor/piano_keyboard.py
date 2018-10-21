@@ -39,12 +39,23 @@ class PianoKeyboard(Widget):
             pyxel.KEY_U,
         ]
 
+        self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_hover", self.__on_mouse_hover)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
 
+    def __on_mouse_down(self, key, x, y):
+        self.parent.cursor_y = 0
+
+    def __on_mouse_hover(self, x, y):
+        self.parent.help_message = "PIANO:ZSXDC..Q2W3E..A TONE:1"
+
     def __on_update(self):
-        if self.parent.cursor_y > 0 or self.parent.play_pos > -1:
+        if (
+            self.parent.cursor_y > 0
+            or self.parent.play_pos > -1
+            or pyxel.btn(pyxel.KEY_CONTROL)
+        ):
             return
 
         if pyxel.btnp(pyxel.KEY_1):
@@ -65,9 +76,6 @@ class PianoKeyboard(Widget):
             pyxel.play(1, 64)
         else:
             pyxel.stop(1)
-
-    def __on_mouse_hover(self, x, y):
-        self.parent.help_message = "PIANO:ZSXDC..Q2W3E..A TONE:1"
 
     def __on_draw(self):
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 8, 12, 123, 6)
