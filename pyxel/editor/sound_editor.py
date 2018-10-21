@@ -1,11 +1,11 @@
 import time
 
 import pyxel
-from pyxel.constants import AUDIO_SOUND_COUNT, SOUND_MAX_LENGTH
+from pyxel.constants import AUDIO_SOUND_COUNT
 from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, SOUND_MAX_LENGTH
 from .editor import Editor
 from .octave_bar import OctaveBar
 from .piano_keyboard import PianoKeyboard

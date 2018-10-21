@@ -1,9 +1,4 @@
-from .constants import (
-    SOUND_EFFECT_TABLE,
-    SOUND_MAX_LENGTH,
-    SOUND_NOTE_TABLE,
-    SOUND_TONE_TABLE,
-)
+from .constants import SOUND_EFFECT_TABLE, SOUND_NOTE_TABLE, SOUND_TONE_TABLE
 
 
 class Sound:
@@ -52,7 +47,7 @@ class Sound:
 
             param_list.append(param)
 
-        self.note[:] = param_list[:SOUND_MAX_LENGTH]
+        self.note[:] = param_list
 
     def set_tone(self, data):
         param_list = []
@@ -69,7 +64,7 @@ class Sound:
 
             param_list.append(param)
 
-        self.tone[:] = param_list[:SOUND_MAX_LENGTH]
+        self.tone[:] = param_list
 
     def set_volume(self, data):
         param_list = []
@@ -86,7 +81,7 @@ class Sound:
 
             param_list.append(param)
 
-        self.volume[:] = param_list[:SOUND_MAX_LENGTH]
+        self.volume[:] = param_list
 
     def set_effect(self, data):
         param_list = []
@@ -103,4 +98,4 @@ class Sound:
 
             param_list.append(param)
 
-        self.effect[:] = param_list[:SOUND_MAX_LENGTH]
+        self.effect[:] = param_list
