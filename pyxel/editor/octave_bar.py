@@ -16,5 +16,5 @@ class OctaveBar(Widget):
         pyxel.rect(self.x, self.y, self.x + self.width - 1, self.y + self.height - 1, 6)
 
         x = self.x + 1
-        y = self.y + 1
+        y = self.y + 1 + (3 - self.parent.octave) * 24
         pyxel.rect(x, y, x + 1, y + 46, 13)
