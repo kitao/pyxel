@@ -48,24 +48,32 @@ class SoundInput(Widget):
 
         if pyxel.btnp(pyxel.KEY_BACKSPACE, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             if edit_x > 0:
+                self.parent.add_edit_history_before()
                 del data[edit_x - 1]
                 self.parent.cursor_x = edit_x - 1
+                self.parent.add_edit_history_after()
             return
 
         if pyxel.btnp(pyxel.KEY_DELETE, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             if edit_x < len(data):
+                self.parent.add_edit_history_before()
                 del data[edit_x]
+                self.parent.add_edit_history_after()
             return
 
         if pyxel.btnp(
             pyxel.KEY_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
         ) or pyxel.btnp(pyxel.KEY_KP_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            self.parent.add_edit_history_before()
+
             data.insert(edit_x, 0)
             data[:] = data[:SOUND_MAX_LENGTH]
 
             self.parent.cursor_x = edit_x
             if edit_x < SOUND_MAX_LENGTH - 1:
                 self.parent.cursor_x += 1
+
+            self.parent.add_edit_history_after()
             return
 
         value = None
@@ -103,6 +111,8 @@ class SoundInput(Widget):
         edit_x = self.parent.edit_x
         data = self.parent.sound_data
 
+        self.parent.add_edit_history_before()
+
         if edit_x >= len(data):
             data.append(value)
         else:
@@ -111,6 +121,8 @@ class SoundInput(Widget):
         self.parent.cursor_x = edit_x
         if edit_x < SOUND_MAX_LENGTH - 1:
             self.parent.cursor_x += 1
+
+        self.parent.add_edit_history_after()
 
     def __on_draw(self):
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 132, 97, 23)
