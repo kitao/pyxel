@@ -31,11 +31,11 @@ class SoundInput(Widget):
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
         if y == 0:
-            self.parent.help_message = "TONE:T/S/P/N EDIT:ENTER/BS/DEL"
+            self.parent.help_message = "TONE:1-4 EDIT:ENTER/BS/DEL"
         elif y == 1:
             self.parent.help_message = "VOLUME:0-7 EDIT:ENTER/BS/DEL"
         elif y == 2:
-            self.parent.help_message = "EFFECT:N/S/V/F EDIT:ENTER/BS/DEL"
+            self.parent.help_message = "EFFECT:1-4 EDIT:ENTER/BS/DEL"
 
     def __on_update(self):
         cursor_y = self.parent.cursor_y
@@ -70,14 +70,14 @@ class SoundInput(Widget):
 
         value = None
         if cursor_y == 1:
-            if pyxel.btnp(pyxel.KEY_T, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-                value = 0
-            elif pyxel.btnp(pyxel.KEY_S, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-                value = 1
-            elif pyxel.btnp(pyxel.KEY_P, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-                value = 2
-            elif pyxel.btnp(pyxel.KEY_N, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-                value = 3
+            for i in range(4):
+                if pyxel.btnp(
+                    pyxel.KEY_1 + i, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+                ) or pyxel.btnp(
+                    pyxel.KEY_KP_1 + i, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+                ):
+                    value = i
+                    break
         elif cursor_y == 2:
             for i in range(8):
                 if pyxel.btnp(
@@ -88,14 +88,14 @@ class SoundInput(Widget):
                     value = i
                     break
         elif cursor_y == 3:
-            if pyxel.btnp(pyxel.KEY_N, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-                value = 0
-            elif pyxel.btnp(pyxel.KEY_S, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-                value = 1
-            elif pyxel.btnp(pyxel.KEY_V, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-                value = 2
-            elif pyxel.btnp(pyxel.KEY_F, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-                value = 3
+            for i in range(4):
+                if pyxel.btnp(
+                    pyxel.KEY_1 + i, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+                ) or pyxel.btnp(
+                    pyxel.KEY_KP_1 + i, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+                ):
+                    value = i
+                    break
 
         if value is None:
             return
