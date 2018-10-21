@@ -26,7 +26,9 @@ class NumberPicker(Widget):
 
         self.add_event_handler("draw", self.__on_draw)
         self.dec_button.add_event_handler("press", self.__on_dec_button_press)
+        self.dec_button.add_event_handler("repeat", self.__on_dec_button_press)
         self.inc_button.add_event_handler("press", self.__on_inc_button_press)
+        self.inc_button.add_event_handler("repeat", self.__on_inc_button_press)
 
         self.value = value
 
