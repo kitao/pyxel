@@ -8,6 +8,7 @@
 - Reduced the size of PNG and animated GIF
 - Changed the max length of the sound to 48
 - Added the system option to the sound command
+- Refined the help message of the Pyxel Editor
 
 ## 0.8.3
 - Fixed the right click bug in the Tilemap Editor

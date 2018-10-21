@@ -8,37 +8,28 @@ class ImageFrame(Widget):
         super().__init__(parent, 157, y, 66, height)
 
         self._is_tilemap_mode = is_tilemap_mode
-
         self.viewport_x = 0
         self.viewport_y = 0
-
         self.select_x = 0
         self.select_y = 0
-
         self._drag_offset_x = 0
         self._drag_offset_y = 0
-
         self._h_scroll_bar = ScrollBar(
             self, 157, 145, 66, ScrollBar.HORIZONTAL, 32, 8, 0
         )
-        self._h_scroll_bar.add_event_handler("change", self.__on_change_x)
-
-        if is_tilemap_mode:
-            self._v_scroll_bar = ScrollBar(
-                self, 222, 80, 66, ScrollBar.VERTICAL, 32, 8, 0
-            )
-        else:
-            self._v_scroll_bar = ScrollBar(
-                self, 222, 16, 130, ScrollBar.VERTICAL, 32, 16, 0
-            )
-
-        self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
+        self._v_scroll_bar = (
+            ScrollBar(self, 222, 80, 66, ScrollBar.VERTICAL, 32, 8, 0)
+            if is_tilemap_mode
+            else ScrollBar(self, 222, 16, 130, ScrollBar.VERTICAL, 32, 16, 0)
+        )
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_drag", self.__on_mouse_drag)
         self.add_event_handler("mouse_hover", self.__on_mouse_hover)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
+        self._h_scroll_bar.add_event_handler("change", self.__on_h_scroll_bar_change)
+        self._v_scroll_bar.add_event_handler("change", self.__on_v_scroll_bar_change)
 
     def _screen_to_view(self, x, y):
         x -= self.x + 1
@@ -52,12 +43,6 @@ class ImageFrame(Widget):
             y = self.viewport_y + min(max((y - 4) // 8, 0), 14) * 8
 
         return x, y
-
-    def __on_change_x(self, value):
-        self.viewport_x = value * 8
-
-    def __on_change_y(self, value):
-        self.viewport_y = value * 8
 
     def __on_mouse_down(self, key, x, y):
         if key == pyxel.KEY_LEFT_BUTTON:
@@ -95,7 +80,7 @@ class ImageFrame(Widget):
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
-        s = "" if self._is_tilemap_mode else "MOVE:ARROW"
+        s = "VIEW:R-DRAG" if self._is_tilemap_mode else "TARGET:CURSOR VIEW:R-DRAG"
         self.parent.help_message = s + " ({},{})".format(x, y)
 
     def __on_update(self):
@@ -136,3 +121,9 @@ class ImageFrame(Widget):
             pyxel.rectb(x - 2, y - 2, x + 19, y + 19, 0)
 
         pyxel.clip()
+
+    def __on_h_scroll_bar_change(self, value):
+        self.viewport_x = value * 8
+
+    def __on_v_scroll_bar_change(self, value):
+        self.viewport_y = value * 8

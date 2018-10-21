@@ -33,7 +33,7 @@ class TilemapFrame(Widget):
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
-        self.parent.help_message = "MOVE:ARROW ({},{})".format(x, y)
+        self.parent.help_message = "TARGET:CURSOR ({},{})".format(x, y)
 
     def __on_draw(self):
         self.draw_frame(self.x, self.y, self.width, self.height)
