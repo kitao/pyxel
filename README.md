@@ -314,8 +314,8 @@ Draw a string `s` of color `col` at (`x`, `y`)
 
 ### Audio
 
-- `sound(snd)`  
-Operate the sound bank `snd`(0-63) (see the Sound class)
+- `sound(snd, [system])`  
+Operate the sound bank `snd`(0-63) (see the Sound class). If `system` is `True`, the sound bank 64 for system can be accessed  
 e.g. `pyxel.sound(0).speed = 60`
 
 - `play(ch, snd, loop=False)`  
