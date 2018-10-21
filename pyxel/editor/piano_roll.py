@@ -86,7 +86,7 @@ class PianoRoll(Widget):
                 data[x1 + i] = value
 
     def __on_mouse_hover(self, x, y):
-        self.parent.help_message = "EDIT:BS/DEL/ENTER"
+        self.parent.help_message = "NOTE:PIANO+ENTER EDIT:ENTER/BS/DEL"
 
     def __on_update(self):
         cursor_y = self.parent.cursor_y
@@ -111,12 +111,19 @@ class PianoRoll(Widget):
         if pyxel.btnp(
             pyxel.KEY_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
         ) or pyxel.btnp(pyxel.KEY_KP_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            data.insert(edit_x, -1)
-            data[:] = data[:SOUND_MAX_LENGTH]
+            note = self.parent.keyboard_note
+            if note is None:
+                data.insert(edit_x, -1)
+                data[:] = data[:SOUND_MAX_LENGTH]
+            elif edit_x >= len(data):
+                data.append(note)
+            else:
+                data[edit_x] = note
 
             self.parent.cursor_x = edit_x
             if edit_x < SOUND_MAX_LENGTH - 1:
                 self.parent.cursor_x += 1
+
             return
 
     def __on_draw(self):
