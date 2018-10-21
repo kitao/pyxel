@@ -36,4 +36,9 @@ class MusicEditor(Editor):
                 12 + i * 59, 39, 3, EDITOR_IMAGE_X + 120, EDITOR_IMAGE_Y + 8, 39, 127
             )
 
+        # for i in range(4):
+        # pyxel.text(
+        #    50, 20 + i * 8, "01 02 03 04 05 06 07 08 09 10 11 12 13 14 15", 7
+        # )
+
         self.draw_not_implemented_message()
