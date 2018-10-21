@@ -2,7 +2,7 @@ import time
 
 import pyxel
 from pyxel.constants import AUDIO_SOUND_COUNT, SOUND_MAX_LENGTH
-from pyxel.ui import ImageButton, NumberPicker
+from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
@@ -36,7 +36,7 @@ class SoundEditor(Editor):
         self._stop_button = ImageButton(
             self, 195, 17, 3, EDITOR_IMAGE_X + 135, EDITOR_IMAGE_Y, is_enabled=False
         )
-        self._loop_button = ImageButton(
+        self._loop_button = ImageToggleButton(
             self, 205, 17, 3, EDITOR_IMAGE_X + 144, EDITOR_IMAGE_Y
         )
         self._piano_keyboard = PianoKeyboard(self)
@@ -115,30 +115,30 @@ class SoundEditor(Editor):
         return pos
 
     def _play(self):
-        pyxel.play(0, self._sound_picker.value)
+        sound = pyxel.sound(self._sound_picker.value)
+
+        play_info = self._play_info
+        play_info.is_playing = True
+        play_info.is_looping = self._loop_button.value
+        play_info.start_time = time.time()
+        play_info.speed = sound.speed
+        play_info.length = len(sound.note)
 
         self._play_button.is_enabled = False
         self._stop_button.is_enabled = True
         self._loop_button.is_enabled = False
 
-        sound = pyxel.sound(self._sound_picker.value)
-
-        play_info = self._play_info
-        play_info.is_playing = True
-        play_info.is_looping = False
-        play_info.start_time = time.time()
-        play_info.speed = sound.speed
-        play_info.length = len(sound.note)
+        pyxel.play(0, self._sound_picker.value, loop=play_info.is_looping)
 
     def _stop(self):
-        pyxel.stop(0)
+        play_info = self._play_info
+        play_info.is_playing = False
 
         self._play_button.is_enabled = True
         self._stop_button.is_enabled = False
         self._loop_button.is_enabled = True
 
-        play_info = self._play_info
-        play_info.is_playing = False
+        pyxel.stop(0)
 
     def __on_update(self):
         if pyxel.btnp(pyxel.KEY_SPACE):
@@ -152,6 +152,12 @@ class SoundEditor(Editor):
 
         if self._play_info.is_playing and self.play_pos < 0:
             self._stop()
+
+        if pyxel.btnp(pyxel.KEY_PAGE_UP):
+            self.octave = min(self.octave + 1, 3)
+
+        if pyxel.btnp(pyxel.KEY_PAGE_DOWN):
+            self.octave = max(self.octave - 1, 0)
 
         if self._play_info.is_playing:
             return
