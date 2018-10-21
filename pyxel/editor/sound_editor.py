@@ -26,7 +26,7 @@ class SoundEditor(Editor):
 
         self.cursor_x = 0
         self.cursor_y = 0
-
+        self.octave = 2
         self._play_info = SoundEditor.PlayInfo()
 
         self._sound_picker = NumberPicker(self, 45, 17, 0, AUDIO_SOUND_COUNT - 1, 0)
@@ -36,7 +36,7 @@ class SoundEditor(Editor):
             self, 185, 17, 3, EDITOR_IMAGE_X + 126, EDITOR_IMAGE_Y
         )
         self._stop_button = ImageButton(
-            self, 195, 17, 3, EDITOR_IMAGE_X + 135, EDITOR_IMAGE_Y
+            self, 195, 17, 3, EDITOR_IMAGE_X + 135, EDITOR_IMAGE_Y, is_enabled=False
         )
         self._loop_button = ImageButton(
             self, 205, 17, 3, EDITOR_IMAGE_X + 144, EDITOR_IMAGE_Y
@@ -88,6 +88,10 @@ class SoundEditor(Editor):
         return min(self.cursor_x, self.max_edit_x)
 
     @property
+    def keyboard_note(self):
+        return self._piano_keyboard.note
+
+    @property
     def play_pos(self):
         play_info = self._play_info
 
@@ -107,6 +111,7 @@ class SoundEditor(Editor):
         pyxel.play(0, self._sound_picker.value)
 
         self._play_button.is_enabled = False
+        self._stop_button.is_enabled = True
         self._loop_button.is_enabled = False
 
         sound = pyxel.sound(self._sound_picker.value)
@@ -122,6 +127,7 @@ class SoundEditor(Editor):
         pyxel.stop(0)
 
         self._play_button.is_enabled = True
+        self._stop_button.is_enabled = False
         self._loop_button.is_enabled = True
 
         play_info = self._play_info

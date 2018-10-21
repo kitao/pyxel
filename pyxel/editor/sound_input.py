@@ -31,11 +31,11 @@ class SoundInput(Widget):
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
         if y == 0:
-            self.parent.help_message = "TONE:T/S/P/N EDIT:BS/DEL/ENTER"
+            self.parent.help_message = "TONE:T/S/P/N EDIT:ENTER/BS/DEL"
         elif y == 1:
-            self.parent.help_message = "VOLUME:0-7 EDIT:BS/DEL/ENTER"
+            self.parent.help_message = "VOLUME:0-7 EDIT:ENTER/BS/DEL"
         elif y == 2:
-            self.parent.help_message = "EFFECT:N/S/V/F EDIT:BS/DEL/ENTER"
+            self.parent.help_message = "EFFECT:N/S/V/F EDIT:ENTER/BS/DEL"
 
     def __on_update(self):
         cursor_y = self.parent.cursor_y
@@ -118,7 +118,7 @@ class SoundInput(Widget):
 
         sound = pyxel.sound(self.parent.sound)
         cursor_x = self.parent.cursor_x
-        cursor_y = self.parent.cursor_y
+        cursor_y = self.parent.cursor_y if self.parent.play_pos < 0 else 0
 
         if cursor_y > 0:
             x = self.parent.edit_x * 4 + 31
