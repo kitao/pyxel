@@ -1,9 +1,8 @@
 import pyxel
-from pyxel.constants import SOUND_MAX_LENGTH
 from pyxel.ui import Widget
 from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, SOUND_MAX_LENGTH
 
 
 class SoundInput(Widget):

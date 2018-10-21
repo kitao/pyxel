@@ -3,6 +3,7 @@
 ## 0.8.5
 - Implemented the undo function of the sound editor
 - Changed the click tolerance time
+- Removed the length limitation of the sound
 
 ## 0.8.4
 - Changed to follow the mouse position outside the window
