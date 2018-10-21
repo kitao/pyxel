@@ -19,37 +19,26 @@ class EditFrame(Widget):
         super().__init__(parent, 11, 16, 130, 130)
 
         self._is_tilemap_mode = is_tilemap_mode
-
         self.viewport_x = 0
         self.viewport_y = 0
-
         self._press_x = 0
         self._press_y = 0
-
         self._last_x = 0
         self._last_y = 0
-
         self._drag_offset_x = 0
         self._drag_offset_y = 0
-
         self._select_x1 = 0
         self._select_y1 = 0
         self._select_x2 = 0
         self._select_y2 = 0
         self._copy_buffer = None
-
         self._is_dragged = False
         self._is_assist_mode = False
-
         self._overlay_canvas = OverlayCanvas()
-
         self._h_scroll_bar = ScrollBar(
             self, 11, 145, 130, ScrollBar.HORIZONTAL, 32, 2, 0
         )
-        self._h_scroll_bar.add_event_handler("change", self.__on_change_x)
-
         self._v_scroll_bar = ScrollBar(self, 140, 16, 130, ScrollBar.VERTICAL, 32, 2, 0)
-        self._v_scroll_bar.add_event_handler("change", self.__on_change_y)
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_up", self.__on_mouse_up)
@@ -58,17 +47,13 @@ class EditFrame(Widget):
         self.add_event_handler("mouse_hover", self.__on_mouse_hover)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
+        self._h_scroll_bar.add_event_handler("change", self.__on_h_scroll_bar_change)
+        self._v_scroll_bar.add_event_handler("change", self.__on_v_scroll_bar_change)
 
     def _screen_to_view(self, x, y):
         x = min(max((x - self.x - 1) // 8, 0), 15)
         y = min(max((y - self.y - 1) // 8, 0), 15)
         return x, y
-
-    def __on_change_x(self, value):
-        self.viewport_x = value * 8
-
-    def __on_change_y(self, value):
-        self.viewport_y = value * 8
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:
@@ -246,7 +231,7 @@ class EditFrame(Widget):
         elif self._is_dragged:
             s = "ASSIST:SHIFT"
         else:
-            s = "MOVE:ARROW"
+            s = "PICK:R-CLICK VIEW:R-DRAG"
 
         x, y = self._screen_to_view(x, y)
         x += self.viewport_x
@@ -386,3 +371,9 @@ class EditFrame(Widget):
             pyxel.rectb(x1, y1, x2, y2, 0)
             pyxel.rectb(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 15)
             pyxel.rectb(x1 + 2, y1 + 2, x2 - 2, y2 - 2, 0)
+
+    def __on_h_scroll_bar_change(self, value):
+        self.viewport_x = value * 8
+
+    def __on_v_scroll_bar_change(self, value):
+        self.viewport_y = value * 8

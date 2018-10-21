@@ -59,20 +59,20 @@ class App(Widget):
         )
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
-        self._undo_button.add_event_handler("press", self.__on_undo_press)
-        self._redo_button.add_event_handler("press", self.__on_redo_press)
-        self._save_button.add_event_handler("press", self.__on_save_press)
+        self._undo_button.add_event_handler("press", self.__on_undo_button_press)
+        self._redo_button.add_event_handler("press", self.__on_redo_button_press)
+        self._save_button.add_event_handler("press", self.__on_save_button_press)
         self._editor_button.add_event_handler(
-            "mouse_hover", self.__editor_button_on_mouse_hover
+            "mouse_hover", self.__on_editor_button_mouse_hover
         )
         self._undo_button.add_event_handler(
-            "mouse_hover", self.__undo_button_on_mouse_hover
+            "mouse_hover", self.__on_undo_button_mouse_hover
         )
         self._redo_button.add_event_handler(
-            "mouse_hover", self.__redo_button_on_mouse_hover
+            "mouse_hover", self.__on_redo_button_mouse_hover
         )
         self._save_button.add_event_handler(
-            "mouse_hover", self.__save_button_on_mouse_hover
+            "mouse_hover", self.__on_save_button_mouse_hover
         )
 
         self.set_editor(0)
@@ -124,23 +124,23 @@ class App(Widget):
         pyxel.text(93, 2, self.help_message, 13)
         self.help_message = ""
 
-    def __on_undo_press(self):
+    def __on_undo_button_press(self):
         self._editor_list[self._editor_button.value].undo()
 
-    def __on_redo_press(self):
+    def __on_redo_button_press(self):
         self._editor_list[self._editor_button.value].redo()
 
-    def __on_save_press(self):
+    def __on_save_button_press(self):
         pyxel.save(self._resource_file)
 
-    def __editor_button_on_mouse_hover(self, x, y):
-        self.help_message = "SWITCH:ALT+LEFT/RIGHT"
+    def __on_editor_button_mouse_hover(self, x, y):
+        self.help_message = "EDITOR:ALT+LEFT/RIGHT"
 
-    def __undo_button_on_mouse_hover(self, x, y):
+    def __on_undo_button_mouse_hover(self, x, y):
         self.help_message = "UNDO:CTRL+Z"
 
-    def __redo_button_on_mouse_hover(self, x, y):
+    def __on_redo_button_mouse_hover(self, x, y):
         self.help_message = "REDO:CTRL+Y"
 
-    def __save_button_on_mouse_hover(self, x, y):
+    def __on_save_button_mouse_hover(self, x, y):
         self.help_message = "SAVE:CTRL+S"
