@@ -159,7 +159,10 @@ class AudioPlayer:
     def output_stream(self):
         return self._output_stream
 
-    def sound(self, snd):
+    def sound(self, snd, *, system=False):
+        if not system and snd == AUDIO_SOUND_COUNT - 1:
+            raise ValueError("sound bank {} is reserved for system".format(snd))
+
         return self._sound_list[snd]
 
     def play(self, ch, snd, *, loop=False):
