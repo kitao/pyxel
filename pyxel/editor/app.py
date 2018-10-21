@@ -60,7 +60,9 @@ class App(Widget):
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
         self._undo_button.add_event_handler("press", self.__on_undo_button_press)
+        self._undo_button.add_event_handler("repeat", self.__on_undo_button_press)
         self._redo_button.add_event_handler("press", self.__on_redo_button_press)
+        self._redo_button.add_event_handler("repeat", self.__on_redo_button_press)
         self._save_button.add_event_handler("press", self.__on_save_button_press)
         self._editor_button.add_event_handler(
             "mouse_hover", self.__on_editor_button_mouse_hover
