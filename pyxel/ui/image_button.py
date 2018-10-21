@@ -21,13 +21,13 @@ class ImageButton(Button):
         self.add_event_handler("draw", self.__on_draw)
 
     def __on_draw(self):
-        color = (
+        col = (
             BUTTON_PRESSED_COLOR
             if self.is_pressed
             else (BUTTON_ENABLED_COLOR if self.is_enabled else BUTTON_DISABLED_COLOR)
         )
 
-        pyxel.pal(BUTTON_ENABLED_COLOR, color)
+        pyxel.pal(BUTTON_ENABLED_COLOR, col)
         pyxel.blt(
             self.x, self.y, self._img, self._sx, self._sy, self.width, self.height, 0
         )
