@@ -40,7 +40,6 @@ class App(Widget):
             SoundEditor(self),
             MusicEditor(self),
         ]
-        self._edit_count = 0
         self._editor_button = RadioButton(
             self, 1, 1, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y, 4, 0
         )
@@ -51,7 +50,7 @@ class App(Widget):
             self, 57, 1, 3, EDITOR_IMAGE_X + 45, EDITOR_IMAGE_Y
         )
         self._save_button = ImageButton(
-            self, 75, 1, 3, EDITOR_IMAGE_X + 54, EDITOR_IMAGE_Y, is_enabled=False
+            self, 75, 1, 3, EDITOR_IMAGE_X + 54, EDITOR_IMAGE_Y
         )
         self.help_message = ""
 
@@ -87,15 +86,6 @@ class App(Widget):
 
         pyxel.run(self.update_widgets, self.draw_widgets)
 
-    @property
-    def edit_count(self):
-        return self._edit_count
-
-    @edit_count.setter
-    def edit_count(self, value):
-        self._edit_count = value
-        self._save_button.is_enabled = self._edit_count > 0
-
     def set_editor(self, editor):
         self._editor_button.value = editor
 
@@ -117,7 +107,7 @@ class App(Widget):
         self._redo_button.is_enabled = editor.can_redo
 
         if pyxel.btn(pyxel.KEY_CONTROL):
-            if self._save_button.is_enabled and pyxel.btnp(pyxel.KEY_S):
+            if pyxel.btnp(pyxel.KEY_S):
                 self._save_button.press()
 
             if editor.can_undo and pyxel.btnp(pyxel.KEY_Z):

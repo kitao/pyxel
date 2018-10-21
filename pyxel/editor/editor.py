@@ -49,7 +49,6 @@ class Editor(Widget):
         self.call_event_handler(
             "undo", self._edit_history_list[self._edit_history_index]
         )
-        self.parent.edit_count -= 1
 
     def redo(self):
         if not self.can_redo:
@@ -59,13 +58,11 @@ class Editor(Widget):
             "redo", self._edit_history_list[self._edit_history_index]
         )
         self._edit_history_index += 1
-        self.parent.edit_count += 1
 
     def add_edit_history(self, data):
         self._edit_history_list = self._edit_history_list[: self._edit_history_index]
         self._edit_history_list.append(data)
         self._edit_history_index += 1
-        self.parent.edit_count += 1
 
     def add_number_picker_help(self, number_picker):
         number_picker.dec_button.add_event_handler(
