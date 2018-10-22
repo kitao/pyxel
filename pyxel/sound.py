@@ -3,11 +3,27 @@ from .constants import SOUND_EFFECT_TABLE, SOUND_NOTE_TABLE, SOUND_TONE_TABLE
 
 class Sound:
     def __init__(self):
-        self.note = []
-        self.tone = []
-        self.volume = []
-        self.effect = []
+        self._note = []
+        self._tone = []
+        self._volume = []
+        self._effect = []
         self.speed = 1
+
+    @property
+    def note(self):
+        return self._note
+
+    @property
+    def tone(self):
+        return self._tone
+
+    @property
+    def volume(self):
+        return self._volume
+
+    @property
+    def effect(self):
+        return self._effect
 
     def set(self, note, tone, volume, effect, speed):
         self.set_note(note)
@@ -47,7 +63,7 @@ class Sound:
 
             param_list.append(param)
 
-        self.note[:] = param_list
+        self._note[:] = param_list
 
     def set_tone(self, data):
         param_list = []
@@ -64,7 +80,7 @@ class Sound:
 
             param_list.append(param)
 
-        self.tone[:] = param_list
+        self._tone[:] = param_list
 
     def set_volume(self, data):
         param_list = []
@@ -81,7 +97,7 @@ class Sound:
 
             param_list.append(param)
 
-        self.volume[:] = param_list
+        self._volume[:] = param_list
 
     def set_effect(self, data):
         param_list = []
@@ -98,4 +114,4 @@ class Sound:
 
             param_list.append(param)
 
-        self.effect[:] = param_list
+        self._effect[:] = param_list
