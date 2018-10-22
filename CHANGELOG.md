@@ -4,6 +4,8 @@
 - Implemented the undo function of the sound editor
 - Changed the click tolerance time
 - Removed the length limitation of the sound
+- Added the music and playm commands
+- Changed the example #2 to use the music and playm commands
 
 ## 0.8.4
 - Changed to follow the mouse position outside the window
