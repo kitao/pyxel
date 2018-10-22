@@ -33,7 +33,8 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 - Fixed 16 color palette
 - 256x256 sized 3 image banks
 - 256x256 sized 8 tilemaps
-- 4 channels with 64 definable sound banks
+- 4 channels with 64 definable sounds
+- 8 musics which can combine arbitrary sounds
 - Keyboard, mouse, and joystick(WIP) inputs
 - Image and sound editor
 
@@ -315,14 +316,20 @@ Draw a string `s` of color `col` at (`x`, `y`)
 ### Audio
 
 - `sound(snd, [system])`  
-Operate the sound bank `snd`(0-63) (see the Sound class). If `system` is `True`, the sound bank 64 for system can be accessed  
+Operate the sound `snd`(0-63) (see the Sound class). If `system` is `True`, the sound 64 for system can be accessed  
 e.g. `pyxel.sound(0).speed = 60`
 
-- `play(ch, snd, loop=False)`  
-Play the sound bank `snd`(0-63) on channel `ch`(0-3). Play in order when `snd` is a list
+- `music(msc)`  
+Operate the music `msc`(0-7) (see the Music class)
 
-- `stop(ch)`  
-Stop playback of channel `ch`(0-3)
+- `play(ch, snd, loop=False)`  
+Play the sound `snd`(0-63) on channel `ch`(0-3). Play in order when `snd` is a list
+
+- `playm(msc, loop=False)`  
+Play the music `msc`(0-7)
+
+- `stop([ch])`  
+Stop playback of all channels. If `ch`(0-3) is specified, stop the corresponding channel only
 
 ### Image Class
 
@@ -401,7 +408,21 @@ e.g. `pyxel.sound(0).set_effect('NFNF NVVS')`
 
 ### Music Class
 
-- WIP
+- `ch0`  
+List of sound(0-63) play on channel 0
+
+- `ch1`  
+List of sound(0-63) play on channel 1
+
+- `ch2`  
+List of sound(0-63) play on channel 2
+
+- `ch3`  
+List of sound(0-63) play on channel 3
+
+- `set(ch0, ch1, ch2, ch3)`  
+Set the sound list of all channels  
+e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 ## Other Information
 
