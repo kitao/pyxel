@@ -3,6 +3,7 @@ import sounddevice as sd
 from .constants import (
     AUDIO_BLOCK_SIZE,
     AUDIO_CHANNEL_COUNT,
+    AUDIO_MUSIC_COUNT,
     AUDIO_ONE_SPEED,
     AUDIO_ONE_VOLUME,
     AUDIO_SAMPLE_RATE,
@@ -11,6 +12,7 @@ from .constants import (
     SOUND_EFFECT_SLIDE,
     SOUND_EFFECT_VIBRATO,
 )
+from .music import Music
 from .oscillator import Oscillator
 from .sound import Sound
 
@@ -154,6 +156,7 @@ class AudioPlayer:
 
         self._channel_list = [Channel() for _ in range(AUDIO_CHANNEL_COUNT)]
         self._sound_list = [Sound() for _ in range(AUDIO_SOUND_COUNT)]
+        self._music_list = [Music() for _ in range(AUDIO_MUSIC_COUNT)]
 
     @property
     def output_stream(self):
@@ -165,6 +168,9 @@ class AudioPlayer:
 
         return self._sound_list[snd]
 
+    def music(self, msc):
+        return self._music_list[msc]
+
     def play(self, ch, snd, *, loop=False):
         if isinstance(snd, list):
             sound_list = [self._sound_list[s] for s in snd]
@@ -173,8 +179,27 @@ class AudioPlayer:
 
         self._channel_list[ch].play(sound_list, loop)
 
-    def stop(self, ch):
-        self._channel_list[ch].stop()
+    def playm(self, msc, *, loop=False):
+        music = self._music_list[msc]
+
+        if music.ch0:
+            self.play(0, music.ch0, loop=loop)
+
+        if music.ch1:
+            self.play(1, music.ch1, loop=loop)
+
+        if music.ch2:
+            self.play(2, music.ch2, loop=loop)
+
+        if music.ch3:
+            self.play(3, music.ch3, loop=loop)
+
+    def stop(self, ch=None):
+        if ch is None:
+            for i in range(AUDIO_CHANNEL_COUNT):
+                self._channel_list[i].stop()
+        else:
+            self._channel_list[ch].stop()
 
     def _output_stream_callback(self, outdata, frames, time, status):
         for i in range(frames):

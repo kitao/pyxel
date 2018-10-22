@@ -19,6 +19,7 @@ from .constants import (
     APP_SCREEN_MAX_SIZE,
     APP_SCREEN_SCALE_CUTDOWN,
     APP_SCREEN_SCALE_MINIMUM,
+    AUDIO_MUSIC_COUNT,
     AUDIO_SOUND_COUNT,
     GIF_TRANSPARENCY_COLOR,
     GLFW_VERSION,
@@ -191,8 +192,9 @@ class App:
         pyxel.bltm = self._renderer.draw_command.bltm
         pyxel.text = self._renderer.draw_command.text
         pyxel.sound = self._audio_player.sound
+        pyxel.music = self._audio_player.music
         pyxel.play = self._audio_player.play
-        pyxel.playm = None  # self._audio_player.playm
+        pyxel.playm = self._audio_player.playm
         pyxel.stop = self._audio_player.stop
 
         # initialize mouse cursor
@@ -288,6 +290,9 @@ class App:
         sound_list = [pyxel.sound(i) for i in range(AUDIO_SOUND_COUNT - 1)]
         data["sound"] = sound_list
 
+        music_list = [pyxel.music(i) for i in range(AUDIO_MUSIC_COUNT - 1)]
+        data["music"] = music_list
+
         pickled_data = pickle.dumps(data)
 
         dirname = os.path.dirname(inspect.stack()[-1].filename)
@@ -323,11 +328,22 @@ class App:
                 src = sound_list[i]
                 dest = pyxel.sound(i)
 
-                dest.note = src.note
-                dest.tone = src.tone
-                dest.volume = src.volume
-                dest.effect = src.effect
+                dest.note[:] = src.note
+                dest.tone[:] = src.tone
+                dest.volume[:] = src.volume
+                dest.effect[:] = src.effect
                 dest.speed = src.speed
+
+        music_list = data.get("music")
+        if music_list:
+            for i in range(AUDIO_MUSIC_COUNT - 1):
+                src = music_list[i]
+                dest = pyxel.music(i)
+
+                dest.ch0[:] = src.ch0
+                dest.ch1[:] = src.ch1
+                dest.ch2[:] = src.ch2
+                dest.ch3[:] = src.ch3
 
     def _key_callback(self, window, key, scancode, action, mods):
         if action == glfw.PRESS:
