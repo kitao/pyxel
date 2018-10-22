@@ -28,17 +28,12 @@ class MusicEditor(Editor):
         pyxel.text(23, 18, "MUSIC", 6)
 
         for i in range(4):
-            x = i * 59 + 11
-            self.draw_frame(x, 30, 41, 143)
-            pyxel.text(x + 15, 32, "CH{}".format(i), 6)
-
+            self.draw_frame(11, 29 + i * 25, 218, 21)
             pyxel.blt(
-                12 + i * 59, 39, 3, EDITOR_IMAGE_X + 120, EDITOR_IMAGE_Y + 8, 39, 127
+                32, 30 + i * 25, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 102, 190, 19, 6
             )
+            pyxel.text(16, 37 + i * 25, "CH{}".format(i), 6)
 
-        # for i in range(4):
-        # pyxel.text(
-        #    50, 20 + i * 8, "01 02 03 04 05 06 07 08 09 10 11 12 13 14 15", 7
-        # )
+        self.draw_frame(11, 129, 218, 44)
 
-        self.draw_not_implemented_message()
+        pyxel.blt(17, 134, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 121, 206, 34, 6)
