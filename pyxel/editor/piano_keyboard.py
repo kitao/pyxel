@@ -78,7 +78,7 @@ class PianoKeyboard(Widget):
             pyxel.stop(1)
 
     def __on_draw(self):
-        pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 8, 12, 123, 6)
+        pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X + 208, EDITOR_IMAGE_Y, 12, 123, 6)
 
         play_pos = self.parent.play_pos
 
