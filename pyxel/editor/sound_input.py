@@ -124,8 +124,7 @@ class SoundInput(Widget):
         self.parent.add_edit_history_after()
 
     def __on_draw(self):
-        pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 132, 97, 23)
-        pyxel.blt(self.x + 97, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 132, -96, 23)
+        pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 79, 193, 23)
 
         sound = pyxel.sound(self.parent.sound)
         cursor_x = self.parent.cursor_x
