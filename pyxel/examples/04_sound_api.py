@@ -112,7 +112,7 @@ class App:
         pyxel.text(16, 44, "effect:[N]one [S]lide [V]ibrato [F]adeOut", 9)
 
         pyxel.text(6, 62, "play(ch,snd,loop=False)", 7)
-        pyxel.text(6, 76, "stop(ch)", 7)
+        pyxel.text(6, 76, "stop([ch])", 7)
 
         pyxel.rectb(6, 97, 193, 143, 14)
         pyxel.rect(6, 91, 34, 97, 14)
@@ -127,7 +127,7 @@ class App:
         for i, v in enumerate(self.is_playing):
             pyxel.pal(1, v and 15 or 13)
             pyxel.blt(
-                150 + i * 16,
+                140 + i * 16,
                 116 + math.sin(pyxel.frame_count * 0.1 + i * 2.1) * 5,
                 0,
                 0,
