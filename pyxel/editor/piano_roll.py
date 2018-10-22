@@ -163,11 +163,9 @@ class PianoRoll(Widget):
                 x = self.parent.edit_x * 4 + 31
                 pyxel.rect(x, 25, x + 2, 147, 1)
 
+        pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 7, 193, 72, 6)
         pyxel.blt(
-            self.x, self.y, 3, EDITOR_IMAGE_X + 16, EDITOR_IMAGE_Y + 8, 97, 123, 6
-        )
-        pyxel.blt(
-            self.x + 97, self.y, 3, EDITOR_IMAGE_X + 16, EDITOR_IMAGE_Y + 8, -96, 123, 6
+            self.x, self.y + 72, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 7, 193, 51, 6
         )
 
         sound = pyxel.sound(self.parent.sound)

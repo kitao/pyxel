@@ -8,7 +8,13 @@ from pyxel.ui.constants import (
     WIDGET_SHADOW_COLOR,
 )
 
-from .constants import APP_HEIGHT, APP_WIDTH, EDITOR_IMAGE_X, EDITOR_IMAGE_Y
+from .constants import (
+    APP_HEIGHT,
+    APP_WIDTH,
+    EDITOR_IMAGE_NAME,
+    EDITOR_IMAGE_X,
+    EDITOR_IMAGE_Y,
+)
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
 from .sound_editor import SoundEditor
@@ -80,7 +86,7 @@ class App(Widget):
         self.set_editor(0)
 
         image_file = os.path.join(
-            os.path.dirname(__file__), "assets", "editor_160x160.png"
+            os.path.dirname(__file__), "assets", EDITOR_IMAGE_NAME
         )
         pyxel.image(3, system=True).load(EDITOR_IMAGE_X, EDITOR_IMAGE_Y, image_file)
 
