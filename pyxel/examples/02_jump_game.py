@@ -32,9 +32,8 @@ class App:
 
         pyxel.sound(2).set("c1c1f0f0a0a0g0g0", "p", "4", "nf", 120)
 
-        pyxel.play(0, 0, loop=True)
-        pyxel.play(1, 1, loop=True)
-        pyxel.play(2, 2, loop=True)
+        pyxel.music(0).set([0], [1], [2], [])
+        pyxel.playm(0, loop=True)
 
         # jump sound
         pyxel.sound(3).set("g1a#1d#2b2", "s", "7654", "s", 9)
