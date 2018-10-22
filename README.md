@@ -421,8 +421,20 @@ List of sound(0-63) play on channel 2
 List of sound(0-63) play on channel 3
 
 - `set(ch0, ch1, ch2, ch3)`  
-Set the sound list of all channels  
+Set the list of sound(0-63) of all channels  
 e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+
+- `set_ch0(data)`  
+Set the list of sound(0-63) of channel 0
+
+- `set_ch1(data)`  
+Set the list of sound(0-63) of channel 1
+
+- `set_ch2(data)`  
+Set the list of sound(0-63) of channel 2
+
+- `set_ch3(data)`  
+Set the list of sound(0-63) of channel 3
 
 ## Other Information
 
