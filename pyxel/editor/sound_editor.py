@@ -10,7 +10,7 @@ from .editor import Editor
 from .octave_bar import OctaveBar
 from .piano_keyboard import PianoKeyboard
 from .piano_roll import PianoRoll
-from .sound_input import SoundInput
+from .sound_field import SoundField
 
 
 class SoundEditor(Editor):
@@ -42,7 +42,7 @@ class SoundEditor(Editor):
         )
         self._piano_keyboard = PianoKeyboard(self)
         self._piano_roll = PianoRoll(self)
-        self._sound_input = SoundInput(self)
+        self._sound_field = SoundField(self)
         self._left_octave_bar = OctaveBar(self, 12, 25)
         self._right_octave_bar = OctaveBar(self, 224, 25)
 
@@ -208,12 +208,9 @@ class SoundEditor(Editor):
             self.cursor_y += 1
 
     def __on_draw(self):
-        self.draw_frame(11, 16, 218, 157)
+        self.draw_panel(11, 16, 218, 157)
         pyxel.text(23, 18, "SOUND", 6)
         pyxel.text(83, 18, "SPEED", 6)
-        pyxel.text(17, 150, "TON", 6)
-        pyxel.text(17, 158, "VOL", 6)
-        pyxel.text(17, 166, "EFX", 6)
 
     def __on_sound_picker_change(self, value):
         sound = pyxel.sound(value)
