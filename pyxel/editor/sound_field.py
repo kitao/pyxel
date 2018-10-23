@@ -5,7 +5,7 @@ from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, SOUND_MAX_LENGTH
 
 
-class SoundInput(Widget):
+class SoundField(Widget):
     def __init__(self, parent):
         super().__init__(parent, 30, 149, 193, 23)
 
@@ -124,6 +124,10 @@ class SoundInput(Widget):
         self.parent.add_edit_history_after()
 
     def __on_draw(self):
+        30, 149
+        pyxel.text(self.x - 13, self.y + 1, "TON", 6)
+        pyxel.text(self.x - 13, self.y + 9, "VOL", 6)
+        pyxel.text(self.x - 13, self.y + 17, "EFX", 6)
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 79, 193, 23)
 
         sound = pyxel.sound(self.parent.sound)
