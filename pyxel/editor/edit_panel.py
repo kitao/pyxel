@@ -14,7 +14,7 @@ from .constants import (
 from .overlay_canvas import OverlayCanvas
 
 
-class EditFrame(Widget):
+class EditPanel(Widget):
     def __init__(self, parent, *, is_tilemap_mode):
         super().__init__(parent, 11, 16, 130, 130)
 
@@ -320,7 +320,7 @@ class EditFrame(Widget):
         self._v_scroll_bar.value = self.viewport_y // 8
 
     def __on_draw(self):
-        self.draw_frame(self.x, self.y, self.width, self.height)
+        self.draw_panel(self.x, self.y, self.width, self.height)
 
         if self._is_tilemap_mode:
             pyxel.bltm(
