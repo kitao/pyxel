@@ -9,7 +9,7 @@ from .constants import (
 )
 
 
-class TilemapFrame(Widget):
+class TilemapPanel(Widget):
     def __init__(self, parent):
         super().__init__(parent, 157, 16, 66, 65)
 
@@ -36,7 +36,7 @@ class TilemapFrame(Widget):
         self.parent.help_message = "TARGET:CURSOR ({},{})".format(x, y)
 
     def __on_draw(self):
-        self.draw_frame(self.x, self.y, self.width, self.height)
+        self.draw_panel(self.x, self.y, self.width, self.height)
 
         pyxel.blt(
             self.x + 1,
