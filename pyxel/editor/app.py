@@ -4,7 +4,7 @@ import pyxel
 from pyxel.ui import ImageButton, RadioButton, Widget
 from pyxel.ui.constants import (
     WIDGET_BACKGROUND_COLOR,
-    WIDGET_FRAME_COLOR,
+    WIDGET_PANEL_COLOR,
     WIDGET_SHADOW_COLOR,
 )
 
@@ -126,7 +126,7 @@ class App(Widget):
 
     def __on_draw(self):
         pyxel.cls(WIDGET_BACKGROUND_COLOR)
-        pyxel.rect(0, 0, 239, 8, WIDGET_FRAME_COLOR)
+        pyxel.rect(0, 0, 239, 8, WIDGET_PANEL_COLOR)
         pyxel.line(0, 9, 239, 9, WIDGET_SHADOW_COLOR)
 
         pyxel.text(93, 2, self.help_message, 13)

@@ -3,8 +3,8 @@ import pyxel
 from .constants import (
     WIDGET_CLICK_DIST,
     WIDGET_CLICK_TIME,
-    WIDGET_FRAME_COLOR,
     WIDGET_HOLD_TIME,
+    WIDGET_PANEL_COLOR,
     WIDGET_REPEAT_TIME,
     WIDGET_SHADOW_COLOR,
 )
@@ -173,15 +173,15 @@ class Widget:
         self._height = height
         self.call_event_handler("resize", width, height)
 
-    def draw_frame(self, x, y, width, height, *, with_shadow=True):
+    def draw_panel(self, x, y, width, height, *, with_shadow=True):
         x1 = x
         y1 = y
         x2 = x + width - 1
         y2 = y + height - 1
 
-        pyxel.line(x1 + 1, y1, x2 - 1, y1, WIDGET_FRAME_COLOR)
-        pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_FRAME_COLOR)
-        pyxel.line(x1 + 1, y2, x2 - 1, y2, WIDGET_FRAME_COLOR)
+        pyxel.line(x1 + 1, y1, x2 - 1, y1, WIDGET_PANEL_COLOR)
+        pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_PANEL_COLOR)
+        pyxel.line(x1 + 1, y2, x2 - 1, y2, WIDGET_PANEL_COLOR)
 
         if with_shadow:
             pyxel.line(x1 + 2, y2 + 1, x2, y2 + 1, WIDGET_SHADOW_COLOR)

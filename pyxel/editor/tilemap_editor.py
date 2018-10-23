@@ -9,19 +9,19 @@ from .constants import (
     TILEMAP_IMAGE_Y,
     TOOL_PENCIL,
 )
-from .edit_frame import EditFrame
+from .edit_panel import EditPanel
 from .editor import Editor
-from .image_frame import ImageFrame
-from .tilemap_frame import TilemapFrame
+from .image_panel import ImagePanel
+from .tilemap_panel import TilemapPanel
 
 
 class TileMapEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self._edit_frame = EditFrame(self, is_tilemap_mode=True)
-        self._tilemap_frame = TilemapFrame(self)
-        self._image_frame = ImageFrame(self, is_tilemap_mode=True)
+        self._edit_panel = EditPanel(self, is_tilemap_mode=True)
+        self._tilemap_panel = TilemapPanel(self)
+        self._image_panel = ImagePanel(self, is_tilemap_mode=True)
         self._tilemap_picker = NumberPicker(
             self, 48, 161, 0, RENDERER_TILEMAP_COUNT - 1, 0
         )
@@ -50,12 +50,12 @@ class TileMapEditor(Editor):
 
     @property
     def color(self):
-        return (self._image_frame.select_y // 8) * 32 + self._image_frame.select_x // 8
+        return (self._image_panel.select_y // 8) * 32 + self._image_panel.select_x // 8
 
     @color.setter
     def color(self, value):
-        self._image_frame.select_y = (value // 32) * 8
-        self._image_frame.select_x = (value % 32) * 8
+        self._image_panel.select_y = (value // 32) * 8
+        self._image_panel.select_x = (value % 32) * 8
 
     @property
     def tool(self):
@@ -75,19 +75,19 @@ class TileMapEditor(Editor):
 
     @property
     def edit_x(self):
-        return self._edit_frame.viewport_x
+        return self._edit_panel.viewport_x
 
     @edit_x.setter
     def edit_x(self, value):
-        self._edit_frame.viewport_x = value
+        self._edit_panel.viewport_x = value
 
     @property
     def edit_y(self):
-        return self._edit_frame.viewport_y
+        return self._edit_panel.viewport_y
 
     @edit_y.setter
     def edit_y(self, value):
-        self._edit_frame.viewport_y = value
+        self._edit_panel.viewport_y = value
 
     def __on_undo(self, data):
         tm = data["tilemap"]
@@ -95,8 +95,8 @@ class TileMapEditor(Editor):
         dest = pyxel.tilemap(tm).data[y : y + 16, x : x + 16]
         dest[:, :] = data["before"]
 
-        self._edit_frame.edit_x = x
-        self._edit_frame.edit_y = y
+        self._edit_panel.edit_x = x
+        self._edit_panel.edit_y = y
         self._tilemap_picker.value = tm
 
     def __on_redo(self, data):
@@ -105,8 +105,8 @@ class TileMapEditor(Editor):
         dest = pyxel.tilemap(tm).data[y : y + 16, x : x + 16]
         dest[:, :] = data["after"]
 
-        self._edit_frame.edit_x = x
-        self._edit_frame.edit_y = y
+        self._edit_panel.edit_x = x
+        self._edit_panel.edit_y = y
         self._tilemap_picker.value = tm
 
     def __on_update(self):
@@ -124,8 +124,8 @@ class TileMapEditor(Editor):
         self.check_tool_button_shortcuts()
 
     def __on_draw(self):
-        self.draw_frame(11, 156, 136, 17)
-        self.draw_frame(157, 156, 72, 17)
+        self.draw_panel(11, 156, 136, 17)
+        self.draw_panel(157, 156, 72, 17)
         pyxel.text(18, 162, "TILEMAP", 6)
         pyxel.text(18, 162, "TILEMAP", 6)
         pyxel.text(170, 162, "IMAGE", 6)

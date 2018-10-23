@@ -61,7 +61,7 @@ class ColorPicker(Widget):
         self.__on_mouse_down(key, x, y)
 
     def __on_draw(self):
-        self.draw_frame(
+        self.draw_panel(
             self.x, self.y, self.width, self.height, with_shadow=self._with_shadow
         )
 

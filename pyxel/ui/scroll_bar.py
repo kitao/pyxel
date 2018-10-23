@@ -1,7 +1,7 @@
 import pyxel
 
 from .button import Button
-from .constants import BUTTON_PRESSED_COLOR, WIDGET_BACKGROUND_COLOR, WIDGET_FRAME_COLOR
+from .constants import BUTTON_PRESSED_COLOR, WIDGET_BACKGROUND_COLOR, WIDGET_PANEL_COLOR
 from .widget import Widget
 
 
@@ -134,7 +134,7 @@ class ScrollBar(Widget):
         x2 = self.x + self.width - 1
         y2 = self.y + self.height - 1
 
-        self.draw_frame(x1, y1, self.width, self.height, with_shadow=self._with_shadow)
+        self.draw_panel(x1, y1, self.width, self.height, with_shadow=self._with_shadow)
 
         inc_color = (
             BUTTON_PRESSED_COLOR
@@ -152,29 +152,29 @@ class ScrollBar(Widget):
             pyxel.rect(x1 + 6, y1 + 1, x2 - 6, y2 - 1, WIDGET_BACKGROUND_COLOR)
             pyxel.rect(x2 - 1, y1 + 1, x2 - 4, y2 - 1, inc_color)
 
-            pyxel.pix(x1 + 2, y1 + 3, WIDGET_FRAME_COLOR)
-            pyxel.line(x1 + 3, y1 + 2, x1 + 3, y2 - 2, WIDGET_FRAME_COLOR)
+            pyxel.pix(x1 + 2, y1 + 3, WIDGET_PANEL_COLOR)
+            pyxel.line(x1 + 3, y1 + 2, x1 + 3, y2 - 2, WIDGET_PANEL_COLOR)
 
-            pyxel.pix(x2 - 2, y2 - 3, WIDGET_FRAME_COLOR)
-            pyxel.line(x2 - 3, y1 + 2, x2 - 3, y2 - 2, WIDGET_FRAME_COLOR)
+            pyxel.pix(x2 - 2, y2 - 3, WIDGET_PANEL_COLOR)
+            pyxel.line(x2 - 3, y1 + 2, x2 - 3, y2 - 2, WIDGET_PANEL_COLOR)
 
             x = self.x + self.slider_pos
             y = self.y + 2
-            pyxel.rect(x, y, x + self.slider_size - 1, y + 2, WIDGET_FRAME_COLOR)
+            pyxel.rect(x, y, x + self.slider_size - 1, y + 2, WIDGET_PANEL_COLOR)
         else:
             pyxel.rect(x1 + 1, y1 + 1, x2 - 1, y1 + 4, dec_color)
             pyxel.rect(x1 + 1, y1 + 6, x2 - 1, y2 - 6, WIDGET_BACKGROUND_COLOR)
             pyxel.rect(x1 + 1, y2 - 1, x2 - 1, y2 - 4, inc_color)
 
-            pyxel.pix(x1 + 3, y1 + 2, WIDGET_FRAME_COLOR)
-            pyxel.line(x1 + 2, y1 + 3, x2 - 2, y1 + 3, WIDGET_FRAME_COLOR)
+            pyxel.pix(x1 + 3, y1 + 2, WIDGET_PANEL_COLOR)
+            pyxel.line(x1 + 2, y1 + 3, x2 - 2, y1 + 3, WIDGET_PANEL_COLOR)
 
-            pyxel.pix(x1 + 3, y2 - 2, WIDGET_FRAME_COLOR)
-            pyxel.line(x1 + 2, y2 - 3, x2 - 2, y2 - 3, WIDGET_FRAME_COLOR)
+            pyxel.pix(x1 + 3, y2 - 2, WIDGET_PANEL_COLOR)
+            pyxel.line(x1 + 2, y2 - 3, x2 - 2, y2 - 3, WIDGET_PANEL_COLOR)
 
             x = self.x + 2
             y = self.y + self.slider_pos
-            pyxel.rect(x, y, x + 2, y + self.slider_size - 1, WIDGET_FRAME_COLOR)
+            pyxel.rect(x, y, x + 2, y + self.slider_size - 1, WIDGET_PANEL_COLOR)
 
     def __on_dec_button_press(self):
         self.value = max(self._value - 1, 0)
