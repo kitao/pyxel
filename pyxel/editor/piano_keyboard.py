@@ -48,7 +48,7 @@ class PianoKeyboard(Widget):
         self.parent.cursor_y = 0
 
     def __on_mouse_hover(self, x, y):
-        self.parent.help_message = "PIANO:ZSXDC..Q2W3E..A TONE:1"
+        self.parent.help_message = "PLAY:Z/S/X..Q/2/W..A TONE:1"
 
     def __on_update(self):
         if (

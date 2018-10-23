@@ -9,6 +9,9 @@ class SoundField(Widget):
     def __init__(self, parent):
         super().__init__(parent, 30, 149, 193, 23)
 
+        self._tone_key_table = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N]
+        self._effect_key_table = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
+
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_hover", self.__on_mouse_hover)
         self.add_event_handler("update", self.__on_update)
@@ -30,11 +33,11 @@ class SoundField(Widget):
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
         if y == 0:
-            self.parent.help_message = "TONE:1-4 EDIT:ENTER/BS/DEL"
+            self.parent.help_message = "TONE:T/S/P/N/BS/DEL"
         elif y == 1:
-            self.parent.help_message = "VOLUME:0-7 EDIT:ENTER/BS/DEL"
+            self.parent.help_message = "VOLUME:0-7/BS/DEL"
         elif y == 2:
-            self.parent.help_message = "EFFECT:1-4 EDIT:ENTER/BS/DEL"
+            self.parent.help_message = "EFFECT:N/S/V/F/BS/DEL"
 
     def __on_update(self):
         cursor_y = self.parent.cursor_y
@@ -60,28 +63,11 @@ class SoundField(Widget):
                 self.parent.add_edit_history_after()
             return
 
-        if pyxel.btnp(
-            pyxel.KEY_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
-        ) or pyxel.btnp(pyxel.KEY_KP_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            self.parent.add_edit_history_before()
-
-            data.insert(edit_x, 0)
-            data[:] = data[:SOUND_MAX_LENGTH]
-
-            self.parent.cursor_x = edit_x
-            if edit_x < SOUND_MAX_LENGTH - 1:
-                self.parent.cursor_x += 1
-
-            self.parent.add_edit_history_after()
-            return
-
         value = None
         if cursor_y == 1:
             for i in range(4):
                 if pyxel.btnp(
-                    pyxel.KEY_1 + i, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
-                ) or pyxel.btnp(
-                    pyxel.KEY_KP_1 + i, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+                    self._tone_key_table[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
                 ):
                     value = i
                     break
@@ -97,9 +83,7 @@ class SoundField(Widget):
         elif cursor_y == 3:
             for i in range(4):
                 if pyxel.btnp(
-                    pyxel.KEY_1 + i, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
-                ) or pyxel.btnp(
-                    pyxel.KEY_KP_1 + i, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+                    self._effect_key_table[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
                 ):
                     value = i
                     break
@@ -112,10 +96,8 @@ class SoundField(Widget):
 
         self.parent.add_edit_history_before()
 
-        if edit_x >= len(data):
-            data.append(value)
-        else:
-            data[edit_x] = value
+        data.insert(edit_x, value)
+        data[:] = data[:SOUND_MAX_LENGTH]
 
         self.parent.cursor_x = edit_x
         if edit_x < SOUND_MAX_LENGTH - 1:

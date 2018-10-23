@@ -104,7 +104,7 @@ class PianoRoll(Widget):
         self.parent.add_edit_history_after()
 
     def __on_mouse_hover(self, x, y):
-        self.parent.help_message = "NOTE:PIANO+ENTER EDIT:ENTER/BS/DEL"
+        self.parent.help_message = "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
 
     def __on_update(self):
         cursor_y = self.parent.cursor_y
@@ -136,13 +136,9 @@ class PianoRoll(Widget):
             self.parent.add_edit_history_before()
 
             note = self.parent.keyboard_note
-            if note is None:
-                data.insert(edit_x, -1)
+            if note is not None:
+                data.insert(edit_x, note)
                 data[:] = data[:SOUND_MAX_LENGTH]
-            elif edit_x >= len(data):
-                data.append(note)
-            else:
-                data[edit_x] = note
 
             self.parent.cursor_x = edit_x
             if edit_x < SOUND_MAX_LENGTH - 1:
