@@ -2,7 +2,7 @@ import pyxel
 from pyxel.ui import ScrollBar, Widget
 
 
-class ImageFrame(Widget):
+class ImagePanel(Widget):
     def __init__(self, parent, *, is_tilemap_mode):
         y, height = (80, 66) if is_tilemap_mode else (16, 130)
         super().__init__(parent, 157, y, 66, height)
@@ -92,7 +92,7 @@ class ImageFrame(Widget):
         self._v_scroll_bar.value = self.viewport_y // 8
 
     def __on_draw(self):
-        self.draw_frame(self.x, self.y, self.width, self.height)
+        self.draw_panel(self.x, self.y, self.width, self.height)
 
         pyxel.blt(
             self.x + 1,
