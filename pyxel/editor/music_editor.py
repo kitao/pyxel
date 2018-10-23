@@ -25,8 +25,8 @@ class MusicEditor(Editor):
         self._loop_button = ImageButton(
             self, 205, 17, 3, EDITOR_IMAGE_X + 144, EDITOR_IMAGE_Y
         )
-        self._music_field = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
         self._sound_selector = SoundSelector(self)
+        self._music_field = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
 
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
@@ -59,6 +59,9 @@ class MusicEditor(Editor):
         return min(self.cursor_x, self.max_edit_x)
 
     def __on_update(self):
+        if self.cursor_x >= 16 and len(self.data) < 15:
+            self.cursor_x -= 16
+
         if self.cursor_x > 0 and pyxel.btnp(
             pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
         ):
@@ -69,19 +72,21 @@ class MusicEditor(Editor):
         ):
             self.cursor_x += 1
 
-        if self.cursor_y > 0 and pyxel.btnp(
-            pyxel.KEY_UP, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
-        ):
+        if pyxel.btnp(pyxel.KEY_UP, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             if self.cursor_x >= 16:
                 self.cursor_x -= 16
-            else:
+            elif self.cursor_y > 0:
                 self.cursor_y -= 1
+                if self.cursor_x < 16 and len(self.data) >= 15:
+                    self.cursor_x += 16
 
         if pyxel.btnp(pyxel.KEY_DOWN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            if self.cursor_x < 16 and len(self.data) >= 16:
+            if self.cursor_x < 16 and len(self.data) >= 15:
                 self.cursor_x += 16
             elif self.cursor_y < 3:
                 self.cursor_y += 1
+                if self.cursor_x >= 16:
+                    self.cursor_x -= 16
 
     def __on_draw(self):
         self.draw_panel(11, 16, 218, 9)
