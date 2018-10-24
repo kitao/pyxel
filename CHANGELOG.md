@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.8.6
+- Changed the operation method of the sound editor
+
 ## 0.8.5
 - Implemented the undo function of the sound editor
 - Changed the click tolerance time
