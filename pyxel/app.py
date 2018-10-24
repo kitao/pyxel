@@ -110,7 +110,6 @@ class App:
         pyxel.height = height
         pyxel.mouse_x = 0
         pyxel.mouse_y = 0
-        pyxel.mouse_cursor = False
         pyxel.frame_count = 0
 
         # initialize window
