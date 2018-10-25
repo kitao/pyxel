@@ -14,7 +14,7 @@ from .constants import (
 from .overlay_canvas import OverlayCanvas
 
 
-class EditPanel(Widget):
+class CanvasPanel(Widget):
     def __init__(self, parent, *, is_tilemap_mode):
         super().__init__(parent, 11, 16, 130, 130)
 
