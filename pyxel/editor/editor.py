@@ -59,7 +59,7 @@ class Editor(Widget):
         )
         self._edit_history_index += 1
 
-    def add_edit_history(self, data):
+    def add_history(self, data):
         self._edit_history_list = self._edit_history_list[: self._edit_history_index]
         self._edit_history_list.append(data)
         self._edit_history_index += 1
