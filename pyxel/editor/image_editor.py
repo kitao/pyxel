@@ -2,8 +2,8 @@ import pyxel
 from pyxel.constants import RENDERER_IMAGE_COUNT
 from pyxel.ui import ColorPicker, NumberPicker, RadioButton
 
+from .canvas_panel import CanvasPanel
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, TOOL_PENCIL
-from .edit_panel import EditPanel
 from .editor import Editor
 from .image_panel import ImagePanel
 
@@ -12,7 +12,7 @@ class ImageEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self._edit_panel = EditPanel(self, is_tilemap_mode=False)
+        self._canvas_panel = CanvasPanel(self, is_tilemap_mode=False)
         self._image_panel = ImagePanel(self, is_tilemap_mode=False)
         self._color_picker = ColorPicker(self, 11, 156, 7, with_shadow=False)
         self._tool_button = RadioButton(
@@ -51,19 +51,19 @@ class ImageEditor(Editor):
 
     @property
     def edit_x(self):
-        return self._edit_panel.viewport_x
+        return self._canvas_panel.viewport_x
 
     @edit_x.setter
     def edit_x(self, value):
-        self._edit_panel.viewport_x = value
+        self._canvas_panel.viewport_x = value
 
     @property
     def edit_y(self):
-        return self._edit_panel.viewport_y
+        return self._canvas_panel.viewport_y
 
     @edit_y.setter
     def edit_y(self, value):
-        self._edit_panel.viewport_y = value
+        self._canvas_panel.viewport_y = value
 
     def __on_undo(self, data):
         img = data["image"]
