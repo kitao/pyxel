@@ -2,6 +2,7 @@ import pyxel
 from pyxel.constants import RENDERER_IMAGE_COUNT, RENDERER_TILEMAP_COUNT
 from pyxel.ui import NumberPicker, RadioButton
 
+from .canvas_panel import CanvasPanel
 from .constants import (
     EDITOR_IMAGE_X,
     EDITOR_IMAGE_Y,
@@ -9,7 +10,6 @@ from .constants import (
     TILEMAP_IMAGE_Y,
     TOOL_PENCIL,
 )
-from .edit_panel import EditPanel
 from .editor import Editor
 from .image_panel import ImagePanel
 from .tilemap_panel import TilemapPanel
@@ -19,7 +19,7 @@ class TileMapEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self._edit_panel = EditPanel(self, is_tilemap_mode=True)
+        self._canvas_panel = CanvasPanel(self, is_tilemap_mode=True)
         self._tilemap_panel = TilemapPanel(self)
         self._image_panel = ImagePanel(self, is_tilemap_mode=True)
         self._tilemap_picker = NumberPicker(
@@ -75,19 +75,19 @@ class TileMapEditor(Editor):
 
     @property
     def edit_x(self):
-        return self._edit_panel.viewport_x
+        return self._canvas_panel.viewport_x
 
     @edit_x.setter
     def edit_x(self, value):
-        self._edit_panel.viewport_x = value
+        self._canvas_panel.viewport_x = value
 
     @property
     def edit_y(self):
-        return self._edit_panel.viewport_y
+        return self._canvas_panel.viewport_y
 
     @edit_y.setter
     def edit_y(self, value):
-        self._edit_panel.viewport_y = value
+        self._canvas_panel.viewport_y = value
 
     def __on_undo(self, data):
         tm = data["tilemap"]
@@ -95,8 +95,8 @@ class TileMapEditor(Editor):
         dest = pyxel.tilemap(tm).data[y : y + 16, x : x + 16]
         dest[:, :] = data["before"]
 
-        self._edit_panel.edit_x = x
-        self._edit_panel.edit_y = y
+        self._canvas_panel.edit_x = x
+        self._canvas_panel.edit_y = y
         self._tilemap_picker.value = tm
 
     def __on_redo(self, data):
@@ -105,8 +105,8 @@ class TileMapEditor(Editor):
         dest = pyxel.tilemap(tm).data[y : y + 16, x : x + 16]
         dest[:, :] = data["after"]
 
-        self._edit_panel.edit_x = x
-        self._edit_panel.edit_y = y
+        self._canvas_panel.edit_x = x
+        self._canvas_panel.edit_y = y
         self._tilemap_picker.value = tm
 
     def __on_update(self):
