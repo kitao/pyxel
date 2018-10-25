@@ -26,7 +26,7 @@ class PianoRoll(Widget):
         return x, y
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos > -1:
+        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos is not None:
             return
 
         x, y = self._screen_to_view(x, y)
@@ -34,14 +34,13 @@ class PianoRoll(Widget):
         self._press_x = x
         self._press_y = y
 
-        self.parent.cursor_x = x
-        self.parent.cursor_y = 0
+        self.parent.field_editor.move(x, 0)
 
     def __on_mouse_up(self, key, x, y):
         pass
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
-        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos > -1:
+        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos is not None:
             return
 
         x, y = self._screen_to_view(x, y)
@@ -59,9 +58,9 @@ class PianoRoll(Widget):
         else:
             return
 
-        self.parent.add_edit_history_before()
+        self.parent.add_pre_history(x, 0)
 
-        data = self.parent.sound_data
+        data = self.parent.field_editor.data
         padding_length = self._press_x + 1 - len(data)
         if padding_length > 0:
             data.extend([-1] * padding_length)
@@ -69,8 +68,7 @@ class PianoRoll(Widget):
         self._press_x = x
         self._press_y = y
 
-        self.parent.cursor_x = x
-        self.parent.cursor_y = 0
+        self.parent.field_editor.move(x, 0)
 
         dx = x2 - x1
         dy = y2 - y1
@@ -83,17 +81,19 @@ class PianoRoll(Widget):
             else:
                 data[x1 + i] = value
 
-        self.parent.add_edit_history_after()
+        self.parent.add_post_history(y, 0)
 
     def __on_mouse_click(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos > -1:
+        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos is not None:
             return
 
         x, y = self._screen_to_view(x, y)
 
-        data = self.parent.sound_data
+        self.parent.field_editor.move(x, 0)
 
-        self.parent.add_edit_history_before()
+        data = self.parent.field_editor.data
+
+        self.parent.add_pre_history(x, 0)
 
         padding_length = x + 1 - len(data)
         if padding_length > 0:
@@ -101,62 +101,33 @@ class PianoRoll(Widget):
 
         data[x] = y
 
-        self.parent.add_edit_history_after()
+        self.parent.add_post_history(x, 0)
 
     def __on_mouse_hover(self, x, y):
         self.parent.help_message = "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
 
     def __on_update(self):
-        cursor_y = self.parent.cursor_y
+        cursor_y = self.parent.field_editor.cursor_y
 
-        if cursor_y > 0 or self.parent.play_pos > -1:
-            return
-
-        edit_x = self.parent.edit_x
-        data = self.parent.sound_data
-
-        if pyxel.btnp(pyxel.KEY_BACKSPACE, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            if edit_x > 0:
-                self.parent.add_edit_history_before()
-                del data[edit_x - 1]
-                self.parent.cursor_x = edit_x - 1
-                self.parent.add_edit_history_after()
-            return
-
-        if pyxel.btnp(pyxel.KEY_DELETE, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            if edit_x < len(data):
-                self.parent.add_edit_history_before()
-                del data[edit_x]
-                self.parent.add_edit_history_after()
+        if cursor_y > 0 or self.parent.play_pos is not None:
             return
 
         if pyxel.btnp(
             pyxel.KEY_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
         ) or pyxel.btnp(pyxel.KEY_KP_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            self.parent.add_edit_history_before()
-
-            note = self.parent.keyboard_note
-            if note is not None:
-                data.insert(edit_x, note)
-                data[:] = data[:SOUND_MAX_LENGTH]
-
-            self.parent.cursor_x = edit_x
-            if edit_x < SOUND_MAX_LENGTH - 1:
-                self.parent.cursor_x += 1
-
-            self.parent.add_edit_history_after()
+            self.parent.field_editor.insert(self.parent.keyboard_note)
 
     def __on_draw(self):
         pyxel.rect(self.x, self.y, self.x + self.width - 1, self.y + self.height - 1, 6)
 
         play_pos = self.parent.play_pos
 
-        if play_pos > -1:
+        if play_pos is not None:
             x = play_pos * 4 + 31
             pyxel.rect(x, 25, x + 2, 147, 2)
         else:
-            if self.parent.cursor_y == 0:
-                x = self.parent.edit_x * 4 + 31
+            if self.parent.field_editor.cursor_y == 0:
+                x = self.parent.field_editor.cursor_x * 4 + 31
                 pyxel.rect(x, 25, x + 2, 147, 1)
 
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 7, 193, 72, 6)
@@ -164,8 +135,7 @@ class PianoRoll(Widget):
             self.x, self.y + 72, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 7, 193, 51, 6
         )
 
-        sound = pyxel.sound(self.parent.sound)
-        for i, note in enumerate(sound.note):
+        for i, note in enumerate(self.parent.field_editor.get_data(0)):
             x = i * 4 + 31
             y = 143 - note * 2
             pyxel.rect(x, y, x + 2, y + 2, 8 if note >= 0 else 12)
