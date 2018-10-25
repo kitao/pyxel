@@ -52,8 +52,8 @@ class PianoKeyboard(Widget):
 
     def __on_update(self):
         if (
-            self.parent.cursor_y > 0
-            or self.parent.play_pos > -1
+            self.parent.field_editor.cursor_y > 0
+            or self.parent.play_pos is not None
             or pyxel.btn(pyxel.KEY_CONTROL)
         ):
             return
@@ -82,11 +82,13 @@ class PianoKeyboard(Widget):
 
         play_pos = self.parent.play_pos
 
-        if play_pos < 0 and self.note is None:
+        if play_pos is None and self.note is None:
             return
 
         note = (
-            self.note if play_pos < 0 else pyxel.sound(self.parent.sound).note[play_pos]
+            self.note
+            if play_pos is None
+            else self.parent.field_editor.get_data(0)[play_pos]
         )
 
         x = self.x
