@@ -68,6 +68,10 @@ class Channel:
         if not self._is_playing:
             return
 
+        if self._total_note_time == 0:
+            self._next_sound()
+            return
+
         # forward note
         if self._time % self._one_note_time == 0:
             sound = self._sound_list[self._sound_index]
@@ -121,15 +125,18 @@ class Channel:
         self._time += 1
 
         if self._time == self._total_note_time:
-            self._sound_index += 1
+            self._next_sound()
 
-            if self._sound_index < len(self._sound_list):
-                self._play_sound()
-            elif self._is_loop:
-                self._sound_index = 0
-                self._play_sound()
-            else:
-                self.stop()
+    def _next_sound(self):
+        self._sound_index += 1
+
+        if self._sound_index < len(self._sound_list):
+            self._play_sound()
+        elif self._is_loop:
+            self._sound_index = 0
+            self._play_sound()
+        else:
+            self.stop()
 
     @staticmethod
     def _note_to_pitch(note):
