@@ -91,14 +91,14 @@ class SoundField(Widget):
             y = cursor_y * 8 + 142
             pyxel.rect(x, y - 1, x + 2, y + 5, 1)
 
-        for i, tone in enumerate(self.parent.field_editor.get_data(1)):
+        for i, tone in enumerate(self.parent.get_data(1)):
             col = 7 if cursor_y == 1 and cursor_x == i else 1
             pyxel.text(31 + i * 4, 150, "TSPN"[tone], col)
 
-        for i, volume in enumerate(self.parent.field_editor.get_data(2)):
+        for i, volume in enumerate(self.parent.get_data(2)):
             col = 7 if cursor_y == 2 and cursor_x == i else 1
             pyxel.text(31 + i * 4, 158, str(volume), col)
 
-        for i, effect in enumerate(self.parent.field_editor.get_data(3)):
+        for i, effect in enumerate(self.parent.get_data(3)):
             col = 7 if cursor_y == 3 and cursor_x == i else 1
             pyxel.text(31 + i * 4, 166, "NSVF"[effect], col)
