@@ -37,9 +37,6 @@ class FieldEditor:
     def data(self):
         return self._get_data(self._cursor_y)
 
-    def get_data(self, index):
-        return self._get_data(index)
-
     def move(self, x, y):
         self._cursor_x = x
         self._cursor_y = y
