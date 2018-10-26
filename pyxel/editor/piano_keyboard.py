@@ -81,15 +81,12 @@ class PianoKeyboard(Widget):
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X + 208, EDITOR_IMAGE_Y, 12, 123, 6)
 
         play_pos = self.parent.play_pos
+        data = self.parent.get_data(0)
 
-        if play_pos is None and self.note is None:
+        if play_pos is None and self.note is None or not data:
             return
 
-        note = (
-            self.note
-            if play_pos is None
-            else self.parent.field_editor.get_data(0)[play_pos]
-        )
+        note = self.note if play_pos is None else data[play_pos]
 
         x = self.x
         y = self.y + (59 - note) * 2
