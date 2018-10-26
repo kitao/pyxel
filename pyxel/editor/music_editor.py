@@ -13,10 +13,12 @@ class MusicEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent)
 
+        self._is_playing = False
+        self._play_pos = [0 for _ in range(AUDIO_CHANNEL_COUNT)]
         self.field_editor = FieldEditor(
-            self._get_data,
-            self._add_pre_history,
-            self._add_post_history,
+            self.get_data,
+            self.add_pre_history,
+            self.add_post_history,
             MUSIC_MAX_LENGTH,
             16,
             AUDIO_CHANNEL_COUNT,
@@ -47,16 +49,12 @@ class MusicEditor(Editor):
 
     @property
     def is_playing(self):
-        for channel in pyxel._app._audio_player._channel_list:
-            if channel._is_playing:
-                return True
+        return self._is_playing
 
-        return False
+    def play_pos(self, ch):
+        return self._play_pos[ch]
 
-    def insert_sound(self, sound):
-        self._music_field[self.cursor_y].insert_sound(sound)
-
-    def _get_data(self, value):
+    def get_data(self, value):
         music = pyxel.music(self._music_picker.value)
 
         if value == 0:
@@ -70,19 +68,20 @@ class MusicEditor(Editor):
 
         return data
 
-    def _add_pre_history(self, x, y):
+    def add_pre_history(self, x, y):
         self._history_data = data = {}
         data["music"] = self._music_picker.value
         data["cursor_before"] = (x, y)
         data["before"] = self.field_editor.data.copy()
 
-    def _add_post_history(self, x, y):
+    def add_post_history(self, x, y):
         data = self._history_data
         data["cursor_after"] = (x, y)
         data["after"] = self.field_editor.data.copy()
         self.add_history(self._history_data)
 
     def _play(self):
+        self._is_playing = True
         self._play_button.is_enabled = False
         self._stop_button.is_enabled = True
         self._loop_button.is_enabled = False
@@ -90,6 +89,7 @@ class MusicEditor(Editor):
         pyxel.playm(self._music_picker.value, loop=self._loop_button.value)
 
     def _stop(self):
+        self._is_playing = False
         self._play_button.is_enabled = True
         self._stop_button.is_enabled = False
         self._loop_button.is_enabled = True
@@ -107,6 +107,31 @@ class MusicEditor(Editor):
         self.field_editor.data[:] = data["after"]
 
     def __on_update(self):
+        self._is_playing = False
+        for i in range(AUDIO_CHANNEL_COUNT):
+            channel = pyxel._app._audio_player._channel_list[i]
+
+            if channel._is_playing:
+                self._is_playing = True
+                self._play_pos[i] = channel._sound_index
+            else:
+                self._play_pos[i] = None
+
+        if pyxel.btnp(pyxel.KEY_SPACE):
+            if self._is_playing:
+                self._stop_button.press()
+            else:
+                self._play_button.press()
+
+        if self._is_playing:
+            return
+
+        if not self._play_button.is_enabled:
+            self._stop()
+
+        if self._loop_button.is_enabled and pyxel.btnp(pyxel.KEY_L):
+            self._loop_button.press()
+
         self.field_editor.process_input()
 
     def __on_draw(self):
