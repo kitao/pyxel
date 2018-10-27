@@ -29,6 +29,21 @@ class SoundSelector(Widget):
 
         return (y // 9) * 16 + x // 13
 
+    def _draw_sound_button(self, snd, col):
+        pyxel.pal(13, col)
+        x = (snd % 16) * 13
+        y = (snd // 16) * 9
+        pyxel.blt(
+            self.x + x + 6,
+            self.y + y + 5,
+            3,
+            EDITOR_IMAGE_X + x,
+            EDITOR_IMAGE_Y + y + 121,
+            11,
+            7,
+        )
+        pyxel.pal()
+
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON or self.parent.is_playing:
             return
@@ -44,6 +59,8 @@ class SoundSelector(Widget):
         self._pressed_sound = None
 
     def __on_mouse_hover(self, x, y):
+        self.parent.help_message = "PREVIEW:HOVER INSERT:CLICK"
+
         if self.parent.is_playing:
             return
 
@@ -73,18 +90,3 @@ class SoundSelector(Widget):
 
         if self._pressed_sound is not None:
             self._draw_sound_button(self._pressed_sound, 7)
-
-    def _draw_sound_button(self, snd, col):
-        pyxel.pal(13, col)
-        x = (snd % 16) * 13
-        y = (snd // 16) * 9
-        pyxel.blt(
-            self.x + x + 6,
-            self.y + y + 5,
-            3,
-            EDITOR_IMAGE_X + x,
-            EDITOR_IMAGE_Y + y + 121,
-            11,
-            7,
-        )
-        pyxel.pal()
