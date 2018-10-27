@@ -7,7 +7,7 @@ class Sound:
         self._tone = []
         self._volume = []
         self._effect = []
-        self.speed = 1
+        self.speed = 30
 
     @property
     def note(self):
