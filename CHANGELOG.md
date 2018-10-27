@@ -4,6 +4,7 @@
 - Changed the operation method of the sound editor
 - Changed to allow sound of length 0
 - Implemented the music editor
+- Changed the example #2 to use resource file
 
 ## 0.8.5
 - Implemented the undo function of the sound editor
