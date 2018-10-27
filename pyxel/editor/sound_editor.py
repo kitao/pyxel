@@ -4,7 +4,7 @@ from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, SOUND_MAX_LENGTH
 from .editor import Editor
-from .field_editor import FieldEditor
+from .field_cursor import FieldCursor
 from .octave_bar import OctaveBar
 from .piano_keyboard import PianoKeyboard
 from .piano_roll import PianoRoll
@@ -15,7 +15,7 @@ class SoundEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.field_editor = FieldEditor(
+        self.field_cursor = FieldCursor(
             self.get_data,
             self.add_pre_history,
             self.add_post_history,
@@ -95,12 +95,12 @@ class SoundEditor(Editor):
         self._history_data = data = {}
         data["sound"] = self._sound_picker.value
         data["cursor_before"] = (x, y)
-        data["before"] = self.field_editor.data.copy()
+        data["before"] = self.field_cursor.data.copy()
 
     def add_post_history(self, x, y):
         data = self._history_data
         data["cursor_after"] = (x, y)
-        data["after"] = self.field_editor.data.copy()
+        data["after"] = self.field_cursor.data.copy()
         self.add_history(self._history_data)
 
     def _play(self):
@@ -127,13 +127,13 @@ class SoundEditor(Editor):
 
     def __on_undo(self, data):
         self._sound_picker.value = data["sound"]
-        self.field_editor.move(*data["cursor_before"])
-        self.field_editor.data[:] = data["before"]
+        self.field_cursor.move(*data["cursor_before"])
+        self.field_cursor.data[:] = data["before"]
 
     def __on_redo(self, data):
         self._sound_picker.value = data["sound"]
-        self.field_editor.move(*data["cursor_after"])
-        self.field_editor.data[:] = data["after"]
+        self.field_cursor.move(*data["cursor_after"])
+        self.field_cursor.data[:] = data["after"]
 
     def __on_hide(self):
         self._stop()
@@ -166,7 +166,7 @@ class SoundEditor(Editor):
         if pyxel.btnp(pyxel.KEY_PAGE_DOWN):
             self.octave = max(self.octave - 1, 0)
 
-        self.field_editor.process_input()
+        self.field_cursor.process_input()
 
     def __on_draw(self):
         self.draw_panel(11, 16, 218, 157)
