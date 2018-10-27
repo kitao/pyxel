@@ -82,7 +82,12 @@ class PianoKeyboard(Widget):
 
         data = self.parent.get_data(0)
 
-        if not self.parent.is_playing and self.note is None or not data:
+        if (
+            self.parent.is_playing
+            and not data
+            or not self.parent.is_playing
+            and self.note is None
+        ):
             return
 
         note = data[self.parent.play_pos] if self.parent.is_playing else self.note
