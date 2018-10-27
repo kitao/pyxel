@@ -33,7 +33,7 @@ setuptools.setup(
         "pyxel.examples",
         "pyxel.examples.assets",
     ],
-    package_data={"": ["*.png", "*.gif"]},
+    package_data={"": ["*.pyxel", "*.png", "*.gif"]},
     install_requires=["numpy", "glfw", "PyOpenGL", "sounddevice", "Pillow"],
     python_requires=">=3",
     entry_points={
