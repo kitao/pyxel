@@ -189,25 +189,25 @@ Pyxel Editor has the following edit modes.
 
 The mode to edit the image banks.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
 
 **Tilemap Editor:**
 
 The mode to edit tilemaps in which images of the image banks are arranged in a tile pattern.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.gif">
 
 **Sound Editor:**
 
 The mode to edit sounds.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.gif">
 
 **Music Editor:**
 
 The mode to edit musics in which the sounds are arranged in order of playback.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
 
 ### Other resource creation methods
 

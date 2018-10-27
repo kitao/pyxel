@@ -190,25 +190,25 @@ Pyxel Editorには次の編集モードがあります。
 
 イメージバンクの画像を編集する画面です。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
 
 **タイルマップエディタ:**
 
 イメージバンクの画像をタイル状に並べたタイルマップを編集する画面です。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.gif">
 
 **サウンドエディタ:**
 
 サウンドを編集する画面です。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.gif">
 
 **ミュージックエディタ:**
 
 サウンドを再生順に並べたミュージックを編集する画面です。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
 
 ### その他のリソース作成方法
 
