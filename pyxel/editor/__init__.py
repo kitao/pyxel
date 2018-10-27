@@ -16,5 +16,5 @@ def run():
 
 
 if __name__ == "__main__":
-    sys.argv[1:] = ["test_resource"]
+    sys.argv[1:] = ["assets/test_resource"]
     run()
