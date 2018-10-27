@@ -17,18 +17,13 @@ class SoundSelector(Widget):
         self.add_event_handler("draw", self.__on_draw)
 
     def __on_mouse_down(self, key, x, y):
+        if key != pyxel.KEY_LEFT_BUTTON:
+            return
+
         x -= self.x + 6
         y -= self.y + 5
 
-        if (
-            key != pyxel.KEY_LEFT_BUTTON
-            or x < 0
-            or y < 0
-            or x > 205
-            or y > 33
-            or x % 13 > 10
-            or y % 9 > 6
-        ):
+        if x < 0 or y < 0 or x > 205 or y > 33 or x % 13 > 10 or y % 9 > 6:
             return
 
         self._pressed_sound = (y // 9) * 16 + x // 13
