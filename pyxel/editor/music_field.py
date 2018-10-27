@@ -11,6 +11,7 @@ class MusicField(Widget):
         self._ch = ch
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
+        self.add_event_handler("mouse_hover", self.__on_mouse_hover)
         self.add_event_handler("draw", self.__on_draw)
 
     @property
@@ -28,6 +29,9 @@ class MusicField(Widget):
             return
 
         self.parent.field_editor.move(x // 12 + (y // 10) * 16, self._ch)
+
+    def __on_mouse_hover(self, x, y):
+        self.parent.help_message = "SOUND:SOUND_BUTTON/BS/DEL"
 
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
