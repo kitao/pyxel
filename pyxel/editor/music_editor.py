@@ -38,6 +38,7 @@ class MusicEditor(Editor):
 
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)
+        self.add_event_handler("hide", self.__on_hide)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
         self._play_button.add_event_handler("press", self.__on_play_button_press)
@@ -96,6 +97,7 @@ class MusicEditor(Editor):
         for i in range(AUDIO_CHANNEL_COUNT):
             self._play_pos[i] = 0
 
+        self._music_picker.is_enabled = False
         self._play_button.is_enabled = False
         self._stop_button.is_enabled = True
         self._loop_button.is_enabled = False
@@ -108,6 +110,7 @@ class MusicEditor(Editor):
         for i in range(AUDIO_CHANNEL_COUNT):
             self._play_pos[i] = None
 
+        self._music_picker.is_enabled = True
         self._play_button.is_enabled = True
         self._stop_button.is_enabled = False
         self._loop_button.is_enabled = True
@@ -123,6 +126,9 @@ class MusicEditor(Editor):
         self._music_picker.value = data["music"]
         self.field_editor.move(*data["cursor_after"])
         self.field_editor.data[:] = data["after"]
+
+    def __on_hide(self):
+        self._stop()
 
     def __on_update(self):
         if self._is_playing:
