@@ -27,7 +27,7 @@ class SoundField(Widget):
             return
 
         x, y = self._screen_to_view(x, y)
-        self.parent.field_editor.move(x, y + 1)
+        self.parent.field_cursor.move(x, y + 1)
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
@@ -39,7 +39,7 @@ class SoundField(Widget):
             self.parent.help_message = "EFFECT:N/S/V/F/BS/DEL"
 
     def __on_update(self):
-        cursor_y = self.parent.field_editor.cursor_y
+        cursor_y = self.parent.field_cursor.y
 
         if cursor_y < 1 or self.parent.is_playing:
             return
@@ -72,7 +72,7 @@ class SoundField(Widget):
         if value is None:
             return
 
-        self.parent.field_editor.insert(value)
+        self.parent.field_cursor.insert(value)
 
     def __on_draw(self):
         30, 149
@@ -81,8 +81,8 @@ class SoundField(Widget):
         pyxel.text(self.x - 13, self.y + 17, "EFX", 6)
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 79, 193, 23)
 
-        cursor_x = self.parent.field_editor.cursor_x
-        cursor_y = 0 if self.parent.is_playing else self.parent.field_editor.cursor_y
+        cursor_x = self.parent.field_cursor.x
+        cursor_y = 0 if self.parent.is_playing else self.parent.field_cursor.y
 
         if cursor_y > 0:
             x = cursor_x * 4 + 31

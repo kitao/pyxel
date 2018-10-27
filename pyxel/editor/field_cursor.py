@@ -2,7 +2,7 @@ import pyxel
 from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 
-class FieldEditor:
+class FieldCursor:
     def __init__(
         self,
         data_getter,
@@ -18,105 +18,105 @@ class FieldEditor:
         self._data_max_length = data_max_length
         self._data_view_length = data_view_length
         self._data_count = data_count
-        self._cursor_x = 0
-        self._cursor_y = 0
+        self._x = 0
+        self._y = 0
 
     @property
-    def cursor_x(self):
-        return min(self._cursor_x, len(self.data), self._data_max_length - 1)
+    def x(self):
+        return min(self._x, len(self.data), self._data_max_length - 1)
 
     @property
-    def _max_cursor_x(self):
+    def _max_x(self):
         return min(len(self.data), self._data_max_length - 1)
 
     @property
-    def cursor_y(self):
-        return self._cursor_y
+    def y(self):
+        return self._y
 
     @property
     def data(self):
-        return self._get_data(self._cursor_y)
+        return self._get_data(self._y)
 
     def move(self, x, y):
-        self._cursor_x = x
-        self._cursor_y = y
+        self._x = x
+        self._y = y
 
     def move_left(self):
-        if self.cursor_x > 0:
-            self._cursor_x = self.cursor_x - 1
+        if self.x > 0:
+            self._x = self.x - 1
 
     def move_right(self):
-        if self.cursor_x < self._max_cursor_x:
-            self._cursor_x += 1
+        if self.x < self._max_x:
+            self._x += 1
 
     def move_up(self):
-        cursor_view_y = self._cursor_x // self._data_view_length
+        cursor_view_y = self._x // self._data_view_length
 
         if cursor_view_y > 0:
-            self._cursor_x -= self._data_view_length
-        elif self._cursor_y > 0:
-            self._cursor_y -= 1
+            self._x -= self._data_view_length
+        elif self._y > 0:
+            self._y -= 1
 
-            data_view_y = self._max_cursor_x // self._data_view_length
-            self._cursor_x = (
-                self._data_view_length * data_view_y
-                + self._cursor_x % self._data_view_length
+            data_view_y = self._max_x // self._data_view_length
+            self._x = (
+                self._data_view_length * data_view_y + self._x % self._data_view_length
             )
 
     def move_down(self):
-        cursor_view_y = self._cursor_x // self._data_view_length
-        data_view_y = self._max_cursor_x // self._data_view_length
+        cursor_view_y = self._x // self._data_view_length
+        data_view_y = self._max_x // self._data_view_length
 
         if cursor_view_y < data_view_y:
-            self._cursor_x += self._data_view_length
-        elif self._cursor_y < self._data_count - 1:
-            self._cursor_y += 1
-            self._cursor_x %= self._data_view_length
+            self._x += self._data_view_length
+        elif self._y < self._data_count - 1:
+            self._y += 1
+            self._x %= self._data_view_length
 
     def insert(self, value):
-        x = self.cursor_x
+        x = self.x
         data = self.data
 
-        self._add_pre_history(self.cursor_x, self.cursor_y)
+        self._add_pre_history(self.x, self.y)
 
         data.insert(x, value)
         data[:] = data[: self._data_max_length]
 
-        self._cursor_x = x
+        self._x = x
         self.move_right()
 
-        self._add_post_history(self.cursor_x, self.cursor_y)
+        self._add_post_history(self.x, self.y)
 
     def overwrite(self, value):
         pass
 
     def backspace(self):
-        x = self.cursor_x
+        x = self.x
 
         if x == 0:
             return
 
         data = self.data
 
-        self._add_pre_history(self.cursor_x, self.cursor_y)
+        self._add_pre_history(self.x, self.y)
 
         del data[x - 1]
-        self.move_left()
+        if self._x <= self._max_x:
+            self.move_left()
 
-        self._add_post_history(self.cursor_x, self.cursor_y)
+        self._add_post_history(self.x, self.y)
 
     def delete(self):
-        x = self.cursor_x
+        x = self.x
         data = self.data
 
         if x >= len(data):
             return
 
-        self._add_pre_history(self.cursor_x, self.cursor_y)
+        self._add_pre_history(self.x, self.y)
 
         del data[x]
 
-        self._add_post_history(self.cursor_x, self.cursor_y)
+        self._add_post_history(self.x, self.y)
 
     def process_input(self):
         if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):

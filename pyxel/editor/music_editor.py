@@ -4,7 +4,7 @@ from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MUSIC_MAX_LENGTH
 from .editor import Editor
-from .field_editor import FieldEditor
+from .field_cursor import FieldCursor
 from .music_field import MusicField
 from .sound_selector import SoundSelector
 
@@ -15,7 +15,7 @@ class MusicEditor(Editor):
 
         self._is_playing = False
         self._play_pos = [0 for _ in range(AUDIO_CHANNEL_COUNT)]
-        self.field_editor = FieldEditor(
+        self.field_cursor = FieldCursor(
             self.get_data,
             self.add_pre_history,
             self.add_post_history,
@@ -83,12 +83,12 @@ class MusicEditor(Editor):
         self._history_data = data = {}
         data["music"] = self._music_picker.value
         data["cursor_before"] = (x, y)
-        data["before"] = self.field_editor.data.copy()
+        data["before"] = self.field_cursor.data.copy()
 
     def add_post_history(self, x, y):
         data = self._history_data
         data["cursor_after"] = (x, y)
-        data["after"] = self.field_editor.data.copy()
+        data["after"] = self.field_cursor.data.copy()
         self.add_history(self._history_data)
 
     def _play(self):
@@ -119,13 +119,13 @@ class MusicEditor(Editor):
 
     def __on_undo(self, data):
         self._music_picker.value = data["music"]
-        self.field_editor.move(*data["cursor_before"])
-        self.field_editor.data[:] = data["before"]
+        self.field_cursor.move(*data["cursor_before"])
+        self.field_cursor.data[:] = data["before"]
 
     def __on_redo(self, data):
         self._music_picker.value = data["music"]
-        self.field_editor.move(*data["cursor_after"])
-        self.field_editor.data[:] = data["after"]
+        self.field_cursor.move(*data["cursor_after"])
+        self.field_cursor.data[:] = data["after"]
 
     def __on_hide(self):
         self._stop()
@@ -158,7 +158,7 @@ class MusicEditor(Editor):
         if self._loop_button.is_enabled and pyxel.btnp(pyxel.KEY_L):
             self._loop_button.press()
 
-        self.field_editor.process_input()
+        self.field_cursor.process_input()
 
     def __on_draw(self):
         self.draw_panel(11, 16, 218, 9)

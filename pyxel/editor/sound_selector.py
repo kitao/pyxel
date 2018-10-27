@@ -51,7 +51,7 @@ class SoundSelector(Widget):
         self._pressed_sound = self._hit_sound_button(x, y)
 
         if self._pressed_sound is not None:
-            self.parent.field_editor.insert(self._pressed_sound)
+            self.parent.field_cursor.insert(self._pressed_sound)
 
     def __on_mouse_up(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON:

@@ -45,14 +45,14 @@ class PianoKeyboard(Widget):
         self.add_event_handler("draw", self.__on_draw)
 
     def __on_mouse_down(self, key, x, y):
-        self.parent.cursor_y = 0
+        pass
 
     def __on_mouse_hover(self, x, y):
         self.parent.help_message = "PLAY:Z/S/X..Q/2/W..A TONE:1"
 
     def __on_update(self):
         if (
-            self.parent.field_editor.cursor_y > 0
+            self.parent.field_cursor.y > 0
             or self.parent.is_playing
             or pyxel.btn(pyxel.KEY_CONTROL)
         ):
