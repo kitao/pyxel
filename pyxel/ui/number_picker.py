@@ -24,6 +24,8 @@ class NumberPicker(Widget):
         self.dec_button = TextButton(self, x, y, "-")
         self.inc_button = TextButton(self, x + width - 7, y, "+")
 
+        self.add_event_handler("enabled", self.__on_enabled)
+        self.add_event_handler("disabled", self.__on_disabled)
         self.add_event_handler("draw", self.__on_draw)
         self.dec_button.add_event_handler("press", self.__on_dec_button_press)
         self.dec_button.add_event_handler("repeat", self.__on_dec_button_press)
@@ -44,6 +46,14 @@ class NumberPicker(Widget):
 
             self.dec_button.is_enabled = self._value != self._min_value
             self.inc_button.is_enabled = self._value != self._max_value
+
+    def __on_enabled(self):
+        self.dec_button.is_enabled = self._value != self._min_value
+        self.inc_button.is_enabled = self._value != self._max_value
+
+    def __on_disabled(self):
+        self.dec_button.is_enabled = False
+        self.inc_button.is_enabled = False
 
     def __on_draw(self):
         x1 = self.x
