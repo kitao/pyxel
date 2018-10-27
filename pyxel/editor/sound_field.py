@@ -23,7 +23,7 @@ class SoundField(Widget):
         return x, y
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos is not None:
+        if key != pyxel.KEY_LEFT_BUTTON or self.parent.is_playing:
             return
 
         x, y = self._screen_to_view(x, y)
@@ -41,7 +41,7 @@ class SoundField(Widget):
     def __on_update(self):
         cursor_y = self.parent.field_editor.cursor_y
 
-        if cursor_y < 1 or self.parent.play_pos is not None:
+        if cursor_y < 1 or self.parent.is_playing:
             return
 
         value = None
@@ -82,9 +82,7 @@ class SoundField(Widget):
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 79, 193, 23)
 
         cursor_x = self.parent.field_editor.cursor_x
-        cursor_y = (
-            self.parent.field_editor.cursor_y if self.parent.play_pos is None else 0
-        )
+        cursor_y = 0 if self.parent.is_playing else self.parent.field_editor.cursor_y
 
         if cursor_y > 0:
             x = cursor_x * 4 + 31
