@@ -46,6 +46,7 @@ class SoundEditor(Editor):
 
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)
+        self.add_event_handler("hide", self.__on_hide)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
         self._sound_picker.add_event_handler("change", self.__on_sound_picker_change)
@@ -105,6 +106,8 @@ class SoundEditor(Editor):
     def _play(self):
         self._is_playing = True
         self._play_pos = 0
+        self._sound_picker.is_enabled = False
+        self._speed_picker.is_enabled = False
         self._play_button.is_enabled = False
         self._stop_button.is_enabled = True
         self._loop_button.is_enabled = False
@@ -114,6 +117,8 @@ class SoundEditor(Editor):
     def _stop(self):
         self._is_playing = None
         self._play_pos = None
+        self._sound_picker.is_enabled = True
+        self._speed_picker.is_enabled = True
         self._play_button.is_enabled = True
         self._stop_button.is_enabled = False
         self._loop_button.is_enabled = True
@@ -129,6 +134,9 @@ class SoundEditor(Editor):
         self._sound_picker.value = data["sound"]
         self.field_editor.move(*data["cursor_after"])
         self.field_editor.data[:] = data["after"]
+
+    def __on_hide(self):
+        self._stop()
 
     def __on_update(self):
         channel = pyxel._app._audio_player._channel_list[0]
