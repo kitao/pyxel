@@ -34,7 +34,7 @@ class PianoRoll(Widget):
         self._press_x = x
         self._press_y = y
 
-        self.parent.field_editor.move(x, 0)
+        self.parent.field_cursor.move(x, 0)
 
     def __on_mouse_up(self, key, x, y):
         pass
@@ -60,7 +60,7 @@ class PianoRoll(Widget):
 
         self.parent.add_pre_history(x, 0)
 
-        data = self.parent.field_editor.data
+        data = self.parent.field_cursor.data
         padding_length = self._press_x + 1 - len(data)
         if padding_length > 0:
             data.extend([-1] * padding_length)
@@ -68,7 +68,7 @@ class PianoRoll(Widget):
         self._press_x = x
         self._press_y = y
 
-        self.parent.field_editor.move(x, 0)
+        self.parent.field_cursor.move(x, 0)
 
         dx = x2 - x1
         dy = y2 - y1
@@ -89,9 +89,9 @@ class PianoRoll(Widget):
 
         x, y = self._screen_to_view(x, y)
 
-        self.parent.field_editor.move(x, 0)
+        self.parent.field_cursor.move(x, 0)
 
-        data = self.parent.field_editor.data
+        data = self.parent.field_cursor.data
 
         self.parent.add_pre_history(x, 0)
 
@@ -107,7 +107,7 @@ class PianoRoll(Widget):
         self.parent.help_message = "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
 
     def __on_update(self):
-        cursor_y = self.parent.field_editor.cursor_y
+        cursor_y = self.parent.field_cursor.y
 
         if cursor_y > 0 or self.parent.is_playing:
             return
@@ -116,7 +116,7 @@ class PianoRoll(Widget):
             pyxel.btnp(pyxel.KEY_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME)
             or pyxel.btnp(pyxel.KEY_KP_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME)
         ) and self.parent.keyboard_note is not None:
-            self.parent.field_editor.insert(self.parent.keyboard_note)
+            self.parent.field_cursor.insert(self.parent.keyboard_note)
 
     def __on_draw(self):
         pyxel.rect(self.x, self.y, self.x + self.width - 1, self.y + self.height - 1, 6)
@@ -125,8 +125,8 @@ class PianoRoll(Widget):
             x = self.parent.play_pos * 4 + 31
             pyxel.rect(x, 25, x + 2, 147, 2)
         else:
-            if self.parent.field_editor.cursor_y == 0:
-                x = self.parent.field_editor.cursor_x * 4 + 31
+            if self.parent.field_cursor.y == 0:
+                x = self.parent.field_cursor.x * 4 + 31
                 pyxel.rect(x, 25, x + 2, 147, 1)
 
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 7, 193, 72, 6)

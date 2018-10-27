@@ -28,7 +28,7 @@ class MusicField(Widget):
         if x < 0 or y < 0 or x > 188 or y > 16 or x % 12 > 8 or y % 10 > 6:
             return
 
-        self.parent.field_editor.move(x // 12 + (y // 10) * 16, self._ch)
+        self.parent.field_cursor.move(x // 12 + (y // 10) * 16, self._ch)
 
     def __on_mouse_hover(self, x, y):
         self.parent.help_message = "SOUND:SOUND_BUTTON/BS/DEL"
@@ -54,8 +54,8 @@ class MusicField(Widget):
                 cursor_y = self._ch
                 cursor_col = 8  # 13
         else:
-            cursor_x = self.parent.field_editor.cursor_x
-            cursor_y = self.parent.field_editor.cursor_y
+            cursor_x = self.parent.field_cursor.x
+            cursor_y = self.parent.field_cursor.y
             cursor_col = 1
 
         if cursor_y == self._ch:
