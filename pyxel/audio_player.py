@@ -78,7 +78,7 @@ class Channel:
             pos = int(self._time / self._one_note_time)
             self._note = sound.note[pos]
             self._volume = (
-                sound.volume[pos % len(sound.volume)] if sound.volume else 0
+                sound.volume[pos % len(sound.volume)] if sound.volume else 7
             ) * AUDIO_ONE_VOLUME
 
             if self._note >= 0 and self._volume > 0:
