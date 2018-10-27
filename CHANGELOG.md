@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.8.8
+- Added the .pyxel file to the install example script
+
 ## 0.8.7
 - Fixed the piano keyboard bug when only enter was pressed
 - Fixed the piano keyboard hilights correctly
