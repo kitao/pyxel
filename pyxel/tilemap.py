@@ -7,7 +7,7 @@ class Tilemap:
     def __init__(self, width, height):
         self._width = width
         self._height = height
-        self._data = np.zeros((width, height), np.uint8)
+        self._data = np.zeros((width, height), np.uint16)
 
     @property
     def width(self):
