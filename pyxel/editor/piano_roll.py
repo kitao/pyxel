@@ -26,7 +26,7 @@ class PianoRoll(Widget):
         return x, y
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos is not None:
+        if key != pyxel.KEY_LEFT_BUTTON or self.parent.is_playing:
             return
 
         x, y = self._screen_to_view(x, y)
@@ -40,7 +40,7 @@ class PianoRoll(Widget):
         pass
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
-        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos is not None:
+        if key != pyxel.KEY_LEFT_BUTTON or self.parent.is_playing:
             return
 
         x, y = self._screen_to_view(x, y)
@@ -84,7 +84,7 @@ class PianoRoll(Widget):
         self.parent.add_post_history(y, 0)
 
     def __on_mouse_click(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON or self.parent.play_pos is not None:
+        if key != pyxel.KEY_LEFT_BUTTON or self.parent.is_playing:
             return
 
         x, y = self._screen_to_view(x, y)
@@ -109,7 +109,7 @@ class PianoRoll(Widget):
     def __on_update(self):
         cursor_y = self.parent.field_editor.cursor_y
 
-        if cursor_y > 0 or self.parent.play_pos is not None:
+        if cursor_y > 0 or self.parent.is_playing:
             return
 
         if pyxel.btnp(
@@ -120,10 +120,8 @@ class PianoRoll(Widget):
     def __on_draw(self):
         pyxel.rect(self.x, self.y, self.x + self.width - 1, self.y + self.height - 1, 6)
 
-        play_pos = self.parent.play_pos
-
-        if play_pos is not None:
-            x = play_pos * 4 + 31
+        if self.parent.is_playing:
+            x = self.parent.play_pos * 4 + 31
             pyxel.rect(x, 25, x + 2, 147, 2)
         else:
             if self.parent.field_editor.cursor_y == 0:

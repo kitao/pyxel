@@ -24,6 +24,7 @@ class SoundEditor(Editor):
             4,
         )
         self.octave = 2
+        self._is_playing = False
         self._play_pos = None
         self._history_data = None
         self._sound_picker = NumberPicker(self, 45, 17, 0, AUDIO_SOUND_COUNT - 1, 0)
@@ -68,6 +69,10 @@ class SoundEditor(Editor):
         return self._piano_keyboard.note
 
     @property
+    def is_playing(self):
+        return self._is_playing
+
+    @property
     def play_pos(self):
         return self._play_pos
 
@@ -98,6 +103,7 @@ class SoundEditor(Editor):
         self.add_history(self._history_data)
 
     def _play(self):
+        self._is_playing = True
         self._play_pos = 0
         self._play_button.is_enabled = False
         self._stop_button.is_enabled = True
@@ -106,6 +112,7 @@ class SoundEditor(Editor):
         pyxel.play(0, self._sound_picker.value, loop=self._loop_button.value)
 
     def _stop(self):
+        self._is_playing = None
         self._play_pos = None
         self._play_button.is_enabled = True
         self._stop_button.is_enabled = False
@@ -125,17 +132,18 @@ class SoundEditor(Editor):
 
     def __on_update(self):
         channel = pyxel._app._audio_player._channel_list[0]
+        self._is_playing = channel._is_playing
         self._play_pos = (
             int(channel._time / channel._one_note_time) if channel._is_playing else None
         )
 
         if pyxel.btnp(pyxel.KEY_SPACE):
-            if self._play_pos is not None:
+            if self._is_playing:
                 self._stop_button.press()
             else:
                 self._play_button.press()
 
-        if self._play_pos is not None:
+        if self._is_playing:
             return
 
         if not self._play_button.is_enabled:
