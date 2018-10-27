@@ -7,7 +7,7 @@ class App:
     def __init__(self):
         pyxel.init(160, 120, caption="Pyxel Jump Game")
 
-        pyxel.image(0).load(0, 0, "assets/jump_game_160x120.png")
+        pyxel.load("assets/jump_game.pyxel")
 
         self.score = 0
         self.player_x = 72
@@ -20,29 +20,7 @@ class App:
         self.floor = [(i * 60, randint(8, 104), True) for i in range(4)]
         self.fruit = [(i * 60, randint(0, 104), randint(0, 2), True) for i in range(4)]
 
-        # bgm
-        a = "c3e2g2c3 e2g2c3e2"
-        b = "c3d2g2c3 d2g2c3d2"
-        pyxel.sound(0).set(a * 3 + b * 1, "t", "2", "f", 30)
-
-        a = "g1c2d2e2 e2e2f2f2"
-        b = "e2e2e2c2 c2c2c2c2"
-        c = "g2g2g2d2 d2d2d2d2"
-        pyxel.sound(1).set(a + b + a + c, "s", "4", "nnnn vvnn vvff nvvf", 30)
-
-        pyxel.sound(2).set("c1c1f0f0a0a0g0g0", "p", "4", "nf", 120)
-
-        pyxel.music(0).set([0], [1], [2], [])
         pyxel.playm(0, loop=True)
-
-        # jump sound
-        pyxel.sound(3).set("g1a#1d#2b2", "s", "7654", "s", 9)
-
-        # eat sound
-        pyxel.sound(4).set("g1c2f2a2c#2f#3", "p", "6", "s", 4)
-
-        # fall sound
-        pyxel.sound(5).set("a3d#3a#2f#2d2b1g1d#1", "s", "77654321", "s", 10)
 
         pyxel.run(self.update, self.draw)
 
