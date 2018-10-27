@@ -107,7 +107,7 @@ class CanvasPanel(Widget):
             self._overlay_canvas.paint(x, y, self.parent.color, dest)
 
             data["after"] = dest.copy()
-            self.parent.add_edit_history(data)
+            self.parent.add_history(data)
 
         self._last_x = x
         self._last_y = y
@@ -135,7 +135,7 @@ class CanvasPanel(Widget):
                 self._overlay_canvas.clear()
 
                 data["after"] = dest.copy()
-                self.parent.add_edit_history(data)
+                self.parent.add_history(data)
             else:
                 dest = pyxel.image(self.parent.image).data[
                     self.viewport_y : self.viewport_y + 16,
@@ -152,7 +152,7 @@ class CanvasPanel(Widget):
                 self._overlay_canvas.clear()
 
                 data["after"] = dest.copy()
-                self.parent.add_edit_history(data)
+                self.parent.add_history(data)
 
     def __on_mouse_click(self, key, x, y):
         if key == pyxel.KEY_RIGHT_BUTTON:
