@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.8.9
+- Fixed the tilemap to allow the tiles of #256 or higher
+
 ## 0.8.8
 - Added the .pyxel file to the install example script
 
