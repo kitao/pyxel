@@ -5,7 +5,7 @@ import pyxel
 
 class App:
     def __init__(self):
-        pyxel.init(160, 120, caption="Pyxel Jump Game")
+        pyxel.init(160, 120, caption="Pyxel Jump")
 
         pyxel.load("assets/jump_game.pyxel")
 
