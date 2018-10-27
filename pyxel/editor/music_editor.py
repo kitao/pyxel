@@ -42,6 +42,16 @@ class MusicEditor(Editor):
         self.add_event_handler("draw", self.__on_draw)
         self._play_button.add_event_handler("press", self.__on_play_button_press)
         self._stop_button.add_event_handler("press", self.__on_stop_button_press)
+        self._play_button.add_event_handler(
+            "mouse_hover", self.__on_play_button_mouse_hover
+        )
+        self._stop_button.add_event_handler(
+            "mouse_hover", self.__on_stop_button_mouse_hover
+        )
+        self._loop_button.add_event_handler(
+            "mouse_hover", self.__on_loop_button_mouse_hover
+        )
+        self.add_number_picker_help(self._music_picker)
 
     @property
     def music(self):
@@ -82,6 +92,10 @@ class MusicEditor(Editor):
 
     def _play(self):
         self._is_playing = True
+
+        for i in range(AUDIO_CHANNEL_COUNT):
+            self._play_pos[i] = 0
+
         self._play_button.is_enabled = False
         self._stop_button.is_enabled = True
         self._loop_button.is_enabled = False
@@ -90,6 +104,10 @@ class MusicEditor(Editor):
 
     def _stop(self):
         self._is_playing = False
+
+        for i in range(AUDIO_CHANNEL_COUNT):
+            self._play_pos[i] = None
+
         self._play_button.is_enabled = True
         self._stop_button.is_enabled = False
         self._loop_button.is_enabled = True
@@ -143,3 +161,12 @@ class MusicEditor(Editor):
 
     def __on_stop_button_press(self):
         self._stop()
+
+    def __on_play_button_mouse_hover(self, x, y):
+        self.parent.help_message = "PLAY:SPACE"
+
+    def __on_stop_button_mouse_hover(self, x, y):
+        self.parent.help_message = "STOP:SPACE"
+
+    def __on_loop_button_mouse_hover(self, x, y):
+        self.parent.help_message = "LOOP:L"

@@ -1,7 +1,7 @@
 import pyxel
 from pyxel.ui import Widget
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MUSIC_MAX_LENGTH
 
 
 class MusicField(Widget):
@@ -10,22 +10,24 @@ class MusicField(Widget):
 
         self._ch = ch
 
+        self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("draw", self.__on_draw)
 
     @property
     def data(self):
-        music = pyxel.music(self.parent.music)
+        return self.parent.get_data(self._ch)
 
-        if self._ch == 0:
-            data = music.ch0
-        elif self._ch == 1:
-            data = music.ch1
-        elif self._ch == 2:
-            data = music.ch2
-        elif self._ch == 3:
-            data = music.ch3
+    def __on_mouse_down(self, key, x, y):
+        if key != pyxel.KEY_LEFT_BUTTON or self.parent.is_playing:
+            return
 
-        return data
+        x -= self.x + 21
+        y -= self.y + 2
+
+        if x < 0 or y < 0 or x > 188 or y > 16 or x % 12 > 8 or y % 10 > 6:
+            return
+
+        self.parent.field_editor.move(x // 12 + (y // 10) * 16, self._ch)
 
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
@@ -35,22 +37,33 @@ class MusicField(Widget):
             self.x + 20, self.y + 1, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 102, 191, 19, 6
         )
 
-        cursor_x = self.parent.field_editor.cursor_x
-        cursor_y = self.parent.field_editor.cursor_y
+        data = self.data
+
+        if self.parent.is_playing:
+            play_pos = self.parent.play_pos(self._ch)
+
+            if play_pos is None or not data:
+                cursor_x = -1
+                cursor_y = -1
+            else:
+                cursor_x = play_pos
+                cursor_y = self._ch
+                cursor_col = 8  # 13
+        else:
+            cursor_x = self.parent.field_editor.cursor_x
+            cursor_y = self.parent.field_editor.cursor_y
+            cursor_col = 1
 
         if cursor_y == self._ch:
             x = self.x + (cursor_x % 16) * 12 + 21
             y = self.y + (cursor_y - self._ch + cursor_x // 16) * 10 + 2
-            pyxel.rect(x, y, x + 8, y + 6, 1)
+            pyxel.rect(x, y, x + 8, y + 6, cursor_col)
 
-        data = self.data
+        for i in range(MUSIC_MAX_LENGTH):
+            if i >= len(data):
+                break
 
-        for i in range(min(len(data), 16)):
+            x = self.x + 22 + (i % 16) * 12
+            y = self.y + (i // 16) * 10 + 3
             col = 7 if cursor_y == self._ch and cursor_x == i else 1
-            pyxel.text(self.x + 22 + i * 12, self.y + 3, "{:0>2}".format(data[i]), col)
-
-        for i in range(len(data) - 16):
-            col = 7 if cursor_y == self._ch and cursor_x == i + 16 else 1
-            pyxel.text(
-                self.x + 22 + i * 12, self.y + 13, "{:0>2}".format(data[i + 16]), col
-            )
+            pyxel.text(x, y, "{:0>2}".format(data[i]), col)
