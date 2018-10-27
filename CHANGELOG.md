@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.8.7
+- Fixed the piano keyboard bug when only enter was pressed
+- Fixed the piano keyboard hilights correctly
+- Changed the default sound volume to 7
+- Changed the default sound speed to 30
+- Fixed the sound button bug of the sound editor
+
 ## 0.8.6
 - Changed the operation method of the sound editor
 - Changed to allow sound of length 0
