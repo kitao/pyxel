@@ -112,9 +112,10 @@ class PianoRoll(Widget):
         if cursor_y > 0 or self.parent.is_playing:
             return
 
-        if pyxel.btnp(
-            pyxel.KEY_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
-        ) or pyxel.btnp(pyxel.KEY_KP_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+        if (
+            pyxel.btnp(pyxel.KEY_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME)
+            or pyxel.btnp(pyxel.KEY_KP_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME)
+        ) and self.parent.keyboard_note is not None:
             self.parent.field_editor.insert(self.parent.keyboard_note)
 
     def __on_draw(self):
