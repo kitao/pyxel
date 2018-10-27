@@ -4,6 +4,8 @@
 - Fixed the tilemap to allow the tiles of #256 or higher
 - Updated the screenshots of the Pyxel Editor
 - Fixed the cursor movement of the sound and music editors
+- Changed the caption of the example #2
+- Renamed the example #6
 
 ## 0.8.8
 - Added the .pyxel file to the install example script
