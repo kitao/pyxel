@@ -53,7 +53,7 @@ class PianoKeyboard(Widget):
     def __on_update(self):
         if (
             self.parent.field_editor.cursor_y > 0
-            or self.parent.play_pos is not None
+            or self.parent.is_playing
             or pyxel.btn(pyxel.KEY_CONTROL)
         ):
             return
@@ -80,14 +80,12 @@ class PianoKeyboard(Widget):
     def __on_draw(self):
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X + 208, EDITOR_IMAGE_Y, 12, 123, 6)
 
-        play_pos = self.parent.play_pos
         data = self.parent.get_data(0)
 
-        if play_pos is None and self.note is None or not data:
+        if not self.parent.is_playing and self.note is None or not data:
             return
 
-        note = self.note if play_pos is None else data[play_pos]
-
+        note = data[self.parent.play_pos] if self.parent.is_playing else self.note
         x = self.x
         y = self.y + (59 - note) * 2
         key = note % 12
