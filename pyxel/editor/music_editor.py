@@ -125,15 +125,17 @@ class MusicEditor(Editor):
         self.field_editor.data[:] = data["after"]
 
     def __on_update(self):
-        self._is_playing = False
-        for i in range(AUDIO_CHANNEL_COUNT):
-            channel = pyxel._app._audio_player._channel_list[i]
+        if self._is_playing:
+            self._is_playing = False
 
-            if channel._is_playing:
-                self._is_playing = True
-                self._play_pos[i] = channel._sound_index
-            else:
-                self._play_pos[i] = None
+            for i in range(AUDIO_CHANNEL_COUNT):
+                channel = pyxel._app._audio_player._channel_list[i]
+
+                if channel._is_playing:
+                    self._is_playing = True
+                    self._play_pos[i] = channel._sound_index
+                else:
+                    self._play_pos[i] = None
 
         if pyxel.btnp(pyxel.KEY_SPACE):
             if self._is_playing:
