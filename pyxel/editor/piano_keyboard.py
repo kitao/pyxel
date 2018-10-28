@@ -54,7 +54,9 @@ class PianoKeyboard(Widget):
         if (
             self.parent.field_cursor.y > 0
             or self.parent.is_playing
+            or pyxel.btn(pyxel.KEY_SHIFT)
             or pyxel.btn(pyxel.KEY_CONTROL)
+            or pyxel.btn(pyxel.KEY_ALT)
         ):
             return
 
