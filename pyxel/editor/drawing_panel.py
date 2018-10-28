@@ -19,6 +19,7 @@ class DrawingPanel(Widget):
         super().__init__(parent, 11, 16, 130, 130)
 
         self._is_tilemap_mode = is_tilemap_mode
+        self._history_data = None
         self.viewport_x = 0
         self.viewport_y = 0
         self._press_x = 0
@@ -50,6 +51,17 @@ class DrawingPanel(Widget):
         self._h_scroll_bar.add_event_handler("change", self.__on_h_scroll_bar_change)
         self._v_scroll_bar.add_event_handler("change", self.__on_v_scroll_bar_change)
 
+    def _add_pre_history(self, target, x, y, canvas):
+        self._history_data = data = {}
+        data["tilemap" if self._is_tilemap_mode else "image"] = target
+        data["pos"] = (x, y)
+        data["before"] = canvas.copy()
+
+    def _add_post_history(self, canvas):
+        data = self._history_data
+        data["after"] = canvas.copy()
+        self.parent.add_history(data)
+
     def _screen_to_view(self, x, y):
         x = min(max((x - self.x - 1) // 8, 0), 15)
         y = min(max((y - self.y - 1) // 8, 0), 15)
@@ -79,10 +91,9 @@ class DrawingPanel(Widget):
                     self.viewport_x : self.viewport_x + 16,
                 ]
 
-                data = {}
-                data["tilemap"] = self.parent.tilemap
-                data["pos"] = (self.viewport_x, self.viewport_y)
-                data["before"] = dest.copy()
+                self._add_pre_history(
+                    self.parent.tilemap, self.viewport_x, self.viewport_y, dest
+                )
 
                 dest = pyxel.tilemap(self.parent.tilemap).data[
                     self.viewport_y : self.viewport_y + 16,
@@ -94,10 +105,9 @@ class DrawingPanel(Widget):
                     self.viewport_x : self.viewport_x + 16,
                 ]
 
-                data = {}
-                data["image"] = self.parent.image
-                data["pos"] = (self.viewport_x, self.viewport_y)
-                data["before"] = dest.copy()
+                self._add_pre_history(
+                    self.parent.image, self.viewport_x, self.viewport_y, dest
+                )
 
                 dest = pyxel.image(self.parent.image).data[
                     self.viewport_y : self.viewport_y + 16,
@@ -106,8 +116,7 @@ class DrawingPanel(Widget):
 
             self._overlay_canvas.paint(x, y, self.parent.color, dest)
 
-            data["after"] = dest.copy()
-            self.parent.add_history(data)
+            self._add_post_history(dest)
 
         self._last_x = x
         self._last_y = y
@@ -125,34 +134,24 @@ class DrawingPanel(Widget):
                     self.viewport_x : self.viewport_x + 16,
                 ]
 
-                data = {}
-                data["tilemap"] = self.parent.tilemap
-                data["pos"] = (self.viewport_x, self.viewport_y)
-                data["before"] = dest.copy()
-
-                index = self._overlay_canvas.data != -1
-                dest[index] = self._overlay_canvas.data[index]
-                self._overlay_canvas.clear()
-
-                data["after"] = dest.copy()
-                self.parent.add_history(data)
+                self._add_pre_history(
+                    self.parent.tilemap, self.viewport_x, self.viewport_y, dest
+                )
             else:
                 dest = pyxel.image(self.parent.image).data[
                     self.viewport_y : self.viewport_y + 16,
                     self.viewport_x : self.viewport_x + 16,
                 ]
 
-                data = {}
-                data["image"] = self.parent.image
-                data["pos"] = (self.viewport_x, self.viewport_y)
-                data["before"] = dest.copy()
+                self._add_pre_history(
+                    self.parent.image, self.viewport_x, self.viewport_y, dest
+                )
 
-                index = self._overlay_canvas.data != -1
-                dest[index] = self._overlay_canvas.data[index]
-                self._overlay_canvas.clear()
+            index = self._overlay_canvas.data != -1
+            dest[index] = self._overlay_canvas.data[index]
+            self._overlay_canvas.clear()
 
-                data["after"] = dest.copy()
-                self.parent.add_history(data)
+            self._add_post_history(dest)
 
     def __on_mouse_click(self, key, x, y):
         if key == pyxel.KEY_RIGHT_BUTTON:
