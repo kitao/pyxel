@@ -34,21 +34,14 @@ class ImagePanel(Widget):
         self._v_scroll_bar.add_event_handler("change", self.__on_v_scroll_bar_change)
 
     def _screen_to_view(self, x, y):
-        x = (x - (self.x + (self._select_width - 8) // 2 + 1)) // 8
-        y = (y - (self.y + (self._select_height - 8) // 2 + 1)) // 8
+        x += self.viewport_x - self.x - 1
+        y += self.viewport_y - self.y - 1
 
-        if self._is_tilemap_mode:
-            width = 64
-            height = 64
-        else:
-            width = 64
-            height = 128
+        x = (x - (self._select_width - 8) // 2) // 8 * 8
+        y = (y - (self._select_height - 8) // 2) // 8 * 8
 
-        width = (width - self._select_width) // 8
-        height = (height - self._select_height) // 8
-
-        x = self.viewport_x + min(max(x, 0), width) * 8
-        y = self.viewport_y + min(max(y, 0), height) * 8
+        x = min(max(x, 0), 256 - self._select_width)
+        y = min(max(y, 0), 256 - self._select_height)
 
         return x, y
 
