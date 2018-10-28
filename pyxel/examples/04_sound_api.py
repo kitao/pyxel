@@ -105,14 +105,16 @@ class App:
         pyxel.cls(1)
 
         pyxel.text(6, 6, "sound(snd).set(note,tone,volume,effect,speed)", 7)
-        pyxel.rect(12, 16, 188, 52, 2)
-        pyxel.text(16, 20, "note  :[CDEFGAB] + [ #-] + [0-4] or [R]", 9)
-        pyxel.text(16, 28, "tone  :[T]riangle [S]quare [P]ulse [N]oise", 9)
-        pyxel.text(16, 36, "volume:[0-7]", 9)
-        pyxel.text(16, 44, "effect:[N]one [S]lide [V]ibrato [F]adeOut", 9)
+        pyxel.rect(12, 13, 188, 47, 2)
+        pyxel.text(16, 16, "note  :[CDEFGAB] + [ #-] + [0-4] or [R]", 9)
+        pyxel.text(16, 24, "tone  :[T]riangle [S]quare [P]ulse [N]oise", 9)
+        pyxel.text(16, 32, "volume:[0-7]", 9)
+        pyxel.text(16, 40, "effect:[N]one [S]lide [V]ibrato [F]adeOut", 9)
 
-        pyxel.text(6, 62, "play(ch,snd,loop=False)", 7)
-        pyxel.text(6, 76, "stop([ch])", 7)
+        pyxel.text(6, 51, "music(msc).set(ch0,ch1,ch2,ch3)", 7)
+        pyxel.text(6, 61, "play(ch,snd,loop=False)", 7)
+        pyxel.text(6, 71, "playm(msc,loop=False)", 7)
+        pyxel.text(6, 81, "stop([ch])", 7)
 
         pyxel.rectb(6, 97, 193, 143, 14)
         pyxel.rect(6, 91, 34, 97, 14)
