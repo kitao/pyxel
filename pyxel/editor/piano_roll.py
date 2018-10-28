@@ -81,7 +81,7 @@ class PianoRoll(Widget):
             else:
                 data[x1 + i] = value
 
-        self.parent.add_post_history(y, 0)
+        self.parent.add_post_history(x, 0)
 
     def __on_mouse_click(self, key, x, y):
         if key != pyxel.KEY_LEFT_BUTTON or self.parent.is_playing:
