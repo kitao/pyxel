@@ -14,7 +14,7 @@ from .constants import (
 from .overlay_canvas import OverlayCanvas
 
 
-class CanvasPanel(Widget):
+class DrawingPanel(Widget):
     def __init__(self, parent, *, is_tilemap_mode):
         super().__init__(parent, 11, 16, 130, 130)
 
@@ -301,17 +301,22 @@ class CanvasPanel(Widget):
                 dest = data[y1 : y1 + height, x1 : x1 + width]
                 dest[:, :] = self._copy_buffer[:height, :width]
 
-        if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            self.viewport_x -= 8
+        if not (
+            pyxel.btn(pyxel.KEY_SHIFT)
+            or pyxel.btn(pyxel.KEY_CONTROL)
+            or pyxel.btn(pyxel.KEY_ALT)
+        ):
+            if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+                self.viewport_x -= 8
 
-        if pyxel.btnp(pyxel.KEY_RIGHT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            self.viewport_x += 8
+            if pyxel.btnp(pyxel.KEY_RIGHT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+                self.viewport_x += 8
 
-        if pyxel.btnp(pyxel.KEY_UP, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            self.viewport_y -= 8
+            if pyxel.btnp(pyxel.KEY_UP, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+                self.viewport_y -= 8
 
-        if pyxel.btnp(pyxel.KEY_DOWN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            self.viewport_y += 8
+            if pyxel.btnp(pyxel.KEY_DOWN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+                self.viewport_y += 8
 
         self.viewport_x = min(max(self.viewport_x, 0), 240)
         self.viewport_y = min(max(self.viewport_y, 0), 240)
