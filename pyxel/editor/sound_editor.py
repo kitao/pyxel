@@ -101,7 +101,9 @@ class SoundEditor(Editor):
         data = self._history_data
         data["cursor_after"] = (x, y)
         data["after"] = self.field_cursor.data.copy()
-        self.add_history(self._history_data)
+
+        if data["before"] != data["after"]:
+            self.add_history(self._history_data)
 
     def _play(self):
         self._is_playing = True
