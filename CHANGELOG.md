@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.8.10
+- Fixed the bug where the Pyxel Editor cursor malfunctions
+
 ## 0.8.9
 - Fixed the tilemap to allow the tiles of #256 or higher
 - Updated the screenshots of the Pyxel Editor
