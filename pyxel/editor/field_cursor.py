@@ -119,6 +119,13 @@ class FieldCursor:
         self._add_post_history(self.x, self.y)
 
     def process_input(self):
+        if (
+            pyxel.btn(pyxel.KEY_SHIFT)
+            or pyxel.btn(pyxel.KEY_CONTROL)
+            or pyxel.btn(pyxel.KEY_ALT)
+        ):
+            return
+
         if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             self.move_left()
 
