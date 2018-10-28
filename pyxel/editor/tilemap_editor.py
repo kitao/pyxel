@@ -95,8 +95,8 @@ class TileMapEditor(Editor):
         dest = pyxel.tilemap(tm).data[y : y + 16, x : x + 16]
         dest[:, :] = data["before"]
 
-        self._drawing_panel.drawing_x = x
-        self._drawing_panel.drawing_y = y
+        self._drawing_panel.viewport_x = x
+        self._drawing_panel.viewport_y = y
         self._tilemap_picker.value = tm
 
     def __on_redo(self, data):
@@ -105,8 +105,8 @@ class TileMapEditor(Editor):
         dest = pyxel.tilemap(tm).data[y : y + 16, x : x + 16]
         dest[:, :] = data["after"]
 
-        self._drawing_panel.drawing_x = x
-        self._drawing_panel.drawing_y = y
+        self._drawing_panel.viewport_x = x
+        self._drawing_panel.viewport_y = y
         self._tilemap_picker.value = tm
 
     def __on_update(self):
