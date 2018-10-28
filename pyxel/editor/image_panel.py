@@ -12,6 +12,8 @@ class ImagePanel(Widget):
         self.viewport_y = 0
         self.select_x = 0
         self.select_y = 0
+        self._select_width = 8 if is_tilemap_mode else 16
+        self._select_height = 8 if is_tilemap_mode else 16
         self._drag_offset_x = 0
         self._drag_offset_y = 0
         self._h_scroll_bar = ScrollBar(
@@ -32,15 +34,21 @@ class ImagePanel(Widget):
         self._v_scroll_bar.add_event_handler("change", self.__on_v_scroll_bar_change)
 
     def _screen_to_view(self, x, y):
-        x -= self.x + 1
-        y -= self.y + 1
+        x = (x - (self.x + (self._select_width - 8) // 2 + 1)) // 8
+        y = (y - (self.y + (self._select_height - 8) // 2 + 1)) // 8
 
         if self._is_tilemap_mode:
-            x = self.viewport_x + min(max(x // 8, 0), 7) * 8
-            y = self.viewport_y + min(max(y // 8, 0), 7) * 8
+            width = 64
+            height = 64
         else:
-            x = self.viewport_x + min(max((x - 4) // 8, 0), 6) * 8
-            y = self.viewport_y + min(max((y - 4) // 8, 0), 14) * 8
+            width = 64
+            height = 128
+
+        width = (width - self._select_width) // 8
+        height = (height - self._select_height) // 8
+
+        x = self.viewport_x + min(max(x, 0), width) * 8
+        y = self.viewport_y + min(max(y, 0), height) * 8
 
         return x, y
 
@@ -108,17 +116,14 @@ class ImagePanel(Widget):
             self.x + 1, self.y + 1, self.x + self.width - 2, self.y + self.height - 2
         )
 
-        x = self.x + self.select_x - self.viewport_x
-        y = self.y + self.select_y - self.viewport_y
+        x1 = self.x + self.select_x - self.viewport_x
+        y1 = self.y + self.select_y - self.viewport_y
+        x2 = x1 + self._select_width + 1
+        y2 = y1 + self._select_height + 1
 
-        if self._is_tilemap_mode:
-            pyxel.rectb(x, y, x + 9, y + 9, 0)
-            pyxel.rectb(x - 1, y - 1, x + 10, y + 10, 7)
-            pyxel.rectb(x - 2, y - 2, x + 11, y + 11, 0)
-        else:
-            pyxel.rectb(x, y, x + 17, y + 17, 0)
-            pyxel.rectb(x - 1, y - 1, x + 18, y + 18, 7)
-            pyxel.rectb(x - 2, y - 2, x + 19, y + 19, 0)
+        pyxel.rectb(x1, y1, x2, y2, 0)
+        pyxel.rectb(x1 - 1, y1 - 1, x2 + 1, y2 + 1, 7)
+        pyxel.rectb(x1 - 2, y1 - 2, x2 + 2, y2 + 2, 0)
 
         pyxel.clip()
 
