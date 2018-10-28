@@ -90,7 +90,7 @@ class App:
         self._update = None
         self._draw = None
         self._capture_start = 0
-        self._capture_index = 0
+        self._capture_count = 0
         self._capture_images = [None] * APP_GIF_CAPTURE_COUNT
 
         self._perf_monitor_is_enabled = False
@@ -445,8 +445,8 @@ class App:
             self._palette,
             self._border_color,
         )
-        self._capture_images[self._capture_index % APP_GIF_CAPTURE_COUNT] = image
-        self._capture_index += 1
+        self._capture_images[self._capture_count % APP_GIF_CAPTURE_COUNT] = image
+        self._capture_count += 1
 
         self._measure_draw_time(draw_start_time)
 
@@ -475,7 +475,7 @@ class App:
                 self._save_capture_image()
 
             if self.btnp(KEY_2):
-                self._capture_start = self._capture_index - 1
+                self._capture_start = self._capture_count - 1
 
             if self.btnp(KEY_3):
                 self._save_capture_animation()
@@ -484,29 +484,29 @@ class App:
             self.quit()
 
     def _save_capture_image(self):
-        index = (self._capture_index - 1) % APP_GIF_CAPTURE_COUNT
+        index = (self._capture_count - 1) % APP_GIF_CAPTURE_COUNT
         image = self._get_capture_image(index)
         image.save(self._get_capture_filename() + ".png", optimize=True)
 
     def _save_capture_animation(self):
         image_count = min(
-            self._capture_index - self._capture_start, APP_GIF_CAPTURE_COUNT
+            self._capture_count - self._capture_start, APP_GIF_CAPTURE_COUNT
         )
 
         if image_count <= 0:
             return
 
-        start_index = self._capture_index - image_count
+        start_index = (self._capture_count - image_count) % APP_GIF_CAPTURE_COUNT
         images = [self._get_capture_image(start_index)]
 
         for i in range(1, image_count):
             index = (start_index + i) % APP_GIF_CAPTURE_COUNT
-            im = self._difference(
+            image = self._difference(
                 self._get_capture_image(index - 1), self._get_capture_image(index)
             )
-            images.append(im)
+            images.append(image)
 
-        index = self._get_color_palette_index(im, GIF_TRANSPARENCY_COLOR)
+        color_index = self._get_color_palette_index(image, GIF_TRANSPARENCY_COLOR)
 
         images[0].save(
             self._get_capture_filename() + ".gif",
@@ -515,7 +515,7 @@ class App:
             duration=self._one_frame_time * 1000,
             loop=0,
             optimize=False,
-            transparency=index,
+            transparency=color_index,
             disposal=1,
             palette=utilities.get_palette(fill=False),
         )

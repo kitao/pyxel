@@ -6,6 +6,7 @@
 - Fixed the cursor movement of the sound and music editors
 - Changed the caption of the example #2
 - Renamed the example #6
+- Fixed the error when saving long animated GIF
 
 ## 0.8.8
 - Added the .pyxel file to the install example script
