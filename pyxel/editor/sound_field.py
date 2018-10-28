@@ -41,7 +41,13 @@ class SoundField(Widget):
     def __on_update(self):
         cursor_y = self.parent.field_cursor.y
 
-        if cursor_y < 1 or self.parent.is_playing:
+        if (
+            cursor_y < 1
+            or self.parent.is_playing
+            or pyxel.btn(pyxel.KEY_SHIFT)
+            or pyxel.btn(pyxel.KEY_CONTROL)
+            or pyxel.btn(pyxel.KEY_ALT)
+        ):
             return
 
         value = None
