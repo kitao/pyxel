@@ -65,7 +65,9 @@ class DrawingPanel(Widget):
     def _add_post_history(self, canvas):
         data = self._history_data
         data["after"] = canvas.copy()
-        self.parent.add_history(data)
+
+        if (data["before"] != data["after"]).any():
+            self.parent.add_history(data)
 
     def _screen_to_view(self, x, y):
         x = min(max((x - self.x - 1) // 8, 0), 15)
