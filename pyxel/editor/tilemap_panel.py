@@ -25,7 +25,7 @@ class TilemapPanel(Widget):
 
     def __on_mouse_down(self, key, x, y):
         if key == pyxel.KEY_LEFT_BUTTON:
-            self.parent.edit_x, self.parent.edit_y = self._screen_to_view(x, y)
+            self.parent.drawing_x, self.parent.drawing_y = self._screen_to_view(x, y)
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         if key == pyxel.KEY_LEFT_BUTTON:
@@ -52,8 +52,8 @@ class TilemapPanel(Widget):
             self.x + 1, self.y + 1, self.x + self.width - 2, self.y + self.height - 2
         )
 
-        x = self.x + self.parent.edit_x // 4
-        y = self.y + self.parent.edit_y // 4
+        x = self.x + self.parent.drawing_x // 4
+        y = self.y + self.parent.drawing_y // 4
         pyxel.rectb(x, y, x + 5, y + 5, 0)
         pyxel.rectb(x - 1, y - 1, x + 6, y + 6, 7)
         pyxel.rectb(x - 2, y - 2, x + 7, y + 7, 0)
