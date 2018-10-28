@@ -2,8 +2,8 @@ import pyxel
 from pyxel.constants import RENDERER_IMAGE_COUNT
 from pyxel.ui import ColorPicker, NumberPicker, RadioButton
 
-from .canvas_panel import CanvasPanel
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, TOOL_PENCIL
+from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
 
@@ -12,7 +12,7 @@ class ImageEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self._canvas_panel = CanvasPanel(self, is_tilemap_mode=False)
+        self._drawing_panel = DrawingPanel(self, is_tilemap_mode=False)
         self._image_panel = ImagePanel(self, is_tilemap_mode=False)
         self._color_picker = ColorPicker(self, 11, 156, 7, with_shadow=False)
         self._tool_button = RadioButton(
@@ -50,20 +50,20 @@ class ImageEditor(Editor):
         return self._image_picker.value
 
     @property
-    def edit_x(self):
-        return self._canvas_panel.viewport_x
+    def drawing_x(self):
+        return self._drawing_panel.viewport_x
 
-    @edit_x.setter
-    def edit_x(self, value):
-        self._canvas_panel.viewport_x = value
+    @drawing_x.setter
+    def drawing_x(self, value):
+        self._drawing_panel.viewport_x = value
 
     @property
-    def edit_y(self):
-        return self._canvas_panel.viewport_y
+    def drawing_y(self):
+        return self._drawing_panel.viewport_y
 
-    @edit_y.setter
-    def edit_y(self, value):
-        self._canvas_panel.viewport_y = value
+    @drawing_y.setter
+    def drawing_y(self, value):
+        self._drawing_panel.viewport_y = value
 
     def __on_undo(self, data):
         img = data["image"]
@@ -71,8 +71,8 @@ class ImageEditor(Editor):
         dest = pyxel.image(img).data[y : y + 16, x : x + 16]
         dest[:, :] = data["before"]
 
-        self.edit_x = x
-        self.edit_y = y
+        self.drawing_x = x
+        self.drawing_y = y
         self.parent.image = img
 
     def __on_redo(self, data):
@@ -81,8 +81,8 @@ class ImageEditor(Editor):
         dest = pyxel.image(img).data[y : y + 16, x : x + 16]
         dest[:, :] = data["after"]
 
-        self.edit_x = x
-        self.edit_y = y
+        self.drawing_x = x
+        self.drawing_y = y
         self.parent.image = img
 
     def __on_update(self):

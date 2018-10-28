@@ -49,8 +49,8 @@ class ImagePanel(Widget):
             self.select_x, self.select_y = self._screen_to_view(x, y)
 
             if not self._is_tilemap_mode:
-                self.parent.edit_x = self.select_x
-                self.parent.edit_y = self.select_y
+                self.parent.drawing_x = self.select_x
+                self.parent.drawing_y = self.select_y
 
         if key == pyxel.KEY_RIGHT_BUTTON:
             self._drag_offset_x = 0
@@ -85,8 +85,8 @@ class ImagePanel(Widget):
 
     def __on_update(self):
         if not self._is_tilemap_mode:
-            self.select_x = self.parent.edit_x
-            self.select_y = self.parent.edit_y
+            self.select_x = self.parent.drawing_x
+            self.select_y = self.parent.drawing_y
 
         self._h_scroll_bar.value = self.viewport_x // 8
         self._v_scroll_bar.value = self.viewport_y // 8
