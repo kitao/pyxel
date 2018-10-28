@@ -301,22 +301,24 @@ class DrawingPanel(Widget):
                 dest = data[y1 : y1 + height, x1 : x1 + width]
                 dest[:, :] = self._copy_buffer[:height, :width]
 
-        if not (
+        if (
             pyxel.btn(pyxel.KEY_SHIFT)
             or pyxel.btn(pyxel.KEY_CONTROL)
             or pyxel.btn(pyxel.KEY_ALT)
         ):
-            if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-                self.viewport_x -= 8
+            return
 
-            if pyxel.btnp(pyxel.KEY_RIGHT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-                self.viewport_x += 8
+        if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            self.viewport_x -= 8
 
-            if pyxel.btnp(pyxel.KEY_UP, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-                self.viewport_y -= 8
+        if pyxel.btnp(pyxel.KEY_RIGHT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            self.viewport_x += 8
 
-            if pyxel.btnp(pyxel.KEY_DOWN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-                self.viewport_y += 8
+        if pyxel.btnp(pyxel.KEY_UP, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            self.viewport_y -= 8
+
+        if pyxel.btnp(pyxel.KEY_DOWN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            self.viewport_y += 8
 
         self.viewport_x = min(max(self.viewport_x, 0), 240)
         self.viewport_y = min(max(self.viewport_y, 0), 240)
