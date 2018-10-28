@@ -51,10 +51,15 @@ class DrawingPanel(Widget):
         self._h_scroll_bar.add_event_handler("change", self.__on_h_scroll_bar_change)
         self._v_scroll_bar.add_event_handler("change", self.__on_v_scroll_bar_change)
 
-    def _add_pre_history(self, target, x, y, canvas):
+    def _add_pre_history(self, canvas):
         self._history_data = data = {}
-        data["tilemap" if self._is_tilemap_mode else "image"] = target
-        data["pos"] = (x, y)
+
+        if self._is_tilemap_mode:
+            data["tilemap"] = self.parent.tilemap
+        else:
+            data["image"] = self.parent.image
+
+        data["pos"] = (self.viewport_x, self.viewport_y)
         data["before"] = canvas.copy()
 
     def _add_post_history(self, canvas):
@@ -85,34 +90,17 @@ class DrawingPanel(Widget):
         elif self.parent.tool >= TOOL_PENCIL and self.parent.tool <= TOOL_CIRC:
             self._overlay_canvas.pix(x, y, self.parent.color)
         elif self.parent.tool == TOOL_BUCKET:
-            if self._is_tilemap_mode:
-                dest = pyxel.tilemap(self.parent.tilemap).data[
-                    self.viewport_y : self.viewport_y + 16,
-                    self.viewport_x : self.viewport_x + 16,
-                ]
+            data = (
+                pyxel.tilemap(self.parent.tilemap).data
+                if self._is_tilemap_mode
+                else pyxel.image(self.parent.image).data
+            )
+            dest = data[
+                self.viewport_y : self.viewport_y + 16,
+                self.viewport_x : self.viewport_x + 16,
+            ]
 
-                self._add_pre_history(
-                    self.parent.tilemap, self.viewport_x, self.viewport_y, dest
-                )
-
-                dest = pyxel.tilemap(self.parent.tilemap).data[
-                    self.viewport_y : self.viewport_y + 16,
-                    self.viewport_x : self.viewport_x + 16,
-                ]
-            else:
-                dest = pyxel.image(self.parent.image).data[
-                    self.viewport_y : self.viewport_y + 16,
-                    self.viewport_x : self.viewport_x + 16,
-                ]
-
-                self._add_pre_history(
-                    self.parent.image, self.viewport_x, self.viewport_y, dest
-                )
-
-                dest = pyxel.image(self.parent.image).data[
-                    self.viewport_y : self.viewport_y + 16,
-                    self.viewport_x : self.viewport_x + 16,
-                ]
+            self._add_pre_history(dest)
 
             self._overlay_canvas.paint(x, y, self.parent.color, dest)
 
@@ -128,24 +116,17 @@ class DrawingPanel(Widget):
         self._is_dragged = False
 
         if self.parent.tool >= TOOL_PENCIL and self.parent.tool <= TOOL_CIRC:
-            if self._is_tilemap_mode:
-                dest = pyxel.tilemap(self.parent.tilemap).data[
-                    self.viewport_y : self.viewport_y + 16,
-                    self.viewport_x : self.viewport_x + 16,
-                ]
+            data = (
+                pyxel.tilemap(self.parent.tilemap).data
+                if self._is_tilemap_mode
+                else pyxel.image(self.parent.image).data
+            )
+            dest = data[
+                self.viewport_y : self.viewport_y + 16,
+                self.viewport_x : self.viewport_x + 16,
+            ]
 
-                self._add_pre_history(
-                    self.parent.tilemap, self.viewport_x, self.viewport_y, dest
-                )
-            else:
-                dest = pyxel.image(self.parent.image).data[
-                    self.viewport_y : self.viewport_y + 16,
-                    self.viewport_x : self.viewport_x + 16,
-                ]
-
-                self._add_pre_history(
-                    self.parent.image, self.viewport_x, self.viewport_y, dest
-                )
+            self._add_pre_history(dest)
 
             index = self._overlay_canvas.data != -1
             dest[index] = self._overlay_canvas.data[index]
