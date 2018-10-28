@@ -2,6 +2,8 @@
 
 ## 0.8.10
 - Fixed the bug where the Pyxel Editor cursor malfunctions
+- Added new API descriptions to the example #3
+- Updated the screenshot of the example #3
 
 ## 0.8.9
 - Fixed the tilemap to allow the tiles of #256 or higher
