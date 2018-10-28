@@ -22,8 +22,8 @@ class Editor(Widget):
     def __init__(self, parent):
         super().__init__(parent, 0, 0, 0, 0, is_visible=False)
 
-        self._edit_history_list = []
-        self._edit_history_index = 0
+        self._history_list = []
+        self._history_index = 0
 
     @property
     def help_message(self):
@@ -35,34 +35,30 @@ class Editor(Widget):
 
     @property
     def can_undo(self):
-        return self._edit_history_index > 0
+        return self._history_index > 0
 
     @property
     def can_redo(self):
-        return self._edit_history_index < len(self._edit_history_list)
+        return self._history_index < len(self._history_list)
 
     def undo(self):
         if not self.can_undo:
             return
 
-        self._edit_history_index -= 1
-        self.call_event_handler(
-            "undo", self._edit_history_list[self._edit_history_index]
-        )
+        self._history_index -= 1
+        self.call_event_handler("undo", self._history_list[self._history_index])
 
     def redo(self):
         if not self.can_redo:
             return
 
-        self.call_event_handler(
-            "redo", self._edit_history_list[self._edit_history_index]
-        )
-        self._edit_history_index += 1
+        self.call_event_handler("redo", self._history_list[self._history_index])
+        self._history_index += 1
 
     def add_history(self, data):
-        self._edit_history_list = self._edit_history_list[: self._edit_history_index]
-        self._edit_history_list.append(data)
-        self._edit_history_index += 1
+        self._history_list = self._history_list[: self._history_index]
+        self._history_list.append(data)
+        self._history_index += 1
 
     def add_number_picker_help(self, number_picker):
         number_picker.dec_button.add_event_handler(
