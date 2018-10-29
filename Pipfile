@@ -9,4 +9,3 @@ glfw="*"
 PyOpenGL="*"
 sounddevice="*"
 Pillow="*"
-
