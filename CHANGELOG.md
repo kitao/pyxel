@@ -6,6 +6,8 @@
 - Updated the screenshot of the example #3
 - Change not to add unnecessary undo history of the editors
 - Added the setting files for Pipenv
+- Modified the cursor design of the Image and Tilemap Editors
+- Changed the cursor UI of the Tilemap Editor
 
 ## 0.8.9
 - Fixed the tilemap to allow the tiles of #256 or higher
