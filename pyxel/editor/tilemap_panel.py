@@ -52,10 +52,12 @@ class TilemapPanel(Widget):
             self.x + 1, self.y + 1, self.x + self.width - 2, self.y + self.height - 2
         )
 
-        x = self.x + self.parent.drawing_x // 4
-        y = self.y + self.parent.drawing_y // 4
-        pyxel.rectb(x, y, x + 5, y + 5, 0)
-        pyxel.rectb(x - 1, y - 1, x + 6, y + 6, 7)
-        pyxel.rectb(x - 2, y - 2, x + 7, y + 7, 0)
+        x1 = self.x + self.parent.drawing_x // 4 + 1
+        y1 = self.y + self.parent.drawing_y // 4 + 1
+        x2 = x1 + 3
+        y2 = y1 + 3
+
+        pyxel.rectb(x1, y1, x2, y2, 7)
+        pyxel.rectb(x1 - 1, y1 - 1, x2 + 1, y2 + 1, 0)
 
         pyxel.clip()
