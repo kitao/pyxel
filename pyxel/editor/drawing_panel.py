@@ -352,14 +352,18 @@ class DrawingPanel(Widget):
         pyxel.line(self.x + 64, self.y + 1, self.x + 64, self.y + 128, 1)
 
         if self.parent.tool == TOOL_SELECT and self._select_x1 >= 0:
-            x1 = self._select_x1 * 8 + 11
-            y1 = self._select_y1 * 8 + 16
-            x2 = self._select_x2 * 8 + 20
-            y2 = self._select_y2 * 8 + 25
+            pyxel.clip(self.x + 1, self.y + 1, self.x + 128, self.y + 128)
 
-            pyxel.rectb(x1, y1, x2, y2, 0)
-            pyxel.rectb(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 15)
-            pyxel.rectb(x1 + 2, y1 + 2, x2 - 2, y2 - 2, 0)
+            x1 = self._select_x1 * 8 + 12
+            y1 = self._select_y1 * 8 + 17
+            x2 = self._select_x2 * 8 + 19
+            y2 = self._select_y2 * 8 + 24
+
+            pyxel.rectb(x1, y1, x2, y2, 15)
+            pyxel.rectb(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 0)
+            pyxel.rectb(x1 - 1, y1 - 1, x2 + 1, y2 + 1, 0)
+
+            pyxel.clip()
 
     def __on_h_scroll_bar_change(self, value):
         self.viewport_x = value * 8
