@@ -444,6 +444,25 @@ Set the list of sound(0-63) of channel 2
 - `set_ch3(data)`  
 Set the list of sound(0-63) of channel 3
 
+## How can I contribute?
+
+### Submitting an issue
+
+We use the [issue tracker](https://github.com/kitao/pyxel/issues) to contain bug reports and feature/enhancement requests.
+Before submitting a new issue, search the issue tracker to ensure that there is no similar open issue.
+
+If you are certain that you are reporting a new issue, [open a new issue](https://github.com/kitao/pyxel/issues/new) using the templates provided.
+
+### Manual testing
+
+We welcome anyone manually testing our product and reporting bugs or suggestions for enhancements in the issue tracker.
+
+### Submitting a pull request
+
+We accept patches/fixes in form of pull requests (PRs). Make sure that the pull request addresses an open issue in the issue tracker.
+
+By submitting a PR, you agree to allow the project team to license your work under the terms of the [MIT](../LICENSE).
+
 ## Other Information
 
 - [Pyxel Wiki](https://github.com/kitao/pyxel/wiki)
