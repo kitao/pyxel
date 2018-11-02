@@ -3,6 +3,33 @@ from pyxel.ui import Widget
 
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
 
+key_table = [
+    pyxel.KEY_Z,
+    pyxel.KEY_S,
+    pyxel.KEY_X,
+    pyxel.KEY_D,
+    pyxel.KEY_C,
+    pyxel.KEY_V,
+    pyxel.KEY_G,
+    pyxel.KEY_B,
+    pyxel.KEY_H,
+    pyxel.KEY_N,
+    pyxel.KEY_J,
+    pyxel.KEY_M,
+    pyxel.KEY_Q,
+    pyxel.KEY_2,
+    pyxel.KEY_W,
+    pyxel.KEY_3,
+    pyxel.KEY_E,
+    pyxel.KEY_R,
+    pyxel.KEY_5,
+    pyxel.KEY_T,
+    pyxel.KEY_6,
+    pyxel.KEY_Y,
+    pyxel.KEY_7,
+    pyxel.KEY_U,
+]
+
 
 class PianoKeyboard(Widget):
     def __init__(self, parent):
@@ -12,33 +39,6 @@ class PianoKeyboard(Widget):
         self._sound.set("g2", "p", "3", "n", 10)
         self.note = None
         self._tone = 0
-        self._key_table = [
-            pyxel.KEY_Z,
-            pyxel.KEY_S,
-            pyxel.KEY_X,
-            pyxel.KEY_D,
-            pyxel.KEY_C,
-            pyxel.KEY_V,
-            pyxel.KEY_G,
-            pyxel.KEY_B,
-            pyxel.KEY_H,
-            pyxel.KEY_N,
-            pyxel.KEY_J,
-            pyxel.KEY_M,
-            pyxel.KEY_Q,
-            pyxel.KEY_2,
-            pyxel.KEY_W,
-            pyxel.KEY_3,
-            pyxel.KEY_E,
-            pyxel.KEY_R,
-            pyxel.KEY_5,
-            pyxel.KEY_T,
-            pyxel.KEY_6,
-            pyxel.KEY_Y,
-            pyxel.KEY_7,
-            pyxel.KEY_U,
-        ]
-
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_hover", self.__on_mouse_hover)
         self.add_event_handler("update", self.__on_update)
@@ -64,7 +64,7 @@ class PianoKeyboard(Widget):
             self._tone = (self._tone + 1) % 4
 
         self.note = None
-        for i, key in enumerate(self._key_table):
+        for i, key in enumerate(key_table):
             if pyxel.btn(key):
                 self.note = self.parent.octave * 12 + i
                 break
