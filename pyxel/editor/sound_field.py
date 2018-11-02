@@ -4,13 +4,13 @@ from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, SOUND_MAX_LENGTH
 
+tone_key_table = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N]
+effect_key_table = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
+
 
 class SoundField(Widget):
     def __init__(self, parent):
         super().__init__(parent, 30, 149, 193, 23)
-
-        self._tone_key_table = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N]
-        self._effect_key_table = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
 
         self.add_event_handler("mouse_down", self.__on_mouse_down)
         self.add_event_handler("mouse_hover", self.__on_mouse_hover)
@@ -53,9 +53,7 @@ class SoundField(Widget):
         value = None
         if cursor_y == 1:
             for i in range(4):
-                if pyxel.btnp(
-                    self._tone_key_table[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
-                ):
+                if pyxel.btnp(tone_key_table[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
                     value = i
                     break
         elif cursor_y == 2:
@@ -70,7 +68,7 @@ class SoundField(Widget):
         elif cursor_y == 3:
             for i in range(4):
                 if pyxel.btnp(
-                    self._effect_key_table[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+                    effect_key_table[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
                 ):
                     value = i
                     break
