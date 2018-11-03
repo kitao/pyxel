@@ -29,39 +29,20 @@ class Tilemap:
             self._data[y, x] = data
             return
 
-        sw = len(data[0]) // 2
-        sh = len(data)
-
-        rect = utilities.get_copy_rect(
-            0, 0, sw, sh, x, y, self.width, self.height, sw, sh
-        )
-        if not rect:
-            return
-        sx, sy, dx, dy, cw, ch = rect
-
-        src_data = np.array(
+        w = len(data[0]) // 2
+        src = np.array(
             [
                 list(
                     map(
                         lambda x: int(x, 16),
-                        [line[i * 2 : i * 2 + 2] for i in range(sw)],
+                        [line[i * 2 : i * 2 + 2] for i in range(w)],
                     )
                 )
                 for line in data
             ]
         )
-        src_data = src_data[sy : sy + ch, sx : sx + cw]
-        self._data[dy : dy + ch, dx : dx + cw] = src_data
+        utilities.copy_ndarray(self._data, x, y, src)
 
-    def copy(self, x, y, tm, sx, sy, w, h):
+    def copy(self, x, y, tm, u, v, w, h):
         tilemap = utilities.tilemap(tm)
-
-        rect = utilities.get_copy_rect(
-            sx, sy, tilemap.width, tilemap.height, x, y, self.width, self.height, w, h
-        )
-        if not rect:
-            return
-        sx, sy, dx, dy, cw, ch = rect
-
-        src_data = tilemap._data[sy : sy + ch, sx : sx + cw]
-        self._data[dy : dy + ch, dx : dx + cw] = src_data
+        utilities.copy_ndarray(self._data, x, y, tilemap._data, u, v, w, h)

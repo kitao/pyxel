@@ -35,20 +35,10 @@ class Image:
             self._tex.update()
             return
 
-        sw = len(data[0])
-        sh = len(data)
+        src = np.array([list(map(lambda x: int(x, 16), line)) for line in data])
 
-        rect = utilities.get_copy_rect(
-            0, 0, sw, sh, x, y, self.width, self.height, sw, sh
-        )
-        if not rect:
-            return
-        sx, sy, dx, dy, cw, ch = rect
-
-        src_data = np.array([list(map(lambda x: int(x, 16), line)) for line in data])
-        src_data = src_data[sy : sy + ch, sx : sx + cw]
-        self._data[dy : dy + ch, dx : dx + cw] = src_data
-        self._tex.update()
+        if utilities.copy_ndarray(self._data, x, y, src):
+            self._tex.update()
 
     def load(self, x, y, filename):
         dirname = os.path.dirname(inspect.stack()[-1].filename)
@@ -56,33 +46,16 @@ class Image:
 
         pil_image = PIL.Image.open(filename).convert("RGB")
         pil_image.load()
+        pil_image = utilities.palettize_pil_image(pil_image)
 
         sw, sh = pil_image.size
+        src = np.array(pil_image.getdata()).reshape(sh, sw)
 
-        rect = utilities.get_copy_rect(
-            0, 0, sw, sh, x, y, self.width, self.height, sw, sh
-        )
-        if not rect:
-            return
-        sx, sy, dx, dy, cw, ch = rect
+        if utilities.copy_ndarray(self._data, x, y, src):
+            self._tex.update()
 
-        pil_image = utilities.palettize_pil_image(pil_image)
-        pil_image = pil_image.crop((sx, sy, sx + cw, sy + ch))
-
-        src_data = np.array(pil_image.getdata()).reshape(ch, cw)
-        self._data[dy : dy + ch, dx : dx + cw] = src_data
-        self._tex.update()
-
-    def copy(self, x, y, img, sx, sy, w, h):
+    def copy(self, x, y, img, u, v, w, h):
         image = utilities.image(img)
 
-        rect = utilities.get_copy_rect(
-            sx, sy, image.width, image.height, x, y, self.width, self.height, w, h
-        )
-        if not rect:
-            return
-        sx, sy, dx, dy, cw, ch = rect
-
-        src_data = image._data[sy : sy + ch, sx : sx + cw]
-        self._data[dy : dy + ch, dx : dx + cw] = src_data
-        self._tex.update()
+        if utilities.copy_ndarray(self._data, x, y, image._data, u, v, w, h):
+            self._tex.update()
