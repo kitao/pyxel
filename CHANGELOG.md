@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.8.10
+## 0.9.0
 - Fixed the bug where the Pyxel Editor cursor malfunctions
 - Added new API descriptions to the example #3
 - Updated the screenshot of the example #3
@@ -8,6 +8,8 @@
 - Added the setting files for Pipenv
 - Modified the cursor design of the Image and Tilemap Editors
 - Changed the cursor UI of the Tilemap Editor
+- Added the link to the subreddit in the manuals
+- Changed to exports all constants for keys before init is called
 
 ## 0.8.9
 - Fixed the tilemap to allow the tiles of #256 or higher
