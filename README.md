@@ -357,8 +357,8 @@ e.g. `pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 - `load(x, y, filename)`  
 Read the png image from the directory of the execution script at (`x`, `y`)
 
-- `copy(x, y, img, sx, sy, w, h)`  
-Copy the region of size (`w`, `h`) from (`sx`, `sy`) of the image bank `img`(0-2) to (`x`, `y`)
+- `copy(x, y, img, u, v, w, h)`  
+Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`)
 
 ### Tilemap Class
 
@@ -375,8 +375,8 @@ Retrieve the data of the tilemap at (`x`, `y`)
 Set the data of the tilemap at (`x`, `y`) by a value or a list of strings   
 e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'])`
 
-- `copy(x, y, tm, sx, sy, w, h)`  
-Copy the region of size (`w`, `h`) from (`sx`, `sy`) of the tilemap `tm`(0-7) to (`x`, `y`)
+- `copy(x, y, tm, u, v, w, h)`  
+Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`)
 
 ### Sound Class
 
@@ -465,7 +465,8 @@ By submitting a PR, you agree to allow the project team to license your work und
 
 ## Other Information
 
-- [Pyxel Wiki](https://github.com/kitao/pyxel/wiki)
+- [Wiki](https://github.com/kitao/pyxel/wiki)
+- [Subreddit](https://www.reddit.com/r/pyxel/)
 
 ## License
 

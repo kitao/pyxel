@@ -358,8 +358,8 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 - `load(x, y, filename)`  
 (`x`, `y`) に実行スクリプトのディレクトリからpngファイルを読み込む
 
-- `copy(x, y, img, sx, sy, w, h)`  
-イメージバンク`img`(0-2) の (`sx`, `sy`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーする
+- `copy(x, y, img, u, v, w, h)`  
+イメージバンク`img`(0-2) の (`u`, `v`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーする
 
 ### タイルマップクラス
 
@@ -376,8 +376,8 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 (`x`, `y`) に値または文字列のリストでタイルマップのデータを設定する  
 e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'])`
 
-- `copy(x, y, tm, sx, sy, width, height)`  
-タイルマップ`tm`(0-7) の (`sx`, `sy`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーする
+- `copy(x, y, tm, u, v, w, h)`  
+タイルマップ`tm`(0-7) の (`u`, `v`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーする
 
 ### サウンドクラス
 
@@ -445,9 +445,29 @@ e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'])`
 - `set_ch3(data)`  
 チャンネル3のサウンド (0-63) のリストを設定する
 
+## How can I contribute?
+
+### Submitting an issue
+
+We use the [issue tracker](https://github.com/kitao/pyxel/issues) to contain bug reports and feature/enhancement requests.
+Before submitting a new issue, search the issue tracker to ensure that there is no similar open issue.
+
+If you are certain that you are reporting a new issue, [open a new issue](https://github.com/kitao/pyxel/issues/new) using the templates provided.
+
+### Manual testing
+
+We welcome anyone manually testing our product and reporting bugs or suggestions for enhancements in the issue tracker.
+
+### Submitting a pull request
+
+We accept patches/fixes in form of pull requests (PRs). Make sure that the pull request addresses an open issue in the issue tracker.
+
+By submitting a PR, you agree to allow the project team to license your work under the terms of the [MIT](../LICENSE).
+
 ## その他情報
 
-- [Pyxel Wiki](https://github.com/kitao/pyxel/wiki)
+- [Wiki](https://github.com/kitao/pyxel/wiki)
+- [Subreddit](https://www.reddit.com/r/pyxel/)
 
 ## ライセンス
 
