@@ -12,8 +12,8 @@ class ImagePanel(Widget):
         self.viewport_y = 0
         self.select_x = 0
         self.select_y = 0
-        self._select_width = 8 if is_tilemap_mode else 16
-        self._select_height = 8 if is_tilemap_mode else 16
+        self.select_width = 8 if is_tilemap_mode else 16
+        self.select_height = 8 if is_tilemap_mode else 16
         self._press_x = 0
         self._press_y = 0
         self._drag_offset_x = 0
@@ -48,8 +48,8 @@ class ImagePanel(Widget):
                 self._press_x = min(max(x, 0), 248)
                 self._press_y = min(max(y, 0), 248)
 
-                self.select_x = min(max(x, 0), 256 - self._select_width)
-                self.select_y = min(max(y, 0), 256 - self._select_height)
+                self.select_x = min(max(x, 0), 256 - self.select_width)
+                self.select_y = min(max(y, 0), 256 - self.select_height)
             else:
                 self.select_x = min(max(x, 0), 240)
                 self.select_y = min(max(y, 0), 240)
@@ -71,8 +71,8 @@ class ImagePanel(Widget):
                 self.select_x = min(self._press_x, x)
                 self.select_y = min(self._press_y, y)
 
-                self._select_width = min(abs(self._press_x - x) + 8, 64)
-                self._select_height = min(abs(self._press_y - y) + 8, 64)
+                self.select_width = min(abs(self._press_x - x) + 8, 64)
+                self.select_height = min(abs(self._press_y - y) + 8, 64)
             else:
                 self.__on_mouse_down(key, x, y)
         elif key == pyxel.KEY_RIGHT_BUTTON:
@@ -126,8 +126,8 @@ class ImagePanel(Widget):
 
         x1 = self.x + self.select_x - self.viewport_x + 1
         y1 = self.y + self.select_y - self.viewport_y + 1
-        x2 = x1 + self._select_width - 1
-        y2 = y1 + self._select_height - 1
+        x2 = x1 + self.select_width - 1
+        y2 = y1 + self.select_height - 1
 
         pyxel.rectb(x1, y1, x2, y2, 7)
         pyxel.rectb(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 0)
