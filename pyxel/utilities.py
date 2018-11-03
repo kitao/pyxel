@@ -71,41 +71,31 @@ def get_desktop_path():
     return path
 
 
-def get_copy_rect(sx, sy, sw, sh, dx, dy, dw, dh, cw, ch):
-    over_sx = max(-sx, 0)
-    over_sy = max(-sy, 0)
-    over_dx = max(-dx, 0)
-    over_dy = max(-dy, 0)
+def copy_ndarray(dest, dx, dy, src, sx=0, sy=0, cw=None, ch=None):
+    dh, dw = dest.shape
+    sh, sw = src.shape
+    cw = cw or sw
+    ch = ch or sh
 
-    if over_sx > 0 or over_dx > 0:
-        cw -= max(over_sx, over_dx)
-        if over_sx > 0:
-            sx = 0
-        if over_dx > 0:
-            dx = 0
+    rx1 = max(max(-dx, 0), max(-sx, 0))
+    ry1 = max(max(-dy, 0), max(-sy, 0))
+    rx2 = max(max(dx + cw - dw, 0), max(sx + cw - sw, 0))
+    ry2 = max(max(dy + ch - dh, 0), max(sy + ch - sh, 0))
 
-    if over_sy > 0 or over_dy > 0:
-        ch -= max(over_sy, over_dy)
-        if over_sy > 0:
-            sy = 0
-        if over_dy > 0:
-            dy = 0
+    cw -= rx1 + rx2
+    ch -= ry1 + ry2
 
-    over_sx = max(sx + cw - sw, 0)
-    over_sy = max(sx + ch - sh, 0)
-    over_dx = max(dx + cw - dw, 0)
-    over_dy = max(dx + ch - dh, 0)
+    if cw <= 0 or ch <= 0:
+        return False
 
-    if over_sx > 0 or over_dx > 0:
-        cw -= max(over_sx, over_dx)
+    dx += rx1
+    dy += ry1
+    sx += rx1
+    sy += ry1
 
-    if over_sy > 0 or over_dy > 0:
-        ch -= max(over_sy, over_dy)
+    dest[dy : dy + ch, dx : dx + cw] = src[sy : sy + ch, sx : sx + cw]
 
-    if cw > 0 and ch > 0:
-        return sx, sy, dx, dy, cw, ch
-    else:
-        return None
+    return True
 
 
 def palettize_pil_image(pil_image):
