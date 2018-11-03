@@ -45,17 +45,14 @@ class ImagePanel(Widget):
             x, y = self._screen_to_view(x, y)
 
             if self._is_tilemap_mode:
-                self.select_x = min(max(x, self.viewport_x), self.viewport_x + 56)
-                self.select_y = min(max(y, self.viewport_y), self.viewport_y + 120)
+                self._press_x = min(max(x, 0), 248)
+                self._press_y = min(max(y, 0), 248)
 
-                self._select_width = 8
-                self._select_height = 8
-
-                self._press_x = self.select_x
-                self._press_y = self.select_y
+                self.select_x = min(max(x, 0), 256 - self._select_width)
+                self.select_y = min(max(y, 0), 256 - self._select_height)
             else:
-                self.select_x = min(max(x, self.viewport_x), self.viewport_x + 48)
-                self.select_y = min(max(y, self.viewport_y), self.viewport_y + 112)
+                self.select_x = min(max(x, 0), 240)
+                self.select_y = min(max(y, 0), 240)
 
                 self.parent.drawing_x = self.select_x
                 self.parent.drawing_y = self.select_y
@@ -68,14 +65,14 @@ class ImagePanel(Widget):
         if key == pyxel.KEY_LEFT_BUTTON:
             if self._is_tilemap_mode:
                 x, y = self._screen_to_view(x, y)
-                x = min(max(x, self.viewport_x), self.viewport_x + 56)
-                y = min(max(y, self.viewport_y), self.viewport_y + 56)
+                x = min(max(x, 0), 248)
+                y = min(max(y, 0), 248)
 
                 self.select_x = min(self._press_x, x)
                 self.select_y = min(self._press_y, y)
 
-                self._select_width = abs(self._press_x - x) + 8
-                self._select_height = abs(self._press_y - y) + 8
+                self._select_width = min(abs(self._press_x - x) + 8, 64)
+                self._select_height = min(abs(self._press_y - y) + 8, 64)
             else:
                 self.__on_mouse_down(key, x, y)
         elif key == pyxel.KEY_RIGHT_BUTTON:
