@@ -1,3 +1,5 @@
+import numpy as np
+
 import pyxel
 from pyxel.ui import ScrollBar, Widget
 
@@ -10,14 +12,15 @@ class ImagePanel(Widget):
         self._is_tilemap_mode = is_tilemap_mode
         self.viewport_x = 0
         self.viewport_y = 0
-        self.select_x = 0
-        self.select_y = 0
-        self.select_width = 8 if is_tilemap_mode else 16
-        self.select_height = 8 if is_tilemap_mode else 16
+        self._focus_x = 0
+        self._focus_y = 0
+        self._focus_width = 8 if is_tilemap_mode else 16
+        self._focus_height = 8 if is_tilemap_mode else 16
         self._press_x = 0
         self._press_y = 0
         self._drag_offset_x = 0
         self._drag_offset_y = 0
+        self._color_table = np.arange(1024).reshape(32, 32)
         self._h_scroll_bar = ScrollBar(
             self, 157, 145, 66, ScrollBar.HORIZONTAL, 32, 8, 0
         )
@@ -35,6 +38,14 @@ class ImagePanel(Widget):
         self._h_scroll_bar.add_event_handler("change", self.__on_h_scroll_bar_change)
         self._v_scroll_bar.add_event_handler("change", self.__on_v_scroll_bar_change)
 
+    @property
+    def focused_tiles(self):
+        return self._focus_y // 8 * 32 + self._focus_x // 8
+
+    def set_focus(self, x, y):
+        self._focus_x = min(max(x, 0), 256 - self._focus_width)
+        self._focus_y = min(max(y, 0), 256 - self._focus_height)
+
     def _screen_to_view(self, x, y):
         x = (x + self.viewport_x - self.x - 1) // 8 * 8
         y = (y + self.viewport_y - self.y - 1) // 8 * 8
@@ -45,17 +56,19 @@ class ImagePanel(Widget):
             x, y = self._screen_to_view(x, y)
 
             if self._is_tilemap_mode:
-                self._press_x = min(max(x, 0), 248)
-                self._press_y = min(max(y, 0), 248)
+                x = min(max(x, 0), 248)
+                y = min(max(y, 0), 248)
 
-                self.select_x = min(max(x, 0), 256 - self.select_width)
-                self.select_y = min(max(y, 0), 256 - self.select_height)
+                self._press_x = x
+                self._press_y = y
+
+                self.set_focus(x, y)
             else:
-                self.select_x = min(max(x, 0), 240)
-                self.select_y = min(max(y, 0), 240)
+                self._focus_x = min(max(x, 0), 240)
+                self._focus_y = min(max(y, 0), 240)
 
-                self.parent.drawing_x = self.select_x
-                self.parent.drawing_y = self.select_y
+                self.parent.drawing_x = self._focus_x
+                self.parent.drawing_y = self._focus_y
 
         if key == pyxel.KEY_RIGHT_BUTTON:
             self._drag_offset_x = 0
@@ -65,14 +78,15 @@ class ImagePanel(Widget):
         if key == pyxel.KEY_LEFT_BUTTON:
             if self._is_tilemap_mode:
                 x, y = self._screen_to_view(x, y)
+
                 x = min(max(x, 0), 248)
                 y = min(max(y, 0), 248)
 
-                self.select_x = min(self._press_x, x)
-                self.select_y = min(self._press_y, y)
+                self._focus_x = min(self._press_x, x)
+                self._focus_y = min(self._press_y, y)
 
-                self.select_width = min(abs(self._press_x - x) + 8, 64)
-                self.select_height = min(abs(self._press_y - y) + 8, 64)
+                self._focus_width = min(abs(self._press_x - x) + 8, 64)
+                self._focus_height = min(abs(self._press_y - y) + 8, 64)
             else:
                 self.__on_mouse_down(key, x, y)
         elif key == pyxel.KEY_RIGHT_BUTTON:
@@ -101,8 +115,8 @@ class ImagePanel(Widget):
 
     def __on_update(self):
         if not self._is_tilemap_mode:
-            self.select_x = self.parent.drawing_x
-            self.select_y = self.parent.drawing_y
+            self._focus_x = self.parent.drawing_x
+            self._focus_y = self.parent.drawing_y
 
         self._h_scroll_bar.value = self.viewport_x // 8
         self._v_scroll_bar.value = self.viewport_y // 8
@@ -124,10 +138,10 @@ class ImagePanel(Widget):
             self.x + 1, self.y + 1, self.x + self.width - 2, self.y + self.height - 2
         )
 
-        x1 = self.x + self.select_x - self.viewport_x + 1
-        y1 = self.y + self.select_y - self.viewport_y + 1
-        x2 = x1 + self.select_width - 1
-        y2 = y1 + self.select_height - 1
+        x1 = self.x + self._focus_x - self.viewport_x + 1
+        y1 = self.y + self._focus_y - self.viewport_y + 1
+        x2 = x1 + self._focus_width - 1
+        y2 = y1 + self._focus_height - 1
 
         pyxel.rectb(x1, y1, x2, y2, 7)
         pyxel.rectb(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 0)
