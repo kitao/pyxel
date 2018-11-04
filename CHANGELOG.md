@@ -10,6 +10,7 @@
 - Enabled to change the focus size of the Tilemap Editor
 - Added the link to the subreddit in the manuals
 - Changed to exports all constants for keys before init is called
+- Added the contribution section to the manuals
 
 ## 0.8.9
 - Fixed the tilemap to allow the tiles of #256 or higher

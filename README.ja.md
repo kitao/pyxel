@@ -445,26 +445,26 @@ e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'])`
 - `set_ch3(data)`  
 チャンネル3のサウンド (0-63) のリストを設定する
 
-## How can I contribute?
+## コントリビューション方法
 
-### Submitting an issue
+### 問題の報告
 
-We use the [issue tracker](https://github.com/kitao/pyxel/issues) to contain bug reports and feature/enhancement requests.
-Before submitting a new issue, search the issue tracker to ensure that there is no similar open issue.
+不具合の報告や機能の要望は[Issue Tracker](https://github.com/kitao/pyxel/issues)で受け付けています。
+新しいレポートを作成する場合は、同じ内容のものがないか事前に確認をお願いします。
 
-If you are certain that you are reporting a new issue, [open a new issue](https://github.com/kitao/pyxel/issues/new) using the templates provided.
+新しいレポートの作成は[こちら](https://github.com/kitao/pyxel/issues/new)から行えます。
 
-### Manual testing
+### 動作確認
 
-We welcome anyone manually testing our product and reporting bugs or suggestions for enhancements in the issue tracker.
+動作確認をして、[Issue Tracker](https://github.com/kitao/pyxel/issues)で不具合の報告や改善の提案をしてくれる方は大歓迎です！
 
-### Submitting a pull request
+### プルリクエスト
 
-We accept patches/fixes in form of pull requests (PRs). Make sure that the pull request addresses an open issue in the issue tracker.
+パッチや修正はプルリクエスト(PR)として受け付けています。提出の前に、問題がすでに解決済みでないか[Issue Tracker](https://github.com/kitao/pyxel/issues)で確認をお願いします。
 
-By submitting a PR, you agree to allow the project team to license your work under the terms of the [MIT](../LICENSE).
+提出されたプルリクエストは、[MITライセンス](../LICENSE)で公開することに同意したものを見なされます。
 
-## その他情報
+## その他の情報
 
 - [Wiki](https://github.com/kitao/pyxel/wiki)
 - [Subreddit](https://www.reddit.com/r/pyxel/)
