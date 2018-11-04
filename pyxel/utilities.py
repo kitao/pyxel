@@ -9,15 +9,15 @@ import pyxel
 from .constants import DEFAULT_PALETTE, GIF_TRANSPARENCY_COLOR, ICON_DATA
 
 
-def image(img):
+def get_pyxel_image(img):
     return pyxel.image(img)
 
 
-def tilemap(tm):
+def get_pyxel_tilemap(tm):
     return pyxel.tilemap(tm)
 
 
-def sound(snd):
+def get_pyxel_sound(snd):
     return pyxel.sound(snd)
 
 

@@ -10,7 +10,6 @@ import glfw
 import numpy as np
 import PIL.Image
 
-from . import utilities
 from .audio_player import AudioPlayer
 from .constants import (
     APP_GIF_CAPTURE_COUNT,
@@ -51,6 +50,12 @@ from .constants import (
     RENDERER_TILEMAP_COUNT,
 )
 from .renderer import Renderer
+from .utilities import (
+    get_desktop_path,
+    get_icon_image,
+    get_palette,
+    palettize_pil_image,
+)
 
 
 class App:
@@ -157,7 +162,7 @@ class App:
         glfw.set_key_callback(self._window, self._key_callback)
         glfw.set_mouse_button_callback(self._window, self._mouse_button_callback)
 
-        glfw.set_window_icon(self._window, 1, [utilities.get_icon_image()])
+        glfw.set_window_icon(self._window, 1, [get_icon_image()])
         glfw.set_input_mode(self._window, glfw.CURSOR, glfw.CURSOR_HIDDEN)
 
         # initialize renderer
@@ -517,7 +522,7 @@ class App:
             optimize=False,
             transparency=color_index,
             disposal=1,
-            palette=utilities.get_palette(fill=False),
+            palette=get_palette(fill=False),
         )
 
     def _get_color_palette_index(self, image, color):
@@ -533,7 +538,7 @@ class App:
         red, green, blue, alpha = new.T
         trans_areas = alpha == 0
         new[..., :-1][trans_areas.T] = GIF_TRANSPARENCY_COLOR
-        return utilities.palettize_pil_image(PIL.Image.fromarray(new))
+        return palettize_pil_image(PIL.Image.fromarray(new))
 
     def _get_capture_image(self, index):
         image = PIL.Image.frombuffer(
@@ -546,7 +551,7 @@ class App:
             1,
         )
 
-        image = utilities.palettize_pil_image(image)
+        image = palettize_pil_image(image)
 
         image = image.resize(
             (pyxel.width * APP_GIF_CAPTURE_SCALE, pyxel.height * APP_GIF_CAPTURE_SCALE)
@@ -557,8 +562,7 @@ class App:
     @staticmethod
     def _get_capture_filename():
         return os.path.join(
-            utilities.get_desktop_path(),
-            datetime.datetime.now().strftime("pyxel-%y%m%d-%H%M%S"),
+            get_desktop_path(), datetime.datetime.now().strftime("pyxel-%y%m%d-%H%M%S")
         )
 
     def _measure_fps(self):
