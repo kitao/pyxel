@@ -89,8 +89,10 @@ class DrawingPanel(Widget):
         if self.parent.tool == TOOL_SELECT:
             self._select_x1 = self._select_x2 = x
             self._select_y1 = self._select_y2 = y
-        elif self.parent.tool >= TOOL_PENCIL and self.parent.tool <= TOOL_CIRC:
+        elif self.parent.tool == TOOL_PENCIL:
             self._overlay_canvas.pix(x, y, self.parent.color)
+        elif self.parent.tool >= TOOL_RECTB and self.parent.tool <= TOOL_CIRC:
+            self._overlay_canvas.rect(x, y, x, y, self.parent.color, False)
         elif self.parent.tool == TOOL_BUCKET:
             data = (
                 pyxel.tilemap(self.parent.tilemap).data
@@ -104,7 +106,7 @@ class DrawingPanel(Widget):
 
             self._add_pre_history(dest)
 
-            self._overlay_canvas.paint(x, y, self.parent.color, dest)
+            self._overlay_canvas.fill(x, y, self.parent.color, dest)
 
             self._add_post_history(dest)
 
@@ -130,7 +132,7 @@ class DrawingPanel(Widget):
 
             self._add_pre_history(dest)
 
-            index = self._overlay_canvas.data != -1
+            index = self._overlay_canvas.data != OverlayCanvas.COLOR_NONE
             dest[index] = self._overlay_canvas.data[index]
             self._overlay_canvas.clear()
 
@@ -329,7 +331,7 @@ class DrawingPanel(Widget):
                     x = self.x + j * 8 + 1
 
                     val = self._overlay_canvas.data[i, j]
-                    if val >= 0:
+                    if val != OverlayCanvas.COLOR_NONE:
                         sx = (val % 32) * 8
                         sy = (val // 32) * 8
                         pyxel.blt(x, y, self.parent.image, sx, sy, 8, 8)
@@ -340,7 +342,7 @@ class DrawingPanel(Widget):
                     x = self.x + j * 8 + 1
 
                     val = self._overlay_canvas.data[i, j]
-                    if val >= 0:
+                    if val != OverlayCanvas.COLOR_NONE:
                         col = self._overlay_canvas.data[i, j]
                     else:
                         data = pyxel.image(self.parent.image).data

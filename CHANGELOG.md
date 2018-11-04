@@ -7,7 +7,7 @@
 - Change not to add unnecessary undo history of the editors
 - Added the setting files for Pipenv
 - Modified the cursor design of the Image and Tilemap Editors
-- Changed the cursor UI of the Tilemap Editor
+- Enabled to change the focus size of the Tilemap Editor
 - Added the link to the subreddit in the manuals
 - Changed to exports all constants for keys before init is called
 
