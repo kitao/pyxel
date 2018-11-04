@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.9.1
+- Fixed the color pick bug of the Image Editor
+- Changed the focus UI of the Image Editor
+
 ## 0.9.0
 - Fixed the bug where the Pyxel Editor cursor malfunctions
 - Added new API descriptions to the example #3

@@ -51,6 +51,22 @@ class ImagePanel(Widget):
         self._focus_x = min(max(x, 0), 256 - self._focus_width)
         self._focus_y = min(max(y, 0), 256 - self._focus_height)
 
+        offset_left = self.viewport_x - self._focus_x
+        if offset_left > 0:
+            self.viewport_x -= offset_left
+
+        offset_right = self._focus_x + self._focus_width - self.viewport_x - 64
+        if offset_right > 0:
+            self.viewport_x += offset_right
+
+        offset_top = self.viewport_y - self._focus_y
+        if offset_top > 0:
+            self.viewport_y -= offset_top
+
+        offset_bottom = self._focus_y + self._focus_height - self.viewport_y - 64
+        if offset_bottom > 0:
+            self.viewport_y += offset_bottom
+
     def _screen_to_view(self, x, y):
         x = (x + self.viewport_x - self.x - 1) // 8 * 8
         y = (y + self.viewport_y - self.y - 1) // 8 * 8
