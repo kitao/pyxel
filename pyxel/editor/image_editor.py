@@ -1,3 +1,5 @@
+import os.path
+
 import pyxel
 from pyxel.constants import RENDERER_IMAGE_COUNT
 from pyxel.ui import ColorPicker, NumberPicker, RadioButton
@@ -24,6 +26,7 @@ class ImageEditor(Editor):
 
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)
+        self.add_event_handler("drop", self.__on_drop)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
         self.add_tool_button_help(self._tool_button)
@@ -84,6 +87,14 @@ class ImageEditor(Editor):
         self.drawing_x = x
         self.drawing_y = y
         self.parent.image = img
+
+    def __on_drop(self, filenames):
+        for filename in filenames:
+            _, ext = os.path.splitext(filename)
+
+            if ext.lower() == ".png":
+                pyxel.image(self.image).load(0, 0, filename)
+                return
 
     def __on_update(self):
         self.check_tool_button_shortcuts()

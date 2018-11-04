@@ -131,7 +131,7 @@ class ImagePanel(Widget):
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
-        s = "VIEW:R-DRAG" if self._is_tilemap_mode else "TARGET:CURSOR VIEW:R-DRAG"
+        s = "VIEW:R-DRAG" if self._is_tilemap_mode else "TARGET:CURSOR IMPORT:DROP"
         self.parent.help_message = s + " ({},{})".format(x, y)
 
     def __on_update(self):
