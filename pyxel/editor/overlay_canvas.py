@@ -1,13 +1,18 @@
 import numpy as np
 
+from pyxel.utilities import copy_ndarray
+
 
 class OverlayCanvas:
+    COLOR_NONE = 0x7FFF
+    COLOR_MARK = 0x7FFE
+
     def __init__(self):
-        self.data = np.ndarray((16, 16), np.int16)
+        self.data = np.ndarray((16, 16), np.uint16)
         self.clear()
 
     def clear(self):
-        self.data[:, :] = -1
+        self.data[:, :] = OverlayCanvas.COLOR_NONE
 
     @staticmethod
     def _adjust_region(x1, y1, x2, y2, is_guide_mode):
@@ -31,9 +36,23 @@ class OverlayCanvas:
         b += 0.41
         return x * x * b * b + y * y * a * a < a * a * b * b
 
+    @staticmethod
+    def _replace_with_tiles(dest, x, y, tiles):
+        tiles_height, tiles_width = tiles.shape
+
+        for i in range(16):
+            for j in range(16):
+                if dest[i, j] == OverlayCanvas.COLOR_MARK:
+                    dest[i, j] = tiles[(i - y) % tiles_height, (j - x) % tiles_width]
+
     def pix(self, x, y, col):
-        if x >= 0 and x < 16 and y >= 0 and y < 16:
+        if x < 0 or x > 15 or y < 0 or y > 15:
+            return
+
+        if type(col) is int:
             self.data[y, x] = col
+        else:
+            copy_ndarray(self.data, x, y, col)
 
     def line(self, x1, y1, x2, y2, col):
         if x1 == x2 and y1 == y2:
@@ -44,58 +63,75 @@ class OverlayCanvas:
         dy = y2 - y1
 
         if abs(dx) > abs(dy):
-            if dx < 0:
-                x1, y1 = x2, y2
-                dx, dy = -dx, -dy
+            sign = 1 if dx > 0 else -1
+            rate = sign * dy / dx
 
-            for i in range(dx + 1):
-                x = x1 + i
-                y = int(y1 + i * dy / dx + 0.5)
+            for i in range(abs(dx) + 1):
+                x = x1 + sign * i
+                y = int(y1 + rate * i + 0.5)
 
-                if x >= 0 and x < 16 and y >= 0 and y < 16:
+                if x < 0 or x > 15 or y < 0 or y > 15:
+                    continue
+
+                if type(col) is int:
                     self.data[y, x] = col
+                else:
+                    copy_ndarray(self.data, x, y, col)
         else:
-            if dy < 0:
-                x1, y1 = x2, y2
-                dx, dy = -dx, -dy
+            sign = 1 if dy > 0 else -1
+            rate = sign * dx / dy
 
-            for i in range(dy + 1):
-                x = int(x1 + i * dx / dy + 0.5)
-                y = y1 + i
+            for i in range(abs(dy) + 1):
+                x = int(x1 + rate * i + 0.5)
+                y = y1 + sign * i
 
-                if x >= 0 and x < 16 and y >= 0 and y < 16:
+                if x < 0 or x > 15 or y < 0 or y > 15:
+                    continue
+
+                if type(col) is int:
                     self.data[y, x] = col
+                else:
+                    copy_ndarray(self.data, x, y, col)
 
     def rectb(self, x1, y1, x2, y2, col, is_guide_mode):
-        x1, y1, x2, y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
+        _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
+        _col = col if type(col) is int else OverlayCanvas.COLOR_MARK
 
-        for y in range(max(y1, 0), min(y2 + 1, 16)):
-            for x in range(max(x1, 0), min(x2 + 1, 16)):
-                if x == x1 or x == x2 or y == y1 or y == y2:
-                    self.data[y, x] = col
+        for y in range(max(_y1, 0), min(_y2 + 1, 16)):
+            for x in range(max(_x1, 0), min(_x2 + 1, 16)):
+                if x == _x1 or x == _x2 or y == _y1 or y == _y2:
+                    self.data[y, x] = _col
+
+        if type(col) is not int:
+            self._replace_with_tiles(self.data, x1, y1, col)
 
     def rect(self, x1, y1, x2, y2, col, is_guide_mode):
-        x1, y1, x2, y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
+        _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
+        _col = col if type(col) is int else OverlayCanvas.COLOR_MARK
 
-        for y in range(max(y1, 0), min(y2 + 1, 16)):
-            for x in range(max(x1, 0), min(x2 + 1, 16)):
-                self.data[y, x] = col
+        for y in range(max(_y1, 0), min(_y2 + 1, 16)):
+            for x in range(max(_x1, 0), min(_x2 + 1, 16)):
+                self.data[y, x] = _col
+
+        if type(col) is not int:
+            self._replace_with_tiles(self.data, x1, y1, col)
 
     def circb(self, x1, y1, x2, y2, col, is_guide_mode):
-        x1, y1, x2, y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
+        _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
+        _col = col if type(col) is int else OverlayCanvas.COLOR_MARK
 
-        a = (x2 - x1) / 2
-        b = (y2 - y1) / 2
+        a = (_x2 - _x1) / 2
+        b = (_y2 - _y1) / 2
 
         if a <= 0.5 or b <= 0.5:
-            self.rect(x1, y1, x2, y2, col, False)
+            self.rect(_x1, _y1, _x2, _y2, col, False)
             return
 
-        cx = (x1 + x2) / 2
-        cy = (y1 + y2) / 2
+        cx = (_x1 + _x2) / 2
+        cy = (_y1 + _y2) / 2
 
-        for y in range(max(y1, 0), min(y2 + 1, 16)):
-            for x in range(max(x1, 0), min(x2 + 1, 16)):
+        for y in range(max(_y1, 0), min(_y2 + 1, 16)):
+            for x in range(max(_x1, 0), min(_x2 + 1, 16)):
                 dx = x - cx
                 dy = y - cy
 
@@ -105,27 +141,42 @@ class OverlayCanvas:
                     or not self._inner_ellipse(dx, dy - 1, a, b)
                     or not self._inner_ellipse(dx, dy + 1, a, b)
                 ):
-                    self.data[y, x] = col
+                    self.data[y, x] = _col
+
+        if type(col) is not int:
+            self._replace_with_tiles(self.data, x1, y1, col)
 
     def circ(self, x1, y1, x2, y2, col, is_guide_mode):
-        x1, y1, x2, y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
+        _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
+        _col = col if type(col) is int else OverlayCanvas.COLOR_MARK
 
-        a = (x2 - x1) / 2
-        b = (y2 - y1) / 2
+        a = (_x2 - _x1) / 2
+        b = (_y2 - _y1) / 2
 
         if a <= 0.5 or b <= 0.5:
-            self.rect(x1, y1, x2, y2, col, False)
+            self.rect(_x1, _y1, _x2, _y2, col, False)
             return
 
-        cx = (x1 + x2) / 2
-        cy = (y1 + y2) / 2
+        cx = (_x1 + _x2) / 2
+        cy = (_y1 + _y2) / 2
 
-        for y in range(max(y1, 0), min(y2 + 1, 16)):
-            for x in range(max(x1, 0), min(x2 + 1, 16)):
+        for y in range(max(_y1, 0), min(_y2 + 1, 16)):
+            for x in range(max(_x1, 0), min(_x2 + 1, 16)):
                 if self._inner_ellipse(x - cx, y - cy, a, b):
-                    self.data[y, x] = col
+                    self.data[y, x] = _col
 
-    def paint(self, x, y, col, dest):
+        if type(col) is not int:
+            self._replace_with_tiles(self.data, x1, y1, col)
+
+    def fill(self, x, y, col, dest):
+        _col = col if type(col) is int else OverlayCanvas.COLOR_MARK
+
+        self._fill_recursively(x, y, _col, dest)
+
+        if type(col) is not int:
+            self._replace_with_tiles(dest, x, y, col)
+
+    def _fill_recursively(self, x, y, col, dest):
         dest_col = dest[y, x]
 
         if dest_col == col:
@@ -138,10 +189,10 @@ class OverlayCanvas:
             dest[y, i] = col
 
             if y > 0 and dest[y - 1, i] == dest_col:
-                self.paint(i, y - 1, col, dest)
+                self._fill_recursively(i, y - 1, col, dest)
 
             if y < 15 and dest[y + 1, i] == dest_col:
-                self.paint(i, y + 1, col, dest)
+                self._fill_recursively(i, y + 1, col, dest)
 
         for i in range(x + 1, 16):
             if dest[y, i] != dest_col:
@@ -150,7 +201,7 @@ class OverlayCanvas:
             dest[y, i] = col
 
             if y > 0 and dest[y - 1, i] == dest_col:
-                self.paint(i, y - 1, col, dest)
+                self._fill_recursively(i, y - 1, col, dest)
 
             if y < 15 and dest[y + 1, i] == dest_col:
-                self.paint(i, y + 1, col, dest)
+                self._fill_recursively(i, y + 1, col, dest)

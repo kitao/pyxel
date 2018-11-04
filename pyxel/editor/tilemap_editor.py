@@ -109,13 +109,11 @@ class TileMapEditor(Editor):
         self._tilemap_picker.value = tm
 
     def __on_update(self):
-        start_y = (pyxel.frame_count % 8) * 8
+        start_y = pyxel.frame_count % 8 * 8
         for y in range(start_y, start_y + 8):
             for x in range(64):
                 val = pyxel.tilemap(self.tilemap).data[y * 4 + 1, x * 4 + 1]
-                col = pyxel.image(self.image).data[
-                    (val // 32) * 8 + 3, (val % 32) * 8 + 3
-                ]
+                col = pyxel.image(self.image).data[val // 32 * 8 + 3, val % 32 * 8 + 3]
                 pyxel.image(3, system=True).data[
                     TILEMAP_IMAGE_Y + y, TILEMAP_IMAGE_X + x
                 ] = col
