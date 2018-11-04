@@ -4,8 +4,8 @@ import os
 import numpy as np
 import PIL.Image
 
-from . import utilities
 from .gl_wrapper import GLTexture
+from .utilities import copy_ndarray, get_pyxel_image, palettize_pil_image
 
 
 class Image:
@@ -37,7 +37,7 @@ class Image:
 
         src = np.array([list(map(lambda x: int(x, 16), line)) for line in data])
 
-        if utilities.copy_ndarray(self._data, x, y, src):
+        if copy_ndarray(self._data, x, y, src):
             self._tex.update()
 
     def load(self, x, y, filename):
@@ -46,16 +46,16 @@ class Image:
 
         pil_image = PIL.Image.open(filename).convert("RGB")
         pil_image.load()
-        pil_image = utilities.palettize_pil_image(pil_image)
+        pil_image = palettize_pil_image(pil_image)
 
         sw, sh = pil_image.size
         src = np.array(pil_image.getdata()).reshape(sh, sw)
 
-        if utilities.copy_ndarray(self._data, x, y, src):
+        if copy_ndarray(self._data, x, y, src):
             self._tex.update()
 
     def copy(self, x, y, img, u, v, w, h):
-        image = utilities.image(img)
+        image = get_pyxel_image(img)
 
-        if utilities.copy_ndarray(self._data, x, y, image._data, u, v, w, h):
+        if copy_ndarray(self._data, x, y, image._data, u, v, w, h):
             self._tex.update()
