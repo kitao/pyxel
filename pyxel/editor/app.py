@@ -1,5 +1,7 @@
 import os
 
+import glfw
+
 import pyxel
 from pyxel.ui import ImageButton, RadioButton, Widget
 from pyxel.ui.constants import (
@@ -61,7 +63,7 @@ class App(Widget):
         self.help_message = ""
 
         self._editor_button.add_event_handler(
-            "change", lambda value: self.set_editor(value)
+            "change", lambda value: self._set_editor(value)
         )
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
@@ -83,18 +85,23 @@ class App(Widget):
             "mouse_hover", self.__on_save_button_mouse_hover
         )
 
-        self.set_editor(0)
-
+        glfw.set_drop_callback(pyxel._app._window, self._drop_callback)
         image_file = os.path.join(
             os.path.dirname(__file__), "assets", EDITOR_IMAGE_NAME
         )
         pyxel.image(3, system=True).load(EDITOR_IMAGE_X, EDITOR_IMAGE_Y, image_file)
-
         pyxel.mouse(True)
+
+        self._set_editor(0)
 
         pyxel.run(self.update_widgets, self.draw_widgets)
 
-    def set_editor(self, editor):
+    def _drop_callback(self, window, filenames):
+        self._editor_list[self._editor_button.value].call_event_handler(
+            "drop", filenames
+        )
+
+    def _set_editor(self, editor):
         self._editor_button.value = editor
 
         for i, widget in enumerate(self._editor_list):
@@ -106,9 +113,9 @@ class App(Widget):
             editor_count = len(self._editor_list)
 
             if pyxel.btnp(pyxel.KEY_LEFT):
-                self.set_editor((editor - 1) % editor_count)
+                self._set_editor((editor - 1) % editor_count)
             elif pyxel.btnp(pyxel.KEY_RIGHT):
-                self.set_editor((editor + 1) % editor_count)
+                self._set_editor((editor + 1) % editor_count)
 
         editor = self._editor_list[self._editor_button.value]
         self._undo_button.is_enabled = editor.can_undo
