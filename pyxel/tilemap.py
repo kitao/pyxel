@@ -1,6 +1,6 @@
 import numpy as np
 
-from . import utilities
+from .utilities import copy_ndarray, get_pyxel_tilemap
 
 
 class Tilemap:
@@ -41,8 +41,8 @@ class Tilemap:
                 for line in data
             ]
         )
-        utilities.copy_ndarray(self._data, x, y, src)
+        copy_ndarray(self._data, x, y, src)
 
     def copy(self, x, y, tm, u, v, w, h):
-        tilemap = utilities.tilemap(tm)
-        utilities.copy_ndarray(self._data, x, y, tilemap._data, u, v, w, h)
+        tilemap = get_pyxel_tilemap(tm)
+        copy_ndarray(self._data, x, y, tilemap._data, u, v, w, h)
