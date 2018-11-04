@@ -17,6 +17,7 @@ class Editor(Widget):
     Events:
         __on_undo(data)
         __on_redo(data)
+        __on_drop(filenames)
     """
 
     def __init__(self, parent):
