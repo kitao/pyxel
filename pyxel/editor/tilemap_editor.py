@@ -1,5 +1,3 @@
-import numpy as np
-
 import pyxel
 from pyxel.constants import RENDERER_IMAGE_COUNT, RENDERER_TILEMAP_COUNT
 from pyxel.ui import NumberPicker, RadioButton
@@ -21,7 +19,6 @@ class TileMapEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self._color_table = np.arange(1024).reshape(32, 32)
         self._drawing_panel = DrawingPanel(self, is_tilemap_mode=True)
         self._tilemap_panel = TilemapPanel(self)
         self._image_panel = ImagePanel(self, is_tilemap_mode=True)
@@ -53,18 +50,11 @@ class TileMapEditor(Editor):
 
     @property
     def color(self):
-        x = self._image_panel.select_x // 8
-        y = self._image_panel.select_y // 8
-        return self._color_table[y, x]
+        return self._image_panel.focused_tiles
 
     @color.setter
     def color(self, value):
-        x = (value % 32) * 8
-        y = (value // 32) * 8
-
-        image_panel = self._image_panel
-        image_panel.select_x = min(max(x, 0), 256 - image_panel.select_width)
-        image_panel.select_y = min(max(y, 0), 256 - image_panel.select_height)
+        self._image_panel.set_focus(value % 32 * 8, value // 32 * 8)
 
     @property
     def tool(self):
