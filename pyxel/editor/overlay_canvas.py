@@ -31,13 +31,13 @@ class OverlayCanvas:
         b += 0.41
         return x * x * b * b + y * y * a * a < a * a * b * b
 
-    def pix(self, x, y, val):
+    def pix(self, x, y, col):
         if x >= 0 and x < 16 and y >= 0 and y < 16:
-            self.data[y, x] = val
+            self.data[y, x] = col
 
-    def line(self, x1, y1, x2, y2, val):
+    def line(self, x1, y1, x2, y2, col):
         if x1 == x2 and y1 == y2:
-            self.pix(x1, y1, val)
+            self.pix(x1, y1, col)
             return
 
         dx = x2 - x1
@@ -53,7 +53,7 @@ class OverlayCanvas:
                 y = int(y1 + i * dy / dx + 0.5)
 
                 if x >= 0 and x < 16 and y >= 0 and y < 16:
-                    self.data[y, x] = val
+                    self.data[y, x] = col
         else:
             if dy < 0:
                 x1, y1 = x2, y2
@@ -64,31 +64,31 @@ class OverlayCanvas:
                 y = y1 + i
 
                 if x >= 0 and x < 16 and y >= 0 and y < 16:
-                    self.data[y, x] = val
+                    self.data[y, x] = col
 
-    def rectb(self, x1, y1, x2, y2, val, is_guide_mode):
+    def rectb(self, x1, y1, x2, y2, col, is_guide_mode):
         x1, y1, x2, y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
 
         for y in range(max(y1, 0), min(y2 + 1, 16)):
             for x in range(max(x1, 0), min(x2 + 1, 16)):
                 if x == x1 or x == x2 or y == y1 or y == y2:
-                    self.data[y, x] = val
+                    self.data[y, x] = col
 
-    def rect(self, x1, y1, x2, y2, val, is_guide_mode):
+    def rect(self, x1, y1, x2, y2, col, is_guide_mode):
         x1, y1, x2, y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
 
         for y in range(max(y1, 0), min(y2 + 1, 16)):
             for x in range(max(x1, 0), min(x2 + 1, 16)):
-                self.data[y, x] = val
+                self.data[y, x] = col
 
-    def circb(self, x1, y1, x2, y2, val, is_guide_mode):
+    def circb(self, x1, y1, x2, y2, col, is_guide_mode):
         x1, y1, x2, y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
 
         a = (x2 - x1) / 2
         b = (y2 - y1) / 2
 
         if a <= 0.5 or b <= 0.5:
-            self.rect(x1, y1, x2, y2, val, False)
+            self.rect(x1, y1, x2, y2, col, False)
             return
 
         cx = (x1 + x2) / 2
@@ -105,16 +105,16 @@ class OverlayCanvas:
                     or not self._inner_ellipse(dx, dy - 1, a, b)
                     or not self._inner_ellipse(dx, dy + 1, a, b)
                 ):
-                    self.data[y, x] = val
+                    self.data[y, x] = col
 
-    def circ(self, x1, y1, x2, y2, val, is_guide_mode):
+    def circ(self, x1, y1, x2, y2, col, is_guide_mode):
         x1, y1, x2, y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
 
         a = (x2 - x1) / 2
         b = (y2 - y1) / 2
 
         if a <= 0.5 or b <= 0.5:
-            self.rect(x1, y1, x2, y2, val, False)
+            self.rect(x1, y1, x2, y2, col, False)
             return
 
         cx = (x1 + x2) / 2
@@ -123,34 +123,34 @@ class OverlayCanvas:
         for y in range(max(y1, 0), min(y2 + 1, 16)):
             for x in range(max(x1, 0), min(x2 + 1, 16)):
                 if self._inner_ellipse(x - cx, y - cy, a, b):
-                    self.data[y, x] = val
+                    self.data[y, x] = col
 
-    def paint(self, x, y, val, dest):
-        dest_val = dest[y, x]
+    def paint(self, x, y, col, dest):
+        dest_col = dest[y, x]
 
-        if dest_val == val:
+        if dest_col == col:
             return
 
         for i in range(x, -1, -1):
-            if dest[y, i] != dest_val:
+            if dest[y, i] != dest_col:
                 break
 
-            dest[y, i] = val
+            dest[y, i] = col
 
-            if y > 0 and dest[y - 1, i] == dest_val:
-                self.paint(i, y - 1, val, dest)
+            if y > 0 and dest[y - 1, i] == dest_col:
+                self.paint(i, y - 1, col, dest)
 
-            if y < 15 and dest[y + 1, i] == dest_val:
-                self.paint(i, y + 1, val, dest)
+            if y < 15 and dest[y + 1, i] == dest_col:
+                self.paint(i, y + 1, col, dest)
 
         for i in range(x + 1, 16):
-            if dest[y, i] != dest_val:
+            if dest[y, i] != dest_col:
                 return
 
-            dest[y, i] = val
+            dest[y, i] = col
 
-            if y > 0 and dest[y - 1, i] == dest_val:
-                self.paint(i, y - 1, val, dest)
+            if y > 0 and dest[y - 1, i] == dest_col:
+                self.paint(i, y - 1, col, dest)
 
-            if y < 15 and dest[y + 1, i] == dest_val:
-                self.paint(i, y + 1, val, dest)
+            if y < 15 and dest[y + 1, i] == dest_col:
+                self.paint(i, y + 1, col, dest)
