@@ -35,7 +35,7 @@ class ImageEditor(Editor):
 
     @color.setter
     def color(self, value):
-        self._color_picker.value = value
+        self._color_picker.value = int(value)
 
     @property
     def tool(self):
