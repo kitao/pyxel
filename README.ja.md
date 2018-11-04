@@ -456,13 +456,13 @@ e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'])`
 
 ### 動作確認
 
-動作確認をして、[Issue Tracker](https://github.com/kitao/pyxel/issues)で不具合の報告や改善の提案をしてくれる方は大歓迎です！
+動作確認を行い、[Issue Tracker](https://github.com/kitao/pyxel/issues)で不具合の報告や改善の提案をしてくれる方は大歓迎です！
 
 ### プルリクエスト
 
-パッチや修正はプルリクエスト(PR)として受け付けています。提出の前に、問題がすでに解決済みでないか[Issue Tracker](https://github.com/kitao/pyxel/issues)で確認をお願いします。
+パッチや修正はプルリクエスト(PR)として受け付けています。提出の前に問題がすでに解決済みでないか[Issue Tracker](https://github.com/kitao/pyxel/issues)で確認をお願いします。
 
-提出されたプルリクエストは、[MITライセンス](https://github.com/kitao/pyxel/blob/master/LICENSE)で公開することに同意したものを見なされます。
+提出されたプルリクエストは[MITライセンス](https://github.com/kitao/pyxel/blob/master/LICENSE)で公開することに同意したものを見なされます。
 
 ## その他の情報
 
