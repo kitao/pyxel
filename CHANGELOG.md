@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.9.2
+- Enabled to import png by drop in the Image Editor
+
 ## 0.9.1
 - Fixed the color pick bug of the Image Editor
 - Changed the focus UI of the Image Editor
