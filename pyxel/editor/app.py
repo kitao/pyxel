@@ -6,7 +6,9 @@ import pyxel
 from pyxel.ui import ImageButton, RadioButton, Widget
 from pyxel.ui.constants import (
     WIDGET_BACKGROUND_COLOR,
+    WIDGET_HOLD_TIME,
     WIDGET_PANEL_COLOR,
+    WIDGET_REPEAT_TIME,
     WIDGET_SHADOW_COLOR,
 )
 
@@ -125,10 +127,14 @@ class App(Widget):
             if pyxel.btnp(pyxel.KEY_S):
                 self._save_button.press()
 
-            if editor.can_undo and pyxel.btnp(pyxel.KEY_Z):
+            if editor.can_undo and pyxel.btnp(
+                pyxel.KEY_Z, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+            ):
                 self._undo_button.press()
 
-            if editor.can_redo and pyxel.btnp(pyxel.KEY_Y):
+            if editor.can_redo and pyxel.btnp(
+                pyxel.KEY_Y, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+            ):
                 self._redo_button.press()
 
     def __on_draw(self):

@@ -4,6 +4,7 @@
 - Enabled to import png by drop in the Image Editor
 - Fixed the crash bug caused by unsupported keys
 - Enabled to play the piano with mouse in the Sound Editor
+- Enabled to repeat undo/redo shortcuts
 
 ## 0.9.1
 - Fixed the color pick bug of the Image Editor
