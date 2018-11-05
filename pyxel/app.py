@@ -353,7 +353,7 @@ class App:
         if action == glfw.PRESS:
             state = pyxel.frame_count
         elif action == glfw.RELEASE:
-            if self._key_state.get(key) == pyxel.frame_count:
+            if self._key_state.get(key, 0) == pyxel.frame_count:
                 state = -pyxel.frame_count - 1
             else:
                 state = -pyxel.frame_count
