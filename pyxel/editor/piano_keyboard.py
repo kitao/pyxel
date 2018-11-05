@@ -37,15 +37,64 @@ class PianoKeyboard(Widget):
 
         self._sound = pyxel.sound(64, system=True)
         self._sound.set("g2", "p", "3", "n", 10)
+        self._mouse_note = None
         self.note = None
         self._tone = 0
+
         self.add_event_handler("mouse_down", self.__on_mouse_down)
+        self.add_event_handler("mouse_up", self.__on_mouse_up)
+        self.add_event_handler("mouse_drag", self.__on_mouse_drag)
         self.add_event_handler("mouse_hover", self.__on_mouse_hover)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
 
+    def _screen_to_note(self, x, y):
+        x -= self.x
+        y -= self.y
+
+        octave = (4 - y // 24) * 12
+        y %= 24
+
+        if octave > 59:
+            return 59
+        if octave < 0:
+            return -1
+
+        if x <= 6:
+            if y >= 2 and y <= 4:
+                return octave + 10
+            elif y >= 6 and y <= 8:
+                return octave + 8
+            elif y >= 10 and y <= 12:
+                return octave + 6
+            elif y >= 16 and y <= 18:
+                return octave + 3
+            elif y >= 20 and y <= 22:
+                return octave + 1
+
+        if y <= 2:
+            return octave + 11
+        elif y <= 6:
+            return octave + 9
+        elif y <= 10:
+            return octave + 7
+        elif y <= 13:
+            return octave + 5
+        elif y <= 16:
+            return octave + 4
+        elif y <= 20:
+            return octave + 2
+        else:
+            return octave
+
     def __on_mouse_down(self, key, x, y):
-        pass
+        self._mouse_note = self._screen_to_note(x, y)
+
+    def __on_mouse_up(self, key, x, y):
+        self._mouse_note = None
+
+    def __on_mouse_drag(self, key, x, y, dx, dy):
+        self._mouse_note = self._screen_to_note(x, y)
 
     def __on_mouse_hover(self, x, y):
         self.parent.help_message = "PLAY:Z/S/X..Q/2/W..A TONE:1"
@@ -63,7 +112,7 @@ class PianoKeyboard(Widget):
         if pyxel.btnp(pyxel.KEY_1):
             self._tone = (self._tone + 1) % 4
 
-        self.note = None
+        self.note = self._mouse_note
         for i, key in enumerate(key_table):
             if pyxel.btn(key):
                 self.note = self.parent.octave * 12 + i
