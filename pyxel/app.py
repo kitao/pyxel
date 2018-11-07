@@ -371,11 +371,6 @@ class App:
         elif key == KEY_LEFT_SUPER or key == KEY_RIGHT_SUPER:
             self._key_state[KEY_SUPER] = state
 
-    def _update_mouse_pos(self):
-        x, y = glfw.get_cursor_pos(self._window)
-        pyxel.mouse_x = int((x - self._viewport_left) / self._viewport_scale)
-        pyxel.mouse_y = int((y - self._viewport_top) / self._viewport_scale)
-
     def _mouse_button_callback(self, window, button, action, mods):
         if button == glfw.MOUSE_BUTTON_LEFT:
             button = MOUSE_LEFT_BUTTON
@@ -422,6 +417,7 @@ class App:
         self._next_update_time += update_count * self._one_frame_time
 
         self._update_mouse_pos()
+        self._update_gamepad()
 
         # update frame
         for _ in range(update_count):
@@ -432,6 +428,32 @@ class App:
 
             pyxel.frame_count += 1
             self._measure_update_time(update_start_time)
+
+    def _update_mouse_pos(self):
+        x, y = glfw.get_cursor_pos(self._window)
+        pyxel.mouse_x = int((x - self._viewport_left) / self._viewport_scale)
+        pyxel.mouse_y = int((y - self._viewport_top) / self._viewport_scale)
+
+    def _update_gamepad(self):
+        for i in range(2):
+            if i == 0:
+                states, count = glfw.get_joystick_buttons(glfw.JOYSTICK_1)
+                offset = pyxel.GAMEPAD_1_A
+            else:
+                states, count = glfw.get_joystick_buttons(glfw.JOYSTICK_2)
+                offset = pyxel.GAMEPAD_2_A
+
+            for j in range(count):
+                action = states[j]
+                button = offset + j
+
+                if action == glfw.PRESS:
+                    self._key_state[button] = pyxel.frame_count
+                elif action == glfw.RELEASE:
+                    if self._key_state.get(button) == pyxel.frame_count:
+                        self._key_state[button] = -pyxel.frame_count - 1
+                    else:
+                        self._key_state[button] = -pyxel.frame_count
 
     def _draw_frame(self):
         draw_start_time = time.time()
