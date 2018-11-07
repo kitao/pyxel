@@ -45,7 +45,7 @@ class SoundSelector(Widget):
         pyxel.pal()
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON or self.parent.is_playing:
+        if key != pyxel.MOUSE_LEFT_BUTTON or self.parent.is_playing:
             return
 
         self._pressed_sound = self._hit_sound_button(x, y)
@@ -54,7 +54,7 @@ class SoundSelector(Widget):
             self.parent.field_cursor.insert(self._pressed_sound)
 
     def __on_mouse_up(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON:
+        if key != pyxel.MOUSE_LEFT_BUTTON:
             return
 
         self._pressed_sound = None

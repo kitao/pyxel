@@ -88,13 +88,15 @@ class PianoKeyboard(Widget):
             return octave
 
     def __on_mouse_down(self, key, x, y):
-        self._mouse_note = self._screen_to_note(x, y)
+        if key == pyxel.MOUSE_LEFT_BUTTON:
+            self._mouse_note = self._screen_to_note(x, y)
 
     def __on_mouse_up(self, key, x, y):
         self._mouse_note = None
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
-        self._mouse_note = self._screen_to_note(x, y)
+        if key == pyxel.MOUSE_LEFT_BUTTON:
+            self._mouse_note = self._screen_to_note(x, y)
 
     def __on_mouse_hover(self, x, y):
         self.parent.help_message = "PLAY:Z/S/X..Q/2/W..A TONE:1"
