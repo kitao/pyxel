@@ -29,13 +29,10 @@ from .constants import (
     KEY_ALT,
     KEY_CONTROL,
     KEY_LEFT_ALT,
-    KEY_LEFT_BUTTON,
     KEY_LEFT_CONTROL,
     KEY_LEFT_SHIFT,
     KEY_LEFT_SUPER,
-    KEY_MIDDLE_BUTTON,
     KEY_RIGHT_ALT,
-    KEY_RIGHT_BUTTON,
     KEY_RIGHT_CONTROL,
     KEY_RIGHT_SHIFT,
     KEY_RIGHT_SUPER,
@@ -46,6 +43,9 @@ from .constants import (
     MOUSE_CURSOR_IMAGE_X,
     MOUSE_CURSOR_IMAGE_Y,
     MOUSE_CURSOR_WIDTH,
+    MOUSE_LEFT_BUTTON,
+    MOUSE_MIDDLE_BUTTON,
+    MOUSE_RIGHT_BUTTON,
     RENDERER_IMAGE_COUNT,
     RENDERER_TILEMAP_COUNT,
 )
@@ -378,11 +378,11 @@ class App:
 
     def _mouse_button_callback(self, window, button, action, mods):
         if button == glfw.MOUSE_BUTTON_LEFT:
-            button = KEY_LEFT_BUTTON
+            button = MOUSE_LEFT_BUTTON
         elif button == glfw.MOUSE_BUTTON_MIDDLE:
-            button = KEY_MIDDLE_BUTTON
+            button = MOUSE_MIDDLE_BUTTON
         elif button == glfw.MOUSE_BUTTON_RIGHT:
-            button = KEY_RIGHT_BUTTON
+            button = MOUSE_RIGHT_BUTTON
         else:
             return
 

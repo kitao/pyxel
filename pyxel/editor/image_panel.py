@@ -73,7 +73,7 @@ class ImagePanel(Widget):
         return x, y
 
     def __on_mouse_down(self, key, x, y):
-        if key == pyxel.KEY_LEFT_BUTTON:
+        if key == pyxel.MOUSE_LEFT_BUTTON:
             x, y = self._screen_to_view(x, y)
 
             if self._is_tilemap_mode:
@@ -91,12 +91,12 @@ class ImagePanel(Widget):
                 self.parent.drawing_x = self._focus_x
                 self.parent.drawing_y = self._focus_y
 
-        if key == pyxel.KEY_RIGHT_BUTTON:
+        if key == pyxel.MOUSE_RIGHT_BUTTON:
             self._drag_offset_x = 0
             self._drag_offset_y = 0
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
-        if key == pyxel.KEY_LEFT_BUTTON:
+        if key == pyxel.MOUSE_LEFT_BUTTON:
             if self._is_tilemap_mode:
                 x, y = self._screen_to_view(x, y)
 
@@ -110,7 +110,7 @@ class ImagePanel(Widget):
                 self._focus_height = min(abs(self._press_y - y) + 8, 64)
             else:
                 self.__on_mouse_down(key, x, y)
-        elif key == pyxel.KEY_RIGHT_BUTTON:
+        elif key == pyxel.MOUSE_RIGHT_BUTTON:
             self._drag_offset_x -= dx
             self._drag_offset_y -= dy
 

@@ -261,12 +261,12 @@ class Widget:
         if self.is_hit(mx, my):
             key = None
 
-            if pyxel.btnp(pyxel.KEY_LEFT_BUTTON):
-                key = pyxel.KEY_LEFT_BUTTON
-            elif pyxel.btnp(pyxel.KEY_RIGHT_BUTTON):
-                key = pyxel.KEY_RIGHT_BUTTON
-            elif pyxel.btnp(pyxel.KEY_MIDDLE_BUTTON):
-                key = pyxel.KEY_MIDDLE_BUTTON
+            if pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON):
+                key = pyxel.MOUSE_LEFT_BUTTON
+            elif pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON):
+                key = pyxel.MOUSE_RIGHT_BUTTON
+            elif pyxel.btnp(pyxel.MOUSE_MIDDLE_BUTTON):
+                key = pyxel.MOUSE_MIDDLE_BUTTON
 
             if key is not None:
                 self._capture_mouse(key)

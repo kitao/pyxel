@@ -75,7 +75,7 @@ class DrawingPanel(Widget):
         return x, y
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON:
+        if key != pyxel.MOUSE_LEFT_BUTTON:
             return
 
         x, y = self._screen_to_view(x, y)
@@ -114,7 +114,7 @@ class DrawingPanel(Widget):
         self._last_y = y
 
     def __on_mouse_up(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON:
+        if key != pyxel.MOUSE_LEFT_BUTTON:
             return
 
         self._is_dragged = False
@@ -139,7 +139,7 @@ class DrawingPanel(Widget):
             self._add_post_history(dest)
 
     def __on_mouse_click(self, key, x, y):
-        if key == pyxel.KEY_RIGHT_BUTTON:
+        if key == pyxel.MOUSE_RIGHT_BUTTON:
             x = self.viewport_x + (x - self.x) // 8
             y = self.viewport_y + (y - self.y) // 8
 
@@ -149,7 +149,7 @@ class DrawingPanel(Widget):
                 self.parent.color = pyxel.image(self.parent.image).data[y, x]
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
-        if key == pyxel.KEY_LEFT_BUTTON:
+        if key == pyxel.MOUSE_LEFT_BUTTON:
             x1 = self._press_x
             y1 = self._press_y
             x2 = (x - self.x - 1) // 8
@@ -192,7 +192,7 @@ class DrawingPanel(Widget):
             self._last_x = x2
             self._last_y = y2
 
-        elif key == pyxel.KEY_RIGHT_BUTTON:
+        elif key == pyxel.MOUSE_RIGHT_BUTTON:
             self._drag_offset_x -= dx
             self._drag_offset_y -= dy
 

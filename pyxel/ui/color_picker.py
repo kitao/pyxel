@@ -49,7 +49,7 @@ class ColorPicker(Widget):
         return None
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON:
+        if key != pyxel.MOUSE_LEFT_BUTTON:
             return
 
         value = self.check_value(x, y)

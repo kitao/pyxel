@@ -63,7 +63,7 @@ class App:
 
         num_bubbles = len(self.bubbles)
 
-        if pyxel.btnp(pyxel.KEY_LEFT_BUTTON):
+        if pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON):
             for i in range(0, num_bubbles):
                 exploder = self.bubbles[i]
                 dx = pyxel.mouse_x - exploder.pos.x
