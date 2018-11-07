@@ -1,3 +1,5 @@
+import os.path
+
 import pyxel
 from pyxel.ui import Widget
 
@@ -25,6 +27,8 @@ class Editor(Widget):
 
         self._history_list = []
         self._history_index = 0
+
+        self.add_event_handler("drop", self.__on_drop)
 
     @property
     def help_message(self):
@@ -119,7 +123,10 @@ class Editor(Widget):
 
         self.help_message = s
 
-    def draw_not_implemented_message(self):
-        pyxel.rect(78, 83, 163, 97, 11)
-        pyxel.rectb(78, 83, 163, 97, 1)
-        pyxel.text(84, 88, "NOT IMPLEMENTED YET", 1)
+    def __on_drop(self, filenames):
+        for filename in filenames:
+            _, ext = os.path.splitext(filename)
+
+            if ext.lower() == ".pyxel":
+                pyxel.load(filename)
+                return
