@@ -3,6 +3,8 @@
 ## 0.9.3
 - Enabled to open a resource file by drop in the Pyxel Editor
 - Renamed the constants for the mouse buttons
+- Added gamepad support
+- Changed gamepad available for the example #2
 
 ## 0.9.2
 - Enabled to import png by drop in the Image Editor
