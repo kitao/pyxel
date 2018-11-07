@@ -19,7 +19,7 @@ class MusicField(Widget):
         return self.parent.get_data(self._ch)
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.KEY_LEFT_BUTTON or self.parent.is_playing:
+        if key != pyxel.MOUSE_LEFT_BUTTON or self.parent.is_playing:
             return
 
         x -= self.x + 21
