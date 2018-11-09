@@ -5,6 +5,7 @@
 - Renamed the constants for the mouse buttons
 - Added gamepad support
 - Changed gamepad available for the example #2
+- Fixed the crash bug when the window is minimized
 
 ## 0.9.2
 - Enabled to import png by drop in the Image Editor
