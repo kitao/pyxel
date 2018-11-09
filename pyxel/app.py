@@ -287,7 +287,8 @@ class App:
         data["image"] = image_list
 
         tilemap_list = [
-            pyxel.tilemap(i).data.dumps() for i in range(RENDERER_TILEMAP_COUNT)
+            (pyxel.tilemap(i).data.dumps(), pyxel.tilemap(i).image)
+            for i in range(RENDERER_TILEMAP_COUNT)
         ]
         data["tilemap"] = tilemap_list
 
@@ -323,8 +324,14 @@ class App:
 
         tilemap_list = data.get("tilemap")
         if tilemap_list:
-            for i in range(RENDERER_TILEMAP_COUNT):
-                pyxel.tilemap(i).data[:, :] = np.loads(tilemap_list[i])
+            if type(tilemap_list[0]) is tuple:
+                for i in range(RENDERER_TILEMAP_COUNT):
+                    tilemap = pyxel.tilemap(i)
+                    tilemap.data[:, :] = np.loads(tilemap_list[i][0])
+                    tilemap.image = tilemap_list[i][1]
+            else:  # todo: delete this block in the future
+                for i in range(RENDERER_TILEMAP_COUNT):
+                    pyxel.tilemap(i).data[:, :] = np.loads(tilemap_list[i])
 
         sound_list = data.get("sound")
         if sound_list:
