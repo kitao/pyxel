@@ -25,9 +25,9 @@ class Tilemap:
     def get(self, x, y):
         return self._data[y, x]
 
-    def set(self, x, y, data, image=None):
-        if image is not None:
-            self.image = image
+    def set(self, x, y, data, img=None):
+        if img is not None:
+            self.image = img
 
         if type(data) is int:
             self._data[y, x] = data
