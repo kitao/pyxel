@@ -6,6 +6,7 @@
 - Added gamepad support
 - Changed gamepad available for the example #2
 - Fixed the crash bug when the window is minimized
+- Modified the code of the example #6
 
 ## 0.9.2
 - Enabled to import png by drop in the Image Editor
