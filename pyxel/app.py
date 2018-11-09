@@ -430,8 +430,8 @@ class App:
             self._measure_update_time(update_start_time)
 
     def _update_mouse_pos(self):
-        x, y = glfw.get_cursor_pos(self._window)
         if self._viewport_scale > 0:
+            x, y = glfw.get_cursor_pos(self._window)
             pyxel.mouse_x = int((x - self._viewport_left) / self._viewport_scale)
             pyxel.mouse_y = int((y - self._viewport_top) / self._viewport_scale)
 
