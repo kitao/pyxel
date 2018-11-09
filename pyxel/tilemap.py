@@ -8,6 +8,7 @@ class Tilemap:
         self._width = width
         self._height = height
         self._data = np.zeros((width, height), np.uint16)
+        self.image = 0
 
     @property
     def width(self):
@@ -24,7 +25,10 @@ class Tilemap:
     def get(self, x, y):
         return self._data[y, x]
 
-    def set(self, x, y, data):
+    def set(self, x, y, data, image=None):
+        if image is not None:
+            self.image = image
+
         if type(data) is int:
             self._data[y, x] = data
             return
