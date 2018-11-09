@@ -10,7 +10,9 @@ class App:
         pyxel.image(0).load(0, 0, "assets/cat_16x16.png")
         pyxel.image(1).load(0, 0, "assets/tileset_24x32.png")
 
-        pyxel.tilemap(0).set(0, 0, ["2200020401006061620040", "4203202122030001020360"])
+        pyxel.tilemap(0).set(
+            0, 0, ["2200020401006061620040", "4203202122030001020360"], 1
+        )
 
         self.pal_test_is_enabled = False
         self.clip_test_is_enabled = False
@@ -148,11 +150,11 @@ class App:
         pyxel.blt(x + 76, y, 0, 0, 0, -16, -16, 5)
 
     def test_bltm(self, x, y):
-        pyxel.text(x, y, "bltm(x,y,img,tm,tu,tv,\n     tw,th,[colkey])", 7)
+        pyxel.text(x, y, "bltm(x,y,tm,u,v,\n     w,h,[colkey])", 7)
 
         y += 15
 
-        pyxel.bltm(x, y, 1, 0, 0, 0, 11, 2, 2)
+        pyxel.bltm(x, y, 0, 0, 0, 11, 2, 2)
 
     def test_text(self, x, y):
         pyxel.text(x, y, "text(x,y,s,col)", 7)
