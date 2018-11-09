@@ -431,8 +431,9 @@ class App:
 
     def _update_mouse_pos(self):
         x, y = glfw.get_cursor_pos(self._window)
-        pyxel.mouse_x = int((x - self._viewport_left) / self._viewport_scale)
-        pyxel.mouse_y = int((y - self._viewport_top) / self._viewport_scale)
+        if self._viewport_scale > 0:
+            pyxel.mouse_x = int((x - self._viewport_left) / self._viewport_scale)
+            pyxel.mouse_y = int((y - self._viewport_top) / self._viewport_scale)
 
     def _update_gamepad(self):
         for i in range(2):
