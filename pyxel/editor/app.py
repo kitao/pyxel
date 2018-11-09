@@ -35,6 +35,7 @@ class App(Widget):
         pyxel.init(
             APP_WIDTH, APP_HEIGHT, caption="Pyxel Editor - {}".format(resource_file)
         )
+        pyxel.mouse(True)
 
         try:
             pyxel.load(resource_file)
@@ -92,7 +93,6 @@ class App(Widget):
             os.path.dirname(__file__), "assets", EDITOR_IMAGE_NAME
         )
         pyxel.image(3, system=True).load(EDITOR_IMAGE_X, EDITOR_IMAGE_Y, image_file)
-        pyxel.mouse(True)
 
         self._set_editor(0)
 
