@@ -29,13 +29,22 @@ class TileMapEditor(Editor):
             self, 81, 161, 3, EDITOR_IMAGE_X + 63, EDITOR_IMAGE_Y, 7, TOOL_PENCIL
         )
         self._image_picker = NumberPicker(
-            self, 192, 161, 0, RENDERER_IMAGE_COUNT - 2, 0
+            self,
+            192,
+            161,
+            0,
+            RENDERER_IMAGE_COUNT - 2,
+            pyxel.tilemap(self._tilemap_picker.value).image,
         )
 
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
+        self._tilemap_picker.add_event_handler(
+            "change", self.__on_tilemap_picker_change
+        )
+        self._image_picker.add_event_handler("change", self.__on_image_picker_change)
         self.add_number_picker_help(self._tilemap_picker)
         self.add_number_picker_help(self._image_picker)
         self.add_tool_button_help(self._tool_button)
@@ -126,3 +135,9 @@ class TileMapEditor(Editor):
         pyxel.text(18, 162, "TILEMAP", 6)
         pyxel.text(18, 162, "TILEMAP", 6)
         pyxel.text(170, 162, "IMAGE", 6)
+
+    def __on_tilemap_picker_change(self, value):
+        self._image_picker.value = pyxel.tilemap(value).image
+
+    def __on_image_picker_change(self, value):
+        pyxel.tilemap(self._tilemap_picker.value).image = value

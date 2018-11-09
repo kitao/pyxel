@@ -317,7 +317,6 @@ class DrawingPanel(Widget):
             pyxel.bltm(
                 self.x + 1,
                 self.y + 1,
-                self.parent.image,
                 self.parent.tilemap,
                 self.viewport_x,
                 self.viewport_y,
