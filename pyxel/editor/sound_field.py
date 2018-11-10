@@ -79,28 +79,29 @@ class SoundField(Widget):
         self.parent.field_cursor.insert(value)
 
     def __on_draw(self):
-        30, 149
         pyxel.text(self.x - 13, self.y + 1, "TON", 6)
         pyxel.text(self.x - 13, self.y + 9, "VOL", 6)
         pyxel.text(self.x - 13, self.y + 17, "EFX", 6)
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 79, 193, 23)
 
+        data_str = []
+        data_str.append("".join(["TSPN"[v] for v in self.parent.get_data(1)]))
+        data_str.append("".join([str(v) for v in self.parent.get_data(2)]))
+        data_str.append("".join(["NSVF"[v] for v in self.parent.get_data(3)]))
+
+        for i in range(3):
+            pyxel.text(31, 150 + i * 8, data_str[i], 1)
+
+        cursor_y = self.parent.field_cursor.y
         cursor_x = self.parent.field_cursor.x
-        cursor_y = 0 if self.parent.is_playing else self.parent.field_cursor.y
 
-        if cursor_y > 0:
-            x = cursor_x * 4 + 31
-            y = cursor_y * 8 + 142
-            pyxel.rect(x, y - 1, x + 2, y + 5, 1)
+        if self.parent.is_playing or cursor_y == 0:
+            return
 
-        for i, tone in enumerate(self.parent.get_data(1)):
-            col = 7 if cursor_y == 1 and cursor_x == i else 1
-            pyxel.text(31 + i * 4, 150, "TSPN"[tone], col)
+        x = cursor_x * 4 + 31
+        y = cursor_y * 8 + 142
 
-        for i, volume in enumerate(self.parent.get_data(2)):
-            col = 7 if cursor_y == 2 and cursor_x == i else 1
-            pyxel.text(31 + i * 4, 158, str(volume), col)
+        pyxel.rect(x, y - 1, x + 2, y + 5, 1)
 
-        for i, effect in enumerate(self.parent.get_data(3)):
-            col = 7 if cursor_y == 3 and cursor_x == i else 1
-            pyxel.text(31 + i * 4, 166, "NSVF"[effect], col)
+        if cursor_x < len(data_str[cursor_y - 1]):
+            pyxel.text(x, y, data_str[cursor_y - 1][cursor_x], 7)
