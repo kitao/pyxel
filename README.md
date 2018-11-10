@@ -315,8 +315,8 @@ Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`)
 - `blt(x, y, img, u, v, w, h, [colkey])`  
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color
 
-- `bltm(x, y, img, tm, tu, tv, tw, th, [colkey])`  
-Copy the image bank `img`(0-2) to (`x`, `y`) according to the tile information of size (`tw`, `th`) from (`tu`, `tv`) of the tilemap `tm`(0-7). If `colkey` is specified, treated as transparent color. A tile of the tilemap is drawn with a size of 8x8, and if the tile number is 0, indicates the region (0, 0)-(7, 7) of the image bank, if 1, indicates (8, 0)-(15, 0).
+- `bltm(x, y, tm, u, v, w, h, [colkey])`  
+Draw the tilemap `tm`(0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. A tile of the tilemap is drawn with a size of 8x8, and if the tile number is 0, indicates the region (0, 0)-(7, 7) of the image bank, if 1, indicates (8, 0)-(15, 0)
 
 - `text(x, y, s, col)`  
 Draw a string `s` of color `col` at (`x`, `y`)
@@ -368,12 +368,15 @@ The width and height of the tilemap
 - `data`  
 The data of the tilemap (NumPy array)
 
+- `refimg`  
+The image bank referenced by the tilemap
+
 - `get(x, y)`  
 Retrieve the data of the tilemap at (`x`, `y`)
 
-- `set(x, y, data)`  
-Set the data of the tilemap at (`x`, `y`) by a value or a list of strings   
-e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'])`
+- `set(x, y, data, [refimg])`  
+Set the data of the tilemap at (`x`, `y`) by a value or a list of strings. If `refimg` is specified, the image bank referenced by the tilemap is also set  
+e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'], 1)`
 
 - `copy(x, y, tm, u, v, w, h)`  
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`)
