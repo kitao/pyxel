@@ -34,7 +34,7 @@ class TileMapEditor(Editor):
             161,
             0,
             RENDERER_IMAGE_COUNT - 2,
-            pyxel.tilemap(self._tilemap_picker.value).image,
+            pyxel.tilemap(self._tilemap_picker.value).refimg,
         )
 
         self.add_event_handler("undo", self.__on_undo)
@@ -137,7 +137,7 @@ class TileMapEditor(Editor):
         pyxel.text(170, 162, "IMAGE", 6)
 
     def __on_tilemap_picker_change(self, value):
-        self._image_picker.value = pyxel.tilemap(value).image
+        self._image_picker.value = pyxel.tilemap(value).refimg
 
     def __on_image_picker_change(self, value):
-        pyxel.tilemap(self._tilemap_picker.value).image = value
+        pyxel.tilemap(self._tilemap_picker.value).refimg = value
