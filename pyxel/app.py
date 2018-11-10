@@ -287,7 +287,7 @@ class App:
         data["image"] = image_list
 
         tilemap_list = [
-            (pyxel.tilemap(i).data.dumps(), pyxel.tilemap(i).image)
+            (pyxel.tilemap(i).data.dumps(), pyxel.tilemap(i).refimg)
             for i in range(RENDERER_TILEMAP_COUNT)
         ]
         data["tilemap"] = tilemap_list
@@ -328,7 +328,7 @@ class App:
                 for i in range(RENDERER_TILEMAP_COUNT):
                     tilemap = pyxel.tilemap(i)
                     tilemap.data[:, :] = np.loads(tilemap_list[i][0])
-                    tilemap.image = tilemap_list[i][1]
+                    tilemap.refimg = tilemap_list[i][1]
             else:  # todo: delete this block in the future
                 for i in range(RENDERER_TILEMAP_COUNT):
                     pyxel.tilemap(i).data[:, :] = np.loads(tilemap_list[i])

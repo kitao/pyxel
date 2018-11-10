@@ -221,7 +221,7 @@ class DrawCommand:
     def bltm(self, x, y, tm, u, v, w, h, colkey=None):
         tilemap = self._tilemap_list[tm]
         data = self._tilemap_list[tm]._data[v:, u:]
-        img = tilemap.image
+        img = tilemap.refimg
 
         for i in range(h):
             for j in range(w):
