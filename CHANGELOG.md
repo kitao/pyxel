@@ -7,7 +7,7 @@
 - Changed gamepad available for the example #2
 - Fixed the crash bug when the window is minimized
 - Modified the code of the example #6
-- Added the image property to the Tilemap class
+- Added the refimg property to the Tilemap class
 - Removed the img argument from the bltm command
 
 ## 0.9.2
