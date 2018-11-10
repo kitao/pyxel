@@ -52,7 +52,7 @@ class MusicField(Widget):
             else:
                 cursor_x = play_pos
                 cursor_y = self._ch
-                cursor_col = 8  # 13
+                cursor_col = 8
         else:
             cursor_x = self.parent.field_cursor.x
             cursor_y = self.parent.field_cursor.y
