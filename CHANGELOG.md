@@ -1,6 +1,7 @@
 # Change Log
 
 ## 0.9.6
+- Added issue templates
 - Added the description of issue templates in the manuals
 
 ## 0.9.4
