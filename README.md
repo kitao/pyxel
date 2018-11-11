@@ -456,7 +456,7 @@ Set the list of sound(0-63) of channel 3
 Use the [issue tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests.
 Before submitting a new issue, search the issue tracker to ensure that there is no similar open issue.
 
-When submitting a report, use [this link](https://github.com/kitao/pyxel/issues/new).
+When submitting a report, select the appropriate template from [this link](https://github.com/kitao/pyxel/issues/new/choose).
 
 ### Manual testing
 

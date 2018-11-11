@@ -455,9 +455,9 @@ e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'], 1)`
 ### 問題の報告
 
 不具合の報告や機能の要望は[Issue Tracker](https://github.com/kitao/pyxel/issues)で受け付けています。
-新しいレポートを作成する場合は、同じ内容のものがないか事前に確認をお願いします。
+新しいレポートを作成する前に、同じ内容のものがないか確認をお願いします。
 
-新しいレポートの作成は[こちら](https://github.com/kitao/pyxel/issues/new)から行えます。
+新しいレポートを作成する際は、[こちらのリンク](https://github.com/kitao/pyxel/issues/new/choose)から内容に適したテンプレートを選択してください。
 
 ### 動作確認
 
