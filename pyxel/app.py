@@ -487,7 +487,7 @@ class App:
 
     def _toggle_fullscreen(self):
         if glfw.get_window_monitor(self._window):  # fullscreen to window
-            glfw.set_window_monitor(self._window, None, *self._window_info, 0)
+            glfw.set_window_monitor(self._window, None, *self._window_info, glfw.DONT_CARE)
         else:  # window to fullscreen
             info = [0] * 4
             info[0], info[1] = glfw.get_window_pos(self._window)
@@ -496,7 +496,7 @@ class App:
 
             monitor = glfw.get_primary_monitor()
             size = glfw.get_video_mode(monitor)[0]
-            glfw.set_window_monitor(self._window, monitor, 0, 0, *size, 0)
+            glfw.set_window_monitor(self._window, monitor, 0, 0, *size, glfw.DONT_CARE)
 
     def _check_special_input(self):
         if self.btn(KEY_ALT):
