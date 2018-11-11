@@ -36,7 +36,7 @@ class PianoKeyboard(Widget):
         super().__init__(parent, 17, 25, 12, 123)
 
         self._sound = pyxel.sound(64, system=True)
-        self._sound.set("g2", "p", "3", "n", 10)
+        self._sound.set("g2", "p", "3", "n", 30)
         self._mouse_note = None
         self.note = None
         self._tone = 0
