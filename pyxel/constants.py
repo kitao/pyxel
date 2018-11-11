@@ -1,8 +1,8 @@
 import glfw
 
-VERSION = "0.9.3"
+VERSION = "0.9.4"
 
-GLFW_VERSION = "3.1.2"
+GLFW_VERSION = "3.2.1"
 
 DEFAULT_CAPTION = "Pyxel"
 DEFAULT_SCALE = 0
