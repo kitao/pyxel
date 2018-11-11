@@ -36,14 +36,14 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 
 ## Specifications
 
-- Run on Windows, Mac, and Linux
+- Run on Windows and Mac (Linux version is under development)
 - Code writing with Python3
 - Fixed 16 color palette
 - 256x256 sized 3 image banks
 - 256x256 sized 8 tilemaps
 - 4 channels with 64 definable sounds
 - 8 musics which can combine arbitrary sounds
-- Keyboard, mouse, and joystick(WIP) inputs
+- Keyboard, mouse, and gamepad inputs
 - Image and sound editor
 
 ### Color Palette
@@ -72,6 +72,8 @@ pip3 install pyxel
 ```
 
 ### Linux
+
+**NOTE: Because Linux version is under development, drawing and sound playback do not work properly.**
 
 Install the required packages in a way appropriate for each distribution. [glfw](http://www.glfw.org/) must be version 3.2.1 or higher.
 
