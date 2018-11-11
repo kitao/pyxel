@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.9.4
+- Fixed the crush bug when entering the fullscreen mode
+- Updated the description for Linux in the manuals
+
 ## 0.9.3
 - Enabled to open a resource file by drop in the Pyxel Editor
 - Renamed the constants for the mouse buttons
