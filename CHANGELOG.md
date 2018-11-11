@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.9.6
+- Added the description of issue templates in the manuals
+
 ## 0.9.4
 - Fixed the crush bug when entering the fullscreen mode
 - Updated the description for Linux in the manuals
