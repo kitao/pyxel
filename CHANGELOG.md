@@ -3,6 +3,7 @@
 ## 0.9.4
 - Fixed the crush bug when entering the fullscreen mode
 - Updated the description for Linux in the manuals
+- Reverted to check the version number of glfw strictly
 
 ## 0.9.3
 - Enabled to open a resource file by drop in the Pyxel Editor
