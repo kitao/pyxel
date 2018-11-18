@@ -466,7 +466,7 @@ Anyone manually testing the code and reporting bugs or suggestions for enhanceme
 
 Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the issue tracker.
 
-Submitted pull request is deemed to have agreed to publich under [MIT license](https://github.com/kitao/pyxel/blob/master/LICENSE).
+Submitted pull request is deemed to have agreed to publish under [MIT license](https://github.com/kitao/pyxel/blob/master/LICENSE).
 
 ## Other Information
 
