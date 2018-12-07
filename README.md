@@ -79,7 +79,7 @@ Install the required packages in a way appropriate for each distribution. [glfw]
 
 **Arch:**
 
-Install [`python-pixel`](https://aur.archlinux.org/packages/python-pyxel/) by using your favorite AUR helper:
+Install [`python-pyxel`](https://aur.archlinux.org/packages/python-pyxel/) by using your favorite AUR helper:
 
 ```sh
 yay -S python-pyxel
