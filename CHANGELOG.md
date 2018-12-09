@@ -1,8 +1,9 @@
 # Change Log
 
-## 0.9.6
+## 0.9.5
 - Added issue templates
 - Added the description of issue templates in the manuals
+- Fixed the clipping bug of drawing primitives
 
 ## 0.9.4
 - Fixed the crush bug when entering the fullscreen mode
