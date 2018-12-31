@@ -487,7 +487,9 @@ class App:
 
     def _toggle_fullscreen(self):
         if glfw.get_window_monitor(self._window):  # fullscreen to window
-            glfw.set_window_monitor(self._window, None, *self._window_info, glfw.DONT_CARE)
+            glfw.set_window_monitor(
+                self._window, None, *self._window_info, glfw.DONT_CARE
+            )
         else:  # window to fullscreen
             info = [0] * 4
             info[0], info[1] = glfw.get_window_pos(self._window)
