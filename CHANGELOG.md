@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.9.7
+- Confirmed operation on Debian and Fedora
+- Updated the instruction of installation on Linux
+
 ## 0.9.6
 - Updated the instruction of installation on Linux
 - Fixed a warning in setup.py
