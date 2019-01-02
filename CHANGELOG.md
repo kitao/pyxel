@@ -2,6 +2,7 @@
 
 ## 0.9.6
 - Updated the instruction of installation on Linux
+- Fixed a warning in setup.py
 
 ## 0.9.5
 - Added issue templates
