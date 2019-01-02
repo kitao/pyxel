@@ -14,7 +14,7 @@ setuptools.setup(
     author="Takashi Kitao",
     author_email="takashi.kitao@gmail.com",
     license="MIT",
-    classifiers=(
+    classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -23,7 +23,7 @@ setuptools.setup(
         "Topic :: Games/Entertainment",
         "Topic :: Multimedia :: Graphics",
         "Topic :: Multimedia :: Sound/Audio",
-    ),
+    ],
     packages=[
         "pyxel",
         "pyxel.ui",
