@@ -37,7 +37,7 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 ## 仕様
 
-- Windows、Mac対応 (Linux版は開発中)
+- Windows、Mac、Linux対応
 - Python3によるコード記述
 - 16色固定パレット
 - 256x256サイズ、3画像バンク
@@ -74,30 +74,13 @@ pip3 install pyxel
 
 ### Linux
 
-**注意: Linux版は開発中のため、描画やサウンド再生が正しく動作しません。**
-
 各ディストリビューションに適した方法で必要なパッケージをインストールしてください。[glfw](http://www.glfw.org/)はバージョン3.2.1以上である必要があります。
 
-**Arch:**
-
-AURヘルパーで[`python-pixel`](https://aur.archlinux.org/packages/python-pyxel/)をインストールします。
+**Ubuntu:**
 
 ```sh
-yay -S python-pyxel
-```
-
-**Debian:**
-
-```sh
-apt-get install python3 python3-pip libglfw3 libportaudio2 libasound-dev
-pip3 install pyxel
-```
-
-**Fedora:**
-
-```sh
-dnf install glfw portaudio
-pip3 install pyxel
+sudo apt install python3 python3-pip libglfw3 libportaudio2
+sudo pip3 install pyxel
 ```
 
 ### サンプルのインストール
