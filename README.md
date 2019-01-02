@@ -36,7 +36,7 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 
 ## Specifications
 
-- Run on Windows and Mac (Linux version is under development)
+- Run on Windows, Mac, and Linux
 - Code writing with Python3
 - Fixed 16 color palette
 - 256x256 sized 3 image banks
@@ -73,30 +73,13 @@ pip3 install pyxel
 
 ### Linux
 
-**NOTE: Because Linux version is under development, drawing and sound playback do not work properly.**
-
 Install the required packages in a way appropriate for each distribution. [glfw](http://www.glfw.org/) must be version 3.2.1 or higher.
 
-**Arch:**
-
-Install [`python-pyxel`](https://aur.archlinux.org/packages/python-pyxel/) by using your favorite AUR helper:
+**Ubuntu:**
 
 ```sh
-yay -S python-pyxel
-```
-
-**Debian:**
-
-```sh
-apt-get install python3 python3-pip libglfw3 libportaudio2 libasound-dev
-pip3 install pyxel
-```
-
-**Fedora:**
-
-```sh
-dnf install glfw portaudio
-pip3 install pyxel
+sudo apt install python3 python3-pip libglfw3 libportaudio2
+sudo pip3 install pyxel
 ```
 
 ### Install examples
