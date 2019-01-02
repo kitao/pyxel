@@ -76,10 +76,17 @@ pip3 install pyxel
 
 各ディストリビューションに適した方法で必要なパッケージをインストールしてください。[glfw](http://www.glfw.org/)はバージョン3.2.1以上である必要があります。
 
-**Ubuntu:**
+**Ubuntu / Debian:**
 
 ```sh
 sudo apt install python3 python3-pip libglfw3 libportaudio2
+sudo pip3 install pyxel
+```
+
+**Fedora:**
+
+```sh
+sudo dnf install glfw portaudio
 sudo pip3 install pyxel
 ```
 
