@@ -44,7 +44,7 @@ SDL2_LDFLAGS = -L$(SDL2_LIBDIR) -L/usr/lib/x86_64-linux-gnu -lSDL2_linux_amd64 -
 TARGET = $(LIBNAME)_linux_amd64.so
 endif
 
-.PHONY: all depends clean distclean
+.PHONY: all depends clean distclean test
 
 all: depends $(TARGET)
 
@@ -65,7 +65,10 @@ clean:
 	rm -rf $(OBJS) *.so *.dll *.dylib
 
 distclean: clean
-	rm -rf include lib download .depends
+	rm -rf $(SDL2_INCDIR) lib download .depends
+
+test:
+	python3 __init__.py
 
 $(TARGET): $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
