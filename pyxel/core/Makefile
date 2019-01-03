@@ -14,6 +14,9 @@ ifeq ($(PF),)
 ifeq ($(shell uname),Darwin)
 PF = mac
 endif
+ifeq ($(shell uname),Linux)
+PF = linux
+endif
 endif
 
 # macOS 64bit
@@ -40,19 +43,11 @@ SDL2_LDFLAGS = -L$(LIBDIR) -L/usr/local/Cellar/mingw-w64/$(MINGW_VERSION)/toolch
 TARGET = $(LIBNAME)_windows_amd64.dll
 endif
 
-# Linux 32bit
-ifeq ($(PF),linux32)
-CC = gcc
-SDL2_CFLAGS = -m32 -D_REENTRANT
-SDL2_LDFLAGS = -m32 -L$(LIBDIR) -L/usr/lib/x86_64-linux-gnu -lSDL2_linux_386 -Wl,--no-undefined -lm -ldl -lasound -lm -ldl -lpthread -lpulse-simple -lpulse -lsndio -lX11 -lXext -lXcursor -lXinerama -lXi -lXrandr -lXss -lXxf86vm -lwayland-egl -lwayland-client -lwayland-cursor -lxkbcommon -lpthread -lrt
-TARGET = $(LIBNAME)_linux_386.so
-endif
-
 # Linux 64bit
-ifeq ($(PF),linux64)
+ifeq ($(PF),linux)
 CC = gcc
 SDL2_CFLAGS = -D_REENTRANT
-SDL2_LDFLAGS = -L$(LIBDIR) -L/usr/lib/x86_64-linux-gnu -lSDL2_linux_amd64 -Wl,--no-undefined -lm -ldl -lasound -lm -ldl -lpthread -lpulse-simple -lpulse -lsndio -lX11 -lXext -lXcursor -lXinerama -lXi -lXrandr -lXss -lXxf86vm -lwayland-egl -lwayland-client -lwayland-cursor -lxkbcommon -lpthread -lrt
+SDL2_LDFLAGS = -L$(LIBDIR) -lSDL2 -Wl,--no-undefined -lm -ldl -lasound -lm -ldl -lpthread -lpulse-simple -lpulse -lsndio -lX11 -lXext -lXcursor -lXinerama -lXi -lXrandr -lXss -lXxf86vm -lwayland-egl -lwayland-client -lwayland-cursor -lxkbcommon -lpthread -lrt
 TARGET = $(LIBNAME)_linux_amd64.so
 endif
 
