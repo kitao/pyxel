@@ -4,7 +4,7 @@ def init_module():
     import platform
     import sys
 
-    lib_path = os.path.join(os.path.dirname(__file__), "libpyxelcore")
+    lib_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libpyxelcore")
 
     system = platform.system()
     if system == "Darwin":
