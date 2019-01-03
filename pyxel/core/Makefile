@@ -43,6 +43,8 @@ endif
 # Linux 32bit
 ifeq ($(PF),linux32)
 CC = gcc
+SDL2_CFLAGS = -m32 -D_REENTRANT
+SDL2_LDFLAGS = -m32 -L$(LIBDIR) -L/usr/lib/x86_64-linux-gnu -lSDL2_linux_386 -Wl,--no-undefined -lm -ldl -lasound -lm -ldl -lpthread -lpulse-simple -lpulse -lsndio -lX11 -lXext -lXcursor -lXinerama -lXi -lXrandr -lXss -lXxf86vm -lwayland-egl -lwayland-client -lwayland-cursor -lxkbcommon -lpthread -lrt
 TARGET = $(LIBNAME)_linux_386.so
 endif
 
@@ -71,4 +73,4 @@ $(TARGET): $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 .c.o:
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) -c $< -o $@ $(CFLAGS)
