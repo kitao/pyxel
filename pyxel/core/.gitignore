@@ -1,4 +1,4 @@
-include/
-lib/
-.depends
 *.o
+.depends
+include/SDL2
+lib/
