@@ -19,7 +19,7 @@ def init_module():
     else:
         raise RuntimeError("unsupported platform: {}".format(system))
 
-    lib_path += "_amd64" if platform.architecture()[0] == "64bit" else "_i386"
+    lib_path += "_amd64" if platform.architecture()[0] == "64bit" else "_386"
     lib_path += lib_ext
 
     lib = ctypes.cdll.LoadLibrary(lib_path)
