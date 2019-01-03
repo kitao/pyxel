@@ -8,36 +8,49 @@ SDL2_URL = "https://github.com/veandco/go-sdl2-libs/archive/acefe9bbab163b8e6f16
 SDL2_INCDIR = include/SDL2
 SDL2_LIBDIR = lib/SDL2
 
+MINGW_VERSION = 5.0.4_1
+
 SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(SRCS:.c=.o)
 
-ifeq ($(PLATFORM),)
+ifeq ($(PF),)
 ifeq ($(shell uname),Darwin)
-PLATFORM = mac
+PF = mac
 endif
 endif
 
-ifeq ($(PLATFORM),mac)
+# macOS 64bit
+ifeq ($(PF),mac)
 CC = gcc
 SDL2_CFLAGS = -D_THREAD_SAFE
 SDL2_LDFLAGS = -L$(SDL2_LIBDIR) -lSDL2_darwin_amd64 -lm -liconv -Wl,-framework,CoreAudio -Wl,-framework,AudioToolbox -Wl,-framework,ForceFeedback -lobjc -Wl,-framework,CoreVideo -Wl,-framework,Cocoa -Wl,-framework,Carbon -Wl,-framework,IOKit -Wl,-weak_framework,QuartzCore -Wl,-weak_framework,Metal
 TARGET = $(LIBNAME)_darwin_amd64.dylib
 endif
 
-ifeq ($(PLATFORM),win32)
+# Windows 32bit
+ifeq ($(PF),win32)
+CC = i686-w64-mingw32-gcc
+SDL2_CFLAGS = -D_REENTRANT
+SDL2_LDFLAGS = -L$(SDL2_LIBDIR) -L/usr/local/Cellar/mingw-w64/$(MINGW_VERSION)/toolchain-i686/i686-w64-mingw32/lib -lmingw32 -lSDL2main_windows_386 -lSDL2_windows_386 -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid -lsetupapi
 TARGET = $(LIBNAME)_windows_386.dll
 endif
 
-ifeq ($(PLATFORM),win64)
+# Windows 64bit
+ifeq ($(PF),win64)
+CC = x86_64-w64-mingw32-gcc
+SDL2_CFLAGS = -D_REENTRANT
+SDL2_LDFLAGS = -L$(SDL2_LIBDIR) -L/usr/local/Cellar/mingw-w64/$(MINGW_VERSION)/toolchain-x86_64/x86_64-w64-mingw32/lib -lmingw32 -lSDL2main_windows_amd64 -lSDL2_windows_amd64 -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid -lsetupapi
 TARGET = $(LIBNAME)_windows_amd64.dll
 endif
 
-ifeq ($(PLATFORM),linux32)
+# Linux 32bit
+ifeq ($(PF),linux32)
 CC = gcc
 TARGET = $(LIBNAME)_linux_386.so
 endif
 
-ifeq ($(PLATFORM),linux64)
+# Linux 64bit
+ifeq ($(PF),linux64)
 CC = gcc
 SDL2_CFLAGS = -D_REENTRANT
 SDL2_LDFLAGS = -L$(SDL2_LIBDIR) -L/usr/lib/x86_64-linux-gnu -lSDL2_linux_amd64 -Wl,--no-undefined -lm -ldl -lasound -lm -ldl -lpthread -lpulse-simple -lpulse -lsndio -lX11 -lXext -lXcursor -lXinerama -lXi -lXrandr -lXss -lXxf86vm -lwayland-egl -lwayland-client -lwayland-cursor -lxkbcommon -lpthread -lrt
@@ -62,10 +75,10 @@ depends: .depends
 	touch .depends
 
 clean:
-	rm -rf $(OBJS) *.so *.dll *.dylib
+	rm -rf $(OBJS) $(TARGET)
 
 distclean: clean
-	rm -rf $(SDL2_INCDIR) lib download .depends
+	rm -rf $(SDL2_INCDIR) lib download .depends *.so *.dll *.dylib
 
 test:
 	python3 __init__.py
