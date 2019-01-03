@@ -30,23 +30,23 @@ endif
 # Windows 32bit
 ifeq ($(PF),win32)
 CC = i686-w64-mingw32-gcc
-SDL2_CFLAGS = -D_REENTRANT
-SDL2_LDFLAGS = -L$(SDL2_LIBDIR) -L/usr/local/Cellar/mingw-w64/$(MINGW_VERSION)/toolchain-i686/i686-w64-mingw32/lib -lmingw32 -lSDL2main_windows_386 -lSDL2_windows_386 -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid -lsetupapi
-TARGET = $(LIBNAME)_windows_386.dll
+SDL2_CFLAGS = -Dmain=SDL_main
+SDL2_LDFLAGS = -L$(SDL2_LIBDIR) -L/usr/local/Cellar/mingw-w64/$(MINGW_VERSION)/toolchain-i686/i686-w64-mingw32/lib -lmingw32 -lSDL2main_windows_386 -lSDL2_windows_386 -mwindows -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid -static-libgcc
+TARGET = $(LIBNAME)_windows_i386.dll
 endif
 
 # Windows 64bit
 ifeq ($(PF),win64)
 CC = x86_64-w64-mingw32-gcc
-SDL2_CFLAGS = -D_REENTRANT
-SDL2_LDFLAGS = -L$(SDL2_LIBDIR) -L/usr/local/Cellar/mingw-w64/$(MINGW_VERSION)/toolchain-x86_64/x86_64-w64-mingw32/lib -lmingw32 -lSDL2main_windows_amd64 -lSDL2_windows_amd64 -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid -lsetupapi
+SDL2_CFLAGS = -Dmain=SDL_main
+SDL2_LDFLAGS = -L$(SDL2_LIBDIR) -L/usr/local/Cellar/mingw-w64/$(MINGW_VERSION)/toolchain-x86_64/x86_64-w64-mingw32/lib -lmingw32 -lSDL2main_windows_amd64 -lSDL2_windows_amd64 -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid -static-libgcc
 TARGET = $(LIBNAME)_windows_amd64.dll
 endif
 
 # Linux 32bit
 ifeq ($(PF),linux32)
 CC = gcc
-TARGET = $(LIBNAME)_linux_386.so
+TARGET = $(LIBNAME)_linux_i386.so
 endif
 
 # Linux 64bit
