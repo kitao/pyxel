@@ -47,7 +47,7 @@ endif
 ifeq ($(PF),linux)
 CC = gcc
 SDL2_CFLAGS = -D_REENTRANT
-SDL2_LDFLAGS = -L$(LIBDIR) -lSDL2 -Wl,--no-undefined -lm -ldl -lasound -lm -ldl -lpthread -lpulse-simple -lpulse -lsndio -lX11 -lXext -lXcursor -lXinerama -lXi -lXrandr -lXss -lXxf86vm -lwayland-egl -lwayland-client -lwayland-cursor -lxkbcommon -lpthread -lrt -lSDL2_image_linux_amd64
+SDL2_LDFLAGS = -lSDL2 -Wl,--no-undefined -lm -ldl -lasound -lm -ldl -lpthread -lpulse-simple -lpulse -lsndio -lX11 -lXext -lXcursor -lXinerama -lXi -lXrandr -lXss -lXxf86vm -lwayland-egl -lwayland-client -lwayland-cursor -lxkbcommon -lpthread -lrt -lSDL2_image
 TARGET = $(LIBNAME)_linux_amd64.so
 endif
 
