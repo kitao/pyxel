@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# How to use
+# 1. Execute this script on Mac with Homebrew
+# 2. Ececute this script on Ubuntu Linux
+
 SCRIPT_DIR=$(cd $(dirname $0);pwd)
 
 SDL2_INCDIR=$SCRIPT_DIR/include/SDL2
