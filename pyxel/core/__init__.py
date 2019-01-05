@@ -22,6 +22,7 @@ def init_module():
     lib_path += "_amd64" if platform.architecture()[0] == "64bit" else "_386"
     lib_path += lib_ext
 
+    print("load library: {}".format(os.path.basename(lib_path)))
     lib = ctypes.cdll.LoadLibrary(lib_path)
 
     module = sys.modules[__name__]
