@@ -24,23 +24,15 @@ endif
 ifeq ($(PF),mac)
 CC = gcc
 SDL2_CFLAGS = `sdl2-config --cflags`
-SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image
+SDL2_LDFLAGS = `sdl2-config --libs`
 TARGET = $(LIBNAME)_darwin_amd64.dylib
-endif
-
-# Linux 64bit
-ifeq ($(PF),linux)
-CC = gcc
-SDL2_CFLAGS = `sdl2-config --cflags`
-SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image
-TARGET = $(LIBNAME)_linux_amd64.so
 endif
 
 # Windows 32bit
 ifeq ($(PF),win32)
 CC = i686-w64-mingw32-gcc
 SDL2_CFLAGS = $(MINGW_SDL2_CONFIG_CFLAGS)
-SDL2_LDFLAGS = `echo $(MINGW_SDL2_CONFIG_STATIC_LIBS)|sed 's|-L/usr/lib -lmingw32 -lSDL2main -lSDL2|-L/usr/local/Cellar/mingw-w64/*/toolchain-i686/i686-w64-mingw32/lib -lmingw32 $(addsuffix _windows_386,-lSDL2_image -lSDL2main -lSDL2 -lpng -ljpeg -lz)|'`
+SDL2_LDFLAGS = `echo $(MINGW_SDL2_CONFIG_STATIC_LIBS) | sed 's|-L/usr/lib -lmingw32 -lSDL2main -lSDL2|-L/usr/local/Cellar/mingw-w64/*/toolchain-i686/i686-w64-mingw32/lib -lmingw32 -lSDL2main_windows_386 -lSDL2_windows_386|'`
 TARGET = $(LIBNAME)_windows_386.dll
 endif
 
@@ -48,9 +40,18 @@ endif
 ifeq ($(PF),win64)
 CC = x86_64-w64-mingw32-gcc
 SDL2_CFLAGS = $(MINGW_SDL2_CONFIG_CFLAGS)
-SDL2_LDFLAGS = `echo $(MINGW_SDL2_CONFIG_STATIC_LIBS)|sed 's|-L/usr/lib -lmingw32 -lSDL2main -lSDL2|-L/usr/local/Cellar/mingw-w64/*/toolchain-x86_64/x86_64-w64-mingw32/lib -lmingw32 $(addsuffix _windows_amd64,-lSDL2_image -lSDL2main -lSDL2 -lpng -ljpeg -lz)|'`
+SDL2_LDFLAGS = `echo $(MINGW_SDL2_CONFIG_STATIC_LIBS) | sed 's|-L/usr/lib -lmingw32 -lSDL2main -lSDL2|-L/usr/local/Cellar/mingw-w64/*/toolchain-x86_64/x86_64-w64-mingw32/lib -lmingw32 -lSDL2main_windows_amd64 -lSDL2_windows_amd64|'`
 TARGET = $(LIBNAME)_windows_amd64.dll
 endif
+
+# Linux 64bit
+ifeq ($(PF),linux)
+CC = gcc
+SDL2_CFLAGS = `sdl2-config --cflags`
+SDL2_LDFLAGS = `sdl2-config --libs`
+TARGET = $(LIBNAME)_linux_amd64.so
+endif
+
 
 .PHONY: all clean distclean test
 
@@ -60,7 +61,7 @@ clean:
 	rm -rf $(OBJS) $(TARGET)
 
 distclean:
-	rm -rf $(OBJS) *.so *.dll *.dylib
+	rm -rf $(OBJS) *.dylib *.dll *.so include/SDL2 lib
 
 test:
 	python3 __init__.py
