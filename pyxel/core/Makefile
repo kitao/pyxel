@@ -20,7 +20,7 @@ PF = linux
 endif
 endif
 
-# macOS 64bit
+# Mac 64bit
 ifeq ($(PF),mac)
 CC = gcc
 SDL2_CFLAGS = `sdl2-config --cflags`
