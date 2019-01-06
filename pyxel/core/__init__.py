@@ -4,25 +4,23 @@ def init_module():
     import platform
     import sys
 
-    lib_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libpyxelcore")
-
+    lib_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin")
+    lib_name = "libpyxelcore"
     system = platform.system()
+
     if system == "Darwin":
-        lib_path += "_darwin"
-        lib_ext = ".dylib"
+        lib_path = os.path.join(lib_dir, "macos", lib_name) + ".dylib"
     elif system == "Windows":
-        lib_path += "_windows"
-        lib_ext = ".dll"
+        win_dir = "win64" if platform.architecture()[0] == "64bit" else "win32"
+        lib_path = os.path.join(lib_dir, win_dir, lib_name) + ".dll"
+        ctypes.windll.kernel32.AddDllDirectory(os.path.join(lib_dir, "bin"))
     elif system == "Linux":
-        lib_path += "_linux"
-        lib_ext = ".so"
+        lib_path = os.path.join(lib_dir, "linux", lib_name) + ".so"
     else:
         raise RuntimeError("unsupported platform: {}".format(system))
 
-    lib_path += "_amd64" if platform.architecture()[0] == "64bit" else "_386"
-    lib_path += lib_ext
-
     print("load library: {}".format(os.path.basename(lib_path)))
+    print("load library: {}".format(lib_path))
     lib = ctypes.cdll.LoadLibrary(lib_path)
 
     module = sys.modules[__name__]
