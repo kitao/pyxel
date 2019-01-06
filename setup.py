@@ -1,4 +1,5 @@
 import setuptools
+
 from pyxel import VERSION
 
 with open("README.md", "r") as fh:
@@ -27,12 +28,17 @@ setuptools.setup(
     packages=[
         "pyxel",
         "pyxel.ui",
+        "pyxel.core",
+        "pyxel.core.bin.macos",
+        "pyxel.core.bin.win32",
+        "pyxel.core.bin.win64",
+        "pyxel.core.bin.linux",
         "pyxel.editor",
         "pyxel.editor.assets",
         "pyxel.examples",
         "pyxel.examples.assets",
     ],
-    package_data={"": ["*.pyxel", "*.png", "*.gif"]},
+    package_data={"": ["*.pyxel", "*.png", "*.gif", "*.dylib", "*.dll", "*.so"]},
     install_requires=["numpy", "glfw", "PyOpenGL", "sounddevice", "Pillow"],
     python_requires=">=3",
     entry_points={
