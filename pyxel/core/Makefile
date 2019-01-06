@@ -21,7 +21,7 @@ endif
 ifeq ($(PF),macos)
 CC = gcc
 SDL2_CFLAGS = `sdl2-config --cflags`
-SDL2_LDFLAGS = `sdl2-config --libs`
+SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image
 TARGET = $(BINDIR)/macos/$(LIBNAME).dylib
 endif
 
@@ -42,7 +42,7 @@ endif
 ifeq ($(PF),linux)
 CC = gcc
 SDL2_CFLAGS = `sdl2-config --cflags`
-SDL2_LDFLAGS = `sdl2-config --libs`
+SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image
 TARGET = $(BINDIR)/linux/$(LIBNAME).so
 endif
 
