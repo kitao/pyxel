@@ -175,13 +175,18 @@ Toggle full screen
 
 The attached Pyxel Editor can create images and sounds used in a Pyxel application.
 
-Pyxel Editor runs with an arbitrary resource file name.
+Pyxel Editor starts with the following command:
 
 ```sh
-pyxeleditor pyxel_resource_file
+pyxeleditor [pyxel_resource_file]
 ```
 
-The created resource file (.pyxel) can be loaded with the `load` function.
+If the specified Pyxel resource file (.pyxel) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
+If the resource file is omitted, the name is `my_resource.pyxel`.
+
+After starting Pyxel Editor, the file can be switched by drag-and-drop another resource file.
+
+The created resource file can be loaded with the `load` function.
 
 Pyxel Editor has the following edit modes.
 
