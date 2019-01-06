@@ -13,9 +13,8 @@ def init_module():
     elif system == "Windows":
         win_dir = "win64" if platform.architecture()[0] == "64bit" else "win32"
         lib_path = os.path.join(lib_dir, win_dir, lib_name) + ".dll"
-        os.environ["PATH"] = (
-            os.path.join(lib_dir, win_dir) + os.pathsep + os.environ["PATH"]
-        )
+        dll_path = os.path.join(lib_dir, win_dir)
+        os.environ["PATH"] = dll_path + os.pathsep + os.environ["PATH"]
     elif system == "Linux":
         lib_path = os.path.join(lib_dir, "linux", lib_name) + ".so"
     else:
