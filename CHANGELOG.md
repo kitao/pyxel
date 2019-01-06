@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.9.8
+- Enabled to run the Pyxel Editor without filename
+
 ## 0.9.7
 - Confirmed operation on Debian and Fedora
 - Updated the instruction of installation on Linux
@@ -117,7 +120,7 @@
 - Implemented the tilemap editor
 - Added the standard widgets
 - Changed the usage of the Pyxel Editor
-- Added the help messages to the PyxelEditor
+- Added the help messages to the Pyxel Editor
 - Added the description of the Pyxel Editor to the READMEs
 
 ## 0.8.0
