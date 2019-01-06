@@ -3,10 +3,10 @@
 # Advance Preparation
 #
 # Mac:
-#   brew install python3 sdl2 mingw-w64
+#   brew install python3 sdl2 sdl2_image mingw-w64
 #
 # Linux:
-#   sudo apt install python3 python3-pip libsdl2-dev
+#   sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
 #
 
 SCRIPT_DIR=$(cd $(dirname $0);pwd)
