@@ -1,12 +1,16 @@
-from typing import Callable, List
+from typing import Any, Callable, List
 
 from . import constants
 
+#
+# constants
+#
+
 DEFAULT_BORDER_COLOR: int = constants.DEFAULT_BORDER_COLOR
 DEFAULT_BORDER_WIDTH: int = constants.DEFAULT_BORDER_WIDTH
-DEFAULT_CAPTION: int = constants.DEFAULT_CAPTION
+DEFAULT_CAPTION: str = constants.DEFAULT_CAPTION
 DEFAULT_FPS: int = constants.DEFAULT_FPS
-DEFAULT_PALETTE: int = constants.DEFAULT_PALETTE
+DEFAULT_PALETTE: List[int] = constants.DEFAULT_PALETTE
 DEFAULT_SCALE: int = constants.DEFAULT_SCALE
 GAMEPAD_1_A: int = constants.GAMEPAD_1_A
 GAMEPAD_1_B: int = constants.GAMEPAD_1_B
@@ -162,17 +166,16 @@ MOUSE_MIDDLE_BUTTON: int = constants.MOUSE_MIDDLE_BUTTON
 MOUSE_RIGHT_BUTTON: int = constants.MOUSE_RIGHT_BUTTON
 VERSION: str = constants.VERSION
 
-width: int = None
-height: int = None
-mouse_x: int = None
-mouse_y: int = None
-frame_count: int = None
+
+#
+# Tilemap class
+#
 
 
 class Tilemap:
-    width: int = None
-    height: int = None
-    data: any = None
+    width: int = 0
+    height: int = 0
+    data: Any = None
 
     def __init__(self, width: int, height: int) -> None:
         pass
@@ -180,18 +183,23 @@ class Tilemap:
     def get(self, x: int, y: int) -> int:
         pass
 
-    def set(self, x: int, y: int, data: any, refimg=None) -> None:
+    def set(self, x: int, y: int, data: Any, refimg=None) -> None:
         pass
 
     def copy(self, x: int, y: int, tm: int, u: int, v: int, w: int, h: int) -> None:
         pass
 
 
+#
+# Sound class
+#
+
+
 class Sound:
-    note: List[int] = None
-    tone: List[int] = None
-    volume: List[int] = None
-    effect: List[int] = None
+    note: List[int] = []
+    tone: List[int] = []
+    volume: List[int] = []
+    effect: List[int] = []
 
     def __init__(self) -> None:
         pass
@@ -212,11 +220,16 @@ class Sound:
         pass
 
 
+#
+# Music class
+#
+
+
 class Music:
-    ch0: int = None
-    ch1: int = None
-    ch2: int = None
-    ch3: int = None
+    ch0: int = 0
+    ch1: int = 0
+    ch2: int = 0
+    ch3: int = 0
 
     def __init__(self) -> None:
         pass
@@ -237,6 +250,67 @@ class Music:
         pass
 
 
+#
+# System
+#
+
+width: int = 0
+height: int = 0
+frame_count: int = 0
+
+
+def init(
+    width: int,
+    height: int,
+    *,
+    caption: str = DEFAULT_CAPTION,
+    scale: int = DEFAULT_SCALE,
+    palette: List[int] = DEFAULT_PALETTE,
+    fps: int = DEFAULT_FPS,
+    border_width: int = DEFAULT_BORDER_WIDTH,
+    border_color: int = DEFAULT_BORDER_COLOR
+) -> None:
+    import sys
+    from .app import App
+
+    module = sys.modules[__name__]
+
+    App(module, width, height, caption, scale, palette, fps, border_width, border_color)
+
+
+def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
+    pass
+
+
+def run_with_profiler(update, draw) -> None:
+    pass
+
+
+def quit() -> None:
+    pass
+
+
+#
+# Resource
+#
+
+
+def save(filename: str) -> None:
+    pass
+
+
+def load(filename: str) -> None:
+    pass
+
+
+#
+# Input
+#
+
+mouse_x: int = 0
+mouse_y: int = 0
+
+
 def btn(key: int) -> bool:
     pass
 
@@ -253,24 +327,9 @@ def mouse(visible: bool) -> None:
     pass
 
 
-def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
-    pass
-
-
-def run_with_profiler(update, draw) -> None:
-    pass
-
-
-def quit() -> None:
-    pass
-
-
-def save(filename: str) -> None:
-    pass
-
-
-def load(filename: str) -> None:
-    pass
+#
+# Graphics
+#
 
 
 def image(img: int, *, system: bool = False) -> int:
@@ -333,6 +392,11 @@ def text(x: int, y: int, s: str, col: int):
     pass
 
 
+#
+# Audio
+#
+
+
 def sound(snd: int, *, system: bool = False) -> Sound:
     pass
 
@@ -351,22 +415,3 @@ def playm(msc: int, *, loop: bool = False) -> None:
 
 def stop(ch: int = None) -> None:
     pass
-
-
-def init(
-    width: int,
-    height: int,
-    *,
-    caption: str = DEFAULT_CAPTION,
-    scale: int = DEFAULT_SCALE,
-    palette: List[int] = DEFAULT_PALETTE,
-    fps: int = DEFAULT_FPS,
-    border_width: int = DEFAULT_BORDER_WIDTH,
-    border_color: int = DEFAULT_BORDER_COLOR
-) -> None:
-    import sys
-    from .app import App
-
-    module = sys.modules[__name__]
-
-    App(module, width, height, caption, scale, palette, fps, border_width, border_color)
