@@ -1,6 +1,6 @@
 import glfw
 
-VERSION = "0.9.8"
+VERSION = "0.9.９"
 
 GLFW_VERSION = "3.2.1"
 
