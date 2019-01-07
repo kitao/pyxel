@@ -1,8 +1,10 @@
 # Change Log
 
+## 0.9.9
+- Added the type hints for Python
+
 ## 0.9.8
 - Enabled to run the Pyxel Editor without filename
-- 1.0.0 release candidate
 
 ## 0.9.7
 - Confirmed operation on Debian and Fedora
