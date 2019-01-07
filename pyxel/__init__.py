@@ -1,6 +1,6 @@
 from typing import Any, Callable, List
 
-from . import constants
+from . import constants  # type: ignore
 
 #
 # constants
@@ -271,7 +271,7 @@ def init(
     border_color: int = DEFAULT_BORDER_COLOR
 ) -> None:
     import sys
-    from .app import App
+    from .app import App  # type: ignore
 
     module = sys.modules[__name__]
 
