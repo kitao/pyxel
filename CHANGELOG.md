@@ -2,6 +2,7 @@
 
 ## 0.9.9
 - Added the type hints for Python
+- Added the description of run_with_profiler function to the manuals
 
 ## 0.9.8
 - Enabled to run the Pyxel Editor without filename

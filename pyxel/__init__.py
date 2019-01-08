@@ -282,7 +282,7 @@ def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
     pass
 
 
-def run_with_profiler(update, draw) -> None:
+def run_with_profiler(update: Callable[[], None], draw: Callable[[], None]) -> None:
     pass
 
 
