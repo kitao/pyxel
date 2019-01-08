@@ -4,7 +4,7 @@
 
 **Pyxel** is a retro game engine for Python.
 
-Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games. 
+Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
 
 <a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py" target="_blank">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
@@ -246,8 +246,11 @@ It is also possible to specify the window title with `caption`, the display magn
 - `run(update, draw)`<br>
 Start the Pyxel application and call `update` function for frame update and `draw` function for drawing
 
+- `run_with_profiler(update, draw)`<br>
+Start the Pyxel application with profiler and call `update` function for frame update and `draw` function for drawing. Then output processing time of each function when the application is finished
+
 - `quit()`<br>
-End the Pyxel application at the end of the current frame
+Quit the Pyxel application at the end of the current frame
 
 ### Resource
 
@@ -348,7 +351,7 @@ The data of the image (NumPy array)
 Retrieve the data of the image at (`x`, `y`)
 
 - `set(x, y, data)`<br>
-Set the data of the image at (`x`, `y`) by a value or a list of strings<br> 
+Set the data of the image at (`x`, `y`) by a value or a list of strings<br>
 e.g. `pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
 
 - `load(x, y, filename)`<br>
