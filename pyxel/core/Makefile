@@ -6,8 +6,8 @@ CFLAGS = -I$(INCDIR) $(SDL2_CFLAGS) -O3
 LDFLAGS = $(SDL2_LDFLAGS) -shared
 LIBNAME = libpyxelcore
 
-SRCS = $(wildcard $(SRCDIR)/*.cc)
-OBJS = $(SRCS:.cc=.o)
+SRCS = $(wildcard $(SRCDIR)/*.cpp)
+OBJS = $(SRCS:.cpp=.o)
 
 ifeq ($(PF),)
 ifeq ($(shell uname),Darwin)
@@ -21,7 +21,7 @@ endif
 ifeq ($(PF),macos)
 CC = g++
 SDL2_CFLAGS = `sdl2-config --cflags`
-SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image -static-libgcc -static-libstdc++
+SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image
 TARGET = $(BINDIR)/macos/$(LIBNAME).dylib
 endif
 
@@ -63,5 +63,5 @@ $(TARGET): $(OBJS)
 	mkdir -p $(shell dirname $(TARGET))
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-.cc.o:
+.cpp.o:
 	$(CC) -c $< -o $@ $(CFLAGS)

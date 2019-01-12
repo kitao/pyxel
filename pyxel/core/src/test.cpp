@@ -50,3 +50,12 @@ int test(int width, int height) {
 
   return 0;
 }
+
+PYXEL_API void init(int width, int height, const char *caption, int scale,
+                    const int *palette, int fps, int border_width,
+                    int border_color) {
+  printf("width: %d\n", width);
+  printf("%d\n", palette[0]);
+  printf("%d\n", palette[1]);
+  printf("%s\n", caption);
+}
