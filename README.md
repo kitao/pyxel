@@ -184,7 +184,7 @@ pyxeleditor [pyxel_resource_file]
 If the specified Pyxel resource file (.pyxel) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
 If the resource file is omitted, the name is `my_resource.pyxel`.
 
-After starting Pyxel Editor, the file can be switched by drag-and-drop another resource file.
+After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file.
 
 The created resource file can be loaded with the `load` function.
 
@@ -195,6 +195,8 @@ Pyxel Editor has the following edit modes.
 The mode to edit the image banks.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
+
+By dragging and dropping a png file onto the Image Editor screen, the image can be loaded into the currently selected image bank.
 
 **Tilemap Editor:**
 
