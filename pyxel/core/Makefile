@@ -6,8 +6,8 @@ CFLAGS = -I$(INCDIR) $(SDL2_CFLAGS) -O3
 LDFLAGS = $(SDL2_LDFLAGS) -shared
 LIBNAME = libpyxelcore
 
-SRCS = $(wildcard $(SRCDIR)/*.c)
-OBJS = $(SRCS:.c=.o)
+SRCS = $(wildcard $(SRCDIR)/*.cc)
+OBJS = $(SRCS:.cc=.o)
 
 ifeq ($(PF),)
 ifeq ($(shell uname),Darwin)
@@ -19,28 +19,28 @@ endif
 endif
 
 ifeq ($(PF),macos)
-CC = gcc
+CC = g++
 SDL2_CFLAGS = `sdl2-config --cflags`
 SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image
 TARGET = $(BINDIR)/macos/$(LIBNAME).dylib
 endif
 
 ifeq ($(PF),win32)
-CC = i686-w64-mingw32-gcc
-SDL2_CFLAGS = -Dmain=SDL_main
-SDL2_LDFLAGS = -L$(LIBDIR)/win32 -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -mwindows
+CC = i686-w64-mingw32-g++
+SDL2_CFLAGS = -Dmain=SDL_main -DPYXEL_DLL
+SDL2_LDFLAGS = -L$(LIBDIR)/win32 -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -mwindows -static-libgcc -static-libstdc++
 TARGET = $(BINDIR)/win32/$(LIBNAME).dll
 endif
 
 ifeq ($(PF),win64)
-CC = x86_64-w64-mingw32-gcc
-SDL2_CFLAGS = -Dmain=SDL_main
-SDL2_LDFLAGS = -L$(LIBDIR)/win64 -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -mwindows
+CC = x86_64-w64-mingw32-g++
+SDL2_CFLAGS = -Dmain=SDL_main -DPYXEL_DLL
+SDL2_LDFLAGS = -L$(LIBDIR)/win64 -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -mwindows -static-libgcc -static-libstdc++
 TARGET = $(BINDIR)/win64/$(LIBNAME).dll
 endif
 
 ifeq ($(PF),linux)
-CC = gcc
+CC = g++
 SDL2_CFLAGS = `sdl2-config --cflags`
 SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image
 TARGET = $(BINDIR)/linux/$(LIBNAME).so
@@ -63,5 +63,5 @@ $(TARGET): $(OBJS)
 	mkdir -p $(shell dirname $(TARGET))
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-.c.o:
+.cc.o:
 	$(CC) -c $< -o $@ $(CFLAGS)
