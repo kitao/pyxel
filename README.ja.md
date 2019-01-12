@@ -196,6 +196,8 @@ Pyxel Editorには次の編集モードがあります。
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
 
+イメージエディタ画面にpngファイルをドラッグ＆ドロップすると、画像を選択中のイメージバンクに読み込むことができます。
+
 **タイルマップエディタ:**
 
 イメージバンクの画像をタイル状に並べたタイルマップを編集する画面です。
