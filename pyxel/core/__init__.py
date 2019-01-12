@@ -25,9 +25,26 @@ def init_module():
 
     module = sys.modules[__name__]
     module.test = lib.test
+    module.init = lib.init
 
 
 init_module()
 
 if __name__ == "__main__":
+    import ctypes
+
+    colors = (ctypes.c_int * 16)()
+    colors[0] = 111
+    colors[1] = 222
+
+    init(
+        -100,
+        0,
+        ctypes.create_string_buffer("This is caption".encode("utf-8")),
+        1,
+        colors,
+        2,
+        3,
+        4,
+    )  # noqa: F821
     print(test(400, 300))  # noqa: F821

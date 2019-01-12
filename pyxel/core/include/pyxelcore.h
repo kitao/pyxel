@@ -16,6 +16,9 @@ extern "C" {
 #endif
 
 PYXEL_API int test(int width, int height);
+PYXEL_API void init(int width, int height, const char *caption, int scale,
+                    const int *palette, int fps, int border_width,
+                    int border_color);
 
 #ifdef __cplusplus
 }
