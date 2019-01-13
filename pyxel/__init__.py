@@ -177,13 +177,10 @@ class Image:
     height: int = 0
     data: Any = None
 
-    def __init__(self, width: int, height: int) -> None:
-        pass
-
     def get(self, x: int, y: int) -> int:
         pass
 
-    def set(self, x: int, y: int, data) -> None:
+    def set(self, x: int, y: int, data: Any) -> None:
         pass
 
     def load(self, x: int, y: int, filename: str) -> None:
@@ -203,13 +200,10 @@ class Tilemap:
     height: int = 0
     data: Any = None
 
-    def __init__(self, width: int, height: int) -> None:
-        pass
-
     def get(self, x: int, y: int) -> int:
         pass
 
-    def set(self, x: int, y: int, data: Any, refimg=None) -> None:
+    def set(self, x: int, y: int, data: Any, refimg: int = None) -> None:
         pass
 
     def copy(self, x: int, y: int, tm: int, u: int, v: int, w: int, h: int) -> None:
@@ -226,9 +220,7 @@ class Sound:
     tone: List[int] = []
     volume: List[int] = []
     effect: List[int] = []
-
-    def __init__(self) -> None:
-        pass
+    speed: int = 0
 
     def set(self, note: str, tone: str, volume: str, effect: str, speed: int) -> None:
         pass
@@ -256,9 +248,6 @@ class Music:
     ch1: List[int] = []
     ch2: List[int] = []
     ch3: List[int] = []
-
-    def __init__(self) -> None:
-        pass
 
     def set(self, ch0, ch1, ch2, ch3) -> None:
         pass
