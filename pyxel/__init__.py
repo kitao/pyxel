@@ -168,6 +168,32 @@ VERSION: str = constants.VERSION
 
 
 #
+# Image class
+#
+
+
+class Image:
+    width: int = 0
+    height: int = 0
+    data: Any = None
+
+    def __init__(self, width: int, height: int) -> None:
+        pass
+
+    def get(self, x: int, y: int) -> int:
+        pass
+
+    def set(self, x: int, y: int, data) -> None:
+        pass
+
+    def load(self, x: int, y: int, filename: str) -> None:
+        pass
+
+    def copy(self, x: int, y: int, img: int, u: int, v: int, w: int, h: int) -> None:
+        pass
+
+
+#
 # Tilemap class
 #
 
@@ -332,7 +358,7 @@ def mouse(visible: bool) -> None:
 #
 
 
-def image(img: int, *, system: bool = False) -> int:
+def image(img: int, *, system: bool = False) -> Image:
     pass
 
 
