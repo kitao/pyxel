@@ -25,7 +25,7 @@ def init_module():
 
     module = sys.modules[__name__]
     module.test = lib.test
-    module.init = lib.Init
+    module.Init = lib.Init
 
 
 init_module()
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     colors[0] = 111
     colors[1] = 222
 
-    init(
+    Init(  # noqa: F821
         -100,
         0,
         ctypes.create_string_buffer("This is caption".encode("utf-8")),
@@ -46,5 +46,5 @@ if __name__ == "__main__":
         2,
         3,
         4,
-    )  # noqa: F821
+    )
     print(test(400, 300))  # noqa: F821
