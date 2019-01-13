@@ -25,7 +25,7 @@ def init_module():
 
     module = sys.modules[__name__]
     module.test = lib.test
-    module.init = lib.init
+    module.init = lib.Init
 
 
 init_module()
