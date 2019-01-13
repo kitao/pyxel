@@ -3,6 +3,7 @@
 ## 1.0.0
 - Added the way to import images on Pixel Editor to the manuals
 - Added the type hints for the Image class
+- Fixed the type hints for the Music class
 
 ## 0.9.9
 - Added the type hints for Python

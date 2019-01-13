@@ -252,10 +252,10 @@ class Sound:
 
 
 class Music:
-    ch0: int = 0
-    ch1: int = 0
-    ch2: int = 0
-    ch3: int = 0
+    ch0: List[int] = []
+    ch1: List[int] = []
+    ch2: List[int] = []
+    ch3: List[int] = []
 
     def __init__(self) -> None:
         pass
