@@ -7,8 +7,8 @@ int Height() { return 0; }
 
 int FrameCount() { return 0; }
 
-void Init(int width, int height, const char *caption, int scale,
-          const int *palette, int fps, int border_width, int border_color) {
+void Init(int width, int height, char *caption, int scale, int *palette,
+          int fps, int border_width, int border_color) {
   printf("width: %d\n", width);
   printf("%d\n", palette[0]);
   printf("%d\n", palette[1]);
