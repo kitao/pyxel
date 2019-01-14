@@ -1,8 +1,9 @@
 # Change Log
 
-## 1.0.0
+## 0.9.10
 - Added the way to import images on Pixel Editor to the manuals
 - Fixed the type hints
+- Added GLFW dll for Windows
 
 ## 0.9.9
 - Added the type hints for Python
