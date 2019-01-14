@@ -1,6 +1,9 @@
 from typing import Any, Callable, List
 
+from . import _dll_path  # type: ignore
 from . import constants  # type: ignore
+
+_dll_path = _dll_path  # dummy for Flake8 F401 warning
 
 #
 # constants
