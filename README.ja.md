@@ -92,10 +92,24 @@ sudo pip3 install pyxel
 
 ### インストールに失敗する場合
 
-`pip`の以前のキャッシュの影響で、Pyxelのインストールに失敗するケースがあるようです。その場合は以下のオプションをつけて`pip`(または`pip3`)コマンドを実行してみてください。
+`pip`の以前のキャッシュの影響で、Pyxelのインストールに失敗するケースがあるようです。その場合は以下のオプションをつけて`pip`コマンドを実行してみてください。
+
+**Windows:**
 
 ```sh
 pip install --no-cache-dir --ignore-installed pyxel
+```
+
+**Mac:**
+
+```sh
+pip3 install --no-cache-dir --ignore-installed pyxel
+```
+
+**Linux:**
+
+```sh
+sudo pip3 install --no-cache-dir --ignore-installed pyxel
 ```
 
 ### サンプルのインストール
@@ -108,12 +122,14 @@ install_pyxel_examples
 
 サンプルは通常のPythonコードと同様に実行できます。
 
+**Windows:**
+
 ```sh
 cd pyxel_examples
 python 01_hello_pyxel.py
 ```
 
-または
+**Mac / Linux:**
 
 ```sh
 cd pyxel_examples
