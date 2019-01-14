@@ -24,8 +24,8 @@ def init_module():
     lib = ctypes.cdll.LoadLibrary(lib_path)
 
     module = sys.modules[__name__]
-    module.test = lib.test
-    module.Init = lib.Init
+    module.init = lib.Init
+    module.run = lib.Run
 
 
 init_module()
@@ -37,9 +37,9 @@ if __name__ == "__main__":
     colors[0] = 111
     colors[1] = 222
 
-    Init(  # noqa: F821
-        -100,
-        0,
+    init(  # noqa: F821
+        400,
+        300,
         ctypes.create_string_buffer("This is caption".encode("utf-8")),
         1,
         colors,
@@ -47,4 +47,4 @@ if __name__ == "__main__":
         3,
         4,
     )
-    print(test(400, 300))  # noqa: F821
+    run()  # noqa: F821
