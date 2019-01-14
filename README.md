@@ -91,10 +91,24 @@ sudo pip3 install pyxel
 
 ### When installation fails
 
-There seems to be a case where Pyxel installation fails due to the influence of `pip`'s previous cache. In that case, try running the `pip` (or `pip3`) command with the following option:
+There seems to be a case where Pyxel installation fails due to the influence of `pip`'s previous cache. In that case, try running the `pip` command with the following option.
+
+**Windows:**
 
 ```sh
 pip install --no-cache-dir --ignore-installed pyxel
+```
+
+**Mac:**
+
+```sh
+pip3 install --no-cache-dir --ignore-installed pyxel
+```
+
+**Linux:**
+
+```sh
+sudo pip3 install --no-cache-dir --ignore-installed pyxel
 ```
 
 ### Install examples
@@ -107,12 +121,14 @@ install_pyxel_examples
 
 The examples can be executed like normal Python code:
 
+**Windows:**
+
 ```sh
 cd pyxel_examples
 python 01_hello_pyxel.py
 ```
 
-or
+**Mac / Linux:**
 
 ```sh
 cd pyxel_examples
