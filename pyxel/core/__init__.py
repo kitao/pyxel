@@ -23,9 +23,51 @@ def init_module():
     print("load library: {}".format(lib_path))
     lib = ctypes.cdll.LoadLibrary(lib_path)
 
-    module = sys.modules[__name__]
+    setup_apis(sys.modules[__name__], lib)
+
+
+def setup_apis(module, lib):
+    #
+    # System
+    #
+    module.width_getter = lib.Width_Getter
+    module.height_getter = lib.Height_Getter
+    module.frame_count_getter = lib.FrameCount_Getter
+
     module.init = lib.Init
     module.run = lib.Run
+
+    #
+    # Resource
+    #
+
+    #
+    # Input
+    #
+
+    #
+    # Graphics
+    #
+
+    #
+    # Audio
+    #
+
+    #
+    # Image class
+    #
+
+    #
+    # Tilemap class
+    #
+
+    #
+    # Sound class
+    #
+
+    #
+    # Music class
+    #
 
 
 init_module()
