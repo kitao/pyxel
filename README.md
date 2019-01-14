@@ -89,6 +89,14 @@ sudo dnf install glfw portaudio
 sudo pip3 install pyxel
 ```
 
+### When installation fails
+
+There seems to be a case where Pyxel installation fails due to the influence of `pip`'s previous cache. In that case, try running the `pip` (or `pip3`) command with the following option:
+
+```sh
+pip install --no-cache-dir --ignore-installed pyxel
+```
+
 ### Install examples
 
 After installing Pyxel, the examples of Pyxel will be copied to the current directory with the following command:
