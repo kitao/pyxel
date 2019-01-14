@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.9.11
+- Added the supplement of installation method to the manuals
+
 ## 0.9.10
 - Added the way to import images on Pixel Editor to the manuals
 - Fixed the type hints
