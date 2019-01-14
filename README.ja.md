@@ -90,6 +90,14 @@ sudo dnf install glfw portaudio
 sudo pip3 install pyxel
 ```
 
+### インストールに失敗する場合
+
+`pip`の以前のキャッシュの影響で、Pyxelのインストールに失敗するケースがあるようです。その場合は以下のオプションをつけて`pip`(または`pip3`)コマンドを実行してみてください。
+
+```sh
+pip install --no-cache-dir --ignore-installed pyxel
+```
+
 ### サンプルのインストール
 
 Pyxelインストール後に、以下のコマンドでカレントディレクトリにPyxelのサンプルコード一式をコピーできます。
