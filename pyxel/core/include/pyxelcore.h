@@ -47,6 +47,22 @@ PYXEL_API void Mouse(int visible);
 //
 // Graphics
 //
+PYXEL_API void *Image(int img, int system);
+PYXEL_API void *Tilemap(int tm);
+PYXEL_API void Clip(int x1, int y1, int x2, int y2);
+
+//
+// Audio
+//
+PYXEL_API void *Sound(int snd, int system);
+PYXEL_API void *Music(int msc);
+PYXEL_API void Play(int ch, int snd, int loop);
+PYXEL_API void Playm(int msc, int loop);
+PYXEL_API void Stop(int ch);
+
+//
+// Image class
+//
 PYXEL_API int Image_Width_Getter(void *self);
 PYXEL_API int Image_Height_Getter(void *self);
 PYXEL_API int *Image_Data_Getter(void *self);
@@ -59,6 +75,9 @@ PYXEL_API void Image_Load(void *self, int x, int y, char *filename);
 PYXEL_API void Image_Copy(void *self, int x, int y, int img, int u, int v,
                           int w, int h);
 
+//
+// Tilemap class
+//
 PYXEL_API int Tilemap_Width_Getter(void *self);
 PYXEL_API int Tilemap_Height_Getter(void *self);
 PYXEL_API int *Tilemap_Data_Getter(void *self);
@@ -69,12 +88,8 @@ PYXEL_API void Timemap_Set(int x, int y, int *data, int data_width,
                            int data_height, int refimg);
 PYXEL_API void Timemap_Copy(int x, int y, int tm, int u, int v, int w, int h);
 
-PYXEL_API void *Image(int img, int system);
-PYXEL_API void *Tilemap(int tm);
-PYXEL_API void Clip(int x1, int y1, int x2, int y2);
-
 //
-// Audio
+// Sound class
 //
 PYXEL_API int *Sound_Note_Getter(void *self, int *length);
 PYXEL_API void Sound_Note_Setter(void *self, int length);
@@ -94,6 +109,9 @@ PYXEL_API void Sound_SetTone(void *self, char *data);
 PYXEL_API void Sound_SetVolume(void *self, char *data);
 PYXEL_API void Sound_SetEffect(void *self, char *data);
 
+//
+// Music class
+//
 PYXEL_API int *Music_Ch0_Getter(void *self, int *length);
 PYXEL_API void Music_Ch0_Setter(void *self, int length);
 PYXEL_API int *Music_Ch1_Getter(void *self, int *length);
@@ -110,12 +128,6 @@ PYXEL_API void Music_SetCh0(void *self, int *data, int data_length);
 PYXEL_API void Music_SetCh1(void *self, int *data, int data_length);
 PYXEL_API void Music_SetCh2(void *self, int *data, int data_length);
 PYXEL_API void Music_SetCh3(void *self, int *data, int data_length);
-
-PYXEL_API void *Sound(int snd, int system);
-PYXEL_API void *Music(int msc);
-PYXEL_API void Play(int ch, int snd, int loop);
-PYXEL_API void Playm(int msc, int loop);
-PYXEL_API void Stop(int ch);
 
 #ifdef __cplusplus
 }
