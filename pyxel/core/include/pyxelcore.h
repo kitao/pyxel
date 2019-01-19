@@ -50,6 +50,19 @@ PYXEL_API void Mouse(int visible);
 PYXEL_API void *Image(int img, int system);
 PYXEL_API void *Tilemap(int tm);
 PYXEL_API void Clip(int x1, int y1, int x2, int y2);
+PYXEL_API void Pal(int col1, int col2);
+PYXEL_API void Cls(int col);
+PYXEL_API void Pix(int x, int y, int col);
+PYXEL_API void Line(int x1, int y1, int x2, int y2, int col);
+PYXEL_API void Rect(int x1, int y1, int x2, int y2, int col);
+PYXEL_API void Rectb(int x1, int y1, int x2, int y2, int col);
+PYXEL_API void Circ(int x, int y, int r, int col);
+PYXEL_API void Circb(int x, int y, int r, int col);
+PYXEL_API void Blt(int x, int y, int img, int u, int v, int w, int h,
+                   int colkey);
+PYXEL_API void Bltm(int x, int y, int tm, int u, int v, int w, int h,
+                    int colkey);
+PYXEL_API void Text(int x, int y, int s, int col);
 
 //
 // Audio
