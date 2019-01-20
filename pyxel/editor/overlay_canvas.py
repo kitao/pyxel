@@ -1,4 +1,5 @@
 import numpy as np
+
 from pyxel.utilities import copy_ndarray
 
 
