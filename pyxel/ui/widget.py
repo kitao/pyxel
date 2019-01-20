@@ -137,10 +137,8 @@ class Widget:
 
     def is_hit(self, x, y):
         return (
-            x >= self._x
-            and x <= self._x + self._width - 1
-            and y >= self._y
-            and y <= self._y + self._height - 1
+            self._x <= x <= self._x + self._width - 1
+            and self._y <= y <= self._y + self._height - 1
         )
 
     def move(self, x, y):
@@ -173,7 +171,8 @@ class Widget:
         self._height = height
         self.call_event_handler("resize", width, height)
 
-    def draw_panel(self, x, y, width, height, *, with_shadow=True):
+    @staticmethod
+    def draw_panel(x, y, width, height, *, with_shadow=True):
         x1 = x
         y1 = y
         x2 = x + width - 1
@@ -195,7 +194,8 @@ class Widget:
         Widget._capture_info.press_pos = (pyxel.mouse_x, pyxel.mouse_y)
         Widget._capture_info.last_pos = Widget._capture_info.press_pos
 
-    def _release_mouse(self):
+    @staticmethod
+    def _release_mouse():
         Widget._capture_info.widget = None
         Widget._capture_info.key = None
         Widget._capture_info.time = None

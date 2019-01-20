@@ -52,7 +52,7 @@ class Sound:
                     c = data[0]
                     data = data[1:]
 
-                if c >= "0" and c <= "4":
+                if "0" <= c <= "4":
                     param += int(c) * 12
                 else:
                     raise ValueError("invalid sound note")
@@ -90,7 +90,7 @@ class Sound:
             c = data[0]
             data = data[1:]
 
-            if c >= "0" and c <= "7":
+            if "0" <= c <= "7":
                 param = int(c)
             else:
                 raise ValueError("invalid sound volume")
