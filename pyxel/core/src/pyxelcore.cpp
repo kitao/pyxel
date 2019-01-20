@@ -7,9 +7,9 @@ static pyxelcore::App *app = NULL;
 //
 // System
 //
-int Width_Getter() { return app ? app->Width_Getter() : 0; }
-int Height_Getter() { return app ? app->Height_Getter() : 0; }
-int FrameCount_Getter() { return app ? app->FrameCount_Getter() : 0; }
+int Width_Getter() { return app ? app->GetWidth() : 0; }
+int Height_Getter() { return app ? app->GetHeight() : 0; }
+int FrameCount_Getter() { return app ? app->GetFrameCount() : 0; }
 
 void Init(int width, int height, char *caption, int scale, int *palette,
           int fps, int border_width, int border_color) {
