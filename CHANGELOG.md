@@ -1,7 +1,13 @@
 # Change Log
 
-## 0.9.11
+## 1.0.1
+- Simplified comparisons
+- Removed a deprecated function
+- Applied static decorator to functions do not use self
+
+## 1.0.0
 - Added the supplement of installation method to the manuals
+- Added the type hints for Python
 
 ## 0.9.10
 - Added the way to import images on Pixel Editor to the manuals

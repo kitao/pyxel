@@ -358,11 +358,11 @@ def tilemap(tm: int) -> Tilemap:
     pass
 
 
-def clip(x1=None, y1=None, x2=None, y2=None) -> None:
+def clip(x1: int = None, y1: int = None, x2: int = None, y2: int = None) -> None:
     pass
 
 
-def pal(col1=None, col2=None) -> None:
+def pal(col1: int = None, col2: int = None) -> None:
     pass
 
 
