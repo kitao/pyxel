@@ -43,7 +43,7 @@ class ColorPicker(Widget):
         x2 = x1 + 6
         y2 = x2 + 6
 
-        if x >= x1 and x <= x2 and y >= y1 and y <= y2:
+        if x1 <= x <= x2 and y1 <= y <= y2:
             return index_y * 8 + index_x
 
         return None
