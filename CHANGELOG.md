@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.0.1
+- Simplified comparisons
+- Removed a deprecated function
+- Applied static decorator to functions do not use self
+
 ## 1.0.0
 - Added the supplement of installation method to the manuals
 - Added the type hints for Python
