@@ -61,15 +61,15 @@ class PianoKeyboard(Widget):
             return -1
 
         if x <= 6:
-            if y >= 2 and y <= 4:
+            if 2 <= y <= 4:
                 return octave + 10
-            elif y >= 6 and y <= 8:
+            elif 6 <= y <= 8:
                 return octave + 8
-            elif y >= 10 and y <= 12:
+            elif 10 <= y <= 12:
                 return octave + 6
-            elif y >= 16 and y <= 18:
+            elif 16 <= y <= 18:
                 return octave + 3
-            elif y >= 20 and y <= 22:
+            elif 20 <= y <= 22:
                 return octave + 1
 
         if y <= 2:

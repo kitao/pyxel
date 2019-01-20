@@ -179,4 +179,4 @@ class Renderer:
 
     @staticmethod
     def _int_to_rgb(color):
-        return ((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF)
+        return (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF
