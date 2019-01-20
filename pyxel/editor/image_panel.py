@@ -1,4 +1,5 @@
 import numpy as np
+
 import pyxel
 from pyxel.ui import ScrollBar, Widget
 
