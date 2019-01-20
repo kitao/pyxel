@@ -3,6 +3,7 @@ import platform
 import subprocess
 
 import PIL.Image
+
 import pyxel
 
 from .constants import DEFAULT_PALETTE, GIF_TRANSPARENCY_COLOR, ICON_DATA
