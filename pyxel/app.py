@@ -278,7 +278,8 @@ class App:
     def quit(self):
         glfw.set_window_should_close(self._window, True)
 
-    def save(self, filename):
+    @staticmethod
+    def save(filename):
         data = {"version": pyxel.VERSION}
 
         image_list = [
@@ -306,7 +307,8 @@ class App:
         with gzip.open(filename, mode="wb") as fp:
             fp.write(pickled_data)
 
-    def load(self, filename):
+    @staticmethod
+    def load(filename):
         dirname = os.path.dirname(inspect.stack()[-1].filename)
         filename = os.path.join(dirname, filename)
 
@@ -320,18 +322,18 @@ class App:
         image_list = data.get("image")
         if image_list:
             for i in range(RENDERER_IMAGE_COUNT - 1):
-                pyxel.image(i).data[:, :] = np.loads(image_list[i])
+                pyxel.image(i).data[:, :] = pickle.loads(image_list[i])
 
         tilemap_list = data.get("tilemap")
         if tilemap_list:
             if type(tilemap_list[0]) is tuple:
                 for i in range(RENDERER_TILEMAP_COUNT):
                     tilemap = pyxel.tilemap(i)
-                    tilemap.data[:, :] = np.loads(tilemap_list[i][0])
+                    tilemap.data[:, :] = pickle.loads(tilemap_list[i][0])
                     tilemap.refimg = tilemap_list[i][1]
             else:  # todo: delete this block in the future
                 for i in range(RENDERER_TILEMAP_COUNT):
-                    pyxel.tilemap(i).data[:, :] = np.loads(tilemap_list[i])
+                    pyxel.tilemap(i).data[:, :] = pickle.loads(tilemap_list[i])
 
         sound_list = data.get("sound")
         if sound_list:
@@ -557,12 +559,14 @@ class App:
             palette=get_palette(fill=False),
         )
 
-    def _get_color_palette_index(self, image, color):
+    @staticmethod
+    def _get_color_palette_index(image, color):
         palette = image.getpalette()
         palette_colors = list(zip(palette[::3], palette[1::3], palette[2::3]))
         return palette_colors.index(color)
 
-    def _difference(self, prev, curr):
+    @staticmethod
+    def _difference(prev, curr):
         prev = np.asarray(prev.convert("RGBA"))
         curr = np.asarray(curr.convert("RGBA"))
         alpha = np.any(prev != curr, axis=-1, keepdims=True)

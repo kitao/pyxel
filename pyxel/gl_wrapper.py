@@ -160,6 +160,7 @@ class GLTexture:
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, self._filter)
         gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
 
-    def _end(self, i):
+    @staticmethod
+    def _end(i):
         gl.glActiveTexture(gl.GL_TEXTURE0 + i)
         gl.glBindTexture(gl.GL_TEXTURE_2D, 0)
