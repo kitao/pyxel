@@ -81,7 +81,7 @@ class App:
             y = randint(8, 104)
             is_active = True
 
-        return (x, y, is_active)
+        return x, y, is_active
 
     def update_fruit(self, x, y, kind, is_active):
         if is_active and abs(x - self.player_x) < 12 and abs(y - self.player_y) < 12:
