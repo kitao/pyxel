@@ -137,10 +137,8 @@ class Widget:
 
     def is_hit(self, x, y):
         return (
-            x >= self._x
-            and x <= self._x + self._width - 1
-            and y >= self._y
-            and y <= self._y + self._height - 1
+                self._x <= x <= self._x + self._width - 1
+                and self._y <= y <= self._y + self._height - 1
         )
 
     def move(self, x, y):
