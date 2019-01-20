@@ -320,18 +320,18 @@ class App:
         image_list = data.get("image")
         if image_list:
             for i in range(RENDERER_IMAGE_COUNT - 1):
-                pyxel.image(i).data[:, :] = np.loads(image_list[i])
+                pyxel.image(i).data[:, :] = pickle.loads(image_list[i])
 
         tilemap_list = data.get("tilemap")
         if tilemap_list:
             if type(tilemap_list[0]) is tuple:
                 for i in range(RENDERER_TILEMAP_COUNT):
                     tilemap = pyxel.tilemap(i)
-                    tilemap.data[:, :] = np.loads(tilemap_list[i][0])
+                    tilemap.data[:, :] = pickle.loads(tilemap_list[i][0])
                     tilemap.refimg = tilemap_list[i][1]
             else:  # todo: delete this block in the future
                 for i in range(RENDERER_TILEMAP_COUNT):
-                    pyxel.tilemap(i).data[:, :] = np.loads(tilemap_list[i])
+                    pyxel.tilemap(i).data[:, :] = pickle.loads(tilemap_list[i])
 
         sound_list = data.get("sound")
         if sound_list:
