@@ -66,10 +66,10 @@ class Renderer:
 
         self._normal_scale_att = GLAttribute(SCALING_ATTRIBUTE_INFO, 4)
         data = self._normal_scale_att.data
-        data[0, :] = [-1, 1, 0, v]
-        data[1, :] = [-1, -1, 0, 0]
-        data[2, :] = [1, 1, u, v]
-        data[3, :] = [1, -1, u, 0]
+        data[0, :] = [-1 / 3, 1 / 3, 0, v]
+        data[1, :] = [-1 / 3, -1 / 3, 0, 0]
+        data[2, :] = [1 / 3, 1 / 3, u, v]
+        data[3, :] = [1 / 3, -1 / 3, u, 0]
 
         self._inverse_scale_att = GLAttribute(SCALING_ATTRIBUTE_INFO, 4)
         data = self._inverse_scale_att.data
