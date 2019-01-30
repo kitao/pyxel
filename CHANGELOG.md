@@ -6,6 +6,7 @@
 - Applied static decorator to functions do not use self
 - Fixed to keep the previous frame when cls is not called
 - Changed frame_count to start from 0
+- Fixed the gamepad constants
 
 ## 1.0.0
 - Added the supplement of installation method to the manuals
