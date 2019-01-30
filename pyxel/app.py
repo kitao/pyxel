@@ -207,23 +207,27 @@ class App:
         )
 
     def btn(self, key):
-        press_frame = self._key_state.get(key, 0)
-        return press_frame > 0 or press_frame == -pyxel.frame_count - 1
-
-    def btnp(self, key, hold=0, period=0):
-        press_frame = self._key_state.get(key, 0)
-        hold_frame = pyxel.frame_count - press_frame - hold
+        press_frame = self._key_state.get(key, None)
         return (
-            press_frame == pyxel.frame_count
-            or press_frame == -pyxel.frame_count - 1
-            or press_frame > 0
-            and period > 0
-            and hold_frame >= 0
-            and hold_frame % period == 0
+            press_frame is not None
+            and press_frame >= 0
+            or press_frame == -(pyxel.frame_count + 2)
         )
 
+    def btnp(self, key, hold=0, period=0):
+        press_frame = self._key_state.get(key, None)
+
+        if press_frame == pyxel.frame_count or press_frame == -(pyxel.frame_count + 2):
+            return True
+
+        if press_frame is None or press_frame < 0 or period <= 0:
+            return False
+
+        hold_frame = pyxel.frame_count - press_frame - hold
+        return hold_frame >= 0 and hold_frame % period == 0
+
     def btnr(self, key):
-        return self._key_state.get(key, 0) == -pyxel.frame_count
+        return self._key_state.get(key, None) == -(pyxel.frame_count + 1)
 
     def mouse(self, visible):
         self._is_mouse_visible = visible
@@ -232,7 +236,6 @@ class App:
         self._update = update
         self._draw = draw
 
-        pyxel.frame_count = 1
         self._next_update_time = self._perf_fps_start_time = time.time()
 
         def main_loop():
@@ -358,18 +361,21 @@ class App:
                 dest.ch2[:] = src.ch2
                 dest.ch3[:] = src.ch3
 
-    def _key_callback(self, window, key, scancode, action, mods):
+    def _set_key_state(self, key, action):
         if action == glfw.PRESS:
-            state = pyxel.frame_count
+            self._key_state[key] = pyxel.frame_count
         elif action == glfw.RELEASE:
-            if self._key_state.get(key, 0) == pyxel.frame_count:
-                state = -pyxel.frame_count - 1
+            if self._key_state.get(key, None) == pyxel.frame_count:
+                self._key_state[key] = -(pyxel.frame_count + 2)
             else:
-                state = -pyxel.frame_count
-        else:
+                self._key_state[key] = -(pyxel.frame_count + 1)
+
+    def _key_callback(self, window, key, scancode, action, mods):
+        if action != glfw.PRESS and action != glfw.RELEASE:
             return
 
-        self._key_state[key] = state
+        self._set_key_state(key, action)
+        state = self._key_state[key]
 
         if key == KEY_LEFT_SHIFT or key == KEY_RIGHT_SHIFT:
             self._key_state[KEY_SHIFT] = state
@@ -390,13 +396,7 @@ class App:
         else:
             return
 
-        if action == glfw.PRESS:
-            self._key_state[button] = pyxel.frame_count
-        elif action == glfw.RELEASE:
-            if self._key_state.get(button) == pyxel.frame_count:
-                self._key_state[button] = -pyxel.frame_count - 1
-            else:
-                self._key_state[button] = -pyxel.frame_count
+        self._set_key_state(button, action)
 
     def _update_viewport(self):
         win_width, win_height = glfw.get_window_size(self._window)
@@ -457,13 +457,7 @@ class App:
                 action = states[j]
                 button = offset + j
 
-                if action == glfw.PRESS:
-                    self._key_state[button] = pyxel.frame_count
-                elif action == glfw.RELEASE:
-                    if self._key_state.get(button) == pyxel.frame_count:
-                        self._key_state[button] = -pyxel.frame_count - 1
-                    else:
-                        self._key_state[button] = -pyxel.frame_count
+                self._set_key_state(button, action)
 
     def _draw_frame(self):
         draw_start_time = time.time()
