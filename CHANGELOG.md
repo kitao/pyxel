@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.0.2
+- Fixed the gamepad inputs
+
 ## 1.0.1
 - Simplified comparisons
 - Removed a deprecated function
