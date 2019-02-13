@@ -363,11 +363,13 @@ class App:
 
     def _set_key_state(self, key, action):
         if action == glfw.PRESS:
-            self._key_state[key] = pyxel.frame_count
+            if self._key_state.get(key, -1) < 0:
+                self._key_state[key] = pyxel.frame_count
         elif action == glfw.RELEASE:
-            if self._key_state.get(key, None) == pyxel.frame_count:
+            state = self._key_state.get(key, -1)
+            if state == pyxel.frame_count:
                 self._key_state[key] = -(pyxel.frame_count + 2)
-            else:
+            elif state >= 0:
                 self._key_state[key] = -(pyxel.frame_count + 1)
 
     def _key_callback(self, window, key, scancode, action, mods):
