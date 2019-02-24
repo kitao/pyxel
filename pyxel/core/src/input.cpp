@@ -1,9 +1,9 @@
-#include "pyxelcore/input.h"
+#include "pyxelcore/app.h"
 
 namespace pyxelcore {
 
-Input::Input() {}
+void App::InitializeInput() {}
 
-Input::~Input() {}
+void App::TerminateInput() {}
 
 } // namespace pyxelcore
