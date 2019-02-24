@@ -19,12 +19,12 @@ public:
   // System
   //
 public:
-  int Width() { return width_; }
-  int Height() { return height_; }
-  int FrameCount() { return frame_count_; }
+  int width_getter() { return width_; }
+  int height_getter() { return height_; }
+  int frame_count_getter() { return frame_count_; }
 
-  void Run(void (*update)(), void (*draw)());
-  void Quit();
+  void run(void (*update)(), void (*draw)());
+  void quit();
 
 private:
   int width_;
@@ -50,8 +50,8 @@ private:
   // Resource
   //
 public:
-  void Save(char *filename);
-  void Load(char *filename);
+  void save(char *filename);
+  void load(char *filename);
 
 private:
   void InitializeResource();
@@ -61,15 +61,18 @@ private:
   // Input
   //
 public:
-  int MouseX();
-  int MouseY();
+  int mouse_x_getter() { return mouse_x_; }
+  int mouse_y_getter() { return mouse_y_; }
 
-  int Btn(int key);
-  int Btnp(int key, int hold, int period);
-  int Btnr(int key);
-  void Mouse(int visible);
+  int btn(int key);
+  int btnp(int key, int hold, int period);
+  int btnr(int key);
+  void mouse(int visible);
 
 private:
+  int mouse_x_;
+  int mouse_y_;
+
   void InitializeInput();
   void TerminateInput();
 
@@ -77,21 +80,21 @@ private:
   // Graphics
   //
 public:
-  void *Image(int img, int system);
-  void *Tilemap(int tm);
-  void Clip(int x1, int y1, int x2, int y2);
-  void Pal();
-  void Pal(int col1, int col2);
-  void Cls(int col);
-  void Pix(int x, int y, int col);
-  void Line(int x1, int y1, int x2, int y2, int col);
-  void Rect(int x1, int y1, int x2, int y2, int col);
-  void Rectb(int x1, int y1, int x2, int y2, int col);
-  void Circ(int x, int y, int r, int col);
-  void Circb(int x, int y, int r, int col);
-  void Blt(int x, int y, int img, int u, int v, int w, int h, int colkey);
-  void Bltm(int x, int y, int tm, int u, int v, int w, int h, int colkey);
-  void Text(int x, int y, int s, int col);
+  void *image(int img, int system);
+  void *tilemap(int tm);
+  void clip(int x1, int y1, int x2, int y2);
+  void pal();
+  void pal(int col1, int col2);
+  void cls(int col);
+  void pix(int x, int y, int col);
+  void line(int x1, int y1, int x2, int y2, int col);
+  void rect(int x1, int y1, int x2, int y2, int col);
+  void rectb(int x1, int y1, int x2, int y2, int col);
+  void circ(int x, int y, int r, int col);
+  void circb(int x, int y, int r, int col);
+  void blt(int x, int y, int img, int u, int v, int w, int h, int colkey);
+  void bltm(int x, int y, int tm, int u, int v, int w, int h, int colkey);
+  void text(int x, int y, int s, int col);
 
 private:
   int *framebuffer_;
@@ -110,11 +113,11 @@ private:
   // Audio
   //
 public:
-  void *Sound(int snd, int system);
-  void *Music(int msc);
-  void Play(int ch, int snd, int loop);
-  void Playm(int msc, int loop);
-  void Stop(int ch);
+  void *sound(int snd, int system);
+  void *music(int msc);
+  void play(int ch, int snd, int loop);
+  void playm(int msc, int loop);
+  void stop(int ch);
 
 private:
   void InitializeAudio();

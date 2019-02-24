@@ -37,7 +37,7 @@ void App::InitializeSystem() {
 
 void App::TerminateSystem() {}
 
-void App::Run(void (*update)(), void (*draw)()) {
+void App::run(void (*update)(), void (*draw)()) {
   SDL_Event ev;
 
   while (1) {
@@ -49,7 +49,7 @@ void App::Run(void (*update)(), void (*draw)()) {
         return;
     }
 
-    Cls(8);
+    cls(8);
     UpdateScreenTexture();
     SDL_RenderCopy(renderer_, screen_texture_, NULL, NULL);
 
@@ -66,7 +66,7 @@ void App::Run(void (*update)(), void (*draw)()) {
   }
 }
 
-void App::Quit() {}
+void App::quit() {}
 
 void App::UpdateScreenTexture() {
   int *pixel;
