@@ -18,9 +18,9 @@ extern "C" {
 //
 // System
 //
-PYXEL_API int get_width();
-PYXEL_API int get_height();
-PYXEL_API int get_frame_count();
+PYXEL_API int width_getter();
+PYXEL_API int height_getter();
+PYXEL_API int frame_count_getter();
 
 PYXEL_API void init(int width, int height, char *caption, int scale,
                     int *palette, int fps, int border_width, int border_color);
@@ -36,8 +36,8 @@ PYXEL_API void load(char *filename);
 //
 // Input
 //
-PYXEL_API int get_mouse_x();
-PYXEL_API int get_mouse_y();
+PYXEL_API int mouse_x_getter();
+PYXEL_API int mouse_y_getter();
 
 PYXEL_API int btn(int key);
 PYXEL_API int btnp(int key, int hold, int period);
@@ -76,9 +76,9 @@ PYXEL_API void stop(int ch);
 //
 // Image class
 //
-PYXEL_API int get_Image_width(void *self);
-PYXEL_API int get_Image_height(void *self);
-PYXEL_API int *get_Image_data(void *self);
+PYXEL_API int Image_width_getter(void *self);
+PYXEL_API int Image_height_getter(void *self);
+PYXEL_API int *Image_data_getter(void *self);
 
 PYXEL_API int Image_get(void *self, int x, int y);
 PYXEL_API void Image_set1(void *self, int x, int y, int data);
@@ -91,9 +91,9 @@ PYXEL_API void Image_copy(void *self, int x, int y, int img, int u, int v,
 //
 // Tilemap class
 //
-PYXEL_API int get_Tilemap_width(void *self);
-PYXEL_API int get_Tilemap_height(void *self);
-PYXEL_API int *get_Tilemap_data(void *self);
+PYXEL_API int Tilemap_width_getter(void *self);
+PYXEL_API int Tilemap_height_getter(void *self);
+PYXEL_API int *Tilemap_data_getter(void *self);
 
 PYXEL_API int Tilemap_get(int x, int y);
 PYXEL_API void Timemap_set1(int x, int y, int data, int refimg);
@@ -104,16 +104,16 @@ PYXEL_API void Timemap_copy(int x, int y, int tm, int u, int v, int w, int h);
 //
 // Sound class
 //
-PYXEL_API int *get_Sound_note(void *self, int *length);
-PYXEL_API void set_Sound_note(void *self, int length);
-PYXEL_API int *get_Sound_tone(void *self, int *length);
-PYXEL_API void set_Sound_tone(void *self, int length);
-PYXEL_API int *get_Sound_volume(void *self, int *length);
-PYXEL_API void set_Sound_volume(void *self, int length);
-PYXEL_API int *get_Sound_effect(void *self, int *length);
-PYXEL_API void set_Sound_effect(void *self, int length);
-PYXEL_API int get_Sound_speed(void *self);
-PYXEL_API void set_Sound_speed(void *self, int speed);
+PYXEL_API int *Sound_note_getter(void *self, int *length);
+PYXEL_API void Sound_note_setter(void *self, int length);
+PYXEL_API int *Sound_tone_getter(void *self, int *length);
+PYXEL_API void Sound_tone_setter(void *self, int length);
+PYXEL_API int *Sound_volume_getter(void *self, int *length);
+PYXEL_API void Sound_volume_setter(void *self, int length);
+PYXEL_API int *Sound_effect_getter(void *self, int *length);
+PYXEL_API void Sound_effect_setter(void *self, int length);
+PYXEL_API int Sound_speed_getter(void *self);
+PYXEL_API void Sound_speed_setter(void *self, int speed);
 
 PYXEL_API void Sound_set(void *self, char *note, char *tone, char *volume,
                          char *effect, int speed);
@@ -125,14 +125,14 @@ PYXEL_API void Sound_set_effect(void *self, char *data);
 //
 // Music class
 //
-PYXEL_API int *get_Music_ch0(void *self, int *length);
-PYXEL_API void set_Music_ch0(void *self, int length);
-PYXEL_API int *get_Music_ch1(void *self, int *length);
-PYXEL_API void set_Music_ch1(void *self, int length);
-PYXEL_API int *get_Music_ch2(void *self, int *length);
-PYXEL_API void set_Music_ch2(void *self, int length);
-PYXEL_API int *get_Music_ch3(void *self, int *length);
-PYXEL_API void set_Music_ch3(void *self, int length);
+PYXEL_API int *Music_ch0_getter(void *self, int *length);
+PYXEL_API void Music_ch0_setter(void *self, int length);
+PYXEL_API int *Music_ch1_getter(void *self, int *length);
+PYXEL_API void Music_ch1_setter(void *self, int length);
+PYXEL_API int *Music_ch2_getter(void *self, int *length);
+PYXEL_API void Music_ch2_setter(void *self, int length);
+PYXEL_API int *Music_ch3_getter(void *self, int *length);
+PYXEL_API void Music_ch3_setter(void *self, int length);
 
 PYXEL_API void Music_set(void *self, int *ch0, int ch0_length, int *ch1,
                          int ch1_length, int *ch2, int ch2_length, int *ch3,
