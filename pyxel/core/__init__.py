@@ -30,12 +30,13 @@ def setup_apis(module, lib):
     #
     # System
     #
-    module.width_getter = lib.Width_Getter
-    module.height_getter = lib.Height_Getter
-    module.frame_count_getter = lib.FrameCount_Getter
+    module.get_width = lib.get_width
+    module.get_height = lib.get_height
+    module.get_frame_count = lib.get_frame_count
 
-    module.init = lib.Init
-    module.run = lib.Run
+    module.init = lib.init
+    module.run = lib.run
+    module.quit = lib.quit
 
     #
     # Resource

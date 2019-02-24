@@ -1,9 +1,9 @@
-#include "pyxelcore/resource.h"
+#include "pyxelcore/app.h"
 
 namespace pyxelcore {
 
-Resource::Resource() {}
+void App::InitializeResource() {}
 
-Resource::~Resource() {}
+void App::TerminateResource() {}
 
 } // namespace pyxelcore
