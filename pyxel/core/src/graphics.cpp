@@ -10,28 +10,28 @@ void App::InitializeGraphics() {
   clip_x2_ = width_ - 1;
   clip_y2_ = height_ - 1;
 
-  Cls(0);
-  Pal();
+  cls(0);
+  pal();
 }
 
 void App::TerminateGraphics() { delete framebuffer_; }
 
-void App::Clip(int x1, int y1, int x2, int y2) {
+void App::clip(int x1, int y1, int x2, int y2) {
   clip_x1_ = x1;
   clip_y1_ = y1;
   clip_x2_ = x2;
   clip_y2_ = y2;
 }
 
-void App::Pal() {
+void App::pal() {
   for (int i; i < 16; i++) {
     palette_[i] = i;
   }
 }
 
-void App::Pal(int col1, int col2) { palette_[col1] = col2; }
+void App::pal(int col1, int col2) { palette_[col1] = col2; }
 
-void App::Cls(int col) {
+void App::cls(int col) {
   int size = width_ * height_;
 
   for (int i = 0; i < size; i++) {
