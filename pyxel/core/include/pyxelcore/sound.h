@@ -5,6 +5,9 @@ namespace pyxelcore {
 
 class Sound {
 public:
+  Sound();
+  ~Sound();
+
 private:
 };
 

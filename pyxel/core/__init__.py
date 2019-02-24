@@ -76,8 +76,23 @@ if __name__ == "__main__":
     import ctypes
 
     colors = (ctypes.c_int * 16)()
-    colors[0] = 111
-    colors[1] = 222
+
+    colors[0] = 0x000000
+    colors[1] = 0x1D2B53
+    colors[2] = 0x7E2553
+    colors[3] = 0x008751
+    colors[4] = 0xAB5236
+    colors[5] = 0x5F574F
+    colors[6] = 0xC2C3C7
+    colors[7] = 0xFFF1E8
+    colors[8] = 0xFF004D
+    colors[9] = 0xFFA300
+    colors[10] = 0xFFEC27
+    colors[11] = 0x00E436
+    colors[12] = 0x29ADFF
+    colors[13] = 0x83769C
+    colors[14] = 0xFF77A8
+    colors[15] = 0xFFCCAA
 
     init(  # noqa: F821
         400,
