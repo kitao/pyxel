@@ -1,27 +1,36 @@
-#include "pyxelcore.h"
-#include "pyxelcore/app.h"
 #include <cstdio>
 
-static pyxelcore::App *app = NULL;
+#include "pyxelcore.h"
+#include "pyxelcore/audio.h"
+#include "pyxelcore/graphics.h"
+#include "pyxelcore/input.h"
+#include "pyxelcore/resource.h"
+#include "pyxelcore/system.h"
+
+static pyxelcore::System *s_system = NULL;
+static pyxelcore::Resource *s_resource = NULL;
+static pyxelcore::Input *s_input = NULL;
+static pyxelcore::Graphics *s_graphics = NULL;
+static pyxelcore::Audio *s_audio = NULL;
 
 //
 // System
 //
-int Width_Getter() { return app ? app->GetWidth() : 0; }
-int Height_Getter() { return app ? app->GetHeight() : 0; }
-int FrameCount_Getter() { return app ? app->GetFrameCount() : 0; }
+int Width_Getter() { return s_system->Width(); }
+int Height_Getter() { return s_system->Height(); }
+int FrameCount_Getter() { return s_system->FrameCount(); }
 
 void Init(int width, int height, char *caption, int scale, int *palette,
           int fps, int border_width, int border_color) {
-  app = new pyxelcore::App(width, height, caption, scale, palette, fps,
-                           border_width, border_color);
+  s_resource = new pyxelcore::Resource();
+  s_input = new pyxelcore::Input();
+  s_graphics = new pyxelcore::Graphics(width, height);
+  s_audio = new pyxelcore::Audio();
+  s_system = new pyxelcore::System(s_graphics, width, height, caption, scale,
+                                   palette, fps, border_width, border_color);
 }
 
-void Run(void (*update)(), void (*draw)()) {
-  if (app) {
-    app->Run(update, draw);
-  }
-}
+void Run(void (*update)(), void (*draw)()) { s_system->Run(update, draw); }
 
 void Quit() {}
 
