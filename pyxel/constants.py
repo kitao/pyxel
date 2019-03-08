@@ -190,7 +190,7 @@ FONT_DATA = [
     0x444440,  # |
     0xC464C0,  # }
     0x6C0000,  # ≈
-    0xEEEEE0,  # two think pipes
+    0xEEEEE0,  # two thick pipes (pause)
 ]
 
 AUDIO_SAMPLE_RATE = 22050
