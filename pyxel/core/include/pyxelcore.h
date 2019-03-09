@@ -49,7 +49,9 @@ PYXEL_API void mouse(int visible);
 //
 PYXEL_API void *image(int img, int system);
 PYXEL_API void *tilemap(int tm);
+PYXEL_API void clip0();
 PYXEL_API void clip(int x1, int y1, int x2, int y2);
+PYXEL_API void pal0();
 PYXEL_API void pal(int col1, int col2);
 PYXEL_API void cls(int col);
 PYXEL_API void pix(int x, int y, int col);

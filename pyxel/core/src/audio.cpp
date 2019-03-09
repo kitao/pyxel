@@ -1,9 +1,9 @@
-#include "pyxelcore/app.h"
+#include "pyxelcore/audio.h"
 
 namespace pyxelcore {
 
-void App::InitializeAudio() {}
+Audio::Audio() {}
 
-void App::TerminateAudio() {}
+Audio::~Audio() {}
 
 } // namespace pyxelcore
