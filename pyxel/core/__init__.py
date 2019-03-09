@@ -134,6 +134,7 @@ if __name__ == "__main__":
     def draw():
         cls(0)  # noqa: F821
         rect(x, 30, 300, 50, 8)  # noqa: F821
+        rectb(10, 70, 300, 100, 10)  # noqa: F821
         pix(x, 10, 7)  # noqa: F821
 
     run(update, draw)  # noqa: F821

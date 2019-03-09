@@ -47,9 +47,9 @@ void Graphics::pal(int col1, int col2) {
 }
 
 void Graphics::cls(int col) {
-  int size = width_ * height_;
+  size_t size = width_ * height_;
 
-  for (int i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++) {
     framebuffer_[i] = col;
   }
 }
@@ -69,20 +69,62 @@ void Graphics::pix(int x, int y, int col) {
 void Graphics::line(int x1, int y1, int x2, int y2, int col) {}
 
 void Graphics::rect(int x1, int y1, int x2, int y2, int col) {
-  int l = std::max(std::min(x1, x2), 0);
-  int t = std::max(std::min(y1, y2), 0);
-  int r = std::min(std::max(x1, x2) + 1, width_);
-  int b = std::min(std::max(y1, y2) + 1, height_);
+  if (col < 0 || col > 15) {
+    return;
+  }
 
-  for (int i = t; i < b; i++) {
-    int offset = width_ * i;
-    for (int j = l; j < r; j++) {
-      framebuffer_[offset + j] = col;
+  int left = std::max(std::min(x1, x2), 0);
+  int top = std::max(std::min(y1, y2), 0);
+  int right = std::min(std::max(x1, x2) + 1, width_);
+  int bottom = std::min(std::max(y1, y2) + 1, height_);
+
+  for (int i = top; i < bottom; i++) {
+    size_t line_head = width_ * i;
+
+    for (int j = left; j < right; j++) {
+      framebuffer_[line_head + j] = col;
     }
   }
 }
 
-void Graphics::rectb(int x1, int y1, int x2, int y2, int col) {}
+void Graphics::rectb(int x1, int y1, int x2, int y2, int col) {
+  if (col < 0 || col > 15) {
+    return;
+  }
+
+  int left = std::max(std::min(x1, x2), 0);
+  int top = std::max(std::min(y1, y2), 0);
+  int right = std::min(std::max(x1, x2) + 1, width_);
+  int bottom = std::min(std::max(y1, y2) + 1, height_);
+
+  if (x1 >= 0 && x1 < width_) {
+    for (int i = top; i < bottom; i++) {
+      framebuffer_[width_ * i + x1] = col;
+    }
+  }
+
+  if (x2 >= 0 && x2 < width_) {
+    for (int i = top; i < bottom; i++) {
+      framebuffer_[width_ * i + x2] = col;
+    }
+  }
+
+  if (y1 >= 0 && y1 < height_) {
+    size_t line_head = width_ * y1;
+
+    for (int i = left; i < right; i++) {
+      framebuffer_[line_head + i] = col;
+    }
+  }
+
+  if (y2 >= 0 && y2 < height_) {
+    size_t line_head = width_ * y2;
+
+    for (int i = left; i < right; i++) {
+      framebuffer_[line_head + i] = col;
+    }
+  }
+}
 
 void Graphics::circ(int x, int y, int r, int col) {}
 
