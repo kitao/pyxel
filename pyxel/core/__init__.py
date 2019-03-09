@@ -35,7 +35,12 @@ def setup_apis(module, lib):
     module.frame_count_getter = lib.frame_count_getter
 
     module.init = lib.init
-    module.run = lib.run
+
+    def run(update, draw):
+        lib.run(ctypes.CFUNCTYPE(None)(update), ctypes.CFUNCTYPE(None)(draw))
+
+    module.run = run
+
     module.quit = lib.quit
 
     #
@@ -49,6 +54,18 @@ def setup_apis(module, lib):
     #
     # Graphics
     #
+    module.clip = lib.clip
+    module.pal = lib.pal
+    module.cls = lib.cls
+    module.pix = lib.pix
+    module.line = lib.line
+    module.rect = lib.rect
+    module.rectb = lib.rectb
+    module.circ = lib.circ
+    module.circb = lib.circb
+    module.blt = lib.blt
+    module.bltm = lib.bltm
+    module.text = lib.text
 
     #
     # Audio
@@ -72,6 +89,7 @@ def setup_apis(module, lib):
 
 
 init_module()
+
 
 if __name__ == "__main__":
     import ctypes
@@ -105,4 +123,17 @@ if __name__ == "__main__":
         3,
         4,
     )
-    run()  # noqa: F821
+
+    global x
+    x = 0
+
+    def update():
+        global x
+        x += 1
+
+    def draw():
+        cls(0)  # noqa: F821
+        rect(x, 30, 300, 50, 8)  # noqa: F821
+        pix(x, 10, 7)  # noqa: F821
+
+    run(update, draw)  # noqa: F821
