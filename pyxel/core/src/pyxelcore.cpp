@@ -2,8 +2,10 @@
 
 #include "pyxelcore.h"
 #include "pyxelcore/app.h"
+#include "pyxelcore/graphics.h"
 
 static pyxelcore::App *s_app = NULL;
+static pyxelcore::Graphics *s_graphics = NULL;
 
 //
 // System
@@ -16,6 +18,8 @@ void init(int width, int height, char *caption, int scale, int *palette,
           int fps, int border_width, int border_color) {
   s_app = new pyxelcore::App(width, height, caption, scale, palette, fps,
                              border_width, border_color);
+
+  s_graphics = s_app->Graphics();
 }
 
 void run(void (*update)(), void (*draw)()) { s_app->run(update, draw); }
@@ -44,7 +48,30 @@ void mouse(int visible) {}
 //
 void *image(int img, int system) { return NULL; }
 void *tilemap(int tm) { return NULL; }
-void clip(int x1, int y1, int x2, int y2) {}
+void clip0() { s_graphics->clip(); }
+void clip(int x1, int y1, int x2, int y2) { s_graphics->clip(x1, y1, x2, y2); }
+void pal0() { s_graphics->pal(); }
+void pal(int col1, int col2) { s_graphics->pal(col1, col2); }
+void cls(int col) { s_graphics->cls(col); }
+void pix(int x, int y, int col) { s_graphics->pix(x, y, col); }
+void line(int x1, int y1, int x2, int y2, int col) {
+  s_graphics->line(x1, y1, x2, y2, col);
+}
+void rect(int x1, int y1, int x2, int y2, int col) {
+  s_graphics->rect(x1, y1, x2, y2, col);
+}
+void rectb(int x1, int y1, int x2, int y2, int col) {
+  s_graphics->rectb(x1, y1, x2, y2, col);
+}
+void circ(int x, int y, int r, int col) { s_graphics->circ(x, y, r, col); }
+void circb(int x, int y, int r, int col) { s_graphics->circb(x, y, r, col); }
+void blt(int x, int y, int img, int u, int v, int w, int h, int colkey) {
+  s_graphics->blt(x, y, img, u, v, w, h, colkey);
+}
+void bltm(int x, int y, int tm, int u, int v, int w, int h, int colkey) {
+  s_graphics->bltm(x, y, tm, u, v, w, h, colkey);
+}
+void text(int x, int y, int s, int col) { s_graphics->text(x, y, s, col); }
 
 //
 // Audio
