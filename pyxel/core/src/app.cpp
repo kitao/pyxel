@@ -1,4 +1,6 @@
 #include "pyxelcore/app.h"
+#include "pyxelcore/audio.h"
+#include "pyxelcore/graphics.h"
 
 namespace pyxelcore {
 
@@ -20,16 +22,18 @@ App::App(int width, int height, char *caption, int scale, int *palette, int fps,
   InitializeSystem();
   InitializeResource();
   InitializeInput();
-  InitializeGraphics();
-  InitializeAudio();
+
+  graphics_ = new class Graphics(width, height);
+  audio_ = new class Audio();
 }
 
 App::~App() {
+  delete audio_;
+  delete graphics_;
+
   TerminateSystem();
   TerminateResource();
   TerminateInput();
-  TerminateGraphics();
-  TerminateAudio();
 }
 
 } // namespace pyxelcore
