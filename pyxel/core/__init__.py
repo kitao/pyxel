@@ -1,8 +1,17 @@
-def init_module():
+from pyxel.constants import (
+    DEFAULT_BORDER_COLOR,
+    DEFAULT_BORDER_WIDTH,
+    DEFAULT_CAPTION,
+    DEFAULT_FPS,
+    DEFAULT_PALETTE,
+    DEFAULT_SCALE,
+)
+
+
+def setup_apis(module):
     import ctypes
     import os
     import platform
-    import sys
 
     lib_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin")
     lib_name = "libpyxelcore"
@@ -23,10 +32,6 @@ def init_module():
     print("load library: {}".format(lib_path))
     lib = ctypes.cdll.LoadLibrary(lib_path)
 
-    setup_apis(sys.modules[__name__], lib)
-
-
-def setup_apis(module, lib):
     #
     # System
     #
@@ -34,7 +39,28 @@ def setup_apis(module, lib):
     module.height_getter = lib.height_getter
     module.frame_count_getter = lib.frame_count_getter
 
-    module.init = lib.init
+    def init(
+        width,
+        height,
+        *,
+        caption=DEFAULT_CAPTION,
+        scale=DEFAULT_SCALE,
+        palette=DEFAULT_PALETTE,
+        fps=DEFAULT_FPS,
+        border_width=DEFAULT_BORDER_WIDTH,
+        border_color=DEFAULT_BORDER_COLOR
+    ):
+        c_caption = ctypes.create_string_buffer("This is caption".encode("utf-8"))
+
+        c_palette = (ctypes.c_int * 16)()
+        for i in range(16):
+            c_palette[i] = palette[i]
+
+        lib.init(
+            width, height, c_caption, scale, c_palette, fps, border_width, border_color
+        )
+
+    module.init = init
 
     def run(update, draw):
         lib.run(ctypes.CFUNCTYPE(None)(update), ctypes.CFUNCTYPE(None)(draw))
@@ -88,53 +114,26 @@ def setup_apis(module, lib):
     #
 
 
-init_module()
-
-
 if __name__ == "__main__":
-    import ctypes
+    import sys
 
-    colors = (ctypes.c_int * 16)()
+    setup_apis(sys.modules[__name__])
 
-    colors[0] = 0x000000
-    colors[1] = 0x1D2B53
-    colors[2] = 0x7E2553
-    colors[3] = 0x008751
-    colors[4] = 0xAB5236
-    colors[5] = 0x5F574F
-    colors[6] = 0xC2C3C7
-    colors[7] = 0xFFF1E8
-    colors[8] = 0xFF004D
-    colors[9] = 0xFFA300
-    colors[10] = 0xFFEC27
-    colors[11] = 0x00E436
-    colors[12] = 0x29ADFF
-    colors[13] = 0x83769C
-    colors[14] = 0xFF77A8
-    colors[15] = 0xFFCCAA
+    class App:
+        def __init__(self):
+            init(400, 300)  # noqa: F821
 
-    init(  # noqa: F821
-        400,
-        300,
-        ctypes.create_string_buffer("This is caption".encode("utf-8")),
-        1,
-        colors,
-        2,
-        3,
-        4,
-    )
+            self.x = 0
 
-    global x
-    x = 0
+            run(self.update, self.draw)  # noqa: F821
 
-    def update():
-        global x
-        x += 1
+        def update(self):
+            self.x += 1
 
-    def draw():
-        cls(0)  # noqa: F821
-        rect(x, 30, 300, 50, 8)  # noqa: F821
-        rectb(10, 70, 300, 100, 10)  # noqa: F821
-        pix(x, 10, 7)  # noqa: F821
+        def draw(self):
+            cls(0)  # noqa: F821
+            rect(self.x, 30, 300, 50, 8)  # noqa: F821
+            rectb(10, 70, 300, 100, 10)  # noqa: F821
+            pix(self.x, 10, 7)  # noqa: F821
 
-    run(update, draw)  # noqa: F821
+    App()
