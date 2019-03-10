@@ -2,12 +2,29 @@
 #include <SDL2/SDL_image.h>
 #include <cstdio>
 
-#include "pyxelcore/app.h"
 #include "pyxelcore/graphics.h"
+#include "pyxelcore/system.h"
 
 namespace pyxelcore {
 
-void App::InitializeSystem() {
+System::System(Graphics *graphics, int width, int height, char *caption,
+               int scale, int *palette, int fps, int border_width,
+               int border_color) {
+  graphics_ = graphics;
+  width_ = width;
+  height_ = height;
+  caption_ = std::string(caption);
+  scale_ = scale;
+
+  for (int i = 0; i < 16; i++) {
+    palette_[i] = palette[i];
+  }
+
+  fps_ = fps;
+  border_width_ = border_width;
+  border_color_ = border_color;
+  graphics_ = graphics;
+
   SDL_Init(SDL_INIT_VIDEO);
 
   window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED,
@@ -36,9 +53,9 @@ void App::InitializeSystem() {
                         SDL_TEXTUREACCESS_STREAMING, width_, height_);
 }
 
-void App::TerminateSystem() {}
+System::~System() {}
 
-void App::run(void (*update)(), void (*draw)()) {
+void System::run(void (*update)(), void (*draw)()) {
   SDL_Event ev;
 
   while (1) {
@@ -70,9 +87,9 @@ void App::run(void (*update)(), void (*draw)()) {
   }
 }
 
-void App::quit() {}
+void System::quit() {}
 
-void App::UpdateScreenTexture() {
+void System::UpdateScreenTexture() {
   int *pixel;
   int pitch;
   size_t size = width_ * height_;
