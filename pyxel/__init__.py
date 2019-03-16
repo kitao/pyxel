@@ -433,7 +433,7 @@ def stop(ch: int = None) -> None:
 
 
 #
-# initialize
+# setup APIs
 #
 
 
@@ -446,6 +446,10 @@ def _setup_apis():
     from . import input_wrapper
     from . import graphics_wrapper
     from . import audio_wrapper
+    from . import image_wrapper
+    from . import tilemap_wrapper
+    from . import sound_wrapper
+    from . import music_wrapper
 
     module = sys.modules[__name__]
     lib = core.lib
@@ -455,6 +459,10 @@ def _setup_apis():
     input_wrapper.setup_apis(module, lib)
     graphics_wrapper.setup_apis(module, lib)
     audio_wrapper.setup_apis(module, lib)
+    image_wrapper.setup_apis(module, lib)
+    tilemap_wrapper.setup_apis(module, lib)
+    sound_wrapper.setup_apis(module, lib)
+    music_wrapper.setup_apis(module, lib)
 
 
 _setup_apis()
