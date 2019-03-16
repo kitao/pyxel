@@ -1,9 +1,6 @@
 from typing import Any, Callable, List
 
-from . import _dll_path  # type: ignore
 from . import constants  # type: ignore
-
-_dll_path = _dll_path  # dummy for Flake8 F401 warning
 
 #
 # constants
@@ -433,3 +430,31 @@ def playm(msc: int, *, loop: bool = False) -> None:
 
 def stop(ch: int = None) -> None:
     pass
+
+
+#
+# initialize
+#
+
+
+def _setup_apis():
+    import sys
+
+    from . import core
+    from . import system_wrapper
+    from . import resource_wrapper
+    from . import input_wrapper
+    from . import graphics_wrapper
+    from . import audio_wrapper
+
+    module = sys.modules[__name__]
+    lib = core.lib
+
+    system_wrapper.setup_apis(module, lib)
+    resource_wrapper.setup_apis(module, lib)
+    input_wrapper.setup_apis(module, lib)
+    graphics_wrapper.setup_apis(module, lib)
+    audio_wrapper.setup_apis(module, lib)
+
+
+_setup_apis()

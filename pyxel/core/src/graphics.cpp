@@ -131,7 +131,16 @@ void Graphics::circ(int x, int y, int r, int col) {}
 void Graphics::circb(int x, int y, int r, int col) {}
 
 void Graphics::blt(int x, int y, int img, int u, int v, int w, int h,
-                   int colkey) {}
+                   int colkey) {
+  // int iw, ih;
+  // SDL_QueryTexture(temp_texture_, NULL, NULL, &iw, &ih);
+  // SDL_Rect image_rect = (SDL_Rect){0, 0, iw, ih};
+  // SDL_Rect draw_rect = (SDL_Rect){50, 50, iw, ih};
+  // SDL_RenderCopy(renderer_, temp_texture_, &image_rect, &draw_rect);
+
+  // SDL_SetRenderDrawColor(renderer_, 255, 255, 0, 255);
+  // SDL_RenderDrawLine(renderer_, 10, 10, 400, 400);
+}
 
 void Graphics::bltm(int x, int y, int tm, int u, int v, int w, int h,
                     int colkey) {}
