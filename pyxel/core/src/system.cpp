@@ -20,10 +20,9 @@ System::System(Graphics *graphics, int width, int height, char *caption,
     palette_[i] = palette[i];
   }
 
-  fps_ = fps;
+  fps_ = std::max(fps, 1);
   border_width_ = border_width;
   border_color_ = border_color;
-  graphics_ = graphics;
 
   SDL_Init(SDL_INIT_VIDEO);
 
@@ -58,13 +57,30 @@ System::~System() {}
 void System::run(void (*update)(), void (*draw)()) {
   SDL_Event ev;
 
+  double one_frame_time = 1000.0f / fps_;
+  double next_update_time = SDL_GetTicks();
+
   while (1) {
-    while (SDL_PollEvent(&ev)) {
-      if (ev.type == SDL_QUIT)
-        return;
+    double sleep_time = next_update_time - SDL_GetTicks();
+
+    if (sleep_time > 0) {
+      SDL_Delay(static_cast<int>(sleep_time / 2));
+      continue;
     }
 
-    update();
+    int update_frame_count =
+        std::min(static_cast<int>(-sleep_time / one_frame_time) + 1, 10);
+
+    next_update_time += one_frame_time * update_frame_count;
+
+    for (int i = 0; i < update_frame_count; i++) {
+      while (SDL_PollEvent(&ev)) {
+        if (ev.type == SDL_QUIT)
+          return;
+      }
+
+      update();
+    }
 
     draw();
 
@@ -73,15 +89,6 @@ void System::run(void (*update)(), void (*draw)()) {
 
     UpdateScreenTexture();
     SDL_RenderCopy(renderer_, screen_texture_, NULL, NULL);
-
-    // int iw, ih;
-    // SDL_QueryTexture(temp_texture_, NULL, NULL, &iw, &ih);
-    // SDL_Rect image_rect = (SDL_Rect){0, 0, iw, ih};
-    // SDL_Rect draw_rect = (SDL_Rect){50, 50, iw, ih};
-    // SDL_RenderCopy(renderer_, temp_texture_, &image_rect, &draw_rect);
-
-    // SDL_SetRenderDrawColor(renderer_, 255, 255, 0, 255);
-    // SDL_RenderDrawLine(renderer_, 10, 10, 400, 400);
 
     SDL_RenderPresent(renderer_);
   }
