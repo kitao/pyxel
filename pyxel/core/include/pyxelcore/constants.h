@@ -5,6 +5,6 @@ namespace pyxelcore {
 
 const int COLOR_COUNT = 16;
 
-} // namespace pyxelcore
+}  // namespace pyxelcore
 
-#endif // PYXELCORE_CONSTANTS_H_
+#endif  // PYXELCORE_CONSTANTS_H_
