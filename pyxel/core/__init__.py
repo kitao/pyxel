@@ -19,10 +19,7 @@ def load_library():
     else:
         raise RuntimeError("unsupported platform: {}".format(system))
 
-    print("load library: {}".format(lib_path))
-    lib = ctypes.cdll.LoadLibrary(lib_path)
-
-    return lib
+    return ctypes.cdll.LoadLibrary(lib_path)
 
 
 lib = load_library()
