@@ -4,10 +4,10 @@
 namespace pyxelcore {
 
 class Tilemap {
-public:
-private:
+ public:
+ private:
 };
 
-} // namespace pyxelcore
+}  // namespace pyxelcore
 
-#endif // PYXELCORE_TILEMAP_H_
+#endif  // PYXELCORE_TILEMAP_H_

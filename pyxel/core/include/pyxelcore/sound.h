@@ -4,13 +4,13 @@
 namespace pyxelcore {
 
 class Sound {
-public:
+ public:
   Sound();
   ~Sound();
 
-private:
+ private:
 };
 
-} // namespace pyxelcore
+}  // namespace pyxelcore
 
-#endif // PYXELCORE_SOUND_H_
+#endif  // PYXELCORE_SOUND_H_

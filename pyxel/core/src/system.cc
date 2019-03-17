@@ -7,8 +7,14 @@
 
 namespace pyxelcore {
 
-System::System(Graphics *graphics, int width, int height, char *caption,
-               int scale, int *palette, int fps, int border_width,
+System::System(Graphics* graphics,
+               int width,
+               int height,
+               char* caption,
+               int scale,
+               int* palette,
+               int fps,
+               int border_width,
                int border_color) {
   graphics_ = graphics;
   width_ = width;
@@ -97,13 +103,13 @@ void System::run(void (*update)(), void (*draw)()) {
 void System::quit() {}
 
 void System::UpdateScreenTexture() {
-  int *pixel;
+  int* pixel;
   int pitch;
   size_t size = width_ * height_;
 
-  SDL_LockTexture(screen_texture_, NULL, (void **)&pixel, &pitch);
+  SDL_LockTexture(screen_texture_, NULL, (void**)&pixel, &pitch);
 
-  int *framebuffer = graphics_->Framebuffer();
+  int* framebuffer = graphics_->Framebuffer();
 
   for (size_t i = 0; i < size; i++) {
     pixel[i] = palette_[framebuffer[i]];
@@ -112,4 +118,4 @@ void System::UpdateScreenTexture() {
   SDL_UnlockTexture(screen_texture_);
 }
 
-} // namespace pyxelcore
+}  // namespace pyxelcore

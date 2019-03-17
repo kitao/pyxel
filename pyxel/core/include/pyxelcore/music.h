@@ -4,10 +4,10 @@
 namespace pyxelcore {
 
 class Music {
-public:
-private:
+ public:
+ private:
 };
 
-} // namespace pyxelcore
+}  // namespace pyxelcore
 
-#endif // PYXELCORE_MUSIC_H_
+#endif  // PYXELCORE_MUSIC_H_

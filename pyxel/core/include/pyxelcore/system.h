@@ -12,9 +12,16 @@ namespace pyxelcore {
 class Graphics;
 
 class System {
-public:
-  System(Graphics *graphics, int width, int height, char *caption, int scale,
-         int *palette, int fps, int border_width, int border_color);
+ public:
+  System(Graphics* graphics,
+         int width,
+         int height,
+         char* caption,
+         int scale,
+         int* palette,
+         int fps,
+         int border_width,
+         int border_color);
   ~System();
 
   int width_getter() { return width_; }
@@ -24,7 +31,7 @@ public:
   void run(void (*update)(), void (*draw)());
   void quit();
 
-private:
+ private:
   int width_;
   int height_;
   std::string caption_;
@@ -35,16 +42,16 @@ private:
   int border_color_;
   int frame_count_;
 
-  Graphics *graphics_;
+  Graphics* graphics_;
 
-  SDL_Renderer *renderer_;
-  SDL_Window *window_;
+  SDL_Renderer* renderer_;
+  SDL_Window* window_;
   // SDL_Texture *temp_texture_;
-  SDL_Texture *screen_texture_;
+  SDL_Texture* screen_texture_;
 
   void UpdateScreenTexture();
 };
 
-} // namespace pyxelcore
+}  // namespace pyxelcore
 
-#endif // PYXELCORE_SYSTEM_H_
+#endif  // PYXELCORE_SYSTEM_H_

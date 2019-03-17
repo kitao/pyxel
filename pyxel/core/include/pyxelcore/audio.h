@@ -8,8 +8,8 @@ class Audio {
   Audio();
   ~Audio();
 
-  void *sound(int snd, int system);
-  void *music(int msc);
+  void* sound(int snd, int system);
+  void* music(int msc);
   void play(int ch, int snd, int loop);
   void playm(int msc, int loop);
   void stop(int ch);
