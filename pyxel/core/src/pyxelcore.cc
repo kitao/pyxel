@@ -20,9 +20,11 @@ static pyxelcore::Audio* s_audio = NULL;
 int width_getter() {
   return s_system->width_getter();
 }
+
 int height_getter() {
   return s_system->height_getter();
 }
+
 int frame_count_getter() {
   return s_system->frame_count_getter();
 }
@@ -63,6 +65,7 @@ void quit() {
 void save(char* filename) {
   s_resource->save(filename);
 }
+
 void load(char* filename) {
   s_resource->load(filename);
 }
@@ -80,12 +83,15 @@ int mouse_y_getter() {
 int btn(int key) {
   return s_input->btn(key);
 }
+
 int btnp(int key, int hold, int period) {
   return s_input->btnp(key, hold, period);
 }
+
 int btnr(int key) {
   return s_input->btnr(key);
 }
+
 void mouse(int visible) {
   return s_input->mouse(visible);
 }
@@ -96,48 +102,63 @@ void mouse(int visible) {
 void* image(int img, int system) {
   return s_graphics->image(img, system);
 }
+
 void* tilemap(int tm) {
   return s_graphics->tilemap(tm);
 }
+
 void clip0() {
   s_graphics->clip();
 }
+
 void clip(int x1, int y1, int x2, int y2) {
   s_graphics->clip(x1, y1, x2, y2);
 }
+
 void pal0() {
   s_graphics->pal();
 }
+
 void pal(int col1, int col2) {
   s_graphics->pal(col1, col2);
 }
+
 void cls(int col) {
   s_graphics->cls(col);
 }
+
 void pix(int x, int y, int col) {
   s_graphics->pix(x, y, col);
 }
+
 void line(int x1, int y1, int x2, int y2, int col) {
   s_graphics->line(x1, y1, x2, y2, col);
 }
+
 void rect(int x1, int y1, int x2, int y2, int col) {
   s_graphics->rect(x1, y1, x2, y2, col);
 }
+
 void rectb(int x1, int y1, int x2, int y2, int col) {
   s_graphics->rectb(x1, y1, x2, y2, col);
 }
+
 void circ(int x, int y, int r, int col) {
   s_graphics->circ(x, y, r, col);
 }
+
 void circb(int x, int y, int r, int col) {
   s_graphics->circb(x, y, r, col);
 }
+
 void blt(int x, int y, int img, int u, int v, int w, int h, int colkey) {
   s_graphics->blt(x, y, img, u, v, w, h, colkey);
 }
+
 void bltm(int x, int y, int tm, int u, int v, int w, int h, int colkey) {
   s_graphics->bltm(x, y, tm, u, v, w, h, colkey);
 }
+
 void text(int x, int y, int s, int col) {
   s_graphics->text(x, y, s, col);
 }
@@ -148,15 +169,19 @@ void text(int x, int y, int s, int col) {
 void* sound(int snd, int system) {
   return s_audio->sound(snd, system);
 }
+
 void* music(int msc) {
   return s_audio->music(msc);
 }
+
 void play(int ch, int snd, int loop) {
   s_audio->play(ch, snd, loop);
 }
+
 void playm(int msc, int loop) {
   s_audio->playm(msc, loop);
 }
+
 void stop(int ch) {
   s_audio->stop(ch);
 }
@@ -180,15 +205,19 @@ int Image_get(void* self, int x, int y) {
   return reinterpret_cast<pyxelcore::Image*>(self)->get(x, y);
 }
 
-void Image_set1(void* self, int x, int y, int data);
+void Image_set1(void* self, int x, int y, int data) {}
+
 void Image_set(void* self,
                int x,
                int y,
                int* data,
                int data_width,
-               int data_height);
-void Image_load(void* self, int x, int y, char* filename);
-void Image_copy(void* self, int x, int y, int img, int u, int v, int w, int h);
+               int data_height) {}
+
+void Image_load(void* self, int x, int y, char* filename) {}
+
+void Image_copy(void* self, int x, int y, int img, int u, int v, int w, int h) {
+}
 
 //
 // Tilemap class

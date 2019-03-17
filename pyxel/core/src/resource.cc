@@ -6,8 +6,8 @@ Resource::Resource() {}
 
 Resource::~Resource() {}
 
-void Resource::save(char *filename) {}
+void Resource::save(char* filename) {}
 
-void Resource::load(char *filename) {}
+void Resource::load(char* filename) {}
 
 }  // namespace pyxelcore

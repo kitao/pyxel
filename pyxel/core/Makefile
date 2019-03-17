@@ -6,8 +6,8 @@ CFLAGS = -I$(INCDIR) $(SDL2_CFLAGS) -O3
 LDFLAGS = $(SDL2_LDFLAGS) -shared
 LIBNAME = libpyxelcore
 
-SRCS = $(wildcard $(SRCDIR)/*.cpp)
-OBJS = $(SRCS:.cpp=.o)
+SRCS = $(wildcard $(SRCDIR)/*.cc)
+OBJS = $(SRCS:.cc=.o)
 
 ifeq ($(PF),)
 ifeq ($(shell uname),Darwin)
@@ -63,5 +63,5 @@ $(TARGET): $(OBJS)
 	mkdir -p $(shell dirname $(TARGET))
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-.cpp.o:
+.cc.o:
 	$(CC) -c $< -o $@ $(CFLAGS)
