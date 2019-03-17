@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "pyxelcore/graphics.h"
+#include "pyxelcore/image.h"
 
 namespace pyxelcore {
 
@@ -10,13 +11,31 @@ Graphics::Graphics(int width, int height) {
 
   framebuffer_ = new int[width_ * height_];
 
+  for (int i = 0; i < 4; i++) {
+    image_[i] = new Image(256, 256);
+  }
+
   clip();
   pal();
 
   cls(0);
 }
 
-Graphics::~Graphics() { delete framebuffer_; }
+Graphics::~Graphics() {
+  for (int i = 0; i < 4; i++) {
+    delete image_[i];
+  }
+
+  delete framebuffer_;
+}
+
+void* Graphics::image(int img, int system) {
+  return image_[img];
+}
+
+void* Graphics::tilemap(int tm) {
+  return NULL;
+}
 
 void Graphics::clip() {
   clip_x1_ = 0;
@@ -130,7 +149,13 @@ void Graphics::circ(int x, int y, int r, int col) {}
 
 void Graphics::circb(int x, int y, int r, int col) {}
 
-void Graphics::blt(int x, int y, int img, int u, int v, int w, int h,
+void Graphics::blt(int x,
+                   int y,
+                   int img,
+                   int u,
+                   int v,
+                   int w,
+                   int h,
                    int colkey) {
   // int iw, ih;
   // SDL_QueryTexture(temp_texture_, NULL, NULL, &iw, &ih);
@@ -142,9 +167,15 @@ void Graphics::blt(int x, int y, int img, int u, int v, int w, int h,
   // SDL_RenderDrawLine(renderer_, 10, 10, 400, 400);
 }
 
-void Graphics::bltm(int x, int y, int tm, int u, int v, int w, int h,
+void Graphics::bltm(int x,
+                    int y,
+                    int tm,
+                    int u,
+                    int v,
+                    int w,
+                    int h,
                     int colkey) {}
 
 void Graphics::text(int x, int y, int s, int col) {}
 
-} // namespace pyxelcore
+}  // namespace pyxelcore

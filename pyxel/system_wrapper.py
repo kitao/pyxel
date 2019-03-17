@@ -9,10 +9,6 @@ def setup_apis(module, lib):
         DEFAULT_SCALE,
     )
 
-    module.width_getter = lib.width_getter
-    module.height_getter = lib.height_getter
-    module.frame_count_getter = lib.frame_count_getter
-
     def init_wrapper(
         width,
         height,
@@ -24,7 +20,7 @@ def setup_apis(module, lib):
         border_width=DEFAULT_BORDER_WIDTH,
         border_color=DEFAULT_BORDER_COLOR
     ):
-        c_caption = ctypes.create_string_buffer("This is caption".encode("utf-8"))
+        c_caption = ctypes.create_string_buffer(caption.encode("utf-8"))
 
         c_palette = (ctypes.c_int * 16)()
         for i in range(16):
@@ -34,11 +30,20 @@ def setup_apis(module, lib):
             width, height, c_caption, scale, c_palette, fps, border_width, border_color
         )
 
-    module.init = init_wrapper
+        module._image_list = []
+        for i in range(4):
+            module._image_list.append(module.Image(lib.image(i, True)))
+
+        # init tilemap
+        # init sound
+        # init music
 
     def run_wrapper(update, draw):
         lib.run(ctypes.CFUNCTYPE(None)(update), ctypes.CFUNCTYPE(None)(draw))
 
+    module.width_getter = lib.width_getter
+    module.height_getter = lib.height_getter
+    module.frame_count_getter = lib.frame_count_getter
+    module.init = init_wrapper
     module.run = run_wrapper
-
     module.quit = lib.quit
