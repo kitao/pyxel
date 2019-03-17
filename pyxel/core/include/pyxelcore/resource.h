@@ -4,16 +4,16 @@
 namespace pyxelcore {
 
 class Resource {
-public:
+ public:
   Resource();
   ~Resource();
 
-  void save(char *filename);
-  void load(char *filename);
+  void save(char* filename);
+  void load(char* filename);
 
-private:
+ private:
 };
 
-} // namespace pyxelcore
+}  // namespace pyxelcore
 
-#endif // PYXELCORE_RESOURCE_H_
+#endif  // PYXELCORE_RESOURCE_H_
