@@ -4,7 +4,7 @@
 namespace pyxelcore {
 
 class Input {
-public:
+ public:
   Input();
   ~Input();
 
@@ -16,11 +16,11 @@ public:
   int btnr(int key);
   void mouse(int visible);
 
-private:
+ private:
   int mouse_x_;
   int mouse_y_;
 };
 
-} // namespace pyxelcore
+}  // namespace pyxelcore
 
-#endif // PYXELCORE_INPUT_H_
+#endif  // PYXELCORE_INPUT_H_

@@ -6,14 +6,14 @@ namespace pyxelcore {
 class Image;
 
 class Graphics {
-public:
+ public:
   Graphics(int width, int height);
   ~Graphics();
 
-  int *Framebuffer() { return framebuffer_; }
+  int* Framebuffer() { return framebuffer_; }
 
-  void *image(int img, int system);
-  void *tilemap(int tm);
+  void* image(int img, int system);
+  void* tilemap(int tm);
   void clip();
   void clip(int x1, int y1, int x2, int y2);
   void pal();
@@ -29,11 +29,11 @@ public:
   void bltm(int x, int y, int tm, int u, int v, int w, int h, int colkey);
   void text(int x, int y, int s, int col);
 
-private:
+ private:
   int width_;
   int height_;
 
-  int *framebuffer_;
+  int* framebuffer_;
 
   int clip_x1_;
   int clip_y1_;
@@ -42,9 +42,9 @@ private:
 
   int pal_[16];
 
-  Image *image_[4];
+  Image* image_[4];
 };
 
-} // namespace pyxelcore
+}  // namespace pyxelcore
 
-#endif // PYXELCORE_GRAPHICS_H_
+#endif  // PYXELCORE_GRAPHICS_H_
