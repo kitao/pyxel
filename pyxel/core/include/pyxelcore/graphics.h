@@ -3,6 +3,8 @@
 
 namespace pyxelcore {
 
+class Image;
+
 class Graphics {
 public:
   Graphics(int width, int height);
@@ -39,6 +41,8 @@ private:
   int clip_y2_;
 
   int pal_[16];
+
+  Image *image_[4];
 };
 
 } // namespace pyxelcore

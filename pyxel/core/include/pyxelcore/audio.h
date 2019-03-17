@@ -4,7 +4,7 @@
 namespace pyxelcore {
 
 class Audio {
-public:
+ public:
   Audio();
   ~Audio();
 
@@ -14,9 +14,9 @@ public:
   void playm(int msc, int loop);
   void stop(int ch);
 
-private:
+ private:
 };
 
-} // namespace pyxelcore
+}  // namespace pyxelcore
 
-#endif // PYXELCORE_AUDIO_H_
+#endif  // PYXELCORE_AUDIO_H_
