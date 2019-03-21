@@ -30,6 +30,8 @@ def setup_apis(module, lib):
             width, height, c_caption, scale, c_palette, fps, border_width, border_color
         )
 
+        lib.image.restype = ctypes.c_void_p
+
         module._image_list = []
         for i in range(4):
             module._image_list.append(module.Image(lib.image(i, True)))
