@@ -6,7 +6,7 @@ CFLAGS = -I$(INCDIR) $(SDL2_CFLAGS) -O3
 LDFLAGS = $(SDL2_LDFLAGS) -shared
 LIBNAME = libpyxelcore
 
-SRCS = $(wildcard $(SRCDIR)/*.cc)
+SRCS = $(shell find $(SRCDIR) -type f -name '*.cc')
 OBJS = $(SRCS:.cc=.o)
 
 ifeq ($(PF),)
