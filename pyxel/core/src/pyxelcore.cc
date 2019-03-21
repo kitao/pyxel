@@ -2,17 +2,30 @@
 
 #include "pyxelcore.h"
 #include "pyxelcore/audio.h"
+#include "pyxelcore/constants.h"
 #include "pyxelcore/graphics.h"
 #include "pyxelcore/image.h"
 #include "pyxelcore/input.h"
 #include "pyxelcore/resource.h"
 #include "pyxelcore/system.h"
 
+static pyxelcore::Constants* s_constants = NULL;
 static pyxelcore::System* s_system = NULL;
 static pyxelcore::Resource* s_resource = NULL;
 static pyxelcore::Input* s_input = NULL;
 static pyxelcore::Graphics* s_graphics = NULL;
 static pyxelcore::Audio* s_audio = NULL;
+
+//
+// Constants
+//
+int get_constant_number(char* name) {
+  return s_constants->get_constant_number(name);
+}
+
+const char* get_constant_string(char* name) {
+  return s_constants->get_constant_string(name);
+}
 
 //
 // System
@@ -37,6 +50,7 @@ void init(int width,
           int fps,
           int border_width,
           int border_color) {
+  s_constants = new pyxelcore::Constants();
   s_resource = new pyxelcore::Resource();
   s_input = new pyxelcore::Input();
   s_graphics = new pyxelcore::Graphics(width, height);
@@ -46,17 +60,19 @@ void init(int width,
 }
 
 void run(void (*update)(), void (*draw)()) {
+  printf("start of run\n");
   s_system->run(update, draw);
 }
 
 void quit() {
   s_system->quit();
 
-  delete s_resource;
-  delete s_input;
-  delete s_graphics;
-  delete s_audio;
   delete s_system;
+  delete s_audio;
+  delete s_graphics;
+  delete s_input;
+  delete s_resource;
+  delete s_constants;
 }
 
 //
