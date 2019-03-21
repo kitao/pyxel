@@ -8,11 +8,11 @@ Constants::Constants() {}
 
 Constants::~Constants() {}
 
-int32_t Constants::get_constant_number(const char* name) {
+int32_t Constants::GetConstantNumber(const char* name) {
   return 0;
 }
 
-const char* Constants::get_constant_string(const char* name) {
+const char* Constants::GetConstantString(const char* name) {
   return "test";
 }
 

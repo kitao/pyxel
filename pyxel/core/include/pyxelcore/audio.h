@@ -10,11 +10,11 @@ class Audio {
   Audio();
   ~Audio();
 
-  void* sound(int32_t snd, int32_t system);
-  void* music(int32_t msc);
-  void play(int32_t ch, int32_t snd, int32_t loop);
-  void playm(int32_t msc, int32_t loop);
-  void stop(int32_t ch);
+  void* Sound(int32_t snd, int32_t system);
+  void* Music(int32_t msc);
+  void Play(int32_t ch, int32_t snd, int32_t loop);
+  void Playm(int32_t msc, int32_t loop);
+  void Stop(int32_t ch);
 
  private:
 };

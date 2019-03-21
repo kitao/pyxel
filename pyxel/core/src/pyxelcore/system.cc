@@ -60,7 +60,7 @@ System::System(Graphics* graphics,
 
 System::~System() {}
 
-void System::run(void (*update)(), void (*draw)()) {
+void System::Run(void (*update)(), void (*draw)()) {
   SDL_Event ev;
 
   double one_frame_time = 1000.0f / fps_;
@@ -100,7 +100,7 @@ void System::run(void (*update)(), void (*draw)()) {
   }
 }
 
-void System::quit() {}
+void System::Quit() {}
 
 void System::UpdateScreenTexture() {
   int32_t* pixel;
