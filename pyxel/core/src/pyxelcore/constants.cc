@@ -8,12 +8,12 @@ Constants::Constants() {}
 
 Constants::~Constants() {}
 
-int Constants::get_constant_number(char* name) {
+int Constants::get_constant_number(const char* name) {
   return 0;
 }
 
-const char* Constants::get_constant_string(char* name) {
-  return "a";
+const char* Constants::get_constant_string(const char* name) {
+  return "test";
 }
 
 }  // namespace pyxelcore

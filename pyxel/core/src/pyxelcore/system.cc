@@ -8,21 +8,21 @@
 namespace pyxelcore {
 
 System::System(Graphics* graphics,
-               int width,
-               int height,
-               char* caption,
-               int scale,
-               int* palette,
-               int fps,
-               int border_width,
-               int border_color) {
+               int32_t width,
+               int32_t height,
+               const char* caption,
+               int32_t scale,
+               const int32_t* palette,
+               int32_t fps,
+               int32_t border_width,
+               int32_t border_color) {
   graphics_ = graphics;
   width_ = width;
   height_ = height;
   caption_ = std::string(caption);
   scale_ = scale;
 
-  for (int i = 0; i < 16; i++) {
+  for (int32_t i = 0; i < 16; i++) {
     palette_[i] = palette[i];
   }
 
@@ -36,7 +36,7 @@ System::System(Graphics* graphics,
                              SDL_WINDOWPOS_CENTERED, width_, height_, 0);
   renderer_ = SDL_CreateRenderer(window_, -1, 0);
 
-  // int flags = IMG_INIT_PNG;
+  // int32_t flags = IMG_INIT_PNG;
   // int initted = IMG_Init(flags);
   // if ((initted & flags) != flags) {
   //  printf("IMG_Init: Failed to init required jpg and png support!\n");
@@ -70,16 +70,16 @@ void System::run(void (*update)(), void (*draw)()) {
     double sleep_time = next_update_time - SDL_GetTicks();
 
     if (sleep_time > 0) {
-      SDL_Delay(static_cast<int>(sleep_time / 2));
+      SDL_Delay(static_cast<int32_t>(sleep_time / 2));
       continue;
     }
 
-    int update_frame_count =
-        std::min(static_cast<int>(-sleep_time / one_frame_time) + 1, 10);
+    int32_t update_frame_count =
+        std::min(static_cast<int32_t>(-sleep_time / one_frame_time) + 1, 10);
 
     next_update_time += one_frame_time * update_frame_count;
 
-    for (int i = 0; i < update_frame_count; i++) {
+    for (int32_t i = 0; i < update_frame_count; i++) {
       while (SDL_PollEvent(&ev)) {
         if (ev.type == SDL_QUIT)
           return;
@@ -103,13 +103,13 @@ void System::run(void (*update)(), void (*draw)()) {
 void System::quit() {}
 
 void System::UpdateScreenTexture() {
-  int* pixel;
-  int pitch;
+  int32_t* pixel;
+  int32_t pitch;
   size_t size = width_ * height_;
 
   SDL_LockTexture(screen_texture_, NULL, (void**)&pixel, &pitch);
 
-  int* framebuffer = graphics_->Framebuffer();
+  int32_t* framebuffer = graphics_->Framebuffer();
 
   for (size_t i = 0; i < size; i++) {
     pixel[i] = palette_[framebuffer[i]];

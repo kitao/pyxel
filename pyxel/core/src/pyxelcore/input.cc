@@ -6,18 +6,18 @@ Input::Input() {}
 
 Input::~Input() {}
 
-int Input::btn(int key) {
+int32_t Input::btn(int32_t key) {
   return 0;
 }
 
-int Input::btnp(int key, int hold, int period) {
+int32_t Input::btnp(int32_t key, int32_t hold, int32_t period) {
   return 0;
 }
 
-int Input::btnr(int key) {
+int32_t Input::btnr(int32_t key) {
   return 0;
 }
 
-void Input::mouse(int visible) {}
+void Input::mouse(int32_t visible) {}
 
 }  // namespace pyxelcore

@@ -1,4 +1,6 @@
 def setup_apis(module, lib):
+    import ctypes
+
     def image_wrapper(img, *, system=False):
         # if not system and img == RENDERER_IMAGE_COUNT - 1:
         #    raise ValueError("image bank {} is reserved for system".format(img))
@@ -20,7 +22,9 @@ def setup_apis(module, lib):
         else:
             lib.pal(col1, col2)
 
+    lib.image.restype = ctypes.c_void_p
     module.image = image_wrapper
+
     module.tilemap = tilemap_wrapper
     module.clip = clip_wrapper
     module.pal = pal_wrapper
