@@ -1,9 +1,13 @@
 def setup_apis(module, lib):
     import ctypes
+    import numpy as np
 
     class Image:
         def __init__(self, c_obj):
             self._c_obj = c_obj
+            # self._data = np.ctypeslib.as_array(lib.Image_data_getter(c_obj)).reshape(
+            #     [self.height, self.width]
+            # )
 
         @property
         def width(self):
@@ -15,17 +19,25 @@ def setup_apis(module, lib):
 
         @property
         def data(self):
-            return lib.Image_data_getter(self._c_obj)
+            return self._data
 
         def get(self, x, y):
             return lib.Image_get(self._c_obj, x, y)
 
         def set(self, x, y, data):
             if type(data) is int:
-                lib.Image_set1(self._c_obj, x, y, data)
+                lib.Image_set1(
+                    self._c_obj, x, y, data.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+                )
             else:
-                pass
-                # lib.Image_set1(self._c_obj, x, y, data)
+                lib.Image_set1(
+                    self._c_obj,
+                    x,
+                    y,
+                    data.ctypes.data_as(ctypes.POINTER(ctypes.c_int)),
+                    data.shape[1],
+                    data.shape[0],
+                )
 
         def load(self, x, y, filename):
             c_filename = ctypes.create_string_buffer(filename.encode("utf-8"))
