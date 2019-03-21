@@ -1,6 +1,8 @@
 #ifndef PYXELCORE_RESOURCE_H_
 #define PYXELCORE_RESOURCE_H_
 
+#include <cstdint>
+
 namespace pyxelcore {
 
 class Resource {
@@ -8,8 +10,8 @@ class Resource {
   Resource();
   ~Resource();
 
-  void save(char* filename);
-  void load(char* filename);
+  void save(const char* filename);
+  void load(const char* filename);
 
  private:
 };

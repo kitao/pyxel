@@ -1,6 +1,7 @@
 #ifndef PYXELCORE_CONSTANTS_H_
 #define PYXELCORE_CONSTANTS_H_
 
+#include <cstdint>
 #include <map>
 #include <string>
 
@@ -9,28 +10,28 @@ namespace pyxelcore {
 const std::string VERSION = "1.1.0";
 const std::string DEFAULT_CAPTION = "Pyxel";
 
-const int DEFAULT_SCALE = 0;
-const int DEFAULT_PALETTE_00 = 0x000000;
-const int DEFAULT_PALETTE_01 = 0x1D2B53;
-const int DEFAULT_PALETTE_02 = 0x7E2553;
-const int DEFAULT_PALETTE_03 = 0x008751;
-const int DEFAULT_PALETTE_04 = 0xAB5236;
-const int DEFAULT_PALETTE_05 = 0x5F574F;
-const int DEFAULT_PALETTE_06 = 0xC2C3C7;
-const int DEFAULT_PALETTE_07 = 0xFFF1E8;
-const int DEFAULT_PALETTE_08 = 0xFF004D;
-const int DEFAULT_PALETTE_09 = 0xFFA300;
-const int DEFAULT_PALETTE_10 = 0xFFEC27;
-const int DEFAULT_PALETTE_11 = 0x00E436;
-const int DEFAULT_PALETTE_12 = 0x29ADFF;
-const int DEFAULT_PALETTE_13 = 0x83769C;
-const int DEFAULT_PALETTE_14 = 0xFF77A8;
-const int DEFAULT_PALETTE_15 = 0xFFCCAA;
-const int DEFAULT_FPS = 30;
-const int DEFAULT_BORDER_WIDTH = 0;
-const int DEFAULT_BORDER_COLOR = 0x101018;
+const int32_t DEFAULT_SCALE = 0;
+const int32_t DEFAULT_PALETTE_00 = 0x000000;
+const int32_t DEFAULT_PALETTE_01 = 0x1D2B53;
+const int32_t DEFAULT_PALETTE_02 = 0x7E2553;
+const int32_t DEFAULT_PALETTE_03 = 0x008751;
+const int32_t DEFAULT_PALETTE_04 = 0xAB5236;
+const int32_t DEFAULT_PALETTE_05 = 0x5F574F;
+const int32_t DEFAULT_PALETTE_06 = 0xC2C3C7;
+const int32_t DEFAULT_PALETTE_07 = 0xFFF1E8;
+const int32_t DEFAULT_PALETTE_08 = 0xFF004D;
+const int32_t DEFAULT_PALETTE_09 = 0xFFA300;
+const int32_t DEFAULT_PALETTE_10 = 0xFFEC27;
+const int32_t DEFAULT_PALETTE_11 = 0x00E436;
+const int32_t DEFAULT_PALETTE_12 = 0x29ADFF;
+const int32_t DEFAULT_PALETTE_13 = 0x83769C;
+const int32_t DEFAULT_PALETTE_14 = 0xFF77A8;
+const int32_t DEFAULT_PALETTE_15 = 0xFFCCAA;
+const int32_t DEFAULT_FPS = 30;
+const int32_t DEFAULT_BORDER_WIDTH = 0;
+const int32_t DEFAULT_BORDER_COLOR = 0x101018;
 
-const int COLOR_COUNT = 16;
+const int32_t COLOR_COUNT = 16;
 
 const std::string ICON_DATA[] = {
     "0000000110000000", "0000011F71100000", "00011FF11FF11000",
@@ -41,37 +42,37 @@ const std::string ICON_DATA[] = {
     "0000000110000000",
 };
 
-const int MOUSE_CURSOR_IMAGE_X = 0;
-const int MOUSE_CURSOR_IMAGE_Y = 16;
-const int MOUSE_CURSOR_WIDTH = 8;
-const int MOUSE_CURSOR_HEIGHT = 8;
+const int32_t MOUSE_CURSOR_IMAGE_X = 0;
+const int32_t MOUSE_CURSOR_IMAGE_Y = 16;
+const int32_t MOUSE_CURSOR_WIDTH = 8;
+const int32_t MOUSE_CURSOR_HEIGHT = 8;
 
 const std::string MOUSE_CURSOR_DATA[] = {
     "00000011", "07776011", "07760111", "07676011",
     "06067601", "00106760", "11110601", "11111011",
 };
 
-const int APP_SCREEN_MAX_SIZE = 255;
-const int APP_SCREEN_SCALE_CUTDOWN = 2;
-const int APP_SCREEN_SCALE_MINIMUM = 2;
-const int APP_GIF_CAPTURE_COUNT = 900;
-const int APP_GIF_CAPTURE_SCALE = 2;
-const int APP_MEASURE_FRAME_COUNT = 10;
+const int32_t APP_SCREEN_MAX_SIZE = 255;
+const int32_t APP_SCREEN_SCALE_CUTDOWN = 2;
+const int32_t APP_SCREEN_SCALE_MINIMUM = 2;
+const int32_t APP_GIF_CAPTURE_COUNT = 900;
+const int32_t APP_GIF_CAPTURE_SCALE = 2;
+const int32_t APP_MEASURE_FRAME_COUNT = 10;
 
-const int RENDERER_IMAGE_COUNT = 4;
-const int RENDERER_IMAGE_WIDTH = 256;
-const int RENDERER_IMAGE_HEIGHT = 256;
-const int RENDERER_TILEMAP_COUNT = 8;
-const int RENDERER_TILEMAP_WIDTH = 256;
-const int RENDERER_TILEMAP_HEIGHT = 256;
-const int RENDERER_MIN_TEXTURE_SIZE = 256;
+const int32_t RENDERER_IMAGE_COUNT = 4;
+const int32_t RENDERER_IMAGE_WIDTH = 256;
+const int32_t RENDERER_IMAGE_HEIGHT = 256;
+const int32_t RENDERER_TILEMAP_COUNT = 8;
+const int32_t RENDERER_TILEMAP_WIDTH = 256;
+const int32_t RENDERER_TILEMAP_HEIGHT = 256;
+const int32_t RENDERER_MIN_TEXTURE_SIZE = 256;
 
-const int FONT_MIN_CODE = 32;
-const int FONT_MAX_CODE = 127;
-const int FONT_WIDTH = 4;
-const int FONT_HEIGHT = 6;
-const int FONT_ROW_COUNT = RENDERER_IMAGE_WIDTH / FONT_WIDTH;
-const int FONT_DATA[] = {
+const int32_t FONT_MIN_CODE = 32;
+const int32_t FONT_MAX_CODE = 127;
+const int32_t FONT_WIDTH = 4;
+const int32_t FONT_HEIGHT = 6;
+const int32_t FONT_ROW_COUNT = RENDERER_IMAGE_WIDTH / FONT_WIDTH;
+const int32_t FONT_DATA[] = {
     0x000000, 0x444040, 0xAA0000, 0xAEAEA0, 0x6C6C40, 0x824820, 0x4A4AC0,
     0x440000, 0x244420, 0x844480, 0xA4E4A0, 0x04E400, 0x000480, 0x00E000,
     0x000040, 0x224880, 0x6AAAC0, 0x4C4440, 0xC248E0, 0xC242C0, 0xAAE220,
@@ -88,41 +89,41 @@ const int FONT_DATA[] = {
     0x64C460, 0x444440, 0xC464C0, 0x6C0000, 0xEEEEE0,
 };
 
-const int AUDIO_SAMPLE_RATE = 22050;
-const int AUDIO_BLOCK_SIZE = 2205;
-const int AUDIO_CHANNEL_COUNT = 4;
-const int AUDIO_SOUND_COUNT = 65;
-const int AUDIO_MUSIC_COUNT = 8;
-const int AUDIO_ONE_SPEED = AUDIO_SAMPLE_RATE / 120;
-const int AUDIO_ONE_VOLUME = 0x7FFF / (AUDIO_CHANNEL_COUNT * 7);
+const int32_t AUDIO_SAMPLE_RATE = 22050;
+const int32_t AUDIO_BLOCK_SIZE = 2205;
+const int32_t AUDIO_CHANNEL_COUNT = 4;
+const int32_t AUDIO_SOUND_COUNT = 65;
+const int32_t AUDIO_MUSIC_COUNT = 8;
+const int32_t AUDIO_ONE_SPEED = AUDIO_SAMPLE_RATE / 120;
+const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (AUDIO_CHANNEL_COUNT * 7);
 
-const int SOUND_TONE_TRIANGLE = 0;
-const int SOUND_TONE_SQUARE = 1;
-const int SOUND_TONE_PULSE = 2;
-const int SOUND_TONE_NOISE = 3;
-const int SOUND_EFFECT_NONE = 0;
-const int SOUND_EFFECT_SLIDE = 1;
-const int SOUND_EFFECT_VIBRATO = 2;
-const int SOUND_EFFECT_FADEOUT = 3;
+const int32_t SOUND_TONE_TRIANGLE = 0;
+const int32_t SOUND_TONE_SQUARE = 1;
+const int32_t SOUND_TONE_PULSE = 2;
+const int32_t SOUND_TONE_NOISE = 3;
+const int32_t SOUND_EFFECT_NONE = 0;
+const int32_t SOUND_EFFECT_SLIDE = 1;
+const int32_t SOUND_EFFECT_VIBRATO = 2;
+const int32_t SOUND_EFFECT_FADEOUT = 3;
 
-const int SOUND_NOTE_C = 0;
-const int SOUND_NOTE_D = 2;
-const int SOUND_NOTE_E = 4;
-const int SOUND_NOTE_F = 5;
-const int SOUND_NOTE_G = 7;
-const int SOUND_NOTE_A = 9;
-const int SOUND_NOTE_B = 11;
+const int32_t SOUND_NOTE_C = 0;
+const int32_t SOUND_NOTE_D = 2;
+const int32_t SOUND_NOTE_E = 4;
+const int32_t SOUND_NOTE_F = 5;
+const int32_t SOUND_NOTE_G = 7;
+const int32_t SOUND_NOTE_A = 9;
+const int32_t SOUND_NOTE_B = 11;
 
 class Constants {
  public:
   Constants();
   ~Constants();
 
-  int get_constant_number(char* name);
-  const char* get_constant_string(char* name);
+  int32_t get_constant_number(const char* name);
+  const char* get_constant_string(const char* name);
 
  private:
-  std::map<std::string, int> constant_number_map_;
+  std::map<std::string, int32_t> constant_number_map_;
   std::map<std::string, std::string> constant_string_map_;
 };
 
