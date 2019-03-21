@@ -27,7 +27,6 @@ PYXEL_API const char* get_constant_string(const char* name);
 PYXEL_API int32_t width_getter();
 PYXEL_API int32_t height_getter();
 PYXEL_API int32_t frame_count_getter();
-
 PYXEL_API void init(int32_t width,
                     int32_t height,
                     const char* caption,
@@ -50,7 +49,6 @@ PYXEL_API void load(const char* filename);
 //
 PYXEL_API int32_t mouse_x_getter();
 PYXEL_API int32_t mouse_y_getter();
-
 PYXEL_API int32_t btn(int32_t key);
 PYXEL_API int32_t btnp(int32_t key, int32_t hold, int32_t period);
 PYXEL_API int32_t btnr(int32_t key);
@@ -114,23 +112,22 @@ PYXEL_API void stop(int32_t ch);
 //
 // Image class
 //
-PYXEL_API int32_t Image_width_getter(void* self);
-PYXEL_API int32_t Image_height_getter(void* self);
-PYXEL_API int32_t* Image_data_getter(void* self);
-
-PYXEL_API int32_t Image_get(void* self, int32_t x, int32_t y);
-PYXEL_API void Image_set1(void* self, int32_t x, int32_t y, int32_t data);
-PYXEL_API void Image_set(void* self,
+PYXEL_API int32_t image_width_getter(void* self);
+PYXEL_API int32_t image_height_getter(void* self);
+PYXEL_API int32_t* image_data_getter(void* self);
+PYXEL_API int32_t image_get(void* self, int32_t x, int32_t y);
+PYXEL_API void image_set1(void* self, int32_t x, int32_t y, int32_t data);
+PYXEL_API void image_set(void* self,
                          int32_t x,
                          int32_t y,
                          const int32_t* data,
                          int32_t data_width,
                          int32_t data_height);
-PYXEL_API void Image_load(void* self,
+PYXEL_API void image_load(void* self,
                           int32_t x,
                           int32_t y,
                           const char* filename);
-PYXEL_API void Image_copy(void* self,
+PYXEL_API void image_copy(void* self,
                           int32_t x,
                           int32_t y,
                           int32_t img,
@@ -142,24 +139,24 @@ PYXEL_API void Image_copy(void* self,
 //
 // Tilemap class
 //
-PYXEL_API int32_t Tilemap_width_getter(void* self);
-PYXEL_API int32_t Tilemap_height_getter(void* self);
-PYXEL_API int32_t* Tilemap_data_getter(void* self);
+PYXEL_API int32_t tilemap_width_getter(void* self);
+PYXEL_API int32_t tilemap_height_getter(void* self);
+PYXEL_API int32_t* tilemap_data_getter(void* self);
 
-PYXEL_API int32_t Tilemap_get(void* self, int32_t x, int32_t y);
-PYXEL_API void Timemap_set1(void* self,
+PYXEL_API int32_t tilemap_get(void* self, int32_t x, int32_t y);
+PYXEL_API void timemap_set1(void* self,
                             int32_t x,
                             int32_t y,
                             int32_t data,
                             int32_t refimg);
-PYXEL_API void Timemap_set(void* self,
+PYXEL_API void timemap_set(void* self,
                            int32_t x,
                            int32_t y,
                            const int32_t* data,
                            int32_t data_width,
                            int32_t data_height,
                            int32_t refimg);
-PYXEL_API void Timemap_copy(void* self,
+PYXEL_API void timemap_copy(void* self,
                             int32_t x,
                             int32_t y,
                             int32_t tm,
@@ -171,57 +168,57 @@ PYXEL_API void Timemap_copy(void* self,
 //
 // Sound class
 //
-PYXEL_API int32_t* Sound_note_getter(void* self, int32_t* length);
-PYXEL_API void Sound_note_setter(void* self,
+PYXEL_API int32_t* sound_note_getter(void* self, int32_t* length);
+PYXEL_API void sound_note_setter(void* self,
                                  const int32_t* data,
                                  int32_t length);
-PYXEL_API int32_t* Sound_tone_getter(void* self, int32_t* length);
-PYXEL_API void Sound_tone_setter(void* self,
+PYXEL_API int32_t* sound_tone_getter(void* self, int32_t* length);
+PYXEL_API void sound_tone_setter(void* self,
                                  const int32_t* data,
                                  int32_t length);
-PYXEL_API int32_t* Sound_volume_getter(void* self, int32_t* length);
-PYXEL_API void Sound_volume_setter(void* self,
+PYXEL_API int32_t* sound_volume_getter(void* self, int32_t* length);
+PYXEL_API void sound_volume_setter(void* self,
                                    const int32_t* data,
                                    int32_t length);
-PYXEL_API int32_t* Sound_effect_getter(void* self, int32_t* length);
-PYXEL_API void Sound_effect_setter(void* self,
+PYXEL_API int32_t* sound_effect_getter(void* self, int32_t* length);
+PYXEL_API void sound_effect_setter(void* self,
                                    const int32_t* data,
                                    int32_t length);
-PYXEL_API int32_t Sound_speed_getter(void* self);
-PYXEL_API void Sound_speed_setter(void* self, int32_t speed);
+PYXEL_API int32_t sound_speed_getter(void* self);
+PYXEL_API void sound_speed_setter(void* self, int32_t speed);
 
-PYXEL_API void Sound_set(void* self,
+PYXEL_API void sound_set(void* self,
                          const char* note,
                          const char* tone,
                          const char* volume,
                          const char* effect,
                          int32_t speed);
-PYXEL_API void Sound_set_note(void* self, const char* data);
-PYXEL_API void Sound_set_tone(void* self, const char* data);
-PYXEL_API void Sound_set_volume(void* self, const char* data);
-PYXEL_API void Sound_set_effect(void* self, const char* data);
+PYXEL_API void sound_set_note(void* self, const char* data);
+PYXEL_API void sound_set_tone(void* self, const char* data);
+PYXEL_API void sound_set_volume(void* self, const char* data);
+PYXEL_API void sound_set_effect(void* self, const char* data);
 
 //
 // Music class
 //
-PYXEL_API int32_t* Music_ch0_getter(void* self, int32_t* length);
-PYXEL_API void Music_ch0_setter(void* self,
+PYXEL_API int32_t* music_ch0_getter(void* self, int32_t* length);
+PYXEL_API void music_ch0_setter(void* self,
                                 const int32_t* data,
                                 int32_t length);
-PYXEL_API int32_t* Music_ch1_getter(void* self, int32_t* length);
-PYXEL_API void Music_ch1_setter(void* self,
+PYXEL_API int32_t* music_ch1_getter(void* self, int32_t* length);
+PYXEL_API void music_ch1_setter(void* self,
                                 const int32_t* data,
                                 int32_t length);
-PYXEL_API int32_t* Music_ch2_getter(void* self, int32_t* length);
-PYXEL_API void Music_ch2_setter(void* self,
+PYXEL_API int32_t* music_ch2_getter(void* self, int32_t* length);
+PYXEL_API void music_ch2_setter(void* self,
                                 const int32_t* data,
                                 int32_t length);
-PYXEL_API int32_t* Music_ch3_getter(void* self, int32_t* length);
-PYXEL_API void Music_ch3_setter(void* self,
+PYXEL_API int32_t* music_ch3_getter(void* self, int32_t* length);
+PYXEL_API void music_ch3_setter(void* self,
                                 const int32_t* data,
                                 int32_t length);
 
-PYXEL_API void Music_set(void* msc,
+PYXEL_API void music_set(void* msc,
                          const int32_t* ch0,
                          int32_t ch0_length,
                          const int32_t* ch1,
@@ -230,10 +227,10 @@ PYXEL_API void Music_set(void* msc,
                          int32_t ch2_length,
                          const int32_t* ch3,
                          int32_t ch3_length);
-PYXEL_API void Music_set_ch0(void* self, const int32_t* data, int32_t length);
-PYXEL_API void Music_set_ch1(void* self, const int32_t* data, int32_t length);
-PYXEL_API void Music_set_ch2(void* self, const int32_t* data, int32_t length);
-PYXEL_API void Music_set_ch3(void* self, const int32_t* data, int32_t length);
+PYXEL_API void music_set_ch0(void* self, const int32_t* data, int32_t length);
+PYXEL_API void music_set_ch1(void* self, const int32_t* data, int32_t length);
+PYXEL_API void music_set_ch2(void* self, const int32_t* data, int32_t length);
+PYXEL_API void music_set_ch3(void* self, const int32_t* data, int32_t length);
 
 #ifdef __cplusplus
 }
