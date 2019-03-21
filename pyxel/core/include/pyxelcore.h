@@ -16,6 +16,12 @@ extern "C" {
 #endif
 
 //
+// Constants
+//
+PYXEL_API int get_constant_number(char* name);
+PYXEL_API const char* get_constant_string(char* name);
+
+//
 // System
 //
 PYXEL_API int width_getter();
