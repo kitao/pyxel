@@ -8,7 +8,7 @@ Constants::Constants() {}
 
 Constants::~Constants() {}
 
-int Constants::get_constant_number(const char* name) {
+int32_t Constants::get_constant_number(const char* name) {
   return 0;
 }
 
