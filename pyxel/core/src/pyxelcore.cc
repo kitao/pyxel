@@ -91,6 +91,7 @@ void load(const char* filename) {
 int32_t mouse_x_getter() {
   return s_input->mouse_x_getter();
 }
+
 int32_t mouse_y_getter() {
   return s_input->mouse_y_getter();
 }
@@ -218,34 +219,34 @@ void stop(int32_t ch) {
 //
 // Image class
 //
-int32_t Image_width_getter(void* self) {
+int32_t image_width_getter(void* self) {
   return reinterpret_cast<pyxelcore::Image*>(self)->width();
 }
 
-int32_t Image_height_getter(void* self) {
+int32_t image_height_getter(void* self) {
   return reinterpret_cast<pyxelcore::Image*>(self)->height();
 }
 
-int* Image_data_getter(void* self) {
+int32_t* image_data_getter(void* self) {
   return reinterpret_cast<pyxelcore::Image*>(self)->data();
 }
 
-int32_t Image_get(void* self, int32_t x, int32_t y) {
+int32_t image_get(void* self, int32_t x, int32_t y) {
   return reinterpret_cast<pyxelcore::Image*>(self)->get(x, y);
 }
 
-void Image_set1(void* self, int32_t x, int32_t y, int32_t data) {}
+void image_set1(void* self, int32_t x, int32_t y, int32_t data) {}
 
-void Image_set(void* self,
+void image_set(void* self,
                int32_t x,
                int32_t y,
                const int32_t* data,
                int32_t data_width,
                int32_t data_height) {}
 
-void Image_load(void* self, int32_t x, int32_t y, const char* filename) {}
+void image_load(void* self, int32_t x, int32_t y, const char* filename) {}
 
-void Image_copy(void* self,
+void image_copy(void* self,
                 int32_t x,
                 int32_t y,
                 int32_t img,
