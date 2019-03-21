@@ -14,20 +14,20 @@ class Graphics {
 
   int* Framebuffer() { return framebuffer_; }
 
-  void* image(int32_t img, int32_t system);
-  void* tilemap(int32_t tm);
-  void clip();
-  void clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
-  void pal();
-  void pal(int32_t col1, int32_t col2);
-  void cls(int32_t col);
-  void pix(int32_t x, int32_t y, int32_t col);
-  void line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col);
-  void rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col);
-  void rectb(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col);
-  void circ(int32_t x, int32_t y, int32_t r, int32_t col);
-  void circb(int32_t x, int32_t y, int32_t r, int32_t col);
-  void blt(int32_t x,
+  void* Image(int32_t img, int32_t system);
+  void* Tilemap(int32_t tm);
+  void Clip();
+  void Clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
+  void Pal();
+  void Pal(int32_t col1, int32_t col2);
+  void Cls(int32_t col);
+  void Pix(int32_t x, int32_t y, int32_t col);
+  void Line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col);
+  void Rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col);
+  void Rectb(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col);
+  void Circ(int32_t x, int32_t y, int32_t r, int32_t col);
+  void Circb(int32_t x, int32_t y, int32_t r, int32_t col);
+  void Blt(int32_t x,
            int32_t y,
            int32_t img,
            int32_t u,
@@ -35,7 +35,7 @@ class Graphics {
            int32_t w,
            int32_t h,
            int32_t colkey);
-  void bltm(int32_t x,
+  void Bltm(int32_t x,
             int32_t y,
             int32_t tm,
             int32_t u,
@@ -43,7 +43,7 @@ class Graphics {
             int32_t w,
             int32_t h,
             int32_t colkey);
-  void text(int32_t x, int32_t y, int32_t s, int32_t col);
+  void Text(int32_t x, int32_t y, int32_t s, int32_t col);
 
  private:
   int32_t width_;
@@ -58,7 +58,7 @@ class Graphics {
 
   int32_t pal_[16];
 
-  Image* image_[4];
+  pyxelcore::Image* image_[4];
 };
 
 }  // namespace pyxelcore

@@ -10,8 +10,8 @@ class Resource {
   Resource();
   ~Resource();
 
-  void save(const char* filename);
-  void load(const char* filename);
+  void Save(const char* filename);
+  void Load(const char* filename);
 
  private:
 };
