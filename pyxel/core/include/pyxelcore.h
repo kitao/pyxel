@@ -27,6 +27,7 @@ PYXEL_API const char* get_constant_string(const char* name);
 PYXEL_API int32_t width_getter();
 PYXEL_API int32_t height_getter();
 PYXEL_API int32_t frame_count_getter();
+
 PYXEL_API void init(int32_t width,
                     int32_t height,
                     const char* caption,
@@ -49,6 +50,7 @@ PYXEL_API void load(const char* filename);
 //
 PYXEL_API int32_t mouse_x_getter();
 PYXEL_API int32_t mouse_y_getter();
+
 PYXEL_API int32_t btn(int32_t key);
 PYXEL_API int32_t btnp(int32_t key, int32_t hold, int32_t period);
 PYXEL_API int32_t btnr(int32_t key);
@@ -115,6 +117,7 @@ PYXEL_API void stop(int32_t ch);
 PYXEL_API int32_t image_width_getter(void* self);
 PYXEL_API int32_t image_height_getter(void* self);
 PYXEL_API int32_t* image_data_getter(void* self);
+
 PYXEL_API int32_t image_get(void* self, int32_t x, int32_t y);
 PYXEL_API void image_set1(void* self, int32_t x, int32_t y, int32_t data);
 PYXEL_API void image_set(void* self,

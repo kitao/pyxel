@@ -25,12 +25,12 @@ class System {
          int32_t border_color);
   ~System();
 
-  int32_t width_getter() { return width_; }
-  int32_t height_getter() { return height_; }
-  int32_t frame_count_getter() { return frame_count_; }
+  int32_t Width() { return width_; }
+  int32_t Height() { return height_; }
+  int32_t FrameCount() { return frame_count_; }
 
-  void run(void (*update)(), void (*draw)());
-  void quit();
+  void Run(void (*update)(), void (*draw)());
+  void Quit();
 
  private:
   int32_t width_;

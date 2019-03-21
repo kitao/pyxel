@@ -103,8 +103,8 @@ class Constants {
   Constants();
   ~Constants();
 
-  int32_t get_constant_number(const char* name);
-  const char* get_constant_string(const char* name);
+  int32_t GetConstantNumber(const char* name);
+  const char* GetConstantString(const char* name);
 
  private:
   std::map<std::string, int32_t> constant_number_map_;
