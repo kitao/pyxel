@@ -1,23 +1,21 @@
-#include "pyxelcore/input.h"
+#include "pyxelcore/app.h"
 
 namespace pyxelcore {
 
-Input::Input() {}
-
-Input::~Input() {}
-
-bool Input::Btn(int32_t key) {
-  return 0;
+bool App::IsButtonOn(int32_t key) {
+  return false;
 }
 
-bool Input::Btnp(int32_t key, int32_t hold, int32_t period) {
-  return 0;
+bool App::IsButtonPressed(int32_t key, int32_t hold, int32_t period) {
+  return false;
 }
 
-bool Input::Btnr(int32_t key) {
-  return 0;
+bool App::IsButtonReleased(int32_t key) {
+  return false;
 }
 
-void Input::Mouse(int32_t visible) {}
+void App::SetMouseVisibility(int32_t visible) {
+  //
+}
 
 }  // namespace pyxelcore

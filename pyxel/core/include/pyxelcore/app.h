@@ -27,6 +27,9 @@ class App {
 
   Canvas* Screen() { return screen_; }
 
+  //
+  // System
+  //
   int32_t Width() { return width_; }
   int32_t Height() { return height_; }
   int32_t FrameCount() { return frame_count_; }
@@ -37,11 +40,32 @@ class App {
   void Run(void (*update)(), void (*draw)());
   void Quit();
 
+  //
+  // Input
+  //
+  int32_t MouseX() { return mouse_x_; }
+  int32_t MouseY() { return mouse_y_; }
+
+  bool IsButtonOn(int32_t key);
+  bool IsButtonPressed(int32_t key, int32_t hold = 0, int32_t period = 0);
+  bool IsButtonReleased(int32_t key);
+  void SetMouseVisibility(int32_t visible);
+
+  //
+  // Image class
+  //
   void LoadImage(Canvas* image, int32_t x, int32_t y, const char* filename);
+
+  //
+  // Resource
+  //
   void LoadAsset(const char* filename);
   void SaveAsset(const char* filename);
 
  private:
+  //
+  // System
+  //
   int32_t width_;
   int32_t height_;
   std::string caption_;
@@ -52,15 +76,24 @@ class App {
   int32_t border_color_;
   int32_t frame_count_;
 
-  Canvas* screen_;
-  Canvas** image_;
-  Tilemap** tilemap_;
-
   SDL_Renderer* renderer_;
   SDL_Window* window_;
   SDL_Texture* screen_texture_;
 
   void UpdateScreenTexture();
+
+  //
+  // Input
+  //
+  int32_t mouse_x_;
+  int32_t mouse_y_;
+
+  //
+  // Graphics
+  //
+  Canvas* screen_;
+  Canvas** image_;
+  Tilemap** tilemap_;
 };
 
 }  // namespace pyxelcore
