@@ -168,11 +168,11 @@ void text(int32_t x, int32_t y, const char* s, int32_t col) {
 // Audio
 //
 void* sound(int32_t snd, int32_t system) {
-  return s_app->Sound(snd, system);
+  return s_app->GetSound(snd, system);
 }
 
 void* music(int32_t msc) {
-  return s_app->Music(msc);
+  return s_app->GetMusic(msc);
 }
 
 void play(int32_t ch, int32_t snd, int32_t loop) {

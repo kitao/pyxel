@@ -4,11 +4,11 @@
 
 namespace pyxelcore {
 
-Sound* App::Sound(int32_t snd, bool system) {
+Sound* App::GetSound(int32_t snd, bool system) {
   return NULL;
 }
 
-Music* App::Music(int32_t msc) {
+Music* App::GetMusic(int32_t msc) {
   return NULL;
 }
 
