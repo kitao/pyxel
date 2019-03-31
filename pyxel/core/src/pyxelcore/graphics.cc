@@ -43,19 +43,4 @@ Tilemap* Graphics::GetTilemap(int32_t tm) {
   return NULL;
 }
 
-void Graphics::DrawTilemap(int32_t x,
-                           int32_t y,
-                           int32_t tm,
-                           int32_t u,
-                           int32_t v,
-                           int32_t width,
-                           int32_t height,
-                           int32_t colkey) {
-  //
-}
-
-void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
-  //
-}
-
 }  // namespace pyxelcore
