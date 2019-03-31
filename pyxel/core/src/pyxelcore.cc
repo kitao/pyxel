@@ -1,41 +1,29 @@
 #include <cstdio>
 
 #include "pyxelcore.h"
+#include "pyxelcore/app.h"
 #include "pyxelcore/audio.h"
 #include "pyxelcore/canvas.h"
-#include "pyxelcore/constants.h"
 #include "pyxelcore/input.h"
-#include "pyxelcore/system.h"
 
-static pyxelcore::Constants* s_constants = NULL;
-static pyxelcore::System* s_system = NULL;
+static pyxelcore::App* s_app = NULL;
+static pyxelcore::Canvas* s_screen = NULL;
 static pyxelcore::Input* s_input = NULL;
 static pyxelcore::Audio* s_audio = NULL;
-
-//
-// Constants
-//
-int32_t get_constant_number(const char* name) {
-  return s_constants->GetConstantNumber(name);
-}
-
-const char* get_constant_string(const char* name) {
-  return s_constants->GetConstantString(name);
-}
 
 //
 // System
 //
 int32_t width_getter() {
-  return s_system->Width();
+  return s_app->Width();
 }
 
 int32_t height_getter() {
-  return s_system->Height();
+  return s_app->Height();
 }
 
 int32_t frame_count_getter() {
-  return s_system->FrameCount();
+  return s_app->FrameCount();
 }
 
 void init(int32_t width,
@@ -46,35 +34,34 @@ void init(int32_t width,
           int32_t fps,
           int32_t border_width,
           int32_t border_color) {
-  s_constants = new pyxelcore::Constants();
   s_input = new pyxelcore::Input();
   s_audio = new pyxelcore::Audio();
-  s_system = new pyxelcore::System(width, height, caption, scale, palette, fps,
-                                   border_width, border_color);
+  s_app = new pyxelcore::App(width, height, caption, scale, palette, fps,
+                             border_width, border_color);
+  s_screen = s_app->Screen();
 }
 
 void run(void (*update)(), void (*draw)()) {
-  s_system->RunApplication(update, draw);
+  s_app->Run(update, draw);
 }
 
 void quit() {
-  s_system->QuitApplication();
+  s_app->Quit();
 
-  delete s_system;
+  delete s_app;
   delete s_audio;
   delete s_input;
-  delete s_constants;
 }
 
 //
 // Resource
 //
 void save(const char* filename) {
-  s_system->SaveAsset(filename);
+  s_app->SaveAsset(filename);
 }
 
 void load(const char* filename) {
-  s_system->LoadAsset(filename);
+  s_app->LoadAsset(filename);
 }
 
 //
@@ -108,55 +95,55 @@ void mouse(int32_t visible) {
 // Graphics
 //
 void* image(int32_t img, int32_t system) {
-  return s_system->GetImage(img, system);
+  return s_app->GetImage(img, system);
 }
 
 void* tilemap(int32_t tm) {
-  return s_system->GetTilemap(tm);
+  return s_app->GetTilemap(tm);
 }
 
 void clip0() {
-  s_system->Screen()->ResetClippingArea();
+  s_screen->ResetClippingArea();
 }
 
 void clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-  s_system->Screen()->SetClippingArea(x1, y1, x2, y2);
+  s_screen->SetClippingArea(x1, y1, x2, y2);
 }
 
 void pal0() {
-  s_system->Screen()->ResetPalette();
+  s_screen->ResetPalette();
 }
 
 void pal(int32_t col1, int32_t col2) {
-  s_system->Screen()->SetPalette(col1, col2);
+  s_screen->SetPalette(col1, col2);
 }
 
 void cls(int32_t col) {
-  s_system->Screen()->Clear(col);
+  s_screen->Clear(col);
 }
 
 void pix(int32_t x, int32_t y, int32_t col) {
-  s_system->Screen()->DrawPoint(x, y, col);
+  s_screen->DrawPoint(x, y, col);
 }
 
 void line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
-  s_system->Screen()->DrawLine(x1, y1, x2, y2, col);
+  s_screen->DrawLine(x1, y1, x2, y2, col);
 }
 
 void rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
-  s_system->Screen()->DrawRectangle(x1, y1, x2, y2, col);
+  s_screen->DrawRectangle(x1, y1, x2, y2, col);
 }
 
 void rectb(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
-  s_system->Screen()->DrawRectangleBorder(x1, y1, x2, y2, col);
+  s_screen->DrawRectangleBorder(x1, y1, x2, y2, col);
 }
 
 void circ(int32_t x, int32_t y, int32_t r, int32_t col) {
-  s_system->Screen()->DrawCircle(x, y, r, col);
+  s_screen->DrawCircle(x, y, r, col);
 }
 
 void circb(int32_t x, int32_t y, int32_t r, int32_t col) {
-  s_system->Screen()->DrawCircleBorder(x, y, r, col);
+  s_screen->DrawCircleBorder(x, y, r, col);
 }
 
 void blt(int32_t x,
@@ -167,8 +154,7 @@ void blt(int32_t x,
          int32_t w,
          int32_t h,
          int32_t colkey) {
-  s_system->Screen()->DrawImage(x, y, s_system->GetImage(img), u, v, w, h,
-                                colkey);
+  s_screen->DrawImage(x, y, s_app->GetImage(img), u, v, w, h, colkey);
 }
 
 void bltm(int32_t x,
@@ -179,12 +165,11 @@ void bltm(int32_t x,
           int32_t w,
           int32_t h,
           int32_t colkey) {
-  s_system->Screen()->DrawTilemap(x, y, s_system->GetTilemap(tm), u, v, w, h,
-                                  colkey);
+  s_screen->DrawTilemap(x, y, s_app->GetTilemap(tm), u, v, w, h, colkey);
 }
 
 void text(int32_t x, int32_t y, const char* s, int32_t col) {
-  s_system->Screen()->DrawText(x, y, s, col);
+  s_screen->DrawText(x, y, s, col);
 }
 
 //
