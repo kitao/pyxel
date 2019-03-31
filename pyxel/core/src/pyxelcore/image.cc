@@ -1,18 +1,15 @@
-#include "pyxelcore/canvas.h"
+#include "pyxelcore/image.h"
 
+#include "pyxelcore/constants.h"
 #include "pyxelcore/tilemap.h"
 
 #include <algorithm>
 
 namespace pyxelcore {
 
-Canvas::Canvas(int32_t width,
-               int32_t height,
-               int32_t color_count,
-               int32_t* data) {
+Image::Image(int32_t width, int32_t height, int32_t* data) {
   width_ = width;
   height_ = height;
-  color_count_ = color_count;
 
   if (data) {
     data_ = data;
@@ -22,14 +19,14 @@ Canvas::Canvas(int32_t width,
     need_to_delete_data_ = true;
   }
 
-  palette_ = new int32_t[color_count];
+  palette_ = new int32_t[COLOR_COUNT];
 
   ResetClippingArea();
   ResetPalette();
   Clear(0);
 }
 
-Canvas::~Canvas() {
+Image::~Image() {
   if (need_to_delete_data_) {
     delete[] data_;
   }
@@ -37,7 +34,7 @@ Canvas::~Canvas() {
   delete[] palette_;
 }
 
-int32_t Canvas::GetColor(int32_t x, int32_t y) {
+int32_t Image::GetColor(int32_t x, int32_t y) {
   if (x < 0 || y < 0 || x >= width_ || y >= height_) {
     // error
   }
@@ -45,48 +42,48 @@ int32_t Canvas::GetColor(int32_t x, int32_t y) {
   return data_[width_ * y + x];
 }
 
-void Canvas::SetColor(int32_t x, int32_t y, int32_t color) {
+void Image::SetColor(int32_t x, int32_t y, int32_t color) {
   //
 }
 
-void Canvas::SetData(int32_t x,
-                     int32_t y,
-                     const int32_t* data,
-                     int32_t data_width,
-                     int32_t data_height) {
+void Image::SetData(int32_t x,
+                    int32_t y,
+                    const int32_t* data,
+                    int32_t data_width,
+                    int32_t data_height) {
   //
 }
 
-void Canvas::ResetClippingArea() {
+void Image::ResetClippingArea() {
   clipping_area_.x1 = 0;
   clipping_area_.y1 = 0;
   clipping_area_.x2 = width_ - 1;
   clipping_area_.y2 = height_ - 1;
 }
 
-void Canvas::SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
+void Image::SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
   clipping_area_.x1 = std::max(std::min(x1, x2), 0);
   clipping_area_.y1 = std::max(std::min(y1, y2), 0);
   clipping_area_.x2 = std::min(std::max(x1, x2), width_ - 1);
   clipping_area_.y2 = std::min(std::max(y1, y2), height_ - 1);
 }
 
-void Canvas::ResetPalette() {
-  for (int32_t i = 0; i < color_count_; i++) {
+void Image::ResetPalette() {
+  for (int32_t i = 0; i < COLOR_COUNT; i++) {
     palette_[i] = i;
   }
 }
 
-void Canvas::SetPalette(int32_t src_color, int32_t dest_color) {
+void Image::SetPalette(int32_t src_color, int32_t dest_color) {
   palette_[src_color] = dest_color;
 }
 
-void Canvas::Load(int32_t x, int32_t y, const char* filename) {
+void Image::Load(int32_t x, int32_t y, const char* filename) {
   //
 }
 
-void Canvas::Clear(int32_t color) {
-  if (color < 0 || color >= color_count_) {
+void Image::Clear(int32_t color) {
+  if (color < 0 || color >= COLOR_COUNT) {
     // error
   }
 
@@ -99,8 +96,8 @@ void Canvas::Clear(int32_t color) {
   }
 }
 
-void Canvas::DrawPoint(int32_t x, int32_t y, int32_t color) {
-  if (color < 0 || color >= color_count_) {
+void Image::DrawPoint(int32_t x, int32_t y, int32_t color) {
+  if (color < 0 || color >= COLOR_COUNT) {
     // error
   }
 
@@ -112,20 +109,20 @@ void Canvas::DrawPoint(int32_t x, int32_t y, int32_t color) {
   data_[width_ * y + x] = palette_[color];
 }
 
-void Canvas::DrawLine(int32_t x1,
-                      int32_t y1,
-                      int32_t x2,
-                      int32_t y2,
-                      int32_t color) {
+void Image::DrawLine(int32_t x1,
+                     int32_t y1,
+                     int32_t x2,
+                     int32_t y2,
+                     int32_t color) {
   //
 }
 
-void Canvas::DrawRectangle(int32_t x1,
-                           int32_t y1,
-                           int32_t x2,
-                           int32_t y2,
-                           int32_t color) {
-  if (color < 0 || color >= color_count_) {
+void Image::DrawRectangle(int32_t x1,
+                          int32_t y1,
+                          int32_t x2,
+                          int32_t y2,
+                          int32_t color) {
+  if (color < 0 || color >= COLOR_COUNT) {
     // error
   }
 
@@ -145,12 +142,12 @@ void Canvas::DrawRectangle(int32_t x1,
   }
 }
 
-void Canvas::DrawRectangleBorder(int32_t x1,
-                                 int32_t y1,
-                                 int32_t x2,
-                                 int32_t y2,
-                                 int32_t color) {
-  if (color < 0 || color >= color_count_) {
+void Image::DrawRectangleBorder(int32_t x1,
+                                int32_t y1,
+                                int32_t x2,
+                                int32_t y2,
+                                int32_t color) {
+  if (color < 0 || color >= COLOR_COUNT) {
     // error
   }
 
@@ -191,26 +188,26 @@ void Canvas::DrawRectangleBorder(int32_t x1,
   //
 }
 
-void Canvas::DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color) {
+void Image::DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color) {
   //
 }
 
-void Canvas::DrawCircleBorder(int32_t x,
-                              int32_t y,
-                              int32_t radius,
-                              int32_t color) {
+void Image::DrawCircleBorder(int32_t x,
+                             int32_t y,
+                             int32_t radius,
+                             int32_t color) {
   //
 }
 
-void Canvas::DrawImage(int32_t x,
-                       int32_t y,
-                       const Canvas* image,
-                       int32_t u,
-                       int32_t v,
-                       int32_t width,
-                       int32_t height,
-                       int32_t color_key) {
-  if (color_key != -1 && (color_key < 0 || color_key >= color_count_)) {
+void Image::DrawImage(int32_t x,
+                      int32_t y,
+                      const Image* image,
+                      int32_t u,
+                      int32_t v,
+                      int32_t width,
+                      int32_t height,
+                      int32_t color_key) {
+  if (color_key != -1 && (color_key < 0 || color_key >= COLOR_COUNT)) {
     // error
   }
 
@@ -263,18 +260,18 @@ void Canvas::DrawImage(int32_t x,
   }
 }
 
-void Canvas::DrawTilemap(int32_t x,
-                         int32_t y,
-                         const Tilemap* tilemap,
-                         int32_t u,
-                         int32_t v,
-                         int32_t width,
-                         int32_t height,
-                         int32_t colkey) {
+void Image::DrawTilemap(int32_t x,
+                        int32_t y,
+                        const Tilemap* tilemap,
+                        int32_t u,
+                        int32_t v,
+                        int32_t width,
+                        int32_t height,
+                        int32_t colkey) {
   //
 }
 
-void Canvas::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
+void Image::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
   //
 }
 
