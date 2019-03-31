@@ -4,10 +4,6 @@
 
 namespace pyxelcore {
 
-void App::LoadImage(Image* image, int32_t x, int32_t y, const char* filename) {
-  //
-}
-
 void App::LoadAsset(const char* filename) {
   // int32_t flags = IMG_INIT_PNG;
   // int initted = IMG_Init(flags);
