@@ -1,8 +1,27 @@
 #include "pyxelcore/image.h"
 
+#include "pyxelcore/tilemap.h"
+
 #include <algorithm>
 
 namespace pyxelcore {
+
+const uint32_t FONT_DATA[] = {
+    0x000000, 0x444040, 0xAA0000, 0xAEAEA0, 0x6C6C40, 0x824820, 0x4A4AC0,
+    0x440000, 0x244420, 0x844480, 0xA4E4A0, 0x04E400, 0x000480, 0x00E000,
+    0x000040, 0x224880, 0x6AAAC0, 0x4C4440, 0xC248E0, 0xC242C0, 0xAAE220,
+    0xE8C2C0, 0x68EAE0, 0xE24880, 0xEAEAE0, 0xEAE2C0, 0x040400, 0x040480,
+    0x248420, 0x0E0E00, 0x842480, 0xE24040, 0x4AA860, 0x4AEAA0, 0xCACAC0,
+    0x688860, 0xCAAAC0, 0xE8E8E0, 0xE8E880, 0x68EA60, 0xAAEAA0, 0xE444E0,
+    0x222A40, 0xAACAA0, 0x8888E0, 0xAEEAA0, 0xCAAAA0, 0x4AAA40, 0xCAC880,
+    0x4AAE60, 0xCAECA0, 0x6842C0, 0xE44440, 0xAAAA60, 0xAAAA40, 0xAAEEA0,
+    0xAA4AA0, 0xAA4440, 0xE248E0, 0x644460, 0x884220, 0xC444C0, 0x4A0000,
+    0x0000E0, 0x840000, 0x06AA60, 0x8CAAC0, 0x068860, 0x26AA60, 0x06AC60,
+    0x24E440, 0x06AE24, 0x8CAAA0, 0x404440, 0x2022A4, 0x8ACCA0, 0xC444E0,
+    0x0EEEA0, 0x0CAAA0, 0x04AA40, 0x0CAAC8, 0x06AA62, 0x068880, 0x06C6C0,
+    0x4E4460, 0x0AAA60, 0x0AAA40, 0x0AAEE0, 0x0A44A0, 0x0AA624, 0x0E24E0,
+    0x64C460, 0x444440, 0xC464C0, 0x6C0000, 0xEEEEE0,
+};
 
 Image::Image(int32_t width, int32_t height, int32_t color_count) {
   width_ = width;
@@ -29,6 +48,18 @@ int32_t Image::GetColor(int32_t x, int32_t y) {
   return data_[width_ * y + x];
 }
 
+void Image::SetColor(int32_t x, int32_t y, int32_t color) {
+  //
+}
+
+void Image::SetData(int32_t x,
+                    int32_t y,
+                    const int32_t* data,
+                    int32_t data_width,
+                    int32_t data_height) {
+  //
+}
+
 void Image::ResetClippingArea() {
   clipping_area_.x1 = 0;
   clipping_area_.y1 = 0;
@@ -53,11 +84,7 @@ void Image::SetPalette(int32_t src_color, int32_t dest_color) {
   palette_[src_color] = dest_color;
 }
 
-void Image::Load(int32_t x,
-                 int32_t y,
-                 const char* filename,
-                 int32_t width,
-                 int32_t height) {
+void Image::Load(int32_t x, int32_t y, const char* filename) {
   //
 }
 
@@ -180,7 +207,7 @@ void Image::DrawCircleBorder(int32_t x,
 
 void Image::DrawImage(int32_t x,
                       int32_t y,
-                      Image* image,
+                      const Image* image,
                       int32_t u,
                       int32_t v,
                       int32_t width,
@@ -237,6 +264,21 @@ void Image::DrawImage(int32_t x,
       }
     }
   }
+}
+
+void Image::DrawTilemap(int32_t x,
+                        int32_t y,
+                        const Tilemap* tilemap,
+                        int32_t u,
+                        int32_t v,
+                        int32_t width,
+                        int32_t height,
+                        int32_t colkey) {
+  //
+}
+
+void Image::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
+  //
 }
 
 }  // namespace pyxelcore
