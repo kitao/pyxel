@@ -3,10 +3,10 @@
 #include "pyxelcore.h"
 #include "pyxelcore/app.h"
 #include "pyxelcore/audio.h"
-#include "pyxelcore/canvas.h"
+#include "pyxelcore/image.h"
 
 static pyxelcore::App* s_app = NULL;
-static pyxelcore::Canvas* s_screen = NULL;
+static pyxelcore::Image* s_screen = NULL;
 static pyxelcore::Audio* s_audio = NULL;
 
 //
@@ -195,23 +195,23 @@ void stop(int32_t ch) {
 // Image class
 //
 int32_t image_width_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Canvas*>(self)->Width();
+  return reinterpret_cast<pyxelcore::Image*>(self)->Width();
 }
 
 int32_t image_height_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Canvas*>(self)->Height();
+  return reinterpret_cast<pyxelcore::Image*>(self)->Height();
 }
 
 int32_t* image_data_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Canvas*>(self)->Data();
+  return reinterpret_cast<pyxelcore::Image*>(self)->Data();
 }
 
 int32_t image_get(void* self, int32_t x, int32_t y) {
-  return reinterpret_cast<pyxelcore::Canvas*>(self)->GetColor(x, y);
+  return reinterpret_cast<pyxelcore::Image*>(self)->GetColor(x, y);
 }
 
 void image_set1(void* self, int32_t x, int32_t y, int32_t color) {
-  reinterpret_cast<pyxelcore::Canvas*>(self)->SetColor(x, y, color);
+  reinterpret_cast<pyxelcore::Image*>(self)->SetColor(x, y, color);
 }
 
 void image_set(void* self,
@@ -220,8 +220,8 @@ void image_set(void* self,
                const int32_t* data,
                int32_t data_width,
                int32_t data_height) {
-  reinterpret_cast<pyxelcore::Canvas*>(self)->SetData(x, y, data, data_width,
-                                                      data_height);
+  reinterpret_cast<pyxelcore::Image*>(self)->SetData(x, y, data, data_width,
+                                                     data_height);
 }
 
 void image_load(void* self, int32_t x, int32_t y, const char* filename) {}
