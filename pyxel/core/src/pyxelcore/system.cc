@@ -33,9 +33,9 @@ App::App(int32_t width,
 
   screen_ = new Image(width, height);
 
-  image_ = new Image*[IMAGE_BANK_COUNT];
-  for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
-    image_[i] = new Image(IMAGE_BANK_WIDTH, IMAGE_BANK_HEIGHT);
+  image_ = new Image*[IMAGE_COUNT];
+  for (int32_t i = 0; i < IMAGE_COUNT; i++) {
+    image_[i] = new Image(IMAGE_WIDTH, IMAGE_HEIGHT);
   }
 
   SDL_Init(SDL_INIT_VIDEO);
@@ -50,7 +50,7 @@ App::App(int32_t width,
 }
 
 App::~App() {
-  for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
+  for (int32_t i = 0; i < IMAGE_COUNT; i++) {
     delete image_[i];
   }
   delete[] image_;
@@ -59,11 +59,11 @@ App::~App() {
 }
 
 Image* App::GetImage(int32_t img, bool system) {
-  if (img < 0 || img >= IMAGE_BANK_COUNT) {
+  if (img < 0 || img >= IMAGE_COUNT) {
     // error
   }
 
-  if (img == IMAGE_BANK_COUNT - 1 && !system) {
+  if (img == IMAGE_COUNT - 1 && !system) {
     // error
   }
 
