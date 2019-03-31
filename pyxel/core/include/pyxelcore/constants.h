@@ -109,19 +109,6 @@ const int32_t SOUND_NOTE_G = 7;
 const int32_t SOUND_NOTE_A = 9;
 const int32_t SOUND_NOTE_B = 11;
 
-class Constants {
- public:
-  Constants();
-  ~Constants();
-
-  int32_t GetConstantNumber(const char* name);
-  const char* GetConstantString(const char* name);
-
- private:
-  std::map<std::string, int32_t> constant_number_map_;
-  std::map<std::string, std::string> constant_string_map_;
-};
-
 }  // namespace pyxelcore
 
 #endif  // PYXELCORE_AUDIO_H_
