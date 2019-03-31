@@ -16,6 +16,9 @@ class Canvas {
          int32_t* data = NULL);
   ~Canvas();
 
+  //
+  // Image class
+  //
   int32_t Width() { return width_; }
   int32_t Height() { return height_; }
   int32_t* Data() { return data_; }
@@ -28,6 +31,9 @@ class Canvas {
                int32_t data_width,
                int32_t data_height);
 
+  //
+  // Graphics
+  //
   void ResetClippingArea();
   void SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
 
