@@ -38,8 +38,6 @@ App::App(int32_t width,
     image_[i] = new Image(IMAGE_BANK_WIDTH, IMAGE_BANK_HEIGHT);
   }
 
-  printf("bbb\n");
-
   SDL_Init(SDL_INIT_VIDEO);
 
   window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED,
