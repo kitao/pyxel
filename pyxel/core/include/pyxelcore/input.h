@@ -13,9 +13,9 @@ class Input {
   int32_t MouseX() { return mouse_x_; }
   int32_t MouseY() { return mouse_y_; }
 
-  int32_t Btn(int32_t key);
-  int32_t Btnp(int32_t key, int32_t hold, int32_t period);
-  int32_t Btnr(int32_t key);
+  bool Btn(int32_t key);
+  bool Btnp(int32_t key, int32_t hold = 0, int32_t period = 0);
+  bool Btnr(int32_t key);
   void Mouse(int32_t visible);
 
  private:
