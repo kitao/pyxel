@@ -187,11 +187,12 @@ void bltm(int32_t x,
           int32_t w,
           int32_t h,
           int32_t colkey) {
-  s_graphics->DrawTilemap(x, y, tm, u, v, w, h, colkey);
+  s_graphics->Screen()->DrawTilemap(x, y, s_graphics->GetTilemap(tm), u, v, w,
+                                    h, colkey);
 }
 
 void text(int32_t x, int32_t y, const char* s, int32_t col) {
-  s_graphics->DrawText(x, y, s, col);
+  s_graphics->Screen()->DrawText(x, y, s, col);
 }
 
 //
@@ -236,14 +237,19 @@ int32_t image_get(void* self, int32_t x, int32_t y) {
   return reinterpret_cast<pyxelcore::Image*>(self)->GetColor(x, y);
 }
 
-void image_set1(void* self, int32_t x, int32_t y, int32_t data) {}
+void image_set1(void* self, int32_t x, int32_t y, int32_t color) {
+  reinterpret_cast<pyxelcore::Image*>(self)->SetColor(x, y, color);
+}
 
 void image_set(void* self,
                int32_t x,
                int32_t y,
                const int32_t* data,
                int32_t data_width,
-               int32_t data_height) {}
+               int32_t data_height) {
+  reinterpret_cast<pyxelcore::Image*>(self)->SetData(x, y, data, data_width,
+                                                     data_height);
+}
 
 void image_load(void* self, int32_t x, int32_t y, const char* filename) {}
 
