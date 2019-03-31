@@ -116,55 +116,55 @@ void mouse(int32_t visible) {
 // Graphics
 //
 void* image(int32_t img, int32_t system) {
-  return s_graphics->Image(img, system);
+  return s_graphics->GetImage(img, system);
 }
 
 void* tilemap(int32_t tm) {
-  return s_graphics->Tilemap(tm);
+  return s_graphics->GetTilemap(tm);
 }
 
 void clip0() {
-  s_graphics->Clip();
+  s_graphics->Screen()->ResetClippingArea();
 }
 
 void clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-  s_graphics->Clip(x1, y1, x2, y2);
+  s_graphics->Screen()->SetClippingArea(x1, y1, x2, y2);
 }
 
 void pal0() {
-  s_graphics->Pal();
+  s_graphics->Screen()->ResetPalette();
 }
 
 void pal(int32_t col1, int32_t col2) {
-  s_graphics->Pal(col1, col2);
+  s_graphics->Screen()->SetPalette(col1, col2);
 }
 
 void cls(int32_t col) {
-  s_graphics->Cls(col);
+  s_graphics->Screen()->Clear(col);
 }
 
 void pix(int32_t x, int32_t y, int32_t col) {
-  s_graphics->Pix(x, y, col);
+  s_graphics->Screen()->DrawPoint(x, y, col);
 }
 
 void line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
-  s_graphics->Line(x1, y1, x2, y2, col);
+  s_graphics->Screen()->DrawLine(x1, y1, x2, y2, col);
 }
 
 void rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
-  s_graphics->Rect(x1, y1, x2, y2, col);
+  s_graphics->Screen()->DrawRectangle(x1, y1, x2, y2, col);
 }
 
 void rectb(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
-  s_graphics->Rectb(x1, y1, x2, y2, col);
+  s_graphics->Screen()->DrawRectangleBorder(x1, y1, x2, y2, col);
 }
 
 void circ(int32_t x, int32_t y, int32_t r, int32_t col) {
-  s_graphics->Circ(x, y, r, col);
+  s_graphics->Screen()->DrawCircle(x, y, r, col);
 }
 
 void circb(int32_t x, int32_t y, int32_t r, int32_t col) {
-  s_graphics->Circb(x, y, r, col);
+  s_graphics->Screen()->DrawCircleBorder(x, y, r, col);
 }
 
 void blt(int32_t x,
@@ -175,7 +175,8 @@ void blt(int32_t x,
          int32_t w,
          int32_t h,
          int32_t colkey) {
-  s_graphics->Blt(x, y, img, u, v, w, h, colkey);
+  s_graphics->Screen()->DrawImage(x, y, s_graphics->GetImage(img), u, v, w, h,
+                                  colkey);
 }
 
 void bltm(int32_t x,
@@ -186,11 +187,11 @@ void bltm(int32_t x,
           int32_t w,
           int32_t h,
           int32_t colkey) {
-  s_graphics->Bltm(x, y, tm, u, v, w, h, colkey);
+  s_graphics->DrawTilemap(x, y, tm, u, v, w, h, colkey);
 }
 
-void text(int32_t x, int32_t y, int32_t s, int32_t col) {
-  s_graphics->Text(x, y, s, col);
+void text(int32_t x, int32_t y, const char* s, int32_t col) {
+  s_graphics->DrawText(x, y, s, col);
 }
 
 //
@@ -232,7 +233,7 @@ int32_t* image_data_getter(void* self) {
 }
 
 int32_t image_get(void* self, int32_t x, int32_t y) {
-  return reinterpret_cast<pyxelcore::Image*>(self)->Get(x, y);
+  return reinterpret_cast<pyxelcore::Image*>(self)->GetColor(x, y);
 }
 
 void image_set1(void* self, int32_t x, int32_t y, int32_t data) {}

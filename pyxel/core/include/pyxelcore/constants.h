@@ -7,9 +7,15 @@
 
 namespace pyxelcore {
 
-const std::string VERSION = "1.1.0";
-const std::string DEFAULT_CAPTION = "Pyxel";
+const int32_t COLOR_COUNT = 16;
 
+const int32_t IMAGE_BANK_COUNT = 4;
+const int32_t IMAGE_BANK_WIDTH = 256;
+const int32_t IMAGE_BANK_HEIGHT = 256;
+
+const std::string VERSION = "1.1.0";
+
+const std::string DEFAULT_CAPTION = "Pyxel";
 const int32_t DEFAULT_SCALE = 0;
 const int32_t DEFAULT_PALETTE_00 = 0x000000;
 const int32_t DEFAULT_PALETTE_01 = 0x1D2B53;
@@ -30,8 +36,6 @@ const int32_t DEFAULT_PALETTE_15 = 0xFFCCAA;
 const int32_t DEFAULT_FPS = 30;
 const int32_t DEFAULT_BORDER_WIDTH = 0;
 const int32_t DEFAULT_BORDER_COLOR = 0x101018;
-
-const int32_t COLOR_COUNT = 16;
 
 const std::string ICON_DATA[] = {
     "0000000110000000", "0000011F71100000", "00011FF11FF11000",

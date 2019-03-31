@@ -38,6 +38,7 @@ PYXEL_API void init(int32_t width,
                     int32_t border_color);
 PYXEL_API void run(void (*update)(), void (*draw)());
 PYXEL_API void quit();
+PYXEL_API void error(const char* func, const char* msg);
 
 //
 // Resource
@@ -100,7 +101,7 @@ PYXEL_API void bltm(int32_t x,
                     int32_t w,
                     int32_t h,
                     int32_t colkey);
-PYXEL_API void text(int32_t x, int32_t y, int32_t s, int32_t col);
+PYXEL_API void text(int32_t x, int32_t y, const char* s, int32_t col);
 
 //
 // Audio

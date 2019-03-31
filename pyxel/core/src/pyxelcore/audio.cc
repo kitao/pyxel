@@ -1,6 +1,6 @@
-#include <cstddef>
-
 #include "pyxelcore/audio.h"
+
+#include <cstddef>
 
 namespace pyxelcore {
 
@@ -8,17 +8,17 @@ Audio::Audio() {}
 
 Audio::~Audio() {}
 
-void* Audio::Sound(int32_t snd, int32_t system) {
+Sound* Audio::Sound(int32_t snd, bool system) {
   return NULL;
 }
 
-void* Audio::Music(int32_t msc) {
+Music* Audio::Music(int32_t msc) {
   return NULL;
 }
 
-void Audio::Play(int32_t ch, int32_t snd, int32_t loop) {}
+void Audio::Play(int32_t ch, int32_t snd, bool loop) {}
 
-void Audio::Playm(int32_t msc, int32_t loop) {}
+void Audio::Playm(int32_t msc, bool loop) {}
 
 void Audio::Stop(int32_t ch) {}
 

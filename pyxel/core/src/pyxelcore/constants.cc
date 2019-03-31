@@ -1,6 +1,6 @@
-#include <cstddef>
-
 #include "pyxelcore/constants.h"
+
+#include <cstddef>
 
 namespace pyxelcore {
 
