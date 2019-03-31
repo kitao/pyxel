@@ -1,7 +1,7 @@
 #include "pyxelcore/system.h"
 
-#include "pyxelcore/graphics.h"
-#include "pyxelcore/image.h"
+#include "pyxelcore/canvas.h"
+#include "pyxelcore/constants.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -9,8 +9,7 @@
 
 namespace pyxelcore {
 
-System::System(Graphics* graphics,
-               int32_t width,
+System::System(int32_t width,
                int32_t height,
                const char* caption,
                int32_t scale,
@@ -18,19 +17,28 @@ System::System(Graphics* graphics,
                int32_t fps,
                int32_t border_width,
                int32_t border_color) {
-  graphics_ = graphics;
   width_ = width;
   height_ = height;
-  caption_ = std::string(caption);
-  scale_ = scale;
+  caption_ = caption ? std::string(caption) : DEFAULT_CAPTION;
+  scale_ = scale != -1 ? scale : DEFAULT_SCALE;
 
-  for (int32_t i = 0; i < 16; i++) {
+  palette = palette ? palette : DEFAULT_PALETTE;
+  for (int32_t i = 0; i < COLOR_COUNT; i++) {
     palette_[i] = palette[i];
   }
 
-  fps_ = std::max(fps, 1);
-  border_width_ = border_width;
-  border_color_ = border_color;
+  fps_ = std::max(fps != -1 ? fps : DEFAULT_FPS, 1);
+  border_width_ = border_width != -1 ? border_width : DEFAULT_BORDER_WIDTH;
+  border_color_ = border_color != -1 ? border_color : DEFAULT_BORDER_COLOR;
+
+  screen_ = new Canvas(width, height, COLOR_COUNT);
+
+  image_ = new Canvas*[IMAGE_BANK_COUNT];
+  for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
+    image_[i] = new Canvas(IMAGE_BANK_WIDTH, IMAGE_BANK_HEIGHT, COLOR_COUNT);
+  }
+
+  printf("bbb\n");
 
   SDL_Init(SDL_INIT_VIDEO);
 
@@ -60,9 +68,33 @@ System::System(Graphics* graphics,
                         SDL_TEXTUREACCESS_STREAMING, width_, height_);
 }
 
-System::~System() {}
+System::~System() {
+  for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
+    delete image_[i];
+  }
+  delete[] image_;
 
-void System::Run(void (*update)(), void (*draw)()) {
+  delete screen_;
+}
+
+Canvas* System::GetImage(int32_t img, bool system) {
+  if (img < 0 || img >= IMAGE_BANK_COUNT) {
+    // error
+  }
+
+  if (img == IMAGE_BANK_COUNT - 1 && !system) {
+    // error
+  }
+
+  return image_[img];
+}
+
+Tilemap* System::GetTilemap(int32_t tm) {
+  //
+  return tilemap_[tm];
+}
+
+void System::RunApplication(void (*update)(), void (*draw)()) {
   SDL_Event ev;
 
   double one_frame_time = 1000.0f / fps_;
@@ -102,9 +134,7 @@ void System::Run(void (*update)(), void (*draw)()) {
   }
 }
 
-void System::Quit() {}
-
-void System::Error(const char* func, const char* msg) {}
+void System::QuitApplication() {}
 
 void System::UpdateScreenTexture() {
   int32_t* pixel;
@@ -113,13 +143,28 @@ void System::UpdateScreenTexture() {
 
   SDL_LockTexture(screen_texture_, NULL, (void**)&pixel, &pitch);
 
-  int32_t* framebuffer = graphics_->Screen()->Data();
+  int32_t* framebuffer = screen_->Data();
 
   for (size_t i = 0; i < size; i++) {
     pixel[i] = palette_[framebuffer[i]];
   }
 
   SDL_UnlockTexture(screen_texture_);
+}
+
+void System::LoadImage(Canvas* image,
+                       int32_t x,
+                       int32_t y,
+                       const char* filename) {
+  //
+}
+
+void System::LoadAsset(const char* filename) {
+  //
+}
+
+void System::SaveAsset(const char* filename) {
+  //
 }
 
 }  // namespace pyxelcore
