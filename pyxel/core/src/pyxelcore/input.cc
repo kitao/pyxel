@@ -6,15 +6,15 @@ Input::Input() {}
 
 Input::~Input() {}
 
-int32_t Input::Btn(int32_t key) {
+bool Input::Btn(int32_t key) {
   return 0;
 }
 
-int32_t Input::Btnp(int32_t key, int32_t hold, int32_t period) {
+bool Input::Btnp(int32_t key, int32_t hold, int32_t period) {
   return 0;
 }
 
-int32_t Input::Btnr(int32_t key) {
+bool Input::Btnr(int32_t key) {
   return 0;
 }
 

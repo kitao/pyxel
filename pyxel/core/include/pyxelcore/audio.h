@@ -5,15 +5,18 @@
 
 namespace pyxelcore {
 
+class Sound;
+class Music;
+
 class Audio {
  public:
   Audio();
   ~Audio();
 
-  void* Sound(int32_t snd, int32_t system);
-  void* Music(int32_t msc);
-  void Play(int32_t ch, int32_t snd, int32_t loop);
-  void Playm(int32_t msc, int32_t loop);
+  Sound* Sound(int32_t snd, bool system = false);
+  Music* Music(int32_t msc);
+  void Play(int32_t ch, int32_t snd, bool loop = false);
+  void Playm(int32_t msc, bool loop = false);
   void Stop(int32_t ch);
 
  private:

@@ -1,9 +1,11 @@
+#include "pyxelcore/system.h"
+
+#include "pyxelcore/graphics.h"
+#include "pyxelcore/image.h"
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <cstdio>
-
-#include "pyxelcore/graphics.h"
-#include "pyxelcore/system.h"
 
 namespace pyxelcore {
 
@@ -102,6 +104,8 @@ void System::Run(void (*update)(), void (*draw)()) {
 
 void System::Quit() {}
 
+void System::Error(const char* func, const char* msg) {}
+
 void System::UpdateScreenTexture() {
   int32_t* pixel;
   int32_t pitch;
@@ -109,7 +113,7 @@ void System::UpdateScreenTexture() {
 
   SDL_LockTexture(screen_texture_, NULL, (void**)&pixel, &pitch);
 
-  int32_t* framebuffer = graphics_->Framebuffer();
+  int32_t* framebuffer = graphics_->Screen()->Data();
 
   for (size_t i = 0; i < size; i++) {
     pixel[i] = palette_[framebuffer[i]];
