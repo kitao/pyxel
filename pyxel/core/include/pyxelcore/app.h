@@ -12,6 +12,8 @@ namespace pyxelcore {
 
 class Image;
 class Tilemap;
+class Sound;
+class Music;
 
 class App {
  public:
@@ -58,15 +60,24 @@ class App {
   void SetMouseVisibility(int32_t visible);
 
   //
-  // Image class
-  //
-  void LoadImage(Image* image, int32_t x, int32_t y, const char* filename);
-
-  //
   // Resource
   //
   void LoadAsset(const char* filename);
   void SaveAsset(const char* filename);
+
+  //
+  // Audio
+  //
+  Sound* Sound(int32_t snd, bool system = false);
+  Music* Music(int32_t msc);
+  void PlaySound(int32_t ch, int32_t snd, bool loop = false);
+  void PlayMusic(int32_t msc, bool loop = false);
+  void StopPlaying(int32_t ch);
+
+  //
+  // Image class
+  //
+  void LoadImage(Image* image, int32_t x, int32_t y, const char* filename);
 
  private:
   //
