@@ -2,12 +2,10 @@
 
 #include "pyxelcore.h"
 #include "pyxelcore/app.h"
-#include "pyxelcore/audio.h"
 #include "pyxelcore/image.h"
 
 static pyxelcore::App* s_app = NULL;
 static pyxelcore::Image* s_screen = NULL;
-static pyxelcore::Audio* s_audio = NULL;
 
 //
 // System
@@ -32,7 +30,6 @@ void init(int32_t width,
           int32_t fps,
           int32_t border_width,
           int32_t border_color) {
-  s_audio = new pyxelcore::Audio();
   s_app = new pyxelcore::App(width, height, caption, scale, palette, fps,
                              border_width, border_color);
   s_screen = s_app->Screen();
@@ -46,7 +43,6 @@ void quit() {
   s_app->Quit();
 
   delete s_app;
-  delete s_audio;
 }
 
 //
@@ -172,23 +168,23 @@ void text(int32_t x, int32_t y, const char* s, int32_t col) {
 // Audio
 //
 void* sound(int32_t snd, int32_t system) {
-  return s_audio->Sound(snd, system);
+  return s_app->Sound(snd, system);
 }
 
 void* music(int32_t msc) {
-  return s_audio->Music(msc);
+  return s_app->Music(msc);
 }
 
 void play(int32_t ch, int32_t snd, int32_t loop) {
-  s_audio->Play(ch, snd, loop);
+  s_app->PlaySound(ch, snd, loop);
 }
 
 void playm(int32_t msc, int32_t loop) {
-  s_audio->Playm(msc, loop);
+  s_app->PlayMusic(msc, loop);
 }
 
 void stop(int32_t ch) {
-  s_audio->Stop(ch);
+  s_app->StopPlaying(ch);
 }
 
 //
