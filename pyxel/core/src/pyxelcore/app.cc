@@ -1,4 +1,4 @@
-#include "pyxelcore/system.h"
+#include "pyxelcore/app.h"
 
 #include "pyxelcore/canvas.h"
 #include "pyxelcore/constants.h"
@@ -9,14 +9,14 @@
 
 namespace pyxelcore {
 
-System::System(int32_t width,
-               int32_t height,
-               const char* caption,
-               int32_t scale,
-               const int32_t* palette,
-               int32_t fps,
-               int32_t border_width,
-               int32_t border_color) {
+App::App(int32_t width,
+         int32_t height,
+         const char* caption,
+         int32_t scale,
+         const int32_t* palette,
+         int32_t fps,
+         int32_t border_width,
+         int32_t border_color) {
   width_ = width;
   height_ = height;
   caption_ = caption ? std::string(caption) : DEFAULT_CAPTION;
@@ -68,7 +68,7 @@ System::System(int32_t width,
                         SDL_TEXTUREACCESS_STREAMING, width_, height_);
 }
 
-System::~System() {
+App::~App() {
   for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
     delete image_[i];
   }
@@ -77,7 +77,7 @@ System::~System() {
   delete screen_;
 }
 
-Canvas* System::GetImage(int32_t img, bool system) {
+Canvas* App::GetImage(int32_t img, bool system) {
   if (img < 0 || img >= IMAGE_BANK_COUNT) {
     // error
   }
@@ -89,12 +89,12 @@ Canvas* System::GetImage(int32_t img, bool system) {
   return image_[img];
 }
 
-Tilemap* System::GetTilemap(int32_t tm) {
+Tilemap* App::GetTilemap(int32_t tm) {
   //
   return tilemap_[tm];
 }
 
-void System::RunApplication(void (*update)(), void (*draw)()) {
+void App::Run(void (*update)(), void (*draw)()) {
   SDL_Event ev;
 
   double one_frame_time = 1000.0f / fps_;
@@ -134,9 +134,9 @@ void System::RunApplication(void (*update)(), void (*draw)()) {
   }
 }
 
-void System::QuitApplication() {}
+void App::Quit() {}
 
-void System::UpdateScreenTexture() {
+void App::UpdateScreenTexture() {
   int32_t* pixel;
   int32_t pitch;
   size_t size = width_ * height_;
@@ -152,18 +152,15 @@ void System::UpdateScreenTexture() {
   SDL_UnlockTexture(screen_texture_);
 }
 
-void System::LoadImage(Canvas* image,
-                       int32_t x,
-                       int32_t y,
-                       const char* filename) {
+void App::LoadImage(Canvas* image, int32_t x, int32_t y, const char* filename) {
   //
 }
 
-void System::LoadAsset(const char* filename) {
+void App::LoadAsset(const char* filename) {
   //
 }
 
-void System::SaveAsset(const char* filename) {
+void App::SaveAsset(const char* filename) {
   //
 }
 
