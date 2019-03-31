@@ -10,7 +10,7 @@ class SDL_Texture;
 
 namespace pyxelcore {
 
-class Canvas;
+class Image;
 class Tilemap;
 
 class App {
@@ -25,7 +25,7 @@ class App {
       int32_t border_color = -1);
   ~App();
 
-  Canvas* Screen() { return screen_; }
+  Image* Screen() { return screen_; }
 
   //
   // Constants
@@ -40,7 +40,7 @@ class App {
   int32_t Height() { return height_; }
   int32_t FrameCount() { return frame_count_; }
 
-  Canvas* GetImage(int32_t img, bool system = false);
+  Image* GetImage(int32_t img, bool system = false);
   Tilemap* GetTilemap(int32_t tm);
 
   void Run(void (*update)(), void (*draw)());
@@ -60,7 +60,7 @@ class App {
   //
   // Image class
   //
-  void LoadImage(Canvas* image, int32_t x, int32_t y, const char* filename);
+  void LoadImage(Image* image, int32_t x, int32_t y, const char* filename);
 
   //
   // Resource
@@ -97,8 +97,8 @@ class App {
   //
   // Graphics
   //
-  Canvas* screen_;
-  Canvas** image_;
+  Image* screen_;
+  Image** image_;
   Tilemap** tilemap_;
 };
 

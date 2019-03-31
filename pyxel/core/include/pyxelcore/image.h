@@ -1,5 +1,5 @@
-#ifndef PYXELCORE_CANVAS_H_
-#define PYXELCORE_CANVAS_H_
+#ifndef PYXELCORE_IMAGE_H_
+#define PYXELCORE_IMAGE_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -8,13 +8,10 @@ namespace pyxelcore {
 
 class Tilemap;
 
-class Canvas {
+class Image {
  public:
-  Canvas(int32_t width,
-         int32_t height,
-         int32_t color_count,
-         int32_t* data = NULL);
-  ~Canvas();
+  Image(int32_t width, int32_t height, int32_t* data = NULL);
+  ~Image();
 
   //
   // Image class
@@ -59,7 +56,7 @@ class Canvas {
   void DrawCircleBorder(int32_t x, int32_t y, int32_t radius, int32_t color);
   void DrawImage(int32_t x,
                  int32_t y,
-                 const Canvas* image,
+                 const Image* image,
                  int32_t u,
                  int32_t v,
                  int32_t width,
@@ -78,7 +75,6 @@ class Canvas {
  private:
   int32_t width_;
   int32_t height_;
-  int32_t color_count_;
   int32_t* data_;
   int32_t* palette_;
   bool need_to_delete_data_;
@@ -93,4 +89,4 @@ class Canvas {
 
 }  // namespace pyxelcore
 
-#endif  // PYXELCORE_CANVAS_H_
+#endif  // PYXELCORE_IMAGE_H_
