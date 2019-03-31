@@ -28,6 +28,12 @@ class App {
   Canvas* Screen() { return screen_; }
 
   //
+  // Constants
+  //
+  int32_t GetConstantNumber(const char* name);
+  const char* GetConstantString(const char* name);
+
+  //
   // System
   //
   int32_t Width() { return width_; }
