@@ -44,7 +44,6 @@ class App {
 
   Image* GetImage(int32_t img, bool system = false);
   Tilemap* GetTilemap(int32_t tm);
-
   void Run(void (*update)(), void (*draw)());
   void Quit();
 
@@ -68,8 +67,8 @@ class App {
   //
   // Audio
   //
-  Sound* Sound(int32_t snd, bool system = false);
-  Music* Music(int32_t msc);
+  Sound* GetSound(int32_t snd, bool system = false);
+  Music* GetMusic(int32_t msc);
   void PlaySound(int32_t ch, int32_t snd, bool loop = false);
   void PlayMusic(int32_t msc, bool loop = false);
   void StopPlaying(int32_t ch);
