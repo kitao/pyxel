@@ -1,7 +1,7 @@
 #include "pyxelcore/app.h"
 
-#include "pyxelcore/canvas.h"
 #include "pyxelcore/constants.h"
+#include "pyxelcore/image.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -31,11 +31,11 @@ App::App(int32_t width,
   border_width_ = border_width != -1 ? border_width : DEFAULT_BORDER_WIDTH;
   border_color_ = border_color != -1 ? border_color : DEFAULT_BORDER_COLOR;
 
-  screen_ = new Canvas(width, height, COLOR_COUNT);
+  screen_ = new Image(width, height);
 
-  image_ = new Canvas*[IMAGE_BANK_COUNT];
+  image_ = new Image*[IMAGE_BANK_COUNT];
   for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
-    image_[i] = new Canvas(IMAGE_BANK_WIDTH, IMAGE_BANK_HEIGHT, COLOR_COUNT);
+    image_[i] = new Image(IMAGE_BANK_WIDTH, IMAGE_BANK_HEIGHT);
   }
 
   printf("bbb\n");
@@ -45,23 +45,6 @@ App::App(int32_t width,
   window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED,
                              SDL_WINDOWPOS_CENTERED, width_, height_, 0);
   renderer_ = SDL_CreateRenderer(window_, -1, 0);
-
-  // int32_t flags = IMG_INIT_PNG;
-  // int initted = IMG_Init(flags);
-  // if ((initted & flags) != flags) {
-  //  printf("IMG_Init: Failed to init required jpg and png support!\n");
-  //  printf("IMG_Init: %s\n", IMG_GetError());
-  //  return;
-  // }
-
-  // SDL_Surface *image = IMG_Load("../examples/assets/pyxel_logo_152x64.png");
-
-  // if (!image) {
-  //  printf("IMG_Load: %s\n", IMG_GetError());
-  //  return;
-  // }
-
-  // temp_texture_ = SDL_CreateTextureFromSurface(renderer_, image);
 
   screen_texture_ =
       SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGB888,
@@ -77,7 +60,7 @@ App::~App() {
   delete screen_;
 }
 
-Canvas* App::GetImage(int32_t img, bool system) {
+Image* App::GetImage(int32_t img, bool system) {
   if (img < 0 || img >= IMAGE_BANK_COUNT) {
     // error
   }
