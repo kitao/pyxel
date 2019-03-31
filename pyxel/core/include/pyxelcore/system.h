@@ -17,12 +17,12 @@ class System {
   System(Graphics* graphics,
          int32_t width,
          int32_t height,
-         const char* caption,
-         int32_t scale,
-         const int* palette,
-         int32_t fps,
-         int32_t border_width,
-         int32_t border_color);
+         const char* caption = NULL,
+         int32_t scale = -1,
+         const int* palette = NULL,
+         int32_t fps = -1,
+         int32_t border_width = -1,
+         int32_t border_color = -1);
   ~System();
 
   int32_t Width() { return width_; }
@@ -31,6 +31,7 @@ class System {
 
   void Run(void (*update)(), void (*draw)());
   void Quit();
+  void Error(const char* func, const char* msg);
 
  private:
   int32_t width_;
