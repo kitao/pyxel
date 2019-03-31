@@ -1,5 +1,5 @@
-#ifndef PYXELCORE_SYSTEM_H_
-#define PYXELCORE_SYSTEM_H_
+#ifndef PYXELCORE_APP_H_
+#define PYXELCORE_APP_H_
 
 #include <cstdint>
 #include <string>
@@ -13,17 +13,17 @@ namespace pyxelcore {
 class Canvas;
 class Tilemap;
 
-class System {
+class App {
  public:
-  System(int32_t width,
-         int32_t height,
-         const char* caption = NULL,
-         int32_t scale = -1,
-         const int32_t* palette = NULL,
-         int32_t fps = -1,
-         int32_t border_width = -1,
-         int32_t border_color = -1);
-  ~System();
+  App(int32_t width,
+      int32_t height,
+      const char* caption = NULL,
+      int32_t scale = -1,
+      const int32_t* palette = NULL,
+      int32_t fps = -1,
+      int32_t border_width = -1,
+      int32_t border_color = -1);
+  ~App();
 
   Canvas* Screen() { return screen_; }
 
@@ -34,8 +34,8 @@ class System {
   Canvas* GetImage(int32_t img, bool system = false);
   Tilemap* GetTilemap(int32_t tm);
 
-  void RunApplication(void (*update)(), void (*draw)());
-  void QuitApplication();
+  void Run(void (*update)(), void (*draw)());
+  void Quit();
 
   void LoadImage(Canvas* image, int32_t x, int32_t y, const char* filename);
   void LoadAsset(const char* filename);
@@ -65,4 +65,4 @@ class System {
 
 }  // namespace pyxelcore
 
-#endif  // PYXELCORE_SYSTEM_H_
+#endif  // PYXELCORE_APP_H_
