@@ -152,16 +152,4 @@ void App::UpdateScreenTexture() {
   SDL_UnlockTexture(screen_texture_);
 }
 
-void App::LoadImage(Canvas* image, int32_t x, int32_t y, const char* filename) {
-  //
-}
-
-void App::LoadAsset(const char* filename) {
-  //
-}
-
-void App::SaveAsset(const char* filename) {
-  //
-}
-
 }  // namespace pyxelcore

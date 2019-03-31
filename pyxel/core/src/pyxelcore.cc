@@ -4,11 +4,9 @@
 #include "pyxelcore/app.h"
 #include "pyxelcore/audio.h"
 #include "pyxelcore/canvas.h"
-#include "pyxelcore/input.h"
 
 static pyxelcore::App* s_app = NULL;
 static pyxelcore::Canvas* s_screen = NULL;
-static pyxelcore::Input* s_input = NULL;
 static pyxelcore::Audio* s_audio = NULL;
 
 //
@@ -34,7 +32,6 @@ void init(int32_t width,
           int32_t fps,
           int32_t border_width,
           int32_t border_color) {
-  s_input = new pyxelcore::Input();
   s_audio = new pyxelcore::Audio();
   s_app = new pyxelcore::App(width, height, caption, scale, palette, fps,
                              border_width, border_color);
@@ -50,7 +47,6 @@ void quit() {
 
   delete s_app;
   delete s_audio;
-  delete s_input;
 }
 
 //
@@ -68,27 +64,27 @@ void load(const char* filename) {
 // Input
 //
 int32_t mouse_x_getter() {
-  return s_input->MouseX();
+  return s_app->MouseX();
 }
 
 int32_t mouse_y_getter() {
-  return s_input->MouseY();
+  return s_app->MouseY();
 }
 
 int32_t btn(int32_t key) {
-  return s_input->Btn(key);
+  return s_app->IsButtonOn(key);
 }
 
 int32_t btnp(int32_t key, int32_t hold, int32_t period) {
-  return s_input->Btnp(key, hold, period);
+  return s_app->IsButtonPressed(key, hold, period);
 }
 
 int32_t btnr(int32_t key) {
-  return s_input->Btnr(key);
+  return s_app->IsButtonReleased(key);
 }
 
 void mouse(int32_t visible) {
-  return s_input->Mouse(visible);
+  return s_app->SetMouseVisibility(visible);
 }
 
 //
