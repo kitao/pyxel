@@ -28,10 +28,6 @@ void App::SetPalette(int32_t src_color, int32_t dest_color) {
   palette_table_[src_color] = dest_color;
 }
 
-void App::Load(int32_t x, int32_t y, const char* filename) {
-  //
-}
-
 void App::Clear(int32_t color) {
   if (color < 0 || color >= COLOR_COUNT) {
     // error

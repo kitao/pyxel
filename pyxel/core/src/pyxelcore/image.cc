@@ -50,4 +50,14 @@ void Image::LoadImage(int32_t x, int32_t y, const char* filename) {
   //
 }
 
+void Image::CopyImage(int32_t x,
+                      int32_t y,
+                      Image* image,
+                      int32_t u,
+                      int32_t v,
+                      int32_t w,
+                      int32_t h) {
+  //
+}
+
 }  // namespace pyxelcore
