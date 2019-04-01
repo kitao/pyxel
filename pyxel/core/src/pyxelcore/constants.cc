@@ -2,11 +2,11 @@
 
 namespace pyxelcore {
 
-int32_t App::GetConstantNumber(const char* name) {
+int32_t GetConstantNumber(const char* name) {
   return 0;
 }
 
-const char* App::GetConstantString(const char* name) {
+const char* GetConstantString(const char* name) {
   return "test";
 }
 
