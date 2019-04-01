@@ -26,6 +26,13 @@ class Image {
                int32_t data_height);
 
   void LoadImage(int32_t x, int32_t y, const char* filename);
+  void CopyImage(int32_t x,
+                 int32_t y,
+                 Image* image,
+                 int32_t u,
+                 int32_t v,
+                 int32_t w,
+                 int32_t h);
 
  private:
   int32_t width_;
