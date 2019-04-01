@@ -4,175 +4,173 @@
 
 namespace pyxelcore {
 
-void App::LoadImage(Image* image, int32_t x, int32_t y, const char* filename) {
-  //
+void App::ResetClippingArea() {
+  clip_x1_ = 0;
+  clip_y1_ = 0;
+  clip_x2_ = width_ - 1;
+  clip_y2_ = height_ - 1;
 }
 
-void Image::ResetClippingArea() {
-  clipping_area_.x1 = 0;
-  clipping_area_.y1 = 0;
-  clipping_area_.x2 = width_ - 1;
-  clipping_area_.y2 = height_ - 1;
+void App::SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
+  clip_x1_ = std::max(std::min(x1, x2), 0);
+  clip_y1_ = std::max(std::min(y1, y2), 0);
+  clip_x2_ = std::min(std::max(x1, x2), width_ - 1);
+  clip_y2_ = std::min(std::max(y1, y2), height_ - 1);
 }
 
-void Image::SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-  clipping_area_.x1 = std::max(std::min(x1, x2), 0);
-  clipping_area_.y1 = std::max(std::min(y1, y2), 0);
-  clipping_area_.x2 = std::min(std::max(x1, x2), width_ - 1);
-  clipping_area_.y2 = std::min(std::max(y1, y2), height_ - 1);
-}
-
-void Image::ResetPalette() {
+void App::ResetPalette() {
   for (int32_t i = 0; i < COLOR_COUNT; i++) {
-    palette_[i] = i;
+    palette_table_[i] = i;
   }
 }
 
-void Image::SetPalette(int32_t src_color, int32_t dest_color) {
-  palette_[src_color] = dest_color;
+void App::SetPalette(int32_t src_color, int32_t dest_color) {
+  palette_table_[src_color] = dest_color;
 }
 
-void Image::Load(int32_t x, int32_t y, const char* filename) {
+void App::Load(int32_t x, int32_t y, const char* filename) {
   //
 }
 
-void Image::Clear(int32_t color) {
+void App::Clear(int32_t color) {
   if (color < 0 || color >= COLOR_COUNT) {
     // error
   }
 
-  color = palette_[color];
+  color = palette_table_[color];
 
   size_t size = width_ * height_;
+  int32_t* data = screen_->Data();
 
   for (size_t i = 0; i < size; i++) {
-    data_[i] = color;
+    data[i] = color;
   }
 }
 
-void Image::DrawPoint(int32_t x, int32_t y, int32_t color) {
+void App::DrawPoint(int32_t x, int32_t y, int32_t color) {
   if (color < 0 || color >= COLOR_COUNT) {
     // error
   }
 
-  if (x < clipping_area_.x1 || y < clipping_area_.y1 || x > clipping_area_.x2 ||
-      y > clipping_area_.y2) {
+  if (x < clip_x1_ || y < clip_y1_ || x > clip_x2_ || y > clip_y2_) {
     return;
   }
 
-  data_[width_ * y + x] = palette_[color];
+  screen_->Data()[width_ * y + x] = palette_table_[color];
 }
 
-void Image::DrawLine(int32_t x1,
-                     int32_t y1,
-                     int32_t x2,
-                     int32_t y2,
-                     int32_t color) {
+void App::DrawLine(int32_t x1,
+                   int32_t y1,
+                   int32_t x2,
+                   int32_t y2,
+                   int32_t color) {
   //
 }
 
-void Image::DrawRectangle(int32_t x1,
-                          int32_t y1,
-                          int32_t x2,
-                          int32_t y2,
-                          int32_t color) {
+void App::DrawRectangle(int32_t x1,
+                        int32_t y1,
+                        int32_t x2,
+                        int32_t y2,
+                        int32_t color) {
   if (color < 0 || color >= COLOR_COUNT) {
     // error
   }
 
-  color = palette_[color];
+  color = palette_table_[color];
 
-  int32_t left = std::max(std::min(x1, x2), clipping_area_.x1);
-  int32_t top = std::max(std::min(y1, y2), clipping_area_.y1);
-  int32_t right = std::min(std::max(x1, x2), clipping_area_.x2);
-  int32_t bottom = std::min(std::max(y1, y2), clipping_area_.y2);
+  int32_t left = std::max(std::min(x1, x2), clip_x1_);
+  int32_t top = std::max(std::min(y1, y2), clip_y1_);
+  int32_t right = std::min(std::max(x1, x2), clip_x2_);
+  int32_t bottom = std::min(std::max(y1, y2), clip_y2_);
+
+  int32_t* data = screen_->Data();
 
   for (int32_t i = top; i <= bottom; i++) {
     int32_t index = width_ * i;
 
     for (int32_t j = left; j <= right; j++) {
-      data_[index + j] = color;
+      data[index + j] = color;
     }
   }
 }
 
-void Image::DrawRectangleBorder(int32_t x1,
-                                int32_t y1,
-                                int32_t x2,
-                                int32_t y2,
-                                int32_t color) {
+void App::DrawRectangleBorder(int32_t x1,
+                              int32_t y1,
+                              int32_t x2,
+                              int32_t y2,
+                              int32_t color) {
   if (color < 0 || color >= COLOR_COUNT) {
     // error
   }
 
-  color = palette_[color];
+  color = palette_table_[color];
 
-  int32_t left = std::max(std::min(x1, x2), clipping_area_.x1);
-  int32_t top = std::max(std::min(y1, y2), clipping_area_.y1);
-  int32_t right = std::min(std::max(x1, x2), clipping_area_.x2);
-  int32_t bottom = std::min(std::max(y1, y2), clipping_area_.y2);
+  int32_t left = std::max(std::min(x1, x2), clip_x1_);
+  int32_t top = std::max(std::min(y1, y2), clip_y1_);
+  int32_t right = std::min(std::max(x1, x2), clip_x2_);
+  int32_t bottom = std::min(std::max(y1, y2), clip_y2_);
 
-  if (x1 >= clipping_area_.x1 && x1 <= clipping_area_.x2) {
+  int32_t* data = screen_->Data();
+
+  if (x1 >= clip_x1_ && x1 <= clip_x2_) {
     for (int32_t i = top; i <= bottom; i++) {
-      data_[width_ * i + x1] = color;
+      data[width_ * i + x1] = color;
     }
   }
 
-  if (x2 >= clipping_area_.x1 && x2 <= clipping_area_.x2) {
+  if (x2 >= clip_x1_ && x2 <= clip_x2_) {
     for (int32_t i = top; i <= bottom; i++) {
-      data_[width_ * i + x2] = color;
+      data[width_ * i + x2] = color;
     }
   }
 
-  if (y1 >= clipping_area_.y1 && y1 <= clipping_area_.y2) {
+  if (y1 >= clip_y1_ && y1 <= clip_y2_) {
     int32_t index = width_ * y1;
 
     for (int32_t i = left; i <= right; i++) {
-      data_[index + i] = color;
+      data[index + i] = color;
     }
   }
 
-  if (y2 >= clipping_area_.y1 && y2 <= clipping_area_.y2) {
+  if (y2 >= clip_y1_ && y2 <= clip_y2_) {
     size_t line_head = width_ * y2;
 
     for (int32_t i = left; i <= right; i++) {
-      data_[line_head + i] = color;
+      data[line_head + i] = color;
     }
   }
   //
 }
 
-void Image::DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color) {
+void App::DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color) {
   //
 }
 
-void Image::DrawCircleBorder(int32_t x,
-                             int32_t y,
-                             int32_t radius,
-                             int32_t color) {
+void App::DrawCircleBorder(int32_t x,
+                           int32_t y,
+                           int32_t radius,
+                           int32_t color) {
   //
 }
 
-void Image::DrawImage(int32_t x,
-                      int32_t y,
-                      const Image* image,
-                      int32_t u,
-                      int32_t v,
-                      int32_t width,
-                      int32_t height,
-                      int32_t color_key) {
+void App::DrawImage(int32_t x,
+                    int32_t y,
+                    Image* image,
+                    int32_t u,
+                    int32_t v,
+                    int32_t width,
+                    int32_t height,
+                    int32_t color_key) {
   if (color_key != -1 && (color_key < 0 || color_key >= COLOR_COUNT)) {
     // error
   }
 
-  int32_t left_offset = std::max(std::max(-x + clipping_area_.x1, -u), 0);
-  int32_t top_offset = std::max(std::max(-y + clipping_area_.y1, -v), 0);
+  int32_t left_offset = std::max(std::max(-x + clip_x1_, -u), 0);
+  int32_t top_offset = std::max(std::max(-y + clip_y1_, -v), 0);
   int32_t right_offset = std::max(
-      std::max(u + width - image->width_, x + width - 1 - clipping_area_.x2),
-      0);
+      std::max(u + width - image->Width(), x + width - 1 - clip_x2_), 0);
   int32_t bottom_offset = std::max(
-      std::max(v + height - image->height_, y + height - 1 - clipping_area_.y2),
-      0);
+      std::max(v + height - image->Height(), y + height - 1 - clip_y2_), 0);
 
   x += left_offset;
   y += top_offset;
@@ -181,52 +179,69 @@ void Image::DrawImage(int32_t x,
   width -= left_offset + right_offset;
   height -= top_offset + bottom_offset;
 
-  if (x >= width_ || y >= height_ || u >= image->width_ ||
-      v >= image->height_ || width <= 0 || height <= 0) {
+  if (x >= width_ || y >= height_ || u >= image->Width() ||
+      v >= image->Height() || width <= 0 || height <= 0) {
     return;
   }
 
-  int32_t* src_data = image->data_;
-  int32_t* dest_data = data_;
+  int32_t* src_data = image->Data();
+  int32_t* dest_data = screen_->Data();
 
   if (color_key == -1) {
     for (int32_t i = 0; i < height; i++) {
-      int32_t src_index = i * image->width_ + u;
+      int32_t src_index = i * image->Width() + u;
       int32_t dest_index = i * width_ + x;
 
       for (int32_t j = 0; j < width; j++) {
-        dest_data[src_index + j] = palette_[src_data[src_index + j]];
+        dest_data[src_index + j] = palette_table_[src_data[src_index + j]];
       }
     }
   } else {
     for (int32_t i = 0; i < height; i++) {
-      int32_t src_index = i * image->width_ + u;
+      int32_t src_index = i * image->Width() + u;
       int32_t dest_index = i * width_ + x;
 
       for (int32_t j = 0; j < width; j++) {
         int32_t src_color = src_data[src_index + j];
 
         if (src_color != color_key) {
-          dest_data[src_index + j] = palette_[src_color];
+          dest_data[src_index + j] = palette_table_[src_color];
         }
       }
     }
   }
 }
 
-void Image::DrawTilemap(int32_t x,
-                        int32_t y,
-                        const Tilemap* tilemap,
-                        int32_t u,
-                        int32_t v,
-                        int32_t width,
-                        int32_t height,
-                        int32_t colkey) {
+void App::DrawTilemap(int32_t x,
+                      int32_t y,
+                      Tilemap* tilemap,
+                      int32_t u,
+                      int32_t v,
+                      int32_t width,
+                      int32_t height,
+                      int32_t colkey) {
   //
 }
 
-void Image::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
+void App::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
   //
+}
+
+void App::SetupFontImage() {
+  /*
+    row_count = image.width // FONT_WIDTH
+
+    for i, v in enumerate(FONT_DATA):
+        left = (i % row_count) * FONT_WIDTH
+        top = (i // row_count) * FONT_HEIGHT
+        data = image.data
+
+        for j in range(FONT_WIDTH * FONT_HEIGHT):
+            x = left + j % FONT_WIDTH
+            y = top + j // FONT_WIDTH
+            data[y, x] = (v & 0x800000) and 7 or 0
+            v <<= 1
+  */
 }
 
 }  // namespace pyxelcore
