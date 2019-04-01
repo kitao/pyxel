@@ -13,7 +13,7 @@ App::App(int32_t width,
          int32_t height,
          const char* caption,
          int32_t scale,
-         const int32_t* palette,
+         const int32_t* palette_color,
          int32_t fps,
          int32_t border_width,
          int32_t border_color) {
@@ -22,9 +22,9 @@ App::App(int32_t width,
   caption_ = caption ? std::string(caption) : DEFAULT_CAPTION;
   scale_ = scale != -1 ? scale : DEFAULT_SCALE;
 
-  palette = palette ? palette : DEFAULT_PALETTE;
+  palette_color = palette_color ? palette_color : DEFAULT_PALETTE;
   for (int32_t i = 0; i < COLOR_COUNT; i++) {
-    palette_[i] = palette[i];
+    palette_color_[i] = palette_color[i];
   }
 
   fps_ = std::max(fps != -1 ? fps : DEFAULT_FPS, 1);
@@ -38,12 +38,17 @@ App::App(int32_t width,
     image_[i] = new Image(IMAGE_WIDTH, IMAGE_HEIGHT);
   }
 
+  SetupFontImage();
+
+  ResetClippingArea();
+  ResetPalette();
+  Clear(0);
+
   SDL_Init(SDL_INIT_VIDEO);
 
   window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED,
                              SDL_WINDOWPOS_CENTERED, width_, height_, 0);
   renderer_ = SDL_CreateRenderer(window_, -1, 0);
-
   screen_texture_ =
       SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGB888,
                         SDL_TEXTUREACCESS_STREAMING, width_, height_);
@@ -58,21 +63,21 @@ App::~App() {
   delete screen_;
 }
 
-Image* App::GetImage(int32_t img, bool system) {
-  if (img < 0 || img >= IMAGE_COUNT) {
+Image* App::GetImage(int32_t image_index, bool system) {
+  if (image_index < 0 || image_index >= IMAGE_COUNT) {
     // error
   }
 
-  if (img == IMAGE_COUNT - 1 && !system) {
+  if (image_index == IMAGE_COUNT - 1 && !system) {
     // error
   }
 
-  return image_[img];
+  return image_[image_index];
 }
 
-Tilemap* App::GetTilemap(int32_t tm) {
+Tilemap* App::GetTilemap(int32_t tilemap_index) {
   //
-  return tilemap_[tm];
+  return tilemap_[tilemap_index];
 }
 
 void App::Run(void (*update)(), void (*draw)()) {
@@ -127,7 +132,7 @@ void App::UpdateScreenTexture() {
   int32_t* framebuffer = screen_->Data();
 
   for (size_t i = 0; i < size; i++) {
-    pixel[i] = palette_[framebuffer[i]];
+    pixel[i] = palette_color_[framebuffer[i]];
   }
 
   SDL_UnlockTexture(screen_texture_);

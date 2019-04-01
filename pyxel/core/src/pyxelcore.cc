@@ -5,7 +5,6 @@
 #include "pyxelcore/image.h"
 
 static pyxelcore::App* s_app = NULL;
-static pyxelcore::Image* s_screen = NULL;
 
 //
 // System
@@ -32,7 +31,6 @@ void init(int32_t width,
           int32_t border_color) {
   s_app = new pyxelcore::App(width, height, caption, scale, palette, fps,
                              border_width, border_color);
-  s_screen = s_app->Screen();
 }
 
 void run(void (*update)(), void (*draw)()) {
@@ -95,47 +93,47 @@ void* tilemap(int32_t tm) {
 }
 
 void clip0() {
-  s_screen->ResetClippingArea();
+  s_app->ResetClippingArea();
 }
 
 void clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-  s_screen->SetClippingArea(x1, y1, x2, y2);
+  s_app->SetClippingArea(x1, y1, x2, y2);
 }
 
 void pal0() {
-  s_screen->ResetPalette();
+  s_app->ResetPalette();
 }
 
 void pal(int32_t col1, int32_t col2) {
-  s_screen->SetPalette(col1, col2);
+  s_app->SetPalette(col1, col2);
 }
 
 void cls(int32_t col) {
-  s_screen->Clear(col);
+  s_app->Clear(col);
 }
 
 void pix(int32_t x, int32_t y, int32_t col) {
-  s_screen->DrawPoint(x, y, col);
+  s_app->DrawPoint(x, y, col);
 }
 
 void line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
-  s_screen->DrawLine(x1, y1, x2, y2, col);
+  s_app->DrawLine(x1, y1, x2, y2, col);
 }
 
 void rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
-  s_screen->DrawRectangle(x1, y1, x2, y2, col);
+  s_app->DrawRectangle(x1, y1, x2, y2, col);
 }
 
 void rectb(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
-  s_screen->DrawRectangleBorder(x1, y1, x2, y2, col);
+  s_app->DrawRectangleBorder(x1, y1, x2, y2, col);
 }
 
 void circ(int32_t x, int32_t y, int32_t r, int32_t col) {
-  s_screen->DrawCircle(x, y, r, col);
+  s_app->DrawCircle(x, y, r, col);
 }
 
 void circb(int32_t x, int32_t y, int32_t r, int32_t col) {
-  s_screen->DrawCircleBorder(x, y, r, col);
+  s_app->DrawCircleBorder(x, y, r, col);
 }
 
 void blt(int32_t x,
@@ -146,7 +144,7 @@ void blt(int32_t x,
          int32_t w,
          int32_t h,
          int32_t colkey) {
-  s_screen->DrawImage(x, y, s_app->GetImage(img), u, v, w, h, colkey);
+  s_app->DrawImage(x, y, s_app->GetImage(img), u, v, w, h, colkey);
 }
 
 void bltm(int32_t x,
@@ -157,11 +155,11 @@ void bltm(int32_t x,
           int32_t w,
           int32_t h,
           int32_t colkey) {
-  s_screen->DrawTilemap(x, y, s_app->GetTilemap(tm), u, v, w, h, colkey);
+  s_app->DrawTilemap(x, y, s_app->GetTilemap(tm), u, v, w, h, colkey);
 }
 
 void text(int32_t x, int32_t y, const char* s, int32_t col) {
-  s_screen->DrawText(x, y, s, col);
+  s_app->DrawText(x, y, s, col);
 }
 
 //
@@ -176,11 +174,11 @@ void* music(int32_t msc) {
 }
 
 void play(int32_t ch, int32_t snd, int32_t loop) {
-  s_app->PlaySound(ch, snd, loop);
+  s_app->PlaySound(ch, s_app->GetSound(snd), loop);
 }
 
 void playm(int32_t msc, int32_t loop) {
-  s_app->PlayMusic(msc, loop);
+  s_app->PlayMusic(s_app->GetMusic(msc), loop);
 }
 
 void stop(int32_t ch) {
