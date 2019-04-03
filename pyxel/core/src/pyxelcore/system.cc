@@ -1,4 +1,4 @@
-#include "pyxelcore/app.h"
+#include "pyxelcore/system.h"
 
 #include "pyxelcore/constants.h"
 #include "pyxelcore/image.h"
@@ -9,16 +9,14 @@
 
 namespace pyxelcore {
 
-App::App(int32_t width,
-         int32_t height,
-         const char* caption,
-         int32_t scale,
-         const int32_t* palette_color,
-         int32_t fps,
-         int32_t border_width,
-         int32_t border_color) {
-  width_ = width;
-  height_ = height;
+System::System(Image* screen,
+               const char* caption,
+               int32_t scale,
+               const int32_t* palette_color,
+               int32_t fps,
+               int32_t border_width,
+               int32_t border_color) {
+  screen_ = screen;
   caption_ = caption ? std::string(caption) : DEFAULT_CAPTION;
   scale_ = scale != -1 ? scale : DEFAULT_SCALE;
 
@@ -31,56 +29,20 @@ App::App(int32_t width,
   border_width_ = border_width != -1 ? border_width : DEFAULT_BORDER_WIDTH;
   border_color_ = border_color != -1 ? border_color : DEFAULT_BORDER_COLOR;
 
-  screen_ = new Image(width, height);
-
-  image_ = new Image*[IMAGE_COUNT];
-  for (int32_t i = 0; i < IMAGE_COUNT; i++) {
-    image_[i] = new Image(IMAGE_WIDTH, IMAGE_HEIGHT);
-  }
-
-  SetupFontImage();
-
-  ResetClippingArea();
-  ResetPalette();
-  Clear(0);
-
   SDL_Init(SDL_INIT_VIDEO);
 
   window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED,
-                             SDL_WINDOWPOS_CENTERED, width_, height_, 0);
+                             SDL_WINDOWPOS_CENTERED, screen_->Width(),
+                             screen_->Height(), 0);
   renderer_ = SDL_CreateRenderer(window_, -1, 0);
-  screen_texture_ =
-      SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGB888,
-                        SDL_TEXTUREACCESS_STREAMING, width_, height_);
+  screen_texture_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGB888,
+                                      SDL_TEXTUREACCESS_STREAMING,
+                                      screen_->Width(), screen_->Height());
 }
 
-App::~App() {
-  for (int32_t i = 0; i < IMAGE_COUNT; i++) {
-    delete image_[i];
-  }
-  delete[] image_;
+System::~System() {}
 
-  delete screen_;
-}
-
-Image* App::GetImage(int32_t image_index, bool system) {
-  if (image_index < 0 || image_index >= IMAGE_COUNT) {
-    // error
-  }
-
-  if (image_index == IMAGE_COUNT - 1 && !system) {
-    // error
-  }
-
-  return image_[image_index];
-}
-
-Tilemap* App::GetTilemap(int32_t tilemap_index) {
-  //
-  return tilemap_[tilemap_index];
-}
-
-void App::Run(void (*update)(), void (*draw)()) {
+void System::Run(void (*update)(), void (*draw)()) {
   SDL_Event ev;
 
   double one_frame_time = 1000.0f / fps_;
@@ -120,12 +82,12 @@ void App::Run(void (*update)(), void (*draw)()) {
   }
 }
 
-void App::Quit() {}
+void System::Quit() {}
 
-void App::UpdateScreenTexture() {
+void System::UpdateScreenTexture() {
   int32_t* pixel;
   int32_t pitch;
-  size_t size = width_ * height_;
+  size_t size = screen_->Width() * screen_->Height();
 
   SDL_LockTexture(screen_texture_, NULL, (void**)&pixel, &pitch);
 

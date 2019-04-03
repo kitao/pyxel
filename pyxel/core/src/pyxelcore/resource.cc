@@ -1,10 +1,10 @@
-#include "pyxelcore/app.h"
+#include "pyxelcore/resource.h"
 
 #include "pyxelcore/image.h"
 
 namespace pyxelcore {
 
-void App::LoadAsset(const char* filename) {
+void Resource::LoadAsset(const char* filename) {
   // int32_t flags = IMG_INIT_PNG;
   // int initted = IMG_Init(flags);
   // if ((initted & flags) != flags) {
@@ -23,7 +23,7 @@ void App::LoadAsset(const char* filename) {
   // temp_texture_ = SDL_CreateTextureFromSurface(renderer_, image);
 }
 
-void App::SaveAsset(const char* filename) {
+void Resource::SaveAsset(const char* filename) {
   //
 }
 

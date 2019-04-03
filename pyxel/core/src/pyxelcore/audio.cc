@@ -1,26 +1,30 @@
-#include "pyxelcore/app.h"
+#include "pyxelcore/audio.h"
 
 #include <cstddef>
 
 namespace pyxelcore {
 
-Sound* App::GetSound(int32_t sound_index, bool system) {
+Audio::Audio() {}
+
+Audio::~Audio() {}
+
+Sound* Audio::GetSound(int32_t sound_index, bool system) {
   return NULL;
 }
 
-Music* App::GetMusic(int32_t music_index) {
+Music* Audio::GetMusic(int32_t music_index) {
   return NULL;
 }
 
-void App::PlaySound(int32_t ch, Sound* sound, bool loop) {
+void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
   //
 }
 
-void App::PlayMusic(Music* music, bool loop) {
+void Audio::PlayMusic(int32_t music_index, bool loop) {
   //
 }
 
-void App::StopPlaying(int32_t ch) {
+void Audio::StopPlaying(int32_t channel) {
   //
 }
 
