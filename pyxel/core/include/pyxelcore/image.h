@@ -32,7 +32,8 @@ class Image {
                  int32_t u,
                  int32_t v,
                  int32_t w,
-                 int32_t h);
+                 int32_t h,
+                 int32_t color_key = -1);
 
  private:
   int32_t width_;

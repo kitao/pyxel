@@ -1,7 +1,7 @@
 #include "pyxelcore/constants.h"
 
 namespace pyxelcore {
-/*
+
 int32_t GetConstantNumber(const char* name) {
   return 0;
 }
@@ -9,5 +9,5 @@ int32_t GetConstantNumber(const char* name) {
 const char* GetConstantString(const char* name) {
   return "test";
 }
-*/
+
 }  // namespace pyxelcore
