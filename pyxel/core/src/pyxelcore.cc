@@ -7,11 +7,11 @@
 #include "pyxelcore/resource.h"
 #include "pyxelcore/system.h"
 
-static pyxelcore::Resource* s_resource = NULL;
 static pyxelcore::System* s_system = NULL;
+static pyxelcore::Resource* s_resource = NULL;
+static pyxelcore::Input* s_input = NULL;
 static pyxelcore::Graphics* s_graphics = NULL;
 static pyxelcore::Audio* s_audio = NULL;
-static pyxelcore::Input* s_input = NULL;
 
 //
 // System

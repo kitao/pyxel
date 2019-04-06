@@ -6,13 +6,13 @@
 namespace pyxelcore {
 
 Graphics::Graphics(int32_t width, int32_t height) {
+  width_ = width;
+  height_ = height;
   screen_ = new Image(width, height);
-  width_ = screen_->Width();
-  height_ = screen_->Height();
 
-  image_ = new Image*[IMAGE_COUNT];
+  image_bank_ = new Image*[IMAGE_COUNT];
   for (int32_t i = 0; i < IMAGE_COUNT; i++) {
-    image_[i] = new Image(IMAGE_WIDTH, IMAGE_HEIGHT);
+    image_bank_[i] = new Image(IMAGE_WIDTH, IMAGE_HEIGHT);
   }
 
   SetupFontImage();
@@ -24,10 +24,10 @@ Graphics::Graphics(int32_t width, int32_t height) {
 
 Graphics::~Graphics() {
   for (int32_t i = 0; i < IMAGE_COUNT; i++) {
-    delete image_[i];
+    delete image_bank_[i];
   }
 
-  delete[] image_;
+  delete[] image_bank_;
 
   delete screen_;
 }
@@ -41,12 +41,12 @@ Image* Graphics::GetImage(int32_t image_index, bool system) {
     // error
   }
 
-  return image_[image_index];
+  return image_bank_[image_index];
 }
 
 Tilemap* Graphics::GetTilemap(int32_t tilemap_index) {
   //
-  return tilemap_[tilemap_index];
+  return tilemap_bank_[tilemap_index];
 }
 
 void Graphics::ResetClippingArea() {
@@ -202,16 +202,24 @@ void Graphics::DrawImage(int32_t x,
                          int32_t width,
                          int32_t height,
                          int32_t color_key) {
+  if (image_index < 0 || image_index >= IMAGE_COUNT) {
+    // error
+  }
+
   if (color_key != -1 && (color_key < 0 || color_key >= COLOR_COUNT)) {
     // error
   }
 
+  Image* src_image = image_bank_[image_index];
+  int32_t src_width = src_image->Width();
+  int32_t src_height = src_image->Height();
+
   int32_t left_offset = std::max(std::max(-x + clip_x1_, -u), 0);
   int32_t top_offset = std::max(std::max(-y + clip_y1_, -v), 0);
   int32_t right_offset =
-      std::max(std::max(u + width - width_, x + width - 1 - clip_x2_), 0);
+      std::max(std::max(u + width - src_width, x + width - 1 - clip_x2_), 0);
   int32_t bottom_offset =
-      std::max(std::max(v + height - height_, y + height - 1 - clip_y2_), 0);
+      std::max(std::max(v + height - src_height, y + height - 1 - clip_y2_), 0);
 
   x += left_offset;
   y += top_offset;
@@ -225,28 +233,28 @@ void Graphics::DrawImage(int32_t x,
     return;
   }
 
-  int32_t* src_data = GetImage(image_index)->Data();
+  int32_t* src_data = src_image->Data();
   int32_t* dest_data = screen_->Data();
 
   if (color_key == -1) {
     for (int32_t i = 0; i < height; i++) {
-      int32_t src_index = i * width_ + u;
-      int32_t dest_index = i * width_ + x;
+      int32_t src_index = src_width * (v + i) + u;
+      int32_t dest_index = width_ * (y + i) + x;
 
       for (int32_t j = 0; j < width; j++) {
-        dest_data[src_index + j] = palette_table_[src_data[src_index + j]];
+        dest_data[dest_index + j] = palette_table_[src_data[src_index + j]];
       }
     }
   } else {
     for (int32_t i = 0; i < height; i++) {
-      int32_t src_index = i * width_ + u;
-      int32_t dest_index = i * width_ + x;
+      int32_t src_index = src_width * (v + i) + u;
+      int32_t dest_index = width_ * (y + i) + x;
 
       for (int32_t j = 0; j < width; j++) {
         int32_t src_color = src_data[src_index + j];
 
         if (src_color != color_key) {
-          dest_data[src_index + j] = palette_table_[src_color];
+          dest_data[dest_index + j] = palette_table_[src_color];
         }
       }
     }
@@ -269,20 +277,24 @@ void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
 }
 
 void Graphics::SetupFontImage() {
-  /*
-    row_count = image.width // FONT_WIDTH
+  const int32_t FONT_COUNT = sizeof(FONT_DATA) / sizeof(FONT_DATA[0]);
+  int32_t* data = image_bank_[IMAGE_COUNT - 1]->Data();
 
-    for i, v in enumerate(FONT_DATA):
-        left = (i % row_count) * FONT_WIDTH
-        top = (i // row_count) * FONT_HEIGHT
-        data = image.data
+  for (int32_t i = 0; i < FONT_COUNT; i++) {
+    int32_t row = i / FONT_ROW_COUNT;
+    int32_t col = i % FONT_ROW_COUNT;
+    int32_t index = IMAGE_WIDTH * FONT_HEIGHT * row + FONT_WIDTH * col;
+    uint32_t font = FONT_DATA[i];
 
-        for j in range(FONT_WIDTH * FONT_HEIGHT):
-            x = left + j % FONT_WIDTH
-            y = top + j // FONT_WIDTH
-            data[y, x] = (v & 0x800000) and 7 or 0
-            v <<= 1
-  */
+    for (int32_t j = 0; j < FONT_HEIGHT; j++) {
+      for (int32_t k = 0; k < FONT_WIDTH; k++) {
+        data[index + k] = (font & 0x800000) ? 7 : 0;
+        font <<= 1;
+      }
+
+      index += IMAGE_WIDTH;
+    }
+  }
 }
 
 }  // namespace pyxelcore
