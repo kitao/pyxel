@@ -1,9 +1,6 @@
 #ifndef PYXELCORE_SYSTEM_H_
 #define PYXELCORE_SYSTEM_H_
 
-#include <cstdint>
-#include <string>
-
 #include "pyxelcore/constants.h"
 #include "pyxelcore/image.h"
 
@@ -13,12 +10,18 @@ class SDL_Texture;
 
 namespace pyxelcore {
 
+class Resource;
+class Input;
+class Graphics;
+class Audio;
+
 class System {
   //
   // System
   //
  public:
-  System(Image* screen,
+  System(int32_t width,
+         int32_t height,
          const char* caption = NULL,
          int32_t scale = -1,
          const int32_t* palette_color = NULL,
@@ -27,15 +30,25 @@ class System {
          int32_t border_color = -1);
   ~System();
 
-  int32_t Width() { return screen_->Width(); }
-  int32_t Height() { return screen_->Height(); }
+  Resource* Resource() { return resource_; }
+  Input* Input() { return input_; }
+  Graphics* Graphics() { return graphics_; }
+  Audio* Audio() { return audio_; }
+
+  int32_t Width() { return width_; }
+  int32_t Height() { return height_; }
   int32_t FrameCount() { return frame_count_; }
 
   void Run(void (*update)(), void (*draw)());
-  void Quit();
 
  private:
-  Image* screen_;
+  pyxelcore::Input* input_;
+  pyxelcore::Resource* resource_;
+  pyxelcore::Graphics* graphics_;
+  pyxelcore::Audio* audio_;
+
+  int32_t width_;
+  int32_t height_;
   std::string caption_;
   int32_t scale_;
   int32_t palette_color_[COLOR_COUNT];

@@ -1,6 +1,5 @@
-#include <cstdio>
-
 #include "pyxelcore.h"
+
 #include "pyxelcore/audio.h"
 #include "pyxelcore/graphics.h"
 #include "pyxelcore/image.h"
@@ -37,12 +36,12 @@ void init(int32_t width,
           int32_t fps,
           int32_t border_width,
           int32_t border_color) {
-  s_resource = new pyxelcore::Resource();
-  s_input = new pyxelcore::Input();
-  s_graphics = new pyxelcore::Graphics(width, height);
-  s_audio = new pyxelcore::Audio();
-  s_system = new pyxelcore::System(s_graphics->Screen(), caption, scale,
-                                   palette, fps, border_width, border_color);
+  s_system = new pyxelcore::System(width, height, caption, scale, palette, fps,
+                                   border_width, border_color);
+  s_resource = s_system->Resource();
+  s_input = s_system->Input();
+  s_graphics = s_system->Graphics();
+  s_audio = s_system->Audio();
 }
 
 void run(void (*update)(), void (*draw)()) {
@@ -50,13 +49,7 @@ void run(void (*update)(), void (*draw)()) {
 }
 
 void quit() {
-  s_system->Quit();
-
   delete s_system;
-  delete s_audio;
-  delete s_graphics;
-  delete s_input;
-  delete s_resource;
 }
 
 //
