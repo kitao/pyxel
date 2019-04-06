@@ -59,11 +59,11 @@ class Graphics {
   void DrawText(int32_t x, int32_t y, const char* text, int32_t color);
 
  private:
-  Image* screen_;
   int32_t width_;
   int32_t height_;
-  Image** image_;
-  Tilemap** tilemap_;
+  Image* screen_;
+  Image** image_bank_;
+  Tilemap** tilemap_bank_;
   int32_t palette_table_[COLOR_COUNT];
   int32_t clip_x1_;
   int32_t clip_y1_;
