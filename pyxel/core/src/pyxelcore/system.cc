@@ -1,7 +1,11 @@
 #include "pyxelcore/system.h"
 
+#include "pyxelcore/audio.h"
 #include "pyxelcore/constants.h"
+#include "pyxelcore/graphics.h"
 #include "pyxelcore/image.h"
+#include "pyxelcore/input.h"
+#include "pyxelcore/resource.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -9,14 +13,21 @@
 
 namespace pyxelcore {
 
-System::System(Image* screen,
+System::System(int32_t width,
+               int32_t height,
                const char* caption,
                int32_t scale,
                const int32_t* palette_color,
                int32_t fps,
                int32_t border_width,
                int32_t border_color) {
-  screen_ = screen;
+  resource_ = new pyxelcore::Resource();
+  input_ = new pyxelcore::Input();
+  graphics_ = new pyxelcore::Graphics(width, height);
+  audio_ = new pyxelcore::Audio();
+
+  width_ = width;
+  height_ = height;
   caption_ = caption ? std::string(caption) : DEFAULT_CAPTION;
   scale_ = scale != -1 ? scale : DEFAULT_SCALE;
 
@@ -32,12 +43,11 @@ System::System(Image* screen,
   SDL_Init(SDL_INIT_VIDEO);
 
   window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED,
-                             SDL_WINDOWPOS_CENTERED, screen_->Width(),
-                             screen_->Height(), 0);
+                             SDL_WINDOWPOS_CENTERED, width, height, 0);
   renderer_ = SDL_CreateRenderer(window_, -1, 0);
-  screen_texture_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGB888,
-                                      SDL_TEXTUREACCESS_STREAMING,
-                                      screen_->Width(), screen_->Height());
+  screen_texture_ =
+      SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGB888,
+                        SDL_TEXTUREACCESS_STREAMING, width, height);
 }
 
 System::~System() {}
@@ -82,16 +92,14 @@ void System::Run(void (*update)(), void (*draw)()) {
   }
 }
 
-void System::Quit() {}
-
 void System::UpdateScreenTexture() {
   int32_t* pixel;
   int32_t pitch;
-  size_t size = screen_->Width() * screen_->Height();
+  size_t size = width_ * height_;
 
   SDL_LockTexture(screen_texture_, NULL, (void**)&pixel, &pitch);
 
-  int32_t* framebuffer = screen_->Data();
+  int32_t* framebuffer = graphics_->Framebuffer();
 
   for (size_t i = 0; i < size; i++) {
     pixel[i] = palette_color_[framebuffer[i]];

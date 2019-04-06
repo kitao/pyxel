@@ -1,4 +1,5 @@
 #include "pyxelcore/graphics.h"
+
 #include "pyxelcore/constants.h"
 #include "pyxelcore/image.h"
 

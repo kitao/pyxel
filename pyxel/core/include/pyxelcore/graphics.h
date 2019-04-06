@@ -1,9 +1,8 @@
 #ifndef PYXELCORE_GRAPHICS_H_
 #define PYXELCORE_GRAPHICS_H_
 
-#include <cstdint>
-
 #include "pyxelcore/constants.h"
+#include "pyxelcore/image.h"
 
 namespace pyxelcore {
 
@@ -15,7 +14,7 @@ class Graphics {
   Graphics(int32_t width, int32_t height);
   ~Graphics();
 
-  Image* Screen() { return screen_; }
+  int32_t* Framebuffer() { return screen_->Data(); }
 
   Image* GetImage(int32_t image_index, bool system = false);
   Tilemap* GetTilemap(int32_t tilemap_index);
