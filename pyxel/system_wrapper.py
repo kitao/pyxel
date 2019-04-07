@@ -41,7 +41,17 @@ def setup_apis(module, lib):
         # init music
 
     def run_wrapper(update, draw):
-        lib.run(ctypes.CFUNCTYPE(None)(update), ctypes.CFUNCTYPE(None)(draw))
+        def update_wrapper():
+            module.width = lib.width_getter()
+            module.height = lib.height_getter()
+            module.frame_count = lib.frame_count_getter()
+
+            module.mouse_x = lib.mouse_x_getter()
+            module.mouse_y = lib.mouse_y_getter()
+
+            update()
+
+        lib.run(ctypes.CFUNCTYPE(None)(update_wrapper), ctypes.CFUNCTYPE(None)(draw))
 
     module.width_getter = lib.width_getter
     module.height_getter = lib.height_getter

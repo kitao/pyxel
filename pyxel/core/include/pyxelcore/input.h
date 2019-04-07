@@ -10,6 +10,8 @@ class Input {
   Input();
   ~Input();
 
+  void UpdateState(int32_t frame_count);
+
   int32_t MouseX() { return mouse_x_; }
   int32_t MouseY() { return mouse_y_; }
 

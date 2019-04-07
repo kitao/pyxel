@@ -7,8 +7,9 @@
 #include "pyxelcore/input.h"
 #include "pyxelcore/resource.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_image.h"
+
 #include <cstdio>
 
 namespace pyxelcore {
@@ -39,15 +40,9 @@ System::System(int32_t width,
   fps_ = std::max(fps != -1 ? fps : DEFAULT_FPS, 1);
   border_width_ = border_width != -1 ? border_width : DEFAULT_BORDER_WIDTH;
   border_color_ = border_color != -1 ? border_color : DEFAULT_BORDER_COLOR;
+  frame_count_ = 0;
 
-  SDL_Init(SDL_INIT_VIDEO);
-
-  window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED,
-                             SDL_WINDOWPOS_CENTERED, width, height, 0);
-  renderer_ = SDL_CreateRenderer(window_, -1, 0);
-  screen_texture_ =
-      SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGB888,
-                        SDL_TEXTUREACCESS_STREAMING, width, height);
+  SetupWindow();
 }
 
 System::~System() {}
@@ -57,6 +52,7 @@ void System::Run(void (*update)(), void (*draw)()) {
 
   double one_frame_time = 1000.0f / fps_;
   double next_update_time = SDL_GetTicks();
+  bool is_first_frame = true;
 
   while (1) {
     double sleep_time = next_update_time - SDL_GetTicks();
@@ -77,32 +73,53 @@ void System::Run(void (*update)(), void (*draw)()) {
           return;
       }
 
+      if (is_first_frame) {
+        is_first_frame = false;
+      } else {
+        frame_count_++;
+      }
+
+      input_->UpdateState(frame_count_);
       update();
     }
 
     draw();
-
-    SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
-    SDL_RenderClear(renderer_);
-
-    UpdateScreenTexture();
-    SDL_RenderCopy(renderer_, screen_texture_, NULL, NULL);
-
-    SDL_RenderPresent(renderer_);
+    RenderWindow();
   }
 }
 
+void System::SetupWindow() {
+  SDL_Init(SDL_INIT_VIDEO);
+
+  window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED,
+                             SDL_WINDOWPOS_CENTERED, width_, height_, 0);
+  renderer_ = SDL_CreateRenderer(window_, -1, 0);
+  screen_texture_ =
+      SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGB888,
+                        SDL_TEXTUREACCESS_STREAMING, width_, height_);
+}
+
+void System::RenderWindow() {
+  SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
+  SDL_RenderClear(renderer_);
+
+  UpdateScreenTexture();
+  SDL_RenderCopy(renderer_, screen_texture_, NULL, NULL);
+
+  SDL_RenderPresent(renderer_);
+}
+
 void System::UpdateScreenTexture() {
-  int32_t* pixel;
+  int32_t* pixels;
   int32_t pitch;
+
+  SDL_LockTexture(screen_texture_, NULL, (void**)&pixels, &pitch);
+
   size_t size = width_ * height_;
-
-  SDL_LockTexture(screen_texture_, NULL, (void**)&pixel, &pitch);
-
-  int32_t* framebuffer = graphics_->Framebuffer();
+  int32_t* screen_data_ = graphics_->Screen()->Data();
 
   for (size_t i = 0; i < size; i++) {
-    pixel[i] = palette_color_[framebuffer[i]];
+    pixels[i] = palette_color_[screen_data_[i]];
   }
 
   SDL_UnlockTexture(screen_texture_);
