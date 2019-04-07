@@ -7,8 +7,8 @@
 #include "pyxelcore/input.h"
 #include "pyxelcore/resource.h"
 
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_image.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #include <cstdio>
 
@@ -27,10 +27,17 @@ System::System(int32_t width,
   graphics_ = new pyxelcore::Graphics(width, height);
   audio_ = new pyxelcore::Audio();
 
-  width_ = width;
-  height_ = height;
+  width_ = std::max(width, 1);
+  height_ = std::max(height, 1);
   caption_ = caption ? std::string(caption) : DEFAULT_CAPTION;
-  scale_ = scale != -1 ? scale : DEFAULT_SCALE;
+
+  scale_ = scale != 0 ? scale : std::max(DEFAULT_SCALE, 1);
+  if (scale_ == 0) {
+    SDL_DisplayMode display_mode;
+    SDL_GetDesktopDisplayMode(0, &display_mode);
+    scale_ = std::min((display_mode.w - border_width_ * 2) / width_,
+                      (display_mode.h - border_width_ * 2) / height_);
+  }
 
   palette_color = palette_color ? palette_color : DEFAULT_PALETTE;
   for (int32_t i = 0; i < COLOR_COUNT; i++) {
@@ -48,8 +55,6 @@ System::System(int32_t width,
 System::~System() {}
 
 void System::Run(void (*update)(), void (*draw)()) {
-  SDL_Event ev;
-
   double one_frame_time = 1000.0f / fps_;
   double next_update_time = SDL_GetTicks();
   bool is_first_frame = true;
@@ -68,9 +73,20 @@ void System::Run(void (*update)(), void (*draw)()) {
     next_update_time += one_frame_time * update_frame_count;
 
     for (int32_t i = 0; i < update_frame_count; i++) {
-      while (SDL_PollEvent(&ev)) {
-        if (ev.type == SDL_QUIT)
+      SDL_Event event;
+
+      while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
           return;
+        } else if (event.type == SDL_WINDOWEVENT) {
+          if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+            window_width_ = event.window.data1;
+            window_height_ = event.window.data2;
+
+            scale_ = std::min((window_width_ - border_width_ * 2) / width_,
+                              (window_height_ - border_width_ * 2) / height_);
+          }
+        }
       }
 
       if (is_first_frame) {
@@ -92,19 +108,30 @@ void System::SetupWindow() {
   SDL_Init(SDL_INIT_VIDEO);
 
   window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED,
-                             SDL_WINDOWPOS_CENTERED, width_, height_, 0);
+                             SDL_WINDOWPOS_CENTERED, width_ * scale_,
+                             height_ * scale_, SDL_WINDOW_RESIZABLE);
   renderer_ = SDL_CreateRenderer(window_, -1, 0);
   screen_texture_ =
       SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGB888,
                         SDL_TEXTUREACCESS_STREAMING, width_, height_);
+
+  SDL_SetWindowMinimumSize(window_, width_, height_);
+
+  SDL_GetWindowSize(window_, &window_width_, &window_height_);
 }
 
 void System::RenderWindow() {
-  SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
+  SDL_SetRenderDrawColor(renderer_, (border_color_ >> 16) & 0xff,
+                         (border_color_ >> 8) & 0xff, border_color_ & 0xff,
+                         255);
   SDL_RenderClear(renderer_);
 
   UpdateScreenTexture();
-  SDL_RenderCopy(renderer_, screen_texture_, NULL, NULL);
+
+  SDL_Rect dest_rect = {(window_width_ - width_ * scale_) / 2,
+                        (window_height_ - height_ * scale_) / 2,
+                        width_ * scale_, height_ * scale_};
+  SDL_RenderCopy(renderer_, screen_texture_, NULL, &dest_rect);
 
   SDL_RenderPresent(renderer_);
 }
