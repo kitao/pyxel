@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     class App:
         def __init__(self):
-            pyxel.init(400, 300)  # noqa: F821
+            pyxel.init(256, 256)  # noqa: F821
 
             self.x = 0
 
