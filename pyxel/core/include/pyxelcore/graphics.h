@@ -14,7 +14,7 @@ class Graphics {
   Graphics(int32_t width, int32_t height);
   ~Graphics();
 
-  int32_t* Framebuffer() { return screen_->Data(); }
+  Image* Screen() { return screen_; }
 
   Image* GetImage(int32_t image_index, bool system = false);
   Tilemap* GetTilemap(int32_t tilemap_index);
@@ -62,13 +62,14 @@ class Graphics {
   int32_t width_;
   int32_t height_;
   Image* screen_;
+  int32_t* screen_data_;
   Image** image_bank_;
   Tilemap** tilemap_bank_;
-  int32_t palette_table_[COLOR_COUNT];
   int32_t clip_x1_;
   int32_t clip_y1_;
   int32_t clip_x2_;
   int32_t clip_y2_;
+  int32_t palette_table_[COLOR_COUNT];
 
   void SetupFontImage();
 };

@@ -61,6 +61,8 @@ class System {
   SDL_Window* window_;
   SDL_Texture* screen_texture_;
 
+  void SetupWindow();
+  void RenderWindow();
   void UpdateScreenTexture();
 };
 
