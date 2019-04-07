@@ -23,7 +23,7 @@ class System {
   System(int32_t width,
          int32_t height,
          const char* caption = NULL,
-         int32_t scale = -1,
+         int32_t scale = 0,
          const int32_t* palette_color = NULL,
          int32_t fps = -1,
          int32_t border_width = -1,
@@ -56,6 +56,8 @@ class System {
   int32_t border_width_;
   int32_t border_color_;
   int32_t frame_count_;
+  int32_t window_width_;
+  int32_t window_height_;
 
   SDL_Renderer* renderer_;
   SDL_Window* window_;
