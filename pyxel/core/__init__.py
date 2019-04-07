@@ -42,8 +42,9 @@ if __name__ == "__main__":
         def draw(self):
             pyxel.cls(0)  # noqa: F821
             pyxel.rect(self.x, 30, 300, 50, 8)  # noqa: F821
-            pyxel.rectb(10, 70, 300, 100, 10)  # noqa: F821
+            pyxel.rectb(10, 70, 300, 100, pyxel.frame_count % 16)  # noqa: F821
             pyxel.blt(30, 100, 3, 0, 0, 256, 256)
             pyxel.pix(self.x, 10, 7)  # noqa: F821
+            pyxel.pix(pyxel.mouse_x, pyxel.mouse_y, 7)  # noqa: F821
 
     App()
