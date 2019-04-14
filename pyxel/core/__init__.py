@@ -34,6 +34,8 @@ if __name__ == "__main__":
 
             self.x = 0
 
+            pyxel.image(0).load(0, 0, "../examples/assets/cat_16x16.png")
+
             pyxel.run(self.update, self.draw)  # noqa: F821
 
         def update(self):
@@ -46,5 +48,7 @@ if __name__ == "__main__":
             pyxel.blt(30, 100, 3, 0, 0, 256, 256)
             pyxel.pix(self.x, 10, 7)  # noqa: F821
             pyxel.pix(pyxel.mouse_x, pyxel.mouse_y, 7)  # noqa: F821
+
+            pyxel.blt(100, 150, 0, 0, 0, 16, 16)
 
     App()
