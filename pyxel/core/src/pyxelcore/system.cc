@@ -105,7 +105,8 @@ void System::Run(void (*update)(), void (*draw)()) {
 }
 
 void System::SetupWindow() {
-  SDL_Init(SDL_INIT_VIDEO);
+  SDL_Init(SDL_INIT_VIDEO);  // TODO: error handling
+  IMG_Init(IMG_INIT_PNG);    // TODO: erro handling
 
   window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED,
                              SDL_WINDOWPOS_CENTERED, width_ * scale_,

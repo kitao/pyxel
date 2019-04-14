@@ -2,6 +2,7 @@
 
 #include "pyxelcore/constants.h"
 #include "pyxelcore/image.h"
+#include "pyxelcore/utilities.h"
 
 namespace pyxelcore {
 
@@ -207,25 +208,30 @@ void Graphics::DrawImage(int32_t x,
   }
 
   Image* src_image = image_bank_[image_index];
-  int32_t src_width = src_image->Width();
-  int32_t src_height = src_image->Height();
 
-  int32_t left_offset = std::max(std::max(-x + clip_x1_, -u), 0);
-  int32_t top_offset = std::max(std::max(-y + clip_y1_, -v), 0);
-  int32_t right_offset =
-      std::max(std::max(u + width - src_width, x + width - 1 - clip_x2_), 0);
-  int32_t bottom_offset =
-      std::max(std::max(v + height - src_height, y + height - 1 - clip_y2_), 0);
+  int32_t src_x = u;
+  int32_t src_y = v;
+  int32_t src_w = src_image->Width();
+  int32_t src_h = src_image->Height();
+  int32_t dest_x = x;
+  int32_t dest_y = y;
+  int32_t dest_w = width_;
+  int32_t dest_h = height_;
+  int32_t copy_w = src_w;
+  int32_t copy_h = src_h;
 
-  x += left_offset;
-  y += top_offset;
-  u += left_offset;
-  v += top_offset;
-  width -= left_offset + right_offset;
-  height -= top_offset + bottom_offset;
+  CopyRegion copy_region =
+      GetCopyRegion(src_x, src_y, src_w, src_h, dest_x, dest_y, dest_w, dest_h,
+                    copy_w, copy_h, clip_x1_, clip_y1_, clip_x2_, clip_y2_);
 
-  if (x >= width_ || y >= height_ || u >= width_ || v >= height_ ||
-      width <= 0 || height <= 0) {
+  src_x = copy_region.src_x;
+  src_y = copy_region.src_y;
+  dest_x = copy_region.dest_x;
+  dest_y = copy_region.dest_y;
+  copy_w = copy_region.copy_w;
+  copy_h = copy_region.copy_h;
+
+  if (copy_w <= 0 || copy_h <= 0) {
     return;
   }
 
@@ -233,20 +239,20 @@ void Graphics::DrawImage(int32_t x,
   int32_t* dest_data = screen_data_;
 
   if (color_key == -1) {
-    for (int32_t i = 0; i < height; i++) {
-      int32_t src_index = src_width * (v + i) + u;
-      int32_t dest_index = width_ * (y + i) + x;
+    for (int32_t i = 0; i < copy_h; i++) {
+      int32_t src_index = src_w * (src_y + i) + src_x;
+      int32_t dest_index = dest_w * (dest_y + i) + dest_x;
 
-      for (int32_t j = 0; j < width; j++) {
+      for (int32_t j = 0; j < copy_w; j++) {
         dest_data[dest_index + j] = palette_table_[src_data[src_index + j]];
       }
     }
   } else {
-    for (int32_t i = 0; i < height; i++) {
-      int32_t src_index = src_width * (v + i) + u;
-      int32_t dest_index = width_ * (y + i) + x;
+    for (int32_t i = 0; i < copy_h; i++) {
+      int32_t src_index = src_w * (src_y + i) + src_x;
+      int32_t dest_index = dest_w * (dest_y + i) + dest_x;
 
-      for (int32_t j = 0; j < width; j++) {
+      for (int32_t j = 0; j < copy_w; j++) {
         int32_t src_color = src_data[src_index + j];
 
         if (src_color != color_key) {
