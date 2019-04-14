@@ -46,7 +46,7 @@ def setup_apis(module, lib):
 
         def load(self, x, y, filename):
             c_filename = ctypes.create_string_buffer(filename.encode("utf-8"))
-            lib.image_load(self._c_obj, x, y, c_filename)
+            lib.image_load(ctypes.c_void_p(self._c_obj), x, y, c_filename)
 
         def copy(self, x, y, img, u, v, w, h):
             lib.image_copy(self._c_obj, x, y, img, u, v, w, h)
