@@ -227,7 +227,10 @@ void image_set(void* self,
                                                      data_height);
 }
 
-void image_load(void* self, int32_t x, int32_t y, const char* filename) {}
+void image_load(void* self, int32_t x, int32_t y, const char* filename) {
+  reinterpret_cast<pyxelcore::Image*>(self)->LoadImage(
+      x, y, filename, s_system->PaletteColor());
+}
 
 void image_copy(void* self,
                 int32_t x,
@@ -236,7 +239,11 @@ void image_copy(void* self,
                 int32_t u,
                 int32_t v,
                 int32_t w,
-                int32_t h) {}
+                int32_t h,
+                int32_t color_key) {
+  reinterpret_cast<pyxelcore::Image*>(self)->CopyImage(
+      x, y, s_graphics->GetImage(img), u, v, w, h, color_key);
+}
 
 //
 // Tilemap class

@@ -25,7 +25,10 @@ class Image {
                int32_t data_width,
                int32_t data_height);
 
-  void LoadImage(int32_t x, int32_t y, const char* filename);
+  void LoadImage(int32_t x,
+                 int32_t y,
+                 const char* filename,
+                 const int32_t* palette_color);
   void CopyImage(int32_t x,
                  int32_t y,
                  Image* image,
