@@ -34,6 +34,7 @@ class System {
   Input* Input() { return input_; }
   Graphics* Graphics() { return graphics_; }
   Audio* Audio() { return audio_; }
+  const int32_t* PaletteColor() { return palette_color_; }
 
   int32_t Width() { return width_; }
   int32_t Height() { return height_; }
