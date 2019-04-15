@@ -9,7 +9,7 @@ namespace pyxelcore {
 const std::string VERSION = "1.1.0";
 
 const std::string DEFAULT_CAPTION = "Pyxel";
-const int32_t DEFAULT_SCALE = 4;
+const int32_t DEFAULT_SCALE = 0;
 const int32_t DEFAULT_PALETTE[] = {
     0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F,
     0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436,
