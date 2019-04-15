@@ -30,24 +30,17 @@ System::System(int32_t width,
   width_ = std::max(width, 1);
   height_ = std::max(height, 1);
   caption_ = caption ? std::string(caption) : DEFAULT_CAPTION;
+  fps_ = std::max(fps != -1 ? fps : DEFAULT_FPS, 1);
+  border_width_ = border_width != -1 ? border_width : DEFAULT_BORDER_WIDTH;
+  border_color_ = border_color != -1 ? border_color : DEFAULT_BORDER_COLOR;
+  frame_count_ = 0;
 
-  scale_ = scale != 0 ? scale : std::max(DEFAULT_SCALE, 1);
-  if (scale_ == 0) {
-    SDL_DisplayMode display_mode;
-    SDL_GetDesktopDisplayMode(0, &display_mode);
-    scale_ = std::min((display_mode.w - border_width_ * 2) / width_,
-                      (display_mode.h - border_width_ * 2) / height_);
-  }
+  window_info_.screen_scale = scale != -1 ? scale : DEFAULT_SCALE;
 
   palette_color = palette_color ? palette_color : DEFAULT_PALETTE;
   for (int32_t i = 0; i < COLOR_COUNT; i++) {
     palette_color_[i] = palette_color[i];
   }
-
-  fps_ = std::max(fps != -1 ? fps : DEFAULT_FPS, 1);
-  border_width_ = border_width != -1 ? border_width : DEFAULT_BORDER_WIDTH;
-  border_color_ = border_color != -1 ? border_color : DEFAULT_BORDER_COLOR;
-  frame_count_ = 0;
 
   SetupWindow();
 }
@@ -80,11 +73,13 @@ void System::Run(void (*update)(), void (*draw)()) {
           return;
         } else if (event.type == SDL_WINDOWEVENT) {
           if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-            window_width_ = event.window.data1;
+            UpdateWindowInfo();
+            /*window_width_ = event.window.data1;
             window_height_ = event.window.data2;
-
             scale_ = std::min((window_width_ - border_width_ * 2) / width_,
                               (window_height_ - border_width_ * 2) / height_);
+            screen_x_ = (window_width_ - width_ * scale_) / 2;
+            screen_y_ = (window_height_ - height_ * scale_) / 2;*/
           }
         }
       }
@@ -108,40 +103,50 @@ void System::SetupWindow() {
   SDL_Init(SDL_INIT_VIDEO);  // TODO: error handling
   IMG_Init(IMG_INIT_PNG);    // TODO: erro handling
 
-  window_ = SDL_CreateWindow(caption_.c_str(), SDL_WINDOWPOS_CENTERED,
-                             SDL_WINDOWPOS_CENTERED, width_ * scale_,
-                             height_ * scale_, SDL_WINDOW_RESIZABLE);
-  renderer_ = SDL_CreateRenderer(window_, -1, 0);
-  screen_texture_ =
-      SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGB888,
+  if (window_info_.screen_scale == 0) {
+    SDL_DisplayMode display_mode;
+    SDL_GetDesktopDisplayMode(0, &display_mode);
+    window_info_.screen_scale =
+        std::min((display_mode.w - border_width_ * 2) / width_,
+                 (display_mode.h - border_width_ * 2) / height_);
+  }
+
+  window_info_.window = SDL_CreateWindow(
+      caption_.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+      width_ * window_info_.screen_scale, height_ * window_info_.screen_scale,
+      SDL_WINDOW_RESIZABLE);
+  window_info_.renderer = SDL_CreateRenderer(window_info_.window, -1, 0);
+  window_info_.screen_texture =
+      SDL_CreateTexture(window_info_.renderer, SDL_PIXELFORMAT_RGB888,
                         SDL_TEXTUREACCESS_STREAMING, width_, height_);
 
-  SDL_SetWindowMinimumSize(window_, width_, height_);
+  SDL_SetWindowMinimumSize(window_info_.window, width_, height_);
 
-  SDL_GetWindowSize(window_, &window_width_, &window_height_);
+  UpdateWindowInfo();
 }
 
 void System::RenderWindow() {
-  SDL_SetRenderDrawColor(renderer_, (border_color_ >> 16) & 0xff,
+  SDL_SetRenderDrawColor(window_info_.renderer, (border_color_ >> 16) & 0xff,
                          (border_color_ >> 8) & 0xff, border_color_ & 0xff,
                          255);
-  SDL_RenderClear(renderer_);
+  SDL_RenderClear(window_info_.renderer);
 
   UpdateScreenTexture();
 
-  SDL_Rect dest_rect = {(window_width_ - width_ * scale_) / 2,
-                        (window_height_ - height_ * scale_) / 2,
-                        width_ * scale_, height_ * scale_};
-  SDL_RenderCopy(renderer_, screen_texture_, NULL, &dest_rect);
+  SDL_Rect dest_rect = {window_info_.screen_x, window_info_.screen_y,
+                        width_ * window_info_.screen_scale,
+                        height_ * window_info_.screen_scale};
+  SDL_RenderCopy(window_info_.renderer, window_info_.screen_texture, NULL,
+                 &dest_rect);
 
-  SDL_RenderPresent(renderer_);
+  SDL_RenderPresent(window_info_.renderer);
 }
 
 void System::UpdateScreenTexture() {
   int32_t* pixels;
   int32_t pitch;
 
-  SDL_LockTexture(screen_texture_, NULL, (void**)&pixels, &pitch);
+  SDL_LockTexture(window_info_.screen_texture, NULL, (void**)&pixels, &pitch);
 
   size_t size = width_ * height_;
   int32_t* screen_data_ = graphics_->Screen()->Data();
@@ -150,7 +155,21 @@ void System::UpdateScreenTexture() {
     pixels[i] = palette_color_[screen_data_[i]];
   }
 
-  SDL_UnlockTexture(screen_texture_);
+  SDL_UnlockTexture(window_info_.screen_texture);
+}
+
+void System::UpdateWindowInfo() {
+  SDL_GetWindowSize(window_info_.window, &window_info_.window_width,
+                    &window_info_.window_height);
+
+  window_info_.screen_scale =
+      std::min((window_info_.window_width - border_width_ * 2) / width_,
+               (window_info_.window_height - border_width_ * 2) / height_);
+
+  window_info_.screen_x =
+      (window_info_.window_width - width_ * window_info_.screen_scale) / 2;
+  window_info_.screen_y =
+      (window_info_.window_height - height_ * window_info_.screen_scale) / 2;
 }
 
 }  // namespace pyxelcore
