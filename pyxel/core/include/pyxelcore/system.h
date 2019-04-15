@@ -16,14 +16,24 @@ class Graphics;
 class Audio;
 
 class System {
-  //
-  // System
-  //
  public:
+  struct WindowInfo {
+    int32_t window_x;
+    int32_t window_y;
+    int32_t window_width;
+    int32_t window_height;
+    int32_t screen_x;
+    int32_t screen_y;
+    int32_t screen_scale;
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+    SDL_Texture* screen_texture;
+  };
+
   System(int32_t width,
          int32_t height,
          const char* caption = NULL,
-         int32_t scale = 0,
+         int32_t scale = -1,
          const int32_t* palette_color = NULL,
          int32_t fps = -1,
          int32_t border_width = -1,
@@ -34,6 +44,9 @@ class System {
   Input* Input() { return input_; }
   Graphics* Graphics() { return graphics_; }
   Audio* Audio() { return audio_; }
+  struct WindowInfo* WindowInfo() {
+    return &window_info_;
+  }
   const int32_t* PaletteColor() { return palette_color_; }
 
   int32_t Width() { return width_; }
@@ -51,22 +64,17 @@ class System {
   int32_t width_;
   int32_t height_;
   std::string caption_;
-  int32_t scale_;
-  int32_t palette_color_[COLOR_COUNT];
   int32_t fps_;
   int32_t border_width_;
   int32_t border_color_;
   int32_t frame_count_;
-  int32_t window_width_;
-  int32_t window_height_;
-
-  SDL_Renderer* renderer_;
-  SDL_Window* window_;
-  SDL_Texture* screen_texture_;
+  struct WindowInfo window_info_;
+  int32_t palette_color_[COLOR_COUNT];
 
   void SetupWindow();
   void RenderWindow();
   void UpdateScreenTexture();
+  void UpdateWindowInfo();
 };
 
 }  // namespace pyxelcore
