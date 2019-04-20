@@ -44,8 +44,4 @@ CopyRegion GetCopyRegion(int32_t src_x,
   return copy_region;
 }
 
-void RaiseError(const char* message) {
-  //
-}
-
 }  // namespace pyxelcore
