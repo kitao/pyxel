@@ -29,4 +29,6 @@ CopyRegion GetCopyRegion(int32_t src_x,
                          int32_t clip_x2 = -1,
                          int32_t clip_y2 = -1);
 
+}  // namespace pyxelcore
+
 #endif  // PYXELCORE_UTILITY_H_
