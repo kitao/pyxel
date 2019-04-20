@@ -55,6 +55,10 @@ class System {
 
   void Run(void (*update)(), void (*draw)());
 
+  static int32_t GetConstantNumber(const char* name);
+  static const char* GetConstantString(const char* name);
+  static void RaiseError(const char* message);
+
  private:
   pyxelcore::Input* input_;
   pyxelcore::Resource* resource_;

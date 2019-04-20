@@ -18,12 +18,6 @@ extern "C" {
 #endif
 
 //
-// Constants
-//
-PYXEL_API int32_t get_constant_number(const char* name);
-PYXEL_API const char* get_constant_string(const char* name);
-
-//
 // System
 //
 PYXEL_API int32_t width_getter();
@@ -41,6 +35,10 @@ PYXEL_API void init(int32_t width,
 PYXEL_API void run(void (*update)(), void (*draw)());
 PYXEL_API void quit();
 PYXEL_API void error(const char* func, const char* msg);
+
+PYXEL_API int32_t get_constant_number(const char* name);
+PYXEL_API const char* get_constant_string(const char* name);
+PYXEL_API void raise_error(const char* message);
 
 //
 // Resource
