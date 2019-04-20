@@ -52,6 +52,18 @@ void quit() {
   delete s_system;
 }
 
+int32_t get_constant_number(const char* name) {
+  return pyxelcore::System::GetConstantNumber(name);
+}
+
+const char* get_constant_string(const char* name) {
+  return pyxelcore::System::GetConstantString(name);
+}
+
+void raise_error(const char* msg) {
+  pyxelcore::System::RaiseError(msg);
+}
+
 //
 // Resource
 //

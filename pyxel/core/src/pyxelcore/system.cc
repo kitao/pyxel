@@ -172,4 +172,8 @@ void System::UpdateWindowInfo() {
       (window_info_.window_height - height_ * window_info_.screen_scale) / 2;
 }
 
+void System::RaiseError(const char* message) {
+  //
+}
+
 }  // namespace pyxelcore
