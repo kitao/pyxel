@@ -2,7 +2,6 @@
 
 #include "pyxelcore/constants.h"
 #include "pyxelcore/image.h"
-#include "pyxelcore/utilities.h"
 
 namespace pyxelcore {
 
@@ -52,17 +51,12 @@ Tilemap* Graphics::GetTilemap(int32_t tilemap_index) {
 }
 
 void Graphics::ResetClippingArea() {
-  clip_x1_ = 0;
-  clip_y1_ = 0;
-  clip_x2_ = width_ - 1;
-  clip_y2_ = height_ - 1;
+  clip_region_ = Region::FromSize(0, 0, width_, height_);
 }
 
 void Graphics::SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-  clip_x1_ = std::max(std::min(x1, x2), 0);
-  clip_y1_ = std::max(std::min(y1, y2), 0);
-  clip_x2_ = std::min(std::max(x1, x2), width_ - 1);
-  clip_y2_ = std::min(std::max(y1, y2), height_ - 1);
+  clip_region_ =
+      Region::FromPos(x1, y1, x2, y2) & Region::FromSize(0, 0, width_, height_);
 }
 
 void Graphics::ResetPalette() {
@@ -94,7 +88,7 @@ void Graphics::DrawPoint(int32_t x, int32_t y, int32_t color) {
     // error
   }
 
-  if (x < clip_x1_ || y < clip_y1_ || x > clip_x2_ || y > clip_y2_) {
+  if (!clip_region_.Includes(x, y)) {
     return;
   }
 
@@ -119,16 +113,17 @@ void Graphics::DrawRectangle(int32_t x1,
   }
 
   color = palette_table_[color];
+  Region rect_region = Region::FromPos(x1, y1, x2, y2) & clip_region_;
 
-  int32_t left = std::max(std::min(x1, x2), clip_x1_);
-  int32_t top = std::max(std::min(y1, y2), clip_y1_);
-  int32_t right = std::min(std::max(x1, x2), clip_x2_);
-  int32_t bottom = std::min(std::max(y1, y2), clip_y2_);
+  int32_t rect_left = rect_region.Left();
+  int32_t rect_top = rect_region.Top();
+  int32_t rect_right = rect_region.Right();
+  int32_t rect_bottom = rect_region.Bottom();
 
-  for (int32_t i = top; i <= bottom; i++) {
+  for (int32_t i = rect_top; i <= rect_bottom; i++) {
     int32_t index = width_ * i;
 
-    for (int32_t j = left; j <= right; j++) {
+    for (int32_t j = rect_left; j <= rect_right; j++) {
       screen_data_[index + j] = color;
     }
   }
@@ -144,36 +139,41 @@ void Graphics::DrawRectangleBorder(int32_t x1,
   }
 
   color = palette_table_[color];
+  Region rect_region = Region::FromPos(x1, y1, x2, y2) & clip_region_;
 
-  int32_t left = std::max(std::min(x1, x2), clip_x1_);
-  int32_t top = std::max(std::min(y1, y2), clip_y1_);
-  int32_t right = std::min(std::max(x1, x2), clip_x2_);
-  int32_t bottom = std::min(std::max(y1, y2), clip_y2_);
+  if (rect_region == Region::ZERO) {
+    return;
+  }
 
-  if (x1 >= clip_x1_ && x1 <= clip_x2_) {
-    for (int32_t i = top; i <= bottom; i++) {
+  int32_t rect_left = rect_region.Left();
+  int32_t rect_top = rect_region.Top();
+  int32_t rect_right = rect_region.Right();
+  int32_t rect_bottom = rect_region.Bottom();
+
+  if (x1 >= clip_region_.Left() && x1 <= clip_region_.Right()) {
+    for (int32_t i = rect_top; i <= rect_bottom; i++) {
       screen_data_[width_ * i + x1] = color;
     }
   }
 
-  if (x2 >= clip_x1_ && x2 <= clip_x2_) {
-    for (int32_t i = top; i <= bottom; i++) {
+  if (x2 >= clip_region_.Left() && x2 <= clip_region_.Right()) {
+    for (int32_t i = rect_top; i <= rect_bottom; i++) {
       screen_data_[width_ * i + x2] = color;
     }
   }
 
-  if (y1 >= clip_y1_ && y1 <= clip_y2_) {
+  if (y1 >= clip_region_.Top() && y1 <= clip_region_.Bottom()) {
     int32_t index = width_ * y1;
 
-    for (int32_t i = left; i <= right; i++) {
+    for (int32_t i = rect_left; i <= rect_right; i++) {
       screen_data_[index + i] = color;
     }
   }
 
-  if (y2 >= clip_y1_ && y2 <= clip_y2_) {
+  if (y2 >= clip_region_.Top() && y2 <= clip_region_.Bottom()) {
     size_t line_head = width_ * y2;
 
-    for (int32_t i = left; i <= right; i++) {
+    for (int32_t i = rect_left; i <= rect_right; i++) {
       screen_data_[line_head + i] = color;
     }
   }
@@ -208,35 +208,36 @@ void Graphics::DrawImage(int32_t x,
   }
 
   Image* src_image = image_bank_[image_index];
-
-  int32_t src_x = u;
-  int32_t src_y = v;
   int32_t src_w = src_image->Width();
   int32_t src_h = src_image->Height();
-  int32_t dest_x = x;
-  int32_t dest_y = y;
-  int32_t dest_w = width_;
-  int32_t dest_h = height_;
-  int32_t copy_w = src_w;
-  int32_t copy_h = src_h;
 
-  CopyRegion copy_region =
-      GetCopyRegion(src_x, src_y, src_w, src_h, dest_x, dest_y, dest_w, dest_h,
-                    copy_w, copy_h, clip_x1_, clip_y1_, clip_x2_, clip_y2_);
+  Region copy_reigon = Region::FromSize(u, v, width, height) &
+                  Region::FromSize(0, 0, src_w, src_h);
 
-  src_x = copy_region.src_x;
-  src_y = copy_region.src_y;
-  dest_x = copy_region.dest_x;
-  dest_y = copy_region.dest_y;
-  copy_w = copy_region.copy_w;
-  copy_h = copy_region.copy_h;
+  int32_t offset_x = copy_reigon.Left() - u;
+  int32_t offset_y = copy_reigon.Top() - v;
 
-  if (copy_w <= 0 || copy_h <= 0) {
+  copy_reigon = copy_reigon.MoveTo(x + offset_x, y + offset_y) & clip_region_;
+
+  if (copy_reigon == Region::ZERO) {
     return;
   }
 
+  offset_x = copy_reigon.Left() - x;
+  offset_y = copy_reigon.Top() - y;
+
+  int32_t src_x = u + offset_x;
+  int32_t src_y = v + offset_y;
   int32_t* src_data = src_image->Data();
+
+  int32_t dest_x = x + offset_x;
+  int32_t dest_y = y + offset_y;
+  int32_t dest_w = width_;
+  int32_t dest_h = height_;
   int32_t* dest_data = screen_data_;
+
+  int32_t copy_w = copy_reigon.Width();
+  int32_t copy_h = copy_reigon.Height();
 
   if (color_key == -1) {
     for (int32_t i = 0; i < copy_h; i++) {
