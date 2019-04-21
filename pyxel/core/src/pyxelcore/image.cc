@@ -1,45 +1,44 @@
 #include "pyxelcore/image.h"
 
 #include "pyxelcore/constants.h"
-#include "pyxelcore/tilemap.h"
-#include "pyxelcore/region.h"
 
 #include <SDL2/SDL_image.h>
-
 #include <algorithm>
 #include <map>
 
 namespace pyxelcore {
 
-Image::Image(int32_t width, int32_t height, int32_t* data) {
-  width_ = width;
-  height_ = height;
+Image::Image(int32_t width, int32_t height, void* data)
+    : Rectangle(0, 0, width, height) {
+  if (Width() <= 0 || Height() <= 0) {
+    // error
+  }
 
   if (data) {
-    data_ = data;
-    need_to_delete_data_ = false;
+    need_to_delete_ = false;
+    data_ = reinterpret_cast<int32_t*>(data);
   } else {
-    data_ = new int32_t[width * height];
-    need_to_delete_data_ = true;
+    need_to_delete_ = true;
+    data_ = new int32_t[Width() * Height()];
   }
 }
 
 Image::~Image() {
-  if (need_to_delete_data_) {
+  if (need_to_delete_) {
     delete[] data_;
   }
 }
 
 int32_t Image::GetColor(int32_t x, int32_t y) {
-  if (x < 0 || y < 0 || x >= width_ || y >= height_) {
+  if (!Includes(x, y)) {
     // error
   }
 
-  return data_[width_ * y + x];
+  return data_[Width() * y + x];
 }
 
 void Image::SetColor(int32_t x, int32_t y, int32_t color) {
-  if (x < 0 || y < 0 || x >= width_ || y >= height_) {
+  if (!Includes(x, y)) {
     // error
   }
 
@@ -47,7 +46,7 @@ void Image::SetColor(int32_t x, int32_t y, int32_t color) {
     // error
   }
 
-  data_[width_ * y + x] = color;
+  data_[Width() * y + x] = color;
 }
 
 void Image::SetData(int32_t x,
@@ -55,6 +54,10 @@ void Image::SetData(int32_t x,
                     const int32_t* data,
                     int32_t data_width,
                     int32_t data_height) {
+  if (!Includes(x, y)) {
+    // error
+  }
+
   //
 }
 
@@ -69,20 +72,22 @@ void Image::LoadImage(int32_t x,
   // TODO: error handling
   int32_t src_w = rgb_image->w;
   int32_t src_h = rgb_image->h;
-  int32_t dest_w = width_;
-  int32_t dest_h = height_;
+  int32_t dest_w = Width();
+  int32_t dest_h = Height();
 
-  Region copy_region = Region::FromSize(0, 0, src_w, src_h) & Region::FromSize(x, y, dest_w, dest_h);
+  Rectangle copy_rect =
+      Rectangle::FromSize(0, 0, src_w, src_h)
+          .Intersect(Rectangle::FromSize(x, y, dest_w, dest_h));
 
-  if (copy_region == Region::ZERO) {
+  if (copy_rect.IsEmpty()) {
     SDL_FreeSurface(rgb_image);
     SDL_FreeSurface(original_image);
 
     return;
   }
 
-  int32_t offset_x = copy_region.Left() - x;
-  int32_t offset_y = copy_region.Top() - y;
+  int32_t offset_x = copy_rect.Left() - x;
+  int32_t offset_y = copy_rect.Top() - y;
 
   int32_t src_x = offset_x;
   int32_t src_y = offset_y;
@@ -93,8 +98,8 @@ void Image::LoadImage(int32_t x,
   int32_t dest_y = y + offset_y;
   int32_t* dest_data = data_;
 
-  int32_t copy_w = copy_region.Width();
-  int32_t copy_h = copy_region.Height();
+  int32_t copy_w = copy_rect.Width();
+  int32_t copy_h = copy_rect.Height();
 
   // std::map<int32_t, int32_t> color_table;
 
