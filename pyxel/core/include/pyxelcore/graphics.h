@@ -65,10 +65,7 @@ class Graphics {
   int32_t* screen_data_;
   Image** image_bank_;
   Tilemap** tilemap_bank_;
-  int32_t clip_x1_;
-  int32_t clip_y1_;
-  int32_t clip_x2_;
-  int32_t clip_y2_;
+  Region clip_region_;
   int32_t palette_table_[COLOR_COUNT];
 
   void SetupFontImage();
