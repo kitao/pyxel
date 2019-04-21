@@ -1,7 +1,6 @@
 #include "pyxelcore/system.h"
 
 #include "pyxelcore/audio.h"
-#include "pyxelcore/constants.h"
 #include "pyxelcore/graphics.h"
 #include "pyxelcore/image.h"
 #include "pyxelcore/input.h"
