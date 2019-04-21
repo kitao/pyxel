@@ -1,4 +1,5 @@
 #include "pyxelcore/constants.h"
+
 #include "pyxelcore/system.h"
 
 namespace pyxelcore {
