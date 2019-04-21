@@ -14,7 +14,7 @@ class Graphics {
   Graphics(int32_t width, int32_t height);
   ~Graphics();
 
-  Image* Screen() { return screen_; }
+  int32_t* ScreenData() { return screen_data_; }
 
   Image* GetImage(int32_t image_index, bool system = false);
   Tilemap* GetTilemap(int32_t tilemap_index);
@@ -59,13 +59,13 @@ class Graphics {
   void DrawText(int32_t x, int32_t y, const char* text, int32_t color);
 
  private:
-  int32_t width_;
-  int32_t height_;
-  Image* screen_;
+  Image* screen_image_;
+  int32_t screen_width_;
+  int32_t screen_height_;
   int32_t* screen_data_;
   Image** image_bank_;
   Tilemap** tilemap_bank_;
-  Region clip_region_;
+  Rectangle clip_rect_;
   int32_t palette_table_[COLOR_COUNT];
 
   void SetupFontImage();

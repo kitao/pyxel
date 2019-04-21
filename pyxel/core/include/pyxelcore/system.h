@@ -2,7 +2,6 @@
 #define PYXELCORE_SYSTEM_H_
 
 #include "pyxelcore/constants.h"
-#include "pyxelcore/image.h"
 
 class SDL_Renderer;
 class SDL_Window;
