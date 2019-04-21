@@ -1,6 +1,8 @@
 #ifndef PYXELCORE_IMAGE_H_
 #define PYXELCORE_IMAGE_H_
 
+#include "pyxelcore/region.h"
+
 #include <cstddef>
 #include <cstdint>
 
