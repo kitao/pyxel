@@ -2,7 +2,7 @@
 
 #include "pyxelcore/constants.h"
 #include "pyxelcore/tilemap.h"
-#include "pyxelcore/utilities.h"
+#include "pyxelcore/region.h"
 
 #include <SDL2/SDL_image.h>
 
@@ -67,39 +67,35 @@ void Image::LoadImage(int32_t x,
       SDL_ConvertSurfaceFormat(original_image, SDL_PIXELFORMAT_RGBA8888, 0);
 
   // TODO: error handling
-
-  int32_t src_x = 0;
-  int32_t src_y = 0;
   int32_t src_w = rgb_image->w;
   int32_t src_h = rgb_image->h;
-  int32_t dest_x = x;
-  int32_t dest_y = y;
   int32_t dest_w = width_;
   int32_t dest_h = height_;
-  int32_t copy_w = src_w;
-  int32_t copy_h = src_h;
 
-  CopyRegion copy_region =
-      GetCopyRegion(src_x, src_y, src_w, src_h, dest_x, dest_y, dest_w, dest_h,
-                    copy_w, copy_h);
+  Region copy_region = Region::FromSize(0, 0, src_w, src_h) & Region::FromSize(x, y, dest_w, dest_h);
 
-  src_x = copy_region.src_x;
-  src_y = copy_region.src_y;
-  dest_x = copy_region.dest_x;
-  dest_y = copy_region.dest_y;
-  copy_w = copy_region.copy_w;
-  copy_h = copy_region.copy_h;
-
-  if (copy_w <= 0 || copy_h <= 0) {
+  if (copy_region == Region::ZERO) {
     SDL_FreeSurface(rgb_image);
     SDL_FreeSurface(original_image);
 
     return;
   }
 
+  int32_t offset_x = copy_region.Left() - x;
+  int32_t offset_y = copy_region.Top() - y;
+
+  int32_t src_x = offset_x;
+  int32_t src_y = offset_y;
   uint8_t* src_data = reinterpret_cast<uint8_t*>(rgb_image->pixels);
   int32_t src_pitch = rgb_image->pitch;
+
+  int32_t dest_x = x + offset_x;
+  int32_t dest_y = y + offset_y;
   int32_t* dest_data = data_;
+
+  int32_t copy_w = copy_region.Width();
+  int32_t copy_h = copy_region.Height();
+
   // std::map<int32_t, int32_t> color_table;
 
   for (int32_t i = 0; i < copy_h; i++) {
