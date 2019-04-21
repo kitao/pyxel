@@ -1,22 +1,18 @@
 #ifndef PYXELCORE_IMAGE_H_
 #define PYXELCORE_IMAGE_H_
 
-#include "pyxelcore/region.h"
+#include "pyxelcore/rectangle.h"
 
 #include <cstddef>
 #include <cstdint>
 
 namespace pyxelcore {
 
-class Tilemap;
-
-class Image {
+class Image : public Rectangle {
  public:
-  Image(int32_t width, int32_t height, int32_t* data = NULL);
+  Image(int32_t width, int32_t height, void* data = NULL);
   ~Image();
 
-  int32_t Width() { return width_; }
-  int32_t Height() { return height_; }
   int32_t* Data() { return data_; }
 
   int32_t GetColor(int32_t x, int32_t y);
@@ -26,7 +22,6 @@ class Image {
                const int32_t* data,
                int32_t data_width,
                int32_t data_height);
-
   void LoadImage(int32_t x,
                  int32_t y,
                  const char* filename,
@@ -41,10 +36,8 @@ class Image {
                  int32_t color_key = -1);
 
  private:
-  int32_t width_;
-  int32_t height_;
+  bool need_to_delete_;
   int32_t* data_;
-  bool need_to_delete_data_;
 };
 
 }  // namespace pyxelcore
