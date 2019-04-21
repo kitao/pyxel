@@ -6,10 +6,10 @@
 namespace pyxelcore {
 
 Graphics::Graphics(int32_t width, int32_t height) {
-  width_ = width;
-  height_ = height;
-  screen_ = new Image(width, height);
-  screen_data_ = screen_->Data();
+  screen_image_ = new Image(width, height);
+  screen_width_ = screen_image_->Width();
+  screen_height_ = screen_image_->Height();
+  screen_data_ = screen_image_->Data();
 
   image_bank_ = new Image*[IMAGE_COUNT];
   for (int32_t i = 0; i < IMAGE_COUNT; i++) {
@@ -30,7 +30,7 @@ Graphics::~Graphics() {
 
   delete[] image_bank_;
 
-  delete screen_;
+  delete screen_image_;
 }
 
 Image* Graphics::GetImage(int32_t image_index, bool system) {
@@ -51,12 +51,13 @@ Tilemap* Graphics::GetTilemap(int32_t tilemap_index) {
 }
 
 void Graphics::ResetClippingArea() {
-  clip_region_ = Region::FromSize(0, 0, width_, height_);
+  clip_rect_ = Rectangle::FromSize(0, 0, screen_width_, screen_height_);
 }
 
 void Graphics::SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-  clip_region_ =
-      Region::FromPos(x1, y1, x2, y2) & Region::FromSize(0, 0, width_, height_);
+  clip_rect_ =
+      Rectangle::FromPos(x1, y1, x2, y2)
+          .Intersect(Rectangle::FromSize(0, 0, screen_width_, screen_height_));
 }
 
 void Graphics::ResetPalette() {
@@ -76,7 +77,7 @@ void Graphics::Clear(int32_t color) {
 
   color = palette_table_[color];
 
-  size_t size = width_ * height_;
+  size_t size = screen_width_ * screen_height_;
 
   for (size_t i = 0; i < size; i++) {
     screen_data_[i] = color;
@@ -88,11 +89,11 @@ void Graphics::DrawPoint(int32_t x, int32_t y, int32_t color) {
     // error
   }
 
-  if (!clip_region_.Includes(x, y)) {
+  if (!clip_rect_.Includes(x, y)) {
     return;
   }
 
-  screen_data_[width_ * y + x] = palette_table_[color];
+  screen_data_[screen_width_ * y + x] = palette_table_[color];
 }
 
 void Graphics::DrawLine(int32_t x1,
@@ -113,15 +114,16 @@ void Graphics::DrawRectangle(int32_t x1,
   }
 
   color = palette_table_[color];
-  Region rect_region = Region::FromPos(x1, y1, x2, y2) & clip_region_;
+  Rectangle draw_rect =
+      Rectangle::FromPos(x1, y1, x2, y2).Intersect(clip_rect_);
 
-  int32_t rect_left = rect_region.Left();
-  int32_t rect_top = rect_region.Top();
-  int32_t rect_right = rect_region.Right();
-  int32_t rect_bottom = rect_region.Bottom();
+  int32_t rect_left = draw_rect.Left();
+  int32_t rect_top = draw_rect.Top();
+  int32_t rect_right = draw_rect.Right();
+  int32_t rect_bottom = draw_rect.Bottom();
 
   for (int32_t i = rect_top; i <= rect_bottom; i++) {
-    int32_t index = width_ * i;
+    int32_t index = screen_width_ * i;
 
     for (int32_t j = rect_left; j <= rect_right; j++) {
       screen_data_[index + j] = color;
@@ -139,39 +141,40 @@ void Graphics::DrawRectangleBorder(int32_t x1,
   }
 
   color = palette_table_[color];
-  Region rect_region = Region::FromPos(x1, y1, x2, y2) & clip_region_;
+  Rectangle draw_rect =
+      Rectangle::FromPos(x1, y1, x2, y2).Intersect(clip_rect_);
 
-  if (rect_region == Region::ZERO) {
+  if (draw_rect.IsEmpty()) {
     return;
   }
 
-  int32_t rect_left = rect_region.Left();
-  int32_t rect_top = rect_region.Top();
-  int32_t rect_right = rect_region.Right();
-  int32_t rect_bottom = rect_region.Bottom();
+  int32_t rect_left = draw_rect.Left();
+  int32_t rect_top = draw_rect.Top();
+  int32_t rect_right = draw_rect.Right();
+  int32_t rect_bottom = draw_rect.Bottom();
 
-  if (x1 >= clip_region_.Left() && x1 <= clip_region_.Right()) {
+  if (x1 >= clip_rect_.Left() && x1 <= clip_rect_.Right()) {
     for (int32_t i = rect_top; i <= rect_bottom; i++) {
-      screen_data_[width_ * i + x1] = color;
+      screen_data_[screen_width_ * i + x1] = color;
     }
   }
 
-  if (x2 >= clip_region_.Left() && x2 <= clip_region_.Right()) {
+  if (x2 >= clip_rect_.Left() && x2 <= clip_rect_.Right()) {
     for (int32_t i = rect_top; i <= rect_bottom; i++) {
-      screen_data_[width_ * i + x2] = color;
+      screen_data_[screen_width_ * i + x2] = color;
     }
   }
 
-  if (y1 >= clip_region_.Top() && y1 <= clip_region_.Bottom()) {
-    int32_t index = width_ * y1;
+  if (y1 >= clip_rect_.Top() && y1 <= clip_rect_.Bottom()) {
+    int32_t index = screen_width_ * y1;
 
     for (int32_t i = rect_left; i <= rect_right; i++) {
       screen_data_[index + i] = color;
     }
   }
 
-  if (y2 >= clip_region_.Top() && y2 <= clip_region_.Bottom()) {
-    size_t line_head = width_ * y2;
+  if (y2 >= clip_rect_.Top() && y2 <= clip_rect_.Bottom()) {
+    size_t line_head = screen_width_ * y2;
 
     for (int32_t i = rect_left; i <= rect_right; i++) {
       screen_data_[line_head + i] = color;
@@ -211,15 +214,17 @@ void Graphics::DrawImage(int32_t x,
   int32_t src_w = src_image->Width();
   int32_t src_h = src_image->Height();
 
-  Region copy_reigon = Region::FromSize(u, v, width, height) &
-                  Region::FromSize(0, 0, src_w, src_h);
+  Rectangle copy_reigon =
+      Rectangle::FromSize(u, v, width, height)
+          .Intersect(Rectangle::FromSize(0, 0, src_w, src_h));
 
   int32_t offset_x = copy_reigon.Left() - u;
   int32_t offset_y = copy_reigon.Top() - v;
 
-  copy_reigon = copy_reigon.MoveTo(x + offset_x, y + offset_y) & clip_region_;
+  copy_reigon =
+      copy_reigon.MoveTo(x + offset_x, y + offset_y).Intersect(clip_rect_);
 
-  if (copy_reigon == Region::ZERO) {
+  if (copy_reigon.IsEmpty()) {
     return;
   }
 
@@ -232,8 +237,8 @@ void Graphics::DrawImage(int32_t x,
 
   int32_t dest_x = x + offset_x;
   int32_t dest_y = y + offset_y;
-  int32_t dest_w = width_;
-  int32_t dest_h = height_;
+  int32_t dest_w = screen_width_;
+  int32_t dest_h = screen_height_;
   int32_t* dest_data = screen_data_;
 
   int32_t copy_w = copy_reigon.Width();
