@@ -251,10 +251,10 @@ void image_copy(void* self,
                 int32_t u,
                 int32_t v,
                 int32_t w,
-                int32_t h,
-                int32_t color_key) {
+                int32_t h) {
+  pyxelcore::Image* image = s_graphics->GetImage(img);
   reinterpret_cast<pyxelcore::Image*>(self)->CopyImage(
-      x, y, s_graphics->GetImage(img), u, v, w, h, color_key);
+      x, y, image, pyxelcore::Rectangle::FromSize(u, v, w, h), *image);
 }
 
 //
