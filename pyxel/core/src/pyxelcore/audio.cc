@@ -8,11 +8,11 @@ Audio::Audio() {}
 
 Audio::~Audio() {}
 
-Sound* Audio::GetSound(int32_t sound_index, bool system) {
+Sound* Audio::GetSound(int32_t sound_index, bool system) const {
   return NULL;
 }
 
-Music* Audio::GetMusic(int32_t music_index) {
+Music* Audio::GetMusic(int32_t music_index) const {
   return NULL;
 }
 

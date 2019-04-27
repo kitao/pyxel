@@ -33,7 +33,7 @@ Graphics::~Graphics() {
   delete screen_image_;
 }
 
-Image* Graphics::GetImage(int32_t image_index, bool system) {
+Image* Graphics::GetImage(int32_t image_index, bool system) const {
   if (image_index < 0 || image_index >= IMAGE_COUNT) {
     // error
   }
@@ -45,7 +45,7 @@ Image* Graphics::GetImage(int32_t image_index, bool system) {
   return image_bank_[image_index];
 }
 
-Tilemap* Graphics::GetTilemap(int32_t tilemap_index) {
+Tilemap* Graphics::GetTilemap(int32_t tilemap_index) const {
   //
   return tilemap_bank_[tilemap_index];
 }
