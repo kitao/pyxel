@@ -51,4 +51,7 @@ if __name__ == "__main__":
 
             pyxel.blt(100, 150, 0, 0, 0, 16, 16)
 
+            pyxel.line(10, 15, 50, 30, 7)  # noqa: F821
+            pyxel.line(10, 15, 50, 100, 8)  # noqa: F821
+
     App()

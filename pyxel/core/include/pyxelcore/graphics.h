@@ -63,6 +63,7 @@ class Graphics {
   int32_t palette_table_[COLOR_COUNT];
 
   void SetupFontImage();
+  int32_t GetDrawColor(int32_t color) const;
 };
 
 }  // namespace pyxelcore
