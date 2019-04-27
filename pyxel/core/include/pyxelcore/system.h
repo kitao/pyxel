@@ -39,18 +39,16 @@ class System {
          int32_t border_color = -1);
   ~System();
 
-  Resource* Resource() { return resource_; }
-  Input* Input() { return input_; }
-  Graphics* Graphics() { return graphics_; }
-  Audio* Audio() { return audio_; }
-  struct WindowInfo* WindowInfo() {
-    return &window_info_;
-  }
-  const int32_t* PaletteColor() { return palette_color_; }
+  Resource* Resource() const { return resource_; }
+  Input* Input() const { return input_; }
+  Graphics* Graphics() const { return graphics_; }
+  Audio* Audio() const { return audio_; }
+  const struct WindowInfo* WindowInfo() const { return &window_info_; }
+  const int32_t* PaletteColor() const { return palette_color_; }
 
-  int32_t Width() { return width_; }
-  int32_t Height() { return height_; }
-  int32_t FrameCount() { return frame_count_; }
+  int32_t Width() const { return width_; }
+  int32_t Height() const { return height_; }
+  int32_t FrameCount() const { return frame_count_; }
 
   void Run(void (*update)(), void (*draw)());
 
