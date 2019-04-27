@@ -71,29 +71,23 @@ void Graphics::SetPalette(int32_t src_color, int32_t dest_color) {
 }
 
 void Graphics::Clear(int32_t color) {
-  if (color < 0 || color >= COLOR_COUNT) {
-    // error
-  }
+  color = GetDrawColor(color);
 
-  color = palette_table_[color];
+  int32_t size = screen_width_ * screen_height_;
 
-  size_t size = screen_width_ * screen_height_;
-
-  for (size_t i = 0; i < size; i++) {
+  for (int32_t i = 0; i < size; i++) {
     screen_data_[i] = color;
   }
 }
 
 void Graphics::DrawPoint(int32_t x, int32_t y, int32_t color) {
-  if (color < 0 || color >= COLOR_COUNT) {
-    // error
-  }
+  color = GetDrawColor(color);
 
   if (!clip_rect_.Includes(x, y)) {
     return;
   }
 
-  screen_data_[screen_width_ * y + x] = palette_table_[color];
+  screen_data_[screen_width_ * y + x] = color;
 }
 
 void Graphics::DrawLine(int32_t x1,
@@ -101,7 +95,73 @@ void Graphics::DrawLine(int32_t x1,
                         int32_t x2,
                         int32_t y2,
                         int32_t color) {
-  //
+  color = GetDrawColor(color);
+
+  if (x1 == x2 && y1 == y2) {
+    if (clip_rect_.Includes(x1, y1)) {
+      screen_data_[screen_width_ * y1 + x1] = color;
+    }
+
+    return;
+  }
+
+  if (std::abs(x1 - x2) > std::abs(y1 - y2)) {
+    int32_t start_x, start_y;
+    int32_t end_x, end_y;
+
+    if (x1 < x2) {
+      start_x = x1;
+      start_y = y1;
+      end_x = x2;
+      end_y = y2;
+    } else {
+      start_x = x2;
+      start_y = y2;
+      end_x = x1;
+      end_y = y1;
+    }
+
+    int32_t length = end_x - start_x + 1;
+    float alpha = static_cast<float>((end_y - start_y)) /
+                  static_cast<float>((end_x - start_x));
+
+    for (int32_t i = 0; i < length; i++) {
+      int32_t x = start_x + i;
+      int32_t y = static_cast<int>(start_y + alpha * i + 0.5f);
+
+      if (clip_rect_.Includes(x, y)) {
+        screen_data_[screen_width_ * y + x] = color;
+      }
+    }
+  } else {
+    int32_t start_x, start_y;
+    int32_t end_x, end_y;
+
+    if (y1 < y2) {
+      start_x = x1;
+      start_y = y1;
+      end_x = x2;
+      end_y = y2;
+    } else {
+      start_x = x2;
+      start_y = y2;
+      end_x = x1;
+      end_y = y1;
+    }
+
+    int32_t length = end_y - start_y + 1;
+    float alpha = static_cast<float>((end_x - start_x)) /
+                  static_cast<float>((end_y - start_y));
+
+    for (int32_t i = 0; i < length; i++) {
+      int32_t y = start_y + i;
+      int32_t x = static_cast<int>(start_x + alpha * i + 0.5f);
+
+      if (clip_rect_.Includes(x, y)) {
+        screen_data_[screen_width_ * y + x] = color;
+      }
+    }
+  }
 }
 
 void Graphics::DrawRectangle(int32_t x1,
@@ -109,13 +169,14 @@ void Graphics::DrawRectangle(int32_t x1,
                              int32_t x2,
                              int32_t y2,
                              int32_t color) {
-  if (color < 0 || color >= COLOR_COUNT) {
-    // error
-  }
+  color = GetDrawColor(color);
 
-  color = palette_table_[color];
   Rectangle draw_rect =
       Rectangle::FromPos(x1, y1, x2, y2).Intersect(clip_rect_);
+
+  if (draw_rect.IsEmpty()) {
+    return;
+  }
 
   int32_t rect_left = draw_rect.Left();
   int32_t rect_top = draw_rect.Top();
@@ -136,11 +197,8 @@ void Graphics::DrawRectangleBorder(int32_t x1,
                                    int32_t x2,
                                    int32_t y2,
                                    int32_t color) {
-  if (color < 0 || color >= COLOR_COUNT) {
-    // error
-  }
+  color = GetDrawColor(color);
 
-  color = palette_table_[color];
   Rectangle draw_rect =
       Rectangle::FromPos(x1, y1, x2, y2).Intersect(clip_rect_);
 
@@ -174,13 +232,12 @@ void Graphics::DrawRectangleBorder(int32_t x1,
   }
 
   if (y2 >= clip_rect_.Top() && y2 <= clip_rect_.Bottom()) {
-    size_t line_head = screen_width_ * y2;
+    int32_t index = screen_width_ * y2;
 
     for (int32_t i = rect_left; i <= rect_right; i++) {
-      screen_data_[line_head + i] = color;
+      screen_data_[index + i] = color;
     }
   }
-  //
 }
 
 void Graphics::DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color) {
@@ -191,7 +248,7 @@ void Graphics::DrawCircleBorder(int32_t x,
                                 int32_t y,
                                 int32_t radius,
                                 int32_t color) {
-  //
+  color = GetDrawColor(color);
 }
 
 void Graphics::DrawImage(int32_t x,
@@ -212,6 +269,8 @@ void Graphics::DrawTilemap(int32_t x,
 }
 
 void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
+  color = GetDrawColor(color);
+
   //
 }
 
@@ -234,6 +293,14 @@ void Graphics::SetupFontImage() {
       index += IMAGE_WIDTH;
     }
   }
+}
+
+int32_t Graphics::GetDrawColor(int32_t color) const {
+  if (color < 0 || color >= COLOR_COUNT) {
+    // error
+  }
+
+  return palette_table_[color];
 }
 
 }  // namespace pyxelcore
