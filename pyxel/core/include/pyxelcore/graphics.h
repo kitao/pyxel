@@ -42,19 +42,13 @@ class Graphics {
   void DrawCircleBorder(int32_t x, int32_t y, int32_t radius, int32_t color);
   void DrawImage(int32_t x,
                  int32_t y,
-                 int32_t image_index,
-                 int32_t u,
-                 int32_t v,
-                 int32_t width,
-                 int32_t height,
+                 const Image* image,
+                 const Rectangle& copy_rect,
                  int32_t color_key = -1);
   void DrawTilemap(int32_t x,
                    int32_t y,
-                   int32_t tilemap_index,
-                   int32_t u,
-                   int32_t v,
-                   int32_t width,
-                   int32_t height,
+                   const Tilemap* tilemap,
+                   const Rectangle& copy_rect,
                    int32_t colkey = -1);
   void DrawText(int32_t x, int32_t y, const char* text, int32_t color);
 
