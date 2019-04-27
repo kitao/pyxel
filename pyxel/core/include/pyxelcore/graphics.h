@@ -14,10 +14,10 @@ class Graphics {
   Graphics(int32_t width, int32_t height);
   ~Graphics();
 
-  int32_t* ScreenData() { return screen_data_; }
+  int32_t* ScreenData() const { return screen_data_; }
 
-  Image* GetImage(int32_t image_index, bool system = false);
-  Tilemap* GetTilemap(int32_t tilemap_index);
+  Image* GetImage(int32_t image_index, bool system = false) const;
+  Tilemap* GetTilemap(int32_t tilemap_index) const;
 
   void ResetClippingArea();
   void SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2);

@@ -13,8 +13,8 @@ class Audio {
   Audio();
   ~Audio();
 
-  Sound* GetSound(int32_t sound_index, bool system = false);
-  Music* GetMusic(int32_t music_index);
+  Sound* GetSound(int32_t sound_index, bool system = false) const;
+  Music* GetMusic(int32_t music_index) const;
   void PlaySound(int32_t channel, int32_t sound_index, bool loop = false);
   void PlayMusic(int32_t music_index, bool loop = false);
   void StopPlaying(int32_t channel);
