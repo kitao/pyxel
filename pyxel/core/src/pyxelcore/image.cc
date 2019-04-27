@@ -8,7 +8,7 @@
 
 namespace pyxelcore {
 
-Image::Image(int32_t width, int32_t height, void* data)
+Image::Image(int32_t width, int32_t height, int32_t* data)
     : Rectangle(0, 0, width, height) {
   if (Width() <= 0 || Height() <= 0) {
     // error
@@ -16,7 +16,7 @@ Image::Image(int32_t width, int32_t height, void* data)
 
   if (data) {
     need_to_delete_ = false;
-    data_ = reinterpret_cast<int32_t*>(data);
+    data_ = data;
   } else {
     need_to_delete_ = true;
     data_ = new int32_t[Width() * Height()];
@@ -29,7 +29,7 @@ Image::~Image() {
   }
 }
 
-int32_t Image::GetColor(int32_t x, int32_t y) {
+int32_t Image::GetColor(int32_t x, int32_t y) const {
   if (!Includes(x, y)) {
     // error
   }
@@ -54,60 +54,37 @@ void Image::SetData(int32_t x,
                     const int32_t* data,
                     int32_t data_width,
                     int32_t data_height) {
-  if (!Includes(x, y)) {
-    // error
-  }
-
-  //
+  Image* image = new Image(data_width, data_height, const_cast<int32_t*>(data));
+  CopyImage(x, y, image, Rectangle::FromSize(0, 0, data_width, data_height),
+            *this);
+  delete image;
 }
 
 void Image::LoadImage(int32_t x,
                       int32_t y,
                       const char* filename,
                       const int32_t* palette_color) {
-  SDL_Surface* original_image = IMG_Load(filename);
-  SDL_Surface* rgb_image =
-      SDL_ConvertSurfaceFormat(original_image, SDL_PIXELFORMAT_RGBA8888, 0);
+  SDL_Surface* png_image = IMG_Load(filename);
 
   // TODO: error handling
-  int32_t src_w = rgb_image->w;
-  int32_t src_h = rgb_image->h;
-  int32_t dest_w = Width();
-  int32_t dest_h = Height();
 
-  Rectangle copy_rect =
-      Rectangle::FromSize(0, 0, src_w, src_h)
-          .Intersect(Rectangle::FromSize(x, y, dest_w, dest_h));
+  SDL_Surface* src_image =
+      SDL_ConvertSurfaceFormat(png_image, SDL_PIXELFORMAT_RGBA8888, 0);
 
-  if (copy_rect.IsEmpty()) {
-    SDL_FreeSurface(rgb_image);
-    SDL_FreeSurface(original_image);
+  int32_t width = src_image->w;
+  int32_t height = src_image->h;
 
-    return;
-  }
+  uint8_t* src_data = reinterpret_cast<uint8_t*>(src_image->pixels);
+  int32_t src_pitch = src_image->pitch;
 
-  int32_t offset_x = copy_rect.Left() - x;
-  int32_t offset_y = copy_rect.Top() - y;
+  Image image = Image(width, height);
+  int32_t* dest_data = image.Data();
 
-  int32_t src_x = offset_x;
-  int32_t src_y = offset_y;
-  uint8_t* src_data = reinterpret_cast<uint8_t*>(rgb_image->pixels);
-  int32_t src_pitch = rgb_image->pitch;
+  for (int32_t i = 0; i < height; i++) {
+    int32_t src_index = src_pitch * i;
+    int32_t dest_index = width * i;
 
-  int32_t dest_x = x + offset_x;
-  int32_t dest_y = y + offset_y;
-  int32_t* dest_data = data_;
-
-  int32_t copy_w = copy_rect.Width();
-  int32_t copy_h = copy_rect.Height();
-
-  // std::map<int32_t, int32_t> color_table;
-
-  for (int32_t i = 0; i < copy_h; i++) {
-    int32_t src_index = src_pitch * (src_y + i) + src_x * 4;
-    int32_t dest_index = dest_w * (dest_y + i) + dest_x;
-
-    for (int32_t j = 0; j < copy_w; j++) {
+    for (int32_t j = 0; j < width; j++) {
       int32_t src_r = src_data[src_index + j * 4 + 3];
       int32_t src_g = src_data[src_index + j * 4 + 2];
       int32_t src_b = src_data[src_index + j * 4 + 1];
@@ -120,7 +97,7 @@ void Image::LoadImage(int32_t x,
         int32_t dr = src_r - ((color >> 16) & 0xff);
         int32_t dg = src_g - ((color >> 8) & 0xff);
         int32_t db = src_b - (color & 0xff);
-        int32_t color_dist = dr * dr * 1 + dg * dg * 1 + db * db * 1;
+        int32_t color_dist = dr * dr + dg * dg + db * db;
 
         if (color_dist < nearest_color_dist) {
           nearest_color = k;
@@ -132,17 +109,69 @@ void Image::LoadImage(int32_t x,
     }
   }
 
-  SDL_FreeSurface(rgb_image);
-  SDL_FreeSurface(original_image);
+  CopyImage(x, y, &image, Rectangle::FromSize(0, 0, width, height), *this);
+
+  SDL_FreeSurface(png_image);
+  SDL_FreeSurface(src_image);
 }
 
 void Image::CopyImage(int32_t x,
                       int32_t y,
-                      Image* image,
-                      int32_t u,
-                      int32_t v,
-                      int32_t w,
-                      int32_t h,
-                      int32_t color_key) {}
+                      const Image* image,
+                      const Rectangle& copy_rect,
+                      const Rectangle& clip_rect,
+                      const int32_t* palette_table,
+                      int32_t color_key) {
+  if (color_key != -1 && (color_key < 0 || color_key >= COLOR_COUNT)) {
+    // error
+  }
+
+  Rectangle src_rect = static_cast<Rectangle>(*image).Intersect(copy_rect);
+
+  x += std::max(src_rect.Left() - copy_rect.Left(), 0);
+  y += std::max(src_rect.Top() - copy_rect.Top(), 0);
+
+  Rectangle dest_rect =
+      static_cast<Rectangle>(*this).Intersect(clip_rect).Intersect(
+          src_rect.MoveTo(x, y));
+
+  if (dest_rect.IsEmpty()) {
+    return;
+  }
+
+  src_rect =
+      dest_rect.MoveTo(copy_rect.Left() + std::max(dest_rect.Left() - x, 0),
+                       copy_rect.Top() + std::max(dest_rect.Top() - y, 0));
+
+  int32_t src_x = src_rect.Left();
+  int32_t src_y = src_rect.Top();
+  int32_t src_w = image->Width();
+  int32_t src_h = image->Height();
+  int32_t* src_data = image->Data();
+
+  int32_t dest_x = dest_rect.Left();
+  int32_t dest_y = dest_rect.Top();
+  int32_t dest_w = Width();
+  int32_t dest_h = Height();
+  int32_t* dest_data = Data();
+
+  int32_t copy_w = dest_rect.Width();
+  int32_t copy_h = dest_rect.Height();
+
+  for (int32_t i = 0; i < copy_h; i++) {
+    int32_t src_index = src_w * (src_y + i) + src_x;
+    int32_t dest_index = dest_w * (dest_y + i) + dest_x;
+
+    for (int32_t j = 0; j < copy_w; j++) {
+      int32_t src_color = src_data[src_index + j];
+
+      // TODO: performance improvement
+      if (src_color != color_key) {
+        dest_data[dest_index + j] =
+            palette_table ? palette_table[src_color] : src_color;
+      }
+    }
+  }
+}
 
 }  // namespace pyxelcore

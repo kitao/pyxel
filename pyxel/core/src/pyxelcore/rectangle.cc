@@ -5,7 +5,12 @@
 namespace pyxelcore {
 
 Rectangle::Rectangle()
-    : left_(0), top_(0), right_(0), bottom_(0), width_(0), height_(0) {}
+    : left_(INT16_MIN),
+      top_(INT16_MIN),
+      right_(INT16_MAX),
+      bottom_(INT16_MAX),
+      width_(INT16_MAX - INT16_MIN),
+      height_(INT16_MAX - INT16_MIN) {}
 
 Rectangle::Rectangle(int32_t left, int32_t top, int32_t width, int32_t height) {
   left_ = left;
