@@ -165,7 +165,8 @@ void blt(int32_t x,
          int32_t w,
          int32_t h,
          int32_t colkey) {
-  s_graphics->DrawImage(x, y, img, u, v, w, h, colkey);
+  s_graphics->DrawImage(x, y, s_graphics->GetImage(img),
+                        pyxelcore::Rectangle::FromSize(u, v, w, h), colkey);
 }
 
 void bltm(int32_t x,
@@ -176,7 +177,8 @@ void bltm(int32_t x,
           int32_t w,
           int32_t h,
           int32_t colkey) {
-  s_graphics->DrawTilemap(x, y, tm, u, v, w, h, colkey);
+  s_graphics->DrawTilemap(x, y, s_graphics->GetTilemap(tm),
+                          pyxelcore::Rectangle::FromSize(u, v, w, h), colkey);
 }
 
 void text(int32_t x, int32_t y, const char* s, int32_t col) {
