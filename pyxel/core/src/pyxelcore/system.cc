@@ -147,7 +147,7 @@ void System::UpdateScreenTexture() {
   SDL_LockTexture(window_info_.screen_texture, NULL, (void**)&pixels, &pitch);
 
   size_t size = width_ * height_;
-  int32_t* screen_data_ = graphics_->ScreenData();
+  int32_t* screen_data_ = graphics_->ScreenImage()->Data();
 
   for (size_t i = 0; i < size; i++) {
     pixels[i] = palette_color_[screen_data_[i]];
