@@ -76,22 +76,29 @@ const int32_t AUDIO_MUSIC_COUNT = 8;
 const int32_t AUDIO_ONE_SPEED = AUDIO_SAMPLE_RATE / 120;
 const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (AUDIO_CHANNEL_COUNT * 7);
 
-const int32_t SOUND_TONE_TRIANGLE = 0;
-const int32_t SOUND_TONE_SQUARE = 1;
-const int32_t SOUND_TONE_PULSE = 2;
-const int32_t SOUND_TONE_NOISE = 3;
-const int32_t SOUND_EFFECT_NONE = 0;
-const int32_t SOUND_EFFECT_SLIDE = 1;
-const int32_t SOUND_EFFECT_VIBRATO = 2;
-const int32_t SOUND_EFFECT_FADEOUT = 3;
+enum {
+  SOUND_TONE_TRIANGLE,
+  SOUND_TONE_SQUARE,
+  SOUND_TONE_PULSE,
+  SOUND_TONE_NOISE,
+};
 
-const int32_t SOUND_NOTE_C = 0;
-const int32_t SOUND_NOTE_D = 2;
-const int32_t SOUND_NOTE_E = 4;
-const int32_t SOUND_NOTE_F = 5;
-const int32_t SOUND_NOTE_G = 7;
-const int32_t SOUND_NOTE_A = 9;
-const int32_t SOUND_NOTE_B = 11;
+enum {
+  SOUND_EFFECT_NONE,
+  SOUND_EFFECT_SLIDE,
+  SOUND_EFFECT_VIBRATO,
+  SOUND_EFFECT_FADEOUT,
+};
+
+enum {
+  SOUND_NOTE_C = 0,
+  SOUND_NOTE_D = 2,
+  SOUND_NOTE_E = 4,
+  SOUND_NOTE_F = 5,
+  SOUND_NOTE_G = 7,
+  SOUND_NOTE_A = 9,
+  SOUND_NOTE_B = 11,
+};
 
 enum {
   KEY_SPACE,
