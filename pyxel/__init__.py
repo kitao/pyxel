@@ -1,170 +1,172 @@
 from typing import Any, Callable, List
-
-from . import constants  # type: ignore
+from . import core  # type: ignore
 
 #
 # constants
 #
 
-DEFAULT_BORDER_COLOR: int = constants.DEFAULT_BORDER_COLOR
-DEFAULT_BORDER_WIDTH: int = constants.DEFAULT_BORDER_WIDTH
-DEFAULT_CAPTION: str = constants.DEFAULT_CAPTION
-DEFAULT_FPS: int = constants.DEFAULT_FPS
-DEFAULT_PALETTE: List[int] = constants.DEFAULT_PALETTE
-DEFAULT_SCALE: int = constants.DEFAULT_SCALE
-GAMEPAD_1_A: int = constants.GAMEPAD_1_A
-GAMEPAD_1_B: int = constants.GAMEPAD_1_B
-GAMEPAD_1_DOWN: int = constants.GAMEPAD_1_DOWN
-GAMEPAD_1_LEFT: int = constants.GAMEPAD_1_LEFT
-GAMEPAD_1_LEFT_SHOULDER: int = constants.GAMEPAD_1_LEFT_SHOULDER
-GAMEPAD_1_RIGHT: int = constants.GAMEPAD_1_RIGHT
-GAMEPAD_1_RIGHT_SHOULDER: int = constants.GAMEPAD_1_RIGHT_SHOULDER
-GAMEPAD_1_SELECT: int = constants.GAMEPAD_1_SELECT
-GAMEPAD_1_START: int = constants.GAMEPAD_1_START
-GAMEPAD_1_UP: int = constants.GAMEPAD_1_UP
-GAMEPAD_1_X: int = constants.GAMEPAD_1_X
-GAMEPAD_1_Y: int = constants.GAMEPAD_1_Y
-GAMEPAD_2_A: int = constants.GAMEPAD_2_A
-GAMEPAD_2_B: int = constants.GAMEPAD_2_B
-GAMEPAD_2_DOWN: int = constants.GAMEPAD_2_DOWN
-GAMEPAD_2_LEFT: int = constants.GAMEPAD_2_LEFT
-GAMEPAD_2_LEFT_SHOULDER: int = constants.GAMEPAD_2_LEFT_SHOULDER
-GAMEPAD_2_RIGHT: int = constants.GAMEPAD_2_RIGHT
-GAMEPAD_2_RIGHT_SHOULDER: int = constants.GAMEPAD_2_RIGHT_SHOULDER
-GAMEPAD_2_SELECT: int = constants.GAMEPAD_2_SELECT
-GAMEPAD_2_START: int = constants.GAMEPAD_2_START
-GAMEPAD_2_UP: int = constants.GAMEPAD_2_UP
-GAMEPAD_2_X: int = constants.GAMEPAD_2_X
-GAMEPAD_2_Y: int = constants.GAMEPAD_2_Y
-KEY_0: int = constants.KEY_0
-KEY_1: int = constants.KEY_1
-KEY_2: int = constants.KEY_2
-KEY_3: int = constants.KEY_3
-KEY_4: int = constants.KEY_4
-KEY_5: int = constants.KEY_5
-KEY_6: int = constants.KEY_6
-KEY_7: int = constants.KEY_7
-KEY_8: int = constants.KEY_8
-KEY_9: int = constants.KEY_9
-KEY_A: int = constants.KEY_A
-KEY_ALT: int = constants.KEY_ALT
-KEY_APOSTROPHE: int = constants.KEY_APOSTROPHE
-KEY_B: int = constants.KEY_B
-KEY_BACKSLASH: int = constants.KEY_BACKSLASH
-KEY_BACKSPACE: int = constants.KEY_BACKSPACE
-KEY_C: int = constants.KEY_C
-KEY_CAPS_LOCK: int = constants.KEY_CAPS_LOCK
-KEY_COMMA: int = constants.KEY_COMMA
-KEY_CONTROL: int = constants.KEY_CONTROL
-KEY_D: int = constants.KEY_D
-KEY_DELETE: int = constants.KEY_DELETE
-KEY_DOWN: int = constants.KEY_DOWN
-KEY_E: int = constants.KEY_E
-KEY_END: int = constants.KEY_END
-KEY_ENTER: int = constants.KEY_ENTER
-KEY_EQUAL: int = constants.KEY_EQUAL
-KEY_ESCAPE: int = constants.KEY_ESCAPE
-KEY_F: int = constants.KEY_F
-KEY_F1: int = constants.KEY_F1
-KEY_F2: int = constants.KEY_F2
-KEY_F3: int = constants.KEY_F3
-KEY_F4: int = constants.KEY_F4
-KEY_F5: int = constants.KEY_F5
-KEY_F6: int = constants.KEY_F6
-KEY_F7: int = constants.KEY_F7
-KEY_F8: int = constants.KEY_F8
-KEY_F9: int = constants.KEY_F9
-KEY_F10: int = constants.KEY_F10
-KEY_F11: int = constants.KEY_F11
-KEY_F12: int = constants.KEY_F12
-KEY_F13: int = constants.KEY_F13
-KEY_F14: int = constants.KEY_F14
-KEY_F15: int = constants.KEY_F15
-KEY_F16: int = constants.KEY_F16
-KEY_F17: int = constants.KEY_F17
-KEY_F18: int = constants.KEY_F18
-KEY_F19: int = constants.KEY_F19
-KEY_F20: int = constants.KEY_F20
-KEY_F21: int = constants.KEY_F21
-KEY_F22: int = constants.KEY_F22
-KEY_F23: int = constants.KEY_F23
-KEY_F24: int = constants.KEY_F24
-KEY_F25: int = constants.KEY_F25
-KEY_G: int = constants.KEY_G
-KEY_GRAVE_ACCENT: int = constants.KEY_GRAVE_ACCENT
-KEY_H: int = constants.KEY_H
-KEY_HOME: int = constants.KEY_HOME
-KEY_I: int = constants.KEY_I
-KEY_INSERT: int = constants.KEY_INSERT
-KEY_J: int = constants.KEY_J
-KEY_K: int = constants.KEY_K
-KEY_KP_0: int = constants.KEY_KP_0
-KEY_KP_1: int = constants.KEY_KP_1
-KEY_KP_2: int = constants.KEY_KP_2
-KEY_KP_3: int = constants.KEY_KP_3
-KEY_KP_4: int = constants.KEY_KP_4
-KEY_KP_5: int = constants.KEY_KP_5
-KEY_KP_6: int = constants.KEY_KP_6
-KEY_KP_7: int = constants.KEY_KP_7
-KEY_KP_8: int = constants.KEY_KP_8
-KEY_KP_9: int = constants.KEY_KP_9
-KEY_KP_ADD: int = constants.KEY_KP_ADD
-KEY_KP_DECIMAL: int = constants.KEY_KP_DECIMAL
-KEY_KP_DIVIDE: int = constants.KEY_KP_DIVIDE
-KEY_KP_ENTER: int = constants.KEY_KP_ENTER
-KEY_KP_EQUAL: int = constants.KEY_KP_EQUAL
-KEY_KP_MULTIPLY: int = constants.KEY_KP_MULTIPLY
-KEY_KP_SUBTRACT: int = constants.KEY_KP_SUBTRACT
-KEY_L: int = constants.KEY_L
-KEY_LEFT: int = constants.KEY_LEFT
-KEY_LEFT_ALT: int = constants.KEY_LEFT_ALT
-KEY_LEFT_BRACKET: int = constants.KEY_LEFT_BRACKET
-KEY_LEFT_CONTROL: int = constants.KEY_LEFT_CONTROL
-KEY_LEFT_SHIFT: int = constants.KEY_LEFT_SHIFT
-KEY_LEFT_SUPER: int = constants.KEY_LEFT_SUPER
-KEY_M: int = constants.KEY_M
-KEY_MENU: int = constants.KEY_MENU
-KEY_MINUS: int = constants.KEY_MINUS
-KEY_N: int = constants.KEY_N
-KEY_NUM_LOCK: int = constants.KEY_NUM_LOCK
-KEY_O: int = constants.KEY_O
-KEY_P: int = constants.KEY_P
-KEY_PAGE_DOWN: int = constants.KEY_PAGE_DOWN
-KEY_PAGE_UP: int = constants.KEY_PAGE_UP
-KEY_PAUSE: int = constants.KEY_PAUSE
-KEY_PERIOD: int = constants.KEY_PERIOD
-KEY_PRINT_SCREEN: int = constants.KEY_PRINT_SCREEN
-KEY_Q: int = constants.KEY_Q
-KEY_R: int = constants.KEY_R
-KEY_RIGHT: int = constants.KEY_RIGHT
-KEY_RIGHT_ALT: int = constants.KEY_RIGHT_ALT
-KEY_RIGHT_BRACKET: int = constants.KEY_RIGHT_BRACKET
-KEY_RIGHT_CONTROL: int = constants.KEY_RIGHT_CONTROL
-KEY_RIGHT_SHIFT: int = constants.KEY_RIGHT_SHIFT
-KEY_RIGHT_SUPER: int = constants.KEY_RIGHT_SUPER
-KEY_S: int = constants.KEY_S
-KEY_SCROLL_LOCK: int = constants.KEY_SCROLL_LOCK
-KEY_SEMICOLON: int = constants.KEY_SEMICOLON
-KEY_SHIFT: int = constants.KEY_SHIFT
-KEY_SLASH: int = constants.KEY_SLASH
-KEY_SPACE: int = constants.KEY_SPACE
-KEY_SUPER: int = constants.KEY_SUPER
-KEY_T: int = constants.KEY_T
-KEY_TAB: int = constants.KEY_TAB
-KEY_U: int = constants.KEY_U
-KEY_UNKNOWN: int = constants.KEY_UNKNOWN
-KEY_UP: int = constants.KEY_UP
-KEY_V: int = constants.KEY_V
-KEY_W: int = constants.KEY_W
-KEY_WORLD_1: int = constants.KEY_WORLD_1
-KEY_WORLD_2: int = constants.KEY_WORLD_2
-KEY_X: int = constants.KEY_X
-KEY_Y: int = constants.KEY_Y
-KEY_Z: int = constants.KEY_Z
-MOUSE_LEFT_BUTTON: int = constants.MOUSE_LEFT_BUTTON
-MOUSE_MIDDLE_BUTTON: int = constants.MOUSE_MIDDLE_BUTTON
-MOUSE_RIGHT_BUTTON: int = constants.MOUSE_RIGHT_BUTTON
-VERSION: str = constants.VERSION
+VERSION: str = core.get_constant_number("VERSION")
+
+DEFAULT_CAPTION: str = core.get_constant_string("DEFAULT_CAPTION")
+DEFAULT_SCALE: int = core.get_constant_number("DEFAULT_SCALE")
+DEFAULT_PALETTE: List[int] = [
+    core.get_constant_number("DEFAULT_PALETTE_00"),
+    core.get_constant_number("DEFAULT_PALETTE_01"),
+    core.get_constant_number("DEFAULT_PALETTE_02"),
+    core.get_constant_number("DEFAULT_PALETTE_03"),
+    core.get_constant_number("DEFAULT_PALETTE_04"),
+    core.get_constant_number("DEFAULT_PALETTE_05"),
+    core.get_constant_number("DEFAULT_PALETTE_06"),
+    core.get_constant_number("DEFAULT_PALETTE_07"),
+    core.get_constant_number("DEFAULT_PALETTE_08"),
+    core.get_constant_number("DEFAULT_PALETTE_09"),
+    core.get_constant_number("DEFAULT_PALETTE_10"),
+    core.get_constant_number("DEFAULT_PALETTE_11"),
+    core.get_constant_number("DEFAULT_PALETTE_12"),
+    core.get_constant_number("DEFAULT_PALETTE_13"),
+    core.get_constant_number("DEFAULT_PALETTE_14"),
+    core.get_constant_number("DEFAULT_PALETTE_15"),
+]
+DEFAULT_FPS: int = core.get_constant_number("DEFAULT_FPS")
+DEFAULT_BORDER_WIDTH: int = core.get_constant_number("DEFAULT_BORDER_WIDTH")
+DEFAULT_BORDER_COLOR: int = core.get_constant_number("DEFAULT_BORDER_COLOR")
+
+KEY_SPACE: int = core.get_constant_number("KEY_SPACE")
+KEY_APOSTROPHE: int = core.get_constant_number("KEY_APOSTROPHE")
+KEY_COMMA: int = core.get_constant_number("KEY_COMMA")
+KEY_MINUS: int = core.get_constant_number("KEY_MINUS")
+KEY_PERIOD: int = core.get_constant_number("KEY_PERIOD")
+KEY_SLASH: int = core.get_constant_number("KEY_SLASH")
+KEY_0: int = core.get_constant_number("KEY_0")
+KEY_1: int = core.get_constant_number("KEY_1")
+KEY_2: int = core.get_constant_number("KEY_2")
+KEY_3: int = core.get_constant_number("KEY_3")
+KEY_4: int = core.get_constant_number("KEY_4")
+KEY_5: int = core.get_constant_number("KEY_5")
+KEY_6: int = core.get_constant_number("KEY_6")
+KEY_7: int = core.get_constant_number("KEY_7")
+KEY_8: int = core.get_constant_number("KEY_8")
+KEY_9: int = core.get_constant_number("KEY_9")
+KEY_SEMICOLON: int = core.get_constant_number("KEY_SEMICOLON")
+KEY_EQUAL: int = core.get_constant_number("KEY_EQUAL")
+KEY_A: int = core.get_constant_number("KEY_A")
+KEY_B: int = core.get_constant_number("KEY_B")
+KEY_C: int = core.get_constant_number("KEY_C")
+KEY_D: int = core.get_constant_number("KEY_D")
+KEY_E: int = core.get_constant_number("KEY_E")
+KEY_F: int = core.get_constant_number("KEY_F")
+KEY_G: int = core.get_constant_number("KEY_G")
+KEY_H: int = core.get_constant_number("KEY_H")
+KEY_I: int = core.get_constant_number("KEY_I")
+KEY_J: int = core.get_constant_number("KEY_J")
+KEY_K: int = core.get_constant_number("KEY_K")
+KEY_L: int = core.get_constant_number("KEY_L")
+KEY_M: int = core.get_constant_number("KEY_M")
+KEY_N: int = core.get_constant_number("KEY_N")
+KEY_O: int = core.get_constant_number("KEY_O")
+KEY_P: int = core.get_constant_number("KEY_P")
+KEY_Q: int = core.get_constant_number("KEY_Q")
+KEY_R: int = core.get_constant_number("KEY_R")
+KEY_S: int = core.get_constant_number("KEY_S")
+KEY_T: int = core.get_constant_number("KEY_T")
+KEY_U: int = core.get_constant_number("KEY_U")
+KEY_V: int = core.get_constant_number("KEY_V")
+KEY_W: int = core.get_constant_number("KEY_W")
+KEY_X: int = core.get_constant_number("KEY_X")
+KEY_Y: int = core.get_constant_number("KEY_Y")
+KEY_Z: int = core.get_constant_number("KEY_Z")
+KEY_LEFT_BRACKET: int = core.get_constant_number("KEY_LEFT_BRACKET")
+KEY_BACKSLASH: int = core.get_constant_number("KEY_BACKSLASH")
+KEY_RIGHT_BRACKET: int = core.get_constant_number("KEY_RIGHT_BRACKET")
+KEY_GRAVE_ACCENT: int = core.get_constant_number("KEY_GRAVE_ACCENT")
+KEY_ESCAPE: int = core.get_constant_number("KEY_ESCAPE")
+KEY_ENTER: int = core.get_constant_number("KEY_ENTER")
+KEY_TAB: int = core.get_constant_number("KEY_TAB")
+KEY_BACKSPACE: int = core.get_constant_number("KEY_BACKSPACE")
+KEY_INSERT: int = core.get_constant_number("KEY_INSERT")
+KEY_DELETE: int = core.get_constant_number("KEY_DELETE")
+KEY_RIGHT: int = core.get_constant_number("KEY_RIGHT")
+KEY_LEFT: int = core.get_constant_number("KEY_LEFT")
+KEY_DOWN: int = core.get_constant_number("KEY_DOWN")
+KEY_UP: int = core.get_constant_number("KEY_UP")
+KEY_PAGE_UP: int = core.get_constant_number("KEY_PAGE_UP")
+KEY_PAGE_DOWN: int = core.get_constant_number("KEY_PAGE_DOWN")
+KEY_HOME: int = core.get_constant_number("KEY_HOME")
+KEY_END: int = core.get_constant_number("KEY_END")
+KEY_CAPS_LOCK: int = core.get_constant_number("KEY_CAPS_LOCK")
+KEY_SCROLL_LOCK: int = core.get_constant_number("KEY_SCROLL_LOCK")
+KEY_NUM_LOCK: int = core.get_constant_number("KEY_NUM_LOCK")
+KEY_PRINT_SCREEN: int = core.get_constant_number("KEY_PRINT_SCREEN")
+KEY_PAUSE: int = core.get_constant_number("KEY_PAUSE")
+KEY_F1: int = core.get_constant_number("KEY_F1")
+KEY_F2: int = core.get_constant_number("KEY_F2")
+KEY_F3: int = core.get_constant_number("KEY_F3")
+KEY_F4: int = core.get_constant_number("KEY_F4")
+KEY_F5: int = core.get_constant_number("KEY_F5")
+KEY_F6: int = core.get_constant_number("KEY_F6")
+KEY_F7: int = core.get_constant_number("KEY_F7")
+KEY_F8: int = core.get_constant_number("KEY_F8")
+KEY_F9: int = core.get_constant_number("KEY_F9")
+KEY_F10: int = core.get_constant_number("KEY_F10")
+KEY_F11: int = core.get_constant_number("KEY_F11")
+KEY_F12: int = core.get_constant_number("KEY_F12")
+KEY_KP_0: int = core.get_constant_number("KEY_KP_0")
+KEY_KP_1: int = core.get_constant_number("KEY_KP_1")
+KEY_KP_2: int = core.get_constant_number("KEY_KP_2")
+KEY_KP_3: int = core.get_constant_number("KEY_KP_3")
+KEY_KP_4: int = core.get_constant_number("KEY_KP_4")
+KEY_KP_5: int = core.get_constant_number("KEY_KP_5")
+KEY_KP_6: int = core.get_constant_number("KEY_KP_6")
+KEY_KP_7: int = core.get_constant_number("KEY_KP_7")
+KEY_KP_8: int = core.get_constant_number("KEY_KP_8")
+KEY_KP_9: int = core.get_constant_number("KEY_KP_9")
+KEY_KP_DECIMAL: int = core.get_constant_number("KEY_KP_DECIMAL")
+KEY_KP_DIVIDE: int = core.get_constant_number("KEY_KP_DIVIDE")
+KEY_KP_MULTIPLY: int = core.get_constant_number("KEY_KP_MULTIPLY")
+KEY_KP_SUBTRACT: int = core.get_constant_number("KEY_KP_SUBTRACT")
+KEY_KP_ADD: int = core.get_constant_number("KEY_KP_ADD")
+KEY_KP_ENTER: int = core.get_constant_number("KEY_KP_ENTER")
+KEY_KP_EQUAL: int = core.get_constant_number("KEY_KP_EQUAL")
+KEY_LEFT_SHIFT: int = core.get_constant_number("KEY_LEFT_SHIFT")
+KEY_LEFT_CONTROL: int = core.get_constant_number("KEY_LEFT_CONTROL")
+KEY_LEFT_ALT: int = core.get_constant_number("KEY_LEFT_ALT")
+KEY_LEFT_SUPER: int = core.get_constant_number("KEY_LEFT_SUPER")
+KEY_RIGHT_SHIFT: int = core.get_constant_number("KEY_RIGHT_SHIFT")
+KEY_RIGHT_CONTROL: int = core.get_constant_number("KEY_RIGHT_CONTROL")
+KEY_RIGHT_ALT: int = core.get_constant_number("KEY_RIGHT_ALT")
+KEY_RIGHT_SUPER: int = core.get_constant_number("KEY_RIGHT_SUPER")
+KEY_MENU: int = core.get_constant_number("KEY_MENU")
+KEY_SHIFT: int = core.get_constant_number("KEY_SHIFT")
+KEY_CONTROL: int = core.get_constant_number("KEY_CONTROL")
+KEY_ALT: int = core.get_constant_number("KEY_ALT")
+KEY_SUPER: int = core.get_constant_number("KEY_SUPER")
+MOUSE_LEFT_BUTTON: int = core.get_constant_number("MOUSE_LEFT_BUTTON")
+MOUSE_MIDDLE_BUTTON: int = core.get_constant_number("MOUSE_MIDDLE_BUTTON")
+MOUSE_RIGHT_BUTTON: int = core.get_constant_number("MOUSE_RIGHT_BUTTON")
+GAMEPAD_1_A: int = core.get_constant_number("GAMEPAD_1_A")
+GAMEPAD_1_B: int = core.get_constant_number("GAMEPAD_1_B")
+GAMEPAD_1_X: int = core.get_constant_number("GAMEPAD_1_X")
+GAMEPAD_1_Y: int = core.get_constant_number("GAMEPAD_1_Y")
+GAMEPAD_1_LEFT_SHOULDER: int = core.get_constant_number("GAMEPAD_1_LEFT_SHOULDER")
+GAMEPAD_1_RIGHT_SHOULDER: int = core.get_constant_number("GAMEPAD_1_RIGHT_SHOULDER")
+GAMEPAD_1_SELECT: int = core.get_constant_number("GAMEPAD_1_SELECT")
+GAMEPAD_1_START: int = core.get_constant_number("GAMEPAD_1_START")
+GAMEPAD_1_UP: int = core.get_constant_number("GAMEPAD_1_UP")
+GAMEPAD_1_RIGHT: int = core.get_constant_number("GAMEPAD_1_RIGHT")
+GAMEPAD_1_DOWN: int = core.get_constant_number("GAMEPAD_1_DOWN")
+GAMEPAD_1_LEFT: int = core.get_constant_number("GAMEPAD_1_LEFT")
+GAMEPAD_2_A: int = core.get_constant_number("GAMEPAD_2_A")
+GAMEPAD_2_B: int = core.get_constant_number("GAMEPAD_2_B")
+GAMEPAD_2_X: int = core.get_constant_number("GAMEPAD_2_X")
+GAMEPAD_2_Y: int = core.get_constant_number("GAMEPAD_2_Y")
+GAMEPAD_2_LEFT_SHOULDER: int = core.get_constant_number("GAMEPAD_2_LEFT_SHOULDER")
+GAMEPAD_2_RIGHT_SHOULDER: int = core.get_constant_number("GAMEPAD_2_RIGHT_SHOULDER")
+GAMEPAD_2_SELECT: int = core.get_constant_number("GAMEPAD_2_SELECT")
+GAMEPAD_2_START: int = core.get_constant_number("GAMEPAD_2_START")
+GAMEPAD_2_UP: int = core.get_constant_number("GAMEPAD_2_UP")
+GAMEPAD_2_RIGHT: int = core.get_constant_number("GAMEPAD_2_RIGHT")
+GAMEPAD_2_DOWN: int = core.get_constant_number("GAMEPAD_2_DOWN")
+GAMEPAD_2_LEFT: int = core.get_constant_number("GAMEPAD_2_LEFT")
 
 
 #
@@ -440,7 +442,6 @@ def stop(ch: int = None) -> None:
 def _setup_apis():
     import sys
 
-    from . import core
     from . import system_wrapper
     from . import resource_wrapper
     from . import input_wrapper
@@ -452,7 +453,7 @@ def _setup_apis():
     from . import music_wrapper
 
     module = sys.modules[__name__]
-    lib = core.lib
+    lib = core._lib
 
     system_wrapper.setup_apis(module, lib)
     resource_wrapper.setup_apis(module, lib)

@@ -4,7 +4,6 @@ import platform
 
 
 def load_library():
-
     lib_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin")
     lib_name = "libpyxelcore"
     system = platform.system()
@@ -24,22 +23,22 @@ def load_library():
     return ctypes.cdll.LoadLibrary(lib_path)
 
 
-lib = load_library()
+_lib = load_library()
 
 
 def get_constant_number(name):
     c_name = ctypes.create_string_buffer(name.encode("utf-8"))
-    return lib.get_constant_number(c_name)
+    return _lib.get_constant_number(c_name)
 
 
 def get_constant_string(name):
     c_name = ctypes.create_string_buffer(name.encode("utf-8"))
-    return lib.get_constant_number(c_name)
+    return _lib.get_constant_number(c_name)
 
 
-def raise_error(message):
-    c_message = ctypes.create_string_buffer(message.encode("utf-8"))
-    lib.raise_error(c_message)
+def raise_error(msg):
+    c_msg = ctypes.create_string_buffer(msg.encode("utf-8"))
+    _lib.raise_error(c_msg)
 
 
 if __name__ == "__main__":
