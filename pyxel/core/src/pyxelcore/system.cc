@@ -193,8 +193,4 @@ void System::UpdateWindowInfo() {
       2;
 }
 
-void System::RaiseError(const char* message) {
-  //
-}
-
 }  // namespace pyxelcore

@@ -6,6 +6,7 @@
 #include "pyxelcore/input.h"
 #include "pyxelcore/resource.h"
 #include "pyxelcore/system.h"
+#include "pyxelcore/utilities.h"
 
 static pyxelcore::System* s_system = NULL;
 static pyxelcore::Resource* s_resource = NULL;
@@ -50,18 +51,6 @@ void run(void (*update)(), void (*draw)()) {
 
 void quit() {
   delete s_system;
-}
-
-int32_t get_constant_number(const char* name) {
-  return pyxelcore::System::GetConstantNumber(name);
-}
-
-const char* get_constant_string(const char* name) {
-  return pyxelcore::System::GetConstantString(name);
-}
-
-void raise_error(const char* msg) {
-  pyxelcore::System::RaiseError(msg);
 }
 
 //
@@ -270,3 +259,18 @@ void image_copy(void* self,
 //
 // Music class
 //
+
+//
+// Utilities
+//
+int32_t get_constant_number(const char* name) {
+  return pyxelcore::Utilities::GetConstantNumber(name);
+}
+
+const char* get_constant_string(const char* name) {
+  return pyxelcore::Utilities::GetConstantString(name);
+}
+
+void raise_error(const char* message) {
+  pyxelcore::Utilities::RaiseError(message);
+}
