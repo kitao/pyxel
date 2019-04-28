@@ -273,19 +273,30 @@ void Graphics::DrawCircleBorder(int32_t x,
 
 void Graphics::DrawImage(int32_t x,
                          int32_t y,
-                         const Image* image,
-                         const Rectangle& copy_rect,
+                         int32_t image_index,
+                         int32_t u,
+                         int32_t v,
+                         int32_t width,
+                         int32_t height,
                          int32_t color_key) {
+  Image* image = GetImage(image_index);
+  Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
+
   screen_image_->CopyImage(x, y, image, copy_rect, clip_rect_, palette_table_,
                            color_key);
 }
 
 void Graphics::DrawTilemap(int32_t x,
                            int32_t y,
-                           const Tilemap* tilemap,
-                           const Rectangle& copy_rect,
+                           int32_t tilemap_index,
+                           int32_t u,
+                           int32_t v,
+                           int32_t width,
+                           int32_t height,
                            int32_t colkey) {
-  //
+  Tilemap* tilemap = GetTilemap(tilemap_index);
+  Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
+  // TODO
 }
 
 void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
@@ -342,14 +353,6 @@ void Graphics::SetupFontImage() {
       index += IMAGE_WIDTH;
     }
   }
-}
-
-int32_t Graphics::GetDrawColor(int32_t color) const {
-  if (color < 0 || color >= COLOR_COUNT) {
-    // error
-  }
-
-  return palette_table_[color];
 }
 
 }  // namespace pyxelcore
