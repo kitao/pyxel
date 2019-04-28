@@ -17,11 +17,7 @@ class Image : public Rectangle {
 
   int32_t GetColor(int32_t x, int32_t y) const;
   void SetColor(int32_t x, int32_t y, int32_t color);
-  void SetData(int32_t x,
-               int32_t y,
-               const int32_t* data,
-               int32_t data_width,
-               int32_t data_height);
+  void SetColor(int32_t x, int32_t y, const char** str, int32_t str_count);
   void LoadImage(int32_t x,
                  int32_t y,
                  const char* filename,

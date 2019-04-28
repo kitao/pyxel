@@ -120,9 +120,8 @@ PYXEL_API void image_set1(void* self, int32_t x, int32_t y, int32_t data);
 PYXEL_API void image_set(void* self,
                          int32_t x,
                          int32_t y,
-                         const int32_t* data,
-                         int32_t data_width,
-                         int32_t data_height);
+                         const char** str,
+                         int32_t str_count);
 PYXEL_API void image_load(void* self,
                           int32_t x,
                           int32_t y,
