@@ -2,6 +2,8 @@
 
 #include "pyxelcore/system.h"
 
+#include <string>
+
 #define CHECK_CONSTANT(n)      \
   if (strcmp(name, #n) == 0) { \
     return n;                  \
