@@ -14,7 +14,7 @@ class Graphics {
   Graphics(int32_t width, int32_t height);
   ~Graphics();
 
-  int32_t* ScreenData() const { return screen_data_; }
+  Image* ScreenImage() const { return screen_image_; }
 
   Image* GetImage(int32_t image_index, bool system = false) const;
   Tilemap* GetTilemap(int32_t tilemap_index) const;
@@ -54,9 +54,6 @@ class Graphics {
 
  private:
   Image* screen_image_;
-  int32_t screen_width_;
-  int32_t screen_height_;
-  int32_t* screen_data_;
   Image** image_bank_;
   Tilemap** tilemap_bank_;
   Rectangle clip_rect_;
@@ -64,6 +61,11 @@ class Graphics {
 
   void SetupFontImage();
   int32_t GetDrawColor(int32_t color) const;
+  void SetPixel(int32_t x, int32_t y, int32_t color) {
+    if (clip_rect_.Includes(x, y)) {
+      screen_image_->Data()[screen_image_->Width() * y + x] = color;
+    }
+  }
 };
 
 }  // namespace pyxelcore
