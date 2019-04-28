@@ -1,6 +1,6 @@
-#include "pyxelcore/constants.h"
+#include "pyxelcore/utilities.h"
 
-#include "pyxelcore/system.h"
+#include "pyxelcore/constants.h"
 
 #include <string>
 
@@ -12,7 +12,7 @@
 
 namespace pyxelcore {
 
-int32_t System::GetConstantNumber(const char* name) {
+int32_t Utilities::GetConstantNumber(const char* name) {
   CHECK_CONSTANT(DEFAULT_FPS);
   CHECK_CONSTANT(DEFAULT_SCALE);
   CHECK_CONSTANT(DEFAULT_FPS);
@@ -41,7 +41,7 @@ int32_t System::GetConstantNumber(const char* name) {
   return 0;
 }
 
-const char* System::GetConstantString(const char* name) {
+const char* Utilities::GetConstantString(const char* name) {
   CHECK_CONSTANT(VERSION);
 
   CHECK_CONSTANT(DEFAULT_CAPTION);
@@ -49,6 +49,10 @@ const char* System::GetConstantString(const char* name) {
   // error
 
   return "";
+}
+
+void Utilities::RaiseError(const char* message) {
+  //
 }
 
 }  // namespace pyxelcore
