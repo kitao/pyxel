@@ -1,6 +1,6 @@
 def setup_apis(module, lib):
     import ctypes
-    from pyxel.constants import (
+    from pyxel import (
         DEFAULT_BORDER_COLOR,
         DEFAULT_BORDER_WIDTH,
         DEFAULT_CAPTION,
