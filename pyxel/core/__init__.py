@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     class App:
         def __init__(self):
-            pyxel.init(256, 256)  # noqa: F821
+            pyxel.init(256, 256, caption="HOGE")  # noqa: F821
 
             self.x = 0
 
@@ -50,8 +50,13 @@ if __name__ == "__main__":
             pyxel.pix(pyxel.mouse_x, pyxel.mouse_y, 7)  # noqa: F821
 
             pyxel.blt(100, 150, 0, 0, 0, 16, 16)
+            pyxel.blt(120, 150, 0, 0, 0, 16, 16, 5)
 
             pyxel.line(10, 15, 50, 30, 7)  # noqa: F821
             pyxel.line(10, 15, 50, 100, 8)  # noqa: F821
+            pyxel.circ(40, 40, 20, 9)  # noqa: F821
+            pyxel.circb(50, 80, 10, 9)  # noqa: F821
+
+            pyxel.text(50, 120, "abcdABCD", 7)
 
     App()
