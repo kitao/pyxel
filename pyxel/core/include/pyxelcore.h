@@ -36,10 +36,6 @@ PYXEL_API void run(void (*update)(), void (*draw)());
 PYXEL_API void quit();
 PYXEL_API void error(const char* func, const char* msg);
 
-PYXEL_API int32_t get_constant_number(const char* name);
-PYXEL_API const char* get_constant_string(const char* name);
-PYXEL_API void raise_error(const char* message);
-
 //
 // Resource
 //
@@ -235,6 +231,13 @@ PYXEL_API void music_set_ch0(void* self, const int32_t* data, int32_t length);
 PYXEL_API void music_set_ch1(void* self, const int32_t* data, int32_t length);
 PYXEL_API void music_set_ch2(void* self, const int32_t* data, int32_t length);
 PYXEL_API void music_set_ch3(void* self, const int32_t* data, int32_t length);
+
+//
+// Utilities
+//
+PYXEL_API int32_t get_constant_number(const char* name);
+PYXEL_API const char* get_constant_string(const char* name);
+PYXEL_API void raise_error(const char* message);
 
 #ifdef __cplusplus
 }
