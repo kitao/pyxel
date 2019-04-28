@@ -3,6 +3,8 @@
 
 #include "pyxelcore/constants.h"
 
+#include <string>
+
 class SDL_Renderer;
 class SDL_Window;
 class SDL_Texture;
@@ -31,12 +33,12 @@ class System {
 
   System(int32_t width,
          int32_t height,
-         const char* caption = NULL,
-         int32_t scale = -1,
-         const int32_t* palette_color = NULL,
-         int32_t fps = -1,
-         int32_t border_width = -1,
-         int32_t border_color = -1);
+         const char* caption = DEFAULT_CAPTION,
+         int32_t scale = DEFAULT_SCALE,
+         const int32_t* palette_color = DEFAULT_PALETTE,
+         int32_t fps = DEFAULT_FPS,
+         int32_t border_width = DEFAULT_BORDER_WIDTH,
+         int32_t border_color = DEFAULT_BORDER_COLOR);
   ~System();
 
   Resource* Resource() const { return resource_; }
