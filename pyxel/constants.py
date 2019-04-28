@@ -1,9 +1,4 @@
-import glfw
-
 from . import core
-
-VERSION = core.get_constant_number("VERSINO")
-
 
 GIF_TRANSPARENCY_COLOR = (255, 0, 0)
 
