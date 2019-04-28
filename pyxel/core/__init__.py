@@ -1,7 +1,9 @@
+import ctypes
+import os
+import platform
+
+
 def load_library():
-    import ctypes
-    import os
-    import platform
 
     lib_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin")
     lib_name = "libpyxelcore"
@@ -23,6 +25,21 @@ def load_library():
 
 
 lib = load_library()
+
+
+def get_constant_number(name):
+    c_name = ctypes.create_string_buffer(name.encode("utf-8"))
+    return lib.get_constant_number(c_name)
+
+
+def get_constant_string(name):
+    c_name = ctypes.create_string_buffer(name.encode("utf-8"))
+    return lib.get_constant_number(c_name)
+
+
+def raise_error(message):
+    c_message = ctypes.create_string_buffer(message.encode("utf-8"))
+    lib.raise_error(c_message)
 
 
 if __name__ == "__main__":
