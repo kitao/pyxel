@@ -12,6 +12,20 @@
 
 namespace pyxelcore {
 
+const char* ICON_DATA[] = {
+    "0000000110000000", "0000011F71100000", "00011FF11FF11000",
+    "011FF111111FF110", "1AE1111111111C71", "1E1EE111111CC1C1",
+    "1E111EE11CC111C1", "1E11111E711111C1", "1E111111C11111C1",
+    "1E111111C11111C1", "1E111111C11111C1", "1AE11111C1111C71",
+    "011EE111C11CC110", "00011EE1CCC11000", "0000011E71100000",
+    "0000000110000000",
+};
+
+const char* MOUSE_CURSOR_DATA[] = {
+    "00000011", "07776011", "07760111", "07676011",
+    "06067601", "00106760", "11110601", "11111011",
+};
+
 System::System(int32_t width,
                int32_t height,
                const char* caption,
@@ -27,15 +41,14 @@ System::System(int32_t width,
 
   width_ = std::max(width, 1);
   height_ = std::max(height, 1);
-  caption_ = caption ? std::string(caption) : DEFAULT_CAPTION;
-  fps_ = std::max(fps != -1 ? fps : DEFAULT_FPS, 1);
-  border_width_ = border_width != -1 ? border_width : DEFAULT_BORDER_WIDTH;
-  border_color_ = border_color != -1 ? border_color : DEFAULT_BORDER_COLOR;
+  caption_ = caption;
+  fps_ = std::max(fps, 1);
+  border_width_ = std::max(DEFAULT_BORDER_WIDTH, 0);
+  border_color_ = std::max(DEFAULT_BORDER_COLOR, 0);
   frame_count_ = 0;
 
-  window_info_.screen_scale = scale != -1 ? scale : DEFAULT_SCALE;
+  window_info_.screen_scale = std::max(scale, 0);
 
-  palette_color = palette_color ? palette_color : DEFAULT_PALETTE;
   for (int32_t i = 0; i < COLOR_COUNT; i++) {
     palette_color_[i] = palette_color[i];
   }
