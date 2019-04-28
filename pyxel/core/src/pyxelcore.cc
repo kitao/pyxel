@@ -271,6 +271,6 @@ const char* get_constant_string(const char* name) {
   return pyxelcore::Utilities::GetConstantString(name);
 }
 
-void raise_error(const char* message) {
-  pyxelcore::Utilities::RaiseError(message);
+void raise_error(const char* msg) {
+  pyxelcore::Utilities::RaiseError(msg);
 }

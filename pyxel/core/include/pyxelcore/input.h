@@ -1,7 +1,7 @@
 #ifndef PYXELCORE_INPUT_H_
 #define PYXELCORE_INPUT_H_
 
-#include <cstdint>
+#include "pyxelcore/constants.h"
 
 namespace pyxelcore {
 
@@ -27,6 +27,7 @@ class Input {
  private:
   int32_t mouse_x_;
   int32_t mouse_y_;
+  int32_t key_state[KEY_COUNT];
 };
 
 }  // namespace pyxelcore
