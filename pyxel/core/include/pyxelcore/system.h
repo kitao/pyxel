@@ -2,12 +2,7 @@
 #define PYXELCORE_SYSTEM_H_
 
 #include "pyxelcore/constants.h"
-
-#include <string>
-
-class SDL_Renderer;
-class SDL_Window;
-class SDL_Texture;
+#include "pyxelcore/window_info.h"
 
 namespace pyxelcore {
 
@@ -18,19 +13,6 @@ class Audio;
 
 class System {
  public:
-  struct WindowInfo {
-    int32_t window_x;
-    int32_t window_y;
-    int32_t window_width;
-    int32_t window_height;
-    int32_t screen_x;
-    int32_t screen_y;
-    int32_t screen_scale;
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    SDL_Texture* screen_texture;
-  };
-
   System(int32_t width,
          int32_t height,
          const char* caption = DEFAULT_CAPTION,
@@ -45,11 +27,10 @@ class System {
   Input* Input() const { return input_; }
   Graphics* Graphics() const { return graphics_; }
   Audio* Audio() const { return audio_; }
-  const struct WindowInfo* WindowInfo() const { return &window_info_; }
   const int32_t* PaletteColor() const { return palette_color_; }
 
-  int32_t Width() const { return width_; }
-  int32_t Height() const { return height_; }
+  int32_t Width() const { return window_info_.screen_width; }
+  int32_t Height() const { return window_info_.screen_height; }
   int32_t FrameCount() const { return frame_count_; }
 
   void Run(void (*update)(), void (*draw)());
@@ -64,9 +45,6 @@ class System {
   pyxelcore::Graphics* graphics_;
   pyxelcore::Audio* audio_;
 
-  int32_t width_;
-  int32_t height_;
-  std::string caption_;
   int32_t fps_;
   int32_t border_width_;
   int32_t border_color_;
@@ -74,7 +52,10 @@ class System {
   struct WindowInfo window_info_;
   int32_t palette_color_[COLOR_COUNT];
 
-  void SetupWindow();
+  void SetupWindow(const char* caption,
+                   int32_t width,
+                   int32_t height,
+                   int32_t scale);
   void RenderWindow();
   void UpdateScreenTexture();
   void UpdateWindowInfo();
