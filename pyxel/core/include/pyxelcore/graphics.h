@@ -42,13 +42,19 @@ class Graphics {
   void DrawCircleBorder(int32_t x, int32_t y, int32_t radius, int32_t color);
   void DrawImage(int32_t x,
                  int32_t y,
-                 const Image* image,
-                 const Rectangle& copy_rect,
+                 int32_t image_index,
+                 int32_t u,
+                 int32_t v,
+                 int32_t width,
+                 int32_t height,
                  int32_t color_key = -1);
   void DrawTilemap(int32_t x,
                    int32_t y,
-                   const Tilemap* tilemap,
-                   const Rectangle& copy_rect,
+                   int32_t tilemap_index,
+                   int32_t u,
+                   int32_t v,
+                   int32_t width,
+                   int32_t height,
                    int32_t colkey = -1);
   void DrawText(int32_t x, int32_t y, const char* text, int32_t color);
 
@@ -61,12 +67,22 @@ class Graphics {
 
   void SetupFontImage();
   int32_t GetDrawColor(int32_t color) const;
-  void SetPixel(int32_t x, int32_t y, int32_t color) {
-    if (clip_rect_.Includes(x, y)) {
-      screen_image_->Data()[screen_image_->Width() * y + x] = color;
-    }
-  }
+  void SetPixel(int32_t x, int32_t y, int32_t color);
 };
+
+inline int32_t Graphics::GetDrawColor(int32_t color) const {
+  if (color < 0 || color >= COLOR_COUNT) {
+    // error
+  }
+
+  return palette_table_[color];
+}
+
+inline void Graphics::SetPixel(int32_t x, int32_t y, int32_t color) {
+  if (clip_rect_.Includes(x, y)) {
+    screen_image_->Data()[screen_image_->Width() * y + x] = color;
+  }
+}
 
 }  // namespace pyxelcore
 

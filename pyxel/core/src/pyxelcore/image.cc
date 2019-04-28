@@ -49,14 +49,38 @@ void Image::SetColor(int32_t x, int32_t y, int32_t color) {
   data_[Width() * y + x] = color;
 }
 
-void Image::SetData(int32_t x,
-                    int32_t y,
-                    const int32_t* data,
-                    int32_t data_width,
-                    int32_t data_height) {
-  Image* image = new Image(data_width, data_height, const_cast<int32_t*>(data));
-  CopyImage(x, y, image, Rectangle::FromSize(0, 0, data_width, data_height),
-            *this);
+void Image::SetColor(int32_t x,
+                     int32_t y,
+                     const char** str,
+                     int32_t str_count) {
+  int32_t width = strlen(str[0]);
+  int32_t height = str_count;
+  Image* image = new Image(width, height);
+  int32_t* data = image->Data();
+
+  for (int32_t i = 0; i < height; i++) {
+    int32_t index = width * i;
+    const char* src = str[i];
+
+    for (int32_t j = 0; j < width; j++) {
+      int32_t value = src[j];
+
+      if (value >= '0' && value <= '9') {
+        value -= '0';
+      } else if (value >= 'A' && value <= 'F') {
+        value -= 'A';
+      } else if (value >= 'a' && value <= 'f') {
+        value -= 'a';
+      } else {
+        // error
+      }
+
+      data[index + j] = value;
+    }
+  }
+
+  CopyImage(x, y, image, Rectangle::FromSize(0, 0, width, height), *this);
+
   delete image;
 }
 

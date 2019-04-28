@@ -154,8 +154,7 @@ void blt(int32_t x,
          int32_t w,
          int32_t h,
          int32_t colkey) {
-  s_graphics->DrawImage(x, y, s_graphics->GetImage(img),
-                        pyxelcore::Rectangle::FromSize(u, v, w, h), colkey);
+  s_graphics->DrawImage(x, y, img, u, v, w, h, colkey);
 }
 
 void bltm(int32_t x,
@@ -166,8 +165,7 @@ void bltm(int32_t x,
           int32_t w,
           int32_t h,
           int32_t colkey) {
-  s_graphics->DrawTilemap(x, y, s_graphics->GetTilemap(tm),
-                          pyxelcore::Rectangle::FromSize(u, v, w, h), colkey);
+  s_graphics->DrawTilemap(x, y, tm, u, v, w, h, colkey);
 }
 
 void text(int32_t x, int32_t y, const char* s, int32_t col) {
@@ -223,11 +221,9 @@ void image_set1(void* self, int32_t x, int32_t y, int32_t color) {
 void image_set(void* self,
                int32_t x,
                int32_t y,
-               const int32_t* data,
-               int32_t data_width,
-               int32_t data_height) {
-  reinterpret_cast<pyxelcore::Image*>(self)->SetData(x, y, data, data_width,
-                                                     data_height);
+               const char** str,
+               int32_t str_count) {
+  reinterpret_cast<pyxelcore::Image*>(self)->SetColor(x, y, str, str_count);
 }
 
 void image_load(void* self, int32_t x, int32_t y, const char* filename) {
