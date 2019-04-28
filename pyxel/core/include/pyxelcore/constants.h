@@ -24,6 +24,7 @@ const int32_t COLOR_COUNT = 16;
 const int32_t IMAGE_COUNT = 4;
 const int32_t IMAGE_WIDTH = 256;
 const int32_t IMAGE_HEIGHT = 256;
+const int32_t IMAGE_FOR_SYSTEM = IMAGE_COUNT - 1;
 
 const int32_t TILEMAP_COUNT = 8;
 const int32_t TILEMAP_WIDTH = 256;
