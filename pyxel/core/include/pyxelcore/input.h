@@ -5,12 +5,14 @@
 
 namespace pyxelcore {
 
+struct WindowInfo;
+
 class Input {
  public:
   Input();
   ~Input();
 
-  void UpdateState(int32_t frame_count);
+  void UpdateState(const WindowInfo* window_info, int32_t frame_count);
 
   int32_t MouseX() const { return mouse_x_; }
   int32_t MouseY() const { return mouse_y_; }
