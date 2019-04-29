@@ -27,8 +27,23 @@ class Input {
  private:
   int32_t mouse_x_;
   int32_t mouse_y_;
-  int32_t key_state[KEY_COUNT];
+  int32_t frame_count_;
+  int32_t key_state_[KEY_COUNT];
+
+  void UpdateKeyState(int32_t key, bool is_on);
 };
+
+inline void Input::UpdateKeyState(int32_t key, bool is_on) {
+  if (is_on) {
+    if (key_state_[key] < 0) {
+      key_state_[key] = frame_count_;
+    }
+  } else {
+    if (key_state_[key] > 0) {
+      key_state_[key] = -frame_count_;
+    }
+  }
+}
 
 }  // namespace pyxelcore
 
