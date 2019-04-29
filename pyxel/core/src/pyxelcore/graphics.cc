@@ -282,7 +282,7 @@ void Graphics::DrawImage(int32_t x,
   Image* image = GetImage(image_index);
   Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
 
-  screen_image_->CopyImage(x, y, image, copy_rect, clip_rect_, palette_table_,
+  screen_image_->DrawImage(x, y, image, copy_rect, clip_rect_, palette_table_,
                            color_key);
 }
 
@@ -327,7 +327,7 @@ void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
         (code % FONT_ROW_COUNT) * FONT_WIDTH,
         (code / FONT_ROW_COUNT) * FONT_HEIGHT, FONT_WIDTH, FONT_HEIGHT);
 
-    screen_image_->CopyImage(x, y, image_bank_[IMAGE_FOR_SYSTEM], copy_rect,
+    screen_image_->DrawImage(x, y, image_bank_[IMAGE_FOR_SYSTEM], copy_rect,
                              clip_rect_, palette_table_);
 
     x += FONT_WIDTH;
