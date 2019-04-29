@@ -79,7 +79,7 @@ void Image::SetColor(int32_t x,
     }
   }
 
-  CopyImage(x, y, image, Rectangle::FromSize(0, 0, width, height), *this);
+  DrawImage(x, y, image, Rectangle::FromSize(0, 0, width, height), *this);
 
   delete image;
 }
@@ -133,13 +133,23 @@ void Image::LoadImage(int32_t x,
     }
   }
 
-  CopyImage(x, y, &image, Rectangle::FromSize(0, 0, width, height), *this);
+  DrawImage(x, y, &image, Rectangle::FromSize(0, 0, width, height), *this);
 
   SDL_FreeSurface(png_image);
   SDL_FreeSurface(src_image);
 }
 
 void Image::CopyImage(int32_t x,
+                      int32_t y,
+                      const Image* image,
+                      int32_t u,
+                      int32_t v,
+                      int32_t width,
+                      int32_t height) {
+  DrawImage(x, y, image, Rectangle::FromSize(u, v, width, height), *this);
+}
+
+void Image::DrawImage(int32_t x,
                       int32_t y,
                       const Image* image,
                       const Rectangle& copy_rect,
