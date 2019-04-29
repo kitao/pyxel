@@ -4,7 +4,6 @@
 #include "pyxelcore/rectangle.h"
 
 #include <cstddef>
-#include <cstdint>
 
 namespace pyxelcore {
 
@@ -23,6 +22,14 @@ class Image : public Rectangle {
                  const char* filename,
                  const int32_t* palette_color);
   void CopyImage(int32_t x,
+                 int32_t y,
+                 const Image* image,
+                 int32_t u,
+                 int32_t v,
+                 int32_t width,
+                 int32_t height);
+
+  void DrawImage(int32_t x,
                  int32_t y,
                  const Image* image,
                  const Rectangle& copy_rect,
