@@ -5,7 +5,7 @@ from . import core  # type: ignore
 # constants
 #
 
-VERSION: str = core.get_constant_number("VERSION")
+VERSION: str = core.get_constant_string("VERSION")
 
 DEFAULT_CAPTION: str = core.get_constant_string("DEFAULT_CAPTION")
 DEFAULT_SCALE: int = core.get_constant_number("DEFAULT_SCALE")

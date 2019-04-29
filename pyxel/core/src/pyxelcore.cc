@@ -259,13 +259,9 @@ void image_copy(void* self,
 // Utilities
 //
 int32_t get_constant_number(const char* name) {
-  return pyxelcore::Utilities::GetConstantNumber(name);
+  return pyxelcore::GetConstantNumber(name);
 }
 
 const char* get_constant_string(const char* name) {
-  return pyxelcore::Utilities::GetConstantString(name);
-}
-
-void raise_error(const char* msg) {
-  pyxelcore::Utilities::RaiseError(msg);
+  return pyxelcore::GetConstantString(name);
 }

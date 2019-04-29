@@ -3,6 +3,7 @@
 
 #include "pyxelcore/constants.h"
 #include "pyxelcore/image.h"
+#include "pyxelcore/utilities.h"
 
 namespace pyxelcore {
 
@@ -55,7 +56,7 @@ class Graphics {
                    int32_t v,
                    int32_t width,
                    int32_t height,
-                   int32_t colkey = -1);
+                   int32_t color_key = -1);
   void DrawText(int32_t x, int32_t y, const char* text, int32_t color);
 
  private:
@@ -72,7 +73,7 @@ class Graphics {
 
 inline int32_t Graphics::GetDrawColor(int32_t color) const {
   if (color < 0 || color >= COLOR_COUNT) {
-    // error
+    RaiseError("invalid color");
   }
 
   return palette_table_[color];
