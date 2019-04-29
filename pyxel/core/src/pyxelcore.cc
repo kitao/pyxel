@@ -214,16 +214,16 @@ int32_t image_get(void* self, int32_t x, int32_t y) {
   return reinterpret_cast<pyxelcore::Image*>(self)->GetColor(x, y);
 }
 
-void image_set1(void* self, int32_t x, int32_t y, int32_t color) {
-  reinterpret_cast<pyxelcore::Image*>(self)->SetColor(x, y, color);
+void image_set1(void* self, int32_t x, int32_t y, int32_t col) {
+  reinterpret_cast<pyxelcore::Image*>(self)->SetColor(x, y, col);
 }
 
 void image_set(void* self,
                int32_t x,
                int32_t y,
-               const char** str,
-               int32_t str_count) {
-  reinterpret_cast<pyxelcore::Image*>(self)->SetColor(x, y, str, str_count);
+               const char** col,
+               int32_t col_count) {
+  reinterpret_cast<pyxelcore::Image*>(self)->SetColor(x, y, col, col_count);
 }
 
 void image_load(void* self, int32_t x, int32_t y, const char* filename) {
