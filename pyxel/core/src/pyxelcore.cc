@@ -240,8 +240,7 @@ void image_copy(void* self,
                 int32_t w,
                 int32_t h) {
   pyxelcore::Image* image = s_graphics->GetImage(img);
-  reinterpret_cast<pyxelcore::Image*>(self)->DrawImage(
-      x, y, image, pyxelcore::Rectangle::FromSize(u, v, w, h), *image);
+  reinterpret_cast<pyxelcore::Image*>(self)->CopyImage(x, y, image, u, v, w, h);
 }
 
 //
