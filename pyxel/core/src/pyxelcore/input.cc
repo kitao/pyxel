@@ -1,6 +1,7 @@
 #include "pyxelcore/input.h"
 
 #include "pyxelcore/system.h"
+#include "pyxelcore/utilities.h"
 
 #include <SDL2/SDL.h>
 
@@ -154,7 +155,7 @@ void Input::UpdateState(const WindowInfo* window_info, int32_t frame_count) {
 
 bool Input::IsButtonOn(int32_t key) const {
   if (key < 0 || key >= KEY_COUNT) {
-    // error
+    RaiseError("invalid key");
   }
 
   return key_state_[key] > 0;
@@ -164,7 +165,7 @@ bool Input::IsButtonPressed(int32_t key,
                             int32_t hold_frame,
                             int32_t period_frame) const {
   if (key < 0 || key >= KEY_COUNT) {
-    // error
+    RaiseError("invalid key");
   }
 
   if (key_state_[key] == frame_count_) {
@@ -181,7 +182,7 @@ bool Input::IsButtonPressed(int32_t key,
 
 bool Input::IsButtonReleased(int32_t key) const {
   if (key < 0 || key >= KEY_COUNT) {
-    // error
+    RaiseError("invalid key");
   }
 
   return key_state_[key] == -frame_count_;

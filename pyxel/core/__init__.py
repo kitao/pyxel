@@ -33,12 +33,7 @@ def get_constant_number(name):
 
 def get_constant_string(name):
     c_name = ctypes.create_string_buffer(name.encode("utf-8"))
-    return _lib.get_constant_number(c_name)
-
-
-def raise_error(msg):
-    c_msg = ctypes.create_string_buffer(msg.encode("utf-8"))
-    _lib.raise_error(c_msg)
+    return _lib.get_constant_string(c_name)
 
 
 if __name__ == "__main__":
