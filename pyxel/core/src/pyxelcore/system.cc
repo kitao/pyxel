@@ -13,20 +13,6 @@
 
 namespace pyxelcore {
 
-const char* ICON_DATA[] = {
-    "0000000110000000", "0000011F71100000", "00011FF11FF11000",
-    "011FF111111FF110", "1AE1111111111C71", "1E1EE111111CC1C1",
-    "1E111EE11CC111C1", "1E11111E711111C1", "1E111111C11111C1",
-    "1E111111C11111C1", "1E111111C11111C1", "1AE11111C1111C71",
-    "011EE111C11CC110", "00011EE1CCC11000", "0000011E71100000",
-    "0000000110000000",
-};
-
-const char* MOUSE_CURSOR_DATA[] = {
-    "00000011", "07776011", "07760111", "07676011",
-    "06067601", "00106760", "11110601", "11111011",
-};
-
 System::System(int32_t width,
                int32_t height,
                const char* caption,
@@ -35,14 +21,19 @@ System::System(int32_t width,
                int32_t fps,
                int32_t border_width,
                int32_t border_color) {
+  if (width < 0 || width > MAX_SCREEN_SIZE || height < 0 ||
+      height > MAX_SCREEN_SIZE) {
+    RaiseError("invalid screen size");
+  }
+
   resource_ = new pyxelcore::Resource();
   input_ = new pyxelcore::Input();
   graphics_ = new pyxelcore::Graphics(width, height);
   audio_ = new pyxelcore::Audio();
 
   fps_ = std::max(fps, 1);
-  border_width_ = std::max(DEFAULT_BORDER_WIDTH, 0);
-  border_color_ = std::max(DEFAULT_BORDER_COLOR, 0);
+  border_width_ = std::max(border_width, 0);
+  border_color_ = std::max(border_color, 0);
   frame_count_ = 0;
 
   for (int32_t i = 0; i < COLOR_COUNT; i++) {

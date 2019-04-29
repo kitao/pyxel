@@ -5,12 +5,10 @@
 
 namespace pyxelcore {
 
-class Utilities {
- public:
-  static int32_t GetConstantNumber(const char* name);
-  static const char* GetConstantString(const char* name);
-  static void RaiseError(const char* message);
-};
+void RaiseError(const char* message);
+
+int32_t GetConstantNumber(const char* name);
+const char* GetConstantString(const char* name);
 
 }  // namespace pyxelcore
 
