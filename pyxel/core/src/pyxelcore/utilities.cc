@@ -4,15 +4,21 @@
 
 #include <string>
 
-#define CHECK_CONSTANT(n)      \
-  if (strcmp(name, #n) == 0) { \
-    return n;                  \
-  }                            \
-  while (0)
+#define CHECK_CONSTANT(n)        \
+  do {                           \
+    if (strcmp(name, #n) == 0) { \
+      return n;                  \
+    }                            \
+  } while (false)
 
 namespace pyxelcore {
 
-int32_t Utilities::GetConstantNumber(const char* name) {
+void RaiseError(const char* message) {
+  printf("Pyxel: %s\n", message);
+  exit(1);
+}
+
+int32_t GetConstantNumber(const char* name) {
   CHECK_CONSTANT(DEFAULT_FPS);
   CHECK_CONSTANT(DEFAULT_SCALE);
   CHECK_CONSTANT(DEFAULT_FPS);
@@ -173,23 +179,19 @@ int32_t Utilities::GetConstantNumber(const char* name) {
   CHECK_CONSTANT(GAMEPAD_2_DOWN);
   CHECK_CONSTANT(GAMEPAD_2_LEFT);
 
-  // error
+  RaiseError("unknown constant number name");
 
   return 0;
 }
 
-const char* Utilities::GetConstantString(const char* name) {
+const char* GetConstantString(const char* name) {
   CHECK_CONSTANT(VERSION);
 
   CHECK_CONSTANT(DEFAULT_CAPTION);
 
-  // error
+  RaiseError("unknown constant string name");
 
   return "";
-}
-
-void Utilities::RaiseError(const char* message) {
-  //
 }
 
 }  // namespace pyxelcore

@@ -2,6 +2,7 @@
 
 #include "pyxelcore/constants.h"
 #include "pyxelcore/image.h"
+#include "pyxelcore/utilities.h"
 
 #include <algorithm>
 #include <cmath>
@@ -51,11 +52,11 @@ Graphics::~Graphics() {
 
 Image* Graphics::GetImage(int32_t image_index, bool system) const {
   if (image_index < 0 || image_index >= IMAGE_COUNT) {
-    // error
+    RaiseError("invalid image index");
   }
 
   if (image_index == IMAGE_FOR_SYSTEM && !system) {
-    // error
+    RaiseError("access image for system without flag");
   }
 
   return image_bank_[image_index];
@@ -63,7 +64,7 @@ Image* Graphics::GetImage(int32_t image_index, bool system) const {
 
 Tilemap* Graphics::GetTilemap(int32_t tilemap_index) const {
   if (tilemap_index < 0 || tilemap_index >= TILEMAP_COUNT) {
-    // error
+    RaiseError("invalid tilemap index");
   }
 
   return tilemap_bank_[tilemap_index];
@@ -86,7 +87,7 @@ void Graphics::ResetPalette() {
 void Graphics::SetPalette(int32_t src_color, int32_t dest_color) {
   if (src_color < 0 || src_color >= COLOR_COUNT || dest_color < 0 ||
       dest_color >= COLOR_COUNT) {
-    // error
+    RaiseError("invalid color");
   }
 
   palette_table_[src_color] = dest_color;
@@ -279,7 +280,7 @@ void Graphics::DrawImage(int32_t x,
                          int32_t width,
                          int32_t height,
                          int32_t color_key) {
-  Image* image = GetImage(image_index);
+  Image* image = GetImage(image_index, true);
   Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
 
   screen_image_->DrawImage(x, y, image, copy_rect, clip_rect_, palette_table_,
@@ -293,7 +294,7 @@ void Graphics::DrawTilemap(int32_t x,
                            int32_t v,
                            int32_t width,
                            int32_t height,
-                           int32_t colkey) {
+                           int32_t color_key) {
   Tilemap* tilemap = GetTilemap(tilemap_index);
   Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
   // TODO
