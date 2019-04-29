@@ -12,6 +12,7 @@ class Input {
   Input();
   ~Input();
 
+  bool IsMouseVisible() const { return is_mouse_visible_; }
   void UpdateState(const WindowInfo* window_info, int32_t frame_count);
 
   int32_t MouseX() const { return mouse_x_; }
@@ -25,9 +26,10 @@ class Input {
   void SetMouseVisibility(int32_t visible);
 
  private:
+  int32_t frame_count_;
   int32_t mouse_x_;
   int32_t mouse_y_;
-  int32_t frame_count_;
+  bool is_mouse_visible_;
   int32_t key_state_[KEY_COUNT];
 
   void UpdateKeyState(int32_t key, bool is_on);
