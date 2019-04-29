@@ -188,7 +188,7 @@ bool Input::IsButtonReleased(int32_t key) const {
 }
 
 void Input::SetMouseVisibility(int32_t visible) {
-  //
+  is_mouse_visible_ = visible;
 }
 
 }  // namespace pyxelcore
