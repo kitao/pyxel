@@ -51,19 +51,19 @@ void Image::SetColor(int32_t x, int32_t y, int32_t color) {
 
 void Image::SetColor(int32_t x,
                      int32_t y,
-                     const char** str,
-                     int32_t str_count) {
-  int32_t width = strlen(str[0]);
-  int32_t height = str_count;
+                     const char** color_str,
+                     int32_t color_str_count) {
+  int32_t width = strlen(color_str[0]);
+  int32_t height = color_str_count;
   Image* image = new Image(width, height);
   int32_t* data = image->Data();
 
   for (int32_t i = 0; i < height; i++) {
     int32_t index = width * i;
-    const char* src = str[i];
+    const char* str = color_str[i];
 
     for (int32_t j = 0; j < width; j++) {
-      int32_t value = src[j];
+      int32_t value = str[j];
 
       if (value >= '0' && value <= '9') {
         value -= '0';
