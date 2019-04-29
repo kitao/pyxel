@@ -114,11 +114,17 @@ const uint8_t SCANCODE_TABLE[SDL_KEY_COUNT] = {
     SDL_SCANCODE_MENU,
 };
 
-Input::Input() {}
+Input::Input() {
+  for (int32_t i = 0; i < KEY_COUNT; i++) {
+    key_state_[i] = 0;
+  }
+}
 
 Input::~Input() {}
 
 void Input::UpdateState(const WindowInfo* window_info, int32_t frame_count) {
+  frame_count_ = frame_count + 1;  // change frame_count to start from 1
+
   uint32_t mouse_state = SDL_GetGlobalMouseState(&mouse_x_, &mouse_y_);
 
   mouse_x_ = (mouse_x_ - (window_info->window_x + window_info->screen_x)) /
@@ -129,47 +135,56 @@ void Input::UpdateState(const WindowInfo* window_info, int32_t frame_count) {
   const uint8_t* sdl_key_state = SDL_GetKeyboardState(NULL);
 
   for (int32_t i = 0; i < SDL_KEY_COUNT; i++) {
-    uint8_t state = sdl_key_state[SCANCODE_TABLE[i]];
-    // TODO
-    key_state[i] = state;
+    UpdateKeyState(i, sdl_key_state[SCANCODE_TABLE[i]]);
   }
 
-  /*
-    if action == glfw.PRESS:
-        state = pyxel.frame_count
-    elif action == glfw.RELEASE:
-        if self._key_state.get(key, 0) == pyxel.frame_count:
-            state = -pyxel.frame_count - 1
-        else:
-            state = -pyxel.frame_count
-    else:
-        return
+  UpdateKeyState(KEY_SHIFT, sdl_key_state[SCANCODE_TABLE[KEY_LEFT_SHIFT]] ||
+                                sdl_key_state[SCANCODE_TABLE[KEY_RIGHT_SHIFT]]);
 
-    self._key_state[key] = state
+  UpdateKeyState(KEY_CONTROL,
+                 sdl_key_state[SCANCODE_TABLE[KEY_LEFT_CONTROL]] ||
+                     sdl_key_state[SCANCODE_TABLE[KEY_RIGHT_CONTROL]]);
 
-    if key == KEY_LEFT_SHIFT or key == KEY_RIGHT_SHIFT:
-        self._key_state[KEY_SHIFT] = state
-    elif key == KEY_LEFT_CONTROL or key == KEY_RIGHT_CONTROL:
-        self._key_state[KEY_CONTROL] = state
-    elif key == KEY_LEFT_ALT or key == KEY_RIGHT_ALT:
-        self._key_state[KEY_ALT] = state
-    elif key == KEY_LEFT_SUPER or key == KEY_RIGHT_SUPER:
-        self._key_state[KEY_SUPER] = state
-  */
+  UpdateKeyState(KEY_ALT, sdl_key_state[SCANCODE_TABLE[KEY_LEFT_ALT]] ||
+                              sdl_key_state[SCANCODE_TABLE[KEY_RIGHT_ALT]]);
+
+  UpdateKeyState(KEY_SUPER, sdl_key_state[SCANCODE_TABLE[KEY_LEFT_SUPER]] ||
+                                sdl_key_state[SCANCODE_TABLE[KEY_RIGHT_SUPER]]);
 }
 
 bool Input::IsButtonOn(int32_t key) const {
-  return false;
+  if (key < 0 || key >= KEY_COUNT) {
+    // error
+  }
+
+  return key_state_[key] > 0;
 }
 
 bool Input::IsButtonPressed(int32_t key,
                             int32_t hold_frame,
                             int32_t period_frame) const {
+  if (key < 0 || key >= KEY_COUNT) {
+    // error
+  }
+
+  if (key_state_[key] == frame_count_) {
+    return true;
+  }
+
+  if (period_frame > 0 &&
+      (frame_count_ - (key_state_[key] + hold_frame)) % period_frame == 0) {
+    return true;
+  }
+
   return false;
 }
 
 bool Input::IsButtonReleased(int32_t key) const {
-  return false;
+  if (key < 0 || key >= KEY_COUNT) {
+    // error
+  }
+
+  return key_state_[key] == -frame_count_;
 }
 
 void Input::SetMouseVisibility(int32_t visible) {
