@@ -2,7 +2,7 @@
 #define PYXELCORE_SYSTEM_H_
 
 #include "pyxelcore/constants.h"
-#include "pyxelcore/window_info.h"
+#include "pyxelcore/window.h"
 
 namespace pyxelcore {
 
@@ -29,32 +29,39 @@ class System {
   Audio* Audio() const { return audio_; }
   const int32_t* PaletteColor() const { return palette_color_; }
 
-  int32_t Width() const { return window_info_.screen_width; }
-  int32_t Height() const { return window_info_.screen_height; }
+  int32_t Width() const { return window_->ScreenWidth(); }
+  int32_t Height() const { return window_->ScreenHeight(); }
   int32_t FrameCount() const { return frame_count_; }
 
   void Run(void (*update)(), void (*draw)());
+  void Quit();
 
  private:
   pyxelcore::Input* input_;
   pyxelcore::Resource* resource_;
   pyxelcore::Graphics* graphics_;
   pyxelcore::Audio* audio_;
+  Window* window_;
 
   int32_t fps_;
-  int32_t border_width_;
-  int32_t border_color_;
   int32_t frame_count_;
-  struct WindowInfo window_info_;
   int32_t palette_color_[COLOR_COUNT];
 
-  void SetupWindow(const char* caption,
-                   int32_t width,
-                   int32_t height,
-                   int32_t scale);
-  void RenderWindow();
-  void UpdateScreenTexture();
-  void UpdateWindowInfo();
+  int32_t measured_update_count_;
+  int32_t measured_update_total_time_;
+  float measured_update_time_;
+
+  int32_t measured_draw_count_;
+  int32_t measured_draw_total_time_;
+  float measured_draw_time;
+
+  int32_t measured_fps_count_;
+  int32_t measured_fps_total_time_;
+  float measured_fps_;
+
+  void UpdateFrame(void (*update)());
+  void CheckSpecialInput();
+  void DrawFrame(void (*draw)());
 };
 
 }  // namespace pyxelcore

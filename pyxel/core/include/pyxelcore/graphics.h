@@ -14,7 +14,7 @@ class Graphics {
   Graphics(int32_t width, int32_t height);
   ~Graphics();
 
-  Image* ScreenImage() const { return screen_image_; }
+  const int32_t* ScreenData() const { return screen_image_->Data(); }
 
   Image* GetImageBank(int32_t image_index, bool system = false) const;
   Tilemap* GetTilemapBank(int32_t tilemap_index) const;

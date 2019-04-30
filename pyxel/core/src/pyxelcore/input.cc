@@ -123,15 +123,15 @@ Input::Input() {
 
 Input::~Input() {}
 
-void Input::UpdateState(const WindowInfo* window_info, int32_t frame_count) {
+void Input::Update(const Window* window, int32_t frame_count) {
   frame_count_ = frame_count + 1;  // change frame_count to start from 1
 
   uint32_t mouse_state = SDL_GetGlobalMouseState(&mouse_x_, &mouse_y_);
 
-  mouse_x_ = (mouse_x_ - (window_info->window_x + window_info->screen_x)) /
-             window_info->screen_scale;
-  mouse_y_ = (mouse_y_ - (window_info->window_y + window_info->screen_y)) /
-             window_info->screen_scale;
+  mouse_x_ = (mouse_x_ - (window->WindowX() + window->ScreenX())) /
+             window->ScreenScale();
+  mouse_y_ = (mouse_y_ - (window->WindowY() + window->ScreenY())) /
+             window->ScreenScale();
 
   const uint8_t* sdl_key_state = SDL_GetKeyboardState(NULL);
 
@@ -155,6 +155,7 @@ void Input::UpdateState(const WindowInfo* window_info, int32_t frame_count) {
 
 bool Input::IsButtonOn(int32_t key) const {
   if (key < 0 || key >= KEY_COUNT) {
+    PRINT_ERROR("invalide key");
     return false;
   }
 
@@ -165,6 +166,7 @@ bool Input::IsButtonPressed(int32_t key,
                             int32_t hold_frame,
                             int32_t period_frame) const {
   if (key < 0 || key >= KEY_COUNT) {
+    PRINT_ERROR("invalide key");
     return false;
   }
 
@@ -182,6 +184,7 @@ bool Input::IsButtonPressed(int32_t key,
 
 bool Input::IsButtonReleased(int32_t key) const {
   if (key < 0 || key >= KEY_COUNT) {
+    PRINT_ERROR("invalide key");
     return false;
   }
 
