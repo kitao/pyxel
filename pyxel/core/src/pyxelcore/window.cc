@@ -56,10 +56,10 @@ Window::Window(const char* caption,
 
   SDL_SetWindowMinimumSize(window_, screen_width_, screen_height_);
 
-  UpdateInfo();
+  UpdateWindowInfo();
 }
 
-void Window::UpdateInfo() {
+void Window::UpdateWindowInfo() {
   SDL_GetWindowPosition(window_, &window_x_, &window_y_);
 
   int32_t window_width, window_height;
@@ -82,7 +82,7 @@ bool Window::ProcessEvents() {
     } else if (event.type == SDL_WINDOWEVENT) {
       if (event.window.event == SDL_WINDOWEVENT_MOVED ||
           event.window.event == SDL_WINDOWEVENT_RESIZED) {
-        UpdateInfo();
+        UpdateWindowInfo();
       }
     }
   }

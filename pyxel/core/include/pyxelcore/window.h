@@ -44,7 +44,7 @@ class Window {
   int32_t border_width_;
   int32_t border_color_;
 
-  void UpdateInfo();
+  void UpdateWindowInfo();
   void UpdateScreenTexture(const int32_t* screen_data,
                            const int32_t* palette_color);
 };
