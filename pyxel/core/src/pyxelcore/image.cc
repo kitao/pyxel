@@ -4,7 +4,7 @@
 #include "pyxelcore/utilities.h"
 
 #include <SDL2/SDL_image.h>
-#include <map>  // TODO
+#include <string>
 
 namespace pyxelcore {
 
@@ -161,8 +161,8 @@ void Image::DrawImage(int32_t x,
 
   Rectangle src_rect = static_cast<Rectangle>(*image).Intersect(copy_rect);
 
-  x += std::max(src_rect.Left() - copy_rect.Left(), 0);
-  y += std::max(src_rect.Top() - copy_rect.Top(), 0);
+  x += Max(src_rect.Left() - copy_rect.Left(), 0);
+  y += Max(src_rect.Top() - copy_rect.Top(), 0);
 
   Rectangle dest_rect =
       static_cast<Rectangle>(*this).Intersect(clip_rect).Intersect(
@@ -172,9 +172,8 @@ void Image::DrawImage(int32_t x,
     return;
   }
 
-  src_rect =
-      dest_rect.MoveTo(copy_rect.Left() + std::max(dest_rect.Left() - x, 0),
-                       copy_rect.Top() + std::max(dest_rect.Top() - y, 0));
+  src_rect = dest_rect.MoveTo(copy_rect.Left() + Max(dest_rect.Left() - x, 0),
+                              copy_rect.Top() + Max(dest_rect.Top() - y, 0));
 
   int32_t src_x = src_rect.Left();
   int32_t src_y = src_rect.Top();
