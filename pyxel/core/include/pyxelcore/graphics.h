@@ -3,7 +3,6 @@
 
 #include "pyxelcore/constants.h"
 #include "pyxelcore/image.h"
-#include "pyxelcore/utilities.h"
 
 namespace pyxelcore {
 
@@ -17,8 +16,8 @@ class Graphics {
 
   Image* ScreenImage() const { return screen_image_; }
 
-  Image* GetImage(int32_t image_index, bool system = false) const;
-  Tilemap* GetTilemap(int32_t tilemap_index) const;
+  Image* GetImageBank(int32_t image_index, bool system = false) const;
+  Tilemap* GetTilemapBank(int32_t tilemap_index) const;
 
   void ResetClippingArea();
   void SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
@@ -71,9 +70,32 @@ class Graphics {
   void SetPixel(int32_t x, int32_t y, int32_t color);
 };
 
+inline Image* Graphics::GetImageBank(int32_t image_index, bool system) const {
+  if (image_index < 0 || image_index >= IMAGE_BANK_COUNT) {
+    PutErrorMessage("invalid image bank index");
+    return NULL;
+  }
+
+  if (image_index == IMAGE_BANK_FOR_SYSTEM && !system) {
+    PutErrorMessage("invalid access to image bank for system");
+    return NULL;
+  }
+
+  return image_bank_[image_index];
+}
+
+inline Tilemap* Graphics::GetTilemapBank(int32_t tilemap_index) const {
+  if (tilemap_index < 0 || tilemap_index >= TILEMAP_BANK_COUNT) {
+    PutErrorMessage("invalid tilemap bank index");
+    return NULL;
+  }
+
+  return tilemap_bank_[tilemap_index];
+}
+
 inline int32_t Graphics::GetDrawColor(int32_t color) const {
   if (color < 0 || color >= COLOR_COUNT) {
-    RaiseError("invalid color");
+    color = 0;
   }
 
   return palette_table_[color];
