@@ -91,6 +91,7 @@ const int32_t MAX_FONT_CODE = 127;
 const int32_t FONT_WIDTH = 4;
 const int32_t FONT_HEIGHT = 6;
 const int32_t FONT_ROW_COUNT = IMAGE_BANK_WIDTH / FONT_WIDTH;
+const int32_t FONT_IMAGE_COLOR = 7;
 
 //
 // Input
