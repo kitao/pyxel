@@ -5,7 +5,7 @@
 
 namespace pyxelcore {
 
-struct WindowInfo;
+struct Window;
 
 class Input {
  public:
@@ -13,7 +13,7 @@ class Input {
   ~Input();
 
   bool IsMouseVisible() const { return is_mouse_visible_; }
-  void UpdateState(const WindowInfo* window_info, int32_t frame_count);
+  void Update(const Window* window, int32_t frame_count);
 
   int32_t MouseX() const { return mouse_x_; }
   int32_t MouseY() const { return mouse_y_; }
@@ -37,7 +37,7 @@ class Input {
 
 inline void Input::UpdateKeyState(int32_t key, bool is_on) {
   if (is_on) {
-    if (key_state_[key] < 0) {
+    if (key_state_[key] <= 0) {
       key_state_[key] = frame_count_;
     }
   } else {
