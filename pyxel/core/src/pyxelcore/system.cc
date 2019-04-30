@@ -40,6 +40,8 @@ System::System(int32_t width,
   for (int32_t i = 0; i < COLOR_COUNT; i++) {
     palette_color_[i] = palette_color[i];
   }
+
+  is_performance_monitor_on = false;
 }
 
 System::~System() {
@@ -109,11 +111,11 @@ void System::UpdateFrame(void (*update)()) {
 void System::CheckSpecialInput() {
   if (input_->IsButtonOn(KEY_ALT)) {
     if (input_->IsButtonPressed(KEY_ENTER)) {
-      // toggle fullscreen
+      window_->ToggleFullscreen();
     }
 
     if (input_->IsButtonPressed(KEY_0)) {
-      // toggle performance monitor
+      is_performance_monitor_on = !is_performance_monitor_on;
     }
 
     if (input_->IsButtonPressed(KEY_1)) {
@@ -147,28 +149,23 @@ void System::DrawFrame(void (*draw)()) {
 }
 
 void System::DrawPerformanceMonitor() {
-  printf("update: %f\n", update_profiler_.AverageTime());
-  printf("draw: %f\n", draw_profiler_.AverageTime());
-  printf("fps: %f\n", fps_profiler_.AverageFPS());
+  if (!is_performance_monitor_on) {
+    return;
+  }
 
-  /*
-     def _draw_perf_monitor(self):
-         if not self._perf_monitor_is_enabled:
-             return
+  char buf[16];
 
-         fps = "{:.2f}".format(self._perf_fps)
-         update = "{:.2f}".format(self._perf_update_time)
-         draw = "{:.2f}".format(self._perf_draw_time)
+  snprintf(buf, sizeof(buf), "%.2f", fps_profiler_.AverageFPS());
+  graphics_->DrawText(1, 0, buf, 1);
+  graphics_->DrawText(0, 0, buf, 9);
 
-         text = self._renderer.draw_command.text
-         text(1, 0, fps, 1)
-         text(0, 0, fps, 9)
-         text(1, 6, update, 1)
-         text(0, 6, update, 9)
-         text(1, 12, draw, 1)
-         text(0, 12, draw, 9)
+  snprintf(buf, sizeof(buf), "%.2f", update_profiler_.AverageTime());
+  graphics_->DrawText(1, 6, buf, 1);
+  graphics_->DrawText(0, 6, buf, 9);
 
-  */
+  snprintf(buf, sizeof(buf), "%.2f", draw_profiler_.AverageTime());
+  graphics_->DrawText(1, 12, buf, 1);
+  graphics_->DrawText(0, 12, buf, 9);
 }
 
 void System::DrawMouseCursor() {
