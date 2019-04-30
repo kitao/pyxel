@@ -11,11 +11,7 @@ namespace pyxelcore {
 const char VERSION[] = "1.1.0";
 
 const int32_t COLOR_COUNT = 16;
-const int32_t MAX_SCREEN_SIZE = 256;
 
-//
-// System
-//
 const char DEFAULT_CAPTION[] = "Pyxel";
 const int32_t DEFAULT_SCALE = 0;
 const int32_t DEFAULT_FPS = 30;
@@ -39,7 +35,7 @@ const int32_t DEFAULT_PALETTE_13 = 0x83769C;
 const int32_t DEFAULT_PALETTE_14 = 0xFF77A8;
 const int32_t DEFAULT_PALETTE_15 = 0xFFCCAA;
 
-const int32_t DEFAULT_PALETTE[] = {
+const int32_t DEFAULT_PALETTE[COLOR_COUNT] = {
     DEFAULT_PALETTE_00, DEFAULT_PALETTE_01, DEFAULT_PALETTE_02,
     DEFAULT_PALETTE_03, DEFAULT_PALETTE_04, DEFAULT_PALETTE_05,
     DEFAULT_PALETTE_06, DEFAULT_PALETTE_07, DEFAULT_PALETTE_08,
@@ -48,14 +44,11 @@ const int32_t DEFAULT_PALETTE[] = {
     DEFAULT_PALETTE_15,
 };
 
-const int32_t IMAGE_COUNT = 4;
-const int32_t IMAGE_WIDTH = 256;
-const int32_t IMAGE_HEIGHT = 256;
-const int32_t IMAGE_FOR_SYSTEM = IMAGE_COUNT - 1;
-
-const int32_t TILEMAP_COUNT = 8;
-const int32_t TILEMAP_WIDTH = 256;
-const int32_t TILEMAP_HEIGHT = 256;
+//
+// System
+//
+const int32_t MIN_SCREEN_SIZE = 64;
+const int32_t MAX_SCREEN_SIZE = 256;
 
 const char ICON_DATA[][17] = {
     "0000000110000000", "0000011F71100000", "00011FF11FF11000",
@@ -66,34 +59,41 @@ const char ICON_DATA[][17] = {
     "0000000110000000",
 };
 
-const char MOUSE_CURSOR_DATA[][9] = {
-    "00000011", "07776011", "07760111", "07676011",
-    "06067601", "00106760", "11110601", "11111011",
-};
-
-//
-// Graphics
-//
-const int32_t FONT_MIN_CODE = 32;
-const int32_t FONT_MAX_CODE = 127;
-const int32_t FONT_WIDTH = 4;
-const int32_t FONT_HEIGHT = 6;
-const int32_t FONT_ROW_COUNT = IMAGE_WIDTH / FONT_WIDTH;
-
-//
-// Input
-//
 const int32_t MOUSE_CURSOR_IMAGE_X = 0;
 const int32_t MOUSE_CURSOR_IMAGE_Y = 16;
 const int32_t MOUSE_CURSOR_WIDTH = 8;
 const int32_t MOUSE_CURSOR_HEIGHT = 8;
 
-const int32_t APP_SCREEN_SCALE_CUTDOWN = 2;
-const int32_t APP_SCREEN_SCALE_MINIMUM = 2;
+const char MOUSE_CURSOR_DATA[][9] = {
+    "00000011", "07776011", "07760111", "07676011",
+    "06067601", "00106760", "11110601", "11111011",
+};
+
 const int32_t APP_GIF_CAPTURE_COUNT = 900;
 const int32_t APP_GIF_CAPTURE_SCALE = 2;
 const int32_t APP_MEASURE_FRAME_COUNT = 10;
 
+//
+// Graphics
+//
+const int32_t IMAGE_BANK_COUNT = 4;
+const int32_t IMAGE_BANK_WIDTH = 256;
+const int32_t IMAGE_BANK_HEIGHT = 256;
+const int32_t IMAGE_BANK_FOR_SYSTEM = IMAGE_BANK_COUNT - 1;
+
+const int32_t TILEMAP_BANK_COUNT = 8;
+const int32_t TILEMAP_BANK_WIDTH = 256;
+const int32_t TILEMAP_BANK_HEIGHT = 256;
+
+const int32_t MIN_FONT_CODE = 32;
+const int32_t MAX_FONT_CODE = 127;
+const int32_t FONT_WIDTH = 4;
+const int32_t FONT_HEIGHT = 6;
+const int32_t FONT_ROW_COUNT = IMAGE_BANK_WIDTH / FONT_WIDTH;
+
+//
+// Input
+//
 enum {
   KEY_SPACE,
   KEY_APOSTROPHE,
@@ -244,14 +244,20 @@ enum {
 //
 // Audio
 //
+const int32_t SOUND_BANK_COUNT = 65;
+const int32_t SOUND_BANK_FOR_SYSTEM = SOUND_BANK_COUNT - 1;
+
+const int32_t MUSIC_BANK_COUNT = 8;
+
 const int32_t AUDIO_SAMPLE_RATE = 22050;
 const int32_t AUDIO_BLOCK_SIZE = 2205;
 const int32_t AUDIO_CHANNEL_COUNT = 4;
-const int32_t AUDIO_SOUND_COUNT = 65;
-const int32_t AUDIO_MUSIC_COUNT = 8;
 const int32_t AUDIO_ONE_SPEED = AUDIO_SAMPLE_RATE / 120;
 const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (AUDIO_CHANNEL_COUNT * 7);
 
+//
+// Sound class
+//
 enum {
   SOUND_TONE_TRIANGLE,
   SOUND_TONE_SQUARE,
@@ -277,13 +283,6 @@ enum {
 };
 
 /*
-  APP_SCREEN_SCALE_CUTDOWN = 2
-  APP_SCREEN_SCALE_MINIMUM = 2
-  APP_GIF_CAPTURE_COUNT = 900
-  APP_GIF_CAPTURE_SCALE = 2
-  APP_MEASURE_FRAME_COUNT = 10
-
-  SOUND_NOTE_TABLE = {"c": 0, "d": 2, "e": 4, "f": 5, "g": 7, "a": 9, "b": 11}
   SOUND_TONE_TABLE = {
       "t": SOUND_TONE_TRIANGLE,
       "s": SOUND_TONE_SQUARE,
