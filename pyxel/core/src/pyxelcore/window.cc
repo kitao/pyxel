@@ -31,6 +31,7 @@ Window::Window(const char* caption,
   screen_scale_ = screen_scale;
   border_width_ = border_width;
   border_color_ = border_color;
+  is_fullscreen_ = false;
 
   SDL_Init(SDL_INIT_VIDEO);  // TODO: error handling
   IMG_Init(IMG_INIT_PNG);    // TODO: erro handling
@@ -70,6 +71,16 @@ void Window::UpdateWindowInfo() {
 
   screen_x_ = (window_width - screen_width_ * screen_scale_) / 2;
   screen_y_ = (window_height - screen_height_ * screen_scale_) / 2;
+}
+
+void Window::ToggleFullscreen() {
+  is_fullscreen_ = !is_fullscreen_;
+
+  if (is_fullscreen_) {
+    SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
+  } else {
+    SDL_SetWindowFullscreen(window_, 0);
+  }
 }
 
 bool Window::ProcessEvents() {
