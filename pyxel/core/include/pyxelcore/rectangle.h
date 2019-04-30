@@ -39,13 +39,14 @@ class Rectangle {
   int32_t height_;
 };
 
-inline Rectangle::Rectangle()
-    : left_(INT16_MIN),
-      top_(INT16_MIN),
-      right_(INT16_MAX),
-      bottom_(INT16_MAX),
-      width_(INT16_MAX - INT16_MIN),
-      height_(INT16_MAX - INT16_MIN) {}
+inline Rectangle::Rectangle() {
+  left_ = INT16_MIN;
+  top_ = INT16_MIN;
+  right_ = INT16_MAX;
+  bottom_ = INT16_MAX;
+  width_ = INT16_MAX - INT16_MIN;
+  height_ = INT16_MAX - INT16_MIN;
+}
 
 inline Rectangle::Rectangle(int32_t left,
                             int32_t top,
