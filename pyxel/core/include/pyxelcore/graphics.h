@@ -72,13 +72,12 @@ class Graphics {
 
 inline Image* Graphics::GetImageBank(int32_t image_index, bool system) const {
   if (image_index < 0 || image_index >= IMAGE_BANK_COUNT) {
-    PutErrorMessage("invalid image bank index");
-    return NULL;
+    PrintErrorMessage("invalid image bank index");
+    image_index = 0;
   }
 
   if (image_index == IMAGE_BANK_FOR_SYSTEM && !system) {
-    PutErrorMessage("invalid access to image bank for system");
-    return NULL;
+    PrintErrorMessage("invalid access to image bank for system");
   }
 
   return image_bank_[image_index];
@@ -86,8 +85,8 @@ inline Image* Graphics::GetImageBank(int32_t image_index, bool system) const {
 
 inline Tilemap* Graphics::GetTilemapBank(int32_t tilemap_index) const {
   if (tilemap_index < 0 || tilemap_index >= TILEMAP_BANK_COUNT) {
-    PutErrorMessage("invalid tilemap bank index");
-    return NULL;
+    PrintErrorMessage("invalid tilemap bank index");
+    tilemap_index = 0;
   }
 
   return tilemap_bank_[tilemap_index];
@@ -95,6 +94,7 @@ inline Tilemap* Graphics::GetTilemapBank(int32_t tilemap_index) const {
 
 inline int32_t Graphics::GetDrawColor(int32_t color) const {
   if (color < 0 || color >= COLOR_COUNT) {
+    PrintErrorMessage("invalid color");
     color = 0;
   }
 

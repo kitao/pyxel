@@ -25,7 +25,7 @@ T Clamp(T v, T low, T high) {
   return v < low ? low : (v > high ? high : v);
 }
 
-void PutErrorMessage(const char* message);
+void PrintErrorMessage(const char* message);
 
 int32_t GetConstantNumber(const char* name);
 const char* GetConstantString(const char* name);
