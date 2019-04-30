@@ -40,18 +40,6 @@ System::System(int32_t width,
   for (int32_t i = 0; i < COLOR_COUNT; i++) {
     palette_color_[i] = palette_color[i];
   }
-
-  measured_update_count_ = 0;
-  measured_total_update_time_ = 0;
-  measured_average_update_time_ = 0.0f;
-
-  measured_draw_count_ = 0;
-  measured_total_draw_time_ = 0;
-  measured_average_draw_time_ = 0.0f;
-
-  measured_fps_count_ = 0;
-  measured_fps_start_time_ = 0;
-  measured_average_fps_ = 0.0f;
 }
 
 System::~System() {
@@ -65,8 +53,7 @@ void System::Run(void (*update)(), void (*draw)()) {
     double one_frame_time = 1000.0f / fps_;
     double next_update_time = cur_time + one_frame_time;
 
-    measured_fps_count_ = 1;
-    measured_fps_start_time_ = cur_time;
+    fps_profiler_.Start();
 
     UpdateFrame(update);
     DrawFrame(draw);
@@ -79,15 +66,8 @@ void System::Run(void (*update)(), void (*draw)()) {
         continue;
       }
 
-      if (measured_fps_count_ == MEASURE_FRAME_COUNT) {
-        uint32_t cur_time = SDL_GetTicks();
-
-        measured_average_fps_ = MEASURE_FRAME_COUNT * 1000.0f /
-                                (cur_time - measured_fps_start_time_);
-        measured_fps_count_ = 0;
-        measured_fps_start_time_ = cur_time;
-      }
-      measured_fps_count_++;
+      fps_profiler_.End(MEASURE_FRAME_COUNT);
+      fps_profiler_.Start();
 
       int32_t update_frame_count =
           Min(static_cast<int32_t>(-sleep_time / one_frame_time),
@@ -113,7 +93,7 @@ void System::Quit() {
 }
 
 void System::UpdateFrame(void (*update)()) {
-  uint32_t start_time = SDL_GetTicks();
+  update_profiler_.Start();
 
   if (window_->ProcessEvents()) {
     Quit();
@@ -123,15 +103,7 @@ void System::UpdateFrame(void (*update)()) {
   CheckSpecialInput();
   update();
 
-  measured_total_update_time_ += SDL_GetTicks() - start_time;
-  measured_update_count_++;
-
-  if (measured_update_count_ == MEASURE_FRAME_COUNT) {
-    measured_average_update_time_ =
-        static_cast<float>(measured_total_update_time_) / MEASURE_FRAME_COUNT;
-    measured_update_count_ = 0;
-    measured_total_update_time_ = 0;
-  }
+  update_profiler_.End(MEASURE_FRAME_COUNT);
 }
 
 void System::CheckSpecialInput() {
@@ -163,23 +135,58 @@ void System::CheckSpecialInput() {
 }
 
 void System::DrawFrame(void (*draw)()) {
-  uint32_t start_time = SDL_GetTicks();
+  draw_profiler_.Start();
 
   draw();
-  // self._draw_perf_monitor()
-  // self._draw_mouse_cursor()
+  DrawPerformanceMonitor();
+  DrawMouseCursor();
 
   window_->Render(graphics_->ScreenData(), palette_color_);
 
-  measured_total_draw_time_ += SDL_GetTicks() - start_time;
-  measured_draw_count_++;
+  draw_profiler_.End(MEASURE_FRAME_COUNT);
+}
 
-  if (measured_draw_count_ == MEASURE_FRAME_COUNT) {
-    measured_average_draw_time_ =
-        static_cast<float>(measured_total_draw_time_) / MEASURE_FRAME_COUNT;
-    measured_draw_count_ = 0;
-    measured_total_draw_time_ = 0;
-  }
+void System::DrawPerformanceMonitor() {
+  printf("update: %f\n", update_profiler_.AverageTime());
+  printf("draw: %f\n", draw_profiler_.AverageTime());
+  printf("fps: %f\n", fps_profiler_.AverageFPS());
+
+  /*
+     def _draw_perf_monitor(self):
+         if not self._perf_monitor_is_enabled:
+             return
+
+         fps = "{:.2f}".format(self._perf_fps)
+         update = "{:.2f}".format(self._perf_update_time)
+         draw = "{:.2f}".format(self._perf_draw_time)
+
+         text = self._renderer.draw_command.text
+         text(1, 0, fps, 1)
+         text(0, 0, fps, 9)
+         text(1, 6, update, 1)
+         text(0, 6, update, 9)
+         text(1, 12, draw, 1)
+         text(0, 12, draw, 9)
+
+  */
+}
+
+void System::DrawMouseCursor() {
+  /*
+        if not self._is_mouse_visible:
+            return
+
+        pyxel.blt(
+            pyxel.mouse_x,
+            pyxel.mouse_y,
+            3,
+            MOUSE_CURSOR_IMAGE_X,
+            MOUSE_CURSOR_IMAGE_Y,
+            MOUSE_CURSOR_WIDTH,
+            MOUSE_CURSOR_HEIGHT,
+            1,
+        )
+  */
 }
 
 }  // namespace pyxelcore
