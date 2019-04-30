@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.0
+- Modified .gitignore to ignore .vscode files
+- Changed to use SDL2 instead of GLFW
+
 ## 1.0.1
 - Simplified comparisons
 - Removed a deprecated function

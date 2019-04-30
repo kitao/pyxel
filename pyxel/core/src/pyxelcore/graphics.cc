@@ -4,7 +4,6 @@
 #include "pyxelcore/image.h"
 #include "pyxelcore/utilities.h"
 
-#include <algorithm>
 #include <cmath>
 
 namespace pyxelcore {
@@ -29,9 +28,9 @@ const uint32_t FONT_DATA[] = {
 Graphics::Graphics(int32_t width, int32_t height) {
   screen_image_ = new Image(width, height);
 
-  image_bank_ = new Image*[IMAGE_COUNT];
-  for (int32_t i = 0; i < IMAGE_COUNT; i++) {
-    image_bank_[i] = new Image(IMAGE_WIDTH, IMAGE_HEIGHT);
+  image_bank_ = new Image*[IMAGE_BANK_COUNT];
+  for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
+    image_bank_[i] = new Image(IMAGE_BANK_WIDTH, IMAGE_BANK_HEIGHT);
   }
 
   SetupFontImage();
@@ -42,32 +41,12 @@ Graphics::Graphics(int32_t width, int32_t height) {
 }
 
 Graphics::~Graphics() {
-  for (int32_t i = 0; i < IMAGE_COUNT; i++) {
+  for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
     delete image_bank_[i];
   }
   delete[] image_bank_;
 
   delete screen_image_;
-}
-
-Image* Graphics::GetImage(int32_t image_index, bool system) const {
-  if (image_index < 0 || image_index >= IMAGE_COUNT) {
-    RaiseError("invalid image index");
-  }
-
-  if (image_index == IMAGE_FOR_SYSTEM && !system) {
-    RaiseError("access image for system without flag");
-  }
-
-  return image_bank_[image_index];
-}
-
-Tilemap* Graphics::GetTilemap(int32_t tilemap_index) const {
-  if (tilemap_index < 0 || tilemap_index >= TILEMAP_COUNT) {
-    RaiseError("invalid tilemap index");
-  }
-
-  return tilemap_bank_[tilemap_index];
 }
 
 void Graphics::ResetClippingArea() {
@@ -85,9 +64,14 @@ void Graphics::ResetPalette() {
 }
 
 void Graphics::SetPalette(int32_t src_color, int32_t dest_color) {
-  if (src_color < 0 || src_color >= COLOR_COUNT || dest_color < 0 ||
-      dest_color >= COLOR_COUNT) {
-    RaiseError("invalid color");
+  if (src_color < 0 || src_color >= COLOR_COUNT) {
+    PrintErrorMessage("invalid color");
+    return;
+  }
+
+  if (dest_color < 0 || dest_color >= COLOR_COUNT) {
+    PrintErrorMessage("invalid color");
+    return;
   }
 
   palette_table_[src_color] = dest_color;
@@ -120,7 +104,7 @@ void Graphics::DrawLine(int32_t x1,
     return;
   }
 
-  if (std::abs(x1 - x2) > std::abs(y1 - y2)) {
+  if (Abs(x1 - x2) > Abs(y1 - y2)) {
     int32_t start_x, start_y;
     int32_t end_x, end_y;
 
@@ -280,7 +264,7 @@ void Graphics::DrawImage(int32_t x,
                          int32_t width,
                          int32_t height,
                          int32_t color_key) {
-  Image* image = GetImage(image_index, true);
+  Image* image = GetImageBank(image_index, true);
   Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
 
   screen_image_->DrawImage(x, y, image, copy_rect, clip_rect_, palette_table_,
@@ -295,7 +279,7 @@ void Graphics::DrawTilemap(int32_t x,
                            int32_t width,
                            int32_t height,
                            int32_t color_key) {
-  Tilemap* tilemap = GetTilemap(tilemap_index);
+  Tilemap* tilemap = GetTilemapBank(tilemap_index);
   Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
   // TODO
 }
@@ -319,17 +303,17 @@ void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
       continue;
     }
 
-    if (*ch < FONT_MIN_CODE || *ch > FONT_MAX_CODE) {
+    if (*ch < MIN_FONT_CODE || *ch > MAX_FONT_CODE) {
       continue;
     }
 
-    int32_t code = *ch - FONT_MIN_CODE;
+    int32_t code = *ch - MIN_FONT_CODE;
     Rectangle copy_rect = Rectangle::FromSize(
         (code % FONT_ROW_COUNT) * FONT_WIDTH,
         (code / FONT_ROW_COUNT) * FONT_HEIGHT, FONT_WIDTH, FONT_HEIGHT);
 
-    screen_image_->DrawImage(x, y, image_bank_[IMAGE_FOR_SYSTEM], copy_rect,
-                             clip_rect_, palette_table_);
+    screen_image_->DrawImage(x, y, image_bank_[IMAGE_BANK_FOR_SYSTEM],
+                             copy_rect, clip_rect_, palette_table_);
 
     x += FONT_WIDTH;
   }
@@ -337,12 +321,12 @@ void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
 
 void Graphics::SetupFontImage() {
   const int32_t FONT_COUNT = sizeof(FONT_DATA) / sizeof(FONT_DATA[0]);
-  int32_t* data = image_bank_[IMAGE_FOR_SYSTEM]->Data();
+  int32_t* data = image_bank_[IMAGE_BANK_FOR_SYSTEM]->Data();
 
   for (int32_t i = 0; i < FONT_COUNT; i++) {
     int32_t row = i / FONT_ROW_COUNT;
     int32_t col = i % FONT_ROW_COUNT;
-    int32_t index = IMAGE_WIDTH * FONT_HEIGHT * row + FONT_WIDTH * col;
+    int32_t index = IMAGE_BANK_WIDTH * FONT_HEIGHT * row + FONT_WIDTH * col;
     uint32_t font = FONT_DATA[i];
 
     for (int32_t j = 0; j < FONT_HEIGHT; j++) {
@@ -351,7 +335,7 @@ void Graphics::SetupFontImage() {
         font <<= 1;
       }
 
-      index += IMAGE_WIDTH;
+      index += IMAGE_BANK_WIDTH;
     }
   }
 }
