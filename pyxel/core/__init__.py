@@ -52,6 +52,15 @@ if __name__ == "__main__":
         def update(self):
             self.x += 1
 
+            if pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON):
+                print("left button pressed")
+
+            if pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON):
+                print("left button released")
+
+            if pyxel.btnp(pyxel.KEY_Q):
+                pyxel.quit()
+
         def draw(self):
             pyxel.cls(0)  # noqa: F821
             pyxel.rect(self.x, 30, 300, 50, 8)  # noqa: F821
