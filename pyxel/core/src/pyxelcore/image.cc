@@ -39,7 +39,7 @@ void Image::SetColor(int32_t x, int32_t y, int32_t color) {
   }
 
   if (color < 0 || color >= COLOR_COUNT) {
-    PrintErrorMessage("invalid color");
+    PRINT_ERROR("invalid color");
     color = 0;
   }
 
@@ -69,7 +69,7 @@ void Image::SetColor(int32_t x,
       } else if (value >= 'a' && value <= 'f') {
         value -= 'a';
       } else {
-        PrintErrorMessage("invalid color string");
+        PRINT_ERROR("invalid color string");
         value = 0;
       }
 
@@ -154,8 +154,8 @@ void Image::DrawImage(int32_t x,
                       const Rectangle& clip_rect,
                       const int32_t* palette_table,
                       int32_t color_key) {
-  if (color_key < 0 || color_key >= COLOR_COUNT) {
-    PrintErrorMessage("invalid color");
+  if (color_key != -1 && (color_key < 0 || color_key >= COLOR_COUNT)) {
+    PRINT_ERROR("invalid color");
     color_key = -1;
   }
 
