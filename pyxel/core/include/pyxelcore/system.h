@@ -2,6 +2,7 @@
 #define PYXELCORE_SYSTEM_H_
 
 #include "pyxelcore/constants.h"
+#include "pyxelcore/profiler.h"
 #include "pyxelcore/window.h"
 
 namespace pyxelcore {
@@ -47,21 +48,15 @@ class System {
   int32_t frame_count_;
   int32_t palette_color_[COLOR_COUNT];
 
-  int32_t measured_update_count_;
-  int32_t measured_total_update_time_;
-  float measured_average_update_time_;
-
-  int32_t measured_draw_count_;
-  int32_t measured_total_draw_time_;
-  float measured_average_draw_time_;
-
-  int32_t measured_fps_count_;
-  uint32_t measured_fps_start_time_;
-  float measured_average_fps_;
+  Profiler fps_profiler_;
+  Profiler update_profiler_;
+  Profiler draw_profiler_;
 
   void UpdateFrame(void (*update)());
   void CheckSpecialInput();
   void DrawFrame(void (*draw)());
+  void DrawPerformanceMonitor();
+  void DrawMouseCursor();
 };
 
 }  // namespace pyxelcore
