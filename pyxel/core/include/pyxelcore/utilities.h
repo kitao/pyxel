@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#define PRINT_ERROR(message) PrintError(message, __FUNCTION__)
+
 namespace pyxelcore {
 
 template <typename T>
@@ -25,7 +27,7 @@ T Clamp(T v, T low, T high) {
   return v < low ? low : (v > high ? high : v);
 }
 
-void PrintErrorMessage(const char* message);
+void PrintError(const char* message, const char* func_name);
 
 int32_t GetConstantNumber(const char* name);
 const char* GetConstantString(const char* name);

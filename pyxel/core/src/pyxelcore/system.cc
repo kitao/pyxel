@@ -20,8 +20,12 @@ System::System(int32_t width,
                int32_t fps,
                int32_t border_width,
                int32_t border_color) {
-  width = Clamp(width, MIN_SCREEN_SIZE, MAX_SCREEN_SIZE);
-  height = Clamp(height, MIN_SCREEN_SIZE, MAX_SCREEN_SIZE);
+  if (width < MIN_SCREEN_SIZE || width > MAX_SCREEN_SIZE ||
+      height < MIN_SCREEN_SIZE || height > MAX_SCREEN_SIZE) {
+    PRINT_ERROR("invalide screen size");
+    width = Clamp(width, MIN_SCREEN_SIZE, MAX_SCREEN_SIZE);
+    height = Clamp(height, MIN_SCREEN_SIZE, MAX_SCREEN_SIZE);
+  }
 
   resource_ = new pyxelcore::Resource();
   input_ = new pyxelcore::Input();

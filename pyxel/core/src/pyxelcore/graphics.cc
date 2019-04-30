@@ -65,12 +65,12 @@ void Graphics::ResetPalette() {
 
 void Graphics::SetPalette(int32_t src_color, int32_t dest_color) {
   if (src_color < 0 || src_color >= COLOR_COUNT) {
-    PrintErrorMessage("invalid color");
+    PRINT_ERROR("invalid color");
     return;
   }
 
   if (dest_color < 0 || dest_color >= COLOR_COUNT) {
-    PrintErrorMessage("invalid color");
+    PRINT_ERROR("invalid color");
     return;
   }
 
