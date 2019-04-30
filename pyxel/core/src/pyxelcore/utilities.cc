@@ -13,9 +13,8 @@
 
 namespace pyxelcore {
 
-void RaiseError(const char* message) {
+void PutErrorMessage(const char* message) {
   printf("Pyxel: %s\n", message);
-  exit(1);
 }
 
 int32_t GetConstantNumber(const char* name) {
@@ -179,8 +178,7 @@ int32_t GetConstantNumber(const char* name) {
   CHECK_CONSTANT(GAMEPAD_2_DOWN);
   CHECK_CONSTANT(GAMEPAD_2_LEFT);
 
-  RaiseError("unknown constant number name");
-
+  PutErrorMessage("unknown constant number name");
   return 0;
 }
 
@@ -189,8 +187,7 @@ const char* GetConstantString(const char* name) {
 
   CHECK_CONSTANT(DEFAULT_CAPTION);
 
-  RaiseError("unknown constant string name");
-
+  PutErrorMessage("unknown constant string name");
   return "";
 }
 
