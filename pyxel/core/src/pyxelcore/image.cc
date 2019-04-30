@@ -4,17 +4,12 @@
 #include "pyxelcore/utilities.h"
 
 #include <SDL2/SDL_image.h>
-#include <algorithm>
-#include <map>
+#include <map>  // TODO
 
 namespace pyxelcore {
 
 Image::Image(int32_t width, int32_t height, int32_t* data)
     : Rectangle(0, 0, width, height) {
-  if (Width() <= 0 || Height() <= 0) {
-    RaiseError("invalid image size");
-  }
-
   if (data) {
     need_to_delete_ = false;
     data_ = data;
@@ -32,7 +27,7 @@ Image::~Image() {
 
 int32_t Image::GetColor(int32_t x, int32_t y) const {
   if (!Includes(x, y)) {
-    RaiseError("access outside image");
+    return 0;
   }
 
   return data_[Width() * y + x];
@@ -40,11 +35,12 @@ int32_t Image::GetColor(int32_t x, int32_t y) const {
 
 void Image::SetColor(int32_t x, int32_t y, int32_t color) {
   if (!Includes(x, y)) {
-    RaiseError("access outside image");
+    return;
   }
 
   if (color < 0 || color >= COLOR_COUNT) {
-    RaiseError("invalid color");
+    PrintErrorMessage("invalid color");
+    color = 0;
   }
 
   data_[Width() * y + x] = color;
@@ -73,7 +69,8 @@ void Image::SetColor(int32_t x,
       } else if (value >= 'a' && value <= 'f') {
         value -= 'a';
       } else {
-        RaiseError("invalid color string");
+        PrintErrorMessage("invalid color string");
+        value = 0;
       }
 
       data[index + j] = value;
@@ -157,8 +154,9 @@ void Image::DrawImage(int32_t x,
                       const Rectangle& clip_rect,
                       const int32_t* palette_table,
                       int32_t color_key) {
-  if (color_key != -1 && (color_key < 0 || color_key >= COLOR_COUNT)) {
-    RaiseError("invalid color key");
+  if (color_key < 0 || color_key >= COLOR_COUNT) {
+    PrintErrorMessage("invalid color");
+    color_key = -1;
   }
 
   Rectangle src_rect = static_cast<Rectangle>(*image).Intersect(copy_rect);

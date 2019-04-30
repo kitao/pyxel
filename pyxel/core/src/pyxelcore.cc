@@ -95,11 +95,11 @@ void mouse(int32_t visible) {
 // Graphics
 //
 void* image(int32_t img, int32_t system) {
-  return s_graphics->GetImage(img, system);
+  return s_graphics->GetImageBank(img, system);
 }
 
 void* tilemap(int32_t tm) {
-  return s_graphics->GetTilemap(tm);
+  return s_graphics->GetTilemapBank(tm);
 }
 
 void clip0() {
@@ -176,11 +176,11 @@ void text(int32_t x, int32_t y, const char* s, int32_t col) {
 // Audio
 //
 void* sound(int32_t snd, int32_t system) {
-  return s_audio->GetSound(snd, system);
+  return s_audio->GetSoundBank(snd, system);
 }
 
 void* music(int32_t msc) {
-  return s_audio->GetMusic(msc);
+  return s_audio->GetMusicBank(msc);
 }
 
 void play(int32_t ch, int32_t snd, int32_t loop) {
@@ -239,7 +239,7 @@ void image_copy(void* self,
                 int32_t v,
                 int32_t w,
                 int32_t h) {
-  pyxelcore::Image* image = s_graphics->GetImage(img);
+  pyxelcore::Image* image = s_graphics->GetImageBank(img);
   reinterpret_cast<pyxelcore::Image*>(self)->CopyImage(x, y, image, u, v, w, h);
 }
 
