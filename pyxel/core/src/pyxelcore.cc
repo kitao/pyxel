@@ -6,6 +6,7 @@
 #include "pyxelcore/input.h"
 #include "pyxelcore/resource.h"
 #include "pyxelcore/system.h"
+#include "pyxelcore/tilemap.h"
 #include "pyxelcore/utilities.h"
 
 static pyxelcore::System* s_system = NULL;
@@ -253,6 +254,50 @@ void image_copy(void* self,
 //
 // Tilemap class
 //
+int32_t tilemap_width_getter(void* self) {
+  return reinterpret_cast<pyxelcore::Tilemap*>(self)->Width();
+}
+
+int32_t tilemap_height_getter(void* self) {
+  return reinterpret_cast<pyxelcore::Tilemap*>(self)->Height();
+}
+
+int32_t* tilemap_data_getter(void* self) {
+  return reinterpret_cast<pyxelcore::Tilemap*>(self)->Data();
+}
+
+int32_t tilemap_get(void* self, int32_t x, int32_t y) {
+  return reinterpret_cast<pyxelcore::Tilemap*>(self)->GetValue(x, y);
+}
+
+void timemap_set1(void* self,
+                  int32_t x,
+                  int32_t y,
+                  int32_t data,
+                  int32_t refimg) {
+  //
+}
+
+void timemap_set(void* self,
+                 int32_t x,
+                 int32_t y,
+                 const int32_t* data,
+                 int32_t data_width,
+                 int32_t data_height,
+                 int32_t refimg) {
+  //
+}
+
+void timemap_copy(void* self,
+                  int32_t x,
+                  int32_t y,
+                  int32_t tm,
+                  int32_t u,
+                  int32_t v,
+                  int32_t w,
+                  int32_t h) {
+  //
+}
 
 //
 // Sound class
