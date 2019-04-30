@@ -8,7 +8,6 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <algorithm>
 #include <cstdio>
 
 namespace pyxelcore {
@@ -21,19 +20,17 @@ System::System(int32_t width,
                int32_t fps,
                int32_t border_width,
                int32_t border_color) {
-  if (width < 0 || width > MAX_SCREEN_SIZE || height < 0 ||
-      height > MAX_SCREEN_SIZE) {
-    RaiseError("invalid screen size");
-  }
+  width = Clamp(width, MIN_SCREEN_SIZE, MAX_SCREEN_SIZE);
+  height = Clamp(height, MIN_SCREEN_SIZE, MAX_SCREEN_SIZE);
 
   resource_ = new pyxelcore::Resource();
   input_ = new pyxelcore::Input();
   graphics_ = new pyxelcore::Graphics(width, height);
   audio_ = new pyxelcore::Audio();
 
-  fps_ = std::max(fps, 1);
-  border_width_ = std::max(border_width, 0);
-  border_color_ = std::max(border_color, 0);
+  fps_ = Max(fps, 1);
+  border_width_ = Max(border_width, 0);
+  border_color_ = Max(border_color, 0);
   frame_count_ = 0;
 
   for (int32_t i = 0; i < COLOR_COUNT; i++) {
@@ -59,7 +56,7 @@ void System::Run(void (*update)(), void (*draw)()) {
     }
 
     int32_t update_frame_count =
-        std::min(static_cast<int32_t>(-sleep_time / one_frame_time) + 1, 10);
+        Min(static_cast<int32_t>(-sleep_time / one_frame_time) + 1, 10);
 
     next_update_time += one_frame_time * update_frame_count;
 
@@ -99,17 +96,17 @@ void System::SetupWindow(const char* caption,
   SDL_Init(SDL_INIT_VIDEO);  // TODO: error handling
   IMG_Init(IMG_INIT_PNG);    // TODO: erro handling
 
-  window_info_.screen_width = std::max(width, 1);
-  window_info_.screen_height = std::max(height, 1);
+  window_info_.screen_width = Max(width, 1);
+  window_info_.screen_height = Max(height, 1);
 
   if (scale > 0) {
     window_info_.screen_scale = scale;
   } else {
     SDL_DisplayMode display_mode;
     SDL_GetDesktopDisplayMode(0, &display_mode);
-    window_info_.screen_scale = std::min(
-        (display_mode.w - border_width_ * 2) / window_info_.screen_width,
-        (display_mode.h - border_width_ * 2) / window_info_.screen_height);
+    window_info_.screen_scale =
+        Min((display_mode.w - border_width_ * 2) / window_info_.screen_width,
+            (display_mode.h - border_width_ * 2) / window_info_.screen_height);
   }
 
   window_info_.window =
@@ -169,10 +166,10 @@ void System::UpdateWindowInfo() {
                     &window_info_.window_height);
 
   window_info_.screen_scale =
-      std::min((window_info_.window_width - border_width_ * 2) /
-                   window_info_.screen_width,
-               (window_info_.window_height - border_width_ * 2) /
-                   window_info_.screen_height);
+      Min((window_info_.window_width - border_width_ * 2) /
+              window_info_.screen_width,
+          (window_info_.window_height - border_width_ * 2) /
+              window_info_.screen_height);
 
   window_info_.screen_x =
       (window_info_.window_width -
