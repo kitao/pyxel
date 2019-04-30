@@ -288,6 +288,9 @@ void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
   color = GetDrawColor(color);
 
   int32_t left = x;
+  int32_t original_color = palette_table_[7];
+
+  palette_table_[7] = color;
 
   for (const char* ch = text; *ch != '\0'; ch++) {
     if (*ch == 10) {  // new line
@@ -313,10 +316,12 @@ void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
         (code / FONT_ROW_COUNT) * FONT_HEIGHT, FONT_WIDTH, FONT_HEIGHT);
 
     screen_image_->DrawImage(x, y, image_bank_[IMAGE_BANK_FOR_SYSTEM],
-                             copy_rect, clip_rect_, palette_table_);
+                             copy_rect, clip_rect_, palette_table_, 0);
 
     x += FONT_WIDTH;
   }
+
+  palette_table_[7] = original_color;
 }
 
 void Graphics::SetupFontImage() {
