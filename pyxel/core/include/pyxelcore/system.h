@@ -48,16 +48,16 @@ class System {
   int32_t palette_color_[COLOR_COUNT];
 
   int32_t measured_update_count_;
-  int32_t measured_update_total_time_;
-  float measured_update_time_;
+  int32_t measured_total_update_time_;
+  float measured_average_update_time_;
 
   int32_t measured_draw_count_;
-  int32_t measured_draw_total_time_;
-  float measured_draw_time;
+  int32_t measured_total_draw_time_;
+  float measured_average_draw_time_;
 
   int32_t measured_fps_count_;
-  int32_t measured_fps_total_time_;
-  float measured_fps_;
+  uint32_t measured_fps_start_time_;
+  float measured_average_fps_;
 
   void UpdateFrame(void (*update)());
   void CheckSpecialInput();

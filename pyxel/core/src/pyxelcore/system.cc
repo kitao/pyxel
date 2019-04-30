@@ -40,6 +40,18 @@ System::System(int32_t width,
   for (int32_t i = 0; i < COLOR_COUNT; i++) {
     palette_color_[i] = palette_color[i];
   }
+
+  measured_update_count_ = 0;
+  measured_total_update_time_ = 0;
+  measured_average_update_time_ = 0.0f;
+
+  measured_draw_count_ = 0;
+  measured_total_draw_time_ = 0;
+  measured_average_draw_time_ = 0.0f;
+
+  measured_fps_count_ = 0;
+  measured_fps_start_time_ = 0;
+  measured_average_fps_ = 0.0f;
 }
 
 System::~System() {
@@ -48,8 +60,13 @@ System::~System() {
 
 void System::Run(void (*update)(), void (*draw)()) {
   try {
+    uint32_t cur_time = SDL_GetTicks();
+
     double one_frame_time = 1000.0f / fps_;
-    double next_update_time = SDL_GetTicks() + one_frame_time;
+    double next_update_time = cur_time + one_frame_time;
+
+    measured_fps_count_ = 1;
+    measured_fps_start_time_ = cur_time;
 
     UpdateFrame(update);
     DrawFrame(draw);
@@ -61,6 +78,16 @@ void System::Run(void (*update)(), void (*draw)()) {
         SDL_Delay(static_cast<int32_t>(sleep_time / 2));
         continue;
       }
+
+      if (measured_fps_count_ == MEASURE_FRAME_COUNT) {
+        uint32_t cur_time = SDL_GetTicks();
+
+        measured_average_fps_ = MEASURE_FRAME_COUNT * 1000.0f /
+                                (cur_time - measured_fps_start_time_);
+        measured_fps_count_ = 0;
+        measured_fps_start_time_ = cur_time;
+      }
+      measured_fps_count_++;
 
       int32_t update_frame_count =
           Min(static_cast<int32_t>(-sleep_time / one_frame_time),
@@ -86,6 +113,8 @@ void System::Quit() {
 }
 
 void System::UpdateFrame(void (*update)()) {
+  uint32_t start_time = SDL_GetTicks();
+
   if (window_->ProcessEvents()) {
     Quit();
   }
@@ -93,6 +122,16 @@ void System::UpdateFrame(void (*update)()) {
   input_->Update(window_, frame_count_);
   CheckSpecialInput();
   update();
+
+  measured_total_update_time_ += SDL_GetTicks() - start_time;
+  measured_update_count_++;
+
+  if (measured_update_count_ == MEASURE_FRAME_COUNT) {
+    measured_average_update_time_ =
+        static_cast<float>(measured_total_update_time_) / MEASURE_FRAME_COUNT;
+    measured_update_count_ = 0;
+    measured_total_update_time_ = 0;
+  }
 }
 
 void System::CheckSpecialInput() {
@@ -124,11 +163,23 @@ void System::CheckSpecialInput() {
 }
 
 void System::DrawFrame(void (*draw)()) {
+  uint32_t start_time = SDL_GetTicks();
+
   draw();
   // self._draw_perf_monitor()
   // self._draw_mouse_cursor()
 
   window_->Render(graphics_->ScreenData(), palette_color_);
+
+  measured_total_draw_time_ += SDL_GetTicks() - start_time;
+  measured_draw_count_++;
+
+  if (measured_draw_count_ == MEASURE_FRAME_COUNT) {
+    measured_average_draw_time_ =
+        static_cast<float>(measured_total_draw_time_) / MEASURE_FRAME_COUNT;
+    measured_draw_count_ = 0;
+    measured_total_draw_time_ = 0;
+  }
 }
 
 }  // namespace pyxelcore
