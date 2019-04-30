@@ -26,6 +26,7 @@ class Window {
   int32_t ScreenHeight() const { return screen_height_; }
   int32_t ScreenScale() const { return screen_scale_; }
 
+  void ToggleFullscreen();
   bool ProcessEvents();
   void Render(const int32_t* screen_data, const int32_t* palette_color);
 
@@ -43,6 +44,7 @@ class Window {
   int32_t screen_scale_;
   int32_t border_width_;
   int32_t border_color_;
+  bool is_fullscreen_;
 
   void UpdateWindowInfo();
   void UpdateScreenTexture(const int32_t* screen_data,
