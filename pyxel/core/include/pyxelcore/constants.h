@@ -49,6 +49,8 @@ const int32_t DEFAULT_PALETTE[COLOR_COUNT] = {
 //
 const int32_t MIN_SCREEN_SIZE = 64;
 const int32_t MAX_SCREEN_SIZE = 256;
+const int32_t MAX_FRAME_SKIP_COUNT = 9;
+const int32_t MEASURE_FRAME_COUNT = 10;
 
 const char ICON_DATA[][17] = {
     "0000000110000000", "0000011F71100000", "00011FF11FF11000",
@@ -71,7 +73,6 @@ const char MOUSE_CURSOR_DATA[][9] = {
 
 const int32_t APP_GIF_CAPTURE_COUNT = 900;
 const int32_t APP_GIF_CAPTURE_SCALE = 2;
-const int32_t APP_MEASURE_FRAME_COUNT = 10;
 
 //
 // Graphics
