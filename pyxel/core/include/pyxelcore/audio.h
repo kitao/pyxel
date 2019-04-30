@@ -25,6 +25,8 @@ class Audio {
  private:
   Sound** sound_bank_;
   Music** music_bank_;
+
+  static void callback(void* audio, uint8_t* stream, int len);
 };
 
 inline Sound* Audio::GetSoundBank(int32_t sound_index, bool system) const {
