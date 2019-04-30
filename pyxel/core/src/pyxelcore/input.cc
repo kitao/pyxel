@@ -126,7 +126,7 @@ Input::~Input() {}
 void Input::Update(const Window* window, int32_t frame_count) {
   frame_count_ = frame_count + 1;  // change frame_count to start from 1
 
-  uint32_t mouse_state = SDL_GetGlobalMouseState(&mouse_x_, &mouse_y_);
+  SDL_GetGlobalMouseState(&mouse_x_, &mouse_y_);
 
   mouse_x_ = (mouse_x_ - (window->WindowX() + window->ScreenX())) /
              window->ScreenScale();
@@ -151,6 +151,12 @@ void Input::Update(const Window* window, int32_t frame_count) {
 
   UpdateKeyState(KEY_SUPER, sdl_key_state[SCANCODE_TABLE[KEY_LEFT_SUPER]] ||
                                 sdl_key_state[SCANCODE_TABLE[KEY_RIGHT_SUPER]]);
+
+  uint32_t mouse_state = SDL_GetMouseState(NULL, NULL);
+
+  UpdateKeyState(MOUSE_LEFT_BUTTON, mouse_state & SDL_BUTTON_LMASK);
+  UpdateKeyState(MOUSE_MIDDLE_BUTTON, mouse_state & SDL_BUTTON_MMASK);
+  UpdateKeyState(MOUSE_RIGHT_BUTTON, mouse_state & SDL_BUTTON_RMASK);
 }
 
 bool Input::IsButtonOn(int32_t key) const {
