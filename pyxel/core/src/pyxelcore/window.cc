@@ -1,11 +1,5 @@
 #include "pyxelcore/window.h"
 
-#include "pyxelcore/constants.h"
-#include "pyxelcore/utilities.h"
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
 namespace pyxelcore {
 
 Window::Window(const char* caption,

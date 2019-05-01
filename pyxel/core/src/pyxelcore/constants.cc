@@ -1,6 +1,4 @@
-#include "pyxelcore/utilities.h"
-
-#include "pyxelcore/constants.h"
+#include "pyxelcore/common.h"
 
 #include <string>
 
@@ -12,10 +10,6 @@
   } while (false)
 
 namespace pyxelcore {
-
-void PrintError(const char* message, const char* func_name) {
-  printf("pyxel: %s in %s\n", message, func_name);
-}
 
 int32_t GetConstantNumber(const char* name) {
   CHECK_CONSTANT(DEFAULT_FPS);

@@ -1,7 +1,7 @@
 #ifndef PYXELCORE_INPUT_H_
 #define PYXELCORE_INPUT_H_
 
-#include "pyxelcore/constants.h"
+#include "pyxelcore/common.h"
 
 namespace pyxelcore {
 

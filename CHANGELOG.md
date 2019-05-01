@@ -3,6 +3,7 @@
 ## 1.1.0
 - Modified .gitignore to ignore .vscode files
 - Changed to use SDL2 instead of GLFW
+- Removed the refimg argument from the Tilemap methods
 
 ## 1.0.1
 - Simplified comparisons
