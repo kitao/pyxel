@@ -18,6 +18,12 @@ extern "C" {
 #endif
 
 //
+// Constants
+//
+PYXEL_API int32_t get_constant_number(const char* name);
+PYXEL_API const char* get_constant_string(const char* name);
+
+//
 // System
 //
 PYXEL_API int32_t width_getter();
@@ -226,12 +232,6 @@ PYXEL_API void music_set_ch0(void* self, const int32_t* data, int32_t length);
 PYXEL_API void music_set_ch1(void* self, const int32_t* data, int32_t length);
 PYXEL_API void music_set_ch2(void* self, const int32_t* data, int32_t length);
 PYXEL_API void music_set_ch3(void* self, const int32_t* data, int32_t length);
-
-//
-// Utilities
-//
-PYXEL_API int32_t get_constant_number(const char* name);
-PYXEL_API const char* get_constant_string(const char* name);
 
 #ifdef __cplusplus
 }

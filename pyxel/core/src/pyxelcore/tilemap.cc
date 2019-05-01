@@ -12,18 +12,11 @@ Tilemap::Tilemap(int32_t width, int32_t height) {
   rect_ = Rectangle::FromSize(0, 0, width, height);
 }
 
-Tilemap::~Tilemap() {
-  //
-}
-
-void Tilemap::ImageIndex(int32_t image_index) {
-  // error
-
-  image_index_ = image_index;
-}
+Tilemap::~Tilemap() {}
 
 int32_t Tilemap::GetValue(int32_t x, int32_t y) const {
   if (!rect_.Includes(x, y)) {
+    PRINT_ERROR("access to outside tilemap");
     return 0;
   }
 
@@ -31,7 +24,12 @@ int32_t Tilemap::GetValue(int32_t x, int32_t y) const {
 }
 
 void Tilemap::SetValue(int32_t x, int32_t y, int32_t value) {
-  //
+  if (!rect_.Includes(x, y)) {
+    PRINT_ERROR("access to outside image");
+    return;
+  }
+
+  data_[Width() * y + x] = value;
 }
 
 void Tilemap::SetValue(int32_t x,

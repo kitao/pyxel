@@ -17,6 +17,17 @@ static pyxelcore::Graphics* s_graphics = NULL;
 static pyxelcore::Audio* s_audio = NULL;
 
 //
+// Constants
+//
+int32_t get_constant_number(const char* name) {
+  return pyxelcore::GetConstantNumber(name);
+}
+
+const char* get_constant_string(const char* name) {
+  return pyxelcore::GetConstantString(name);
+}
+
+//
 // System
 //
 int32_t width_getter() {
@@ -220,11 +231,11 @@ int32_t* image_data_getter(void* self) {
 }
 
 int32_t image_get(void* self, int32_t x, int32_t y) {
-  return reinterpret_cast<pyxelcore::Image*>(self)->GetColor(x, y);
+  return reinterpret_cast<pyxelcore::Image*>(self)->GetValue(x, y);
 }
 
 void image_set1(void* self, int32_t x, int32_t y, int32_t col) {
-  reinterpret_cast<pyxelcore::Image*>(self)->SetColor(x, y, col);
+  reinterpret_cast<pyxelcore::Image*>(self)->SetValue(x, y, col);
 }
 
 void image_set(void* self,
@@ -232,7 +243,7 @@ void image_set(void* self,
                int32_t y,
                const char** col,
                int32_t col_count) {
-  reinterpret_cast<pyxelcore::Image*>(self)->SetColor(x, y, col, col_count);
+  reinterpret_cast<pyxelcore::Image*>(self)->SetValue(x, y, col, col_count);
 }
 
 void image_load(void* self, int32_t x, int32_t y, const char* filename) {
@@ -311,14 +322,3 @@ void timemap_copy(void* self,
 //
 // Music class
 //
-
-//
-// Utilities
-//
-int32_t get_constant_number(const char* name) {
-  return pyxelcore::GetConstantNumber(name);
-}
-
-const char* get_constant_string(const char* name) {
-  return pyxelcore::GetConstantString(name);
-}
