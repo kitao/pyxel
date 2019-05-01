@@ -36,6 +36,15 @@ class Tilemap {
   int32_t image_index_;
 };
 
+inline void Tilemap::ImageIndex(int32_t image_index) {
+  if (image_index < 0 || image_index >= IMAGE_BANK_COUNT) {
+    PRINT_ERROR("invalie imgae index");
+    return;
+  }
+
+  image_index_ = image_index;
+}
+
 }  // namespace pyxelcore
 
 #endif  // PYXELCORE_TILEMAP_H_
