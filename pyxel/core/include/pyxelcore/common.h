@@ -32,7 +32,7 @@ T Clamp(T v, T low, T high) {
 }
 
 inline void PrintError(const char* message, const char* func_name) {
-  printf("pyxel: %s in %s\n", message, func_name);
+  printf("pyxel error: %s in '%s'\n", message, func_name);
 }
 
 }  // namespace pyxelcore
