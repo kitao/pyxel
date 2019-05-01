@@ -1,10 +1,7 @@
 #ifndef PYXELCORE_AUDIO_H_
 #define PYXELCORE_AUDIO_H_
 
-#include "pyxelcore/constants.h"
-#include "pyxelcore/utilities.h"
-
-#include <cstddef>
+#include "pyxelcore/common.h"
 
 namespace pyxelcore {
 

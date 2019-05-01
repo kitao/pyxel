@@ -1,7 +1,6 @@
 #ifndef PYXELCORE_GRAPHICS_H_
 #define PYXELCORE_GRAPHICS_H_
 
-#include "pyxelcore/constants.h"
 #include "pyxelcore/image.h"
 
 namespace pyxelcore {

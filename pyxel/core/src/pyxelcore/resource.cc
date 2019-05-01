@@ -1,7 +1,5 @@
 #include "pyxelcore/resource.h"
 
-#include "pyxelcore/image.h"
-
 namespace pyxelcore {
 
 void Resource::LoadAsset(const char* filename) {

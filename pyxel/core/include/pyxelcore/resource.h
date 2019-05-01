@@ -1,7 +1,7 @@
 #ifndef PYXELCORE_RESOURCE_H_
 #define PYXELCORE_RESOURCE_H_
 
-#include <cstdint>
+#include "pyxelcore/common.h"
 
 namespace pyxelcore {
 

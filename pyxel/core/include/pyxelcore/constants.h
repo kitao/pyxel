@@ -299,6 +299,9 @@ enum {
   }
 */
 
+int32_t GetConstantNumber(const char* name);
+const char* GetConstantString(const char* name);
+
 }  // namespace pyxelcore
 
 #endif  // PYXELCORE_AUDIO_H_

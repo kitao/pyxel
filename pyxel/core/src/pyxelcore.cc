@@ -4,10 +4,11 @@
 #include "pyxelcore/graphics.h"
 #include "pyxelcore/image.h"
 #include "pyxelcore/input.h"
+#include "pyxelcore/music.h"
 #include "pyxelcore/resource.h"
+#include "pyxelcore/sound.h"
 #include "pyxelcore/system.h"
 #include "pyxelcore/tilemap.h"
-#include "pyxelcore/utilities.h"
 
 static pyxelcore::System* s_system = NULL;
 static pyxelcore::Resource* s_resource = NULL;
@@ -266,26 +267,29 @@ int32_t* tilemap_data_getter(void* self) {
   return reinterpret_cast<pyxelcore::Tilemap*>(self)->Data();
 }
 
+int32_t tilemap_refimg_getter(void* self) {
+  return reinterpret_cast<pyxelcore::Tilemap*>(self)->ImageIndex();
+}
+
+void tilemap_refimg_setter(void* self, int32_t refimg) {
+  reinterpret_cast<pyxelcore::Tilemap*>(self)->ImageIndex(refimg);
+}
+
 int32_t tilemap_get(void* self, int32_t x, int32_t y) {
   return reinterpret_cast<pyxelcore::Tilemap*>(self)->GetValue(x, y);
 }
 
-void timemap_set1(void* self,
-                  int32_t x,
-                  int32_t y,
-                  int32_t data,
-                  int32_t refimg) {
-  //
+void timemap_set1(void* self, int32_t x, int32_t y, int32_t val) {
+  return reinterpret_cast<pyxelcore::Tilemap*>(self)->SetValue(x, y, val);
 }
 
 void timemap_set(void* self,
                  int32_t x,
                  int32_t y,
-                 const int32_t* data,
-                 int32_t data_width,
-                 int32_t data_height,
-                 int32_t refimg) {
-  //
+                 const char** val,
+                 int32_t val_count) {
+  return reinterpret_cast<pyxelcore::Tilemap*>(self)->SetValue(x, y, val,
+                                                               val_count);
 }
 
 void timemap_copy(void* self,
@@ -296,7 +300,8 @@ void timemap_copy(void* self,
                   int32_t v,
                   int32_t w,
                   int32_t h) {
-  //
+  return reinterpret_cast<pyxelcore::Tilemap*>(self)->CopyTilemap(
+      x, y, s_graphics->GetTilemapBank(tm), u, v, w, h);
 }
 
 //

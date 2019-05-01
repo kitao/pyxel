@@ -1,8 +1,6 @@
 #include "pyxelcore/graphics.h"
 
-#include "pyxelcore/constants.h"
 #include "pyxelcore/image.h"
-#include "pyxelcore/utilities.h"
 
 #include <cmath>
 
@@ -50,11 +48,12 @@ Graphics::~Graphics() {
 }
 
 void Graphics::ResetClippingArea() {
-  clip_rect_ = *static_cast<Rectangle*>(screen_image_);
+  clip_rect_ = screen_image_->Recangle();
 }
 
 void Graphics::SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-  clip_rect_ = Rectangle::FromPos(x1, y1, x2, y2).Intersect(*screen_image_);
+  clip_rect_ =
+      Rectangle::FromPos(x1, y1, x2, y2).Intersect(screen_image_->Recangle());
 }
 
 void Graphics::ResetPalette() {
