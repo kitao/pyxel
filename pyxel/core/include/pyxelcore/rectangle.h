@@ -1,7 +1,7 @@
 #ifndef PYXELCORE_RECTANGLE_H_
 #define PYXELCORE_RECTANGLE_H_
 
-#include "pyxelcore/utilities.h"
+#include "pyxelcore/common.h"
 
 namespace pyxelcore {
 
@@ -27,9 +27,6 @@ class Rectangle {
                             int32_t width,
                             int32_t height);
 
- protected:
-  Rectangle(int32_t left, int32_t top, int32_t width, int32_t height);
-
  private:
   int32_t left_;
   int32_t top_;
@@ -37,46 +34,66 @@ class Rectangle {
   int32_t bottom_;
   int32_t width_;
   int32_t height_;
+
+  Rectangle(int32_t left,
+            int32_t top,
+            int32_t right,
+            int32_t bottom,
+            int32_t width,
+            int32_t height);
 };
 
-inline Rectangle::Rectangle() {
-  left_ = INT16_MIN;
-  top_ = INT16_MIN;
-  right_ = INT16_MAX;
-  bottom_ = INT16_MAX;
-  width_ = INT16_MAX - INT16_MIN;
-  height_ = INT16_MAX - INT16_MIN;
-}
+inline Rectangle::Rectangle()
+    : left_(0), top_(0), right_(0), bottom_(0), width_(0), height_(0) {}
 
 inline Rectangle::Rectangle(int32_t left,
                             int32_t top,
+                            int32_t right,
+                            int32_t bottom,
                             int32_t width,
-                            int32_t height) {
-  left_ = left;
-  top_ = top;
-  width_ = Max(width, 0);
-  height_ = Max(height, 0);
-  right_ = left_ + width_ - 1;
-  bottom_ = top_ + height_ - 1;
-}
+                            int32_t height)
+    : left_(left),
+      top_(top),
+      right_(right),
+      bottom_(bottom),
+      width_(width),
+      height_(height) {}
 
 inline Rectangle Rectangle::FromPos(int32_t x1,
                                     int32_t y1,
                                     int32_t x2,
                                     int32_t y2) {
-  int32_t left = Min(x1, x2);
-  int32_t top = Min(y1, y2);
-  int32_t width = Abs(x1 - x2);
-  int32_t height = Abs(y1 - y2);
+  int32_t left, top, right, bottom;
 
-  return Rectangle(left, top, width, height);
+  if (x1 < x2) {
+    left = x1;
+    right = x2;
+  } else {
+    left = x2;
+    right = x1;
+  }
+
+  if (y1 < y2) {
+    top = y1;
+    bottom = y2;
+  } else {
+    top = y2;
+    bottom = y1;
+  }
+
+  return Rectangle(left, top, right, bottom, right - left + 1,
+                   bottom - top + 1);
 }
 
 inline Rectangle Rectangle::FromSize(int32_t left,
                                      int32_t top,
                                      int32_t width,
                                      int32_t height) {
-  return Rectangle(left, top, width, height);
+  width = Max(width, 0);
+  height = Max(height, 0);
+
+  return Rectangle(left, top, left + width - 1, top + height - 1, width,
+                   height);
 }
 
 inline bool Rectangle::IsEmpty() const {
@@ -88,7 +105,7 @@ inline bool Rectangle::Includes(int32_t x, int32_t y) const {
 }
 
 inline Rectangle Rectangle::MoveTo(int32_t x, int32_t y) const {
-  return Rectangle(x, y, width_, height_);
+  return Rectangle(x, y, x + width_ - 1, y + height_ - 1, width_, height_);
 }
 
 inline Rectangle Rectangle::Intersect(const Rectangle& rect) const {
@@ -100,9 +117,9 @@ inline Rectangle Rectangle::Intersect(const Rectangle& rect) const {
   int32_t height = bottom - top + 1;
 
   if (width > 0 && height > 0) {
-    return Rectangle(left, top, width, height);
+    return Rectangle(left, top, right, bottom, width, height);
   } else {
-    return Rectangle(0, 0, 0, 0);
+    return Rectangle();
   }
 }
 

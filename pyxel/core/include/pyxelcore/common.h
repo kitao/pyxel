@@ -1,7 +1,11 @@
-#ifndef PYXELCORE_UTILITIES_H_
-#define PYXELCORE_UTILITIES_H_
+#ifndef PYXELCORE_COMMON_H_
+#define PYXELCORE_COMMON_H_
 
-#include <cstdint>
+#include "pyxelcore/constants.h"
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <cstdio>
 
 #define PRINT_ERROR(message) PrintError(message, __FUNCTION__)
 
@@ -27,11 +31,10 @@ T Clamp(T v, T low, T high) {
   return v < low ? low : (v > high ? high : v);
 }
 
-void PrintError(const char* message, const char* func_name);
-
-int32_t GetConstantNumber(const char* name);
-const char* GetConstantString(const char* name);
+inline void PrintError(const char* message, const char* func_name) {
+  printf("pyxel: %s in %s\n", message, func_name);
+}
 
 }  // namespace pyxelcore
 
-#endif  // PYXELCORE_UTILITIES_H_
+#endif  // PYXELCORE_COMMON_H_

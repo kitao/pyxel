@@ -1,7 +1,7 @@
 #ifndef PYXELCORE_PROFILER_H_
 #define PYXELCORE_PROFILER_H_
 
-#include <SDL2/SDL.h>
+#include "pyxelcore/common.h"
 
 namespace pyxelcore {
 

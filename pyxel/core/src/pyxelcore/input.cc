@@ -1,9 +1,6 @@
 #include "pyxelcore/input.h"
 
-#include "pyxelcore/system.h"
-#include "pyxelcore/utilities.h"
-
-#include <SDL2/SDL.h>
+#include "pyxelcore/window.h"
 
 namespace pyxelcore {
 

@@ -3,15 +3,17 @@
 
 #include "pyxelcore/rectangle.h"
 
-#include <cstddef>
-
 namespace pyxelcore {
 
-class Image : public Rectangle {
+class Image {
  public:
   Image(int32_t width, int32_t height, int32_t* data = NULL);
   ~Image();
 
+  const Rectangle& Recangle() const { return rect_; }
+
+  int32_t Width() const { return rect_.Width(); }
+  int32_t Height() const { return rect_.Height(); }
   int32_t* Data() const { return data_; }
 
   int32_t GetColor(int32_t x, int32_t y) const;
@@ -41,8 +43,9 @@ class Image : public Rectangle {
                  int32_t color_key = -1);
 
  private:
-  bool need_to_delete_;
+  Rectangle rect_;
   int32_t* data_;
+  bool need_to_delete_;
 };
 
 }  // namespace pyxelcore

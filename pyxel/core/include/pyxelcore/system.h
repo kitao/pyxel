@@ -1,7 +1,6 @@
 #ifndef PYXELCORE_SYSTEM_H_
 #define PYXELCORE_SYSTEM_H_
 
-#include "pyxelcore/constants.h"
 #include "pyxelcore/profiler.h"
 #include "pyxelcore/window.h"
 

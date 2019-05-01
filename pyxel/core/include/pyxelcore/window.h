@@ -1,11 +1,7 @@
 #ifndef PYXELCORE_WINDOW_H_
 #define PYXELCORE_WINDOW_H_
 
-#include <cstdint>
-
-class SDL_Renderer;
-class SDL_Window;
-class SDL_Texture;
+#include "pyxelcore/common.h"
 
 namespace pyxelcore {
 
