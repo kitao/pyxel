@@ -16,12 +16,12 @@ class Image {
   int32_t Height() const { return rect_.Height(); }
   int32_t* Data() const { return data_; }
 
-  int32_t GetColor(int32_t x, int32_t y) const;
-  void SetColor(int32_t x, int32_t y, int32_t color);
-  void SetColor(int32_t x,
+  int32_t GetValue(int32_t x, int32_t y) const;
+  void SetValue(int32_t x, int32_t y, int32_t value);
+  void SetValue(int32_t x,
                 int32_t y,
-                const char** color_str,
-                int32_t color_str_count);
+                const char** value_str,
+                int32_t value_str_count);
   void LoadImage(int32_t x,
                  int32_t y,
                  const char* filename,

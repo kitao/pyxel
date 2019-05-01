@@ -28,39 +28,41 @@ Image::~Image() {
   }
 }
 
-int32_t Image::GetColor(int32_t x, int32_t y) const {
+int32_t Image::GetValue(int32_t x, int32_t y) const {
   if (!rect_.Includes(x, y)) {
+    PRINT_ERROR("access to outside image");
     return 0;
   }
 
   return data_[Width() * y + x];
 }
 
-void Image::SetColor(int32_t x, int32_t y, int32_t color) {
+void Image::SetValue(int32_t x, int32_t y, int32_t value) {
   if (!rect_.Includes(x, y)) {
+    PRINT_ERROR("access to outside image");
     return;
   }
 
-  if (color < 0 || color >= COLOR_COUNT) {
+  if (value < 0 || value >= COLOR_COUNT) {
     PRINT_ERROR("invalid color");
-    color = 0;
+    return;
   }
 
-  data_[Width() * y + x] = color;
+  data_[Width() * y + x] = value;
 }
 
-void Image::SetColor(int32_t x,
+void Image::SetValue(int32_t x,
                      int32_t y,
-                     const char** color_str,
-                     int32_t color_str_count) {
-  int32_t width = strlen(color_str[0]);
-  int32_t height = color_str_count;
+                     const char** value_str,
+                     int32_t value_str_count) {
+  int32_t width = strlen(value_str[0]);
+  int32_t height = value_str_count;
   Image* image = new Image(width, height);
   int32_t* data = image->Data();
 
   for (int32_t i = 0; i < height; i++) {
     int32_t index = width * i;
-    const char* str = color_str[i];
+    const char* str = value_str[i];
 
     for (int32_t j = 0; j < width; j++) {
       int32_t value = str[j];
