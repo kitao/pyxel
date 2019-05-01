@@ -6,10 +6,6 @@
 #include "pyxelcore/input.h"
 #include "pyxelcore/resource.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <cstdio>
-
 namespace pyxelcore {
 
 class PyxelQuit {};

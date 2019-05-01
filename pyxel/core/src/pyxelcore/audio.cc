@@ -1,8 +1,5 @@
 #include "pyxelcore/audio.h"
 
-#include <SDL.h>
-#include <cstddef>
-
 namespace pyxelcore {
 
 Audio::Audio() {

@@ -5,40 +5,35 @@
 
 namespace pyxelcore {
 
-class Tilemap : public Rectangle {
+class Tilemap {
  public:
   Tilemap(int32_t width, int32_t height);
   ~Tilemap();
 
+  int32_t Width() const { return rect_.Width(); }
+  int32_t Height() const { return rect_.Height(); }
   int32_t* Data() const { return data_; }
+  int32_t ImageIndex() const { return image_index_; }
+  void ImageIndex(int32_t image_index);
 
   int32_t GetValue(int32_t x, int32_t y) const;
+  void SetValue(int32_t x, int32_t y, int32_t value);
+  void SetValue(int32_t x,
+                int32_t y,
+                const char** value_str,
+                int32_t value_str_count);
+  void CopyTilemap(int32_t x,
+                   int32_t y,
+                   const Tilemap* tilemap,
+                   int32_t u,
+                   int32_t v,
+                   int32_t width,
+                   int32_t height);
 
-  /*
- PYXEL_API int32_t tilemap_get(void* self, int32_t x, int32_t y);
- PYXEL_API void timemap_set1(void* self,
-                             int32_t x,
-                             int32_t y,
-                             int32_t data,
-                             int32_t refimg);
- PYXEL_API void timemap_set(void* self,
-                            int32_t x,
-                            int32_t y,
-                            const int32_t* data,
-                            int32_t data_width,
-                            int32_t data_height,
-                            int32_t refimg);
- PYXEL_API void timemap_copy(void* self,
-                             int32_t x,
-                             int32_t y,
-                             int32_t tm,
-                             int32_t u,
-                             int32_t v,
-                             int32_t w,
-                             int32_t h);
-                             */
  private:
+  Rectangle rect_;
   int32_t* data_;
+  int32_t image_index_;
 };
 
 }  // namespace pyxelcore

@@ -1,7 +1,7 @@
 #ifndef PYXELCORE_SOUND_H_
 #define PYXELCORE_SOUND_H_
 
-#include <cstdint>
+#include "pyxelcore/common.h"
 
 namespace pyxelcore {
 

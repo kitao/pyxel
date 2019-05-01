@@ -1,15 +1,18 @@
 #include "pyxelcore/image.h"
 
-#include "pyxelcore/constants.h"
-#include "pyxelcore/utilities.h"
-
-#include <SDL2/SDL_image.h>
 #include <string>
 
 namespace pyxelcore {
 
-Image::Image(int32_t width, int32_t height, int32_t* data)
-    : Rectangle(0, 0, width, height) {
+Image::Image(int32_t width, int32_t height, int32_t* data) {
+  if (width < 1 || height < 1) {
+    PRINT_ERROR("invalide image size");
+    width = Max(width, 1);
+    height = Max(height, 1);
+  }
+
+  rect_ = Rectangle::FromSize(0, 0, width, height);
+
   if (data) {
     need_to_delete_ = false;
     data_ = data;
@@ -26,7 +29,7 @@ Image::~Image() {
 }
 
 int32_t Image::GetColor(int32_t x, int32_t y) const {
-  if (!Includes(x, y)) {
+  if (!rect_.Includes(x, y)) {
     return 0;
   }
 
@@ -34,7 +37,7 @@ int32_t Image::GetColor(int32_t x, int32_t y) const {
 }
 
 void Image::SetColor(int32_t x, int32_t y, int32_t color) {
-  if (!Includes(x, y)) {
+  if (!rect_.Includes(x, y)) {
     return;
   }
 
@@ -77,7 +80,7 @@ void Image::SetColor(int32_t x,
     }
   }
 
-  DrawImage(x, y, image, Rectangle::FromSize(0, 0, width, height), *this);
+  DrawImage(x, y, image, Rectangle::FromSize(0, 0, width, height), rect_);
 
   delete image;
 }
@@ -131,7 +134,7 @@ void Image::LoadImage(int32_t x,
     }
   }
 
-  DrawImage(x, y, &image, Rectangle::FromSize(0, 0, width, height), *this);
+  DrawImage(x, y, &image, Rectangle::FromSize(0, 0, width, height), rect_);
 
   SDL_FreeSurface(png_image);
   SDL_FreeSurface(src_image);
@@ -144,7 +147,7 @@ void Image::CopyImage(int32_t x,
                       int32_t v,
                       int32_t width,
                       int32_t height) {
-  DrawImage(x, y, image, Rectangle::FromSize(u, v, width, height), *this);
+  DrawImage(x, y, image, Rectangle::FromSize(u, v, width, height), rect_);
 }
 
 void Image::DrawImage(int32_t x,
@@ -159,14 +162,13 @@ void Image::DrawImage(int32_t x,
     color_key = -1;
   }
 
-  Rectangle src_rect = static_cast<Rectangle>(*image).Intersect(copy_rect);
+  Rectangle src_rect = image->rect_.Intersect(copy_rect);
 
   x += Max(src_rect.Left() - copy_rect.Left(), 0);
   y += Max(src_rect.Top() - copy_rect.Top(), 0);
 
   Rectangle dest_rect =
-      static_cast<Rectangle>(*this).Intersect(clip_rect).Intersect(
-          src_rect.MoveTo(x, y));
+      rect_.Intersect(clip_rect).Intersect(src_rect.MoveTo(x, y));
 
   if (dest_rect.IsEmpty()) {
     return;

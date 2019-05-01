@@ -1,7 +1,7 @@
 #ifndef PYXELCORE_MUSIC_H_
 #define PYXELCORE_MUSIC_H_
 
-#include <cstdint>
+#include "pyxelcore/common.h"
 
 namespace pyxelcore {
 
