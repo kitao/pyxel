@@ -38,26 +38,24 @@ System::System(int32_t width,
     height = Clamp(height, MIN_SCREEN_SIZE, MAX_SCREEN_SIZE);
   }
 
+  if (fps < 1) {
+    PRINT_ERROR("invalid fps");
+    fps = 1;
+  }
+
   resource_ = new pyxelcore::Resource();
   input_ = new pyxelcore::Input();
   graphics_ = new pyxelcore::Graphics(width, height);
   audio_ = new pyxelcore::Audio();
   window_ = new pyxelcore::Window(caption, width, height, scale, border_width,
                                   border_color);
-
-  if (fps < 1) {
-    PRINT_ERROR("invalid fps");
-    fps = 1;
-  }
-
   fps_ = fps;
   frame_count_ = 0;
+  is_performance_monitor_on = false;
 
   for (int32_t i = 0; i < COLOR_COUNT; i++) {
     palette_color_[i] = palette_color[i];
   }
-
-  is_performance_monitor_on = false;
 }
 
 System::~System() {
