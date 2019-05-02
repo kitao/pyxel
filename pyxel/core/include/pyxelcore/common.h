@@ -31,6 +31,17 @@ T Clamp(T v, T low, T high) {
   return v < low ? low : (v > high ? high : v);
 }
 
+template <typename T, size_t N, size_t M>
+T** NewPointerArrayFromArray2D(T (&array2d)[N][M]) {
+  T** pointer_array = new T*[N];
+
+  for (int32_t i = 0; i < N; i++) {
+    pointer_array[i] = array2d[i];
+  }
+
+  return pointer_array;
+}
+
 inline void PrintError(const char* message, const char* func_name) {
   printf("pyxel error: %s in '%s'\n", message, func_name);
 }

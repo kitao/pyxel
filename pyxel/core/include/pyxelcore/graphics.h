@@ -64,7 +64,8 @@ class Graphics {
   Rectangle clip_rect_;
   int32_t palette_table_[COLOR_COUNT];
 
-  void SetupFontImage();
+  void SetupMouseCursor();
+  void SetupFont();
   int32_t GetDrawColor(int32_t color) const;
   void SetPixel(int32_t x, int32_t y, int32_t color);
 };
