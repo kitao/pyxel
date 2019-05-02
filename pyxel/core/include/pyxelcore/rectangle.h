@@ -30,12 +30,15 @@ class Rectangle {
     int32_t height;
   };
 
-  CopyArea GetCopyArea(int32_t dst_x,
-                       int32_t dst_y,
+  CopyArea GetCopyArea(int32_t x,
+                       int32_t y,
                        const Rectangle& src_rect,
                        const Rectangle& copy_rect) const;
 
-  static Rectangle FromPos(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
+  static Rectangle FromPos(int32_t left,
+                           int32_t top,
+                           int32_t right,
+                           int32_t bottom);
   static Rectangle FromSize(int32_t left,
                             int32_t top,
                             int32_t width,
@@ -73,26 +76,20 @@ inline Rectangle::Rectangle(int32_t left,
       width_(width),
       height_(height) {}
 
-inline Rectangle Rectangle::FromPos(int32_t x1,
-                                    int32_t y1,
-                                    int32_t x2,
-                                    int32_t y2) {
-  int32_t left, top, right, bottom;
-
-  if (x1 < x2) {
-    left = x1;
-    right = x2;
-  } else {
-    left = x2;
-    right = x1;
+inline Rectangle Rectangle::FromPos(int32_t left,
+                                    int32_t top,
+                                    int32_t right,
+                                    int32_t bottom) {
+  if (left > right) {
+    int32_t tmp = left;
+    left = right;
+    right = tmp;
   }
 
-  if (y1 < y2) {
-    top = y1;
-    bottom = y2;
-  } else {
-    top = y2;
-    bottom = y1;
+  if (top > bottom) {
+    int32_t tmp = top;
+    top = bottom;
+    bottom = tmp;
   }
 
   return Rectangle(left, top, right, bottom, right - left + 1,
@@ -111,7 +108,7 @@ inline Rectangle Rectangle::FromSize(int32_t left,
 }
 
 inline bool Rectangle::IsEmpty() const {
-  return width_ == 0 && height_ == 0;
+  return width_ == 0 || height_ == 0;
 }
 
 inline bool Rectangle::Includes(int32_t x, int32_t y) const {
@@ -138,22 +135,21 @@ inline Rectangle Rectangle::Intersect(const Rectangle& rect) const {
 }
 
 inline Rectangle::CopyArea Rectangle::GetCopyArea(
-    int32_t dst_x,
-    int32_t dst_y,
+    int32_t x,
+    int32_t y,
     const Rectangle& src_rect,
     const Rectangle& copy_rect) const {
   Rectangle cr = copy_rect.Intersect(src_rect);
 
-  int32_t dr_x = dst_x + Max(cr.Left() - copy_rect.Left(), 0);
-  int32_t dr_y = dst_y + Max(cr.Top() - copy_rect.Top(), 0);
-  Rectangle dr = this->Intersect(cr.MoveTo(dr_x, dr_y));
+  int32_t dst_x = x + Max(cr.Left() - copy_rect.Left(), 0);
+  int32_t dst_y = y + Max(cr.Top() - copy_rect.Top(), 0);
+  Rectangle dst = cr.MoveTo(dst_x, dst_y).Intersect(*this);
 
-  int32_t sr_x = copy_rect.Left() + Max(dr.Left() - dst_x, 0);
-  int32_t sr_y = copy_rect.Top() + Max(dr.Top() - dst_y, 0);
-  Rectangle sr = dr.MoveTo(sr_x, sr_y);
+  int32_t src_x = copy_rect.Left() + Max(dst.Left() - x, 0);
+  int32_t src_y = copy_rect.Top() + Max(dst.Top() - y, 0);
 
   CopyArea copy_area = {
-      sr.Left(), sr.Top(), dr.Left(), dr.Top(), sr.Width(), sr.Height(),
+      src_x, src_y, dst.Left(), dst.Top(), dst.Width(), dst.Height(),
   };
 
   return copy_area;

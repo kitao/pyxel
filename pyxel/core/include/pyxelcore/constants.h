@@ -15,7 +15,7 @@ const int32_t COLOR_COUNT = 16;
 const char DEFAULT_CAPTION[] = "Pyxel";
 const int32_t DEFAULT_SCALE = 0;
 const int32_t DEFAULT_FPS = 30;
-const int32_t DEFAULT_BORDER_WIDTH = 0;
+const int32_t DEFAULT_BORDER_WIDTH = 8;
 const int32_t DEFAULT_BORDER_COLOR = 0x101018;
 
 const int32_t DEFAULT_PALETTE_00 = 0x000000;
@@ -49,6 +49,7 @@ const int32_t DEFAULT_PALETTE[COLOR_COUNT] = {
 //
 const int32_t MIN_SCREEN_SIZE = 64;
 const int32_t MAX_SCREEN_SIZE = 256;
+
 const int32_t MAX_FRAME_SKIP_COUNT = 9;
 const int32_t MEASURE_FRAME_COUNT = 10;
 
