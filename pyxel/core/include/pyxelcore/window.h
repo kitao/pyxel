@@ -38,7 +38,6 @@ class Window {
   int32_t screen_width_;
   int32_t screen_height_;
   int32_t screen_scale_;
-  int32_t border_width_;
   int32_t border_color_;
   bool is_fullscreen_;
 

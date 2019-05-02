@@ -40,7 +40,7 @@ class Tilemap {
 
 inline void Tilemap::ImageIndex(int32_t image_index) {
   if (image_index < 0 || image_index >= IMAGE_BANK_COUNT) {
-    PRINT_ERROR("invalid image bank index");
+    PRINT_ERROR("invalid image index");
     return;
   }
 
