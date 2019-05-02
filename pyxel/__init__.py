@@ -205,7 +205,7 @@ class Tilemap:
     def get(self, x: int, y: int) -> int:
         pass
 
-    def set(self, x: int, y: int, data: Any, refimg: int = None) -> None:
+    def set(self, x: int, y: int, data: Any) -> None:
         pass
 
     def copy(self, x: int, y: int, tm: int, u: int, v: int, w: int, h: int) -> None:
