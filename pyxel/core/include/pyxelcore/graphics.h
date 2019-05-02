@@ -76,7 +76,7 @@ inline Image* Graphics::GetImageBank(int32_t image_index, bool system) const {
   }
 
   if (image_index == IMAGE_BANK_FOR_SYSTEM && !system) {
-    PRINT_ERROR("invalid access to image bank for system");
+    PRINT_ERROR("access to image bank for system");
   }
 
   return image_bank_[image_index];
