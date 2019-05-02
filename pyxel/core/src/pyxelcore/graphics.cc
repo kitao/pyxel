@@ -48,12 +48,12 @@ Graphics::~Graphics() {
 }
 
 void Graphics::ResetClippingArea() {
-  clip_rect_ = screen_image_->Recangle();
+  clip_rect_ = screen_image_->Rectangle();
 }
 
 void Graphics::SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
   clip_rect_ =
-      Rectangle::FromPos(x1, y1, x2, y2).Intersect(screen_image_->Recangle());
+      Rectangle::FromPos(x1, y1, x2, y2).Intersect(screen_image_->Rectangle());
 }
 
 void Graphics::ResetPalette() {
@@ -264,10 +264,50 @@ void Graphics::DrawImage(int32_t x,
                          int32_t height,
                          int32_t color_key) {
   Image* image = GetImageBank(image_index, true);
-  Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
 
-  screen_image_->DrawImage(x, y, image, copy_rect, clip_rect_, palette_table_,
-                           color_key);
+  if (color_key != -1 && (color_key < 0 || color_key >= COLOR_COUNT)) {
+    PRINT_ERROR("invalid color");
+    color_key = -1;
+  }
+
+  Rectangle dst_rect = screen_image_->Rectangle().Intersect(clip_rect_);
+  Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
+  Rectangle::CopyArea copy_area =
+      dst_rect.GetCopyArea(x, y, image->Rectangle(), copy_rect);
+
+  if (copy_area.width <= 0 || copy_area.height <= 0) {
+    return;
+  }
+
+  int32_t src_width = image->Width();
+  int32_t* src_data = image->Data();
+
+  int32_t dst_width = screen_image_->Width();
+  int32_t* dst_data = screen_image_->Data();
+
+  if (color_key == -1) {
+    for (int32_t i = 0; i < copy_area.height; i++) {
+      int32_t src_index = src_width * (copy_area.src_y + i) + copy_area.src_x;
+      int32_t dst_index = dst_width * (copy_area.dst_y + i) + copy_area.dst_x;
+
+      for (int32_t j = 0; j < copy_area.width; j++) {
+        dst_data[dst_index + j] = palette_table_[src_data[src_index + j]];
+      }
+    }
+  } else {
+    for (int32_t i = 0; i < copy_area.height; i++) {
+      int32_t src_index = src_width * (copy_area.src_y + i) + copy_area.src_x;
+      int32_t dst_index = dst_width * (copy_area.dst_y + i) + copy_area.dst_x;
+
+      for (int32_t j = 0; j < copy_area.width; j++) {
+        int32_t src_color = src_data[src_index + j];
+
+        if (src_color != color_key) {
+          dst_data[dst_index + j] = palette_table_[src_color];
+        }
+      }
+    }
+  }
 }
 
 void Graphics::DrawTilemap(int32_t x,
@@ -279,17 +319,16 @@ void Graphics::DrawTilemap(int32_t x,
                            int32_t height,
                            int32_t color_key) {
   Tilemap* tilemap = GetTilemapBank(tilemap_index);
-  Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
   // TODO
 }
 
 void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
   color = GetDrawColor(color);
 
-  int32_t left = x;
   int32_t original_color = palette_table_[FONT_IMAGE_COLOR];
-
   palette_table_[FONT_IMAGE_COLOR] = color;
+
+  int32_t left = x;
 
   for (const char* ch = text; *ch != '\0'; ch++) {
     if (*ch == 10) {  // new line
@@ -310,12 +349,10 @@ void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
     }
 
     int32_t code = *ch - MIN_FONT_CODE;
-    Rectangle copy_rect = Rectangle::FromSize(
-        (code % FONT_ROW_COUNT) * FONT_WIDTH,
-        (code / FONT_ROW_COUNT) * FONT_HEIGHT, FONT_WIDTH, FONT_HEIGHT);
+    int32_t u = (code % FONT_ROW_COUNT) * FONT_WIDTH;
+    int32_t v = (code / FONT_ROW_COUNT) * FONT_HEIGHT;
 
-    screen_image_->DrawImage(x, y, image_bank_[IMAGE_BANK_FOR_SYSTEM],
-                             copy_rect, clip_rect_, palette_table_, 0);
+    DrawImage(x, y, IMAGE_BANK_FOR_SYSTEM, u, v, FONT_WIDTH, FONT_HEIGHT, 0);
 
     x += FONT_WIDTH;
   }
