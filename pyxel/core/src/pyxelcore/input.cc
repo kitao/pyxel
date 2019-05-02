@@ -113,6 +113,8 @@ const uint8_t SCANCODE_TABLE[SDL_KEY_COUNT] = {
 };
 
 Input::Input() {
+  is_mouse_visible_ = true;
+
   for (int32_t i = 0; i < KEY_COUNT; i++) {
     key_state_[i] = 0;
   }
@@ -194,7 +196,7 @@ bool Input::IsButtonReleased(int32_t key) const {
   return key_state_[key] == -frame_count_;
 }
 
-void Input::SetMouseVisibility(int32_t is_visible) {
+void Input::SetMouseVisible(int32_t is_visible) {
   is_mouse_visible_ = is_visible;
 }
 

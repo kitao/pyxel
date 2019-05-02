@@ -183,21 +183,13 @@ void System::DrawPerformanceMonitor() {
 }
 
 void System::DrawMouseCursor() {
-  /*
-        if not self._is_mouse_visible:
-            return
+  if (!input_->IsMouseVisible()) {
+    return;
+  }
 
-        pyxel.blt(
-            pyxel.mouse_x,
-            pyxel.mouse_y,
-            3,
-            MOUSE_CURSOR_IMAGE_X,
-            MOUSE_CURSOR_IMAGE_Y,
-            MOUSE_CURSOR_WIDTH,
-            MOUSE_CURSOR_HEIGHT,
-            1,
-        )
-  */
+  graphics_->DrawImage(input_->MouseX(), input_->MouseY(),
+                       IMAGE_BANK_FOR_SYSTEM, MOUSE_CURSOR_X, MOUSE_CURSOR_Y,
+                       MOUSE_CURSOR_WIDTH, MOUSE_CURSOR_HEIGHT, 1);
 }
 
 /*
