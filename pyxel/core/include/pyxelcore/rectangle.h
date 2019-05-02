@@ -21,6 +21,20 @@ class Rectangle {
   Rectangle MoveTo(int32_t x, int32_t y) const;
   Rectangle Intersect(const Rectangle& rect) const;
 
+  struct CopyArea {
+    int32_t src_x;
+    int32_t src_y;
+    int32_t dst_x;
+    int32_t dst_y;
+    int32_t width;
+    int32_t height;
+  };
+
+  CopyArea GetCopyArea(int32_t dst_x,
+                       int32_t dst_y,
+                       const Rectangle& src_rect,
+                       const Rectangle& copy_rect) const;
+
   static Rectangle FromPos(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
   static Rectangle FromSize(int32_t left,
                             int32_t top,
@@ -121,6 +135,28 @@ inline Rectangle Rectangle::Intersect(const Rectangle& rect) const {
   } else {
     return Rectangle();
   }
+}
+
+inline Rectangle::CopyArea Rectangle::GetCopyArea(
+    int32_t dst_x,
+    int32_t dst_y,
+    const Rectangle& src_rect,
+    const Rectangle& copy_rect) const {
+  Rectangle cr = copy_rect.Intersect(src_rect);
+
+  int32_t dr_x = dst_x + Max(cr.Left() - copy_rect.Left(), 0);
+  int32_t dr_y = dst_y + Max(cr.Top() - copy_rect.Top(), 0);
+  Rectangle dr = this->Intersect(cr.MoveTo(dr_x, dr_y));
+
+  int32_t sr_x = copy_rect.Left() + Max(dr.Left() - dst_x, 0);
+  int32_t sr_y = copy_rect.Top() + Max(dr.Top() - dst_y, 0);
+  Rectangle sr = dr.MoveTo(sr_x, sr_y);
+
+  CopyArea copy_area = {
+      sr.Left(), sr.Top(), dr.Left(), dr.Top(), sr.Width(), sr.Height(),
+  };
+
+  return copy_area;
 }
 
 }  // namespace pyxelcore

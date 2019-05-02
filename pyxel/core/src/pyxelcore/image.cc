@@ -4,7 +4,7 @@
 
 namespace pyxelcore {
 
-Image::Image(int32_t width, int32_t height, int32_t* data) {
+Image::Image(int32_t width, int32_t height) {
   if (width < 1 || height < 1) {
     PRINT_ERROR("invalide image size");
     width = Max(width, 1);
@@ -12,20 +12,11 @@ Image::Image(int32_t width, int32_t height, int32_t* data) {
   }
 
   rect_ = Rectangle::FromSize(0, 0, width, height);
-
-  if (data) {
-    need_to_delete_ = false;
-    data_ = data;
-  } else {
-    need_to_delete_ = true;
-    data_ = new int32_t[Width() * Height()];
-  }
+  data_ = new int32_t[width * height];
 }
 
 Image::~Image() {
-  if (need_to_delete_) {
-    delete[] data_;
-  }
+  delete[] data_;
 }
 
 int32_t Image::GetValue(int32_t x, int32_t y) const {
@@ -39,7 +30,6 @@ int32_t Image::GetValue(int32_t x, int32_t y) const {
 
 void Image::SetValue(int32_t x, int32_t y, int32_t value) {
   if (!rect_.Includes(x, y)) {
-    PRINT_ERROR("access to outside image");
     return;
   }
 
@@ -58,31 +48,18 @@ void Image::SetValue(int32_t x,
   int32_t width = strlen(value_str[0]);
   int32_t height = value_str_count;
   Image* image = new Image(width, height);
-  int32_t* data = image->Data();
+  int32_t* data = image->data_;
 
   for (int32_t i = 0; i < height; i++) {
     int32_t index = width * i;
-    const char* str = value_str[i];
+    std::string str = value_str[i];
 
     for (int32_t j = 0; j < width; j++) {
-      int32_t value = str[j];
-
-      if (value >= '0' && value <= '9') {
-        value -= '0';
-      } else if (value >= 'A' && value <= 'F') {
-        value -= 'A';
-      } else if (value >= 'a' && value <= 'f') {
-        value -= 'a';
-      } else {
-        PRINT_ERROR("invalid color string");
-        value = 0;
-      }
-
-      data[index + j] = value;
+      data[index + j] = std::stoi(str.substr(j, 1), nullptr, 16);
     }
   }
 
-  DrawImage(x, y, image, Rectangle::FromSize(0, 0, width, height), rect_);
+  CopyImage(x, y, image, 0, 0, width, height);
 
   delete image;
 }
@@ -105,7 +82,7 @@ void Image::LoadImage(int32_t x,
   int32_t src_pitch = src_image->pitch;
 
   Image image = Image(width, height);
-  int32_t* dest_data = image.Data();
+  int32_t* dest_data = image.data_;
 
   for (int32_t i = 0; i < height; i++) {
     int32_t src_index = src_pitch * i;
@@ -136,7 +113,7 @@ void Image::LoadImage(int32_t x,
     }
   }
 
-  DrawImage(x, y, &image, Rectangle::FromSize(0, 0, width, height), rect_);
+  CopyImage(x, y, &image, 0, 0, width, height);
 
   SDL_FreeSurface(png_image);
   SDL_FreeSurface(src_image);
@@ -149,63 +126,25 @@ void Image::CopyImage(int32_t x,
                       int32_t v,
                       int32_t width,
                       int32_t height) {
-  DrawImage(x, y, image, Rectangle::FromSize(u, v, width, height), rect_);
-}
+  Rectangle::CopyArea copy_area = rect_.GetCopyArea(
+      x, y, image->rect_, Rectangle::FromSize(u, v, width, height));
 
-void Image::DrawImage(int32_t x,
-                      int32_t y,
-                      const Image* image,
-                      const Rectangle& copy_rect,
-                      const Rectangle& clip_rect,
-                      const int32_t* palette_table,
-                      int32_t color_key) {
-  if (color_key != -1 && (color_key < 0 || color_key >= COLOR_COUNT)) {
-    PRINT_ERROR("invalid color");
-    color_key = -1;
-  }
-
-  Rectangle src_rect = image->rect_.Intersect(copy_rect);
-
-  x += Max(src_rect.Left() - copy_rect.Left(), 0);
-  y += Max(src_rect.Top() - copy_rect.Top(), 0);
-
-  Rectangle dest_rect =
-      rect_.Intersect(clip_rect).Intersect(src_rect.MoveTo(x, y));
-
-  if (dest_rect.IsEmpty()) {
+  if (copy_area.width <= 0 || copy_area.height <= 0) {
     return;
   }
 
-  src_rect = dest_rect.MoveTo(copy_rect.Left() + Max(dest_rect.Left() - x, 0),
-                              copy_rect.Top() + Max(dest_rect.Top() - y, 0));
+  int32_t src_width = image->Width();
+  int32_t* src_data = image->data_;
 
-  int32_t src_x = src_rect.Left();
-  int32_t src_y = src_rect.Top();
-  int32_t src_w = image->Width();
-  int32_t src_h = image->Height();
-  int32_t* src_data = image->Data();
+  int32_t dst_width = Width();
+  int32_t* dst_data = data_;
 
-  int32_t dest_x = dest_rect.Left();
-  int32_t dest_y = dest_rect.Top();
-  int32_t dest_w = Width();
-  int32_t dest_h = Height();
-  int32_t* dest_data = Data();
+  for (int32_t i = 0; i < copy_area.height; i++) {
+    int32_t src_index = src_width * (copy_area.src_y + i) + copy_area.src_x;
+    int32_t dst_index = dst_width * (copy_area.dst_y + i) + copy_area.dst_x;
 
-  int32_t copy_w = dest_rect.Width();
-  int32_t copy_h = dest_rect.Height();
-
-  for (int32_t i = 0; i < copy_h; i++) {
-    int32_t src_index = src_w * (src_y + i) + src_x;
-    int32_t dest_index = dest_w * (dest_y + i) + dest_x;
-
-    for (int32_t j = 0; j < copy_w; j++) {
-      int32_t src_color = src_data[src_index + j];
-
-      // TODO: performance improvement
-      if (src_color != color_key) {
-        dest_data[dest_index + j] =
-            palette_table ? palette_table[src_color] : src_color;
-      }
+    for (int32_t j = 0; j < copy_area.width; j++) {
+      dst_data[dst_index + j] = src_data[src_index + j];
     }
   }
 }

@@ -10,6 +10,8 @@ class Tilemap {
   Tilemap(int32_t width, int32_t height);
   ~Tilemap();
 
+  const class Rectangle& Rectangle() const { return rect_; }
+
   int32_t Width() const { return rect_.Width(); }
   int32_t Height() const { return rect_.Height(); }
   int32_t* Data() const { return data_; }
@@ -31,14 +33,14 @@ class Tilemap {
                    int32_t height);
 
  private:
-  Rectangle rect_;
+  class Rectangle rect_;
   int32_t* data_;
   int32_t image_index_;
 };
 
 inline void Tilemap::ImageIndex(int32_t image_index) {
   if (image_index < 0 || image_index >= IMAGE_BANK_COUNT) {
-    PRINT_ERROR("invalie imgae index");
+    PRINT_ERROR("invalid image bank index");
     return;
   }
 
