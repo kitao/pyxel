@@ -2,6 +2,10 @@
 
 namespace pyxelcore {
 
+Sound::Sound() {}
+
+Sound::~Sound() {}
+
 /*
 from .constants import SOUND_EFFECT_TABLE, SOUND_NOTE_TABLE, SOUND_TONE_TABLE
 
