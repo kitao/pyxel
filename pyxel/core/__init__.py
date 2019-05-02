@@ -46,6 +46,18 @@ if __name__ == "__main__":
             self.x = 0
 
             pyxel.image(0).load(0, 0, "../examples/assets/cat_16x16.png")
+            pyxel.image(1).load(0, 0, "../examples/assets/tileset_24x32.png")
+
+            pyxel.tilemap(0).set(
+                0,
+                0,
+                [
+                    "022000002004001000060061062000040",
+                    "042003020021022003000001002003060",
+                ],
+                1,
+            )
+            pyxel.tilemap(0).refimg = 1
 
             pyxel.run(self.update, self.draw)  # noqa: F821
 

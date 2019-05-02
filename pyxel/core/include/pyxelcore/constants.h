@@ -57,6 +57,8 @@ const int32_t IMAGE_BANK_FOR_SYSTEM = IMAGE_BANK_COUNT - 1;
 const int32_t TILEMAP_BANK_COUNT = 8;
 const int32_t TILEMAP_BANK_WIDTH = 256;
 const int32_t TILEMAP_BANK_HEIGHT = 256;
+const int32_t TILEMAP_CHIP_WIDTH = 8;
+const int32_t TILEMAP_CHIP_HEIGHT = 8;
 
 const int32_t MOUSE_CURSOR_X = 2;
 const int32_t MOUSE_CURSOR_Y = 2;

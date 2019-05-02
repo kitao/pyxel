@@ -314,20 +314,32 @@ void Graphics::DrawTilemap(int32_t x,
                            int32_t height,
                            int32_t color_key) {
   Tilemap* tilemap = GetTilemapBank(tilemap_index);
-  // TODO
-  /*
-    def bltm(self, x, y, tm, u, v, w, h, colkey=None):
-        tilemap = self._tilemap_list[tm]
-        data = self._tilemap_list[tm]._data[v:, u:]
-        img = tilemap.refimg
+  int32_t image_index = tilemap->ImageIndex();
 
-        for i in range(h):
-            for j in range(w):
-                val = data[i, j]
-                sx = (val % 32) * 8
-                sy = (val // 32) * 8
-                self.blt(x + j * 8, y + i * 8, img, sx, sy, 8, 8, colkey)
-  */
+  Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
+  Rectangle dst_rect =
+      Rectangle::FromPos(INT16_MIN, INT16_MIN, INT16_MAX, INT16_MAX);
+  Rectangle::CopyArea copy_area =
+      dst_rect.GetCopyArea(x, y, tilemap->Rectangle(), copy_rect);
+
+  int32_t src_width = tilemap->Width();
+  int32_t* src_data = tilemap->Data();
+
+  for (int32_t i = 0; i < copy_area.height; i++) {
+    int32_t index = src_width * (copy_area.src_y + i) + copy_area.src_x;
+
+    for (int32_t j = 0; j < copy_area.width; j++) {
+      int32_t value = src_data[index + j];
+      int32_t u = (value % (IMAGE_BANK_WIDTH / TILEMAP_CHIP_WIDTH)) *
+                  TILEMAP_CHIP_WIDTH;
+      int32_t v = (value / (IMAGE_BANK_HEIGHT / TILEMAP_CHIP_HEIGHT)) *
+                  TILEMAP_CHIP_HEIGHT;
+
+      DrawImage(x + j * TILEMAP_CHIP_WIDTH, y + i * TILEMAP_CHIP_HEIGHT,
+                image_index, u, v, TILEMAP_CHIP_WIDTH, TILEMAP_CHIP_HEIGHT,
+                color_key);
+    }
+  }
 }
 
 void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
