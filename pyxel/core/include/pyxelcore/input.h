@@ -23,7 +23,7 @@ class Input {
                        int32_t hold_frame = 0,
                        int32_t period_frame = 0) const;
   bool IsButtonReleased(int32_t key) const;
-  void SetMouseVisibility(int32_t is_visible);
+  void SetMouseVisible(int32_t is_visible);
 
  private:
   int32_t frame_count_;

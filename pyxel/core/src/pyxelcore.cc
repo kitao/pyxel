@@ -108,7 +108,7 @@ int32_t btnr(int32_t key) {
 }
 
 void mouse(int32_t visible) {
-  return s_input->SetMouseVisibility(visible);
+  return s_input->SetMouseVisible(visible);
 }
 
 //
