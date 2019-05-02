@@ -7,6 +7,9 @@ namespace pyxelcore {
 
 class Music {
  public:
+  Music();
+  ~Music();
+
  private:
 };
 
