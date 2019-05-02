@@ -7,15 +7,16 @@ namespace pyxelcore {
 
 class Profiler {
  public:
-  Profiler();
-
-  void Start();
-  void End(int32_t measure_frame_count);
+  Profiler(int32_t measure_frame_count);
 
   float AverageTime() const { return average_time_; }
   float AverageFPS() const { return average_fps_; }
 
+  void Start();
+  void End();
+
  private:
+  int32_t measure_frame_count_;
   int32_t frame_count_;
   int32_t start_time_;
   int32_t total_time_;
@@ -23,24 +24,25 @@ class Profiler {
   float average_fps_;
 };
 
-inline Profiler::Profiler() {
-  frame_count_ = 0;
-  start_time_ = 0;
-  total_time_ = 0;
-  average_time_ = 0.0f;
-  average_fps_ = 0.0f;
+inline Profiler::Profiler(int32_t measure_frame_count)
+    : frame_count_(0),
+      start_time_(0),
+      total_time_(0),
+      average_time_(0.0f),
+      average_fps_(0.0f) {
+  measure_frame_count_ = Max(measure_frame_count, 1);
 }
 
 inline void Profiler::Start() {
   start_time_ = SDL_GetTicks();
 }
 
-inline void Profiler::End(int32_t measure_frame_count) {
+inline void Profiler::End() {
   total_time_ += SDL_GetTicks() - start_time_;
   frame_count_++;
 
-  if (frame_count_ == measure_frame_count) {
-    average_time_ = static_cast<float>(total_time_) / measure_frame_count;
+  if (frame_count_ >= measure_frame_count_) {
+    average_time_ = static_cast<float>(total_time_) / frame_count_;
     average_fps_ = 1000.0f / average_time_;
 
     frame_count_ = 0;

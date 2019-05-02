@@ -320,6 +320,19 @@ void Graphics::DrawTilemap(int32_t x,
                            int32_t color_key) {
   Tilemap* tilemap = GetTilemapBank(tilemap_index);
   // TODO
+  /*
+    def bltm(self, x, y, tm, u, v, w, h, colkey=None):
+        tilemap = self._tilemap_list[tm]
+        data = self._tilemap_list[tm]._data[v:, u:]
+        img = tilemap.refimg
+
+        for i in range(h):
+            for j in range(w):
+                val = data[i, j]
+                sx = (val % 32) * 8
+                sy = (val // 32) * 8
+                self.blt(x + j * 8, y + i * 8, img, sx, sy, 8, 8, colkey)
+  */
 }
 
 void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {

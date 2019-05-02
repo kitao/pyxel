@@ -8,40 +8,31 @@ Window::Window(const char* caption,
                int32_t screen_scale,
                int32_t border_width,
                int32_t border_color) {
-  if (screen_width < MIN_SCREEN_SIZE || screen_width > MAX_SCREEN_SIZE ||
-      screen_height < MIN_SCREEN_SIZE || screen_height > MAX_SCREEN_SIZE) {
-    PRINT_ERROR("invalide screen size");
-    screen_width = Clamp(screen_width, MIN_SCREEN_SIZE, MAX_SCREEN_SIZE);
-    screen_height = Clamp(screen_height, MIN_SCREEN_SIZE, MAX_SCREEN_SIZE);
-  }
-
   if (border_width < 0) {
-    PRINT_ERROR("invalide boader width");
+    PRINT_ERROR("invalid boader width");
     border_width = 0;
   }
 
   screen_width_ = screen_width;
   screen_height_ = screen_height;
   screen_scale_ = screen_scale;
-  border_width_ = border_width;
   border_color_ = border_color;
   is_fullscreen_ = false;
-
-  SDL_Init(SDL_INIT_VIDEO);  // TODO: error handling
-  IMG_Init(IMG_INIT_PNG);    // TODO: erro handling
 
   if (screen_scale_ <= 0) {
     SDL_DisplayMode display_mode;
     SDL_GetDesktopDisplayMode(0, &display_mode);
 
-    screen_scale_ = Min((display_mode.w - border_width_ * 2) / screen_width_,
-                        (display_mode.h - border_width_ * 2) / screen_height_);
+    screen_scale_ = Min((display_mode.w - border_width * 2) / screen_width_,
+                        (display_mode.h - border_width * 2) / screen_height_);
   }
+
+  int32_t window_width = screen_width_ * screen_scale_ + border_width * 2;
+  int32_t window_height = screen_height_ * screen_scale_ + border_width * 2;
 
   window_ =
       SDL_CreateWindow(caption, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                       screen_width_ * screen_scale_,
-                       screen_height_ * screen_scale_, SDL_WINDOW_RESIZABLE);
+                       window_width, window_height, SDL_WINDOW_RESIZABLE);
 
   renderer_ = SDL_CreateRenderer(window_, -1, 0);
 
@@ -60,8 +51,8 @@ void Window::UpdateWindowInfo() {
   int32_t window_width, window_height;
   SDL_GetWindowSize(window_, &window_width, &window_height);
 
-  screen_scale_ = Min((window_width - border_width_ * 2) / screen_width_,
-                      (window_height - border_width_ * 2) / screen_height_);
+  screen_scale_ =
+      Min(window_width / screen_width_, window_height / screen_height_);
 
   screen_x_ = (window_width - screen_width_ * screen_scale_) / 2;
   screen_y_ = (window_height - screen_height_ * screen_scale_) / 2;
