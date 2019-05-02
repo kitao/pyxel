@@ -1,6 +1,7 @@
 #include "pyxelcore/graphics.h"
 
 #include "pyxelcore/image.h"
+#include "pyxelcore/tilemap.h"
 
 #include <cmath>
 
@@ -31,6 +32,11 @@ Graphics::Graphics(int32_t width, int32_t height) {
     image_bank_[i] = new Image(IMAGE_BANK_WIDTH, IMAGE_BANK_HEIGHT);
   }
 
+  tilemap_bank_ = new Tilemap*[TILEMAP_BANK_COUNT];
+  for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
+    tilemap_bank_[i] = new Tilemap(TILEMAP_BANK_WIDTH, TILEMAP_BANK_HEIGHT);
+  }
+
   SetupFontImage();
 
   ResetClippingArea();
@@ -43,6 +49,11 @@ Graphics::~Graphics() {
     delete image_bank_[i];
   }
   delete[] image_bank_;
+
+  for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
+    delete tilemap_bank_[i];
+  }
+  delete[] tilemap_bank_;
 
   delete screen_image_;
 }
