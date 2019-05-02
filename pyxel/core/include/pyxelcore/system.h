@@ -37,10 +37,10 @@ class System {
   void Quit();
 
  private:
-  pyxelcore::Input* input_;
-  pyxelcore::Resource* resource_;
-  pyxelcore::Graphics* graphics_;
-  pyxelcore::Audio* audio_;
+  class Resource* resource_;
+  class Input* input_;
+  class Graphics* graphics_;
+  class Audio* audio_;
   Window* window_;
 
   int32_t fps_;

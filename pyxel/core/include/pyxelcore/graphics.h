@@ -71,7 +71,7 @@ class Graphics {
 
 inline Image* Graphics::GetImageBank(int32_t image_index, bool system) const {
   if (image_index < 0 || image_index >= IMAGE_BANK_COUNT) {
-    PRINT_ERROR("invalid image bank index");
+    PRINT_ERROR("invalid image index");
     image_index = 0;
   }
 
@@ -84,7 +84,7 @@ inline Image* Graphics::GetImageBank(int32_t image_index, bool system) const {
 
 inline Tilemap* Graphics::GetTilemapBank(int32_t tilemap_index) const {
   if (tilemap_index < 0 || tilemap_index >= TILEMAP_BANK_COUNT) {
-    PRINT_ERROR("invalid tilemap bank index");
+    PRINT_ERROR("invalid tilemap index");
     tilemap_index = 0;
   }
 
@@ -94,15 +94,15 @@ inline Tilemap* Graphics::GetTilemapBank(int32_t tilemap_index) const {
 inline int32_t Graphics::GetDrawColor(int32_t color) const {
   if (color < 0 || color >= COLOR_COUNT) {
     PRINT_ERROR("invalid color");
-    color = 0;
+    return 0;
   }
 
   return palette_table_[color];
 }
 
-inline void Graphics::SetPixel(int32_t x, int32_t y, int32_t color) {
+inline void Graphics::SetPixel(int32_t x, int32_t y, int32_t draw_color) {
   if (clip_rect_.Includes(x, y)) {
-    screen_image_->Data()[screen_image_->Width() * y + x] = color;
+    screen_image_->Data()[screen_image_->Width() * y + x] = draw_color;
   }
 }
 

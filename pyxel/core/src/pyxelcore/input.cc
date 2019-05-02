@@ -194,8 +194,31 @@ bool Input::IsButtonReleased(int32_t key) const {
   return key_state_[key] == -frame_count_;
 }
 
-void Input::SetMouseVisibility(int32_t visible) {
-  is_mouse_visible_ = visible;
+void Input::SetMouseVisibility(int32_t is_visible) {
+  is_mouse_visible_ = is_visible;
 }
+
+/*
+    def _update_gamepad(self):
+        for i in range(2):
+            if i == 0:
+                states, count = glfw.get_joystick_buttons(glfw.JOYSTICK_1)
+                offset = pyxel.GAMEPAD_1_A
+            else:
+                states, count = glfw.get_joystick_buttons(glfw.JOYSTICK_2)
+                offset = pyxel.GAMEPAD_2_A
+
+            for j in range(count):
+                action = states[j]
+                button = offset + j
+
+                if action == glfw.PRESS:
+                    self._key_state[button] = pyxel.frame_count
+                elif action == glfw.RELEASE:
+                    if self._key_state.get(button) == pyxel.frame_count:
+                        self._key_state[button] = -pyxel.frame_count - 1
+                    else:
+                        self._key_state[button] = -pyxel.frame_count
+*/
 
 }  // namespace pyxelcore
