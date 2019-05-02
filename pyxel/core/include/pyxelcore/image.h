@@ -7,10 +7,10 @@ namespace pyxelcore {
 
 class Image {
  public:
-  Image(int32_t width, int32_t height, int32_t* data = NULL);
+  Image(int32_t width, int32_t height);
   ~Image();
 
-  const Rectangle& Recangle() const { return rect_; }
+  const class Rectangle& Rectangle() const { return rect_; }
 
   int32_t Width() const { return rect_.Width(); }
   int32_t Height() const { return rect_.Height(); }
@@ -34,18 +34,9 @@ class Image {
                  int32_t width,
                  int32_t height);
 
-  void DrawImage(int32_t x,
-                 int32_t y,
-                 const Image* image,
-                 const Rectangle& copy_rect,
-                 const Rectangle& clip_rect,
-                 const int32_t* palette_table = NULL,
-                 int32_t color_key = -1);
-
  private:
-  Rectangle rect_;
+  class Rectangle rect_;
   int32_t* data_;
-  bool need_to_delete_;
 };
 
 }  // namespace pyxelcore
