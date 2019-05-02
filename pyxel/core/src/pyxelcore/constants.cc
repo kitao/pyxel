@@ -2,38 +2,35 @@
 
 #include <string>
 
-#define CHECK_CONSTANT(n)        \
-  do {                           \
-    if (strcmp(name, #n) == 0) { \
-      return n;                  \
-    }                            \
+#define CHECK_CONSTANT(constant)        \
+  do {                                  \
+    if (strcmp(name, #constant) == 0) { \
+      return constant;                  \
+    }                                   \
   } while (false)
 
 namespace pyxelcore {
 
 int32_t GetConstantNumber(const char* name) {
+  for (int32_t i = 0; i < COLOR_COUNT; i++) {
+    std::string constant = "DEFAULT_PALETTE_";
+
+    if (i < 10) {
+      constant += "0";
+    }
+
+    constant += std::to_string(i);
+
+    if (std::string(name) == constant) {
+      return DEFAULT_PALETTE[i];
+    }
+  }
+
   CHECK_CONSTANT(DEFAULT_FPS);
   CHECK_CONSTANT(DEFAULT_SCALE);
   CHECK_CONSTANT(DEFAULT_FPS);
   CHECK_CONSTANT(DEFAULT_BORDER_WIDTH);
   CHECK_CONSTANT(DEFAULT_BORDER_COLOR);
-
-  CHECK_CONSTANT(DEFAULT_PALETTE_00);
-  CHECK_CONSTANT(DEFAULT_PALETTE_01);
-  CHECK_CONSTANT(DEFAULT_PALETTE_02);
-  CHECK_CONSTANT(DEFAULT_PALETTE_03);
-  CHECK_CONSTANT(DEFAULT_PALETTE_04);
-  CHECK_CONSTANT(DEFAULT_PALETTE_05);
-  CHECK_CONSTANT(DEFAULT_PALETTE_06);
-  CHECK_CONSTANT(DEFAULT_PALETTE_07);
-  CHECK_CONSTANT(DEFAULT_PALETTE_08);
-  CHECK_CONSTANT(DEFAULT_PALETTE_09);
-  CHECK_CONSTANT(DEFAULT_PALETTE_10);
-  CHECK_CONSTANT(DEFAULT_PALETTE_11);
-  CHECK_CONSTANT(DEFAULT_PALETTE_12);
-  CHECK_CONSTANT(DEFAULT_PALETTE_13);
-  CHECK_CONSTANT(DEFAULT_PALETTE_14);
-  CHECK_CONSTANT(DEFAULT_PALETTE_15);
 
   CHECK_CONSTANT(KEY_SPACE);
   CHECK_CONSTANT(KEY_APOSTROPHE);
@@ -144,9 +141,11 @@ int32_t GetConstantNumber(const char* name) {
   CHECK_CONSTANT(KEY_CONTROL);
   CHECK_CONSTANT(KEY_ALT);
   CHECK_CONSTANT(KEY_SUPER);
+
   CHECK_CONSTANT(MOUSE_LEFT_BUTTON);
   CHECK_CONSTANT(MOUSE_MIDDLE_BUTTON);
   CHECK_CONSTANT(MOUSE_RIGHT_BUTTON);
+
   CHECK_CONSTANT(GAMEPAD_1_A);
   CHECK_CONSTANT(GAMEPAD_1_B);
   CHECK_CONSTANT(GAMEPAD_1_X);
