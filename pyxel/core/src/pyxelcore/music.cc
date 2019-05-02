@@ -2,6 +2,10 @@
 
 namespace pyxelcore {
 
+Music::Music() {}
+
+Music::~Music() {}
+
 /*
 class Music:
     def __init__(self):

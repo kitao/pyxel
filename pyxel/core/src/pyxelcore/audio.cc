@@ -1,15 +1,11 @@
 #include "pyxelcore/audio.h"
 
+#include "pyxelcore/music.h"
+#include "pyxelcore/sound.h"
+
 namespace pyxelcore {
 
 Audio::Audio() {
-  /*
-  sound_bank_ = new Sound*[SOUND_BANK_COUNT];
-  for (int32_t i = 0; i < SOUND_BANK_COUNT; i++) {
-    sound_bank_[i] = new Sound();
-  }
-  */
-
   SDL_AudioSpec audio_spec;
 
   audio_spec.freq = AUDIO_SAMPLE_RATE;
@@ -23,10 +19,30 @@ Audio::Audio() {
     // error
   }
 
+  sound_bank_ = new Sound*[SOUND_BANK_COUNT];
+  for (int32_t i = 0; i < SOUND_BANK_COUNT; i++) {
+    sound_bank_[i] = new Sound();
+  }
+
+  music_bank_ = new Music*[MUSIC_BANK_COUNT];
+  for (int32_t i = 0; i < MUSIC_BANK_COUNT; i++) {
+    music_bank_[i] = new Music();
+  }
+
   SDL_PauseAudio(0);
 }
 
-Audio::~Audio() {}
+Audio::~Audio() {
+  for (int32_t i = 0; i < SOUND_BANK_COUNT; i++) {
+    delete sound_bank_[i];
+  }
+  delete[] sound_bank_;
+
+  for (int32_t i = 0; i < MUSIC_BANK_COUNT; i++) {
+    delete music_bank_[i];
+  }
+  delete[] music_bank_;
+}
 
 void Audio::callback(void* audio, uint8_t* stream, int len) {
   uint16_t* frame_data = reinterpret_cast<uint16_t*>(stream);
