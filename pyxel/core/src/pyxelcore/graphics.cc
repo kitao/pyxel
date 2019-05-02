@@ -20,11 +20,9 @@ Graphics::Graphics(int32_t width, int32_t height) {
     tilemap_bank_[i] = new Tilemap(TILEMAP_BANK_WIDTH, TILEMAP_BANK_HEIGHT);
   }
 
-  SetupFontImage();
-  /*image_bank_[IMAGE_BANK_FOR_SYSTEM]->SetValue(
-      MOUSE_CURSOR_IMAGE_X, MOUSE_CURSOR_IMAGE_Y,
-      reinterpret_cast<const char**>(MOUSE_CURSOR_DATA), MOUSE_CURSOR_HEIGHT);
-*/
+  SetupMouseCursor();
+  SetupFont();
+
   ResetClippingArea();
   ResetPalette();
   Clear(0);
@@ -362,7 +360,8 @@ void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
     int32_t u = (code % FONT_ROW_COUNT) * FONT_WIDTH;
     int32_t v = (code / FONT_ROW_COUNT) * FONT_HEIGHT;
 
-    DrawImage(x, y, IMAGE_BANK_FOR_SYSTEM, u, v, FONT_WIDTH, FONT_HEIGHT, 0);
+    DrawImage(x, y, IMAGE_BANK_FOR_SYSTEM, FONT_X + u, FONT_Y + v, FONT_WIDTH,
+              FONT_HEIGHT, 0);
 
     x += FONT_WIDTH;
   }
@@ -370,14 +369,25 @@ void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
   palette_table_[FONT_COLOR] = original_color;
 }
 
-void Graphics::SetupFontImage() {
+void Graphics::SetupMouseCursor() {
+  const char** mouse_cursor_data =
+      NewPointerArrayFromArray2D(MOUSE_CURSOR_DATA);
+
+  image_bank_[IMAGE_BANK_FOR_SYSTEM]->SetValue(
+      MOUSE_CURSOR_X, MOUSE_CURSOR_Y, mouse_cursor_data, MOUSE_CURSOR_HEIGHT);
+
+  delete[] mouse_cursor_data;
+}
+
+void Graphics::SetupFont() {
   const int32_t FONT_COUNT = sizeof(FONT_DATA) / sizeof(FONT_DATA[0]);
   int32_t* data = image_bank_[IMAGE_BANK_FOR_SYSTEM]->Data();
 
   for (int32_t i = 0; i < FONT_COUNT; i++) {
     int32_t row = i / FONT_ROW_COUNT;
     int32_t col = i % FONT_ROW_COUNT;
-    int32_t index = IMAGE_BANK_WIDTH * FONT_HEIGHT * row + FONT_WIDTH * col;
+    int32_t index = IMAGE_BANK_WIDTH * (FONT_HEIGHT * row + FONT_Y) +
+                    FONT_WIDTH * col + FONT_X;
     uint32_t font = FONT_DATA[i];
 
     for (int32_t j = 0; j < FONT_HEIGHT; j++) {
