@@ -44,6 +44,7 @@ if __name__ == "__main__":
     class App:
         def __init__(self):
             pyxel.init(256, 256, caption="HOGE")  # noqa: F821
+            pyxel.mouse(True)
 
             self.x = 0
 
@@ -62,6 +63,9 @@ if __name__ == "__main__":
                 ],
             )
             pyxel.tilemap(0).refimg = 1
+
+            pyxel.image(3, system=True).data[0] = 8
+            pyxel.tilemap(0).data[0] = 1
 
             pyxel.run(self.update, self.draw)  # noqa: F821
 
