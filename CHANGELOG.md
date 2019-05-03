@@ -2,6 +2,7 @@
 
 ## 1.0.2
 - Fixed the gamepad inputs
+- Modified the .gitignore for VSCode
 
 ## 1.0.1
 - Simplified comparisons
