@@ -51,7 +51,7 @@ System::System(int32_t width,
                                   border_color);
   fps_ = fps;
   frame_count_ = 0;
-  is_performance_monitor_on = false;
+  is_performance_monitor_on_ = false;
 
   for (int32_t i = 0; i < COLOR_COUNT; i++) {
     palette_color_[i] = palette_color[i];
@@ -129,7 +129,7 @@ void System::CheckSpecialInput() {
     }
 
     if (input_->IsButtonPressed(KEY_0)) {
-      is_performance_monitor_on = !is_performance_monitor_on;
+      is_performance_monitor_on_ = !is_performance_monitor_on_;
     }
 
     if (input_->IsButtonPressed(KEY_1)) {
@@ -163,7 +163,7 @@ void System::DrawFrame(void (*draw)()) {
 }
 
 void System::DrawPerformanceMonitor() {
-  if (!is_performance_monitor_on) {
+  if (!is_performance_monitor_on_) {
     return;
   }
 
