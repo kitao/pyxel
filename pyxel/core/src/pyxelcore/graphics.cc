@@ -58,12 +58,8 @@ void Graphics::ResetPalette() {
 }
 
 void Graphics::SetPalette(int32_t src_color, int32_t dst_color) {
-  if (src_color < 0 || src_color >= COLOR_COUNT) {
-    PRINT_ERROR("invalid color");
-    return;
-  }
-
-  if (dst_color < 0 || dst_color >= COLOR_COUNT) {
+  if (src_color < 0 || src_color >= COLOR_COUNT || dst_color < 0 ||
+      dst_color >= COLOR_COUNT) {
     PRINT_ERROR("invalid color");
     return;
   }
@@ -72,14 +68,8 @@ void Graphics::SetPalette(int32_t src_color, int32_t dst_color) {
 }
 
 void Graphics::Clear(int32_t color) {
-  color = GetDrawColor(color);
-
-  int32_t size = screen_image_->Width() * screen_image_->Height();
-  int32_t* data = screen_image_->Data();
-
-  for (int32_t i = 0; i < size; i++) {
-    data[i] = color;
-  }
+  DrawRectangle(0, 0, screen_image_->Width() - 1, screen_image_->Height() - 1,
+                color);
 }
 
 void Graphics::DrawPoint(int32_t x, int32_t y, int32_t color) {
@@ -115,8 +105,7 @@ void Graphics::DrawLine(int32_t x1,
     }
 
     int32_t length = end_x - start_x + 1;
-    float alpha = static_cast<float>((end_y - start_y)) /
-                  static_cast<float>((end_x - start_x));
+    float alpha = static_cast<float>(end_y - start_y) / (end_x - start_x);
 
     for (int32_t i = 0; i < length; i++) {
       SetPixel(start_x + i, start_y + alpha * i + 0.5f, color);
@@ -138,8 +127,7 @@ void Graphics::DrawLine(int32_t x1,
     }
 
     int32_t length = end_y - start_y + 1;
-    float alpha = static_cast<float>((end_x - start_x)) /
-                  static_cast<float>((end_y - start_y));
+    float alpha = static_cast<float>(end_x - start_x) / (end_y - start_y);
 
     for (int32_t i = 0; i < length; i++) {
       SetPixel(start_x + alpha * i + 0.5f, start_y + i, color);
@@ -161,12 +149,17 @@ void Graphics::DrawRectangle(int32_t x1,
     return;
   }
 
+  int32_t left = draw_rect.Left();
+  int32_t top = draw_rect.Top();
+  int32_t right = draw_rect.Right();
+  int32_t bottom = draw_rect.Bottom();
+  int32_t width = screen_image_->Width();
   int32_t* data = screen_image_->Data();
 
-  for (int32_t i = draw_rect.Top(); i <= draw_rect.Bottom(); i++) {
-    int32_t index = screen_image_->Width() * i;
+  for (int32_t i = top; i <= bottom; i++) {
+    int32_t index = width * i;
 
-    for (int32_t j = draw_rect.Left(); j <= draw_rect.Right(); j++) {
+    for (int32_t j = left; j <= right; j++) {
       data[index + j] = color;
     }
   }
@@ -185,12 +178,17 @@ void Graphics::DrawRectangleBorder(int32_t x1,
     return;
   }
 
-  for (int32_t i = draw_rect.Left(); i <= draw_rect.Right(); i++) {
+  int32_t left = draw_rect.Left();
+  int32_t top = draw_rect.Top();
+  int32_t right = draw_rect.Right();
+  int32_t bottom = draw_rect.Bottom();
+
+  for (int32_t i = left; i <= right; i++) {
     SetPixel(i, y1, color);
     SetPixel(i, y2, color);
   }
 
-  for (int32_t i = draw_rect.Top(); i <= draw_rect.Bottom(); i++) {
+  for (int32_t i = top; i <= bottom; i++) {
     SetPixel(x1, i, color);
     SetPixel(x2, i, color);
   }
@@ -204,8 +202,10 @@ void Graphics::DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color) {
     return;
   }
 
+  int32_t sq_radius = radius * radius;
+
   for (int32_t dx = 0; dx <= radius; dx++) {
-    int32_t dy = std::sqrt(radius * radius - dx * dx) + 0.5f;
+    int32_t dy = std::sqrt(sq_radius - dx * dx) + 0.5f;
 
     if (dx > dy) {
       continue;
@@ -231,8 +231,10 @@ void Graphics::DrawCircleBorder(int32_t x,
     return;
   }
 
+  int32_t sq_radius = radius * radius;
+
   for (int32_t dx = 0; dx <= radius; dx++) {
-    int32_t dy = std::sqrt(radius * radius - dx * dx) + 0.5f;
+    int32_t dy = std::sqrt(sq_radius - dx * dx) + 0.5f;
 
     if (dx > dy) {
       continue;
@@ -270,31 +272,38 @@ void Graphics::DrawImage(int32_t x,
   Rectangle::CopyArea copy_area =
       dst_rect.GetCopyArea(x, y, image->Rectangle(), copy_rect);
 
-  if (copy_area.width <= 0 || copy_area.height <= 0) {
+  int32_t copy_w = copy_area.copy_w;
+  int32_t copy_h = copy_area.copy_h;
+
+  if (copy_w <= 0 || copy_h <= 0) {
     return;
   }
 
+  int32_t src_x = copy_area.src_x;
+  int32_t src_y = copy_area.src_y;
   int32_t src_width = image->Width();
   int32_t* src_data = image->Data();
 
+  int32_t dst_x = copy_area.dst_x;
+  int32_t dst_y = copy_area.dst_y;
   int32_t dst_width = screen_image_->Width();
   int32_t* dst_data = screen_image_->Data();
 
   if (color_key == -1) {
-    for (int32_t i = 0; i < copy_area.height; i++) {
-      int32_t src_index = src_width * (copy_area.src_y + i) + copy_area.src_x;
-      int32_t dst_index = dst_width * (copy_area.dst_y + i) + copy_area.dst_x;
+    for (int32_t i = 0; i < height; i++) {
+      int32_t src_index = src_width * (src_y + i) + src_x;
+      int32_t dst_index = dst_width * (dst_y + i) + dst_x;
 
-      for (int32_t j = 0; j < copy_area.width; j++) {
+      for (int32_t j = 0; j < width; j++) {
         dst_data[dst_index + j] = palette_table_[src_data[src_index + j]];
       }
     }
   } else {
-    for (int32_t i = 0; i < copy_area.height; i++) {
-      int32_t src_index = src_width * (copy_area.src_y + i) + copy_area.src_x;
-      int32_t dst_index = dst_width * (copy_area.dst_y + i) + copy_area.dst_x;
+    for (int32_t i = 0; i < height; i++) {
+      int32_t src_index = src_width * (src_y + i) + src_x;
+      int32_t dst_index = dst_width * (dst_y + i) + dst_x;
 
-      for (int32_t j = 0; j < copy_area.width; j++) {
+      for (int32_t j = 0; j < width; j++) {
         int32_t src_color = src_data[src_index + j];
 
         if (src_color != color_key) {
@@ -322,20 +331,25 @@ void Graphics::DrawTilemap(int32_t x,
   Rectangle::CopyArea copy_area =
       dst_rect.GetCopyArea(x, y, tilemap->Rectangle(), copy_rect);
 
+  int32_t src_x = copy_area.src_x;
+  int32_t src_y = copy_area.src_y;
   int32_t src_width = tilemap->Width();
   int32_t* src_data = tilemap->Data();
 
-  for (int32_t i = 0; i < copy_area.height; i++) {
-    int32_t index = src_width * (copy_area.src_y + i) + copy_area.src_x;
+  int32_t copy_w = copy_area.copy_w;
+  int32_t copy_h = copy_area.copy_h;
 
-    for (int32_t j = 0; j < copy_area.width; j++) {
+  for (int32_t i = 0; i < copy_h; i++) {
+    int32_t index = src_width * (src_y + i) + src_x;
+
+    for (int32_t j = 0; j < copy_w; j++) {
       int32_t value = src_data[index + j];
       int32_t u = (value % (IMAGE_BANK_WIDTH / TILEMAP_CHIP_WIDTH)) *
                   TILEMAP_CHIP_WIDTH;
       int32_t v = (value / (IMAGE_BANK_HEIGHT / TILEMAP_CHIP_HEIGHT)) *
                   TILEMAP_CHIP_HEIGHT;
 
-      DrawImage(x + j * TILEMAP_CHIP_WIDTH, y + i * TILEMAP_CHIP_HEIGHT,
+      DrawImage(x + TILEMAP_CHIP_WIDTH * j, y + TILEMAP_CHIP_HEIGHT * i,
                 image_index, u, v, TILEMAP_CHIP_WIDTH, TILEMAP_CHIP_HEIGHT,
                 color_key);
     }
