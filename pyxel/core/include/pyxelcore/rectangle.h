@@ -26,8 +26,8 @@ class Rectangle {
     int32_t src_y;
     int32_t dst_x;
     int32_t dst_y;
-    int32_t width;
-    int32_t height;
+    int32_t copy_w;
+    int32_t copy_h;
   };
 
   CopyArea GetCopyArea(int32_t x,
