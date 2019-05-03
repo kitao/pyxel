@@ -1,14 +1,10 @@
 def setup_apis(module, lib):
     import ctypes
-    import numpy as np
 
     class Image:
         def __init__(self, c_obj):
             self._c_obj = c_obj
-
-            self._data = np.ctypeslib.as_array(
-                lib.image_data_getter(c_obj), shape=(self.width * self.height,)
-            )
+            self._data = lib.image_data_getter(c_obj)
 
         @property
         def width(self):
@@ -44,5 +40,7 @@ def setup_apis(module, lib):
 
         def copy(self, x, y, img, u, v, w, h):
             lib.image_copy(self._c_obj, x, y, img, u, v, w, h)
+
+    lib.image_data_getter.restype = ctypes.POINTER(ctypes.c_int32)
 
     module.Image = Image
