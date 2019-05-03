@@ -25,18 +25,18 @@ def setup_apis(module, lib):
         def get(self, x, y):
             return lib.image_get(self._c_obj, x, y)
 
-        def set(self, x, y, val):
-            if type(val) is int:
-                lib.image_set1(self._c_obj, x, y, val)
+        def set(self, x, y, data):
+            if type(data) is int:
+                lib.image_set1(self._c_obj, x, y, data)
             else:
-                val_count = len(val)
-                c_val = (ctypes.c_char_p * val_count)()
+                data_count = len(data)
+                c_data = (ctypes.c_char_p * data_count)()
 
-                for i in range(val_count):
-                    c_str = ctypes.create_string_buffer(val[i].encode("utf-8"))
-                    c_val[i] = ctypes.cast(c_str, ctypes.c_char_p)
+                for i in range(data_count):
+                    c_str = ctypes.create_string_buffer(data[i].encode("utf-8"))
+                    c_data[i] = ctypes.cast(c_str, ctypes.c_char_p)
 
-                lib.image_set(self._c_obj, x, y, c_val, val_count)
+                lib.image_set(self._c_obj, x, y, c_data, data_count)
 
         def load(self, x, y, filename):
             c_filename = ctypes.create_string_buffer(filename.encode("utf-8"))
