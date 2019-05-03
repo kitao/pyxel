@@ -182,7 +182,7 @@ class Image:
     def get(self, x: int, y: int) -> int:
         pass
 
-    def set(self, x: int, y: int, data: Any) -> None:
+    def set(self, x: int, y: int, val: Any) -> None:
         pass
 
     def load(self, x: int, y: int, filename: str) -> None:
@@ -205,7 +205,7 @@ class Tilemap:
     def get(self, x: int, y: int) -> int:
         pass
 
-    def set(self, x: int, y: int, data: Any) -> None:
+    def set(self, x: int, y: int, val: Any) -> None:
         pass
 
     def copy(self, x: int, y: int, tm: int, u: int, v: int, w: int, h: int) -> None:
@@ -287,12 +287,7 @@ def init(
     border_width: int = DEFAULT_BORDER_WIDTH,
     border_color: int = DEFAULT_BORDER_COLOR
 ) -> None:
-    import sys
-    from .app import App  # type: ignore
-
-    module = sys.modules[__name__]
-
-    App(module, width, height, caption, scale, palette, fps, border_width, border_color)
+    pass
 
 
 def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
