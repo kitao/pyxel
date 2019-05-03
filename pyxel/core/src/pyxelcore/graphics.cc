@@ -57,18 +57,18 @@ void Graphics::ResetPalette() {
   }
 }
 
-void Graphics::SetPalette(int32_t src_color, int32_t dest_color) {
+void Graphics::SetPalette(int32_t src_color, int32_t dst_color) {
   if (src_color < 0 || src_color >= COLOR_COUNT) {
     PRINT_ERROR("invalid color");
     return;
   }
 
-  if (dest_color < 0 || dest_color >= COLOR_COUNT) {
+  if (dst_color < 0 || dst_color >= COLOR_COUNT) {
     PRINT_ERROR("invalid color");
     return;
   }
 
-  palette_table_[src_color] = dest_color;
+  palette_table_[src_color] = dst_color;
 }
 
 void Graphics::Clear(int32_t color) {
