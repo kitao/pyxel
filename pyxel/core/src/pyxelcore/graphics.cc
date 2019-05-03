@@ -29,15 +29,15 @@ Graphics::Graphics(int32_t width, int32_t height) {
 }
 
 Graphics::~Graphics() {
-  for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
-    delete image_bank_[i];
-  }
-  delete[] image_bank_;
-
   for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
     delete tilemap_bank_[i];
   }
   delete[] tilemap_bank_;
+
+  for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
+    delete image_bank_[i];
+  }
+  delete[] image_bank_;
 
   delete screen_image_;
 }
@@ -385,7 +385,7 @@ void Graphics::SetupMouseCursor() {
   const char** mouse_cursor_data =
       NewPointerArrayFromArray2D(MOUSE_CURSOR_DATA);
 
-  image_bank_[IMAGE_BANK_FOR_SYSTEM]->SetValue(
+  image_bank_[IMAGE_BANK_FOR_SYSTEM]->SetData(
       MOUSE_CURSOR_X, MOUSE_CURSOR_Y, mouse_cursor_data, MOUSE_CURSOR_HEIGHT);
 
   delete[] mouse_cursor_data;

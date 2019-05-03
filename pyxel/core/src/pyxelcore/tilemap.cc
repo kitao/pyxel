@@ -41,28 +41,28 @@ void Tilemap::SetValue(int32_t x, int32_t y, int32_t value) {
   data_[Width() * y + x] = value;
 }
 
-void Tilemap::SetValue(int32_t x,
-                       int32_t y,
-                       const char** value,
-                       int32_t value_count) {
-  int32_t width = strlen(value[0]) / 3;
-  int32_t height = value_count;
+void Tilemap::SetData(int32_t x,
+                      int32_t y,
+                      const char** data,
+                      int32_t data_count) {
+  int32_t width = strlen(data[0]) / 3;
+  int32_t height = data_count;
   Tilemap* tilemap = new Tilemap(width, height);
-  int32_t* data = tilemap->data_;
+  int32_t* dst_data = tilemap->data_;
 
   for (int32_t i = 0; i < height; i++) {
     int32_t index = width * i;
-    std::string str = value[i];
+    std::string str = data[i];
 
     for (int32_t j = 0; j < width; j++) {
-      int32_t val = std::stoi(str.substr(j * 3, 3), nullptr, 16);
+      int32_t value = std::stoi(str.substr(j * 3, 3), nullptr, 16);
 
-      if (val < 0 || val >= TILEMAP_CHIP_COUNT) {
+      if (value < 0 || value >= TILEMAP_CHIP_COUNT) {
         PRINT_ERROR("invalid value");
-        val = 0;
+        value = 0;
       }
 
-      data[index + j] = val;
+      dst_data[index + j] = value;
     }
   }
 
