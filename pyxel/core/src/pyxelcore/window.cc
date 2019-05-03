@@ -54,7 +54,6 @@ void Window::UpdateWindowInfo() {
 
   screen_scale_ =
       Min(window_width / screen_width_, window_height / screen_height_);
-
   screen_x_ = (window_width - screen_width_ * screen_scale_) / 2;
   screen_y_ = (window_height - screen_height_ * screen_scale_) / 2;
 }
@@ -105,20 +104,20 @@ void Window::Render(const int32_t* screen_data, const int32_t* palette_color) {
   };
 
   SDL_RenderCopy(renderer_, screen_texture_, NULL, &dest_rect);
-
   SDL_RenderPresent(renderer_);
 }
 
 void Window::UpdateScreenTexture(const int32_t* screen_data,
                                  const int32_t* palette_color) {
-  int32_t* pixels;
+  int32_t* data;
   int32_t pitch;
   int32_t size = screen_width_ * screen_height_;
 
-  SDL_LockTexture(screen_texture_, NULL, (void**)&pixels, &pitch);
+  SDL_LockTexture(screen_texture_, NULL, reinterpret_cast<void**>(&data),
+                  &pitch);
 
   for (int32_t i = 0; i < size; i++) {
-    pixels[i] = palette_color[screen_data[i]];
+    data[i] = palette_color[screen_data[i]];
   }
 
   SDL_UnlockTexture(screen_texture_);
