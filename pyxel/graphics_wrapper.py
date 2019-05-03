@@ -2,13 +2,10 @@ def setup_apis(module, lib):
     import ctypes
 
     def image_wrapper(img, *, system=False):
-        # if not system and img == RENDERER_IMAGE_COUNT - 1:
-        #    raise ValueError("image bank {} is reserved for system".format(img))
-
         return module._image_list[img]
 
-    def tilemap_wrapper():
-        pass
+    def tilemap_wrapper(tm):
+        return module._tilemap_list[tm]
 
     def clip_wrapper(x1=None, y1=None, x2=None, y2=None):
         if x1 is None:

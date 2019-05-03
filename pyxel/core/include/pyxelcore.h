@@ -151,13 +151,13 @@ PYXEL_API int32_t tilemap_refimg_getter(void* self);
 PYXEL_API void tilemap_refimg_setter(void* self, int32_t refimg);
 
 PYXEL_API int32_t tilemap_get(void* self, int32_t x, int32_t y);
-PYXEL_API void timemap_set1(void* self, int32_t x, int32_t y, int32_t val);
-PYXEL_API void timemap_set(void* self,
+PYXEL_API void tilemap_set1(void* self, int32_t x, int32_t y, int32_t val);
+PYXEL_API void tilemap_set(void* self,
                            int32_t x,
                            int32_t y,
                            const char** val,
                            int32_t val_count);
-PYXEL_API void timemap_copy(void* self,
+PYXEL_API void tilemap_copy(void* self,
                             int32_t x,
                             int32_t y,
                             int32_t tm,
