@@ -113,7 +113,7 @@ const uint8_t SCANCODE_TABLE[SDL_KEY_COUNT] = {
 };
 
 Input::Input() {
-  is_mouse_visible_ = true;
+  is_mouse_visible_ = false;
 
   for (int32_t i = 0; i < KEY_COUNT; i++) {
     key_state_[i] = 0;
@@ -160,7 +160,7 @@ void Input::Update(const Window* window, int32_t frame_count) {
 
 bool Input::IsButtonOn(int32_t key) const {
   if (key < 0 || key >= KEY_COUNT) {
-    PRINT_ERROR("invalide key");
+    PRINT_ERROR("invalid key");
     return false;
   }
 
@@ -171,7 +171,7 @@ bool Input::IsButtonPressed(int32_t key,
                             int32_t hold_frame,
                             int32_t period_frame) const {
   if (key < 0 || key >= KEY_COUNT) {
-    PRINT_ERROR("invalide key");
+    PRINT_ERROR("invalid key");
     return false;
   }
 
@@ -189,7 +189,7 @@ bool Input::IsButtonPressed(int32_t key,
 
 bool Input::IsButtonReleased(int32_t key) const {
   if (key < 0 || key >= KEY_COUNT) {
-    PRINT_ERROR("invalide key");
+    PRINT_ERROR("invalid key");
     return false;
   }
 
