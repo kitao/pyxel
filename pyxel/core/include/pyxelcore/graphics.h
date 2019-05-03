@@ -5,7 +5,6 @@
 
 namespace pyxelcore {
 
-class Image;
 class Tilemap;
 
 class Graphics {
@@ -22,7 +21,7 @@ class Graphics {
   void SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
 
   void ResetPalette();
-  void SetPalette(int32_t src_color, int32_t dest_color);
+  void SetPalette(int32_t src_color, int32_t dst_color);
 
   void Clear(int32_t color);
   void DrawPoint(int32_t x, int32_t y, int32_t color);
