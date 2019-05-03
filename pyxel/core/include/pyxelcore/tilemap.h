@@ -20,7 +20,7 @@ class Tilemap {
 
   int32_t GetValue(int32_t x, int32_t y) const;
   void SetValue(int32_t x, int32_t y, int32_t value);
-  void SetValue(int32_t x, int32_t y, const char** value, int32_t value_count);
+  void SetData(int32_t x, int32_t y, const char** data, int32_t data_count);
   void CopyTilemap(int32_t x,
                    int32_t y,
                    const Tilemap* tilemap,
