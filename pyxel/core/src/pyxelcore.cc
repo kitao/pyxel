@@ -243,7 +243,7 @@ void image_set(void* self,
                int32_t y,
                const char** val,
                int32_t val_count) {
-  reinterpret_cast<pyxelcore::Image*>(self)->SetValue(x, y, val, val_count);
+  reinterpret_cast<pyxelcore::Image*>(self)->SetData(x, y, val, val_count);
 }
 
 void image_load(void* self, int32_t x, int32_t y, const char* filename) {
@@ -299,8 +299,8 @@ void tilemap_set(void* self,
                  int32_t y,
                  const char** val,
                  int32_t val_count) {
-  return reinterpret_cast<pyxelcore::Tilemap*>(self)->SetValue(x, y, val,
-                                                               val_count);
+  return reinterpret_cast<pyxelcore::Tilemap*>(self)->SetData(x, y, val,
+                                                              val_count);
 }
 
 void tilemap_copy(void* self,
