@@ -16,7 +16,8 @@ Audio::Audio() {
   audio_spec.userdata = this;
 
   if (SDL_OpenAudio(&audio_spec, NULL) < 0) {
-    // error
+    PRINT_ERROR("failed to initialize SDL Audio");
+    exit(1);
   }
 
   sound_bank_ = new Sound*[SOUND_BANK_COUNT];
@@ -46,7 +47,7 @@ Audio::~Audio() {
 
 void Audio::callback(void* audio, uint8_t* stream, int len) {
   uint16_t* frame_data = reinterpret_cast<uint16_t*>(stream);
-  int32_t frame_count = len / 2;
+  int32_t frame_count = len / sizeof(uint16_t);
 
   for (int32_t i = 0; i < frame_count; i++) {
     frame_data[i] = 0;
