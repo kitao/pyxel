@@ -2,8 +2,6 @@ import ctypes
 import os
 import platform
 
-print("core is initialized")
-
 
 def load_library():
     lib_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin")
