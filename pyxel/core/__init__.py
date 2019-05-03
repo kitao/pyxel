@@ -2,6 +2,8 @@ import ctypes
 import os
 import platform
 
+print("core is initialized")
+
 
 def load_library():
     lib_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin")
@@ -48,6 +50,9 @@ if __name__ == "__main__":
             pyxel.image(0).load(0, 0, "../examples/assets/cat_16x16.png")
             pyxel.image(1).load(0, 0, "../examples/assets/tileset_24x32.png")
 
+            pyxel.image(3, system=True).set(0, 0, ["7777", "7777"])
+
+            print(pyxel.tilemap(0).get(0, 0))
             pyxel.tilemap(0).set(
                 0,
                 0,
@@ -55,7 +60,6 @@ if __name__ == "__main__":
                     "022000002004001000060061062000040",
                     "042003020021022003000001002003060",
                 ],
-                1,
             )
             pyxel.tilemap(0).refimg = 1
 
@@ -63,12 +67,6 @@ if __name__ == "__main__":
 
         def update(self):
             self.x += 1
-
-            if pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON):
-                print("left button pressed")
-
-            if pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON):
-                print("left button released")
 
             if pyxel.btnp(pyxel.KEY_Q):
                 pyxel.quit()
@@ -89,6 +87,8 @@ if __name__ == "__main__":
             pyxel.line(10, 15, 50, 100, 8)  # noqa: F821
             pyxel.circ(40, 40, 20, 9)  # noqa: F821
             pyxel.circb(50, 80, 10, 9)  # noqa: F821
+
+            pyxel.bltm(0, 150, 0, 0, 0, 11, 2, 2)
 
             pyxel.text(50, 120, "abcdABCD", 7)
 
