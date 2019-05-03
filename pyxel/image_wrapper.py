@@ -7,17 +7,16 @@ def setup_apis(module, lib):
             self._c_obj = c_obj
 
             self._data = np.ctypeslib.as_array(
-                lib.image_data_getter(ctypes.c_void_p(c_obj)),
-                shape=(self.width * self.height,),
+                lib.image_data_getter(c_obj), shape=(self.width * self.height,)
             )
 
         @property
         def width(self):
-            return lib.image_width_getter(ctypes.c_void_p(self._c_obj))
+            return lib.image_width_getter(self._c_obj)
 
         @property
         def height(self):
-            return lib.image_height_getter(ctypes.c_void_p(self._c_obj))
+            return lib.image_height_getter(self._c_obj)
 
         @property
         def data(self):
@@ -26,27 +25,22 @@ def setup_apis(module, lib):
         def get(self, x, y):
             return lib.image_get(self._c_obj, x, y)
 
-        def set(self, x, y, data):
-            if type(data) is int:
-                lib.image_set1(
-                    self._c_obj,
-                    x,
-                    y,
-                    data.ctypes.data_as(ctypes.POINTER(ctypes.c_int32)),
-                )
+        def set(self, x, y, val):
+            if type(val) is int:
+                lib.image_set1(self._c_obj, x, y, val)
             else:
-                lib.image_set(
-                    self._c_obj,
-                    x,
-                    y,
-                    data.ctypes.data_as(ctypes.POINTER(ctypes.c_int32)),
-                    data.shape[1],
-                    data.shape[0],
-                )
+                val_count = len(val)
+                c_val = (ctypes.c_char_p * val_count)()
+
+                for i in range(val_count):
+                    c_str = ctypes.create_string_buffer(val[i].encode("utf-8"))
+                    c_val[i] = ctypes.cast(c_str, ctypes.c_char_p)
+
+                lib.image_set(self._c_obj, x, y, c_val, val_count)
 
         def load(self, x, y, filename):
             c_filename = ctypes.create_string_buffer(filename.encode("utf-8"))
-            lib.image_load(ctypes.c_void_p(self._c_obj), x, y, c_filename)
+            lib.image_load(self._c_obj, x, y, c_filename)
 
         def copy(self, x, y, img, u, v, w, h):
             lib.image_copy(self._c_obj, x, y, img, u, v, w, h)
