@@ -6,10 +6,16 @@
 - Removed the refimg argument from the Tilemap methods
 - Renamed an arguments of the set method of the Image and Tilemap class
 
+## 1.0.2
+- Fixed the gamepad inputs
+
 ## 1.0.1
 - Simplified comparisons
 - Removed a deprecated function
 - Applied static decorator to functions do not use self
+- Fixed to keep the previous frame when cls is not called
+- Changed frame_count to start from 0
+- Fixed the gamepad constants
 
 ## 1.0.0
 - Added the supplement of installation method to the manuals
