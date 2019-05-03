@@ -272,10 +272,10 @@ void Graphics::DrawImage(int32_t x,
   Rectangle::CopyArea copy_area =
       dst_rect.GetCopyArea(x, y, image->Rectangle(), copy_rect);
 
-  int32_t copy_w = copy_area.copy_w;
-  int32_t copy_h = copy_area.copy_h;
+  int32_t copy_width = copy_area.copy_width;
+  int32_t copy_height = copy_area.copy_height;
 
-  if (copy_w <= 0 || copy_h <= 0) {
+  if (copy_width <= 0 || copy_height <= 0) {
     return;
   }
 
@@ -336,13 +336,13 @@ void Graphics::DrawTilemap(int32_t x,
   int32_t src_width = tilemap->Width();
   int32_t* src_data = tilemap->Data();
 
-  int32_t copy_w = copy_area.copy_w;
-  int32_t copy_h = copy_area.copy_h;
+  int32_t copy_width = copy_area.copy_width;
+  int32_t copy_height = copy_area.copy_height;
 
-  for (int32_t i = 0; i < copy_h; i++) {
+  for (int32_t i = 0; i < copy_height; i++) {
     int32_t index = src_width * (src_y + i) + src_x;
 
-    for (int32_t j = 0; j < copy_w; j++) {
+    for (int32_t j = 0; j < copy_width; j++) {
       int32_t value = src_data[index + j];
       int32_t u = (value % (IMAGE_BANK_WIDTH / TILEMAP_CHIP_WIDTH)) *
                   TILEMAP_CHIP_WIDTH;
