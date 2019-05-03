@@ -259,7 +259,7 @@ void image_copy(void* self,
                 int32_t v,
                 int32_t w,
                 int32_t h) {
-  pyxelcore::Image* image = s_graphics->GetImageBank(img);
+  pyxelcore::Image* image = s_graphics->GetImageBank(img, true);
   reinterpret_cast<pyxelcore::Image*>(self)->CopyImage(x, y, image, u, v, w, h);
 }
 
