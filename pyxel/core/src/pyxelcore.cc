@@ -234,16 +234,16 @@ int32_t image_get(void* self, int32_t x, int32_t y) {
   return reinterpret_cast<pyxelcore::Image*>(self)->GetValue(x, y);
 }
 
-void image_set1(void* self, int32_t x, int32_t y, int32_t col) {
-  reinterpret_cast<pyxelcore::Image*>(self)->SetValue(x, y, col);
+void image_set1(void* self, int32_t x, int32_t y, int32_t val) {
+  reinterpret_cast<pyxelcore::Image*>(self)->SetValue(x, y, val);
 }
 
 void image_set(void* self,
                int32_t x,
                int32_t y,
-               const char** col,
-               int32_t col_count) {
-  reinterpret_cast<pyxelcore::Image*>(self)->SetValue(x, y, col, col_count);
+               const char** val,
+               int32_t val_count) {
+  reinterpret_cast<pyxelcore::Image*>(self)->SetValue(x, y, val, val_count);
 }
 
 void image_load(void* self, int32_t x, int32_t y, const char* filename) {
@@ -290,17 +290,17 @@ int32_t tilemap_get(void* self, int32_t x, int32_t y) {
   return reinterpret_cast<pyxelcore::Tilemap*>(self)->GetValue(x, y);
 }
 
-void tilemap_set1(void* self, int32_t x, int32_t y, int32_t data) {
-  return reinterpret_cast<pyxelcore::Tilemap*>(self)->SetValue(x, y, data);
+void tilemap_set1(void* self, int32_t x, int32_t y, int32_t val) {
+  return reinterpret_cast<pyxelcore::Tilemap*>(self)->SetValue(x, y, val);
 }
 
 void tilemap_set(void* self,
                  int32_t x,
                  int32_t y,
-                 const char** data,
-                 int32_t data_count) {
-  return reinterpret_cast<pyxelcore::Tilemap*>(self)->SetValue(x, y, data,
-                                                               data_count);
+                 const char** val,
+                 int32_t val_count) {
+  return reinterpret_cast<pyxelcore::Tilemap*>(self)->SetValue(x, y, val,
+                                                               val_count);
 }
 
 void tilemap_copy(void* self,
