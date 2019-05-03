@@ -49,6 +49,7 @@ System::System(int32_t width,
   audio_ = new pyxelcore::Audio();
   window_ = new pyxelcore::Window(caption, width, height, scale, border_width,
                                   border_color);
+
   fps_ = fps;
   frame_count_ = 0;
   is_performance_monitor_on_ = false;
@@ -60,6 +61,10 @@ System::System(int32_t width,
 
 System::~System() {
   delete window_;
+  delete audio_;
+  delete graphics_;
+  delete input_;
+  delete resource_;
 }
 
 void System::Run(void (*update)(), void (*draw)()) {
@@ -195,22 +200,6 @@ void System::DrawMouseCursor() {
 /*
 class App:
     def _draw_frame(self):
-        draw_start_time = time.time()
-
-        self._draw()
-
-        self._draw_perf_monitor()
-        self._draw_mouse_cursor()
-
-        hs = self._hidpi_scale
-        image = self._renderer.render(
-            self._viewport_left * hs,
-            self._viewport_bottom * hs,
-            self._viewport_width * hs,
-            self._viewport_height * hs,
-            self._palette,
-            self._border_color,
-        )
         self._capture_images[self._capture_count % APP_GIF_CAPTURE_COUNT] =
 image self._capture_count += 1
 
