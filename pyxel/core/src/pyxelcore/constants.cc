@@ -26,6 +26,12 @@ int32_t GetConstantNumber(const char* name) {
     }
   }
 
+  CHECK_CONSTANT(COLOR_COUNT);
+  CHECK_CONSTANT(IMAGE_BANK_COUNT);
+  CHECK_CONSTANT(TILEMAP_BANK_COUNT);
+  CHECK_CONSTANT(SOUND_BANK_COUNT);
+  CHECK_CONSTANT(MUSIC_BANK_COUNT);
+
   CHECK_CONSTANT(DEFAULT_FPS);
   CHECK_CONSTANT(DEFAULT_SCALE);
   CHECK_CONSTANT(DEFAULT_FPS);
@@ -171,7 +177,7 @@ int32_t GetConstantNumber(const char* name) {
   CHECK_CONSTANT(GAMEPAD_2_DOWN);
   CHECK_CONSTANT(GAMEPAD_2_LEFT);
 
-  PRINT_ERROR("unknown constant number name");
+  PRINT_ERROR("unknown constant name");
   return 0;
 }
 
@@ -180,7 +186,7 @@ const char* GetConstantString(const char* name) {
 
   CHECK_CONSTANT(DEFAULT_CAPTION);
 
-  PRINT_ERROR("unknown constant string name");
+  PRINT_ERROR("unknown constant name");
   return "";
 }
 
