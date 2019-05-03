@@ -1,14 +1,10 @@
 def setup_apis(module, lib):
     import ctypes
-    import numpy as np
 
     class Tilemap:
         def __init__(self, c_obj):
             self._c_obj = c_obj
-
-            self._data = np.ctypeslib.as_array(
-                lib.tilemap_data_getter(c_obj), shape=(self.width * self.height,)
-            )
+            self._data = lib.tilemap_data_getter(c_obj)
 
         @property
         def width(self):
@@ -48,5 +44,7 @@ def setup_apis(module, lib):
 
         def copy(self, x, y, tm, u, v, w, h):
             lib.tilemap_copy(self._c_obj, x, y, tm, u, v, w, h)
+
+    lib.tilemap_data_getter.restype = ctypes.POINTER(ctypes.c_int32)
 
     module.Tilemap = Tilemap
