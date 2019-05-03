@@ -6,10 +6,6 @@
 - Removed the refimg argument from the Tilemap methods
 - Renamed an arguments of the set method of the Image and Tilemap class
 
-## 1.0.2
-- Fixed the gamepad inputs
-- Modified the .gitignore for VSCode
-
 ## 1.0.1
 - Simplified comparisons
 - Removed a deprecated function
