@@ -50,7 +50,7 @@ class System {
   Profiler fps_profiler_;
   Profiler update_profiler_;
   Profiler draw_profiler_;
-  bool is_performance_monitor_on;
+  bool is_performance_monitor_on_;
 
   void UpdateFrame(void (*update)());
   void CheckSpecialInput();
