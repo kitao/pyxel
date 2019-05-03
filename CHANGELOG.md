@@ -4,6 +4,7 @@
 - Modified .gitignore to ignore .vscode files
 - Changed to use SDL2 instead of GLFW
 - Removed the refimg argument from the Tilemap methods
+- Renamed an arguments of the set method of the Image and Tilemap class
 
 ## 1.0.1
 - Simplified comparisons

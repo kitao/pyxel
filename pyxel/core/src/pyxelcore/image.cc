@@ -33,26 +33,21 @@ void Image::SetValue(int32_t x, int32_t y, int32_t value) {
     return;
   }
 
-  if (value < 0 || value >= COLOR_COUNT) {
-    PRINT_ERROR("invalid color");
-    return;
-  }
-
   data_[Width() * y + x] = value;
 }
 
 void Image::SetValue(int32_t x,
                      int32_t y,
-                     const char** value_str,
-                     int32_t value_str_count) {
-  int32_t width = strlen(value_str[0]);
-  int32_t height = value_str_count;
+                     const char** value,
+                     int32_t value_count) {
+  int32_t width = strlen(value[0]);
+  int32_t height = value_count;
   Image* image = new Image(width, height);
   int32_t* data = image->data_;
 
   for (int32_t i = 0; i < height; i++) {
     int32_t index = width * i;
-    std::string str = value_str[i];
+    std::string str = value[i];
 
     for (int32_t j = 0; j < width; j++) {
       data[index + j] = std::stoi(str.substr(j, 1), nullptr, 16);
