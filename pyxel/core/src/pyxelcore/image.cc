@@ -33,6 +33,10 @@ void Image::SetValue(int32_t x, int32_t y, int32_t value) {
     return;
   }
 
+  if (value < 0 || value >= COLOR_COUNT) {
+    PRINT_ERROR("invalid value");
+  }
+
   data_[Width() * y + x] = value;
 }
 
@@ -50,7 +54,14 @@ void Image::SetValue(int32_t x,
     std::string str = value[i];
 
     for (int32_t j = 0; j < width; j++) {
-      data[index + j] = std::stoi(str.substr(j, 1), nullptr, 16);
+      int32_t val = std::stoi(str.substr(j, 1), nullptr, 16);
+
+      if (val < 0 || val >= COLOR_COUNT) {
+        PRINT_ERROR("invalid value");
+        val = 0;
+      }
+
+      data[index + j] = val;
     }
   }
 

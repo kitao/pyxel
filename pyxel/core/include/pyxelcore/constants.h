@@ -59,6 +59,8 @@ const int32_t TILEMAP_BANK_WIDTH = 256;
 const int32_t TILEMAP_BANK_HEIGHT = 256;
 const int32_t TILEMAP_CHIP_WIDTH = 8;
 const int32_t TILEMAP_CHIP_HEIGHT = 8;
+const int32_t TILEMAP_CHIP_COUNT = (TILEMAP_BANK_WIDTH / TILEMAP_CHIP_WIDTH) *
+                                   (TILEMAP_BANK_HEIGHT / TILEMAP_CHIP_HEIGHT);
 
 const int32_t MOUSE_CURSOR_X = 2;
 const int32_t MOUSE_CURSOR_Y = 2;
@@ -305,4 +307,4 @@ const char* GetConstantString(const char* name);
 
 }  // namespace pyxelcore
 
-#endif  // PYXELCORE_AUDIO_H_
+#endif  // PYXELCORE_CONSTANTS_H_
