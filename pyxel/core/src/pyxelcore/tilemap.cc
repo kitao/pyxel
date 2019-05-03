@@ -81,10 +81,10 @@ void Tilemap::CopyTilemap(int32_t x,
   Rectangle::CopyArea copy_area = rect_.GetCopyArea(
       x, y, tilemap->rect_, Rectangle::FromSize(u, v, width, height));
 
-  int32_t copy_w = copy_area.copy_w;
-  int32_t copy_h = copy_area.copy_h;
+  int32_t copy_width = copy_area.copy_width;
+  int32_t copy_height = copy_area.copy_height;
 
-  if (copy_w <= 0 || copy_h <= 0) {
+  if (copy_width <= 0 || copy_height <= 0) {
     return;
   }
 
@@ -94,11 +94,11 @@ void Tilemap::CopyTilemap(int32_t x,
   int32_t dst_width = Width();
   int32_t* dst_data = data_;
 
-  for (int32_t i = 0; i < copy_h; i++) {
+  for (int32_t i = 0; i < copy_height; i++) {
     int32_t src_index = src_width * (copy_area.src_y + i) + copy_area.src_x;
     int32_t dst_index = dst_width * (copy_area.dst_y + i) + copy_area.dst_x;
 
-    for (int32_t j = 0; j < copy_w; j++) {
+    for (int32_t j = 0; j < copy_width; j++) {
       dst_data[dst_index + j] = src_data[src_index + j];
     }
   }

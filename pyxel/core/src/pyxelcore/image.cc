@@ -76,7 +76,10 @@ void Image::LoadImage(int32_t x,
                       const int32_t* palette_color) {
   SDL_Surface* png_image = IMG_Load(filename);
 
-  // TODO: error handling
+  if (!png_image) {
+    PRINT_ERROR("cannot load image");
+    return;
+  }
 
   SDL_Surface* src_image =
       SDL_ConvertSurfaceFormat(png_image, SDL_PIXELFORMAT_RGBA8888, 0);
@@ -135,8 +138,8 @@ void Image::CopyImage(int32_t x,
   Rectangle::CopyArea copy_area = rect_.GetCopyArea(
       x, y, image->rect_, Rectangle::FromSize(u, v, width, height));
 
-  int32_t copy_w = copy_area.copy_w;
-  int32_t copy_h = copy_area.copy_h;
+  int32_t copy_w = copy_area.copy_width;
+  int32_t copy_h = copy_area.copy_height;
 
   if (copy_w <= 0 || copy_h <= 0) {
     return;
