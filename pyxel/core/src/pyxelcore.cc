@@ -290,11 +290,11 @@ int32_t tilemap_get(void* self, int32_t x, int32_t y) {
   return reinterpret_cast<pyxelcore::Tilemap*>(self)->GetValue(x, y);
 }
 
-void timemap_set1(void* self, int32_t x, int32_t y, int32_t val) {
+void tilemap_set1(void* self, int32_t x, int32_t y, int32_t val) {
   return reinterpret_cast<pyxelcore::Tilemap*>(self)->SetValue(x, y, val);
 }
 
-void timemap_set(void* self,
+void tilemap_set(void* self,
                  int32_t x,
                  int32_t y,
                  const char** val,
@@ -303,7 +303,7 @@ void timemap_set(void* self,
                                                                val_count);
 }
 
-void timemap_copy(void* self,
+void tilemap_copy(void* self,
                   int32_t x,
                   int32_t y,
                   int32_t tm,

@@ -1,5 +1,6 @@
 def setup_apis(module, lib):
     import ctypes
+
     from pyxel import (
         DEFAULT_BORDER_COLOR,
         DEFAULT_BORDER_WIDTH,
@@ -8,6 +9,14 @@ def setup_apis(module, lib):
         DEFAULT_PALETTE,
         DEFAULT_SCALE,
     )
+
+    from . import core
+
+    COLOR_COUNT = core.get_constant_number("COLOR_COUNT")
+    IMAGE_BANK_COUNT = core.get_constant_number("IMAGE_BANK_COUNT")
+    TILEMAP_BANK_COUNT = core.get_constant_number("TILEMAP_BANK_COUNT")
+    SOUND_BANK_COUNT = core.get_constant_number("SOUND_BANK_COUNT")
+    MUSIC_BANK_COUNT = core.get_constant_number("MUSIC_BANK_COUNT")
 
     def init_wrapper(
         width,
@@ -22,8 +31,8 @@ def setup_apis(module, lib):
     ):
         c_caption = ctypes.create_string_buffer(caption.encode("utf-8"))
 
-        c_palette = (ctypes.c_int * 16)()
-        for i in range(16):
+        c_palette = (ctypes.c_int * COLOR_COUNT)()
+        for i in range(COLOR_COUNT):
             c_palette[i] = palette[i]
 
         lib.init(
@@ -31,12 +40,18 @@ def setup_apis(module, lib):
         )
 
         lib.image.restype = ctypes.c_void_p
+        lib.tilemap.restype = ctypes.c_void_p
+        lib.sound.restype = ctypes.c_void_p
+        lib.music.restype = ctypes.c_void_p
 
         module._image_list = []
-        for i in range(4):
-            module._image_list.append(module.Image(lib.image(i, True)))
+        for i in range(IMAGE_BANK_COUNT):
+            module._image_list.append(module.Image(ctypes.c_void_p(lib.image(i, True))))
 
-        # init tilemap
+        module._tilemap_list = []
+        for i in range(TILEMAP_BANK_COUNT):
+            module._tilemap_list.append(module.Tilemap(ctypes.c_void_p(lib.tilemap(i))))
+
         # init sound
         # init music
 
