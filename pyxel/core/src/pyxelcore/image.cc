@@ -135,21 +135,29 @@ void Image::CopyImage(int32_t x,
   Rectangle::CopyArea copy_area = rect_.GetCopyArea(
       x, y, image->rect_, Rectangle::FromSize(u, v, width, height));
 
-  if (copy_area.width <= 0 || copy_area.height <= 0) {
+  int32_t copy_w = copy_area.copy_w;
+  int32_t copy_h = copy_area.copy_h;
+
+  if (copy_w <= 0 || copy_h <= 0) {
     return;
   }
 
+  int32_t src_x = copy_area.src_x;
+  int32_t src_y = copy_area.src_y;
   int32_t src_width = image->Width();
   int32_t* src_data = image->data_;
 
+  int32_t dst_x = copy_area.dst_x;
+  int32_t dst_y = copy_area.dst_y;
   int32_t dst_width = Width();
+  int32_t dst_height = Height();
   int32_t* dst_data = data_;
 
-  for (int32_t i = 0; i < copy_area.height; i++) {
-    int32_t src_index = src_width * (copy_area.src_y + i) + copy_area.src_x;
-    int32_t dst_index = dst_width * (copy_area.dst_y + i) + copy_area.dst_x;
+  for (int32_t i = 0; i < height; i++) {
+    int32_t src_index = src_width * (src_y + i) + src_x;
+    int32_t dst_index = dst_width * (dst_y + i) + dst_x;
 
-    for (int32_t j = 0; j < copy_area.width; j++) {
+    for (int32_t j = 0; j < width; j++) {
       dst_data[dst_index + j] = src_data[src_index + j];
     }
   }
