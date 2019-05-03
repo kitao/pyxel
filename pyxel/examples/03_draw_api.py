@@ -10,7 +10,11 @@ class App:
         pyxel.image(0).load(0, 0, "assets/cat_16x16.png")
         pyxel.image(1).load(0, 0, "assets/tileset_24x32.png")
 
-        pyxel.tilemap(0).set(0, 0, ["2200020401006061620040", "4203202122030001020360"])
+        pyxel.tilemap(0).set(
+            0,
+            0,
+            ["022000002004001000060061062000040", "042003020021022003000001002003060"],
+        )
         pyxel.tilemap(0).refimg = 1
 
         self.pal_test_is_enabled = False
