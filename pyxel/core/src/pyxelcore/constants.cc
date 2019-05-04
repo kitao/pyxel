@@ -178,7 +178,10 @@ int32_t GetConstantNumber(const char* name) {
   CHECK_CONSTANT(GAMEPAD_2_DOWN);
   CHECK_CONSTANT(GAMEPAD_2_LEFT);
 
-  PRINT_ERROR("unknown constant name");
+  char buf[256];
+  snprintf(buf, sizeof(buf), "unknown constant name '%s'", name);
+  PRINT_ERROR(buf);
+
   return 0;
 }
 
@@ -187,7 +190,10 @@ const char* GetConstantString(const char* name) {
 
   CHECK_CONSTANT(DEFAULT_CAPTION);
 
-  PRINT_ERROR("unknown constant name");
+  char buf[256];
+  snprintf(buf, sizeof(buf), "unknown constant name '%s'", name);
+  PRINT_ERROR(buf);
+
   return "";
 }
 
