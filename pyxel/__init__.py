@@ -1,3 +1,5 @@
+import inspect
+import os
 import sys
 from ctypes import CFUNCTYPE, c_char_p, c_int32, cast, create_string_buffer
 from typing import Any, Callable, List, Optional
@@ -216,6 +218,9 @@ class Image:
             core.image_set(self._obj, int(x), int(y), c_data, data_count)
 
     def load(self, x: int, y: int, filename: str) -> bool:
+        dirname = os.path.dirname(inspect.stack()[-1].filename)
+        filename = os.path.join(dirname, filename)
+
         return core.image_load(  # type: ignore
             self._obj, int(x), int(y), filename.encode("utf-8")
         )
@@ -383,10 +388,16 @@ def quit() -> None:
 # Resource
 #
 def save(filename: str) -> bool:
+    dirname = os.path.dirname(inspect.stack()[-1].filename)
+    filename = os.path.join(dirname, filename)
+
     return core.save(filename.encode("utf-8"))  # type: ignore
 
 
 def load(filename: str) -> bool:
+    dirname = os.path.dirname(inspect.stack()[-1].filename)
+    filename = os.path.join(dirname, filename)
+
     return core.load(filename.encode("utf-8"))  # type: ignore
 
 
