@@ -76,12 +76,12 @@ void quit() {
 //
 // Resource
 //
-void save(const char* filename) {
-  s_resource->SaveAsset(filename);
+int32_t save(const char* filename) {
+  return s_resource->SaveAsset(filename);
 }
 
-void load(const char* filename) {
-  s_resource->LoadAsset(filename);
+int32_t load(const char* filename) {
+  return s_resource->LoadAsset(filename);
 }
 
 //
@@ -246,8 +246,8 @@ void image_set(void* self,
   reinterpret_cast<pyxelcore::Image*>(self)->SetData(x, y, val, val_count);
 }
 
-void image_load(void* self, int32_t x, int32_t y, const char* filename) {
-  reinterpret_cast<pyxelcore::Image*>(self)->LoadImage(
+int32_t image_load(void* self, int32_t x, int32_t y, const char* filename) {
+  return reinterpret_cast<pyxelcore::Image*>(self)->LoadImage(
       x, y, filename, s_system->PaletteColor());
 }
 

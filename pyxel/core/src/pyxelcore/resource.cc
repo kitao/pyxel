@@ -2,7 +2,41 @@
 
 namespace pyxelcore {
 
-void Resource::LoadAsset(const char* filename) {
+bool Resource::SaveAsset(const char* filename) {
+  /*
+    @staticmethod def save(filename):
+        data = {"version": pyxel.VERSION}
+
+        image_list = [
+            pyxel.image(i).data.dumps() for i in range(RENDERER_IMAGE_COUNT - 1)
+        ]
+        data["image"] = image_list
+
+        tilemap_list = [
+            (pyxel.tilemap(i).data.dumps(), pyxel.tilemap(i).refimg)
+            for i in range(RENDERER_TILEMAP_COUNT)
+        ]
+        data["tilemap"] = tilemap_list
+
+        sound_list = [pyxel.sound(i) for i in range(AUDIO_SOUND_COUNT - 1)]
+        data["sound"] = sound_list
+
+        music_list = [pyxel.music(i) for i in range(AUDIO_MUSIC_COUNT - 1)]
+        data["music"] = music_list
+
+        pickled_data = pickle.dumps(data)
+
+        dirname = os.path.dirname(inspect.stack()[-1].filename)
+        filename = os.path.join(dirname, filename)
+
+        with gzip.open(filename, mode="wb") as fp:
+            fp.write(pickled_data)
+  */
+
+  return true;
+}
+
+bool Resource::LoadAsset(const char* filename) {
   /*
     @staticmethod
     def load(filename):
@@ -55,38 +89,8 @@ void Resource::LoadAsset(const char* filename) {
                 dest.ch2[:] = src.ch2
                 dest.ch3[:] = src.ch3
   */
-}
 
-void Resource::SaveAsset(const char* filename) {
-  /*
-    @staticmethod def save(filename):
-        data = {"version": pyxel.VERSION}
-
-        image_list = [
-            pyxel.image(i).data.dumps() for i in range(RENDERER_IMAGE_COUNT - 1)
-        ]
-        data["image"] = image_list
-
-        tilemap_list = [
-            (pyxel.tilemap(i).data.dumps(), pyxel.tilemap(i).refimg)
-            for i in range(RENDERER_TILEMAP_COUNT)
-        ]
-        data["tilemap"] = tilemap_list
-
-        sound_list = [pyxel.sound(i) for i in range(AUDIO_SOUND_COUNT - 1)]
-        data["sound"] = sound_list
-
-        music_list = [pyxel.music(i) for i in range(AUDIO_MUSIC_COUNT - 1)]
-        data["music"] = music_list
-
-        pickled_data = pickle.dumps(data)
-
-        dirname = os.path.dirname(inspect.stack()[-1].filename)
-        filename = os.path.join(dirname, filename)
-
-        with gzip.open(filename, mode="wb") as fp:
-            fp.write(pickled_data)
-  */
+  return true;
 }
 
 }  // namespace pyxelcore
