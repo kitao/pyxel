@@ -318,8 +318,8 @@ void Graphics::DrawImage(int32_t x,
 
   if (color_key == -1) {
     for (int32_t i = 0; i < copy_height; i++) {
-      int32_t src_index = src_width * (src_y + sign_y * i + offset_y) + src_x;
-      int32_t dst_index = dst_width * (dst_y + i) + dst_x;
+      int32_t src_index = src_width * (src_y + i) + src_x;
+      int32_t dst_index = dst_width * (dst_y + sign_y * i + offset_y) + dst_x;
 
       for (int32_t j = 0; j < copy_width; j++) {
         dst_data[dst_index + sign_x * j + offset_x] =
@@ -328,11 +328,11 @@ void Graphics::DrawImage(int32_t x,
     }
   } else {
     for (int32_t i = 0; i < copy_height; i++) {
-      int32_t src_index = src_width * (src_y + sign_y * i + offset_y) + src_x;
-      int32_t dst_index = dst_width * (dst_y + i) + dst_x;
+      int32_t src_index = src_width * (src_y + i) + src_x;
+      int32_t dst_index = dst_width * (dst_y + sign_y * i + offset_y) + dst_x;
 
       for (int32_t j = 0; j < copy_width; j++) {
-        int32_t src_color = src_data[src_index + sign_x * j + offset_x];
+        int32_t src_color = src_data[src_index + j];
 
         if (src_color != color_key) {
           dst_data[dst_index + sign_x * j + offset_x] =
