@@ -268,7 +268,7 @@ void Graphics::DrawImage(int32_t x,
   }
 
   Rectangle dst_rect = screen_image_->Rectangle().Intersect(clip_rect_);
-  Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
+  Rectangle copy_rect = Rectangle::FromSize(u, v, Abs(width), Abs(height));
   Rectangle::CopyArea copy_area =
       dst_rect.GetCopyArea(x, y, image->Rectangle(), copy_rect);
 
@@ -289,22 +289,44 @@ void Graphics::DrawImage(int32_t x,
   int32_t dst_width = screen_image_->Width();
   int32_t* dst_data = screen_image_->Data();
 
+  int32_t sign_x, sign_y;
+  int32_t offset_x, offset_y;
+
+  if (width < 0) {
+    width = -width;
+    sign_x = -1;
+    offset_x = width - 1;
+  } else {
+    sign_x = 1;
+    offset_x = 0;
+  }
+
+  if (height < 0) {
+    height = -height;
+    sign_y = -1;
+    offset_y = height - 1;
+  } else {
+    sign_y = 1;
+    offset_y = 0;
+  }
+
   if (color_key == -1) {
-    for (int32_t i = 0; i < height; i++) {
-      int32_t src_index = src_width * (src_y + i) + src_x;
+    for (int32_t i = 0; i < copy_height; i++) {
+      int32_t src_index = src_width * (src_y + sign_y * i + offset_y) + src_x;
       int32_t dst_index = dst_width * (dst_y + i) + dst_x;
 
-      for (int32_t j = 0; j < width; j++) {
-        dst_data[dst_index + j] = palette_table_[src_data[src_index + j]];
+      for (int32_t j = 0; j < copy_width; j++) {
+        dst_data[dst_index + sign_x * j + offset_x] =
+            palette_table_[src_data[src_index + j]];
       }
     }
   } else {
-    for (int32_t i = 0; i < height; i++) {
-      int32_t src_index = src_width * (src_y + i) + src_x;
+    for (int32_t i = 0; i < copy_height; i++) {
+      int32_t src_index = src_width * (src_y + sign_y * i + offset_y) + src_x;
       int32_t dst_index = dst_width * (dst_y + i) + dst_x;
 
-      for (int32_t j = 0; j < width; j++) {
-        int32_t src_color = src_data[src_index + j];
+      for (int32_t j = 0; j < copy_width; j++) {
+        int32_t src_color = src_data[src_index + sign_x * j + offset_x];
 
         if (src_color != color_key) {
           dst_data[dst_index + j] = palette_table_[src_color];
