@@ -33,7 +33,9 @@ class Rectangle {
   CopyArea GetCopyArea(int32_t x,
                        int32_t y,
                        const Rectangle& src_rect,
-                       const Rectangle& copy_rect) const;
+                       const Rectangle& copy_rect,
+                       bool flip_x = false,
+                       bool flip_y = false) const;
 
   static Rectangle FromPos(int32_t left,
                            int32_t top,
@@ -134,19 +136,45 @@ inline Rectangle Rectangle::Intersect(const Rectangle& rect) const {
   }
 }
 
-inline Rectangle::CopyArea Rectangle::GetCopyArea(
-    int32_t x,
-    int32_t y,
-    const Rectangle& src_rect,
-    const Rectangle& copy_rect) const {
+inline Rectangle::CopyArea Rectangle::GetCopyArea(int32_t x,
+                                                  int32_t y,
+                                                  const Rectangle& src_rect,
+                                                  const Rectangle& copy_rect,
+                                                  bool flip_x,
+                                                  bool flip_y) const {
   Rectangle cr = copy_rect.Intersect(src_rect);
 
-  int32_t dst_x = x + Max(cr.Left() - copy_rect.Left(), 0);
-  int32_t dst_y = y + Max(cr.Top() - copy_rect.Top(), 0);
+  int32_t dst_x, dst_y;
+
+  if (flip_x) {
+    dst_x = x - Min(cr.Right() - copy_rect.Right(), 0);
+  } else {
+    dst_x = x + Max(cr.Left() - copy_rect.Left(), 0);
+  }
+
+  if (flip_y) {
+    dst_y = y - Min(cr.Bottom() - copy_rect.Bottom(), 0);
+  } else {
+    dst_y = y + Max(cr.Top() - copy_rect.Top(), 0);
+  }
+
   Rectangle dst = cr.MoveTo(dst_x, dst_y).Intersect(*this);
 
-  int32_t src_x = copy_rect.Left() + Max(dst.Left() - x, 0);
-  int32_t src_y = copy_rect.Top() + Max(dst.Top() - y, 0);
+  int32_t src_x, src_y;
+
+  if (flip_x) {
+    src_x =
+        copy_rect.Left() - Min(dst.Right() - (x + copy_rect.Width() - 1), 0);
+  } else {
+    src_x = copy_rect.Left() + Max(dst.Left() - x, 0);
+  }
+
+  if (flip_y) {
+    src_y =
+        copy_rect.Top() - Min(dst.Bottom() - (y + copy_rect.Height() - 1), 0);
+  } else {
+    src_y = copy_rect.Top() + Max(dst.Top() - y, 0);
+  }
 
   CopyArea copy_area = {
       src_x, src_y, dst.Left(), dst.Top(), dst.Width(), dst.Height(),
