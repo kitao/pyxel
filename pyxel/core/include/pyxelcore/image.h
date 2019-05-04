@@ -19,7 +19,7 @@ class Image {
   int32_t GetValue(int32_t x, int32_t y) const;
   void SetValue(int32_t x, int32_t y, int32_t value);
   void SetData(int32_t x, int32_t y, const char** data, int32_t data_count);
-  void LoadImage(int32_t x,
+  bool LoadImage(int32_t x,
                  int32_t y,
                  const char* filename,
                  const int32_t* palette_color);
