@@ -6,6 +6,23 @@
 #include "pyxelcore/input.h"
 #include "pyxelcore/resource.h"
 
+#define STORE_CLIP_AREA_AND_PALETTE()                    \
+  int32_t cur_palette_table[COLOR_COUNT];                \
+  for (int32_t i = 0; i < COLOR_COUNT; i++) {            \
+    cur_palette_table[i] = graphics_->PaletteTable()[i]; \
+  }                                                      \
+                                                         \
+  Rectangle cur_clip_area = graphics_->ClipArea();       \
+  graphics_->ResetClipArea()
+
+#define RESTORE_CLIP_AREA_AND_PALETTE()                             \
+  for (int32_t i = 0; i < COLOR_COUNT; i++) {                       \
+    graphics_->SetPalette(i, cur_palette_table[i]);                 \
+  }                                                                 \
+                                                                    \
+  graphics_->SetClipArea(cur_clip_area.Left(), cur_clip_area.Top(), \
+                         cur_clip_area.Right(), cur_clip_area.Bottom())
+
 namespace pyxelcore {
 
 class PyxelQuit {};
@@ -172,6 +189,8 @@ void System::DrawPerformanceMonitor() {
     return;
   }
 
+  STORE_CLIP_AREA_AND_PALETTE();
+
   char buf[16];
 
   snprintf(buf, sizeof(buf), "%.2f", fps_profiler_.AverageFPS());
@@ -185,6 +204,8 @@ void System::DrawPerformanceMonitor() {
   snprintf(buf, sizeof(buf), "%.2f", draw_profiler_.AverageTime());
   graphics_->DrawText(1, 12, buf, 1);
   graphics_->DrawText(0, 12, buf, 9);
+
+  RESTORE_CLIP_AREA_AND_PALETTE();
 }
 
 void System::DrawMouseCursor() {
@@ -192,9 +213,14 @@ void System::DrawMouseCursor() {
     return;
   }
 
+  STORE_CLIP_AREA_AND_PALETTE();
+
+  graphics_->ResetPalette();
   graphics_->DrawImage(input_->MouseX(), input_->MouseY(),
                        IMAGE_BANK_FOR_SYSTEM, MOUSE_CURSOR_X, MOUSE_CURSOR_Y,
                        MOUSE_CURSOR_WIDTH, MOUSE_CURSOR_HEIGHT, 1);
+
+  RESTORE_CLIP_AREA_AND_PALETTE();
 }
 
 /*
