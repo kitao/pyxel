@@ -395,10 +395,13 @@ def save(filename: str) -> bool:
 
 
 def load(filename: str) -> bool:
+    """
     dirname = os.path.dirname(inspect.stack()[-1].filename)
     filename = os.path.join(dirname, filename)
 
     return core.load(filename.encode("utf-8"))  # type: ignore
+    """
+    return old_load(filename)
 
 
 #
@@ -519,3 +522,90 @@ def playm(msc: int, *, loop: bool = False) -> None:
 
 def stop(ch: int = -1) -> None:
     pass
+
+
+def old_save(filename: str) -> bool:
+    import gzip
+    import pickle
+
+    data = {"version": VERSION}
+
+    image_list = [image(i).data.dumps() for i in range(3)]
+    data["image"] = image_list
+
+    tilemap_list = [(tilemap(i).data.dumps(), tilemap(i).refimg) for i in range(8)]
+    data["tilemap"] = tilemap_list
+
+    sound_list = [sound(i) for i in range(64)]
+    data["sound"] = sound_list
+
+    music_list = [music(i) for i in range(8)]
+    data["music"] = music_list
+
+    pickled_data = pickle.dumps(data)
+
+    dirname = os.path.dirname(inspect.stack()[-1].filename)
+    filename = os.path.join(dirname, filename)
+
+    with gzip.open(filename, mode="wb") as fp:
+        fp.write(pickled_data)
+
+    return True
+
+
+def old_load(filename: str) -> bool:
+    import gzip
+    import pickle
+
+    dirname = os.path.dirname(inspect.stack()[-1].filename)
+    filename = os.path.join(dirname, filename)
+
+    with gzip.open(filename, mode="rb") as fp:
+        pickled_data = fp.read()
+
+    data = pickle.loads(pickled_data)
+
+    # todo: version check
+
+    image_list = data.get("image")
+    if image_list:
+        for i in range(3):
+            image(i).data[:, :] = pickle.loads(image_list[i])
+
+    tilemap_list = data.get("tilemap")
+    if tilemap_list:
+        if type(tilemap_list[0]) is tuple:
+            for i in range(8):
+                tile = tilemap(i)
+                tile.data[:, :] = pickle.loads(tilemap_list[i][0])
+                tile.refimg = tilemap_list[i][1]
+        else:  # todo: delete this block in the future
+            for i in range(8):
+                tilemap(i).data[:, :] = pickle.loads(tilemap_list[i])
+
+    """
+    sound_list = data.get("sound")
+    if sound_list:
+        for i in range(64):
+            src = sound_list[i]
+            dest = sound(i)
+
+            dest.note[:] = src.note
+            dest.tone[:] = src.tone
+            dest.volume[:] = src.volume
+            dest.effect[:] = src.effect
+            dest.speed = src.speed
+
+    music_list = data.get("music")
+    if music_list:
+        for i in range(i):
+            src = music_list[i]
+            dest = music(i)
+
+            dest.ch0[:] = src.ch0
+            dest.ch1[:] = src.ch1
+            dest.ch2[:] = src.ch2
+            dest.ch3[:] = src.ch3
+    """
+
+    return True
