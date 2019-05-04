@@ -70,7 +70,7 @@ void Image::SetData(int32_t x,
   delete image;
 }
 
-void Image::LoadImage(int32_t x,
+bool Image::LoadImage(int32_t x,
                       int32_t y,
                       const char* filename,
                       const int32_t* palette_color) {
@@ -80,7 +80,8 @@ void Image::LoadImage(int32_t x,
     char buf[256];
     snprintf(buf, sizeof(buf), "cannot load image '%s'", filename);
     PRINT_ERROR(buf);
-    return;
+
+    return false;
   }
 
   SDL_Surface* src_image =
@@ -128,6 +129,8 @@ void Image::LoadImage(int32_t x,
 
   SDL_FreeSurface(png_image);
   SDL_FreeSurface(src_image);
+
+  return true;
 }
 
 void Image::CopyImage(int32_t x,
