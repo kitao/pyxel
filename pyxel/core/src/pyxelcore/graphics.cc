@@ -23,9 +23,9 @@ Graphics::Graphics(int32_t width, int32_t height) {
   SetupMouseCursor();
   SetupFont();
 
-  ResetClippingArea();
+  ResetClipArea();
   ResetPalette();
-  Clear(0);
+  ClearScreen(0);
 }
 
 Graphics::~Graphics() {
@@ -42,12 +42,12 @@ Graphics::~Graphics() {
   delete screen_image_;
 }
 
-void Graphics::ResetClippingArea() {
-  clip_rect_ = screen_image_->Rectangle();
+void Graphics::ResetClipArea() {
+  clip_area_ = screen_image_->Rectangle();
 }
 
-void Graphics::SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-  clip_rect_ =
+void Graphics::SetClipArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
+  clip_area_ =
       Rectangle::FromPos(x1, y1, x2, y2).Intersect(screen_image_->Rectangle());
 }
 
@@ -67,9 +67,15 @@ void Graphics::SetPalette(int32_t src_color, int32_t dst_color) {
   palette_table_[src_color] = dst_color;
 }
 
-void Graphics::Clear(int32_t color) {
-  DrawRectangle(0, 0, screen_image_->Width() - 1, screen_image_->Height() - 1,
-                color);
+void Graphics::ClearScreen(int32_t color) {
+  color = GetDrawColor(color);
+
+  int32_t size = screen_image_->Width() * screen_image_->Height();
+  int32_t* data = screen_image_->Data();
+
+  for (int32_t i = 0; i < size; i++) {
+    data[i] = color;
+  }
 }
 
 void Graphics::DrawPoint(int32_t x, int32_t y, int32_t color) {
@@ -143,7 +149,7 @@ void Graphics::DrawRectangle(int32_t x1,
   color = GetDrawColor(color);
 
   Rectangle draw_rect =
-      Rectangle::FromPos(x1, y1, x2, y2).Intersect(clip_rect_);
+      Rectangle::FromPos(x1, y1, x2, y2).Intersect(clip_area_);
 
   if (draw_rect.IsEmpty()) {
     return;
@@ -174,7 +180,7 @@ void Graphics::DrawRectangleBorder(int32_t x1,
 
   Rectangle draw_rect = Rectangle::FromPos(x1, y1, x2, y2);
 
-  if (draw_rect.Intersect(clip_rect_).IsEmpty()) {
+  if (draw_rect.Intersect(clip_area_).IsEmpty()) {
     return;
   }
 
@@ -267,7 +273,7 @@ void Graphics::DrawImage(int32_t x,
     color_key = -1;
   }
 
-  Rectangle dst_rect = screen_image_->Rectangle().Intersect(clip_rect_);
+  Rectangle dst_rect = screen_image_->Rectangle().Intersect(clip_area_);
   Rectangle copy_rect = Rectangle::FromSize(u, v, Abs(width), Abs(height));
   Rectangle::CopyArea copy_area =
       dst_rect.GetCopyArea(x, y, image->Rectangle(), copy_rect);
@@ -329,7 +335,8 @@ void Graphics::DrawImage(int32_t x,
         int32_t src_color = src_data[src_index + sign_x * j + offset_x];
 
         if (src_color != color_key) {
-          dst_data[dst_index + j] = palette_table_[src_color];
+          dst_data[dst_index + sign_x * j + offset_x] =
+              palette_table_[src_color];
         }
       }
     }
@@ -353,13 +360,17 @@ void Graphics::DrawTilemap(int32_t x,
   Rectangle::CopyArea copy_area =
       dst_rect.GetCopyArea(x, y, tilemap->Rectangle(), copy_rect);
 
+  int32_t copy_width = copy_area.copy_width;
+  int32_t copy_height = copy_area.copy_height;
+
+  if (copy_width <= 0 || copy_height <= 0) {
+    return;
+  }
+
   int32_t src_x = copy_area.src_x;
   int32_t src_y = copy_area.src_y;
   int32_t src_width = tilemap->Width();
   int32_t* src_data = tilemap->Data();
-
-  int32_t copy_width = copy_area.copy_width;
-  int32_t copy_height = copy_area.copy_height;
 
   for (int32_t i = 0; i < copy_height; i++) {
     int32_t index = src_width * (src_y + i) + src_x;
@@ -381,7 +392,7 @@ void Graphics::DrawTilemap(int32_t x,
 void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
   color = GetDrawColor(color);
 
-  int32_t original_color = palette_table_[FONT_COLOR];
+  int32_t cur_color = palette_table_[FONT_COLOR];
   palette_table_[FONT_COLOR] = color;
 
   int32_t left = x;
@@ -414,7 +425,7 @@ void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
     x += FONT_WIDTH;
   }
 
-  palette_table_[FONT_COLOR] = original_color;
+  palette_table_[FONT_COLOR] = cur_color;
 }
 
 void Graphics::SetupMouseCursor() {

@@ -123,11 +123,11 @@ void* tilemap(int32_t tm) {
 }
 
 void clip0() {
-  s_graphics->ResetClippingArea();
+  s_graphics->ResetClipArea();
 }
 
 void clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-  s_graphics->SetClippingArea(x1, y1, x2, y2);
+  s_graphics->SetClipArea(x1, y1, x2, y2);
 }
 
 void pal0() {
@@ -139,7 +139,7 @@ void pal(int32_t col1, int32_t col2) {
 }
 
 void cls(int32_t col) {
-  s_graphics->Clear(col);
+  s_graphics->ClearScreen(col);
 }
 
 void pix(int32_t x, int32_t y, int32_t col) {
