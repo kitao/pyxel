@@ -17,7 +17,7 @@ class Audio {
   Music* GetMusicBank(int32_t music_index) const;
   void PlaySound(int32_t channel, int32_t sound_index, bool loop = false);
   void PlayMusic(int32_t music_index, bool loop = false);
-  void StopPlaying(int32_t channel);
+  void StopPlaying(int32_t channel = -1);
 
  private:
   Sound** sound_bank_;
