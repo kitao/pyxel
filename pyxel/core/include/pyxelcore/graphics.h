@@ -12,18 +12,20 @@ class Graphics {
   Graphics(int32_t width, int32_t height);
   ~Graphics();
 
+  Rectangle ClipArea() const { return clip_area_; }
+  const int32_t* PaletteTable() const { return palette_table_; }
   const int32_t* ScreenData() const { return screen_image_->Data(); }
 
   Image* GetImageBank(int32_t image_index, bool system = false) const;
   Tilemap* GetTilemapBank(int32_t tilemap_index) const;
 
-  void ResetClippingArea();
-  void SetClippingArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
+  void ResetClipArea();
+  void SetClipArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
 
   void ResetPalette();
   void SetPalette(int32_t src_color, int32_t dst_color);
 
-  void Clear(int32_t color);
+  void ClearScreen(int32_t color);
   void DrawPoint(int32_t x, int32_t y, int32_t color);
   void DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t color);
   void DrawRectangle(int32_t x1,
@@ -60,7 +62,7 @@ class Graphics {
   Image* screen_image_;
   Image** image_bank_;
   Tilemap** tilemap_bank_;
-  Rectangle clip_rect_;
+  Rectangle clip_area_;
   int32_t palette_table_[COLOR_COUNT];
 
   void SetupMouseCursor();
@@ -101,7 +103,7 @@ inline int32_t Graphics::GetDrawColor(int32_t color) const {
 }
 
 inline void Graphics::SetPixel(int32_t x, int32_t y, int32_t draw_color) {
-  if (clip_rect_.Includes(x, y)) {
+  if (clip_area_.Includes(x, y)) {
     screen_image_->Data()[screen_image_->Width() * y + x] = draw_color;
   }
 }
