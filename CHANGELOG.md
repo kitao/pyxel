@@ -6,6 +6,7 @@
 - Removed the refimg argument from the Tilemap methods
 - Renamed an arguments of the set method of the Image and Tilemap class
 - Changed the save and load method to return bool value
+- Removed the run_with_profiler API
 
 ## 1.0.1
 - Simplified comparisons
