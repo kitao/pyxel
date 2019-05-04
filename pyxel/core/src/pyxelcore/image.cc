@@ -110,10 +110,11 @@ bool Image::LoadImage(int32_t x,
 
       for (int32_t k = 0; k < COLOR_COUNT; k++) {
         int32_t color = palette_color[k];
-        int32_t dr = src_r - ((color >> 16) & 0xff);
-        int32_t dg = src_g - ((color >> 8) & 0xff);
-        int32_t db = src_b - (color & 0xff);
-        int32_t color_dist = dr * dr + dg * dg + db * db;
+        int32_t pal_r = (color >> 16) & 0xff;
+        int32_t pal_g = (color >> 8) & 0xff;
+        int32_t pal_b = color & 0xff;
+        int32_t color_dist =
+            Abs(src_r - pal_r) + Abs(src_g - pal_g) + Abs(src_b - pal_b);
 
         if (color_dist < nearest_color_dist) {
           nearest_color = k;
