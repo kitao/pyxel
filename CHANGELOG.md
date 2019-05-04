@@ -5,6 +5,7 @@
 - Changed to use SDL2 instead of GLFW
 - Removed the refimg argument from the Tilemap methods
 - Renamed an arguments of the set method of the Image and Tilemap class
+- Changed the save and load method to return bool value
 
 ## 1.0.1
 - Simplified comparisons

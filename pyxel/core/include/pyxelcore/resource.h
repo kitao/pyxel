@@ -7,8 +7,8 @@ namespace pyxelcore {
 
 class Resource {
  public:
-  void LoadAsset(const char* filename);
-  void SaveAsset(const char* filename);
+  bool SaveAsset(const char* filename);
+  bool LoadAsset(const char* filename);
 };
 
 }  // namespace pyxelcore

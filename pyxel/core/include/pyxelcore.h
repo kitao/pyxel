@@ -44,8 +44,8 @@ PYXEL_API void quit();
 //
 // Resource
 //
-PYXEL_API void save(const char* filename);
-PYXEL_API void load(const char* filename);
+PYXEL_API int32_t save(const char* filename);
+PYXEL_API int32_t load(const char* filename);
 
 //
 // Input
@@ -127,10 +127,10 @@ PYXEL_API void image_set(void* self,
                          int32_t y,
                          const char** val,
                          int32_t val_count);
-PYXEL_API void image_load(void* self,
-                          int32_t x,
-                          int32_t y,
-                          const char* filename);
+PYXEL_API int32_t image_load(void* self,
+                             int32_t x,
+                             int32_t y,
+                             const char* filename);
 PYXEL_API void image_copy(void* self,
                           int32_t x,
                           int32_t y,
