@@ -1,10 +1,11 @@
 #ifndef PYXELCORE_GRAPHICS_H_
 #define PYXELCORE_GRAPHICS_H_
 
-#include "pyxelcore/image.h"
+#include "pyxelcore/rectangle.h"
 
 namespace pyxelcore {
 
+class Image;
 class Tilemap;
 
 class Graphics {
@@ -12,9 +13,9 @@ class Graphics {
   Graphics(int32_t width, int32_t height);
   ~Graphics();
 
-  Rectangle ClipArea() const { return clip_area_; }
+  const Rectangle& ClipArea() const { return clip_area_; }
   const int32_t* PaletteTable() const { return palette_table_; }
-  const int32_t* ScreenData() const { return screen_image_->Data(); }
+  const int32_t* ScreenData() const { return screen_data_; }
 
   Image* GetImageBank(int32_t image_index, bool system = false) const;
   Tilemap* GetTilemapBank(int32_t tilemap_index) const;
@@ -60,6 +61,9 @@ class Graphics {
 
  private:
   Image* screen_image_;
+  int32_t screen_width_;
+  int32_t screen_height_;
+  int32_t* screen_data_;
   Image** image_bank_;
   Tilemap** tilemap_bank_;
   Rectangle clip_area_;
@@ -104,7 +108,7 @@ inline int32_t Graphics::GetDrawColor(int32_t color) const {
 
 inline void Graphics::SetPixel(int32_t x, int32_t y, int32_t draw_color) {
   if (clip_area_.Includes(x, y)) {
-    screen_image_->Data()[screen_image_->Width() * y + x] = draw_color;
+    screen_data_[screen_width_ * y + x] = draw_color;
   }
 }
 
