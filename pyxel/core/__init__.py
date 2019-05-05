@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
             pyxel.image(3, system=True).set(0, 0, ["7777", "7777"])
 
-            print(pyxel.tilemap(0).get(0, 0))
+            print("tilemap[0,0]=", pyxel.tilemap(0).get(0, 0))
             pyxel.tilemap(0).set(
                 0,
                 0,
