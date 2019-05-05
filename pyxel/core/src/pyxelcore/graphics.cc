@@ -9,6 +9,9 @@ namespace pyxelcore {
 
 Graphics::Graphics(int32_t width, int32_t height) {
   screen_image_ = new Image(width, height);
+  screen_width_ = screen_image_->Width();
+  screen_height_ = screen_image_->Height();
+  screen_data_ = screen_image_->Data();
 
   image_bank_ = new Image*[IMAGE_BANK_COUNT];
   for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
@@ -29,17 +32,17 @@ Graphics::Graphics(int32_t width, int32_t height) {
 }
 
 Graphics::~Graphics() {
-  for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
-    delete tilemap_bank_[i];
-  }
-  delete[] tilemap_bank_;
+  delete screen_image_;
 
   for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
     delete image_bank_[i];
   }
   delete[] image_bank_;
 
-  delete screen_image_;
+  for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
+    delete tilemap_bank_[i];
+  }
+  delete[] tilemap_bank_;
 }
 
 void Graphics::ResetClipArea() {
@@ -68,13 +71,11 @@ void Graphics::SetPalette(int32_t src_color, int32_t dst_color) {
 }
 
 void Graphics::ClearScreen(int32_t color) {
-  color = GetDrawColor(color);
-
-  int32_t size = screen_image_->Width() * screen_image_->Height();
-  int32_t* data = screen_image_->Data();
+  int32_t draw_color = GetDrawColor(color);
+  int32_t size = screen_width_ * screen_height_;
 
   for (int32_t i = 0; i < size; i++) {
-    data[i] = color;
+    screen_data_[i] = draw_color;
   }
 }
 
@@ -87,10 +88,10 @@ void Graphics::DrawLine(int32_t x1,
                         int32_t x2,
                         int32_t y2,
                         int32_t color) {
-  color = GetDrawColor(color);
+  int32_t draw_color = GetDrawColor(color);
 
   if (x1 == x2 && y1 == y2) {
-    SetPixel(x1, y1, color);
+    SetPixel(x1, y1, draw_color);
     return;
   }
 
@@ -114,7 +115,7 @@ void Graphics::DrawLine(int32_t x1,
     float alpha = static_cast<float>(end_y - start_y) / (end_x - start_x);
 
     for (int32_t i = 0; i < length; i++) {
-      SetPixel(start_x + i, start_y + alpha * i + 0.5f, color);
+      SetPixel(start_x + i, start_y + alpha * i + 0.5f, draw_color);
     }
   } else {
     int32_t start_x, start_y;
@@ -136,7 +137,7 @@ void Graphics::DrawLine(int32_t x1,
     float alpha = static_cast<float>(end_x - start_x) / (end_y - start_y);
 
     for (int32_t i = 0; i < length; i++) {
-      SetPixel(start_x + alpha * i + 0.5f, start_y + i, color);
+      SetPixel(start_x + alpha * i + 0.5f, start_y + i, draw_color);
     }
   }
 }
@@ -146,8 +147,7 @@ void Graphics::DrawRectangle(int32_t x1,
                              int32_t x2,
                              int32_t y2,
                              int32_t color) {
-  color = GetDrawColor(color);
-
+  int32_t draw_color = GetDrawColor(color);
   Rectangle draw_rect =
       Rectangle::FromPos(x1, y1, x2, y2).Intersect(clip_area_);
 
@@ -159,14 +159,12 @@ void Graphics::DrawRectangle(int32_t x1,
   int32_t top = draw_rect.Top();
   int32_t right = draw_rect.Right();
   int32_t bottom = draw_rect.Bottom();
-  int32_t width = screen_image_->Width();
-  int32_t* data = screen_image_->Data();
 
   for (int32_t i = top; i <= bottom; i++) {
-    int32_t index = width * i;
+    int32_t index = screen_width_ * i;
 
     for (int32_t j = left; j <= right; j++) {
-      data[index + j] = color;
+      screen_data_[index + j] = draw_color;
     }
   }
 }
@@ -176,8 +174,7 @@ void Graphics::DrawRectangleBorder(int32_t x1,
                                    int32_t x2,
                                    int32_t y2,
                                    int32_t color) {
-  color = GetDrawColor(color);
-
+  int32_t draw_color = GetDrawColor(color);
   Rectangle draw_rect = Rectangle::FromPos(x1, y1, x2, y2);
 
   if (draw_rect.Intersect(clip_area_).IsEmpty()) {
@@ -190,21 +187,21 @@ void Graphics::DrawRectangleBorder(int32_t x1,
   int32_t bottom = draw_rect.Bottom();
 
   for (int32_t i = left; i <= right; i++) {
-    SetPixel(i, y1, color);
-    SetPixel(i, y2, color);
+    SetPixel(i, y1, draw_color);
+    SetPixel(i, y2, draw_color);
   }
 
   for (int32_t i = top; i <= bottom; i++) {
-    SetPixel(x1, i, color);
-    SetPixel(x2, i, color);
+    SetPixel(x1, i, draw_color);
+    SetPixel(x2, i, draw_color);
   }
 }
 
 void Graphics::DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color) {
-  color = GetDrawColor(color);
+  int32_t draw_color = GetDrawColor(color);
 
   if (radius == 0) {
-    SetPixel(x, y, color);
+    SetPixel(x, y, draw_color);
     return;
   }
 
@@ -218,10 +215,10 @@ void Graphics::DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color) {
     }
 
     for (int32_t i = -dy; i <= dy; i++) {
-      SetPixel(x - dx, y + i, color);
-      SetPixel(x + dx, y + i, color);
-      SetPixel(x + i, y - dx, color);
-      SetPixel(x + i, y + dx, color);
+      SetPixel(x - dx, y + i, draw_color);
+      SetPixel(x + dx, y + i, draw_color);
+      SetPixel(x + i, y - dx, draw_color);
+      SetPixel(x + i, y + dx, draw_color);
     }
   }
 }
@@ -230,10 +227,10 @@ void Graphics::DrawCircleBorder(int32_t x,
                                 int32_t y,
                                 int32_t radius,
                                 int32_t color) {
-  color = GetDrawColor(color);
+  int32_t draw_color = GetDrawColor(color);
 
   if (radius == 0) {
-    SetPixel(x, y, color);
+    SetPixel(x, y, draw_color);
     return;
   }
 
@@ -246,15 +243,15 @@ void Graphics::DrawCircleBorder(int32_t x,
       continue;
     }
 
-    SetPixel(x - dx, y - dy, color);
-    SetPixel(x + dx, y - dy, color);
-    SetPixel(x - dx, y + dy, color);
-    SetPixel(x + dx, y + dy, color);
+    SetPixel(x - dx, y - dy, draw_color);
+    SetPixel(x + dx, y - dy, draw_color);
+    SetPixel(x - dx, y + dy, draw_color);
+    SetPixel(x + dx, y + dy, draw_color);
 
-    SetPixel(x - dy, y - dx, color);
-    SetPixel(x + dy, y - dx, color);
-    SetPixel(x - dy, y + dx, color);
-    SetPixel(x + dy, y + dx, color);
+    SetPixel(x - dy, y - dx, draw_color);
+    SetPixel(x + dy, y - dx, draw_color);
+    SetPixel(x - dy, y + dx, draw_color);
+    SetPixel(x + dy, y + dx, draw_color);
   }
 }
 
@@ -273,44 +270,37 @@ void Graphics::DrawImage(int32_t x,
     color_key = -1;
   }
 
-  Rectangle dst_rect = screen_image_->Rectangle().Intersect(clip_area_);
-  Rectangle copy_rect = Rectangle::FromSize(u, v, Abs(width), Abs(height));
-  Rectangle::CopyArea copy_area = dst_rect.GetCopyArea(
-      x, y, image->Rectangle(), copy_rect, width < 0, height < 0);
+  Rectangle::CopyArea copy_area =
+      clip_area_.GetCopyArea(x, y, image->Rectangle(), u, v, Abs(width),
+                             Abs(height), width < 0, height < 0);
 
-  int32_t copy_width = copy_area.copy_width;
-  int32_t copy_height = copy_area.copy_height;
-
-  if (copy_width <= 0 || copy_height <= 0) {
+  if (copy_area.IsEmpty()) {
     return;
   }
 
-  int32_t src_x = copy_area.src_x;
-  int32_t src_y = copy_area.src_y;
   int32_t src_width = image->Width();
   int32_t* src_data = image->Data();
 
-  int32_t dst_x = copy_area.dst_x;
-  int32_t dst_y = copy_area.dst_y;
-  int32_t dst_width = screen_image_->Width();
-  int32_t* dst_data = screen_image_->Data();
+  int32_t dst_width = screen_width_;
+  int32_t* dst_data = screen_data_;
+
+  int32_t copy_width = copy_area.width;
+  int32_t copy_height = copy_area.height;
 
   int32_t sign_x, sign_y;
   int32_t offset_x, offset_y;
 
   if (width < 0) {
-    width = -width;
     sign_x = -1;
-    offset_x = copy_width - 1;
+    offset_x = copy_area.width;
   } else {
     sign_x = 1;
     offset_x = 0;
   }
 
   if (height < 0) {
-    height = -height;
     sign_y = -1;
-    offset_y = copy_height - 1;
+    offset_y = copy_area.height;
   } else {
     sign_y = 1;
     offset_y = 0;
@@ -318,25 +308,27 @@ void Graphics::DrawImage(int32_t x,
 
   if (color_key == -1) {
     for (int32_t i = 0; i < copy_height; i++) {
-      int32_t src_index = src_width * (src_y + sign_y * i + offset_y) + src_x;
-      int32_t dst_index = dst_width * (dst_y + i) + dst_x;
+      int32_t src_index = src_width * (copy_area.v + i) + copy_area.u;
+      int32_t dst_index = dst_width * (copy_area.y + i * sign_y + offset_y) +
+                          copy_area.x + offset_x;
 
       for (int32_t j = 0; j < copy_width; j++) {
-        int32_t src_color = src_data[src_index + sign_x * j + offset_x];
+        int32_t src_color = src_data[src_index + j];
 
         dst_data[dst_index + j] = palette_table_[src_color];
       }
     }
   } else {
     for (int32_t i = 0; i < copy_height; i++) {
-      int32_t src_index = src_width * (src_y + sign_y * i + offset_y) + src_x;
-      int32_t dst_index = dst_width * (dst_y + i) + dst_x;
+      int32_t src_index = src_width * (copy_area.v + i) + copy_area.u;
+      int32_t dst_index = dst_width * (copy_area.y + i * sign_y + offset_y) +
+                          copy_area.x + offset_x;
 
       for (int32_t j = 0; j < copy_width; j++) {
-        int32_t src_color = src_data[src_index + sign_x * j + offset_x];
+        int32_t src_color = src_data[src_index + j];
 
         if (src_color != color_key) {
-          dst_data[dst_index + j] = palette_table_[src_color];
+          dst_data[dst_index + j * sign_x] = palette_table_[src_color];
         }
       }
     }
@@ -354,46 +346,45 @@ void Graphics::DrawTilemap(int32_t x,
   Tilemap* tilemap = GetTilemapBank(tilemap_index);
   int32_t image_index = tilemap->ImageIndex();
 
-  Rectangle copy_rect = Rectangle::FromSize(u, v, width, height);
-  Rectangle dst_rect =
-      Rectangle::FromPos(INT16_MIN, INT16_MIN, INT16_MAX, INT16_MAX);
   Rectangle::CopyArea copy_area =
-      dst_rect.GetCopyArea(x, y, tilemap->Rectangle(), copy_rect);
+      Rectangle::FromPos(INT16_MIN, INT16_MIN, INT16_MAX, INT16_MAX)
+          .GetCopyArea(0, 0, tilemap->Rectangle(), u, v, width, height);
 
-  int32_t copy_width = copy_area.copy_width;
-  int32_t copy_height = copy_area.copy_height;
-
-  if (copy_width <= 0 || copy_height <= 0) {
+  if (copy_area.IsEmpty()) {
     return;
   }
 
-  int32_t src_x = copy_area.src_x;
-  int32_t src_y = copy_area.src_y;
   int32_t src_width = tilemap->Width();
   int32_t* src_data = tilemap->Data();
 
+  int32_t copy_u = copy_area.u;
+  int32_t copy_v = copy_area.v;
+  int32_t copy_x = x + copy_area.x * TILEMAP_CHIP_WIDTH;
+  int32_t copy_y = y + copy_area.y * TILEMAP_CHIP_HEIGHT;
+  int32_t copy_width = copy_area.width;
+  int32_t copy_height = copy_area.height;
+
   for (int32_t i = 0; i < copy_height; i++) {
-    int32_t index = src_width * (src_y + i) + src_x;
+    int32_t src_index = src_width * (copy_v + i) + copy_u;
 
     for (int32_t j = 0; j < copy_width; j++) {
-      int32_t value = src_data[index + j];
+      int32_t value = src_data[src_index + j];
       int32_t u = (value % (IMAGE_BANK_WIDTH / TILEMAP_CHIP_WIDTH)) *
                   TILEMAP_CHIP_WIDTH;
       int32_t v = (value / (IMAGE_BANK_HEIGHT / TILEMAP_CHIP_HEIGHT)) *
                   TILEMAP_CHIP_HEIGHT;
 
-      DrawImage(x + TILEMAP_CHIP_WIDTH * j, y + TILEMAP_CHIP_HEIGHT * i,
-                image_index, u, v, TILEMAP_CHIP_WIDTH, TILEMAP_CHIP_HEIGHT,
-                color_key);
+      DrawImage(copy_x + TILEMAP_CHIP_WIDTH * j,
+                copy_y + TILEMAP_CHIP_HEIGHT * i, image_index, copy_u, copy_v,
+                TILEMAP_CHIP_WIDTH, TILEMAP_CHIP_HEIGHT, color_key);
     }
   }
 }
 
 void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
-  color = GetDrawColor(color);
-
+  int32_t draw_color = GetDrawColor(color);
   int32_t cur_color = palette_table_[FONT_COLOR];
-  palette_table_[FONT_COLOR] = color;
+  palette_table_[FONT_COLOR] = draw_color;
 
   int32_t left = x;
 

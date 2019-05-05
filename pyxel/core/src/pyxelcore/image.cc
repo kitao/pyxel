@@ -11,6 +11,8 @@ Image::Image(int32_t width, int32_t height) {
     height = Max(height, 1);
   }
 
+  width_ = width;
+  height_ = height;
   rect_ = Rectangle::FromSize(0, 0, width, height);
   data_ = new int32_t[width * height];
 }
@@ -25,7 +27,7 @@ int32_t Image::GetValue(int32_t x, int32_t y) const {
     return 0;
   }
 
-  return data_[Width() * y + x];
+  return data_[width_ * y + x];
 }
 
 void Image::SetValue(int32_t x, int32_t y, int32_t value) {
@@ -37,7 +39,7 @@ void Image::SetValue(int32_t x, int32_t y, int32_t value) {
     PRINT_ERROR("invalid value");
   }
 
-  data_[Width() * y + x] = value;
+  data_[width_ * y + x] = value;
 }
 
 void Image::SetData(int32_t x,
@@ -46,8 +48,14 @@ void Image::SetData(int32_t x,
                     int32_t data_count) {
   int32_t width = strlen(data[0]);
   int32_t height = data_count;
-  Image* image = new Image(width, height);
-  int32_t* dst_data = image->data_;
+
+  if (width <= 0 || height <= 0) {
+    PRINT_ERROR("invalid data size");
+    return;
+  }
+
+  Image dst_image = Image(width, height);
+  int32_t* dst_data = dst_image.data_;
 
   for (int32_t i = 0; i < height; i++) {
     int32_t index = width * i;
@@ -65,9 +73,7 @@ void Image::SetData(int32_t x,
     }
   }
 
-  CopyImage(x, y, image, 0, 0, width, height);
-
-  delete image;
+  CopyImage(x, y, &dst_image, 0, 0, width, height);
 }
 
 bool Image::LoadImage(int32_t x,
@@ -87,20 +93,20 @@ bool Image::LoadImage(int32_t x,
   SDL_Surface* src_image =
       SDL_ConvertSurfaceFormat(png_image, SDL_PIXELFORMAT_RGBA8888, 0);
 
-  uint8_t* src_data = reinterpret_cast<uint8_t*>(src_image->pixels);
   int32_t src_width = src_image->pitch;
+  uint8_t* src_data = reinterpret_cast<uint8_t*>(src_image->pixels);
 
-  int32_t dst_width = src_image->w;
-  int32_t dst_height = src_image->h;
+  int32_t width = src_image->w;
+  int32_t height = src_image->h;
 
-  Image image = Image(dst_width, dst_height);
-  int32_t* dest_data = image.data_;
+  Image dst_image = Image(width, height);
+  int32_t* dst_data = dst_image.data_;
 
-  for (int32_t i = 0; i < dst_height; i++) {
+  for (int32_t i = 0; i < height; i++) {
     int32_t src_index = src_width * i;
-    int32_t dest_index = dst_width * i;
+    int32_t dst_index = width * i;
 
-    for (int32_t j = 0; j < dst_width; j++) {
+    for (int32_t j = 0; j < width; j++) {
       int32_t src_r = src_data[src_index + j * 4 + 3];
       int32_t src_g = src_data[src_index + j * 4 + 2];
       int32_t src_b = src_data[src_index + j * 4 + 1];
@@ -122,11 +128,11 @@ bool Image::LoadImage(int32_t x,
         }
       }
 
-      dest_data[dest_index + j] = nearest_color;
+      dst_data[dst_index + j] = nearest_color;
     }
   }
 
-  CopyImage(x, y, &image, 0, 0, dst_width, dst_height);
+  CopyImage(x, y, &dst_image, 0, 0, width, height);
 
   SDL_FreeSurface(png_image);
   SDL_FreeSurface(src_image);
@@ -141,30 +147,25 @@ void Image::CopyImage(int32_t x,
                       int32_t v,
                       int32_t width,
                       int32_t height) {
-  Rectangle::CopyArea copy_area = rect_.GetCopyArea(
-      x, y, image->rect_, Rectangle::FromSize(u, v, width, height));
+  Rectangle::CopyArea copy_area =
+      rect_.GetCopyArea(x, y, image->Rectangle(), u, v, width, height);
 
-  int32_t copy_width = copy_area.copy_width;
-  int32_t copy_height = copy_area.copy_height;
-
-  if (copy_width <= 0 || copy_height <= 0) {
+  if (copy_area.IsEmpty()) {
     return;
   }
 
-  int32_t src_x = copy_area.src_x;
-  int32_t src_y = copy_area.src_y;
-  int32_t src_width = image->Width();
+  int32_t src_width = image->width_;
   int32_t* src_data = image->data_;
 
-  int32_t dst_x = copy_area.dst_x;
-  int32_t dst_y = copy_area.dst_y;
-  int32_t dst_width = Width();
-  int32_t dst_height = Height();
+  int32_t dst_width = width_;
   int32_t* dst_data = data_;
 
+  int32_t copy_width = copy_area.width;
+  int32_t copy_height = copy_area.height;
+
   for (int32_t i = 0; i < copy_height; i++) {
-    int32_t src_index = src_width * (src_y + i) + src_x;
-    int32_t dst_index = dst_width * (dst_y + i) + dst_x;
+    int32_t src_index = src_width * (copy_area.v + i) + copy_area.u;
+    int32_t dst_index = dst_width * (copy_area.y + i) + copy_area.x;
 
     for (int32_t j = 0; j < copy_width; j++) {
       dst_data[dst_index + j] = src_data[src_index + j];
