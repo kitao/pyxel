@@ -12,8 +12,8 @@ class Tilemap {
 
   const class Rectangle& Rectangle() const { return rect_; }
 
-  int32_t Width() const { return rect_.Width(); }
-  int32_t Height() const { return rect_.Height(); }
+  int32_t Width() const { return width_; }
+  int32_t Height() const { return height_; }
   int32_t* Data() const { return data_; }
   int32_t ImageIndex() const { return image_index_; }
   void ImageIndex(int32_t image_index);
@@ -30,6 +30,8 @@ class Tilemap {
                    int32_t height);
 
  private:
+  int32_t width_;
+  int32_t height_;
   class Rectangle rect_;
   int32_t* data_;
   int32_t image_index_;
