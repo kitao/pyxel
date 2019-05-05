@@ -18,24 +18,16 @@ class Rectangle {
 
   bool IsEmpty() const;
   bool Includes(int32_t x, int32_t y) const;
-  Rectangle MoveTo(int32_t x, int32_t y) const;
   Rectangle Intersect(const Rectangle& rect) const;
-
-  struct CopyArea {
-    int32_t src_x;
-    int32_t src_y;
-    int32_t dst_x;
-    int32_t dst_y;
-    int32_t copy_width;
-    int32_t copy_height;
-  };
-
-  CopyArea GetCopyArea(int32_t x,
-                       int32_t y,
-                       const Rectangle& src_rect,
-                       const Rectangle& copy_rect,
-                       bool flip_x = false,
-                       bool flip_y = false) const;
+  Rectangle GetCopyArea(int32_t x,
+                        int32_t y,
+                        const Rectangle& src,
+                        int32_t u,
+                        int32_t v,
+                        int32_t width,
+                        int32_t height,
+                        bool flip_x = false,
+                        bool flip_y = false) const;
 
   static Rectangle FromPos(int32_t left,
                            int32_t top,
@@ -117,10 +109,6 @@ inline bool Rectangle::Includes(int32_t x, int32_t y) const {
   return x >= left_ && x <= right_ && y >= top_ && y <= bottom_;
 }
 
-inline Rectangle Rectangle::MoveTo(int32_t x, int32_t y) const {
-  return Rectangle(x, y, x + width_ - 1, y + height_ - 1, width_, height_);
-}
-
 inline Rectangle Rectangle::Intersect(const Rectangle& rect) const {
   int32_t left = Max(left_, rect.left_);
   int32_t top = Max(top_, rect.top_);
@@ -136,51 +124,36 @@ inline Rectangle Rectangle::Intersect(const Rectangle& rect) const {
   }
 }
 
-inline Rectangle::CopyArea Rectangle::GetCopyArea(int32_t x,
-                                                  int32_t y,
-                                                  const Rectangle& src_rect,
-                                                  const Rectangle& copy_rect,
-                                                  bool flip_x,
-                                                  bool flip_y) const {
-  Rectangle cr = copy_rect.Intersect(src_rect);
-
-  int32_t dst_x, dst_y;
-
-  if (flip_x) {
-    dst_x = x - Min(cr.Right() - copy_rect.Right(), 0);
-  } else {
-    dst_x = x + Max(cr.Left() - copy_rect.Left(), 0);
-  }
-
-  if (flip_y) {
-    dst_y = y - Min(cr.Bottom() - copy_rect.Bottom(), 0);
-  } else {
-    dst_y = y + Max(cr.Top() - copy_rect.Top(), 0);
-  }
-
-  Rectangle dst = cr.MoveTo(dst_x, dst_y).Intersect(*this);
-
-  int32_t src_x, src_y;
+inline Rectangle Rectangle::GetCopyArea(int32_t x,
+                                        int32_t y,
+                                        const Rectangle& src,
+                                        int32_t u,
+                                        int32_t v,
+                                        int32_t width,
+                                        int32_t height,
+                                        bool flip_x,
+                                        bool flip_y) const {
+  int32_t x1, x2;
 
   if (flip_x) {
-    src_x =
-        copy_rect.Left() - Min(dst.Right() - (x + copy_rect.Width() - 1), 0);
+    x1 = Max(u + width - 1 - src.right_, left_ - x, 0);
+    x2 = Min(u + width - 1 - src.left_, right_ - x, width - 1);
   } else {
-    src_x = copy_rect.Left() + Max(dst.Left() - x, 0);
+    x1 = Max(src.left_ - u, left_ - x, 0);
+    x2 = Min(src.right_ - u, right_ - x, width - 1);
   }
+
+  int32_t y1, y2;
 
   if (flip_y) {
-    src_y =
-        copy_rect.Top() - Min(dst.Bottom() - (y + copy_rect.Height() - 1), 0);
+    y1 = Max(v + height - 1 - src.bottom_, top_ - y, 0);
+    y2 = Min(v + height - 1 - src.top_, bottom_ - y, height - 1);
   } else {
-    src_y = copy_rect.Top() + Max(dst.Top() - y, 0);
+    y1 = Max(src.top_ - v, top_ - y, 0);
+    y2 = Min(src.bottom_ - v, bottom_ - y, height - 1);
   }
 
-  CopyArea copy_area = {
-      src_x, src_y, dst.Left(), dst.Top(), dst.Width(), dst.Height(),
-  };
-
-  return copy_area;
+  return FromPos(x1, y1, x2, y2);
 }
 
 }  // namespace pyxelcore
