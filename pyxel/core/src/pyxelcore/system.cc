@@ -77,11 +77,11 @@ System::System(int32_t width,
 }
 
 System::~System() {
-  delete window_;
-  delete audio_;
-  delete graphics_;
-  delete input_;
   delete resource_;
+  delete input_;
+  delete graphics_;
+  delete audio_;
+  delete window_;
 }
 
 void System::Run(void (*update)(), void (*draw)()) {
