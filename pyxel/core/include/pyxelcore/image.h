@@ -12,8 +12,8 @@ class Image {
 
   const class Rectangle& Rectangle() const { return rect_; }
 
-  int32_t Width() const { return rect_.Width(); }
-  int32_t Height() const { return rect_.Height(); }
+  int32_t Width() const { return width_; }
+  int32_t Height() const { return height_; }
   int32_t* Data() const { return data_; }
 
   int32_t GetValue(int32_t x, int32_t y) const;
@@ -32,6 +32,8 @@ class Image {
                  int32_t height);
 
  private:
+  int32_t width_;
+  int32_t height_;
   class Rectangle rect_;
   int32_t* data_;
 };
