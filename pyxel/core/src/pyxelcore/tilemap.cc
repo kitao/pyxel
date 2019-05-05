@@ -11,6 +11,8 @@ Tilemap::Tilemap(int32_t width, int32_t height) {
     height = Max(height, 1);
   }
 
+  width_ = width;
+  height_ = height;
   rect_ = Rectangle::FromSize(0, 0, width, height);
   data_ = new int32_t[width * height];
   image_index_ = 0;
@@ -26,7 +28,7 @@ int32_t Tilemap::GetValue(int32_t x, int32_t y) const {
     return 0;
   }
 
-  return data_[Width() * y + x];
+  return data_[width_ * y + x];
 }
 
 void Tilemap::SetValue(int32_t x, int32_t y, int32_t value) {
@@ -38,7 +40,7 @@ void Tilemap::SetValue(int32_t x, int32_t y, int32_t value) {
     PRINT_ERROR("invalid value");
   }
 
-  data_[Width() * y + x] = value;
+  data_[width_ * y + x] = value;
 }
 
 void Tilemap::SetData(int32_t x,
@@ -47,11 +49,17 @@ void Tilemap::SetData(int32_t x,
                       int32_t data_count) {
   int32_t width = strlen(data[0]) / 3;
   int32_t height = data_count;
-  Tilemap* tilemap = new Tilemap(width, height);
-  int32_t* dst_data = tilemap->data_;
+
+  if (width <= 0 || height <= 0) {
+    PRINT_ERROR("invalid data size");
+    return;
+  }
+
+  Tilemap dst_tilemap = Tilemap(width, height);
+  int32_t* dst_data = dst_tilemap.data_;
 
   for (int32_t i = 0; i < height; i++) {
-    int32_t index = width * i;
+    int32_t dst_index = width * i;
     std::string str = data[i];
 
     for (int32_t j = 0; j < width; j++) {
@@ -62,13 +70,11 @@ void Tilemap::SetData(int32_t x,
         value = 0;
       }
 
-      dst_data[index + j] = value;
+      dst_data[dst_index + j] = value;
     }
   }
 
-  CopyTilemap(x, y, tilemap, 0, 0, width, height);
-
-  delete tilemap;
+  CopyTilemap(x, y, &dst_tilemap, 0, 0, width, height);
 }
 
 void Tilemap::CopyTilemap(int32_t x,
@@ -78,25 +84,25 @@ void Tilemap::CopyTilemap(int32_t x,
                           int32_t v,
                           int32_t width,
                           int32_t height) {
-  Rectangle::CopyArea copy_area = rect_.GetCopyArea(
-      x, y, tilemap->rect_, Rectangle::FromSize(u, v, width, height));
+  Rectangle::CopyArea copy_area =
+      rect_.GetCopyArea(x, y, tilemap->Rectangle(), u, v, width, height);
 
-  int32_t copy_width = copy_area.copy_width;
-  int32_t copy_height = copy_area.copy_height;
-
-  if (copy_width <= 0 || copy_height <= 0) {
+  if (copy_area.IsEmpty()) {
     return;
   }
 
-  int32_t src_width = tilemap->Width();
+  int32_t src_width = tilemap->width_;
   int32_t* src_data = tilemap->data_;
 
-  int32_t dst_width = Width();
+  int32_t dst_width = width_;
   int32_t* dst_data = data_;
 
+  int32_t copy_width = copy_area.width;
+  int32_t copy_height = copy_area.height;
+
   for (int32_t i = 0; i < copy_height; i++) {
-    int32_t src_index = src_width * (copy_area.src_y + i) + copy_area.src_x;
-    int32_t dst_index = dst_width * (copy_area.dst_y + i) + copy_area.dst_x;
+    int32_t src_index = src_width * (copy_area.v + i) + copy_area.u;
+    int32_t dst_index = dst_width * (copy_area.y + i) + copy_area.x;
 
     for (int32_t j = 0; j < copy_width; j++) {
       dst_data[dst_index + j] = src_data[src_index + j];
