@@ -11,16 +11,28 @@ void Sound::Set(const char* note,
                 const char* volume,
                 const char* effect,
                 int32_t speed) {
+  SetNote(note);
+  SetNote(tone);
+  SetVolume(volume);
+  SetEffect(effect);
+  Speed(speed);
+}
+
+void Sound::SetNote(const char* value) {
   //
 }
 
-void Sound::SetNote(const char* value) {}
+void Sound::SetTone(const char* value) {
+  //
+}
 
-void Sound::SetTone(const char* value) {}
+void Sound::SetVolume(const char* value) {
+  //
+}
 
-void Sound::SetVolume(const char* value) {}
-
-void Sound::SetEffect(const char* value) {}
+void Sound::SetEffect(const char* value) {
+  //
+}
 
 /*
 from .constants import SOUND_EFFECT_TABLE, SOUND_NOTE_TABLE, SOUND_TONE_TABLE
