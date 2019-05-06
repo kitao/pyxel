@@ -183,7 +183,7 @@ if __name__ == "__main__":
             pyxel.circ(40, 40, 20, 9)  # noqa: F821
             pyxel.circb(50, 80, 10, 9)  # noqa: F821
 
-            pyxel.bltm(0, 150, 0, 0, 0, 11, 2, 2)
+            pyxel.bltm(4, 150, 0, 0, 0, 11, 2, 2)
 
             pyxel.text(50, 120, "abcdABCD", 7)
 
