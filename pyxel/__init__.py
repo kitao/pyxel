@@ -284,6 +284,9 @@ class Tilemap:
 # Sound class
 #
 class Sound:
+    def __init__(self, obj: Any):
+        self._obj = obj
+
     @property
     def note(self) -> List[int]:
         return core.sound_note_getter(self._obj)  # type: ignore
@@ -341,44 +344,101 @@ class Sound:
         core.sound_speed_setter(self._obj, speed)  # type: ignore
 
     def set(self, note: str, tone: str, volume: str, effect: str, speed: int) -> None:
-        pass
+        core.sound_set(
+            note.encode("utf-8"),
+            tone.encode("utf-8"),
+            volume.encode("utf-8"),
+            effect.encode("utf-8"),
+            speed,
+        )
 
-    def set_note(self, data: str) -> None:
-        pass
+    def set_note(self, note: str) -> None:
+        core.sound_set_note(note.encode("utf-8"))
 
-    def set_tone(self, data: str) -> None:
-        pass
+    def set_tone(self, tone: str) -> None:
+        core.sound_set_tone(tone.encode("utf-8"))
 
-    def set_volume(self, data: str) -> None:
-        pass
+    def set_volume(self, volume: str) -> None:
+        core.sound_set_volume(volume.encode("utf-8"))
 
-    def set_effect(self, data: str) -> None:
-        pass
+    def set_effect(self, effect: str) -> None:
+        core.sound_set_effect(effect.encode("utf-8"))
 
 
 #
 # Music class
 #
 class Music:
-    ch0: List[int] = []
-    ch1: List[int] = []
-    ch2: List[int] = []
-    ch3: List[int] = []
+    def __init__(self, obj: Any):
+        self._obj = obj
+
+    @property
+    def ch0(self) -> List[int]:
+        return core.music_ch0_getter(self._obj)  # type: ignore
+
+    @property
+    def ch0_length(self) -> int:
+        return core.music_ch0_length_getter(self._obj)  # type: ignore
+
+    @ch0_length.setter
+    def ch0_length(self, length) -> int:
+        core.music_ch0_length_setter(self._obj, length)  # type: ignore
+
+    @property
+    def ch1(self) -> List[int]:
+        return core.music_ch1_getter(self._obj)  # type: ignore
+
+    @property
+    def ch1_length(self) -> int:
+        return core.music_ch1_length_getter(self._obj)  # type: ignore
+
+    @ch1_length.setter
+    def ch1_length(self, length) -> int:
+        core.music_ch1_length_setter(self._obj, length)  # type: ignore
+
+    @property
+    def ch2(self) -> List[int]:
+        return core.music_ch2_getter(self._obj)  # type: ignore
+
+    @property
+    def ch2_length(self) -> int:
+        return core.music_ch2_length_getter(self._obj)  # type: ignore
+
+    @ch2_length.setter
+    def ch2_length(self, length) -> int:
+        core.music_ch2_length_setter(self._obj, length)  # type: ignore
+
+    @property
+    def ch3(self) -> List[int]:
+        return core.music_ch3_getter(self._obj)  # type: ignore
+
+    @property
+    def ch3_length(self) -> int:
+        return core.music_ch3_length_getter(self._obj)  # type: ignore
+
+    @ch3_length.setter
+    def ch3_length(self, length) -> int:
+        core.music_ch3_length_setter(self._obj, length)  # type: ignore
 
     def set(self, ch0: str, ch1: str, ch2: str, ch3: str) -> None:
-        pass
+        core.music_set(
+            ch0.encode("utf-8"),
+            ch1.encode("utf-8"),
+            ch2.encode("utf-8"),
+            ch3.encode("utf-8"),
+        )
 
-    def set_ch0(self, data: str) -> None:
-        pass
+    def set_ch0(self, ch0: str) -> None:
+        core.music_set(ch0.encode("utf-8"))
 
-    def set_ch1(self, data: str) -> None:
-        pass
+    def set_ch1(self, ch1: str) -> None:
+        core.music_set(ch1.encode("utf-8"))
 
     def set_ch2(self, data: str) -> None:
-        pass
+        core.music_set(ch2.encode("utf-8"))
 
     def set_ch3(self, data: str) -> None:
-        pass
+        core.music_set(ch3.encode("utf-8"))
 
 
 #
