@@ -149,44 +149,21 @@ inline Rectangle::CopyArea Rectangle::GetCopyArea(int32_t x,
                                                   int32_t height,
                                                   bool flip_x,
                                                   bool flip_y) const {
-  CopyArea copy_area;
+  int32_t left_cut = Max(src.left_ - u, left_ - x, 0);
+  int32_t right_cut =
+      Max(u + width - 1 - src.right_, x + width - 1 - right_, 0);
+  int32_t top_cut = Max(src.top_ - v, top_ - y, 0);
+  int32_t bottom_cut =
+      Max(v + height - 1 - src.bottom_, y + height - 1 - bottom_, 0);
 
-  if (flip_x) {
-    int32_t left = Max(src.left_ - u, left_ - x, 0);
-    int32_t right = Min(src.right_ - u, right_ - x, width - 1);
-
-    copy_area.u = left + u;
-    copy_area.x = left + x;
-    copy_area.width = Max(right - left + 1, 0);
-    // left = Max(u + width - 1 - src.right_, left_ - x, 0);
-    // right = Min(u + width - 1 - src.left_, right_ - x, width - 1);
-  } else {
-    int32_t left = Max(src.left_ - u, left_ - x, 0);
-    int32_t right = Min(src.right_ - u, right_ - x, width - 1);
-
-    copy_area.u = left + u;
-    copy_area.x = left + x;
-    copy_area.width = Max(right - left + 1, 0);
-  }
-
-  if (flip_y) {
-    int32_t top = Max(src.top_ - v, top_ - y, 0);
-    int32_t bottom = Min(src.bottom_ - v, bottom_ - y, height - 1);
-
-    copy_area.v = top + v;
-    copy_area.y = top + y;
-    copy_area.height = Max(bottom - top + 1, 0);
-    // top = Max(v + height - 1 - src.bottom_, y + height - 1 - bottom_, 0);
-    // bottom = Min(v + height - 1 - src.top_, y + height - 1 - top_, height -
-    // 1);
-  } else {
-    int32_t top = Max(src.top_ - v, top_ - y, 0);
-    int32_t bottom = Min(src.bottom_ - v, bottom_ - y, height - 1);
-
-    copy_area.v = top + v;
-    copy_area.y = top + y;
-    copy_area.height = Max(bottom - top + 1, 0);
-  }
+  CopyArea copy_area = {
+      u + (flip_x ? right_cut : left_cut),
+      v + (flip_y ? bottom_cut : top_cut),
+      x + left_cut,
+      y + top_cut,
+      Max(width - left_cut - right_cut, 0),
+      Max(height - top_cut - bottom_cut, 0),
+  };
 
   return copy_area;
 }
