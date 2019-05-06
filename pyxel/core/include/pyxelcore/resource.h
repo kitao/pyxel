@@ -3,8 +3,6 @@
 
 #include "pyxelcore/common.h"
 
-#include "picojason/picojson.h"
-
 namespace pyxelcore {
 
 class Resource {
