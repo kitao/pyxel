@@ -284,15 +284,12 @@ void Graphics::DrawImage(int32_t x,
   int32_t dst_width = screen_width_;
   int32_t* dst_data = screen_data_;
 
-  int32_t copy_width = copy_area.width;
-  int32_t copy_height = copy_area.height;
-
   int32_t sign_x, sign_y;
   int32_t offset_x, offset_y;
 
   if (width < 0) {
     sign_x = -1;
-    offset_x = copy_area.width;
+    offset_x = copy_area.width - 1;
   } else {
     sign_x = 1;
     offset_x = 0;
@@ -300,35 +297,35 @@ void Graphics::DrawImage(int32_t x,
 
   if (height < 0) {
     sign_y = -1;
-    offset_y = copy_area.height;
+    offset_y = copy_area.height - 1;
   } else {
     sign_y = 1;
     offset_y = 0;
   }
 
   if (color_key == -1) {
-    for (int32_t i = 0; i < copy_height; i++) {
-      int32_t src_index = src_width * (copy_area.v + i) + copy_area.u;
-      int32_t dst_index = dst_width * (copy_area.y + i * sign_y + offset_y) +
-                          copy_area.x + offset_x;
+    for (int32_t i = 0; i < copy_area.height; i++) {
+      int32_t src_index = src_width * (copy_area.v + i * sign_y + offset_y) +
+                          copy_area.u + offset_x;
+      int32_t dst_index = dst_width * (copy_area.y + i) + copy_area.x;
 
-      for (int32_t j = 0; j < copy_width; j++) {
-        int32_t src_color = src_data[src_index + j];
+      for (int32_t j = 0; j < copy_area.width; j++) {
+        int32_t src_color = src_data[src_index + j * sign_x];
 
         dst_data[dst_index + j] = palette_table_[src_color];
       }
     }
   } else {
-    for (int32_t i = 0; i < copy_height; i++) {
-      int32_t src_index = src_width * (copy_area.v + i) + copy_area.u;
-      int32_t dst_index = dst_width * (copy_area.y + i * sign_y + offset_y) +
-                          copy_area.x + offset_x;
+    for (int32_t i = 0; i < copy_area.height; i++) {
+      int32_t src_index = src_width * (copy_area.v + i * sign_y + offset_y) +
+                          copy_area.u + offset_x;
+      int32_t dst_index = dst_width * (copy_area.y + i) + copy_area.x;
 
-      for (int32_t j = 0; j < copy_width; j++) {
-        int32_t src_color = src_data[src_index + j];
+      for (int32_t j = 0; j < copy_area.width; j++) {
+        int32_t src_color = src_data[src_index + j * sign_x];
 
         if (src_color != color_key) {
-          dst_data[dst_index + j * sign_x] = palette_table_[src_color];
+          dst_data[dst_index + j] = palette_table_[src_color];
         }
       }
     }
@@ -346,9 +343,15 @@ void Graphics::DrawTilemap(int32_t x,
   Tilemap* tilemap = GetTilemapBank(tilemap_index);
   int32_t image_index = tilemap->ImageIndex();
 
+  Rectangle dst_rect = Rectangle::FromPos(
+      clip_area_.Left() / TILEMAP_CHIP_WIDTH,
+      clip_area_.Top() / TILEMAP_CHIP_HEIGHT,
+      (clip_area_.Right() + TILEMAP_CHIP_WIDTH - 1) / TILEMAP_CHIP_WIDTH,
+      (clip_area_.Bottom() + TILEMAP_CHIP_HEIGHT - 1) / TILEMAP_CHIP_HEIGHT);
+
   Rectangle::CopyArea copy_area =
-      Rectangle::FromPos(INT16_MIN, INT16_MIN, INT16_MAX, INT16_MAX)
-          .GetCopyArea(0, 0, tilemap->Rectangle(), u, v, width, height);
+      dst_rect.GetCopyArea(x / TILEMAP_CHIP_WIDTH, y / TILEMAP_CHIP_HEIGHT,
+                           tilemap->Rectangle(), u, v, width, height);
 
   if (copy_area.IsEmpty()) {
     return;
@@ -357,26 +360,22 @@ void Graphics::DrawTilemap(int32_t x,
   int32_t src_width = tilemap->Width();
   int32_t* src_data = tilemap->Data();
 
-  int32_t copy_u = copy_area.u;
-  int32_t copy_v = copy_area.v;
-  int32_t copy_x = x + copy_area.x * TILEMAP_CHIP_WIDTH;
-  int32_t copy_y = y + copy_area.y * TILEMAP_CHIP_HEIGHT;
-  int32_t copy_width = copy_area.width;
-  int32_t copy_height = copy_area.height;
+  copy_area.x = copy_area.x * TILEMAP_CHIP_WIDTH + x % TILEMAP_CHIP_WIDTH;
+  copy_area.y = copy_area.y * TILEMAP_CHIP_HEIGHT + y % TILEMAP_CHIP_HEIGHT;
 
-  for (int32_t i = 0; i < copy_height; i++) {
-    int32_t src_index = src_width * (copy_v + i) + copy_u;
+  for (int32_t i = 0; i < copy_area.height; i++) {
+    int32_t src_index = src_width * (copy_area.v + i) + copy_area.u;
 
-    for (int32_t j = 0; j < copy_width; j++) {
+    for (int32_t j = 0; j < copy_area.width; j++) {
       int32_t value = src_data[src_index + j];
-      int32_t u = (value % (IMAGE_BANK_WIDTH / TILEMAP_CHIP_WIDTH)) *
-                  TILEMAP_CHIP_WIDTH;
-      int32_t v = (value / (IMAGE_BANK_HEIGHT / TILEMAP_CHIP_HEIGHT)) *
-                  TILEMAP_CHIP_HEIGHT;
+      int32_t draw_u = (value % (IMAGE_BANK_WIDTH / TILEMAP_CHIP_WIDTH)) *
+                       TILEMAP_CHIP_WIDTH;
+      int32_t draw_v = (value / (IMAGE_BANK_HEIGHT / TILEMAP_CHIP_HEIGHT)) *
+                       TILEMAP_CHIP_HEIGHT;
 
-      DrawImage(copy_x + TILEMAP_CHIP_WIDTH * j,
-                copy_y + TILEMAP_CHIP_HEIGHT * i, image_index, copy_u, copy_v,
-                TILEMAP_CHIP_WIDTH, TILEMAP_CHIP_HEIGHT, color_key);
+      DrawImage(copy_area.x + TILEMAP_CHIP_WIDTH * j,
+                copy_area.y + TILEMAP_CHIP_HEIGHT * i, image_index, draw_u,
+                draw_v, TILEMAP_CHIP_WIDTH, TILEMAP_CHIP_HEIGHT, color_key);
     }
   }
 }
