@@ -77,6 +77,9 @@ System::System(int32_t width,
 }
 
 System::~System() {
+  IMG_Quit();
+  SDL_Quit();
+
   delete resource_;
   delete input_;
   delete graphics_;
