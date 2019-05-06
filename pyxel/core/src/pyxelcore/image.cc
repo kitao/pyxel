@@ -160,14 +160,11 @@ void Image::CopyImage(int32_t x,
   int32_t dst_width = width_;
   int32_t* dst_data = data_;
 
-  int32_t copy_width = copy_area.width;
-  int32_t copy_height = copy_area.height;
-
-  for (int32_t i = 0; i < copy_height; i++) {
+  for (int32_t i = 0; i < copy_area.height; i++) {
     int32_t src_index = src_width * (copy_area.v + i) + copy_area.u;
     int32_t dst_index = dst_width * (copy_area.y + i) + copy_area.x;
 
-    for (int32_t j = 0; j < copy_width; j++) {
+    for (int32_t j = 0; j < copy_area.width; j++) {
       dst_data[dst_index + j] = src_data[src_index + j];
     }
   }
