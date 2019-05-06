@@ -39,7 +39,7 @@ setuptools.setup(
         "pyxel.examples.assets",
     ],
     package_data={"": ["*.pyxel", "*.png", "*.gif", "*.dylib", "*.dll", "*.so"]},
-    install_requires=["numpy", "glfw", "PyOpenGL", "sounddevice", "Pillow"],
+    install_requires=["numpy"],
     python_requires=">=3",
     entry_points={
         "console_scripts": [
