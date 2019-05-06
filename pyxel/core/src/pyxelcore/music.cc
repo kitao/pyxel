@@ -6,6 +6,17 @@ Music::Music() {}
 
 Music::~Music() {}
 
+void Music::Set(const int32_t* ch0,
+                int32_t ch0_length,
+                const int32_t* ch1,
+                int32_t ch1_length,
+                const int32_t* ch2,
+                int32_t ch2_length,
+                const int32_t* ch3,
+                int32_t ch3_length) {
+  //
+}
+
 /*
 class Music:
     def __init__(self):
