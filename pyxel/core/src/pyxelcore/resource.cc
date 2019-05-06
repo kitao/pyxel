@@ -1,5 +1,8 @@
 #include "pyxelcore/resource.h"
 
+#include "miniz-cpp/zip_file.hpp"
+#include "picojason/picojson.h"
+
 namespace pyxelcore {
 
 bool Resource::SaveAsset(const char* filename) {
