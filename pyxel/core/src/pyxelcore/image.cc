@@ -49,7 +49,7 @@ void Image::SetData(int32_t x,
   int32_t width = strlen(data[0]);
   int32_t height = data_count;
 
-  if (width <= 0 || height <= 0) {
+  if (width < 1 || height < 1) {
     PRINT_ERROR("invalid data size");
     return;
   }
