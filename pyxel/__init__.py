@@ -284,11 +284,61 @@ class Tilemap:
 # Sound class
 #
 class Sound:
-    note: List[int] = []
-    tone: List[int] = []
-    volume: List[int] = []
-    effect: List[int] = []
-    speed: int = 0
+    @property
+    def note(self) -> List[int]:
+        return core.sound_note_getter(self._obj)  # type: ignore
+
+    @property
+    def note_length(self) -> int:
+        return core.sound_note_length_getter(self._obj)  # type: ignore
+
+    @note_length.setter
+    def note_length(self, length) -> int:
+        core.sound_note_length_setter(self._obj, length)  # type: ignore
+
+    @property
+    def tone(self) -> List[int]:
+        return core.sound_tone_getter(self._obj)  # type: ignore
+
+    @property
+    def tone_length(self) -> int:
+        return core.sound_tone_length_getter(self._obj)  # type: ignore
+
+    @tone_length.setter
+    def tone_length(self, length) -> int:
+        core.sound_tone_length_setter(self._obj, length)  # type: ignore
+
+    @property
+    def volume(self) -> List[int]:
+        return core.sound_volume_getter(self._obj)  # type: ignore
+
+    @property
+    def volume_length(self) -> int:
+        return core.sound_volume_length_getter(self._obj)  # type: ignore
+
+    @volume_length.setter
+    def volume_length(self, length) -> int:
+        core.sound_volume_length_setter(self._obj, length)  # type: ignore
+
+    @property
+    def effect(self) -> List[int]:
+        return core.sound_effect_getter(self._obj)  # type: ignore
+
+    @property
+    def effect_length(self) -> int:
+        return core.sound_effect_length_getter(self._obj)  # type: ignore
+
+    @effect_length.setter
+    def effect_length(self, length) -> int:
+        core.sound_effect_length_setter(self._obj, length)  # type: ignore
+
+    @property
+    def speed_length(self) -> int:
+        return core.sound_speed_getter(self._obj)  # type: ignore
+
+    @speed_length.setter
+    def speed_length(self, speed) -> int:
+        core.sound_speed_setter(self._obj, speed)  # type: ignore
 
     def set(self, note: str, tone: str, volume: str, effect: str, speed: int) -> None:
         pass

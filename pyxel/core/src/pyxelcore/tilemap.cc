@@ -43,24 +43,24 @@ void Tilemap::SetValue(int32_t x, int32_t y, int32_t value) {
   data_[width_ * y + x] = value;
 }
 
-void Tilemap::SetData(int32_t x,
-                      int32_t y,
-                      const char** data,
-                      int32_t data_count) {
-  int32_t width = strlen(data[0]) / 3;
-  int32_t height = data_count;
+void Tilemap::SetValue(int32_t x,
+                       int32_t y,
+                       const char** value,
+                       int32_t value_count) {
+  int32_t width = strlen(value[0]) / 3;
+  int32_t height = value_count;
 
   if (width < 1 || height < 1) {
-    PRINT_ERROR("invalid data size");
+    PRINT_ERROR("invalid value size");
     return;
   }
 
-  Tilemap dst_tilemap = Tilemap(width, height);
-  int32_t* dst_data = dst_tilemap.data_;
+  Tilemap tilemap = Tilemap(width, height);
+  int32_t* data = tilemap.data_;
 
   for (int32_t i = 0; i < height; i++) {
     int32_t dst_index = width * i;
-    std::string str = data[i];
+    std::string str = value[i];
 
     for (int32_t j = 0; j < width; j++) {
       int32_t value = std::stoi(str.substr(j * 3, 3), nullptr, 16);
@@ -70,11 +70,11 @@ void Tilemap::SetData(int32_t x,
         value = 0;
       }
 
-      dst_data[dst_index + j] = value;
+      data[dst_index + j] = value;
     }
   }
 
-  CopyTilemap(x, y, &dst_tilemap, 0, 0, width, height);
+  CopyTilemap(x, y, &tilemap, 0, 0, width, height);
 }
 
 void Tilemap::CopyTilemap(int32_t x,

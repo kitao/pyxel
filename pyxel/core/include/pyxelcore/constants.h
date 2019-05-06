@@ -287,6 +287,8 @@ enum {
   SOUND_NOTE_B = 11,
 };
 
+const int32_t MAX_SOUND_LENGTH = 256;
+
 /*
   SOUND_TONE_TABLE = {
       "t": SOUND_TONE_TRIANGLE,
@@ -304,6 +306,11 @@ enum {
 
 int32_t GetConstantNumber(const char* name);
 const char* GetConstantString(const char* name);
+
+//
+// Music class
+//
+const int32_t MAX_CHANNEL_LENGTH = 256;
 
 }  // namespace pyxelcore
 
