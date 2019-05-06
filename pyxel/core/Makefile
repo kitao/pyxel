@@ -2,7 +2,7 @@ INCDIR = include
 SRCDIR = src
 LIBDIR = lib
 BINDIR = bin
-CFLAGS = -I$(INCDIR) $(SDL2_CFLAGS) -O3
+CFLAGS = -I$(INCDIR) $(SDL2_CFLAGS) -std=gnu++14 -O3
 LDFLAGS = $(SDL2_LDFLAGS) -shared
 LIBNAME = libpyxelcore
 

@@ -5570,7 +5570,7 @@ private:
             case MZ_ZIP_MODE_READING:
             {
                 mz_zip_archive archive_copy;
-            std::memset(&archive_copy, 0, sizeof(mz_zip_archive));
+                memset(&archive_copy, 0, sizeof(mz_zip_archive));
                 std::vector<char> buffer_copy(buffer_.begin(), buffer_.end());
                 
                 if(!mz_zip_reader_init_mem(&archive_copy, buffer_copy.data(), buffer_copy.size(), 0))
@@ -5676,7 +5676,7 @@ private:
 
         zip_info result;
 
-        result.filename = std::string(stat.m_filename, stat.m_filename + std::strlen(stat.m_filename));
+        result.filename = std::string(stat.m_filename, stat.m_filename + strlen(stat.m_filename));
         result.comment = std::string(stat.m_comment, stat.m_comment + stat.m_comment_size);
         result.compress_size = static_cast<std::size_t>(stat.m_comp_size);
         result.file_size = static_cast<std::size_t>(stat.m_uncomp_size);
