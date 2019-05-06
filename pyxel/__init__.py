@@ -395,13 +395,13 @@ def save(filename: str) -> bool:
 
 
 def load(filename: str) -> bool:
-    """
+    if load_as_old_pyxel_format(filename):
+        return True
+
     dirname = os.path.dirname(inspect.stack()[-1].filename)
     filename = os.path.join(dirname, filename)
 
     return core.load(filename.encode("utf-8"))  # type: ignore
-    """
-    return old_load(filename)
 
 
 #
@@ -524,36 +524,7 @@ def stop(ch: int = -1) -> None:
     pass
 
 
-def old_save(filename: str) -> bool:
-    import gzip
-    import pickle
-
-    data = {"version": VERSION}
-
-    image_list = [image(i).data.dumps() for i in range(3)]
-    data["image"] = image_list
-
-    tilemap_list = [(tilemap(i).data.dumps(), tilemap(i).refimg) for i in range(8)]
-    data["tilemap"] = tilemap_list
-
-    sound_list = [sound(i) for i in range(64)]
-    data["sound"] = sound_list
-
-    music_list = [music(i) for i in range(8)]
-    data["music"] = music_list
-
-    pickled_data = pickle.dumps(data)
-
-    dirname = os.path.dirname(inspect.stack()[-1].filename)
-    filename = os.path.join(dirname, filename)
-
-    with gzip.open(filename, mode="wb") as fp:
-        fp.write(pickled_data)
-
-    return True
-
-
-def old_load(filename: str) -> bool:
+def load_as_old_pyxel_format(filename: str) -> bool:
     import gzip
     import pickle
 
@@ -563,14 +534,24 @@ def old_load(filename: str) -> bool:
     with gzip.open(filename, mode="rb") as fp:
         pickled_data = fp.read()
 
-    data = pickle.loads(pickled_data)
+    if pickled_data[-1:] != pickle.STOP:
+        return False
 
-    # todo: version check
+    print("load as old pyxel format")
+
+    data = pickle.loads(pickled_data)
 
     image_list = data.get("image")
     if image_list:
         for i in range(3):
-            image(i).data[:, :] = pickle.loads(image_list[i])
+            index = 0
+            image_array = pickle.loads(image_list[i])
+            image_data = image(i).data
+
+            for line in image_array:
+                for elem in line:
+                    image_data[index] = elem
+                    index += 1
 
     tilemap_list = data.get("tilemap")
     if tilemap_list:
@@ -581,7 +562,14 @@ def old_load(filename: str) -> bool:
                 tile.refimg = tilemap_list[i][1]
         else:  # todo: delete this block in the future
             for i in range(8):
-                tilemap(i).data[:, :] = pickle.loads(tilemap_list[i])
+                index = 0
+                tilemap_array = pickle.loads(tilemap_list[i])
+                tilemap_data = tilemap(i).data
+
+                for line in tilemap_array:
+                    for elem in line:
+                        tilemap_data[index] = elem
+                        index += 1
 
     """
     sound_list = data.get("sound")
