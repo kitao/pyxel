@@ -303,30 +303,16 @@ void Graphics::DrawImage(int32_t x,
     offset_y = 0;
   }
 
-  if (color_key == -1) {
-    for (int32_t i = 0; i < copy_area.height; i++) {
-      int32_t src_index = src_width * (copy_area.v + i * sign_y + offset_y) +
-                          copy_area.u + offset_x;
-      int32_t dst_index = dst_width * (copy_area.y + i) + copy_area.x;
+  for (int32_t i = 0; i < copy_area.height; i++) {
+    int32_t src_index = src_width * (copy_area.v + i * sign_y + offset_y) +
+                        copy_area.u + offset_x;
+    int32_t dst_index = dst_width * (copy_area.y + i) + copy_area.x;
 
-      for (int32_t j = 0; j < copy_area.width; j++) {
-        int32_t src_color = src_data[src_index + j * sign_x];
+    for (int32_t j = 0; j < copy_area.width; j++) {
+      int32_t src_color = src_data[src_index + j * sign_x];
 
+      if (src_color != color_key) {
         dst_data[dst_index + j] = palette_table_[src_color];
-      }
-    }
-  } else {
-    for (int32_t i = 0; i < copy_area.height; i++) {
-      int32_t src_index = src_width * (copy_area.v + i * sign_y + offset_y) +
-                          copy_area.u + offset_x;
-      int32_t dst_index = dst_width * (copy_area.y + i) + copy_area.x;
-
-      for (int32_t j = 0; j < copy_area.width; j++) {
-        int32_t src_color = src_data[src_index + j * sign_x];
-
-        if (src_color != color_key) {
-          dst_data[dst_index + j] = palette_table_[src_color];
-        }
       }
     }
   }
