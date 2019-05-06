@@ -3,7 +3,7 @@
 
 #include "pyxelcore/common.h"
 
-#include "pyxelcore/gif.h"
+#include "gif/gif.h"
 
 namespace pyxelcore {
 
