@@ -434,10 +434,10 @@ class Music:
     def set_ch1(self, ch1: str) -> None:
         core.music_set(ch1.encode("utf-8"))
 
-    def set_ch2(self, data: str) -> None:
+    def set_ch2(self, ch2: str) -> None:
         core.music_set(ch2.encode("utf-8"))
 
-    def set_ch3(self, data: str) -> None:
+    def set_ch3(self, ch3: str) -> None:
         core.music_set(ch3.encode("utf-8"))
 
 
