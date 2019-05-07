@@ -277,16 +277,6 @@ enum {
   SOUND_EFFECT_FADEOUT,
 };
 
-enum {
-  SOUND_NOTE_C = 0,
-  SOUND_NOTE_D = 2,
-  SOUND_NOTE_E = 4,
-  SOUND_NOTE_F = 5,
-  SOUND_NOTE_G = 7,
-  SOUND_NOTE_A = 9,
-  SOUND_NOTE_B = 11,
-};
-
 const int32_t MAX_SOUND_LENGTH = 256;
 
 /*
@@ -304,13 +294,13 @@ const int32_t MAX_SOUND_LENGTH = 256;
   }
 */
 
-int32_t GetConstantNumber(const char* name);
-const char* GetConstantString(const char* name);
-
 //
 // Music class
 //
 const int32_t MAX_CHANNEL_LENGTH = 256;
+
+int32_t GetConstantNumber(const char* name);
+const char* GetConstantString(const char* name);
 
 }  // namespace pyxelcore
 
