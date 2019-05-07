@@ -95,7 +95,8 @@ _setup_api("text", None, [c_int32, c_int32, c_char_p, c_int32])
 #
 _setup_api("sound", c_void_p, [c_int32] * 2)
 _setup_api("music", c_void_p, [c_int32])
-_setup_api("play", None, [c_int32] * 3)
+_setup_api("play1", None, [c_int32] * 3)
+_setup_api("play", None, [c_int32, POINTER(c_int32)] + [c_int32] * 2)
 _setup_api("playm", None, [c_int32] * 2)
 _setup_api("stop", None, [c_int32])
 
@@ -127,6 +128,48 @@ _setup_api(
     "tilemap_set", None, [c_void_p] + [c_int32] * 2 + [POINTER(c_char_p), c_int32]
 )
 _setup_api("tilemap_copy", None, [c_void_p] + [c_int32] * 7)
+
+#
+# Sound class
+#
+_setup_api("sound_note_getter", POINTER(c_int32), [c_void_p])
+_setup_api("sound_note_length_getter", c_int32, [c_void_p])
+_setup_api("sound_note_length_setter", None, [c_void_p, c_int32])
+_setup_api("sound_tone_getter", POINTER(c_int32), [c_void_p])
+_setup_api("sound_tone_length_getter", c_int32, [c_void_p])
+_setup_api("sound_tone_length_setter", None, [c_void_p, c_int32])
+_setup_api("sound_volume_getter", POINTER(c_int32), [c_void_p])
+_setup_api("sound_volume_length_getter", c_int32, [c_void_p])
+_setup_api("sound_volume_length_setter", None, [c_void_p, c_int32])
+_setup_api("sound_effect_getter", POINTER(c_int32), [c_void_p])
+_setup_api("sound_effect_length_getter", c_int32, [c_void_p])
+_setup_api("sound_effect_length_setter", None, [c_void_p, c_int32])
+_setup_api("sound_speed_getter", c_int32, [c_void_p])
+_setup_api("sound_speed_setter", None, [c_void_p, c_int32])
+
+_setup_api("sound_set", None, [c_void_p] + [c_char_p] * 4 + [c_int32])
+_setup_api("sound_set_note", None, [c_void_p, c_char_p])
+_setup_api("sound_set_tone", None, [c_void_p, c_char_p])
+_setup_api("sound_set_volume", None, [c_void_p, c_char_p])
+_setup_api("sound_set_effect", None, [c_void_p, c_char_p])
+
+#
+# Music class
+#
+_setup_api("music_ch0_getter", POINTER(c_int32), [c_void_p])
+_setup_api("music_ch0_length_getter", c_int32, [c_void_p])
+_setup_api("music_ch0_length_setter", None, [c_void_p, c_int32])
+_setup_api("music_ch1_getter", POINTER(c_int32), [c_void_p])
+_setup_api("music_ch1_length_getter", c_int32, [c_void_p])
+_setup_api("music_ch1_length_setter", None, [c_void_p, c_int32])
+_setup_api("music_ch2_getter", POINTER(c_int32), [c_void_p])
+_setup_api("music_ch2_length_getter", c_int32, [c_void_p])
+_setup_api("music_ch2_length_setter", None, [c_void_p, c_int32])
+_setup_api("music_ch3_getter", POINTER(c_int32), [c_void_p])
+_setup_api("music_ch3_length_getter", c_int32, [c_void_p])
+_setup_api("music_ch3_length_setter", None, [c_void_p, c_int32])
+
+_setup_api("music_set", None, [c_void_p] + [POINTER(c_int32), c_int32] * 4)
 
 
 if __name__ == "__main__":
