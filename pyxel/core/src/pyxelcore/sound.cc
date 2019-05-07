@@ -2,6 +2,16 @@
 
 namespace pyxelcore {
 
+enum {
+  SOUND_NOTE_C = 0,
+  SOUND_NOTE_D = 2,
+  SOUND_NOTE_E = 4,
+  SOUND_NOTE_F = 5,
+  SOUND_NOTE_G = 7,
+  SOUND_NOTE_A = 9,
+  SOUND_NOTE_B = 11,
+};
+
 Sound::Sound() {}
 
 Sound::~Sound() {}
