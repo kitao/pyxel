@@ -16,6 +16,10 @@ class Audio {
   Sound* GetSoundBank(int32_t sound_index, bool system = false) const;
   Music* GetMusicBank(int32_t music_index) const;
   void PlaySound(int32_t channel, int32_t sound_index, bool loop = false);
+  void PlaySound(int32_t channel,
+                 int32_t* sound_index,
+                 int32_t sound_index_count,
+                 bool loop = false);
   void PlayMusic(int32_t music_index, bool loop = false);
   void StopPlaying(int32_t channel = -1);
 
