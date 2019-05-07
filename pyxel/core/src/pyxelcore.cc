@@ -203,8 +203,12 @@ void* music(int32_t msc) {
   return s_audio->GetMusicBank(msc);
 }
 
-void play(int32_t ch, int32_t snd, int32_t loop) {
-  s_audio->PlaySound(snd, loop);
+void play1(int32_t ch, int32_t snd, int32_t loop) {
+  s_audio->PlaySound(ch, snd, loop);
+}
+
+void play(int32_t ch, int32_t* snd, int32_t snd_count, int32_t loop) {
+  s_audio->PlaySound(ch, snd, snd_count, loop);
 }
 
 void playm(int32_t msc, int32_t loop) {
