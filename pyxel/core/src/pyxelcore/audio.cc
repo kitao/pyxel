@@ -58,6 +58,13 @@ void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
   //
 }
 
+void Audio::PlaySound(int32_t channel,
+                      int32_t* sound_index,
+                      int32_t sound_index_count,
+                      bool loop) {
+  //
+}
+
 void Audio::PlayMusic(int32_t music_index, bool loop) {
   //
 }
