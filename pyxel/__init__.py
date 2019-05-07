@@ -620,7 +620,7 @@ def sound(snd: int, *, system: bool = False) -> Sound:
 
 
 def music(msc: int) -> Music:
-    return Music(core.sound(int(msc)))
+    return Music(core.music(int(msc)))
 
 
 def play(ch: int, snd: int, *, loop: bool = False) -> None:
@@ -653,11 +653,14 @@ def load_as_old_pyxel_format(filename: str) -> bool:
 
     print("load as old pyxel format")
 
+    _sound = sound
+    _music = music
+
     data = pickle.loads(pickled_data)
 
     image_list = data.get("image")
     if image_list:
-        for i in range(3):
+        for i in range(len(image_list)):
             index = 0
             image_array = pickle.loads(image_list[i])
             image_data = image(i).data
@@ -671,9 +674,16 @@ def load_as_old_pyxel_format(filename: str) -> bool:
     if tilemap_list:
         if type(tilemap_list[0]) is tuple:
             for i in range(8):
-                tile = tilemap(i)
-                tile.data[:, :] = pickle.loads(tilemap_list[i][0])
-                tile.refimg = tilemap_list[i][1]
+                index = 0
+                tilemap_array = pickle.loads(tilemap_list[i][0])
+                tilemap_data = tilemap(i).data
+
+                for line in tilemap_array:
+                    for elem in line:
+                        tilemap_data[index] = elem
+                        index += 1
+
+                tilemap(i).refimg = tilemap_list[i][1]
         else:  # todo: delete this block in the future
             for i in range(8):
                 index = 0
@@ -685,29 +695,42 @@ def load_as_old_pyxel_format(filename: str) -> bool:
                         tilemap_data[index] = elem
                         index += 1
 
-    """
     sound_list = data.get("sound")
     if sound_list:
-        for i in range(64):
+        for i in range(len(sound_list)):
             src = sound_list[i]
-            dest = sound(i)
+            dest = _sound(i)
 
-            dest.note[:] = src.note
-            dest.tone[:] = src.tone
-            dest.volume[:] = src.volume
-            dest.effect[:] = src.effect
+            for i in range(len(src._note)):
+                dest.note[i] = src._note[i]
+
+            for i in range(len(src._tone)):
+                dest.tone[i] = src._tone[i]
+
+            for i in range(len(src._volume)):
+                dest.volume[i] = src._volume[i]
+
+            for i in range(len(src._effect)):
+                dest.effect[i] = src._effect[i]
+
             dest.speed = src.speed
 
     music_list = data.get("music")
     if music_list:
-        for i in range(i):
+        for i in range(len(music_list)):
             src = music_list[i]
-            dest = music(i)
+            dest = _music(i)
 
-            dest.ch0[:] = src.ch0
-            dest.ch1[:] = src.ch1
-            dest.ch2[:] = src.ch2
-            dest.ch3[:] = src.ch3
-    """
+            for i in range(len(src._ch1)):
+                dest.ch1[i] = src._ch1[i]
+
+            for i in range(len(src._ch1)):
+                dest.ch1[i] = src._ch1[i]
+
+            for i in range(len(src._ch1)):
+                dest.ch1[i] = src._ch1[i]
+
+            for i in range(len(src._ch1)):
+                dest.ch1[i] = src._ch1[i]
 
     return True
