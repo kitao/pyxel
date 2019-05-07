@@ -631,7 +631,7 @@ def play(ch: int, snd: int, *, loop: bool = False) -> None:
 
 
 def playm(msc: int, *, loop: bool = False) -> None:
-    core.play(int(msc), int(loop))
+    core.playm(int(msc), int(loop))
 
 
 def stop(ch: int = -1) -> None:
