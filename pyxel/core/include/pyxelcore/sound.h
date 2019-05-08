@@ -88,13 +88,14 @@ inline void Sound::EffectLength(int32_t length) {
 }
 
 inline void Sound::Speed(int32_t speed) {
-  if (speed < 0) {
+  if (speed < 1) {
     PRINT_ERROR("invalid speed");
     return;
   }
 
   speed_ = speed;
 }
+
 }  // namespace pyxelcore
 
 #endif  // PYXELCORE_SOUND_H_
