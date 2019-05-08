@@ -3,8 +3,6 @@
 
 #include "pyxelcore/common.h"
 
-#include "gif/gif.h"
-
 namespace pyxelcore {
 
 class Recorder {
