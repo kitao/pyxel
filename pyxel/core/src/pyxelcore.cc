@@ -10,6 +10,11 @@
 #include "pyxelcore/system.h"
 #include "pyxelcore/tilemap.h"
 
+#define IMAGE reinterpret_cast<pyxelcore::Image*>(self)
+#define TILEMAP reinterpret_cast<pyxelcore::Tilemap*>(self)
+#define SOUND reinterpret_cast<pyxelcore::Sound*>(self)
+#define MUSIC reinterpret_cast<pyxelcore::Music*>(self)
+
 static pyxelcore::System* s_system = NULL;
 static pyxelcore::Resource* s_resource = NULL;
 static pyxelcore::Input* s_input = NULL;
@@ -223,36 +228,35 @@ void stop(int32_t ch) {
 // Image class
 //
 int32_t image_width_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Image*>(self)->Width();
+  return IMAGE->Width();
 }
 
 int32_t image_height_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Image*>(self)->Height();
+  return IMAGE->Height();
 }
 
 int32_t* image_data_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Image*>(self)->Data();
+  return IMAGE->Data();
 }
 
 int32_t image_get(void* self, int32_t x, int32_t y) {
-  return reinterpret_cast<pyxelcore::Image*>(self)->GetValue(x, y);
+  return IMAGE->GetValue(x, y);
 }
 
 void image_set1(void* self, int32_t x, int32_t y, int32_t val) {
-  reinterpret_cast<pyxelcore::Image*>(self)->SetValue(x, y, val);
+  IMAGE->SetValue(x, y, val);
 }
 
 void image_set(void* self,
                int32_t x,
                int32_t y,
-               const char** data,
-               int32_t data_count) {
-  reinterpret_cast<pyxelcore::Image*>(self)->SetValue(x, y, data, data_count);
+               const char** val,
+               int32_t val_count) {
+  IMAGE->SetValue(x, y, val, val_count);
 }
 
 int32_t image_load(void* self, int32_t x, int32_t y, const char* filename) {
-  return reinterpret_cast<pyxelcore::Image*>(self)->LoadImage(
-      x, y, filename, s_system->PaletteColor());
+  return IMAGE->LoadImage(x, y, filename, s_system->PaletteColor());
 }
 
 void image_copy(void* self,
@@ -263,48 +267,46 @@ void image_copy(void* self,
                 int32_t v,
                 int32_t w,
                 int32_t h) {
-  pyxelcore::Image* image = s_graphics->GetImageBank(img, true);
-  reinterpret_cast<pyxelcore::Image*>(self)->CopyImage(x, y, image, u, v, w, h);
+  IMAGE->CopyImage(x, y, s_graphics->GetImageBank(img, true), u, v, w, h);
 }
 
 //
 // Tilemap class
 //
 int32_t tilemap_width_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Tilemap*>(self)->Width();
+  return TILEMAP->Width();
 }
 
 int32_t tilemap_height_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Tilemap*>(self)->Height();
+  return TILEMAP->Height();
 }
 
 int32_t* tilemap_data_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Tilemap*>(self)->Data();
+  return TILEMAP->Data();
 }
 
 int32_t tilemap_refimg_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Tilemap*>(self)->ImageIndex();
+  return TILEMAP->ImageIndex();
 }
 
 void tilemap_refimg_setter(void* self, int32_t refimg) {
-  reinterpret_cast<pyxelcore::Tilemap*>(self)->ImageIndex(refimg);
+  TILEMAP->ImageIndex(refimg);
 }
 
 int32_t tilemap_get(void* self, int32_t x, int32_t y) {
-  return reinterpret_cast<pyxelcore::Tilemap*>(self)->GetValue(x, y);
+  return TILEMAP->GetValue(x, y);
 }
 
 void tilemap_set1(void* self, int32_t x, int32_t y, int32_t val) {
-  return reinterpret_cast<pyxelcore::Tilemap*>(self)->SetValue(x, y, val);
+  return TILEMAP->SetValue(x, y, val);
 }
 
 void tilemap_set(void* self,
                  int32_t x,
                  int32_t y,
-                 const char** value,
-                 int32_t value_count) {
-  return reinterpret_cast<pyxelcore::Tilemap*>(self)->SetValue(x, y, value,
-                                                               value_count);
+                 const char** val,
+                 int32_t val_count) {
+  return TILEMAP->SetValue(x, y, val, val_count);
 }
 
 void tilemap_copy(void* self,
@@ -315,67 +317,66 @@ void tilemap_copy(void* self,
                   int32_t v,
                   int32_t w,
                   int32_t h) {
-  return reinterpret_cast<pyxelcore::Tilemap*>(self)->CopyTilemap(
-      x, y, s_graphics->GetTilemapBank(tm), u, v, w, h);
+  return TILEMAP->CopyTilemap(x, y, s_graphics->GetTilemapBank(tm), u, v, w, h);
 }
 
 //
 // Sound class
 //
 int32_t* sound_note_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Sound*>(self)->Note();
+  return SOUND->Note();
 }
 
 int32_t sound_note_length_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Sound*>(self)->NoteLength();
+  return SOUND->NoteLength();
 }
 
 void sound_note_length_setter(void* self, int32_t length) {
-  reinterpret_cast<pyxelcore::Sound*>(self)->NoteLength(length);
+  SOUND->NoteLength(length);
 }
 
 int32_t* sound_tone_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Sound*>(self)->Tone();
+  return SOUND->Tone();
 }
 
 int32_t sound_tone_length_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Sound*>(self)->ToneLength();
+  return SOUND->ToneLength();
 }
 
 void sound_tone_length_setter(void* self, int32_t length) {
-  reinterpret_cast<pyxelcore::Sound*>(self)->ToneLength(length);
+  SOUND->ToneLength(length);
 }
 
 int32_t* sound_volume_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Sound*>(self)->Volume();
+  return SOUND->Volume();
 }
 
 int32_t sound_volume_length_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Sound*>(self)->VolumeLength();
+  return SOUND->VolumeLength();
 }
 
 void sound_volume_length_setter(void* self, int32_t length) {
-  reinterpret_cast<pyxelcore::Sound*>(self)->VolumeLength(length);
+  SOUND->VolumeLength(length);
 }
 
 int32_t* sound_effect_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Sound*>(self)->Effect();
+  return SOUND->Effect();
 }
 
 int32_t sound_effect_length_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Sound*>(self)->EffectLength();
+  return SOUND->EffectLength();
 }
 
 void sound_effect_length_setter(void* self, int32_t length) {
-  reinterpret_cast<pyxelcore::Sound*>(self)->EffectLength(length);
+  SOUND->EffectLength(length);
 }
 
 int32_t sound_speed_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Sound*>(self)->Speed();
+  return SOUND->Speed();
 }
 
 void sound_speed_setter(void* self, int32_t speed) {
-  reinterpret_cast<pyxelcore::Sound*>(self)->Speed(speed);
+  SOUND->Speed(speed);
 }
 
 void sound_set(void* self,
@@ -384,75 +385,74 @@ void sound_set(void* self,
                const char* volume,
                const char* effect,
                int32_t speed) {
-  reinterpret_cast<pyxelcore::Sound*>(self)->Set(note, tone, volume, effect,
-                                                 speed);
+  SOUND->Set(note, tone, volume, effect, speed);
 }
 
 void sound_set_note(void* self, const char* note) {
-  reinterpret_cast<pyxelcore::Sound*>(self)->SetNote(note);
+  SOUND->SetNote(note);
 }
 
 void sound_set_tone(void* self, const char* tone) {
-  reinterpret_cast<pyxelcore::Sound*>(self)->SetTone(tone);
+  SOUND->SetTone(tone);
 }
 
 void sound_set_volume(void* self, const char* volume) {
-  reinterpret_cast<pyxelcore::Sound*>(self)->SetVolume(volume);
+  SOUND->SetVolume(volume);
 }
 
 void sound_set_effect(void* self, const char* effect) {
-  reinterpret_cast<pyxelcore::Sound*>(self)->SetEffect(effect);
+  SOUND->SetEffect(effect);
 }
 
 //
 // Music class
 //
 int32_t* music_ch0_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Music*>(self)->Ch0();
+  return MUSIC->Ch0();
 }
 
 int32_t music_ch0_length_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Music*>(self)->Ch0Length();
+  return MUSIC->Ch0Length();
 }
 
 void music_ch0_length_setter(void* self, int32_t length) {
-  reinterpret_cast<pyxelcore::Music*>(self)->Ch0Length(length);
+  MUSIC->Ch0Length(length);
 }
 
 int32_t* music_ch1_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Music*>(self)->Ch1();
+  return MUSIC->Ch1();
 }
 
 int32_t music_ch1_length_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Music*>(self)->Ch1Length();
+  return MUSIC->Ch1Length();
 }
 
 void music_ch1_length_setter(void* self, int32_t length) {
-  reinterpret_cast<pyxelcore::Music*>(self)->Ch1Length(length);
+  MUSIC->Ch1Length(length);
 }
 
 int32_t* music_ch2_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Music*>(self)->Ch2();
+  return MUSIC->Ch2();
 }
 
 int32_t music_ch2_length_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Music*>(self)->Ch2Length();
+  return MUSIC->Ch2Length();
 }
 
 void music_ch2_length_setter(void* self, int32_t length) {
-  reinterpret_cast<pyxelcore::Music*>(self)->Ch2Length(length);
+  MUSIC->Ch2Length(length);
 }
 
 int32_t* music_ch3_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Music*>(self)->Ch3();
+  return MUSIC->Ch3();
 }
 
 int32_t music_ch3_length_getter(void* self) {
-  return reinterpret_cast<pyxelcore::Music*>(self)->Ch3Length();
+  return MUSIC->Ch3Length();
 }
 
 void music_ch3_length_setter(void* self, int32_t length) {
-  reinterpret_cast<pyxelcore::Music*>(self)->Ch3Length(length);
+  MUSIC->Ch3Length(length);
 }
 
 void music_set(void* self,
@@ -464,6 +464,6 @@ void music_set(void* self,
                int32_t ch2_length,
                const int32_t* ch3,
                int32_t ch3_length) {
-  reinterpret_cast<pyxelcore::Music*>(self)->Set(
-      ch0, ch0_length, ch1, ch1_length, ch2, ch2_length, ch3, ch3_length);
+  MUSIC->Set(ch0, ch0_length, ch1, ch1_length, ch2, ch2_length, ch3,
+             ch3_length);
 }
