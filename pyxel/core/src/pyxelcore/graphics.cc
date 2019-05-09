@@ -353,15 +353,15 @@ void Graphics::DrawTilemap(int32_t x,
     int32_t src_index = src_width * (copy_area.v + i) + copy_area.u;
 
     for (int32_t j = 0; j < copy_area.width; j++) {
-      int32_t value = src_data[src_index + j];
-      int32_t draw_u = (value % (IMAGE_BANK_WIDTH / TILEMAP_CHIP_WIDTH)) *
-                       TILEMAP_CHIP_WIDTH;
-      int32_t draw_v = (value / (IMAGE_BANK_HEIGHT / TILEMAP_CHIP_HEIGHT)) *
-                       TILEMAP_CHIP_HEIGHT;
+      int32_t chip = src_data[src_index + j];
+      int32_t cu =
+          (chip % (IMAGE_BANK_WIDTH / TILEMAP_CHIP_WIDTH)) * TILEMAP_CHIP_WIDTH;
+      int32_t cv = (chip / (IMAGE_BANK_HEIGHT / TILEMAP_CHIP_HEIGHT)) *
+                   TILEMAP_CHIP_HEIGHT;
 
       DrawImage(copy_area.x + TILEMAP_CHIP_WIDTH * j,
-                copy_area.y + TILEMAP_CHIP_HEIGHT * i, image_index, draw_u,
-                draw_v, TILEMAP_CHIP_WIDTH, TILEMAP_CHIP_HEIGHT, color_key);
+                copy_area.y + TILEMAP_CHIP_HEIGHT * i, image_index, cu, cv,
+                TILEMAP_CHIP_WIDTH, TILEMAP_CHIP_HEIGHT, color_key);
     }
   }
 }
@@ -377,13 +377,11 @@ void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
     if (*ch == 10) {  // new line
       x = left;
       y += FONT_HEIGHT;
-
       continue;
     }
 
     if (*ch == 32) {  // space
       x += FONT_WIDTH;
-
       continue;
     }
 
