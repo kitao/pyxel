@@ -59,7 +59,7 @@ void Tilemap::SetValue(int32_t x,
   int32_t* data = tilemap.data_;
 
   for (int32_t i = 0; i < height; i++) {
-    int32_t dst_index = width * i;
+    int32_t index = width * i;
     std::string str = value[i];
 
     for (int32_t j = 0; j < width; j++) {
@@ -70,7 +70,7 @@ void Tilemap::SetValue(int32_t x,
         value = 0;
       }
 
-      data[dst_index + j] = value;
+      data[index + j] = value;
     }
   }
 
