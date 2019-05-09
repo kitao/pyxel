@@ -7,7 +7,6 @@ namespace pyxelcore {
 
 Audio::Audio() {
   SDL_AudioSpec audio_spec;
-
   audio_spec.freq = AUDIO_SAMPLE_RATE;
   audio_spec.format = AUDIO_S16LSB;
   audio_spec.channels = 0;
@@ -45,7 +44,8 @@ Audio::~Audio() {
   delete[] music_bank_;
 }
 
-void Audio::callback(void* audio, uint8_t* stream, int len) {
+void Audio::callback(void* userdata, uint8_t* stream, int len) {
+  Audio* audio = reinterpret_cast<Audio*>(userdata);
   uint16_t* frame_data = reinterpret_cast<uint16_t*>(stream);
   int32_t frame_count = len / sizeof(uint16_t);
 
