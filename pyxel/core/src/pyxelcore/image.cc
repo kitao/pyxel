@@ -6,7 +6,7 @@ namespace pyxelcore {
 
 Image::Image(int32_t width, int32_t height) {
   if (width < 1 || height < 1) {
-    PRINT_ERROR("invalide image size");
+    PRINT_ERROR("invalid image size");
     width = Max(width, 1);
     height = Max(height, 1);
   }
