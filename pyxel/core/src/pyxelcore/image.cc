@@ -1,7 +1,5 @@
 #include "pyxelcore/image.h"
 
-#include <string>
-
 namespace pyxelcore {
 
 Image::Image(int32_t width, int32_t height) {
