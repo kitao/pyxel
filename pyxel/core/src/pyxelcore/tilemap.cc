@@ -1,7 +1,5 @@
 #include "pyxelcore/tilemap.h"
 
-#include <string>
-
 namespace pyxelcore {
 
 Tilemap::Tilemap(int32_t width, int32_t height) {

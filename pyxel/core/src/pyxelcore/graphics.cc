@@ -3,8 +3,6 @@
 #include "pyxelcore/image.h"
 #include "pyxelcore/tilemap.h"
 
-#include <cmath>
-
 namespace pyxelcore {
 
 Graphics::Graphics(int32_t width, int32_t height) {
