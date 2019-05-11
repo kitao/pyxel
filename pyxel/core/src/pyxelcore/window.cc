@@ -61,11 +61,8 @@ void Window::UpdateWindowInfo() {
 void Window::ToggleFullscreen() {
   is_fullscreen_ = !is_fullscreen_;
 
-  if (is_fullscreen_) {
-    SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN_DESKTOP);
-  } else {
-    SDL_SetWindowFullscreen(window_, 0);
-  }
+  SDL_SetWindowFullscreen(window_,
+                          is_fullscreen_ ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 }
 
 bool Window::ProcessEvents() {
