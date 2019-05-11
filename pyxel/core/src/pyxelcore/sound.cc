@@ -2,17 +2,13 @@
 
 namespace pyxelcore {
 
-enum {
-  SOUND_NOTE_C = 0,
-  SOUND_NOTE_D = 2,
-  SOUND_NOTE_E = 4,
-  SOUND_NOTE_F = 5,
-  SOUND_NOTE_G = 7,
-  SOUND_NOTE_A = 9,
-  SOUND_NOTE_B = 11,
-};
-
-Sound::Sound() {}
+Sound::Sound() {
+  note_length_ = 0;
+  tone_length_ = 0;
+  volume_length_ = 0;
+  effect_length_ = 0;
+  speed_ = INITIAL_SOUND_SPEED;
+}
 
 Sound::~Sound() {}
 
@@ -28,57 +24,90 @@ void Sound::Set(const char* note,
   Speed(speed);
 }
 
-void Sound::SetNote(const char* value) {
+void Sound::SetNote(const char* note) {
+  std::string data(note);
+  data = FormatString(data);
+
+  note_length_ = 0;
+
+  int32_t index = 0;
+
+  for (int32_t i = 0; i < data.length(); i++) {
+    char c = data[i];
+    //
+  }
+
+  /*
+    def set_note(self, data):
+        while data:
+            c = data[0]
+            data = data[1:]
+
+            param = SOUND_NOTE_TABLE.get(c, None)
+
+            if param is not None:
+                c = data[0]
+                data = data[1:]
+
+                if c == "#" or c == "-":
+                    param += c == "#" and 1 or -1
+
+                    c = data[0]
+                    data = data[1:]
+
+                if "0" <= c <= "4":
+                    param += int(c) * 12
+                else:
+                    raise ValueError("invalid sound note")
+            elif c == "r":
+                param = -1
+            else:
+                raise ValueError("invalid sound note")
+
+            param_list.append(param)
+
+        self._note[:] = param_list
+  */
+}
+
+void Sound::SetTone(const char* tone) {
   //
 }
 
-void Sound::SetTone(const char* value) {
+void Sound::SetVolume(const char* volume) {
   //
 }
 
-void Sound::SetVolume(const char* value) {
+void Sound::SetEffect(const char* effect) {
   //
 }
 
-void Sound::SetEffect(const char* value) {
-  //
+std::string Sound::FormatString(const std::string& str) {
+  std::string s = str;
+
+  s = ReplaceString(s, " ", "");
+  s = ReplaceString(s, "\n", "");
+  s = ReplaceString(s, "\t", "");
+  std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+
+  return s;
+}
+
+std::string Sound::ReplaceString(const std::string& str,
+                                 const std::string& from,
+                                 const std::string& to) {
+  std::string s = str;
+  std::string::size_type pos;
+
+  for (pos = s.find(from, pos); pos != std::string::npos; pos += to.length()) {
+    s.replace(pos, from.length(), to);
+  }
+
+  return s;
 }
 
 /*
-from .constants import SOUND_EFFECT_TABLE, SOUND_NOTE_TABLE, SOUND_TONE_TABLE
-
-
 class Sound:
-    def __init__(self):
-        self._note = []
-        self._tone = []
-        self._volume = []
-        self._effect = []
-        self.speed = 30
-
-    @property
-    def note(self):
-        return self._note
-
-    @property
-    def tone(self):
-        return self._tone
-
-    @property
-    def volume(self):
-        return self._volume
-
-    @property
-    def effect(self):
-        return self._effect
-
-    def set(self, note, tone, volume, effect, speed):
-        self.set_note(note)
-        self.set_tone(tone)
-        self.set_volume(volume)
-        self.set_effect(effect)
-        self.speed = speed
-
     def set_note(self, data):
         param_list = []
         data = data.replace(" ", "").replace("\n", "").replace("\t", "").lower()
