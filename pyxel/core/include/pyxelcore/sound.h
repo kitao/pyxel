@@ -3,6 +3,8 @@
 
 #include "pyxelcore/common.h"
 
+#include <string>
+
 namespace pyxelcore {
 
 class Sound {
@@ -49,6 +51,11 @@ class Sound {
   int32_t effect_[MAX_SOUND_LENGTH];
   int32_t effect_length_;
   int32_t speed_;
+
+  static std::string FormatString(const std::string& str);
+  static std::string ReplaceString(const std::string& str,
+                                   const std::string& from,
+                                   const std::string& to);
 };
 
 inline void Sound::NoteLength(int32_t length) {

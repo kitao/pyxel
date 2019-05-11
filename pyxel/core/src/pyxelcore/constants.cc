@@ -1,7 +1,5 @@
 #include "pyxelcore/common.h"
 
-#include <string>
-
 #define CHECK_CONSTANT(constant)        \
   do {                                  \
     if (strcmp(name, #constant) == 0) { \

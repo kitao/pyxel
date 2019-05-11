@@ -3,10 +3,6 @@
 
 #include "pyxelcore/constants.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <cstdio>
-
 #define PRINT_ERROR(message) PrintError(message, __FUNCTION__)
 
 namespace pyxelcore {
