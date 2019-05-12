@@ -36,18 +36,18 @@ class Music {
            int32_t ch3_length);
 
  private:
-  int32_t ch0_[MAX_CHANNEL_LENGTH];
+  int32_t ch0_[MAX_MUSIC_LENGTH];
   int32_t ch0_length_;
-  int32_t ch1_[MAX_CHANNEL_LENGTH];
+  int32_t ch1_[MAX_MUSIC_LENGTH];
   int32_t ch1_length_;
-  int32_t ch2_[MAX_CHANNEL_LENGTH];
+  int32_t ch2_[MAX_MUSIC_LENGTH];
   int32_t ch2_length_;
-  int32_t ch3_[MAX_CHANNEL_LENGTH];
+  int32_t ch3_[MAX_MUSIC_LENGTH];
   int32_t ch3_length_;
 };
 
 inline void Music::Ch0Length(int32_t length) {
-  if (length < 0 || length >= MAX_CHANNEL_LENGTH) {
+  if (length < 0 || length >= MAX_MUSIC_LENGTH) {
     PRINT_ERROR("invalid channel length");
     return;
   }
@@ -56,7 +56,7 @@ inline void Music::Ch0Length(int32_t length) {
 }
 
 inline void Music::Ch1Length(int32_t length) {
-  if (length < 0 || length >= MAX_CHANNEL_LENGTH) {
+  if (length < 0 || length >= MAX_MUSIC_LENGTH) {
     PRINT_ERROR("invalid channel length");
     return;
   }
@@ -65,7 +65,7 @@ inline void Music::Ch1Length(int32_t length) {
 }
 
 inline void Music::Ch2Length(int32_t length) {
-  if (length < 0 || length >= MAX_CHANNEL_LENGTH) {
+  if (length < 0 || length >= MAX_MUSIC_LENGTH) {
     PRINT_ERROR("invalid channel length");
     return;
   }
@@ -74,7 +74,7 @@ inline void Music::Ch2Length(int32_t length) {
 }
 
 inline void Music::Ch3Length(int32_t length) {
-  if (length < 0 || length >= MAX_CHANNEL_LENGTH) {
+  if (length < 0 || length >= MAX_MUSIC_LENGTH) {
     PRINT_ERROR("invalid channel length");
     return;
   }
