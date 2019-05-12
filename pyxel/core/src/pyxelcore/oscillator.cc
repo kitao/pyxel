@@ -2,57 +2,50 @@
 
 namespace pyxelcore {
 
-Oscillator::Oscillator() {}
+Oscillator::Oscillator() {
+  phase_ = 0;
+  tone_ = TONE_TRIANGLE;
+  period_ = 0;
+  volume_ = 0;
 
-Oscillator::~Oscillator() {}
+  next_tone_ = nullptr;
+  next_period_ = 0;
+  next_volume_ = 0;
 
-/*
-from .constants import (
-    SOUND_TONE_NOISE,
-    SOUND_TONE_PULSE,
-    SOUND_TONE_SQUARE,
-    SOUND_TONE_TRIANGLE,
-)
+  noise_seed_ = 0x8000;
+  noist_last_ = 0;
+}
 
+void Oscillator::SetTone(int32_t tone) {
+  if (tone == TONE_TRIANGLE) {
+    next_tone_ = &Oscillator::Triangle;
+  } else if (tone == TONE_SQUARE) {
+    next_tone_ = &Oscillator::Square;
+  } else if (tone == TONE_PULSE) {
+    next_tone_ = &Oscillator::Pulse;
+  } else if (tone == TONE_NOISE) {
+    next_tone_ = &Oscillator::Noise;
+  } else {
+    next_tone_ = nullptr;
+  }
+}
 
-class Oscillator:
-    def __init__(self):
-        self._phase = 0
-        self._tone = None
-        self._period = 0
-        self._volume = 0
+void Oscillator::SetPeriod(int32_t period) {
+  next_period_ = period;
+}
 
-        self._next_tone = None
-        self._next_period = 0
-        self._next_volume = 0
+void Oscillator::SetVolume(int32_t volume) {
+  next_volume_ = volume;
+}
 
-        self._noise_seed = 0x8000
-        self._noise_last = 0
+void Oscillator::Stop() {
+  next_tone_ = nullptr;
+  next_period_ = 0;
+  next_volume_ = 0;
+}
 
-    def set_tone(self, tone):
-        if tone == SOUND_TONE_TRIANGLE:
-            self._next_tone = self._triangle
-        elif tone == SOUND_TONE_SQUARE:
-            self._next_tone = self._square
-        elif tone == SOUND_TONE_PULSE:
-            self._next_tone = self._pulse
-        elif tone == SOUND_TONE_NOISE:
-            self._next_tone = self._noise
-        else:
-            self._next_tone = None
-
-    def set_period(self, period):
-        self._next_period = period
-
-    def set_volume(self, volume):
-        self._next_volume = volume
-
-    def stop(self):
-        self._next_tone = None
-        self._next_period = 0
-        self._next_volume = 0
-
-    def output(self):
+int32_t Oscillator::Output() {
+  /*
         if self._phase == 0:
             self._period = self._next_period
             self._tone = self._next_tone
@@ -65,29 +58,47 @@ class Oscillator:
             output = 0
 
         return output
+        */
 
-    @staticmethod
-    def _triangle(period, phase):
+  //(this->*next_tone_)(10, 10);
+
+  return 0;
+}
+
+int32_t Oscillator::Triangle(int32_t period, int32_t phase) {
+  /*
         x = (phase / period + 0.25) % 1
         return abs(x * 4 - 2) - 1
+        */
+  return 0;
+}
 
-    @staticmethod
-    def _square(period, phase):
+int32_t Oscillator::Square(int32_t period, int32_t phase) {
+  /*
         x = (phase / period) % 1
         return (x < 0.5 and 1 or -1) * 0.2
+        */
+  return 0;
+}
 
-    @staticmethod
-    def _pulse(period, phase):
+int32_t Oscillator::Pulse(int32_t period, int32_t phase) {
+  /*
         x = (phase / period) % 1
         return (x < 0.25 and 1 or -1) * 0.2
+        */
+  return 0;
+}
 
-    def _noise(self, period, phase):
-        if phase % (period // 4) == 0:
+int32_t Oscillator::Noise(int32_t period, int32_t phase) {
+  /*
+          if phase % (period // 4) == 0:
             self._noise_seed >>= 1
             self._noise_seed |= ((self._noise_seed ^ (self._noise_seed >> 1)) &
 1) << 15 self._noise_last = self._noise_seed & 1
 
         return self._noise_last * 0.5
-*/
+        */
+  return 0;
+}
 
 }  // namespace pyxelcore
