@@ -50,8 +50,8 @@ const char ICON_DATA[ICON_HEIGHT][ICON_WIDTH + 1] = {
     "0000000110000000",
 };
 
-const int32_t APP_GIF_CAPTURE_COUNT = 900;
-const int32_t APP_GIF_CAPTURE_SCALE = 2;
+const int32_t GIF_CAPTURE_COUNT = 900;
+const int32_t GIF_CAPTURE_SCALE = 2;
 
 //
 // Graphics
@@ -398,8 +398,11 @@ const int32_t INITIAL_SOUND_SPEED = 30;
 //
 // Music class
 //
-const int32_t MAX_CHANNEL_LENGTH = 256;
+const int32_t MAX_MUSIC_LENGTH = 256;
 
+//
+// Helper functions
+//
 int32_t GetConstantNumber(const char* name);
 const char* GetConstantString(const char* name);
 
