@@ -395,19 +395,6 @@ enum {
 const int32_t MAX_SOUND_LENGTH = 256;
 const int32_t INITIAL_SOUND_SPEED = 30;
 
-const std::map<char, int> NOTE_TABLE{{'c', 0}, {'d', 2}, {'e', 4}, {'f', 5},
-                                     {'g', 7}, {'a', 9}, {'b', 11}};
-
-const std::map<char, int> TONE_TABLE{{'t', TONE_TRIANGLE},
-                                     {'s', TONE_SQUARE},
-                                     {'p', TONE_PULSE},
-                                     {'n', TONE_NOISE}};
-
-const std::map<char, int> EFFECT_TABLE{{'n', EFFECT_NONE},
-                                       {'s', EFFECT_SLIDE},
-                                       {'v', EFFECT_VIBRATO},
-                                       {'f', EFFECT_FADEOUT}};
-
 //
 // Music class
 //
