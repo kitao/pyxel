@@ -23,8 +23,6 @@ Sound::Sound() {
   speed_ = INITIAL_SOUND_SPEED;
 }
 
-Sound::~Sound() {}
-
 void Sound::Set(const char* note,
                 const char* tone,
                 const char* volume,
