@@ -10,7 +10,6 @@ namespace pyxelcore {
 class Sound {
  public:
   Sound();
-  ~Sound();
 
   int32_t* Note() { return note_; }
   int32_t NoteLength() const { return note_length_; }

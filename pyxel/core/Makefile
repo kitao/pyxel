@@ -57,7 +57,13 @@ distclean:
 	rm -rf $(OBJS) *.dylib *.dll *.so include/SDL2 lib bin
 
 test:
-	python3 __init__.py
+	#python3 ../examples/01_*.py
+	#python3 ../examples/02_*.py
+	#python3 ../examples/03_*.py
+	python3 ../examples/04_*.py
+	#python3 ../examples/05_*.py
+	#python3 ../examples/06_*.py
+	#python3 __init__.py
 
 $(TARGET): $(OBJS)
 	mkdir -p $(shell dirname $(TARGET))
