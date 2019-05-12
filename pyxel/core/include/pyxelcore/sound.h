@@ -52,10 +52,10 @@ class Sound {
   int32_t effect_length_;
   int32_t speed_;
 
-  static std::string FormatString(const std::string& str);
-  static std::string ReplaceString(const std::string& str,
-                                   const std::string& from,
-                                   const std::string& to);
+  static void ReplaceAll(std::string& str,
+                         const std::string& from,
+                         const std::string& to);
+  static std::string FormatData(const char* str);
 };
 
 inline void Sound::NoteLength(int32_t length) {
