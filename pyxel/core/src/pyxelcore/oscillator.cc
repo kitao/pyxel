@@ -4,7 +4,7 @@ namespace pyxelcore {
 
 Oscillator::Oscillator() {
   phase_ = 0;
-  tone_ = TONE_TRIANGLE;
+  tone_ = nullptr;
   period_ = 0;
   volume_ = 0;
 
@@ -13,7 +13,7 @@ Oscillator::Oscillator() {
   next_volume_ = 0;
 
   noise_seed_ = 0x8000;
-  noist_last_ = 0;
+  noise_last_ = 0;
 }
 
 void Oscillator::SetTone(int32_t tone) {
@@ -45,60 +45,53 @@ void Oscillator::Stop() {
 }
 
 int32_t Oscillator::Output() {
-  /*
-        if self._phase == 0:
-            self._period = self._next_period
-            self._tone = self._next_tone
-            self._volume = self._next_volume
+  if (phase_ == 0) {
+    period_ = next_period_;
+    tone_ = next_tone_;
+    volume_ = next_volume_;
+  }
 
-        if self._tone:
-            output = self._tone(self._period, self._phase) * self._volume
-            self._phase = (self._phase + 1) % self._period
-        else:
-            output = 0
+  int32_t output;
 
-        return output
-        */
+  if (tone_) {
+    output = (this->*tone_)(period_, phase_) * volume_;
+    phase_ = (phase_ + 1) % period_;
+  } else {
+    output = 0;
+  }
 
-  //(this->*next_tone_)(10, 10);
-
-  return 0;
+  return output;
 }
 
 int32_t Oscillator::Triangle(int32_t period, int32_t phase) {
-  /*
-        x = (phase / period + 0.25) % 1
-        return abs(x * 4 - 2) - 1
-        */
-  return 0;
+  float x = static_cast<float>(phase) / period + 0.25f;
+  x -= static_cast<int32_t>(x);
+
+  return Abs(x * 4.0f - 2.0f) - 1.0f;
 }
 
 int32_t Oscillator::Square(int32_t period, int32_t phase) {
-  /*
-        x = (phase / period) % 1
-        return (x < 0.5 and 1 or -1) * 0.2
-        */
-  return 0;
+  float x = static_cast<float>(phase) / period;
+  x -= static_cast<int32_t>(x);
+
+  return (x < 0.5f ? 1.0f : -1.0f) * 0.2f;
 }
 
 int32_t Oscillator::Pulse(int32_t period, int32_t phase) {
-  /*
-        x = (phase / period) % 1
-        return (x < 0.25 and 1 or -1) * 0.2
-        */
-  return 0;
+  float x = static_cast<float>(phase) / period;
+  x -= static_cast<int32_t>(x);
+
+  return (x < 0.25f ? 1.0f : -1.0f) * 0.2f;
 }
 
 int32_t Oscillator::Noise(int32_t period, int32_t phase) {
-  /*
-          if phase % (period // 4) == 0:
-            self._noise_seed >>= 1
-            self._noise_seed |= ((self._noise_seed ^ (self._noise_seed >> 1)) &
-1) << 15 self._noise_last = self._noise_seed & 1
+  if (phase % (period / 4) == 0) {
+    noise_seed_ >>= 1;
+    noise_seed_ |= ((noise_seed_ ^ (noise_seed_ >> 1)) & 1) << 15;
+    noise_last_ = noise_seed_ & 1;
+  }
 
-        return self._noise_last * 0.5
-        */
-  return 0;
+  return noise_last_ * 0.5f;
 }
 
 }  // namespace pyxelcore
