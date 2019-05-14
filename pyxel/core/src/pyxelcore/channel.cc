@@ -2,13 +2,8 @@
 
 namespace pyxelcore {
 
-Channel::Channel() {}
-
-Channel::~Channel() {}
-
-/*
-  class Channel:
-      def __init__(self):
+Channel::Channel() {
+  /*
           self._oscillator = Oscillator()
 
           self._is_playing = False
@@ -29,33 +24,54 @@ Channel::~Channel() {}
           self._effect_time = 0
           self._effect_pitch = 0
           self._effect_volume = 0
+  */
+}
 
-      def play(self, sound_list, loop):
-          self._is_playing = True
+Channel::~Channel() {}
+
+void Channel::Play(int32_t* sound, int32_t sound_count, bool loop) {
+  //
+  /*
+            self._is_playing = True
           self._is_loop = loop
           self._sound_list = sound_list
           self._sound_index = 0
 
           self._play_sound()
+          */
+}
 
-      def stop(self):
-          self._is_playing = False
+void Channel::Stop() {
+  //
+  /*
+            self._is_playing = False
           self._pitch = 0
           self._oscillator.stop()
+          */
+}
 
-      def output(self):
-          self._update()
+int32_t Channel::Output() {
+  /*
+            self._update()
           return self._oscillator.output()
+          */
+  return 0;
+}
 
-      def _play_sound(self):
-          sound = self._sound_list[self._sound_index]
+void Channel::PlaySound() {
+  //
+  /*
+            sound = self._sound_list[self._sound_index]
 
           self._time = 0
           self._one_note_time = sound.speed * AUDIO_ONE_SPEED
           self._total_note_time = self._one_note_time * len(sound.note)
+          */
+}
 
-      def _update(self):
-          if not self._is_playing:
+void Channel::Update() {
+  /*
+            if not self._is_playing:
               return
 
           if self._total_note_time == 0:
@@ -117,9 +133,13 @@ Channel::~Channel() {}
 
           if self._time == self._total_note_time:
               self._next_sound()
+              */
+}
 
-      def _next_sound(self):
-          self._sound_index += 1
+void Channel::NextSound() {
+  //
+  /*
+            self._sound_index += 1
 
           if self._sound_index < len(self._sound_list):
               self._play_sound()
@@ -128,15 +148,22 @@ Channel::~Channel() {}
               self._play_sound()
           else:
               self.stop()
+              */
+}
 
-      @staticmethod
-      def _note_to_pitch(note):
-          return 440 * pow(2, (note - 33) / 12)
+int32_t Channel::NoteToPitch() {
+  //
+  /*
+            return 440 * pow(2, (note - 33) / 12)
+            */
+}
 
-      @staticmethod
-      def _lfo(time):
-          x = (time * 8 / AUDIO_SAMPLE_RATE + 0.25) % 1
+int32_t Channel::Lfo(int32_t time) {
+  //
+  /*
+            x = (time * 8 / AUDIO_SAMPLE_RATE + 0.25) % 1
           return abs(x * 4 - 2) - 1
-*/
+          */
+}
 
 }  // namespace pyxelcore
