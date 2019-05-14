@@ -56,6 +56,14 @@ void Audio::callback(void* userdata, uint8_t* stream, int len) {
 
 void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
   //
+  /*
+            if isinstance(snd, list):
+              sound_list = [self._sound_list[s] for s in snd]
+          else:
+              sound_list = [self._sound_list[snd]]
+
+          self._channel_list[ch].play(sound_list, loop)
+          */
 }
 
 void Audio::PlaySound(int32_t channel,
@@ -67,10 +75,32 @@ void Audio::PlaySound(int32_t channel,
 
 void Audio::PlayMusic(int32_t music_index, bool loop) {
   //
+  /*
+            music = self._music_list[msc]
+
+          if music.ch0:
+              self.play(0, music.ch0, loop=loop)
+
+          if music.ch1:
+              self.play(1, music.ch1, loop=loop)
+
+          if music.ch2:
+              self.play(2, music.ch2, loop=loop)
+
+          if music.ch3:
+              self.play(3, music.ch3, loop=loop)
+              */
 }
 
 void Audio::StopPlaying(int32_t channel) {
   //
+  /*
+            if ch is None:
+              for i in range(AUDIO_CHANNEL_COUNT):
+                  self._channel_list[i].stop()
+          else:
+              self._channel_list[ch].stop()
+              */
 }
 
 /*
@@ -94,46 +124,6 @@ void Audio::StopPlaying(int32_t channel) {
       @property
       def output_stream(self):
           return self._output_stream
-
-      def sound(self, snd, *, system=False):
-          if not system and snd == AUDIO_SOUND_COUNT - 1:
-              raise ValueError("sound bank {} is reserved for
-  system".format(snd))
-
-          return self._sound_list[snd]
-
-      def music(self, msc):
-          return self._music_list[msc]
-
-      def play(self, ch, snd, *, loop=False):
-          if isinstance(snd, list):
-              sound_list = [self._sound_list[s] for s in snd]
-          else:
-              sound_list = [self._sound_list[snd]]
-
-          self._channel_list[ch].play(sound_list, loop)
-
-      def playm(self, msc, *, loop=False):
-          music = self._music_list[msc]
-
-          if music.ch0:
-              self.play(0, music.ch0, loop=loop)
-
-          if music.ch1:
-              self.play(1, music.ch1, loop=loop)
-
-          if music.ch2:
-              self.play(2, music.ch2, loop=loop)
-
-          if music.ch3:
-              self.play(3, music.ch3, loop=loop)
-
-      def stop(self, ch=None):
-          if ch is None:
-              for i in range(AUDIO_CHANNEL_COUNT):
-                  self._channel_list[i].stop()
-          else:
-              self._channel_list[ch].stop()
 
       def _output_stream_callback(self, outdata, frames, time, status):
           for i in range(frames):
