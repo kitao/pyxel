@@ -17,7 +17,7 @@ class Oscillator {
 
  private:
   int32_t phase_;
-  int32_t tone_;
+  int32_t (Oscillator::*tone_)(int32_t period, int32_t phase);
   int32_t period_;
   int32_t volume_;
 
@@ -26,7 +26,7 @@ class Oscillator {
   int32_t next_volume_;
 
   int32_t noise_seed_;
-  int32_t noist_last_;
+  int32_t noise_last_;
 
   int32_t Triangle(int32_t period, int32_t phase);
   int32_t Square(int32_t period, int32_t phase);
