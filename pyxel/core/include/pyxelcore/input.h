@@ -32,11 +32,11 @@ class Input {
   bool is_mouse_visible_;
   int32_t key_state_[KEY_COUNT];
 
-  void UpdateKeyState(int32_t key, bool is_on);
+  void UpdateKeyState(int32_t key, bool state);
 };
 
-inline void Input::UpdateKeyState(int32_t key, bool is_on) {
-  if (is_on) {
+inline void Input::UpdateKeyState(int32_t key, bool state) {
+  if (state) {
     if (key_state_[key] <= 0) {
       key_state_[key] = frame_count_;
     }
