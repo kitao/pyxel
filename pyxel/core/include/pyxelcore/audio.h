@@ -1,7 +1,7 @@
 #ifndef PYXELCORE_AUDIO_H_
 #define PYXELCORE_AUDIO_H_
 
-#include "pyxelcore/common.h"
+#include "pyxelcore/channel.h"
 
 namespace pyxelcore {
 
@@ -18,7 +18,7 @@ class Audio {
   void PlaySound(int32_t channel, int32_t sound_index, bool loop = false);
   void PlaySound(int32_t channel,
                  int32_t* sound_index,
-                 int32_t sound_index_count,
+                 int32_t sound_count,
                  bool loop = false);
   void PlayMusic(int32_t music_index, bool loop = false);
   void StopPlaying(int32_t channel = -1);
@@ -26,6 +26,7 @@ class Audio {
  private:
   Sound** sound_bank_;
   Music** music_bank_;
+  Channel channel_list_[AUDIO_CHANNEL_COUNT];
 
   static void callback(void* userdata, uint8_t* stream, int len);
 };

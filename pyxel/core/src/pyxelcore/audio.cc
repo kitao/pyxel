@@ -50,87 +50,99 @@ void Audio::callback(void* userdata, uint8_t* stream, int len) {
   int32_t frame_count = len / sizeof(uint16_t);
 
   for (int32_t i = 0; i < frame_count; i++) {
-    frame_data[i] = 0;
+    uint16_t output = 0;
+
+    for (int32_t i = 0; i < AUDIO_CHANNEL_COUNT; i++) {
+      output += audio->channel_list_[i].Output();
+    }
+
+    frame_data[i] = output;
   }
 }
 
 void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
-  //
-  /*
-            if isinstance(snd, list):
-              sound_list = [self._sound_list[s] for s in snd]
-          else:
-              sound_list = [self._sound_list[snd]]
+  if (channel < 0 || channel >= AUDIO_CHANNEL_COUNT) {
+    PRINT_ERROR("invalid channel");
+    return;
+  }
 
-          self._channel_list[ch].play(sound_list, loop)
-          */
+  if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+    PRINT_ERROR("invalid sound index");
+    return;
+  }
+
+  Sound* sound = sound_bank_[sound_index];
+  channel_list_[channel].PlaySound(&sound, 1, loop);
 }
 
 void Audio::PlaySound(int32_t channel,
                       int32_t* sound_index,
-                      int32_t sound_index_count,
+                      int32_t sound_count,
                       bool loop) {
-  //
+  if (channel < 0 || channel >= AUDIO_CHANNEL_COUNT) {
+    PRINT_ERROR("invalid channel");
+    return;
+  }
+
+  if (sound_count < 0 || sound_count >= MAX_MUSIC_LENGTH) {
+    PRINT_ERROR("invalid sound count");
+    return;
+  }
+
+  Sound* sound[sound_count];
+
+  for (int32_t i = 0; i < sound_count; i++) {
+    int32_t index = sound_index[i];
+
+    if (index < 0 || index >= SOUND_BANK_COUNT) {
+      PRINT_ERROR("invalid sound index");
+      return;
+    }
+
+    sound[i] = sound_bank_[index];
+  }
+
+  channel_list_[channel].PlaySound(sound, sound_count, loop);
 }
 
 void Audio::PlayMusic(int32_t music_index, bool loop) {
-  //
-  /*
-            music = self._music_list[msc]
+  if (music_index < 0 || music_index >= AUDIO_CHANNEL_COUNT) {
+    PRINT_ERROR("invalid music index");
+    return;
+  }
 
-          if music.ch0:
-              self.play(0, music.ch0, loop=loop)
+  Music* music = music_bank_[music_index];
 
-          if music.ch1:
-              self.play(1, music.ch1, loop=loop)
+  if (music->Ch0Length() > 0) {
+    PlaySound(0, music->Ch0(), music->Ch0Length(), loop);
+  }
 
-          if music.ch2:
-              self.play(2, music.ch2, loop=loop)
+  if (music->Ch1Length() > 0) {
+    PlaySound(1, music->Ch1(), music->Ch1Length(), loop);
+  }
 
-          if music.ch3:
-              self.play(3, music.ch3, loop=loop)
-              */
+  if (music->Ch2Length() > 0) {
+    PlaySound(0, music->Ch2(), music->Ch2Length(), loop);
+  }
+
+  if (music->Ch3Length() > 0) {
+    PlaySound(0, music->Ch3(), music->Ch3Length(), loop);
+  }
 }
 
 void Audio::StopPlaying(int32_t channel) {
-  //
-  /*
-            if ch is None:
-              for i in range(AUDIO_CHANNEL_COUNT):
-                  self._channel_list[i].stop()
-          else:
-              self._channel_list[ch].stop()
-              */
+  if (channel != -1 && (channel < 0 || channel >= AUDIO_CHANNEL_COUNT)) {
+    PRINT_ERROR("invalide channel");
+    return;
+  }
+
+  if (channel == -1) {
+    for (int32_t i = 0; i < AUDIO_CHANNEL_COUNT; i++) {
+      channel_list_[i].StopPlaying();
+    }
+  } else {
+    channel_list_[channel].StopPlaying();
+  }
 }
-
-/*
-  class AudioPlayer:
-      def __init__(self):
-          try:
-              self._output_stream = sd.OutputStream(
-                  samplerate=AUDIO_SAMPLE_RATE,
-                  blocksize=AUDIO_BLOCK_SIZE,
-                  channels=1,
-                  dtype="int16",
-                  callback=self._output_stream_callback,
-              )
-          except sd.PortAudioError:
-              self._output_stream = None
-
-          self._channel_list = [Channel() for _ in range(AUDIO_CHANNEL_COUNT)]
-          self._sound_list = [Sound() for _ in range(AUDIO_SOUND_COUNT)]
-          self._music_list = [Music() for _ in range(AUDIO_MUSIC_COUNT)]
-
-      @property
-      def output_stream(self):
-          return self._output_stream
-
-      def _output_stream_callback(self, outdata, frames, time, status):
-          for i in range(frames):
-              output = 0
-              for channel in self._channel_list:
-                  output += channel.output()
-              outdata[i] = output
-*/
 
 }  // namespace pyxelcore
