@@ -11,8 +11,8 @@ class Channel {
  public:
   Channel();
 
-  void Play(Sound** sound, int32_t sound_count, bool loop);
-  void Stop();
+  void PlaySound(Sound** sound, int32_t sound_count, bool loop);
+  void StopPlaying();
   int32_t Output();
 
  private:
@@ -39,11 +39,28 @@ class Channel {
   int32_t effect_volume_;
 
   void PlaySound();
-  void Update();
+  void UpdateState();
   void NextSound();
   int32_t NoteToPitch(int32_t note);
   int32_t Lfo(int32_t time);
 };
+
+inline int32_t Channel::Output() {
+  UpdateState();
+
+  return oscillator_.Output();
+}
+
+inline int32_t Channel::NoteToPitch(int32_t note) {
+  return 440.0f * pow(2.0f, (note - 33.0f) / 12.0f);
+}
+
+inline int32_t Channel::Lfo(int32_t time) {
+  float x = (time * 8 / AUDIO_SAMPLE_RATE + 0.25f);
+  x -= static_cast<int32_t>(x);
+
+  return Abs(x * 4.0f - 2.0f) - 1.0f;
+}
 
 }  // namespace pyxelcore
 
