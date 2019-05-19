@@ -8,78 +8,52 @@ namespace pyxelcore {
 class Music {
  public:
   Music();
-  ~Music();
 
-  int32_t* Ch0() { return ch0_; }
-  int32_t Ch0Length() const { return ch0_length_; }
-  void Ch0Length(int32_t length);
+  int32_t* Sound(int32_t channel);
+  int32_t SoundLength(int32_t channel) const;
+  void SoundLength(int32_t channel, int32_t length);
 
-  int32_t* Ch1() { return ch1_; }
-  int32_t Ch1Length() const { return ch1_length_; }
-  void Ch1Length(int32_t length);
-
-  int32_t* Ch2() { return ch2_; }
-  int32_t Ch2Length() const { return ch2_length_; }
-  void Ch2Length(int32_t length);
-
-  int32_t* Ch3() { return ch3_; }
-  int32_t Ch3Length() const { return ch3_length_; }
-  void Ch3Length(int32_t length);
-
-  void Set(const int32_t* ch0,
-           int32_t ch0_length,
-           const int32_t* ch1,
-           int32_t ch1_length,
-           const int32_t* ch2,
-           int32_t ch2_length,
-           const int32_t* ch3,
-           int32_t ch3_length);
+  void Set(const int32_t* channel0,
+           int32_t channel0_length,
+           const int32_t* channel1,
+           int32_t channel1_length,
+           const int32_t* channel2,
+           int32_t channel2_length,
+           const int32_t* channel3,
+           int32_t channel3_length);
+  void SetSound(int32_t channel, const int32_t* sound, int32_t sound_length);
 
  private:
-  int32_t ch0_[MAX_MUSIC_LENGTH];
-  int32_t ch0_length_;
-  int32_t ch1_[MAX_MUSIC_LENGTH];
-  int32_t ch1_length_;
-  int32_t ch2_[MAX_MUSIC_LENGTH];
-  int32_t ch2_length_;
-  int32_t ch3_[MAX_MUSIC_LENGTH];
-  int32_t ch3_length_;
+  int32_t sound_[MUSIC_CHANNEL_COUNT][MAX_MUSIC_LENGTH];
+  int32_t sound_length_[MUSIC_CHANNEL_COUNT];
 };
 
-inline void Music::Ch0Length(int32_t length) {
-  if (length < 0 || length >= MAX_MUSIC_LENGTH) {
-    PRINT_ERROR("invalid channel length");
-    return;
+inline int32_t* Music::Sound(int32_t channel) {
+  if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
+    PRINT_ERROR("invalid music channel");
   }
 
-  ch0_length_ = length;
+  return sound_[channel];
 }
 
-inline void Music::Ch1Length(int32_t length) {
-  if (length < 0 || length >= MAX_MUSIC_LENGTH) {
-    PRINT_ERROR("invalid channel length");
-    return;
+inline int32_t Music::SoundLength(int32_t channel) const {
+  if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
+    PRINT_ERROR("invalid music channel");
   }
 
-  ch1_length_ = length;
+  return sound_length_[channel];
 }
 
-inline void Music::Ch2Length(int32_t length) {
-  if (length < 0 || length >= MAX_MUSIC_LENGTH) {
-    PRINT_ERROR("invalid channel length");
-    return;
+inline void Music::SoundLength(int32_t channel, int32_t length) {
+  if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
+    PRINT_ERROR("invalid music channel");
   }
 
-  ch2_length_ = length;
-}
-
-inline void Music::Ch3Length(int32_t length) {
-  if (length < 0 || length >= MAX_MUSIC_LENGTH) {
-    PRINT_ERROR("invalid channel length");
-    return;
+  if (length < 0 || length > MAX_MUSIC_LENGTH) {
+    PRINT_ERROR("invalid music length");
   }
 
-  ch3_length_ = length;
+  sound_length_[channel] = length;
 }
 
 }  // namespace pyxelcore

@@ -113,20 +113,10 @@ void Audio::PlayMusic(int32_t music_index, bool loop) {
 
   Music* music = music_bank_[music_index];
 
-  if (music->Ch0Length() > 0) {
-    PlaySound(0, music->Ch0(), music->Ch0Length(), loop);
-  }
-
-  if (music->Ch1Length() > 0) {
-    PlaySound(1, music->Ch1(), music->Ch1Length(), loop);
-  }
-
-  if (music->Ch2Length() > 0) {
-    PlaySound(0, music->Ch2(), music->Ch2Length(), loop);
-  }
-
-  if (music->Ch3Length() > 0) {
-    PlaySound(0, music->Ch3(), music->Ch3Length(), loop);
+  for (int32_t i = 0; i < MUSIC_CHANNEL_COUNT; i++) {
+    if (music->SoundLength(i) > 0) {
+      PlaySound(i, music->Sound(i), music->SoundLength(i), loop);
+    }
   }
 }
 
