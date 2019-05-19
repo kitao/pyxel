@@ -13,7 +13,7 @@ class Oscillator {
   void SetPeriod(int32_t period);
   void SetVolume(int32_t volume);
   void Stop();
-  int32_t Output();
+  int16_t Output();
 
  private:
   int32_t phase_;
@@ -49,16 +49,25 @@ inline Oscillator::Oscillator() {
 }
 
 inline void Oscillator::SetTone(int32_t tone) {
-  if (tone == TONE_TRIANGLE) {
-    next_tone_ = &Oscillator::Triangle;
-  } else if (tone == TONE_SQUARE) {
-    next_tone_ = &Oscillator::Square;
-  } else if (tone == TONE_PULSE) {
-    next_tone_ = &Oscillator::Pulse;
-  } else if (tone == TONE_NOISE) {
-    next_tone_ = &Oscillator::Noise;
-  } else {
-    next_tone_ = nullptr;
+  switch (tone) {
+    case TONE_TRIANGLE:
+      next_tone_ = &Oscillator::Triangle;
+      break;
+
+    case TONE_SQUARE:
+      next_tone_ = &Oscillator::Square;
+      break;
+
+    case TONE_PULSE:
+      next_tone_ = &Oscillator::Pulse;
+      break;
+
+    case TONE_NOISE:
+      next_tone_ = &Oscillator::Noise;
+      break;
+
+    default:
+      next_tone_ = nullptr;
   }
 }
 
@@ -76,7 +85,7 @@ inline void Oscillator::Stop() {
   next_volume_ = 0;
 }
 
-inline int32_t Oscillator::Output() {
+inline int16_t Oscillator::Output() {
   if (phase_ == 0) {
     period_ = next_period_;
     tone_ = next_tone_;
@@ -96,7 +105,7 @@ inline int32_t Oscillator::Output() {
 }
 
 inline float Oscillator::Triangle(int32_t period, int32_t phase) {
-  float x = static_cast<float>(phase) / period + 0.25f;
+  float x = static_cast<float>(phase) / period + 0.75f;
   x -= static_cast<int32_t>(x);
 
   return Abs(x * 4.0f - 2.0f) - 1.0f;
