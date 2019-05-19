@@ -408,51 +408,51 @@ void sound_set_effect(void* self, const char* effect) {
 // Music class
 //
 int32_t* music_ch0_getter(void* self) {
-  return MUSIC->Ch0();
+  return MUSIC->Sound(0);
 }
 
 int32_t music_ch0_length_getter(void* self) {
-  return MUSIC->Ch0Length();
+  return MUSIC->SoundLength(0);
 }
 
 void music_ch0_length_setter(void* self, int32_t length) {
-  MUSIC->Ch0Length(length);
+  MUSIC->SoundLength(0, length);
 }
 
 int32_t* music_ch1_getter(void* self) {
-  return MUSIC->Ch1();
+  return MUSIC->Sound(1);
 }
 
 int32_t music_ch1_length_getter(void* self) {
-  return MUSIC->Ch1Length();
+  return MUSIC->SoundLength(1);
 }
 
 void music_ch1_length_setter(void* self, int32_t length) {
-  MUSIC->Ch1Length(length);
+  MUSIC->SoundLength(1, length);
 }
 
 int32_t* music_ch2_getter(void* self) {
-  return MUSIC->Ch2();
+  return MUSIC->Sound(2);
 }
 
 int32_t music_ch2_length_getter(void* self) {
-  return MUSIC->Ch2Length();
+  return MUSIC->SoundLength(2);
 }
 
 void music_ch2_length_setter(void* self, int32_t length) {
-  MUSIC->Ch2Length(length);
+  MUSIC->SoundLength(2, length);
 }
 
 int32_t* music_ch3_getter(void* self) {
-  return MUSIC->Ch3();
+  return MUSIC->Sound(3);
 }
 
 int32_t music_ch3_length_getter(void* self) {
-  return MUSIC->Ch3Length();
+  return MUSIC->SoundLength(3);
 }
 
 void music_ch3_length_setter(void* self, int32_t length) {
-  MUSIC->Ch3Length(length);
+  MUSIC->SoundLength(3, length);
 }
 
 void music_set(void* self,
