@@ -39,23 +39,23 @@ class Channel {
   int32_t effect_volume_;
 
   void PlaySound();
-  void UpdateState();
+  void NextNote();
   void NextSound();
-  int32_t NoteToPitch(int32_t note);
-  int32_t Lfo(int32_t time);
+  float NoteToPitch(float note);
+  float Lfo(int32_t time);
 };
 
 inline int32_t Channel::Output() {
-  UpdateState();
+  NextNote();
 
   return oscillator_.Output();
 }
 
-inline int32_t Channel::NoteToPitch(int32_t note) {
+inline float Channel::NoteToPitch(float note) {
   return 440.0f * pow(2.0f, (note - 33.0f) / 12.0f);
 }
 
-inline int32_t Channel::Lfo(int32_t time) {
+inline float Channel::Lfo(int32_t time) {
   float x = (time * 8 / AUDIO_SAMPLE_RATE + 0.25f);
   x -= static_cast<int32_t>(x);
 

@@ -366,9 +366,8 @@ const uint8_t SCANCODE_TABLE[SDL_KEY_COUNT] = {
 //
 const int32_t AUDIO_SAMPLE_RATE = 22050;
 const int32_t AUDIO_BLOCK_SIZE = 2205;
-const int32_t AUDIO_CHANNEL_COUNT = 4;
 const int32_t AUDIO_ONE_SPEED = AUDIO_SAMPLE_RATE / 120;
-const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (AUDIO_CHANNEL_COUNT * 7);
+const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (4 * 7);
 
 const int32_t SOUND_BANK_COUNT = 65;
 const int32_t SOUND_BANK_FOR_SYSTEM = SOUND_BANK_COUNT - 1;
@@ -398,6 +397,7 @@ const int32_t INITIAL_SOUND_SPEED = 30;
 //
 // Music class
 //
+const int32_t MUSIC_CHANNEL_COUNT = 4;
 const int32_t MAX_MUSIC_LENGTH = 256;
 
 //

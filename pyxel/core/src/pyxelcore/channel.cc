@@ -50,9 +50,10 @@ void Channel::PlaySound() {
   time_ = 0;
   one_note_time_ = sound->Speed() * AUDIO_ONE_SPEED;
   total_note_time_ = one_note_time_ * sound->NoteLength();
+  printf("play total:%d, %d\n", one_note_time_, total_note_time_);
 }
 
-void Channel::UpdateState() {
+void Channel::NextNote() {
   if (!is_playing_) {
     return;
   }
@@ -71,6 +72,7 @@ void Channel::UpdateState() {
                    ? sound->Volume()[pos % sound->VolumeLength()]
                    : 7) *
               AUDIO_ONE_VOLUME;
+    printf("pos:%d note:%d\n", pos, note_);
 
     if (note_ >= 0 && volume_ > 0) {
       int32_t last_pitch = pitch_;
@@ -85,37 +87,37 @@ void Channel::UpdateState() {
       oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch_);
       oscillator_.SetVolume(volume_);
 
-      if (effect_ == EFFECT_SLIDE) {
+      /*if (effect_ == EFFECT_SLIDE) {
         effect_time_ = time_;
         effect_pitch_ = last_pitch ? last_pitch : pitch_;
       } else if (effect_ == EFFECT_VIBRATO) {
         effect_time_ = time_;
         effect_pitch_ = NoteToPitch(note_ + 0.5f) - pitch_;
-      } else {
-        oscillator_.Stop();
-      }
-
-      // play note
-      if (note_ >= 0) {
-        if (effect_ == EFFECT_SLIDE) {
-          float a = (time_ - effect_time_) / one_note_time_;
-          float pitch = pitch_ * a + effect_pitch_ * (1.0f - a);
-          oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch);
-        } else if (effect_ == EFFECT_VIBRATO) {
-          float pitch = pitch_ + Lfo(time_) * effect_pitch_;
-          oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch);
-        } else if (effect_ == EFFECT_FADEOUT) {
-          oscillator_.SetVolume(
-              effect_volume_ *
-              (1.0f - ((time_ - effect_time_) / one_note_time_)));
-        }
-      }
-      time_++;
-
-      if (time_ == total_note_time_) {
-        NextSound();
-      }
+      }*/
+    } else {
+      oscillator_.Stop();
     }
+  }
+
+  // play note
+  if (note_ >= 0) {
+    /*if (effect_ == EFFECT_SLIDE) {
+      float a = (time_ - effect_time_) / one_note_time_;
+      float pitch = pitch_ * a + effect_pitch_ * (1.0f - a);
+      oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch);
+    } else if (effect_ == EFFECT_VIBRATO) {
+      float pitch = pitch_ + Lfo(time_) * effect_pitch_;
+      oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch);
+    } else if (effect_ == EFFECT_FADEOUT) {
+      oscillator_.SetVolume(effect_volume_ *
+                            (1.0f - ((time_ - effect_time_) / one_note_time_)));
+    }*/
+  }
+
+  time_++;
+
+  if (time_ == total_note_time_) {
+    NextSound();
   }
 }
 
@@ -123,11 +125,14 @@ void Channel::NextSound() {
   sound_index_ += 1;
 
   if (sound_index_ < sound_count_) {
+    printf("aaa\n");
     PlaySound();
   } else if (is_loop_) {
+    printf("bbb\n");
     sound_index_ = 0;
     PlaySound();
   } else {
+    printf("ccc\n");
     StopPlaying();
   }
 }

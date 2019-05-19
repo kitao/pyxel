@@ -26,7 +26,7 @@ class Audio {
  private:
   Sound** sound_bank_;
   Music** music_bank_;
-  Channel channel_list_[AUDIO_CHANNEL_COUNT];
+  Channel channel_list_[MUSIC_CHANNEL_COUNT];
 
   static void callback(void* userdata, uint8_t* stream, int len);
 };
