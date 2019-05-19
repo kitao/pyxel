@@ -212,8 +212,8 @@ void play1(int32_t ch, int32_t snd, int32_t loop) {
   s_audio->PlaySound(ch, snd, loop);
 }
 
-void play(int32_t ch, int32_t* snd, int32_t snd_count, int32_t loop) {
-  s_audio->PlaySound(ch, snd, snd_count, loop);
+void play(int32_t ch, int32_t* snd, int32_t snd_length, int32_t loop) {
+  s_audio->PlaySound(ch, snd, snd_length, loop);
 }
 
 void playm(int32_t msc, int32_t loop) {
@@ -251,8 +251,8 @@ void image_set(void* self,
                int32_t x,
                int32_t y,
                const char** val,
-               int32_t val_count) {
-  IMAGE->SetValue(x, y, val, val_count);
+               int32_t val_length) {
+  IMAGE->SetValue(x, y, val, val_length);
 }
 
 int32_t image_load(void* self, int32_t x, int32_t y, const char* filename) {
@@ -305,8 +305,8 @@ void tilemap_set(void* self,
                  int32_t x,
                  int32_t y,
                  const char** val,
-                 int32_t val_count) {
-  return TILEMAP->SetValue(x, y, val, val_count);
+                 int32_t val_length) {
+  return TILEMAP->SetValue(x, y, val, val_length);
 }
 
 void tilemap_copy(void* self,
