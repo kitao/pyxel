@@ -53,7 +53,7 @@ void Audio::callback(void* userdata, uint8_t* stream, int len) {
     uint16_t output = 0;
 
     for (int32_t i = 0; i < MUSIC_CHANNEL_COUNT; i++) {
-      output += audio->channel_list_[i].Output();
+      output += audio->channel_[i].Output();
     }
 
     frame_data[i] = output;
@@ -72,26 +72,26 @@ void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
   }
 
   Sound* sound = sound_bank_[sound_index];
-  channel_list_[channel].PlaySound(&sound, 1, loop);
+  channel_[channel].PlaySound(&sound, 1, loop);
 }
 
 void Audio::PlaySound(int32_t channel,
                       int32_t* sound_index,
-                      int32_t sound_count,
+                      int32_t sound_length,
                       bool loop) {
   if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
     PRINT_ERROR("invalid channel");
     return;
   }
 
-  if (sound_count < 0 || sound_count >= MAX_MUSIC_LENGTH) {
-    PRINT_ERROR("invalid sound count");
+  if (sound_length < 0 || sound_length >= MAX_MUSIC_LENGTH) {
+    PRINT_ERROR("invalid sound length");
     return;
   }
 
-  Sound* sound[sound_count];
+  Sound* sound[sound_length];
 
-  for (int32_t i = 0; i < sound_count; i++) {
+  for (int32_t i = 0; i < sound_length; i++) {
     int32_t index = sound_index[i];
 
     if (index < 0 || index >= SOUND_BANK_COUNT) {
@@ -102,7 +102,7 @@ void Audio::PlaySound(int32_t channel,
     sound[i] = sound_bank_[index];
   }
 
-  channel_list_[channel].PlaySound(sound, sound_count, loop);
+  channel_[channel].PlaySound(sound, sound_length, loop);
 }
 
 void Audio::PlayMusic(int32_t music_index, bool loop) {
@@ -128,10 +128,10 @@ void Audio::StopPlaying(int32_t channel) {
 
   if (channel == -1) {
     for (int32_t i = 0; i < MUSIC_CHANNEL_COUNT; i++) {
-      channel_list_[i].StopPlaying();
+      channel_[i].StopPlaying();
     }
   } else {
-    channel_list_[channel].StopPlaying();
+    channel_[channel].StopPlaying();
   }
 }
 
