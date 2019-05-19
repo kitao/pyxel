@@ -2,62 +2,40 @@
 
 namespace pyxelcore {
 
-Music::Music() {}
-
-Music::~Music() {}
-
-void Music::Set(const int32_t* ch0,
-                int32_t ch0_length,
-                const int32_t* ch1,
-                int32_t ch1_length,
-                const int32_t* ch2,
-                int32_t ch2_length,
-                const int32_t* ch3,
-                int32_t ch3_length) {
-  //
+Music::Music() {
+  for (int32_t i = 0; i < MUSIC_CHANNEL_COUNT; i++) {
+    sound_length_[i] = 0;
+  }
 }
 
-/*
-class Music:
-    def __init__(self):
-        self._ch0 = []
-        self._ch1 = []
-        self._ch2 = []
-        self._ch3 = []
+void Music::Set(const int32_t* channel0,
+                int32_t channel0_length,
+                const int32_t* channel1,
+                int32_t channel1_length,
+                const int32_t* channel2,
+                int32_t channel2_length,
+                const int32_t* channel3,
+                int32_t channel3_length) {
+  SetSound(0, channel0, channel0_length);
+  SetSound(1, channel1, channel1_length);
+  SetSound(2, channel2, channel2_length);
+  SetSound(3, channel3, channel3_length);
+}
 
-    @property
-    def ch0(self):
-        return self._ch0
+void Music::SetSound(int32_t channel,
+                     const int32_t* sound,
+                     int32_t sound_length) {
+  if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
+    PRINT_ERROR("invalid music channel");
+  }
 
-    @property
-    def ch1(self):
-        return self._ch1
+  if (sound_length < 0 || sound_length > MAX_MUSIC_LENGTH) {
+    PRINT_ERROR("invalid music length");
+  }
 
-    @property
-    def ch2(self):
-        return self._ch2
-
-    @property
-    def ch3(self):
-        return self._ch3
-
-    def set(self, ch0, ch1, ch2, ch3):
-        self.set_ch0(ch0)
-        self.set_ch1(ch1)
-        self.set_ch2(ch2)
-        self.set_ch3(ch3)
-
-    def set_ch0(self, data):
-        self._ch0[:] = data
-
-    def set_ch1(self, data):
-        self._ch1[:] = data
-
-    def set_ch2(self, data):
-        self._ch2[:] = data
-
-    def set_ch3(self, data):
-        self._ch3[:] = data
-*/
+  for (int32_t i = 0; i < sound_length; i++) {
+    sound_[channel][i] = sound[i];
+  }
+}
 
 }  // namespace pyxelcore
