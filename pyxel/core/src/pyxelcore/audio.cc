@@ -9,7 +9,7 @@ Audio::Audio() {
   SDL_AudioSpec audio_spec;
   audio_spec.freq = AUDIO_SAMPLE_RATE;
   audio_spec.format = AUDIO_S16LSB;
-  audio_spec.channels = 0;
+  audio_spec.channels = 1;
   audio_spec.samples = AUDIO_BLOCK_SIZE;
   audio_spec.callback = callback;
   audio_spec.userdata = this;
@@ -46,7 +46,7 @@ Audio::~Audio() {
 
 void Audio::callback(void* userdata, uint8_t* stream, int len) {
   Audio* audio = reinterpret_cast<Audio*>(userdata);
-  uint16_t* frame_data = reinterpret_cast<uint16_t*>(stream);
+  int16_t* frame_data = reinterpret_cast<int16_t*>(stream);
   int32_t frame_count = len / sizeof(uint16_t);
 
   for (int32_t i = 0; i < frame_count; i++) {
