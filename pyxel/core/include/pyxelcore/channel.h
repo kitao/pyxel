@@ -11,7 +11,7 @@ class Channel {
  public:
   Channel();
 
-  void PlaySound(Sound** sound, int32_t sound_count, bool loop);
+  void PlaySound(Sound** sound, int32_t sound_length, bool loop);
   void StopPlaying();
   int16_t Output();
 
@@ -21,7 +21,7 @@ class Channel {
   bool is_playing_;
   bool is_loop_;
   Sound* sound_[MAX_MUSIC_LENGTH];
-  int32_t sound_count_;
+  int32_t sound_length_;
   int32_t sound_index_;
 
   int32_t time_;

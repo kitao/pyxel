@@ -7,7 +7,7 @@ namespace pyxelcore {
 Channel::Channel() {
   is_playing_ = false;
   is_loop_ = false;
-  sound_count_ = 0;
+  sound_length_ = 0;
   sound_index_ = 0;
 
   time_ = 0;
@@ -25,13 +25,13 @@ Channel::Channel() {
   effect_volume_ = 0;
 }
 
-void Channel::PlaySound(Sound** sound, int32_t sound_count, bool loop) {
+void Channel::PlaySound(Sound** sound, int32_t sound_length, bool loop) {
   is_playing_ = true;
   is_loop_ = loop;
-  sound_count_ = Min(sound_count, MAX_MUSIC_LENGTH);
+  sound_length_ = Min(sound_length, MAX_MUSIC_LENGTH);
   sound_index_ = 0;
 
-  for (int32_t i = 0; i < sound_count_; i++) {
+  for (int32_t i = 0; i < sound_length_; i++) {
     sound_[i] = sound[i];
   }
 
@@ -142,7 +142,7 @@ void Channel::NextNote() {
 void Channel::NextSound() {
   sound_index_ += 1;
 
-  if (sound_index_ < sound_count_) {
+  if (sound_index_ < sound_length_) {
     PlaySound();
   } else if (is_loop_) {
     sound_index_ = 0;
