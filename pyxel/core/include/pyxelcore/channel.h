@@ -13,7 +13,7 @@ class Channel {
 
   void PlaySound(Sound** sound, int32_t sound_count, bool loop);
   void StopPlaying();
-  int32_t Output();
+  int16_t Output();
 
  private:
   Oscillator oscillator_;
@@ -41,22 +41,22 @@ class Channel {
   void PlaySound();
   void NextNote();
   void NextSound();
-  float NoteToPitch(float note);
+  int32_t NoteToPitch(float note);
   float Lfo(int32_t time);
 };
 
-inline int32_t Channel::Output() {
+inline int16_t Channel::Output() {
   NextNote();
 
   return oscillator_.Output();
 }
 
-inline float Channel::NoteToPitch(float note) {
+inline int32_t Channel::NoteToPitch(float note) {
   return 440.0f * pow(2.0f, (note - 33.0f) / 12.0f);
 }
 
 inline float Channel::Lfo(int32_t time) {
-  float x = (time * 8 / AUDIO_SAMPLE_RATE + 0.25f);
+  float x = (time * 8.0f / AUDIO_SAMPLE_RATE + 0.25f);
   x -= static_cast<int32_t>(x);
 
   return Abs(x * 4.0f - 2.0f) - 1.0f;
