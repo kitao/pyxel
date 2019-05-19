@@ -336,11 +336,11 @@ class Sound:
         core.sound_effect_length_setter(self._obj, length)  # type: ignore
 
     @property
-    def speed_length(self) -> int:
+    def speed(self) -> int:
         return core.sound_speed_getter(self._obj)  # type: ignore
 
-    @speed_length.setter
-    def speed_length(self, speed) -> int:
+    @speed.setter
+    def speed(self, speed) -> int:
         core.sound_speed_setter(self._obj, speed)  # type: ignore
 
     def set(self, note: str, tone: str, volume: str, effect: str, speed: int) -> None:
@@ -450,6 +450,17 @@ height: int = 0
 frame_count: int = 0
 
 
+def _update_properties():  # type: ignore
+    module = sys.modules[__name__]
+
+    module.width = core.width_getter()  # type: ignore
+    module.height = core.height_getter()  # type: ignore
+    module.frame_count = core.frame_count_getter()  # type: ignore
+
+    module.mouse_x = core.mouse_x_getter()  # type: ignore
+    module.mouse_y = core.mouse_y_getter()  # type: ignore
+
+
 def init(
     width: int,
     height: int,
@@ -474,18 +485,12 @@ def init(
         int(border_color),
     )
 
+    _update_properties()
+
 
 def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
     def update_wrapper():  # type: ignore
-        module = sys.modules[__name__]
-
-        module.width = core.width_getter()  # type: ignore
-        module.height = core.height_getter()  # type: ignore
-        module.frame_count = core.frame_count_getter()  # type: ignore
-
-        module.mouse_x = core.mouse_x_getter()  # type: ignore
-        module.mouse_y = core.mouse_y_getter()  # type: ignore
-
+        _update_properties()
         update()
 
     core.run(CFUNCTYPE(None)(update_wrapper), CFUNCTYPE(None)(draw))
@@ -623,9 +628,10 @@ def music(msc: int) -> Music:
     return Music(core.music(int(msc)))
 
 
-def play(ch: int, snd: int, *, loop: bool = False) -> None:
+def play(ch: int, snd: Any, *, loop: bool = False) -> None:
     if isinstance(snd, list):
-        pass  # TODO
+        snd_count = len(snd)
+        core.play(int(ch), (c_int32 * snd_count)(*snd), int(snd_count), int(loop))
     else:
         core.play1(int(ch), int(snd), int(loop))
 
