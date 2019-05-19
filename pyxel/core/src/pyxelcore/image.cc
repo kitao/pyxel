@@ -43,9 +43,9 @@ void Image::SetValue(int32_t x, int32_t y, int32_t value) {
 void Image::SetValue(int32_t x,
                      int32_t y,
                      const char** value,
-                     int32_t value_count) {
+                     int32_t value_length) {
   int32_t width = strlen(value[0]);
-  int32_t height = value_count;
+  int32_t height = value_length;
 
   if (width < 1 || height < 1) {
     PRINT_ERROR("invalid value size");
