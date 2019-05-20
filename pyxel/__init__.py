@@ -707,16 +707,20 @@ def load_as_old_pyxel_format(filename: str) -> bool:
             src = sound_list[i]
             dest = _sound(i)
 
-            for i in range(len(src._note)):
+            dest.note_length = len(src._note)
+            for i in range(dest.note_length):
                 dest.note[i] = src._note[i]
 
-            for i in range(len(src._tone)):
+            dest.tone_length = len(src._tone)
+            for i in range(dest.tone_length):
                 dest.tone[i] = src._tone[i]
 
-            for i in range(len(src._volume)):
+            dest.volume_length = len(src._volume)
+            for i in range(dest.volume_length):
                 dest.volume[i] = src._volume[i]
 
-            for i in range(len(src._effect)):
+            dest.effect_length = len(src._effect)
+            for i in range(dest.effect_length):
                 dest.effect[i] = src._effect[i]
 
             dest.speed = src.speed
@@ -727,16 +731,20 @@ def load_as_old_pyxel_format(filename: str) -> bool:
             src = music_list[i]
             dest = _music(i)
 
-            for i in range(len(src._ch1)):
+            dest.ch0_length = len(src._ch0)
+            for i in range(dest.ch0_length):
+                dest.ch0[i] = src._ch0[i]
+
+            dest.ch1_length = len(src._ch1)
+            for i in range(dest.ch1_length):
                 dest.ch1[i] = src._ch1[i]
 
-            for i in range(len(src._ch1)):
-                dest.ch1[i] = src._ch1[i]
+            dest.ch2_length = len(src._ch2)
+            for i in range(dest.ch2_length):
+                dest.ch2[i] = src._ch2[i]
 
-            for i in range(len(src._ch1)):
-                dest.ch1[i] = src._ch1[i]
-
-            for i in range(len(src._ch1)):
-                dest.ch1[i] = src._ch1[i]
+            dest.ch3_length = len(src._ch3)
+            for i in range(dest.ch3_length):
+                dest.ch3[i] = src._ch3[i]
 
     return True
