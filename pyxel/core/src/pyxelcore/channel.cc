@@ -52,7 +52,7 @@ void Channel::PlaySound() {
   total_note_time_ = one_note_time_ * sound->NoteLength();
 }
 
-void Channel::NextNote() {
+void Channel::Update() {
   if (!is_playing_) {
     return;
   }
@@ -65,7 +65,7 @@ void Channel::NextNote() {
   // forward note
   if (time_ % one_note_time_ == 0) {
     Sound* sound = sound_[sound_index_];
-    int32_t pos = static_cast<float>(time_ / one_note_time_);
+    int32_t pos = time_ / one_note_time_;
     note_ = sound->Note()[pos];
     volume_ = (sound->VolumeLength() > 0
                    ? sound->Volume()[pos % sound->VolumeLength()]
@@ -126,8 +126,7 @@ void Channel::NextNote() {
       case EFFECT_FADEOUT:
         oscillator_.SetVolume(
             static_cast<float>(effect_volume_) *
-            (1.0f -
-             ((static_cast<float>(time_) - effect_time_) / one_note_time_)));
+            (1.0f - static_cast<float>(time_ - effect_time_) / one_note_time_));
         break;
     }
   }
