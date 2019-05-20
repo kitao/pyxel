@@ -39,14 +39,14 @@ class Channel {
   int32_t effect_volume_;
 
   void PlaySound();
-  void NextNote();
+  void Update();
   void NextSound();
   int32_t NoteToPitch(float note);
   float Lfo(int32_t time);
 };
 
 inline int16_t Channel::Output() {
-  NextNote();
+  Update();
 
   return oscillator_.Output();
 }

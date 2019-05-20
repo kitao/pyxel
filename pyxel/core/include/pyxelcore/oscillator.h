@@ -65,9 +65,6 @@ inline void Oscillator::SetTone(int32_t tone) {
     case TONE_NOISE:
       next_tone_ = &Oscillator::Noise;
       break;
-
-    default:
-      next_tone_ = nullptr;
   }
 }
 

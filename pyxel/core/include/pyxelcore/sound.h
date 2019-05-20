@@ -19,7 +19,7 @@ class Sound {
   int32_t ToneLength() const { return tone_length_; }
   void ToneLength(int32_t length);
 
-  int32_t* Volume() { return tone_; }
+  int32_t* Volume() { return volume_; }
   int32_t VolumeLength() const { return volume_length_; }
   void VolumeLength(int32_t length);
 
