@@ -50,7 +50,7 @@ void Audio::callback(void* userdata, uint8_t* stream, int len) {
   int32_t frame_count = len / sizeof(uint16_t);
 
   for (int32_t i = 0; i < frame_count; i++) {
-    uint16_t output = 0;
+    int16_t output = 0;
 
     for (int32_t i = 0; i < MUSIC_CHANNEL_COUNT; i++) {
       output += audio->channel_[i].Output();

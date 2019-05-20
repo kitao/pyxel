@@ -59,7 +59,6 @@ void Sound::SetNote(const char* note) {
         char buf[256];
         snprintf(buf, sizeof(buf), "invalid sound note '%c'", c);
         PRINT_ERROR(buf);
-        printf("index %d\n", i);
 
         return;
       }
