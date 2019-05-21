@@ -88,7 +88,7 @@ class App(Widget):
             "mouse_hover", self.__on_save_button_mouse_hover
         )
 
-        glfw.set_drop_callback(pyxel._app._window, self._drop_callback)
+        # TODO: glfw.set_drop_callback(pyxel._app._window, self._drop_callback)
         image_file = os.path.join(
             os.path.dirname(__file__), "assets", EDITOR_IMAGE_NAME
         )
