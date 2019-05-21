@@ -4,6 +4,8 @@ import sys
 from ctypes import CFUNCTYPE, c_char_p, c_int32, cast, create_string_buffer
 from typing import Any, Callable, List, Optional
 
+import numpy as np  # type: ignore
+
 from . import core  # type: ignore
 
 
@@ -207,8 +209,10 @@ class Image:
         return core.image_height_getter(self._obj)  # type: ignore
 
     @property
-    def data(self) -> List[int]:
-        return core.image_data_getter(self._obj)  # type: ignore
+    def data(self) -> Any:
+        return np.ctypeslib.as_array(
+            core.image_data_getter(self._obj), shape=(self.height, self.width)
+        )
 
     def get(self, x: int, y: int) -> int:
         return core.image_get(self._obj, int(x), int(y))  # type: ignore
@@ -256,11 +260,13 @@ class Tilemap:
         return core.tilemap_height_getter(self._obj)  # type: ignore
 
     @property
-    def data(self) -> List[int]:
-        return core.tilemap_data_getter(self._obj)  # type: ignore
+    def data(self) -> Any:
+        return np.ctypeslib.as_array(
+            core.tilemap_data_getter(self._obj), shape=(self.height, self.width)
+        )
 
     @property
-    def refimg(self) -> List[int]:
+    def refimg(self) -> int:
         return core.tilemap_refimg_getter(self._obj)  # type: ignore
 
     @refimg.setter
@@ -297,60 +303,60 @@ class Sound:
         self._obj = obj
 
     @property
-    def note(self) -> List[int]:
-        return core.sound_note_getter(self._obj)  # type: ignore
+    def note(self) -> Any:
+        return np.ctypeslib.as_array(core.sound_note_getter(self._obj), shape=(256,))
 
     @property
     def note_length(self) -> int:
         return core.sound_note_length_getter(self._obj)  # type: ignore
 
     @note_length.setter
-    def note_length(self, length) -> int:
-        core.sound_note_length_setter(self._obj, length)  # type: ignore
+    def note_length(self, length: int) -> None:
+        core.sound_note_length_setter(self._obj, length)
 
     @property
-    def tone(self) -> List[int]:
-        return core.sound_tone_getter(self._obj)  # type: ignore
+    def tone(self) -> Any:
+        return np.ctypeslib.as_array(core.sound_tone_getter(self._obj), shape=(256,))
 
     @property
     def tone_length(self) -> int:
         return core.sound_tone_length_getter(self._obj)  # type: ignore
 
     @tone_length.setter
-    def tone_length(self, length) -> int:
-        core.sound_tone_length_setter(self._obj, length)  # type: ignore
+    def tone_length(self, length: int) -> None:
+        core.sound_tone_length_setter(self._obj, length)
 
     @property
-    def volume(self) -> List[int]:
-        return core.sound_volume_getter(self._obj)  # type: ignore
+    def volume(self) -> Any:
+        return np.ctypeslib.as_array(core.sound_volume_getter(self._obj), shape=(256,))
 
     @property
     def volume_length(self) -> int:
         return core.sound_volume_length_getter(self._obj)  # type: ignore
 
     @volume_length.setter
-    def volume_length(self, length) -> int:
-        core.sound_volume_length_setter(self._obj, length)  # type: ignore
+    def volume_length(self, length: int) -> None:
+        core.sound_volume_length_setter(self._obj, length)
 
     @property
-    def effect(self) -> List[int]:
-        return core.sound_effect_getter(self._obj)  # type: ignore
+    def effect(self) -> Any:
+        return np.ctypeslib.as_array(core.sound_effect_getter(self._obj), shape=(256,))
 
     @property
     def effect_length(self) -> int:
         return core.sound_effect_length_getter(self._obj)  # type: ignore
 
     @effect_length.setter
-    def effect_length(self, length) -> int:
-        core.sound_effect_length_setter(self._obj, length)  # type: ignore
+    def effect_length(self, length: int) -> None:
+        core.sound_effect_length_setter(self._obj, length)
 
     @property
     def speed(self) -> int:
         return core.sound_speed_getter(self._obj)  # type: ignore
 
     @speed.setter
-    def speed(self, speed) -> int:
-        core.sound_speed_setter(self._obj, speed)  # type: ignore
+    def speed(self, speed: int) -> None:
+        core.sound_speed_setter(self._obj, speed)
 
     def set(self, note: str, tone: str, volume: str, effect: str, speed: int) -> None:
         core.sound_set(
@@ -383,52 +389,52 @@ class Music:
         self._obj = obj
 
     @property
-    def ch0(self) -> List[int]:
-        return core.music_ch0_getter(self._obj)  # type: ignore
+    def ch0(self) -> Any:
+        return np.ctypeslib.as_array(core.music_ch0_getter(self._obj), shape=(256,))
 
     @property
     def ch0_length(self) -> int:
         return core.music_ch0_length_getter(self._obj)  # type: ignore
 
     @ch0_length.setter
-    def ch0_length(self, length) -> int:
-        core.music_ch0_length_setter(self._obj, length)  # type: ignore
+    def ch0_length(self, length: int) -> None:
+        core.music_ch0_length_setter(self._obj, length)
 
     @property
-    def ch1(self) -> List[int]:
-        return core.music_ch1_getter(self._obj)  # type: ignore
+    def ch1(self) -> Any:
+        return np.ctypeslib.as_array(core.music_ch1_getter(self._obj), shape=(256,))
 
     @property
     def ch1_length(self) -> int:
         return core.music_ch1_length_getter(self._obj)  # type: ignore
 
     @ch1_length.setter
-    def ch1_length(self, length) -> int:
-        core.music_ch1_length_setter(self._obj, length)  # type: ignore
+    def ch1_length(self, length: int) -> None:
+        core.music_ch1_length_setter(self._obj, length)
 
     @property
-    def ch2(self) -> List[int]:
-        return core.music_ch2_getter(self._obj)  # type: ignore
+    def ch2(self) -> Any:
+        return np.ctypeslib.as_array(core.music_ch2_getter(self._obj), shape=(256,))
 
     @property
     def ch2_length(self) -> int:
         return core.music_ch2_length_getter(self._obj)  # type: ignore
 
     @ch2_length.setter
-    def ch2_length(self, length) -> int:
-        core.music_ch2_length_setter(self._obj, length)  # type: ignore
+    def ch2_length(self, length: int) -> None:
+        core.music_ch2_length_setter(self._obj, length)
 
     @property
-    def ch3(self) -> List[int]:
-        return core.music_ch3_getter(self._obj)  # type: ignore
+    def ch3(self) -> Any:
+        return np.ctypeslib.as_array(core.music_ch3_getter(self._obj), shape=(256,))
 
     @property
     def ch3_length(self) -> int:
         return core.music_ch3_length_getter(self._obj)  # type: ignore
 
     @ch3_length.setter
-    def ch3_length(self, length) -> int:
-        core.music_ch3_length_setter(self._obj, length)  # type: ignore
+    def ch3_length(self, length: int) -> None:
+        core.music_ch3_length_setter(self._obj, length)
 
     def set(self, ch0: str, ch1: str, ch2: str, ch3: str) -> None:
         core.music_set(
@@ -494,12 +500,12 @@ def init(
         int(border_color),
     )
 
-    _update_properties()
+    _update_properties()  # type: ignore
 
 
 def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
     def update_wrapper():  # type: ignore
-        _update_properties()
+        _update_properties()  # type: ignore
         update()
 
     core.run(CFUNCTYPE(None)(update_wrapper), CFUNCTYPE(None)(draw))
@@ -675,40 +681,18 @@ def load_as_old_pyxel_format(filename: str) -> bool:
 
     image_list = data.get("image")
     if image_list:
-        for i in range(len(image_list)):
-            index = 0
-            image_array = pickle.loads(image_list[i])
-            image_data = image(i).data
-
-            for line in image_array:
-                for elem in line:
-                    image_data[index] = elem
-                    index += 1
+        for i in range(IMAGE_BANK_COUNT - 1):
+            image(i).data[:, :] = pickle.loads(image_list[i])
 
     tilemap_list = data.get("tilemap")
     if tilemap_list:
         if type(tilemap_list[0]) is tuple:
-            for i in range(8):
-                index = 0
-                tilemap_array = pickle.loads(tilemap_list[i][0])
-                tilemap_data = tilemap(i).data
-
-                for line in tilemap_array:
-                    for elem in line:
-                        tilemap_data[index] = elem
-                        index += 1
-
+            for i in range(TILEMAP_BANK_COUNT):
+                tilemap(i).data[:, :] = pickle.loads(tilemap_list[i][0])
                 tilemap(i).refimg = tilemap_list[i][1]
         else:  # todo: delete this block in the future
-            for i in range(8):
-                index = 0
-                tilemap_array = pickle.loads(tilemap_list[i])
-                tilemap_data = tilemap(i).data
-
-                for line in tilemap_array:
-                    for elem in line:
-                        tilemap_data[index] = elem
-                        index += 1
+            for i in range(TILEMAP_BANK_COUNT):
+                tilemap(i).data[:, :] = pickle.loads(tilemap_list[i])
 
     sound_list = data.get("sound")
     if sound_list:
@@ -740,20 +724,20 @@ def load_as_old_pyxel_format(filename: str) -> bool:
             src = music_list[i]
             dest = _music(i)
 
-            dest.ch0_length = len(src._ch0)
-            for i in range(dest.ch0_length):
-                dest.ch0[i] = src._ch0[i]
+            dest.ch0_length = len(src._ch0)  # type: ignore
+            for i in range(dest.ch0_length):  # type: ignore
+                dest.ch0[i] = src._ch0[i]  # type: ignore
 
-            dest.ch1_length = len(src._ch1)
-            for i in range(dest.ch1_length):
-                dest.ch1[i] = src._ch1[i]
+            dest.ch1_length = len(src._ch1)  # type: ignore
+            for i in range(dest.ch1_length):  # type: ignore
+                dest.ch1[i] = src._ch1[i]  # type: ignore
 
-            dest.ch2_length = len(src._ch2)
-            for i in range(dest.ch2_length):
-                dest.ch2[i] = src._ch2[i]
+            dest.ch2_length = len(src._ch2)  # type: ignore
+            for i in range(dest.ch2_length):  # type: ignore
+                dest.ch2[i] = src._ch2[i]  # type: ignore
 
-            dest.ch3_length = len(src._ch3)
-            for i in range(dest.ch3_length):
-                dest.ch3[i] = src._ch3[i]
+            dest.ch3_length = len(src._ch3)  # type: ignore
+            for i in range(dest.ch3_length):  # type: ignore
+                dest.ch3[i] = src._ch3[i]  # type: ignore
 
     return True
