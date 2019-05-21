@@ -1,5 +1,5 @@
 import pyxel
-from pyxel.constants import FONT_HEIGHT, FONT_WIDTH
+from pyxel import FONT_HEIGHT, FONT_WIDTH
 
 from .button import Button
 from .constants import (

@@ -44,6 +44,15 @@ DEFAULT_FPS: int = get_constant_number("DEFAULT_FPS")
 DEFAULT_BORDER_WIDTH: int = get_constant_number("DEFAULT_BORDER_WIDTH")
 DEFAULT_BORDER_COLOR: int = get_constant_number("DEFAULT_BORDER_COLOR")
 
+IMAGE_BANK_COUNT: int = get_constant_number("IMAGE_BANK_COUNT")
+TILEMAP_BANK_COUNT: int = get_constant_number("TILEMAP_BANK_COUNT")
+SOUND_BANK_COUNT: int = get_constant_number("SOUND_BANK_COUNT")
+MUSIC_BANK_COUNT: int = get_constant_number("MUSIC_BANK_COUNT")
+MUSIC_CHANNEL_COUNT: int = get_constant_number("MUSIC_CHANNEL_COUNT")
+
+FONT_WIDTH: int = get_constant_number("FONT_WIDTH")
+FONT_HEIGHT: int = get_constant_number("FONT_HEIGHT")
+
 KEY_SPACE: int = get_constant_number("KEY_SPACE")
 KEY_APOSTROPHE: int = get_constant_number("KEY_APOSTROPHE")
 KEY_COMMA: int = get_constant_number("KEY_COMMA")
