@@ -1,5 +1,5 @@
 import pyxel
-from pyxel.constants import AUDIO_SOUND_COUNT
+from pyxel import SOUND_BANK_COUNT
 from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, SOUND_MAX_LENGTH
@@ -27,7 +27,7 @@ class SoundEditor(Editor):
         self._is_playing = False
         self._play_pos = None
         self._history_data = None
-        self._sound_picker = NumberPicker(self, 45, 17, 0, AUDIO_SOUND_COUNT - 2, 0)
+        self._sound_picker = NumberPicker(self, 45, 17, 0, SOUND_BANK_COUNT - 2, 0)
         self._speed_picker = NumberPicker(self, 105, 17, 1, 99, pyxel.sound(0).speed)
         self._play_button = ImageButton(
             self, 185, 17, 3, EDITOR_IMAGE_X + 126, EDITOR_IMAGE_Y
