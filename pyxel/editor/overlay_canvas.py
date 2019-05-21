@@ -1,7 +1,5 @@
 import numpy as np
 
-from pyxel.utilities import copy_ndarray
-
 
 class OverlayCanvas:
     COLOR_NONE = 0x7FFF

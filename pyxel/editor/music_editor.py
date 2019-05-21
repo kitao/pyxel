@@ -1,5 +1,5 @@
 import pyxel
-from pyxel.constants import AUDIO_CHANNEL_COUNT, AUDIO_MUSIC_COUNT
+from pyxel import MUSIC_BANK_COUNT, MUSIC_CHANNEL_COUNT
 from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MUSIC_MAX_LENGTH
@@ -14,16 +14,16 @@ class MusicEditor(Editor):
         super().__init__(parent)
 
         self._is_playing = False
-        self._play_pos = [0 for _ in range(AUDIO_CHANNEL_COUNT)]
+        self._play_pos = [0 for _ in range(MUSIC_CHANNEL_COUNT)]
         self.field_cursor = FieldCursor(
             self.get_data,
             self.add_pre_history,
             self.add_post_history,
             MUSIC_MAX_LENGTH,
             16,
-            AUDIO_CHANNEL_COUNT,
+            MUSIC_CHANNEL_COUNT,
         )
-        self._music_picker = NumberPicker(self, 45, 17, 0, AUDIO_MUSIC_COUNT - 1, 0)
+        self._music_picker = NumberPicker(self, 45, 17, 0, MUSIC_BANK_COUNT - 1, 0)
         self._play_button = ImageButton(
             self, 185, 17, 3, EDITOR_IMAGE_X + 126, EDITOR_IMAGE_Y
         )
