@@ -69,7 +69,7 @@ class Graphics {
 
   void SetupMouseCursor();
   void SetupFont();
-  int32_t GetDrawColor(int32_t color) const;
+  int32_t GetDrawColor(int32_t color, const char* func_name) const;
   void SetPixel(int32_t x, int32_t y, int32_t color);
 };
 
@@ -95,14 +95,17 @@ inline Tilemap* Graphics::GetTilemapBank(int32_t tilemap_index) const {
   return tilemap_bank_[tilemap_index];
 }
 
-inline int32_t Graphics::GetDrawColor(int32_t color) const {
+inline int32_t Graphics::GetDrawColor(int32_t color,
+                                      const char* func_name) const {
   if (color < 0 || color >= COLOR_COUNT) {
-    PRINT_ERROR("invalid color");
+    PrintError("invalid color", func_name);
     return 0;
   }
 
   return palette_table_[color];
 }
+
+#define GET_DRAW_COLOR(color) GetDrawColor(color, __FUNCTION__)
 
 inline void Graphics::SetPixel(int32_t x, int32_t y, int32_t draw_color) {
   if (clip_area_.Includes(x, y)) {
