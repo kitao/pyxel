@@ -1,5 +1,4 @@
 import pyxel
-from pyxel import MUSIC_BANK_COUNT, MUSIC_CHANNEL_COUNT
 from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MUSIC_MAX_LENGTH
@@ -7,6 +6,9 @@ from .editor import Editor
 from .field_cursor import FieldCursor
 from .music_field import MusicField
 from .sound_selector import SoundSelector
+
+MUSIC_BANK_COUNT = pyxel.get_constant_number("MUSIC_BANK_COUNT")
+MUSIC_CHANNEL_COUNT = pyxel.get_constant_number("MUSIC_CHANNEL_COUNT")
 
 
 class MusicEditor(Editor):
