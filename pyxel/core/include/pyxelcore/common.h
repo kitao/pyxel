@@ -3,8 +3,6 @@
 
 #include "pyxelcore/constants.h"
 
-#define PRINT_ERROR(message) PrintError(message, __FUNCTION__)
-
 namespace pyxelcore {
 
 template <typename T>
@@ -51,6 +49,8 @@ T** NewPointerArrayFromArray2D(T (&array2d)[N][M]) {
 inline void PrintError(const char* message, const char* func_name) {
   printf("pyxel error: %s in '%s'\n", message, func_name);
 }
+
+#define PRINT_ERROR(message) PrintError(message, __FUNCTION__)
 
 }  // namespace pyxelcore
 
