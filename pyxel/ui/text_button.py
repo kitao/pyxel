@@ -1,5 +1,4 @@
 import pyxel
-from pyxel import FONT_HEIGHT, FONT_WIDTH
 
 from .button import Button
 from .constants import (
@@ -8,6 +7,9 @@ from .constants import (
     BUTTON_PRESSED_COLOR,
     BUTTON_TEXT_COLOR,
 )
+
+FONT_WIDTH = pyxel.get_constant_number("FONT_WIDTH")
+FONT_HEIGHT = pyxel.get_constant_number("FONT_HEIGHT")
 
 
 class TextButton(Button):
