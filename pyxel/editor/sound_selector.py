@@ -1,8 +1,9 @@
 import pyxel
-from pyxel import SOUND_BANK_COUNT
 from pyxel.ui import Widget
 
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
+
+SOUND_BANK_COUNT = pyxel.get_constant_number("SOUND_BANK_COUNT")
 
 
 class SoundSelector(Widget):

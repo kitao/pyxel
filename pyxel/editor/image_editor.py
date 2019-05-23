@@ -1,13 +1,14 @@
 import os.path
 
 import pyxel
-from pyxel import IMAGE_BANK_COUNT
 from pyxel.ui import ColorPicker, NumberPicker, RadioButton
 
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, TOOL_PENCIL
 from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
+
+IMAGE_BANK_COUNT = pyxel.get_constant_number("IMAGE_BANK_COUNT")
 
 
 class ImageEditor(Editor):
