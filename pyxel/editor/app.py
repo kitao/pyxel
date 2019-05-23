@@ -1,7 +1,5 @@
 import os
 
-import glfw
-
 import pyxel
 from pyxel.ui import ImageButton, RadioButton, Widget
 from pyxel.ui.constants import (
