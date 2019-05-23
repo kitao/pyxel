@@ -69,7 +69,7 @@ void Graphics::SetPalette(int32_t src_color, int32_t dst_color) {
 }
 
 void Graphics::ClearScreen(int32_t color) {
-  int32_t draw_color = GetDrawColor(color);
+  int32_t draw_color = GET_DRAW_COLOR(color);
   int32_t size = screen_width_ * screen_height_;
 
   for (int32_t i = 0; i < size; i++) {
@@ -78,7 +78,7 @@ void Graphics::ClearScreen(int32_t color) {
 }
 
 void Graphics::DrawPoint(int32_t x, int32_t y, int32_t color) {
-  SetPixel(x, y, GetDrawColor(color));
+  SetPixel(x, y, GET_DRAW_COLOR(color));
 }
 
 void Graphics::DrawLine(int32_t x1,
@@ -86,7 +86,7 @@ void Graphics::DrawLine(int32_t x1,
                         int32_t x2,
                         int32_t y2,
                         int32_t color) {
-  int32_t draw_color = GetDrawColor(color);
+  int32_t draw_color = GET_DRAW_COLOR(color);
 
   if (x1 == x2 && y1 == y2) {
     SetPixel(x1, y1, draw_color);
@@ -145,7 +145,7 @@ void Graphics::DrawRectangle(int32_t x1,
                              int32_t x2,
                              int32_t y2,
                              int32_t color) {
-  int32_t draw_color = GetDrawColor(color);
+  int32_t draw_color = GET_DRAW_COLOR(color);
   Rectangle draw_rect =
       Rectangle::FromPos(x1, y1, x2, y2).Intersect(clip_area_);
 
@@ -172,7 +172,7 @@ void Graphics::DrawRectangleBorder(int32_t x1,
                                    int32_t x2,
                                    int32_t y2,
                                    int32_t color) {
-  int32_t draw_color = GetDrawColor(color);
+  int32_t draw_color = GET_DRAW_COLOR(color);
   Rectangle draw_rect = Rectangle::FromPos(x1, y1, x2, y2);
 
   if (draw_rect.Intersect(clip_area_).IsEmpty()) {
@@ -196,7 +196,7 @@ void Graphics::DrawRectangleBorder(int32_t x1,
 }
 
 void Graphics::DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color) {
-  int32_t draw_color = GetDrawColor(color);
+  int32_t draw_color = GET_DRAW_COLOR(color);
 
   if (radius == 0) {
     SetPixel(x, y, draw_color);
@@ -225,7 +225,7 @@ void Graphics::DrawCircleBorder(int32_t x,
                                 int32_t y,
                                 int32_t radius,
                                 int32_t color) {
-  int32_t draw_color = GetDrawColor(color);
+  int32_t draw_color = GET_DRAW_COLOR(color);
 
   if (radius == 0) {
     SetPixel(x, y, draw_color);
@@ -365,7 +365,7 @@ void Graphics::DrawTilemap(int32_t x,
 }
 
 void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
-  int32_t draw_color = GetDrawColor(color);
+  int32_t draw_color = GET_DRAW_COLOR(color);
   int32_t cur_color = palette_table_[FONT_COLOR];
   palette_table_[FONT_COLOR] = draw_color;
 
