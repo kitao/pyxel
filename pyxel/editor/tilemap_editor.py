@@ -1,5 +1,4 @@
 import pyxel
-from pyxel import IMAGE_BANK_COUNT, TILEMAP_BANK_COUNT
 from pyxel.ui import NumberPicker, RadioButton
 
 from .constants import (
@@ -13,6 +12,9 @@ from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
 from .tilemap_panel import TilemapPanel
+
+IMAGE_BANK_COUNT = pyxel.get_constant_number("IMAGE_BANK_COUNT")
+TILEMAP_BANK_COUNT = pyxel.get_constant_number("TILEMAP_BANK_COUNT")
 
 
 class TileMapEditor(Editor):

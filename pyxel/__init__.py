@@ -46,15 +46,6 @@ DEFAULT_FPS: int = get_constant_number("DEFAULT_FPS")
 DEFAULT_BORDER_WIDTH: int = get_constant_number("DEFAULT_BORDER_WIDTH")
 DEFAULT_BORDER_COLOR: int = get_constant_number("DEFAULT_BORDER_COLOR")
 
-IMAGE_BANK_COUNT: int = get_constant_number("IMAGE_BANK_COUNT")
-TILEMAP_BANK_COUNT: int = get_constant_number("TILEMAP_BANK_COUNT")
-SOUND_BANK_COUNT: int = get_constant_number("SOUND_BANK_COUNT")
-MUSIC_BANK_COUNT: int = get_constant_number("MUSIC_BANK_COUNT")
-MUSIC_CHANNEL_COUNT: int = get_constant_number("MUSIC_CHANNEL_COUNT")
-
-FONT_WIDTH: int = get_constant_number("FONT_WIDTH")
-FONT_HEIGHT: int = get_constant_number("FONT_HEIGHT")
-
 KEY_SPACE: int = get_constant_number("KEY_SPACE")
 KEY_APOSTROPHE: int = get_constant_number("KEY_APOSTROPHE")
 KEY_COMMA: int = get_constant_number("KEY_COMMA")
@@ -681,17 +672,17 @@ def load_as_old_pyxel_format(filename: str) -> bool:
 
     image_list = data.get("image")
     if image_list:
-        for i in range(IMAGE_BANK_COUNT - 1):
+        for i in range(len(image_list)):
             image(i).data[:, :] = pickle.loads(image_list[i])
 
     tilemap_list = data.get("tilemap")
     if tilemap_list:
         if type(tilemap_list[0]) is tuple:
-            for i in range(TILEMAP_BANK_COUNT):
+            for i in range(len(tilemap_list)):
                 tilemap(i).data[:, :] = pickle.loads(tilemap_list[i][0])
                 tilemap(i).refimg = tilemap_list[i][1]
         else:  # todo: delete this block in the future
-            for i in range(TILEMAP_BANK_COUNT):
+            for i in range(len(tilemap_list)):
                 tilemap(i).data[:, :] = pickle.loads(tilemap_list[i])
 
     sound_list = data.get("sound")
