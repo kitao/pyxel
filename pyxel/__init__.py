@@ -709,50 +709,50 @@ def load_as_old_pyxel_format(filename: str) -> bool:
     if sound_list:
         for i in range(len(sound_list)):
             src = sound_list[i]
-            dest = _sound(i)
+            dst = _sound(i)
 
-            dest.note_length = len(src._note)
-            for i in range(dest.note_length):
-                dest.note[i] = src._note[i]
+            dst.note_length = len(src._note)
+            for i in range(dst.note_length):
+                dst.note[i] = src._note[i]
 
-            dest.tone_length = len(src._tone)
-            for i in range(dest.tone_length):
-                dest.tone[i] = src._tone[i]
+            dst.tone_length = len(src._tone)
+            for i in range(dst.tone_length):
+                dst.tone[i] = src._tone[i]
 
-            dest.volume_length = len(src._volume)
-            for i in range(dest.volume_length):
-                dest.volume[i] = src._volume[i]
+            dst.volume_length = len(src._volume)
+            for i in range(dst.volume_length):
+                dst.volume[i] = src._volume[i]
 
-            dest.effect_length = len(src._effect)
-            for i in range(dest.effect_length):
-                dest.effect[i] = src._effect[i]
+            dst.effect_length = len(src._effect)
+            for i in range(dst.effect_length):
+                dst.effect[i] = src._effect[i]
 
-            dest.speed = src.speed
+            dst.speed = src.speed
 
     music_list = data.get("music")
     if music_list:
         for i in range(len(music_list)):
             src = music_list[i]
-            dest = _music(i)
+            dst = _music(i)  # type: ignore
 
-            dest.ch0_length = len(src._ch0)  # type: ignore
-            for i in range(dest.ch0_length):  # type: ignore
-                dest.ch0[i] = src._ch0[i]  # type: ignore
+            dst.ch0_length = len(src._ch0)  # type: ignore
+            for i in range(dst.ch0_length):  # type: ignore
+                dst.ch0[i] = src._ch0[i]  # type: ignore
 
-            dest.ch1_length = len(src._ch1)  # type: ignore
-            for i in range(dest.ch1_length):  # type: ignore
-                dest.ch1[i] = src._ch1[i]  # type: ignore
+            dst.ch1_length = len(src._ch1)  # type: ignore
+            for i in range(dst.ch1_length):  # type: ignore
+                dst.ch1[i] = src._ch1[i]  # type: ignore
 
-            dest.ch2_length = len(src._ch2)  # type: ignore
-            for i in range(dest.ch2_length):  # type: ignore
-                dest.ch2[i] = src._ch2[i]  # type: ignore
+            dst.ch2_length = len(src._ch2)  # type: ignore
+            for i in range(dst.ch2_length):  # type: ignore
+                dst.ch2[i] = src._ch2[i]  # type: ignore
 
-            dest.ch3_length = len(src._ch3)  # type: ignore
-            for i in range(dest.ch3_length):  # type: ignore
-                dest.ch3[i] = src._ch3[i]  # type: ignore
+            dst.ch3_length = len(src._ch3)  # type: ignore
+            for i in range(dst.ch3_length):  # type: ignore
+                dst.ch3[i] = src._ch3[i]  # type: ignore
 
     module = sys.modules[__name__]
-    module.sound = _sound
-    module.music = _music
+    module.sound = _sound  # type: ignore
+    module.music = _music  # type: ignore
 
     return True
