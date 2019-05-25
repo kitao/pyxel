@@ -122,12 +122,12 @@ PYXEL_API int32_t image_height_getter(void* self);
 PYXEL_API int32_t* image_data_getter(void* self);
 
 PYXEL_API int32_t image_get(void* self, int32_t x, int32_t y);
-PYXEL_API void image_set1(void* self, int32_t x, int32_t y, int32_t val);
+PYXEL_API void image_set1(void* self, int32_t x, int32_t y, int32_t data);
 PYXEL_API void image_set(void* self,
                          int32_t x,
                          int32_t y,
-                         const char** val,
-                         int32_t val_length);
+                         const char** data,
+                         int32_t data_length);
 PYXEL_API int32_t image_load(void* self,
                              int32_t x,
                              int32_t y,
@@ -151,12 +151,12 @@ PYXEL_API int32_t tilemap_refimg_getter(void* self);
 PYXEL_API void tilemap_refimg_setter(void* self, int32_t refimg);
 
 PYXEL_API int32_t tilemap_get(void* self, int32_t x, int32_t y);
-PYXEL_API void tilemap_set1(void* self, int32_t x, int32_t y, int32_t val);
+PYXEL_API void tilemap_set1(void* self, int32_t x, int32_t y, int32_t data);
 PYXEL_API void tilemap_set(void* self,
                            int32_t x,
                            int32_t y,
-                           const char** val,
-                           int32_t val_length);
+                           const char** data,
+                           int32_t data_length);
 PYXEL_API void tilemap_copy(void* self,
                             int32_t x,
                             int32_t y,
