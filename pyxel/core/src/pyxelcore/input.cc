@@ -10,9 +10,59 @@ Input::Input() {
   for (int32_t i = 0; i < KEY_COUNT; i++) {
     key_state_[i] = 0;
   }
+
+  /*
+    if (!SDL_IsGameController(JoystickIndex))
+
+    ControllerHandles[ControllerIndex] = SDL_GameControllerOpen(JoystickIndex);
+
+    if(ControllerHandles[ControllerIndex] != 0 &&
+    SDL_GameControllerGetAttached(ControllerHandles[ControllerIndex]))
+    {
+        // NOTE: We have a controller with index ControllerIndex.
+        bool Up =
+    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_BUTTON_DPAD_UP); bool Down =
+    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_BUTTON_DPAD_DOWN); bool Left =
+    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_BUTTON_DPAD_LEFT); bool Right =
+    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_BUTTON_DPAD_RIGHT); bool Start =
+    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_BUTTON_START); bool Back =
+    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_BUTTON_BACK); bool LeftShoulder =
+    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_BUTTON_LEFTSHOULDER); bool RightShoulder =
+    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_BUTTON_RIGHTSHOULDER); bool AButton =
+    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_BUTTON_A); bool BButton =
+    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_BUTTON_B); bool XButton =
+    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_BUTTON_X); bool YButton =
+    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_BUTTON_Y);
+
+        int16 StickX =
+    SDL_GameControllerGetAxis(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_AXIS_LEFTX); int16 StickY =
+    SDL_GameControllerGetAxis(ControllerHandles[ControllerIndex],
+    SDL_CONTROLLER_AXIS_LEFTY);
+    }
+  */
 }
 
-Input::~Input() {}
+Input::~Input() {
+  /*
+   if (ControllerHandles[ControllerIndex])
+   {
+       SDL_GameControllerClose(ControllerHandles[ControllerIndex]);
+   }
+  */
+}
 
 void Input::Update(const Window* window, int32_t frame_count) {
   frame_count_ = frame_count + 1;  // change frame_count to start from 1
@@ -71,8 +121,13 @@ bool Input::IsButtonPressed(int32_t key,
     return true;
   }
 
-  if (period_frame > 0 &&
-      (frame_count_ - (key_state_[key] + hold_frame)) % period_frame == 0) {
+  if (key_state_[key] <= 0 || period_frame <= 0) {
+    return false;
+  }
+
+  int32_t elapsed_frame = frame_count_ - (key_state_[key] + hold_frame);
+
+  if (elapsed_frame >= 0 && elapsed_frame % period_frame == 0) {
     return true;
   }
 
