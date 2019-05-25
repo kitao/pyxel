@@ -117,15 +117,17 @@ bool Input::IsButtonPressed(int32_t key,
     return false;
   }
 
-  if (key_state_[key] == frame_count_) {
+  int32_t press_frame = key_state_[key];
+
+  if (press_frame == frame_count_) {
     return true;
   }
 
-  if (key_state_[key] <= 0 || period_frame <= 0) {
+  if (press_frame <= 0 || period_frame <= 0) {
     return false;
   }
 
-  int32_t elapsed_frame = frame_count_ - (key_state_[key] + hold_frame);
+  int32_t elapsed_frame = frame_count_ - (press_frame + hold_frame);
 
   if (elapsed_frame >= 0 && elapsed_frame % period_frame == 0) {
     return true;
