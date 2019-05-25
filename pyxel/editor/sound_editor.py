@@ -4,8 +4,8 @@ from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 from .constants import (
     EDITOR_IMAGE_X,
     EDITOR_IMAGE_Y,
+    MAX_SOUND_LENGTH,
     SOUND_BANK_COUNT,
-    SOUND_MAX_LENGTH,
 )
 from .editor import Editor
 from .field_cursor import FieldCursor
@@ -23,8 +23,8 @@ class SoundEditor(Editor):
             self.get_data,
             self.add_pre_history,
             self.add_post_history,
-            SOUND_MAX_LENGTH,
-            SOUND_MAX_LENGTH,
+            MAX_SOUND_LENGTH,
+            MAX_SOUND_LENGTH,
             4,
         )
         self.octave = 2
