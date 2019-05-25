@@ -4,11 +4,13 @@
 - Modified .gitignore to ignore .vscode files
 - Changed to use SDL2 instead of GLFW
 - Removed the refimg argument from the Tilemap methods
-- Renamed an arguments of the set method of the Image and Tilemap class
 - Changed the save and load method to return bool value
 - Removed the run_with_profiler API
 - Changed the max screen size to 256
-- Mofieid the screen size of the example #3
+- Modified the screen size of the example #3
+- Changed the max sound length to 48
+- Changed the max music length to 32
+- Changed the number of the sound bank to 7 + 1 for system
 
 ## 1.0.1
 - Simplified comparisons
