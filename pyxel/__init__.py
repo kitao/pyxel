@@ -646,10 +646,6 @@ def text(x: int, y: int, s: str, col: int) -> None:
 #
 # Audio
 #
-def play_pos(ch: int) -> int:
-    return core.play_pos(int(ch))  # type: ignore
-
-
 def sound(snd: int, *, system: bool = False) -> Sound:
     return Sound(core.sound(int(snd), int(system)))
 
@@ -672,6 +668,10 @@ def playm(msc: int, *, loop: bool = False) -> None:
 
 def stop(ch: int = -1) -> None:
     core.stop(int(ch))
+
+
+def play_pos(ch: int) -> int:
+    return core.play_pos(int(ch))  # type: ignore
 
 
 def load_as_old_pyxel_format(filename: str) -> bool:
