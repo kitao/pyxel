@@ -200,10 +200,6 @@ void text(int32_t x, int32_t y, const char* s, int32_t col) {
 //
 // Audio
 //
-int32_t play_pos(int32_t ch) {
-  return s_audio->GetPlayPos(ch);
-}
-
 void* sound(int32_t snd, int32_t system) {
   return s_audio->GetSoundBank(snd, system);
 }
@@ -226,6 +222,10 @@ void playm(int32_t msc, int32_t loop) {
 
 void stop(int32_t ch) {
   s_audio->StopPlaying(ch);
+}
+
+int32_t play_pos(int32_t ch) {
+  return s_audio->GetPlayPos(ch);
 }
 
 //
