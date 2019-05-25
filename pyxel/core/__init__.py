@@ -93,6 +93,9 @@ _setup_api("text", None, [c_int32, c_int32, c_char_p, c_int32])
 #
 # Audio
 #
+_setup_api("playing", c_int32, [])
+_setup_api("play_pos", c_int32, [c_int32])
+
 _setup_api("sound", c_void_p, [c_int32] * 2)
 _setup_api("music", c_void_p, [c_int32])
 _setup_api("play1", None, [c_int32] * 3)
