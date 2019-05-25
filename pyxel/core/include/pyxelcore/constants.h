@@ -369,7 +369,7 @@ const int32_t AUDIO_BLOCK_SIZE = 2205;
 const int32_t AUDIO_ONE_SPEED = AUDIO_SAMPLE_RATE / 120;
 const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (4 * 7);
 
-const int32_t SOUND_BANK_COUNT = 64;
+const int32_t SOUND_BANK_COUNT = 65;
 const int32_t SOUND_BANK_FOR_SYSTEM = SOUND_BANK_COUNT - 1;
 
 const int32_t MUSIC_BANK_COUNT = 8;
