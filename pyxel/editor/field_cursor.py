@@ -6,6 +6,7 @@ class FieldCursor:
     def __init__(
         self,
         data_getter,
+        data_length_getter,
         pre_history_setter,
         post_history_setter,
         data_max_length,
@@ -13,6 +14,7 @@ class FieldCursor:
         data_count,
     ):
         self._get_data = data_getter
+        self._get_data_length = data_length_getter
         self._add_pre_history = pre_history_setter
         self._add_post_history = post_history_setter
         self._data_max_length = data_max_length
@@ -23,11 +25,11 @@ class FieldCursor:
 
     @property
     def x(self):
-        return min(self._x, len(self.data), self._data_max_length - 1)
+        return min(self._x, self.data_length, self._data_max_length - 1)
 
     @property
     def _max_x(self):
-        return min(len(self.data), self._data_max_length - 1)
+        return min(self.data_length, self._data_max_length - 1)
 
     @property
     def y(self):
@@ -36,6 +38,10 @@ class FieldCursor:
     @property
     def data(self):
         return self._get_data(self._y)
+
+    @property
+    def data_length(self):
+        return self._get_data_length(self._y)
 
     def move(self, x, y):
         self._x = x
@@ -109,7 +115,7 @@ class FieldCursor:
         x = self.x
         data = self.data
 
-        if x >= len(data):
+        if x >= self.data_length:
             return
 
         self._add_pre_history(self.x, self.y)
