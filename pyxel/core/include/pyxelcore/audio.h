@@ -13,6 +13,9 @@ class Audio {
   Audio();
   ~Audio();
 
+  bool IsPlaying() const;
+  int32_t GetPlayPos(int32_t channel) const;
+
   Sound* GetSoundBank(int32_t sound_index, bool system = false) const;
   Music* GetMusicBank(int32_t music_index) const;
   void PlaySound(int32_t channel, int32_t sound_index, bool loop = false);
