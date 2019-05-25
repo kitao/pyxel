@@ -1,4 +1,4 @@
-import pyxel
+from pyxel import _get_constant_number
 
 APP_WIDTH = 240
 APP_HEIGHT = 180
@@ -20,10 +20,12 @@ TOOL_CIRCB = 4
 TOOL_CIRC = 5
 TOOL_BUCKET = 6
 
-IMAGE_BANK_COUNT = pyxel.get_constant_number("IMAGE_BANK_COUNT")
-TILEMAP_BANK_COUNT = pyxel.get_constant_number("TILEMAP_BANK_COUNT")
-SOUND_BANK_COUNT = pyxel.get_constant_number("SOUND_BANK_COUNT")
-MUSIC_BANK_COUNT = pyxel.get_constant_number("MUSIC_BANK_COUNT")
-MUSIC_CHANNEL_COUNT = pyxel.get_constant_number("MUSIC_CHANNEL_COUNT")
-MAX_SOUND_LENGTH = pyxel.get_constant_number("MAX_SOUND_LENGTH")
-MAX_MUSIC_LENGTH = pyxel.get_constant_number("MAX_MUSIC_LENGTH")
+IMAGE_BANK_COUNT = _get_constant_number("IMAGE_BANK_COUNT")
+TILEMAP_BANK_COUNT = _get_constant_number("TILEMAP_BANK_COUNT")
+SOUND_BANK_COUNT = _get_constant_number("SOUND_BANK_COUNT")
+MUSIC_BANK_COUNT = _get_constant_number("MUSIC_BANK_COUNT")
+MUSIC_CHANNEL_COUNT = _get_constant_number("MUSIC_CHANNEL_COUNT")
+MAX_SOUND_LENGTH = _get_constant_number("MAX_SOUND_LENGTH")
+MAX_MUSIC_LENGTH = _get_constant_number("MAX_MUSIC_LENGTH")
+FONT_WIDTH = _get_constant_number("FONT_WIDTH")
+FONT_HEIGHT = _get_constant_number("FONT_HEIGHT")

@@ -115,7 +115,7 @@ class MusicEditor(Editor):
     def _stop(self):
         self._is_playing = False
 
-        for i in range(AUDIO_CHANNEL_COUNT):
+        for i in range(MUSIC_CHANNEL_COUNT):
             self._play_pos[i] = None
 
         self._music_picker.is_enabled = True
@@ -142,7 +142,7 @@ class MusicEditor(Editor):
         if self._is_playing:
             self._is_playing = False
 
-            for i in range(AUDIO_CHANNEL_COUNT):
+            for i in range(MUSIC_CHANNEL_COUNT):
                 channel = pyxel._app._audio_player._channel_list[i]
 
                 if channel._is_playing:
