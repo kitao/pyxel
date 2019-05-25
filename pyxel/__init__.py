@@ -731,4 +731,8 @@ def load_as_old_pyxel_format(filename: str) -> bool:
             for i in range(dest.ch3_length):  # type: ignore
                 dest.ch3[i] = src._ch3[i]  # type: ignore
 
+    module = sys.modules[__name__]
+    module.sound = _sound
+    module.music = _music
+
     return True
