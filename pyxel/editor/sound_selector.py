@@ -85,7 +85,7 @@ class SoundSelector(Widget):
         )
 
         for i in range(SOUND_BANK_COUNT - 1):
-            if pyxel.sound(i).note:
+            if pyxel.sound(i).note_length > 0:
                 self._draw_sound_button(i, 12)
 
         if self._pressed_sound is not None:

@@ -85,9 +85,21 @@ class SoundField(Widget):
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 79, 193, 23)
 
         data_str = []
-        data_str.append("".join(["TSPN"[v] for v in self.parent.get_data(1)]))
-        data_str.append("".join([str(v) for v in self.parent.get_data(2)]))
-        data_str.append("".join(["NSVF"[v] for v in self.parent.get_data(3)]))
+
+        s = ""
+        for i in range(self.parent.get_data_length(1)):
+            s += "TSPN"[self.parent.get_data(1)[i]]
+        data_str.append(s)
+
+        s = ""
+        for i in range(self.parent.get_data_length(2)):
+            s += str(self.parent.get_data(2)[i])
+        data_str.append(s)
+
+        s = ""
+        for i in range(self.parent.get_data_length(3)):
+            s += "NSVF"[self.parent.get_data(3)[i]]
+        data_str.append(s)
 
         for i in range(3):
             pyxel.text(31, 150 + i * 8, data_str[i], 1)
