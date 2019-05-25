@@ -203,3 +203,30 @@ class OverlayCanvas:
 
             if y < 15 and dest[y + 1, i] == dest_col:
                 self._fill_recursively(i, y + 1, col, dest)
+
+
+def copy_ndarray(dest, dx, dy, src, sx=0, sy=0, cw=None, ch=None):
+    dh, dw = dest.shape
+    sh, sw = src.shape
+    cw = cw or sw
+    ch = ch or sh
+
+    rx1 = max(max(-dx, 0), max(-sx, 0))
+    ry1 = max(max(-dy, 0), max(-sy, 0))
+    rx2 = max(max(dx + cw - dw, 0), max(sx + cw - sw, 0))
+    ry2 = max(max(dy + ch - dh, 0), max(sy + ch - sh, 0))
+
+    cw -= rx1 + rx2
+    ch -= ry1 + ry2
+
+    if cw <= 0 or ch <= 0:
+        return False
+
+    dx += rx1
+    dy += ry1
+    sx += rx1
+    sy += ry1
+
+    dest[dy : dy + ch, dx : dx + cw] = src[sy : sy + ch, sx : sx + cw]
+
+    return True
