@@ -1,15 +1,18 @@
 import pyxel
 from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, SOUND_MAX_LENGTH
+from .constants import (
+    EDITOR_IMAGE_X,
+    EDITOR_IMAGE_Y,
+    SOUND_BANK_COUNT,
+    SOUND_MAX_LENGTH,
+)
 from .editor import Editor
 from .field_cursor import FieldCursor
 from .octave_bar import OctaveBar
 from .piano_keyboard import PianoKeyboard
 from .piano_roll import PianoRoll
 from .sound_field import SoundField
-
-SOUND_BANK_COUNT = pyxel.get_constant_number("SOUND_BANK_COUNT")
 
 
 class SoundEditor(Editor):
