@@ -21,6 +21,7 @@ class SoundEditor(Editor):
 
         self.field_cursor = FieldCursor(
             self.get_data,
+            self.get_data_length,
             self.add_pre_history,
             self.add_post_history,
             MAX_SOUND_LENGTH,
@@ -95,6 +96,20 @@ class SoundEditor(Editor):
 
         return data
 
+    def get_data_length(self, index):
+        sound = pyxel.sound(self._sound_picker.value)
+
+        if index == 0:
+            data_length = sound.note_length
+        elif index == 1:
+            data_length = sound.tone_length
+        elif index == 2:
+            data_length = sound.volume_length
+        elif index == 3:
+            data_length = sound.effect_length
+
+        return data_length
+
     def add_pre_history(self, x, y):
         self._history_data = data = {}
         data["sound"] = self._sound_picker.value
@@ -146,10 +161,11 @@ class SoundEditor(Editor):
 
     def __on_update(self):
         channel = pyxel._app._audio_player._channel_list[0]
-        self._is_playing = channel._is_playing
-        self._play_pos = (
+        self._is_playing = False  # channel._is_playing
+        self._play_pos = None
+        """(
             int(channel._time / channel._one_note_time) if channel._is_playing else None
-        )
+        )"""
 
         if pyxel.btnp(pyxel.KEY_SPACE):
             if self._is_playing:
