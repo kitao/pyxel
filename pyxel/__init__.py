@@ -297,7 +297,9 @@ class Sound:
 
     @property
     def note(self) -> Any:
-        return np.ctypeslib.as_array(core.sound_note_getter(self._obj), shape=(Sound._MAX_SOUND_LENGTH,))
+        return np.ctypeslib.as_array(
+            core.sound_note_getter(self._obj), shape=(Sound._MAX_SOUND_LENGTH,)
+        )
 
     @property
     def note_length(self) -> int:
@@ -309,7 +311,9 @@ class Sound:
 
     @property
     def tone(self) -> Any:
-        return np.ctypeslib.as_array(core.sound_tone_getter(self._obj), shape=(Sound._MAX_SOUND_LENGTH,))
+        return np.ctypeslib.as_array(
+            core.sound_tone_getter(self._obj), shape=(Sound._MAX_SOUND_LENGTH,)
+        )
 
     @property
     def tone_length(self) -> int:
@@ -321,7 +325,9 @@ class Sound:
 
     @property
     def volume(self) -> Any:
-        return np.ctypeslib.as_array(core.sound_volume_getter(self._obj), shape=(Sound._MAX_SOUND_LENGTH,))
+        return np.ctypeslib.as_array(
+            core.sound_volume_getter(self._obj), shape=(Sound._MAX_SOUND_LENGTH,)
+        )
 
     @property
     def volume_length(self) -> int:
@@ -333,7 +339,9 @@ class Sound:
 
     @property
     def effect(self) -> Any:
-        return np.ctypeslib.as_array(core.sound_effect_getter(self._obj), shape=(Sound._MAX_SOUND_LENGTH,))
+        return np.ctypeslib.as_array(
+            core.sound_effect_getter(self._obj), shape=(Sound._MAX_SOUND_LENGTH,)
+        )
 
     @property
     def effect_length(self) -> int:
@@ -385,7 +393,9 @@ class Music:
 
     @property
     def ch0(self) -> Any:
-        return np.ctypeslib.as_array(core.music_ch0_getter(self._obj), shape=(Music._MAX_MUSIC_LENGTH,))
+        return np.ctypeslib.as_array(
+            core.music_ch0_getter(self._obj), shape=(Music._MAX_MUSIC_LENGTH,)
+        )
 
     @property
     def ch0_length(self) -> int:
@@ -397,7 +407,9 @@ class Music:
 
     @property
     def ch1(self) -> Any:
-        return np.ctypeslib.as_array(core.music_ch1_getter(self._obj), shape=(Music._MAX_MUSIC_LENGTH,))
+        return np.ctypeslib.as_array(
+            core.music_ch1_getter(self._obj), shape=(Music._MAX_MUSIC_LENGTH,)
+        )
 
     @property
     def ch1_length(self) -> int:
@@ -409,7 +421,9 @@ class Music:
 
     @property
     def ch2(self) -> Any:
-        return np.ctypeslib.as_array(core.music_ch2_getter(self._obj), shape=(Music._MAX_MUSIC_LENGTH,))
+        return np.ctypeslib.as_array(
+            core.music_ch2_getter(self._obj), shape=(Music._MAX_MUSIC_LENGTH,)
+        )
 
     @property
     def ch2_length(self) -> int:
@@ -421,7 +435,9 @@ class Music:
 
     @property
     def ch3(self) -> Any:
-        return np.ctypeslib.as_array(core.music_ch3_getter(self._obj), shape=(Music._MAX_MUSIC_LENGTH,))
+        return np.ctypeslib.as_array(
+            core.music_ch3_getter(self._obj), shape=(Music._MAX_MUSIC_LENGTH,)
+        )
 
     @property
     def ch3_length(self) -> int:
