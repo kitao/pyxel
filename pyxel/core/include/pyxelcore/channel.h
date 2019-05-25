@@ -11,6 +11,9 @@ class Channel {
  public:
   Channel();
 
+  bool IsPlaying() const { return is_playing_; }
+  int32_t PlayPos() const { return sound_index_; }
+
   void PlaySound(Sound** sound, int32_t sound_length, bool loop);
   void StopPlaying();
   int16_t Output();
