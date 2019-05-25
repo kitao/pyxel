@@ -200,6 +200,14 @@ void text(int32_t x, int32_t y, const char* s, int32_t col) {
 //
 // Audio
 //
+int32_t playing() {
+  return s_audio->IsPlaying();
+}
+
+int32_t play_pos(int32_t ch) {
+  return s_audio->GetPlayPos(ch);
+}
+
 void* sound(int32_t snd, int32_t system) {
   return s_audio->GetSoundBank(snd, system);
 }

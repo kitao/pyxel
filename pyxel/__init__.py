@@ -486,6 +486,8 @@ def _update_properties():  # type: ignore
     module.mouse_x = core.mouse_x_getter()  # type: ignore
     module.mouse_y = core.mouse_y_getter()  # type: ignore
 
+    module.playing = core.playing()  # type: ignore
+
 
 def init(
     width: int,
@@ -646,6 +648,10 @@ def text(x: int, y: int, s: str, col: int) -> None:
 #
 # Audio
 #
+def play_pos(ch: int) -> int:
+    return core.play_pos(int(ch))  # type: ignore
+
+
 def sound(snd: int, *, system: bool = False) -> Sound:
     return Sound(core.sound(int(snd), int(system)))
 
