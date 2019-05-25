@@ -44,15 +44,6 @@ Audio::~Audio() {
   delete[] music_bank_;
 }
 
-int32_t Audio::GetPlayPos(int32_t channel) const {
-  if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
-    PRINT_ERROR("invalid channel");
-    return 0;
-  }
-
-  return channel_[channel].PlayPos();
-}
-
 void Audio::callback(void* userdata, uint8_t* stream, int len) {
   Audio* audio = reinterpret_cast<Audio*>(userdata);
   int16_t* frame_data = reinterpret_cast<int16_t*>(stream);
@@ -142,6 +133,15 @@ void Audio::StopPlaying(int32_t channel) {
   } else {
     channel_[channel].StopPlaying();
   }
+}
+
+int32_t Audio::GetPlayPos(int32_t channel) const {
+  if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
+    PRINT_ERROR("invalid channel");
+    return 0;
+  }
+
+  return channel_[channel].PlayPos();
 }
 
 }  // namespace pyxelcore
