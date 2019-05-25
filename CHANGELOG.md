@@ -10,7 +10,6 @@
 - Modified the screen size of the example #3
 - Changed the max sound length to 48
 - Changed the max music length to 32
-- Added the play_pos function
 
 
 ## 1.0.1

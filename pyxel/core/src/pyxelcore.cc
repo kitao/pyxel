@@ -224,10 +224,6 @@ void stop(int32_t ch) {
   s_audio->StopPlaying(ch);
 }
 
-int32_t play_pos(int32_t ch) {
-  return s_audio->GetPlayPos(ch);
-}
-
 //
 // Image class
 //

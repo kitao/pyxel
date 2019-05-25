@@ -22,7 +22,6 @@ class Audio {
                  bool loop = false);
   void PlayMusic(int32_t music_index, bool loop = false);
   void StopPlaying(int32_t channel = -1);
-  int32_t GetPlayPos(int32_t channel) const;
 
  private:
   Sound** sound_bank_;
