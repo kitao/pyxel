@@ -404,7 +404,7 @@ void Graphics::SetupMouseCursor() {
   const char** mouse_cursor_data =
       NewPointerArrayFromArray2D(MOUSE_CURSOR_DATA);
 
-  image_bank_[IMAGE_BANK_FOR_SYSTEM]->SetValue(
+  image_bank_[IMAGE_BANK_FOR_SYSTEM]->SetData(
       MOUSE_CURSOR_X, MOUSE_CURSOR_Y, mouse_cursor_data, MOUSE_CURSOR_HEIGHT);
 
   delete[] mouse_cursor_data;

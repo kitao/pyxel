@@ -243,16 +243,16 @@ int32_t image_get(void* self, int32_t x, int32_t y) {
   return IMAGE->GetValue(x, y);
 }
 
-void image_set1(void* self, int32_t x, int32_t y, int32_t val) {
-  IMAGE->SetValue(x, y, val);
+void image_set1(void* self, int32_t x, int32_t y, int32_t data) {
+  IMAGE->SetValue(x, y, data);
 }
 
 void image_set(void* self,
                int32_t x,
                int32_t y,
-               const char** val,
-               int32_t val_length) {
-  IMAGE->SetValue(x, y, val, val_length);
+               const char** data,
+               int32_t data_length) {
+  IMAGE->SetData(x, y, data, data_length);
 }
 
 int32_t image_load(void* self, int32_t x, int32_t y, const char* filename) {
@@ -297,16 +297,16 @@ int32_t tilemap_get(void* self, int32_t x, int32_t y) {
   return TILEMAP->GetValue(x, y);
 }
 
-void tilemap_set1(void* self, int32_t x, int32_t y, int32_t val) {
-  return TILEMAP->SetValue(x, y, val);
+void tilemap_set1(void* self, int32_t x, int32_t y, int32_t data) {
+  return TILEMAP->SetValue(x, y, data);
 }
 
 void tilemap_set(void* self,
                  int32_t x,
                  int32_t y,
-                 const char** val,
-                 int32_t val_length) {
-  return TILEMAP->SetValue(x, y, val, val_length);
+                 const char** data,
+                 int32_t data_length) {
+  return TILEMAP->SetData(x, y, data, data_length);
 }
 
 void tilemap_copy(void* self,
