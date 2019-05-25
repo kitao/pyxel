@@ -4,9 +4,9 @@ from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 from .constants import (
     EDITOR_IMAGE_X,
     EDITOR_IMAGE_Y,
+    MAX_MUSIC_LENGTH,
     MUSIC_BANK_COUNT,
     MUSIC_CHANNEL_COUNT,
-    MUSIC_MAX_LENGTH,
 )
 from .editor import Editor
 from .field_cursor import FieldCursor
@@ -24,7 +24,7 @@ class MusicEditor(Editor):
             self.get_data,
             self.add_pre_history,
             self.add_post_history,
-            MUSIC_MAX_LENGTH,
+            MAX_MUSIC_LENGTH,
             16,
             MUSIC_CHANNEL_COUNT,
         )
