@@ -134,7 +134,8 @@ class PianoRoll(Widget):
             self.x, self.y + 72, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 7, 193, 51, 6
         )
 
-        for i, note in enumerate(self.parent.get_data(0)):
+        for i in range(self.parent.get_data_length(0)):
+            note = self.parent.get_data(0)[i]
             x = i * 4 + 31
             y = 143 - note * 2
             pyxel.rect(x, y, x + 2, y + 2, 8 if note >= 0 else 12)
