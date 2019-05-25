@@ -20,12 +20,10 @@ TOOL_CIRCB = 4
 TOOL_CIRC = 5
 TOOL_BUCKET = 6
 
-SOUND_MAX_LENGTH = 48
-
-MUSIC_MAX_LENGTH = 32
-
 IMAGE_BANK_COUNT = pyxel.get_constant_number("IMAGE_BANK_COUNT")
 TILEMAP_BANK_COUNT = pyxel.get_constant_number("TILEMAP_BANK_COUNT")
 SOUND_BANK_COUNT = pyxel.get_constant_number("SOUND_BANK_COUNT")
 MUSIC_BANK_COUNT = pyxel.get_constant_number("MUSIC_BANK_COUNT")
 MUSIC_CHANNEL_COUNT = pyxel.get_constant_number("MUSIC_CHANNEL_COUNT")
+MAX_SOUND_LENGTH = pyxel.get_constant_number("MAX_SOUND_LENGTH")
+MAX_MUSIC_LENGTH = pyxel.get_constant_number("MAX_MUSIC_LENGTH")

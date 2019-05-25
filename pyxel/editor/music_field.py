@@ -1,7 +1,7 @@
 import pyxel
 from pyxel.ui import Widget
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MUSIC_MAX_LENGTH
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_MUSIC_LENGTH
 
 
 class MusicField(Widget):
@@ -63,7 +63,7 @@ class MusicField(Widget):
             y = self.y + (cursor_y - self._ch + cursor_x // 16) * 10 + 2
             pyxel.rect(x, y, x + 8, y + 6, cursor_col)
 
-        for i in range(MUSIC_MAX_LENGTH):
+        for i in range(MAX_MUSIC_LENGTH):
             if i >= len(data):
                 break
 

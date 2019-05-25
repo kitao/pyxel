@@ -2,7 +2,7 @@ import pyxel
 from pyxel.ui import Widget
 from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, SOUND_MAX_LENGTH
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_SOUND_LENGTH
 
 tone_key_table = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N]
 effect_key_table = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
@@ -18,7 +18,7 @@ class SoundField(Widget):
         self.add_event_handler("draw", self.__on_draw)
 
     def _screen_to_view(self, x, y):
-        x = min(max((x - self.x - 1) // 4, 0), SOUND_MAX_LENGTH - 1)
+        x = min(max((x - self.x - 1) // 4, 0), MAX_SOUND_LENGTH - 1)
         y = min(max((y - self.y) // 8, 0), 2)
         return x, y
 
