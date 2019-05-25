@@ -44,16 +44,6 @@ Audio::~Audio() {
   delete[] music_bank_;
 }
 
-bool Audio::IsPlaying() const {
-  for (int32_t i = 0; i < MUSIC_CHANNEL_COUNT; i++) {
-    if (channel_[i].IsPlaying()) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 int32_t Audio::GetPlayPos(int32_t channel) const {
   if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
     PRINT_ERROR("invalid channel");
