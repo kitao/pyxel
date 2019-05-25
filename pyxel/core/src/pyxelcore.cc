@@ -200,10 +200,6 @@ void text(int32_t x, int32_t y, const char* s, int32_t col) {
 //
 // Audio
 //
-int32_t playing() {
-  return s_audio->IsPlaying();
-}
-
 int32_t play_pos(int32_t ch) {
   return s_audio->GetPlayPos(ch);
 }
