@@ -99,7 +99,6 @@ _setup_api("play1", None, [c_int32] * 3)
 _setup_api("play", None, [c_int32, POINTER(c_int32)] + [c_int32] * 2)
 _setup_api("playm", None, [c_int32] * 2)
 _setup_api("stop", None, [c_int32])
-_setup_api("play_pos", c_int32, [c_int32])
 
 #
 # Image class

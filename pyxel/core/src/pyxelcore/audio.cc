@@ -135,13 +135,4 @@ void Audio::StopPlaying(int32_t channel) {
   }
 }
 
-int32_t Audio::GetPlayPos(int32_t channel) const {
-  if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
-    PRINT_ERROR("invalid channel");
-    return 0;
-  }
-
-  return channel_[channel].PlayPos();
-}
-
 }  // namespace pyxelcore
