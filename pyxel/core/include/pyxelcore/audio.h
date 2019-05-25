@@ -13,7 +13,6 @@ class Audio {
   Audio();
   ~Audio();
 
-  bool IsPlaying() const;
   int32_t GetPlayPos(int32_t channel) const;
 
   Sound* GetSoundBank(int32_t sound_index, bool system = false) const;
