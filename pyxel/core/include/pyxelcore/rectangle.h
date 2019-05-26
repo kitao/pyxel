@@ -111,8 +111,8 @@ inline Rectangle Rectangle::FromSize(int32_t left,
   width = Max(width, 0);
   height = Max(height, 0);
 
-  int32_t right = Max(left + width - 1, 0);
-  int32_t bottom = Max(top + height - 1, 0);
+  int32_t right = left + Max(width - 1, 0);
+  int32_t bottom = top + Max(height - 1, 0);
 
   return Rectangle(left, top, right, bottom, width, height);
 }
