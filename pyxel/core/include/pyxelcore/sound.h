@@ -58,7 +58,7 @@ class Sound {
 };
 
 inline void Sound::NoteLength(int32_t length) {
-  if (length < 0 || length >= MAX_SOUND_LENGTH) {
+  if (length < 0 || length > MAX_SOUND_LENGTH) {
     PRINT_ERROR("invalid note length");
     return;
   }
@@ -67,7 +67,7 @@ inline void Sound::NoteLength(int32_t length) {
 }
 
 inline void Sound::ToneLength(int32_t length) {
-  if (length < 0 || length >= MAX_SOUND_LENGTH) {
+  if (length < 0 || length > MAX_SOUND_LENGTH) {
     PRINT_ERROR("invalid tone length");
     return;
   }
@@ -76,7 +76,7 @@ inline void Sound::ToneLength(int32_t length) {
 }
 
 inline void Sound::VolumeLength(int32_t length) {
-  if (length < 0 || length >= MAX_SOUND_LENGTH) {
+  if (length < 0 || length > MAX_SOUND_LENGTH) {
     PRINT_ERROR("invalid volume length");
     return;
   }
@@ -85,7 +85,7 @@ inline void Sound::VolumeLength(int32_t length) {
 }
 
 inline void Sound::EffectLength(int32_t length) {
-  if (length < 0 || length >= MAX_SOUND_LENGTH) {
+  if (length < 0 || length > MAX_SOUND_LENGTH) {
     PRINT_ERROR("invalid effect length");
     return;
   }
