@@ -7,6 +7,7 @@ class FieldCursor:
         self,
         data_getter,
         data_length_getter,
+        data_length_setter,
         pre_history_setter,
         post_history_setter,
         data_max_length,
@@ -15,6 +16,7 @@ class FieldCursor:
     ):
         self._get_data = data_getter
         self._get_data_length = data_length_getter
+        self._set_data_length = data_length_setter
         self._add_pre_history = pre_history_setter
         self._add_post_history = post_history_setter
         self._data_max_length = data_max_length
@@ -42,6 +44,10 @@ class FieldCursor:
     @property
     def data_length(self):
         return self._get_data_length(self._y)
+
+    @data_length.setter
+    def data_length(self, length):
+        self._set_data_length(self._y, length)
 
     def move(self, x, y):
         self._x = x
@@ -80,12 +86,16 @@ class FieldCursor:
 
     def insert(self, value):
         x = self.x
-        data = self.data
 
         self._add_pre_history(self.x, self.y)
 
-        data.insert(x, value)
-        data[:] = data[: self._data_max_length]
+        self.data[x + 1 : self._data_max_length] = self.data[
+            x : self._data_max_length - 1
+        ]
+        self.data[x] = value
+
+        if self.data_length < self._data_max_length:
+            self.data_length += 1
 
         self._x = x
         self.move_right()
@@ -101,11 +111,15 @@ class FieldCursor:
         if x == 0:
             return
 
-        data = self.data
-
         self._add_pre_history(self.x, self.y)
 
-        del data[x - 1]
+        self.data[x - 1 : self._data_max_length - 1] = self.data[
+            x : self._data_max_length
+        ]
+
+        if self.data_length > 0:
+            self.data_length -= 1
+
         if self._x <= self._max_x:
             self.move_left()
 
@@ -113,14 +127,16 @@ class FieldCursor:
 
     def delete(self):
         x = self.x
-        data = self.data
 
         if x >= self.data_length:
             return
 
         self._add_pre_history(self.x, self.y)
 
-        del data[x]
+        self.data[x : self._data_max_length - 1] = self.data[
+            x + 1 : self._data_max_length
+        ]
+        self.data_length -= 1
 
         self._add_post_history(self.x, self.y)
 

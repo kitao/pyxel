@@ -134,10 +134,11 @@ class PianoKeyboard(Widget):
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X + 208, EDITOR_IMAGE_Y, 12, 123, 6)
 
         data = self.parent.get_data(0)
+        data_length = self.parent.get_data_length(0)
 
         if (
             self.parent.is_playing
-            and not data
+            and data_length == 0
             or not self.parent.is_playing
             and self.note is None
         ):
