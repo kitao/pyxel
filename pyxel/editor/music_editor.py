@@ -23,6 +23,7 @@ class MusicEditor(Editor):
         self.field_cursor = FieldCursor(
             self.get_data,
             self.get_data_length,
+            self.set_data_length,
             self.add_pre_history,
             self.add_post_history,
             MAX_MUSIC_LENGTH,
@@ -99,17 +100,30 @@ class MusicEditor(Editor):
 
         return data_length
 
+    def set_data_length(self, value, length):
+        music = pyxel.music(self._music_picker.value)
+
+        if value == 0:
+            music.ch0_length = length
+        elif value == 1:
+            music.ch1_length = length
+        elif value == 2:
+            music.ch2_length = length
+        elif value == 3:
+            music.ch3_length = length
+
     def add_pre_history(self, x, y):
         self._history_data = data = {}
         data["music"] = self._music_picker.value
         data["cursor_before"] = (x, y)
-        data["before"] = self.field_cursor.data.copy()
+        data["before"] = self.field_cursor.data.tolist()[
+            : self.field_cursor.data_length
+        ]
 
     def add_post_history(self, x, y):
         data = self._history_data
         data["cursor_after"] = (x, y)
-        data["after"] = self.field_cursor.data.copy()
-        self.add_history(self._history_data)
+        data["after"] = self.field_cursor.data.tolist()[: self.field_cursor.data_length]
 
         if data["before"] != data["after"]:
             self.add_history(self._history_data)
@@ -141,14 +155,22 @@ class MusicEditor(Editor):
         pyxel.stop()
 
     def __on_undo(self, data):
+        dat = data["before"]
+        dat_len = len(dat)
+
         self._music_picker.value = data["music"]
         self.field_cursor.move(*data["cursor_before"])
-        self.field_cursor.data[:] = data["before"]
+        self.field_cursor.data[:dat_len] = dat
+        self.field_cursor.data_length = dat_len
 
     def __on_redo(self, data):
+        dat = data["after"]
+        dat_len = len(dat)
+
         self._music_picker.value = data["music"]
         self.field_cursor.move(*data["cursor_after"])
-        self.field_cursor.data[:] = data["after"]
+        self.field_cursor.data[:dat_len] = dat
+        self.field_cursor.data_lengh = dat_len
 
     def __on_hide(self):
         self._stop()
@@ -157,14 +179,14 @@ class MusicEditor(Editor):
         if self._is_playing:
             self._is_playing = False
 
+            """
             for i in range(MUSIC_CHANNEL_COUNT):
-                channel = pyxel._app._audio_player._channel_list[i]
-
-                if channel._is_playing:
+                if pyxel.play_pos(i) >= 0:
                     self._is_playing = True
-                    self._play_pos[i] = channel._sound_index
+                    self._play_pos[i] = pyxel.play_pos(i) if pyxel.play_pos(i) >= 0 else None
                 else:
                     self._play_pos[i] = None
+            """
 
         if pyxel.btnp(pyxel.KEY_SPACE):
             if self._is_playing:
