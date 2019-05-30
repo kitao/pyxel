@@ -122,7 +122,7 @@ class PianoRoll(Widget):
         pyxel.rect(self.x, self.y, self.x + self.width - 1, self.y + self.height - 1, 6)
 
         if self.parent.is_playing:
-            x = self.parent.play_pos * 4 + 31
+            x = (self.parent.play_pos % 100) * 4 + 31
             pyxel.rect(x, 25, x + 2, 147, 2)
         else:
             if self.parent.field_cursor.y == 0:

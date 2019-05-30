@@ -31,7 +31,7 @@ class SoundEditor(Editor):
         )
         self.octave = 2
         self._is_playing = False
-        self._play_pos = None
+        self._play_pos = -1
         self._history_data = None
         self._sound_picker = NumberPicker(self, 45, 17, 0, SOUND_BANK_COUNT - 2, 0)
         self._speed_picker = NumberPicker(self, 105, 17, 1, 99, pyxel.sound(0).speed)
@@ -152,7 +152,7 @@ class SoundEditor(Editor):
 
     def _stop(self):
         self._is_playing = None
-        self._play_pos = None
+        self._play_pos = -1
         self._sound_picker.is_enabled = True
         self._speed_picker.is_enabled = True
         self._play_button.is_enabled = True
@@ -183,8 +183,8 @@ class SoundEditor(Editor):
         self._stop()
 
     def __on_update(self):
-        self._is_playing = False  # TODO
-        self._play_pos = 0  # TODO
+        self._is_playing = pyxel.play_pos(0) >= 0
+        self._play_pos = pyxel.play_pos(0)
 
         if pyxel.btnp(pyxel.KEY_SPACE):
             if self._is_playing:
