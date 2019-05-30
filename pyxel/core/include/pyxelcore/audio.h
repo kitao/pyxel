@@ -15,6 +15,7 @@ class Audio {
 
   Sound* GetSoundBank(int32_t sound_index, bool system = false) const;
   Music* GetMusicBank(int32_t music_index) const;
+  int32_t GetPlayPos(int32_t channel) const;
   void PlaySound(int32_t channel, int32_t sound_index, bool loop = false);
   void PlaySound(int32_t channel,
                  int32_t* sound_index,
@@ -51,6 +52,15 @@ inline Music* Audio::GetMusicBank(int32_t music_index) const {
   }
 
   return music_bank_[music_index];
+}
+
+inline int32_t Audio::GetPlayPos(int32_t channel) const {
+  if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
+    PRINT_ERROR("invalid channel");
+    return -1;
+  }
+
+  return channel_[channel].PlayPos();
 }
 
 }  // namespace pyxelcore
