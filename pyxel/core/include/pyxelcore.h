@@ -64,7 +64,7 @@ PYXEL_API void mouse(int32_t visible);
 PYXEL_API void* image(int32_t img, int32_t system);
 PYXEL_API void* tilemap(int32_t tm);
 PYXEL_API void clip0();
-PYXEL_API void clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
+PYXEL_API void clip(int32_t x, int32_t y, int32_t w, int32_t h);
 PYXEL_API void pal0();
 PYXEL_API void pal(int32_t col1, int32_t col2);
 PYXEL_API void cls(int32_t col);
@@ -74,16 +74,8 @@ PYXEL_API void line(int32_t x1,
                     int32_t x2,
                     int32_t y2,
                     int32_t col);
-PYXEL_API void rect(int32_t x1,
-                    int32_t y1,
-                    int32_t x2,
-                    int32_t y2,
-                    int32_t col);
-PYXEL_API void rectb(int32_t x1,
-                     int32_t y1,
-                     int32_t x2,
-                     int32_t y2,
-                     int32_t col);
+PYXEL_API void rect(int32_t x, int32_t y, int32_t w, int32_t h, int32_t col);
+PYXEL_API void rectb(int32_t x, int32_t y, int32_t w, int32_t h, int32_t col);
 PYXEL_API void circ(int32_t x, int32_t y, int32_t r, int32_t col);
 PYXEL_API void circb(int32_t x, int32_t y, int32_t r, int32_t col);
 PYXEL_API void blt(int32_t x,

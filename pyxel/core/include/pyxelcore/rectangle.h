@@ -41,10 +41,6 @@ class Rectangle {
                        bool flip_x = false,
                        bool flip_y = false) const;
 
-  static Rectangle FromPos(int32_t left,
-                           int32_t top,
-                           int32_t right,
-                           int32_t bottom);
   static Rectangle FromSize(int32_t left,
                             int32_t top,
                             int32_t width,
@@ -81,28 +77,6 @@ inline Rectangle::Rectangle(int32_t left,
       bottom_(bottom),
       width_(width),
       height_(height) {}
-
-inline Rectangle Rectangle::FromPos(int32_t left,
-                                    int32_t top,
-                                    int32_t right,
-                                    int32_t bottom) {
-  if (left > right) {
-    int32_t tmp = left;
-    left = right;
-    right = tmp;
-  }
-
-  if (top > bottom) {
-    int32_t tmp = top;
-    top = bottom;
-    bottom = tmp;
-  }
-
-  int32_t width = right - left + 1;
-  int32_t height = bottom - top + 1;
-
-  return Rectangle(left, top, right, bottom, width, height);
-}
 
 inline Rectangle Rectangle::FromSize(int32_t left,
                                      int32_t top,

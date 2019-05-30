@@ -47,9 +47,12 @@ void Graphics::ResetClipArea() {
   clip_area_ = screen_image_->Rectangle();
 }
 
-void Graphics::SetClipArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-  clip_area_ =
-      Rectangle::FromPos(x1, y1, x2, y2).Intersect(screen_image_->Rectangle());
+void Graphics::SetClipArea(int32_t x,
+                           int32_t y,
+                           int32_t width,
+                           int32_t height) {
+  clip_area_ = Rectangle::FromSize(x, y, width, height)
+                   .Intersect(screen_image_->Rectangle());
 }
 
 void Graphics::ResetPalette() {
@@ -140,14 +143,14 @@ void Graphics::DrawLine(int32_t x1,
   }
 }
 
-void Graphics::DrawRectangle(int32_t x1,
-                             int32_t y1,
-                             int32_t x2,
-                             int32_t y2,
+void Graphics::DrawRectangle(int32_t x,
+                             int32_t y,
+                             int32_t width,
+                             int32_t height,
                              int32_t color) {
   int32_t draw_color = GET_DRAW_COLOR(color);
   Rectangle draw_rect =
-      Rectangle::FromPos(x1, y1, x2, y2).Intersect(clip_area_);
+      Rectangle::FromSize(x, y, width, height).Intersect(clip_area_);
 
   if (draw_rect.IsEmpty()) {
     return;
@@ -167,13 +170,13 @@ void Graphics::DrawRectangle(int32_t x1,
   }
 }
 
-void Graphics::DrawRectangleBorder(int32_t x1,
-                                   int32_t y1,
-                                   int32_t x2,
-                                   int32_t y2,
+void Graphics::DrawRectangleBorder(int32_t x,
+                                   int32_t y,
+                                   int32_t width,
+                                   int32_t height,
                                    int32_t color) {
   int32_t draw_color = GET_DRAW_COLOR(color);
-  Rectangle draw_rect = Rectangle::FromPos(x1, y1, x2, y2);
+  Rectangle draw_rect = Rectangle::FromSize(x, y, width, height);
 
   if (draw_rect.Intersect(clip_area_).IsEmpty()) {
     return;
@@ -185,13 +188,13 @@ void Graphics::DrawRectangleBorder(int32_t x1,
   int32_t bottom = draw_rect.Bottom();
 
   for (int32_t i = left; i <= right; i++) {
-    SetPixel(i, y1, draw_color);
-    SetPixel(i, y2, draw_color);
+    SetPixel(i, top, draw_color);
+    SetPixel(i, bottom, draw_color);
   }
 
   for (int32_t i = top; i <= bottom; i++) {
-    SetPixel(x1, i, draw_color);
-    SetPixel(x2, i, draw_color);
+    SetPixel(left, i, draw_color);
+    SetPixel(right, i, draw_color);
   }
 }
 
@@ -327,11 +330,14 @@ void Graphics::DrawTilemap(int32_t x,
   Tilemap* tilemap = GetTilemapBank(tilemap_index);
   int32_t image_index = tilemap->ImageIndex();
 
-  Rectangle dst_rect = Rectangle::FromPos(
-      clip_area_.Left() / TILEMAP_CHIP_WIDTH,
-      clip_area_.Top() / TILEMAP_CHIP_HEIGHT,
-      (clip_area_.Right() + TILEMAP_CHIP_WIDTH - 1) / TILEMAP_CHIP_WIDTH,
-      (clip_area_.Bottom() + TILEMAP_CHIP_HEIGHT - 1) / TILEMAP_CHIP_HEIGHT);
+  int32_t left = clip_area_.Left() / TILEMAP_CHIP_WIDTH;
+  int32_t top = clip_area_.Top() / TILEMAP_CHIP_WIDTH;
+  int32_t right =
+      (clip_area_.Right() + TILEMAP_CHIP_WIDTH - 1) / TILEMAP_CHIP_WIDTH;
+  int32_t bottom =
+      (clip_area_.Bottom() + TILEMAP_CHIP_HEIGHT - 1) / TILEMAP_CHIP_HEIGHT;
+  Rectangle dst_rect =
+      Rectangle::FromSize(left, top, right - left + 1, bottom - top + 1);
 
   Rectangle::CopyArea copy_area =
       dst_rect.GetCopyArea(x / TILEMAP_CHIP_WIDTH, y / TILEMAP_CHIP_HEIGHT,

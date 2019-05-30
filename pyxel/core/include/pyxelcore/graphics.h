@@ -21,21 +21,17 @@ class Graphics {
   Tilemap* GetTilemapBank(int32_t tilemap_index) const;
 
   void ResetClipArea();
-  void SetClipArea(int32_t x1, int32_t y1, int32_t x2, int32_t y2);
+  void SetClipArea(int32_t x, int32_t y, int32_t width, int32_t height);
   void ResetPalette();
   void SetPalette(int32_t src_color, int32_t dst_color);
   void ClearScreen(int32_t color);
   void DrawPoint(int32_t x, int32_t y, int32_t color);
   void DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t color);
-  void DrawRectangle(int32_t x1,
-                     int32_t y1,
-                     int32_t x2,
-                     int32_t y2,
-                     int32_t color);
-  void DrawRectangleBorder(int32_t x1,
-                           int32_t y1,
-                           int32_t x2,
-                           int32_t y2,
+  void DrawRectangle(int32_t x, int32_t y, int32_t width, int32_t height, int32_t color);
+  void DrawRectangleBorder(int32_t x,
+                           int32_t y,
+                           int32_t width,
+                           int32_t height,
                            int32_t color);
   void DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color);
   void DrawCircleBorder(int32_t x, int32_t y, int32_t radius, int32_t color);
