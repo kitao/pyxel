@@ -11,7 +11,7 @@ Tilemap::Tilemap(int32_t width, int32_t height) {
 
   width_ = width;
   height_ = height;
-  rect_ = Rectangle::FromSize(0, 0, width, height);
+  rect_ = pyxelcore::Rectangle(0, 0, width, height);
   data_ = new int32_t[width * height]();
   image_index_ = 0;
 }
