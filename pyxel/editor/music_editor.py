@@ -145,7 +145,7 @@ class MusicEditor(Editor):
         self._is_playing = False
 
         for i in range(MUSIC_CHANNEL_COUNT):
-            self._play_pos[i] = None
+            self._play_pos[i] = -1
 
         self._music_picker.is_enabled = True
         self._play_button.is_enabled = True
@@ -179,14 +179,13 @@ class MusicEditor(Editor):
         if self._is_playing:
             self._is_playing = False
 
-            """
             for i in range(MUSIC_CHANNEL_COUNT):
                 if pyxel.play_pos(i) >= 0:
                     self._is_playing = True
-                    self._play_pos[i] = pyxel.play_pos(i) if pyxel.play_pos(i) >= 0 else None
+                    play_pos = pyxel.play_pos(i)
+                    self._play_pos[i] = play_pos // 100 if play_pos >= 0 else -1
                 else:
-                    self._play_pos[i] = None
-            """
+                    self._play_pos[i] = -1
 
         if pyxel.btnp(pyxel.KEY_SPACE):
             if self._is_playing:

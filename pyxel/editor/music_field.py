@@ -51,7 +51,7 @@ class MusicField(Widget):
         if self.parent.is_playing:
             play_pos = self.parent.play_pos(self._ch)
 
-            if play_pos is None or data_length == 0:
+            if play_pos < 0 or data_length == 0:
                 cursor_x = -1
                 cursor_y = -1
             else:
