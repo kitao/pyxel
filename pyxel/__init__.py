@@ -654,6 +654,10 @@ def music(msc: int) -> Music:
     return Music(core.music(int(msc)))
 
 
+def play_pos(ch: int) -> int:
+    return core.play_pos(int(ch))  # type: ignore
+
+
 def play(ch: int, snd: Any, *, loop: bool = False) -> None:
     if isinstance(snd, list):
         snd_count = len(snd)
