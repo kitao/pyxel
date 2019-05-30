@@ -581,15 +581,15 @@ def tilemap(tm: int) -> Tilemap:
 
 
 def clip(
-    x1: Optional[int] = None,
-    y1: Optional[int] = None,
-    x2: Optional[int] = None,
-    y2: Optional[int] = None,
+    x: Optional[int] = None,
+    y: Optional[int] = None,
+    w: Optional[int] = None,
+    h: Optional[int] = None,
 ) -> None:
-    if x1 is None:
+    if x is None:
         core.clip0()
     else:
-        core.clip(int(x1), int(y1), int(x2), int(y2))  # type: ignore
+        core.clip(int(x), int(y), int(w), int(h))  # type: ignore
 
 
 def pal(col1: Optional[int] = None, col2: Optional[int] = None) -> None:
@@ -611,12 +611,12 @@ def line(x1: int, y1: int, x2: int, y2: int, col: int) -> None:
     core.line(int(x1), int(y1), int(x2), int(y2), int(col))
 
 
-def rect(x1: int, y1: int, x2: int, y2: int, col: int) -> None:
-    core.rect(int(x1), int(y1), int(x2), int(y2), int(col))
+def rect(x: int, y: int, w: int, h: int, col: int) -> None:
+    core.rect(int(x), int(y), int(w), int(h), int(col))
 
 
-def rectb(x1: int, y1: int, x2: int, y2: int, col: int) -> None:
-    core.rectb(int(x1), int(y1), int(x2), int(y2), int(col))
+def rectb(x: int, y: int, w: int, h: int, col: int) -> None:
+    core.rectb(int(x), int(y), int(w), int(h), int(col))
 
 
 def circ(x: int, y: int, r: int, col: int) -> None:

@@ -131,8 +131,8 @@ void clip0() {
   s_graphics->ResetClipArea();
 }
 
-void clip(int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
-  s_graphics->SetClipArea(x1, y1, x2, y2);
+void clip(int32_t x, int32_t y, int32_t w, int32_t h) {
+  s_graphics->SetClipArea(x, y, w, h);
 }
 
 void pal0() {
@@ -155,12 +155,12 @@ void line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
   s_graphics->DrawLine(x1, y1, x2, y2, col);
 }
 
-void rect(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
-  s_graphics->DrawRectangle(x1, y1, x2, y2, col);
+void rect(int32_t x, int32_t y, int32_t w, int32_t h, int32_t col) {
+  s_graphics->DrawRectangle(x, y, w, h, col);
 }
 
-void rectb(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
-  s_graphics->DrawRectangleBorder(x1, y1, x2, y2, col);
+void rectb(int32_t x, int32_t y, int32_t w, int32_t h, int32_t col) {
+  s_graphics->DrawRectangleBorder(x, y, w, h, col);
 }
 
 void circ(int32_t x, int32_t y, int32_t r, int32_t col) {
