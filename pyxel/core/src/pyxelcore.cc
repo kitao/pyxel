@@ -208,6 +208,10 @@ void* music(int32_t msc) {
   return s_audio->GetMusicBank(msc);
 }
 
+int32_t play_pos(int32_t ch) {
+  return s_audio->GetPlayPos(ch);
+}
+
 void play1(int32_t ch, int32_t snd, int32_t loop) {
   s_audio->PlaySound(ch, snd, loop);
 }

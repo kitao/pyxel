@@ -11,6 +11,8 @@ class Channel {
  public:
   Channel();
 
+  int32_t PlayPos() const;
+
   void PlaySound(Sound** sound, int32_t sound_length, bool loop);
   void StopPlaying();
   int16_t Output();
@@ -44,6 +46,10 @@ class Channel {
   int32_t NoteToPitch(float note);
   float Lfo(int32_t time);
 };
+
+inline int32_t Channel::PlayPos() const {
+  return is_playing_ ? sound_index_ * 100 + time_ / one_note_time_ : -1;
+}
 
 inline int16_t Channel::Output() {
   Update();

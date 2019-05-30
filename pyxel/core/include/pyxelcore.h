@@ -109,6 +109,7 @@ PYXEL_API void text(int32_t x, int32_t y, const char* s, int32_t col);
 //
 PYXEL_API void* sound(int32_t snd, int32_t system);
 PYXEL_API void* music(int32_t msc);
+PYXEL_API int32_t play_pos(int32_t ch);
 PYXEL_API void play1(int32_t ch, int32_t snd, int32_t loop);
 PYXEL_API void play(int32_t ch, int32_t* snd, int32_t snd_length, int32_t loop);
 PYXEL_API void playm(int32_t msc, int32_t loop);
