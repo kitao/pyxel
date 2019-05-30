@@ -21,7 +21,7 @@
   }                                                                 \
                                                                     \
   graphics_->SetClipArea(cur_clip_area.Left(), cur_clip_area.Top(), \
-                         cur_clip_area.Right(), cur_clip_area.Bottom())
+                         cur_clip_area.Width(), cur_clip_area.Height())
 
 namespace pyxelcore {
 

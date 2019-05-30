@@ -11,7 +11,8 @@
 - Changed the max sound length to 48
 - Changed the max music length to 32
 - Added the play_pos API
-
+- Changed arguments of the clip API
+- Changed arguments of the rect and rectb API
 
 ## 1.0.1
 - Simplified comparisons
