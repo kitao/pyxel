@@ -8,6 +8,7 @@ namespace pyxelcore {
 class Rectangle {
  public:
   Rectangle();
+  Rectangle(int32_t left, int32_t top, int32_t width, int32_t height);
 
   int32_t Left() const { return left_; }
   int32_t Top() const { return top_; }
@@ -41,11 +42,6 @@ class Rectangle {
                        bool flip_x = false,
                        bool flip_y = false) const;
 
-  static Rectangle FromSize(int32_t left,
-                            int32_t top,
-                            int32_t width,
-                            int32_t height);
-
  private:
   int32_t left_;
   int32_t top_;
@@ -53,13 +49,6 @@ class Rectangle {
   int32_t bottom_;
   int32_t width_;
   int32_t height_;
-
-  Rectangle(int32_t left,
-            int32_t top,
-            int32_t right,
-            int32_t bottom,
-            int32_t width,
-            int32_t height);
 };
 
 inline Rectangle::Rectangle()
@@ -67,28 +56,14 @@ inline Rectangle::Rectangle()
 
 inline Rectangle::Rectangle(int32_t left,
                             int32_t top,
-                            int32_t right,
-                            int32_t bottom,
                             int32_t width,
-                            int32_t height)
-    : left_(left),
-      top_(top),
-      right_(right),
-      bottom_(bottom),
-      width_(width),
-      height_(height) {}
-
-inline Rectangle Rectangle::FromSize(int32_t left,
-                                     int32_t top,
-                                     int32_t width,
-                                     int32_t height) {
-  width = Max(width, 0);
-  height = Max(height, 0);
-
-  int32_t right = left + Max(width - 1, 0);
-  int32_t bottom = top + Max(height - 1, 0);
-
-  return Rectangle(left, top, right, bottom, width, height);
+                            int32_t height) {
+  left_ = left;
+  top_ = top;
+  width_ = Max(width, 0);
+  height_ = Max(height, 0);
+  right_ = left + Max(width - 1, 0);
+  bottom_ = top + Max(height - 1, 0);
 }
 
 inline bool Rectangle::IsEmpty() const {
@@ -108,7 +83,7 @@ inline Rectangle Rectangle::Intersect(const Rectangle& rect) const {
   int32_t height = bottom - top + 1;
 
   if (width > 0 && height > 0) {
-    return Rectangle(left, top, right, bottom, width, height);
+    return Rectangle(left, top, width, height);
   } else {
     return Rectangle();
   }
