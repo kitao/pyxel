@@ -105,7 +105,7 @@ class App:
         pyxel.cls(1)
 
         pyxel.text(6, 6, "sound(snd).set(note,tone,volume,effect,speed)", 7)
-        pyxel.rect(12, 14, 188, 48, 2)
+        pyxel.rect(12, 14, 177, 35, 2)
         pyxel.text(16, 17, "note  :[CDEFGAB] + [ #-] + [0-4] or [R]", 9)
         pyxel.text(16, 25, "tone  :[T]riangle [S]quare [P]ulse [N]oise", 9)
         pyxel.text(16, 33, "volume:[0-7]", 9)
@@ -116,8 +116,8 @@ class App:
         pyxel.text(6, 71, "playm(msc,loop=False)", 7)
         pyxel.text(6, 80, "stop([ch])", 7)
 
-        pyxel.rectb(6, 97, 193, 143, 14)
-        pyxel.rect(6, 91, 34, 97, 14)
+        pyxel.rectb(6, 97, 188, 47, 14)
+        pyxel.rect(6, 91, 29, 7, 14)
         pyxel.text(7, 92, "CONTROL", 1)
 
         pyxel.text(12, 102, "1: Play all channels", 14)
