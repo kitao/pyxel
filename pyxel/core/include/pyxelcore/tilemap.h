@@ -10,7 +10,7 @@ class Tilemap {
   Tilemap(int32_t width, int32_t height);
   ~Tilemap();
 
-  const class Rectangle& Rectangle() const { return rect_; }
+  const pyxelcore::Rectangle& Rectangle() const { return rect_; }
 
   int32_t Width() const { return width_; }
   int32_t Height() const { return height_; }
