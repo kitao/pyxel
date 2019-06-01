@@ -56,11 +56,7 @@ class NumberPicker(Widget):
         self.inc_button.is_enabled = False
 
     def __on_draw(self):
-        x1 = self.x
-        y1 = self.y
-        x2 = self.x + self.width - 1
-        y2 = self.y + self.height - 1
-        pyxel.rect(x1 + 9, y1, x2 - 9, y2, INPUT_FIELD_COLOR)
+        pyxel.rect(self.x + 9, self.y, self.width - 18, self.height, INPUT_FIELD_COLOR)
 
         pyxel.text(
             self.x + 11,
