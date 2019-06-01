@@ -173,19 +173,19 @@ class Widget:
 
     @staticmethod
     def draw_panel(x, y, width, height, *, with_shadow=True):
-        x1 = x
-        y1 = y
-        x2 = x + width - 1
-        y2 = y + height - 1
+        x = x
+        y = y
+        w = width
+        h = height
 
-        pyxel.line(x1 + 1, y1, x2 - 1, y1, WIDGET_PANEL_COLOR)
-        pyxel.rect(x1, y1 + 1, x2, y2 - 1, WIDGET_PANEL_COLOR)
-        pyxel.line(x1 + 1, y2, x2 - 1, y2, WIDGET_PANEL_COLOR)
+        pyxel.line(x + 1, y, x + w - 2, y, WIDGET_PANEL_COLOR)
+        pyxel.rect(x, y + 1, w, h - 2, WIDGET_PANEL_COLOR)
+        pyxel.line(x + 1, y + h - 1, x + w - 2, y + h - 1, WIDGET_PANEL_COLOR)
 
         if with_shadow:
-            pyxel.line(x1 + 2, y2 + 1, x2, y2 + 1, WIDGET_SHADOW_COLOR)
-            pyxel.line(x2 + 1, y1 + 2, x2 + 1, y2, WIDGET_SHADOW_COLOR)
-            pyxel.pix(x2, y2, WIDGET_SHADOW_COLOR)
+            pyxel.line(x + 2, y + h, x + w - 1, y + h, WIDGET_SHADOW_COLOR)
+            pyxel.line(x + w, y + 2, x + w, y + h - 1, WIDGET_SHADOW_COLOR)
+            pyxel.pix(x + w - 1, y + h - 1, WIDGET_SHADOW_COLOR)
 
     def _capture_mouse(self, key):
         Widget._capture_info.widget = self

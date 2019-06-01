@@ -28,16 +28,17 @@ class TextButton(Button):
         self.add_event_handler("draw", self.__on_draw)
 
     def __on_draw(self):
-        x1 = self.x
-        y1 = self.y
-        x2 = self.x + self.width - 1
-        y2 = self.y + self.height - 1
+        x = self.x
+        y = self.y
+        w = self.width
+        h = self.height
         col = (
             BUTTON_PRESSED_COLOR
             if self.is_pressed
             else (BUTTON_ENABLED_COLOR if self.is_enabled else BUTTON_DISABLED_COLOR)
         )
 
-        pyxel.rect(x1 + 1, y1, x2 - 1, y2, col)
-        pyxel.rect(x1, y1 + 1, x2, y2 - 1, col)
-        pyxel.text(x1 + 2, y1 + 1, self._text, BUTTON_TEXT_COLOR)
+        pyxel.line(x + 1, y, x + w - 2, y, col)
+        pyxel.rect(x, y + 1, w, h - 2, col)
+        pyxel.line(x + 1, y + h - 1, x + w - 2, y + h - 1, col)
+        pyxel.text(x + 2, y + 1, self._text, BUTTON_TEXT_COLOR)
