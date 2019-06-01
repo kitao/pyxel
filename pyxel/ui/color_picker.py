@@ -67,12 +67,10 @@ class ColorPicker(Widget):
 
         for i in range(2):
             for j in range(8):
-                x1 = self.x + j * 8 + 1
-                y1 = self.y + i * 8 + 1
-                x2 = x1 + 6
-                y2 = y1 + 6
+                x = self.x + j * 8 + 1
+                y = self.y + i * 8 + 1
                 col = i * 8 + j
-                pyxel.rect(x1, y1, x2, y2, col)
+                pyxel.rect(x, y, 7, 7, col)
 
         x = self.x + (self._value % 8) * 8 + 3
         y = self.y + (self._value // 8) * 8 + 2

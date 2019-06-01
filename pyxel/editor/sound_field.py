@@ -113,7 +113,7 @@ class SoundField(Widget):
         x = cursor_x * 4 + 31
         y = cursor_y * 8 + 142
 
-        pyxel.rect(x, y - 1, x + 2, y + 5, 1)
+        pyxel.rect(x, y - 1, 3, 6, 1)
 
         if cursor_x < len(data_str[cursor_y - 1]):
             pyxel.text(x, y, data_str[cursor_y - 1][cursor_x], 7)
