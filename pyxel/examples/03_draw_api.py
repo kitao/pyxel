@@ -67,14 +67,14 @@ class App:
         if not self.clip_test_is_enabled:
             return
 
-        x1 = math.sin(pyxel.frame_count * 0.02) * 39 + 40
-        y1 = math.sin(pyxel.frame_count * 0.03) * 29 + 30
-        x2 = x1 + 119
-        y2 = y1 + 89
+        x = math.sin(pyxel.frame_count * 0.02) * 39 + 40
+        y = math.sin(pyxel.frame_count * 0.03) * 29 + 30
+        w = 120
+        h = 90
 
-        pyxel.text(x1, y1 - 8, "clip(x1,y1,x2,y2)", 14)
-        pyxel.rectb(x1 - 1, y1 - 1, x2 + 1, y2 + 1, 14)
-        pyxel.clip(x1, y1, x2, y2)
+        pyxel.text(x, y - 8, "clip(x,y,w,h)", 14)
+        pyxel.rectb(x - 1, y - 1, w + 2, h + 2, 14)
+        pyxel.clip(x, y, w, h)
 
     def test_pix(self, x, y):
         pyxel.text(x, y, "pix(x,y,col)", 7)
@@ -105,22 +105,22 @@ class App:
             col += 1
 
     def test_rect(self, x, y):
-        pyxel.text(x, y, "rect(x1,y1,x2,y2,col)", 7)
+        pyxel.text(x, y, "rect(x,y,w,h,col)", 7)
 
         x += 4
         y += 16
 
         for i in range(8):
-            pyxel.rect(x + i * 8, y, x + i * 9, y - i, i + 8)
+            pyxel.rect(x + i * 8, y - i, i + 1, i + 1, i + 8)
 
     def test_rectb(self, x, y):
-        pyxel.text(x, y, "rectb(x1,y1,x2,y2,col)", 7)
+        pyxel.text(x, y, "rectb(x,y,w,h,col)", 7)
 
         x += 4
         y += 16
 
         for i in range(8):
-            pyxel.rectb(x + i * 8, y, x + i * 9, y - i, i + 8)
+            pyxel.rectb(x + i * 8, y - i, i + 1, i + 1, i + 8)
 
     def test_circ(self, x, y):
         pyxel.text(x, y, "circ(x,y,r,col)", 7)
