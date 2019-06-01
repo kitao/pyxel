@@ -1,9 +1,11 @@
 #ifndef PYXELCORE_CONSTANTS_H_
 #define PYXELCORE_CONSTANTS_H_
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <map>
 #include <string>
 
