@@ -23,10 +23,10 @@ class System {
          int32_t border_color = DEFAULT_BORDER_COLOR);
   ~System();
 
-  Resource* Resource() const { return resource_; }
-  Input* Input() const { return input_; }
-  Graphics* Graphics() const { return graphics_; }
-  Audio* Audio() const { return audio_; }
+  pyxelcore::Resource* Resource() const { return resource_; }
+  pyxelcore::Input* Input() const { return input_; }
+  pyxelcore::Graphics* Graphics() const { return graphics_; }
+  pyxelcore::Audio* Audio() const { return audio_; }
   const int32_t* PaletteColor() const { return palette_color_; }
 
   int32_t Width() const { return window_->ScreenWidth(); }
