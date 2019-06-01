@@ -89,10 +89,8 @@ class DrawingPanel(Widget):
         if self.parent.tool == TOOL_SELECT:
             self._select_x1 = self._select_x2 = x
             self._select_y1 = self._select_y2 = y
-        elif self.parent.tool == TOOL_PENCIL:
+        elif TOOL_PENCIL <= self.parent.tool <= TOOL_CIRC:
             self._overlay_canvas.pix(x, y, self.parent.color)
-        elif TOOL_RECTB <= self.parent.tool <= TOOL_CIRC:
-            self._overlay_canvas.rect(x, y, 1, 1, self.parent.color, False)
         elif self.parent.tool == TOOL_BUCKET:
             data = (
                 pyxel.tilemap(self.parent.tilemap).data
