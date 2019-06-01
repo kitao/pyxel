@@ -23,7 +23,7 @@ class App:
             col_val >> 16, (col_val >> 8) & 0xFF, col_val & 0xFF
         )
 
-        pyxel.rect(x, y, x + 12, y + 12, col)
+        pyxel.rect(x, y, 13, 13, col)
         pyxel.text(x + 16, y + 1, hex_col, 7)
         pyxel.text(x + 16, y + 8, rgb_col, 7)
         pyxel.text(
@@ -31,7 +31,7 @@ class App:
         )
 
         if col == 0:
-            pyxel.rectb(x, y, x + 12, y + 12, 5)
+            pyxel.rectb(x, y, 13, 13, 5)
 
 
 App()
