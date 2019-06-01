@@ -27,8 +27,8 @@ class OctaveBar(Widget):
         self.parent.help_message = "OCTAVE:PAGEUP/PAGEDOWN"
 
     def __on_draw(self):
-        pyxel.rect(self.x, self.y, self.x + self.width - 1, self.y + self.height - 1, 6)
+        pyxel.rect(self.x, self.y, self.width, self.height, 6)
 
         x = self.x + 1
         y = self.y + 1 + (3 - self.parent.octave) * 24
-        pyxel.rect(x, y, x + 1, y + 46, 13)
+        pyxel.rect(x, y, 2, 47, 13)

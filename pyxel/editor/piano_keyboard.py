@@ -150,15 +150,15 @@ class PianoKeyboard(Widget):
         key = note % 12
 
         if note == -1:
-            pyxel.rect(x, y + 1, x + 11, y + 2, 12)
+            pyxel.rect(x, y + 1, 12, 2, 12)
         elif key == 0 or key == 5:
-            pyxel.rect(x, y + 1, x + 6, y + 1, 14)
-            pyxel.rect(x + 7, y, x + 11, y + 1, 14)
+            pyxel.rect(x, y + 1, 7, 1, 14)
+            pyxel.rect(x + 7, y, 5, 2, 14)
         elif key == 4 or key == 11:
-            pyxel.rect(x, y + 1, x + 6, y + 1, 14)
-            pyxel.rect(x + 7, y + 1, x + 11, y + 2, 14)
+            pyxel.rect(x, y + 1, 7, 1, 14)
+            pyxel.rect(x + 7, y + 1, 5, 2, 14)
         elif key == 2 or key == 7 or key == 9:
-            pyxel.rect(x, y + 1, x + 6, y + 1, 14)
-            pyxel.rect(x + 7, y, x + 11, y + 2, 14)
+            pyxel.rect(x, y + 1, 7, 1, 14)
+            pyxel.rect(x + 7, y, 5, 3, 14)
         else:
-            pyxel.rect(x, y + 1, x + 5, y + 1, 14)
+            pyxel.rect(x, y + 1, 6, 1, 14)
