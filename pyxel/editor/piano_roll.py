@@ -119,15 +119,15 @@ class PianoRoll(Widget):
             self.parent.field_cursor.insert(self.parent.keyboard_note)
 
     def __on_draw(self):
-        pyxel.rect(self.x, self.y, self.x + self.width - 1, self.y + self.height - 1, 6)
+        pyxel.rect(self.x, self.y, self.width, self.height, 6)
 
         if self.parent.is_playing:
             x = (self.parent.play_pos % 100) * 4 + 31
-            pyxel.rect(x, 25, x + 2, 147, 2)
+            pyxel.rect(x, 25, 3, 123, 2)
         else:
             if self.parent.field_cursor.y == 0:
                 x = self.parent.field_cursor.x * 4 + 31
-                pyxel.rect(x, 25, x + 2, 147, 1)
+                pyxel.rect(x, 25, 3, 123, 1)
 
         pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 7, 193, 72, 6)
         pyxel.blt(
@@ -138,4 +138,4 @@ class PianoRoll(Widget):
             note = self.parent.get_data(0)[i]
             x = i * 4 + 31
             y = 143 - note * 2
-            pyxel.rect(x, y, x + 2, y + 2, 8 if note >= 0 else 12)
+            pyxel.rect(x, y, 3, 3, 8 if note >= 0 else 12)
