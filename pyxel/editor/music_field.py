@@ -66,7 +66,7 @@ class MusicField(Widget):
         if cursor_y == self._ch:
             x = self.x + (cursor_x % 16) * 12 + 21
             y = self.y + (cursor_y - self._ch + cursor_x // 16) * 10 + 2
-            pyxel.rect(x, y, x + 8, y + 6, cursor_col)
+            pyxel.rect(x, y, 9, 7, cursor_col)
 
         for i in range(MAX_MUSIC_LENGTH):
             if i >= data_length:
