@@ -48,16 +48,14 @@ class TilemapPanel(Widget):
             TILEMAP_IMAGE_HEIGHT,
         )
 
-        pyxel.clip(
-            self.x + 1, self.y + 1, self.x + self.width - 2, self.y + self.height - 2
-        )
+        pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
 
-        x1 = self.x + self.parent.drawing_x // 4 + 1
-        y1 = self.y + self.parent.drawing_y // 4 + 1
-        x2 = x1 + 3
-        y2 = y1 + 3
+        x = self.x + self.parent.drawing_x // 4 + 1
+        y = self.y + self.parent.drawing_y // 4 + 1
+        w = 4
+        h = 4
 
-        pyxel.rectb(x1, y1, x2, y2, 7)
-        pyxel.rectb(x1 - 1, y1 - 1, x2 + 1, y2 + 1, 0)
+        pyxel.rectb(x, y, w, h, 7)
+        pyxel.rectb(x - 1, y - 1, w + 2, h + 2, 0)
 
         pyxel.clip()

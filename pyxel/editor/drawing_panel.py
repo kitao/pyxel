@@ -92,7 +92,7 @@ class DrawingPanel(Widget):
         elif self.parent.tool == TOOL_PENCIL:
             self._overlay_canvas.pix(x, y, self.parent.color)
         elif TOOL_RECTB <= self.parent.tool <= TOOL_CIRC:
-            self._overlay_canvas.rect(x, y, x, y, self.parent.color, False)
+            self._overlay_canvas.rect(x, y, 1, 1, self.parent.color, False)
         elif self.parent.tool == TOOL_BUCKET:
             data = (
                 pyxel.tilemap(self.parent.tilemap).data
@@ -347,7 +347,7 @@ class DrawingPanel(Widget):
                         data = pyxel.image(self.parent.image).data
                         col = data[self.viewport_y + i, self.viewport_x + j]
 
-                    pyxel.rect(x, y, x + 7, y + 7, col)
+                    pyxel.rect(x, y, 8, 8, col)
 
         pyxel.line(self.x + 1, self.y + 64, self.x + 128, self.y + 64, 1)
         pyxel.line(self.x + 64, self.y + 1, self.x + 64, self.y + 128, 1)
@@ -355,14 +355,14 @@ class DrawingPanel(Widget):
         if self.parent.tool == TOOL_SELECT and self._select_x1 >= 0:
             pyxel.clip(self.x + 1, self.y + 1, self.x + 128, self.y + 128)
 
-            x1 = self._select_x1 * 8 + 12
-            y1 = self._select_y1 * 8 + 17
-            x2 = self._select_x2 * 8 + 19
-            y2 = self._select_y2 * 8 + 24
+            x = self._select_x1 * 8 + 12
+            y = self._select_y1 * 8 + 17
+            w = self._select_x2 * 8 - x + 20
+            h = self._select_y2 * 8 - y + 25
 
-            pyxel.rectb(x1, y1, x2, y2, 15)
-            pyxel.rectb(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 0)
-            pyxel.rectb(x1 - 1, y1 - 1, x2 + 1, y2 + 1, 0)
+            pyxel.rectb(x, y, w, h, 15)
+            pyxel.rectb(x + 1, y + 1, w - 2, h - 2, 0)
+            pyxel.rectb(x - 1, y - 1, w + 2, h + 2, 0)
 
             pyxel.clip()
 
