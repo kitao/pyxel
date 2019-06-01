@@ -155,18 +155,16 @@ class ImagePanel(Widget):
             self.height - 2,
         )
 
-        pyxel.clip(
-            self.x + 1, self.y + 1, self.x + self.width - 2, self.y + self.height - 2
-        )
+        pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
 
-        x1 = self.x + self._focus_x - self.viewport_x + 1
-        y1 = self.y + self._focus_y - self.viewport_y + 1
-        x2 = x1 + self._focus_width - 1
-        y2 = y1 + self._focus_height - 1
+        x = self.x + self._focus_x - self.viewport_x + 1
+        y = self.y + self._focus_y - self.viewport_y + 1
+        w = self._focus_width
+        h = self._focus_height
 
-        pyxel.rectb(x1, y1, x2, y2, 7)
-        pyxel.rectb(x1 + 1, y1 + 1, x2 - 1, y2 - 1, 0)
-        pyxel.rectb(x1 - 1, y1 - 1, x2 + 1, y2 + 1, 0)
+        pyxel.rectb(x, y, w, h, 7)
+        pyxel.rectb(x + 1, y + 1, w - 2, h - 2, 0)
+        pyxel.rectb(x - 1, y - 1, w + 2, h + 2, 0)
 
         pyxel.clip()
 
