@@ -410,7 +410,7 @@ void Graphics::SetupMouseCursor() {
 }
 
 void Graphics::SetupFont() {
-  const int32_t FONT_COUNT = sizeof(FONT_DATA) / sizeof(FONT_DATA[0]);
+  const int32_t FONT_COUNT = FONT_DATA.size();
   int32_t* data = image_bank_[IMAGE_BANK_FOR_SYSTEM]->Data();
 
   for (int32_t i = 0; i < FONT_COUNT; i++) {
