@@ -7,7 +7,7 @@ namespace pyxelcore {
 
 class Window {
  public:
-  Window(const char* caption,
+  Window(const std::string& caption,
          int32_t screen_width,
          int32_t screen_height,
          int32_t screen_scale,
@@ -24,7 +24,7 @@ class Window {
 
   void ToggleFullscreen();
   bool ProcessEvents();
-  void Render(const int32_t* screen_data, const int32_t* palette_color);
+  void Render(const int32_t* screen_data, const PaletteColor& palette_color);
 
  private:
   SDL_Window* window_;
@@ -43,7 +43,7 @@ class Window {
 
   void UpdateWindowInfo();
   void UpdateScreenTexture(const int32_t* screen_data,
-                           const int32_t* palette_color);
+                           const PaletteColor& palette_color);
 };
 
 }  // namespace pyxelcore

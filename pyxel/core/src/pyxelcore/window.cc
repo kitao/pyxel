@@ -2,7 +2,7 @@
 
 namespace pyxelcore {
 
-Window::Window(const char* caption,
+Window::Window(const std::string& caption,
                int32_t screen_width,
                int32_t screen_height,
                int32_t screen_scale,
@@ -30,9 +30,9 @@ Window::Window(const char* caption,
   int32_t window_width = screen_width_ * screen_scale_ + border_width * 2;
   int32_t window_height = screen_height_ * screen_scale_ + border_width * 2;
 
-  window_ =
-      SDL_CreateWindow(caption, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                       window_width, window_height, SDL_WINDOW_RESIZABLE);
+  window_ = SDL_CreateWindow(caption.c_str(), SDL_WINDOWPOS_CENTERED,
+                             SDL_WINDOWPOS_CENTERED, window_width,
+                             window_height, SDL_WINDOW_RESIZABLE);
 
   renderer_ = SDL_CreateRenderer(window_, -1, 0);
 
@@ -83,7 +83,8 @@ bool Window::ProcessEvents() {
   return window_should_close;
 }
 
-void Window::Render(const int32_t* screen_data, const int32_t* palette_color) {
+void Window::Render(const int32_t* screen_data,
+                    const PaletteColor& palette_color) {
   uint8_t r = (border_color_ >> 16) & 0xff;
   uint8_t g = (border_color_ >> 8) & 0xff;
   uint8_t b = border_color_ & 0xff;
@@ -105,7 +106,7 @@ void Window::Render(const int32_t* screen_data, const int32_t* palette_color) {
 }
 
 void Window::UpdateScreenTexture(const int32_t* screen_data,
-                                 const int32_t* palette_color) {
+                                 const PaletteColor& palette_color) {
   int32_t* data;
   int32_t pitch;
   int32_t size = screen_width_ * screen_height_;
