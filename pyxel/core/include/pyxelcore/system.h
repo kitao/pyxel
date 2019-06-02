@@ -13,21 +13,22 @@ class Audio;
 
 class System {
  public:
-  System(int32_t width,
-         int32_t height,
-         const char* caption = DEFAULT_CAPTION,
-         int32_t scale = DEFAULT_SCALE,
-         const int32_t* palette_color = DEFAULT_PALETTE,
-         int32_t fps = DEFAULT_FPS,
-         int32_t border_width = DEFAULT_BORDER_WIDTH,
-         int32_t border_color = DEFAULT_BORDER_COLOR);
+  System(
+      int32_t width,
+      int32_t height,
+      const std::string& caption = DEFAULT_CAPTION,
+      int32_t scale = DEFAULT_SCALE,
+      const PaletteColor& palette_color = DEFAULT_PALETTE,
+      int32_t fps = DEFAULT_FPS,
+      int32_t border_width = DEFAULT_BORDER_WIDTH,
+      int32_t border_color = DEFAULT_BORDER_COLOR);
   ~System();
 
   pyxelcore::Resource* Resource() const { return resource_; }
   pyxelcore::Input* Input() const { return input_; }
   pyxelcore::Graphics* Graphics() const { return graphics_; }
   pyxelcore::Audio* Audio() const { return audio_; }
-  const int32_t* PaletteColor() const { return palette_color_; }
+  const PaletteColor& PaletteColor() const { return palette_color_; }
 
   int32_t Width() const { return window_->ScreenWidth(); }
   int32_t Height() const { return window_->ScreenHeight(); }
@@ -37,15 +38,15 @@ class System {
   void Quit();
 
  private:
-  class Resource* resource_;
-  class Input* input_;
-  class Graphics* graphics_;
-  class Audio* audio_;
+  pyxelcore::Resource* resource_;
+  pyxelcore::Input* input_;
+  pyxelcore::Graphics* graphics_;
+  pyxelcore::Audio* audio_;
   Window* window_;
 
   int32_t fps_;
   int32_t frame_count_;
-  int32_t palette_color_[COLOR_COUNT];
+  PaletteColor palette_color_;
 
   Profiler fps_profiler_;
   Profiler update_profiler_;
