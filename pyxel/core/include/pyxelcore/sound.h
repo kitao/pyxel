@@ -30,15 +30,15 @@ class Sound {
   int32_t Speed() const { return speed_; }
   void Speed(int32_t speed);
 
-  void Set(const char* note,
-           const char* tone,
-           const char* volume,
-           const char* effect,
+  void Set(const std::string& note,
+           const std::string& tone,
+           const std::string& volume,
+           const std::string& effect,
            int32_t speed);
-  void SetNote(const char* note);
-  void SetTone(const char* tone);
-  void SetVolume(const char* volume);
-  void SetEffect(const char* effect);
+  void SetNote(const std::string& note);
+  void SetTone(const std::string& tone);
+  void SetVolume(const std::string& volume);
+  void SetEffect(const std::string& effect);
 
  private:
   int32_t note_[MAX_SOUND_LENGTH];
@@ -54,7 +54,7 @@ class Sound {
   static void ReplaceAll(std::string& str,
                          const std::string& from,
                          const std::string& to);
-  static std::string FormatData(const char* str);
+  static std::string FormatData(const std::string& str);
 };
 
 inline void Sound::NoteLength(int32_t length) {

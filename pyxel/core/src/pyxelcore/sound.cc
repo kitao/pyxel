@@ -23,10 +23,10 @@ Sound::Sound() {
   speed_ = INITIAL_SOUND_SPEED;
 }
 
-void Sound::Set(const char* note,
-                const char* tone,
-                const char* volume,
-                const char* effect,
+void Sound::Set(const std::string& note,
+                const std::string& tone,
+                const std::string& volume,
+                const std::string& effect,
                 int32_t speed) {
   SetNote(note);
   SetTone(tone);
@@ -35,7 +35,7 @@ void Sound::Set(const char* note,
   Speed(speed);
 }
 
-void Sound::SetNote(const char* note) {
+void Sound::SetNote(const std::string& note) {
   std::string data = FormatData(note);
 
   note_length_ = 0;
@@ -77,7 +77,7 @@ void Sound::SetNote(const char* note) {
   }
 }
 
-void Sound::SetTone(const char* tone) {
+void Sound::SetTone(const std::string& tone) {
   std::string data = FormatData(tone);
 
   tone_length_ = 0;
@@ -103,7 +103,7 @@ void Sound::SetTone(const char* tone) {
   }
 }
 
-void Sound::SetVolume(const char* volume) {
+void Sound::SetVolume(const std::string& volume) {
   std::string data = FormatData(volume);
 
   volume_length_ = 0;
@@ -129,7 +129,7 @@ void Sound::SetVolume(const char* volume) {
   }
 }
 
-void Sound::SetEffect(const char* effect) {
+void Sound::SetEffect(const std::string& effect) {
   std::string data = FormatData(effect);
 
   effect_length_ = 0;
@@ -166,7 +166,7 @@ void Sound::ReplaceAll(std::string& str,
   }
 }
 
-std::string Sound::FormatData(const char* str) {
+std::string Sound::FormatData(const std::string& str) {
   std::string s = std::string(str);
 
   ReplaceAll(s, " ", "");
