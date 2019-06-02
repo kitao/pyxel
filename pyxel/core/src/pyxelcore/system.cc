@@ -31,7 +31,7 @@ System::System(int32_t width,
                int32_t height,
                const std::string& caption,
                int32_t scale,
-               const PaletteColor& palette_color,
+               const pyxelcore::PaletteColor& palette_color,
                int32_t fps,
                int32_t border_width,
                int32_t border_color)

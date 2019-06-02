@@ -28,7 +28,7 @@ class System {
   pyxelcore::Input* Input() const { return input_; }
   pyxelcore::Graphics* Graphics() const { return graphics_; }
   pyxelcore::Audio* Audio() const { return audio_; }
-  const PaletteColor& PaletteColor() const { return palette_color_; }
+  const pyxelcore::PaletteColor& PaletteColor() const { return palette_color_; }
 
   int32_t Width() const { return window_->ScreenWidth(); }
   int32_t Height() const { return window_->ScreenHeight(); }
@@ -46,7 +46,7 @@ class System {
 
   int32_t fps_;
   int32_t frame_count_;
-  PaletteColor palette_color_;
+  pyxelcore::PaletteColor palette_color_;
 
   Profiler fps_profiler_;
   Profiler update_profiler_;
