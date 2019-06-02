@@ -1,15 +1,15 @@
 #include "pyxelcore/common.h"
 
-#define CHECK_CONSTANT(constant)        \
-  do {                                  \
-    if (strcmp(name, #constant) == 0) { \
-      return constant;                  \
-    }                                   \
+#define CHECK_CONSTANT(constant) \
+  do {                           \
+    if (name == #constant) {     \
+      return constant;           \
+    }                            \
   } while (false)
 
 namespace pyxelcore {
 
-int32_t GetConstantNumber(const char* name) {
+int32_t GetConstantNumber(const std::string& name) {
   for (int32_t i = 0; i < COLOR_COUNT; i++) {
     std::string constant = "DEFAULT_PALETTE_";
 
@@ -181,22 +181,15 @@ int32_t GetConstantNumber(const char* name) {
   CHECK_CONSTANT(FONT_WIDTH);
   CHECK_CONSTANT(FONT_HEIGHT);
 
-  char buf[256];
-  snprintf(buf, sizeof(buf), "unknown constant name '%s'", name);
-  PRINT_ERROR(buf);
-
+  PRINT_ERROR("unknown constant name '" + name + "'");
   return 0;
 }
 
-const char* GetConstantString(const char* name) {
+std::string GetConstantString(const std::string& name) {
   CHECK_CONSTANT(VERSION);
-
   CHECK_CONSTANT(DEFAULT_CAPTION);
 
-  char buf[256];
-  snprintf(buf, sizeof(buf), "unknown constant name '%s'", name);
-  PRINT_ERROR(buf);
-
+  PRINT_ERROR("unknown constant name '" + name + "'");
   return "";
 }
 
