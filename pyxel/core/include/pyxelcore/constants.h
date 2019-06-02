@@ -2,12 +2,12 @@
 #define PYXELCORE_CONSTANTS_H_
 
 #include <algorithm>
+#include <array>
 #include <cmath>
-#include <cstdint>
-#include <cstdio>
-#include <cstring>
+#include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -17,16 +17,16 @@ namespace pyxelcore {
 //
 // Common
 //
-const char VERSION[] = "1.1.0";
+const std::string VERSION = "1.1.0";
 
 const int32_t COLOR_COUNT = 16;
 
-const char DEFAULT_CAPTION[] = "Pyxel";
+const std::string DEFAULT_CAPTION = "Pyxel";
 const int32_t DEFAULT_SCALE = 0;
 const int32_t DEFAULT_FPS = 30;
 const int32_t DEFAULT_BORDER_WIDTH = 16;
 const int32_t DEFAULT_BORDER_COLOR = 0x101018;
-const int32_t DEFAULT_PALETTE[COLOR_COUNT] = {
+const std::array<int32_t, COLOR_COUNT> DEFAULT_PALETTE = {
     0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F,
     0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436,
     0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA,
@@ -43,7 +43,7 @@ const int32_t MEASURE_FRAME_COUNT = 10;
 
 const int32_t ICON_WIDTH = 16;
 const int32_t ICON_HEIGHT = 16;
-const char ICON_DATA[ICON_HEIGHT][ICON_WIDTH + 1] = {
+const std::vector<std::string> ICON_DATA = {
     "0000000110000000", "0000011F71100000", "00011FF11FF11000",
     "011FF111111FF110", "1AE1111111111C71", "1E1EE111111CC1C1",
     "1E111EE11CC111C1", "1E11111E711111C1", "1E111111C11111C1",
@@ -75,7 +75,7 @@ const int32_t MOUSE_CURSOR_X = 2;
 const int32_t MOUSE_CURSOR_Y = 2;
 const int32_t MOUSE_CURSOR_WIDTH = 8;
 const int32_t MOUSE_CURSOR_HEIGHT = 8;
-const char MOUSE_CURSOR_DATA[MOUSE_CURSOR_HEIGHT][MOUSE_CURSOR_WIDTH + 1] = {
+const std::vector<std::string> MOUSE_CURSOR_DATA = {
     "00000011", "07776011", "07760111", "07676011",
     "06067601", "00106760", "11110601", "11111011",
 };
@@ -88,7 +88,7 @@ const int32_t FONT_WIDTH = 4;
 const int32_t FONT_HEIGHT = 6;
 const int32_t FONT_ROW_COUNT = 48;
 const int32_t FONT_COLOR = 7;
-const uint32_t FONT_DATA[] = {
+const std::vector<uint32_t> FONT_DATA = {
     0x000000, 0x444040, 0xAA0000, 0xAEAEA0, 0x6C6C40, 0x824820, 0x4A4AC0,
     0x440000, 0x244420, 0x844480, 0xA4E4A0, 0x04E400, 0x000480, 0x00E000,
     0x000040, 0x224880, 0x6AAAC0, 0x4C4440, 0xC248E0, 0xC242C0, 0xAAE220,
@@ -405,8 +405,8 @@ const int32_t MAX_MUSIC_LENGTH = 32;
 //
 // Helper functions
 //
-int32_t GetConstantNumber(const char* name);
-const char* GetConstantString(const char* name);
+int32_t GetConstantNumber(const std::string& name);
+std::string GetConstantString(const std::string& name);
 
 }  // namespace pyxelcore
 
