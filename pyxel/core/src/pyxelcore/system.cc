@@ -29,9 +29,9 @@ class PyxelQuit {};
 
 System::System(int32_t width,
                int32_t height,
-               const char* caption,
+               const std::string& caption,
                int32_t scale,
-               const int32_t* palette_color,
+               const PaletteColor& palette_color,
                int32_t fps,
                int32_t border_width,
                int32_t border_color)
@@ -67,13 +67,10 @@ System::System(int32_t width,
   window_ = new pyxelcore::Window(caption, width, height, scale, border_width,
                                   border_color);
 
+  palette_color_ = palette_color;
   fps_ = fps;
   frame_count_ = 0;
   is_performance_monitor_on_ = false;
-
-  for (int32_t i = 0; i < COLOR_COUNT; i++) {
-    palette_color_[i] = palette_color[i];
-  }
 }
 
 System::~System() {
