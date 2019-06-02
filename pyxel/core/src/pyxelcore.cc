@@ -223,7 +223,12 @@ void play1(int32_t ch, int32_t snd, int32_t loop) {
 }
 
 void play(int32_t ch, int32_t* snd, int32_t snd_length, int32_t loop) {
-  s_audio->PlaySound(ch, snd, snd_length, loop);
+  pyxelcore::SoundIndexList sound_index_list;
+  for (int32_t i = 0; i < snd_length; i++) {
+    sound_index_list.push_back(snd[i]);
+  }
+
+  s_audio->PlaySound(ch, sound_index_list, loop);
 }
 
 void playm(int32_t msc, int32_t loop) {
@@ -344,51 +349,51 @@ void tilemap_copy(void* self,
 // Sound class
 //
 int32_t* sound_note_getter(void* self) {
-  return SOUND->Note();
+  return SOUND->Note().data();
 }
 
 int32_t sound_note_length_getter(void* self) {
-  return SOUND->NoteLength();
+  return SOUND->Note().size();
 }
 
 void sound_note_length_setter(void* self, int32_t length) {
-  SOUND->NoteLength(length);
+  SOUND->Note().resize(length);
 }
 
 int32_t* sound_tone_getter(void* self) {
-  return SOUND->Tone();
+  return SOUND->Tone().data();
 }
 
 int32_t sound_tone_length_getter(void* self) {
-  return SOUND->ToneLength();
+  return SOUND->Tone().size();
 }
 
 void sound_tone_length_setter(void* self, int32_t length) {
-  SOUND->ToneLength(length);
+  SOUND->Tone().resize(length);
 }
 
 int32_t* sound_volume_getter(void* self) {
-  return SOUND->Volume();
+  return SOUND->Volume().data();
 }
 
 int32_t sound_volume_length_getter(void* self) {
-  return SOUND->VolumeLength();
+  return SOUND->Volume().size();
 }
 
 void sound_volume_length_setter(void* self, int32_t length) {
-  SOUND->VolumeLength(length);
+  SOUND->Volume().resize(length);
 }
 
 int32_t* sound_effect_getter(void* self) {
-  return SOUND->Effect();
+  return SOUND->Effect().data();
 }
 
 int32_t sound_effect_length_getter(void* self) {
-  return SOUND->EffectLength();
+  return SOUND->Effect().size();
 }
 
 void sound_effect_length_setter(void* self, int32_t length) {
-  SOUND->EffectLength(length);
+  SOUND->Effect().resize(length);
 }
 
 int32_t sound_speed_getter(void* self) {
@@ -428,51 +433,51 @@ void sound_set_effect(void* self, const char* effect) {
 // Music class
 //
 int32_t* music_ch0_getter(void* self) {
-  return MUSIC->Sound(0);
+  return MUSIC->Channel0().data();
 }
 
 int32_t music_ch0_length_getter(void* self) {
-  return MUSIC->SoundLength(0);
+  return MUSIC->Channel0().size();
 }
 
 void music_ch0_length_setter(void* self, int32_t length) {
-  MUSIC->SoundLength(0, length);
+  MUSIC->Channel0().resize(length);
 }
 
 int32_t* music_ch1_getter(void* self) {
-  return MUSIC->Sound(1);
+  return MUSIC->Channel1().data();
 }
 
 int32_t music_ch1_length_getter(void* self) {
-  return MUSIC->SoundLength(1);
+  return MUSIC->Channel1().size();
 }
 
 void music_ch1_length_setter(void* self, int32_t length) {
-  MUSIC->SoundLength(1, length);
+  MUSIC->Channel1().resize(length);
 }
 
 int32_t* music_ch2_getter(void* self) {
-  return MUSIC->Sound(2);
+  return MUSIC->Channel2().data();
 }
 
 int32_t music_ch2_length_getter(void* self) {
-  return MUSIC->SoundLength(2);
+  return MUSIC->Channel2().size();
 }
 
 void music_ch2_length_setter(void* self, int32_t length) {
-  MUSIC->SoundLength(2, length);
+  MUSIC->Channel2().resize(length);
 }
 
 int32_t* music_ch3_getter(void* self) {
-  return MUSIC->Sound(3);
+  return MUSIC->Channel3().data();
 }
 
 int32_t music_ch3_length_getter(void* self) {
-  return MUSIC->SoundLength(3);
+  return MUSIC->Channel3().size();
 }
 
 void music_ch3_length_setter(void* self, int32_t length) {
-  MUSIC->SoundLength(3, length);
+  MUSIC->Channel3().resize(length);
 }
 
 void music_set(void* self,
@@ -484,6 +489,26 @@ void music_set(void* self,
                int32_t ch2_length,
                const int32_t* ch3,
                int32_t ch3_length) {
-  MUSIC->Set(ch0, ch0_length, ch1, ch1_length, ch2, ch2_length, ch3,
-             ch3_length);
+  pyxelcore::SoundIndexList sound_index_list0;
+  for (int32_t i = 0; i < ch0_length; i++) {
+    sound_index_list0.push_back(ch0[i]);
+  }
+
+  pyxelcore::SoundIndexList sound_index_list1;
+  for (int32_t i = 0; i < ch0_length; i++) {
+    sound_index_list1.push_back(ch1[i]);
+  }
+
+  pyxelcore::SoundIndexList sound_index_list2;
+  for (int32_t i = 0; i < ch0_length; i++) {
+    sound_index_list2.push_back(ch2[i]);
+  }
+
+  pyxelcore::SoundIndexList sound_index_list3;
+  for (int32_t i = 0; i < ch0_length; i++) {
+    sound_index_list3.push_back(ch3[i]);
+  }
+
+  MUSIC->Set(sound_index_list0, sound_index_list1, sound_index_list2,
+             sound_index_list3);
 }

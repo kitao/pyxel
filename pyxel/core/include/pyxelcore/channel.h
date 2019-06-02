@@ -13,7 +13,7 @@ class Channel {
 
   int32_t PlayPos() const;
 
-  void PlaySound(Sound** sound, int32_t sound_length, bool loop);
+  void PlaySound(const SoundList& sound_list, bool loop);
   void StopPlaying();
   int16_t Output();
 
@@ -22,9 +22,8 @@ class Channel {
 
   bool is_playing_;
   bool is_loop_;
-  Sound* sound_[MAX_MUSIC_LENGTH];
-  int32_t sound_length_;
-  int32_t sound_index_;
+  SoundList sound_list_;
+  int32_t play_index_;
 
   int32_t time_;
   int32_t one_note_time_;
@@ -48,7 +47,7 @@ class Channel {
 };
 
 inline int32_t Channel::PlayPos() const {
-  return is_playing_ ? sound_index_ * 100 + time_ / one_note_time_ : -1;
+  return is_playing_ ? play_index_ * 100 + time_ / one_note_time_ : -1;
 }
 
 inline int16_t Channel::Output() {
