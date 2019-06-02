@@ -40,12 +40,9 @@ void Image::SetValue(int32_t x, int32_t y, int32_t value) {
   data_[width_ * y + x] = value;
 }
 
-void Image::SetData(int32_t x,
-                    int32_t y,
-                    const char** data,
-                    int32_t data_length) {
-  int32_t width = strlen(data[0]);
-  int32_t height = data_length;
+void Image::SetData(int32_t x, int32_t y, const ImageString& image_string) {
+  int32_t width = image_string[0].size();
+  int32_t height = image_string.size();
 
   if (width < 1 || height < 1) {
     PRINT_ERROR("invalid value size");
@@ -57,7 +54,7 @@ void Image::SetData(int32_t x,
 
   for (int32_t i = 0; i < height; i++) {
     int32_t index = width * i;
-    std::string str = data[i];
+    std::string str = image_string[i];
 
     for (int32_t j = 0; j < width; j++) {
       int32_t value = std::stoi(str.substr(j, 1), nullptr, 16);
@@ -77,7 +74,7 @@ void Image::SetData(int32_t x,
 bool Image::LoadImage(int32_t x,
                       int32_t y,
                       const char* filename,
-                      const int32_t* palette_color) {
+                      const PaletteColor& palette_color) {
   SDL_Surface* png_image = IMG_Load(filename);
 
   if (!png_image) {
