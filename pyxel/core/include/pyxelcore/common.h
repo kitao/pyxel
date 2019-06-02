@@ -5,6 +5,16 @@
 
 namespace pyxelcore {
 
+class Sound;
+
+typedef std::array<int32_t, COLOR_COUNT> PaletteColor;
+typedef std::vector<std::string> ImageString;
+typedef std::vector<std::string> TilemapString;
+typedef std::vector<int32_t> SoundIndexList;
+typedef std::vector<Sound*> SoundList;
+typedef std::array<int32_t, MAX_SOUND_LENGTH> SoundData;
+typedef std::array<Sound*, MAX_MUSIC_LENGTH> ChannelData;
+
 template <typename T>
 T Min(T a, T b) {
   return a < b ? a : b;
@@ -35,19 +45,10 @@ T Clamp(T v, T low, T high) {
   return v < low ? low : (v > high ? high : v);
 }
 
-template <typename T, size_t N, size_t M>
-T** NewPointerArrayFromArray2D(T (&array2d)[N][M]) {
-  T** pointer_array = new T*[N];
-
-  for (int32_t i = 0; i < N; i++) {
-    pointer_array[i] = array2d[i];
-  }
-
-  return pointer_array;
-}
-
-inline void PrintError(const char* message, const char* func_name) {
-  printf("pyxel error: %s in '%s'\n", message, func_name);
+inline void PrintError(const std::string& message,
+                       const std::string& func_name) {
+  std::cout << "pyxel error: " + message + " in '" + func_name + "'"
+            << std::endl;
 }
 
 #define PRINT_ERROR(message) PrintError(message, __FUNCTION__)
