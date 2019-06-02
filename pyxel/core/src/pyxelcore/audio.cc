@@ -71,38 +71,35 @@ void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
     return;
   }
 
-  Sound* sound = sound_bank_[sound_index];
-  channel_[channel].PlaySound(&sound, 1, loop);
+  const SoundList sound_list = {sound_bank_[sound_index]};
+  channel_[channel].PlaySound(sound_list, loop);
 }
 
 void Audio::PlaySound(int32_t channel,
-                      int32_t* sound_index,
-                      int32_t sound_length,
+                      const SoundIndexList& sound_index_list,
                       bool loop) {
   if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
     PRINT_ERROR("invalid channel");
     return;
   }
 
-  if (sound_length < 0 || sound_length >= MAX_MUSIC_LENGTH) {
+  if (sound_index_list.size() >= MAX_MUSIC_LENGTH) {
     PRINT_ERROR("invalid sound length");
     return;
   }
 
-  Sound* sound[sound_length];
+  SoundList sound_list;
 
-  for (int32_t i = 0; i < sound_length; i++) {
-    int32_t index = sound_index[i];
-
-    if (index < 0 || index >= SOUND_BANK_COUNT) {
+  for (int32_t sound_index : sound_index_list) {
+    if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
       PRINT_ERROR("invalid sound index");
       return;
     }
 
-    sound[i] = sound_bank_[index];
+    sound_list.push_back(sound_bank_[sound_index]);
   }
 
-  channel_[channel].PlaySound(sound, sound_length, loop);
+  channel_[channel].PlaySound(sound_list, loop);
 }
 
 void Audio::PlayMusic(int32_t music_index, bool loop) {
@@ -113,11 +110,10 @@ void Audio::PlayMusic(int32_t music_index, bool loop) {
 
   Music* music = music_bank_[music_index];
 
-  for (int32_t i = 0; i < MUSIC_CHANNEL_COUNT; i++) {
-    if (music->SoundLength(i) > 0) {
-      PlaySound(i, music->Sound(i), music->SoundLength(i), loop);
-    }
-  }
+  PlaySound(0, music->Channel0(), loop);
+  PlaySound(1, music->Channel1(), loop);
+  PlaySound(2, music->Channel2(), loop);
+  PlaySound(3, music->Channel3(), loop);
 }
 
 void Audio::StopPlaying(int32_t channel) {

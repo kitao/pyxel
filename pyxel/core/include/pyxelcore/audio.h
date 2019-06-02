@@ -18,8 +18,7 @@ class Audio {
   int32_t GetPlayPos(int32_t channel) const;
   void PlaySound(int32_t channel, int32_t sound_index, bool loop = false);
   void PlaySound(int32_t channel,
-                 int32_t* sound_index,
-                 int32_t sound_length,
+                 const SoundIndexList& sound_index_list,
                  bool loop = false);
   void PlayMusic(int32_t music_index, bool loop = false);
   void StopPlaying(int32_t channel = -1);

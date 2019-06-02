@@ -2,24 +2,25 @@
 
 namespace pyxelcore {
 
-std::map<char, int> NOTE_TABLE{{'c', 0}, {'d', 2}, {'e', 4}, {'f', 5},
-                               {'g', 7}, {'a', 9}, {'b', 11}};
+std::map<char, int> NOTE_TABLE = {
+    {'c', 0}, {'d', 2}, {'e', 4}, {'f', 5}, {'g', 7}, {'a', 9}, {'b', 11},
+};
 
-std::map<char, int> TONE_TABLE{{'t', TONE_TRIANGLE},
-                               {'s', TONE_SQUARE},
-                               {'p', TONE_PULSE},
-                               {'n', TONE_NOISE}};
+std::map<char, int> TONE_TABLE = {
+    {'t', TONE_TRIANGLE},
+    {'s', TONE_SQUARE},
+    {'p', TONE_PULSE},
+    {'n', TONE_NOISE},
+};
 
-std::map<char, int> EFFECT_TABLE{{'n', EFFECT_NONE},
-                                 {'s', EFFECT_SLIDE},
-                                 {'v', EFFECT_VIBRATO},
-                                 {'f', EFFECT_FADEOUT}};
+std::map<char, int> EFFECT_TABLE = {
+    {'n', EFFECT_NONE},
+    {'s', EFFECT_SLIDE},
+    {'v', EFFECT_VIBRATO},
+    {'f', EFFECT_FADEOUT},
+};
 
 Sound::Sound() {
-  note_length_ = 0;
-  tone_length_ = 0;
-  volume_length_ = 0;
-  effect_length_ = 0;
   speed_ = INITIAL_SOUND_SPEED;
 }
 
@@ -38,9 +39,9 @@ void Sound::Set(const std::string& note,
 void Sound::SetNote(const std::string& note) {
   std::string data = FormatData(note);
 
-  note_length_ = 0;
+  note_.resize(0);
 
-  for (int32_t i = 0; i < data.length();) {
+  for (int32_t i = 0; i < data.size();) {
     char c = data[i++];
     int32_t param;
 
@@ -68,9 +69,8 @@ void Sound::SetNote(const std::string& note) {
       return;
     }
 
-    if (note_length_ < MAX_SOUND_LENGTH) {
-      note_[note_length_] = param;
-      note_length_++;
+    if (note_.size() < MAX_SOUND_LENGTH) {
+      note_.push_back(param);
     } else {
       PRINT_ERROR("too long sound note");
     }
@@ -80,7 +80,7 @@ void Sound::SetNote(const std::string& note) {
 void Sound::SetTone(const std::string& tone) {
   std::string data = FormatData(tone);
 
-  tone_length_ = 0;
+  tone_.resize(0);
 
   for (int32_t i = 0; i < data.length(); i++) {
     char c = data[i];
@@ -94,9 +94,8 @@ void Sound::SetTone(const std::string& tone) {
       return;
     }
 
-    if (tone_length_ < MAX_SOUND_LENGTH) {
-      tone_[tone_length_] = param;
-      tone_length_++;
+    if (tone_.size() < MAX_SOUND_LENGTH) {
+      tone_.push_back(param);
     } else {
       PRINT_ERROR("too long sound tone");
     }
@@ -106,7 +105,7 @@ void Sound::SetTone(const std::string& tone) {
 void Sound::SetVolume(const std::string& volume) {
   std::string data = FormatData(volume);
 
-  volume_length_ = 0;
+  volume_.resize(0);
 
   for (int32_t i = 0; i < data.length(); i++) {
     char c = data[i];
@@ -120,9 +119,8 @@ void Sound::SetVolume(const std::string& volume) {
       return;
     }
 
-    if (volume_length_ < MAX_SOUND_LENGTH) {
-      volume_[volume_length_] = param;
-      volume_length_++;
+    if (volume_.size() < MAX_SOUND_LENGTH) {
+      volume_.push_back(param);
     } else {
       PRINT_ERROR("too long sound volume");
     }
@@ -132,7 +130,7 @@ void Sound::SetVolume(const std::string& volume) {
 void Sound::SetEffect(const std::string& effect) {
   std::string data = FormatData(effect);
 
-  effect_length_ = 0;
+  effect_.resize(0);
 
   for (int32_t i = 0; i < data.length(); i++) {
     char c = data[i];
@@ -146,9 +144,8 @@ void Sound::SetEffect(const std::string& effect) {
       return;
     }
 
-    if (effect_length_ < MAX_SOUND_LENGTH) {
-      effect_[effect_length_] = param;
-      effect_length_++;
+    if (effect_.size() < MAX_SOUND_LENGTH) {
+      effect_.push_back(param);
     } else {
       PRINT_ERROR("too long sound effect");
     }

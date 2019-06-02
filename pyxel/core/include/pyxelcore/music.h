@@ -7,54 +7,26 @@ namespace pyxelcore {
 
 class Music {
  public:
-  Music();
+  SoundIndexList& Channel0() { return channel0_; }
+  SoundIndexList& Channel1() { return channel1_; }
+  SoundIndexList& Channel2() { return channel2_; }
+  SoundIndexList& Channel3() { return channel3_; }
 
-  int32_t* Sound(int32_t channel);
-  int32_t SoundLength(int32_t channel) const;
-  void SoundLength(int32_t channel, int32_t length);
-
-  void Set(const int32_t* channel0,
-           int32_t channel0_length,
-           const int32_t* channel1,
-           int32_t channel1_length,
-           const int32_t* channel2,
-           int32_t channel2_length,
-           const int32_t* channel3,
-           int32_t channel3_length);
-  void SetSound(int32_t channel, const int32_t* sound, int32_t sound_length);
+  void Set(const SoundIndexList& channel0,
+           const SoundIndexList& channel1,
+           const SoundIndexList& channel2,
+           const SoundIndexList& channle3);
+  void SetChannel0(const SoundIndexList& channel0);
+  void SetChannel1(const SoundIndexList& channel1);
+  void SetChannel2(const SoundIndexList& channel2);
+  void SetChannel3(const SoundIndexList& channel3);
 
  private:
-  int32_t sound_[MUSIC_CHANNEL_COUNT][MAX_MUSIC_LENGTH];
-  int32_t sound_length_[MUSIC_CHANNEL_COUNT];
+  SoundIndexList channel0_;
+  SoundIndexList channel1_;
+  SoundIndexList channel2_;
+  SoundIndexList channel3_;
 };
-
-inline int32_t* Music::Sound(int32_t channel) {
-  if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
-    PRINT_ERROR("invalid music channel");
-  }
-
-  return sound_[channel];
-}
-
-inline int32_t Music::SoundLength(int32_t channel) const {
-  if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
-    PRINT_ERROR("invalid music channel");
-  }
-
-  return sound_length_[channel];
-}
-
-inline void Music::SoundLength(int32_t channel, int32_t length) {
-  if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
-    PRINT_ERROR("invalid music channel");
-  }
-
-  if (length < 0 || length > MAX_MUSIC_LENGTH) {
-    PRINT_ERROR("invalid music length");
-  }
-
-  sound_length_[channel] = length;
-}
 
 }  // namespace pyxelcore
 
