@@ -2,40 +2,68 @@
 
 namespace pyxelcore {
 
-Music::Music() {
-  for (int32_t i = 0; i < MUSIC_CHANNEL_COUNT; i++) {
-    sound_length_[i] = 0;
-  }
+void Music::Set(const SoundIndexList& channel0,
+                const SoundIndexList& channel1,
+                const SoundIndexList& channel2,
+                const SoundIndexList& channel3) {
+  SetChannel0(channel0);
+  SetChannel1(channel1);
+  SetChannel2(channel2);
+  SetChannel3(channel3);
 }
 
-void Music::Set(const int32_t* channel0,
-                int32_t channel0_length,
-                const int32_t* channel1,
-                int32_t channel1_length,
-                const int32_t* channel2,
-                int32_t channel2_length,
-                const int32_t* channel3,
-                int32_t channel3_length) {
-  SetSound(0, channel0, channel0_length);
-  SetSound(1, channel1, channel1_length);
-  SetSound(2, channel2, channel2_length);
-  SetSound(3, channel3, channel3_length);
-}
-
-void Music::SetSound(int32_t channel,
-                     const int32_t* sound,
-                     int32_t sound_length) {
-  if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
-    PRINT_ERROR("invalid music channel");
-  }
-
-  if (sound_length < 0 || sound_length > MAX_MUSIC_LENGTH) {
+void Music::SetChannel0(const SoundIndexList& channel0) {
+  if (channel0.size() > MAX_MUSIC_LENGTH) {
     PRINT_ERROR("invalid music length");
   }
 
-  for (int32_t i = 0; i < sound_length; i++) {
-    sound_[channel][i] = sound[i];
+  for (int32_t sound_index : channel0) {
+    if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+      PRINT_ERROR("invalid sound index");
+    }
   }
+
+  channel0_ = channel0;
+}
+
+void Music::SetChannel1(const SoundIndexList& channel1) {
+  if (channel1.size() > MAX_MUSIC_LENGTH) {
+    PRINT_ERROR("invalid music length");
+  }
+
+  for (int32_t sound_index : channel1) {
+    if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+      PRINT_ERROR("invalid sound index");
+    }
+  }
+
+  channel1_ = channel1;
+}
+void Music::SetChannel2(const SoundIndexList& channel2) {
+  if (channel2.size() > MAX_MUSIC_LENGTH) {
+    PRINT_ERROR("invalid music length");
+  }
+
+  for (int32_t sound_index : channel2) {
+    if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+      PRINT_ERROR("invalid sound index");
+    }
+  }
+
+  channel2_ = channel2;
+}
+void Music::SetChannel3(const SoundIndexList& channel3) {
+  if (channel3.size() > MAX_MUSIC_LENGTH) {
+    PRINT_ERROR("invalid music length");
+  }
+
+  for (int32_t sound_index : channel3) {
+    if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+      PRINT_ERROR("invalid sound index");
+    }
+  }
+
+  channel3_ = channel3;
 }
 
 }  // namespace pyxelcore

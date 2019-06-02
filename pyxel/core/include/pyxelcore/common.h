@@ -10,10 +10,9 @@ class Sound;
 typedef std::array<int32_t, COLOR_COUNT> PaletteColor;
 typedef std::vector<std::string> ImageString;
 typedef std::vector<std::string> TilemapString;
+typedef std::vector<int32_t> SoundData;
 typedef std::vector<int32_t> SoundIndexList;
 typedef std::vector<Sound*> SoundList;
-typedef std::array<int32_t, MAX_SOUND_LENGTH> SoundData;
-typedef std::array<Sound*, MAX_MUSIC_LENGTH> ChannelData;
 
 template <typename T>
 T Min(T a, T b) {

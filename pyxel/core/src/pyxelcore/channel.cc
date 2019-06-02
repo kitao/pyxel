@@ -7,12 +7,10 @@ namespace pyxelcore {
 Channel::Channel() {
   is_playing_ = false;
   is_loop_ = false;
-  sound_length_ = 0;
-  sound_index_ = 0;
+  play_index_ = 0;
 
   time_ = 0;
   one_note_time_ = 0;
-  sound_index_ = 0;
 
   tone_ = 0;
   note_ = 0;
@@ -25,15 +23,15 @@ Channel::Channel() {
   effect_volume_ = 0;
 }
 
-void Channel::PlaySound(Sound** sound, int32_t sound_length, bool loop) {
+void Channel::PlaySound(const SoundList& sound_list, bool loop) {
+  if (sound_list.empty()) {
+    return;
+  }
+
   is_playing_ = true;
   is_loop_ = loop;
-  sound_length_ = Min(sound_length, MAX_MUSIC_LENGTH);
-  sound_index_ = 0;
-
-  for (int32_t i = 0; i < sound_length_; i++) {
-    sound_[i] = sound[i];
-  }
+  sound_list_ = sound_list;
+  play_index_ = 0;
 
   PlaySound();
 }
@@ -45,11 +43,11 @@ void Channel::StopPlaying() {
 }
 
 void Channel::PlaySound() {
-  Sound* sound = sound_[sound_index_];
+  Sound* sound = sound_list_[play_index_];
 
   time_ = 0;
   one_note_time_ = sound->Speed() * AUDIO_ONE_SPEED;
-  total_note_time_ = one_note_time_ * sound->NoteLength();
+  total_note_time_ = one_note_time_ * sound->Note().size();
 }
 
 void Channel::Update() {
@@ -64,22 +62,22 @@ void Channel::Update() {
 
   // forward note
   if (time_ % one_note_time_ == 0) {
-    Sound* sound = sound_[sound_index_];
+    Sound* sound = sound_list_[play_index_];
     int32_t pos = time_ / one_note_time_;
     note_ = sound->Note()[pos];
-    volume_ = (sound->VolumeLength() > 0
-                   ? sound->Volume()[pos % sound->VolumeLength()]
-                   : 7) *
+    volume_ = (sound->Volume().empty()
+                   ? 7
+                   : sound->Volume()[pos % sound->Volume().size()]) *
               AUDIO_ONE_VOLUME;
 
     if (note_ >= 0 && volume_ > 0) {
       int32_t last_pitch = pitch_;
-      tone_ = sound->ToneLength() > 0 ? sound->Tone()[pos % sound->ToneLength()]
-                                      : TONE_TRIANGLE;
+      tone_ = sound->Tone().empty() ? TONE_TRIANGLE
+                                    : sound->Tone()[pos % sound->Tone().size()];
       pitch_ = NoteToPitch(note_);
-      effect_ = sound->EffectLength() > 0
-                    ? sound->Effect()[pos % sound->EffectLength()]
-                    : EFFECT_NONE;
+      effect_ = sound->Effect().empty()
+                    ? EFFECT_NONE
+                    : sound->Effect()[pos % sound->Effect().size()];
 
       oscillator_.SetTone(tone_);
       oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch_);
@@ -139,12 +137,12 @@ void Channel::Update() {
 }
 
 void Channel::NextSound() {
-  sound_index_ += 1;
+  play_index_ += 1;
 
-  if (sound_index_ < sound_length_) {
+  if (play_index_ < sound_list_.size()) {
     PlaySound();
   } else if (is_loop_) {
-    sound_index_ = 0;
+    play_index_ = 0;
     PlaySound();
   } else {
     StopPlaying();
