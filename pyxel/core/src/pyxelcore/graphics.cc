@@ -405,13 +405,8 @@ void Graphics::DrawText(int32_t x, int32_t y, const char* text, int32_t color) {
 }
 
 void Graphics::SetupMouseCursor() {
-  const char** mouse_cursor_data =
-      NewPointerArrayFromArray2D(MOUSE_CURSOR_DATA);
-
-  image_bank_[IMAGE_BANK_FOR_SYSTEM]->SetData(
-      MOUSE_CURSOR_X, MOUSE_CURSOR_Y, mouse_cursor_data, MOUSE_CURSOR_HEIGHT);
-
-  delete[] mouse_cursor_data;
+  image_bank_[IMAGE_BANK_FOR_SYSTEM]->SetData(MOUSE_CURSOR_X, MOUSE_CURSOR_Y,
+                                              MOUSE_CURSOR_DATA);
 }
 
 void Graphics::SetupFont() {
