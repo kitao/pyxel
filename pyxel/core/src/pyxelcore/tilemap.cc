@@ -43,10 +43,9 @@ void Tilemap::SetValue(int32_t x, int32_t y, int32_t value) {
 
 void Tilemap::SetData(int32_t x,
                       int32_t y,
-                      const char** data,
-                      int32_t data_length) {
-  int32_t width = strlen(data[0]) / 3;
-  int32_t height = data_length;
+                      const TilemapString& tilemap_string) {
+  int32_t width = tilemap_string[0].size() / 3;
+  int32_t height = tilemap_string.size();
 
   if (width < 1 || height < 1) {
     PRINT_ERROR("invalid value size");
@@ -58,7 +57,7 @@ void Tilemap::SetData(int32_t x,
 
   for (int32_t i = 0; i < height; i++) {
     int32_t index = width * i;
-    std::string str = data[i];
+    std::string str = tilemap_string[i];
 
     for (int32_t j = 0; j < width; j++) {
       int32_t value = std::stoi(str.substr(j * 3, 3), nullptr, 16);
