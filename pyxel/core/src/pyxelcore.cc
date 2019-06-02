@@ -29,7 +29,7 @@ int32_t get_constant_number(const char* name) {
 }
 
 const char* get_constant_string(const char* name) {
-  return pyxelcore::GetConstantString(name);
+  return pyxelcore::GetConstantString(name).c_str();
 }
 
 //
@@ -55,8 +55,14 @@ void init(int32_t width,
           int32_t fps,
           int32_t border_width,
           int32_t border_color) {
-  s_system = new pyxelcore::System(width, height, caption, scale, palette, fps,
-                                   border_width, border_color);
+  std::array<int32_t, pyxelcore::COLOR_COUNT> palette_color;
+  for (int32_t i = 0; i < pyxelcore::COLOR_COUNT; i++) {
+    palette_color[i] = palette[i];
+  }
+
+  s_system =
+      new pyxelcore::System(width, height, std::string(caption), scale,
+                            palette_color, fps, border_width, border_color);
   s_resource = s_system->Resource();
   s_input = s_system->Input();
   s_graphics = s_system->Graphics();
@@ -256,7 +262,12 @@ void image_set(void* self,
                int32_t y,
                const char** data,
                int32_t data_length) {
-  IMAGE->SetData(x, y, data, data_length);
+  pyxelcore::ImageString image_string;
+  for (int32_t i = 0; i < data_length; i++) {
+    image_string.push_back(data[i]);
+  }
+
+  IMAGE->SetData(x, y, image_string);
 }
 
 int32_t image_load(void* self, int32_t x, int32_t y, const char* filename) {
@@ -302,7 +313,7 @@ int32_t tilemap_get(void* self, int32_t x, int32_t y) {
 }
 
 void tilemap_set1(void* self, int32_t x, int32_t y, int32_t data) {
-  return TILEMAP->SetValue(x, y, data);
+  TILEMAP->SetValue(x, y, data);
 }
 
 void tilemap_set(void* self,
@@ -310,7 +321,12 @@ void tilemap_set(void* self,
                  int32_t y,
                  const char** data,
                  int32_t data_length) {
-  return TILEMAP->SetData(x, y, data, data_length);
+  pyxelcore::TilemapString tilemap_string;
+  for (int32_t i = 0; i < data_length; i++) {
+    tilemap_string.push_back(data[i]);
+  }
+
+  TILEMAP->SetData(x, y, tilemap_string);
 }
 
 void tilemap_copy(void* self,
