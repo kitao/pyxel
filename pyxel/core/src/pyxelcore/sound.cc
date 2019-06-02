@@ -56,19 +56,15 @@ void Sound::SetNote(const char* note) {
       if (c >= '0' && c <= '4') {
         param += (c - '0') * 12;
       } else {
-        char buf[256];
-        snprintf(buf, sizeof(buf), "invalid sound note '%c'", c);
-        PRINT_ERROR(buf);
-
+        std::string s = {c};
+        PRINT_ERROR("invalid sound note '" + s + "'");
         return;
       }
     } else if (c == 'r') {
       param = -1;
     } else {
-      char buf[256];
-      snprintf(buf, sizeof(buf), "invalid sound note '%c'", c);
-      PRINT_ERROR(buf);
-
+      std::string s = {c};
+      PRINT_ERROR("invalid sound note '" + s + "'");
       return;
     }
 
@@ -93,10 +89,8 @@ void Sound::SetTone(const char* tone) {
     if (c == 't' || c == 's' || c == 'p' || c == 'n') {
       param = TONE_TABLE[c];
     } else {
-      char buf[256];
-      snprintf(buf, sizeof(buf), "invalid sound tone '%c'", c);
-      PRINT_ERROR(buf);
-
+      std::string s = {c};
+      PRINT_ERROR("invalid sound tone '" + s + "'");
       return;
     }
 
@@ -121,10 +115,8 @@ void Sound::SetVolume(const char* volume) {
     if (c >= '0' && c <= '7') {
       param = c - '0';
     } else {
-      char buf[256];
-      snprintf(buf, sizeof(buf), "invalid sound volume '%c'", c);
-      PRINT_ERROR(buf);
-
+      std::string s = {c};
+      PRINT_ERROR("invalid sound volume '" + s + "'");
       return;
     }
 
@@ -149,10 +141,8 @@ void Sound::SetEffect(const char* effect) {
     if (c == 'n' || c == 's' || c == 'v' || c == 'f') {
       param = EFFECT_TABLE[c];
     } else {
-      char buf[256];
-      snprintf(buf, sizeof(buf), "invalid sound effect '%c'", c);
-      PRINT_ERROR(buf);
-
+      std::string s = {c};
+      PRINT_ERROR("invalid sound effect '" + s + "'");
       return;
     }
 
