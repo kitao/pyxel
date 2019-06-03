@@ -1,6 +1,7 @@
 import inspect
 import os
 import sys
+from collections import MutableSequence
 from ctypes import CFUNCTYPE, c_char_p, c_int32, cast, create_string_buffer
 from typing import Any, Callable, List, Optional
 
@@ -292,76 +293,60 @@ class Tilemap:
 class Sound:
     _MAX_SOUND_LENGTH = _get_constant_number("MAX_SOUND_LENGTH")
 
-    def __init__(self, obj: Any):
-        self._obj = obj
-
-    @property
-    def note(self) -> Any:
-        return np.ctypeslib.as_array(
-            core.sound_note_getter(self._obj), shape=(Sound._MAX_SOUND_LENGTH,)
+    def __init__(self, c_obj: Any):
+        self._c_obj = c_obj
+        self._note = _CListInterface(  # type: ignore
+            c_obj,
+            core.sound_note_getter,
+            core.sound_note_length_getter,
+            core.sound_note_length_setter,
+        )
+        self._tone = _CListInterface(  # type: ignore
+            c_obj,
+            core.sound_tone_getter,
+            core.sound_tone_length_getter,
+            core.sound_tone_length_setter,
+        )
+        self._volume = _CListInterface(  # type: ignore
+            c_obj,
+            core.sound_volume_getter,
+            core.sound_volume_length_getter,
+            core.sound_volume_length_setter,
+        )
+        self._effect = _CListInterface(  # type: ignore
+            c_obj,
+            core.sound_effect_getter,
+            core.sound_effect_length_getter,
+            core.sound_effect_length_setter,
         )
 
     @property
-    def note_length(self) -> int:
-        return core.sound_note_length_getter(self._obj)  # type: ignore
-
-    @note_length.setter
-    def note_length(self, length: int) -> None:
-        core.sound_note_length_setter(self._obj, length)
+    def note(self) -> List[int]:
+        return self._note  # type: ignore
 
     @property
-    def tone(self) -> Any:
-        return np.ctypeslib.as_array(
-            core.sound_tone_getter(self._obj), shape=(Sound._MAX_SOUND_LENGTH,)
-        )
+    def tone(self) -> List[int]:
+        return self._tone  # type: ignore
 
     @property
-    def tone_length(self) -> int:
-        return core.sound_tone_length_getter(self._obj)  # type: ignore
-
-    @tone_length.setter
-    def tone_length(self, length: int) -> None:
-        core.sound_tone_length_setter(self._obj, length)
+    def volume(self) -> List[int]:
+        return self._volume  # type: ignore
 
     @property
-    def volume(self) -> Any:
-        return np.ctypeslib.as_array(
-            core.sound_volume_getter(self._obj), shape=(Sound._MAX_SOUND_LENGTH,)
-        )
-
-    @property
-    def volume_length(self) -> int:
-        return core.sound_volume_length_getter(self._obj)  # type: ignore
-
-    @volume_length.setter
-    def volume_length(self, length: int) -> None:
-        core.sound_volume_length_setter(self._obj, length)
-
-    @property
-    def effect(self) -> Any:
-        return np.ctypeslib.as_array(
-            core.sound_effect_getter(self._obj), shape=(Sound._MAX_SOUND_LENGTH,)
-        )
-
-    @property
-    def effect_length(self) -> int:
-        return core.sound_effect_length_getter(self._obj)  # type: ignore
-
-    @effect_length.setter
-    def effect_length(self, length: int) -> None:
-        core.sound_effect_length_setter(self._obj, length)
+    def effect(self) -> List[int]:
+        return self._effect  # type: ignore
 
     @property
     def speed(self) -> int:
-        return core.sound_speed_getter(self._obj)  # type: ignore
+        return core.sound_speed_getter(self._c_obj)  # type: ignore
 
     @speed.setter
     def speed(self, speed: int) -> None:
-        core.sound_speed_setter(self._obj, speed)
+        core.sound_speed_setter(self._c_obj, speed)
 
     def set(self, note: str, tone: str, volume: str, effect: str, speed: int) -> None:
         core.sound_set(
-            self._obj,
+            self._c_obj,
             note.encode("utf-8"),
             tone.encode("utf-8"),
             volume.encode("utf-8"),
@@ -388,64 +373,48 @@ class Sound:
 class Music:
     _MAX_MUSIC_LENGTH = _get_constant_number("MAX_MUSIC_LENGTH")
 
-    def __init__(self, obj: Any):
-        self._obj = obj
-
-    @property
-    def ch0(self) -> Any:
-        return np.ctypeslib.as_array(
-            core.music_ch0_getter(self._obj), shape=(Music._MAX_MUSIC_LENGTH,)
+    def __init__(self, c_obj: Any):
+        self._c_obj = c_obj
+        self._ch0 = _CListInterface(  # type: ignore
+            c_obj,
+            core.music_ch0_getter,
+            core.music_ch0_length_getter,
+            core.music_ch0_length_setter,
+        )
+        self._ch1 = _CListInterface(  # type: ignore
+            c_obj,
+            core.music_ch1_getter,
+            core.music_ch1_length_getter,
+            core.music_ch1_length_setter,
+        )
+        self._ch2 = _CListInterface(  # type: ignore
+            c_obj,
+            core.music_ch2_getter,
+            core.music_ch2_length_getter,
+            core.music_ch2_length_setter,
+        )
+        self._ch3 = _CListInterface(  # type: ignore
+            c_obj,
+            core.music_ch3_getter,
+            core.music_ch3_length_getter,
+            core.music_ch3_length_setter,
         )
 
     @property
-    def ch0_length(self) -> int:
-        return core.music_ch0_length_getter(self._obj)  # type: ignore
-
-    @ch0_length.setter
-    def ch0_length(self, length: int) -> None:
-        core.music_ch0_length_setter(self._obj, length)
+    def ch0(self) -> List[int]:
+        return self._ch0  # type: ignore
 
     @property
-    def ch1(self) -> Any:
-        return np.ctypeslib.as_array(
-            core.music_ch1_getter(self._obj), shape=(Music._MAX_MUSIC_LENGTH,)
-        )
+    def ch1(self) -> List[int]:
+        return self._ch1  # type: ignore
 
     @property
-    def ch1_length(self) -> int:
-        return core.music_ch1_length_getter(self._obj)  # type: ignore
-
-    @ch1_length.setter
-    def ch1_length(self, length: int) -> None:
-        core.music_ch1_length_setter(self._obj, length)
+    def ch2(self) -> List[int]:
+        return self._ch2  # type: ignore
 
     @property
-    def ch2(self) -> Any:
-        return np.ctypeslib.as_array(
-            core.music_ch2_getter(self._obj), shape=(Music._MAX_MUSIC_LENGTH,)
-        )
-
-    @property
-    def ch2_length(self) -> int:
-        return core.music_ch2_length_getter(self._obj)  # type: ignore
-
-    @ch2_length.setter
-    def ch2_length(self, length: int) -> None:
-        core.music_ch2_length_setter(self._obj, length)
-
-    @property
-    def ch3(self) -> Any:
-        return np.ctypeslib.as_array(
-            core.music_ch3_getter(self._obj), shape=(Music._MAX_MUSIC_LENGTH,)
-        )
-
-    @property
-    def ch3_length(self) -> int:
-        return core.music_ch3_length_getter(self._obj)  # type: ignore
-
-    @ch3_length.setter
-    def ch3_length(self, length: int) -> None:
-        core.music_ch3_length_setter(self._obj, length)
+    def ch3(self) -> List[int]:
+        return self._ch3  # type: ignore
 
     def set(self, ch0: str, ch1: str, ch2: str, ch3: str) -> None:
         core.music_set(
@@ -544,6 +513,71 @@ def load(filename: str) -> bool:
     filename = os.path.join(dirname, filename)
 
     return core.load(filename.encode("utf-8"))  # type: ignore
+
+
+def load_as_old_pyxel_format(filename: str) -> bool:
+    import gzip
+    import pickle
+
+    dirname = os.path.dirname(inspect.stack()[-1].filename)
+    filename = os.path.join(dirname, filename)
+
+    with gzip.open(filename, mode="rb") as fp:
+        pickled_data = fp.read()
+
+    if pickled_data[-1:] != pickle.STOP:
+        return False
+
+    print("load as old pyxel format")
+
+    _sound = sound
+    _music = music
+
+    data = pickle.loads(pickled_data)
+
+    image_list = data.get("image")
+    if image_list:
+        for i in range(len(image_list)):
+            image(i).data[:, :] = pickle.loads(image_list[i])
+
+    tilemap_list = data.get("tilemap")
+    if tilemap_list:
+        if type(tilemap_list[0]) is tuple:
+            for i in range(len(tilemap_list)):
+                tilemap(i).data[:, :] = pickle.loads(tilemap_list[i][0])
+                tilemap(i).refimg = tilemap_list[i][1]
+        else:  # todo: delete this block in the future
+            for i in range(len(tilemap_list)):
+                tilemap(i).data[:, :] = pickle.loads(tilemap_list[i])
+
+    sound_list = data.get("sound")
+    if sound_list:
+        for i in range(len(sound_list)):
+            src = sound_list[i]
+            dst = _sound(i)
+
+            dst.note[:] = src._note
+            dst.tone[:] = src._tone
+            dst.volume[:] = src._volume
+            dst.effect[:] = src._effect
+            dst.speed = src.speed
+
+    music_list = data.get("music")
+    if music_list:
+        for i in range(len(music_list)):
+            src = music_list[i]
+            dst = _music(i)  # type: ignore
+
+            dst.ch0[:] = src._ch0  # type: ignore
+            dst.ch1[:] = src._ch1  # type: ignore
+            dst.ch2[:] = src._ch2  # type: ignore
+            dst.ch3[:] = src._ch3  # type: ignore
+
+    module = sys.modules[__name__]
+    module.sound = _sound  # type: ignore
+    module.music = _music  # type: ignore
+
+    return True
 
 
 #
@@ -674,89 +708,50 @@ def stop(ch: int = -1) -> None:
     core.stop(int(ch))
 
 
-def load_as_old_pyxel_format(filename: str) -> bool:
-    import gzip
-    import pickle
+class _CListInterface(MutableSequence):  # type: ignore
+    def __init__(  # type: ignore
+        self, c_obj, data_getter, length_getter, length_setter
+    ):
+        self._c_obj = c_obj
+        self._get_data = data_getter
+        self._get_length = length_getter
+        self._set_length = length_setter
 
-    dirname = os.path.dirname(inspect.stack()[-1].filename)
-    filename = os.path.join(dirname, filename)
+    def _data_to_list(self):  # type: ignore
+        length = self._get_length(self._c_obj)
+        data = self._get_data(self._c_obj)
 
-    with gzip.open(filename, mode="rb") as fp:
-        pickled_data = fp.read()
+        lst = []
+        for i in range(length):
+            lst.append(data[i])
 
-    if pickled_data[-1:] != pickle.STOP:
-        return False
+        return lst
 
-    print("load as old pyxel format")
+    def _list_to_data(self, lst):  # type: ignore
+        length = len(lst)
+        self._set_length(self._c_obj, length)
+        data = self._get_data(self._c_obj)
 
-    _sound = sound
-    _music = music
+        for i in range(length):
+            data[i] = lst[i]
 
-    data = pickle.loads(pickled_data)
+    def __getitem__(self, ii):  # type: ignore
+        return self._data_to_list()[ii]
 
-    image_list = data.get("image")
-    if image_list:
-        for i in range(len(image_list)):
-            image(i).data[:, :] = pickle.loads(image_list[i])
+    def __setitem__(self, ii, val):  # type: ignore
+        lst = self._data_to_list()
+        lst[ii] = val
+        self._list_to_data(lst)
 
-    tilemap_list = data.get("tilemap")
-    if tilemap_list:
-        if type(tilemap_list[0]) is tuple:
-            for i in range(len(tilemap_list)):
-                tilemap(i).data[:, :] = pickle.loads(tilemap_list[i][0])
-                tilemap(i).refimg = tilemap_list[i][1]
-        else:  # todo: delete this block in the future
-            for i in range(len(tilemap_list)):
-                tilemap(i).data[:, :] = pickle.loads(tilemap_list[i])
+    def __delitem__(self, ii):  # type: ignore
+        lst = self._data_to_list()
+        del lst[ii]
+        self._list_to_data(lst)
 
-    sound_list = data.get("sound")
-    if sound_list:
-        for i in range(len(sound_list)):
-            src = sound_list[i]
-            dst = _sound(i)
+    def __len__(self):  # type: ignore
+        return self._get_length(self._c_obj)
 
-            dst.note_length = len(src._note)
-            for i in range(dst.note_length):
-                dst.note[i] = src._note[i]
-
-            dst.tone_length = len(src._tone)
-            for i in range(dst.tone_length):
-                dst.tone[i] = src._tone[i]
-
-            dst.volume_length = len(src._volume)
-            for i in range(dst.volume_length):
-                dst.volume[i] = src._volume[i]
-
-            dst.effect_length = len(src._effect)
-            for i in range(dst.effect_length):
-                dst.effect[i] = src._effect[i]
-
-            dst.speed = src.speed
-
-    music_list = data.get("music")
-    if music_list:
-        for i in range(len(music_list)):
-            src = music_list[i]
-            dst = _music(i)  # type: ignore
-
-            dst.ch0_length = len(src._ch0)  # type: ignore
-            for i in range(dst.ch0_length):  # type: ignore
-                dst.ch0[i] = src._ch0[i]  # type: ignore
-
-            dst.ch1_length = len(src._ch1)  # type: ignore
-            for i in range(dst.ch1_length):  # type: ignore
-                dst.ch1[i] = src._ch1[i]  # type: ignore
-
-            dst.ch2_length = len(src._ch2)  # type: ignore
-            for i in range(dst.ch2_length):  # type: ignore
-                dst.ch2[i] = src._ch2[i]  # type: ignore
-
-            dst.ch3_length = len(src._ch3)  # type: ignore
-            for i in range(dst.ch3_length):  # type: ignore
-                dst.ch3[i] = src._ch3[i]  # type: ignore
-
-    module = sys.modules[__name__]
-    module.sound = _sound  # type: ignore
-    module.music = _music  # type: ignore
-
-    return True
+    def insert(self, ii, val):  # type: ignore
+        lst = self._data_to_list()
+        lst.insert(ii, val)
+        self._list_to_data(lst)
