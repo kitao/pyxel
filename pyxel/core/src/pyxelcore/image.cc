@@ -12,10 +12,16 @@ Image::Image(int32_t width, int32_t height) {
   width_ = width;
   height_ = height;
   rect_ = pyxelcore::Rectangle(0, 0, width, height);
-  data_ = new int32_t[width * height]();
+
+  data_ = new int32_t*[height];
+  data_[0] = new int32_t[width * height]();
+  for (int32_t i = 1; i < height; i++) {
+    data_[i] = data_[0] + width * i;
+  }
 }
 
 Image::~Image() {
+  delete[] data_[0];
   delete[] data_;
 }
 
@@ -25,7 +31,7 @@ int32_t Image::GetValue(int32_t x, int32_t y) const {
     return 0;
   }
 
-  return data_[width_ * y + x];
+  return data_[y][x];
 }
 
 void Image::SetValue(int32_t x, int32_t y, int32_t value) {
@@ -37,7 +43,7 @@ void Image::SetValue(int32_t x, int32_t y, int32_t value) {
     PRINT_ERROR("invalid value");
   }
 
-  data_[width_ * y + x] = value;
+  data_[y][x] = value;
 }
 
 void Image::SetData(int32_t x, int32_t y, const ImageString& image_string) {
@@ -50,11 +56,11 @@ void Image::SetData(int32_t x, int32_t y, const ImageString& image_string) {
   }
 
   Image image = Image(width, height);
-  int32_t* dst_data = image.data_;
+  int32_t** dst_data = image.data_;
 
   for (int32_t i = 0; i < height; i++) {
-    int32_t index = width * i;
     std::string str = image_string[i];
+    int32_t* dst_line = dst_data[i];
 
     for (int32_t j = 0; j < width; j++) {
       int32_t value = std::stoi(str.substr(j, 1), nullptr, 16);
@@ -64,7 +70,7 @@ void Image::SetData(int32_t x, int32_t y, const ImageString& image_string) {
         value = 0;
       }
 
-      dst_data[index + j] = value;
+      dst_line[j] = value;
     }
   }
 
@@ -95,11 +101,11 @@ bool Image::LoadImage(int32_t x,
   int32_t height = src_image->h;
 
   Image dst_image = Image(width, height);
-  int32_t* dst_data = dst_image.data_;
+  int32_t** dst_data = dst_image.data_;
 
   for (int32_t i = 0; i < height; i++) {
     int32_t src_index = src_width * i;
-    int32_t dst_index = width * i;
+    int32_t* dst_line = dst_data[i];
 
     for (int32_t j = 0; j < width; j++) {
       int32_t src_r = src_data[src_index + j * 4 + 3];
@@ -123,7 +129,7 @@ bool Image::LoadImage(int32_t x,
         }
       }
 
-      dst_data[dst_index + j] = nearest_color;
+      dst_line[j] = nearest_color;
     }
   }
 
@@ -149,18 +155,15 @@ void Image::CopyImage(int32_t x,
     return;
   }
 
-  int32_t src_width = image->width_;
-  int32_t* src_data = image->data_;
-
-  int32_t dst_width = width_;
-  int32_t* dst_data = data_;
+  int32_t** src_data = image->data_;
+  int32_t** dst_data = data_;
 
   for (int32_t i = 0; i < copy_area.height; i++) {
-    int32_t src_index = src_width * (copy_area.v + i) + copy_area.u;
-    int32_t dst_index = dst_width * (copy_area.y + i) + copy_area.x;
+    int32_t* src_line = src_data[copy_area.v + i];
+    int32_t* dst_line = dst_data[copy_area.y + i];
 
     for (int32_t j = 0; j < copy_area.width; j++) {
-      dst_data[dst_index + j] = src_data[src_index + j];
+      dst_line[copy_area.x + j] = src_line[copy_area.u + j];
     }
   }
 }
