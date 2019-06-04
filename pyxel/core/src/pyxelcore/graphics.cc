@@ -73,10 +73,13 @@ void Graphics::SetPalette(int32_t src_color, int32_t dst_color) {
 
 void Graphics::ClearScreen(int32_t color) {
   int32_t draw_color = GET_DRAW_COLOR(color);
-  int32_t size = screen_width_ * screen_height_;
 
-  for (int32_t i = 0; i < size; i++) {
-    screen_data_[i] = draw_color;
+  for (int32_t i = 0; i < screen_height_; i++) {
+    int32_t* dst_line = screen_data_[i];
+
+    for (int32_t j = 0; j < screen_width_; j++) {
+      dst_line[j] = draw_color;
+    }
   }
 }
 
@@ -161,10 +164,10 @@ void Graphics::DrawRectangle(int32_t x,
   int32_t bottom = draw_rect.Bottom();
 
   for (int32_t i = top; i <= bottom; i++) {
-    int32_t index = screen_width_ * i;
+    int32_t* dst_line = screen_data_[i];
 
     for (int32_t j = left; j <= right; j++) {
-      screen_data_[index + j] = draw_color;
+      dst_line[j] = draw_color;
     }
   }
 }
@@ -278,11 +281,8 @@ void Graphics::DrawImage(int32_t x,
     return;
   }
 
-  int32_t src_width = image->Width();
-  int32_t* src_data = image->Data();
-
-  int32_t dst_width = screen_width_;
-  int32_t* dst_data = screen_data_;
+  int32_t** src_data = image->Data();
+  int32_t** dst_data = screen_data_;
 
   int32_t sign_x, sign_y;
   int32_t offset_x, offset_y;
@@ -304,15 +304,14 @@ void Graphics::DrawImage(int32_t x,
   }
 
   for (int32_t i = 0; i < copy_area.height; i++) {
-    int32_t src_index = src_width * (copy_area.v + i * sign_y + offset_y) +
-                        copy_area.u + offset_x;
-    int32_t dst_index = dst_width * (copy_area.y + i) + copy_area.x;
+    int32_t* src_line = src_data[copy_area.v + sign_y * i + offset_y];
+    int32_t* dst_line = dst_data[copy_area.y + i];
 
     for (int32_t j = 0; j < copy_area.width; j++) {
-      int32_t src_color = src_data[src_index + j * sign_x];
+      int32_t src_color = src_line[copy_area.u + sign_x * j + offset_x];
 
       if (src_color != color_key) {
-        dst_data[dst_index + j] = palette_table_[src_color];
+        dst_line[copy_area.x + j] = palette_table_[src_color];
       }
     }
   }
@@ -345,25 +344,24 @@ void Graphics::DrawTilemap(int32_t x,
     return;
   }
 
-  int32_t src_width = tilemap->Width();
-  int32_t* src_data = tilemap->Data();
+  int32_t** src_data = tilemap->Data();
 
   copy_area.x = copy_area.x * TILEMAP_CHIP_WIDTH + x % TILEMAP_CHIP_WIDTH;
   copy_area.y = copy_area.y * TILEMAP_CHIP_HEIGHT + y % TILEMAP_CHIP_HEIGHT;
 
   for (int32_t i = 0; i < copy_area.height; i++) {
-    int32_t src_index = src_width * (copy_area.v + i) + copy_area.u;
+    int32_t* src_line = src_data[copy_area.v + i];
+    int32_t dst_y = copy_area.y + TILEMAP_CHIP_HEIGHT * i;
 
     for (int32_t j = 0; j < copy_area.width; j++) {
-      int32_t chip = src_data[src_index + j];
+      int32_t chip = src_line[copy_area.u + j];
       int32_t cu =
           (chip % (IMAGE_BANK_WIDTH / TILEMAP_CHIP_WIDTH)) * TILEMAP_CHIP_WIDTH;
       int32_t cv = (chip / (IMAGE_BANK_HEIGHT / TILEMAP_CHIP_HEIGHT)) *
                    TILEMAP_CHIP_HEIGHT;
 
-      DrawImage(copy_area.x + TILEMAP_CHIP_WIDTH * j,
-                copy_area.y + TILEMAP_CHIP_HEIGHT * i, image_index, cu, cv,
-                TILEMAP_CHIP_WIDTH, TILEMAP_CHIP_HEIGHT, color_key);
+      DrawImage(copy_area.x + TILEMAP_CHIP_WIDTH * j, dst_y, image_index, cu,
+                cv, TILEMAP_CHIP_WIDTH, TILEMAP_CHIP_HEIGHT, color_key);
     }
   }
 }
@@ -411,22 +409,21 @@ void Graphics::SetupMouseCursor() {
 
 void Graphics::SetupFont() {
   const int32_t FONT_COUNT = FONT_DATA.size();
-  int32_t* data = image_bank_[IMAGE_BANK_FOR_SYSTEM]->Data();
+  int32_t** dst_data = image_bank_[IMAGE_BANK_FOR_SYSTEM]->Data();
 
   for (int32_t i = 0; i < FONT_COUNT; i++) {
     int32_t row = i / FONT_ROW_COUNT;
     int32_t col = i % FONT_ROW_COUNT;
-    int32_t index = IMAGE_BANK_WIDTH * (FONT_HEIGHT * row + FONT_Y) +
-                    FONT_WIDTH * col + FONT_X;
     uint32_t font = FONT_DATA[i];
 
     for (int32_t j = 0; j < FONT_HEIGHT; j++) {
+      int32_t* dst_line = dst_data[FONT_Y + FONT_HEIGHT * row + j];
+
       for (int32_t k = 0; k < FONT_WIDTH; k++) {
-        data[index + k] = (font & 0x800000) ? FONT_COLOR : 0;
+        dst_line[FONT_X + FONT_WIDTH * col + k] =
+            (font & 0x800000) ? FONT_COLOR : 0;
         font <<= 1;
       }
-
-      index += IMAGE_BANK_WIDTH;
     }
   }
 }
