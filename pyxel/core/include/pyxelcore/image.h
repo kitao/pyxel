@@ -14,7 +14,7 @@ class Image {
 
   int32_t Width() const { return width_; }
   int32_t Height() const { return height_; }
-  int32_t* Data() const { return data_; }
+  int32_t** Data() const { return data_; }
 
   int32_t GetValue(int32_t x, int32_t y) const;
   void SetValue(int32_t x, int32_t y, int32_t value);
@@ -35,7 +35,7 @@ class Image {
   int32_t width_;
   int32_t height_;
   class Rectangle rect_;
-  int32_t* data_;
+  int32_t** data_;
 };
 
 }  // namespace pyxelcore
