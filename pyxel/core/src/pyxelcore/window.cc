@@ -83,8 +83,7 @@ bool Window::ProcessEvents() {
   return window_should_close;
 }
 
-void Window::Render(const int32_t* screen_data,
-                    const PaletteColor& palette_color) {
+void Window::Render(int32_t** screen_data, const PaletteColor& palette_color) {
   uint8_t r = (border_color_ >> 16) & 0xff;
   uint8_t g = (border_color_ >> 8) & 0xff;
   uint8_t b = border_color_ & 0xff;
@@ -105,17 +104,20 @@ void Window::Render(const int32_t* screen_data,
   SDL_RenderPresent(renderer_);
 }
 
-void Window::UpdateScreenTexture(const int32_t* screen_data,
+void Window::UpdateScreenTexture(int32_t** screen_data,
                                  const PaletteColor& palette_color) {
-  int32_t* data;
+  int32_t* framebuffer;
   int32_t pitch;
   int32_t size = screen_width_ * screen_height_;
 
-  SDL_LockTexture(screen_texture_, NULL, reinterpret_cast<void**>(&data),
+  SDL_LockTexture(screen_texture_, NULL, reinterpret_cast<void**>(&framebuffer),
                   &pitch);
 
-  for (int32_t i = 0; i < size; i++) {
-    data[i] = palette_color[screen_data[i]];
+  for (int32_t i = 0; i < screen_height_; i++) {
+    int32_t index = screen_width_ * i;
+    for (int32_t j = 0; j < screen_width_; j++) {
+      framebuffer[index + j] = palette_color[screen_data[i][j]];
+    }
   }
 
   SDL_UnlockTexture(screen_texture_);
