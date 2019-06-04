@@ -24,7 +24,7 @@ class Window {
 
   void ToggleFullscreen();
   bool ProcessEvents();
-  void Render(const int32_t* screen_data, const PaletteColor& palette_color);
+  void Render(int32_t** screen_data, const PaletteColor& palette_color);
 
  private:
   SDL_Window* window_;
@@ -42,7 +42,7 @@ class Window {
   bool is_fullscreen_;
 
   void UpdateWindowInfo();
-  void UpdateScreenTexture(const int32_t* screen_data,
+  void UpdateScreenTexture(int32_t** screen_data,
                            const PaletteColor& palette_color);
 };
 

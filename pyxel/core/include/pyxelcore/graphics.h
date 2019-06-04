@@ -14,8 +14,8 @@ class Graphics {
   ~Graphics();
 
   const Rectangle& ClipArea() const { return clip_area_; }
-  const int32_t* PaletteTable() const { return palette_table_; }
-  const int32_t* ScreenData() const { return screen_data_; }
+  const pyxelcore::PaletteTable& PaletteTable() const { return palette_table_; }
+  int32_t** ScreenData() const { return screen_data_; }
 
   Image* GetImageBank(int32_t image_index, bool system = false) const;
   Tilemap* GetTilemapBank(int32_t tilemap_index) const;
@@ -27,7 +27,11 @@ class Graphics {
   void ClearScreen(int32_t color);
   void DrawPoint(int32_t x, int32_t y, int32_t color);
   void DrawLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t color);
-  void DrawRectangle(int32_t x, int32_t y, int32_t width, int32_t height, int32_t color);
+  void DrawRectangle(int32_t x,
+                     int32_t y,
+                     int32_t width,
+                     int32_t height,
+                     int32_t color);
   void DrawRectangleBorder(int32_t x,
                            int32_t y,
                            int32_t width,
@@ -57,11 +61,11 @@ class Graphics {
   Image* screen_image_;
   int32_t screen_width_;
   int32_t screen_height_;
-  int32_t* screen_data_;
+  int32_t** screen_data_;
   Image** image_bank_;
   Tilemap** tilemap_bank_;
   Rectangle clip_area_;
-  int32_t palette_table_[COLOR_COUNT];
+  pyxelcore::PaletteTable palette_table_;
 
   void SetupMouseCursor();
   void SetupFont();
@@ -105,7 +109,7 @@ inline int32_t Graphics::GetDrawColor(int32_t color,
 
 inline void Graphics::SetPixel(int32_t x, int32_t y, int32_t draw_color) {
   if (clip_area_.Includes(x, y)) {
-    screen_data_[screen_width_ * y + x] = draw_color;
+    screen_data_[y][x] = draw_color;
   }
 }
 

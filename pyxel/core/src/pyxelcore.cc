@@ -251,7 +251,7 @@ int32_t image_height_getter(void* self) {
 }
 
 int32_t* image_data_getter(void* self) {
-  return IMAGE->Data();
+  return IMAGE->Data()[0];
 }
 
 int32_t image_get(void* self, int32_t x, int32_t y) {
@@ -302,7 +302,7 @@ int32_t tilemap_height_getter(void* self) {
 }
 
 int32_t* tilemap_data_getter(void* self) {
-  return TILEMAP->Data();
+  return TILEMAP->Data()[0];
 }
 
 int32_t tilemap_refimg_getter(void* self) {
