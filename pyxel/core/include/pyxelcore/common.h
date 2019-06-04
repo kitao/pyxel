@@ -8,6 +8,7 @@ namespace pyxelcore {
 class Sound;
 
 typedef std::array<int32_t, COLOR_COUNT> PaletteColor;
+typedef std::array<int32_t, COLOR_COUNT> PaletteTable;
 typedef std::vector<std::string> ImageString;
 typedef std::vector<std::string> TilemapString;
 typedef std::vector<int32_t> SoundData;
