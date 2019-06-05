@@ -103,21 +103,27 @@ inline int16_t Oscillator::Output() {
 
 inline float Oscillator::Triangle(int32_t period, int32_t phase) {
   float x = static_cast<float>(phase) / period + 0.75f;
-  x -= static_cast<int32_t>(x);
+
+  float n;
+  x = modff(x, &n);
 
   return Abs(x * 4.0f - 2.0f) - 1.0f;
 }
 
 inline float Oscillator::Square(int32_t period, int32_t phase) {
   float x = static_cast<float>(phase) / period;
-  x -= static_cast<int32_t>(x);
+
+  float n;
+  x = modff(x, &n);
 
   return (x < 0.5f ? 1.0f : -1.0f) * 0.2f;
 }
 
 inline float Oscillator::Pulse(int32_t period, int32_t phase) {
   float x = static_cast<float>(phase) / period;
-  x -= static_cast<int32_t>(x);
+
+  float n;
+  x = modff(x, &n);
 
   return (x < 0.25f ? 1.0f : -1.0f) * 0.2f;
 }

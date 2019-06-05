@@ -152,23 +152,26 @@ void Sound::SetEffect(const std::string& effect) {
   }
 }
 
-void Sound::ReplaceAll(std::string& str,
-                       const std::string& from,
-                       const std::string& to) {
-  std::string::size_type pos = str.find(from);
+std::string Sound::ReplaceAll(const std::string& str,
+                              const std::string& from,
+                              const std::string& to) {
+  std::string s = str;
+  std::string::size_type pos = s.find(from);
 
-  while ((pos = str.find(from, pos)) != std::string::npos) {
-    str.replace(pos, from.length(), to);
+  while ((pos = s.find(from, pos)) != std::string::npos) {
+    s.replace(pos, from.length(), to);
     pos += to.length();
   }
+
+  return s;
 }
 
 std::string Sound::FormatData(const std::string& str) {
   std::string s = std::string(str);
 
-  ReplaceAll(s, " ", "");
-  ReplaceAll(s, "\n", "");
-  ReplaceAll(s, "\t", "");
+  s = ReplaceAll(s, " ", "");
+  s = ReplaceAll(s, "\n", "");
+  s = ReplaceAll(s, "\t", "");
   std::transform(s.begin(), s.end(), s.begin(), ::tolower);
 
   return s;
