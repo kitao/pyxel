@@ -22,8 +22,6 @@ class MusicEditor(Editor):
         self._play_pos = [0 for _ in range(MUSIC_CHANNEL_COUNT)]
         self.field_cursor = FieldCursor(
             self.get_data,
-            self.get_data_length,
-            self.set_data_length,
             self.add_pre_history,
             self.add_post_history,
             MAX_MUSIC_LENGTH,
@@ -85,32 +83,6 @@ class MusicEditor(Editor):
             data = music.ch3
 
         return data
-
-    def get_data_length(self, value):
-        music = pyxel.music(self._music_picker.value)
-
-        if value == 0:
-            data_length = music.ch0_length
-        elif value == 1:
-            data_length = music.ch1_length
-        elif value == 2:
-            data_length = music.ch2_length
-        elif value == 3:
-            data_length = music.ch3_length
-
-        return data_length
-
-    def set_data_length(self, value, length):
-        music = pyxel.music(self._music_picker.value)
-
-        if value == 0:
-            music.ch0_length = length
-        elif value == 1:
-            music.ch1_length = length
-        elif value == 2:
-            music.ch2_length = length
-        elif value == 3:
-            music.ch3_length = length
 
     def add_pre_history(self, x, y):
         self._history_data = data = {}
