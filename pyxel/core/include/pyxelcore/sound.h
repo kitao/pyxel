@@ -3,8 +3,6 @@
 
 #include "pyxelcore/common.h"
 
-#include <string>
-
 namespace pyxelcore {
 
 class Sound {
@@ -35,9 +33,9 @@ class Sound {
   SoundData effect_;
   int32_t speed_;
 
-  static void ReplaceAll(std::string& str,
-                         const std::string& from,
-                         const std::string& to);
+  static std::string ReplaceAll(const std::string& str,
+                                const std::string& from,
+                                const std::string& to);
   static std::string FormatData(const std::string& str);
 };
 

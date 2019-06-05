@@ -32,7 +32,7 @@ class Tilemap {
  private:
   int32_t width_;
   int32_t height_;
-  class Rectangle rect_;
+  pyxelcore::Rectangle rect_;
   int32_t** data_;
   int32_t image_index_;
 };

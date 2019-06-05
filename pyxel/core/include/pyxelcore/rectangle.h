@@ -51,8 +51,14 @@ class Rectangle {
   int32_t height_;
 };
 
-inline Rectangle::Rectangle()
-    : left_(0), top_(0), right_(0), bottom_(0), width_(0), height_(0) {}
+inline Rectangle::Rectangle() {
+  left_ = 0;
+  top_ = 0;
+  right_ = 0;
+  bottom_ = 0;
+  width_ = 0;
+  height_ = 0;
+}
 
 inline Rectangle::Rectangle(int32_t left,
                             int32_t top,
@@ -62,8 +68,8 @@ inline Rectangle::Rectangle(int32_t left,
   top_ = top;
   width_ = Max(width, 0);
   height_ = Max(height, 0);
-  right_ = left + Max(width - 1, 0);
-  bottom_ = top + Max(height - 1, 0);
+  right_ = left + width - 1;
+  bottom_ = top + height - 1;
 }
 
 inline bool Rectangle::IsEmpty() const {
