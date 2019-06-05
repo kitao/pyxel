@@ -5,8 +5,6 @@
 
 namespace pyxelcore {
 
-class Sound;
-
 class Channel {
  public:
   Channel();
