@@ -24,13 +24,13 @@ class Profiler {
   float average_fps_;
 };
 
-inline Profiler::Profiler(int32_t measure_frame_count)
-    : frame_count_(0),
-      start_time_(0),
-      total_time_(0),
-      average_time_(0.0f),
-      average_fps_(0.0f) {
+inline Profiler::Profiler(int32_t measure_frame_count) {
   measure_frame_count_ = Max(measure_frame_count, 1);
+  frame_count_ = 0;
+  start_time_ = 0;
+  total_time_ = 0;
+  average_time_ = 0.0f;
+  average_fps_ = 0.0f;
 }
 
 inline void Profiler::Start() {
