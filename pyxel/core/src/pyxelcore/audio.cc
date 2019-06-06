@@ -83,11 +83,6 @@ void Audio::PlaySound(int32_t channel,
     return;
   }
 
-  if (sound_index_list.size() >= MAX_MUSIC_LENGTH) {
-    PRINT_ERROR("invalid sound length");
-    return;
-  }
-
   SoundList sound_list;
 
   for (int32_t sound_index : sound_index_list) {
