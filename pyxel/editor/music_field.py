@@ -18,10 +18,6 @@ class MusicField(Widget):
     def data(self):
         return self.parent.get_data(self._ch)
 
-    @property
-    def data_length(self):
-        return self.parent.get_data_length(self._ch)
-
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_LEFT_BUTTON or self.parent.is_playing:
             return
@@ -46,12 +42,11 @@ class MusicField(Widget):
         )
 
         data = self.data
-        data_length = self.data_length
 
         if self.parent.is_playing:
             play_pos = self.parent.play_pos(self._ch)
 
-            if play_pos < 0 or data_length == 0:
+            if play_pos < 0 or not data:
                 cursor_x = -1
                 cursor_y = -1
             else:
@@ -69,7 +64,7 @@ class MusicField(Widget):
             pyxel.rect(x, y, 9, 7, cursor_col)
 
         for i in range(MAX_MUSIC_LENGTH):
-            if i >= data_length:
+            if i >= len(data):
                 break
 
             x = self.x + 22 + (i % 16) * 12
