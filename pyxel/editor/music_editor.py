@@ -88,14 +88,12 @@ class MusicEditor(Editor):
         self._history_data = data = {}
         data["music"] = self._music_picker.value
         data["cursor_before"] = (x, y)
-        data["before"] = self.field_cursor.data.tolist()[
-            : self.field_cursor.data_length
-        ]
+        data["before"] = self.field_cursor.data[:]
 
     def add_post_history(self, x, y):
         data = self._history_data
         data["cursor_after"] = (x, y)
-        data["after"] = self.field_cursor.data.tolist()[: self.field_cursor.data_length]
+        data["after"] = self.field_cursor.data[:]
 
         if data["before"] != data["after"]:
             self.add_history(self._history_data)
@@ -127,13 +125,9 @@ class MusicEditor(Editor):
         pyxel.stop()
 
     def __on_undo(self, data):
-        dat = data["before"]
-        dat_len = len(dat)
-
         self._music_picker.value = data["music"]
         self.field_cursor.move(*data["cursor_before"])
-        self.field_cursor.data[:dat_len] = dat
-        self.field_cursor.data_length = dat_len
+        self.field_cursor.data[:] = data["before"]
 
     def __on_redo(self, data):
         dat = data["after"]
