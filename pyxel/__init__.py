@@ -191,6 +191,9 @@ GAMEPAD_2_LEFT: int = _get_constant_number("GAMEPAD_2_LEFT")
 class Image:
     def __init__(self, obj: Any):
         self._obj = obj
+        self._data = np.ctypeslib.as_array(
+            core.image_data_getter(self._obj), shape=(self.height, self.width)
+        )
 
     @property
     def width(self) -> int:
@@ -202,9 +205,7 @@ class Image:
 
     @property
     def data(self) -> Any:
-        return np.ctypeslib.as_array(
-            core.image_data_getter(self._obj), shape=(self.height, self.width)
-        )
+        return self._data
 
     def get(self, x: int, y: int) -> int:
         return core.image_get(self._obj, int(x), int(y))  # type: ignore
@@ -242,6 +243,9 @@ class Image:
 class Tilemap:
     def __init__(self, obj: Any):
         self._obj = obj
+        self._data = np.ctypeslib.as_array(
+            core.tilemap_data_getter(self._obj), shape=(self.height, self.width)
+        )
 
     @property
     def width(self) -> int:
@@ -253,9 +257,7 @@ class Tilemap:
 
     @property
     def data(self) -> Any:
-        return np.ctypeslib.as_array(
-            core.tilemap_data_getter(self._obj), shape=(self.height, self.width)
-        )
+        return self._data
 
     @property
     def refimg(self) -> int:
