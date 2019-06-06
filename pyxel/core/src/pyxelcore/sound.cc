@@ -69,11 +69,7 @@ void Sound::SetNote(const std::string& note) {
       return;
     }
 
-    if (note_.size() < MAX_SOUND_LENGTH) {
-      note_.push_back(param);
-    } else {
-      PRINT_ERROR("too long sound note");
-    }
+    note_.push_back(param);
   }
 }
 
@@ -94,11 +90,7 @@ void Sound::SetTone(const std::string& tone) {
       return;
     }
 
-    if (tone_.size() < MAX_SOUND_LENGTH) {
-      tone_.push_back(param);
-    } else {
-      PRINT_ERROR("too long sound tone");
-    }
+    tone_.push_back(param);
   }
 }
 
@@ -119,11 +111,7 @@ void Sound::SetVolume(const std::string& volume) {
       return;
     }
 
-    if (volume_.size() < MAX_SOUND_LENGTH) {
-      volume_.push_back(param);
-    } else {
-      PRINT_ERROR("too long sound volume");
-    }
+    volume_.push_back(param);
   }
 }
 
@@ -144,11 +132,7 @@ void Sound::SetEffect(const std::string& effect) {
       return;
     }
 
-    if (effect_.size() < MAX_SOUND_LENGTH) {
-      effect_.push_back(param);
-    } else {
-      PRINT_ERROR("too long sound effect");
-    }
+    effect_.push_back(param);
   }
 }
 
