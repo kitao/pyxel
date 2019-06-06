@@ -393,14 +393,12 @@ enum {
   EFFECT_FADEOUT,
 };
 
-const int32_t MAX_SOUND_LENGTH = 48;
 const int32_t INITIAL_SOUND_SPEED = 30;
 
 //
 // Music class
 //
 const int32_t MUSIC_CHANNEL_COUNT = 4;
-const int32_t MAX_MUSIC_LENGTH = 32;
 
 //
 // Helper functions
