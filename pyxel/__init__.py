@@ -293,8 +293,6 @@ class Tilemap:
 # Sound class
 #
 class Sound:
-    _MAX_SOUND_LENGTH = _get_constant_number("MAX_SOUND_LENGTH")
-
     def __init__(self, c_obj: Any):
         self._c_obj = c_obj
         self._note = _CListInterface(  # type: ignore
@@ -373,8 +371,6 @@ class Sound:
 # Music class
 #
 class Music:
-    _MAX_MUSIC_LENGTH = _get_constant_number("MAX_MUSIC_LENGTH")
-
     def __init__(self, c_obj: Any):
         self._c_obj = c_obj
         self._ch0 = _CListInterface(  # type: ignore
@@ -508,11 +504,12 @@ def save(filename: str) -> bool:
 
 
 def load(filename: str) -> bool:
-    if load_as_old_pyxel_format(filename):
-        return True
-
     dirname = os.path.dirname(inspect.stack()[-1].filename)
     filename = os.path.join(dirname, filename)
+
+    ext = os.path.splitext(filename)[1]
+    if ext == ".pyxel":
+        return load_as_old_pyxel_format(filename)
 
     return core.load(filename.encode("utf-8"))  # type: ignore
 
