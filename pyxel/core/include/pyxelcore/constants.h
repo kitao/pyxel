@@ -4,8 +4,11 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -18,8 +21,8 @@ namespace pyxelcore {
 // Common
 //
 const std::string VERSION = "1.1.0";
-
 const int32_t COLOR_COUNT = 16;
+const std::string WHITESPACE = " \t\v\r\n";
 
 const std::string DEFAULT_CAPTION = "Pyxel";
 const int32_t DEFAULT_SCALE = 0;
