@@ -60,10 +60,10 @@ System::System(int32_t width,
     fps = 1;
   }
 
-  resource_ = new pyxelcore::Resource();
   input_ = new pyxelcore::Input();
   graphics_ = new pyxelcore::Graphics(width, height);
   audio_ = new pyxelcore::Audio();
+  resource_ = new pyxelcore::Resource(graphics_, audio_);
   window_ = new pyxelcore::Window(caption, width, height, scale, border_width,
                                   border_color);
 
@@ -77,11 +77,11 @@ System::~System() {
   IMG_Quit();
   SDL_Quit();
 
-  delete resource_;
-  delete input_;
-  delete graphics_;
-  delete audio_;
   delete window_;
+  delete resource_;
+  delete audio_;
+  delete graphics_;
+  delete input_;
 }
 
 void System::Run(void (*update)(), void (*draw)()) {
