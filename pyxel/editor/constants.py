@@ -1,4 +1,4 @@
-from pyxel import _get_constant_number
+from pyxel import _get_constant_number, _get_constant_string
 
 APP_WIDTH = 240
 APP_HEIGHT = 180
@@ -30,3 +30,5 @@ MUSIC_BANK_COUNT = _get_constant_number("MUSIC_BANK_COUNT")
 MUSIC_CHANNEL_COUNT = _get_constant_number("MUSIC_CHANNEL_COUNT")
 FONT_WIDTH = _get_constant_number("FONT_WIDTH")
 FONT_HEIGHT = _get_constant_number("FONT_HEIGHT")
+
+RESOURCE_FILE_EXTENSION = _get_constant_string("RESOURCE_FILE_EXTENSION")
