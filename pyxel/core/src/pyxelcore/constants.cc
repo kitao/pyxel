@@ -186,6 +186,7 @@ int32_t GetConstantNumber(const std::string& name) {
 std::string GetConstantString(const std::string& name) {
   CHECK_CONSTANT(VERSION);
   CHECK_CONSTANT(DEFAULT_CAPTION);
+  CHECK_CONSTANT(RESOURCE_FILE_EXTENSION);
 
   PRINT_ERROR("unknown constant name '" + name + "'");
   return "";

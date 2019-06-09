@@ -54,7 +54,7 @@ Resource::Resource(Graphics* graphics, Audio* audio) {
 }
 
 bool Resource::SaveAsset(const std::string& filename) {
-  std::ofstream ofs(filename + "test");
+  std::ofstream ofs(filename);
 
   if (ofs.fail()) {
     PRINT_ERROR("cannot open file '" + filename + "'");
