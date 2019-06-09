@@ -54,13 +54,6 @@ Resource::Resource(Graphics* graphics, Audio* audio) {
 }
 
 bool Resource::SaveAsset(const std::string& filename) {
-  std::ofstream ofs(filename);
-
-  if (ofs.fail()) {
-    PRINT_ERROR("cannot open file '" + filename + "'");
-    return false;
-  }
-
   std::stringstream ss;
 
   ss << "__pyxel__" << std::endl;
@@ -82,32 +75,24 @@ bool Resource::SaveAsset(const std::string& filename) {
     DumpMusic(ss, i);
   }
 
-  ofs << ss.str();
-
-  ofs.close();
+  try {
+    miniz_cpp::zip_file file;
+    file.writestr(RESOURCE_ARCHIVE_NAME, ss.str());
+    file.save(filename);
+  } catch (...) {
+    PRINT_ERROR("cannot save file '" + filename + "'");
+    return false;
+  }
 
   return true;
 }
 
 bool Resource::LoadAsset(const std::string& filename) {
-  std::ifstream ifs(filename);
-
-  if (ifs.fail()) {
-    PRINT_ERROR("cannot open file '" + filename + "'");
-    return false;
-  }
-
-  std::istreambuf_iterator<char> it(ifs);
-  std::istreambuf_iterator<char> last;
-  std::stringstream ss;
-
-  ss << std::string(it, last);
-
-  ifs.close();
-
   try {
-    std::string line;
+    miniz_cpp::zip_file file(filename);
+    std::stringstream ss(file.read(RESOURCE_ARCHIVE_NAME));
 
+    std::string line;
     std::getline(ss, line);
     line = Trim(line);
 
@@ -138,7 +123,7 @@ bool Resource::LoadAsset(const std::string& filename) {
       }
     }
   } catch (...) {
-    PRINT_ERROR("invalid pyxel resource file");
+    PRINT_ERROR("invalid resource file");
     return false;
   }
 
