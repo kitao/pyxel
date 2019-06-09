@@ -9,6 +9,41 @@
 
 #include "miniz-cpp/zip_file.hpp"
 
+#define PARSE_CHANNEL(ss, music, channel)                          \
+  do {                                                             \
+    std::string line;                                              \
+                                                                   \
+    std::getline(ss, line);                                        \
+    line = Trim(line);                                             \
+                                                                   \
+    SoundIndexList& data = music->channel();                       \
+    data.clear();                                                  \
+                                                                   \
+    if (line != "none") {                                          \
+      for (int32_t i = 0; i < line.size() / 2; i++) {              \
+        int32_t v = std::stoi(line.substr(i * 2, 2), nullptr, 16); \
+                                                                   \
+        data.push_back(v);                                         \
+      }                                                            \
+    }                                                              \
+  } while (false)
+
+#define PARSE_SOUND(ss, sound, property) \
+  do {                                   \
+    std::string line;                    \
+    std::getline(ss, line);              \
+    line = Trim(line);                   \
+                                         \
+    SoundData& data = sound->property(); \
+    data.clear();                        \
+                                         \
+    if (line != "none") {                \
+      for (char c : line) {              \
+        data.push_back(c - '0');         \
+      }                                  \
+    }                                    \
+  } while (false)
+
 namespace pyxelcore {
 
 class ParseError {};
@@ -70,41 +105,41 @@ bool Resource::LoadAsset(const std::string& filename) {
 
   ifs.close();
 
-  std::string line;
+  try {
+    std::string line;
 
-  std::getline(ss, line);
-  line = Trim(line);
-
-  if (line == "__pyxel__") {
-    ParseVersion(ss);
-  } else {
-    PRINT_ERROR("invalid pyxel file");
-    return false;
-  }
-
-  while (!ss.eof()) {
     std::getline(ss, line);
     line = Trim(line);
 
-    if (line.find("__") == 0) {
-      if (line.find("__image_") == 0) {
-        int32_t image_index = std::atoi(line.substr(8, 1).c_str());
-        ParseImage(ss, image_index);
-        std::cout << line << std::endl;
-      } else if (line.find("__tilemap_") == 0) {
-        int32_t tilemap_index = std::atoi(line.substr(10, 1).c_str());
-        ParseTilemap(ss, tilemap_index);
-        std::cout << line << std::endl;
-      } else if (line.find("__sound_") == 0) {
-        int32_t sound_index = std::atoi(line.substr(8, 2).c_str());
-        ParseSound(ss, sound_index);
-        std::cout << line << std::endl;
-      } else if (line.find("__music_") == 0) {
-        int32_t music_index = std::atoi(line.substr(8, 1).c_str());
-        ParseMusic(ss, music_index);
-        std::cout << line << std::endl;
+    if (line == "__pyxel__") {
+      ParseVersion(ss);
+    } else {
+      throw ParseError();
+    }
+
+    while (!ss.eof()) {
+      std::getline(ss, line);
+      line = Trim(line);
+
+      if (line.find("__") == 0) {
+        if (line.find("__image_") == 0) {
+          int32_t image_index = std::atoi(line.substr(8, 1).c_str());
+          ParseImage(ss, image_index);
+        } else if (line.find("__tilemap_") == 0) {
+          int32_t tilemap_index = std::atoi(line.substr(10, 1).c_str());
+          ParseTilemap(ss, tilemap_index);
+        } else if (line.find("__sound_") == 0) {
+          int32_t sound_index = std::atoi(line.substr(8, 2).c_str());
+          ParseSound(ss, sound_index);
+        } else if (line.find("__music_") == 0) {
+          int32_t music_index = std::atoi(line.substr(8, 1).c_str());
+          ParseMusic(ss, music_index);
+        }
       }
     }
+  } catch (...) {
+    PRINT_ERROR("invalid pyxel resource file");
+    return false;
   }
 
   return true;
@@ -302,19 +337,86 @@ void Resource::ParseVersion(std::stringstream& ss) {
 }
 
 void Resource::ParseImage(std::stringstream& ss, int32_t image_index) {
-  //
+  Image* image = graphics_->GetImageBank(image_index);
+  int32_t** data = image->Data();
+
+  for (int32_t i = 0; i < image->Height(); i++) {
+    std::string line;
+    std::getline(ss, line);
+    line = Trim(line);
+
+    if (line.size() != image->Width()) {
+      throw ParseError();
+    }
+
+    for (int32_t j = 0; j < image->Width(); j++) {
+      data[i][j] = std::stoi(line.substr(j, 1), nullptr, 16);
+    }
+  }
 }
 
 void Resource::ParseTilemap(std::stringstream& ss, int32_t tilemap_index) {
-  //
+  Tilemap* tilemap = graphics_->GetTilemapBank(tilemap_index);
+  int32_t** data = tilemap->Data();
+
+  for (int32_t i = 0; i < tilemap->Height(); i++) {
+    std::string line;
+    std::getline(ss, line);
+    line = Trim(line);
+
+    if (line.size() != tilemap->Width() * 3) {
+      throw ParseError();
+    }
+
+    for (int32_t j = 0; j < tilemap->Width(); j++) {
+      data[i][j] = std::stoi(line.substr(j * 3, 3), nullptr, 16);
+    }
+  }
 }
 
 void Resource::ParseSound(std::stringstream& ss, int32_t sound_index) {
-  //
+  Sound* sound = audio_->GetSoundBank(sound_index);
+
+  {
+    std::string line;
+    std::getline(ss, line);
+    line = Trim(line);
+
+    SoundData& note = sound->Note();
+    note.clear();
+
+    if (line != "none") {
+      for (int32_t i = 0; i < line.size() / 2; i++) {
+        int32_t v = std::stoi(line.substr(i * 2, 2), nullptr, 16);
+
+        if (v == 0xff) {
+          v = -1;
+        }
+
+        note.push_back(v);
+      }
+    }
+  }
+
+  PARSE_SOUND(ss, sound, Tone);
+  PARSE_SOUND(ss, sound, Volume);
+  PARSE_SOUND(ss, sound, Effect);
+
+  {
+    std::string line;
+    std::getline(ss, line);
+    line = Trim(line);
+    sound->Speed(std::stoi(line));
+  }
 }
 
 void Resource::ParseMusic(std::stringstream& ss, int32_t music_index) {
-  //
+  Music* music = audio_->GetMusicBank(music_index);
+
+  PARSE_CHANNEL(ss, music, Channel0);
+  PARSE_CHANNEL(ss, music, Channel1);
+  PARSE_CHANNEL(ss, music, Channel2);
+  PARSE_CHANNEL(ss, music, Channel3);
 }
 
 }  // namespace pyxelcore
