@@ -16,6 +16,7 @@ from .constants import (
     EDITOR_IMAGE_NAME,
     EDITOR_IMAGE_X,
     EDITOR_IMAGE_Y,
+    RESOURCE_FILE_EXTENSION,
 )
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
@@ -26,9 +27,9 @@ from .tilemap_editor import TileMapEditor
 class App(Widget):
     def __init__(self, resource_file):
         resource_file = os.path.join(os.getcwd(), resource_file)
-        root, ext = os.path.splitext(resource_file)
-        if ext != ".pyxel":
-            resource_file += ".pyxel"
+        ext = os.path.splitext(resource_file)[1]
+        if ext != RESOURCE_FILE_EXTENSION and ext != ".pyxel":
+            resource_file += RESOURCE_FILE_EXTENSION
 
         pyxel.init(
             APP_WIDTH, APP_HEIGHT, caption="Pyxel Editor - {}".format(resource_file)
