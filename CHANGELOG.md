@@ -7,12 +7,10 @@
 - Changed the save and load method to return bool value
 - Removed the run_with_profiler API
 - Changed the max screen size to 256
-- Modified the screen size of the example #3
-- Changed the max sound length to 48
-- Changed the max music length to 32
 - Added the play_pos API
 - Changed arguments of the clip API
 - Changed arguments of the rect and rectb API
+- Modified the examples according to the API changes
 
 ## 1.0.1
 - Simplified comparisons
