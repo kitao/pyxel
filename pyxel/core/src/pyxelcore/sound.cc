@@ -136,29 +136,16 @@ void Sound::SetEffect(const std::string& effect) {
   }
 }
 
-std::string Sound::ReplaceAll(const std::string& str,
-                              const std::string& from,
-                              const std::string& to) {
-  std::string s = str;
-  std::string::size_type pos = s.find(from);
+std::string Sound::FormatData(const std::string& str) {
+  std::string res = std::string(str);
 
-  while ((pos = s.find(from, pos)) != std::string::npos) {
-    s.replace(pos, from.length(), to);
-    pos += to.length();
+  for (char c : WHITESPACE) {
+    res = ReplaceAll(res, " ", "");
   }
 
-  return s;
-}
+  std::transform(res.begin(), res.end(), res.begin(), ::tolower);
 
-std::string Sound::FormatData(const std::string& str) {
-  std::string s = std::string(str);
-
-  s = ReplaceAll(s, " ", "");
-  s = ReplaceAll(s, "\n", "");
-  s = ReplaceAll(s, "\t", "");
-  std::transform(s.begin(), s.end(), s.begin(), ::tolower);
-
-  return s;
+  return res;
 }
 
 }  // namespace pyxelcore
