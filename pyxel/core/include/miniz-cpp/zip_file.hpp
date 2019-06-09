@@ -32,6 +32,7 @@
 #include <string>
 #include <time.h>
 #include <vector>
+#include <cstring>
 
 /* miniz.c v1.15 - public domain deflate/inflate, zlib-subset, ZIP reading/writing/appending, PNG writing
    See "unlicense" statement at the end of this file.
@@ -514,8 +515,8 @@ typedef signed short mz_int16;
 typedef unsigned short mz_uint16;
 typedef unsigned int mz_uint32;
 typedef unsigned int mz_uint;
-typedef long long mz_int64;
-typedef unsigned long long mz_uint64;
+typedef int64_t mz_int64;
+typedef uint64_t mz_uint64;
 typedef int mz_bool;
 
 #define MZ_FALSE (0)
@@ -2900,7 +2901,7 @@ void *tdefl_write_image_to_png_file_in_memory(const void *pImage, int w, int h, 
   #include <stdio.h>
   #include <sys/stat.h>
 
-  #if defined(_MSC_VER) || defined(__MINGW64__)
+  #if defined(_MSC_VER)
     static FILE *mz_fopen(const char *pFilename, const char *pMode)
     {
       FILE* pFile = NULL;
@@ -2929,7 +2930,7 @@ void *tdefl_write_image_to_png_file_in_memory(const void *pImage, int w, int h, 
     #define MZ_FFLUSH fflush
     #define MZ_FREOPEN mz_freopen
     #define MZ_DELETE_FILE remove
-  #elif defined(__MINGW32__)
+  #elif defined(__MINGW32__) || defined(__MINGW64__)
     #ifndef MINIZ_NO_TIME
       #include <sys/utime.h>
     #endif
