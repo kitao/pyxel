@@ -11,6 +11,7 @@
 - Changed arguments of the clip API
 - Changed arguments of the rect and rectb API
 - Modified the examples according to the API changes
+- Changed the resource file extension name to .pyxres
 
 ## 1.0.1
 - Simplified comparisons
