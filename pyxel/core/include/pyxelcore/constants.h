@@ -62,7 +62,7 @@ const int32_t GIF_CAPTURE_SCALE = 2;
 // Resource
 //
 const std::string RESOURCE_FILE_EXTENSION = ".pyxres";
-const std::string RESOURCE_ARCHIVE_NAME = "pyxel_resource.txt";
+const std::string RESOURCE_ARCHIVE_DIRNAME = "pyxel_resource/";
 
 //
 // Input
