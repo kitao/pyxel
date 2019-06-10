@@ -71,6 +71,12 @@ inline std::string Trim(const std::string& str) {
   return res;
 }
 
+inline std::string GetTrimmedLine(std::istream& is) {
+  std::string line;
+  std::getline(is, line);
+  return Trim(line);
+}
+
 inline void PrintError(const std::string& message,
                        const std::string& func_name) {
   std::cout << "pyxel error: " + message + " in '" + func_name + "'"
