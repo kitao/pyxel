@@ -45,20 +45,6 @@ T Clamp(T v, T low, T high) {
   return v < low ? low : (v > high ? high : v);
 }
 
-inline std::string ReplaceAll(const std::string& str,
-                              const std::string& from,
-                              const std::string& to) {
-  std::string res = str;
-  std::string::size_type pos = res.find(from);
-
-  while ((pos = res.find(from, pos)) != std::string::npos) {
-    res.replace(pos, from.length(), to);
-    pos += to.length();
-  }
-
-  return res;
-}
-
 inline std::string Trim(const std::string& str) {
   std::string res;
   std::string::size_type left = str.find_first_not_of(WHITESPACE);
@@ -75,6 +61,20 @@ inline std::string GetTrimmedLine(std::istream& is) {
   std::string line;
   std::getline(is, line);
   return Trim(line);
+}
+
+inline std::string ReplaceAll(const std::string& str,
+                              const std::string& from,
+                              const std::string& to) {
+  std::string res = str;
+  std::string::size_type pos = res.find(from);
+
+  while ((pos = res.find(from, pos)) != std::string::npos) {
+    res.replace(pos, from.length(), to);
+    pos += to.length();
+  }
+
+  return res;
 }
 
 inline void PrintError(const std::string& message,
