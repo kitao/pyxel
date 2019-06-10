@@ -11,13 +11,10 @@
 
 #define PARSE_CHANNEL(ss, music, channel)                          \
   do {                                                             \
-    std::string line;                                              \
-                                                                   \
-    std::getline(ss, line);                                        \
-    line = Trim(line);                                             \
-                                                                   \
     SoundIndexList& data = music->channel();                       \
     data.clear();                                                  \
+                                                                   \
+    std::string line = GetTrimmedLine(ss);                         \
                                                                    \
     if (line != "none") {                                          \
       for (int32_t i = 0; i < line.size() / 2; i++) {              \
@@ -28,20 +25,18 @@
     }                                                              \
   } while (false)
 
-#define PARSE_SOUND(ss, sound, property) \
-  do {                                   \
-    std::string line;                    \
-    std::getline(ss, line);              \
-    line = Trim(line);                   \
-                                         \
-    SoundData& data = sound->property(); \
-    data.clear();                        \
-                                         \
-    if (line != "none") {                \
-      for (char c : line) {              \
-        data.push_back(c - '0');         \
-      }                                  \
-    }                                    \
+#define PARSE_SOUND(ss, sound, property)   \
+  do {                                     \
+    SoundData& data = sound->property();   \
+    data.clear();                          \
+                                           \
+    std::string line = GetTrimmedLine(ss); \
+                                           \
+    if (line != "none") {                  \
+      for (char c : line) {                \
+        data.push_back(c - '0');           \
+      }                                    \
+    }                                      \
   } while (false)
 
 namespace pyxelcore {
@@ -54,72 +49,114 @@ Resource::Resource(Graphics* graphics, Audio* audio) {
 }
 
 bool Resource::SaveAsset(const std::string& filename) {
-  std::stringstream ss;
+  std::ofstream ofs(filename);
 
-  ss << "__pyxel__" << std::endl;
-  ss << VERSION << std::endl;
-
-  for (int32_t i = 0; i < IMAGE_BANK_FOR_SYSTEM; i++) {
-    DumpImage(ss, i);
-  }
-
-  for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
-    DumpTilemap(ss, i);
-  }
-
-  for (int32_t i = 0; i < SOUND_BANK_FOR_SYSTEM; i++) {
-    DumpSound(ss, i);
-  }
-
-  for (int32_t i = 0; i < MUSIC_BANK_COUNT; i++) {
-    DumpMusic(ss, i);
-  }
-
-  try {
-    miniz_cpp::zip_file file;
-    file.writestr(RESOURCE_ARCHIVE_NAME, ss.str());
-    file.save(filename);
-  } catch (...) {
+  if (ofs.fail()) {
     PRINT_ERROR("cannot save file '" + filename + "'");
     return false;
   }
+
+  miniz_cpp::zip_file file;
+
+  file.writestr(GetVersionName(), VERSION + '\n');
+
+  for (int32_t i = 0; i < IMAGE_BANK_FOR_SYSTEM; i++) {
+    std::string str = DumpImage(i);
+
+    if (str.size() > 0) {
+      file.writestr(GetImageName(i), str);
+    }
+  }
+
+  for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
+    std::string str = DumpTilemap(i);
+
+    if (str.size() > 0) {
+      file.writestr(GetTilemapName(i), str);
+    }
+  }
+
+  for (int32_t i = 0; i < SOUND_BANK_FOR_SYSTEM; i++) {
+    std::string str = DumpSound(i);
+
+    if (str.size() > 0) {
+      file.writestr(GetSoundName(i), str);
+    }
+  }
+
+  for (int32_t i = 0; i < MUSIC_BANK_COUNT; i++) {
+    std::string str = DumpMusic(i);
+
+    if (str.size() > 0) {
+      file.writestr(GetMusicName(i), str);
+    }
+  }
+
+  file.save(ofs);
+  ofs.close();
 
   return true;
 }
 
 bool Resource::LoadAsset(const std::string& filename) {
+  std::ifstream ifs(filename);
+
+  if (ifs.fail()) {
+    PRINT_ERROR("cannot open file '" + filename + "'");
+    return false;
+  }
+
+  miniz_cpp::zip_file file;
+  file.load(ifs);
+
+  ifs.close();
+
   try {
-    miniz_cpp::zip_file file(filename);
-    std::stringstream ss(file.read(RESOURCE_ARCHIVE_NAME));
+    {
+      std::string name = GetVersionName();
 
-    std::string line;
-    std::getline(ss, line);
-    line = Trim(line);
+      if (file.has_file(name)) {
+        std::stringstream ss(file.read(name));
+        std::string line = GetTrimmedLine(ss);
 
-    if (line == "__pyxel__") {
-      ParseVersion(ss);
-    } else {
-      throw ParseError();
+        if (line > VERSION) {
+          PRINT_ERROR("unsupported resource file version '" + line + "'");
+          return false;
+        }
+      } else {
+        throw ParseError();
+      }
     }
 
-    while (!ss.eof()) {
-      std::getline(ss, line);
-      line = Trim(line);
+    for (int32_t i = 0; i < IMAGE_BANK_FOR_SYSTEM; i++) {
+      std::string name = GetImageName(i);
 
-      if (line.find("__") == 0) {
-        if (line.find("__image_") == 0) {
-          int32_t image_index = std::atoi(line.substr(8, 1).c_str());
-          ParseImage(ss, image_index);
-        } else if (line.find("__tilemap_") == 0) {
-          int32_t tilemap_index = std::atoi(line.substr(10, 1).c_str());
-          ParseTilemap(ss, tilemap_index);
-        } else if (line.find("__sound_") == 0) {
-          int32_t sound_index = std::atoi(line.substr(8, 2).c_str());
-          ParseSound(ss, sound_index);
-        } else if (line.find("__music_") == 0) {
-          int32_t music_index = std::atoi(line.substr(8, 1).c_str());
-          ParseMusic(ss, music_index);
-        }
+      if (file.has_file(name)) {
+        ParseImage(i, file.read(name));
+      }
+    }
+
+    for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
+      std::string name = GetTilemapName(i);
+
+      if (file.has_file(name)) {
+        ParseTilemap(i, file.read(name));
+      }
+    }
+
+    for (int32_t i = 0; i < SOUND_BANK_FOR_SYSTEM; i++) {
+      std::string name = GetSoundName(i);
+
+      if (file.has_file(name)) {
+        ParseSound(i, file.read(name));
+      }
+    }
+
+    for (int32_t i = 0; i < MUSIC_BANK_COUNT; i++) {
+      std::string name = GetMusicName(i);
+
+      if (file.has_file(name)) {
+        ParseMusic(i, file.read(name));
       }
     }
   } catch (...) {
@@ -130,10 +167,9 @@ bool Resource::LoadAsset(const std::string& filename) {
   return true;
 }
 
-void Resource::DumpImage(std::stringstream& ss, int32_t image_index) {
+std::string Resource::DumpImage(int32_t image_index) const {
   Image* image = graphics_->GetImageBank(image_index);
   int32_t** data = image->Data();
-
   bool is_editted = false;
 
   for (int32_t i = 0; i < image->Height(); i++) {
@@ -150,11 +186,10 @@ void Resource::DumpImage(std::stringstream& ss, int32_t image_index) {
   }
 
   if (!is_editted) {
-    return;
+    return "";
   }
 
-  ss << std::endl;
-  ss << "__image_" << image_index << "__" << std::endl;
+  std::stringstream ss;
 
   ss << std::hex;
 
@@ -166,13 +201,12 @@ void Resource::DumpImage(std::stringstream& ss, int32_t image_index) {
     ss << std::endl;
   }
 
-  ss << std::dec;
+  return ss.str();
 }
 
-void Resource::DumpTilemap(std::stringstream& ss, int32_t tilemap_index) {
+std::string Resource::DumpTilemap(int32_t tilemap_index) const {
   Tilemap* tilemap = graphics_->GetTilemapBank(tilemap_index);
   int32_t** data = tilemap->Data();
-
   bool is_editted = false;
 
   for (int32_t i = 0; i < tilemap->Height(); i++) {
@@ -189,11 +223,10 @@ void Resource::DumpTilemap(std::stringstream& ss, int32_t tilemap_index) {
   }
 
   if (!is_editted) {
-    return;
+    return "";
   }
 
-  ss << std::endl;
-  ss << "__tilemap_" << tilemap_index << "__" << std::endl;
+  std::stringstream ss;
 
   ss << std::hex;
 
@@ -205,20 +238,18 @@ void Resource::DumpTilemap(std::stringstream& ss, int32_t tilemap_index) {
     ss << std::endl;
   }
 
-  ss << std::dec;
+  return ss.str();
 }
 
-void Resource::DumpSound(std::stringstream& ss, int32_t sound_index) {
+std::string Resource::DumpSound(int32_t sound_index) const {
   Sound* sound = audio_->GetSoundBank(sound_index);
 
   if (sound->Note().size() == 0 && sound->Tone().size() == 0 &&
       sound->Volume().size() == 0 && sound->Effect().size() == 0) {
-    return;
+    return "";
   }
 
-  ss << std::endl;
-  ss << "__sound_" << std::setw(2) << std::setfill('0') << sound_index << "__"
-     << std::endl;
+  std::stringstream ss;
 
   ss << std::hex;
 
@@ -263,18 +294,19 @@ void Resource::DumpSound(std::stringstream& ss, int32_t sound_index) {
   }
 
   ss << std::dec << sound->Speed() << std::endl;
+
+  return ss.str();
 }
 
-void Resource::DumpMusic(std::stringstream& ss, int32_t music_index) {
+std::string Resource::DumpMusic(int32_t music_index) const {
   Music* music = audio_->GetMusicBank(music_index);
 
   if (music->Channel0().size() == 0 && music->Channel1().size() == 0 &&
       music->Channel2().size() == 0 and music->Channel3().size() == 0) {
-    return;
+    return "";
   }
 
-  ss << std::endl;
-  ss << "__music_" << music_index << "__" << std::endl;
+  std::stringstream ss;
 
   ss << std::hex;
 
@@ -314,16 +346,13 @@ void Resource::DumpMusic(std::stringstream& ss, int32_t music_index) {
     ss << "none" << std::endl;
   }
 
-  ss << std::dec;
+  return ss.str();
 }
 
-void Resource::ParseVersion(std::stringstream& ss) {
-  //
-}
-
-void Resource::ParseImage(std::stringstream& ss, int32_t image_index) {
+void Resource::ParseImage(int32_t image_index, const std::string& str) {
   Image* image = graphics_->GetImageBank(image_index);
   int32_t** data = image->Data();
+  std::stringstream ss(str);
 
   for (int32_t i = 0; i < image->Height(); i++) {
     std::string line;
@@ -340,9 +369,10 @@ void Resource::ParseImage(std::stringstream& ss, int32_t image_index) {
   }
 }
 
-void Resource::ParseTilemap(std::stringstream& ss, int32_t tilemap_index) {
+void Resource::ParseTilemap(int32_t tilemap_index, const std::string& str) {
   Tilemap* tilemap = graphics_->GetTilemapBank(tilemap_index);
   int32_t** data = tilemap->Data();
+  std::stringstream ss(str);
 
   for (int32_t i = 0; i < tilemap->Height(); i++) {
     std::string line;
@@ -359,8 +389,9 @@ void Resource::ParseTilemap(std::stringstream& ss, int32_t tilemap_index) {
   }
 }
 
-void Resource::ParseSound(std::stringstream& ss, int32_t sound_index) {
+void Resource::ParseSound(int32_t sound_index, const std::string& str) {
   Sound* sound = audio_->GetSoundBank(sound_index);
+  std::stringstream ss(str);
 
   {
     std::string line;
@@ -391,12 +422,14 @@ void Resource::ParseSound(std::stringstream& ss, int32_t sound_index) {
     std::string line;
     std::getline(ss, line);
     line = Trim(line);
+
     sound->Speed(std::stoi(line));
   }
 }
 
-void Resource::ParseMusic(std::stringstream& ss, int32_t music_index) {
+void Resource::ParseMusic(int32_t music_index, const std::string& str) {
   Music* music = audio_->GetMusicBank(music_index);
+  std::stringstream ss(str);
 
   PARSE_CHANNEL(ss, music, Channel0);
   PARSE_CHANNEL(ss, music, Channel1);
