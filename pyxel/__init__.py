@@ -515,19 +515,13 @@ def load(filename: str) -> bool:
 
 
 def load_as_old_pyxel_format(filename: str) -> bool:
+    print("load as old pyxel format")
+
     import gzip
     import pickle
 
-    dirname = os.path.dirname(inspect.stack()[-1].filename)
-    filename = os.path.join(dirname, filename)
-
     with gzip.open(filename, mode="rb") as fp:
         pickled_data = fp.read()
-
-    if pickled_data[-1:] != pickle.STOP:
-        return False
-
-    print("load as old pyxel format")
 
     _sound = sound
     _music = music
