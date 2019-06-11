@@ -75,7 +75,6 @@ void Recorder::SaveScreenCapture() {
   }
 
   uint32_t* dst_data = new uint32_t[scaled_width_ * scaled_height_];
-
   GifWriter gif;
   GifBegin(&gif, (GetBaseName() + ".gif").c_str(),
            width_ * SCREEN_CAPTURE_SCALE, height_ * SCREEN_CAPTURE_SCALE,
@@ -106,8 +105,9 @@ void Recorder::SaveScreenCapture() {
   }
 
   GifEnd(&gif);
-
   delete[] dst_data;
+
+  ResetScreenCapture();
 }
 
 void Recorder::Update(const Image* screen_image) {

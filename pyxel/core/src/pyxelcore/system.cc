@@ -72,6 +72,7 @@ System::System(int32_t width,
   palette_color_ = palette_color;
   fps_ = fps;
   frame_count_ = 0;
+  is_update_suspended_ = false;
   is_performance_monitor_on_ = false;
 }
 
@@ -110,12 +111,19 @@ void System::Run(void (*update)(), void (*draw)()) {
       fps_profiler_.End();
       fps_profiler_.Start();
 
-      int32_t update_frame_count =
-          Min(static_cast<int32_t>(-sleep_time / one_frame_time),
-              MAX_FRAME_SKIP_COUNT) +
-          1;
+      int32_t update_frame_count;
 
-      next_update_time += one_frame_time * update_frame_count;
+      if (is_update_suspended_) {
+        is_update_suspended_ = false;
+        update_frame_count = 1;
+        next_update_time = SDL_GetTicks() + one_frame_time;
+      } else {
+        update_frame_count =
+            Min(static_cast<int32_t>(-sleep_time / one_frame_time),
+                MAX_FRAME_SKIP_COUNT) +
+            1;
+        next_update_time += one_frame_time * update_frame_count;
+      }
 
       for (int32_t i = 0; i < update_frame_count; i++) {
         frame_count_++;
@@ -159,6 +167,7 @@ void System::CheckSpecialInput() {
 
     if (input_->IsButtonPressed(KEY_1)) {
       recorder_->SaveScreenshot();
+      is_update_suspended_ = true;
     }
 
     if (input_->IsButtonPressed(KEY_2)) {
@@ -167,6 +176,7 @@ void System::CheckSpecialInput() {
 
     if (input_->IsButtonPressed(KEY_3)) {
       recorder_->SaveScreenCapture();
+      is_update_suspended_ = true;
     }
   }
 
