@@ -15,7 +15,7 @@ class Graphics {
 
   const Rectangle& ClipArea() const { return clip_area_; }
   const pyxelcore::PaletteTable& PaletteTable() const { return palette_table_; }
-  int32_t** ScreenData() const { return screen_data_; }
+  Image* ScreenImage() const { return screen_image_; }
 
   Image* GetImageBank(int32_t image_index, bool system = false) const;
   Tilemap* GetTilemapBank(int32_t tilemap_index) const;
