@@ -55,8 +55,8 @@ const std::vector<std::string> ICON_DATA = {
     "0000000110000000",
 };
 
-const int32_t GIF_CAPTURE_COUNT = 900;
-const int32_t GIF_CAPTURE_SCALE = 2;
+const int32_t SCREEN_CAPTURE_COUNT = 900;
+const int32_t SCREEN_CAPTURE_SCALE = 2;
 
 //
 // Resource
