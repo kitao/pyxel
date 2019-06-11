@@ -1,11 +1,14 @@
 #include "pyxelcore/window.h"
 
+#include "pyxelcore/image.h"
+
 namespace pyxelcore {
 
 Window::Window(const std::string& caption,
                int32_t screen_width,
                int32_t screen_height,
                int32_t screen_scale,
+               const PaletteColor& palette_color,
                int32_t border_width,
                int32_t border_color) {
   if (border_width < 0) {
@@ -16,6 +19,7 @@ Window::Window(const std::string& caption,
   screen_width_ = screen_width;
   screen_height_ = screen_height;
   screen_scale_ = screen_scale;
+  palette_color_ = palette_color;
   border_color_ = border_color;
   is_fullscreen_ = false;
 
@@ -43,7 +47,32 @@ Window::Window(const std::string& caption,
   SDL_SetWindowMinimumSize(window_, screen_width_, screen_height_);
   SDL_ShowCursor(false);
 
+  SetupWindowIcon();
   UpdateWindowInfo();
+}
+
+void Window::SetupWindowIcon() const {
+  SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
+      0, ICON_WIDTH, ICON_HEIGHT, 32, SDL_PIXELFORMAT_RGB888);
+
+  Image* image = new Image(ICON_WIDTH, ICON_HEIGHT);
+  image->SetData(0, 0, ICON_DATA);
+
+  int32_t** src_data = image->Data();
+  int32_t* dst_data = reinterpret_cast<int32_t*>(surface->pixels);
+
+  for (int32_t i = 0; i < ICON_HEIGHT; i++) {
+    int32_t index = ICON_WIDTH * i;
+
+    for (int32_t j = 0; j < ICON_WIDTH; j++) {
+      dst_data[index + j] = palette_color_[src_data[i][j]];
+    }
+  }
+
+  SDL_SetWindowIcon(window_, surface);
+  SDL_FreeSurface(surface);
+
+  delete image;
 }
 
 void Window::UpdateWindowInfo() {
@@ -83,7 +112,7 @@ bool Window::ProcessEvents() {
   return window_should_close;
 }
 
-void Window::Render(int32_t** screen_data, const PaletteColor& palette_color) {
+void Window::Render(int32_t** screen_data) {
   uint8_t r = (border_color_ >> 16) & 0xff;
   uint8_t g = (border_color_ >> 8) & 0xff;
   uint8_t b = border_color_ & 0xff;
@@ -91,7 +120,7 @@ void Window::Render(int32_t** screen_data, const PaletteColor& palette_color) {
   SDL_SetRenderDrawColor(renderer_, r, g, b, 255);
   SDL_RenderClear(renderer_);
 
-  UpdateScreenTexture(screen_data, palette_color);
+  UpdateScreenTexture(screen_data);
 
   SDL_Rect dest_rect = {
       screen_x_,
@@ -104,8 +133,7 @@ void Window::Render(int32_t** screen_data, const PaletteColor& palette_color) {
   SDL_RenderPresent(renderer_);
 }
 
-void Window::UpdateScreenTexture(int32_t** screen_data,
-                                 const PaletteColor& palette_color) {
+void Window::UpdateScreenTexture(int32_t** screen_data) {
   int32_t* framebuffer;
   int32_t pitch;
   int32_t size = screen_width_ * screen_height_;
@@ -116,7 +144,7 @@ void Window::UpdateScreenTexture(int32_t** screen_data,
   for (int32_t i = 0; i < screen_height_; i++) {
     int32_t index = screen_width_ * i;
     for (int32_t j = 0; j < screen_width_; j++) {
-      framebuffer[index + j] = palette_color[screen_data[i][j]];
+      framebuffer[index + j] = palette_color_[screen_data[i][j]];
     }
   }
 
