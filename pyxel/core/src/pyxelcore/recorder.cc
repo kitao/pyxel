@@ -2,15 +2,20 @@
 
 #include "pyxelcore/image.h"
 
-#include "gif/gif.h"
+#include "gif-h/gif.h"
 
 namespace pyxelcore {
 
-Recorder::Recorder(int32_t width, int32_t height, const PaletteColor& palette_color, int32_t fps) {
+Recorder::Recorder(int32_t width,
+                   int32_t height,
+                   const PaletteColor& palette_color,
+                   int32_t fps) {
   width_ = width;
   height_ = height;
+  scaled_width_ = width * SCREEN_CAPTURE_SCALE;
+  scaled_height_ = height * SCREEN_CAPTURE_SCALE;
   palette_color_ = palette_color;
-  fps_ = fps;
+  delay_time_ = static_cast<int32_t>((100.0f / fps) + 0.5f);
   cur_frame_ = -1;
   start_frame_ = 0;
   frame_count_ = 0;
@@ -32,8 +37,7 @@ void Recorder::SaveScreenshot() {
   }
 
   SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
-      0, width_ * SCREEN_CAPTURE_SCALE, height_ * SCREEN_CAPTURE_SCALE, 32,
-      SDL_PIXELFORMAT_RGB888);
+      0, scaled_width_, scaled_height_, 32, SDL_PIXELFORMAT_RGB888);
 
   SDL_LockSurface(surface);
 
@@ -45,7 +49,8 @@ void Recorder::SaveScreenshot() {
       int32_t color = palette_color_[src_data[i][j]];
 
       for (int32_t y = 0; y < SCREEN_CAPTURE_SCALE; y++) {
-        int32_t index = (width_ * (i * SCREEN_CAPTURE_SCALE + y) + j) * SCREEN_CAPTURE_SCALE;
+        int32_t index = scaled_width_ * (i * SCREEN_CAPTURE_SCALE + y) +
+                        j * SCREEN_CAPTURE_SCALE;
 
         for (int32_t x = 0; x < SCREEN_CAPTURE_SCALE; x++) {
           dst_data[index + x] = color;
@@ -68,8 +73,41 @@ void Recorder::SaveScreenCapture() {
   if (frame_count_ < 1) {
     return;
   }
-  //
-  std::cout << GetBaseName() << std::endl;
+
+  uint32_t* dst_data = new uint32_t[scaled_width_ * scaled_height_];
+
+  GifWriter gif;
+  GifBegin(&gif, (GetBaseName() + ".gif").c_str(),
+           width_ * SCREEN_CAPTURE_SCALE, height_ * SCREEN_CAPTURE_SCALE,
+           delay_time_);
+
+  for (int32_t frame = 0; frame < frame_count_; frame++) {
+    int32_t** src_data =
+        captured_images_[(start_frame_ + frame) % SCREEN_CAPTURE_COUNT]->Data();
+
+    for (int32_t i = 0; i < height_; i++) {
+      for (int32_t j = 0; j < width_; j++) {
+        int32_t color = palette_color_[src_data[i][j]];
+
+        for (int32_t y = 0; y < SCREEN_CAPTURE_SCALE; y++) {
+          int32_t index = scaled_width_ * (i * SCREEN_CAPTURE_SCALE + y) +
+                          j * SCREEN_CAPTURE_SCALE;
+
+          for (int32_t x = 0; x < SCREEN_CAPTURE_SCALE; x++) {
+            dst_data[index + x] =
+                ((color & 0xff) << 16) + (color & 0xff00) + (color >> 16);
+          }
+        }
+      }
+    }
+
+    GifWriteFrame(&gif, reinterpret_cast<uint8_t*>(dst_data), scaled_width_,
+                  scaled_height_, delay_time_);
+  }
+
+  GifEnd(&gif);
+
+  delete[] dst_data;
 }
 
 void Recorder::Update(const Image* screen_image) {
