@@ -4,6 +4,7 @@
 #include "pyxelcore/graphics.h"
 #include "pyxelcore/image.h"
 #include "pyxelcore/input.h"
+#include "pyxelcore/recorder.h"
 #include "pyxelcore/resource.h"
 
 #define STORE_CLIP_AREA_AND_PALETTE()                    \
@@ -64,8 +65,9 @@ System::System(int32_t width,
   graphics_ = new pyxelcore::Graphics(width, height);
   audio_ = new pyxelcore::Audio();
   resource_ = new pyxelcore::Resource(graphics_, audio_);
-  window_ = new pyxelcore::Window(caption, width, height, scale, border_width,
-                                  border_color);
+  window_ =
+      new Window(caption, width, height, scale, border_width, border_color);
+  recorder_ = new Recorder(width, height, fps);
 
   palette_color_ = palette_color;
   fps_ = fps;
@@ -77,6 +79,7 @@ System::~System() {
   IMG_Quit();
   SDL_Quit();
 
+  delete recorder_;
   delete window_;
   delete resource_;
   delete audio_;
@@ -155,15 +158,15 @@ void System::CheckSpecialInput() {
     }
 
     if (input_->IsButtonPressed(KEY_1)) {
-      // capture image
+      recorder_->SaveScreenshot();
     }
 
     if (input_->IsButtonPressed(KEY_2)) {
-      // reset animation capture
+      recorder_->ResetScreenCapture();
     }
 
     if (input_->IsButtonPressed(KEY_3)) {
-      // save animation
+      recorder_->SaveScreenCapture();
     }
   }
 
@@ -179,7 +182,8 @@ void System::DrawFrame(void (*draw)()) {
   DrawPerformanceMonitor();
   DrawMouseCursor();
 
-  window_->Render(graphics_->ScreenData(), palette_color_);
+  window_->Render(graphics_->ScreenImage()->Data(), palette_color_);
+  recorder_->Update(graphics_->ScreenImage());
 
   draw_profiler_.End();
 }
@@ -222,60 +226,5 @@ void System::DrawMouseCursor() {
 
   RESTORE_CLIP_AREA_AND_PALETTE();
 }
-
-/*
-class App:
-    def _draw_frame(self):
-        self._capture_images[self._capture_count % APP_GIF_CAPTURE_COUNT] =
-image self._capture_count += 1
-
-        self._measure_draw_time(draw_start_time)
-
-    def _save_capture_image(self):
-        index = (self._capture_count - 1) % APP_GIF_CAPTURE_COUNT
-        image = self._get_capture_image(index)
-        image.save(self._get_capture_filename() + ".png", optimize=True)
-
-    def _save_capture_animation(self):
-        image_count = min(
-            self._capture_count - self._capture_start, APP_GIF_CAPTURE_COUNT
-        )
-
-        if image_count <= 0:
-            return
-
-        start_index = (self._capture_count - image_count) %
-APP_GIF_CAPTURE_COUNT images = [self._get_capture_image(start_index)]
-
-        for i in range(1, image_count):
-            index = (start_index + i) % APP_GIF_CAPTURE_COUNT
-            image = self._difference(
-                self._get_capture_image(index - 1),
-self._get_capture_image(index)
-            )
-            images.append(image)
-
-        color_index = self._get_color_palette_index(image,
-GIF_TRANSPARENCY_COLOR)
-
-        images[0].save(
-            self._get_capture_filename() + ".gif",
-            save_all=True,
-            append_images=images[1:],
-            duration=self._one_frame_time * 1000,
-            loop=0,
-            optimize=False,
-            transparency=color_index,
-            disposal=1,
-            palette=get_palette(fill=False),
-        )
-
-    @staticmethod
-    def _get_capture_filename():
-        return os.path.join(
-            get_desktop_path(),
-datetime.datetime.now().strftime("pyxel-%y%m%d-%H%M%S")
-        )
-*/
 
 }  // namespace pyxelcore

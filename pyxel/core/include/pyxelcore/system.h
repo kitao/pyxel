@@ -10,18 +10,18 @@ class Resource;
 class Input;
 class Graphics;
 class Audio;
+class Recorder;
 
 class System {
  public:
-  System(
-      int32_t width,
-      int32_t height,
-      const std::string& caption = DEFAULT_CAPTION,
-      int32_t scale = DEFAULT_SCALE,
-      const PaletteColor& palette_color = DEFAULT_PALETTE,
-      int32_t fps = DEFAULT_FPS,
-      int32_t border_width = DEFAULT_BORDER_WIDTH,
-      int32_t border_color = DEFAULT_BORDER_COLOR);
+  System(int32_t width,
+         int32_t height,
+         const std::string& caption = DEFAULT_CAPTION,
+         int32_t scale = DEFAULT_SCALE,
+         const pyxelcore::PaletteColor& palette_color = DEFAULT_PALETTE,
+         int32_t fps = DEFAULT_FPS,
+         int32_t border_width = DEFAULT_BORDER_WIDTH,
+         int32_t border_color = DEFAULT_BORDER_COLOR);
   ~System();
 
   pyxelcore::Resource* Resource() const { return resource_; }
@@ -43,6 +43,7 @@ class System {
   pyxelcore::Graphics* graphics_;
   pyxelcore::Audio* audio_;
   Window* window_;
+  Recorder* recorder_;
 
   int32_t fps_;
   int32_t frame_count_;
