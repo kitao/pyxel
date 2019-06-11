@@ -26,6 +26,7 @@ class Window {
   void ToggleFullscreen();
   bool ProcessEvents();
   void Render(int32_t** screen_data);
+  std::string GetDropFile();
 
  private:
   SDL_Window* window_;
@@ -42,11 +43,18 @@ class Window {
   PaletteColor palette_color_;
   int32_t border_color_;
   bool is_fullscreen_;
+  std::string drop_file_;
 
   void SetupWindowIcon() const;
   void UpdateWindowInfo();
   void UpdateScreenTexture(int32_t** screen_data);
 };
+
+inline std::string Window::GetDropFile() {
+  std::string drop_file = drop_file_;
+  drop_file_ = "";
+  return drop_file;
+}
 
 }  // namespace pyxelcore
 
