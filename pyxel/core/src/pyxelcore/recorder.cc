@@ -6,9 +6,10 @@
 
 namespace pyxelcore {
 
-Recorder::Recorder(int32_t width, int32_t height, int32_t fps) {
+Recorder::Recorder(int32_t width, int32_t height, const PaletteColor& palette_color, int32_t fps) {
   width_ = width;
   height_ = height;
+  palette_color_ = palette_color;
   fps_ = fps;
   cur_frame_ = -1;
   start_frame_ = 0;
@@ -26,8 +27,36 @@ Recorder::~Recorder() {
 }
 
 void Recorder::SaveScreenshot() {
-  //
-  std::cout << GetFilename() << std::endl;
+  if (frame_count_ < 1) {
+    return;
+  }
+
+  SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
+      0, width_ * SCREEN_CAPTURE_SCALE, height_ * SCREEN_CAPTURE_SCALE, 32,
+      SDL_PIXELFORMAT_RGB888);
+
+  SDL_LockSurface(surface);
+
+  int32_t** src_data = captured_images_[cur_frame_]->Data();
+  int32_t* dst_data = reinterpret_cast<int32_t*>(surface->pixels);
+
+  for (int32_t i = 0; i < height_; i++) {
+    for (int32_t j = 0; j < width_; j++) {
+      int32_t color = palette_color_[src_data[i][j]];
+
+      for (int32_t y = 0; y < SCREEN_CAPTURE_SCALE; y++) {
+        int32_t index = (width_ * (i * SCREEN_CAPTURE_SCALE + y) + j) * SCREEN_CAPTURE_SCALE;
+
+        for (int32_t x = 0; x < SCREEN_CAPTURE_SCALE; x++) {
+          dst_data[index + x] = color;
+        }
+      }
+    }
+  }
+
+  SDL_UnlockSurface(surface);
+  IMG_SavePNG(surface, (GetBaseName() + ".png").c_str());
+  SDL_FreeSurface(surface);
 }
 
 void Recorder::ResetScreenCapture() {
@@ -36,8 +65,11 @@ void Recorder::ResetScreenCapture() {
 }
 
 void Recorder::SaveScreenCapture() {
+  if (frame_count_ < 1) {
+    return;
+  }
   //
-  std::cout << GetFilename() << std::endl;
+  std::cout << GetBaseName() << std::endl;
 }
 
 void Recorder::Update(const Image* screen_image) {
@@ -52,7 +84,7 @@ void Recorder::Update(const Image* screen_image) {
   }
 }
 
-std::string Recorder::GetFilename() const {
+std::string Recorder::GetBaseName() const {
 #ifdef WIN32
   std::string desktop_path = getenv("USERPROFILE");
   desktop_path += "\\Desktop\\";
@@ -60,18 +92,13 @@ std::string Recorder::GetFilename() const {
   std::string desktop_path = getenv("HOME");
   desktop_path += "/Desktop/";
 #endif
-  //
-  return desktop_path;
+
+  char basename[30];
+  time_t t = std::time(nullptr);
+  std::strftime(basename, sizeof(basename), "pyxel-%y%m%d-%H%M%S",
+                std::localtime(&t));
+
+  return desktop_path + basename;
 }
-
-/*
-    def _save_capture_image(self):
-        image.save(self._get_capture_filename() + ".png", optimize=True)
-
-    def _get_capture_filename():
-        return os.path.join(
-            get_desktop_path(),
-datetime.datetime.now().strftime("pyxel-%y%m%d-%H%M%S")
-*/
 
 }  // namespace pyxelcore
