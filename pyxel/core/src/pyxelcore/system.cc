@@ -73,6 +73,7 @@ System::System(int32_t width,
   fps_ = fps;
   frame_count_ = 0;
   is_update_suspended_ = false;
+  drop_file_ = "";
   is_performance_monitor_on_ = false;
 }
 
@@ -148,6 +149,7 @@ void System::UpdateFrame(void (*update)()) {
     Quit();
   }
 
+  drop_file_ = window_->GetDropFile();
   input_->Update(window_, frame_count_);
   CheckSpecialInput();
   update();

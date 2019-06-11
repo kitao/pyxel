@@ -90,7 +90,6 @@ class App(Widget):
             "mouse_hover", self.__on_save_button_mouse_hover
         )
 
-        # TODO: glfw.set_drop_callback(pyxel._app._window, self._drop_callback)
         image_file = os.path.join(
             os.path.dirname(__file__), "assets", EDITOR_IMAGE_NAME
         )
@@ -100,11 +99,6 @@ class App(Widget):
 
         pyxel.run(self.update_widgets, self.draw_widgets)
 
-    def _drop_callback(self, window, filenames):
-        self._editor_list[self._editor_button.value].call_event_handler(
-            "drop", filenames
-        )
-
     def _set_editor(self, editor):
         self._editor_button.value = editor
 
@@ -112,6 +106,11 @@ class App(Widget):
             widget.is_visible = i == editor
 
     def __on_update(self):
+        if pyxel.drop_file:
+            self._editor_list[self._editor_button.value].call_event_handler(
+                "drop", pyxel.drop_file
+            )
+
         if pyxel.btn(pyxel.KEY_LEFT_ALT) or pyxel.btn(pyxel.KEY_RIGHT_ALT):
             editor = self._editor_button.value
             editor_count = len(self._editor_list)
