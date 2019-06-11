@@ -46,6 +46,7 @@ _setup_api("get_constant_string", c_char_p, [c_char_p])
 _setup_api("width_getter", c_int32, [])
 _setup_api("height_getter", c_int32, [])
 _setup_api("frame_count_getter", c_int32, [])
+_setup_api("drop_file_getter", c_char_p, [])
 
 _setup_api(
     "init", None, [c_int32] * 2 + [c_char_p, c_int32, c_int32 * 16] + [c_int32] * 3

@@ -47,6 +47,10 @@ int32_t frame_count_getter() {
   return s_system->FrameCount();
 }
 
+const char* drop_file_getter() {
+  return s_system->DropFile();
+}
+
 void init(int32_t width,
           int32_t height,
           const char* caption,

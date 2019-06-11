@@ -99,13 +99,21 @@ bool Window::ProcessEvents() {
   bool window_should_close = false;
 
   while (SDL_PollEvent(&event)) {
-    if (event.type == SDL_QUIT) {
-      window_should_close = true;
-    } else if (event.type == SDL_WINDOWEVENT) {
-      if (event.window.event == SDL_WINDOWEVENT_MOVED ||
-          event.window.event == SDL_WINDOWEVENT_RESIZED) {
-        UpdateWindowInfo();
-      }
+    switch (event.type) {
+      case SDL_WINDOWEVENT:
+        if (event.window.event == SDL_WINDOWEVENT_MOVED ||
+            event.window.event == SDL_WINDOWEVENT_RESIZED) {
+          UpdateWindowInfo();
+        }
+        break;
+
+      case SDL_DROPFILE:
+        drop_file_ = event.drop.file;
+        break;
+
+      case SDL_QUIT:
+        window_should_close = true;
+        break;
     }
   }
 
