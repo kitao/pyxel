@@ -65,8 +65,8 @@ System::System(int32_t width,
   graphics_ = new pyxelcore::Graphics(width, height);
   audio_ = new pyxelcore::Audio();
   resource_ = new pyxelcore::Resource(graphics_, audio_);
-  window_ =
-      new Window(caption, width, height, scale, border_width, border_color);
+  window_ = new Window(caption, width, height, scale, palette_color,
+                       border_width, border_color);
   recorder_ = new Recorder(width, height, palette_color, fps);
 
   palette_color_ = palette_color;
@@ -192,7 +192,7 @@ void System::DrawFrame(void (*draw)()) {
   DrawPerformanceMonitor();
   DrawMouseCursor();
 
-  window_->Render(graphics_->ScreenImage()->Data(), palette_color_);
+  window_->Render(graphics_->ScreenImage()->Data());
   recorder_->Update(graphics_->ScreenImage());
 
   draw_profiler_.End();

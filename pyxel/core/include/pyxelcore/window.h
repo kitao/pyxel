@@ -11,6 +11,7 @@ class Window {
          int32_t screen_width,
          int32_t screen_height,
          int32_t screen_scale,
+         const PaletteColor& palette_color,
          int32_t border_width,
          int32_t border_color);
 
@@ -24,7 +25,7 @@ class Window {
 
   void ToggleFullscreen();
   bool ProcessEvents();
-  void Render(int32_t** screen_data, const PaletteColor& palette_color);
+  void Render(int32_t** screen_data);
 
  private:
   SDL_Window* window_;
@@ -38,12 +39,13 @@ class Window {
   int32_t screen_width_;
   int32_t screen_height_;
   int32_t screen_scale_;
+  PaletteColor palette_color_;
   int32_t border_color_;
   bool is_fullscreen_;
 
+  void SetupWindowIcon() const;
   void UpdateWindowInfo();
-  void UpdateScreenTexture(int32_t** screen_data,
-                           const PaletteColor& palette_color);
+  void UpdateScreenTexture(int32_t** screen_data);
 };
 
 }  // namespace pyxelcore
