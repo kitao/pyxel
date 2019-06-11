@@ -29,6 +29,7 @@ PYXEL_API const char* get_constant_string(const char* name);
 PYXEL_API int32_t width_getter();
 PYXEL_API int32_t height_getter();
 PYXEL_API int32_t frame_count_getter();
+PYXEL_API const char* drop_file_getter();
 
 PYXEL_API void init(int32_t width,
                     int32_t height,

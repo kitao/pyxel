@@ -85,13 +85,12 @@ class ImageEditor(Editor):
         self.drawing_y = y
         self.parent.image = img
 
-    def __on_drop(self, filenames):
-        for filename in filenames:
-            _, ext = os.path.splitext(filename)
+    def __on_drop(self, filename):
+        _, ext = os.path.splitext(filename)
 
-            if ext.lower() == ".png":
-                pyxel.image(self.image).load(0, 0, filename)
-                return
+        if ext.lower() == ".png":
+            pyxel.image(self.image).load(0, 0, filename)
+            return
 
     def __on_update(self):
         self.check_tool_button_shortcuts()

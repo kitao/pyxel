@@ -441,6 +441,7 @@ class Music:
 width: int = 0
 height: int = 0
 frame_count: int = 0
+drop_file: Optional[str] = None
 
 
 def _update_properties():  # type: ignore
@@ -449,6 +450,9 @@ def _update_properties():  # type: ignore
     module.width = core.width_getter()  # type: ignore
     module.height = core.height_getter()  # type: ignore
     module.frame_count = core.frame_count_getter()  # type: ignore
+
+    drop_file = core.drop_file_getter()
+    module.drop_file = drop_file.decode() if drop_file else None  # type: ignore
 
     module.mouse_x = core.mouse_x_getter()  # type: ignore
     module.mouse_y = core.mouse_y_getter()  # type: ignore
