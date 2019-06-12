@@ -148,6 +148,10 @@ class SoundEditor(Editor):
         self._is_playing = pyxel.play_pos(0) >= 0
         self._play_pos = pyxel.play_pos(0)
 
+        sound = pyxel.sound(self._sound_picker.value)
+        if self._speed_picker.value != sound.speed:
+            self._speed_picker.value = sound.speed
+
         if pyxel.btnp(pyxel.KEY_SPACE):
             if self._is_playing:
                 self._stop_button.press()
