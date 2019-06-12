@@ -39,6 +39,7 @@ class System {
 
   void Run(void (*update)(), void (*draw)());
   void Quit();
+  void SetCaption(const std::string& caption);
 
  private:
   pyxelcore::Resource* resource_;

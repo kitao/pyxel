@@ -88,6 +88,10 @@ void quit() {
   s_audio = NULL;
 }
 
+void caption(const char* caption) {
+  s_system->SetCaption(caption);
+}
+
 //
 // Resource
 //

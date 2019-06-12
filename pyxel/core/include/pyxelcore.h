@@ -41,6 +41,7 @@ PYXEL_API void init(int32_t width,
                     int32_t border_color);
 PYXEL_API void run(void (*update)(), void (*draw)());
 PYXEL_API void quit();
+PYXEL_API void caption(const char* caption);
 
 //
 // Resource
