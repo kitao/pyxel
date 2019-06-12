@@ -114,6 +114,7 @@ class App(Widget):
                 for editor in self._editor_list:
                     editor.reset_history()
                 pyxel.load(pyxel._drop_file)
+                pyxel._caption(pyxel._drop_file)
             else:
                 self._editor_list[self._editor_button.value].call_event_handler(
                     "drop", pyxel._drop_file
