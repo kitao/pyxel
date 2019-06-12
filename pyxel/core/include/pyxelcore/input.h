@@ -26,6 +26,9 @@ class Input {
   void Update(const Window* window, int32_t frame_count);
 
  private:
+  SDL_GameController* gamepad1_;
+  SDL_GameController* gamepad2_;
+
   int32_t frame_count_;
   int32_t mouse_x_;
   int32_t mouse_y_;
