@@ -5,63 +5,24 @@
 namespace pyxelcore {
 
 Input::Input() {
+  gamepad1_ = SDL_GameControllerOpen(0);
+  gamepad2_ = SDL_GameControllerOpen(1);
+
   is_mouse_visible_ = false;
 
   for (int32_t i = 0; i < KEY_COUNT; i++) {
     key_state_[i] = 0;
   }
-
-  /*
-    if (!SDL_IsGameController(JoystickIndex))
-
-    ControllerHandles[ControllerIndex] = SDL_GameControllerOpen(JoystickIndex);
-
-    if(ControllerHandles[ControllerIndex] != 0 &&
-    SDL_GameControllerGetAttached(ControllerHandles[ControllerIndex]))
-    {
-        // NOTE: We have a controller with index ControllerIndex.
-        bool Up =
-    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_BUTTON_DPAD_UP); bool Down =
-    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_BUTTON_DPAD_DOWN); bool Left =
-    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_BUTTON_DPAD_LEFT); bool Right =
-    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_BUTTON_DPAD_RIGHT); bool Start =
-    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_BUTTON_START); bool Back =
-    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_BUTTON_BACK); bool LeftShoulder =
-    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_BUTTON_LEFTSHOULDER); bool RightShoulder =
-    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_BUTTON_RIGHTSHOULDER); bool AButton =
-    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_BUTTON_A); bool BButton =
-    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_BUTTON_B); bool XButton =
-    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_BUTTON_X); bool YButton =
-    SDL_GameControllerGetButton(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_BUTTON_Y);
-
-        int16 StickX =
-    SDL_GameControllerGetAxis(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_AXIS_LEFTX); int16 StickY =
-    SDL_GameControllerGetAxis(ControllerHandles[ControllerIndex],
-    SDL_CONTROLLER_AXIS_LEFTY);
-    }
-  */
 }
 
 Input::~Input() {
-  /*
-   if (ControllerHandles[ControllerIndex])
-   {
-       SDL_GameControllerClose(ControllerHandles[ControllerIndex]);
-   }
-  */
+  if (gamepad1_) {
+    SDL_GameControllerClose(gamepad1_);
+  }
+
+  if (gamepad2_) {
+    SDL_GameControllerClose(gamepad2_);
+  }
 }
 
 void Input::Update(const Window* window, int32_t frame_count) {
@@ -77,27 +38,43 @@ void Input::Update(const Window* window, int32_t frame_count) {
   const uint8_t* sdl_key_state = SDL_GetKeyboardState(NULL);
 
   for (int32_t i = 0; i < SDL_KEY_COUNT; i++) {
-    UpdateKeyState(i, sdl_key_state[SCANCODE_TABLE[i]]);
+    UpdateKeyState(i, sdl_key_state[SDL_KEY_TABLE[i]]);
   }
 
-  UpdateKeyState(KEY_SHIFT, sdl_key_state[SCANCODE_TABLE[KEY_LEFT_SHIFT]] ||
-                                sdl_key_state[SCANCODE_TABLE[KEY_RIGHT_SHIFT]]);
+  UpdateKeyState(KEY_SHIFT, sdl_key_state[SDL_KEY_TABLE[KEY_LEFT_SHIFT]] ||
+                                sdl_key_state[SDL_KEY_TABLE[KEY_RIGHT_SHIFT]]);
 
   UpdateKeyState(KEY_CONTROL,
-                 sdl_key_state[SCANCODE_TABLE[KEY_LEFT_CONTROL]] ||
-                     sdl_key_state[SCANCODE_TABLE[KEY_RIGHT_CONTROL]]);
+                 sdl_key_state[SDL_KEY_TABLE[KEY_LEFT_CONTROL]] ||
+                     sdl_key_state[SDL_KEY_TABLE[KEY_RIGHT_CONTROL]]);
 
-  UpdateKeyState(KEY_ALT, sdl_key_state[SCANCODE_TABLE[KEY_LEFT_ALT]] ||
-                              sdl_key_state[SCANCODE_TABLE[KEY_RIGHT_ALT]]);
+  UpdateKeyState(KEY_ALT, sdl_key_state[SDL_KEY_TABLE[KEY_LEFT_ALT]] ||
+                              sdl_key_state[SDL_KEY_TABLE[KEY_RIGHT_ALT]]);
 
-  UpdateKeyState(KEY_SUPER, sdl_key_state[SCANCODE_TABLE[KEY_LEFT_SUPER]] ||
-                                sdl_key_state[SCANCODE_TABLE[KEY_RIGHT_SUPER]]);
+  UpdateKeyState(KEY_SUPER, sdl_key_state[SDL_KEY_TABLE[KEY_LEFT_SUPER]] ||
+                                sdl_key_state[SDL_KEY_TABLE[KEY_RIGHT_SUPER]]);
 
   uint32_t mouse_state = SDL_GetMouseState(NULL, NULL);
 
   UpdateKeyState(MOUSE_LEFT_BUTTON, mouse_state & SDL_BUTTON_LMASK);
   UpdateKeyState(MOUSE_MIDDLE_BUTTON, mouse_state & SDL_BUTTON_MMASK);
   UpdateKeyState(MOUSE_RIGHT_BUTTON, mouse_state & SDL_BUTTON_RMASK);
+
+  if (gamepad1_) {
+    for (int32_t i = 0; i < SDL_BUTTON_COUNT; i++) {
+      bool button_state =
+          SDL_GameControllerGetButton(gamepad1_, SDL_BUTTON_TABLE[i]);
+      UpdateKeyState(GAMEPAD_1_A + i, button_state);
+    }
+  }
+
+  if (gamepad2_) {
+    for (int32_t i = 0; i < SDL_BUTTON_COUNT; i++) {
+      bool button_state =
+          SDL_GameControllerGetButton(gamepad2_, SDL_BUTTON_TABLE[i]);
+      UpdateKeyState(GAMEPAD_2_A + i, button_state);
+    }
+  }
 }
 
 bool Input::IsButtonOn(int32_t key) const {
