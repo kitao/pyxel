@@ -498,7 +498,7 @@ def quit() -> None:
 
 
 def _caption(caption: str) -> None:
-    core.caption(caption.encode("utf-8"))
+    core._caption(caption.encode("utf-8"))
 
 
 #
