@@ -151,6 +151,16 @@ void Window::Render(int32_t** screen_data) {
   SDL_RenderPresent(renderer_);
 }
 
+std::string Window::GetDropFile() {
+  std::string drop_file = drop_file_;
+  drop_file_ = "";
+  return drop_file;
+}
+
+void Window::SetCaption(const std::string& caption) {
+  SDL_SetWindowTitle(window_, caption.c_str());
+}
+
 void Window::UpdateScreenTexture(int32_t** screen_data) {
   int32_t* framebuffer;
   int32_t pitch;

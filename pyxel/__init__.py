@@ -497,6 +497,10 @@ def quit() -> None:
     core.quit()
 
 
+def caption(caption: str) -> None:
+    core.caption(caption.encode("utf-8"))
+
+
 #
 # Resource
 #
