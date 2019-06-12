@@ -14,11 +14,11 @@ from . import core  # type: ignore
 # constants
 #
 def _get_constant_number(name: str) -> int:
-    return core.get_constant_number(name.encode("utf-8"))  # type: ignore
+    return core._get_constant_number(name.encode("utf-8"))  # type: ignore
 
 
 def _get_constant_string(name: str) -> str:
-    return core.get_constant_string(name.encode("utf-8")).decode()  # type: ignore
+    return core._get_constant_string(name.encode("utf-8")).decode()  # type: ignore
 
 
 VERSION: str = _get_constant_string("VERSION")
@@ -441,7 +441,7 @@ class Music:
 width: int = 0
 height: int = 0
 frame_count: int = 0
-drop_file: Optional[str] = None
+_drop_file: Optional[str] = None
 
 
 def _update_properties():  # type: ignore
@@ -451,8 +451,8 @@ def _update_properties():  # type: ignore
     module.height = core.height_getter()  # type: ignore
     module.frame_count = core.frame_count_getter()  # type: ignore
 
-    drop_file = core.drop_file_getter()
-    module.drop_file = drop_file.decode() if drop_file else None  # type: ignore
+    drop_file = core._drop_file_getter()
+    module._drop_file = drop_file.decode() if drop_file else None  # type: ignore
 
     module.mouse_x = core.mouse_x_getter()  # type: ignore
     module.mouse_y = core.mouse_y_getter()  # type: ignore
@@ -497,7 +497,7 @@ def quit() -> None:
     core.quit()
 
 
-def caption(caption: str) -> None:
+def _caption(caption: str) -> None:
     core.caption(caption.encode("utf-8"))
 
 

@@ -24,11 +24,11 @@ static pyxelcore::Audio* s_audio = NULL;
 //
 // Constants
 //
-int32_t get_constant_number(const char* name) {
+int32_t _get_constant_number(const char* name) {
   return pyxelcore::GetConstantNumber(name);
 }
 
-const char* get_constant_string(const char* name) {
+const char* _get_constant_string(const char* name) {
   return pyxelcore::GetConstantString(name).c_str();
 }
 
@@ -45,10 +45,6 @@ int32_t height_getter() {
 
 int32_t frame_count_getter() {
   return s_system->FrameCount();
-}
-
-const char* drop_file_getter() {
-  return s_system->DropFile();
 }
 
 void init(int32_t width,
@@ -88,7 +84,12 @@ void quit() {
   s_audio = NULL;
 }
 
-void caption(const char* caption) {
+const char* _drop_file_getter() {
+  std::string drop_file = s_system->DropFile();
+  return drop_file.size() > 0 ? drop_file.c_str() : nullptr;
+}
+
+void _caption(const char* caption) {
   s_system->SetCaption(caption);
 }
 
