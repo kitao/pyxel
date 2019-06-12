@@ -27,6 +27,7 @@ class Window {
   bool ProcessEvents();
   void Render(int32_t** screen_data);
   std::string GetDropFile();
+  void SetCaption(const std::string& caption);
 
  private:
   SDL_Window* window_;
@@ -49,12 +50,6 @@ class Window {
   void UpdateWindowInfo();
   void UpdateScreenTexture(int32_t** screen_data);
 };
-
-inline std::string Window::GetDropFile() {
-  std::string drop_file = drop_file_;
-  drop_file_ = "";
-  return drop_file;
-}
 
 }  // namespace pyxelcore
 

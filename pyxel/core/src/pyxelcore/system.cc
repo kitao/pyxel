@@ -142,6 +142,10 @@ void System::Quit() {
   throw PyxelQuit();
 }
 
+void System::SetCaption(const std::string& caption) {
+  window_->SetCaption(caption);
+}
+
 void System::UpdateFrame(void (*update)()) {
   update_profiler_.Start();
 
