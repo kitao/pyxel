@@ -133,6 +133,8 @@ bool Resource::LoadAsset(const std::string& filename) {
 
       if (file.has_file(name)) {
         ParseImage(i, file.read(name));
+      } else {
+        ClearImage(i);
       }
     }
 
@@ -141,6 +143,8 @@ bool Resource::LoadAsset(const std::string& filename) {
 
       if (file.has_file(name)) {
         ParseTilemap(i, file.read(name));
+      } else {
+        ClearTilemap(i);
       }
     }
 
@@ -149,6 +153,8 @@ bool Resource::LoadAsset(const std::string& filename) {
 
       if (file.has_file(name)) {
         ParseSound(i, file.read(name));
+      } else {
+        ClearSound(i);
       }
     }
 
@@ -157,6 +163,8 @@ bool Resource::LoadAsset(const std::string& filename) {
 
       if (file.has_file(name)) {
         ParseMusic(i, file.read(name));
+      } else {
+        ClearMusic(i);
       }
     }
   } catch (...) {
@@ -165,6 +173,46 @@ bool Resource::LoadAsset(const std::string& filename) {
   }
 
   return true;
+}
+
+void Resource::ClearImage(int32_t image_index) {
+  Image* image = graphics_->GetImageBank(image_index);
+  int32_t** data = image->Data();
+
+  for (int32_t i = 0; i < image->Height(); i++) {
+    for (int32_t j = 0; j < image->Width(); j++) {
+      data[i][j] = 0;
+    }
+  }
+}
+
+void Resource::ClearTilemap(int32_t tilemap_index) {
+  Tilemap* tilemap = graphics_->GetTilemapBank(tilemap_index);
+  int32_t** data = tilemap->Data();
+
+  for (int32_t i = 0; i < tilemap->Height(); i++) {
+    for (int32_t j = 0; j < tilemap->Width(); j++) {
+      data[i][j] = 0;
+    }
+  }
+}
+
+void Resource::ClearSound(int32_t sound_index) {
+  Sound* sound = audio_->GetSoundBank(sound_index);
+
+  sound->Note().clear();
+  sound->Tone().clear();
+  sound->Volume().clear();
+  sound->Effect().clear();
+}
+
+void Resource::ClearMusic(int32_t music_index) {
+  Music* music = audio_->GetMusicBank(music_index);
+
+  music->Channel0().clear();
+  music->Channel1().clear();
+  music->Channel2().clear();
+  music->Channel3().clear();
 }
 
 std::string Resource::DumpImage(int32_t image_index) const {

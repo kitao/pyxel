@@ -107,9 +107,15 @@ class App(Widget):
 
     def __on_update(self):
         if pyxel.drop_file:
-            self._editor_list[self._editor_button.value].call_event_handler(
-                "drop", pyxel.drop_file
-            )
+            ext = os.path.splitext(pyxel.drop_file)[1]
+
+            if ext == RESOURCE_FILE_EXTENSION:
+                pyxel.load(pyxel.drop_file)
+                self._set_editor(0)
+            else:
+                self._editor_list[self._editor_button.value].call_event_handler(
+                    "drop", pyxel.drop_file
+                )
 
         if pyxel.btn(pyxel.KEY_LEFT_ALT) or pyxel.btn(pyxel.KEY_RIGHT_ALT):
             editor = self._editor_button.value
