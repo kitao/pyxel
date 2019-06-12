@@ -65,6 +65,10 @@ class Editor(Widget):
         self._history_list.append(data)
         self._history_index += 1
 
+    def reset_history(self):
+        self._history_list = []
+        self._history_index = 0
+
     def add_number_picker_help(self, number_picker):
         number_picker.dec_button.add_event_handler(
             "mouse_hover", self.__on_number_picker_dec_mouse_hover

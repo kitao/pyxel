@@ -110,8 +110,10 @@ class App(Widget):
             ext = os.path.splitext(pyxel.drop_file)[1]
 
             if ext == RESOURCE_FILE_EXTENSION:
+                pyxel.stop()
+                for editor in self._editor_list:
+                    editor.reset_history()
                 pyxel.load(pyxel.drop_file)
-                self._set_editor(0)
             else:
                 self._editor_list[self._editor_button.value].call_event_handler(
                     "drop", pyxel.drop_file
