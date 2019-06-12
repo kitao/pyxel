@@ -40,7 +40,7 @@ setuptools.setup(
     ],
     package_data={"": ["*.pyxel", "*.png", "*.gif", "*.dylib", "*.dll", "*.so"]},
     install_requires=["numpy"],
-    python_requires=">=3",
+    python_requires=">=3.7",
     entry_points={
         "console_scripts": [
             "pyxeleditor=pyxel.editor:run",
