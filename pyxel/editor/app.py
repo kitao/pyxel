@@ -106,17 +106,17 @@ class App(Widget):
             widget.is_visible = i == editor
 
     def __on_update(self):
-        if pyxel.drop_file:
-            ext = os.path.splitext(pyxel.drop_file)[1]
+        if pyxel._drop_file:
+            ext = os.path.splitext(pyxel._drop_file)[1]
 
             if ext == RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
                 for editor in self._editor_list:
                     editor.reset_history()
-                pyxel.load(pyxel.drop_file)
+                pyxel.load(pyxel._drop_file)
             else:
                 self._editor_list[self._editor_button.value].call_event_handler(
-                    "drop", pyxel.drop_file
+                    "drop", pyxel._drop_file
                 )
 
         if pyxel.btn(pyxel.KEY_LEFT_ALT) or pyxel.btn(pyxel.KEY_RIGHT_ALT):
