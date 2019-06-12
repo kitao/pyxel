@@ -23,6 +23,11 @@ class Resource {
   Graphics* graphics_;
   Audio* audio_;
 
+  void ClearImage(int32_t image_index);
+  void ClearTilemap(int32_t tilemap_index);
+  void ClearSound(int32_t sound_index);
+  void ClearMusic(int32_t music_index);
+
   std::string DumpImage(int32_t image_index) const;
   std::string DumpTilemap(int32_t tilemap_index) const;
   std::string DumpSound(int32_t sound_index) const;
