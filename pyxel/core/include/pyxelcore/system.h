@@ -33,12 +33,11 @@ class System {
   int32_t Width() const { return window_->ScreenWidth(); }
   int32_t Height() const { return window_->ScreenHeight(); }
   int32_t FrameCount() const { return frame_count_; }
-  const char* DropFile() const {
-    return drop_file_.size() > 0 ? drop_file_.c_str() : nullptr;
-  }
 
   void Run(void (*update)(), void (*draw)());
   void Quit();
+
+  std::string DropFile() const { return drop_file_; }
   void SetCaption(const std::string& caption);
 
  private:
