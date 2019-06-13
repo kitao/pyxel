@@ -224,7 +224,7 @@ class Image:
             core.image_set(self._obj, int(x), int(y), c_data, data_count)
 
     def load(self, x: int, y: int, filename: str) -> bool:
-        dirname = os.path.dirname(inspect.stack()[-1].filename)
+        dirname = os.path.dirname(inspect.currentframe().f_back.f_code.co_filename)
         filename = os.path.join(dirname, filename)
 
         return core.image_load(  # type: ignore
@@ -505,14 +505,14 @@ def _caption(caption: str) -> None:
 # Resource
 #
 def save(filename: str) -> bool:
-    dirname = os.path.dirname(inspect.stack()[-1].filename)
+    dirname = os.path.dirname(inspect.currentframe().f_back.f_code.co_filename)
     filename = os.path.join(dirname, filename)
 
     return core.save(filename.encode("utf-8"))  # type: ignore
 
 
 def load(filename: str) -> bool:
-    dirname = os.path.dirname(inspect.stack()[-1].filename)
+    dirname = os.path.dirname(inspect.currentframe().f_back.f_code.co_filename)
     filename = os.path.join(dirname, filename)
 
     ext = os.path.splitext(filename)[1]
