@@ -4,8 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-numpy="*"
-glfw="*"
-PyOpenGL="*"
-sounddevice="*"
-Pillow="*"
+numpy = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
