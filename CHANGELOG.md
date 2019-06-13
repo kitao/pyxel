@@ -14,6 +14,7 @@
 - Changed the resource file extension name to .pyxres
 - Added the _drop_file property
 - Added the _caption API
+- Changed the way to detect the caller script
 
 ## 1.0.1
 - Simplified comparisons
