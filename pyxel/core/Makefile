@@ -2,7 +2,7 @@ INCDIR = include
 SRCDIR = src
 LIBDIR = lib
 BINDIR = bin
-CFLAGS = -I$(INCDIR) $(SDL2_CFLAGS) -std=gnu++11 -fPIC -O3
+CFLAGS = -I$(INCDIR) $(SDL2_CFLAGS) -std=gnu++14 -fPIC -O3
 LDFLAGS = $(SDL2_LDFLAGS) -shared
 LIBNAME = libpyxelcore
 
@@ -15,6 +15,12 @@ PF = macos
 endif
 ifeq ($(shell uname),Linux)
 PF = linux
+endif
+ifneq ($(findstring MINGW32,$(shell uname)),)
+PF = win32
+endif
+ifneq ($(findstring MINGW64,$(shell uname)),)
+PF = win64
 endif
 endif
 
@@ -41,7 +47,7 @@ endif
 
 ifeq ($(PF),linux)
 CC = g++
-SDL2_CFLAGS = `sdl2-config --cflags`
+SDL2_CFLAGS = `sdl2-config --cflags` -fpermissive
 SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image -static-libgcc -static-libstdc++
 TARGET = $(BINDIR)/linux/$(LIBNAME).so
 endif
