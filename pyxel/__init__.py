@@ -18,7 +18,10 @@ def _get_constant_number(name: str) -> int:
 
 
 def _get_constant_string(name: str) -> str:
-    return core._get_constant_string(name.encode("utf-8")).decode()  # type: ignore
+    buf = create_string_buffer(256)
+    core._get_constant_string(buf, len(buf), name.encode("utf-8"))
+
+    return buf.value.decode()
 
 
 VERSION: str = _get_constant_string("VERSION")
@@ -224,7 +227,9 @@ class Image:
             core.image_set(self._obj, int(x), int(y), c_data, data_count)
 
     def load(self, x: int, y: int, filename: str) -> bool:
-        dirname = os.path.dirname(inspect.currentframe().f_back.f_code.co_filename)
+        dirname = os.path.dirname(
+            inspect.currentframe().f_back.f_code.co_filename  # type: ignore
+        )
         filename = os.path.join(dirname, filename)
 
         return core.image_load(  # type: ignore
@@ -451,8 +456,9 @@ def _update_properties():  # type: ignore
     module.height = core.height_getter()  # type: ignore
     module.frame_count = core.frame_count_getter()  # type: ignore
 
-    drop_file = core._drop_file_getter()
-    module._drop_file = drop_file.decode() if drop_file else None  # type: ignore
+    buf = create_string_buffer(256)
+    core._drop_file_getter(buf, len(buf))
+    module._drop_file = buf.value.decode()  # type: ignore
 
     module.mouse_x = core.mouse_x_getter()  # type: ignore
     module.mouse_y = core.mouse_y_getter()  # type: ignore
@@ -505,14 +511,18 @@ def _caption(caption: str) -> None:
 # Resource
 #
 def save(filename: str) -> bool:
-    dirname = os.path.dirname(inspect.currentframe().f_back.f_code.co_filename)
+    dirname = os.path.dirname(
+        inspect.currentframe().f_back.f_code.co_filename  # type: ignore
+    )
     filename = os.path.join(dirname, filename)
 
     return core.save(filename.encode("utf-8"))  # type: ignore
 
 
 def load(filename: str) -> bool:
-    dirname = os.path.dirname(inspect.currentframe().f_back.f_code.co_filename)
+    dirname = os.path.dirname(
+        inspect.currentframe().f_back.f_code.co_filename  # type: ignore
+    )
     filename = os.path.join(dirname, filename)
 
     ext = os.path.splitext(filename)[1]
