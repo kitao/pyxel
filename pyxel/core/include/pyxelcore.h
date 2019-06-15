@@ -21,7 +21,7 @@ extern "C" {
 // Constants
 //
 PYXEL_API int32_t _get_constant_number(const char* name);
-PYXEL_API const char* _get_constant_string(const char* name);
+PYXEL_API void _get_constant_string(char* str, int32_t str_length, const char* name);
 
 //
 // System
@@ -41,7 +41,7 @@ PYXEL_API void init(int32_t width,
 PYXEL_API void run(void (*update)(), void (*draw)());
 PYXEL_API void quit();
 
-PYXEL_API const char* _drop_file_getter();
+PYXEL_API void _drop_file_getter(char* str, int32_t str_length);
 PYXEL_API void _caption(const char* caption);
 
 //

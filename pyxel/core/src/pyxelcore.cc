@@ -28,8 +28,8 @@ int32_t _get_constant_number(const char* name) {
   return pyxelcore::GetConstantNumber(name);
 }
 
-const char* _get_constant_string(const char* name) {
-  return pyxelcore::GetConstantString(name).c_str();
+void _get_constant_string(char* str, int32_t str_length, const char* name) {
+  strncpy(str, pyxelcore::GetConstantString(name).c_str(), str_length);
 }
 
 //
@@ -84,9 +84,8 @@ void quit() {
   s_audio = NULL;
 }
 
-const char* _drop_file_getter() {
-  std::string drop_file = s_system->DropFile();
-  return drop_file.size() > 0 ? drop_file.c_str() : nullptr;
+void _drop_file_getter(char* str, int32_t str_length) {
+  strncpy(str, s_system->DropFile().c_str(), str_length);
 }
 
 void _caption(const char* caption) {
