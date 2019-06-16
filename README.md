@@ -316,10 +316,10 @@ Draw a pixel of color `col` at (`x`, `y`)
 - `line(x1, y1, x2, y2, col)`<br>
 Draw a line of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
 
-- `rect(x1, y1, x2, y2, col)`<br>
+- `rect(x, y, w, h, col)`<br>
 Draw a rectangle of width `w`, height `h` and color `col` from (`x`, `y`)
 
-- `rectb(x1, y1, x2, y2, col)`<br>
+- `rectb(x, y, w, h, col)`<br>
 Draw the outline of a rectangle of width `w`, height `h` and color `col` from (`x`, `y`)
 
 - `circ(x, y, r, col)`<br>
