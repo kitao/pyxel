@@ -63,30 +63,23 @@ pip install pyxel
 
 ### Mac
 
-[Python3](https://www.python.org/)と[glfw](http://www.glfw.org/) (バージョン3.2.1以上) をインストールをした後に、`pip`コマンドでPyxelをインストールします。
+[Python3](https://www.python.org/)と[SDL2](https://www.libsdl.org/)をインストールをした後に、`pip`コマンドでPyxelをインストールします。
 
 [Homebrew](https://brew.sh/)を導入している環境では、以下のコマンドで必要なパッケージが一通りインストールできます。
 
 ```sh
-brew install python3 glfw
+brew install python3 sdl2 sdl2_image
 pip3 install pyxel
 ```
 
 ### Linux
 
-各ディストリビューションに適した方法で必要なパッケージをインストールしてください。[glfw](http://www.glfw.org/)はバージョン3.2.1以上である必要があります。
+各ディストリビューションに適した方法で必要なパッケージをインストールしてください。
 
-**Ubuntu / Debian:**
-
-```sh
-sudo apt install python3 python3-pip libglfw3 libportaudio2
-sudo pip3 install pyxel
-```
-
-**Fedora:**
+**Ubuntu:**
 
 ```sh
-sudo dnf install glfw portaudio
+sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
 sudo pip3 install pyxel
 ```
 
@@ -176,7 +169,7 @@ class App:
 
     def draw(self):
         pyxel.cls(0)
-        pyxel.rect(self.x, 0, self.x + 7, 7, 9)
+        pyxel.rect(self.x, 0, 8, 8, 9)
 
 App()
 ```
@@ -206,7 +199,7 @@ Pyxel Editorは以下のコマンドで起動します。
 pyxeleditor [Pyxelリソースファイル]
 ```
 
-指定したPyxelリソースファイル (.pyxel) が存在する場合は読み込み、存在しない場合は指定した名前で新規にファイルを作成します。リソースファイルを省略した場合は`my_resource.pyxel`がファイル名になります。
+指定したPyxelリソースファイル (.pyxres) が存在する場合は読み込み、存在しない場合は指定した名前で新規にファイルを作成します。リソースファイルを省略した場合は`my_resource.pyxres`がファイル名になります。
 
 またPyxel Editorの起動後に、別のリソースファイルをドラッグ＆ドロップすることでファイルを切り替えることができます。
 
@@ -281,10 +274,10 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 ### リソース
 
 - `save(filename)`<br>
-実行スクリプトのディレクトリにリソースファイル (.pyxel) を保存する
+実行スクリプトのディレクトリにリソースファイル (.pyxres) を保存する
 
 - `load(filename)`<br>
-実行スクリプトのディレクトリからリソースファイル (.pyxel) を読み込む
+実行スクリプトのディレクトリからリソースファイル (.pyxres) を読み込む
 
 ### 入力
 - `mouse_x`, `mouse_y`<br>
@@ -311,8 +304,8 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 - `tilemap(tm)`<br>
 タイルマップ`tm`(0-7)を操作する (タイルマップクラスを参照のこと)
 
-- `clip(x1, y1, x2, y2)`<br>
-画面の描画領域を (`x1`, `y1`)-(`x2`, `y2`) にする。`clip()`で描画領域をリセットする
+- `clip(x, y, w, h)`<br>
+画面の描画領域を (`x`, `y`) から幅`w`、高さ`h`に設定する。`clip()`で描画領域を全画面にリセットする
 
 - `pal(col1, col2)`<br>
 描画時に色`col1`を`col2`に置き換える。`pal()`で初期状態にリセットする
@@ -326,11 +319,11 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 - `line(x1, y1, x2, y2, col)`<br>
 色`col`の直線を (`x1`, `y1`)-(`x2`, `y2`) に描画する
 
-- `rect(x1, y1, x2, y2, col)`<br>
-色`col`の矩形を (`x1`, `y1`)-(`x2`, `y2`) に描画する
+- `rect(x, y, w, h, col)`<br>
+幅`w`、高さ`h`、色`col`の矩形を (`x`, `y`) に描画する
 
-- `rectb(x1, y1, x2, y2, col)`<br>
-色`col`の矩形の輪郭線を (`x1`, `y1`)-(`x2`, `y2`) に描画する
+- `rectb(x, y, w, h, col)`<br>
+幅`w`、高さ`h`、色`col`の矩形の輪郭線を (`x`, `y`) に描画する
 
 - `circ(x, y, r, col)`<br>
 半径`r`、色`col`の円を (`x`, `y`) に描画する
@@ -355,6 +348,9 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 
 - `music(msc)`<br>
 ミュージック`msc`(0-7) を操作する (ミュージッククラスを参照のこと)
+
+- `play_pos(ch)`<br>
+チャンネル`ch`(0-3) のサウンド再生位置を取得する。再生停止時は`-1`を返す
 
 - `play(ch, snd, loop=False)`<br>
 チャンネル`ch`(0-3) でサウンド`snd`(0-63) を再生する。`snd`がリストの場合順に再生する
