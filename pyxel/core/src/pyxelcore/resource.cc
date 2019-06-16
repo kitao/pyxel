@@ -49,7 +49,7 @@ Resource::Resource(Graphics* graphics, Audio* audio) {
 }
 
 bool Resource::SaveAsset(const std::string& filename) {
-  std::ofstream ofs(filename);
+  std::ofstream ofs(filename, std::ios::binary);
 
   if (ofs.fail()) {
     PRINT_ERROR("cannot save file '" + filename + "'");
@@ -99,7 +99,7 @@ bool Resource::SaveAsset(const std::string& filename) {
 }
 
 bool Resource::LoadAsset(const std::string& filename) {
-  std::ifstream ifs(filename);
+  std::ifstream ifs(filename, std::ios::binary);
 
   if (ifs.fail()) {
     PRINT_ERROR("cannot open file '" + filename + "'");
