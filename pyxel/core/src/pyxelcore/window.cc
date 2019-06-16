@@ -28,8 +28,8 @@ Window::Window(const std::string& caption,
     SDL_GetDesktopDisplayMode(0, &display_mode);
 
     screen_scale_ =
-        Max(Min((display_mode.w - border_width * 2) / screen_width_,
-                (display_mode.h - border_width * 2) / screen_height_) *
+        Max(Min((display_mode.w - border_width * 2.0f) / screen_width_,
+                (display_mode.h - border_width * 2.0f) / screen_height_) *
                 MAX_SCREEN_RATIO,
             1.0f);
   }
