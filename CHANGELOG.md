@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.1
+- fixed the install_pyxel_examples script to include .pyxres file
+
 ## 1.1.0
 - Modified .gitignore to ignore .vscode files
 - Changed to use SDL2 instead of GLFW
