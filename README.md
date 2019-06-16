@@ -62,12 +62,12 @@ pip install pyxel
 
 ### Mac
 
-After installing [Python3](https://www.python.org/) and [glfw](http://www.glfw.org/) (version 3.2.1 or higher), install Pyxel with `pip` command.
+After installing [Python3](https://www.python.org/) and [SDL2](https://www.libsdl.org/), install Pyxel with `pip` command.
 
 If [Homebrew](https://brew.sh/) package manager is ready, the following command installs all the necessary packages:
 
 ```sh
-brew install python3 glfw
+brew install python3 sdl2 sdl2_image
 pip3 install pyxel
 ```
 
@@ -75,17 +75,10 @@ pip3 install pyxel
 
 Install the required packages in a way appropriate for each distribution. [glfw](http://www.glfw.org/) must be version 3.2.1 or higher.
 
-**Ubuntu / Debian:**
+**Ubuntu:**
 
 ```sh
-sudo apt install python3 python3-pip libglfw3 libportaudio2
-sudo pip3 install pyxel
-```
-
-**Fedora:**
-
-```sh
-sudo dnf install glfw portaudio
+sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
 sudo pip3 install pyxel
 ```
 
@@ -175,7 +168,7 @@ class App:
 
     def draw(self):
         pyxel.cls(0)
-        pyxel.rect(self.x, 0, self.x + 7, 7, 9)
+        pyxel.rect(self.x, 0, 8, 8, 9)
 
 App()
 ```
@@ -205,8 +198,8 @@ Pyxel Editor starts with the following command:
 pyxeleditor [pyxel_resource_file]
 ```
 
-If the specified Pyxel resource file (.pyxel) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
-If the resource file is omitted, the name is `my_resource.pyxel`.
+If the specified Pyxel resource file (.pyxres) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
+If the resource file is omitted, the name is `my_resource.pyxres`.
 
 After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file.
 
@@ -278,10 +271,10 @@ Quit the Pyxel application at the end of the current frame
 ### Resource
 
 - `save(filename)`<br>
-Save the resource file (.pyxel) to the directory of the execution script
+Save the resource file (.pyxres) to the directory of the execution script
 
 - `load(filename)`<br>
-Read the resource file (.pyxel) from the directory of the execution script
+Read the resource file (.pyxres) from the directory of the execution script
 
 ### Input
 - `mouse_x`, `mouse_y`<br>
@@ -308,8 +301,8 @@ e.g. `pyxel.image(0).load(0, 0, 'title.png')`
 - `tilemap(tm)`<br>
 Operate the tilemap `tm`(0-7) (see the Tilemap class)
 
-- `clip(x1, y1, x2, y2)`<br>
-Set the drawing area of the screen to (`x1`, `y1`)-(`x2`, `y2`). Reset the drawing area with `clip()`
+- `clip(x, y, w, h)`<br>
+Set the drawing area of the screen from (`x`, `y`) to width `w` and height `h`. Reset the drawing area to full screen with `clip()`
 
 - `pal(col1, col2)`<br>
 Replace color `col1` with `col2` at drawing. `pal()` to reset to the initial palette
@@ -324,10 +317,10 @@ Draw a pixel of color `col` at (`x`, `y`)
 Draw a line of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
 
 - `rect(x1, y1, x2, y2, col)`<br>
-Draw a rectangle of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
+Draw a rectangle of width `w`, height `h` and color `col` from (`x`, `y`)
 
 - `rectb(x1, y1, x2, y2, col)`<br>
-Draw the outline of a rectangle of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
+Draw the outline of a rectangle of width `w`, height `h` and color `col` from (`x`, `y`)
 
 - `circ(x, y, r, col)`<br>
 Draw a circle of radius `r` and color `col` at (`x`, `y`)
@@ -352,6 +345,9 @@ e.g. `pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
 Operate the music `msc`(0-7) (see the Music class)
+
+- `play_pos(ch)`<br>
+Get the sound playback position of channel `ch`. When playback is stopped, return `-1`
 
 - `play(ch, snd, loop=False)`<br>
 Play the sound `snd`(0-63) on channel `ch`(0-3). Play in order when `snd` is a list
