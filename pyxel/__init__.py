@@ -446,7 +446,7 @@ class Music:
 width: int = 0
 height: int = 0
 frame_count: int = 0
-_drop_file: Optional[str] = None
+_drop_file: str = ""
 
 
 def _update_properties():  # type: ignore
