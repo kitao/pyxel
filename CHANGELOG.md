@@ -11,7 +11,7 @@
 - Changed arguments of the clip API
 - Changed arguments of the rect and rectb API
 - Modified the examples according to the API changes
-- Changed the resource file extension name to .pyxres
+- Renamed the resource file extension to .pyxres
 - Added the _drop_file property
 - Added the _caption API
 - Changed the way to detect the caller script
