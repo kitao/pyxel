@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.2
+- Fixed the way to decide the automatic screen size
+
 ## 1.1.1
 - fixed the install_pyxel_examples script to include .pyxres file
 
