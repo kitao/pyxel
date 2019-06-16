@@ -73,7 +73,7 @@ pip3 install pyxel
 
 ### Linux
 
-Install the required packages in a way appropriate for each distribution. [glfw](http://www.glfw.org/) must be version 3.2.1 or higher.
+Install the required packages in a way appropriate for each distribution.
 
 **Ubuntu:**
 
