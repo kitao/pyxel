@@ -12,7 +12,7 @@ def install():
     shutil.rmtree(dest_dir, ignore_errors=True)
     os.makedirs(os.path.join(dest_dir, "assets"))
 
-    patterns = ["[0-9]*.py", "assets/*.pyxel", "assets/*.png", "assets/*.gif"]
+    patterns = ["[0-9]*.py", "assets/*.pyxres", "assets/*.png", "assets/*.gif"]
 
     for pattern in patterns:
         srcs = glob.glob(os.path.join(src_dir, pattern))
