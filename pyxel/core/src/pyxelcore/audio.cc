@@ -15,8 +15,7 @@ Audio::Audio() {
   audio_spec.userdata = this;
 
   if (SDL_OpenAudio(&audio_spec, NULL) < 0) {
-    PRINT_ERROR("failed to initialize SDL Audio");
-    exit(1);
+    PYXEL_ERROR("failed to initialize SDL Audio");
   }
 
   sound_bank_ = new Sound*[SOUND_BANK_COUNT];
@@ -62,13 +61,11 @@ void Audio::callback(void* userdata, uint8_t* stream, int len) {
 
 void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
   if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
-    PRINT_ERROR("invalid channel");
-    return;
+    PYXEL_ERROR("invalid channel");
   }
 
   if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
-    PRINT_ERROR("invalid sound index");
-    return;
+    PYXEL_ERROR("invalid sound index");
   }
 
   const SoundList sound_list = {sound_bank_[sound_index]};
@@ -79,16 +76,14 @@ void Audio::PlaySound(int32_t channel,
                       const SoundIndexList& sound_index_list,
                       bool loop) {
   if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
-    PRINT_ERROR("invalid channel");
-    return;
+    PYXEL_ERROR("invalid channel");
   }
 
   SoundList sound_list;
 
   for (int32_t sound_index : sound_index_list) {
     if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
-      PRINT_ERROR("invalid sound index");
-      return;
+      PYXEL_ERROR("invalid sound index");
     }
 
     sound_list.push_back(sound_bank_[sound_index]);
@@ -99,8 +94,7 @@ void Audio::PlaySound(int32_t channel,
 
 void Audio::PlayMusic(int32_t music_index, bool loop) {
   if (music_index < 0 || music_index >= MUSIC_CHANNEL_COUNT) {
-    PRINT_ERROR("invalid music index");
-    return;
+    PYXEL_ERROR("invalid music index");
   }
 
   Music* music = music_bank_[music_index];
@@ -113,8 +107,7 @@ void Audio::PlayMusic(int32_t music_index, bool loop) {
 
 void Audio::StopPlaying(int32_t channel) {
   if (channel != -1 && (channel < 0 || channel >= MUSIC_CHANNEL_COUNT)) {
-    PRINT_ERROR("invalide channel");
-    return;
+    PYXEL_ERROR("invalide channel");
   }
 
   if (channel == -1) {
