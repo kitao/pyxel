@@ -59,8 +59,8 @@ _setup_api("_caption", None, [c_char_p])
 #
 # Resource
 #
-_setup_api("save", c_int32, [c_char_p])
-_setup_api("load", c_int32, [c_char_p])
+_setup_api("save", None, [c_char_p])
+_setup_api("load", None, [c_char_p])
 
 #
 # Input
@@ -114,7 +114,7 @@ _setup_api("image_data_getter", POINTER(c_int32), [c_void_p])
 _setup_api("image_get", c_int32, [c_void_p] + [c_int32] * 2)
 _setup_api("image_set1", None, [c_void_p] + [c_int32] * 3)
 _setup_api("image_set", None, [c_void_p] + [c_int32] * 2 + [POINTER(c_char_p), c_int32])
-_setup_api("image_load", c_int32, [c_void_p] + [c_int32] * 2 + [c_char_p])
+_setup_api("image_load", None, [c_void_p] + [c_int32] * 2 + [c_char_p])
 _setup_api("image_copy", None, [c_void_p] + [c_int32] * 7)
 
 #

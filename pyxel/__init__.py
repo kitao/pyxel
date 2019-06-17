@@ -226,15 +226,13 @@ class Image:
 
             core.image_set(self._obj, int(x), int(y), c_data, data_count)
 
-    def load(self, x: int, y: int, filename: str) -> bool:
+    def load(self, x: int, y: int, filename: str) -> None:
         dirname = os.path.dirname(
             inspect.currentframe().f_back.f_code.co_filename  # type: ignore
         )
         filename = os.path.join(dirname, filename)
 
-        return core.image_load(  # type: ignore
-            self._obj, int(x), int(y), filename.encode("utf-8")
-        )
+        core.image_load(self._obj, int(x), int(y), filename.encode("utf-8"))
 
     def copy(self, x: int, y: int, img: int, u: int, v: int, w: int, h: int) -> None:
         core.image_copy(
@@ -510,16 +508,16 @@ def _caption(caption: str) -> None:
 #
 # Resource
 #
-def save(filename: str) -> bool:
+def save(filename: str) -> None:
     dirname = os.path.dirname(
         inspect.currentframe().f_back.f_code.co_filename  # type: ignore
     )
     filename = os.path.join(dirname, filename)
 
-    return core.save(filename.encode("utf-8"))  # type: ignore
+    core.save(filename.encode("utf-8"))
 
 
-def load(filename: str) -> bool:
+def load(filename: str) -> None:
     dirname = os.path.dirname(
         inspect.currentframe().f_back.f_code.co_filename  # type: ignore
     )
@@ -529,10 +527,10 @@ def load(filename: str) -> bool:
     if ext == ".pyxel":
         return load_as_old_pyxel_format(filename)
 
-    return core.load(filename.encode("utf-8"))  # type: ignore
+    core.load(filename.encode("utf-8"))
 
 
-def load_as_old_pyxel_format(filename: str) -> bool:
+def load_as_old_pyxel_format(filename: str) -> None:
     print("load as old pyxel format")
 
     import gzip
@@ -587,8 +585,6 @@ def load_as_old_pyxel_format(filename: str) -> bool:
     module = sys.modules[__name__]
     module.sound = _sound  # type: ignore
     module.music = _music  # type: ignore
-
-    return True
 
 
 #
