@@ -6,6 +6,7 @@
 - Changed the way to handle runtime errors
 - Changed save and load APIs not to return bool
 - Specified the version of Python in the READMEs
+- Added the play_pos API to the example #4
 
 ## 1.1.1
 - fixed the install_pyxel_examples script to include .pyxres file
