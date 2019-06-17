@@ -496,3 +496,10 @@ e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'], 1)`
 ## ライセンス
 
 Pyxelは[MITライセンス](http://en.wikipedia.org/wiki/MIT_License)です。ソースコードやライセンス表示用のファイル等で、[著作権とライセンス全文](https://raw.githubusercontent.com/kitao/pyxel/master/LICENSE)の表示を行えば、自由に販売や配布をすることができます。
+
+Pyxelは以下のライブラリを使用しています。
+
+- [SDL2](https://www.libsdl.org/) - [zlib License](https://www.zlib.net/zlib_license.html)
+- [NumPy](https://www.numpy.org/) - [BSD License](https://www.numpy.org/license.html#license)
+- [gif-h](https://github.com/ginsweater/gif-h) - [Unlicense](https://github.com/ginsweater/gif-h/blob/master/LICENSE)
+- [miniz-cpp](https://github.com/tfussell/miniz-cpp) - [MIT License](https://github.com/tfussell/miniz-cpp/blob/master/LICENSE.md)
