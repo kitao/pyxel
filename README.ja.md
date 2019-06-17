@@ -55,7 +55,7 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 ### Windows
 
-[Python3](https://www.python.org/)をインストールした後に、以下の`pip`コマンドでPyxelをインストールします。
+[Python3](https://www.python.org/) (バージョン3.7以上) をインストールした後に、以下の`pip`コマンドでPyxelをインストールします。
 
 ```sh
 pip install pyxel
@@ -63,7 +63,7 @@ pip install pyxel
 
 ### Mac
 
-[Python3](https://www.python.org/)と[SDL2](https://www.libsdl.org/)をインストールをした後に、`pip`コマンドでPyxelをインストールします。
+[Python3](https://www.python.org/) (バージョン3.7以上) と[SDL2](https://www.libsdl.org/)をインストールをした後に、`pip`コマンドでPyxelをインストールします。
 
 [Homebrew](https://brew.sh/)を導入している環境では、以下のコマンドで必要なパッケージが一通りインストールできます。
 
@@ -74,7 +74,7 @@ pip3 install pyxel
 
 ### Linux
 
-各ディストリビューションに適した方法で必要なパッケージをインストールしてください。
+各ディストリビューションに適した方法で[Python3](https://www.python.org/) (バージョン3.7以上) と必要なパッケージをインストールしてください。
 
 **Ubuntu:**
 
