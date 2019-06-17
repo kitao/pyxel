@@ -48,12 +48,11 @@ Resource::Resource(Graphics* graphics, Audio* audio) {
   audio_ = audio;
 }
 
-bool Resource::SaveAsset(const std::string& filename) {
+void Resource::SaveAsset(const std::string& filename) {
   std::ofstream ofs(filename, std::ios::binary);
 
   if (ofs.fail()) {
-    PRINT_ERROR("cannot save file '" + filename + "'");
-    return false;
+    PYXEL_ERROR("cannot save file '" + filename + "'");
   }
 
   miniz_cpp::zip_file file;
@@ -94,16 +93,13 @@ bool Resource::SaveAsset(const std::string& filename) {
 
   file.save(ofs);
   ofs.close();
-
-  return true;
 }
 
-bool Resource::LoadAsset(const std::string& filename) {
+void Resource::LoadAsset(const std::string& filename) {
   std::ifstream ifs(filename, std::ios::binary);
 
   if (ifs.fail()) {
-    PRINT_ERROR("cannot open file '" + filename + "'");
-    return false;
+    PYXEL_ERROR("cannot open file '" + filename + "'");
   }
 
   miniz_cpp::zip_file file;
@@ -120,8 +116,7 @@ bool Resource::LoadAsset(const std::string& filename) {
         std::string line = GetTrimmedLine(ss);
 
         if (line > VERSION) {
-          PRINT_ERROR("unsupported resource file version '" + line + "'");
-          return false;
+          PYXEL_ERROR("unsupported resource file version '" + line + "'");
         }
       } else {
         throw ParseError();
@@ -168,11 +163,8 @@ bool Resource::LoadAsset(const std::string& filename) {
       }
     }
   } catch (...) {
-    PRINT_ERROR("invalid resource file");
-    return false;
+    PYXEL_ERROR("invalid resource file");
   }
-
-  return true;
 }
 
 void Resource::ClearImage(int32_t image_index) {

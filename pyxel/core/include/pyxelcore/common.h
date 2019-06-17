@@ -77,13 +77,14 @@ inline std::string ReplaceAll(const std::string& str,
   return res;
 }
 
-inline void PrintError(const std::string& message,
+inline void PyxelError(const std::string& message,
                        const std::string& func_name) {
   std::cout << "pyxel error: " + message + " in '" + func_name + "'"
             << std::endl;
+  exit(1);
 }
 
-#define PRINT_ERROR(message) PrintError(message, __FUNCTION__)
+#define PYXEL_ERROR(message) PyxelError(message, __FUNCTION__)
 
 }  // namespace pyxelcore
 

@@ -40,25 +40,20 @@ System::System(int32_t width,
       update_profiler_(MEASURE_FRAME_COUNT),
       draw_profiler_(MEASURE_FRAME_COUNT) {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
-    PRINT_ERROR("failed to initialize SDL");
-    exit(1);
+    PYXEL_ERROR("failed to initialize SDL");
   }
 
   if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG) {
-    PRINT_ERROR("failed to initialize SDL_image");
-    exit(1);
+    PYXEL_ERROR("failed to initialize SDL_image");
   }
 
   if (width < MIN_SCREEN_SIZE || width > MAX_SCREEN_SIZE ||
       height < MIN_SCREEN_SIZE || height > MAX_SCREEN_SIZE) {
-    PRINT_ERROR("invalid screen size");
-    width = Clamp(width, MIN_SCREEN_SIZE, MAX_SCREEN_SIZE);
-    height = Clamp(height, MIN_SCREEN_SIZE, MAX_SCREEN_SIZE);
+    PYXEL_ERROR("invalid screen size");
   }
 
   if (fps < 1) {
-    PRINT_ERROR("invalid fps");
-    fps = 1;
+    PYXEL_ERROR("invalid fps");
   }
 
   input_ = new pyxelcore::Input();

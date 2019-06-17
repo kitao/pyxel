@@ -4,9 +4,7 @@ namespace pyxelcore {
 
 Image::Image(int32_t width, int32_t height) {
   if (width < 1 || height < 1) {
-    PRINT_ERROR("invalid image size");
-    width = Max(width, 1);
-    height = Max(height, 1);
+    PYXEL_ERROR("invalid image size");
   }
 
   width_ = width;
@@ -27,8 +25,7 @@ Image::~Image() {
 
 int32_t Image::GetValue(int32_t x, int32_t y) const {
   if (!rect_.Includes(x, y)) {
-    PRINT_ERROR("access to outside image");
-    return 0;
+    PYXEL_ERROR("access to outside image");
   }
 
   return data_[y][x];
@@ -40,7 +37,7 @@ void Image::SetValue(int32_t x, int32_t y, int32_t value) {
   }
 
   if (value < 0 || value >= COLOR_COUNT) {
-    PRINT_ERROR("invalid value");
+    PYXEL_ERROR("invalid value");
   }
 
   data_[y][x] = value;
@@ -51,8 +48,7 @@ void Image::SetData(int32_t x, int32_t y, const ImageString& image_string) {
   int32_t height = image_string.size();
 
   if (width < 1 || height < 1) {
-    PRINT_ERROR("invalid value size");
-    return;
+    PYXEL_ERROR("invalid value size");
   }
 
   Image image = Image(width, height);
@@ -66,8 +62,7 @@ void Image::SetData(int32_t x, int32_t y, const ImageString& image_string) {
       int32_t value = std::stoi(str.substr(j, 1), nullptr, 16);
 
       if (value < 0 || value >= COLOR_COUNT) {
-        PRINT_ERROR("invalid value");
-        value = 0;
+        PYXEL_ERROR("invalid value");
       }
 
       dst_line[j] = value;
@@ -77,18 +72,14 @@ void Image::SetData(int32_t x, int32_t y, const ImageString& image_string) {
   CopyImage(x, y, &image, 0, 0, width, height);
 }
 
-bool Image::LoadImage(int32_t x,
+void Image::LoadImage(int32_t x,
                       int32_t y,
-                      const char* filename,
+                      const std::string& filename,
                       const PaletteColor& palette_color) {
-  SDL_Surface* png_image = IMG_Load(filename);
+  SDL_Surface* png_image = IMG_Load(filename.c_str());
 
   if (!png_image) {
-    char buf[256];
-    snprintf(buf, sizeof(buf), "cannot load image '%s'", filename);
-    PRINT_ERROR(buf);
-
-    return false;
+    PYXEL_ERROR("cannot load image '" + filename + "'");
   }
 
   SDL_Surface* src_image =
@@ -137,8 +128,6 @@ bool Image::LoadImage(int32_t x,
 
   SDL_FreeSurface(png_image);
   SDL_FreeSurface(src_image);
-
-  return true;
 }
 
 void Image::CopyImage(int32_t x,

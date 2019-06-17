@@ -38,8 +38,7 @@ class Sound {
 
 inline void Sound::Speed(int32_t speed) {
   if (speed < 1) {
-    PRINT_ERROR("invalid speed");
-    return;
+    PYXEL_ERROR("invalid speed");
   }
 
   speed_ = speed;
