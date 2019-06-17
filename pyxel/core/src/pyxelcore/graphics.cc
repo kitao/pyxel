@@ -64,8 +64,7 @@ void Graphics::ResetPalette() {
 void Graphics::SetPalette(int32_t src_color, int32_t dst_color) {
   if (src_color < 0 || src_color >= COLOR_COUNT || dst_color < 0 ||
       dst_color >= COLOR_COUNT) {
-    PRINT_ERROR("invalid color");
-    return;
+    PYXEL_ERROR("invalid color");
   }
 
   palette_table_[src_color] = dst_color;
@@ -269,8 +268,7 @@ void Graphics::DrawImage(int32_t x,
   Image* image = GetImageBank(image_index, true);
 
   if (color_key != -1 && (color_key < 0 || color_key >= COLOR_COUNT)) {
-    PRINT_ERROR("invalid color");
-    color_key = -1;
+    PYXEL_ERROR("invalid color");
   }
 
   Rectangle::CopyArea copy_area =

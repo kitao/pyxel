@@ -69,18 +69,17 @@ class Graphics {
 
   void SetupMouseCursor();
   void SetupFont();
-  int32_t GetDrawColor(int32_t color, const char* func_name) const;
+  int32_t GetDrawColor(int32_t color, const std::string& func_name) const;
   void SetPixel(int32_t x, int32_t y, int32_t color);
 };
 
 inline Image* Graphics::GetImageBank(int32_t image_index, bool system) const {
   if (image_index < 0 || image_index >= IMAGE_BANK_COUNT) {
-    PRINT_ERROR("invalid image index");
-    image_index = 0;
+    PYXEL_ERROR("invalid image index");
   }
 
   if (image_index == IMAGE_BANK_FOR_SYSTEM && !system) {
-    PRINT_ERROR("access to image bank for system");
+    PYXEL_ERROR("access to image bank for system");
   }
 
   return image_bank_[image_index];
@@ -88,18 +87,16 @@ inline Image* Graphics::GetImageBank(int32_t image_index, bool system) const {
 
 inline Tilemap* Graphics::GetTilemapBank(int32_t tilemap_index) const {
   if (tilemap_index < 0 || tilemap_index >= TILEMAP_BANK_COUNT) {
-    PRINT_ERROR("invalid tilemap index");
-    tilemap_index = 0;
+    PYXEL_ERROR("invalid tilemap index");
   }
 
   return tilemap_bank_[tilemap_index];
 }
 
 inline int32_t Graphics::GetDrawColor(int32_t color,
-                                      const char* func_name) const {
+                                      const std::string& func_name) const {
   if (color < 0 || color >= COLOR_COUNT) {
-    PrintError("invalid color", func_name);
-    return 0;
+    PyxelError("invalid color", func_name);
   }
 
   return palette_table_[color];
