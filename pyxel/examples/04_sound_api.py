@@ -58,15 +58,11 @@ class App:
             "f0ra4r f0ra4r f0ra4r f0f0a4r", "n", "6622 6622 6622 6422", "f", 25
         )
 
-        self.is_playing = [True] * 3
-
         self.play_music(True, True, True)
 
         pyxel.run(self.update, self.draw)
 
     def play_music(self, ch0, ch1, ch2):
-        self.is_playing = (ch0, ch1, ch2)
-
         if ch0:
             pyxel.play(0, [0, 1], loop=True)
         else:
@@ -126,18 +122,16 @@ class App:
         pyxel.text(12, 126, "4: Play channel #2 (Drums)", 14)
         pyxel.text(12, 134, "5: Stop playing", 14)
 
-        for i, v in enumerate(self.is_playing):
-            pyxel.pal(1, v and 15 or 13)
-            pyxel.blt(
-                140 + i * 16,
-                116 + math.sin(pyxel.frame_count * 0.1 + i * 2.1) * 5,
-                0,
-                0,
-                0,
-                8,
-                8,
-                0,
-            )
+        pyxel.text(137, 107, "play_pos(ch)", 15)
+
+        for i in range(3):
+            x = 140 + i * 16
+            y = 123 + math.sin(pyxel.frame_count * 0.1 + i * 2.1) * 5
+            col = 15 if pyxel.play_pos(i) >= 0 else 13
+
+            pyxel.pal(1, col)
+            pyxel.blt(x, y, 0, 0, 0, 8, 8, 0)
+
         pyxel.pal()
 
 
