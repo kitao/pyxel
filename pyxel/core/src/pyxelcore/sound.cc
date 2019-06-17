@@ -58,15 +58,13 @@ void Sound::SetNote(const std::string& note) {
         param += (c - '0') * 12;
       } else {
         std::string s = {c};
-        PRINT_ERROR("invalid sound note '" + s + "'");
-        return;
+        PYXEL_ERROR("invalid sound note '" + s + "'");
       }
     } else if (c == 'r') {
       param = -1;
     } else {
       std::string s = {c};
-      PRINT_ERROR("invalid sound note '" + s + "'");
-      return;
+      PYXEL_ERROR("invalid sound note '" + s + "'");
     }
 
     note_.push_back(param);
@@ -86,8 +84,7 @@ void Sound::SetTone(const std::string& tone) {
       param = TONE_TABLE[c];
     } else {
       std::string s = {c};
-      PRINT_ERROR("invalid sound tone '" + s + "'");
-      return;
+      PYXEL_ERROR("invalid sound tone '" + s + "'");
     }
 
     tone_.push_back(param);
@@ -107,8 +104,7 @@ void Sound::SetVolume(const std::string& volume) {
       param = c - '0';
     } else {
       std::string s = {c};
-      PRINT_ERROR("invalid sound volume '" + s + "'");
-      return;
+      PYXEL_ERROR("invalid sound volume '" + s + "'");
     }
 
     volume_.push_back(param);
@@ -128,8 +124,7 @@ void Sound::SetEffect(const std::string& effect) {
       param = EFFECT_TABLE[c];
     } else {
       std::string s = {c};
-      PRINT_ERROR("invalid sound effect '" + s + "'");
-      return;
+      PYXEL_ERROR("invalid sound effect '" + s + "'");
     }
 
     effect_.push_back(param);

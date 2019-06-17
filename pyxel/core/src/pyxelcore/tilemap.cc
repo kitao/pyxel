@@ -4,9 +4,7 @@ namespace pyxelcore {
 
 Tilemap::Tilemap(int32_t width, int32_t height) {
   if (width < 1 || height < 1) {
-    PRINT_ERROR("invalid tilemap size");
-    width = Max(width, 1);
-    height = Max(height, 1);
+    PYXEL_ERROR("invalid tilemap size");
   }
 
   width_ = width;
@@ -28,8 +26,7 @@ Tilemap::~Tilemap() {
 
 int32_t Tilemap::GetValue(int32_t x, int32_t y) const {
   if (!rect_.Includes(x, y)) {
-    PRINT_ERROR("access to outside tilemap");
-    return 0;
+    PYXEL_ERROR("access to outside tilemap");
   }
 
   return data_[y][x];
@@ -41,7 +38,7 @@ void Tilemap::SetValue(int32_t x, int32_t y, int32_t value) {
   }
 
   if (value < 0 || value >= TILEMAP_CHIP_COUNT) {
-    PRINT_ERROR("invalid value");
+    PYXEL_ERROR("invalid value");
   }
 
   data_[y][x] = value;
@@ -54,8 +51,7 @@ void Tilemap::SetData(int32_t x,
   int32_t height = tilemap_string.size();
 
   if (width < 1 || height < 1) {
-    PRINT_ERROR("invalid value size");
-    return;
+    PYXEL_ERROR("invalid value size");
   }
 
   Tilemap tilemap = Tilemap(width, height);
@@ -69,8 +65,7 @@ void Tilemap::SetData(int32_t x,
       int32_t value = std::stoi(str.substr(j * 3, 3), nullptr, 16);
 
       if (value < 0 || value >= TILEMAP_CHIP_COUNT) {
-        PRINT_ERROR("invalid value");
-        value = 0;
+        PYXEL_ERROR("invalid value");
       }
 
       dst_line[j] = value;

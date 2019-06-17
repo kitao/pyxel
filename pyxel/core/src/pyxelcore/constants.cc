@@ -179,7 +179,7 @@ int32_t GetConstantNumber(const std::string& name) {
   CHECK_CONSTANT(FONT_WIDTH);
   CHECK_CONSTANT(FONT_HEIGHT);
 
-  PRINT_ERROR("unknown constant name '" + name + "'");
+  PYXEL_ERROR("unknown constant name '" + name + "'");
   return 0;
 }
 
@@ -188,7 +188,7 @@ std::string GetConstantString(const std::string& name) {
   CHECK_CONSTANT(DEFAULT_CAPTION);
   CHECK_CONSTANT(RESOURCE_FILE_EXTENSION);
 
-  PRINT_ERROR("unknown constant name '" + name + "'");
+  PYXEL_ERROR("unknown constant name '" + name + "'");
   return "";
 }
 

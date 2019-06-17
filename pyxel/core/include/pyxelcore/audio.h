@@ -33,12 +33,11 @@ class Audio {
 
 inline Sound* Audio::GetSoundBank(int32_t sound_index, bool system) const {
   if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
-    PRINT_ERROR("invalid sound index");
-    sound_index = 0;
+    PYXEL_ERROR("invalid sound index");
   }
 
   if (sound_index == SOUND_BANK_FOR_SYSTEM && !system) {
-    PRINT_ERROR("access to sound bank for system");
+    PYXEL_ERROR("access to sound bank for system");
   }
 
   return sound_bank_[sound_index];
@@ -46,8 +45,7 @@ inline Sound* Audio::GetSoundBank(int32_t sound_index, bool system) const {
 
 inline Music* Audio::GetMusicBank(int32_t music_index) const {
   if (music_index < 0 || music_index >= MUSIC_BANK_COUNT) {
-    PRINT_ERROR("invalid music index");
-    music_index = 0;
+    PYXEL_ERROR("invalid music index");
   }
 
   return music_bank_[music_index];
@@ -55,8 +53,7 @@ inline Music* Audio::GetMusicBank(int32_t music_index) const {
 
 inline int32_t Audio::GetPlayPos(int32_t channel) const {
   if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
-    PRINT_ERROR("invalid channel");
-    return -1;
+    PYXEL_ERROR("invalid channel");
   }
 
   return channel_[channel].PlayPos();

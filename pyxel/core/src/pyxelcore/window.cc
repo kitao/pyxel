@@ -12,8 +12,7 @@ Window::Window(const std::string& caption,
                int32_t border_width,
                int32_t border_color) {
   if (border_width < 0) {
-    PRINT_ERROR("invalid boader width");
-    border_width = 0;
+    PYXEL_ERROR("invalid boader width");
   }
 
   screen_width_ = screen_width;
