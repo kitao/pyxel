@@ -493,3 +493,10 @@ Submitted pull request is deemed to have agreed to publish under [MIT license](h
 ## License
 
 Pyxel is under [MIT license](http://en.wikipedia.org/wiki/MIT_License). It can be reused within proprietary software provided that all copies of the licensed software include a copy of the MIT License terms and the copyright notice.
+
+Pyxel uses the following libraries:
+
+- [SDL2](https://www.libsdl.org/) - [zlib License](https://www.zlib.net/zlib_license.html)
+- [NumPy](https://www.numpy.org/) - [BSD License](https://www.numpy.org/license.html#license)
+- [gif-h](https://github.com/ginsweater/gif-h) - [Unlicense](https://github.com/ginsweater/gif-h/blob/master/LICENSE)
+- [miniz-cpp](https://github.com/tfussell/miniz-cpp) - [MIT License](https://github.com/tfussell/miniz-cpp/blob/master/LICENSE.md)
