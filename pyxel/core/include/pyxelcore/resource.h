@@ -16,8 +16,8 @@ class Resource {
  public:
   Resource(Graphics* graphics, Audio* audio);
 
-  bool SaveAsset(const std::string& filename);
-  bool LoadAsset(const std::string& filename);
+  void SaveAsset(const std::string& filename);
+  void LoadAsset(const std::string& filename);
 
  private:
   Graphics* graphics_;

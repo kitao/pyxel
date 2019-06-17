@@ -95,12 +95,12 @@ void _caption(const char* caption) {
 //
 // Resource
 //
-int32_t save(const char* filename) {
-  return s_resource->SaveAsset(filename);
+void save(const char* filename) {
+  s_resource->SaveAsset(filename);
 }
 
-int32_t load(const char* filename) {
-  return s_resource->LoadAsset(filename);
+void load(const char* filename) {
+  s_resource->LoadAsset(filename);
 }
 
 //
@@ -283,8 +283,8 @@ void image_set(void* self,
   IMAGE->SetData(x, y, image_string);
 }
 
-int32_t image_load(void* self, int32_t x, int32_t y, const char* filename) {
-  return IMAGE->LoadImage(x, y, filename, s_system->PaletteColor());
+void image_load(void* self, int32_t x, int32_t y, const char* filename) {
+  IMAGE->LoadImage(x, y, filename, s_system->PaletteColor());
 }
 
 void image_copy(void* self,

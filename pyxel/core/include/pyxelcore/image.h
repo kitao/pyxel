@@ -19,9 +19,9 @@ class Image {
   int32_t GetValue(int32_t x, int32_t y) const;
   void SetValue(int32_t x, int32_t y, int32_t value);
   void SetData(int32_t x, int32_t y, const ImageString& image_string);
-  bool LoadImage(int32_t x,
+  void LoadImage(int32_t x,
                  int32_t y,
-                 const char* filename,
+                 const std::string& filename,
                  const PaletteColor& palette_color);
   void CopyImage(int32_t x,
                  int32_t y,
