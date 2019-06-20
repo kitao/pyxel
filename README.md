@@ -347,7 +347,7 @@ e.g. `pyxel.sound(0).speed = 60`
 Operate the music `msc`(0-7) (see the Music class)
 
 - `play_pos(ch)`<br>
-Get the sound playback position of channel `ch`. When playback is stopped, return `-1`
+Get the sound playback position of channel `ch`. The 100's and 1000's indicate the sound number and the 1's and 10's indicate the note number. When playback is stopped, return `-1`
 
 - `play(ch, snd, loop=False)`<br>
 Play the sound `snd`(0-63) on channel `ch`(0-3). Play in order when `snd` is a list
