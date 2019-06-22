@@ -3,10 +3,21 @@
 # Advance Preparation
 #
 # Mac:
-#   brew install python3 sdl2 sdl2_image mingw-w64
+#   brew install python3 sdl2 sdl2_image
 #
 # Linux:
 #   sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
+#
+# Windows:
+#   choco install -y msys2
+#
+#   [32bit]
+#   pacman -Syu
+#   pacman -S make mingw-w64-i686-{toolchain,python3-numpy}
+#
+#   [64bit]
+#   pacman -Syu
+#   pacman -S make mingw-w64-x86_64-{toolchain,python3-numpy}
 #
 
 SCRIPT_DIR=$(cd $(dirname $0);pwd)
