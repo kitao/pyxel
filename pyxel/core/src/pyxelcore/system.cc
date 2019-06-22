@@ -39,7 +39,8 @@ System::System(int32_t width,
     : fps_profiler_(MEASURE_FRAME_COUNT),
       update_profiler_(MEASURE_FRAME_COUNT),
       draw_profiler_(MEASURE_FRAME_COUNT) {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) !=
+      0) {
     PYXEL_ERROR("failed to initialize SDL");
   }
 
