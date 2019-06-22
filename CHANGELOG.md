@@ -9,6 +9,7 @@
 - Added the play_pos API to the example #4
 - Added the description of the included libraries to the READMEs
 - Updated the screenshots of the example #3 and #4
+- Fixed game controller input
 
 ## 1.1.1
 - fixed the install_pyxel_examples script to include .pyxres file
