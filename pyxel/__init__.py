@@ -3,7 +3,7 @@ import os
 import sys
 from collections import MutableSequence
 from ctypes import CFUNCTYPE, c_char_p, c_int32, cast, create_string_buffer
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 import numpy as np  # type: ignore
 
@@ -445,6 +445,8 @@ width: int = 0
 height: int = 0
 frame_count: int = 0
 _drop_file: str = ""
+_image_bank: Dict[int, Image] = {}
+_tilemap_bank: Dict[int, Tilemap] = {}
 
 
 def _update_properties():  # type: ignore
@@ -474,6 +476,10 @@ def init(
     border_color: int = DEFAULT_BORDER_COLOR
 ) -> None:
     COLOR_COUNT = _get_constant_number("COLOR_COUNT")
+
+    global _image_bank, _tilemap_bank
+    _image_bank.clear()
+    _tilemap_bank.clear()
 
     core.init(
         int(width),
@@ -614,11 +620,21 @@ def mouse(visible: bool) -> None:
 # Graphics
 #
 def image(img: int, *, system: bool = False) -> Image:
-    return Image(core.image(int(img), int(system)))
+    if img in _image_bank:
+        core.image(int(img), int(system))
+    else:
+        _image_bank[img] = Image(core.image(int(img), int(system)))
+
+    return _image_bank[img]
 
 
 def tilemap(tm: int) -> Tilemap:
-    return Tilemap(core.tilemap(int(tm)))
+    if tm in _tilemap_bank:
+        core.tilemap(int(tm))
+    else:
+        _tilemap_bank[tm] = Tilemap(core.tilemap(int(tm)))
+
+    return _tilemap_bank[tm]
 
 
 def clip(
