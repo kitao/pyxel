@@ -299,7 +299,7 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 
 - `image(img, [system])`<br>
 イメージバンク`img`(0-2) を操作する (イメージクラスを参照のこと)。`system`に`True`を指定すると、システム用のイメージバンク3にアクセスできる<br>
-例：`pyxel.image(0).load(0, 0, 'title.png')`
+例：`pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
 タイルマップ`tm`(0-7)を操作する (タイルマップクラスを参照のこと)
@@ -374,7 +374,7 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 
 - `set(x, y, data)`<br>
 (`x`, `y`) に値または文字列のリストでイメージのデータを設定する<br>
-例：`pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
+例：`pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
 
 - `load(x, y, filename)`<br>
 (`x`, `y`) に実行スクリプトのディレクトリからpngファイルを読み込む
@@ -398,7 +398,7 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 
 - `set(x, y, data, [refimg])`<br>
 (`x`, `y`) に値または文字列のリストでタイルマップのデータを設定する。`refimg`を指定すると、タイルマップが参照するイメージバンクも同時に設定される<br>
-e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'], 1)`
+e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"], 1)`
 
 - `copy(x, y, tm, u, v, w, h)`<br>
 タイルマップ`tm`(0-7) の (`u`, `v`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーする
@@ -425,19 +425,19 @@ e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'], 1)`
 
 - `set_note(note)`<br>
 'CDEFGAB'+'#-'+'0123'または'R'の文字列で音程を設定する。大文字と小文字を区別せず、空白は無視される<br>
-例：`pyxel.sound(0).set_note('G2B-2D3R RF3F3F3')`
+例：`pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
 
 - `set_tone(tone)`<br>
 'TSPN'の文字列で音色を設定する。大文字と小文字を区別せず、空白は無視される<br>
-例：`pyxel.sound(0).set_tone('TTSS PPPN')`
+例：`pyxel.sound(0).set_tone("TTSS PPPN")`
 
 - `set_volume(volume)`<br>
 '01234567'の文字列で音量を設定する。大文字と小文字を区別せず、空白は無視される<br>
-例：`pyxel.sound(0).set_volume('7777 7531')`
+例：`pyxel.sound(0).set_volume("7777 7531")`
 
 - `set_effect(effect)`<br>
 'NSVF'の文字列でエフェクトを設定する。大文字と小文字を区別せず、空白は無視される<br>
-例：`pyxel.sound(0).set_effect('NFNF NVVS')`
+例：`pyxel.sound(0).set_effect("NFNF NVVS")`
 
 ### ミュージッククラス
 
