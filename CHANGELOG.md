@@ -3,7 +3,6 @@
 ## 1.1.3
 - Fixed how to handle missing files in the Pyxel Editor
 - Fixed how to quit the application
-- Improved the performance of the Image, Tilemap, Sound and Music APIs
 
 ## 1.1.2
 - Fixed the way to decide the automatic screen size
