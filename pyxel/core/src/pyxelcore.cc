@@ -75,13 +75,6 @@ void run(void (*update)(), void (*draw)()) {
 
 void quit() {
   s_system->Quit();
-  delete s_system;
-
-  s_system = NULL;
-  s_resource = NULL;
-  s_input = NULL;
-  s_graphics = NULL;
-  s_audio = NULL;
 }
 
 void _drop_file_getter(char* str, int32_t str_length) {
