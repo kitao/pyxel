@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.3
+- Fixed how to handle missing files in the Pyxel Editor
+
 ## 1.1.2
 - Fixed the way to decide the automatic screen size
 - Fixed the API description in the READMEs
