@@ -296,7 +296,7 @@ If `visible` is `True`, show the mouse cursor. If `False`, hide it. Even if the 
 
 - `image(img, [system])`<br>
 Operate the image bank `img`(0-2) (see the Image class). If `system` is `True`, the image bank 3 for system can be accessed<br>
-e.g. `pyxel.image(0).load(0, 0, 'title.png')`
+e.g. `pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
 Operate the tilemap `tm`(0-7) (see the Tilemap class)
@@ -371,7 +371,7 @@ Retrieve the data of the image at (`x`, `y`)
 
 - `set(x, y, data)`<br>
 Set the data of the image at (`x`, `y`) by a value or a list of strings<br>
-e.g. `pyxel.image(0).set(10, 10, ['1234', '5678', '9abc', 'defg'])`
+e.g. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
 
 - `load(x, y, filename)`<br>
 Read the png image from the directory of the execution script at (`x`, `y`)
@@ -395,7 +395,7 @@ Retrieve the data of the tilemap at (`x`, `y`)
 
 - `set(x, y, data, [refimg])`<br>
 Set the data of the tilemap at (`x`, `y`) by a value or a list of strings. If `refimg` is specified, the image bank referenced by the tilemap is also set<br>
-e.g. `pyxel.tilemap(0).set(0, 0, ['000102', '202122', 'a0a1a2', 'b0b1b2'], 1)`
+e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"], 1)`
 
 - `copy(x, y, tm, u, v, w, h)`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`)
@@ -422,19 +422,19 @@ Set a note, tone, volume, and effect with a string. If the tone, volume, and eff
 
 - `set_note(note)`<br>
 Set the note with a string made of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored<br>
-e.g. `pyxel.sound(0).set_note('G2B-2D3R RF3F3F3')`
+e.g. `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
 
 - `set_tone(tone)`<br>
 Set the tone with a string made of 'TSPN'. Case-insensitive and whitespace is ignored<br>
-e.g. `pyxel.sound(0).set_tone('TTSS PPPN')`
+e.g. `pyxel.sound(0).set_tone("TTSS PPPN")`
 
 - `set_volume(volume)`<br>
 Set the volume with a string made of '01234567'. Case-insensitive and whitespace is ignored<br>
-e.g. `pyxel.sound(0).set_volume('7777 7531')`
+e.g. `pyxel.sound(0).set_volume("7777 7531")`
 
 - `set_effect(effect)`<br>
 Set the effect with a string made of 'NSVF'. Case-insensitive and whitespace is ignored<br>
-e.g. `pyxel.sound(0).set_effect('NFNF NVVS')`
+e.g. `pyxel.sound(0).set_effect("NFNF NVVS")`
 
 ### Music Class
 
