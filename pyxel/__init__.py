@@ -447,6 +447,8 @@ frame_count: int = 0
 _drop_file: str = ""
 _image_bank: Dict[int, Image] = {}
 _tilemap_bank: Dict[int, Tilemap] = {}
+_sound_bank: Dict[int, Sound] = {}
+_music_bank: Dict[int, Music] = {}
 
 
 def _update_properties():  # type: ignore
@@ -477,9 +479,11 @@ def init(
 ) -> None:
     COLOR_COUNT = _get_constant_number("COLOR_COUNT")
 
-    global _image_bank, _tilemap_bank
+    global _image_bank, _tilemap_bank, _sound_bank, _music_bank
     _image_bank.clear()
     _tilemap_bank.clear()
+    _sound_bank.clear()
+    _music_bank.clear()
 
     core.init(
         int(width),
@@ -620,19 +624,19 @@ def mouse(visible: bool) -> None:
 # Graphics
 #
 def image(img: int, *, system: bool = False) -> Image:
-    if img in _image_bank:
-        core.image(int(img), int(system))
-    else:
-        _image_bank[img] = Image(core.image(int(img), int(system)))
+    obj = core.image(int(img), int(system))
+
+    if img not in _image_bank:
+        _image_bank[img] = Image(obj)
 
     return _image_bank[img]
 
 
 def tilemap(tm: int) -> Tilemap:
-    if tm in _tilemap_bank:
-        core.tilemap(int(tm))
-    else:
-        _tilemap_bank[tm] = Tilemap(core.tilemap(int(tm)))
+    obj = core.tilemap(int(tm))
+
+    if tm not in _tilemap_bank:
+        _tilemap_bank[tm] = Tilemap(obj)
 
     return _tilemap_bank[tm]
 
@@ -704,11 +708,21 @@ def text(x: int, y: int, s: str, col: int) -> None:
 # Audio
 #
 def sound(snd: int, *, system: bool = False) -> Sound:
-    return Sound(core.sound(int(snd), int(system)))
+    obj = core.sound(int(snd), int(system))
+
+    if snd not in _sound_bank:
+        _sound_bank[snd] = Sound(obj)
+
+    return _sound_bank[snd]
 
 
 def music(msc: int) -> Music:
-    return Music(core.music(int(msc)))
+    obj = core.music(int(msc))
+
+    if msc not in _music_bank:
+        _music_bank[msc] = Music(obj)
+
+    return _music_bank[msc]
 
 
 def play_pos(ch: int) -> int:
