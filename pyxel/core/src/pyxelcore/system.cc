@@ -26,8 +26,6 @@
 
 namespace pyxelcore {
 
-class PyxelQuit {};
-
 System::System(int32_t width,
                int32_t height,
                const std::string& caption,
@@ -68,6 +66,7 @@ System::System(int32_t width,
   palette_color_ = palette_color;
   fps_ = fps;
   frame_count_ = 0;
+  need_to_quit_ = false;
   is_update_suspended_ = false;
   drop_file_ = "";
   is_performance_monitor_on_ = false;
@@ -86,56 +85,53 @@ System::~System() {
 }
 
 void System::Run(void (*update)(), void (*draw)()) {
-  try {
-    uint32_t cur_time = SDL_GetTicks();
+  uint32_t cur_time = SDL_GetTicks();
+  double one_frame_time = 1000.0f / fps_;
+  double next_update_time = cur_time + one_frame_time;
 
-    double one_frame_time = 1000.0f / fps_;
-    double next_update_time = cur_time + one_frame_time;
+  fps_profiler_.Start();
 
+  UpdateFrame(update);
+  DrawFrame(draw);
+
+  while (!need_to_quit_) {
+    double sleep_time = next_update_time - SDL_GetTicks();
+
+    if (sleep_time > 0) {
+      SDL_Delay(static_cast<int32_t>(sleep_time / 2));
+      continue;
+    }
+
+    fps_profiler_.End();
     fps_profiler_.Start();
 
-    UpdateFrame(update);
-    DrawFrame(draw);
+    int32_t update_frame_count;
 
-    while (true) {
-      double sleep_time = next_update_time - SDL_GetTicks();
-
-      if (sleep_time > 0) {
-        SDL_Delay(static_cast<int32_t>(sleep_time / 2));
-        continue;
-      }
-
-      fps_profiler_.End();
-      fps_profiler_.Start();
-
-      int32_t update_frame_count;
-
-      if (is_update_suspended_) {
-        is_update_suspended_ = false;
-        update_frame_count = 1;
-        next_update_time = SDL_GetTicks() + one_frame_time;
-      } else {
-        update_frame_count =
-            Min(static_cast<int32_t>(-sleep_time / one_frame_time),
-                MAX_FRAME_SKIP_COUNT) +
-            1;
-        next_update_time += one_frame_time * update_frame_count;
-      }
-
-      for (int32_t i = 0; i < update_frame_count; i++) {
-        frame_count_++;
-        UpdateFrame(update);
-      }
-
-      DrawFrame(draw);
+    if (is_update_suspended_) {
+      is_update_suspended_ = false;
+      update_frame_count = 1;
+      next_update_time = SDL_GetTicks() + one_frame_time;
+    } else {
+      update_frame_count =
+          Min(static_cast<int32_t>(-sleep_time / one_frame_time),
+              MAX_FRAME_SKIP_COUNT) +
+          1;
+      next_update_time += one_frame_time * update_frame_count;
     }
-  } catch (PyxelQuit) {
-    return;
+
+    for (int32_t i = 0; i < update_frame_count; i++) {
+      frame_count_++;
+      UpdateFrame(update);
+    }
+
+    DrawFrame(draw);
   }
+
+  delete this;
 }
 
 void System::Quit() {
-  throw PyxelQuit();
+  need_to_quit_ = true;
 }
 
 void System::SetCaption(const std::string& caption) {

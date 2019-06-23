@@ -50,6 +50,7 @@ class System {
 
   int32_t fps_;
   int32_t frame_count_;
+  bool need_to_quit_;
   bool is_update_suspended_;
   std::string drop_file_;
   pyxelcore::PaletteColor palette_color_;
