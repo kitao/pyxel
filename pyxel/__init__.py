@@ -3,7 +3,7 @@ import os
 import sys
 from collections import MutableSequence
 from ctypes import CFUNCTYPE, c_char_p, c_int32, cast, create_string_buffer
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, List, Optional
 
 import numpy as np  # type: ignore
 
@@ -445,10 +445,6 @@ width: int = 0
 height: int = 0
 frame_count: int = 0
 _drop_file: str = ""
-_image_bank: Dict[int, Image] = {}
-_tilemap_bank: Dict[int, Tilemap] = {}
-_sound_bank: Dict[int, Sound] = {}
-_music_bank: Dict[int, Music] = {}
 
 
 def _update_properties():  # type: ignore
@@ -478,12 +474,6 @@ def init(
     border_color: int = DEFAULT_BORDER_COLOR
 ) -> None:
     COLOR_COUNT = _get_constant_number("COLOR_COUNT")
-
-    global _image_bank, _tilemap_bank, _sound_bank, _music_bank
-    _image_bank.clear()
-    _tilemap_bank.clear()
-    _sound_bank.clear()
-    _music_bank.clear()
 
     core.init(
         int(width),
@@ -624,21 +614,11 @@ def mouse(visible: bool) -> None:
 # Graphics
 #
 def image(img: int, *, system: bool = False) -> Image:
-    obj = core.image(int(img), int(system))
-
-    if img not in _image_bank:
-        _image_bank[img] = Image(obj)
-
-    return _image_bank[img]
+    return Image(core.image(int(img), int(system)))
 
 
 def tilemap(tm: int) -> Tilemap:
-    obj = core.tilemap(int(tm))
-
-    if tm not in _tilemap_bank:
-        _tilemap_bank[tm] = Tilemap(obj)
-
-    return _tilemap_bank[tm]
+    return Tilemap(core.tilemap(int(tm)))
 
 
 def clip(
@@ -708,21 +688,11 @@ def text(x: int, y: int, s: str, col: int) -> None:
 # Audio
 #
 def sound(snd: int, *, system: bool = False) -> Sound:
-    obj = core.sound(int(snd), int(system))
-
-    if snd not in _sound_bank:
-        _sound_bank[snd] = Sound(obj)
-
-    return _sound_bank[snd]
+    return Sound(core.sound(int(snd), int(system)))
 
 
 def music(msc: int) -> Music:
-    obj = core.music(int(msc))
-
-    if msc not in _music_bank:
-        _music_bank[msc] = Music(obj)
-
-    return _music_bank[msc]
+    return Music(core.music(int(msc)))
 
 
 def play_pos(ch: int) -> int:
