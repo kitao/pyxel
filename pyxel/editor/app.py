@@ -36,10 +36,8 @@ class App(Widget):
         )
         pyxel.mouse(True)
 
-        try:
+        if os.path.exists(resource_file):
             pyxel.load(resource_file)
-        except FileNotFoundError:
-            pass
 
         if ext == ".pyxel":
             resource_file = root + RESOURCE_FILE_EXTENSION
