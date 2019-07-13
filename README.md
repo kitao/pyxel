@@ -393,9 +393,9 @@ The image bank referenced by the tilemap
 - `get(x, y)`<br>
 Retrieve the data of the tilemap at (`x`, `y`)
 
-- `set(x, y, data, [refimg])`<br>
-Set the data of the tilemap at (`x`, `y`) by a value or a list of strings. If `refimg` is specified, the image bank referenced by the tilemap is also set<br>
-e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"], 1)`
+- `set(x, y, data)`<br>
+Set the data of the tilemap at (`x`, `y`) by a value or a list of strings.<br>
+e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `copy(x, y, tm, u, v, w, h)`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`)
