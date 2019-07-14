@@ -225,12 +225,20 @@ void System::DrawMouseCursor() {
     return;
   }
 
+  int32_t mouse_x = input_->MouseX();
+  int32_t mouse_y = input_->MouseY();
+
+  if (mouse_x < 0 || mouse_x >= window_->ScreenWidth() || mouse_y < 0 ||
+      mouse_y >= window_->ScreenHeight()) {
+    return;
+  }
+
   STORE_CLIP_AREA_AND_PALETTE();
 
   graphics_->ResetPalette();
-  graphics_->DrawImage(input_->MouseX(), input_->MouseY(),
-                       IMAGE_BANK_FOR_SYSTEM, MOUSE_CURSOR_X, MOUSE_CURSOR_Y,
-                       MOUSE_CURSOR_WIDTH, MOUSE_CURSOR_HEIGHT, 1);
+  graphics_->DrawImage(mouse_x, mouse_y, IMAGE_BANK_FOR_SYSTEM, MOUSE_CURSOR_X,
+                       MOUSE_CURSOR_Y, MOUSE_CURSOR_WIDTH, MOUSE_CURSOR_HEIGHT,
+                       1);
 
   RESTORE_CLIP_AREA_AND_PALETTE();
 }
