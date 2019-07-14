@@ -4,6 +4,7 @@ from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 from .constants import (
     EDITOR_IMAGE_X,
     EDITOR_IMAGE_Y,
+    IMAGE_BANK_FOR_SYSTEM,
     MAX_MUSIC_LENGTH,
     MUSIC_BANK_COUNT,
     MUSIC_CHANNEL_COUNT,
@@ -30,13 +31,13 @@ class MusicEditor(Editor):
         )
         self._music_picker = NumberPicker(self, 45, 17, 0, MUSIC_BANK_COUNT - 1, 0)
         self._play_button = ImageButton(
-            self, 185, 17, 3, EDITOR_IMAGE_X + 126, EDITOR_IMAGE_Y
+            self, 185, 17, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X + 126, EDITOR_IMAGE_Y
         )
         self._stop_button = ImageButton(
-            self, 195, 17, 3, EDITOR_IMAGE_X + 135, EDITOR_IMAGE_Y
+            self, 195, 17, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X + 135, EDITOR_IMAGE_Y
         )
         self._loop_button = ImageToggleButton(
-            self, 205, 17, 3, EDITOR_IMAGE_X + 144, EDITOR_IMAGE_Y
+            self, 205, 17, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X + 144, EDITOR_IMAGE_Y
         )
         self._music_field = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
         self._sound_selector = SoundSelector(self)
