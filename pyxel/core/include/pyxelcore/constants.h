@@ -21,7 +21,7 @@ namespace pyxelcore {
 //
 // Common
 //
-const std::string VERSION = "1.1.3";
+const std::string VERSION = "1.1.4";
 const int32_t COLOR_COUNT = 16;
 const std::string WHITESPACE = " \t\v\r\n";
 
@@ -345,10 +345,12 @@ const SDL_GameControllerButton SDL_BUTTON_TABLE[SDL_BUTTON_COUNT] = {
 //
 // Graphics
 //
-const int32_t IMAGE_BANK_COUNT = 4;
-const int32_t IMAGE_BANK_WIDTH = 256;
-const int32_t IMAGE_BANK_HEIGHT = 256;
-const int32_t IMAGE_BANK_FOR_SYSTEM = IMAGE_BANK_COUNT - 1;
+const int32_t IMAGE_BANK_COUNT = 5;
+const int32_t USER_IMAGE_BANK_COUNT = IMAGE_BANK_COUNT - 2;
+const int32_t IMAGE_BANK_FOR_SYSTEM = IMAGE_BANK_COUNT - 2;
+const int32_t IMAGE_BANK_FOR_SCREEN = IMAGE_BANK_COUNT - 1;
+const int32_t IMAGE_BANK_WIDTH = MAX_SCREEN_SIZE;
+const int32_t IMAGE_BANK_HEIGHT = MAX_SCREEN_SIZE;
 
 const int32_t TILEMAP_BANK_COUNT = 8;
 const int32_t TILEMAP_BANK_WIDTH = 256;
@@ -401,6 +403,7 @@ const int32_t AUDIO_ONE_SPEED = AUDIO_SAMPLE_RATE / 120;
 const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (4 * 7);
 
 const int32_t SOUND_BANK_COUNT = 65;
+const int32_t USER_SOUND_BANK_COUNT = SOUND_BANK_COUNT - 1;
 const int32_t SOUND_BANK_FOR_SYSTEM = SOUND_BANK_COUNT - 1;
 
 const int32_t MUSIC_BANK_COUNT = 8;
