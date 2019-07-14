@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.4
+- Fixed the index check of the playm API
+- Enabled to access the screen as the image bank #4
+
 ## 1.1.3
 - Fixed how to handle missing files in the Pyxel Editor
 - Fixed how to quit the application
