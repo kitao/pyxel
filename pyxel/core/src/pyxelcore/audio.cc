@@ -93,7 +93,7 @@ void Audio::PlaySound(int32_t channel,
 }
 
 void Audio::PlayMusic(int32_t music_index, bool loop) {
-  if (music_index < 0 || music_index >= MUSIC_CHANNEL_COUNT) {
+  if (music_index < 0 || music_index >= MUSIC_BANK_COUNT) {
     PYXEL_ERROR("invalid music index");
   }
 
