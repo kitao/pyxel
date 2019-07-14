@@ -15,7 +15,7 @@ class Graphics {
 
   const Rectangle& ClipArea() const { return clip_area_; }
   const pyxelcore::PaletteTable& PaletteTable() const { return palette_table_; }
-  Image* ScreenImage() const { return screen_image_; }
+  Image* ScreenImage() const { return image_bank_[IMAGE_BANK_FOR_SCREEN]; }
 
   Image* GetImageBank(int32_t image_index, bool system = false) const;
   Tilemap* GetTilemapBank(int32_t tilemap_index) const;
@@ -58,12 +58,11 @@ class Graphics {
   void DrawText(int32_t x, int32_t y, const char* text, int32_t color);
 
  private:
-  Image* screen_image_;
+  Image** image_bank_;
+  Tilemap** tilemap_bank_;
   int32_t screen_width_;
   int32_t screen_height_;
   int32_t** screen_data_;
-  Image** image_bank_;
-  Tilemap** tilemap_bank_;
   Rectangle clip_area_;
   pyxelcore::PaletteTable palette_table_;
 
@@ -78,7 +77,7 @@ inline Image* Graphics::GetImageBank(int32_t image_index, bool system) const {
     PYXEL_ERROR("invalid image index");
   }
 
-  if (image_index == IMAGE_BANK_FOR_SYSTEM && !system) {
+  if (image_index >= USER_IMAGE_BANK_COUNT && !system) {
     PYXEL_ERROR("access to image bank for system");
   }
 

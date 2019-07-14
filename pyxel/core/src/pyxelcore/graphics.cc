@@ -6,11 +6,6 @@
 namespace pyxelcore {
 
 Graphics::Graphics(int32_t width, int32_t height) {
-  screen_image_ = new Image(width, height);
-  screen_width_ = screen_image_->Width();
-  screen_height_ = screen_image_->Height();
-  screen_data_ = screen_image_->Data();
-
   image_bank_ = new Image*[IMAGE_BANK_COUNT];
   for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
     image_bank_[i] = new Image(IMAGE_BANK_WIDTH, IMAGE_BANK_HEIGHT);
@@ -21,6 +16,10 @@ Graphics::Graphics(int32_t width, int32_t height) {
     tilemap_bank_[i] = new Tilemap(TILEMAP_BANK_WIDTH, TILEMAP_BANK_HEIGHT);
   }
 
+  screen_width_ = width;
+  screen_height_ = height;
+  screen_data_ = image_bank_[IMAGE_BANK_FOR_SCREEN]->Data();
+
   SetupMouseCursor();
   SetupFont();
 
@@ -30,8 +29,6 @@ Graphics::Graphics(int32_t width, int32_t height) {
 }
 
 Graphics::~Graphics() {
-  delete screen_image_;
-
   for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
     delete image_bank_[i];
   }
@@ -44,15 +41,15 @@ Graphics::~Graphics() {
 }
 
 void Graphics::ResetClipArea() {
-  clip_area_ = screen_image_->Rectangle();
+  clip_area_ = Rectangle(0, 0, screen_width_, screen_height_);
 }
 
 void Graphics::SetClipArea(int32_t x,
                            int32_t y,
                            int32_t width,
                            int32_t height) {
-  clip_area_ =
-      Rectangle(x, y, width, height).Intersect(screen_image_->Rectangle());
+  clip_area_ = Rectangle(0, 0, screen_width_, screen_height_)
+                   .Intersect(Rectangle(x, y, width, height));
 }
 
 void Graphics::ResetPalette() {

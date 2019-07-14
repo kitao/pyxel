@@ -36,7 +36,7 @@ inline Sound* Audio::GetSoundBank(int32_t sound_index, bool system) const {
     PYXEL_ERROR("invalid sound index");
   }
 
-  if (sound_index == SOUND_BANK_FOR_SYSTEM && !system) {
+  if (sound_index >= USER_SOUND_BANK_COUNT && !system) {
     PYXEL_ERROR("access to sound bank for system");
   }
 
