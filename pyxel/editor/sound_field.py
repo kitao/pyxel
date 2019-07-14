@@ -2,7 +2,12 @@ import pyxel
 from pyxel.ui import Widget
 from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_SOUND_LENGTH
+from .constants import (
+    EDITOR_IMAGE_X,
+    EDITOR_IMAGE_Y,
+    IMAGE_BANK_FOR_SYSTEM,
+    MAX_SOUND_LENGTH,
+)
 
 tone_key_table = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N]
 effect_key_table = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
@@ -82,7 +87,15 @@ class SoundField(Widget):
         pyxel.text(self.x - 13, self.y + 1, "TON", 6)
         pyxel.text(self.x - 13, self.y + 9, "VOL", 6)
         pyxel.text(self.x - 13, self.y + 17, "EFX", 6)
-        pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 79, 193, 23)
+        pyxel.blt(
+            self.x,
+            self.y,
+            IMAGE_BANK_FOR_SYSTEM,
+            EDITOR_IMAGE_X,
+            EDITOR_IMAGE_Y + 79,
+            193,
+            23,
+        )
 
         data_str = []
         data_str.append("".join(["TSPN"[v] for v in self.parent.get_data(1)]))
