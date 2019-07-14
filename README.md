@@ -295,7 +295,7 @@ If `visible` is `True`, show the mouse cursor. If `False`, hide it. Even if the 
 ### Graphics
 
 - `image(img, [system])`<br>
-Operate the image bank `img`(0-2) (see the Image class). If `system` is `True`, the image bank 3 for system can be accessed<br>
+Operate the image bank `img`(0-2) (see the Image class). If `system` is `True`, the image bank for system can be accessed. 3 is for the font and resource editor. 4 is for the display screen<br>
 e.g. `pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
