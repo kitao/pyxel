@@ -35,6 +35,9 @@ void Input::Update(const Window* window, int32_t frame_count) {
   mouse_y_ = (mouse_y_ - (window->WindowY() + window->ScreenY())) /
              window->ScreenScale();
 
+  SDL_ShowCursor(mouse_x_ < 0 || mouse_x_ >= window->ScreenWidth() ||
+                 mouse_y_ < 0 || mouse_y_ >= window->ScreenHeight());
+
   const uint8_t* sdl_key_state = SDL_GetKeyboardState(NULL);
 
   for (int32_t i = 0; i < SDL_KEY_COUNT; i++) {
