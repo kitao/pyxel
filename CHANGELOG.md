@@ -4,6 +4,7 @@
 - Fixed the index check of the playm API
 - Enabled to access the screen as the image bank #4
 - Changed the area to display the mouse cursor
+- Updated the READMEs
 
 ## 1.1.3
 - Fixed how to handle missing files in the Pyxel Editor
