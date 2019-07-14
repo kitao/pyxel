@@ -3,7 +3,7 @@ import os
 import sys
 from collections import MutableSequence
 from ctypes import CFUNCTYPE, c_char_p, c_int32, cast, create_string_buffer
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 import numpy as np  # type: ignore
 
@@ -613,12 +613,26 @@ def mouse(visible: bool) -> None:
 #
 # Graphics
 #
+_image_bank: Dict[int, Image] = {}
+_tilemap_bank: Dict[int, Tilemap] = {}
+
+
 def image(img: int, *, system: bool = False) -> Image:
-    return Image(core.image(int(img), int(system)))
+    obj = core.image(int(img), int(system))
+
+    if img not in _image_bank:
+        _image_bank[img] = Image(obj)
+
+    return _image_bank[img]
 
 
 def tilemap(tm: int) -> Tilemap:
-    return Tilemap(core.tilemap(int(tm)))
+    obj = core.tilemap(int(tm))
+
+    if tm not in _tilemap_bank:
+        _tilemap_bank[tm] = Tilemap(obj)
+
+    return _tilemap_bank[tm]
 
 
 def clip(
