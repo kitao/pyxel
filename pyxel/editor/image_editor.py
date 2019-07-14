@@ -3,7 +3,13 @@ import os.path
 import pyxel
 from pyxel.ui import ColorPicker, NumberPicker, RadioButton
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, IMAGE_BANK_COUNT, TOOL_PENCIL
+from .constants import (
+    EDITOR_IMAGE_X,
+    EDITOR_IMAGE_Y,
+    IMAGE_BANK_FOR_SYSTEM,
+    TOOL_PENCIL,
+    USER_IMAGE_BANK_COUNT,
+)
 from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
@@ -17,9 +23,18 @@ class ImageEditor(Editor):
         self._image_panel = ImagePanel(self, is_tilemap_mode=False)
         self._color_picker = ColorPicker(self, 11, 156, 7, with_shadow=False)
         self._tool_button = RadioButton(
-            self, 81, 161, 3, EDITOR_IMAGE_X + 63, EDITOR_IMAGE_Y, 7, TOOL_PENCIL
+            self,
+            81,
+            161,
+            IMAGE_BANK_FOR_SYSTEM,
+            EDITOR_IMAGE_X + 63,
+            EDITOR_IMAGE_Y,
+            7,
+            TOOL_PENCIL,
         )
-        self._image_picker = NumberPicker(self, 192, 161, 0, IMAGE_BANK_COUNT - 2, 0)
+        self._image_picker = NumberPicker(
+            self, 192, 161, 0, USER_IMAGE_BANK_COUNT - 1, 0
+        )
 
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)

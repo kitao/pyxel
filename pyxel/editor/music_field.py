@@ -1,7 +1,12 @@
 import pyxel
 from pyxel.ui import Widget
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_MUSIC_LENGTH
+from .constants import (
+    EDITOR_IMAGE_X,
+    EDITOR_IMAGE_Y,
+    IMAGE_BANK_FOR_SYSTEM,
+    MAX_MUSIC_LENGTH,
+)
 
 
 class MusicField(Widget):
@@ -38,7 +43,14 @@ class MusicField(Widget):
 
         pyxel.text(self.x + 5, self.y + 8, "CH{}".format(self._ch), 6)
         pyxel.blt(
-            self.x + 20, self.y + 1, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 102, 191, 19, 6
+            self.x + 20,
+            self.y + 1,
+            IMAGE_BANK_FOR_SYSTEM,
+            EDITOR_IMAGE_X,
+            EDITOR_IMAGE_Y + 102,
+            191,
+            19,
+            6,
         )
 
         data = self.data

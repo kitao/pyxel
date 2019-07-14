@@ -2,7 +2,12 @@ import pyxel
 from pyxel.ui import Widget
 from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_SOUND_LENGTH
+from .constants import (
+    EDITOR_IMAGE_X,
+    EDITOR_IMAGE_Y,
+    IMAGE_BANK_FOR_SYSTEM,
+    MAX_SOUND_LENGTH,
+)
 
 
 class PianoRoll(Widget):
@@ -129,9 +134,25 @@ class PianoRoll(Widget):
                 x = self.parent.field_cursor.x * 4 + 31
                 pyxel.rect(x, 25, 3, 123, 1)
 
-        pyxel.blt(self.x, self.y, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 7, 193, 72, 6)
         pyxel.blt(
-            self.x, self.y + 72, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 7, 193, 51, 6
+            self.x,
+            self.y,
+            IMAGE_BANK_FOR_SYSTEM,
+            EDITOR_IMAGE_X,
+            EDITOR_IMAGE_Y + 7,
+            193,
+            72,
+            6,
+        )
+        pyxel.blt(
+            self.x,
+            self.y + 72,
+            IMAGE_BANK_FOR_SYSTEM,
+            EDITOR_IMAGE_X,
+            EDITOR_IMAGE_Y + 7,
+            193,
+            51,
+            6,
         )
 
         for i, note in enumerate(self.parent.get_data(0)):
