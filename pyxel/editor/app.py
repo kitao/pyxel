@@ -16,6 +16,7 @@ from .constants import (
     EDITOR_IMAGE_NAME,
     EDITOR_IMAGE_X,
     EDITOR_IMAGE_Y,
+    IMAGE_BANK_FOR_SYSTEM,
     RESOURCE_FILE_EXTENSION,
 )
 from .image_editor import ImageEditor
@@ -52,16 +53,16 @@ class App(Widget):
             MusicEditor(self),
         ]
         self._editor_button = RadioButton(
-            self, 1, 1, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y, 4, 0
+            self, 1, 1, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X, EDITOR_IMAGE_Y, 4, 0
         )
         self._undo_button = ImageButton(
-            self, 48, 1, 3, EDITOR_IMAGE_X + 36, EDITOR_IMAGE_Y
+            self, 48, 1, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X + 36, EDITOR_IMAGE_Y
         )
         self._redo_button = ImageButton(
-            self, 57, 1, 3, EDITOR_IMAGE_X + 45, EDITOR_IMAGE_Y
+            self, 57, 1, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X + 45, EDITOR_IMAGE_Y
         )
         self._save_button = ImageButton(
-            self, 75, 1, 3, EDITOR_IMAGE_X + 54, EDITOR_IMAGE_Y
+            self, 75, 1, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X + 54, EDITOR_IMAGE_Y
         )
         self.help_message = ""
 
@@ -91,7 +92,9 @@ class App(Widget):
         image_file = os.path.join(
             os.path.dirname(__file__), "assets", EDITOR_IMAGE_NAME
         )
-        pyxel.image(3, system=True).load(EDITOR_IMAGE_X, EDITOR_IMAGE_Y, image_file)
+        pyxel.image(IMAGE_BANK_FOR_SYSTEM, system=True).load(
+            EDITOR_IMAGE_X, EDITOR_IMAGE_Y, image_file
+        )
 
         self._set_editor(0)
 
