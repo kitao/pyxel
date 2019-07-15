@@ -66,9 +66,13 @@ System::System(int32_t width,
   palette_color_ = palette_color;
   fps_ = fps;
   frame_count_ = 0;
+  one_frame_time_ = 1000.0f / fps_;
+  next_update_time_ = SDL_GetTicks();
   is_update_suspended_ = false;
   drop_file_ = "";
   is_performance_monitor_on_ = false;
+
+  fps_profiler_.Start();
 }
 
 System::~System() {
@@ -84,22 +88,13 @@ System::~System() {
 }
 
 void System::Run(void (*update)(), void (*draw)()) {
-  uint32_t cur_time = SDL_GetTicks();
-  double one_frame_time = 1000.0f / fps_;
-  double next_update_time = cur_time + one_frame_time;
-
-  fps_profiler_.Start();
+  next_update_time_ = SDL_GetTicks() + one_frame_time_;
 
   UpdateFrame(update);
   DrawFrame(draw);
 
   while (true) {
-    double sleep_time = next_update_time - SDL_GetTicks();
-
-    if (sleep_time > 0) {
-      SDL_Delay(static_cast<int32_t>(sleep_time / 2));
-      continue;
-    }
+    double sleep_time = WaitForUpdateTime();
 
     fps_profiler_.End();
     fps_profiler_.Start();
@@ -109,13 +104,13 @@ void System::Run(void (*update)(), void (*draw)()) {
     if (is_update_suspended_) {
       is_update_suspended_ = false;
       update_frame_count = 1;
-      next_update_time = SDL_GetTicks() + one_frame_time;
+      next_update_time_ = SDL_GetTicks() + one_frame_time_;
     } else {
       update_frame_count =
-          Min(static_cast<int32_t>(-sleep_time / one_frame_time),
+          Min(static_cast<int32_t>(-sleep_time / one_frame_time_),
               MAX_FRAME_SKIP_COUNT) +
           1;
-      next_update_time += one_frame_time * update_frame_count;
+      next_update_time_ += one_frame_time_ * update_frame_count;
     }
 
     for (int32_t i = 0; i < update_frame_count; i++) {
@@ -134,8 +129,32 @@ void System::Quit() {
   exit(0);
 }
 
+void System::FlipScreen() {
+  WaitForUpdateTime();
+  next_update_time_ += one_frame_time_;
+
+  fps_profiler_.End();
+  fps_profiler_.Start();
+
+  frame_count_++;
+  UpdateFrame(nullptr);
+  DrawFrame(nullptr);
+}
+
 void System::SetCaption(const std::string& caption) {
   window_->SetCaption(caption);
+}
+
+int32_t System::WaitForUpdateTime() {
+  while (true) {
+    double sleep_time = next_update_time_ - SDL_GetTicks();
+
+    if (sleep_time <= 0) {
+      return sleep_time;
+    }
+
+    SDL_Delay(static_cast<int32_t>(sleep_time / 2));
+  }
 }
 
 void System::UpdateFrame(void (*update)()) {

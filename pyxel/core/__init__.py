@@ -52,6 +52,7 @@ _setup_api(
 )
 _setup_api("run", None, [CFUNCTYPE(None), CFUNCTYPE(None)])
 _setup_api("quit", None, [])
+_setup_api("flip", None, [])
 
 _setup_api("_drop_file_getter", None, [c_char_p, c_int32])
 _setup_api("_caption", None, [c_char_p])
