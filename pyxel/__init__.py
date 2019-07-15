@@ -475,6 +475,11 @@ def init(
 ) -> None:
     COLOR_COUNT = _get_constant_number("COLOR_COUNT")
 
+    _image_bank.clear()
+    _tilemap_bank.clear()
+    _sound_bank.clear()
+    _music_bank.clear()
+
     core.init(
         int(width),
         int(height),
@@ -627,10 +632,8 @@ def image(img: int, *, system: bool = False) -> Image:
 
 
 def tilemap(tm: int) -> Tilemap:
-    obj = core.tilemap(int(tm))
-
     if tm not in _tilemap_bank:
-        _tilemap_bank[tm] = Tilemap(obj)
+        _tilemap_bank[tm] = Tilemap(core.tilemap(int(tm)))
 
     return _tilemap_bank[tm]
 
@@ -701,12 +704,24 @@ def text(x: int, y: int, s: str, col: int) -> None:
 #
 # Audio
 #
+_sound_bank: Dict[int, Sound] = {}
+_music_bank: Dict[int, Music] = {}
+
+
 def sound(snd: int, *, system: bool = False) -> Sound:
-    return Sound(core.sound(int(snd), int(system)))
+    obj = core.sound(int(snd), int(system))
+
+    if snd not in _sound_bank:
+        _sound_bank[snd] = Sound(obj)
+
+    return _sound_bank[snd]
 
 
 def music(msc: int) -> Music:
-    return Music(core.music(int(msc)))
+    if msc not in _music_bank:
+        _music_bank[msc] = Music(core.music(int(msc)))
+
+    return _music_bank[msc]
 
 
 def play_pos(ch: int) -> int:
