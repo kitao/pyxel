@@ -66,20 +66,26 @@ class SoundSelector(Widget):
     def __on_mouse_hover(self, x, y):
         self.parent.help_message = "PREVIEW:HOVER INSERT:CLICK"
 
-        if self.parent.is_playing:
-            return
-
-        self._preview_sound = self._hit_sound_button(x, y)
-
     def __on_update(self):
         if self.parent.is_playing:
             return
 
-        if self._preview_sound != self._last_preview_sound:
-            if self._preview_sound is None:
-                pyxel.stop(0)
-            else:
+        mx = pyxel.mouse_x
+        my = pyxel.mouse_y
+
+        if self.is_hit(mx, my):
+            self._preview_sound = self._hit_sound_button(mx, my)
+
+            if (
+                self._preview_sound is not None
+                and self._preview_sound != self._last_preview_sound
+            ):
                 pyxel.play(0, self._preview_sound, loop=True)
+        else:
+            self._preview_sound = None
+
+        if self._preview_sound is None and pyxel.play_pos(0) >= 0:
+            pyxel.stop(0)
 
         self._last_preview_sound = self._preview_sound
 

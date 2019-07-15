@@ -3,7 +3,8 @@
 ## 1.1.5
 - Optimized the sound and music APIs
 - Added the color class for the default palette
-- Added the shortcut to select a color to the resource editor
+- Added the shortcut to select a color to the Image Editor
+- Fixed the sound preview bug of the Sound Editor
 
 ## 1.1.4
 - Fixed the index check of the playm API
@@ -26,7 +27,7 @@
 - Added the description of the included libraries to the READMEs
 - Updated the screenshots of the example #3 and #4
 - Fixed game controller input
-- Improved the performance of the tilemap editor
+- Improved the performance of the Tilemap Editor
 
 ## 1.1.1
 - fixed the install_pyxel_examples script to include .pyxres file
@@ -127,7 +128,7 @@
 ## 0.8.9
 - Fixed the tilemap to allow the tiles of #256 or higher
 - Updated the screenshots of the Pyxel Editor
-- Fixed the cursor movement of the sound and music editors
+- Fixed the cursor movement of the Sound and Music Editors
 - Changed the caption of the example #2
 - Renamed the example #6
 - Fixed the error when saving long animated GIF
@@ -140,16 +141,16 @@
 - Fixed the piano keyboard hilights correctly
 - Changed the default sound volume to 7
 - Changed the default sound speed to 30
-- Fixed the sound button bug of the sound editor
+- Fixed the sound button bug of the Sound Editor
 
 ## 0.8.6
-- Changed the operation method of the sound editor
+- Changed the operation method of the Sound Editor
 - Changed to allow sound of length 0
-- Implemented the music editor
+- Implemented the Music Editor
 - Changed the example #2 to use resource file
 
 ## 0.8.5
-- Implemented the undo function of the sound editor
+- Implemented the undo function of the Sound Editor
 - Changed the click tolerance time
 - Removed the length limitation of the sound
 - Added the music and playm commands
@@ -165,7 +166,7 @@
 - Added the system option to the sound command
 - Refined the help message of the Pyxel Editor
 - Added the ToggleButton and ImageToggleButton
-- Implemented the sound editor except the undo function
+- Implemented the Sound Editor except the undo function
 
 ## 0.8.3
 - Fixed the right click bug in the Tilemap Editor
@@ -185,7 +186,7 @@
 - Added the run_with_profiler command
 - Added the Tilemap class
 - Added the bltm command
-- Implemented the tilemap editor
+- Implemented the Tilemap Editor
 - Added the standard widgets
 - Changed the usage of the Pyxel Editor
 - Added the help messages to the Pyxel Editor
@@ -209,7 +210,7 @@
 
 ## 0.7.11
 - Changed the Japanese link name in the READMEs
-- Implemented the widget class for the resource editor
+- Implemented the widget class for the Pyxel Editor
 - Added the example #6 by ttrkaya
 - Renamed the constant variable for the max screen size
 - Changed to set the defualt scale automatically
