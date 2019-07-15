@@ -42,6 +42,7 @@ PYXEL_API void init(int32_t width,
                     int32_t border_color);
 PYXEL_API void run(void (*update)(), void (*draw)());
 PYXEL_API void quit();
+PYXEL_API void flip();
 
 PYXEL_API void _drop_file_getter(char* str, int32_t str_length);
 PYXEL_API void _caption(const char* caption);
