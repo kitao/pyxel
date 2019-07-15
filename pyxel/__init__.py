@@ -189,6 +189,31 @@ GAMEPAD_2_LEFT: int = _get_constant_number("GAMEPAD_2_LEFT")
 
 
 #
+# Color class
+#
+class Color:
+    BLACK = 0
+    NAVY = 1
+    PERPLE = 2
+    GREEN = 3
+    BROWN = 4
+    DARKGRAY = 5
+    LIGHTGRAY = 6
+    WHITE = 7
+    RED = 8
+    ORANGE = 9
+    YELLOW = 10
+    LIME = 11
+    CYAN = 12
+    STEELBLUE = 13
+    PINK = 14
+    PEACH = 15
+
+    def __init__(self):
+        pass
+
+
+#
 # Image class
 #
 class Image:
