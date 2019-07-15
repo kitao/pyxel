@@ -16,6 +16,17 @@ from .image_panel import ImagePanel
 
 
 class ImageEditor(Editor):
+    _COLOR_BUTTONS = (
+        pyxel.KEY_1,
+        pyxel.KEY_2,
+        pyxel.KEY_3,
+        pyxel.KEY_4,
+        pyxel.KEY_5,
+        pyxel.KEY_6,
+        pyxel.KEY_7,
+        pyxel.KEY_8,
+    )
+
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -41,6 +52,9 @@ class ImageEditor(Editor):
         self.add_event_handler("drop", self.__on_drop)
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
+        self._color_picker.add_event_handler(
+            "mouse_hover", self.__on_color_picker_mouse_hover
+        )
         self.add_tool_button_help(self._tool_button)
         self.add_number_picker_help(self._image_picker)
 
@@ -110,7 +124,18 @@ class ImageEditor(Editor):
     def __on_update(self):
         self.check_tool_button_shortcuts()
 
+        for btn in self._COLOR_BUTTONS:
+            if pyxel.btnp(btn):
+                col = btn - pyxel.KEY_1
+                if pyxel.btn(pyxel.KEY_SHIFT):
+                    col += 8
+                self._color_picker.value = col
+                break
+
     def __on_draw(self):
         self.draw_panel(11, 156, 136, 17)
         self.draw_panel(157, 156, 72, 17)
         pyxel.text(170, 162, "IMAGE", 6)
+
+    def __on_color_picker_mouse_hover(self, x, y):
+        self.help_message = "COLOR:1-8/SHIFT+1-8"
