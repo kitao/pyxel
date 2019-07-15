@@ -148,7 +148,10 @@ void System::UpdateFrame(void (*update)()) {
   drop_file_ = window_->GetDropFile();
   input_->Update(window_, frame_count_);
   CheckSpecialInput();
-  update();
+
+  if (update) {
+    update();
+  }
 
   update_profiler_.End();
 }
@@ -186,7 +189,10 @@ void System::CheckSpecialInput() {
 void System::DrawFrame(void (*draw)()) {
   draw_profiler_.Start();
 
-  draw();
+  if (draw) {
+    draw();
+  }
+
   DrawPerformanceMonitor();
   DrawMouseCursor();
 
