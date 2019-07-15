@@ -2,6 +2,7 @@
 
 ## 1.1.5
 - Optimized the sound and music APIs
+- Added the color class for the default palette
 
 ## 1.1.4
 - Fixed the index check of the playm API

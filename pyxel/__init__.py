@@ -189,28 +189,25 @@ GAMEPAD_2_LEFT: int = _get_constant_number("GAMEPAD_2_LEFT")
 
 
 #
-# Color class
+# Color class for the default palette
 #
 class Color:
-    BLACK = 0
-    NAVY = 1
-    PERPLE = 2
-    GREEN = 3
-    BROWN = 4
-    DARKGRAY = 5
-    LIGHTGRAY = 6
-    WHITE = 7
-    RED = 8
-    ORANGE = 9
-    YELLOW = 10
-    LIME = 11
-    CYAN = 12
-    STEELBLUE = 13
-    PINK = 14
-    PEACH = 15
-
-    def __init__(self):
-        pass
+    BLACK: int = 0
+    NAVY: int = 1
+    PERPLE: int = 2
+    GREEN: int = 3
+    BROWN: int = 4
+    DARKGRAY: int = 5
+    LIGHTGRAY: int = 6
+    WHITE: int = 7
+    RED: int = 8
+    ORANGE: int = 9
+    YELLOW: int = 10
+    LIME: int = 11
+    CYAN: int = 12
+    STEELBLUE: int = 13
+    PINK: int = 14
+    PEACH: int = 15
 
 
 #
