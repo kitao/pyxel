@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.5
+- Optimized the sound and music APIs
+
 ## 1.1.4
 - Fixed the index check of the playm API
 - Enabled to access the screen as the image bank #4
