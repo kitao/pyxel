@@ -77,6 +77,10 @@ void quit() {
   s_system->Quit();
 }
 
+void flip() {
+  s_system->FlipScreen();
+}
+
 void _drop_file_getter(char* str, int32_t str_length) {
   strncpy(str, s_system->DropFile().c_str(), str_length);
 }

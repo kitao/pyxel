@@ -528,6 +528,11 @@ def quit() -> None:
     core.quit()
 
 
+def flip() -> None:
+    core.flip()
+    _update_properties()
+
+
 def _caption(caption: str) -> None:
     core._caption(caption.encode("utf-8"))
 

@@ -36,6 +36,7 @@ class System {
 
   void Run(void (*update)(), void (*draw)());
   void Quit();
+  void FlipScreen();
 
   std::string DropFile() const { return drop_file_; }
   void SetCaption(const std::string& caption);
@@ -50,6 +51,8 @@ class System {
 
   int32_t fps_;
   int32_t frame_count_;
+  double one_frame_time_;
+  double next_update_time_;
   bool is_update_suspended_;
   std::string drop_file_;
   pyxelcore::PaletteColor palette_color_;
@@ -59,6 +62,7 @@ class System {
   Profiler draw_profiler_;
   bool is_performance_monitor_on_;
 
+  int32_t WaitForUpdateTime();
   void UpdateFrame(void (*update)());
   void CheckSpecialInput();
   void DrawFrame(void (*draw)());

@@ -5,6 +5,8 @@
 - Added the color class for the default palette
 - Added the shortcut to select a color to the Image Editor
 - Fixed the sound preview bug of the Sound Editor
+- Enabled to quit from anywhere
+- Added the flip API
 
 ## 1.1.4
 - Fixed the index check of the playm API
@@ -41,7 +43,7 @@
 - Changed the max screen size to 256
 - Added the play_pos API
 - Changed arguments of the clip API
-- Changed arguments of the rect and rectb API
+- Changed arguments of the rect and rectb APIs
 - Modified the examples according to the API changes
 - Renamed the resource file extension to .pyxres
 - Added the _drop_file property
@@ -100,7 +102,7 @@
 - Fixed the crash bug when the window is minimized
 - Modified the code of the example #6
 - Added the refimg property to the Tilemap class
-- Removed the img argument from the bltm command
+- Removed the img argument from the bltm API
 - Updated the screenshot of the example #3
 
 ## 0.9.2
@@ -153,17 +155,17 @@
 - Implemented the undo function of the Sound Editor
 - Changed the click tolerance time
 - Removed the length limitation of the sound
-- Added the music and playm commands
-- Changed the example #2 to use the music and playm commands
+- Added the music and playm APIs
+- Changed the example #2 to use the music and playm APIs
 
 ## 0.8.4
 - Changed to follow the mouse position outside the window
 - Changed to draw the self mouse cursor
-- Added the mouse command
-- Renamed arguments of the blt and bltm commands
+- Added the mouse API
+- Renamed arguments of the blt and bltm APIs
 - Reduced the size of PNG and animated GIF
 - Changed the max length of the sound to 48
-- Added the system option to the sound command
+- Added the system option to the sound API
 - Refined the help message of the Pyxel Editor
 - Added the ToggleButton and ImageToggleButton
 - Implemented the Sound Editor except the undo function
@@ -179,13 +181,13 @@
 
 ## 0.8.2
 - Fixed the set, load, and copy methods of the image class
-- Fixed the starting directory of the save and load commands
+- Fixed the starting directory of the save and load APIs
 - Modified the usage of the Pyxel Editor
 
 ## 0.8.1
-- Added the run_with_profiler command
+- Added the run_with_profiler API
 - Added the Tilemap class
-- Added the bltm command
+- Added the bltm API
 - Implemented the Tilemap Editor
 - Added the standard widgets
 - Changed the usage of the Pyxel Editor
@@ -195,16 +197,16 @@
 ## 0.8.0
 - Changed the formatter from yapf to black
 - Added the UI module
-- Added the save and load commands
+- Added the save and load APIs
 - Added the Image Editor as a part of the Pyxel Editor
-- Removed the dirname option of the save and load commands
+- Removed the dirname option of the save and load APIs
 
 ## 0.7.12
 - Added new key definitions which integrates keys on both sides
 - Changed the description of the project
 - Changed the max scren size to 255
-- Fixed the key hold time of the btnp command
-- Fixed to work the btnp command correctly in the slow frame rate condtion
+- Fixed the key hold time of the btnp API
+- Fixed to work the btnp API correctly in the slow frame rate condtion
 - Changed the screen size of the example #5 and #6
 - Updated the screenshot of the example #5
 
@@ -227,10 +229,10 @@
 - Added glfw version check
 
 ## 0.7.8
-- Added the system option to the image command
+- Added the system option to the image API
 - Fixed the color bug of the shader for some environments
 - Added the dirname option to the load method of the image class
-- Updated the description of the init command of the READMEs
+- Updated the description of the init API of the READMEs
 
 ## 0.7.7
 - Added the description of the screen size limitation to the READMEs
@@ -258,7 +260,7 @@
 - Fixed the way to capture screen on Linux
 
 ## 0.7.3
-- Fixed the btnr command
+- Fixed the btnr API
 - Fixed a typo in the README.md
 - Added the title logo to the READMEs
 - Added the Portuguese version of the README.md
@@ -280,8 +282,8 @@
 ## 0.7.0
 - Modified the example #1 to use the App class
 - Renamed and modified the example #2
-- Remove the logo command and added the logo image
-- Improved the performance of the text command
+- Remove the logo API and added the logo image
+- Improved the performance of the text API
 - Updated the README.md and README.ja.md
 - Replaced the example #2
 - Removed the resize method of the Image class
@@ -292,9 +294,9 @@
 - Changed the properties of the Sound class to public
 - Added offset arguments to the Image load method
 - Added the copy method to the Image class
-- Renamed arguments of the image and sound command
+- Renamed arguments of the image and sound API
 - Added the window icon
-- Added the logo command
+- Added the logo API
 - Added the resize method to the Image class
 - Refined the example #1-4
 
@@ -303,8 +305,8 @@
 - Renamed the examples copy script to install_pyxel_examples
 - Removed unnecessary scripts
 - Separated the constant definitions
-- Added the image command and renamed related APIs
-- Added the sound command and renamed related APIs
+- Added the image API and renamed related APIs
+- Added the sound API and renamed related APIs
 
 ## 0.4.0
 - Changed the key assigns of the special inputs
@@ -317,7 +319,7 @@
 - Added the '-'(flat) syntax to the Sound class
 - Added the set method to the Image class again
 - Renamed the track to channel
-- Changed the play command to enable to play a sound list
+- Changed the play API to enable to play a sound list
 
 ## 0.2.0
 - Added the audio playback function
