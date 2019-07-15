@@ -22,6 +22,9 @@ class Editor(Widget):
         __on_drop(filenames)
     """
 
+    _COLOR_BUTTONS = (pyxel.KEY_1, pyxel.KEY_2, pyxel.KEY_3, pyxel.KEY_4,
+                      pyxel.KEY_5, pyxel.KEY_6, pyxel.KEY_7, pyxel.KEY_8)
+
     def __init__(self, parent):
         super().__init__(parent, 0, 0, 0, 0, is_visible=False)
 
@@ -101,6 +104,14 @@ class Editor(Widget):
             )
         elif pyxel.btnp(pyxel.KEY_B):
             self._tool_button.value = TOOL_BUCKET
+
+        for btn in self._COLOR_BUTTONS:
+            if pyxel.btnp(btn):
+                col = btn - 49
+                if pyxel.btn(pyxel.KEY_LEFT_SHIFT):
+                    col += 8
+                self._color_picker.value = col
+                break
 
     def add_tool_button_help(self, tool_button):
         tool_button.add_event_handler("mouse_hover", self.__on_tool_button_mouse_hover)
