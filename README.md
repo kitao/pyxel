@@ -268,6 +268,9 @@ Start the Pyxel application and call `update` function for frame update and `dra
 - `quit()`<br>
 Quit the Pyxel application at the end of the current frame
 
+- `flip()`<br>
+Force drawing (do not use in normal applications)
+
 ### Resource
 
 - `save(filename)`<br>
