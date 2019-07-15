@@ -66,7 +66,6 @@ System::System(int32_t width,
   palette_color_ = palette_color;
   fps_ = fps;
   frame_count_ = 0;
-  need_to_quit_ = false;
   is_update_suspended_ = false;
   drop_file_ = "";
   is_performance_monitor_on_ = false;
@@ -94,7 +93,7 @@ void System::Run(void (*update)(), void (*draw)()) {
   UpdateFrame(update);
   DrawFrame(draw);
 
-  while (!need_to_quit_) {
+  while (true) {
     double sleep_time = next_update_time - SDL_GetTicks();
 
     if (sleep_time > 0) {
@@ -131,7 +130,8 @@ void System::Run(void (*update)(), void (*draw)()) {
 }
 
 void System::Quit() {
-  need_to_quit_ = true;
+  delete this;
+  exit(0);
 }
 
 void System::SetCaption(const std::string& caption) {
