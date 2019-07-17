@@ -59,7 +59,7 @@ void Resource::SaveAsset(const std::string& filename) {
 
   file.writestr(GetVersionName(), VERSION + '\n');
 
-  for (int32_t i = 0; i < USER_IMAGE_BANK_COUNT; i++) {
+  for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
     std::string str = DumpImage(i);
 
     if (str.size() > 0) {
@@ -75,7 +75,7 @@ void Resource::SaveAsset(const std::string& filename) {
     }
   }
 
-  for (int32_t i = 0; i < USER_SOUND_BANK_COUNT; i++) {
+  for (int32_t i = 0; i < SOUND_BANK_COUNT; i++) {
     std::string str = DumpSound(i);
 
     if (str.size() > 0) {
@@ -123,7 +123,7 @@ void Resource::LoadAsset(const std::string& filename) {
       }
     }
 
-    for (int32_t i = 0; i < USER_IMAGE_BANK_COUNT; i++) {
+    for (int32_t i = 0; i < IMAGE_BANK_COUNT; i++) {
       std::string name = GetImageName(i);
 
       if (file.has_file(name)) {
@@ -143,7 +143,7 @@ void Resource::LoadAsset(const std::string& filename) {
       }
     }
 
-    for (int32_t i = 0; i < USER_SOUND_BANK_COUNT; i++) {
+    for (int32_t i = 0; i < SOUND_BANK_COUNT; i++) {
       std::string name = GetSoundName(i);
 
       if (file.has_file(name)) {
