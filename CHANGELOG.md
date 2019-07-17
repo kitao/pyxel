@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.6
+- Changed the way to make module properties
+
 ## 1.1.5
 - Optimized the sound and music APIs
 - Added the color class for the default palette

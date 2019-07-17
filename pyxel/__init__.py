@@ -469,19 +469,26 @@ frame_count: int = 0
 _drop_file: str = ""
 
 
-def _update_properties():  # type: ignore
-    module = sys.modules[__name__]
+@property  # type: ignore
+def width(mod):  # type: ignore
+    return mod.core.width_getter()
 
-    module.width = core.width_getter()  # type: ignore
-    module.height = core.height_getter()  # type: ignore
-    module.frame_count = core.frame_count_getter()  # type: ignore
 
+@property  # type: ignore
+def height(mod):  # type: ignore
+    return mod.core.height_getter()
+
+
+@property  # type: ignore
+def frame_count(mod):  # type: ignore
+    return mod.core.frame_count_getter()
+
+
+@property  # type: ignore
+def _drop_file(mod):  # type: ignore
     buf = create_string_buffer(256)
-    core._drop_file_getter(buf, len(buf))
-    module._drop_file = buf.value.decode()  # type: ignore
-
-    module.mouse_x = core.mouse_x_getter()  # type: ignore
-    module.mouse_y = core.mouse_y_getter()  # type: ignore
+    mod.core._drop_file_getter(buf, len(buf))
+    return buf.value.decode()
 
 
 def init(
@@ -513,15 +520,9 @@ def init(
         int(border_color),
     )
 
-    _update_properties()  # type: ignore
-
 
 def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
-    def update_wrapper():  # type: ignore
-        _update_properties()  # type: ignore
-        update()
-
-    core.run(CFUNCTYPE(None)(update_wrapper), CFUNCTYPE(None)(draw))
+    core.run(CFUNCTYPE(None)(update), CFUNCTYPE(None)(draw))
 
 
 def quit() -> None:
@@ -530,7 +531,6 @@ def quit() -> None:
 
 def flip() -> None:
     core.flip()
-    _update_properties()
 
 
 def _caption(caption: str) -> None:
@@ -624,6 +624,16 @@ def load_as_old_pyxel_format(filename: str) -> None:
 #
 mouse_x: int = 0
 mouse_y: int = 0
+
+
+@property  # type: ignore
+def mouse_x(mod):  # type: ignore
+    return mod.core.mouse_x_getter()
+
+
+@property  # type: ignore
+def mouse_y(mod):  # type: ignore
+    return mod.core.mouse_y_getter()
 
 
 def btn(key: int) -> bool:
@@ -818,3 +828,23 @@ class _CListInterface(MutableSequence):  # type: ignore
         lst = self._data_to_list()
         lst.insert(ii, val)
         self._list_to_data(lst)
+
+
+#
+# Enable module properties
+#
+class Module(object):
+    pass
+
+
+module = Module()
+module.__dict__ = globals()
+
+for k, v in list(module.__dict__.items()):
+    if isinstance(v, property):
+        setattr(Module, k, v)
+        del module.__dict__[k]
+
+module._module = sys.modules[module.__name__]  # type: ignore
+module._pmodule = module  # type: ignore
+sys.modules[module.__name__] = module  # type: ignore
