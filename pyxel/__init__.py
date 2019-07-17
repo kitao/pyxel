@@ -25,6 +25,17 @@ def _get_constant_string(name: str) -> str:
 
 
 VERSION: str = _get_constant_string("VERSION")
+COLOR_COUNT: int = _get_constant_number("COLOR_COUNT")
+FONT_WIDTH: int = _get_constant_number("FONT_WIDTH")
+FONT_HEIGHT: int = _get_constant_number("FONT_HEIGHT")
+USER_IMAGE_BANK_COUNT: int = _get_constant_number("IMAGE_BANK_COUNT")
+IMAGE_BANK_FOR_SYSTEM: int = _get_constant_number("IMAGE_BANK_FOR_SYSTEM")
+TILEMAP_BANK_COUNT: int = _get_constant_number("TILEMAP_BANK_COUNT")
+USER_SOUND_BANK_COUNT: int = _get_constant_number("SOUND_BANK_COUNT")
+SOUND_BANK_FOR_SYSTEM: int = _get_constant_number("SOUND_BANK_FOR_SYSTEM")
+MUSIC_BANK_COUNT: int = _get_constant_number("MUSIC_BANK_COUNT")
+MUSIC_CHANNEL_COUNT: int = _get_constant_number("MUSIC_CHANNEL_COUNT")
+RESOURCE_FILE_EXTENSION: str = _get_constant_string("RESOURCE_FILE_EXTENSION")
 
 DEFAULT_CAPTION: str = _get_constant_string("DEFAULT_CAPTION")
 DEFAULT_SCALE: int = _get_constant_number("DEFAULT_SCALE")
@@ -502,8 +513,6 @@ def init(
     border_width: int = DEFAULT_BORDER_WIDTH,
     border_color: int = DEFAULT_BORDER_COLOR
 ) -> None:
-    COLOR_COUNT = _get_constant_number("COLOR_COUNT")
-
     _image_bank.clear()
     _tilemap_bank.clear()
     _sound_bank.clear()
