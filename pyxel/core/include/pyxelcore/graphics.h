@@ -73,11 +73,11 @@ class Graphics {
 };
 
 inline Image* Graphics::GetImageBank(int32_t image_index, bool system) const {
-  if (image_index < 0 || image_index >= IMAGE_BANK_COUNT) {
+  if (image_index < 0 || image_index >= EXTENDED_IMAGE_BANK_COUNT) {
     PYXEL_ERROR("invalid image index");
   }
 
-  if (image_index >= USER_IMAGE_BANK_COUNT && !system) {
+  if (image_index >= IMAGE_BANK_COUNT && !system) {
     PYXEL_ERROR("access to image bank for system");
   }
 
