@@ -18,8 +18,8 @@ Audio::Audio() {
     PYXEL_ERROR("failed to initialize SDL Audio");
   }
 
-  sound_bank_ = new Sound*[SOUND_BANK_COUNT];
-  for (int32_t i = 0; i < SOUND_BANK_COUNT; i++) {
+  sound_bank_ = new Sound*[EXTENDED_SOUND_BANK_COUNT];
+  for (int32_t i = 0; i < EXTENDED_SOUND_BANK_COUNT; i++) {
     sound_bank_[i] = new Sound();
   }
 
@@ -32,7 +32,7 @@ Audio::Audio() {
 }
 
 Audio::~Audio() {
-  for (int32_t i = 0; i < SOUND_BANK_COUNT; i++) {
+  for (int32_t i = 0; i < EXTENDED_SOUND_BANK_COUNT; i++) {
     delete sound_bank_[i];
   }
   delete[] sound_bank_;
