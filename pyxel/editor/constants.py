@@ -1,5 +1,3 @@
-from pyxel import _get_constant_number, _get_constant_string
-
 APP_WIDTH = 240
 APP_HEIGHT = 180
 
@@ -22,15 +20,3 @@ TOOL_BUCKET = 6
 
 MAX_SOUND_LENGTH = 48
 MAX_MUSIC_LENGTH = 32
-
-USER_IMAGE_BANK_COUNT = _get_constant_number("USER_IMAGE_BANK_COUNT")
-IMAGE_BANK_FOR_SYSTEM = _get_constant_number("IMAGE_BANK_FOR_SYSTEM")
-TILEMAP_BANK_COUNT = _get_constant_number("TILEMAP_BANK_COUNT")
-USER_SOUND_BANK_COUNT = _get_constant_number("USER_SOUND_BANK_COUNT")
-SOUND_BANK_FOR_SYSTEM = _get_constant_number("SOUND_BANK_FOR_SYSTEM")
-MUSIC_BANK_COUNT = _get_constant_number("MUSIC_BANK_COUNT")
-MUSIC_CHANNEL_COUNT = _get_constant_number("MUSIC_CHANNEL_COUNT")
-FONT_WIDTH = _get_constant_number("FONT_WIDTH")
-FONT_HEIGHT = _get_constant_number("FONT_HEIGHT")
-
-RESOURCE_FILE_EXTENSION = _get_constant_string("RESOURCE_FILE_EXTENSION")

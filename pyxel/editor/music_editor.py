@@ -1,14 +1,7 @@
 import pyxel
 from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 
-from .constants import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
-    IMAGE_BANK_FOR_SYSTEM,
-    MAX_MUSIC_LENGTH,
-    MUSIC_BANK_COUNT,
-    MUSIC_CHANNEL_COUNT,
-)
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_MUSIC_LENGTH
 from .editor import Editor
 from .field_cursor import FieldCursor
 from .music_field import MusicField
@@ -20,24 +13,41 @@ class MusicEditor(Editor):
         super().__init__(parent)
 
         self._is_playing = False
-        self._play_pos = [0 for _ in range(MUSIC_CHANNEL_COUNT)]
+        self._play_pos = [0 for _ in range(pyxel.MUSIC_CHANNEL_COUNT)]
         self.field_cursor = FieldCursor(
             self.get_data,
             self.add_pre_history,
             self.add_post_history,
             MAX_MUSIC_LENGTH,
             16,
-            MUSIC_CHANNEL_COUNT,
+            pyxel.MUSIC_CHANNEL_COUNT,
         )
-        self._music_picker = NumberPicker(self, 45, 17, 0, MUSIC_BANK_COUNT - 1, 0)
+        self._music_picker = NumberPicker(
+            self, 45, 17, 0, pyxel.MUSIC_BANK_COUNT - 1, 0
+        )
         self._play_button = ImageButton(
-            self, 185, 17, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X + 126, EDITOR_IMAGE_Y
+            self,
+            185,
+            17,
+            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            EDITOR_IMAGE_X + 126,
+            EDITOR_IMAGE_Y,
         )
         self._stop_button = ImageButton(
-            self, 195, 17, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X + 135, EDITOR_IMAGE_Y
+            self,
+            195,
+            17,
+            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            EDITOR_IMAGE_X + 135,
+            EDITOR_IMAGE_Y,
         )
         self._loop_button = ImageToggleButton(
-            self, 205, 17, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X + 144, EDITOR_IMAGE_Y
+            self,
+            205,
+            17,
+            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            EDITOR_IMAGE_X + 144,
+            EDITOR_IMAGE_Y,
         )
         self._music_field = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
         self._sound_selector = SoundSelector(self)
@@ -102,7 +112,7 @@ class MusicEditor(Editor):
     def _play(self):
         self._is_playing = True
 
-        for i in range(MUSIC_CHANNEL_COUNT):
+        for i in range(pyxel.MUSIC_CHANNEL_COUNT):
             self._play_pos[i] = 0
 
         self._music_picker.is_enabled = False
@@ -115,7 +125,7 @@ class MusicEditor(Editor):
     def _stop(self):
         self._is_playing = False
 
-        for i in range(MUSIC_CHANNEL_COUNT):
+        for i in range(pyxel.MUSIC_CHANNEL_COUNT):
             self._play_pos[i] = -1
 
         self._music_picker.is_enabled = True
@@ -146,7 +156,7 @@ class MusicEditor(Editor):
         if self._is_playing:
             self._is_playing = False
 
-            for i in range(MUSIC_CHANNEL_COUNT):
+            for i in range(pyxel.MUSIC_CHANNEL_COUNT):
                 if pyxel.play_pos(i) >= 0:
                     self._is_playing = True
                     play_pos = pyxel.play_pos(i)

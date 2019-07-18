@@ -16,8 +16,6 @@ from .constants import (
     EDITOR_IMAGE_NAME,
     EDITOR_IMAGE_X,
     EDITOR_IMAGE_Y,
-    IMAGE_BANK_FOR_SYSTEM,
-    RESOURCE_FILE_EXTENSION,
 )
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
@@ -29,8 +27,8 @@ class App(Widget):
     def __init__(self, resource_file):
         resource_file = os.path.join(os.getcwd(), resource_file)
         root, ext = os.path.splitext(resource_file)
-        if ext != RESOURCE_FILE_EXTENSION and ext != ".pyxel":
-            resource_file += RESOURCE_FILE_EXTENSION
+        if ext != pyxel.RESOURCE_FILE_EXTENSION and ext != ".pyxel":
+            resource_file += pyxel.RESOURCE_FILE_EXTENSION
 
         pyxel.init(
             APP_WIDTH, APP_HEIGHT, caption="Pyxel Editor - {}".format(resource_file)
@@ -41,7 +39,7 @@ class App(Widget):
             pyxel.load(resource_file)
 
         if ext == ".pyxel":
-            resource_file = root + RESOURCE_FILE_EXTENSION
+            resource_file = root + pyxel.RESOURCE_FILE_EXTENSION
 
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
 
@@ -53,16 +51,38 @@ class App(Widget):
             MusicEditor(self),
         ]
         self._editor_button = RadioButton(
-            self, 1, 1, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X, EDITOR_IMAGE_Y, 4, 0
+            self,
+            1,
+            1,
+            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            EDITOR_IMAGE_X,
+            EDITOR_IMAGE_Y,
+            4,
+            0,
         )
         self._undo_button = ImageButton(
-            self, 48, 1, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X + 36, EDITOR_IMAGE_Y
+            self,
+            48,
+            1,
+            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            EDITOR_IMAGE_X + 36,
+            EDITOR_IMAGE_Y,
         )
         self._redo_button = ImageButton(
-            self, 57, 1, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X + 45, EDITOR_IMAGE_Y
+            self,
+            57,
+            1,
+            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            EDITOR_IMAGE_X + 45,
+            EDITOR_IMAGE_Y,
         )
         self._save_button = ImageButton(
-            self, 75, 1, IMAGE_BANK_FOR_SYSTEM, EDITOR_IMAGE_X + 54, EDITOR_IMAGE_Y
+            self,
+            75,
+            1,
+            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            EDITOR_IMAGE_X + 54,
+            EDITOR_IMAGE_Y,
         )
         self.help_message = ""
 
@@ -92,7 +112,7 @@ class App(Widget):
         image_file = os.path.join(
             os.path.dirname(__file__), "assets", EDITOR_IMAGE_NAME
         )
-        pyxel.image(IMAGE_BANK_FOR_SYSTEM, system=True).load(
+        pyxel.image(pyxel.IMAGE_BANK_FOR_SYSTEM, system=True).load(
             EDITOR_IMAGE_X, EDITOR_IMAGE_Y, image_file
         )
 
@@ -110,7 +130,7 @@ class App(Widget):
         if pyxel._drop_file:
             ext = os.path.splitext(pyxel._drop_file)[1]
 
-            if ext == RESOURCE_FILE_EXTENSION:
+            if ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
                 for editor in self._editor_list:
                     editor.reset_history()

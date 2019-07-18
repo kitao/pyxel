@@ -1,12 +1,7 @@
 import pyxel
 from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 
-from .constants import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
-    MAX_SOUND_LENGTH,
-    USER_SOUND_BANK_COUNT,
-)
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_SOUND_LENGTH
 from .editor import Editor
 from .field_cursor import FieldCursor
 from .octave_bar import OctaveBar
@@ -31,7 +26,9 @@ class SoundEditor(Editor):
         self._is_playing = False
         self._play_pos = -1
         self._history_data = None
-        self._sound_picker = NumberPicker(self, 45, 17, 0, USER_SOUND_BANK_COUNT - 1, 0)
+        self._sound_picker = NumberPicker(
+            self, 45, 17, 0, pyxel.SOUND_BANK_COUNT - 1, 0
+        )
         self._speed_picker = NumberPicker(self, 105, 17, 1, 99, pyxel.sound(0).speed)
         self._play_button = ImageButton(
             self, 185, 17, 3, EDITOR_IMAGE_X + 126, EDITOR_IMAGE_Y
