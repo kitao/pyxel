@@ -4,6 +4,7 @@
 - Changed the way to make module properties
 - Added public constants for fonts and banks
 - Removed the screen size limit
+- Added the description of a shortcut
 
 ## 1.1.5
 - Optimized the sound and music APIs

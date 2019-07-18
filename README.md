@@ -177,6 +177,8 @@ App()
 
 The following special controls can be performed while a Pyxel application is running:
 
+- `Esc`<br>
+Quit the application
 - `Alt(Option)+1`<br>
 Save the screenshot to the desktop
 - `Alt(Option)+2`<br>
