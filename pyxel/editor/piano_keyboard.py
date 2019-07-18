@@ -1,12 +1,7 @@
 import pyxel
 from pyxel.ui import Widget
 
-from .constants import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
-    IMAGE_BANK_FOR_SYSTEM,
-    SOUND_BANK_FOR_SYSTEM,
-)
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
 
 key_table = [
     pyxel.KEY_Z,
@@ -40,7 +35,7 @@ class PianoKeyboard(Widget):
     def __init__(self, parent):
         super().__init__(parent, 17, 25, 12, 123)
 
-        self._sound = pyxel.sound(SOUND_BANK_FOR_SYSTEM, system=True)
+        self._sound = pyxel.sound(pyxel.SOUND_BANK_FOR_SYSTEM, system=True)
         self._sound.set("g2", "p", "3", "n", 30)
         self._mouse_note = None
         self.note = None
@@ -131,7 +126,7 @@ class PianoKeyboard(Widget):
         if self.note is not None:
             self._sound.note[0] = self.note
             self._sound.tone[0] = self._tone
-            pyxel.play(1, SOUND_BANK_FOR_SYSTEM)
+            pyxel.play(1, pyxel.SOUND_BANK_FOR_SYSTEM)
         else:
             pyxel.stop(1)
 
@@ -139,7 +134,7 @@ class PianoKeyboard(Widget):
         pyxel.blt(
             self.x,
             self.y,
-            IMAGE_BANK_FOR_SYSTEM,
+            pyxel.IMAGE_BANK_FOR_SYSTEM,
             EDITOR_IMAGE_X + 208,
             EDITOR_IMAGE_Y,
             12,

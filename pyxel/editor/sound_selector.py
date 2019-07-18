@@ -1,12 +1,7 @@
 import pyxel
 from pyxel.ui import Widget
 
-from .constants import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
-    IMAGE_BANK_FOR_SYSTEM,
-    USER_SOUND_BANK_COUNT,
-)
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
 
 
 class SoundSelector(Widget):
@@ -40,7 +35,7 @@ class SoundSelector(Widget):
         pyxel.blt(
             self.x + x + 6,
             self.y + y + 5,
-            IMAGE_BANK_FOR_SYSTEM,
+            pyxel.IMAGE_BANK_FOR_SYSTEM,
             EDITOR_IMAGE_X + x,
             EDITOR_IMAGE_Y + y + 121,
             11,
@@ -95,7 +90,7 @@ class SoundSelector(Widget):
             self.x + 6, self.y + 5, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 121, 206, 34, 6
         )
 
-        for i in range(USER_SOUND_BANK_COUNT):
+        for i in range(pyxel.SOUND_BANK_COUNT):
             if pyxel.sound(i).note:
                 self._draw_sound_button(i, 12)
 
