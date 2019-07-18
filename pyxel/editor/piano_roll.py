@@ -2,12 +2,7 @@ import pyxel
 from pyxel.ui import Widget
 from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-from .constants import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
-    IMAGE_BANK_FOR_SYSTEM,
-    MAX_SOUND_LENGTH,
-)
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_SOUND_LENGTH
 
 
 class PianoRoll(Widget):
@@ -137,7 +132,7 @@ class PianoRoll(Widget):
         pyxel.blt(
             self.x,
             self.y,
-            IMAGE_BANK_FOR_SYSTEM,
+            pyxel.IMAGE_BANK_FOR_SYSTEM,
             EDITOR_IMAGE_X,
             EDITOR_IMAGE_Y + 7,
             193,
@@ -147,7 +142,7 @@ class PianoRoll(Widget):
         pyxel.blt(
             self.x,
             self.y + 72,
-            IMAGE_BANK_FOR_SYSTEM,
+            pyxel.IMAGE_BANK_FOR_SYSTEM,
             EDITOR_IMAGE_X,
             EDITOR_IMAGE_Y + 7,
             193,

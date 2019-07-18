@@ -4,12 +4,9 @@ from pyxel.ui import NumberPicker, RadioButton
 from .constants import (
     EDITOR_IMAGE_X,
     EDITOR_IMAGE_Y,
-    IMAGE_BANK_FOR_SYSTEM,
-    TILEMAP_BANK_COUNT,
     TILEMAP_IMAGE_X,
     TILEMAP_IMAGE_Y,
     TOOL_PENCIL,
-    USER_IMAGE_BANK_COUNT,
 )
 from .drawing_panel import DrawingPanel
 from .editor import Editor
@@ -24,12 +21,14 @@ class TileMapEditor(Editor):
         self._drawing_panel = DrawingPanel(self, is_tilemap_mode=True)
         self._tilemap_panel = TilemapPanel(self)
         self._image_panel = ImagePanel(self, is_tilemap_mode=True)
-        self._tilemap_picker = NumberPicker(self, 48, 161, 0, TILEMAP_BANK_COUNT - 1, 0)
+        self._tilemap_picker = NumberPicker(
+            self, 48, 161, 0, pyxel.TILEMAP_BANK_COUNT - 1, 0
+        )
         self._tool_button = RadioButton(
             self,
             81,
             161,
-            IMAGE_BANK_FOR_SYSTEM,
+            pyxel.IMAGE_BANK_FOR_SYSTEM,
             EDITOR_IMAGE_X + 63,
             EDITOR_IMAGE_Y,
             7,
@@ -40,7 +39,7 @@ class TileMapEditor(Editor):
             192,
             161,
             0,
-            USER_IMAGE_BANK_COUNT - 1,
+            pyxel.IMAGE_BANK_COUNT - 1,
             pyxel.tilemap(self._tilemap_picker.value).refimg,
         )
 
