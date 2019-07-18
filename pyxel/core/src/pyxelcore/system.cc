@@ -46,8 +46,8 @@ System::System(int32_t width,
     PYXEL_ERROR("failed to initialize SDL_image");
   }
 
-  if (width < MIN_SCREEN_SIZE || width > MAX_SCREEN_SIZE ||
-      height < MIN_SCREEN_SIZE || height > MAX_SCREEN_SIZE) {
+  if (width < 1 || width > MAX_SCREEN_SIZE || height < 1 ||
+      height > MAX_SCREEN_SIZE) {
     PYXEL_ERROR("invalid screen size");
   }
 
