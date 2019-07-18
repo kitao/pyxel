@@ -3,6 +3,7 @@
 ## 1.1.6
 - Changed the way to make module properties
 - Added public constants for fonts and banks
+- Removed the screen size limit
 
 ## 1.1.5
 - Optimized the sound and music APIs

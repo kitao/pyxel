@@ -39,7 +39,6 @@ const std::array<int32_t, COLOR_COUNT> DEFAULT_PALETTE = {
 //
 // System
 //
-const int32_t MIN_SCREEN_SIZE = 64;
 const int32_t MAX_SCREEN_SIZE = 256;
 const float MAX_SCREEN_RATIO = 0.8f;
 
