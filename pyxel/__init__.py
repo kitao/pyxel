@@ -842,7 +842,7 @@ class _CListInterface(MutableSequence):  # type: ignore
 #
 # Enable module properties
 #
-class Module(object):
+class Module:
     pass
 
 
