@@ -1,5 +1,6 @@
 import inspect
 import os
+import signal
 import sys
 from collections import MutableSequence
 from ctypes import CFUNCTYPE, c_char_p, c_int32, cast, create_string_buffer
@@ -517,6 +518,8 @@ def init(
     _tilemap_bank.clear()
     _sound_bank.clear()
     _music_bank.clear()
+
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     core.init(
         int(width),
