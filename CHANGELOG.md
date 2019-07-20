@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.7
+- Fixed to stop with ctrl-c
+
 ## 1.1.6
 - Changed the way to make module properties
 - Added public constants for fonts and banks
