@@ -3,6 +3,7 @@
 ## 1.1.7
 - Fixed to stop with ctrl-c
 - Updated the classifiers of setup.py
+- Added the description of APIs to the READMEs
 
 ## 1.1.6
 - Changed the way to make module properties
