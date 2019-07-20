@@ -444,19 +444,19 @@ e.g. `pyxel.sound(0).set_effect("NFNF NVVS")`
 ### Music Class
 
 - `ch0`<br>
-List of sound(0-63) play on channel 0
+List of sound(0-63) play on channel 0. If an empty list is specified, the channel is not used for playback
 
 - `ch1`<br>
-List of sound(0-63) play on channel 1
+List of sound(0-63) play on channel 1. If an empty list is specified, the channel is not used for playback
 
 - `ch2`<br>
-List of sound(0-63) play on channel 2
+List of sound(0-63) play on channel 2. If an empty list is specified, the channel is not used for playback
 
 - `ch3`<br>
-List of sound(0-63) play on channel 3
+List of sound(0-63) play on channel 3. If an empty list is specified, the channel is not used for playback
 
 - `set(ch0, ch1, ch2, ch3)`<br>
-Set the list of sound(0-63) of all channels<br>
+Set the list of sound(0-63) of all channels. If an empty list is specified, that channel is not used for playback<br>
 e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 - `set_ch0(data)`<br>
