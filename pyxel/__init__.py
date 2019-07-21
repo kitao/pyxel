@@ -2,6 +2,7 @@ import inspect
 import os
 import signal
 import sys
+import traceback
 from collections import MutableSequence
 from ctypes import CFUNCTYPE, c_char_p, c_int32, cast, create_string_buffer
 from typing import Any, Callable, Dict, List, Optional
@@ -27,6 +28,22 @@ def _get_constant_string(name: str) -> str:
 
 VERSION: str = _get_constant_string("VERSION")
 COLOR_COUNT: int = _get_constant_number("COLOR_COUNT")
+COLOR_BLACK: int = _get_constant_number("COLOR_BLACK")
+COLOR_NAVY: int = _get_constant_number("COLOR_NAVY")
+COLOR_PERPLE: int = _get_constant_number("COLOR_PERPLE")
+COLOR_GREEN: int = _get_constant_number("COLOR_GREEN")
+COLOR_BROWN: int = _get_constant_number("COLOR_BROWN")
+COLOR_DARKGRAY: int = _get_constant_number("COLOR_DARKGRAY")
+COLOR_LIGHTGRAY: int = _get_constant_number("COLOR_LIGHTGRAY")
+COLOR_WHITE: int = _get_constant_number("COLOR_WHITE")
+COLOR_RED: int = _get_constant_number("COLOR_RED")
+COLOR_ORANGE: int = _get_constant_number("COLOR_ORANGE")
+COLOR_YELLOW: int = _get_constant_number("COLOR_YELLOW")
+COLOR_LIME: int = _get_constant_number("COLOR_LIME")
+COLOR_CYAN: int = _get_constant_number("COLOR_CYAN")
+COLOR_STEELBLUE: int = _get_constant_number("COLOR_STEELBLUE")
+COLOR_PINK: int = _get_constant_number("COLOR_PINK")
+COLOR_PEACH: int = _get_constant_number("COLOR_PEACH")
 FONT_WIDTH: int = _get_constant_number("FONT_WIDTH")
 FONT_HEIGHT: int = _get_constant_number("FONT_HEIGHT")
 IMAGE_BANK_COUNT: int = _get_constant_number("IMAGE_BANK_COUNT")
@@ -198,28 +215,6 @@ GAMEPAD_2_UP: int = _get_constant_number("GAMEPAD_2_UP")
 GAMEPAD_2_RIGHT: int = _get_constant_number("GAMEPAD_2_RIGHT")
 GAMEPAD_2_DOWN: int = _get_constant_number("GAMEPAD_2_DOWN")
 GAMEPAD_2_LEFT: int = _get_constant_number("GAMEPAD_2_LEFT")
-
-
-#
-# Color class for the default palette
-#
-class Color:
-    BLACK: int = 0
-    NAVY: int = 1
-    PERPLE: int = 2
-    GREEN: int = 3
-    BROWN: int = 4
-    DARKGRAY: int = 5
-    LIGHTGRAY: int = 6
-    WHITE: int = 7
-    RED: int = 8
-    ORANGE: int = 9
-    YELLOW: int = 10
-    LIME: int = 11
-    CYAN: int = 12
-    STEELBLUE: int = 13
-    PINK: int = 14
-    PEACH: int = 15
 
 
 #
@@ -534,7 +529,21 @@ def init(
 
 
 def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
-    core.run(CFUNCTYPE(None)(update), CFUNCTYPE(None)(draw))
+    def update_wrapper():
+        try:
+            update()
+        except Exception:
+            traceback.print_exc()
+            quit()
+
+    def draw_wrapper():
+        try:
+            draw()
+        except Exception:
+            traceback.print_exc()
+            quit()
+
+    core.run(CFUNCTYPE(None)(update_wrapper), CFUNCTYPE(None)(draw_wrapper))
 
 
 def quit() -> None:
