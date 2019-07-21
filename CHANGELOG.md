@@ -4,6 +4,8 @@
 - Fixed to stop with ctrl-c
 - Updated the classifiers of setup.py
 - Added the description of APIs to the READMEs
+- Added the constants for the default colors
+- Fixed to stop the application with Python exception
 
 ## 1.1.6
 - Changed the way to make module properties
