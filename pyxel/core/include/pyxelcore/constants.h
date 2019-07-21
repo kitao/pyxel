@@ -25,6 +25,25 @@ const std::string VERSION = "1.1.7";
 const int32_t COLOR_COUNT = 16;
 const std::string WHITESPACE = " \t\v\r\n";
 
+enum {
+  COLOR_BLACK,
+  COLOR_NAVY,
+  COLOR_PERPLE,
+  COLOR_GREEN,
+  COLOR_BROWN,
+  COLOR_DARKGRAY,
+  COLOR_LIGHTGRAY,
+  COLOR_WHITE,
+  COLOR_RED,
+  COLOR_ORANGE,
+  COLOR_YELLOW,
+  COLOR_LIME,
+  COLOR_CYAN,
+  COLOR_STEELBLUE,
+  COLOR_PINK,
+  COLOR_PEACH,
+};
+
 const std::string DEFAULT_CAPTION = "Pyxel";
 const int32_t DEFAULT_SCALE = 0;
 const int32_t DEFAULT_FPS = 30;
