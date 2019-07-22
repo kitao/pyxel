@@ -113,6 +113,16 @@ Pyxelインストール後に、以下のコマンドでカレントディレク
 install_pyxel_examples
 ```
 
+コピーされるサンプルは以下の通りです。
+
+- [01_hello_pyxel.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py) - シンプルなアプリケーション
+- [02_jump_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py) - Pyxelリソースファイルを使ったジャンプゲーム
+- [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - 描画APIのデモ
+- [04_sound_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py) - サウンドAPIのデモ
+- [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - カラーパレット一覧
+- [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - マウスクリックゲーム
+- [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - BGM付きスネークゲーム
+
 サンプルは通常のPythonコードと同様に実行できます。
 
 **Windows:**
