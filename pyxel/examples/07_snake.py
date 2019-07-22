@@ -48,6 +48,7 @@ LEFT = Point(-1, 0)
 
 START = Point(5, 5 + HEIGHT_SCORE)
 
+
 ###################
 # The game itself #
 ###################
@@ -60,7 +61,7 @@ class Snake:
         """Initiate pyxel, set up initial game variables, and run."""
 
         pyxel.init(WIDTH, HEIGHT, caption="Snake!", scale=8, fps=20)
-        self.music = Music()
+        define_sound_and_music()
         self.reset()
         pyxel.run(self.update, self.draw)
 
@@ -73,7 +74,8 @@ class Snake:
         self.death = False
         self.score = 0
         self.generate_apple()
-        self.music.start_music()
+
+        pyxel.playm(0, loop=True)
 
     ##############
     # Game logic #
@@ -123,9 +125,10 @@ class Snake:
 
         if self.snake[0] == self.apple:
             self.score += 1
-            self.music.sfx_apple()
             self.snake.append(self.popped_point)
             self.generate_apple()
+
+            pyxel.play(0, 0)
 
     def generate_apple(self):
         """Generate an apple randomly."""
@@ -148,9 +151,10 @@ class Snake:
 
     def death_event(self):
         """Kill the game (bring up end screen)."""
-        self.music.sfx_death()
-        self.music.stop_music()
         self.death = True  # Check having run into self
+
+        pyxel.stop()
+        pyxel.play(0, 1)
 
     ##############
     # Draw logic #
@@ -209,94 +213,73 @@ class Snake:
 ###########################
 
 
-class Music:
-    def __init__(self):
-        """Define sound and music."""
+def define_sound_and_music():
+    """Define sound and music."""
 
-        # Sound effects
-        pyxel.sound(0).set(
-            note="c3e3g3c4c4", tone="s", volume="4", effect=("n" * 4 + "f"), speed=7
-        )
-        pyxel.sound(1).set(
-            note="f3 b2 f2 b1  f1 f1 f1 f1",
-            tone="p",
-            volume=("4" * 4 + "4321"),
-            effect=("n" * 7 + "f"),
-            speed=9,
-        )
+    # Sound effects
+    pyxel.sound(0).set(
+        note="c3e3g3c4c4", tone="s", volume="4", effect=("n" * 4 + "f"), speed=7
+    )
+    pyxel.sound(1).set(
+        note="f3 b2 f2 b1  f1 f1 f1 f1",
+        tone="p",
+        volume=("4" * 4 + "4321"),
+        effect=("n" * 7 + "f"),
+        speed=9,
+    )
 
-        melody1 = (
-            "c3 c3 c3 d3 e3 r e3 r"
-            + ("r" * 8)
-            + "e3 e3 e3 f3 d3 r c3 r"
-            + ("r" * 8)
-            + "c3 c3 c3 d3 e3 r e3 r"
-            + ("r" * 8)
-            + "b2 b2 b2 f3 d3 r c3 r"
-            + ("r" * 8)
-        )
+    melody1 = (
+        "c3 c3 c3 d3 e3 r e3 r"
+        + ("r" * 8)
+        + "e3 e3 e3 f3 d3 r c3 r"
+        + ("r" * 8)
+        + "c3 c3 c3 d3 e3 r e3 r"
+        + ("r" * 8)
+        + "b2 b2 b2 f3 d3 r c3 r"
+        + ("r" * 8)
+    )
 
-        melody2 = (
-            "rrrr e3e3e3e3 d3d3c3c3 b2b2c3c3"
-            + "a2a2a2a2 c3c3c3c3 d3d3d3d3 e3e3e3e3"
-            + "rrrr e3e3e3e3 d3d3c3c3 b2b2c3c3"
-            + "a2a2a2a2 g2g2g2g2 c3c3c3c3 g2g2a2a2"
-            + "rrrr e3e3e3e3 d3d3c3c3 b2b2c3c3"
-            + "a2a2a2a2 c3c3c3c3 d3d3d3d3 e3e3e3e3"
-            + "f3f3f3a3 a3a3a3a3 g3g3g3b3 b3b3b3b3"
-            + "b3b3b3b4 rrrr e3d3c3g3 a2g2e2d2"
-        )
+    melody2 = (
+        "rrrr e3e3e3e3 d3d3c3c3 b2b2c3c3"
+        + "a2a2a2a2 c3c3c3c3 d3d3d3d3 e3e3e3e3"
+        + "rrrr e3e3e3e3 d3d3c3c3 b2b2c3c3"
+        + "a2a2a2a2 g2g2g2g2 c3c3c3c3 g2g2a2a2"
+        + "rrrr e3e3e3e3 d3d3c3c3 b2b2c3c3"
+        + "a2a2a2a2 c3c3c3c3 d3d3d3d3 e3e3e3e3"
+        + "f3f3f3a3 a3a3a3a3 g3g3g3b3 b3b3b3b3"
+        + "b3b3b3b4 rrrr e3d3c3g3 a2g2e2d2"
+    )
 
-        # Music
-        pyxel.sound(2).set(
-            note=melody1 * 2 + melody2 * 2,
-            tone="s",
-            volume=("3"),
-            effect=("nnnsffff"),
-            speed=20,
-        )
+    # Music
+    pyxel.sound(2).set(
+        note=melody1 * 2 + melody2 * 2,
+        tone="s",
+        volume=("3"),
+        effect=("nnnsffff"),
+        speed=20,
+    )
 
-        harmony1 = (
-            "a1 a1 a1 b1  f1 f1 c2 c2"
-            "c2 c2 c2 c2  g1 g1 b1 b1" * 3
-            + "f1 f1 f1 f1 f1 f1 f1 f1 g1 g1 g1 g1 g1 g1 g1 g1"
-        )
-        harmony2 = (
-            ("f1" * 8 + "g1" * 8 + "a1" * 8 + ("c2" * 7 + "d2")) * 3
-            + "f1" * 16
-            + "g1" * 16
-        )
+    harmony1 = (
+        "a1 a1 a1 b1  f1 f1 c2 c2"
+        "c2 c2 c2 c2  g1 g1 b1 b1" * 3
+        + "f1 f1 f1 f1 f1 f1 f1 f1 g1 g1 g1 g1 g1 g1 g1 g1"
+    )
+    harmony2 = (
+        ("f1" * 8 + "g1" * 8 + "a1" * 8 + ("c2" * 7 + "d2")) * 3 + "f1" * 16 + "g1" * 16
+    )
 
-        pyxel.sound(3).set(
-            note=harmony1 * 2 + harmony2 * 2, tone="t", volume="5", effect="f", speed=20
-        )
-        pyxel.sound(4).set(
-            note=("f0 r a4 r  f0 f0 a4 r" "f0 r a4 r   f0 f0 a4 f0"),
-            tone="n",
-            volume="6622 6622 6622 6426",
-            effect="f",
-            speed=20,
-        )
+    pyxel.sound(3).set(
+        note=harmony1 * 2 + harmony2 * 2, tone="t", volume="5", effect="f", speed=20
+    )
+    pyxel.sound(4).set(
+        note=("f0 r a4 r  f0 f0 a4 r" "f0 r a4 r   f0 f0 a4 f0"),
+        tone="n",
+        volume="6622 6622 6622 6426",
+        effect="f",
+        speed=20,
+    )
 
-    def sfx_apple(self):
-        """Play apple collection sound."""
-        pyxel.play(ch=0, snd=0)
-
-    def sfx_death(self):
-        """Play death collection sound."""
-        pyxel.play(ch=0, snd=1)
-
-    def start_music(self):
-        """Start all music tracks (channels 1 - 3)."""
-        music_tracks = [2, 3, 4]
-        for ch, snd in enumerate(music_tracks):
-            pyxel.play(ch=(ch + 1), snd=snd, loop=True)
-
-    def stop_music(self):
-        """Stop all music tracks (channels 1 - 3)."""
-        for ch in range(1, 4):
-            pyxel.stop(ch=ch)
+    pyxel.music(0).set([], [2], [3], [4])
 
 
-if __name__ == "__main__":
-    Snake()
+Snake()
