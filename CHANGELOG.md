@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.8
+- Added the example #7
+
 ## 1.1.7
 - Fixed to stop with ctrl-c
 - Updated the classifiers of setup.py
