@@ -20,6 +20,7 @@ import pyxel
 
 Point = namedtuple("Point", ["x", "y"])  # Convenience class for coordinates
 
+
 #############
 # Constants #
 #############
