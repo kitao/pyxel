@@ -500,17 +500,17 @@ void music_set(void* self,
   }
 
   pyxelcore::SoundIndexList sound_index_list1;
-  for (int32_t i = 0; i < ch0_length; i++) {
+  for (int32_t i = 0; i < ch1_length; i++) {
     sound_index_list1.push_back(ch1[i]);
   }
 
   pyxelcore::SoundIndexList sound_index_list2;
-  for (int32_t i = 0; i < ch0_length; i++) {
+  for (int32_t i = 0; i < ch2_length; i++) {
     sound_index_list2.push_back(ch2[i]);
   }
 
   pyxelcore::SoundIndexList sound_index_list3;
-  for (int32_t i = 0; i < ch0_length; i++) {
+  for (int32_t i = 0; i < ch3_length; i++) {
     sound_index_list3.push_back(ch3[i]);
   }
 

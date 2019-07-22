@@ -446,25 +446,41 @@ class Music:
     def ch3(self) -> List[int]:
         return self._ch3  # type: ignore
 
-    def set(self, ch0: str, ch1: str, ch2: str, ch3: str) -> None:
+    def set(
+        self, ch0: List[int], ch1: List[int], ch2: List[int], ch3: List[int]
+    ) -> None:
+        length0 = len(ch0)
+        length1 = len(ch1)
+        length2 = len(ch2)
+        length3 = len(ch3)
+
         core.music_set(
-            ch0.encode("utf-8"),
-            ch1.encode("utf-8"),
-            ch2.encode("utf-8"),
-            ch3.encode("utf-8"),
+            self._c_obj,
+            (c_int32 * length0)(*ch0),
+            length0,
+            (c_int32 * length1)(*ch1),
+            length1,
+            (c_int32 * length2)(*ch2),
+            length2,
+            (c_int32 * length3)(*ch3),
+            length3,
         )
 
-    def set_ch0(self, ch0: str) -> None:
-        core.music_set(ch0.encode("utf-8"))
+    def set_ch0(self, ch0: List[int]) -> None:
+        length = len(ch0)
+        core.music_set(self._c_obj, (c_int32 * length)(*ch0), length)
 
-    def set_ch1(self, ch1: str) -> None:
-        core.music_set(ch1.encode("utf-8"))
+    def set_ch1(self, ch1: List[int]) -> None:
+        length = len(ch1)
+        core.music_set(self._c_obj, (c_int32 * length)(*ch1), length)
 
-    def set_ch2(self, ch2: str) -> None:
-        core.music_set(ch2.encode("utf-8"))
+    def set_ch2(self, ch2: List[int]) -> None:
+        length = len(ch2)
+        core.music_set(self._c_obj, (c_int32 * length)(*ch2), length)
 
-    def set_ch3(self, ch3: str) -> None:
-        core.music_set(ch3.encode("utf-8"))
+    def set_ch3(self, ch3: List[int]) -> None:
+        length = len(ch3)
+        core.music_set(self._c_obj, (c_int32 * length)(*ch3), length)
 
 
 #
