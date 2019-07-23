@@ -141,6 +141,12 @@ void System::FlipScreen() {
   DrawFrame(nullptr);
 }
 
+void System::ShowScreen() {
+  while (true) {
+    FlipScreen();
+  }
+}
+
 void System::SetCaption(const std::string& caption) {
   window_->SetCaption(caption);
 }

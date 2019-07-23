@@ -570,6 +570,10 @@ def flip() -> None:
     core.flip()
 
 
+def show() -> None:
+    core.show()
+
+
 def _caption(caption: str) -> None:
     core._caption(caption.encode("utf-8"))
 
