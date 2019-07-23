@@ -545,14 +545,14 @@ def init(
 
 
 def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
-    def update_wrapper():
+    def update_wrapper():  # type: ignore
         try:
             update()
         except Exception:
             traceback.print_exc()
             quit()
 
-    def draw_wrapper():
+    def draw_wrapper():  # type: ignore
         try:
             draw()
         except Exception:
