@@ -281,7 +281,10 @@ Start the Pyxel application and call `update` function for frame update and `dra
 Quit the Pyxel application at the end of the current frame
 
 - `flip()`<br>
-Force drawing (do not use in normal applications)
+Force drawing the screen (do not use in normal applications)
+
+- `show()`<br>
+Draw the screen and wait forever (do not use in normal applications)
 
 ### Resource
 

@@ -4,6 +4,7 @@
 - Added the example #7
 - Fixed the set method of the Music class
 - Added the list of the examples to the READMEs
+- Added the show API
 
 ## 1.1.7
 - Fixed to stop with ctrl-c
