@@ -299,7 +299,7 @@ Read the resource file (.pyxres) from the directory of the execution script
 The current position of the mouse cursor
 
 - `btn(key)`<br>
-Return `True` if `key` is pressed, otherwise return `False` ([key definition list](https://github.com/kitao/pyxel/blob/master/pyxel/constants.py))
+Return `True` if `key` is pressed, otherwise return `False` ([key definition list](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
 
 - `btnp(key, [hold], [period])`<br>
 Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `period` are specified, `True` will be returned at the `period` frame interval when the `key` is held down for more than `hold` frames
