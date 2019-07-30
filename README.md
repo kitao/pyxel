@@ -82,6 +82,24 @@ sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
 sudo pip3 install pyxel
 ```
 
+**Raspberry Pi**
+
+The Raspberry Pi installation requires you to manually recompile the shared library for the ARM architecture.
+
+First install the prequesites:
+```sh
+sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
+
+```
+Clone/Download the latest version of pyxel, compile the shared libraries and install the library:
+```sh
+git clone https://github.com/kitao/pyxel.git pyxel
+cd pyxel/pyxel/core/
+make
+pip3 install <path-to-project>/pyxel
+```
+
+
 ### When installation fails
 
 There seems to be a case where Pyxel installation fails due to the influence of `pip`'s previous cache. In that case, try running the `pip` command with the following option.
@@ -103,6 +121,7 @@ pip3 install --no-cache-dir --ignore-installed pyxel
 ```sh
 sudo pip3 install --no-cache-dir --ignore-installed pyxel
 ```
+
 
 ### Install examples
 
