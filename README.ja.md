@@ -302,7 +302,7 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 現在のマウスカーソル座標
 
 - `btn(key)`<br>
-`key`が押されていたら`True`、押されていなければ`False`を返す ([キー定義一覧](https://github.com/kitao/pyxel/blob/master/pyxel/constants.py))
+`key`が押されていたら`True`、押されていなければ`False`を返す ([キー定義一覧](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
 
 - `btnp(key, [hold], [period])`<br>
 そのフレームに`key`が押されたら`True`、押されなければ`False`を返す。`hold`と`period`を指定すると、`hold`フレーム以上ボタンを押し続けた際に`period`フレーム間隔で`True`が返る
