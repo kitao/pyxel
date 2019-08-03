@@ -596,68 +596,7 @@ def load(filename: str) -> None:
     )
     filename = os.path.join(dirname, filename)
 
-    ext = os.path.splitext(filename)[1]
-    if ext == ".pyxel":
-        return load_as_old_pyxel_format(filename)
-
     core.load(filename.encode("utf-8"))
-
-
-def load_as_old_pyxel_format(filename: str) -> None:
-    print("load as old pyxel format")
-
-    import gzip
-    import pickle
-
-    with gzip.open(filename, mode="rb") as fp:
-        pickled_data = fp.read()
-
-    _sound = sound
-    _music = music
-
-    data = pickle.loads(pickled_data)
-
-    image_list = data.get("image")
-    if image_list:
-        for i in range(len(image_list)):
-            image(i).data[:, :] = pickle.loads(image_list[i])
-
-    tilemap_list = data.get("tilemap")
-    if tilemap_list:
-        if type(tilemap_list[0]) is tuple:
-            for i in range(len(tilemap_list)):
-                tilemap(i).data[:, :] = pickle.loads(tilemap_list[i][0])
-                tilemap(i).refimg = tilemap_list[i][1]
-        else:  # todo: delete this block in the future
-            for i in range(len(tilemap_list)):
-                tilemap(i).data[:, :] = pickle.loads(tilemap_list[i])
-
-    sound_list = data.get("sound")
-    if sound_list:
-        for i in range(len(sound_list)):
-            src = sound_list[i]
-            dst = _sound(i)
-
-            dst.note[:] = src._note
-            dst.tone[:] = src._tone
-            dst.volume[:] = src._volume
-            dst.effect[:] = src._effect
-            dst.speed = src.speed
-
-    music_list = data.get("music")
-    if music_list:
-        for i in range(len(music_list)):
-            src = music_list[i]
-            dst = _music(i)  # type: ignore
-
-            dst.ch0[:] = src._ch0  # type: ignore
-            dst.ch1[:] = src._ch1  # type: ignore
-            dst.ch2[:] = src._ch2  # type: ignore
-            dst.ch3[:] = src._ch3  # type: ignore
-
-    module = sys.modules[__name__]
-    module.sound = _sound  # type: ignore
-    module.music = _music  # type: ignore
 
 
 #
