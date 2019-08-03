@@ -27,7 +27,7 @@ class App(Widget):
     def __init__(self, resource_file):
         resource_file = os.path.join(os.getcwd(), resource_file)
         root, ext = os.path.splitext(resource_file)
-        if ext != pyxel.RESOURCE_FILE_EXTENSION and ext != ".pyxel":
+        if ext != pyxel.RESOURCE_FILE_EXTENSION:
             resource_file += pyxel.RESOURCE_FILE_EXTENSION
 
         pyxel.init(
