@@ -180,6 +180,32 @@ class App:
 App()
 ```
 
+It is also possible to write simple code using `show` and `flip` functions to draw simple graphics and animations.
+
+The `show` function displays the screen and waits until the `ESC` key is pressed.
+
+```python
+import pyxel
+
+pyxel.init(120, 120)
+pyxel.cls(1)
+pyxel.circb(60, 60, 40, 7)
+pyxel.show()
+```
+
+The `flip` function updates the screen once.
+
+```python
+import pyxel
+
+pyxel.init(120, 80)
+
+while True:
+    pyxel.cls(3)
+    pyxel.rectb(pyxel.frame_count % 160 - 40, 20, 40, 40, 7)
+    pyxel.flip()
+```
+
 ### Special Controls
 
 The following special controls can be performed while a Pyxel application is running:

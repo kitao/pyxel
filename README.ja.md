@@ -181,6 +181,33 @@ class App:
 App()
 ```
 
+また、シンプルなグラフィックスやアニメーションを作成する場合は、`show`関数や`flip`関数を使った簡易的な記述も可能です。
+
+`show`関数は画面を表示して、`ESC`キーが押されるまで待機します。
+
+```python
+import pyxel
+
+pyxel.init(120, 120)
+pyxel.cls(1)
+pyxel.circb(60, 60, 40, 7)
+pyxel.show()
+```
+
+`flip`関数は画面を一度更新します。
+
+```python
+import pyxel
+
+pyxel.init(120, 80)
+
+while True:
+    pyxel.cls(3)
+    pyxel.rectb(pyxel.frame_count % 160 - 40, 20, 40, 40, 7)
+    pyxel.flip()
+```
+
+
 ### 特殊操作
 
 Pyxelアプリケーション実行中に、以下の特殊操作を行うことができます。
