@@ -82,26 +82,23 @@ sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
 sudo pip3 install pyxel
 ```
 
-### When installation fails
+### Other environment
 
-There seems to be a case where Pyxel installation fails due to the influence of `pip`'s previous cache. In that case, try running the `pip` command with the following option.
+To install Pyxel in an environment other than the above (32-bit Linux, Raspberry PI, etc.), follow the steps below for building:
 
-**Windows:**
+#### Install necessary tools and packages
 
-```sh
-pip install --no-cache-dir --ignore-installed pyxel
-```
+- C++ build toolchain (should include gcc and make command)
+- libsdl2-dev and libsdl2-image-dev
+- [Python3](https://www.python.org/) (version 3.7 or highter) and pip command
 
-**Mac:**
-
-```sh
-pip3 install --no-cache-dir --ignore-installed pyxel
-```
-
-**Linux:**
+#### Execute the following command in any folder
 
 ```sh
-sudo pip3 install --no-cache-dir --ignore-installed pyxel
+git clone https://github.com/kitao/pyxel.git
+cd pyxel
+make -C pyxel/core clean all
+pip3 install
 ```
 
 ### Install examples

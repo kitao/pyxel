@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.0
+- Removed support for loading old format
+- Added the build method to the READMEs
+
 ## 1.1.8
 - Added the example #7
 - Fixed the set method of the Music class
