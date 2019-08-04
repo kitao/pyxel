@@ -99,7 +99,7 @@ sudo pip3 install pyxel
 git clone https://github.com/kitao/pyxel.git
 cd pyxel
 make -C pyxel/core clean all
-pip3 install
+pip3 install .
 ```
 
 ### サンプルのインストール
