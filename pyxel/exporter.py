@@ -47,6 +47,7 @@ def run():
         )
 
     try:
+        shutil.rmtree("dist", ignore_errors=True)
         _run_pyinstaller(options + [filename])
     finally:
         shutil.rmtree("build", ignore_errors=True)
