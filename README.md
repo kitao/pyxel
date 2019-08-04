@@ -89,7 +89,8 @@ To install Pyxel in an environment other than the above (32-bit Linux, Raspberry
 #### Install necessary tools and packages
 
 - C++ build toolchain (should include gcc and make command)
-- libsdl2-dev and libsdl2-image-dev
+- libsdl2-dev
+- libsdl2-image-dev
 - [Python3](https://www.python.org/) (version 3.7 or highter) and pip command
 
 #### Execute the following command in any folder
