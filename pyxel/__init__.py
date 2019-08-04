@@ -259,7 +259,7 @@ class Image:
         dirname = os.path.dirname(
             inspect.currentframe().f_back.f_code.co_filename  # type: ignore
         )
-        filename = os.path.join(dirname, filename)
+        filename = os.path.abspath(os.path.join(dirname, filename))
 
         core.image_load(self._obj, int(x), int(y), filename.encode("utf-8"))
 
@@ -594,7 +594,7 @@ def load(filename: str) -> None:
     dirname = os.path.dirname(
         inspect.currentframe().f_back.f_code.co_filename  # type: ignore
     )
-    filename = os.path.join(dirname, filename)
+    filename = os.path.abspath(os.path.join(dirname, filename))
 
     core.load(filename.encode("utf-8"))
 
