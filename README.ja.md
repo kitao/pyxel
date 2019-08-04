@@ -555,7 +555,8 @@ Pyxelは[MITライセンス](http://en.wikipedia.org/wiki/MIT_License)です。�
 
 Pyxelは以下のライブラリを使用しています。
 
-- [SDL2](https://www.libsdl.org/) - [zlib License](https://www.zlib.net/zlib_license.html)
-- [NumPy](https://www.numpy.org/) - [BSD License](https://www.numpy.org/license.html#license)
-- [gif-h](https://github.com/ginsweater/gif-h) - [Unlicense](https://github.com/ginsweater/gif-h/blob/master/LICENSE)
-- [miniz-cpp](https://github.com/tfussell/miniz-cpp) - [MIT License](https://github.com/tfussell/miniz-cpp/blob/master/LICENSE.md)
+- [SDL2](https://www.libsdl.org/)
+- [gif-h](https://github.com/ginsweater/gif-h)
+- [miniz-cpp](https://github.com/tfussell/miniz-cpp)
+- [NumPy](https://www.numpy.org/)
+- [PyInstaller](https://www.pyinstaller.org/)
