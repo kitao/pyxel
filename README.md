@@ -223,7 +223,7 @@ Toggle the performance monitor (fps, update time, and draw time)
 - `Alt(Option)+Enter`<br>
 Toggle full screen
 
-### Pyxel Editor
+### How to Create a Resource
 
 The attached Pyxel Editor can create images and sounds used in a Pyxel application.
 
@@ -282,6 +282,20 @@ Pyxel sounds can also be created in the following way:
 - Create a sound from strings with `Sound.set` or `Music.set` function
 
 Please refer to the API reference for usage of these functions.
+
+### How to Create a Stand-Alone Executable
+
+By using the attached Pyxel Packager, a stand-alone executable that will work even in environments where Python is not installed can be created.
+
+To create a stand-alone executable, specify the Python file to be used to launch the application with the `pyxelpackager` command as follows:
+
+```sh
+pyxelpackager python_file
+```
+
+When the process is complete, a stand-alone executable is created in the `dist` folder.
+
+If resources such as .pyxres and .png files are also necessary, put them under the `assets` folder and they will be included.
 
 ## API Reference
 
