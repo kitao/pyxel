@@ -12,10 +12,10 @@ def run():
 
     if not arg or arg.startswith("-"):
         if arg == "-v" or arg == "--version":
-            print("pyxelexport {}".format(pyxel.VERSION))
+            print("Pyxel Packager {}".format(pyxel.VERSION))
             return
         else:
-            print("Usage: pyxelexport python_file")
+            print("Usage: pyxelpackager python_file")
             print("Options:")
             print(" -h, --help     This help text")
             print(" -v, --version  Show version number and quit")
