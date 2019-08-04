@@ -4,6 +4,7 @@
 - Removed support for loading old format
 - Added the build method to the READMEs
 - Added the usage of the show and flip APIs to the READMEs
+- Added the pyxelexport command
 
 ## 1.1.8
 - Added the example #7

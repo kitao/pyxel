@@ -4,22 +4,35 @@ import sys
 from ctypes import CFUNCTYPE, POINTER, c_char_p, c_int32, c_void_p, cdll
 
 
-def _load_library():
-    lib_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin")
+def _get_relative_libpath():
     lib_name = "libpyxelcore"
+
     system = platform.system()
 
     if system == "Darwin":
-        lib_path = os.path.join(lib_dir, "macos", lib_name) + ".dylib"
+        lib_name = os.path.join("macos", lib_name) + ".dylib"
     elif system == "Windows":
         win_dir = "win64" if platform.architecture()[0] == "64bit" else "win32"
-        lib_path = os.path.join(lib_dir, win_dir, lib_name) + ".dll"
-        dll_path = os.path.join(lib_dir, win_dir)
-        os.environ["PATH"] = dll_path + os.pathsep + os.environ["PATH"]
+        lib_name = os.path.join(win_dir, lib_name) + ".dll"
     elif system == "Linux":
-        lib_path = os.path.join(lib_dir, "linux", lib_name) + ".so"
+        lib_name = os.path.join("linux", lib_name) + ".so"
     else:
-        raise RuntimeError("unsupported platform: {}".format(system))
+        lib_name = ""
+
+    return os.path.join("pyxel/core/bin", lib_name)
+
+
+def _get_absolute_libpath():
+    return os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "../..", _get_relative_libpath())
+    )
+
+
+def _load_library():
+    lib_path = _get_absolute_libpath()
+
+    if os.path.splitext(lib_path)[1] == ".dll":
+        os.environ["PATH"] = os.path.dirname(lib_path) + os.pathsep + os.environ["PATH"]
 
     return cdll.LoadLibrary(lib_path)
 
