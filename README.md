@@ -98,7 +98,7 @@ To install Pyxel in an environment other than the above (32-bit Linux, Raspberry
 git clone https://github.com/kitao/pyxel.git
 cd pyxel
 make -C pyxel/core clean all
-pip3 install
+pip3 install .
 ```
 
 ### Install examples
