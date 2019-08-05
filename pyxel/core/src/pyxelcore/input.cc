@@ -2,6 +2,9 @@
 
 #include "pyxelcore/window.h"
 
+#define GET_KEY_STATE(key) \
+  sdl_scancode_state[SDL_GetScancodeFromKey(SDL_KEYCODE_TABLE[key])]
+
 namespace pyxelcore {
 
 Input::Input() {
@@ -38,24 +41,23 @@ void Input::Update(const Window* window, int32_t frame_count) {
   SDL_ShowCursor(mouse_x_ < 0 || mouse_x_ >= window->ScreenWidth() ||
                  mouse_y_ < 0 || mouse_y_ >= window->ScreenHeight());
 
-  const uint8_t* sdl_key_state = SDL_GetKeyboardState(NULL);
+  const uint8_t* sdl_scancode_state = SDL_GetKeyboardState(NULL);
 
-  for (int32_t i = 0; i < SDL_KEY_COUNT; i++) {
-    UpdateKeyState(i, sdl_key_state[SDL_KEY_TABLE[i]]);
+  for (int32_t i = 0; i < SDL_KEYCODE_COUNT; i++) {
+    UpdateKeyState(i, GET_KEY_STATE(i));
   }
 
-  UpdateKeyState(KEY_SHIFT, sdl_key_state[SDL_KEY_TABLE[KEY_LEFT_SHIFT]] ||
-                                sdl_key_state[SDL_KEY_TABLE[KEY_RIGHT_SHIFT]]);
+  UpdateKeyState(KEY_SHIFT, GET_KEY_STATE(KEY_LEFT_SHIFT) ||
+                                GET_KEY_STATE(KEY_RIGHT_SHIFT));
 
-  UpdateKeyState(KEY_CONTROL,
-                 sdl_key_state[SDL_KEY_TABLE[KEY_LEFT_CONTROL]] ||
-                     sdl_key_state[SDL_KEY_TABLE[KEY_RIGHT_CONTROL]]);
+  UpdateKeyState(KEY_CONTROL, GET_KEY_STATE(KEY_LEFT_CONTROL) ||
+                                  GET_KEY_STATE(KEY_RIGHT_CONTROL));
 
-  UpdateKeyState(KEY_ALT, sdl_key_state[SDL_KEY_TABLE[KEY_LEFT_ALT]] ||
-                              sdl_key_state[SDL_KEY_TABLE[KEY_RIGHT_ALT]]);
+  UpdateKeyState(KEY_ALT,
+                 GET_KEY_STATE(KEY_LEFT_ALT) || GET_KEY_STATE(KEY_RIGHT_ALT));
 
-  UpdateKeyState(KEY_SUPER, sdl_key_state[SDL_KEY_TABLE[KEY_LEFT_SUPER]] ||
-                                sdl_key_state[SDL_KEY_TABLE[KEY_RIGHT_SUPER]]);
+  UpdateKeyState(KEY_SUPER, GET_KEY_STATE(KEY_LEFT_SUPER) ||
+                                GET_KEY_STATE(KEY_RIGHT_SUPER));
 
   uint32_t mouse_state = SDL_GetMouseState(NULL, NULL);
 
@@ -64,18 +66,16 @@ void Input::Update(const Window* window, int32_t frame_count) {
   UpdateKeyState(MOUSE_RIGHT_BUTTON, mouse_state & SDL_BUTTON_RMASK);
 
   if (gamepad1_) {
-    for (int32_t i = 0; i < SDL_BUTTON_COUNT; i++) {
-      bool button_state =
-          SDL_GameControllerGetButton(gamepad1_, SDL_BUTTON_TABLE[i]);
-      UpdateKeyState(GAMEPAD_1_A + i, button_state);
+    for (int32_t i = 0; i < BUTTON_COUNT; i++) {
+      UpdateKeyState(GAMEPAD_1_A + i, SDL_GameControllerGetButton(
+                                          gamepad1_, SDL_BUTTON_TABLE[i]));
     }
   }
 
   if (gamepad2_) {
-    for (int32_t i = 0; i < SDL_BUTTON_COUNT; i++) {
-      bool button_state =
-          SDL_GameControllerGetButton(gamepad2_, SDL_BUTTON_TABLE[i]);
-      UpdateKeyState(GAMEPAD_2_A + i, button_state);
+    for (int32_t i = 0; i < BUTTON_COUNT; i++) {
+      UpdateKeyState(GAMEPAD_2_A + i, SDL_GameControllerGetButton(
+                                          gamepad2_, SDL_BUTTON_TABLE[i]));
     }
   }
 }
