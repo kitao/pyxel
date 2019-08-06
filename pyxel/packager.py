@@ -1,5 +1,6 @@
 import glob
 import os
+import platform
 import shutil
 import sys
 
@@ -24,6 +25,7 @@ def run():
     dirname = os.path.dirname(arg) or "."
     filename = os.path.basename(arg)
     name = name or os.path.splitext(filename)[0]
+    separator = ";" if platform.system() == "Windows" else ":"
 
     os.chdir(dirname)
 
@@ -33,8 +35,9 @@ def run():
         "--name={}".format(name),
         "--onefile",
         "--noconsole",
-        "--add-data={}:{}".format(
+        "--add-data={}{}{}".format(
             pyxel.core._get_absolute_libpath(),
+            separator,
             os.path.dirname(pyxel.core._get_relative_libpath()),
         ),
     ]
@@ -43,7 +46,9 @@ def run():
 
     for asset in assets:
         options.append(
-            "--add-data={}:{}".format(os.path.abspath(asset), os.path.dirname(asset))
+            "--add-data={}{}{}".format(
+                os.path.abspath(asset), separator, os.path.dirname(asset)
+            )
         )
 
     try:
