@@ -1,5 +1,2 @@
 numpy
-glfw
-PyOpenGL
-sounddevice
-Pillow
+PyInstaller
