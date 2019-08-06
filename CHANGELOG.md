@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.2
+- Updated the requirements.txt and Pipfile
+
 ## 1.2.1
 - Changed to use SDK_Keycode instead of SDL_Scancode
 - Fixed to use the correct separator in the Pyxel Packager
