@@ -22,5 +22,5 @@ def run():
 
 
 if __name__ == "__main__":
-    sys.argv[1:] = ["assets/test_resource"]
+    sys.argv[1:] = [os.path.join(os.path.dirname(__file__), "assets/test_resource")]
     run()
