@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 numpy = "*"
+PyInstaller = "*"
 
 [dev-packages]
 
