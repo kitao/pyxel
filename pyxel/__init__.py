@@ -259,7 +259,7 @@ class Image:
         caller = inspect.currentframe().f_back.f_code.co_filename
         dirname = (
             getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(caller)))
-            if getattr(sys, "frozen") and hasattr(sys, "_MEIPASS")
+            if hasattr(sys, "_MEIPASS")
             else os.path.dirname(caller)
         )
         filename = os.path.abspath(os.path.join(dirname, filename))
@@ -597,7 +597,7 @@ def load(filename: str) -> None:
     caller = inspect.currentframe().f_back.f_code.co_filename
     dirname = (
         getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(caller)))
-        if getattr(sys, "frozen") and hasattr(sys, "_MEIPASS")
+        if hasattr(sys, "_MEIPASS")
         else os.path.dirname(caller)
     )
     filename = os.path.abspath(os.path.join(dirname, filename))

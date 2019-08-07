@@ -80,3 +80,7 @@ def _run_pyinstaller(args):
 
     print("pyinstaller {}".format(" ".join(args)))
     PyInstaller.__main__.run(args)
+
+
+if __name__ == "__main__":
+    run()
