@@ -2,6 +2,7 @@
 
 ## 1.2.2
 - Updated the requirements.txt and Pipfile
+- Fixed the Pyxel Packager for Windows
 
 ## 1.2.1
 - Changed to use SDK_Keycode instead of SDL_Scancode

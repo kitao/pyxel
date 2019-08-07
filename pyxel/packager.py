@@ -32,15 +32,27 @@ def run():
     options = [
         "--clean",
         "--noconfirm",
-        "--name={}".format(name),
+        "--log-level=WARN",
         "--onefile",
         "--noconsole",
-        "--add-data={}{}{}".format(
-            pyxel.core._get_absolute_libpath(),
-            separator,
-            os.path.dirname(pyxel.core._get_relative_libpath()),
-        ),
+        "--name={}".format(name),
+        "--hidden-import=numpy.random.bounded_integers",
+        "--hidden-import=numpy.random.common",
+        "--hidden-import=numpy.random.entropy",
     ]
+
+    src_lib_dir = os.path.dirname(pyxel.core._get_absolute_libpath())
+    dst_lib_dir = os.path.dirname(pyxel.core._get_relative_libpath())
+    libs = filter(os.path.isfile, glob.glob(os.path.join(src_lib_dir, "*")))
+
+    for lib in libs:
+        libname = os.path.basename(lib)
+
+        options.append(
+            "--add-data={}{}{}".format(
+                os.path.join(src_lib_dir, libname), separator, dst_lib_dir
+            )
+        )
 
     assets = filter(os.path.isfile, glob.glob("assets/**", recursive=True))
 
