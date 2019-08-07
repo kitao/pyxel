@@ -256,8 +256,11 @@ class Image:
             core.image_set(self._obj, int(x), int(y), c_data, data_count)
 
     def load(self, x: int, y: int, filename: str) -> None:
-        dirname = os.path.dirname(
-            inspect.currentframe().f_back.f_code.co_filename  # type: ignore
+        caller = inspect.currentframe().f_back.f_code.co_filename
+        dirname = (
+            getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(caller)))
+            if getattr(sys, "frozen") and hasattr(sys, "_MEIPASS")
+            else os.path.dirname(caller)
         )
         filename = os.path.abspath(os.path.join(dirname, filename))
 
@@ -591,8 +594,11 @@ def save(filename: str) -> None:
 
 
 def load(filename: str) -> None:
-    dirname = os.path.dirname(
-        inspect.currentframe().f_back.f_code.co_filename  # type: ignore
+    caller = inspect.currentframe().f_back.f_code.co_filename
+    dirname = (
+        getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(caller)))
+        if getattr(sys, "frozen") and hasattr(sys, "_MEIPASS")
+        else os.path.dirname(caller)
     )
     filename = os.path.abspath(os.path.join(dirname, filename))
 
