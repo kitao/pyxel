@@ -18,8 +18,8 @@ Audio::Audio() {
     PYXEL_ERROR("failed to initialize SDL Audio");
   }
 
-  sound_bank_ = new Sound*[EXTENDED_SOUND_BANK_COUNT];
-  for (int32_t i = 0; i < EXTENDED_SOUND_BANK_COUNT; i++) {
+  sound_bank_ = new Sound*[TOTAL_SOUND_BANK_COUNT];
+  for (int32_t i = 0; i < TOTAL_SOUND_BANK_COUNT; i++) {
     sound_bank_[i] = new Sound();
   }
 
@@ -32,7 +32,7 @@ Audio::Audio() {
 }
 
 Audio::~Audio() {
-  for (int32_t i = 0; i < EXTENDED_SOUND_BANK_COUNT; i++) {
+  for (int32_t i = 0; i < TOTAL_SOUND_BANK_COUNT; i++) {
     delete sound_bank_[i];
   }
   delete[] sound_bank_;
@@ -64,7 +64,7 @@ void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
     PYXEL_ERROR("invalid channel");
   }
 
-  if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+  if (sound_index < 0 || sound_index >= TOTAL_SOUND_BANK_COUNT) {
     PYXEL_ERROR("invalid sound index");
   }
 
@@ -82,7 +82,7 @@ void Audio::PlaySound(int32_t channel,
   SoundList sound_list;
 
   for (int32_t sound_index : sound_index_list) {
-    if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+    if (sound_index < 0 || sound_index >= TOTAL_SOUND_BANK_COUNT) {
       PYXEL_ERROR("invalid sound index");
     }
 
