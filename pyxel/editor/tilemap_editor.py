@@ -39,7 +39,7 @@ class TileMapEditor(Editor):
             192,
             161,
             0,
-            pyxel.IMAGE_BANK_COUNT - 1,
+            pyxel.USER_IMAGE_BANK_COUNT - 1,
             pyxel.tilemap(self._tilemap_picker.value).refimg,
         )
 

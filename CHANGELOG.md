@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.3
+- Fixed an error of tone playback in the Sound Editor
+-
+
 ## 1.2.2
 - Updated the requirements.txt and Pipfile
 - Fixed the Pyxel Packager for Windows
