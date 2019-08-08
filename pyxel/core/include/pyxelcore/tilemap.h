@@ -38,7 +38,7 @@ class Tilemap {
 };
 
 inline void Tilemap::ImageIndex(int32_t image_index) {
-  if (image_index < 0 || image_index >= IMAGE_BANK_COUNT) {
+  if (image_index < 0 || image_index >= TOTAL_IMAGE_BANK_COUNT) {
     PYXEL_ERROR("invalid image index");
   }
 
