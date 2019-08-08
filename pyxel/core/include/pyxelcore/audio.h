@@ -32,11 +32,11 @@ class Audio {
 };
 
 inline Sound* Audio::GetSoundBank(int32_t sound_index, bool system) const {
-  if (sound_index < 0 || sound_index >= EXTENDED_SOUND_BANK_COUNT) {
+  if (sound_index < 0 || sound_index >= TOTAL_SOUND_BANK_COUNT) {
     PYXEL_ERROR("invalid sound index");
   }
 
-  if (sound_index >= SOUND_BANK_COUNT && !system) {
+  if (sound_index >= USER_SOUND_BANK_COUNT && !system) {
     PYXEL_ERROR("access to sound bank for system");
   }
 
