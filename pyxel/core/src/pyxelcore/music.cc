@@ -14,7 +14,7 @@ void Music::Set(const SoundIndexList& channel0,
 
 void Music::SetChannel0(const SoundIndexList& channel0) {
   for (int32_t sound_index : channel0) {
-    if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+    if (sound_index < 0 || sound_index >= TOTAL_SOUND_BANK_COUNT) {
       PYXEL_ERROR("invalid sound index");
     }
   }
@@ -24,7 +24,7 @@ void Music::SetChannel0(const SoundIndexList& channel0) {
 
 void Music::SetChannel1(const SoundIndexList& channel1) {
   for (int32_t sound_index : channel1) {
-    if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+    if (sound_index < 0 || sound_index >= TOTAL_SOUND_BANK_COUNT) {
       PYXEL_ERROR("invalid sound index");
     }
   }
@@ -33,7 +33,7 @@ void Music::SetChannel1(const SoundIndexList& channel1) {
 }
 void Music::SetChannel2(const SoundIndexList& channel2) {
   for (int32_t sound_index : channel2) {
-    if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+    if (sound_index < 0 || sound_index >= TOTAL_SOUND_BANK_COUNT) {
       PYXEL_ERROR("invalid sound index");
     }
   }
@@ -42,7 +42,7 @@ void Music::SetChannel2(const SoundIndexList& channel2) {
 }
 void Music::SetChannel3(const SoundIndexList& channel3) {
   for (int32_t sound_index : channel3) {
-    if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+    if (sound_index < 0 || sound_index >= TOTAL_SOUND_BANK_COUNT) {
       PYXEL_ERROR("invalid sound index");
     }
   }
