@@ -64,7 +64,7 @@ void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
     PYXEL_ERROR("invalid channel");
   }
 
-  if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+  if (sound_index < 0 || sound_index >= EXTENDED_SOUND_BANK_COUNT) {
     PYXEL_ERROR("invalid sound index");
   }
 
@@ -82,7 +82,7 @@ void Audio::PlaySound(int32_t channel,
   SoundList sound_list;
 
   for (int32_t sound_index : sound_index_list) {
-    if (sound_index < 0 || sound_index >= SOUND_BANK_COUNT) {
+    if (sound_index < 0 || sound_index >= EXTENDED_SOUND_BANK_COUNT) {
       PYXEL_ERROR("invalid sound index");
     }
 
