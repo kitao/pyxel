@@ -5,7 +5,7 @@
 
 namespace pyxelcore {
 
-struct Window;
+class Window;
 
 class Input {
  public:
