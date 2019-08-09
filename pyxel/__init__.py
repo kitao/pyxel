@@ -80,7 +80,7 @@ DEFAULT_BORDER_WIDTH: int = _get_constant_number("DEFAULT_BORDER_WIDTH")
 DEFAULT_BORDER_COLOR: int = _get_constant_number("DEFAULT_BORDER_COLOR")
 
 KEY_SPACE: int = _get_constant_number("KEY_SPACE")
-KEY_APOSTROPHE: int = _get_constant_number("KEY_APOSTROPHE")
+KEY_QUOTE: int = _get_constant_number("KEY_QUOTE")
 KEY_COMMA: int = _get_constant_number("KEY_COMMA")
 KEY_MINUS: int = _get_constant_number("KEY_MINUS")
 KEY_PERIOD: int = _get_constant_number("KEY_PERIOD")
@@ -126,7 +126,7 @@ KEY_Z: int = _get_constant_number("KEY_Z")
 KEY_LEFT_BRACKET: int = _get_constant_number("KEY_LEFT_BRACKET")
 KEY_BACKSLASH: int = _get_constant_number("KEY_BACKSLASH")
 KEY_RIGHT_BRACKET: int = _get_constant_number("KEY_RIGHT_BRACKET")
-KEY_GRAVE_ACCENT: int = _get_constant_number("KEY_GRAVE_ACCENT")
+KEY_BACKQUOTE: int = _get_constant_number("KEY_BACKQUOTE")
 KEY_ESCAPE: int = _get_constant_number("KEY_ESCAPE")
 KEY_ENTER: int = _get_constant_number("KEY_ENTER")
 KEY_TAB: int = _get_constant_number("KEY_TAB")
@@ -256,8 +256,11 @@ class Image:
             core.image_set(self._obj, int(x), int(y), c_data, data_count)
 
     def load(self, x: int, y: int, filename: str) -> None:
-        dirname = os.path.dirname(
-            inspect.currentframe().f_back.f_code.co_filename  # type: ignore
+        caller = inspect.currentframe().f_back.f_code.co_filename
+        dirname = (
+            getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(caller)))
+            if hasattr(sys, "_MEIPASS")
+            else os.path.dirname(caller)
         )
         filename = os.path.abspath(os.path.join(dirname, filename))
 
@@ -591,8 +594,11 @@ def save(filename: str) -> None:
 
 
 def load(filename: str) -> None:
-    dirname = os.path.dirname(
-        inspect.currentframe().f_back.f_code.co_filename  # type: ignore
+    caller = inspect.currentframe().f_back.f_code.co_filename
+    dirname = (
+        getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(caller)))
+        if hasattr(sys, "_MEIPASS")
+        else os.path.dirname(caller)
     )
     filename = os.path.abspath(os.path.join(dirname, filename))
 

@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.2.2
+- Updated the requirements.txt and Pipfile
+- Fixed the Pyxel Packager for Windows
+
+## 1.2.1
+- Changed to use SDK_Keycode instead of SDL_Scancode
+- Fixed to use the correct separator in the Pyxel Packager
+
 ## 1.2.0
 - Removed support for loading old format
 - Added the build method to the READMEs

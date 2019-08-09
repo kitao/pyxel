@@ -1,5 +1,6 @@
 import glob
 import os
+import platform
 import shutil
 import sys
 
@@ -24,26 +25,42 @@ def run():
     dirname = os.path.dirname(arg) or "."
     filename = os.path.basename(arg)
     name = name or os.path.splitext(filename)[0]
+    separator = ";" if platform.system() == "Windows" else ":"
 
     os.chdir(dirname)
 
     options = [
         "--clean",
         "--noconfirm",
-        "--name={}".format(name),
+        "--log-level=WARN",
         "--onefile",
         "--noconsole",
-        "--add-data={}:{}".format(
-            pyxel.core._get_absolute_libpath(),
-            os.path.dirname(pyxel.core._get_relative_libpath()),
-        ),
+        "--name={}".format(name),
+        "--hidden-import=numpy.random.bounded_integers",
+        "--hidden-import=numpy.random.common",
+        "--hidden-import=numpy.random.entropy",
     ]
+
+    src_lib_dir = os.path.dirname(pyxel.core._get_absolute_libpath())
+    dst_lib_dir = os.path.dirname(pyxel.core._get_relative_libpath())
+    libs = filter(os.path.isfile, glob.glob(os.path.join(src_lib_dir, "*")))
+
+    for lib in libs:
+        libname = os.path.basename(lib)
+
+        options.append(
+            "--add-data={}{}{}".format(
+                os.path.join(src_lib_dir, libname), separator, dst_lib_dir
+            )
+        )
 
     assets = filter(os.path.isfile, glob.glob("assets/**", recursive=True))
 
     for asset in assets:
         options.append(
-            "--add-data={}:{}".format(os.path.abspath(asset), os.path.dirname(asset))
+            "--add-data={}{}{}".format(
+                os.path.abspath(asset), separator, os.path.dirname(asset)
+            )
         )
 
     try:
@@ -63,3 +80,7 @@ def _run_pyinstaller(args):
 
     print("pyinstaller {}".format(" ".join(args)))
     PyInstaller.__main__.run(args)
+
+
+if __name__ == "__main__":
+    run()

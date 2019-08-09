@@ -70,7 +70,11 @@ test:
 	python3 ../examples/05_*.py
 	python3 ../examples/06_*.py
 	python3 ../examples/07_*.py
-	cd ../editor; python3 __init__.py
+	python3 ../editor/__init__.py
+	python3 ../packager.py ../examples/01_*.py
+	python3 ../examples/01_*.py
+	python3 ../packager.py ../examples/02_*.py
+	python3 ../examples/02_*.py
 
 $(TARGET): $(OBJS)
 	mkdir -p $(shell dirname $(TARGET))
