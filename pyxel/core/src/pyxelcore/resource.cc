@@ -278,6 +278,8 @@ std::string Resource::DumpTilemap(int32_t tilemap_index) const {
     ss << std::endl;
   }
 
+  ss << std::dec << tilemap->ImageIndex() << std::endl;
+
   return ss.str();
 }
 
@@ -426,6 +428,16 @@ void Resource::ParseTilemap(int32_t tilemap_index, const std::string& str) {
     for (int32_t j = 0; j < tilemap->Width(); j++) {
       data[i][j] = std::stoi(line.substr(j * 3, 3), nullptr, 16);
     }
+  }
+
+  try {  // for backward compatibility
+    std::string line;
+    std::getline(ss, line);
+    line = Trim(line);
+
+    tilemap->ImageIndex(std::stoi(line));
+  } catch (...) {
+    tilemap->ImageIndex(0);
   }
 }
 
