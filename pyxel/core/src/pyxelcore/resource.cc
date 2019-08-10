@@ -342,7 +342,7 @@ std::string Resource::DumpMusic(int32_t music_index) const {
   Music* music = audio_->GetMusicBank(music_index);
 
   if (music->Channel0().size() == 0 && music->Channel1().size() == 0 &&
-      music->Channel2().size() == 0 and music->Channel3().size() == 0) {
+      music->Channel2().size() == 0 && music->Channel3().size() == 0) {
     return "";
   }
 
