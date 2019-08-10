@@ -7,7 +7,7 @@ extern "C" {
 
 #include <stdint.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #ifdef PYXEL_DLL
 #define PYXEL_API __declspec(dllexport)
 #else
