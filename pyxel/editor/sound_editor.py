@@ -27,7 +27,7 @@ class SoundEditor(Editor):
         self._play_pos = -1
         self._history_data = None
         self._sound_picker = NumberPicker(
-            self, 45, 17, 0, pyxel.SOUND_BANK_COUNT - 1, 0
+            self, 45, 17, 0, pyxel.USER_SOUND_BANK_COUNT - 1, 0
         )
         self._speed_picker = NumberPicker(self, 105, 17, 1, 99, pyxel.sound(0).speed)
         self._play_button = ImageButton(

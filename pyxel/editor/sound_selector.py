@@ -90,7 +90,7 @@ class SoundSelector(Widget):
             self.x + 6, self.y + 5, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 121, 206, 34, 6
         )
 
-        for i in range(pyxel.SOUND_BANK_COUNT):
+        for i in range(pyxel.USER_SOUND_BANK_COUNT):
             if pyxel.sound(i).note:
                 self._draw_sound_button(i, 12)
 

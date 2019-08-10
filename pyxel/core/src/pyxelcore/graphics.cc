@@ -6,8 +6,8 @@
 namespace pyxelcore {
 
 Graphics::Graphics(int32_t width, int32_t height) {
-  image_bank_ = new Image*[EXTENDED_IMAGE_BANK_COUNT];
-  for (int32_t i = 0; i < EXTENDED_IMAGE_BANK_COUNT; i++) {
+  image_bank_ = new Image*[TOTAL_IMAGE_BANK_COUNT];
+  for (int32_t i = 0; i < TOTAL_IMAGE_BANK_COUNT; i++) {
     image_bank_[i] = new Image(IMAGE_BANK_WIDTH, IMAGE_BANK_HEIGHT);
   }
 
@@ -29,7 +29,7 @@ Graphics::Graphics(int32_t width, int32_t height) {
 }
 
 Graphics::~Graphics() {
-  for (int32_t i = 0; i < EXTENDED_IMAGE_BANK_COUNT; i++) {
+  for (int32_t i = 0; i < TOTAL_IMAGE_BANK_COUNT; i++) {
     delete image_bank_[i];
   }
   delete[] image_bank_;

@@ -46,10 +46,10 @@ COLOR_PINK: int = _get_constant_number("COLOR_PINK")
 COLOR_PEACH: int = _get_constant_number("COLOR_PEACH")
 FONT_WIDTH: int = _get_constant_number("FONT_WIDTH")
 FONT_HEIGHT: int = _get_constant_number("FONT_HEIGHT")
-IMAGE_BANK_COUNT: int = _get_constant_number("IMAGE_BANK_COUNT")
+USER_IMAGE_BANK_COUNT: int = _get_constant_number("USER_IMAGE_BANK_COUNT")
 IMAGE_BANK_FOR_SYSTEM: int = _get_constant_number("IMAGE_BANK_FOR_SYSTEM")
 TILEMAP_BANK_COUNT: int = _get_constant_number("TILEMAP_BANK_COUNT")
-SOUND_BANK_COUNT: int = _get_constant_number("SOUND_BANK_COUNT")
+USER_SOUND_BANK_COUNT: int = _get_constant_number("USER_SOUND_BANK_COUNT")
 SOUND_BANK_FOR_SYSTEM: int = _get_constant_number("SOUND_BANK_FOR_SYSTEM")
 MUSIC_BANK_COUNT: int = _get_constant_number("MUSIC_BANK_COUNT")
 MUSIC_CHANNEL_COUNT: int = _get_constant_number("MUSIC_CHANNEL_COUNT")
@@ -256,7 +256,7 @@ class Image:
             core.image_set(self._obj, int(x), int(y), c_data, data_count)
 
     def load(self, x: int, y: int, filename: str) -> None:
-        caller = inspect.currentframe().f_back.f_code.co_filename
+        caller = inspect.currentframe().f_back.f_code.co_filename  # type: ignore
         dirname = (
             getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(caller)))
             if hasattr(sys, "_MEIPASS")
@@ -594,7 +594,7 @@ def save(filename: str) -> None:
 
 
 def load(filename: str) -> None:
-    caller = inspect.currentframe().f_back.f_code.co_filename
+    caller = inspect.currentframe().f_back.f_code.co_filename  # type: ignore
     dirname = (
         getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(caller)))
         if hasattr(sys, "_MEIPASS")
