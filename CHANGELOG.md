@@ -2,7 +2,7 @@
 
 ## 1.2.3
 - Fixed an error of tone playback in the Sound Editor
--
+- Fixed to keep the image index of tilemaps in the Pyxel Editor
 
 ## 1.2.2
 - Updated the requirements.txt and Pipfile
