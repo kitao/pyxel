@@ -47,7 +47,6 @@ Window::Window(const std::string& caption,
                                       screen_width_, screen_height_);
 
   SDL_SetWindowMinimumSize(window_, screen_width_, screen_height_);
-  SDL_ShowCursor(false);
 
   SetupWindowIcon();
   UpdateWindowInfo();
