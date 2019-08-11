@@ -11,6 +11,11 @@ Input::Input() {
   gamepad1_ = SDL_GameControllerOpen(0);
   gamepad2_ = SDL_GameControllerOpen(1);
 
+  const uint8_t data[] = {8};
+  blank_cursor_ = SDL_CreateCursor(data, data, 1, 1, 0, 0);
+  normal_cursor_ = SDL_GetCursor();
+  SDL_SetCursor(blank_cursor_);
+
   is_mouse_visible_ = false;
 
   for (int32_t i = 0; i < KEY_COUNT; i++) {
@@ -19,6 +24,8 @@ Input::Input() {
 }
 
 Input::~Input() {
+  SDL_FreeCursor(blank_cursor_);
+
   if (gamepad1_) {
     SDL_GameControllerClose(gamepad1_);
   }
@@ -38,8 +45,15 @@ void Input::Update(const Window* window, int32_t frame_count) {
   mouse_y_ = (mouse_y_ - (window->WindowY() + window->ScreenY())) /
              window->ScreenScale();
 
-  SDL_ShowCursor(mouse_x_ < 0 || mouse_x_ >= window->ScreenWidth() ||
-                 mouse_y_ < 0 || mouse_y_ >= window->ScreenHeight());
+  if (is_mouse_visible_) {
+    SDL_ShowCursor(true);
+    SDL_SetCursor(mouse_x_ >= 0 && mouse_x_ < window->ScreenWidth() &&
+                          mouse_y_ >= 0 && mouse_y_ < window->ScreenHeight()
+                      ? blank_cursor_
+                      : normal_cursor_);
+  } else {
+    SDL_ShowCursor(false);
+  }
 
   const uint8_t* sdl_scancode_state = SDL_GetKeyboardState(NULL);
 

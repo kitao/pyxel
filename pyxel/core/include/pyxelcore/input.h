@@ -28,6 +28,8 @@ class Input {
  private:
   SDL_GameController* gamepad1_;
   SDL_GameController* gamepad2_;
+  SDL_Cursor* blank_cursor_;
+  SDL_Cursor* normal_cursor_;
 
   int32_t frame_count_;
   int32_t mouse_x_;
