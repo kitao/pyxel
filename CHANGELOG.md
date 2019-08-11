@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.4
+- Fixed to keep the mouse cursor speed on Linux
+- Added Python version check
+
 ## 1.2.3
 - Fixed an error of tone playback in the Sound Editor
 - Fixed to keep the image index of tilemaps in the Pyxel Editor
