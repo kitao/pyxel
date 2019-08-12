@@ -11,7 +11,7 @@ import numpy as np  # type: ignore
 
 from . import core  # type: ignore
 
-if sys.version_info < (3, 7):
+if sys.version_info < (3, 6, 7):
     print("pyxel error: Python version must be 3.7 or higher")
     sys.exit(1)
 
