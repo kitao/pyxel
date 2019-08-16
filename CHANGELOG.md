@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.5
+- Fixed the pictch of the sound being off
+
 ## 1.2.4
 - Fixed to keep the mouse cursor speed on Linux
 - Added Python version check
