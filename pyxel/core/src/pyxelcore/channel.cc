@@ -14,12 +14,12 @@ Channel::Channel() {
 
   tone_ = 0;
   note_ = 0;
-  pitch_ = 0;
+  pitch_ = 0.0f;
   volume_ = 0;
   effect_ = 0;
 
   effect_time_ = 0;
-  effect_pitch_ = 0;
+  effect_pitch_ = 0.0f;
   effect_volume_ = 0;
 }
 
@@ -38,7 +38,7 @@ void Channel::PlaySound(const SoundList& sound_list, bool loop) {
 
 void Channel::StopPlaying() {
   is_playing_ = false;
-  pitch_ = 0;
+  pitch_ = 0.0f;
   oscillator_.Stop();
 }
 
@@ -71,7 +71,7 @@ void Channel::Update() {
               AUDIO_ONE_VOLUME;
 
     if (note_ >= 0 && volume_ > 0) {
-      int32_t last_pitch = pitch_;
+      float last_pitch = pitch_;
       tone_ = sound->Tone().empty() ? TONE_TRIANGLE
                                     : sound->Tone()[pos % sound->Tone().size()];
       pitch_ = NoteToPitch(note_);
@@ -80,13 +80,13 @@ void Channel::Update() {
                     : sound->Effect()[pos % sound->Effect().size()];
 
       oscillator_.SetTone(tone_);
-      oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch_);
+      oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch_ + 0.5f);
       oscillator_.SetVolume(volume_);
 
       switch (effect_) {
         case EFFECT_SLIDE:
           effect_time_ = time_;
-          effect_pitch_ = last_pitch > 0 ? last_pitch : pitch_;
+          effect_pitch_ = last_pitch > 0.0f ? last_pitch : pitch_;
           break;
 
         case EFFECT_VIBRATO:
@@ -113,12 +113,12 @@ void Channel::Update() {
       case EFFECT_SLIDE:
         a = static_cast<float>(time_ - effect_time_) / one_note_time_;
         pitch = pitch_ * a + effect_pitch_ * (1.0f - a);
-        oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch);
+        oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch + 0.5f);
         break;
 
       case EFFECT_VIBRATO:
         pitch = pitch_ + Lfo(time_) * effect_pitch_;
-        oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch);
+        oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch + 0.5f);
         break;
 
       case EFFECT_FADEOUT:
