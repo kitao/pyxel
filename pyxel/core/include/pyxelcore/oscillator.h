@@ -10,38 +10,38 @@ class Oscillator {
   Oscillator();
 
   void SetTone(int32_t tone);
-  void SetPeriod(int32_t period);
+  void SetPeriod(float period);
   void SetVolume(int32_t volume);
   void Stop();
   int16_t Output();
 
  private:
-  int32_t phase_;
-  float (Oscillator::*tone_)(int32_t period, int32_t phase);
-  int32_t period_;
+  float phase_;
+  float (Oscillator::*tone_)(float period, float phase);
+  float period_;
   int32_t volume_;
 
-  float (Oscillator::*next_tone_)(int32_t period, int32_t phase);
-  int32_t next_period_;
+  float (Oscillator::*next_tone_)(float period, float phase);
+  float next_period_;
   int32_t next_volume_;
 
   int32_t noise_seed_;
   int32_t noise_last_;
 
-  float Triangle(int32_t period, int32_t phase);
-  float Square(int32_t period, int32_t phase);
-  float Pulse(int32_t period, int32_t phase);
-  float Noise(int32_t period, int32_t phase);
+  float Triangle(float period, float phase);
+  float Square(float period, float phase);
+  float Pulse(float period, float phase);
+  float Noise(float period, float phase);
 };
 
 inline Oscillator::Oscillator() {
-  phase_ = 0;
+  phase_ = 0.0f;
   tone_ = nullptr;
-  period_ = 0;
+  period_ = 0.0f;
   volume_ = 0;
 
   next_tone_ = nullptr;
-  next_period_ = 0;
+  next_period_ = 0.0f;
   next_volume_ = 0;
 
   noise_seed_ = 0x8000;
@@ -68,7 +68,7 @@ inline void Oscillator::SetTone(int32_t tone) {
   }
 }
 
-inline void Oscillator::SetPeriod(int32_t period) {
+inline void Oscillator::SetPeriod(float period) {
   next_period_ = period;
 }
 
@@ -78,12 +78,12 @@ inline void Oscillator::SetVolume(int32_t volume) {
 
 inline void Oscillator::Stop() {
   next_tone_ = nullptr;
-  next_period_ = 0;
+  next_period_ = 0.0f;
   next_volume_ = 0;
 }
 
 inline int16_t Oscillator::Output() {
-  if (phase_ == 0) {
+  if (phase_ >= 0.0f && phase_ < 1.0f) {
     period_ = next_period_;
     tone_ = next_tone_;
     volume_ = next_volume_;
@@ -93,7 +93,7 @@ inline int16_t Oscillator::Output() {
 
   if (tone_) {
     output = (this->*tone_)(period_, phase_) * volume_;
-    phase_ = (phase_ + 1) % period_;
+    phase_ = fmod(phase_ + 1.0f, period_);
   } else {
     output = 0;
   }
@@ -101,8 +101,8 @@ inline int16_t Oscillator::Output() {
   return output;
 }
 
-inline float Oscillator::Triangle(int32_t period, int32_t phase) {
-  float x = static_cast<float>(phase) / period + 0.75f;
+inline float Oscillator::Triangle(float period, float phase) {
+  float x = phase / period + 0.75f;
 
   float n;
   x = modff(x, &n);
@@ -110,8 +110,8 @@ inline float Oscillator::Triangle(int32_t period, int32_t phase) {
   return Abs(x * 4.0f - 2.0f) - 1.0f;
 }
 
-inline float Oscillator::Square(int32_t period, int32_t phase) {
-  float x = static_cast<float>(phase) / period;
+inline float Oscillator::Square(float period, float phase) {
+  float x = phase / period;
 
   float n;
   x = modff(x, &n);
@@ -119,8 +119,8 @@ inline float Oscillator::Square(int32_t period, int32_t phase) {
   return (x < 0.5f ? 1.0f : -1.0f) * 0.2f;
 }
 
-inline float Oscillator::Pulse(int32_t period, int32_t phase) {
-  float x = static_cast<float>(phase) / period;
+inline float Oscillator::Pulse(float period, float phase) {
+  float x = phase / period;
 
   float n;
   x = modff(x, &n);
@@ -128,8 +128,10 @@ inline float Oscillator::Pulse(int32_t period, int32_t phase) {
   return (x < 0.25f ? 1.0f : -1.0f) * 0.2f;
 }
 
-inline float Oscillator::Noise(int32_t period, int32_t phase) {
-  if (phase % (period / 4) == 0) {
+inline float Oscillator::Noise(float period, float phase) {
+  float x = fmod(phase, period / 4.0f);
+
+  if (x >= 0.0f && x < 1.0f) {
     noise_seed_ >>= 1;
     noise_seed_ |= ((noise_seed_ ^ (noise_seed_ >> 1)) & 1) << 15;
     noise_last_ = noise_seed_ & 1;
