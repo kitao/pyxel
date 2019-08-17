@@ -80,7 +80,7 @@ void Channel::Update() {
                     : sound->Effect()[pos % sound->Effect().size()];
 
       oscillator_.SetTone(tone_);
-      oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch_ + 0.5f);
+      oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch_);
       oscillator_.SetVolume(volume_);
 
       switch (effect_) {
@@ -113,12 +113,12 @@ void Channel::Update() {
       case EFFECT_SLIDE:
         a = static_cast<float>(time_ - effect_time_) / one_note_time_;
         pitch = pitch_ * a + effect_pitch_ * (1.0f - a);
-        oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch + 0.5f);
+        oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch);
         break;
 
       case EFFECT_VIBRATO:
         pitch = pitch_ + Lfo(time_) * effect_pitch_;
-        oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch + 0.5f);
+        oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch);
         break;
 
       case EFFECT_FADEOUT:
