@@ -55,7 +55,7 @@ inline int16_t Channel::Output() {
 }
 
 inline float Channel::NoteToPitch(float note) {
-  return 440.0f * pow(2.0, (note - 33.0) / 12.0);
+  return 440.0f * pow(2.0f, (note - 33.0f) / 12.0f);
 }
 
 inline float Channel::Lfo(int32_t time) {
