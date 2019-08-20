@@ -7,8 +7,6 @@ from collections import MutableSequence
 from ctypes import CFUNCTYPE, c_char_p, c_int32, cast, create_string_buffer
 from typing import Any, Callable, Dict, List, Optional
 
-import numpy as np  # type: ignore
-
 from . import core  # type: ignore
 
 if sys.version_info < (3, 6, 7):
@@ -227,9 +225,7 @@ GAMEPAD_2_LEFT: int = _get_constant_number("GAMEPAD_2_LEFT")
 class Image:
     def __init__(self, obj: Any):
         self._obj = obj
-        self._data = np.ctypeslib.as_array(
-            core.image_data_getter(self._obj), shape=(self.height, self.width)
-        )
+        self._data = core.image_data_getter(self._obj)
 
     @property
     def width(self) -> int:
@@ -282,9 +278,7 @@ class Image:
 class Tilemap:
     def __init__(self, obj: Any):
         self._obj = obj
-        self._data = np.ctypeslib.as_array(
-            core.tilemap_data_getter(self._obj), shape=(self.height, self.width)
-        )
+        self._data = core.image_data_getter(self._obj)
 
     @property
     def width(self) -> int:

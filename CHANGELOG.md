@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.6
+- Updated the instruction for installation in the READMEs
+- Removed dependency on NumPy
+
 ## 1.2.5
 - Fixed the pictch of the sound being off
 
