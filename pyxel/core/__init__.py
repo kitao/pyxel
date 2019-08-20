@@ -124,7 +124,7 @@ _setup_api("stop", None, [c_int32])
 #
 _setup_api("image_width_getter", c_int32, [c_void_p])
 _setup_api("image_height_getter", c_int32, [c_void_p])
-_setup_api("image_data_getter", POINTER(c_int32), [c_void_p])
+_setup_api("image_data_getter", POINTER(POINTER(c_int32)), [c_void_p])
 
 _setup_api("image_get", c_int32, [c_void_p] + [c_int32] * 2)
 _setup_api("image_set1", None, [c_void_p] + [c_int32] * 3)
@@ -137,7 +137,7 @@ _setup_api("image_copy", None, [c_void_p] + [c_int32] * 7)
 #
 _setup_api("tilemap_width_getter", c_int32, [c_void_p])
 _setup_api("tilemap_height_getter", c_int32, [c_void_p])
-_setup_api("tilemap_data_getter", POINTER(c_int32), [c_void_p])
+_setup_api("tilemap_data_getter", POINTER(POINTER(c_int32)), [c_void_p])
 _setup_api("tilemap_refimg_getter", c_int32, [c_void_p])
 _setup_api("tilemap_refimg_setter", c_int32, [c_void_p, c_int32])
 

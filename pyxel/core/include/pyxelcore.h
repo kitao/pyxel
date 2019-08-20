@@ -119,7 +119,7 @@ PYXEL_API void stop(int32_t ch);
 //
 PYXEL_API int32_t image_width_getter(void* self);
 PYXEL_API int32_t image_height_getter(void* self);
-PYXEL_API int32_t* image_data_getter(void* self);
+PYXEL_API int32_t** image_data_getter(void* self);
 
 PYXEL_API int32_t image_get(void* self, int32_t x, int32_t y);
 PYXEL_API void image_set1(void* self, int32_t x, int32_t y, int32_t data);
@@ -146,7 +146,7 @@ PYXEL_API void image_copy(void* self,
 //
 PYXEL_API int32_t tilemap_width_getter(void* self);
 PYXEL_API int32_t tilemap_height_getter(void* self);
-PYXEL_API int32_t* tilemap_data_getter(void* self);
+PYXEL_API int32_t** tilemap_data_getter(void* self);
 PYXEL_API int32_t tilemap_refimg_getter(void* self);
 PYXEL_API void tilemap_refimg_setter(void* self, int32_t refimg);
 
