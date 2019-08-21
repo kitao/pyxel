@@ -91,8 +91,8 @@ class ImageEditor(Editor):
     def __on_undo(self, data):
         img = data["image"]
         x, y = data["pos"]
-        dest = pyxel.image(img).data[y : y + 16, x : x + 16]
-        dest[:, :] = data["before"]
+        dst = pyxel.image(img).data[y : y + 16, x : x + 16]
+        dst[:, :] = data["before"]
 
         self.drawing_x = x
         self.drawing_y = y
@@ -101,8 +101,8 @@ class ImageEditor(Editor):
     def __on_redo(self, data):
         img = data["image"]
         x, y = data["pos"]
-        dest = pyxel.image(img).data[y : y + 16, x : x + 16]
-        dest[:, :] = data["after"]
+        dst = pyxel.image(img).data[y : y + 16, x : x + 16]
+        dst[:, :] = data["after"]
 
         self.drawing_x = x
         self.drawing_y = y
