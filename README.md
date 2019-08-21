@@ -554,5 +554,4 @@ Pyxel uses the following libraries:
 - [SDL2](https://www.libsdl.org/)
 - [gif-h](https://github.com/ginsweater/gif-h)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
-- [NumPy](https://www.numpy.org/)
 - [PyInstaller](https://www.pyinstaller.org/)

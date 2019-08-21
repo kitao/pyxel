@@ -558,5 +558,4 @@ Pyxelは以下のライブラリを使用しています。
 - [SDL2](https://www.libsdl.org/)
 - [gif-h](https://github.com/ginsweater/gif-h)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
-- [NumPy](https://www.numpy.org/)
 - [PyInstaller](https://www.pyinstaller.org/)
