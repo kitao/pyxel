@@ -141,14 +141,14 @@ void Window::Render(int32_t** screen_data) {
 
   UpdateScreenTexture(screen_data);
 
-  SDL_Rect dest_rect = {
+  SDL_Rect dst_rect = {
       screen_x_,
       screen_y_,
       screen_width_ * screen_scale_,
       screen_height_ * screen_scale_,
   };
 
-  SDL_RenderCopy(renderer_, screen_texture_, NULL, &dest_rect);
+  SDL_RenderCopy(renderer_, screen_texture_, NULL, &dst_rect);
   SDL_RenderPresent(renderer_);
 }
 
