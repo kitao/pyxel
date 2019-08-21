@@ -13,11 +13,11 @@
 #
 #   [32bit]
 #   pacman -Syu
-#   pacman -S make mingw-w64-i686-{toolchain,python3-numpy}
+#   pacman -S make mingw-w64-i686-toolchain
 #
 #   [64bit]
 #   pacman -Syu
-#   pacman -S make mingw-w64-x86_64-{toolchain,python3-numpy}
+#   pacman -S make mingw-w64-x86_64-toolchain
 #
 
 SCRIPT_DIR=$(cd $(dirname $0);pwd)

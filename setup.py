@@ -40,7 +40,7 @@ setuptools.setup(
         "pyxel.examples.assets",
     ],
     package_data={"": ["*.pyxres", "*.png", "*.gif", "*.dylib", "*.dll", "*.so"]},
-    install_requires=["numpy", "pyinstaller"],
+    install_requires=["pyinstaller"],
     python_requires=">=3.7",
     entry_points={
         "console_scripts": [
