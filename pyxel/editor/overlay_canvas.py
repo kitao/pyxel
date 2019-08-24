@@ -13,8 +13,8 @@ class OverlayCanvas:
         fill_array2d(self.data, OverlayCanvas.COLOR_NONE)
 
     @staticmethod
-    def _adjust_region(x1, y1, x2, y2, is_guide_mode):
-        if is_guide_mode:
+    def _adjust_region(x1, y1, x2, y2, is_assist_mode):
+        if is_assist_mode:
             dx = x2 - x1
             dy = y2 - y1
 
@@ -92,8 +92,8 @@ class OverlayCanvas:
                 else:
                     copy_array2d(self.data, x, y, col)
 
-    def rectb(self, x1, y1, x2, y2, col, is_guide_mode):
-        _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
+    def rectb(self, x1, y1, x2, y2, col, is_assist_mode):
+        _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_assist_mode)
         _col = col if type(col) is int else OverlayCanvas.COLOR_MARK
 
         for y in range(max(_y1, 0), min(_y2 + 1, 16)):
@@ -104,8 +104,8 @@ class OverlayCanvas:
         if type(col) is not int:
             self._replace_with_tiles(self.data, x1, y1, col)
 
-    def rect(self, x1, y1, x2, y2, col, is_guide_mode):
-        _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
+    def rect(self, x1, y1, x2, y2, col, is_assist_mode):
+        _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_assist_mode)
         _col = col if type(col) is int else OverlayCanvas.COLOR_MARK
 
         for y in range(max(_y1, 0), min(_y2 + 1, 16)):
@@ -115,8 +115,8 @@ class OverlayCanvas:
         if type(col) is not int:
             self._replace_with_tiles(self.data, x1, y1, col)
 
-    def circb(self, x1, y1, x2, y2, col, is_guide_mode):
-        _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
+    def circb(self, x1, y1, x2, y2, col, is_assist_mode):
+        _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_assist_mode)
         _col = col if type(col) is int else OverlayCanvas.COLOR_MARK
 
         a = (_x2 - _x1) / 2
@@ -145,8 +145,8 @@ class OverlayCanvas:
         if type(col) is not int:
             self._replace_with_tiles(self.data, x1, y1, col)
 
-    def circ(self, x1, y1, x2, y2, col, is_guide_mode):
-        _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
+    def circ(self, x1, y1, x2, y2, col, is_assist_mode):
+        _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_assist_mode)
         _col = col if type(col) is int else OverlayCanvas.COLOR_MARK
 
         a = (_x2 - _x1) / 2
