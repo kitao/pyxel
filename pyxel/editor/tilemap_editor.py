@@ -12,6 +12,7 @@ from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
 from .tilemap_panel import TilemapPanel
+from .utility import copy_array2d
 
 
 class TileMapEditor(Editor):
@@ -106,8 +107,7 @@ class TileMapEditor(Editor):
     def __on_undo(self, data):
         tm = data["tilemap"]
         x, y = data["pos"]
-        dest = pyxel.tilemap(tm).data[y : y + 16, x : x + 16]
-        dest[:, :] = data["before"]
+        copy_array2d(pyxel.tilemap(tm).data, x, y, data["before"])
 
         self._drawing_panel.viewport_x = x
         self._drawing_panel.viewport_y = y
@@ -116,8 +116,7 @@ class TileMapEditor(Editor):
     def __on_redo(self, data):
         tm = data["tilemap"]
         x, y = data["pos"]
-        dest = pyxel.tilemap(tm).data[y : y + 16, x : x + 16]
-        dest[:, :] = data["after"]
+        copy_array2d(pyxel.tilemap(tm).data, x, y, data["after"])
 
         self._drawing_panel.viewport_x = x
         self._drawing_panel.viewport_y = y
@@ -131,9 +130,9 @@ class TileMapEditor(Editor):
 
         for y in range(start_y, start_y + 8):
             for x in range(64):
-                val = tilemap_data[y * 4 + 1, x * 4 + 1]
-                col = image_data[val // 32 * 8 + 3, val % 32 * 8 + 3]
-                minimap_data[TILEMAP_IMAGE_Y + y, TILEMAP_IMAGE_X + x] = col
+                val = tilemap_data[y * 4 + 1][x * 4 + 1]
+                col = image_data[val // 32 * 8 + 3][val % 32 * 8 + 3]
+                minimap_data[TILEMAP_IMAGE_Y + y][TILEMAP_IMAGE_X + x] = col
 
         self.check_tool_button_shortcuts()
 

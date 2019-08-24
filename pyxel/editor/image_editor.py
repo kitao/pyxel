@@ -7,6 +7,7 @@ from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, TOOL_PENCIL
 from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
+from .utility import copy_array2d
 
 
 class ImageEditor(Editor):
@@ -91,8 +92,7 @@ class ImageEditor(Editor):
     def __on_undo(self, data):
         img = data["image"]
         x, y = data["pos"]
-        dst = pyxel.image(img).data[y : y + 16, x : x + 16]
-        dst[:, :] = data["before"]
+        copy_array2d(pyxel.image(img).data, x, y, data["before"])
 
         self.drawing_x = x
         self.drawing_y = y
@@ -101,8 +101,7 @@ class ImageEditor(Editor):
     def __on_redo(self, data):
         img = data["image"]
         x, y = data["pos"]
-        dst = pyxel.image(img).data[y : y + 16, x : x + 16]
-        dst[:, :] = data["after"]
+        copy_array2d(pyxel.image(img).data, x, y, data["after"])
 
         self.drawing_x = x
         self.drawing_y = y
