@@ -36,10 +36,11 @@ class OverlayCanvas:
 
     @staticmethod
     def _replace_with_tiles(dst, x, y, tiles):
-        tiles_height, tiles_width = get_array2d_size(tiles)
+        width, height = get_array2d_size(dst)
+        tiles_width, tiles_height = get_array2d_size(tiles)
 
-        for i in range(16):
-            for j in range(16):
+        for i in range(height):
+            for j in range(width):
                 if dst[i][j] == OverlayCanvas.COLOR_MARK:
                     dst[i][j] = tiles[(i - y) % tiles_height][(j - x) % tiles_width]
 
