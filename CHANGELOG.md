@@ -3,7 +3,8 @@
 ## 1.2.6
 - Updated the instruction for installation in the READMEs
 - Removed dependency on NumPy
-- Changed the search path of the asset folder in the Pixel Packager
+- Changed the search path of the asset folder in the Pyxel Packager
+- Fixed the undo/redo for copy and paste in the Pyxel Editor
 
 ## 1.2.5
 - Fixed the pictch of the sound being off
