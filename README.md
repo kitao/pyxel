@@ -419,7 +419,7 @@ Stop playback of all channels. If `ch`(0-3) is specified, stop the corresponding
 The width and height of the image
 
 - `data`<br>
-The data of the image (NumPy array)
+The data of the image (256x256 two-dimentional list)
 
 - `get(x, y)`<br>
 Retrieve the data of the image at (`x`, `y`)
@@ -440,7 +440,7 @@ Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) 
 The width and height of the tilemap
 
 - `data`<br>
-The data of the tilemap (NumPy array)
+The data of the tilemap (256x256 two-dimentional list)
 
 - `refimg`<br>
 The image bank referenced by the tilemap
