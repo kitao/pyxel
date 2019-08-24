@@ -165,9 +165,9 @@ class DrawingPanel(Widget):
             y = self.viewport_y + (y - self.y) // 8
 
             if self._is_tilemap_mode:
-                self.parent.color = pyxel.tilemap(self.parent.tilemap).data[y, x]
+                self.parent.color = pyxel.tilemap(self.parent.tilemap).data[y][x]
             else:
-                self.parent.color = pyxel.image(self.parent.image).data[y, x]
+                self.parent.color = pyxel.image(self.parent.image).data[y][x]
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         if key == pyxel.MOUSE_LEFT_BUTTON:
