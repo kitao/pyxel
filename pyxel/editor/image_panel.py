@@ -1,7 +1,7 @@
-import numpy as np
-
 import pyxel
 from pyxel.ui import ScrollBar, Widget
+
+from .utility import slice_array2d
 
 
 class ImagePanel(Widget):
@@ -20,7 +20,7 @@ class ImagePanel(Widget):
         self._press_y = 0
         self._drag_offset_x = 0
         self._drag_offset_y = 0
-        self._tile_table = np.arange(1024).reshape(32, 32)
+        self._tile_table = [list(range(x, x + 32)) for x in range(0, 1024, 32)]
         self._h_scroll_bar = ScrollBar(
             self, 157, 145, 66, ScrollBar.HORIZONTAL, 32, 8, 0
         )
@@ -45,7 +45,7 @@ class ImagePanel(Widget):
         width = self._focus_width // 8
         height = self._focus_height // 8
 
-        return self._tile_table[y : y + height, x : x + width]
+        return slice_array2d(self._tile_table, x, y, width, height)
 
     def set_focus(self, x, y):
         self._focus_x = min(max(x, 0), 256 - self._focus_width)
