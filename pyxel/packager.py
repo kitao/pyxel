@@ -51,7 +51,7 @@ def run():
             )
         )
 
-    assets = filter(os.path.isfile, glob.glob("assets/**", recursive=True))
+    assets = filter(os.path.isfile, glob.glob("**/assets/**", recursive=True))
 
     for asset in assets:
         options.append(
