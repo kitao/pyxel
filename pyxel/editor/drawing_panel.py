@@ -280,6 +280,10 @@ class DrawingPanel(Widget):
                 else:
                     data = pyxel.image(self.parent.image).data
 
+                self._add_pre_history(
+                    slice_array2d(data, self.viewport_x, self.viewport_y, 16, 16)
+                )
+
                 copy_array2d(
                     data,
                     self.viewport_x + self._select_x1,
@@ -289,6 +293,10 @@ class DrawingPanel(Widget):
                     0,
                     width,
                     height,
+                )
+
+                self._add_post_history(
+                    slice_array2d(data, self.viewport_x, self.viewport_y, 16, 16)
                 )
 
         if (
