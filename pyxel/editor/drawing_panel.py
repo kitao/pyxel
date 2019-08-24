@@ -12,6 +12,7 @@ from .constants import (
     TOOL_SELECT,
 )
 from .overlay_canvas import OverlayCanvas
+from .utility import copy_array2d, get_array2d_size, slice_array2d
 
 
 class DrawingPanel(Widget):
@@ -66,7 +67,7 @@ class DrawingPanel(Widget):
         data = self._history_data
         data["after"] = canvas.copy()
 
-        if (data["before"] != data["after"]).any():
+        if data["before"] != data["after"]:
             self.parent.add_history(data)
 
     def _screen_to_view(self, x, y):
@@ -97,16 +98,18 @@ class DrawingPanel(Widget):
                 if self._is_tilemap_mode
                 else pyxel.image(self.parent.image).data
             )
-            dest = data[
-                self.viewport_y : self.viewport_y + 16,
-                self.viewport_x : self.viewport_x + 16,
-            ]
 
-            self._add_pre_history(dest)
+            self._add_pre_history(
+                slice_array2d(data, self.viewport_x, self.viewport_y, 16, 16)
+            )
 
-            self._overlay_canvas.fill(x, y, self.parent.color, dest)
+            dst = slice_array2d(data, self.viewport_x, self.viewport_y, 16, 16)
+            self._overlay_canvas.fill(x, y, self.parent.color, dst)
+            copy_array2d(data, self.viewport_x, self.viewport_y, dst)
 
-            self._add_post_history(dest)
+            self._add_post_history(
+                slice_array2d(data, self.viewport_x, self.viewport_y, 16, 16)
+            )
 
         self._last_x = x
         self._last_y = y
@@ -123,18 +126,22 @@ class DrawingPanel(Widget):
                 if self._is_tilemap_mode
                 else pyxel.image(self.parent.image).data
             )
-            dest = data[
-                self.viewport_y : self.viewport_y + 16,
-                self.viewport_x : self.viewport_x + 16,
-            ]
 
-            self._add_pre_history(dest)
+            self._add_pre_history(
+                slice_array2d(data, self.viewport_x, self.viewport_y, 16, 16)
+            )
 
-            index = self._overlay_canvas.data != OverlayCanvas.COLOR_NONE
-            dest[index] = self._overlay_canvas.data[index]
+            for i in range(16):
+                for j in range(16):
+                    val = self._overlay_canvas.data[i][j]
+                    if val != OverlayCanvas.COLOR_NONE:
+                        data[self.viewport_y + i][self.viewport_x + j] = val
+
             self._overlay_canvas.clear()
 
-            self._add_post_history(dest)
+            self._add_post_history(
+                slice_array2d(data, self.viewport_x, self.viewport_y, 16, 16)
+            )
 
     def __on_mouse_click(self, key, x, y):
         if key == pyxel.MOUSE_RIGHT_BUTTON:
@@ -256,22 +263,15 @@ class DrawingPanel(Widget):
                 else:
                     data = pyxel.image(self.parent.image).data
 
-                src = data[
-                    self.viewport_y
-                    + self._select_y1 : self.viewport_y
-                    + self._select_y2
-                    + 1,
-                    self.viewport_x
-                    + self._select_x1 : self.viewport_x
-                    + self._select_x2
-                    + 1,
-                ]
-                self._copy_buffer = src.copy()
+                self._copy_buffer = slice_array2d(
+                    data,
+                    self.viewport_x + self._select_x1,
+                    self.viewport_y + self._select_y1,
+                    self._select_x2 - self._select_x1 + 1,
+                    self._select_y2 - self._select_y1 + 1,
+                )
             elif self._copy_buffer is not None and pyxel.btnp(pyxel.KEY_V):
-                x1 = self.viewport_x + self._select_x1
-                y1 = self.viewport_y + self._select_y1
-
-                height, width = self._copy_buffer.shape
+                width, height = get_array2d_size(self._copy_buffer)
                 width -= max(self._select_x1 + width - 16, 0)
                 height -= max(self._select_y1 + height - 16, 0)
 
@@ -280,8 +280,16 @@ class DrawingPanel(Widget):
                 else:
                     data = pyxel.image(self.parent.image).data
 
-                dest = data[y1 : y1 + height, x1 : x1 + width]
-                dest[:, :] = self._copy_buffer[:height, :width]
+                copy_array2d(
+                    data,
+                    self.viewport_x + self._select_x1,
+                    self.viewport_y + self._select_y1,
+                    self._copy_buffer,
+                    0,
+                    0,
+                    width,
+                    height,
+                )
 
         if (
             pyxel.btn(pyxel.KEY_SHIFT)
@@ -327,7 +335,7 @@ class DrawingPanel(Widget):
                 for j in range(16):
                     x = self.x + j * 8 + 1
 
-                    val = self._overlay_canvas.data[i, j]
+                    val = self._overlay_canvas.data[i][j]
                     if val != OverlayCanvas.COLOR_NONE:
                         sx = (val % 32) * 8
                         sy = (val // 32) * 8
@@ -338,12 +346,13 @@ class DrawingPanel(Widget):
                 for j in range(16):
                     x = self.x + j * 8 + 1
 
-                    val = self._overlay_canvas.data[i, j]
+                    val = self._overlay_canvas.data[i][j]
                     if val != OverlayCanvas.COLOR_NONE:
-                        col = self._overlay_canvas.data[i, j]
+                        col = val
                     else:
-                        data = pyxel.image(self.parent.image).data
-                        col = data[self.viewport_y + i, self.viewport_x + j]
+                        col = pyxel.image(self.parent.image).data[self.viewport_y + i][
+                            self.viewport_x + j
+                        ]
 
                     pyxel.rect(x, y, 8, 8, col)
 

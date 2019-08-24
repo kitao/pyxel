@@ -1,4 +1,4 @@
-import numpy as np
+from .utility import copy_array2d, fill_array2d, get_array2d_size, new_array2d
 
 
 class OverlayCanvas:
@@ -6,11 +6,11 @@ class OverlayCanvas:
     COLOR_MARK = 0x7FFE
 
     def __init__(self):
-        self.data = np.ndarray((16, 16), np.uint16)
+        self.data = new_array2d(16, 16)
         self.clear()
 
     def clear(self):
-        self.data[:, :] = OverlayCanvas.COLOR_NONE
+        fill_array2d(self.data, OverlayCanvas.COLOR_NONE)
 
     @staticmethod
     def _adjust_region(x1, y1, x2, y2, is_guide_mode):
@@ -35,22 +35,22 @@ class OverlayCanvas:
         return x * x * b * b + y * y * a * a < a * a * b * b
 
     @staticmethod
-    def _replace_with_tiles(dest, x, y, tiles):
-        tiles_height, tiles_width = tiles.shape
+    def _replace_with_tiles(dst, x, y, tiles):
+        tiles_height, tiles_width = get_array2d_size(tiles)
 
         for i in range(16):
             for j in range(16):
-                if dest[i, j] == OverlayCanvas.COLOR_MARK:
-                    dest[i, j] = tiles[(i - y) % tiles_height, (j - x) % tiles_width]
+                if dst[i][j] == OverlayCanvas.COLOR_MARK:
+                    dst[i][j] = tiles[(i - y) % tiles_height][(j - x) % tiles_width]
 
     def pix(self, x, y, col):
         if x < 0 or x > 15 or y < 0 or y > 15:
             return
 
         if type(col) is int:
-            self.data[y, x] = col
+            self.data[y][x] = col
         else:
-            copy_ndarray(self.data, x, y, col)
+            copy_array2d(self.data, x, y, col)
 
     def line(self, x1, y1, x2, y2, col):
         if x1 == x2 and y1 == y2:
@@ -72,9 +72,9 @@ class OverlayCanvas:
                     continue
 
                 if type(col) is int:
-                    self.data[y, x] = col
+                    self.data[y][x] = col
                 else:
-                    copy_ndarray(self.data, x, y, col)
+                    copy_array2d(self.data, x, y, col)
         else:
             sign = 1 if dy > 0 else -1
             rate = sign * dx / dy
@@ -87,9 +87,9 @@ class OverlayCanvas:
                     continue
 
                 if type(col) is int:
-                    self.data[y, x] = col
+                    self.data[y][x] = col
                 else:
-                    copy_ndarray(self.data, x, y, col)
+                    copy_array2d(self.data, x, y, col)
 
     def rectb(self, x1, y1, x2, y2, col, is_guide_mode):
         _x1, _y1, _x2, _y2 = self._adjust_region(x1, y1, x2, y2, is_guide_mode)
@@ -98,7 +98,7 @@ class OverlayCanvas:
         for y in range(max(_y1, 0), min(_y2 + 1, 16)):
             for x in range(max(_x1, 0), min(_x2 + 1, 16)):
                 if x == _x1 or x == _x2 or y == _y1 or y == _y2:
-                    self.data[y, x] = _col
+                    self.data[y][x] = _col
 
         if type(col) is not int:
             self._replace_with_tiles(self.data, x1, y1, col)
@@ -109,7 +109,7 @@ class OverlayCanvas:
 
         for y in range(max(_y1, 0), min(_y2 + 1, 16)):
             for x in range(max(_x1, 0), min(_x2 + 1, 16)):
-                self.data[y, x] = _col
+                self.data[y][x] = _col
 
         if type(col) is not int:
             self._replace_with_tiles(self.data, x1, y1, col)
@@ -139,7 +139,7 @@ class OverlayCanvas:
                     or not self._inner_ellipse(dx, dy - 1, a, b)
                     or not self._inner_ellipse(dx, dy + 1, a, b)
                 ):
-                    self.data[y, x] = _col
+                    self.data[y][x] = _col
 
         if type(col) is not int:
             self._replace_with_tiles(self.data, x1, y1, col)
@@ -161,72 +161,45 @@ class OverlayCanvas:
         for y in range(max(_y1, 0), min(_y2 + 1, 16)):
             for x in range(max(_x1, 0), min(_x2 + 1, 16)):
                 if self._inner_ellipse(x - cx, y - cy, a, b):
-                    self.data[y, x] = _col
+                    self.data[y][x] = _col
 
         if type(col) is not int:
             self._replace_with_tiles(self.data, x1, y1, col)
 
-    def fill(self, x, y, col, dest):
+    def fill(self, x, y, col, dst):
         _col = col if type(col) is int else OverlayCanvas.COLOR_MARK
 
-        self._fill_recursively(x, y, _col, dest)
+        self._fill_recursively(x, y, _col, dst)
 
         if type(col) is not int:
-            self._replace_with_tiles(dest, x, y, col)
+            self._replace_with_tiles(dst, x, y, col)
 
-    def _fill_recursively(self, x, y, col, dest):
-        dest_col = dest[y, x]
+    def _fill_recursively(self, x, y, col, dst):
+        dst_col = dst[y][x]
 
-        if dest_col == col:
+        if dst_col == col:
             return
 
         for i in range(x, -1, -1):
-            if dest[y, i] != dest_col:
+            if dst[y][i] != dst_col:
                 break
 
-            dest[y, i] = col
+            dst[y][i] = col
 
-            if y > 0 and dest[y - 1, i] == dest_col:
-                self._fill_recursively(i, y - 1, col, dest)
+            if y > 0 and dst[y - 1][i] == dst_col:
+                self._fill_recursively(i, y - 1, col, dst)
 
-            if y < 15 and dest[y + 1, i] == dest_col:
-                self._fill_recursively(i, y + 1, col, dest)
+            if y < 15 and dst[y + 1][i] == dst_col:
+                self._fill_recursively(i, y + 1, col, dst)
 
         for i in range(x + 1, 16):
-            if dest[y, i] != dest_col:
+            if dst[y][i] != dst_col:
                 return
 
-            dest[y, i] = col
+            dst[y][i] = col
 
-            if y > 0 and dest[y - 1, i] == dest_col:
-                self._fill_recursively(i, y - 1, col, dest)
+            if y > 0 and dst[y - 1][i] == dst_col:
+                self._fill_recursively(i, y - 1, col, dst)
 
-            if y < 15 and dest[y + 1, i] == dest_col:
-                self._fill_recursively(i, y + 1, col, dest)
-
-
-def copy_ndarray(dest, dx, dy, src, sx=0, sy=0, cw=None, ch=None):
-    dh, dw = dest.shape
-    sh, sw = src.shape
-    cw = cw or sw
-    ch = ch or sh
-
-    rx1 = max(max(-dx, 0), max(-sx, 0))
-    ry1 = max(max(-dy, 0), max(-sy, 0))
-    rx2 = max(max(dx + cw - dw, 0), max(sx + cw - sw, 0))
-    ry2 = max(max(dy + ch - dh, 0), max(sy + ch - sh, 0))
-
-    cw -= rx1 + rx2
-    ch -= ry1 + ry2
-
-    if cw <= 0 or ch <= 0:
-        return False
-
-    dx += rx1
-    dy += ry1
-    sx += rx1
-    sy += ry1
-
-    dest[dy : dy + ch, dx : dx + cw] = src[sy : sy + ch, sx : sx + cw]
-
-    return True
+            if y < 15 and dst[y + 1][i] == dst_col:
+                self._fill_recursively(i, y + 1, col, dst)
