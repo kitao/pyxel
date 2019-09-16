@@ -1,30 +1,33 @@
+import argparse
 import glob
 import os
 import platform
 import shutil
-import sys
 
 import pyxel
 
 
 def run():
-    arg = sys.argv[1] if len(sys.argv) >= 2 else ""
-    name = ""
+    parser = argparse.ArgumentParser(description="Pyxel Packager")
+    parser.add_argument(
+        "entrypoint", type=argparse.FileType(),
+        help="Pyxel program file entry point"
+    )
+    parser.add_argument(
+        "-v", "--version", action="version",
+        version="Pyxel Packager {}".format(pyxel.VERSION),
+        help="Show version number and quit"
+    )
+    parser.add_argument(
+        "-i", "--icon", type=argparse.FileType(),
+        help="Pyxel program icon file"
+    )
 
-    if not arg or arg.startswith("-"):
-        if arg == "-v" or arg == "--version":
-            print("Pyxel Packager {}".format(pyxel.VERSION))
-            return
-        else:
-            print("Usage: pyxelpackager python_file")
-            print("Options:")
-            print(" -h, --help     This help text")
-            print(" -v, --version  Show version number and quit")
-            return
+    args = parser.parse_args()
 
-    dirname = os.path.dirname(arg) or "."
-    filename = os.path.basename(arg)
-    name = name or os.path.splitext(filename)[0]
+    dirname = os.path.dirname(args.entrypoint.name) or "."
+    filename = os.path.basename(args.entrypoint.name)
+    name = os.path.splitext(filename)[0]
     separator = ";" if platform.system() == "Windows" else ":"
 
     os.chdir(dirname)
@@ -58,6 +61,11 @@ def run():
             "--add-data={}{}{}".format(
                 os.path.abspath(asset), separator, os.path.dirname(asset)
             )
+        )
+
+    if args.icon:
+        options.append(
+            "--icon={}".format(os.path.abspath(args.icon.name))
         )
 
     try:
