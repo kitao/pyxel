@@ -2,9 +2,9 @@
 
 [ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/YifangSun/pyxel/blob/master/README.cn.md) | [Other Languages](https://github.com/kitao/pyxel/wiki) ]
 
-**Pyxel** is a retro game engine for Python.
+**Pyxel**是一个python的经典像素风游戏制作引擎。
 
-Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
+由于像素风游戏的机制非常简单（如：最多只能显示16种颜色、播放4种声音等），现在你也可以轻松地享受这种游戏的制作过程。
 
 <a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py" target="_blank">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
@@ -30,17 +30,17 @@ Thanks to its simple specifications inspired by retro gaming consoles, such as o
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
-The specifications of the gaming console, APIs, and palettes of Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic.computer/).
+Pyxel的设计、API以及调色板参考了经典的[PICO-8](https://www.lexaloffle.com/pico-8.php)以及[TIC-80](https://tic.computer/)。
 
-Pyxel is open source and free to use. Let's start making a retro game with Pyxel!
+Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel制作自己的游戏吧！
 
-## Specifications
+## 配置
 
-- Run on Windows, Mac, and Linux
-- Code writing with Python3
-- Fixed 16 color palette
-- 256x256 sized 3 image banks
-- 256x256 sized 8 tilemaps
+- 在Windows、Mac或Linux上运行
+- Python3
+- 内置16色调色板
+- 3个256x256的图像库
+- 8个256x256的瓦片地图
 - 4 channels with 64 definable sounds
 - 8 musics which can combine arbitrary sounds
 - Keyboard, mouse, and gamepad inputs
