@@ -42,8 +42,8 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 - 3个256x256的图像库
 - 8个256x256的瓦片地图
 - 4个音轨各含有64个可选音调
-- 任意组合的8个音乐
-- 支持键盘、鼠标及手柄输入
+- 可任意组合8个音乐
+- 支持键盘、鼠标及游戏手柄输入
 - 图像和音频编辑器
 
 ### 调色板
@@ -271,14 +271,14 @@ Pyxel编辑器有以下编辑模式。
 
 ### 其他创建源文件的方法
 
-Pyxel图像和瓦片地图也可以通过一下方法创建：
+Pyxel图像和瓦片地图还可以通过以下方法创建：
 
 - 用`Image.set`或`Tilemap.set`函数string列表来生成图像
 - 在Pyxel调色板中用`Image.load`函数加载png文件
 
-Because Pyxel uses the same palette as [PICO-8](https://www.lexaloffle.com/pico-8.php), when creating png images for Pyxel, it is recommended to use [Aseprite](https://www.aseprite.org/) in PICO-8 palette mode.
+因为Pyxel使用了与[PICO-8](https://www.lexaloffle.com/pico-8.php)相同的调色板，所以在为Pyxel创建png图像时，建议使用PICO-8调色板模式中的[Aseprite](https://www.aseprite.org/)。
 
-Pyxel sounds can also be created in the following way:
+Pyxel音频也可以通过以下方法创建：
 
 - Create a sound from strings with `Sound.set` or `Music.set` function
 
