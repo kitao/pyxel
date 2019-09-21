@@ -348,7 +348,7 @@ pyxelpackager python_file
 - `mouse(visible)`<br>
 如果`visible`为`True`则显示鼠标指针，为`False`则不显示。即使鼠标指针不显示，其位置同样会被更新。
 
-### 图像
+### 显示
 
 - `image(img, [system])`<br>
 操作图像库`img`(0-2)（参考Image类）。若`system`指定为`True`，则图像库可存取。
@@ -386,15 +386,15 @@ pyxelpackager python_file
 用`col`颜色绘制圆心为(`x`, `y`)，半径为`r`的圆形边框。
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color
+将尺寸为(`w`, `h`)的区域从图像库的(`u`, `v`)复制到(`x`, `y`)。若`w`或`h`为负值，则在水平或垂直方向上翻转。若指定`colkey`的值，则视作透明颜色。
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 Draw the tilemap `tm`(0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. A tile of the tilemap is drawn with a size of 8x8, and if the tile number is 0, indicates the region (0, 0)-(7, 7) of the image bank, if 1, indicates (8, 0)-(15, 0)
 
 - `text(x, y, s, col)`<br>
-Draw a string `s` of color `col` at (`x`, `y`)
+用`col`颜色在(`x`, `y`)绘制字符串`s`。
 
-### Audio
+### 声音
 
 - `sound(snd, [system])`<br>
 Operate the sound `snd`(0-63) (see the Sound class). If `system` is `True`, the sound 64 for system can be accessed<br>
@@ -523,20 +523,19 @@ Set the list of sound(0-63) of channel 2
 - `set_ch3(data)`<br>
 Set the list of sound(0-63) of channel 3
 
-## How to Contribute
+## 如何参与
 
-### Submitting an issue
+### 提交问题
+使用[issue tracker](https://github.com/kitao/pyxel/issues)来提交bug报告或功能需求。
+提交问题之前，请搜索issue tracker以确认没有人提出过类似的问题。
 
-Use the [issue tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests.
-Before submitting a new issue, search the issue tracker to ensure that there is no similar open issue.
+提交报告时，从[这里](https://github.com/kitao/pyxel/issues/new/choose)选取合适的模板。
 
-When submitting a report, select the appropriate template from [this link](https://github.com/kitao/pyxel/issues/new/choose).
+### 手动测试
 
-### Manual testing
+欢迎大家手动测试代码并提交bug，或者提出改进意见！
 
-Anyone manually testing the code and reporting bugs or suggestions for enhancements in the issue tracker are very welcome!
-
-### Submitting a pull request
+### 提交pull request
 
 Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the issue tracker.
 
@@ -551,7 +550,7 @@ Submitted pull request is deemed to have agreed to publish under [MIT license](h
 
 Pyxel is under [MIT license](http://en.wikipedia.org/wiki/MIT_License). It can be reused within proprietary software provided that all copies of the licensed software include a copy of the MIT License terms and the copyright notice.
 
-Pyxel uses the following libraries:
+Pyxel使用了以下库：
 
 - [SDL2](https://www.libsdl.org/)
 - [gif-h](https://github.com/ginsweater/gif-h)
