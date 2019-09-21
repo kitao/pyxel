@@ -36,8 +36,8 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 
 ## 说明
 
-- 在Windows、Mac或Linux上运行
-- Python3
+- 需要在Windows、Mac或Linux上运行
+- 需要Python3
 - 内置16色调色板
 - 3个256x256的图像库
 - 8个256x256的瓦片地图
@@ -157,9 +157,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-The arguments of `run` function are `update` function to update each frame and `draw` function to draw screen when necessary.
+`run`函数的两个参数`update`函数和`draw`函数分别用来在需要时更新边框和绘制画面。
 
-In an actual application, it is recommended to wrap pyxel code in a class as below:
+实际应用中，推荐将pyxel代码封装成如下类：
 
 ```python
 import pyxel
@@ -180,9 +180,9 @@ class App:
 App()
 ```
 
-It is also possible to write simple code using `show` and `flip` functions to draw simple graphics and animations.
+有时也可简单使用`show`和`flip`画出简单的画面和动画。
 
-The `show` function displays the screen and waits until the `ESC` key is pressed.
+`show`函数可以显示画面直到`ESC`键按下。
 
 ```python
 import pyxel
@@ -193,7 +193,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-The `flip` function updates the screen once.
+`flip`函数可以更新一次画面。
 
 ```python
 import pyxel
@@ -206,34 +206,35 @@ while True:
     pyxel.flip()
 ```
 
-### Special Controls
+### 快捷键
 
-The following special controls can be performed while a Pyxel application is running:
+以下快捷键可以在Pyxel运行时使用：
 
 - `Esc`<br>
-Quit the application
+退出应用
 - `Alt(Option)+1`<br>
-Save the screenshot to the desktop
+截屏并保存在桌面
 - `Alt(Option)+2`<br>
-Reset the recording start time of the screen capture video
+重置屏幕录制的开始时间
 - `Alt(Option)+3`<br>
-Save the screen capture video (gif) to the desktop (up to 30 seconds)
+保存屏幕录制动图（gif）到桌面（最多30秒）
 - `Alt(Option)+0`<br>
-Toggle the performance monitor (fps, update time, and draw time)
+切换性能监控（fps，更新时间，画面绘制时间）
 - `Alt(Option)+Enter`<br>
-Toggle full screen
+切换全屏
 
-### How to Create a Resource
+### 如何创建源文件
 
-The attached Pyxel Editor can create images and sounds used in a Pyxel application.
+内置Pyxel编辑器可以为Pyxel应用创建图片和音频。
 
-Pyxel Editor starts with the following command:
+输入以下命令启动Pyxel编辑器：
 
 ```sh
 pyxeleditor [pyxel_resource_file]
 ```
 
-If the specified Pyxel resource file (.pyxres) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
+若指定Pyxel源文件（.pyxres）存在，则加载文件，若不存在，则以指定文件名新建文件。
+
 If the resource file is omitted, the name is `my_resource.pyxres`.
 
 After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file.
