@@ -157,7 +157,7 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-`run`函数的两个参数`update`函数和`draw`函数分别用来在需要时更新边框和绘制画面。
+`run`函数的两个参数`update`函数和`draw`函数分别用来在需要时更新帧和绘制画面。
 
 实际应用中，建议将pyxel代码封装成如下类：
 
@@ -273,116 +273,117 @@ Pyxel编辑器有以下编辑模式。
 
 Pyxel图像和瓦片地图还可以通过以下方法创建：
 
-- 用`Image.set`或`Tilemap.set`函数string列表来生成图像
+- 在`Image.set`或`Tilemap.set`函数中通过字符串list来生成图像
 - 在Pyxel调色板中用`Image.load`函数加载png文件
 
 因为Pyxel使用了与[PICO-8](https://www.lexaloffle.com/pico-8.php)相同的调色板，所以在为Pyxel创建png图像时，建议使用PICO-8调色板模式中的[Aseprite](https://www.aseprite.org/)。
 
 Pyxel音频也可以通过以下方法创建：
 
-- Create a sound from strings with `Sound.set` or `Music.set` function
+- 在`Sound.set`或`Music.set`函数中通过字符串来生成音频
 
-Please refer to the API reference for usage of these functions.
+这些函数的具体用法请查阅API参考手册。
 
-### How to Create a Stand-Alone Executable
+### 如何创建独立可执行文件
 
-By using the attached Pyxel Packager, a stand-alone executable that will work even in environments where Python is not installed can be created.
+使用内置的Pyxel  Packager创建独立的可执行文件，在没有python的环境下也可以执行。
 
-To create a stand-alone executable, specify the Python file to be used to launch the application with the `pyxelpackager` command as follows:
+使用`pyxelpackager`命令来指定打开启动应用的python文件，就可以创建可执行文件：
 
 ```sh
 pyxelpackager python_file
 ```
 
-When the process is complete, a stand-alone executable is created in the `dist` folder.
+进程结束后，可执行文件便会生成在`dist`文件夹下。
 
-If resources such as .pyxres and .png files are also necessary, put them under the `assets` folder and they will be included.
+若应用必须包含.pyxres和.png文件，将其放在`assets`文件夹下，他们便会被打包进可执行文件中。
 
-## API Reference
+## API参考手册
 
-### System
+### 系统
 
 - `width`, `height`<br>
-The width and height of the screen
+画面的宽和高
 
 - `frame_count`<br>
-The number of the elapsed frames
+经过的帧数
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color])`<br>
-Initialize the Pyxel application with screen size (`width`, `height`). The maximum width and height of the screen is 256<br>
-It is also possible to specify the window title with `caption`, the display magnification with `scale`, the palette color with `palette`, the frame rate with `fps`, and the margin width and color outside the screen with `border_width` and `border_color`. `palette` is specified as a list of 16 elements of 24 bit color, `border_color` as 24 bit color
+初始化Pyxel应用的画面尺寸。画面的宽和高的最大值是256。<br>
+同时可以用`caption`指定窗口标题，`scale`设定放大倍数，`palette`设定色调，`fps`设定帧率，`border_width`和`border_color`设定画面外白边的颜色和宽度。`palette`通过使用16个24位色彩元素的list来设定，`border_color`使用24位的色彩设定。
 
 - `run(update, draw)`<br>
-Start the Pyxel application and call `update` function for frame update and `draw` function for drawing
+启动Pyxel应用并调用`update`更新帧、`draw`绘制画面。
 
 - `quit()`<br>
-Quit the Pyxel application at the end of the current frame
+当前帧结束后退出Pyxel应用。
 
 - `flip()`<br>
-Force drawing the screen (do not use in normal applications)
+强制绘制画面（通常应用中不会使用）。
 
 - `show()`<br>
-Draw the screen and wait forever (do not use in normal applications)
+绘制画面并一直等待（通常应用中不会使用）。
 
-### Resource
+### 源文件
 
 - `save(filename)`<br>
-Save the resource file (.pyxres) to the directory of the execution script
+保存源文件（.pyxres）到执行脚本的目录下。
 
 - `load(filename)`<br>
-Read the resource file (.pyxres) from the directory of the execution script
+从执行脚本的目录下读取源文件（.pyxres）。
 
-### Input
+### 输入
 - `mouse_x`, `mouse_y`<br>
-The current position of the mouse cursor
+当前鼠标指针的位置。
 
 - `btn(key)`<br>
-Return `True` if `key` is pressed, otherwise return `False` ([key definition list](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
+如果`key`被按下则返回`True`，否则返回`False`([key definition list](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))。
 
 - `btnp(key, [hold], [period])`<br>
-Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `period` are specified, `True` will be returned at the `period` frame interval when the `key` is held down for more than `hold` frames
+如果`key`被按下则返回`True`。若设置了`hold`和`period`参数，则当`key`被按下持续`hold`帧时，在`period`帧间隙返回`True`。
 
 - `btnr(key)`<br>
-Return `True` if `key` is released at that frame, otherwise return `False`
+如果`key`被松开，则在此帧返回`True`，否则返回`False`。
 
 - `mouse(visible)`<br>
-If `visible` is `True`, show the mouse cursor. If `False`, hide it. Even if the mouse cursor is not displayed, its position is updated.
+如果`visible`为`True`则显示鼠标指针，为`False`则不显示。即使鼠标指针不显示，其位置同样会被更新。
 
-### Graphics
+### 图像
 
 - `image(img, [system])`<br>
-Operate the image bank `img`(0-2) (see the Image class). If `system` is `True`, the image bank for system can be accessed. 3 is for the font and resource editor. 4 is for the display screen<br>
-e.g. `pyxel.image(0).load(0, 0, "title.png")`
+操作图像库`img`(0-2)（参考Image类）。若`system`指定为`True`，则图像库可存取。
+3对应字体和源文件编辑器，4对应显示画面。<br>
+例：`pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
-Operate the tilemap `tm`(0-7) (see the Tilemap class)
+操作瓦片地图`tm`(0-7)（参考Tilemap类）
 
 - `clip(x, y, w, h)`<br>
-Set the drawing area of the screen from (`x`, `y`) to width `w` and height `h`. Reset the drawing area to full screen with `clip()`
+设置画面绘制区域为从(`x`, `y`)开始的宽度`w`、高度为`h`的区域。`clip()`可以将绘制区域重置为全屏。
 
 - `pal(col1, col2)`<br>
-Replace color `col1` with `col2` at drawing. `pal()` to reset to the initial palette
+绘制时用`col1`颜色代替`col2`颜色。`pal()`可以重置为初始色调。
 
 - `cls(col)`<br>
-Clear screen with color `col`
+用`col`颜色清空画面。
 
 - `pix(x, y, col)`<br>
-Draw a pixel of color `col` at (`x`, `y`)
+用`col`颜色在(`x`, `y`)处绘制一个像素点。
 
 - `line(x1, y1, x2, y2, col)`<br>
-Draw a line of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
+用`col`颜色画一条从(`x1`, `y1`)到(`x2`, `y2`)的直线。
 
 - `rect(x, y, w, h, col)`<br>
-Draw a rectangle of width `w`, height `h` and color `col` from (`x`, `y`)
+用`col`颜色绘制一个从(`x`, `y`)开始的宽为`w`、高为`h`的矩形。
 
 - `rectb(x, y, w, h, col)`<br>
-Draw the outline of a rectangle of width `w`, height `h` and color `col` from (`x`, `y`)
+用`col`颜色绘制从(`x`, `y`)开始的宽为`w`、高为`h`的矩形边框。
 
 - `circ(x, y, r, col)`<br>
-Draw a circle of radius `r` and color `col` at (`x`, `y`)
+用`col`颜色绘制圆心为(`x`, `y`)，半径为`r`的圆形。
 
 - `circb(x, y, r, col)`<br>
-Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`)
+用`col`颜色绘制圆心为(`x`, `y`)，半径为`r`的圆形边框。
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color
