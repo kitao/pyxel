@@ -537,18 +537,18 @@ Set the list of sound(0-63) of channel 3
 
 ### 提交pull request
 
-Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the issue tracker.
+可以通过pull requests(PRs)形式来提交补丁。确认Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the issue tracker.
 
 Submitted pull request is deemed to have agreed to publish under [MIT license](https://github.com/kitao/pyxel/blob/master/LICENSE).
 
-## Other Information
+## 其他信息
 
 - [Wiki](https://github.com/kitao/pyxel/wiki)
 - [Subreddit](https://www.reddit.com/r/pyxel/)
 
-## License
+## 许可证
 
-Pyxel is under [MIT license](http://en.wikipedia.org/wiki/MIT_License). It can be reused within proprietary software provided that all copies of the licensed software include a copy of the MIT License terms and the copyright notice.
+Pyxel开源在[MIT license](http://en.wikipedia.org/wiki/MIT_License)下，. It can be reused within proprietary software provided that all copies of the licensed software include a copy of the MIT License terms and the copyright notice.
 
 Pyxel使用了以下库：
 
