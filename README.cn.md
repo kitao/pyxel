@@ -46,7 +46,7 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 - 支持键盘、鼠标及手柄输入
 - 图像和音频编辑器
 
-### 调色盘
+### 调色板
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
 
@@ -115,7 +115,7 @@ install_pyxel_examples
 - [02_jump_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py) - 用Pyxel制作的跳跃游戏
 - [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - 绘画API的示例
 - [04_sound_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py) - 声音API的示例
-- [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - 调色盘列表
+- [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - 调色板列表
 - [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - 鼠标点击游戏
 - [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - 带BGM的贪吃蛇游戏
 
@@ -159,7 +159,7 @@ pyxel.run(update, draw)
 
 `run`函数的两个参数`update`函数和`draw`函数分别用来在需要时更新边框和绘制画面。
 
-实际应用中，推荐将pyxel代码封装成如下类：
+实际应用中，建议将pyxel代码封装成如下类：
 
 ```python
 import pyxel
@@ -235,46 +235,46 @@ pyxeleditor [pyxel_resource_file]
 
 若指定Pyxel源文件（.pyxres）存在，则加载文件，若不存在，则以指定文件名新建文件。
 
-If the resource file is omitted, the name is `my_resource.pyxres`.
+若未指定源文件，则命名为`my_resource.pyxres`。
 
-After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file.
+启动Pyxel编辑器后，可以通过拖动来切换文件。
 
-The created resource file can be loaded with the `load` function.
+创建后的源文件可用`load`函数来加载。
 
-Pyxel Editor has the following edit modes.
+Pyxel编辑器有以下编辑模式。
 
-**Image Editor:**
+**图像编辑器：**
 
-The mode to edit the image banks.
+此模式用来编辑图像库。
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
 
-By dragging and dropping a png file onto the Image Editor screen, the image can be loaded into the currently selected image bank.
+通过拖动png文件至图像编辑器界面，可以将图像加载至当选择前图像库。
 
-**Tilemap Editor:**
+**瓦片地图编辑器：**
 
-The mode to edit tilemaps in which images of the image banks are arranged in a tile pattern.
+此模式用来编辑瓦片地图，其中图像库的图像以瓦片的样式排列。
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.gif">
 
-**Sound Editor:**
+**音频编辑器：**
 
-The mode to edit sounds.
+此模式用来编辑音频。
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.gif">
 
-**Music Editor:**
+**音乐编辑器：**
 
-The mode to edit musics in which the sounds are arranged in order of playback.
+此模式用来编辑将录音有序编排形成的音乐。
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
 
-### Other resource creation methods
+### 其他创建源文件的方法
 
-Pyxel images and tilemaps can also be created in the following way:
+Pyxel图像和瓦片地图也可以通过一下方法创建：
 
-- Create an image from a list of strings with `Image.set` or `Tilemap.set` function
-- Load a png file in Pyxel palette with `Image.load` function
+- 用`Image.set`或`Tilemap.set`函数string列表来生成图像
+- 在Pyxel调色板中用`Image.load`函数加载png文件
 
 Because Pyxel uses the same palette as [PICO-8](https://www.lexaloffle.com/pico-8.php), when creating png images for Pyxel, it is recommended to use [Aseprite](https://www.aseprite.org/) in PICO-8 palette mode.
 
