@@ -34,27 +34,27 @@ Pyxel的设计、API以及调色板参考了经典的[PICO-8](https://www.lexalo
 
 Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel制作自己的游戏吧！
 
-## 配置
+## 说明
 
 - 在Windows、Mac或Linux上运行
 - Python3
 - 内置16色调色板
 - 3个256x256的图像库
 - 8个256x256的瓦片地图
-- 4 channels with 64 definable sounds
-- 8 musics which can combine arbitrary sounds
-- Keyboard, mouse, and gamepad inputs
-- Image and sound editor
+- 4个音轨各含有64个可选音调
+- 任意组合的8个音乐
+- 支持键盘、鼠标及手柄输入
+- 图像和音频编辑器
 
-### Color Palette
+### 调色盘
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
 
-## How to Install
+## 如何安装
 
 ### Windows
 
-After installing [Python3](https://www.python.org/) (version 3.7 or higher), the following `pip` command installs Pyxel:
+安装[Python3](https://www.python.org/)(3.7或更高版本)之后，输入以下`pip`命令来安装Pyxel：
 
 ```sh
 pip install -U pyxel
@@ -62,9 +62,9 @@ pip install -U pyxel
 
 ### Mac
 
-After installing [Python3](https://www.python.org/) (version 3.7 or higher) and [SDL2](https://www.libsdl.org/), install Pyxel with `pip` command.
+安装[Python3](https://www.python.org/)(3.7或更高版本)以及[SDL2](https://www.libsdl.org/)之后，输入`pip`命令来安装Pyxel。
 
-If [Homebrew](https://brew.sh/) package manager is ready, the following command installs all the necessary packages:
+如果已安装[Homebrew](https://brew.sh/)，输入以下命令安装所有需要的包。
 
 ```sh
 brew install python3 sdl2 sdl2_image
@@ -73,7 +73,7 @@ pip3 install -U pyxel
 
 ### Linux
 
-Install [Python3](https://www.python.org/) (version 3.7 or higher) and the required packages in a way appropriate for each distribution.
+为各linux发行版安装[Python3](https://www.python.org/)(3.7或更高版本)以及依赖包。
 
 **Ubuntu:**
 
@@ -82,17 +82,17 @@ sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
 sudo pip3 install -U pyxel
 ```
 
-### Other environment
+### 其他环境
 
-To install Pyxel in an environment other than the above (32-bit Linux, Raspberry PI, etc.), follow the steps below for building:
+为除上述外其他环境(32位Linux、树莓派等)安装Pyxel，请按以下步骤进行构建：
 
-#### Install necessary tools and packages
+#### 安装所需的工具及依赖包
 
-- C++ build toolchain (should include gcc and make command)
-- libsdl2-dev and libsdl2-image-dev
-- [Python3](https://www.python.org/) (version 3.7 or highter) and pip command
+- C++构建工具链（包含gcc和make命令）
+- libsdl2-dev和libsdl2-image-dev
+- [Python3](https://www.python.org/)(3.7或更高版本)和pip工具
 
-#### Execute the following command in any folder
+#### 任意文件夹中执行以下命令
 
 ```sh
 git clone https://github.com/kitao/pyxel.git
@@ -101,25 +101,25 @@ make -C pyxel/core clean all
 pip3 install .
 ```
 
-### Install examples
+### 安装例程
 
-After installing Pyxel, the examples of Pyxel will be copied to the current directory with the following command:
+安装Pyxel后，可以用以下命令将Pyxe例程复制到当前文件夹：
 
 ```sh
 install_pyxel_examples
 ```
 
-The examples to be copied are as follows:
+例程包含：
 
-- [01_hello_pyxel.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py) - Simplest application
-- [02_jump_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py) - Jump game with Pyxel resource file
-- [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - Demonstration of drawig API
-- [04_sound_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py) - Demonstration of sound API
-- [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - Color palette list
-- [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - Mouse click game
-- [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - Snake game with BGM
+- [01_hello_pyxel.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py) - 最简单的应用
+- [02_jump_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py) - 用Pyxel制作的跳跃游戏
+- [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - 绘画API的示例
+- [04_sound_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py) - 声音API的示例
+- [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - 调色盘列表
+- [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - 鼠标点击游戏
+- [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - 带BGM的贪吃蛇游戏
 
-The examples can be executed like normal Python code:
+这些例程可以像执行正常python程序一样运行：
 
 **Windows:**
 
@@ -135,11 +135,11 @@ cd pyxel_examples
 python3 01_hello_pyxel.py
 ```
 
-## How to Use
+## 使用教程
 
-### Create a Pyxel Application
+### 创建Pyxel应用
 
-After importing the Pyxel module in your python code, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
+在python代码导入Pyxel模块后，首先用`init`函数指定窗口大小，然后用`run`函数启动Pyxel应用。
 
 ```python
 import pyxel
