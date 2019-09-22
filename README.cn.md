@@ -41,7 +41,7 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 - 内置16色调色板
 - 3个256x256的图像库
 - 8个256x256的瓦片地图
-- 4个音轨各含有64个可选音调
+- 4个声道各含有64个可选音调
 - 可任意组合8个音乐
 - 支持键盘、鼠标及游戏手柄输入
 - 图像和音频编辑器
@@ -251,7 +251,7 @@ Pyxel编辑器有以下编辑模式。
 
 通过拖动png文件至图像编辑器界面，可以将图像加载至当选择前图像库。
 
-**瓦片地图编辑器：**
+**瓦片地图(Tilemap)编辑器：**
 
 此模式用来编辑瓦片地图，其中图像库的图像以瓦片的样式排列。
 
@@ -386,10 +386,10 @@ pyxelpackager python_file
 用`col`颜色绘制圆心为(`x`, `y`)，半径为`r`的圆形边框。
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-将尺寸为(`w`, `h`)的区域从图像库的(`u`, `v`)复制到(`x`, `y`)。若`w`或`h`为负值，则在水平或垂直方向上翻转。若指定`colkey`的值，则视作透明颜色。
+将尺寸为(`w`, `h`)的区域从图像库的(`u`, `v`)复制到(`x`, `y`)。若`w`或`h`为负值，则在水平或垂直方向上翻转。若指定了`colkey`的值，则视作透明颜色。
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Draw the tilemap `tm`(0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. A tile of the tilemap is drawn with a size of 8x8, and if the tile number is 0, indicates the region (0, 0)-(7, 7) of the image bank, if 1, indicates (8, 0)-(15, 0)
+根据从(`u`, `v`)开始的尺寸为(`w`, `h`)的tail信息，将瓦片地图(tilemap)`tm`(0-7)绘制到(`x`, `y`)处。若指定了`colkey`的值，则视作透明颜色。瓦片地图(tilemap)中一个tail尺寸为8x8。若tail编号为0，代表图像库中(0, 0)-(7, 7)的区域，若编号为1，代表(8, 0)-(15, 0)的区域。
 
 - `text(x, y, s, col)`<br>
 用`col`颜色在(`x`, `y`)绘制字符串`s`。
@@ -397,131 +397,131 @@ Draw the tilemap `tm`(0-7) to (`x`, `y`) according to the tile information of si
 ### 声音
 
 - `sound(snd, [system])`<br>
-Operate the sound `snd`(0-63) (see the Sound class). If `system` is `True`, the sound 64 for system can be accessed<br>
-e.g. `pyxel.sound(0).speed = 60`
+操作音频`snd`(0-63)（参考Sound类）。若`system`为`True`，则sound 64可存取<br>
+示例：`pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
-Operate the music `msc`(0-7) (see the Music class)
+操作音乐`msc`(0-7)（参考Music类）
 
 - `play_pos(ch)`<br>
-Get the sound playback position of channel `ch`. The 100's and 1000's indicate the sound number and the 1's and 10's indicate the note number. When playback is stopped, return `-1`
+获取`ch`声道的音频当前播放到的位置。个位数和十位数表示note的值，百位数和千位数表示sound的数字。当播放停止时，返回-1。
 
 - `play(ch, snd, loop=False)`<br>
-Play the sound `snd`(0-63) on channel `ch`(0-3). Play in order when `snd` is a list
+在声道`ch`(0-3)播放音频`snd`(0-63)。当`snd`是列表时，按顺序播放。
 
 - `playm(msc, loop=False)`<br>
-Play the music `msc`(0-7)
+播放音乐`msc`(0-7)
 
 - `stop([ch])`<br>
-Stop playback of all channels. If `ch`(0-3) is specified, stop the corresponding channel only
+停止所有声道的播放。若指定了`ch`(0-3)，则只停止对应声道。
 
-### Image Class
+### Image类
 
 - `width`, `height`<br>
-The width and height of the image
+图像的宽和高。
 
 - `data`<br>
-The data of the image (256x256 two-dimentional list)
+图像中的数据（256x256的二维列表）。
 
 - `get(x, y)`<br>
-Retrieve the data of the image at (`x`, `y`)
+获取图像中(`x`, `y`)位置的值。
 
 - `set(x, y, data)`<br>
-Set the data of the image at (`x`, `y`) by a value or a list of strings<br>
-e.g. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+将图像中(`x`, `y`)位置的值设置为字符串列表的值。<br>
+示例：`pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
 
 - `load(x, y, filename)`<br>
-Read the png image from the directory of the execution script at (`x`, `y`)
+从执行脚本所在的文件夹加载png文件到(`x`, `y`)
 
 - `copy(x, y, img, u, v, w, h)`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`)
+将图像库`img`(0-2)中从(`u`, `v`)开始的尺寸为(`w`, `h`)的区域复制到(`x`, `y`)
 
-### Tilemap Class
+### Tilemap类
 
 - `width`, `height`<br>
-The width and height of the tilemap
+瓦片地图(tilemap)的宽和高。
 
 - `data`<br>
-The data of the tilemap (256x256 two-dimentional list)
+瓦片地图中的数据（256x256的二维列表）
 
 - `refimg`<br>
-The image bank referenced by the tilemap
+瓦片地图中引用的图像库。
 
 - `get(x, y)`<br>
-Retrieve the data of the tilemap at (`x`, `y`)
+获取瓦片地图中(`x`, `y`)位置的值。
 
 - `set(x, y, data)`<br>
-Set the data of the tilemap at (`x`, `y`) by a value or a list of strings.<br>
-e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+将瓦片地图中(`x`, `y`)位置的值设置为字符串列表的值。<br>
+示例：`pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `copy(x, y, tm, u, v, w, h)`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`)
+将瓦片地图`tm`(0-7)中从(`u`, `v`)开始的尺寸为(`w`, `h`)的区域复制到(`x`, `y`)
 
-### Sound Class
+### Sound类
 
 - `note`<br>
-List of note(0-127) (33 = 'A2' = 440Hz)
+note（音符）列表(0-127) (33 = 'A2' = 440Hz)
 
 - `tone`<br>
-List of tone(0:Triangle / 1:Square / 2:Pulse / 3:Noise)
+tone（音调）列表(0:Triangle / 1:Square / 2:Pulse / 3:Noise)
 
 - `volume`<br>
-List of volume(0-7)
+volume（音量）列表(0-7)
 
 - `effect`<br>
-List of effects(0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
+effect（音效）列表(0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
 
 - `speed`<br>
-The length of one note(120 = 1 second per tone)
+一个note（音符）的长度(120 = 1 second per tone)
 
 - `set(note, tone, volume, effect, speed)`<br>
-Set a note, tone, volume, and effect with a string. If the tone, volume, and effect length are shorter than the note, it is repeated from the beginning
+用字符串来设置note，tone，volume和effect。若tone，volume，和effect的长度比note短，则将其循环处理。
 
 - `set_note(note)`<br>
-Set the note with a string made of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored<br>
-e.g. `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+用'CDEFGAB'+'#-'+'0123'或'R'组成的字符串来设置note。不区分大小写，不计入空格。<br>
+示例：`pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
 
 - `set_tone(tone)`<br>
-Set the tone with a string made of 'TSPN'. Case-insensitive and whitespace is ignored<br>
-e.g. `pyxel.sound(0).set_tone("TTSS PPPN")`
+用'TSPN'组成的字符串设置tone。不区分大小写，不计入空格。<br>
+示例：`pyxel.sound(0).set_tone("TTSS PPPN")`
 
 - `set_volume(volume)`<br>
-Set the volume with a string made of '01234567'. Case-insensitive and whitespace is ignored<br>
-e.g. `pyxel.sound(0).set_volume("7777 7531")`
+用'01234567'组成的字符串设置volume。不区分大小写，不计入空格。<br>
+示例：`pyxel.sound(0).set_volume("7777 7531")`
 
 - `set_effect(effect)`<br>
-Set the effect with a string made of 'NSVF'. Case-insensitive and whitespace is ignored<br>
-e.g. `pyxel.sound(0).set_effect("NFNF NVVS")`
+用'NSVF'组成的字符串设置effect。不区分大小写，不计入空格。<br>
+示例：`pyxel.sound(0).set_effect("NFNF NVVS")`
 
-### Music Class
+### Music类
 
 - `ch0`<br>
-List of sound(0-63) play on channel 0. If an empty list is specified, the channel is not used for playback
+声道0中播放的sound(0-63)列表。若列表为空，则此声道未被使用。
 
 - `ch1`<br>
-List of sound(0-63) play on channel 1. If an empty list is specified, the channel is not used for playback
+声道1中播放的sound(0-63)列表。若列表为空，则此声道未被使用。
 
 - `ch2`<br>
-List of sound(0-63) play on channel 2. If an empty list is specified, the channel is not used for playback
+声道2中播放的sound(0-63)列表。若列表为空，则此声道未被使用。
 
 - `ch3`<br>
-List of sound(0-63) play on channel 3. If an empty list is specified, the channel is not used for playback
+声道3中播放的sound(0-63)列表。若列表为空，则此声道未被使用。
 
 - `set(ch0, ch1, ch2, ch3)`<br>
-Set the list of sound(0-63) of all channels. If an empty list is specified, that channel is not used for playback<br>
-e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+设置所有声道的音频sound(0-63)播放列表。若指定了空列表，则对应声道未被使用。<br>
+示例：`pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 - `set_ch0(data)`<br>
-Set the list of sound(0-63) of channel 0
+设置声道0的音频sound(0-63)播放列表。
 
 - `set_ch1(data)`<br>
-Set the list of sound(0-63) of channel 1
+设置声道1的音频sound(0-63)播放列表。
 
 - `set_ch2(data)`<br>
-Set the list of sound(0-63) of channel 2
+设置声道2的音频sound(0-63)播放列表。
 
 - `set_ch3(data)`<br>
-Set the list of sound(0-63) of channel 3
+设置声道3的音频sound(0-63)播放列表。
 
 ## 如何参与
 
@@ -537,9 +537,9 @@ Set the list of sound(0-63) of channel 3
 
 ### 提交pull request
 
-可以通过pull requests(PRs)形式来提交补丁。确认Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the issue tracker.
+可以通过pull requests(PRs)形式来提交补丁或修复。请确认你的pull request对应的issue地址在issue tracker中依然是open状态。
 
-Submitted pull request is deemed to have agreed to publish under [MIT license](https://github.com/kitao/pyxel/blob/master/LICENSE).
+一旦提交pull request，则默认同意在[MIT license](https://github.com/kitao/pyxel/blob/master/LICENSE)的许可下发布。
 
 ## 其他信息
 
@@ -548,7 +548,7 @@ Submitted pull request is deemed to have agreed to publish under [MIT license](h
 
 ## 许可证
 
-Pyxel开源在[MIT license](http://en.wikipedia.org/wiki/MIT_License)下，. It can be reused within proprietary software provided that all copies of the licensed software include a copy of the MIT License terms and the copyright notice.
+Pyxel开源在[MIT license](http://en.wikipedia.org/wiki/MIT_License)下，你可以将pyxel用在你的软件中，但同时上述软件的所有版本都必须包含MIT License许可条款及版权声明。
 
 Pyxel使用了以下库：
 
