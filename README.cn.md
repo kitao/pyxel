@@ -548,7 +548,7 @@ effect（音效）列表(0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
 
 ## 许可证
 
-Pyxel开源在[MIT license](http://en.wikipedia.org/wiki/MIT_License)下，你可以将pyxel用在你的软件中，但同时上述软件的所有版本都必须包含MIT License许可条款及版权声明。
+Pyxel开源在[MIT license](http://en.wikipedia.org/wiki/MIT_License)下，你可以将pyxel用在你的软件中，但同时所述软件的所有版本都必须包含MIT License许可条款及版权声明。
 
 Pyxel使用了以下库：
 
