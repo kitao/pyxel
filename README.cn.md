@@ -73,7 +73,7 @@ pip3 install -U pyxel
 
 ### Linux
 
-为各linux发行版安装[Python3](https://www.python.org/)(3.7或更高版本)以及依赖包。
+为各linux发行版安装[Python3](https://www.python.org/)(3.7或更高版本)及其依赖包。
 
 **Ubuntu:**
 
