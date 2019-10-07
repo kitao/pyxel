@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.7
+- Added the Chinese version of the README
+- Added the icon option to the Pyxel Packager command.
+
 ## 1.2.6
 - Updated the instruction for installation in the READMEs
 - Removed dependency on NumPy

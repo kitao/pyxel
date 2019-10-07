@@ -1,6 +1,6 @@
 # <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [Other Languages](https://github.com/kitao/pyxel/wiki) ]
+[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [Other Languages](https://github.com/kitao/pyxel/wiki) ]
 
 **Pyxel (ピクセル)** はPython向けのレトロゲームエンジンです。
 
@@ -291,12 +291,14 @@ Pyxel用のサウンドやミュージックは以下の方法で作成するこ
 単体実行ファイルを作成するには、次のように`pyxelpackager`コマンドでアプリケーションの起動に使用するPythonファイルを指定します。
 
 ```sh
-pyxelpackager Pythonファイル
+pyxelpackager python_file
 ```
 
 処理に成功すると、distフォルダに単体実行可能なファイルが作成されます。
 
 .pyxresファイルや.pngファイル等のリソースも同梱する必要がある場合は、`assets`フォルダ以下に置くと取り込まれます。
+
+``-i``オプションでアイコンファイルを設定することも可能です。
 
 ## APIリファレンス
 

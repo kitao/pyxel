@@ -1,6 +1,6 @@
 # <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [Other Languages](https://github.com/kitao/pyxel/wiki) ]
+[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [Other Languages](https://github.com/kitao/pyxel/wiki) ]
 
 **Pyxel** is a retro game engine for Python.
 
@@ -296,6 +296,8 @@ pyxelpackager python_file
 When the process is complete, a stand-alone executable is created in the `dist` folder.
 
 If resources such as .pyxres and .png files are also necessary, put them under the `assets` folder and they will be included.
+
+It is also possible to specify an icon with the ``-i`` option.
 
 ## API Reference
 
