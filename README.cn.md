@@ -298,6 +298,8 @@ pyxelpackager python_file
 
 若应用必须包含.pyxres和.png文件，将其放在`assets`文件夹下，他们便会被打包进可执行文件中。
 
+It is also possible to specify an icon with the ``-i`` option.
+
 ## API参考手册
 
 ### 系统
