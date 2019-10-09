@@ -297,7 +297,7 @@ When the process is complete, a stand-alone executable is created in the `dist` 
 
 If resources such as .pyxres and .png files are also necessary, put them under the `assets` folder and they will be included.
 
-It is also possible to specify an icon with the ``-i`` option.
+It is also possible to specify an icon with the ``-i icon_file`` option.
 
 ## API Reference
 
