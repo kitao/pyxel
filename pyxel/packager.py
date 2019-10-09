@@ -10,7 +10,7 @@ import pyxel
 def run():
     parser = argparse.ArgumentParser(description="Pyxel Packager")
     parser.add_argument(
-        "entrypoint", type=argparse.FileType(),
+        "python_file", type=argparse.FileType(),
         help="Pyxel program file entry point"
     )
     parser.add_argument(
