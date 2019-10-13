@@ -2,7 +2,8 @@
 
 ## 1.2.7
 - Added the Chinese version of the README
-- Added the icon option to the Pyxel Packager command.
+- Added the icon option to the Pyxel Packager command
+- Fixed the the copy method of the Tilemap class
 
 ## 1.2.6
 - Updated the instruction for installation in the READMEs

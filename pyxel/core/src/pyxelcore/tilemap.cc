@@ -97,7 +97,7 @@ void Tilemap::CopyTilemap(int32_t x,
     int32_t* dst_line = dst_data[copy_area.y + i];
 
     for (int32_t j = 0; j < copy_area.width; j++) {
-      dst_line[copy_area.x + j] = src_line[copy_area.x + j];
+      dst_line[copy_area.x + j] = src_line[copy_area.u + j];
     }
   }
 }
