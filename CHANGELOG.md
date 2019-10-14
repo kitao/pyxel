@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.8
+- Fixed the Pyxel Packager
+
 ## 1.2.7
 - Added the Chinese version of the README
 - Added the icon option to the Pyxel Packager command
