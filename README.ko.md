@@ -90,7 +90,8 @@ sudo pip3 install -U pyxel
 #### 필요한 툴과 패키지 설치
 
 - C++ build toolchain (gcc 및 make 명령어를 포함해야 함)
-- libsdl2-dev, libsdl2-image-dev
+- libsdl2-dev
+- libsdl2-image-dev
 - [Python3](https://www.python.org/) (버전 3.7 이상), pip
 
 #### 임의의 폴더에서 아래 명령어 실행
