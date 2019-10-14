@@ -318,9 +318,6 @@ Pyxel 애플리케이션을 (`width`, `height`) 크기로 초기화합니다. �
 - `run(update, draw)`<br>
 Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수를, 화면 그리기에 `draw` 함수를 호출합니다.
 
-- `run_with_profiler(update, draw)`<br>
-프로파일러를 붙여서 Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수를, 화면 그리기에 `draw` 함수를 호출합니다. 애플리케이션 종료 시 각 함수의 처리 시간을 출력합니다.
-
 - `quit()`<br>
 현재 프레임 종료 시에 Pyxel 애플리케이션을 종료합니다.
 
