@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.9
+- Added the Korean version of the README
+
 ## 1.2.8
 - Fixed the Pyxel Packager
 
