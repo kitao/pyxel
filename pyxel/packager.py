@@ -25,8 +25,8 @@ def run():
 
     args = parser.parse_args()
 
-    dirname = os.path.dirname(args.entrypoint.name) or "."
-    filename = os.path.basename(args.entrypoint.name)
+    dirname = os.path.dirname(args.python_file.name) or "."
+    filename = os.path.basename(args.python_file.name)
     name = os.path.splitext(filename)[0]
     separator = ";" if platform.system() == "Windows" else ":"
 
