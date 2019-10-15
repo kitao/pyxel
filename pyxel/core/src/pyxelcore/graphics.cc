@@ -254,6 +254,34 @@ void Graphics::DrawCircleBorder(int32_t x,
   }
 }
 
+void DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, int32_t color){
+    int32_t draw_color = GET_DRAW_COLOR(color);
+    
+    if(y1 > y2){ //rank as y3 > y2 > y1
+        swap(y1, y2);
+        swap(x1, x2);
+    }
+    if(y1 > y3){
+        swap(y1, y3);
+        swap(x1, x3);
+    }
+    if(y2 > y3){
+        swap(y2, y3);
+        swap(x2, x3);
+    }
+    
+    float alpha12 = static_cast<float>(y2 - y1) / (x2 - x1);
+    int32_t y_slider=y1; // slide bottom-up from y1 to y3
+
+  }
+  
+  void DrawTriangleBorder(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, int32_t color){
+    DrawLine(x1, y1, x2, y2, color);
+    DrawLine(x1, y1, x3, y3, color);
+    DrawLine(x2, y2, x3, y3, color);
+  }
+  
+  
 void Graphics::DrawImage(int32_t x,
                          int32_t y,
                          int32_t image_index,
