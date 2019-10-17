@@ -187,11 +187,11 @@ void circb(int32_t x, int32_t y, int32_t r, int32_t col) {
 }
 
 void tri(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, int32_t col) {
-  s_graphics->DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, int32_t col);
+  s_graphics->DrawTriangle(x1, y1, x2, y2, x3, y3, col);
 }
 
 void trib(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, int32_t col) {
-  s_graphics->DrawTriangleBorder(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, int32_t col);
+  s_graphics->DrawTriangleBorder(x1, y1, x2, y2, x3, y3, col);
 }
 
 void blt(int32_t x,
