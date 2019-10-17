@@ -259,16 +259,16 @@ void Graphics::DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int3
 
   //rank as y3 > y2 > y1
   if(y1 > y2){
-    swap(y1, y2);
-    swap(x1, x2);
+    std::swap(y1, y2);
+    std::swap(x1, x2);
   }
   if(y1 > y3){
-    swap(y1, y3);
-    swap(x1, x3);
+    std::swap(y1, y3);
+    std::swap(x1, x3);
   }
   if(y2 > y3){
-    swap(y2, y3);
-    swap(x2, x3);
+    std::swap(y2, y3);
+    std::swap(x2, x3);
   }
   // slide bottom-up from y1 to y3
   float alpha12 = (y2==y1) ? 0 : static_cast<float>(x2 - x1) / (y2 - y1);
