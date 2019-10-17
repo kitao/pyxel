@@ -314,7 +314,6 @@ void Graphics::DrawTriangleBorder(int32_t x1, int32_t y1, int32_t x2, int32_t y2
   DrawLine(x2, y2, x3, y3, color);
 }
   
-  
 void Graphics::DrawImage(int32_t x,
                          int32_t y,
                          int32_t image_index,
