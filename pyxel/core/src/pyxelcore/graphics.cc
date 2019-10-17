@@ -280,11 +280,11 @@ void Graphics::DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int3
       int32_t x_slider, x_end;
 
       if(x_intersection < x2){
-        x_slider = x1 + alpha13 * (y_slider - y1) + 0.5f;
-        x_end = x1 + alpha12 * (y_slider - y1) + 0.5f;
+        x_slider = x_intersection + alpha13 * (y_slider - y2) + 0.5f;
+        x_end = x2 + alpha12 * (y_slider - y2) + 0.5f;
       }else{
-        x_slider = x1 + alpha12 * (y_slider - y1) + 0.5f;
-        x_end = x1 + alpha13 * (y_slider - y1) + 0.5f;
+        x_slider = x2 + alpha12 * (y_slider - y2) + 0.5f;
+        x_end = x_intersection + alpha13 * (y_slider - y2) + 0.5f;
       }
 
       for(; x_slider <= x_end; x_slider++){
