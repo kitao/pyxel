@@ -85,6 +85,8 @@ PYXEL_API void rect(int32_t x, int32_t y, int32_t w, int32_t h, int32_t col);
 PYXEL_API void rectb(int32_t x, int32_t y, int32_t w, int32_t h, int32_t col);
 PYXEL_API void circ(int32_t x, int32_t y, int32_t r, int32_t col);
 PYXEL_API void circb(int32_t x, int32_t y, int32_t r, int32_t col);
+PYXEL_API void tri(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, int32_t col);
+PYXEL_API void trib(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, int32_t col);
 PYXEL_API void blt(int32_t x,
                    int32_t y,
                    int32_t img,
