@@ -39,6 +39,20 @@ class Graphics {
                            int32_t color);
   void DrawCircle(int32_t x, int32_t y, int32_t radius, int32_t color);
   void DrawCircleBorder(int32_t x, int32_t y, int32_t radius, int32_t color);
+  void DrawTriangle(int32_t x1,
+                    int32_t y1,
+                    int32_t x2,
+                    int32_t y2,
+                    int32_t x3,
+                    int32_t y3,
+                    int32_t color);
+  void DrawTriangleBorder(int32_t x1,
+                          int32_t y1,
+                          int32_t x2,
+                          int32_t y2,
+                          int32_t x3,
+                          int32_t y3,
+                          int32_t color);
   void DrawImage(int32_t x,
                  int32_t y,
                  int32_t image_index,

@@ -254,6 +254,66 @@ void Graphics::DrawCircleBorder(int32_t x,
   }
 }
 
+void Graphics::DrawTriangle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, int32_t color){
+  int32_t draw_color = GET_DRAW_COLOR(color);
+
+  //rank as y3 > y2 > y1
+  if(y1 > y2){
+    std::swap(y1, y2);
+    std::swap(x1, x2);
+  }
+  if(y1 > y3){
+    std::swap(y1, y3);
+    std::swap(x1, x3);
+  }
+  if(y2 > y3){
+    std::swap(y2, y3);
+    std::swap(x2, x3);
+  }
+  // slide bottom-up from y1 to y3
+  float alpha12 = (y2==y1) ? 0 : static_cast<float>(x2 - x1) / (y2 - y1);
+  float alpha13 = (y3==y1) ? 0 : static_cast<float>(x3 - x1) / (y3 - y1);
+  float alpha23 = (y3==y2) ? 0 : static_cast<float>(x3 - x2) / (y3 - y2);
+  int32_t x_intersection = x1 + alpha13 * (y2 - y1)  + 0.5f;
+  int32_t y_slider = y1;
+  for(; y_slider <= y2; y_slider++){
+      int32_t x_slider, x_end;
+
+      if(x_intersection < x2){
+        x_slider = x_intersection + alpha13 * (y_slider - y2) + 0.5f;
+        x_end = x2 + alpha12 * (y_slider - y2) + 0.5f;
+      }else{
+        x_slider = x2 + alpha12 * (y_slider - y2) + 0.5f;
+        x_end = x_intersection + alpha13 * (y_slider - y2) + 0.5f;
+      }
+
+      for(; x_slider <= x_end; x_slider++){
+        SetPixel(x_slider, y_slider, draw_color);
+      }
+  }
+  for(; y_slider <= y3; y_slider++){
+      int32_t x_slider, x_end;
+
+      if(x_intersection < x2){
+        x_slider = x_intersection + alpha13 * (y_slider - y2) + 0.5f;
+        x_end = x2 + alpha23 * (y_slider - y2) + 0.5f;
+      }else{
+        x_slider = x2 + alpha23 * (y_slider - y2) + 0.5f;
+        x_end = x_intersection + alpha13 * (y_slider - y2) + 0.5f;
+      }
+
+      for(; x_slider <= x_end; x_slider++){
+        SetPixel(x_slider, y_slider, draw_color);
+      }
+  }
+}
+
+void Graphics::DrawTriangleBorder(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, int32_t color){
+  DrawLine(x1, y1, x2, y2, color);
+  DrawLine(x1, y1, x3, y3, color);
+  DrawLine(x2, y2, x3, y3, color);
+}
+  
 void Graphics::DrawImage(int32_t x,
                          int32_t y,
                          int32_t image_index,
