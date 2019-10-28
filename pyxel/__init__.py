@@ -706,6 +706,14 @@ def circb(x: int, y: int, r: int, col: int) -> None:
     core.circb(int(x), int(y), int(r), int(col))
 
 
+def tri(x1: int, y1: int, x2: int, y2: int, x3: int, y3: int, col: int) -> None:
+	core.tri(int(x1), int(y1), int(x2), int (y2), int(x3), int (y3), int(col))
+
+	
+def trib(x1: int, y1: int, x2: int, y2: int, x3: int, y3: int, col: int) -> None:
+	core.trib(int(x1), int(y1), int(x2), int (y2), int(x3), int (y3), int(col))
+
+	
 def blt(
     x: int, y: int, img: int, u: int, v: int, w: int, h: int, colkey: int = -1
 ) -> None:
