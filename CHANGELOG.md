@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.0
+- Added the tri and trib APIs
+
 ## 1.2.9
 - Added the Korean version of the README
 
