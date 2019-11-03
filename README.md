@@ -79,7 +79,7 @@ Install [Python3](https://www.python.org/) (version 3.7 or higher) and the requi
 
 ```sh
 sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
-sudo pip3 install -U pyxel
+sudo -H pip3 install -U pyxel
 ```
 
 ### Other environment
