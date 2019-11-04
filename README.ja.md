@@ -80,7 +80,7 @@ pip3 install -U pyxel
 
 ```sh
 sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
-sudo pip3 install -U pyxel
+sudo -H pip3 install -U pyxel
 ```
 
 ### その他の環境
