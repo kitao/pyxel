@@ -80,6 +80,7 @@ DEFAULT_PALETTE: List[int] = [
 DEFAULT_FPS: int = _get_constant_number("DEFAULT_FPS")
 DEFAULT_BORDER_WIDTH: int = _get_constant_number("DEFAULT_BORDER_WIDTH")
 DEFAULT_BORDER_COLOR: int = _get_constant_number("DEFAULT_BORDER_COLOR")
+DEFAULT_QUIT_KEY: int = _get_constant_number("DEFAULT_QUIT_KEY")
 
 KEY_SPACE: int = _get_constant_number("KEY_SPACE")
 KEY_QUOTE: int = _get_constant_number("KEY_QUOTE")
@@ -524,7 +525,8 @@ def init(
     palette: List[int] = DEFAULT_PALETTE,
     fps: int = DEFAULT_FPS,
     border_width: int = DEFAULT_BORDER_WIDTH,
-    border_color: int = DEFAULT_BORDER_COLOR
+    border_color: int = DEFAULT_BORDER_COLOR,
+    quit_key: int = DEFAULT_QUIT_KEY
 ) -> None:
     _image_bank.clear()
     _tilemap_bank.clear()
@@ -542,6 +544,7 @@ def init(
         int(fps),
         int(border_width),
         int(border_color),
+        int(quit_key),
     )
 
 
@@ -582,16 +585,28 @@ def _caption(caption: str) -> None:
 #
 # Resource
 #
-def save(filename: str) -> None:
+def save(
+    filename: str,
+    image: bool = True,
+    tilemap: bool = True,
+    sound: bool = True,
+    music: bool = True,
+) -> None:
     dirname = os.path.dirname(
         inspect.currentframe().f_back.f_code.co_filename  # type: ignore
     )
     filename = os.path.join(dirname, filename)
 
-    core.save(filename.encode("utf-8"))
+    core.save(filename.encode("utf-8"), image, tilemap, sound, music)
 
 
-def load(filename: str) -> None:
+def load(
+    filename: str,
+    image: bool = True,
+    tilemap: bool = True,
+    sound: bool = True,
+    music: bool = True,
+) -> None:
     caller = inspect.currentframe().f_back.f_code.co_filename  # type: ignore
     dirname = (
         getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(caller)))
@@ -600,7 +615,7 @@ def load(filename: str) -> None:
     )
     filename = os.path.abspath(os.path.join(dirname, filename))
 
-    core.load(filename.encode("utf-8"))
+    core.load(filename.encode("utf-8"), image, tilemap, sound, music)
 
 
 #
@@ -707,13 +722,13 @@ def circb(x: int, y: int, r: int, col: int) -> None:
 
 
 def tri(x1: int, y1: int, x2: int, y2: int, x3: int, y3: int, col: int) -> None:
-	core.tri(int(x1), int(y1), int(x2), int (y2), int(x3), int (y3), int(col))
+    core.tri(int(x1), int(y1), int(x2), int(y2), int(x3), int(y3), int(col))
 
-	
+
 def trib(x1: int, y1: int, x2: int, y2: int, x3: int, y3: int, col: int) -> None:
-	core.trib(int(x1), int(y1), int(x2), int (y2), int(x3), int (y3), int(col))
+    core.trib(int(x1), int(y1), int(x2), int(y2), int(x3), int(y3), int(col))
 
-	
+
 def blt(
     x: int, y: int, img: int, u: int, v: int, w: int, h: int, colkey: int = -1
 ) -> None:
