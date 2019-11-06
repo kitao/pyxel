@@ -21,7 +21,8 @@ class System {
          const pyxelcore::PaletteColor& palette_color = DEFAULT_PALETTE,
          int32_t fps = DEFAULT_FPS,
          int32_t border_width = DEFAULT_BORDER_WIDTH,
-         int32_t border_color = DEFAULT_BORDER_COLOR);
+         int32_t border_color = DEFAULT_BORDER_COLOR,
+         int32_t quit_key = DEFAULT_QUIT_KEY);
   ~System();
 
   pyxelcore::Resource* Resource() const { return resource_; }
@@ -51,6 +52,7 @@ class System {
   Recorder* recorder_;
 
   int32_t fps_;
+  int32_t quit_key_;
   int32_t frame_count_;
   double one_frame_time_;
   double next_update_time_;
