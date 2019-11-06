@@ -54,15 +54,16 @@ void init(int32_t width,
           const int32_t* palette,
           int32_t fps,
           int32_t border_width,
-          int32_t border_color) {
+          int32_t border_color,
+          int32_t quit_key) {
   std::array<int32_t, pyxelcore::COLOR_COUNT> palette_color;
   for (int32_t i = 0; i < pyxelcore::COLOR_COUNT; i++) {
     palette_color[i] = palette[i];
   }
 
-  s_system =
-      new pyxelcore::System(width, height, std::string(caption), scale,
-                            palette_color, fps, border_width, border_color);
+  s_system = new pyxelcore::System(width, height, std::string(caption), scale,
+                                   palette_color, fps, border_width,
+                                   border_color, quit_key);
   s_resource = s_system->Resource();
   s_input = s_system->Input();
   s_graphics = s_system->Graphics();
@@ -96,12 +97,20 @@ void _caption(const char* caption) {
 //
 // Resource
 //
-void save(const char* filename) {
-  s_resource->SaveAsset(filename);
+void save(const char* filename,
+          int32_t image,
+          int32_t tilemap,
+          int32_t sound,
+          int32_t music) {
+  s_resource->SaveAsset(filename, image, tilemap, sound, music);
 }
 
-void load(const char* filename) {
-  s_resource->LoadAsset(filename);
+void load(const char* filename,
+          int32_t image,
+          int32_t tilemap,
+          int32_t sound,
+          int32_t music) {
+  s_resource->LoadAsset(filename, image, tilemap, sound, music);
 }
 
 //
@@ -186,11 +195,23 @@ void circb(int32_t x, int32_t y, int32_t r, int32_t col) {
   s_graphics->DrawCircleBorder(x, y, r, col);
 }
 
-void tri(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, int32_t col) {
+void tri(int32_t x1,
+         int32_t y1,
+         int32_t x2,
+         int32_t y2,
+         int32_t x3,
+         int32_t y3,
+         int32_t col) {
   s_graphics->DrawTriangle(x1, y1, x2, y2, x3, y3, col);
 }
 
-void trib(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t x3, int32_t y3, int32_t col) {
+void trib(int32_t x1,
+          int32_t y1,
+          int32_t x2,
+          int32_t y2,
+          int32_t x3,
+          int32_t y3,
+          int32_t col) {
   s_graphics->DrawTriangleBorder(x1, y1, x2, y2, x3, y3, col);
 }
 
