@@ -121,7 +121,7 @@ Los ejemplos a ser copiados son los siguientes:
 - [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - Juego de click con el Mouse
 - [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - Juego de serpiente con música de fondo
 
-The examples can be executed like normal Python code:
+Los ejemplos pueden ser ejecutados como código Python normal:
 
 **Windows:**
 
@@ -137,11 +137,11 @@ cd pyxel_examples
 python3 01_hello_pyxel.py
 ```
 
-## How to Use
+## Cómo usarlo
 
-### Create a Pyxel Application
+### Crear una aplicación Pyxel
 
-After importing the Pyxel module in your python code, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
+Luego de importar el modulo Pyxel en tu código Python, primero especifíca el tamaño de la pantalla con la función `init`, luego inicia la aplicación Pyxel con la func `run`.
 
 ```python
 import pyxel
@@ -159,9 +159,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-The arguments of `run` function are `update` function to update each frame and `draw` function to draw screen when necessary.
+Los argumentos de la función `run` son la función `update` para actualizar cada cuadro y la función `draw` para dibujar la pantalla cuando es necesario.
 
-In an actual application, it is recommended to wrap pyxel code in a class as below:
+En una aplicación actual, es recomendable envolver el código Pyxel en una clase como a continuación:
 
 ```python
 import pyxel
@@ -182,9 +182,9 @@ class App:
 App()
 ```
 
-It is also possible to write simple code using `show` and `flip` functions to draw simple graphics and animations.
+También es posible escribir código simple utilizando las funciones `show` y `flip` para dibujar graficos y animaciones simples.
 
-The `show` function displays the screen and waits until the `ESC` key is pressed.
+La función `show` muestra la pantalla y espera hasta que la tecla `ESC` es pulsada.
 
 ```python
 import pyxel
@@ -195,7 +195,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-The `flip` function updates the screen once.
+La función `flip` actualiza la pantalla una vez.
 
 ```python
 import pyxel
