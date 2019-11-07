@@ -423,80 +423,80 @@ Detiene la reproducción de todos los canales. Si `ch`(0-3) es difinido, detiene
 ### Clase Image
 
 - `width`, `height`<br>
-The width and height of the image
+El ancho y alto de la imagen
 
 - `data`<br>
-The data of the image (256x256 two-dimentional list)
+La data de la imagen (256x256 lista bidimensional)
 
 - `get(x, y)`<br>
-Retrieve the data of the image at (`x`, `y`)
+Recupera la data de la imagen en (`x`, `y`)
 
 - `set(x, y, data)`<br>
-Set the data of the image at (`x`, `y`) by a value or a list of strings<br>
-e.g. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+Establece la data de la imagen en (`x`, `y`) por un valor o una lista de cadenas<br>
+p.ej. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
 
 - `load(x, y, filename)`<br>
-Read the png image from the directory of the execution script at (`x`, `y`)
+Lee la imagen png desde el directorio de ejecución del script en (`x`, `y`)
 
 - `copy(x, y, img, u, v, w, h)`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`)
+Copia la región de tamaño (`w`, `h`) desde (`u`, `v`) del banco de imagen `img`(0-2) a (`x`, `y`)
 
-### Tilemap Class
+### Clase Tilemap
 
 - `width`, `height`<br>
-The width and height of the tilemap
+El ancho y alto del tilemap
 
 - `data`<br>
-The data of the tilemap (256x256 two-dimentional list)
+La data del tilemap (256x256 lista bidimensional)
 
 - `refimg`<br>
-The image bank referenced by the tilemap
+El banco de imagen referenciado por el tilemap
 
 - `get(x, y)`<br>
-Retrieve the data of the tilemap at (`x`, `y`)
+Obtiene la data del tilemap en (`x`, `y`)
 
 - `set(x, y, data)`<br>
-Set the data of the tilemap at (`x`, `y`) by a value or a list of strings.<br>
-e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+Establece la data del tilemap en (`x`, `y`) por un valor o una lista de cadenas.<br>
+p.ej. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `copy(x, y, tm, u, v, w, h)`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`)
+Copia la región de tamaño (`w`, `h`) desde (`u`, `v`) del tilemap `tm`(0-7) a (`x`, `y`)
 
-### Sound Class
+### Clase Sound
 
 - `note`<br>
-List of note(0-127) (33 = 'A2' = 440Hz)
+Lista de notas(0-127) (33 = 'A2' = 440Hz)
 
 - `tone`<br>
-List of tone(0:Triangle / 1:Square / 2:Pulse / 3:Noise)
+Lista de tonos(0:Triangulo / 1:Cuadrado / 2:Pulso / 3:Ruido)
 
 - `volume`<br>
-List of volume(0-7)
+Lista de volumen(0-7)
 
 - `effect`<br>
-List of effects(0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
+Lista de efectos(0:Ninguno / 1:Deslisante / 2:Vibración / 3:Desvanecido)
 
 - `speed`<br>
-The length of one note(120 = 1 second per tone)
+La longitud de una nota(120 = 1 segundo por tono)
 
 - `set(note, tone, volume, effect, speed)`<br>
-Set a note, tone, volume, and effect with a string. If the tone, volume, and effect length are shorter than the note, it is repeated from the beginning
+Establece una nota, tono, volumen, y efecto con una cadena. Si la longitud del tono, volumen, y efecto son mas cortos que la nota, es repetido desde el principio
 
 - `set_note(note)`<br>
-Set the note with a string made of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored<br>
-e.g. `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+Establece la nota con una cadena hecha con 'CDEFGAB'+'#-'+'0123' o 'R'. No distingue mayúsculas, minúsculas y los espacios en blanco son ignorados<br>
+p.ej. `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
 
 - `set_tone(tone)`<br>
-Set the tone with a string made of 'TSPN'. Case-insensitive and whitespace is ignored<br>
-e.g. `pyxel.sound(0).set_tone("TTSS PPPN")`
+Establece el tono con una cadena hecha con 'TSPN'. No distingue mayúsculas/minúsculas y los espacios en blanco son ignorados<br>
+p.ej. `pyxel.sound(0).set_tone("TTSS PPPN")`
 
 - `set_volume(volume)`<br>
-Set the volume with a string made of '01234567'. Case-insensitive and whitespace is ignored<br>
-e.g. `pyxel.sound(0).set_volume("7777 7531")`
+Establece el volumen con una cadena hecha con '01234567'. No distingue mayúsculas/minúsculas y los espacios en blanco son ignorados<br>
+p.ej. `pyxel.sound(0).set_volume("7777 7531")`
 
 - `set_effect(effect)`<br>
-Set the effect with a string made of 'NSVF'. Case-insensitive and whitespace is ignored<br>
-e.g. `pyxel.sound(0).set_effect("NFNF NVVS")`
+Establece el efecto con una cadena hecha con 'NSVF'. No distingue mayúsculas/minúsculas y los espacios en blanco son ignorados<br>
+p.ej. `pyxel.sound(0).set_effect("NFNF NVVS")`
 
 ### Music Class
 
