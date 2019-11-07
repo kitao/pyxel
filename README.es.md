@@ -266,7 +266,6 @@ El modo para editar sonidos.
 
 **Editor de Música:**
 
-The mode to edit musics in which the sounds are arranged in order of playback.
 El modo para editar música en el que los sonidos son organizados en orden de reproducción.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
@@ -280,44 +279,46 @@ La imagenes y tilemaps de Pyxel también pueden ser creadas de la siguiente form
 
 Debido a que Pyxel usa la misma paleta que [PICO-8](https://www.lexaloffle.com/pico-8.php), cuando se crean las imagenes png para Pyxel, es recomendable usar [Aseprite](https://www.aseprite.org/) en el modo paleta PICO-8.
 
-Pyxel sounds can also be created in the following way:
+Los sonidos en Pyxel también pueden ser creados de la siguiente forma:
 
 - Create a sound from strings with `Sound.set` or `Music.set` function
+- Crear un sonido desde cadenas con la función `Sound.set` o `Music.set`
 
-Please refer to the API reference for usage of these functions.
+Por favor acudir a la referencia del API para el uso de estas funciones.
 
-### How to Create a Stand-Alone Executable
+### Cómo crear un ejecutable independiente
 
-By using the attached Pyxel Packager, a stand-alone executable that will work even in environments where Python is not installed can be created.
+Mediante el uso del Pyxel Packager adjunto, un ejecutable independiente que funcione incluso en ambientes donde Python no este instalado puede se creado.
 
-To create a stand-alone executable, specify the Python file to be used to launch the application with the `pyxelpackager` command as follows:
+Para crear un ejecutable independiente, especificar el archivo Python a ser usado para iniciar la aplicación con el comando `pyxelpackager` de la siguiente forma:
 
 ```sh
 pyxelpackager python_file
 ```
 
-When the process is complete, a stand-alone executable is created in the `dist` folder.
+Cuando el proceso esta completo, el ejecutable independiente es creado en la carpeta `dist`.
 
-If resources such as .pyxres and .png files are also necessary, put them under the `assets` folder and they will be included.
+Si también son necesarios recursos como archivos .pyxres y .png, ponlos bajo la carpeta `assets` y estos serán incluidos.
 
-It is also possible to specify an icon with the ``-i icon_file`` option.
+También es posible especificar un icono con la opción ``-i icon_file``.
 
-## API Reference
+## Referencia de la API
 
-### System
+### Sistema
 
 - `width`, `height`<br>
-The width and height of the screen
+El ancho y alto de la pantalla
 
 - `frame_count`<br>
-The number of the elapsed frames
+El número de cuadros transcurridos
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color])`<br>
-Initialize the Pyxel application with screen size (`width`, `height`). The maximum width and height of the screen is 256<br>
+Inicializar la aplicación Pyxel con el tamaño de pantalla (`width`, `height`). El ancho y alto máximo de la pantalla es 256<br>
 It is also possible to specify the window title with `caption`, the display magnification with `scale`, the palette color with `palette`, the frame rate with `fps`, and the margin width and color outside the screen with `border_width` and `border_color`. `palette` is specified as a list of 16 elements of 24 bit color, `border_color` as 24 bit color
+También es posible especificar el titulo de la ventana con `caption`, el aumento de pantalla con `scale`, la paleta de colores con `palette`, los cuadros por segundo con `fps`, y el ancho del margen y color fuera de la pantalla con `border_width` y `border_color`. `palette` es especificada como una lista de 16 elementos de color de 24 bits, `border_color` como color de 24 bits
 
 - `run(update, draw)`<br>
-Start the Pyxel application and call `update` function for frame update and `draw` function for drawing
+Inicia la aplicación Pyxel y llama a la función `update` para la actualización de cuadros y la función `draw` para el dibujado
 
 - `quit()`<br>
 Quit the Pyxel application at the end of the current frame
