@@ -28,8 +28,6 @@ class Editor(Widget):
         self._history_list = []
         self._history_index = 0
 
-        self.add_event_handler("drop", self.__on_drop)
-
     @property
     def help_message(self):
         return self.parent.help_message
@@ -126,11 +124,3 @@ class Editor(Widget):
             s = ""
 
         self.help_message = s
-
-    def __on_drop(self, filenames):
-        for filename in filenames:
-            _, ext = os.path.splitext(filename)
-
-            if ext.lower() == ".pyxel":
-                pyxel.load(filename)
-                return
