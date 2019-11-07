@@ -208,65 +208,66 @@ while True:
     pyxel.flip()
 ```
 
-### Special Controls
+### Controles especiales
 
-The following special controls can be performed while a Pyxel application is running:
+Los siguientes controles especiales pueden ser usados cuando una aplicación Pyxel se esta ejecutando:
 
 - `Esc`<br>
-Quit the application
+Sale de la aplicación
 - `Alt(Option)+1`<br>
-Save the screenshot to the desktop
+Guarda la captura de pantalla en el escritorio
 - `Alt(Option)+2`<br>
-Reset the recording start time of the screen capture video
+Reinicia el tiempo inicial de grabación de la captura de video de pantalla
 - `Alt(Option)+3`<br>
-Save the screen capture video (gif) to the desktop (up to 30 seconds)
+Guarda la captura de video de pantalla (gif) en el escritorio (máximo 30 segundos)
 - `Alt(Option)+0`<br>
-Toggle the performance monitor (fps, update time, and draw time)
+Intercambia el monitor de rendimiento (fps, tiempo de actualización, y tiempo de dibujado)
 - `Alt(Option)+Enter`<br>
-Toggle full screen
+Intercambia la pantalla completa
 
-### How to Create a Resource
+### Cómo crear un recurso
 
-The attached Pyxel Editor can create images and sounds used in a Pyxel application.
+El Editor Pyxel adjunto puede crear imagenes y sonidos usados en la aplicación Pyxel.
 
-Pyxel Editor starts with the following command:
+El Editor Pyxel inicia con el siguiente comando:
 
 ```sh
 pyxeleditor [pyxel_resource_file]
 ```
 
-If the specified Pyxel resource file (.pyxres) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
-If the resource file is omitted, the name is `my_resource.pyxres`.
+Si el archivo de recurso Pyxel especificado (.pyxres) existe, el archivo es cargado, y sino existe, un nuevo archivo es creado con el nombre especificado.
+Si el archivo de recurso es omitido, el nombre es `my_resource.pyxres`.
 
-After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file.
+Luego de iniciar el Editor Pyxel, el archivo puede ser cambiado arrastrando y soltando otro archivo de recurso.
 
-The created resource file can be loaded with the `load` function.
+El archivo de recurso creado puede ser cargado con la función `load`.
 
-Pyxel Editor has the following edit modes.
+El Editor Pyxel Editor tiene los siguientes modos de edición.
 
-**Image Editor:**
+**Editor de Imagenes:**
 
-The mode to edit the image banks.
+El modo para editar el banco de imagenes.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
 
-By dragging and dropping a png file onto the Image Editor screen, the image can be loaded into the currently selected image bank.
+Arrastrando y soltando un archivo png en la pantalla del Editor de Imagenes, la imagen puede ser cargada en el banco de imagenes actualmente seleccionado.
 
-**Tilemap Editor:**
+**Editor de Tilemap:**
 
-The mode to edit tilemaps in which images of the image banks are arranged in a tile pattern.
+El modo para editar tilemaps en el que imagenes del banco de imagenes son organizados en un patrón de tiles.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.gif">
 
-**Sound Editor:**
+**Editor de Sonido:**
 
-The mode to edit sounds.
+El modo para editar sonidos.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.gif">
 
-**Music Editor:**
+**Editor de Música:**
 
 The mode to edit musics in which the sounds are arranged in order of playback.
+El modo para editar música en el que los sonidos son organizados en orden de reproducción.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
 
