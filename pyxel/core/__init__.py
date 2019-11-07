@@ -74,7 +74,7 @@ _setup_api("_caption", None, [c_char_p])
 #
 # Resource
 #
-_setup_api("save", None, [c_char_p] + [c_int32] * 4)
+_setup_api("save", None, [c_char_p])
 _setup_api("load", None, [c_char_p] + [c_int32] * 4)
 
 #

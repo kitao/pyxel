@@ -52,11 +52,7 @@ PYXEL_API void _caption(const char* caption);
 //
 // Resource
 //
-PYXEL_API void save(const char* filename,
-                    int32_t image,
-                    int32_t tilemap,
-                    int32_t sound,
-                    int32_t music);
+PYXEL_API void save(const char* filename);
 PYXEL_API void load(const char* filename,
                     int32_t image,
                     int32_t tilemap,
