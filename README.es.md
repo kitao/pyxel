@@ -402,25 +402,25 @@ Dibuja una cadena de texto `s` de color `col` en (`x`, `y`)
 ### Audio
 
 - `sound(snd, [system])`<br>
-Operate the sound `snd`(0-63) (see the Sound class). If `system` is `True`, the sound 64 for system can be accessed<br>
-e.g. `pyxel.sound(0).speed = 60`
+Opera el sonido `snd`(0-63) (referirse a la clase Sound). Si `system` es `True`, el sonido 64 para el systema puede ser accesado<br>
+p.ej. `pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
-Operate the music `msc`(0-7) (see the Music class)
+Opera la música `msc`(0-7) (referirse a la clase Music)
 
 - `play_pos(ch)`<br>
-Get the sound playback position of channel `ch`. The 100's and 1000's indicate the sound number and the 1's and 10's indicate the note number. When playback is stopped, return `-1`
+Obtiene la posición de reproducción de sonido del canal `ch`. Los 100es y 1000es indican el número de sonido y los 1s and 10es inican el número de nota. Cuando la reproducción es detenida, retorna `-1`
 
 - `play(ch, snd, loop=False)`<br>
-Play the sound `snd`(0-63) on channel `ch`(0-3). Play in order when `snd` is a list
+Toca el sonido `snd`(0-63) en el canal `ch`(0-3). Los toca en orden cuando `snd` es una lista
 
 - `playm(msc, loop=False)`<br>
-Play the music `msc`(0-7)
+Toca la música `msc`(0-7)
 
 - `stop([ch])`<br>
-Stop playback of all channels. If `ch`(0-3) is specified, stop the corresponding channel only
+Detiene la reproducción de todos los canales. Si `ch`(0-3) es difinido, detiene unicamente el canal correspondiente
 
-### Image Class
+### Clase Image
 
 - `width`, `height`<br>
 The width and height of the image
