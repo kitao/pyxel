@@ -585,19 +585,13 @@ def _caption(caption: str) -> None:
 #
 # Resource
 #
-def save(
-    filename: str,
-    image: bool = True,
-    tilemap: bool = True,
-    sound: bool = True,
-    music: bool = True,
-) -> None:
+def save(filename: str) -> None:
     dirname = os.path.dirname(
         inspect.currentframe().f_back.f_code.co_filename  # type: ignore
     )
     filename = os.path.join(dirname, filename)
 
-    core.save(filename.encode("utf-8"), image, tilemap, sound, music)
+    core.save(filename.encode("utf-8"))
 
 
 def load(

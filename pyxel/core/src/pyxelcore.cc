@@ -97,12 +97,8 @@ void _caption(const char* caption) {
 //
 // Resource
 //
-void save(const char* filename,
-          int32_t image,
-          int32_t tilemap,
-          int32_t sound,
-          int32_t music) {
-  s_resource->SaveAsset(filename, image, tilemap, sound, music);
+void save(const char* filename) {
+  s_resource->SaveAsset(filename);
 }
 
 void load(const char* filename,
