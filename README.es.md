@@ -498,37 +498,37 @@ p.ej. `pyxel.sound(0).set_volume("7777 7531")`
 Establece el efecto con una cadena hecha con 'NSVF'. No distingue mayúsculas/minúsculas y los espacios en blanco son ignorados<br>
 p.ej. `pyxel.sound(0).set_effect("NFNF NVVS")`
 
-### Music Class
+### Clase Music
 
 - `ch0`<br>
-List of sound(0-63) play on channel 0. If an empty list is specified, the channel is not used for playback
+Lista de sonidos (0-63) tocada en el canal 0. Si se define una lista vacía, el canal no es usado para reproducción
 
 - `ch1`<br>
-List of sound(0-63) play on channel 1. If an empty list is specified, the channel is not used for playback
+Lista de sonidos (0-63) tocada en el canal 1. Si se define una lista vacía, el canal no es usado para reproducción
 
 - `ch2`<br>
-List of sound(0-63) play on channel 2. If an empty list is specified, the channel is not used for playback
+Lista de sonidos (0-63) tocada en el canal 2. Si se define una lista vacía, el canal no es usado para reproducción
 
 - `ch3`<br>
-List of sound(0-63) play on channel 3. If an empty list is specified, the channel is not used for playback
+Lista de sonidos (0-63) tocada en el canal 3. Si se define una lista vacía, el canal no es usado para reproducción
 
 - `set(ch0, ch1, ch2, ch3)`<br>
-Set the list of sound(0-63) of all channels. If an empty list is specified, that channel is not used for playback<br>
-e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+Define la lista de sonidos (0-63) de todos los canales. Si se define una lista vacía, el canal no es usado para reproducción<br>
+p.ej. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 - `set_ch0(data)`<br>
-Set the list of sound(0-63) of channel 0
+Define la lista de sonidos (0-63) del canal 0
 
 - `set_ch1(data)`<br>
-Set the list of sound(0-63) of channel 1
+Define la lista de sonidos (0-63) del canal 1
 
 - `set_ch2(data)`<br>
-Set the list of sound(0-63) of channel 2
+Define la lista de sonidos (0-63) del canal 2
 
 - `set_ch3(data)`<br>
-Set the list of sound(0-63) of channel 3
+Define la lista de sonidos (0-63) del canal 3
 
-## How to Contribute
+## Cómo contribuir
 
 ### Submitting an issue
 
