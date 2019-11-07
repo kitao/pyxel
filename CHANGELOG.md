@@ -4,7 +4,7 @@
 - Added the tri and trib APIs
 - Modified the install option in the READMEs
 - Added the quit_key option to the init API
-- Added the target options to the save and load APIs
+- Added the target options to the load APIs
 
 ## 1.2.9
 - Added the Korean version of the README

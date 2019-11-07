@@ -16,11 +16,7 @@ class Resource {
  public:
   Resource(Graphics* graphics, Audio* audio);
 
-  void SaveAsset(const std::string& filename,
-                 bool image = true,
-                 bool tilemap = true,
-                 bool sound = true,
-                 bool music = true);
+  void SaveAsset(const std::string& filename);
   void LoadAsset(const std::string& filename,
                  bool image = true,
                  bool tilemap = true,
