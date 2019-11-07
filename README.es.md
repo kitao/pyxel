@@ -321,82 +321,83 @@ También es posible especificar el titulo de la ventana con `caption`, el aument
 Inicia la aplicación Pyxel y llama a la función `update` para la actualización de cuadros y la función `draw` para el dibujado
 
 - `quit()`<br>
-Quit the Pyxel application at the end of the current frame
+Sale de la aplicación Pyxel al final del cuadro actual
 
 - `flip()`<br>
-Force drawing the screen (do not use in normal applications)
+Fuerza el dibujado en la pantalla (no usarlo en aplicaciones normales)
 
 - `show()`<br>
-Draw the screen and wait forever (do not use in normal applications)
+Dibuja la pantalla y espera indefinidamente (no usarlo en aplicaciones normales)
 
-### Resource
+### Recurso
 
 - `save(filename)`<br>
-Save the resource file (.pyxres) to the directory of the execution script
+Guarda el archivo de recurso (.pyxres) en el directorio donde se ejecuta el script
 
 - `load(filename)`<br>
-Read the resource file (.pyxres) from the directory of the execution script
+Lee el archivo de recurso (.pyxres) desde el directorio donde se ejecuta el script
 
-### Input
+### Entrada
 - `mouse_x`, `mouse_y`<br>
-The current position of the mouse cursor
+La posición actual del puntero del mouse
 
 - `btn(key)`<br>
-Return `True` if `key` is pressed, otherwise return `False` ([key definition list](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
+Retorna `True` si `key` es presionada, sino retorna `False` ([key definition list](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
 
 - `btnp(key, [hold], [period])`<br>
-Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `period` are specified, `True` will be returned at the `period` frame interval when the `key` is held down for more than `hold` frames
+<!-- Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `period` are specified, `True` will be returned at the `period` frame interval when the `key` is held down for more than `hold` frames -->
+Retorna `True` si `key` es presionada en ese cuadro, sino retorna `False`. Cuando `hold` y `period` son especificados, `True` es retornado en el intervalo de cuadro `period` cuando la `key` es sostenida por mas que cuadros `hold`
 
 - `btnr(key)`<br>
-Return `True` if `key` is released at that frame, otherwise return `False`
+Retorna `True` si `key` es liberada en ese cuadro, sino retorna `False`
 
 - `mouse(visible)`<br>
-If `visible` is `True`, show the mouse cursor. If `False`, hide it. Even if the mouse cursor is not displayed, its position is updated.
+Si `visible` es `True`, muestra el puntero del mouse. Si es `False`, lo esconde. Incluso si el puntero del mouse no es mostrado, su posición si es actualizada.
 
-### Graphics
+### Graficos
 
 - `image(img, [system])`<br>
-Operate the image bank `img`(0-2) (see the Image class). If `system` is `True`, the image bank for system can be accessed. 3 is for the font and resource editor. 4 is for the display screen<br>
-e.g. `pyxel.image(0).load(0, 0, "title.png")`
+Opera el banco de imagen `img`(0-2) (referirse a la clase Image). Si `system` es `True`, el banco de imagen para el sistema no puede ser accedido. 3 es para el editor de recurso y fuente. 4 es para la pantalla de visualicación<br>
+p.ej. `pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
-Operate the tilemap `tm`(0-7) (see the Tilemap class)
+Opera el tilemap `tm`(0-7) (referirse a la clase Tilemap)
 
 - `clip(x, y, w, h)`<br>
-Set the drawing area of the screen from (`x`, `y`) to width `w` and height `h`. Reset the drawing area to full screen with `clip()`
+Prepara el area de dibujado de la pantalla de (`x`, `y`) para el ancho `w` y alto `h`. Reinicia el area de dibujado para pantalla completa con `clip()`
 
 - `pal(col1, col2)`<br>
-Replace color `col1` with `col2` at drawing. `pal()` to reset to the initial palette
+Remplaca el color `col1` con `col2` en el dibujado. `pal()` para reiniciar a la paleta inicial
 
 - `cls(col)`<br>
-Clear screen with color `col`
+Limpia la pantalla con el color `col`
 
 - `pix(x, y, col)`<br>
-Draw a pixel of color `col` at (`x`, `y`)
+Dibuja un pixel de color `col` en (`x`, `y`)
 
 - `line(x1, y1, x2, y2, col)`<br>
-Draw a line of color `col` from (`x1`, `y1`) to (`x2`, `y2`)
+Dibuja una linea de color `col` desde (`x1`, `y1`) hasta (`x2`, `y2`)
 
 - `rect(x, y, w, h, col)`<br>
-Draw a rectangle of width `w`, height `h` and color `col` from (`x`, `y`)
+Dibuja un rectangulo de ancho `w`, alto `h` y color `col` desde (`x`, `y`)
 
 - `rectb(x, y, w, h, col)`<br>
-Draw the outline of a rectangle of width `w`, height `h` and color `col` from (`x`, `y`)
+Dibuja el contorno de un rectangulo de ancho `w`, alto `h` y color `col` desde (`x`, `y`)
 
 - `circ(x, y, r, col)`<br>
-Draw a circle of radius `r` and color `col` at (`x`, `y`)
+Dibuja un circulo de radio `r` y color `col` en (`x`, `y`)
 
 - `circb(x, y, r, col)`<br>
-Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`)
+Dibuja el contorno de un circulo de radio `r` y color `col` en (`x`, `y`)
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color
+Copia la región de tamaño (`w`, `h`) de (`u`, `v`) del banco de imagen `img`(0-2) a (`x`, `y`). Si se establece un valor negativo para `w` y/o `h`, será invertido horizontal y/o verticalmente. Si `colkey` es especificado, ese color se trata como transparente
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Draw the tilemap `tm`(0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. A tile of the tilemap is drawn with a size of 8x8, and if the tile number is 0, indicates the region (0, 0)-(7, 7) of the image bank, if 1, indicates (8, 0)-(15, 0)
+Dibuja el tilemap `tm`(0-7) a (`x`, `y`) de acuerdo a la información del tile de tamaño (`w`, `h`) de (`u`, `v`). Si `colkey` es definido, ese color se trata como transparente. Un tile del tilemap es dibujado con un tamaño de 8x8, y si el número de tile es 0, apunta a la región (0, 0)-(7, 7) del banco de imagen, si es 1, apunta a (8, 0)-(15, 0)
 
 - `text(x, y, s, col)`<br>
-Draw a string `s` of color `col` at (`x`, `y`)
+Dibuja una cadena de texto `s` de color `col` en (`x`, `y`)
 
 ### Audio
 
