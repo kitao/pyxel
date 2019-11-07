@@ -271,14 +271,14 @@ El modo para editar música en el que los sonidos son organizados en orden de re
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
 
-### Other resource creation methods
+### Otros metodos de creación de recursos
 
-Pyxel images and tilemaps can also be created in the following way:
+La imagenes y tilemaps de Pyxel también pueden ser creadas de la siguiente forma:
 
-- Create an image from a list of strings with `Image.set` or `Tilemap.set` function
-- Load a png file in Pyxel palette with `Image.load` function
+- Crea una imágen desde una lista de cadenas con la función `Image.set` o `Tilemap.set`
+- Carga un archivo png en la paleta de Pyxel con la función `Image.load`
 
-Because Pyxel uses the same palette as [PICO-8](https://www.lexaloffle.com/pico-8.php), when creating png images for Pyxel, it is recommended to use [Aseprite](https://www.aseprite.org/) in PICO-8 palette mode.
+Debido a que Pyxel usa la misma paleta que [PICO-8](https://www.lexaloffle.com/pico-8.php), cuando se crean las imagenes png para Pyxel, es recomendable usar [Aseprite](https://www.aseprite.org/) en el modo paleta PICO-8.
 
 Pyxel sounds can also be created in the following way:
 
