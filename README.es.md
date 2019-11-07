@@ -530,33 +530,33 @@ Define la lista de sonidos (0-63) del canal 3
 
 ## Cómo contribuir
 
-### Submitting an issue
+### Enviar un issue
 
-Use the [issue tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests.
-Before submitting a new issue, search the issue tracker to ensure that there is no similar open issue.
+Usar el [issue tracker](https://github.com/kitao/pyxel/issues) para enviar reportes de bugs y solicitud de característica/mejora.
+Antes de enviar un nuevo issue, buscar en el issue tracker para asegurarse que no existe un issue similar abierto.
 
-When submitting a report, select the appropriate template from [this link](https://github.com/kitao/pyxel/issues/new/choose).
+Cuando se envie un reporte, seleccionar la plantilla apropiada de [este enlace](https://github.com/kitao/pyxel/issues/new/choose).
 
-### Manual testing
+### Testeo manual
 
-Anyone manually testing the code and reporting bugs or suggestions for enhancements in the issue tracker are very welcome!
+Cualquiera puede hacer test manuales del código y enviar reporte de bugs o sugerencias para mejoras en el issue tracker serán bien recibidos!
 
-### Submitting a pull request
+### Enviando un pull request
 
-Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the issue tracker.
+Parches/correcciones son aceptados en forma de pull requests (PRs). Asegurarse que el issue del pull request que direcciona este abierto en el issue tracker.
 
-Submitted pull request is deemed to have agreed to publish under [MIT license](https://github.com/kitao/pyxel/blob/master/LICENSE).
+Los pull request enviados se considera acordado publicarse bajo [licencia MIT](https://github.com/kitao/pyxel/blob/master/LICENSE).
 
-## Other Information
+## Otra Información
 
 - [Wiki](https://github.com/kitao/pyxel/wiki)
 - [Subreddit](https://www.reddit.com/r/pyxel/)
 
-## License
+## Licencia
 
-Pyxel is under [MIT license](http://en.wikipedia.org/wiki/MIT_License). It can be reused within proprietary software provided that all copies of the licensed software include a copy of the MIT License terms and the copyright notice.
+Pyxel esta bajo [licencia MIT](http://en.wikipedia.org/wiki/MIT_License). Puede ser reutilizado dentro de software propietario proporcionando a todas las copias del software licenciado que incluyen una copia de la licencia MIT, terminos y aviso de derechos de autor.
 
-Pyxel uses the following libraries:
+Pyxel usa las siguientes librerías:
 
 - [SDL2](https://www.libsdl.org/)
 - [gif-h](https://github.com/ginsweater/gif-h)
