@@ -237,7 +237,7 @@ pyxeleditor [pyxel_resource_file]
 
 若未指定源文件，则命名为`my_resource.pyxres`。
 
-启动Pyxel编辑器后，可以通过拖动来切换文件。
+启动Pyxel编辑器后，可以通过拖放来切换文件。若在按下Ctrl键的同时拖放源文件，则只有当前正在编辑的类型(image/tilemap/sound/music)会被加载。通过本操作可以将多个源文件合并为一个。
 
 创建后的源文件可用`load`函数来加载。
 
@@ -332,7 +332,7 @@ pyxelpackager python_file
 保存源文件（.pyxres）到执行脚本的目录下。
 
 - `load(filename)`<br>
-从执行脚本的目录下读取源文件（.pyxres）。
+从执行脚本的目录下读取源文件（.pyxres）。如果某一源文件类型指定为False，则对应类型不会被加载。
 
 ### 输入
 - `mouse_x`, `mouse_y`<br>
