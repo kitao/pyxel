@@ -236,7 +236,7 @@ pyxeleditor [pyxel_resource_file]
 If the specified Pyxel resource file (.pyxres) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
 If the resource file is omitted, the name is `my_resource.pyxres`.
 
-After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file.
+After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down ``Ctrl`` key, only the resource type (image/tilemap/sound/music) that is currently being edited will be loaded. This operation enables to combine multiple resource file into one.
 
 The created resource file can be loaded with the `load` function.
 
@@ -330,8 +330,8 @@ Draw the screen and wait forever (do not use in normal applications)
 - `save(filename)`<br>
 Save the resource file (.pyxres) to the directory of the execution script
 
-- `load(filename)`<br>
-Read the resource file (.pyxres) from the directory of the execution script
+- `load(filename, [image], [tilemap], [sound], [music])`<br>
+Read the resource file (.pyxres) from the directory of the execution script. If ``False`` is specified for the resource type (image/tilemap/sound/music), the resource will not be loaded.
 
 ### Input
 - `mouse_x`, `mouse_y`<br>

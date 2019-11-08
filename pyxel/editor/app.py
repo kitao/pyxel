@@ -132,9 +132,32 @@ class App(Widget):
 
             if ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
-                for editor in self._editor_list:
+
+                if pyxel.btn(pyxel.KEY_CONTROL):
+                    editor = self._editor_list[self._editor_button.value]
                     editor.reset_history()
-                pyxel.load(pyxel._drop_file)
+
+                    if isinstance(editor, ImageEditor):
+                        pyxel.load(
+                            pyxel._drop_file, tilemap=False, sound=False, music=False
+                        )
+                    elif isinstance(editor, TileMapEditor):
+                        pyxel.load(
+                            pyxel._drop_file, image=False, sound=False, music=False
+                        )
+                    elif isinstance(editor, SoundEditor):
+                        pyxel.load(
+                            pyxel._drop_file, image=False, tilemap=False, music=False
+                        )
+                    elif isinstance(editor, MusicEditor):
+                        pyxel.load(
+                            pyxel._drop_file, image=False, tilemap=False, sound=False
+                        )
+                else:
+                    for editor in self._editor_list:
+                        editor.reset_history()
+                    pyxel.load(pyxel._drop_file)
+
                 pyxel._caption(pyxel._drop_file)
             else:
                 self._editor_list[self._editor_button.value].call_event_handler(

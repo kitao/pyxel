@@ -48,11 +48,7 @@ Resource::Resource(Graphics* graphics, Audio* audio) {
   audio_ = audio;
 }
 
-void Resource::SaveAsset(const std::string& filename,
-                         bool image,
-                         bool tilemap,
-                         bool sound,
-                         bool music) {
+void Resource::SaveAsset(const std::string& filename) {
   std::ofstream ofs(filename, std::ios::binary);
 
   if (ofs.fail()) {
@@ -63,43 +59,35 @@ void Resource::SaveAsset(const std::string& filename,
 
   file.writestr(GetVersionName(), VERSION + '\n');
 
-  if (image) {
-    for (int32_t i = 0; i < USER_IMAGE_BANK_COUNT; i++) {
-      std::string str = DumpImage(i);
+  for (int32_t i = 0; i < USER_IMAGE_BANK_COUNT; i++) {
+    std::string str = DumpImage(i);
 
-      if (str.size() > 0) {
-        file.writestr(GetImageName(i), str);
-      }
+    if (str.size() > 0) {
+      file.writestr(GetImageName(i), str);
     }
   }
 
-  if (tilemap) {
-    for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
-      std::string str = DumpTilemap(i);
+  for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
+    std::string str = DumpTilemap(i);
 
-      if (str.size() > 0) {
-        file.writestr(GetTilemapName(i), str);
-      }
+    if (str.size() > 0) {
+      file.writestr(GetTilemapName(i), str);
     }
   }
 
-  if (sound) {
-    for (int32_t i = 0; i < USER_SOUND_BANK_COUNT; i++) {
-      std::string str = DumpSound(i);
+  for (int32_t i = 0; i < USER_SOUND_BANK_COUNT; i++) {
+    std::string str = DumpSound(i);
 
-      if (str.size() > 0) {
-        file.writestr(GetSoundName(i), str);
-      }
+    if (str.size() > 0) {
+      file.writestr(GetSoundName(i), str);
     }
   }
 
-  if (music) {
-    for (int32_t i = 0; i < MUSIC_BANK_COUNT; i++) {
-      std::string str = DumpMusic(i);
+  for (int32_t i = 0; i < MUSIC_BANK_COUNT; i++) {
+    std::string str = DumpMusic(i);
 
-      if (str.size() > 0) {
-        file.writestr(GetMusicName(i), str);
-      }
+    if (str.size() > 0) {
+      file.writestr(GetMusicName(i), str);
     }
   }
 

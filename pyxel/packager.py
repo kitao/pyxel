@@ -10,17 +10,17 @@ import pyxel
 def run():
     parser = argparse.ArgumentParser(description="Pyxel Packager")
     parser.add_argument(
-        "python_file", type=argparse.FileType(),
-        help="Pyxel program file entry point"
+        "python_file", type=argparse.FileType(), help="Pyxel program file entry point"
     )
     parser.add_argument(
-        "-v", "--version", action="version",
+        "-v",
+        "--version",
+        action="version",
         version="Pyxel Packager {}".format(pyxel.VERSION),
-        help="Show version number and quit"
+        help="Show version number and quit",
     )
     parser.add_argument(
-        "-i", "--icon", type=argparse.FileType(),
-        help="Pyxel program icon file"
+        "-i", "--icon", type=argparse.FileType(), help="Pyxel program icon file"
     )
 
     args = parser.parse_args()
@@ -64,9 +64,7 @@ def run():
         )
 
     if args.icon:
-        options.append(
-            "--icon={}".format(os.path.abspath(args.icon.name))
-        )
+        options.append("--icon={}".format(os.path.abspath(args.icon.name)))
 
     try:
         shutil.rmtree("dist", ignore_errors=True)
