@@ -95,7 +95,11 @@ void Resource::SaveAsset(const std::string& filename) {
   ofs.close();
 }
 
-void Resource::LoadAsset(const std::string& filename) {
+void Resource::LoadAsset(const std::string& filename,
+                         bool image,
+                         bool tilemap,
+                         bool sound,
+                         bool music) {
   std::ifstream ifs(filename, std::ios::binary);
 
   if (ifs.fail()) {
@@ -123,43 +127,51 @@ void Resource::LoadAsset(const std::string& filename) {
       }
     }
 
-    for (int32_t i = 0; i < USER_IMAGE_BANK_COUNT; i++) {
-      std::string name = GetImageName(i);
+    if (image) {
+      for (int32_t i = 0; i < USER_IMAGE_BANK_COUNT; i++) {
+        std::string name = GetImageName(i);
 
-      if (file.has_file(name)) {
-        ParseImage(i, file.read(name));
-      } else {
-        ClearImage(i);
+        if (file.has_file(name)) {
+          ParseImage(i, file.read(name));
+        } else {
+          ClearImage(i);
+        }
       }
     }
 
-    for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
-      std::string name = GetTilemapName(i);
+    if (tilemap) {
+      for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
+        std::string name = GetTilemapName(i);
 
-      if (file.has_file(name)) {
-        ParseTilemap(i, file.read(name));
-      } else {
-        ClearTilemap(i);
+        if (file.has_file(name)) {
+          ParseTilemap(i, file.read(name));
+        } else {
+          ClearTilemap(i);
+        }
       }
     }
 
-    for (int32_t i = 0; i < USER_SOUND_BANK_COUNT; i++) {
-      std::string name = GetSoundName(i);
+    if (sound) {
+      for (int32_t i = 0; i < USER_SOUND_BANK_COUNT; i++) {
+        std::string name = GetSoundName(i);
 
-      if (file.has_file(name)) {
-        ParseSound(i, file.read(name));
-      } else {
-        ClearSound(i);
+        if (file.has_file(name)) {
+          ParseSound(i, file.read(name));
+        } else {
+          ClearSound(i);
+        }
       }
     }
 
-    for (int32_t i = 0; i < MUSIC_BANK_COUNT; i++) {
-      std::string name = GetMusicName(i);
+    if (music) {
+      for (int32_t i = 0; i < MUSIC_BANK_COUNT; i++) {
+        std::string name = GetMusicName(i);
 
-      if (file.has_file(name)) {
-        ParseMusic(i, file.read(name));
-      } else {
-        ClearMusic(i);
+        if (file.has_file(name)) {
+          ParseMusic(i, file.read(name));
+        } else {
+          ClearMusic(i);
+        }
       }
     }
   } catch (...) {

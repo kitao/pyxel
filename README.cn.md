@@ -1,6 +1,6 @@
 # <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) ]
+[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) ]
 
 **Pyxel**是一个python的经典像素风游戏制作引擎。
 
@@ -79,7 +79,7 @@ pip3 install -U pyxel
 
 ```sh
 sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
-sudo pip3 install -U pyxel
+sudo -H pip3 install -U pyxel
 ```
 
 ### 其他环境

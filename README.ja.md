@@ -1,6 +1,6 @@
 # <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) ]
+[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) ]
 
 **Pyxel (ピクセル)** はPython向けのレトロゲームエンジンです。
 
@@ -80,7 +80,7 @@ pip3 install -U pyxel
 
 ```sh
 sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
-sudo pip3 install -U pyxel
+sudo -H pip3 install -U pyxel
 ```
 
 ### その他の環境
@@ -237,7 +237,7 @@ pyxeleditor [Pyxelリソースファイル]
 
 指定したPyxelリソースファイル (.pyxres) が存在する場合は読み込み、存在しない場合は指定した名前で新規にファイルを作成します。リソースファイルを省略した場合は`my_resource.pyxres`がファイル名になります。
 
-またPyxel Editorの起動後に、別のリソースファイルをドラッグ＆ドロップすることでファイルを切り替えることができます。
+Pyxel Editorの起動後に、別のリソースファイルをドラッグ＆ドロップすることでファイルを切り替えることができます。また、``Ctrl``キーを押しながらリソースファイルをドラッグ＆ドロップすると、現在編集中のリソースタイプ(イメージ/タイルマップ/サウンド/ミュージック)のみが読み込まれます。この操作により、複数のリソースファイルを1つにまとめることができます。
 
 作成したリソースファイルはPyxelアプリケーションから`load`関数で読み込めます。
 
@@ -334,8 +334,8 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 - `save(filename)`<br>
 実行スクリプトのディレクトリにリソースファイル (.pyxres) を保存する
 
-- `load(filename)`<br>
-実行スクリプトのディレクトリからリソースファイル (.pyxres) を読み込む
+- `load(filename, [image], [tilemap], [sound], [music])`<br>
+実行スクリプトのディレクトリからリソースファイル (.pyxres) を読み込む。リソースタイプ(イメージ/タイルマップ/サウンド/ミュージック)に``False``を指定すると、そのリソースは読み込まれない
 
 ### 入力
 - `mouse_x`, `mouse_y`<br>

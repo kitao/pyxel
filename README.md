@@ -1,6 +1,6 @@
 # <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) ]
+[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) ]
 
 **Pyxel** is a retro game engine for Python.
 
@@ -79,7 +79,7 @@ Install [Python3](https://www.python.org/) (version 3.7 or higher) and the requi
 
 ```sh
 sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
-sudo pip3 install -U pyxel
+sudo -H pip3 install -U pyxel
 ```
 
 ### Other environment
@@ -236,7 +236,7 @@ pyxeleditor [pyxel_resource_file]
 If the specified Pyxel resource file (.pyxres) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
 If the resource file is omitted, the name is `my_resource.pyxres`.
 
-After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file.
+After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down ``Ctrl`` key, only the resource type (image/tilemap/sound/music) that is currently being edited will be loaded. This operation enables to combine multiple resource file into one.
 
 The created resource file can be loaded with the `load` function.
 
@@ -330,8 +330,8 @@ Draw the screen and wait forever (do not use in normal applications)
 - `save(filename)`<br>
 Save the resource file (.pyxres) to the directory of the execution script
 
-- `load(filename)`<br>
-Read the resource file (.pyxres) from the directory of the execution script
+- `load(filename, [image], [tilemap], [sound], [music])`<br>
+Read the resource file (.pyxres) from the directory of the execution script. If ``False`` is specified for the resource type (image/tilemap/sound/music), the resource will not be loaded.
 
 ### Input
 - `mouse_x`, `mouse_y`<br>
