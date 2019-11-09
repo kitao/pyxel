@@ -238,7 +238,8 @@ pyxeleditor [Pyxel 리소스 파일]
 
 지정한 Pyxel 리소스 파일 (.pyxres)이 존재하는 경우에는 해당 파일을 불러오고, 존재하지 않는 경우 지정한 이름으로 새 리소스 파일을 생성합니다. 파일 이름을 생략했을 경우, 기본 파일 이름은 `my_resource.pyxres`입니다.
 
-또한, Pyxel Editor 실행 중 다른 리소스 파일을 Drag & Drop하는 것으로 작업 중인 리소스 파일을 변경할 수 있습니다.
+Pyxel Editor 실행 중 다른 리소스 파일을 Drag & Drop하는 것으로 작업 중인 리소스 파일을 변경할 수 있습니다.
+또한 ``Ctrl`` 키를 누르면서 리소스 파일을 Drag & Drop 하면, 현재 편집 중인 리소스 유형(이미지/타일 맵/사운드/뮤직)만 불러올 수 있습니다. 이를 통해 여러 개의 리소스 파일을 하나로 결합할 수 있습니다.
 
 작성한 리소스 파일은 Pyxel 애플리케이션에서 `load` 함수를 사용해 불러올 수 있습니다.
 
@@ -332,8 +333,8 @@ Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수�
 - `save(filename)`<br>
 실행 스크립트가 위치한 폴더에 리소스 파일 (.pyxres)을 저장합니다.
 
-- `load(filename)`<br>
-실행 스크립트가 위치한 폴더에서 리소스 파일 (.pyxres)을 불러옵니다.
+- `load(filename, [image], [tilemap], [sound], [music])`<br>
+실행 스크립트가 위치한 폴더에서 리소스 파일 (.pyxres)을 불러옵니다. 리소스 타입(image/tilemap/sound/music)에 False를 지정하면, 해당 리소스는 불러오지 않습니다.
 
 ### 입력
 - `mouse_x`, `mouse_y`<br>
