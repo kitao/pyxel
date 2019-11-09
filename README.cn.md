@@ -331,7 +331,7 @@ pyxelpackager python_file
 - `save(filename)`<br>
 保存源文件（.pyxres）到执行脚本的目录下。
 
-- `load(filename)`<br>
+- `load(filename, [image], [tilemap], [sound], [music])`<br>
 从执行脚本的目录下读取源文件（.pyxres）。如果某一源文件类型指定为False，则对应类型不会被加载。
 
 ### 输入
