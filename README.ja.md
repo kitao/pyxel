@@ -119,6 +119,7 @@ install_pyxel_examples
 - [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - カラーパレット一覧
 - [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - マウスクリックゲーム
 - [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - BGM付きスネークゲーム
+- [08_triangle.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle.py) - 三角形描画APIのデモ
 
 サンプルは通常のPythonコードと同様に実行できます。
 
@@ -310,9 +311,9 @@ pyxelpackager python_file
 - `frame_count`<br>
 経過フレーム数
 
-- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color])`<br>
+- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key])`<br>
 Pyxelアプリを画面サイズ (`width`, `height`) で初期化する。画面の最大の幅と高さは255<br>
-`caption`でウィンドウタイトル、`scale`で表示倍率、`palette`でパレット色、`fps`で動作フレームレート、`border_width`と`border_color`で画面外側のマージン幅と色を指定できる。`palette`は24ビットカラーの16要素のリスト、`border_color`は24ビットカラーで指定する
+また、`caption`でウィンドウタイトル、`scale`で表示倍率、`palette`でパレット色、`fps`で動作フレームレート、`border_width`と`border_color`で画面外側のマージン幅と色、`quit_key`でアプリケーション終了キーを指定できる。`palette`は24ビットカラーの16要素のリスト、`border_color`は24ビットカラーで指定する
 
 - `run(update, draw)`<br>
 Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時に`draw`関数を呼ぶ

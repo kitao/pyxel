@@ -118,6 +118,7 @@ The examples to be copied are as follows:
 - [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - Color palette list
 - [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - Mouse click game
 - [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - Snake game with BGM
+- [08_triangle.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle.py) - Demonstration of triangle drawing API
 
 The examples can be executed like normal Python code:
 
@@ -309,9 +310,9 @@ The width and height of the screen
 - `frame_count`<br>
 The number of the elapsed frames
 
-- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color])`<br>
+- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key])`<br>
 Initialize the Pyxel application with screen size (`width`, `height`). The maximum width and height of the screen is 256<br>
-It is also possible to specify the window title with `caption`, the display magnification with `scale`, the palette color with `palette`, the frame rate with `fps`, and the margin width and color outside the screen with `border_width` and `border_color`. `palette` is specified as a list of 16 elements of 24 bit color, `border_color` as 24 bit color
+It is also possible to specify the window title with `caption`, the display magnification with `scale`, the palette color with `palette`, the frame rate with `fps`, the margin width and color outside the screen with `border_width` and `border_color`, and the key to quit the application with `quit_key`. `palette` is specified as a list of 16 elements of 24 bit color, `border_color` as 24 bit color.
 
 - `run(update, draw)`<br>
 Start the Pyxel application and call `update` function for frame update and `draw` function for drawing
