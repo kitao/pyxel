@@ -311,7 +311,7 @@ pyxelpackager python_file
 - `frame_count`<br>
 经过的帧数
 
-- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color])`<br>
+- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key])`<br>
 初始化Pyxel应用的画面尺寸。画面的宽和高的最大值是256。<br>
 同时可以用`caption`指定窗口标题，`scale`设定放大倍数，`palette`设定色调，`fps`设定帧率，`border_width`和`border_color`设定画面外白边的颜色和宽度。`palette`通过使用16个24位色彩元素的list来设定，`border_color`使用24位的色彩设定。
 
