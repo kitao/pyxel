@@ -313,7 +313,7 @@ pyxelpackager python_file
 - `frame_count`<br>
 경과한 프레임의 수
 
-- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color])`<br>
+- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key])`<br>
 Pyxel 애플리케이션을 (`width`, `height`) 크기로 초기화합니다. 화면의 가로/세로 최대 크기는 256입니다.<br>
 `caption`으로 창 제목, `scale`로 표시 배율, `palette`로 팔레트 색, `fps`로 동작 프레임 레이트, `border_width`와 `border_color`로 화면 바깥의 margin 폭과 색을 지정할 수 있습니다. `palette`는 24비트 색상 중 16개의 요소로, `border_color`는 24비트 색상으로 지정합니다.
 
