@@ -340,7 +340,7 @@ pyxelpackager python_file
 当前鼠标指针的位置。
 
 - `btn(key)`<br>
-如果`key`被按下则返回`True`，否则返回`False`([key definition list](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))。
+如果`key`被按下则返回`True`，否则返回`False`([按键定义列表](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))。
 
 - `btnp(key, [hold], [period])`<br>
 如果`key`被按下则返回`True`。若设置了`hold`和`period`参数，则当`key`被按下持续`hold`帧时，在`period`帧间隙返回`True`。
@@ -387,6 +387,12 @@ pyxelpackager python_file
 
 - `circb(x, y, r, col)`<br>
 用`col`颜色绘制圆心为(`x`, `y`)，半径为`r`的圆形边框。
+
+- `tri(x1, y1, x2, y2, x3, y3, col)`<br>
+用`col`颜色绘制顶点分别为(`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`)的三角形。
+
+- `trib(x1, y1, x2, y2, x3, y3, col)`<br>
+用`col`颜色绘制顶点分别为(`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`)的三角形。
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 将尺寸为(`w`, `h`)的区域从图像库的(`u`, `v`)复制到(`x`, `y`)。若`w`或`h`为负值，则在水平或垂直方向上翻转。若指定了`colkey`的值，则视作透明颜色。
