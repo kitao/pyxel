@@ -1,11 +1,12 @@
 # Change Log
 
-## 1.3.0
+## 1.2.10
 - Added the tri and trib APIs
 - Modified the install option in the READMEs
 - Added the quit_key option to the init API
 - Added the target options to the load APIs
 - Added the partial load function to the Pyxel Editor
+- Added the example #8
 
 ## 1.2.9
 - Added the Korean version of the README
