@@ -390,10 +390,10 @@ Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수�
 반경 `r`, `col` 색의 원 테두리를 (`x`, `y`) 좌표에 그립니다. (테두리 안쪽에 색상을 채우지 않음)
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
-Draw a triangle with vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) and color `col`
+꼭짓점 좌표 (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`)를 기준으로 `col` 색상의 삼각형을 그립니다.
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
-Draw the outline of a triangle with vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) and color `col`
+꼭짓점 좌표 (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`)를 기준으로 `col` 색상의 삼각형 테두리를 그립니다. (테두리 안쪽에 색상을 채우지 않음)
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 이미지 뱅크 `img`(0-2)의 (`u`, `v`)부터 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 마이너스로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다.
