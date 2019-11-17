@@ -115,12 +115,12 @@ install_pyxel_examples
 
 - [01_hello_pyxel.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py) - 간단한 애플리케이션
 - [02_jump_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py) - Pyxel 리소스 파일을 사용한 점프 게임
-- [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - 드로잉 API 데모
+- [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - Drawing API를 사용한 그리기 데모
 - [04_sound_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py) - 사운드 API 데모
 - [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - 색상 팔레트 목록
 - [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - 마우스 클릭 게임
 - [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - BGM이 포함된 스네이크 게임
-- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing API
+- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - Triangle Drawing API를 사용한 삼각형 그리기 데모
 
 예제 파일은 일반적인 Python 코드와 같이 실행할 수 있습니다:
 
@@ -315,7 +315,7 @@ pyxelpackager python_file
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key])`<br>
 Pyxel 애플리케이션을 (`width`, `height`) 크기로 초기화합니다. 화면의 가로/세로 최대 크기는 256입니다.<br>
-`caption`으로 창 제목, `scale`로 표시 배율, `palette`로 팔레트 색, `fps`로 동작 프레임 레이트, `border_width`와 `border_color`로 화면 바깥의 margin 폭과 색을 지정할 수 있습니다. `palette`는 24비트 색상 중 16개의 요소로, `border_color`는 24비트 색상으로 지정합니다.
+`caption`으로 창 제목, `scale`로 표시 배율, `palette`로 팔레트 색, `fps`로 동작 프레임 레이트, `border_width`와 `border_color`로 화면 바깥의 margin 폭과 색, `quit_key`로 애플리케이션의 종료 키를 지정할 수 있습니다. `palette`는 24비트 색상 중 16개의 요소로, `border_color`는 24비트 색상으로 지정합니다.
 
 - `run(update, draw)`<br>
 Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수를, 화면 그리기에 `draw` 함수를 호출합니다.
