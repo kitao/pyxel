@@ -119,7 +119,7 @@ install_pyxel_examples
 - [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - カラーパレット一覧
 - [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - マウスクリックゲーム
 - [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - BGM付きスネークゲーム
-- [08_triangle.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle.py) - 三角形描画APIのデモ
+- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - 三角形描画APIのデモ
 
 サンプルは通常のPythonコードと同様に実行できます。
 
