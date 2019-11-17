@@ -310,7 +310,7 @@ El ancho y alto de la pantalla
 - `frame_count`<br>
 El número de cuadros transcurridos
 
-- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color])`<br>
+- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key])`<br>
 Inicializar la aplicación Pyxel con el tamaño de pantalla (`width`, `height`). El ancho y alto máximo de la pantalla es 256<br>
 También es posible especificar el título de la ventana con `caption`, el aumento de pantalla con `scale`, la paleta de colores con `palette`, los cuadros por segundo con `fps`, y el ancho del margen y color fuera de la pantalla con `border_width` y `border_color`. `palette` es especificada como una lista de 16 elementos de color a 24 bits, `border_color` como color a 24 bits
 
