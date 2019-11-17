@@ -386,6 +386,12 @@ Draw a circle of radius `r` and color `col` at (`x`, `y`)
 - `circb(x, y, r, col)`<br>
 Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`)
 
+- `tri(x1, y1, x2, y2, x3, y3, col)`<br>
+Draw a triangle with vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) and color `col`
+
+- `trib(x1, y1, x2, y2, x3, y3, col)`<br>
+Draw the outline of a triangle with vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) and color `col`
+
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color
 

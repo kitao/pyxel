@@ -386,6 +386,12 @@ Dibuja un círculo de radio `r` y color `col` en (`x`, `y`)
 - `circb(x, y, r, col)`<br>
 Dibuja el contorno de un círculo de radio `r` y color `col` en (`x`, `y`)
 
+- `tri(x1, y1, x2, y2, x3, y3, col)`<br>
+Draw a triangle with vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) and color `col`
+
+- `trib(x1, y1, x2, y2, x3, y3, col)`<br>
+Draw the outline of a triangle with vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) and color `col`
+
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copia la región de tamaño (`w`, `h`) de (`u`, `v`) del banco de imágenes `img`(0-2) en (`x`, `y`). Si se establece un valor negativo para `w` y/o `h`, será invertido horizontal y/o verticalmente. Si `colkey` es especificado, ese color se trata como transparencia
 
