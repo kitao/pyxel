@@ -116,12 +116,12 @@ void Resource::LoadAsset(const std::string& filename,
       std::string name = GetVersionName();
 
       if (file.has_file(name)) {
-        std::stringstream ss(file.read(name));
+        /*std::stringstream ss(file.read(name));
         std::string line = GetTrimmedLine(ss);
 
         if (line > VERSION) {
           PYXEL_ERROR("unsupported resource file version '" + line + "'");
-        }
+        }*/
       } else {
         throw ParseError();
       }
