@@ -118,7 +118,7 @@ install_pyxel_examples
 - [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - 调色板列表
 - [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - 鼠标点击游戏
 - [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - 带BGM的贪吃蛇游戏
-- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing API
+- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - 三角形绘图示例
 
 这些例程可以像执行正常python程序一样运行：
 
@@ -313,7 +313,7 @@ pyxelpackager python_file
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key])`<br>
 初始化Pyxel应用的画面尺寸。画面的宽和高的最大值是256。<br>
-同时可以用`caption`指定窗口标题，`scale`设定放大倍数，`palette`设定色调，`fps`设定帧率，`border_width`和`border_color`设定画面外白边的颜色和宽度。`palette`通过使用16个24位色彩元素的list来设定，`border_color`使用24位的色彩设定。
+同时可以用`caption`指定窗口标题，`scale`设定放大倍数，`palette`设定色调，`fps`设定帧率，`border_width`和`border_color`设定画面外白边的颜色和宽度，`quit_key`可指定退出键。其中`palette`为16个24位真彩色元素的list，`border_color`为24位真彩色。
 
 - `run(update, draw)`<br>
 启动Pyxel应用并调用`update`更新帧、`draw`绘制画面。
@@ -340,7 +340,7 @@ pyxelpackager python_file
 当前鼠标指针的位置。
 
 - `btn(key)`<br>
-如果`key`被按下则返回`True`，否则返回`False`([key definition list](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))。
+如果`key`被按下则返回`True`，否则返回`False`([按键定义列表](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))。
 
 - `btnp(key, [hold], [period])`<br>
 如果`key`被按下则返回`True`。若设置了`hold`和`period`参数，则当`key`被按下持续`hold`帧时，在`period`帧间隙返回`True`。
@@ -387,6 +387,12 @@ pyxelpackager python_file
 
 - `circb(x, y, r, col)`<br>
 用`col`颜色绘制圆心为(`x`, `y`)，半径为`r`的圆形边框。
+
+- `tri(x1, y1, x2, y2, x3, y3, col)`<br>
+用`col`颜色绘制顶点分别为(`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`)的三角形。
+
+- `trib(x1, y1, x2, y2, x3, y3, col)`<br>
+用`col`颜色绘制顶点分别为(`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`)的三角形边框。
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 将尺寸为(`w`, `h`)的区域从图像库的(`u`, `v`)复制到(`x`, `y`)。若`w`或`h`为负值，则在水平或垂直方向上翻转。若指定了`colkey`的值，则视作透明颜色。
