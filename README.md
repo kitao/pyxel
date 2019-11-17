@@ -118,7 +118,7 @@ The examples to be copied are as follows:
 - [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - Color palette list
 - [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - Mouse click game
 - [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - Snake game with BGM
-- [08_triangle.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle.py) - Demonstration of triangle drawing API
+- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing API
 
 The examples can be executed like normal Python code:
 

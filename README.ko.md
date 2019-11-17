@@ -120,6 +120,7 @@ install_pyxel_examples
 - [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - 색상 팔레트 목록
 - [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - 마우스 클릭 게임
 - [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - BGM이 포함된 스네이크 게임
+- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing API
 
 예제 파일은 일반적인 Python 코드와 같이 실행할 수 있습니다:
 
