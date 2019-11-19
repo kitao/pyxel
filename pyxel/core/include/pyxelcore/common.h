@@ -45,6 +45,16 @@ T Clamp(T v, T low, T high) {
   return v < low ? low : (v > high ? high : v);
 }
 
+inline std::vector<std::string> Split(std::string str, char del) {
+  std::istringstream iss(str);
+  std::vector<std::string> res;
+
+  for (std::string temp; std::getline(iss, temp, del); res.push_back(temp))
+    ;
+
+  return res;
+}
+
 inline std::string Trim(const std::string& str) {
   std::string res;
   std::string::size_type left = str.find_first_not_of(WHITESPACE);
