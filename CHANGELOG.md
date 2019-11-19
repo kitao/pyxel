@@ -7,6 +7,7 @@
 - Added the target options to the load APIs
 - Added the partial load function to the Pyxel Editor
 - Added the example #8
+- Modified the example #5
 
 ## 1.2.9
 - Added the Korean version of the README
