@@ -1,6 +1,7 @@
 #include "pyxelcore.h"
 
 #include "pyxelcore/audio.h"
+#include "pyxelcore/constants.h"
 #include "pyxelcore/graphics.h"
 #include "pyxelcore/image.h"
 #include "pyxelcore/input.h"
@@ -35,16 +36,35 @@ void _get_constant_string(char* str, int32_t str_length, const char* name) {
 //
 // System
 //
+inline pyxelcore::System* get_system() {
+  if (s_system == NULL) {
+    // Show a message when forcing initialization. Maybe we should 
+    // raise a Python exception.
+    std::cerr << "Warning: Pyxel system was not explicitly initialized." << std::endl;
+    std::cerr << "Using default configuration." << std::endl;
+
+    init(160, 120, 
+         pyxelcore::DEFAULT_CAPTION.c_str(),
+         pyxelcore::DEFAULT_SCALE,
+         pyxelcore::DEFAULT_PALETTE.data(),
+         pyxelcore::DEFAULT_FPS,
+         pyxelcore::DEFAULT_BORDER_WIDTH,
+         pyxelcore::DEFAULT_BORDER_COLOR,
+         pyxelcore::DEFAULT_QUIT_KEY);
+  }  
+  return s_system;
+}
+
 int32_t width_getter() {
-  return s_system->Width();
+  return s_system? s_system->Width(): 0;
 }
 
 int32_t height_getter() {
-  return s_system->Height();
+  return s_system? s_system->Height(): 0;
 }
 
 int32_t frame_count_getter() {
-  return s_system->FrameCount();
+  return s_system? s_system->FrameCount(): 0;
 }
 
 void init(int32_t width,
@@ -71,33 +91,34 @@ void init(int32_t width,
 }
 
 void run(void (*update)(), void (*draw)()) {
-  s_system->Run(update, draw);
+  get_system()->Run(update, draw);
 }
 
 void quit() {
-  s_system->Quit();
+  get_system()->Quit();
 }
 
 void flip() {
-  s_system->FlipScreen();
+  get_system()->FlipScreen();
 }
 
 void show() {
-  s_system->ShowScreen();
+  get_system()->ShowScreen();
 }
 
 void _drop_file_getter(char* str, int32_t str_length) {
-  strncpy(str, s_system->DropFile().c_str(), str_length);
+  strncpy(str, get_system()->DropFile().c_str(), str_length);
 }
 
 void _caption(const char* caption) {
-  s_system->SetCaption(caption);
+  get_system()->SetCaption(caption);
 }
 
 //
 // Resource
 //
 void save(const char* filename) {
+  get_system();
   s_resource->SaveAsset(filename);
 }
 
@@ -106,6 +127,7 @@ void load(const char* filename,
           int32_t tilemap,
           int32_t sound,
           int32_t music) {
+  get_system();
   s_resource->LoadAsset(filename, image, tilemap, sound, music);
 }
 
@@ -113,26 +135,27 @@ void load(const char* filename,
 // Input
 //
 int32_t mouse_x_getter() {
-  return s_input->MouseX();
+  return s_system? s_input->MouseX(): 0;
 }
 
 int32_t mouse_y_getter() {
-  return s_input->MouseY();
+  return s_system? s_input->MouseY(): 0;
 }
 
 int32_t btn(int32_t key) {
-  return s_input->IsButtonOn(key);
+  return s_system? s_input->IsButtonOn(key): 0;
 }
 
 int32_t btnp(int32_t key, int32_t hold, int32_t period) {
-  return s_input->IsButtonPressed(key, hold, period);
+  return s_system? s_input->IsButtonPressed(key, hold, period): 0;
 }
 
 int32_t btnr(int32_t key) {
-  return s_input->IsButtonReleased(key);
+  return s_system? s_input->IsButtonReleased(key): 0;
 }
 
 void mouse(int32_t visible) {
+  get_system();
   return s_input->SetMouseVisible(visible);
 }
 
@@ -140,54 +163,67 @@ void mouse(int32_t visible) {
 // Graphics
 //
 void* image(int32_t img, int32_t system) {
+  get_system();
   return s_graphics->GetImageBank(img, system);
 }
 
 void* tilemap(int32_t tm) {
+  get_system();
   return s_graphics->GetTilemapBank(tm);
 }
 
 void clip0() {
+  get_system();
   s_graphics->ResetClipArea();
 }
 
 void clip(int32_t x, int32_t y, int32_t w, int32_t h) {
+  get_system();
   s_graphics->SetClipArea(x, y, w, h);
 }
 
 void pal0() {
+  get_system();
   s_graphics->ResetPalette();
 }
 
 void pal(int32_t col1, int32_t col2) {
+  get_system();
   s_graphics->SetPalette(col1, col2);
 }
 
 void cls(int32_t col) {
+  get_system();
   s_graphics->ClearScreen(col);
 }
 
 void pix(int32_t x, int32_t y, int32_t col) {
+  get_system();
   s_graphics->DrawPoint(x, y, col);
 }
 
 void line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t col) {
+  get_system();
   s_graphics->DrawLine(x1, y1, x2, y2, col);
 }
 
 void rect(int32_t x, int32_t y, int32_t w, int32_t h, int32_t col) {
+  get_system();
   s_graphics->DrawRectangle(x, y, w, h, col);
 }
 
 void rectb(int32_t x, int32_t y, int32_t w, int32_t h, int32_t col) {
+  get_system();
   s_graphics->DrawRectangleBorder(x, y, w, h, col);
 }
 
 void circ(int32_t x, int32_t y, int32_t r, int32_t col) {
+  get_system();
   s_graphics->DrawCircle(x, y, r, col);
 }
 
 void circb(int32_t x, int32_t y, int32_t r, int32_t col) {
+  get_system();
   s_graphics->DrawCircleBorder(x, y, r, col);
 }
 
@@ -198,6 +234,7 @@ void tri(int32_t x1,
          int32_t x3,
          int32_t y3,
          int32_t col) {
+  get_system();
   s_graphics->DrawTriangle(x1, y1, x2, y2, x3, y3, col);
 }
 
@@ -208,6 +245,7 @@ void trib(int32_t x1,
           int32_t x3,
           int32_t y3,
           int32_t col) {
+  get_system();
   s_graphics->DrawTriangleBorder(x1, y1, x2, y2, x3, y3, col);
 }
 
@@ -219,6 +257,7 @@ void blt(int32_t x,
          int32_t w,
          int32_t h,
          int32_t colkey) {
+  get_system();
   s_graphics->DrawImage(x, y, img, u, v, w, h, colkey);
 }
 
@@ -230,10 +269,12 @@ void bltm(int32_t x,
           int32_t w,
           int32_t h,
           int32_t colkey) {
+  get_system();
   s_graphics->DrawTilemap(x, y, tm, u, v, w, h, colkey);
 }
 
 void text(int32_t x, int32_t y, const char* s, int32_t col) {
+  get_system();
   s_graphics->DrawText(x, y, s, col);
 }
 
@@ -241,18 +282,22 @@ void text(int32_t x, int32_t y, const char* s, int32_t col) {
 // Audio
 //
 void* sound(int32_t snd, int32_t system) {
+  get_system();
   return s_audio->GetSoundBank(snd, system);
 }
 
 void* music(int32_t msc) {
+  get_system();
   return s_audio->GetMusicBank(msc);
 }
 
 int32_t play_pos(int32_t ch) {
+  get_system();
   return s_audio->GetPlayPos(ch);
 }
 
 void play1(int32_t ch, int32_t snd, int32_t loop) {
+  get_system();
   s_audio->PlaySound(ch, snd, loop);
 }
 
@@ -262,14 +307,17 @@ void play(int32_t ch, int32_t* snd, int32_t snd_length, int32_t loop) {
     sound_index_list.push_back(snd[i]);
   }
 
+  get_system();
   s_audio->PlaySound(ch, sound_index_list, loop);
 }
 
 void playm(int32_t msc, int32_t loop) {
+  get_system();
   s_audio->PlayMusic(msc, loop);
 }
 
 void stop(int32_t ch) {
+  get_system();
   s_audio->StopPlaying(ch);
 }
 
