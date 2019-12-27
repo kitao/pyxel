@@ -3,6 +3,7 @@
 ## 1.3.0
 - Fixed the version check of the resource file
 - Fixed the typo of the PURPLE variables
+- Added the uninitialized error
 
 ## 1.2.10
 - Added the tri and trib APIs
