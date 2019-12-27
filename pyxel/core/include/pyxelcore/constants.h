@@ -28,7 +28,7 @@ const std::string WHITESPACE = " \t\v\r\n";
 enum {
   COLOR_BLACK,
   COLOR_NAVY,
-  COLOR_PERPLE,
+  COLOR_PURPLE,
   COLOR_GREEN,
   COLOR_BROWN,
   COLOR_DARKGRAY,
