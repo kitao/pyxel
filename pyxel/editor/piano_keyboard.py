@@ -108,6 +108,7 @@ class PianoKeyboard(Widget):
             or pyxel.btn(pyxel.KEY_SHIFT)
             or pyxel.btn(pyxel.KEY_CONTROL)
             or pyxel.btn(pyxel.KEY_ALT)
+            or pyxel.btn(pyxel.KEY_SUPER)
         ):
             return
 

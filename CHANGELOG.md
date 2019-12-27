@@ -4,6 +4,7 @@
 - Fixed the version check of the resource file
 - Fixed the typo of the PURPLE variables
 - Added the uninitialized error
+- Added support for command key shortcuts in the Pyxel Editor
 
 ## 1.2.10
 - Added the tri and trib APIs

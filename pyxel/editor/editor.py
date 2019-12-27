@@ -82,7 +82,11 @@ class Editor(Widget):
         self.help_message = "+10:SHIFT+CLICK"
 
     def check_tool_button_shortcuts(self):
-        if pyxel.btn(pyxel.KEY_CONTROL):
+        if (
+            pyxel.btn(pyxel.KEY_CONTROL)
+            or pyxel.btn(pyxel.KEY_ALT)
+            or pyxel.btn(pyxel.KEY_SUPER)
+        ):
             return
 
         if pyxel.btnp(pyxel.KEY_S):
