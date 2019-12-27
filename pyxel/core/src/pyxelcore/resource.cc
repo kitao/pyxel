@@ -127,6 +127,10 @@ void Resource::LoadAsset(const std::string& filename,
           int v1 = (i < lib_ver.size()) ? std::atoi(lib_ver[i].c_str()) : 0;
           int v2 = (i < res_ver.size()) ? std::atoi(res_ver[i].c_str()) : 0;
 
+          if (v1 > v2) {
+            break;
+          }
+
           if (v2 > v1) {
             PYXEL_ERROR("unsupported resource file version '" + line + "'");
           }
