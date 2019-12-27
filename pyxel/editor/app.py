@@ -133,7 +133,7 @@ class App(Widget):
             if ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
 
-                if pyxel.btn(pyxel.KEY_CONTROL):
+                if pyxel.btn(pyxel.KEY_CONTROL) or pyxel.btn(pyxel.KEY_SUPER):
                     editor = self._editor_list[self._editor_button.value]
                     editor.reset_history()
 
@@ -177,7 +177,7 @@ class App(Widget):
         self._undo_button.is_enabled = editor.can_undo
         self._redo_button.is_enabled = editor.can_redo
 
-        if pyxel.btn(pyxel.KEY_CONTROL):
+        if pyxel.btn(pyxel.KEY_CONTROL) or pyxel.btn(pyxel.KEY_SUPER):
             if pyxel.btnp(pyxel.KEY_S):
                 self._save_button.press()
 
