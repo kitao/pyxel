@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.0
+- Fixed the version check of the resource file
+
 ## 1.2.10
 - Added the tri and trib APIs
 - Modified the install option in the READMEs
