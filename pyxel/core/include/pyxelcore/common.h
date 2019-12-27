@@ -94,7 +94,7 @@ inline void PyxelError(const std::string& message,
   exit(1);
 }
 
-#define PYXEL_ERROR(message) PyxelError(message, __FUNCTION__)
+#define PYXEL_ERROR(message) pyxelcore::PyxelError(message, __FUNCTION__)
 
 }  // namespace pyxelcore
 
