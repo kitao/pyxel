@@ -271,7 +271,7 @@ class DrawingPanel(Widget):
         if (
             self.parent.tool == TOOL_SELECT
             and self._select_x1 >= 0
-            and pyxel.btn(pyxel.KEY_CONTROL)
+            and (pyxel.btn(pyxel.KEY_CONTROL) or pyxel.btn(pyxel.KEY_SUPER))
         ):
             if pyxel.btnp(pyxel.KEY_C):
                 if self._is_tilemap_mode:
@@ -319,6 +319,7 @@ class DrawingPanel(Widget):
             pyxel.btn(pyxel.KEY_SHIFT)
             or pyxel.btn(pyxel.KEY_CONTROL)
             or pyxel.btn(pyxel.KEY_ALT)
+            or pyxel.btn(pyxel.KEY_SUPER)
         ):
             return
 
