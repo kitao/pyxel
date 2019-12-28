@@ -119,21 +119,28 @@ void Resource::LoadAsset(const std::string& filename,
         std::stringstream ss(file.read(name));
         std::string line = GetTrimmedLine(ss);
 
-        std::vector<std::string> lib_ver = Split(VERSION, '.');
-        std::vector<std::string> res_ver = Split(line, '.');
-        int size = std::max(lib_ver.size(), res_ver.size());
+        std::vector<std::string> lib_ver_str = Split(VERSION, '.');
+        std::vector<std::string> res_ver_str = Split(line, '.');
+        int size = std::max(lib_ver_str.size(), res_ver_str.size());
 
-        for (int i = 0; i < size; ++i) {
-          int v1 = (i < lib_ver.size()) ? std::atoi(lib_ver[i].c_str()) : 0;
-          int v2 = (i < res_ver.size()) ? std::atoi(res_ver[i].c_str()) : 0;
+        if (size != 3) {
+          throw ParseError();
+        }
 
-          if (v1 > v2) {
-            break;
-          }
+        int32_t lib_ver = 0;
+        int32_t res_ver = 0;
 
-          if (v2 > v1) {
-            PYXEL_ERROR("unsupported resource file version '" + line + "'");
-          }
+        for (int32_t i = 0; i < size; ++i) {
+          lib_ver =
+              lib_ver * 100 +
+              (i < lib_ver_str.size() ? std::atoi(lib_ver_str[i].c_str()) : 0);
+          res_ver =
+              res_ver * 100 +
+              (i < res_ver_str.size() ? std::atoi(res_ver_str[i].c_str()) : 0);
+        }
+
+        if (res_ver > lib_ver) {
+          PYXEL_ERROR("unsupported resource file version '" + line + "'");
         }
       } else {
         throw ParseError();
