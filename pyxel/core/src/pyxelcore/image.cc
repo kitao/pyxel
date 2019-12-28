@@ -72,6 +72,27 @@ void Image::SetData(int32_t x, int32_t y, const ImageString& image_string) {
   CopyImage(x, y, &image, 0, 0, width, height);
 }
 
+static double ColorDifference(uint8_t r1,
+                              uint8_t g1,
+                              uint8_t b1,
+                              uint8_t r2,
+                              uint8_t g2,
+                              uint8_t b2) {
+  double x1 = 0.412453 * r1 + 0.357580 * g1 + 0.189423 * b1;
+  double y1 = 0.212671 * r1 + 0.715160 * g1 + 0.072169 * b1;
+  double z1 = 0.019334 * r1 + 0.119193 * g1 + 0.950227 * b1;
+
+  double x2 = 0.412453 * r2 + 0.357580 * g2 + 0.189423 * b2;
+  double y2 = 0.212671 * r2 + 0.715160 * g2 + 0.072169 * b2;
+  double z2 = 0.019334 * r2 + 0.119193 * g2 + 0.950227 * b2;
+
+  double dx = x1 - x2;
+  double dy = y1 - y2;
+  double dz = z1 - z2;
+
+  return dx * dx + dy * dy + dz * dz;
+}
+
 void Image::LoadImage(int32_t x,
                       int32_t y,
                       const std::string& filename,
@@ -104,15 +125,16 @@ void Image::LoadImage(int32_t x,
       int32_t src_b = src_data[src_index + j * 4 + 1];
 
       int32_t nearest_color = 0;
-      int32_t nearest_color_dist = INT32_MAX;
+      double nearest_color_dist = DBL_MAX;
 
       for (int32_t k = 0; k < COLOR_COUNT; k++) {
         int32_t color = palette_color[k];
         int32_t pal_r = (color >> 16) & 0xff;
         int32_t pal_g = (color >> 8) & 0xff;
         int32_t pal_b = color & 0xff;
-        int32_t color_dist =
-            Abs(src_r - pal_r) + Abs(src_g - pal_g) + Abs(src_b - pal_b);
+
+        double color_dist =
+            ColorDifference(src_r, src_g, src_b, pal_r, pal_g, pal_b);
 
         if (color_dist < nearest_color_dist) {
           nearest_color = k;
