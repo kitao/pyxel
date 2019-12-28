@@ -37,7 +37,7 @@ void _get_constant_string(char* str, int32_t str_length, const char* name) {
 //
 inline pyxelcore::System* GetSystem() {
   if (!s_system) {
-    PYXEL_ERROR("not initialized");
+    PYXEL_ERROR("uninitialized function call");
   }
 
   return s_system;
@@ -107,7 +107,7 @@ void _caption(const char* caption) {
 //
 inline pyxelcore::Resource* GetResource() {
   if (!s_resource) {
-    PYXEL_ERROR("not initialized");
+    PYXEL_ERROR("uninitialized function call");
   }
 
   return s_resource;
@@ -130,7 +130,7 @@ void load(const char* filename,
 //
 inline pyxelcore::Input* GetInput() {
   if (!s_input) {
-    PYXEL_ERROR("not initialized");
+    PYXEL_ERROR("uninitialized function call");
   }
 
   return s_input;
@@ -165,7 +165,7 @@ void mouse(int32_t visible) {
 //
 inline pyxelcore::Graphics* GetGraphics() {
   if (!s_graphics) {
-    PYXEL_ERROR("not initialized");
+    PYXEL_ERROR("uninitialized function call");
   }
 
   return s_graphics;
@@ -274,7 +274,7 @@ void text(int32_t x, int32_t y, const char* s, int32_t col) {
 //
 inline pyxelcore::Audio* GetAudio() {
   if (!s_audio) {
-    PYXEL_ERROR("not initialized");
+    PYXEL_ERROR("uninitialized function call");
   }
 
   return s_audio;
