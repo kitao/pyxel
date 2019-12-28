@@ -129,11 +129,15 @@ class SoundEditor(Editor):
         pyxel.stop(0)
 
     def __on_undo(self, data):
+        self._stop()
+
         self._sound_picker.value = data["sound"]
         self.field_cursor.move(*data["cursor_before"])
         self.field_cursor.data[:] = data["before"]
 
     def __on_redo(self, data):
+        self._stop()
+
         self._sound_picker.value = data["sound"]
         self.field_cursor.move(*data["cursor_after"])
         self.field_cursor.data[:] = data["after"]
