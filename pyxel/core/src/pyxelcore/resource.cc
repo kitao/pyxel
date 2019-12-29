@@ -112,6 +112,9 @@ void Resource::LoadAsset(const std::string& filename,
   ifs.close();
 
   try {
+    int32_t lib_ver = 0;
+    int32_t res_ver = 0;
+
     {
       std::string name = GetVersionName();
 
@@ -121,16 +124,13 @@ void Resource::LoadAsset(const std::string& filename,
 
         std::vector<std::string> lib_ver_str = Split(VERSION, '.');
         std::vector<std::string> res_ver_str = Split(line, '.');
-        int size = std::max(lib_ver_str.size(), res_ver_str.size());
+        const int32_t ver_size = lib_ver_str.size();
 
-        if (size != 3) {
+        if (res_ver_str.size() != ver_size) {
           throw ParseError();
         }
 
-        int32_t lib_ver = 0;
-        int32_t res_ver = 0;
-
-        for (int32_t i = 0; i < size; ++i) {
+        for (int32_t i = 0; i < ver_size; ++i) {
           lib_ver =
               lib_ver * 100 +
               (i < lib_ver_str.size() ? std::atoi(lib_ver_str[i].c_str()) : 0);
@@ -153,6 +153,20 @@ void Resource::LoadAsset(const std::string& filename,
 
         if (file.has_file(name)) {
           ParseImage(i, file.read(name));
+
+          if (res_ver < 10300) {  // convert palette
+            const int32_t COLOR_TABLE[] = {0, 1, 2,  3,  4,  5,  6,  7,
+                                           8, 9, 10, 11, 12, 13, 14, 15};
+
+            Image* image = graphics_->GetImageBank(i);
+            int32_t** data = image->Data();
+
+            for (int32_t i = 0; i < image->Height(); i++) {
+              for (int32_t j = 0; j < image->Width(); j++) {
+                data[i][j] = COLOR_TABLE[data[i][j]];
+              }
+            }
+          }
         } else {
           ClearImage(i);
         }
