@@ -3,12 +3,17 @@
 # Advance Preparation
 #
 # Mac:
-#   brew install python3 sdl2 sdl2_image
+#   brew install python3 sdl2 sdl2_image clang-format
+#   pip3 install -U black flake8 isort mypy
 #
 # Linux:
+#   sudo apt update
+#   sudo apt dist-upgrade
+#   sudo apt autoremove
 #   sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
 #
 # Windows:
+#   choco upgrade all -y
 #   choco install -y msys2
 #
 #   [32bit]
