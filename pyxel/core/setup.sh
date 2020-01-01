@@ -31,8 +31,8 @@ SDL2_INCDIR=$SCRIPT_DIR/include/SDL2
 SDL2_LIBDIR=$SCRIPT_DIR/lib
 SDL2_BINDIR=$SCRIPT_DIR/bin
 
-MINGW_SDL2_URL="https://www.libsdl.org/release/SDL2-devel-2.0.9-mingw.tar.gz"
-MINGW_SDL2_IMAGE_URL="https://www.libsdl.org/projects/SDL_image/release/SDL2_image-devel-2.0.4-mingw.tar.gz"
+MINGW_SDL2_URL="https://www.libsdl.org/release/SDL2-devel-2.0.10-mingw.tar.gz"
+MINGW_SDL2_IMAGE_URL="https://www.libsdl.org/projects/SDL_image/release/SDL2_image-devel-2.0.5-mingw.tar.gz"
 
 rm -rf $SDL2_INCDIR $SDL2_LIBDIR $SDL_BINDIR $DOWNLOAD_DIR
 mkdir -p $SDL2_INCDIR $SDL2_LIBDIR/win{32,64} $SDL2_BINDIR/win{32,64} $DOWNLOAD_DIR
