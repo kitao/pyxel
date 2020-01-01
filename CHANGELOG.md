@@ -7,6 +7,7 @@
 - Added support for command key shortcuts in the Pyxel Editor
 - Fixed undo and redo of the Sound and Music Editor
 - Changed color comparison method when importing images
+- Updated the SDL to 2.0.10
 
 ## 1.2.10
 - Added the tri and trib APIs
