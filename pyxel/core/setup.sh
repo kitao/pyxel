@@ -4,6 +4,7 @@
 #
 # Mac:
 #   brew install python3 sdl2 sdl2_image clang-format
+#   (reboot terminal)
 #   pip3 install -U black flake8 isort mypy
 #
 # Linux:
