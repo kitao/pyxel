@@ -8,6 +8,9 @@
 - Fixed undo and redo of the Sound and Music Editor
 - Changed color comparison method when importing images
 - Updated the SDL to 2.0.10
+- Updated the SDL_image to 2.0.5
+- Changed dll search method for Python 3.8
+- Updated the READMEs
 
 ## 1.2.10
 - Added the tri and trib APIs
