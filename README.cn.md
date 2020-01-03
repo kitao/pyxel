@@ -68,6 +68,11 @@ pip install -U pyxel
 
 ```sh
 brew install python3 sdl2 sdl2_image
+```
+
+After restarting the terminal,
+
+```sh
 pip3 install -U pyxel
 ```
 
@@ -238,7 +243,7 @@ pyxeleditor [pyxel_resource_file]
 
 若未指定源文件，则命名为`my_resource.pyxres`。
 
-启动Pyxel编辑器后，可以通过拖放来切换文件。若在按下Ctrl键的同时拖放源文件，则只有当前正在编辑的类型(image/tilemap/sound/music)会被加载。通过本操作可以将多个源文件合并为一个。
+启动Pyxel编辑器后，可以通过拖放来切换文件。若在按下``Ctrl``(``Cmd``)键的同时拖放源文件，则只有当前正在编辑的类型(image/tilemap/sound/music)会被加载。通过本操作可以将多个源文件合并为一个。
 
 创建后的源文件可用`load`函数来加载。
 
@@ -276,8 +281,6 @@ Pyxel图像和瓦片地图还可以通过以下方法创建：
 
 - 在`Image.set`或`Tilemap.set`函数中通过字符串list来生成图像
 - 在Pyxel调色板中用`Image.load`函数加载png文件
-
-因为Pyxel使用了与[PICO-8](https://www.lexaloffle.com/pico-8.php)相同的调色板，所以在为Pyxel创建png图像时，建议使用PICO-8调色板模式中的[Aseprite](https://www.aseprite.org/)。
 
 Pyxel音频也可以通过以下方法创建：
 
