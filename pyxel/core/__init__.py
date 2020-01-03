@@ -32,7 +32,9 @@ def _load_library():
     lib_path = _get_absolute_libpath()
 
     if os.path.splitext(lib_path)[1] == ".dll":
-        os.environ["PATH"] = os.path.dirname(lib_path) + os.pathsep + os.environ["PATH"]
+        dll_dir = os.path.dirname(lib_path)
+        os.add_dll_directory(dll_dir)
+        os.environ["PATH"] = dll_dir + os.pathsep + os.environ["PATH"]
 
     return cdll.LoadLibrary(lib_path)
 
