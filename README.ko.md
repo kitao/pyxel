@@ -69,6 +69,11 @@ pip install -U pyxel
 
 ```sh
 brew install python3 sdl2 sdl2_image
+```
+
+After restarting the terminal,
+
+```sh
 pip3 install -U pyxel
 ```
 
@@ -240,7 +245,7 @@ pyxeleditor [Pyxel 리소스 파일]
 지정한 Pyxel 리소스 파일 (.pyxres)이 존재하는 경우에는 해당 파일을 불러오고, 존재하지 않는 경우 지정한 이름으로 새 리소스 파일을 생성합니다. 파일 이름을 생략했을 경우, 기본 파일 이름은 `my_resource.pyxres`입니다.
 
 Pyxel Editor 실행 중 다른 리소스 파일을 Drag & Drop하는 것으로 작업 중인 리소스 파일을 변경할 수 있습니다.
-또한 ``Ctrl`` 키를 누르면서 리소스 파일을 Drag & Drop 하면, 현재 편집 중인 리소스 유형(이미지/타일 맵/사운드/뮤직)만 불러올 수 있습니다. 이를 통해 여러 개의 리소스 파일을 하나로 결합할 수 있습니다.
+또한 ``Ctrl``(``Cmd``) 키를 누르면서 리소스 파일을 Drag & Drop 하면, 현재 편집 중인 리소스 유형(이미지/타일 맵/사운드/뮤직)만 불러올 수 있습니다. 이를 통해 여러 개의 리소스 파일을 하나로 결합할 수 있습니다.
 
 작성한 리소스 파일은 Pyxel 애플리케이션에서 `load` 함수를 사용해 불러올 수 있습니다.
 
@@ -278,8 +283,6 @@ Pyxel을 위한 이미지나 타일 맵은 아래와 같은 방법으로 편집�
 
 - `Image.set`나 `Tilemap.set` 함수를 사용해 문자열 리스트에서 이미지 생성
 - `Image.load` 함수를 사용해 Pyxel 색상 팔레트로 png 파일 불러오기
-
-Pyxel은 [PICO-8](https://www.lexaloffle.com/pico-8.php)와 같은 팔레트를 사용하고 있기 때문에, Pyxel을 위한 png 파일을 만드는 경우에는 [Aseprite](https://www.aseprite.org/)를 PICO-8 팔레트 설정으로 설정 후 사용하시는 것을 추천합니다.
 
 Pyxel을 위한 사운드나 음악은 아래의 방법으로 작성할 수도 있습니다:
 

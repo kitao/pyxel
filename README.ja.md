@@ -30,7 +30,7 @@
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
-Pyxelのゲーム機の仕様やAPI、パレットなどは、
+Pyxelのゲーム機の仕様やAPIは、
 [PICO-8](https://www.lexaloffle.com/pico-8.php)や[TIC-80](https://tic.computer/)のデザインを参考にしています。
 
 Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレトロゲームづくりを始めましょう！
@@ -69,6 +69,11 @@ pip install -U pyxel
 
 ```sh
 brew install python3 sdl2 sdl2_image
+```
+
+ターミナルを再起動した後に、
+
+```sh
 pip3 install -U pyxel
 ```
 
@@ -238,7 +243,7 @@ pyxeleditor [Pyxelリソースファイル]
 
 指定したPyxelリソースファイル (.pyxres) が存在する場合は読み込み、存在しない場合は指定した名前で新規にファイルを作成します。リソースファイルを省略した場合は`my_resource.pyxres`がファイル名になります。
 
-Pyxel Editorの起動後に、別のリソースファイルをドラッグ＆ドロップすることでファイルを切り替えることができます。また、``Ctrl``キーを押しながらリソースファイルをドラッグ＆ドロップすると、現在編集中のリソースタイプ(イメージ/タイルマップ/サウンド/ミュージック)のみが読み込まれます。この操作により、複数のリソースファイルを1つにまとめることができます。
+Pyxel Editorの起動後に、別のリソースファイルをドラッグ＆ドロップすることでファイルを切り替えることができます。また、``Ctrl``(``Cmd``)キーを押しながらリソースファイルをドラッグ＆ドロップすると、現在編集中のリソースタイプ(イメージ/タイルマップ/サウンド/ミュージック)のみが読み込まれます。この操作により、複数のリソースファイルを1つにまとめることができます。
 
 作成したリソースファイルはPyxelアプリケーションから`load`関数で読み込めます。
 
@@ -276,8 +281,6 @@ Pyxel用の画像やタイルマップは以下の方法で作成することも
 
 - `Image.set`や`Tilemap.set`関数で文字列のリストから作成する
 - `Image.load`関数でPyxel向け配色のpngファイルを読み込む
-
-Pyxelは[PICO-8](https://www.lexaloffle.com/pico-8.php)と同じパレットを使用しているため、Pyxel向け配色のpngファイルを作成する場合は、[Aseprite](https://www.aseprite.org/)をPICO-8パレット設定にして使用するのがおすすめです。
 
 Pyxel用のサウンドやミュージックは以下の方法で作成することもできます。
 
