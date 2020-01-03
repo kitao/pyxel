@@ -68,6 +68,11 @@ Si el gestor de paquetes [Homebrew](https://brew.sh/) esta listo, el siguiente c
 
 ```sh
 brew install python3 sdl2 sdl2_image
+```
+
+After restarting the terminal,
+
+```sh
 pip3 install -U pyxel
 ```
 
@@ -237,7 +242,7 @@ pyxeleditor [pyxel_resource_file]
 Si el archivo de recurso Pyxel especificado (.pyxres) existe, el archivo es cargado, sino existe, un nuevo archivo es creado con el nombre especificado.
 Si el archivo de recurso es omitido, el nombre es `my_resource.pyxres`.
 
-Luego de iniciar el Pyxel Editor, el archivo puede ser cambiado arrastrando y soltando otro archivo de recurso. Si el archivo de recurso es arrastrado y soltado mientras se sostiene la tecla ``Ctrl``, solo el tipo de recurso (imagen/tilemap/sonido/musica) que esta siendo editado será cargado. Esta operación permite combinar multiples archivos de recursos en uno.
+Luego de iniciar el Pyxel Editor, el archivo puede ser cambiado arrastrando y soltando otro archivo de recurso. Si el archivo de recurso es arrastrado y soltado mientras se sostiene la tecla ``Ctrl``(``Cmd``), solo el tipo de recurso (imagen/tilemap/sonido/musica) que esta siendo editado será cargado. Esta operación permite combinar multiples archivos de recursos en uno.
 
 El archivo de recurso creado puede ser cargado con la función `load`.
 
@@ -275,8 +280,6 @@ La imágenes y tilemaps de Pyxel también pueden ser creadas de la siguiente for
 
 - Crea una imagen desde una lista de cadena de texto con la función `Image.set` o `Tilemap.set`
 - Carga un archivo png en la paleta de Pyxel con la función `Image.load`
-
-Debido a que Pyxel usa la misma paleta que [PICO-8](https://www.lexaloffle.com/pico-8.php), cuando se crean las imágenes png para Pyxel, es recomendable usar [Aseprite](https://www.aseprite.org/) con la paleta PICO-8.
 
 Los sonidos en Pyxel también pueden ser creados de la siguiente forma:
 
