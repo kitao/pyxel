@@ -30,7 +30,7 @@ Thanks to its simple specifications inspired by retro gaming consoles, such as o
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
-The specifications of the gaming console, APIs, and palettes of Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic.computer/).
+The specifications of the gaming console and APIs for Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic.computer/).
 
 Pyxel is open source and free to use. Let's start making a retro game with Pyxel!
 
@@ -68,6 +68,11 @@ If [Homebrew](https://brew.sh/) package manager is ready, the following command 
 
 ```sh
 brew install python3 sdl2 sdl2_image
+```
+
+After restarting the terminal,
+
+```sh
 pip3 install -U pyxel
 ```
 
@@ -237,7 +242,7 @@ pyxeleditor [pyxel_resource_file]
 If the specified Pyxel resource file (.pyxres) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
 If the resource file is omitted, the name is `my_resource.pyxres`.
 
-After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down ``Ctrl`` key, only the resource type (image/tilemap/sound/music) that is currently being edited will be loaded. This operation enables to combine multiple resource file into one.
+After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down ``Ctrl``(``Cmd``) key, only the resource type (image/tilemap/sound/music) that is currently being edited will be loaded. This operation enables to combine multiple resource file into one.
 
 The created resource file can be loaded with the `load` function.
 
@@ -275,8 +280,6 @@ Pyxel images and tilemaps can also be created in the following way:
 
 - Create an image from a list of strings with `Image.set` or `Tilemap.set` function
 - Load a png file in Pyxel palette with `Image.load` function
-
-Because Pyxel uses the same palette as [PICO-8](https://www.lexaloffle.com/pico-8.php), when creating png images for Pyxel, it is recommended to use [Aseprite](https://www.aseprite.org/) in PICO-8 palette mode.
 
 Pyxel sounds can also be created in the following way:
 
