@@ -11,6 +11,7 @@
 - Updated the SDL_image to 2.0.5
 - Changed dll search method for Python 3.8
 - Updated the READMEs
+- Added KEY_NONE constant to ignore key input
 
 ## 1.2.10
 - Added the tri and trib APIs
