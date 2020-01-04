@@ -316,7 +316,8 @@ pyxelpackager python_file
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key])`<br>
 Pyxelアプリを画面サイズ (`width`, `height`) で初期化する。画面の最大の幅と高さは255<br>
-また、`caption`でウィンドウタイトル、`scale`で表示倍率、`palette`でパレット色、`fps`で動作フレームレート、`border_width`と`border_color`で画面外側のマージン幅と色、`quit_key`でアプリケーション終了キーを指定できる。`palette`は24ビットカラーの16要素のリスト、`border_color`は24ビットカラーで指定する
+また、`caption`でウィンドウタイトル、`scale`で表示倍率、`palette`でパレット色、`fps`で動作フレームレート、`border_width`と`border_color`で画面外側のマージン幅と色、`quit_key`でアプリケーション終了キーを指定できる。`palette`は24ビットカラーの16要素のリスト、`border_color`は24ビットカラーで指定する<br>
+例：`pyxel.init(160, 120, caption="Pyxel with PICO-8 palette", palette=[0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436, 0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA], quit_key=pyxel.KEY_NONE)`
 
 - `run(update, draw)`<br>
 Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時に`draw`関数を呼ぶ
