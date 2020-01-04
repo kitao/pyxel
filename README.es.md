@@ -30,7 +30,7 @@ Gracias a sus características simples inspiradas en las consolas de juegos retr
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
-Las características de la consola de juego, APIs, y paletas de Pyxel son referencia de los increíbles [PICO-8](https://www.lexaloffle.com/pico-8.php) y [TIC-80](https://tic.computer/).
+Las características de la consola de juego y APIs de Pyxel son referencia de los increíbles [PICO-8](https://www.lexaloffle.com/pico-8.php) y [TIC-80](https://tic.computer/).
 
 Pyxel es de código abierto y de libre uso. Comencemos a crear juegos retro con Pyxel!
 
@@ -70,7 +70,7 @@ Si el gestor de paquetes [Homebrew](https://brew.sh/) esta listo, el siguiente c
 brew install python3 sdl2 sdl2_image
 ```
 
-After restarting the terminal,
+Luego de reiniciar la terminal,
 
 ```sh
 pip3 install -U pyxel
