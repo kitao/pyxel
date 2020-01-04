@@ -30,7 +30,7 @@
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
-Pyxel的设计、API以及调色板参考了经典的[PICO-8](https://www.lexaloffle.com/pico-8.php)以及[TIC-80](https://tic.computer/)。
+游戏控制台以及API的设计参考了经典的[PICO-8](https://www.lexaloffle.com/pico-8.php)以及[TIC-80](https://tic.computer/)。
 
 Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel制作自己的游戏吧！
 
@@ -70,7 +70,7 @@ pip install -U pyxel
 brew install python3 sdl2 sdl2_image
 ```
 
-After restarting the terminal,
+重启终端之后输入：
 
 ```sh
 pip3 install -U pyxel
