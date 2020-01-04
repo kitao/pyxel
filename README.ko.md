@@ -30,8 +30,7 @@
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
-Pyxel의 게이밍 콘솔, API, 팔레트 등은,
-[PICO-8](https://www.lexaloffle.com/pico-8.php)이나 [TIC-80](https://tic.computer/)의 디자인을 참고하고 있습니다.
+Pyxel의 게이밍 콘솔, API의 사양은 [PICO-8](https://www.lexaloffle.com/pico-8.php)과 [TIC-80](https://tic.computer/)의 디자인을 참고하고 있습니다.
 
 Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Pyxel과 함께 레트로 스타일의 게임을 만들어보세요!
 
@@ -71,7 +70,7 @@ pip install -U pyxel
 brew install python3 sdl2 sdl2_image
 ```
 
-After restarting the terminal,
+터미널 재시작 후, 아래 명령어를 입력합니다.
 
 ```sh
 pip3 install -U pyxel
