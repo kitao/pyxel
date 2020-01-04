@@ -317,7 +317,8 @@ pyxelpackager python_file
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key])`<br>
 Pyxel 애플리케이션을 (`width`, `height`) 크기로 초기화합니다. 화면의 가로/세로 최대 크기는 256입니다.<br>
-`caption`으로 창 제목, `scale`로 표시 배율, `palette`로 팔레트 색, `fps`로 동작 프레임 레이트, `border_width`와 `border_color`로 화면 바깥의 margin 폭과 색, `quit_key`로 애플리케이션의 종료 키를 지정할 수 있습니다. `palette`는 24비트 색상 중 16개의 요소로, `border_color`는 24비트 색상으로 지정합니다.
+`caption`으로 창 제목, `scale`로 표시 배율, `palette`로 팔레트 색, `fps`로 동작 프레임 레이트, `border_width`와 `border_color`로 화면 바깥의 margin 폭과 색, `quit_key`로 애플리케이션의 종료 키를 지정할 수 있습니다. `palette`는 24비트 색상 중 16개의 요소로, `border_color`는 24비트 색상으로 지정합니다.<br>
+예: `pyxel.init(160, 120, caption="Pyxel with PICO-8 palette", palette=[0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436, 0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA], quit_key=pyxel.KEY_NONE)`
 
 - `run(update, draw)`<br>
 Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수를, 화면 그리기에 `draw` 함수를 호출합니다.

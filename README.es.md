@@ -315,7 +315,8 @@ El número de cuadros transcurridos
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key])`<br>
 Inicializar la aplicación Pyxel con el tamaño de pantalla (`width`, `height`). El ancho y alto máximo de la pantalla es 256<br>
-También es posible especificar el título de la ventana con `caption`, el aumento de pantalla con `scale`, la paleta de colores con `palette`, los cuadros por segundo con `fps`, y el ancho del margen y color fuera de la pantalla con `border_width` y `border_color`, y la tecla para salir de la aplicación con `quit_key`. `palette` es especificada como una lista de 16 elementos de color a 24 bits, `border_color` como color a 24 bits
+También es posible especificar el título de la ventana con `caption`, el aumento de pantalla con `scale`, la paleta de colores con `palette`, los cuadros por segundo con `fps`, y el ancho del margen y color fuera de la pantalla con `border_width` y `border_color`, y la tecla para salir de la aplicación con `quit_key`. `palette` es especificada como una lista de 16 elementos de color a 24 bits, `border_color` como color a 24 bits<br>
+p.ej. `pyxel.init(160, 120, caption="Pyxel with PICO-8 palette", palette=[0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436, 0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA], quit_key=pyxel.KEY_NONE)`
 
 - `run(update, draw)`<br>
 Inicia la aplicación Pyxel y llama a la función `update` para la actualización de cuadros y la función `draw` para el dibujado
