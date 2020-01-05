@@ -1,13 +1,12 @@
 #include "pyxelcore/resource.h"
 
+#include "miniz-cpp/zip_file.hpp"
 #include "pyxelcore/audio.h"
 #include "pyxelcore/graphics.h"
 #include "pyxelcore/image.h"
 #include "pyxelcore/music.h"
 #include "pyxelcore/sound.h"
 #include "pyxelcore/tilemap.h"
-
-#include "miniz-cpp/zip_file.hpp"
 
 #define PARSE_CHANNEL(ss, music, channel)                          \
   do {                                                             \
