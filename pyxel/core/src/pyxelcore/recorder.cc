@@ -1,8 +1,7 @@
 #include "pyxelcore/recorder.h"
 
-#include "pyxelcore/image.h"
-
 #include "gif-h/gif.h"
+#include "pyxelcore/image.h"
 
 namespace pyxelcore {
 
