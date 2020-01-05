@@ -5,7 +5,7 @@ import pyxel
 
 class App:
     def __init__(self):
-        pyxel.init(200, 150, caption="Pixel Sound API")
+        pyxel.init(200, 150, caption="Pyxel Sound API")
 
         pyxel.image(0).set(
             0,
