@@ -91,7 +91,7 @@ class DrawingPanel(Widget):
             self._select_x1 = self._select_x2 = x
             self._select_y1 = self._select_y2 = y
         elif self.parent.tool == TOOL_PENCIL:
-            self._overlay_canvas.pix(x, y, self.parent.color)
+            self._overlay_canvas.pset(x, y, self.parent.color)
         elif self.parent.tool == TOOL_RECTB:
             self._overlay_canvas.rectb(
                 x, y, x, y, self.parent.color, self._is_assist_mode
