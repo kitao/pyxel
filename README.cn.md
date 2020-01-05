@@ -374,7 +374,10 @@ pyxelpackager python_file
 - `cls(col)`<br>
 用`col`颜色清空画面。
 
-- `pix(x, y, col)`<br>
+- `pget(x, y)`<br>
+Get the color of the pixel at (`x`, `y`)
+
+- `pset(x, y, col)`<br>
 用`col`颜色在(`x`, `y`)处绘制一个像素点。
 
 - `line(x1, y1, x2, y2, col)`<br>

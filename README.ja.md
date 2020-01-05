@@ -376,7 +376,10 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 - `cls(col)`<br>
 画面を色`col`でクリアする
 
-- `pix(x, y, col)`<br>
+- `pget(x, y)`<br>
+(`x`, `y`) のピクセルの色を取得する
+
+- `pset(x, y, col)`<br>
 (`x`, `y`) に色`col`のピクセルを描画する
 
 - `line(x1, y1, x2, y2, col)`<br>
