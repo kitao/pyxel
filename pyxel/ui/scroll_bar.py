@@ -152,10 +152,10 @@ class ScrollBar(Widget):
             pyxel.rect(x + 6, y + 1, w - 12, h - 2, WIDGET_BACKGROUND_COLOR)
             pyxel.rect(x + w - 5, y + 1, 4, h - 2, inc_color)
 
-            pyxel.pix(x + 2, y + 3, WIDGET_PANEL_COLOR)
+            pyxel.pset(x + 2, y + 3, WIDGET_PANEL_COLOR)
             pyxel.line(x + 3, y + 2, x + 3, y + h - 3, WIDGET_PANEL_COLOR)
 
-            pyxel.pix(x + w - 3, y + h - 4, WIDGET_PANEL_COLOR)
+            pyxel.pset(x + w - 3, y + h - 4, WIDGET_PANEL_COLOR)
             pyxel.line(x + w - 4, y + 2, x + w - 4, y + h - 3, WIDGET_PANEL_COLOR)
 
             x = self.x + self.slider_pos
@@ -166,10 +166,10 @@ class ScrollBar(Widget):
             pyxel.rect(x + 1, y + 6, w - 2, h - 12, WIDGET_BACKGROUND_COLOR)
             pyxel.rect(x + 1, y + h - 5, w - 2, 4, inc_color)
 
-            pyxel.pix(x + 3, y + 2, WIDGET_PANEL_COLOR)
+            pyxel.pset(x + 3, y + 2, WIDGET_PANEL_COLOR)
             pyxel.line(x + 2, y + 3, x + w - 3, y + 3, WIDGET_PANEL_COLOR)
 
-            pyxel.pix(x + 3, y + h - 3, WIDGET_PANEL_COLOR)
+            pyxel.pset(x + 3, y + h - 3, WIDGET_PANEL_COLOR)
             pyxel.line(x + 2, y + h - 4, x + w - 3, y + h - 4, WIDGET_PANEL_COLOR)
 
             x = self.x + 2

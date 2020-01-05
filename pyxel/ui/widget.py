@@ -185,7 +185,7 @@ class Widget:
         if with_shadow:
             pyxel.line(x + 2, y + h, x + w - 1, y + h, WIDGET_SHADOW_COLOR)
             pyxel.line(x + w, y + 2, x + w, y + h - 1, WIDGET_SHADOW_COLOR)
-            pyxel.pix(x + w - 1, y + h - 1, WIDGET_SHADOW_COLOR)
+            pyxel.pset(x + w - 1, y + h - 1, WIDGET_SHADOW_COLOR)
 
     def _capture_mouse(self, key):
         Widget._capture_info.widget = self
