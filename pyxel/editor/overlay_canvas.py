@@ -44,7 +44,7 @@ class OverlayCanvas:
                 if dst[i][j] == OverlayCanvas.COLOR_MARK:
                     dst[i][j] = tiles[(i - y) % tiles_height][(j - x) % tiles_width]
 
-    def pix(self, x, y, col):
+    def pset(self, x, y, col):
         if x < 0 or x > 15 or y < 0 or y > 15:
             return
 
@@ -55,7 +55,7 @@ class OverlayCanvas:
 
     def line(self, x1, y1, x2, y2, col):
         if x1 == x2 and y1 == y2:
-            self.pix(x1, y1, col)
+            self.pset(x1, y1, col)
             return
 
         dx = x2 - x1
