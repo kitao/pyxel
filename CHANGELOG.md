@@ -12,6 +12,7 @@
 - Changed dll search method for Python 3.8
 - Updated the READMEs
 - Added KEY_NONE constant to ignore key input
+- Added pget API and renamed pix to pset
 
 ## 1.2.10
 - Added the tri and trib APIs
@@ -146,7 +147,7 @@
 - Added the type hints for Python
 
 ## 0.9.10
-- Added the way to import images on Pixel Editor to the manuals
+- Added the way to import images on Pyxel Editor to the manuals
 - Fixed the type hints
 - Added GLFW dll for Windows
 
