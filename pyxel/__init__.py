@@ -692,8 +692,12 @@ def cls(col: int) -> None:
     core.cls(int(col))
 
 
-def pix(x: int, y: int, col: int) -> None:
-    core.pix(int(x), int(y), int(col))
+def pget(x: int, y: int) -> int:
+    core.pget(int(x), int(y))
+
+
+def pset(x: int, y: int, col: int) -> None:
+    core.pset(int(x), int(y), int(col))
 
 
 def line(x1: int, y1: int, x2: int, y2: int, col: int) -> None:

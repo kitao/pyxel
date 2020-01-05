@@ -168,7 +168,7 @@ class Snake:
             pyxel.cls(col=COL_BACKGROUND)
             self.draw_snake()
             self.draw_score()
-            pyxel.pix(self.apple.x, self.apple.y, col=COL_APPLE)
+            pyxel.pset(self.apple.x, self.apple.y, col=COL_APPLE)
 
         else:
             self.draw_death()
@@ -181,7 +181,7 @@ class Snake:
                 colour = COL_HEAD
             else:
                 colour = COL_BODY
-            pyxel.pix(point.x, point.y, col=colour)
+            pyxel.pset(point.x, point.y, col=colour)
 
     def draw_score(self):
         """Draw the score at the top."""

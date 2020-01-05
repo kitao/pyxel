@@ -35,7 +35,7 @@ class App:
         self.test_pal1()
         self.test_cls(6, 6)
         self.test_clip()
-        self.test_pix(6, 20)
+        self.test_pset(6, 20)
         self.test_line(106, 6)
         self.test_rect(6, 38)
         self.test_rectb(106, 38)
@@ -76,14 +76,14 @@ class App:
         pyxel.rectb(x - 1, y - 1, w + 2, h + 2, 14)
         pyxel.clip(x, y, w, h)
 
-    def test_pix(self, x, y):
-        pyxel.text(x, y, "pix(x,y,col)", 7)
+    def test_pset(self, x, y):
+        pyxel.text(x, y, "pset(x,y,col)", 7)
 
         x += 4
         y += 10
 
         for i in range(16):
-            pyxel.pix(x + i * 2, y, i)
+            pyxel.pset(x + i * 2, y, i)
 
     def test_line(self, x, y):
         pyxel.text(x, y, "line(x1,y1,x2,y2,col)", 7)
