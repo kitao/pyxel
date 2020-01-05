@@ -693,7 +693,7 @@ def cls(col: int) -> None:
 
 
 def pget(x: int, y: int) -> int:
-    core.pget(int(x), int(y))
+    return core.pget(int(x), int(y))
 
 
 def pset(x: int, y: int, col: int) -> None:
