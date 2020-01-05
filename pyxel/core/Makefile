@@ -52,9 +52,14 @@ SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image -static-libgcc -static-libstdc+
 TARGET = $(BINDIR)/linux/$(LIBNAME).so
 endif
 
-.PHONY: all clean distclean test
+.PHONY: all format clean distclean test
 
 all: $(TARGET)
+
+format:
+	find include/pyxelcore.h include/pyxelcore src -name "*.h" -or -name "*.cc" | xargs clang-format -i
+	isort -rc ../..
+	black ../..
 
 clean:
 	rm -rf $(OBJS) $(TARGET)
