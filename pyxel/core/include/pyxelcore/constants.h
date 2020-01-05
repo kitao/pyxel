@@ -1,6 +1,9 @@
 #ifndef PYXELCORE_CONSTANTS_H_
 #define PYXELCORE_CONSTANTS_H_
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
 #include <algorithm>
 #include <array>
 #include <cfloat>
@@ -13,9 +16,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 
 namespace pyxelcore {
 
