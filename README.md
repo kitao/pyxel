@@ -372,7 +372,10 @@ Replace color `col1` with `col2` at drawing. `pal()` to reset to the initial pal
 - `cls(col)`<br>
 Clear screen with color `col`
 
-- `pix(x, y, col)`<br>
+- `pget(x, y)`<br>
+Get the color of the pixel at (`x`, `y`)
+
+- `pset(x, y, col)`<br>
 Draw a pixel of color `col` at (`x`, `y`)
 
 - `line(x1, y1, x2, y2, col)`<br>
