@@ -23,6 +23,11 @@ class Image {
                  int32_t y,
                  const std::string& filename,
                  const PaletteColor& palette_color);
+  /*void SaveImage(int32_t x,
+                 int32_t y,
+                 int32_t width,
+                 int32_t height,
+                 const std::string& filename);*/
   void CopyImage(int32_t x,
                  int32_t y,
                  const Image* image,
