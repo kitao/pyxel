@@ -48,16 +48,16 @@ class App:
 
     def test_pal1(self):
         if self.pal_test_is_enabled:
-            pyxel.pal(2, 3)
-            pyxel.pal(4, 7)
+            pyxel.pal(5, 2)
+            pyxel.pal(12, 7)
             pyxel.pal(7, 10)
 
     def test_pal2(self, x, y):
-        pyxel.text(x, y, "pal(col1,col2)", 4)
+        pyxel.text(x, y, "pal(col1,col2)", 12)
         pyxel.pal()
 
     def test_cls(self, x, y):
-        pyxel.cls(2)
+        pyxel.cls(5)
 
         pyxel.text(x, y, "cls(col)", 7)
 
@@ -147,10 +147,10 @@ class App:
         offset = math.sin(pyxel.frame_count * 0.1) * 2
 
         pyxel.blt(x, y, 0, 0, 0, 16, 16)
-        pyxel.blt(x + offset + 19, y, 0, 0, 0, 16, 16, 5)
-        pyxel.blt(x + 38, y, 0, 0, 0, -16, 16, 5)
-        pyxel.blt(x + 57, y, 0, 0, 0, 16, -16, 5)
-        pyxel.blt(x + 76, y, 0, 0, 0, -16, -16, 5)
+        pyxel.blt(x + offset + 19, y, 0, 0, 0, 16, 16, 13)
+        pyxel.blt(x + 38, y, 0, 0, 0, -16, 16, 13)
+        pyxel.blt(x + 57, y, 0, 0, 0, 16, -16, 13)
+        pyxel.blt(x + 76, y, 0, 0, 0, -16, -16, 13)
 
     def test_bltm(self, x, y):
         pyxel.text(x, y, "bltm(x,y,tm,u,v,\n     w,h,[colkey])", 7)
