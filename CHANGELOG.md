@@ -13,6 +13,7 @@
 - Updated the READMEs
 - Added KEY_NONE constant to ignore key input
 - Added pget API and renamed pix to pset
+- Changed the palette colors
 
 ## 1.2.10
 - Added the tri and trib APIs
