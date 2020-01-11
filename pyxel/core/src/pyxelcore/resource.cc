@@ -153,9 +153,10 @@ void Resource::LoadAsset(const std::string& filename,
         if (file.has_file(name)) {
           ParseImage(i, file.read(name));
 
+#if PYXEL_PALETTE == SEPIA_COLOR
           if (res_ver < 10300) {  // convert palette
-            const int32_t COLOR_TABLE[] = {0, 1, 2,  3,  4,  5,  6,  7,
-                                           8, 9, 10, 11, 12, 13, 14, 15};
+            const int32_t COLOR_TABLE[] = {0,  8, 9, 1, 5, 13, 14, 15,
+                                           10, 6, 7, 4, 3, 2,  11, 12};
 
             Image* image = graphics_->GetImageBank(i);
             int32_t** data = image->Data();
@@ -166,6 +167,7 @@ void Resource::LoadAsset(const std::string& filename,
               }
             }
           }
+#endif
         } else {
           ClearImage(i);
         }
