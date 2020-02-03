@@ -1,8 +1,10 @@
 import pyxel
 from pyxel.ui import ScrollBar, Widget
-from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
 
 from .constants import (
+    PANEL_SELECT_BORDER_COLOR,
+    PANEL_SELECT_FRAME_COLOR,
     TOOL_BUCKET,
     TOOL_CIRC,
     TOOL_CIRCB,
@@ -381,8 +383,12 @@ class DrawingPanel(Widget):
 
                     pyxel.rect(x, y, 8, 8, col)
 
-        pyxel.line(self.x + 1, self.y + 64, self.x + 128, self.y + 64, 1)
-        pyxel.line(self.x + 64, self.y + 1, self.x + 64, self.y + 128, 1)
+        pyxel.line(
+            self.x + 1, self.y + 64, self.x + 128, self.y + 64, WIDGET_PANEL_COLOR
+        )
+        pyxel.line(
+            self.x + 64, self.y + 1, self.x + 64, self.y + 128, WIDGET_PANEL_COLOR
+        )
 
         if self.parent.tool == TOOL_SELECT and self._select_x1 >= 0:
             pyxel.clip(self.x + 1, self.y + 1, self.x + 128, self.y + 128)
@@ -392,9 +398,9 @@ class DrawingPanel(Widget):
             w = self._select_x2 * 8 - x + 20
             h = self._select_y2 * 8 - y + 25
 
-            pyxel.rectb(x, y, w, h, 15)
-            pyxel.rectb(x + 1, y + 1, w - 2, h - 2, 0)
-            pyxel.rectb(x - 1, y - 1, w + 2, h + 2, 0)
+            pyxel.rectb(x, y, w, h, PANEL_SELECT_FRAME_COLOR)
+            pyxel.rectb(x + 1, y + 1, w - 2, h - 2, PANEL_SELECT_BORDER_COLOR)
+            pyxel.rectb(x - 1, y - 1, w + 2, h + 2, PANEL_SELECT_BORDER_COLOR)
 
             pyxel.clip()
 

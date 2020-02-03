@@ -2,7 +2,15 @@ import pyxel
 from pyxel.ui import Widget
 from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_SOUND_LENGTH
+from .constants import (
+    EDITOR_IMAGE_X,
+    EDITOR_IMAGE_Y,
+    MAX_SOUND_LENGTH,
+    SOUND_FIELD_DATA_FOCUS_COLOR,
+    SOUND_FIELD_DATA_NORMAL_COLOR,
+    SOUND_FIELD_FOCUS_COLOR,
+    TEXT_LABEL_COLOR,
+)
 
 tone_key_table = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N]
 effect_key_table = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
@@ -80,9 +88,9 @@ class SoundField(Widget):
         self.parent.field_cursor.insert(value)
 
     def __on_draw(self):
-        pyxel.text(self.x - 13, self.y + 1, "TON", 7)
-        pyxel.text(self.x - 13, self.y + 9, "VOL", 7)
-        pyxel.text(self.x - 13, self.y + 17, "EFX", 7)
+        pyxel.text(self.x - 13, self.y + 1, "TON", TEXT_LABEL_COLOR)
+        pyxel.text(self.x - 13, self.y + 9, "VOL", TEXT_LABEL_COLOR)
+        pyxel.text(self.x - 13, self.y + 17, "EFX", TEXT_LABEL_COLOR)
         pyxel.blt(
             self.x,
             self.y,
@@ -99,7 +107,7 @@ class SoundField(Widget):
         data_str.append("".join(["NSVF"[v] for v in self.parent.get_data(3)]))
 
         for i in range(3):
-            pyxel.text(31, 150 + i * 8, data_str[i], 1)
+            pyxel.text(31, 150 + i * 8, data_str[i], SOUND_FIELD_DATA_NORMAL_COLOR)
 
         cursor_y = self.parent.field_cursor.y
         cursor_x = self.parent.field_cursor.x
@@ -110,7 +118,9 @@ class SoundField(Widget):
         x = cursor_x * 4 + 31
         y = cursor_y * 8 + 142
 
-        pyxel.rect(x, y - 1, 3, 6, 1)
+        pyxel.rect(x, y - 1, 3, 6, SOUND_FIELD_FOCUS_COLOR)
 
         if cursor_x < len(data_str[cursor_y - 1]):
-            pyxel.text(x, y, data_str[cursor_y - 1][cursor_x], 7)
+            pyxel.text(
+                x, y, data_str[cursor_y - 1][cursor_x], SOUND_FIELD_DATA_FOCUS_COLOR
+            )

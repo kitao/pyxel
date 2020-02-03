@@ -1,7 +1,12 @@
 import pyxel
 from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_SOUND_LENGTH
+from .constants import (
+    EDITOR_IMAGE_X,
+    EDITOR_IMAGE_Y,
+    MAX_SOUND_LENGTH,
+    TEXT_LABEL_COLOR,
+)
 from .editor import Editor
 from .field_cursor import FieldCursor
 from .octave_bar import OctaveBar
@@ -178,8 +183,8 @@ class SoundEditor(Editor):
 
     def __on_draw(self):
         self.draw_panel(11, 16, 218, 157)
-        pyxel.text(23, 18, "SOUND", 7)
-        pyxel.text(83, 18, "SPEED", 7)
+        pyxel.text(23, 18, "SOUND", TEXT_LABEL_COLOR)
+        pyxel.text(83, 18, "SPEED", TEXT_LABEL_COLOR)
 
     def __on_sound_picker_change(self, value):
         sound = pyxel.sound(value)
