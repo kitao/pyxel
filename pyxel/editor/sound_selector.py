@@ -1,5 +1,6 @@
 import pyxel
 from pyxel.ui import Widget
+from pyxel.ui.constants import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
 
 from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
 
@@ -87,12 +88,12 @@ class SoundSelector(Widget):
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
         pyxel.blt(
-            self.x + 6, self.y + 5, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 121, 206, 34, 6
+            self.x + 6, self.y + 5, 3, EDITOR_IMAGE_X, EDITOR_IMAGE_Y + 121, 206, 34
         )
 
         for i in range(pyxel.USER_SOUND_BANK_COUNT):
             if pyxel.sound(i).note:
-                self._draw_sound_button(i, 12)
+                self._draw_sound_button(i, BUTTON_ENABLED_COLOR)
 
         if self._pressed_sound is not None:
-            self._draw_sound_button(self._pressed_sound, 7)
+            self._draw_sound_button(self._pressed_sound, BUTTON_PRESSED_COLOR)
