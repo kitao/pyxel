@@ -196,7 +196,7 @@ class App(Widget):
         pyxel.rect(0, 0, 240, 9, WIDGET_PANEL_COLOR)
         pyxel.line(0, 9, 239, 9, WIDGET_SHADOW_COLOR)
 
-        pyxel.text(93, 2, self.help_message, 13)
+        pyxel.text(93, 2, self.help_message, 12)
         self.help_message = ""
 
     def __on_undo_button_press(self):

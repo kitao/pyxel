@@ -187,7 +187,7 @@ class MusicEditor(Editor):
 
     def __on_draw(self):
         self.draw_panel(11, 16, 218, 9)
-        pyxel.text(23, 18, "MUSIC", 6)
+        pyxel.text(23, 18, "MUSIC", 7)
 
     def __on_play_button_press(self):
         self._play()
