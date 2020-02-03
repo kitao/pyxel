@@ -1,7 +1,12 @@
 import pyxel
 from pyxel.ui import Widget
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
+from .constants import (
+    EDITOR_IMAGE_X,
+    EDITOR_IMAGE_Y,
+    PIANO_KEYBOARD_PLAY_COLOR,
+    PIANO_KEYBOARD_REST_COLOR,
+)
 
 key_table = [
     pyxel.KEY_Z,
@@ -140,7 +145,6 @@ class PianoKeyboard(Widget):
             EDITOR_IMAGE_Y,
             12,
             123,
-            6,
         )
 
         data = self.parent.get_data(0)
@@ -159,15 +163,15 @@ class PianoKeyboard(Widget):
         key = note % 12
 
         if note == -1:
-            pyxel.rect(x, y + 1, 12, 2, 12)
+            pyxel.rect(x, y + 1, 12, 2, PIANO_KEYBOARD_REST_COLOR)
         elif key == 0 or key == 5:
-            pyxel.rect(x, y + 1, 7, 1, 14)
-            pyxel.rect(x + 7, y, 5, 2, 14)
+            pyxel.rect(x, y + 1, 7, 1, PIANO_KEYBOARD_PLAY_COLOR)
+            pyxel.rect(x + 7, y, 5, 2, PIANO_KEYBOARD_PLAY_COLOR)
         elif key == 4 or key == 11:
-            pyxel.rect(x, y + 1, 7, 1, 14)
-            pyxel.rect(x + 7, y + 1, 5, 2, 14)
+            pyxel.rect(x, y + 1, 7, 1, PIANO_KEYBOARD_PLAY_COLOR)
+            pyxel.rect(x + 7, y + 1, 5, 2, PIANO_KEYBOARD_PLAY_COLOR)
         elif key == 2 or key == 7 or key == 9:
-            pyxel.rect(x, y + 1, 7, 1, 14)
-            pyxel.rect(x + 7, y, 5, 3, 14)
+            pyxel.rect(x, y + 1, 7, 1, PIANO_KEYBOARD_PLAY_COLOR)
+            pyxel.rect(x + 7, y, 5, 3, PIANO_KEYBOARD_PLAY_COLOR)
         else:
-            pyxel.rect(x, y + 1, 6, 1, 14)
+            pyxel.rect(x, y + 1, 6, 1, PIANO_KEYBOARD_PLAY_COLOR)

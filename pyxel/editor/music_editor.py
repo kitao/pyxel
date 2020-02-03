@@ -1,7 +1,12 @@
 import pyxel
 from pyxel.ui import ImageButton, ImageToggleButton, NumberPicker
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_MUSIC_LENGTH
+from .constants import (
+    EDITOR_IMAGE_X,
+    EDITOR_IMAGE_Y,
+    MAX_MUSIC_LENGTH,
+    TEXT_LABEL_COLOR,
+)
 from .editor import Editor
 from .field_cursor import FieldCursor
 from .music_field import MusicField
@@ -187,7 +192,7 @@ class MusicEditor(Editor):
 
     def __on_draw(self):
         self.draw_panel(11, 16, 218, 9)
-        pyxel.text(23, 18, "MUSIC", 7)
+        pyxel.text(23, 18, "MUSIC", TEXT_LABEL_COLOR)
 
     def __on_play_button_press(self):
         self._play()

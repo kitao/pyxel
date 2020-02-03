@@ -2,6 +2,8 @@ import pyxel
 from pyxel.ui import Widget
 
 from .constants import (
+    PANEL_FOCUS_BORDER_COLOR,
+    PANEL_FOCUS_COLOR,
     TILEMAP_IMAGE_HEIGHT,
     TILEMAP_IMAGE_WIDTH,
     TILEMAP_IMAGE_X,
@@ -55,7 +57,7 @@ class TilemapPanel(Widget):
         w = 4
         h = 4
 
-        pyxel.rectb(x, y, w, h, 7)
-        pyxel.rectb(x - 1, y - 1, w + 2, h + 2, 0)
+        pyxel.rectb(x, y, w, h, PANEL_FOCUS_COLOR)
+        pyxel.rectb(x - 1, y - 1, w + 2, h + 2, PANEL_FOCUS_BORDER_COLOR)
 
         pyxel.clip()

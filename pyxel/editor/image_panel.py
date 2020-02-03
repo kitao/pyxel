@@ -1,6 +1,7 @@
 import pyxel
 from pyxel.ui import ScrollBar, Widget
 
+from .constants import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR
 from .utility import slice_array2d
 
 
@@ -162,9 +163,9 @@ class ImagePanel(Widget):
         w = self._focus_width
         h = self._focus_height
 
-        pyxel.rectb(x, y, w, h, 7)
-        pyxel.rectb(x + 1, y + 1, w - 2, h - 2, 0)
-        pyxel.rectb(x - 1, y - 1, w + 2, h + 2, 0)
+        pyxel.rectb(x, y, w, h, PANEL_FOCUS_COLOR)
+        pyxel.rectb(x + 1, y + 1, w - 2, h - 2, PANEL_FOCUS_BORDER_COLOR)
+        pyxel.rectb(x - 1, y - 1, w + 2, h + 2, PANEL_FOCUS_BORDER_COLOR)
 
         pyxel.clip()
 

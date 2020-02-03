@@ -1,6 +1,8 @@
 import pyxel
 from pyxel.ui import Widget
 
+from .constants import OCTAVE_BAR_BACKGROUND_COLOR, OCTAVE_BAR_COLOR
+
 
 class OctaveBar(Widget):
     def __init__(self, parent, x, y):
@@ -27,8 +29,8 @@ class OctaveBar(Widget):
         self.parent.help_message = "OCTAVE:PAGEUP/PAGEDOWN"
 
     def __on_draw(self):
-        pyxel.rect(self.x, self.y, self.width, self.height, 7)
+        pyxel.rect(self.x, self.y, self.width, self.height, OCTAVE_BAR_BACKGROUND_COLOR)
 
         x = self.x + 1
         y = self.y + 1 + (3 - self.parent.octave) * 24
-        pyxel.rect(x, y, 2, 47, 13)
+        pyxel.rect(x, y, 2, 47, OCTAVE_BAR_COLOR)
