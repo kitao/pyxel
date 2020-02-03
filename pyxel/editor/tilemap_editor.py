@@ -139,9 +139,9 @@ class TileMapEditor(Editor):
     def __on_draw(self):
         self.draw_panel(11, 156, 136, 17)
         self.draw_panel(157, 156, 72, 17)
-        pyxel.text(18, 162, "TILEMAP", 6)
-        pyxel.text(18, 162, "TILEMAP", 6)
-        pyxel.text(170, 162, "IMAGE", 6)
+        pyxel.text(18, 162, "TILEMAP", 7)
+        pyxel.text(18, 162, "TILEMAP", 7)
+        pyxel.text(170, 162, "IMAGE", 7)
 
     def __on_tilemap_picker_change(self, value):
         self._image_picker.value = pyxel.tilemap(value).refimg

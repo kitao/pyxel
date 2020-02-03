@@ -178,8 +178,8 @@ class SoundEditor(Editor):
 
     def __on_draw(self):
         self.draw_panel(11, 16, 218, 157)
-        pyxel.text(23, 18, "SOUND", 6)
-        pyxel.text(83, 18, "SPEED", 6)
+        pyxel.text(23, 18, "SOUND", 7)
+        pyxel.text(83, 18, "SPEED", 7)
 
     def __on_sound_picker_change(self, value):
         sound = pyxel.sound(value)

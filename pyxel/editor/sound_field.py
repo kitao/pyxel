@@ -80,9 +80,9 @@ class SoundField(Widget):
         self.parent.field_cursor.insert(value)
 
     def __on_draw(self):
-        pyxel.text(self.x - 13, self.y + 1, "TON", 6)
-        pyxel.text(self.x - 13, self.y + 9, "VOL", 6)
-        pyxel.text(self.x - 13, self.y + 17, "EFX", 6)
+        pyxel.text(self.x - 13, self.y + 1, "TON", 7)
+        pyxel.text(self.x - 13, self.y + 9, "VOL", 7)
+        pyxel.text(self.x - 13, self.y + 17, "EFX", 7)
         pyxel.blt(
             self.x,
             self.y,
