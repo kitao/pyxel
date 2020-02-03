@@ -3,7 +3,7 @@ import os.path
 import pyxel
 from pyxel.ui import ColorPicker, NumberPicker, RadioButton
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, TOOL_PENCIL
+from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, TEXT_LABEL_COLOR, TOOL_PENCIL
 from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
@@ -128,7 +128,7 @@ class ImageEditor(Editor):
     def __on_draw(self):
         self.draw_panel(11, 156, 136, 17)
         self.draw_panel(157, 156, 72, 17)
-        pyxel.text(170, 162, "IMAGE", 7)
+        pyxel.text(170, 162, "IMAGE", TEXT_LABEL_COLOR)
 
     def __on_color_picker_mouse_hover(self, x, y):
         self.help_message = "COLOR:1-8/SHIFT+1-8"

@@ -4,6 +4,7 @@ from pyxel.ui import NumberPicker, RadioButton
 from .constants import (
     EDITOR_IMAGE_X,
     EDITOR_IMAGE_Y,
+    TEXT_LABEL_COLOR,
     TILEMAP_IMAGE_X,
     TILEMAP_IMAGE_Y,
     TOOL_PENCIL,
@@ -139,9 +140,9 @@ class TileMapEditor(Editor):
     def __on_draw(self):
         self.draw_panel(11, 156, 136, 17)
         self.draw_panel(157, 156, 72, 17)
-        pyxel.text(18, 162, "TILEMAP", 7)
-        pyxel.text(18, 162, "TILEMAP", 7)
-        pyxel.text(170, 162, "IMAGE", 7)
+        pyxel.text(18, 162, "TILEMAP", TEXT_LABEL_COLOR)
+        pyxel.text(18, 162, "TILEMAP", TEXT_LABEL_COLOR)
+        pyxel.text(170, 162, "IMAGE", TEXT_LABEL_COLOR)
 
     def __on_tilemap_picker_change(self, value):
         self._image_picker.value = pyxel.tilemap(value).refimg

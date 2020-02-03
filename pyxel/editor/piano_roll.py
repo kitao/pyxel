@@ -2,7 +2,16 @@ import pyxel
 from pyxel.ui import Widget
 from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_SOUND_LENGTH
+from .constants import (
+    EDITOR_IMAGE_X,
+    EDITOR_IMAGE_Y,
+    MAX_SOUND_LENGTH,
+    PIANO_ROLL_BACKGROUND_COLOR,
+    PIANO_ROLL_CURSOR_EDIT_COLOR,
+    PIANO_ROLL_CURSOR_PLAY_COLOR,
+    PIANO_ROLL_NOTE_COLOR,
+    PIANO_ROLL_REST_COLOR,
+)
 
 
 class PianoRoll(Widget):
@@ -123,11 +132,11 @@ class PianoRoll(Widget):
 
         if self.parent.is_playing:
             x = (self.parent.play_pos % 100) * 4 + 31
-            pyxel.rect(x, 25, 3, 123, 14)
+            pyxel.rect(x, 25, 3, 123, PIANO_ROLL_CURSOR_PLAY_COLOR)
         else:
             if self.parent.field_cursor.y == 0:
                 x = self.parent.field_cursor.x * 4 + 31
-                pyxel.rect(x, 25, 3, 123, 6)
+                pyxel.rect(x, 25, 3, 123, PIANO_ROLL_CURSOR_EDIT_COLOR)
 
         pyxel.blt(
             self.x,
@@ -137,7 +146,7 @@ class PianoRoll(Widget):
             EDITOR_IMAGE_Y + 7,
             193,
             72,
-            7,
+            PIANO_ROLL_BACKGROUND_COLOR,
         )
         pyxel.blt(
             self.x,
@@ -147,10 +156,16 @@ class PianoRoll(Widget):
             EDITOR_IMAGE_Y + 7,
             193,
             51,
-            7,
+            PIANO_ROLL_BACKGROUND_COLOR,
         )
 
         for i, note in enumerate(self.parent.get_data(0)):
             x = i * 4 + 31
             y = 143 - note * 2
-            pyxel.rect(x, y, 3, 3, 8 if note >= 0 else 5)
+            pyxel.rect(
+                x,
+                y,
+                3,
+                3,
+                PIANO_ROLL_NOTE_COLOR if note >= 0 else PIANO_ROLL_REST_COLOR,
+            )
