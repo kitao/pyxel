@@ -166,7 +166,7 @@ pyxel.run(update, draw)
 
 `run` 함수의 인자로는 프레임 갱신을 처리하는 `update` 함수와, 필요할 때 화면을 그리는 `draw` 함수가 사용됩니다.
 
-실제 애플리케이션에서는, 아래와 같이 클래스에서 Pyxel 코드를 Wrap하는 것이 추천됩니다:
+실제 애플리케이션에서는 아래와 같이 클래스에서 Pyxel 코드를 감싸는 것이 좋습니다:
 
 ```python
 import pyxel
@@ -189,7 +189,7 @@ App()
 
 `show`나 `flip` 함수를 이용해 간단한 그래픽이나 애니메이션을 그리는 것도 가능합니다.
 
-`show` 함수는 화면을 표시하는 함수이며, `ESC` 키가 눌릴 때까지 대기합니다.
+`show` 함수는 화면을 표시하고 `ESC` 키가 눌릴 때까지 대기합니다.
 
 ```python
 import pyxel
@@ -229,7 +229,7 @@ Pyxel 애플리케이션 실행 중에, 아래의 특수 조작을 사용할 수
 - `Alt(Option)+0`<br>
 성능 모니터 (fps, update time, and draw time)의 표시/표시 해제
 - `Alt(Option)+Enter`<br>
-전체 화면 모드 전환
+전체 화면 전환
 
 ### 리소스의 작성 방법
 
@@ -291,19 +291,19 @@ Pyxel을 위한 사운드나 음악은 아래의 방법으로 작성할 수도 �
 
 ### Stand-Alone 실행 파일 작성 방법
 
-Pyxel Packager를 사용해, Python이 설치되지 않은 환경에서도 동작하는 Stand-Alone 실행 파일을 생성할 수 있습니다.
+Pyxel Packager를 사용해 Python이 설치되지 않은 환경에서도 실행 가능한 독립 실행 파일을 생성할 수 있습니다.
 
-실행 파일을 작성하려면, 다음과 같이 `pyxelpackager` 명령어로 애플리케이션의 실행에 사용하는 Python 파일을 지정합니다:
+실행 파일을 작성하려면 다음과 같이 `pyxelpackager` 명령어로 애플리케이션의 실행에 사용하는 Python 파일을 지정합니다:
 
 ```sh
 pyxelpackager python_file
 ```
 
-처리가 완료되면, dist 폴더에 실행 가능한 파일이 생성됩니다.
+처리가 완료되면 dist 폴더에 실행 가능한 파일이 생성됩니다.
 
-.pyxres 파일이나 .png 파일 등의 리소스도 필요한 경우, `assets` 폴더 내에 넣으면 인클루드(include) 할 수 있습니다.
+.pyxres 파일이나 .png 파일 등의 리소스도 필요한 경우 리소스를 `assets` 폴더 내에 넣으면 포함할 수 있습니다.
 
-``-i icon_file`` 옵션으로 애플리케이션의 아이콘을 설정할 수도 있습니다.
+``-i icon_file`` 옵션으로 애플리케이션의 아이콘을 지정할 수도 있습니다.
 
 ## API 레퍼런스
 
@@ -556,7 +556,7 @@ Get the color of the pixel at (`x`, `y`)
 
 패치나 수정 요청은 풀 리퀘스트(PR)로 받고 있습니다. 제출하기 전에 문제가 이미 해결되지 않았는지 [Issue Tracker](https://github.com/kitao/pyxel/issues) 페이지에서 확인 부탁드립니다.
 
-제출한 풀 리퀘스트는 [MIT license](https://github.com/kitao/pyxel/blob/master/LICENSE)에 따라 게시하기로 동의한 것으로 간주됩니다.
+제출한 풀 리퀘스트는 [MIT license](https://github.com/kitao/pyxel/blob/master/LICENSE)에 따라 게시하기를 동의한 것으로 간주됩니다.
 
 ## 기타 정보
 
