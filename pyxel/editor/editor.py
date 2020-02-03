@@ -1,5 +1,3 @@
-import os.path
-
 import pyxel
 from pyxel.ui import Widget
 
