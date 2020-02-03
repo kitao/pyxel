@@ -37,12 +37,12 @@ Pyxel es de código abierto y de libre uso. Comencemos a crear juegos retro con 
 ## Características
 
 - Se ejecuta en Windows, Mac y Linux
-- Escritura de código con Python3
+- código con Python3
 - Paleta fija de 16 colores
 - 3 bancos de imágenes de tamaño 256x256
 - 8 tilemaps de tamaño 256x256
 - 4 canales con 64 sonidos configurables
-- 8 músicas que pueden combinar sonidos arbitrarios
+- 8 canciones que pueden combinar sonidos arbitrarios
 - Entradas de teclado, mouse, y gamepad
 - Editor de imagen y sonido
 
@@ -54,7 +54,7 @@ Pyxel es de código abierto y de libre uso. Comencemos a crear juegos retro con 
 
 ### Windows
 
-Despues de instalar [Python3](https://www.python.org/) (versión 3.7 o superior), los siguientes comandos `pip` instalan Pyxel:
+Despues de instalar [Python3](https://www.python.org/) (versión 3.7 o superior), usa los siguientes comandos `pip` que instalaran Pyxel:
 
 ```sh
 pip install -U pyxel
@@ -62,9 +62,9 @@ pip install -U pyxel
 
 ### Mac
 
-Despues de instalar [Python3](https://www.python.org/) (versión 3.7 superior) y [SDL2](https://www.libsdl.org/), instalar Pyxel con el comando `pip`.
+Despues de instalar [Python3](https://www.python.org/) (versión 3.7 superior) y [SDL2](https://www.libsdl.org/), instala Pyxel con el comando `pip`.
 
-Si el gestor de paquetes [Homebrew](https://brew.sh/) esta listo, el siguiente comando instala todos los paquetes necesarios:
+Si utiliza el gestor de paquetes [Homebrew](https://brew.sh/) , el siguiente comando instalara todos los paquetes necesarios:
 
 ```sh
 brew install python3 sdl2 sdl2_image
@@ -87,11 +87,11 @@ sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
 sudo pip3 install -U pyxel
 ```
 
-### Otros entornos
+### Otros entornos Linux
 
-Para instalar Pyxel en un entorno diferente a los anteriores (Linux 32-bit, Raspberry PI, etc.), sigue los pasos descritos debajo para construirlo:
+Para instalar Pyxel en un entorno diferente a los anteriores (Linux 32-bit, Raspberry PI, etc.), sigue los pasos siguientes  para montarlos:
 
-#### Instalar las herramientas y paquetes necesarios
+#### Instalar las herramientas y paquetes necesarios:
 
 - C++ build toolchain (debe incluir los comandos `gcc` y `make`)
 - libsdl2-dev y libsdl2-image-dev
@@ -106,7 +106,7 @@ make -C pyxel/core clean all
 pip3 install .
 ```
 
-### Instalar ejemplos
+### Instalar los ejemplos:
 
 Después de instalar Pyxel, los ejemplos serán copiados al directorio actual con el siguiente comando:
 
@@ -117,15 +117,15 @@ install_pyxel_examples
 Los ejemplos a ser copiados son los siguientes:
 
 - [01_hello_pyxel.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py) - Aplicación simple
-- [02_jump_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py) - Juego de saltos con los archivos de recursos Pyxel
-- [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - Demonstración del API de dibujado
-- [04_sound_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py) - Demonstración del API de sonido
+- [02_jump_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py) - Juego de plataformas con los archivos de recursos Pyxel
+- [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - Demonstración de la API de dibujado
+- [04_sound_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py) - Demonstración de la API de sonido
 - [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - Lista de paleta de colores
 - [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - Juego de click con el mouse
 - [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - Juego de serpiente con música de fondo
-- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - Demostración del API de dibujo de triangulo
+- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - Demostración de la API dibujando triangulos
 
-Los ejemplos pueden ser ejecutados como código Python normal:
+Los ejemplos pueden ser ejecutados como código Python:
 
 **Windows:**
 
@@ -163,9 +163,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-Los argumentos de la función `run` son la función `update` para actualizar cada cuadro y la función `draw` para dibujar la pantalla cuando es necesario.
+Los argumentos de la función `run` son la función `update` para actualizar cada cuadro, y la función `draw` para dibujar la escena cuando es necesario.
 
-En una aplicación actual, es recomendable rodear el código Pyxel dentro de una clase como a continuación:
+En la aplicación actual, es recomendable envolver el código Pyxel dentro de una clase como a continuación:
 
 ```python
 import pyxel
@@ -186,7 +186,7 @@ class App:
 App()
 ```
 
-También es posible escribir código simple utilizando las funciones `show` y `flip` para dibujar gráficos y animaciones simples.
+También se puede escribir código simple utilizando las funciones `show` y `flip` para dibujar gráficos y animaciones simples.
 
 La función `show` muestra la pantalla y espera hasta que la tecla `ESC` es pulsada.
 
@@ -231,9 +231,9 @@ Intercambia la pantalla completa
 
 ### Cómo crear un recurso
 
-El Pyxel Editor adjunto puede crear imágenes y sonidos usados dentro de Pyxel.
+La aplicacion "Pyxel Editor" viene adjunta, puede crear imágenes y sonidos usados dentro de Pyxel.
 
-El Pyxel Editor inicia con el siguiente comando:
+Pyxel Editor se inicia con el siguiente comando:
 
 ```sh
 pyxeleditor [pyxel_resource_file]
@@ -246,11 +246,11 @@ Luego de iniciar el Pyxel Editor, el archivo puede ser cambiado arrastrando y so
 
 El archivo de recurso creado puede ser cargado con la función `load`.
 
-El Pyxel Editor tiene las siguientes modalidades de edición.
+Pyxel Editor tiene las siguientes modalidades de edición.
 
 **Editor de Imágenes:**
 
-La modalidad para editar el banco de imágenes.
+El modulo para editar el banco de imágenes.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
 
@@ -258,19 +258,19 @@ Arrastrando y soltando un archivo png en la pantalla del Editor de Imágenes, la
 
 **Editor de Tilemap:**
 
-La modalidad para editar tilemaps en el que las imágenes del banco de imágenes son organizadas en un patrón de tiles.
+El modulo para editar tilemaps en el que las imágenes del banco de imágenes son organizadas en un patrón de tiles.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.gif">
 
 **Editor de Sonido:**
 
-La modalidad para editar sonidos.
+El modulo para editar sonidos.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.gif">
 
 **Editor de Música:**
 
-La modalidad para editar música en la que los sonidos son organizados en orden de reproducción.
+El modulo para editar música en la que los sonidos son organizados en orden de reproducción.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
 
