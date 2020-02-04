@@ -78,17 +78,9 @@ static double ColorDifference(uint8_t r1,
                               uint8_t r2,
                               uint8_t g2,
                               uint8_t b2) {
-  double x1 = 0.412453 * r1 + 0.357580 * g1 + 0.189423 * b1;
-  double y1 = 0.212671 * r1 + 0.715160 * g1 + 0.072169 * b1;
-  double z1 = 0.019334 * r1 + 0.119193 * g1 + 0.950227 * b1;
-
-  double x2 = 0.412453 * r2 + 0.357580 * g2 + 0.189423 * b2;
-  double y2 = 0.212671 * r2 + 0.715160 * g2 + 0.072169 * b2;
-  double z2 = 0.019334 * r2 + 0.119193 * g2 + 0.950227 * b2;
-
-  double dx = x1 - x2;
-  double dy = y1 - y2;
-  double dz = z1 - z2;
+  double dx = (r1 - r2) * 0.30;
+  double dy = (g1 - g2) * 0.59;
+  double dz = (b1 - b2) * 0.11;
 
   return dx * dx + dy * dy + dz * dz;
 }
