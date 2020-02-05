@@ -75,9 +75,8 @@ void Recorder::SaveScreenCapture() {
 
   uint32_t* dst_data = new uint32_t[scaled_width_ * scaled_height_];
   GifWriter gif;
-  GifBegin(&gif, (GetBaseName() + ".gif").c_str(),
-           width_ * SCREEN_CAPTURE_SCALE, height_ * SCREEN_CAPTURE_SCALE,
-           delay_time_);
+  GifBegin(&gif, (GetBaseName() + ".gif").c_str(), scaled_width_,
+           scaled_height_, delay_time_);
 
   for (int32_t frame = 0; frame < frame_count_; frame++) {
     int32_t** src_data =
