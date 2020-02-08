@@ -375,7 +375,7 @@ pyxelpackager python_file
 用`col`颜色清空画面。
 
 - `pget(x, y)`<br>
-Get the color of the pixel at (`x`, `y`)
+获取(`x`, `y`)处的像素颜色。
 
 - `pset(x, y, col)`<br>
 用`col`颜色在(`x`, `y`)处绘制一个像素点。
