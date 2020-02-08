@@ -375,7 +375,7 @@ Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수�
 화면을 `col` 색으로 지웁니다.
 
 - `pget(x, y)`<br>
-Get the color of the pixel at (`x`, `y`)
+(`x`, `y`) 좌표의 색상 값을 가져옵니다.
 
 - `pset(x, y, col)`<br>
 `col` 색을 사용해 (`x`, `y`) 좌표에 픽셀을 찍습니다.
