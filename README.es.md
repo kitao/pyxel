@@ -373,7 +373,7 @@ Remplaza el color `col1` con `col2` en el dibujado. `pal()` para reiniciar a la 
 Limpia la pantalla con el color `col`
 
 - `pget(x, y)`<br>
-Get the color of the pixel at (`x`, `y`)
+Obtiene el color del pixel en (`x`, `y`)
 
 - `pset(x, y, col)`<br>
 Dibuja un pixel de color `col` en (`x`, `y`)
