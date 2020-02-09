@@ -107,7 +107,7 @@ void Audio::PlayMusic(int32_t music_index, bool loop) {
 
 void Audio::StopPlaying(int32_t channel) {
   if (channel != -1 && (channel < 0 || channel >= MUSIC_CHANNEL_COUNT)) {
-    PYXEL_ERROR("invalide channel");
+    PYXEL_ERROR("invalid channel");
   }
 
   if (channel == -1) {
