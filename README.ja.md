@@ -50,6 +50,8 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 ### カラーパレット
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
+<br><br>
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_palette.png">
 
 ## インストール方法
 

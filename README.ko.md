@@ -49,6 +49,8 @@ Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Py
 ### 색상 팔레트
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
+<br><br>
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_palette.png">
 
 ## 설치 방법
 

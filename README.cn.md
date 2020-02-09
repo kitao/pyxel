@@ -49,6 +49,8 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 ### 调色板
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
+<br><br>
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_palette.png">
 
 ## 如何安装
 
