@@ -35,8 +35,8 @@ TEXT_DEATH = ["GAME OVER", "(Q)UIT", "(R)ESTART"]
 COL_TEXT_DEATH = 0
 HEIGHT_DEATH = 5
 
-WIDTH = 40
-HEIGHT = 50
+WIDTH = 50
+HEIGHT = 60
 
 HEIGHT_SCORE = pyxel.FONT_HEIGHT
 COL_SCORE = 6
@@ -61,21 +61,23 @@ class Snake:
     def __init__(self):
         """Initiate pyxel, set up initial game variables, and run."""
 
-        pyxel.init(WIDTH, HEIGHT, caption="Snake!", scale=8, fps=20)
+        pyxel.init(WIDTH, HEIGHT, caption="Snake G!", scale=9, fps=13)
         define_sound_and_music()
         self.reset()
         pyxel.run(self.update, self.draw)
 
     def reset(self):
         """Initiate key variables (direction, snake, apple, score, etc.)"""
-
+        self.apple_list=[]
+        self.apple_limit=10
+        self.level=1
         self.direction = RIGHT
         self.snake = deque()
         self.snake.append(START)
         self.death = False
         self.score = 0
         self.generate_apple()
-
+        
         pyxel.playm(0, loop=True)
 
     ##############
@@ -123,23 +125,32 @@ class Snake:
 
     def check_apple(self):
         """Check whether the snake is on an apple."""
-
-        if self.snake[0] == self.apple:
-            self.score += 1
-            self.snake.append(self.popped_point)
-            self.generate_apple()
-
-            pyxel.play(0, 0)
+        apple_to_remove=None
+        for apple in self.apple_list:
+            if self.snake[0] == apple:
+                self.score += 1
+                self.snake.append(self.popped_point)                
+                pyxel.play(0, 0)
+                apple_to_remove=apple
+                # Increase difficulty increasing apples
+                self.level=self.level+1
+                self.apple_limit=self.apple_limit+int(self.level*0.7)
+                break
+        if apple_to_remove!=None:
+            self.apple_list.remove(apple_to_remove)
+        self.generate_apple()
 
     def generate_apple(self):
         """Generate an apple randomly."""
-        snake_pixels = set(self.snake)
-
-        self.apple = self.snake[0]
-        while self.apple in snake_pixels:
-            x = randint(0, WIDTH - 1)
-            y = randint(HEIGHT_SCORE + 1, HEIGHT - 1)
-            self.apple = Point(x, y)
+        if len(self.apple_list) < self.apple_limit:
+            snake_pixels = set(self.snake)            
+            apple = self.snake[0]
+            # GG Generate an apple OUTSIDE the snake figure
+            while apple in snake_pixels:
+                x = randint(0, WIDTH - 1)
+                y = randint(HEIGHT_SCORE + 1, HEIGHT - 1)
+                apple = Point(x, y)
+            self.apple_list.append(apple)
 
     def check_death(self):
         """Check whether the snake has died (out of bounds or doubled up.)"""
@@ -168,8 +179,8 @@ class Snake:
             pyxel.cls(col=COL_BACKGROUND)
             self.draw_snake()
             self.draw_score()
-            pyxel.pix(self.apple.x, self.apple.y, col=COL_APPLE)
-
+            for apple in self.apple_list:
+                pyxel.pix(apple.x, apple.y, col=COL_APPLE)
         else:
             self.draw_death()
 
@@ -186,7 +197,7 @@ class Snake:
     def draw_score(self):
         """Draw the score at the top."""
 
-        score = "{:04}".format(self.score)
+        score = "{:04} Lev {:03}".format(self.score, self.level)
         pyxel.rect(0, 0, WIDTH, HEIGHT_SCORE, COL_SCORE_BACKGROUND)
         pyxel.text(1, 1, score, COL_SCORE)
 
