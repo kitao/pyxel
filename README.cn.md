@@ -571,6 +571,5 @@ Pyxel开源在[MIT license](http://en.wikipedia.org/wiki/MIT_License)下，你�
 Pyxel使用了以下库：
 
 - [SDL2](https://www.libsdl.org/)
-- [gif-h](https://github.com/ginsweater/gif-h)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
 - [PyInstaller](https://www.pyinstaller.org/)
