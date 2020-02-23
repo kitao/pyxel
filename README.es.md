@@ -570,6 +570,5 @@ Pyxel esta bajo [licencia MIT](http://en.wikipedia.org/wiki/MIT_License). Puede 
 Pyxel usa las siguientes librerías:
 
 - [SDL2](https://www.libsdl.org/)
-- [gif-h](https://github.com/ginsweater/gif-h)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
 - [PyInstaller](https://www.pyinstaller.org/)
