@@ -15,6 +15,7 @@
 - Added pget API and renamed pix to pset
 - Changed the palette colors
 - Added new Pyxel palette file
+- Changed the animated GIF making method
 
 ## 1.2.10
 - Added the tri and trib APIs
