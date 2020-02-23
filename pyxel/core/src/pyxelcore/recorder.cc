@@ -1,6 +1,6 @@
 #include "pyxelcore/recorder.h"
 
-#include "gif-h/gif.h"
+#include "pyxelcore/gif_writer.h"
 #include "pyxelcore/image.h"
 
 namespace pyxelcore {
@@ -11,8 +11,6 @@ Recorder::Recorder(int32_t width,
                    int32_t fps) {
   width_ = width;
   height_ = height;
-  scaled_width_ = width * SCREEN_CAPTURE_SCALE;
-  scaled_height_ = height * SCREEN_CAPTURE_SCALE;
   palette_color_ = palette_color;
   delay_time_ = static_cast<int32_t>((100.0f / fps) + 0.5f);
   cur_frame_ = -1;
@@ -36,25 +34,24 @@ void Recorder::SaveScreenshot() {
   }
 
   SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
-      0, scaled_width_, scaled_height_, 32, SDL_PIXELFORMAT_RGB888);
+      0, width_ * SCREEN_CAPTURE_SCALE, height_ * SCREEN_CAPTURE_SCALE, 32,
+      SDL_PIXELFORMAT_RGB888);
 
   SDL_LockSurface(surface);
 
   int32_t** src_data = captured_images_[cur_frame_]->Data();
   int32_t* dst_data = reinterpret_cast<int32_t*>(surface->pixels);
 
-  for (int32_t i = 0; i < height_; i++) {
-    for (int32_t j = 0; j < width_; j++) {
-      int32_t color = palette_color_[src_data[i][j]];
+  int32_t scaled_width = width_ * SCREEN_CAPTURE_SCALE;
+  int32_t scaled_height = height_ * SCREEN_CAPTURE_SCALE;
 
-      for (int32_t y = 0; y < SCREEN_CAPTURE_SCALE; y++) {
-        int32_t index = scaled_width_ * (i * SCREEN_CAPTURE_SCALE + y) +
-                        j * SCREEN_CAPTURE_SCALE;
+  for (int32_t i = 0; i < scaled_height; i++) {
+    for (int32_t j = 0; j < scaled_width; j++) {
+      int32_t index = scaled_width * i + j;
+      int32_t color =
+          src_data[i / SCREEN_CAPTURE_SCALE][j / SCREEN_CAPTURE_SCALE];
 
-        for (int32_t x = 0; x < SCREEN_CAPTURE_SCALE; x++) {
-          dst_data[index + x] = color;
-        }
-      }
+      dst_data[index] = palette_color_[color];
     }
   }
 
@@ -73,37 +70,17 @@ void Recorder::SaveScreenCapture() {
     return;
   }
 
-  uint32_t* dst_data = new uint32_t[scaled_width_ * scaled_height_];
-  GifWriter gif;
-  GifBegin(&gif, (GetBaseName() + ".gif").c_str(), scaled_width_,
-           scaled_height_, delay_time_);
+  GifWriter* gif_writer = new GifWriter(GetBaseName() + ".gif", width_, height_,
+                                        palette_color_, delay_time_);
 
   for (int32_t frame = 0; frame < frame_count_; frame++) {
-    int32_t** src_data =
-        captured_images_[(start_frame_ + frame) % SCREEN_CAPTURE_COUNT]->Data();
-
-    for (int32_t i = 0; i < height_; i++) {
-      for (int32_t j = 0; j < width_; j++) {
-        int32_t color = palette_color_[src_data[i][j]];
-
-        for (int32_t y = 0; y < SCREEN_CAPTURE_SCALE; y++) {
-          int32_t index = scaled_width_ * (i * SCREEN_CAPTURE_SCALE + y) +
-                          j * SCREEN_CAPTURE_SCALE;
-
-          for (int32_t x = 0; x < SCREEN_CAPTURE_SCALE; x++) {
-            dst_data[index + x] =
-                ((color & 0xff) << 16) + (color & 0xff00) + (color >> 16);
-          }
-        }
-      }
-    }
-
-    GifWriteFrame(&gif, reinterpret_cast<uint8_t*>(dst_data), scaled_width_,
-                  scaled_height_, delay_time_);
+    gif_writer->AddFrame(
+        captured_images_[(start_frame_ + frame) % SCREEN_CAPTURE_COUNT]);
   }
 
-  GifEnd(&gif);
-  delete[] dst_data;
+  gif_writer->EndFrame();
+
+  delete gif_writer;
 
   ResetScreenCapture();
 }
