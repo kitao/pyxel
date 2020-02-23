@@ -24,8 +24,6 @@ class Recorder {
  private:
   int32_t width_;
   int32_t height_;
-  int32_t scaled_width_;
-  int32_t scaled_height_;
   PaletteColor palette_color_;
   int32_t delay_time_;
   int32_t cur_frame_;
