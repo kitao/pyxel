@@ -4,9 +4,9 @@
 
 namespace pyxelcore {
 
-class GitBit {
+class GifBitStream {
  public:
-  GitBit(std::ofstream* ofs) {
+  GifBitStream(std::ofstream* ofs) {
     ofs_ = ofs;
     bit_index_ = 0;
     bit_data_ = 0;
@@ -193,75 +193,73 @@ void GifWriter::AddFrame(const Image* image) {
 
   // LZW Minimum Code Size (1byte)
   const int MIN_CODE_SIZE = 5;
-  const uint32_t CLEAR_CODE = 1 << MIN_CODE_SIZE;
-
   ofs_.put(MIN_CODE_SIZE);
 
   struct GifLzwNode {
     uint16_t next[256];
   };
 
-  GifLzwNode* codetree = new GifLzwNode[4096];
-  memset(codetree, 0, sizeof(GifLzwNode) * 4096);
+  const int32_t MAX_CODE_COUNT = 4096;
+  GifLzwNode* code_tree = new GifLzwNode[MAX_CODE_COUNT];
+  memset(code_tree, 0, sizeof(GifLzwNode) * MAX_CODE_COUNT);
 
-  int32_t cur_code = -1;
-  uint32_t codeSize = MIN_CODE_SIZE + 1;
-  uint32_t maxCode = CLEAR_CODE + 1;
+  int32_t clear_code = 1 << MIN_CODE_SIZE;
+  int32_t code_size = MIN_CODE_SIZE + 1;
+  int32_t max_code_index = clear_code + 1;
+  int32_t code = -1;
 
-  GitBit bit(&ofs_);
-
-  bit.WriteCode(CLEAR_CODE, codeSize);
-
+  GifBitStream bs(&ofs_);
   int32_t** data = image->Data();
 
-  for (uint32_t yy = 0; yy < scaled_height; ++yy) {
-    for (uint32_t xx = 0; xx < scaled_width; ++xx) {
-      int32_t x = xx / SCREEN_CAPTURE_SCALE;
-      int32_t y = yy / SCREEN_CAPTURE_SCALE;
+  bs.WriteCode(clear_code, code_size);
 
-      uint8_t cur_value = data[y][x];
+  for (int32_t i = 0; i < scaled_height; i++) {
+    for (int32_t j = 0; j < scaled_width; j++) {
+      int32_t value = data[i / SCREEN_CAPTURE_SCALE][j / SCREEN_CAPTURE_SCALE];
 
-      if (cur_code < 0) {
-        cur_code = cur_value;
-      } else if (codetree[cur_code].next[cur_value]) {
-        cur_code = codetree[cur_code].next[cur_value];
+      if (code < 0) {
+        code = value;
+      } else if (code_tree[code].next[value]) {
+        code = code_tree[code].next[value];
       } else {
-        bit.WriteCode(cur_code, codeSize);
+        bs.WriteCode(code, code_size);
 
-        codetree[cur_code].next[cur_value] = ++maxCode;
+        max_code_index++;
+        code_tree[code].next[value] = max_code_index;
 
-        if (maxCode >= (1ul << codeSize)) {
-          codeSize++;
-        }
-        if (maxCode == 4095) {
-          bit.WriteCode(CLEAR_CODE, codeSize);  // clear tree
-
-          memset(codetree, 0, sizeof(GifLzwNode) * 4096);
-          codeSize = MIN_CODE_SIZE + 1;
-          maxCode = CLEAR_CODE + 1;
+        if (max_code_index >= (1ul << code_size)) {
+          code_size++;
         }
 
-        cur_code = cur_value;
+        if (max_code_index == MAX_CODE_COUNT - 1) {
+          bs.WriteCode(clear_code, code_size);
+
+          memset(code_tree, 0, sizeof(GifLzwNode) * MAX_CODE_COUNT);
+          code_size = MIN_CODE_SIZE + 1;
+          max_code_index = clear_code + 1;
+        }
+
+        code = value;
       }
     }
   }
 
-  bit.WriteCode(cur_code, codeSize);
-  bit.WriteCode(CLEAR_CODE, codeSize);
-  bit.WriteCode(CLEAR_CODE + 1, MIN_CODE_SIZE + 1);
+  bs.WriteCode(code, code_size);
+  bs.WriteCode(clear_code, code_size);
+  bs.WriteCode(clear_code + 1, MIN_CODE_SIZE + 1);
 
-  while (bit.BitIndex() > 0) {
-    bit.WriteBit(0);
+  while (bs.BitIndex() > 0) {
+    bs.WriteBit(0);
   }
 
-  if (bit.ChunkIndex() > 0) {
-    bit.WriteChunk();
+  if (bs.ChunkIndex() > 0) {
+    bs.WriteChunk();
   }
 
   // Block Terminator (1byte)
   ofs_.put(0);
 
-  delete[] codetree;
+  delete[] code_tree;
 }
 
 void GifWriter::EndFrame() {
