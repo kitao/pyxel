@@ -70,8 +70,9 @@ void Recorder::SaveScreenCapture() {
     return;
   }
 
-  GifWriter* gif_writer = new GifWriter(GetBaseName() + ".gif", width_, height_,
-                                        palette_color_, delay_time_);
+  std::string filename = GetBaseName() + ".gif";
+  GifWriter* gif_writer =
+      new GifWriter(filename, width_, height_, palette_color_, delay_time_);
 
   for (int32_t frame = 0; frame < frame_count_; frame++) {
     gif_writer->AddFrame(
@@ -79,8 +80,11 @@ void Recorder::SaveScreenCapture() {
   }
 
   gif_writer->EndFrame();
-
   delete gif_writer;
+
+#ifdef GIFSICLE
+  std::system(("gifsicle -O3 " + filename + " -o " + filename).c_str());
+#endif
 
   ResetScreenCapture();
 }
