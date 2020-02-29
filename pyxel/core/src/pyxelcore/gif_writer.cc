@@ -66,6 +66,7 @@ GifWriter::GifWriter(const std::string& filename,
   width_ = width;
   height_ = height;
   delay_time_ = delay_time;
+  last_frame_data_ = new int32_t[width * height]();
 
   /*
     GIF Header
@@ -89,7 +90,7 @@ GifWriter::GifWriter(const std::string& filename,
   // Color Resolution (3bits)
   // Sort Flag (1bit)
   // Size of Global Color Table (3bits)
-  ofs_.put(0xb3);
+  ofs_.put(0xc4);
 
   // Background Color Index (1byte)
   ofs_.put(0);
@@ -103,6 +104,12 @@ GifWriter::GifWriter(const std::string& filename,
     ofs_.put((color >> 16) & 0xff);
     ofs_.put((color >> 8) & 0xff);
     ofs_.put(color & 0xff);
+  }
+
+  for (int i = 0; i < 16; i++) {
+    ofs_.put(0);
+    ofs_.put(0);
+    ofs_.put(0);
   }
 
   /*
@@ -129,6 +136,10 @@ GifWriter::GifWriter(const std::string& filename,
   ofs_.put(0);
 }
 
+GifWriter::~GifWriter() {
+  delete[] last_frame_data_;
+}
+
 void GifWriter::AddFrame(const Image* image) {
   /*
     Graphics Control Extension
@@ -147,14 +158,14 @@ void GifWriter::AddFrame(const Image* image) {
   // Disposal Method (3bits)
   // User Input Flag (1bit)
   // Transparent Color Flag (1bit)
-  ofs_.put(0 /*0x05*/);
+  ofs_.put(0x05);
 
   // Delay Time (2bytes)
   ofs_.put(delay_time_ & 0xff);
   ofs_.put((delay_time_ >> 8) & 0xff);
 
   // Transparent Color Index (1byte)
-  ofs_.put(0 /*16*/);
+  ofs_.put(TRANSPARENT_COLOR);
 
   // Block Terminator (1byte)
   ofs_.put(0);
@@ -189,7 +200,7 @@ void GifWriter::AddFrame(const Image* image) {
   // Sort Flag (1bit)
   // Reserved (2bits)
   // Size of Local Color Table (3bits)
-  ofs_.put(0);
+  ofs_.put(0x00);
 
   // LZW Minimum Code Size (1byte)
   const int MIN_CODE_SIZE = 5;
@@ -214,8 +225,15 @@ void GifWriter::AddFrame(const Image* image) {
   bs.WriteCode(clear_code, code_size);
 
   for (int32_t i = 0; i < scaled_height; i++) {
+    int32_t y = i / SCREEN_CAPTURE_SCALE;
+
     for (int32_t j = 0; j < scaled_width; j++) {
-      int32_t value = data[i / SCREEN_CAPTURE_SCALE][j / SCREEN_CAPTURE_SCALE];
+      int32_t x = j / SCREEN_CAPTURE_SCALE;
+      int32_t value = data[y][x];
+
+      if (value == last_frame_data_[width_ * y + x]) {
+        value = TRANSPARENT_COLOR;
+      }
 
       if (code < 0) {
         code = value;
@@ -260,6 +278,9 @@ void GifWriter::AddFrame(const Image* image) {
   ofs_.put(0);
 
   delete[] code_tree;
+
+  memcpy(last_frame_data_, image->Data()[0],
+         sizeof(int32_t) * width_ * height_);
 }
 
 void GifWriter::EndFrame() {
