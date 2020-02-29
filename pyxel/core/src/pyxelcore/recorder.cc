@@ -82,10 +82,6 @@ void Recorder::SaveScreenCapture() {
   gif_writer->EndFrame();
   delete gif_writer;
 
-#ifdef GIFSICLE
-  std::system(("gifsicle -O3 " + filename + " -o " + filename).c_str());
-#endif
-
   ResetScreenCapture();
 }
 
