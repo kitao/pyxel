@@ -2,7 +2,6 @@
 #define PYXELCORE_CONSTANTS_H_
 
 #define NEW_PALETTE
-#define GIFSICLE
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
