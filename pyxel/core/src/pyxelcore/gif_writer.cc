@@ -66,7 +66,11 @@ GifWriter::GifWriter(const std::string& filename,
   width_ = width;
   height_ = height;
   delay_time_ = delay_time;
-  last_frame_data_ = new int32_t[width * height]();
+  last_frame_data_ = new int32_t[width * height];
+
+  for (int32_t i = 0; i < width * height; i++) {
+    last_frame_data_[i] = TRANSPARENT_COLOR;
+  }
 
   /*
     GIF Header
@@ -93,7 +97,7 @@ GifWriter::GifWriter(const std::string& filename,
   ofs_.put(0xc4);
 
   // Background Color Index (1byte)
-  ofs_.put(0);
+  ofs_.put(TRANSPARENT_COLOR);
 
   // Pixel Aspect Ratio (1byte)
   ofs_.put(0);
