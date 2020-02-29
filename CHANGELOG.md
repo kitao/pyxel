@@ -1,7 +1,7 @@
 # Change Log
 
 ## 1.3.1
-- Changed to use gifsicle for GIF compression if possible
+- Improved the animated GIF making method
 
 ## 1.3.0
 - Fixed the version check of the resource file
