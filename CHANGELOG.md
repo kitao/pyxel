@@ -2,6 +2,7 @@
 
 ## 1.3.1
 - Improved the animated GIF making method
+- Added the README in Portguese
 
 ## 1.3.0
 - Fixed the version check of the resource file
