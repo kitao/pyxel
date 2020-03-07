@@ -33,7 +33,8 @@ def _load_library():
 
     if os.path.splitext(lib_path)[1] == ".dll":
         dll_dir = os.path.dirname(lib_path)
-        os.add_dll_directory(dll_dir)
+        if hasattr(os, "add_dll_directory"):  # for Python 3.8 or later
+            os.add_dll_directory(dll_dir)
         os.environ["PATH"] = dll_dir + os.pathsep + os.environ["PATH"]
 
     return cdll.LoadLibrary(lib_path)
