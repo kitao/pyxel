@@ -3,6 +3,7 @@
 ## 1.3.1
 - Improved the animated GIF making method
 - Added the README in Portguese
+- Fixed to work with Python 3.7 on Windows
 
 ## 1.3.0
 - Fixed the version check of the resource file
