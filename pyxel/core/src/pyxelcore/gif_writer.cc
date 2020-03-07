@@ -22,10 +22,10 @@ class GifBitStream {
 
     if (bit_index_ > 7) {
       chunk_data_[chunk_index_] = bit_data_;
+      chunk_index_++;
 
       bit_index_ = 0;
       bit_data_ = 0;
-      chunk_index_++;
     }
   }
 
@@ -62,7 +62,7 @@ GifWriter::GifWriter(const std::string& filename,
                      int32_t height,
                      const PaletteColor& palette_color,
                      int32_t delay_time) {
-  ofs_ = std::ofstream(filename);
+  ofs_ = std::ofstream(filename, std::ios_base::binary);
   width_ = width;
   height_ = height;
   delay_time_ = delay_time;
