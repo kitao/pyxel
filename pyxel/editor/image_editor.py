@@ -117,13 +117,14 @@ class ImageEditor(Editor):
     def __on_update(self):
         self.check_tool_button_shortcuts()
 
-        for btn in self._COLOR_BUTTONS:
-            if pyxel.btnp(btn):
-                col = btn - pyxel.KEY_1
-                if pyxel.btn(pyxel.KEY_SHIFT):
-                    col += 8
-                self._color_picker.value = col
-                break
+        if not pyxel.btn(pyxel.KEY_ALT):
+            for btn in self._COLOR_BUTTONS:
+                if pyxel.btnp(btn):
+                    col = btn - pyxel.KEY_1
+                    if pyxel.btn(pyxel.KEY_SHIFT):
+                        col += 8
+                    self._color_picker.value = col
+                    break
 
     def __on_draw(self):
         self.draw_panel(11, 156, 136, 17)
