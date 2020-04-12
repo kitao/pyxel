@@ -3,7 +3,7 @@
 # Advance Preparation
 #
 # Mac:
-#   brew install python3 sdl2 sdl2_image clang-format
+#   brew install python3 sdl2 sdl2_image clang-format gifsicle
 #   (reboot terminal)
 #   pip3 install -U black flake8 isort mypy twine
 #
