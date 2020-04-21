@@ -12,7 +12,7 @@ Recorder::Recorder(int32_t width,
   width_ = width;
   height_ = height;
   palette_color_ = palette_color;
-  delay_time_ = static_cast<int32_t>((100.0f / fps) + 0.5f);
+  fps_ = fps;
   cur_frame_ = -1;
   start_frame_ = 0;
   frame_count_ = 0;
@@ -72,11 +72,13 @@ void Recorder::SaveScreenCapture() {
 
   std::string filename = GetBaseName() + ".gif";
   GifWriter* gif_writer =
-      new GifWriter(filename, width_, height_, palette_color_, delay_time_);
+      new GifWriter(filename, width_, height_, palette_color_);
 
-  for (int32_t frame = 0; frame < frame_count_; frame++) {
-    gif_writer->AddFrame(
-        captured_images_[(start_frame_ + frame) % SCREEN_CAPTURE_COUNT]);
+  for (int32_t i = 0; i < frame_count_; i++) {
+    int32_t index = (start_frame_ + i) % SCREEN_CAPTURE_COUNT;
+
+    gif_writer->AddFrame(captured_images_[index],
+                         captured_frames_[index] * 100.0f / fps_ + 0.5f);
   }
 
   gif_writer->EndFrame();
@@ -85,11 +87,12 @@ void Recorder::SaveScreenCapture() {
   ResetScreenCapture();
 }
 
-void Recorder::Update(const Image* screen_image) {
+void Recorder::Update(const Image* screen_image, int32_t update_frame_count) {
   cur_frame_ = (cur_frame_ + 1) % SCREEN_CAPTURE_COUNT;
   frame_count_++;
   captured_images_[cur_frame_]->CopyImage(0, 0, screen_image, 0, 0, width_,
                                           height_);
+  captured_frames_[cur_frame_] = update_frame_count;
 
   if (frame_count_ > SCREEN_CAPTURE_COUNT) {
     start_frame_ = (start_frame_ + 1) % SCREEN_CAPTURE_COUNT;
