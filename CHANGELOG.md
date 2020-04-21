@@ -3,6 +3,7 @@
 ## 1.3.2
 - Updated the installation instructions of the READMEs
 - Added the link to the Discord server to the READMEs
+- Added variable frame rate support for animated GIF
 
 ## 1.3.1
 - Improved the animated GIF making method
