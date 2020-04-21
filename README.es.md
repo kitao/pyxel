@@ -56,7 +56,13 @@ Pyxel es de código abierto y de libre uso. Comencemos a crear juegos retro con 
 
 ### Windows
 
-Despues de instalar [Python3](https://www.python.org/) (versión 3.7 o superior), usa los siguientes comandos `pip` que instalaran Pyxel:
+First, install [Python3](https://www.python.org/) (version 3.7 or higher).
+
+When you install Python with the official installer, don't forget to **add Python to PATH** by checking the button below:
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/python_installer.png">
+
+Next, install Pyxel with the following `pip` command from the command prompt:
 
 ```sh
 pip install -U pyxel
@@ -72,7 +78,7 @@ Si utiliza el gestor de paquetes [Homebrew](https://brew.sh/) , el siguiente com
 brew install python3 sdl2 sdl2_image
 ```
 
-Luego de reiniciar la terminal,
+After **restarting the terminal**,
 
 ```sh
 pip3 install -U pyxel
