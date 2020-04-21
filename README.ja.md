@@ -572,6 +572,7 @@ e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - [Wiki](https://github.com/kitao/pyxel/wiki)
 - [Subreddit](https://www.reddit.com/r/pyxel/)
+- [Discord server](https://discord.gg/FC7kUZJ)
 
 ## ライセンス
 
