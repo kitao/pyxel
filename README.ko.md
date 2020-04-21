@@ -56,7 +56,13 @@ Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Py
 
 ### Windows
 
-[Python3](https://www.python.org/) (버전 3.7 이상) 을 설치한 후, 아래의 `pip` 명령어를 통해 Pyxel을 설치합니다.
+First, install [Python3](https://www.python.org/) (version 3.7 or higher).
+
+When you install Python with the official installer, don't forget to **add Python to PATH** by checking the button below:
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/python_installer.png">
+
+Next, install Pyxel with the following `pip` command from the command prompt:
 
 ```sh
 pip install -U pyxel
@@ -72,7 +78,7 @@ pip install -U pyxel
 brew install python3 sdl2 sdl2_image
 ```
 
-터미널 재시작 후, 아래 명령어를 입력합니다.
+After **restarting the terminal**,
 
 ```sh
 pip3 install -U pyxel

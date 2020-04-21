@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.2
+- Updated the installation instructions of the READMEs
+
 ## 1.3.1
 - Improved the animated GIF making method
 - Added the README in Portguese

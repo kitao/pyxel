@@ -56,7 +56,13 @@ Pyxel é open source e livre para utilização. Vamos começar fazendo um jogo r
 
 ### Windows
 
-Após instalar o [Python3](https://www.python.org/) (versão 3.7 ou superior), o seguinte comando `pip` instala o Pyxel:
+First, install [Python3](https://www.python.org/) (version 3.7 or higher).
+
+When you install Python with the official installer, don't forget to **add Python to PATH** by checking the button below:
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/python_installer.png">
+
+Next, install Pyxel with the following `pip` command from the command prompt:
 
 ```sh
 pip install -U pyxel
@@ -72,7 +78,7 @@ Se o gerenciador de pacotes [Homebrew](https://brew.sh/) estiver instalado, o se
 brew install python3 sdl2 sdl2_image
 ```
 
-Após reiniciar o terminal,
+After **restarting the terminal**,
 
 ```sh
 pip3 install -U pyxel
@@ -524,7 +530,7 @@ Lista de som(0-63) a tocar no canal 2. Se uma lista vazia for definida, o canal 
 Lista de som(0-63) a tocar no canal 3. Se uma lista vazia for definida, o canal não será usado para reprodução
 
 - `set(ch0, ch1, ch2, ch3)`<br>
-Define a lista de som(0-63) de todos os canais. Se uma lista vazia for definida, o canal não será usado para reprodução<br> 
+Define a lista de som(0-63) de todos os canais. Se uma lista vazia for definida, o canal não será usado para reprodução<br>
 e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 - `set_ch0(data)`<br>
