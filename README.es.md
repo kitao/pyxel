@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_logo_152x64.png">
+# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/pyxel_logo_152x64.png">
 
 [ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt.md) ]
 
@@ -60,7 +60,7 @@ First, install [Python3](https://www.python.org/) (version 3.7 or higher).
 
 When you install Python with the official installer, **add Python to PATH** by checking the button below:
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/python_installer.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/python_installer.png">
 
 Next, install Pyxel with the following `pip` command from the command prompt:
 
@@ -349,6 +349,9 @@ Lee el archivo de recurso (.pyxres) desde el directorio donde se ejecuta el scri
 ### Entrada
 - `mouse_x`, `mouse_y`<br>
 La posición actual del puntero del mouse
+
+- `mouse_wheel`<br>
+The current value of the mouse wheel
 
 - `btn(key)`<br>
 Devuelve `True` si `key` es presionada, sino devuelve `False` ([lista de definición de teclas](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
