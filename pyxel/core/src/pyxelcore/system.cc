@@ -93,7 +93,7 @@ void System::Run(void (*update)(), void (*draw)()) {
   next_update_time_ = SDL_GetTicks() + one_frame_time_;
 
   UpdateFrame(update);
-  DrawFrame(draw);
+  DrawFrame(draw, 1);
 
   while (true) {
     double sleep_time = WaitForUpdateTime();
@@ -120,7 +120,7 @@ void System::Run(void (*update)(), void (*draw)()) {
       UpdateFrame(update);
     }
 
-    DrawFrame(draw);
+    DrawFrame(draw, update_frame_count);
   }
 
   delete this;
@@ -140,7 +140,7 @@ void System::FlipScreen() {
 
   frame_count_++;
   UpdateFrame(nullptr);
-  DrawFrame(nullptr);
+  DrawFrame(nullptr, 1);
 }
 
 void System::ShowScreen() {
@@ -213,7 +213,7 @@ void System::CheckSpecialInput() {
   }
 }
 
-void System::DrawFrame(void (*draw)()) {
+void System::DrawFrame(void (*draw)(), int32_t update_frame_count) {
   draw_profiler_.Start();
 
   if (draw) {
@@ -224,7 +224,7 @@ void System::DrawFrame(void (*draw)()) {
   DrawMouseCursor();
 
   window_->Render(graphics_->ScreenImage()->Data());
-  recorder_->Update(graphics_->ScreenImage());
+  recorder_->Update(graphics_->ScreenImage(), update_frame_count);
 
   draw_profiler_.End();
 }
