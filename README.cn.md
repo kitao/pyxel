@@ -569,6 +569,7 @@ effect（音效）列表(0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
 
 - [Wiki](https://github.com/kitao/pyxel/wiki)
 - [Subreddit](https://www.reddit.com/r/pyxel/)
+- [Discord server](https://discord.gg/FC7kUZJ)
 
 ## 许可证
 

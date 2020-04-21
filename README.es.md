@@ -568,6 +568,7 @@ Los pull request enviados se consideran acordados publicarse bajo [licencia MIT]
 
 - [Wiki](https://github.com/kitao/pyxel/wiki)
 - [Subreddit](https://www.reddit.com/r/pyxel/)
+- [Discord server](https://discord.gg/FC7kUZJ)
 
 ## Licencia
 
