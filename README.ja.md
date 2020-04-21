@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_logo_152x64.png">
+# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/pyxel_logo_152x64.png">
 
 [ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt.md) ]
 
@@ -61,7 +61,7 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 公式のPythonインストーラーを使用する場合は、次のボタンをチェックして、**Pythonをパスに追加**してください。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/python_installer.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/python_installer.png">
 
 続いて、コマンドプロンプトから、以下の`pip`コマンドでPyxelをインストールします。
 
@@ -353,6 +353,9 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 ### 入力
 - `mouse_x`, `mouse_y`<br>
 現在のマウスカーソル座標
+
+- `mouse_wheel`<br>
+現在のマウスホイールの値
 
 - `btn(key)`<br>
 `key`が押されていたら`True`、押されていなければ`False`を返す ([キー定義一覧](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))

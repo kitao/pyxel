@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_logo_152x64.png">
+# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/pyxel_logo_152x64.png">
 
 [ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt.md) ]
 
@@ -60,7 +60,7 @@ First, install [Python3](https://www.python.org/) (version 3.7 or higher).
 
 When you install Python with the official installer, **add Python to PATH** by checking the button below:
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/python_installer.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/python_installer.png">
 
 Next, install Pyxel with the following `pip` command from the command prompt:
 
@@ -351,6 +351,9 @@ Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수�
 ### 입력
 - `mouse_x`, `mouse_y`<br>
 현재의 마우스 커서 좌표를 나타냅니다.
+
+- `mouse_wheel`<br>
+The current value of the mouse wheel
 
 - `btn(key)`<br>
 `key`가 눌리고 있으면 `True`, 눌리고 있지 않으면 `False`를 반환합니다. ([키 정의 리스트](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
