@@ -57,7 +57,13 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 ### Windows
 
-[Python3](https://www.python.org/) (バージョン3.7以上) をインストールした後に、以下の`pip`コマンドでPyxelをインストールします。
+最初に[Python3](https://www.python.org/) (バージョン3.7以上) をインストールします。
+
+公式のPythonインストーラーを使用する場合は、次のボタンをチェックして、**Pythonをパスに追加**してください。
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/python_installer.png">
+
+続いて、コマンドプロンプトから、以下の`pip`コマンドでPyxelをインストールします。
 
 ```sh
 pip install -U pyxel
@@ -73,7 +79,7 @@ pip install -U pyxel
 brew install python3 sdl2 sdl2_image
 ```
 
-ターミナルを再起動した後に、
+**ターミナルを再起動**した後に、
 
 ```sh
 pip3 install -U pyxel

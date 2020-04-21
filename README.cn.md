@@ -56,7 +56,13 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 
 ### Windows
 
-安装[Python3](https://www.python.org/)(3.7或更高版本)之后，输入以下`pip`命令来安装Pyxel：
+First, install [Python3](https://www.python.org/) (version 3.7 or higher).
+
+When you install Python with the official installer, don't forget to **add Python to PATH** by checking the button below:
+
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/python_installer.png">
+
+Next, install Pyxel with the following `pip` command from the command prompt:
 
 ```sh
 pip install -U pyxel
@@ -72,7 +78,7 @@ pip install -U pyxel
 brew install python3 sdl2 sdl2_image
 ```
 
-重启终端之后输入：
+After **restarting the terminal**,
 
 ```sh
 pip3 install -U pyxel
