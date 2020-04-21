@@ -58,7 +58,7 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 
 First, install [Python3](https://www.python.org/) (version 3.7 or higher).
 
-When you install Python with the official installer, don't forget to **add Python to PATH** by checking the button below:
+When you install Python with the official installer, **add Python to PATH** by checking the button below:
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/python_installer.png">
 
