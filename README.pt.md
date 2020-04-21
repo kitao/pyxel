@@ -56,13 +56,13 @@ Pyxel é open source e livre para utilização. Vamos começar fazendo um jogo r
 
 ### Windows
 
-First, install [Python3](https://www.python.org/) (version 3.7 or higher).
+Primeiro, instale o [Python3](https://www.python.org/) (versão 3.7 ou superior).
 
-When you install Python with the official installer, don't forget to **add Python to PATH** by checking the button below:
+Durante a instalação utilizando o instalador oficial do Python, não esqueça de **adicionar o Python no PATH** selecionando a seguinte opção:
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/python_installer.png">
 
-Next, install Pyxel with the following `pip` command from the command prompt:
+Em seguida, instale o Pyxel com o seguinte comando do `pip` na linha de comando:
 
 ```sh
 pip install -U pyxel
@@ -78,7 +78,7 @@ Se o gerenciador de pacotes [Homebrew](https://brew.sh/) estiver instalado, o se
 brew install python3 sdl2 sdl2_image
 ```
 
-After **restarting the terminal**,
+Após **reiniciar o terminal**,
 
 ```sh
 pip3 install -U pyxel
@@ -491,7 +491,7 @@ Lista de notas(0-127) (33 = 'A2' = 440Hz)
 Lista de tons(0:Triangle / 1:Square / 2:Pulse / 3:Noise)
 
 - `volume`<br>
-List de volume(0-7)
+Lista de volume(0-7)
 
 - `effect`<br>
 Lista de efeitos(0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
