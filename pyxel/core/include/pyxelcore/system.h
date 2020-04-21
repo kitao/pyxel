@@ -68,7 +68,7 @@ class System {
   int32_t WaitForUpdateTime();
   void UpdateFrame(void (*update)());
   void CheckSpecialInput();
-  void DrawFrame(void (*draw)());
+  void DrawFrame(void (*draw)(), int32_t update_frame_count);
   void DrawPerformanceMonitor();
   void DrawMouseCursor();
 };
