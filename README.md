@@ -58,7 +58,7 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 
 First, install [Python3](https://www.python.org/) (version 3.7 or higher).
 
-When you install Python with the official installer, don't forget to **add Python to PATH** by checking the button below:
+When you install Python with the official installer, **add Python to PATH** by checking the button below:
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/python_installer.png">
 
