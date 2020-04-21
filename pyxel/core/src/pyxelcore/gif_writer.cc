@@ -60,12 +60,10 @@ class GifBitStream {
 GifWriter::GifWriter(const std::string& filename,
                      int32_t width,
                      int32_t height,
-                     const PaletteColor& palette_color,
-                     int32_t delay_time) {
+                     const PaletteColor& palette_color) {
   ofs_ = std::ofstream(filename, std::ios_base::binary);
   width_ = width;
   height_ = height;
-  delay_time_ = delay_time;
   last_frame_data_ = new int32_t[width * height];
 
   for (int32_t i = 0; i < width * height; i++) {
@@ -144,7 +142,7 @@ GifWriter::~GifWriter() {
   delete[] last_frame_data_;
 }
 
-void GifWriter::AddFrame(const Image* image) {
+void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
   /*
     Graphics Control Extension
   */
@@ -165,8 +163,8 @@ void GifWriter::AddFrame(const Image* image) {
   ofs_.put(0x05);
 
   // Delay Time (2bytes)
-  ofs_.put(delay_time_ & 0xff);
-  ofs_.put((delay_time_ >> 8) & 0xff);
+  ofs_.put(delay_time & 0xff);
+  ofs_.put((delay_time >> 8) & 0xff);
 
   // Transparent Color Index (1byte)
   ofs_.put(TRANSPARENT_COLOR);
