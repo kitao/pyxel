@@ -141,6 +141,10 @@ int mouse_y_getter() {
   return GetInput()->MouseY();
 }
 
+int mouse_wheel_getter() {
+  return GetInput()->MouseWheel();
+}
+
 int btn(int key) {
   return GetInput()->IsButtonOn(key);
 }

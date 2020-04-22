@@ -4,6 +4,8 @@
 - Updated the installation instructions of the READMEs
 - Added the link to the Discord server to the READMEs
 - Added variable frame rate support for animated GIF
+- Added the mouse_wheel variable
+- Added the fullscreen option to the init API
 
 ## 1.3.1
 - Improved the animated GIF making method

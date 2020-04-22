@@ -63,6 +63,7 @@ PYXEL_API void load(const char* filename,
 //
 PYXEL_API int mouse_x_getter();
 PYXEL_API int mouse_y_getter();
+PYXEL_API int mouse_wheel_getter();
 
 PYXEL_API int btn(int key);
 PYXEL_API int btnp(int key, int hold, int period);

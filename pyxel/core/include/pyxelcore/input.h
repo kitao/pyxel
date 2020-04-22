@@ -14,6 +14,7 @@ class Input {
 
   int32_t MouseX() const { return mouse_x_; }
   int32_t MouseY() const { return mouse_y_; }
+  int32_t MouseWheel() const { return mouse_wheel_; }
 
   bool IsButtonOn(int32_t key) const;
   bool IsButtonPressed(int32_t key,
@@ -23,7 +24,7 @@ class Input {
   void SetMouseVisible(int32_t is_visible);
 
   bool IsMouseVisible() const { return is_mouse_visible_; }
-  void Update(const Window* window, int32_t frame_count);
+  void Update(Window* window, int32_t frame_count);
 
  private:
   SDL_GameController* gamepad1_;
@@ -34,6 +35,7 @@ class Input {
   int32_t frame_count_;
   int32_t mouse_x_;
   int32_t mouse_y_;
+  int32_t mouse_wheel_;
   bool is_mouse_visible_;
   int32_t key_state_[KEY_COUNT];
 
