@@ -34,7 +34,8 @@ System::System(int32_t width,
                int32_t fps,
                int32_t border_width,
                int32_t border_color,
-               int32_t quit_key)
+               int32_t quit_key,
+               bool is_fullscreen)
     : fps_profiler_(MEASURE_FRAME_COUNT),
       update_profiler_(MEASURE_FRAME_COUNT),
       draw_profiler_(MEASURE_FRAME_COUNT) {
@@ -75,6 +76,10 @@ System::System(int32_t width,
   is_performance_monitor_on_ = false;
 
   fps_profiler_.Start();
+
+  if (is_fullscreen) {
+    window_->ToggleFullscreen();
+  }
 }
 
 System::~System() {

@@ -527,7 +527,8 @@ def init(
     fps: int = DEFAULT_FPS,
     border_width: int = DEFAULT_BORDER_WIDTH,
     border_color: int = DEFAULT_BORDER_COLOR,
-    quit_key: int = DEFAULT_QUIT_KEY
+    quit_key: int = DEFAULT_QUIT_KEY,
+    fullscreen: bool = False,
 ) -> None:
     _image_bank.clear()
     _tilemap_bank.clear()
@@ -546,6 +547,7 @@ def init(
         int(border_width),
         int(border_color),
         int(quit_key),
+        int(fullscreen),
     )
 
 

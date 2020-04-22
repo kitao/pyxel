@@ -22,7 +22,8 @@ class System {
          int32_t fps = DEFAULT_FPS,
          int32_t border_width = DEFAULT_BORDER_WIDTH,
          int32_t border_color = DEFAULT_BORDER_COLOR,
-         int32_t quit_key = DEFAULT_QUIT_KEY);
+         int32_t quit_key = DEFAULT_QUIT_KEY,
+         bool is_fullscreen = false);
   ~System();
 
   pyxelcore::Resource* Resource() const { return resource_; }
