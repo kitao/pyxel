@@ -35,7 +35,7 @@ Input::~Input() {
   }
 }
 
-void Input::Update(const Window* window, int32_t frame_count) {
+void Input::Update(Window* window, int32_t frame_count) {
   frame_count_ = frame_count + 1;  // change frame_count to start from 1
 
   SDL_GetGlobalMouseState(&mouse_x_, &mouse_y_);
@@ -44,6 +44,7 @@ void Input::Update(const Window* window, int32_t frame_count) {
              window->ScreenScale();
   mouse_y_ = (mouse_y_ - (window->WindowY() + window->ScreenY())) /
              window->ScreenScale();
+  mouse_wheel_ = window->GetMouseWheel();
 
   if (is_mouse_visible_) {
     SDL_ShowCursor(true);
