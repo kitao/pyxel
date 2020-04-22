@@ -322,10 +322,10 @@ pyxelpackager python_file
 - `frame_count`<br>
 经过的帧数
 
-- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key])`<br>
+- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key], [fullscreen])`<br>
 初始化Pyxel应用的画面尺寸。画面的宽和高的最大值是256。<br>
-同时可以用`caption`指定窗口标题，`scale`设定放大倍数，`palette`设定色调，`fps`设定帧率，`border_width`和`border_color`设定画面外白边的颜色和宽度，`quit_key`可指定退出键。其中`palette`为16个24位真彩色元素的list，`border_color`为24位真彩色。<br>
-例：`pyxel.init(160, 120, caption="Pyxel with PICO-8 palette", palette=[0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436, 0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA], quit_key=pyxel.KEY_NONE)`
+同时可以用`caption`指定窗口标题，`scale`设定放大倍数，`palette`设定色调，`fps`设定帧率，`border_width`和`border_color`设定画面外白边的颜色和宽度，`quit_key`可指定退出键, and whether to start in full screen with `fullscreen`. 其中`palette`为16个24位真彩色元素的list，`border_color`为24位真彩色。<br>
+例：`pyxel.init(160, 120, caption="Pyxel with PICO-8 palette", palette=[0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436, 0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA], quit_key=pyxel.KEY_NONE, fullscreen=True)`
 
 - `run(update, draw)`<br>
 启动Pyxel应用并调用`update`更新帧、`draw`绘制画面。
