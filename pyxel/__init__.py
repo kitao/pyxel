@@ -620,6 +620,7 @@ def load(
 #
 mouse_x: int = 0
 mouse_y: int = 0
+mouse_wheel: int = 0
 
 
 @property  # type: ignore
@@ -630,6 +631,11 @@ def mouse_x(mod):  # type: ignore
 @property  # type: ignore
 def mouse_y(mod):  # type: ignore
     return mod.core.mouse_y_getter()
+
+
+@property  # type: ignore
+def mouse_wheel(mod):  # type: ignore
+    return mod.core.mouse_wheel_getter()
 
 
 def btn(key: int) -> bool:

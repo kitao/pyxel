@@ -26,6 +26,7 @@ class Window {
   void ToggleFullscreen();
   bool ProcessEvents();
   void Render(int32_t** screen_data);
+  int32_t GetMouseWheel();
   std::string GetDropFile();
   void SetCaption(const std::string& caption);
 
@@ -44,6 +45,7 @@ class Window {
   PaletteColor palette_color_;
   int32_t border_color_;
   bool is_fullscreen_;
+  int32_t mouse_wheel_;
   std::string drop_file_;
 
   void SetupWindowIcon() const;
