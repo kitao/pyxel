@@ -21,6 +21,7 @@ Window::Window(const std::string& caption,
   palette_color_ = palette_color;
   border_color_ = border_color;
   is_fullscreen_ = false;
+  mouse_wheel_ = 0;
 
   if (screen_scale_ <= 0) {
     SDL_DisplayMode display_mode;
@@ -118,6 +119,10 @@ bool Window::ProcessEvents() {
         }
         break;
 
+      case SDL_MOUSEWHEEL:
+        mouse_wheel_ += event.wheel.y;
+        break;
+
       case SDL_DROPFILE:
         drop_file_ = event.drop.file;
         break;
@@ -150,6 +155,12 @@ void Window::Render(int32_t** screen_data) {
 
   SDL_RenderCopy(renderer_, screen_texture_, NULL, &dst_rect);
   SDL_RenderPresent(renderer_);
+}
+
+int32_t Window::GetMouseWheel() {
+  int32_t mouse_wheel = mouse_wheel_;
+  mouse_wheel_ = 0;
+  return mouse_wheel;
 }
 
 std::string Window::GetDropFile() {
