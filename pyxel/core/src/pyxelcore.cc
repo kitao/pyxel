@@ -87,8 +87,8 @@ void quit() {
   GetSystem()->Quit();
 }
 
-void flip() {
-  GetSystem()->FlipScreen();
+int flip() {
+  return GetSystem()->FlipScreen();
 }
 
 void show() {

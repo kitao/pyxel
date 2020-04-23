@@ -571,10 +571,12 @@ def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
 
 def quit() -> None:
     core.quit()
+    exit(0)
 
 
 def flip() -> None:
-    core.flip()
+    if core.flip():
+        exit(0)
 
 
 def show() -> None:
