@@ -27,6 +27,8 @@
 namespace pyxelcore {
 
 class ExitPyxel {};
+static bool s_is_exit_enabled = false;
+static bool s_is_quitted = false;
 
 System::System(int32_t width,
                int32_t height,
@@ -97,6 +99,8 @@ System::~System() {
 }
 
 void System::Run(void (*update)(), void (*draw)()) {
+  s_is_exit_enabled = true;
+
   try {
     next_update_time_ = SDL_GetTicks() + one_frame_time_;
     is_update_suspended_ = true;
@@ -137,10 +141,14 @@ void System::Run(void (*update)(), void (*draw)()) {
 }
 
 void System::Quit() {
-  throw ExitPyxel();
+  s_is_quitted = true;
+
+  if (s_is_exit_enabled) {
+    throw ExitPyxel();
+  }
 }
 
-void System::FlipScreen() {
+bool System::FlipScreen() {
   WaitForUpdateTime();
   next_update_time_ += one_frame_time_;
 
@@ -150,11 +158,19 @@ void System::FlipScreen() {
   frame_count_++;
   UpdateFrame(nullptr);
   DrawFrame(nullptr, 1);
+
+  return s_is_quitted;
 }
 
 void System::ShowScreen() {
-  while (true) {
-    FlipScreen();
+  s_is_exit_enabled = true;
+
+  try {
+    while (true) {
+      FlipScreen();
+    }
+  } catch (ExitPyxel) {
+    delete this;
   }
 }
 
