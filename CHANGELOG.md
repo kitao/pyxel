@@ -6,6 +6,7 @@
 - Added variable frame rate support for animated GIF
 - Added the mouse_wheel variable
 - Added the fullscreen option to the init API
+- Changed the way to quit the Pyxel application
 
 ## 1.3.1
 - Improved the animated GIF making method
