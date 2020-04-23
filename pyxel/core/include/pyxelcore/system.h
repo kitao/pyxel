@@ -38,7 +38,7 @@ class System {
 
   void Run(void (*update)(), void (*draw)());
   void Quit();
-  void FlipScreen();
+  bool FlipScreen();
   void ShowScreen();
 
   std::string DropFile() const { return drop_file_; }
