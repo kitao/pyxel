@@ -56,13 +56,13 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 
 ### Windows
 
-First, install [Python3](https://www.python.org/) (version 3.7 or higher).
+第一步，安装[Python3](https://www.python.org/)(3.7或更高版本)。
 
-When you install Python with the official installer, **add Python to PATH** by checking the button below:
+如果使用官方安装器来安装python，不要忘记勾选下图选项**将python添加到环境变量：**
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/python_installer.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/python_installer.png">
 
-Next, install Pyxel with the following `pip` command from the command prompt:
+第二步, 在命令提示符中输入以下`pip`指令直接安装pyxel：
 
 ```sh
 pip install -U pyxel
@@ -78,7 +78,7 @@ pip install -U pyxel
 brew install python3 sdl2 sdl2_image
 ```
 
-After **restarting the terminal**,
+**重启终端**之后：
 
 ```sh
 pip3 install -U pyxel
@@ -324,7 +324,7 @@ pyxelpackager python_file
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key], [fullscreen])`<br>
 初始化Pyxel应用的画面尺寸。画面的宽和高的最大值是256。<br>
-同时可以用`caption`指定窗口标题，`scale`设定放大倍数，`palette`设定色调，`fps`设定帧率，`border_width`和`border_color`设定画面外白边的颜色和宽度，`quit_key`可指定退出键, and whether to start in full screen with `fullscreen`. 其中`palette`为16个24位真彩色元素的list，`border_color`为24位真彩色。<br>
+同时可以用`caption`指定窗口标题，`scale`设定放大倍数，`palette`设定色调，`fps`设定帧率，`border_width`和`border_color`设定画面外白边的颜色和宽度，`quit_key`可指定退出键, `fullscreen`设置是否全屏启动。其中`palette`为16个24位真彩色元素的list，`border_color`为24位真彩色。<br>
 例：`pyxel.init(160, 120, caption="Pyxel with PICO-8 palette", palette=[0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436, 0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA], quit_key=pyxel.KEY_NONE, fullscreen=True)`
 
 - `run(update, draw)`<br>
@@ -352,7 +352,7 @@ pyxelpackager python_file
 当前鼠标指针的位置。
 
 - `mouse_wheel`<br>
-The current value of the mouse wheel
+当前鼠标滚轮的值。
 
 - `btn(key)`<br>
 如果`key`被按下则返回`True`，否则返回`False`([按键定义列表](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))。
