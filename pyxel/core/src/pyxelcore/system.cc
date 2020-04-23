@@ -26,6 +26,8 @@
 
 namespace pyxelcore {
 
+class ExitPyxel {};
+
 System::System(int32_t width,
                int32_t height,
                const std::string& caption,
@@ -95,46 +97,47 @@ System::~System() {
 }
 
 void System::Run(void (*update)(), void (*draw)()) {
-  next_update_time_ = SDL_GetTicks() + one_frame_time_;
-  is_update_suspended_ = true;
+  try {
+    next_update_time_ = SDL_GetTicks() + one_frame_time_;
+    is_update_suspended_ = true;
 
-  UpdateFrame(update);
-  DrawFrame(draw, 1);
+    UpdateFrame(update);
+    DrawFrame(draw, 1);
 
-  while (true) {
-    double sleep_time = WaitForUpdateTime();
+    while (true) {
+      double sleep_time = WaitForUpdateTime();
 
-    fps_profiler_.End();
-    fps_profiler_.Start();
+      fps_profiler_.End();
+      fps_profiler_.Start();
 
-    int32_t update_frame_count;
+      int32_t update_frame_count;
 
-    if (is_update_suspended_) {
-      is_update_suspended_ = false;
-      update_frame_count = 1;
-      next_update_time_ = SDL_GetTicks() + one_frame_time_;
-    } else {
-      update_frame_count =
-          Min(static_cast<int32_t>(-sleep_time / one_frame_time_),
-              MAX_FRAME_SKIP_COUNT) +
-          1;
-      next_update_time_ += one_frame_time_ * update_frame_count;
+      if (is_update_suspended_) {
+        is_update_suspended_ = false;
+        update_frame_count = 1;
+        next_update_time_ = SDL_GetTicks() + one_frame_time_;
+      } else {
+        update_frame_count =
+            Min(static_cast<int32_t>(-sleep_time / one_frame_time_),
+                MAX_FRAME_SKIP_COUNT) +
+            1;
+        next_update_time_ += one_frame_time_ * update_frame_count;
+      }
+
+      for (int32_t i = 0; i < update_frame_count; i++) {
+        frame_count_++;
+        UpdateFrame(update);
+      }
+
+      DrawFrame(draw, update_frame_count);
     }
-
-    for (int32_t i = 0; i < update_frame_count; i++) {
-      frame_count_++;
-      UpdateFrame(update);
-    }
-
-    DrawFrame(draw, update_frame_count);
+  } catch (ExitPyxel) {
+    delete this;
   }
-
-  delete this;
 }
 
 void System::Quit() {
-  delete this;
-  exit(0);
+  throw ExitPyxel();
 }
 
 void System::FlipScreen() {
