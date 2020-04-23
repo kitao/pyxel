@@ -95,6 +95,7 @@ System::~System() {
 }
 
 void System::Run(void (*update)(), void (*draw)()) {
+  next_update_time_ = SDL_GetTicks() + one_frame_time_;
   is_update_suspended_ = true;
 
   UpdateFrame(update);
