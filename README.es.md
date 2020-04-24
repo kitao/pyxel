@@ -56,13 +56,13 @@ Pyxel es de código abierto y de libre uso. Comencemos a crear juegos retro con 
 
 ### Windows
 
-First, install [Python3](https://www.python.org/) (version 3.7 or higher).
+Primero, instalar [Python3](https://www.python.org/) (versión 3.7 o superior).
 
-When you install Python with the official installer, **add Python to PATH** by checking the button below:
+Cuando instale Python con el instalador oficial, **añada Python al PATH** marcando el botón de abajo:
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/python_installer.png">
 
-Next, install Pyxel with the following `pip` command from the command prompt:
+A continuación, instale Pyxel con el siguiente comando `pip` desde la línea de comandos:
 
 ```sh
 pip install -U pyxel
@@ -70,7 +70,7 @@ pip install -U pyxel
 
 ### Mac
 
-Despues de instalar [Python3](https://www.python.org/) (versión 3.7 superior) y [SDL2](https://www.libsdl.org/), instala Pyxel con el comando `pip`.
+Despues de instalar [Python3](https://www.python.org/) (versión 3.7 o superior) y [SDL2](https://www.libsdl.org/), instala Pyxel con el comando `pip`.
 
 Si utiliza el gestor de paquetes [Homebrew](https://brew.sh/) , el siguiente comando instalara todos los paquetes necesarios:
 
@@ -78,7 +78,7 @@ Si utiliza el gestor de paquetes [Homebrew](https://brew.sh/) , el siguiente com
 brew install python3 sdl2 sdl2_image
 ```
 
-After **restarting the terminal**,
+Después de **reiniciar el terminal**,
 
 ```sh
 pip3 install -U pyxel
@@ -86,7 +86,7 @@ pip3 install -U pyxel
 
 ### Linux
 
-Instala [Python3](https://www.python.org/) (version 3.7 o superior) y los paquetes requeridos en la forma apropiada para cada distribución.
+Instala [Python3](https://www.python.org/) (versión 3.7 o superior) y los paquetes requeridos en la forma apropiada para cada distribución.
 
 **Ubuntu:**
 
@@ -103,7 +103,7 @@ Para instalar Pyxel en un entorno diferente a los anteriores (Linux 32-bit, Rasp
 
 - C++ build toolchain (debe incluir los comandos `gcc` y `make`)
 - libsdl2-dev y libsdl2-image-dev
-- [Python3](https://www.python.org/) (version 3.7 o superior) y el comando `pip`
+- [Python3](https://www.python.org/) (versión 3.7 o superior) y el comando `pip`
 
 #### Ejecuta el siguiente comando en cualquier carpeta
 
@@ -323,7 +323,7 @@ El número de cuadros transcurridos
 
 - `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key], [fullscreen])`<br>
 Inicializar la aplicación Pyxel con el tamaño de pantalla (`width`, `height`). El ancho y alto máximo de la pantalla es 256<br>
-También es posible especificar el título de la ventana con `caption`, el aumento de pantalla con `scale`, la paleta de colores con `palette`, los cuadros por segundo con `fps`, y el ancho del margen y color fuera de la pantalla con `border_width` y `border_color`, y la tecla para salir de la aplicación con `quit_key`, and whether to start in full screen with `fullscreen`. `palette` es especificada como una lista de 16 elementos de color a 24 bits, `border_color` como color a 24 bits<br>
+También es posible especificar el título de la ventana con `caption`, el aumento de pantalla con `scale`, la paleta de colores con `palette`, los cuadros por segundo con `fps`, y el ancho del margen y color fuera de la pantalla con `border_width` y `border_color`, la tecla para salir de la aplicación con `quit_key`, y si se iniciará en modo de pantalla completa con `fullscreen`. `palette` es especificada como una lista de 16 elementos de color a 24 bits, `border_color` como color a 24 bits<br>
 p.ej. `pyxel.init(160, 120, caption="Pyxel with PICO-8 palette", palette=[0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436, 0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA], quit_key=pyxel.KEY_NONE, fullscreen=True)`
 
 - `run(update, draw)`<br>
@@ -351,7 +351,7 @@ Lee el archivo de recurso (.pyxres) desde el directorio donde se ejecuta el scri
 La posición actual del puntero del mouse
 
 - `mouse_wheel`<br>
-The current value of the mouse wheel
+El valor actual del mouse wheel
 
 - `btn(key)`<br>
 Devuelve `True` si `key` es presionada, sino devuelve `False` ([lista de definición de teclas](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
