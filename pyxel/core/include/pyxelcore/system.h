@@ -58,6 +58,8 @@ class System {
   double one_frame_time_;
   double next_update_time_;
   bool is_update_suspended_;
+  bool is_exit_enabled_;
+  bool is_quitted_;
   std::string drop_file_;
   pyxelcore::PaletteColor palette_color_;
 
