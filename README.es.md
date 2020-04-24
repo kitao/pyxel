@@ -351,7 +351,6 @@ Lee el archivo de recurso (.pyxres) desde el directorio donde se ejecuta el scri
 La posición actual del puntero del mouse
 
 - `mouse_wheel`<br>
-
 El valor actual del mouse wheel
 
 - `btn(key)`<br>
