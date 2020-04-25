@@ -21,16 +21,13 @@ Window::Window(const std::string& caption,
     SDL_GetDesktopDisplayMode(0, &display_mode);
 
     screen_scale_ = Max(
-        Min((display_mode.w - WINDOW_BORDER_WIDTH * 2.0f) / screen_width_,
-            (display_mode.h - WINDOW_BORDER_WIDTH * 2.0f) / screen_height_) *
+        Min(display_mode.w / screen_width_, display_mode.h / screen_height_) *
             MAX_SCREEN_RATIO,
         1.0f);
   }
 
-  int32_t window_width =
-      screen_width_ * screen_scale_ + WINDOW_BORDER_WIDTH * 2;
-  int32_t window_height =
-      screen_height_ * screen_scale_ + WINDOW_BORDER_WIDTH * 2;
+  int32_t window_width = screen_width_ * screen_scale_;
+  int32_t window_height = screen_height_ * screen_scale_;
 
   window_ = SDL_CreateWindow(caption.c_str(), SDL_WINDOWPOS_CENTERED,
                              SDL_WINDOWPOS_CENTERED, window_width,
@@ -132,9 +129,9 @@ bool Window::ProcessEvents() {
 }
 
 void Window::Render(int32_t** screen_data) {
-  uint8_t r = (WINDOW_BORDER_COLOR >> 16) & 0xff;
-  uint8_t g = (WINDOW_BORDER_COLOR >> 8) & 0xff;
-  uint8_t b = WINDOW_BORDER_COLOR & 0xff;
+  uint8_t r = (WINDOW_BACKGROUND_COLOR >> 16) & 0xff;
+  uint8_t g = (WINDOW_BACKGROUND_COLOR >> 8) & 0xff;
+  uint8_t b = WINDOW_BACKGROUND_COLOR & 0xff;
 
   SDL_SetRenderDrawColor(renderer_, r, g, b, 255);
   SDL_RenderClear(renderer_);
