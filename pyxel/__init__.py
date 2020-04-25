@@ -78,8 +78,6 @@ DEFAULT_PALETTE: List[int] = [
     _get_constant_number("DEFAULT_PALETTE_15"),
 ]
 DEFAULT_FPS: int = _get_constant_number("DEFAULT_FPS")
-DEFAULT_BORDER_WIDTH: int = _get_constant_number("DEFAULT_BORDER_WIDTH")
-DEFAULT_BORDER_COLOR: int = _get_constant_number("DEFAULT_BORDER_COLOR")
 DEFAULT_QUIT_KEY: int = _get_constant_number("DEFAULT_QUIT_KEY")
 
 KEY_SPACE: int = _get_constant_number("KEY_SPACE")
@@ -525,8 +523,6 @@ def init(
     scale: int = DEFAULT_SCALE,
     palette: List[int] = DEFAULT_PALETTE,
     fps: int = DEFAULT_FPS,
-    border_width: int = DEFAULT_BORDER_WIDTH,
-    border_color: int = DEFAULT_BORDER_COLOR,
     quit_key: int = DEFAULT_QUIT_KEY,
     fullscreen: bool = False,
 ) -> None:
@@ -544,8 +540,6 @@ def init(
         int(scale),
         (c_int32 * COLOR_COUNT)(*palette),
         int(fps),
-        int(border_width),
-        int(border_color),
         int(quit_key),
         int(fullscreen),
     )

@@ -7,6 +7,7 @@
 - Added the mouse_wheel variable
 - Added the fullscreen option to the init API
 - Changed the way to quit the Pyxel application
+- Removed the border options of the init API
 
 ## 1.3.1
 - Improved the animated GIF making method

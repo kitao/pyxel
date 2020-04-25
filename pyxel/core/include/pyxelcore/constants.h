@@ -69,6 +69,9 @@ const std::vector<std::string> ICON_DATA = {
     "0000000110000000",
 };
 
+const int32_t WINDOW_BORDER_WIDTH = 16;
+const int32_t WINDOW_BORDER_COLOR = 0x101018;
+
 const int32_t SCREEN_CAPTURE_COUNT = 900;
 const int32_t SCREEN_CAPTURE_SCALE = 2;
 
@@ -448,8 +451,6 @@ const int32_t MUSIC_CHANNEL_COUNT = 4;
 const std::string DEFAULT_CAPTION = "Pyxel";
 const int32_t DEFAULT_SCALE = 0;
 const int32_t DEFAULT_FPS = 30;
-const int32_t DEFAULT_BORDER_WIDTH = 16;
-const int32_t DEFAULT_BORDER_COLOR = 0x101018;
 const int32_t DEFAULT_QUIT_KEY = KEY_ESCAPE;
 
 const std::array<int32_t, COLOR_COUNT> PICO8_PALETTE = {

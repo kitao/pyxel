@@ -61,8 +61,6 @@ void init(int width,
           int scale,
           const int* palette,
           int fps,
-          int border_width,
-          int border_color,
           int quit_key,
           int fullscreen) {
   std::array<int, pyxelcore::COLOR_COUNT> palette_color;
@@ -71,8 +69,7 @@ void init(int width,
   }
 
   s_system = new pyxelcore::System(width, height, std::string(caption), scale,
-                                   palette_color, fps, border_width,
-                                   border_color, quit_key, fullscreen);
+                                   palette_color, fps, quit_key, fullscreen);
   s_resource = s_system->Resource();
   s_input = s_system->Input();
   s_graphics = s_system->Graphics();
