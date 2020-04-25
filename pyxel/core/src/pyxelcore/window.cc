@@ -22,7 +22,7 @@ Window::Window(const std::string& caption,
 
     screen_scale_ = Max(
         Min(display_mode.w / screen_width_, display_mode.h / screen_height_) *
-            MAX_SCREEN_RATIO,
+            MAX_WINDOW_SIZE_RATIO,
         1.0f);
   }
 
