@@ -56,7 +56,7 @@ Pyxel es de código abierto y de libre uso. Comencemos a crear juegos retro con 
 
 ### Windows
 
-Primero, instalar [Python3](https://www.python.org/) (versión 3.7 o superior).
+Primero, instalar [Python3](https://www.python.org/) (versión 3.6.9 o superior).
 
 Cuando instale Python con el instalador oficial, **añada Python al PATH** marcando el botón de abajo:
 
@@ -70,7 +70,7 @@ pip install -U pyxel
 
 ### Mac
 
-Despues de instalar [Python3](https://www.python.org/) (versión 3.7 o superior) y [SDL2](https://www.libsdl.org/), instala Pyxel con el comando `pip`.
+Despues de instalar [Python3](https://www.python.org/) (versión 3.6.9 o superior) y [SDL2](https://www.libsdl.org/), instala Pyxel con el comando `pip`.
 
 Si utiliza el gestor de paquetes [Homebrew](https://brew.sh/) , el siguiente comando instalara todos los paquetes necesarios:
 
@@ -86,7 +86,7 @@ pip3 install -U pyxel
 
 ### Linux
 
-Instala [Python3](https://www.python.org/) (versión 3.7 o superior) y los paquetes requeridos en la forma apropiada para cada distribución.
+Instala [Python3](https://www.python.org/) (versión 3.6.9 o superior) y los paquetes requeridos en la forma apropiada para cada distribución.
 
 **Ubuntu:**
 
@@ -103,7 +103,7 @@ Para instalar Pyxel en un entorno diferente a los anteriores (Linux 32-bit, Rasp
 
 - C++ build toolchain (debe incluir los comandos `gcc` y `make`)
 - libsdl2-dev y libsdl2-image-dev
-- [Python3](https://www.python.org/) (versión 3.7 o superior) y el comando `pip`
+- [Python3](https://www.python.org/) (versión 3.6.9 o superior) y el comando `pip`
 
 #### Ejecuta el siguiente comando en cualquier carpeta
 
