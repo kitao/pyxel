@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/pyxel_logo_152x64.png">
+# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_logo_152x64.png">
 
 [ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt.md) ]
 
@@ -51,7 +51,7 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
 <br><br>
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_palette.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_palette.png">
 
 ## インストール方法
 
@@ -61,7 +61,7 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 公式のPythonインストーラーを使用する場合は、次のボタンをチェックして、**Pythonをパスに追加**してください。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/python_installer.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/python_installer.png">
 
 続いて、コマンドプロンプトから、以下の`pip`コマンドでPyxelをインストールします。
 
