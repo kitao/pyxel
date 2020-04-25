@@ -8,18 +8,11 @@ Window::Window(const std::string& caption,
                int32_t screen_width,
                int32_t screen_height,
                int32_t screen_scale,
-               const PaletteColor& palette_color,
-               int32_t border_width,
-               int32_t border_color) {
-  if (border_width < 0) {
-    PYXEL_ERROR("invalid border width");
-  }
-
+               const PaletteColor& palette_color) {
   screen_width_ = screen_width;
   screen_height_ = screen_height;
   screen_scale_ = screen_scale;
   palette_color_ = palette_color;
-  border_color_ = border_color;
   is_fullscreen_ = false;
   mouse_wheel_ = 0;
 
@@ -27,15 +20,17 @@ Window::Window(const std::string& caption,
     SDL_DisplayMode display_mode;
     SDL_GetDesktopDisplayMode(0, &display_mode);
 
-    screen_scale_ =
-        Max(Min((display_mode.w - border_width * 2.0f) / screen_width_,
-                (display_mode.h - border_width * 2.0f) / screen_height_) *
-                MAX_SCREEN_RATIO,
-            1.0f);
+    screen_scale_ = Max(
+        Min((display_mode.w - WINDOW_BORDER_WIDTH * 2.0f) / screen_width_,
+            (display_mode.h - WINDOW_BORDER_WIDTH * 2.0f) / screen_height_) *
+            MAX_SCREEN_RATIO,
+        1.0f);
   }
 
-  int32_t window_width = screen_width_ * screen_scale_ + border_width * 2;
-  int32_t window_height = screen_height_ * screen_scale_ + border_width * 2;
+  int32_t window_width =
+      screen_width_ * screen_scale_ + WINDOW_BORDER_WIDTH * 2;
+  int32_t window_height =
+      screen_height_ * screen_scale_ + WINDOW_BORDER_WIDTH * 2;
 
   window_ = SDL_CreateWindow(caption.c_str(), SDL_WINDOWPOS_CENTERED,
                              SDL_WINDOWPOS_CENTERED, window_width,
@@ -137,9 +132,9 @@ bool Window::ProcessEvents() {
 }
 
 void Window::Render(int32_t** screen_data) {
-  uint8_t r = (border_color_ >> 16) & 0xff;
-  uint8_t g = (border_color_ >> 8) & 0xff;
-  uint8_t b = border_color_ & 0xff;
+  uint8_t r = (WINDOW_BORDER_COLOR >> 16) & 0xff;
+  uint8_t g = (WINDOW_BORDER_COLOR >> 8) & 0xff;
+  uint8_t b = WINDOW_BORDER_COLOR & 0xff;
 
   SDL_SetRenderDrawColor(renderer_, r, g, b, 255);
   SDL_RenderClear(renderer_);

@@ -20,8 +20,6 @@ class System {
          int32_t scale = DEFAULT_SCALE,
          const pyxelcore::PaletteColor& palette_color = DEFAULT_PALETTE,
          int32_t fps = DEFAULT_FPS,
-         int32_t border_width = DEFAULT_BORDER_WIDTH,
-         int32_t border_color = DEFAULT_BORDER_COLOR,
          int32_t quit_key = DEFAULT_QUIT_KEY,
          bool is_fullscreen = false);
   ~System();

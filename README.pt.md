@@ -321,9 +321,9 @@ A largura e a altura da tela
 - `frame_count`<br>
 O número dos quadros decorridos
 
-- `init(width, height, [caption], [scale], [palette], [fps], [border_width], [border_color], [quit_key], [fullscreen])`<br>
+- `init(width, height, [caption], [scale], [palette], [fps], [quit_key], [fullscreen])`<br>
 Inicializa a aplicação Pyxel com o tamanho de tela (`width`, `height`). A largura e a altura máxima da tela é 256<br>
-Também é possível especificar o título da janela com `caption`, a ampliação da tela com `scale`, a paleta de cores com `palette`, a taxa de quadros com `fps`, a largura e cor da margem de fora da tela com `border_width` e `border_color`, a tecla para finalizar a aplicação com `quit_key` e se ela será iniciada em modo tela cheia com `fullscreen`. `palette` é especificada como uma lista de 16 elementos de cor de 24 bits, ` border_color` como cor de 24 bits.<br>
+Também é possível especificar o título da janela com `caption`, a ampliação da tela com `scale`, a paleta de cores com `palette`, a taxa de quadros com `fps`, a tecla para finalizar a aplicação com `quit_key` e se ela será iniciada em modo tela cheia com `fullscreen`. `palette` é especificada como uma lista de 16 elementos de cor de 24 bits.<br>
 e.g. `pyxel.init(160, 120, caption="Pyxel with PICO-8 palette", palette=[0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436, 0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA], quit_key=pyxel.KEY_NONE, fullscreen=True)`
 
 - `run(update, draw)`<br>
