@@ -32,6 +32,8 @@ Audio::Audio() {
 }
 
 Audio::~Audio() {
+  SDL_CloseAudio();
+
   for (int32_t i = 0; i < TOTAL_SOUND_BANK_COUNT; i++) {
     delete sound_bank_[i];
   }
