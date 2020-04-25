@@ -11,9 +11,7 @@ class Window {
          int32_t screen_width,
          int32_t screen_height,
          int32_t screen_scale,
-         const PaletteColor& palette_color,
-         int32_t border_width,
-         int32_t border_color);
+         const PaletteColor& palette_color);
 
   int32_t WindowX() const { return window_x_; }
   int32_t WindowY() const { return window_y_; }
@@ -43,7 +41,6 @@ class Window {
   int32_t screen_height_;
   int32_t screen_scale_;
   PaletteColor palette_color_;
-  int32_t border_color_;
   bool is_fullscreen_;
   int32_t mouse_wheel_;
   std::string drop_file_;

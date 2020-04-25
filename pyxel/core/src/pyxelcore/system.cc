@@ -34,8 +34,6 @@ System::System(int32_t width,
                int32_t scale,
                const pyxelcore::PaletteColor& palette_color,
                int32_t fps,
-               int32_t border_width,
-               int32_t border_color,
                int32_t quit_key,
                bool is_fullscreen)
     : fps_profiler_(MEASURE_FRAME_COUNT),
@@ -63,8 +61,7 @@ System::System(int32_t width,
   graphics_ = new pyxelcore::Graphics(width, height);
   audio_ = new pyxelcore::Audio();
   resource_ = new pyxelcore::Resource(graphics_, audio_);
-  window_ = new Window(caption, width, height, scale, palette_color,
-                       border_width, border_color);
+  window_ = new Window(caption, width, height, scale, palette_color);
   recorder_ = new Recorder(width, height, palette_color, fps);
 
   palette_color_ = palette_color;
