@@ -68,14 +68,14 @@ distclean:
 	rm -rf $(OBJS) *.dylib *.dll *.so include/SDL2 lib bin
 
 test:
-	python3 ../examples/01_*.py
-	python3 ../examples/02_*.py
-	python3 ../examples/03_*.py
-	python3 ../examples/04_*.py
-	python3 ../examples/05_*.py
-	python3 ../examples/06_*.py
-	python3 ../examples/07_*.py
-	python3 ../examples/08_*.py
+	python3 ../examples/01_hello_pyxel.py
+	python3 ../examples/02_jump_game.py
+	python3 ../examples/03_draw_api.py
+	python3 ../examples/04_sound_api.py
+	python3 ../examples/05_color_palette.py
+	python3 ../examples/06_click_game.py
+	python3 ../examples/07_snake.py
+	python3 ../examples/08_triangle_api.py
 	python3 ../editor/__init__.py
 
 $(TARGET): $(OBJS)
