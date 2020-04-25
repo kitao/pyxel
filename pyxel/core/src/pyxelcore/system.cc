@@ -84,15 +84,15 @@ System::System(int32_t width,
 }
 
 System::~System() {
-  IMG_Quit();
-  SDL_Quit();
-
   delete recorder_;
   delete window_;
   delete resource_;
   delete audio_;
   delete graphics_;
   delete input_;
+
+  IMG_Quit();
+  SDL_Quit();
 }
 
 void System::Run(void (*update)(), void (*draw)()) {
