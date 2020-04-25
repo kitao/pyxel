@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/pyxel_logo_152x64.png">
+# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_logo_152x64.png">
 
 [ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt.md) ]
 
@@ -50,7 +50,7 @@ Pyxel é open source e livre para utilização. Vamos começar fazendo um jogo r
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
 <br><br>
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/assets/pyxel_palette.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_palette.png">
 
 ## Como instalar
 
@@ -60,7 +60,7 @@ Primeiro, instale o [Python3](https://www.python.org/) (versão 3.6.9 ou superio
 
 Durante a instalação utilizando o instalador oficial do Python, não esqueça de **adicionar o Python no PATH** selecionando a seguinte opção:
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/python_installer.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/python_installer.png">
 
 Em seguida, instale o Pyxel com o seguinte comando do `pip` na linha de comando:
 
