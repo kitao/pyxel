@@ -56,7 +56,7 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 
 ### Windows
 
-第一步，安装[Python3](https://www.python.org/)(3.7或更高版本)。
+第一步，安装[Python3](https://www.python.org/)(3.6.9或更高版本)。
 
 如果使用官方安装器来安装python，不要忘记勾选下图选项**将python添加到环境变量：**
 
@@ -70,7 +70,7 @@ pip install -U pyxel
 
 ### Mac
 
-安装[Python3](https://www.python.org/)(3.7或更高版本)以及[SDL2](https://www.libsdl.org/)之后，输入`pip`命令来安装Pyxel。
+安装[Python3](https://www.python.org/)(3.6.9或更高版本)以及[SDL2](https://www.libsdl.org/)之后，输入`pip`命令来安装Pyxel。
 
 如果已安装[Homebrew](https://brew.sh/)，输入以下命令安装所有需要的包。
 
@@ -86,7 +86,7 @@ pip3 install -U pyxel
 
 ### Linux
 
-为各linux发行版安装[Python3](https://www.python.org/)(3.7或更高版本)及其依赖包。
+为各linux发行版安装[Python3](https://www.python.org/)(3.6.9或更高版本)及其依赖包。
 
 **Ubuntu:**
 
@@ -103,7 +103,7 @@ sudo -H pip3 install -U pyxel
 
 - C++构建工具链（包含gcc和make命令）
 - libsdl2-dev和libsdl2-image-dev
-- [Python3](https://www.python.org/)(3.7或更高版本)和pip工具
+- [Python3](https://www.python.org/)(3.6.9或更高版本)和pip工具
 
 #### 任意文件夹中执行以下命令
 
