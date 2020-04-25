@@ -59,7 +59,7 @@ const int32_t MEASURE_FRAME_COUNT = 10;
 const int32_t SCREEN_CAPTURE_COUNT = 900;
 const int32_t SCREEN_CAPTURE_SCALE = 2;
 
-const float MAX_WINDOW_SIZE_RATIO = 0.9f;
+const float MAX_WINDOW_SIZE_RATIO = 0.8f;
 const int32_t WINDOW_BACKGROUND_COLOR = 0x101018;
 
 const int32_t ICON_WIDTH = 16;
