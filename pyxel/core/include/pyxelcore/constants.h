@@ -69,8 +69,7 @@ const std::vector<std::string> ICON_DATA = {
     "0000000110000000",
 };
 
-const int32_t WINDOW_BORDER_WIDTH = 16;
-const int32_t WINDOW_BORDER_COLOR = 0x101018;
+const int32_t WINDOW_BACKGROUND_COLOR = 0x101018;
 
 const int32_t SCREEN_CAPTURE_COUNT = 900;
 const int32_t SCREEN_CAPTURE_SCALE = 2;
