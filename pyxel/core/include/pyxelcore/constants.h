@@ -52,7 +52,7 @@ enum {
 // System
 //
 const int32_t MAX_SCREEN_SIZE = 256;
-const float MAX_SCREEN_RATIO = 0.8f;
+const float MAX_SCREEN_RATIO = 0.9f;
 
 const int32_t MAX_FRAME_SKIP_COUNT = 9;
 const int32_t MEASURE_FRAME_COUNT = 10;
