@@ -52,10 +52,15 @@ enum {
 // System
 //
 const int32_t MAX_SCREEN_SIZE = 256;
-const float MAX_SCREEN_RATIO = 0.9f;
 
 const int32_t MAX_FRAME_SKIP_COUNT = 9;
 const int32_t MEASURE_FRAME_COUNT = 10;
+
+const int32_t SCREEN_CAPTURE_COUNT = 900;
+const int32_t SCREEN_CAPTURE_SCALE = 2;
+
+const float MAX_WINDOW_SIZE_RATIO = 0.9f;
+const int32_t WINDOW_BACKGROUND_COLOR = 0x101018;
 
 const int32_t ICON_WIDTH = 16;
 const int32_t ICON_HEIGHT = 16;
@@ -68,11 +73,6 @@ const std::vector<std::string> ICON_DATA = {
     "011EE111C11CC110", "00011EE1CCC11000", "0000011E71100000",
     "0000000110000000",
 };
-
-const int32_t WINDOW_BACKGROUND_COLOR = 0x101018;
-
-const int32_t SCREEN_CAPTURE_COUNT = 900;
-const int32_t SCREEN_CAPTURE_SCALE = 2;
 
 //
 // Resource
