@@ -26,8 +26,6 @@
 
 namespace pyxelcore {
 
-class ExitPyxel {};
-
 System::System(int32_t width,
                int32_t height,
                const std::string& caption,
@@ -35,7 +33,8 @@ System::System(int32_t width,
                const pyxelcore::PaletteColor& palette_color,
                int32_t fps,
                int32_t quit_key,
-               bool is_fullscreen)
+               bool is_fullscreen,
+               void (*quit)())
     : fps_profiler_(MEASURE_FRAME_COUNT),
       update_profiler_(MEASURE_FRAME_COUNT),
       draw_profiler_(MEASURE_FRAME_COUNT) {
@@ -63,6 +62,7 @@ System::System(int32_t width,
   resource_ = new pyxelcore::Resource(graphics_, audio_);
   window_ = new Window(caption, width, height, scale, palette_color);
   recorder_ = new Recorder(width, height, palette_color, fps);
+  quit_ = quit;
 
   palette_color_ = palette_color;
   fps_ = fps;
@@ -71,8 +71,6 @@ System::System(int32_t width,
   one_frame_time_ = 1000.0f / fps_;
   next_update_time_ = SDL_GetTicks();
   is_update_suspended_ = false;
-  is_exit_enabled_ = false;
-  is_quitted_ = false;
   drop_file_ = "";
   is_performance_monitor_on_ = false;
 
@@ -96,56 +94,46 @@ System::~System() {
 }
 
 void System::Run(void (*update)(), void (*draw)()) {
-  is_exit_enabled_ = true;
+  next_update_time_ = SDL_GetTicks() + one_frame_time_;
+  is_update_suspended_ = true;
 
-  try {
-    next_update_time_ = SDL_GetTicks() + one_frame_time_;
-    is_update_suspended_ = true;
+  UpdateFrame(update);
+  DrawFrame(draw, 1);
 
-    UpdateFrame(update);
-    DrawFrame(draw, 1);
+  while (true) {
+    double sleep_time = WaitForUpdateTime();
 
-    while (true) {
-      double sleep_time = WaitForUpdateTime();
+    fps_profiler_.End();
+    fps_profiler_.Start();
 
-      fps_profiler_.End();
-      fps_profiler_.Start();
+    int32_t update_frame_count;
 
-      int32_t update_frame_count;
-
-      if (is_update_suspended_) {
-        is_update_suspended_ = false;
-        update_frame_count = 1;
-        next_update_time_ = SDL_GetTicks() + one_frame_time_;
-      } else {
-        update_frame_count =
-            Min(static_cast<int32_t>(-sleep_time / one_frame_time_),
-                MAX_FRAME_SKIP_COUNT) +
-            1;
-        next_update_time_ += one_frame_time_ * update_frame_count;
-      }
-
-      for (int32_t i = 0; i < update_frame_count; i++) {
-        frame_count_++;
-        UpdateFrame(update);
-      }
-
-      DrawFrame(draw, update_frame_count);
+    if (is_update_suspended_) {
+      is_update_suspended_ = false;
+      update_frame_count = 1;
+      next_update_time_ = SDL_GetTicks() + one_frame_time_;
+    } else {
+      update_frame_count =
+          Min(static_cast<int32_t>(-sleep_time / one_frame_time_),
+              MAX_FRAME_SKIP_COUNT) +
+          1;
+      next_update_time_ += one_frame_time_ * update_frame_count;
     }
-  } catch (ExitPyxel) {
-    delete this;
+
+    for (int32_t i = 0; i < update_frame_count; i++) {
+      frame_count_++;
+      UpdateFrame(update);
+    }
+
+    DrawFrame(draw, update_frame_count);
   }
 }
 
 void System::Quit() {
-  is_quitted_ = true;
-
-  if (is_exit_enabled_) {
-    throw ExitPyxel();
-  }
+  quit_();
 }
 
-bool System::FlipScreen() {
+void System::FlipScreen() {
   WaitForUpdateTime();
   next_update_time_ += one_frame_time_;
 
@@ -155,19 +143,11 @@ bool System::FlipScreen() {
   frame_count_++;
   UpdateFrame(nullptr);
   DrawFrame(nullptr, 1);
-
-  return is_quitted_;
 }
 
 void System::ShowScreen() {
-  is_exit_enabled_ = true;
-
-  try {
-    while (true) {
-      FlipScreen();
-    }
-  } catch (ExitPyxel) {
-    delete this;
+  while (true) {
+    FlipScreen();
   }
 }
 
