@@ -9,8 +9,8 @@ from typing import Any, Callable, Dict, List, Optional
 
 from . import core  # type: ignore
 
-if sys.version_info < (3, 6, 7):
-    print("pyxel error: Python version must be 3.7 or higher")
+if sys.version_info < (3, 6, 9):
+    print("pyxel error: Python version must be 3.6.9 or higher")
     sys.exit(1)
 
 
@@ -533,6 +533,12 @@ def init(
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+    def quit_callback():  # type: ignore
+        sys.exit(0)
+
+    global _quit_callback
+    _quit_callback = CFUNCTYPE(None)(quit_callback)  # type: ignore
+
     core.init(
         int(width),
         int(height),
@@ -542,35 +548,36 @@ def init(
         int(fps),
         int(quit_key),
         int(fullscreen),
+        _quit_callback,  # type: ignore
     )
 
 
 def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
-    def update_wrapper():  # type: ignore
+    def update_callback():  # type: ignore
         try:
             update()
         except Exception:
             traceback.print_exc()
-            quit()
+            sys.exit(1)
 
-    def draw_wrapper():  # type: ignore
+    def draw_callback():  # type: ignore
         try:
             draw()
         except Exception:
             traceback.print_exc()
-            quit()
+            sys.exit(1)
 
-    core.run(CFUNCTYPE(None)(update_wrapper), CFUNCTYPE(None)(draw_wrapper))
+    core.run(
+        CFUNCTYPE(None)(update_callback), CFUNCTYPE(None)(draw_callback),
+    )
 
 
 def quit() -> None:
     core.quit()
-    exit(0)
 
 
 def flip() -> None:
-    if core.flip():
-        exit(0)
+    core.flip()
 
 
 def show() -> None:
