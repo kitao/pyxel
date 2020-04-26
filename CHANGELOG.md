@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.3
+- Fixed the way to quit the Pyxel application
+
 ## 1.3.2
 - Updated the installation instructions of the READMEs
 - Added the link to the Discord server to the READMEs
