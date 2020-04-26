@@ -2,6 +2,7 @@
 
 ## 1.3.3
 - Fixed the way to quit the Pyxel application
+- Fixed the Python version check
 
 ## 1.3.2
 - Updated the installation instructions of the READMEs
