@@ -573,7 +573,8 @@ Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수�
 
 - [Wiki](https://github.com/kitao/pyxel/wiki)
 - [Subreddit](https://www.reddit.com/r/pyxel/)
-- [Discord server](https://discord.gg/FC7kUZJ)
+- [Discord server (English)](https://discord.gg/FC7kUZJ)
+- [Discord server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## 라이선스 정보
 
