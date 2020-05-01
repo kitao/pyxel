@@ -56,13 +56,13 @@ Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Py
 
 ### Windows
 
-먼저 [Python3](https://www.python.org/) (버전 3.6.9 이상)을 설치하십시오.
+먼저 [Python3](https://www.python.org/) (버전 3.6.9 이상)을 설치합니다.
 
-공식 설치 프로그램으로 Python을 설치할 때 아래 버튼을 확인하여 **PATH에 Python을 추가** 하십시오:
+설치 중 아래 사진과 같이 **Add Python to PATH** 란을 체크해주세요.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/python_installer.png">
 
-다음, 명령 프롬프트에서 다음`pip` 명령으로 Pyxel을 설치하십시오:
+다음으로, 명령 프롬프트에서 아래의 `pip` 명령을 통해 Pyxel을 설치합니다.
 
 ```sh
 pip install -U pyxel
@@ -72,13 +72,13 @@ pip install -U pyxel
 
 [Python3](https://www.python.org/) (버전 3.6.9 이상)과 [SDL2](https://www.libsdl.org/)를 설치한 후, 아래의 `pip` 명령어를 통해 Pyxel을 설치합니다.
 
-[Homebrew](https://brew.sh/) 패키지 관리자를 사용할 수 있다면, 아래의 명령으로 필요한 패키지를 모두 설치할 수 있습니다:
+[Homebrew](https://brew.sh/) 패키지 관리자를 사용할 수 있다면, 아래의 명령으로 필요한 패키지를 모두 설치할 수 있습니다.
 
 ```sh
 brew install python3 sdl2 sdl2_image
 ```
 
-**터미널을 다시 시작**한 후,
+**터미널을 다시 시작**한 후, 아래 명령어를 입력합니다.
 
 ```sh
 pip3 install -U pyxel
@@ -86,7 +86,7 @@ pip3 install -U pyxel
 
 ### Linux
 
-각 distribution에 적합한 방법으로 [Python3](https://www.python.org/) (버전 3.6.9 이상)과 필요한 패키지를 설치하시면 됩니다.
+각 배포판에 적합한 방법으로 [Python3](https://www.python.org/) (버전 3.6.9 이상)과 필요한 패키지를 설치하시면 됩니다.
 
 **Ubuntu:**
 
@@ -325,7 +325,7 @@ pyxelpackager python_file
 
 - `init(width, height, [caption], [scale], [palette], [fps], [quit_key], [fullscreen])`<br>
 Pyxel 애플리케이션을 (`width`, `height`) 크기로 초기화합니다. 화면의 가로/세로 최대 크기는 256입니다.<br>
-`caption`으로 창 제목, `scale`로 표시 배율, `palette`로 팔레트 색, `fps`로 동작 프레임 레이트, `quit_key`로 애플리케이션의 종료 키를 지정할 수 있습니다, 그리고 `fullscreen`으로 전체 화면으로 시작할지 여부. `palette`는 24비트 색상 중 16개의 요소로 지정합니다.<br>
+`caption`으로 창 제목, `scale`로 표시 배율, `palette`로 팔레트 색, `fps`로 동작 프레임 레이트, `quit_key`로 애플리케이션의 종료 키를 지정할 수 있으며, `fullscreen`으로 전체 화면으로 시작할 지의 여부를 결정할 수 있습니다. `palette`는 24비트 색상 중 16개의 요소로 지정합니다.<br>
 예: `pyxel.init(160, 120, caption="Pyxel with PICO-8 palette", palette=[0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436, 0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA], quit_key=pyxel.KEY_NONE, fullscreen=True)`
 
 - `run(update, draw)`<br>
@@ -350,10 +350,10 @@ Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수�
 
 ### 입력
 - `mouse_x`, `mouse_y`<br>
-현재의 마우스 커서 좌표를 나타냅니다.
+마우스 커서의 현재 좌표를 나타냅니다.
 
 - `mouse_wheel`<br>
-마우스 휠의 현재 값
+마우스 휠의 현재 값을 나타냅니다.
 
 - `btn(key)`<br>
 `key`가 눌리고 있으면 `True`, 눌리고 있지 않으면 `False`를 반환합니다. ([키 정의 리스트](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
