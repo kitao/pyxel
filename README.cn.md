@@ -70,15 +70,13 @@ pip install -U pyxel
 
 ### Mac
 
-安装[Python3](https://www.python.org/)(3.6.9或更高版本)以及[SDL2](https://www.libsdl.org/)之后，输入`pip`命令来安装Pyxel。
-
-如果已安装[Homebrew](https://brew.sh/)，输入以下命令安装所有需要的包。
+第一步，在已经安装了[Homebrew](https://brew.sh/)包管理工具的环境下，输入以下命令安装[Python3](https://www.python.org/)(3.6.9或更高版本)以及[SDL2](https://www.libsdl.org/)：
 
 ```sh
 brew install python3 sdl2 sdl2_image
 ```
 
-**重启终端**之后：
+第二步，**重启终端**，并使用`pip3`命令安装Pyxel：
 
 ```sh
 pip3 install -U pyxel
