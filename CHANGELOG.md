@@ -3,6 +3,7 @@
 ## 1.3.4
 - Updated the README in Korean
 - Updated the installation instructions in the READMEs
+- Changed color names along the new palette
 
 ## 1.3.3
 - Fixed the way to quit the Pyxel application
