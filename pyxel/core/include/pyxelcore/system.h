@@ -35,7 +35,7 @@ class System {
   int32_t FrameCount() const { return frame_count_; }
 
   void Run(void (*update)(), void (*draw)());
-  void Quit();
+  bool Quit();
   bool FlipScreen();
   void ShowScreen();
 
@@ -55,6 +55,7 @@ class System {
   int32_t frame_count_;
   double one_frame_time_;
   double next_update_time_;
+  bool is_loop_running_;
   bool is_update_suspended_;
   std::string drop_file_;
   pyxelcore::PaletteColor palette_color_;

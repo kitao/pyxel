@@ -39,7 +39,7 @@ PYXEL_API void init(int width,
                     int quit_key,
                     int fullscreen);
 PYXEL_API void run(void (*update)(), void (*draw)());
-PYXEL_API void quit();
+PYXEL_API int quit();
 PYXEL_API int flip();
 PYXEL_API void show();
 
