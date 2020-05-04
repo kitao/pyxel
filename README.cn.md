@@ -582,3 +582,4 @@ Pyxel使用了以下库：
 - [SDL2](https://www.libsdl.org/)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
 - [PyInstaller](https://www.pyinstaller.org/)
+- [Gifsicle](https://www.lcdf.org/gifsicle/)
