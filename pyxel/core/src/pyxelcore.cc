@@ -62,16 +62,14 @@ void init(int width,
           const int* palette,
           int fps,
           int quit_key,
-          int fullscreen,
-          void (*quit)()) {
+          int fullscreen) {
   std::array<int, pyxelcore::COLOR_COUNT> palette_color;
   for (int i = 0; i < pyxelcore::COLOR_COUNT; i++) {
     palette_color[i] = palette[i];
   }
 
-  s_system =
-      new pyxelcore::System(width, height, std::string(caption), scale,
-                            palette_color, fps, quit_key, fullscreen, quit);
+  s_system = new pyxelcore::System(width, height, std::string(caption), scale,
+                                   palette_color, fps, quit_key, fullscreen);
   s_resource = s_system->Resource();
   s_input = s_system->Input();
   s_graphics = s_system->Graphics();
@@ -86,8 +84,8 @@ void quit() {
   GetSystem()->Quit();
 }
 
-void flip() {
-  GetSystem()->FlipScreen();
+int flip() {
+  return GetSystem()->FlipScreen();
 }
 
 void show() {

@@ -533,12 +533,6 @@ def init(
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-    def quit_callback():  # type: ignore
-        sys.exit(0)
-
-    global _quit_callback
-    _quit_callback = CFUNCTYPE(None)(quit_callback)  # type: ignore
-
     core.init(
         int(width),
         int(height),
@@ -548,7 +542,6 @@ def init(
         int(fps),
         int(quit_key),
         int(fullscreen),
-        _quit_callback,  # type: ignore
     )
 
 
@@ -577,7 +570,8 @@ def quit() -> None:
 
 
 def flip() -> None:
-    core.flip()
+    if core.flip():
+        sys.exit(0)
 
 
 def show() -> None:
