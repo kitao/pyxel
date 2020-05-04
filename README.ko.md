@@ -578,7 +578,7 @@ Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수�
 
 Pyxel은 [MIT license](http://en.wikipedia.org/wiki/MIT_License)를 따릅니다. 라이선스가 부여된 소프트웨어의 모든 사본에 MIT 라이선스 조항의 사본 및 저작권 통지가 포함되어 있다면 독점 소프트웨어 내에서 재사용할 수 있습니다.
 
-Pyxel은 아래와 같은 라이브러리를 사용하고 있습니다:
+Pyxel은 다음 소프트웨어를 사용합니다:
 
 - [SDL2](https://www.libsdl.org/)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
