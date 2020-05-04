@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.5
+- Changed the way to quit the Pyxel application
+
 ## 1.3.4
 - Updated the README in Korean
 - Updated the installation instructions in the READMEs

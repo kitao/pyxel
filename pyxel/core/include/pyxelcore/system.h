@@ -21,8 +21,7 @@ class System {
          const pyxelcore::PaletteColor& palette_color,
          int32_t fps,
          int32_t quit_key,
-         bool is_fullscreen,
-         void (*quit)());
+         bool is_fullscreen);
   ~System();
 
   pyxelcore::Resource* Resource() const { return resource_; }
@@ -37,7 +36,7 @@ class System {
 
   void Run(void (*update)(), void (*draw)());
   void Quit();
-  void FlipScreen();
+  bool FlipScreen();
   void ShowScreen();
 
   std::string DropFile() const { return drop_file_; }
@@ -50,7 +49,6 @@ class System {
   pyxelcore::Audio* audio_;
   Window* window_;
   Recorder* recorder_;
-  void (*quit_)();
 
   int32_t fps_;
   int32_t quit_key_;
