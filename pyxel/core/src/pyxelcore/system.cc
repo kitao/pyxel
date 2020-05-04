@@ -70,6 +70,7 @@ System::System(int32_t width,
   frame_count_ = 0;
   one_frame_time_ = 1000.0f / fps_;
   next_update_time_ = SDL_GetTicks();
+  is_loop_running_ = false;
   is_update_suspended_ = false;
   drop_file_ = "";
   is_performance_monitor_on_ = false;
@@ -96,6 +97,7 @@ System::~System() {
 void System::Run(void (*update)(), void (*draw)()) {
   try {
     next_update_time_ = SDL_GetTicks() + one_frame_time_;
+    is_loop_running_ = true;
     is_update_suspended_ = true;
 
     UpdateFrame(update);
@@ -129,12 +131,16 @@ void System::Run(void (*update)(), void (*draw)()) {
       DrawFrame(draw, update_frame_count);
     }
   } catch (ExitPyxel) {
-    delete this;
+    // do nothing
   }
 }
 
-void System::Quit() {
-  throw ExitPyxel();
+bool System::Quit() {
+  if (is_loop_running_) {
+    throw ExitPyxel();
+  }
+
+  return true;
 }
 
 bool System::FlipScreen() {
@@ -151,13 +157,15 @@ bool System::FlipScreen() {
 
     return false;
   } catch (ExitPyxel) {
-    delete this;
+    // do nothing
   }
 
   return true;
 }
 
 void System::ShowScreen() {
+  is_loop_running_ = true;
+
   while (true) {
     if (FlipScreen()) {
       break;
@@ -185,7 +193,7 @@ void System::UpdateFrame(void (*update)()) {
   update_profiler_.Start();
 
   if (window_->ProcessEvents()) {
-    Quit();
+    throw ExitPyxel();
   }
 
   drop_file_ = window_->GetDropFile();
@@ -225,7 +233,7 @@ void System::CheckSpecialInput() {
   }
 
   if (input_->IsButtonPressed(quit_key_)) {
-    Quit();
+    throw ExitPyxel();
   }
 }
 
