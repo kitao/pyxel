@@ -84,13 +84,8 @@ void Recorder::SaveScreenCapture() {
   gif_writer->EndFrame();
   delete gif_writer;
 
-  // try to optimize the generated GIF file with Gifsicle
-#ifdef _WIN32
-  std::string error_output_dest = " 2> nul";
-#else
-  std::string error_output_dest = " 2> /dev/null";
-#endif
-  system(("gifsicle -b -O3 " + filename + error_output_dest).c_str());
+  // optimize the generated GIF file with Gifsicle
+  system(("gifsicle -b -O3 " + filename).c_str());
 
   ResetScreenCapture();
 }
