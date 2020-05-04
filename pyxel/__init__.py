@@ -563,10 +563,12 @@ def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
     core.run(
         CFUNCTYPE(None)(update_callback), CFUNCTYPE(None)(draw_callback),
     )
+    sys.exit(0)
 
 
 def quit() -> None:
-    core.quit()
+    if core.quit():
+        sys.exit(0)
 
 
 def flip() -> None:
@@ -576,6 +578,7 @@ def flip() -> None:
 
 def show() -> None:
     core.show()
+    sys.exit(0)
 
 
 def _caption(caption: str) -> None:

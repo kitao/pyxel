@@ -80,8 +80,8 @@ void run(void (*update)(), void (*draw)()) {
   GetSystem()->Run(update, draw);
 }
 
-void quit() {
-  GetSystem()->Quit();
+int quit() {
+  return GetSystem()->Quit();
 }
 
 int flip() {

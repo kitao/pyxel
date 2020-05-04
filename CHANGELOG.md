@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.3.6
+- Add the quit key to the example #8
+- Fixed the key input detection at the first frame
+- Fixed the way to quit the Pyxel application
+
 ## 1.3.5
 - Changed the way to quit the Pyxel application
 
