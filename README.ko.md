@@ -583,3 +583,4 @@ Pyxel은 아래와 같은 라이브러리를 사용하고 있습니다:
 - [SDL2](https://www.libsdl.org/)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
 - [PyInstaller](https://www.pyinstaller.org/)
+- [Gifsicle](https://www.lcdf.org/gifsicle/)
