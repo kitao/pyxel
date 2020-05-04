@@ -129,7 +129,7 @@ void System::Run(void (*update)(), void (*draw)()) {
       DrawFrame(draw, update_frame_count);
     }
   } catch (ExitPyxel) {
-    // do nothing
+    delete this;
   }
 }
 
@@ -151,7 +151,7 @@ bool System::FlipScreen() {
 
     return false;
   } catch (ExitPyxel) {
-    // do nothing
+    delete this;
   }
 
   return true;
