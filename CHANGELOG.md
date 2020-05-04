@@ -4,7 +4,7 @@
 - Updated the README in Korean
 - Updated the installation instructions in the READMEs
 - Changed color names along the new palette
-- Changed to try to optimize an animated GIF with Gifsicle
+- Changed to optimize an animated GIF with Gifsicle
 
 ## 1.3.3
 - Fixed the way to quit the Pyxel application
