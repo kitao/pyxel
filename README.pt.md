@@ -70,10 +70,10 @@ pip install -U pyxel
 
 ### Mac
 
-Primeiro, em um ambiente com [Homebrew](https://brew.sh/) instalado, instale o [Python3](https://www.python.org/) (versão 3.6.9 ou superior) e o [SDL2](https://www.libsdl.org/) com o seguinte commando:
+Primeiro, no ambiente com o [Homebrew] (https://brew.sh/) instalado, instale o [Python3] (https://www.python.org/) (versão 3.6.9 ou superior) e os pacotes necessários com o próximo comando:
 
 ```sh
-brew install python3 sdl2 sdl2_image
+brew install python3 sdl2 sdl2_image gifsicle
 ```
 
 Em seguida, **reinicie o terminal** e instale o Pyxel com o commando `pip3`:
@@ -89,7 +89,7 @@ Instale [Python3](https://www.python.org/) (versão 3.6.9 ou superior) e os requ
 **Ubuntu:**
 
 ```sh
-sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev
+sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev gifsicle
 sudo -H pip3 install -U pyxel
 ```
 
