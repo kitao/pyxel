@@ -85,7 +85,7 @@ void Recorder::SaveScreenCapture() {
   delete gif_writer;
 
   // optimize the generated GIF file with Gifsicle
-  system(("gifsicle -b -O3 " + filename).c_str());
+  int32_t res = system(("gifsicle -b -O3 " + filename).c_str());
 
   ResetScreenCapture();
 }
