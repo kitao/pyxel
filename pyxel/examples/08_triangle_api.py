@@ -36,4 +36,7 @@ while True:
         t = triangle_list.pop(0)
         draw_triangle(*t)
 
+    if pyxel.btnp(pyxel.KEY_Q):
+        pyxel.quit()
+
     pyxel.flip()
