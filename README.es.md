@@ -576,7 +576,7 @@ Los pull request enviados se consideran acordados publicarse bajo [licencia MIT]
 
 Pyxel esta bajo [licencia MIT](http://en.wikipedia.org/wiki/MIT_License). Puede ser reutilizado dentro de software propietario proporcionando a todas las copias del software licenciado que incluyan una copia de la licencia MIT, términos y aviso de derechos de autor.
 
-Pyxel usa las siguientes librerías:
+Pyxel utiliza el siguiente software:
 
 - [SDL2](https://www.libsdl.org/)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
