@@ -110,6 +110,10 @@ bool Input::IsButtonPressed(int32_t key,
     PYXEL_ERROR("invalid key");
   }
 
+  if (frame_count_ == 0) {
+    return false;
+  }
+
   int32_t press_frame = key_state_[key];
 
   if (press_frame == frame_count_) {
@@ -132,6 +136,10 @@ bool Input::IsButtonPressed(int32_t key,
 bool Input::IsButtonReleased(int32_t key) const {
   if (key < 0 || key >= KEY_COUNT) {
     PYXEL_ERROR("invalid key");
+  }
+
+  if (frame_count_ == 0) {
+    return false;
   }
 
   return key_state_[key] == -frame_count_;
