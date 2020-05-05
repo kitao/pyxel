@@ -28,7 +28,7 @@
 
 SCRIPT_DIR=$(cd $(dirname $0);pwd)
 DOWNLOAD_DIR=$SCRIPT_DIR/download
-INCDIR=$SCRIPT_DIR/include/SDL2
+INCDIR=$SCRIPT_DIR/include
 LIBDIR=$SCRIPT_DIR/lib
 BINDIR=$SCRIPT_DIR/bin
 
@@ -38,16 +38,17 @@ MINGW_SDL2_IMAGE_URL="https://www.libsdl.org/projects/SDL_image/release/SDL2_ima
 GIFSICLE_WIN32_URL="https://eternallybored.org/misc/gifsicle/releases/gifsicle-1.92-win32.zip"
 GIFSICLE_WIN64_URL="https://eternallybored.org/misc/gifsicle/releases/gifsicle-1.92-win64.zip"
 
-rm -rf $INCDIR $LIBDIR $SDL_BINDIR $DOWNLOAD_DIR
-mkdir -p $INCDIR $LIBDIR/win{32,64} $BINDIR/win{32,64} $DOWNLOAD_DIR
+rm -rf $INCDIR/win{32,64} $LIBDIR $BINDIR $DOWNLOAD_DIR
+mkdir -p $INCDIR/win{32,64}/SDL2 $LIBDIR/win{32,64} $BINDIR/win{32,64} $DOWNLOAD_DIR
 
 cd $DOWNLOAD_DIR
 curl -L $MINGW_SDL2_URL -o SDL2.tar.gz
 tar xzf SDL2.tar.gz
 cd SDL2-*
-cp i686-w64-mingw32/include/SDL2/*.h $INCDIR
+cp i686-w64-mingw32/include/SDL2/*.h $INCDIR/win32/SDL2
 cp i686-w64-mingw32/lib/libSDL2{.dll,main}.a $LIBDIR/win32
 cp i686-w64-mingw32/bin/SDL2.dll $BINDIR/win32
+cp x86_64-w64-mingw32/include/SDL2/*.h $INCDIR/win64/SDL2
 cp x86_64-w64-mingw32/lib/libSDL2{.dll,main}.a $LIBDIR/win64
 cp x86_64-w64-mingw32/bin/SDL2.dll $BINDIR/win64
 
@@ -55,9 +56,10 @@ cd $DOWNLOAD_DIR
 curl -L $MINGW_SDL2_IMAGE_URL -o SDL2_image.tar.gz
 tar xzf SDL2_image.tar.gz
 cd SDL2_image-*
-cp i686-w64-mingw32/include/SDL2/*.h $INCDIR
+cp i686-w64-mingw32/include/SDL2/*.h $INCDIR/win32/SDL2
 cp i686-w64-mingw32/lib/libSDL2_image.dll.a $LIBDIR/win32
 cp i686-w64-mingw32/bin/*.dll $BINDIR/win32
+cp x86_64-w64-mingw32/include/SDL2/*.h $INCDIR/win64/SDL2
 cp x86_64-w64-mingw32/lib/libSDL2_image.dll.a $LIBDIR/win64
 cp x86_64-w64-mingw32/bin/*.dll $BINDIR/win64
 
