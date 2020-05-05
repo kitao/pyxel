@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.3.7
+- Updated the library downloader script
+- Updated the SDL2 version for Windows
+
 ## 1.3.6
 - Add the quit key to the example #8
 - Fixed the key input detection at the first frame
