@@ -4,48 +4,31 @@
 
 namespace pyxelcore {
 
-class GifBitStream {
+const int32_t MAX_IMAGE_DATA_BLOCK_SIZE = 255;
+
+class ImageDataBlock {
  public:
-  GifBitStream(std::ofstream* ofs) {
+  ImageDataBlock(std::ofstream* ofs) {
     ofs_ = ofs;
     bit_index_ = 0;
     bit_data_ = 0;
-    chunk_index_ = 0;
+    block_size_ = 0;
   }
 
-  uint8_t BitIndex() { return bit_index_; }
-  uint8_t ChunkIndex() { return chunk_index_; }
-
-  void WriteBit(uint32_t bit) {
-    bit_data_ |= (bit & 1) << bit_index_;
-    bit_index_++;
-
-    if (bit_index_ > 7) {
-      chunk_data_[chunk_index_] = bit_data_;
-      chunk_index_++;
-
-      bit_index_ = 0;
-      bit_data_ = 0;
+  void WriteCode(int32_t code, int32_t bit_length) {
+    for (int32_t i = 0; i < bit_length; i++) {
+      WriteBit(code);
+      code >>= 1;
     }
   }
 
-  void WriteChunk() {
-    ofs_->put(chunk_index_);
-    ofs_->write(reinterpret_cast<char*>(chunk_data_), chunk_index_);
+  void FinishCode() {
+    while (bit_index_ > 0) {
+      WriteBit(0);
+    }
 
-    bit_index_ = 0;
-    bit_data_ = 0;
-    chunk_index_ = 0;
-  }
-
-  void WriteCode(uint32_t code, int32_t length) {
-    for (int32_t i = 0; i < length; i++) {
-      WriteBit(code);
-      code >>= 1;
-
-      if (chunk_index_ == 255) {
-        WriteChunk();
-      }
+    if (block_size_ > 0) {
+      WriteBlock();
     }
   }
 
@@ -53,8 +36,34 @@ class GifBitStream {
   std::ofstream* ofs_;
   int32_t bit_index_;
   int32_t bit_data_;
-  int32_t chunk_index_;
-  uint8_t chunk_data_[256];
+  int32_t block_size_;
+  uint8_t block_data_[MAX_IMAGE_DATA_BLOCK_SIZE];
+
+  void WriteBit(int32_t bit) {
+    bit_data_ |= (bit & 1) << bit_index_;
+    bit_index_++;
+
+    if (bit_index_ == 8) {
+      block_data_[block_size_] = bit_data_;
+      block_size_++;
+
+      bit_index_ = 0;
+      bit_data_ = 0;
+
+      if (block_size_ == MAX_IMAGE_DATA_BLOCK_SIZE) {
+        WriteBlock();
+      }
+    }
+  }
+
+  void WriteBlock() {
+    ofs_->put(block_size_);
+    ofs_->write(reinterpret_cast<char*>(block_data_), block_size_);
+
+    bit_index_ = 0;
+    bit_data_ = 0;
+    block_size_ = 0;
+  }
 };
 
 GifWriter::GifWriter(const std::string& filename,
@@ -205,7 +214,7 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
   ofs_.put(0x00);
 
   // LZW Minimum Code Size (1byte)
-  const int MIN_CODE_SIZE = 5;
+  const int32_t MIN_CODE_SIZE = 5;
   ofs_.put(MIN_CODE_SIZE);
 
   struct GifLzwNode {
@@ -213,18 +222,19 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
   };
 
   const int32_t MAX_CODE_COUNT = 4096;
+
   GifLzwNode* code_tree = new GifLzwNode[MAX_CODE_COUNT];
   memset(code_tree, 0, sizeof(GifLzwNode) * MAX_CODE_COUNT);
 
-  int32_t clear_code = 1 << MIN_CODE_SIZE;
+  const int32_t CLEAR_CODE = 1 << MIN_CODE_SIZE;
   int32_t code_size = MIN_CODE_SIZE + 1;
-  int32_t max_code_index = clear_code + 1;
+  int32_t max_code_index = CLEAR_CODE + 1;
   int32_t code = -1;
 
-  GifBitStream bs(&ofs_);
+  ImageDataBlock block(&ofs_);
   int32_t** data = image->Data();
 
-  bs.WriteCode(clear_code, code_size);
+  block.WriteCode(CLEAR_CODE, code_size);
 
   for (int32_t i = 0; i < scaled_height; i++) {
     int32_t y = i / SCREEN_CAPTURE_SCALE;
@@ -242,7 +252,7 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
       } else if (code_tree[code].next[value]) {
         code = code_tree[code].next[value];
       } else {
-        bs.WriteCode(code, code_size);
+        block.WriteCode(code, code_size);
 
         max_code_index++;
         code_tree[code].next[value] = max_code_index;
@@ -252,11 +262,12 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
         }
 
         if (max_code_index == MAX_CODE_COUNT - 1) {
-          bs.WriteCode(clear_code, code_size);
+          block.WriteCode(CLEAR_CODE, code_size);
+          printf("*** WRITE CLEAR CODE**\n");
 
           memset(code_tree, 0, sizeof(GifLzwNode) * MAX_CODE_COUNT);
           code_size = MIN_CODE_SIZE + 1;
-          max_code_index = clear_code + 1;
+          max_code_index = CLEAR_CODE + 1;
         }
 
         code = value;
@@ -264,17 +275,10 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
     }
   }
 
-  bs.WriteCode(code, code_size);
-  bs.WriteCode(clear_code, code_size);
-  bs.WriteCode(clear_code + 1, MIN_CODE_SIZE + 1);
-
-  while (bs.BitIndex() > 0) {
-    bs.WriteBit(0);
-  }
-
-  if (bs.ChunkIndex() > 0) {
-    bs.WriteChunk();
-  }
+  block.WriteCode(code, code_size);
+  block.WriteCode(CLEAR_CODE, code_size);
+  block.WriteCode(CLEAR_CODE + 1, MIN_CODE_SIZE + 1);
+  block.FinishCode();
 
   // Block Terminator (1byte)
   ofs_.put(0);
