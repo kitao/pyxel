@@ -25,7 +25,7 @@ namespace pyxelcore {
 //
 // Common
 //
-const std::string VERSION = "1.3.6";
+const std::string VERSION = "1.3.7";
 const int32_t COLOR_COUNT = 16;
 const std::string WHITESPACE = " \t\v\r\n";
 
