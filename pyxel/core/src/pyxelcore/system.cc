@@ -70,9 +70,9 @@ System::System(int32_t width,
   frame_count_ = 0;
   one_frame_time_ = 1000.0f / fps_;
   next_update_time_ = SDL_GetTicks();
+  drop_file_ = "";
   is_loop_running_ = false;
   is_update_suspended_ = false;
-  drop_file_ = "";
   is_performance_monitor_on_ = false;
 
   fps_profiler_.Start();
