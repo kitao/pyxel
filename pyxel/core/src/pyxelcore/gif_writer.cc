@@ -22,14 +22,14 @@ class ImageDataBlock {
     block_size_ = 0;
   }
 
-  void WriteCode(int32_t code, int32_t bit_length) {
+  void AddCode(int32_t code, int32_t bit_length) {
     for (int32_t i = 0; i < bit_length; i++) {
       WriteBit(code);
       code >>= 1;
     }
   }
 
-  void FinishCode() {
+  void EndCode() {
     while (bit_index_ > 0) {
       WriteBit(0);
     }
@@ -146,9 +146,9 @@ GifWriter::GifWriter(const std::string& filename,
   ofs_.write("NETSCAPE2.0", 11);
   ofs_.put(3);  // 3 bytes of NETSCAPE2.0 data
 
-  ofs_.put(1);
-  ofs_.put(0);
-  ofs_.put(0);
+  ofs_.put(1);  // fixed at 1
+  ofs_.put(0);  // loop count
+  ofs_.put(0);  // loop count
 
   // Block Terminator (1byte)
   ofs_.put(0);
@@ -176,7 +176,7 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
   // Disposal Method (3bits)
   // User Input Flag (1bit)
   // Transparent Color Flag (1bit)
-  ofs_.put(0x05);
+  ofs_.put(0x01);
 
   // Delay Time (2bytes)
   ofs_.put(delay_time & 0xff);
@@ -228,14 +228,14 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
   ofs_.put(MIN_CODE_LENGTH);
 
   int32_t** data = image->Data();
-  int32_t code_tree[4096][256];
+  int32_t code_tree[MAX_CODE_COUNT][256];
   ImageDataBlock block(&ofs_);
 
   int32_t code_length = MIN_CODE_LENGTH + 1;
   int32_t code_index = CLEAR_CODE + 1;
   int32_t code = -1;
 
-  block.WriteCode(CLEAR_CODE, code_length);
+  block.AddCode(CLEAR_CODE, code_length);
   ClearCodeTree(code_tree);
 
   for (int32_t i = 0; i < scaled_height; i++) {
@@ -254,7 +254,7 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
       } else if (code_tree[code][value] >= 0) {
         code = code_tree[code][value];
       } else {
-        block.WriteCode(code, code_length);
+        block.AddCode(code, code_length);
 
         code_index++;
         code_tree[code][value] = code_index;
@@ -264,7 +264,7 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
         }
 
         if (code_index == MAX_CODE_COUNT - 1) {
-          block.WriteCode(CLEAR_CODE, code_length);
+          block.AddCode(CLEAR_CODE, code_length);
           ClearCodeTree(code_tree);
 
           code_length = MIN_CODE_LENGTH + 1;
@@ -276,10 +276,10 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
     }
   }
 
-  block.WriteCode(code, code_length);
-  block.WriteCode(CLEAR_CODE, code_length);
-  block.WriteCode(CLEAR_CODE + 1, MIN_CODE_LENGTH + 1);
-  block.FinishCode();
+  block.AddCode(code, code_length);
+  block.AddCode(CLEAR_CODE, code_length);
+  block.AddCode(CLEAR_CODE + 1, MIN_CODE_LENGTH + 1);
+  block.EndCode();
 
   // Block Terminator (1byte)
   ofs_.put(0);
