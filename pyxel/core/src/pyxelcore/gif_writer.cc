@@ -4,7 +4,9 @@
 
 namespace pyxelcore {
 
-const int32_t MAX_IMAGE_DATA_BLOCK_SIZE = 255;
+struct GifLzwNode {
+  uint16_t next[256];
+};
 
 class ImageDataBlock {
  public:
@@ -37,7 +39,7 @@ class ImageDataBlock {
   int32_t bit_index_;
   int32_t bit_data_;
   int32_t block_size_;
-  uint8_t block_data_[MAX_IMAGE_DATA_BLOCK_SIZE];
+  uint8_t block_data_[255];
 
   void WriteBit(int32_t bit) {
     bit_data_ |= (bit & 1) << bit_index_;
@@ -50,7 +52,7 @@ class ImageDataBlock {
       bit_index_ = 0;
       bit_data_ = 0;
 
-      if (block_size_ == MAX_IMAGE_DATA_BLOCK_SIZE) {
+      if (block_size_ == 255) {
         WriteBlock();
       }
     }
@@ -185,6 +187,10 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
     Image Block
   */
 
+  const int32_t MIN_CODE_LENGTH = 5;
+  const int32_t MAX_CODE_COUNT = 4096;
+  const int32_t CLEAR_CODE = 1 << MIN_CODE_LENGTH;
+
   // Image Separator (1byte)
   ofs_.put(0x2c);
 
@@ -214,27 +220,17 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
   ofs_.put(0x00);
 
   // LZW Minimum Code Size (1byte)
-  const int32_t MIN_CODE_SIZE = 5;
-  ofs_.put(MIN_CODE_SIZE);
+  ofs_.put(MIN_CODE_LENGTH);
 
-  struct GifLzwNode {
-    uint16_t next[256];
-  };
+  int32_t** data = image->Data();
+  GifLzwNode* code_tree = new GifLzwNode[MAX_CODE_COUNT]();
+  ImageDataBlock block(&ofs_);
 
-  const int32_t MAX_CODE_COUNT = 4096;
-
-  GifLzwNode* code_tree = new GifLzwNode[MAX_CODE_COUNT];
-  memset(code_tree, 0, sizeof(GifLzwNode) * MAX_CODE_COUNT);
-
-  const int32_t CLEAR_CODE = 1 << MIN_CODE_SIZE;
-  int32_t code_size = MIN_CODE_SIZE + 1;
-  int32_t max_code_index = CLEAR_CODE + 1;
+  int32_t code_length = MIN_CODE_LENGTH + 1;
+  int32_t code_index = CLEAR_CODE + 1;
   int32_t code = -1;
 
-  ImageDataBlock block(&ofs_);
-  int32_t** data = image->Data();
-
-  block.WriteCode(CLEAR_CODE, code_size);
+  block.WriteCode(CLEAR_CODE, code_length);
 
   for (int32_t i = 0; i < scaled_height; i++) {
     int32_t y = i / SCREEN_CAPTURE_SCALE;
@@ -252,22 +248,21 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
       } else if (code_tree[code].next[value]) {
         code = code_tree[code].next[value];
       } else {
-        block.WriteCode(code, code_size);
+        block.WriteCode(code, code_length);
 
-        max_code_index++;
-        code_tree[code].next[value] = max_code_index;
+        code_index++;
+        code_tree[code].next[value] = code_index;
 
-        if (max_code_index >= (1ul << code_size)) {
-          code_size++;
+        if (code_index >= (1 << code_length)) {
+          code_length++;
         }
 
-        if (max_code_index == MAX_CODE_COUNT - 1) {
-          block.WriteCode(CLEAR_CODE, code_size);
-          printf("*** WRITE CLEAR CODE**\n");
+        if (code_index == MAX_CODE_COUNT - 1) {
+          block.WriteCode(CLEAR_CODE, code_length);
 
+          code_length = MIN_CODE_LENGTH + 1;
+          code_index = CLEAR_CODE + 1;
           memset(code_tree, 0, sizeof(GifLzwNode) * MAX_CODE_COUNT);
-          code_size = MIN_CODE_SIZE + 1;
-          max_code_index = CLEAR_CODE + 1;
         }
 
         code = value;
@@ -275,9 +270,9 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
     }
   }
 
-  block.WriteCode(code, code_size);
-  block.WriteCode(CLEAR_CODE, code_size);
-  block.WriteCode(CLEAR_CODE + 1, MIN_CODE_SIZE + 1);
+  block.WriteCode(code, code_length);
+  block.WriteCode(CLEAR_CODE, code_length);
+  block.WriteCode(CLEAR_CODE + 1, MIN_CODE_LENGTH + 1);
   block.FinishCode();
 
   // Block Terminator (1byte)
