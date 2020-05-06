@@ -8,7 +8,7 @@ template <class T, std::size_t N1, std::size_t N2>
 void ClearCodeTree(T (&code_tree)[N1][N2]) {
   for (int32_t i = 0; i < N1; i++) {
     for (int32_t j = 0; j < N2; j++) {
-      code_tree[i][j] = -1;
+      code_tree[i][j] = 0;
     }
   }
 }
@@ -22,8 +22,8 @@ class ImageDataBlock {
     block_size_ = 0;
   }
 
-  void AddCode(int32_t code, int32_t bit_length) {
-    for (int32_t i = 0; i < bit_length; i++) {
+  void AddCode(int32_t code, int32_t size) {
+    for (int32_t i = 0; i < size; i++) {
       WriteBit(code);
       code >>= 1;
     }
@@ -251,7 +251,7 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
 
       if (code < 0) {
         code = value;
-      } else if (code_tree[code][value] >= 0) {
+      } else if (code_tree[code][value]) {
         code = code_tree[code][value];
       } else {
         block.AddCode(code, code_size);
