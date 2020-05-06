@@ -1,8 +1,9 @@
 # Change Log
 
 ## 1.3.7
-- Updated the library downloader script
+- Updated the library download script
 - Updated the SDL2 version for Windows
+- Improved the animated GIF making method
 
 ## 1.3.6
 - Add the quit key to the example #8
