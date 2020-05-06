@@ -4,11 +4,14 @@
 
 namespace pyxelcore {
 
-template <class T, std::size_t N1, std::size_t N2>
-void ClearCodeTree(T (&code_tree)[N1][N2]) {
-  for (int32_t i = 0; i < N1; i++) {
-    for (int32_t j = 0; j < N2; j++) {
-      code_tree[i][j] = 0;
+struct CodeTree {
+  int32_t next[256];
+};
+
+void ClearCodeTree(CodeTree* code_tree) {
+  for (int32_t i = 0; i < 4096; i++) {
+    for (int32_t j = 0; j < 256; j++) {
+      code_tree[i].next[j] = 0;
     }
   }
 }
@@ -228,7 +231,7 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
   ofs_.put(MIN_CODE_SIZE);
 
   int32_t** data = image->Data();
-  int32_t code_tree[MAX_CODE_COUNT][256];
+  CodeTree* code_tree = new CodeTree[MAX_CODE_COUNT];
   ImageDataBlock block(&ofs_);
 
   int32_t code_size = MIN_CODE_SIZE + 1;
@@ -251,13 +254,13 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
 
       if (code < 0) {
         code = value;
-      } else if (code_tree[code][value]) {
-        code = code_tree[code][value];
+      } else if (code_tree[code].next[value]) {
+        code = code_tree[code].next[value];
       } else {
         block.AddCode(code, code_size);
 
         code_index++;
-        code_tree[code][value] = code_index;
+        code_tree[code].next[value] = code_index;
 
         if (code_index >= (1 << code_size)) {
           code_size++;
@@ -283,6 +286,8 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
 
   // Block Terminator (1byte)
   ofs_.put(0);
+
+  delete[] code_tree;
 
   memcpy(last_frame_data_, image->Data()[0],
          sizeof(int32_t) * width_ * height_);
