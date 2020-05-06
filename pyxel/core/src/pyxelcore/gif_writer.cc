@@ -192,9 +192,9 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
     Image Block
   */
 
-  const int32_t MIN_CODE_LENGTH = 5;
+  const int32_t MIN_CODE_SIZE = 5;
   const int32_t MAX_CODE_COUNT = 4096;
-  const int32_t CLEAR_CODE = 1 << MIN_CODE_LENGTH;
+  const int32_t CLEAR_CODE = 1 << MIN_CODE_SIZE;
 
   // Image Separator (1byte)
   ofs_.put(0x2c);
@@ -225,17 +225,17 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
   ofs_.put(0x00);
 
   // LZW Minimum Code Size (1byte)
-  ofs_.put(MIN_CODE_LENGTH);
+  ofs_.put(MIN_CODE_SIZE);
 
   int32_t** data = image->Data();
   int32_t code_tree[MAX_CODE_COUNT][256];
   ImageDataBlock block(&ofs_);
 
-  int32_t code_length = MIN_CODE_LENGTH + 1;
+  int32_t code_size = MIN_CODE_SIZE + 1;
   int32_t code_index = CLEAR_CODE + 1;
   int32_t code = -1;
 
-  block.AddCode(CLEAR_CODE, code_length);
+  block.AddCode(CLEAR_CODE, code_size);
   ClearCodeTree(code_tree);
 
   for (int32_t i = 0; i < scaled_height; i++) {
@@ -254,20 +254,20 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
       } else if (code_tree[code][value] >= 0) {
         code = code_tree[code][value];
       } else {
-        block.AddCode(code, code_length);
+        block.AddCode(code, code_size);
 
         code_index++;
         code_tree[code][value] = code_index;
 
-        if (code_index >= (1 << code_length)) {
-          code_length++;
+        if (code_index >= (1 << code_size)) {
+          code_size++;
         }
 
         if (code_index == MAX_CODE_COUNT - 1) {
-          block.AddCode(CLEAR_CODE, code_length);
+          block.AddCode(CLEAR_CODE, code_size);
           ClearCodeTree(code_tree);
 
-          code_length = MIN_CODE_LENGTH + 1;
+          code_size = MIN_CODE_SIZE + 1;
           code_index = CLEAR_CODE + 1;
         }
 
@@ -276,9 +276,9 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
     }
   }
 
-  block.AddCode(code, code_length);
-  block.AddCode(CLEAR_CODE, code_length);
-  block.AddCode(CLEAR_CODE + 1, MIN_CODE_LENGTH + 1);
+  block.AddCode(code, code_size);
+  block.AddCode(CLEAR_CODE, code_size);
+  block.AddCode(CLEAR_CODE + 1, MIN_CODE_SIZE + 1);
   block.EndCode();
 
   // Block Terminator (1byte)
