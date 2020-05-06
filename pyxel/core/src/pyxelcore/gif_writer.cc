@@ -4,9 +4,14 @@
 
 namespace pyxelcore {
 
-struct GifLzwNode {
-  uint16_t next[256];
-};
+template <class T, std::size_t N1, std::size_t N2>
+void ClearCodeTree(T (&code_tree)[N1][N2]) {
+  for (int32_t i = 0; i < N1; i++) {
+    for (int32_t j = 0; j < N2; j++) {
+      code_tree[i][j] = -1;
+    }
+  }
+}
 
 class ImageDataBlock {
  public:
@@ -223,7 +228,7 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
   ofs_.put(MIN_CODE_LENGTH);
 
   int32_t** data = image->Data();
-  GifLzwNode* code_tree = new GifLzwNode[MAX_CODE_COUNT]();
+  int32_t code_tree[4096][256];
   ImageDataBlock block(&ofs_);
 
   int32_t code_length = MIN_CODE_LENGTH + 1;
@@ -231,13 +236,14 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
   int32_t code = -1;
 
   block.WriteCode(CLEAR_CODE, code_length);
+  ClearCodeTree(code_tree);
 
   for (int32_t i = 0; i < scaled_height; i++) {
     int32_t y = i / SCREEN_CAPTURE_SCALE;
 
     for (int32_t j = 0; j < scaled_width; j++) {
       int32_t x = j / SCREEN_CAPTURE_SCALE;
-      int32_t value = data[y][x];
+      uint8_t value = data[y][x];
 
       if (value == last_frame_data_[width_ * y + x]) {
         value = TRANSPARENT_COLOR;
@@ -245,13 +251,13 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
 
       if (code < 0) {
         code = value;
-      } else if (code_tree[code].next[value]) {
-        code = code_tree[code].next[value];
+      } else if (code_tree[code][value] >= 0) {
+        code = code_tree[code][value];
       } else {
         block.WriteCode(code, code_length);
 
         code_index++;
-        code_tree[code].next[value] = code_index;
+        code_tree[code][value] = code_index;
 
         if (code_index >= (1 << code_length)) {
           code_length++;
@@ -259,10 +265,10 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
 
         if (code_index == MAX_CODE_COUNT - 1) {
           block.WriteCode(CLEAR_CODE, code_length);
+          ClearCodeTree(code_tree);
 
           code_length = MIN_CODE_LENGTH + 1;
           code_index = CLEAR_CODE + 1;
-          memset(code_tree, 0, sizeof(GifLzwNode) * MAX_CODE_COUNT);
         }
 
         code = value;
@@ -277,8 +283,6 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
 
   // Block Terminator (1byte)
   ofs_.put(0);
-
-  delete[] code_tree;
 
   memcpy(last_frame_data_, image->Data()[0],
          sizeof(int32_t) * width_ * height_);
