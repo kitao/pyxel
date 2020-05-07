@@ -4,14 +4,19 @@
 
 namespace pyxelcore {
 
-struct CodeTree {
-  int32_t next[256];
-};
+const int32_t TRANSPARENT_COLOR = COLOR_COUNT;
+const int32_t VALUE_TYPE_COUNT = COLOR_COUNT + 1;
+const int32_t MIN_CODE_SIZE = 5;
+const int32_t MAX_CODE_SIZE = 12;
+const int32_t MAX_CODE_COUNT = 1 << MAX_CODE_SIZE;
+const int32_t MAX_BLOCK_SIZE = 255;
+const int32_t CLEAR_CODE = 1 << MIN_CODE_SIZE;
 
-void ClearCodeTree(CodeTree* code_tree) {
-  for (int32_t i = 0; i < 4096; i++) {
-    for (int32_t j = 0; j < 256; j++) {
-      code_tree[i].next[j] = 0;
+template <class T, size_t N1, size_t N2>
+void ClearCodeTree(T (&code_tree)[N1][N2]) {
+  for (int32_t i = 0; i < N1; i++) {
+    for (int32_t j = 0; j < N2; j++) {
+      code_tree[i][j] = 0;
     }
   }
 }
@@ -47,20 +52,24 @@ class ImageDataBlock {
   int32_t bit_index_;
   int32_t bit_data_;
   int32_t block_size_;
-  uint8_t block_data_[255];
+  uint8_t block_data_[MAX_BLOCK_SIZE];
 
   void WriteBit(int32_t bit) {
     bit_data_ |= (bit & 1) << bit_index_;
     bit_index_++;
 
     if (bit_index_ == 8) {
+      if (block_size_ >= MAX_BLOCK_SIZE) {
+        PYXEL_ERROR("failed to generate GIF");
+      }
+
       block_data_[block_size_] = bit_data_;
       block_size_++;
 
       bit_index_ = 0;
       bit_data_ = 0;
 
-      if (block_size_ == 255) {
+      if (block_size_ == MAX_BLOCK_SIZE) {
         WriteBlock();
       }
     }
@@ -195,10 +204,6 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
     Image Block
   */
 
-  const int32_t MIN_CODE_SIZE = 5;
-  const int32_t MAX_CODE_COUNT = 4096;
-  const int32_t CLEAR_CODE = 1 << MIN_CODE_SIZE;
-
   // Image Separator (1byte)
   ofs_.put(0x2c);
 
@@ -231,8 +236,8 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
   ofs_.put(MIN_CODE_SIZE);
 
   int32_t** data = image->Data();
-  CodeTree* code_tree = new CodeTree[MAX_CODE_COUNT];
   ImageDataBlock block(&ofs_);
+  static uint16_t code_tree[MAX_CODE_COUNT][VALUE_TYPE_COUNT];
 
   int32_t code_size = MIN_CODE_SIZE + 1;
   int32_t code_index = CLEAR_CODE + 1;
@@ -246,21 +251,30 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
 
     for (int32_t j = 0; j < scaled_width; j++) {
       int32_t x = j / SCREEN_CAPTURE_SCALE;
-      uint8_t value = data[y][x];
+      int32_t value = data[y][x];
 
       if (value == last_frame_data_[width_ * y + x]) {
         value = TRANSPARENT_COLOR;
       }
 
+      if (code >= MAX_CODE_COUNT || code_size > MAX_CODE_SIZE ||
+          value >= VALUE_TYPE_COUNT) {
+        PYXEL_ERROR("failed to generate GIF");
+      }
+
       if (code < 0) {
         code = value;
-      } else if (code_tree[code].next[value]) {
-        code = code_tree[code].next[value];
+      } else if (code_tree[code][value] > 0) {
+        code = code_tree[code][value];
       } else {
         block.AddCode(code, code_size);
 
         code_index++;
-        code_tree[code].next[value] = code_index;
+        code_tree[code][value] = code_index;
+
+        if (code >= code_index) {
+          PYXEL_ERROR("failed to generate GIF");
+        }
 
         if (code_index >= (1 << code_size)) {
           code_size++;
@@ -286,8 +300,6 @@ void GifWriter::AddFrame(const Image* image, int32_t delay_time) {
 
   // Block Terminator (1byte)
   ofs_.put(0);
-
-  delete[] code_tree;
 
   memcpy(last_frame_data_, image->Data()[0],
          sizeof(int32_t) * width_ * height_);
