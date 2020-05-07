@@ -9,8 +9,6 @@ class Image;
 
 class GifWriter {
  public:
-  static const int32_t TRANSPARENT_COLOR = COLOR_COUNT;
-
   GifWriter(const std::string& filename,
             int32_t width,
             int32_t height,
