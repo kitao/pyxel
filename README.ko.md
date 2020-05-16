@@ -299,7 +299,7 @@ Pyxel을 위한 사운드나 음악은 아래의 방법으로 작성할 수도 �
 
 Pyxel Packager를 사용해 Python이 설치되지 않은 환경에서도 실행 가능한 독립 실행 파일을 생성할 수 있습니다.
 
-실행 파일을 작성하려면 다음과 같이 `pyxelpackager` 명령어로 애플리케이션의 실행에 사용하는 Python 파일을 지정합니다:
+독립 실행 형 실행 파일을 만들려면 [PyInstaller](https://www.pyinstaller.org/)가 설치된 환경에서 다음과 같이`pyxelpackager` 명령으로 응용 프로그램을 시작하는 데 사용할 Python 파일을 지정하십시오:
 
 ```sh
 pyxelpackager python_file
@@ -582,5 +582,4 @@ Pyxel은 다음 소프트웨어를 사용합니다:
 
 - [SDL2](https://www.libsdl.org/)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
-- [PyInstaller](https://www.pyinstaller.org/)
 - [Gifsicle](https://www.lcdf.org/gifsicle/)

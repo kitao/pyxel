@@ -298,7 +298,7 @@ Pyxel音频也可以通过以下方法创建：
 
 使用内置的Pyxel  Packager创建独立的可执行文件，在没有python的环境下也可以执行。
 
-使用`pyxelpackager`命令来指定打开启动应用的python文件，就可以创建可执行文件：
+要创建独立的可执行文件，请在安装了[PyInstaller](https://www.pyinstaller.org/)的环境中，使用`pyxelpackager`命令指定用于启动应用程序的Python文件，如下所示：
 
 ```sh
 pyxelpackager python_file
@@ -581,5 +581,4 @@ Pyxel使用以下软件：
 
 - [SDL2](https://www.libsdl.org/)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
-- [PyInstaller](https://www.pyinstaller.org/)
 - [Gifsicle](https://www.lcdf.org/gifsicle/)

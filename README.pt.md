@@ -297,7 +297,7 @@ Favor consultar a referência da API para o uso dessas funções.
 
 Usando o Empacotador Pyxel embutido é possível criar um executável autônomo que irá funcionar até em ambientes em que não tenham o Python instalado.
 
-Para criar o executável, especifique o arquivo Python que será usado para lançar a aplicação com o comando `pyxelpackager` como demonstrado:
+Para criar um executável independente, no ambiente em que [PyInstaller](https://www.pyinstaller.org/) está instalado, especifique o arquivo Python a ser usado para iniciar o aplicativo com o comando `pyxelpackager` da seguinte maneira:
 
 ```sh
 pyxelpackager python_file
@@ -580,5 +580,4 @@ Pyxel usa o seguinte software:
 
 - [SDL2](https://www.libsdl.org/)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
-- [PyInstaller](https://www.pyinstaller.org/)
 - [Gifsicle](https://www.lcdf.org/gifsicle/)
