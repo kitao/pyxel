@@ -4,6 +4,7 @@
 - Modified .gitignore for Windows
 - Changed the installation of PyInstaller to optional
 - Changed the way to set the path on Windows
+- Updated the pipfile
 
 ## 1.3.7
 - Updated the library download script
