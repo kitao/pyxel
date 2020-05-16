@@ -297,7 +297,7 @@ Please refer to the API reference for usage of these functions.
 
 By using the attached Pyxel Packager, a stand-alone executable that will work even in environments where Python is not installed can be created.
 
-To create a stand-alone executable, specify the Python file to be used to launch the application with the `pyxelpackager` command as follows:
+To create a stand-alone executable, in the environment where [PyInstaller](https://www.pyinstaller.org/) is installed, specify the Python file to be used to launch the application with the `pyxelpackager` command as follows:
 
 ```sh
 pyxelpackager python_file
@@ -580,5 +580,4 @@ Pyxel uses the following software:
 
 - [SDL2](https://www.libsdl.org/)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
-- [PyInstaller](https://www.pyinstaller.org/)
 - [Gifsicle](https://www.lcdf.org/gifsicle/)
