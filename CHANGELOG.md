@@ -3,6 +3,7 @@
 ## 1.3.8
 - Modified .gitignore for Windows
 - Changed the installation of PyInstaller to optional
+- Changed the way to set the path on Windows
 
 ## 1.3.7
 - Updated the library download script
