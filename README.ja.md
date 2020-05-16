@@ -298,7 +298,7 @@ Pyxel用のサウンドやミュージックは以下の方法で作成するこ
 
 付属するPyxel Packagerを使用することで、Pythonがインストールされていない環境でも動作する、単体実行ファイルを作成することができます。
 
-単体実行ファイルを作成するには、次のように`pyxelpackager`コマンドでアプリケーションの起動に使用するPythonファイルを指定します。
+単体実行ファイルを作成するには、[PyInstaller](https://www.pyinstaller.org/)がインストール済みの環境で、次のように`pyxelpackager`コマンドでアプリケーションの起動に使用するPythonファイルを指定します。
 
 ```sh
 pyxelpackager python_file
@@ -584,5 +584,4 @@ Pyxelは以下のソフトウェアを使用しています。
 
 - [SDL2](https://www.libsdl.org/)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
-- [PyInstaller](https://www.pyinstaller.org/)
 - [Gifsicle](https://www.lcdf.org/gifsicle/)

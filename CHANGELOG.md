@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.3.8
+- Modified .gitignore for Windows
+- Changed the installation of PyInstaller to optional
+
 ## 1.3.7
 - Updated the library download script
 - Updated the SDL2 version for Windows
