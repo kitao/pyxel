@@ -1,3 +1,3 @@
 *.o
-include/win32/SDL2
-include/win64/SDL2
+include/win32
+include/win64
