@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.10
+- Changed the required version of Python
+
 ## 1.3.9
 - Updated the compiler version to C++17
 - Added support for multi-byte character paths

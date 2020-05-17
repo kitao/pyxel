@@ -56,7 +56,7 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 
 ### Windows
 
-First, install [Python3](https://www.python.org/) (version 3.6.9 or higher).
+First, install [Python3](https://www.python.org/) (version 3.6.8 or higher).
 
 When you install Python with the official installer, **add Python to PATH** by checking the button below:
 
@@ -70,7 +70,7 @@ pip install -U pyxel
 
 ### Mac
 
-First, in the environment where [Homebrew](https://brew.sh/) package manager is installed, install [Python3](https://www.python.org/) (version 3.6.9 or higher) and the required packages with the following command:
+First, in the environment where [Homebrew](https://brew.sh/) package manager is installed, install [Python3](https://www.python.org/) (version 3.6.8 or higher) and the required packages with the following command:
 
 ```sh
 brew install python3 sdl2 sdl2_image gifsicle
@@ -84,7 +84,7 @@ pip3 install -U pyxel
 
 ### Linux
 
-Install [Python3](https://www.python.org/) (version 3.6.9 or higher) and the required packages in a way appropriate for each distribution.
+Install [Python3](https://www.python.org/) (version 3.6.8 or higher) and the required packages in a way appropriate for each distribution.
 
 **Ubuntu:**
 
@@ -101,7 +101,7 @@ To install Pyxel in an environment other than the above (32-bit Linux, Raspberry
 
 - C++ build toolchain (should include gcc and make command)
 - libsdl2-dev and libsdl2-image-dev
-- [Python3](https://www.python.org/) (version 3.6.9 or highter) and pip command
+- [Python3](https://www.python.org/) (version 3.6.8 or highter) and pip command
 
 #### Execute the following command in any folder
 

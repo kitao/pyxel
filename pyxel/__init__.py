@@ -9,8 +9,8 @@ from typing import Any, Callable, Dict, List, Optional
 
 from . import core  # type: ignore
 
-if sys.version_info < (3, 6, 9):
-    print("pyxel error: Python version must be 3.6.9 or higher")
+if sys.version_info < (3, 6, 8):
+    print("pyxel error: Python version must be 3.6.8 or higher")
     sys.exit(1)
 
 
