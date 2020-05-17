@@ -79,10 +79,13 @@ def run():
 
 
 def _run_pyinstaller(args):
-    import PyInstaller.__main__
+    try:
+        import PyInstaller.__main__
 
-    print("pyinstaller {}".format(" ".join(args)))
-    PyInstaller.__main__.run(args)
+        print("pyinstaller {}".format(" ".join(args)))
+        PyInstaller.__main__.run(args)
+    except ModuleNotFoundError:
+        print("pyxel error: PyInstaller is not installed")
 
 
 if __name__ == "__main__":
