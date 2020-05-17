@@ -58,6 +58,7 @@ class System {
   double next_update_time_;
   std::string drop_file_;
   bool is_loop_running_;
+  bool is_quit_requested_;
   bool is_update_suspended_;
 
   Profiler fps_profiler_;
@@ -66,7 +67,7 @@ class System {
   bool is_performance_monitor_on_;
 
   int32_t WaitForUpdateTime();
-  void UpdateFrame(void (*update)());
+  bool UpdateFrame(void (*update)());
   void CheckSpecialInput();
   void DrawFrame(void (*draw)(), int32_t update_frame_count);
   void DrawPerformanceMonitor();
