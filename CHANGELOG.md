@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.9
+- Updated the compiler version to C++17
+
 ## 1.3.8
 - Modified .gitignore for Windows
 - Changed the installation of PyInstaller to optional
