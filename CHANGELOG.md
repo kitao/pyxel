@@ -2,6 +2,7 @@
 
 ## 1.3.9
 - Updated the compiler version to C++17
+- Added support for multi-byte character paths
 
 ## 1.3.8
 - Modified .gitignore for Windows

@@ -48,7 +48,7 @@ Resource::Resource(Graphics* graphics, Audio* audio) {
 }
 
 void Resource::SaveAsset(const std::string& filename) {
-  std::ofstream ofs(filename, std::ios::binary);
+  std::ofstream ofs(std::filesystem::u8path(filename), std::ios::binary);
 
   if (ofs.fail()) {
     PYXEL_ERROR("cannot save file '" + filename + "'");
@@ -99,7 +99,7 @@ void Resource::LoadAsset(const std::string& filename,
                          bool tilemap,
                          bool sound,
                          bool music) {
-  std::ifstream ifs(filename, std::ios::binary);
+  std::ifstream ifs(std::filesystem::u8path(filename), std::ios::binary);
 
   if (ifs.fail()) {
     PYXEL_ERROR("cannot open file '" + filename + "'");
