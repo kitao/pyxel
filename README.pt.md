@@ -56,7 +56,7 @@ Pyxel é open source e livre para utilização. Vamos começar fazendo um jogo r
 
 ### Windows
 
-Primeiro, instale o [Python3](https://www.python.org/) (versão 3.6.9 ou superior).
+Primeiro, instale o [Python3](https://www.python.org/) (versão 3.6.8 ou superior).
 
 Durante a instalação utilizando o instalador oficial do Python, não esqueça de **adicionar o Python no PATH** selecionando a seguinte opção:
 
@@ -70,7 +70,7 @@ pip install -U pyxel
 
 ### Mac
 
-Primeiro, no ambiente com o [Homebrew] (https://brew.sh/) instalado, instale o [Python3] (https://www.python.org/) (versão 3.6.9 ou superior) e os pacotes necessários com o próximo comando:
+Primeiro, no ambiente com o [Homebrew] (https://brew.sh/) instalado, instale o [Python3] (https://www.python.org/) (versão 3.6.8 ou superior) e os pacotes necessários com o próximo comando:
 
 ```sh
 brew install python3 sdl2 sdl2_image gifsicle
@@ -84,7 +84,7 @@ pip3 install -U pyxel
 
 ### Linux
 
-Instale [Python3](https://www.python.org/) (versão 3.6.9 ou superior) e os requisitos específicos para cada distribuição.
+Instale [Python3](https://www.python.org/) (versão 3.6.8 ou superior) e os requisitos específicos para cada distribuição.
 
 **Ubuntu:**
 
@@ -101,7 +101,7 @@ Para instalar o Pyxel em ambientes diferentes dos anteriores (Linux 32-bit, Rasp
 
 - Conjunto de ferramentas C++ (deve incluir os comandos gcc e make)
 - libsdl2-dev and libsdl2-image-dev
-- [Python3](https://www.python.org/) (versão 3.6.9 ou superior) e o comando pip
+- [Python3](https://www.python.org/) (versão 3.6.8 ou superior) e o comando pip
 
 #### Execute o comando seguinte em qualquer diretório
 
