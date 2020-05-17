@@ -89,7 +89,8 @@ GifWriter::GifWriter(const std::string& filename,
                      int32_t width,
                      int32_t height,
                      const PaletteColor& palette_color) {
-  ofs_ = std::ofstream(filename, std::ios_base::binary);
+  ofs_ =
+      std::ofstream(std::filesystem::u8path(filename), std::ios_base::binary);
   width_ = width;
   height_ = height;
   last_frame_data_ = new int32_t[width * height];
