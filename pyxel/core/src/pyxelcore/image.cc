@@ -144,14 +144,6 @@ void Image::LoadImage(int32_t x,
   SDL_FreeSurface(src_image);
 }
 
-/*void Image::SaveImage(int32_t x,
-                      int32_t y,
-                      int32_t width,
-                      int32_t height,
-                      const std::string& filename) {
-  // TODO
-}*/
-
 void Image::CopyImage(int32_t x,
                       int32_t y,
                       const Image* image,
