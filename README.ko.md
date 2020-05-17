@@ -56,7 +56,7 @@ Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Py
 
 ### Windows
 
-먼저 [Python3](https://www.python.org/) (버전 3.6.9 이상)을 설치합니다.
+먼저 [Python3](https://www.python.org/) (버전 3.6.8 이상)을 설치합니다.
 
 설치 중 아래 사진과 같이 **Add Python to PATH** 란을 체크해주세요.
 
@@ -70,7 +70,7 @@ pip install -U pyxel
 
 ### Mac
 
-먼저 [Homebrew](https://brew.sh/) 패키지 관리자가 설치된 환경에서 다음 명령을 사용하여 [Python](https://www.python.org/) (버전 3.6.9 이상) 및 필수 패키지를 설치하십시오:
+먼저 [Homebrew](https://brew.sh/) 패키지 관리자가 설치된 환경에서 다음 명령을 사용하여 [Python](https://www.python.org/) (버전 3.6.8 이상) 및 필수 패키지를 설치하십시오:
 
 ```sh
 brew install python3 sdl2 sdl2_image gifsicle
@@ -84,7 +84,7 @@ pip3 install -U pyxel
 
 ### Linux
 
-각 배포판에 적합한 방법으로 [Python3](https://www.python.org/) (버전 3.6.9 이상)과 필요한 패키지를 설치하시면 됩니다.
+각 배포판에 적합한 방법으로 [Python3](https://www.python.org/) (버전 3.6.8 이상)과 필요한 패키지를 설치하시면 됩니다.
 
 **Ubuntu:**
 
@@ -102,7 +102,7 @@ sudo -H pip3 install -U pyxel
 - C++ build toolchain (gcc 및 make 명령어를 포함해야 함)
 - libsdl2-dev
 - libsdl2-image-dev
-- [Python3](https://www.python.org/) (버전 3.6.9 이상), pip
+- [Python3](https://www.python.org/) (버전 3.6.8 이상), pip
 
 #### 임의의 폴더에서 아래 명령어 실행
 
