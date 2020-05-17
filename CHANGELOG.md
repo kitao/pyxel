@@ -1,7 +1,8 @@
 # Change Log
 
-## 1.3.10
+## 1.4.0
 - Changed the required version of Python
+- Changed the way to quit the Pyxel application
 
 ## 1.3.9
 - Updated the compiler version to C++17

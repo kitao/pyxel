@@ -26,8 +26,6 @@
 
 namespace pyxelcore {
 
-class ExitPyxel {};
-
 System::System(int32_t width,
                int32_t height,
                const std::string& caption,
@@ -72,6 +70,7 @@ System::System(int32_t width,
   next_update_time_ = SDL_GetTicks();
   drop_file_ = "";
   is_loop_running_ = false;
+  is_quit_requested_ = false;
   is_update_suspended_ = false;
   is_performance_monitor_on_ = false;
 
@@ -95,72 +94,70 @@ System::~System() {
 }
 
 void System::Run(void (*update)(), void (*draw)()) {
-  try {
-    next_update_time_ = SDL_GetTicks() + one_frame_time_;
-    is_loop_running_ = true;
-    is_update_suspended_ = true;
+  next_update_time_ = SDL_GetTicks() + one_frame_time_;
+  is_loop_running_ = true;
+  is_update_suspended_ = true;
 
-    UpdateFrame(update);
-    DrawFrame(draw, 1);
+  frame_count_ = -1;
+  if (UpdateFrame(update)) {
+    return;
+  }
 
-    while (true) {
-      double sleep_time = WaitForUpdateTime();
+  DrawFrame(draw, 1);
 
-      fps_profiler_.End();
-      fps_profiler_.Start();
+  while (true) {
+    double sleep_time = WaitForUpdateTime();
 
-      int32_t update_frame_count;
+    fps_profiler_.End();
+    fps_profiler_.Start();
 
-      if (is_update_suspended_) {
-        is_update_suspended_ = false;
-        update_frame_count = 1;
-        next_update_time_ = SDL_GetTicks() + one_frame_time_;
-      } else {
-        update_frame_count =
-            Min(static_cast<int32_t>(-sleep_time / one_frame_time_),
-                MAX_FRAME_SKIP_COUNT) +
-            1;
-        next_update_time_ += one_frame_time_ * update_frame_count;
-      }
+    int32_t update_frame_count;
 
-      for (int32_t i = 0; i < update_frame_count; i++) {
-        frame_count_++;
-        UpdateFrame(update);
-      }
-
-      DrawFrame(draw, update_frame_count);
+    if (is_update_suspended_) {
+      is_update_suspended_ = false;
+      update_frame_count = 1;
+      next_update_time_ = SDL_GetTicks() + one_frame_time_;
+    } else {
+      update_frame_count =
+          Min(static_cast<int32_t>(-sleep_time / one_frame_time_),
+              MAX_FRAME_SKIP_COUNT) +
+          1;
+      next_update_time_ += one_frame_time_ * update_frame_count;
     }
-  } catch (ExitPyxel) {
-    // do nothing
+
+    for (int32_t i = 0; i < update_frame_count; i++) {
+      if (UpdateFrame(update)) {
+        return;
+      }
+    }
+
+    DrawFrame(draw, update_frame_count);
   }
 }
 
 bool System::Quit() {
   if (is_loop_running_) {
-    throw ExitPyxel();
+    is_quit_requested_ = true;
+    return false;
   }
 
   return true;
 }
 
 bool System::FlipScreen() {
-  try {
-    WaitForUpdateTime();
-    next_update_time_ += one_frame_time_;
+  WaitForUpdateTime();
+  next_update_time_ += one_frame_time_;
 
-    fps_profiler_.End();
-    fps_profiler_.Start();
+  fps_profiler_.End();
+  fps_profiler_.Start();
 
-    frame_count_++;
-    UpdateFrame(nullptr);
-    DrawFrame(nullptr, 1);
-
-    return false;
-  } catch (ExitPyxel) {
-    // do nothing
+  if (UpdateFrame(nullptr)) {
+    return true;
   }
 
-  return true;
+  DrawFrame(nullptr, 1);
+
+  return false;
 }
 
 void System::ShowScreen() {
@@ -189,11 +186,13 @@ int32_t System::WaitForUpdateTime() {
   }
 }
 
-void System::UpdateFrame(void (*update)()) {
+bool System::UpdateFrame(void (*update)()) {
+  frame_count_++;
+
   update_profiler_.Start();
 
   if (window_->ProcessEvents()) {
-    throw ExitPyxel();
+    return true;
   }
 
   drop_file_ = window_->GetDropFile();
@@ -205,6 +204,8 @@ void System::UpdateFrame(void (*update)()) {
   }
 
   update_profiler_.End();
+
+  return is_quit_requested_;
 }
 
 void System::CheckSpecialInput() {
@@ -233,7 +234,7 @@ void System::CheckSpecialInput() {
   }
 
   if (input_->IsButtonPressed(quit_key_)) {
-    throw ExitPyxel();
+    is_quit_requested_ = true;
   }
 }
 
