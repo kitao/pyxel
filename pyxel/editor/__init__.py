@@ -22,5 +22,7 @@ def run():
 
 
 if __name__ == "__main__":
-    sys.argv[1:] = [os.path.join(os.path.dirname(__file__), "assets/test_resource")]
+    if len(sys.argv) < 2:
+        sys.argv[1:] = [os.path.join(os.path.dirname(__file__), "assets/test_resource")]
+
     run()
