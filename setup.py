@@ -42,7 +42,7 @@ setuptools.setup(
     package_data={
         "": ["*.pyxres", "*.png", "*.gif", "*.dylib", "*.dll", "*.so", "*.exe"]
     },
-    python_requires=">=3.6.9",
+    python_requires=">=3.6.8",
     entry_points={
         "console_scripts": [
             "pyxeleditor=pyxel.editor:run",
