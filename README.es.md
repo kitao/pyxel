@@ -1,10 +1,10 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_logo_152x64.png">
+# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/pyxel_logo_152x64.png">
 
 [ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt.md) ]
 
-**Pyxel** es un motor de videojuegos para Python.
+**Pyxel** es un motor de videojuegos retro para Python.
 
-Gracias a sus características simples inspiradas en las consolas de juegos retro, como el solo mostrar 16 colores y el reproducir 4 sonidos al mismo tiempo, puedes sentirte libre de disfrutar creando juegos en estilo pixel art.
+Gracias a sus características simples inspiradas en las consolas de juegos retro, como el solo mostrar 16 colores y el solo reproducir 4 sonidos al mismo tiempo, puedes sentirte libre de disfrutar crear juegos estilo pixel art.
 
 <a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py" target="_blank">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
@@ -37,7 +37,7 @@ Pyxel es de código abierto y de libre uso. Comencemos a crear juegos retro con 
 ## Características
 
 - Se ejecuta en Windows, Mac y Linux
-- código con Python3
+- Código escrito con Python3
 - Paleta fija de 16 colores
 - 3 bancos de imágenes de tamaño 256x256
 - 8 tilemaps de tamaño 256x256
@@ -58,11 +58,11 @@ Pyxel es de código abierto y de libre uso. Comencemos a crear juegos retro con 
 
 Primero, instalar [Python3](https://www.python.org/) (versión 3.6.8 o superior).
 
-Cuando instale Python con el instalador oficial, **añada Python al PATH** marcando el botón de abajo:
+Cuando instales Python con el instalador oficial, **añadir Python al PATH** marcando la casilla de abajo:
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/python_installer.png">
+<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/images/python_installer.png">
 
-A continuación, instale Pyxel con el siguiente comando `pip` desde la línea de comandos:
+A continuación, instala Pyxel con el siguiente comando `pip` desde la línea de comandos:
 
 ```sh
 pip install -U pyxel
@@ -70,13 +70,13 @@ pip install -U pyxel
 
 ### Mac
 
-Primero, en el entorno donde está instalado el administrador de paquetes [Homebrew](https://brew.sh/), instale [Python3](https://www.python.org/) (versión 3.6.8 o superior) y el paquetes requeridos con el siguiente comando:
+Primero, en el entorno donde el administrador de paquetes [Homebrew](https://brew.sh/) está instalado, instalar [Python3](https://www.python.org/) (versión 3.6.8 o superior) y los paquetes requeridos con el siguiente comando:
 
 ```sh
 brew install python3 sdl2 sdl2_image gifsicle
 ```
 
-Luego, **reinicie el terminal** e instale Pyxel con el comando `pip3`:
+Luego, **reinicia la terminal** e instala Pyxel con el comando `pip3`:
 
 ```sh
 pip3 install -U pyxel
@@ -90,12 +90,12 @@ Instala [Python3](https://www.python.org/) (versión 3.6.8 o superior) y los paq
 
 ```sh
 sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev gifsicle
-sudo pip3 install -U pyxel
+sudo -H pip3 install -U pyxel
 ```
 
-### Otros entornos Linux
+### Otros entornos
 
-Para instalar Pyxel en un entorno diferente a los anteriores (Linux 32-bit, Raspberry PI, etc.), sigue los pasos siguientes  para montarlos:
+Para instalar Pyxel en un entorno diferente a los anteriores (Linux 32-bit, Raspberry PI, etc.), sigue los siguientes pasos para construirlos:
 
 #### Instalar las herramientas y paquetes necesarios:
 
@@ -129,7 +129,7 @@ Los ejemplos a ser copiados son los siguientes:
 - [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - Lista de paleta de colores
 - [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - Juego de click con el mouse
 - [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - Juego de serpiente con música de fondo
-- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - Demostración de la API dibujando triangulos
+- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - Demostración de la API de dibujado de triangulos
 
 Los ejemplos pueden ser ejecutados como código Python:
 
@@ -169,7 +169,7 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-Los argumentos de la función `run` son la función `update` para actualizar cada cuadro, y la función `draw` para dibujar la escena cuando es necesario.
+Los argumentos de la función `run` son la función `update` para actualizar cada cuadro, y la función `draw` para dibujar la pantalla cuando sea necesario.
 
 En la aplicación actual, es recomendable envolver el código Pyxel dentro de una clase como a continuación:
 
@@ -194,7 +194,7 @@ App()
 
 También se puede escribir código simple utilizando las funciones `show` y `flip` para dibujar gráficos y animaciones simples.
 
-La función `show` muestra la pantalla y espera hasta que la tecla `ESC` es pulsada.
+La función `show` muestra la pantalla y espera hasta que la tecla `ESC` es presionada.
 
 ```python
 import pyxel
@@ -205,7 +205,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-La función `flip` actualiza la pantalla una vez.
+La función `flip` actualiza la pantalla una sola vez.
 
 ```python
 import pyxel
@@ -227,9 +227,9 @@ Sale de la aplicación
 - `Alt(Option)+1`<br>
 Guarda la captura de pantalla en el escritorio
 - `Alt(Option)+2`<br>
-Reinicia el tiempo de grabación de la captura de video de pantalla al inicial
+Reinicia el tiempo inicial de grabación de la captura de video de pantalla
 - `Alt(Option)+3`<br>
-Guarda la captura de video de pantalla (gif) en el escritorio (máximo 30 segundos)
+Guarda la captura de video (gif) en el escritorio (máximo 30 segundos)
 - `Alt(Option)+0`<br>
 Intercambia el monitor de rendimiento (fps, tiempo de actualización, y tiempo de dibujado)
 - `Alt(Option)+Enter`<br>
@@ -237,7 +237,7 @@ Intercambia la pantalla completa
 
 ### Cómo crear un recurso
 
-La aplicacion "Pyxel Editor" viene adjunta, puede crear imágenes y sonidos usados dentro de Pyxel.
+El Pyxel Editor adjunto puede crear imagenes y sonidos usados en una aplicación Pyxel.
 
 Pyxel Editor se inicia con el siguiente comando:
 
@@ -248,15 +248,15 @@ pyxeleditor [pyxel_resource_file]
 Si el archivo de recurso Pyxel especificado (.pyxres) existe, el archivo es cargado, sino existe, un nuevo archivo es creado con el nombre especificado.
 Si el archivo de recurso es omitido, el nombre es `my_resource.pyxres`.
 
-Luego de iniciar el Pyxel Editor, el archivo puede ser cambiado arrastrando y soltando otro archivo de recurso. Si el archivo de recurso es arrastrado y soltado mientras se sostiene la tecla ``Ctrl``(``Cmd``), solo el tipo de recurso (imagen/tilemap/sonido/musica) que esta siendo editado será cargado. Esta operación permite combinar multiples archivos de recursos en uno.
+Luego de iniciar el Pyxel Editor, el archivo puede ser cambiado arrastrando y soltando otro archivo de recurso. Si el archivo de recurso es arrastrado y soltado mientras se sostiene la tecla ``Ctrl``(``Cmd``), solo el recurso de tipo (imagen/tilemap/sonido/musica) que esta siendo editado será cargado. Esta operación permite combinar multiples archivos de recursos en uno.
 
 El archivo de recurso creado puede ser cargado con la función `load`.
 
-Pyxel Editor tiene las siguientes modalidades de edición.
+Pyxel Editor tiene los siguientes modos de edición.
 
 **Editor de Imágenes:**
 
-El modulo para editar el banco de imágenes.
+El modo para editar el banco de imágenes.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
 
@@ -264,19 +264,19 @@ Arrastrando y soltando un archivo png en la pantalla del Editor de Imágenes, la
 
 **Editor de Tilemap:**
 
-El modulo para editar tilemaps en el que las imágenes del banco de imágenes son organizadas en un patrón de tiles.
+El modo para editar tilemaps en el que las imágenes del banco de imágenes son organizadas en un patrón de tiles.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.gif">
 
 **Editor de Sonido:**
 
-El modulo para editar sonidos.
+El modo para editar sonidos.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.gif">
 
 **Editor de Música:**
 
-El modulo para editar música en la que los sonidos son organizados en orden de reproducción.
+El modo para editar música en la que los sonidos son organizados en orden de reproducción.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
 
@@ -291,19 +291,19 @@ Los sonidos en Pyxel también pueden ser creados de la siguiente forma:
 
 - Crear un sonido desde cadenas de texto con la función `Sound.set` o `Music.set`
 
-Favor acudir a la referencia del API para el uso de estas funciones.
+Favor acudir a la referencia en el API para el uso de estas funciones.
 
 ### Cómo crear un ejecutable independiente
 
 Mediante el uso del Pyxel Packager adjunto, se puede crear un ejecutable independiente que funcione incluso en ambientes donde Python no este instalado.
 
-Para crear un ejecutable autónomo, en el entorno en el que está instalado [PyInstaller](https://www.pyinstaller.org/), especifique el archivo Python que se utilizará para lanzar la aplicación con el comando `pyxelpackager` de la siguiente manera:
+Para crear un ejecutable independiente, en el entorno en el que está instalado [PyInstaller](https://www.pyinstaller.org/), especifique el archivo Python que se utilizará para lanzar la aplicación con el comando `pyxelpackager` de la siguiente forma:
 
 ```sh
 pyxelpackager python_file
 ```
 
-Cuando el proceso termine, el ejecutable independiente se encontrará en la carpeta `dist`.
+Cuando el proceso termine, el ejecutable independiente es creado en la carpeta `dist`.
 
 Si también son necesarios recursos como archivos .pyxres y .png, ponlos dentro de la carpeta `assets` para que sean incluidos.
 
@@ -321,7 +321,7 @@ El número de cuadros transcurridos
 
 - `init(width, height, [caption], [scale], [palette], [fps], [quit_key], [fullscreen])`<br>
 Inicializar la aplicación Pyxel con el tamaño de pantalla (`width`, `height`). El ancho y alto máximo de la pantalla es 256<br>
-También es posible especificar el título de la ventana con `caption`, el aumento de pantalla con `scale`, la paleta de colores con `palette`, los cuadros por segundo con `fps`, la tecla para salir de la aplicación con `quit_key`, y si se iniciará en modo de pantalla completa con `fullscreen`. `palette` es especificada como una lista de 16 elementos de color a 24 bits<br>
+También es posible especificar el título de la ventana con `caption`, el aumento de pantalla con `scale`, la paleta de colores con `palette`, los cuadros por segundo con `fps`, la tecla para salir de la aplicación con `quit_key`, y si se iniciara en pantalla completa con `fullscreen`. `palette` es especificada como una lista de 16 elementos de color de 24 bits<br>
 p.ej. `pyxel.init(160, 120, caption="Pyxel with PICO-8 palette", palette=[0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436, 0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA], quit_key=pyxel.KEY_NONE, fullscreen=True)`
 
 - `run(update, draw)`<br>
@@ -342,26 +342,26 @@ Dibuja la pantalla y espera indefinidamente (no usarlo en aplicaciones normales)
 Guarda el archivo de recurso (.pyxres) en el directorio donde se ejecuta el script
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-Lee el archivo de recurso (.pyxres) desde el directorio donde se ejecuta el script. Si el tipo de recurso (image/tilemap/sound/music) se configura como ``False``, el recurso no será cargado.
+Lee el archivo de recurso (.pyxres) desde el directorio donde se ejecuta el script. Si el tipo de recurso (image/tilemap/sonido/musica) se configura como ``False``, el recurso no será cargado.
 
 ### Entrada
 - `mouse_x`, `mouse_y`<br>
 La posición actual del puntero del mouse
 
 - `mouse_wheel`<br>
-El valor actual del mouse wheel
+El valor actual de la rueda del mouse
 
 - `btn(key)`<br>
 Devuelve `True` si `key` es presionada, sino devuelve `False` ([lista de definición de teclas](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
 
 - `btnp(key, [hold], [period])`<br>
-Devuelve `True` si `key` es presionada en ese cuadro, sino devuelve `False`. Cuando `hold` y `period` son definidos, `True` es devuelto en el intervalo de cuadro `period` cuando la `key` es sostenida por mas cuadros que el valor `hold`
+Devuelve `True` si `key` es presionada en ese cuadro, de lo contrario devuelve `False`. Cuando `hold` y `period` son definidos, `True` es devuelto en el intervalo de cuadro `period` cuando la `key` es sostenida por mas cuadros que el valor `hold`
 
 - `btnr(key)`<br>
-Devuelve `True` si `key` es liberada en ese cuadro, sino devuelve `False`
+Devuelve `True` si `key` es liberada en ese cuadro, de lo contrario devuelve `False`
 
 - `mouse(visible)`<br>
-Si `visible` es `True`, muestra el puntero del mouse. Si es `False`, lo esconde. Incluso si el puntero del mouse no es mostrado, su posición si es actualizada.
+Si `visible` es `True`, muestra el puntero del mouse. Si es `False`, lo esconde. Incluso si el puntero del mouse se encuentra oculto, su posición es actualizada.
 
 ### Gráficos
 
@@ -444,7 +444,7 @@ Detiene la reproducción de todos los canales. Si `ch`(0-3) es definido, detiene
 El ancho y alto de la imagen
 
 - `data`<br>
-La data de la imagen (256x256 lista bidimensional)
+La data de la imagen (lista bidimensional 256x256)
 
 - `get(x, y)`<br>
 Obtiene la data de la imagen en (`x`, `y`)
@@ -465,7 +465,7 @@ Copia la región de tamaño (`w`, `h`) desde (`u`, `v`) del banco de imágenes `
 El ancho y alto del tilemap
 
 - `data`<br>
-La data del tilemap (256x256 lista bidimensional)
+La data del tilemap (lista bidimensional 256x256)
 
 - `refimg`<br>
 El banco de imágenes referenciado por el tilemap
@@ -498,7 +498,7 @@ Lista de efectos (0:Ninguno / 1:Deslisante / 2:Vibración / 3:Desvanecimiento)
 La longitud de una nota (120 = 1 segundo por tono)
 
 - `set(note, tone, volume, effect, speed)`<br>
-Establece una nota, tono, volumen, y efecto con una cadena de texto. Si la longitud del tono, volumen, y efecto son mas cortos que la nota, se repite desde el principio
+Establece una nota, tono, volumen, y efecto con una cadena de texto. Si la longitud del efecto, tono y volumen son mas cortos que la nota, este es repetido desde el principio
 
 - `set_note(note)`<br>
 Establece la nota con una cadena hecha con 'CDEFGAB'+'#-'+'0123' o 'R'. No diferencia mayúsculas/minúsculas y los espacios en blanco son ignorados<br>
@@ -563,7 +563,7 @@ Cualquiera puede hacer test manuales del código y enviar reporte de bugs o suge
 
 Parches/correcciones son aceptados en forma de pull requests (PRs). Asegurarse que el issue del pull request que apunta este abierto en el issue tracker.
 
-Los pull request enviados se consideran acordados publicarse bajo [licencia MIT](https://github.com/kitao/pyxel/blob/master/LICENSE).
+Los pull request enviados se consideran acordados de publicarse bajo [licencia MIT](https://github.com/kitao/pyxel/blob/master/LICENSE).
 
 ## Otra Información
 
@@ -574,7 +574,7 @@ Los pull request enviados se consideran acordados publicarse bajo [licencia MIT]
 
 ## Licencia
 
-Pyxel esta bajo [licencia MIT](http://en.wikipedia.org/wiki/MIT_License). Puede ser reutilizado dentro de software propietario proporcionando a todas las copias del software licenciado que incluyan una copia de la licencia MIT, términos y aviso de derechos de autor.
+Pyxel esta bajo [licencia MIT](http://en.wikipedia.org/wiki/MIT_License). Puede ser reutilizado dentro de software propietario proporcionando a todas las copias del software licenciado que incluyan una copia de los términos de licencia MIT y aviso de derechos de autor.
 
 Pyxel utiliza el siguiente software:
 
