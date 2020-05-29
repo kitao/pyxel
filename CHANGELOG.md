@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.1
+- Restored the compiler version to C++14
+
 ## 1.4.0
 - Changed the required version of Python
 - Changed the way to quit the Pyxel application
