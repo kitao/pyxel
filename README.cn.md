@@ -581,5 +581,4 @@ Pyxel使用以下软件：
 
 - [SDL2](https://www.libsdl.org/)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
-- [Filesystem](https://github.com/gulrak/filesystem)
 - [Gifsicle](https://www.lcdf.org/gifsicle/)
