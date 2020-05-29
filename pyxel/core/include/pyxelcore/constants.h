@@ -12,7 +12,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -26,7 +25,7 @@ namespace pyxelcore {
 //
 // Common
 //
-const std::string VERSION = "1.4.0";
+const std::string VERSION = "1.4.1";
 const int32_t COLOR_COUNT = 16;
 const std::string WHITESPACE = " \t\v\r\n";
 

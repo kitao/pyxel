@@ -2,6 +2,7 @@
 
 ## 1.4.1
 - Restored the compiler version to C++14
+- Changed to use the external filesystem library
 
 ## 1.4.0
 - Changed the required version of Python
