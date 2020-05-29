@@ -582,5 +582,4 @@ Pyxel은 다음 소프트웨어를 사용합니다:
 
 - [SDL2](https://www.libsdl.org/)
 - [miniz-cpp](https://github.com/tfussell/miniz-cpp)
-- [Filesystem](https://github.com/gulrak/filesystem)
 - [Gifsicle](https://www.lcdf.org/gifsicle/)
