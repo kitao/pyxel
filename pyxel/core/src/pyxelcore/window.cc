@@ -61,7 +61,7 @@ void Window::SetupWindowIcon() const {
 
     for (int32_t j = 0; j < ICON_WIDTH; j++) {
       int32_t color = src_data[i][j];
-      uint32_t argb = color == 0 ? 0 : (palette_color_[color] << 8) + 0xff;
+      uint32_t argb = color == 0 ? 0 : (DEFAULT_PALETTE[color] << 8) + 0xff;
 
       for (int32_t y = 0; y < ICON_SCALE; y++) {
         int32_t index = (ICON_WIDTH * (i * ICON_SCALE + y) + j) * ICON_SCALE;

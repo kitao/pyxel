@@ -1,7 +1,8 @@
 # Change Log
 
 ## 1.4.1
--
+- Changed to use gcc compiler on Mac
+- Fixed the icon not to get affected by palette changes
 
 ## 1.4.0
 - Changed the required version of Python
