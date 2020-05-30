@@ -1,10 +1,8 @@
 #ifndef PYXELCORE_CONSTANTS_H_
 #define PYXELCORE_CONSTANTS_H_
 
-#define NEW_PALETTE
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL.h>
+#include <SDL_image.h>
 
 #include <algorithm>
 #include <array>
@@ -452,23 +450,11 @@ const std::string DEFAULT_CAPTION = "Pyxel";
 const int32_t DEFAULT_SCALE = 0;
 const int32_t DEFAULT_FPS = 30;
 const int32_t DEFAULT_QUIT_KEY = KEY_ESCAPE;
-
-const std::array<int32_t, COLOR_COUNT> PICO8_PALETTE = {
-    0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F,
-    0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436,
-    0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA,
-};
-const std::array<int32_t, COLOR_COUNT> PYXEL_PALETTE = {
+const std::array<int32_t, COLOR_COUNT> DEFAULT_PALETTE = {
     0x000000, 0x2B335F, 0x7E2072, 0x19959C, 0x8B4852, 0x395C98,
     0xA9C1FF, 0xEEEEEE, 0xD4186C, 0xD38441, 0xE9C35B, 0x70C6A9,
     0x7696DE, 0xA3A3A3, 0xFF9798, 0xEDC7B0,
 };
-
-#ifdef NEW_PALETTE
-#define DEFAULT_PALETTE PYXEL_PALETTE
-#else
-#define DEFAULT_PALETTE PICO8_PALETTE
-#endif
 
 //
 // Helper functions
