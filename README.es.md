@@ -76,6 +76,8 @@ Primero, en el entorno donde está instalado el administrador de paquetes [Homeb
 brew install python3 gcc sdl2 sdl2_image gifsicle
 ```
 
+Puedes instalar Python3 de otras maneras, pero ten en cuenta que debes instalar otras bibliotecas.
+
 Luego, **reinicie el terminal** e instale Pyxel con el comando `pip3`:
 
 ```sh
