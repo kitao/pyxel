@@ -76,6 +76,8 @@ First, in the environment where [Homebrew](https://brew.sh/) package manager is 
 brew install python3 gcc sdl2 sdl2_image gifsicle
 ```
 
+You can install Python3 in other ways, but be aware that you must install other libraries.
+
 Next, **restart the terminal** and install Pyxel with the `pip3` command:
 
 ```sh

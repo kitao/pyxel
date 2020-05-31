@@ -76,6 +76,8 @@ pip install -U pyxel
 brew install python3 gcc sdl2 sdl2_image gifsicle
 ```
 
+你可以用其他方式安装Python3，但要注意的是，你必须安装其他库。
+
 第二步，**重启终端**，并使用`pip3`命令安装Pyxel：
 
 ```sh
