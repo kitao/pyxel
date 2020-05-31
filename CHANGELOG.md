@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.2
+- Updated the installation instructions in the READMEs
+
 ## 1.4.1
 - Changed to use gcc compiler on Mac
 - Fixed the icon not to get affected by palette changes

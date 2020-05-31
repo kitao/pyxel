@@ -76,6 +76,8 @@ pip install -U pyxel
 brew install python3 gcc sdl2 sdl2_image gifsicle
 ```
 
+다른 방법으로 Python3을 설치할 수 있지만 다른 라이브러리를 설치해야합니다.
+
 **터미널을 다시 시작**한 후, 아래 명령어를 입력합니다.
 
 ```sh
