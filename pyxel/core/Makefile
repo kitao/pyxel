@@ -25,7 +25,7 @@ endif
 endif
 
 ifeq ($(PF),macos)
-CC = g++
+CC = g++-9
 SDL2_CFLAGS = `sdl2-config --cflags`
 SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image
 TARGET = $(BINDIR)/macos/$(LIBNAME).dylib
@@ -33,14 +33,14 @@ endif
 
 ifeq ($(PF),win32)
 CC = i686-w64-mingw32-g++
-SDL2_CFLAGS = -I$(INCDIR)/win32 -Dmain=SDL_main -DPYXEL_DLL
+SDL2_CFLAGS = -I$(INCDIR)/win32/SDL2 -Dmain=SDL_main -DPYXEL_DLL
 SDL2_LDFLAGS = -static -lstdc++ -lgcc -lwinpthread -L$(LIBDIR)/win32 -Wl,-Bdynamic -lSDL2main -lSDL2 -lSDL2_image -mwindows
 TARGET = $(BINDIR)/win32/$(LIBNAME).dll
 endif
 
 ifeq ($(PF),win64)
 CC = x86_64-w64-mingw32-g++
-SDL2_CFLAGS = -I$(INCDIR)/win64 -Dmain=SDL_main -DPYXEL_DLL
+SDL2_CFLAGS = -I$(INCDIR)/win64/SDL2 -Dmain=SDL_main -DPYXEL_DLL
 SDL2_LDFLAGS = -static -lstdc++ -lgcc -lwinpthread -L$(LIBDIR)/win64 -Wl,-Bdynamic -lSDL2main -lSDL2 -lSDL2_image -mwindows
 TARGET = $(BINDIR)/win64/$(LIBNAME).dll
 endif

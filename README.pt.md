@@ -73,8 +73,10 @@ pip install -U pyxel
 Primeiro, no ambiente com o [Homebrew] (https://brew.sh/) instalado, instale o [Python3] (https://www.python.org/) (versão 3.6.8 ou superior) e os pacotes necessários com o próximo comando:
 
 ```sh
-brew install python3 sdl2 sdl2_image gifsicle
+brew install python3 gcc sdl2 sdl2_image gifsicle
 ```
+
+Você pode instalar o Python3 de outras maneiras, mas lembre-se de que você deve instalar outras bibliotecas.
 
 Em seguida, **reinicie o terminal** e instale o Pyxel com o commando `pip3`:
 

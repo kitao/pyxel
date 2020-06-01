@@ -73,8 +73,10 @@ pip install -U pyxel
 먼저 [Homebrew](https://brew.sh/) 패키지 관리자가 설치된 환경에서 다음 명령을 사용하여 [Python](https://www.python.org/) (버전 3.6.8 이상) 및 필수 패키지를 설치하십시오:
 
 ```sh
-brew install python3 sdl2 sdl2_image gifsicle
+brew install python3 gcc sdl2 sdl2_image gifsicle
 ```
+
+다른 방법으로 Python3을 설치할 수 있지만 다른 라이브러리를 설치해야합니다.
 
 **터미널을 다시 시작**한 후, 아래 명령어를 입력합니다.
 
