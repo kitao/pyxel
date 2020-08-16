@@ -2,6 +2,8 @@
 
 ## 1.4.2
 - Updated the installation instructions in the READMEs
+- Changed the gcc version on Mac
+- Added the example #9
 
 ## 1.4.1
 - Changed to use gcc compiler on Mac
