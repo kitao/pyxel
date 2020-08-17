@@ -327,8 +327,8 @@ class App:
         pyxel.text(39, 4, "SCORE {:5}".format(self.score), 7)
 
     def draw_title_scene(self):
-        pyxel.text(35, 70, "Pyxel Shooter", pyxel.frame_count % 16)
-        pyxel.text(31, 100, "- PRESS ENTER -", 13)
+        pyxel.text(35, 66, "Pyxel Shooter", pyxel.frame_count % 16)
+        pyxel.text(31, 126, "- PRESS ENTER -", 13)
 
     def draw_play_scene(self):
         self.player.draw()
@@ -341,8 +341,8 @@ class App:
         draw_list(enemy_list)
         draw_list(blast_list)
 
-        pyxel.text(43, 70, "GAME OVER", 8)
-        pyxel.text(31, 100, "- PRESS ENTER -", 13)
+        pyxel.text(43, 66, "GAME OVER", 8)
+        pyxel.text(31, 126, "- PRESS ENTER -", 13)
 
 
 App()
