@@ -133,6 +133,7 @@ install_pyxel_examples
 - [06_click_game.py](pyxel/examples/06_click_game.py) - マウスクリックゲーム
 - [07_snake.py](pyxel/examples/07_snake.py) - BGM付きスネークゲーム
 - [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - 三角形描画APIのデモ
+- [09_shooter.py](pyxel/examples/09_shooter.py) - 画面遷移のあるシューティングゲーム
 
 サンプルは通常のPythonコードと同様に実行できます。
 
