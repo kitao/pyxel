@@ -132,6 +132,7 @@ Los ejemplos a ser copiados son los siguientes:
 - [06_click_game.py](pyxel/examples/06_click_game.py) - Juego de click con el mouse
 - [07_snake.py](pyxel/examples/07_snake.py) - Juego de serpiente con música de fondo
 - [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - Demostración de la API dibujando triangulos
+- [09_shooter.py](pyxel/examples/09_shooter.py) - Shoot'em up juego con transición de pantalla
 
 Los ejemplos pueden ser ejecutados como código Python:
 

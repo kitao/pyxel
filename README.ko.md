@@ -132,7 +132,8 @@ install_pyxel_examples
 - [05_color_palette.py](pyxel/examples/05_color_palette.py) - 색상 팔레트 목록
 - [06_click_game.py](pyxel/examples/06_click_game.py) - 마우스 클릭 게임
 - [07_snake.py](pyxel/examples/07_snake.py) - BGM이 포함된 스네이크 게임
-- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - Triangle Drawing API를 사용한 삼각형 그리기 데모
+- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - 삼각형 그리기 API 데모
+- [09_shooter.py](pyxel/examples/09_shooter.py) - 화면 전환으로 슈팅 게임
 
 예제 파일은 일반적인 Python 코드와 같이 실행할 수 있습니다:
 

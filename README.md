@@ -132,6 +132,7 @@ The examples to be copied are as follows:
 - [06_click_game.py](pyxel/examples/06_click_game.py) - Mouse click game
 - [07_snake.py](pyxel/examples/07_snake.py) - Snake game with BGM
 - [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing API
+- [09_shooter.py](pyxel/examples/09_shooter.py) - Shoot'em up game with screen transition
 
 The examples can be executed like normal Python code:
 

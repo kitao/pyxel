@@ -132,6 +132,7 @@ install_pyxel_examples
 - [06_click_game.py](pyxel/examples/06_click_game.py) - 鼠标点击游戏
 - [07_snake.py](pyxel/examples/07_snake.py) - 带BGM的贪吃蛇游戏
 - [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - 三角形绘图示例
+- [09_shooter.py](pyxel/examples/09_shooter.py) - 屏幕过渡射击游戏
 
 这些例程可以像执行正常python程序一样运行：
 
