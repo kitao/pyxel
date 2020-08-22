@@ -414,8 +414,12 @@ Desenha o contorno de um triangulo com os vértices (`x1`, `y1`), (`x2`, `y2`), 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img`(0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente
 
+<img src="images/image_bank_mechanism.png">
+
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 Desenha o tilemap `tm`(0-7) em (`x`, `y`) de acordo com a informação de tile de tamanho (`w`, `h`) da posição (`u`, `v`). Se `colkey` for especificada, será tratada como cor transparente. Um tile do tilemap será desenhado com tamanho 8x8, e se o número do tile for 0, indica a região (0, 0)-(7, 7) do banco de imagens, se for 1, indica (8, 0)-(15, 0)
+
+<img src="images/tilemap_mechanism.png">
 
 - `text(x, y, s, col)`<br>
 Desenha uma string `s` de cor `col` em (`x`, `y`)

@@ -416,8 +416,12 @@ Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수�
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 이미지 뱅크 `img`(0-2)의 (`u`, `v`)부터 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 마이너스로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다.
 
+<img src="images/image_bank_mechanism.png">
+
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 타일 맵 `tm`(0-7)을 (`u`, `v`)부터 (`w`, `h`)까지의 타일 정보에 따라 (`x`, `y`) 좌표에 그립니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다. 타일 맵의 타일은 8x8 크기로 그려지며, 타일 번호가 0이면 이미지 뱅크의 (0, 0)-(7, 7), 1이면 (8, 0)-(15, 0) 영역을 나타냅니다.
+
+<img src="images/tilemap_mechanism.png">
 
 - `text(x, y, s, col)`<br>
 `col` 색을 사용해 문자열 `s`를 (`x`, `y`) 좌표에 그립니다.
