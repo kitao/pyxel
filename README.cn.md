@@ -416,8 +416,12 @@ pyxelpackager python_file
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 将尺寸为(`w`, `h`)的区域从图像库的(`u`, `v`)复制到(`x`, `y`)。若`w`或`h`为负值，则在水平或垂直方向上翻转。若指定了`colkey`的值，则视作透明颜色。
 
+<img src="images/image_bank_mechanism.png">
+
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 根据从(`u`, `v`)开始的尺寸为(`w`, `h`)的tail信息，将瓦片地图(tilemap)`tm`(0-7)绘制到(`x`, `y`)处。若指定了`colkey`的值，则视作透明颜色。瓦片地图(tilemap)中一个tail尺寸为8x8。若tail编号为0，代表图像库中(0, 0)-(7, 7)的区域，若编号为1，代表(8, 0)-(15, 0)的区域。
+
+<img src="images/tilemap_mechanism.png">
 
 - `text(x, y, s, col)`<br>
 用`col`颜色在(`x`, `y`)绘制字符串`s`。
