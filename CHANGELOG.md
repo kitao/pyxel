@@ -2,7 +2,7 @@
 
 ## 1.4.2
 - Updated the installation instructions in the READMEs
-- Changed the gcc version on Mac
+- Changed the gcc version for Mac
 - Added the example #9
 - Added the Noguchi's tilemap for reference
 - Added figures for the API reference in the READEMEs
