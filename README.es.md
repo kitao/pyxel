@@ -414,8 +414,12 @@ Dibuja el controno de un triangulo con los vértices (`x1`, `y1`), (`x2`, `y2`),
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copia la región de tamaño (`w`, `h`) de (`u`, `v`) del banco de imágenes `img`(0-2) en (`x`, `y`). Si se establece un valor negativo para `w` y/o `h`, será invertido horizontal y/o verticalmente. Si `colkey` es especificado, ese color se trata como transparencia
 
+<img src="images/image_bank_mechanism.png">
+
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 Dibuja el tilemap `tm`(0-7) en (`x`, `y`) de acuerdo a la información del tile de tamaño (`w`, `h`) de (`u`, `v`). Si `colkey` es definido, ese color se trata como transparencia. Un tile del tilemap es dibujado con un tamaño de 8x8, y si el número de tile es 0, apunta a la región (0, 0)-(7, 7) del banco de imágenes, si es 1, apunta a (8, 0)-(15, 0)
+
+<img src="images/tilemap_mechanism.png">
 
 - `text(x, y, s, col)`<br>
 Dibuja una cadena de texto `s` de color `col` en (`x`, `y`)
