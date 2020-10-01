@@ -1,3 +1,4 @@
+#Setup file
 import setuptools
 
 from pyxel import VERSION
