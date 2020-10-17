@@ -1,6 +1,6 @@
 # <img src="images/pyxel_logo_152x64.png">
 
-[ [English](README.md) | [日本語](README.ja.md) | [中文](README.cn.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português](README.pt.md) | [Italiano](README.it.md) ] 
+[ [English](README.md) | [日本語](README.ja.md) | [中文](README.cn.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português](README.pt.md) | [Italiano](README.it.md) | [Русский](README.ru.md) ]
 
 **Pyxel (픽셀)** 은 Python을 위한 레트로 게임 엔진입니다.
 
