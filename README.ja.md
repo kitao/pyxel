@@ -1,33 +1,33 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_logo_152x64.png">
+# <img src="images/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt.md) ]
+[ [English](README.md) | [中文](README.cn.md) | [Español](README.es.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
 **Pyxel (ピクセル)** はPython向けのレトロゲームエンジンです。
 
 使える色は16色のみ、同時に再生できる音は4音までなど、レトロゲーム機を意識したシンプルな仕様で、Pythonでドット絵スタイルのゲームづくりが気軽に楽しめます。
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
+<a href="pyxel/examples/01_hello_pyxel.py" target="_blank">
+<img src="pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/02_jump_game.gif" width="48%">
+<a href="pyxel/examples/02_jump_game.py" target="_blank">
+<img src="pyxel/examples/screenshots/02_jump_game.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/03_draw_api.gif" width="48%">
+<a href="pyxel/examples/03_draw_api.py" target="_blank">
+<img src="pyxel/examples/screenshots/03_draw_api.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/04_sound_api.gif" width="48%">
+<a href="pyxel/examples/04_sound_api.py" target="_blank">
+<img src="pyxel/examples/screenshots/04_sound_api.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
+<a href="pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
+<img src="pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
+<a href="pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
+<img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
 Pyxelのゲーム機の仕様やAPIは、
@@ -49,9 +49,9 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 ### カラーパレット
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
+<img src="pyxel/examples/screenshots/05_color_palette.png">
 <br><br>
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_palette.png">
+<img src="images/pyxel_palette.png">
 
 ## インストール方法
 
@@ -61,7 +61,7 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 公式のPythonインストーラーを使用する場合は、次のボタンをチェックして、**Pythonをパスに追加**してください。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/python_installer.png">
+<img src="images/python_installer.png">
 
 続いて、コマンドプロンプトから、以下の`pip`コマンドでPyxelをインストールします。
 
@@ -125,14 +125,15 @@ install_pyxel_examples
 
 コピーされるサンプルは以下の通りです。
 
-- [01_hello_pyxel.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py) - シンプルなアプリケーション
-- [02_jump_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py) - Pyxelリソースファイルを使ったジャンプゲーム
-- [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - 描画APIのデモ
-- [04_sound_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py) - サウンドAPIのデモ
-- [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - カラーパレット一覧
-- [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - マウスクリックゲーム
-- [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - BGM付きスネークゲーム
-- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - 三角形描画APIのデモ
+- [01_hello_pyxel.py](pyxel/examples/01_hello_pyxel.py) - シンプルなアプリケーション
+- [02_jump_game.py](pyxel/examples/02_jump_game.py) - Pyxelリソースファイルを使ったジャンプゲーム
+- [03_draw_api.py](pyxel/examples/03_draw_api.py) - 描画APIのデモ
+- [04_sound_api.py](pyxel/examples/04_sound_api.py) - サウンドAPIのデモ
+- [05_color_palette.py](pyxel/examples/05_color_palette.py) - カラーパレット一覧
+- [06_click_game.py](pyxel/examples/06_click_game.py) - マウスクリックゲーム
+- [07_snake.py](pyxel/examples/07_snake.py) - BGM付きスネークゲーム
+- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - 三角形描画APIのデモ
+- [09_shooter.py](pyxel/examples/09_shooter.py) - 画面遷移のあるシューティングゲーム
 
 サンプルは通常のPythonコードと同様に実行できます。
 
@@ -261,7 +262,7 @@ Pyxel Editorには次の編集モードがあります。
 
 イメージバンクの画像を編集する画面です。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
+<img src="pyxel/editor/screenshots/image_editor.gif">
 
 イメージエディタ画面にpngファイルをドラッグ＆ドロップすると、画像を選択中のイメージバンクに読み込むことができます。
 
@@ -269,19 +270,19 @@ Pyxel Editorには次の編集モードがあります。
 
 イメージバンクの画像をタイル状に並べたタイルマップを編集する画面です。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.gif">
+<img src="pyxel/editor/screenshots/tilemap_editor.gif">
 
 **サウンドエディタ:**
 
 サウンドを編集する画面です。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.gif">
+<img src="pyxel/editor/screenshots/sound_editor.gif">
 
 **ミュージックエディタ:**
 
 サウンドを再生順に並べたミュージックを編集する画面です。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
+<img src="pyxel/editor/screenshots/music_editor.gif">
 
 ### その他のリソース作成方法
 
@@ -358,7 +359,7 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 現在のマウスホイールの値
 
 - `btn(key)`<br>
-`key`が押されていたら`True`、押されていなければ`False`を返す ([キー定義一覧](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
+`key`が押されていたら`True`、押されていなければ`False`を返す ([キー定義一覧](pyxel/__init__.py))
 
 - `btnp(key, [hold], [period])`<br>
 そのフレームに`key`が押されたら`True`、押されなければ`False`を返す。`hold`と`period`を指定すると、`hold`フレーム以上ボタンを押し続けた際に`period`フレーム間隔で`True`が返る
@@ -417,8 +418,12 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 イメージバンク`img`(0-2) の (`u`, `v`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーする。`w`、`h`それぞれに負の値を設定すると水平、垂直方向に反転する。`colkey`に色を指定すると透明色として扱われる
 
+<img src="images/image_bank_mechanism.png">
+
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 タイルマップ`tm`(0-7) を (`u`, `v`) からサイズ (`w`, `h`) のタイル情報に従って (`x`, `y`) に描画する。`colkey`に色を指定すると透明色として扱われる。タイルマップは1タイルが8x8のサイズで描画され、タイル番号が0ならイメージバンクの (0, 0)-(7, 7) の領域、1なら (8, 0)-(15, 0) の領域を表す
+
+<img src="images/tilemap_mechanism.png">
 
 - `text(x, y, s, col)`<br>
 色`col`の文字列`s`を (`x`, `y`) に描画する
@@ -569,7 +574,7 @@ e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 パッチや修正はプルリクエスト(PR)として受け付けています。提出の前に問題がすでに解決済みでないか[Issue Tracker](https://github.com/kitao/pyxel/issues)で確認をお願いします。
 
-提出されたプルリクエストは[MITライセンス](https://github.com/kitao/pyxel/blob/master/LICENSE)で公開することに同意したものを見なされます。
+提出されたプルリクエストは[MITライセンス](LICENSE)で公開することに同意したものを見なされます。
 
 ## その他の情報
 
@@ -580,7 +585,7 @@ e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 ## ライセンス
 
-Pyxelは[MITライセンス](http://en.wikipedia.org/wiki/MIT_License)です。ソースコードやライセンス表示用のファイル等で、[著作権とライセンス全文](https://raw.githubusercontent.com/kitao/pyxel/master/LICENSE)の表示を行えば、自由に販売や配布をすることができます。
+Pyxelは[MITライセンス](http://en.wikipedia.org/wiki/MIT_License)です。ソースコードやライセンス表示用のファイル等で、[著作権とライセンス全文](LICENSE)の表示を行えば、自由に販売や配布をすることができます。
 
 Pyxelは以下のソフトウェアを使用しています。
 

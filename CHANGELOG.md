@@ -1,7 +1,15 @@
 # Change Log
 
+## 1.4.3
+- Added the README in Italian
+- Added the README in Russian
+
 ## 1.4.2
 - Updated the installation instructions in the READMEs
+- Changed the gcc version for Mac
+- Added the example #9
+- Added the Noguchi's tilemap for reference
+- Added figures for the API reference in the READEMEs
 
 ## 1.4.1
 - Changed to use gcc compiler on Mac

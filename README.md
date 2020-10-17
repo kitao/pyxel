@@ -1,33 +1,33 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_logo_152x64.png">
+# <img src="images/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt.md) ]
+[ [English](README.md) | [中文](README.cn.md) | [Español](README.es.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
 **Pyxel** is a retro game engine for Python.
 
 Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
+<a href="pyxel/examples/01_hello_pyxel.py" target="_blank">
+<img src="pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/02_jump_game.gif" width="48%">
+<a href="pyxel/examples/02_jump_game.py" target="_blank">
+<img src="pyxel/examples/screenshots/02_jump_game.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/03_draw_api.gif" width="48%">
+<a href="pyxel/examples/03_draw_api.py" target="_blank">
+<img src="pyxel/examples/screenshots/03_draw_api.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/04_sound_api.gif" width="48%">
+<a href="pyxel/examples/04_sound_api.py" target="_blank">
+<img src="pyxel/examples/screenshots/04_sound_api.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
+<a href="pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
+<img src="pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
+<a href="pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
+<img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
 The specifications of the gaming console and APIs for Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic.computer/).
@@ -48,9 +48,9 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 
 ### Color Palette
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
+<img src="pyxel/examples/screenshots/05_color_palette.png">
 <br><br>
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_palette.png">
+<img src="images/pyxel_palette.png">
 
 ## How to Install
 
@@ -60,7 +60,7 @@ First, install [Python3](https://www.python.org/) (version 3.6.8 or higher).
 
 When you install Python with the official installer, **add Python to PATH** by checking the button below:
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/python_installer.png">
+<img src="images/python_installer.png">
 
 Next, install Pyxel with the following `pip` command from the command prompt:
 
@@ -124,14 +124,15 @@ install_pyxel_examples
 
 The examples to be copied are as follows:
 
-- [01_hello_pyxel.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py) - Simplest application
-- [02_jump_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py) - Jump game with Pyxel resource file
-- [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - Demonstration of drawing API
-- [04_sound_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py) - Demonstration of sound API
-- [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - Color palette list
-- [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - Mouse click game
-- [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - Snake game with BGM
-- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing API
+- [01_hello_pyxel.py](pyxel/examples/01_hello_pyxel.py) - Simplest application
+- [02_jump_game.py](pyxel/examples/02_jump_game.py) - Jump game with Pyxel resource file
+- [03_draw_api.py](pyxel/examples/03_draw_api.py) - Demonstration of drawing API
+- [04_sound_api.py](pyxel/examples/04_sound_api.py) - Demonstration of sound API
+- [05_color_palette.py](pyxel/examples/05_color_palette.py) - Color palette list
+- [06_click_game.py](pyxel/examples/06_click_game.py) - Mouse click game
+- [07_snake.py](pyxel/examples/07_snake.py) - Snake game with BGM
+- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing API
+- [09_shooter.py](pyxel/examples/09_shooter.py) - Shoot'em up game with screen transition
 
 The examples can be executed like normal Python code:
 
@@ -260,7 +261,7 @@ Pyxel Editor has the following edit modes.
 
 The mode to edit the image banks.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
+<img src="pyxel/editor/screenshots/image_editor.gif">
 
 By dragging and dropping a png file onto the Image Editor screen, the image can be loaded into the currently selected image bank.
 
@@ -268,19 +269,19 @@ By dragging and dropping a png file onto the Image Editor screen, the image can 
 
 The mode to edit tilemaps in which images of the image banks are arranged in a tile pattern.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.gif">
+<img src="pyxel/editor/screenshots/tilemap_editor.gif">
 
 **Sound Editor:**
 
 The mode to edit sounds.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.gif">
+<img src="pyxel/editor/screenshots/sound_editor.gif">
 
 **Music Editor:**
 
 The mode to edit musics in which the sounds are arranged in order of playback.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
+<img src="pyxel/editor/screenshots/music_editor.gif">
 
 ### Other resource creation methods
 
@@ -354,7 +355,7 @@ The current position of the mouse cursor
 The current value of the mouse wheel
 
 - `btn(key)`<br>
-Return `True` if `key` is pressed, otherwise return `False` ([key definition list](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
+Return `True` if `key` is pressed, otherwise return `False` ([key definition list](pyxel/__init__.py))
 
 - `btnp(key, [hold], [period])`<br>
 Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `period` are specified, `True` will be returned at the `period` frame interval when the `key` is held down for more than `hold` frames
@@ -413,8 +414,12 @@ Draw the outline of a triangle with vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color
 
+<img src="images/image_bank_mechanism.png">
+
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 Draw the tilemap `tm`(0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. A tile of the tilemap is drawn with a size of 8x8, and if the tile number is 0, indicates the region (0, 0)-(7, 7) of the image bank, if 1, indicates (8, 0)-(15, 0)
+
+<img src="images/tilemap_mechanism.png">
 
 - `text(x, y, s, col)`<br>
 Draw a string `s` of color `col` at (`x`, `y`)
@@ -565,7 +570,7 @@ Anyone manually testing the code and reporting bugs or suggestions for enhanceme
 
 Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the issue tracker.
 
-Submitted pull request is deemed to have agreed to publish under [MIT license](https://github.com/kitao/pyxel/blob/master/LICENSE).
+Submitted pull request is deemed to have agreed to publish under [MIT license](LICENSE).
 
 ## Other Information
 

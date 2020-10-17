@@ -1,33 +1,33 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_logo_152x64.png">
+# <img src="images/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt.md) ]
+[ [English](README.md) | [中文](README.cn.md) | [Español](README.es.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
 **Pyxel (픽셀)** 은 Python을 위한 레트로 게임 엔진입니다.
 
 16가지 색상만 사용하거나 동시에 4가지 소리만 재생하는 등 레트로 게임에 나올 법한 사양으로, Python에서 픽셀 아트 스타일의 게임을 마음껏 만들 수 있습니다.
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
+<a href="pyxel/examples/01_hello_pyxel.py" target="_blank">
+<img src="pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/02_jump_game.gif" width="48%">
+<a href="pyxel/examples/02_jump_game.py" target="_blank">
+<img src="pyxel/examples/screenshots/02_jump_game.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/03_draw_api.gif" width="48%">
+<a href="pyxel/examples/03_draw_api.py" target="_blank">
+<img src="pyxel/examples/screenshots/03_draw_api.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/04_sound_api.gif" width="48%">
+<a href="pyxel/examples/04_sound_api.py" target="_blank">
+<img src="pyxel/examples/screenshots/04_sound_api.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
+<a href="pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
+<img src="pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
+<a href="pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
+<img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
 Pyxel의 게이밍 콘솔, API의 사양은 [PICO-8](https://www.lexaloffle.com/pico-8.php)과 [TIC-80](https://tic.computer/)의 디자인을 참고하고 있습니다.
@@ -48,9 +48,9 @@ Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Py
 
 ### 색상 팔레트
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
+<img src="pyxel/examples/screenshots/05_color_palette.png">
 <br><br>
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_palette.png">
+<img src="images/pyxel_palette.png">
 
 ## 설치 방법
 
@@ -60,7 +60,7 @@ Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Py
 
 설치 중 아래 사진과 같이 **Add Python to PATH** 란을 체크해주세요.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/python_installer.png">
+<img src="images/python_installer.png">
 
 다음으로, 명령 프롬프트에서 아래의 `pip` 명령을 통해 Pyxel을 설치합니다.
 
@@ -125,14 +125,15 @@ install_pyxel_examples
 
 복사되는 예제는 다음과 같습니다:
 
-- [01_hello_pyxel.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py) - 간단한 애플리케이션
-- [02_jump_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py) - Pyxel 리소스 파일을 사용한 점프 게임
-- [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - Drawing API를 사용한 그리기 데모
-- [04_sound_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py) - 사운드 API 데모
-- [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - 색상 팔레트 목록
-- [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - 마우스 클릭 게임
-- [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - BGM이 포함된 스네이크 게임
-- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - Triangle Drawing API를 사용한 삼각형 그리기 데모
+- [01_hello_pyxel.py](pyxel/examples/01_hello_pyxel.py) - 간단한 애플리케이션
+- [02_jump_game.py](pyxel/examples/02_jump_game.py) - Pyxel 리소스 파일을 사용한 점프 게임
+- [03_draw_api.py](pyxel/examples/03_draw_api.py) - Drawing API를 사용한 그리기 데모
+- [04_sound_api.py](pyxel/examples/04_sound_api.py) - 사운드 API 데모
+- [05_color_palette.py](pyxel/examples/05_color_palette.py) - 색상 팔레트 목록
+- [06_click_game.py](pyxel/examples/06_click_game.py) - 마우스 클릭 게임
+- [07_snake.py](pyxel/examples/07_snake.py) - BGM이 포함된 스네이크 게임
+- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - 삼각형 그리기 API 데모
+- [09_shooter.py](pyxel/examples/09_shooter.py) - 화면 전환으로 슈팅 게임
 
 예제 파일은 일반적인 Python 코드와 같이 실행할 수 있습니다:
 
@@ -262,7 +263,7 @@ Pyxel Editor는 다음과 같은 편집 모드가 있습니다:
 
 이미지 뱅크를 편집하는 화면입니다.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
+<img src="pyxel/editor/screenshots/image_editor.gif">
 
 이미지 에디터 화면에 png 파일을 Drag & Drop하면, 이미지 파일을 선택 중인 이미지 뱅크에 추가할 수 있습니다.
 
@@ -270,19 +271,19 @@ Pyxel Editor는 다음과 같은 편집 모드가 있습니다:
 
 이미지 뱅크의 이미지를 타일 모양으로 늘어놓은 타일 맵을 편집하는 화면입니다.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.gif">
+<img src="pyxel/editor/screenshots/tilemap_editor.gif">
 
 **사운드 에디터:**
 
 사운드를 편집하는 화면입니다.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.gif">
+<img src="pyxel/editor/screenshots/sound_editor.gif">
 
 **음악 에디터:**
 
 사운드를 플레이 순서대로 늘어놓은 음악을 편집하는 화면입니다.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
+<img src="pyxel/editor/screenshots/music_editor.gif">
 
 ### 기타 리소스 작성 방법
 
@@ -356,7 +357,7 @@ Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수�
 마우스 휠의 현재 값을 나타냅니다.
 
 - `btn(key)`<br>
-`key`가 눌리고 있으면 `True`, 눌리고 있지 않으면 `False`를 반환합니다. ([키 정의 리스트](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
+`key`가 눌리고 있으면 `True`, 눌리고 있지 않으면 `False`를 반환합니다. ([키 정의 리스트](pyxel/__init__.py))
 
 - `btnp(key, [hold], [period])`<br>
 해당 프레임에 `key`가 눌리면 `True`, 눌리지 않으면 `False`를 반환합니다. `hold`와 `period`를 지정하면, `hold` 프레임 이상 `key`가 눌린 상태인 경우 `period` 프레임 간격으로 `True`를 반환합니다.
@@ -415,8 +416,12 @@ Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수�
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 이미지 뱅크 `img`(0-2)의 (`u`, `v`)부터 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 마이너스로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다.
 
+<img src="images/image_bank_mechanism.png">
+
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 타일 맵 `tm`(0-7)을 (`u`, `v`)부터 (`w`, `h`)까지의 타일 정보에 따라 (`x`, `y`) 좌표에 그립니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다. 타일 맵의 타일은 8x8 크기로 그려지며, 타일 번호가 0이면 이미지 뱅크의 (0, 0)-(7, 7), 1이면 (8, 0)-(15, 0) 영역을 나타냅니다.
+
+<img src="images/tilemap_mechanism.png">
 
 - `text(x, y, s, col)`<br>
 `col` 색을 사용해 문자열 `s`를 (`x`, `y`) 좌표에 그립니다.
@@ -567,7 +572,7 @@ Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수�
 
 패치나 수정 요청은 풀 리퀘스트(PR)로 받고 있습니다. 제출하기 전에 문제가 이미 해결되지 않았는지 [Issue Tracker](https://github.com/kitao/pyxel/issues) 페이지에서 확인 부탁드립니다.
 
-제출한 풀 리퀘스트는 [MIT license](https://github.com/kitao/pyxel/blob/master/LICENSE)에 따라 게시하기를 동의한 것으로 간주됩니다.
+제출한 풀 리퀘스트는 [MIT license](LICENSE)에 따라 게시하기를 동의한 것으로 간주됩니다.
 
 ## 기타 정보
 
