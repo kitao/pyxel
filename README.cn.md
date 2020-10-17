@@ -1,33 +1,33 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_logo_152x64.png">
+# <img src="images/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt.md) | [Русский](https://github.com/kitao/pyxel/blob/master/README.ru.md) ]
+[ [English](README.md) | [日本語](README.ja.md) | [中文](README.cn.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português](README.pt.md) | [Italiano](README.it.md) | [Русский](README.ru.md) ]
 
 **Pyxel**是一个python的经典像素风游戏制作引擎。
 
 由于像素风游戏的机制非常简单（如：最多只能显示16种颜色、播放4种声音等），现在你也可以轻松地享受这种游戏的制作过程。
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
+<a href="pyxel/examples/01_hello_pyxel.py" target="_blank">
+<img src="pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/02_jump_game.gif" width="48%">
+<a href="pyxel/examples/02_jump_game.py" target="_blank">
+<img src="pyxel/examples/screenshots/02_jump_game.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/03_draw_api.gif" width="48%">
+<a href="pyxel/examples/03_draw_api.py" target="_blank">
+<img src="pyxel/examples/screenshots/03_draw_api.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/04_sound_api.gif" width="48%">
+<a href="pyxel/examples/04_sound_api.py" target="_blank">
+<img src="pyxel/examples/screenshots/04_sound_api.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
+<a href="pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
+<img src="pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
+<a href="pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
+<img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
 游戏控制台以及API的设计参考了经典的[PICO-8](https://www.lexaloffle.com/pico-8.php)以及[TIC-80](https://tic.computer/)。
@@ -48,9 +48,9 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 
 ### 调色板
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
+<img src="pyxel/examples/screenshots/05_color_palette.png">
 <br><br>
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_palette.png">
+<img src="images/pyxel_palette.png">
 
 ## 如何安装
 
@@ -60,7 +60,7 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 
 如果使用官方安装器来安装python，不要忘记勾选下图选项**将python添加到环境变量：**
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/python_installer.png">
+<img src="images/python_installer.png">
 
 第二步, 在命令提示符中输入以下`pip`指令直接安装pyxel：
 
@@ -124,14 +124,15 @@ install_pyxel_examples
 
 例程包含：
 
-- [01_hello_pyxel.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py) - 最简单的应用
-- [02_jump_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py) - 用Pyxel制作的跳跃游戏
-- [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - 绘画API的示例
-- [04_sound_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py) - 声音API的示例
-- [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - 调色板列表
-- [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - 鼠标点击游戏
-- [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - 带BGM的贪吃蛇游戏
-- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - 三角形绘图示例
+- [01_hello_pyxel.py](pyxel/examples/01_hello_pyxel.py) - 最简单的应用
+- [02_jump_game.py](pyxel/examples/02_jump_game.py) - 用Pyxel制作的跳跃游戏
+- [03_draw_api.py](pyxel/examples/03_draw_api.py) - 绘画API的示例
+- [04_sound_api.py](pyxel/examples/04_sound_api.py) - 声音API的示例
+- [05_color_palette.py](pyxel/examples/05_color_palette.py) - 调色板列表
+- [06_click_game.py](pyxel/examples/06_click_game.py) - 鼠标点击游戏
+- [07_snake.py](pyxel/examples/07_snake.py) - 带BGM的贪吃蛇游戏
+- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - 三角形绘图示例
+- [09_shooter.py](pyxel/examples/09_shooter.py) - 屏幕过渡射击游戏
 
 这些例程可以像执行正常python程序一样运行：
 
@@ -261,7 +262,7 @@ Pyxel编辑器有以下编辑模式。
 
 此模式用来编辑图像库。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
+<img src="pyxel/editor/screenshots/image_editor.gif">
 
 通过拖动png文件至图像编辑器界面，可以将图像加载至当选择前图像库。
 
@@ -269,19 +270,19 @@ Pyxel编辑器有以下编辑模式。
 
 此模式用来编辑瓦片地图，其中图像库的图像以瓦片的样式排列。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.gif">
+<img src="pyxel/editor/screenshots/tilemap_editor.gif">
 
 **音频编辑器：**
 
 此模式用来编辑音频。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.gif">
+<img src="pyxel/editor/screenshots/sound_editor.gif">
 
 **音乐编辑器：**
 
 此模式用来编辑将录音有序编排形成的音乐。
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
+<img src="pyxel/editor/screenshots/music_editor.gif">
 
 ### 其他创建源文件的方法
 
@@ -355,7 +356,7 @@ pyxelpackager python_file
 当前鼠标滚轮的值。
 
 - `btn(key)`<br>
-如果`key`被按下则返回`True`，否则返回`False`([按键定义列表](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))。
+如果`key`被按下则返回`True`，否则返回`False`([按键定义列表](pyxel/__init__.py))。
 
 - `btnp(key, [hold], [period])`<br>
 如果`key`被按下则返回`True`。若设置了`hold`和`period`参数，则当`key`被按下持续`hold`帧时，在`period`帧间隙返回`True`。
@@ -415,8 +416,12 @@ pyxelpackager python_file
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 将尺寸为(`w`, `h`)的区域从图像库的(`u`, `v`)复制到(`x`, `y`)。若`w`或`h`为负值，则在水平或垂直方向上翻转。若指定了`colkey`的值，则视作透明颜色。
 
+<img src="images/image_bank_mechanism.png">
+
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 根据从(`u`, `v`)开始的尺寸为(`w`, `h`)的tail信息，将瓦片地图(tilemap)`tm`(0-7)绘制到(`x`, `y`)处。若指定了`colkey`的值，则视作透明颜色。瓦片地图(tilemap)中一个tail尺寸为8x8。若tail编号为0，代表图像库中(0, 0)-(7, 7)的区域，若编号为1，代表(8, 0)-(15, 0)的区域。
+
+<img src="images/tilemap_mechanism.png">
 
 - `text(x, y, s, col)`<br>
 用`col`颜色在(`x`, `y`)绘制字符串`s`。
@@ -566,7 +571,7 @@ effect（音效）列表(0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
 
 可以通过pull requests(PRs)形式来提交补丁或修复。请确认你的pull request对应的issue地址在issue tracker中依然是open状态。
 
-一旦提交pull request，则默认同意在[MIT license](https://github.com/kitao/pyxel/blob/master/LICENSE)的许可下发布。
+一旦提交pull request，则默认同意在[MIT license](LICENSE)的许可下发布。
 
 ## 其他信息
 

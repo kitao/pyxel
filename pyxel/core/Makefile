@@ -25,7 +25,7 @@ endif
 endif
 
 ifeq ($(PF),macos)
-CC = g++-9
+CC = g++-10
 SDL2_CFLAGS = `sdl2-config --cflags`
 SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image
 TARGET = $(BINDIR)/macos/$(LIBNAME).dylib
@@ -76,6 +76,7 @@ test:
 	python3 ../examples/06_click_game.py
 	python3 ../examples/07_snake.py
 	python3 ../examples/08_triangle_api.py
+	python3 ../examples/09_shooter.py
 	python3 ../editor/__init__.py
 
 $(TARGET): $(OBJS)
