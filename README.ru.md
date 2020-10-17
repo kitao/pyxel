@@ -1,33 +1,33 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_logo_152x64.png">
+# <img src="images/pyxel_logo_152x64.png">
 
-[ [English](https://github.com/kitao/pyxel/blob/master/README.md) | [日本語](https://github.com/kitao/pyxel/blob/master/README.ja.md) | [中文](https://github.com/kitao/pyxel/blob/master/README.cn.md) | [한국어](https://github.com/kitao/pyxel/blob/master/README.ko.md) | [Español](https://github.com/kitao/pyxel/blob/master/README.es.md) | [Português](https://github.com/kitao/pyxel/blob/master/README.pt.md) | [Русский](https://github.com/kitao/pyxel/blob/master/README.ru.md) ]
+[ [English](README.md) | [中文](README.cn.md) | [Español](README.es.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
 **Pyxel** -- это игровой движок для Python в стиле ретро.
 
 Благодаря своей простоте, вдохновленной старыми игровыми консолями (например, палитра состоит всего из 16 цветов, и только 4 звука могут быть проиграны одновременно), вы можете легко сможете создавать игры в стиле пиксель-арт.
 
 <a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
+<img src="pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
 </a>
 
 <a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/02_jump_game.gif" width="48%">
+<img src="pyxel/examples/screenshots/02_jump_game.gif" width="48%">
 </a>
 
 <a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/03_draw_api.gif" width="48%">
+<img src="pyxel/examples/screenshots/03_draw_api.gif" width="48%">
 </a>
 
 <a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/04_sound_api.gif" width="48%">
+<img src="pyxel/examples/screenshots/04_sound_api.gif" width="48%">
 </a>
 
 <a href="https://github.com/kitao/pyxel/blob/master/pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
+<img src="pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
 </a>
 
 <a href="https://github.com/kitao/pyxel/blob/master/pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
+<img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
 Характеристики игровой консоли и API для Pyxel позаимствованны из замечательной [PICO-8](https://www.lexaloffle.com/pico-8.php) и[TIC-80](https://tic.computer/).
@@ -48,9 +48,9 @@ Pyxel -- программа с открытым кодом и бесплатна
 
 ### Цветовая Палитра
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/examples/screenshots/05_color_palette.png">
+<img src="pyxel/examples/screenshots/05_color_palette.png">
 <br><br>
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/pyxel_palette.png">
+<img src="images/pyxel_palette.png">
 
 ## Как установить
 
@@ -60,7 +60,7 @@ Pyxel -- программа с открытым кодом и бесплатна
 
 Во время установки Python3 с помощью официального установщика, выберите опцию **add Python to PATH**, нажав кнопку внизу:
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/images/python_installer.png">
+<img src="images/python_installer.png">
 
 Затем установите Pyxel, используя следующую `pip` команду из командной строки:
 
@@ -260,7 +260,7 @@ pyxeleditor [имя_ресурсного_файла]
 
 Режим редактирования наборов изображений.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/image_editor.gif">
+<img src="pyxel/editor/screenshots/image_editor.gif">
 
 Путем перетаскивания png файла на экран редактора изображений, изображение может быть загружено в выбранный набор.
 
@@ -268,19 +268,19 @@ pyxeleditor [имя_ресурсного_файла]
 
 Режим редактирования тайлмапов, в котором изоражения расположены в плиточном порядке.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/tilemap_editor.gif">
+<img src="pyxel/editor/screenshots/tilemap_editor.gif">
 
 **Редактор звука:**
 
 Режим для редактирования звуковых файлов.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/sound_editor.gif">
+<img src="pyxel/editor/screenshots/sound_editor.gif">
 
 **Редактор музыки:**
 
 Режим для редактирования музыки, в которой звуки расставлены в порядке проигрывания.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/master/pyxel/editor/screenshots/music_editor.gif">
+<img src="pyxel/editor/screenshots/music_editor.gif">
 
 ### Другие методы создания ресурсов
 
@@ -415,7 +415,7 @@ pyxelpackager имя_файла
 Скопировать область размеров (`w`, `h`), по координатам (`u`, `v`) набора изображений `img`(0-2) по координатам (`x`, `y`) на экране. Если для `w` и/или `h` установлено отрицательное значение, изображение будет развернуто горизонтально и/или вертикально. Если указан параметр `colkey`, соответствующий свет будет считаться цветом фона (прозрачным цветом)
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Нарисовать из тайлмапа `tm`(0-7) по координатам (`x`, `y`) тайл размером (`w`, `h`), находящийся по координатам (`u`, `v`). Если указан параметр `colkey`, соответствующий цвет будет считаться цветом фона (прозрачным цветом). Тайл тайлмапа рисуется размера 8x8. Если номер тайла равен 0, означает регион (0, 0)-(7, 7) набора изображений, если 1, означает регион (8, 0) - (15, 0) 
+Нарисовать из тайлмапа `tm`(0-7) по координатам (`x`, `y`) тайл размером (`w`, `h`), находящийся по координатам (`u`, `v`). Если указан параметр `colkey`, соответствующий цвет будет считаться цветом фона (прозрачным цветом). Тайл тайлмапа рисуется размера 8x8. Если номер тайла равен 0, означает регион (0, 0)-(7, 7) набора изображений, если 1, означает регион (8, 0) - (15, 0)
 
 - `text(x, y, s, col)`<br>
 Нарисовать строку текста `s` цвета `col` по координате (`x`, `y`)
@@ -460,7 +460,7 @@ pyxelpackager имя_файла
 Загрузить png изображение из директории исполняемого скрипта с координаты (`x`, `y`)
 
 - `copy(x, y, img, u, v, w, h)`<br>
-Скопировать регион размера (`w`, `h`) с координаты (`u`, `v`) набора изображений `img`(0-3) по координатам (`x`, `y`) 
+Скопировать регион размера (`w`, `h`) с координаты (`u`, `v`) набора изображений `img`(0-3) по координатам (`x`, `y`)
 
 ### Класс Tilemap
 
@@ -501,7 +501,7 @@ pyxelpackager имя_файла
 Длина ноты(120 = 1 секунда в тон)
 
 - `set(note, tone, volume, effect, speed)`<br>
-Установить ноту, тон, громкость и эффект с помощью строки. Если длины строк короче ноты, зацикливается 
+Установить ноту, тон, громкость и эффект с помощью строки. Если длины строк короче ноты, зацикливается
 
 - `set_note(note)`<br>
 Установить ноту с помощью строки, составленной по форме 'CDEFGAB'+'#-'+'0123' или 'R'. Регистр и пробелы игнорируются<br>

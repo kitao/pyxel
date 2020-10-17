@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.4.3
+- Added the README in Italian
+- Added the README in Russian
+
 ## 1.4.2
 - Updated the installation instructions in the READMEs
 - Changed the gcc version for Mac
