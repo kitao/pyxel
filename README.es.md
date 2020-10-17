@@ -1,6 +1,6 @@
 # <img src="images/pyxel_logo_152x64.png">
 
-[ [English](README.md) | [日本語](README.ja.md) | [中文](README.cn.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português](README.pt.md) | [Italiano](README.it.md) ] 
+[ [English](README.md) | [日本語](README.ja.md) | [中文](README.cn.md) | [한국어](README.ko.md) | [Español](README.es.md) | [Português](README.pt.md) | [Italiano](README.it.md) | [Русский](README.ru.md) ]
 
 **Pyxel** es un motor de videojuegos para Python.
 
