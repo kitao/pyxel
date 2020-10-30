@@ -61,8 +61,8 @@ void Channel::Update() {
   }
 
   // forward note
-  if (time_ % one_note_time_ == 0 && play_index_ < sound_list_.size()) {  // (Rarely) play_index_ over the sound_list_ size 
-    Sound* sound = sound_list_[play_index_];  // then crash
+  if (time_ % one_note_time_ == 0) {
+    Sound* sound = sound_list_[play_index_];
     int32_t pos = time_ / one_note_time_;
     note_ = sound->Note()[pos];
     volume_ = (sound->Volume().empty()
@@ -105,7 +105,7 @@ void Channel::Update() {
   }
 
   // play note
-  if (note_ >= 0 && volume_ > 0) {  // for avoid 0 divide error (bad pitch_ value cause crash 100% on special case)
+  if (note_ >= 0) {
     float a;
     int32_t pitch;
 
