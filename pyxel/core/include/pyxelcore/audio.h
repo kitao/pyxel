@@ -24,6 +24,7 @@ class Audio {
   void StopPlaying(int32_t channel = -1);
 
  private:
+  SDL_AudioDeviceID audio_device_id_;
   Sound** sound_bank_;
   Music** music_bank_;
   Channel channel_[MUSIC_CHANNEL_COUNT];
