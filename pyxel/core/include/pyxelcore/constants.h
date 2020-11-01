@@ -410,8 +410,11 @@ const std::vector<uint32_t> FONT_DATA = {
 //
 // Audio
 //
-const int32_t AUDIO_SAMPLE_RATE = 22050;
-const int32_t AUDIO_BLOCK_SIZE = 2205;
+const int32_t AUDIO_SAMPLE_RATE = 44100;  // [SOUND QUALITY WILL CHANGE!]
+                                          // When 22050Hz (block size=512) and g++ -O3 compile,
+                                          // often cause silence by my enviroment. (-O0 is OK)
+const int32_t AUDIO_BLOCK_SIZE = 512;     // power of 2. "512 is a good value for games".
+                                          // And large value often cause silence with my enviroment. 
 const int32_t AUDIO_ONE_SPEED = AUDIO_SAMPLE_RATE / 120;
 const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (4 * 7);
 
