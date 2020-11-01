@@ -6,6 +6,10 @@
 namespace pyxelcore {
 
 Audio::Audio() {
+  audio_mutex_ = SDL_CreateMutex();
+
+  LockAudio();
+
   SDL_AudioSpec audio_spec;
   audio_spec.freq = AUDIO_SAMPLE_RATE;
   audio_spec.format = AUDIO_S16LSB;
@@ -29,9 +33,13 @@ Audio::Audio() {
   }
 
   SDL_PauseAudio(0);
+
+  UnlockAudio();
 }
 
 Audio::~Audio() {
+  LockAudio();
+
   SDL_CloseAudio();
 
   for (int32_t i = 0; i < TOTAL_SOUND_BANK_COUNT; i++) {
@@ -43,10 +51,17 @@ Audio::~Audio() {
     delete music_bank_[i];
   }
   delete[] music_bank_;
+
+  UnlockAudio();
+
+  SDL_DestroyMutex(audio_mutex_);
 }
 
 void Audio::callback(void* userdata, uint8_t* stream, int len) {
   Audio* audio = reinterpret_cast<Audio*>(userdata);
+
+  audio->LockAudio();
+
   int16_t* frame_data = reinterpret_cast<int16_t*>(stream);
   int32_t frame_count = len / sizeof(uint16_t);
 
@@ -59,9 +74,13 @@ void Audio::callback(void* userdata, uint8_t* stream, int len) {
 
     frame_data[i] = output;
   }
+
+  audio->UnlockAudio();
 }
 
 void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
+  LockAudio();
+
   if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
     PYXEL_ERROR("invalid channel");
   }
@@ -72,11 +91,15 @@ void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
 
   const SoundList sound_list = {sound_bank_[sound_index]};
   channel_[channel].PlaySound(sound_list, loop);
+
+  UnlockAudio();
 }
 
 void Audio::PlaySound(int32_t channel,
                       const SoundIndexList& sound_index_list,
                       bool loop) {
+  LockAudio();
+
   if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
     PYXEL_ERROR("invalid channel");
   }
@@ -92,6 +115,8 @@ void Audio::PlaySound(int32_t channel,
   }
 
   channel_[channel].PlaySound(sound_list, loop);
+
+  UnlockAudio();
 }
 
 void Audio::PlayMusic(int32_t music_index, bool loop) {
@@ -108,6 +133,8 @@ void Audio::PlayMusic(int32_t music_index, bool loop) {
 }
 
 void Audio::StopPlaying(int32_t channel) {
+  LockAudio();
+
   if (channel != -1 && (channel < 0 || channel >= MUSIC_CHANNEL_COUNT)) {
     PYXEL_ERROR("invalid channel");
   }
@@ -119,6 +146,8 @@ void Audio::StopPlaying(int32_t channel) {
   } else {
     channel_[channel].StopPlaying();
   }
+
+  UnlockAudio();
 }
 
 }  // namespace pyxelcore
