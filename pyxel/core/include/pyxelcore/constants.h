@@ -24,7 +24,7 @@ namespace pyxelcore {
 //
 // Common
 //
-const std::string VERSION = "1.4.2";
+const std::string VERSION = "1.4.3";
 const int32_t COLOR_COUNT = 16;
 const std::string WHITESPACE = " \t\v\r\n";
 
@@ -411,7 +411,7 @@ const std::vector<uint32_t> FONT_DATA = {
 // Audio
 //
 const int32_t AUDIO_SAMPLE_RATE = 22050;
-const int32_t AUDIO_BLOCK_SIZE = 2205;
+const int32_t AUDIO_BLOCK_SIZE = 2048;
 const int32_t AUDIO_ONE_SPEED = AUDIO_SAMPLE_RATE / 120;
 const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (4 * 7);
 

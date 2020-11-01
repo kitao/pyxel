@@ -561,7 +561,8 @@ def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
             sys.exit(1)
 
     core.run(
-        CFUNCTYPE(None)(update_callback), CFUNCTYPE(None)(draw_callback),
+        CFUNCTYPE(None)(update_callback),
+        CFUNCTYPE(None)(draw_callback),
     )
     sys.exit(0)
 

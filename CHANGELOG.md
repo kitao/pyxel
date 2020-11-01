@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.4.3
+- Added the README in Italian
+- Added the README in Russian
+- Fixed a crush bug when playing sound
+
 ## 1.4.2
 - Updated the installation instructions in the READMEs
 - Changed the gcc version for Mac
