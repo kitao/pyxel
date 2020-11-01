@@ -24,13 +24,10 @@ class Audio {
   void StopPlaying(int32_t channel = -1);
 
  private:
-  SDL_mutex* audio_mutex_;
+  SDL_AudioDeviceID audio_device_id_;
   Sound** sound_bank_;
   Music** music_bank_;
   Channel channel_[MUSIC_CHANNEL_COUNT];
-
-  void LockAudio();
-  void UnlockAudio();
 
   static void callback(void* userdata, uint8_t* stream, int len);
 };
@@ -61,14 +58,6 @@ inline int32_t Audio::GetPlayPos(int32_t channel) const {
   }
 
   return channel_[channel].PlayPos();
-}
-
-inline void Audio::LockAudio() {
-  SDL_LockMutex(audio_mutex_);
-}
-
-inline void Audio::UnlockAudio() {
-  SDL_UnlockMutex(audio_mutex_);
 }
 
 }  // namespace pyxelcore
