@@ -1,6 +1,5 @@
 import os
 import platform
-import sys
 from ctypes import CFUNCTYPE, POINTER, c_char_p, c_int32, c_void_p, cdll
 
 
@@ -41,13 +40,12 @@ def _load_library():
 
 
 _lib = _load_library()
-_module = sys.modules[__name__]
 
 
 def _setup_api(name, restype, argtypes):
-    api = _module.__dict__[name] = eval("_lib.{0}".format(name))
-    api.restype = restype
+    api = globals()[name] = getattr(_lib, name)
     api.argtypes = argtypes
+    api.restype = restype
 
 
 #

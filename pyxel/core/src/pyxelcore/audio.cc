@@ -14,7 +14,8 @@ Audio::Audio() {
   audio_spec.callback = callback;
   audio_spec.userdata = this;
 
-  if (SDL_OpenAudio(&audio_spec, NULL) < 0) {
+  audio_device_id_ = SDL_OpenAudioDevice(NULL, 0, &audio_spec, NULL, 0);
+  if (audio_device_id_ == 0) {
     PYXEL_ERROR("failed to initialize SDL Audio");
   }
 
@@ -28,11 +29,11 @@ Audio::Audio() {
     music_bank_[i] = new Music();
   }
 
-  SDL_PauseAudio(0);
+  SDL_PauseAudioDevice(audio_device_id_, 0);
 }
 
 Audio::~Audio() {
-  SDL_CloseAudio();
+  SDL_CloseAudioDevice(audio_device_id_);
 
   for (int32_t i = 0; i < TOTAL_SOUND_BANK_COUNT; i++) {
     delete sound_bank_[i];
@@ -62,6 +63,8 @@ void Audio::callback(void* userdata, uint8_t* stream, int len) {
 }
 
 void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
+  SDL_LockAudioDevice(audio_device_id_);
+
   if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
     PYXEL_ERROR("invalid channel");
   }
@@ -72,11 +75,15 @@ void Audio::PlaySound(int32_t channel, int32_t sound_index, bool loop) {
 
   const SoundList sound_list = {sound_bank_[sound_index]};
   channel_[channel].PlaySound(sound_list, loop);
+
+  SDL_UnlockAudioDevice(audio_device_id_);
 }
 
 void Audio::PlaySound(int32_t channel,
                       const SoundIndexList& sound_index_list,
                       bool loop) {
+  SDL_LockAudioDevice(audio_device_id_);
+
   if (channel < 0 || channel >= MUSIC_CHANNEL_COUNT) {
     PYXEL_ERROR("invalid channel");
   }
@@ -92,9 +99,13 @@ void Audio::PlaySound(int32_t channel,
   }
 
   channel_[channel].PlaySound(sound_list, loop);
+
+  SDL_UnlockAudioDevice(audio_device_id_);
 }
 
 void Audio::PlayMusic(int32_t music_index, bool loop) {
+  SDL_LockAudioDevice(audio_device_id_);
+
   if (music_index < 0 || music_index >= MUSIC_BANK_COUNT) {
     PYXEL_ERROR("invalid music index");
   }
@@ -105,9 +116,13 @@ void Audio::PlayMusic(int32_t music_index, bool loop) {
   PlaySound(1, music->Channel1(), loop);
   PlaySound(2, music->Channel2(), loop);
   PlaySound(3, music->Channel3(), loop);
+
+  SDL_UnlockAudioDevice(audio_device_id_);
 }
 
 void Audio::StopPlaying(int32_t channel) {
+  SDL_LockAudioDevice(audio_device_id_);
+
   if (channel != -1 && (channel < 0 || channel >= MUSIC_CHANNEL_COUNT)) {
     PYXEL_ERROR("invalid channel");
   }
@@ -119,6 +134,8 @@ void Audio::StopPlaying(int32_t channel) {
   } else {
     channel_[channel].StopPlaying();
   }
+
+  SDL_UnlockAudioDevice(audio_device_id_);
 }
 
 }  // namespace pyxelcore
