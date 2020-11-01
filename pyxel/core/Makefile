@@ -58,7 +58,7 @@ all: $(TARGET)
 
 format:
 	find include/pyxelcore.h include/pyxelcore src -name "*.h" -or -name "*.cc" | xargs clang-format -i
-	isort -rc ../..
+	isort ../..
 	black ../..
 
 clean:
