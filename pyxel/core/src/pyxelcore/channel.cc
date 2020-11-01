@@ -105,7 +105,7 @@ void Channel::Update() {
   }
 
   // play note
-  if (note_ >= 0) {
+  if (note_ >= 0 && volume_ > 0) {
     float a;
     int32_t pitch;
 
