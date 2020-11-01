@@ -14,8 +14,7 @@ Audio::Audio() {
   audio_spec.callback = callback;
   audio_spec.userdata = this;
 
-  audio_device_id_ = SDL_OpenAudioDevice(NULL, 0, &audio_spec, NULL,
-                                         SDL_AUDIO_ALLOW_ANY_CHANGE);
+  audio_device_id_ = SDL_OpenAudioDevice(NULL, 0, &audio_spec, NULL, 0);
   if (audio_device_id_ == 0) {
     PYXEL_ERROR("failed to initialize SDL Audio");
   }
