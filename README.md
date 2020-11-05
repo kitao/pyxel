@@ -100,7 +100,7 @@ sudo -H pip3 install -U pyxel
 ```sh
 sudo pacman -Syu
 sudo pacman -S sdl2 sdl2_image
-sudo pip3 install -U pixel
+sudo pip3 install -U pyxel
 ```
 
 ### Other environment
