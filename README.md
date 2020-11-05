@@ -2,7 +2,7 @@
 
 [ [English](README.md) | [中文](README.cn.md) | [Español](README.es.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
-**Pyxel** is a retro game engine for Python.
+**Pyxel** is a __simple, powerful__ retro game engine for Python.
 
 Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
 
@@ -56,7 +56,7 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 
 ### Windows
 
-First, install [Python3](https://www.python.org/) (version 3.6.8 or higher).
+First, install [Python3](https://www.python.org/) (version 3.6.8 or higher) to your computer.
 
 When you install Python with the official installer, **add Python to PATH** by checking the button below:
 
@@ -93,6 +93,14 @@ Install [Python3](https://www.python.org/) (version 3.6.8 or higher) and the req
 ```sh
 sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev gifsicle
 sudo -H pip3 install -U pyxel
+```
+
+**Arch Linux:**
+
+```sh
+sudo pacman -Syu
+sudo pacman -S sdl2 sdl2_image
+sudo pip3 install -U pixel
 ```
 
 ### Other environment
@@ -172,6 +180,8 @@ def draw():
 pyxel.run(update, draw)
 ```
 
+When run the above code, you should see a window with a rectangle on a black background.
+
 The arguments of `run` function are `update` function to update each frame and `draw` function to draw screen when necessary.
 
 In an actual application, it is recommended to wrap pyxel code in a class as below:
@@ -246,6 +256,12 @@ Pyxel Editor starts with the following command:
 
 ```sh
 pyxeleditor [pyxel_resource_file]
+```
+
+Or you can start a new resource file with the following:
+
+```sh
+pyxeleditor
 ```
 
 If the specified Pyxel resource file (.pyxres) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
