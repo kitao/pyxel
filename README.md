@@ -306,7 +306,7 @@ To create a stand-alone executable, in the environment where [PyInstaller](https
 pyxelpackager python_file
 ```
 
-When the process is complete, a stand-alone executable is created in the `dist` folder.
+When the process is completed, a stand-alone executable is created in the `dist` folder.
 
 If resources such as .pyxres and .png files are also necessary, put them under the `assets` folder and they will be included.
 
