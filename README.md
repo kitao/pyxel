@@ -258,12 +258,6 @@ Pyxel Editor starts with the following command:
 pyxeleditor [pyxel_resource_file]
 ```
 
-Or you can start a new resource file with the following:
-
-```sh
-pyxeleditor
-```
-
 If the specified Pyxel resource file (.pyxres) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
 If the resource file is omitted, the name is `my_resource.pyxres`.
 
