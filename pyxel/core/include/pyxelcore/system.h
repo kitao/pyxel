@@ -38,6 +38,7 @@ class System {
   bool Quit();
   bool FlipScreen();
   void ShowScreen();
+  void ToggleFullscreen();
 
   std::string DropFile() const { return drop_file_; }
   void SetCaption(const std::string& caption);

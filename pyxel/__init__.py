@@ -576,6 +576,8 @@ def flip() -> None:
     if core.flip():
         sys.exit(0)
 
+def toggleFullscreen() -> None:
+    core.toggleFullscreen()
 
 def show() -> None:
     core.show()
