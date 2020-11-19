@@ -41,6 +41,7 @@ PYXEL_API void init(int width,
 PYXEL_API void run(void (*update)(), void (*draw)());
 PYXEL_API int quit();
 PYXEL_API int flip();
+PYXEL_API void toggleFullscreen();
 PYXEL_API void show();
 
 PYXEL_API void _drop_file_getter(char* str, int str_length);

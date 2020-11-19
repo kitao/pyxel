@@ -67,6 +67,7 @@ _setup_api(
 _setup_api("run", None, [CFUNCTYPE(None)] * 2)
 _setup_api("quit", c_int32, [])
 _setup_api("flip", c_int32, [])
+_setup_api("toggleFullscreen", None, [])
 _setup_api("show", None, [])
 
 _setup_api("_drop_file_getter", None, [c_char_p, c_int32])

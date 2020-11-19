@@ -88,6 +88,10 @@ int flip() {
   return GetSystem()->FlipScreen();
 }
 
+void toggleFullscreen() {
+  return GetSystem()->ToggleFullscreen();
+}
+
 void show() {
   GetSystem()->ShowScreen();
 }

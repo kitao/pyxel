@@ -208,6 +208,10 @@ bool System::UpdateFrame(void (*update)()) {
   return is_quit_requested_;
 }
 
+void System::ToggleFullscreen() {
+  window_->ToggleFullscreen();
+}
+
 void System::CheckSpecialInput() {
   if (input_->IsButtonOn(KEY_ALT)) {
     if (input_->IsButtonPressed(KEY_ENTER)) {
