@@ -86,9 +86,10 @@ void Window::UpdateWindowInfo() {
   SDL_GetWindowSize(window_, &window_width, &window_height);
 
   screen_scale_ =
-      Min(window_width / screen_width_, window_height / screen_height_);
-  screen_x_ = (window_width - screen_width_ * screen_scale_) / 2;
-  screen_y_ = (window_height - screen_height_ * screen_scale_) / 2;
+      Min(float(window_width) / float(screen_width_),
+          float(window_height) / float(screen_height_));
+  screen_x_ = int32_t((float(window_width) - float(screen_width_) * screen_scale_) / 2.0);
+  screen_y_ = int32_t((float(window_height) - float(screen_height_) * screen_scale_) / 2.0);
 }
 
 void Window::ToggleFullscreen() {
@@ -141,8 +142,8 @@ void Window::Render(int32_t** screen_data) {
   SDL_Rect dst_rect = {
       screen_x_,
       screen_y_,
-      screen_width_ * screen_scale_,
-      screen_height_ * screen_scale_,
+      int32_t(float(screen_width_) * screen_scale_),
+      int32_t(float(screen_height_) * screen_scale_),
   };
 
   SDL_RenderCopy(renderer_, screen_texture_, NULL, &dst_rect);

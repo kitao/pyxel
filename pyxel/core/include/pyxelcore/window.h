@@ -39,7 +39,7 @@ class Window {
   int32_t screen_y_;
   int32_t screen_width_;
   int32_t screen_height_;
-  int32_t screen_scale_;
+  float screen_scale_;
   PaletteColor palette_color_;
   bool is_fullscreen_;
   int32_t mouse_wheel_;
