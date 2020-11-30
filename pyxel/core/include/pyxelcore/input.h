@@ -21,9 +21,12 @@ class Input {
                        int32_t hold_frame = 0,
                        int32_t period_frame = 0) const;
   bool IsButtonReleased(int32_t key) const;
+  void SetMousePaused(int32_t is_paused);
   void SetMouseVisible(int32_t is_visible);
 
-  bool IsMouseVisible() const { return is_mouse_visible_; }
+  bool IsMousePaused() const { return is_mouse_paused_; }
+  bool IsMouseVisible() const { return is_mouse_visible_ || is_mouse_paused_; }
+
   void Update(Window* window, int32_t frame_count);
 
  private:
@@ -36,6 +39,7 @@ class Input {
   int32_t mouse_x_;
   int32_t mouse_y_;
   int32_t mouse_wheel_;
+  bool is_mouse_paused_;
   bool is_mouse_visible_;
   int32_t key_state_[KEY_COUNT];
 

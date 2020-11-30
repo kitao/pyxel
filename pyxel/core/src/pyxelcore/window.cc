@@ -98,17 +98,14 @@ void Window::ToggleFullscreen() {
                           is_fullscreen_ ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 }
 
-bool Window::ProcessEvents() {
+uint32_t Window::ProcessEvents() {
   SDL_Event event;
-  bool window_should_close = false;
+  uint32_t action_flag = WINDOW_ACTION_NONE;
 
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
       case SDL_WINDOWEVENT:
-        if (event.window.event == SDL_WINDOWEVENT_MOVED ||
-            event.window.event == SDL_WINDOWEVENT_RESIZED) {
-          UpdateWindowInfo();
-        }
+        action_flag = action_flag | ProcessWindowEvent(event);
         break;
 
       case SDL_MOUSEWHEEL:
@@ -120,12 +117,37 @@ bool Window::ProcessEvents() {
         break;
 
       case SDL_QUIT:
-        window_should_close = true;
+        action_flag = action_flag | WINDOW_ACTION_CLOSE;
         break;
     }
   }
 
-  return window_should_close;
+  return action_flag;
+}
+
+uint32_t Window::ProcessWindowEvent(SDL_Event event) {
+  uint32_t flag = WINDOW_ACTION_NONE;
+
+  switch(event.window.event) {
+    case SDL_WINDOWEVENT_MOVED:
+    case SDL_WINDOWEVENT_RESIZED:
+      UpdateWindowInfo();
+      break;
+
+    case SDL_WINDOWEVENT_MINIMIZED:
+    case SDL_WINDOWEVENT_FOCUS_LOST:
+    case SDL_WINDOWEVENT_HIDDEN:
+      flag = flag | WINDOW_ACTION_PAUSE_CURSOR;
+      break;
+
+    case SDL_WINDOWEVENT_MAXIMIZED:
+    case SDL_WINDOWEVENT_FOCUS_GAINED:
+    case SDL_WINDOWEVENT_SHOWN:
+      flag = flag | WINDOW_ACTION_RESUME_CURSOR;
+      break;
+  }
+
+  return flag;
 }
 
 void Window::Render(int32_t** screen_data) {

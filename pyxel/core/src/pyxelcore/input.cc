@@ -36,6 +36,11 @@ Input::~Input() {
 }
 
 void Input::Update(Window* window, int32_t frame_count) {
+  if (is_mouse_paused_) {
+    // stop updating any state because we should be ignoring mouse input
+    return;
+  }
+
   frame_count_ = frame_count + 1;  // change frame_count to start from 1
 
   SDL_GetGlobalMouseState(&mouse_x_, &mouse_y_);
@@ -145,8 +150,11 @@ bool Input::IsButtonReleased(int32_t key) const {
   return key_state_[key] == -frame_count_;
 }
 
+void Input::SetMousePaused(int32_t is_paused) {
+  is_mouse_paused_ = is_paused;
+}
+
 void Input::SetMouseVisible(int32_t is_visible) {
   is_mouse_visible_ = is_visible;
 }
-
 }  // namespace pyxelcore
