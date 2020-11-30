@@ -191,8 +191,15 @@ bool System::UpdateFrame(void (*update)()) {
 
   update_profiler_.Start();
 
-  if (window_->ProcessEvents()) {
+  uint32_t action_flag = window_->ProcessEvents();
+  if (action_flag & WINDOW_ACTION_CLOSE) {
     return true;
+  }
+
+  if (action_flag & WINDOW_ACTION_PAUSE_CURSOR) {
+    input_->SetMousePaused(true);
+  } else if (action_flag & WINDOW_ACTION_RESUME_CURSOR) {
+    input_->SetMousePaused(false);
   }
 
   drop_file_ = window_->GetDropFile();

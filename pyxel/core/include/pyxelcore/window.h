@@ -3,6 +3,12 @@
 
 #include "pyxelcore/common.h"
 
+// Events on the window might need system-level actions to be performed
+#define WINDOW_ACTION_NONE          0
+#define WINDOW_ACTION_CLOSE         (1u << 0)  // close the window
+#define WINDOW_ACTION_PAUSE_CURSOR  (1u << 1)  // window is inactive, so don't respond to cursor movements
+#define WINDOW_ACTION_RESUME_CURSOR (1u << 2)  // start moving cursor again
+
 namespace pyxelcore {
 
 class Window {
@@ -22,7 +28,7 @@ class Window {
   int32_t ScreenScale() const { return screen_scale_; }
 
   void ToggleFullscreen();
-  bool ProcessEvents();
+  uint32_t ProcessEvents();
   void Render(int32_t** screen_data);
   int32_t GetMouseWheel();
   std::string GetDropFile();
@@ -45,6 +51,7 @@ class Window {
   int32_t mouse_wheel_;
   std::string drop_file_;
 
+  uint32_t ProcessWindowEvent(SDL_Event event);
   void SetupWindowIcon() const;
   void UpdateWindowInfo();
   void UpdateScreenTexture(int32_t** screen_data);
