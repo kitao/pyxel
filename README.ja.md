@@ -96,6 +96,13 @@ sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev gifsicle
 sudo -H pip3 install -U pyxel
 ```
 
+**openSUSE:**
+
+```sh
+sudo zypper install python3 python3-pip libSDL2-devel libSDL2_image-devel gifsicle
+sudo -H pip3 install -U pyxel
+```
+
 ### その他の環境
 
 上記以外の環境 (32bit版LinuxやRaspberry PI等) にPyxelをインストールするには、次の手順でビルドを行なってください。

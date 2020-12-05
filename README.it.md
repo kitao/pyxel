@@ -95,6 +95,13 @@ sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev gifsicle
 sudo -H pip3 install -U pyxel
 ```
 
+**openSUSE:**
+
+```sh
+sudo zypper install python3 python3-pip libSDL2-devel libSDL2_image-devel gifsicle
+sudo -H pip3 install -U pyxel
+```
+
 ### Altri ambienti
 
 Per installare Pyxel in un ambiente diverso da quelli precedenti (32-bit Linux, Raspberry PI, ecc.), segui i procedimenti seguenti per compilare:
