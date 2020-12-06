@@ -11,7 +11,7 @@ Input::Input() {
   gamepad1_ = SDL_GameControllerOpen(0);
   gamepad2_ = SDL_GameControllerOpen(1);
 
-  const uint8_t data[] = {8};
+  const uint8_t data[] = {0};
   blank_cursor_ = SDL_CreateCursor(data, data, 1, 1, 0, 0);
   normal_cursor_ = SDL_GetCursor();
   SDL_SetCursor(blank_cursor_);
