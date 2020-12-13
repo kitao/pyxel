@@ -16,6 +16,7 @@ class Input {
   int32_t MouseY() const { return mouse_y_; }
   int32_t MouseWheel() const { return mouse_wheel_; }
 
+  int32_t GetButtonsOn(int32_t *keys, int32_t len) const;
   bool IsButtonOn(int32_t key) const;
   bool IsButtonPressed(int32_t key,
                        int32_t hold_frame = 0,

@@ -86,6 +86,7 @@ _setup_api("mouse_y_getter", c_int32, [])
 _setup_api("mouse_wheel_getter", c_int32, [])
 
 _setup_api("btn", c_int32, [c_int32])
+_setup_api("btns", c_int32, [POINTER(c_int32), c_int32])
 _setup_api("btnp", c_int32, [c_int32] * 3)
 _setup_api("btnr", c_int32, [c_int32])
 _setup_api("mouse", None, [c_int32])

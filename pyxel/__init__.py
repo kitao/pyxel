@@ -218,6 +218,7 @@ GAMEPAD_2_RIGHT: int = _get_constant_number("GAMEPAD_2_RIGHT")
 GAMEPAD_2_DOWN: int = _get_constant_number("GAMEPAD_2_DOWN")
 GAMEPAD_2_LEFT: int = _get_constant_number("GAMEPAD_2_LEFT")
 
+KEY_COUNT: int = _get_constant_number("KEY_COUNT")
 
 #
 # Image class
@@ -642,6 +643,10 @@ def mouse_wheel(mod):  # type: ignore
 def btn(key: int) -> bool:
     return core.btn(int(key))  # type: ignore
 
+def btns() -> List[int]:
+    btns_list = (c_int32 * KEY_COUNT)()
+    btns_count = core.btns(btns_list, c_int32(len(btns_list)))
+    return list(btns_list)[0:btns_count]
 
 def btnp(key: int, hold: int = 0, period: int = 0) -> bool:
     return core.btnp(int(key), int(hold), int(period))  # type: ignore
