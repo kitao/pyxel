@@ -154,6 +154,10 @@ int btnp(int key, int hold, int period) {
   return GetInput()->IsButtonPressed(key, hold, period);
 }
 
+int btnsp(int *keys, int len, int hold, int period) {
+  return GetInput()->GetButtonsPressed(keys, hold, period);
+}
+
 int btnr(int key) {
   return GetInput()->IsButtonReleased(key);
 }

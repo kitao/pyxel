@@ -66,6 +66,7 @@ PYXEL_API int mouse_wheel_getter();
 PYXEL_API int btn(int key);
 PYXEL_API int btns(int *keys, int len);
 PYXEL_API int btnp(int key, int hold, int period);
+PYXEL_API int btnsp(int *keys, int len, int hold, int period);
 PYXEL_API int btnr(int key);
 PYXEL_API void mouse(int visible);
 

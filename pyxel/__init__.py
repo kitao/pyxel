@@ -651,6 +651,10 @@ def btns() -> List[int]:
 def btnp(key: int, hold: int = 0, period: int = 0) -> bool:
     return core.btnp(int(key), int(hold), int(period))  # type: ignore
 
+def btnsp(hold: int = 0, period: int = 0) -> List[int]:
+    btns_list = (c_int32 * KEY_COUNT)()
+    btns_count = core.btnsp(btns_list, c_int32(len(btns_list)), c_int32(hold), c_int32(period))
+    return list(btns_list)[0:btns_count]
 
 def btnr(key: int) -> bool:
     return core.btnr(int(key))  # type: ignore
