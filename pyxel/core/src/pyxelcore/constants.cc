@@ -198,6 +198,8 @@ int32_t GetConstantNumber(const std::string& name) {
   CHECK_CONSTANT(GAMEPAD_2_DOWN);
   CHECK_CONSTANT(GAMEPAD_2_LEFT);
 
+  CHECK_CONSTANT(KEY_COUNT);
+
   PYXEL_ERROR("unknown constant name '" + name + "'");
   return 0;
 }

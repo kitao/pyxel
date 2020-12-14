@@ -146,8 +146,16 @@ int btn(int key) {
   return GetInput()->IsButtonOn(key);
 }
 
+int btns(int *keys, int len) {
+  return GetInput()->GetButtonsOn(keys, len);
+}
+
 int btnp(int key, int hold, int period) {
   return GetInput()->IsButtonPressed(key, hold, period);
+}
+
+int btnsp(int *keys, int len, int hold, int period) {
+  return GetInput()->GetButtonsPressed(keys, hold, period);
 }
 
 int btnr(int key) {

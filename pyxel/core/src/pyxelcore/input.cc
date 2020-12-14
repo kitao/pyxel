@@ -95,12 +95,44 @@ void Input::Update(Window* window, int32_t frame_count) {
   }
 }
 
+int32_t Input::GetButtonsOn(int32_t *keys, int32_t len) const {
+  int32_t j = 0;
+  for (int32_t i = 0; i < KEY_COUNT; i++) {
+    if (Input::IsButtonOn(i)) {
+      if (j >= len) {
+        return j;
+      }
+
+      keys[j] = i;
+      j++;
+    }
+  }
+
+  return j;
+}
+
 bool Input::IsButtonOn(int32_t key) const {
   if (key < 0 || key >= KEY_COUNT) {
     PYXEL_ERROR("invalid key");
   }
 
   return key_state_[key] > 0;
+}
+
+int32_t Input::GetButtonsPressed(int32_t *keys, int32_t len, int32_t hold_frame, int32_t period_frame) const {
+  int32_t j = 0;
+
+  for (int32_t i = 0; i < KEY_COUNT; i++) {
+    if (Input::IsButtonPressed(i, hold_frame, period_frame)) {
+      if (j >= len) {
+        return j;
+      }
+      keys[j] = i;
+      j++;
+    }
+  }
+
+  return j;
 }
 
 bool Input::IsButtonPressed(int32_t key,
