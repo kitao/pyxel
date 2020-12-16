@@ -257,7 +257,7 @@ void System::DrawFrame(void (*draw)(), int32_t update_frame_count) {
   DrawMouseCursor();
 
   window_->Render(graphics_->ScreenImage()->Data());
-  if (recorder) {
+  if (recorder_) {
     recorder_->Update(graphics_->ScreenImage(), update_frame_count);
   }
 

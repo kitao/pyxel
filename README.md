@@ -322,9 +322,9 @@ The width and height of the screen
 - `frame_count`<br>
 The number of the elapsed frames
 
-- `init(width, height, [caption], [scale], [palette], [fps], [quit_key], [fullscreen])`<br>
+- `init(width, height, [caption], [scale], [palette], [fps], [quit_key], [fullscreen], [recording_enabled])`<br>
 Initialize the Pyxel application with screen size (`width`, `height`). The maximum width and height of the screen is 256<br>
-It is also possible to specify the window title with `caption`, the display magnification with `scale`, the palette color with `palette`, the frame rate with `fps`, the key to quit the application with `quit_key`, and whether to start in full screen with `fullscreen`. `palette` is specified as a list of 16 elements of 24 bit color.<br>
+It is also possible to specify the window title with `caption`, the display magnification with `scale`, the palette color with `palette`, the frame rate with `fps`, the key to quit the application with `quit_key`, and whether to start in full screen with `fullscreen`. `palette` is specified as a list of 16 elements of 24 bit color. It is possible to disable screen recording functionality on low-spec systems by setting `recording_enabled` to `False`.<br>
 e.g. `pyxel.init(160, 120, caption="Pyxel with PICO-8 palette", palette=[0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436, 0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA], quit_key=pyxel.KEY_NONE, fullscreen=True)`
 
 - `run(update, draw)`<br>
