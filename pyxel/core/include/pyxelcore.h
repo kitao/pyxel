@@ -37,7 +37,8 @@ PYXEL_API void init(int width,
                     const int* palette,
                     int fps,
                     int quit_key,
-                    int fullscreen);
+                    int fullscreen,
+                    int recording_enabled);
 PYXEL_API void run(void (*update)(), void (*draw)());
 PYXEL_API int quit();
 PYXEL_API int flip();

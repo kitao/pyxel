@@ -62,7 +62,7 @@ _setup_api("height_getter", c_int32, [])
 _setup_api("frame_count_getter", c_int32, [])
 
 _setup_api(
-    "init", None, [c_int32] * 2 + [c_char_p, c_int32, c_int32 * 16] + [c_int32] * 3
+    "init", None, [c_int32] * 2 + [c_char_p, c_int32, c_int32 * 16] + [c_int32] * 4
 )
 _setup_api("run", None, [CFUNCTYPE(None)] * 2)
 _setup_api("quit", c_int32, [])

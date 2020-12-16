@@ -525,6 +525,7 @@ def init(
     fps: int = DEFAULT_FPS,
     quit_key: int = DEFAULT_QUIT_KEY,
     fullscreen: bool = False,
+    recording_enabled: bool = True
 ) -> None:
     _image_bank.clear()
     _tilemap_bank.clear()
@@ -542,6 +543,7 @@ def init(
         int(fps),
         int(quit_key),
         int(fullscreen),
+        int(recording_enabled)
     )
 
 

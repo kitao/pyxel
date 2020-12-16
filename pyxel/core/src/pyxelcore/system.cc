@@ -33,10 +33,12 @@ System::System(int32_t width,
                const pyxelcore::PaletteColor& palette_color,
                int32_t fps,
                int32_t quit_key,
-               bool is_fullscreen)
+               bool is_fullscreen,
+               bool is_recording_enabled)
     : fps_profiler_(MEASURE_FRAME_COUNT),
       update_profiler_(MEASURE_FRAME_COUNT),
-      draw_profiler_(MEASURE_FRAME_COUNT) {
+      draw_profiler_(MEASURE_FRAME_COUNT),
+      recorder_(NULL) {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) !=
       0) {
     PYXEL_ERROR("failed to initialize SDL");
@@ -60,7 +62,9 @@ System::System(int32_t width,
   audio_ = new pyxelcore::Audio();
   resource_ = new pyxelcore::Resource(graphics_, audio_);
   window_ = new Window(caption, width, height, scale, palette_color);
-  recorder_ = new Recorder(width, height, palette_color, fps);
+  if (is_recording_enabled) {
+    recorder_ = new Recorder(width, height, palette_color, fps);
+  }
 
   palette_color_ = palette_color;
   fps_ = fps;
@@ -82,7 +86,9 @@ System::System(int32_t width,
 }
 
 System::~System() {
-  delete recorder_;
+  if (recorder_) {
+    delete recorder_;
+  }
   delete window_;
   delete resource_;
   delete audio_;
@@ -218,18 +224,20 @@ void System::CheckSpecialInput() {
       is_performance_monitor_on_ = !is_performance_monitor_on_;
     }
 
-    if (input_->IsButtonPressed(KEY_1)) {
-      recorder_->SaveScreenshot();
-      is_update_suspended_ = true;
-    }
+    if (recorder_) {
+      if (input_->IsButtonPressed(KEY_1)) {
+        recorder_->SaveScreenshot();
+        is_update_suspended_ = true;
+      }
 
-    if (input_->IsButtonPressed(KEY_2)) {
-      recorder_->ResetScreenCapture();
-    }
+      if (input_->IsButtonPressed(KEY_2)) {
+        recorder_->ResetScreenCapture();
+      }
 
-    if (input_->IsButtonPressed(KEY_3)) {
-      recorder_->SaveScreenCapture();
-      is_update_suspended_ = true;
+      if (input_->IsButtonPressed(KEY_3)) {
+        recorder_->SaveScreenCapture();
+        is_update_suspended_ = true;
+      }
     }
   }
 
@@ -249,7 +257,9 @@ void System::DrawFrame(void (*draw)(), int32_t update_frame_count) {
   DrawMouseCursor();
 
   window_->Render(graphics_->ScreenImage()->Data());
-  recorder_->Update(graphics_->ScreenImage(), update_frame_count);
+  if (recorder) {
+    recorder_->Update(graphics_->ScreenImage(), update_frame_count);
+  }
 
   draw_profiler_.End();
 }

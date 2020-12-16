@@ -21,7 +21,8 @@ class System {
          const pyxelcore::PaletteColor& palette_color,
          int32_t fps,
          int32_t quit_key,
-         bool is_fullscreen);
+         bool is_fullscreen,
+         bool is_recording_enabled);
   ~System();
 
   pyxelcore::Resource* Resource() const { return resource_; }
