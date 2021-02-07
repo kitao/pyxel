@@ -1,0 +1,16 @@
+[package]
+name = "pyxelextension"
+version = "0.1.0"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies.pyo3]
+version = "0.13.1"
+features = ["abi3"]
+
+[dependencies.pyxelengine]
+version = "*"
+path = "../engine"
