@@ -1,0 +1,9 @@
+[package]
+name = "pyxelengine"
+version = "0.1.0"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2018"
+
+[dependencies.retrocore]
+version = "*"
+path = "../core"
