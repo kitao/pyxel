@@ -4,12 +4,12 @@ macro_rules! global_instance {
 
         fn set_instance($instance_name: $struct_name) {
             unsafe {
-                /*if INSTANCE.is_none() {
+                if INSTANCE.is_some() {
                     panic!(concat!(
                         stringify!($instance_name),
                         " is already initialized"
                     ));
-                }*/
+                }
 
                 INSTANCE = Some($instance_name);
             }
