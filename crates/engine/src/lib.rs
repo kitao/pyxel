@@ -4,6 +4,13 @@ macro_rules! global_instance {
 
         fn set_instance($instance_name: $struct_name) {
             unsafe {
+                /*if INSTANCE.is_none() {
+                    panic!(concat!(
+                        stringify!($instance_name),
+                        " is already initialized"
+                    ));
+                }*/
+
                 INSTANCE = Some($instance_name);
             }
         }
@@ -20,26 +27,16 @@ macro_rules! global_instance {
 }
 
 mod system;
-pub use system::init_system;
-pub use system::system;
-pub use system::System;
+pub use system::{init_system, system, System};
 
 mod resource;
-pub use resource::init_resource;
-pub use resource::resource;
-pub use resource::Resource;
+pub use resource::{init_resource, resource, Resource};
 
 mod input;
-pub use input::init_input;
-pub use input::input;
-pub use input::Input;
+pub use input::{init_input, input, Input};
 
 mod graphics;
-pub use graphics::graphics;
-pub use graphics::init_graphics;
-pub use graphics::Graphics;
+pub use graphics::{graphics, init_graphics, Graphics};
 
 mod audio;
-pub use audio::audio;
-pub use audio::init_audio;
-pub use audio::Audio;
+pub use audio::{audio, init_audio, Audio};
