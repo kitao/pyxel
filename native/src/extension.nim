@@ -1,5 +1,5 @@
 import nimpy
-import ../pyxel
+import pyxel
 
 proc greet(name: string): string {.exportpy.} =
   return "Hello, " & name & "!"

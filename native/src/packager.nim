@@ -1,4 +1,4 @@
-import ../pyxel
+import pyxel
 
 proc main =
   discard

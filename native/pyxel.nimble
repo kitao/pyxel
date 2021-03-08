@@ -25,12 +25,11 @@ description   = "A retro game engine for Python and Nim"
 license       = "MIT"
 srcDir        = "src"
 binDir        = "../pyxel/bin" & OsBinDir
-installExt    = @["nim"]
 
-namedBin["pyxel/pyxelcore"] = "pyxelcore" & PyLibExt
-namedBin["pyxel/pyxelplayer"] = "pyxelplayer"
-namedBin["pyxel/pyxeleditor"] = "pyxeleditor"
-namedBin["pyxel/pyxelpackager"] = "pyxelpackager"
+namedBin["extension"] = "pyxelnative" & PyLibExt
+namedBin["player"] = "pyxelplayer"
+namedBin["editor"] = "pyxeleditor"
+namedBin["packager"] = "pyxelpackager"
 
 #
 # Dependencies
