@@ -4,14 +4,14 @@ import palette
 
 suite "Palette":
   setup:
-    var palette = newPalette[8, uint8]()
+    var palette = newPalette[3, uint8]()
 
-  test "ColorCount":
-    check(palette.ColorCount == 8)
+  test "Constants":
+    check(Rgb24 is uint32)
+    check(palette.ColorCount == 3)
 
-  test "ColorType":
-    var color: palette.ColorType
-    check(color is uint8)
+    var a: palette.ColorType
+    check(a is uint8)
 
   test "getDisplayColor":
     for i in 0 ..< palette.ColorCount:
@@ -21,26 +21,32 @@ suite "Palette":
       discard palette.getDisplayColor(-1)
 
     expect AssertionDefect:
-      discard palette.getDisplayColor(8)
+      discard palette.getDisplayColor(3)
 
   test "setDisplayColor":
     check(palette.getDisplayColor(0) == 0)
     palette.setDisplayColor(0, 0x112233)
     check(palette.getDisplayColor(0) == 0x112233)
 
-    check(palette.getDisplayColor(7) == 0)
-    palette.setDisplayColor(7, 0x445566)
-    check(palette.getDisplayColor(7) == 0x445566)
+    check(palette.getDisplayColor(2) == 0)
+    palette.setDisplayColor(2, 0x445566)
+    check(palette.getDisplayColor(2) == 0x445566)
 
     expect AssertionDefect:
       palette.setDisplayColor(-1, 0)
 
     expect AssertionDefect:
-      palette.setDisplayColor(8, 0)
+      palette.setDisplayColor(3, 0)
+
+  test "setDisplayColors":
+    palette.setDisplayColors([0x111111, 0x222222, 0x333333])
+    check(palette.getDisplayColor(0) == 0x111111)
+    check(palette.getDisplayColor(1) == 0x222222)
+    check(palette.getDisplayColor(2) == 0x333333)
 
   test "getReplaceColor":
     for i in 0 ..< palette.ColorCount:
-      check(palette.getReplaceColor(i) == uint8(i))
+      check(palette.getReplaceColor(i) == i)
 
     expect AssertionDefect:
       discard palette.getReplaceColor(-1)
@@ -50,24 +56,24 @@ suite "Palette":
 
   test "setReplaceColor":
     check(palette.getReplaceColor(0) == 0)
-    palette.setReplaceColor(0, 1)
-    check(palette.getReplaceColor(0) == 1)
+    palette.setReplaceColor(0, 2)
+    check(palette.getReplaceColor(0) == 2)
 
-    check(palette.getReplaceColor(7) == 7)
-    palette.setReplaceColor(7, 2)
-    check(palette.getReplaceColor(7) == 2)
+    check(palette.getReplaceColor(2) == 2)
+    palette.setReplaceColor(2, 0)
+    check(palette.getReplaceColor(2) == 0)
 
     expect AssertionDefect:
       palette.setReplaceColor(-1, 0)
 
     expect AssertionDefect:
-      palette.setReplaceColor(8, 0)
+      palette.setReplaceColor(3, 0)
 
     expect AssertionDefect:
       palette.setReplaceColor(0, -1)
 
     expect AssertionDefect:
-      palette.setReplaceColor(0, 8)
+      palette.setReplaceColor(0, 3)
 
   test "resetReplaceColor":
     for i in 0 ..< palette.ColorCount:
@@ -77,4 +83,4 @@ suite "Palette":
     palette.resetReplaceColor()
 
     for i in 0 ..< palette.ColorCount:
-      check(palette.getReplaceColor(i) == uint8(i))
+      check(palette.getReplaceColor(i) == i)

@@ -1,35 +1,36 @@
 type
-  Rgb* = uint32
+  Rgb24* = uint32
 
-  Palette*[ColorCount: static[uint], ColorType] = ref object
-    displayColor: array[ColorCount, Rgb]
-    replaceColor: array[ColorCount, ColorType]
+  Palette*[ColorCount: static[int], ColorType] = ref object
+    displayColors: array[ColorCount, Rgb24]
+    replaceColors: array[ColorCount, ColorType]
 
 proc newPalette*[ColorCount, ColorType](): Palette[ColorCount, ColorType] =
   new(result)
   result.resetReplaceColor()
 
-proc getDisplayColor*(palette: Palette, color: int): Rgb =
-  assert(color >= 0 and color < palette.ColorCount, "Invalid color")
-  result = palette.displayColor[color]
+proc getDisplayColor*(self: Palette, color: int): Rgb24 =
+  assert(color >= 0 and color < self.ColorCount, "Invalid color")
+  result = self.displayColors[color]
 
-proc setDisplayColor*(palette: var Palette, color: int, rgb: Rgb) =
-  assert(color >= 0 and color < palette.ColorCount, "Invalid color")
-  palette.displayColor[color] = rgb
+proc setDisplayColor*(self: var Palette, color: int, rgb: Rgb24) =
+  assert(color >= 0 and color < self.ColorCount, "Invalid color")
+  self.displayColors[color] = rgb
 
-proc setDisplayColor*(palette: var Palette, color: ref array[palette.ColorCount, Rgb]) =
-  for i, c in color:
-    palette.displayColor[i] = c
+proc setDisplayColors*[ColorCount: static[int], ColorType](self: var Palette[
+    ColorCount, ColorType], colors: array[ColorCount, int]) =
+  for i, color in colors:
+    self.displayColors[i] = Rgb24(color)
 
-proc getReplaceColor*(palette: Palette, color: int): palette.ColorType =
-  assert(color >= 0 and color < palette.ColorCount, "Invalid color")
-  result = palette.replaceColor[color]
+proc getReplaceColor*(self: Palette, color: int): int =
+  assert(color >= 0 and color < self.ColorCount, "Invalid color")
+  result = int(self.replaceColors[color])
 
-proc setReplaceColor*(palette: Palette, srcColor: int, dstColor: int) =
-  assert(srcColor >= 0 and srcColor < palette.ColorCount, "Invalid src color")
-  assert(dstColor >= 0 and dstColor < palette.ColorCount, "Invalid dst color")
-  palette.replaceColor[srcColor] = palette.ColorType(dstColor)
+proc setReplaceColor*(self: Palette, srcColor: int, dstColor: int) =
+  assert(srcColor >= 0 and srcColor < self.ColorCount, "Invalid src color")
+  assert(dstColor >= 0 and dstColor < self.ColorCount, "Invalid dst color")
+  self.replaceColors[srcColor] = self.ColorType(dstColor)
 
-proc resetReplaceColor*(palette: var Palette) =
-  for i in 0 ..< palette.ColorCount:
-    palette.replaceColor[i] = palette.ColorType(i)
+proc resetReplaceColor*(self: var Palette) =
+  for i in 0 ..< self.ColorCount:
+    self.replaceColors[i] = self.ColorType(i)
