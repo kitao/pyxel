@@ -490,6 +490,13 @@ class Music:
 width: int = 0
 height: int = 0
 frame_count: int = 0
+caption: str = DEFAULT_CAPTION
+scale: int = DEFAULT_SCALE
+palette: List[int] = DEFAULT_PALETTE
+fps: int = DEFAULT_FPS
+quit_key: int = DEFAULT_QUIT_KEY
+fullscreen: bool = False
+has_init: bool = False
 _drop_file: str = ""
 
 
@@ -526,10 +533,19 @@ def init(
     quit_key: int = DEFAULT_QUIT_KEY,
     fullscreen: bool = False,
 ) -> None:
+    global has_init
     _image_bank.clear()
     _tilemap_bank.clear()
     _sound_bank.clear()
     _music_bank.clear()
+
+    globs = globals()
+    globs["caption"] = caption
+    globs["scale"] = scale
+    globs["palette"] = palette
+    globs["fps"] = fps
+    globs["quit_key"] = quit_key
+    globs["fullscreen"] = fullscreen
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -543,6 +559,7 @@ def init(
         int(quit_key),
         int(fullscreen),
     )
+    has_init = True
 
 
 def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
