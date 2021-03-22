@@ -3,10 +3,10 @@ import unittest
 import core/rectarea
 
 suite "RectArea":
-  test "deault constractor":
-    let rect: RectArea = RectArea()
+  test "default constructor":
+    let rect = RectArea()
     check(rect.left == 0 and rect.top == 0)
-    check(rect.right == 0 and rect.bottom == 0)
+    check(rect.right == -1 and rect.bottom == -1)
     check(rect.width == 0 and rect.height == 0)
 
   test "initRectAreaFromPos and properties":
@@ -32,14 +32,20 @@ suite "RectArea":
     check(rect1.width == 3 and rect1.height == 4)
 
     let rect2 = initRectAreaFromSize(10, 20, 0, 40)
-    check(rect2.left == 0 and rect2.top == 0)
-    check(rect2.right == 0 and rect2.bottom == 0)
-    check(rect2.width == 0 and rect2.height == 0)
+    check(rect2.left == 10 and rect2.top == 20)
+    check(rect2.right == 9 and rect2.bottom == 59)
+    check(rect2.width == 0 and rect2.height == 40)
 
-    let rect3 = initRectAreaFromSize(10, 20, 30, 0)
-    check(rect3.left == 0 and rect3.top == 0)
-    check(rect3.right == 0 and rect3.bottom == 0)
-    check(rect3.width == 0 and rect3.height == 0)
+    let rect3 = initRectAreaFromSize(100, 200, 300, 0)
+    check(rect3.left == 100 and rect3.top == 200)
+    check(rect3.right == 399 and rect3.bottom == 199)
+    check(rect3.width == 300 and rect3.height == 0)
+
+    expect AssertionDefect:
+      discard initRectAreaFromSize(1, 2, -1, 4)
+
+    expect AssertionDefect:
+      discard initRectAreaFromSize(1, 2, 3, -1)
 
   test "isEmpty":
     let rect1 = initRectAreaFromSize(1, 2, 3, 4)
@@ -62,10 +68,11 @@ suite "RectArea":
 
     let rect2 = initRectAreaFromSize(1, 2, 0, 4)
     check(not rect2.contains(1, 2))
-    check(not rect2.contains(0, 2))
-    check(not rect2.contains(1, 1))
-    check(not rect2.contains(2, 2))
-    check(not rect2.contains(1, 5))
+    check(not rect2.contains(1, 4))
+
+    let rect3 = initRectAreaFromSize(1, 2, 3, 0)
+    check(not rect3.contains(1, 2))
+    check(not rect3.contains(3, 2))
 
   test "intersects":
     let rect1 = initRectAreaFromSize(10, 20, 30, 40)
