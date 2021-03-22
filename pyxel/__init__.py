@@ -490,7 +490,15 @@ class Music:
 width: int = 0
 height: int = 0
 frame_count: int = 0
+caption: str = DEFAULT_CAPTION
+scale: int = DEFAULT_SCALE
+palette: List[int] = DEFAULT_PALETTE
+fps: int = DEFAULT_FPS
+quit_key: int = DEFAULT_QUIT_KEY
+fullscreen: bool = False
+has_init: bool = False
 _drop_file: str = ""
+_unsafe_core = core
 
 
 @property  # type: ignore
@@ -526,14 +534,24 @@ def init(
     quit_key: int = DEFAULT_QUIT_KEY,
     fullscreen: bool = False,
 ) -> None:
+    global has_init, core
+
     _image_bank.clear()
     _tilemap_bank.clear()
     _sound_bank.clear()
     _music_bank.clear()
 
+    globs = globals()
+    globs["caption"] = caption
+    globs["scale"] = scale
+    globs["palette"] = palette
+    globs["fps"] = fps
+    globs["quit_key"] = quit_key
+    globs["fullscreen"] = fullscreen
+
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-    core.init(
+    _unsafe_core.init(
         int(width),
         int(height),
         caption.encode("utf-8"),
@@ -543,6 +561,9 @@ def init(
         int(quit_key),
         int(fullscreen),
     )
+
+    core = _unsafe_core
+    has_init = True
 
 
 def run(update: Callable[[], None], draw: Callable[[], None]) -> None:
@@ -843,6 +864,18 @@ class _CListInterface(MutableSequence):  # type: ignore
         lst = self._data_to_list()
         lst.insert(ii, val)
         self._list_to_data(lst)
+
+
+#
+# Protect core model from non-initialized access
+#
+class _NonInitialized:
+    def __getattr__(self, attr):
+        msg = "run pyxel.init(width, height) before executing this command"
+        raise RuntimeError(msg)
+
+
+core = _NonInitialized()
 
 
 #
