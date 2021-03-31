@@ -31,8 +31,12 @@ class App(Widget):
         if ext != pyxel.RESOURCE_FILE_EXTENSION:
             resource_file += pyxel.RESOURCE_FILE_EXTENSION
 
+        # Handle palette tweaks, if any
+        palette = self._load_palette(root + ".pyxpal")
+
         pyxel.init(
-            APP_WIDTH, APP_HEIGHT, caption="Pyxel Editor - {}".format(resource_file)
+            APP_WIDTH, APP_HEIGHT, caption="Pyxel Editor - {}".format(resource_file),
+            palette=palette
         )
         pyxel.mouse(True)
 
@@ -120,6 +124,28 @@ class App(Widget):
         self._set_editor(0)
 
         pyxel.run(self.update_widgets, self.draw_widgets)
+
+    def _load_palette(self, tweaks_file):
+        palette = pyxel.DEFAULT_PALETTE
+        if os.path.exists(tweaks_file):
+            print(f"Loading palette tweaks: {tweaks_file}")
+            with open(tweaks_file, "r") as p:
+                for linum in range(16):
+                    tweak = p.readline().rstrip()
+                    if tweak == "":
+                        continue
+                    col, rgb_col = tweak.split(" ")
+                    col = int(col)
+                    if len(rgb_col) != 6:
+                        print(f"Parse error at line {linum}, 6 hexdigits expected")
+                        continue
+                    red   = int(rgb_col[0:2], 16)
+                    green = int(rgb_col[2:4], 16)
+                    blue  = int(rgb_col[4:6], 16)
+                    print(f"[{col}] ({red}, {green}, {blue})")
+                    col_val = red * 256**2 + green * 256 + blue
+                    palette[col] = col_val
+        return palette
 
     def _set_editor(self, editor):
         self._editor_button.value = editor
