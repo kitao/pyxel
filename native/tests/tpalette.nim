@@ -1,6 +1,6 @@
-import unittest
-
-import core/palette
+import
+  unittest,
+  core/palette
 
 suite "Palette":
   test "types":
@@ -9,9 +9,9 @@ suite "Palette":
   test "properties":
     let pal = newPalette[uint8](3)
 
-    assert(pal.colorCount == 3)
+    check(pal.colorCount == 3)
 
-  test "operators":
+  test "[] and []=":
     let pal = newPalette[uint8](3)
 
     for i in 0 ..< pal.colorCount:
