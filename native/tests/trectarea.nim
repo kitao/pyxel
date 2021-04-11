@@ -1,6 +1,6 @@
-import unittest
-
-import core/rectarea
+import
+  unittest,
+  core/rectarea
 
 suite "RectArea":
   test "default constructor":
@@ -75,11 +75,12 @@ suite "RectArea":
     check(not rect3.contains(3, 2))
 
   test "intersects":
-    let rect1 = initRectAreaFromSize(10, 20, 30, 40)
-    let rect2 = initRectAreaFromSize(11, 22, 300, 400)
-    let rect3 = initRectAreaFromSize(5, 6, 10, 20)
-    let rect4 = initRectAreaFromSize(1, 2, 3, 4)
-    let rect5 = initRectAreaFromSize(0, 0, 0, 0)
+    let
+      rect1 = initRectAreaFromSize(10, 20, 30, 40)
+      rect2 = initRectAreaFromSize(11, 22, 300, 400)
+      rect3 = initRectAreaFromSize(5, 6, 10, 20)
+      rect4 = initRectAreaFromSize(1, 2, 3, 4)
+      rect5 = initRectAreaFromSize(0, 0, 0, 0)
 
     check(rect1.intersects(rect2) == initRectAreaFromPos(11, 22, 39, 59))
     check(rect1.intersects(rect3) == initRectAreaFromPos(10, 20, 14, 25))
