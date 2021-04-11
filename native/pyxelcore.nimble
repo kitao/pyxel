@@ -26,10 +26,10 @@ license       = "MIT"
 srcDir        = "src"
 binDir        = "../pyxel/bin" & OsBinDir
 
-namedBin["extension"] = "pyxelnative" & PyLibExt
-namedBin["player"] = "pyxelplayer"
-namedBin["editor"] = "pyxeleditor"
-namedBin["packager"] = "pyxelpackager"
+namedBin["pyxelcore/extension"] = "pyxelcore" & PyLibExt
+namedBin["pyxelcore/player"] = "pyxelplayer"
+namedBin["pyxelcore/editor"] = "pyxeleditor"
+namedBin["pyxelcore/packager"] = "pyxelpackager"
 
 #
 # Dependencies
