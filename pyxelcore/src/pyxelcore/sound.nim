@@ -1,3 +1,4 @@
+#[
 #
 # Sound class
 #
@@ -26,3 +27,4 @@ void sound_set_note(void* self, const char* note);
 void sound_set_tone(void* self, const char* tone);
 void sound_set_volume(void* self, const char* volume);
 void sound_set_effect(void* self, const char* effect);
+]#

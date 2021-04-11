@@ -1,3 +1,4 @@
+#[
 #
 # Graphics
 #
@@ -20,3 +21,4 @@ void trib(int x1, int y1, int x2, int y2, int x3, int y3, int col);
 void blt(int x, int y, int img, int u, int v, int w, int h, int colkey);
 void bltm(int x, int y, int tm, int u, int v, int w, int h, int colkey);
 void text(int x, int y, const char* s, int col);
+]#
