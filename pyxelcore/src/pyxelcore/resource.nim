@@ -1,9 +1,4 @@
-#
-# resource
-#
-void save(const char* filename);
-void load(const char* filename,
-                int image,
-                int tilemap,
-                int sound,
-                int music);
+proc save(self: Pyxel, filaname: string) = discard
+
+proc load(self: Pyxel, filename: string, image, tilemap, sound,
+    music: int) = discard
