@@ -1,3 +1,4 @@
+#[
 #
 # Image class
 #
@@ -14,3 +15,4 @@ void image_set(void* self,
                      int data_length);
 void image_load(void* self, int x, int y, const char* filename);
 void image_copy(void* self, int x, int y, int img, int u, int v, int w, int h);
+]#
