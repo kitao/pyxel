@@ -1,4 +1,4 @@
-import engine
+import ../pyxelcore
 
 proc main =
   discard
