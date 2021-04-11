@@ -1,4 +1,6 @@
-import sequtils, sugar
+import
+  sequtils,
+  sugar
 
 type
   Rgb* = uint32
@@ -14,7 +16,7 @@ proc newPalette*[T](colorCount: int): Palette[T] =
   new(result)
   result.colorCount = colorCount
   result.replaceTable = toSeq(0 ..< colorCount).map(x => T(x))
-  result.displayColors = newSeq[Rgb](colorCount)
+  result.displayColors = newSeq[uint32](colorCount)
 
 proc colorCount*(self: Palette): int {.inline.} = self.colorCount
 

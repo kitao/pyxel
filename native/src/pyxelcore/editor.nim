@@ -1,7 +1,7 @@
-import pyxel
+import engine
 
 proc main =
-  pyxel.testSdl()
+  discard
 
 if isMainModule:
   main()
