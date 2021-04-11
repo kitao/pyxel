@@ -5,4 +5,4 @@ type Pyxel = ref object
 
 let pyxel* = new(Pyxel)
 
-include system
+include pyxelcore/system

@@ -1,5 +1,5 @@
 import nimpy
-import engine
+import ../pyxelcore
 
 proc greet(name: string): string {.exportpy.} =
   return "Hello, " & name & "!"
