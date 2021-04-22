@@ -3,7 +3,7 @@ import os
 import signal
 import sys
 import traceback
-from collections import MutableSequence
+from collections.abc import MutableSequence
 from ctypes import CFUNCTYPE, c_char_p, c_int32, cast, create_string_buffer
 from typing import Any, Callable, Dict, List, Optional
 
