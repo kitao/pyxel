@@ -1,6 +1,6 @@
 import
   unittest,
-  core/rectarea
+  pyxelcore/rectarea
 
 suite "RectArea":
   test "default constructor":
