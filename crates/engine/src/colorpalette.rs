@@ -1,6 +1,7 @@
 use crate::settings::{Color, Rgb24, COLOR_COUNT, RGB24_MAX_VALUE};
 use crate::Palette;
 
+#[derive(Debug)]
 pub struct ColorPalette {
     render_colors: [Color; COLOR_COUNT],
     display_colors: [Rgb24; COLOR_COUNT],
