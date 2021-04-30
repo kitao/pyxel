@@ -1,3 +1,3 @@
 pub trait Palette<T> {
-    fn get_render_color(&self, original_color: T) -> T;
+    fn get_render_value(&self, original_value: T) -> T;
 }

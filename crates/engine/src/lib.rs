@@ -1,13 +1,13 @@
 mod canvas;
-mod imagepalette;
+mod colorpalette;
 mod palette;
 mod rectarea;
 mod settings;
-mod tilemappalette;
+mod tilepalette;
 
-pub use imagepalette::ImagePalette;
+pub use colorpalette::ColorPalette;
 pub use palette::Palette;
-pub use tilemappalette::TilemapPalette;
+pub use tilepalette::TilePalette;
 
 /*
 macro_rules! global_instance {
