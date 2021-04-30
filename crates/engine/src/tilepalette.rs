@@ -1,6 +1,7 @@
 use crate::settings::{Tile, TILE_COUNT};
 use crate::Palette;
 
+#[derive(Debug)]
 pub struct TilePalette;
 
 impl Palette<Tile> for TilePalette {
