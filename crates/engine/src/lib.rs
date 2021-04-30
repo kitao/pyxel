@@ -1,7 +1,7 @@
 mod canvas;
 mod colorpalette;
 mod palette;
-mod rectarea;
+mod region;
 mod settings;
 mod tilepalette;
 
