@@ -1,0 +1,21 @@
+[package]
+name = "pyxelengine"
+version = "0.1.0"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "pyxelengine"
+
+[[test]]
+name = "engine_tests"
+path = "tests/main.rs"
+# harness = false
+
+[dependencies]
+num = "0.4.0"
+
+[dependencies.sdl2]
+version = "0.34.3"
+default-features = false
+features = ["image"]
