@@ -1,6 +1,6 @@
 import
   unittest,
-  core/graphicsbuffer
+  pyxelcore/graphicsbuffer
 
 #[
 suite "GraphicsBuffer":
