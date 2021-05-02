@@ -5,7 +5,7 @@ import
   palette
 
 type
-  GraphicsBuffer*[T] = ref object
+  Canvas*[T] = ref object
     width: int
     height: int
     colorCount: int
@@ -13,10 +13,10 @@ type
     dataRowIndices: seq[int]
     selfRect: RectArea
     clipRect: RectArea
-    palette: Palette[T]
+    palette: Palette
 
-proc newGraphicsBuffer*[T](width, height, colorCount: int,
-                           palette: Palette[T]): GraphicsBuffer[T] =
+proc newCanvas*[T](width, height, colorCount: int,
+    palette: Palette): Canvas[T] =
   doAssert(width > 0 and height > 0, "Invalid size")
   doAssert(colorCount > 0, "Invalid colorCount")
   doAssert(palette == nil or palette.colorCount == colorCount, "Invalid palette")
@@ -31,15 +31,15 @@ proc newGraphicsBuffer*[T](width, height, colorCount: int,
   result.clilpRect = result.selfRect
   result.palette = palette
 
-proc width*(self: GraphicsBuffer): int {.inline.} = self.width
-proc height*(self: GraphicsBuffer): int {.inline.} = self.height
-proc colorCount*(self: GraphicsBuffer): int {.inline.} = self.colorCount
-proc palette*(self: GraphicsBuffer): Palette {.inline.} = self.palette
+proc width*(self: Canvas): int {.inline.} = self.width
+proc height*(self: Canvas): int {.inline.} = self.height
+proc colorCount*(self: Canvas): int {.inline.} = self.colorCount
+proc palette*(self: Canvas): Palette {.inline.} = self.palette
 
-proc getDataIndex(self: GraphicsBuffer, x, y: int): int {.inline.} =
+proc getDataIndex(self: Canvas, x, y: int): int {.inline.} =
   self.dataRowIndices[y] + x
 
-proc getDrawColor(self: GraphicsBuffer, color: int): self.T {.inline.} =
+proc getDrawColor(self: Canvas, color: int): self.T {.inline.} =
   doAssert(color >= 0 and color <= self.colorCount)
 
   if self.palette != nil:
@@ -47,65 +47,65 @@ proc getDrawColor(self: GraphicsBuffer, color: int): self.T {.inline.} =
   else:
     result = self.T(color)
 
-proc getClippingArea*(self: GraphicsBuffer): (int, int, int, int) =
+proc getClippingArea*(self: Canvas): (int, int, int, int) =
   (self.clipRect.left, self.clipRect.top,
    self.clipRect.width, self.clipRect.height)
 
-proc setClippingArea*(self: GraphicsBuffer, x, y, width, height: int) =
+proc setClippingArea*(self: Canvas, x, y, width, height: int) =
   self.clipRect = initRectAreaFromSize(x, y, width, height).intersects(self.selfRect)
 
-proc clear*(self: GraphicsBuffer, color: int) =
+proc clear*(self: Canvas, color: int) =
   let col = self.getDrawColor(color)
 
   for i in 0 ..< self.data.len:
     self.data[i] = col
 
-proc getPixel(self: GraphicsBuffer, x, y: int): self.T =
+proc getPixel(self: Canvas, x, y: int): self.T =
   if self.selfRect.contains(x, y):
     result = self.data[self.getDataIndex(x, y)]
   else:
     result = 0
 
-proc setPixel(self: GraphicsBuffer, x, y, color: int) =
+proc setPixel(self: Canvas, x, y, color: int) =
   if self.clipRect.containts(x, y):
     self.data[self.getDataIndex(x, y)] = self.getDrawColor(color)
 
-proc drawLine(self: GraphicsBuffer, x1, y1, x2, y2, color: int) =
+proc drawLine(self: Canvas, x1, y1, x2, y2, color: int) =
   let col = self.getDrawColor(color)
 
   discard
 
-proc drawRectangle(self: GraphicsBuffer, x, y, width, height, color: int) =
+proc drawRectangle(self: Canvas, x, y, width, height, color: int) =
   let col = self.getDrawColor(color)
 
   discard
 
-proc drawRectangleBorder(self: GraphicsBuffer, x, y, width, height, color: int) =
+proc drawRectangleBorder(self: Canvas, x, y, width, height, color: int) =
   let col = self.getDrawColor(color)
 
   discard
 
-proc drawCircle(self: GraphicsBuffer, x, y, radius, color: int) =
+proc drawCircle(self: Canvas, x, y, radius, color: int) =
   let col = self.getDrawColor(color)
 
   discard
 
-proc drawCircleBorder(self: GraphicsBuffer, x, y, r, color: int) =
+proc drawCircleBorder(self: Canvas, x, y, r, color: int) =
   let col = self.getDrawColor(color)
 
   discard
 
-proc drawTriangle(self: GraphicsBuffer, x1, y1, x2, y2, x3, y3, color: int) =
+proc drawTriangle(self: Canvas, x1, y1, x2, y2, x3, y3, color: int) =
   let col = self.getDrawColor(color)
 
   discard
 
-proc drawTriangleBorder(self: GraphicsBuffer, x1, y1, x2, y2, x3, y3, color: int) =
+proc drawTriangleBorder(self: Canvas, x1, y1, x2, y2, x3, y3, color: int) =
   let col = self.getDrawColor(color)
 
   discard
 
-proc drawGraphicsBuffer(self: GraphicsBuffer, x, y: int, gbuf: GraphicsBuffer,
+proc drawCanvas(self: Canvas, x, y: int, gbuf: Canvas,
                         u, v, width, height, colorKey: int = -1) =
   discard
 
