@@ -53,11 +53,6 @@ impl RectArea {
     }
 
     #[inline]
-    pub fn copy(&mut self, rect: &RectArea) {
-        *self = rect.clone();
-    }
-
-    #[inline]
     pub fn left(&self) -> i32 {
         self.left
     }
@@ -192,16 +187,6 @@ mod rect_area_tests {
     #[should_panic]
     fn with_size_panic2() {
         RectArea::with_size(1, 2, 3, -1);
-    }
-
-    #[test]
-    fn copy() {
-        let rect1 = RectArea::with_size(1, 2, 3, 4);
-        let mut rect2 = RectArea::with_size(0, 0, 0, 0);
-
-        assert_ne!(rect1, rect2);
-        rect2.copy(&rect1);
-        assert_eq!(rect1, rect2);
     }
 
     #[test]
