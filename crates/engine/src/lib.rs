@@ -1,13 +1,8 @@
-mod canvas;
-mod colorpalette;
-mod palette;
-mod region;
-mod settings;
-mod tilepalette;
-
-pub use colorpalette::ColorPalette;
-pub use palette::Palette;
-pub use tilepalette::TilePalette;
+pub mod canvas;
+pub mod imagebank;
+pub mod palette;
+pub mod rectarea;
+pub mod system;
 
 /*
 macro_rules! global_instance {
