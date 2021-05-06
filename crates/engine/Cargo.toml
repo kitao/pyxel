@@ -5,10 +5,10 @@ authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2018"
 
 [lib]
-name = "pyxel_engine"
+name = "pyxel"
 
 [[test]]
-name = "engine_tests"
+name = "tests"
 path = "tests/main.rs"
 harness = false
 
