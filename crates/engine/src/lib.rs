@@ -1,8 +1,10 @@
-pub mod canvas;
-pub mod imagebank;
-pub mod palette;
+pub mod color_palette;
+pub mod graphics;
+pub mod graphics_buffer;
+pub mod image_buffer;
 pub mod rectarea;
 pub mod system;
+pub mod tilemap_buffer;
 
 /*
 macro_rules! global_instance {
