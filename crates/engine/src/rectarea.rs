@@ -111,7 +111,7 @@ impl Rectarea {
 }
 
 #[cfg(test)]
-mod rect_area_tests {
+mod tests {
     use super::*;
 
     #[test]
