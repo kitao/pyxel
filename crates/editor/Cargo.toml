@@ -1,0 +1,8 @@
+[package]
+name = "pyxel-editor"
+version = "0.1.0"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2018"
+
+[dependencies.pyxel-engine]
+path = "../engine"
