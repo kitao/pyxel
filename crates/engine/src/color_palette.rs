@@ -83,7 +83,7 @@ impl ColorPalette {
 }
 
 #[cfg(test)]
-mod color_palette_tests {
+mod tests {
     use super::*;
 
     #[test]
