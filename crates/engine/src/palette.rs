@@ -4,14 +4,14 @@ pub type Rgb24 = u32;
 const MAX_COLOR_COUNT: usize = 256;
 
 #[derive(Debug)]
-pub struct ColorPalette {
+pub struct Palette {
     render_colors: [Color; MAX_COLOR_COUNT],
     display_colors: [Rgb24; MAX_COLOR_COUNT],
 }
 
-impl ColorPalette {
-    pub fn new() -> ColorPalette {
-        let mut palette = ColorPalette {
+impl Palette {
+    pub fn new() -> Palette {
+        let mut palette = Palette {
             render_colors: [0; MAX_COLOR_COUNT],
             display_colors: [0; MAX_COLOR_COUNT],
         };
@@ -62,7 +62,7 @@ mod tests {
 
     #[test]
     fn new() {
-        let palette = ColorPalette::new();
+        let palette = Palette::new();
 
         for i in 0..MAX_COLOR_COUNT {
             assert_eq!(palette.get_render_color(i as Color), i as Color);
@@ -72,7 +72,7 @@ mod tests {
 
     #[test]
     fn set_render_color() {
-        let mut palette = ColorPalette::new();
+        let mut palette = Palette::new();
 
         for i in 0..MAX_COLOR_COUNT {
             assert_eq!(palette.get_render_color(i as Color), i as Color);
@@ -92,7 +92,7 @@ mod tests {
 
     #[test]
     fn reset_render_colors() {
-        let mut palette = ColorPalette::new();
+        let mut palette = Palette::new();
 
         for i in 0..MAX_COLOR_COUNT {
             palette.set_render_color(i as Color, ((i + 1) % MAX_COLOR_COUNT) as Color);
@@ -107,7 +107,7 @@ mod tests {
 
     #[test]
     fn set_display_color() {
-        let mut palette = ColorPalette::new();
+        let mut palette = Palette::new();
 
         for i in 0..MAX_COLOR_COUNT {
             assert_eq!(palette.get_display_color(i as Color), 0);
@@ -127,7 +127,7 @@ mod tests {
 
     #[test]
     fn set_display_colors() {
-        let mut palette = ColorPalette::new();
+        let mut palette = Palette::new();
 
         let rgbs: [Rgb24; 16] = [
             0x000000, 0x111111, 0x222222, 0x333333, 0x444444, 0x555555, 0x666666, 0x777777,
