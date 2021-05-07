@@ -1,30 +1,37 @@
-use std::cell::RefCell;
-use std::rc::Rc;
-
-use crate::color_palette::{Color, ColorPalette};
-use crate::graphics_buffer::GraphicsBuffer;
+use crate::canvas::Canvas;
+use crate::palette::{Color, Palette};
 use crate::rectarea::Rectarea;
 
 #[derive(Debug)]
-pub struct ImageBuffer {
+pub struct Imagebank {
   width: u32,
   height: u32,
   data: Vec<Vec<Color>>,
-  palette: Rc<RefCell<ColorPalette>>,
+  palette: Palette,
   self_rect: Rectarea,
   clip_rect: Rectarea,
 }
 
-impl ImageBuffer {
-  pub fn new(width: u32, height: u32, palette: Rc<RefCell<ColorPalette>>) -> ImageBuffer {
-    ImageBuffer {
+impl Imagebank {
+  pub fn new(width: u32, height: u32) -> Imagebank {
+    Imagebank {
       width: width,
       height: height,
       data: vec![vec![0; width as usize]; height as usize],
-      palette: palette,
+      palette: Palette::new(),
       self_rect: Rectarea::with_size(0, 0, width, height),
       clip_rect: Rectarea::with_size(0, 0, width, height),
     }
+  }
+
+  #[inline]
+  pub fn palette(&self) -> &Palette {
+    &self.palette
+  }
+
+  #[inline]
+  pub fn palette_mut(&mut self) -> &mut Palette {
+    &mut self.palette
   }
 
   /*
@@ -33,7 +40,7 @@ impl ImageBuffer {
   */
 }
 
-impl GraphicsBuffer<Color> for ImageBuffer {
+impl Canvas<Color> for Imagebank {
   #[inline]
   fn width(&self) -> u32 {
     self.width
@@ -45,12 +52,7 @@ impl GraphicsBuffer<Color> for ImageBuffer {
   }
 
   #[inline]
-  fn data<'a>(&'a self) -> &'a Vec<Vec<Color>> {
-    &self.data
-  }
-
-  #[inline]
-  fn data_mut<'a>(&'a mut self) -> &'a mut Vec<Vec<Color>> {
+  fn data<'a>(&'a mut self) -> &'a mut Vec<Vec<Color>> {
     &mut self.data
   }
 
@@ -71,7 +73,7 @@ impl GraphicsBuffer<Color> for ImageBuffer {
 
   #[inline]
   fn get_render_color(&self, original_color: Color) -> Color {
-    self.palette.borrow().get_render_color(original_color)
+    self.palette.get_render_color(original_color)
   }
 }
 
