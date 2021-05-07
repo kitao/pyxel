@@ -1,4 +1,5 @@
 mod canvas;
+mod constants;
 mod graphics;
 mod imagebank;
 mod palette;
