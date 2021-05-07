@@ -1,9 +1,9 @@
 mod canvas;
-mod constants;
 mod graphics;
 mod imagebank;
 mod palette;
 mod rectarea;
+mod settings;
 mod system;
 mod tilemap;
 
