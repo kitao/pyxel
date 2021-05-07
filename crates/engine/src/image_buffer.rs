@@ -1,4 +1,4 @@
-use std::cell::{RefCell, RefMut};
+use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::color_palette::{Color, ColorPalette};
@@ -25,10 +25,6 @@ impl ImageBuffer {
       self_rect: Rectarea::with_size(0, 0, width, height),
       clip_rect: Rectarea::with_size(0, 0, width, height),
     }
-  }
-
-  pub fn palette(&self) -> RefMut<ColorPalette> {
-    self.palette.borrow_mut()
   }
 
   /*
@@ -69,8 +65,8 @@ impl GraphicsBuffer<Color> for ImageBuffer {
   }
 
   #[inline]
-  fn set_clip_rect(&mut self, rect: Rectarea) {
-    self.clip_rect = rect
+  fn clip_rect_mut(&mut self) -> &mut Rectarea {
+    &mut self.clip_rect
   }
 
   #[inline]
