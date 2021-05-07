@@ -1,0 +1,13 @@
+[package]
+name = "pyxel-pymodule"
+version = "0.1.0"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "pyxelcore"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.13.2", features = ["abi3-py37"] }
+pyxel-engine = { path = "../engine" }
