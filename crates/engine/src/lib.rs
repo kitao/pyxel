@@ -1,22 +1,22 @@
-mod color_palette;
+mod canvas;
 mod graphics;
-mod graphics_buffer;
-mod image_buffer;
+mod imagebank;
+mod palette;
 mod rectarea;
 mod system;
-mod tilemap_buffer;
+mod tilemap;
 
-use color_palette::Color;
+use canvas::Canvas;
 use graphics::{graphics, init_graphics};
-use graphics_buffer::GraphicsBuffer;
+use palette::Color;
 use system::{init_system, system};
 
 //
 // System
 //
 #[inline]
-pub fn init(width: u32, height: u32) {
-    init_system("hoge", width, height);
+pub fn init(width: u32, height: u32, caption: &str) {
+    init_system(width, height, caption);
     init_graphics(width, height);
 }
 
