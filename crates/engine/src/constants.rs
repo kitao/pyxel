@@ -1,53 +1,17 @@
-pub type Color = u8;
-pub const COLOR_COUNT: usize = 16;
+use crate::palette::{Color, Rgb24};
 
-pub type Tile = u32;
-pub const TILE_COUNT: usize = 256 * 256;
-
-pub type Rgb24 = u32;
-pub const RGB24_MAX_VALUE: Rgb24 = 0xffffff;
-
-/*
 //
 // Common
 //
-const std::string VERSION = "1.4.3";
-const int32_t COLOR_COUNT = 16;
-const std::string WHITESPACE = " \t\v\r\n";
-
-enum {
-  COLOR_BLACK,
-  COLOR_NAVY,
-  COLOR_PURPLE,
-  COLOR_GREEN,
-  COLOR_BROWN,
-  COLOR_DARKBLUE,
-  COLOR_LIGHTBLUE,
-  COLOR_WHITE,
-  COLOR_RED,
-  COLOR_ORANGE,
-  COLOR_YELLOW,
-  COLOR_LIME,
-  COLOR_CYAN,
-  COLOR_GRAY,
-  COLOR_PINK,
-  COLOR_PEACH,
-};
+pub const PYXEL_VERSION: &str = "2.0.0";
+//const std::string WHITESPACE = " \t\v\r\n";
 
 //
 // System
 //
-const int32_t MAX_SCREEN_SIZE = 256;
+pub const WINDOW_BACKGROUND_COLOR: Rgb24 = 0x101018;
 
-const int32_t MAX_FRAME_SKIP_COUNT = 9;
-const int32_t MEASURE_FRAME_COUNT = 10;
-
-const int32_t SCREEN_CAPTURE_COUNT = 900;
-const int32_t SCREEN_CAPTURE_SCALE = 2;
-
-const float MAX_WINDOW_SIZE_RATIO = 0.8f;
-const int32_t WINDOW_BACKGROUND_COLOR = 0x101018;
-
+/*
 const int32_t ICON_WIDTH = 16;
 const int32_t ICON_HEIGHT = 16;
 const int32_t ICON_SCALE = 4;
@@ -58,6 +22,52 @@ const std::vector<std::string> ICON_DATA = {
     "1E111111C11111C1", "1E111111C11111C1", "17E11111C1111C71",
     "011EE111C11CC110", "00011EE1CCC11000", "0000011E71100000",
     "0000000110000000",
+*/
+
+//
+// Graphics
+//
+pub const IMAGEBANK_COUNT: usize = 4;
+pub const IMAGEBANK_SIZE: u32 = 256;
+
+pub const TILEMAP_COUNT: usize = 8;
+pub const TILEMAP_SIZE: u32 = 256;
+
+pub const DISPLAY_COLORS: [Rgb24; 16] = [
+  0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, 0xd4186c,
+  0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0,
+];
+
+pub const COLOR_BLACK: Color = 0;
+pub const COLOR_NAVY: Color = 1;
+pub const COLOR_PURPLE: Color = 2;
+pub const COLOR_GREEN: Color = 3;
+pub const COLOR_BROWN: Color = 4;
+pub const COLOR_DARK_BLUE: Color = 5;
+pub const COLOR_LIGHT_BLUE: Color = 6;
+pub const COLOR_WHITE: Color = 7;
+pub const COLOR_RED: Color = 8;
+pub const COLOR_ORANGE: Color = 9;
+pub const COLOR_YELLOW: Color = 10;
+pub const COLOR_LIME: Color = 11;
+pub const COLOR_CYAN: Color = 12;
+pub const COLOR_GRAY: Color = 13;
+pub const COLOR_PINK: Color = 14;
+pub const COLOR_PEACH: Color = 15;
+
+/*
+
+//
+// System
+//
+const int32_t MAX_FRAME_SKIP_COUNT = 9;
+const int32_t MEASURE_FRAME_COUNT = 10;
+
+const int32_t SCREEN_CAPTURE_COUNT = 900;
+const int32_t SCREEN_CAPTURE_SCALE = 2;
+
+const float MAX_WINDOW_SIZE_RATIO = 0.8f;
+
 };
 
 //
@@ -345,16 +355,6 @@ const SDL_GameControllerButton SDL_BUTTON_TABLE[BUTTON_COUNT] = {
 //
 // Graphics
 //
-const int32_t USER_IMAGE_BANK_COUNT = 3;
-const int32_t TOTAL_IMAGE_BANK_COUNT = USER_IMAGE_BANK_COUNT + 2;
-const int32_t IMAGE_BANK_FOR_SYSTEM = USER_IMAGE_BANK_COUNT;
-const int32_t IMAGE_BANK_FOR_SCREEN = USER_IMAGE_BANK_COUNT + 1;
-const int32_t IMAGE_BANK_WIDTH = MAX_SCREEN_SIZE;
-const int32_t IMAGE_BANK_HEIGHT = MAX_SCREEN_SIZE;
-
-const int32_t TILEMAP_BANK_COUNT = 8;
-const int32_t TILEMAP_BANK_WIDTH = 256;
-const int32_t TILEMAP_BANK_HEIGHT = 256;
 const int32_t TILEMAP_CHIP_WIDTH = 8;
 const int32_t TILEMAP_CHIP_HEIGHT = 8;
 const int32_t TILEMAP_CHIP_COUNT = (TILEMAP_BANK_WIDTH / TILEMAP_CHIP_WIDTH) *
@@ -437,9 +437,4 @@ const std::string DEFAULT_CAPTION = "Pyxel";
 const int32_t DEFAULT_SCALE = 0;
 const int32_t DEFAULT_FPS = 30;
 const int32_t DEFAULT_QUIT_KEY = KEY_ESCAPE;
-const std::array<int32_t, COLOR_COUNT> DEFAULT_PALETTE = {
-    0x000000, 0x2B335F, 0x7E2072, 0x19959C, 0x8B4852, 0x395C98,
-    0xA9C1FF, 0xEEEEEE, 0xD4186C, 0xD38441, 0xE9C35B, 0x70C6A9,
-    0x7696DE, 0xA3A3A3, 0xFF9798, 0xEDC7B0,
-}
 */
