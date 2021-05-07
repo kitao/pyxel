@@ -7,7 +7,7 @@ pub trait GraphicsBuffer<T: Copy + Default> {
   fn data_mut(&mut self) -> &mut Vec<Vec<T>>;
   fn self_rect(&self) -> Rectarea;
   fn clip_rect(&self) -> Rectarea;
-  fn set_clip_rect(&mut self, rect: Rectarea);
+  fn clip_rect_mut(&mut self) -> &mut Rectarea;
   fn get_render_color(&self, original_color: T) -> T;
 
   #[inline]
@@ -29,20 +29,20 @@ pub trait GraphicsBuffer<T: Copy + Default> {
       (height as f64) as u32,
     ));
 
-    self.set_clip_rect(rect);
+    *self.clip_rect_mut() = rect;
   }
 
   #[inline]
   fn reset_clip_area(&mut self) {
-    self.set_clip_rect(self.self_rect());
+    *self.clip_rect_mut() = self.self_rect();
   }
 
   #[inline]
   fn clear_buffer(&mut self, color: T) {
     let color = self.get_render_color(color);
 
-    for i in 0..self.width() {
-      for j in 0..self.height() {
+    for i in 0..self.height() {
+      for j in 0..self.width() {
         self.data_mut()[i as usize][j as usize] = color;
       }
     }
