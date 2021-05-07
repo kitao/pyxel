@@ -1,4 +1,4 @@
-use crate::graphics_buffer::GraphicsBuffer;
+use crate::canvas::Canvas;
 use crate::rectarea::Rectarea;
 
 pub type Tile = u16;
@@ -6,7 +6,7 @@ pub type Tile = u16;
 pub const TILE_COUNT: usize = 256 * 256;
 
 #[derive(Debug)]
-pub struct TilemapBuffer {
+pub struct Tilemap {
     width: u32,
     height: u32,
     data: Vec<Vec<Tile>>,
@@ -14,9 +14,9 @@ pub struct TilemapBuffer {
     clip_rect: Rectarea,
 }
 
-impl TilemapBuffer {
-    pub fn new(width: u32, height: u32) -> TilemapBuffer {
-        TilemapBuffer {
+impl Tilemap {
+    pub fn new(width: u32, height: u32) -> Tilemap {
+        Tilemap {
             width: width,
             height: height,
             data: vec![vec![0; width as usize]; height as usize],
@@ -26,7 +26,7 @@ impl TilemapBuffer {
     }
 }
 
-impl GraphicsBuffer<Tile> for TilemapBuffer {
+impl Canvas<Tile> for Tilemap {
     #[inline]
     fn width(&self) -> u32 {
         self.width
@@ -38,12 +38,7 @@ impl GraphicsBuffer<Tile> for TilemapBuffer {
     }
 
     #[inline]
-    fn data<'a>(&'a self) -> &'a Vec<Vec<Tile>> {
-        &self.data
-    }
-
-    #[inline]
-    fn data_mut<'a>(&'a mut self) -> &'a mut Vec<Vec<Tile>> {
+    fn data<'a>(&'a mut self) -> &'a mut Vec<Vec<Tile>> {
         &mut self.data
     }
 
