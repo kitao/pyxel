@@ -13,9 +13,4 @@ path = "tests/main.rs"
 harness = false
 
 [dependencies]
-num = "0.4.0"
-
-[dependencies.sdl2]
-version = "0.34.3"
-default-features = false
-features = ["image", "unsafe_textures"]
+sdl2 = { version = "0.34.5", default-features = false, features = ["image", "unsafe_textures"] }
