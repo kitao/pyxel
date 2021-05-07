@@ -8,7 +8,8 @@ use sdl2::EventPump as SdlEventPump;
 use sdl2::Sdl as SdlContext;
 use sdl2::VideoSubsystem as SdlVideoSubsystem;
 
-//use crate::image_buffer::ImageBuffer;
+use crate::canvas::Canvas;
+use crate::graphics::graphics;
 
 static mut INSTANCE: Option<System> = None;
 
@@ -17,9 +18,11 @@ pub fn system() -> &'static mut System {
     unsafe { INSTANCE.as_mut().expect("System is not initialized") }
 }
 
-pub fn init_system(name: &str, width: u32, height: u32) {
+pub fn init_system(width: u32, height: u32, caption: &str) {
     unsafe {
-        INSTANCE = Some(System::new(name, width, height));
+        assert!(INSTANCE.is_none(), "System is already initialized");
+
+        INSTANCE = Some(System::new(width, height, caption));
     }
 }
 
@@ -32,6 +35,7 @@ pub struct System {
 
     screen_width: u32,
     screen_height: u32,
+    window_caption: String,
     /*
         Window* window_;
         Recorder* recorder_;
@@ -55,11 +59,11 @@ pub struct System {
 }
 
 impl System {
-    pub fn new(name: &str, width: u32, height: u32) -> System {
+    pub fn new(width: u32, height: u32, caption: &str) -> System {
         let sdl_context = sdl2::init().unwrap();
         let sdl_video_subsystem = sdl_context.video().unwrap();
         let sdl_window = sdl_video_subsystem
-            .window(name, width, height)
+            .window(caption, width, height)
             .position_centered()
             .build()
             .unwrap();
@@ -79,6 +83,7 @@ impl System {
 
             screen_width: width,
             screen_height: height,
+            window_caption: caption.to_string(),
         }
 
         /*
@@ -99,18 +104,11 @@ impl System {
                                      SDL_WINDOWPOS_CENTERED, window_width,
                                      window_height, SDL_WINDOW_RESIZABLE);
 
-          renderer_ = SDL_CreateRenderer(window_, -1, 0);
-
-          screen_texture_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGB888,
-                                              SDL_TEXTUREACCESS_STREAMING,
-                                              screen_width_, screen_height_);
-
           SDL_SetWindowMinimumSize(window_, screen_width_, screen_height_);
 
           SetupWindowIcon();
           UpdateWindowInfo();
-        }
-                                              */
+        */
     }
 
     #[inline]
@@ -124,17 +122,17 @@ impl System {
     }
 
     pub fn run(&mut self) {
-        /*let palette = self.image_bank.palette();
-        let data = self.image_bank.data();
+        let palette = graphics().palette();
+        let data = graphics().screen().data();
         let width = self.screen_width as usize;
         let height = self.screen_height as usize;
 
         self.sdl_texture
             .with_lock(None, |buffer: &mut [u8], pitch: usize| {
-                for y in 0..height {
-                    for x in 0..width {
-                        let c = palette.get_display_color(data[y][x]);
-                        let offset = y * pitch + x * 3;
+                for i in 0..height {
+                    for j in 0..width {
+                        let c = palette.get_display_color(data[i][j]);
+                        let offset = i * pitch + j * 3;
 
                         buffer[offset] = ((c >> 16) & 0xff) as u8;
                         buffer[offset + 1] = ((c >> 8) & 0xff) as u8;
@@ -142,15 +140,15 @@ impl System {
                     }
                 }
             })
-            .unwrap();*/
+            .unwrap();
 
         'main_loop: loop {
             self.sdl_canvas.set_draw_color(Color::RGB(200, 200, 200));
             self.sdl_canvas.clear();
 
-            /*self.sdl_canvas
-            .copy(&self.sdl_texture, None, None)
-            .expect("Render failed");*/
+            self.sdl_canvas
+                .copy(&self.sdl_texture, None, None)
+                .expect("Render failed");
 
             //canvas.copy(&texture, None, Some(Rect::new(100, 100, 256, 256)))?;
             /*canvas.copy_ex(
@@ -179,24 +177,6 @@ impl System {
 
             //thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));}
         }
-
-        /*
-        int32_t* framebuffer;
-        int32_t pitch;
-        int32_t size = screen_width_ * screen_height_;
-
-        SDL_LockTexture(screen_texture_, NULL, reinterpret_cast<void**>(&framebuffer),
-                        &pitch);
-
-        for (int32_t i = 0; i < screen_height_; i++) {
-          int32_t index = screen_width_ * i;
-          for (int32_t j = 0; j < screen_width_; j++) {
-            framebuffer[index + j] = palette_color_[screen_data[i][j]];
-          }
-        }
-
-        SDL_UnlockTexture(screen_texture_);
-        */
     }
 
     pub fn get_window_caption(&self) -> &'static str {
@@ -225,8 +205,6 @@ impl System {
         int32_t quit_key,
         bool is_fullscreen);
         ~System();
-
-        const pyxelcore::PaletteColor& PaletteColor() const { return palette_color_; }
 
         int32_t Width() const { return window_->ScreenWidth(); }
         int32_t Height() const { return window_->ScreenHeight(); }
