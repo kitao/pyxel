@@ -3,31 +3,6 @@ pub type Rgb24 = u32;
 
 const MAX_COLOR_COUNT: usize = 256;
 
-pub const DEFAULT_COLOR_COUNT: usize = 16;
-pub const DEFAULT_DISPLAY_COLORS: [Rgb24; DEFAULT_COLOR_COUNT] = [
-    0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, 0xd4186c,
-    0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0,
-];
-
-pub enum DefaultColor {
-    Black,
-    Navy,
-    Purple,
-    Green,
-    Brown,
-    DarkBlue,
-    LightBlue,
-    White,
-    Red,
-    Orange,
-    Yellow,
-    Lime,
-    Cyan,
-    Gray,
-    Pink,
-    Peach,
-}
-
 #[derive(Debug)]
 pub struct ColorPalette {
     render_colors: [Color; MAX_COLOR_COUNT],
@@ -42,7 +17,6 @@ impl ColorPalette {
         };
 
         palette.reset_render_colors();
-        palette.set_display_colors(&DEFAULT_DISPLAY_COLORS);
 
         palette
     }
@@ -92,17 +66,7 @@ mod tests {
 
         for i in 0..MAX_COLOR_COUNT {
             assert_eq!(palette.get_render_color(i as Color), i as Color);
-
-            for i in 0..MAX_COLOR_COUNT {
-                if i < DEFAULT_COLOR_COUNT {
-                    assert_eq!(
-                        palette.get_display_color(i as Color),
-                        DEFAULT_DISPLAY_COLORS[i]
-                    );
-                } else {
-                    assert_eq!(palette.get_display_color(i as Color), 0);
-                }
-            }
+            assert_eq!(palette.get_display_color(i as Color), 0);
         }
     }
 
@@ -146,14 +110,7 @@ mod tests {
         let mut palette = ColorPalette::new();
 
         for i in 0..MAX_COLOR_COUNT {
-            if i < DEFAULT_COLOR_COUNT {
-                assert_eq!(
-                    palette.get_display_color(i as Color),
-                    DEFAULT_DISPLAY_COLORS[i]
-                );
-            } else {
-                assert_eq!(palette.get_display_color(i as Color), 0);
-            }
+            assert_eq!(palette.get_display_color(i as Color), 0);
         }
 
         for i in 0..MAX_COLOR_COUNT {
