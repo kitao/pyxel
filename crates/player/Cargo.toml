@@ -6,6 +6,4 @@ edition = "2018"
 
 [dependencies]
 cpython = "0.5.2"
-
-[dependencies.pyxel-engine]
-path = "../engine"
+pyxel-engine = { path = "../engine" }
