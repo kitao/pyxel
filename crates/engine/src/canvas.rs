@@ -1,10 +1,10 @@
 use crate::rectarea::Rectarea;
 
-pub trait GraphicsBuffer<T: Copy + Default> {
+pub trait Canvas<T: Copy + Default> {
   fn width(&self) -> u32;
   fn height(&self) -> u32;
-  fn data(&self) -> &Vec<Vec<T>>;
-  fn data_mut(&mut self) -> &mut Vec<Vec<T>>;
+  //fn data(&self) -> &Vec<Vec<T>>;
+  fn data(&mut self) -> &mut Vec<Vec<T>>;
   fn self_rect(&self) -> Rectarea;
   fn clip_rect(&self) -> Rectarea;
   fn clip_rect_mut(&mut self) -> &mut Rectarea;
@@ -43,7 +43,7 @@ pub trait GraphicsBuffer<T: Copy + Default> {
 
     for i in 0..self.height() {
       for j in 0..self.width() {
-        self.data_mut()[i as usize][j as usize] = color;
+        self.data()[i as usize][j as usize] = color;
       }
     }
   }
@@ -62,7 +62,7 @@ pub trait GraphicsBuffer<T: Copy + Default> {
     let color = self.get_render_color(color);
 
     if self.self_rect().contains(x, y) {
-      self.data_mut()[y as usize][x as usize] = color;
+      self.data()[y as usize][x as usize] = color;
     }
   }
 
@@ -114,7 +114,7 @@ pub trait GraphicsBuffer<T: Copy + Default> {
     &mut self,
     x: i32,
     y: i32,
-    gbuf: &dyn GraphicsBuffer<T>,
+    gbuf: &dyn Canvas<T>,
     u: i32,
     v: i32,
     width: i32,
