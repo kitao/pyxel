@@ -58,8 +58,8 @@ impl GraphicsBuffer<Tile> for TilemapBuffer {
     }
 
     #[inline]
-    fn set_clip_rect(&mut self, rect: Rectarea) {
-        self.clip_rect = rect
+    fn clip_rect_mut(&mut self) -> &mut Rectarea {
+        &mut self.clip_rect
     }
 
     #[inline]
