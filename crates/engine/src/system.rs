@@ -8,12 +8,30 @@ use sdl2::EventPump as SdlEventPump;
 use sdl2::Sdl as SdlContext;
 use sdl2::VideoSubsystem as SdlVideoSubsystem;
 
+//use crate::image_buffer::ImageBuffer;
+
+static mut INSTANCE: Option<System> = None;
+
+#[inline]
+pub fn system() -> &'static mut System {
+    unsafe { INSTANCE.as_mut().expect("System is not initialized") }
+}
+
+pub fn init_system(name: &str, width: u32, height: u32) {
+    unsafe {
+        INSTANCE = Some(System::new(name, width, height));
+    }
+}
+
 pub struct System {
     sdl_context: SdlContext,
     sdl_video_subsystem: SdlVideoSubsystem,
     sdl_canvas: SdlCanvas,
     sdl_texture: SdlTexture,
     sdl_event_pump: SdlEventPump,
+
+    screen_width: u32,
+    screen_height: u32,
     /*
         Window* window_;
         Recorder* recorder_;
@@ -58,6 +76,9 @@ impl System {
             sdl_canvas: sdl_canvas,
             sdl_texture: sdl_texture,
             sdl_event_pump: sdl_event_pump,
+
+            screen_width: width,
+            screen_height: height,
         }
 
         /*
@@ -90,6 +111,16 @@ impl System {
           UpdateWindowInfo();
         }
                                               */
+    }
+
+    #[inline]
+    pub fn screen_width(&self) -> u32 {
+        self.screen_width
+    }
+
+    #[inline]
+    pub fn screen_height(&self) -> u32 {
+        self.screen_height
     }
 
     pub fn run(&mut self) {
