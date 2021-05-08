@@ -22,13 +22,13 @@ impl Palette {
     }
 
     #[inline]
-    pub fn set_render_color(&mut self, original_color: Color, render_color: Color) {
-        self.render_colors[original_color as usize] = render_color;
+    pub fn get_render_color(&self, original_color: Color) -> Color {
+        self.render_colors[original_color as usize]
     }
 
     #[inline]
-    pub fn get_render_color(&self, original_color: Color) -> Color {
-        self.render_colors[original_color as usize]
+    pub fn set_render_color(&mut self, original_color: Color, render_color: Color) {
+        self.render_colors[original_color as usize] = render_color;
     }
 
     #[inline]
