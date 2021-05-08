@@ -65,7 +65,12 @@ impl Canvas<Color> for Image {
   }
 
   #[inline]
-  fn data<'a>(&'a mut self) -> &'a mut Vec<Vec<Color>> {
+  fn data<'a>(&'a self) -> &'a Vec<Vec<Color>> {
+    &self.data
+  }
+
+  #[inline]
+  fn data_mut<'a>(&'a mut self) -> &'a mut Vec<Vec<Color>> {
     &mut self.data
   }
 

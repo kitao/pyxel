@@ -5,21 +5,6 @@ use crate::settings::{
 };
 use crate::tilemap::Tilemap;
 
-static mut INSTANCE: Option<Graphics> = None;
-
-#[inline]
-pub fn graphics() -> &'static mut Graphics {
-    unsafe { INSTANCE.as_mut().expect("Graphics is not initialized") }
-}
-
-pub fn init_graphics(width: u32, height: u32, colors: Option<&[Rgb24]>) {
-    unsafe {
-        assert!(INSTANCE.is_none(), "Graphics is already initialized");
-
-        INSTANCE = Some(Graphics::new(width, height, colors));
-    }
-}
-
 pub struct Graphics {
     screen: Image,
     images: Vec<Image>,
@@ -28,9 +13,13 @@ pub struct Graphics {
 
 impl Graphics {
     pub fn new(width: u32, height: u32, colors: Option<&[Rgb24]>) -> Graphics {
-        let screen = Image::new(width, height);
+        let mut screen = Image::new(width, height);
         let mut images = Vec::new();
         let mut tilemaps = Vec::new();
+
+        screen
+            .palette_mut()
+            .set_display_colors(colors.unwrap_or(&DISPLAY_COLORS));
 
         for _ in 0..IMAGEBANK_COUNT {
             images.push(Image::new(IMAGEBANK_SIZE, IMAGEBANK_SIZE));
@@ -40,32 +29,36 @@ impl Graphics {
             tilemaps.push(Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE));
         }
 
-        let mut graphics = Graphics {
+        let graphics = Graphics {
             screen: screen,
             images: images,
             tilemaps: tilemaps,
         };
 
-        match colors {
-            Some(cols) => graphics.palette().set_display_colors(&cols),
-            None => graphics.palette().set_display_colors(&DISPLAY_COLORS),
-        }
-
         graphics
     }
 
     #[inline]
-    pub fn screen(&mut self) -> &mut Image {
+    pub fn screen(&self) -> &Image {
+        &self.screen
+    }
+
+    #[inline]
+    pub fn screen_mut(&mut self) -> &mut Image {
         &mut self.screen
     }
 
     #[inline]
-    pub fn palette(&mut self) -> &mut Palette {
-        self.screen.palette_mut()
+    pub fn image(&self, no: usize) -> &Image {
+        if no < self.images.len() {
+            &self.images[no]
+        } else {
+            &self.screen
+        }
     }
 
     #[inline]
-    pub fn image(&mut self, no: usize) -> &mut Image {
+    pub fn image_mut(&mut self, no: usize) -> &mut Image {
         if no < self.images.len() {
             &mut self.images[no]
         } else {
@@ -74,7 +67,12 @@ impl Graphics {
     }
 
     #[inline]
-    pub fn tilemap(&mut self, no: usize) -> &mut Tilemap {
+    pub fn tilemap(&self, no: usize) -> &Tilemap {
+        &self.tilemaps[no]
+    }
+
+    #[inline]
+    pub fn tilemap_mut(&mut self, no: usize) -> &mut Tilemap {
         &mut self.tilemaps[no]
     }
 }

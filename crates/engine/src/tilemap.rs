@@ -36,7 +36,12 @@ impl Canvas<Tile> for Tilemap {
     }
 
     #[inline]
-    fn data<'a>(&'a mut self) -> &'a mut Vec<Vec<Tile>> {
+    fn data<'a>(&'a self) -> &'a Vec<Vec<Tile>> {
+        &self.data
+    }
+
+    #[inline]
+    fn data_mut<'a>(&'a mut self) -> &'a mut Vec<Vec<Tile>> {
         &mut self.data
     }
 
