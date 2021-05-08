@@ -18,7 +18,7 @@ pub fn system() -> &'static mut System {
     unsafe { INSTANCE.as_mut().expect("System is not initialized") }
 }
 
-pub fn init_system(width: u32, height: u32, caption: &str) {
+pub fn init_system(width: u32, height: u32, caption: Option<&str>) {
     unsafe {
         assert!(INSTANCE.is_none(), "System is already initialized");
 
@@ -59,7 +59,9 @@ pub struct System {
 }
 
 impl System {
-    pub fn new(width: u32, height: u32, caption: &str) -> System {
+    pub fn new(width: u32, height: u32, caption: Option<&str>) -> System {
+        let caption = caption.unwrap_or("Pyxel");
+
         let sdl_context = sdl2::init().unwrap();
         let sdl_video_subsystem = sdl_context.video().unwrap();
         let sdl_window = sdl_video_subsystem
@@ -112,13 +114,31 @@ impl System {
     }
 
     #[inline]
-    pub fn screen_width(&self) -> u32 {
+    pub fn width(&self) -> u32 {
         self.screen_width
     }
 
     #[inline]
-    pub fn screen_height(&self) -> u32 {
+    pub fn height(&self) -> u32 {
         self.screen_height
+    }
+
+    #[inline]
+    pub fn get_caption(&self) -> &String {
+        &self.window_caption
+    }
+
+    #[inline]
+    pub fn set_caption(&mut self, caption: &str) {
+        self.window_caption = caption.to_string();
+    }
+
+    pub fn is_fullscreen(&self) -> bool {
+        true
+    }
+
+    pub fn set_fullscreen(&self, is_fullscreen: bool) {
+        //
     }
 
     pub fn run(&mut self) {
@@ -177,22 +197,6 @@ impl System {
 
             //thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));}
         }
-    }
-
-    pub fn get_window_caption(&self) -> &'static str {
-        "hoge"
-    }
-
-    pub fn set_window_caption(&self, caption: &str) {
-        //
-    }
-
-    pub fn is_fullscreen(&self) -> bool {
-        true
-    }
-
-    pub fn set_fullscreen(&self, is_fullscreen: bool) {
-        //
     }
 
     /*
