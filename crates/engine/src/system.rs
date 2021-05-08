@@ -9,22 +9,7 @@ use sdl2::Sdl as SdlContext;
 use sdl2::VideoSubsystem as SdlVideoSubsystem;
 
 use crate::canvas::Canvas;
-use crate::graphics::graphics;
-
-static mut INSTANCE: Option<System> = None;
-
-#[inline]
-pub fn system() -> &'static mut System {
-    unsafe { INSTANCE.as_mut().expect("System is not initialized") }
-}
-
-pub fn init_system(width: u32, height: u32, caption: Option<&str>) {
-    unsafe {
-        assert!(INSTANCE.is_none(), "System is already initialized");
-
-        INSTANCE = Some(System::new(width, height, caption));
-    }
-}
+use crate::graphics::Graphics;
 
 pub struct System {
     sdl_context: SdlContext,
@@ -141,9 +126,9 @@ impl System {
         //
     }
 
-    pub fn run(&mut self) {
-        let palette = graphics().palette();
-        let data = graphics().screen().data();
+    pub fn run(&mut self, graphics: &Graphics) {
+        let palette = graphics.screen().palette();
+        let data = graphics.screen().data();
         let width = self.screen_width as usize;
         let height = self.screen_height as usize;
 
