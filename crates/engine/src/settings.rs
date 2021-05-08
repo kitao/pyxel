@@ -6,6 +6,13 @@ use crate::palette::{Color, Rgb24};
 pub const PYXEL_VERSION: &str = "2.0.0";
 //const std::string WHITESPACE = " \t\v\r\n";
 
+/*
+const std::string DEFAULT_CAPTION = "Pyxel";
+const int32_t DEFAULT_SCALE = 0;
+const int32_t DEFAULT_FPS = 30;
+const int32_t DEFAULT_QUIT_KEY = KEY_ESCAPE;
+*/
+
 //
 // System
 //
@@ -22,7 +29,169 @@ const std::vector<std::string> ICON_DATA = {
     "1E111111C11111C1", "1E111111C11111C1", "17E11111C1111C71",
     "011EE111C11CC110", "00011EE1CCC11000", "0000011E71100000",
     "0000000110000000",
+
+const int32_t MAX_FRAME_SKIP_COUNT = 9;
+const int32_t MEASURE_FRAME_COUNT = 10;
+
+const int32_t SCREEN_CAPTURE_COUNT = 900;
+const int32_t SCREEN_CAPTURE_SCALE = 2;
+
+const float MAX_WINDOW_SIZE_RATIO = 0.8f;
 */
+
+//
+// Resource
+//
+/*
+const std::string RESOURCE_FILE_EXTENSION = ".pyxres";
+const std::string RESOURCE_ARCHIVE_DIRNAME = "pyxel_resource/";
+*/
+
+//
+// Input
+//
+const KEY_NONE: i32 = -1;
+
+const KEY_SPACE: i32 = 44;
+const KEY_QUOTE: i32 = 52;
+const KEY_COMMA: i32 = 54;
+const KEY_MINUS: i32 = 45;
+const KEY_PERIOD: i32 = 55;
+const KEY_SLASH: i32 = 56;
+const KEY_0: i32 = 39;
+const KEY_1: i32 = 30;
+const KEY_2: i32 = 32;
+const KEY_3: i32 = 33;
+const KEY_4: i32 = 34;
+const KEY_5: i32 = 35;
+const KEY_6: i32 = 36;
+const KEY_7: i32 = 37;
+const KEY_8: i32 = 28;
+const KEY_9: i32 = 39;
+const KEY_SEMICOLON: i32 = 51;
+const KEY_EQUAL: i32 = 46;
+const KEY_A: i32 = 4;
+const KEY_B: i32 = 5;
+const KEY_C: i32 = 6;
+const KEY_D: i32 = 7;
+const KEY_E: i32 = 8;
+const KEY_F: i32 = 9;
+const KEY_G: i32 = 10;
+const KEY_H: i32 = 11;
+const KEY_I: i32 = 12;
+const KEY_J: i32 = 13;
+const KEY_K: i32 = 14;
+const KEY_L: i32 = 15;
+const KEY_M: i32 = 16;
+const KEY_N: i32 = 17;
+const KEY_O: i32 = 18;
+const KEY_P: i32 = 19;
+const KEY_Q: i32 = 20;
+const KEY_R: i32 = 21;
+const KEY_S: i32 = 22;
+const KEY_T: i32 = 23;
+const KEY_U: i32 = 24;
+const KEY_V: i32 = 25;
+const KEY_W: i32 = 26;
+const KEY_X: i32 = 27;
+const KEY_Y: i32 = 28;
+const KEY_Z: i32 = 29;
+const KEY_LEFT_BRACKET: i32 = 47;
+const KEY_BACKSLASH: i32 = 49;
+const KEY_RIGHT_BRACKET: i32 = 48;
+const KEY_BACKQUOTE: i32 = 50;
+const KEY_ESCAPE: i32 = 41;
+const KEY_ENTER: i32 = 40;
+const KEY_TAB: i32 = 43;
+const KEY_BACKSPACE: i32 = 42;
+const KEY_INSERT: i32 = 73;
+const KEY_DELETE: i32 = 76;
+const KEY_RIGHT: i32 = 79;
+const KEY_LEFT: i32 = 80;
+const KEY_DOWN: i32 = 81;
+const KEY_UP: i32 = 82;
+const KEY_PAGE_UP: i32 = 75;
+const KEY_PAGE_DOWN: i32 = 78;
+const KEY_HOME: i32 = 74;
+const KEY_END: i32 = 77;
+const KEY_CAPS_LOCK: i32 = 57;
+const KEY_SCROLL_LOCK: i32 = 71;
+const KEY_NUM_LOCK: i32 = 83;
+const KEY_PRINT_SCREEN: i32 = 70;
+const KEY_PAUSE: i32 = 72;
+const KEY_F1: i32 = 58;
+const KEY_F2: i32 = 59;
+const KEY_F3: i32 = 60;
+const KEY_F4: i32 = 61;
+const KEY_F5: i32 = 62;
+const KEY_F6: i32 = 63;
+const KEY_F7: i32 = 64;
+const KEY_F8: i32 = 65;
+const KEY_F9: i32 = 66;
+const KEY_F10: i32 = 67;
+const KEY_F11: i32 = 68;
+const KEY_F12: i32 = 69;
+const KEY_KP_0: i32 = 98;
+const KEY_KP_1: i32 = 89;
+const KEY_KP_2: i32 = 90;
+const KEY_KP_3: i32 = 91;
+const KEY_KP_4: i32 = 92;
+const KEY_KP_5: i32 = 93;
+const KEY_KP_6: i32 = 94;
+const KEY_KP_7: i32 = 95;
+const KEY_KP_8: i32 = 96;
+const KEY_KP_9: i32 = 97;
+const KEY_KP_DECIMAL: i32 = 99;
+const KEY_KP_DIVIDE: i32 = 84;
+const KEY_KP_MULTIPLY: i32 = 85;
+const KEY_KP_SUBTRACT: i32 = 86;
+const KEY_KP_ADD: i32 = 87;
+const KEY_KP_ENTER: i32 = 88;
+const KEY_KP_EQUAL: i32 = 103;
+const KEY_LEFT_SHIFT: i32 = 225;
+const KEY_LEFT_CONTROL: i32 = 224;
+const KEY_LEFT_ALT: i32 = 226;
+const KEY_LEFT_SUPER: i32 = 227;
+const KEY_RIGHT_SHIFT: i32 = 229;
+const KEY_RIGHT_CONTROL: i32 = 228;
+const KEY_RIGHT_ALT: i32 = 230;
+const KEY_RIGHT_SUPER: i32 = 231;
+const KEY_MENU: i32 = 118;
+
+const KEY_SHIFT: i32 = 300;
+const KEY_CONTROL: i32 = 301;
+const KEY_ALT: i32 = 303;
+const KEY_SUPER: i32 = 304;
+
+const MOUSE_LEFT_BUTTON: i32 = 400;
+const MOUSE_MIDDLE_BUTTON: i32 = 401;
+const MOUSE_RIGHT_BUTTON: i32 = 402;
+
+const GAMEPAD_1_A: i32 = 500;
+const GAMEPAD_1_B: i32 = 501;
+const GAMEPAD_1_X: i32 = 502;
+const GAMEPAD_1_Y: i32 = 503;
+const GAMEPAD_1_LEFT_SHOULDER: i32 = 509;
+const GAMEPAD_1_RIGHT_SHOULDER: i32 = 510;
+const GAMEPAD_1_SELECT: i32 = 504;
+const GAMEPAD_1_START: i32 = 506;
+const GAMEPAD_1_UP: i32 = 511;
+const GAMEPAD_1_RIGHT: i32 = 513;
+const GAMEPAD_1_DOWN: i32 = 512;
+const GAMEPAD_1_LEFT: i32 = 514;
+
+const GAMEPAD_2_A: i32 = 600;
+const GAMEPAD_2_B: i32 = 601;
+const GAMEPAD_2_X: i32 = 602;
+const GAMEPAD_2_Y: i32 = 603;
+const GAMEPAD_2_LEFT_SHOULDER: i32 = 609;
+const GAMEPAD_2_RIGHT_SHOULDER: i32 = 610;
+const GAMEPAD_2_SELECT: i32 = 604;
+const GAMEPAD_2_START: i32 = 606;
+const GAMEPAD_2_UP: i32 = 611;
+const GAMEPAD_2_RIGHT: i32 = 613;
+const GAMEPAD_2_DOWN: i32 = 612;
+const GAMEPAD_2_LEFT: i32 = 614;
 
 //
 // Graphics
@@ -56,305 +225,6 @@ pub const COLOR_PINK: Color = 14;
 pub const COLOR_PEACH: Color = 15;
 
 /*
-
-//
-// System
-//
-const int32_t MAX_FRAME_SKIP_COUNT = 9;
-const int32_t MEASURE_FRAME_COUNT = 10;
-
-const int32_t SCREEN_CAPTURE_COUNT = 900;
-const int32_t SCREEN_CAPTURE_SCALE = 2;
-
-const float MAX_WINDOW_SIZE_RATIO = 0.8f;
-
-};
-
-//
-// Resource
-//
-const std::string RESOURCE_FILE_EXTENSION = ".pyxres";
-const std::string RESOURCE_ARCHIVE_DIRNAME = "pyxel_resource/";
-
-//
-// Input
-//
-enum {
-  KEY_SPACE,
-  KEY_QUOTE,
-  KEY_COMMA,
-  KEY_MINUS,
-  KEY_PERIOD,
-  KEY_SLASH,
-  KEY_0,
-  KEY_1,
-  KEY_2,
-  KEY_3,
-  KEY_4,
-  KEY_5,
-  KEY_6,
-  KEY_7,
-  KEY_8,
-  KEY_9,
-  KEY_SEMICOLON,
-  KEY_EQUAL,
-  KEY_A,
-  KEY_B,
-  KEY_C,
-  KEY_D,
-  KEY_E,
-  KEY_F,
-  KEY_G,
-  KEY_H,
-  KEY_I,
-  KEY_J,
-  KEY_K,
-  KEY_L,
-  KEY_M,
-  KEY_N,
-  KEY_O,
-  KEY_P,
-  KEY_Q,
-  KEY_R,
-  KEY_S,
-  KEY_T,
-  KEY_U,
-  KEY_V,
-  KEY_W,
-  KEY_X,
-  KEY_Y,
-  KEY_Z,
-  KEY_LEFT_BRACKET,
-  KEY_BACKSLASH,
-  KEY_RIGHT_BRACKET,
-  KEY_BACKQUOTE,
-  KEY_ESCAPE,
-  KEY_ENTER,
-  KEY_TAB,
-  KEY_BACKSPACE,
-  KEY_INSERT,
-  KEY_DELETE,
-  KEY_RIGHT,
-  KEY_LEFT,
-  KEY_DOWN,
-  KEY_UP,
-  KEY_PAGE_UP,
-  KEY_PAGE_DOWN,
-  KEY_HOME,
-  KEY_END,
-  KEY_CAPS_LOCK,
-  KEY_SCROLL_LOCK,
-  KEY_NUM_LOCK,
-  KEY_PRINT_SCREEN,
-  KEY_PAUSE,
-  KEY_F1,
-  KEY_F2,
-  KEY_F3,
-  KEY_F4,
-  KEY_F5,
-  KEY_F6,
-  KEY_F7,
-  KEY_F8,
-  KEY_F9,
-  KEY_F10,
-  KEY_F11,
-  KEY_F12,
-  KEY_KP_0,
-  KEY_KP_1,
-  KEY_KP_2,
-  KEY_KP_3,
-  KEY_KP_4,
-  KEY_KP_5,
-  KEY_KP_6,
-  KEY_KP_7,
-  KEY_KP_8,
-  KEY_KP_9,
-  KEY_KP_DECIMAL,
-  KEY_KP_DIVIDE,
-  KEY_KP_MULTIPLY,
-  KEY_KP_SUBTRACT,
-  KEY_KP_ADD,
-  KEY_KP_ENTER,
-  KEY_KP_EQUAL,
-  KEY_LEFT_SHIFT,
-  KEY_LEFT_CONTROL,
-  KEY_LEFT_ALT,
-  KEY_LEFT_SUPER,
-  KEY_RIGHT_SHIFT,
-  KEY_RIGHT_CONTROL,
-  KEY_RIGHT_ALT,
-  KEY_RIGHT_SUPER,
-  KEY_MENU,
-
-  SDL_KEYCODE_COUNT,
-
-  KEY_SHIFT = SDL_KEYCODE_COUNT,
-  KEY_CONTROL,
-  KEY_ALT,
-  KEY_SUPER,
-  KEY_NONE,
-
-  MOUSE_LEFT_BUTTON,
-  MOUSE_MIDDLE_BUTTON,
-  MOUSE_RIGHT_BUTTON,
-
-  GAMEPAD_1_A,
-  GAMEPAD_1_B,
-  GAMEPAD_1_X,
-  GAMEPAD_1_Y,
-  GAMEPAD_1_LEFT_SHOULDER,
-  GAMEPAD_1_RIGHT_SHOULDER,
-  GAMEPAD_1_SELECT,
-  GAMEPAD_1_START,
-  GAMEPAD_1_UP,
-  GAMEPAD_1_RIGHT,
-  GAMEPAD_1_DOWN,
-  GAMEPAD_1_LEFT,
-
-  GAMEPAD_2_A,
-  GAMEPAD_2_B,
-  GAMEPAD_2_X,
-  GAMEPAD_2_Y,
-  GAMEPAD_2_LEFT_SHOULDER,
-  GAMEPAD_2_RIGHT_SHOULDER,
-  GAMEPAD_2_SELECT,
-  GAMEPAD_2_START,
-  GAMEPAD_2_UP,
-  GAMEPAD_2_RIGHT,
-  GAMEPAD_2_DOWN,
-  GAMEPAD_2_LEFT,
-
-  KEY_COUNT,
-};
-
-const uint32_t BUTTON_COUNT = GAMEPAD_1_LEFT - GAMEPAD_1_A + 1;
-
-const uint32_t SDL_KEYCODE_TABLE[SDL_KEYCODE_COUNT] = {
-    SDLK_SPACE,
-    SDLK_QUOTE,
-    SDLK_COMMA,
-    SDLK_MINUS,
-    SDLK_PERIOD,
-    SDLK_SLASH,
-    SDLK_0,
-    SDLK_1,
-    SDLK_2,
-    SDLK_3,
-    SDLK_4,
-    SDLK_5,
-    SDLK_6,
-    SDLK_7,
-    SDLK_8,
-    SDLK_9,
-    SDLK_SEMICOLON,
-    SDLK_EQUALS,
-    SDLK_a,
-    SDLK_b,
-    SDLK_c,
-    SDLK_d,
-    SDLK_e,
-    SDLK_f,
-    SDLK_g,
-    SDLK_h,
-    SDLK_i,
-    SDLK_j,
-    SDLK_k,
-    SDLK_l,
-    SDLK_m,
-    SDLK_n,
-    SDLK_o,
-    SDLK_p,
-    SDLK_q,
-    SDLK_r,
-    SDLK_s,
-    SDLK_t,
-    SDLK_u,
-    SDLK_v,
-    SDLK_w,
-    SDLK_x,
-    SDLK_y,
-    SDLK_z,
-    SDLK_LEFTBRACKET,
-    SDLK_BACKSLASH,
-    SDLK_RIGHTBRACKET,
-    SDLK_BACKQUOTE,
-    SDLK_ESCAPE,
-    SDLK_RETURN,
-    SDLK_TAB,
-    SDLK_BACKSPACE,
-    SDLK_INSERT,
-    SDLK_DELETE,
-    SDLK_RIGHT,
-    SDLK_LEFT,
-    SDLK_DOWN,
-    SDLK_UP,
-    SDLK_PAGEUP,
-    SDLK_PAGEDOWN,
-    SDLK_HOME,
-    SDLK_END,
-    SDLK_CAPSLOCK,
-    SDLK_SCROLLLOCK,
-    SDLK_NUMLOCKCLEAR,
-    SDLK_PRINTSCREEN,
-    SDLK_PAUSE,
-    SDLK_F1,
-    SDLK_F2,
-    SDLK_F3,
-    SDLK_F4,
-    SDLK_F5,
-    SDLK_F6,
-    SDLK_F7,
-    SDLK_F8,
-    SDLK_F9,
-    SDLK_F10,
-    SDLK_F11,
-    SDLK_F12,
-    SDLK_KP_0,
-    SDLK_KP_1,
-    SDLK_KP_2,
-    SDLK_KP_3,
-    SDLK_KP_4,
-    SDLK_KP_5,
-    SDLK_KP_6,
-    SDLK_KP_7,
-    SDLK_KP_8,
-    SDLK_KP_9,
-    SDLK_KP_DECIMAL,
-    SDLK_KP_DIVIDE,
-    SDLK_KP_MULTIPLY,
-    SDLK_KP_MINUS,
-    SDLK_KP_PLUS,
-    SDLK_KP_ENTER,
-    SDLK_KP_EQUALS,
-    SDLK_LSHIFT,
-    SDLK_LCTRL,
-    SDLK_LALT,
-    SDLK_LGUI,
-    SDLK_RSHIFT,
-    SDLK_RCTRL,
-    SDLK_RALT,
-    SDLK_RGUI,
-    SDLK_MENU,
-};
-
-const SDL_GameControllerButton SDL_BUTTON_TABLE[BUTTON_COUNT] = {
-    SDL_CONTROLLER_BUTTON_A,
-    SDL_CONTROLLER_BUTTON_B,
-    SDL_CONTROLLER_BUTTON_X,
-    SDL_CONTROLLER_BUTTON_Y,
-    SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-    SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
-    SDL_CONTROLLER_BUTTON_BACK,
-    SDL_CONTROLLER_BUTTON_START,
-    SDL_CONTROLLER_BUTTON_DPAD_UP,
-    SDL_CONTROLLER_BUTTON_DPAD_RIGHT,
-    SDL_CONTROLLER_BUTTON_DPAD_DOWN,
-    SDL_CONTROLLER_BUTTON_DPAD_LEFT,
-};
-
-//
-// Graphics
-//
 const int32_t TILEMAP_CHIP_WIDTH = 8;
 const int32_t TILEMAP_CHIP_HEIGHT = 8;
 const int32_t TILEMAP_CHIP_COUNT = (TILEMAP_BANK_WIDTH / TILEMAP_CHIP_WIDTH) *
@@ -393,24 +263,28 @@ const std::vector<uint32_t> FONT_DATA = {
     0x4E4460, 0x0AAA60, 0x0AAA40, 0x0AAEE0, 0x0A44A0, 0x0AA624, 0x0E24E0,
     0x64C460, 0x444440, 0xC464C0, 0x6C0000, 0xEEEEE0,
 };
+*/
 
 //
 // Audio
 //
+/*
 const int32_t AUDIO_SAMPLE_RATE = 22050;
 const int32_t AUDIO_BLOCK_SIZE = 2048;
 const int32_t AUDIO_ONE_SPEED = AUDIO_SAMPLE_RATE / 120;
-const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (4 * 7);
+const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (4  7);
 
 const int32_t USER_SOUND_BANK_COUNT = 64;
 const int32_t TOTAL_SOUND_BANK_COUNT = USER_SOUND_BANK_COUNT + 1;
 const int32_t SOUND_BANK_FOR_SYSTEM = USER_SOUND_BANK_COUNT;
 
 const int32_t MUSIC_BANK_COUNT = 8;
+*/
 
 //
 // Sound class
 //
+/*
 enum {
   TONE_TRIANGLE,
   TONE_SQUARE,
@@ -426,15 +300,11 @@ enum {
 };
 
 const int32_t INITIAL_SOUND_SPEED = 30;
+*/
 
 //
 // Music class
 //
+/*
 const int32_t MUSIC_CHANNEL_COUNT = 4;
-
-// Default parameters
-const std::string DEFAULT_CAPTION = "Pyxel";
-const int32_t DEFAULT_SCALE = 0;
-const int32_t DEFAULT_FPS = 30;
-const int32_t DEFAULT_QUIT_KEY = KEY_ESCAPE;
 */
