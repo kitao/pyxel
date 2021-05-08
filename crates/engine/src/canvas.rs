@@ -3,7 +3,6 @@ use crate::rectarea::Rectarea;
 pub trait Canvas<T: Copy + Default> {
   fn width(&self) -> u32;
   fn height(&self) -> u32;
-  //fn data(&self) -> &Vec<Vec<T>>;
   fn data(&mut self) -> &mut Vec<Vec<T>>;
   fn self_rect(&self) -> Rectarea;
   fn clip_rect(&self) -> Rectarea;
@@ -38,7 +37,7 @@ pub trait Canvas<T: Copy + Default> {
   }
 
   #[inline]
-  fn clear_buffer(&mut self, color: T) {
+  fn clear(&mut self, color: T) {
     let color = self.get_render_color(color);
 
     for i in 0..self.height() {
@@ -58,7 +57,7 @@ pub trait Canvas<T: Copy + Default> {
   }
 
   #[inline]
-  fn set_color(&mut self, x: i32, y: i32, color: T) {
+  fn draw_point(&mut self, x: i32, y: i32, color: T) {
     let color = self.get_render_color(color);
 
     if self.self_rect().contains(x, y) {
@@ -110,11 +109,17 @@ pub trait Canvas<T: Copy + Default> {
     //
   }
 
-  fn copy_buffer(
+  #[inline]
+  fn paint(&mut self, x: i32, y: i32, color: T) {
+    //
+  }
+
+  #[inline]
+  fn copy(
     &mut self,
     x: i32,
     y: i32,
-    gbuf: &dyn Canvas<T>,
+    src: &dyn Canvas<T>,
     u: i32,
     v: i32,
     width: i32,
