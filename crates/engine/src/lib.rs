@@ -1,34 +1,37 @@
+mod audio;
 mod canvas;
 mod graphics;
-mod imagebank;
+mod image;
+mod input;
 mod palette;
 mod rectarea;
+mod resource;
 mod settings;
 mod system;
 mod tilemap;
 
 use canvas::Canvas;
 use graphics::{graphics, init_graphics};
-use palette::Color;
+use palette::{Color, Rgb24};
 use system::{init_system, system};
 
 //
 // System
 //
 #[inline]
-pub fn init(width: u32, height: u32, caption: &str) {
+pub fn init(width: u32, height: u32, caption: Option<&str>, colors: Option<&[Rgb24]>) {
     init_system(width, height, caption);
-    init_graphics(width, height);
+    init_graphics(width, height, colors);
 }
 
 #[inline]
 pub fn width() -> u32 {
-    system().screen_width()
+    system().width()
 }
 
 #[inline]
 pub fn height() -> u32 {
-    system().screen_height()
+    system().height()
 }
 
 #[inline]
@@ -41,7 +44,7 @@ pub fn run() {
 //
 #[inline]
 pub fn cls(color: Color) {
-    graphics().screen().clear_buffer(color);
+    graphics().screen().clear(color);
 }
 
 #[inline]
@@ -51,5 +54,5 @@ pub fn pget(x: i32, y: i32) -> Color {
 
 #[inline]
 pub fn pset(x: i32, y: i32, color: Color) {
-    graphics().screen().set_color(x, y, color);
+    graphics().screen().draw_point(x, y, color);
 }
