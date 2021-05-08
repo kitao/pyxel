@@ -3,8 +3,6 @@ use crate::rectarea::Rectarea;
 
 pub type Tile = u16;
 
-pub const TILE_COUNT: usize = 256 * 256;
-
 #[derive(Debug)]
 pub struct Tilemap {
     width: u32,
