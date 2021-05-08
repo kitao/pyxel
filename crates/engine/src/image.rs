@@ -3,7 +3,7 @@ use crate::palette::{Color, Palette};
 use crate::rectarea::Rectarea;
 
 #[derive(Debug)]
-pub struct Imagebank {
+pub struct Image {
   width: u32,
   height: u32,
   data: Vec<Vec<Color>>,
@@ -12,9 +12,9 @@ pub struct Imagebank {
   clip_rect: Rectarea,
 }
 
-impl Imagebank {
-  pub fn new(width: u32, height: u32) -> Imagebank {
-    Imagebank {
+impl Image {
+  pub fn new(width: u32, height: u32) -> Image {
+    Image {
       width: width,
       height: height,
       data: vec![vec![0; width as usize]; height as usize],
@@ -34,13 +34,26 @@ impl Imagebank {
     &mut self.palette
   }
 
-  /*
-  bltm(self: Canvas, x, y: int, img: Canvas, u, v, w, h, colkey: int) =
-  text(self: Canvas, x, y: int, s: string, col: int) =
-  */
+  pub fn draw_tilemap(
+    &mut self,
+    x: i32,
+    y: i32,
+    src: &dyn Canvas<Color>,
+    u: i32,
+    v: i32,
+    width: i32,
+    height: i32,
+    color_key: Option<Color>,
+  ) {
+    //
+  }
+
+  pub fn draw_text(&mut self, x: i32, y: i32, text: &str, color: Color) {
+    //
+  }
 }
 
-impl Canvas<Color> for Imagebank {
+impl Canvas<Color> for Image {
   #[inline]
   fn width(&self) -> u32 {
     self.width
