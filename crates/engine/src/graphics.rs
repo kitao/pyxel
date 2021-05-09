@@ -1,5 +1,5 @@
 use crate::image::Image;
-use crate::palette::{Palette, Rgb24};
+use crate::palette::Rgb24;
 use crate::settings::{
     DISPLAY_COLORS, IMAGEBANK_COUNT, IMAGEBANK_SIZE, TILEMAP_COUNT, TILEMAP_SIZE,
 };
