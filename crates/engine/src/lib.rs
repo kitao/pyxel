@@ -1,3 +1,5 @@
+#[macro_use]
+mod system;
 mod audio;
 mod canvas;
 mod graphics;
@@ -7,7 +9,6 @@ mod palette;
 mod rectarea;
 mod resource;
 mod settings;
-mod system;
 mod tilemap;
 
 use audio::Audio;
@@ -16,6 +17,7 @@ use graphics::Graphics;
 use input::Input;
 use palette::{Color, Rgb24};
 use resource::Resource;
+use settings::*;
 use system::System;
 
 pub struct Pyxel {
@@ -26,13 +28,24 @@ pub struct Pyxel {
     audio: Audio,
 }
 
+pub trait PyxelCallback {
+    fn update(&mut self, pyxel: &mut Pyxel);
+    fn draw(&mut self, pyxel: &mut Pyxel);
+}
+
 impl Pyxel {
     //
     // System
     //
     #[inline]
-    pub fn init(width: u32, height: u32, caption: Option<&str>, colors: Option<&[Rgb24]>) -> Pyxel {
-        let system = System::new(width, height, caption);
+    pub fn init(
+        width: u32,
+        height: u32,
+        caption: Option<&str>,
+        colors: Option<&[Rgb24]>,
+        fps: Option<u32>,
+    ) -> Pyxel {
+        let system = System::new(width, height, caption, fps);
         let graphics = Graphics::new(width, height, colors);
 
         Pyxel {
@@ -55,8 +68,8 @@ impl Pyxel {
     }
 
     #[inline]
-    pub fn run(&mut self) {
-        self.system.run(&self.graphics);
+    pub fn run(&mut self, callback: &mut dyn PyxelCallback) {
+        run!(self.system, self.graphics, callback, self);
     }
 
     //

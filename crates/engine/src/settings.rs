@@ -6,17 +6,20 @@ use crate::palette::{Color, Rgb24};
 pub const PYXEL_VERSION: &str = "2.0.0";
 //const std::string WHITESPACE = " \t\v\r\n";
 
+pub const DEFAULT_CAPTION: &str = "Pyxel";
+pub const DEFAULT_FPS: u32 = 30;
+
 /*
-const std::string DEFAULT_CAPTION = "Pyxel";
 const int32_t DEFAULT_SCALE = 0;
-const int32_t DEFAULT_FPS = 30;
 const int32_t DEFAULT_QUIT_KEY = KEY_ESCAPE;
 */
 
 //
 // System
 //
-pub const WINDOW_BACKGROUND_COLOR: Rgb24 = 0x101018;
+pub const BACKGROUND_COLOR: Rgb24 = 0x101018;
+pub const MAX_FRAME_SKIP_COUNT: u32 = 9;
+pub const MEASURE_FRAME_COUNT: u32 = 10;
 
 /*
 const int32_t ICON_WIDTH = 16;
@@ -30,8 +33,6 @@ const std::vector<std::string> ICON_DATA = {
     "011EE111C11CC110", "00011EE1CCC11000", "0000011E71100000",
     "0000000110000000",
 
-const int32_t MAX_FRAME_SKIP_COUNT = 9;
-const int32_t MEASURE_FRAME_COUNT = 10;
 
 const int32_t SCREEN_CAPTURE_COUNT = 900;
 const int32_t SCREEN_CAPTURE_SCALE = 2;
