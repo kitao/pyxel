@@ -22,7 +22,7 @@ impl Palette {
     }
 
     #[inline]
-    pub fn get_render_color(&self, original_color: Color) -> Color {
+    pub fn render_color(&self, original_color: Color) -> Color {
         self.render_colors[original_color as usize]
     }
 
@@ -39,7 +39,7 @@ impl Palette {
     }
 
     #[inline]
-    pub fn get_display_color(&self, render_color: Color) -> Rgb24 {
+    pub fn display_color(&self, render_color: Color) -> Rgb24 {
         self.display_colors[render_color as usize]
     }
 
@@ -65,8 +65,8 @@ mod tests {
         let palette = Palette::new();
 
         for i in 0..MAX_COLOR_COUNT {
-            assert_eq!(palette.get_render_color(i as Color), i as Color);
-            assert_eq!(palette.get_display_color(i as Color), 0);
+            assert_eq!(palette.render_color(i as Color), i as Color);
+            assert_eq!(palette.display_color(i as Color), 0);
         }
     }
 
@@ -75,7 +75,7 @@ mod tests {
         let mut palette = Palette::new();
 
         for i in 0..MAX_COLOR_COUNT {
-            assert_eq!(palette.get_render_color(i as Color), i as Color);
+            assert_eq!(palette.render_color(i as Color), i as Color);
         }
 
         for i in 0..MAX_COLOR_COUNT {
@@ -84,7 +84,7 @@ mod tests {
 
         for i in 0..MAX_COLOR_COUNT {
             assert_eq!(
-                palette.get_render_color(i as Color),
+                palette.render_color(i as Color),
                 ((i + 1) % MAX_COLOR_COUNT) as Color
             );
         }
@@ -101,7 +101,7 @@ mod tests {
         palette.reset_render_colors();
 
         for i in 0..MAX_COLOR_COUNT {
-            assert_eq!(palette.get_render_color(i as Color), i as Color);
+            assert_eq!(palette.render_color(i as Color), i as Color);
         }
     }
 
@@ -110,7 +110,7 @@ mod tests {
         let mut palette = Palette::new();
 
         for i in 0..MAX_COLOR_COUNT {
-            assert_eq!(palette.get_display_color(i as Color), 0);
+            assert_eq!(palette.display_color(i as Color), 0);
         }
 
         for i in 0..MAX_COLOR_COUNT {
@@ -118,10 +118,7 @@ mod tests {
         }
 
         for i in 0..MAX_COLOR_COUNT {
-            assert_eq!(
-                palette.get_display_color(i as Color),
-                (0x111111 * i) as Rgb24
-            );
+            assert_eq!(palette.display_color(i as Color), (0x111111 * i) as Rgb24);
         }
     }
 
@@ -137,7 +134,7 @@ mod tests {
         palette.set_display_colors(&rgbs);
 
         for i in 0..16 {
-            assert_eq!(palette.get_display_color(i as Color), rgbs[i]);
+            assert_eq!(palette.display_color(i as Color), rgbs[i]);
         }
     }
 }

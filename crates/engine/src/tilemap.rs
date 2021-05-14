@@ -61,7 +61,7 @@ impl Canvas<Tile> for Tilemap {
     }
 
     #[inline]
-    fn get_render_color(&self, original_color: Tile) -> Tile {
+    fn render_color(&self, original_color: Tile) -> Tile {
         original_color
     }
 }
