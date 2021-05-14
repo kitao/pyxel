@@ -94,7 +94,7 @@ impl Rectarea {
     }
 
     #[inline]
-    pub fn intersects(&self, rect: &Rectarea) -> Rectarea {
+    pub fn intersects(&self, rect: Rectarea) -> Rectarea {
         let left = max(self.left, rect.left);
         let top = max(self.top, rect.top);
         let right = min(self.right(), rect.right());
@@ -207,9 +207,9 @@ mod tests {
         let rect4 = Rectarea::with_size(1, 2, 3, 4);
         let rect5 = Rectarea::with_size(0, 0, 0, 0);
 
-        assert_eq!(rect1.intersects(&rect2), Rectarea::with_pos(11, 22, 39, 59));
-        assert_eq!(rect1.intersects(&rect3), Rectarea::with_pos(10, 20, 14, 25));
-        assert!(rect1.intersects(&rect4).is_empty());
-        assert!(rect1.intersects(&rect5).is_empty());
+        assert_eq!(rect1.intersects(rect2), Rectarea::with_pos(11, 22, 39, 59));
+        assert_eq!(rect1.intersects(rect3), Rectarea::with_pos(10, 20, 14, 25));
+        assert!(rect1.intersects(rect4).is_empty());
+        assert!(rect1.intersects(rect5).is_empty());
     }
 }
