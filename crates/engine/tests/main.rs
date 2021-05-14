@@ -1,4 +1,4 @@
-use pyxel::*;
+use pyxel_engine::*;
 
 pub struct App {
     x: i32,
@@ -13,13 +13,16 @@ impl App {
 
 impl PyxelCallback for App {
     fn update(&mut self, pyxel: &mut Pyxel) {
-        self.x += 1;
+        self.x += pyxel.frame_count() % 2;
         self.y -= 1;
     }
 
     fn draw(&mut self, pyxel: &mut Pyxel) {
         pyxel.cls(3);
-        pyxel.pset(10, 20, 8);
+        pyxel.pset(self.x, 20, 7);
+        pyxel.rect(self.x + 10, 25, 15, 10, 8);
+        pyxel.rectb(self.x + 15, 45, 15, 10, COLOR_WHITE);
+        println!("{}", self.x);
     }
 }
 
