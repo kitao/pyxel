@@ -2,26 +2,53 @@
 mod system;
 mod audio;
 mod canvas;
+mod event;
 mod graphics;
 mod image;
 mod input;
+mod key;
 mod palette;
+mod platform;
 mod rectarea;
 mod resource;
+mod sdl2;
 mod settings;
 mod tilemap;
 
-use audio::Audio;
-use canvas::Canvas;
-use graphics::Graphics;
-use input::Input;
-use palette::{Color, Rgb24};
-use resource::Resource;
-use settings::*;
-use system::System;
+use crate::audio::Audio;
+use crate::canvas::Canvas;
+use crate::graphics::Graphics;
+use crate::input::Input;
+use crate::palette::{Color, Rgb24};
+use crate::resource::Resource;
+use crate::sdl2::Sdl2;
+use crate::system::System;
+
+pub use crate::key::*;
+pub use crate::settings::*;
+
+type CurrentPlatform = Sdl2;
+
+#[inline]
+fn i32_to_u32(v: i32) -> u32 {
+    if v < 0 {
+        0
+    } else {
+        v as u32
+    }
+}
+
+#[inline]
+fn u32_to_i32(v: u32) -> i32 {
+    if v > i32::MAX as u32 {
+        i32::MAX
+    } else {
+        v as i32
+    }
+}
 
 pub struct Pyxel {
-    system: System,
+    system: System<CurrentPlatform>,
     resource: Resource,
     input: Input,
     graphics: Graphics,
@@ -45,7 +72,8 @@ impl Pyxel {
         colors: Option<&[Rgb24]>,
         fps: Option<u32>,
     ) -> Pyxel {
-        let system = System::new(width, height, caption, fps);
+        let platform = Sdl2::new(width, height);
+        let system = System::new(platform, width, height, caption, fps);
         let graphics = Graphics::new(width, height, colors);
 
         Pyxel {
@@ -58,18 +86,23 @@ impl Pyxel {
     }
 
     #[inline]
-    pub fn width(&self) -> u32 {
-        self.system.width()
+    pub fn width(&self) -> i32 {
+        u32_to_i32(self.system.width())
     }
 
     #[inline]
-    pub fn height(&self) -> u32 {
-        self.system.height()
+    pub fn height(&self) -> i32 {
+        u32_to_i32(self.system.height())
+    }
+
+    #[inline]
+    pub fn frame_count(&self) -> i32 {
+        u32_to_i32(self.system.frame_count())
     }
 
     #[inline]
     pub fn run(&mut self, callback: &mut dyn PyxelCallback) {
-        run!(self.system, self.graphics, callback, self);
+        run!(self.system, &self.graphics, callback, self);
     }
 
     //
@@ -84,18 +117,32 @@ impl Pyxel {
     // Graphics
     //
     #[inline]
-    pub fn cls(&mut self, color: Color) {
-        self.graphics.screen_mut().clear(color);
+    pub fn cls(&mut self, col: Color) {
+        self.graphics.screen_mut().clear(col);
     }
 
     #[inline]
     pub fn pget(&mut self, x: i32, y: i32) -> Color {
-        self.graphics.screen_mut().get_color(x, y)
+        self.graphics.screen_mut().point(x, y)
     }
 
     #[inline]
-    pub fn pset(&mut self, x: i32, y: i32, color: Color) {
-        self.graphics.screen_mut().draw_point(x, y, color);
+    pub fn pset(&mut self, x: i32, y: i32, col: Color) {
+        self.graphics.screen_mut().draw_point(x, y, col);
+    }
+
+    #[inline]
+    pub fn rect(&mut self, x: i32, y: i32, w: i32, h: i32, col: Color) {
+        self.graphics
+            .screen_mut()
+            .draw_rect(x, y, w as f64 as u32, h as f64 as u32, col);
+    }
+
+    #[inline]
+    pub fn rectb(&mut self, x: i32, y: i32, w: i32, h: i32, col: Color) {
+        self.graphics
+            .screen_mut()
+            .draw_rect_border(x, y, w as f64 as u32, h as f64 as u32, col);
     }
 
     //
