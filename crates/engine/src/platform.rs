@@ -5,7 +5,7 @@ use crate::palette::Rgb24;
 pub trait Platform {
     fn width(&self) -> u32;
     fn height(&self) -> u32;
-    fn caption(&mut self) -> &str;
+    fn caption(&self) -> &str;
     fn set_caption(&mut self, caption: &str);
     fn set_icon(&mut self, icon: &Image, scale: u32);
     fn is_full_screen(&self) -> bool;
