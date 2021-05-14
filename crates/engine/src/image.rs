@@ -90,8 +90,8 @@ impl Canvas<Color> for Image {
   }
 
   #[inline]
-  fn get_render_color(&self, original_color: Color) -> Color {
-    self.palette.get_render_color(original_color)
+  fn render_color(&self, original_color: Color) -> Color {
+    self.palette.render_color(original_color)
   }
 }
 
