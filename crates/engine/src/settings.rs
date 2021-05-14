@@ -21,10 +21,10 @@ pub const BACKGROUND_COLOR: Rgb24 = 0x101018;
 pub const MAX_FRAME_SKIP_COUNT: u32 = 9;
 pub const MEASURE_FRAME_COUNT: u32 = 10;
 
+pub const ICON_SIZE: u32 = 16;
+pub const ICON_SCALE: u32 = 4;
+
 /*
-const int32_t ICON_WIDTH = 16;
-const int32_t ICON_HEIGHT = 16;
-const int32_t ICON_SCALE = 4;
 const std::vector<std::string> ICON_DATA = {
     "0000000110000000", "0000011F71100000", "00011FF11FF11000",
     "011FF111111FF110", "17E1111111111C71", "1E1EE111111CC1C1",
