@@ -6,13 +6,15 @@ mod event;
 mod graphics;
 mod image;
 mod input;
-mod key;
+mod keycode;
+mod music;
 mod palette;
 mod platform;
 mod rectarea;
 mod resource;
 mod sdl2;
 mod settings;
+mod sound;
 mod tilemap;
 
 use crate::audio::Audio;
@@ -24,7 +26,7 @@ use crate::resource::Resource;
 use crate::sdl2::Sdl2;
 use crate::system::System;
 
-pub use crate::key::*;
+pub use crate::keycode::*;
 pub use crate::settings::*;
 
 type CurrentPlatform = Sdl2;
