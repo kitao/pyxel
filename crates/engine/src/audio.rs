@@ -1,11 +1,13 @@
+use crate::music::Music;
+use crate::sound::Sound;
+
 pub struct Audio {
     /*
-    SDL_AudioDeviceID audio_device_id_;
-    Sound** sound_bank_;
-    Music** music_bank_;
-    Channel channel_[MUSIC_CHANNEL_COUNT];
-    */
-}
+SDL_AudioDeviceID audio_device_id_;
+Sound** sound_bank_;
+Music** music_bank_;
+Channel channel_[MUSIC_CHANNEL_COUNT];
+*/}
 
 impl Audio {
     /*
