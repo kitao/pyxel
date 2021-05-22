@@ -22,7 +22,6 @@ impl PyxelCallback for App {
         pyxel.pset(self.x, 20, 7);
         pyxel.rect(self.x + 10, 25, 15, 10, 8);
         pyxel.rectb(self.x + 15, 45, 15, 10, COLOR_WHITE);
-        println!("{}", self.x);
     }
 }
 
