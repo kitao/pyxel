@@ -10,6 +10,10 @@ Channel channel_[MUSIC_CHANNEL_COUNT];
 */}
 
 impl Audio {
+    pub fn new() -> Audio {
+        Audio {}
+    }
+
     /*
     Sound* GetSoundBank(int32_t sound_index, bool system = false) const;
     Music* GetMusicBank(int32_t music_index) const;

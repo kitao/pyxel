@@ -76,14 +76,17 @@ impl Pyxel {
     ) -> Pyxel {
         let platform = Sdl2::new(width, height);
         let system = System::new(platform, width, height, caption, fps);
+        let resource = Resource::new();
+        let input = Input::new();
         let graphics = Graphics::new(width, height, colors);
+        let audio = Audio::new();
 
         Pyxel {
             system: system,
-            resource: Resource {},
-            input: Input {},
+            resource: resource,
+            input: input,
             graphics: graphics,
-            audio: Audio {},
+            audio: audio,
         }
     }
 
@@ -104,7 +107,7 @@ impl Pyxel {
 
     #[inline]
     pub fn run(&mut self, callback: &mut dyn PyxelCallback) {
-        run!(self.system, &self.graphics, callback, self);
+        run!(self, callback);
     }
 
     //
