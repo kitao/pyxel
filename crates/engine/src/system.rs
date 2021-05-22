@@ -3,6 +3,7 @@ use std::cmp::min;
 use crate::canvas::Canvas;
 use crate::event::Event;
 use crate::graphics::Graphics;
+use crate::input::Input;
 use crate::platform::Platform;
 use crate::settings::{BACKGROUND_COLOR, DEFAULT_CAPTION, DEFAULT_FPS, MAX_FRAME_SKIP_COUNT};
 
@@ -152,12 +153,22 @@ impl<T: Platform> System<T> {
     */
 
     #[inline]
-    fn process_events(&mut self) {
+    fn process_events(&mut self, input: &mut Input) {
         while let Some(event) = self.platform.poll_event() {
             match event {
                 Event::Quit => self.should_quit = true,
 
-                _ => {}
+                Event::KeyDown { key: key } => {
+                    //
+                }
+
+                Event::KeyUp { key: key } => {
+                    //
+                }
+
+                _ => {
+                    println!("none");
+                }
             }
         }
 
@@ -313,10 +324,10 @@ impl<T: Platform> System<T> {
     }
 
     #[inline]
-    pub fn _start_update(&mut self) {
+    pub fn _start_update(&mut self, input: &mut Input) {
         // TODO: update_profiler_.Start();
 
-        self.process_events();
+        self.process_events(input);
 
         // TODO: drop_file_ = window_->GetDropFile();
         // TODO: input_->Update(window_, frame_count_);
@@ -348,49 +359,49 @@ impl<T: Platform> System<T> {
 }
 
 macro_rules! update_frame {
-    ($self: expr, $callback: expr, $context: expr, $quit: stmt) => {
-        $self._start_update();
+    ($self: expr, $callback: expr, $quit: stmt) => {
+        $self.system._start_update(&mut $self.input);
 
-        if $self._should_quit() {
+        if $self.system._should_quit() {
             $quit
         }
 
-        $callback.update($context);
+        $callback.update($self);
 
-        if $self._should_quit() {
+        if $self.system._should_quit() {
             $quit
         }
 
-        $self.end_update();
+        $self.system.end_update();
     };
 }
 
 macro_rules! draw_frame {
-    ($self: expr, $graphics: expr, $callback: expr, $context: expr) => {
-        $self._start_draw();
+    ($self: expr, $callback: expr) => {
+        $self.system._start_draw();
 
-        $callback.draw($context);
+        $callback.draw($self);
 
-        $self._end_draw($graphics);
+        $self.system._end_draw(&$self.graphics);
     };
 }
 
 macro_rules! run {
-    ($self: expr, $graphics: expr, $callback: expr, $context: expr) => {
+    ($self: expr, $callback: expr) => {
         'main_loop: loop {
-            $self._init_run_status();
+            $self.system._init_run_status();
 
-            update_frame!($self, $callback, $context, break 'main_loop);
-            draw_frame!($self, $graphics, $callback, $context);
+            update_frame!($self, $callback, break 'main_loop);
+            draw_frame!($self, $callback);
 
             loop {
-                $self._prepare_for_update();
+                $self.system._prepare_for_update();
 
-                while $self._should_update() {
-                    update_frame!($self, $callback, $context, break 'main_loop);
+                while $self.system._should_update() {
+                    update_frame!($self, $callback, break 'main_loop);
                 }
 
-                draw_frame!($self, $graphics, $callback, $context);
+                draw_frame!($self, $callback);
             }
         }
     };
