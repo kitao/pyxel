@@ -1,5 +1,4 @@
 use sdl2::event::Event as SdlEvent;
-use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color as SdlColor;
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::render::Texture as SdlTexture;
@@ -10,7 +9,7 @@ use sdl2::TimerSubsystem as SdlTimerSubsystem;
 use sdl2::VideoSubsystem as SdlVideoSubsystem;
 
 use crate::canvas::Canvas;
-use crate::event::Event;
+use crate::event::{Event, Scancode};
 use crate::image::Image;
 use crate::palette::{Color, Palette, Rgb24};
 use crate::platform::Platform;
@@ -143,7 +142,7 @@ impl Platform for Sdl2 {
 
     #[inline]
     fn ticks(&self) -> u32 {
-        0
+        self.sdl_timer.ticks()
     }
 
     #[inline]
@@ -152,20 +151,119 @@ impl Platform for Sdl2 {
     }
 
     fn poll_event(&mut self) -> Option<Event> {
-        let sdl_event = self.sdl_event_pump.poll_event();
+        loop {
+            let sdl_event = self.sdl_event_pump.poll_event();
 
-        if sdl_event.is_none() {
-            return None;
-        }
+            if sdl_event.is_none() {
+                return None;
+            }
 
-        match sdl_event.unwrap() {
-            SdlEvent::Quit { .. }
-            | SdlEvent::KeyDown {
-                keycode: Some(Keycode::Escape),
-                ..
-            } => Some(Event::Quit),
+            match sdl_event.unwrap() {
+                //
+                // System Events
+                //
+                SdlEvent::Quit { .. } => return Some(Event::Quit),
 
-            _ => None,
+                /*
+                DropFile {
+                    file: String,
+                },
+                */
+
+                //
+                // Window Events
+                //
+                /*
+                WindowShown,
+                WindowHidden,
+                WindowMoved {
+                    x: i32,
+                    y: i32,
+                },
+                WindowResized {
+                    width: u32,
+                    height: u32,
+                },
+                WindowMinimized,
+                WindowMaximized,
+                WindowEnter,
+                WindowLeave,
+                WindowFocusGained,
+                WindowFocusLost,
+                WindowClose,
+                */
+                //
+                // Key Events
+                //
+                SdlEvent::KeyDown {
+                    scancode: Some(scancode),
+                    ..
+                } => {
+                    println!("key_down");
+                    return Some(Event::KeyDown {
+                        key: scancode as Scancode,
+                    });
+                }
+
+                SdlEvent::KeyUp {
+                    scancode: Some(scancode),
+                    ..
+                } => {
+                    println!("key_up");
+                    return Some(Event::KeyUp {
+                        key: scancode as Scancode,
+                    });
+                }
+
+                /*
+                KeyInput {
+                    key: Vec<Scancode>,
+                },
+                */
+
+                //
+                // Mouse Events
+                //
+                /*
+                MouseMotion {
+                    x: i32,
+                    y: i32,
+                },
+                MouseButtonDown {
+                    button: MouseButton,
+                },
+                MouseButtonUp {
+                    button: MouseButton,
+                },
+                MouseWheel {
+                    x: i32,
+                    y: i32,
+                },
+                */
+
+                //
+                // Controller Events
+                //
+                /*
+                ControllerAxisMotion {
+                id: u8,
+                    axis: ControllerAxis,
+                    value: i32,
+                },
+                ControllerButtonDown {
+                    id: u8,
+                    button: ControllerButton,
+                },
+                ControllerButtonUp {
+                    id: u8,
+                    button: ControllerButton,
+                },
+                */
+                //
+                // Default
+                //
+                _ => continue,
+            }
         }
 
         /*
