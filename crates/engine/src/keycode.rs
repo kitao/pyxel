@@ -1,6 +1,6 @@
-pub type Keycode = u16;
+use crate::event::Scancode;
 
-pub const KEY_BUFFER_SIZE: usize = 512;
+pub type Keycode = Scancode;
 
 pub const KEY_NONE: Keycode = 0;
 
@@ -284,3 +284,5 @@ pub const CONTROLLER2_BUTTON_DPAD_UP: Keycode = 411;
 pub const CONTROLLER2_BUTTON_DPAD_DOWN: Keycode = 412;
 pub const CONTROLLER2_BUTTON_DPAD_LEFT: Keycode = 413;
 pub const CONTROLLER2_BUTTON_DPAD_RIGHT: Keycode = 414;
+
+pub const KEYCODE_BUFFER_SIZE: usize = 512;
