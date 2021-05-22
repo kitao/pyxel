@@ -22,9 +22,7 @@ pub trait Canvas<T: Copy + Default> {
 
   #[inline]
   fn set_clip_area(&mut self, left: i32, top: i32, width: u32, height: u32) {
-    let rect = self
-      .self_rect()
-      .intersects(Rectarea::with_size(left, top, width, height));
+    let rect = Rectarea::with_size(left, top, width, height).intersects(self.self_rect());
 
     *self.clip_rect_mut() = rect;
   }
@@ -116,16 +114,22 @@ pub trait Canvas<T: Copy + Default> {
 
   #[inline]
   fn draw_circle(&mut self, x: i32, y: i32, radius: u32, color: T) {
+    let color = self.render_color(color);
+
     //
   }
 
   #[inline]
   fn draw_circle_border(&mut self, x: i32, y: i32, radius: u32, color: T) {
+    let color = self.render_color(color);
+
     //
   }
 
   #[inline]
   fn draw_triangle(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, color: T) {
+    let color = self.render_color(color);
+
     //
   }
 
@@ -140,11 +144,20 @@ pub trait Canvas<T: Copy + Default> {
     y3: i32,
     color: T,
   ) {
+    let color = self.render_color(color);
+
     //
   }
 
   #[inline]
   fn paint(&mut self, x: i32, y: i32, color: T) {
+    let color = self.render_color(color);
+
+    //
+  }
+
+  #[inline]
+  fn paint_rec(&mut self) {
     //
   }
 
