@@ -1,37 +1,218 @@
-pub struct Input {
-    /*
-    private:
-    SDL_GameController* gamepad1_;
-    SDL_GameController* gamepad2_;
-    SDL_Cursor* blank_cursor_;
-    SDL_Cursor* normal_cursor_;
+use std::collections::HashMap;
 
+use crate::keycode::Keycode;
+
+pub struct Input {
+    mouse_x: i32,
+    mouse_y: i32,
+    mouse_wheel: i32,
+    is_mouse_visible: bool,
+    keycode_statuses: HashMap<Keycode, u32>,
+    /*
     int32_t frame_count_;
-    int32_t mouse_x_;
-    int32_t mouse_y_;
-    int32_t mouse_wheel_;
-    bool is_mouse_visible_;
-    int32_t key_state_[KEY_COUNT];
     */
 }
 
 impl Input {
-    /*
-    public:
-    int32_t MouseX() const { return mouse_x_; }
-    int32_t MouseY() const { return mouse_y_; }
-    int32_t MouseWheel() const { return mouse_wheel_; }
+    pub fn new() -> Input {
+        Input {
+            mouse_x: 0,
+            mouse_y: 0,
+            mouse_wheel: 0,
+            is_mouse_visible: true,
+            keycode_statuses: HashMap::new(),
+        }
+    }
 
-    bool IsButtonOn(int32_t key) const;
-    bool IsButtonPressed(int32_t key,
-    int32_t hold_frame = 0,
-    int32_t period_frame = 0) const;
-    bool IsButtonReleased(int32_t key) const;
-    void SetMouseVisible(int32_t is_visible);
+    #[inline]
+    pub fn mouse_x(&self) -> i32 {
+        self.mouse_x
+    }
 
-    bool IsMouseVisible() const { return is_mouse_visible_; }
-    void Update(Window* window, int32_t frame_count);
+    #[inline]
+    pub fn mouse_y(&self) -> i32 {
+        self.mouse_y
+    }
 
-    void UpdateKeyState(int32_t key, bool state);
-    */
+    #[inline]
+    pub fn mouse_wheel(&self) -> i32 {
+        self.mouse_wheel
+    }
+
+    #[inline]
+    pub fn is_button_on(&self, button: Keycode) -> bool {
+        false
+    }
+
+    #[inline]
+    pub fn is_button_pressed(&self, button: Keycode, hold_frame: u32, period_frame: u32) -> bool {
+        false
+    }
+
+    #[inline]
+    pub fn is_button_released(&self, button: Keycode) -> bool {
+        false
+    }
+
+    #[inline]
+    pub fn is_mouse_visible(&self, button: Keycode) -> bool {
+        false
+    }
+
+    #[inline]
+    pub fn set_mouse_visible(&self, is_mouse_visible: bool) {
+        //
+    }
 }
+
+/*
+void Update(Window* window, int32_t frame_count);
+void UpdateKeyState(int32_t key, bool state);
+*/
+
+/*
+#define GET_KEY_STATE(key) \
+  sdl_scancode_state[SDL_GetScancodeFromKey(SDL_KEYCODE_TABLE[key])]
+
+Input::Input() {
+  gamepad1_ = SDL_GameControllerOpen(0);
+  gamepad2_ = SDL_GameControllerOpen(1);
+
+  const uint8_t data[] = {8};
+  blank_cursor_ = SDL_CreateCursor(data, data, 1, 1, 0, 0);
+  normal_cursor_ = SDL_GetCursor();
+  SDL_SetCursor(blank_cursor_);
+
+  is_mouse_visible_ = false;
+
+  for (int32_t i = 0; i < KEY_COUNT; i++) {
+    key_state_[i] = 0;
+  }
+}
+
+Input::~Input() {
+  SDL_FreeCursor(blank_cursor_);
+
+  if (gamepad1_) {
+    SDL_GameControllerClose(gamepad1_);
+  }
+
+  if (gamepad2_) {
+    SDL_GameControllerClose(gamepad2_);
+  }
+}
+
+void Input::Update(Window* window, int32_t frame_count) {
+  frame_count_ = frame_count + 1;  // change frame_count to start from 1
+
+  SDL_GetGlobalMouseState(&mouse_x_, &mouse_y_);
+
+  mouse_x_ = (mouse_x_ - (window->WindowX() + window->ScreenX())) /
+             window->ScreenScale();
+  mouse_y_ = (mouse_y_ - (window->WindowY() + window->ScreenY())) /
+             window->ScreenScale();
+  mouse_wheel_ = window->GetMouseWheel();
+
+  if (is_mouse_visible_) {
+    SDL_ShowCursor(true);
+    SDL_SetCursor(mouse_x_ >= 0 && mouse_x_ < window->ScreenWidth() &&
+                          mouse_y_ >= 0 && mouse_y_ < window->ScreenHeight()
+                      ? blank_cursor_
+                      : normal_cursor_);
+  } else {
+    SDL_ShowCursor(false);
+  }
+
+  const uint8_t* sdl_scancode_state = SDL_GetKeyboardState(NULL);
+
+  for (int32_t i = 0; i < SDL_KEYCODE_COUNT; i++) {
+    UpdateKeyState(i, GET_KEY_STATE(i));
+  }
+
+  UpdateKeyState(KEY_SHIFT, GET_KEY_STATE(KEY_LEFT_SHIFT) ||
+                                GET_KEY_STATE(KEY_RIGHT_SHIFT));
+
+  UpdateKeyState(KEY_CONTROL, GET_KEY_STATE(KEY_LEFT_CONTROL) ||
+                                  GET_KEY_STATE(KEY_RIGHT_CONTROL));
+
+  UpdateKeyState(KEY_ALT,
+                 GET_KEY_STATE(KEY_LEFT_ALT) || GET_KEY_STATE(KEY_RIGHT_ALT));
+
+  UpdateKeyState(KEY_SUPER, GET_KEY_STATE(KEY_LEFT_SUPER) ||
+                                GET_KEY_STATE(KEY_RIGHT_SUPER));
+
+  uint32_t mouse_state = SDL_GetMouseState(NULL, NULL);
+
+  UpdateKeyState(MOUSE_LEFT_BUTTON, mouse_state & SDL_BUTTON_LMASK);
+  UpdateKeyState(MOUSE_MIDDLE_BUTTON, mouse_state & SDL_BUTTON_MMASK);
+  UpdateKeyState(MOUSE_RIGHT_BUTTON, mouse_state & SDL_BUTTON_RMASK);
+
+  if (gamepad1_) {
+    for (int32_t i = 0; i < BUTTON_COUNT; i++) {
+      UpdateKeyState(GAMEPAD_1_A + i, SDL_GameControllerGetButton(
+                                          gamepad1_, SDL_BUTTON_TABLE[i]));
+    }
+  }
+
+  if (gamepad2_) {
+    for (int32_t i = 0; i < BUTTON_COUNT; i++) {
+      UpdateKeyState(GAMEPAD_2_A + i, SDL_GameControllerGetButton(
+                                          gamepad2_, SDL_BUTTON_TABLE[i]));
+    }
+  }
+}
+
+bool Input::IsButtonOn(int32_t key) const {
+  if (key < 0 || key >= KEY_COUNT) {
+    PYXEL_ERROR("invalid key");
+  }
+
+  return key_state_[key] > 0;
+}
+
+bool Input::IsButtonPressed(int32_t key,
+                            int32_t hold_frame,
+                            int32_t period_frame) const {
+  if (key < 0 || key >= KEY_COUNT) {
+    PYXEL_ERROR("invalid key");
+  }
+
+  if (frame_count_ == 0) {
+    return false;
+  }
+
+  int32_t press_frame = key_state_[key];
+
+  if (press_frame == frame_count_) {
+    return true;
+  }
+
+  if (press_frame <= 0 || period_frame <= 0) {
+    return false;
+  }
+
+  int32_t elapsed_frame = frame_count_ - (press_frame + hold_frame);
+
+  if (elapsed_frame >= 0 && elapsed_frame % period_frame == 0) {
+    return true;
+  }
+
+  return false;
+}
+
+bool Input::IsButtonReleased(int32_t key) const {
+  if (key < 0 || key >= KEY_COUNT) {
+    PYXEL_ERROR("invalid key");
+  }
+
+  if (frame_count_ == 0) {
+    return false;
+  }
+
+  return key_state_[key] == -frame_count_;
+}
+
+void Input::SetMouseVisible(int32_t is_visible) {
+  is_mouse_visible_ = is_visible;
+}
+*/
