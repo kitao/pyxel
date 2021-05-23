@@ -6,7 +6,7 @@ use crate::palette::{Color, Rgb24};
 pub const PYXEL_VERSION: &str = "2.0.0";
 //const std::string WHITESPACE = " \t\v\r\n";
 
-pub const DEFAULT_CAPTION: &str = "Pyxel";
+pub const DEFAULT_TITLE: &str = "Pyxel";
 pub const DEFAULT_FPS: u32 = 30;
 
 /*
