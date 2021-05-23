@@ -6,6 +6,7 @@ pub enum MouseButton {
     Right,
     X1,
     X2,
+    Unknown,
 }
 
 pub enum ControllerAxis {
@@ -29,10 +30,10 @@ pub enum ControllerButton {
     RightStick,
     LeftShoulder,
     RightShoulder,
-    DpadUp,
-    DpadDown,
-    DpadLeft,
-    DpadRight,
+    DPadUp,
+    DPadDown,
+    DPadLeft,
+    DPadRight,
 }
 
 pub enum Event {
@@ -41,7 +42,7 @@ pub enum Event {
     //
     Quit,
     DropFile {
-        file: String,
+        filename: String,
     },
 
     //
@@ -54,8 +55,8 @@ pub enum Event {
         y: i32,
     },
     WindowResized {
-        width: u32,
-        height: u32,
+        width: i32,
+        height: i32,
     },
     WindowMinimized,
     WindowMaximized,
@@ -74,8 +75,8 @@ pub enum Event {
     KeyUp {
         key: Scancode,
     },
-    KeyInput {
-        key: Vec<Scancode>,
+    TextInput {
+        text: String,
     },
 
     //
@@ -100,16 +101,16 @@ pub enum Event {
     // Controller Events
     //
     ControllerAxisMotion {
-        id: u8,
+        which: u32,
         axis: ControllerAxis,
-        value: i32,
+        value: i16,
     },
     ControllerButtonDown {
-        id: u8,
+        which: u32,
         button: ControllerButton,
     },
     ControllerButtonUp {
-        id: u8,
+        which: u32,
         button: ControllerButton,
     },
 }
