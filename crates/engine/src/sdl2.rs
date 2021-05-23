@@ -7,30 +7,22 @@ use sdl2::pixels::Color as SdlColor;
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::render::Texture as SdlTexture;
 use sdl2::render::WindowCanvas as SdlCanvas;
+use sdl2::video::FullscreenType as SdlFullscreenType;
 use sdl2::EventPump as SdlEventPump;
-use sdl2::Sdl as SdlContext;
 use sdl2::TimerSubsystem as SdlTimerSubsystem;
-use sdl2::VideoSubsystem as SdlVideoSubsystem;
 
 use crate::canvas::Canvas;
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton, Scancode};
 use crate::image::Image;
-use crate::palette::{Color, Palette, Rgb24};
+use crate::palette::Rgb24;
 use crate::platform::Platform;
 
 pub struct Sdl2 {
-    is_fullscreen: bool,
-
-    /*window_x: i32,
-    window_y: i32,
+    /*
     screen_x: i32,
     screen_y: i32,
     screen_scale: u32,
-    mouse_wheel: i32,
-    drop_file: String,
     */
-    sdl_context: SdlContext,
-    sdl_video: SdlVideoSubsystem,
     sdl_timer: SdlTimerSubsystem,
     sdl_canvas: SdlCanvas,
     sdl_texture: SdlTexture,
@@ -55,10 +47,6 @@ impl Sdl2 {
             .unwrap();
 
         Sdl2 {
-            is_fullscreen: false,
-
-            sdl_context: sdl_context,
-            sdl_video: sdl_video,
             sdl_timer: sdl_timer,
             sdl_canvas: sdl_canvas,
             sdl_texture: sdl_texture,
@@ -129,12 +117,22 @@ impl Platform for Sdl2 {
 
     #[inline]
     fn is_fullscreen(&self) -> bool {
-        false
+        self.sdl_canvas.window().fullscreen_state() == SdlFullscreenType::True
     }
 
     #[inline]
-    fn set_fullscreen(&mut self, is_full_screen: bool) {
-        //
+    fn set_fullscreen(&mut self, is_fullscreen: bool) {
+        if is_fullscreen {
+            let _ = self
+                .sdl_canvas
+                .window_mut()
+                .set_fullscreen(SdlFullscreenType::True);
+        } else {
+            let _ = self
+                .sdl_canvas
+                .window_mut()
+                .set_fullscreen(SdlFullscreenType::Off);
+        }
     }
 
     #[inline]
@@ -338,6 +336,18 @@ impl Platform for Sdl2 {
         self.sdl_canvas.clear();
         self.sdl_canvas.copy(&self.sdl_texture, None, None).unwrap();
         self.sdl_canvas.present();
+
+        /*
+        SDL_GetWindowPosition(window_, &window_x_, &window_y_);
+
+        int32_t window_width, window_height;
+        SDL_GetWindowSize(window_, &window_width, &window_height);
+
+        screen_scale_ =
+            Min(window_width / screen_width_, window_height / screen_height_);
+        screen_x_ = (window_width - screen_width_ * screen_scale_) / 2;
+        screen_y_ = (window_height - screen_height_ * screen_scale_) / 2;
+        */
 
         /*
         SDL_Rect dst_rect = {
