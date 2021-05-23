@@ -3,15 +3,15 @@ use crate::image::Image;
 use crate::palette::Rgb24;
 
 pub trait Platform {
-    fn width(&self) -> u32;
-    fn height(&self) -> u32;
-    fn caption(&self) -> &str;
-    fn set_caption(&mut self, caption: &str);
-    fn set_icon(&mut self, icon: &Image, scale: u32);
-    fn is_full_screen(&self) -> bool;
-    fn set_full_screen(&mut self, is_full_screen: bool);
+    fn window_pos(&self) -> (i32, i32);
+    fn window_size(&self) -> (u32, u32);
+    fn window_title(&self) -> &str;
+    fn set_window_title(&mut self, title: &str);
+    fn set_window_icon(&mut self, icon: &Image, scale: u32);
+    fn is_fullscreen(&self) -> bool;
+    fn set_fullscreen(&mut self, is_full_screen: bool);
     fn ticks(&self) -> u32;
-    fn delay(&self, ms: u32);
+    fn delay(&mut self, ms: u32);
     fn poll_event(&mut self) -> Option<Event>;
     fn render_screen(&mut self, screen: &Image, bg_color: Rgb24);
 }
