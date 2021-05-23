@@ -70,12 +70,12 @@ impl Pyxel {
     pub fn init(
         width: u32,
         height: u32,
-        caption: Option<&str>,
+        title: Option<&str>,
         colors: Option<&[Rgb24]>,
         fps: Option<u32>,
     ) -> Pyxel {
         let platform = Sdl2::new(width, height);
-        let system = System::new(platform, width, height, caption, fps);
+        let system = System::new(platform, width, height, title, fps);
         let resource = Resource::new();
         let input = Input::new();
         let graphics = Graphics::new(width, height, colors);
@@ -92,17 +92,27 @@ impl Pyxel {
 
     #[inline]
     pub fn width(&self) -> i32 {
-        u32_to_i32(self.system.width())
+        u32_to_i32(self.graphics.screen().width())
     }
 
     #[inline]
     pub fn height(&self) -> i32 {
-        u32_to_i32(self.system.height())
+        u32_to_i32(self.graphics.screen().height())
     }
 
     #[inline]
     pub fn frame_count(&self) -> i32 {
         u32_to_i32(self.system.frame_count())
+    }
+
+    #[inline]
+    pub fn title(&self) -> &str {
+        self.system.window_title()
+    }
+
+    #[inline]
+    pub fn set_title(&mut self, title: &str) {
+        self.system.set_window_title(title);
     }
 
     #[inline]
