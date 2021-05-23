@@ -1,4 +1,8 @@
+use sdl2::controller::Axis as SdlAxis;
+use sdl2::controller::Button as SdlButton;
 use sdl2::event::Event as SdlEvent;
+use sdl2::event::WindowEvent as SdlWindowEvent;
+use sdl2::mouse::MouseButton as SdlMouseButton;
 use sdl2::pixels::Color as SdlColor;
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::render::Texture as SdlTexture;
@@ -9,15 +13,12 @@ use sdl2::TimerSubsystem as SdlTimerSubsystem;
 use sdl2::VideoSubsystem as SdlVideoSubsystem;
 
 use crate::canvas::Canvas;
-use crate::event::{Event, Scancode};
+use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton, Scancode};
 use crate::image::Image;
 use crate::palette::{Color, Palette, Rgb24};
 use crate::platform::Platform;
 
 pub struct Sdl2 {
-    caption: String,
-    width: u32,
-    height: u32,
     is_fullscreen: bool,
 
     /*window_x: i32,
@@ -54,9 +55,6 @@ impl Sdl2 {
             .unwrap();
 
         Sdl2 {
-            caption: "".to_string(),
-            width: width,
-            height: height,
             is_fullscreen: false,
 
             sdl_context: sdl_context,
@@ -71,7 +69,6 @@ impl Sdl2 {
         screen_width_ = screen_width;
         screen_height_ = screen_height;
         screen_scale_ = screen_scale;
-        palette_color_ = palette_color;
         is_fullscreen_ = false;
         mouse_wheel_ = 0;
 
@@ -106,37 +103,37 @@ impl Sdl2 {
 
 impl Platform for Sdl2 {
     #[inline]
-    fn width(&self) -> u32 {
-        0
+    fn window_pos(&self) -> (i32, i32) {
+        self.sdl_canvas.window().position()
     }
 
     #[inline]
-    fn height(&self) -> u32 {
-        0
+    fn window_size(&self) -> (u32, u32) {
+        self.sdl_canvas.window().size()
     }
 
     #[inline]
-    fn caption(&self) -> &str {
-        "hoge"
+    fn window_title(&self) -> &str {
+        self.sdl_canvas.window().title()
     }
 
     #[inline]
-    fn set_caption(&mut self, caption: &str) {
+    fn set_window_title(&mut self, title: &str) {
+        self.sdl_canvas.window_mut().set_title(title).unwrap();
+    }
+
+    #[inline]
+    fn set_window_icon(&mut self, icon: &Image, scale: u32) {
         //
     }
 
     #[inline]
-    fn set_icon(&mut self, icon: &Image, scale: u32) {
-        //
-    }
-
-    #[inline]
-    fn is_full_screen(&self) -> bool {
+    fn is_fullscreen(&self) -> bool {
         false
     }
 
     #[inline]
-    fn set_full_screen(&mut self, is_full_screen: bool) {
+    fn set_fullscreen(&mut self, is_full_screen: bool) {
         //
     }
 
@@ -146,8 +143,8 @@ impl Platform for Sdl2 {
     }
 
     #[inline]
-    fn delay(&self, ms: u32) {
-        //
+    fn delay(&mut self, ms: u32) {
+        self.sdl_timer.delay(ms);
     }
 
     fn poll_event(&mut self) -> Option<Event> {
@@ -158,149 +155,163 @@ impl Platform for Sdl2 {
                 return None;
             }
 
-            match sdl_event.unwrap() {
+            let event = match sdl_event.unwrap() {
                 //
                 // System Events
                 //
-                SdlEvent::Quit { .. } => return Some(Event::Quit),
+                SdlEvent::Quit { .. } => Event::Quit,
 
-                /*
-                DropFile {
-                    file: String,
-                },
-                */
+                SdlEvent::DropFile { filename, .. } => Event::DropFile { filename: filename },
 
                 //
                 // Window Events
                 //
-                /*
-                WindowShown,
-                WindowHidden,
-                WindowMoved {
-                    x: i32,
-                    y: i32,
+                SdlEvent::Window { win_event, .. } => match win_event {
+                    /*
+                    WindowShown,
+                    WindowHidden,
+                    */
+                    SdlWindowEvent::Moved(x, y) => Event::WindowMoved { x: x, y: y },
+
+                    SdlWindowEvent::Resized(width, height) => Event::WindowResized {
+                        width: width,
+                        height: height,
+                    },
+                    _ => continue,
+                    /*
+                    WindowMinimized,
+                    WindowMaximized,
+                    WindowEnter,
+                    WindowLeave,
+                    WindowFocusGained,
+                    WindowFocusLost,
+                    WindowClose,
+                    */
                 },
-                WindowResized {
-                    width: u32,
-                    height: u32,
-                },
-                WindowMinimized,
-                WindowMaximized,
-                WindowEnter,
-                WindowLeave,
-                WindowFocusGained,
-                WindowFocusLost,
-                WindowClose,
-                */
+
                 //
                 // Key Events
                 //
                 SdlEvent::KeyDown {
                     scancode: Some(scancode),
                     ..
-                } => {
-                    println!("key_down");
-                    return Some(Event::KeyDown {
-                        key: scancode as Scancode,
-                    });
-                }
+                } => Event::KeyDown {
+                    key: scancode as Scancode,
+                },
 
                 SdlEvent::KeyUp {
                     scancode: Some(scancode),
                     ..
-                } => {
-                    println!("key_up");
-                    return Some(Event::KeyUp {
-                        key: scancode as Scancode,
-                    });
-                }
-
-                /*
-                KeyInput {
-                    key: Vec<Scancode>,
+                } => Event::KeyUp {
+                    key: scancode as Scancode,
                 },
-                */
+
+                SdlEvent::TextInput { text, .. } => Event::TextInput { text: text },
 
                 //
                 // Mouse Events
                 //
-                /*
-                MouseMotion {
-                    x: i32,
-                    y: i32,
+                SdlEvent::MouseMotion { x, y, .. } => Event::MouseMotion { x: x, y: y },
+
+                SdlEvent::MouseButtonDown { mouse_btn, .. } => Event::MouseButtonDown {
+                    button: match mouse_btn {
+                        SdlMouseButton::Left => MouseButton::Left,
+                        SdlMouseButton::Middle => MouseButton::Middle,
+                        SdlMouseButton::Right => MouseButton::Right,
+                        SdlMouseButton::X1 => MouseButton::X1,
+                        SdlMouseButton::X2 => MouseButton::X2,
+                        SdlMouseButton::Unknown => MouseButton::Unknown,
+                    },
                 },
-                MouseButtonDown {
-                    button: MouseButton,
+
+                SdlEvent::MouseButtonUp { mouse_btn, .. } => Event::MouseButtonUp {
+                    button: match mouse_btn {
+                        SdlMouseButton::Left => MouseButton::Left,
+                        SdlMouseButton::Middle => MouseButton::Middle,
+                        SdlMouseButton::Right => MouseButton::Right,
+                        SdlMouseButton::X1 => MouseButton::X1,
+                        SdlMouseButton::X2 => MouseButton::X2,
+                        SdlMouseButton::Unknown => MouseButton::Unknown,
+                    },
                 },
-                MouseButtonUp {
-                    button: MouseButton,
-                },
-                MouseWheel {
-                    x: i32,
-                    y: i32,
-                },
-                */
+
+                SdlEvent::MouseWheel { x, y, .. } => Event::MouseWheel { x: x, y: y },
 
                 //
                 // Controller Events
                 //
-                /*
-                ControllerAxisMotion {
-                id: u8,
-                    axis: ControllerAxis,
-                    value: i32,
+                SdlEvent::ControllerAxisMotion {
+                    which, axis, value, ..
+                } => Event::ControllerAxisMotion {
+                    which: which,
+                    axis: match axis {
+                        SdlAxis::LeftX => ControllerAxis::LeftX,
+                        SdlAxis::LeftY => ControllerAxis::LeftY,
+                        SdlAxis::RightX => ControllerAxis::RightX,
+                        SdlAxis::RightY => ControllerAxis::RightY,
+                        SdlAxis::TriggerLeft => ControllerAxis::TriggerLeft,
+                        SdlAxis::TriggerRight => ControllerAxis::TriggerRight,
+                    },
+                    value: value,
                 },
-                ControllerButtonDown {
-                    id: u8,
-                    button: ControllerButton,
+
+                SdlEvent::ControllerButtonDown { which, button, .. } => {
+                    Event::ControllerButtonDown {
+                        which: which,
+                        button: match button {
+                            SdlButton::A => ControllerButton::A,
+                            SdlButton::B => ControllerButton::B,
+                            SdlButton::X => ControllerButton::X,
+                            SdlButton::Y => ControllerButton::Y,
+                            SdlButton::Back => ControllerButton::Back,
+                            SdlButton::Guide => ControllerButton::Guide,
+                            SdlButton::Start => ControllerButton::Start,
+                            SdlButton::LeftStick => ControllerButton::LeftStick,
+                            SdlButton::RightStick => ControllerButton::RightStick,
+                            SdlButton::LeftShoulder => ControllerButton::LeftShoulder,
+                            SdlButton::RightShoulder => ControllerButton::RightShoulder,
+                            SdlButton::DPadUp => ControllerButton::DPadUp,
+                            SdlButton::DPadDown => ControllerButton::DPadDown,
+                            SdlButton::DPadLeft => ControllerButton::DPadLeft,
+                            SdlButton::DPadRight => ControllerButton::DPadRight,
+                        },
+                    }
+                }
+
+                SdlEvent::ControllerButtonUp { which, button, .. } => Event::ControllerButtonUp {
+                    which: which,
+                    button: match button {
+                        SdlButton::A => ControllerButton::A,
+                        SdlButton::B => ControllerButton::B,
+                        SdlButton::X => ControllerButton::X,
+                        SdlButton::Y => ControllerButton::Y,
+                        SdlButton::Back => ControllerButton::Back,
+                        SdlButton::Guide => ControllerButton::Guide,
+                        SdlButton::Start => ControllerButton::Start,
+                        SdlButton::LeftStick => ControllerButton::LeftStick,
+                        SdlButton::RightStick => ControllerButton::RightStick,
+                        SdlButton::LeftShoulder => ControllerButton::LeftShoulder,
+                        SdlButton::RightShoulder => ControllerButton::RightShoulder,
+                        SdlButton::DPadUp => ControllerButton::DPadUp,
+                        SdlButton::DPadDown => ControllerButton::DPadDown,
+                        SdlButton::DPadLeft => ControllerButton::DPadLeft,
+                        SdlButton::DPadRight => ControllerButton::DPadRight,
+                    },
                 },
-                ControllerButtonUp {
-                    id: u8,
-                    button: ControllerButton,
-                },
-                */
+
                 //
                 // Default
                 //
                 _ => continue,
-            }
+            };
+
+            return Some(event);
         }
-
-        /*
-        SDL_Event event;
-        bool window_should_close = false;
-
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-            case SDL_WINDOWEVENT:
-                if (event.window.event == SDL_WINDOWEVENT_MOVED ||
-                    event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                UpdateWindowInfo();
-                }
-                break;
-
-            case SDL_MOUSEWHEEL:
-                mouse_wheel_ += event.wheel.y;
-                break;
-
-            case SDL_DROPFILE:
-                drop_file_ = event.drop.file;
-                break;
-
-            case SDL_QUIT:
-                window_should_close = true;
-                break;
-            }
-        }
-
-        return window_should_close;
-        }
-        */
     }
 
     fn render_screen(&mut self, screen: &Image, bg_color: Rgb24) {
-        let width = self.width as usize;
-        let height = self.height as usize;
+        let width = screen.width() as usize;
+        let height = screen.height() as usize;
         let data = screen.data();
         let palette = screen.palette();
 
@@ -329,31 +340,6 @@ impl Platform for Sdl2 {
         self.sdl_canvas.present();
 
         /*
-        int32_t* framebuffer;
-        int32_t pitch;
-        int32_t size = screen_width_ * screen_height_;
-
-        SDL_LockTexture(screen_texture_, NULL, reinterpret_cast<void**>(&framebuffer), &pitch);
-
-        for (int32_t i = 0; i < screen_height_; i++) {
-            int32_t index = screen_width_ * i;
-            for (int32_t j = 0; j < screen_width_; j++) {
-            framebuffer[index + j] = palette_color_[screen_data[i][j]];
-            }
-
-        SDL_UnlockTexture(screen_texture_);
-        */
-
-        /*
-        uint8_t r = (WINDOW_BACKGROUND_COLOR >> 16) & 0xff;
-        uint8_t g = (WINDOW_BACKGROUND_COLOR >> 8) & 0xff;
-        uint8_t b = WINDOW_BACKGROUND_COLOR & 0xff;
-
-        SDL_SetRenderDrawColor(renderer_, r, g, b, 255);
-        SDL_RenderClear(renderer_);
-
-        UpdateScreenTexture(screen_data);
-
         SDL_Rect dst_rect = {
             screen_x_,
             screen_y_,
@@ -362,7 +348,6 @@ impl Platform for Sdl2 {
         };
 
         SDL_RenderCopy(renderer_, screen_texture_, NULL, &dst_rect);
-        SDL_RenderPresent(renderer_);
         */
     }
 }
