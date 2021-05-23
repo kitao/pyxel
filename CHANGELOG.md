@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.4
+- Added the README in French
+
 ## 1.4.3
 - Added the README in Italian
 - Added the README in Russian
