@@ -5,14 +5,15 @@ use crate::event::Event;
 use crate::graphics::Graphics;
 use crate::input::Input;
 use crate::platform::Platform;
-use crate::settings::{BACKGROUND_COLOR, DEFAULT_CAPTION, DEFAULT_FPS, MAX_FRAME_SKIP_COUNT};
+use crate::rectarea::Rectarea;
+use crate::settings::{BACKGROUND_COLOR, DEFAULT_FPS, DEFAULT_TITLE, MAX_FRAME_SKIP_COUNT};
 
 pub struct System<T: Platform> {
     platform: T,
 
     target_fps: u32,
 
-    elapsed_frame_count: u32,
+    frame_count: u32,
     one_frame_time: f64,
     next_update_time: f64,
     waiting_update_count: u32,
@@ -38,21 +39,21 @@ impl<T: Platform> System<T> {
         platform: T,
         pwidth: u32,
         height: u32,
-        caption: Option<&str>,
+        title: Option<&str>,
         fps: Option<u32>,
     ) -> System<T> {
-        let caption = caption.unwrap_or(DEFAULT_CAPTION);
+        let title = title.unwrap_or(DEFAULT_TITLE);
         let fps = fps.unwrap_or(DEFAULT_FPS);
 
         let one_frame_time = 1000.0 / fps as f64;
         let next_update_time = platform.ticks() as f64;
 
-        System::<T> {
+        let mut system = System::<T> {
             platform: platform,
 
             target_fps: fps,
 
-            elapsed_frame_count: 0,
+            frame_count: 0,
             one_frame_time: one_frame_time,
             next_update_time: next_update_time,
             waiting_update_count: 0,
@@ -60,32 +61,31 @@ impl<T: Platform> System<T> {
             should_quit: false,
             disable_frame_skip_once: false,
             performance_monitor_enabled: false,
-        }
+        };
+
+        system.set_window_title(title);
+
+        system
     }
 
     #[inline]
-    pub fn width(&self) -> u32 {
-        self.platform.width()
+    pub fn window_width(&self) -> u32 {
+        self.platform.window_size().0
     }
 
     #[inline]
-    pub fn height(&self) -> u32 {
-        self.platform.height()
+    pub fn window_height(&self) -> u32 {
+        self.platform.window_size().1
     }
 
     #[inline]
-    pub fn frame_count(&self) -> u32 {
-        self.elapsed_frame_count
+    pub fn window_title(&self) -> &str {
+        self.platform.window_title()
     }
 
     #[inline]
-    pub fn caption(&self) -> &str {
-        self.platform.caption()
-    }
-
-    #[inline]
-    pub fn set_caption(&mut self, caption: &str) {
-        self.platform.set_caption(caption);
+    pub fn set_window_title(&mut self, title: &str) {
+        self.platform.set_window_title(title);
     }
 
     #[inline]
@@ -96,6 +96,11 @@ impl<T: Platform> System<T> {
     #[inline]
     pub fn set_fullscreen(&self, is_fullscreen: bool) {
         //
+    }
+
+    #[inline]
+    pub fn frame_count(&self) -> u32 {
+        self.frame_count
     }
 
     /*
@@ -158,16 +163,17 @@ impl<T: Platform> System<T> {
             match event {
                 Event::Quit => self.should_quit = true,
 
-                Event::KeyDown { key: key } => {
-                    //
-                }
-
-                Event::KeyUp { key: key } => {
-                    //
-                }
-
                 _ => {
-                    println!("none");
+                    let window_pos = self.platform.window_pos();
+                    let window_size = self.platform.window_size();
+                    let window_rect = Rectarea::with_size(
+                        window_pos.0,
+                        window_pos.1,
+                        window_size.0,
+                        window_size.1,
+                    );
+
+                    input.process_input_event(event, self.frame_count, window_rect);
                 }
             }
         }
@@ -230,7 +236,6 @@ impl<T: Platform> System<T> {
         void ShowScreen();
 
         std::string DropFile() const { return drop_file_; }
-        void SetCaption(const std::string& caption);
 
     private:
         void DrawFrame(void (*draw)(), int32_t update_frame_count);
@@ -300,7 +305,7 @@ impl<T: Platform> System<T> {
         self.next_update_time = self.platform.ticks() as f64 + self.one_frame_time;
         self.should_quit = false;
         self.disable_frame_skip_once = true;
-        self.elapsed_frame_count = 0;
+        self.frame_count = 0;
     }
 
     #[inline]
@@ -340,7 +345,7 @@ impl<T: Platform> System<T> {
 
         if self.waiting_update_count > 0 {
             self.waiting_update_count -= 1;
-            self.elapsed_frame_count += 1;
+            self.frame_count += 1;
         }
     }
 
@@ -354,7 +359,7 @@ impl<T: Platform> System<T> {
         self.platform
             .render_screen(graphics.screen(), BACKGROUND_COLOR);
 
-        self.elapsed_frame_count += 1;
+        self.frame_count += 1;
     }
 }
 
