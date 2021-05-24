@@ -12,7 +12,7 @@ use sdl2::EventPump as SdlEventPump;
 use sdl2::TimerSubsystem as SdlTimerSubsystem;
 
 use crate::canvas::Canvas;
-use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton, Scancode};
+use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
 use crate::image::Image;
 use crate::palette::Rgb24;
 use crate::platform::Platform;
@@ -194,14 +194,14 @@ impl Platform for Sdl2 {
                     scancode: Some(scancode),
                     ..
                 } => Event::KeyDown {
-                    key: scancode as Scancode,
+                    key: scancode as u32,
                 },
 
                 SdlEvent::KeyUp {
                     scancode: Some(scancode),
                     ..
                 } => Event::KeyUp {
-                    key: scancode as Scancode,
+                    key: scancode as u32,
                 },
 
                 SdlEvent::TextInput { text, .. } => Event::TextInput { text: text },
@@ -250,7 +250,7 @@ impl Platform for Sdl2 {
                         SdlAxis::TriggerLeft => ControllerAxis::TriggerLeft,
                         SdlAxis::TriggerRight => ControllerAxis::TriggerRight,
                     },
-                    value: value,
+                    value: value as i32,
                 },
 
                 SdlEvent::ControllerButtonDown { which, button, .. } => {
