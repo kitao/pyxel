@@ -13,8 +13,10 @@ impl App {
 
 impl PyxelCallback for App {
     fn update(&mut self, pyxel: &mut Pyxel) {
-        self.x += pyxel.frame_count() % 2;
-        self.y -= 1;
+        if pyxel.frame_count() < 60 {
+            self.x += pyxel.frame_count() % 2;
+            self.y -= 1;
+        }
     }
 
     fn draw(&mut self, pyxel: &mut Pyxel) {
@@ -26,7 +28,7 @@ impl PyxelCallback for App {
 }
 
 pub fn main() {
-    let mut pyxel = Pyxel::init(200, 150, Some("Hello"), None, None);
+    let mut pyxel = Pyxel::init(200, 150, Some("Hello, Pyxel in Rust!"), None, None);
     let mut app = App::new();
 
     pyxel.run(&mut app);
