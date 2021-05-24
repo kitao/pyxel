@@ -1,5 +1,3 @@
-pub type Scancode = u16;
-
 pub enum MouseButton {
     Left,
     Middle,
@@ -70,10 +68,10 @@ pub enum Event {
     // Key Events
     //
     KeyDown {
-        key: Scancode,
+        key: u32,
     },
     KeyUp {
-        key: Scancode,
+        key: u32,
     },
     TextInput {
         text: String,
@@ -103,7 +101,7 @@ pub enum Event {
     ControllerAxisMotion {
         which: u32,
         axis: ControllerAxis,
-        value: i16,
+        value: i32,
     },
     ControllerButtonDown {
         which: u32,
