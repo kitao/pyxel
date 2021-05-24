@@ -6,7 +6,7 @@ mod event;
 mod graphics;
 mod image;
 mod input;
-mod keycode;
+mod key;
 mod music;
 mod palette;
 mod platform;
@@ -26,7 +26,7 @@ use crate::resource::Resource;
 use crate::sdl2::Sdl2;
 use crate::system::System;
 
-pub use crate::keycode::*;
+pub use crate::key::*;
 pub use crate::settings::*;
 
 type CurrentPlatform = Sdl2;
