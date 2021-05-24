@@ -250,7 +250,7 @@ pub const KEY_MIN_VALUE: KeyCode = KEY_A;
 pub const KEY_MAX_VALUE: KeyCode = KEY_AUDIOFASTFORWARD;
 
 pub const KEY_SHIFT: KeyCode = 300;
-pub const KEY_CONTROL: KeyCode = 301;
+pub const KEY_CTRL: KeyCode = 301;
 pub const KEY_ALT: KeyCode = 302;
 pub const KEY_GUI: KeyCode = 303;
 
