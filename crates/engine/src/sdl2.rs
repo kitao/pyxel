@@ -1,3 +1,5 @@
+use std::cmp::min;
+
 use sdl2::controller::Axis as SdlAxis;
 use sdl2::controller::Button as SdlButton;
 use sdl2::event::Event as SdlEvent;
@@ -5,6 +7,7 @@ use sdl2::event::WindowEvent as SdlWindowEvent;
 use sdl2::mouse::MouseButton as SdlMouseButton;
 use sdl2::pixels::Color as SdlColor;
 use sdl2::pixels::PixelFormatEnum;
+use sdl2::rect::Rect as SdlRect;
 use sdl2::render::Texture as SdlTexture;
 use sdl2::render::WindowCanvas as SdlCanvas;
 use sdl2::video::FullscreenType as SdlFullscreenType;
@@ -34,11 +37,15 @@ impl Sdl2 {
         let sdl_context = sdl2::init().unwrap();
         let sdl_video = sdl_context.video().unwrap();
         let sdl_timer = sdl_context.timer().unwrap();
-        let sdl_window = sdl_video
+        let mut sdl_window = sdl_video
             .window("", width, height)
             .position_centered()
+            .resizable()
             .build()
             .unwrap();
+
+        sdl_window.set_minimum_size(width, height).unwrap();
+
         let sdl_canvas = sdl_window.into_canvas().build().unwrap();
         let sdl_event_pump = sdl_context.event_pump().unwrap();
         let sdl_texture_creator = sdl_canvas.texture_creator();
@@ -54,38 +61,31 @@ impl Sdl2 {
         }
 
         /*
-        screen_width_ = screen_width;
-        screen_height_ = screen_height;
-        screen_scale_ = screen_scale;
-        is_fullscreen_ = false;
-        mouse_wheel_ = 0;
+                screen_width_ = screen_width;
+                screen_height_ = screen_height;
+                screen_scale_ = screen_scale;
+                is_fullscreen_ = false;
+                mouse_wheel_ = 0;
 
-        if (screen_scale_ <= 0) {
-            SDL_DisplayMode display_mode;
-            SDL_GetDesktopDisplayMode(0, &display_mode);
+                if (screen_scale_ <= 0) {
+                    SDL_DisplayMode display_mode;
+        e           SDL_GetDesktopDisplayMode(0, &display_mode);
 
-            screen_scale_ = Max(
-                Min(display_mode.w / screen_width_, display_mode.h / screen_height_) * MAX_WINDOW_SIZE_RATIO, 1.0f);
-        }
+                    screen_scale_ = Max(
+                        Min(display_mode.w / screen_width_, display_mode.h / screen_height_) * MAX_WINDOW_SIZE_RATIO, 1.0f);
+                }
 
-        int32_t window_width = screen_width_ * screen_scale_;
-        int32_t window_height = screen_height_ * screen_scale_;
+                int32_t window_width = screen_width_ * screen_scale_;
+                int32_t window_height = screen_height_ * screen_scale_;
 
-        window_ = SDL_CreateWindow(caption.c_str(), SDL_WINDOWPOS_CENTERED,
-                                    SDL_WINDOWPOS_CENTERED, window_width,
-                                    window_height, SDL_WINDOW_RESIZABLE);
+                window_ = SDL_CreateWindow(caption.c_str(), SDL_WINDOWPOS_CENTERED,
+                                            SDL_WINDOWPOS_CENTERED, window_width,
+                                            window_height, SDL_WINDOW_RESIZABLE);
 
-        renderer_ = SDL_CreateRenderer(window_, -1, 0);
 
-        screen_texture_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGB888,
-                                            SDL_TEXTUREACCESS_STREAMING,
-                                            screen_width_, screen_height_);
-
-        SDL_SetWindowMinimumSize(window_, screen_width_, screen_height_);
-
-        SetupWindowIcon();
-        UpdateWindowInfo();
-        */
+                SetupWindowIcon();
+                UpdateWindowInfo();
+                */
     }
 }
 
@@ -333,31 +333,25 @@ impl Platform for Sdl2 {
             ((bg_color >> 8) & 0xff) as u8,
             (bg_color & 0xff) as u8,
         ));
+
+        let screen_width = screen.width();
+        let screen_height = screen.height();
+        let (window_width, window_height) = self.sdl_canvas.window().size();
+        let screen_scale = min(window_width / screen_width, window_height / screen_height);
+        let screen_x = (window_width - screen_width * screen_scale) / 2;
+        let screen_y = (window_height - screen_height * screen_scale) / 2;
+
+        let dst = SdlRect::new(
+            screen_x as i32,
+            screen_y as i32,
+            screen_width * screen_scale,
+            screen_height * screen_scale,
+        );
+
         self.sdl_canvas.clear();
-        self.sdl_canvas.copy(&self.sdl_texture, None, None).unwrap();
+        self.sdl_canvas
+            .copy(&self.sdl_texture, None, Some(dst))
+            .unwrap();
         self.sdl_canvas.present();
-
-        /*
-        SDL_GetWindowPosition(window_, &window_x_, &window_y_);
-
-        int32_t window_width, window_height;
-        SDL_GetWindowSize(window_, &window_width, &window_height);
-
-        screen_scale_ =
-            Min(window_width / screen_width_, window_height / screen_height_);
-        screen_x_ = (window_width - screen_width_ * screen_scale_) / 2;
-        screen_y_ = (window_height - screen_height_ * screen_scale_) / 2;
-        */
-
-        /*
-        SDL_Rect dst_rect = {
-            screen_x_,
-            screen_y_,
-            screen_width_ * screen_scale_,
-            screen_height_ * screen_scale_,
-        };
-
-        SDL_RenderCopy(renderer_, screen_texture_, NULL, &dst_rect);
-        */
     }
 }
