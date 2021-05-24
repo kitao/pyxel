@@ -159,69 +159,35 @@ impl<T: Platform> System<T> {
 
     #[inline]
     fn process_events(&mut self, input: &mut Input) {
+        let window_pos = self.platform.window_pos();
+        let window_size = self.platform.window_size();
+        let window_rect =
+            Rectarea::with_size(window_pos.0, window_pos.1, window_size.0, window_size.1);
+
+        input.update_frame(self.frame_count, window_rect);
+
         while let Some(event) = self.platform.poll_event() {
             match event {
                 Event::Quit => self.should_quit = true,
 
-                _ => {
-                    let window_pos = self.platform.window_pos();
-                    let window_size = self.platform.window_size();
-                    let window_rect = Rectarea::with_size(
-                        window_pos.0,
-                        window_pos.1,
-                        window_size.0,
-                        window_size.1,
-                    );
-
-                    input.process_input_event(event, self.frame_count, window_rect);
+                Event::WindowMoved { x, y } => {
+                    //
                 }
+
+                Event::WindowResized { width, height } => {
+                    //
+                }
+
+                _ => input.process_event(event),
             }
         }
 
         /*
-        // TODO
-        for event in self.sdl_event_pump.poll_iter() {
-            match event {
-                Event::Quit { .. }
-                | Event::KeyDown {
-                    keycode: Some(Keycode::Escape),
-                    ..
-                } => self.should_quit = true,
-
-                _ => {}
-            }
-        }
-        */
-
-        /*
-        SDL_Event event;
-        bool window_should_close = false;
-
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-            case SDL_WINDOWEVENT:
-                if (event.window.event == SDL_WINDOWEVENT_MOVED ||
-                    event.window.event == SDL_WINDOWEVENT_RESIZED) {
-                UpdateWindowInfo();
-                }
-                break;
-
-            case SDL_MOUSEWHEEL:
-                mouse_wheel_ += event.wheel.y;
-                break;
-
-            case SDL_DROPFILE:
-                drop_file_ = event.drop.file;
-                break;
-
-            case SDL_QUIT:
-                window_should_close = true;
-                break;
-            }
-        }
-
-        return window_should_close;
-        }
+        Event::Quit { .. }
+        | Event::KeyDown {
+            keycode: Some(Keycode::Escape),
+            ..
+        } => self.should_quit = true,
         */
     }
 
@@ -234,8 +200,6 @@ impl<T: Platform> System<T> {
         bool Quit();
         bool FlipScreen();
         void ShowScreen();
-
-        std::string DropFile() const { return drop_file_; }
 
     private:
         void DrawFrame(void (*draw)(), int32_t update_frame_count);
