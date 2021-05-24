@@ -1,78 +1,231 @@
 use std::collections::HashMap;
 
-use crate::keycode::Keycode;
+use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
+use crate::key::*;
+use crate::rectarea::Rectarea;
+
+enum KeyState {
+  Pressed(u32),
+  Released(u32),
+}
 
 pub struct Input {
-    mouse_x: i32,
-    mouse_y: i32,
-    mouse_wheel: i32,
-    is_mouse_visible: bool,
-    keycode_statuses: HashMap<Keycode, u32>,
-    /*
-    int32_t frame_count_;
-    */
+  is_mouse_visible: bool,
+  frame_count: u32,
+  window_rect: Rectarea,
+  key_states: HashMap<KeyCode, KeyState>,
+  key_values: HashMap<KeyCode, KeyValue>,
 }
 
 impl Input {
-    pub fn new() -> Input {
-        Input {
-            mouse_x: 0,
-            mouse_y: 0,
-            mouse_wheel: 0,
-            is_mouse_visible: true,
-            keycode_statuses: HashMap::new(),
+  pub fn new() -> Input {
+    Input {
+      frame_count: 0,
+      window_rect: Rectarea::with_size(0, 0, 0, 0),
+      is_mouse_visible: true,
+      key_states: HashMap::new(),
+      key_values: HashMap::new(),
+    }
+  }
+
+  #[inline]
+  pub fn is_key_pressed(
+    &self,
+    key: KeyCode,
+    hold_frame: Option<u32>,
+    period_frame: Option<u32>,
+  ) -> bool {
+    false
+
+    /*
+    if (key < 0 || key >= KEY_COUNT) {
+      PYXEL_ERROR("invalid key");
+    }
+
+    if (frame_count_ == 0) {
+      return false;
+    }
+
+    int32_t press_frame = key_state_[key];
+
+    if (press_frame == frame_count_) {
+      return true;
+    }
+
+    if (press_frame <= 0 || period_frame <= 0) {
+      return false;
+    }
+
+    int32_t elapsed_frame = frame_count_ - (press_frame + hold_frame);
+
+    if (elapsed_frame >= 0 && elapsed_frame % period_frame == 0) {
+      return true;
+    }
+
+    return false;
+    */
+  }
+
+  #[inline]
+  pub fn is_key_released(&self, key: KeyCode) -> bool {
+    false
+
+    /*
+    if (key < 0 || key >= KEY_COUNT) {
+      PYXEL_ERROR("invalid key");
+    }
+
+    if (frame_count_ == 0) {
+      return false;
+    }
+
+    return key_state_[key] == -frame_count_;
+    */
+  }
+
+  #[inline]
+  pub fn is_key_on(&self, key: KeyCode) -> bool {
+    match self.key_states.get(&key) {
+      Some(KeyState::Pressed(..)) => true,
+      _ => false,
+    }
+  }
+
+  #[inline]
+  pub fn key_value(&self, key: KeyCode) -> KeyValue {
+    self.key_values.get(&key).cloned().unwrap_or(0)
+  }
+
+  #[inline]
+  pub fn is_mouse_visible(&self) -> bool {
+    self.is_mouse_visible
+  }
+
+  #[inline]
+  pub fn set_mouse_visible(&mut self, is_mouse_visible: bool) {
+    self.is_mouse_visible = is_mouse_visible;
+  }
+
+  #[inline]
+  pub fn update_frame(&mut self, frame_count: u32, window_rect: Rectarea) {
+    self.frame_count = frame_count;
+    self.window_rect = window_rect;
+
+    self.key_values.insert(MOUSE_WHEEL_X, 0);
+    self.key_values.insert(MOUSE_WHEEL_Y, 0);
+  }
+
+  #[inline]
+  pub fn process_event(&mut self, event: Event) {
+    match event {
+      Event::KeyDown { key } => {
+        if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
+          self.press_key(key);
+
+          if key == KEY_LSHIFT || key == KEY_RSHIFT {
+            self.press_key(KEY_SHIFT);
+          } else if key == KEY_LCTRL || key == KEY_RCTRL {
+            self.press_key(KEY_CTRL);
+          } else if key == KEY_LALT || key == KEY_RALT {
+            self.press_key(KEY_ALT);
+          } else if key == KEY_LGUI || key == KEY_RGUI {
+            self.press_key(KEY_GUI);
+          }
         }
-    }
+      }
 
-    #[inline]
-    pub fn mouse_x(&self) -> i32 {
-        self.mouse_x
-    }
+      Event::KeyUp { key } => {
+        if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
+          self.release_key(key);
 
-    #[inline]
-    pub fn mouse_y(&self) -> i32 {
-        self.mouse_y
-    }
+          if key == KEY_LSHIFT || key == KEY_RSHIFT {
+            self.release_key(KEY_SHIFT);
+          } else if key == KEY_LCTRL || key == KEY_RCTRL {
+            self.release_key(KEY_CTRL);
+          } else if key == KEY_LALT || key == KEY_RALT {
+            self.release_key(KEY_ALT);
+          } else if key == KEY_LGUI || key == KEY_RGUI {
+            self.release_key(KEY_GUI);
+          }
+        }
+      }
 
-    #[inline]
-    pub fn mouse_wheel(&self) -> i32 {
-        self.mouse_wheel
-    }
+      Event::TextInput { text } => {}
 
-    #[inline]
-    pub fn is_button_on(&self, button: Keycode) -> bool {
-        false
-    }
+      Event::MouseMotion { x, y } => {
+        self.key_values.insert(MOUSE_POS_X, x as KeyValue);
+        self.key_values.insert(MOUSE_POS_Y, y as KeyValue);
+      }
 
-    #[inline]
-    pub fn is_button_pressed(&self, button: Keycode, hold_frame: u32, period_frame: u32) -> bool {
-        false
-    }
+      Event::MouseButtonDown { button } => {
+        self.press_key(MOUSE_BUTTON_LEFT + button as KeyCode);
+      }
 
-    #[inline]
-    pub fn is_button_released(&self, button: Keycode) -> bool {
-        false
-    }
+      Event::MouseButtonUp { button } => {
+        self.release_key(MOUSE_BUTTON_LEFT + button as KeyCode);
+      }
 
-    #[inline]
-    pub fn is_mouse_visible(&self, button: Keycode) -> bool {
-        false
-    }
+      Event::MouseWheel { x, y } => {
+        *self.key_values.entry(MOUSE_WHEEL_X).or_insert(0) += x as KeyValue;
+        *self.key_values.entry(MOUSE_WHEEL_Y).or_insert(0) += y as KeyValue;
+      }
 
-    #[inline]
-    pub fn set_mouse_visible(&self, is_mouse_visible: bool) {
-        //
+      Event::ControllerAxisMotion { which, axis, value } => {
+        // do nothing for now
+      }
+
+      Event::ControllerButtonDown { which, button } => {
+        let offset = if which == 0 {
+          0
+        } else if which == 1 {
+          CONTROLLER2_BUTTON_A - CONTROLLER1_BUTTON_A
+        } else {
+          return;
+        };
+
+        self.press_key(CONTROLLER1_BUTTON_A + button as KeyCode + offset);
+      }
+
+      Event::ControllerButtonUp { which, button } => {
+        let offset = if which == 0 {
+          0
+        } else if which == 1 {
+          CONTROLLER2_BUTTON_A - CONTROLLER1_BUTTON_A
+        } else {
+          return;
+        };
+
+        self.release_key(CONTROLLER1_BUTTON_A + button as KeyCode + offset);
+      }
+
+      _ => {}
     }
+    //
+  }
+
+  #[inline]
+  pub fn end_process_event(&mut self) {
+    //
+  }
+
+  #[inline]
+  fn press_key(&mut self, key: KeyCode) {
+    self
+      .key_states
+      .insert(key, KeyState::Pressed(self.frame_count));
+  }
+
+  #[inline]
+  fn release_key(&mut self, key: KeyCode) {
+    self
+      .key_states
+      .insert(key, KeyState::Released(self.frame_count));
+  }
 }
 
 /*
-void Update(Window* window, int32_t frame_count);
-void UpdateKeyState(int32_t key, bool state);
-*/
-
-/*
 #define GET_KEY_STATE(key) \
-  sdl_scancode_state[SDL_GetScancodeFromKey(SDL_KEYCODE_TABLE[key])]
+  sdl_scancode_state[SDL_GetScancodeFromKey(SDL_KeyCode_TABLE[key])]
 
 Input::Input() {
   gamepad1_ = SDL_GameControllerOpen(0);
@@ -122,97 +275,5 @@ void Input::Update(Window* window, int32_t frame_count) {
   } else {
     SDL_ShowCursor(false);
   }
-
-  const uint8_t* sdl_scancode_state = SDL_GetKeyboardState(NULL);
-
-  for (int32_t i = 0; i < SDL_KEYCODE_COUNT; i++) {
-    UpdateKeyState(i, GET_KEY_STATE(i));
-  }
-
-  UpdateKeyState(KEY_SHIFT, GET_KEY_STATE(KEY_LEFT_SHIFT) ||
-                                GET_KEY_STATE(KEY_RIGHT_SHIFT));
-
-  UpdateKeyState(KEY_CONTROL, GET_KEY_STATE(KEY_LEFT_CONTROL) ||
-                                  GET_KEY_STATE(KEY_RIGHT_CONTROL));
-
-  UpdateKeyState(KEY_ALT,
-                 GET_KEY_STATE(KEY_LEFT_ALT) || GET_KEY_STATE(KEY_RIGHT_ALT));
-
-  UpdateKeyState(KEY_SUPER, GET_KEY_STATE(KEY_LEFT_SUPER) ||
-                                GET_KEY_STATE(KEY_RIGHT_SUPER));
-
-  uint32_t mouse_state = SDL_GetMouseState(NULL, NULL);
-
-  UpdateKeyState(MOUSE_LEFT_BUTTON, mouse_state & SDL_BUTTON_LMASK);
-  UpdateKeyState(MOUSE_MIDDLE_BUTTON, mouse_state & SDL_BUTTON_MMASK);
-  UpdateKeyState(MOUSE_RIGHT_BUTTON, mouse_state & SDL_BUTTON_RMASK);
-
-  if (gamepad1_) {
-    for (int32_t i = 0; i < BUTTON_COUNT; i++) {
-      UpdateKeyState(GAMEPAD_1_A + i, SDL_GameControllerGetButton(
-                                          gamepad1_, SDL_BUTTON_TABLE[i]));
-    }
-  }
-
-  if (gamepad2_) {
-    for (int32_t i = 0; i < BUTTON_COUNT; i++) {
-      UpdateKeyState(GAMEPAD_2_A + i, SDL_GameControllerGetButton(
-                                          gamepad2_, SDL_BUTTON_TABLE[i]));
-    }
-  }
-}
-
-bool Input::IsButtonOn(int32_t key) const {
-  if (key < 0 || key >= KEY_COUNT) {
-    PYXEL_ERROR("invalid key");
-  }
-
-  return key_state_[key] > 0;
-}
-
-bool Input::IsButtonPressed(int32_t key,
-                            int32_t hold_frame,
-                            int32_t period_frame) const {
-  if (key < 0 || key >= KEY_COUNT) {
-    PYXEL_ERROR("invalid key");
-  }
-
-  if (frame_count_ == 0) {
-    return false;
-  }
-
-  int32_t press_frame = key_state_[key];
-
-  if (press_frame == frame_count_) {
-    return true;
-  }
-
-  if (press_frame <= 0 || period_frame <= 0) {
-    return false;
-  }
-
-  int32_t elapsed_frame = frame_count_ - (press_frame + hold_frame);
-
-  if (elapsed_frame >= 0 && elapsed_frame % period_frame == 0) {
-    return true;
-  }
-
-  return false;
-}
-
-bool Input::IsButtonReleased(int32_t key) const {
-  if (key < 0 || key >= KEY_COUNT) {
-    PYXEL_ERROR("invalid key");
-  }
-
-  if (frame_count_ == 0) {
-    return false;
-  }
-
-  return key_state_[key] == -frame_count_;
-}
-
-void Input::SetMouseVisible(int32_t is_visible) {
-  is_mouse_visible_ = is_visible;
 }
 */
