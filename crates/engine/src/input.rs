@@ -162,13 +162,13 @@ impl Input {
         let offset = if which == 0 {
           0
         } else if which == 1 {
-          CONTROLLER2_AXIS_LEFTX - CONTROLLER1_AXIS_LEFTX
+          GAMEPAD2_AXIS_LEFTX - GAMEPAD1_AXIS_LEFTX
         } else {
           return;
         };
 
         self.key_values.insert(
-          CONTROLLER1_AXIS_LEFTX + axis as KeyCode + offset as KeyCode,
+          GAMEPAD1_AXIS_LEFTX + axis as KeyCode + offset as KeyCode,
           value,
         );
       }
@@ -177,24 +177,24 @@ impl Input {
         let offset = if which == 0 {
           0
         } else if which == 1 {
-          CONTROLLER2_BUTTON_A - CONTROLLER1_BUTTON_A
+          GAMEPAD2_BUTTON_A - GAMEPAD1_BUTTON_A
         } else {
           return;
         };
 
-        self.press_key(CONTROLLER1_BUTTON_A + button as KeyCode + offset);
+        self.press_key(GAMEPAD1_BUTTON_A + button as KeyCode + offset);
       }
 
       Event::ControllerButtonUp { which, button } => {
         let offset = if which == 0 {
           0
         } else if which == 1 {
-          CONTROLLER2_BUTTON_A - CONTROLLER1_BUTTON_A
+          GAMEPAD2_BUTTON_A - GAMEPAD1_BUTTON_A
         } else {
           return;
         };
 
-        self.release_key(CONTROLLER1_BUTTON_A + button as KeyCode + offset);
+        self.release_key(GAMEPAD1_BUTTON_A + button as KeyCode + offset);
       }
 
       _ => {}
