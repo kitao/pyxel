@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
+use crate::event::Event;
 use crate::key::*;
 use crate::rectarea::Rectarea;
 
@@ -122,14 +122,8 @@ impl Input {
         if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
           self.press_key(key);
 
-          if key == KEY_LSHIFT || key == KEY_RSHIFT {
-            self.press_key(KEY_SHIFT);
-          } else if key == KEY_LCTRL || key == KEY_RCTRL {
-            self.press_key(KEY_CTRL);
-          } else if key == KEY_LALT || key == KEY_RALT {
-            self.press_key(KEY_ALT);
-          } else if key == KEY_LGUI || key == KEY_RGUI {
-            self.press_key(KEY_GUI);
+          if let Some(key) = Self::get_common_key(key) {
+            self.press_key(key);
           }
         }
       }
@@ -138,14 +132,8 @@ impl Input {
         if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
           self.release_key(key);
 
-          if key == KEY_LSHIFT || key == KEY_RSHIFT {
-            self.release_key(KEY_SHIFT);
-          } else if key == KEY_LCTRL || key == KEY_RCTRL {
-            self.release_key(KEY_CTRL);
-          } else if key == KEY_LALT || key == KEY_RALT {
-            self.release_key(KEY_ALT);
-          } else if key == KEY_LGUI || key == KEY_RGUI {
-            self.release_key(KEY_GUI);
+          if let Some(key) = Self::get_common_key(key) {
+            self.release_key(key);
           }
         }
       }
@@ -171,7 +159,18 @@ impl Input {
       }
 
       Event::ControllerAxisMotion { which, axis, value } => {
-        // do nothing for now
+        let offset = if which == 0 {
+          0
+        } else if which == 1 {
+          CONTROLLER2_AXIS_LEFTX - CONTROLLER1_AXIS_LEFTX
+        } else {
+          return;
+        };
+
+        self.key_values.insert(
+          CONTROLLER1_AXIS_LEFTX + axis as KeyCode + offset as KeyCode,
+          value,
+        );
       }
 
       Event::ControllerButtonDown { which, button } => {
@@ -206,6 +205,17 @@ impl Input {
   #[inline]
   pub fn end_process_event(&mut self) {
     //
+  }
+
+  #[inline]
+  fn get_common_key(key: KeyCode) -> Option<KeyCode> {
+    match key {
+      KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
+      KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),
+      KEY_LALT | KEY_RALT => Some(KEY_ALT),
+      KEY_LGUI | KEY_RGUI => Some(KEY_GUI),
+      _ => None,
+    }
   }
 
   #[inline]
