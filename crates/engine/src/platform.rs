@@ -3,6 +3,7 @@ use crate::image::Image;
 use crate::palette::Rgb24;
 
 pub trait Platform {
+    fn new(title: &str, width: u32, height: u32, scale: u32) -> Self;
     fn window_pos(&self) -> (i32, i32);
     fn window_size(&self) -> (u32, u32);
     fn window_title(&self) -> &str;
