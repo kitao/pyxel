@@ -71,11 +71,11 @@ impl Pyxel {
         width: u32,
         height: u32,
         title: Option<&str>,
-        colors: Option<&[Rgb24]>,
+        scale: Option<u32>,
         fps: Option<u32>,
+        colors: Option<&[Rgb24]>,
     ) -> Pyxel {
-        let platform = Sdl2::new(width, height);
-        let system = System::new(platform, width, height, title, fps);
+        let system = System::new(width, height, title, scale, fps);
         let resource = Resource::new();
         let input = Input::new();
         let graphics = Graphics::new(width, height, colors);
