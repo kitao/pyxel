@@ -60,7 +60,7 @@ impl Platform {
             .resizable()
             .build()
             .unwrap();
-        let sdl_canvas = sdl_window.into_canvas().build().unwrap();
+        let mut sdl_canvas = sdl_window.into_canvas().build().unwrap();
         let sdl_texture = sdl_canvas
             .texture_creator()
             .create_texture_streaming(PixelFormatEnum::RGB24, width, height)
@@ -69,21 +69,18 @@ impl Platform {
         let sdl_event_pump = sdl_context.event_pump().unwrap();
         let sdl_audio = sdl_context.audio().unwrap();
 
-        let mut platform = Platform {
+        sdl_canvas
+            .window_mut()
+            .set_minimum_size(width, height)
+            .unwrap();
+
+        Platform {
             sdl_timer: sdl_timer,
             sdl_canvas: sdl_canvas,
             sdl_texture: sdl_texture,
             sdl_event_pump: sdl_event_pump,
             sdl_audio: sdl_audio,
-        };
-
-        platform
-            .sdl_canvas
-            .window_mut()
-            .set_minimum_size(width, height)
-            .unwrap();
-
-        platform
+        }
     }
 
     #[inline]
