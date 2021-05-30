@@ -159,42 +159,6 @@ impl System {
     }
     */
 
-    #[inline]
-    fn process_events(&mut self, input: &mut Input) {
-        let window_pos = self.platform.window_pos();
-        let window_size = self.platform.window_size();
-        let window_rect =
-            Rectarea::with_size(window_pos.0, window_pos.1, window_size.0, window_size.1);
-
-        input.start_update(self.frame_count, window_rect);
-
-        while let Some(event) = self.platform.poll_event() {
-            match event {
-                Event::Quit => self.should_quit = true,
-
-                Event::WindowMoved { x, y } => {
-                    //
-                }
-
-                Event::WindowResized { width, height } => {
-                    //
-                }
-
-                _ => input.process_event(event),
-            }
-        }
-
-        input.end_update();
-
-        /*
-        Event::Quit { .. }
-        | Event::KeyDown {
-            keycode: Some(Keycode::Escape),
-            ..
-        } => self.should_quit = true,
-        */
-    }
-
     /*
         int32_t scale,
         int32_t fps,
@@ -239,6 +203,47 @@ impl System {
             break;
             }
         }
+        */
+    }
+
+    #[inline]
+    pub(crate) fn platform_mut(&mut self) -> &mut Platform {
+        &mut self.platform
+    }
+
+    #[inline]
+    fn process_events(&mut self, input: &mut Input) {
+        let window_pos = self.platform.window_pos();
+        let window_size = self.platform.window_size();
+        let window_rect =
+            Rectarea::with_size(window_pos.0, window_pos.1, window_size.0, window_size.1);
+
+        input.start_update(self.frame_count, window_rect);
+
+        while let Some(event) = self.platform.poll_event() {
+            match event {
+                Event::Quit => self.should_quit = true,
+
+                Event::WindowMoved { x, y } => {
+                    //
+                }
+
+                Event::WindowResized { width, height } => {
+                    //
+                }
+
+                _ => input.process_event(event),
+            }
+        }
+
+        input.end_update();
+
+        /*
+        Event::Quit { .. }
+        | Event::KeyDown {
+            keycode: Some(Keycode::Escape),
+            ..
+        } => self.should_quit = true,
         */
     }
 
