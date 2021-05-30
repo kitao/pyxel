@@ -13,6 +13,7 @@ mod palette;
 mod platform;
 mod rectarea;
 mod resource;
+mod sdl2;
 mod settings;
 mod sound;
 mod tilemap;
@@ -25,13 +26,14 @@ use crate::graphics::Graphics;
 use crate::input::Input;
 use crate::palette::{Color, Rgb24};
 use crate::resource::Resource;
+use crate::sdl2::Sdl2;
 use crate::system::System;
 
 pub use crate::key::*;
 pub use crate::settings::*;
 
 pub struct Pyxel {
-    system: System,
+    system: System<Sdl2>,
     resource: Resource,
     input: Input,
     graphics: Graphics,

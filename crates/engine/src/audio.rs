@@ -34,7 +34,7 @@ impl AudioCallback for Audio {
 }
 
 impl Audio {
-    pub fn new(platform: &mut Platform) -> Arc<Mutex<Audio>> {
+    pub fn new<T: Platform>(platform: &mut T) -> Arc<Mutex<Audio>> {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
         let mut channels = Vec::new();
         let mut sounds = Vec::new();
