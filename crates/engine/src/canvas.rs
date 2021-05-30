@@ -166,7 +166,7 @@ pub trait Canvas<T: Copy + Default> {
     &mut self,
     x: i32,
     y: i32,
-    src: &dyn Canvas<T>,
+    src: &Self,
     u: i32,
     v: i32,
     width: u32,
