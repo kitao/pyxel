@@ -53,8 +53,8 @@ const std::string RESOURCE_ARCHIVE_DIRNAME = "pyxel_resource/";
 //
 // Graphics
 //
-pub const IMAGEBANK_COUNT: usize = 4;
-pub const IMAGEBANK_SIZE: u32 = 256;
+pub const IMAGE_COUNT: usize = 4;
+pub const IMAGE_SIZE: u32 = 256;
 
 pub const TILEMAP_COUNT: usize = 8;
 pub const TILEMAP_SIZE: u32 = 256;
@@ -128,18 +128,15 @@ const std::vector<uint32_t> FONT_DATA = {
 pub const CLOCK_RATE: f64 = 1789773.0; // NES NTSC clock
 pub const SAMPLE_RATE: u32 = 48000; // NES sample rate
 pub const SAMPLE_COUNT: u32 = SAMPLE_RATE / 10;
+pub const CHANNEL_COUNT: u32 = 4;
+pub const SOUND_COUNT: u32 = 65;
+pub const MUSIC_COUNT: u32 = 8;
 
 /*
 const int32_t AUDIO_SAMPLE_RATE = 22050;
 const int32_t AUDIO_BLOCK_SIZE = 2048;
 const int32_t AUDIO_ONE_SPEED = AUDIO_SAMPLE_RATE / 120;
 const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (4  7);
-
-const int32_t USER_SOUND_BANK_COUNT = 64;
-const int32_t TOTAL_SOUND_BANK_COUNT = USER_SOUND_BANK_COUNT + 1;
-const int32_t SOUND_BANK_FOR_SYSTEM = USER_SOUND_BANK_COUNT;
-
-const int32_t MUSIC_BANK_COUNT = 8;
 */
 
 //
