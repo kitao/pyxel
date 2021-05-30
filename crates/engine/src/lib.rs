@@ -2,6 +2,7 @@
 mod system;
 mod audio;
 mod canvas;
+mod channel;
 mod event;
 mod graphics;
 mod image;
@@ -12,7 +13,6 @@ mod palette;
 mod platform;
 mod rectarea;
 mod resource;
-mod sdl2;
 mod settings;
 mod sound;
 mod tilemap;
@@ -23,34 +23,13 @@ use crate::graphics::Graphics;
 use crate::input::Input;
 use crate::palette::{Color, Rgb24};
 use crate::resource::Resource;
-use crate::sdl2::Sdl2;
 use crate::system::System;
 
 pub use crate::key::*;
 pub use crate::settings::*;
 
-type CurrentPlatform = Sdl2;
-
-#[inline]
-fn i32_to_u32(v: i32) -> u32 {
-    if v < 0 {
-        0
-    } else {
-        v as u32
-    }
-}
-
-#[inline]
-fn u32_to_i32(v: u32) -> i32 {
-    if v > i32::MAX as u32 {
-        i32::MAX
-    } else {
-        v as i32
-    }
-}
-
 pub struct Pyxel {
-    system: System<CurrentPlatform>,
+    system: System,
     resource: Resource,
     input: Input,
     graphics: Graphics,
@@ -63,11 +42,7 @@ pub trait PyxelCallback {
 }
 
 impl Pyxel {
-    //
-    // System
-    //
-    #[inline]
-    pub fn init(
+    pub fn new(
         width: u32,
         height: u32,
         title: Option<&str>,
@@ -91,27 +66,22 @@ impl Pyxel {
     }
 
     #[inline]
-    pub fn width(&self) -> i32 {
-        u32_to_i32(self.graphics.screen().width())
+    pub fn width(&self) -> u32 {
+        self.graphics.screen().width()
     }
 
     #[inline]
-    pub fn height(&self) -> i32 {
-        u32_to_i32(self.graphics.screen().height())
+    pub fn height(&self) -> u32 {
+        self.graphics.screen().height()
     }
 
     #[inline]
-    pub fn frame_count(&self) -> i32 {
-        u32_to_i32(self.system.frame_count())
+    pub fn frame_count(&self) -> u32 {
+        self.system.frame_count()
     }
 
     #[inline]
-    pub fn title(&self) -> &str {
-        self.system.window_title()
-    }
-
-    #[inline]
-    pub fn set_title(&mut self, title: &str) {
+    pub fn title(&mut self, title: &str) {
         self.system.set_window_title(title);
     }
 
