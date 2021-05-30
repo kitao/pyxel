@@ -7,6 +7,7 @@ pub const PYXEL_VERSION: &str = "2.0.0";
 //const std::string WHITESPACE = " \t\v\r\n";
 
 pub const DEFAULT_TITLE: &str = "Pyxel";
+pub const DEFAULT_SCALE: u32 = 2;
 pub const DEFAULT_FPS: u32 = 30;
 
 /*
@@ -24,6 +25,8 @@ pub const MEASURE_FRAME_COUNT: u32 = 10;
 pub const ICON_SIZE: u32 = 16;
 pub const ICON_SCALE: u32 = 4;
 
+pub const MAX_WINDOW_SIZE_RATIO: f32 = 0.8;
+
 /*
 const std::vector<std::string> ICON_DATA = {
     "0000000110000000", "0000011F71100000", "00011FF11FF11000",
@@ -37,7 +40,6 @@ const std::vector<std::string> ICON_DATA = {
 const int32_t SCREEN_CAPTURE_COUNT = 900;
 const int32_t SCREEN_CAPTURE_SCALE = 2;
 
-const float MAX_WINDOW_SIZE_RATIO = 0.8f;
 */
 
 //
@@ -123,6 +125,10 @@ const std::vector<uint32_t> FONT_DATA = {
 //
 // Audio
 //
+pub const CLOCK_RATE: f64 = 1789773.0; // NES NTSC clock
+pub const SAMPLE_RATE: u32 = 48000; // NES sample rate
+pub const SAMPLE_COUNT: u32 = SAMPLE_RATE / 10;
+
 /*
 const int32_t AUDIO_SAMPLE_RATE = 22050;
 const int32_t AUDIO_BLOCK_SIZE = 2048;
