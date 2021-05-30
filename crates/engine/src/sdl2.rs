@@ -1,5 +1,8 @@
 use std::cmp::min;
+use std::sync::{Arc, Mutex};
 
+use sdl2::audio::AudioCallback as SdlAudioCallback;
+use sdl2::audio::AudioSpecDesired as SdlAudioSpecDesired;
 use sdl2::controller::Axis as SdlAxis;
 use sdl2::controller::Button as SdlButton;
 use sdl2::event::Event as SdlEvent;
@@ -11,6 +14,7 @@ use sdl2::rect::Rect as SdlRect;
 use sdl2::render::Texture as SdlTexture;
 use sdl2::render::WindowCanvas as SdlCanvas;
 use sdl2::video::FullscreenType as SdlFullscreenType;
+use sdl2::AudioSubsystem as SdlAudioSubsystem;
 use sdl2::EventPump as SdlEventPump;
 use sdl2::TimerSubsystem as SdlTimerSubsystem;
 
@@ -18,13 +22,28 @@ use crate::canvas::Canvas;
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
 use crate::image::Image;
 use crate::palette::Rgb24;
-use crate::platform::Platform;
+use crate::platform::{AudioCallback, Platform};
+
+struct MySdlAudioCallback {
+    audio_callback: Arc<Mutex<dyn AudioCallback + Send>>,
+}
+
+impl SdlAudioCallback for MySdlAudioCallback {
+    type Channel = f32;
+
+    #[inline]
+    fn callback(&mut self, out: &mut [f32]) {
+        let mut audio_callback = self.audio_callback.lock().unwrap();
+        audio_callback.audio_callback(out);
+    }
+}
 
 pub struct Sdl2 {
     sdl_canvas: SdlCanvas,
     sdl_texture: SdlTexture,
     sdl_timer: SdlTimerSubsystem,
     sdl_event_pump: SdlEventPump,
+    sdl_audio: SdlAudioSubsystem,
 }
 
 impl Platform for Sdl2 {
@@ -45,12 +64,14 @@ impl Platform for Sdl2 {
             .unwrap();
         let sdl_timer = sdl_context.timer().unwrap();
         let sdl_event_pump = sdl_context.event_pump().unwrap();
+        let sdl_audio = sdl_context.audio().unwrap();
 
         let mut sdl2 = Sdl2 {
             sdl_timer: sdl_timer,
             sdl_canvas: sdl_canvas,
             sdl_texture: sdl_texture,
             sdl_event_pump: sdl_event_pump,
+            sdl_audio: sdl_audio,
         };
 
         sdl2.sdl_canvas
@@ -325,5 +346,29 @@ impl Platform for Sdl2 {
             .unwrap();
 
         self.sdl_canvas.present();
+    }
+
+    #[inline]
+    fn init_audio(
+        &mut self,
+        sample_rate: u32,
+        channels: u32,
+        sample_count: u32,
+        audio_callback: Arc<Mutex<dyn AudioCallback + Send>>,
+    ) {
+        let spec = SdlAudioSpecDesired {
+            freq: Some(sample_rate as i32),
+            channels: Some(channels as u8),
+            samples: Some(sample_count as u16),
+        };
+
+        let device = self
+            .sdl_audio
+            .open_playback(None, &spec, |_| MySdlAudioCallback {
+                audio_callback: audio_callback,
+            })
+            .unwrap();
+
+        device.resume();
     }
 }
