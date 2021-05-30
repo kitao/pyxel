@@ -1,4 +1,4 @@
-use pyxel_engine::*;
+use pyxel::{Pyxel, PyxelCallback};
 
 pub struct App {
     x: i32,
@@ -14,7 +14,7 @@ impl App {
 impl PyxelCallback for App {
     fn update(&mut self, pyxel: &mut Pyxel) {
         if pyxel.frame_count() < 60 {
-            self.x += pyxel.frame_count() % 2;
+            self.x += (pyxel.frame_count() % 2) as i32;
             self.y -= 1;
         }
     }
@@ -23,12 +23,12 @@ impl PyxelCallback for App {
         pyxel.cls(3);
         pyxel.pset(self.x, 20, 7);
         pyxel.rect(self.x + 10, 25, 15, 10, 8);
-        pyxel.rectb(self.x + 15, 45, 15, 10, COLOR_WHITE);
+        pyxel.rectb(self.x + 15, 45, 15, 10, pyxel::COLOR_WHITE);
     }
 }
 
 pub fn main() {
-    let mut pyxel = Pyxel::init(200, 150, Some("Hello, Pyxel in Rust!"), None, None, None);
+    let mut pyxel = Pyxel::new(200, 150, Some("Hello, Pyxel in Rust!"), None, None, None);
     let mut app = App::new();
 
     pyxel.run(&mut app);
