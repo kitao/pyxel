@@ -17,6 +17,8 @@ mod settings;
 mod sound;
 mod tilemap;
 
+use std::sync::{Arc, Mutex};
+
 use crate::audio::Audio;
 use crate::canvas::Canvas;
 use crate::graphics::Graphics;
@@ -33,7 +35,7 @@ pub struct Pyxel {
     resource: Resource,
     input: Input,
     graphics: Graphics,
-    audio: Audio,
+    audio: Arc<Mutex<Audio>>,
 }
 
 pub trait PyxelCallback {
@@ -50,11 +52,11 @@ impl Pyxel {
         fps: Option<u32>,
         colors: Option<&[Rgb24]>,
     ) -> Pyxel {
-        let system = System::new(width, height, title, scale, fps);
+        let mut system = System::new(width, height, title, scale, fps);
         let resource = Resource::new();
         let input = Input::new();
         let graphics = Graphics::new(width, height, colors);
-        let audio = Audio::new();
+        let audio = Audio::new(system.platform_mut());
 
         Pyxel {
             system: system,
