@@ -1,17 +1,17 @@
 use std::cmp::min;
+use std::sync::{Arc, Mutex};
 
-use crate::canvas::Canvas;
 use crate::event::Event;
 use crate::graphics::Graphics;
 use crate::input::Input;
-use crate::platform::Platform;
+use crate::platform::{AudioCallback, Platform};
 use crate::rectarea::Rectarea;
-use crate::settings::{BACKGROUND_COLOR, DEFAULT_FPS, DEFAULT_TITLE, MAX_FRAME_SKIP_COUNT};
+use crate::settings::{
+    BACKGROUND_COLOR, DEFAULT_FPS, DEFAULT_SCALE, DEFAULT_TITLE, MAX_FRAME_SKIP_COUNT,
+};
 
-pub struct System<T: Platform> {
-    platform: T,
-
-    target_fps: u32,
+pub struct System {
+    platform: Platform,
 
     frame_count: u32,
     one_frame_time: f64,
@@ -34,24 +34,30 @@ pub struct System<T: Platform> {
     */
 }
 
-impl<T: Platform> System<T> {
+pub trait SystemCallback<T> {
+    fn update(&mut self, context: &mut T);
+    fn draw(&mut self, context: &mut T);
+}
+
+impl System {
+    #[inline]
     pub fn new(
-        platform: T,
-        pwidth: u32,
+        width: u32,
         height: u32,
         title: Option<&str>,
+        scale: Option<u32>,
         fps: Option<u32>,
-    ) -> System<T> {
+    ) -> System {
         let title = title.unwrap_or(DEFAULT_TITLE);
-        let fps = fps.unwrap_or(DEFAULT_FPS);
+        let scale = scale.unwrap_or(DEFAULT_SCALE);
+        let platform = Platform::new(title, width, height, scale);
 
+        let fps = fps.unwrap_or(DEFAULT_FPS);
         let one_frame_time = 1000.0 / fps as f64;
         let next_update_time = platform.ticks() as f64;
 
-        let mut system = System::<T> {
+        System {
             platform: platform,
-
-            target_fps: fps,
 
             frame_count: 0,
             one_frame_time: one_frame_time,
@@ -61,11 +67,7 @@ impl<T: Platform> System<T> {
             should_quit: false,
             disable_frame_skip_once: false,
             performance_monitor_enabled: false,
-        };
-
-        system.set_window_title(title);
-
-        system
+        }
     }
 
     #[inline]
@@ -164,7 +166,7 @@ impl<T: Platform> System<T> {
         let window_rect =
             Rectarea::with_size(window_pos.0, window_pos.1, window_size.0, window_size.1);
 
-        input.update_frame(self.frame_count, window_rect);
+        input.start_update(self.frame_count, window_rect);
 
         while let Some(event) = self.platform.poll_event() {
             match event {
@@ -181,6 +183,8 @@ impl<T: Platform> System<T> {
                 _ => input.process_event(event),
             }
         }
+
+        input.end_update();
 
         /*
         Event::Quit { .. }
@@ -255,17 +259,17 @@ impl<T: Platform> System<T> {
     // methods for run macro
     //
     #[inline]
-    pub fn _should_update(&self) -> bool {
+    pub(crate) fn should_update(&self) -> bool {
         self.waiting_update_count > 0
     }
 
     #[inline]
-    pub fn _should_quit(&self) -> bool {
+    pub(crate) fn should_quit(&self) -> bool {
         self.should_quit
     }
 
     #[inline]
-    pub fn _init_run_status(&mut self) {
+    pub(crate) fn init_run_states(&mut self) {
         self.next_update_time = self.platform.ticks() as f64 + self.one_frame_time;
         self.should_quit = false;
         self.disable_frame_skip_once = true;
@@ -273,7 +277,7 @@ impl<T: Platform> System<T> {
     }
 
     #[inline]
-    pub fn _prepare_for_update(&mut self) {
+    pub(crate) fn prepare_for_update(&mut self) {
         let sleep_time = self.wait_for_update_time();
 
         // TODO: fps_profiler_.End();
@@ -293,7 +297,7 @@ impl<T: Platform> System<T> {
     }
 
     #[inline]
-    pub fn _start_update(&mut self, input: &mut Input) {
+    pub(crate) fn start_update(&mut self, input: &mut Input) {
         // TODO: update_profiler_.Start();
 
         self.process_events(input);
@@ -304,7 +308,7 @@ impl<T: Platform> System<T> {
     }
 
     #[inline]
-    pub fn end_update(&mut self) {
+    pub(crate) fn end_update(&mut self) {
         // TODO: update_profiler_.End();
 
         if self.waiting_update_count > 0 {
@@ -314,12 +318,12 @@ impl<T: Platform> System<T> {
     }
 
     #[inline]
-    pub fn _start_draw(&mut self) {
+    pub(crate) fn start_draw(&mut self) {
         //
     }
 
     #[inline]
-    pub fn _end_draw(&mut self, graphics: &Graphics) {
+    pub(crate) fn end_draw(&mut self, graphics: &Graphics) {
         self.platform
             .render_screen(graphics.screen(), BACKGROUND_COLOR);
 
@@ -329,15 +333,15 @@ impl<T: Platform> System<T> {
 
 macro_rules! update_frame {
     ($self: expr, $callback: expr, $quit: stmt) => {
-        $self.system._start_update(&mut $self.input);
+        $self.system.start_update(&mut $self.input);
 
-        if $self.system._should_quit() {
+        if $self.system.should_quit() {
             $quit
         }
 
         $callback.update($self);
 
-        if $self.system._should_quit() {
+        if $self.system.should_quit() {
             $quit
         }
 
@@ -347,26 +351,26 @@ macro_rules! update_frame {
 
 macro_rules! draw_frame {
     ($self: expr, $callback: expr) => {
-        $self.system._start_draw();
+        $self.system.start_draw();
 
         $callback.draw($self);
 
-        $self.system._end_draw(&$self.graphics);
+        $self.system.end_draw(&$self.graphics);
     };
 }
 
 macro_rules! run {
     ($self: expr, $callback: expr) => {
         'main_loop: loop {
-            $self.system._init_run_status();
+            $self.system.init_run_states();
 
             update_frame!($self, $callback, break 'main_loop);
             draw_frame!($self, $callback);
 
             loop {
-                $self.system._prepare_for_update();
+                $self.system.prepare_for_update();
 
-                while $self.system._should_update() {
+                while $self.system.should_update() {
                     update_frame!($self, $callback, break 'main_loop);
                 }
 
@@ -374,9 +378,4 @@ macro_rules! run {
             }
         }
     };
-}
-
-#[cfg(test)]
-mod tests {
-    //
 }
