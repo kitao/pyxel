@@ -2,6 +2,7 @@ use std::cmp::min;
 use std::sync::{Arc, Mutex};
 
 use sdl2::audio::AudioCallback as SdlAudioCallback;
+use sdl2::audio::AudioDevice as SdlAudioDevice;
 use sdl2::audio::AudioSpecDesired as SdlAudioSpecDesired;
 use sdl2::controller::Axis as SdlAxis;
 use sdl2::controller::Button as SdlButton;
@@ -27,11 +28,11 @@ pub trait AudioCallback {
     fn audio_callback(&mut self, out: &mut [f32]);
 }
 
-struct MySdlAudioCallback {
+struct AudioCallbackData {
     audio_callback: Arc<Mutex<dyn AudioCallback + Send>>,
 }
 
-impl SdlAudioCallback for MySdlAudioCallback {
+impl SdlAudioCallback for AudioCallbackData {
     type Channel = f32;
 
     #[inline]
@@ -47,6 +48,7 @@ pub struct Platform {
     sdl_timer: SdlTimerSubsystem,
     sdl_event_pump: SdlEventPump,
     sdl_audio: SdlAudioSubsystem,
+    sdl_audio_device: Option<SdlAudioDevice<AudioCallbackData>>,
 }
 
 impl Platform {
@@ -80,6 +82,7 @@ impl Platform {
             sdl_texture: sdl_texture,
             sdl_event_pump: sdl_event_pump,
             sdl_audio: sdl_audio,
+            sdl_audio_device: None,
         }
     }
 
@@ -353,23 +356,24 @@ impl Platform {
     pub fn init_audio(
         &mut self,
         sample_rate: u32,
-        channels: u32,
         sample_count: u32,
         audio_callback: Arc<Mutex<dyn AudioCallback + Send>>,
     ) {
         let spec = SdlAudioSpecDesired {
             freq: Some(sample_rate as i32),
-            channels: Some(channels as u8),
+            channels: Some(1),
             samples: Some(sample_count as u16),
         };
 
-        let device = self
+        let sdl_audio_device = self
             .sdl_audio
-            .open_playback(None, &spec, |_| MySdlAudioCallback {
+            .open_playback(None, &spec, |_| AudioCallbackData {
                 audio_callback: audio_callback,
             })
             .unwrap();
 
-        device.resume();
+        sdl_audio_device.resume();
+
+        self.sdl_audio_device = Some(sdl_audio_device);
     }
 }
