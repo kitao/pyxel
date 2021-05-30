@@ -5,13 +5,13 @@ use crate::key::*;
 use crate::rectarea::Rectarea;
 
 enum KeyState {
-  Pressed(u32),
-  Released(u32),
+  Pressed { frame_count: u32 },
+  Released { frame_count: u32 },
 }
 
 pub struct Input {
-  is_mouse_visible: bool,
   frame_count: u32,
+  is_mouse_visible: bool,
   window_rect: Rectarea,
   key_states: HashMap<KeyCode, KeyState>,
   key_values: HashMap<KeyCode, KeyValue>,
@@ -86,7 +86,7 @@ impl Input {
   #[inline]
   pub fn is_key_on(&self, key: KeyCode) -> bool {
     match self.key_states.get(&key) {
-      Some(KeyState::Pressed(..)) => true,
+      Some(KeyState::Pressed { .. }) => true,
       _ => false,
     }
   }
@@ -107,7 +107,7 @@ impl Input {
   }
 
   #[inline]
-  pub fn update_frame(&mut self, frame_count: u32, window_rect: Rectarea) {
+  pub(crate) fn start_update(&mut self, frame_count: u32, window_rect: Rectarea) {
     self.frame_count = frame_count;
     self.window_rect = window_rect;
 
@@ -116,7 +116,7 @@ impl Input {
   }
 
   #[inline]
-  pub fn process_event(&mut self, event: Event) {
+  pub(crate) fn process_event(&mut self, event: Event) {
     match event {
       Event::KeyDown { key } => {
         if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
@@ -203,7 +203,7 @@ impl Input {
   }
 
   #[inline]
-  pub fn end_process_event(&mut self) {
+  pub(crate) fn end_update(&mut self) {
     //
   }
 
@@ -220,16 +220,22 @@ impl Input {
 
   #[inline]
   fn press_key(&mut self, key: KeyCode) {
-    self
-      .key_states
-      .insert(key, KeyState::Pressed(self.frame_count));
+    self.key_states.insert(
+      key,
+      KeyState::Pressed {
+        frame_count: self.frame_count,
+      },
+    );
   }
 
   #[inline]
   fn release_key(&mut self, key: KeyCode) {
-    self
-      .key_states
-      .insert(key, KeyState::Released(self.frame_count));
+    self.key_states.insert(
+      key,
+      KeyState::Released {
+        frame_count: self.frame_count,
+      },
+    );
   }
 }
 
