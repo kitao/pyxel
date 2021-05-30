@@ -10,8 +10,8 @@ use crate::settings::{
     BACKGROUND_COLOR, DEFAULT_FPS, DEFAULT_SCALE, DEFAULT_TITLE, MAX_FRAME_SKIP_COUNT,
 };
 
-pub struct System {
-    platform: Platform,
+pub struct System<T> {
+    platform: T,
 
     frame_count: u32,
     one_frame_time: f64,
@@ -39,7 +39,7 @@ pub trait SystemCallback<T> {
     fn draw(&mut self, context: &mut T);
 }
 
-impl System {
+impl<T: Platform> System<T> {
     #[inline]
     pub fn new(
         width: u32,
@@ -47,10 +47,10 @@ impl System {
         title: Option<&str>,
         scale: Option<u32>,
         fps: Option<u32>,
-    ) -> System {
+    ) -> System<T> {
         let title = title.unwrap_or(DEFAULT_TITLE);
         let scale = scale.unwrap_or(DEFAULT_SCALE);
-        let platform = Platform::new(title, width, height, scale);
+        let platform = T::new(title, width, height, scale);
 
         let fps = fps.unwrap_or(DEFAULT_FPS);
         let one_frame_time = 1000.0 / fps as f64;
@@ -207,7 +207,7 @@ impl System {
     }
 
     #[inline]
-    pub(crate) fn platform_mut(&mut self) -> &mut Platform {
+    pub(crate) fn platform_mut(&mut self) -> &mut T {
         &mut self.platform
     }
 
