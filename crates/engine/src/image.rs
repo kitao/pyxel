@@ -38,7 +38,7 @@ impl Image {
     &mut self,
     x: i32,
     y: i32,
-    src: &dyn Canvas<Color>,
+    src: &Image,
     u: i32,
     v: i32,
     width: i32,
