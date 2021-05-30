@@ -1,8 +1,6 @@
 use crate::image::Image;
 use crate::palette::Rgb24;
-use crate::settings::{
-    DISPLAY_COLORS, IMAGEBANK_COUNT, IMAGEBANK_SIZE, TILEMAP_COUNT, TILEMAP_SIZE,
-};
+use crate::settings::{DISPLAY_COLORS, IMAGE_COUNT, IMAGE_SIZE, TILEMAP_COUNT, TILEMAP_SIZE};
 use crate::tilemap::Tilemap;
 
 pub struct Graphics {
@@ -21,8 +19,8 @@ impl Graphics {
             .palette_mut()
             .set_display_colors(colors.unwrap_or(&DISPLAY_COLORS));
 
-        for _ in 0..IMAGEBANK_COUNT {
-            images.push(Image::new(IMAGEBANK_SIZE, IMAGEBANK_SIZE));
+        for _ in 0..IMAGE_COUNT {
+            images.push(Image::new(IMAGE_SIZE, IMAGE_SIZE));
         }
 
         for _ in 0..TILEMAP_COUNT {
