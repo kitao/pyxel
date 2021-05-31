@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::event::Event;
 use crate::key::*;
-use crate::rectarea::Rectarea;
+use crate::rectarea::RectArea;
 
 enum KeyState {
   Pressed { frame_count: u32 },
@@ -12,7 +12,7 @@ enum KeyState {
 pub struct Input {
   frame_count: u32,
   is_mouse_visible: bool,
-  window_rect: Rectarea,
+  window_rect: RectArea,
   key_states: HashMap<KeyCode, KeyState>,
   key_values: HashMap<KeyCode, KeyValue>,
 }
@@ -21,7 +21,7 @@ impl Input {
   pub fn new() -> Input {
     Input {
       frame_count: 0,
-      window_rect: Rectarea::with_size(0, 0, 0, 0),
+      window_rect: RectArea::with_size(0, 0, 0, 0),
       is_mouse_visible: true,
       key_states: HashMap::new(),
       key_values: HashMap::new(),
@@ -107,7 +107,7 @@ impl Input {
   }
 
   #[inline]
-  pub(crate) fn start_update(&mut self, frame_count: u32, window_rect: Rectarea) {
+  pub(crate) fn start_update(&mut self, frame_count: u32, window_rect: RectArea) {
     self.frame_count = frame_count;
     self.window_rect = window_rect;
 
@@ -240,9 +240,6 @@ impl Input {
 }
 
 /*
-#define GET_KEY_STATE(key) \
-  sdl_scancode_state[SDL_GetScancodeFromKey(SDL_KeyCode_TABLE[key])]
-
 Input::Input() {
   gamepad1_ = SDL_GameControllerOpen(0);
   gamepad2_ = SDL_GameControllerOpen(1);
@@ -272,16 +269,6 @@ Input::~Input() {
 }
 
 void Input::Update(Window* window, int32_t frame_count) {
-  frame_count_ = frame_count + 1;  // change frame_count to start from 1
-
-  SDL_GetGlobalMouseState(&mouse_x_, &mouse_y_);
-
-  mouse_x_ = (mouse_x_ - (window->WindowX() + window->ScreenX())) /
-             window->ScreenScale();
-  mouse_y_ = (mouse_y_ - (window->WindowY() + window->ScreenY())) /
-             window->ScreenScale();
-  mouse_wheel_ = window->GetMouseWheel();
-
   if (is_mouse_visible_) {
     SDL_ShowCursor(true);
     SDL_SetCursor(mouse_x_ >= 0 && mouse_x_ < window->ScreenWidth() &&

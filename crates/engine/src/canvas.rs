@@ -1,13 +1,13 @@
-use crate::rectarea::Rectarea;
+use crate::rectarea::RectArea;
 
 pub trait Canvas<T: Copy + Default> {
   fn width(&self) -> u32;
   fn height(&self) -> u32;
   fn data(&self) -> &Vec<Vec<T>>;
   fn data_mut(&mut self) -> &mut Vec<Vec<T>>;
-  fn self_rect(&self) -> Rectarea;
-  fn clip_rect(&self) -> Rectarea;
-  fn clip_rect_mut(&mut self) -> &mut Rectarea;
+  fn self_rect(&self) -> RectArea;
+  fn clip_rect(&self) -> RectArea;
+  fn clip_rect_mut(&mut self) -> &mut RectArea;
   fn render_color(&self, original_color: T) -> T;
 
   #[inline]
@@ -22,7 +22,7 @@ pub trait Canvas<T: Copy + Default> {
 
   #[inline]
   fn set_clip_area(&mut self, left: i32, top: i32, width: u32, height: u32) {
-    let rect = Rectarea::with_size(left, top, width, height).intersects(self.self_rect());
+    let rect = RectArea::with_size(left, top, width, height).intersects(self.self_rect());
 
     *self.clip_rect_mut() = rect;
   }
@@ -69,7 +69,7 @@ pub trait Canvas<T: Copy + Default> {
   #[inline]
   fn draw_rect(&mut self, x: i32, y: i32, width: u32, height: u32, color: T) {
     let color = self.render_color(color);
-    let rect = Rectarea::with_size(x, y, width, height).intersects(self.clip_rect());
+    let rect = RectArea::with_size(x, y, width, height).intersects(self.clip_rect());
 
     if rect.is_empty() {
       return;
@@ -90,7 +90,7 @@ pub trait Canvas<T: Copy + Default> {
   #[inline]
   fn draw_rect_border(&mut self, x: i32, y: i32, width: u32, height: u32, color: T) {
     let color = self.render_color(color);
-    let rect = Rectarea::with_size(x, y, width, height).intersects(self.clip_rect());
+    let rect = RectArea::with_size(x, y, width, height).intersects(self.clip_rect());
 
     if rect.is_empty() {
       return;
