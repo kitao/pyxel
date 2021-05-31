@@ -47,30 +47,30 @@ impl Graphics {
     }
 
     #[inline]
-    pub fn image(&self, no: usize) -> &Image {
-        if no < self.images.len() {
-            &self.images[no]
+    pub fn image(&self, no: u32) -> &Image {
+        if no < self.images.len() as u32 {
+            &self.images[no as usize]
         } else {
             &self.screen
         }
     }
 
     #[inline]
-    pub fn image_mut(&mut self, no: usize) -> &mut Image {
-        if no < self.images.len() {
-            &mut self.images[no]
+    pub fn image_mut(&mut self, no: u32) -> &mut Image {
+        if no < self.images.len() as u32 {
+            &mut self.images[no as usize]
         } else {
             &mut self.screen
         }
     }
 
     #[inline]
-    pub fn tilemap(&self, no: usize) -> &Tilemap {
-        &self.tilemaps[no]
+    pub fn tilemap(&self, no: u32) -> &Tilemap {
+        &self.tilemaps[no as usize]
     }
 
     #[inline]
-    pub fn tilemap_mut(&mut self, no: usize) -> &mut Tilemap {
-        &mut self.tilemaps[no]
+    pub fn tilemap_mut(&mut self, no: u32) -> &mut Tilemap {
+        &mut self.tilemaps[no as usize]
     }
 }
