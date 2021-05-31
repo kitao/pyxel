@@ -1,6 +1,6 @@
 use crate::canvas::Canvas;
 use crate::palette::{Color, Palette};
-use crate::rectarea::Rectarea;
+use crate::rectarea::RectArea;
 
 #[derive(Debug)]
 pub struct Image {
@@ -8,8 +8,8 @@ pub struct Image {
   height: u32,
   data: Vec<Vec<Color>>,
   palette: Palette,
-  self_rect: Rectarea,
-  clip_rect: Rectarea,
+  self_rect: RectArea,
+  clip_rect: RectArea,
 }
 
 impl Image {
@@ -19,8 +19,8 @@ impl Image {
       height: height,
       data: vec![vec![0; width as usize]; height as usize],
       palette: Palette::new(),
-      self_rect: Rectarea::with_size(0, 0, width, height),
-      clip_rect: Rectarea::with_size(0, 0, width, height),
+      self_rect: RectArea::with_size(0, 0, width, height),
+      clip_rect: RectArea::with_size(0, 0, width, height),
     }
   }
 
@@ -75,17 +75,17 @@ impl Canvas<Color> for Image {
   }
 
   #[inline]
-  fn self_rect(&self) -> Rectarea {
+  fn self_rect(&self) -> RectArea {
     self.self_rect
   }
 
   #[inline]
-  fn clip_rect(&self) -> Rectarea {
+  fn clip_rect(&self) -> RectArea {
     self.clip_rect
   }
 
   #[inline]
-  fn clip_rect_mut(&mut self) -> &mut Rectarea {
+  fn clip_rect_mut(&mut self) -> &mut RectArea {
     &mut self.clip_rect
   }
 

@@ -1,5 +1,5 @@
 use crate::canvas::Canvas;
-use crate::rectarea::Rectarea;
+use crate::rectarea::RectArea;
 
 pub type Tile = u16;
 
@@ -8,8 +8,8 @@ pub struct Tilemap {
     width: u32,
     height: u32,
     data: Vec<Vec<Tile>>,
-    self_rect: Rectarea,
-    clip_rect: Rectarea,
+    self_rect: RectArea,
+    clip_rect: RectArea,
 }
 
 impl Tilemap {
@@ -18,8 +18,8 @@ impl Tilemap {
             width: width,
             height: height,
             data: vec![vec![0; width as usize]; height as usize],
-            self_rect: Rectarea::with_size(0, 0, width, height),
-            clip_rect: Rectarea::with_size(0, 0, width, height),
+            self_rect: RectArea::with_size(0, 0, width, height),
+            clip_rect: RectArea::with_size(0, 0, width, height),
         }
     }
 }
@@ -46,17 +46,17 @@ impl Canvas<Tile> for Tilemap {
     }
 
     #[inline]
-    fn self_rect(&self) -> Rectarea {
+    fn self_rect(&self) -> RectArea {
         self.self_rect
     }
 
     #[inline]
-    fn clip_rect(&self) -> Rectarea {
+    fn clip_rect(&self) -> RectArea {
         self.clip_rect
     }
 
     #[inline]
-    fn clip_rect_mut(&mut self) -> &mut Rectarea {
+    fn clip_rect_mut(&mut self) -> &mut RectArea {
         &mut self.clip_rect
     }
 
