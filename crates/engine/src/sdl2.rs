@@ -94,28 +94,52 @@ impl Platform for Sdl2 {
     }
 
     #[inline]
-    fn window_title(&self) -> &str {
-        self.sdl_canvas.window().title()
-    }
-
-    #[inline]
     fn set_window_title(&mut self, title: &str) {
         self.sdl_canvas.window_mut().set_title(title).unwrap();
     }
 
     #[inline]
     fn set_window_icon(&mut self, icon: &Image, scale: u32) {
-        //
+        /*
+        void Window::SetupWindowIcon() const {
+            SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
+                0, ICON_WIDTH * ICON_SCALE, ICON_HEIGHT * ICON_SCALE, 32,
+                SDL_PIXELFORMAT_RGBA8888);
+
+            Image* image = new Image(ICON_WIDTH, ICON_HEIGHT);
+            image->SetData(0, 0, ICON_DATA);
+
+            int32_t** src_data = image->Data();
+            uint32_t* dst_data = reinterpret_cast<uint32_t*>(surface->pixels);
+
+            for (int32_t i = 0; i < ICON_HEIGHT; i++) {
+                int32_t index = ICON_WIDTH * i;
+
+                for (int32_t j = 0; j < ICON_WIDTH; j++) {
+                    int32_t color = src_data[i][j];
+                    uint32_t argb = color == 0 ? 0 : (DEFAULT_PALETTE[color] << 8) + 0xff;
+
+                    for (int32_t y = 0; y < ICON_SCALE; y++) {
+                        int32_t index = (ICON_WIDTH * (i * ICON_SCALE + y) + j) * ICON_SCALE;
+
+                        for (int32_t x = 0; x < ICON_SCALE; x++) {
+                            dst_data[index + x] = argb;
+                        }
+                    }
+                }
+            }
+
+            SDL_SetWindowIcon(window_, surface);
+            SDL_FreeSurface(surface);
+
+            delete image;
+        }
+        */
     }
 
     #[inline]
-    fn is_fullscreen(&self) -> bool {
-        self.sdl_canvas.window().fullscreen_state() == SdlFullscreenType::True
-    }
-
-    #[inline]
-    fn set_fullscreen(&mut self, is_fullscreen: bool) {
-        if is_fullscreen {
+    fn toggle_fullscreen(&mut self) {
+        if self.sdl_canvas.window().fullscreen_state() == SdlFullscreenType::True {
             self.sdl_canvas
                 .window_mut()
                 .set_fullscreen(SdlFullscreenType::True)
