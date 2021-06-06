@@ -30,10 +30,10 @@ struct AudioCallbackData {
 }
 
 impl SdlAudioCallback for AudioCallbackData {
-    type Channel = f32;
+    type Channel = i16;
 
     #[inline]
-    fn callback(&mut self, out: &mut [f32]) {
+    fn callback(&mut self, out: &mut [i16]) {
         let mut audio_callback = self.audio_callback.lock().unwrap();
         audio_callback.audio_callback(out);
     }
