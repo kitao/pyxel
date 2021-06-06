@@ -132,6 +132,11 @@ pub const CHANNEL_COUNT: u32 = 4;
 pub const SOUND_COUNT: u32 = 65;
 pub const MUSIC_COUNT: u32 = 8;
 
+pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0;
+pub const SQUARE_VOLUME_FACTOR: f64 = 0.2;
+pub const PULSE_VOLUME_FACTOR: f64 = 0.2;
+pub const NOISE_VOLUME_FACTOR: f64 = 0.5;
+
 /*
 const int32_t AUDIO_SAMPLE_RATE = 22050;
 const int32_t AUDIO_BLOCK_SIZE = 2048;
