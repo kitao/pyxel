@@ -3,7 +3,6 @@ use crate::rectarea::RectArea;
 
 pub type Tile = u16;
 
-#[derive(Debug)]
 pub struct Tilemap {
     width: u32,
     height: u32,
