@@ -2,7 +2,6 @@ use crate::canvas::Canvas;
 use crate::palette::{Color, Palette};
 use crate::rectarea::RectArea;
 
-#[derive(Debug)]
 pub struct Image {
   width: u32,
   height: u32,
