@@ -9,6 +9,7 @@ mod image;
 mod input;
 mod key;
 mod music;
+mod oscillator;
 mod palette;
 mod platform;
 mod rectarea;
