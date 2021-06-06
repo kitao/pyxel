@@ -5,7 +5,7 @@ use crate::image::Image;
 use crate::palette::Rgb24;
 
 pub trait AudioCallback {
-    fn audio_callback(&mut self, out: &mut [f32]);
+    fn audio_callback(&mut self, out: &mut [i16]);
 }
 
 pub trait Platform {
