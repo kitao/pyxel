@@ -14,22 +14,20 @@ pub struct Audio {
     blip_buf: BlipBuf,
     channels: Vec<Channel>,
     sounds: Vec<Arc<Mutex<Sound>>>,
-    musics: Vec<Music>,
-    /*
-    SDL_AudioDeviceID audio_device_id_;
-    Sound** sound_bank_;
-    Music** music_bank_;
-    Channel channel_[MUSIC_CHANNEL_COUNT];
-    */
+    musics: Vec<Arc<Mutex<Music>>>,
 }
 
 impl AudioCallback for Audio {
-    fn audio_callback(&mut self, out: &mut [f32]) {
-        let blip_buf = &self.blip_buf;
+    fn audio_callback(&mut self, out: &mut [i16]) {
+        let blip_buf = &mut self.blip_buf;
+        let clocks = blip_buf.clocks_needed(out.len() as u32);
 
-        for x in out.iter_mut() {
-            *x = 0.0;
+        for channel in &mut self.channels {
+            channel.update(blip_buf, clocks);
         }
+
+        blip_buf.end_frame(clocks);
+        blip_buf.read_samples(out, false);
     }
 }
 
@@ -43,7 +41,7 @@ impl Audio {
         blip_buf.set_rates(CLOCK_RATE, SAMPLE_RATE as f64);
 
         for _ in 0..CHANNEL_COUNT {
-            channels.push(Channel::new());
+            channels.push(Channel::new(SAMPLE_RATE));
         }
 
         for _ in 0..SOUND_COUNT {
@@ -51,7 +49,7 @@ impl Audio {
         }
 
         for _ in 0..MUSIC_COUNT {
-            musics.push(Music::new());
+            musics.push(Arc::new(Mutex::new(Music::new())));
         }
 
         let audio = Arc::new(Mutex::new(Audio {
@@ -67,18 +65,16 @@ impl Audio {
     }
 
     #[inline]
-    pub fn sound(&self, no: usize) -> Arc<Mutex<Sound>> {
-        self.sounds[no].clone()
+    pub fn sound(&self, no: u32) -> Arc<Mutex<Sound>> {
+        self.sounds[no as usize].clone()
     }
 
     #[inline]
-    pub fn music(&self, no: usize) -> &Music {
-        &self.musics[no]
+    pub fn music(&self, no: u32) -> Arc<Mutex<Music>> {
+        self.musics[no as usize].clone()
     }
 
     /*
-    Sound* GetSoundBank(int32_t sound_index, bool system = false) const;
-    Music* GetMusicBank(int32_t music_index) const;
     int32_t GetPlayPos(int32_t channel) const;
     void PlaySound(int32_t channel, int32_t sound_index, bool loop = false);
     void PlaySound(int32_t channel,
