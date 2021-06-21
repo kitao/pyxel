@@ -7,10 +7,9 @@ use crate::sound::Sound;
 
 pub struct Channel {
     sample_rate: u32,
-    period: u32,
-    elapsed: u32,
+    start_offset: u32,
+    sound_period: u32,
     oscillator: Oscillator,
-
     sounds: Vec<Arc<Mutex<Sound>>>,
     /*
      bool is_playing_;
@@ -48,8 +47,8 @@ impl Channel {
 
         Channel {
             sample_rate: sample_rate,
-            period: 0,
-            elapsed: 0,
+            start_offset: 0,
+            sound_period: 0,
             oscillator: oscillator,
             sounds: Vec::new(),
         }
@@ -77,22 +76,35 @@ impl Channel {
     }
 
     #[inline]
-    pub fn update(&mut self, blip_buf: &mut BlipBuf, clocks: u32) {
-        let mut cur_time = 0;
-        let end_time = clocks;
-
-        while cur_time < end_time {
-            // play
-
-            let tone_clocks = self.period - self.elapsed;
-            self.elapsed = 0;
-
-            self.oscillator.update(blip_buf, cur_time, tone_clocks);
-
-            cur_time += tone_clocks;
+    pub fn update(&mut self, blip_buf: &mut BlipBuf, end_time: u32) {
+        if self.start_offset >= end_time {
+            self.oscillator.update(blip_buf, 0, end_time);
+            self.start_offset -= end_time;
+            return;
         }
 
-        self.elapsed = cur_time - end_time;
+        let mut cur_time = 0;
+
+        if self.start_offset > 0 {
+            self.oscillator.update(blip_buf, 0, self.start_offset);
+            cur_time = self.start_offset;
+        }
+
+        loop {
+            // play
+
+            let next_time = cur_time + self.sound_period;
+
+            if next_time >= end_time {
+                self.oscillator.update(blip_buf, cur_time, end_time);
+                self.start_offset = next_time - end_time;
+                return;
+            }
+
+            self.oscillator.update(blip_buf, cur_time, next_time);
+
+            cur_time = next_time;
+        }
 
         /*
         if (!is_playing_) {
