@@ -19,7 +19,7 @@ pub trait Platform {
     fn delay(&mut self, ms: u32);
     fn poll_event(&mut self) -> Option<Event>;
     fn render_screen(&mut self, screen: &Image, bg_color: Rgb24);
-    fn init_audio(
+    fn start_audio(
         &mut self,
         sample_rate: u32,
         sample_count: u32,
