@@ -2,13 +2,10 @@ use std::sync::{Arc, Mutex};
 
 use blip_buf::BlipBuf;
 
-use crate::oscillator::Oscillator;
+use crate::oscillator::{Effect, Oscillator, Tone};
 use crate::sound::Sound;
 
 pub struct Channel {
-    sample_rate: u32,
-    start_offset: u32,
-    sound_period: u32,
     oscillator: Oscillator,
     sounds: Vec<Arc<Mutex<Sound>>>,
     /*
@@ -46,9 +43,6 @@ impl Channel {
         let oscillator = Oscillator::new();
 
         Channel {
-            sample_rate: sample_rate,
-            start_offset: 0,
-            sound_period: 0,
             oscillator: oscillator,
             sounds: Vec::new(),
         }
@@ -76,36 +70,7 @@ impl Channel {
     }
 
     #[inline]
-    pub fn update(&mut self, blip_buf: &mut BlipBuf, end_time: u32) {
-        if self.start_offset >= end_time {
-            self.oscillator.update(blip_buf, 0, end_time);
-            self.start_offset -= end_time;
-            return;
-        }
-
-        let mut cur_time = 0;
-
-        if self.start_offset > 0 {
-            self.oscillator.update(blip_buf, 0, self.start_offset);
-            cur_time = self.start_offset;
-        }
-
-        loop {
-            // play
-
-            let next_time = cur_time + self.sound_period;
-
-            if next_time >= end_time {
-                self.oscillator.update(blip_buf, cur_time, end_time);
-                self.start_offset = next_time - end_time;
-                return;
-            }
-
-            self.oscillator.update(blip_buf, cur_time, next_time);
-
-            cur_time = next_time;
-        }
-
+    pub fn update(&mut self, blip_buf: &mut BlipBuf) {
         /*
         if (!is_playing_) {
         return;
@@ -158,29 +123,10 @@ impl Channel {
         }
 
         */
+        self.oscillator
+            .play(440.0, 1, Tone::Triangle, 1.0, Effect::None);
 
-        /*for i in 0..out.len() as usize {
-            let time = ((CLOCK_RATE / SAMPLE_RATE as f64) * i as f64) as u32;
-
-            for channel in &mut self.channels {
-                let last_output = channel.output();
-                channel.update();
-                blip_buf.add_delta(time, channel.output() as i32 - last_output as i32)
-            }
-        }*/
-
-        /*
-        int period = (int) (clock_rate / w->frequency / 2 + 0.5);
-        int volume = (int) (w->volume * 65536 / 2 + 0.5);
-        for ( ; w->time < clocks; w->time += period )
-        {
-            int delta = w->phase * volume - w->amp;
-            w->amp += delta;
-            blip_add_delta( blip, w->time, delta );
-            w->phase = -w->phase;
-        }
-        w->time -= clocks;
-        */
+        self.oscillator.update(blip_buf);
     }
 
     #[inline]
