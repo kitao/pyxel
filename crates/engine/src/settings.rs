@@ -125,25 +125,20 @@ const std::vector<uint32_t> FONT_DATA = {
 //
 // Audio
 //
-pub const CLOCK_RATE: f64 = 1789772.727; // 1.78 MHz clock rate
+pub const CLOCK_RATE: u32 = 1789773; // 1.78 MHz clock rate
 pub const SAMPLE_RATE: u32 = 44100; // 44.1 kHz sample rate
 pub const SAMPLE_COUNT: u32 = SAMPLE_RATE / 10;
+pub const TICK_CLOCK_COUNT: u32 = CLOCK_RATE / 120;
+
+pub const MASTER_VOLUME_FACTOR: f64 = 0.25;
+pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0; //0.30;
+pub const SQUARE_VOLUME_FACTOR: f64 = 0.2; // 0.26;
+pub const PULSE_VOLUME_FACTOR: f64 = 0.2; // 0.26;
+pub const NOISE_VOLUME_FACTOR: f64 = 0.5; //0.18;
+
 pub const CHANNEL_COUNT: u32 = 4;
 pub const SOUND_COUNT: u32 = 65;
 pub const MUSIC_COUNT: u32 = 8;
-
-pub const MASTER_VOLUME_FACTOR: f64 = 0.25;
-pub const TRIANGLE_VOLUME_FACTOR: f64 = 0.30; //1.0;
-pub const SQUARE_VOLUME_FACTOR: f64 = 0.26; //0.2;
-pub const PULSE_VOLUME_FACTOR: f64 = 0.26; //0.2;
-pub const NOISE_VOLUME_FACTOR: f64 = 0.18; //0.5;
-
-/*
-const int32_t AUDIO_SAMPLE_RATE = 22050;
-const int32_t AUDIO_BLOCK_SIZE = 2048;
-const int32_t AUDIO_ONE_SPEED = AUDIO_SAMPLE_RATE / 120;
-const int32_t AUDIO_ONE_VOLUME = 0x7FFF / (4  7);
-*/
 
 //
 // Sound class
