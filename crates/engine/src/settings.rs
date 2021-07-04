@@ -130,15 +130,15 @@ pub const SAMPLE_RATE: u32 = 44100; // 44.1 kHz sample rate
 pub const SAMPLE_COUNT: u32 = SAMPLE_RATE / 10;
 pub const TICK_CLOCK_COUNT: u32 = CLOCK_RATE / 120;
 
-pub const MASTER_VOLUME_FACTOR: f64 = 0.25;
-pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0; //0.30;
-pub const SQUARE_VOLUME_FACTOR: f64 = 0.2; // 0.26;
-pub const PULSE_VOLUME_FACTOR: f64 = 0.2; // 0.26;
-pub const NOISE_VOLUME_FACTOR: f64 = 0.5; //0.18;
-
 pub const CHANNEL_COUNT: u32 = 4;
 pub const SOUND_COUNT: u32 = 65;
 pub const MUSIC_COUNT: u32 = 8;
+
+pub const MASTER_VOLUME_FACTOR: f64 = 1.0 / CHANNEL_COUNT as f64;
+pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0;
+pub const SQUARE_VOLUME_FACTOR: f64 = 0.3;
+pub const PULSE_VOLUME_FACTOR: f64 = 0.3;
+pub const NOISE_VOLUME_FACTOR: f64 = 0.25;
 
 //
 // Sound class
