@@ -1,11 +1,10 @@
 use std::cmp::min;
-use std::sync::{Arc, Mutex};
 
 use crate::event::Event;
 use crate::graphics::Graphics;
 use crate::input::Input;
-use crate::platform::{AudioCallback, Platform};
-use crate::rectarea::Rectarea;
+use crate::platform::Platform;
+use crate::rectarea::RectArea;
 use crate::settings::{
     BACKGROUND_COLOR, DEFAULT_FPS, DEFAULT_SCALE, DEFAULT_TITLE, MAX_FRAME_SKIP_COUNT,
 };
@@ -71,18 +70,18 @@ impl<T: Platform> System<T> {
     }
 
     #[inline]
-    pub fn window_width(&self) -> u32 {
+    pub(crate) fn platform_mut(&mut self) -> &mut T {
+        &mut self.platform
+    }
+
+    #[inline]
+    pub(crate) fn window_width(&self) -> u32 {
         self.platform.window_size().0
     }
 
     #[inline]
-    pub fn window_height(&self) -> u32 {
+    pub(crate) fn window_height(&self) -> u32 {
         self.platform.window_size().1
-    }
-
-    #[inline]
-    pub fn window_title(&self) -> &str {
-        self.platform.window_title()
     }
 
     #[inline]
@@ -91,92 +90,17 @@ impl<T: Platform> System<T> {
     }
 
     #[inline]
-    pub fn is_fullscreen(&self) -> bool {
-        true
-    }
-
-    #[inline]
-    pub fn set_fullscreen(&self, is_fullscreen: bool) {
-        //
-    }
-
-    #[inline]
     pub fn frame_count(&self) -> u32 {
         self.frame_count
     }
 
-    /*
-    void Window::SetupWindowIcon() const {
-    SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
-        0, ICON_WIDTH * ICON_SCALE, ICON_HEIGHT * ICON_SCALE, 32,
-        SDL_PIXELFORMAT_RGBA8888);
-
-    Image* image = new Image(ICON_WIDTH, ICON_HEIGHT);
-    image->SetData(0, 0, ICON_DATA);
-
-    int32_t** src_data = image->Data();
-    uint32_t* dst_data = reinterpret_cast<uint32_t*>(surface->pixels);
-
-    for (int32_t i = 0; i < ICON_HEIGHT; i++) {
-        int32_t index = ICON_WIDTH * i;
-
-        for (int32_t j = 0; j < ICON_WIDTH; j++) {
-        int32_t color = src_data[i][j];
-        uint32_t argb = color == 0 ? 0 : (DEFAULT_PALETTE[color] << 8) + 0xff;
-
-        for (int32_t y = 0; y < ICON_SCALE; y++) {
-            int32_t index = (ICON_WIDTH * (i * ICON_SCALE + y) + j) * ICON_SCALE;
-
-            for (int32_t x = 0; x < ICON_SCALE; x++) {
-            dst_data[index + x] = argb;
-            }
-        }
-        }
+    #[inline]
+    pub fn quit(&mut self) {
+        //
     }
-
-    SDL_SetWindowIcon(window_, surface);
-    SDL_FreeSurface(surface);
-
-    delete image;
-    }
-
-    void Window::UpdateWindowInfo() {
-    SDL_GetWindowPosition(window_, &window_x_, &window_y_);
-
-    int32_t window_width, window_height;
-    SDL_GetWindowSize(window_, &window_width, &window_height);
-
-    screen_scale_ =
-        Min(window_width / screen_width_, window_height / screen_height_);
-    screen_x_ = (window_width - screen_width_ * screen_scale_) / 2;
-    screen_y_ = (window_height - screen_height_ * screen_scale_) / 2;
-    }
-
-    void Window::ToggleFullscreen() {
-    is_fullscreen_ = !is_fullscreen_;
-
-    SDL_SetWindowFullscreen(window_, is_fullscreen_ ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-    }
-    */
-
-    /*
-        int32_t scale,
-        int32_t fps,
-        int32_t quit_key,
-        bool is_fullscreen);
-
-        bool Quit();
-        bool FlipScreen();
-        void ShowScreen();
-
-    private:
-        void DrawFrame(void (*draw)(), int32_t update_frame_count);
-        void DrawPerformanceMonitor();
-        void DrawMouseCursor();
-    */
 
     #[inline]
-    pub fn flip(&mut self) {
+    pub fn flip_screen(&mut self) {
         /*
         next_update_time_ += one_frame_time_;
 
@@ -194,7 +118,7 @@ impl<T: Platform> System<T> {
     }
 
     #[inline]
-    pub fn show(&mut self) {
+    pub fn show_screen(&mut self) {
         /*
         is_loop_running_ = true;
 
@@ -207,16 +131,11 @@ impl<T: Platform> System<T> {
     }
 
     #[inline]
-    pub(crate) fn platform_mut(&mut self) -> &mut T {
-        &mut self.platform
-    }
-
-    #[inline]
     fn process_events(&mut self, input: &mut Input) {
         let window_pos = self.platform.window_pos();
         let window_size = self.platform.window_size();
         let window_rect =
-            Rectarea::with_size(window_pos.0, window_pos.1, window_size.0, window_size.1);
+            RectArea::with_size(window_pos.0, window_pos.1, window_size.0, window_size.1);
 
         input.start_update(self.frame_count, window_rect);
 
@@ -237,14 +156,6 @@ impl<T: Platform> System<T> {
         }
 
         input.end_update();
-
-        /*
-        Event::Quit { .. }
-        | Event::KeyDown {
-            keycode: Some(Keycode::Escape),
-            ..
-        } => self.should_quit = true,
-        */
     }
 
     #[inline]
