@@ -7,6 +7,7 @@ use crate::music::Music;
 use crate::platform::{AudioCallback, Platform};
 use crate::settings::{
     CHANNEL_COUNT, CLOCK_RATE, MUSIC_COUNT, SAMPLE_COUNT, SAMPLE_RATE, SOUND_COUNT,
+    TICK_CLOCK_COUNT,
 };
 use crate::sound::Sound;
 
@@ -19,15 +20,17 @@ pub struct Audio {
 
 impl AudioCallback for Audio {
     fn audio_callback(&mut self, out: &mut [i16]) {
-        let blip_buf = &mut self.blip_buf;
-        let clocks = blip_buf.clocks_needed(out.len() as u32);
+        let mut samples = self.blip_buf.read_samples(out, false);
 
-        for channel in &mut self.channels {
-            channel.update(blip_buf, clocks);
+        while samples < out.len() {
+            for channel in &mut self.channels {
+                channel.update(&mut self.blip_buf);
+            }
+
+            self.blip_buf.end_frame(TICK_CLOCK_COUNT);
+
+            samples += self.blip_buf.read_samples(&mut out[samples..], false);
         }
-
-        blip_buf.end_frame(clocks);
-        blip_buf.read_samples(out, false);
     }
 }
 
@@ -38,7 +41,7 @@ impl Audio {
         let mut sounds = Vec::new();
         let mut musics = Vec::new();
 
-        blip_buf.set_rates(CLOCK_RATE, SAMPLE_RATE as f64);
+        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 
         for _ in 0..CHANNEL_COUNT {
             channels.push(Channel::new(SAMPLE_RATE));
@@ -59,7 +62,7 @@ impl Audio {
             musics: musics,
         }));
 
-        platform.init_audio(SAMPLE_RATE, SAMPLE_COUNT, audio.clone());
+        platform.start_audio(SAMPLE_RATE, SAMPLE_COUNT, audio.clone());
 
         audio
     }
