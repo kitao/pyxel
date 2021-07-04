@@ -375,7 +375,7 @@ impl Platform for Sdl2 {
     }
 
     #[inline]
-    fn init_audio(
+    fn start_audio(
         &mut self,
         sample_rate: u32,
         sample_count: u32,
