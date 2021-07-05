@@ -128,7 +128,9 @@ const std::vector<uint32_t> FONT_DATA = {
 pub const CLOCK_RATE: u32 = 1789773; // 1.78 MHz clock rate
 pub const SAMPLE_RATE: u32 = 44100; // 44.1 kHz sample rate
 pub const SAMPLE_COUNT: u32 = SAMPLE_RATE / 10;
+
 pub const TICK_CLOCK_COUNT: u32 = CLOCK_RATE / 120;
+pub const OSCILLATOR_RESOLUTION: u32 = 32;
 
 pub const CHANNEL_COUNT: u32 = 4;
 pub const SOUND_COUNT: u32 = 65;
