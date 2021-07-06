@@ -141,17 +141,18 @@ impl<T: Platform> System<T> {
 
         while let Some(event) = self.platform.poll_event() {
             match event {
-                Event::Quit => self.should_quit = true,
-
+                Event::Quit => {
+                    self.should_quit = true;
+                }
                 Event::WindowMoved { x, y } => {
                     //
                 }
-
                 Event::WindowResized { width, height } => {
                     //
                 }
-
-                _ => input.process_event(event),
+                _ => {
+                    input.process_event(event);
+                }
             }
         }
 
