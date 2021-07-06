@@ -43,7 +43,7 @@ pub struct Oscillator {
     tone: Tone,
     volume: f64,
     effect: Effect,
-    ticks: u32,
+    duration: u32,
     time: u32,
     phase: u32,
     amplitude: i16,
@@ -61,7 +61,7 @@ impl Oscillator {
             tone: Tone::Triangle,
             volume: 0.0,
             effect: Effect::None,
-            ticks: 0,
+            duration: 0,
             time: 0,
             phase: 0,
             amplitude: 0,
@@ -74,28 +74,28 @@ impl Oscillator {
     }
 
     #[inline]
-    pub fn play(&mut self, pitch: f64, tone: Tone, volume: f64, effect: Effect, ticks: u32) {
+    pub fn play(&mut self, pitch: f64, tone: Tone, volume: f64, effect: Effect, duration: u32) {
         self.pitch = pitch;
         self.tone = tone;
         self.volume = volume;
         self.effect = effect;
-        self.ticks = ticks;
+        self.duration = duration;
 
         if effect == Effect::Slide {
-            self.slide.pitch = (pitch - self.pitch) / self.ticks as f64;
+            self.slide.pitch = (pitch - self.pitch) / self.duration as f64;
         } else if effect == Effect::FadeOut {
-            self.fadeout.volume = -self.volume / self.ticks as f64;
+            self.fadeout.volume = -self.volume / self.duration as f64;
         }
     }
 
     #[inline]
     pub fn stop(&mut self) {
-        self.ticks = 0;
+        self.duration = 0;
     }
 
     #[inline]
     pub fn update(&mut self, blip_buf: &mut BlipBuf) {
-        if self.ticks == 0 {
+        if self.duration == 0 {
             if self.amplitude != 0 {
                 blip_buf.add_delta(0, -(self.amplitude as i32));
             }
@@ -132,7 +132,7 @@ impl Oscillator {
             self.time += period;
         }
 
-        self.ticks -= 1;
+        self.duration -= 1;
         self.time -= TICK_CLOCK_COUNT;
 
         match self.effect {
