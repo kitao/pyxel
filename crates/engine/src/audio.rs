@@ -44,7 +44,7 @@ impl Audio {
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 
         for _ in 0..CHANNEL_COUNT {
-            channels.push(Channel::new(SAMPLE_RATE));
+            channels.push(Channel::new());
         }
 
         for _ in 0..SOUND_COUNT {
