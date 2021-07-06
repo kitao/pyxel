@@ -3,9 +3,13 @@ use blip_buf::BlipBuf;
 use crate::settings::{
     CLOCK_RATE, MASTER_VOLUME_FACTOR, NOISE_VOLUME_FACTOR, OSCILLATOR_RESOLUTION,
     PULSE_VOLUME_FACTOR, SQUARE_VOLUME_FACTOR, TICK_CLOCK_COUNT, TRIANGLE_VOLUME_FACTOR,
+    VIBRATO_DEPTH, VIBRATO_FREQUENCY,
 };
 
-#[derive(Copy, Clone)]
+const VIBRATO_PERIOD: u32 =
+    (CLOCK_RATE as f64 / VIBRATO_FREQUENCY / OSCILLATOR_RESOLUTION as f64) as u32;
+
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum Tone {
     Triangle,
     Square,
@@ -13,12 +17,25 @@ pub enum Tone {
     Noise,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum Effect {
     None,
-    Slide { target: f64 },
-    Vibrato { depth: f64, frequency: f64 },
+    Slide,
+    Vibrato,
     FadeOut,
+}
+
+struct Slide {
+    pitch: f64,
+}
+
+struct Vibrato {
+    time: u32,
+    phase: u32,
+}
+
+struct FadeOut {
+    volume: f64,
 }
 
 pub struct Oscillator {
@@ -26,17 +43,15 @@ pub struct Oscillator {
     tone: Tone,
     volume: f64,
     effect: Effect,
-    duration: u32,
+    ticks: u32,
     time: u32,
     phase: u32,
     amplitude: i16,
     noise: u32,
 
-    slide_change: f64,
-    vibrato_period: u32,
-    vibrato_time: u32,
-    vibrato_phase: u32,
-    fadeout_change: f64,
+    slide: Slide,
+    vibrato: Vibrato,
+    fadeout: FadeOut,
 }
 
 impl Oscillator {
@@ -46,50 +61,41 @@ impl Oscillator {
             tone: Tone::Triangle,
             volume: 0.0,
             effect: Effect::None,
-            duration: 0,
+            ticks: 0,
             time: 0,
             phase: 0,
             amplitude: 0,
             noise: 0x8000,
 
-            slide_change: 0.0,
-            vibrato_period: 0,
-            vibrato_time: 0,
-            vibrato_phase: 0,
-            fadeout_change: 0.0,
+            slide: Slide { pitch: 0.0 },
+            vibrato: Vibrato { time: 0, phase: 0 },
+            fadeout: FadeOut { volume: 0.0 },
         }
     }
+
     #[inline]
-    pub fn play(&mut self, pitch: f64, tone: Tone, volume: f64, effect: Effect, duration: u32) {
+    pub fn play(&mut self, pitch: f64, tone: Tone, volume: f64, effect: Effect, ticks: u32) {
         self.pitch = pitch;
         self.tone = tone;
         self.volume = volume;
         self.effect = effect;
-        self.duration = duration;
+        self.ticks = ticks;
 
-        match effect {
-            Effect::None => {}
-            Effect::Slide { target } => {
-                self.slide_change = (target - pitch) / duration as f64;
-            }
-            Effect::Vibrato { frequency, .. } => {
-                self.vibrato_period =
-                    (CLOCK_RATE as f64 / frequency / OSCILLATOR_RESOLUTION as f64) as u32;
-            }
-            Effect::FadeOut => {
-                self.fadeout_change = -volume / duration as f64;
-            }
+        if effect == Effect::Slide {
+            self.slide.pitch = (pitch - self.pitch) / self.ticks as f64;
+        } else if effect == Effect::FadeOut {
+            self.fadeout.volume = -self.volume / self.ticks as f64;
         }
     }
 
     #[inline]
     pub fn stop(&mut self) {
-        self.duration = 0;
+        self.ticks = 0;
     }
 
     #[inline]
     pub fn update(&mut self, blip_buf: &mut BlipBuf) {
-        if self.duration == 0 {
+        if self.ticks == 0 {
             if self.amplitude != 0 {
                 blip_buf.add_delta(0, -(self.amplitude as i32));
             }
@@ -101,8 +107,8 @@ impl Oscillator {
         }
 
         let pitch = self.pitch
-            + if let Effect::Vibrato { depth, .. } = self.effect {
-                Oscillator::triangle(self.vibrato_phase) * depth
+            + if self.effect == Effect::Vibrato {
+                Oscillator::triangle(self.vibrato.phase) * VIBRATO_DEPTH
             } else {
                 0.0
             };
@@ -126,22 +132,22 @@ impl Oscillator {
             self.time += period;
         }
 
-        self.duration -= 1;
+        self.ticks -= 1;
         self.time -= TICK_CLOCK_COUNT;
 
         match self.effect {
             Effect::None => {}
-            Effect::Slide { .. } => {
-                self.pitch += self.slide_change;
+            Effect::Slide => {
+                self.pitch += self.slide.pitch;
             }
-            Effect::Vibrato { .. } => {
-                self.vibrato_time += TICK_CLOCK_COUNT;
-                let phases = self.vibrato_time / self.vibrato_period;
-                self.vibrato_phase = (self.vibrato_phase + phases) % OSCILLATOR_RESOLUTION;
-                self.vibrato_time %= self.vibrato_period;
+            Effect::Vibrato => {
+                self.vibrato.time += TICK_CLOCK_COUNT;
+                let phases = self.vibrato.time / VIBRATO_PERIOD;
+                self.vibrato.phase = (self.vibrato.phase + phases) % OSCILLATOR_RESOLUTION;
+                self.vibrato.time %= VIBRATO_PERIOD;
             }
             Effect::FadeOut => {
-                self.volume += self.fadeout_change;
+                self.volume += self.fadeout.volume;
             }
         }
     }
