@@ -131,6 +131,8 @@ pub const SAMPLE_COUNT: u32 = SAMPLE_RATE / 10;
 
 pub const TICK_CLOCK_COUNT: u32 = CLOCK_RATE / 120;
 pub const OSCILLATOR_RESOLUTION: u32 = 32;
+pub const VIBRATO_DEPTH: f64 = 0.2;
+pub const VIBRATO_FREQUENCY: f64 = 6.0;
 
 pub const CHANNEL_COUNT: u32 = 4;
 pub const SOUND_COUNT: u32 = 65;
