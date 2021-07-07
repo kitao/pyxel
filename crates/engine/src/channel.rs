@@ -1,196 +1,113 @@
-use std::sync::{Arc, Mutex};
-
 use blip_buf::BlipBuf;
 
-use crate::oscillator::{Effect, Oscillator, Tone};
+use crate::oscillator::Oscillator;
+use crate::settings::MAX_SOUND_VOLUME;
 use crate::sound::Sound;
 
 pub struct Channel {
     oscillator: Oscillator,
-    sounds: Vec<Arc<Mutex<Sound>>>,
-    /*
-     bool is_playing_;
-     bool is_loop_;
-     SoundList sound_list_;
-     int32_t play_index_;
-
-     int32_t time_;
-     int32_t one_note_time_;
-     int32_t total_note_time_;
-
-     int32_t tone_;
-     int32_t note_;
-     float pitch_;
-     int32_t volume_;
-     int32_t effect_;
-
-     int32_t effect_time_;
-     float effect_pitch_;
-     int32_t effect_volume_;
-
-     void PlaySound();
-     void Update();
-     void NextSound();
-     float NoteToPitch(float note);
-     float Lfo(int32_t time);
-    */
+    sounds: Vec<Sound>,
+    is_playing: bool,
+    is_looping: bool,
+    sound_index: u32,
+    note_index: u32,
+    tick_count: u32,
 }
 
 impl Channel {
-    pub fn new(sample_rate: u32) -> Channel {
-        assert!(sample_rate > 0);
-
-        let oscillator = Oscillator::new();
-
+    pub fn new() -> Channel {
         Channel {
-            oscillator: oscillator,
+            oscillator: Oscillator::new(),
             sounds: Vec::new(),
+            is_playing: false,
+            is_looping: false,
+            sound_index: 0,
+            note_index: 0,
+            tick_count: 0,
         }
-
-        /*
-        Channel::Channel() {
-          is_playing_ = false;
-          is_loop_ = false;
-          play_index_ = 0;
-
-          time_ = 0;
-          one_note_time_ = 0;
-
-          tone_ = 0;
-          note_ = 0;
-          pitch_ = 0.0f;
-          volume_ = 0;
-          effect_ = 0;
-
-          effect_time_ = 0;
-          effect_pitch_ = 0.0f;
-          effect_volume_ = 0;
-        }
-        */
     }
 
     #[inline]
     pub fn update(&mut self, blip_buf: &mut BlipBuf) {
-        /*
-        if (!is_playing_) {
-        return;
+        if !self.is_playing {
+            return;
         }
 
-        if (total_note_time_ == 0) {
-        NextSound();
-        return;
+        let sound = &self.sounds[self.sound_index as usize];
+
+        if self.tick_count % sound.speed() as u32 == 0 {
+            if self.note_index >= sound.len() as u32 {
+                self.sound_index += 1;
+                self.note_index = 0;
+
+                if self.sound_index >= self.sounds.len() as u32 {
+                    if self.is_looping {
+                        self.sound_index = 0;
+                    } else {
+                        self.stop();
+                        return;
+                    }
+                }
+            }
+
+            let sound = &self.sounds[self.sound_index as usize];
+            let note = sound.note(self.note_index);
+            let volume = sound.volume(self.note_index);
+
+            if note >= 0 && volume > 0 {
+                self.oscillator.play(
+                    note as f64,
+                    sound.tone(self.note_index),
+                    volume as f64 / MAX_SOUND_VOLUME as f64,
+                    sound.effect(self.note_index),
+                    sound.speed() as u32,
+                );
+            }
+
+            self.note_index += 1;
         }
-
-        // forward note
-        if (time_ % one_note_time_ == 0) {
-        Sound* sound = sound_list_[play_index_];
-        int32_t pos = time_ / one_note_time_;
-        note_ = sound->Note()[pos];
-        volume_ = (sound->Volume().empty()
-                        ? 7
-                        : sound->Volume()[pos % sound->Volume().size()]) *
-                    AUDIO_ONE_VOLUME;
-
-        if (note_ >= 0 && volume_ > 0) {
-            float last_pitch = pitch_;
-            tone_ = sound->Tone().empty() ? TONE_TRIANGLE
-                                        : sound->Tone()[pos % sound->Tone().size()];
-            pitch_ = NoteToPitch(note_);
-            effect_ = sound->Effect().empty()
-                        ? EFFECT_NONE
-                        : sound->Effect()[pos % sound->Effect().size()];
-
-            oscillator_.SetTone(tone_);
-            oscillator_.SetPeriod(AUDIO_SAMPLE_RATE / pitch_);
-            oscillator_.SetVolume(volume_);
-
-        } else {
-            oscillator_.Stop();
-        }
-        }
-
-        // play note
-        if (note_ >= 0 && volume_ > 0) {
-        float a;
-        int32_t pitch;
-
-        }
-
-        time_++;
-
-        if (time_ == total_note_time_) {
-        NextSound();
-        }
-
-        */
-        self.oscillator
-            .play(440.0, 1, Tone::Triangle, 1.0, Effect::None);
 
         self.oscillator.update(blip_buf);
+        self.tick_count += 1;
     }
 
     #[inline]
-    pub fn play_pos() -> i32 {
-        //return is_playing_ ? play_index_ * 100 + time_ / one_note_time_ : -1;
-        0
+    pub fn is_playing(&self) -> bool {
+        self.is_playing
     }
 
     #[inline]
-    pub fn play_sound(sound: Vec<Arc<Sound>>, is_loop: bool) {
-        /*
-        if (sound_list.empty()) {
-        return;
-        }
-
-        is_playing_ = true;
-        is_loop_ = loop;
-        sound_list_ = sound_list;
-        play_index_ = 0;
-
-        PlaySound();
-        */
+    pub fn is_looping(&self) -> bool {
+        self.is_looping
     }
 
     #[inline]
-    fn play_sound_() {
-        /*
-        Sound* sound = sound_list_[play_index_];
-
-        time_ = 0;
-        one_note_time_ = sound->Speed() * AUDIO_ONE_SPEED;
-        total_note_time_ = one_note_time_ * sound->Note().size();
-        */
+    pub fn sound_index(&self) -> u32 {
+        self.sound_index
     }
 
     #[inline]
-    pub fn stop_playing() {
-        /*
-        is_playing_ = false;
-        pitch_ = 0.0f;
-        oscillator_.Stop();
-        */
+    pub fn note_index(&self) -> u32 {
+        self.note_index
     }
 
-    /*
-    void Channel::NextSound() {
-        play_index_ += 1;
-
-        if (play_index_ < sound_list_.size()) {
-        PlaySound();
-        } else if (is_loop_) {
-        play_index_ = 0;
-        PlaySound();
-        } else {
-        StopPlaying();
-        }
-    }
-    */
-
-    /*
     #[inline]
-    fn note_to_period(&self, note: f64) -> u32 {
-        let freq = 440.0 * 2.0_f64.powf((note - 33.0) as f64 / 12.0);
-        (self.sample_rate as f64 / freq).round() as u32
+    pub fn play(&mut self, sounds: &Vec<Sound>, is_looping: bool) {
+        self.sounds = sounds.clone();
+        self.is_playing = true;
+        self.is_looping = is_looping;
+        self.sound_index = 0;
+        self.note_index = 0;
+        self.tick_count = 0;
     }
-    */
+
+    #[inline]
+    pub fn stop(&mut self) {
+        self.is_playing = false;
+        self.is_looping = false;
+        self.sound_index = 0;
+        self.note_index = 0;
+
+        self.oscillator.stop();
+    }
 }
