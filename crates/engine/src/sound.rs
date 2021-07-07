@@ -1,5 +1,5 @@
 use crate::oscillator::{Effect, Tone};
-use crate::settings::DEFAULT_SOUND_SPEED;
+use crate::settings::{DEFAULT_SOUND_SPEED, MAX_SOUND_VOLUME};
 
 pub type Note = i32;
 pub type Volume = u32;
@@ -26,53 +26,76 @@ impl Sound {
   }
 
   #[inline]
-  pub fn notes(&self) -> &Vec<Note> {
-    &self.notes
+  pub fn len(&self) -> usize {
+    self.notes.len()
   }
 
-  pub fn notes_mut(&mut self) -> &mut Vec<Note> {
+  #[inline]
+  pub fn note(&self, index: u32) -> Note {
+    self.notes[index as usize]
+  }
+
+  /*pub fn notes_mut(&mut self) -> &mut Vec<Note> {
     &mut self.notes
-  }
+  }*/
 
   #[inline]
-  pub fn tones(&self) -> &Vec<Tone> {
-    &self.tones
+  pub fn tone(&self, index: u32) -> Tone {
+    let len = self.tones.len();
+
+    if len > 0 {
+      self.tones[index as usize % len]
+    } else {
+      Tone::Triangle
+    }
   }
 
-  #[inline]
+  /*#[inline]
   pub fn tones_mut(&mut self) -> &mut Vec<Tone> {
     &mut self.tones
-  }
+  }*/
 
   #[inline]
-  pub fn volumes(&self) -> &Vec<Volume> {
-    &self.volumes
+  pub fn volume(&self, index: u32) -> Volume {
+    let len = self.volumes.len();
+
+    if len > 0 {
+      self.volumes[index as usize % len]
+    } else {
+      MAX_SOUND_VOLUME
+    }
   }
 
-  #[inline]
+  /*#[inline]
   pub fn volumes_mut(&mut self) -> &mut Vec<Volume> {
     &mut self.volumes
-  }
+  }*/
 
   #[inline]
-  pub fn effects(&self) -> &Vec<Effect> {
-    &self.effects
+  pub fn effect(&self, index: u32) -> Effect {
+    let len = self.effects.len();
+
+    if len > 0 {
+      self.effects[index as usize % len]
+    } else {
+      Effect::None
+    }
   }
 
-  #[inline]
+  /*#[inline]
   pub fn effects_mut(&mut self) -> &mut Vec<Effect> {
     &mut self.effects
-  }
+  }*/
 
   #[inline]
   pub fn speed(&self) -> Speed {
     self.speed
   }
 
-  #[inline]
+  /*#[inline]
   pub fn set_speed(&mut self, speed: Speed) {
     self.speed = speed;
-  }
+  }*/
 
   /*
   void Set(const std::string& note,
@@ -88,14 +111,6 @@ impl Sound {
   */
 
   /*
-  inline void Sound::Speed(int32_t speed) {
-      if (speed < 1) {
-      PYXEL_ERROR("invalid speed");
-      }
-
-      speed_ = speed;
-  }
-
   std::map<char, int> NOTE_TABLE = {
       {'c', 0}, {'d', 2}, {'e', 4}, {'f', 5}, {'g', 7}, {'a', 9}, {'b', 11},
   };
