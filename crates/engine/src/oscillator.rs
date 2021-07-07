@@ -74,15 +74,18 @@ impl Oscillator {
     }
 
     #[inline]
-    pub fn play(&mut self, pitch: f64, tone: Tone, volume: f64, effect: Effect, duration: u32) {
-        self.pitch = pitch;
+    pub fn play(&mut self, note: f64, tone: Tone, volume: f64, effect: Effect, duration: u32) {
+        let last_pitch = self.pitch;
+
+        self.pitch = Oscillator::note_to_pitch(note);
         self.tone = tone;
         self.volume = volume;
         self.effect = effect;
         self.duration = duration;
 
         if effect == Effect::Slide {
-            self.slide.pitch = (pitch - self.pitch) / self.duration as f64;
+            self.slide.pitch = (self.pitch - last_pitch) / self.duration as f64;
+            self.pitch = last_pitch;
         } else if effect == Effect::FadeOut {
             self.fadeout.volume = -self.volume / self.duration as f64;
         }
@@ -107,10 +110,10 @@ impl Oscillator {
         }
 
         let pitch = self.pitch
-            + if self.effect == Effect::Vibrato {
+            * if self.effect == Effect::Vibrato {
                 Oscillator::triangle(self.vibrato.phase) * VIBRATO_DEPTH
             } else {
-                0.0
+                1.0
             };
         let period = (CLOCK_RATE as f64 / pitch / OSCILLATOR_RESOLUTION as f64) as u32;
 
@@ -132,9 +135,6 @@ impl Oscillator {
             self.time += period;
         }
 
-        self.duration -= 1;
-        self.time -= TICK_CLOCK_COUNT;
-
         match self.effect {
             Effect::None => {}
             Effect::Slide => {
@@ -150,6 +150,14 @@ impl Oscillator {
                 self.volume += self.fadeout.volume;
             }
         }
+
+        self.duration -= 1;
+        self.time -= TICK_CLOCK_COUNT;
+    }
+
+    #[inline]
+    fn note_to_pitch(note: f64) -> f64 {
+        440.0 * 2.0_f64.powf((note - 33.0) as f64 / 12.0)
     }
 
     #[inline]
