@@ -61,7 +61,7 @@ impl Sound {
         self.set_notes(notes);
         self.set_tones(tones);
         self.set_volumes(volumes);
-        self.set_effects(volumes);
+        self.set_effects(effects);
         self.set_speed(speed);
     }
 
