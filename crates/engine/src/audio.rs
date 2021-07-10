@@ -14,8 +14,8 @@ use crate::sound::Sound;
 pub struct Audio {
     blip_buf: BlipBuf,
     channels: Vec<Channel>,
-    sounds: Vec<Arc<Mutex<Sound>>>,
-    musics: Vec<Arc<Mutex<Music>>>,
+    sounds: Vec<Sound>,
+    musics: Vec<Music>,
 }
 
 impl AudioCallback for Audio {
@@ -37,23 +37,11 @@ impl AudioCallback for Audio {
 impl Audio {
     pub fn new<T: Platform>(platform: &mut T) -> Arc<Mutex<Audio>> {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
-        let mut channels = Vec::new();
-        let mut sounds = Vec::new();
-        let mut musics = Vec::new();
+        let channels = (0..CHANNEL_COUNT).map(|_| Channel::new()).collect();
+        let sounds = (0..SOUND_COUNT).map(|_| Sound::new()).collect();
+        let musics = (0..MUSIC_COUNT).map(|_| Music::new()).collect();
 
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
-
-        for _ in 0..CHANNEL_COUNT {
-            channels.push(Channel::new());
-        }
-
-        for _ in 0..SOUND_COUNT {
-            sounds.push(Arc::new(Mutex::new(Sound::new())));
-        }
-
-        for _ in 0..MUSIC_COUNT {
-            musics.push(Arc::new(Mutex::new(Music::new())));
-        }
 
         let audio = Arc::new(Mutex::new(Audio {
             blip_buf: blip_buf,
@@ -67,21 +55,36 @@ impl Audio {
         audio
     }
 
-    pub fn sound(&self, no: u32) -> Arc<Mutex<Sound>> {
-        self.sounds[no as usize].clone()
+    pub fn sound(&self, sound_no: u32) -> &Sound {
+        &self.sounds[sound_no as usize]
     }
 
-    pub fn music(&self, no: u32) -> Arc<Mutex<Music>> {
-        self.musics[no as usize].clone()
+    pub fn music(&self, music_no: u32) -> &Music {
+        &self.musics[music_no as usize]
     }
 
-    /*
-    int32_t GetPlayPos(int32_t channel) const;
-    void PlaySound(int32_t channel, int32_t sound_index, bool loop = false);
-    void PlaySound(int32_t channel,
-    const SoundIndexList& sound_index_list,
-    bool loop = false);
-    void PlayMusic(int32_t music_index, bool loop = false);
-    void StopPlaying(int32_t channel = -1);
-    */
+    pub fn play_sound(&mut self, channel_no: u32, sound_nos: &[u32], is_looping: bool) {
+        let mut sounds: Vec<Sound> = Vec::new();
+
+        for sound_no in sound_nos {
+            sounds.push(self.sounds[*sound_no as usize].clone());
+        }
+
+        self.channels[channel_no as usize].play(sounds, is_looping);
+    }
+
+    pub fn play_music(&mut self, music_no: u32, is_looping: bool) {
+        for i in 0..MUSIC_COUNT {
+            let sequence = &self.musics[music_no as usize].sequence(i).clone();
+            self.play_sound(i, sequence, is_looping);
+        }
+    }
+
+    pub fn stop(&mut self, channel_no: u32) {
+        self.channels[channel_no as usize].stop();
+    }
+
+    /*pub fn play_pos(&self) -> Option<(u32, u32)> {
+        //
+    }*/
 }
