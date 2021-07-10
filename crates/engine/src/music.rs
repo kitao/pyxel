@@ -10,22 +10,6 @@ impl Music {
             sequences: [Vec::new(), Vec::new(), Vec::new(), Vec::new()],
         }
     }
-}
-
-impl Music {
-    pub fn sequence(&mut self, channel: u32) -> &Vec<u32> {
-        &self.sequences[channel as usize]
-    }
-
-    pub fn set_sequence(&mut self, channel: u32, sounds: &[u32]) {
-        let sequence = &mut self.sequences[channel as usize];
-
-        sequence.clear();
-
-        for sound in sounds {
-            sequence.push(*sound);
-        }
-    }
 
     pub fn set(
         &mut self,
@@ -38,5 +22,19 @@ impl Music {
         self.set_sequence(1, sequence1);
         self.set_sequence(2, sequence2);
         self.set_sequence(3, sequence3);
+    }
+
+    pub fn sequence(&mut self, channel: u32) -> &Vec<u32> {
+        &self.sequences[channel as usize]
+    }
+
+    pub fn set_sequence(&mut self, channel: u32, sounds: &[u32]) {
+        let sequence = &mut self.sequences[channel as usize];
+
+        sequence.clear();
+
+        for sound in sounds {
+            sequence.push(*sound);
+        }
     }
 }
