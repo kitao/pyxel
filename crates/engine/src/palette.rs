@@ -21,34 +21,28 @@ impl Palette {
         palette
     }
 
-    #[inline]
     pub fn render_color(&self, original_color: Color) -> Color {
         self.render_colors[original_color as usize]
     }
 
-    #[inline]
     pub fn set_render_color(&mut self, original_color: Color, render_color: Color) {
         self.render_colors[original_color as usize] = render_color;
     }
 
-    #[inline]
     pub fn reset_render_colors(&mut self) {
         for i in 0..MAX_COLOR_COUNT {
             self.render_colors[i] = i as Color;
         }
     }
 
-    #[inline]
     pub fn display_color(&self, render_color: Color) -> Rgb24 {
         self.display_colors[render_color as usize]
     }
 
-    #[inline]
     pub fn set_display_color(&mut self, render_color: Color, display_color: Rgb24) {
         self.display_colors[render_color as usize] = display_color;
     }
 
-    #[inline]
     pub fn set_display_colors(&mut self, display_colors: &[Rgb24]) {
         for (i, &display_color) in display_colors.iter().enumerate() {
             self.set_display_color(i as Color, display_color);

@@ -73,7 +73,6 @@ impl Oscillator {
         }
     }
 
-    #[inline]
     pub fn play(&mut self, note: f64, tone: Tone, volume: f64, effect: Effect, duration: u32) {
         let last_pitch = self.pitch;
 
@@ -91,12 +90,10 @@ impl Oscillator {
         }
     }
 
-    #[inline]
     pub fn stop(&mut self) {
         self.duration = 0;
     }
 
-    #[inline]
     pub fn update(&mut self, blip_buf: &mut BlipBuf) {
         if self.duration == 0 {
             if self.amplitude != 0 {
@@ -155,12 +152,10 @@ impl Oscillator {
         self.time -= TICK_CLOCK_COUNT;
     }
 
-    #[inline]
     fn note_to_pitch(note: f64) -> f64 {
         440.0 * 2.0_f64.powf((note - 33.0) as f64 / 12.0)
     }
 
-    #[inline]
     fn triangle(phase: u32) -> f64 {
         if phase < OSCILLATOR_RESOLUTION / 2 {
             phase as f64 / (OSCILLATOR_RESOLUTION / 4) as f64 - 1.0
@@ -169,7 +164,6 @@ impl Oscillator {
         }
     }
 
-    #[inline]
     fn square(phase: u32) -> f64 {
         if phase < OSCILLATOR_RESOLUTION / 2 {
             1.0
@@ -178,7 +172,6 @@ impl Oscillator {
         }
     }
 
-    #[inline]
     fn pulse(phase: u32) -> f64 {
         if phase < OSCILLATOR_RESOLUTION / 4 {
             1.0
@@ -187,7 +180,6 @@ impl Oscillator {
         }
     }
 
-    #[inline]
     fn noise(&mut self) -> f64 {
         self.noise >>= 1;
         self.noise |= ((self.noise ^ (self.noise >> 1)) & 1) << 15;

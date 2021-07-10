@@ -23,12 +23,10 @@ impl Image {
         }
     }
 
-    #[inline]
     pub fn palette(&self) -> &Palette {
         &self.palette
     }
 
-    #[inline]
     pub fn palette_mut(&mut self) -> &mut Palette {
         &mut self.palette
     }
@@ -53,42 +51,34 @@ impl Image {
 }
 
 impl Canvas<Color> for Image {
-    #[inline]
     fn width(&self) -> u32 {
         self.width
     }
 
-    #[inline]
     fn height(&self) -> u32 {
         self.height
     }
 
-    #[inline]
     fn data<'a>(&'a self) -> &'a Vec<Vec<Color>> {
         &self.data
     }
 
-    #[inline]
     fn data_mut<'a>(&'a mut self) -> &'a mut Vec<Vec<Color>> {
         &mut self.data
     }
 
-    #[inline]
     fn self_rect(&self) -> RectArea {
         self.self_rect
     }
 
-    #[inline]
     fn clip_rect(&self) -> RectArea {
         self.clip_rect
     }
 
-    #[inline]
     fn clip_rect_mut(&mut self) -> &mut RectArea {
         &mut self.clip_rect
     }
 
-    #[inline]
     fn render_color(&self, original_color: Color) -> Color {
         self.palette.render_color(original_color)
     }
