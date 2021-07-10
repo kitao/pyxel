@@ -1,5 +1,8 @@
+use std::collections::HashMap;
+
 use crate::oscillator::{Effect, Tone};
 use crate::settings::{DEFAULT_SOUND_SPEED, MAX_SOUND_VOLUME};
+use crate::utility::remove_whitespace;
 
 pub type Note = i32;
 pub type Volume = u32;
@@ -7,245 +10,208 @@ pub type Speed = u32;
 
 #[derive(Clone)]
 pub struct Sound {
-  notes: Vec<Note>,
-  tones: Vec<Tone>,
-  volumes: Vec<Volume>,
-  effects: Vec<Effect>,
-  speed: Speed,
+    notes: Vec<Note>,
+    tones: Vec<Tone>,
+    volumes: Vec<Volume>,
+    effects: Vec<Effect>,
+    speed: Speed,
+
+    note_table: HashMap<char, Note>,
+    tone_table: HashMap<char, Tone>,
+    effect_table: HashMap<char, Effect>,
 }
 
 impl Sound {
-  pub fn new() -> Sound {
-    Sound {
-      notes: Vec::new(),
-      tones: Vec::new(),
-      volumes: Vec::new(),
-      effects: Vec::new(),
-      speed: DEFAULT_SOUND_SPEED,
-    }
-  }
+    pub fn new() -> Sound {
+        let mut note_table = HashMap::new();
+        note_table.insert('c', 0);
+        note_table.insert('d', 2);
+        note_table.insert('e', 4);
+        note_table.insert('f', 5);
+        note_table.insert('g', 7);
+        note_table.insert('a', 9);
+        note_table.insert('b', 11);
 
-  #[inline]
-  pub fn len(&self) -> usize {
-    self.notes.len()
-  }
+        let mut tone_table = HashMap::new();
+        tone_table.insert('t', Tone::Triangle);
+        tone_table.insert('q', Tone::Square);
+        tone_table.insert('p', Tone::Pulse);
+        tone_table.insert('n', Tone::Noise);
 
-  #[inline]
-  pub fn note(&self, index: u32) -> Note {
-    self.notes[index as usize]
-  }
+        let mut effect_table = HashMap::new();
+        effect_table.insert('n', Effect::None);
+        effect_table.insert('s', Effect::Slide);
+        effect_table.insert('v', Effect::Vibrato);
+        effect_table.insert('f', Effect::FadeOut);
 
-  /*pub fn notes_mut(&mut self) -> &mut Vec<Note> {
-    &mut self.notes
-  }*/
+        Sound {
+            notes: Vec::new(),
+            tones: Vec::new(),
+            volumes: Vec::new(),
+            effects: Vec::new(),
+            speed: DEFAULT_SOUND_SPEED,
 
-  #[inline]
-  pub fn tone(&self, index: u32) -> Tone {
-    let len = self.tones.len();
-
-    if len > 0 {
-      self.tones[index as usize % len]
-    } else {
-      Tone::Triangle
-    }
-  }
-
-  /*#[inline]
-  pub fn tones_mut(&mut self) -> &mut Vec<Tone> {
-    &mut self.tones
-  }*/
-
-  #[inline]
-  pub fn volume(&self, index: u32) -> Volume {
-    let len = self.volumes.len();
-
-    if len > 0 {
-      self.volumes[index as usize % len]
-    } else {
-      MAX_SOUND_VOLUME
-    }
-  }
-
-  /*#[inline]
-  pub fn volumes_mut(&mut self) -> &mut Vec<Volume> {
-    &mut self.volumes
-  }*/
-
-  #[inline]
-  pub fn effect(&self, index: u32) -> Effect {
-    let len = self.effects.len();
-
-    if len > 0 {
-      self.effects[index as usize % len]
-    } else {
-      Effect::None
-    }
-  }
-
-  /*#[inline]
-  pub fn effects_mut(&mut self) -> &mut Vec<Effect> {
-    &mut self.effects
-  }*/
-
-  #[inline]
-  pub fn speed(&self) -> Speed {
-    self.speed
-  }
-
-  /*#[inline]
-  pub fn set_speed(&mut self, speed: Speed) {
-    self.speed = speed;
-  }*/
-
-  /*
-  void Set(const std::string& note,
-           const std::string& tone,
-           const std::string& volume,
-           const std::string& effect,
-           int32_t speed);
-  void SetNote(const std::string& note);
-  void SetTone(const std::string& tone);
-  void SetVolume(const std::string& volume);
-  void SetEffect(const std::string& effect);
-  static std::string FormatData(const std::string& str);
-  */
-
-  /*
-  std::map<char, int> NOTE_TABLE = {
-      {'c', 0}, {'d', 2}, {'e', 4}, {'f', 5}, {'g', 7}, {'a', 9}, {'b', 11},
-  };
-
-  std::map<char, int> TONE_TABLE = {
-      {'t', TONE_TRIANGLE},
-      {'s', TONE_SQUARE},
-      {'p', TONE_PULSE},
-      {'n', TONE_NOISE},
-  };
-
-  std::map<char, int> EFFECT_TABLE = {
-      {'n', EFFECT_NONE},
-      {'s', EFFECT_SLIDE},
-      {'v', EFFECT_VIBRATO},
-      {'f', EFFECT_FADEOUT},
-  };
-
-  void Sound::Set(const std::string& note,
-                  const std::string& tone,
-                  const std::string& volume,
-                  const std::string& effect,
-                  int32_t speed) {
-    SetNote(note);
-    SetTone(tone);
-    SetVolume(volume);
-    SetEffect(effect);
-    Speed(speed);
-  }
-
-  void Sound::SetNote(const std::string& note) {
-    std::string data = FormatData(note);
-
-    note_.resize(0);
-
-    for (int32_t i = 0; i < data.size();) {
-      char c = data[i++];
-      int32_t param;
-
-      if (c >= 'a' && c <= 'g') {
-        param = NOTE_TABLE[c];
-        c = i < data.length() ? data[i++] : 0;
-
-        if (c == '#' || c == '-') {
-          param += c == '#' ? 1 : -1;
-          c = i < data.length() ? data[i++] : 0;
+            note_table: note_table,
+            tone_table: tone_table,
+            effect_table: effect_table,
         }
+    }
 
-        if (c >= '0' && c <= '4') {
-          param += (c - '0') * 12;
+    pub fn set(&mut self, notes: &str, tones: &str, volumes: &str, effects: &str, speed: Speed) {
+        self.set_notes(notes);
+        self.set_tones(tones);
+        self.set_volumes(volumes);
+        self.set_effects(volumes);
+        self.set_speed(speed);
+    }
+
+    pub fn len(&self) -> usize {
+        self.notes.len()
+    }
+
+    pub fn note(&self, index: u32) -> Note {
+        self.notes[index as usize]
+    }
+
+    pub fn notes(&self) -> &Vec<Note> {
+        &self.notes
+    }
+
+    pub fn set_notes(&mut self, notes: &str) {
+        let notes = remove_whitespace(notes);
+        let mut chars = notes.chars();
+
+        self.notes.clear();
+
+        while let Some(c) = chars.next() {
+            let mut note;
+
+            if let Some(_note) = self.note_table.get(&c) {
+                note = *_note;
+                let mut c = chars.next().unwrap_or(0 as char);
+
+                if c == '#' {
+                    note += 1;
+                    c = chars.next().unwrap_or(0 as char);
+                } else if c == '-' {
+                    note -= 1;
+                    c = chars.next().unwrap_or(0 as char);
+                }
+
+                if c >= '0' && c <= '4' {
+                    note += (c as Note - '0' as Note) * 12;
+                    chars.next();
+                } else {
+                    panic!();
+                    //PYXEL_ERROR("invalid sound note '" + s + "'");
+                }
+            } else if c == 'r' {
+                note = -1;
+            } else {
+                panic!();
+                //PYXEL_ERROR("invalid sound note '" + s + "'");
+            }
+
+            self.notes.push(note);
+        }
+    }
+
+    pub fn tone(&self, index: u32) -> Tone {
+        let len = self.tones.len();
+
+        if len > 0 {
+            self.tones[index as usize % len]
         } else {
-          std::string s = {c};
-          PYXEL_ERROR("invalid sound note '" + s + "'");
+            Tone::Triangle
         }
-      } else if (c == 'r') {
-        param = -1;
-      } else {
-        std::string s = {c};
-        PYXEL_ERROR("invalid sound note '" + s + "'");
-      }
-
-      note_.push_back(param);
-    }
-  }
-
-  void Sound::SetTone(const std::string& tone) {
-    std::string data = FormatData(tone);
-
-    tone_.resize(0);
-
-    for (int32_t i = 0; i < data.length(); i++) {
-      char c = data[i];
-      int32_t param;
-
-      if (c == 't' || c == 's' || c == 'p' || c == 'n') {
-        param = TONE_TABLE[c];
-      } else {
-        std::string s = {c};
-        PYXEL_ERROR("invalid sound tone '" + s + "'");
-      }
-
-      tone_.push_back(param);
-    }
-  }
-
-  void Sound::SetVolume(const std::string& volume) {
-    std::string data = FormatData(volume);
-
-    volume_.resize(0);
-
-    for (int32_t i = 0; i < data.length(); i++) {
-      char c = data[i];
-      int32_t param;
-
-      if (c >= '0' && c <= '7') {
-        param = c - '0';
-      } else {
-        std::string s = {c};
-        PYXEL_ERROR("invalid sound volume '" + s + "'");
-      }
-
-      volume_.push_back(param);
-    }
-  }
-
-  void Sound::SetEffect(const std::string& effect) {
-    std::string data = FormatData(effect);
-
-    effect_.resize(0);
-
-    for (int32_t i = 0; i < data.length(); i++) {
-      char c = data[i];
-      int32_t param;
-
-      if (c == 'n' || c == 's' || c == 'v' || c == 'f') {
-        param = EFFECT_TABLE[c];
-      } else {
-        std::string s = {c};
-        PYXEL_ERROR("invalid sound effect '" + s + "'");
-      }
-
-      effect_.push_back(param);
-    }
-  }
-
-  std::string Sound::FormatData(const std::string& str) {
-    std::string res = std::string(str);
-
-    for (char c : WHITESPACE) {
-      res = ReplaceAll(res, " ", "");
     }
 
-    std::transform(res.begin(), res.end(), res.begin(), ::tolower);
+    pub fn tones(&self) -> &Vec<Tone> {
+        &self.tones
+    }
 
-    return res;
-  }
-  */
+    pub fn set_tones(&mut self, tones: &str) {
+        let tones = remove_whitespace(tones);
+        let mut chars = tones.chars();
+
+        self.tones.clear();
+
+        while let Some(c) = chars.next() {
+            if let Some(tone) = self.tone_table.get(&c) {
+                self.tones.push(*tone);
+            } else {
+                panic!();
+                //PYXEL_ERROR("invalid sound tone '" + s + "'");
+            }
+        }
+    }
+
+    pub fn volume(&self, index: u32) -> Volume {
+        let len = self.volumes.len();
+
+        if len > 0 {
+            self.volumes[index as usize % len]
+        } else {
+            MAX_SOUND_VOLUME
+        }
+    }
+
+    pub fn volumes(&mut self) -> &Vec<Volume> {
+        &self.volumes
+    }
+
+    pub fn set_volumes(&mut self, volumes: &str) {
+        let volumes = remove_whitespace(volumes);
+        let mut chars = volumes.chars();
+
+        self.volumes.clear();
+
+        while let Some(c) = chars.next() {
+            if c >= '0' && c <= '7' {
+                self.volumes.push(c as Volume - '0' as Volume);
+            } else {
+                panic!();
+                //PYXEL_ERROR("invalid sound volume '" + s + "'");
+            }
+        }
+    }
+
+    pub fn effect(&self, index: u32) -> Effect {
+        let len = self.effects.len();
+
+        if len > 0 {
+            self.effects[index as usize % len]
+        } else {
+            Effect::None
+        }
+    }
+
+    pub fn effects(&mut self) -> &Vec<Effect> {
+        &mut self.effects
+    }
+
+    pub fn set_effects(&mut self, effects: &str) {
+        let effects = remove_whitespace(effects);
+        let mut chars = effects.chars();
+
+        self.effects.clear();
+
+        while let Some(c) = chars.next() {
+            if let Some(effect) = self.effect_table.get(&c) {
+                self.effects.push(*effect);
+            } else {
+                panic!();
+                //PYXEL_ERROR("invalid sound effect '" + s + "'");
+            }
+            //
+        }
+    }
+
+    pub fn speed(&self) -> Speed {
+        self.speed
+    }
+
+    pub fn set_speed(&mut self, speed: Speed) {
+        self.speed = speed;
+    }
 }
