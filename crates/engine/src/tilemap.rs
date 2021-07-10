@@ -56,9 +56,3 @@ impl Canvas<Tile> for Tilemap {
         original_color
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    //
-}
