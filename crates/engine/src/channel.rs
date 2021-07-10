@@ -27,7 +27,6 @@ impl Channel {
         }
     }
 
-    #[inline]
     pub fn update(&mut self, blip_buf: &mut BlipBuf) {
         if !self.is_playing {
             return;
@@ -71,27 +70,22 @@ impl Channel {
         self.tick_count += 1;
     }
 
-    #[inline]
     pub fn is_playing(&self) -> bool {
         self.is_playing
     }
 
-    #[inline]
     pub fn is_looping(&self) -> bool {
         self.is_looping
     }
 
-    #[inline]
     pub fn sound_index(&self) -> u32 {
         self.sound_index
     }
 
-    #[inline]
     pub fn note_index(&self) -> u32 {
         self.note_index
     }
 
-    #[inline]
     pub fn play(&mut self, sounds: &Vec<Sound>, is_looping: bool) {
         self.sounds = sounds.clone();
         self.is_playing = true;
@@ -101,7 +95,6 @@ impl Channel {
         self.tick_count = 0;
     }
 
-    #[inline]
     pub fn stop(&mut self) {
         self.is_playing = false;
         self.is_looping = false;

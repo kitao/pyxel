@@ -67,12 +67,10 @@ impl Audio {
         audio
     }
 
-    #[inline]
     pub fn sound(&self, no: u32) -> Arc<Mutex<Sound>> {
         self.sounds[no as usize].clone()
     }
 
-    #[inline]
     pub fn music(&self, no: u32) -> Arc<Mutex<Music>> {
         self.musics[no as usize].clone()
     }
