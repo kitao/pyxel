@@ -39,7 +39,6 @@ pub trait SystemCallback<T> {
 }
 
 impl<T: Platform> System<T> {
-    #[inline]
     pub fn new(
         width: u32,
         height: u32,
@@ -69,37 +68,30 @@ impl<T: Platform> System<T> {
         }
     }
 
-    #[inline]
     pub(crate) fn platform_mut(&mut self) -> &mut T {
         &mut self.platform
     }
 
-    #[inline]
     pub(crate) fn window_width(&self) -> u32 {
         self.platform.window_size().0
     }
 
-    #[inline]
     pub(crate) fn window_height(&self) -> u32 {
         self.platform.window_size().1
     }
 
-    #[inline]
     pub fn set_window_title(&mut self, title: &str) {
         self.platform.set_window_title(title);
     }
 
-    #[inline]
     pub fn frame_count(&self) -> u32 {
         self.frame_count
     }
 
-    #[inline]
     pub fn quit(&mut self) {
         //
     }
 
-    #[inline]
     pub fn flip_screen(&mut self) {
         /*
         next_update_time_ += one_frame_time_;
@@ -117,7 +109,6 @@ impl<T: Platform> System<T> {
         */
     }
 
-    #[inline]
     pub fn show_screen(&mut self) {
         /*
         is_loop_running_ = true;
@@ -130,7 +121,6 @@ impl<T: Platform> System<T> {
         */
     }
 
-    #[inline]
     fn process_events(&mut self, input: &mut Input) {
         let window_pos = self.platform.window_pos();
         let window_size = self.platform.window_size();
@@ -159,7 +149,6 @@ impl<T: Platform> System<T> {
         input.end_update();
     }
 
-    #[inline]
     fn wait_for_update_time(&mut self) -> i32 {
         loop {
             let sleep_time = self.next_update_time - self.platform.ticks() as f64;
@@ -175,17 +164,14 @@ impl<T: Platform> System<T> {
     //
     // methods for run macro
     //
-    #[inline]
     pub(crate) fn should_update(&self) -> bool {
         self.waiting_update_count > 0
     }
 
-    #[inline]
     pub(crate) fn should_quit(&self) -> bool {
         self.should_quit
     }
 
-    #[inline]
     pub(crate) fn init_run_states(&mut self) {
         self.next_update_time = self.platform.ticks() as f64 + self.one_frame_time;
         self.should_quit = false;
@@ -193,7 +179,6 @@ impl<T: Platform> System<T> {
         self.frame_count = 0;
     }
 
-    #[inline]
     pub(crate) fn prepare_for_update(&mut self) {
         let sleep_time = self.wait_for_update_time();
 
@@ -213,7 +198,6 @@ impl<T: Platform> System<T> {
         }
     }
 
-    #[inline]
     pub(crate) fn start_update(&mut self, input: &mut Input) {
         // TODO: update_profiler_.Start();
 
@@ -224,7 +208,6 @@ impl<T: Platform> System<T> {
         // TODO: CheckSpecialInput();
     }
 
-    #[inline]
     pub(crate) fn end_update(&mut self) {
         // TODO: update_profiler_.End();
 
@@ -234,12 +217,10 @@ impl<T: Platform> System<T> {
         }
     }
 
-    #[inline]
     pub(crate) fn start_draw(&mut self) {
         //
     }
 
-    #[inline]
     pub(crate) fn end_draw(&mut self, graphics: &Graphics) {
         self.platform
             .render_screen(graphics.screen(), BACKGROUND_COLOR);

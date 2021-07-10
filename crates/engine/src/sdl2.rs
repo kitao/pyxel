@@ -32,7 +32,6 @@ struct AudioCallbackData {
 impl SdlAudioCallback for AudioCallbackData {
     type Channel = i16;
 
-    #[inline]
     fn callback(&mut self, out: &mut [i16]) {
         let mut audio_callback = self.audio_callback.lock().unwrap();
         audio_callback.audio_callback(out);
@@ -49,7 +48,6 @@ pub struct Sdl2 {
 }
 
 impl Platform for Sdl2 {
-    #[inline]
     fn new(title: &str, width: u32, height: u32, scale: u32) -> Self {
         let sdl_context = sdl2::init().unwrap();
         let sdl_video = sdl_context.video().unwrap();
@@ -83,22 +81,18 @@ impl Platform for Sdl2 {
         }
     }
 
-    #[inline]
     fn window_pos(&self) -> (i32, i32) {
         self.sdl_canvas.window().position()
     }
 
-    #[inline]
     fn window_size(&self) -> (u32, u32) {
         self.sdl_canvas.window().size()
     }
 
-    #[inline]
     fn set_window_title(&mut self, title: &str) {
         self.sdl_canvas.window_mut().set_title(title).unwrap();
     }
 
-    #[inline]
     fn set_window_icon(&mut self, icon: &Image, scale: u32) {
         /*
         void Window::SetupWindowIcon() const {
@@ -137,7 +131,6 @@ impl Platform for Sdl2 {
         */
     }
 
-    #[inline]
     fn toggle_fullscreen(&mut self) {
         if self.sdl_canvas.window().fullscreen_state() == SdlFullscreenType::True {
             self.sdl_canvas
@@ -152,17 +145,14 @@ impl Platform for Sdl2 {
         }
     }
 
-    #[inline]
     fn ticks(&self) -> u32 {
         self.sdl_timer.ticks()
     }
 
-    #[inline]
     fn delay(&mut self, ms: u32) {
         self.sdl_timer.delay(ms);
     }
 
-    #[inline]
     fn poll_event(&mut self) -> Option<Event> {
         loop {
             let sdl_event = self.sdl_event_pump.poll_event();
@@ -364,7 +354,6 @@ impl Platform for Sdl2 {
         self.sdl_canvas.present();
     }
 
-    #[inline]
     fn start_audio(
         &mut self,
         sample_rate: u32,

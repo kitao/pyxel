@@ -28,7 +28,6 @@ impl Input {
         }
     }
 
-    #[inline]
     pub fn is_key_pressed(
         &self,
         key: KeyCode,
@@ -66,7 +65,6 @@ impl Input {
         */
     }
 
-    #[inline]
     pub fn is_key_released(&self, key: KeyCode) -> bool {
         false
 
@@ -83,7 +81,6 @@ impl Input {
         */
     }
 
-    #[inline]
     pub fn is_key_on(&self, key: KeyCode) -> bool {
         match self.key_states.get(&key) {
             Some(KeyState::Pressed { .. }) => true,
@@ -91,22 +88,18 @@ impl Input {
         }
     }
 
-    #[inline]
     pub fn key_value(&self, key: KeyCode) -> KeyValue {
         self.key_values.get(&key).cloned().unwrap_or(0)
     }
 
-    #[inline]
     pub fn is_mouse_visible(&self) -> bool {
         self.is_mouse_visible
     }
 
-    #[inline]
     pub fn set_mouse_visible(&mut self, is_mouse_visible: bool) {
         self.is_mouse_visible = is_mouse_visible;
     }
 
-    #[inline]
     pub(crate) fn start_update(&mut self, frame_count: u32, window_rect: RectArea) {
         self.frame_count = frame_count;
         self.window_rect = window_rect;
@@ -115,7 +108,6 @@ impl Input {
         self.key_values.insert(MOUSE_WHEEL_Y, 0);
     }
 
-    #[inline]
     pub(crate) fn process_event(&mut self, event: Event) {
         match event {
             Event::KeyDown { key } => {
@@ -202,12 +194,10 @@ impl Input {
         //
     }
 
-    #[inline]
     pub(crate) fn end_update(&mut self) {
         //
     }
 
-    #[inline]
     fn get_common_key(key: KeyCode) -> Option<KeyCode> {
         match key {
             KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
@@ -218,7 +208,6 @@ impl Input {
         }
     }
 
-    #[inline]
     fn press_key(&mut self, key: KeyCode) {
         self.key_states.insert(
             key,
@@ -228,7 +217,6 @@ impl Input {
         );
     }
 
-    #[inline]
     fn release_key(&mut self, key: KeyCode) {
         self.key_states.insert(
             key,
