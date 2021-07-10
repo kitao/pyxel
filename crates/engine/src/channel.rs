@@ -86,8 +86,8 @@ impl Channel {
         self.note_index
     }
 
-    pub fn play(&mut self, sounds: &Vec<Sound>, is_looping: bool) {
-        self.sounds = sounds.clone();
+    pub fn play(&mut self, sounds: Vec<Sound>, is_looping: bool) {
+        self.sounds = sounds;
         self.is_playing = true;
         self.is_looping = is_looping;
         self.sound_index = 0;
