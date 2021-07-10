@@ -18,6 +18,7 @@ mod sdl2;
 mod settings;
 mod sound;
 mod tilemap;
+mod utility;
 
 use std::sync::{Arc, Mutex};
 
@@ -70,27 +71,22 @@ impl Pyxel {
         }
     }
 
-    #[inline]
     pub fn width(&self) -> u32 {
         self.graphics.screen().width()
     }
 
-    #[inline]
     pub fn height(&self) -> u32 {
         self.graphics.screen().height()
     }
 
-    #[inline]
     pub fn frame_count(&self) -> u32 {
         self.system.frame_count()
     }
 
-    #[inline]
     pub fn title(&mut self, title: &str) {
         self.system.set_window_title(title);
     }
 
-    #[inline]
     pub fn run(&mut self, callback: &mut dyn PyxelCallback) {
         run!(self, callback);
     }
@@ -106,29 +102,24 @@ impl Pyxel {
     //
     // Graphics
     //
-    #[inline]
     pub fn cls(&mut self, col: Color) {
         self.graphics.screen_mut().clear(col);
     }
 
-    #[inline]
     pub fn pget(&mut self, x: i32, y: i32) -> Color {
         self.graphics.screen_mut().point(x, y)
     }
 
-    #[inline]
     pub fn pset(&mut self, x: i32, y: i32, col: Color) {
         self.graphics.screen_mut().draw_point(x, y, col);
     }
 
-    #[inline]
     pub fn rect(&mut self, x: i32, y: i32, w: i32, h: i32, col: Color) {
         self.graphics
             .screen_mut()
             .draw_rect(x, y, w as f64 as u32, h as f64 as u32, col);
     }
 
-    #[inline]
     pub fn rectb(&mut self, x: i32, y: i32, w: i32, h: i32, col: Color) {
         self.graphics
             .screen_mut()
