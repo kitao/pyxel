@@ -53,13 +53,16 @@ const std::string RESOURCE_ARCHIVE_DIRNAME = "pyxel_resource/";
 //
 // Graphics
 //
-pub const IMAGE_COUNT: usize = 4;
+pub const MAX_COLOR_COUNT: u32 = 256;
+pub const COLOR_COUNT: u32 = 16;
+
+pub const IMAGE_COUNT: u32 = 4;
 pub const IMAGE_SIZE: u32 = 256;
 
-pub const TILEMAP_COUNT: usize = 8;
+pub const TILEMAP_COUNT: u32 = 8;
 pub const TILEMAP_SIZE: u32 = 256;
 
-pub const DISPLAY_COLORS: [Rgb24; 16] = [
+pub const DISPLAY_COLORS: [Rgb24; COLOR_COUNT as usize] = [
     0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, 0xd4186c,
     0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0,
 ];
