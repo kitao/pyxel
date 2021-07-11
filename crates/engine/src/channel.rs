@@ -35,7 +35,7 @@ impl Channel {
         let sound = &self.sounds[self.sound_index as usize];
 
         if self.tick_count % sound.speed() as u32 == 0 {
-            if self.note_index >= sound.len() as u32 {
+            if self.note_index >= sound.notes().len() as u32 {
                 self.sound_index += 1;
                 self.note_index = 0;
 
