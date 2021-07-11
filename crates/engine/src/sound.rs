@@ -15,45 +15,16 @@ pub struct Sound {
     volumes: Vec<Volume>,
     effects: Vec<Effect>,
     speed: Speed,
-
-    note_table: HashMap<char, Note>,
-    tone_table: HashMap<char, Tone>,
-    effect_table: HashMap<char, Effect>,
 }
 
 impl Sound {
     pub fn new() -> Sound {
-        let mut note_table = HashMap::new();
-        note_table.insert('c', 0);
-        note_table.insert('d', 2);
-        note_table.insert('e', 4);
-        note_table.insert('f', 5);
-        note_table.insert('g', 7);
-        note_table.insert('a', 9);
-        note_table.insert('b', 11);
-
-        let mut tone_table = HashMap::new();
-        tone_table.insert('t', Tone::Triangle);
-        tone_table.insert('q', Tone::Square);
-        tone_table.insert('p', Tone::Pulse);
-        tone_table.insert('n', Tone::Noise);
-
-        let mut effect_table = HashMap::new();
-        effect_table.insert('n', Effect::None);
-        effect_table.insert('s', Effect::Slide);
-        effect_table.insert('v', Effect::Vibrato);
-        effect_table.insert('f', Effect::FadeOut);
-
         Sound {
             notes: Vec::new(),
             tones: Vec::new(),
             volumes: Vec::new(),
             effects: Vec::new(),
             speed: DEFAULT_SOUND_SPEED,
-
-            note_table: note_table,
-            tone_table: tone_table,
-            effect_table: effect_table,
         }
     }
 
@@ -65,12 +36,14 @@ impl Sound {
         self.set_speed(speed);
     }
 
-    pub fn len(&self) -> usize {
-        self.notes.len()
-    }
-
     pub fn note(&self, index: u32) -> Note {
-        self.notes[index as usize]
+        let len = self.notes.len();
+
+        if len > 0 {
+            self.notes[index as usize % len]
+        } else {
+            0
+        }
     }
 
     pub fn notes(&self) -> &Vec<Note> {
@@ -84,10 +57,19 @@ impl Sound {
         self.notes.clear();
 
         while let Some(c) = chars.next() {
-            let mut note;
+            let mut note: Note;
 
-            if let Some(_note) = self.note_table.get(&c) {
-                note = *_note;
+            if c >= 'a' && c <= 'g' {
+                note = match c {
+                    'c' => 0,
+                    'd' => 2,
+                    'e' => 4,
+                    'f' => 5,
+                    'g' => 7,
+                    'a' => 9,
+                    'b' => 11,
+                    _ => panic!("invalid sound note '{}'", c),
+                };
                 let mut c = chars.next().unwrap_or(0 as char);
 
                 if c == '#' {
@@ -100,16 +82,13 @@ impl Sound {
 
                 if c >= '0' && c <= '4' {
                     note += (c as Note - '0' as Note) * 12;
-                    chars.next();
                 } else {
-                    panic!();
-                    //PYXEL_ERROR("invalid sound note '" + s + "'");
+                    panic!("invalid sound note '{}'", c);
                 }
             } else if c == 'r' {
                 note = -1;
             } else {
-                panic!();
-                //PYXEL_ERROR("invalid sound note '" + s + "'");
+                panic!("invalid sound note '{}'", c);
             }
 
             self.notes.push(note);
@@ -137,12 +116,15 @@ impl Sound {
         self.tones.clear();
 
         while let Some(c) = chars.next() {
-            if let Some(tone) = self.tone_table.get(&c) {
-                self.tones.push(*tone);
-            } else {
-                panic!();
-                //PYXEL_ERROR("invalid sound tone '" + s + "'");
-            }
+            let tone = match c {
+                't' => Tone::Triangle,
+                's' => Tone::Square,
+                'p' => Tone::Pulse,
+                'n' => Tone::Noise,
+                _ => panic!("invalid sound tone '{}'", c),
+            };
+
+            self.tones.push(tone);
         }
     }
 
@@ -156,7 +138,7 @@ impl Sound {
         }
     }
 
-    pub fn volumes(&mut self) -> &Vec<Volume> {
+    pub fn volumes(&self) -> &Vec<Volume> {
         &self.volumes
     }
 
@@ -170,8 +152,7 @@ impl Sound {
             if c >= '0' && c <= '7' {
                 self.volumes.push(c as Volume - '0' as Volume);
             } else {
-                panic!();
-                //PYXEL_ERROR("invalid sound volume '" + s + "'");
+                panic!("invalid sound volume '{}'", c);
             }
         }
     }
@@ -186,8 +167,8 @@ impl Sound {
         }
     }
 
-    pub fn effects(&mut self) -> &Vec<Effect> {
-        &mut self.effects
+    pub fn effects(&self) -> &Vec<Effect> {
+        &self.effects
     }
 
     pub fn set_effects(&mut self, effects: &str) {
@@ -197,13 +178,15 @@ impl Sound {
         self.effects.clear();
 
         while let Some(c) = chars.next() {
-            if let Some(effect) = self.effect_table.get(&c) {
-                self.effects.push(*effect);
-            } else {
-                panic!();
-                //PYXEL_ERROR("invalid sound effect '" + s + "'");
-            }
-            //
+            let effect = match c {
+                'n' => Effect::None,
+                's' => Effect::Slide,
+                'v' => Effect::Vibrato,
+                'f' => Effect::FadeOut,
+                _ => panic!("invalid sound effect '{}'", c),
+            };
+
+            self.effects.push(effect);
         }
     }
 
@@ -213,5 +196,84 @@ impl Sound {
 
     pub fn set_speed(&mut self, speed: Speed) {
         self.speed = speed;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new() {
+        let sound = Sound::new();
+        assert_eq!(sound.note(0), 0);
+        assert_eq!(sound.notes().len(), 0);
+        assert_eq!(sound.tone(0), Tone::Triangle);
+        assert_eq!(sound.tones().len(), 0);
+        assert_eq!(sound.volume(0), 7);
+        assert_eq!(sound.volumes().len(), 0);
+        assert_eq!(sound.effect(0), Effect::None);
+        assert_eq!(sound.effects().len(), 0);
+        assert_eq!(sound.speed(), 30);
+    }
+
+    #[test]
+    fn set_notes() {
+        let mut sound = Sound::new();
+
+        sound.set_notes(" c 0 d 1 r e 2 f 3 g 4 r a 0 b 1 ");
+        assert_eq!(sound.note(1), 14);
+        assert_eq!(sound.note(11), -1);
+        assert_eq!(sound.notes(), &vec![0, 14, -1, 28, 41, 55, -1, 9, 23]);
+    }
+
+    #[test]
+    fn set_tones() {
+        let mut sound = Sound::new();
+
+        sound.set_tones(" t s p n ");
+        assert_eq!(sound.tone(1), Tone::Square);
+        assert_eq!(sound.tone(6), Tone::Pulse);
+        assert_eq!(
+            sound.tones(),
+            &vec![Tone::Triangle, Tone::Square, Tone::Pulse, Tone::Noise]
+        );
+    }
+
+    #[test]
+    fn set_volumes() {
+        let mut sound = Sound::new();
+
+        sound.set_volumes(" 0 1 2 3 4 5 6 7 ");
+        assert_eq!(sound.volume(1), 1);
+        assert_eq!(sound.volume(10), 2);
+        assert_eq!(sound.volumes(), &vec![0, 1, 2, 3, 4, 5, 6, 7]);
+    }
+
+    #[test]
+    fn set_effects() {
+        let mut sound = Sound::new();
+
+        sound.set_effects(" n s v f ");
+        assert_eq!(sound.effect(1), Effect::Slide);
+        assert_eq!(sound.effect(6), Effect::Vibrato);
+        assert_eq!(
+            sound.effects(),
+            &vec![
+                Effect::None,
+                Effect::Slide,
+                Effect::Vibrato,
+                Effect::FadeOut
+            ]
+        );
+    }
+
+    #[test]
+    fn set_speed() {
+        let mut sound = Sound::new();
+
+        assert_eq!(sound.speed(), 30);
+        sound.set_speed(100);
+        assert_eq!(sound.speed(), 100);
     }
 }
