@@ -1,19 +1,21 @@
+use crate::settings::{COLOR_COUNT, MAX_COLOR_COUNT};
+
 pub type Color = u8;
 pub type Rgb24 = u32;
 
-const MAX_COLOR_COUNT: usize = 256;
-
 #[derive(Debug)]
 pub struct Palette {
-    render_colors: [Color; MAX_COLOR_COUNT],
-    display_colors: [Rgb24; MAX_COLOR_COUNT],
+    render_colors: [Color; MAX_COLOR_COUNT as usize],
+    display_colors: [Rgb24; MAX_COLOR_COUNT as usize],
 }
 
 impl Palette {
     pub fn new() -> Palette {
+        assert!(MAX_COLOR_COUNT <= Color::MAX as u32 + 1);
+
         let mut palette = Palette {
-            render_colors: [0; MAX_COLOR_COUNT],
-            display_colors: [0; MAX_COLOR_COUNT],
+            render_colors: [0; MAX_COLOR_COUNT as usize],
+            display_colors: [0; MAX_COLOR_COUNT as usize],
         };
 
         palette.reset_render_colors();
@@ -31,7 +33,7 @@ impl Palette {
 
     pub fn reset_render_colors(&mut self) {
         for i in 0..MAX_COLOR_COUNT {
-            self.render_colors[i] = i as Color;
+            self.render_colors[i as usize] = i as Color;
         }
     }
 
@@ -120,7 +122,7 @@ mod tests {
     fn set_display_colors() {
         let mut palette = Palette::new();
 
-        let rgbs: [Rgb24; 16] = [
+        let rgbs: [Rgb24; COLOR_COUNT as usize] = [
             0x000000, 0x111111, 0x222222, 0x333333, 0x444444, 0x555555, 0x666666, 0x777777,
             0x888888, 0x999999, 0xaaaaaa, 0xbbbbbb, 0xcccccc, 0xdddddd, 0xeeeeee, 0xffffff,
         ];
