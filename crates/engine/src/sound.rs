@@ -218,13 +218,36 @@ mod tests {
     }
 
     #[test]
+    fn set() {
+        let mut sound = Sound::new();
+
+        sound.set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
+        assert_eq!(sound.notes(), &vec![0, 1, 2, 3]);
+        assert_eq!(
+            sound.tones(),
+            &vec![Tone::Triangle, Tone::Square, Tone::Pulse, Tone::Noise]
+        );
+        assert_eq!(sound.volumes(), &vec![0, 1, 2, 3]);
+        assert_eq!(
+            sound.effects(),
+            &vec![
+                Effect::None,
+                Effect::Slide,
+                Effect::Vibrato,
+                Effect::FadeOut
+            ]
+        );
+        assert_eq!(sound.speed(), 123);
+    }
+
+    #[test]
     fn set_notes() {
         let mut sound = Sound::new();
 
-        sound.set_notes(" c 0 d 1 r e 2 f 3 g 4 r a 0 b 1 ");
-        assert_eq!(sound.note(1), 14);
+        sound.set_notes(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ");
+        assert_eq!(sound.note(1), 15);
         assert_eq!(sound.note(11), -1);
-        assert_eq!(sound.notes(), &vec![0, 14, -1, 28, 41, 55, -1, 9, 23]);
+        assert_eq!(sound.notes(), &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]);
     }
 
     #[test]
