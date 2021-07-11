@@ -145,7 +145,7 @@ class Snake:
         """Check whether the snake has died (out of bounds or doubled up.)"""
 
         head = self.snake[0]
-        if head.x < 0 or head.y <= HEIGHT_SCORE or head.x >= WIDTH or head.y >= HEIGHT:
+        if head.x < 0 or head.y < HEIGHT_SCORE or head.x >= WIDTH or head.y >= HEIGHT:
             self.death_event()
         elif len(self.snake) != len(set(self.snake)):
             self.death_event()
