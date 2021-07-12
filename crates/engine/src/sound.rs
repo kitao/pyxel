@@ -1,8 +1,6 @@
-use std::collections::HashMap;
-
 use crate::oscillator::{Effect, Tone};
 use crate::settings::{DEFAULT_SOUND_SPEED, MAX_SOUND_VOLUME};
-use crate::utility::remove_whitespace;
+use crate::utility::arrange_string;
 
 pub type Note = i32;
 pub type Volume = u32;
@@ -51,7 +49,7 @@ impl Sound {
     }
 
     pub fn set_notes(&mut self, notes: &str) {
-        let notes = remove_whitespace(notes);
+        let notes = arrange_string(notes);
         let mut chars = notes.chars();
 
         self.notes.clear();
@@ -110,7 +108,7 @@ impl Sound {
     }
 
     pub fn set_tones(&mut self, tones: &str) {
-        let tones = remove_whitespace(tones);
+        let tones = arrange_string(tones);
         let mut chars = tones.chars();
 
         self.tones.clear();
@@ -143,7 +141,7 @@ impl Sound {
     }
 
     pub fn set_volumes(&mut self, volumes: &str) {
-        let volumes = remove_whitespace(volumes);
+        let volumes = arrange_string(volumes);
         let mut chars = volumes.chars();
 
         self.volumes.clear();
@@ -172,7 +170,7 @@ impl Sound {
     }
 
     pub fn set_effects(&mut self, effects: &str) {
-        let effects = remove_whitespace(effects);
+        let effects = arrange_string(effects);
         let mut chars = effects.chars();
 
         self.effects.clear();
