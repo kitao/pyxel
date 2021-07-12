@@ -134,7 +134,7 @@ pub const SAMPLE_COUNT: u32 = SAMPLE_RATE / 10;
 
 pub const TICK_CLOCK_COUNT: u32 = CLOCK_RATE / 120;
 pub const OSCILLATOR_RESOLUTION: u32 = 32;
-pub const VIBRATO_DEPTH: f64 = 0.02;
+pub const VIBRATO_DEPTH: f64 = 0.025;
 pub const VIBRATO_FREQUENCY: f64 = 6.0;
 
 pub const MAX_SOUND_VOLUME: u32 = 7;
@@ -148,7 +148,7 @@ pub const MASTER_VOLUME_FACTOR: f64 = 1.0 / CHANNEL_COUNT as f64;
 pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0;
 pub const SQUARE_VOLUME_FACTOR: f64 = 0.3;
 pub const PULSE_VOLUME_FACTOR: f64 = 0.3;
-pub const NOISE_VOLUME_FACTOR: f64 = 0.25;
+pub const NOISE_VOLUME_FACTOR: f64 = 0.6;
 
 //
 // Sound class
