@@ -57,7 +57,7 @@ pub struct Oscillator {
 impl Oscillator {
     pub fn new() -> Oscillator {
         Oscillator {
-            pitch: 0.0,
+            pitch: Oscillator::note_to_pitch(0.0),
             tone: Tone::Triangle,
             volume: 0.0,
             effect: Effect::None,
@@ -107,10 +107,10 @@ impl Oscillator {
         }
 
         let pitch = self.pitch
-            * if self.effect == Effect::Vibrato {
-                Oscillator::triangle(self.vibrato.phase) * VIBRATO_DEPTH
+            + if self.effect == Effect::Vibrato {
+                self.pitch * Oscillator::triangle(self.vibrato.phase) * VIBRATO_DEPTH
             } else {
-                1.0
+                0.0
             };
         let period = (CLOCK_RATE as f64 / pitch / OSCILLATOR_RESOLUTION as f64) as u32;
 
@@ -139,8 +139,8 @@ impl Oscillator {
             }
             Effect::Vibrato => {
                 self.vibrato.time += TICK_CLOCK_COUNT;
-                let phases = self.vibrato.time / VIBRATO_PERIOD;
-                self.vibrato.phase = (self.vibrato.phase + phases) % OSCILLATOR_RESOLUTION;
+                self.vibrato.phase = (self.vibrato.phase + self.vibrato.time / VIBRATO_PERIOD)
+                    % OSCILLATOR_RESOLUTION;
                 self.vibrato.time %= VIBRATO_PERIOD;
             }
             Effect::FadeOut => {
