@@ -33,8 +33,7 @@ impl SdlAudioCallback for AudioCallbackData {
     type Channel = i16;
 
     fn callback(&mut self, out: &mut [i16]) {
-        let mut audio_callback = self.audio_callback.lock().unwrap();
-        audio_callback.audio_callback(out);
+        self.audio_callback.lock().unwrap().audio_callback(out);
     }
 }
 
