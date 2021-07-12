@@ -122,7 +122,7 @@ impl Oscillator {
                 Tone::Triangle => Oscillator::triangle(self.phase) * TRIANGLE_VOLUME_FACTOR,
                 Tone::Square => Oscillator::square(self.phase) * SQUARE_VOLUME_FACTOR,
                 Tone::Pulse => Oscillator::pulse(self.phase) * PULSE_VOLUME_FACTOR,
-                Tone::Noise => self.noise() * NOISE_VOLUME_FACTOR,
+                Tone::Noise => self.noise(self.phase) * NOISE_VOLUME_FACTOR,
             } * MASTER_VOLUME_FACTOR
                 * self.volume
                 * i16::MAX as f64) as i16;
@@ -180,9 +180,11 @@ impl Oscillator {
         }
     }
 
-    fn noise(&mut self) -> f64 {
-        self.noise >>= 1;
-        self.noise |= ((self.noise ^ (self.noise >> 1)) & 1) << 15;
+    fn noise(&mut self, phase: u32) -> f64 {
+        if phase % 8 == 0 {
+            self.noise >>= 1;
+            self.noise |= ((self.noise ^ (self.noise >> 1)) & 1) << 15;
+        }
 
         (self.noise & 1) as f64 * 2.0 - 1.0
     }
