@@ -55,12 +55,12 @@ impl Audio {
         audio
     }
 
-    pub fn sound(&self, sound_no: u32) -> &Sound {
-        &self.sounds[sound_no as usize]
+    pub fn sound_mut(&mut self, sound_no: u32) -> &mut Sound {
+        &mut self.sounds[sound_no as usize]
     }
 
-    pub fn music(&self, music_no: u32) -> &Music {
-        &self.musics[music_no as usize]
+    pub fn music_mut(&mut self, music_no: u32) -> &mut Music {
+        &mut self.musics[music_no as usize]
     }
 
     pub fn play_sound(&mut self, channel_no: u32, sound_nos: &[u32], is_looping: bool) {
