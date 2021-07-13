@@ -89,7 +89,7 @@ impl<T: Platform> System<T> {
     }
 
     pub fn quit(&mut self) {
-        //
+        self.should_quit = true;
     }
 
     pub fn flip_screen(&mut self) {
