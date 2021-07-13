@@ -11,8 +11,6 @@ pub struct Palette {
 
 impl Palette {
     pub fn new() -> Palette {
-        assert!(MAX_COLOR_COUNT <= Color::MAX as u32 + 1);
-
         let mut palette = Palette {
             render_colors: [0; MAX_COLOR_COUNT as usize],
             display_colors: [0; MAX_COLOR_COUNT as usize],
@@ -129,8 +127,8 @@ mod tests {
 
         palette.set_display_colors(&rgbs);
 
-        for i in 0..16 {
-            assert_eq!(palette.display_color(i as Color), rgbs[i]);
+        for i in 0..COLOR_COUNT {
+            assert_eq!(palette.display_color(i as Color), rgbs[i as usize]);
         }
     }
 }
