@@ -1,6 +1,7 @@
 use crate::canvas::Canvas;
 use crate::palette::{Color, Palette};
 use crate::rectarea::RectArea;
+use crate::utility::{arrange_string, parse_hex_string};
 
 pub struct Image {
     width: u32,
@@ -29,6 +30,31 @@ impl Image {
 
     pub fn palette_mut(&mut self) -> &mut Palette {
         &mut self.palette
+    }
+
+    pub fn set_data(&mut self, x: i32, y: i32, data: &[&str]) {
+        let width = data[0].len() as u32;
+        let height = data.len() as u32;
+
+        if width <= 0 || height <= 0 {
+            return;
+        }
+
+        let mut image = Image::new(width, height);
+
+        for i in 0..height as usize {
+            let data = arrange_string(data[i]);
+
+            for j in 0..width as usize {
+                if let Some(value) = parse_hex_string(&data[j..j + 1]) {
+                    image.data[i as usize][j as usize] = value as u8;
+                } else {
+                    panic!("invalid image data");
+                }
+            }
+        }
+
+        self.copy(x, y, &image, 0, 0, width, height, false, false, None);
     }
 
     pub fn draw_tilemap(
