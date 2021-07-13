@@ -119,8 +119,11 @@ impl Pyxel {
         run!(self, callback);
     }
 
+    pub fn quit(&mut self) {
+        self.system.quit();
+    }
+
     /*
-    int quit();
     int flip();
     void show();
 
@@ -143,17 +146,33 @@ impl Pyxel {
     //
     // Input
     //
+    pub fn mouse_x(&self) -> i32 {
+        self.input.key_value(MOUSE_POS_X)
+    }
 
-    /*
-    int mouse_x_getter();
-    int mouse_y_getter();
-    int mouse_wheel_getter();
+    pub fn mouse_y(&self) -> i32 {
+        self.input.key_value(MOUSE_POS_Y)
+    }
 
-    int btn(int key);
-    int btnp(int key, int hold, int period);
-    int btnr(int key);
-    void mouse(int visible);
-    */
+    pub fn mouse_wheel(&self) -> i32 {
+        self.input.key_value(MOUSE_WHEEL_Y)
+    }
+
+    pub fn btn(&self, key: Key) -> bool {
+        self.input.is_key_on(key)
+    }
+
+    pub fn btnp(&self, key: Key, hold: Option<u32>, period: Option<u32>) -> bool {
+        self.input.is_key_pressed(key, hold, period)
+    }
+
+    pub fn btnr(&self, key: Key) -> bool {
+        self.input.is_key_released(key)
+    }
+
+    pub fn mouse(&mut self, visible: bool) {
+        self.input.set_mouse_visible(visible);
+    }
 
     //
     // Graphics
