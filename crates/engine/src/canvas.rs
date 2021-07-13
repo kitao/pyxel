@@ -1,6 +1,8 @@
+use std::cmp::max;
+
 use crate::rectarea::RectArea;
 
-pub trait Canvas<T: Copy + Default> {
+pub trait Canvas<T: Copy + PartialEq + Default> {
     fn width(&self) -> u32;
     fn height(&self) -> u32;
     fn data(&self) -> &Vec<Vec<T>>;
@@ -39,7 +41,7 @@ pub trait Canvas<T: Copy + Default> {
         }
     }
 
-    fn point(&mut self, x: i32, y: i32) -> T {
+    fn point(&self, x: i32, y: i32) -> T {
         if self.self_rect().contains(x, y) {
             self.data()[y as usize][x as usize]
         } else {
@@ -159,9 +161,8 @@ pub trait Canvas<T: Copy + Default> {
 
     fn draw_circle(&mut self, x: i32, y: i32, radius: u32, color: T) {
         let color = self.render_color(color);
-        /*
-        int32_t draw_color = GET_DRAW_COLOR(color);
 
+        /*
         if (radius == 0) {
           SetPixel(x, y, draw_color);
           return;
@@ -288,11 +289,9 @@ pub trait Canvas<T: Copy + Default> {
     ) {
         let color = self.render_color(color);
 
-        /*
-        DrawLine(x1, y1, x2, y2, color);
-        DrawLine(x1, y1, x3, y3, color);
-        DrawLine(x2, y2, x3, y3, color);
-        */
+        self.draw_line(x1, y1, x2, y2, color);
+        self.draw_line(x1, y1, x3, y3, color);
+        self.draw_line(x2, y2, x3, y3, color);
     }
 
     fn paint(&mut self, x: i32, y: i32, color: T) {
@@ -350,57 +349,82 @@ pub trait Canvas<T: Copy + Default> {
         v: i32,
         width: u32,
         height: u32,
+        flip_x: bool,
+        flip_y: bool,
         color_key: Option<T>,
     ) {
-        /*
-        Image* image = GetImageBank(image_index, true);
+        let src_rect = src.self_rect();
+        let dst_rect = self.self_rect();
 
-        if (color_key != -1 && (color_key < 0 || color_key >= COLOR_COUNT)) {
-          PYXEL_ERROR("invalid color");
+        let width = width as i32;
+        let height = height as i32;
+
+        let left_margin = max(max(src_rect.left() - u, dst_rect.left() - x), 0);
+        let right_margin = max(
+            max(
+                u + width - 1 - src_rect.right(),
+                x + width - 1 - dst_rect.right(),
+            ),
+            0,
+        );
+        let top_margin = max(max(src_rect.top() - v, dst_rect.top() - y), 0);
+        let bottom_margin = max(
+            max(
+                v + height - 1 - src_rect.bottom(),
+                y + height - 1 - dst_rect.bottom(),
+            ),
+            0,
+        );
+
+        let x = x + left_margin;
+        let y = y + top_margin;
+        let u = u + if flip_x { right_margin } else { left_margin };
+        let v = v + if flip_y { bottom_margin } else { top_margin };
+        let width = max(width - left_margin - right_margin, 0);
+        let height = max(height - top_margin - bottom_margin, 0);
+
+        if width == 0 && height == 0 {
+            return;
         }
 
-        Rectangle::CopyArea copy_area =
-            clip_area_.GetCopyArea(x, y, image->Rectangle(), u, v, Abs(width),
-                                   Abs(height), width < 0, height < 0);
+        let sign_x: i32;
+        let sign_y: i32;
+        let offset_x: i32;
+        let offset_y: i32;
 
-        if (copy_area.IsEmpty()) {
-          return;
-        }
-
-        int32_t** src_data = image->Data();
-        int32_t** dst_data = screen_data_;
-
-        int32_t sign_x, sign_y;
-        int32_t offset_x, offset_y;
-
-        if (width < 0) {
-          sign_x = -1;
-          offset_x = copy_area.width - 1;
+        if flip_x {
+            sign_x = -1;
+            offset_x = width - 1;
         } else {
-          sign_x = 1;
-          offset_x = 0;
+            sign_x = 1;
+            offset_x = 0;
         }
 
-        if (height < 0) {
-          sign_y = -1;
-          offset_y = copy_area.height - 1;
+        if flip_y {
+            sign_y = -1;
+            offset_y = height - 1;
         } else {
-          sign_y = 1;
-          offset_y = 0;
+            sign_y = 1;
+            offset_y = 0;
         }
 
-        for (int32_t i = 0; i < copy_area.height; i++) {
-          int32_t* src_line = src_data[copy_area.v + sign_y * i + offset_y];
-          int32_t* dst_line = dst_data[copy_area.y + i];
+        if let Some(color_key) = color_key {
+            for i in 0..height {
+                for j in 0..width {
+                    let color = src.point(u + sign_x * j + offset_x, v + sign_y * i + offset_y);
 
-          for (int32_t j = 0; j < copy_area.width; j++) {
-            int32_t src_color = src_line[copy_area.u + sign_x * j + offset_x];
-
-            if (src_color != color_key) {
-              dst_line[copy_area.x + j] = palette_table_[src_color];
+                    if color != color_key {
+                        self.draw_point(x + j, y + i, color);
+                    }
+                }
             }
-          }
+        } else {
+            for i in 0..height {
+                for j in 0..width {
+                    let color = src.point(u + sign_x * j + offset_x, v + sign_y * i + offset_y);
+                    self.draw_point(x + j, y + i, color);
+                }
+            }
         }
-        */
     }
 }
