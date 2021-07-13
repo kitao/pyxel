@@ -13,8 +13,8 @@ pub struct Input {
     frame_count: u32,
     is_mouse_visible: bool,
     window_rect: RectArea,
-    key_states: HashMap<KeyCode, KeyState>,
-    key_values: HashMap<KeyCode, KeyValue>,
+    key_states: HashMap<Key, KeyState>,
+    key_values: HashMap<Key, KeyValue>,
 }
 
 impl Input {
@@ -28,73 +28,59 @@ impl Input {
         }
     }
 
+    pub fn is_key_on(&self, key: Key) -> bool {
+        if let Some(KeyState::Pressed { .. }) = self.key_states.get(&key) {
+            true
+        } else {
+            false
+        }
+    }
+
     pub fn is_key_pressed(
         &self,
-        key: KeyCode,
-        hold_frame: Option<u32>,
-        period_frame: Option<u32>,
+        key: Key,
+        hold_frames: Option<u32>,
+        period_frames: Option<u32>,
     ) -> bool {
+        if let Some(KeyState::Pressed { frame_count }) = self.key_states.get(&key) {
+            if *frame_count == self.frame_count {
+                return true;
+            }
+
+            let hold_frames = hold_frames.unwrap_or(0);
+            let period_frames = period_frames.unwrap_or(0);
+
+            if hold_frames == 0 || period_frames == 0 {
+                return false;
+            }
+
+            let elapsed_frames = self.frame_count as i32 - (*frame_count + hold_frames) as i32;
+
+            if elapsed_frames > 0 && elapsed_frames % period_frames as i32 == 0 {
+                return true;
+            }
+        }
+
         false
-
-        /*
-        if (key < 0 || key >= KEY_COUNT) {
-          PYXEL_ERROR("invalid key");
-        }
-
-        if (frame_count_ == 0) {
-          return false;
-        }
-
-        int32_t press_frame = key_state_[key];
-
-        if (press_frame == frame_count_) {
-          return true;
-        }
-
-        if (press_frame <= 0 || period_frame <= 0) {
-          return false;
-        }
-
-        int32_t elapsed_frame = frame_count_ - (press_frame + hold_frame);
-
-        if (elapsed_frame >= 0 && elapsed_frame % period_frame == 0) {
-          return true;
-        }
-
-        return false;
-        */
     }
 
-    pub fn is_key_released(&self, key: KeyCode) -> bool {
+    pub fn is_key_released(&self, key: Key) -> bool {
+        if let Some(KeyState::Released { frame_count }) = self.key_states.get(&key) {
+            if *frame_count == self.frame_count {
+                return true;
+            }
+        }
+
         false
-
-        /*
-        if (key < 0 || key >= KEY_COUNT) {
-          PYXEL_ERROR("invalid key");
-        }
-
-        if (frame_count_ == 0) {
-          return false;
-        }
-
-        return key_state_[key] == -frame_count_;
-        */
     }
 
-    pub fn is_key_on(&self, key: KeyCode) -> bool {
-        match self.key_states.get(&key) {
-            Some(KeyState::Pressed { .. }) => true,
-            _ => false,
-        }
-    }
-
-    pub fn key_value(&self, key: KeyCode) -> KeyValue {
+    pub fn key_value(&self, key: Key) -> KeyValue {
         self.key_values.get(&key).cloned().unwrap_or(0)
     }
 
-    pub fn is_mouse_visible(&self) -> bool {
+    /*pub fn is_mouse_visible(&self) -> bool {
         self.is_mouse_visible
-    }
+    }*/
 
     pub fn set_mouse_visible(&mut self, is_mouse_visible: bool) {
         self.is_mouse_visible = is_mouse_visible;
@@ -138,11 +124,11 @@ impl Input {
             }
 
             Event::MouseButtonDown { button } => {
-                self.press_key(MOUSE_BUTTON_LEFT + button as KeyCode);
+                self.press_key(MOUSE_BUTTON_LEFT + button as Key);
             }
 
             Event::MouseButtonUp { button } => {
-                self.release_key(MOUSE_BUTTON_LEFT + button as KeyCode);
+                self.release_key(MOUSE_BUTTON_LEFT + button as Key);
             }
 
             Event::MouseWheel { x, y } => {
@@ -159,10 +145,8 @@ impl Input {
                     return;
                 };
 
-                self.key_values.insert(
-                    GAMEPAD1_AXIS_LEFTX + axis as KeyCode + offset as KeyCode,
-                    value,
-                );
+                self.key_values
+                    .insert(GAMEPAD1_AXIS_LEFTX + axis as Key + offset as Key, value);
             }
 
             Event::ControllerButtonDown { which, button } => {
@@ -174,7 +158,7 @@ impl Input {
                     return;
                 };
 
-                self.press_key(GAMEPAD1_BUTTON_A + button as KeyCode + offset);
+                self.press_key(GAMEPAD1_BUTTON_A + button as Key + offset);
             }
 
             Event::ControllerButtonUp { which, button } => {
@@ -186,19 +170,18 @@ impl Input {
                     return;
                 };
 
-                self.release_key(GAMEPAD1_BUTTON_A + button as KeyCode + offset);
+                self.release_key(GAMEPAD1_BUTTON_A + button as Key + offset);
             }
 
             _ => {}
         }
-        //
     }
 
     pub(crate) fn end_update(&mut self) {
         //
     }
 
-    fn get_common_key(key: KeyCode) -> Option<KeyCode> {
+    fn get_common_key(key: Key) -> Option<Key> {
         match key {
             KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
             KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),
@@ -208,7 +191,7 @@ impl Input {
         }
     }
 
-    fn press_key(&mut self, key: KeyCode) {
+    fn press_key(&mut self, key: Key) {
         self.key_states.insert(
             key,
             KeyState::Pressed {
@@ -217,7 +200,7 @@ impl Input {
         );
     }
 
-    fn release_key(&mut self, key: KeyCode) {
+    fn release_key(&mut self, key: Key) {
         self.key_states.insert(
             key,
             KeyState::Released {
