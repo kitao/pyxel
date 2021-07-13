@@ -17,6 +17,10 @@ impl PyxelCallback for App {
             self.x += (pyxel.frame_count() % 2) as i32;
             self.y -= 1;
         }
+
+        if pyxel.btnp(pyxel::KEY_ESCAPE, None, None) {
+            pyxel.quit();
+        }
     }
 
     fn draw(&mut self, pyxel: &mut Pyxel) {
