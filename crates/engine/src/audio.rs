@@ -37,11 +37,11 @@ impl AudioCallback for Audio {
 impl Audio {
     pub fn new<T: Platform>(platform: &mut T) -> Arc<Mutex<Audio>> {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
+        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
+
         let channels = (0..CHANNEL_COUNT).map(|_| Channel::new()).collect();
         let sounds = (0..SOUND_COUNT).map(|_| Sound::new()).collect();
         let musics = (0..MUSIC_COUNT).map(|_| Music::new()).collect();
-
-        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 
         let audio = Arc::new(Mutex::new(Audio {
             blip_buf: blip_buf,
@@ -63,7 +63,21 @@ impl Audio {
         &mut self.musics[music_no as usize]
     }
 
-    pub fn play_sound(&mut self, channel_no: u32, sound_nos: &[u32], is_looping: bool) {
+    pub fn play_pos(&self, channel_no: u32) -> Option<(u32, u32)> {
+        let channel = &self.channels[channel_no as usize];
+
+        if channel.is_playing() {
+            Some((channel.sound_index(), channel.note_index()))
+        } else {
+            None
+        }
+    }
+
+    pub fn play_sound(&mut self, channel_no: u32, sound_no: u32, is_looping: bool) {
+        self.play_sounds(channel_no, &[sound_no], is_looping);
+    }
+
+    pub fn play_sounds(&mut self, channel_no: u32, sound_nos: &[u32], is_looping: bool) {
         let mut sounds: Vec<Sound> = Vec::new();
 
         for sound_no in sound_nos {
@@ -75,8 +89,8 @@ impl Audio {
 
     pub fn play_music(&mut self, music_no: u32, is_looping: bool) {
         for i in 0..MUSIC_COUNT {
-            let sequence = &self.musics[music_no as usize].sequence(i).clone();
-            self.play_sound(i, sequence, is_looping);
+            let sequence = self.musics[music_no as usize].sequence(i).clone();
+            self.play_sounds(i, &sequence, is_looping);
         }
     }
 
@@ -84,7 +98,9 @@ impl Audio {
         self.channels[channel_no as usize].stop();
     }
 
-    /*pub fn play_pos(&self) -> Option<(u32, u32)> {
-        //
-    }*/
+    pub fn stop_all(&mut self) {
+        for i in 0..CHANNEL_COUNT {
+            self.stop(i);
+        }
+    }
 }
