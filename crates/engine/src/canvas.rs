@@ -12,14 +12,14 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
     fn clip_rect_mut(&mut self) -> &mut RectArea;
     fn render_color(&self, original_color: T) -> T;
 
-    fn clip_area(&mut self) -> (i32, i32, u32, u32) {
+    /*fn clip_area(&mut self) -> (i32, i32, u32, u32) {
         (
             self.clip_rect().left(),
             self.clip_rect().top(),
             self.clip_rect().width(),
             self.clip_rect().height(),
         )
-    }
+    }*/
 
     fn set_clip_area(&mut self, left: i32, top: i32, width: u32, height: u32) {
         let rect = RectArea::with_size(left, top, width, height).intersects(self.self_rect());
@@ -58,7 +58,6 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
     }
 
     fn draw_line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, color: T) {
-        //
         /*
         int32_t draw_color = GET_DRAW_COLOR(color);
 
@@ -112,7 +111,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
             SetPixel(start_x + alpha * i + 0.5f, start_y + i, draw_color);
           }
         }
-              */
+        */
     }
 
     fn draw_rect(&mut self, x: i32, y: i32, width: u32, height: u32, color: T) {
@@ -184,10 +183,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
             SetPixel(x + i, y + dx, draw_color);
           }
         }
-
         */
-
-        //
     }
 
     fn draw_circle_border(&mut self, x: i32, y: i32, radius: u32, color: T) {
@@ -347,17 +343,17 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         src: &Self,
         u: i32,
         v: i32,
-        width: u32,
-        height: u32,
-        flip_x: bool,
-        flip_y: bool,
+        width: i32,
+        height: i32,
         color_key: Option<T>,
     ) {
         let src_rect = src.self_rect();
         let dst_rect = self.self_rect();
 
-        let width = width as i32;
-        let height = height as i32;
+        let flip_x = width < 0;
+        let flip_y = height < 0;
+        let width = width.abs();
+        let height = height.abs();
 
         let left_margin = max(max(src_rect.left() - u, dst_rect.left() - x), 0);
         let right_margin = max(
@@ -414,14 +410,16 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
                     let color = src.point(u + sign_x * j + offset_x, v + sign_y * i + offset_y);
 
                     if color != color_key {
-                        self.draw_point(x + j, y + i, color);
+                        self.draw_point(x + j, y + i, self.render_color(color));
                     }
                 }
             }
         } else {
             for i in 0..height {
                 for j in 0..width {
-                    let color = src.point(u + sign_x * j + offset_x, v + sign_y * i + offset_y);
+                    let color = self.render_color(
+                        src.point(u + sign_x * j + offset_x, v + sign_y * i + offset_y),
+                    );
                     self.draw_point(x + j, y + i, color);
                 }
             }
