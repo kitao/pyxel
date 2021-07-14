@@ -4,7 +4,6 @@ use crate::palette::{Color, Rgb24};
 // Common
 //
 pub const PYXEL_VERSION: &str = "2.0.0";
-//const std::string WHITESPACE = " \t\v\r\n";
 
 pub const DEFAULT_TITLE: &str = "Pyxel";
 pub const DEFAULT_SCALE: u32 = 2;
@@ -39,7 +38,6 @@ const std::vector<std::string> ICON_DATA = {
 
 const int32_t SCREEN_CAPTURE_COUNT = 900;
 const int32_t SCREEN_CAPTURE_SCALE = 2;
-
 */
 
 //
@@ -53,7 +51,7 @@ const std::string RESOURCE_ARCHIVE_DIRNAME = "pyxel_resource/";
 //
 // Graphics
 //
-pub const MAX_COLOR_COUNT: u32 = u8::MAX as u32 + 1;
+pub const MAX_COLOR_COUNT: u32 = u8::MAX as u32 + 1; // 256 colors
 pub const COLOR_COUNT: u32 = 16;
 
 pub const IMAGE_COUNT: u32 = 4;
@@ -149,31 +147,3 @@ pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0;
 pub const SQUARE_VOLUME_FACTOR: f64 = 0.3;
 pub const PULSE_VOLUME_FACTOR: f64 = 0.3;
 pub const NOISE_VOLUME_FACTOR: f64 = 0.6;
-
-//
-// Sound class
-//
-/*
-enum {
-  TONE_TRIANGLE,
-  TONE_SQUARE,
-  TONE_PULSE,
-  TONE_NOISE,
-};
-
-enum {
-  EFFECT_NONE,
-  EFFECT_SLIDE,
-  EFFECT_VIBRATO,
-  EFFECT_FADEOUT,
-};
-
-const int32_t INITIAL_SOUND_SPEED = 30;
-*/
-
-//
-// Music class
-//
-/*
-const int32_t MUSIC_CHANNEL_COUNT = 4;
-*/
