@@ -1,6 +1,6 @@
 use crate::oscillator::{Effect, Tone};
 use crate::settings::{DEFAULT_SOUND_SPEED, MAX_SOUND_VOLUME};
-use crate::utility::arrange_string;
+use crate::utility::simplify_string;
 
 pub type Note = i32;
 pub type Volume = u32;
@@ -49,7 +49,7 @@ impl Sound {
     }
 
     pub fn set_notes(&mut self, notes: &str) {
-        let notes = arrange_string(notes);
+        let notes = simplify_string(notes);
         let mut chars = notes.chars();
 
         self.notes.clear();
@@ -108,7 +108,7 @@ impl Sound {
     }
 
     pub fn set_tones(&mut self, tones: &str) {
-        let tones = arrange_string(tones);
+        let tones = simplify_string(tones);
         let mut chars = tones.chars();
 
         self.tones.clear();
@@ -141,7 +141,7 @@ impl Sound {
     }
 
     pub fn set_volumes(&mut self, volumes: &str) {
-        let volumes = arrange_string(volumes);
+        let volumes = simplify_string(volumes);
         let mut chars = volumes.chars();
 
         self.volumes.clear();
@@ -170,7 +170,7 @@ impl Sound {
     }
 
     pub fn set_effects(&mut self, effects: &str) {
-        let effects = arrange_string(effects);
+        let effects = simplify_string(effects);
         let mut chars = effects.chars();
 
         self.effects.clear();
