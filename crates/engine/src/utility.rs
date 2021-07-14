@@ -2,7 +2,7 @@ pub fn remove_whitespace(s: &str) -> String {
     s.replace(&[' ', '\n', '\r', '\t'][..], "")
 }
 
-pub fn arrange_string(s: &str) -> String {
+pub fn simplify_string(s: &str) -> String {
     remove_whitespace(s).to_ascii_lowercase()
 }
 
@@ -35,8 +35,8 @@ mod tests {
     }
 
     #[test]
-    fn unify_string_() {
-        assert_eq!(arrange_string(" 0\n 1\r 2\t 3 A\n b\r c\t d "), "0123abcd");
+    fn simplify_string_() {
+        assert_eq!(simplify_string(" 0\n 1\r 2\t 3 A\n b\r c\t d "), "0123abcd");
     }
 
     #[test]
