@@ -1,9 +1,8 @@
-use crate::settings::{COLOR_COUNT, MAX_COLOR_COUNT};
+use crate::settings::MAX_COLOR_COUNT;
 
 pub type Color = u8;
 pub type Rgb24 = u32;
 
-#[derive(Debug)]
 pub struct Palette {
     render_colors: [Color; MAX_COLOR_COUNT as usize],
     display_colors: [Rgb24; MAX_COLOR_COUNT as usize],
@@ -120,14 +119,14 @@ mod tests {
     fn set_display_colors() {
         let mut palette = Palette::new();
 
-        let rgbs: [Rgb24; COLOR_COUNT as usize] = [
+        let rgbs: [Rgb24; 16 as usize] = [
             0x000000, 0x111111, 0x222222, 0x333333, 0x444444, 0x555555, 0x666666, 0x777777,
             0x888888, 0x999999, 0xaaaaaa, 0xbbbbbb, 0xcccccc, 0xdddddd, 0xeeeeee, 0xffffff,
         ];
 
         palette.set_display_colors(&rgbs);
 
-        for i in 0..COLOR_COUNT {
+        for i in 0..16 {
             assert_eq!(palette.display_color(i as Color), rgbs[i as usize]);
         }
     }
