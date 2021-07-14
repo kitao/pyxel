@@ -38,22 +38,22 @@ use crate::system::System;
 pub use crate::key::*;
 pub use crate::settings::*;
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Copy, Clone)]
 pub struct Image {
     image_no: u32,
 }
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Copy, Clone)]
 pub struct Tilemap {
     tilemap_no: u32,
 }
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Copy, Clone)]
 pub struct Sound {
     sound_no: u32,
 }
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Copy, Clone)]
 pub struct Music {
     music_no: u32,
 }
@@ -209,6 +209,20 @@ impl Pyxel {
             .draw_rect_border(x, y, w as f64 as u32, h as f64 as u32, col);
     }
 
+    pub fn blt(
+        &mut self,
+        x: i32,
+        y: i32,
+        img: u32,
+        u: i32,
+        v: i32,
+        w: i32,
+        h: i32,
+        colkey: Option<Color>,
+    ) {
+        //
+    }
+
     /*
     void clip0();
     void clip(int x, int y, int w, int h);
@@ -235,8 +249,12 @@ impl Pyxel {
         Music { music_no: msc }
     }
 
-    pub fn play(&mut self, ch: u32, snd: &[u32], loop_: bool) {
+    pub fn play1(&mut self, ch: u32, snd: u32, loop_: bool) {
         self.audio.lock().unwrap().play_sound(ch, snd, loop_);
+    }
+
+    pub fn play(&mut self, ch: u32, snds: &[u32], loop_: bool) {
+        self.audio.lock().unwrap().play_sounds(ch, snds, loop_);
     }
 
     pub fn playm(&mut self, msc: u32, loop_: bool) {
@@ -251,6 +269,11 @@ impl Pyxel {
 //
 // Image class
 //
+impl Image {
+    pub fn set(&self, pyxel: &mut Pyxel, x: i32, y: i32, data: &[&str]) {
+        pyxel.graphics.image_mut(self.image_no).set(x, y, data);
+    }
+}
 
 /*
 int image_width_getter(void* self);
