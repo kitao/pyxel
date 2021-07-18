@@ -1,6 +1,7 @@
 use crate::canvas::Canvas;
 use crate::palette::{Color, Palette};
 use crate::rectarea::RectArea;
+use crate::tilemap::Tilemap;
 use crate::utility::{parse_hex_string, simplify_string};
 
 pub struct Image {
@@ -61,7 +62,7 @@ impl Image {
         &mut self,
         x: i32,
         y: i32,
-        src: &Image,
+        src: &Tilemap,
         u: i32,
         v: i32,
         width: i32,
