@@ -1,5 +1,6 @@
 use crate::settings::CHANNEL_COUNT;
 
+#[derive(Clone)]
 pub struct Music {
     sequences: [Vec<u32>; CHANNEL_COUNT as usize],
 }
