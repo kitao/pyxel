@@ -28,12 +28,32 @@ impl PyxelCallback for App {
         pyxel.pset(self.x, 20, 7);
         pyxel.rect(self.x + 10, 25, 15, 10, 8);
         pyxel.rectb(self.x + 15, 45, 15, 10, pyxel::COLOR_WHITE);
+
+        pyxel.blt(0, 0, 0, 0, 0, 8, 8, None);
     }
 }
 
 pub fn main() {
-    let mut pyxel = Pyxel::new(200, 150, Some("Hello, Pyxel in Rust!"), None, None, None);
+    let mut pyxel = Pyxel::new(
+        200,
+        150,
+        Some("Hello, Pyxel in Rust!"),
+        None,
+        None,
+        None,
+        None,
+    );
     let mut app = App::new();
+
+    pyxel.image(0).set(
+        &mut pyxel,
+        0,
+        0,
+        &[
+            "00011000", "00010100", "00010010", "00010010", "00010100", "00010000", "01110000",
+            "01100000",
+        ],
+    );
 
     pyxel.sound(0).set(
         &pyxel,
