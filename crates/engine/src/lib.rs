@@ -12,6 +12,8 @@ mod music;
 mod oscillator;
 mod palette;
 mod platform;
+mod profiler;
+mod recorder;
 mod rectarea;
 mod resource;
 mod sdl2;
@@ -25,6 +27,8 @@ use std::sync::{Arc, Mutex};
 use crate::audio::Audio;
 use crate::canvas::Canvas;
 use crate::graphics::Graphics;
+use crate::image::Image as Image_;
+use crate::image::Image as Tilemap_;
 use crate::input::Input;
 use crate::music::Music as Music_;
 use crate::oscillator::{Effect, Tone};
@@ -78,13 +82,10 @@ impl Pyxel {
         title: Option<&str>,
         scale: Option<u32>,
         fps: Option<u32>,
+        quit_key: Option<Key>,
         colors: Option<&[Rgb24]>,
-        /*
-        int quit_key,
-        int fullscreen);
-        */
     ) -> Pyxel {
-        let mut system = System::new(width, height, title, scale, fps);
+        let mut system = System::new(width, height, title, scale, fps, quit_key);
         let resource = Resource::new();
         let input = Input::new();
         let graphics = Graphics::new(width, height, colors);
@@ -185,6 +186,28 @@ impl Pyxel {
         Tilemap { tilemap_no: tlm }
     }
 
+    pub fn clip_(&mut self) {
+        self.graphics.screen_mut().reset_clip_area();
+    }
+
+    pub fn clip(&mut self, x: i32, y: i32, w: u32, h: u32) {
+        self.graphics.screen_mut().set_clip_area(x, y, w, h);
+    }
+
+    pub fn pal_(&mut self) {
+        self.graphics
+            .screen_mut()
+            .palette_mut()
+            .reset_render_colors();
+    }
+
+    pub fn pal(&mut self, col1: Color, col2: Color) {
+        self.graphics
+            .screen_mut()
+            .palette_mut()
+            .set_render_color(col1, col2);
+    }
+
     pub fn cls(&mut self, col: Color) {
         self.graphics.screen_mut().clear(col);
     }
@@ -195,6 +218,10 @@ impl Pyxel {
 
     pub fn pset(&mut self, x: i32, y: i32, col: Color) {
         self.graphics.screen_mut().draw_point(x, y, col);
+    }
+
+    pub fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, col: Color) {
+        self.graphics.screen_mut().draw_line(x1, y1, x2, y2, col);
     }
 
     pub fn rect(&mut self, x: i32, y: i32, w: i32, h: i32, col: Color) {
@@ -209,6 +236,26 @@ impl Pyxel {
             .draw_rect_border(x, y, w as f64 as u32, h as f64 as u32, col);
     }
 
+    pub fn circ(&mut self, x: i32, y: i32, r: u32, col: Color) {
+        self.graphics.screen_mut().draw_circle(x, y, r, col);
+    }
+
+    pub fn circb(&mut self, x: i32, y: i32, r: u32, col: Color) {
+        self.graphics.screen_mut().draw_circle_border(x, y, r, col);
+    }
+
+    pub fn tri(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, col: Color) {
+        self.graphics
+            .screen_mut()
+            .draw_triangle(x1, y1, x2, y2, x3, y3, col);
+    }
+
+    pub fn trib(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, col: Color) {
+        self.graphics
+            .screen_mut()
+            .draw_triangle_border(x1, y1, x2, y2, x3, y3, col);
+    }
+
     pub fn blt(
         &mut self,
         x: i32,
@@ -220,23 +267,19 @@ impl Pyxel {
         h: i32,
         colkey: Option<Color>,
     ) {
+        unsafe {
+            let screen = self.graphics.screen_mut() as *mut Image_;
+            (&mut *screen).copy(x, y, self.graphics.image(img), u, v, w, h, colkey);
+        }
+    }
+
+    pub fn bltm(&mut self, x: i32, y: i32, tm: u32, u: i32, v: i32, w: u32, h: u32, colkey: Color) {
         //
     }
 
-    /*
-    void clip0();
-    void clip(int x, int y, int w, int h);
-    void pal0();
-    void pal(int col1, int col2);
-    void line(int x1, int y1, int x2, int y2, int col);
-    void circ(int x, int y, int r, int col);
-    void circb(int x, int y, int r, int col);
-    void tri(int x1, int y1, int x2, int y2, int x3, int y3, int col);
-    void trib(int x1, int y1, int x2, int y2, int x3, int y3, int col);
-    void blt(int x, int y, int img, int u, int v, int w, int h, int colkey);
-    void bltm(int x, int y, int tm, int u, int v, int w, int h, int colkey);
-    void text(int x, int y, const char* s, int col);
-    */
+    pub fn text(&mut self, x: i32, y: i32, s: &str, col: Color) {
+        self.graphics.screen_mut().draw_text(x, y, s, col);
+    }
 
     //
     // Audio
