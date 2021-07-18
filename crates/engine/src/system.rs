@@ -3,10 +3,14 @@ use std::cmp::min;
 use crate::event::Event;
 use crate::graphics::Graphics;
 use crate::input::Input;
+use crate::key::{Key, KEY_NONE};
 use crate::platform::Platform;
+use crate::profiler::Profiler;
+use crate::recorder::Recorder;
 use crate::rectarea::RectArea;
 use crate::settings::{
     BACKGROUND_COLOR, DEFAULT_FPS, DEFAULT_SCALE, DEFAULT_TITLE, MAX_FRAME_SKIP_COUNT,
+    MEASURE_FRAME_COUNT,
 };
 
 pub struct System<T> {
@@ -16,21 +20,17 @@ pub struct System<T> {
     one_frame_time: f64,
     next_update_time: f64,
     waiting_update_count: u32,
-
-    should_quit: bool,
     disable_frame_skip_once: bool,
+
+    quit_key: Key,
+    should_quit: bool,
+    recorder: Recorder,
+    drop_file: String,
+
+    fps_profiler: Profiler,
+    update_profiler: Profiler,
+    draw_profiler: Profiler,
     performance_monitor_enabled: bool,
-    /*
-        Recorder* recorder_;
-
-        int32_t quit_key_;
-        std::string drop_file_;
-
-        Profiler fps_profiler_;
-        Profiler update_profiler_;
-        Profiler draw_profiler_;
-        bool is_performance_monitor_on_;
-    */
 }
 
 pub trait SystemCallback<T> {
@@ -45,6 +45,7 @@ impl<T: Platform> System<T> {
         title: Option<&str>,
         scale: Option<u32>,
         fps: Option<u32>,
+        quit_key: Option<Key>,
     ) -> System<T> {
         let title = title.unwrap_or(DEFAULT_TITLE);
         let scale = scale.unwrap_or(DEFAULT_SCALE);
@@ -61,22 +62,29 @@ impl<T: Platform> System<T> {
             one_frame_time: one_frame_time,
             next_update_time: next_update_time,
             waiting_update_count: 0,
-
-            should_quit: false,
             disable_frame_skip_once: false,
+
+            quit_key: quit_key.unwrap_or(KEY_NONE),
+            should_quit: false,
+            recorder: Recorder::new(),
+            drop_file: "".to_string(),
+
+            fps_profiler: Profiler::new(MEASURE_FRAME_COUNT),
+            update_profiler: Profiler::new(MEASURE_FRAME_COUNT),
+            draw_profiler: Profiler::new(MEASURE_FRAME_COUNT),
             performance_monitor_enabled: false,
         }
     }
 
-    pub(crate) fn platform_mut(&mut self) -> &mut T {
+    pub fn platform_mut(&mut self) -> &mut T {
         &mut self.platform
     }
 
-    pub(crate) fn window_width(&self) -> u32 {
+    pub fn window_width(&self) -> u32 {
         self.platform.window_size().0
     }
 
-    pub(crate) fn window_height(&self) -> u32 {
+    pub fn window_height(&self) -> u32 {
         self.platform.window_size().1
     }
 
@@ -172,7 +180,7 @@ impl<T: Platform> System<T> {
         self.should_quit
     }
 
-    pub(crate) fn init_run_states(&mut self) {
+    pub(crate) fn init_run_state(&mut self) {
         self.next_update_time = self.platform.ticks() as f64 + self.one_frame_time;
         self.should_quit = false;
         self.disable_frame_skip_once = true;
@@ -182,8 +190,9 @@ impl<T: Platform> System<T> {
     pub(crate) fn prepare_for_update(&mut self) {
         let sleep_time = self.wait_for_update_time();
 
-        // TODO: fps_profiler_.End();
-        // TODO: fps_profiler_.Start();
+        let ticks = self.platform.ticks();
+        self.fps_profiler.end(ticks);
+        self.fps_profiler.start(ticks);
 
         if self.disable_frame_skip_once {
             self.disable_frame_skip_once = false;
@@ -199,7 +208,7 @@ impl<T: Platform> System<T> {
     }
 
     pub(crate) fn start_update(&mut self, input: &mut Input) {
-        // TODO: update_profiler_.Start();
+        self.update_profiler.start(self.platform.ticks());
 
         self.process_events(input);
 
@@ -209,7 +218,7 @@ impl<T: Platform> System<T> {
     }
 
     pub(crate) fn end_update(&mut self) {
-        // TODO: update_profiler_.End();
+        self.update_profiler.end(self.platform.ticks());
 
         if self.waiting_update_count > 0 {
             self.waiting_update_count -= 1;
@@ -218,12 +227,14 @@ impl<T: Platform> System<T> {
     }
 
     pub(crate) fn start_draw(&mut self) {
-        //
+        self.draw_profiler.start(self.platform.ticks());
     }
 
     pub(crate) fn end_draw(&mut self, graphics: &Graphics) {
         self.platform
             .render_screen(graphics.screen(), BACKGROUND_COLOR);
+
+        self.draw_profiler.end(self.platform.ticks());
 
         self.frame_count += 1;
     }
@@ -260,7 +271,7 @@ macro_rules! draw_frame {
 macro_rules! run {
     ($self: expr, $callback: expr) => {
         'main_loop: loop {
-            $self.system.init_run_states();
+            $self.system.init_run_state();
 
             update_frame!($self, $callback, break 'main_loop);
             draw_frame!($self, $callback);
