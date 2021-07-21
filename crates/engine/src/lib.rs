@@ -213,7 +213,7 @@ impl Pyxel {
     }
 
     pub fn pget(&mut self, x: i32, y: i32) -> Color {
-        self.graphics.screen_mut().point(x, y)
+        self.graphics.screen_mut().value(x, y)
     }
 
     pub fn pset(&mut self, x: i32, y: i32, col: Color) {
