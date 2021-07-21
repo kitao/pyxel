@@ -1,7 +1,11 @@
+use std::collections::HashMap;
+use std::path::Path;
+
 use crate::canvas::Canvas;
 use crate::palette::{Color, Palette};
 use crate::rectarea::RectArea;
-use crate::tilemap::Tilemap;
+use crate::settings::MAX_COLOR_COUNT;
+use crate::tilemap::{Tile, Tilemap};
 use crate::utility::{parse_hex_string, simplify_string};
 
 pub struct Image {
@@ -67,13 +71,87 @@ impl Image {
         v: i32,
         width: i32,
         height: i32,
-        color_key: Option<Color>,
+        tile_key: Option<Tile>,
     ) {
         //
     }
 
     pub fn draw_text(&mut self, x: i32, y: i32, text: &str, color: Color) {
         //
+    }
+
+    pub fn load_image(&mut self, x: i32, y: i32, filename: &str) {
+        let src_image = image::open(&Path::new(&filename)).unwrap().to_rgb8();
+        let (width, height) = src_image.dimensions();
+        let mut dst_image = Image::new(width, height);
+        let dst_data = dst_image.data_mut();
+        let mut color_table = HashMap::<(u8, u8, u8), u8>::new();
+        let color_count = Image::used_color_count(&self.palette);
+
+        for i in 0..height {
+            for j in 0..width {
+                let p = src_image.get_pixel(j, i);
+                let src_rgb = (p[0], p[1], p[2]);
+
+                if let Some(color) = color_table.get(&src_rgb) {
+                    dst_data[i as usize][j as usize] = *color;
+                } else {
+                    let mut closest_color: Color = 0;
+                    let mut closest_dist: f64 = f64::MAX;
+
+                    for k in 0..color_count {
+                        let pal_color = self.palette.display_color(k as Color);
+                        let pal_rgb = (
+                            ((pal_color >> 16) & 0xff) as u8,
+                            ((pal_color >> 8) & 0xff) as u8,
+                            (pal_color & 0xff) as u8,
+                        );
+                        let dist = Image::color_dist(src_rgb, pal_rgb);
+
+                        if dist < closest_dist {
+                            closest_color = k as Color;
+                            closest_dist = dist;
+                        }
+                    }
+
+                    color_table.insert(src_rgb, closest_color);
+                    dst_data[i as usize][j as usize] = closest_color;
+                }
+            }
+        }
+
+        self.copy(x, y, &dst_image, 0, 0, width as i32, height as i32, None);
+    }
+
+    fn used_color_count(palette: &Palette) -> u32 {
+        let mut color_count: u32 = MAX_COLOR_COUNT;
+
+        'outer_loop: for i in (1..MAX_COLOR_COUNT).rev() {
+            color_count = i + 1;
+
+            let color = palette.display_color(i as Color);
+
+            for j in (0..i).rev() {
+                if palette.display_color(j as Color) == color {
+                    continue 'outer_loop;
+                }
+            }
+
+            break;
+        }
+
+        color_count
+    }
+
+    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
+        let (r1, g1, b1) = rgb1;
+        let (r2, g2, b2) = rgb2;
+
+        let dx = (r1 as f64 - r2 as f64) * 0.30;
+        let dy = (g1 as f64 - g2 as f64) * 0.59;
+        let dz = (b1 as f64 - b2 as f64) * 0.11;
+
+        dx * dx + dy * dy + dz * dz
     }
 }
 
@@ -106,8 +184,8 @@ impl Canvas<Color> for Image {
         &mut self.clip_rect
     }
 
-    fn render_color(&self, original_color: Color) -> Color {
-        self.palette.render_color(original_color)
+    fn render_value(&self, original_value: Color) -> Color {
+        self.palette.render_color(original_value)
     }
 }
 
