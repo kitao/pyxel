@@ -9,8 +9,8 @@ use crate::profiler::Profiler;
 use crate::recorder::Recorder;
 use crate::rectarea::RectArea;
 use crate::settings::{
-    BACKGROUND_COLOR, DEFAULT_FPS, DEFAULT_SCALE, DEFAULT_TITLE, MAX_FRAME_SKIP_COUNT,
-    MEASURE_FRAME_COUNT,
+    BACKGROUND_COLOR, DEFAULT_FPS, DEFAULT_QUIT_KEY, DEFAULT_SCALE, DEFAULT_TITLE,
+    MAX_FRAME_SKIP_COUNT, MEASURE_FRAME_COUNT,
 };
 
 pub struct System<T> {
@@ -64,7 +64,7 @@ impl<T: Platform> System<T> {
             waiting_update_count: 0,
             disable_frame_skip_once: false,
 
-            quit_key: quit_key.unwrap_or(KEY_NONE),
+            quit_key: quit_key.unwrap_or(DEFAULT_QUIT_KEY),
             should_quit: false,
             recorder: Recorder::new(),
             drop_file: "".to_string(),
