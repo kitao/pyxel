@@ -39,18 +39,18 @@ impl Graphics {
     }
 
     pub fn image(&self, image_no: u32) -> &Image {
-        if image_no < self.images.len() as u32 {
-            &self.images[image_no as usize]
-        } else {
+        if image_no == self.images.len() as u32 {
             &self.screen
+        } else {
+            &self.images[image_no as usize]
         }
     }
 
     pub fn image_mut(&mut self, image_no: u32) -> &mut Image {
-        if image_no < self.images.len() as u32 {
-            &mut self.images[image_no as usize]
-        } else {
+        if image_no == self.images.len() as u32 {
             &mut self.screen
+        } else {
+            &mut self.images[image_no as usize]
         }
     }
 
