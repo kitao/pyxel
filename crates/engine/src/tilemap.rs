@@ -52,7 +52,7 @@ impl Canvas<Tile> for Tilemap {
         &mut self.clip_rect
     }
 
-    fn render_color(&self, original_color: Tile) -> Tile {
-        original_color
+    fn render_value(&self, original_value: Tile) -> Tile {
+        original_value
     }
 }
