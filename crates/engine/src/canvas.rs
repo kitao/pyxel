@@ -334,52 +334,6 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         self.draw_line(x2, y2, x3, y3, value);
     }
 
-    fn fill(&mut self, x: i32, y: i32, value: T) {
-        let value = self.render_value(value);
-
-        /*
-        _col = col if type(col) is int else OverlayCanvas.COLOR_MARK
-
-        self._fill_recursively(x, y, _col, dst)
-
-        if type(col) is not int:
-            self._replace_with_tiles(dst, x, y, col)
-        */
-    }
-
-    fn fill_rec(&mut self) {
-        /*
-        dst_col = dst[y][x]
-
-        if dst_col == col:
-            return
-
-        for i in range(x, -1, -1):
-            if dst[y][i] != dst_col:
-                break
-
-            dst[y][i] = col
-
-            if y > 0 and dst[y - 1][i] == dst_col:
-                self._fill_recursively(i, y - 1, col, dst)
-
-            if y < 15 and dst[y + 1][i] == dst_col:
-                self._fill_recursively(i, y + 1, col, dst)
-
-        for i in range(x + 1, 16):
-            if dst[y][i] != dst_col:
-                return
-
-            dst[y][i] = col
-
-            if y > 0 and dst[y - 1][i] == dst_col:
-                self._fill_recursively(i, y - 1, col, dst)
-
-            if y < 15 and dst[y + 1][i] == dst_col:
-                self._fill_recursively(i, y + 1, col, dst)
-        */
-    }
-
     fn copy(
         &mut self,
         x: i32,
