@@ -1,6 +1,8 @@
 use crate::image::Image;
 use crate::palette::Rgb24;
-use crate::settings::{DISPLAY_COLORS, IMAGE_COUNT, IMAGE_SIZE, TILEMAP_COUNT, TILEMAP_SIZE};
+use crate::settings::{
+    DEFAULT_DISPLAY_COLORS, IMAGE_COUNT, IMAGE_SIZE, TILEMAP_COUNT, TILEMAP_SIZE,
+};
 use crate::tilemap::Tilemap;
 
 pub struct Graphics {
@@ -12,16 +14,16 @@ pub struct Graphics {
 impl Graphics {
     pub fn new(width: u32, height: u32, colors: Option<&[Rgb24]>) -> Graphics {
         let mut screen = Image::new(width, height);
+        screen
+            .palette_mut()
+            .set_display_colors(colors.unwrap_or(&DEFAULT_DISPLAY_COLORS));
+
         let images = (0..IMAGE_COUNT)
             .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
             .collect();
         let tilemaps = (0..TILEMAP_COUNT)
             .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE))
             .collect();
-
-        screen
-            .palette_mut()
-            .set_display_colors(colors.unwrap_or(&DISPLAY_COLORS));
 
         Graphics {
             screen: screen,
