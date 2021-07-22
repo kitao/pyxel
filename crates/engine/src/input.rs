@@ -21,7 +21,7 @@ impl Input {
     pub fn new() -> Input {
         Input {
             frame_count: 0,
-            window_rect: RectArea::with_size(0, 0, 0, 0),
+            window_rect: RectArea::new(0, 0, 0, 0),
             is_mouse_visible: true,
             key_states: HashMap::new(),
             key_values: HashMap::new(),
