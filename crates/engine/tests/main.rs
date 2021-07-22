@@ -18,7 +18,7 @@ impl PyxelCallback for App {
             self.y -= 1;
         }
 
-        if pyxel.btnp(pyxel::KEY_ESCAPE, None, None) {
+        if pyxel.btnp(pyxel::KEY_Q, None, None) {
             pyxel.quit();
         }
     }
