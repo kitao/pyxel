@@ -3,7 +3,7 @@ use std::cmp::min;
 use crate::event::Event;
 use crate::graphics::Graphics;
 use crate::input::Input;
-use crate::key::{Key, KEY_NONE};
+use crate::key::{Key, KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use crate::platform::Platform;
 use crate::profiler::Profiler;
 use crate::recorder::Recorder;
@@ -30,7 +30,7 @@ pub struct System<T> {
     fps_profiler: Profiler,
     update_profiler: Profiler,
     draw_profiler: Profiler,
-    performance_monitor_enabled: bool,
+    perf_monitor_enabled: bool,
 }
 
 pub trait SystemCallback<T> {
@@ -72,7 +72,7 @@ impl<T: Platform> System<T> {
             fps_profiler: Profiler::new(MEASURE_FRAME_COUNT),
             update_profiler: Profiler::new(MEASURE_FRAME_COUNT),
             draw_profiler: Profiler::new(MEASURE_FRAME_COUNT),
-            performance_monitor_enabled: false,
+            perf_monitor_enabled: false,
         }
     }
 
@@ -132,8 +132,7 @@ impl<T: Platform> System<T> {
     fn process_events(&mut self, input: &mut Input) {
         let window_pos = self.platform.window_pos();
         let window_size = self.platform.window_size();
-        let window_rect =
-            RectArea::with_size(window_pos.0, window_pos.1, window_size.0, window_size.1);
+        let window_rect = RectArea::new(window_pos.0, window_pos.1, window_size.0, window_size.1);
 
         input.start_update(self.frame_count, window_rect);
 
@@ -166,6 +165,38 @@ impl<T: Platform> System<T> {
             }
 
             self.platform.delay((sleep_time / 2.0) as u32);
+        }
+    }
+
+    fn check_special_input(&mut self, input: &Input) {
+        if input.is_key_on(KEY_ALT) {
+            if input.is_key_pressed(KEY_RETURN, None, None) {
+                //window_->ToggleFullscreen();
+            }
+
+            if input.is_key_pressed(KEY_0, None, None) {
+                self.perf_monitor_enabled = !self.perf_monitor_enabled;
+            }
+
+            if input.is_key_pressed(KEY_1, None, None) {
+                //recorder_->SaveScreenshot();
+                self.disable_frame_skip_once = true;
+            }
+
+            if input.is_key_pressed(KEY_2, None, None) {
+                //recorder_->ResetScreenCapture();
+            }
+
+            if input.is_key_pressed(KEY_3, None, None) {
+                /*
+                recorder_->SaveScreenCapture();
+                is_update_suspended_ = true;
+                */
+            }
+        }
+
+        if input.is_key_pressed(self.quit_key, None, None) {
+            self.should_quit = true;
         }
     }
 
@@ -213,8 +244,8 @@ impl<T: Platform> System<T> {
         self.process_events(input);
 
         // TODO: drop_file_ = window_->GetDropFile();
-        // TODO: input_->Update(window_, frame_count_);
-        // TODO: CheckSpecialInput();
+
+        self.check_special_input(input);
     }
 
     pub(crate) fn end_update(&mut self) {
