@@ -1,7 +1,8 @@
 use crate::canvas::Canvas;
 use crate::rectarea::RectArea;
+use crate::utility::{parse_hex_string, simplify_string};
 
-pub type Tile = u16;
+pub type Tile = (u8, u8);
 
 pub struct Tilemap {
     width: u32,
@@ -16,10 +17,38 @@ impl Tilemap {
         Tilemap {
             width: width,
             height: height,
-            data: vec![vec![0; width as usize]; height as usize],
-            self_rect: RectArea::with_size(0, 0, width, height),
-            clip_rect: RectArea::with_size(0, 0, width, height),
+            data: vec![vec![(0, 0); width as usize]; height as usize],
+            self_rect: RectArea::new(0, 0, width, height),
+            clip_rect: RectArea::new(0, 0, width, height),
         }
+    }
+
+    pub fn set_data(&mut self, x: i32, y: i32, data: &[&str]) {
+        let width = data[0].len() as u32 / 4;
+        let height = data.len() as u32;
+
+        if width == 0 || height == 0 {
+            return;
+        }
+
+        let mut tilemap = Tilemap::new(width, height);
+
+        for i in 0..height {
+            let data = simplify_string(data[i as usize]);
+
+            for j in 0..width {
+                let index = j as usize * 4;
+
+                if let Some(value) = parse_hex_string(&data[index..index + 4]) {
+                    tilemap.data[i as usize][j as usize] =
+                        (((value >> 16) & 0xff) as u8, (value & 0xff) as u8);
+                } else {
+                    panic!("invalid tilemap data");
+                }
+            }
+        }
+
+        self.copy(x, y, &tilemap, 0, 0, width as i32, height as i32, None);
     }
 }
 
@@ -40,19 +69,19 @@ impl Canvas<Tile> for Tilemap {
         &mut self.data
     }
 
-    fn self_rect(&self) -> RectArea {
+    fn _self_rect(&self) -> RectArea {
         self.self_rect
     }
 
-    fn clip_rect(&self) -> RectArea {
+    fn _clip_rect(&self) -> RectArea {
         self.clip_rect
     }
 
-    fn clip_rect_mut(&mut self) -> &mut RectArea {
+    fn _clip_rect_mut(&mut self) -> &mut RectArea {
         &mut self.clip_rect
     }
 
-    fn render_value(&self, original_value: Tile) -> Tile {
+    fn _render_value(&self, original_value: Tile) -> Tile {
         original_value
     }
 }
