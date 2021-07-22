@@ -23,7 +23,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
     }
 
     fn set_clip_area(&mut self, left: i32, top: i32, width: u32, height: u32) {
-        let rect = RectArea::with_size(left, top, width, height).intersects(self._self_rect());
+        let rect = RectArea::new(left, top, width, height).intersects(self._self_rect());
         *self._clip_rect_mut() = rect;
     }
 
@@ -129,7 +129,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
 
     fn draw_rect(&mut self, x: i32, y: i32, width: u32, height: u32, value: T) {
         let value = self._render_value(value);
-        let rect = RectArea::with_size(x, y, width, height).intersects(self._clip_rect());
+        let rect = RectArea::new(x, y, width, height).intersects(self._clip_rect());
 
         if rect.is_empty() {
             return;
@@ -149,7 +149,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
 
     fn draw_rect_border(&mut self, x: i32, y: i32, width: u32, height: u32, value: T) {
         let value = self._render_value(value);
-        let rect = RectArea::with_size(x, y, width, height).intersects(self._clip_rect());
+        let rect = RectArea::new(x, y, width, height).intersects(self._clip_rect());
 
         if rect.is_empty() {
             return;
