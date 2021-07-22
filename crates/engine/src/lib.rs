@@ -278,7 +278,10 @@ impl Pyxel {
     }
 
     pub fn text(&mut self, x: i32, y: i32, s: &str, col: Color) {
-        self.graphics.screen_mut().draw_text(x, y, s, col);
+        unsafe {
+            let screen = self.graphics.screen_mut() as *mut Image_;
+            (&mut *screen).draw_text(&self.graphics, x, y, s, col);
+        }
     }
 
     //
@@ -314,7 +317,7 @@ impl Pyxel {
 //
 impl Image {
     pub fn set(&self, pyxel: &mut Pyxel, x: i32, y: i32, data: &[&str]) {
-        pyxel.graphics.image_mut(self.image_no).set(x, y, data);
+        pyxel.graphics.image_mut(self.image_no).set_data(x, y, data);
     }
 }
 
