@@ -9,37 +9,7 @@ pub struct RectArea {
 }
 
 impl RectArea {
-    pub fn with_pos(x1: i32, y1: i32, x2: i32, y2: i32) -> RectArea {
-        let left: i32;
-        let top: i32;
-        let width: i32;
-        let height: i32;
-
-        if x1 < x2 {
-            left = x1;
-            width = x2 - x1 + 1;
-        } else {
-            left = x2;
-            width = x1 - x2 + 1;
-        }
-
-        if y1 < y2 {
-            top = y1;
-            height = y2 - y1 + 1;
-        } else {
-            top = y2;
-            height = y1 - y2 + 1;
-        }
-
-        RectArea {
-            left: left,
-            top: top,
-            width: width as u32,
-            height: height as u32,
-        }
-    }
-
-    pub fn with_size(left: i32, top: i32, width: u32, height: u32) -> RectArea {
+    pub fn new(left: i32, top: i32, width: u32, height: u32) -> RectArea {
         RectArea {
             left: left,
             top: top,
@@ -92,9 +62,9 @@ impl RectArea {
         let height = bottom - top + 1;
 
         if width > 0 && height > 0 {
-            RectArea::with_size(left, top, width as u32, height as u32)
+            RectArea::new(left, top, width as u32, height as u32)
         } else {
-            RectArea::with_size(0, 0, 0, 0)
+            RectArea::new(0, 0, 0, 0)
         }
     }
 }
@@ -104,35 +74,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn with_pos() {
-        let rect1 = RectArea::with_pos(0, 0, 0, 0);
-        assert_eq!(rect1.left(), 0);
-        assert_eq!(rect1.top(), 0);
-        assert_eq!(rect1.right(), 0);
-        assert_eq!(rect1.bottom(), 0);
-        assert_eq!(rect1.width(), 1);
-        assert_eq!(rect1.height(), 1);
-
-        let rect2 = RectArea::with_pos(1, 2, 30, 40);
-        assert_eq!(rect2.left(), 1);
-        assert_eq!(rect2.top(), 2);
-        assert_eq!(rect2.right(), 30);
-        assert_eq!(rect2.bottom(), 40);
-        assert_eq!(rect2.width(), 30);
-        assert_eq!(rect2.height(), 39);
-
-        let rect3 = RectArea::with_pos(10, 20, 3, 4);
-        assert_eq!(rect3.left(), 3);
-        assert_eq!(rect3.top(), 4);
-        assert_eq!(rect3.right(), 10);
-        assert_eq!(rect3.bottom(), 20);
-        assert_eq!(rect3.width(), 8);
-        assert_eq!(rect3.height(), 17);
-    }
-
-    #[test]
-    fn with_size() {
-        let rect1 = RectArea::with_size(1, 2, 3, 4);
+    fn new() {
+        let rect1 = RectArea::new(1, 2, 3, 4);
         assert_eq!(rect1.left(), 1);
         assert_eq!(rect1.top(), 2);
         assert_eq!(rect1.right(), 3);
@@ -140,7 +83,7 @@ mod tests {
         assert_eq!(rect1.width(), 3);
         assert_eq!(rect1.height(), 4);
 
-        let rect2 = RectArea::with_size(10, 20, 0, 40);
+        let rect2 = RectArea::new(10, 20, 0, 40);
         assert_eq!(rect2.left(), 10);
         assert_eq!(rect2.top(), 20);
         assert_eq!(rect2.right(), 9);
@@ -148,7 +91,7 @@ mod tests {
         assert_eq!(rect2.width(), 0);
         assert_eq!(rect2.height(), 40);
 
-        let rect3 = RectArea::with_size(100, 200, 300, 0);
+        let rect3 = RectArea::new(100, 200, 300, 0);
         assert_eq!(rect3.left(), 100);
         assert_eq!(rect3.top(), 200);
         assert_eq!(rect3.right(), 399);
@@ -159,19 +102,19 @@ mod tests {
 
     #[test]
     fn is_empty() {
-        let rect1 = RectArea::with_size(1, 2, 3, 4);
+        let rect1 = RectArea::new(1, 2, 3, 4);
         assert!(!rect1.is_empty());
 
-        let rect2 = RectArea::with_size(1, 2, 0, 4);
+        let rect2 = RectArea::new(1, 2, 0, 4);
         assert!(rect2.is_empty());
 
-        let rect3 = RectArea::with_size(1, 2, 3, 0);
+        let rect3 = RectArea::new(1, 2, 3, 0);
         assert!(rect3.is_empty());
     }
 
     #[test]
     fn contains() {
-        let rect1 = RectArea::with_pos(1, 2, 3, 4);
+        let rect1 = RectArea::new(1, 2, 3, 3);
         assert!(rect1.contains(1, 2));
         assert!(rect1.contains(3, 4));
         assert!(!rect1.contains(0, 2));
@@ -179,25 +122,25 @@ mod tests {
         assert!(!rect1.contains(4, 4));
         assert!(!rect1.contains(3, 5));
 
-        let rect2 = RectArea::with_size(1, 2, 0, 4);
+        let rect2 = RectArea::new(1, 2, 0, 4);
         assert!(!rect2.contains(1, 2));
         assert!(!rect2.contains(1, 4));
 
-        let rect3 = RectArea::with_size(1, 2, 3, 0);
+        let rect3 = RectArea::new(1, 2, 3, 0);
         assert!(!rect3.contains(1, 2));
         assert!(!rect3.contains(3, 2));
     }
 
     #[test]
     fn intersects() {
-        let rect1 = RectArea::with_size(10, 20, 30, 40);
-        let rect2 = RectArea::with_size(11, 22, 300, 400);
-        let rect3 = RectArea::with_size(5, 6, 10, 20);
-        let rect4 = RectArea::with_size(1, 2, 3, 4);
-        let rect5 = RectArea::with_size(0, 0, 0, 0);
+        let rect1 = RectArea::new(10, 20, 30, 40);
+        let rect2 = RectArea::new(11, 22, 300, 400);
+        let rect3 = RectArea::new(5, 6, 10, 20);
+        let rect4 = RectArea::new(1, 2, 3, 4);
+        let rect5 = RectArea::new(0, 0, 0, 0);
 
-        assert_eq!(rect1.intersects(rect2), RectArea::with_pos(11, 22, 39, 59));
-        assert_eq!(rect1.intersects(rect3), RectArea::with_pos(10, 20, 14, 25));
+        assert_eq!(rect1.intersects(rect2), RectArea::new(11, 22, 29, 38));
+        assert_eq!(rect1.intersects(rect3), RectArea::new(10, 20, 5, 6));
         assert!(rect1.intersects(rect4).is_empty());
         assert!(rect1.intersects(rect5).is_empty());
     }
