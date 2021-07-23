@@ -43,7 +43,7 @@ impl RectArea {
     }
 
     pub fn is_empty(&self) -> bool {
-        self.width <= 0 || self.height <= 0
+        self.width == 0 || self.height == 0
     }
 
     pub fn contains(&self, x: i32, y: i32) -> bool {
