@@ -7,7 +7,6 @@ use sdl2::audio::AudioSpecDesired as SdlAudioSpecDesired;
 use sdl2::controller::Axis as SdlAxis;
 use sdl2::controller::Button as SdlButton;
 use sdl2::event::Event as SdlEvent;
-use sdl2::event::WindowEvent as SdlWindowEvent;
 use sdl2::mouse::MouseButton as SdlMouseButton;
 use sdl2::pixels::Color as SdlColor;
 use sdl2::pixels::PixelFormatEnum;
@@ -44,6 +43,10 @@ pub struct Sdl2 {
     sdl_event_pump: SdlEventPump,
     sdl_audio: SdlAudioSubsystem,
     sdl_audio_device: Option<SdlAudioDevice<AudioCallbackData>>,
+    screen_width: u32,
+    screen_height: u32,
+    mouse_x: i32,
+    mouse_y: i32,
 }
 
 impl Platform for Sdl2 {
@@ -77,15 +80,11 @@ impl Platform for Sdl2 {
             sdl_event_pump: sdl_event_pump,
             sdl_audio: sdl_audio,
             sdl_audio_device: None,
+            screen_width: width,
+            screen_height: height,
+            mouse_x: i32::MIN,
+            mouse_y: i32::MIN,
         }
-    }
-
-    fn window_pos(&self) -> (i32, i32) {
-        self.sdl_canvas.window().position()
-    }
-
-    fn window_size(&self) -> (u32, u32) {
-        self.sdl_canvas.window().size()
     }
 
     fn set_window_title(&mut self, title: &str) {
@@ -94,7 +93,6 @@ impl Platform for Sdl2 {
 
     fn set_window_icon(&mut self, icon: &Image, scale: u32) {
         /*
-        void Window::SetupWindowIcon() const {
             SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
                 0, ICON_WIDTH * ICON_SCALE, ICON_HEIGHT * ICON_SCALE, 32,
                 SDL_PIXELFORMAT_RGBA8888);
@@ -126,21 +124,16 @@ impl Platform for Sdl2 {
             SDL_FreeSurface(surface);
 
             delete image;
-        }
         */
     }
 
-    fn toggle_fullscreen(&mut self) {
-        if self.sdl_canvas.window().fullscreen_state() == SdlFullscreenType::True {
-            self.sdl_canvas
-                .window_mut()
-                .set_fullscreen(SdlFullscreenType::True)
-                .unwrap();
+    fn set_fullscreen(&mut self, is_fullscreen: bool) {
+        let window = self.sdl_canvas.window_mut();
+
+        if is_fullscreen {
+            let _ = window.set_fullscreen(SdlFullscreenType::True);
         } else {
-            self.sdl_canvas
-                .window_mut()
-                .set_fullscreen(SdlFullscreenType::Off)
-                .unwrap();
+            let _ = window.set_fullscreen(SdlFullscreenType::Off);
         }
     }
 
@@ -157,7 +150,19 @@ impl Platform for Sdl2 {
             let sdl_event = self.sdl_event_pump.poll_event();
 
             if sdl_event.is_none() {
-                return None;
+                let (cur_mouse_x, cur_mouse_y) = self.mouse_pos();
+
+                if cur_mouse_x != self.mouse_x || cur_mouse_y != self.mouse_y {
+                    self.mouse_x = cur_mouse_x;
+                    self.mouse_y = cur_mouse_y;
+
+                    return Some(Event::MouseMotion {
+                        x: cur_mouse_x,
+                        y: cur_mouse_y,
+                    });
+                } else {
+                    return None;
+                }
             }
 
             let event = match sdl_event.unwrap() {
@@ -166,31 +171,6 @@ impl Platform for Sdl2 {
                 //
                 SdlEvent::Quit { .. } => Event::Quit,
                 SdlEvent::DropFile { filename, .. } => Event::DropFile { filename: filename },
-
-                //
-                // Window Events
-                //
-                SdlEvent::Window { win_event, .. } => match win_event {
-                    /*
-                    WindowShown,
-                    WindowHidden,
-                    */
-                    SdlWindowEvent::Moved(x, y) => Event::WindowMoved { x: x, y: y },
-                    SdlWindowEvent::Resized(width, height) => Event::WindowResized {
-                        width: width,
-                        height: height,
-                    },
-                    _ => continue,
-                    /*
-                    WindowMinimized,
-                    WindowMaximized,
-                    WindowEnter,
-                    WindowLeave,
-                    WindowFocusGained,
-                    WindowFocusLost,
-                    WindowClose,
-                    */
-                },
 
                 //
                 // Key Events
@@ -212,7 +192,6 @@ impl Platform for Sdl2 {
                 //
                 // Mouse Events
                 //
-                SdlEvent::MouseMotion { x, y, .. } => Event::MouseMotion { x: x, y: y },
                 SdlEvent::MouseButtonDown { mouse_btn, .. } => Event::MouseButtonDown {
                     button: match mouse_btn {
                         SdlMouseButton::Left => MouseButton::Left,
@@ -311,6 +290,8 @@ impl Platform for Sdl2 {
         let screen_data = screen.data();
         let screen_palette = screen.palette();
 
+        assert!(screen_width == self.screen_width && screen_height == self.screen_height);
+
         self.sdl_texture
             .with_lock(None, |buffer: &mut [u8], pitch: usize| {
                 for i in 0..screen_height as usize {
@@ -334,10 +315,7 @@ impl Platform for Sdl2 {
 
         self.sdl_canvas.clear();
 
-        let (window_width, window_height) = self.window_size();
-        let screen_scale = min(window_width / screen_width, window_height / screen_height);
-        let screen_x = (window_width - screen_width * screen_scale) / 2;
-        let screen_y = (window_height - screen_height * screen_scale) / 2;
+        let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
 
         let dst = SdlRect::new(
             screen_x as i32,
@@ -375,5 +353,34 @@ impl Platform for Sdl2 {
         sdl_audio_device.resume();
 
         self.sdl_audio_device = Some(sdl_audio_device);
+    }
+}
+
+impl Sdl2 {
+    fn screen_pos_scale(&self) -> (u32, u32, u32) {
+        let (window_width, window_height) = self.sdl_canvas.window().size();
+        let screen_scale = min(
+            window_width / self.screen_width,
+            window_height / self.screen_height,
+        );
+        let screen_x = (window_width - self.screen_width * screen_scale) / 2;
+        let screen_y = (window_height - self.screen_height * screen_scale) / 2;
+
+        (screen_x, screen_y, screen_scale)
+    }
+
+    fn mouse_pos(&self) -> (i32, i32) {
+        let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
+        let mut mouse_x = self.mouse_x;
+        let mut mouse_y = self.mouse_y;
+
+        unsafe {
+            sdl2::sys::SDL_GetGlobalMouseState(&mut mouse_x, &mut mouse_y);
+        }
+
+        mouse_x = (mouse_x - screen_x as i32) / screen_scale as i32;
+        mouse_y = (mouse_y - screen_y as i32) / screen_scale as i32;
+
+        (mouse_x, mouse_y)
     }
 }
