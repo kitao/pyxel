@@ -44,27 +44,6 @@ pub enum Event {
     },
 
     //
-    // Window Events
-    //
-    WindowShown,
-    WindowHidden,
-    WindowMoved {
-        x: i32,
-        y: i32,
-    },
-    WindowResized {
-        width: i32,
-        height: i32,
-    },
-    WindowMinimized,
-    WindowMaximized,
-    WindowEnter,
-    WindowLeave,
-    WindowFocusGained,
-    WindowFocusLost,
-    WindowClose,
-
-    //
     // Key Events
     //
     KeyDown {
