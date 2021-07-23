@@ -27,17 +27,15 @@ use std::sync::{Arc, Mutex};
 use crate::audio::Audio;
 use crate::canvas::Canvas;
 use crate::graphics::Graphics;
-use crate::image::Image as Image_;
-use crate::image::Image as Tilemap_;
+use crate::image::Image as PyxelImage;
 use crate::input::Input;
-use crate::music::Music as Music_;
 use crate::oscillator::{Effect, Tone};
 use crate::palette::{Color, Rgb24};
 use crate::resource::Resource;
 use crate::sdl2::Sdl2;
-use crate::sound::Sound as Sound_;
 use crate::sound::{Note, Speed, Volume};
 use crate::system::System;
+use crate::tilemap::Tile;
 
 pub use crate::key::*;
 pub use crate::settings::*;
@@ -116,6 +114,10 @@ impl Pyxel {
         self.system.set_window_title(title);
     }
 
+    pub fn fullscreen(&mut self, is_fullscreen: bool) {
+        self.system.set_fullscreen(is_fullscreen);
+    }
+
     pub fn run(&mut self, callback: &mut dyn PyxelCallback) {
         run!(self, callback);
     }
@@ -173,6 +175,10 @@ impl Pyxel {
 
     pub fn mouse(&mut self, visible: bool) {
         self.input.set_mouse_visible(visible);
+    }
+
+    pub fn text_input(&self) -> &str {
+        self.input.text_input()
     }
 
     //
@@ -268,18 +274,31 @@ impl Pyxel {
         colkey: Option<Color>,
     ) {
         unsafe {
-            let screen = self.graphics.screen_mut() as *mut Image_;
+            let screen = self.graphics.screen_mut() as *mut PyxelImage;
             (&mut *screen).copy(x, y, self.graphics.image(img), u, v, w, h, colkey);
         }
     }
 
-    pub fn bltm(&mut self, x: i32, y: i32, tm: u32, u: i32, v: i32, w: u32, h: u32, colkey: Color) {
-        //
+    pub fn bltm(
+        &mut self,
+        x: i32,
+        y: i32,
+        tm: u32,
+        u: i32,
+        v: i32,
+        w: i32,
+        h: i32,
+        tilekey: Option<Tile>,
+    ) {
+        unsafe {
+            let screen = self.graphics.screen_mut() as *mut PyxelImage;
+            (&mut *screen).draw_tilemap(x, y, self.graphics.tilemap(tm), u, v, w, h, tilekey);
+        }
     }
 
     pub fn text(&mut self, x: i32, y: i32, s: &str, col: Color) {
         unsafe {
-            let screen = self.graphics.screen_mut() as *mut Image_;
+            let screen = self.graphics.screen_mut() as *mut PyxelImage;
             (&mut *screen).draw_text(&self.graphics, x, y, s, col);
         }
     }
@@ -317,7 +336,7 @@ impl Pyxel {
 //
 impl Image {
     pub fn set(&self, pyxel: &mut Pyxel, x: i32, y: i32, data: &[&str]) {
-        pyxel.graphics.image_mut(self.image_no).set_data(x, y, data);
+        pyxel.graphics.image_mut(self.image_no).set(x, y, data);
     }
 }
 
@@ -336,6 +355,11 @@ void image_copy(void* self, int x, int y, int img, int u, int v, int w, int h);
 //
 // Tilemap class
 //
+impl Tilemap {
+    pub fn set(&self, pyxel: &mut Pyxel, x: i32, y: i32, data: &[&str]) {
+        pyxel.graphics.tilemap_mut(self.tilemap_no).set(x, y, data);
+    }
+}
 
 /*
 int tilemap_width_getter(void* self);
@@ -367,7 +391,7 @@ impl Sound {
         tones: &str,
         volumes: &str,
         effects: &str,
-        speed: u32,
+        speed: Speed,
     ) {
         sound!(self, pyxel).set(notes, tones, volumes, effects, speed);
     }
@@ -404,11 +428,11 @@ impl Sound {
         sound!(self, pyxel).set_effects(effects);
     }
 
-    pub fn speed(&self, pyxel: &Pyxel) -> u32 {
+    pub fn speed(&self, pyxel: &Pyxel) -> Speed {
         sound!(self, pyxel).speed()
     }
 
-    pub fn set_speed(&self, pyxel: &Pyxel, speed: u32) {
+    pub fn set_speed(&self, pyxel: &Pyxel, speed: Speed) {
         sound!(self, pyxel).set_speed(speed);
     }
 }
@@ -423,20 +447,15 @@ macro_rules! music {
 }
 
 impl Music {
-    /*
-    int* music_ch0_getter(void* self);
-    int music_ch0_length_getter(void* self);
-    void music_ch0_length_setter(void* self, int length);
-    int* music_ch1_getter(void* self);
-    int music_ch1_length_getter(void* self);
-    void music_ch1_length_setter(void* self, int length);
-    int* music_ch2_getter(void* self);
-    int music_ch2_length_getter(void* self);
-    void music_ch2_length_setter(void* self, int length);
-    int* music_ch3_getter(void* self);
-    int music_ch3_length_getter(void* self);
-    void music_ch3_length_setter(void* self, int length);
+    pub fn set(&self, pyxel: &Pyxel, seq0: &[u32], seq1: &[u32], seq2: &[u32], seq3: &[u32]) {
+        music!(self, pyxel).set(seq0, seq1, seq2, seq3);
+    }
 
-    void music_set(void* self, const int* ch0, int ch0_length, const int* ch1, int ch1_length, const int* ch2, int ch2_length, const int* ch3, int ch3_length);
-    */
+    pub fn seq(&self, pyxel: &Pyxel, ch: u32) -> Vec<u32> {
+        music!(self, pyxel).sequence(ch).clone()
+    }
+
+    pub fn set_seq(&self, pyxel: &Pyxel, ch: u32, snds: &[u32]) {
+        music!(self, pyxel).set_sequence(ch, snds);
+    }
 }
