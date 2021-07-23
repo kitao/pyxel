@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use crate::event::Event;
 use crate::key::*;
-use crate::rectarea::RectArea;
 
 enum KeyState {
     Pressed { frame_count: u32 },
@@ -12,19 +11,19 @@ enum KeyState {
 pub struct Input {
     frame_count: u32,
     is_mouse_visible: bool,
-    window_rect: RectArea,
     key_states: HashMap<Key, KeyState>,
     key_values: HashMap<Key, KeyValue>,
+    text_input: String,
 }
 
 impl Input {
     pub fn new() -> Input {
         Input {
             frame_count: 0,
-            window_rect: RectArea::new(0, 0, 0, 0),
             is_mouse_visible: true,
             key_states: HashMap::new(),
             key_values: HashMap::new(),
+            text_input: "".to_string(),
         }
     }
 
@@ -78,20 +77,21 @@ impl Input {
         self.key_values.get(&key).cloned().unwrap_or(0)
     }
 
-    /*pub fn is_mouse_visible(&self) -> bool {
-        self.is_mouse_visible
-    }*/
+    pub fn text_input(&self) -> &str {
+        &self.text_input
+    }
 
     pub fn set_mouse_visible(&mut self, is_mouse_visible: bool) {
         self.is_mouse_visible = is_mouse_visible;
     }
 
-    pub(crate) fn start_update(&mut self, frame_count: u32, window_rect: RectArea) {
+    pub(crate) fn start_update(&mut self, frame_count: u32) {
         self.frame_count = frame_count;
-        self.window_rect = window_rect;
 
         self.key_values.insert(MOUSE_WHEEL_X, 0);
         self.key_values.insert(MOUSE_WHEEL_Y, 0);
+
+        self.text_input = "".to_string();
     }
 
     pub(crate) fn process_event(&mut self, event: Event) {
@@ -116,7 +116,9 @@ impl Input {
                 }
             }
 
-            Event::TextInput { text } => {}
+            Event::TextInput { text } => {
+                self.text_input += &text;
+            }
 
             Event::MouseMotion { x, y } => {
                 self.key_values.insert(MOUSE_POS_X, x as KeyValue);
