@@ -38,7 +38,7 @@ impl Image {
         &mut self.palette
     }
 
-    pub fn set_data(&mut self, x: i32, y: i32, data: &[&str]) {
+    pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
         let width = data[0].len() as u32;
         let height = data.len() as u32;
 
