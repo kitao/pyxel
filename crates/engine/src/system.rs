@@ -7,7 +7,6 @@ use crate::key::{Key, KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use crate::platform::Platform;
 use crate::profiler::Profiler;
 use crate::recorder::Recorder;
-use crate::rectarea::RectArea;
 use crate::settings::{
     BACKGROUND_COLOR, DEFAULT_FPS, DEFAULT_QUIT_KEY, DEFAULT_SCALE, DEFAULT_TITLE,
     MAX_FRAME_SKIP_COUNT, MEASURE_FRAME_COUNT,
@@ -80,14 +79,6 @@ impl<T: Platform> System<T> {
         &mut self.platform
     }
 
-    pub fn window_width(&self) -> u32 {
-        self.platform.window_size().0
-    }
-
-    pub fn window_height(&self) -> u32 {
-        self.platform.window_size().1
-    }
-
     pub fn set_window_title(&mut self, title: &str) {
         self.platform.set_window_title(title);
     }
@@ -129,23 +120,17 @@ impl<T: Platform> System<T> {
         */
     }
 
-    fn process_events(&mut self, input: &mut Input) {
-        let window_pos = self.platform.window_pos();
-        let window_size = self.platform.window_size();
-        let window_rect = RectArea::new(window_pos.0, window_pos.1, window_size.0, window_size.1);
+    pub fn set_fullscreen(&mut self, is_fullscreen: bool) {
+        self.platform.set_fullscreen(is_fullscreen);
+    }
 
-        input.start_update(self.frame_count, window_rect);
+    fn process_events(&mut self, input: &mut Input) {
+        input.start_update(self.frame_count);
 
         while let Some(event) = self.platform.poll_event() {
             match event {
                 Event::Quit => {
                     self.should_quit = true;
-                }
-                Event::WindowMoved { x, y } => {
-                    //
-                }
-                Event::WindowResized { width, height } => {
-                    //
                 }
                 _ => {
                     input.process_event(event);
