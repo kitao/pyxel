@@ -314,6 +314,10 @@ impl Pyxel {
         Music { music_no: msc }
     }
 
+    pub fn play_pos(&self, ch: u32) -> Option<(u32, u32)> {
+        self.audio.lock().unwrap().play_pos(ch)
+    }
+
     pub fn play1(&mut self, ch: u32, snd: u32, loop_: bool) {
         self.audio.lock().unwrap().play_sound(ch, snd, loop_);
     }
@@ -337,6 +341,20 @@ impl Pyxel {
 impl Image {
     pub fn set(&self, pyxel: &mut Pyxel, x: i32, y: i32, data: &[&str]) {
         pyxel.graphics.image_mut(self.image_no).set(x, y, data);
+    }
+
+    pub fn load(&self, pyxel: &mut Pyxel, x: i32, y: i32, filename: &str) {
+        pyxel
+            .graphics
+            .image_mut(self.image_no)
+            .load_image(x, y, filename);
+    }
+
+    pub fn save(&self, pyxel: &mut Pyxel, filename: &str, scale: u32) {
+        pyxel
+            .graphics
+            .image(self.image_no)
+            .save_image(filename, scale);
     }
 }
 
