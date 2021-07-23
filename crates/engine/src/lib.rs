@@ -161,6 +161,10 @@ impl Pyxel {
         self.input.key_value(MOUSE_WHEEL_Y)
     }
 
+    pub fn mouse(&mut self, visible: bool) {
+        self.input.set_mouse_visible(visible);
+    }
+
     pub fn btn(&self, key: Key) -> bool {
         self.input.is_key_on(key)
     }
@@ -171,10 +175,6 @@ impl Pyxel {
 
     pub fn btnr(&self, key: Key) -> bool {
         self.input.is_key_released(key)
-    }
-
-    pub fn mouse(&mut self, visible: bool) {
-        self.input.set_mouse_visible(visible);
     }
 
     pub fn text_input(&self) -> &str {
