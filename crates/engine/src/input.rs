@@ -2,6 +2,9 @@ use std::collections::HashMap;
 
 use crate::event::Event;
 use crate::key::*;
+use crate::types::{Key, KeyValue};
+
+use super::Pyxel;
 
 enum KeyState {
     Pressed { frame_count: u32 },
@@ -10,92 +13,39 @@ enum KeyState {
 
 pub struct Input {
     frame_count: u32,
-    is_mouse_visible: bool,
+    mouse_visible: bool,
     key_states: HashMap<Key, KeyState>,
     key_values: HashMap<Key, KeyValue>,
     text_input: String,
+    drop_files: Vec<String>,
 }
 
 impl Input {
     pub fn new() -> Input {
         Input {
             frame_count: 0,
-            is_mouse_visible: true,
+            mouse_visible: true,
             key_states: HashMap::new(),
             key_values: HashMap::new(),
             text_input: "".to_string(),
+            drop_files: Vec::new(),
         }
     }
 
-    pub fn is_key_on(&self, key: Key) -> bool {
-        if let Some(KeyState::Pressed { .. }) = self.key_states.get(&key) {
-            true
-        } else {
-            false
-        }
-    }
-
-    pub fn is_key_pressed(
-        &self,
-        key: Key,
-        hold_frames: Option<u32>,
-        period_frames: Option<u32>,
-    ) -> bool {
-        if let Some(KeyState::Pressed { frame_count }) = self.key_states.get(&key) {
-            if *frame_count == self.frame_count {
-                return true;
-            }
-
-            let hold_frames = hold_frames.unwrap_or(0);
-            let period_frames = period_frames.unwrap_or(0);
-
-            if hold_frames == 0 || period_frames == 0 {
-                return false;
-            }
-
-            let elapsed_frames = self.frame_count as i32 - (*frame_count + hold_frames) as i32;
-
-            if elapsed_frames > 0 && elapsed_frames % period_frames as i32 == 0 {
-                return true;
-            }
-        }
-
-        false
-    }
-
-    pub fn is_key_released(&self, key: Key) -> bool {
-        if let Some(KeyState::Released { frame_count }) = self.key_states.get(&key) {
-            if *frame_count == self.frame_count {
-                return true;
-            }
-        }
-
-        false
-    }
-
-    pub fn key_value(&self, key: Key) -> KeyValue {
-        self.key_values.get(&key).cloned().unwrap_or(0)
-    }
-
-    pub fn text_input(&self) -> &str {
-        &self.text_input
-    }
-
-    pub fn set_mouse_visible(&mut self, is_mouse_visible: bool) {
-        self.is_mouse_visible = is_mouse_visible;
-    }
-
-    pub(crate) fn start_update(&mut self, frame_count: u32) {
+    pub fn start_update(&mut self, frame_count: u32) {
         self.frame_count = frame_count;
-
         self.key_values.insert(MOUSE_WHEEL_X, 0);
         self.key_values.insert(MOUSE_WHEEL_Y, 0);
-
         self.text_input = "".to_string();
+        self.drop_files.clear();
     }
 
-    pub(crate) fn process_event(&mut self, event: Event) {
+    pub fn process_event(&mut self, event: Event) {
         match event {
+            Event::DropFile { filename } => {
+                self.drop_files.push(filename);
+            }
+
             Event::KeyDown { key } => {
                 if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
                     self.press_key(key);
@@ -179,8 +129,14 @@ impl Input {
         }
     }
 
-    pub(crate) fn end_update(&mut self) {
-        //
+    pub fn end_update(&mut self) -> (i32, i32, i32, String, Vec<String>) {
+        (
+            self.key_values.get(&MOUSE_POS_X).cloned().unwrap_or(0),
+            self.key_values.get(&MOUSE_POS_Y).cloned().unwrap_or(0),
+            self.key_values.get(&MOUSE_WHEEL_Y).cloned().unwrap_or(0),
+            self.text_input.clone(),
+            self.drop_files.clone(),
+        )
     }
 
     fn get_common_key(key: Key) -> Option<Key> {
@@ -209,6 +165,58 @@ impl Input {
                 frame_count: self.frame_count,
             },
         );
+    }
+}
+
+impl Pyxel {
+    pub fn btn(&self, key: Key) -> bool {
+        if let Some(KeyState::Pressed { .. }) = self.input.key_states.get(&key) {
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn btnp(&self, key: Key, hold: Option<u32>, period: Option<u32>) -> bool {
+        if let Some(KeyState::Pressed { frame_count }) = self.input.key_states.get(&key) {
+            if *frame_count == self.input.frame_count {
+                return true;
+            }
+
+            let hold_frames = hold.unwrap_or(0);
+            let period_frames = period.unwrap_or(0);
+
+            if hold_frames == 0 || period_frames == 0 {
+                return false;
+            }
+
+            let elapsed_frames =
+                self.input.frame_count as i32 - (*frame_count + hold_frames) as i32;
+
+            if elapsed_frames > 0 && elapsed_frames % period_frames as i32 == 0 {
+                return true;
+            }
+        }
+
+        false
+    }
+
+    pub fn btnr(&self, key: Key) -> bool {
+        if let Some(KeyState::Released { frame_count }) = self.input.key_states.get(&key) {
+            if *frame_count == self.input.frame_count {
+                return true;
+            }
+        }
+
+        false
+    }
+
+    pub fn btnv(&self, key: Key) -> KeyValue {
+        self.input.key_values.get(&key).cloned().unwrap_or(0)
+    }
+
+    pub fn mouse(&mut self, visible: bool) {
+        self.input.mouse_visible = visible;
     }
 }
 

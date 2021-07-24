@@ -5,9 +5,10 @@ use crate::utility::{parse_hex_string, simplify_string};
 pub type Tile = (u8, u8);
 
 pub struct Tilemap {
-    width: u32,
-    height: u32,
-    data: Vec<Vec<Tile>>,
+    pub width: u32,
+    pub height: u32,
+    pub data: Vec<Vec<Tile>>,
+
     self_rect: RectArea,
     clip_rect: RectArea,
 }
@@ -18,6 +19,7 @@ impl Tilemap {
             width: width,
             height: height,
             data: vec![vec![(0, 0); width as usize]; height as usize],
+
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
         }
@@ -48,7 +50,7 @@ impl Tilemap {
             }
         }
 
-        self.copy(x, y, &tilemap, 0, 0, width as i32, height as i32, None);
+        self.blt(x, y, &tilemap, 0, 0, width as i32, height as i32, None);
     }
 }
 
@@ -81,7 +83,7 @@ impl Canvas<Tile> for Tilemap {
         &mut self.clip_rect
     }
 
-    fn _render_value(&self, original_value: Tile) -> Tile {
-        original_value
+    fn _palette_value(&self, val: Tile) -> Tile {
+        val
     }
 }
