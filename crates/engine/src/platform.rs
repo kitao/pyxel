@@ -2,7 +2,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::event::Event;
 use crate::image::Image;
-use crate::palette::Rgb24;
+use crate::types::Rgb8;
 
 pub trait AudioCallback {
     fn audio_callback(&mut self, out: &mut [i16]);
@@ -10,13 +10,14 @@ pub trait AudioCallback {
 
 pub trait Platform {
     fn new(title: &str, width: u32, height: u32, scale: u32) -> Self;
-    fn set_window_title(&mut self, title: &str);
-    fn set_window_icon(&mut self, icon: &Image, scale: u32);
-    fn set_fullscreen(&mut self, is_fullscreen: bool);
+    fn set_title(&mut self, title: &str);
+    fn set_icon(&mut self, icon: &Image, color: &[Rgb8], scale: u32);
+    fn is_fullscreen(&mut self) -> bool;
+    fn set_fullscreen(&mut self, fullscreen: bool);
     fn ticks(&self) -> u32;
     fn delay(&mut self, ms: u32);
     fn poll_event(&mut self) -> Option<Event>;
-    fn render_screen(&mut self, screen: &Image, bg_color: Rgb24);
+    fn render_screen(&mut self, screen: &Image, color: &[Rgb8], bg_color: Rgb8);
     fn start_audio(
         &mut self,
         sample_rate: u32,
