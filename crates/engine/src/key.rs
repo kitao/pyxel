@@ -1,5 +1,4 @@
-pub type Key = u32;
-pub type KeyValue = i32;
+use crate::types::Key;
 
 pub const KEY_NONE: Key = 0;
 
