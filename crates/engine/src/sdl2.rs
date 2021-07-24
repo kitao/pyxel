@@ -21,8 +21,8 @@ use sdl2::TimerSubsystem as SdlTimerSubsystem;
 use crate::canvas::Canvas;
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
 use crate::image::Image;
-use crate::palette::Rgb24;
 use crate::platform::{AudioCallback, Platform};
+use crate::types::Rgb8;
 
 struct AudioCallbackData {
     audio_callback: Arc<Mutex<dyn AudioCallback + Send>>,
@@ -87,11 +87,11 @@ impl Platform for Sdl2 {
         }
     }
 
-    fn set_window_title(&mut self, title: &str) {
+    fn set_title(&mut self, title: &str) {
         self.sdl_canvas.window_mut().set_title(title).unwrap();
     }
 
-    fn set_window_icon(&mut self, icon: &Image, scale: u32) {
+    fn set_icon(&mut self, icon: &Image, color: &[Rgb8], scale: u32) {
         /*
             SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
                 0, ICON_WIDTH * ICON_SCALE, ICON_HEIGHT * ICON_SCALE, 32,
@@ -127,10 +127,14 @@ impl Platform for Sdl2 {
         */
     }
 
-    fn set_fullscreen(&mut self, is_fullscreen: bool) {
+    fn is_fullscreen(&mut self) -> bool {
+        self.sdl_canvas.window().fullscreen_state() != SdlFullscreenType::Off
+    }
+
+    fn set_fullscreen(&mut self, fullscreen: bool) {
         let window = self.sdl_canvas.window_mut();
 
-        if is_fullscreen {
+        if fullscreen {
             let _ = window.set_fullscreen(SdlFullscreenType::True);
         } else {
             let _ = window.set_fullscreen(SdlFullscreenType::Off);
@@ -170,6 +174,7 @@ impl Platform for Sdl2 {
                 // System Events
                 //
                 SdlEvent::Quit { .. } => Event::Quit,
+
                 SdlEvent::DropFile { filename, .. } => Event::DropFile { filename: filename },
 
                 //
@@ -181,12 +186,14 @@ impl Platform for Sdl2 {
                 } => Event::KeyDown {
                     key: scancode as u32,
                 },
+
                 SdlEvent::KeyUp {
                     scancode: Some(scancode),
                     ..
                 } => Event::KeyUp {
                     key: scancode as u32,
                 },
+
                 SdlEvent::TextInput { text, .. } => Event::TextInput { text: text },
 
                 //
@@ -202,6 +209,7 @@ impl Platform for Sdl2 {
                         SdlMouseButton::Unknown => MouseButton::Unknown,
                     },
                 },
+
                 SdlEvent::MouseButtonUp { mouse_btn, .. } => Event::MouseButtonUp {
                     button: match mouse_btn {
                         SdlMouseButton::Left => MouseButton::Left,
@@ -212,6 +220,7 @@ impl Platform for Sdl2 {
                         SdlMouseButton::Unknown => MouseButton::Unknown,
                     },
                 },
+
                 SdlEvent::MouseWheel { x, y, .. } => Event::MouseWheel { x: x, y: y },
 
                 //
@@ -231,6 +240,7 @@ impl Platform for Sdl2 {
                     },
                     value: value as i32,
                 },
+
                 SdlEvent::ControllerButtonDown { which, button, .. } => {
                     Event::ControllerButtonDown {
                         which: which,
@@ -253,6 +263,7 @@ impl Platform for Sdl2 {
                         },
                     }
                 }
+
                 SdlEvent::ControllerButtonUp { which, button, .. } => Event::ControllerButtonUp {
                     which: which,
                     button: match button {
@@ -284,20 +295,19 @@ impl Platform for Sdl2 {
         }
     }
 
-    fn render_screen(&mut self, screen: &Image, bg_color: Rgb24) {
-        let screen_width = screen.width();
-        let screen_height = screen.height();
-        let screen_data = screen.data();
-        let screen_palette = screen.palette();
+    fn render_screen(&mut self, screen: &Image, color: &[Rgb8], bg_color: Rgb8) {
+        let width = screen.width();
+        let height = screen.height();
+        let data = screen.data();
 
-        assert!(screen_width == self.screen_width && screen_height == self.screen_height);
+        assert!(self.screen_width == width && self.screen_height == height);
 
         self.sdl_texture
             .with_lock(None, |buffer: &mut [u8], pitch: usize| {
-                for i in 0..screen_height as usize {
-                    for j in 0..screen_width as usize {
+                for i in 0..height as usize {
+                    for j in 0..width as usize {
                         let offset = i * pitch + j * 3;
-                        let color = screen_palette.display_color(screen_data[i][j]);
+                        let color = color[data[i][j] as usize];
 
                         buffer[offset] = ((color >> 16) & 0xff) as u8;
                         buffer[offset + 1] = ((color >> 8) & 0xff) as u8;
@@ -320,8 +330,8 @@ impl Platform for Sdl2 {
         let dst = SdlRect::new(
             screen_x as i32,
             screen_y as i32,
-            screen_width * screen_scale,
-            screen_height * screen_scale,
+            width * screen_scale,
+            height * screen_scale,
         );
 
         self.sdl_canvas
