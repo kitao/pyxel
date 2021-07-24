@@ -1,5 +1,5 @@
-use crate::key::{Key, KEY_ESCAPE};
-use crate::palette::{Color, Rgb24};
+use crate::key::KEY_ESCAPE;
+use crate::types::{Color, Key, Rgb8, Speed, Volume};
 
 //
 // System
@@ -12,7 +12,7 @@ pub const DEFAULT_FPS: u32 = 30;
 pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
 
 pub const WINDOW_SIZE_RATIO: f32 = 0.8;
-pub const BACKGROUND_COLOR: Rgb24 = 0x101018;
+pub const BACKGROUND_COLOR: Rgb8 = 0x101018;
 pub const MAX_FRAME_SKIP_COUNT: u32 = 9;
 pub const MEASURE_FRAME_COUNT: u32 = 10;
 
@@ -43,16 +43,13 @@ pub const CAPTURE_FRAME_SCALE: u32 = 2;
 //
 // Resource
 //
-/*
-const std::string RESOURCE_FILE_EXTENSION = ".pyxres";
-const std::string RESOURCE_ARCHIVE_DIRNAME = "pyxel_resource/";
-*/
+pub const RESOURCE_FILE_EXTENSION: &str = ".pyxres";
+pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
 
 //
 // Graphics
 //
-pub const MAX_COLOR_COUNT: u32 = Color::MAX as u32 + 1;
-pub const DEFAULT_COLOR_COUNT: u32 = 16;
+pub const COLOR_COUNT: u32 = 16;
 
 pub const IMAGE_COUNT: u32 = 4;
 pub const IMAGE_SIZE: u32 = 256;
@@ -61,7 +58,7 @@ pub const TILEMAP_COUNT: u32 = 8;
 pub const TILEMAP_SIZE: u32 = 256;
 pub const TILE_SIZE: u32 = 8;
 
-pub const DEFAULT_DISPLAY_COLORS: [Rgb24; DEFAULT_COLOR_COUNT as usize] = [
+pub const DEFAULT_COLOR: [Rgb8; COLOR_COUNT as usize] = [
     0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, 0xd4186c,
     0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0,
 ];
@@ -83,8 +80,6 @@ pub const COLOR_GRAY: Color = 13;
 pub const COLOR_PINK: Color = 14;
 pub const COLOR_PEACH: Color = 15;
 
-const MOUSE_CURSOR_X: u32 = 2;
-const MOUSE_CURSOR_Y: u32 = 2;
 const MOUSE_CURSOR_WIDTH: u32 = 8;
 const MOUSE_CURSOR_HEIGHT: u32 = 8;
 const MOUSE_CURSOR_DATA: [&str; MOUSE_CURSOR_HEIGHT as usize] = [
@@ -93,11 +88,8 @@ const MOUSE_CURSOR_DATA: [&str; MOUSE_CURSOR_HEIGHT as usize] = [
 
 const MIN_FONT_CODE: u32 = 32;
 const MAX_FONT_CODE: u32 = 127;
-const FONT_X: u32 = 12;
-const FONT_Y: u32 = 0;
 const FONT_WIDTH: u32 = 4;
 const FONT_HEIGHT: u32 = 6;
-const FONT_ROW_COUNT: u32 = 48;
 const FONT_COLOR: Color = COLOR_WHITE;
 const FONT_DATA: [u32; 96] = [
     0x000000, 0x444040, 0xAA0000, 0xAEAEA0, 0x6C6C40, 0x824820, 0x4A4AC0, 0x440000, 0x244420,
@@ -125,11 +117,11 @@ pub const OSCILLATOR_RESOLUTION: u32 = 32;
 pub const VIBRATO_DEPTH: f64 = 0.025;
 pub const VIBRATO_FREQUENCY: f64 = 6.0;
 
-pub const MAX_SOUND_VOLUME: u32 = 7;
-pub const DEFAULT_SOUND_SPEED: u32 = 30;
+pub const MAX_SOUND_VOLUME: Volume = 7;
+pub const DEFAULT_SOUND_SPEED: Speed = 30;
 
 pub const CHANNEL_COUNT: u32 = 4;
-pub const SOUND_COUNT: u32 = 65;
+pub const SOUND_COUNT: u32 = 64;
 pub const MUSIC_COUNT: u32 = 8;
 
 pub const MASTER_VOLUME_FACTOR: f64 = 1.0 / CHANNEL_COUNT as f64;
