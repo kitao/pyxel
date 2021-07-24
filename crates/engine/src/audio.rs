@@ -3,19 +3,16 @@ use std::sync::{Arc, Mutex};
 use blip_buf::BlipBuf;
 
 use crate::channel::Channel;
-use crate::music::Music;
-use crate::platform::{AudioCallback, Platform};
+use crate::platform::AudioCallback;
 use crate::settings::{
-    CHANNEL_COUNT, CLOCK_RATE, MUSIC_COUNT, SAMPLE_COUNT, SAMPLE_RATE, SOUND_COUNT,
-    TICK_CLOCK_COUNT,
+    CHANNEL_COUNT, CLOCK_RATE, MUSIC_COUNT, SAMPLE_COUNT, SAMPLE_RATE, TICK_CLOCK_COUNT,
 };
 use crate::sound::Sound;
+use crate::Pyxel;
 
 pub struct Audio {
     blip_buf: BlipBuf,
     channels: Vec<Channel>,
-    sounds: Vec<Sound>,
-    musics: Vec<Music>,
 }
 
 impl AudioCallback for Audio {
@@ -35,78 +32,55 @@ impl AudioCallback for Audio {
 }
 
 impl Audio {
-    pub fn new<T: Platform>(platform: &mut T) -> Arc<Mutex<Audio>> {
+    pub fn new() -> Arc<Mutex<Audio>> {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 
         let channels = (0..CHANNEL_COUNT).map(|_| Channel::new()).collect();
-        let sounds = (0..SOUND_COUNT).map(|_| Sound::new()).collect();
-        let musics = (0..MUSIC_COUNT).map(|_| Music::new()).collect();
 
-        let audio = Arc::new(Mutex::new(Audio {
+        Arc::new(Mutex::new(Audio {
             blip_buf: blip_buf,
             channels: channels,
-            sounds: sounds,
-            musics: musics,
-        }));
+        }))
+    }
+}
 
-        platform.start_audio(SAMPLE_RATE, SAMPLE_COUNT, audio.clone());
-
-        audio
+impl Pyxel {
+    pub fn playing(&self, ch: u32) -> bool {
+        self.audio.lock().unwrap().channels[ch as usize].is_playing()
     }
 
-    pub fn sound(&mut self, sound_no: u32) -> &Sound {
-        &self.sounds[sound_no as usize]
+    pub fn looping(&self, ch: u32) -> bool {
+        self.audio.lock().unwrap().channels[ch as usize].is_looping()
     }
 
-    pub fn sound_mut(&mut self, sound_no: u32) -> &mut Sound {
-        &mut self.sounds[sound_no as usize]
+    pub fn play_pos(&self, ch: u32) -> (u32, u32) {
+        let channel = &self.audio.lock().unwrap().channels[ch as usize];
+        (channel.sound_index(), channel.note_index())
     }
 
-    pub fn music(&mut self, music_no: u32) -> &Music {
-        &self.musics[music_no as usize]
-    }
+    pub fn play(&mut self, ch: u32, seq: &[u32], looping: bool) {
+        let mut sound_list: Vec<Sound> = Vec::new();
 
-    pub fn music_mut(&mut self, music_no: u32) -> &mut Music {
-        &mut self.musics[music_no as usize]
-    }
-
-    pub fn play_pos(&self, channel_no: u32) -> Option<(u32, u32)> {
-        let channel = &self.channels[channel_no as usize];
-
-        if channel.is_playing() {
-            Some((channel.sound_index(), channel.note_index()))
-        } else {
-            None
-        }
-    }
-
-    pub fn play_sound(&mut self, channel_no: u32, sound_no: u32, is_looping: bool) {
-        self.play_sounds(channel_no, &[sound_no], is_looping);
-    }
-
-    pub fn play_sounds(&mut self, channel_no: u32, sound_nos: &[u32], is_looping: bool) {
-        let mut sounds: Vec<Sound> = Vec::new();
-
-        for sound_no in sound_nos {
-            sounds.push(self.sounds[*sound_no as usize].clone());
+        for snd in seq {
+            sound_list.push(self.sound[*snd as usize].clone());
         }
 
-        self.channels[channel_no as usize].play(sounds, is_looping);
+        self.audio.lock().unwrap().channels[ch as usize].play(sound_list, looping);
     }
 
-    pub fn play_music(&mut self, music_no: u32, is_looping: bool) {
+    pub fn playm(&mut self, msc: u32, looping: bool) {
         for i in 0..MUSIC_COUNT {
-            let sequence = self.musics[music_no as usize].sequence(i).clone();
-            self.play_sounds(i, &sequence, is_looping);
+            let seq = self.music[msc as usize].seq[i as usize].clone();
+            self.play(i, &seq, looping);
         }
     }
 
-    pub fn stop(&mut self, channel_no: u32) {
-        self.channels[channel_no as usize].stop();
+    pub fn stop(&mut self, ch: u32) {
+        self.audio.lock().unwrap().channels[ch as usize].stop();
     }
 
-    pub fn stop_all(&mut self) {
+    pub fn stop_(&mut self) {
         for i in 0..CHANNEL_COUNT {
             self.stop(i);
         }
