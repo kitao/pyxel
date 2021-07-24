@@ -2,40 +2,54 @@ use std::collections::HashMap;
 use std::path::Path;
 
 use crate::canvas::Canvas;
-use crate::graphics::Graphics;
-use crate::palette::{Color, Palette};
 use crate::rectarea::RectArea;
-use crate::settings::MAX_COLOR_COUNT;
+use crate::settings::COLOR_COUNT;
 use crate::tilemap::{Tile, Tilemap};
+use crate::types::{Color, Rgb8};
 use crate::utility::{parse_hex_string, simplify_string};
+use crate::Pyxel;
 
 pub struct Image {
     width: u32,
     height: u32,
-    palette: Palette,
     data: Vec<Vec<Color>>,
+    palette: [Color; COLOR_COUNT as usize],
     self_rect: RectArea,
     clip_rect: RectArea,
 }
 
 impl Image {
     pub fn new(width: u32, height: u32) -> Image {
-        Image {
+        let mut image = Image {
             width: width,
             height: height,
-            palette: Palette::new(),
             data: vec![vec![0; width as usize]; height as usize],
+            palette: [0; COLOR_COUNT as usize],
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
+        };
+
+        image.pal_();
+
+        image
+    }
+
+    pub fn width(&self) -> u32 {
+        self.width
+    }
+
+    pub fn height(&self) -> u32 {
+        self.height
+    }
+
+    pub fn pal(&mut self, col1: Color, col2: Color) {
+        self.palette[col1 as usize] = col2;
+    }
+
+    pub fn pal_(&mut self) {
+        for i in 0..COLOR_COUNT {
+            self.palette[i as usize] = i as Color;
         }
-    }
-
-    pub fn palette(&self) -> &Palette {
-        &self.palette
-    }
-
-    pub fn palette_mut(&mut self) -> &mut Palette {
-        &mut self.palette
     }
 
     pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
@@ -46,24 +60,25 @@ impl Image {
             return;
         }
 
-        let mut image = Image::new(width, height);
+        let mut tmp_image = Image::new(width, height);
+        let tmp_data = tmp_image.data_mut();
 
         for i in 0..height {
             let data = simplify_string(data[i as usize]);
 
             for j in 0..width {
                 if let Some(value) = parse_hex_string(&data[j as usize..j as usize + 1]) {
-                    image.data[i as usize][j as usize] = value as Color;
+                    tmp_data[i as usize][j as usize] = value as Color;
                 } else {
                     panic!("invalid image data");
                 }
             }
         }
 
-        self.copy(x, y, &image, 0, 0, width as i32, height as i32, None);
+        self.blt(x, y, &tmp_image, 0, 0, width as i32, height as i32, None);
     }
 
-    pub fn draw_tilemap(
+    pub fn bltm(
         &mut self,
         x: i32,
         y: i32,
@@ -77,17 +92,16 @@ impl Image {
         //
     }
 
-    pub fn draw_text(&mut self, graphics: &Graphics, x: i32, y: i32, text: &str, color: Color) {
+    pub fn text(&mut self, pyxel: &Pyxel, x: i32, y: i32, text: &str, color: Color) {
         //
     }
 
-    pub fn load_image(&mut self, x: i32, y: i32, filename: &str) {
+    pub fn load(&mut self, x: i32, y: i32, filename: &str, color: &[Rgb8]) {
         let src_image = image::open(&Path::new(&filename)).unwrap().to_rgb8();
         let (width, height) = src_image.dimensions();
         let mut dst_image = Image::new(width, height);
-        let dst_data = dst_image.data_mut();
+        let dst_data = &mut dst_image.data;
         let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
-        let max_used_color = Image::max_used_color(&self.palette);
 
         for i in 0..height {
             for j in 0..width {
@@ -100,8 +114,8 @@ impl Image {
                     let mut closest_color: Color = 0;
                     let mut closest_dist: f64 = f64::MAX;
 
-                    for k in 0..=max_used_color {
-                        let pal_color = self.palette.display_color(k);
+                    for k in 0..=COLOR_COUNT {
+                        let pal_color = color[k as usize];
                         let pal_rgb = (
                             ((pal_color >> 16) & 0xff) as u8,
                             ((pal_color >> 8) & 0xff) as u8,
@@ -110,7 +124,7 @@ impl Image {
                         let dist = Image::color_dist(src_rgb, pal_rgb);
 
                         if dist < closest_dist {
-                            closest_color = k;
+                            closest_color = k as Color;
                             closest_dist = dist;
                         }
                     }
@@ -121,31 +135,11 @@ impl Image {
             }
         }
 
-        self.copy(x, y, &dst_image, 0, 0, width as i32, height as i32, None);
+        self.blt(x, y, &dst_image, 0, 0, width as i32, height as i32, None);
     }
 
-    pub fn save_image(&self, filename: &str, scale: u32) {
+    pub fn save(&self, filename: &str, scale: u32) {
         //
-    }
-
-    fn max_used_color(palette: &Palette) -> Color {
-        let mut max_used_color: Color = Color::MAX;
-
-        'outer_loop: for i in (1..MAX_COLOR_COUNT).rev() {
-            max_used_color = i as Color;
-
-            let color = palette.display_color(i as Color);
-
-            for j in (0..i).rev() {
-                if palette.display_color(j as Color) == color {
-                    continue 'outer_loop;
-                }
-            }
-
-            break;
-        }
-
-        max_used_color
     }
 
     fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
@@ -189,7 +183,7 @@ impl Canvas<Color> for Image {
         &mut self.clip_rect
     }
 
-    fn _render_value(&self, original_value: Color) -> Color {
-        self.palette.render_color(original_value)
+    fn _palette_value(&self, val: Color) -> Color {
+        self.palette[val as usize]
     }
 }
