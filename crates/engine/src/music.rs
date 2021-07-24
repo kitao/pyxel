@@ -2,41 +2,21 @@ use crate::settings::CHANNEL_COUNT;
 
 #[derive(Clone)]
 pub struct Music {
-    sequences: [Vec<u32>; CHANNEL_COUNT as usize],
+    pub seq: [Vec<u32>; CHANNEL_COUNT as usize],
 }
 
 impl Music {
     pub fn new() -> Music {
         Music {
-            sequences: Default::default(),
+            seq: Default::default(),
         }
     }
 
-    pub fn set(
-        &mut self,
-        sequence0: &[u32],
-        sequence1: &[u32],
-        sequence2: &[u32],
-        sequence3: &[u32],
-    ) {
-        self.set_sequence(0, sequence0);
-        self.set_sequence(1, sequence1);
-        self.set_sequence(2, sequence2);
-        self.set_sequence(3, sequence3);
-    }
-
-    pub fn sequence(&self, channel: u32) -> &Vec<u32> {
-        &self.sequences[channel as usize]
-    }
-
-    pub fn set_sequence(&mut self, channel: u32, sounds: &[u32]) {
-        let sequence = &mut self.sequences[channel as usize];
-
-        sequence.clear();
-
-        for sound in sounds {
-            sequence.push(*sound);
-        }
+    pub fn set(&mut self, seq0: &[u32], seq1: &[u32], seq2: &[u32], seq3: &[u32]) {
+        self.seq[0] = seq0.to_vec();
+        self.seq[1] = seq1.to_vec();
+        self.seq[2] = seq2.to_vec();
+        self.seq[3] = seq3.to_vec();
     }
 }
 
@@ -49,7 +29,7 @@ mod tests {
         let music = Music::new();
 
         for i in 0..CHANNEL_COUNT {
-            assert_eq!(music.sequence(i).len(), 0);
+            assert_eq!(music.seq[i as usize].len(), 0);
         }
     }
 
@@ -60,17 +40,7 @@ mod tests {
         music.set(&[0, 1, 2], &[1, 2, 3], &[2, 3, 4], &[3, 4, 5]);
 
         for i in 0..CHANNEL_COUNT {
-            assert_eq!(music.sequence(i), &vec![i, i + 1, i + 2]);
-        }
-    }
-
-    #[test]
-    fn set_sequence() {
-        let mut music = Music::new();
-
-        for i in 0..CHANNEL_COUNT {
-            music.set_sequence(i, &[0, 1, 2, 3]);
-            assert_eq!(music.sequence(0), &vec![0, 1, 2, 3]);
+            assert_eq!(&music.seq[i as usize], &vec![i, i + 1, i + 2]);
         }
     }
 }
