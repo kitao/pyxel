@@ -5,25 +5,10 @@ use crate::settings::{
     PULSE_VOLUME_FACTOR, SQUARE_VOLUME_FACTOR, TICK_CLOCK_COUNT, TRIANGLE_VOLUME_FACTOR,
     VIBRATO_DEPTH, VIBRATO_FREQUENCY,
 };
+use crate::types::{Effect, Tone};
 
 const VIBRATO_PERIOD: u32 =
     (CLOCK_RATE as f64 / VIBRATO_FREQUENCY / OSCILLATOR_RESOLUTION as f64) as u32;
-
-#[derive(Copy, Clone, PartialEq, Debug)]
-pub enum Tone {
-    Triangle,
-    Square,
-    Pulse,
-    Noise,
-}
-
-#[derive(Copy, Clone, PartialEq, Debug)]
-pub enum Effect {
-    None,
-    Slide,
-    Vibrato,
-    FadeOut,
-}
 
 struct Slide {
     pitch: f64,
