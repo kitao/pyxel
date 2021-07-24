@@ -1,8 +1,11 @@
+use std::cmp::min;
+
 use blip_buf::BlipBuf;
 
 use crate::oscillator::Oscillator;
 use crate::settings::MAX_SOUND_VOLUME;
 use crate::sound::Sound;
+use crate::types::{Effect, Note, Tone, Volume};
 
 pub struct Channel {
     oscillator: Oscillator,
@@ -34,8 +37,8 @@ impl Channel {
 
         let sound = &self.sounds[self.sound_index as usize];
 
-        if self.tick_count % sound.speed() as u32 == 0 {
-            if self.note_index >= sound.notes().len() as u32 {
+        if self.tick_count % sound.speed as u32 == 0 {
+            if self.note_index >= sound.note.len() as u32 {
                 self.sound_index += 1;
                 self.note_index = 0;
 
@@ -50,16 +53,16 @@ impl Channel {
             }
 
             let sound = &self.sounds[self.sound_index as usize];
-            let note = sound.note(self.note_index);
-            let volume = sound.volume(self.note_index);
+            let note = Channel::note(&sound.note, self.note_index);
+            let volume = Channel::volume(&sound.volume, self.note_index);
 
             if note >= 0 && volume > 0 {
                 self.oscillator.play(
                     note as f64,
-                    sound.tone(self.note_index),
+                    Channel::tone(&sound.tone, self.note_index),
                     volume as f64 / MAX_SOUND_VOLUME as f64,
-                    sound.effect(self.note_index),
-                    sound.speed() as u32,
+                    Channel::effect(&sound.effect, self.note_index),
+                    sound.speed as u32,
                 );
             }
 
@@ -102,5 +105,45 @@ impl Channel {
         self.note_index = 0;
 
         self.oscillator.stop();
+    }
+
+    fn note(note: &[Note], index: u32) -> Note {
+        let len = note.len();
+
+        if len > 0 {
+            note[index as usize % len]
+        } else {
+            0
+        }
+    }
+
+    fn tone(tone: &[Tone], index: u32) -> Tone {
+        let len = tone.len();
+
+        if len > 0 {
+            tone[index as usize % len]
+        } else {
+            Tone::Triangle
+        }
+    }
+
+    fn volume(volume: &[Volume], index: u32) -> Volume {
+        let len = volume.len();
+
+        if len > 0 {
+            min(volume[index as usize % len], MAX_SOUND_VOLUME)
+        } else {
+            MAX_SOUND_VOLUME
+        }
+    }
+
+    fn effect(effect: &[Effect], index: u32) -> Effect {
+        let len = effect.len();
+
+        if len > 0 {
+            effect[index as usize % len]
+        } else {
+            Effect::None
+        }
     }
 }
