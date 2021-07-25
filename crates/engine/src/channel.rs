@@ -50,15 +50,15 @@ impl Channel {
             }
 
             let sound = &self.sounds[self.sound_index as usize];
-            let note = Channel::note(&sound.note, self.note_index);
-            let volume = Channel::volume(&sound.volume, self.note_index);
+            let note = Channel::circular_note(&sound.note, self.note_index);
+            let volume = Channel::circular_volume(&sound.volume, self.note_index);
 
             if note >= 0 && volume > Volume::Level0 {
                 self.oscillator.play(
                     note as f64,
-                    Channel::tone(&sound.tone, self.note_index),
+                    Channel::circular_tone(&sound.tone, self.note_index),
                     volume as u32 as f64 / Volume::Level7 as u32 as f64,
-                    Channel::effect(&sound.effect, self.note_index),
+                    Channel::circular_effect(&sound.effect, self.note_index),
                     sound.speed as u32,
                 );
             }
@@ -104,7 +104,7 @@ impl Channel {
         self.oscillator.stop();
     }
 
-    fn note(note: &[Note], index: u32) -> Note {
+    fn circular_note(note: &[Note], index: u32) -> Note {
         let len = note.len();
 
         if len > 0 {
@@ -114,7 +114,7 @@ impl Channel {
         }
     }
 
-    fn tone(tone: &[Tone], index: u32) -> Tone {
+    fn circular_tone(tone: &[Tone], index: u32) -> Tone {
         let len = tone.len();
 
         if len > 0 {
@@ -124,7 +124,7 @@ impl Channel {
         }
     }
 
-    fn volume(volume: &[Volume], index: u32) -> Volume {
+    fn circular_volume(volume: &[Volume], index: u32) -> Volume {
         let len = volume.len();
 
         if len > 0 {
@@ -134,7 +134,7 @@ impl Channel {
         }
     }
 
-    fn effect(effect: &[Effect], index: u32) -> Effect {
+    fn circular_effect(effect: &[Effect], index: u32) -> Effect {
         let len = effect.len();
 
         if len > 0 {
