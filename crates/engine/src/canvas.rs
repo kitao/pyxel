@@ -44,9 +44,8 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
     }
 
     fn pset(&mut self, x: i32, y: i32, val: T) {
-        let data: *mut Vec<Vec<T>> = self.data_mut();
-
         unsafe {
+            let data: *mut Vec<Vec<T>> = self.data_mut();
             set_data_value_with_check(&mut *data, self._self_rect(), x, y, val);
         }
     }
@@ -132,11 +131,12 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         }
 
         let val = self._palette_value(val);
+        let data = self.data_mut();
+
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
-        let data = self.data_mut();
 
         for i in top..=bottom {
             for j in left..=right {
@@ -180,6 +180,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         let val = self._palette_value(val);
         let rect = self._self_rect();
         let data = self.data_mut();
+
         let sq_radius = radius * radius;
 
         for dx in 0..=radius as i32 {
@@ -207,6 +208,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         let val = self._palette_value(val);
         let rect = self._self_rect();
         let data = self.data_mut();
+
         let sq_radius = radius * radius;
 
         for dx in 0..=radius as i32 {
@@ -313,51 +315,59 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
     }
 
     fn fill(&mut self, x: i32, y: i32, val: T) {
-        let val = self._palette_value(val);
+        if self._self_rect().contains(x, y) {
+            let render_val = self._palette_value(val);
+            let target_val = data_value(self.data(), x, y);
 
-        self._fill_rec(x, y, val);
-
-        /*
-        _col = col if type(col) is int else OverlayCanvas.COLOR_MARK
-
-        self._fill_recursively(x, y, _col, dst)
-
-        if type(col) is not int:
-            self._replace_with_tiles(dst, x, y, col)
-        */
+            if render_val != target_val {
+                self._fill_rec(x, y, self._self_rect(), render_val, target_val);
+            }
+        }
     }
 
-    fn _fill_rec(&mut self, x: i32, y: i32, val: T) {
-        /*
-        dst_col = dst[y][x]
+    fn _fill_rec(&mut self, x: i32, y: i32, rect: RectArea, render_val: T, target_val: T) {
+        let data: *mut Vec<Vec<T>> = self.data_mut();
 
-        if dst_col == col:
-            return
+        let left = rect.left();
+        let top = rect.top();
+        let right = rect.right();
+        let bottom = rect.bottom();
 
-        for i in range(x, -1, -1):
-            if dst[y][i] != dst_col:
-                break
+        for i in (x..=left).rev() {
+            unsafe {
+                if data_value(&*data, i, y) != target_val {
+                    break;
+                }
 
-            dst[y][i] = col
+                set_data_value(&mut *data, i, y, render_val);
 
-            if y > 0 and dst[y - 1][i] == dst_col:
-                self._fill_recursively(i, y - 1, col, dst)
+                if y > top && data_value(&mut *data, i, y - 1) == target_val {
+                    self._fill_rec(i, y - 1, rect, render_val, target_val);
+                }
 
-            if y < 15 and dst[y + 1][i] == dst_col:
-                self._fill_recursively(i, y + 1, col, dst)
+                if y > bottom && data_value(&mut *data, i, y + 1) == target_val {
+                    self._fill_rec(i, y - 1, rect, render_val, target_val);
+                }
+            }
+        }
 
-        for i in range(x + 1, 16):
-            if dst[y][i] != dst_col:
-                return
+        for i in x + 1..=right {
+            unsafe {
+                if data_value(&*data, i, y) != target_val {
+                    break;
+                }
 
-            dst[y][i] = col
+                set_data_value(&mut *data, i, y, render_val);
 
-            if y > 0 and dst[y - 1][i] == dst_col:
-                self._fill_recursively(i, y - 1, col, dst)
+                if y > top && data_value(&mut *data, i, y - 1) == target_val {
+                    self._fill_rec(i, y - 1, rect, render_val, target_val);
+                }
 
-            if y < 15 and dst[y + 1][i] == dst_col:
-                self._fill_recursively(i, y + 1, col, dst)
-        */
+                if y > bottom && data_value(&mut *data, i, y + 1) == target_val {
+                    self._fill_rec(i, y - 1, rect, render_val, target_val);
+                }
+            }
+        }
     }
 
     fn blt(
@@ -455,7 +465,10 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
                         u + sign_x * j + offset_x,
                         v + sign_y * i + offset_y,
                     );
-                    self.data_mut()[(y + i) as usize][(x + j) as usize] = self._palette_value(val);
+
+                    unsafe {
+                        set_data_value(&mut *dst_data, x + j, y + i, self._palette_value(val));
+                    }
                 }
             }
         }
