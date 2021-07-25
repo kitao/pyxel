@@ -6,7 +6,7 @@ use crate::rectarea::RectArea;
 use crate::settings::COLOR_COUNT;
 use crate::tilemap::{Tile, Tilemap};
 use crate::types::{Color, Rgb8};
-use crate::utility::{parse_hex_string, simplify_string};
+use crate::utility::{parse_hex_string, set_data_value, simplify_string};
 use crate::Pyxel;
 
 pub struct Image {
@@ -52,30 +52,30 @@ impl Image {
         }
     }
 
-    pub fn set(&mut self, x: i32, y: i32, data: &[&str]) {
-        let width = data[0].len() as u32;
-        let height = data.len() as u32;
+    pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
+        let width = data_str[0].len() as u32;
+        let height = data_str.len() as u32;
 
         if width == 0 || height == 0 {
             return;
         }
 
-        let mut tmp_image = Image::new(width, height);
-        let tmp_data = tmp_image.data_mut();
+        let mut dst_image = Image::new(width, height);
+        let dst_data = dst_image.data_mut();
 
         for i in 0..height {
-            let data = simplify_string(data[i as usize]);
+            let src_data = simplify_string(data_str[i as usize]);
 
             for j in 0..width {
-                if let Some(value) = parse_hex_string(&data[j as usize..j as usize + 1]) {
-                    tmp_data[i as usize][j as usize] = value as Color;
+                if let Some(value) = parse_hex_string(&src_data[j as usize..j as usize + 1]) {
+                    set_data_value(dst_data, j as i32, i as i32, value as Color);
                 } else {
                     panic!("invalid image data");
                 }
             }
         }
 
-        self.blt(x, y, &tmp_image, 0, 0, width as i32, height as i32, None);
+        self.blt(x, y, &dst_image, 0, 0, width as i32, height as i32, None);
     }
 
     pub fn bltm(
@@ -109,7 +109,7 @@ impl Image {
                 let src_rgb = (p[0], p[1], p[2]);
 
                 if let Some(color) = color_table.get(&src_rgb) {
-                    dst_data[i as usize][j as usize] = *color;
+                    set_data_value(dst_data, j as i32, i as i32, *color);
                 } else {
                     let mut closest_color: Color = 0;
                     let mut closest_dist: f64 = f64::MAX;
@@ -130,7 +130,7 @@ impl Image {
                     }
 
                     color_table.insert(src_rgb, closest_color);
-                    dst_data[i as usize][j as usize] = closest_color;
+                    set_data_value(dst_data, j as i32, i as i32, closest_color);
                 }
             }
         }
