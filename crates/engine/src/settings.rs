@@ -1,5 +1,5 @@
-use crate::key::KEY_ESCAPE;
-use crate::types::{Color, Key, Rgb8, Speed, Volume};
+use crate::key::*;
+use crate::types::*;
 
 //
 // System
@@ -117,9 +117,6 @@ pub const OSCILLATOR_RESOLUTION: u32 = 32;
 pub const VIBRATO_DEPTH: f64 = 0.025;
 pub const VIBRATO_FREQUENCY: f64 = 6.0;
 
-pub const MAX_SOUND_VOLUME: Volume = 7;
-pub const DEFAULT_SOUND_SPEED: Speed = 30;
-
 pub const CHANNEL_COUNT: u32 = 4;
 pub const SOUND_COUNT: u32 = 64;
 pub const MUSIC_COUNT: u32 = 8;
@@ -129,3 +126,5 @@ pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0;
 pub const SQUARE_VOLUME_FACTOR: f64 = 0.3;
 pub const PULSE_VOLUME_FACTOR: f64 = 0.3;
 pub const NOISE_VOLUME_FACTOR: f64 = 0.6;
+
+pub const DEFAULT_SOUND_SPEED: Speed = 30;
