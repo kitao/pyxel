@@ -32,16 +32,16 @@ impl AudioCallback for Audio {
 }
 
 impl Audio {
-    pub fn new() -> Arc<Mutex<Audio>> {
+    pub fn new() -> Audio {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 
         let channels = (0..CHANNEL_COUNT).map(|_| Channel::new()).collect();
 
-        Arc::new(Mutex::new(Audio {
+        Audio {
             blip_buf: blip_buf,
             channels: channels,
-        }))
+        }
     }
 }
 
