@@ -58,17 +58,17 @@ impl Pyxel {
     pub fn play(&mut self, ch: u32, seq: &[u32], looping: bool) {
         let sounds = seq
             .iter()
-            .map(|snd| self.sound[*snd as usize].clone())
+            .map(|snd| self.sounds[*snd as usize].clone())
             .collect();
 
         self.audio.lock().unwrap().channels[ch as usize].play(sounds, looping);
     }
 
-    pub fn playm(&mut self, msc: u32, looping: bool) {
+    pub fn playm(&mut self, msc: u32, loop_: bool) {
         for i in 0..MUSIC_COUNT {
             unsafe {
-                let seq: *const Vec<u32> = &self.music[msc as usize].seq[i as usize];
-                self.play(i, &*seq, looping);
+                let seq: *const Vec<u32> = &self.musics[msc as usize].seq[i as usize];
+                self.play(i, &*seq, loop_);
             }
         }
     }
