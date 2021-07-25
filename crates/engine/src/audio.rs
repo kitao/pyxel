@@ -1,5 +1,3 @@
-use std::sync::{Arc, Mutex};
-
 use blip_buf::BlipBuf;
 
 use crate::channel::Channel;
@@ -7,7 +5,6 @@ use crate::platform::AudioCallback;
 use crate::settings::{
     CHANNEL_COUNT, CLOCK_RATE, MUSIC_COUNT, SAMPLE_COUNT, SAMPLE_RATE, TICK_CLOCK_COUNT,
 };
-use crate::sound::Sound;
 use crate::Pyxel;
 
 pub struct Audio {
@@ -25,7 +22,6 @@ impl AudioCallback for Audio {
             }
 
             self.blip_buf.end_frame(TICK_CLOCK_COUNT);
-
             samples += self.blip_buf.read_samples(&mut out[samples..], false);
         }
     }
@@ -46,11 +42,11 @@ impl Audio {
 }
 
 impl Pyxel {
-    pub fn playing(&self, ch: u32) -> bool {
+    pub fn is_playing(&self, ch: u32) -> bool {
         self.audio.lock().unwrap().channels[ch as usize].is_playing()
     }
 
-    pub fn looping(&self, ch: u32) -> bool {
+    pub fn is_looping(&self, ch: u32) -> bool {
         self.audio.lock().unwrap().channels[ch as usize].is_looping()
     }
 
@@ -60,19 +56,20 @@ impl Pyxel {
     }
 
     pub fn play(&mut self, ch: u32, seq: &[u32], looping: bool) {
-        let mut sound_list: Vec<Sound> = Vec::new();
+        let sounds = seq
+            .iter()
+            .map(|snd| self.sound[*snd as usize].clone())
+            .collect();
 
-        for snd in seq {
-            sound_list.push(self.sound[*snd as usize].clone());
-        }
-
-        self.audio.lock().unwrap().channels[ch as usize].play(sound_list, looping);
+        self.audio.lock().unwrap().channels[ch as usize].play(sounds, looping);
     }
 
     pub fn playm(&mut self, msc: u32, looping: bool) {
         for i in 0..MUSIC_COUNT {
-            let seq = self.music[msc as usize].seq[i as usize].clone();
-            self.play(i, &seq, looping);
+            unsafe {
+                let seq: *const Vec<u32> = &self.music[msc as usize].seq[i as usize];
+                self.play(i, &*seq, looping);
+            }
         }
     }
 
