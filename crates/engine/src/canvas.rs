@@ -2,6 +2,9 @@ use std::cmp::max;
 use std::mem::swap;
 
 use crate::rectarea::RectArea;
+use crate::utility::{
+    data_value, data_value_with_check, set_data_value, set_data_value_with_check,
+};
 
 pub trait Canvas<T: Copy + PartialEq + Default> {
     fn width(&self) -> u32;
@@ -456,40 +459,5 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
                 }
             }
         }
-    }
-}
-
-fn data_value<T: Copy>(data: &Vec<Vec<T>>, x: i32, y: i32) -> T {
-    data[y as usize][x as usize]
-}
-
-fn data_value_with_check<T: Copy + Default>(
-    data: &Vec<Vec<T>>,
-    rect: RectArea,
-    x: i32,
-    y: i32,
-) -> T {
-    if rect.contains(x, y) {
-        data[y as usize][x as usize]
-    } else {
-        T::default()
-    }
-}
-
-#[inline]
-fn set_data_value<T: Copy>(data: &mut Vec<Vec<T>>, x: i32, y: i32, val: T) {
-    data[y as usize][x as usize] = val;
-}
-
-#[inline]
-fn set_data_value_with_check<T: Copy>(
-    data: &mut Vec<Vec<T>>,
-    rect: RectArea,
-    x: i32,
-    y: i32,
-    val: T,
-) {
-    if rect.contains(x, y) {
-        data[y as usize][x as usize] = val;
     }
 }
