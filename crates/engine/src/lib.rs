@@ -34,10 +34,10 @@ use crate::sdl2::Sdl2;
 use crate::sound::Sound;
 use crate::system::System;
 use crate::tilemap::Tilemap;
-use crate::types::{Key, Rgb8};
 
 pub use crate::key::*;
 pub use crate::settings::*;
+pub use crate::types::*;
 
 pub type Target = Sdl2;
 
