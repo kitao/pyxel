@@ -10,9 +10,10 @@ use crate::utility::{parse_hex_string, set_data_value, simplify_string};
 use crate::Pyxel;
 
 pub struct Image {
-    width: u32,
-    height: u32,
-    data: Vec<Vec<Color>>,
+    pub width: u32,
+    pub height: u32,
+    pub data: Vec<Vec<Color>>,
+
     palette: [Color; COLOR_COUNT as usize],
     self_rect: RectArea,
     clip_rect: RectArea,
@@ -61,7 +62,7 @@ impl Image {
         }
 
         let mut dst_image = Image::new(width, height);
-        let dst_data = dst_image.data_mut();
+        let dst_data = &mut dst_image.data;
 
         for i in 0..height {
             let src_data = simplify_string(data_str[i as usize]);
@@ -155,34 +156,42 @@ impl Image {
 }
 
 impl Canvas<Color> for Image {
-    fn width(&self) -> u32 {
+    #[inline]
+    fn _width(&self) -> u32 {
         self.width
     }
 
-    fn height(&self) -> u32 {
+    #[inline]
+    fn _height(&self) -> u32 {
         self.height
     }
 
-    fn data<'a>(&'a self) -> &'a Vec<Vec<Color>> {
+    #[inline]
+    fn _data<'a>(&'a self) -> &'a Vec<Vec<Color>> {
         &self.data
     }
 
-    fn data_mut<'a>(&'a mut self) -> &'a mut Vec<Vec<Color>> {
+    #[inline]
+    fn _data_mut<'a>(&'a mut self) -> &'a mut Vec<Vec<Color>> {
         &mut self.data
     }
 
+    #[inline]
     fn _self_rect(&self) -> RectArea {
         self.self_rect
     }
 
+    #[inline]
     fn _clip_rect(&self) -> RectArea {
         self.clip_rect
     }
 
+    #[inline]
     fn _clip_rect_mut(&mut self) -> &mut RectArea {
         &mut self.clip_rect
     }
 
+    #[inline]
     fn _palette_value(&self, val: Color) -> Color {
         self.palette[val as usize]
     }
