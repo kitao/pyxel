@@ -1,9 +1,6 @@
-use std::cmp::min;
-
 use blip_buf::BlipBuf;
 
 use crate::oscillator::Oscillator;
-use crate::settings::MAX_SOUND_VOLUME;
 use crate::sound::Sound;
 use crate::types::{Effect, Note, Tone, Volume};
 
@@ -56,11 +53,11 @@ impl Channel {
             let note = Channel::note(&sound.note, self.note_index);
             let volume = Channel::volume(&sound.volume, self.note_index);
 
-            if note >= 0 && volume > 0 {
+            if note >= 0 && volume > Volume::Level0 {
                 self.oscillator.play(
                     note as f64,
                     Channel::tone(&sound.tone, self.note_index),
-                    volume as f64 / MAX_SOUND_VOLUME as f64,
+                    volume as u32 as f64 / Volume::Level7 as u32 as f64,
                     Channel::effect(&sound.effect, self.note_index),
                     sound.speed as u32,
                 );
@@ -131,9 +128,9 @@ impl Channel {
         let len = volume.len();
 
         if len > 0 {
-            min(volume[index as usize % len], MAX_SOUND_VOLUME)
+            volume[index as usize % len]
         } else {
-            MAX_SOUND_VOLUME
+            Volume::Level7
         }
     }
 
