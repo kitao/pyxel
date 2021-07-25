@@ -108,11 +108,19 @@ impl Sound {
         self.volume.clear();
 
         while let Some(c) = chars.next() {
-            if c >= '0' && c <= '7' {
-                self.volume.push(c as Volume - '0' as Volume);
-            } else {
-                panic!("invalid sound volume '{}'", c);
-            }
+            let volume = match c {
+                '0' => Volume::Level0,
+                '1' => Volume::Level1,
+                '2' => Volume::Level2,
+                '3' => Volume::Level3,
+                '4' => Volume::Level4,
+                '5' => Volume::Level5,
+                '6' => Volume::Level6,
+                '7' => Volume::Level7,
+                _ => panic!("invalid sound volume '{}'", c),
+            };
+
+            self.volume.push(volume);
         }
     }
 
@@ -160,7 +168,15 @@ mod tests {
             &sound.tone,
             &vec![Tone::Triangle, Tone::Square, Tone::Pulse, Tone::Noise]
         );
-        assert_eq!(&sound.volume, &vec![0, 1, 2, 3]);
+        assert_eq!(
+            &sound.volume,
+            &vec![
+                Volume::Level0,
+                Volume::Level1,
+                Volume::Level2,
+                Volume::Level3,
+            ]
+        );
         assert_eq!(
             &sound.effect,
             &vec![
@@ -197,7 +213,19 @@ mod tests {
         let mut sound = Sound::new();
 
         sound.set_volume(" 0 1 2 3 4 5 6 7 ");
-        assert_eq!(&sound.volume, &vec![0, 1, 2, 3, 4, 5, 6, 7]);
+        assert_eq!(
+            &sound.volume,
+            &vec![
+                Volume::Level0,
+                Volume::Level1,
+                Volume::Level2,
+                Volume::Level3,
+                Volume::Level4,
+                Volume::Level5,
+                Volume::Level6,
+                Volume::Level7,
+            ]
+        );
     }
 
     #[test]
