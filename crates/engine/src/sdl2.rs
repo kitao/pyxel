@@ -91,7 +91,7 @@ impl Platform for Sdl2 {
         self.sdl_canvas.window_mut().set_title(title).unwrap();
     }
 
-    fn set_icon(&mut self, icon: &Image, color: &[Rgb8], scale: u32) {
+    fn set_icon(&mut self, icon: &Image, colors: &[Rgb8], scale: u32) {
         /*
             SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
                 0, ICON_WIDTH * ICON_SCALE, ICON_HEIGHT * ICON_SCALE, 32,
@@ -295,10 +295,10 @@ impl Platform for Sdl2 {
         }
     }
 
-    fn render_screen(&mut self, screen: &Image, color: &[Rgb8], bg_color: Rgb8) {
-        let width = screen.width();
-        let height = screen.height();
-        let data = screen.data();
+    fn render_screen(&mut self, screen: &Image, colors: &[Rgb8], bg_color: Rgb8) {
+        let width = screen.width;
+        let height = screen.height;
+        let data = &screen.data;
 
         assert!(self.screen_width == width && self.screen_height == height);
 
@@ -307,7 +307,7 @@ impl Platform for Sdl2 {
                 for i in 0..height as usize {
                     for j in 0..width as usize {
                         let offset = i * pitch + j * 3;
-                        let color = color[data[i][j] as usize];
+                        let color = colors[data[i][j] as usize];
 
                         buffer[offset] = ((color >> 16) & 0xff) as u8;
                         buffer[offset + 1] = ((color >> 8) & 0xff) as u8;

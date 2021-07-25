@@ -62,16 +62,16 @@ pub struct Pyxel {
     pub drop_files: Vec<String>,
 
     // Graphics
-    pub color: [Rgb8; COLOR_COUNT as usize],
-    pub image: Vec<Image>,
-    pub tilemap: Vec<Tilemap>,
+    pub colors: [Rgb8; COLOR_COUNT as usize],
+    pub images: Vec<Image>,
+    pub tilemaps: Vec<Tilemap>,
     pub screen: Image,
     pub cursor: Image,
     pub font: Image,
 
     // Audio
-    pub sound: Vec<Sound>,
-    pub music: Vec<Music>,
+    pub sounds: Vec<Sound>,
+    pub musics: Vec<Music>,
 }
 
 pub trait PyxelCallback {
@@ -100,22 +100,22 @@ impl Pyxel {
         let graphics = Graphics::new();
         let audio = Arc::new(Mutex::new(Audio::new()));
 
-        let mut color = [0; COLOR_COUNT as usize];
+        let mut colors = [0; COLOR_COUNT as usize];
         for (i, rgb) in DEFAULT_COLOR.iter().enumerate() {
-            color[i] = *rgb;
+            colors[i] = *rgb;
         }
-        let image: Vec<Image> = (0..IMAGE_COUNT)
+        let images: Vec<Image> = (0..IMAGE_COUNT)
             .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
             .collect();
-        let tilemap = (0..TILEMAP_COUNT)
+        let tilemaps = (0..TILEMAP_COUNT)
             .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE))
             .collect();
         let screen = Image::new(width, height);
         let cursor = Graphics::new_cursor_image();
         let font = Graphics::new_font_image();
 
-        let sound = (0..SOUND_COUNT).map(|_| Sound::new()).collect();
-        let music = (0..MUSIC_COUNT).map(|_| Music::new()).collect();
+        let sounds = (0..SOUND_COUNT).map(|_| Sound::new()).collect();
+        let musics = (0..MUSIC_COUNT).map(|_| Music::new()).collect();
 
         let mut pyxel = Pyxel {
             platform: platform,
@@ -138,16 +138,16 @@ impl Pyxel {
             drop_files: Vec::new(),
 
             // Graphics
-            color: color,
-            image: image,
-            tilemap: tilemap,
+            colors: colors,
+            images: images,
+            tilemaps: tilemaps,
             screen: screen,
             cursor: cursor,
             font: font,
 
             // Audio
-            sound: sound,
-            music: music,
+            sounds: sounds,
+            musics: musics,
         };
 
         pyxel.platform.start_audio(SAMPLE_RATE, SAMPLE_COUNT, audio);

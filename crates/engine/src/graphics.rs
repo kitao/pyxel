@@ -92,7 +92,7 @@ impl Pyxel {
         colkey: Option<Color>,
     ) {
         self.screen
-            .blt(x, y, &self.image[img as usize], u, v, w, h, colkey);
+            .blt(x, y, &self.images[img as usize], u, v, w, h, colkey);
     }
 
     pub fn blt_(
@@ -121,7 +121,7 @@ impl Pyxel {
         tilekey: Option<Tile>,
     ) {
         self.screen
-            .bltm(x, y, &self.tilemap[tm as usize], u, v, w, h, tilekey);
+            .bltm(x, y, &self.tilemaps[tm as usize], u, v, w, h, tilekey);
     }
 
     pub fn bltm_(
