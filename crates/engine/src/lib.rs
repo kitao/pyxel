@@ -98,7 +98,7 @@ impl Pyxel {
         let resource = Resource::new();
         let input = Input::new();
         let graphics = Graphics::new();
-        let audio = Audio::new();
+        let audio = Arc::new(Mutex::new(Audio::new()));
 
         let mut color = [0; COLOR_COUNT as usize];
         for (i, rgb) in DEFAULT_COLOR.iter().enumerate() {
