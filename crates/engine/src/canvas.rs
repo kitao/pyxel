@@ -123,8 +123,8 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         }
     }
 
-    fn rect(&mut self, x: i32, y: i32, width: u32, height: u32, val: T) {
-        let rect = RectArea::new(x, y, width, height).intersects(self._clip_rect());
+    fn rect(&mut self, x: i32, y: i32, w: u32, h: u32, val: T) {
+        let rect = RectArea::new(x, y, w, h).intersects(self._clip_rect());
 
         if rect.is_empty() {
             return;
@@ -145,8 +145,8 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         }
     }
 
-    fn rectb(&mut self, x: i32, y: i32, width: u32, height: u32, val: T) {
-        let rect = RectArea::new(x, y, width, height).intersects(self._clip_rect());
+    fn rectb(&mut self, x: i32, y: i32, w: u32, h: u32, val: T) {
+        let rect = RectArea::new(x, y, w, h).intersects(self._clip_rect());
 
         if rect.is_empty() {
             return;
@@ -171,8 +171,8 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         }
     }
 
-    fn circ(&mut self, x: i32, y: i32, radius: u32, val: T) {
-        if radius == 0 {
+    fn circ(&mut self, x: i32, y: i32, r: u32, val: T) {
+        if r == 0 {
             self.pset(x, y, val);
             return;
         }
@@ -181,9 +181,9 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         let rect = self._self_rect();
         let data = self.data_mut();
 
-        let sq_radius = radius * radius;
+        let sq_radius = r * r;
 
-        for dx in 0..=radius as i32 {
+        for dx in 0..=r as i32 {
             let dy = (((sq_radius as i32 - dx * dx) as f64).sqrt() + 0.5) as i32;
 
             if dx > dy {
@@ -199,8 +199,8 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         }
     }
 
-    fn circb(&mut self, x: i32, y: i32, radius: u32, val: T) {
-        if radius == 0 {
+    fn circb(&mut self, x: i32, y: i32, r: u32, val: T) {
+        if r == 0 {
             self.pset(x, y, val);
             return;
         }
@@ -209,9 +209,9 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         let rect = self._self_rect();
         let data = self.data_mut();
 
-        let sq_radius = radius * radius;
+        let sq_radius = r * r;
 
-        for dx in 0..=radius as i32 {
+        for dx in 0..=r as i32 {
             let dy = (((sq_radius as i32 - dx * dx) as f64).sqrt() + 0.5) as i32;
 
             if dx > dy {
@@ -377,17 +377,17 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         src: &Self,
         u: i32,
         v: i32,
-        width: i32,
-        height: i32,
+        w: i32,
+        h: i32,
         valkey: Option<T>,
     ) {
         let src_rect = src._self_rect();
         let dst_rect = self._self_rect();
 
-        let flip_x = width < 0;
-        let flip_y = height < 0;
-        let width = width.abs();
-        let height = height.abs();
+        let flip_x = w < 0;
+        let flip_y = h < 0;
+        let width = w.abs();
+        let height = h.abs();
 
         let left_margin = max(max(src_rect.left() - u, dst_rect.left() - x), 0);
         let right_margin = max(
