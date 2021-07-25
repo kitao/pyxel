@@ -55,34 +55,42 @@ impl Tilemap {
 }
 
 impl Canvas<Tile> for Tilemap {
-    fn width(&self) -> u32 {
+    #[inline]
+    fn _width(&self) -> u32 {
         self.width
     }
 
-    fn height(&self) -> u32 {
+    #[inline]
+    fn _height(&self) -> u32 {
         self.height
     }
 
-    fn data<'a>(&'a self) -> &'a Vec<Vec<Tile>> {
+    #[inline]
+    fn _data<'a>(&'a self) -> &'a Vec<Vec<Tile>> {
         &self.data
     }
 
-    fn data_mut<'a>(&'a mut self) -> &'a mut Vec<Vec<Tile>> {
+    #[inline]
+    fn _data_mut<'a>(&'a mut self) -> &'a mut Vec<Vec<Tile>> {
         &mut self.data
     }
 
+    #[inline]
     fn _self_rect(&self) -> RectArea {
         self.self_rect
     }
 
+    #[inline]
     fn _clip_rect(&self) -> RectArea {
         self.clip_rect
     }
 
+    #[inline]
     fn _clip_rect_mut(&mut self) -> &mut RectArea {
         &mut self.clip_rect
     }
 
+    #[inline]
     fn _palette_value(&self, val: Tile) -> Tile {
         val
     }
