@@ -8,8 +8,10 @@ pub struct Music {
     pub seq: [Vec<u32>; CHANNEL_COUNT as usize],
 }
 
+pub type SharedMusic = Rc<RefCell<Music>>;
+
 impl Music {
-    pub fn new() -> Rc<RefCell<Music>> {
+    pub fn new() -> SharedMusic {
         Rc::new(RefCell::new(Music {
             seq: Default::default(),
         }))
@@ -38,7 +40,7 @@ mod tests {
 
     #[test]
     fn set() {
-        let mut music = Music::new();
+        let music = Music::new();
 
         music
             .borrow_mut()
