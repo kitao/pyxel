@@ -1,4 +1,5 @@
 use blip_buf::BlipBuf;
+use std::cmp::max;
 
 use crate::oscillator::Oscillator;
 use crate::sound::Sound;
@@ -33,9 +34,10 @@ impl Channel {
         }
 
         let sound = &self.sounds[self.sound_index as usize];
+        let speed = max(sound.speed, 1);
 
-        if self.tick_count % sound.speed as u32 == 0 {
-            if self.note_index >= sound.note.len() as u32 {
+        if self.tick_count % speed as u32 == 0 {
+            if self.note_index >= sound.notes.len() as u32 {
                 self.sound_index += 1;
                 self.note_index = 0;
 
@@ -50,16 +52,17 @@ impl Channel {
             }
 
             let sound = &self.sounds[self.sound_index as usize];
-            let note = Channel::circular_note(&sound.note, self.note_index);
-            let volume = Channel::circular_volume(&sound.volume, self.note_index);
+            let note = Channel::circular_note(&sound.notes, self.note_index);
+            let volume = Channel::circular_volume(&sound.volumes, self.note_index);
+            let speeds = max(sound.speed, 1);
 
             if note >= 0 && volume > Volume::Level0 {
                 self.oscillator.play(
                     note as f64,
-                    Channel::circular_tone(&sound.tone, self.note_index),
+                    Channel::circular_tone(&sound.tones, self.note_index),
                     volume as u32 as f64 / Volume::Level7 as u32 as f64,
-                    Channel::circular_effect(&sound.effect, self.note_index),
-                    sound.speed as u32,
+                    Channel::circular_effect(&sound.effects, self.note_index),
+                    speed as u32,
                 );
             }
 
@@ -104,41 +107,41 @@ impl Channel {
         self.oscillator.stop();
     }
 
-    fn circular_note(note: &[Note], index: u32) -> Note {
-        let len = note.len();
+    fn circular_note(notes: &[Note], index: u32) -> Note {
+        let len = notes.len();
 
         if len > 0 {
-            note[index as usize % len]
+            notes[index as usize % len]
         } else {
             0
         }
     }
 
-    fn circular_tone(tone: &[Tone], index: u32) -> Tone {
-        let len = tone.len();
+    fn circular_tone(tones: &[Tone], index: u32) -> Tone {
+        let len = tones.len();
 
         if len > 0 {
-            tone[index as usize % len]
+            tones[index as usize % len]
         } else {
             Tone::Triangle
         }
     }
 
-    fn circular_volume(volume: &[Volume], index: u32) -> Volume {
-        let len = volume.len();
+    fn circular_volume(volumes: &[Volume], index: u32) -> Volume {
+        let len = volumes.len();
 
         if len > 0 {
-            volume[index as usize % len]
+            volumes[index as usize % len]
         } else {
             Volume::Level7
         }
     }
 
-    fn circular_effect(effect: &[Effect], index: u32) -> Effect {
-        let len = effect.len();
+    fn circular_effect(effects: &[Effect], index: u32) -> Effect {
+        let len = effects.len();
 
         if len > 0 {
-            effect[index as usize % len]
+            effects[index as usize % len]
         } else {
             Effect::None
         }
