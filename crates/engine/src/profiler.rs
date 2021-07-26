@@ -2,7 +2,6 @@ pub struct Profiler {
     measure_frame_count: u32,
     frame_count: u32,
     start_time: u32,
-    end_time: u32,
     total_time: u32,
     average_time: f64,
     average_fps: f64,
@@ -16,7 +15,6 @@ impl Profiler {
             measure_frame_count: measure_frame_count,
             frame_count: 0,
             start_time: 0,
-            end_time: 0,
             total_time: 0,
             average_time: 0.0,
             average_fps: 0.0,
@@ -27,8 +25,8 @@ impl Profiler {
         self.average_time
     }
 
-    pub fn averate_fps(&self) -> f64 {
-        self.averate_fps()
+    pub fn average_fps(&self) -> f64 {
+        self.average_fps
     }
 
     pub fn start(&mut self, ticks: u32) {
