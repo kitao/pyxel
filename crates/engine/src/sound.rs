@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use crate::settings::DEFAULT_SOUND_SPEED;
 use crate::types::{Effect, Note, Speed, Tone, Volume};
 use crate::utility::simplify_string;
@@ -12,14 +15,14 @@ pub struct Sound {
 }
 
 impl Sound {
-    pub fn new() -> Sound {
-        Sound {
+    pub fn new() -> Rc<RefCell<Sound>> {
+        Rc::new(RefCell::new(Sound {
             note: Vec::new(),
             tone: Vec::new(),
             volume: Vec::new(),
             effect: Vec::new(),
             speed: DEFAULT_SOUND_SPEED,
-        }
+        }))
     }
 
     pub fn set(
@@ -151,25 +154,27 @@ mod tests {
     #[test]
     fn new() {
         let sound = Sound::new();
-        assert_eq!(sound.note.len(), 0);
-        assert_eq!(sound.tone.len(), 0);
-        assert_eq!(sound.volume.len(), 0);
-        assert_eq!(sound.effect.len(), 0);
-        assert_eq!(sound.speed, DEFAULT_SOUND_SPEED);
+        assert_eq!(sound.borrow().note.len(), 0);
+        assert_eq!(sound.borrow().tone.len(), 0);
+        assert_eq!(sound.borrow().volume.len(), 0);
+        assert_eq!(sound.borrow().effect.len(), 0);
+        assert_eq!(sound.borrow().speed, DEFAULT_SOUND_SPEED);
     }
 
     #[test]
     fn set() {
-        let mut sound = Sound::new();
+        let sound = Sound::new();
 
-        sound.set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
-        assert_eq!(&sound.note, &vec![0, 1, 2, 3]);
+        sound
+            .borrow_mut()
+            .set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
+        assert_eq!(&sound.borrow().note, &vec![0, 1, 2, 3]);
         assert_eq!(
-            &sound.tone,
+            &sound.borrow().tone,
             &vec![Tone::Triangle, Tone::Square, Tone::Pulse, Tone::Noise]
         );
         assert_eq!(
-            &sound.volume,
+            &sound.borrow().volume,
             &vec![
                 Volume::Level0,
                 Volume::Level1,
@@ -178,7 +183,7 @@ mod tests {
             ]
         );
         assert_eq!(
-            &sound.effect,
+            &sound.borrow().effect,
             &vec![
                 Effect::None,
                 Effect::Slide,
@@ -186,35 +191,40 @@ mod tests {
                 Effect::FadeOut
             ]
         );
-        assert_eq!(sound.speed, 123);
+        assert_eq!(sound.borrow().speed, 123);
     }
 
     #[test]
     fn set_note() {
-        let mut sound = Sound::new();
+        let sound = Sound::new();
 
-        sound.set_note(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ");
-        assert_eq!(&sound.note, &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]);
+        sound
+            .borrow_mut()
+            .set_note(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ");
+        assert_eq!(
+            &sound.borrow().note,
+            &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]
+        );
     }
 
     #[test]
     fn set_tone() {
-        let mut sound = Sound::new();
+        let sound = Sound::new();
 
-        sound.set_tone(" t s p n ");
+        sound.borrow_mut().set_tone(" t s p n ");
         assert_eq!(
-            &sound.tone,
+            &sound.borrow().tone,
             &vec![Tone::Triangle, Tone::Square, Tone::Pulse, Tone::Noise]
         );
     }
 
     #[test]
     fn set_volume() {
-        let mut sound = Sound::new();
+        let sound = Sound::new();
 
-        sound.set_volume(" 0 1 2 3 4 5 6 7 ");
+        sound.borrow_mut().set_volume(" 0 1 2 3 4 5 6 7 ");
         assert_eq!(
-            &sound.volume,
+            &sound.borrow().volume,
             &vec![
                 Volume::Level0,
                 Volume::Level1,
@@ -230,11 +240,11 @@ mod tests {
 
     #[test]
     fn set_effect() {
-        let mut sound = Sound::new();
+        let sound = Sound::new();
 
-        sound.set_effect(" n s v f ");
+        sound.borrow_mut().set_effect(" n s v f ");
         assert_eq!(
-            &sound.effect,
+            &sound.borrow().effect,
             &vec![
                 Effect::None,
                 Effect::Slide,

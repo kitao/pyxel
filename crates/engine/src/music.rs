@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use crate::settings::CHANNEL_COUNT;
 
 #[derive(Clone)]
@@ -6,10 +9,10 @@ pub struct Music {
 }
 
 impl Music {
-    pub fn new() -> Music {
-        Music {
+    pub fn new() -> Rc<RefCell<Music>> {
+        Rc::new(RefCell::new(Music {
             seq: Default::default(),
-        }
+        }))
     }
 
     pub fn set(&mut self, seq0: &[u32], seq1: &[u32], seq2: &[u32], seq3: &[u32]) {
@@ -29,7 +32,7 @@ mod tests {
         let music = Music::new();
 
         for i in 0..CHANNEL_COUNT {
-            assert_eq!(music.seq[i as usize].len(), 0);
+            assert_eq!(music.borrow().seq[i as usize].len(), 0);
         }
     }
 
@@ -37,10 +40,12 @@ mod tests {
     fn set() {
         let mut music = Music::new();
 
-        music.set(&[0, 1, 2], &[1, 2, 3], &[2, 3, 4], &[3, 4, 5]);
+        music
+            .borrow_mut()
+            .set(&[0, 1, 2], &[1, 2, 3], &[2, 3, 4], &[3, 4, 5]);
 
         for i in 0..CHANNEL_COUNT {
-            assert_eq!(&music.seq[i as usize], &vec![i, i + 1, i + 2]);
+            assert_eq!(&music.borrow().seq[i as usize], &vec![i, i + 1, i + 2]);
         }
     }
 }
