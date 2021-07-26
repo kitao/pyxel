@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use crate::canvas::Canvas;
 use crate::image::Image;
 use crate::tilemap::Tilemap;
@@ -12,12 +15,12 @@ impl Graphics {
         Graphics {}
     }
 
-    pub fn new_cursor_image() -> Image {
+    pub fn new_cursor_image() -> Rc<RefCell<Image>> {
         // TODO
         Image::new(10, 10)
     }
 
-    pub fn new_font_image() -> Image {
+    pub fn new_font_image() -> Rc<RefCell<Image>> {
         // TOTO
         Image::new(10, 10)
     }
@@ -25,59 +28,59 @@ impl Graphics {
 
 impl Pyxel {
     pub fn clip(&mut self, x: i32, y: i32, w: u32, h: u32) {
-        self.screen.clip(x, y, w, h);
+        self.screen.borrow_mut().clip(x, y, w, h);
     }
 
     pub fn clip_(&mut self) {
-        self.screen.clip_();
+        self.screen.borrow_mut().clip_();
     }
 
     pub fn pal(&mut self, col1: Color, col2: Color) {
-        self.screen.pal(col1, col2);
+        self.screen.borrow_mut().pal(col1, col2);
     }
 
     pub fn pal_(&mut self) {
-        self.screen.pal_();
+        self.screen.borrow_mut().pal_();
     }
 
     pub fn cls(&mut self, col: Color) {
-        self.screen.cls(col);
+        self.screen.borrow_mut().cls(col);
     }
 
     pub fn pget(&mut self, x: i32, y: i32) -> Color {
-        self.screen.pget(x, y)
+        self.screen.borrow_mut().pget(x, y)
     }
 
     pub fn pset(&mut self, x: i32, y: i32, col: Color) {
-        self.screen.pset(x, y, col);
+        self.screen.borrow_mut().pset(x, y, col);
     }
 
     pub fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, col: Color) {
-        self.screen.line(x1, y1, x2, y2, col);
+        self.screen.borrow_mut().line(x1, y1, x2, y2, col);
     }
 
     pub fn rect(&mut self, x: i32, y: i32, w: u32, h: u32, col: Color) {
-        self.screen.rect(x, y, w, h, col);
+        self.screen.borrow_mut().rect(x, y, w, h, col);
     }
 
     pub fn rectb(&mut self, x: i32, y: i32, w: u32, h: u32, col: Color) {
-        self.screen.rectb(x, y, w, h, col);
+        self.screen.borrow_mut().rectb(x, y, w, h, col);
     }
 
     pub fn circ(&mut self, x: i32, y: i32, r: u32, col: Color) {
-        self.screen.circ(x, y, r, col);
+        self.screen.borrow_mut().circ(x, y, r, col);
     }
 
     pub fn circb(&mut self, x: i32, y: i32, r: u32, col: Color) {
-        self.screen.circb(x, y, r, col);
+        self.screen.borrow_mut().circb(x, y, r, col);
     }
 
     pub fn tri(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, col: Color) {
-        self.screen.tri(x1, y1, x2, y2, x3, y3, col);
+        self.screen.borrow_mut().tri(x1, y1, x2, y2, x3, y3, col);
     }
 
     pub fn trib(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, col: Color) {
-        self.screen.trib(x1, y1, x2, y2, x3, y3, col);
+        self.screen.borrow_mut().trib(x1, y1, x2, y2, x3, y3, col);
     }
 
     pub fn blt(
@@ -91,22 +94,16 @@ impl Pyxel {
         h: i32,
         colkey: Option<Color>,
     ) {
-        self.screen
-            .blt(x, y, &self.images[img as usize], u, v, w, h, colkey);
-    }
-
-    pub fn blt_(
-        &mut self,
-        x: i32,
-        y: i32,
-        img: &Image,
-        u: i32,
-        v: i32,
-        w: i32,
-        h: i32,
-        colkey: Option<Color>,
-    ) {
-        self.screen.blt(x, y, img, u, v, w, h, colkey);
+        self.screen.borrow_mut().blt(
+            x,
+            y,
+            &self.images[img as usize].borrow(),
+            u,
+            v,
+            w,
+            h,
+            colkey,
+        );
     }
 
     pub fn bltm(
@@ -120,25 +117,21 @@ impl Pyxel {
         h: i32,
         tilekey: Option<Tile>,
     ) {
-        self.screen
-            .bltm(x, y, &self.tilemaps[tm as usize], u, v, w, h, tilekey);
-    }
-
-    pub fn bltm_(
-        &mut self,
-        x: i32,
-        y: i32,
-        tm: &Tilemap,
-        u: i32,
-        v: i32,
-        w: i32,
-        h: i32,
-        tilekey: Option<Tile>,
-    ) {
-        self.screen.bltm(x, y, tm, u, v, w, h, tilekey);
+        self.screen.borrow_mut().bltm(
+            x,
+            y,
+            &self.tilemaps[tm as usize].borrow(),
+            u,
+            v,
+            w,
+            h,
+            tilekey,
+        );
     }
 
     pub fn text(&mut self, x: i32, y: i32, s: &str, col: Color) {
-        //self.screen.text(x, y, s, col);
+        self.screen
+            .borrow_mut()
+            .text(x, y, s, col, &self.font.borrow());
     }
 }

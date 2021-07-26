@@ -34,6 +34,8 @@ use crate::sdl2::Sdl2;
 use crate::sound::Sound;
 use crate::system::System;
 use crate::tilemap::Tilemap;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub use crate::key::*;
 pub use crate::settings::*;
@@ -63,15 +65,15 @@ pub struct Pyxel {
 
     // Graphics
     pub colors: [Rgb8; COLOR_COUNT as usize],
-    pub images: Vec<Image>,
-    pub tilemaps: Vec<Tilemap>,
-    pub screen: Image,
-    pub cursor: Image,
-    pub font: Image,
+    pub images: Vec<Rc<RefCell<Image>>>,
+    pub tilemaps: Vec<Rc<RefCell<Tilemap>>>,
+    pub screen: Rc<RefCell<Image>>,
+    pub cursor: Rc<RefCell<Image>>,
+    pub font: Rc<RefCell<Image>>,
 
     // Audio
-    pub sounds: Vec<Sound>,
-    pub musics: Vec<Music>,
+    pub sounds: Vec<Rc<RefCell<Sound>>>,
+    pub musics: Vec<Rc<RefCell<Music>>>,
 }
 
 pub trait PyxelCallback {
@@ -98,13 +100,13 @@ impl Pyxel {
         let resource = Resource::new();
         let input = Input::new();
         let graphics = Graphics::new();
-        let audio = Arc::new(Mutex::new(Audio::new()));
+        let audio = Audio::new();
 
         let mut colors = [0; COLOR_COUNT as usize];
         for (i, rgb) in DEFAULT_COLOR.iter().enumerate() {
             colors[i] = *rgb;
         }
-        let images: Vec<Image> = (0..IMAGE_COUNT)
+        let images = (0..IMAGE_COUNT)
             .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
             .collect();
         let tilemaps = (0..TILEMAP_COUNT)
@@ -134,7 +136,7 @@ impl Pyxel {
             mouse_x: 0,
             mouse_y: 0,
             mouse_wheel: 0,
-            text_input: "".to_string(),
+            text_input: String::from(""),
             drop_files: Vec::new(),
 
             // Graphics
