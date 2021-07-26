@@ -1,4 +1,5 @@
 use blip_buf::BlipBuf;
+use std::sync::{Arc, Mutex};
 
 use crate::channel::Channel;
 use crate::platform::AudioCallback;
@@ -28,16 +29,16 @@ impl AudioCallback for Audio {
 }
 
 impl Audio {
-    pub fn new() -> Audio {
+    pub fn new() -> Arc<Mutex<Audio>> {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 
         let channels = (0..CHANNEL_COUNT).map(|_| Channel::new()).collect();
 
-        Audio {
+        Arc::new(Mutex::new(Audio {
             blip_buf: blip_buf,
             channels: channels,
-        }
+        }))
     }
 }
 
@@ -58,18 +59,16 @@ impl Pyxel {
     pub fn play(&mut self, ch: u32, seq: &[u32], looping: bool) {
         let sounds = seq
             .iter()
-            .map(|snd| self.sounds[*snd as usize].clone())
+            .map(|snd| self.sounds[*snd as usize].borrow().clone())
             .collect();
 
         self.audio.lock().unwrap().channels[ch as usize].play(sounds, looping);
     }
 
-    pub fn playm(&mut self, msc: u32, loop_: bool) {
+    pub fn playm(&mut self, msc: u32, looping: bool) {
         for i in 0..MUSIC_COUNT {
-            unsafe {
-                let seq: *const Vec<u32> = &self.musics[msc as usize].seq[i as usize];
-                self.play(i, &*seq, loop_);
-            }
+            let music = self.musics[msc as usize].clone();
+            self.play(i, &music.borrow().seq[i as usize], looping);
         }
     }
 
