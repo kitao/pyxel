@@ -55,14 +55,14 @@ impl Pyxel {
         self.platform.set_title(title);
     }
 
-    pub fn fullscreen(&mut self, fullscreen: bool) {
-        self.platform.set_fullscreen(fullscreen);
+    pub fn fullscreen(&mut self) {
+        self.platform.toggle_fullscreen();
     }
 
     pub fn run<T: PyxelCallback>(&mut self, callback: &mut T) {
         'main_loop: loop {
             self.system.next_update_time =
-                self.platform.ticks() as f64 + self.system.one_frame_time;
+                self.platform.tick_count() as f64 + self.system.one_frame_time;
             self.system.should_quit = false;
             self.system.disable_frame_skip_once = true;
             self.frame_count = 0;
@@ -76,7 +76,7 @@ impl Pyxel {
             loop {
                 let sleep_time = self.wait_for_update_time();
 
-                let ticks = self.platform.ticks();
+                let ticks = self.platform.tick_count();
                 self.system.fps_profiler.end(ticks);
                 self.system.fps_profiler.start(ticks);
 
@@ -84,7 +84,7 @@ impl Pyxel {
                     self.system.disable_frame_skip_once = false;
                     self.system.waiting_update_count = 1;
                     self.system.next_update_time =
-                        self.platform.ticks() as f64 + self.system.one_frame_time;
+                        self.platform.tick_count() as f64 + self.system.one_frame_time;
                 } else {
                     self.system.waiting_update_count = min(
                         (-sleep_time as f64 / self.system.one_frame_time) as u32,
@@ -106,7 +106,9 @@ impl Pyxel {
     }
 
     fn update_frame(&mut self, callback: &mut dyn PyxelCallback) -> bool {
-        self.system.update_profiler.start(self.platform.ticks());
+        self.system
+            .update_profiler
+            .start(self.platform.tick_count());
 
         self.process_events();
         // TODO: drop_file_ = window_->GetDropFile();
@@ -122,7 +124,7 @@ impl Pyxel {
             return true;
         }
 
-        self.system.update_profiler.end(self.platform.ticks());
+        self.system.update_profiler.end(self.platform.tick_count());
 
         if self.system.waiting_update_count > 0 {
             self.system.waiting_update_count -= 1;
@@ -133,14 +135,14 @@ impl Pyxel {
     }
 
     fn draw_frame(&mut self, callback: &mut dyn PyxelCallback) {
-        self.system.draw_profiler.start(self.platform.ticks());
+        self.system.draw_profiler.start(self.platform.tick_count());
 
         callback.draw(self);
 
         self.platform
             .render_screen(&self.screen.borrow(), &self.colors, BACKGROUND_COLOR);
 
-        self.system.draw_profiler.end(self.platform.ticks());
+        self.system.draw_profiler.end(self.platform.tick_count());
 
         self.frame_count += 1;
     }
@@ -202,21 +204,20 @@ impl Pyxel {
 
     fn wait_for_update_time(&mut self) -> i32 {
         loop {
-            let sleep_time = self.system.next_update_time - self.platform.ticks() as f64;
+            let sleep_time = self.system.next_update_time - self.platform.tick_count() as f64;
 
             if sleep_time <= 0.0 {
                 return sleep_time as i32;
             }
 
-            self.platform.delay((sleep_time / 2.0) as u32);
+            self.platform.sleep((sleep_time / 2.0) as u32);
         }
     }
 
     fn check_special_input(&mut self) {
         if self.btn(KEY_ALT) {
             if self.btnp(KEY_RETURN, None, None) {
-                let fullscreen = self.platform.is_fullscreen();
-                self.platform.set_fullscreen(!fullscreen);
+                self.platform.toggle_fullscreen();
             }
 
             if self.btnp(KEY_0, None, None) {
