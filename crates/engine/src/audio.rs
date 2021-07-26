@@ -13,6 +13,8 @@ pub struct Audio {
     channels: Vec<Channel>,
 }
 
+pub type SyncedAudio = Arc<Mutex<Audio>>;
+
 impl AudioCallback for Audio {
     fn audio_callback(&mut self, out: &mut [i16]) {
         let mut samples = self.blip_buf.read_samples(out, false);
@@ -29,7 +31,7 @@ impl AudioCallback for Audio {
 }
 
 impl Audio {
-    pub fn new() -> Arc<Mutex<Audio>> {
+    pub fn new() -> SyncedAudio {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 

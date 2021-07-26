@@ -16,8 +16,10 @@ pub struct Tilemap {
     clip_rect: RectArea,
 }
 
+pub type SharedTilemap = Rc<RefCell<Tilemap>>;
+
 impl Tilemap {
-    pub fn new(width: u32, height: u32) -> Rc<RefCell<Tilemap>> {
+    pub fn new(width: u32, height: u32) -> SharedTilemap {
         Rc::new(RefCell::new(Tilemap {
             width: width,
             height: height,
