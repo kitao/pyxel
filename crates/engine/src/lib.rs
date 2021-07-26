@@ -21,21 +21,17 @@ mod tilemap;
 mod types;
 mod utility;
 
-use std::sync::{Arc, Mutex};
-
-use crate::audio::Audio;
+use crate::audio::{Audio, SyncedAudio};
 use crate::graphics::Graphics;
-use crate::image::Image;
+use crate::image::{Image, SharedImage};
 use crate::input::Input;
-use crate::music::Music;
+use crate::music::{Music, SharedMusic};
 use crate::platform::Platform;
 use crate::resource::Resource;
 use crate::sdl2::Sdl2;
-use crate::sound::Sound;
+use crate::sound::{SharedSound, Sound};
 use crate::system::System;
-use crate::tilemap::Tilemap;
-use std::cell::RefCell;
-use std::rc::Rc;
+use crate::tilemap::{SharedTilemap, Tilemap};
 
 pub use crate::key::*;
 pub use crate::settings::*;
@@ -49,7 +45,7 @@ pub struct Pyxel {
     resource: Resource,
     input: Input,
     graphics: Graphics,
-    audio: Arc<Mutex<Audio>>,
+    audio: SyncedAudio,
 
     // System
     pub width: u32,
@@ -65,15 +61,15 @@ pub struct Pyxel {
 
     // Graphics
     pub colors: [Rgb8; COLOR_COUNT as usize],
-    pub images: Vec<Rc<RefCell<Image>>>,
-    pub tilemaps: Vec<Rc<RefCell<Tilemap>>>,
-    pub screen: Rc<RefCell<Image>>,
-    pub cursor: Rc<RefCell<Image>>,
-    pub font: Rc<RefCell<Image>>,
+    pub images: Vec<SharedImage>,
+    pub tilemaps: Vec<SharedTilemap>,
+    pub screen: SharedImage,
+    pub cursor: SharedImage,
+    pub font: SharedImage,
 
     // Audio
-    pub sounds: Vec<Rc<RefCell<Sound>>>,
-    pub musics: Vec<Rc<RefCell<Music>>>,
+    pub sounds: Vec<SharedSound>,
+    pub musics: Vec<SharedMusic>,
 }
 
 pub trait PyxelCallback {
