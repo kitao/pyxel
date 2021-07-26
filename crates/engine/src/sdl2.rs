@@ -9,39 +9,39 @@ use sdl2::controller::Button as SdlButton;
 use sdl2::event::Event as SdlEvent;
 use sdl2::mouse::MouseButton as SdlMouseButton;
 use sdl2::pixels::Color as SdlColor;
-use sdl2::pixels::PixelFormatEnum;
+use sdl2::pixels::PixelFormatEnum as SdlPixelFormat;
 use sdl2::rect::Rect as SdlRect;
 use sdl2::render::Texture as SdlTexture;
 use sdl2::render::WindowCanvas as SdlCanvas;
 use sdl2::video::FullscreenType as SdlFullscreenType;
-use sdl2::AudioSubsystem as SdlAudioSubsystem;
+use sdl2::AudioSubsystem as SdlAudio;
 use sdl2::EventPump as SdlEventPump;
-use sdl2::TimerSubsystem as SdlTimerSubsystem;
+use sdl2::TimerSubsystem as SdlTimer;
 
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
 use crate::image::Image;
 use crate::platform::{AudioCallback, Platform};
 use crate::types::Rgb8;
 
-struct AudioCallbackData {
-    audio_callback: Arc<Mutex<dyn AudioCallback + Send>>,
+struct AudioContextHolder {
+    audio: Arc<Mutex<dyn AudioCallback + Send>>,
 }
 
-impl SdlAudioCallback for AudioCallbackData {
+impl SdlAudioCallback for AudioContextHolder {
     type Channel = i16;
 
     fn callback(&mut self, out: &mut [i16]) {
-        self.audio_callback.lock().unwrap().audio_callback(out);
+        self.audio.lock().unwrap().update(out);
     }
 }
 
 pub struct Sdl2 {
     sdl_canvas: SdlCanvas,
     sdl_texture: SdlTexture,
-    sdl_timer: SdlTimerSubsystem,
+    sdl_timer: SdlTimer,
     sdl_event_pump: SdlEventPump,
-    sdl_audio: SdlAudioSubsystem,
-    sdl_audio_device: Option<SdlAudioDevice<AudioCallbackData>>,
+    sdl_audio: SdlAudio,
+    sdl_audio_device: Option<SdlAudioDevice<AudioContextHolder>>,
     screen_width: u32,
     screen_height: u32,
     mouse_x: i32,
@@ -61,7 +61,7 @@ impl Platform for Sdl2 {
         let mut sdl_canvas = sdl_window.into_canvas().build().unwrap();
         let sdl_texture = sdl_canvas
             .texture_creator()
-            .create_texture_streaming(PixelFormatEnum::RGB24, width, height)
+            .create_texture_streaming(SdlPixelFormat::RGB24, width, height)
             .unwrap();
         let sdl_timer = sdl_context.timer().unwrap();
         let sdl_event_pump = sdl_context.event_pump().unwrap();
@@ -126,25 +126,21 @@ impl Platform for Sdl2 {
         */
     }
 
-    fn is_fullscreen(&mut self) -> bool {
-        self.sdl_canvas.window().fullscreen_state() != SdlFullscreenType::Off
-    }
-
-    fn set_fullscreen(&mut self, fullscreen: bool) {
+    fn toggle_fullscreen(&mut self) {
         let window = self.sdl_canvas.window_mut();
 
-        if fullscreen {
+        if window.fullscreen_state() != SdlFullscreenType::True {
             let _ = window.set_fullscreen(SdlFullscreenType::True);
         } else {
             let _ = window.set_fullscreen(SdlFullscreenType::Off);
         }
     }
 
-    fn ticks(&self) -> u32 {
+    fn tick_count(&self) -> u32 {
         self.sdl_timer.ticks()
     }
 
-    fn delay(&mut self, ms: u32) {
+    fn sleep(&mut self, ms: u32) {
         self.sdl_timer.delay(ms);
     }
 
@@ -299,7 +295,10 @@ impl Platform for Sdl2 {
         let height = screen.height;
         let data = &screen.data;
 
-        assert!(self.screen_width == width && self.screen_height == height);
+        assert!(
+            self.screen_width == width && self.screen_height == height,
+            "screen size is changed"
+        );
 
         self.sdl_texture
             .with_lock(None, |buffer: &mut [u8], pitch: usize| {
@@ -321,11 +320,9 @@ impl Platform for Sdl2 {
             ((bg_color >> 8) & 0xff) as u8,
             (bg_color & 0xff) as u8,
         ));
-
         self.sdl_canvas.clear();
 
         let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
-
         let dst = SdlRect::new(
             screen_x as i32,
             screen_y as i32,
@@ -336,7 +333,6 @@ impl Platform for Sdl2 {
         self.sdl_canvas
             .copy(&self.sdl_texture, None, Some(dst))
             .unwrap();
-
         self.sdl_canvas.present();
     }
 
@@ -344,7 +340,7 @@ impl Platform for Sdl2 {
         &mut self,
         sample_rate: u32,
         sample_count: u32,
-        audio_callback: Arc<Mutex<dyn AudioCallback + Send>>,
+        audio: Arc<Mutex<dyn AudioCallback + Send>>,
     ) {
         let spec = SdlAudioSpecDesired {
             freq: Some(sample_rate as i32),
@@ -354,9 +350,7 @@ impl Platform for Sdl2 {
 
         let sdl_audio_device = self
             .sdl_audio
-            .open_playback(None, &spec, |_| AudioCallbackData {
-                audio_callback: audio_callback,
-            })
+            .open_playback(None, &spec, |_| AudioContextHolder { audio: audio })
             .unwrap();
 
         sdl_audio_device.resume();
