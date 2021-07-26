@@ -7,10 +7,10 @@ use crate::utility::simplify_string;
 
 #[derive(Clone)]
 pub struct Sound {
-    pub note: Vec<Note>,
-    pub tone: Vec<Tone>,
-    pub volume: Vec<Volume>,
-    pub effect: Vec<Effect>,
+    pub notes: Vec<Note>,
+    pub tones: Vec<Tone>,
+    pub volumes: Vec<Volume>,
+    pub effects: Vec<Effect>,
     pub speed: Speed,
 }
 
@@ -19,10 +19,10 @@ pub type SharedSound = Rc<RefCell<Sound>>;
 impl Sound {
     pub fn new() -> SharedSound {
         Rc::new(RefCell::new(Sound {
-            note: Vec::new(),
-            tone: Vec::new(),
-            volume: Vec::new(),
-            effect: Vec::new(),
+            notes: Vec::new(),
+            tones: Vec::new(),
+            volumes: Vec::new(),
+            effects: Vec::new(),
             speed: DEFAULT_SOUND_SPEED,
         }))
     }
@@ -46,7 +46,7 @@ impl Sound {
         let note_str = simplify_string(note_str);
         let mut chars = note_str.chars();
 
-        self.note.clear();
+        self.notes.clear();
 
         while let Some(c) = chars.next() {
             let mut note: Note;
@@ -83,7 +83,7 @@ impl Sound {
                 panic!("invalid sound note '{}'", c);
             }
 
-            self.note.push(note);
+            self.notes.push(note);
         }
     }
 
@@ -91,7 +91,7 @@ impl Sound {
         let tone_str = simplify_string(tone_str);
         let mut chars = tone_str.chars();
 
-        self.tone.clear();
+        self.tones.clear();
 
         while let Some(c) = chars.next() {
             let tone = match c {
@@ -102,7 +102,7 @@ impl Sound {
                 _ => panic!("invalid sound tone '{}'", c),
             };
 
-            self.tone.push(tone);
+            self.tones.push(tone);
         }
     }
 
@@ -110,7 +110,7 @@ impl Sound {
         let volume_str = simplify_string(volume_str);
         let mut chars = volume_str.chars();
 
-        self.volume.clear();
+        self.volumes.clear();
 
         while let Some(c) = chars.next() {
             let volume = match c {
@@ -125,7 +125,7 @@ impl Sound {
                 _ => panic!("invalid sound volume '{}'", c),
             };
 
-            self.volume.push(volume);
+            self.volumes.push(volume);
         }
     }
 
@@ -133,7 +133,7 @@ impl Sound {
         let effect_str = simplify_string(effect_str);
         let mut chars = effect_str.chars();
 
-        self.effect.clear();
+        self.effects.clear();
 
         while let Some(c) = chars.next() {
             let effect = match c {
@@ -144,7 +144,7 @@ impl Sound {
                 _ => panic!("invalid sound effect '{}'", c),
             };
 
-            self.effect.push(effect);
+            self.effects.push(effect);
         }
     }
 }
@@ -156,10 +156,10 @@ mod tests {
     #[test]
     fn new() {
         let sound = Sound::new();
-        assert_eq!(sound.borrow().note.len(), 0);
-        assert_eq!(sound.borrow().tone.len(), 0);
-        assert_eq!(sound.borrow().volume.len(), 0);
-        assert_eq!(sound.borrow().effect.len(), 0);
+        assert_eq!(sound.borrow().notes.len(), 0);
+        assert_eq!(sound.borrow().tones.len(), 0);
+        assert_eq!(sound.borrow().volumes.len(), 0);
+        assert_eq!(sound.borrow().effects.len(), 0);
         assert_eq!(sound.borrow().speed, DEFAULT_SOUND_SPEED);
     }
 
@@ -170,13 +170,13 @@ mod tests {
         sound
             .borrow_mut()
             .set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
-        assert_eq!(&sound.borrow().note, &vec![0, 1, 2, 3]);
+        assert_eq!(&sound.borrow().notes, &vec![0, 1, 2, 3]);
         assert_eq!(
-            &sound.borrow().tone,
+            &sound.borrow().tones,
             &vec![Tone::Triangle, Tone::Square, Tone::Pulse, Tone::Noise]
         );
         assert_eq!(
-            &sound.borrow().volume,
+            &sound.borrow().volumes,
             &vec![
                 Volume::Level0,
                 Volume::Level1,
@@ -185,7 +185,7 @@ mod tests {
             ]
         );
         assert_eq!(
-            &sound.borrow().effect,
+            &sound.borrow().effects,
             &vec![
                 Effect::None,
                 Effect::Slide,
@@ -204,7 +204,7 @@ mod tests {
             .borrow_mut()
             .set_note(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ");
         assert_eq!(
-            &sound.borrow().note,
+            &sound.borrow().notes,
             &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]
         );
     }
@@ -215,7 +215,7 @@ mod tests {
 
         sound.borrow_mut().set_tone(" t s p n ");
         assert_eq!(
-            &sound.borrow().tone,
+            &sound.borrow().tones,
             &vec![Tone::Triangle, Tone::Square, Tone::Pulse, Tone::Noise]
         );
     }
@@ -226,7 +226,7 @@ mod tests {
 
         sound.borrow_mut().set_volume(" 0 1 2 3 4 5 6 7 ");
         assert_eq!(
-            &sound.borrow().volume,
+            &sound.borrow().volumes,
             &vec![
                 Volume::Level0,
                 Volume::Level1,
@@ -246,7 +246,7 @@ mod tests {
 
         sound.borrow_mut().set_effect(" n s v f ");
         assert_eq!(
-            &sound.borrow().effect,
+            &sound.borrow().effects,
             &vec![
                 Effect::None,
                 Effect::Slide,
