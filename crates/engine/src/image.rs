@@ -20,8 +20,10 @@ pub struct Image {
     clip_rect: RectArea,
 }
 
+pub type SharedImage = Rc<RefCell<Image>>;
+
 impl Image {
-    pub fn new(width: u32, height: u32) -> Rc<RefCell<Image>> {
+    pub fn new(width: u32, height: u32) -> SharedImage {
         let image = Rc::new(RefCell::new(Image {
             width: width,
             height: height,
