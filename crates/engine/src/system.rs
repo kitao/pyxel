@@ -138,7 +138,7 @@ impl Pyxel {
         callback.draw(self);
 
         self.platform
-            .render_screen(&self.screen, &self.colors, BACKGROUND_COLOR);
+            .render_screen(&self.screen.borrow(), &self.colors, BACKGROUND_COLOR);
 
         self.system.draw_profiler.end(self.platform.ticks());
 
