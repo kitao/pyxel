@@ -59,7 +59,7 @@ impl Pyxel {
         self.platform.set_fullscreen(fullscreen);
     }
 
-    pub fn run(&mut self, callback: &mut dyn PyxelCallback) {
+    pub fn run<T: PyxelCallback>(&mut self, callback: &mut T) {
         'main_loop: loop {
             self.system.next_update_time =
                 self.platform.ticks() as f64 + self.system.one_frame_time;
