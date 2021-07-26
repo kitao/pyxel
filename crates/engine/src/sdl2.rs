@@ -18,7 +18,6 @@ use sdl2::AudioSubsystem as SdlAudioSubsystem;
 use sdl2::EventPump as SdlEventPump;
 use sdl2::TimerSubsystem as SdlTimerSubsystem;
 
-use crate::canvas::Canvas;
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
 use crate::image::Image;
 use crate::platform::{AudioCallback, Platform};
