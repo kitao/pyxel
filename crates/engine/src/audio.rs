@@ -16,7 +16,7 @@ pub struct Audio {
 pub type SyncedAudio = Arc<Mutex<Audio>>;
 
 impl AudioCallback for Audio {
-    fn audio_callback(&mut self, out: &mut [i16]) {
+    fn update(&mut self, out: &mut [i16]) {
         let mut samples = self.blip_buf.read_samples(out, false);
 
         while samples < out.len() {
@@ -70,7 +70,7 @@ impl Pyxel {
     pub fn playm(&mut self, msc: u32, looping: bool) {
         for i in 0..MUSIC_COUNT {
             let music = self.musics[msc as usize].clone();
-            self.play(i, &music.borrow().seq[i as usize], looping);
+            self.play(i, &music.borrow().seqs[i as usize], looping);
         }
     }
 
