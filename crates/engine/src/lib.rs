@@ -149,7 +149,7 @@ impl Pyxel {
         };
 
         pyxel.platform.start_audio(SAMPLE_RATE, SAMPLE_COUNT, audio);
-        pyxel.system.reset_start_time(pyxel.platform.ticks());
+        pyxel.system.reset_start_time(pyxel.platform.tick_count());
 
         pyxel
     }
