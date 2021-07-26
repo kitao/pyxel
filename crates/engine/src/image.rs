@@ -1,5 +1,7 @@
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::path::Path;
+use std::rc::Rc;
 
 use crate::canvas::Canvas;
 use crate::rectarea::RectArea;
@@ -7,7 +9,6 @@ use crate::settings::COLOR_COUNT;
 use crate::tilemap::{Tile, Tilemap};
 use crate::types::{Color, Rgb8};
 use crate::utility::{parse_hex_string, set_data_value, simplify_string};
-use crate::Pyxel;
 
 pub struct Image {
     pub width: u32,
@@ -20,17 +21,17 @@ pub struct Image {
 }
 
 impl Image {
-    pub fn new(width: u32, height: u32) -> Image {
-        let mut image = Image {
+    pub fn new(width: u32, height: u32) -> Rc<RefCell<Image>> {
+        let image = Rc::new(RefCell::new(Image {
             width: width,
             height: height,
             data: vec![vec![0; width as usize]; height as usize],
             palette: [0; COLOR_COUNT as usize],
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
-        };
+        }));
 
-        image.pal_();
+        image.borrow_mut().pal_();
 
         image
     }
@@ -61,22 +62,34 @@ impl Image {
             return;
         }
 
-        let mut dst_image = Image::new(width, height);
-        let dst_data = &mut dst_image.data;
+        let dst_image = Image::new(width, height);
 
-        for i in 0..height {
-            let src_data = simplify_string(data_str[i as usize]);
+        {
+            let dst_data = &mut dst_image.borrow_mut().data;
 
-            for j in 0..width {
-                if let Some(value) = parse_hex_string(&src_data[j as usize..j as usize + 1]) {
-                    set_data_value(dst_data, j as i32, i as i32, value as Color);
-                } else {
-                    panic!("invalid image data");
+            for i in 0..height {
+                let src_str = simplify_string(data_str[i as usize]);
+
+                for j in 0..width {
+                    if let Some(value) = parse_hex_string(&src_str[j as usize..j as usize + 1]) {
+                        set_data_value(dst_data, j as i32, i as i32, value as Color);
+                    } else {
+                        panic!("invalid image data");
+                    }
                 }
             }
         }
 
-        self.blt(x, y, &dst_image, 0, 0, width as i32, height as i32, None);
+        self.blt(
+            x,
+            y,
+            &dst_image.borrow(),
+            0,
+            0,
+            width as i32,
+            height as i32,
+            None,
+        );
     }
 
     pub fn bltm(
@@ -93,15 +106,15 @@ impl Image {
         //
     }
 
-    pub fn text(&mut self, pyxel: &Pyxel, x: i32, y: i32, text: &str, color: Color) {
+    pub fn text(&mut self, x: i32, y: i32, s: &str, color: Color, font: &Image) {
         //
     }
 
     pub fn load(&mut self, x: i32, y: i32, filename: &str, color: &[Rgb8]) {
         let src_image = image::open(&Path::new(&filename)).unwrap().to_rgb8();
         let (width, height) = src_image.dimensions();
-        let mut dst_image = Image::new(width, height);
-        let dst_data = &mut dst_image.data;
+        let dst_image = Image::new(width, height);
+        let dst_data = &mut dst_image.borrow_mut().data;
         let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
 
         for i in 0..height {
@@ -136,7 +149,16 @@ impl Image {
             }
         }
 
-        self.blt(x, y, &dst_image, 0, 0, width as i32, height as i32, None);
+        self.blt(
+            x,
+            y,
+            &dst_image.borrow(),
+            0,
+            0,
+            width as i32,
+            height as i32,
+            None,
+        );
     }
 
     pub fn save(&self, filename: &str, scale: u32) {
