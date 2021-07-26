@@ -14,8 +14,10 @@ pub struct Sound {
     pub speed: Speed,
 }
 
+pub type SharedSound = Rc<RefCell<Sound>>;
+
 impl Sound {
-    pub fn new() -> Rc<RefCell<Sound>> {
+    pub fn new() -> SharedSound {
         Rc::new(RefCell::new(Sound {
             note: Vec::new(),
             tone: Vec::new(),
