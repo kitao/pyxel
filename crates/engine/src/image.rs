@@ -15,7 +15,6 @@ pub struct Image {
     pub height: u32,
     pub data: Vec<Vec<Color>>,
 
-    palette: [Color; COLOR_COUNT as usize],
     self_rect: RectArea,
     clip_rect: RectArea,
 }
@@ -24,56 +23,29 @@ pub type SharedImage = Rc<RefCell<Image>>;
 
 impl Image {
     pub fn new(width: u32, height: u32) -> SharedImage {
-        let image = Rc::new(RefCell::new(Image {
+        Rc::new(RefCell::new(Image {
             width: width,
             height: height,
             data: vec![vec![0; width as usize]; height as usize],
-            palette: [0; COLOR_COUNT as usize],
+
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
-        }));
-
-        image.borrow_mut().pal_();
-
-        image
-    }
-
-    pub fn width(&self) -> u32 {
-        self.width
-    }
-
-    pub fn height(&self) -> u32 {
-        self.height
-    }
-
-    pub fn pal(&mut self, col1: Color, col2: Color) {
-        self.palette[col1 as usize] = col2;
-    }
-
-    pub fn pal_(&mut self) {
-        for i in 0..COLOR_COUNT {
-            self.palette[i as usize] = i as Color;
-        }
+        }))
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = data_str[0].len() as u32;
         let height = data_str.len() as u32;
-
-        if width == 0 || height == 0 {
-            return;
-        }
-
         let dst_image = Image::new(width, height);
 
         {
             let dst_data = &mut dst_image.borrow_mut().data;
 
             for i in 0..height {
-                let src_str = simplify_string(data_str[i as usize]);
+                let src_data = simplify_string(data_str[i as usize]);
 
                 for j in 0..width {
-                    if let Some(value) = parse_hex_string(&src_str[j as usize..j as usize + 1]) {
+                    if let Some(value) = parse_hex_string(&src_data[j as usize..j as usize + 1]) {
                         set_data_value(dst_data, j as i32, i as i32, value as Color);
                     } else {
                         panic!("invalid image data");
@@ -90,6 +62,7 @@ impl Image {
             0,
             width as i32,
             height as i32,
+            None,
             None,
         );
     }
@@ -160,6 +133,7 @@ impl Image {
             width as i32,
             height as i32,
             None,
+            None,
         );
     }
 
@@ -182,12 +156,12 @@ impl Image {
 impl Canvas<Color> for Image {
     #[inline]
     fn _width(&self) -> u32 {
-        self.width
+        self._self_rect().width()
     }
 
     #[inline]
     fn _height(&self) -> u32 {
-        self.height
+        self._self_rect().height()
     }
 
     #[inline]
@@ -213,10 +187,5 @@ impl Canvas<Color> for Image {
     #[inline]
     fn _clip_rect_mut(&mut self) -> &mut RectArea {
         &mut self.clip_rect
-    }
-
-    #[inline]
-    fn _palette_value(&self, val: Color) -> Color {
-        self.palette[val as usize]
     }
 }
