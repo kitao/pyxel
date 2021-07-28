@@ -139,6 +139,9 @@ impl Pyxel {
 
         callback.draw(self);
 
+        self.draw_perf_monitor();
+        self.draw_mouse_cursor();
+
         self.platform
             .render_screen(&self.screen.borrow(), &self.colors, BACKGROUND_COLOR);
 
@@ -244,5 +247,56 @@ impl Pyxel {
         if self.btnp(self.system.quit_key, None, None) {
             self.system.should_quit = true;
         }
+    }
+
+    fn draw_perf_monitor(&mut self) {
+        if !self.system.perf_monitor_enabled {
+            return;
+        }
+
+        /*
+        STORE_CLIP_AREA_AND_PALETTE();
+
+        char buf[16];
+
+        snprintf(buf, sizeof(buf), "%.2f", fps_profiler_.AverageFPS());
+        graphics_->DrawText(1, 0, buf, 1);
+        graphics_->DrawText(0, 0, buf, 9);
+
+        snprintf(buf, sizeof(buf), "%.2f", update_profiler_.AverageTime());
+        graphics_->DrawText(1, 6, buf, 1);
+        graphics_->DrawText(0, 6, buf, 9);
+
+        snprintf(buf, sizeof(buf), "%.2f", draw_profiler_.AverageTime());
+        graphics_->DrawText(1, 12, buf, 1);
+        graphics_->DrawText(0, 12, buf, 9);
+
+        RESTORE_CLIP_AREA_AND_PALETTE();
+        */
+    }
+
+    fn draw_mouse_cursor(&mut self) {
+        /*
+        if (!input_->IsMouseVisible()) {
+            return;
+        }
+
+        int32_t mouse_x = input_->MouseX();
+        int32_t mouse_y = input_->MouseY();
+
+        if (mouse_x < 0 || mouse_x >= window_->ScreenWidth() || mouse_y < 0 ||
+            mouse_y >= window_->ScreenHeight()) {
+            return;
+        }
+
+        STORE_CLIP_AREA_AND_PALETTE();
+
+        graphics_->ResetPalette();
+        graphics_->DrawImage(mouse_x, mouse_y, IMAGE_BANK_FOR_SYSTEM, MOUSE_CURSOR_X,
+                            MOUSE_CURSOR_Y, MOUSE_CURSOR_WIDTH, MOUSE_CURSOR_HEIGHT,
+                            1);
+
+        RESTORE_CLIP_AREA_AND_PALETTE();
+        */
     }
 }
