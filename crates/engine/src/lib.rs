@@ -21,7 +21,7 @@ mod tilemap;
 mod types;
 mod utility;
 
-use crate::audio::{Audio, SyncedAudio};
+use crate::audio::{AtomicAudio, Audio};
 use crate::graphics::Graphics;
 use crate::image::{Image, SharedImage};
 use crate::input::Input;
@@ -45,7 +45,7 @@ pub struct Pyxel {
     resource: Resource,
     input: Input,
     graphics: Graphics,
-    audio: SyncedAudio,
+    audio: AtomicAudio,
 
     // System
     pub width: u32,
