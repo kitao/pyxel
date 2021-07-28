@@ -47,8 +47,8 @@ pub fn data_value_with_check<T: Copy + Default>(
 }
 
 #[inline]
-pub fn set_data_value<T: Copy>(data: &mut Vec<Vec<T>>, x: i32, y: i32, val: T) {
-    data[y as usize][x as usize] = val;
+pub fn set_data_value<T: Copy>(data: &mut Vec<Vec<T>>, x: i32, y: i32, value: T) {
+    data[y as usize][x as usize] = value;
 }
 
 #[inline]
@@ -57,10 +57,10 @@ pub fn set_data_value_with_check<T: Copy>(
     rect: RectArea,
     x: i32,
     y: i32,
-    val: T,
+    value: T,
 ) {
     if rect.contains(x, y) {
-        data[y as usize][x as usize] = val;
+        data[y as usize][x as usize] = value;
     }
 }
 
