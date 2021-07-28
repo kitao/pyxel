@@ -2,11 +2,12 @@ use std::cmp::max;
 use std::mem::swap;
 
 use crate::rectarea::RectArea;
+use crate::types::ToIndex;
 use crate::utility::{
     data_value, data_value_with_check, set_data_value, set_data_value_with_check,
 };
 
-pub trait Canvas<T: Copy + PartialEq + Default> {
+pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     fn _width(&self) -> u32;
     fn _height(&self) -> u32;
     fn _data(&self) -> &Vec<Vec<T>>;
@@ -14,7 +15,6 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
     fn _self_rect(&self) -> RectArea;
     fn _clip_rect(&self) -> RectArea;
     fn _clip_rect_mut(&mut self) -> &mut RectArea;
-    fn _palette_value(&self, val: T) -> T;
 
     fn clip(&mut self, x: i32, y: i32, w: u32, h: u32) {
         let rect = RectArea::new(x, y, w, h).intersects(self._self_rect());
@@ -26,7 +26,6 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
     }
 
     fn cls(&mut self, val: T) {
-        let val = self._palette_value(val);
         let width = self._width();
         let height = self._height();
         let data = self._data_mut();
@@ -43,21 +42,18 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
     }
 
     fn pset(&mut self, x: i32, y: i32, val: T) {
-        unsafe {
-            let data: *mut Vec<Vec<T>> = self._data_mut();
-            set_data_value_with_check(&mut *data, self._self_rect(), x, y, val);
-        }
+        let rect = self._clip_rect();
+        set_data_value_with_check(&mut self._data_mut(), rect, x, y, val);
     }
 
     fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, val: T) {
-        let val = self._palette_value(val);
-        let rect = self._self_rect();
-        let data = self._data_mut();
-
         if x1 == x2 && y1 == y2 {
             self.pset(x1, y1, val);
             return;
         }
+
+        let rect = self._clip_rect();
+        let data = self._data_mut();
 
         if (x1 - x2).abs() > (y1 - y2).abs() {
             let start_x: i32;
@@ -129,13 +125,11 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
             return;
         }
 
-        let val = self._palette_value(val);
-        let data = self._data_mut();
-
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
+        let data = self._data_mut();
 
         for i in top..=bottom {
             for j in left..=right {
@@ -151,13 +145,11 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
             return;
         }
 
-        let val = self._palette_value(val);
-        let data = self._data_mut();
-
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
+        let data = self._data_mut();
 
         for i in left..=right {
             set_data_value(data, i, top, val);
@@ -176,10 +168,8 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
             return;
         }
 
-        let val = self._palette_value(val);
-        let rect = self._self_rect();
+        let rect = self._clip_rect();
         let data = self._data_mut();
-
         let sq_radius = r * r;
 
         for dx in 0..=r as i32 {
@@ -204,10 +194,8 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
             return;
         }
 
-        let val = self._palette_value(val);
-        let rect = self._self_rect();
+        let rect = self._clip_rect();
         let data = self._data_mut();
-
         let sq_radius = r * r;
 
         for dx in 0..=r as i32 {
@@ -230,10 +218,6 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
     }
 
     fn tri(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, val: T) {
-        let val = self._palette_value(val);
-        let rect = self._self_rect();
-        let data = self._data_mut();
-
         let mut x1 = x1;
         let mut y1 = y1;
         let mut x2 = x2;
@@ -270,6 +254,8 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
             (x3 - x2) as f64 / (y3 - y2) as f64
         };
 
+        let rect = self._clip_rect();
+        let data = self._data_mut();
         let x_inter = (x1 as f64 + alpha13 * (y2 - y1) as f64 + 0.5) as i32;
 
         for i in y1..=y2 {
@@ -314,56 +300,51 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
     }
 
     fn fill(&mut self, x: i32, y: i32, val: T) {
-        if self._self_rect().contains(x, y) {
-            let render_val = self._palette_value(val);
-            let target_val = data_value(self._data(), x, y);
-
-            if render_val != target_val {
-                self._fill_rec(x, y, self._self_rect(), render_val, target_val);
-            }
+        if self._clip_rect().contains(x, y) {
+            self._fill_rec(x, y, val, data_value(self._data(), x, y));
         }
     }
 
-    fn _fill_rec(&mut self, x: i32, y: i32, rect: RectArea, render_val: T, target_val: T) {
-        let data: *mut Vec<Vec<T>> = self._data_mut();
-
+    fn _fill_rec(&mut self, x: i32, y: i32, val: T, tgt_val: T) {
+        let rect = self._clip_rect();
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
+        let data: *mut Vec<Vec<T>> = self._data_mut();
 
         for i in (x..=left).rev() {
             unsafe {
-                if data_value(&*data, i, y) != target_val {
+                if data_value(&*data, i, y) != tgt_val {
                     break;
                 }
 
-                set_data_value(&mut *data, i, y, render_val);
+                set_data_value(&mut *data, i, y, val);
 
-                if y > top && data_value(&mut *data, i, y - 1) == target_val {
-                    self._fill_rec(i, y - 1, rect, render_val, target_val);
+                if y > top && data_value(&mut *data, i, y - 1) == tgt_val {
+                    self._fill_rec(i, y - 1, val, tgt_val);
                 }
 
-                if y > bottom && data_value(&mut *data, i, y + 1) == target_val {
-                    self._fill_rec(i, y - 1, rect, render_val, target_val);
+                if y > bottom && data_value(&mut *data, i, y + 1) == tgt_val {
+                    self._fill_rec(i, y + 1, val, tgt_val);
                 }
             }
         }
 
         for i in x + 1..=right {
             unsafe {
-                if data_value(&*data, i, y) != target_val {
+                if data_value(&*data, i, y) != tgt_val {
                     break;
                 }
 
-                set_data_value(&mut *data, i, y, render_val);
+                set_data_value(&mut *data, i, y, val);
 
-                if y > top && data_value(&mut *data, i, y - 1) == target_val {
-                    self._fill_rec(i, y - 1, rect, render_val, target_val);
+                if y > top && data_value(&mut *data, i, y - 1) == tgt_val {
+                    self._fill_rec(i, y - 1, val, tgt_val);
                 }
 
-                if y > bottom && data_value(&mut *data, i, y + 1) == target_val {
-                    self._fill_rec(i, y - 1, rect, render_val, target_val);
+                if y > bottom && data_value(&mut *data, i, y + 1) == tgt_val {
+                    self._fill_rec(i, y + 1, val, tgt_val);
                 }
             }
         }
@@ -378,11 +359,11 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         v: i32,
         w: i32,
         h: i32,
-        valkey: Option<T>,
+        pal: Option<&[T]>,
+        key: Option<T>,
     ) {
         let src_rect = src._self_rect();
-        let dst_rect = self._self_rect();
-
+        let dst_rect = self._clip_rect();
         let flip_x = w < 0;
         let flip_y = h < 0;
         let width = w.abs();
@@ -412,7 +393,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         let width = max(width - left_margin - right_margin, 0);
         let height = max(height - top_margin - bottom_margin, 0);
 
-        if width == 0 && height == 0 {
+        if width == 0 || height == 0 {
             return;
         }
 
@@ -440,34 +421,28 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         let src_data = src._data();
         let dst_data: *mut Vec<Vec<T>> = self._data_mut();
 
-        if let Some(valkey) = valkey {
-            for i in 0..height {
-                for j in 0..width {
-                    let val = data_value(
-                        src_data,
-                        u + sign_x * j + offset_x,
-                        v + sign_y * i + offset_y,
-                    );
+        for i in 0..height {
+            for j in 0..width {
+                let val = data_value(
+                    src_data,
+                    u + sign_x * j + offset_x,
+                    v + sign_y * i + offset_y,
+                );
 
-                    if val != valkey {
-                        unsafe {
-                            set_data_value(&mut *dst_data, x + j, y + i, self._palette_value(val));
-                        }
+                let val = if let Some(pal) = pal {
+                    pal[val.to_index()]
+                } else {
+                    val
+                };
+
+                if let Some(key) = key {
+                    if val == key {
+                        continue;
                     }
                 }
-            }
-        } else {
-            for i in 0..height {
-                for j in 0..width {
-                    let val = data_value(
-                        src_data,
-                        u + sign_x * j + offset_x,
-                        v + sign_y * i + offset_y,
-                    );
 
-                    unsafe {
-                        set_data_value(&mut *dst_data, x + j, y + i, self._palette_value(val));
-                    }
+                unsafe {
+                    set_data_value(&mut *dst_data, x + j, y + i, val);
                 }
             }
         }
