@@ -33,23 +33,18 @@ impl Tilemap {
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = data_str[0].len() as u32 / 4;
         let height = data_str.len() as u32;
-
-        if width == 0 || height == 0 {
-            return;
-        }
-
         let dst_tilemap = Tilemap::new(width, height);
 
         {
             let dst_data = &mut dst_tilemap.borrow_mut().data;
 
             for i in 0..height {
-                let src_str = simplify_string(data_str[i as usize]);
+                let src_data = simplify_string(data_str[i as usize]);
 
                 for j in 0..width {
                     let index = j as usize * 4;
 
-                    if let Some(value) = parse_hex_string(&src_str[index..index + 4]) {
+                    if let Some(value) = parse_hex_string(&src_data[index..index + 4]) {
                         set_data_value(
                             dst_data,
                             j as i32,
@@ -71,6 +66,7 @@ impl Tilemap {
             0,
             width as i32,
             height as i32,
+            None,
             None,
         );
     }
@@ -110,10 +106,5 @@ impl Canvas<Tile> for Tilemap {
     #[inline]
     fn _clip_rect_mut(&mut self) -> &mut RectArea {
         &mut self.clip_rect
-    }
-
-    #[inline]
-    fn _palette_value(&self, val: Tile) -> Tile {
-        val
     }
 }
