@@ -54,7 +54,7 @@ impl Channel {
             let sound = &self.sounds[self.sound_index as usize];
             let note = Channel::circular_note(&sound.notes, self.note_index);
             let volume = Channel::circular_volume(&sound.volumes, self.note_index);
-            let speeds = max(sound.speed, 1);
+            let speed = max(sound.speed, 1);
 
             if note >= 0 && volume > Volume::Level0 {
                 self.oscillator.play(
