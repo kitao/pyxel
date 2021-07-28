@@ -43,7 +43,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
 
     fn pset(&mut self, x: i32, y: i32, val: T) {
         let rect = self._clip_rect();
-        set_data_value_with_check(&mut self._data_mut(), rect, x, y, val);
+        set_data_value_with_check(self._data_mut(), rect, x, y, val);
     }
 
     fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, val: T) {
@@ -311,41 +311,37 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
-        let data: *mut Vec<Vec<T>> = self._data_mut();
+        let data = self._data_mut();
 
         for i in (x..=left).rev() {
-            unsafe {
-                if data_value(&*data, i, y) != tgt_val {
-                    break;
-                }
+            if data_value(data, i, y) != tgt_val {
+                break;
+            }
 
-                set_data_value(&mut *data, i, y, val);
+            set_data_value(data, i, y, val);
 
-                if y > top && data_value(&mut *data, i, y - 1) == tgt_val {
-                    self._fill_rec(i, y - 1, val, tgt_val);
-                }
+            if y > top && data_value(data, i, y - 1) == tgt_val {
+                self._fill_rec(i, y - 1, val, tgt_val);
+            }
 
-                if y > bottom && data_value(&mut *data, i, y + 1) == tgt_val {
-                    self._fill_rec(i, y + 1, val, tgt_val);
-                }
+            if y > bottom && data_value(data, i, y + 1) == tgt_val {
+                self._fill_rec(i, y + 1, val, tgt_val);
             }
         }
 
         for i in x + 1..=right {
-            unsafe {
-                if data_value(&*data, i, y) != tgt_val {
-                    break;
-                }
+            if data_value(data, i, y) != tgt_val {
+                break;
+            }
 
-                set_data_value(&mut *data, i, y, val);
+            set_data_value(data, i, y, val);
 
-                if y > top && data_value(&mut *data, i, y - 1) == tgt_val {
-                    self._fill_rec(i, y - 1, val, tgt_val);
-                }
+            if y > top && data_value(data, i, y - 1) == tgt_val {
+                self._fill_rec(i, y - 1, val, tgt_val);
+            }
 
-                if y > bottom && data_value(&mut *data, i, y + 1) == tgt_val {
-                    self._fill_rec(i, y + 1, val, tgt_val);
-                }
+            if y > bottom && data_value(data, i, y + 1) == tgt_val {
+                self._fill_rec(i, y + 1, val, tgt_val);
             }
         }
     }
@@ -419,7 +415,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         }
 
         let src_data = src._data();
-        let dst_data: *mut Vec<Vec<T>> = self._data_mut();
+        let dst_data = self._data_mut();
 
         for i in 0..height {
             for j in 0..width {
@@ -441,9 +437,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
                     }
                 }
 
-                unsafe {
-                    set_data_value(&mut *dst_data, x + j, y + i, val);
-                }
+                set_data_value(dst_data, x + j, y + i, val);
             }
         }
     }
