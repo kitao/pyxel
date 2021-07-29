@@ -13,8 +13,7 @@ use crate::types::Key;
 pub struct System {
     one_frame_time: f64,
     next_update_time: f64,
-    waiting_update_count: u32,
-    disable_frame_skip_once: bool,
+    disable_next_frame_skip: bool,
 
     quit_key: Key,
     should_quit: bool,
@@ -31,8 +30,7 @@ impl System {
         System {
             one_frame_time: 1000.0 / fps as f64,
             next_update_time: 0.0,
-            waiting_update_count: 0,
-            disable_frame_skip_once: false,
+            disable_next_frame_skip: true,
 
             quit_key: quit_key,
             should_quit: false,
@@ -45,8 +43,8 @@ impl System {
         }
     }
 
-    pub fn reset_start_time(&mut self, ticks: u32) {
-        self.next_update_time = ticks as f64 - self.one_frame_time;
+    pub fn reset_start_time(&mut self, tick_count: u32) {
+        self.next_update_time = tick_count as f64 - self.one_frame_time;
     }
 }
 
@@ -60,65 +58,72 @@ impl Pyxel {
     }
 
     pub fn run<T: PyxelCallback>(&mut self, callback: &mut T) {
-        'main_loop: loop {
-            self.system.next_update_time =
-                self.platform.tick_count() as f64 + self.system.one_frame_time;
-            self.system.should_quit = false;
-            self.system.disable_frame_skip_once = true;
-            self.frame_count = 0;
+        self.system.next_update_time =
+            self.platform.tick_count() as f64 + self.system.one_frame_time;
 
-            if self.update_frame(callback) {
+        'main_loop: loop {
+            if self.update_frame(Some(callback)) {
                 break 'main_loop;
             }
 
-            self.draw_frame(callback);
+            self.draw_frame(Some(callback), 0);
 
             loop {
                 let sleep_time = self.wait_for_update_time();
 
-                let ticks = self.platform.tick_count();
-                self.system.fps_profiler.end(ticks);
-                self.system.fps_profiler.start(ticks);
+                let tick_count = self.platform.tick_count();
+                self.system.fps_profiler.end(tick_count);
+                self.system.fps_profiler.start(tick_count);
 
-                if self.system.disable_frame_skip_once {
-                    self.system.disable_frame_skip_once = false;
-                    self.system.waiting_update_count = 1;
+                let update_count: u32;
+
+                if self.system.disable_next_frame_skip {
+                    self.system.disable_next_frame_skip = false;
+
+                    update_count = 1;
+
                     self.system.next_update_time =
-                        self.platform.tick_count() as f64 + self.system.one_frame_time;
+                        self.platform.tick_count() as f64 + self.system.one_frame_time as f64;
                 } else {
-                    self.system.waiting_update_count = min(
+                    update_count = min(
                         (-sleep_time as f64 / self.system.one_frame_time) as u32,
                         MAX_FRAME_SKIP_COUNT,
                     ) + 1;
+
                     self.system.next_update_time +=
-                        self.system.one_frame_time * self.system.waiting_update_count as f64;
+                        self.system.one_frame_time * update_count as f64;
                 }
 
-                while self.system.waiting_update_count > 0 {
-                    if self.update_frame(callback) {
+                for i in 0..update_count {
+                    if self.update_frame(Some(callback)) {
                         break 'main_loop;
+                    }
+
+                    if i < update_count - 1 {
+                        self.frame_count += 1;
                     }
                 }
 
-                self.draw_frame(callback);
+                self.draw_frame(Some(callback), update_count);
             }
         }
     }
 
-    fn update_frame(&mut self, callback: &mut dyn PyxelCallback) -> bool {
+    fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) -> bool {
         self.system
             .update_profiler
             .start(self.platform.tick_count());
 
         self.process_events();
-        // TODO: drop_file_ = window_->GetDropFile();
         self.check_special_input();
 
         if self.system.should_quit {
             return true;
         }
 
-        callback.update(self);
+        if let Some(callback) = callback {
+            callback.update(self);
+        }
 
         if self.system.should_quit {
             return true;
@@ -126,24 +131,23 @@ impl Pyxel {
 
         self.system.update_profiler.end(self.platform.tick_count());
 
-        if self.system.waiting_update_count > 0 {
-            self.system.waiting_update_count -= 1;
-            self.frame_count += 1;
-        }
-
         false
     }
 
-    fn draw_frame(&mut self, callback: &mut dyn PyxelCallback) {
+    fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>, elapsed_frame_count: u32) {
         self.system.draw_profiler.start(self.platform.tick_count());
 
-        callback.draw(self);
+        if let Some(callback) = callback {
+            callback.draw(self);
+        }
 
         self.draw_perf_monitor();
         self.draw_mouse_cursor();
-
         self.platform
             .render_screen(&self.screen.borrow(), &self.colors, BACKGROUND_COLOR);
+        self.system
+            .recorder
+            .capture_screen(&self.screen.borrow(), elapsed_frame_count);
 
         self.system.draw_profiler.end(self.platform.tick_count());
 
@@ -154,33 +158,30 @@ impl Pyxel {
         self.system.should_quit = true;
     }
 
-    pub fn flip(&mut self) {
-        /*
-        next_update_time_ += one_frame_time_;
+    pub fn flip(&mut self) -> bool {
+        self.system.next_update_time += self.system.next_update_time;
 
-        fps_profiler_.End();
-        fps_profiler_.Start();
+        let tick_count = self.platform.tick_count();
+        self.system.fps_profiler.end(tick_count);
+        self.system.fps_profiler.start(tick_count);
 
-        if (UpdateFrame(nullptr)) {
+        if self.update_frame(None) {
             return true;
         }
 
-        DrawFrame(nullptr, 1);
+        self.draw_frame(None, 1);
 
-        return false;
-        */
+        false
     }
 
     pub fn show(&mut self) {
-        /*
-        is_loop_running_ = true;
-
-        while (true) {
-            if (FlipScreen()) {
-            break;
+        loop {
+            if self.update_frame(None) {
+                break;
             }
+
+            self.draw_frame(None, 1);
         }
-        */
     }
 
     fn process_events(&mut self) {
@@ -229,7 +230,7 @@ impl Pyxel {
 
             if self.btnp(KEY_1, None, None) {
                 //recorder_->SaveScreenshot();
-                self.system.disable_frame_skip_once = true;
+                self.system.disable_next_frame_skip = true;
             }
 
             if self.btnp(KEY_2, None, None) {
