@@ -1,18 +1,18 @@
 use crate::rectarea::RectArea;
 
-pub fn remove_whitespace(s: &str) -> String {
-    s.replace(&[' ', '\n', '\r', '\t'][..], "")
+pub fn remove_whitespace(string: &str) -> String {
+    string.replace(&[' ', '\n', '\r', '\t'][..], "")
 }
 
-pub fn simplify_string(s: &str) -> String {
-    remove_whitespace(s).to_ascii_lowercase()
+pub fn simplify_string(string: &str) -> String {
+    remove_whitespace(string).to_ascii_lowercase()
 }
 
-pub fn parse_hex_string(s: &str) -> Option<u32> {
-    let s = s.to_ascii_lowercase();
+pub fn parse_hex_string(string: &str) -> Option<u32> {
+    let string = string.to_ascii_lowercase();
     let mut result: u32 = 0;
 
-    for c in s.chars() {
+    for c in string.chars() {
         result *= 0x10;
 
         if c >= '0' && c <= '9' {
