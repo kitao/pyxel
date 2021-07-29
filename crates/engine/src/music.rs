@@ -5,7 +5,7 @@ use crate::settings::CHANNEL_COUNT;
 
 #[derive(Clone)]
 pub struct Music {
-    pub seqs: [Vec<u32>; CHANNEL_COUNT as usize],
+    pub sequences: [Vec<u32>; CHANNEL_COUNT as usize],
 }
 
 pub type SharedMusic = Rc<RefCell<Music>>;
@@ -13,15 +13,14 @@ pub type SharedMusic = Rc<RefCell<Music>>;
 impl Music {
     pub fn new() -> SharedMusic {
         Rc::new(RefCell::new(Music {
-            seqs: Default::default(),
+            sequences: Default::default(),
         }))
     }
 
-    pub fn set(&mut self, seq0: &[u32], seq1: &[u32], seq2: &[u32], seq3: &[u32]) {
-        self.seqs[0] = seq0.to_vec();
-        self.seqs[1] = seq1.to_vec();
-        self.seqs[2] = seq2.to_vec();
-        self.seqs[3] = seq3.to_vec();
+    pub fn set(&mut self, sequences: &[&[u32]]) {
+        for i in 0..CHANNEL_COUNT {
+            self.sequences[i as usize] = sequences[i as usize].to_vec();
+        }
     }
 }
 
@@ -34,7 +33,7 @@ mod tests {
         let music = Music::new();
 
         for i in 0..CHANNEL_COUNT {
-            assert_eq!(music.borrow().seqs[i as usize].len(), 0);
+            assert_eq!(music.borrow().sequences[i as usize].len(), 0);
         }
     }
 
@@ -44,10 +43,13 @@ mod tests {
 
         music
             .borrow_mut()
-            .set(&[0, 1, 2], &[1, 2, 3], &[2, 3, 4], &[3, 4, 5]);
+            .set(&[&[0, 1, 2], &[1, 2, 3], &[2, 3, 4], &[3, 4, 5]]);
 
         for i in 0..CHANNEL_COUNT {
-            assert_eq!(&music.borrow().seqs[i as usize], &vec![i, i + 1, i + 2]);
+            assert_eq!(
+                &music.borrow().sequences[i as usize],
+                &vec![i, i + 1, i + 2]
+            );
         }
     }
 }
