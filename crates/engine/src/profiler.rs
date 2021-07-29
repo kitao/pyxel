@@ -29,12 +29,12 @@ impl Profiler {
         self.average_fps
     }
 
-    pub fn start(&mut self, ticks: u32) {
-        self.start_time = ticks;
+    pub fn start(&mut self, tick_count: u32) {
+        self.start_time = tick_count;
     }
 
-    pub fn end(&mut self, ticks: u32) {
-        self.total_time += ticks - self.start_time;
+    pub fn end(&mut self, tick_count: u32) {
+        self.total_time += tick_count - self.start_time;
         self.frame_count += 1;
 
         if self.frame_count >= self.measure_frame_count {
