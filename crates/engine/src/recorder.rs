@@ -1,3 +1,5 @@
+use crate::image::Image;
+
 pub struct Recorder {
     /*
 int32_t width_;
@@ -13,50 +15,39 @@ int32_t captured_frames_[SCREEN_CAPTURE_COUNT];
 
 impl Recorder {
     pub fn new() -> Recorder {
+        /*
+        width_ = width;
+        height_ = height;
+        palette_color_ = palette_color;
+        fps_ = fps;
+        cur_frame_ = -1;
+        start_frame_ = 0;
+        frame_count_ = 0;
+
+        for (int32_t i = 0; i < SCREEN_CAPTURE_COUNT; i++) {
+            captured_images_[i] = new Image(width, height);
+        }
+        */
+
         Recorder {}
     }
 
-    /*
-      Recorder(int32_t width,
-               int32_t height,
-               const PaletteColor& palette_color,
-               int32_t fps);
+    pub fn capture_screen(&mut self, screen: &Image, elapsed_frame_count: u32) {
+        /*
+        cur_frame_ = (cur_frame_ + 1) % SCREEN_CAPTURE_COUNT;
+        frame_count_++;
+        captured_images_[cur_frame_]->CopyImage(0, 0, screen_image, 0, 0, width_,
+                                                height_);
+        captured_frames_[cur_frame_] = update_frame_count;
 
-      void SaveScreenshot();
-      void ResetScreenCapture();
-      void SaveScreenCapture();
-
-      void Update(const Image* screen_image, int32_t update_frame_count);
-
-     private:
-      std::string GetBaseName() const;
-    };
-    */
-
-    /*
-    Recorder::Recorder(int32_t width,
-                       int32_t height,
-                       const PaletteColor& palette_color,
-                       int32_t fps) {
-      width_ = width;
-      height_ = height;
-      palette_color_ = palette_color;
-      fps_ = fps;
-      cur_frame_ = -1;
-      start_frame_ = 0;
-      frame_count_ = 0;
-
-      for (int32_t i = 0; i < SCREEN_CAPTURE_COUNT; i++) {
-        captured_images_[i] = new Image(width, height);
-      }
+        if (frame_count_ > SCREEN_CAPTURE_COUNT) {
+          start_frame_ = (start_frame_ + 1) % SCREEN_CAPTURE_COUNT;
+          frame_count_ = SCREEN_CAPTURE_COUNT;
+        }
+        */
     }
 
-    Recorder::~Recorder() {
-      for (int32_t i = 0; i < SCREEN_CAPTURE_COUNT; i++) {
-        delete captured_images_[i];
-      }
-    }
-
+    /*
     void Recorder::SaveScreenshot() {
       if (frame_count_ < 1) {
         return;
@@ -117,19 +108,6 @@ impl Recorder {
       int32_t res = system(("gifsicle -b -O3 -Okeep-empty " + filename).c_str());
 
       ResetScreenCapture();
-    }
-
-    void Recorder::Update(const Image* screen_image, int32_t update_frame_count) {
-      cur_frame_ = (cur_frame_ + 1) % SCREEN_CAPTURE_COUNT;
-      frame_count_++;
-      captured_images_[cur_frame_]->CopyImage(0, 0, screen_image, 0, 0, width_,
-                                              height_);
-      captured_frames_[cur_frame_] = update_frame_count;
-
-      if (frame_count_ > SCREEN_CAPTURE_COUNT) {
-        start_frame_ = (start_frame_ + 1) % SCREEN_CAPTURE_COUNT;
-        frame_count_ = SCREEN_CAPTURE_COUNT;
-      }
     }
 
     std::string Recorder::GetBaseName() const {
