@@ -45,37 +45,37 @@ impl Audio {
 }
 
 impl Pyxel {
-    pub fn is_playing(&self, ch: u32) -> bool {
-        self.audio.lock().unwrap().channels[ch as usize].is_playing()
+    pub fn is_playing(&self, channel: u32) -> bool {
+        self.audio.lock().unwrap().channels[channel as usize].is_playing()
     }
 
-    pub fn is_looping(&self, ch: u32) -> bool {
-        self.audio.lock().unwrap().channels[ch as usize].is_looping()
+    pub fn is_looping(&self, channel: u32) -> bool {
+        self.audio.lock().unwrap().channels[channel as usize].is_looping()
     }
 
-    pub fn play_pos(&self, ch: u32) -> (u32, u32) {
-        let channel = &self.audio.lock().unwrap().channels[ch as usize];
+    pub fn play_pos(&self, channel: u32) -> (u32, u32) {
+        let channel = &self.audio.lock().unwrap().channels[channel as usize];
         (channel.sound_index(), channel.note_index())
     }
 
-    pub fn play(&mut self, ch: u32, seq: &[u32], looping: bool) {
-        let sounds = seq
+    pub fn play(&mut self, channel: u32, sequence: &[u32], is_looping: bool) {
+        let sounds = sequence
             .iter()
-            .map(|snd| self.sounds[*snd as usize].borrow().clone())
+            .map(|sound_no| self.sounds[*sound_no as usize].borrow().clone())
             .collect();
 
-        self.audio.lock().unwrap().channels[ch as usize].play(sounds, looping);
+        self.audio.lock().unwrap().channels[channel as usize].play(sounds, is_looping);
     }
 
-    pub fn playm(&mut self, msc: u32, looping: bool) {
+    pub fn playm(&mut self, music_no: u32, looping: bool) {
         for i in 0..MUSIC_COUNT {
-            let music = self.musics[msc as usize].clone();
-            self.play(i, &music.borrow().seqs[i as usize], looping);
+            let music = self.musics[music_no as usize].clone();
+            self.play(i, &music.borrow().sequences[i as usize], looping);
         }
     }
 
-    pub fn stop(&mut self, ch: u32) {
-        self.audio.lock().unwrap().channels[ch as usize].stop();
+    pub fn stop(&mut self, channel: u32) {
+        self.audio.lock().unwrap().channels[channel as usize].stop();
     }
 
     pub fn stop_(&mut self) {
