@@ -13,7 +13,7 @@ enum KeyState {
 
 pub struct Input {
     frame_count: u32,
-    mouse_visible: bool,
+    is_mouse_visible: bool,
     key_states: HashMap<Key, KeyState>,
     key_values: HashMap<Key, KeyValue>,
     text_input: String,
@@ -24,7 +24,7 @@ impl Input {
     pub fn new() -> Input {
         Input {
             frame_count: 0,
-            mouse_visible: true,
+            is_mouse_visible: true,
             key_states: HashMap::new(),
             key_values: HashMap::new(),
             text_input: "".to_string(),
@@ -177,23 +177,28 @@ impl Pyxel {
         }
     }
 
-    pub fn btnp(&self, key: Key, hold: Option<u32>, period: Option<u32>) -> bool {
+    pub fn btnp(
+        &self,
+        key: Key,
+        hold_frame_count: Option<u32>,
+        repeat_frame_count: Option<u32>,
+    ) -> bool {
         if let Some(KeyState::Pressed { frame_count }) = self.input.key_states.get(&key) {
             if *frame_count == self.input.frame_count {
                 return true;
             }
 
-            let hold_frames = hold.unwrap_or(0);
-            let period_frames = period.unwrap_or(0);
+            let hold_frame_count = hold_frame_count.unwrap_or(0);
+            let repeat_frame_count = repeat_frame_count.unwrap_or(0);
 
-            if hold_frames == 0 || period_frames == 0 {
+            if hold_frame_count == 0 || repeat_frame_count == 0 {
                 return false;
             }
 
             let elapsed_frames =
-                self.input.frame_count as i32 - (*frame_count + hold_frames) as i32;
+                self.input.frame_count as i32 - (*frame_count + hold_frame_count) as i32;
 
-            if elapsed_frames > 0 && elapsed_frames % period_frames as i32 == 0 {
+            if elapsed_frames > 0 && elapsed_frames % repeat_frame_count as i32 == 0 {
                 return true;
             }
         }
@@ -215,8 +220,8 @@ impl Pyxel {
         self.input.key_values.get(&key).cloned().unwrap_or(0)
     }
 
-    pub fn mouse(&mut self, visible: bool) {
-        self.input.mouse_visible = visible;
+    pub fn mouse(&mut self, is_visible: bool) {
+        self.input.is_mouse_visible = is_visible;
     }
 }
 
