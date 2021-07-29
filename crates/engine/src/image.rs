@@ -71,21 +71,21 @@ impl Image {
         &mut self,
         x: i32,
         y: i32,
-        src: &Tilemap,
-        u: i32,
-        v: i32,
+        tilemap: &Tilemap,
+        tilemap_x: i32,
+        tilemap_y: i32,
         width: i32,
         height: i32,
-        tile_key: Option<Tile>,
+        transparent: Option<Tile>,
     ) {
         //
     }
 
-    pub fn text(&mut self, x: i32, y: i32, s: &str, color: Color, font: &Image) {
+    pub fn text(&mut self, x: i32, y: i32, string: &str, color: Color, font: &Image) {
         //
     }
 
-    pub fn load(&mut self, x: i32, y: i32, filename: &str, color: &[Rgb8]) {
+    pub fn load(&mut self, x: i32, y: i32, filename: &str, colors: &[Rgb8]) {
         let src_image = image::open(&Path::new(&filename)).unwrap().to_rgb8();
         let (width, height) = src_image.dimensions();
         let dst_image = Image::new(width, height);
@@ -104,7 +104,7 @@ impl Image {
                     let mut closest_dist: f64 = f64::MAX;
 
                     for k in 0..=COLOR_COUNT {
-                        let pal_color = color[k as usize];
+                        let pal_color = colors[k as usize];
                         let pal_rgb = (
                             ((pal_color >> 16) & 0xff) as u8,
                             ((pal_color >> 8) & 0xff) as u8,
@@ -137,7 +137,7 @@ impl Image {
         );
     }
 
-    pub fn save(&self, filename: &str, scale: u32) {
+    pub fn save(&self, filename: &str, colors: &[Rgb8], scale: u32) {
         //
     }
 
