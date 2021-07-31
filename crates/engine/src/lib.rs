@@ -10,7 +10,6 @@ mod music;
 mod oscillator;
 mod platform;
 mod profiler;
-mod recorder;
 mod rectarea;
 mod resource;
 mod sdl2;
@@ -93,7 +92,7 @@ impl Pyxel {
 
         let platform = TargetPlatform::new(title, width, height, scale);
         let system = System::new(fps, quit_key);
-        let resource = Resource::new();
+        let resource = Resource::new(width, height);
         let input = Input::new();
         let graphics = Graphics::new();
         let audio = Audio::new();
