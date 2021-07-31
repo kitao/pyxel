@@ -168,7 +168,6 @@ impl Platform for Sdl2 {
                 // System Events
                 //
                 SdlEvent::Quit { .. } => Event::Quit,
-
                 SdlEvent::DropFile { filename, .. } => Event::DropFile { filename: filename },
 
                 //
@@ -180,14 +179,12 @@ impl Platform for Sdl2 {
                 } => Event::KeyDown {
                     key: scancode as u32,
                 },
-
                 SdlEvent::KeyUp {
                     scancode: Some(scancode),
                     ..
                 } => Event::KeyUp {
                     key: scancode as u32,
                 },
-
                 SdlEvent::TextInput { text, .. } => Event::TextInput { text: text },
 
                 //
@@ -203,7 +200,6 @@ impl Platform for Sdl2 {
                         SdlMouseButton::Unknown => MouseButton::Unknown,
                     },
                 },
-
                 SdlEvent::MouseButtonUp { mouse_btn, .. } => Event::MouseButtonUp {
                     button: match mouse_btn {
                         SdlMouseButton::Left => MouseButton::Left,
@@ -214,7 +210,6 @@ impl Platform for Sdl2 {
                         SdlMouseButton::Unknown => MouseButton::Unknown,
                     },
                 },
-
                 SdlEvent::MouseWheel { x, y, .. } => Event::MouseWheel { x: x, y: y },
 
                 //
@@ -234,7 +229,6 @@ impl Platform for Sdl2 {
                     },
                     value: value as i32,
                 },
-
                 SdlEvent::ControllerButtonDown { which, button, .. } => {
                     Event::ControllerButtonDown {
                         which: which,
@@ -257,7 +251,6 @@ impl Platform for Sdl2 {
                         },
                     }
                 }
-
                 SdlEvent::ControllerButtonUp { which, button, .. } => Event::ControllerButtonUp {
                     which: which,
                     button: match button {
