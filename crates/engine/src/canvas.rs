@@ -301,7 +301,11 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
 
     fn fill(&mut self, x: i32, y: i32, value: T) {
         if self._clip_rect().contains(x, y) {
-            self._fill_rec(x, y, value, data_value(self._data(), x, y));
+            let target_value = data_value(self._data(), x, y);
+
+            if value != target_value {
+                self._fill_rec(x, y, value, target_value);
+            }
         }
     }
 
