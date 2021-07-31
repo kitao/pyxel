@@ -2,8 +2,7 @@ use crate::canvas::Canvas;
 use crate::image::{Image, SharedImage};
 use crate::settings::COLOR_COUNT;
 use crate::types::{Color, Tile};
-
-use super::Pyxel;
+use crate::Pyxel;
 
 pub struct Graphics {
     org_palette: [Color; COLOR_COUNT as usize],
