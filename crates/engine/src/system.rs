@@ -162,7 +162,7 @@ impl Pyxel {
     }
 
     fn process_events(&mut self) {
-        self.input.start_process_event(self.frame_count);
+        self.start_input_event();
 
         while let Some(event) = self.platform.poll_event() {
             match event {
@@ -170,18 +170,12 @@ impl Pyxel {
                     self.system.should_quit = true;
                 }
                 _ => {
-                    self.input.process_event(event);
+                    self.process_input_event(event);
                 }
             }
         }
 
-        let (mouse_x, mouse_y, mouse_wheel, text_input, drop_files) =
-            self.input.end_process_event();
-        self.mouse_x = mouse_x;
-        self.mouse_y = mouse_y;
-        self.mouse_wheel = mouse_wheel;
-        self.text_input = text_input;
-        self.drop_files = drop_files;
+        self.end_input_event();
     }
 
     fn check_special_input(&mut self) {

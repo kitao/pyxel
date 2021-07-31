@@ -11,159 +11,18 @@ enum KeyState {
 }
 
 pub struct Input {
-    frame_count: u32,
     is_mouse_visible: bool,
     key_states: HashMap<Key, KeyState>,
     key_values: HashMap<Key, KeyValue>,
-    text_input: String,
-    drop_files: Vec<String>,
 }
 
 impl Input {
     pub fn new() -> Input {
         Input {
-            frame_count: 0,
             is_mouse_visible: true,
             key_states: HashMap::new(),
             key_values: HashMap::new(),
-            text_input: "".to_string(),
-            drop_files: Vec::new(),
         }
-    }
-
-    pub fn start_process_event(&mut self, frame_count: u32) {
-        self.frame_count = frame_count;
-        self.key_values.insert(MOUSE_WHEEL_X, 0);
-        self.key_values.insert(MOUSE_WHEEL_Y, 0);
-        self.text_input = "".to_string();
-        self.drop_files.clear();
-    }
-
-    pub fn process_event(&mut self, event: Event) {
-        match event {
-            Event::DropFile { filename } => {
-                self.drop_files.push(filename);
-            }
-
-            Event::KeyDown { key } => {
-                if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
-                    self.press_key(key);
-
-                    if let Some(key) = Self::get_common_key(key) {
-                        self.press_key(key);
-                    }
-                }
-            }
-
-            Event::KeyUp { key } => {
-                if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
-                    self.release_key(key);
-
-                    if let Some(key) = Self::get_common_key(key) {
-                        self.release_key(key);
-                    }
-                }
-            }
-
-            Event::TextInput { text } => {
-                self.text_input += &text;
-            }
-
-            Event::MouseMotion { x, y } => {
-                self.key_values.insert(MOUSE_POS_X, x as KeyValue);
-                self.key_values.insert(MOUSE_POS_Y, y as KeyValue);
-            }
-
-            Event::MouseButtonDown { button } => {
-                self.press_key(MOUSE_BUTTON_LEFT + button as Key);
-            }
-
-            Event::MouseButtonUp { button } => {
-                self.release_key(MOUSE_BUTTON_LEFT + button as Key);
-            }
-
-            Event::MouseWheel { x, y } => {
-                *self.key_values.entry(MOUSE_WHEEL_X).or_insert(0) += x as KeyValue;
-                *self.key_values.entry(MOUSE_WHEEL_Y).or_insert(0) += y as KeyValue;
-            }
-
-            Event::ControllerAxisMotion { which, axis, value } => {
-                let offset = if which == 0 {
-                    0
-                } else if which == 1 {
-                    GAMEPAD2_AXIS_LEFTX - GAMEPAD1_AXIS_LEFTX
-                } else {
-                    return;
-                };
-
-                self.key_values
-                    .insert(GAMEPAD1_AXIS_LEFTX + axis as Key + offset as Key, value);
-            }
-
-            Event::ControllerButtonDown { which, button } => {
-                let offset = if which == 0 {
-                    0
-                } else if which == 1 {
-                    GAMEPAD2_BUTTON_A - GAMEPAD1_BUTTON_A
-                } else {
-                    return;
-                };
-
-                self.press_key(GAMEPAD1_BUTTON_A + button as Key + offset);
-            }
-
-            Event::ControllerButtonUp { which, button } => {
-                let offset = if which == 0 {
-                    0
-                } else if which == 1 {
-                    GAMEPAD2_BUTTON_A - GAMEPAD1_BUTTON_A
-                } else {
-                    return;
-                };
-
-                self.release_key(GAMEPAD1_BUTTON_A + button as Key + offset);
-            }
-
-            _ => {}
-        }
-    }
-
-    pub fn end_process_event(&mut self) -> (i32, i32, i32, String, Vec<String>) {
-        (
-            self.key_values.get(&MOUSE_POS_X).cloned().unwrap_or(0),
-            self.key_values.get(&MOUSE_POS_Y).cloned().unwrap_or(0),
-            self.key_values.get(&MOUSE_WHEEL_Y).cloned().unwrap_or(0),
-            self.text_input.clone(),
-            self.drop_files.clone(),
-        )
-    }
-
-    fn get_common_key(key: Key) -> Option<Key> {
-        match key {
-            KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
-            KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),
-            KEY_LALT | KEY_RALT => Some(KEY_ALT),
-            KEY_LGUI | KEY_RGUI => Some(KEY_GUI),
-            _ => None,
-        }
-    }
-
-    fn press_key(&mut self, key: Key) {
-        self.key_states.insert(
-            key,
-            KeyState::Pressed {
-                frame_count: self.frame_count,
-            },
-        );
-    }
-
-    fn release_key(&mut self, key: Key) {
-        self.key_states.insert(
-            key,
-            KeyState::Released {
-                frame_count: self.frame_count,
-            },
-        );
     }
 }
 
@@ -183,7 +42,7 @@ impl Pyxel {
         repeat_frame_count: Option<u32>,
     ) -> bool {
         if let Some(KeyState::Pressed { frame_count }) = self.input.key_states.get(&key) {
-            if *frame_count == self.input.frame_count {
+            if *frame_count == self.frame_count {
                 return true;
             }
 
@@ -194,8 +53,7 @@ impl Pyxel {
                 return false;
             }
 
-            let elapsed_frames =
-                self.input.frame_count as i32 - (*frame_count + hold_frame_count) as i32;
+            let elapsed_frames = self.frame_count as i32 - (*frame_count + hold_frame_count) as i32;
 
             if elapsed_frames > 0 && elapsed_frames % repeat_frame_count as i32 == 0 {
                 return true;
@@ -207,7 +65,7 @@ impl Pyxel {
 
     pub fn btnr(&self, key: Key) -> bool {
         if let Some(KeyState::Released { frame_count }) = self.input.key_states.get(&key) {
-            if *frame_count == self.input.frame_count {
+            if *frame_count == self.frame_count {
                 return true;
             }
         }
@@ -221,6 +79,160 @@ impl Pyxel {
 
     pub fn mouse(&mut self, is_visible: bool) {
         self.input.is_mouse_visible = is_visible;
+    }
+
+    pub(crate) fn start_input_event(&mut self) {
+        self.input.key_values.insert(MOUSE_WHEEL_X, 0);
+        self.input.key_values.insert(MOUSE_WHEEL_Y, 0);
+        self.text_input = "".to_string();
+        self.drop_files.clear();
+    }
+
+    pub(crate) fn process_input_event(&mut self, event: Event) {
+        match event {
+            //
+            // System Events
+            //
+            Event::DropFile { filename } => {
+                self.drop_files.push(filename);
+            }
+
+            //
+            // Key Events
+            //
+            Event::KeyDown { key } => {
+                if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
+                    self.press_key(key);
+
+                    if let Some(key) = Self::get_common_key(key) {
+                        self.press_key(key);
+                    }
+                }
+            }
+            Event::KeyUp { key } => {
+                if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
+                    self.release_key(key);
+
+                    if let Some(key) = Self::get_common_key(key) {
+                        self.release_key(key);
+                    }
+                }
+            }
+            Event::TextInput { text } => {
+                self.text_input += &text;
+            }
+
+            //
+            // Mouse Events
+            //
+            Event::MouseMotion { x, y } => {
+                self.input.key_values.insert(MOUSE_POS_X, x as KeyValue);
+                self.input.key_values.insert(MOUSE_POS_Y, y as KeyValue);
+            }
+            Event::MouseButtonDown { button } => {
+                self.press_key(MOUSE_BUTTON_LEFT + button as Key);
+            }
+            Event::MouseButtonUp { button } => {
+                self.release_key(MOUSE_BUTTON_LEFT + button as Key);
+            }
+            Event::MouseWheel { x, y } => {
+                *self.input.key_values.entry(MOUSE_WHEEL_X).or_insert(0) += x as KeyValue;
+                *self.input.key_values.entry(MOUSE_WHEEL_Y).or_insert(0) += y as KeyValue;
+            }
+
+            //
+            // Controller Events
+            //
+            Event::ControllerAxisMotion { which, axis, value } => {
+                let offset = if which == 0 {
+                    0
+                } else if which == 1 {
+                    GAMEPAD2_AXIS_LEFTX - GAMEPAD1_AXIS_LEFTX
+                } else {
+                    return;
+                };
+
+                self.input
+                    .key_values
+                    .insert(GAMEPAD1_AXIS_LEFTX + axis as Key + offset as Key, value);
+            }
+            Event::ControllerButtonDown { which, button } => {
+                let offset = if which == 0 {
+                    0
+                } else if which == 1 {
+                    GAMEPAD2_BUTTON_A - GAMEPAD1_BUTTON_A
+                } else {
+                    return;
+                };
+
+                self.press_key(GAMEPAD1_BUTTON_A + button as Key + offset);
+            }
+            Event::ControllerButtonUp { which, button } => {
+                let offset = if which == 0 {
+                    0
+                } else if which == 1 {
+                    GAMEPAD2_BUTTON_A - GAMEPAD1_BUTTON_A
+                } else {
+                    return;
+                };
+
+                self.release_key(GAMEPAD1_BUTTON_A + button as Key + offset);
+            }
+
+            //
+            // Default
+            //
+            _ => {}
+        }
+    }
+
+    pub(crate) fn end_input_event(&mut self) {
+        self.mouse_x = self
+            .input
+            .key_values
+            .get(&MOUSE_POS_X)
+            .cloned()
+            .unwrap_or(0);
+        self.mouse_y = self
+            .input
+            .key_values
+            .get(&MOUSE_POS_Y)
+            .cloned()
+            .unwrap_or(0);
+        self.mouse_wheel = self
+            .input
+            .key_values
+            .get(&MOUSE_WHEEL_Y)
+            .cloned()
+            .unwrap_or(0);
+    }
+
+    fn get_common_key(key: Key) -> Option<Key> {
+        match key {
+            KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
+            KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),
+            KEY_LALT | KEY_RALT => Some(KEY_ALT),
+            KEY_LGUI | KEY_RGUI => Some(KEY_GUI),
+            _ => None,
+        }
+    }
+
+    fn press_key(&mut self, key: Key) {
+        self.input.key_states.insert(
+            key,
+            KeyState::Pressed {
+                frame_count: self.frame_count,
+            },
+        );
+    }
+
+    fn release_key(&mut self, key: Key) {
+        self.input.key_states.insert(
+            key,
+            KeyState::Released {
+                frame_count: self.frame_count,
+            },
+        );
     }
 }
 
