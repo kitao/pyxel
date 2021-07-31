@@ -1,3 +1,4 @@
+use array_macro::array;
 use blip_buf::BlipBuf;
 use std::sync::{Arc, Mutex};
 
@@ -10,7 +11,7 @@ use crate::Pyxel;
 
 pub struct Audio {
     blip_buf: BlipBuf,
-    channels: Vec<Channel>,
+    channels: [Channel; CHANNEL_COUNT as usize],
 }
 
 pub type AtomicAudio = Arc<Mutex<Audio>>;
@@ -18,9 +19,9 @@ pub type AtomicAudio = Arc<Mutex<Audio>>;
 impl Audio {
     pub fn new() -> AtomicAudio {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
-        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
+        let channels = array![_ => Channel::new(); CHANNEL_COUNT as usize];
 
-        let channels = (0..CHANNEL_COUNT).map(|_| Channel::new()).collect();
+        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 
         Arc::new(Mutex::new(Audio {
             blip_buf: blip_buf,
