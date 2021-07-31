@@ -3,8 +3,7 @@ use std::collections::HashMap;
 use crate::event::Event;
 use crate::key::*;
 use crate::types::{Key, KeyValue};
-
-use super::Pyxel;
+use crate::Pyxel;
 
 enum KeyState {
     Pressed { frame_count: u32 },
@@ -32,7 +31,7 @@ impl Input {
         }
     }
 
-    pub fn start_update(&mut self, frame_count: u32) {
+    pub fn start_process_event(&mut self, frame_count: u32) {
         self.frame_count = frame_count;
         self.key_values.insert(MOUSE_WHEEL_X, 0);
         self.key_values.insert(MOUSE_WHEEL_Y, 0);
@@ -129,7 +128,7 @@ impl Input {
         }
     }
 
-    pub fn end_update(&mut self) -> (i32, i32, i32, String, Vec<String>) {
+    pub fn end_process_event(&mut self) -> (i32, i32, i32, String, Vec<String>) {
         (
             self.key_values.get(&MOUSE_POS_X).cloned().unwrap_or(0),
             self.key_values.get(&MOUSE_POS_Y).cloned().unwrap_or(0),
