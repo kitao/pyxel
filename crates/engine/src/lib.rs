@@ -37,10 +37,10 @@ pub use crate::key::*;
 pub use crate::settings::*;
 pub use crate::types::*;
 
-pub type Target = Sdl2;
+pub type TargetPlatform = Sdl2;
 
 pub struct Pyxel {
-    platform: Target,
+    platform: TargetPlatform,
     system: System,
     resource: Resource,
     input: Input,
@@ -91,7 +91,7 @@ impl Pyxel {
         let fps = fps.unwrap_or(DEFAULT_FPS);
         let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
 
-        let platform = Target::new(title, width, height, scale);
+        let platform = TargetPlatform::new(title, width, height, scale);
         let system = System::new(fps, quit_key);
         let resource = Resource::new();
         let input = Input::new();
