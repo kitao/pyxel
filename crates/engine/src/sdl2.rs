@@ -90,14 +90,33 @@ impl Platform for Sdl2 {
     }
 
     fn set_icon(&mut self, icon: &Image, colors: &[Rgb8], scale: u32) {
+        let width = icon.width;
+        let height = icon.height;
+        let mut sdl_texture = self
+            .sdl_canvas
+            .texture_creator()
+            .create_texture_streaming(SdlPixelFormat::RGBA32, width * scale, height * scale)
+            .unwrap();
+        let data = &icon.data;
+
+        sdl_texture
+            .with_lock(None, |buffer: &mut [u8], pitch: usize| {
+                for i in 0..height as usize {
+                    for j in 0..width as usize {
+                        let offset = i * pitch + j * 4;
+                        let color = colors[data[i][j] as usize];
+
+                        buffer[offset] = ((color >> 16) & 0xff) as u8;
+                        buffer[offset + 1] = ((color >> 8) & 0xff) as u8;
+                        buffer[offset + 2] = (color & 0xff) as u8;
+                    }
+                }
+            })
+            .unwrap();
+
+        //self.sdl_canvas.window_mut().set_icon(sdl_texture.surface);
+
         /*
-        SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
-            0, ICON_WIDTH * ICON_SCALE, ICON_HEIGHT * ICON_SCALE, 32,
-            SDL_PIXELFORMAT_RGBA8888);
-
-        Image* image = new Image(ICON_WIDTH, ICON_HEIGHT);
-        image->SetData(0, 0, ICON_DATA);
-
         int32_t** src_data = image->Data();
         uint32_t* dst_data = reinterpret_cast<uint32_t*>(surface->pixels);
 
@@ -119,9 +138,6 @@ impl Platform for Sdl2 {
         }
 
         SDL_SetWindowIcon(window_, surface);
-        SDL_FreeSurface(surface);
-
-        delete image;
         */
     }
 
@@ -286,11 +302,6 @@ impl Platform for Sdl2 {
         let width = screen.width;
         let height = screen.height;
         let data = &screen.data;
-
-        assert!(
-            self.screen_width == width && self.screen_height == height,
-            "screen size is changed"
-        );
 
         self.sdl_texture
             .with_lock(None, |buffer: &mut [u8], pitch: usize| {
