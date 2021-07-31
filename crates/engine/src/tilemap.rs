@@ -18,43 +18,6 @@ pub struct Tilemap {
 
 pub type SharedTilemap = Rc<RefCell<Tilemap>>;
 
-impl Canvas<Tile> for Tilemap {
-    #[inline]
-    fn _width(&self) -> u32 {
-        self.width
-    }
-
-    #[inline]
-    fn _height(&self) -> u32 {
-        self.height
-    }
-
-    #[inline]
-    fn _data<'a>(&'a self) -> &'a Vec<Vec<Tile>> {
-        &self.data
-    }
-
-    #[inline]
-    fn _data_mut<'a>(&'a mut self) -> &'a mut Vec<Vec<Tile>> {
-        &mut self.data
-    }
-
-    #[inline]
-    fn _self_rect(&self) -> RectArea {
-        self.self_rect
-    }
-
-    #[inline]
-    fn _clip_rect(&self) -> RectArea {
-        self.clip_rect
-    }
-
-    #[inline]
-    fn _clip_rect_mut(&mut self) -> &mut RectArea {
-        &mut self.clip_rect
-    }
-}
-
 impl Tilemap {
     pub fn new(width: u32, height: u32) -> SharedTilemap {
         Rc::new(RefCell::new(Tilemap {
@@ -106,5 +69,42 @@ impl Tilemap {
             None,
             None,
         );
+    }
+}
+
+impl Canvas<Tile> for Tilemap {
+    #[inline]
+    fn _width(&self) -> u32 {
+        self.width
+    }
+
+    #[inline]
+    fn _height(&self) -> u32 {
+        self.height
+    }
+
+    #[inline]
+    fn _data<'a>(&'a self) -> &'a Vec<Vec<Tile>> {
+        &self.data
+    }
+
+    #[inline]
+    fn _data_mut<'a>(&'a mut self) -> &'a mut Vec<Vec<Tile>> {
+        &mut self.data
+    }
+
+    #[inline]
+    fn _self_rect(&self) -> RectArea {
+        self.self_rect
+    }
+
+    #[inline]
+    fn _clip_rect(&self) -> RectArea {
+        self.clip_rect
+    }
+
+    #[inline]
+    fn _clip_rect_mut(&mut self) -> &mut RectArea {
+        &mut self.clip_rect
     }
 }
