@@ -26,7 +26,30 @@ impl Graphics {
     }
 
     pub fn new_font_image() -> SharedImage {
-        // TOTO
+        /*
+        Image* image = new Image(ICON_WIDTH, ICON_HEIGHT);
+        image->SetData(0, 0, ICON_DATA);
+
+        int32_t** src_data = image->Data();
+        uint32_t* dst_data = reinterpret_cast<uint32_t*>(surface->pixels);
+
+        for (int32_t i = 0; i < ICON_HEIGHT; i++) {
+            int32_t index = ICON_WIDTH * i;
+
+            for (int32_t j = 0; j < ICON_WIDTH; j++) {
+                int32_t color = src_data[i][j];
+                uint32_t argb = color == 0 ? 0 : (DEFAULT_PALETTE[color] << 8) + 0xff;
+
+                for (int32_t y = 0; y < ICON_SCALE; y++) {
+                    int32_t index = (ICON_WIDTH * (i * ICON_SCALE + y) + j) * ICON_SCALE;
+
+                    for (int32_t x = 0; x < ICON_SCALE; x++) {
+                        dst_data[index + x] = argb;
+                    }
+                }
+            }
+        }
+        */
         Image::new(10, 10)
     }
 }
