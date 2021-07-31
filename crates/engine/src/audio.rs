@@ -15,6 +15,20 @@ pub struct Audio {
 
 pub type AtomicAudio = Arc<Mutex<Audio>>;
 
+impl Audio {
+    pub fn new() -> AtomicAudio {
+        let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
+        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
+
+        let channels = (0..CHANNEL_COUNT).map(|_| Channel::new()).collect();
+
+        Arc::new(Mutex::new(Audio {
+            blip_buf: blip_buf,
+            channels: channels,
+        }))
+    }
+}
+
 impl AudioCallback for Audio {
     fn update(&mut self, out: &mut [i16]) {
         let mut samples = self.blip_buf.read_samples(out, false);
@@ -27,20 +41,6 @@ impl AudioCallback for Audio {
             self.blip_buf.end_frame(TICK_CLOCK_COUNT);
             samples += self.blip_buf.read_samples(&mut out[samples..], false);
         }
-    }
-}
-
-impl Audio {
-    pub fn new() -> AtomicAudio {
-        let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
-        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
-
-        let channels = (0..CHANNEL_COUNT).map(|_| Channel::new()).collect();
-
-        Arc::new(Mutex::new(Audio {
-            blip_buf: blip_buf,
-            channels: channels,
-        }))
     }
 }
 
