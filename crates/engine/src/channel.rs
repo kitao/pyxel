@@ -28,6 +28,40 @@ impl Channel {
         }
     }
 
+    pub fn is_playing(&self) -> bool {
+        self.is_playing
+    }
+
+    pub fn is_looping(&self) -> bool {
+        self.is_looping
+    }
+
+    pub fn sound_index(&self) -> u32 {
+        self.sound_index
+    }
+
+    pub fn note_index(&self) -> u32 {
+        self.note_index
+    }
+
+    pub fn play(&mut self, sounds: Vec<Sound>, is_looping: bool) {
+        self.sounds = sounds;
+        self.is_playing = true;
+        self.is_looping = is_looping;
+        self.sound_index = 0;
+        self.note_index = 0;
+        self.tick_count = 0;
+    }
+
+    pub fn stop(&mut self) {
+        self.is_playing = false;
+        self.is_looping = false;
+        self.sound_index = 0;
+        self.note_index = 0;
+
+        self.oscillator.stop();
+    }
+
     pub fn update(&mut self, blip_buf: &mut BlipBuf) {
         if !self.is_playing {
             return;
@@ -71,40 +105,6 @@ impl Channel {
 
         self.oscillator.update(blip_buf);
         self.tick_count += 1;
-    }
-
-    pub fn is_playing(&self) -> bool {
-        self.is_playing
-    }
-
-    pub fn is_looping(&self) -> bool {
-        self.is_looping
-    }
-
-    pub fn sound_index(&self) -> u32 {
-        self.sound_index
-    }
-
-    pub fn note_index(&self) -> u32 {
-        self.note_index
-    }
-
-    pub fn play(&mut self, sounds: Vec<Sound>, is_looping: bool) {
-        self.sounds = sounds;
-        self.is_playing = true;
-        self.is_looping = is_looping;
-        self.sound_index = 0;
-        self.note_index = 0;
-        self.tick_count = 0;
-    }
-
-    pub fn stop(&mut self) {
-        self.is_playing = false;
-        self.is_looping = false;
-        self.sound_index = 0;
-        self.note_index = 0;
-
-        self.oscillator.stop();
     }
 
     fn circular_note(notes: &[Note], index: u32) -> Note {
