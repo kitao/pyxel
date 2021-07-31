@@ -1,3 +1,5 @@
+use array_macro::array;
+
 use crate::canvas::Canvas;
 use crate::image::{Image, SharedImage};
 use crate::settings::COLOR_COUNT;
@@ -11,17 +13,11 @@ pub struct Graphics {
 
 impl Graphics {
     pub fn new() -> Graphics {
-        let mut org_palette: [Color; COLOR_COUNT as usize] = [0; COLOR_COUNT as usize];
-        for i in 0..COLOR_COUNT {
-            org_palette[i as usize] = i as Color;
-        }
-
-        let mut cur_palette: [Color; COLOR_COUNT as usize] = [0; COLOR_COUNT as usize];
-        cur_palette.clone_from_slice(&org_palette);
+        let palette = array![i => i as Color; COLOR_COUNT as usize];
 
         Graphics {
-            org_palette: org_palette,
-            cur_palette: cur_palette,
+            org_palette: palette.clone(),
+            cur_palette: palette,
         }
     }
 
