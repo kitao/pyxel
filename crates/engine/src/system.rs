@@ -2,11 +2,11 @@ use super::{Pyxel, PyxelCallback};
 
 use std::cmp::min;
 
+use crate::canvas::Canvas;
 use crate::event::Event;
 use crate::key::{KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use crate::platform::Platform;
 use crate::profiler::Profiler;
-use crate::recorder::Recorder;
 use crate::settings::{BACKGROUND_COLOR, MAX_FRAME_SKIP_COUNT, MEASURE_FRAME_COUNT};
 use crate::types::Key;
 
@@ -17,7 +17,6 @@ pub struct System {
 
     quit_key: Key,
     should_quit: bool,
-    recorder: Recorder,
 
     fps_profiler: Profiler,
     update_profiler: Profiler,
@@ -34,7 +33,6 @@ impl System {
 
             quit_key: quit_key,
             should_quit: false,
-            recorder: Recorder::new(),
 
             fps_profiler: Profiler::new(MEASURE_FRAME_COUNT),
             update_profiler: Profiler::new(MEASURE_FRAME_COUNT),
@@ -65,7 +63,7 @@ impl Pyxel {
             return;
         }
 
-        self.draw_frame(Some(callback), 0);
+        self.draw_frame(Some(callback));
 
         loop {
             let sleep_time = self.wait_for_update_time();
@@ -102,7 +100,7 @@ impl Pyxel {
                 }
             }
 
-            self.draw_frame(Some(callback), update_count);
+            self.draw_frame(Some(callback));
         }
     }
 
@@ -121,7 +119,7 @@ impl Pyxel {
             return true;
         }
 
-        self.draw_frame(None, 1);
+        self.draw_frame(None);
 
         false
     }
@@ -132,7 +130,7 @@ impl Pyxel {
                 break;
             }
 
-            self.draw_frame(None, 1);
+            self.draw_frame(None);
         }
     }
 
@@ -189,19 +187,17 @@ impl Pyxel {
             }
 
             if self.btnp(KEY_1, None, None) {
-                //recorder_->SaveScreenshot();
+                self.save_screen_image();
                 self.system.disable_next_frame_skip = true;
             }
 
             if self.btnp(KEY_2, None, None) {
-                //recorder_->ResetScreenCapture();
+                self.reset_screen_video();
             }
 
             if self.btnp(KEY_3, None, None) {
-                /*
-                recorder_->SaveScreenCapture();
-                is_update_suspended_ = true;
-                */
+                self.save_screen_video();
+                self.system.disable_next_frame_skip = true;
             }
         }
 
@@ -210,7 +206,19 @@ impl Pyxel {
         }
     }
 
-    fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>, elapsed_frame_count: u32) {
+    fn wait_for_update_time(&mut self) -> i32 {
+        loop {
+            let sleep_time = self.system.next_update_time - self.platform.tick_count() as f64;
+
+            if sleep_time <= 0.0 {
+                return sleep_time as i32;
+            }
+
+            self.platform.sleep((sleep_time / 2.0) as u32);
+        }
+    }
+
+    fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
         self.system.draw_profiler.start(self.platform.tick_count());
 
         if let Some(callback) = callback {
@@ -221,9 +229,7 @@ impl Pyxel {
         self.draw_mouse_cursor();
         self.platform
             .render_screen(&self.screen.borrow(), &self.colors, BACKGROUND_COLOR);
-        self.system
-            .recorder
-            .capture_screen(&self.screen.borrow(), elapsed_frame_count);
+        self.capture_screen_video();
 
         self.system.draw_profiler.end(self.platform.tick_count());
 
@@ -236,8 +242,6 @@ impl Pyxel {
         }
 
         /*
-        STORE_CLIP_AREA_AND_PALETTE();
-
         char buf[16];
 
         snprintf(buf, sizeof(buf), "%.2f", fps_profiler_.AverageFPS());
@@ -251,45 +255,37 @@ impl Pyxel {
         snprintf(buf, sizeof(buf), "%.2f", draw_profiler_.AverageTime());
         graphics_->DrawText(1, 12, buf, 1);
         graphics_->DrawText(0, 12, buf, 9);
-
-        RESTORE_CLIP_AREA_AND_PALETTE();
         */
     }
 
     fn draw_mouse_cursor(&mut self) {
-        /*
-        if (!input_->IsMouseVisible()) {
+        if !self.input.is_mouse_visible() {
             return;
         }
 
-        int32_t mouse_x = input_->MouseX();
-        int32_t mouse_y = input_->MouseY();
+        let mouse_x = self.mouse_x;
+        let mouse_y = self.mouse_y;
+        let mouse_width = self.cursor.borrow().width as i32;
+        let mouse_height = self.cursor.borrow().height as i32;
 
-        if (mouse_x < 0 || mouse_x >= window_->ScreenWidth() || mouse_y < 0 ||
-            mouse_y >= window_->ScreenHeight()) {
+        if mouse_x <= -mouse_width
+            || mouse_x >= self.width as i32
+            || mouse_y <= -mouse_height
+            || mouse_y >= self.height as i32
+        {
             return;
         }
 
-        STORE_CLIP_AREA_AND_PALETTE();
-
-        graphics_->ResetPalette();
-        graphics_->DrawImage(mouse_x, mouse_y, IMAGE_BANK_FOR_SYSTEM, MOUSE_CURSOR_X,
-                            MOUSE_CURSOR_Y, MOUSE_CURSOR_WIDTH, MOUSE_CURSOR_HEIGHT,
-                            1);
-
-        RESTORE_CLIP_AREA_AND_PALETTE();
-        */
-    }
-
-    fn wait_for_update_time(&mut self) -> i32 {
-        loop {
-            let sleep_time = self.system.next_update_time - self.platform.tick_count() as f64;
-
-            if sleep_time <= 0.0 {
-                return sleep_time as i32;
-            }
-
-            self.platform.sleep((sleep_time / 2.0) as u32);
-        }
+        self.screen.borrow_mut().blt(
+            mouse_x,
+            mouse_y,
+            &self.cursor.borrow(),
+            0,
+            0,
+            mouse_width,
+            mouse_height,
+            Some(0),
+            None,
+        );
     }
 }

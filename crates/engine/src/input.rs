@@ -24,6 +24,20 @@ impl Input {
             key_values: HashMap::new(),
         }
     }
+
+    pub fn is_mouse_visible(&self) -> bool {
+        self.is_mouse_visible
+    }
+
+    fn get_common_key(key: Key) -> Option<Key> {
+        match key {
+            KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
+            KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),
+            KEY_LALT | KEY_RALT => Some(KEY_ALT),
+            KEY_LGUI | KEY_RGUI => Some(KEY_GUI),
+            _ => None,
+        }
+    }
 }
 
 impl Pyxel {
@@ -104,7 +118,7 @@ impl Pyxel {
                 if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
                     self.press_key(key);
 
-                    if let Some(key) = Self::get_common_key(key) {
+                    if let Some(key) = Input::get_common_key(key) {
                         self.press_key(key);
                     }
                 }
@@ -113,7 +127,7 @@ impl Pyxel {
                 if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
                     self.release_key(key);
 
-                    if let Some(key) = Self::get_common_key(key) {
+                    if let Some(key) = Input::get_common_key(key) {
                         self.release_key(key);
                     }
                 }
@@ -205,16 +219,6 @@ impl Pyxel {
             .get(&MOUSE_WHEEL_Y)
             .cloned()
             .unwrap_or(0);
-    }
-
-    fn get_common_key(key: Key) -> Option<Key> {
-        match key {
-            KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
-            KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),
-            KEY_LALT | KEY_RALT => Some(KEY_ALT),
-            KEY_LGUI | KEY_RGUI => Some(KEY_GUI),
-            _ => None,
-        }
     }
 
     fn press_key(&mut self, key: Key) {
