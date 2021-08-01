@@ -1,3 +1,17 @@
+import platform
+
+system = platform.system()
+
+if system == "Darwin":
+    from .bin.mac.pyxel_extension import *
+elif system == "Windows":
+    from .bin.windows.pyxel_extension import *
+elif system == "Linux":
+    from .bin.linux.pyxel_extension import *
+else:
+    raise Exception("unsupported platform")
+
+"""
 import inspect
 import os
 import signal
@@ -863,3 +877,4 @@ for k, v in list(module.__dict__.items()):
 module._module = sys.modules[module.__name__]  # type: ignore
 module._pmodule = module  # type: ignore
 sys.modules[module.__name__] = module  # type: ignore
+"""
