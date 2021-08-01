@@ -5,7 +5,7 @@ authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2018"
 
 [lib]
-name = "pyxel"
+name = "pyxel_extension"
 crate-type = ["cdylib"]
 
 [dependencies]
