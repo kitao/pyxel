@@ -80,18 +80,19 @@ pub const COLOR_GRAY: Color = 13;
 pub const COLOR_PINK: Color = 14;
 pub const COLOR_PEACH: Color = 15;
 
-const MOUSE_CURSOR_WIDTH: u32 = 8;
-const MOUSE_CURSOR_HEIGHT: u32 = 8;
-const MOUSE_CURSOR_DATA: [&str; MOUSE_CURSOR_HEIGHT as usize] = [
+pub const CURSOR_WIDTH: u32 = 8;
+pub const CURSOR_HEIGHT: u32 = 8;
+pub const CURSOR_DATA: [&str; CURSOR_HEIGHT as usize] = [
     "00000011", "07776011", "07760111", "07676011", "06067601", "00106760", "11110601", "11111011",
 ];
 
-const MIN_FONT_CODE: u32 = 32;
-const MAX_FONT_CODE: u32 = 127;
-const FONT_WIDTH: u32 = 4;
-const FONT_HEIGHT: u32 = 6;
-const FONT_COLOR: Color = COLOR_WHITE;
-const FONT_DATA: [u32; 96] = [
+pub const MIN_FONT_CODE: u32 = 32;
+pub const MAX_FONT_CODE: u32 = 127;
+pub const FONT_ROW_COUNT: u32 = 16;
+
+pub const FONT_WIDTH: u32 = 4;
+pub const FONT_HEIGHT: u32 = 6;
+pub const FONT_DATA: [u32; 96] = [
     0x000000, 0x444040, 0xAA0000, 0xAEAEA0, 0x6C6C40, 0x824820, 0x4A4AC0, 0x440000, 0x244420,
     0x844480, 0xA4E4A0, 0x04E400, 0x000480, 0x00E000, 0x000040, 0x224880, 0x6AAAC0, 0x4C4440,
     0xC248E0, 0xC242C0, 0xAAE220, 0xE8C2C0, 0x68EAE0, 0xE24880, 0xEAEAE0, 0xEAE2C0, 0x040400,
