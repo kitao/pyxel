@@ -9,5 +9,5 @@ name = "pyxel"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.14.1", features = ["extension-module", "abi3-py37"] }
+pyo3 = { version = "0.14.1", features = ["extension-module", "abi3-py36"] }
 pyxel-engine = { path = "../engine" }
