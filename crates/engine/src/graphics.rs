@@ -2,7 +2,7 @@ use array_macro::array;
 
 use crate::canvas::Canvas;
 use crate::image::{Image, SharedImage};
-use crate::settings::COLOR_COUNT;
+use crate::settings::{COLOR_COUNT, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH};
 use crate::types::{Color, Tile};
 use crate::Pyxel;
 
@@ -22,7 +22,10 @@ impl Graphics {
     }
 
     pub fn new_cursor_image() -> SharedImage {
-        Image::new(10, 10)
+        let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
+        image.borrow_mut().set(0, 0, &CURSOR_DATA);
+
+        image
     }
 
     pub fn new_font_image() -> SharedImage {
