@@ -1,2 +1,2 @@
 [workspace]
-members = ["engine", "player", "editor", "packager", "pymodule"]
+members = ["engine", "player", "editor", "packager", "extension"]
