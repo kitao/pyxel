@@ -226,7 +226,7 @@ impl Pyxel {
         }
 
         self.draw_perf_monitor();
-        self.draw_mouse_cursor();
+        self.draw_cursor();
         self.platform
             .render_screen(&self.screen.borrow(), &self.colors, BACKGROUND_COLOR);
         self.capture_screen_video();
@@ -258,32 +258,28 @@ impl Pyxel {
         */
     }
 
-    fn draw_mouse_cursor(&mut self) {
+    fn draw_cursor(&mut self) {
         if !self.input.is_mouse_visible() {
             return;
         }
 
-        let mouse_x = self.mouse_x;
-        let mouse_y = self.mouse_y;
-        let mouse_width = self.cursor.borrow().width as i32;
-        let mouse_height = self.cursor.borrow().height as i32;
+        let x = self.mouse_x;
+        let y = self.mouse_y;
+        let width = self.cursor.borrow().width as i32;
+        let height = self.cursor.borrow().height as i32;
 
-        if mouse_x <= -mouse_width
-            || mouse_x >= self.width as i32
-            || mouse_y <= -mouse_height
-            || mouse_y >= self.height as i32
-        {
+        if x <= -width || x >= self.width as i32 || y <= -height || y >= self.height as i32 {
             return;
         }
 
         self.screen.borrow_mut().blt(
-            mouse_x,
-            mouse_y,
+            x,
+            y,
             &self.cursor.borrow(),
             0,
             0,
-            mouse_width,
-            mouse_height,
+            width,
+            height,
             Some(0),
             None,
         );
