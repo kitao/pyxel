@@ -16,4 +16,4 @@ harness = false
 array-macro = "2.1.0"
 blip_buf = "0.1.4"
 image = "0.23.14"
-sdl2 = { version = "0.34.5", default-features = false, features = ["unsafe_textures"] }
+sdl2 = { version = "0.34.5", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
