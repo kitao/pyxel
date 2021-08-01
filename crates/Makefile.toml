@@ -1,0 +1,28 @@
+[env]
+BIN_DIR = "../pyxel/mac"
+
+[tasks.clean]
+script_runner = "@duckscript"
+script = '''
+cargo clean
+rm -rf ../pyxel/bin/mac
+'''
+
+[tasks.build]
+script_runner = "@duckscript"
+script = '''
+cargo build
+'''
+
+[tasks.test]
+script_runner = "@duckscript"
+script = '''
+cargo test
+'''
+
+[tasks.copy]
+script_runner = "@duckscript"
+script = '''
+mkdir -p `dirname ../pyxel/bin/mac/pyxel_extension.so`
+cp -f target/debug/libpyxel_extension.dylib ../pyxel/bin/mac/pyxel_extension.so
+'''
