@@ -17,6 +17,7 @@ use sdl2::TimerSubsystem as SdlTimer;
 use std::cmp::min;
 use std::sync::{Arc, Mutex};
 
+use crate::canvas::Canvas;
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
 use crate::image::Image;
 use crate::platform::{AudioCallback, Platform};
@@ -90,21 +91,20 @@ impl Platform for Sdl2 {
     }
 
     fn set_icon(&mut self, icon: &Image, colors: &[Rgb8], scale: u32) {
-        let width = icon.width;
-        let height = icon.height;
+        let width = icon.width();
+        let height = icon.height();
         let mut sdl_texture = self
             .sdl_canvas
             .texture_creator()
             .create_texture_streaming(SdlPixelFormat::RGBA32, width * scale, height * scale)
             .unwrap();
-        let data = &icon.data;
 
         sdl_texture
             .with_lock(None, |buffer: &mut [u8], pitch: usize| {
                 for i in 0..height as usize {
                     for j in 0..width as usize {
                         let offset = i * pitch + j * 4;
-                        let color = colors[data[i][j] as usize];
+                        let color = colors[icon.value(j as i32, i as i32) as usize];
 
                         buffer[offset] = ((color >> 16) & 0xff) as u8;
                         buffer[offset + 1] = ((color >> 8) & 0xff) as u8;
@@ -299,16 +299,15 @@ impl Platform for Sdl2 {
     }
 
     fn render_screen(&mut self, screen: &Image, colors: &[Rgb8], bg_color: Rgb8) {
-        let width = screen.width;
-        let height = screen.height;
-        let data = &screen.data;
+        let width = screen.width();
+        let height = screen.height();
 
         self.sdl_texture
             .with_lock(None, |buffer: &mut [u8], pitch: usize| {
                 for i in 0..height as usize {
                     for j in 0..width as usize {
                         let offset = i * pitch + j * 3;
-                        let color = colors[data[i][j] as usize];
+                        let color = colors[screen.value(j as i32, i as i32) as usize];
 
                         buffer[offset] = ((color >> 16) & 0xff) as u8;
                         buffer[offset + 1] = ((color >> 8) & 0xff) as u8;
