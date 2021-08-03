@@ -4,6 +4,8 @@ use std::cmp::{max, min};
 pub struct RectArea {
     left: i32,
     top: i32,
+    right: i32,
+    bottom: i32,
     width: u32,
     height: u32,
 }
@@ -13,6 +15,8 @@ impl RectArea {
         RectArea {
             left: left,
             top: top,
+            right: left + width as i32 - 1,
+            bottom: top + height as i32 - 1,
             width: width,
             height: height,
         }
@@ -27,11 +31,11 @@ impl RectArea {
     }
 
     pub fn right(&self) -> i32 {
-        self.left + self.width as i32 - 1
+        self.right
     }
 
     pub fn bottom(&self) -> i32 {
-        self.top + self.height as i32 - 1
+        self.bottom
     }
 
     pub fn width(&self) -> u32 {
@@ -56,8 +60,8 @@ impl RectArea {
     pub fn intersects(&self, rect: RectArea) -> RectArea {
         let left = max(self.left, rect.left);
         let top = max(self.top, rect.top);
-        let right = min(self.right(), rect.right());
-        let bottom = min(self.bottom(), rect.bottom());
+        let right = min(self.right, rect.right);
+        let bottom = min(self.bottom, rect.bottom);
         let width = right - left + 1;
         let height = bottom - top + 1;
 
