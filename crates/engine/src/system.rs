@@ -81,8 +81,8 @@ impl Pyxel {
 
         loop {
             let sleep_time = self.wait_for_update_time();
-
             let tick_count = self.platform.tick_count();
+
             self.system.fps_profiler.end(tick_count);
             self.system.fps_profiler.start(tick_count);
 

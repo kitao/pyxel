@@ -20,6 +20,8 @@ mod tilemap;
 mod types;
 mod utility;
 
+use array_macro::array;
+
 use crate::audio::{AtomicAudio, Audio};
 use crate::graphics::Graphics;
 use crate::image::{Image, SharedImage};
@@ -47,12 +49,11 @@ pub struct Pyxel {
     audio: AtomicAudio,
 
     pub colors: [Rgb8; COLOR_COUNT as usize],
-    pub images: Vec<SharedImage>,
-    pub tilemaps: Vec<SharedTilemap>,
     pub screen: SharedImage,
     pub cursor: SharedImage,
     pub font: SharedImage,
-
+    pub images: Vec<SharedImage>,
+    pub tilemaps: Vec<SharedTilemap>,
     pub sounds: Vec<SharedSound>,
     pub musics: Vec<SharedMusic>,
 }
@@ -83,20 +84,16 @@ impl Pyxel {
         let graphics = Graphics::new();
         let audio = Audio::new();
 
-        let mut colors = [0; COLOR_COUNT as usize];
-        for (i, rgb) in DEFAULT_COLOR.iter().enumerate() {
-            colors[i] = *rgb;
-        }
+        let colors = array![i => DEFAULT_COLORS[i] ; COLOR_COUNT as usize];
+        let screen = Image::new(width, height);
+        let cursor = Graphics::new_cursor_image();
+        let font = Graphics::new_font_image();
         let images = (0..IMAGE_COUNT)
             .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
             .collect();
         let tilemaps = (0..TILEMAP_COUNT)
             .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE))
             .collect();
-        let screen = Image::new(width, height);
-        let cursor = Graphics::new_cursor_image();
-        let font = Graphics::new_font_image();
-
         let sounds = (0..SOUND_COUNT).map(|_| Sound::new()).collect();
         let musics = (0..MUSIC_COUNT).map(|_| Music::new()).collect();
 
@@ -108,12 +105,13 @@ impl Pyxel {
             graphics: graphics,
             audio: audio.clone(),
 
-            colors: colors,
-            images: images,
-            tilemaps: tilemaps,
             screen: screen,
             cursor: cursor,
             font: font,
+
+            colors: colors,
+            images: images,
+            tilemaps: tilemaps,
 
             sounds: sounds,
             musics: musics,
