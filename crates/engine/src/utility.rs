@@ -1,5 +1,3 @@
-use crate::rectarea::RectArea;
-
 pub fn remove_whitespace(string: &str) -> String {
     string.replace(&[' ', '\n', '\r', '\t'][..], "")
 }
