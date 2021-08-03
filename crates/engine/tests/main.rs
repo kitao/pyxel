@@ -68,8 +68,8 @@ impl App {
 
 impl PyxelCallback for App {
     fn update(&mut self, pyxel: &mut Pyxel) {
-        if pyxel.frame_count < 60 {
-            self.x += (pyxel.frame_count % 2) as i32;
+        if pyxel.frame_count() < 60 {
+            self.x += (pyxel.frame_count() % 2) as i32;
             self.y -= 1;
         }
 
