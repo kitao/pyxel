@@ -58,7 +58,7 @@ pub const TILEMAP_COUNT: u32 = 8;
 pub const TILEMAP_SIZE: u32 = 256;
 pub const TILE_SIZE: u32 = 8;
 
-pub const DEFAULT_COLOR: [Rgb8; COLOR_COUNT as usize] = [
+pub const DEFAULT_COLORS: [Rgb8; COLOR_COUNT as usize] = [
     0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, 0xd4186c,
     0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0,
 ];
