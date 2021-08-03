@@ -14,6 +14,8 @@ pub struct Input {
     is_mouse_visible: bool,
     key_states: HashMap<Key, KeyState>,
     key_values: HashMap<Key, KeyValue>,
+    text_input: String,
+    drop_files: Vec<String>,
 }
 
 impl Input {
@@ -22,6 +24,8 @@ impl Input {
             is_mouse_visible: true,
             key_states: HashMap::new(),
             key_values: HashMap::new(),
+            text_input: String::from(""),
+            drop_files: Vec::new(),
         }
     }
 
@@ -41,6 +45,26 @@ impl Input {
 }
 
 impl Pyxel {
+    pub fn mouse_x(&self) -> i32 {
+        *self.input.key_values.get(&MOUSE_POS_X).unwrap()
+    }
+
+    pub fn mouse_y(&self) -> i32 {
+        *self.input.key_values.get(&MOUSE_POS_Y).unwrap()
+    }
+
+    pub fn mouse_wheel(&self) -> i32 {
+        *self.input.key_values.get(&MOUSE_WHEEL_Y).unwrap()
+    }
+
+    pub fn text_input(&self) -> &str {
+        &self.input.text_input
+    }
+
+    pub fn drop_files(&self) -> &Vec<String> {
+        &self.input.drop_files
+    }
+
     pub fn btn(&self, key: Key) -> bool {
         if let Some(KeyState::Pressed { .. }) = self.input.key_states.get(&key) {
             true
@@ -56,7 +80,7 @@ impl Pyxel {
         repeat_frame_count: Option<u32>,
     ) -> bool {
         if let Some(KeyState::Pressed { frame_count }) = self.input.key_states.get(&key) {
-            if *frame_count == self.frame_count {
+            if *frame_count == self.frame_count() {
                 return true;
             }
 
@@ -67,7 +91,8 @@ impl Pyxel {
                 return false;
             }
 
-            let elapsed_frames = self.frame_count as i32 - (*frame_count + hold_frame_count) as i32;
+            let elapsed_frames =
+                self.frame_count() as i32 - (*frame_count + hold_frame_count) as i32;
 
             if elapsed_frames > 0 && elapsed_frames % repeat_frame_count as i32 == 0 {
                 return true;
@@ -79,7 +104,7 @@ impl Pyxel {
 
     pub fn btnr(&self, key: Key) -> bool {
         if let Some(KeyState::Released { frame_count }) = self.input.key_states.get(&key) {
-            if *frame_count == self.frame_count {
+            if *frame_count == self.frame_count() {
                 return true;
             }
         }
@@ -95,11 +120,11 @@ impl Pyxel {
         self.input.is_mouse_visible = is_visible;
     }
 
-    pub(crate) fn start_input_event(&mut self) {
+    pub(crate) fn reset_input_states(&mut self) {
         self.input.key_values.insert(MOUSE_WHEEL_X, 0);
         self.input.key_values.insert(MOUSE_WHEEL_Y, 0);
-        self.text_input = "".to_string();
-        self.drop_files.clear();
+        self.input.text_input = String::from("");
+        self.input.drop_files.clear();
     }
 
     pub(crate) fn process_input_event(&mut self, event: Event) {
@@ -108,7 +133,7 @@ impl Pyxel {
             // System Events
             //
             Event::DropFile { filename } => {
-                self.drop_files.push(filename);
+                self.input.drop_files.push(filename);
             }
 
             //
@@ -133,7 +158,7 @@ impl Pyxel {
                 }
             }
             Event::TextInput { text } => {
-                self.text_input += &text;
+                self.input.text_input += &text;
             }
 
             //
@@ -200,32 +225,11 @@ impl Pyxel {
         }
     }
 
-    pub(crate) fn end_input_event(&mut self) {
-        self.mouse_x = self
-            .input
-            .key_values
-            .get(&MOUSE_POS_X)
-            .cloned()
-            .unwrap_or(0);
-        self.mouse_y = self
-            .input
-            .key_values
-            .get(&MOUSE_POS_Y)
-            .cloned()
-            .unwrap_or(0);
-        self.mouse_wheel = self
-            .input
-            .key_values
-            .get(&MOUSE_WHEEL_Y)
-            .cloned()
-            .unwrap_or(0);
-    }
-
     fn press_key(&mut self, key: Key) {
         self.input.key_states.insert(
             key,
             KeyState::Pressed {
-                frame_count: self.frame_count,
+                frame_count: self.frame_count(),
             },
         );
     }
@@ -234,7 +238,7 @@ impl Pyxel {
         self.input.key_states.insert(
             key,
             KeyState::Released {
-                frame_count: self.frame_count,
+                frame_count: self.frame_count(),
             },
         );
     }

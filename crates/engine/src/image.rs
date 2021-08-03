@@ -6,17 +6,16 @@ use std::rc::Rc;
 use crate::canvas::Canvas;
 use crate::rectarea::RectArea;
 use crate::settings::COLOR_COUNT;
-use crate::tilemap::{Tile, Tilemap};
-use crate::types::{Color, Rgb8};
-use crate::utility::{parse_hex_string, set_data_value, simplify_string};
+use crate::tilemap::Tilemap;
+use crate::types::{Color, Rgb8, Tile};
+use crate::utility::{parse_hex_string, simplify_string};
 
 pub struct Image {
-    pub width: u32,
-    pub height: u32,
-    pub data: Vec<Vec<Color>>,
-
+    width: u32,
+    height: u32,
     self_rect: RectArea,
     clip_rect: RectArea,
+    data: Vec<Vec<Color>>,
 }
 
 pub type SharedImage = Rc<RefCell<Image>>;
@@ -26,10 +25,9 @@ impl Image {
         Rc::new(RefCell::new(Image {
             width: width,
             height: height,
-            data: vec![vec![0; width as usize]; height as usize],
-
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
+            data: vec![vec![0; width as usize]; height as usize],
         }))
     }
 
@@ -38,18 +36,16 @@ impl Image {
         let height = data_str.len() as u32;
         let dst_image = Image::new(width, height);
 
-        {
-            let dst_data = &mut dst_image.borrow_mut().data;
+        for i in 0..height {
+            let src_data = simplify_string(data_str[i as usize]);
 
-            for i in 0..height {
-                let src_data = simplify_string(data_str[i as usize]);
-
-                for j in 0..width {
-                    if let Some(value) = parse_hex_string(&src_data[j as usize..j as usize + 1]) {
-                        set_data_value(dst_data, j as i32, i as i32, value as Color);
-                    } else {
-                        panic!("invalid image data");
-                    }
+            for j in 0..width {
+                if let Some(value) = parse_hex_string(&src_data[j as usize..j as usize + 1]) {
+                    dst_image
+                        .borrow_mut()
+                        .set_value(j as i32, i as i32, value as Color);
+                } else {
+                    panic!("invalid image data");
                 }
             }
         }
@@ -163,7 +159,6 @@ impl Image {
         let src_image = image::open(&Path::new(&filename)).unwrap().to_rgb8();
         let (width, height) = src_image.dimensions();
         let dst_image = Image::new(width, height);
-        let dst_data = &mut dst_image.borrow_mut().data;
         let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
 
         for i in 0..height {
@@ -172,7 +167,7 @@ impl Image {
                 let src_rgb = (p[0], p[1], p[2]);
 
                 if let Some(color) = color_table.get(&src_rgb) {
-                    set_data_value(dst_data, j as i32, i as i32, *color);
+                    dst_image.borrow_mut().set_value(j as i32, i as i32, *color);
                 } else {
                     let mut closest_color: Color = 0;
                     let mut closest_dist: f64 = f64::MAX;
@@ -193,7 +188,9 @@ impl Image {
                     }
 
                     color_table.insert(src_rgb, closest_color);
-                    set_data_value(dst_data, j as i32, i as i32, closest_color);
+                    dst_image
+                        .borrow_mut()
+                        .set_value(j as i32, i as i32, closest_color);
                 }
             }
         }
@@ -228,38 +225,37 @@ impl Image {
 }
 
 impl Canvas<Color> for Image {
-    #[inline]
-    fn _width(&self) -> u32 {
-        self._self_rect().width()
+    fn width(&self) -> u32 {
+        self.width
     }
 
-    #[inline]
-    fn _height(&self) -> u32 {
-        self._self_rect().height()
+    fn height(&self) -> u32 {
+        self.height
     }
 
-    #[inline]
-    fn _data<'a>(&'a self) -> &'a Vec<Vec<Color>> {
-        &self.data
+    fn value(&self, x: i32, y: i32) -> Color {
+        self.data[y as usize][x as usize]
     }
 
-    #[inline]
-    fn _data_mut<'a>(&'a mut self) -> &'a mut Vec<Vec<Color>> {
-        &mut self.data
+    fn set_value(&mut self, x: i32, y: i32, color: Color) {
+        self.data[y as usize][x as usize] = color;
     }
 
-    #[inline]
-    fn _self_rect(&self) -> RectArea {
+    fn self_rect(&self) -> RectArea {
         self.self_rect
     }
 
-    #[inline]
-    fn _clip_rect(&self) -> RectArea {
+    fn clip_rect(&self) -> RectArea {
         self.clip_rect
     }
 
-    #[inline]
-    fn _clip_rect_mut(&mut self) -> &mut RectArea {
-        &mut self.clip_rect
+    fn clip(&mut self, x: i32, y: i32, width: u32, height: u32) {
+        self.clip_rect = self
+            .self_rect
+            .intersects(RectArea::new(x, y, width, height));
+    }
+
+    fn clip_(&mut self) {
+        self.clip_rect = self.self_rect;
     }
 }
