@@ -3,47 +3,40 @@ use std::mem::swap;
 
 use crate::rectarea::RectArea;
 use crate::types::ToIndex;
-use crate::utility::{
-    data_value, data_value_with_check, set_data_value, set_data_value_with_check,
-};
 
 pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
-    fn _width(&self) -> u32;
-    fn _height(&self) -> u32;
-    fn _data(&self) -> &Vec<Vec<T>>;
-    fn _data_mut(&mut self) -> &mut Vec<Vec<T>>;
-    fn _self_rect(&self) -> RectArea;
-    fn _clip_rect(&self) -> RectArea;
-    fn _clip_rect_mut(&mut self) -> &mut RectArea;
-
-    fn clip(&mut self, x: i32, y: i32, width: u32, height: u32) {
-        let rect = RectArea::new(x, y, width, height).intersects(self._self_rect());
-        *self._clip_rect_mut() = rect;
-    }
-
-    fn clip_(&mut self) {
-        *self._clip_rect_mut() = self._self_rect();
-    }
+    fn width(&self) -> u32;
+    fn height(&self) -> u32;
+    fn self_rect(&self) -> RectArea;
+    fn clip_rect(&self) -> RectArea;
+    fn value(&self, x: i32, y: i32) -> T;
+    fn set_value(&mut self, x: i32, y: i32, value: T);
+    fn clip(&mut self, x: i32, y: i32, width: u32, height: u32);
+    fn clip_(&mut self);
 
     fn cls(&mut self, value: T) {
-        let width = self._width();
-        let height = self._height();
-        let data = self._data_mut();
+        let width = self.width();
+        let height = self.height();
 
         for i in 0..height {
             for j in 0..width {
-                set_data_value(data, j as i32, i as i32, value);
+                self.set_value(j as i32, i as i32, value);
             }
         }
     }
 
     fn pget(&mut self, x: i32, y: i32) -> T {
-        data_value_with_check(self._data(), self._self_rect(), x, y)
+        if self.self_rect().contains(x, y) {
+            self.value(x, y)
+        } else {
+            T::default()
+        }
     }
 
     fn pset(&mut self, x: i32, y: i32, value: T) {
-        let rect = self._clip_rect();
-        set_data_value_with_check(self._data_mut(), rect, x, y, value);
+        if self.self_rect().contains(x, y) {
+            self.set_value(x, y, value)
+        }
     }
 
     fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, value: T) {
@@ -51,9 +44,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             self.pset(x1, y1, value);
             return;
         }
-
-        let rect = self._clip_rect();
-        let data = self._data_mut();
 
         if (x1 - x2).abs() > (y1 - y2).abs() {
             let start_x: i32;
@@ -77,9 +67,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             let alpha = (end_y - start_y) as f64 / (end_x - start_x) as f64;
 
             for i in 0..length {
-                set_data_value_with_check(
-                    data,
-                    rect,
+                self.pset(
                     start_x + i,
                     (start_y as f64 + alpha * i as f64 + 0.5) as i32,
                     value,
@@ -107,9 +95,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             let alpha = (end_x - start_x) as f64 / (end_y - start_y) as f64;
 
             for i in 0..length {
-                set_data_value_with_check(
-                    data,
-                    rect,
+                self.pset(
                     (start_x as f64 + alpha as f64 * i as f64 + 0.5) as i32,
                     start_y + i,
                     value,
@@ -119,7 +105,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     }
 
     fn rect(&mut self, x: i32, y: i32, width: u32, height: u32, value: T) {
-        let rect = RectArea::new(x, y, width, height).intersects(self._clip_rect());
+        let rect = RectArea::new(x, y, width, height).intersects(self.clip_rect());
 
         if rect.is_empty() {
             return;
@@ -129,17 +115,16 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
-        let data = self._data_mut();
 
         for i in top..=bottom {
             for j in left..=right {
-                set_data_value(data, j, i, value);
+                self.set_value(j, i, value);
             }
         }
     }
 
     fn rectb(&mut self, x: i32, y: i32, width: u32, height: u32, value: T) {
-        let rect = RectArea::new(x, y, width, height).intersects(self._clip_rect());
+        let rect = RectArea::new(x, y, width, height).intersects(self.clip_rect());
 
         if rect.is_empty() {
             return;
@@ -149,16 +134,15 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
-        let data = self._data_mut();
 
         for i in left..=right {
-            set_data_value(data, i, top, value);
-            set_data_value(data, i, bottom, value);
+            self.set_value(i, top, value);
+            self.set_value(i, bottom, value);
         }
 
         for i in top..=bottom {
-            set_data_value(data, left, i, value);
-            set_data_value(data, right, i, value);
+            self.set_value(left, i, value);
+            self.set_value(right, i, value);
         }
     }
 
@@ -168,8 +152,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             return;
         }
 
-        let rect = self._clip_rect();
-        let data = self._data_mut();
         let sq_radius = radius * radius;
 
         for dx in 0..=radius as i32 {
@@ -180,10 +162,10 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             }
 
             for i in -dy..=dy {
-                set_data_value_with_check(data, rect, x - dx, y + i, value);
-                set_data_value_with_check(data, rect, x + dx, y + i, value);
-                set_data_value_with_check(data, rect, x + i, y - dx, value);
-                set_data_value_with_check(data, rect, x + i, y + dx, value);
+                self.pset(x - dx, y + i, value);
+                self.pset(x + dx, y + i, value);
+                self.pset(x + i, y - dx, value);
+                self.pset(x + i, y + dx, value);
             }
         }
     }
@@ -194,8 +176,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             return;
         }
 
-        let rect = self._clip_rect();
-        let data = self._data_mut();
         let sq_radius = radius * radius;
 
         for dx in 0..=radius as i32 {
@@ -205,15 +185,15 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
                 continue;
             }
 
-            set_data_value_with_check(data, rect, x - dx, y - dy, value);
-            set_data_value_with_check(data, rect, x + dx, y - dy, value);
-            set_data_value_with_check(data, rect, x - dx, y + dy, value);
-            set_data_value_with_check(data, rect, x + dx, y + dy, value);
+            self.pset(x - dx, y - dy, value);
+            self.pset(x + dx, y - dy, value);
+            self.pset(x - dx, y + dy, value);
+            self.pset(x + dx, y + dy, value);
 
-            set_data_value_with_check(data, rect, x - dy, y - dx, value);
-            set_data_value_with_check(data, rect, x + dy, y - dx, value);
-            set_data_value_with_check(data, rect, x - dy, y + dx, value);
-            set_data_value_with_check(data, rect, x + dy, y + dx, value);
+            self.pset(x - dy, y - dx, value);
+            self.pset(x + dy, y - dx, value);
+            self.pset(x - dy, y + dx, value);
+            self.pset(x + dy, y + dx, value);
         }
     }
 
@@ -254,8 +234,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             (x3 - x2) as f64 / (y3 - y2) as f64
         };
 
-        let rect = self._clip_rect();
-        let data = self._data_mut();
         let x_inter = (x1 as f64 + alpha13 * (y2 - y1) as f64 + 0.5) as i32;
 
         for i in y1..=y2 {
@@ -271,7 +249,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             }
 
             for j in x_slider..=x_end {
-                set_data_value_with_check(data, rect, j, i, value);
+                self.pset(j, i, value);
             }
         }
 
@@ -288,7 +266,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             }
 
             for j in x_slider..=x_end {
-                set_data_value_with_check(data, rect, j, i, value);
+                self.pset(j, i, value);
             }
         }
     }
@@ -300,56 +278,53 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     }
 
     fn fill(&mut self, x: i32, y: i32, value: T) {
-        if self._clip_rect().contains(x, y) {
-            let target_value = data_value(self._data(), x, y);
+        if !self.clip_rect().contains(x, y) {
+            return;
+        }
 
-            if value != target_value {
-                self._fill_rec(x, y, value, target_value);
-            }
+        let target_value = self.value(x, y);
+
+        if value != target_value {
+            self._fill_rec(x, y, value, target_value);
         }
     }
 
     fn _fill_rec(&mut self, x: i32, y: i32, value: T, target_value: T) {
-        let rect = self._clip_rect();
+        let rect = self.clip_rect();
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
-        let data: *mut Vec<Vec<T>> = self._data_mut();
 
         for i in (x..=left).rev() {
-            unsafe {
-                if data_value(&*data, i, y) != target_value {
-                    break;
-                }
+            if self.value(i, y) != target_value {
+                break;
+            }
 
-                set_data_value(&mut *data, i, y, value);
+            self.set_value(i, y, value);
 
-                if y > top && data_value(&mut *data, i, y - 1) == target_value {
-                    self._fill_rec(i, y - 1, value, target_value);
-                }
+            if y > top && self.value(i, y - 1) == target_value {
+                self._fill_rec(i, y - 1, value, target_value);
+            }
 
-                if y > bottom && data_value(&mut *data, i, y + 1) == target_value {
-                    self._fill_rec(i, y + 1, value, target_value);
-                }
+            if y > bottom && self.value(i, y + 1) == target_value {
+                self._fill_rec(i, y + 1, value, target_value);
             }
         }
 
         for i in x + 1..=right {
-            unsafe {
-                if data_value(&mut *data, i, y) != target_value {
-                    break;
-                }
+            if self.value(i, y) != target_value {
+                break;
+            }
 
-                set_data_value(&mut *data, i, y, value);
+            self.set_value(i, y, value);
 
-                if y > top && data_value(&mut *data, i, y - 1) == target_value {
-                    self._fill_rec(i, y - 1, value, target_value);
-                }
+            if y > top && self.value(i, y - 1) == target_value {
+                self._fill_rec(i, y - 1, value, target_value);
+            }
 
-                if y > bottom && data_value(&mut *data, i, y + 1) == target_value {
-                    self._fill_rec(i, y + 1, value, target_value);
-                }
+            if y > bottom && self.value(i, y + 1) == target_value {
+                self._fill_rec(i, y + 1, value, target_value);
             }
         }
     }
@@ -366,8 +341,8 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         transparent: Option<T>,
         palette: Option<&[T]>,
     ) {
-        let src_rect = canvas._self_rect();
-        let dst_rect = self._clip_rect();
+        let src_rect = canvas.self_rect();
+        let dst_rect = self.clip_rect();
         let flip_x = width < 0;
         let flip_y = height < 0;
         let width = width.abs();
@@ -422,16 +397,10 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             offset_y = 0;
         }
 
-        let src_data = canvas._data();
-        let dst_data = self._data_mut();
-
         for i in 0..height {
             for j in 0..width {
-                let value = data_value(
-                    src_data,
-                    src_x + sign_x * j + offset_x,
-                    src_y + sign_y * i + offset_y,
-                );
+                let value =
+                    canvas.value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
 
                 let value = if let Some(palette) = palette {
                     palette[value.to_index()]
@@ -445,7 +414,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
                     }
                 }
 
-                set_data_value(dst_data, dst_x + j, dst_y + i, value);
+                self.set_value(dst_x + j, dst_y + i, value);
             }
         }
     }
