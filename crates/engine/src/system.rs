@@ -11,6 +11,7 @@ use crate::settings::{BACKGROUND_COLOR, MAX_FRAME_SKIP_COUNT, MEASURE_FRAME_COUN
 use crate::types::Key;
 
 pub struct System {
+    frame_count: u32,
     one_frame_time: f64,
     next_update_time: f64,
     disable_next_frame_skip: bool,
@@ -27,6 +28,7 @@ pub struct System {
 impl System {
     pub fn new(fps: u32, quit_key: Key) -> System {
         System {
+            frame_count: 0,
             one_frame_time: 1000.0 / fps as f64,
             next_update_time: 0.0,
             disable_next_frame_skip: true,
@@ -47,6 +49,18 @@ impl System {
 }
 
 impl Pyxel {
+    pub fn width(&self) -> u32 {
+        self.screen.borrow().width()
+    }
+
+    pub fn height(&self) -> u32 {
+        self.screen.borrow().height()
+    }
+
+    pub fn frame_count(&self) -> u32 {
+        self.system.frame_count
+    }
+
     pub fn title(&mut self, title: &str) {
         self.platform.set_title(title);
     }
@@ -96,7 +110,7 @@ impl Pyxel {
                 }
 
                 if i < update_count - 1 {
-                    self.frame_count += 1;
+                    self.system.frame_count += 1;
                 }
             }
 
@@ -160,7 +174,7 @@ impl Pyxel {
     }
 
     fn process_events(&mut self) {
-        self.start_input_event();
+        self.reset_input_states();
 
         while let Some(event) = self.platform.poll_event() {
             match event {
@@ -172,8 +186,6 @@ impl Pyxel {
                 }
             }
         }
-
-        self.end_input_event();
     }
 
     fn check_special_input(&mut self) {
@@ -233,7 +245,7 @@ impl Pyxel {
 
         self.system.draw_profiler.end(self.platform.tick_count());
 
-        self.frame_count += 1;
+        self.system.frame_count += 1;
     }
 
     fn draw_perf_monitor(&mut self) {
@@ -263,12 +275,12 @@ impl Pyxel {
             return;
         }
 
-        let x = self.mouse_x;
-        let y = self.mouse_y;
-        let width = self.cursor.borrow().width as i32;
-        let height = self.cursor.borrow().height as i32;
+        let x = self.mouse_x();
+        let y = self.mouse_y();
+        let width = self.cursor.borrow().width() as i32;
+        let height = self.cursor.borrow().height() as i32;
 
-        if x <= -width || x >= self.width as i32 || y <= -height || y >= self.height as i32 {
+        if x <= -width || x >= self.width() as i32 || y <= -height || y >= self.height() as i32 {
             return;
         }
 
