@@ -46,19 +46,6 @@ pub struct Pyxel {
     graphics: Graphics,
     audio: AtomicAudio,
 
-    // System
-    pub width: u32,
-    pub height: u32,
-    pub frame_count: u32,
-
-    // Input
-    pub mouse_x: i32,
-    pub mouse_y: i32,
-    pub mouse_wheel: i32,
-    pub text_input: String,
-    pub drop_files: Vec<String>,
-
-    // Graphics
     pub colors: [Rgb8; COLOR_COUNT as usize],
     pub images: Vec<SharedImage>,
     pub tilemaps: Vec<SharedTilemap>,
@@ -66,7 +53,6 @@ pub struct Pyxel {
     pub cursor: SharedImage,
     pub font: SharedImage,
 
-    // Audio
     pub sounds: Vec<SharedSound>,
     pub musics: Vec<SharedMusic>,
 }
@@ -122,19 +108,6 @@ impl Pyxel {
             graphics: graphics,
             audio: audio.clone(),
 
-            // System
-            width: width,
-            height: height,
-            frame_count: 0,
-
-            // Input
-            mouse_x: 0,
-            mouse_y: 0,
-            mouse_wheel: 0,
-            text_input: String::from(""),
-            drop_files: Vec::new(),
-
-            // Graphics
             colors: colors,
             images: images,
             tilemaps: tilemaps,
@@ -142,7 +115,6 @@ impl Pyxel {
             cursor: cursor,
             font: font,
 
-            // Audio
             sounds: sounds,
             musics: musics,
         };
