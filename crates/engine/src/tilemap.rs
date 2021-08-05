@@ -95,7 +95,7 @@ impl Canvas<Tile> for Tilemap {
             .intersects(RectArea::new(x, y, width, height));
     }
 
-    fn clip_(&mut self) {
+    fn clip0(&mut self) {
         self.clip_rect = self.self_rect;
     }
 }
