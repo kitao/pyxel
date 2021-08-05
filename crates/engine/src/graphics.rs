@@ -62,8 +62,8 @@ impl Pyxel {
         self.screen.borrow_mut().clip(x, y, width, height);
     }
 
-    pub fn clip_(&mut self) {
-        self.screen.borrow_mut().clip_();
+    pub fn clip0(&mut self) {
+        self.screen.borrow_mut().clip0();
     }
 
     pub fn pal(&mut self, src_color: Color, dst_color: Color) {
