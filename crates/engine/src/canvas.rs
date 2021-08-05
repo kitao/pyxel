@@ -12,7 +12,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     fn value(&self, x: i32, y: i32) -> T;
     fn set_value(&mut self, x: i32, y: i32, value: T);
     fn clip(&mut self, x: i32, y: i32, width: u32, height: u32);
-    fn clip_(&mut self);
+    fn clip0(&mut self);
 
     fn cls(&mut self, value: T) {
         let width = self.width();
