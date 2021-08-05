@@ -65,6 +65,10 @@ impl Pyxel {
         &self.input.drop_files
     }
 
+    pub fn mouse(&mut self, is_visible: bool) {
+        self.input.is_mouse_visible = is_visible;
+    }
+
     pub fn btn(&self, key: Key) -> bool {
         if let Some(KeyState::Pressed { .. }) = self.input.key_states.get(&key) {
             true
@@ -114,10 +118,6 @@ impl Pyxel {
 
     pub fn btnv(&self, key: Key) -> KeyValue {
         self.input.key_values.get(&key).cloned().unwrap_or(0)
-    }
-
-    pub fn mouse(&mut self, is_visible: bool) {
-        self.input.is_mouse_visible = is_visible;
     }
 
     pub(crate) fn reset_input_states(&mut self) {
