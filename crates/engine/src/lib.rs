@@ -49,6 +49,7 @@ pub struct Pyxel {
     audio: AtomicAudio,
 
     pub colors: [Rgb8; COLOR_COUNT as usize],
+    pub palette: [Color; COLOR_COUNT as usize],
     pub screen: SharedImage,
     pub cursor: SharedImage,
     pub font: SharedImage,
@@ -77,14 +78,15 @@ impl Pyxel {
         let fps = fps.unwrap_or(DEFAULT_FPS);
         let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
 
-        let platform = TargetPlatform::new(title, width, height, scale);
+        let mut platform = TargetPlatform::new(title, width, height, scale);
         let system = System::new(fps, quit_key);
         let resource = Resource::new(width, height);
         let input = Input::new();
         let graphics = Graphics::new();
-        let audio = Audio::new();
+        let audio = Audio::new(&mut platform);
 
         let colors = array![i => DEFAULT_COLORS[i] ; COLOR_COUNT as usize];
+        let palette = array![i => i as Color; COLOR_COUNT as usize];
         let screen = Image::new(width, height);
         let cursor = Graphics::new_cursor_image();
         let font = Graphics::new_font_image();
@@ -97,7 +99,7 @@ impl Pyxel {
         let sounds = (0..SOUND_COUNT).map(|_| Sound::new()).collect();
         let musics = (0..MUSIC_COUNT).map(|_| Music::new()).collect();
 
-        let mut pyxel = Pyxel {
+        Pyxel {
             platform: platform,
             system: system,
             resource: resource,
@@ -105,21 +107,15 @@ impl Pyxel {
             graphics: graphics,
             audio: audio.clone(),
 
+            colors: colors,
+            palette: palette,
             screen: screen,
             cursor: cursor,
             font: font,
-
-            colors: colors,
             images: images,
             tilemaps: tilemaps,
-
             sounds: sounds,
             musics: musics,
-        };
-
-        pyxel.platform.start_audio(SAMPLE_RATE, SAMPLE_COUNT, audio);
-        pyxel.system.reset_start_time(pyxel.platform.tick_count());
-
-        pyxel
+        }
     }
 }
