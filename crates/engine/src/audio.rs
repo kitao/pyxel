@@ -3,7 +3,7 @@ use blip_buf::BlipBuf;
 use std::sync::{Arc, Mutex};
 
 use crate::channel::Channel;
-use crate::platform::AudioCallback;
+use crate::platform::{AudioCallback, Platform};
 use crate::settings::{
     CHANNEL_COUNT, CLOCK_RATE, MUSIC_COUNT, SAMPLE_COUNT, SAMPLE_RATE, TICK_CLOCK_COUNT,
 };
@@ -17,16 +17,20 @@ pub struct Audio {
 pub type AtomicAudio = Arc<Mutex<Audio>>;
 
 impl Audio {
-    pub fn new() -> AtomicAudio {
+    pub fn new<T: Platform>(platform: &mut T) -> AtomicAudio {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
         let channels = array![_ => Channel::new(); CHANNEL_COUNT as usize];
 
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 
-        Arc::new(Mutex::new(Audio {
+        let audio = Arc::new(Mutex::new(Audio {
             blip_buf: blip_buf,
             channels: channels,
-        }))
+        }));
+
+        platform.start_audio(SAMPLE_RATE, SAMPLE_COUNT, audio.clone());
+
+        audio
     }
 }
 

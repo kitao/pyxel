@@ -30,7 +30,7 @@ impl System {
         System {
             frame_count: 0,
             one_frame_time: 1000.0 / fps as f64,
-            next_update_time: 0.0,
+            next_update_time: -1.0,
             disable_next_frame_skip: true,
 
             quit_key: quit_key,
@@ -41,10 +41,6 @@ impl System {
             draw_profiler: Profiler::new(MEASURE_FRAME_COUNT),
             perf_monitor_enabled: false,
         }
-    }
-
-    pub fn reset_start_time(&mut self, tick_count: u32) {
-        self.next_update_time = tick_count as f64 - self.one_frame_time;
     }
 }
 
@@ -81,8 +77,8 @@ impl Pyxel {
 
         loop {
             let sleep_time = self.wait_for_update_time();
-            let tick_count = self.platform.tick_count();
 
+            let tick_count = self.platform.tick_count();
             self.system.fps_profiler.end(tick_count);
             self.system.fps_profiler.start(tick_count);
 
@@ -123,7 +119,13 @@ impl Pyxel {
     }
 
     pub fn flip(&mut self) -> bool {
-        self.system.next_update_time += self.system.next_update_time;
+        if self.system.next_update_time < 0.0 {
+            self.system.next_update_time = self.platform.tick_count() as f64;
+        } else {
+            self.wait_for_update_time();
+        }
+
+        self.system.next_update_time += self.system.one_frame_time;
 
         let tick_count = self.platform.tick_count();
         self.system.fps_profiler.end(tick_count);
