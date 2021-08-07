@@ -1,24 +1,16 @@
-use array_macro::array;
-
 use crate::canvas::Canvas;
 use crate::image::{Image, SharedImage};
-use crate::settings::{COLOR_COUNT, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH};
+use crate::settings::{CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH};
 use crate::types::{Color, Tile};
 use crate::Pyxel;
 
 pub struct Graphics {
-    org_palette: [Color; COLOR_COUNT as usize],
-    cur_palette: [Color; COLOR_COUNT as usize],
+    //
 }
 
 impl Graphics {
     pub fn new() -> Graphics {
-        let palette = array![i => i as Color; COLOR_COUNT as usize];
-
-        Graphics {
-            org_palette: palette.clone(),
-            cur_palette: palette,
-        }
+        Graphics {}
     }
 
     pub fn new_cursor_image() -> SharedImage {
@@ -66,17 +58,8 @@ impl Pyxel {
         self.screen.borrow_mut().clip0();
     }
 
-    pub fn pal(&mut self, src_color: Color, dst_color: Color) {
-        self.graphics.cur_palette[src_color as usize] = dst_color;
-    }
-
-    pub fn pal_(&mut self) {
-        self.graphics
-            .cur_palette
-            .clone_from_slice(&self.graphics.org_palette);
-    }
-
     pub fn cls(&mut self, color: Color) {
+        let color = self.palette[color as usize];
         self.screen.borrow_mut().cls(color);
     }
 
@@ -85,34 +68,42 @@ impl Pyxel {
     }
 
     pub fn pset(&mut self, x: i32, y: i32, color: Color) {
+        let color = self.palette[color as usize];
         self.screen.borrow_mut().pset(x, y, color);
     }
 
     pub fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, color: Color) {
+        let color = self.palette[color as usize];
         self.screen.borrow_mut().line(x1, y1, x2, y2, color);
     }
 
     pub fn rect(&mut self, x: i32, y: i32, width: u32, height: u32, color: Color) {
+        let color = self.palette[color as usize];
         self.screen.borrow_mut().rect(x, y, width, height, color);
     }
 
     pub fn rectb(&mut self, x: i32, y: i32, width: u32, height: u32, color: Color) {
+        let color = self.palette[color as usize];
         self.screen.borrow_mut().rectb(x, y, width, height, color);
     }
 
     pub fn circ(&mut self, x: i32, y: i32, radius: u32, color: Color) {
+        let color = self.palette[color as usize];
         self.screen.borrow_mut().circ(x, y, radius, color);
     }
 
     pub fn circb(&mut self, x: i32, y: i32, radius: u32, color: Color) {
+        let color = self.palette[color as usize];
         self.screen.borrow_mut().circb(x, y, radius, color);
     }
 
     pub fn tri(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, color: Color) {
+        let color = self.palette[color as usize];
         self.screen.borrow_mut().tri(x1, y1, x2, y2, x3, y3, color);
     }
 
     pub fn trib(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, color: Color) {
+        let color = self.palette[color as usize];
         self.screen.borrow_mut().trib(x1, y1, x2, y2, x3, y3, color);
     }
 
@@ -136,7 +127,7 @@ impl Pyxel {
             width,
             height,
             color_key,
-            Some(&self.graphics.cur_palette),
+            Some(&self.palette),
         );
     }
 
@@ -164,6 +155,7 @@ impl Pyxel {
     }
 
     pub fn text(&mut self, x: i32, y: i32, string: &str, color: Color) {
+        let color = self.palette[color as usize];
         self.screen
             .borrow_mut()
             .text(x, y, string, color, &self.font.borrow());
