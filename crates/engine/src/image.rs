@@ -5,7 +5,7 @@ use std::rc::Rc;
 
 use crate::canvas::Canvas;
 use crate::rectarea::RectArea;
-use crate::settings::COLOR_COUNT;
+use crate::settings::MAX_COLOR_COUNT;
 use crate::tilemap::Tilemap;
 use crate::types::{Color, Rgb8, Tile};
 use crate::utility::{parse_hex_string, simplify_string};
@@ -172,7 +172,7 @@ impl Image {
                     let mut closest_color: Color = 0;
                     let mut closest_dist: f64 = f64::MAX;
 
-                    for k in 0..=COLOR_COUNT {
+                    for k in 0..=MAX_COLOR_COUNT {
                         let pal_color = colors[k as usize];
                         let pal_rgb = (
                             ((pal_color >> 16) & 0xff) as u8,
