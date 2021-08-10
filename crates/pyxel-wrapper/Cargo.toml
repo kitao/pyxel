@@ -1,13 +1,12 @@
 [package]
-name = "pyxel-extension"
+name = "pyxel-wrapper"
 version = "0.1.0"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2018"
 
 [lib]
-name = "pyxel_extension"
 crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.14.1", features = ["extension-module", "abi3-py36"] }
-pyxel-engine = { path = "../engine" }
+pyxel-engine = { path = "../pyxel-engine" }
