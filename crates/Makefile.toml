@@ -1,28 +1,37 @@
-[env]
-BIN_DIR = "../pyxel/mac"
+[config]
+skip_core_tasks = true
 
-[tasks.clean]
-script_runner = "@duckscript"
+[env]
+CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
+
+[tasks.cargo-clean]
 script = '''
 cargo clean
-rm -rf ../pyxel/bin/mac
 '''
 
-[tasks.build]
-script_runner = "@duckscript"
+[tasks.cargo-build]
 script = '''
 cargo build
 '''
 
-[tasks.test]
-script_runner = "@duckscript"
+[tasks.cargo-build-release]
+script = '''
+cargo build --release
+'''
+
+[tasks.cargo-test]
 script = '''
 cargo test
 '''
 
-[tasks.copy]
-script_runner = "@duckscript"
-script = '''
-mkdir -p `dirname ../pyxel/bin/mac/pyxel_extension.so`
-cp -f target/debug/libpyxel_extension.dylib ../pyxel/bin/mac/pyxel_extension.so
-'''
+[tasks.clean]
+alias = "cargo-clean"
+
+[tasks.build]
+alias = "cargo-build"
+
+[tasks.build-release]
+alias = "cargo-build-release"
+
+[tasks.test]
+alias = "cargo-test"

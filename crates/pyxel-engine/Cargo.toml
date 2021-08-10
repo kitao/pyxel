@@ -6,6 +6,11 @@ edition = "2018"
 
 [lib]
 name = "pyxel"
+path = "src/lib.rs"
+
+[[bin]]
+name = "pyxel"
+path = "src/main.rs"
 
 [[test]]
 name = "tests"
