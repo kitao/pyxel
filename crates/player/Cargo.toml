@@ -1,9 +1,0 @@
-[package]
-name = "pyxel-player"
-version = "0.1.0"
-authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
-edition = "2018"
-
-[dependencies]
-cpython = "0.6.0"
-pyxel-engine = { path = "../engine" }
