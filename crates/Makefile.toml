@@ -1,8 +1,11 @@
 [config]
 skip_core_tasks = true
 
-[env]
-CARGO_MAKE_EXTEND_WORKSPACE_MAKEFILE = true
+[tasks.cargo-format]
+install_crate = "rustfmt"
+script = '''
+cargo fmt -- --emit=files
+'''
 
 [tasks.cargo-clean]
 script = '''
@@ -23,15 +26,3 @@ cargo build --release
 script = '''
 cargo test
 '''
-
-[tasks.clean]
-alias = "cargo-clean"
-
-[tasks.build]
-alias = "cargo-build"
-
-[tasks.build-release]
-alias = "cargo-build-release"
-
-[tasks.test]
-alias = "cargo-test"
