@@ -1,35 +1,45 @@
-[env]
-SRC_LIB_EXT = { source = "${CARGO_MAKE_RUST_TARGET_OS}", default_value = "so", mapping = { macos = "dylib", windows = "dll" } }
-DST_LIB_EXT = { source = "${CARGO_MAKE_RUST_TARGET_OS}", default_value = "so", mapping = { windows = "pyd" } }
-SRC_LIB_NAME = "lib${CARGO_MAKE_CRATE_FS_NAME}.${SRC_LIB_EXT}"
-DST_LIB_NAME = "${CARGO_MAKE_CRATE_FS_NAME}.${DST_LIB_EXT}"
-SRC_LIB_DIR = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/release"
-DST_LIB_DIR = "../../pyxel/lib"
+extend = "../Makefile.toml"
 
-[tasks.clean]
-clear = true
-dependencies = ["cargo-clean"]
+[env]
+PLATFORM_NAME = { source = "${CARGO_MAKE_RUST_TARGET_OS}", default_value = "linux", mapping = { macos = "mac", windows = "windows" } }
+PYTHON_LIB_DIR = "../../pyxel/lib/${PLATFORM_NAME}"
+DEBUG_TARGET_DIR = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/debug"
+RELEASE_TARGET_DIR = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/release"
+
+SRC_DIR = { source = "${CARGO_MAKE_TASK}", default_value = "${DEBUG_TARGET_DIR}", mapping = { build-release = "${RELEASE_TARGET_DIR}" } }
+SRC_EXT = { source = "${PLATFORM_NAME}", default_value = "so", mapping = { mac = "dylib", windows = "dll" } }
+SRC_NAME = "lib${CARGO_MAKE_CRATE_FS_NAME}.${SRC_EXT}"
+SRC_PATH = "${SRC_DIR}/${SRC_NAME}"
+
+DST_DIR = { source = "${CARGO_MAKE_TASK}", default_value = "${DEBUG_TARGET_DIR}", mapping = { build-release = "${PYTHON_LIB_DIR}" } }
+DST_EXT = { source = "${PLATFORM_NAME}", default_value = "so", mapping = { windows = "pyd" } }
+DST_NAME = "${CARGO_MAKE_CRATE_FS_NAME}.${DST_EXT}"
+DST_PATH = "${DST_DIR}/${DST_NAME}"
+
+[tasks.copy-lib]
+private = true
 script = '''
-rm -rf ${DST_LIB_DIR}
+echo copy ${SRC_PATH} to ${DST_PATH}
+cp ${SRC_PATH} ${DST_PATH}
 '''
 
-[tasks.extension-build]
+[tasks.format]
+alias = "cargo-format"
+
+[tasks.clean]
+dependencies = ["cargo-clean"]
 script = '''
-echo mv ${SRC_LIB_DIR}/${SRC_LIB_NAME} ${SRC_LIB_DIR}/${DST_LIB_NAME}
+rm -rf ${PYTHON_LIB_DIR}
 '''
 
 [tasks.build]
-dependencies = ["cargo-build", "extension-build"]
+dependencies = ["cargo-build", "copy-lib"]
 
 [tasks.build-release]
-clear = true
-dependencies = ["cargo-build-release"]
-script = '''
-mv ${SRC_LIB_DIR}/${SRC_LIB_NAME} ${SRC_LIB_DIR}/${DST_LIB_NAME}"
-cp -f ${SRC_LIB_DIR}/${SRC_LIB_NAME} ${DST_LIB_DIR}/${DST_LIB_NAME}"
-'''
+dependencies = ["cargo-build-release", "copy-lib"]
 
 [tasks.test]
-clear = true
+dependencies = ["build"]
 script = '''
+#
 '''
