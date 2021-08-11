@@ -1,4 +1,3 @@
-import os, sys
-sys.path.append(os.path.join('../../debug/'))
+import pyxel_debug as pyxel
 
 print("main")
