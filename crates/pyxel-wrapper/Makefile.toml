@@ -6,21 +6,21 @@ PYTHON_LIB_DIR = "../../pyxel/lib/${PLATFORM_NAME}"
 DEBUG_TARGET_DIR = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/debug"
 RELEASE_TARGET_DIR = "${CARGO_MAKE_CRATE_TARGET_DIRECTORY}/release"
 
-SRC_DIR = { source = "${CARGO_MAKE_TASK}", default_value = "${DEBUG_TARGET_DIR}", mapping = { build-release = "${RELEASE_TARGET_DIR}" } }
-SRC_EXT = { source = "${PLATFORM_NAME}", default_value = "so", mapping = { mac = "dylib", windows = "dll" } }
-SRC_NAME = "lib${CARGO_MAKE_CRATE_FS_NAME}.${SRC_EXT}"
-SRC_PATH = "${SRC_DIR}/${SRC_NAME}"
+SRC_LIB_DIR = { source = "${CARGO_MAKE_TASK}", default_value = "${DEBUG_TARGET_DIR}", mapping = { build-release = "${RELEASE_TARGET_DIR}" } }
+SRC_LIB_EXT = { source = "${PLATFORM_NAME}", default_value = "so", mapping = { mac = "dylib", windows = "dll" } }
+SRC_LIB_NAME = "lib${CARGO_MAKE_CRATE_FS_NAME}.${SRC_LIB_EXT}"
+SRC_LIB_PATH = "${SRC_LIB_DIR}/${SRC_LIB_NAME}"
 
-DST_DIR = { source = "${CARGO_MAKE_TASK}", default_value = "${DEBUG_TARGET_DIR}", mapping = { build-release = "${PYTHON_LIB_DIR}" } }
-DST_EXT = { source = "${PLATFORM_NAME}", default_value = "so", mapping = { windows = "pyd" } }
-DST_NAME = "${CARGO_MAKE_CRATE_FS_NAME}.${DST_EXT}"
-DST_PATH = "${DST_DIR}/${DST_NAME}"
+DST_LIB_DIR = { source = "${CARGO_MAKE_TASK}", default_value = "${DEBUG_TARGET_DIR}", mapping = { build-release = "${PYTHON_LIB_DIR}" } }
+DST_LIB_EXT = { source = "${PLATFORM_NAME}", default_value = "so", mapping = { windows = "pyd" } }
+DST_LIB_NAME = "${CARGO_MAKE_CRATE_FS_NAME}.${DST_LIB_EXT}"
+DST_LIB_PATH = "${DST_LIB_DIR}/${DST_LIB_NAME}"
 
 [tasks.copy-lib]
 private = true
 script = '''
-echo copy ${SRC_PATH} to ${DST_PATH}
-cp ${SRC_PATH} ${DST_PATH}
+echo copy ${SRC_LIB_PATH} to ${DST_LIB_PATH}
+cp ${SRC_LIB_PATH} ${DST_LIB_PATH}
 '''
 
 [tasks.format]
@@ -41,5 +41,5 @@ dependencies = ["cargo-build-release", "copy-lib"]
 [tasks.test]
 dependencies = ["build"]
 script = '''
-#
+python3 tests/*.py
 '''
