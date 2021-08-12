@@ -3,26 +3,16 @@ import platform
 system = platform.system()
 
 if system == "Darwin":
-    from .bin.mac.pyxel_extension import *
+    from .bin.mac.pyxel_extension import *  # type: ignore  # noqa F403
 elif system == "Windows":
-    from .bin.windows.pyxel_extension import *
+    from .bin.windows.pyxel_extension import *  # type: ignore  # noqa F403
 elif system == "Linux":
-    from .bin.linux.pyxel_extension import *
+    from .bin.linux.pyxel_extension import *  # type: ignore  # noqa F403
 else:
     raise Exception("unsupported platform")
 
+
 """
-import inspect
-import os
-import signal
-import sys
-import traceback
-from collections.abc import MutableSequence
-from ctypes import CFUNCTYPE, c_char_p, c_int32, cast, create_string_buffer
-from typing import Any, Callable, Dict, List, Optional
-
-from . import core  # type: ignore
-
 if sys.version_info < (3, 6, 8):
     print("pyxel error: Python version must be 3.6.8 or higher")
     sys.exit(1)
