@@ -35,22 +35,26 @@ fn fullscreen() {
 
 #[pyfunction]
 fn run(update: &PyAny, draw: &PyAny) {
-    struct Hoge<'a> {
+    struct PythonCallback<'a> {
         update: &'a PyAny,
         draw: &'a PyAny,
     }
 
-    impl<'a> PyxelCallback for Hoge<'a> {
+    impl<'a> PyxelCallback for PythonCallback<'a> {
         fn update(&mut self, _pyxel: &mut Pyxel) {
-            let _ = self.update.call0();
+            if let Err(err) = self.update.call0() {
+                panic!("{}", err);
+            }
         }
 
         fn draw(&mut self, _pyxel: &mut Pyxel) {
-            let _ = self.draw.call0();
+            if let Err(err) = self.draw.call0() {
+                panic!("{}", err);
+            }
         }
     }
 
-    instance().run(&mut Hoge {
+    instance().run(&mut PythonCallback {
         update: update,
         draw: draw,
     });
