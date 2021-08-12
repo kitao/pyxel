@@ -118,6 +118,16 @@ impl Pyxel {
         self.system.should_quit = true;
     }
 
+    pub fn show(&mut self) {
+        loop {
+            if self.update_frame(None) {
+                break;
+            }
+
+            self.draw_frame(None);
+        }
+    }
+
     pub fn flip(&mut self) -> bool {
         if self.system.next_update_time < 0.0 {
             self.system.next_update_time = self.platform.tick_count() as f64;
@@ -138,16 +148,6 @@ impl Pyxel {
         self.draw_frame(None);
 
         false
-    }
-
-    pub fn show(&mut self) {
-        loop {
-            if self.update_frame(None) {
-                break;
-            }
-
-            self.draw_frame(None);
-        }
     }
 
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) -> bool {
