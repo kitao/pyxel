@@ -11,8 +11,6 @@ use crate::types::{Color, Rgb8, Tile};
 use crate::utility::{parse_hex_string, simplify_string};
 
 pub struct Image {
-    width: u32,
-    height: u32,
     self_rect: RectArea,
     clip_rect: RectArea,
     data: Vec<Vec<Color>>,
@@ -23,8 +21,6 @@ pub type SharedImage = Rc<RefCell<Image>>;
 impl Image {
     pub fn new(width: u32, height: u32) -> SharedImage {
         Rc::new(RefCell::new(Image {
-            width: width,
-            height: height,
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
             data: vec![vec![0; width as usize]; height as usize],
@@ -74,6 +70,17 @@ impl Image {
         height: i32,
         transparent: Option<Tile>,
     ) {
+        let _ = (
+            x,
+            y,
+            tilemap,
+            tilemap_x,
+            tilemap_y,
+            width,
+            height,
+            transparent,
+        ); // dummy
+
         /*
         Tilemap* tilemap = GetTilemapBank(tilemap_index);
         int32_t image_index = tilemap->ImageIndex();
@@ -118,6 +125,8 @@ impl Image {
     }
 
     pub fn text(&mut self, x: i32, y: i32, string: &str, color: Color, font: &Image) {
+        let _ = (x, y, string, color, font); // dummy
+
         /*
         int32_t draw_color = GET_DRAW_COLOR(color);
         int32_t cur_color = palette_table_[FONT_COLOR];
@@ -209,6 +218,8 @@ impl Image {
     }
 
     pub fn save(&self, filename: &str, colors: &[Rgb8], scale: u32) {
+        let _ = (filename, colors, scale); // dummy
+
         //
     }
 
@@ -226,11 +237,11 @@ impl Image {
 
 impl Canvas<Color> for Image {
     fn width(&self) -> u32 {
-        self.width
+        self.self_rect.width()
     }
 
     fn height(&self) -> u32 {
-        self.height
+        self.self_rect.height()
     }
 
     fn value(&self, x: i32, y: i32) -> Color {
