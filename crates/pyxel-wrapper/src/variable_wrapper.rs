@@ -9,6 +9,11 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "width" => instance().width().to_object(py),
         "height" => instance().height().to_object(py),
         "frame_count" => instance().frame_count().to_object(py),
+        "mouse_x" => instance().mouse_x().to_object(py),
+        "mouse_y" => instance().mouse_y().to_object(py),
+        "mouse_wheel" => instance().mouse_wheel().to_object(py),
+        "text_input" => instance().text_input().to_object(py),
+        "drop_files" => instance().drop_files().to_object(py),
 
         _ => {
             return Err(PyAttributeError::new_err(format!(
