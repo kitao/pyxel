@@ -114,10 +114,6 @@ impl Pyxel {
         }
     }
 
-    pub fn quit(&mut self) {
-        self.system.should_quit = true;
-    }
-
     pub fn show(&mut self) {
         loop {
             if self.update_frame(None) {
@@ -148,6 +144,10 @@ impl Pyxel {
         self.draw_frame(None);
 
         false
+    }
+
+    pub fn quit(&mut self) {
+        self.system.should_quit = true;
     }
 
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) -> bool {
