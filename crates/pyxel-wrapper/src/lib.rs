@@ -1,6 +1,18 @@
-use pyo3::prelude::*;
+mod constant_wrapper;
+mod graphics_wrapper;
+mod system_wrapper;
+#[allow(non_snake_case)]
+mod variable_wrapper;
 
+use pyo3::prelude::*;
 use pyxel::Pyxel;
+use std::cmp::max;
+use std::mem::transmute;
+
+use crate::constant_wrapper::add_module_constants;
+use crate::graphics_wrapper::add_graphics_functions;
+use crate::system_wrapper::add_system_functions;
+use crate::variable_wrapper::add_module_variables;
 
 static mut INSTANCE: *mut Pyxel = 0 as *mut Pyxel;
 
@@ -14,30 +26,22 @@ pub fn instance() -> &'static mut Pyxel {
     }
 }
 
-#[pyfunction(
-    args = "*",
-    title = "None",
-    scale = "None",
-    fps = "None",
-    quit_key = "None"
-)]
-//#[pyo3(text_signature = "(width, height, / title, [scale, fps, quit_key)")]
-fn init(
-    width: u32,
-    height: u32,
-    title: Option<&str>,
-    scale: Option<u32>,
-    fps: Option<u32>,
-    quit_key: Option<pyxel::Key>,
-) {
-    *instance() = pyxel::Pyxel::new(width, height, title, scale, fps, quit_key);
+pub fn set_instance(pyxel: Pyxel) {
+    unsafe {
+        INSTANCE = transmute(Box::new(pyxel));
+    }
+}
+
+pub fn i32_to_u32(x: i32) -> u32 {
+    max(x, 0) as u32
 }
 
 #[pymodule]
-fn pyxel_extension(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add("TEST", 1234)?;
-
-    m.add_function(wrap_pyfunction!(init, m)?)?;
+fn pyxel_wrapper(_py: Python, m: &PyModule) -> PyResult<()> {
+    add_module_constants(m)?;
+    add_module_variables(m)?;
+    add_system_functions(m)?;
+    add_graphics_functions(m)?;
 
     Ok(())
 }
