@@ -45,7 +45,7 @@ pub struct Pyxel {
     system: System,
     resource: Resource,
     input: Input,
-    graphics: Graphics,
+    _graphics: Graphics,
     audio: AtomicAudio,
 
     pub colors: [Rgb8; MAX_COLOR_COUNT as usize],
@@ -107,7 +107,7 @@ impl Pyxel {
             system: system,
             resource: resource,
             input: input,
-            graphics: graphics,
+            _graphics: graphics,
             audio: audio.clone(),
 
             colors: colors,
