@@ -1,7 +1,7 @@
 use array_macro::array;
 
 use crate::image::{Image, SharedImage};
-use crate::settings::{CAPTURE_FRAME_COUNT, CAPTURE_FRAME_SCALE};
+use crate::settings::CAPTURE_FRAME_COUNT;
 use crate::Pyxel;
 
 pub struct Resource {
@@ -50,10 +50,15 @@ impl Resource {
 
 impl Pyxel {
     pub fn load(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
+        let _ = (filename, image, tilemap, sound, music); // dummy
+        let _ = self.resource.captured_frames; // dummy
+
         //
     }
 
     pub fn save(&mut self, filename: &str) {
+        let _ = filename; // dummy
+
         //
     }
 
