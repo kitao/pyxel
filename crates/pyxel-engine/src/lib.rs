@@ -48,8 +48,8 @@ pub struct Pyxel {
     _graphics: Graphics,
     audio: AtomicAudio,
 
-    pub colors: [Rgb8; MAX_COLOR_COUNT as usize],
-    pub palette: [Color; MAX_COLOR_COUNT as usize],
+    pub colors: [Rgb8; COLOR_COUNT as usize],
+    pub palette: [Color; COLOR_COUNT as usize],
     pub screen: SharedImage,
     pub cursor: SharedImage,
     pub font: SharedImage,
@@ -85,11 +85,8 @@ impl Pyxel {
         let graphics = Graphics::new();
         let audio = Audio::new(&mut platform);
 
-        let mut colors = [0; MAX_COLOR_COUNT as usize];
-        for (i, color) in DEFAULT_COLORS.iter().enumerate() {
-            colors[i] = *color;
-        }
-        let palette = array![i => i as Color; MAX_COLOR_COUNT as usize];
+        let colors = DEFAULT_COLORS.clone();
+        let palette = array![i => i as Color; COLOR_COUNT as usize];
         let screen = Image::new(width, height);
         let cursor = Graphics::new_cursor_image();
         let font = Graphics::new_font_image();
