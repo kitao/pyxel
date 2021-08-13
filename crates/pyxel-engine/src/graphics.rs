@@ -1,6 +1,6 @@
 use crate::canvas::Canvas;
 use crate::image::{Image, SharedImage};
-use crate::settings::{CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH};
+use crate::settings::{COLOR_COUNT, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH};
 use crate::types::{Color, Tile};
 use crate::Pyxel;
 
@@ -56,6 +56,16 @@ impl Pyxel {
 
     pub fn clip0(&mut self) {
         self.screen.borrow_mut().clip0();
+    }
+
+    pub fn pal(&mut self, src_color: Color, dst_color: Color) {
+        self.palette[src_color as usize] = dst_color;
+    }
+
+    pub fn pal0(&mut self) {
+        for i in 0..COLOR_COUNT {
+            self.palette[i as usize] = i as Color;
+        }
     }
 
     pub fn cls(&mut self, color: Color) {
