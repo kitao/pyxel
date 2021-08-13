@@ -4,9 +4,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::channel::Channel;
 use crate::platform::{AudioCallback, Platform};
-use crate::settings::{
-    CHANNEL_COUNT, CLOCK_RATE, MUSIC_COUNT, SAMPLE_COUNT, SAMPLE_RATE, TICK_CLOCK_COUNT,
-};
+use crate::settings::{CHANNEL_COUNT, CLOCK_RATE, SAMPLE_COUNT, SAMPLE_RATE, TICK_CLOCK_COUNT};
 use crate::Pyxel;
 
 pub struct Audio {
@@ -73,8 +71,9 @@ impl Pyxel {
     }
 
     pub fn playm(&mut self, music_no: u32, looping: bool) {
-        for i in 0..MUSIC_COUNT {
-            let music = self.musics[music_no as usize].clone();
+        let music = self.musics[music_no as usize].clone();
+
+        for i in 0..CHANNEL_COUNT {
             self.play(i, &music.borrow().sequences[i as usize], looping);
         }
     }
