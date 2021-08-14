@@ -1,7 +1,9 @@
 use pyo3::exceptions::PyAttributeError;
 use pyo3::prelude::*;
 
+use crate::colors_wrapper::Colors;
 use crate::instance;
+use crate::palette_wrapper::Palette;
 
 #[pyfunction]
 fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
@@ -14,6 +16,8 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "mouse_wheel" => instance().mouse_wheel().to_object(py),
         "text_input" => instance().text_input().to_object(py),
         "drop_files" => instance().drop_files().to_object(py),
+        "colors" => Py::new(py, Colors::new())?.into_py(py),
+        "palette" => Py::new(py, Palette::new())?.into_py(py),
 
         _ => {
             return Err(PyAttributeError::new_err(format!(
