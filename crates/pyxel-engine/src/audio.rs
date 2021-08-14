@@ -14,13 +14,12 @@ use crate::settings::{
 use crate::sound::Sound;
 use crate::Pyxel;
 
-pub struct AudioCore {
+struct AudioCore {
     blip_buf: BlipBuf,
     channels: [Arc<Mutex<Channel>>; CHANNEL_COUNT as usize],
 }
 
 pub struct Audio {
-    audio_core: Arc<Mutex<AudioCore>>,
     channels: [Arc<Mutex<Channel>>; CHANNEL_COUNT as usize],
     sounds: [Rc<RefCell<Sound>>; SOUND_COUNT as usize],
     musics: [Rc<RefCell<Music>>; MUSIC_COUNT as usize],
@@ -41,7 +40,6 @@ impl Audio {
         }));
 
         let audio = Audio {
-            audio_core: audio_core.clone(),
             channels: channels,
             sounds: sounds,
             musics: musics,
@@ -88,7 +86,7 @@ impl Pyxel {
             .map(|sound_no| self.audio.sounds[*sound_no as usize].borrow().clone())
             .collect();
 
-        self.audio.audio_core.lock().unwrap().channels[channel as usize]
+        self.audio.channels[channel as usize]
             .lock()
             .unwrap()
             .play(sounds, is_looping);
@@ -103,10 +101,7 @@ impl Pyxel {
     }
 
     pub fn stop(&mut self, channel: u32) {
-        self.audio.audio_core.lock().unwrap().channels[channel as usize]
-            .lock()
-            .unwrap()
-            .stop();
+        self.audio.channels[channel as usize].lock().unwrap().stop();
     }
 
     pub fn stop_(&mut self) {
