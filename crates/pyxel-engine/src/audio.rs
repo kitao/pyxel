@@ -16,11 +16,12 @@ use crate::Pyxel;
 
 pub struct AudioCore {
     blip_buf: BlipBuf,
-    channels: [Channel; CHANNEL_COUNT as usize],
+    channels: [Arc<Mutex<Channel>>; CHANNEL_COUNT as usize],
 }
 
 pub struct Audio {
     audio_core: Arc<Mutex<AudioCore>>,
+    channels: [Arc<Mutex<Channel>>; CHANNEL_COUNT as usize],
     sounds: [Rc<RefCell<Sound>>; SOUND_COUNT as usize],
     musics: [Rc<RefCell<Music>>; MUSIC_COUNT as usize],
 }
@@ -28,7 +29,7 @@ pub struct Audio {
 impl Audio {
     pub fn new<T: Platform>(platform: &mut T) -> Audio {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
-        let channels = array![_ => Channel::new(); CHANNEL_COUNT as usize];
+        let channels = array![_ => Arc::new(Mutex::new(Channel::new())); CHANNEL_COUNT as usize];
         let sounds = array![_ => Rc::new(RefCell::new(Sound::new())); SOUND_COUNT as usize];
         let musics = array![_ => Rc::new(RefCell::new(Music::new())); MUSIC_COUNT as usize];
 
@@ -36,11 +37,12 @@ impl Audio {
 
         let audio_core = Arc::new(Mutex::new(AudioCore {
             blip_buf: blip_buf,
-            channels: channels,
+            channels: channels.clone(),
         }));
 
         let audio = Audio {
             audio_core: audio_core.clone(),
+            channels: channels,
             sounds: sounds,
             musics: musics,
         };
@@ -57,7 +59,7 @@ impl AudioCallback for AudioCore {
 
         while samples < out.len() {
             for channel in &mut self.channels {
-                channel.update(&mut self.blip_buf);
+                channel.lock().unwrap().update(&mut self.blip_buf);
             }
 
             self.blip_buf.end_frame(TICK_CLOCK_COUNT);
@@ -68,6 +70,10 @@ impl AudioCallback for AudioCore {
 }
 
 impl Pyxel {
+    pub fn channel(&self, channel_no: u32) -> Arc<Mutex<Channel>> {
+        self.audio.channels[channel_no as usize].clone()
+    }
+
     pub fn sound(&self, sound_no: u32) -> Rc<RefCell<Sound>> {
         self.audio.sounds[sound_no as usize].clone()
     }
@@ -76,27 +82,16 @@ impl Pyxel {
         self.audio.musics[music_no as usize].clone()
     }
 
-    pub fn is_playing(&self, channel: u32) -> bool {
-        self.audio.audio_core.lock().unwrap().channels[channel as usize].is_playing()
-    }
-
-    pub fn is_looping(&self, channel: u32) -> bool {
-        self.audio.audio_core.lock().unwrap().channels[channel as usize].is_looping()
-    }
-
-    pub fn play_pos(&self, channel: u32) -> (u32, u32) {
-        let channel = &self.audio.audio_core.lock().unwrap().channels[channel as usize];
-
-        (channel.sound_index(), channel.note_index())
-    }
-
     pub fn play(&mut self, channel: u32, sequence: &[u32], is_looping: bool) {
         let sounds = sequence
             .iter()
             .map(|sound_no| self.audio.sounds[*sound_no as usize].borrow().clone())
             .collect();
 
-        self.audio.audio_core.lock().unwrap().channels[channel as usize].play(sounds, is_looping);
+        self.audio.audio_core.lock().unwrap().channels[channel as usize]
+            .lock()
+            .unwrap()
+            .play(sounds, is_looping);
     }
 
     pub fn playm(&mut self, music_no: u32, looping: bool) {
@@ -108,7 +103,10 @@ impl Pyxel {
     }
 
     pub fn stop(&mut self, channel: u32) {
-        self.audio.audio_core.lock().unwrap().channels[channel as usize].stop();
+        self.audio.audio_core.lock().unwrap().channels[channel as usize]
+            .lock()
+            .unwrap()
+            .stop();
     }
 
     pub fn stop_(&mut self) {
