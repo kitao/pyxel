@@ -233,7 +233,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         } else {
             (x3 - x2) as f64 / (y3 - y2) as f64
         };
-
         let x_inter = (x1 as f64 + alpha13 * (y2 - y1) as f64 + 0.5) as i32;
 
         for i in y1..=y2 {
