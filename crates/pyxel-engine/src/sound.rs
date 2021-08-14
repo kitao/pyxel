@@ -1,6 +1,3 @@
-use std::cell::RefCell;
-use std::rc::Rc;
-
 use crate::settings::DEFAULT_SOUND_SPEED;
 use crate::types::{Effect, Note, Speed, Tone, Volume};
 use crate::utility::simplify_string;
@@ -14,17 +11,15 @@ pub struct Sound {
     pub speed: Speed,
 }
 
-pub type SharedSound = Rc<RefCell<Sound>>;
-
 impl Sound {
-    pub fn new() -> SharedSound {
-        Rc::new(RefCell::new(Sound {
+    pub fn new() -> Sound {
+        Sound {
             notes: Vec::new(),
             tones: Vec::new(),
             volumes: Vec::new(),
             effects: Vec::new(),
             speed: DEFAULT_SOUND_SPEED,
-        }))
+        }
     }
 
     pub fn set(
@@ -156,27 +151,25 @@ mod tests {
     #[test]
     fn new() {
         let sound = Sound::new();
-        assert_eq!(sound.borrow().notes.len(), 0);
-        assert_eq!(sound.borrow().tones.len(), 0);
-        assert_eq!(sound.borrow().volumes.len(), 0);
-        assert_eq!(sound.borrow().effects.len(), 0);
-        assert_eq!(sound.borrow().speed, DEFAULT_SOUND_SPEED);
+        assert_eq!(sound.notes.len(), 0);
+        assert_eq!(sound.tones.len(), 0);
+        assert_eq!(sound.volumes.len(), 0);
+        assert_eq!(sound.effects.len(), 0);
+        assert_eq!(sound.speed, DEFAULT_SOUND_SPEED);
     }
 
     #[test]
     fn set() {
-        let sound = Sound::new();
+        let mut sound = Sound::new();
 
-        sound
-            .borrow_mut()
-            .set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
-        assert_eq!(&sound.borrow().notes, &vec![0, 1, 2, 3]);
+        sound.set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
+        assert_eq!(&sound.notes, &vec![0, 1, 2, 3]);
         assert_eq!(
-            &sound.borrow().tones,
+            &sound.tones,
             &vec![Tone::Triangle, Tone::Square, Tone::Pulse, Tone::Noise]
         );
         assert_eq!(
-            &sound.borrow().volumes,
+            &sound.volumes,
             &vec![
                 Volume::Level0,
                 Volume::Level1,
@@ -185,7 +178,7 @@ mod tests {
             ]
         );
         assert_eq!(
-            &sound.borrow().effects,
+            &sound.effects,
             &vec![
                 Effect::None,
                 Effect::Slide,
@@ -193,40 +186,35 @@ mod tests {
                 Effect::FadeOut
             ]
         );
-        assert_eq!(sound.borrow().speed, 123);
+        assert_eq!(sound.speed, 123);
     }
 
     #[test]
     fn set_note() {
-        let sound = Sound::new();
+        let mut sound = Sound::new();
 
-        sound
-            .borrow_mut()
-            .set_note(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ");
-        assert_eq!(
-            &sound.borrow().notes,
-            &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]
-        );
+        sound.set_note(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ");
+        assert_eq!(&sound.notes, &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]);
     }
 
     #[test]
     fn set_tone() {
-        let sound = Sound::new();
+        let mut sound = Sound::new();
 
-        sound.borrow_mut().set_tone(" t s p n ");
+        sound.set_tone(" t s p n ");
         assert_eq!(
-            &sound.borrow().tones,
+            &sound.tones,
             &vec![Tone::Triangle, Tone::Square, Tone::Pulse, Tone::Noise]
         );
     }
 
     #[test]
     fn set_volume() {
-        let sound = Sound::new();
+        let mut sound = Sound::new();
 
-        sound.borrow_mut().set_volume(" 0 1 2 3 4 5 6 7 ");
+        sound.set_volume(" 0 1 2 3 4 5 6 7 ");
         assert_eq!(
-            &sound.borrow().volumes,
+            &sound.volumes,
             &vec![
                 Volume::Level0,
                 Volume::Level1,
@@ -242,11 +230,11 @@ mod tests {
 
     #[test]
     fn set_effect() {
-        let sound = Sound::new();
+        let mut sound = Sound::new();
 
-        sound.borrow_mut().set_effect(" n s v f ");
+        sound.set_effect(" n s v f ");
         assert_eq!(
-            &sound.borrow().effects,
+            &sound.effects,
             &vec![
                 Effect::None,
                 Effect::Slide,

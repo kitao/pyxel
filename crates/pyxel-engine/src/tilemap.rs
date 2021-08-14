@@ -1,6 +1,3 @@
-use std::cell::RefCell;
-use std::rc::Rc;
-
 use crate::canvas::Canvas;
 use crate::rectarea::RectArea;
 use crate::types::Tile;
@@ -14,23 +11,21 @@ pub struct Tilemap {
     data: Vec<Vec<Tile>>,
 }
 
-pub type SharedTilemap = Rc<RefCell<Tilemap>>;
-
 impl Tilemap {
-    pub fn new(width: u32, height: u32) -> SharedTilemap {
-        Rc::new(RefCell::new(Tilemap {
+    pub fn new(width: u32, height: u32) -> Tilemap {
+        Tilemap {
             width: width,
             height: height,
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
             data: vec![vec![(0, 0); width as usize]; height as usize],
-        }))
+        }
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = data_str[0].len() as u32 / 4;
         let height = data_str.len() as u32;
-        let dst_tilemap = Tilemap::new(width, height);
+        let mut dst_tilemap = Tilemap::new(width, height);
 
         for i in 0..height {
             let src_data = simplify_string(data_str[i as usize]);
@@ -39,7 +34,7 @@ impl Tilemap {
                 let index = j as usize * 4;
 
                 if let Some(value) = parse_hex_string(&src_data[index..index + 4]) {
-                    dst_tilemap.borrow_mut().set_value(
+                    dst_tilemap.set_value(
                         j as i32,
                         i as i32,
                         (((value >> 16) & 0xff) as u8, (value & 0xff) as u8),
@@ -53,7 +48,7 @@ impl Tilemap {
         self.blt(
             x,
             y,
-            &dst_tilemap.borrow(),
+            &dst_tilemap,
             0,
             0,
             width as i32,
