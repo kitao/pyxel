@@ -80,10 +80,7 @@ impl Pyxel {
         let graphics = Graphics::new();
         let audio = Audio::new(&mut platform);
 
-        let mut colors = [0; MAX_COLOR_COUNT as usize];
-        for i in 0..COLOR_COUNT {
-            colors[i as usize] = DEFAULT_COLORS[i as usize];
-        }
+        let colors = array![i => if i < COLOR_COUNT as usize { DEFAULT_COLORS[i] } else { 0 }; MAX_COLOR_COUNT as usize];
         let palette = array![i => i as Color; MAX_COLOR_COUNT as usize];
         let screen = Rc::new(RefCell::new(Image::new(width, height)));
         let cursor = Rc::new(RefCell::new(Graphics::new_cursor_image()));
