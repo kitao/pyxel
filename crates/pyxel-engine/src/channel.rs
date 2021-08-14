@@ -13,6 +13,7 @@ pub struct Channel {
     sound_index: u32,
     note_index: u32,
     tick_count: u32,
+    pub volume: u8,
 }
 
 impl Channel {
@@ -25,6 +26,7 @@ impl Channel {
             sound_index: 0,
             note_index: 0,
             tick_count: 0,
+            volume: 255,
         }
     }
 
@@ -36,12 +38,8 @@ impl Channel {
         self.is_looping
     }
 
-    pub fn sound_index(&self) -> u32 {
-        self.sound_index
-    }
-
-    pub fn note_index(&self) -> u32 {
-        self.note_index
+    pub fn play_pos(&self) -> (u32, u32) {
+        (self.sound_index, self.note_index)
     }
 
     pub fn play(&mut self, sounds: Vec<Sound>, is_looping: bool) {
@@ -94,7 +92,7 @@ impl Channel {
                 self.oscillator.play(
                     note as f64,
                     Channel::circular_tone(&sound.tones, self.note_index),
-                    volume as u32 as f64 / Volume::Level7 as u32 as f64,
+                    (volume as u32 as f64 / 7.0) * (self.volume as f64 / 255.0),
                     Channel::circular_effect(&sound.effects, self.note_index),
                     speed as u32,
                 );
