@@ -28,11 +28,11 @@ pub struct Audio {
 impl Audio {
     pub fn new<T: Platform>(platform: &mut T) -> Audio {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
-        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
-
         let channels = array![_ => Channel::new(); CHANNEL_COUNT as usize];
         let sounds = array![_ => Rc::new(RefCell::new(Sound::new())); SOUND_COUNT as usize];
         let musics = array![_ => Rc::new(RefCell::new(Music::new())); MUSIC_COUNT as usize];
+
+        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 
         let audio_core = Arc::new(Mutex::new(AudioCore {
             blip_buf: blip_buf,
