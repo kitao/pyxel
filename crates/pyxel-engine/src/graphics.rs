@@ -1,6 +1,7 @@
-use array_macro::array;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+use array_macro::array;
 
 use crate::canvas::Canvas;
 use crate::image::Image;
