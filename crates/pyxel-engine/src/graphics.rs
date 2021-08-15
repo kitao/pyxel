@@ -1,6 +1,7 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use array_macro::array;
+use parking_lot::Mutex;
 
 use crate::canvas::Canvas;
 use crate::image::Image;
@@ -74,11 +75,11 @@ impl Pyxel {
     }
 
     pub fn clip(&mut self, x: i32, y: i32, width: u32, height: u32) {
-        self.screen.lock().unwrap().clip(x, y, width, height);
+        self.screen.lock().clip(x, y, width, height);
     }
 
     pub fn clip0(&mut self) {
-        self.screen.lock().unwrap().clip0();
+        self.screen.lock().clip0();
     }
 
     pub fn pal(&mut self, src_color: Color, dst_color: Color) {
@@ -94,68 +95,59 @@ impl Pyxel {
     pub fn cls(&mut self, color: Color) {
         let color = self.palette[color as usize];
 
-        self.screen.lock().unwrap().cls(color);
+        self.screen.lock().cls(color);
     }
 
     pub fn pget(&mut self, x: i32, y: i32) -> Color {
-        self.screen.lock().unwrap().pget(x, y)
+        self.screen.lock().pget(x, y)
     }
 
     pub fn pset(&mut self, x: i32, y: i32, color: Color) {
         let color = self.palette[color as usize];
 
-        self.screen.lock().unwrap().pset(x, y, color);
+        self.screen.lock().pset(x, y, color);
     }
 
     pub fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, color: Color) {
         let color = self.palette[color as usize];
 
-        self.screen.lock().unwrap().line(x1, y1, x2, y2, color);
+        self.screen.lock().line(x1, y1, x2, y2, color);
     }
 
     pub fn rect(&mut self, x: i32, y: i32, width: u32, height: u32, color: Color) {
         let color = self.palette[color as usize];
 
-        self.screen.lock().unwrap().rect(x, y, width, height, color);
+        self.screen.lock().rect(x, y, width, height, color);
     }
 
     pub fn rectb(&mut self, x: i32, y: i32, width: u32, height: u32, color: Color) {
         let color = self.palette[color as usize];
 
-        self.screen
-            .lock()
-            .unwrap()
-            .rectb(x, y, width, height, color);
+        self.screen.lock().rectb(x, y, width, height, color);
     }
 
     pub fn circ(&mut self, x: i32, y: i32, radius: u32, color: Color) {
         let color = self.palette[color as usize];
 
-        self.screen.lock().unwrap().circ(x, y, radius, color);
+        self.screen.lock().circ(x, y, radius, color);
     }
 
     pub fn circb(&mut self, x: i32, y: i32, radius: u32, color: Color) {
         let color = self.palette[color as usize];
 
-        self.screen.lock().unwrap().circb(x, y, radius, color);
+        self.screen.lock().circb(x, y, radius, color);
     }
 
     pub fn tri(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, color: Color) {
         let color = self.palette[color as usize];
 
-        self.screen
-            .lock()
-            .unwrap()
-            .tri(x1, y1, x2, y2, x3, y3, color);
+        self.screen.lock().tri(x1, y1, x2, y2, x3, y3, color);
     }
 
     pub fn trib(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, color: Color) {
         let color = self.palette[color as usize];
 
-        self.screen
-            .lock()
-            .unwrap()
-            .trib(x1, y1, x2, y2, x3, y3, color);
+        self.screen.lock().trib(x1, y1, x2, y2, x3, y3, color);
     }
 
     pub fn blt(
@@ -169,10 +161,10 @@ impl Pyxel {
         height: i32,
         color_key: Option<Color>,
     ) {
-        self.screen.lock().unwrap().blt(
+        self.screen.lock().blt(
             x,
             y,
-            &self.graphics.images[image_no as usize].lock().unwrap(),
+            &self.graphics.images[image_no as usize].lock(),
             image_x,
             image_y,
             width,
@@ -193,10 +185,10 @@ impl Pyxel {
         height: i32,
         tile_key: Option<Tile>,
     ) {
-        self.screen.lock().unwrap().bltm(
+        self.screen.lock().bltm(
             x,
             y,
-            &self.graphics.tilemaps[tilemap_no as usize].lock().unwrap(),
+            &self.graphics.tilemaps[tilemap_no as usize].lock(),
             tilemap_x,
             tilemap_y,
             width,
@@ -210,7 +202,6 @@ impl Pyxel {
 
         self.screen
             .lock()
-            .unwrap()
-            .text(x, y, string, color, &self.font.lock().unwrap());
+            .text(x, y, string, color, &self.font.lock());
     }
 }

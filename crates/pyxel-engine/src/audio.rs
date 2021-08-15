@@ -1,7 +1,8 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use array_macro::array;
 use blip_buf::BlipBuf;
+use parking_lot::Mutex;
 
 use crate::channel::Channel;
 use crate::music::Music;
@@ -56,7 +57,7 @@ impl AudioCallback for AudioCore {
 
         while samples < out.len() {
             for channel in &mut self.channels {
-                channel.lock().unwrap().update(&mut self.blip_buf);
+                channel.lock().update(&mut self.blip_buf);
             }
 
             self.blip_buf.end_frame(TICK_CLOCK_COUNT);
@@ -82,17 +83,11 @@ impl Pyxel {
     pub fn play(&mut self, channel: u32, sequence: &[u32], is_looping: bool) {
         let sounds = sequence
             .iter()
-            .map(|sound_no| {
-                self.audio.sounds[*sound_no as usize]
-                    .lock()
-                    .unwrap()
-                    .clone()
-            })
+            .map(|sound_no| self.audio.sounds[*sound_no as usize].lock().clone())
             .collect();
 
         self.audio.channels[channel as usize]
             .lock()
-            .unwrap()
             .play(sounds, is_looping);
     }
 
@@ -100,12 +95,12 @@ impl Pyxel {
         let music = self.audio.musics[music_no as usize].clone();
 
         for i in 0..CHANNEL_COUNT {
-            self.play(i, &music.lock().unwrap().sequences[i as usize], looping);
+            self.play(i, &music.lock().sequences[i as usize], looping);
         }
     }
 
     pub fn stop(&mut self, channel: u32) {
-        self.audio.channels[channel as usize].lock().unwrap().stop();
+        self.audio.channels[channel as usize].lock().stop();
     }
 
     pub fn stop_(&mut self) {

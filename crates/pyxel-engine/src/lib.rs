@@ -20,9 +20,10 @@ mod tilemap;
 mod types;
 mod utility;
 
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use array_macro::array;
+use parking_lot::Mutex;
 
 use crate::audio::Audio;
 use crate::graphics::Graphics;
