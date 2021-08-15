@@ -1,4 +1,7 @@
-use crate::settings::DEFAULT_SOUND_SPEED;
+use crate::settings::{
+    EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED, TONE_NOISE,
+    TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
+};
 use crate::types::{Effect, Note, Speed, Tone, Volume};
 use crate::utility::simplify_string;
 
@@ -18,7 +21,7 @@ impl Sound {
             tones: Vec::new(),
             volumes: Vec::new(),
             effects: Vec::new(),
-            speed: DEFAULT_SOUND_SPEED,
+            speed: INITIAL_SPEED,
         }
     }
 
@@ -90,10 +93,10 @@ impl Sound {
 
         while let Some(c) = chars.next() {
             let tone = match c {
-                't' => Tone::Triangle,
-                's' => Tone::Square,
-                'p' => Tone::Pulse,
-                'n' => Tone::Noise,
+                't' => TONE_TRIANGLE,
+                's' => TONE_SQUARE,
+                'p' => TONE_PULSE,
+                'n' => TONE_NOISE,
                 _ => panic!("invalid sound tone '{}'", c),
             };
 
@@ -108,19 +111,11 @@ impl Sound {
         self.volumes.clear();
 
         while let Some(c) = chars.next() {
-            let volume = match c {
-                '0' => Volume::Level0,
-                '1' => Volume::Level1,
-                '2' => Volume::Level2,
-                '3' => Volume::Level3,
-                '4' => Volume::Level4,
-                '5' => Volume::Level5,
-                '6' => Volume::Level6,
-                '7' => Volume::Level7,
-                _ => panic!("invalid sound volume '{}'", c),
-            };
-
-            self.volumes.push(volume);
+            if c >= '0' && c <= '7' {
+                self.volumes.push((c as u32 - '0' as u32) as Volume);
+            } else {
+                panic!("invalid sound volume '{}'", c);
+            }
         }
     }
 
@@ -132,10 +127,10 @@ impl Sound {
 
         while let Some(c) = chars.next() {
             let effect = match c {
-                'n' => Effect::None,
-                's' => Effect::Slide,
-                'v' => Effect::Vibrato,
-                'f' => Effect::FadeOut,
+                'n' => EFFECT_NONE,
+                's' => EFFECT_SLIDE,
+                'v' => EFFECT_VIBRATO,
+                'f' => EFFECT_FADEOUT,
                 _ => panic!("invalid sound effect '{}'", c),
             };
 
@@ -155,7 +150,7 @@ mod tests {
         assert_eq!(sound.tones.len(), 0);
         assert_eq!(sound.volumes.len(), 0);
         assert_eq!(sound.effects.len(), 0);
-        assert_eq!(sound.speed, DEFAULT_SOUND_SPEED);
+        assert_eq!(sound.speed, INITIAL_SPEED);
     }
 
     #[test]
@@ -166,25 +161,12 @@ mod tests {
         assert_eq!(&sound.notes, &vec![0, 1, 2, 3]);
         assert_eq!(
             &sound.tones,
-            &vec![Tone::Triangle, Tone::Square, Tone::Pulse, Tone::Noise]
+            &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
         );
-        assert_eq!(
-            &sound.volumes,
-            &vec![
-                Volume::Level0,
-                Volume::Level1,
-                Volume::Level2,
-                Volume::Level3,
-            ]
-        );
+        assert_eq!(&sound.volumes, &vec![0, 1, 2, 3]);
         assert_eq!(
             &sound.effects,
-            &vec![
-                Effect::None,
-                Effect::Slide,
-                Effect::Vibrato,
-                Effect::FadeOut
-            ]
+            &vec![EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, EFFECT_FADEOUT]
         );
         assert_eq!(sound.speed, 123);
     }
@@ -204,7 +186,7 @@ mod tests {
         sound.set_tone(" t s p n ");
         assert_eq!(
             &sound.tones,
-            &vec![Tone::Triangle, Tone::Square, Tone::Pulse, Tone::Noise]
+            &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
         );
     }
 
@@ -213,19 +195,7 @@ mod tests {
         let mut sound = Sound::new();
 
         sound.set_volume(" 0 1 2 3 4 5 6 7 ");
-        assert_eq!(
-            &sound.volumes,
-            &vec![
-                Volume::Level0,
-                Volume::Level1,
-                Volume::Level2,
-                Volume::Level3,
-                Volume::Level4,
-                Volume::Level5,
-                Volume::Level6,
-                Volume::Level7,
-            ]
-        );
+        assert_eq!(&sound.volumes, &vec![0, 1, 2, 3, 4, 5, 6, 7]);
     }
 
     #[test]
@@ -235,12 +205,7 @@ mod tests {
         sound.set_effect(" n s v f ");
         assert_eq!(
             &sound.effects,
-            &vec![
-                Effect::None,
-                Effect::Slide,
-                Effect::Vibrato,
-                Effect::FadeOut
-            ]
+            &vec![EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, EFFECT_FADEOUT]
         );
     }
 }
