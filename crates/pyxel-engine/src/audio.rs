@@ -1,5 +1,3 @@
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 
 use array_macro::array;
@@ -22,16 +20,16 @@ struct AudioCore {
 
 pub struct Audio {
     channels: [Arc<Mutex<Channel>>; CHANNEL_COUNT as usize],
-    sounds: [Rc<RefCell<Sound>>; SOUND_COUNT as usize],
-    musics: [Rc<RefCell<Music>>; MUSIC_COUNT as usize],
+    sounds: [Arc<Mutex<Sound>>; SOUND_COUNT as usize],
+    musics: [Arc<Mutex<Music>>; MUSIC_COUNT as usize],
 }
 
 impl Audio {
     pub fn new<T: Platform>(platform: &mut T) -> Audio {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
         let channels = array![_ => Arc::new(Mutex::new(Channel::new())); CHANNEL_COUNT as usize];
-        let sounds = array![_ => Rc::new(RefCell::new(Sound::new())); SOUND_COUNT as usize];
-        let musics = array![_ => Rc::new(RefCell::new(Music::new())); MUSIC_COUNT as usize];
+        let sounds = array![_ => Arc::new(Mutex::new(Sound::new())); SOUND_COUNT as usize];
+        let musics = array![_ => Arc::new(Mutex::new(Music::new())); MUSIC_COUNT as usize];
 
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 
@@ -73,18 +71,23 @@ impl Pyxel {
         self.audio.channels[channel_no as usize].clone()
     }
 
-    pub fn sound(&self, sound_no: u32) -> Rc<RefCell<Sound>> {
+    pub fn sound(&self, sound_no: u32) -> Arc<Mutex<Sound>> {
         self.audio.sounds[sound_no as usize].clone()
     }
 
-    pub fn music(&self, music_no: u32) -> Rc<RefCell<Music>> {
+    pub fn music(&self, music_no: u32) -> Arc<Mutex<Music>> {
         self.audio.musics[music_no as usize].clone()
     }
 
     pub fn play(&mut self, channel: u32, sequence: &[u32], is_looping: bool) {
         let sounds = sequence
             .iter()
-            .map(|sound_no| self.audio.sounds[*sound_no as usize].borrow().clone())
+            .map(|sound_no| {
+                self.audio.sounds[*sound_no as usize]
+                    .lock()
+                    .unwrap()
+                    .clone()
+            })
             .collect();
 
         self.audio.channels[channel as usize]
@@ -97,7 +100,7 @@ impl Pyxel {
         let music = self.audio.musics[music_no as usize].clone();
 
         for i in 0..CHANNEL_COUNT {
-            self.play(i, &music.borrow().sequences[i as usize], looping);
+            self.play(i, &music.lock().unwrap().sequences[i as usize], looping);
         }
     }
 
