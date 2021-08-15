@@ -1,3 +1,6 @@
+use std::cmp::min;
+use std::sync::{Arc, Mutex};
+
 use sdl2::audio::AudioCallback as SdlAudioCallback;
 use sdl2::audio::AudioDevice as SdlAudioDevice;
 use sdl2::audio::AudioSpecDesired as SdlAudioSpecDesired;
@@ -14,8 +17,6 @@ use sdl2::video::FullscreenType as SdlFullscreenType;
 use sdl2::AudioSubsystem as SdlAudio;
 use sdl2::EventPump as SdlEventPump;
 use sdl2::TimerSubsystem as SdlTimer;
-use std::cmp::min;
-use std::sync::{Arc, Mutex};
 
 use crate::canvas::Canvas;
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};

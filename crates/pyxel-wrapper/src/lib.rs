@@ -9,10 +9,11 @@ mod tilemap_wrapper;
 #[allow(non_snake_case)]
 mod variable_wrapper;
 
-use pyo3::prelude::*;
-use pyxel::Pyxel;
 use std::cmp::max;
 use std::mem::transmute;
+
+use pyo3::prelude::*;
+use pyxel::Pyxel;
 
 use crate::constant_wrapper::add_module_constants;
 use crate::graphics_wrapper::add_graphics_functions;

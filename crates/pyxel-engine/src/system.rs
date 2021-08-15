@@ -1,5 +1,3 @@
-use super::{Pyxel, PyxelCallback};
-
 use std::cmp::min;
 
 use crate::canvas::Canvas;
@@ -9,6 +7,7 @@ use crate::platform::Platform;
 use crate::profiler::Profiler;
 use crate::settings::{BACKGROUND_COLOR, MAX_FRAME_SKIP_COUNT, MEASURE_FRAME_COUNT};
 use crate::types::Key;
+use crate::{Pyxel, PyxelCallback};
 
 pub struct System {
     frame_count: u32,
