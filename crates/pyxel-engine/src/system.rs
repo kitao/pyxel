@@ -45,11 +45,11 @@ impl System {
 
 impl Pyxel {
     pub fn width(&self) -> u32 {
-        self.screen.borrow().width()
+        self.screen.lock().unwrap().width()
     }
 
     pub fn height(&self) -> u32 {
-        self.screen.borrow().height()
+        self.screen.lock().unwrap().height()
     }
 
     pub fn frame_count(&self) -> u32 {
@@ -241,7 +241,7 @@ impl Pyxel {
         self.draw_perf_monitor();
         self.draw_cursor();
         self.platform
-            .render_screen(&self.screen.borrow(), &self.colors, BACKGROUND_COLOR);
+            .render_screen(&self.screen.lock().unwrap(), &self.colors, BACKGROUND_COLOR);
         self.capture_screen_video();
 
         self.system.draw_profiler.end(self.platform.tick_count());
@@ -278,17 +278,17 @@ impl Pyxel {
 
         let x = self.mouse_x();
         let y = self.mouse_y();
-        let width = self.cursor.borrow().width() as i32;
-        let height = self.cursor.borrow().height() as i32;
+        let width = self.cursor.lock().unwrap().width() as i32;
+        let height = self.cursor.lock().unwrap().height() as i32;
 
         if x <= -width || x >= self.width() as i32 || y <= -height || y >= self.height() as i32 {
             return;
         }
 
-        self.screen.borrow_mut().blt(
+        self.screen.lock().unwrap().blt(
             x,
             y,
-            &self.cursor.borrow(),
+            &self.cursor.lock().unwrap(),
             0,
             0,
             width,
