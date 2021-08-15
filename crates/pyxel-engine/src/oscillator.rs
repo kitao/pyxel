@@ -1,8 +1,9 @@
 use blip_buf::BlipBuf;
 
 use crate::settings::{
-    CLOCK_RATE, MASTER_VOLUME_FACTOR, NOISE_VOLUME_FACTOR, OSCILLATOR_RESOLUTION,
-    PULSE_VOLUME_FACTOR, SQUARE_VOLUME_FACTOR, TICK_CLOCK_COUNT, TRIANGLE_VOLUME_FACTOR,
+    CLOCK_RATE, EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, MASTER_VOLUME_FACTOR,
+    NOISE_VOLUME_FACTOR, OSCILLATOR_RESOLUTION, PULSE_VOLUME_FACTOR, SQUARE_VOLUME_FACTOR,
+    TICK_CLOCK_COUNT, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, TRIANGLE_VOLUME_FACTOR,
     VIBRATO_DEPTH, VIBRATO_FREQUENCY,
 };
 use crate::types::{Effect, Tone};
@@ -43,9 +44,9 @@ impl Oscillator {
     pub fn new() -> Oscillator {
         Oscillator {
             pitch: Oscillator::note_to_pitch(0.0),
-            tone: Tone::Triangle,
+            tone: TONE_TRIANGLE,
             volume: 0.0,
-            effect: Effect::None,
+            effect: EFFECT_NONE,
             duration: 0,
             time: 0,
             phase: 0,
@@ -67,10 +68,10 @@ impl Oscillator {
         self.effect = effect;
         self.duration = duration;
 
-        if effect == Effect::Slide {
+        if effect == EFFECT_SLIDE {
             self.slide.pitch = (self.pitch - last_pitch) / self.duration as f64;
             self.pitch = last_pitch;
-        } else if effect == Effect::FadeOut {
+        } else if effect == EFFECT_FADEOUT {
             self.fadeout.volume = -self.volume / self.duration as f64;
         }
     }
@@ -92,7 +93,7 @@ impl Oscillator {
         }
 
         let pitch = self.pitch
-            + if self.effect == Effect::Vibrato {
+            + if self.effect == EFFECT_VIBRATO {
                 self.pitch * Oscillator::triangle(self.vibrato.phase) * VIBRATO_DEPTH
             } else {
                 0.0
@@ -104,10 +105,11 @@ impl Oscillator {
 
             self.phase = (self.phase + 1) % OSCILLATOR_RESOLUTION;
             self.amplitude = (match self.tone {
-                Tone::Triangle => Oscillator::triangle(self.phase) * TRIANGLE_VOLUME_FACTOR,
-                Tone::Square => Oscillator::square(self.phase) * SQUARE_VOLUME_FACTOR,
-                Tone::Pulse => Oscillator::pulse(self.phase) * PULSE_VOLUME_FACTOR,
-                Tone::Noise => self.noise(self.phase) * NOISE_VOLUME_FACTOR,
+                TONE_TRIANGLE => Oscillator::triangle(self.phase) * TRIANGLE_VOLUME_FACTOR,
+                TONE_SQUARE => Oscillator::square(self.phase) * SQUARE_VOLUME_FACTOR,
+                TONE_PULSE => Oscillator::pulse(self.phase) * PULSE_VOLUME_FACTOR,
+                TONE_NOISE => self.noise(self.phase) * NOISE_VOLUME_FACTOR,
+                _ => panic!("invalid tone {}", self.tone),
             } * MASTER_VOLUME_FACTOR
                 * self.volume
                 * i16::MAX as f64) as i16;
@@ -118,19 +120,20 @@ impl Oscillator {
         }
 
         match self.effect {
-            Effect::None => {}
-            Effect::Slide => {
+            EFFECT_NONE => {}
+            EFFECT_SLIDE => {
                 self.pitch += self.slide.pitch;
             }
-            Effect::Vibrato => {
+            EFFECT_VIBRATO => {
                 self.vibrato.time += TICK_CLOCK_COUNT;
                 self.vibrato.phase = (self.vibrato.phase + self.vibrato.time / VIBRATO_PERIOD)
                     % OSCILLATOR_RESOLUTION;
                 self.vibrato.time %= VIBRATO_PERIOD;
             }
-            Effect::FadeOut => {
+            EFFECT_FADEOUT => {
                 self.volume += self.fadeout.volume;
             }
+            _ => panic!("invalid effect {}", self.effect),
         }
 
         self.duration -= 1;
