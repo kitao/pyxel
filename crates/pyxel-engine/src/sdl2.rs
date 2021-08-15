@@ -1,6 +1,7 @@
 use std::cmp::min;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
+use parking_lot::Mutex;
 use sdl2::audio::AudioCallback as SdlAudioCallback;
 use sdl2::audio::AudioDevice as SdlAudioDevice;
 use sdl2::audio::AudioSpecDesired as SdlAudioSpecDesired;
@@ -32,7 +33,7 @@ impl SdlAudioCallback for AudioContextHolder {
     type Channel = i16;
 
     fn callback(&mut self, out: &mut [i16]) {
-        self.audio.lock().unwrap().update(out);
+        self.audio.lock().update(out);
     }
 }
 
