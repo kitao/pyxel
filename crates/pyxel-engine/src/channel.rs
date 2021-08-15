@@ -2,6 +2,7 @@ use blip_buf::BlipBuf;
 use std::cmp::max;
 
 use crate::oscillator::Oscillator;
+use crate::settings::{EFFECT_NONE, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE};
 use crate::sound::Sound;
 use crate::types::{Effect, Note, Tone, Volume};
 
@@ -13,7 +14,7 @@ pub struct Channel {
     sound_index: u32,
     note_index: u32,
     tick_count: u32,
-    pub volume: u8,
+    pub volume: Volume,
 }
 
 impl Channel {
@@ -26,7 +27,7 @@ impl Channel {
             sound_index: 0,
             note_index: 0,
             tick_count: 0,
-            volume: 255,
+            volume: MAX_VOLUME,
         }
     }
 
@@ -38,8 +39,12 @@ impl Channel {
         self.is_looping
     }
 
-    pub fn play_pos(&self) -> (u32, u32) {
-        (self.sound_index, self.note_index)
+    pub fn sound_index(&self) -> u32 {
+        self.sound_index
+    }
+
+    pub fn note_index(&self) -> u32 {
+        self.note_index
     }
 
     pub fn play(&mut self, sounds: Vec<Sound>, is_looping: bool) {
@@ -85,15 +90,27 @@ impl Channel {
 
             let sound = &self.sounds[self.sound_index as usize];
             let note = Channel::circular_note(&sound.notes, self.note_index);
+            let tone = Channel::circular_tone(&sound.tones, self.note_index);
             let volume = Channel::circular_volume(&sound.volumes, self.note_index);
+            let effect = Channel::circular_effect(&sound.effects, self.note_index);
             let speed = max(sound.speed, 1);
 
-            if note >= 0 && volume > Volume::Level0 {
+            assert!(note <= MAX_NOTE, "invalid sound note {}", note);
+            assert!(tone <= MAX_TONE, "invalid sound tone {}", tone);
+            assert!(volume <= MAX_VOLUME, "invalid sound volume {}", volume);
+            assert!(
+                self.volume <= MAX_VOLUME,
+                "invalid channel volume {}",
+                self.volume
+            );
+            assert!(effect <= MAX_EFFECT, "invalid sound effect {}", effect);
+
+            if note >= 0 && volume > 0 {
                 self.oscillator.play(
                     note as f64,
-                    Channel::circular_tone(&sound.tones, self.note_index),
-                    (volume as u32 as f64 / 7.0) * (self.volume as f64 / 255.0),
-                    Channel::circular_effect(&sound.effects, self.note_index),
+                    tone,
+                    (volume as f64 / MAX_VOLUME as f64) * (self.volume as f64 / MAX_VOLUME as f64),
+                    effect,
                     speed as u32,
                 );
             }
@@ -121,7 +138,7 @@ impl Channel {
         if len > 0 {
             tones[index as usize % len]
         } else {
-            Tone::Triangle
+            TONE_TRIANGLE
         }
     }
 
@@ -131,7 +148,7 @@ impl Channel {
         if len > 0 {
             volumes[index as usize % len]
         } else {
-            Volume::Level7
+            MAX_VOLUME
         }
     }
 
@@ -141,7 +158,7 @@ impl Channel {
         if len > 0 {
             effects[index as usize % len]
         } else {
-            Effect::None
+            EFFECT_NONE
         }
     }
 }
