@@ -49,10 +49,9 @@ pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
 //
 // Graphics
 //
-pub const MAX_COLOR_COUNT: u32 = u8::MAX as u32 + 1; // 256 colors
 pub const COLOR_COUNT: u32 = 16;
 
-pub const IMAGE_COUNT: u32 = 4;
+pub const IMAGE_COUNT: u32 = 3;
 pub const IMAGE_SIZE: u32 = 256;
 
 pub const TILEMAP_COUNT: u32 = 8;

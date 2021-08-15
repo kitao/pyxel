@@ -20,8 +20,7 @@ mod tilemap;
 mod types;
 mod utility;
 
-use std::cell::RefCell;
-use std::rc::Rc;
+use std::sync::{Arc, Mutex};
 
 use array_macro::array;
 
@@ -52,11 +51,11 @@ pub struct Pyxel {
     graphics: Graphics,
     audio: Audio,
 
-    pub colors: [Rgb8; MAX_COLOR_COUNT as usize],
-    pub palette: [Color; MAX_COLOR_COUNT as usize],
-    pub screen: Rc<RefCell<Image>>,
-    pub cursor: Rc<RefCell<Image>>,
-    pub font: Rc<RefCell<Image>>,
+    pub colors: [Rgb8; COLOR_COUNT as usize],
+    pub palette: [Color; COLOR_COUNT as usize],
+    pub screen: Arc<Mutex<Image>>,
+    pub cursor: Arc<Mutex<Image>>,
+    pub font: Arc<Mutex<Image>>,
 }
 
 pub trait PyxelCallback {
@@ -85,11 +84,11 @@ impl Pyxel {
         let graphics = Graphics::new();
         let audio = Audio::new(&mut platform);
 
-        let colors = array![i => if i < COLOR_COUNT as usize { DEFAULT_COLORS[i] } else { 0 }; MAX_COLOR_COUNT as usize];
-        let palette = array![i => i as Color; MAX_COLOR_COUNT as usize];
-        let screen = Rc::new(RefCell::new(Image::new(width, height)));
-        let cursor = Rc::new(RefCell::new(Graphics::new_cursor_image()));
-        let font = Rc::new(RefCell::new(Graphics::new_font_image()));
+        let colors = DEFAULT_COLORS.clone();
+        let palette = array![i => i as Color; COLOR_COUNT as usize];
+        let screen = Arc::new(Mutex::new(Image::new(width, height)));
+        let cursor = Arc::new(Mutex::new(Graphics::new_cursor_image()));
+        let font = Arc::new(Mutex::new(Graphics::new_font_image()));
 
         Pyxel {
             platform: platform,
