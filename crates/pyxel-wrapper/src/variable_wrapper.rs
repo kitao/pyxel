@@ -31,12 +31,6 @@ impl PySequenceProtocol for Colors {
     }
 }
 
-pub fn add_colors_class(m: &PyModule) -> PyResult<()> {
-    m.add_class::<Colors>()?;
-
-    Ok(())
-}
-
 #[pyclass]
 struct Palette;
 
@@ -61,12 +55,6 @@ impl PySequenceProtocol for Palette {
     fn __setitem__(&mut self, idx: isize, value: Color) {
         instance().palette[idx as usize] = value;
     }
-}
-
-pub fn add_palette_class(m: &PyModule) -> PyResult<()> {
-    m.add_class::<Palette>()?;
-
-    Ok(())
 }
 
 #[pyfunction]
