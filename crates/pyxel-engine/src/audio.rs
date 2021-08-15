@@ -1,8 +1,9 @@
-use array_macro::array;
-use blip_buf::BlipBuf;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
+
+use array_macro::array;
+use blip_buf::BlipBuf;
 
 use crate::channel::Channel;
 use crate::music::Music;

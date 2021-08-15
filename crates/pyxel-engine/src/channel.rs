@@ -1,5 +1,6 @@
-use blip_buf::BlipBuf;
 use std::cmp::max;
+
+use blip_buf::BlipBuf;
 
 use crate::oscillator::Oscillator;
 use crate::settings::{EFFECT_NONE, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE};

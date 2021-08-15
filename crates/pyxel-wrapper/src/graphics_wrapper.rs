@@ -1,7 +1,7 @@
 use pyo3::prelude::*;
+use pyxel::Color;
 
 use crate::instance;
-use pyxel::Color;
 
 #[pyfunction]
 fn cls(color: Color) {

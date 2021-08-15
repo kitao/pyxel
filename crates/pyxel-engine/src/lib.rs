@@ -20,21 +20,26 @@ mod tilemap;
 mod types;
 mod utility;
 
-use array_macro::array;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use array_macro::array;
+
 use crate::audio::Audio;
 use crate::graphics::Graphics;
-use crate::image::Image;
 use crate::input::Input;
 use crate::platform::Platform;
 use crate::resource::Resource;
 use crate::sdl2::Sdl2;
 use crate::system::System;
 
+pub use crate::channel::Channel;
+pub use crate::image::Image;
 pub use crate::key::*;
+pub use crate::music::Music;
 pub use crate::settings::*;
+pub use crate::sound::Sound;
+pub use crate::tilemap::Tilemap;
 pub use crate::types::*;
 
 pub type TargetPlatform = Sdl2;
