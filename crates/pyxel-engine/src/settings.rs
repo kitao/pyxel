@@ -1,5 +1,5 @@
-use crate::key::*;
-use crate::types::*;
+use crate::key::KEY_ESCAPE;
+use crate::types::{Color, Effect, Key, Note, Rgb8, Speed, Tone, Volume};
 
 //
 // System
@@ -129,4 +129,19 @@ pub const SQUARE_VOLUME_FACTOR: f64 = 0.3;
 pub const PULSE_VOLUME_FACTOR: f64 = 0.3;
 pub const NOISE_VOLUME_FACTOR: f64 = 0.6;
 
-pub const DEFAULT_SOUND_SPEED: Speed = 30;
+pub const TONE_TRIANGLE: Tone = 0;
+pub const TONE_SQUARE: Tone = 1;
+pub const TONE_PULSE: Tone = 2;
+pub const TONE_NOISE: Tone = 3;
+
+pub const EFFECT_NONE: Effect = 0;
+pub const EFFECT_SLIDE: Effect = 1;
+pub const EFFECT_VIBRATO: Effect = 2;
+pub const EFFECT_FADEOUT: Effect = 3;
+
+pub const MAX_TONE: Tone = 3;
+pub const MAX_NOTE: Note = 59; // 5 octaves
+pub const MAX_VOLUME: Volume = 7;
+pub const MAX_EFFECT: Effect = 3;
+
+pub const INITIAL_SPEED: Speed = 30;
