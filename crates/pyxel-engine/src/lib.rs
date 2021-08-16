@@ -20,10 +20,9 @@ mod tilemap;
 mod types;
 mod utility;
 
-use std::sync::Arc;
-
 use array_macro::array;
 use parking_lot::Mutex;
+use std::sync::Arc;
 
 use crate::audio::Audio;
 use crate::graphics::Graphics;
@@ -33,6 +32,7 @@ use crate::resource::Resource;
 use crate::sdl2::Sdl2;
 use crate::system::System;
 
+pub use crate::canvas::Canvas;
 pub use crate::channel::Channel;
 pub use crate::image::Image;
 pub use crate::key::*;
@@ -87,9 +87,9 @@ impl Pyxel {
 
         let colors = DEFAULT_COLORS.clone();
         let palette = array![i => i as Color; COLOR_COUNT as usize];
-        let screen = Arc::new(Mutex::new(Image::new(width, height)));
-        let cursor = Arc::new(Mutex::new(Graphics::new_cursor_image()));
-        let font = Arc::new(Mutex::new(Graphics::new_font_image()));
+        let screen = Image::with_arc_mutex(width, height);
+        let cursor = Graphics::new_cursor_image();
+        let font = Graphics::new_font_image();
 
         Pyxel {
             platform: platform,
