@@ -1,23 +1,33 @@
+mod audio_wrapper;
 mod channel_wrapper;
 mod constant_wrapper;
 mod graphics_wrapper;
 mod image_wrapper;
+mod input_wrapper;
 mod music_wrapper;
+mod resource_wrapper;
 mod sound_wrapper;
 mod system_wrapper;
 mod tilemap_wrapper;
 #[allow(non_snake_case)]
 mod variable_wrapper;
 
+use pyo3::prelude::*;
+use pyxel::Pyxel;
 use std::cmp::max;
 use std::mem::transmute;
 
-use pyo3::prelude::*;
-use pyxel::Pyxel;
-
+use crate::audio_wrapper::add_audio_functions;
+use crate::channel_wrapper::add_channel_class;
 use crate::constant_wrapper::add_module_constants;
 use crate::graphics_wrapper::add_graphics_functions;
+use crate::image_wrapper::add_image_class;
+use crate::input_wrapper::add_input_functions;
+use crate::music_wrapper::add_music_class;
+use crate::resource_wrapper::add_resource_functions;
+use crate::sound_wrapper::add_sound_class;
 use crate::system_wrapper::add_system_functions;
+use crate::tilemap_wrapper::add_tilemap_class;
 use crate::variable_wrapper::add_module_variables;
 
 static mut INSTANCE: *mut Pyxel = 0 as *mut Pyxel;
@@ -44,8 +54,15 @@ pub fn i32_to_u32(x: i32) -> u32 {
 
 #[pymodule]
 fn pyxel_wrapper(_py: Python, m: &PyModule) -> PyResult<()> {
+    add_image_class(m)?;
+    add_tilemap_class(m)?;
+    add_channel_class(m)?;
+    add_sound_class(m)?;
+    add_music_class(m)?;
+
     add_module_constants(m)?;
     add_module_variables(m)?;
+
     add_system_functions(m)?;
     add_graphics_functions(m)?;
 
