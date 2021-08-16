@@ -1,7 +1,6 @@
-use std::sync::Arc;
-
 use array_macro::array;
 use parking_lot::Mutex;
+use std::sync::Arc;
 
 use crate::canvas::Canvas;
 use crate::image::Image;
@@ -20,8 +19,9 @@ pub struct Graphics {
 
 impl Graphics {
     pub fn new() -> Graphics {
-        let images = array![_ => Arc::new(Mutex::new(Image::new(IMAGE_SIZE, IMAGE_SIZE))); IMAGE_COUNT as usize];
-        let tilemaps = array![_ => Arc::new(Mutex::new(Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE))); TILEMAP_COUNT as usize];
+        let images =
+            array![_ => Image::with_arc_mutex(IMAGE_SIZE, IMAGE_SIZE); IMAGE_COUNT as usize];
+        let tilemaps = array![_ => Tilemap::with_arc_mutex(TILEMAP_SIZE, TILEMAP_SIZE); TILEMAP_COUNT as usize];
 
         Graphics {
             images: images,
@@ -29,14 +29,14 @@ impl Graphics {
         }
     }
 
-    pub fn new_cursor_image() -> Image {
-        let mut image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
-        image.set(0, 0, &CURSOR_DATA);
+    pub fn new_cursor_image() -> Arc<Mutex<Image>> {
+        let image = Image::with_arc_mutex(CURSOR_WIDTH, CURSOR_HEIGHT);
+        image.lock().set(0, 0, &CURSOR_DATA);
 
         image
     }
 
-    pub fn new_font_image() -> Image {
+    pub fn new_font_image() -> Arc<Mutex<Image>> {
         /*
         Image* image = new Image(ICON_WIDTH, ICON_HEIGHT);
         image->SetData(0, 0, ICON_DATA);
@@ -61,7 +61,7 @@ impl Graphics {
             }
         }
         */
-        Image::new(10, 10)
+        Image::with_arc_mutex(10, 10)
     }
 }
 
