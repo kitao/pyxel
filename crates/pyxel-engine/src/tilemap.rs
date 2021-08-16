@@ -1,3 +1,6 @@
+use parking_lot::Mutex;
+use std::sync::Arc;
+
 use crate::canvas::Canvas;
 use crate::rectarea::RectArea;
 use crate::types::Tile;
@@ -20,6 +23,10 @@ impl Tilemap {
             clip_rect: RectArea::new(0, 0, width, height),
             data: vec![vec![(0, 0); width as usize]; height as usize],
         }
+    }
+
+    pub fn with_arc_mutex(width: u32, height: u32) -> Arc<Mutex<Tilemap>> {
+        Arc::new(Mutex::new(Tilemap::new(width, height)))
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {

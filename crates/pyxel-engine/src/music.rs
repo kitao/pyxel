@@ -1,3 +1,6 @@
+use parking_lot::Mutex;
+use std::sync::Arc;
+
 use crate::settings::CHANNEL_COUNT;
 
 #[derive(Clone)]
@@ -10,6 +13,10 @@ impl Music {
         Music {
             sequences: Default::default(),
         }
+    }
+
+    pub fn with_arc_mutex() -> Arc<Mutex<Music>> {
+        Arc::new(Mutex::new(Music::new()))
     }
 
     pub fn set(&mut self, sequences: &[&[u32]]) {
