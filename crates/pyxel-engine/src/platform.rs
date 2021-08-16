@@ -1,6 +1,5 @@
-use std::sync::Arc;
-
 use parking_lot::Mutex;
+use std::sync::Arc;
 
 use crate::event::Event;
 use crate::image::Image;
