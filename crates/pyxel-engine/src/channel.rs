@@ -1,6 +1,7 @@
-use std::cmp::max;
-
 use blip_buf::BlipBuf;
+use parking_lot::Mutex;
+use std::cmp::max;
+use std::sync::Arc;
 
 use crate::oscillator::Oscillator;
 use crate::settings::{EFFECT_NONE, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE};
@@ -30,6 +31,10 @@ impl Channel {
             tick_count: 0,
             volume: MAX_VOLUME,
         }
+    }
+
+    pub fn with_arc_mutex() -> Arc<Mutex<Channel>> {
+        Arc::new(Mutex::new(Channel::new()))
     }
 
     pub fn is_playing(&self) -> bool {

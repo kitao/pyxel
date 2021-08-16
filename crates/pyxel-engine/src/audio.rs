@@ -1,8 +1,7 @@
-use std::sync::Arc;
-
 use array_macro::array;
 use blip_buf::BlipBuf;
 use parking_lot::Mutex;
+use std::sync::Arc;
 
 use crate::channel::Channel;
 use crate::music::Music;
@@ -28,9 +27,9 @@ pub struct Audio {
 impl Audio {
     pub fn new<T: Platform>(platform: &mut T) -> Audio {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
-        let channels = array![_ => Arc::new(Mutex::new(Channel::new())); CHANNEL_COUNT as usize];
-        let sounds = array![_ => Arc::new(Mutex::new(Sound::new())); SOUND_COUNT as usize];
-        let musics = array![_ => Arc::new(Mutex::new(Music::new())); MUSIC_COUNT as usize];
+        let channels = array![_ => Channel::with_arc_mutex(); CHANNEL_COUNT as usize];
+        let sounds = array![_ => Sound::with_arc_mutex(); SOUND_COUNT as usize];
+        let musics = array![_ => Music::with_arc_mutex(); MUSIC_COUNT as usize];
 
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 

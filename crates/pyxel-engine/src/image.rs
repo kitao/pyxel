@@ -1,5 +1,7 @@
+use parking_lot::Mutex;
 use std::collections::HashMap;
 use std::path::Path;
+use std::sync::Arc;
 
 use crate::canvas::Canvas;
 use crate::rectarea::RectArea;
@@ -21,6 +23,10 @@ impl Image {
             clip_rect: RectArea::new(0, 0, width, height),
             data: vec![vec![0; width as usize]; height as usize],
         }
+    }
+
+    pub fn with_arc_mutex(width: u32, height: u32) -> Arc<Mutex<Image>> {
+        Arc::new(Mutex::new(Image::new(width, height)))
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {

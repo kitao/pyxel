@@ -1,3 +1,6 @@
+use parking_lot::Mutex;
+use std::sync::Arc;
+
 use crate::settings::{
     EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED, TONE_NOISE,
     TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
@@ -23,6 +26,10 @@ impl Sound {
             effects: Vec::new(),
             speed: INITIAL_SPEED,
         }
+    }
+
+    pub fn with_arc_mutex() -> Arc<Mutex<Sound>> {
+        Arc::new(Mutex::new(Sound::new()))
     }
 
     pub fn set(
