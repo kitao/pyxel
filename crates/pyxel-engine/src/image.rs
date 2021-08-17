@@ -39,7 +39,7 @@ impl Image {
 
             for j in 0..width {
                 if let Some(value) = parse_hex_string(&src_data[j as usize..j as usize + 1]) {
-                    dst_image.set_value(j as i32, i as i32, value as Color);
+                    dst_image._set_value(j as i32, i as i32, value as Color);
                 } else {
                     panic!("invalid image data");
                 }
@@ -176,7 +176,7 @@ impl Image {
                 let src_rgb = (p[0], p[1], p[2]);
 
                 if let Some(color) = color_table.get(&src_rgb) {
-                    dst_image.set_value(j as i32, i as i32, *color);
+                    dst_image._set_value(j as i32, i as i32, *color);
                 } else {
                     let mut closest_color: Color = 0;
                     let mut closest_dist: f64 = f64::MAX;
@@ -197,7 +197,7 @@ impl Image {
                     }
 
                     color_table.insert(src_rgb, closest_color);
-                    dst_image.set_value(j as i32, i as i32, closest_color);
+                    dst_image._set_value(j as i32, i as i32, closest_color);
                 }
             }
         }
@@ -242,29 +242,23 @@ impl Canvas<Color> for Image {
         self.self_rect.height()
     }
 
-    fn value(&self, x: i32, y: i32) -> Color {
+    fn _value(&self, x: i32, y: i32) -> Color {
         self.data[y as usize][x as usize]
     }
 
-    fn set_value(&mut self, x: i32, y: i32, color: Color) {
+    fn _set_value(&mut self, x: i32, y: i32, color: Color) {
         self.data[y as usize][x as usize] = color;
     }
 
-    fn self_rect(&self) -> RectArea {
+    fn _self_rect(&self) -> RectArea {
         self.self_rect
     }
 
-    fn clip_rect(&self) -> RectArea {
+    fn _clip_rect(&self) -> RectArea {
         self.clip_rect
     }
 
-    fn clip(&mut self, x: i32, y: i32, width: u32, height: u32) {
-        self.clip_rect = self
-            .self_rect
-            .intersects(RectArea::new(x, y, width, height));
-    }
-
-    fn clip0(&mut self) {
-        self.clip_rect = self.self_rect;
+    fn _clip_rect_mut(&mut self) -> &mut RectArea {
+        &mut self.clip_rect
     }
 }
