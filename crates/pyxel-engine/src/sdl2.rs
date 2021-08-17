@@ -105,7 +105,7 @@ impl Platform for Sdl2 {
                 for i in 0..height as usize {
                     for j in 0..width as usize {
                         let offset = i * pitch + j * 4;
-                        let color = colors[icon.value(j as i32, i as i32) as usize];
+                        let color = colors[icon._value(j as i32, i as i32) as usize];
 
                         buffer[offset] = ((color >> 16) & 0xff) as u8;
                         buffer[offset + 1] = ((color >> 8) & 0xff) as u8;
@@ -308,7 +308,7 @@ impl Platform for Sdl2 {
                 for i in 0..height as usize {
                     for j in 0..width as usize {
                         let offset = i * pitch + j * 3;
-                        let color = colors[screen.value(j as i32, i as i32) as usize];
+                        let color = colors[screen._value(j as i32, i as i32) as usize];
 
                         buffer[offset] = ((color >> 16) & 0xff) as u8;
                         buffer[offset + 1] = ((color >> 8) & 0xff) as u8;

@@ -41,7 +41,7 @@ impl Tilemap {
                 let index = j as usize * 4;
 
                 if let Some(value) = parse_hex_string(&src_data[index..index + 4]) {
-                    dst_tilemap.set_value(
+                    dst_tilemap._set_value(
                         j as i32,
                         i as i32,
                         (((value >> 16) & 0xff) as u8, (value & 0xff) as u8),
@@ -75,29 +75,23 @@ impl Canvas<Tile> for Tilemap {
         self.height
     }
 
-    fn value(&self, x: i32, y: i32) -> Tile {
+    fn _value(&self, x: i32, y: i32) -> Tile {
         self.data[y as usize][x as usize]
     }
 
-    fn set_value(&mut self, x: i32, y: i32, tile: Tile) {
+    fn _set_value(&mut self, x: i32, y: i32, tile: Tile) {
         self.data[y as usize][x as usize] = tile;
     }
 
-    fn self_rect(&self) -> RectArea {
+    fn _self_rect(&self) -> RectArea {
         self.self_rect
     }
 
-    fn clip_rect(&self) -> RectArea {
+    fn _clip_rect(&self) -> RectArea {
         self.clip_rect
     }
 
-    fn clip(&mut self, x: i32, y: i32, width: u32, height: u32) {
-        self.clip_rect = self
-            .self_rect
-            .intersects(RectArea::new(x, y, width, height));
-    }
-
-    fn clip0(&mut self) {
-        self.clip_rect = self.self_rect;
+    fn _clip_rect_mut(&mut self) -> &mut RectArea {
+        &mut self.clip_rect
     }
 }
