@@ -59,6 +59,74 @@ impl Image {
         );
     }
 
+    pub fn load(&mut self, x: i32, y: i32, filename: &str, colors: &[Rgb8]) {
+        let src_image = image::open(&Path::new(&filename)).unwrap().to_rgb8();
+        let (width, height) = src_image.dimensions();
+        let mut dst_image = Image::new(width, height);
+        let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
+
+        for i in 0..height {
+            for j in 0..width {
+                let p = src_image.get_pixel(j, i);
+                let src_rgb = (p[0], p[1], p[2]);
+
+                if let Some(color) = color_table.get(&src_rgb) {
+                    dst_image._set_value(j as i32, i as i32, *color);
+                } else {
+                    let mut closest_color: Color = 0;
+                    let mut closest_dist: f64 = f64::MAX;
+
+                    for k in 0..=COLOR_COUNT {
+                        let pal_color = colors[k as usize];
+                        let pal_rgb = (
+                            ((pal_color >> 16) & 0xff) as u8,
+                            ((pal_color >> 8) & 0xff) as u8,
+                            (pal_color & 0xff) as u8,
+                        );
+                        let dist = Image::color_dist(src_rgb, pal_rgb);
+
+                        if dist < closest_dist {
+                            closest_color = k as Color;
+                            closest_dist = dist;
+                        }
+                    }
+
+                    color_table.insert(src_rgb, closest_color);
+                    dst_image._set_value(j as i32, i as i32, closest_color);
+                }
+            }
+        }
+
+        self.blt(
+            x,
+            y,
+            &dst_image,
+            0,
+            0,
+            width as i32,
+            height as i32,
+            None,
+            None,
+        );
+    }
+
+    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
+        let (r1, g1, b1) = rgb1;
+        let (r2, g2, b2) = rgb2;
+
+        let dx = (r1 as f64 - r2 as f64) * 0.30;
+        let dy = (g1 as f64 - g2 as f64) * 0.59;
+        let dz = (b1 as f64 - b2 as f64) * 0.11;
+
+        dx * dx + dy * dy + dz * dz
+    }
+
+    pub fn save(&self, filename: &str, colors: &[Rgb8], scale: u32) {
+        let _ = (filename, colors, scale); // dummy
+
+        //
+    }
+
     pub fn bltm(
         &mut self,
         x: i32,
@@ -162,74 +230,6 @@ impl Image {
 
         palette_table_[FONT_COLOR] = cur_color;
         */
-    }
-
-    pub fn load(&mut self, x: i32, y: i32, filename: &str, colors: &[Rgb8]) {
-        let src_image = image::open(&Path::new(&filename)).unwrap().to_rgb8();
-        let (width, height) = src_image.dimensions();
-        let mut dst_image = Image::new(width, height);
-        let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
-
-        for i in 0..height {
-            for j in 0..width {
-                let p = src_image.get_pixel(j, i);
-                let src_rgb = (p[0], p[1], p[2]);
-
-                if let Some(color) = color_table.get(&src_rgb) {
-                    dst_image._set_value(j as i32, i as i32, *color);
-                } else {
-                    let mut closest_color: Color = 0;
-                    let mut closest_dist: f64 = f64::MAX;
-
-                    for k in 0..=COLOR_COUNT {
-                        let pal_color = colors[k as usize];
-                        let pal_rgb = (
-                            ((pal_color >> 16) & 0xff) as u8,
-                            ((pal_color >> 8) & 0xff) as u8,
-                            (pal_color & 0xff) as u8,
-                        );
-                        let dist = Image::color_dist(src_rgb, pal_rgb);
-
-                        if dist < closest_dist {
-                            closest_color = k as Color;
-                            closest_dist = dist;
-                        }
-                    }
-
-                    color_table.insert(src_rgb, closest_color);
-                    dst_image._set_value(j as i32, i as i32, closest_color);
-                }
-            }
-        }
-
-        self.blt(
-            x,
-            y,
-            &dst_image,
-            0,
-            0,
-            width as i32,
-            height as i32,
-            None,
-            None,
-        );
-    }
-
-    pub fn save(&self, filename: &str, colors: &[Rgb8], scale: u32) {
-        let _ = (filename, colors, scale); // dummy
-
-        //
-    }
-
-    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
-        let (r1, g1, b1) = rgb1;
-        let (r2, g2, b2) = rgb2;
-
-        let dx = (r1 as f64 - r2 as f64) * 0.30;
-        let dy = (g1 as f64 - g2 as f64) * 0.59;
-        let dz = (b1 as f64 - b2 as f64) * 0.11;
-
-        dx * dx + dy * dy + dz * dz
     }
 }
 
