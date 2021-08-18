@@ -13,9 +13,10 @@ mod tilemap_wrapper;
 mod variable_wrapper;
 
 use pyo3::prelude::*;
-use pyxel::Pyxel;
 use std::cmp::max;
 use std::mem::transmute;
+
+use pyxel::Pyxel;
 
 use crate::audio_wrapper::add_audio_functions;
 use crate::channel_wrapper::add_channel_class;
@@ -64,7 +65,10 @@ fn pyxel_wrapper(_py: Python, m: &PyModule) -> PyResult<()> {
     add_module_variables(m)?;
 
     add_system_functions(m)?;
+    add_resource_functions(m)?;
+    add_input_functions(m)?;
     add_graphics_functions(m)?;
+    add_audio_functions(m)?;
 
     Ok(())
 }
