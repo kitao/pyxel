@@ -71,7 +71,7 @@ impl Channel {
         self.oscillator.stop();
     }
 
-    pub fn update(&mut self, blip_buf: &mut BlipBuf) {
+    pub(crate) fn update(&mut self, blip_buf: &mut BlipBuf) {
         if !self.is_playing {
             return;
         }
