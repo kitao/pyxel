@@ -1,20 +1,14 @@
 use pyo3::class::PySequenceProtocol;
 use pyo3::exceptions::PyAttributeError;
 use pyo3::prelude::*;
+
 use pyxel::{Color, Rgb8};
 
+use crate::image_wrapper::wrap_pyxel_image;
 use crate::instance;
 
 #[pyclass]
 struct Colors;
-
-#[pymethods]
-impl Colors {
-    #[new]
-    pub fn new() -> Colors {
-        Colors
-    }
-}
 
 #[pyproto]
 impl PySequenceProtocol for Colors {
@@ -33,14 +27,6 @@ impl PySequenceProtocol for Colors {
 
 #[pyclass]
 struct Palette;
-
-#[pymethods]
-impl Palette {
-    #[new]
-    pub fn new() -> Palette {
-        Palette
-    }
-}
 
 #[pyproto]
 impl PySequenceProtocol for Palette {
@@ -79,11 +65,11 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         //
         // Graphics
         //
-        "colors" => Py::new(py, Colors::new())?.into_py(py),
-        "palette" => Py::new(py, Palette::new())?.into_py(py),
-        "screen" => instance().mouse_x().to_object(py), // dummy
-        "cursor" => instance().mouse_x().to_object(py), // dummy
-        "font" => instance().mouse_x().to_object(py),   // dummy
+        "colors" => Py::new(py, Colors)?.into_py(py),
+        "palette" => Py::new(py, Palette)?.into_py(py),
+        "screen" => wrap_pyxel_image(instance().screen.clone()).into_py(py),
+        "cursor" => wrap_pyxel_image(instance().cursor.clone()).into_py(py),
+        "font" => wrap_pyxel_image(instance().font.clone()).into_py(py),
 
         _ => {
             return Err(PyAttributeError::new_err(format!(
