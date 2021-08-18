@@ -98,11 +98,11 @@ impl Pyxel {
         }
     }
 
-    pub fn stop(&mut self, channel: u32) {
-        self.audio.channels[channel as usize].lock().stop();
+    pub fn stop(&mut self, channel_no: u32) {
+        self.audio.channels[channel_no as usize].lock().stop();
     }
 
-    pub fn stop_(&mut self) {
+    pub fn stop0(&mut self) {
         for i in 0..CHANNEL_COUNT {
             self.stop(i);
         }
