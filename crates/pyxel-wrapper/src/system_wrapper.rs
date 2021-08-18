@@ -1,5 +1,6 @@
 use pyo3::prelude::*;
 use pyo3::types::PyAny;
+
 use pyxel::{Pyxel, PyxelCallback};
 
 use crate::{i32_to_u32, instance, set_instance};
@@ -61,11 +62,6 @@ fn run(update: &PyAny, draw: &PyAny) {
 }
 
 #[pyfunction]
-fn quit() {
-    instance().quit();
-}
-
-#[pyfunction]
 fn show() {
     instance().show();
 }
@@ -75,14 +71,19 @@ fn flip() {
     instance().flip();
 }
 
+#[pyfunction]
+fn quit() {
+    instance().quit();
+}
+
 pub fn add_system_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(init, m)?)?;
     m.add_function(wrap_pyfunction!(title, m)?)?;
     m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
     m.add_function(wrap_pyfunction!(run, m)?)?;
-    m.add_function(wrap_pyfunction!(quit, m)?)?;
     m.add_function(wrap_pyfunction!(show, m)?)?;
     m.add_function(wrap_pyfunction!(flip, m)?)?;
+    m.add_function(wrap_pyfunction!(quit, m)?)?;
 
     Ok(())
 }
