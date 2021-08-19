@@ -29,14 +29,14 @@ impl Graphics {
         }
     }
 
-    pub fn new_cursor_image() -> Image {
-        let mut image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
-        image.set(0, 0, &CURSOR_DATA);
+    pub fn new_cursor_image() -> Arc<Mutex<Image>> {
+        let mut image = Image::with_arc_mutex(CURSOR_WIDTH, CURSOR_HEIGHT);
+        image.lock().set(0, 0, &CURSOR_DATA);
 
         image
     }
 
-    pub fn new_font_image() -> Image {
+    pub fn new_font_image() -> Arc<Mutex<Image>> {
         let width = FONT_WIDTH * FONT_ROW_COUNT;
         let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + FONT_ROW_COUNT - 1) / FONT_ROW_COUNT);
         let mut image = Image::new(width, height);
@@ -66,7 +66,7 @@ impl Graphics {
             }
         }
 
-        image
+        Arc::new(Mutex::new(image))
     }
 }
 
