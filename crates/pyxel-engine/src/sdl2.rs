@@ -11,6 +11,7 @@ use sdl2::pixels::PixelFormatEnum as SdlPixelFormat;
 use sdl2::rect::Rect as SdlRect;
 use sdl2::render::Texture as SdlTexture;
 use sdl2::render::WindowCanvas as SdlCanvas;
+use sdl2::surface::Surface as SdlSurface;
 use sdl2::video::FullscreenType as SdlFullscreenType;
 use sdl2::AudioSubsystem as SdlAudio;
 use sdl2::EventPump as SdlEventPump;
@@ -94,52 +95,24 @@ impl Platform for Sdl2 {
     fn set_icon(&mut self, icon: &Image, colors: &[Rgb8], scale: u32) {
         let width = icon.width();
         let height = icon.height();
-        let mut sdl_texture = self
-            .sdl_canvas
-            .texture_creator()
-            .create_texture_streaming(SdlPixelFormat::RGBA32, width * scale, height * scale)
-            .unwrap();
+        let mut sdl_surface =
+            SdlSurface::new(width * scale, height * scale, SdlPixelFormat::RGBA32).unwrap();
+        let pitch = sdl_surface.pitch();
 
-        sdl_texture
-            .with_lock(None, |buffer: &mut [u8], pitch: usize| {
-                for i in 0..height as usize {
-                    for j in 0..width as usize {
-                        let offset = i * pitch + j * 4;
-                        let color = colors[icon._value(j as i32, i as i32) as usize];
+        sdl_surface.with_lock_mut(|buffer: &mut [u8]| {
+            for i in 0..height as usize {
+                for j in 0..width as usize {
+                    let offset = i * pitch as usize + j * 4;
+                    let color = colors[icon._value(j as i32, i as i32) as usize];
 
-                        buffer[offset] = ((color >> 16) & 0xff) as u8;
-                        buffer[offset + 1] = ((color >> 8) & 0xff) as u8;
-                        buffer[offset + 2] = (color & 0xff) as u8;
-                    }
-                }
-            })
-            .unwrap();
-
-        //self.sdl_canvas.window_mut().set_icon(sdl_texture.surface);
-
-        /*
-        int32_t** src_data = image->Data();
-        uint32_t* dst_data = reinterpret_cast<uint32_t*>(surface->pixels);
-
-        for (int32_t i = 0; i < ICON_HEIGHT; i++) {
-            int32_t index = ICON_WIDTH * i;
-
-            for (int32_t j = 0; j < ICON_WIDTH; j++) {
-                int32_t color = src_data[i][j];
-                uint32_t argb = color == 0 ? 0 : (DEFAULT_PALETTE[color] << 8) + 0xff;
-
-                for (int32_t y = 0; y < ICON_SCALE; y++) {
-                    int32_t index = (ICON_WIDTH * (i * ICON_SCALE + y) + j) * ICON_SCALE;
-
-                    for (int32_t x = 0; x < ICON_SCALE; x++) {
-                        dst_data[index + x] = argb;
-                    }
+                    buffer[offset] = ((color >> 16) & 0xff) as u8;
+                    buffer[offset + 1] = ((color >> 8) & 0xff) as u8;
+                    buffer[offset + 2] = (color & 0xff) as u8;
                 }
             }
-        }
+        });
 
-        SDL_SetWindowIcon(window_, surface);
-        */
+        self.sdl_canvas.window_mut().set_icon(&sdl_surface);
     }
 
     fn toggle_fullscreen(&mut self) {
