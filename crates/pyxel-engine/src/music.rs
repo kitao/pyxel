@@ -19,9 +19,9 @@ impl Music {
         Arc::new(Mutex::new(Music::new()))
     }
 
-    pub fn set(&mut self, sequences: &[&[u32]]) {
+    pub fn set(&mut self, sequences: &[Vec<u32>]) {
         for i in 0..CHANNEL_COUNT {
-            self.sequences[i as usize] = sequences[i as usize].to_vec();
+            self.sequences[i as usize] = sequences[i as usize].clone();
         }
     }
 }
@@ -43,7 +43,7 @@ mod tests {
     fn set() {
         let mut music = Music::new();
 
-        music.set(&[&[0, 1, 2], &[1, 2, 3], &[2, 3, 4], &[3, 4, 5]]);
+        music.set(&[vec![0, 1, 2], vec![1, 2, 3], vec![2, 3, 4], vec![3, 4, 5]]);
 
         for i in 0..CHANNEL_COUNT {
             assert_eq!(&music.sequences[i as usize], &vec![i, i + 1, i + 2]);
