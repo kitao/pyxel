@@ -34,9 +34,27 @@ pub fn save(
     instance().save(filename, image, tilemap, sound, music);
 }
 
+#[pyfunction]
+pub fn save_screen_image() {
+    instance().save_screen_image();
+}
+
+#[pyfunction]
+pub fn reset_screen_video() {
+    instance().reset_screen_video();
+}
+
+#[pyfunction]
+pub fn save_screen_video() {
+    instance().save_screen_video();
+}
+
 pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(load, m)?)?;
     m.add_function(wrap_pyfunction!(save, m)?)?;
+    m.add_function(wrap_pyfunction!(save_screen_image, m)?)?;
+    m.add_function(wrap_pyfunction!(reset_screen_video, m)?)?;
+    m.add_function(wrap_pyfunction!(save_screen_video, m)?)?;
 
     Ok(())
 }
