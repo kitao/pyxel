@@ -30,6 +30,11 @@ fn title(title: &str) {
 }
 
 #[pyfunction]
+fn icon(data_str: Vec<&str>, scale: u32) {
+    instance().icon(&data_str, scale);
+}
+
+#[pyfunction]
 fn fullscreen() {
     instance().fullscreen();
 }
