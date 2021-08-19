@@ -349,36 +349,8 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         transparent: Option<T>,
         palette: Option<&[T]>,
     ) {
-        let src_rect = canvas._self_rect();
-        let dst_rect = self._clip_rect();
-        let flip_x = width < 0;
-        let flip_y = height < 0;
-        let width = width.abs();
-        let height = height.abs();
-
-        let left_margin = max(max(src_rect.left() - canvas_x, dst_rect.left() - x), 0);
-        let right_margin = max(
-            max(
-                canvas_x + width - 1 - src_rect.right(),
-                x + width - 1 - dst_rect.right(),
-            ),
-            0,
-        );
-        let top_margin = max(max(src_rect.top() - canvas_y, dst_rect.top() - y), 0);
-        let bottom_margin = max(
-            max(
-                canvas_y + height - 1 - src_rect.bottom(),
-                y + height - 1 - dst_rect.bottom(),
-            ),
-            0,
-        );
-
-        let src_x = canvas_x + if flip_x { right_margin } else { left_margin };
-        let src_y = canvas_y + if flip_y { bottom_margin } else { top_margin };
-        let dst_x = x + left_margin;
-        let dst_y = y + top_margin;
-        let width = max(width - left_margin - right_margin, 0);
-        let height = max(height - top_margin - bottom_margin, 0);
+        let (dst_x, dst_y, src_x, src_y, width, height, flip_x, flip_y) =
+            self._copy_area(x, y, canvas._self_rect(), canvas_x, canvas_y, width, height);
 
         if width == 0 || height == 0 {
             return;
@@ -425,5 +397,50 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
                 self._set_value(dst_x + j, dst_y + i, value);
             }
         }
+    }
+
+    fn _copy_area(
+        &self,
+        dst_x: i32,
+        dst_y: i32,
+        src_rect: RectArea,
+        src_x: i32,
+        src_y: i32,
+        width: i32,
+        height: i32,
+    ) -> (i32, i32, i32, i32, i32, i32, bool, bool) {
+        let dst_rect = self._clip_rect();
+        let flip_x = width < 0;
+        let flip_y = height < 0;
+        let width = width.abs();
+        let height = height.abs();
+
+        let left_cut = max(max(src_rect.left() - src_x, dst_rect.left() - dst_x), 0);
+        let right_cut = max(
+            max(
+                src_x + width as i32 - 1 - src_rect.right(),
+                dst_x + width as i32 - 1 - dst_rect.right(),
+            ),
+            0,
+        );
+        let top_cut = max(max(src_rect.top() - src_y, dst_rect.top() - dst_y), 0);
+        let bottom_cut = max(
+            max(
+                src_y + height as i32 - 1 - src_rect.bottom(),
+                dst_y + height as i32 - 1 - dst_rect.bottom(),
+            ),
+            0,
+        );
+
+        (
+            dst_x + left_cut,
+            dst_y + top_cut,
+            src_x + if flip_x { right_cut } else { left_cut },
+            src_y + if flip_y { bottom_cut } else { top_cut },
+            max(width - left_cut - right_cut, 0),
+            max(height - top_cut - bottom_cut, 0),
+            flip_x,
+            flip_y,
+        )
     }
 }
