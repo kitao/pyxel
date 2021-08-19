@@ -2,6 +2,7 @@ use std::cmp::min;
 
 use crate::canvas::Canvas;
 use crate::event::Event;
+use crate::image::Image;
 use crate::key::{KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use crate::platform::Platform;
 use crate::profiler::Profiler;
@@ -58,6 +59,14 @@ impl Pyxel {
 
     pub fn title(&mut self, title: &str) {
         self.platform.set_title(title);
+    }
+
+    pub fn icon(&mut self, data_str: &[&str], scale: u32) {
+        let width = data_str[0].len() as u32;
+        let height = data_str.len() as u32;
+        let image = Image::new(width, height);
+
+        self.platform.set_icon(&image, &self.colors, scale);
     }
 
     pub fn fullscreen(&mut self) {
