@@ -24,6 +24,7 @@ pub fn btnr(key: Key) -> bool {
     instance().btnr(key)
 }
 
+#[pyfunction]
 pub fn btnv(key: Key) -> KeyValue {
     instance().btnv(key)
 }
