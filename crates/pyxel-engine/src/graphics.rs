@@ -30,7 +30,7 @@ impl Graphics {
     }
 
     pub fn new_cursor_image() -> Arc<Mutex<Image>> {
-        let mut image = Image::with_arc_mutex(CURSOR_WIDTH, CURSOR_HEIGHT);
+        let image = Image::with_arc_mutex(CURSOR_WIDTH, CURSOR_HEIGHT);
         image.lock().set(0, 0, &CURSOR_DATA);
 
         image
