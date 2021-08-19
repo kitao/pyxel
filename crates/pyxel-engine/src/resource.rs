@@ -62,54 +62,7 @@ impl Pyxel {
         //
     }
 
-    pub(crate) fn reset_screen_video(&mut self) {
-        self.resource.start_frame_index = (self.resource.cur_frame_index + 1) % CAPTURE_FRAME_COUNT;
-        self.resource.frame_count = 0;
-    }
-
-    pub(crate) fn capture_screen_video(&mut self) {
-        if self.resource.frame_count < 1 {
-            return;
-        }
-
-        /*
-        cur_frame_ = (cur_frame_ + 1) % SCREEN_CAPTURE_COUNT;
-        frame_count_++;
-        captured_images_[cur_frame_]->CopyImage(0, 0, screen_image, 0, 0, width_,
-                                                height_);
-        captured_frames_[cur_frame_] = update_frame_count;
-
-        if (frame_count_ > SCREEN_CAPTURE_COUNT) {
-          start_frame_ = (start_frame_ + 1) % SCREEN_CAPTURE_COUNT;
-          frame_count_ = SCREEN_CAPTURE_COUNT;
-        }
-        */
-    }
-
-    pub(crate) fn save_screen_video(&mut self) {
-        /*
-        std::string filename = GetBaseName() + ".gif";
-        GifWriter* gif_writer =
-            new GifWriter(filename, width_, height_, palette_color_);
-
-        for (int32_t i = 0; i < frame_count_; i++) {
-          int32_t index = (start_frame_ + i) % SCREEN_CAPTURE_COUNT;
-
-          gif_writer->AddFrame(captured_images_[index],
-                               captured_frames_[index] * 100.0f / fps_ + 0.5f);
-        }
-
-        gif_writer->EndFrame();
-        delete gif_writer;
-
-        // try to optimize the generated GIF file with Gifsicle
-        int32_t res = system(("gifsicle -b -O3 -Okeep-empty " + filename).c_str());
-
-        ResetScreenCapture();
-        */
-    }
-
-    pub(crate) fn save_screen_image(&mut self) {
+    pub fn save_screen_image(&mut self) {
         /*
         SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
             0, width_ * SCREEN_CAPTURE_SCALE, height_ * SCREEN_CAPTURE_SCALE, 32,
@@ -136,6 +89,53 @@ impl Pyxel {
         SDL_UnlockSurface(surface);
         IMG_SavePNG(surface, (GetBaseName() + ".png").c_str());
         SDL_FreeSurface(surface);
+        */
+    }
+
+    pub fn reset_screen_video(&mut self) {
+        self.resource.start_frame_index = (self.resource.cur_frame_index + 1) % CAPTURE_FRAME_COUNT;
+        self.resource.frame_count = 0;
+    }
+
+    pub fn save_screen_video(&mut self) {
+        /*
+        std::string filename = GetBaseName() + ".gif";
+        GifWriter* gif_writer =
+            new GifWriter(filename, width_, height_, palette_color_);
+
+        for (int32_t i = 0; i < frame_count_; i++) {
+          int32_t index = (start_frame_ + i) % SCREEN_CAPTURE_COUNT;
+
+          gif_writer->AddFrame(captured_images_[index],
+                               captured_frames_[index] * 100.0f / fps_ + 0.5f);
+        }
+
+        gif_writer->EndFrame();
+        delete gif_writer;
+
+        // try to optimize the generated GIF file with Gifsicle
+        int32_t res = system(("gifsicle -b -O3 -Okeep-empty " + filename).c_str());
+
+        ResetScreenCapture();
+        */
+    }
+
+    pub(crate) fn capture_screen_video(&mut self) {
+        if self.resource.frame_count < 1 {
+            return;
+        }
+
+        /*
+        cur_frame_ = (cur_frame_ + 1) % SCREEN_CAPTURE_COUNT;
+        frame_count_++;
+        captured_images_[cur_frame_]->CopyImage(0, 0, screen_image, 0, 0, width_,
+                                                height_);
+        captured_frames_[cur_frame_] = update_frame_count;
+
+        if (frame_count_ > SCREEN_CAPTURE_COUNT) {
+          start_frame_ = (start_frame_ + 1) % SCREEN_CAPTURE_COUNT;
+          frame_count_ = SCREEN_CAPTURE_COUNT;
+        }
         */
     }
 
