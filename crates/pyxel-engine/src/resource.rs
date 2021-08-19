@@ -56,8 +56,8 @@ impl Pyxel {
         //
     }
 
-    pub fn save(&mut self, filename: &str) {
-        let _ = filename; // dummy
+    pub fn save(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
+        let _ = (filename, image, tilemap, sound, music); // dummy
 
         //
     }
