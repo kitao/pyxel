@@ -5,8 +5,8 @@ use std::sync::Arc;
 use crate::canvas::Canvas;
 use crate::image::Image;
 use crate::settings::{
-    COLOR_COUNT, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, IMAGE_COUNT, IMAGE_SIZE, TILEMAP_COUNT,
-    TILEMAP_SIZE,
+    COLOR_COUNT, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, FONT_COLOR, FONT_DATA, FONT_HEIGHT,
+    FONT_ROW_COUNT, FONT_WIDTH, IMAGE_COUNT, IMAGE_SIZE, TILEMAP_COUNT, TILEMAP_SIZE,
 };
 use crate::tilemap::Tilemap;
 use crate::types::{Color, Tile};
@@ -29,39 +29,44 @@ impl Graphics {
         }
     }
 
-    pub fn new_cursor_image() -> Arc<Mutex<Image>> {
-        let image = Image::with_arc_mutex(CURSOR_WIDTH, CURSOR_HEIGHT);
-        image.lock().set(0, 0, &CURSOR_DATA);
+    pub fn new_cursor_image() -> Image {
+        let mut image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
+        image.set(0, 0, &CURSOR_DATA);
 
         image
     }
 
-    pub fn new_font_image() -> Arc<Mutex<Image>> {
-        /*
-        Image* image = new Image(ICON_WIDTH, ICON_HEIGHT);
-        image->SetData(0, 0, ICON_DATA);
+    pub fn new_font_image() -> Image {
+        let width = FONT_WIDTH * FONT_ROW_COUNT;
+        let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + FONT_ROW_COUNT - 1) / FONT_ROW_COUNT);
+        let mut image = Image::new(width, height);
 
-        int32_t** src_data = image->Data();
-        uint32_t* dst_data = reinterpret_cast<uint32_t*>(surface->pixels);
+        for (i, data) in FONT_DATA.iter().enumerate() {
+            let row = i as u32 / FONT_ROW_COUNT;
+            let col = i as u32 % FONT_ROW_COUNT;
 
-        for (int32_t i = 0; i < ICON_HEIGHT; i++) {
-            int32_t index = ICON_WIDTH * i;
+            for j in 0..FONT_HEIGHT {
+                let mut data = *data;
 
-            for (int32_t j = 0; j < ICON_WIDTH; j++) {
-                int32_t color = src_data[i][j];
-                uint32_t argb = color == 0 ? 0 : (DEFAULT_PALETTE[color] << 8) + 0xff;
+                for k in 0..FONT_WIDTH {
+                    let color = if (data & 0x800000) != 0 {
+                        FONT_COLOR
+                    } else {
+                        0
+                    };
 
-                for (int32_t y = 0; y < ICON_SCALE; y++) {
-                    int32_t index = (ICON_WIDTH * (i * ICON_SCALE + y) + j) * ICON_SCALE;
+                    image._set_value(
+                        (FONT_WIDTH * col + k) as i32,
+                        (FONT_HEIGHT * row + j) as i32,
+                        color,
+                    );
 
-                    for (int32_t x = 0; x < ICON_SCALE; x++) {
-                        dst_data[index + x] = argb;
-                    }
+                    data <<= 1;
                 }
             }
         }
-        */
-        Image::with_arc_mutex(10, 10)
+
+        image
     }
 }
 
