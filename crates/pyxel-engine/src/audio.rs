@@ -3,33 +3,33 @@ use blip_buf::BlipBuf;
 use parking_lot::Mutex;
 use std::sync::Arc;
 
-use crate::channel::Channel;
-use crate::music::Music;
+use crate::channel::{Channel, SharedChannel};
+use crate::music::{Music, SharedMusic};
 use crate::platform::{AudioCallback, Platform};
 use crate::settings::{
     CHANNEL_COUNT, CLOCK_RATE, MUSIC_COUNT, SAMPLE_COUNT, SAMPLE_RATE, SOUND_COUNT,
     TICK_CLOCK_COUNT,
 };
-use crate::sound::Sound;
+use crate::sound::{SharedSound, Sound};
 use crate::Pyxel;
 
 struct AudioCore {
     blip_buf: BlipBuf,
-    channels: [Arc<Mutex<Channel>>; CHANNEL_COUNT as usize],
+    channels: [SharedChannel; CHANNEL_COUNT as usize],
 }
 
 pub struct Audio {
-    channels: [Arc<Mutex<Channel>>; CHANNEL_COUNT as usize],
-    sounds: [Arc<Mutex<Sound>>; SOUND_COUNT as usize],
-    musics: [Arc<Mutex<Music>>; MUSIC_COUNT as usize],
+    channels: [SharedChannel; CHANNEL_COUNT as usize],
+    sounds: [SharedSound; SOUND_COUNT as usize],
+    musics: [SharedMusic; MUSIC_COUNT as usize],
 }
 
 impl Audio {
     pub fn new<T: Platform>(platform: &mut T) -> Audio {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
-        let channels = array![_ => Channel::with_arc_mutex(); CHANNEL_COUNT as usize];
-        let sounds = array![_ => Sound::with_arc_mutex(); SOUND_COUNT as usize];
-        let musics = array![_ => Music::with_arc_mutex(); MUSIC_COUNT as usize];
+        let channels = array![_ => Channel::new(); CHANNEL_COUNT as usize];
+        let sounds = array![_ => Sound::new(); SOUND_COUNT as usize];
+        let musics = array![_ => Music::new(); MUSIC_COUNT as usize];
 
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 
