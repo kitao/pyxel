@@ -21,7 +21,7 @@ impl Graphics {
     pub fn new() -> Graphics {
         let images =
             array![_ => Image::with_arc_mutex(IMAGE_SIZE, IMAGE_SIZE); IMAGE_COUNT as usize];
-        let tilemaps = array![_ => Tilemap::with_arc_mutex(TILEMAP_SIZE, TILEMAP_SIZE); TILEMAP_COUNT as usize];
+        let tilemaps = array![_ => Tilemap::with_arc_mutex(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()); TILEMAP_COUNT as usize];
 
         Graphics {
             images: images,
