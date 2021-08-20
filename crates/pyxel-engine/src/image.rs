@@ -20,60 +20,48 @@ pub type SharedImage = Arc<Mutex<Image>>;
 
 impl Image {
     pub fn new(width: u32, height: u32) -> SharedImage {
-        Arc::new(Mutex::new(Image::without_arc_mutex(width, height)))
-    }
-
-    pub fn without_arc_mutex(width: u32, height: u32) -> Image {
-        Image {
+        Arc::new(Mutex::new(Image {
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
             data: vec![vec![0; width as usize]; height as usize],
-        }
+        }))
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = data_str[0].len() as u32;
         let height = data_str.len() as u32;
-        let mut dst_image = Image::without_arc_mutex(width, height);
+        let shared_image = Image::new(width, height);
+        let mut image = shared_image.lock();
 
         for i in 0..height {
             let src_data = simplify_string(data_str[i as usize]);
 
             for j in 0..width {
                 if let Some(value) = parse_hex_string(&src_data[j as usize..j as usize + 1]) {
-                    dst_image._set_value(j as i32, i as i32, value as Color);
+                    image._set_value(j as i32, i as i32, value as Color);
                 } else {
                     panic!("invalid image data");
                 }
             }
         }
 
-        self.blt(
-            x,
-            y,
-            &dst_image,
-            0,
-            0,
-            width as i32,
-            height as i32,
-            None,
-            None,
-        );
+        self.blt(x, y, &image, 0, 0, width as i32, height as i32, None, None);
     }
 
     pub fn load(&mut self, x: i32, y: i32, filename: &str, colors: &[Rgb8]) {
-        let src_image = image::open(&Path::new(&filename)).unwrap().to_rgb8();
-        let (width, height) = src_image.dimensions();
-        let mut dst_image = Image::without_arc_mutex(width, height);
+        let image_file = image::open(&Path::new(&filename)).unwrap().to_rgb8();
+        let (width, height) = image_file.dimensions();
+        let shared_image = Image::new(width, height);
+        let mut image = shared_image.lock();
         let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
 
         for i in 0..height {
             for j in 0..width {
-                let p = src_image.get_pixel(j, i);
+                let p = image_file.get_pixel(j, i);
                 let src_rgb = (p[0], p[1], p[2]);
 
                 if let Some(color) = color_table.get(&src_rgb) {
-                    dst_image._set_value(j as i32, i as i32, *color);
+                    image._set_value(j as i32, i as i32, *color);
                 } else {
                     let mut closest_color: Color = 0;
                     let mut closest_dist: f64 = f64::MAX;
@@ -94,22 +82,12 @@ impl Image {
                     }
 
                     color_table.insert(src_rgb, closest_color);
-                    dst_image._set_value(j as i32, i as i32, closest_color);
+                    image._set_value(j as i32, i as i32, closest_color);
                 }
             }
         }
 
-        self.blt(
-            x,
-            y,
-            &dst_image,
-            0,
-            0,
-            width as i32,
-            height as i32,
-            None,
-            None,
-        );
+        self.blt(x, y, &image, 0, 0, width as i32, height as i32, None, None);
     }
 
     fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {

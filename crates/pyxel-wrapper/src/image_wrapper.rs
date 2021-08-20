@@ -24,7 +24,7 @@ pub fn wrap_pyxel_image(pyxel_image: Arc<Mutex<PyxelImage>>) -> Image {
 impl Image {
     #[new]
     pub fn new(width: u32, height: u32) -> Image {
-        wrap_pyxel_image(PyxelImage::with_arc_mutex(width, height))
+        wrap_pyxel_image(PyxelImage::new(width, height))
     }
 
     #[getter]
