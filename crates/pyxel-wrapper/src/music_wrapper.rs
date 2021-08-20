@@ -8,8 +8,8 @@ use pyxel::Music as PyxelMusic;
 #[pyclass]
 #[derive(Clone)]
 pub struct Sequence {
-    pyxel_music: Arc<Mutex<PyxelMusic>>,
-    channel_no: u32,
+    pub pyxel_music: Arc<Mutex<PyxelMusic>>,
+    pub channel_no: u32,
 }
 
 #[pyproto]
