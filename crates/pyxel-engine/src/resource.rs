@@ -1,11 +1,11 @@
 use array_macro::array;
 
-use crate::image::Image;
+use crate::image::{Image, SharedImage};
 use crate::settings::CAPTURE_FRAME_COUNT;
 use crate::Pyxel;
 
 pub struct Resource {
-    captured_frames: [(Image, u32); CAPTURE_FRAME_COUNT as usize],
+    captured_frames: [(SharedImage, u32); CAPTURE_FRAME_COUNT as usize],
     start_frame_index: u32,
     cur_frame_index: u32,
     frame_count: u32,
@@ -14,7 +14,7 @@ pub struct Resource {
 impl Resource {
     pub fn new(width: u32, height: u32) -> Resource {
         let captured_frames =
-            array![_ => (Image::without_arc_mutex(width, height), 0); CAPTURE_FRAME_COUNT as usize];
+            array![_ => (Image::new(width, height), 0); CAPTURE_FRAME_COUNT as usize];
 
         Resource {
             captured_frames: captured_frames,

@@ -69,7 +69,7 @@ pub fn wrap_pyxel_music(pyxel_music: Arc<Mutex<PyxelMusic>>) -> Music {
 impl Music {
     #[new]
     pub fn new() -> Music {
-        wrap_pyxel_music(PyxelMusic::with_arc_mutex())
+        wrap_pyxel_music(PyxelMusic::new())
     }
 
     pub fn set(&self, sequences: Vec<Vec<u32>>) {

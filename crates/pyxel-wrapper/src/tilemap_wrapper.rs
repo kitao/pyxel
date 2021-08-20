@@ -22,11 +22,7 @@ pub fn wrap_pyxel_tilemap(pyxel_tilemap: Arc<Mutex<PyxelTilemap>>) -> Tilemap {
 impl Tilemap {
     #[new]
     pub fn new(width: u32, height: u32, image: Image) -> Tilemap {
-        wrap_pyxel_tilemap(PyxelTilemap::with_arc_mutex(
-            width,
-            height,
-            image.pyxel_image,
-        ))
+        wrap_pyxel_tilemap(PyxelTilemap::new(width, height, image.pyxel_image))
     }
 }
 

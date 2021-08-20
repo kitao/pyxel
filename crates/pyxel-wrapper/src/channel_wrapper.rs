@@ -21,7 +21,7 @@ pub fn wrap_pyxel_channel(pyxel_channel: Arc<Mutex<PyxelChannel>>) -> Channel {
 impl Channel {
     #[new]
     pub fn new() -> Channel {
-        wrap_pyxel_channel(PyxelChannel::with_arc_mutex())
+        wrap_pyxel_channel(PyxelChannel::new())
     }
 
     #[getter]
