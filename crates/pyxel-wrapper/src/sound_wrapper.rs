@@ -106,7 +106,7 @@ pub fn wrap_pyxel_sound(pyxel_sound: Arc<Mutex<PyxelSound>>) -> Sound {
 impl Sound {
     #[new]
     pub fn new() -> Sound {
-        wrap_pyxel_sound(PyxelSound::with_arc_mutex())
+        wrap_pyxel_sound(PyxelSound::new())
     }
 
     #[getter]
