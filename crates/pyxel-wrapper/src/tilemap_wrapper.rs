@@ -4,6 +4,8 @@ use std::sync::Arc;
 
 use pyxel::Tilemap as PyxelTilemap;
 
+use crate::image_wrapper::Image;
+
 #[pyclass]
 #[derive(Clone)]
 pub struct Tilemap {
@@ -19,8 +21,12 @@ pub fn wrap_pyxel_tilemap(pyxel_tilemap: Arc<Mutex<PyxelTilemap>>) -> Tilemap {
 #[pymethods]
 impl Tilemap {
     #[new]
-    pub fn new(width: u32, height: u32) -> Tilemap {
-        wrap_pyxel_tilemap(PyxelTilemap::with_arc_mutex(width, height))
+    pub fn new(width: u32, height: u32, image: Image) -> Tilemap {
+        wrap_pyxel_tilemap(PyxelTilemap::with_arc_mutex(
+            width,
+            height,
+            image.pyxel_image,
+        ))
     }
 }
 
