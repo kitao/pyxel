@@ -8,7 +8,7 @@ use pyxel::Volume;
 #[pyclass]
 #[derive(Clone)]
 pub struct Channel {
-    pyxel_channel: Arc<Mutex<PyxelChannel>>,
+    pub pyxel_channel: Arc<Mutex<PyxelChannel>>,
 }
 
 pub fn wrap_pyxel_channel(pyxel_channel: Arc<Mutex<PyxelChannel>>) -> Channel {
