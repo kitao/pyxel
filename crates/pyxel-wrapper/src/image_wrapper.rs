@@ -11,7 +11,7 @@ use crate::tilemap_wrapper::Tilemap;
 #[pyclass]
 #[derive(Clone)]
 pub struct Image {
-    pyxel_image: Arc<Mutex<PyxelImage>>,
+    pub pyxel_image: Arc<Mutex<PyxelImage>>,
 }
 
 pub fn wrap_pyxel_image(pyxel_image: Arc<Mutex<PyxelImage>>) -> Image {

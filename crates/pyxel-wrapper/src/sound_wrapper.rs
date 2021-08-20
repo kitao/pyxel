@@ -9,7 +9,7 @@ use pyxel::{Effect, Note, Speed, Tone, Volume};
 #[pyclass]
 #[derive(Clone)]
 pub struct Notes {
-    pyxel_sound: Arc<Mutex<PyxelSound>>,
+    pub pyxel_sound: Arc<Mutex<PyxelSound>>,
 }
 
 #[pyproto]
