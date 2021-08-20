@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
 
-use crate::canvas::Canvas;
+use crate::canvas::{Canvas, CopyArea};
 use crate::rectarea::RectArea;
-use crate::settings::COLOR_COUNT;
+use crate::settings::{COLOR_COUNT, TILE_SIZE};
 use crate::tilemap::Tilemap;
 use crate::types::{Color, Rgb8, Tile};
 use crate::utility::{parse_hex_string, simplify_string};
@@ -16,8 +16,14 @@ pub struct Image {
     data: Vec<Vec<Color>>,
 }
 
+pub type SharedImage = Arc<Mutex<Image>>;
+
 impl Image {
-    pub fn new(width: u32, height: u32) -> Image {
+    pub fn new(width: u32, height: u32) -> SharedImage {
+        Arc::new(Mutex::new(Image::without_arc_mutex(width, height)))
+    }
+
+    pub fn without_arc_mutex(width: u32, height: u32) -> Image {
         Image {
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
@@ -25,14 +31,10 @@ impl Image {
         }
     }
 
-    pub fn with_arc_mutex(width: u32, height: u32) -> Arc<Mutex<Image>> {
-        Arc::new(Mutex::new(Image::new(width, height)))
-    }
-
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = data_str[0].len() as u32;
         let height = data_str.len() as u32;
-        let mut dst_image = Image::new(width, height);
+        let mut dst_image = Image::without_arc_mutex(width, height);
 
         for i in 0..height {
             let src_data = simplify_string(data_str[i as usize]);
@@ -62,7 +64,7 @@ impl Image {
     pub fn load(&mut self, x: i32, y: i32, filename: &str, colors: &[Rgb8]) {
         let src_image = image::open(&Path::new(&filename)).unwrap().to_rgb8();
         let (width, height) = src_image.dimensions();
-        let mut dst_image = Image::new(width, height);
+        let mut dst_image = Image::without_arc_mutex(width, height);
         let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
 
         for i in 0..height {
@@ -122,9 +124,7 @@ impl Image {
     }
 
     pub fn save(&self, filename: &str, colors: &[Rgb8], scale: u32) {
-        let _ = (filename, colors, scale); // dummy
-
-        //
+        // TODO
     }
 
     pub fn bltm(
@@ -138,37 +138,65 @@ impl Image {
         height: i32,
         transparent: Option<Tile>,
     ) {
-        let _ = (
-            x,
-            y,
-            tilemap,
+        let tile_size = if width < 0 {
+            -(TILE_SIZE as i32)
+        } else {
+            TILE_SIZE as i32
+        };
+
+        let left = self.clip_rect.left() / TILE_SIZE as i32;
+        let top = self.clip_rect.top() / TILE_SIZE as i32;
+        let right = (self.clip_rect.right() + TILE_SIZE as i32 - 1) / TILE_SIZE as i32;
+        let bottom = (self.clip_rect.bottom() + TILE_SIZE as i32 - 1) / TILE_SIZE as i32;
+        let dst_rect = RectArea::new(
+            left,
+            top,
+            (right - left + 1) as u32,
+            (bottom - top + 1) as u32,
+        );
+
+        let copy_area = CopyArea::new(
+            x / TILE_SIZE as i32,
+            y / TILE_SIZE as i32,
+            dst_rect,
             tilemap_x,
             tilemap_y,
+            tilemap._self_rect(),
             width,
             height,
-            transparent,
-        ); // dummy
+        );
 
-        /*
-        Tilemap* tilemap = GetTilemapBank(tilemap_index);
-        int32_t image_index = tilemap->ImageIndex();
+        let src_x = copy_area.src_x;
+        let src_y = copy_area.src_y;
+        let sign_x = copy_area.sign_x;
+        let sign_y = copy_area.sign_y;
+        let offset_x = copy_area.offset_x;
+        let offset_y = copy_area.offset_y;
+        let width = copy_area.width;
+        let height = copy_area.height;
 
-        int32_t left = clip_area_.Left() / TILEMAP_CHIP_WIDTH;
-        int32_t top = clip_area_.Top() / TILEMAP_CHIP_WIDTH;
-        int32_t right =
-            (clip_area_.Right() + TILEMAP_CHIP_WIDTH - 1) / TILEMAP_CHIP_WIDTH;
-        int32_t bottom =
-            (clip_area_.Bottom() + TILEMAP_CHIP_HEIGHT - 1) / TILEMAP_CHIP_HEIGHT;
-        Rectangle dst_rect = Rectangle(left, top, right - left + 1, bottom - top + 1);
-
-        Rectangle::CopyArea copy_area =
-            dst_rect.GetCopyArea(x / TILEMAP_CHIP_WIDTH, y / TILEMAP_CHIP_HEIGHT,
-                                 tilemap->Rectangle(), u, v, width, height);
-
-        if (copy_area.IsEmpty()) {
-          return;
+        if width == 0 || height == 0 {
+            return;
         }
 
+        for i in 0..height {
+            for j in 0..width {
+                let tile =
+                    tilemap._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
+
+                if let Some(transparent) = transparent {
+                    if tile == transparent {
+                        continue;
+                    }
+                }
+
+                // self.blt(x + TILE_SIZE as i32 * j, y + TILE_SIZE as i32 * i,
+                // TODO
+                //self._set_value(dst_x + j, dst_y + i, tile);
+            }
+        }
+
+        /*
         int32_t** src_data = tilemap->Data();
 
         copy_area.x = copy_area.x * TILEMAP_CHIP_WIDTH + x % TILEMAP_CHIP_WIDTH;

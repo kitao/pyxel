@@ -17,19 +17,17 @@ pub struct Sound {
     pub speed: Speed,
 }
 
+pub type SharedSound = Arc<Mutex<Sound>>;
+
 impl Sound {
-    pub fn new() -> Sound {
-        Sound {
+    pub fn new() -> SharedSound {
+        Arc::new(Mutex::new(Sound {
             notes: Vec::new(),
             tones: Vec::new(),
             volumes: Vec::new(),
             effects: Vec::new(),
             speed: INITIAL_SPEED,
-        }
-    }
-
-    pub fn with_arc_mutex() -> Arc<Mutex<Sound>> {
-        Arc::new(Mutex::new(Sound::new()))
+        }))
     }
 
     pub fn set(
@@ -153,46 +151,48 @@ mod tests {
     #[test]
     fn new() {
         let sound = Sound::new();
-        assert_eq!(sound.notes.len(), 0);
-        assert_eq!(sound.tones.len(), 0);
-        assert_eq!(sound.volumes.len(), 0);
-        assert_eq!(sound.effects.len(), 0);
-        assert_eq!(sound.speed, INITIAL_SPEED);
+        assert_eq!(sound.lock().notes.len(), 0);
+        assert_eq!(sound.lock().tones.len(), 0);
+        assert_eq!(sound.lock().volumes.len(), 0);
+        assert_eq!(sound.lock().effects.len(), 0);
+        assert_eq!(sound.lock().speed, INITIAL_SPEED);
     }
 
     #[test]
     fn set() {
         let mut sound = Sound::new();
 
-        sound.set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
-        assert_eq!(&sound.notes, &vec![0, 1, 2, 3]);
+        sound.lock().set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
+        assert_eq!(&sound.lock().notes, &vec![0, 1, 2, 3]);
         assert_eq!(
-            &sound.tones,
+            &sound.lock().tones,
             &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
         );
-        assert_eq!(&sound.volumes, &vec![0, 1, 2, 3]);
+        assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3]);
         assert_eq!(
-            &sound.effects,
+            &sound.lock().effects,
             &vec![EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, EFFECT_FADEOUT]
         );
-        assert_eq!(sound.speed, 123);
+        assert_eq!(sound.lock().speed, 123);
     }
 
     #[test]
     fn set_note() {
         let mut sound = Sound::new();
 
-        sound.set_note(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ");
-        assert_eq!(&sound.notes, &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]);
+        sound
+            .lock()
+            .set_note(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ");
+        assert_eq!(&sound.lock().notes, &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]);
     }
 
     #[test]
     fn set_tone() {
         let mut sound = Sound::new();
 
-        sound.set_tone(" t s p n ");
+        sound.lock().set_tone(" t s p n ");
         assert_eq!(
-            &sound.tones,
+            &sound.lock().tones,
             &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
         );
     }
@@ -201,17 +201,17 @@ mod tests {
     fn set_volume() {
         let mut sound = Sound::new();
 
-        sound.set_volume(" 0 1 2 3 4 5 6 7 ");
-        assert_eq!(&sound.volumes, &vec![0, 1, 2, 3, 4, 5, 6, 7]);
+        sound.lock().set_volume(" 0 1 2 3 4 5 6 7 ");
+        assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3, 4, 5, 6, 7]);
     }
 
     #[test]
     fn set_effect() {
         let mut sound = Sound::new();
 
-        sound.set_effect(" n s v f ");
+        sound.lock().set_effect(" n s v f ");
         assert_eq!(
-            &sound.effects,
+            &sound.lock().effects,
             &vec![EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, EFFECT_FADEOUT]
         );
     }

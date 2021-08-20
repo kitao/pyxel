@@ -19,9 +19,8 @@ pub struct Graphics {
 
 impl Graphics {
     pub fn new() -> Graphics {
-        let images =
-            array![_ => Image::with_arc_mutex(IMAGE_SIZE, IMAGE_SIZE); IMAGE_COUNT as usize];
-        let tilemaps = array![_ => Tilemap::with_arc_mutex(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()); TILEMAP_COUNT as usize];
+        let images = array![_ => Image::new(IMAGE_SIZE, IMAGE_SIZE); IMAGE_COUNT as usize];
+        let tilemaps = array![_ => Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()); TILEMAP_COUNT as usize];
 
         Graphics {
             images: images,
@@ -30,7 +29,7 @@ impl Graphics {
     }
 
     pub fn new_cursor_image() -> Arc<Mutex<Image>> {
-        let image = Image::with_arc_mutex(CURSOR_WIDTH, CURSOR_HEIGHT);
+        let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
         image.lock().set(0, 0, &CURSOR_DATA);
 
         image
@@ -39,7 +38,7 @@ impl Graphics {
     pub fn new_font_image() -> Arc<Mutex<Image>> {
         let width = FONT_WIDTH * FONT_ROW_COUNT;
         let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + FONT_ROW_COUNT - 1) / FONT_ROW_COUNT);
-        let mut image = Image::new(width, height);
+        let mut image = Image::without_arc_mutex(width, height);
 
         for (i, data) in FONT_DATA.iter().enumerate() {
             let row = i as u32 / FONT_ROW_COUNT;

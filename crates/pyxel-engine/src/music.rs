@@ -8,15 +8,13 @@ pub struct Music {
     pub sequences: [Vec<u32>; CHANNEL_COUNT as usize],
 }
 
-impl Music {
-    pub fn new() -> Music {
-        Music {
-            sequences: Default::default(),
-        }
-    }
+pub type SharedMusic = Arc<Mutex<Music>>;
 
-    pub fn with_arc_mutex() -> Arc<Mutex<Music>> {
-        Arc::new(Mutex::new(Music::new()))
+impl Music {
+    pub fn new() -> SharedMusic {
+        Arc::new(Mutex::new(Music {
+            sequences: Default::default(),
+        }))
     }
 
     pub fn set(&mut self, sequences: &[Vec<u32>]) {
@@ -35,7 +33,7 @@ mod tests {
         let music = Music::new();
 
         for i in 0..CHANNEL_COUNT {
-            assert_eq!(music.sequences[i as usize].len(), 0);
+            assert_eq!(music.lock().sequences[i as usize].len(), 0);
         }
     }
 
@@ -43,10 +41,12 @@ mod tests {
     fn set() {
         let mut music = Music::new();
 
-        music.set(&[vec![0, 1, 2], vec![1, 2, 3], vec![2, 3, 4], vec![3, 4, 5]]);
+        music
+            .lock()
+            .set(&[vec![0, 1, 2], vec![1, 2, 3], vec![2, 3, 4], vec![3, 4, 5]]);
 
         for i in 0..CHANNEL_COUNT {
-            assert_eq!(&music.sequences[i as usize], &vec![i, i + 1, i + 2]);
+            assert_eq!(&music.lock().sequences[i as usize], &vec![i, i + 1, i + 2]);
         }
     }
 }
