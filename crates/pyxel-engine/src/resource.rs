@@ -14,7 +14,7 @@ pub struct Resource {
 impl Resource {
     pub fn new(width: u32, height: u32) -> Resource {
         let captured_frames =
-            array![_ => (Image::new(width, height), 0); CAPTURE_FRAME_COUNT as usize];
+            array![_ => (Image::without_arc_mutex(width, height), 0); CAPTURE_FRAME_COUNT as usize];
 
         Resource {
             captured_frames: captured_frames,

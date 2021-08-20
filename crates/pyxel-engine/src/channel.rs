@@ -19,9 +19,11 @@ pub struct Channel {
     pub volume: Volume,
 }
 
+pub type SharedChannel = Arc<Mutex<Channel>>;
+
 impl Channel {
-    pub fn new() -> Channel {
-        Channel {
+    pub fn new() -> SharedChannel {
+        Arc::new(Mutex::new(Channel {
             oscillator: Oscillator::new(),
             sounds: Vec::new(),
             is_playing: false,
@@ -30,11 +32,7 @@ impl Channel {
             note_index: 0,
             tick_count: 0,
             volume: MAX_VOLUME,
-        }
-    }
-
-    pub fn with_arc_mutex() -> Arc<Mutex<Channel>> {
-        Arc::new(Mutex::new(Channel::new()))
+        }))
     }
 
     pub fn is_playing(&self) -> bool {

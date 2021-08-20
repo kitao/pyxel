@@ -21,8 +21,6 @@ mod types;
 mod utility;
 
 use array_macro::array;
-use parking_lot::Mutex;
-use std::sync::Arc;
 
 use crate::audio::Audio;
 use crate::graphics::Graphics;
@@ -34,12 +32,12 @@ use crate::system::System;
 
 pub use crate::canvas::Canvas;
 pub use crate::channel::Channel;
-pub use crate::image::Image;
+pub use crate::image::{Image, SharedImage};
 pub use crate::key::*;
-pub use crate::music::Music;
+pub use crate::music::{Music, SharedMusic};
 pub use crate::settings::*;
-pub use crate::sound::Sound;
-pub use crate::tilemap::Tilemap;
+pub use crate::sound::{SharedSound, Sound};
+pub use crate::tilemap::{SharedTilemap, Tilemap};
 pub use crate::types::*;
 
 pub type TargetPlatform = Sdl2;
@@ -54,9 +52,9 @@ pub struct Pyxel {
 
     pub colors: [Rgb8; COLOR_COUNT as usize],
     pub palette: [Color; COLOR_COUNT as usize],
-    pub screen: Arc<Mutex<Image>>,
-    pub cursor: Arc<Mutex<Image>>,
-    pub font: Arc<Mutex<Image>>,
+    pub screen: SharedImage,
+    pub cursor: SharedImage,
+    pub font: SharedImage,
 }
 
 pub trait PyxelCallback {
@@ -87,7 +85,7 @@ impl Pyxel {
 
         let colors = DEFAULT_COLORS.clone();
         let palette = array![i => i as Color; COLOR_COUNT as usize];
-        let screen = Image::with_arc_mutex(width, height);
+        let screen = Image::new(width, height);
         let cursor = Graphics::new_cursor_image();
         let font = Graphics::new_font_image();
 
