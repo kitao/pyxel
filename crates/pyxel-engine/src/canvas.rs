@@ -349,32 +349,30 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         transparent: Option<T>,
         palette: Option<&[T]>,
     ) {
-        let (dst_x, dst_y, src_x, src_y, width, height, flip_x, flip_y) =
-            self._copy_area(x, y, canvas._self_rect(), canvas_x, canvas_y, width, height);
+        let copy_area = CopyArea::new(
+            x,
+            y,
+            self._clip_rect(),
+            canvas_x,
+            canvas_y,
+            canvas._self_rect(),
+            width,
+            height,
+        );
+
+        let dst_x = copy_area.dst_x;
+        let dst_y = copy_area.dst_y;
+        let src_x = copy_area.src_x;
+        let src_y = copy_area.src_y;
+        let sign_x = copy_area.sign_x;
+        let sign_y = copy_area.sign_y;
+        let offset_x = copy_area.offset_x;
+        let offset_y = copy_area.offset_y;
+        let width = copy_area.width;
+        let height = copy_area.height;
 
         if width == 0 || height == 0 {
             return;
-        }
-
-        let sign_x: i32;
-        let sign_y: i32;
-        let offset_x: i32;
-        let offset_y: i32;
-
-        if flip_x {
-            sign_x = -1;
-            offset_x = width - 1;
-        } else {
-            sign_x = 1;
-            offset_x = 0;
-        }
-
-        if flip_y {
-            sign_y = -1;
-            offset_y = height - 1;
-        } else {
-            sign_y = 1;
-            offset_y = 0;
         }
 
         for i in 0..height {
@@ -398,18 +396,32 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             }
         }
     }
+}
 
-    fn _copy_area(
-        &self,
+pub struct CopyArea {
+    pub dst_x: i32,
+    pub dst_y: i32,
+    pub src_x: i32,
+    pub src_y: i32,
+    pub sign_x: i32,
+    pub sign_y: i32,
+    pub offset_x: i32,
+    pub offset_y: i32,
+    pub width: i32,
+    pub height: i32,
+}
+
+impl CopyArea {
+    pub fn new(
         dst_x: i32,
         dst_y: i32,
-        src_rect: RectArea,
+        dst_rect: RectArea,
         src_x: i32,
         src_y: i32,
+        src_rect: RectArea,
         width: i32,
         height: i32,
-    ) -> (i32, i32, i32, i32, i32, i32, bool, bool) {
-        let dst_rect = self._clip_rect();
+    ) -> CopyArea {
         let flip_x = width < 0;
         let flip_y = height < 0;
         let width = width.abs();
@@ -418,29 +430,55 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         let left_cut = max(max(src_rect.left() - src_x, dst_rect.left() - dst_x), 0);
         let right_cut = max(
             max(
-                src_x + width as i32 - 1 - src_rect.right(),
-                dst_x + width as i32 - 1 - dst_rect.right(),
+                src_x + width - 1 - src_rect.right(),
+                dst_x + width - 1 - dst_rect.right(),
             ),
             0,
         );
         let top_cut = max(max(src_rect.top() - src_y, dst_rect.top() - dst_y), 0);
         let bottom_cut = max(
             max(
-                src_y + height as i32 - 1 - src_rect.bottom(),
-                dst_y + height as i32 - 1 - dst_rect.bottom(),
+                src_y + height - 1 - src_rect.bottom(),
+                dst_y + height - 1 - dst_rect.bottom(),
             ),
             0,
         );
 
-        (
-            dst_x + left_cut,
-            dst_y + top_cut,
-            src_x + if flip_x { right_cut } else { left_cut },
-            src_y + if flip_y { bottom_cut } else { top_cut },
-            max(width - left_cut - right_cut, 0),
-            max(height - top_cut - bottom_cut, 0),
-            flip_x,
-            flip_y,
-        )
+        let width = max(width - left_cut - right_cut, 0);
+        let height = max(height - top_cut - bottom_cut, 0);
+
+        let sign_x: i32;
+        let sign_y: i32;
+        let offset_x: i32;
+        let offset_y: i32;
+
+        if flip_x {
+            sign_x = -1;
+            offset_x = width - 1;
+        } else {
+            sign_x = 1;
+            offset_x = 0;
+        }
+
+        if flip_y {
+            sign_y = -1;
+            offset_y = height - 1;
+        } else {
+            sign_y = 1;
+            offset_y = 0;
+        }
+
+        CopyArea {
+            dst_x: dst_x + left_cut,
+            dst_y: dst_y + top_cut,
+            src_x: src_x + if flip_x { right_cut } else { left_cut },
+            src_y: src_y + if flip_y { bottom_cut } else { top_cut },
+            sign_x: sign_x,
+            sign_y: sign_y,
+            offset_x: offset_x,
+            offset_y: offset_y,
+            width: width,
+            height: height,
+        }
     }
 }
