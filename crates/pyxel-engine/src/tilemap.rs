@@ -2,6 +2,7 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 
 use crate::canvas::Canvas;
+use crate::image::Image;
 use crate::rectarea::RectArea;
 use crate::types::Tile;
 use crate::utility::{parse_hex_string, simplify_string};
@@ -12,27 +13,33 @@ pub struct Tilemap {
     self_rect: RectArea,
     clip_rect: RectArea,
     data: Vec<Vec<Tile>>,
+    pub image: Arc<Mutex<Image>>,
 }
 
 impl Tilemap {
-    pub fn new(width: u32, height: u32) -> Tilemap {
+    pub fn new(width: u32, height: u32, image: Arc<Mutex<Image>>) -> Tilemap {
         Tilemap {
             width: width,
             height: height,
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
             data: vec![vec![(0, 0); width as usize]; height as usize],
+            image: image,
         }
     }
 
-    pub fn with_arc_mutex(width: u32, height: u32) -> Arc<Mutex<Tilemap>> {
-        Arc::new(Mutex::new(Tilemap::new(width, height)))
+    pub fn with_arc_mutex(
+        width: u32,
+        height: u32,
+        image: Arc<Mutex<Image>>,
+    ) -> Arc<Mutex<Tilemap>> {
+        Arc::new(Mutex::new(Tilemap::new(width, height, image)))
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = data_str[0].len() as u32 / 4;
         let height = data_str.len() as u32;
-        let mut dst_tilemap = Tilemap::new(width, height);
+        let mut dst_tilemap = Tilemap::new(width, height, self.image.clone());
 
         for i in 0..height {
             let src_data = simplify_string(data_str[i as usize]);
