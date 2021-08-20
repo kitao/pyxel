@@ -39,7 +39,7 @@ mod tests {
 
     #[test]
     fn set() {
-        let mut music = Music::new();
+        let music = Music::new();
 
         music
             .lock()
