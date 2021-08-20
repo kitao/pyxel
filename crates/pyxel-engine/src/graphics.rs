@@ -38,34 +38,38 @@ impl Graphics {
     pub fn new_font_image() -> Arc<Mutex<Image>> {
         let width = FONT_WIDTH * FONT_ROW_COUNT;
         let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + FONT_ROW_COUNT - 1) / FONT_ROW_COUNT);
-        let mut image = Image::without_arc_mutex(width, height);
+        let shared_image = Image::new(width, height);
 
-        for (i, data) in FONT_DATA.iter().enumerate() {
-            let row = i as u32 / FONT_ROW_COUNT;
-            let col = i as u32 % FONT_ROW_COUNT;
+        {
+            let mut image = shared_image.lock();
 
-            for j in 0..FONT_HEIGHT {
-                let mut data = *data;
+            for (i, data) in FONT_DATA.iter().enumerate() {
+                let row = i as u32 / FONT_ROW_COUNT;
+                let col = i as u32 % FONT_ROW_COUNT;
 
-                for k in 0..FONT_WIDTH {
-                    let color = if (data & 0x800000) != 0 {
-                        FONT_COLOR
-                    } else {
-                        0
-                    };
+                for j in 0..FONT_HEIGHT {
+                    let mut data = *data;
 
-                    image._set_value(
-                        (FONT_WIDTH * col + k) as i32,
-                        (FONT_HEIGHT * row + j) as i32,
-                        color,
-                    );
+                    for k in 0..FONT_WIDTH {
+                        let color = if (data & 0x800000) != 0 {
+                            FONT_COLOR
+                        } else {
+                            0
+                        };
 
-                    data <<= 1;
+                        image._set_value(
+                            (FONT_WIDTH * col + k) as i32,
+                            (FONT_HEIGHT * row + j) as i32,
+                            color,
+                        );
+
+                        data <<= 1;
+                    }
                 }
             }
         }
 
-        Arc::new(Mutex::new(image))
+        shared_image
     }
 }
 
