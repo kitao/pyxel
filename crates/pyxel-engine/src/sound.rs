@@ -160,7 +160,7 @@ mod tests {
 
     #[test]
     fn set() {
-        let mut sound = Sound::new();
+        let sound = Sound::new();
 
         sound.lock().set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
         assert_eq!(&sound.lock().notes, &vec![0, 1, 2, 3]);
@@ -178,7 +178,7 @@ mod tests {
 
     #[test]
     fn set_note() {
-        let mut sound = Sound::new();
+        let sound = Sound::new();
 
         sound
             .lock()
@@ -188,7 +188,7 @@ mod tests {
 
     #[test]
     fn set_tone() {
-        let mut sound = Sound::new();
+        let sound = Sound::new();
 
         sound.lock().set_tone(" t s p n ");
         assert_eq!(
@@ -199,7 +199,7 @@ mod tests {
 
     #[test]
     fn set_volume() {
-        let mut sound = Sound::new();
+        let sound = Sound::new();
 
         sound.lock().set_volume(" 0 1 2 3 4 5 6 7 ");
         assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3, 4, 5, 6, 7]);
@@ -207,7 +207,7 @@ mod tests {
 
     #[test]
     fn set_effect() {
-        let mut sound = Sound::new();
+        let sound = Sound::new();
 
         sound.lock().set_effect(" n s v f ");
         assert_eq!(
