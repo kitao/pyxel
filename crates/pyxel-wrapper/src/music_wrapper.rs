@@ -1,14 +1,13 @@
-use parking_lot::Mutex;
 use pyo3::class::PySequenceProtocol;
 use pyo3::prelude::*;
-use std::sync::Arc;
 
 use pyxel::Music as PyxelMusic;
+use pyxel::SharedMusic as PyxelSharedMusic;
 
 #[pyclass]
 #[derive(Clone)]
 pub struct Sequence {
-    pub pyxel_music: Arc<Mutex<PyxelMusic>>,
+    pub pyxel_music: PyxelSharedMusic,
     pub channel_no: u32,
 }
 
@@ -30,7 +29,7 @@ impl PySequenceProtocol for Sequence {
 #[pyclass]
 #[derive(Clone)]
 pub struct Sequences {
-    music: Arc<Mutex<PyxelMusic>>,
+    music: PyxelSharedMusic,
 }
 
 #[pyproto]
@@ -56,10 +55,10 @@ impl PySequenceProtocol for Sequences {
 #[pyclass]
 #[derive(Clone)]
 pub struct Music {
-    pyxel_music: Arc<Mutex<PyxelMusic>>,
+    pyxel_music: PyxelSharedMusic,
 }
 
-pub fn wrap_pyxel_music(pyxel_music: Arc<Mutex<PyxelMusic>>) -> Music {
+pub fn wrap_pyxel_music(pyxel_music: PyxelSharedMusic) -> Music {
     Music {
         pyxel_music: pyxel_music,
     }
