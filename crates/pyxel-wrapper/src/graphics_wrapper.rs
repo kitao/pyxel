@@ -136,19 +136,17 @@ fn bltm(
     tilemap_y: i32,
     width: i32,
     height: i32,
-    tile_key: Option<&PyTuple>,
+    transparent: Option<Color>,
 ) {
-    let tile_key = if let Some(tile_key) = tile_key {
-        Some((
-            tile_key.get_item(0).extract().unwrap(),
-            tile_key.get_item(1).extract().unwrap(),
-        ))
-    } else {
-        None
-    };
-
     instance().bltm(
-        x, y, tilemap_no, tilemap_x, tilemap_y, width, height, tile_key,
+        x,
+        y,
+        tilemap_no,
+        tilemap_x,
+        tilemap_y,
+        width,
+        height,
+        transparent,
     );
 }
 
