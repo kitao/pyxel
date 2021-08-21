@@ -245,8 +245,8 @@ pub const KEY_APP2: Key = 284;
 pub const KEY_AUDIOREWIND: Key = 285;
 pub const KEY_AUDIOFASTFORWARD: Key = 286;
 
-pub const KEY_MIN_VALUE: Key = KEY_A;
-pub const KEY_MAX_VALUE: Key = KEY_AUDIOFASTFORWARD;
+pub const _KEY_MIN_VALUE: Key = KEY_A;
+pub const _KEY_MAX_VALUE: Key = KEY_AUDIOFASTFORWARD;
 
 pub const KEY_SHIFT: Key = 300;
 pub const KEY_CTRL: Key = 301;
