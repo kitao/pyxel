@@ -89,11 +89,16 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
 }
 
 pub fn add_module_variables(m: &PyModule) -> PyResult<()> {
+    //
+    // system variables
+    //
     m.add_class::<Colors>()?;
     m.add_class::<Palette>()?;
     m.add_function(wrap_pyfunction!(__getattr__, m)?)?;
 
-    // settings
+    //
+    // setting constants
+    //
     add_constant!(m, PYXEL_VERSION)?;
 
     add_constant!(m, COLOR_COUNT)?;
@@ -137,7 +142,9 @@ pub fn add_module_variables(m: &PyModule) -> PyResult<()> {
     add_constant!(m, EFFECT_VIBRATO)?;
     add_constant!(m, EFFECT_FADEOUT)?;
 
-    // keys
+    //
+    // key constants
+    //
     add_constant!(m, KEY_NONE)?;
 
     add_constant!(m, KEY_A)?;
