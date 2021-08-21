@@ -33,38 +33,31 @@ impl Tilemap {
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = data_str[0].len() as u32 / 4;
         let height = data_str.len() as u32;
-        let shared_tilemap = Tilemap::new(width, height, self.image.clone());
-        let mut tilemap = shared_tilemap.lock();
+        let tilemap = Tilemap::new(width, height, self.image.clone());
 
-        for i in 0..height {
-            let src_data = simplify_string(data_str[i as usize]);
+        {
+            let mut tilemap = tilemap.lock();
 
-            for j in 0..width {
-                let index = j as usize * 4;
+            for i in 0..height {
+                let src_data = simplify_string(data_str[i as usize]);
 
-                if let Some(value) = parse_hex_string(&src_data[index..index + 4]) {
-                    tilemap._set_value(
-                        j as i32,
-                        i as i32,
-                        (((value >> 16) & 0xff) as u8, (value & 0xff) as u8),
-                    );
-                } else {
-                    panic!("invalid tilemap data");
+                for j in 0..width {
+                    let index = j as usize * 4;
+
+                    if let Some(value) = parse_hex_string(&src_data[index..index + 4]) {
+                        tilemap._set_value(
+                            j as i32,
+                            i as i32,
+                            (((value >> 16) & 0xff) as u8, (value & 0xff) as u8),
+                        );
+                    } else {
+                        panic!("invalid tilemap data");
+                    }
                 }
             }
         }
 
-        self.blt(
-            x,
-            y,
-            &tilemap,
-            0,
-            0,
-            width as i32,
-            height as i32,
-            None,
-            None,
-        );
+        self.blt(x, y, tilemap, 0, 0, width as i32, height as i32, None, None);
     }
 }
 

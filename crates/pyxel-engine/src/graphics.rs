@@ -1,6 +1,4 @@
 use array_macro::array;
-use parking_lot::Mutex;
-use std::sync::Arc;
 
 use crate::canvas::Canvas;
 use crate::image::{Image, SharedImage};
@@ -38,10 +36,10 @@ impl Graphics {
     pub fn new_font_image() -> SharedImage {
         let width = FONT_WIDTH * FONT_ROW_COUNT;
         let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + FONT_ROW_COUNT - 1) / FONT_ROW_COUNT);
-        let shared_image = Image::new(width, height);
+        let image = Image::new(width, height);
 
         {
-            let mut image = shared_image.lock();
+            let mut image = image.lock();
 
             for (i, data) in FONT_DATA.iter().enumerate() {
                 let row = i as u32 / FONT_ROW_COUNT;
@@ -69,7 +67,7 @@ impl Graphics {
             }
         }
 
-        shared_image
+        image
     }
 }
 
@@ -172,7 +170,7 @@ impl Pyxel {
         self.screen.lock().blt(
             x,
             y,
-            &self.graphics.images[image_no as usize].lock(),
+            self.graphics.images[image_no as usize].clone(),
             image_x,
             image_y,
             width,
@@ -196,7 +194,7 @@ impl Pyxel {
         self.screen.lock().bltm(
             x,
             y,
-            &self.graphics.tilemaps[tilemap_no as usize].lock(),
+            self.graphics.tilemaps[tilemap_no as usize].clone(),
             tilemap_x,
             tilemap_y,
             width,
@@ -210,6 +208,6 @@ impl Pyxel {
 
         self.screen
             .lock()
-            .text(x, y, string, color, &self.font.lock());
+            .text(x, y, string, color, self.font.clone());
     }
 }
