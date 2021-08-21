@@ -184,7 +184,7 @@ impl Pyxel {
     }
 
     fn process_events(&mut self) {
-        self.reset_input_states();
+        self.input.reset_input_states();
 
         while let Some(event) = self.platform.poll_event() {
             match event {
@@ -192,7 +192,8 @@ impl Pyxel {
                     self.system.should_quit = true;
                 }
                 _ => {
-                    self.process_input_event(event);
+                    self.input
+                        .process_input_event(event, self.system.frame_count);
                 }
             }
         }
@@ -297,7 +298,7 @@ impl Pyxel {
         self.screen.lock().blt(
             x,
             y,
-            &self.cursor.lock(),
+            self.cursor.clone(),
             0,
             0,
             width,
