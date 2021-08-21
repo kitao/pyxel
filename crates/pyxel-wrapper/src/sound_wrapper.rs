@@ -1,15 +1,14 @@
-use parking_lot::Mutex;
 use pyo3::class::PySequenceProtocol;
 use pyo3::prelude::*;
-use std::sync::Arc;
 
+use pyxel::SharedSound as PyxelSharedSound;
 use pyxel::Sound as PyxelSound;
 use pyxel::{Effect, Note, Speed, Tone, Volume};
 
 #[pyclass]
 #[derive(Clone)]
 pub struct Notes {
-    pub pyxel_sound: Arc<Mutex<PyxelSound>>,
+    pub pyxel_sound: PyxelSharedSound,
 }
 
 #[pyproto]
@@ -30,7 +29,7 @@ impl PySequenceProtocol for Notes {
 #[pyclass]
 #[derive(Clone)]
 pub struct Tones {
-    pyxel_sound: Arc<Mutex<PyxelSound>>,
+    pyxel_sound: PyxelSharedSound,
 }
 
 #[pyproto]
@@ -51,7 +50,7 @@ impl PySequenceProtocol for Tones {
 #[pyclass]
 #[derive(Clone)]
 pub struct Volumes {
-    pyxel_sound: Arc<Mutex<PyxelSound>>,
+    pyxel_sound: PyxelSharedSound,
 }
 
 #[pyproto]
@@ -72,7 +71,7 @@ impl PySequenceProtocol for Volumes {
 #[pyclass]
 #[derive(Clone)]
 pub struct Effects {
-    pyxel_sound: Arc<Mutex<PyxelSound>>,
+    pyxel_sound: PyxelSharedSound,
 }
 
 #[pyproto]
@@ -93,10 +92,10 @@ impl PySequenceProtocol for Effects {
 #[pyclass]
 #[derive(Clone)]
 pub struct Sound {
-    pyxel_sound: Arc<Mutex<PyxelSound>>,
+    pyxel_sound: PyxelSharedSound,
 }
 
-pub fn wrap_pyxel_sound(pyxel_sound: Arc<Mutex<PyxelSound>>) -> Sound {
+pub fn wrap_pyxel_sound(pyxel_sound: PyxelSharedSound) -> Sound {
     Sound {
         pyxel_sound: pyxel_sound,
     }

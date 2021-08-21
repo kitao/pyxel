@@ -3,18 +3,18 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 
 use crate::canvas::Canvas;
-use crate::image::Image;
+use crate::image::{Image, SharedImage};
 use crate::settings::{
     COLOR_COUNT, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, FONT_COLOR, FONT_DATA, FONT_HEIGHT,
     FONT_ROW_COUNT, FONT_WIDTH, IMAGE_COUNT, IMAGE_SIZE, TILEMAP_COUNT, TILEMAP_SIZE,
 };
-use crate::tilemap::Tilemap;
+use crate::tilemap::{SharedTilemap, Tilemap};
 use crate::types::{Color, Tile};
 use crate::Pyxel;
 
 pub struct Graphics {
-    images: [Arc<Mutex<Image>>; IMAGE_COUNT as usize],
-    tilemaps: [Arc<Mutex<Tilemap>>; TILEMAP_COUNT as usize],
+    images: [SharedImage; IMAGE_COUNT as usize],
+    tilemaps: [SharedTilemap; TILEMAP_COUNT as usize],
 }
 
 impl Graphics {
@@ -28,14 +28,14 @@ impl Graphics {
         }
     }
 
-    pub fn new_cursor_image() -> Arc<Mutex<Image>> {
+    pub fn new_cursor_image() -> SharedImage {
         let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
         image.lock().set(0, 0, &CURSOR_DATA);
 
         image
     }
 
-    pub fn new_font_image() -> Arc<Mutex<Image>> {
+    pub fn new_font_image() -> SharedImage {
         let width = FONT_WIDTH * FONT_ROW_COUNT;
         let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + FONT_ROW_COUNT - 1) / FONT_ROW_COUNT);
         let shared_image = Image::new(width, height);
@@ -74,11 +74,11 @@ impl Graphics {
 }
 
 impl Pyxel {
-    pub fn image(&self, image_no: u32) -> Arc<Mutex<Image>> {
+    pub fn image(&self, image_no: u32) -> SharedImage {
         self.graphics.images[image_no as usize].clone()
     }
 
-    pub fn tilemap(&self, image_no: u32) -> Arc<Mutex<Tilemap>> {
+    pub fn tilemap(&self, image_no: u32) -> SharedTilemap {
         self.graphics.tilemaps[image_no as usize].clone()
     }
 

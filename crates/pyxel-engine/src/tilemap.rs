@@ -2,7 +2,7 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 
 use crate::canvas::Canvas;
-use crate::image::Image;
+use crate::image::SharedImage;
 use crate::rectarea::RectArea;
 use crate::types::Tile;
 use crate::utility::{parse_hex_string, simplify_string};
@@ -13,13 +13,13 @@ pub struct Tilemap {
     self_rect: RectArea,
     clip_rect: RectArea,
     data: Vec<Vec<Tile>>,
-    pub image: Arc<Mutex<Image>>,
+    pub image: SharedImage,
 }
 
 pub type SharedTilemap = Arc<Mutex<Tilemap>>;
 
 impl Tilemap {
-    pub fn new(width: u32, height: u32, image: Arc<Mutex<Image>>) -> SharedTilemap {
+    pub fn new(width: u32, height: u32, image: SharedImage) -> SharedTilemap {
         Arc::new(Mutex::new(Tilemap {
             width: width,
             height: height,

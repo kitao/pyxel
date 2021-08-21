@@ -1,17 +1,16 @@
-use parking_lot::Mutex;
 use pyo3::prelude::*;
-use std::sync::Arc;
 
 use pyxel::Channel as PyxelChannel;
+use pyxel::SharedChannel as PyxelSharedChannel;
 use pyxel::Volume;
 
 #[pyclass]
 #[derive(Clone)]
 pub struct Channel {
-    pub pyxel_channel: Arc<Mutex<PyxelChannel>>,
+    pub pyxel_channel: PyxelSharedChannel,
 }
 
-pub fn wrap_pyxel_channel(pyxel_channel: Arc<Mutex<PyxelChannel>>) -> Channel {
+pub fn wrap_pyxel_channel(pyxel_channel: PyxelSharedChannel) -> Channel {
     Channel {
         pyxel_channel: pyxel_channel,
     }

@@ -31,7 +31,7 @@ use crate::sdl2::Sdl2;
 use crate::system::System;
 
 pub use crate::canvas::Canvas;
-pub use crate::channel::Channel;
+pub use crate::channel::{Channel, SharedChannel};
 pub use crate::image::{Image, SharedImage};
 pub use crate::key::*;
 pub use crate::music::{Music, SharedMusic};
