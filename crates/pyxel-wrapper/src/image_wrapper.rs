@@ -127,17 +127,9 @@ impl Image {
         tilemap_y: i32,
         width: i32,
         height: i32,
-        transparent: Option<&PyTuple>,
+        transparent: Option<Color>,
+        palette: Option<&[Color]>,
     ) {
-        let transparent = if let Some(transparent) = transparent {
-            Some((
-                transparent.get_item(0).extract().unwrap(),
-                transparent.get_item(1).extract().unwrap(),
-            ))
-        } else {
-            None
-        };
-
         self.pyxel_image.lock().bltm(
             x,
             y,
@@ -147,6 +139,7 @@ impl Image {
             width,
             height,
             transparent,
+            palette,
         );
     }
 

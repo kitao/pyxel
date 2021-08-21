@@ -3,11 +3,11 @@ use array_macro::array;
 use crate::canvas::Canvas;
 use crate::image::{Image, SharedImage};
 use crate::settings::{
-    COLOR_COUNT, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, FONT_COLOR, FONT_DATA, FONT_HEIGHT,
-    FONT_ROW_COUNT, FONT_WIDTH, IMAGE_COUNT, IMAGE_SIZE, TILEMAP_COUNT, TILEMAP_SIZE,
+    COLOR_COUNT, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, FONT_DATA, FONT_HEIGHT, FONT_ROW_COUNT,
+    FONT_WIDTH, IMAGE_COUNT, IMAGE_SIZE, TILEMAP_COUNT, TILEMAP_SIZE,
 };
 use crate::tilemap::{SharedTilemap, Tilemap};
-use crate::types::{Color, Tile};
+use crate::types::Color;
 use crate::Pyxel;
 
 pub struct Graphics {
@@ -49,11 +49,7 @@ impl Graphics {
                     let mut data = *data;
 
                     for k in 0..FONT_WIDTH {
-                        let color = if (data & 0x800000) != 0 {
-                            FONT_COLOR
-                        } else {
-                            0
-                        };
+                        let color = if (data & 0x800000) != 0 { 1 } else { 0 };
 
                         image._set_value(
                             (FONT_WIDTH * col + k) as i32,
@@ -189,7 +185,7 @@ impl Pyxel {
         tilemap_y: i32,
         width: i32,
         height: i32,
-        tile_key: Option<Tile>,
+        color_key: Option<Color>,
     ) {
         self.screen.lock().bltm(
             x,
@@ -199,7 +195,8 @@ impl Pyxel {
             tilemap_y,
             width,
             height,
-            tile_key,
+            color_key,
+            Some(&self.palette),
         );
     }
 
