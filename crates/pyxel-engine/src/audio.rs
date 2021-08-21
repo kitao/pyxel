@@ -67,15 +67,15 @@ impl AudioCallback for AudioCore {
 }
 
 impl Pyxel {
-    pub fn channel(&self, channel_no: u32) -> Arc<Mutex<Channel>> {
+    pub fn channel(&self, channel_no: u32) -> SharedChannel {
         self.audio.channels[channel_no as usize].clone()
     }
 
-    pub fn sound(&self, sound_no: u32) -> Arc<Mutex<Sound>> {
+    pub fn sound(&self, sound_no: u32) -> SharedSound {
         self.audio.sounds[sound_no as usize].clone()
     }
 
-    pub fn music(&self, music_no: u32) -> Arc<Mutex<Music>> {
+    pub fn music(&self, music_no: u32) -> SharedMusic {
         self.audio.musics[music_no as usize].clone()
     }
 

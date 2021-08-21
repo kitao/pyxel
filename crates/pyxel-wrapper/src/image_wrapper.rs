@@ -1,9 +1,8 @@
-use parking_lot::Mutex;
 use pyo3::prelude::*;
 use pyo3::types::PyTuple;
-use std::sync::Arc;
 
 use pyxel::Image as PyxelImage;
+use pyxel::SharedImage as PyxelSharedImage;
 use pyxel::{Canvas, Color, Rgb8};
 
 use crate::tilemap_wrapper::Tilemap;
@@ -11,10 +10,10 @@ use crate::tilemap_wrapper::Tilemap;
 #[pyclass]
 #[derive(Clone)]
 pub struct Image {
-    pub pyxel_image: Arc<Mutex<PyxelImage>>,
+    pub pyxel_image: PyxelSharedImage,
 }
 
-pub fn wrap_pyxel_image(pyxel_image: Arc<Mutex<PyxelImage>>) -> Image {
+pub fn wrap_pyxel_image(pyxel_image: PyxelSharedImage) -> Image {
     Image {
         pyxel_image: pyxel_image,
     }
