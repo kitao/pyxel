@@ -84,6 +84,7 @@ fn quit() {
 pub fn add_system_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(init, m)?)?;
     m.add_function(wrap_pyfunction!(title, m)?)?;
+    m.add_function(wrap_pyfunction!(icon, m)?)?;
     m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
     m.add_function(wrap_pyfunction!(run, m)?)?;
     m.add_function(wrap_pyfunction!(show, m)?)?;
