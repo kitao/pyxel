@@ -53,7 +53,7 @@ impl Input {
             // Key Events
             //
             Event::KeyDown { key } => {
-                if key >= _KEY_MIN_VALUE && key <= _KEY_MAX_VALUE {
+                if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
                     self.press_key(key, frame_count);
 
                     if let Some(key) = Input::get_common_key(key) {
@@ -62,7 +62,7 @@ impl Input {
                 }
             }
             Event::KeyUp { key } => {
-                if key >= _KEY_MIN_VALUE && key <= _KEY_MAX_VALUE {
+                if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
                     self.release_key(key, frame_count);
 
                     if let Some(key) = Input::get_common_key(key) {
