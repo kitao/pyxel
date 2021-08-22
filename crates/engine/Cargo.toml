@@ -8,10 +8,6 @@ edition = "2018"
 name = "pyxel"
 path = "src/lib.rs"
 
-[[bin]]
-name = "pyxel"
-path = "src/main.rs"
-
 [[test]]
 name = "tests"
 path = "tests/main.rs"
