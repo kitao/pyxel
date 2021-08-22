@@ -9,6 +9,7 @@ pub const PYXEL_VERSION: &str = "2.0.0";
 pub const DEFAULT_TITLE: &str = "Pyxel";
 pub const DEFAULT_SCALE: u32 = 2;
 pub const DEFAULT_FPS: u32 = 30;
+pub const DEFAULT_RECORD_SEC: u32 = 10;
 pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
 
 pub const WINDOW_SIZE_RATIO: f32 = 0.8;
@@ -37,14 +38,13 @@ pub const ICON_DATA: [&str; ICON_SIZE as usize] = [
     "0000000110000000",
 ];
 
-pub const CAPTURE_FRAME_COUNT: u32 = 300;
-pub const CAPTURE_FRAME_SCALE: u32 = 2;
-
 //
 // Resource
 //
 pub const RESOURCE_FILE_EXTENSION: &str = ".pyxres";
 pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
+
+pub const SCREEN_CAPTURE_SCALE: u32 = 2;
 
 //
 // Graphics
