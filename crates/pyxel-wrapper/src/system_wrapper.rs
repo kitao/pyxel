@@ -12,8 +12,9 @@ fn init<'a>(
     title: Option<&str>,
     scale: Option<u32>,
     fps: Option<u32>,
-    record_sec: Option<u32>,
     quit_key: Option<pyxel::Key>,
+    capture_scale: Option<u32>,
+    capture_sec: Option<u32>,
 ) {
     set_instance(Pyxel::new(
         i32_to_u32(width),
@@ -21,8 +22,9 @@ fn init<'a>(
         title,
         scale,
         fps,
-        record_sec,
         quit_key,
+        capture_scale,
+        capture_sec,
     ));
 }
 

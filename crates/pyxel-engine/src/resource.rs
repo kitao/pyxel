@@ -1,28 +1,29 @@
 use crate::image::{Image, SharedImage};
-use crate::settings::SCREEN_CAPTURE_SCALE;
 use crate::Pyxel;
 
 pub struct Resource {
-    video_frame_count: u32,
-    video_frames: Vec<(SharedImage, u32)>,
+    capture_scale: u32,
+    capture_frame_count: u32,
+    capture_frames: Vec<(SharedImage, u32)>,
     start_frame_index: u32,
     cur_frame_index: u32,
-    recorded_frame_count: u32,
+    cur_frame_count: u32,
 }
 
 impl Resource {
-    pub fn new(width: u32, height: u32, video_frame_count: u32) -> Resource {
+    pub fn new(width: u32, height: u32, capture_scale: u32, capture_frame_count: u32) -> Resource {
         let mut video_frames = Vec::new();
-        for _ in 0..video_frame_count {
+        for _ in 0..capture_frame_count {
             video_frames.push((Image::new(width, height), 0))
         }
 
         Resource {
-            video_frame_count: video_frame_count,
-            video_frames: video_frames,
+            capture_scale: capture_scale,
+            capture_frame_count: capture_frame_count,
+            capture_frames: video_frames,
             start_frame_index: 0,
             cur_frame_index: 0,
-            recorded_frame_count: 0,
+            cur_frame_count: 0,
         }
     }
 
@@ -53,7 +54,7 @@ impl Resource {
 impl Pyxel {
     pub fn load(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
         let _ = (filename, image, tilemap, sound, music); // dummy
-        let _ = self.resource.video_frames; // dummy
+        let _ = self.resource.capture_frames; // dummy
 
         //
     }
@@ -65,8 +66,6 @@ impl Pyxel {
     }
 
     pub fn save_screen_image(&mut self) {
-        let _ = SCREEN_CAPTURE_SCALE;
-
         /*
         SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
             0, width_ * SCREEN_CAPTURE_SCALE, height_ * SCREEN_CAPTURE_SCALE, 32,
@@ -97,17 +96,17 @@ impl Pyxel {
     }
 
     pub fn reset_screen_video(&mut self) {
-        if self.resource.video_frame_count == 0 {
+        if self.resource.capture_frame_count == 0 {
             return;
         }
 
         self.resource.start_frame_index =
-            (self.resource.cur_frame_index + 1) % self.resource.video_frame_count;
-        self.resource.recorded_frame_count = 0;
+            (self.resource.cur_frame_index + 1) % self.resource.capture_frame_count;
+        self.resource.cur_frame_count = 0;
     }
 
     pub fn save_screen_video(&mut self) {
-        if self.resource.video_frame_count == 0 || self.resource.recorded_frame_count == 0 {
+        if self.resource.capture_frame_count == 0 || self.resource.cur_frame_count == 0 {
             return;
         }
 
@@ -134,7 +133,7 @@ impl Pyxel {
     }
 
     pub(crate) fn capture_screen_video(&mut self) {
-        if self.resource.video_frame_count == 0 {
+        if self.resource.capture_frame_count == 0 {
             return;
         }
 
