@@ -111,6 +111,7 @@ impl Image {
 
     pub fn save(&self, filename: &str, colors: &[Rgb8], scale: u32) {
         // TODO
+        let _ = (filename, colors, scale); // dummy
     }
 
     pub fn bltm(
