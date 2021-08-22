@@ -17,10 +17,10 @@ endif
 PYTHON_LIB_DIR = ../../pyxel/lib/$(PLATFORM_NAME)
 DEBUG_TARGET_DIR = target/debug
 RELEASE_TARGET_DIR = target/release
-SRC_LIB_NAME = libpyxel_extension.$(SRC_LIB_EXT)
-DST_LIB_NAME = pyxel_extension.$(DST_LIB_EXT)
+SRC_LIB_NAME = libpyxel_wrapper.$(SRC_LIB_EXT)
+DST_LIB_NAME = pyxel_wrapper.$(DST_LIB_EXT)
 
-.PHONY: all debug release test clean
+.PHONY: all debug release test format clean
 
 all: debug
 
@@ -34,7 +34,10 @@ release:
 
 test:
 	cargo test
-	python3 pyxel-wrapper/tests/main.py
+	python3 wrapper/tests/main.py
+
+format:
+	cargo fmt -- --emit=files
 
 clean:
 	cargo clean
