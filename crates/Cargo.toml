@@ -1,2 +1,2 @@
 [workspace]
-members = ["pyxel-engine", "pyxel-wrapper"]
+members = ["engine", "wrapper"]
