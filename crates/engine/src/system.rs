@@ -210,16 +210,16 @@ impl Pyxel {
             }
 
             if self.btnp(KEY_1, None, None) {
-                self.save_screen_image();
+                self.save_gif();
                 self.system.disable_next_frame_skip = true;
             }
 
             if self.btnp(KEY_2, None, None) {
-                self.reset_screen_video();
+                self.reset_gif();
             }
 
             if self.btnp(KEY_3, None, None) {
-                self.save_screen_video();
+                self.save_png();
                 self.system.disable_next_frame_skip = true;
             }
         }
@@ -252,7 +252,7 @@ impl Pyxel {
         self.draw_cursor();
         self.platform
             .render_screen(&self.screen.lock(), &self.colors, BACKGROUND_COLOR);
-        self.capture_screen_video();
+        self.capture_screen();
 
         self.system.draw_profiler.end(self.platform.tick_count());
 
