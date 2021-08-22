@@ -7,12 +7,6 @@ use pyxel::{Color, Rgb8};
 use crate::image_wrapper::wrap_pyxel_image;
 use crate::instance;
 
-macro_rules! add_constant {
-    ($m: ident, $name: ident) => {
-        $m.add(stringify!($name), pyxel::$name)
-    };
-}
-
 #[pyclass]
 struct Colors;
 
