@@ -35,26 +35,26 @@ pub fn save(
 }
 
 #[pyfunction]
-pub fn save_screen_image() {
-    instance().save_screen_image();
+pub fn save_png() {
+    instance().save_png();
 }
 
 #[pyfunction]
-pub fn reset_screen_video() {
-    instance().reset_screen_video();
+pub fn reset_gif() {
+    instance().reset_gif();
 }
 
 #[pyfunction]
-pub fn save_screen_video() {
-    instance().save_screen_video();
+pub fn save_gif() {
+    instance().save_gif();
 }
 
 pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(load, m)?)?;
     m.add_function(wrap_pyfunction!(save, m)?)?;
-    m.add_function(wrap_pyfunction!(save_screen_image, m)?)?;
-    m.add_function(wrap_pyfunction!(reset_screen_video, m)?)?;
-    m.add_function(wrap_pyfunction!(save_screen_video, m)?)?;
+    m.add_function(wrap_pyfunction!(save_png, m)?)?;
+    m.add_function(wrap_pyfunction!(reset_gif, m)?)?;
+    m.add_function(wrap_pyfunction!(save_gif, m)?)?;
 
     Ok(())
 }

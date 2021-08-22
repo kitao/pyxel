@@ -53,19 +53,19 @@ impl Resource {
 
 impl Pyxel {
     pub fn load(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
+        // TODO
         let _ = (filename, image, tilemap, sound, music); // dummy
         let _ = self.resource.capture_frames; // dummy
-
-        //
     }
 
     pub fn save(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
+        // TODO
         let _ = (filename, image, tilemap, sound, music); // dummy
-
-        //
+        let _ = self.resource.capture_scale; // dummy
     }
 
-    pub fn save_screen_image(&mut self) {
+    pub fn save_png(&mut self) {
+        // TODO
         /*
         SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
             0, width_ * SCREEN_CAPTURE_SCALE, height_ * SCREEN_CAPTURE_SCALE, 32,
@@ -95,7 +95,7 @@ impl Pyxel {
         */
     }
 
-    pub fn reset_screen_video(&mut self) {
+    pub fn reset_gif(&mut self) {
         if self.resource.capture_frame_count == 0 {
             return;
         }
@@ -105,11 +105,12 @@ impl Pyxel {
         self.resource.cur_frame_count = 0;
     }
 
-    pub fn save_screen_video(&mut self) {
+    pub fn save_gif(&mut self) {
         if self.resource.capture_frame_count == 0 || self.resource.cur_frame_count == 0 {
             return;
         }
 
+        // TODO
         /*
         std::string filename = GetBaseName() + ".gif";
         GifWriter* gif_writer =
@@ -132,11 +133,12 @@ impl Pyxel {
         */
     }
 
-    pub(crate) fn capture_screen_video(&mut self) {
+    pub(crate) fn capture_screen(&mut self) {
         if self.resource.capture_frame_count == 0 {
             return;
         }
 
+        // TODO
         /*
         cur_frame_ = (cur_frame_ + 1) % SCREEN_CAPTURE_COUNT;
         frame_count_++;
