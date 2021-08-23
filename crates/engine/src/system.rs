@@ -282,12 +282,16 @@ impl Pyxel {
     }
 
     fn draw_cursor(&mut self) {
+        let x = self.mouse_x();
+        let y = self.mouse_y();
+
+        self.platform
+            .show_cursor(x < 0 || x >= self.width() as i32 || y < 0 || y >= self.height() as i32);
+
         if !self.input.is_mouse_visible() {
             return;
         }
 
-        let x = self.mouse_x();
-        let y = self.mouse_y();
         let width = self.cursor.lock().width() as i32;
         let height = self.cursor.lock().height() as i32;
 
