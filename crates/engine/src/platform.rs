@@ -13,6 +13,7 @@ pub trait Platform {
     fn new(title: &str, width: u32, height: u32, scale: u32) -> Self;
     fn set_title(&mut self, title: &str);
     fn set_icon(&mut self, icon: &Image, colors: &[Rgb8], scale: u32);
+    fn show_cursor(&self, show: bool);
     fn toggle_fullscreen(&mut self);
     fn tick_count(&self) -> u32;
     fn sleep(&mut self, ms: u32);
