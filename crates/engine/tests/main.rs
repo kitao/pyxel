@@ -9,6 +9,8 @@ impl App {
     fn new(pyxel: &mut Pyxel) -> App {
         let app = App { x: 0, y: 0 };
 
+        pyxel.mouse(true);
+
         pyxel.image(0).lock().set(
             0,
             0,
