@@ -21,7 +21,7 @@ pub struct Input {
 impl Input {
     pub fn new() -> Input {
         Input {
-            is_mouse_visible: true,
+            is_mouse_visible: false,
             key_states: HashMap::new(),
             key_values: HashMap::new(),
             text_input: String::from(""),
