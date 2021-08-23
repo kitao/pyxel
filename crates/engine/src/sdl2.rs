@@ -15,6 +15,7 @@ use sdl2::surface::Surface as SdlSurface;
 use sdl2::video::FullscreenType as SdlFullscreenType;
 use sdl2::AudioSubsystem as SdlAudio;
 use sdl2::EventPump as SdlEventPump;
+use sdl2::Sdl as SdlContext;
 use sdl2::TimerSubsystem as SdlTimer;
 use std::cmp::min;
 use std::sync::Arc;
@@ -38,6 +39,7 @@ impl SdlAudioCallback for AudioContextHolder {
 }
 
 pub struct Sdl2 {
+    sdl_context: SdlContext,
     sdl_canvas: SdlCanvas,
     sdl_texture: SdlTexture,
     sdl_timer: SdlTimer,
@@ -75,6 +77,7 @@ impl Platform for Sdl2 {
             .unwrap();
 
         Sdl2 {
+            sdl_context: sdl_context,
             sdl_timer: sdl_timer,
             sdl_canvas: sdl_canvas,
             sdl_texture: sdl_texture,
@@ -113,6 +116,10 @@ impl Platform for Sdl2 {
         });
 
         self.sdl_canvas.window_mut().set_icon(&sdl_surface);
+    }
+
+    fn show_cursor(&self, show: bool) {
+        self.sdl_context.mouse().show_cursor(show);
     }
 
     fn toggle_fullscreen(&mut self) {
@@ -348,16 +355,18 @@ impl Sdl2 {
     }
 
     fn mouse_pos(&self) -> (i32, i32) {
-        let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
-        let mut mouse_x = self.mouse_x;
-        let mut mouse_y = self.mouse_y;
+        let mut mouse_x = 0;
+        let mut mouse_y = 0;
 
         unsafe {
             sdl2::sys::SDL_GetGlobalMouseState(&mut mouse_x, &mut mouse_y);
         }
 
-        mouse_x = (mouse_x - screen_x as i32) / screen_scale as i32;
-        mouse_y = (mouse_y - screen_y as i32) / screen_scale as i32;
+        let (window_x, window_y) = self.sdl_canvas.window().position();
+        let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
+
+        mouse_x = (mouse_x - window_x - screen_x as i32) / screen_scale as i32;
+        mouse_y = (mouse_y - window_y - screen_y as i32) / screen_scale as i32;
 
         (mouse_x, mouse_y)
     }
