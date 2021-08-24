@@ -258,7 +258,7 @@ impl Canvas<Color> for Image {
         self.clip_rect
     }
 
-    fn _clip_rect_mut(&mut self) -> &mut RectArea {
-        &mut self.clip_rect
+    fn _set_clip_rect(&mut self, clip_rect: RectArea) {
+        self.clip_rect = clip_rect;
     }
 }
