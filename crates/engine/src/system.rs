@@ -299,7 +299,10 @@ impl Pyxel {
             return;
         }
 
-        self.screen.lock().blt(
+        let mut screen = self.screen.lock();
+        let clip_rect = screen._clip_rect();
+
+        screen.blt(
             x,
             y,
             self.cursor.clone(),
@@ -310,5 +313,7 @@ impl Pyxel {
             Some(0),
             None,
         );
+
+        screen._set_clip_rect(clip_rect);
     }
 }
