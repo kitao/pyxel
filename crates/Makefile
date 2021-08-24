@@ -15,6 +15,7 @@ DST_LIB_EXT = pyd
 endif
 
 PYXEL_LIB_DIR = ../../pyxel/lib/$(PLATFORM_NAME)
+PYXEL_TESTS_DIR = wrapper/tests
 PYXEL_EXAMPLES_DIR = ../pyxel/examples
 CARGO_DEBUG_DIR = target/debug
 CARGO_RELEASE_DIR = target/release
@@ -25,7 +26,7 @@ ifeq ($(RELEASE),)
 CARGO_BUILD_OPT =
 SRC_LIB_PATH = $(CARGO_DEBUG_DIR)/$(SRC_LIB_NAME)
 DST_LIB_PATH = $(CARGO_DEBUG_DIR)/$(DST_LIB_NAME)
-TEST_IMPORT_DIR = wrapper/tests
+TEST_IMPORT_DIR = $(PYXEL_TESTS_DIR)
 else
 CARGO_BUILD_OPT = --release
 SRC_LIB_PATH = $(CARGO_RELEASE_DIR)/$(SRC_LIB_NAME)
@@ -37,13 +38,14 @@ endif
 
 all: build
 
-build:
+build: format
 	cargo build $(CARGO_BUILD_OPT)
 	cp $(SRC_LIB_PATH) $(DST_LIB_PATH)
 
-test:
+test: build
 	# cargo test
-	# python3 wrapper/tests/main.py
+	# python3 $(PYXEL_TESTS_DIR)/main.py
+	cd $(PYXEL_TESTS_DIR); python3 -m unittest
 	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/01_hello_pyxel.py
 
 format:
