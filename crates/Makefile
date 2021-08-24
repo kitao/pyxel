@@ -14,31 +14,41 @@ SRC_LIB_EXT = dll
 DST_LIB_EXT = pyd
 endif
 
-PYTHON_LIB_DIR = ../../pyxel/lib/$(PLATFORM_NAME)
-DEBUG_TARGET_DIR = target/debug
-RELEASE_TARGET_DIR = target/release
+PYXEL_LIB_DIR = ../../pyxel/lib/$(PLATFORM_NAME)
+PYXEL_EXAMPLES_DIR = ../pyxel/examples
+CARGO_DEBUG_DIR = target/debug
+CARGO_RELEASE_DIR = target/release
 SRC_LIB_NAME = libpyxel_wrapper.$(SRC_LIB_EXT)
 DST_LIB_NAME = pyxel_wrapper.$(DST_LIB_EXT)
 
-.PHONY: all debug release test format clean
+ifeq ($(RELEASE),)
+CARGO_BUILD_OPT =
+SRC_LIB_PATH = $(CARGO_DEBUG_DIR)/$(SRC_LIB_NAME)
+DST_LIB_PATH = $(CARGO_DEBUG_DIR)/$(DST_LIB_NAME)
+TEST_IMPORT_DIR = wrapper
+else
+CARGO_BUILD_OPT = --release
+SRC_LIB_PATH = $(CARGO_RELEASE_DIR)/$(SRC_LIB_NAME)
+DST_LIB_PATH = $(PYXEL_LIB_DIR)/$(DST_LIB_NAME)
+TEST_IMPORT_DIR = ..
+endif
 
-all: debug
+.PHONY: all build test format clean
 
-debug:
-	cargo build
-	cp $(DEBUG_TARGET_DIR)/$(SRC_LIB_NAME) $(DEBUG_TARGET_DIR)/$(DST_LIB_NAME)
+all: build
 
-release:
-	cargo build --release
-	cp $(RELEASE_TARGET_DIR)/$(SRC_LIB_NAME) $(PYTHON_LIB_DIR)/$(DST_LIB_NAME)
+build:
+	cargo build $(CARGO_BUILD_OPT)
+	cp $(SRC_LIB_PATH) $(DST_LIB_PATH)
 
 test:
-	cargo test
-	python3 wrapper/tests/main.py
+	# cargo test
+	# python3 wrapper/tests/main.py
+	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/01_hello_pyxel.py
 
 format:
 	cargo fmt -- --emit=files
 
 clean:
 	cargo clean
-	rm -rf $(PYTHON_LIB_DIR)
+	rm -rf $(PYXEL_LIB_DIR)
