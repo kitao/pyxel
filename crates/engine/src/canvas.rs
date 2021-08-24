@@ -13,16 +13,17 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     fn _set_value(&mut self, x: i32, y: i32, value: T);
     fn _self_rect(&self) -> RectArea;
     fn _clip_rect(&self) -> RectArea;
-    fn _clip_rect_mut(&mut self) -> &mut RectArea;
+    fn _set_clip_rect(&mut self, clip_rect: RectArea);
 
     fn clip(&mut self, x: i32, y: i32, width: u32, height: u32) {
-        *self._clip_rect_mut() = self
-            ._self_rect()
-            .intersects(RectArea::new(x, y, width, height));
+        self._set_clip_rect(
+            self._self_rect()
+                .intersects(RectArea::new(x, y, width, height)),
+        );
     }
 
     fn clip0(&mut self) {
-        *self._clip_rect_mut() = self._self_rect();
+        self._set_clip_rect(self._self_rect());
     }
 
     fn cls(&mut self, value: T) {
