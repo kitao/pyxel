@@ -1,10 +1,10 @@
 use pyo3::prelude::*;
-use pyo3::types::PyTuple;
 
 use pyxel::Image as PyxelImage;
 use pyxel::SharedImage as PyxelSharedImage;
-use pyxel::{Canvas, Color, Rgb8};
+use pyxel::{Canvas, Color};
 
+use crate::instance;
 use crate::tilemap_wrapper::Tilemap;
 
 #[pyclass]
@@ -40,12 +40,16 @@ impl Image {
         self.pyxel_image.lock().set(x, y, &data_str);
     }
 
-    pub fn load(&self, x: i32, y: i32, filename: &str, colors: Vec<Rgb8>) {
-        self.pyxel_image.lock().load(x, y, filename, &colors);
+    pub fn load(&self, x: i32, y: i32, filename: &str) {
+        self.pyxel_image
+            .lock()
+            .load(x, y, filename, &instance().colors);
     }
 
-    pub fn save(&self, filename: &str, colors: Vec<Rgb8>, scale: u32) {
-        self.pyxel_image.lock().save(filename, &colors, scale);
+    pub fn save(&self, filename: &str, scale: u32) {
+        self.pyxel_image
+            .lock()
+            .save(filename, &instance().colors, scale);
     }
 
     pub fn clip(&self, x: Option<i32>, y: Option<i32>, width: Option<u32>, height: Option<u32>) {
