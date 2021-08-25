@@ -118,6 +118,29 @@ impl Image {
         self.pyxel_image.lock().fill(x, y, color);
     }
 
+    pub fn blt(
+        &self,
+        x: i32,
+        y: i32,
+        image: Image,
+        image_x: i32,
+        image_y: i32,
+        width: i32,
+        height: i32,
+        transparent: Option<Color>,
+    ) {
+        self.pyxel_image.lock().blt(
+            x,
+            y,
+            image.pyxel_image.clone(),
+            image_x,
+            image_y,
+            width,
+            height,
+            transparent,
+        );
+    }
+
     pub fn bltm(
         &self,
         x: i32,
@@ -128,7 +151,6 @@ impl Image {
         width: i32,
         height: i32,
         transparent: Option<Color>,
-        palette: Option<&[Color]>,
     ) {
         self.pyxel_image.lock().bltm(
             x,
@@ -139,7 +161,6 @@ impl Image {
             width,
             height,
             transparent,
-            palette,
         );
     }
 

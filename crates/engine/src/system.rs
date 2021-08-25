@@ -301,19 +301,11 @@ impl Pyxel {
 
         let mut screen = self.screen.lock();
         let clip_rect = screen._clip_rect();
+        let palette = screen._palette().clone();
 
-        screen.blt(
-            x,
-            y,
-            self.cursor.clone(),
-            0,
-            0,
-            width,
-            height,
-            Some(0),
-            None,
-        );
+        screen.blt(x, y, self.cursor.clone(), 0, 0, width, height, Some(0));
 
         screen._set_clip_rect(clip_rect);
+        screen._set_palette(&palette);
     }
 }
