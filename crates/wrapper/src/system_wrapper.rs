@@ -3,12 +3,12 @@ use pyo3::types::PyAny;
 
 use pyxel::{Pyxel, PyxelCallback};
 
-use crate::{i32_to_u32, instance, set_instance};
+use crate::{instance, set_instance};
 
 #[pyfunction]
 fn init<'a>(
-    width: i32,
-    height: i32,
+    width: u32,
+    height: u32,
     title: Option<&str>,
     scale: Option<u32>,
     fps: Option<u32>,
@@ -17,8 +17,8 @@ fn init<'a>(
     capture_sec: Option<u32>,
 ) {
     set_instance(Pyxel::new(
-        i32_to_u32(width),
-        i32_to_u32(height),
+        width,
+        height,
         title,
         scale,
         fps,
