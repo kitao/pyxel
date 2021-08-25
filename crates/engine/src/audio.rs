@@ -80,6 +80,10 @@ impl Pyxel {
     }
 
     pub fn play(&mut self, channel: u32, sequence: &[u32], is_looping: bool) {
+        if sequence.len() == 0 {
+            return;
+        }
+
         let sounds = sequence
             .iter()
             .map(|sound_no| self.audio.sounds[*sound_no as usize].lock().clone())
@@ -90,11 +94,15 @@ impl Pyxel {
             .play(sounds, is_looping);
     }
 
-    pub fn playm(&mut self, music_no: u32, looping: bool) {
+    pub fn play1(&mut self, channel: u32, sound_no: u32, is_looping: bool) {
+        self.play(channel, &[sound_no], is_looping);
+    }
+
+    pub fn playm(&mut self, music_no: u32, is_looping: bool) {
         let music = self.audio.musics[music_no as usize].clone();
 
         for i in 0..CHANNEL_COUNT {
-            self.play(i, &music.lock().sequences[i as usize], looping);
+            self.play(i, &music.lock().sequences[i as usize], is_looping);
         }
     }
 
