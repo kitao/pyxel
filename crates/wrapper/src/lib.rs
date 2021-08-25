@@ -13,6 +13,7 @@ mod tilemap_wrapper;
 mod variable_wrapper;
 
 use pyo3::prelude::*;
+use pyo3::types::{PyDict, PyList};
 use std::cmp::max;
 use std::mem::transmute;
 
@@ -54,7 +55,7 @@ pub fn i32_to_u32(x: i32) -> u32 {
 }
 
 #[pymodule]
-fn pyxel_wrapper(_py: Python, m: &PyModule) -> PyResult<()> {
+fn pyxel_wrapper(py: Python, m: &PyModule) -> PyResult<()> {
     add_image_class(m)?;
     add_tilemap_class(m)?;
     add_channel_class(m)?;
@@ -69,6 +70,15 @@ fn pyxel_wrapper(_py: Python, m: &PyModule) -> PyResult<()> {
     add_input_functions(m)?;
     add_graphics_functions(m)?;
     add_audio_functions(m)?;
+
+    let locals = PyDict::new(py);
+    locals.set_item("os", py.import("os")?)?;
+    locals.set_item("inspect", py.import("inspect")?)?;
+    py.eval(
+        "os.chdir(os.path.dirname(inspect.stack()[-1].filename))",
+        None,
+        Some(&locals),
+    )?;
 
     Ok(())
 }
