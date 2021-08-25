@@ -5,7 +5,7 @@ import pyxel
 
 class App:
     def __init__(self):
-        pyxel.init(160, 120, caption="Pyxel Jump")
+        pyxel.init(160, 120, title="Pyxel Jump")
 
         pyxel.load("assets/jump_game.pyxres")
 
@@ -20,7 +20,7 @@ class App:
         self.floor = [(i * 60, randint(8, 104), True) for i in range(4)]
         self.fruit = [(i * 60, randint(0, 104), randint(0, 2), True) for i in range(4)]
 
-        pyxel.playm(0, loop=True)
+        pyxel.playm(0, is_looping=True)
 
         pyxel.run(self.update, self.draw)
 
@@ -37,10 +37,10 @@ class App:
             self.fruit[i] = self.update_fruit(*v)
 
     def update_player(self):
-        if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD_1_LEFT):
+        if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
             self.player_x = max(self.player_x - 2, 0)
 
-        if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD_1_RIGHT):
+        if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
             self.player_x = min(self.player_x + 2, pyxel.width - 16)
 
         self.player_y += self.player_vy
