@@ -1,3 +1,5 @@
+import inspect
+import os
 import platform
 
 system = platform.system()
@@ -11,6 +13,7 @@ elif system == "Linux":
 else:
     raise Exception("unsupported platform")
 
+os.chdir(os.path.dirname(inspect.stack()[-1].filename))
 
 """
 if sys.version_info < (3, 6, 8):
