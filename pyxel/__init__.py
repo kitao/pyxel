@@ -1,4 +1,3 @@
-import inspect
 import os
 import platform
 
@@ -12,8 +11,6 @@ elif system == "Linux":
     from .bin.linux.pyxel_extension import *  # type: ignore  # noqa F403
 else:
     raise Exception("unsupported platform")
-
-os.chdir(os.path.dirname(inspect.stack()[-1].filename))
 
 """
 if sys.version_info < (3, 6, 8):
