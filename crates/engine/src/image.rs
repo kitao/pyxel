@@ -94,7 +94,7 @@ impl Image {
                         let mut closest_color: Color = 0;
                         let mut closest_dist: f64 = f64::MAX;
 
-                        for k in 0..=COLOR_COUNT {
+                        for k in 0..COLOR_COUNT {
                             let pal_color = colors[k as usize];
                             let pal_rgb = (
                                 ((pal_color >> 16) & 0xff) as u8,
