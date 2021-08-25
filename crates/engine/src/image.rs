@@ -208,12 +208,14 @@ impl Image {
     }
 
     pub fn text(&mut self, x: i32, y: i32, string: &str, color: Color, font: SharedImage) {
-        let org_color = self._palette()[1];
+        let color = self._palette_value(color);
+        let palette1 = self._palette()[1];
+
+        self.pal(1, color);
+
         let start_x = x;
         let mut x = x;
         let mut y = y;
-
-        self.pal(1, color);
 
         for c in string.chars() {
             if c < MIN_FONT_CODE || c > MAX_FONT_CODE {
@@ -251,7 +253,7 @@ impl Image {
             x += FONT_WIDTH as i32;
         }
 
-        self.pal(1, org_color);
+        self.pal(1, palette1);
     }
 }
 
