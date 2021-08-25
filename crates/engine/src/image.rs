@@ -1,3 +1,4 @@
+use array_macro::array;
 use parking_lot::Mutex;
 use std::collections::HashMap;
 use std::path::Path;
@@ -15,6 +16,7 @@ use crate::utility::{parse_hex_string, simplify_string};
 pub struct Image {
     self_rect: RectArea,
     clip_rect: RectArea,
+    palette: [Color; COLOR_COUNT as usize],
     data: Vec<Vec<Color>>,
 }
 
@@ -25,8 +27,27 @@ impl Image {
         Arc::new(Mutex::new(Image {
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
+            palette: array![i => i as Color; COLOR_COUNT as usize],
             data: vec![vec![0; width as usize]; height as usize],
         }))
+    }
+
+    pub fn _palette(&self) -> &[Color; COLOR_COUNT as usize] {
+        &self.palette
+    }
+
+    pub fn _set_palette(&mut self, palette: &[Color; COLOR_COUNT as usize]) {
+        self.palette = palette.clone();
+    }
+
+    pub fn pal(&mut self, src_color: Color, dst_color: Color) {
+        self.palette[src_color as usize] = dst_color;
+    }
+
+    pub fn pal0(&mut self) {
+        for i in 0..COLOR_COUNT {
+            self.palette[i as usize] = i as Color;
+        }
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
@@ -50,7 +71,7 @@ impl Image {
             }
         }
 
-        self.blt(x, y, image, 0, 0, width as i32, height as i32, None, None);
+        self.blt(x, y, image, 0, 0, width as i32, height as i32, None);
     }
 
     pub fn load(&mut self, x: i32, y: i32, filename: &str, colors: &[Rgb8]) {
@@ -95,7 +116,7 @@ impl Image {
             }
         }
 
-        self.blt(x, y, image, 0, 0, width as i32, height as i32, None, None);
+        self.blt(x, y, image, 0, 0, width as i32, height as i32, None);
     }
 
     fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
@@ -124,7 +145,6 @@ impl Image {
         width: i32,
         height: i32,
         transparent: Option<Color>,
-        palette: Option<&[Color]>,
     ) {
         let tilemap_ = tilemap.lock();
         let tile_size = if width < 0 {
@@ -182,17 +202,18 @@ impl Image {
                     tile_size,
                     tile_size,
                     transparent,
-                    palette,
                 );
             }
         }
     }
 
     pub fn text(&mut self, x: i32, y: i32, string: &str, color: Color, font: SharedImage) {
-        let palette = [0, color];
+        let org_color = self._palette()[1];
         let start_x = x;
         let mut x = x;
         let mut y = y;
+
+        self.pal(1, color);
 
         for c in string.chars() {
             if c < MIN_FONT_CODE || c > MAX_FONT_CODE {
@@ -225,11 +246,12 @@ impl Image {
                 FONT_WIDTH as i32,
                 FONT_HEIGHT as i32,
                 Some(0),
-                Some(&palette),
             );
 
             x += FONT_WIDTH as i32;
         }
+
+        self.pal(1, org_color);
     }
 }
 
@@ -246,8 +268,8 @@ impl Canvas<Color> for Image {
         self.data[y as usize][x as usize]
     }
 
-    fn _set_value(&mut self, x: i32, y: i32, color: Color) {
-        self.data[y as usize][x as usize] = color;
+    fn _set_value(&mut self, x: i32, y: i32, value: Color) {
+        self.data[y as usize][x as usize] = value;
     }
 
     fn _self_rect(&self) -> RectArea {
@@ -260,5 +282,9 @@ impl Canvas<Color> for Image {
 
     fn _set_clip_rect(&mut self, clip_rect: RectArea) {
         self.clip_rect = clip_rect;
+    }
+
+    fn _palette_value(&self, value: Color) -> Color {
+        self.palette[value as usize]
     }
 }

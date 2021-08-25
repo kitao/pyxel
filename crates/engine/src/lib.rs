@@ -20,8 +20,6 @@ mod tilemap;
 mod types;
 mod utility;
 
-use array_macro::array;
-
 use crate::audio::Audio;
 use crate::graphics::Graphics;
 use crate::input::Input;
@@ -51,7 +49,6 @@ pub struct Pyxel {
     audio: Audio,
 
     pub colors: [Rgb8; COLOR_COUNT as usize],
-    pub palette: [Color; COLOR_COUNT as usize],
     pub screen: SharedImage,
     pub cursor: SharedImage,
     pub font: SharedImage,
@@ -88,7 +85,6 @@ impl Pyxel {
         let audio = Audio::new(&mut platform);
 
         let colors = DEFAULT_COLORS.clone();
-        let palette = array![i => i as Color; COLOR_COUNT as usize];
         let screen = Image::new(width, height);
         let cursor = Graphics::new_cursor_image();
         let font = Graphics::new_font_image();
@@ -102,7 +98,6 @@ impl Pyxel {
             audio: audio,
 
             colors: colors,
-            palette: palette,
             screen: screen,
             cursor: cursor,
             font: font,

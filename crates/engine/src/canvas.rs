@@ -14,6 +14,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     fn _self_rect(&self) -> RectArea;
     fn _clip_rect(&self) -> RectArea;
     fn _set_clip_rect(&mut self, clip_rect: RectArea);
+    fn _palette_value(&self, value: T) -> T;
 
     fn clip(&mut self, x: i32, y: i32, width: u32, height: u32) {
         self._set_clip_rect(
@@ -29,6 +30,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     fn cls(&mut self, value: T) {
         let width = self.width();
         let height = self.height();
+        let value = self._palette_value(value);
 
         for i in 0..height {
             for j in 0..width {
@@ -46,12 +48,16 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     }
 
     fn pset(&mut self, x: i32, y: i32, value: T) {
+        let value = self._palette_value(value);
+
         if self._self_rect().contains(x, y) {
             self._set_value(x, y, value)
         }
     }
 
     fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, value: T) {
+        let value = self._palette_value(value);
+
         if x1 == x2 && y1 == y2 {
             self.pset(x1, y1, value);
             return;
@@ -123,6 +129,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             return;
         }
 
+        let value = self._palette_value(value);
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
@@ -142,6 +149,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             return;
         }
 
+        let value = self._palette_value(value);
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
@@ -160,10 +168,10 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
 
     fn circ(&mut self, x: i32, y: i32, radius: u32, value: T) {
         if radius == 0 {
-            self.pset(x, y, value);
             return;
         }
 
+        let value = self._palette_value(value);
         let sq_radius = radius * radius;
 
         for dx in 0..=radius as i32 {
@@ -184,10 +192,10 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
 
     fn circb(&mut self, x: i32, y: i32, radius: u32, value: T) {
         if radius == 0 {
-            self.pset(x, y, value);
             return;
         }
 
+        let value = self._palette_value(value);
         let sq_radius = radius * radius;
 
         for dx in 0..=radius as i32 {
@@ -293,6 +301,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             return;
         }
 
+        let value = self._palette_value(value);
         let target_value = self._value(x, y);
 
         if value != target_value {
@@ -350,7 +359,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         width: i32,
         height: i32,
         transparent: Option<T>,
-        palette: Option<&[T]>,
     ) {
         let canvas = canvas.lock();
         let copy_area = CopyArea::new(
@@ -381,14 +389,9 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
 
         for i in 0..height {
             for j in 0..width {
-                let value =
-                    canvas._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
-
-                let value = if let Some(palette) = palette {
-                    palette[value.to_index()]
-                } else {
-                    value
-                };
+                let value = self._palette_value(
+                    canvas._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y),
+                );
 
                 if let Some(transparent) = transparent {
                     if value == transparent {
