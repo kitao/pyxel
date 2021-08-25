@@ -13,8 +13,7 @@ mod tilemap_wrapper;
 mod variable_wrapper;
 
 use pyo3::prelude::*;
-use pyo3::types::{PyDict, PyList};
-use std::cmp::max;
+use pyo3::types::PyDict;
 use std::mem::transmute;
 
 use pyxel::Pyxel;
@@ -50,8 +49,17 @@ pub fn set_instance(pyxel: Pyxel) {
     }
 }
 
-pub fn i32_to_u32(x: i32) -> u32 {
-    max(x, 0) as u32
+pub fn set_current_directory(py: Python) -> PyResult<()> {
+    let locals = PyDict::new(py);
+    locals.set_item("os", py.import("os")?)?;
+    locals.set_item("inspect", py.import("inspect")?)?;
+    py.eval(
+        "os.chdir(os.path.dirname(inspect.stack()[-1].filename))",
+        None,
+        Some(&locals),
+    )?;
+
+    Ok(())
 }
 
 #[pymodule]
@@ -71,14 +79,7 @@ fn pyxel_wrapper(py: Python, m: &PyModule) -> PyResult<()> {
     add_graphics_functions(m)?;
     add_audio_functions(m)?;
 
-    let locals = PyDict::new(py);
-    locals.set_item("os", py.import("os")?)?;
-    locals.set_item("inspect", py.import("inspect")?)?;
-    py.eval(
-        "os.chdir(os.path.dirname(inspect.stack()[-1].filename))",
-        None,
-        Some(&locals),
-    )?;
+    set_current_directory(py)?;
 
     Ok(())
 }
