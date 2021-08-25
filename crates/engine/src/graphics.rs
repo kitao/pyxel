@@ -44,10 +44,9 @@ impl Graphics {
             for (i, data) in FONT_DATA.iter().enumerate() {
                 let row = i as u32 / FONT_ROW_COUNT;
                 let col = i as u32 % FONT_ROW_COUNT;
+                let mut data = *data;
 
                 for j in 0..FONT_HEIGHT {
-                    let mut data = *data;
-
                     for k in 0..FONT_WIDTH {
                         let color = if (data & 0x800000) != 0 { 1 } else { 0 };
 
