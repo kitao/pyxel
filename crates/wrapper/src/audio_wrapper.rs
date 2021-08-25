@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-use pyo3::PyErr;
 
 use crate::channel_wrapper::{wrap_pyxel_channel, Channel};
 use crate::instance;
