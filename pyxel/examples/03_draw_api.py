@@ -5,7 +5,7 @@ import pyxel
 
 class App:
     def __init__(self):
-        pyxel.init(200, 150, caption="Pyxel Draw API")
+        pyxel.init(200, 150, title="Pyxel Draw API")
 
         pyxel.image(0).load(0, 0, "assets/cat_16x16.png")
         pyxel.image(1).load(0, 0, "assets/tileset_24x32.png")
@@ -15,7 +15,7 @@ class App:
             0,
             ["022000002004001000060061062000040", "042003020021022003000001002003060"],
         )
-        pyxel.tilemap(0).refimg = 1
+        pyxel.tilemap(0).image = pyxel.image(1)
 
         self.pal_test_is_enabled = False
         self.clip_test_is_enabled = False
