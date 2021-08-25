@@ -1,4 +1,5 @@
 use pyo3::prelude::*;
+use pyo3::PyErr;
 
 use crate::channel_wrapper::{wrap_pyxel_channel, Channel};
 use crate::instance;
@@ -21,13 +22,19 @@ fn music(music_no: u32) -> Music {
 }
 
 #[pyfunction]
-fn play(channel: u32, sequence: Vec<u32>, is_looping: bool) {
-    instance().play(channel, &sequence, is_looping);
+fn play(channel: u32, sequence: &PyAny, is_looping: Option<bool>) {
+    if let Ok(sequence) = sequence.extract::<Vec<u32>>() {
+        instance().play(channel, &sequence, is_looping.unwrap_or(false));
+    } else if let Ok(sound_no) = sequence.extract::<u32>() {
+        instance().play1(channel, sound_no, is_looping.unwrap_or(false));
+    } else {
+        panic!("Invalid arguments for play");
+    }
 }
 
 #[pyfunction]
-fn playm(music_no: u32, looping: bool) {
-    instance().playm(music_no, looping);
+fn playm(music_no: u32, is_looping: Option<bool>) {
+    instance().playm(music_no, is_looping.unwrap_or(false));
 }
 
 #[pyfunction]
