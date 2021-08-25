@@ -47,6 +47,8 @@ test: build
 	# python3 $(PYXEL_TESTS_DIR)/main.py
 	cd $(PYXEL_TESTS_DIR); python3 -m unittest
 	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/01_hello_pyxel.py
+	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/02_jump_game.py
+	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/03_draw_api.py
 
 format:
 	cargo fmt -- --emit=files
