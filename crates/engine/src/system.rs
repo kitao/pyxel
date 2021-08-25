@@ -264,21 +264,26 @@ impl Pyxel {
             return;
         }
 
-        /*
-        char buf[16];
+        let palette1 = self.screen.lock()._palette()[1];
+        let palette2 = self.screen.lock()._palette()[2];
 
-        snprintf(buf, sizeof(buf), "%.2f", fps_profiler_.AverageFPS());
-        graphics_->DrawText(1, 0, buf, 1);
-        graphics_->DrawText(0, 0, buf, 9);
+        self.pal(1, 1);
+        self.pal(2, 9);
 
-        snprintf(buf, sizeof(buf), "%.2f", update_profiler_.AverageTime());
-        graphics_->DrawText(1, 6, buf, 1);
-        graphics_->DrawText(0, 6, buf, 9);
+        let fps = format!("{:.*}", 2, self.system.fps_profiler.average_fps());
+        self.text(1, 0, &fps, 1);
+        self.text(0, 0, &fps, 2);
 
-        snprintf(buf, sizeof(buf), "%.2f", draw_profiler_.AverageTime());
-        graphics_->DrawText(1, 12, buf, 1);
-        graphics_->DrawText(0, 12, buf, 9);
-        */
+        let update_time = format!("{:.*}", 2, self.system.update_profiler.average_time());
+        self.text(1, 6, &update_time, 1);
+        self.text(0, 6, &update_time, 2);
+
+        let draw_time = format!("{:.*}", 2, self.system.draw_profiler.average_time());
+        self.text(1, 12, &draw_time, 1);
+        self.text(0, 12, &draw_time, 2);
+
+        self.pal(1, palette1);
+        self.pal(2, palette2);
     }
 
     fn draw_cursor(&mut self) {
