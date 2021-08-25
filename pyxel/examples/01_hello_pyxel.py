@@ -3,7 +3,7 @@ import pyxel
 
 class App:
     def __init__(self):
-        pyxel.init(160, 120, caption="Hello Pyxel")
+        pyxel.init(160, 120, title="Hello Pyxel")
         pyxel.image(0).load(0, 0, "assets/pyxel_logo_38x16.png")
         pyxel.run(self.update, self.draw)
 
