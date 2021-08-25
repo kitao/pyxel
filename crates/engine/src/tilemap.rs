@@ -57,7 +57,7 @@ impl Tilemap {
             }
         }
 
-        self.blt(x, y, tilemap, 0, 0, width as i32, height as i32, None, None);
+        self.blt(x, y, tilemap, 0, 0, width as i32, height as i32, None);
     }
 }
 
@@ -74,8 +74,8 @@ impl Canvas<Tile> for Tilemap {
         self.data[y as usize][x as usize]
     }
 
-    fn _set_value(&mut self, x: i32, y: i32, tile: Tile) {
-        self.data[y as usize][x as usize] = tile;
+    fn _set_value(&mut self, x: i32, y: i32, value: Tile) {
+        self.data[y as usize][x as usize] = value;
     }
 
     fn _self_rect(&self) -> RectArea {
@@ -88,5 +88,9 @@ impl Canvas<Tile> for Tilemap {
 
     fn _set_clip_rect(&mut self, clip_rect: RectArea) {
         self.clip_rect = clip_rect;
+    }
+
+    fn _palette_value(&self, value: Tile) -> Tile {
+        value
     }
 }

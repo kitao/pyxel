@@ -3,8 +3,8 @@ use array_macro::array;
 use crate::canvas::Canvas;
 use crate::image::{Image, SharedImage};
 use crate::settings::{
-    COLOR_COUNT, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, FONT_DATA, FONT_HEIGHT, FONT_ROW_COUNT,
-    FONT_WIDTH, IMAGE_COUNT, IMAGE_SIZE, TILEMAP_COUNT, TILEMAP_SIZE,
+    CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, FONT_DATA, FONT_HEIGHT, FONT_ROW_COUNT, FONT_WIDTH,
+    IMAGE_COUNT, IMAGE_SIZE, TILEMAP_COUNT, TILEMAP_SIZE,
 };
 use crate::tilemap::{SharedTilemap, Tilemap};
 use crate::types::Color;
@@ -85,18 +85,14 @@ impl Pyxel {
     }
 
     pub fn pal(&mut self, src_color: Color, dst_color: Color) {
-        self.palette[src_color as usize] = dst_color;
+        self.screen.lock().pal(src_color, dst_color);
     }
 
     pub fn pal0(&mut self) {
-        for i in 0..COLOR_COUNT {
-            self.palette[i as usize] = i as Color;
-        }
+        self.screen.lock().pal0();
     }
 
     pub fn cls(&mut self, color: Color) {
-        let color = self.palette[color as usize];
-
         self.screen.lock().cls(color);
     }
 
@@ -105,50 +101,34 @@ impl Pyxel {
     }
 
     pub fn pset(&mut self, x: i32, y: i32, color: Color) {
-        let color = self.palette[color as usize];
-
         self.screen.lock().pset(x, y, color);
     }
 
     pub fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, color: Color) {
-        let color = self.palette[color as usize];
-
         self.screen.lock().line(x1, y1, x2, y2, color);
     }
 
     pub fn rect(&mut self, x: i32, y: i32, width: u32, height: u32, color: Color) {
-        let color = self.palette[color as usize];
-
         self.screen.lock().rect(x, y, width, height, color);
     }
 
     pub fn rectb(&mut self, x: i32, y: i32, width: u32, height: u32, color: Color) {
-        let color = self.palette[color as usize];
-
         self.screen.lock().rectb(x, y, width, height, color);
     }
 
     pub fn circ(&mut self, x: i32, y: i32, radius: u32, color: Color) {
-        let color = self.palette[color as usize];
-
         self.screen.lock().circ(x, y, radius, color);
     }
 
     pub fn circb(&mut self, x: i32, y: i32, radius: u32, color: Color) {
-        let color = self.palette[color as usize];
-
         self.screen.lock().circb(x, y, radius, color);
     }
 
     pub fn tri(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, color: Color) {
-        let color = self.palette[color as usize];
-
         self.screen.lock().tri(x1, y1, x2, y2, x3, y3, color);
     }
 
     pub fn trib(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, color: Color) {
-        let color = self.palette[color as usize];
-
         self.screen.lock().trib(x1, y1, x2, y2, x3, y3, color);
     }
 
@@ -172,7 +152,6 @@ impl Pyxel {
             width,
             height,
             color_key,
-            Some(&self.palette),
         );
     }
 
@@ -196,13 +175,10 @@ impl Pyxel {
             width,
             height,
             color_key,
-            Some(&self.palette),
         );
     }
 
     pub fn text(&mut self, x: i32, y: i32, string: &str, color: Color) {
-        let color = self.palette[color as usize];
-
         self.screen
             .lock()
             .text(x, y, string, color, self.font.clone());

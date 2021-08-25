@@ -25,24 +25,6 @@ impl PySequenceProtocol for Colors {
     }
 }
 
-#[pyclass]
-struct Palette;
-
-#[pyproto]
-impl PySequenceProtocol for Palette {
-    fn __len__(&self) -> usize {
-        instance().palette.len()
-    }
-
-    fn __getitem__(&self, idx: isize) -> PyResult<Color> {
-        Ok(instance().palette[idx as usize])
-    }
-
-    fn __setitem__(&mut self, idx: isize, value: Color) {
-        instance().palette[idx as usize] = value;
-    }
-}
-
 #[pyfunction]
 fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
     let value = match name {
@@ -66,7 +48,6 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         // Graphics
         //
         "colors" => Py::new(py, Colors)?.into_py(py),
-        "palette" => Py::new(py, Palette)?.into_py(py),
         "screen" => wrap_pyxel_image(instance().screen.clone()).into_py(py),
         "cursor" => wrap_pyxel_image(instance().cursor.clone()).into_py(py),
         "font" => wrap_pyxel_image(instance().font.clone()).into_py(py),
@@ -84,7 +65,6 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
 
 pub fn add_module_variables(m: &PyModule) -> PyResult<()> {
     m.add_class::<Colors>()?;
-    m.add_class::<Palette>()?;
     m.add_function(wrap_pyfunction!(__getattr__, m)?)?;
 
     Ok(())

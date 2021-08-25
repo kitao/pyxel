@@ -10,11 +10,11 @@ class TestPyxel(unittest.TestCase):
     def test_title(self):
         pyxel.title("hoge")
 
-    def test_palette(self):
-        self.assertEqual(pyxel.palette[3], 3)
+    def test_colors(self):
+        self.assertEqual(pyxel.colors[0], 0)
 
-        pyxel.palette[3] = 5
-        self.assertEqual(pyxel.palette[3], 5)
+        pyxel.colors[0] = 0x112233
+        self.assertEqual(pyxel.colors[0], 0x112233)
 
     def test_cls(self):
         pyxel.cls(3)
