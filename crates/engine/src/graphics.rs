@@ -145,7 +145,7 @@ impl Pyxel {
         self.screen.lock().blt(
             x,
             y,
-            self.graphics.images[image_no as usize].clone(),
+            &self.graphics.images[image_no as usize].lock(),
             image_x,
             image_y,
             width,
@@ -168,7 +168,7 @@ impl Pyxel {
         self.screen.lock().bltm(
             x,
             y,
-            self.graphics.tilemaps[tilemap_no as usize].clone(),
+            &self.graphics.tilemaps[tilemap_no as usize].lock(),
             tilemap_x,
             tilemap_y,
             width,
@@ -180,6 +180,6 @@ impl Pyxel {
     pub fn text(&mut self, x: i32, y: i32, string: &str, color: Color) {
         self.screen
             .lock()
-            .text(x, y, string, color, self.font.clone());
+            .text(x, y, string, color, &self.font.lock());
     }
 }
