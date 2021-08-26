@@ -95,7 +95,10 @@ impl Pyxel {
     }
 
     pub fn play1(&mut self, channel: u32, sound_no: u32, is_looping: bool) {
-        self.play(channel, &[sound_no], is_looping);
+        self.audio.channels[channel as usize].lock().play1(
+            self.audio.sounds[sound_no as usize].lock().clone(),
+            is_looping,
+        );
     }
 
     pub fn playm(&mut self, music_no: u32, is_looping: bool) {
