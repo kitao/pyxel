@@ -136,7 +136,7 @@ impl Image {
         self.pyxel_image.lock().blt(
             x,
             y,
-            image.pyxel_image.clone(),
+            &image.pyxel_image.lock(),
             image_x,
             image_y,
             width,
@@ -159,7 +159,7 @@ impl Image {
         self.pyxel_image.lock().bltm(
             x,
             y,
-            tilemap.pyxel_tilemap.clone(),
+            &tilemap.pyxel_tilemap.lock(),
             tilemap_x,
             tilemap_y,
             width,
@@ -171,7 +171,7 @@ impl Image {
     pub fn text(&self, x: i32, y: i32, string: &str, color: Color, font: Image) {
         self.pyxel_image
             .lock()
-            .text(x, y, string, color, font.pyxel_image.clone());
+            .text(x, y, string, color, &font.pyxel_image.lock());
     }
 }
 
