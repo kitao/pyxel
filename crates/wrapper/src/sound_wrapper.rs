@@ -8,7 +8,7 @@ use pyxel::{Effect, Note, Speed, Tone, Volume};
 #[pyclass]
 #[derive(Clone)]
 pub struct Notes {
-    pub pyxel_sound: PyxelSharedSound,
+    pyxel_sound: PyxelSharedSound,
 }
 
 #[pyproto]
@@ -92,7 +92,7 @@ impl PySequenceProtocol for Effects {
 #[pyclass]
 #[derive(Clone)]
 pub struct Sound {
-    pyxel_sound: PyxelSharedSound,
+    pub pyxel_sound: PyxelSharedSound,
 }
 
 pub fn wrap_pyxel_sound(pyxel_sound: PyxelSharedSound) -> Sound {
