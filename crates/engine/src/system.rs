@@ -64,9 +64,10 @@ impl Pyxel {
     pub fn icon(&mut self, data_str: &[&str], scale: u32) {
         let width = data_str[0].len() as u32;
         let height = data_str.len() as u32;
-        let image = Image::new(width, height);
+        let mut image = Image::without_arc_mutex(width, height);
 
-        self.platform.set_icon(&image.lock(), &self.colors, scale);
+        image.set(0, 0, data_str);
+        self.platform.set_icon(&image, &self.colors, scale);
     }
 
     pub fn fullscreen(&mut self) {
@@ -308,7 +309,7 @@ impl Pyxel {
         let clip_rect = screen._clip_rect();
         let palette = screen._palette().clone();
 
-        screen.blt(x, y, self.cursor.clone(), 0, 0, width, height, Some(0));
+        screen.blt(x, y, &self.cursor.lock(), 0, 0, width, height, Some(0));
 
         screen._set_clip_rect(clip_rect);
         screen._set_palette(&palette);
