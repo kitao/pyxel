@@ -4,6 +4,7 @@ use pyxel::SharedTilemap as PyxelSharedTilemap;
 use pyxel::Tilemap as PyxelTilemap;
 
 use crate::image_wrapper::{wrap_pyxel_image, Image};
+use crate::instance;
 
 #[pyclass]
 #[derive(Clone)]
@@ -30,8 +31,14 @@ impl Tilemap {
     }
 
     #[setter]
-    pub fn set_image(&self, image: Image) {
-        self.pyxel_tilemap.lock().image = image.pyxel_image.clone();
+    pub fn set_image(&self, image: &PyAny) {
+        if let Ok(image) = image.extract::<Image>() {
+            self.pyxel_tilemap.lock().image = image.pyxel_image.clone();
+        } else if let Ok(image_no) = image.extract::<u32>() {
+            self.pyxel_tilemap.lock().image = instance().image(image_no).clone();
+        } else {
+            panic!("Invalid value for Tilemap.image");
+        }
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: Vec<&str>) {
