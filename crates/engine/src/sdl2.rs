@@ -103,9 +103,9 @@ impl Platform for Sdl2 {
         let pitch = sdl_surface.pitch();
 
         sdl_surface.with_lock_mut(|buffer: &mut [u8]| {
-            for i in 0..height as usize {
-                for j in 0..width as usize {
-                    let offset = i * pitch as usize + j * 4;
+            for i in 0..height {
+                for j in 0..width {
+                    let offset = (i * pitch as u32 + j * 4) as usize;
                     let color = colors[icon._value(j as i32, i as i32) as usize];
 
                     buffer[offset] = ((color >> 16) & 0xff) as u8;
