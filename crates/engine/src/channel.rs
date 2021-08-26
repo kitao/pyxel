@@ -52,12 +52,20 @@ impl Channel {
     }
 
     pub fn play(&mut self, sounds: Vec<Sound>, is_looping: bool) {
+        if sounds.len() == 0 {
+            return;
+        }
+
         self.sounds = sounds;
         self.is_playing = true;
         self.is_looping = is_looping;
         self.sound_index = 0;
         self.note_index = 0;
         self.tick_count = 0;
+    }
+
+    pub fn play1(&mut self, sound: Sound, is_looping: bool) {
+        self.play(vec![sound], is_looping);
     }
 
     pub fn stop(&mut self) {
