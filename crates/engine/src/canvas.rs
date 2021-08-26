@@ -48,7 +48,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     fn pset(&mut self, x: i32, y: i32, value: T) {
         let value = self._palette_value(value);
 
-        if self._self_rect().contains(x, y) {
+        if self._clip_rect().contains(x, y) {
             self._set_value(x, y, value)
         }
     }
