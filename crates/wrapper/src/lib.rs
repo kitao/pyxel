@@ -1,3 +1,5 @@
+#[macro_use]
+mod utility;
 mod audio_wrapper;
 mod channel_wrapper;
 mod constant_wrapper;
