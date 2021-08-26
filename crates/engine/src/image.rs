@@ -11,7 +11,7 @@ use crate::settings::{
 };
 use crate::tilemap::Tilemap;
 use crate::types::{Color, Rgb8};
-use crate::utility::{parse_hex_string, simplify_string};
+use crate::utils::{parse_hex_string, simplify_string};
 
 pub struct Image {
     self_rect: RectArea,
@@ -113,6 +113,17 @@ impl Image {
         }
 
         self.blt(x, y, &image, 0, 0, width as i32, height as i32, None);
+    }
+
+    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
+        let (r1, g1, b1) = rgb1;
+        let (r2, g2, b2) = rgb2;
+
+        let dx = (r1 as f64 - r2 as f64) * 0.30;
+        let dy = (g1 as f64 - g2 as f64) * 0.59;
+        let dz = (b1 as f64 - b2 as f64) * 0.11;
+
+        dx * dx + dy * dy + dz * dz
     }
 
     pub fn save(&self, filename: &str, colors: &[Rgb8], scale: u32) {
@@ -238,17 +249,6 @@ impl Image {
         }
 
         self.pal(1, palette1);
-    }
-
-    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
-        let (r1, g1, b1) = rgb1;
-        let (r2, g2, b2) = rgb2;
-
-        let dx = (r1 as f64 - r2 as f64) * 0.30;
-        let dy = (g1 as f64 - g2 as f64) * 0.59;
-        let dz = (b1 as f64 - b2 as f64) * 0.11;
-
-        dx * dx + dy * dy + dz * dz
     }
 }
 

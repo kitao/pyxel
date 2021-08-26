@@ -6,7 +6,7 @@ use crate::settings::{
     TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
 };
 use crate::types::{Effect, Note, Speed, Tone, Volume};
-use crate::utility::simplify_string;
+use crate::utils::simplify_string;
 
 #[derive(Clone)]
 pub struct Sound {

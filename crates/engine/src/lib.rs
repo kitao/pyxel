@@ -18,7 +18,7 @@ mod sound;
 mod system;
 mod tilemap;
 mod types;
-mod utility;
+mod utils;
 
 use crate::audio::Audio;
 use crate::graphics::Graphics;
