@@ -5,7 +5,7 @@ use crate::canvas::Canvas;
 use crate::image::SharedImage;
 use crate::rectarea::RectArea;
 use crate::types::Tile;
-use crate::utility::{parse_hex_string, simplify_string};
+use crate::utils::{parse_hex_string, simplify_string};
 
 pub struct Tilemap {
     width: u32,
