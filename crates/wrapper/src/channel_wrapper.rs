@@ -4,6 +4,8 @@ use pyxel::Channel as PyxelChannel;
 use pyxel::SharedChannel as PyxelSharedChannel;
 use pyxel::Volume;
 
+use crate::sound_wrapper::{wrap_pyxel_sound, Sound};
+
 #[pyclass]
 #[derive(Clone)]
 pub struct Channel {
@@ -53,8 +55,25 @@ impl Channel {
         self.pyxel_channel.lock().note_index()
     }
 
-    /*pub fn play(&mut self, sounds: Vec<Sound>, is_looping: bool) {
-    }*/
+    pub fn play(&self, sounds: &PyAny, is_looping: Option<bool>) {
+        if let Ok(sounds) = sounds.extract::<Vec<Sound>>() {
+            let sounds = sounds
+                .iter()
+                .map(|sound| sound.pyxel_sound.lock().clone())
+                .collect();
+
+            self.pyxel_channel
+                .lock()
+                .play(sounds, is_looping.unwrap_or(false));
+        } else if let Ok(sound) = sounds.extract::<Sound>() {
+            self.pyxel_channel.lock().play1(
+                sound.pyxel_sound.lock().clone(),
+                is_looping.unwrap_or(false),
+            );
+        } else {
+            panic!("Invalid arguments for play");
+        }
+    }
 
     pub fn stop(&mut self) {
         self.pyxel_channel.lock().stop();
