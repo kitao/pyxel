@@ -1,7 +1,5 @@
-use parking_lot::Mutex;
 use std::cmp::max;
 use std::mem::swap;
-use std::sync::Arc;
 
 use crate::rectarea::RectArea;
 use crate::types::ToIndex;
@@ -353,14 +351,13 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         &mut self,
         x: i32,
         y: i32,
-        canvas: Arc<Mutex<Self>>,
+        canvas: &Self,
         canvas_x: i32,
         canvas_y: i32,
         width: i32,
         height: i32,
         transparent: Option<T>,
     ) {
-        let canvas = canvas.lock();
         let copy_area = CopyArea::new(
             x,
             y,
