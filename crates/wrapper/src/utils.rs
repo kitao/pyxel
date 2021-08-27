@@ -29,4 +29,17 @@ macro_rules! type_switch {
             $block2
         }
     };
+
+    ($var: ident, $type1: ty, $block1: block, $type2: ty, $block2: block, $type3: ty, $block3: block, $type4: ty, $block4: block) => {
+        if let Ok($var) = $var.extract::<$type1>() {
+            $block1
+        } else if let Ok($var) = $var.extract::<$type2>() {
+            $block2
+        } else if let Ok($var) = $var.extract::<$type3>() {
+            $block3
+        } else {
+            let $var = $var.extract::<$type4>().unwrap();
+            $block4
+        }
+    };
 }
