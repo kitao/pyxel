@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use crate::instance;
 
 #[pyfunction]
-pub fn load(
+fn load(
     filename: &str,
     image: Option<bool>,
     tilemap: Option<bool>,
@@ -19,7 +19,7 @@ pub fn load(
 }
 
 #[pyfunction]
-pub fn save(
+fn save(
     filename: &str,
     image: Option<bool>,
     tilemap: Option<bool>,
@@ -35,17 +35,17 @@ pub fn save(
 }
 
 #[pyfunction]
-pub fn save_png() {
+fn save_png() {
     instance().save_png();
 }
 
 #[pyfunction]
-pub fn reset_gif() {
+fn reset_gif() {
     instance().reset_gif();
 }
 
 #[pyfunction]
-pub fn save_gif() {
+fn save_gif() {
     instance().save_gif();
 }
 
