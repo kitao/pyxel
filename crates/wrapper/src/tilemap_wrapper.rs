@@ -21,8 +21,20 @@ pub fn wrap_pyxel_tilemap(pyxel_tilemap: PyxelSharedTilemap) -> Tilemap {
 #[pymethods]
 impl Tilemap {
     #[new]
-    pub fn new(width: u32, height: u32, image: Image) -> Tilemap {
-        wrap_pyxel_tilemap(PyxelTilemap::new(width, height, image.pyxel_image))
+    pub fn new(width: &PyAny, height: &PyAny, image: &PyAny) -> Tilemap {
+        let image = type_switch! {
+            image,
+            Image,
+            {
+                image.pyxel_image.clone()
+            },
+            u32,
+            {
+                instance().image(image).clone()
+            }
+        };
+
+        wrap_pyxel_tilemap(PyxelTilemap::new(as_u32!(width), as_u32!(height), image))
     }
 
     #[getter]
@@ -32,17 +44,21 @@ impl Tilemap {
 
     #[setter]
     pub fn set_image(&self, image: &PyAny) {
-        if let Ok(image) = image.extract::<Image>() {
-            self.pyxel_tilemap.lock().image = image.pyxel_image.clone();
-        } else if let Ok(image_no) = image.extract::<u32>() {
-            self.pyxel_tilemap.lock().image = instance().image(image_no).clone();
-        } else {
-            panic!("Invalid value for Tilemap.image");
+        type_switch! {
+            image,
+            Image, {
+                self.pyxel_tilemap.lock().image = image.pyxel_image.clone();
+            },
+            u32, {
+                self.pyxel_tilemap.lock().image = instance().image(image).clone();
+            }
         }
     }
 
-    pub fn set(&mut self, x: i32, y: i32, data_str: Vec<&str>) {
-        self.pyxel_tilemap.lock().set(x, y, &data_str);
+    pub fn set(&mut self, x: &PyAny, y: &PyAny, data_str: Vec<&str>) {
+        self.pyxel_tilemap
+            .lock()
+            .set(as_i32!(x), as_i32!(y), &data_str);
     }
 }
 
