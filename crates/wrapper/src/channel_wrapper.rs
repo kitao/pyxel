@@ -4,6 +4,7 @@ use pyxel::Channel as PyxelChannel;
 use pyxel::SharedChannel as PyxelSharedChannel;
 use pyxel::Volume;
 
+use crate::instance;
 use crate::sound_wrapper::Sound;
 
 #[pyclass]
@@ -56,22 +57,44 @@ impl Channel {
     }
 
     pub fn play(&self, sounds: &PyAny, is_looping: Option<bool>) {
-        if let Ok(sounds) = sounds.extract::<Vec<Sound>>() {
-            let sounds = sounds
-                .iter()
-                .map(|sound| sound.pyxel_sound.lock().clone())
-                .collect();
+        type_switch! {
+            sounds,
+            Vec<Sound>,
+            {
+                let sounds = sounds
+                    .iter()
+                    .map(|sound| sound.pyxel_sound.lock().clone())
+                    .collect();
 
-            self.pyxel_channel
-                .lock()
-                .play(sounds, is_looping.unwrap_or(false));
-        } else if let Ok(sound) = sounds.extract::<Sound>() {
-            self.pyxel_channel.lock().play1(
-                sound.pyxel_sound.lock().clone(),
-                is_looping.unwrap_or(false),
-            );
-        } else {
-            panic!("Invalid arguments for play");
+                self.pyxel_channel
+                    .lock()
+                    .play(sounds, is_looping.unwrap_or(false));
+            },
+            Vec<u32>,
+            {
+                let sounds = sounds
+                    .iter()
+                    .map(|sound_no| instance().sound(*sound_no).lock().clone())
+                    .collect();
+
+                self.pyxel_channel
+                    .lock()
+                    .play(sounds, is_looping.unwrap_or(false));
+            },
+            Sound,
+            {
+                self.pyxel_channel.lock().play1(
+                    sounds.pyxel_sound.lock().clone(),
+                    is_looping.unwrap_or(false),
+                );
+            },
+            u32,
+            {
+                self.pyxel_channel.lock().play1(
+                    instance().sound(sounds).lock().clone(),
+                    is_looping.unwrap_or(false),
+                );
+            }
         }
     }
 
