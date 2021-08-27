@@ -55,7 +55,7 @@ impl Image {
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
-        let width = data_str[0].len() as u32;
+        let width = simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
         let mut image = Image::without_arc_mutex(width, height);
 
