@@ -82,7 +82,7 @@ pub const COLOR_PEACH: Color = 15;
 pub const CURSOR_WIDTH: u32 = 8;
 pub const CURSOR_HEIGHT: u32 = 8;
 pub const CURSOR_DATA: [&str; CURSOR_HEIGHT as usize] = [
-    "11111100", "17776100", "17761000", "17676100", "16167610", "11016761", "00001610", "00000100",
+    "00000011", "07776011", "07760111", "07676011", "06067601", "00106760", "11110601", "11111011",
 ];
 
 pub const MIN_FONT_CODE: char = 32 as char;
