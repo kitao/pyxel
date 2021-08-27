@@ -4,7 +4,7 @@ use pyxel::Channel as PyxelChannel;
 use pyxel::SharedChannel as PyxelSharedChannel;
 use pyxel::Volume;
 
-use crate::sound_wrapper::{wrap_pyxel_sound, Sound};
+use crate::sound_wrapper::Sound;
 
 #[pyclass]
 #[derive(Clone)]
