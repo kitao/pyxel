@@ -165,10 +165,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     }
 
     fn circ(&mut self, x: i32, y: i32, radius: u32, value: T) {
-        if radius == 0 {
-            return;
-        }
-
         let value = self._palette_value(value);
         let sq_radius = radius * radius;
 
@@ -189,10 +185,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     }
 
     fn circb(&mut self, x: i32, y: i32, radius: u32, value: T) {
-        if radius == 0 {
-            return;
-        }
-
         let value = self._palette_value(value);
         let sq_radius = radius * radius;
 
