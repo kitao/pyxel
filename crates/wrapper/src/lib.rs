@@ -51,7 +51,7 @@ pub fn set_instance(pyxel: Pyxel) {
     }
 }
 
-pub fn set_current_directory(py: Python) -> PyResult<()> {
+fn set_current_directory(py: Python) -> PyResult<()> {
     let locals = PyDict::new(py);
     locals.set_item("os", py.import("os")?)?;
     locals.set_item("inspect", py.import("inspect")?)?;
