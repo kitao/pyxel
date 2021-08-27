@@ -35,7 +35,7 @@ impl Tilemap {
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
-        let width = data_str[0].len() as u32 / 4;
+        let width = simplify_string(data_str[0]).len() as u32 / 4;
         let height = data_str.len() as u32;
         let mut tilemap = Tilemap::without_arc_mutex(width, height, self.image.clone());
 
@@ -49,7 +49,7 @@ impl Tilemap {
                     tilemap._set_value(
                         j as i32,
                         i as i32,
-                        (((value >> 16) & 0xff) as u8, (value & 0xff) as u8),
+                        (((value >> 8) & 0xff) as u8, (value & 0xff) as u8),
                     );
                 } else {
                     panic!("invalid tilemap data");
