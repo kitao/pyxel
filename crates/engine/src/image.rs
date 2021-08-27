@@ -213,20 +213,13 @@ impl Image {
         let mut y = y;
 
         for c in string.chars() {
-            if c < MIN_FONT_CODE || c > MAX_FONT_CODE {
-                continue;
-            }
-
-            // new line
-            if c == 10 as char {
+            if c == '\n' as char {
                 x = start_x;
                 y += FONT_HEIGHT as i32;
                 continue;
             }
 
-            // space
-            if c == 32 as char {
-                x += FONT_WIDTH as i32;
+            if c < MIN_FONT_CODE || c > MAX_FONT_CODE {
                 continue;
             }
 
