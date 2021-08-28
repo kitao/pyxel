@@ -41,7 +41,7 @@ impl Channel {
         Ok(self.pyxel_channel.lock().play_pos())
     }
 
-    pub fn play(&self, snd: &PyAny, loop_: Option<bool>) -> PyResult<()> {
+    pub fn play(&self, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
         type_switch! {
             snd,
             Vec<Sound>,
@@ -53,13 +53,13 @@ impl Channel {
 
                 self.pyxel_channel
                     .lock()
-                    .play(snd, loop_.unwrap_or(false));
+                    .play(snd, r#loop.unwrap_or(false));
             },
             Sound,
             {
                 self.pyxel_channel.lock().play1(
                     snd.pyxel_sound.lock().clone(),
-                    loop_.unwrap_or(false),
+                    r#loop.unwrap_or(false),
                 );
             }
         }
