@@ -378,15 +378,16 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
 
         for i in 0..height {
             for j in 0..width {
-                let value = self._palette_value(
-                    canvas._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y),
-                );
+                let value =
+                    canvas._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
 
                 if let Some(transparent) = transparent {
                     if value == transparent {
                         continue;
                     }
                 }
+
+                let value = self._palette_value(value);
 
                 self._set_value(dst_x + j, dst_y + i, value);
             }
