@@ -47,9 +47,8 @@ impl PySequenceProtocol for Sequences {
         })
     }
 
-    fn __setitem__(&mut self, idx: isize, sequence: Sequence) -> PyResult<()> {
-        // TODO
-        // self.music.lock().sequences[.channel_no as usize][idx as usize] = sound_no;
+    fn __setitem__(&mut self, idx: isize, sequence: Vec<u32>) -> PyResult<()> {
+        self.music.lock().sequences[idx as usize] = sequence;
 
         Ok(())
     }
