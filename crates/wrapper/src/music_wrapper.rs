@@ -13,16 +13,18 @@ pub struct Sequence {
 
 #[pyproto]
 impl PySequenceProtocol for Sequence {
-    fn __len__(&self) -> usize {
-        self.pyxel_music.lock().sequences[self.channel_no as usize].len()
+    fn __len__(&self) -> PyResult<usize> {
+        Ok(self.pyxel_music.lock().sequences[self.channel_no as usize].len())
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<u32> {
         Ok(self.pyxel_music.lock().sequences[self.channel_no as usize][idx as usize])
     }
 
-    fn __setitem__(&mut self, idx: isize, sound_no: u32) {
+    fn __setitem__(&mut self, idx: isize, sound_no: u32) -> PyResult<()> {
         self.pyxel_music.lock().sequences[self.channel_no as usize][idx as usize] = sound_no;
+
+        Ok(())
     }
 }
 
@@ -34,8 +36,8 @@ pub struct Sequences {
 
 #[pyproto]
 impl PySequenceProtocol for Sequences {
-    fn __len__(&self) -> usize {
-        self.music.lock().sequences.len()
+    fn __len__(&self) -> PyResult<usize> {
+        Ok(self.music.lock().sequences.len())
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<Sequence> {
@@ -45,11 +47,12 @@ impl PySequenceProtocol for Sequences {
         })
     }
 
-    /*
-    fn __setitem__(&mut self, idx: isize, sequcne: Sequence) {
-        self.music.lock().sequences[self.channel_no as usize][idx as usize] = sound_no;
+    fn __setitem__(&mut self, idx: isize, sequence: Sequence) -> PyResult<()> {
+        // TODO
+        // self.music.lock().sequences[.channel_no as usize][idx as usize] = sound_no;
+
+        Ok(())
     }
-    */
 }
 
 #[pyclass]
@@ -67,12 +70,14 @@ pub fn wrap_pyxel_music(pyxel_music: PyxelSharedMusic) -> Music {
 #[pymethods]
 impl Music {
     #[new]
-    pub fn new() -> Music {
-        wrap_pyxel_music(PyxelMusic::new())
+    pub fn new() -> PyResult<Music> {
+        Ok(wrap_pyxel_music(PyxelMusic::new()))
     }
 
-    pub fn set(&self, sequences: Vec<Vec<u32>>) {
+    pub fn set(&self, sequences: Vec<Vec<u32>>) -> PyResult<()> {
         self.pyxel_music.lock().set(&sequences);
+
+        Ok(())
     }
 }
 
