@@ -21,16 +21,21 @@ fn music(music_no: u32) -> PyResult<Music> {
 }
 
 #[pyfunction]
-fn play(channel: u32, sequence: &PyAny, is_looping: Option<bool>) -> PyResult<()> {
+fn play_pos(channel_no: u32) -> PyResult<Option<(u32, u32)>> {
+    Ok(instance().play_pos(channel_no))
+}
+
+#[pyfunction]
+fn play(channel_no: u32, sequence: &PyAny, is_looping: Option<bool>) -> PyResult<()> {
     type_switch! {
         sequence,
         Vec<u32>,
         {
-            instance().play(channel, &sequence, is_looping.unwrap_or(false));
+            instance().play(channel_no, &sequence, is_looping.unwrap_or(false));
         },
         u32,
         {
-            instance().play1(channel, sequence, is_looping.unwrap_or(false));
+            instance().play1(channel_no, sequence, is_looping.unwrap_or(false));
         }
     }
 
@@ -59,6 +64,7 @@ pub fn add_audio_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(channel, m)?)?;
     m.add_function(wrap_pyfunction!(sound, m)?)?;
     m.add_function(wrap_pyfunction!(music, m)?)?;
+    m.add_function(wrap_pyfunction!(play_pos, m)?)?;
     m.add_function(wrap_pyfunction!(play, m)?)?;
     m.add_function(wrap_pyfunction!(playm, m)?)?;
     m.add_function(wrap_pyfunction!(stop, m)?)?;

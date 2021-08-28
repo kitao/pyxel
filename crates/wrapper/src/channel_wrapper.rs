@@ -38,24 +38,8 @@ impl Channel {
         Ok(())
     }
 
-    #[getter]
-    pub fn is_playing(&self) -> PyResult<bool> {
-        Ok(self.pyxel_channel.lock().is_playing())
-    }
-
-    #[getter]
-    pub fn is_looping(&self) -> PyResult<bool> {
-        Ok(self.pyxel_channel.lock().is_looping())
-    }
-
-    #[getter]
-    pub fn sound_index(&self) -> PyResult<u32> {
-        Ok(self.pyxel_channel.lock().sound_index())
-    }
-
-    #[getter]
-    pub fn note_index(&self) -> PyResult<u32> {
-        Ok(self.pyxel_channel.lock().note_index())
+    pub fn play_pos(&self) -> PyResult<Option<(u32, u32)>> {
+        Ok(self.pyxel_channel.lock().play_pos())
     }
 
     pub fn play(&self, sounds: &PyAny, is_looping: Option<bool>) -> PyResult<()> {
