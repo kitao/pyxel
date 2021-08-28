@@ -50,6 +50,7 @@ test: build
 	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/02_jump_game.py
 	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/03_draw_api.py
 	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/04_sound_api.py
+	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/05_color_palette.py
 
 format:
 	cargo fmt -- --emit=files
