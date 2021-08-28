@@ -126,7 +126,7 @@ class App(Widget):
         pyxel.run(self.update_widgets, self.draw_widgets)
 
     def _load_palette(self, tweaks_file):
-        palette = pyxel.DEFAULT_PALETTE
+        palette = pyxel.DEFAULT_PALETTE.copy()
         if os.path.exists(tweaks_file):
             print(f"Loading palette tweaks: {tweaks_file}")
             with open(tweaks_file, "r") as p:
