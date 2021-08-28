@@ -31,24 +31,24 @@ impl PySequenceProtocol for Sequence {
 #[pyclass]
 #[derive(Clone)]
 pub struct Sequences {
-    music: PyxelSharedMusic,
+    pyxel_music: PyxelSharedMusic,
 }
 
 #[pyproto]
 impl PySequenceProtocol for Sequences {
     fn __len__(&self) -> PyResult<usize> {
-        Ok(self.music.lock().sequences.len())
+        Ok(self.pyxel_music.lock().sequences.len())
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<Sequence> {
         Ok(Sequence {
-            pyxel_music: self.music.clone(),
+            pyxel_music: self.pyxel_music.clone(),
             channel_no: idx as u32,
         })
     }
 
     fn __setitem__(&mut self, idx: isize, sequence: Vec<u32>) -> PyResult<()> {
-        self.music.lock().sequences[idx as usize] = sequence;
+        self.pyxel_music.lock().sequences[idx as usize] = sequence;
 
         Ok(())
     }
@@ -77,6 +77,13 @@ impl Music {
         self.pyxel_music.lock().set(&sequences);
 
         Ok(())
+    }
+
+    #[getter]
+    pub fn seqs(&self) -> PyResult<Sequences> {
+        Ok(Sequences {
+            pyxel_music: self.pyxel_music.clone(),
+        })
     }
 }
 
