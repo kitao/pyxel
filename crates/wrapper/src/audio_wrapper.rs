@@ -26,16 +26,16 @@ fn play_pos(ch: u32) -> PyResult<Option<(u32, u32)>> {
 }
 
 #[pyfunction]
-fn play(ch: u32, snd: &PyAny, loop_: Option<bool>) -> PyResult<()> {
+fn play(ch: u32, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
     type_switch! {
         snd,
         Vec<u32>,
         {
-            instance().play(ch, &snd, loop_.unwrap_or(false));
+            instance().play(ch, &snd, r#loop.unwrap_or(false));
         },
         u32,
         {
-            instance().play1(ch, snd, loop_.unwrap_or(false));
+            instance().play1(ch, snd, r#loop.unwrap_or(false));
         }
     }
 
@@ -43,8 +43,8 @@ fn play(ch: u32, snd: &PyAny, loop_: Option<bool>) -> PyResult<()> {
 }
 
 #[pyfunction]
-fn playm(msc: u32, loop_: Option<bool>) -> PyResult<()> {
-    instance().playm(msc, loop_.unwrap_or(false));
+fn playm(msc: u32, r#loop: Option<bool>) -> PyResult<()> {
+    instance().playm(msc, r#loop.unwrap_or(false));
 
     Ok(())
 }
