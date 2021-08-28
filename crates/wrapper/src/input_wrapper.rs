@@ -17,12 +17,8 @@ fn btn(key: Key) -> PyResult<bool> {
 }
 
 #[pyfunction]
-fn btnp(
-    key: Key,
-    hold_frame_count: Option<u32>,
-    repeat_frame_count: Option<u32>,
-) -> PyResult<bool> {
-    Ok(instance().btnp(key, hold_frame_count, repeat_frame_count))
+fn btnp(key: Key, hold: Option<u32>, repeat: Option<u32>) -> PyResult<bool> {
+    Ok(instance().btnp(key, hold, repeat))
 }
 
 #[pyfunction]

@@ -40,8 +40,8 @@ fn title(title: &str) -> PyResult<()> {
 }
 
 #[pyfunction]
-fn icon(data_str: Vec<&str>, scale: u32) -> PyResult<()> {
-    instance().icon(&data_str, scale);
+fn icon(data: Vec<&str>, scale: u32) -> PyResult<()> {
+    instance().icon(&data, scale);
 
     Ok(())
 }

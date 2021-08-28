@@ -6,36 +6,36 @@ use crate::music_wrapper::{wrap_pyxel_music, Music};
 use crate::sound_wrapper::{wrap_pyxel_sound, Sound};
 
 #[pyfunction]
-fn channel(channel_no: u32) -> PyResult<Channel> {
-    Ok(wrap_pyxel_channel(instance().channel(channel_no)))
+fn channel(ch: u32) -> PyResult<Channel> {
+    Ok(wrap_pyxel_channel(instance().channel(ch)))
 }
 
 #[pyfunction]
-fn sound(sound_no: u32) -> PyResult<Sound> {
-    Ok(wrap_pyxel_sound(instance().sound(sound_no)))
+fn sound(snd: u32) -> PyResult<Sound> {
+    Ok(wrap_pyxel_sound(instance().sound(snd)))
 }
 
 #[pyfunction]
-fn music(music_no: u32) -> PyResult<Music> {
-    Ok(wrap_pyxel_music(instance().music(music_no)))
+fn music(msc: u32) -> PyResult<Music> {
+    Ok(wrap_pyxel_music(instance().music(msc)))
 }
 
 #[pyfunction]
-fn play_pos(channel_no: u32) -> PyResult<Option<(u32, u32)>> {
-    Ok(instance().play_pos(channel_no))
+fn play_pos(ch: u32) -> PyResult<Option<(u32, u32)>> {
+    Ok(instance().play_pos(ch))
 }
 
 #[pyfunction]
-fn play(channel_no: u32, sequence: &PyAny, is_looping: Option<bool>) -> PyResult<()> {
+fn play(ch: u32, snd: &PyAny, loop_: Option<bool>) -> PyResult<()> {
     type_switch! {
-        sequence,
+        snd,
         Vec<u32>,
         {
-            instance().play(channel_no, &sequence, is_looping.unwrap_or(false));
+            instance().play(ch, &snd, loop_.unwrap_or(false));
         },
         u32,
         {
-            instance().play1(channel_no, sequence, is_looping.unwrap_or(false));
+            instance().play1(ch, snd, loop_.unwrap_or(false));
         }
     }
 
@@ -43,16 +43,16 @@ fn play(channel_no: u32, sequence: &PyAny, is_looping: Option<bool>) -> PyResult
 }
 
 #[pyfunction]
-fn playm(music_no: u32, is_looping: Option<bool>) -> PyResult<()> {
-    instance().playm(music_no, is_looping.unwrap_or(false));
+fn playm(msc: u32, loop_: Option<bool>) -> PyResult<()> {
+    instance().playm(msc, loop_.unwrap_or(false));
 
     Ok(())
 }
 
 #[pyfunction]
-fn stop(channel_no: Option<u32>) -> PyResult<()> {
-    if let Some(channel_no) = channel_no {
-        instance().stop(channel_no);
+fn stop(ch: Option<u32>) -> PyResult<()> {
+    if let Some(ch) = ch {
+        instance().stop(ch);
     } else {
         instance().stop0();
     }
