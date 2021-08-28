@@ -5,7 +5,7 @@ import pyxel
 
 class App:
     def __init__(self):
-        pyxel.init(200, 150, caption="Pyxel Sound API")
+        pyxel.init(200, 150, title="Pyxel Sound API")
 
         pyxel.image(0).set(
             0,
@@ -64,17 +64,17 @@ class App:
 
     def play_music(self, ch0, ch1, ch2):
         if ch0:
-            pyxel.play(0, [0, 1], loop=True)
+            pyxel.play(0, [0, 1], loop_=True)
         else:
             pyxel.stop(0)
 
         if ch1:
-            pyxel.play(1, [2, 3], loop=True)
+            pyxel.play(1, [2, 3], loop_=True)
         else:
             pyxel.stop(1)
 
         if ch2:
-            pyxel.play(2, 4, loop=True)
+            pyxel.play(2, 4, loop_=True)
         else:
             pyxel.stop(2)
 
@@ -127,7 +127,7 @@ class App:
         for i in range(3):
             x = 140 + i * 16
             y = 123 + math.sin(pyxel.frame_count * 0.1 + i * 2.1) * 5
-            col = 15 if pyxel.play_pos(i) >= 0 else 13
+            col = 15 if pyxel.play_pos(i) else 13
 
             pyxel.pal(1, col)
             pyxel.blt(x, y, 0, 0, 0, 8, 8, 0)
