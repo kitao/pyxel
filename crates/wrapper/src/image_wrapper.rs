@@ -22,36 +22,45 @@ pub fn wrap_pyxel_image(pyxel_image: PyxelSharedImage) -> Image {
 #[pymethods]
 impl Image {
     #[new]
-    pub fn new(width: &PyAny, height: &PyAny) -> Image {
-        wrap_pyxel_image(PyxelImage::new(as_u32!(width), as_u32!(height)))
+    pub fn new(width: &PyAny, height: &PyAny) -> PyResult<Image> {
+        Ok(wrap_pyxel_image(PyxelImage::new(
+            as_u32!(width),
+            as_u32!(height),
+        )))
     }
 
     #[getter]
-    pub fn width(&self) -> u32 {
-        self.pyxel_image.lock().width()
+    pub fn width(&self) -> PyResult<u32> {
+        Ok(self.pyxel_image.lock().width())
     }
 
     #[getter]
-    pub fn height(&self) -> u32 {
-        self.pyxel_image.lock().height()
+    pub fn height(&self) -> PyResult<u32> {
+        Ok(self.pyxel_image.lock().height())
     }
 
-    pub fn set(&self, x: &PyAny, y: &PyAny, data_str: Vec<&str>) {
+    pub fn set(&self, x: &PyAny, y: &PyAny, data_str: Vec<&str>) -> PyResult<()> {
         self.pyxel_image
             .lock()
             .set(as_i32!(x), as_i32!(y), &data_str);
+
+        Ok(())
     }
 
-    pub fn load(&self, x: &PyAny, y: &PyAny, filename: &str) {
+    pub fn load(&self, x: &PyAny, y: &PyAny, filename: &str) -> PyResult<()> {
         self.pyxel_image
             .lock()
             .load(as_i32!(x), as_i32!(y), filename, &instance().colors);
+
+        Ok(())
     }
 
-    pub fn save(&self, filename: &str, scale: &PyAny) {
+    pub fn save(&self, filename: &str, scale: &PyAny) -> PyResult<()> {
         self.pyxel_image
             .lock()
             .save(filename, &instance().colors, as_u32!(scale));
+
+        Ok(())
     }
 
     pub fn clip(
@@ -60,56 +69,59 @@ impl Image {
         y: Option<&PyAny>,
         width: Option<&PyAny>,
         height: Option<&PyAny>,
-    ) {
-        if let Some(x) = x {
-            if let Some(y) = y {
-                if let Some(width) = width {
-                    if let Some(height) = height {
-                        self.pyxel_image.lock().clip(
-                            as_i32!(x),
-                            as_i32!(y),
-                            as_u32!(width),
-                            as_u32!(height),
-                        );
-                        return;
-                    }
-                }
-            }
+    ) -> PyResult<()> {
+        if let (Some(x), Some(y), Some(width), Some(height)) = (x, y, width, height) {
+            self.pyxel_image
+                .lock()
+                .clip(as_i32!(x), as_i32!(y), as_u32!(width), as_u32!(height));
+        } else if let (None, None, None, None) = (x, y, width, height) {
+            self.pyxel_image.lock().clip0();
+        } else {
+            type_error!("clip() takes 0 or 4 arguments");
         }
 
-        if let None = x {
-            if let None = y {
-                if let None = width {
-                    if let None = height {
-                        self.pyxel_image.lock().clip0();
-                        return;
-                    }
-                }
-            }
-        }
-
-        panic!("invalid argument number for clip");
+        Ok(())
     }
 
-    pub fn cls(&self, color: Color) {
+    pub fn cls(&self, color: Color) -> PyResult<()> {
         self.pyxel_image.lock().cls(color);
+
+        Ok(())
     }
 
-    pub fn pget(&self, x: &PyAny, y: &PyAny) -> Color {
-        self.pyxel_image.lock().pget(as_i32!(x), as_i32!(y))
+    pub fn pget(&self, x: &PyAny, y: &PyAny) -> PyResult<Color> {
+        Ok(self.pyxel_image.lock().pget(as_i32!(x), as_i32!(y)))
     }
 
-    pub fn pset(&self, x: &PyAny, y: &PyAny, color: Color) {
+    pub fn pset(&self, x: &PyAny, y: &PyAny, color: Color) -> PyResult<()> {
         self.pyxel_image.lock().pset(as_i32!(x), as_i32!(y), color);
+
+        Ok(())
     }
 
-    pub fn line(&self, x1: &PyAny, y1: &PyAny, x2: &PyAny, y2: &PyAny, color: Color) {
+    pub fn line(
+        &self,
+        x1: &PyAny,
+        y1: &PyAny,
+        x2: &PyAny,
+        y2: &PyAny,
+        color: Color,
+    ) -> PyResult<()> {
         self.pyxel_image
             .lock()
             .line(as_i32!(x1), as_i32!(y1), as_i32!(x2), as_i32!(y2), color);
+
+        Ok(())
     }
 
-    pub fn rect(&self, x: &PyAny, y: &PyAny, width: &PyAny, height: &PyAny, color: Color) {
+    pub fn rect(
+        &self,
+        x: &PyAny,
+        y: &PyAny,
+        width: &PyAny,
+        height: &PyAny,
+        color: Color,
+    ) -> PyResult<()> {
         self.pyxel_image.lock().rect(
             as_i32!(x),
             as_i32!(y),
@@ -117,9 +129,18 @@ impl Image {
             as_u32!(height),
             color,
         );
+
+        Ok(())
     }
 
-    pub fn rectb(&self, x: &PyAny, y: &PyAny, width: &PyAny, height: &PyAny, color: Color) {
+    pub fn rectb(
+        &self,
+        x: &PyAny,
+        y: &PyAny,
+        width: &PyAny,
+        height: &PyAny,
+        color: Color,
+    ) -> PyResult<()> {
         self.pyxel_image.lock().rectb(
             as_i32!(x),
             as_i32!(y),
@@ -127,18 +148,24 @@ impl Image {
             as_u32!(height),
             color,
         );
+
+        Ok(())
     }
 
-    pub fn circ(&self, x: &PyAny, y: &PyAny, radius: &PyAny, color: Color) {
+    pub fn circ(&self, x: &PyAny, y: &PyAny, radius: &PyAny, color: Color) -> PyResult<()> {
         self.pyxel_image
             .lock()
             .circ(as_i32!(x), as_i32!(y), as_u32!(radius), color);
+
+        Ok(())
     }
 
-    pub fn circb(&self, x: &PyAny, y: &PyAny, radius: &PyAny, color: Color) {
+    pub fn circb(&self, x: &PyAny, y: &PyAny, radius: &PyAny, color: Color) -> PyResult<()> {
         self.pyxel_image
             .lock()
             .circb(as_i32!(x), as_i32!(y), as_u32!(radius), color);
+
+        Ok(())
     }
 
     pub fn tri(
@@ -150,7 +177,7 @@ impl Image {
         x3: &PyAny,
         y3: &PyAny,
         color: Color,
-    ) {
+    ) -> PyResult<()> {
         self.pyxel_image.lock().tri(
             as_i32!(x1),
             as_i32!(y1),
@@ -160,6 +187,8 @@ impl Image {
             as_i32!(y3),
             color,
         );
+
+        Ok(())
     }
 
     pub fn trib(
@@ -171,7 +200,7 @@ impl Image {
         x3: &PyAny,
         y3: &PyAny,
         color: Color,
-    ) {
+    ) -> PyResult<()> {
         self.pyxel_image.lock().trib(
             as_i32!(x1),
             as_i32!(y1),
@@ -181,10 +210,14 @@ impl Image {
             as_i32!(y3),
             color,
         );
+
+        Ok(())
     }
 
-    pub fn fill(&self, x: &PyAny, y: &PyAny, color: Color) {
+    pub fn fill(&self, x: &PyAny, y: &PyAny, color: Color) -> PyResult<()> {
         self.pyxel_image.lock().fill(as_i32!(x), as_i32!(y), color);
+
+        Ok(())
     }
 
     pub fn blt(
@@ -197,7 +230,7 @@ impl Image {
         width: &PyAny,
         height: &PyAny,
         transparent: Option<Color>,
-    ) {
+    ) -> PyResult<()> {
         self.pyxel_image.lock().blt(
             as_i32!(x),
             as_i32!(y),
@@ -208,6 +241,8 @@ impl Image {
             as_i32!(height),
             transparent,
         );
+
+        Ok(())
     }
 
     pub fn bltm(
@@ -220,7 +255,7 @@ impl Image {
         width: &PyAny,
         height: &PyAny,
         transparent: Option<Color>,
-    ) {
+    ) -> PyResult<()> {
         self.pyxel_image.lock().bltm(
             as_i32!(x),
             as_i32!(y),
@@ -231,9 +266,18 @@ impl Image {
             as_i32!(height),
             transparent,
         );
+
+        Ok(())
     }
 
-    pub fn text(&self, x: &PyAny, y: &PyAny, string: &str, color: Color, font: Image) {
+    pub fn text(
+        &self,
+        x: &PyAny,
+        y: &PyAny,
+        string: &str,
+        color: Color,
+        font: Image,
+    ) -> PyResult<()> {
         self.pyxel_image.lock().text(
             as_i32!(x),
             as_i32!(y),
@@ -241,6 +285,8 @@ impl Image {
             color,
             &font.pyxel_image.lock(),
         );
+
+        Ok(())
     }
 }
 

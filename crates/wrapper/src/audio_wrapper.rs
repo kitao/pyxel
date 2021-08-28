@@ -6,22 +6,22 @@ use crate::music_wrapper::{wrap_pyxel_music, Music};
 use crate::sound_wrapper::{wrap_pyxel_sound, Sound};
 
 #[pyfunction]
-fn channel(channel_no: u32) -> Channel {
-    wrap_pyxel_channel(instance().channel(channel_no))
+fn channel(channel_no: u32) -> PyResult<Channel> {
+    Ok(wrap_pyxel_channel(instance().channel(channel_no)))
 }
 
 #[pyfunction]
-fn sound(sound_no: u32) -> Sound {
-    wrap_pyxel_sound(instance().sound(sound_no))
+fn sound(sound_no: u32) -> PyResult<Sound> {
+    Ok(wrap_pyxel_sound(instance().sound(sound_no)))
 }
 
 #[pyfunction]
-fn music(music_no: u32) -> Music {
-    wrap_pyxel_music(instance().music(music_no))
+fn music(music_no: u32) -> PyResult<Music> {
+    Ok(wrap_pyxel_music(instance().music(music_no)))
 }
 
 #[pyfunction]
-fn play(channel: u32, sequence: &PyAny, is_looping: Option<bool>) {
+fn play(channel: u32, sequence: &PyAny, is_looping: Option<bool>) -> PyResult<()> {
     type_switch! {
         sequence,
         Vec<u32>,
@@ -33,20 +33,26 @@ fn play(channel: u32, sequence: &PyAny, is_looping: Option<bool>) {
             instance().play1(channel, sequence, is_looping.unwrap_or(false));
         }
     }
+
+    Ok(())
 }
 
 #[pyfunction]
-fn playm(music_no: u32, is_looping: Option<bool>) {
+fn playm(music_no: u32, is_looping: Option<bool>) -> PyResult<()> {
     instance().playm(music_no, is_looping.unwrap_or(false));
+
+    Ok(())
 }
 
 #[pyfunction]
-fn stop(channel_no: Option<u32>) {
+fn stop(channel_no: Option<u32>) -> PyResult<()> {
     if let Some(channel_no) = channel_no {
         instance().stop(channel_no);
     } else {
         instance().stop0();
     }
+
+    Ok(())
 }
 
 pub fn add_audio_functions(m: &PyModule) -> PyResult<()> {

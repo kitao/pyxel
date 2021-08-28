@@ -22,41 +22,43 @@ pub fn wrap_pyxel_channel(pyxel_channel: PyxelSharedChannel) -> Channel {
 #[pymethods]
 impl Channel {
     #[new]
-    pub fn new() -> Channel {
-        wrap_pyxel_channel(PyxelChannel::new())
+    pub fn new() -> PyResult<Channel> {
+        Ok(wrap_pyxel_channel(PyxelChannel::new()))
     }
 
     #[getter]
-    pub fn get_volume(&self) -> Volume {
-        self.pyxel_channel.lock().volume
+    pub fn get_volume(&self) -> PyResult<Volume> {
+        Ok(self.pyxel_channel.lock().volume)
     }
 
     #[setter]
-    pub fn set_volume(&self, volume: Volume) {
+    pub fn set_volume(&self, volume: Volume) -> PyResult<()> {
         self.pyxel_channel.lock().volume = volume;
+
+        Ok(())
     }
 
     #[getter]
-    pub fn is_playing(&self) -> bool {
-        self.pyxel_channel.lock().is_playing()
+    pub fn is_playing(&self) -> PyResult<bool> {
+        Ok(self.pyxel_channel.lock().is_playing())
     }
 
     #[getter]
-    pub fn is_looping(&self) -> bool {
-        self.pyxel_channel.lock().is_looping()
+    pub fn is_looping(&self) -> PyResult<bool> {
+        Ok(self.pyxel_channel.lock().is_looping())
     }
 
     #[getter]
-    pub fn sound_index(&self) -> u32 {
-        self.pyxel_channel.lock().sound_index()
+    pub fn sound_index(&self) -> PyResult<u32> {
+        Ok(self.pyxel_channel.lock().sound_index())
     }
 
     #[getter]
-    pub fn note_index(&self) -> u32 {
-        self.pyxel_channel.lock().note_index()
+    pub fn note_index(&self) -> PyResult<u32> {
+        Ok(self.pyxel_channel.lock().note_index())
     }
 
-    pub fn play(&self, sounds: &PyAny, is_looping: Option<bool>) {
+    pub fn play(&self, sounds: &PyAny, is_looping: Option<bool>) -> PyResult<()> {
         type_switch! {
             sounds,
             Vec<Sound>,
@@ -70,6 +72,13 @@ impl Channel {
                     .lock()
                     .play(sounds, is_looping.unwrap_or(false));
             },
+            Sound,
+            {
+                self.pyxel_channel.lock().play1(
+                    sounds.pyxel_sound.lock().clone(),
+                    is_looping.unwrap_or(false),
+                );
+            },
             Vec<u32>,
             {
                 let sounds = sounds
@@ -81,13 +90,6 @@ impl Channel {
                     .lock()
                     .play(sounds, is_looping.unwrap_or(false));
             },
-            Sound,
-            {
-                self.pyxel_channel.lock().play1(
-                    sounds.pyxel_sound.lock().clone(),
-                    is_looping.unwrap_or(false),
-                );
-            },
             u32,
             {
                 self.pyxel_channel.lock().play1(
@@ -96,10 +98,14 @@ impl Channel {
                 );
             }
         }
+
+        Ok(())
     }
 
-    pub fn stop(&mut self) {
+    pub fn stop(&mut self) -> PyResult<()> {
         self.pyxel_channel.lock().stop();
+
+        Ok(())
     }
 }
 
