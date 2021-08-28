@@ -1,3 +1,5 @@
+use std::process::exit;
+
 use pyo3::prelude::*;
 use pyo3::types::PyAny;
 
@@ -15,7 +17,7 @@ fn init<'a>(
     quit_key: Option<pyxel::Key>,
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,
-) {
+) -> PyResult<()> {
     set_instance(Pyxel::new(
         width,
         height,
@@ -26,26 +28,35 @@ fn init<'a>(
         capture_scale,
         capture_sec,
     ));
+
+    Ok(())
 }
 
 #[pyfunction]
-fn title(title: &str) {
+fn title(title: &str) -> PyResult<()> {
     instance().title(title);
+
+    Ok(())
 }
 
 #[pyfunction]
-fn icon(data_str: Vec<&str>, scale: u32) {
+fn icon(data_str: Vec<&str>, scale: u32) -> PyResult<()> {
     instance().icon(&data_str, scale);
+
+    Ok(())
 }
 
 #[pyfunction]
-fn fullscreen() {
+fn fullscreen() -> PyResult<()> {
     instance().fullscreen();
+
+    Ok(())
 }
 
 #[pyfunction]
-fn run(update: &PyAny, draw: &PyAny) {
+fn run(py: Python, update: &PyAny, draw: &PyAny) -> PyResult<()> {
     struct PythonCallback<'a> {
+        py: Python<'a>,
         update: &'a PyAny,
         draw: &'a PyAny,
     }
@@ -53,36 +64,47 @@ fn run(update: &PyAny, draw: &PyAny) {
     impl<'a> PyxelCallback for PythonCallback<'a> {
         fn update(&mut self, _pyxel: &mut Pyxel) {
             if let Err(err) = self.update.call0() {
-                panic!("{}", err);
+                err.print(self.py);
+                exit(1);
             }
         }
 
         fn draw(&mut self, _pyxel: &mut Pyxel) {
             if let Err(err) = self.draw.call0() {
-                panic!("{}", err);
+                err.print(self.py);
+                exit(1);
             }
         }
     }
 
     instance().run(&mut PythonCallback {
+        py: py,
         update: update,
         draw: draw,
     });
+
+    Ok(())
 }
 
 #[pyfunction]
-fn show() {
+fn show() -> PyResult<()> {
     instance().show();
+
+    Ok(())
 }
 
 #[pyfunction]
-fn flip() {
+fn flip() -> PyResult<()> {
     instance().flip();
+
+    Ok(())
 }
 
 #[pyfunction]
-fn quit() {
+fn quit() -> PyResult<()> {
     instance().quit();
+
+    Ok(())
 }
 
 pub fn add_system_functions(m: &PyModule) -> PyResult<()> {
