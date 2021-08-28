@@ -20,7 +20,7 @@ class App:
         self.floor = [(i * 60, randint(8, 104), True) for i in range(4)]
         self.fruit = [(i * 60, randint(0, 104), randint(0, 2), True) for i in range(4)]
 
-        pyxel.playm(0, is_looping=True)
+        pyxel.playm(0, loop_=True)
 
         pyxel.run(self.update, self.draw)
 
