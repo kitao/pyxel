@@ -99,7 +99,6 @@ pub fn main() {
         None,
         None,
         None,
-        None,
     );
     let mut app = App::new(&mut pyxel);
 
