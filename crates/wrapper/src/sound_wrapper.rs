@@ -13,16 +13,18 @@ pub struct Notes {
 
 #[pyproto]
 impl PySequenceProtocol for Notes {
-    fn __len__(&self) -> usize {
-        self.pyxel_sound.lock().notes.len()
+    fn __len__(&self) -> PyResult<usize> {
+        Ok(self.pyxel_sound.lock().notes.len())
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<Note> {
         Ok(self.pyxel_sound.lock().notes[idx as usize])
     }
 
-    fn __setitem__(&mut self, idx: isize, note: Note) {
+    fn __setitem__(&mut self, idx: isize, note: Note) -> PyResult<()> {
         self.pyxel_sound.lock().notes[idx as usize] = note;
+
+        Ok(())
     }
 }
 
@@ -34,16 +36,18 @@ pub struct Tones {
 
 #[pyproto]
 impl PySequenceProtocol for Tones {
-    fn __len__(&self) -> usize {
-        self.pyxel_sound.lock().tones.len()
+    fn __len__(&self) -> PyResult<usize> {
+        Ok(self.pyxel_sound.lock().tones.len())
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<Tone> {
         Ok(self.pyxel_sound.lock().tones[idx as usize])
     }
 
-    fn __setitem__(&mut self, idx: isize, tone: Tone) {
+    fn __setitem__(&mut self, idx: isize, tone: Tone) -> PyResult<()> {
         self.pyxel_sound.lock().tones[idx as usize] = tone;
+
+        Ok(())
     }
 }
 
@@ -55,16 +59,18 @@ pub struct Volumes {
 
 #[pyproto]
 impl PySequenceProtocol for Volumes {
-    fn __len__(&self) -> usize {
-        self.pyxel_sound.lock().volumes.len()
+    fn __len__(&self) -> PyResult<usize> {
+        Ok(self.pyxel_sound.lock().volumes.len())
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<Volume> {
         Ok(self.pyxel_sound.lock().volumes[idx as usize])
     }
 
-    fn __setitem__(&mut self, idx: isize, volume: Volume) {
+    fn __setitem__(&mut self, idx: isize, volume: Volume) -> PyResult<()> {
         self.pyxel_sound.lock().volumes[idx as usize] = volume;
+
+        Ok(())
     }
 }
 
@@ -76,16 +82,18 @@ pub struct Effects {
 
 #[pyproto]
 impl PySequenceProtocol for Effects {
-    fn __len__(&self) -> usize {
-        self.pyxel_sound.lock().effects.len()
+    fn __len__(&self) -> PyResult<usize> {
+        Ok(self.pyxel_sound.lock().effects.len())
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<Effect> {
         Ok(self.pyxel_sound.lock().effects[idx as usize])
     }
 
-    fn __setitem__(&mut self, idx: isize, effect: Tone) {
+    fn __setitem__(&mut self, idx: isize, effect: Tone) -> PyResult<()> {
         self.pyxel_sound.lock().effects[idx as usize] = effect;
+
+        Ok(())
     }
 }
 
@@ -104,46 +112,48 @@ pub fn wrap_pyxel_sound(pyxel_sound: PyxelSharedSound) -> Sound {
 #[pymethods]
 impl Sound {
     #[new]
-    pub fn new() -> Sound {
-        wrap_pyxel_sound(PyxelSound::new())
+    pub fn new() -> PyResult<Sound> {
+        Ok(wrap_pyxel_sound(PyxelSound::new()))
     }
 
     #[getter]
-    pub fn notes(&self) -> Notes {
-        Notes {
+    pub fn notes(&self) -> PyResult<Notes> {
+        Ok(Notes {
             pyxel_sound: self.pyxel_sound.clone(),
-        }
+        })
     }
 
     #[getter]
-    pub fn tones(&self) -> Tones {
-        Tones {
+    pub fn tones(&self) -> PyResult<Tones> {
+        Ok(Tones {
             pyxel_sound: self.pyxel_sound.clone(),
-        }
+        })
     }
 
     #[getter]
-    pub fn volumes(&self) -> Volumes {
-        Volumes {
+    pub fn volumes(&self) -> PyResult<Volumes> {
+        Ok(Volumes {
             pyxel_sound: self.pyxel_sound.clone(),
-        }
+        })
     }
 
     #[getter]
-    pub fn effect(&self) -> Effects {
-        Effects {
+    pub fn effect(&self) -> PyResult<Effects> {
+        Ok(Effects {
             pyxel_sound: self.pyxel_sound.clone(),
-        }
+        })
     }
 
     #[getter]
-    pub fn get_speed(&self) -> Speed {
-        self.pyxel_sound.lock().speed
+    pub fn get_speed(&self) -> PyResult<Speed> {
+        Ok(self.pyxel_sound.lock().speed)
     }
 
     #[setter]
-    pub fn set_speed(&self, speed: Speed) {
+    pub fn set_speed(&self, speed: Speed) -> PyResult<()> {
         self.pyxel_sound.lock().speed = speed;
+
+        Ok(())
     }
 
     pub fn set(
@@ -153,26 +163,36 @@ impl Sound {
         volume_str: &str,
         effect_str: &str,
         speed: Speed,
-    ) {
+    ) -> PyResult<()> {
         self.pyxel_sound
             .lock()
             .set(note_str, tone_str, volume_str, effect_str, speed);
+
+        Ok(())
     }
 
-    pub fn set_note(&self, note_str: &str) {
+    pub fn set_note(&self, note_str: &str) -> PyResult<()> {
         self.pyxel_sound.lock().set_note(note_str);
+
+        Ok(())
     }
 
-    pub fn set_tone(&self, tone_str: &str) {
+    pub fn set_tone(&self, tone_str: &str) -> PyResult<()> {
         self.pyxel_sound.lock().set_tone(tone_str);
+
+        Ok(())
     }
 
-    pub fn set_volume(&self, volume_str: &str) {
+    pub fn set_volume(&self, volume_str: &str) -> PyResult<()> {
         self.pyxel_sound.lock().set_volume(volume_str);
+
+        Ok(())
     }
 
-    pub fn set_effect(&self, effect_str: &str) {
+    pub fn set_effect(&self, effect_str: &str) -> PyResult<()> {
         self.pyxel_sound.lock().set_effect(effect_str);
+
+        Ok(())
     }
 }
 
