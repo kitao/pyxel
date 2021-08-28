@@ -15,18 +15,10 @@ fn init<'a>(
     scale: Option<u32>,
     fps: Option<u32>,
     quit_key: Option<pyxel::Key>,
-    capture_scale: Option<u32>,
-    capture_sec: Option<u32>,
+    gif_sec: Option<u32>,
 ) -> PyResult<()> {
     set_instance(Pyxel::new(
-        width,
-        height,
-        title,
-        scale,
-        fps,
-        quit_key,
-        capture_scale,
-        capture_sec,
+        width, height, title, scale, fps, quit_key, gif_sec,
     ));
 
     Ok(())

@@ -1,35 +1,34 @@
 use crate::canvas::Canvas;
 use crate::image::Image;
+use crate::settings::CAPTURE_SCALE;
 use crate::Pyxel;
 
-struct CaptureFrame {
-    image: Image,
+struct FrameInfo {
+    frame_image: Image,
     frame_count: u32,
 }
 
 pub struct Resource {
-    capture_scale: u32,
-    capture_frame_count: u32,
-    capture_frames: Vec<CaptureFrame>,
+    max_frame_count: u32,
+    frame_info: Vec<FrameInfo>,
     start_frame_index: u32,
     cur_frame_index: u32,
     cur_frame_count: u32,
 }
 
 impl Resource {
-    pub fn new(width: u32, height: u32, capture_scale: u32, capture_frame_count: u32) -> Resource {
-        let mut capture_frames = Vec::new();
-        for _ in 0..capture_frame_count {
-            capture_frames.push(CaptureFrame {
-                image: Image::without_arc_mutex(width, height),
+    pub fn new(width: u32, height: u32, max_frame_count: u32) -> Resource {
+        let mut frame_info = Vec::new();
+        for _ in 0..max_frame_count {
+            frame_info.push(FrameInfo {
+                frame_image: Image::without_arc_mutex(width, height),
                 frame_count: 0,
             })
         }
 
         Resource {
-            capture_scale: capture_scale,
-            capture_frame_count: capture_frame_count,
-            capture_frames: capture_frames,
+            max_frame_count: max_frame_count,
+            frame_info: frame_info,
             start_frame_index: 0,
             cur_frame_index: 0,
             cur_frame_count: 0,
@@ -37,15 +36,15 @@ impl Resource {
     }
 
     pub fn capture_screen(&mut self, screen: &Image, frame_count: u32) {
-        if self.capture_frame_count == 0 {
+        if self.max_frame_count == 0 {
             return;
         }
 
-        self.cur_frame_index = (self.cur_frame_index + 1) % self.capture_frame_count;
+        self.cur_frame_index = (self.cur_frame_index + 1) % self.max_frame_count;
         self.cur_frame_count += 1;
 
-        self.capture_frames[self.cur_frame_index as usize]
-            .image
+        self.frame_info[self.cur_frame_index as usize]
+            .frame_image
             .blt(
                 0,
                 0,
@@ -56,11 +55,11 @@ impl Resource {
                 screen.height() as i32,
                 None,
             );
-        self.capture_frames[self.cur_frame_index as usize].frame_count = frame_count;
+        self.frame_info[self.cur_frame_index as usize].frame_count = frame_count;
 
-        if self.cur_frame_count > self.capture_frame_count {
-            self.start_frame_index = (self.start_frame_index + 1) % self.capture_frame_count;
-            self.cur_frame_count = self.capture_frame_count;
+        if self.cur_frame_count > self.max_frame_count {
+            self.start_frame_index = (self.start_frame_index + 1) % self.max_frame_count;
+            self.cur_frame_count = self.max_frame_count;
         }
     }
 
@@ -92,7 +91,6 @@ impl Pyxel {
     pub fn load(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
         // TODO
         let _ = (filename, image, tilemap, sound, music); // dummy
-        let _ = self.resource.capture_frames; // dummy
 
         /*
         std::ifstream ifs(std::filesystem::u8path(filename), std::ios::binary);
@@ -198,7 +196,6 @@ impl Pyxel {
     pub fn save(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
         // TODO
         let _ = (filename, image, tilemap, sound, music); // dummy
-        let _ = self.resource.capture_scale; // dummy
 
         /*
         std::ofstream ofs(std::filesystem::u8path(filename), std::ios::binary);
@@ -280,17 +277,17 @@ impl Pyxel {
     }
 
     pub fn reset_gif(&mut self) {
-        if self.resource.capture_frame_count == 0 {
+        if self.resource.max_frame_count == 0 {
             return;
         }
 
         self.resource.start_frame_index =
-            (self.resource.cur_frame_index + 1) % self.resource.capture_frame_count;
+            (self.resource.cur_frame_index + 1) % self.resource.max_frame_count;
         self.resource.cur_frame_count = 0;
     }
 
     pub fn save_gif(&mut self) {
-        if self.resource.capture_frame_count == 0 || self.resource.cur_frame_count == 0 {
+        if self.resource.max_frame_count == 0 || self.resource.cur_frame_count == 0 {
             return;
         }
 
