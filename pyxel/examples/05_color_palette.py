@@ -2,7 +2,7 @@ import pyxel
 
 
 def draw_palette(x, y, col):
-    col_val = pyxel.DEFAULT_PALETTE[col]
+    col_val = pyxel.colors[col]
     hex_col = "#{:06X}".format(col_val)
     rgb_col = "{},{},{}".format(col_val >> 16, (col_val >> 8) & 0xFF, col_val & 0xFF)
 
@@ -15,7 +15,7 @@ def draw_palette(x, y, col):
         pyxel.rectb(x, y, 13, 13, 13)
 
 
-pyxel.init(255, 81, caption="Pyxel Color Palette")
+pyxel.init(255, 81, title="Pyxel Color Palette")
 pyxel.cls(0)
 
 for i in range(16):
