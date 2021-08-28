@@ -7,25 +7,25 @@ use crate::instance;
 use crate::tilemap_wrapper::{wrap_pyxel_tilemap, Tilemap};
 
 #[pyfunction]
-fn image(image_no: u32) -> PyResult<Image> {
-    Ok(wrap_pyxel_image(instance().image(image_no)))
+fn image(img: u32) -> PyResult<Image> {
+    Ok(wrap_pyxel_image(instance().image(img)))
 }
 
 #[pyfunction]
-fn tilemap(tilemap_no: u32) -> PyResult<Tilemap> {
-    Ok(wrap_pyxel_tilemap(instance().tilemap(tilemap_no)))
+fn tilemap(tm: u32) -> PyResult<Tilemap> {
+    Ok(wrap_pyxel_tilemap(instance().tilemap(tm)))
 }
 
 #[pyfunction]
 fn clip(
     x: Option<&PyAny>,
     y: Option<&PyAny>,
-    width: Option<&PyAny>,
-    height: Option<&PyAny>,
+    w: Option<&PyAny>,
+    h: Option<&PyAny>,
 ) -> PyResult<()> {
-    if let (Some(x), Some(y), Some(width), Some(height)) = (x, y, width, height) {
-        instance().clip(as_i32!(x), as_i32!(y), as_u32!(width), as_u32!(height));
-    } else if let (None, None, None, None) = (x, y, width, height) {
+    if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
+        instance().clip(as_i32!(x), as_i32!(y), as_u32!(w), as_u32!(h));
+    } else if let (None, None, None, None) = (x, y, w, h) {
         instance().clip0();
     } else {
         type_error!("clip() takes 0 or 4 arguments");
@@ -35,10 +35,10 @@ fn clip(
 }
 
 #[pyfunction]
-fn pal(src_color: Option<Color>, dst_color: Option<Color>) -> PyResult<()> {
-    if let (Some(src_color), Some(dst_color)) = (src_color, dst_color) {
-        instance().pal(src_color, dst_color);
-    } else if let (None, None) = (src_color, dst_color) {
+fn pal(col1: Option<Color>, col2: Option<Color>) -> PyResult<()> {
+    if let (Some(col1), Some(col2)) = (col1, col2) {
+        instance().pal(col1, col2);
+    } else if let (None, None) = (col1, col2) {
         instance().pal0();
     } else {
         type_error!("pal() takes 0 or 2 arguments");
@@ -48,8 +48,8 @@ fn pal(src_color: Option<Color>, dst_color: Option<Color>) -> PyResult<()> {
 }
 
 #[pyfunction]
-fn cls(color: Color) -> PyResult<()> {
-    instance().cls(color);
+fn cls(col: Color) -> PyResult<()> {
+    instance().cls(col);
 
     Ok(())
 }
@@ -60,55 +60,43 @@ fn pget(x: &PyAny, y: &PyAny) -> PyResult<Color> {
 }
 
 #[pyfunction]
-fn pset(x: &PyAny, y: &PyAny, color: Color) -> PyResult<()> {
-    instance().pset(as_i32!(x), as_i32!(y), color);
+fn pset(x: &PyAny, y: &PyAny, col: Color) -> PyResult<()> {
+    instance().pset(as_i32!(x), as_i32!(y), col);
 
     Ok(())
 }
 
 #[pyfunction]
-fn line(x1: &PyAny, y1: &PyAny, x2: &PyAny, y2: &PyAny, color: Color) -> PyResult<()> {
-    instance().line(as_i32!(x1), as_i32!(y1), as_i32!(x2), as_i32!(y2), color);
+fn line(x1: &PyAny, y1: &PyAny, x2: &PyAny, y2: &PyAny, col: Color) -> PyResult<()> {
+    instance().line(as_i32!(x1), as_i32!(y1), as_i32!(x2), as_i32!(y2), col);
 
     Ok(())
 }
 
 #[pyfunction]
-fn rect(x: &PyAny, y: &PyAny, width: &PyAny, height: &PyAny, color: Color) -> PyResult<()> {
-    instance().rect(
-        as_i32!(x),
-        as_i32!(y),
-        as_u32!(width),
-        as_u32!(height),
-        color,
-    );
+fn rect(x: &PyAny, y: &PyAny, w: &PyAny, h: &PyAny, col: Color) -> PyResult<()> {
+    instance().rect(as_i32!(x), as_i32!(y), as_u32!(w), as_u32!(h), col);
 
     Ok(())
 }
 
 #[pyfunction]
-fn rectb(x: &PyAny, y: &PyAny, width: &PyAny, height: &PyAny, color: Color) -> PyResult<()> {
-    instance().rectb(
-        as_i32!(x),
-        as_i32!(y),
-        as_u32!(width),
-        as_u32!(height),
-        color,
-    );
+fn rectb(x: &PyAny, y: &PyAny, w: &PyAny, h: &PyAny, col: Color) -> PyResult<()> {
+    instance().rectb(as_i32!(x), as_i32!(y), as_u32!(w), as_u32!(h), col);
 
     Ok(())
 }
 
 #[pyfunction]
-fn circ(x: &PyAny, y: &PyAny, radius: &PyAny, color: Color) -> PyResult<()> {
-    instance().circ(as_i32!(x), as_i32!(y), as_u32!(radius), color);
+fn circ(x: &PyAny, y: &PyAny, r: &PyAny, col: Color) -> PyResult<()> {
+    instance().circ(as_i32!(x), as_i32!(y), as_u32!(r), col);
 
     Ok(())
 }
 
 #[pyfunction]
-fn circb(x: &PyAny, y: &PyAny, radius: &PyAny, color: Color) -> PyResult<()> {
-    instance().circb(as_i32!(x), as_i32!(y), as_u32!(radius), color);
+fn circb(x: &PyAny, y: &PyAny, r: &PyAny, col: Color) -> PyResult<()> {
+    instance().circb(as_i32!(x), as_i32!(y), as_u32!(r), col);
 
     Ok(())
 }
@@ -121,7 +109,7 @@ fn tri(
     y2: &PyAny,
     x3: &PyAny,
     y3: &PyAny,
-    color: Color,
+    col: Color,
 ) -> PyResult<()> {
     instance().tri(
         as_i32!(x1),
@@ -130,7 +118,7 @@ fn tri(
         as_i32!(y2),
         as_i32!(x3),
         as_i32!(y3),
-        color,
+        col,
     );
 
     Ok(())
@@ -144,7 +132,7 @@ fn trib(
     y2: &PyAny,
     x3: &PyAny,
     y3: &PyAny,
-    color: Color,
+    col: Color,
 ) -> PyResult<()> {
     instance().trib(
         as_i32!(x1),
@@ -153,7 +141,7 @@ fn trib(
         as_i32!(y2),
         as_i32!(x3),
         as_i32!(y3),
-        color,
+        col,
     );
 
     Ok(())
@@ -163,21 +151,21 @@ fn trib(
 fn blt(
     x: &PyAny,
     y: &PyAny,
-    image_no: u32,
+    img: u32,
     image_x: &PyAny,
     image_y: &PyAny,
-    width: &PyAny,
-    height: &PyAny,
+    w: &PyAny,
+    h: &PyAny,
     color_key: Option<Color>,
 ) -> PyResult<()> {
     instance().blt(
         as_i32!(x),
         as_i32!(y),
-        image_no,
+        img,
         as_i32!(image_x),
         as_i32!(image_y),
-        as_i32!(width),
-        as_i32!(height),
+        as_i32!(w),
+        as_i32!(h),
         color_key,
     );
 
@@ -188,30 +176,30 @@ fn blt(
 fn bltm(
     x: &PyAny,
     y: &PyAny,
-    tilemap_no: u32,
-    tilemap_x: &PyAny,
-    tilemap_y: &PyAny,
-    width: &PyAny,
-    height: &PyAny,
-    transparent: Option<Color>,
+    tm: u32,
+    u: &PyAny,
+    v: &PyAny,
+    w: &PyAny,
+    h: &PyAny,
+    colkey: Option<Color>,
 ) -> PyResult<()> {
     instance().bltm(
         as_i32!(x),
         as_i32!(y),
-        tilemap_no,
-        as_i32!(tilemap_x),
-        as_i32!(tilemap_y),
-        as_i32!(width),
-        as_i32!(height),
-        transparent,
+        tm,
+        as_i32!(u),
+        as_i32!(v),
+        as_i32!(w),
+        as_i32!(h),
+        colkey,
     );
 
     Ok(())
 }
 
 #[pyfunction]
-fn text(x: &PyAny, y: &PyAny, string: &str, color: Color) -> PyResult<()> {
-    instance().text(as_i32!(x), as_i32!(y), string, color);
+fn text(x: &PyAny, y: &PyAny, string: &str, col: Color) -> PyResult<()> {
+    instance().text(as_i32!(x), as_i32!(y), string, col);
 
     Ok(())
 }
