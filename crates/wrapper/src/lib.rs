@@ -56,7 +56,7 @@ fn set_current_directory(py: Python) -> PyResult<()> {
     locals.set_item("os", py.import("os")?)?;
     locals.set_item("inspect", py.import("inspect")?)?;
     py.eval(
-        "os.chdir(os.path.dirname(inspect.stack()[-1].filename))",
+        "os.chdir(os.path.dirname(inspect.stack()[-1].filename) or '.')",
         None,
         Some(&locals),
     )?;
