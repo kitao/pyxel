@@ -1,10 +1,16 @@
-use crate::image::{Image, SharedImage};
+use crate::canvas::Canvas;
+use crate::image::Image;
 use crate::Pyxel;
+
+struct CaptureFrame {
+    image: Image,
+    frame_count: u32,
+}
 
 pub struct Resource {
     capture_scale: u32,
     capture_frame_count: u32,
-    capture_frames: Vec<(SharedImage, u32)>,
+    capture_frames: Vec<CaptureFrame>,
     start_frame_index: u32,
     cur_frame_index: u32,
     cur_frame_count: u32,
@@ -12,39 +18,50 @@ pub struct Resource {
 
 impl Resource {
     pub fn new(width: u32, height: u32, capture_scale: u32, capture_frame_count: u32) -> Resource {
-        let mut video_frames = Vec::new();
+        let mut capture_frames = Vec::new();
         for _ in 0..capture_frame_count {
-            video_frames.push((Image::new(width, height), 0))
+            capture_frames.push(CaptureFrame {
+                image: Image::without_arc_mutex(width, height),
+                frame_count: 0,
+            })
         }
 
         Resource {
             capture_scale: capture_scale,
             capture_frame_count: capture_frame_count,
-            capture_frames: video_frames,
+            capture_frames: capture_frames,
             start_frame_index: 0,
             cur_frame_index: 0,
             cur_frame_count: 0,
         }
     }
 
-    pub fn capture_screen(&mut self) {
+    pub fn capture_screen(&mut self, screen: &Image, frame_count: u32) {
         if self.capture_frame_count == 0 {
             return;
         }
 
-        // TODO
-        /*
-        cur_frame_ = (cur_frame_ + 1) % SCREEN_CAPTURE_COUNT;
-        frame_count_++;
-        captured_images_[cur_frame_]->CopyImage(0, 0, screen_image, 0, 0, width_,
-                                                height_);
-        captured_frames_[cur_frame_] = update_frame_count;
+        self.cur_frame_index = (self.cur_frame_index + 1) % self.capture_frame_count;
+        self.cur_frame_count += 1;
 
-        if (frame_count_ > SCREEN_CAPTURE_COUNT) {
-          start_frame_ = (start_frame_ + 1) % SCREEN_CAPTURE_COUNT;
-          frame_count_ = SCREEN_CAPTURE_COUNT;
+        self.capture_frames[self.cur_frame_index as usize]
+            .image
+            .blt(
+                0,
+                0,
+                screen,
+                0,
+                0,
+                screen.width() as i32,
+                screen.height() as i32,
+                None,
+            );
+        self.capture_frames[self.cur_frame_index as usize].frame_count = frame_count;
+
+        if self.cur_frame_count > self.capture_frame_count {
+            self.start_frame_index = (self.start_frame_index + 1) % self.capture_frame_count;
+            self.cur_frame_count = self.capture_frame_count;
         }
-        */
     }
 
     /*
