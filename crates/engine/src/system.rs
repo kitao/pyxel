@@ -253,7 +253,8 @@ impl Pyxel {
         self.draw_cursor();
         self.platform
             .render_screen(&self.screen.lock(), &self.colors, BACKGROUND_COLOR);
-        self.resource.capture_screen();
+        self.resource
+            .capture_screen(&self.screen.lock(), self.system.frame_count);
 
         self.system.draw_profiler.end(self.platform.tick_count());
 
