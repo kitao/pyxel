@@ -35,20 +35,12 @@ impl Channel {
         }))
     }
 
-    pub fn is_playing(&self) -> bool {
-        self.is_playing
-    }
-
-    pub fn is_looping(&self) -> bool {
-        self.is_looping
-    }
-
-    pub fn sound_index(&self) -> u32 {
-        self.sound_index
-    }
-
-    pub fn note_index(&self) -> u32 {
-        self.note_index
+    pub fn play_pos(&mut self) -> Option<(u32, u32)> {
+        if self.is_playing {
+            Some((self.sound_index, self.note_index))
+        } else {
+            None
+        }
     }
 
     pub fn play(&mut self, sounds: Vec<Sound>, is_looping: bool) {
