@@ -1,3 +1,4 @@
+use pyo3::exceptions::PyTypeError;
 use pyo3::prelude::*;
 
 use pyxel::Color;
@@ -17,25 +18,34 @@ fn tilemap(tilemap_no: u32) -> Tilemap {
 }
 
 #[pyfunction]
-fn clip(x: Option<&PyAny>, y: Option<&PyAny>, width: Option<&PyAny>, height: Option<&PyAny>) {
+fn clip(
+    x: Option<&PyAny>,
+    y: Option<&PyAny>,
+    width: Option<&PyAny>,
+    height: Option<&PyAny>,
+) -> PyResult<()> {
     if let (Some(x), Some(y), Some(width), Some(height)) = (x, y, width, height) {
         instance().clip(as_i32!(x), as_i32!(y), as_u32!(width), as_u32!(height));
     } else if let (None, None, None, None) = (x, y, width, height) {
         instance().clip0();
     } else {
-        panic!("invalid argument number for clip");
+        return Err(PyTypeError::new_err("clip() takes 0 or 4 arguments"));
     }
+
+    Ok(())
 }
 
 #[pyfunction]
-fn pal(src_color: Option<Color>, dst_color: Option<Color>) {
+fn pal(src_color: Option<Color>, dst_color: Option<Color>) -> PyResult<()> {
     if let (Some(src_color), Some(dst_color)) = (src_color, dst_color) {
         instance().pal(src_color, dst_color);
     } else if let (None, None) = (src_color, dst_color) {
         instance().pal0();
     } else {
-        panic!("invalid argument number for pal");
+        return Err(PyTypeError::new_err("pal() takes 0 or 2 arguments"));
     }
+
+    Ok(())
 }
 
 #[pyfunction]
