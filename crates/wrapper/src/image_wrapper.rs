@@ -195,7 +195,7 @@ impl Image {
         &self,
         x: &PyAny,
         y: &PyAny,
-        image: Image,
+        img: Image,
         u: &PyAny,
         v: &PyAny,
         w: &PyAny,
@@ -205,7 +205,7 @@ impl Image {
         self.pyxel_image.lock().blt(
             as_i32!(x),
             as_i32!(y),
-            &image.pyxel_image.lock(),
+            &img.pyxel_image.lock(),
             as_i32!(u),
             as_i32!(v),
             as_i32!(w),
