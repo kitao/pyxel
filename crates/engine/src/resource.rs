@@ -3,32 +3,32 @@ use crate::image::Image;
 use crate::settings::CAPTURE_SCALE;
 use crate::Pyxel;
 
-struct FrameInfo {
+struct CaptureFrame {
     frame_image: Image,
     frame_count: u32,
 }
 
 pub struct Resource {
-    max_frame_count: u32,
-    frame_info: Vec<FrameInfo>,
+    capture_frame_count: u32,
+    capture_frames: Vec<CaptureFrame>,
     start_frame_index: u32,
     cur_frame_index: u32,
     cur_frame_count: u32,
 }
 
 impl Resource {
-    pub fn new(width: u32, height: u32, max_frame_count: u32) -> Resource {
-        let mut frame_info = Vec::new();
-        for _ in 0..max_frame_count {
-            frame_info.push(FrameInfo {
+    pub fn new(width: u32, height: u32, capture_frame_count: u32) -> Resource {
+        let mut capture_frames = Vec::new();
+        for _ in 0..capture_frame_count {
+            capture_frames.push(CaptureFrame {
                 frame_image: Image::without_arc_mutex(width, height),
                 frame_count: 0,
             })
         }
 
         Resource {
-            max_frame_count: max_frame_count,
-            frame_info: frame_info,
+            capture_frame_count: capture_frame_count,
+            capture_frames: capture_frames,
             start_frame_index: 0,
             cur_frame_index: 0,
             cur_frame_count: 0,
@@ -36,14 +36,14 @@ impl Resource {
     }
 
     pub fn capture_screen(&mut self, screen: &Image, frame_count: u32) {
-        if self.max_frame_count == 0 {
+        if self.capture_frame_count == 0 {
             return;
         }
 
-        self.cur_frame_index = (self.cur_frame_index + 1) % self.max_frame_count;
+        self.cur_frame_index = (self.cur_frame_index + 1) % self.capture_frame_count;
         self.cur_frame_count += 1;
 
-        self.frame_info[self.cur_frame_index as usize]
+        self.capture_frames[self.cur_frame_index as usize]
             .frame_image
             .blt(
                 0,
@@ -55,11 +55,11 @@ impl Resource {
                 screen.height() as i32,
                 None,
             );
-        self.frame_info[self.cur_frame_index as usize].frame_count = frame_count;
+        self.capture_frames[self.cur_frame_index as usize].frame_count = frame_count;
 
-        if self.cur_frame_count > self.max_frame_count {
-            self.start_frame_index = (self.start_frame_index + 1) % self.max_frame_count;
-            self.cur_frame_count = self.max_frame_count;
+        if self.cur_frame_count > self.capture_frame_count {
+            self.start_frame_index = (self.start_frame_index + 1) % self.capture_frame_count;
+            self.cur_frame_count = self.capture_frame_count;
         }
     }
 
@@ -245,7 +245,7 @@ impl Pyxel {
                */
     }
 
-    pub fn save_png(&mut self) {
+    pub fn screenshot(&mut self) {
         // TODO
         /*
         SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
@@ -276,18 +276,18 @@ impl Pyxel {
         */
     }
 
-    pub fn reset_gif(&mut self) {
-        if self.resource.max_frame_count == 0 {
+    pub fn reset_capture(&mut self) {
+        if self.resource.capture_frame_count == 0 {
             return;
         }
 
         self.resource.start_frame_index =
-            (self.resource.cur_frame_index + 1) % self.resource.max_frame_count;
+            (self.resource.cur_frame_index + 1) % self.resource.capture_frame_count;
         self.resource.cur_frame_count = 0;
     }
 
-    pub fn save_gif(&mut self) {
-        if self.resource.max_frame_count == 0 || self.resource.cur_frame_count == 0 {
+    pub fn screencast(&mut self) {
+        if self.resource.capture_frame_count == 0 || self.resource.cur_frame_count == 0 {
             return;
         }
 
