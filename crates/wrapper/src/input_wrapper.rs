@@ -6,7 +6,7 @@ use crate::instance;
 
 #[pyfunction]
 fn mouse(visible: bool) -> PyResult<()> {
-    instance().mouse(is_visible);
+    instance().mouse(visible);
 
     Ok(())
 }
