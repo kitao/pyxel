@@ -12,6 +12,9 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     //
     add_constant!(m, PYXEL_VERSION)?;
 
+    add_constant!(m, RESOURCE_FILE_EXTENSION)?;
+    add_constant!(m, RESOURCE_ARCHIVE_DIRNAME)?;
+
     add_constant!(m, COLOR_COUNT)?;
     add_constant!(m, IMAGE_COUNT)?;
     add_constant!(m, IMAGE_SIZE)?;
