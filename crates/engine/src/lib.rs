@@ -85,6 +85,8 @@ impl Pyxel {
         let cursor = Graphics::new_cursor_image();
         let font = Graphics::new_font_image();
 
+        platform.set_icon(&ICON_DATA, &DEFAULT_COLORS, ICON_SCALE);
+
         Pyxel {
             platform: platform,
             system: system,
