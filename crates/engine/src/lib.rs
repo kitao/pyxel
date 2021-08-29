@@ -64,18 +64,16 @@ impl Pyxel {
         width: u32,
         height: u32,
         title: Option<&str>,
-        scale: Option<u32>,
         fps: Option<u32>,
         quit_key: Option<Key>,
         capture_sec: Option<u32>,
     ) -> Pyxel {
         let title = title.unwrap_or(DEFAULT_TITLE);
-        let scale = scale.unwrap_or(DEFAULT_SCALE);
         let fps = fps.unwrap_or(DEFAULT_FPS);
         let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
         let capture_sec = capture_sec.unwrap_or(DEFAULT_GIF_SEC);
 
-        let mut platform = TargetPlatform::new(title, width, height, scale);
+        let mut platform = TargetPlatform::new(title, width, height, DISPLAY_RATIO);
         let system = System::new(fps, quit_key);
         let resource = Resource::new(width, height, capture_sec * fps);
         let input = Input::new();
