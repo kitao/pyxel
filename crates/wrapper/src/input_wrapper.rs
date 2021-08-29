@@ -5,7 +5,7 @@ use pyxel::{Key, KeyValue};
 use crate::instance;
 
 #[pyfunction]
-fn mouse(is_visible: bool) -> PyResult<()> {
+fn mouse(visible: bool) -> PyResult<()> {
     instance().mouse(is_visible);
 
     Ok(())

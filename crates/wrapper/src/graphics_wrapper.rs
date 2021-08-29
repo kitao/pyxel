@@ -152,8 +152,8 @@ fn blt(
     x: &PyAny,
     y: &PyAny,
     img: u32,
-    image_x: &PyAny,
-    image_y: &PyAny,
+    u: &PyAny,
+    v: &PyAny,
     w: &PyAny,
     h: &PyAny,
     color_key: Option<Color>,
@@ -162,8 +162,8 @@ fn blt(
         as_i32!(x),
         as_i32!(y),
         img,
-        as_i32!(image_x),
-        as_i32!(image_y),
+        as_i32!(u),
+        as_i32!(v),
         as_i32!(w),
         as_i32!(h),
         color_key,
@@ -198,8 +198,8 @@ fn bltm(
 }
 
 #[pyfunction]
-fn text(x: &PyAny, y: &PyAny, string: &str, col: Color) -> PyResult<()> {
-    instance().text(as_i32!(x), as_i32!(y), string, col);
+fn text(x: &PyAny, y: &PyAny, s: &str, col: Color) -> PyResult<()> {
+    instance().text(as_i32!(x), as_i32!(y), s, col);
 
     Ok(())
 }
