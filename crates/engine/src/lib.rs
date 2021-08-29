@@ -67,17 +67,17 @@ impl Pyxel {
         scale: Option<u32>,
         fps: Option<u32>,
         quit_key: Option<Key>,
-        gif_sec: Option<u32>,
+        capture_sec: Option<u32>,
     ) -> Pyxel {
         let title = title.unwrap_or(DEFAULT_TITLE);
         let scale = scale.unwrap_or(DEFAULT_SCALE);
         let fps = fps.unwrap_or(DEFAULT_FPS);
         let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
-        let gif_sec = gif_sec.unwrap_or(DEFAULT_GIF_SEC);
+        let capture_sec = capture_sec.unwrap_or(DEFAULT_GIF_SEC);
 
         let mut platform = TargetPlatform::new(title, width, height, scale);
         let system = System::new(fps, quit_key);
-        let resource = Resource::new(width, height, gif_sec * fps);
+        let resource = Resource::new(width, height, capture_sec * fps);
         let input = Input::new();
         let graphics = Graphics::new();
         let audio = Audio::new(&mut platform);
