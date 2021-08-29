@@ -372,7 +372,6 @@ def init(
     width: int,
     height: int,
     title: Optional[str],
-    scale: Optional[int],
     fps: Optional[int],
     quit_key: Optional[int],
     capture_sec: Optional[int],
