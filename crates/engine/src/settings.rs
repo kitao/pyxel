@@ -12,7 +12,7 @@ pub const DEFAULT_FPS: u32 = 30;
 pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
 pub const DEFAULT_GIF_SEC: u32 = 10;
 
-pub const WINDOW_SIZE_RATIO: f32 = 0.8;
+pub const DISPLAY_RATIO: f64 = 0.8;
 pub const BACKGROUND_COLOR: Rgb8 = 0x101018;
 pub const MAX_FRAME_SKIP_COUNT: u32 = 9;
 pub const MEASURE_FRAME_COUNT: u32 = 10;
