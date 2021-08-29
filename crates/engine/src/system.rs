@@ -304,12 +304,11 @@ impl Pyxel {
         let mut screen = self.screen.lock();
         let clip_rect = screen._clip_rect();
         let palette = screen._palette().clone();
-        let transparent = Some(self.cursor.lock()._value(width - 1, height - 1));
 
         screen.clip0();
         screen.pal0();
 
-        screen.blt(x, y, &self.cursor.lock(), 0, 0, width, height, transparent);
+        screen.blt(x, y, &self.cursor.lock(), 0, 0, width, height, Some(0));
 
         screen._set_clip_rect(clip_rect);
         screen._set_palette(&palette);
