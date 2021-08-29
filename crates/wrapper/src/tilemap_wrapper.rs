@@ -72,8 +72,10 @@ impl Tilemap {
         Ok(())
     }
 
-    pub fn set(&mut self, x: &PyAny, y: &PyAny, data: Vec<&str>) -> PyResult<()> {
-        self.pyxel_tilemap.lock().set(as_i32!(x), as_i32!(y), &data);
+    pub fn set(&mut self, x: &PyAny, y: &PyAny, data_str: Vec<&str>) -> PyResult<()> {
+        self.pyxel_tilemap
+            .lock()
+            .set(as_i32!(x), as_i32!(y), &data_str);
 
         Ok(())
     }
