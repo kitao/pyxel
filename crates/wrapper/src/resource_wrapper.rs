@@ -39,22 +39,22 @@ fn save(
 }
 
 #[pyfunction]
-fn save_png() -> PyResult<()> {
-    instance().save_png();
+fn screenshot() -> PyResult<()> {
+    instance().screenshot();
 
     Ok(())
 }
 
 #[pyfunction]
-fn reset_gif() -> PyResult<()> {
-    instance().reset_gif();
+fn reset_capture() -> PyResult<()> {
+    instance().reset_capture();
 
     Ok(())
 }
 
 #[pyfunction]
-fn save_gif() -> PyResult<()> {
-    instance().save_gif();
+fn screencast() -> PyResult<()> {
+    instance().screencast();
 
     Ok(())
 }
@@ -62,9 +62,9 @@ fn save_gif() -> PyResult<()> {
 pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(load, m)?)?;
     m.add_function(wrap_pyfunction!(save, m)?)?;
-    m.add_function(wrap_pyfunction!(save_png, m)?)?;
-    m.add_function(wrap_pyfunction!(reset_gif, m)?)?;
-    m.add_function(wrap_pyfunction!(save_gif, m)?)?;
+    m.add_function(wrap_pyfunction!(screenshot, m)?)?;
+    m.add_function(wrap_pyfunction!(reset_capture, m)?)?;
+    m.add_function(wrap_pyfunction!(screencast, m)?)?;
 
     Ok(())
 }

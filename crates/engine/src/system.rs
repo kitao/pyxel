@@ -211,16 +211,16 @@ impl Pyxel {
             }
 
             if self.btnp(KEY_1, None, None) {
-                self.save_gif();
+                self.screenshot();
                 self.system.disable_next_frame_skip = true;
             }
 
             if self.btnp(KEY_2, None, None) {
-                self.reset_gif();
+                self.reset_capture();
             }
 
             if self.btnp(KEY_3, None, None) {
-                self.save_png();
+                self.screencast();
                 self.system.disable_next_frame_skip = true;
             }
         }
