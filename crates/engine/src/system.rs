@@ -62,12 +62,7 @@ impl Pyxel {
     }
 
     pub fn icon(&mut self, data_str: &[&str], scale: u32) {
-        let width = data_str[0].len() as u32;
-        let height = data_str.len() as u32;
-        let mut image = Image::without_arc_mutex(width, height);
-
-        image.set(0, 0, data_str);
-        self.platform.set_icon(&image, &self.colors, scale);
+        self.platform.set_icon(data_str, &self.colors, scale);
     }
 
     pub fn fullscreen(&mut self) {

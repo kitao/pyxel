@@ -25,6 +25,7 @@ use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
 use crate::image::Image;
 use crate::platform::{AudioCallback, Platform};
 use crate::types::Rgb8;
+use crate::utils::simplify_string;
 
 struct AudioContextHolder {
     audio: Arc<Mutex<dyn AudioCallback + Send>>,
@@ -57,7 +58,7 @@ impl Platform for Sdl2 {
         let sdl_context = sdl2::init().unwrap();
         let sdl_video = sdl_context.video().unwrap();
         let sdl_display_mode = sdl_video.desktop_display_mode(0).unwrap();
-        let window_scale = f64::max(
+        let scale = f64::max(
             f64::min(
                 sdl_display_mode.w as f64 / width as f64,
                 sdl_display_mode.h as f64 / height as f64,
@@ -65,7 +66,7 @@ impl Platform for Sdl2 {
             1.0,
         ) as u32;
         let sdl_window = sdl_video
-            .window(title, width * window_scale, height * window_scale)
+            .window(title, width * scale, height * scale)
             .position_centered()
             .resizable()
             .build()
@@ -103,22 +104,32 @@ impl Platform for Sdl2 {
         self.sdl_canvas.window_mut().set_title(title).unwrap();
     }
 
-    fn set_icon(&mut self, icon: &Image, colors: &[Rgb8], scale: u32) {
-        let width = icon.width();
-        let height = icon.height();
+    fn set_icon(&mut self, data_str: &[&str], colors: &[Rgb8], scale: u32) {
+        let width = simplify_string(data_str[0]).len() as u32;
+        let height = data_str.len() as u32;
+        let mut image = Image::without_arc_mutex(width, height);
+        image.set(0, 0, data_str);
+
         let mut sdl_surface =
             SdlSurface::new(width * scale, height * scale, SdlPixelFormat::RGBA32).unwrap();
         let pitch = sdl_surface.pitch();
 
         sdl_surface.with_lock_mut(|buffer: &mut [u8]| {
-            for i in 0..height {
-                for j in 0..width {
-                    let offset = (i * pitch as u32 + j * 4) as usize;
-                    let color = colors[icon._value(j as i32, i as i32) as usize];
+            for y in 0..height {
+                for x in 0..width {
+                    for i in 0..scale {
+                        for j in 0..scale {
+                            let color = image._value(x as i32, y as i32) as usize;
+                            let rgb = colors[image._value(x as i32, y as i32) as usize];
+                            let offset =
+                                ((y * scale + i) * pitch as u32 + (x * scale + j) * 4) as usize;
 
-                    buffer[offset] = ((color >> 16) & 0xff) as u8;
-                    buffer[offset + 1] = ((color >> 8) & 0xff) as u8;
-                    buffer[offset + 2] = (color & 0xff) as u8;
+                            buffer[offset] = ((rgb >> 16) & 0xff) as u8;
+                            buffer[offset + 1] = ((rgb >> 8) & 0xff) as u8;
+                            buffer[offset + 2] = (rgb & 0xff) as u8;
+                            buffer[offset + 3] = if color > 0 { 0xff } else { 0x00 };
+                        }
+                    }
                 }
             }
         });
