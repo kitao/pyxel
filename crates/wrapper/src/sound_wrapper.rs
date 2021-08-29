@@ -138,7 +138,7 @@ impl Sound {
     }
 
     #[getter]
-    pub fn effect(&self) -> PyResult<Effects> {
+    pub fn effects(&self) -> PyResult<Effects> {
         Ok(Effects {
             pyxel_sound: self.pyxel_sound.clone(),
         })
