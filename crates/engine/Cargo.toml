@@ -20,6 +20,7 @@ harness = false
 [dependencies]
 array-macro = "2.1.0"
 blip_buf = "0.1.4"
+chrono = "0.4.19"
 image = "0.23.14"
 parking_lot = "0.11.1"
 sdl2 = { version = "0.34.5", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
