@@ -1,5 +1,6 @@
 mod audio;
 mod canvas;
+mod capturer;
 mod channel;
 mod event;
 mod graphics;
