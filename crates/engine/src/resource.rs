@@ -1,3 +1,9 @@
+use chrono::Local;
+use image::imageops::FilterType;
+use image::{imageops, Rgb, RgbImage};
+use std::env;
+use std::path::Path;
+
 use crate::canvas::Canvas;
 use crate::image::Image;
 use crate::settings::CAPTURE_SCALE;
@@ -35,6 +41,29 @@ impl Resource {
         }
     }
 
+    /*
+    void ClearImage(int32_t image_index);
+    void ClearTilemap(int32_t tilemap_index);
+    void ClearSound(int32_t sound_index);
+    void ClearMusic(int32_t music_index);
+
+    std::string DumpImage(int32_t image_index) const;
+    std::string DumpTilemap(int32_t tilemap_index) const;
+    std::string DumpSound(int32_t sound_index) const;
+    std::string DumpMusic(int32_t music_index) const;
+
+    void ParseImage(int32_t image_index, const std::string& str);
+    void ParseTilemap(int32_t tilemap_index, const std::string& str);
+    void ParseSound(int32_t sound_index, const std::string& str);
+    void ParseMusic(int32_t music_index, const std::string& str);
+
+    static std::string GetVersionName();
+    static std::string GetImageName(int32_t image_index);
+    static std::string GetTilemapName(int32_t tilemap_index);
+    static std::string GetSoundName(int32_t sound_index);
+    static std::string GetMusicName(int32_t music_index);
+    */
+
     pub fn capture_screen(&mut self, screen: &Image, frame_count: u32) {
         if self.capture_frame_count == 0 {
             return;
@@ -63,28 +92,25 @@ impl Resource {
         }
     }
 
-    /*
-    void ClearImage(int32_t image_index);
-    void ClearTilemap(int32_t tilemap_index);
-    void ClearSound(int32_t sound_index);
-    void ClearMusic(int32_t music_index);
+    #[cfg(not(target_os = "windows"))]
+    fn export_path() -> String {
+        Path::new(&env::var("HOME").unwrap())
+            .join("Desktop")
+            .join(Local::now().format("pyxel-%Y%m%d-%H%M%S").to_string())
+            .to_str()
+            .unwrap()
+            .to_string()
+    }
 
-    std::string DumpImage(int32_t image_index) const;
-    std::string DumpTilemap(int32_t tilemap_index) const;
-    std::string DumpSound(int32_t sound_index) const;
-    std::string DumpMusic(int32_t music_index) const;
-
-    void ParseImage(int32_t image_index, const std::string& str);
-    void ParseTilemap(int32_t tilemap_index, const std::string& str);
-    void ParseSound(int32_t sound_index, const std::string& str);
-    void ParseMusic(int32_t music_index, const std::string& str);
-
-    static std::string GetVersionName();
-    static std::string GetImageName(int32_t image_index);
-    static std::string GetTilemapName(int32_t tilemap_index);
-    static std::string GetSoundName(int32_t sound_index);
-    static std::string GetMusicName(int32_t music_index);
-    */
+    #[cfg(target_os = "windows")]
+    fn export_path() -> String {
+        Path::new(&env::var("USERPROFILE").unwrap())
+            .join(RegKey::predef(HKEY_LOCAL_MACHINE)
+                .open_subkey("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders")
+                .unwrap()
+                .get_value("Desktop")
+                .unwrap())
+    }
 }
 
 impl Pyxel {
@@ -246,34 +272,30 @@ impl Pyxel {
     }
 
     pub fn screenshot(&mut self) {
-        // TODO
-        /*
-        SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
-            0, width_ * SCREEN_CAPTURE_SCALE, height_ * SCREEN_CAPTURE_SCALE, 32,
-            SDL_PIXELFORMAT_RGB888);
+        let screen = self.screen.lock();
+        let width = screen.width();
+        let height = screen.height();
+        let mut image = RgbImage::new(width, height);
 
-        SDL_LockSurface(surface);
+        for i in 0..height {
+            for j in 0..width {
+                let rgb = self.colors[screen._value(j as i32, i as i32) as usize];
+                let r = ((rgb >> 16) & 0xff) as u8;
+                let g = ((rgb >> 8) & 0xff) as u8;
+                let b = (rgb & 0xff) as u8;
 
-        int32_t** src_data = captured_images_[cur_frame_]->Data();
-        int32_t* dst_data = reinterpret_cast<int32_t*>(surface->pixels);
-
-        int32_t scaled_width = width_ * SCREEN_CAPTURE_SCALE;
-        int32_t scaled_height = height_ * SCREEN_CAPTURE_SCALE;
-
-        for (int32_t i = 0; i < scaled_height; i++) {
-          for (int32_t j = 0; j < scaled_width; j++) {
-            int32_t index = scaled_width * i + j;
-            int32_t color =
-                src_data[i / SCREEN_CAPTURE_SCALE][j / SCREEN_CAPTURE_SCALE];
-
-            dst_data[index] = palette_color_[color];
-          }
+                image.put_pixel(j, i, Rgb([r, g, b]));
+            }
         }
 
-        SDL_UnlockSurface(surface);
-        IMG_SavePNG(surface, (GetBaseName() + ".png").c_str());
-        SDL_FreeSurface(surface);
-        */
+        let image = imageops::resize(
+            &image,
+            width * CAPTURE_SCALE,
+            height * CAPTURE_SCALE,
+            FilterType::Nearest,
+        );
+
+        image.save(Resource::export_path() + ".png").unwrap();
     }
 
     pub fn reset_capture(&mut self) {
@@ -313,25 +335,6 @@ impl Pyxel {
         ResetScreenCapture();
         */
     }
-
-    /*
-    std::string Recorder::GetBaseName() const {
-    #ifdef WIN32
-      std::string desktop_path = getenv("USERPROFILE");
-      desktop_path += "\\Desktop\\";
-    #else
-      std::string desktop_path = getenv("HOME");
-      desktop_path += "/Desktop/";
-    #endif
-
-      char basename[30];
-      time_t t = std::time(nullptr);
-      std::strftime(basename, sizeof(basename), "pyxel-%y%m%d-%H%M%S",
-                    std::localtime(&t));
-
-      return desktop_path + basename;
-    }
-    */
 }
 
 /*
