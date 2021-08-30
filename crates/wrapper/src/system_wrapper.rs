@@ -8,6 +8,7 @@ use pyxel::{Pyxel, PyxelCallback};
 use crate::{instance, set_instance};
 
 #[pyfunction]
+#[pyo3(text_signature = "(width, height, *, title, fps, quit_key, capture_sec)")]
 fn init<'a>(
     width: u32,
     height: u32,
