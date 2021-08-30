@@ -2,7 +2,6 @@ use std::cmp::min;
 
 use crate::canvas::Canvas;
 use crate::event::Event;
-use crate::image::Image;
 use crate::key::{KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use crate::platform::Platform;
 use crate::profiler::Profiler;
