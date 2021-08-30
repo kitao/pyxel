@@ -17,6 +17,7 @@ fn btn(key: Key) -> PyResult<bool> {
 }
 
 #[pyfunction]
+#[pyo3(text_signature = "(key, *, hold, repeat)")]
 fn btnp(key: Key, hold: Option<u32>, repeat: Option<u32>) -> PyResult<bool> {
     Ok(instance().btnp(key, hold, repeat))
 }

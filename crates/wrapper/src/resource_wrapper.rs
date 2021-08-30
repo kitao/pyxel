@@ -3,6 +3,7 @@ use pyo3::prelude::*;
 use crate::instance;
 
 #[pyfunction]
+#[pyo3(text_signature = "(filename, *, image, tilemap, sound, music)")]
 fn load(
     filename: &str,
     image: Option<bool>,
@@ -21,6 +22,7 @@ fn load(
 }
 
 #[pyfunction]
+#[pyo3(text_signature = "(filename, *, image, tilemap, sound, music)")]
 fn save(
     filename: &str,
     image: Option<bool>,
