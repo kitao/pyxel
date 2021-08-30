@@ -41,6 +41,7 @@ impl Channel {
         Ok(self.pyxel_channel.lock().play_pos())
     }
 
+    #[pyo3(text_signature = "($self, snd, *, loop)")]
     pub fn play(&self, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
         type_switch! {
             snd,

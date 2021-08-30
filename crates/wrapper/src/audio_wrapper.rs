@@ -26,6 +26,7 @@ fn play_pos(ch: u32) -> PyResult<Option<(u32, u32)>> {
 }
 
 #[pyfunction]
+#[pyo3(text_signature = "(ch, snd, *, loop)")]
 fn play(ch: u32, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
     type_switch! {
         snd,
@@ -43,6 +44,7 @@ fn play(ch: u32, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
 }
 
 #[pyfunction]
+#[pyo3(text_signature = "(msc, *, loop)")]
 fn playm(msc: u32, r#loop: Option<bool>) -> PyResult<()> {
     instance().playm(msc, r#loop.unwrap_or(false));
 
