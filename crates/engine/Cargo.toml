@@ -24,7 +24,7 @@ chrono = "0.4.19"
 image = "0.23.14"
 parking_lot = "0.11.1"
 sdl2 = { version = "0.34.5", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
-zip = "0.5.13"
+zip = { version = "0.5.13", default-features = false, features = ["deflate"] }
 
 [target.'cfg(windows)'.dependencies]
 winreg = "0.9.0"
