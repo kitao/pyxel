@@ -1,6 +1,5 @@
 use pyo3::prelude::*;
 
-use pyxel::Channel as PyxelChannel;
 use pyxel::SharedChannel as PyxelSharedChannel;
 use pyxel::Volume;
 
@@ -21,11 +20,6 @@ pub fn wrap_pyxel_channel(pyxel_channel: PyxelSharedChannel) -> Channel {
 
 #[pymethods]
 impl Channel {
-    #[new]
-    pub fn new() -> PyResult<Channel> {
-        Ok(wrap_pyxel_channel(PyxelChannel::new()))
-    }
-
     #[getter]
     pub fn get_volume(&self) -> PyResult<Volume> {
         Ok(self.pyxel_channel.lock().volume)
