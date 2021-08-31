@@ -20,23 +20,23 @@ impl Resource {
     }
 
     fn version_name() -> String {
-        String::from(RESOURCE_ARCHIVE_DIRNAME) + "version"
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "version"
     }
 
     fn image_name(image_no: u32) -> String {
-        String::from(RESOURCE_ARCHIVE_DIRNAME) + "image" + &image_no.to_string()
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "image" + &image_no.to_string()
     }
 
     fn tilemap_name(tilemap_no: u32) -> String {
-        String::from(RESOURCE_ARCHIVE_DIRNAME) + "tilemap" + &tilemap_no.to_string()
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "tilemap" + &tilemap_no.to_string()
     }
 
     fn sound_name(sound_no: u32) -> String {
-        String::from(RESOURCE_ARCHIVE_DIRNAME) + "sound" + &format!("{:02}", sound_no)
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{:02}", sound_no)
     }
 
     fn music_name(music_no: u32) -> String {
-        String::from(RESOURCE_ARCHIVE_DIRNAME) + "music" + &music_no.to_string()
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "music" + &music_no.to_string()
     }
 
     /*
