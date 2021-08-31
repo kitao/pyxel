@@ -11,10 +11,10 @@ fn load(
     sound: Option<bool>,
     music: Option<bool>,
 ) -> PyResult<()> {
-    let image = image.unwrap_or(false);
-    let tilemap = tilemap.unwrap_or(false);
-    let sound = sound.unwrap_or(false);
-    let music = music.unwrap_or(false);
+    let image = image.unwrap_or(true);
+    let tilemap = tilemap.unwrap_or(true);
+    let sound = sound.unwrap_or(true);
+    let music = music.unwrap_or(true);
 
     instance().load(filename, image, tilemap, sound, music);
 
@@ -30,10 +30,10 @@ fn save(
     sound: Option<bool>,
     music: Option<bool>,
 ) -> PyResult<()> {
-    let image = image.unwrap_or(false);
-    let tilemap = tilemap.unwrap_or(false);
-    let sound = sound.unwrap_or(false);
-    let music = music.unwrap_or(false);
+    let image = image.unwrap_or(true);
+    let tilemap = tilemap.unwrap_or(true);
+    let sound = sound.unwrap_or(true);
+    let music = music.unwrap_or(true);
 
     instance().save(filename, image, tilemap, sound, music);
 
