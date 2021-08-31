@@ -243,6 +243,56 @@ impl Image {
 
         self.pal(1, palette1);
     }
+
+    pub(crate) fn serialize(&self) -> String {
+        /*
+        Image* image = graphics_->GetImageBank(image_index);
+        int32_t** data = image->Data();
+        bool is_editted = false;
+
+        for (int32_t i = 0; i < image->Height(); i++) {
+          for (int32_t j = 0; j < image->Width(); j++) {
+            if (data[i][j] != 0) {
+              is_editted = true;
+              break;
+            }
+          }
+
+          if (is_editted) {
+            break;
+          }
+        }
+
+        if (!is_editted) {
+          return "";
+        }
+
+        std::stringstream ss;
+
+        ss << std::hex;
+
+        for (int32_t i = 0; i < image->Height(); i++) {
+          for (int32_t j = 0; j < image->Width(); j++) {
+            ss << data[i][j];
+          }
+
+          ss << std::endl;
+        }
+
+        return ss.str();
+        */
+
+        "TODO".to_string()
+    }
+
+    pub(crate) fn deserialize(&mut self, input: &str) {
+        for (i, line) in input.lines().enumerate() {
+            for (j, c) in line.chars().enumerate() {
+                let value = parse_hex_string(&c.to_string()).unwrap();
+                self._set_value(j as i32, i as i32, value as Color);
+            }
+        }
+    }
 }
 
 impl Canvas<Color> for Image {
