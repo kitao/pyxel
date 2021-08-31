@@ -152,6 +152,22 @@ impl Pyxel {
         );
     }
 
+    pub fn blt_(
+        &mut self,
+        x: i32,
+        y: i32,
+        image: &Image,
+        image_x: i32,
+        image_y: i32,
+        width: i32,
+        height: i32,
+        color_key: Option<Color>,
+    ) {
+        self.screen
+            .lock()
+            .blt(x, y, image, image_x, image_y, width, height, color_key);
+    }
+
     pub fn bltm(
         &mut self,
         x: i32,
@@ -172,6 +188,22 @@ impl Pyxel {
             width,
             height,
             color_key,
+        );
+    }
+
+    pub fn bltm_(
+        &mut self,
+        x: i32,
+        y: i32,
+        tilemap: &Tilemap,
+        tilemap_x: i32,
+        tilemap_y: i32,
+        width: i32,
+        height: i32,
+        color_key: Option<Color>,
+    ) {
+        self.screen.lock().bltm(
+            x, y, tilemap, tilemap_x, tilemap_y, width, height, color_key,
         );
     }
 
