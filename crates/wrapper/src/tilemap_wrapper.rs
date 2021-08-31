@@ -212,23 +212,42 @@ impl Tilemap {
         &self,
         x: &PyAny,
         y: &PyAny,
-        tm: Tilemap,
+        tm: &PyAny,
         u: &PyAny,
         v: &PyAny,
         w: &PyAny,
         h: &PyAny,
         tilekey: Option<Tile>,
     ) -> PyResult<()> {
-        self.pyxel_tilemap.lock().blt(
-            as_i32!(x),
-            as_i32!(y),
-            &tm.pyxel_tilemap.lock(),
-            as_i32!(u),
-            as_i32!(v),
-            as_i32!(w),
-            as_i32!(h),
-            tilekey,
-        );
+        type_switch! {
+            tm,
+            u32,
+            {
+                self.pyxel_tilemap.lock().blt(
+                    as_i32!(x),
+                    as_i32!(y),
+                    &instance().tilemap(tm).lock(),
+                    as_i32!(u),
+                    as_i32!(v),
+                    as_i32!(w),
+                    as_i32!(h),
+                    tilekey,
+                );
+            },
+            Tilemap,
+            {
+                self.pyxel_tilemap.lock().blt(
+                    as_i32!(x),
+                    as_i32!(y),
+                    &tm.pyxel_tilemap.lock(),
+                    as_i32!(u),
+                    as_i32!(v),
+                    as_i32!(w),
+                    as_i32!(h),
+                    tilekey,
+                );
+            }
+        }
 
         Ok(())
     }
