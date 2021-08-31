@@ -4,6 +4,7 @@ use pyxel::Channel as PyxelChannel;
 use pyxel::SharedChannel as PyxelSharedChannel;
 use pyxel::Volume;
 
+use crate::instance;
 use crate::sound_wrapper::Sound;
 
 #[pyclass]
@@ -43,8 +44,31 @@ impl Channel {
 
     #[pyo3(text_signature = "($self, snd, *, loop)")]
     pub fn play(&self, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
+        let loop_ = r#loop.unwrap_or(false);
+
         type_switch! {
             snd,
+            u32,
+            {
+                self.pyxel_channel
+                    .lock()
+                    .play1(instance().sound(snd).lock().clone(), loop_);
+            },
+            Vec<u32>,
+            {
+                let snd = snd
+                    .iter()
+                    .map(|sound_no| instance().sound(*sound_no).lock().clone())
+                    .collect();
+
+                self.pyxel_channel.lock().play(snd, loop_);
+            },
+            Sound,
+            {
+                self.pyxel_channel
+                    .lock()
+                    .play1(snd.pyxel_sound.lock().clone(), loop_);
+            },
             Vec<Sound>,
             {
                 let snd = snd
@@ -52,16 +76,7 @@ impl Channel {
                     .map(|sound| sound.pyxel_sound.lock().clone())
                     .collect();
 
-                self.pyxel_channel
-                    .lock()
-                    .play(snd, r#loop.unwrap_or(false));
-            },
-            Sound,
-            {
-                self.pyxel_channel.lock().play1(
-                    snd.pyxel_sound.lock().clone(),
-                    r#loop.unwrap_or(false),
-                );
+                self.pyxel_channel.lock().play(snd, loop_);
             }
         }
 

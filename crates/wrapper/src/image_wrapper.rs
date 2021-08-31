@@ -195,23 +195,42 @@ impl Image {
         &self,
         x: &PyAny,
         y: &PyAny,
-        img: Image,
+        img: &PyAny,
         u: &PyAny,
         v: &PyAny,
         w: &PyAny,
         h: &PyAny,
         colkey: Option<Color>,
     ) -> PyResult<()> {
-        self.pyxel_image.lock().blt(
-            as_i32!(x),
-            as_i32!(y),
-            &img.pyxel_image.lock(),
-            as_i32!(u),
-            as_i32!(v),
-            as_i32!(w),
-            as_i32!(h),
-            colkey,
-        );
+        type_switch! {
+            img,
+            u32,
+            {
+                self.pyxel_image.lock().blt(
+                    as_i32!(x),
+                    as_i32!(y),
+                    &instance().image(img).lock(),
+                    as_i32!(u),
+                    as_i32!(v),
+                    as_i32!(w),
+                    as_i32!(h),
+                    colkey,
+                );
+            },
+            Image,
+            {
+                self.pyxel_image.lock().blt(
+                    as_i32!(x),
+                    as_i32!(y),
+                    &img.pyxel_image.lock(),
+                    as_i32!(u),
+                    as_i32!(v),
+                    as_i32!(w),
+                    as_i32!(h),
+                    colkey,
+                );
+            }
+        }
 
         Ok(())
     }
@@ -220,31 +239,63 @@ impl Image {
         &self,
         x: &PyAny,
         y: &PyAny,
-        tm: Tilemap,
+        tm: &PyAny,
         u: &PyAny,
         v: &PyAny,
         w: &PyAny,
         h: &PyAny,
         colkey: Option<Color>,
     ) -> PyResult<()> {
-        self.pyxel_image.lock().bltm(
-            as_i32!(x),
-            as_i32!(y),
-            &tm.pyxel_tilemap.lock(),
-            as_i32!(u),
-            as_i32!(v),
-            as_i32!(w),
-            as_i32!(h),
-            colkey,
-        );
+        type_switch! {
+            tm,
+            u32,
+            {
+                self.pyxel_image.lock().bltm(
+                    as_i32!(x),
+                    as_i32!(y),
+                    &instance().tilemap(tm).lock(),
+                    as_i32!(u),
+                    as_i32!(v),
+                    as_i32!(w),
+                    as_i32!(h),
+                    colkey,
+                );
+            },
+            Tilemap,
+            {
+                self.pyxel_image.lock().bltm(
+                    as_i32!(x),
+                    as_i32!(y),
+                    &tm.pyxel_tilemap.lock(),
+                    as_i32!(u),
+                    as_i32!(v),
+                    as_i32!(w),
+                    as_i32!(h),
+                    colkey,
+                );
+            }
+        }
 
         Ok(())
     }
 
-    pub fn text(&self, x: &PyAny, y: &PyAny, s: &str, col: Color, font: Image) -> PyResult<()> {
-        self.pyxel_image
-            .lock()
-            .text(as_i32!(x), as_i32!(y), s, col, &font.pyxel_image.lock());
+    pub fn text(
+        &self,
+        x: &PyAny,
+        y: &PyAny,
+        s: &str,
+        col: Color,
+        font: Option<Image>,
+    ) -> PyResult<()> {
+        if let Some(font) = font {
+            self.pyxel_image
+                .lock()
+                .text(as_i32!(x), as_i32!(y), s, col, &font.pyxel_image.lock());
+        } else {
+            self.pyxel_image
+                .lock()
+                .text(as_i32!(x), as_i32!(y), s, col, &instance().font.lock());
+        }
 
         Ok(())
     }

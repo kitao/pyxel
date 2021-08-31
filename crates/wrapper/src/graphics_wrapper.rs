@@ -151,23 +151,42 @@ fn trib(
 fn blt(
     x: &PyAny,
     y: &PyAny,
-    img: u32,
+    img: &PyAny,
     u: &PyAny,
     v: &PyAny,
     w: &PyAny,
     h: &PyAny,
     color_key: Option<Color>,
 ) -> PyResult<()> {
-    instance().blt(
-        as_i32!(x),
-        as_i32!(y),
+    type_switch! {
         img,
-        as_i32!(u),
-        as_i32!(v),
-        as_i32!(w),
-        as_i32!(h),
-        color_key,
-    );
+        u32,
+        {
+            instance().blt(
+                as_i32!(x),
+                as_i32!(y),
+                img,
+                as_i32!(u),
+                as_i32!(v),
+                as_i32!(w),
+                as_i32!(h),
+                color_key,
+            );
+        },
+        Image,
+        {
+            instance().blt_(
+                as_i32!(x),
+                as_i32!(y),
+                &img.pyxel_image.lock(),
+                as_i32!(u),
+                as_i32!(v),
+                as_i32!(w),
+                as_i32!(h),
+                color_key,
+            );
+        }
+    }
 
     Ok(())
 }
@@ -176,23 +195,42 @@ fn blt(
 fn bltm(
     x: &PyAny,
     y: &PyAny,
-    tm: u32,
+    tm: &PyAny,
     u: &PyAny,
     v: &PyAny,
     w: &PyAny,
     h: &PyAny,
     colkey: Option<Color>,
 ) -> PyResult<()> {
-    instance().bltm(
-        as_i32!(x),
-        as_i32!(y),
+    type_switch! {
         tm,
-        as_i32!(u),
-        as_i32!(v),
-        as_i32!(w),
-        as_i32!(h),
-        colkey,
-    );
+        u32,
+        {
+            instance().bltm(
+                as_i32!(x),
+                as_i32!(y),
+                tm,
+                as_i32!(u),
+                as_i32!(v),
+                as_i32!(w),
+                as_i32!(h),
+                colkey,
+            );
+        },
+        Tilemap,
+        {
+            instance().bltm_(
+                as_i32!(x),
+                as_i32!(y),
+                &tm.pyxel_tilemap.lock(),
+                as_i32!(u),
+                as_i32!(v),
+                as_i32!(w),
+                as_i32!(h),
+                colkey,
+            );
+        }
+    }
 
     Ok(())
 }
