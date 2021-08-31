@@ -22,7 +22,7 @@ pub struct Channel {
 pub type SharedChannel = Arc<Mutex<Channel>>;
 
 impl Channel {
-    pub fn new() -> SharedChannel {
+    pub(crate) fn new() -> SharedChannel {
         Arc::new(Mutex::new(Channel {
             oscillator: Oscillator::new(),
             sounds: Vec::new(),
