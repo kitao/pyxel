@@ -472,7 +472,7 @@ def trib(
 def blt(
     x: int,
     y: int,
-    img: int,
+    img: Union[int|Image],
     image_x: int,
     image_y: int,
     w: int,
@@ -482,7 +482,7 @@ def blt(
 def bltm(
     x: int,
     y: int,
-    tm: int,
+    tm: Union[int|Tilemap],
     u: int,
     v: int,
     w: int,
@@ -502,7 +502,7 @@ def channel(ch: int) -> Channel: ...
 def sound(snd: int) -> Sound: ...
 def music(msc: int) -> Music: ...
 def play_pos(ch: int) -> Optional[Tuple[int, int]]: ...
-def play(ch: int, snd: Union[List[int] | int], *, loop: Optional[bool]) -> None: ...
+def play(ch: int, snd: Union[int|List[int]|Sound|List[Sound]], *, loop: Optional[bool]) -> None: ...
 def playm(msc: int, *, loop: Optional[bool]) -> None: ...
 def stop(ch: Optional[int]) -> None: ...
 
@@ -539,7 +539,7 @@ class Image:
         self,
         x: int,
         y: int,
-        img: Image,
+        img: Union[int|Image],
         u: int,
         v: int,
         w: int,
@@ -550,14 +550,14 @@ class Image:
         self,
         x: int,
         y: int,
-        tm: Tilemap,
+        tm: Union[int|Tilemap],
         u: int,
         v: int,
         w: int,
         h: int,
         colkey: Optional[int],
     ) -> None: ...
-    def text(self, x: int, y: int, s: str, col: int, font: Image) -> None: ...
+    def text(self, x: int, y: int, s: str, col: int, font: Optional[Image]) -> None: ...
 
 #
 # Tilemap class
@@ -610,7 +610,7 @@ class Tilemap:
         self,
         x: int,
         y: int,
-        tm: Tilemap,
+        tm: Union[int|Tilemap],
         u: int,
         v: int,
         w: int,
@@ -625,7 +625,7 @@ class Channel:
     volume: int
     def __init__(self) -> None: ...
     def play_pos(self) -> Optional[Tuple[int, int]]: ...
-    def play(self, snd: Union[List[Sound] | Sound], *, loop: Optional[bool]) -> None: ...
+    def play(self, snd: Union[int|List[int]|Sound|List[Sound]], *, loop: Optional[bool]) -> None: ...
     def stop(self) -> None: ...
 
 #
