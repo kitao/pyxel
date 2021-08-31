@@ -24,7 +24,7 @@ impl Input {
             is_mouse_visible: false,
             key_states: HashMap::new(),
             key_values: HashMap::new(),
-            text_input: String::from(""),
+            text_input: "".to_string(),
             drop_files: Vec::new(),
         }
     }
@@ -36,7 +36,7 @@ impl Input {
     pub fn reset_input_states(&mut self) {
         self.key_values.insert(MOUSE_WHEEL_X, 0);
         self.key_values.insert(MOUSE_WHEEL_Y, 0);
-        self.text_input = String::from("");
+        self.text_input = "".to_string();
         self.drop_files.clear();
     }
 
