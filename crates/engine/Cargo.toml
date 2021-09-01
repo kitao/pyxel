@@ -9,7 +9,7 @@ name = "pyxel"
 path = "src/lib.rs"
 
 [[bin]]
-name = "pyxel"
+name = "pyxel-engine"
 path = "src/bin.rs"
 
 [[test]]
