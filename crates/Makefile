@@ -26,7 +26,7 @@ ifeq ($(RELEASE),)
 CARGO_BUILD_OPT =
 SRC_LIB_DIR = $(CARGO_DEBUG_DIR)
 DST_LIB_DIR = $(CARGO_DEBUG_DIR)
-TEST_IMPORT_DIR = $(PYXEL_TESTS_DIR)
+TEST_IMPORT_DIR = $(PYXEL_TESTS_DIR)/debug
 else
 CARGO_BUILD_OPT = --release
 SRC_LIB_DIR = $(CARGO_RELEASE_DIR)
@@ -45,8 +45,7 @@ build: format
 
 test: build
 	# cargo test
-	# python3 $(PYXEL_TESTS_DIR)/main.py
-	cd $(PYXEL_TESTS_DIR); PYTHONPATH=$(TEST_IMPORT_DIR) python3 -m unittest
+	PYTHONPATH=$(TEST_IMPORT_DIR) python3 -m unittest discover $(PYXEL_TESTS_DIR)
 	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/01_hello_pyxel.py
 	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/02_jump_game.py
 	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/03_draw_api.py
