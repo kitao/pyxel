@@ -1,6 +1,7 @@
 use parking_lot::Mutex;
 use std::sync::Arc;
 
+use crate::resource::ResourceItem;
 use crate::settings::{
     EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED,
     RESOURCE_ARCHIVE_DIRNAME, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
@@ -142,16 +143,18 @@ impl Sound {
             self.effects.push(effect);
         }
     }
+}
 
-    pub(crate) fn resource_name(sound_no: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{:02}", sound_no)
+impl ResourceItem for Sound {
+    fn resource_name(item_no: u32) -> String {
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{:02}", item_no)
     }
 
-    pub fn clear(&mut self) {
+    fn clear(&mut self) {
         //
     }
 
-    pub(crate) fn serialize(&self) -> String {
+    fn serialize(&self) -> String {
         /*
         Sound* sound = audio_->GetSoundBank(sound_index);
 
@@ -211,7 +214,7 @@ impl Sound {
         "TODO".to_string()
     }
 
-    pub(crate) fn deserialize(&mut self, input: &str) {
+    fn deserialize(&mut self, input: &str) {
         /*
         Sound* sound = audio_->GetSoundBank(sound_index);
         std::stringstream ss(str);

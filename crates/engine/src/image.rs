@@ -6,6 +6,7 @@ use std::sync::Arc;
 
 use crate::canvas::{Canvas, CopyArea};
 use crate::rectarea::RectArea;
+use crate::resource::ResourceItem;
 use crate::settings::{
     COLOR_COUNT, FONT_HEIGHT, FONT_ROW_COUNT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE,
     RESOURCE_ARCHIVE_DIRNAME, TILE_SIZE,
@@ -244,16 +245,52 @@ impl Image {
 
         self.pal(1, palette1);
     }
+}
 
-    pub fn resource_name(image_no: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "image" + &image_no.to_string()
+impl Canvas<Color> for Image {
+    fn width(&self) -> u32 {
+        self.self_rect.width()
     }
 
-    pub(crate) fn clear(&mut self) {
+    fn height(&self) -> u32 {
+        self.self_rect.height()
+    }
+
+    fn _value(&self, x: i32, y: i32) -> Color {
+        self.data[y as usize][x as usize]
+    }
+
+    fn _set_value(&mut self, x: i32, y: i32, value: Color) {
+        self.data[y as usize][x as usize] = value;
+    }
+
+    fn _self_rect(&self) -> RectArea {
+        self.self_rect
+    }
+
+    fn _clip_rect(&self) -> RectArea {
+        self.clip_rect
+    }
+
+    fn _set_clip_rect(&mut self, clip_rect: RectArea) {
+        self.clip_rect = clip_rect;
+    }
+
+    fn _palette_value(&self, value: Color) -> Color {
+        self.palette[value as usize]
+    }
+}
+
+impl ResourceItem for Image {
+    fn resource_name(item_no: u32) -> String {
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "image" + &item_no.to_string()
+    }
+
+    fn clear(&mut self) {
         self.cls(0);
     }
 
-    pub(crate) fn serialize(&self) -> String {
+    fn serialize(&self) -> String {
         /*
         Image* image = graphics_->GetImageBank(image_index);
         int32_t** data = image->Data();
@@ -294,46 +331,12 @@ impl Image {
         "TODO".to_string()
     }
 
-    pub(crate) fn deserialize(&mut self, input: &str) {
+    fn deserialize(&mut self, input: &str) {
         for (i, line) in input.lines().enumerate() {
             for (j, c) in line.chars().enumerate() {
                 let value = parse_hex_string(&c.to_string()).unwrap();
                 self._set_value(j as i32, i as i32, value as Color);
             }
         }
-    }
-}
-
-impl Canvas<Color> for Image {
-    fn width(&self) -> u32 {
-        self.self_rect.width()
-    }
-
-    fn height(&self) -> u32 {
-        self.self_rect.height()
-    }
-
-    fn _value(&self, x: i32, y: i32) -> Color {
-        self.data[y as usize][x as usize]
-    }
-
-    fn _set_value(&mut self, x: i32, y: i32, value: Color) {
-        self.data[y as usize][x as usize] = value;
-    }
-
-    fn _self_rect(&self) -> RectArea {
-        self.self_rect
-    }
-
-    fn _clip_rect(&self) -> RectArea {
-        self.clip_rect
-    }
-
-    fn _set_clip_rect(&mut self, clip_rect: RectArea) {
-        self.clip_rect = clip_rect;
-    }
-
-    fn _palette_value(&self, value: Color) -> Color {
-        self.palette[value as usize]
     }
 }

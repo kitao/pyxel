@@ -1,6 +1,7 @@
 use parking_lot::Mutex;
 use std::sync::Arc;
 
+use crate::resource::ResourceItem;
 use crate::settings::{CHANNEL_COUNT, RESOURCE_ARCHIVE_DIRNAME};
 
 #[derive(Clone)]
@@ -22,16 +23,18 @@ impl Music {
             self.sequences[i as usize] = sequences[i as usize].clone();
         }
     }
+}
 
-    pub(crate) fn resource_name(music_no: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "music" + &music_no.to_string()
+impl ResourceItem for Music {
+    fn resource_name(item_no: u32) -> String {
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "music" + &item_no.to_string()
     }
 
-    pub(crate) fn clear(&mut self) {
+    fn clear(&mut self) {
         //
     }
 
-    pub(crate) fn serialize(&self) -> String {
+    fn serialize(&self) -> String {
         /*
         Music* music = audio_->GetMusicBank(music_index);
 
@@ -85,7 +88,7 @@ impl Music {
         "TODO".to_string()
     }
 
-    pub(crate) fn deserialize(&mut self, input: &str) {
+    fn deserialize(&mut self, input: &str) {
         /*
         Music* music = audio_->GetMusicBank(music_index);
         std::stringstream ss(str);
