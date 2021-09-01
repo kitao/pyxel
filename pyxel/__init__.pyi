@@ -390,8 +390,8 @@ def quit() -> None: ...
 #
 mouse_x: int
 mouse_y: int
-mouse_wheel : int
-text_input : str
+mouse_wheel: int
+text_input: str
 drop_files: List[str]
 
 def load(
@@ -472,7 +472,7 @@ def trib(
 def blt(
     x: int,
     y: int,
-    img: Union[int|Image],
+    img: Union[int | Image],
     image_x: int,
     image_y: int,
     w: int,
@@ -482,7 +482,7 @@ def blt(
 def bltm(
     x: int,
     y: int,
-    tm: Union[int|Tilemap],
+    tm: Union[int | Tilemap],
     u: int,
     v: int,
     w: int,
@@ -502,7 +502,9 @@ def channel(ch: int) -> Channel: ...
 def sound(snd: int) -> Sound: ...
 def music(msc: int) -> Music: ...
 def play_pos(ch: int) -> Optional[Tuple[int, int]]: ...
-def play(ch: int, snd: Union[int|List[int]|Sound|List[Sound]], *, loop: Optional[bool]) -> None: ...
+def play(
+    ch: int, snd: Union[int | List[int] | Sound | List[Sound]], *, loop: Optional[bool]
+) -> None: ...
 def playm(msc: int, *, loop: Optional[bool]) -> None: ...
 def stop(ch: Optional[int]) -> None: ...
 
@@ -539,7 +541,7 @@ class Image:
         self,
         x: int,
         y: int,
-        img: Union[int|Image],
+        img: Union[int | Image],
         u: int,
         v: int,
         w: int,
@@ -550,7 +552,7 @@ class Image:
         self,
         x: int,
         y: int,
-        tm: Union[int|Tilemap],
+        tm: Union[int | Tilemap],
         u: int,
         v: int,
         w: int,
@@ -610,7 +612,7 @@ class Tilemap:
         self,
         x: int,
         y: int,
-        tm: Union[int|Tilemap],
+        tm: Union[int | Tilemap],
         u: int,
         v: int,
         w: int,
@@ -624,7 +626,9 @@ class Tilemap:
 class Channel:
     volume: int
     def play_pos(self) -> Optional[Tuple[int, int]]: ...
-    def play(self, snd: Union[int|List[int]|Sound|List[Sound]], *, loop: Optional[bool]) -> None: ...
+    def play(
+        self, snd: Union[int | List[int] | Sound | List[Sound]], *, loop: Optional[bool]
+    ) -> None: ...
     def stop(self) -> None: ...
 
 #
@@ -654,6 +658,6 @@ class Sound:
 # Music class
 #
 class Music:
-    seqs: List[List[int]]
+    sequences: List[List[int]]
     def __init__(self) -> None: ...
-    def set(self, seqs: List[List[int]]) -> None: ...
+    def set(self, sequences: List[List[int]]) -> None: ...
