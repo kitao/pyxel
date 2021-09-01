@@ -2,8 +2,8 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 
 use crate::settings::{
-    EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED, TONE_NOISE,
-    TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
+    EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED,
+    RESOURCE_ARCHIVE_DIRNAME, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
 };
 use crate::types::{Effect, Note, Speed, Tone, Volume};
 use crate::utils::simplify_string;
@@ -141,6 +141,128 @@ impl Sound {
 
             self.effects.push(effect);
         }
+    }
+
+    pub(crate) fn resource_name(sound_no: u32) -> String {
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{:02}", sound_no)
+    }
+
+    pub fn clear(&mut self) {
+        //
+    }
+
+    pub(crate) fn serialize(&self) -> String {
+        /*
+        Sound* sound = audio_->GetSoundBank(sound_index);
+
+        if (sound->Note().size() == 0 && sound->Tone().size() == 0 &&
+            sound->Volume().size() == 0 && sound->Effect().size() == 0) {
+          return "";
+        }
+
+        std::stringstream ss;
+
+        ss << std::hex;
+
+        if (sound->Note().size() > 0) {
+          for (int32_t v : sound->Note()) {
+            if (v < 0) {
+              v = 0xff;
+            }
+
+            ss << std::setw(2) << std::setfill('0') << v;
+          }
+          ss << std::endl;
+        } else {
+          ss << "none" << std::endl;
+        }
+
+        if (sound->Tone().size() > 0) {
+          for (int32_t v : sound->Tone()) {
+            ss << v;
+          }
+          ss << std::endl;
+        } else {
+          ss << "none" << std::endl;
+        }
+
+        if (sound->Volume().size() > 0) {
+          for (int32_t v : sound->Volume()) {
+            ss << v;
+          }
+          ss << std::endl;
+        } else {
+          ss << "none" << std::endl;
+        }
+
+        if (sound->Effect().size() > 0) {
+          for (int32_t v : sound->Effect()) {
+            ss << v;
+          }
+          ss << std::endl;
+        } else {
+          ss << "none" << std::endl;
+        }
+
+        ss << std::dec << sound->Speed() << std::endl;
+
+        return ss.str();
+        */
+        "TODO".to_string()
+    }
+
+    pub(crate) fn deserialize(&mut self, input: &str) {
+        /*
+        Sound* sound = audio_->GetSoundBank(sound_index);
+        std::stringstream ss(str);
+
+        {
+        std::string line;
+        std::getline(ss, line);
+        line = Trim(line);
+
+        SoundData& note = sound->Note();
+        note.clear();
+
+        if (line != "none") {
+            for (int32_t i = 0; i < line.size() / 2; i++) {
+            int32_t v = std::stoi(line.substr(i * 2, 2), nullptr, 16);
+
+            if (v == 0xff) {
+                v = -1;
+            }
+
+            note.push_back(v);
+            }
+        }
+
+        PARSE_SOUND(ss, sound, Tone);
+        PARSE_SOUND(ss, sound, Volume);
+        PARSE_SOUND(ss, sound, Effect);
+
+        {
+            std::string line;
+            std::getline(ss, line);
+            line = Trim(line);
+
+            sound->Speed(std::stoi(line));
+        }
+
+        #define PARSE_SOUND(ss, sound, property)   \
+          do {                                     \
+            SoundData& data = sound->property();   \
+            data.clear();                          \
+                                                   \
+            std::string line = GetTrimmedLine(ss); \
+                                                   \
+            if (line != "none") {                  \
+              for (char c : line) {                \
+                data.push_back(c - '0');           \
+              }                                    \
+            }                                      \
+          } while (false)
+
+        */
     }
 }
 
