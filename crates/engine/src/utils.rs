@@ -1,3 +1,5 @@
+use crate::settings::PYXEL_VERSION;
+
 pub fn remove_whitespace(string: &str) -> String {
     string.replace(&[' ', '\n', '\r', '\t'][..], "")
 }
@@ -25,6 +27,24 @@ pub fn parse_hex_string(string: &str) -> Option<u32> {
     Some(result)
 }
 
+pub fn parse_version_string(string: &str) -> Option<u32> {
+    let mut version = 0;
+
+    for number in simplify_string(string).split(".") {
+        if let Ok(number) = number.parse::<u32>() {
+            version = version * 100 + number;
+        } else {
+            return None;
+        }
+    }
+
+    Some(version)
+}
+
+pub fn pyxel_version() -> u32 {
+    parse_version_string(PYXEL_VERSION).unwrap()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -45,5 +65,20 @@ mod tests {
         assert_eq!(parse_hex_string("a2"), Some(162));
         assert_eq!(parse_hex_string("BC"), Some(188));
         assert_eq!(parse_hex_string(" "), None);
+    }
+
+    #[test]
+    fn parse_version_string_() {
+        assert_eq!(parse_version_string("1.2.3"), Some(12030));
+        assert_eq!(parse_version_string("12.34.56"), Some(123456));
+        assert_eq!(parse_version_string("12.34.0"), Some(123400));
+    }
+
+    #[test]
+    fn pyxel_version_() {
+        assert_eq!(
+            !pyxel_version(),
+            parse_version_string(PYXEL_VERSION).unwrap(),
+        );
     }
 }
