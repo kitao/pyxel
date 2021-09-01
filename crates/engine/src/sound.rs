@@ -7,7 +7,7 @@ use crate::settings::{
     RESOURCE_ARCHIVE_DIRNAME, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
 };
 use crate::types::{Effect, Note, Speed, Tone, Volume};
-use crate::utils::simplify_string;
+use crate::utils::{parse_hex_string, simplify_string};
 
 #[derive(Clone)]
 pub struct Sound {
@@ -215,57 +215,39 @@ impl ResourceItem for Sound {
     }
 
     fn deserialize(&mut self, input: &str) {
-        /*
-        Sound* sound = audio_->GetSoundBank(sound_index);
-        std::stringstream ss(str);
+        self.clear();
 
-        {
-        std::string line;
-        std::getline(ss, line);
-        line = Trim(line);
-
-        SoundData& note = sound->Note();
-        note.clear();
-
-        if (line != "none") {
-            for (int32_t i = 0; i < line.size() / 2; i++) {
-            int32_t v = std::stoi(line.substr(i * 2, 2), nullptr, 16);
-
-            if (v == 0xff) {
-                v = -1;
+        for (i, line) in input.lines().enumerate() {
+            if line == "none" {
+                continue;
             }
 
-            note.push_back(v);
+            if i == 0 {
+                for j in 0..line.len() / 2 {
+                    let index = j * 2;
+                    let value = parse_hex_string(&line[index..index + 2].to_string()).unwrap();
+                    self.notes.push(value as i8);
+                }
+
+                continue;
+            } else if i == 4 {
+                self.speed = line.parse().unwrap();
+
+                continue;
+            }
+
+            let data = match i {
+                1 => &mut self.tones,
+                2 => &mut self.volumes,
+                3 => &mut self.effects,
+                _ => panic!(),
+            };
+
+            for j in 0..line.len() {
+                let value = parse_hex_string(&line[j..j + 1].to_string()).unwrap();
+                data.push(value as u8);
             }
         }
-
-        PARSE_SOUND(ss, sound, Tone);
-        PARSE_SOUND(ss, sound, Volume);
-        PARSE_SOUND(ss, sound, Effect);
-
-        {
-            std::string line;
-            std::getline(ss, line);
-            line = Trim(line);
-
-            sound->Speed(std::stoi(line));
-        }
-
-        #define PARSE_SOUND(ss, sound, property)   \
-          do {                                     \
-            SoundData& data = sound->property();   \
-            data.clear();                          \
-                                                   \
-            std::string line = GetTrimmedLine(ss); \
-                                                   \
-            if (line != "none") {                  \
-              for (char c : line) {                \
-                data.push_back(c - '0');           \
-              }                                    \
-            }                                      \
-          } while (false)
-
-        */
     }
 }
 
