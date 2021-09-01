@@ -14,6 +14,13 @@ use crate::tilemap::Tilemap;
 use crate::utils::{parse_version_string, pyxel_version};
 use crate::Pyxel;
 
+pub trait ResourceItem {
+    fn resource_name(item_no: u32) -> String;
+    fn clear(&mut self);
+    fn serialize(&self) -> String;
+    fn deserialize(&mut self, input: &str);
+}
+
 pub struct Resource {
     capturer: Capturer,
 }
