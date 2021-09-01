@@ -1,6 +1,3 @@
-# Visual Studio Code
-.vscode/*
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -17,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-#lib/
+lib/
 lib64/
 parts/
 sdist/
@@ -139,3 +136,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Pyxel
+.vscode/*
+!pyxel/lib/
