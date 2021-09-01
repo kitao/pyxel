@@ -4,6 +4,7 @@ use std::sync::Arc;
 use crate::canvas::Canvas;
 use crate::image::SharedImage;
 use crate::rectarea::RectArea;
+use crate::resource::ResourceItem;
 use crate::settings::RESOURCE_ARCHIVE_DIRNAME;
 use crate::types::Tile;
 use crate::utils::{parse_hex_string, pyxel_version, simplify_string};
@@ -60,16 +61,52 @@ impl Tilemap {
 
         self.blt(x, y, &tilemap, 0, 0, width as i32, height as i32, None);
     }
+}
 
-    pub fn resource_name(tilemap_no: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "tilemap" + &tilemap_no.to_string()
+impl Canvas<Tile> for Tilemap {
+    fn width(&self) -> u32 {
+        self.width
     }
 
-    pub(crate) fn clear(&mut self) {
+    fn height(&self) -> u32 {
+        self.height
+    }
+
+    fn _value(&self, x: i32, y: i32) -> Tile {
+        self.data[y as usize][x as usize]
+    }
+
+    fn _set_value(&mut self, x: i32, y: i32, value: Tile) {
+        self.data[y as usize][x as usize] = value;
+    }
+
+    fn _self_rect(&self) -> RectArea {
+        self.self_rect
+    }
+
+    fn _clip_rect(&self) -> RectArea {
+        self.clip_rect
+    }
+
+    fn _set_clip_rect(&mut self, clip_rect: RectArea) {
+        self.clip_rect = clip_rect;
+    }
+
+    fn _palette_value(&self, value: Tile) -> Tile {
+        value
+    }
+}
+
+impl ResourceItem for Tilemap {
+    fn resource_name(item_no: u32) -> String {
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "tilemap" + &item_no.to_string()
+    }
+
+    fn clear(&mut self) {
         self.cls((0, 0));
     }
 
-    pub(crate) fn serialize(&self) -> String {
+    fn serialize(&self) -> String {
         /*
         Tilemap* tilemap = graphics_->GetTilemapBank(tilemap_index);
         int32_t** data = tilemap->Data();
@@ -111,7 +148,7 @@ impl Tilemap {
         "TODO".to_string()
     }
 
-    pub(crate) fn deserialize(&mut self, input: &str) {
+    fn deserialize(&mut self, input: &str) {
         if pyxel_version() < 15000 {
             for (i, line) in input.lines().enumerate() {
                 for j in 0..(line.len() / 3) {
@@ -132,39 +169,5 @@ impl Tilemap {
                 }
             }
         }
-    }
-}
-
-impl Canvas<Tile> for Tilemap {
-    fn width(&self) -> u32 {
-        self.width
-    }
-
-    fn height(&self) -> u32 {
-        self.height
-    }
-
-    fn _value(&self, x: i32, y: i32) -> Tile {
-        self.data[y as usize][x as usize]
-    }
-
-    fn _set_value(&mut self, x: i32, y: i32, value: Tile) {
-        self.data[y as usize][x as usize] = value;
-    }
-
-    fn _self_rect(&self) -> RectArea {
-        self.self_rect
-    }
-
-    fn _clip_rect(&self) -> RectArea {
-        self.clip_rect
-    }
-
-    fn _set_clip_rect(&mut self, clip_rect: RectArea) {
-        self.clip_rect = clip_rect;
-    }
-
-    fn _palette_value(&self, value: Tile) -> Tile {
-        value
     }
 }
