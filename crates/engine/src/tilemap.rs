@@ -4,8 +4,9 @@ use std::sync::Arc;
 use crate::canvas::Canvas;
 use crate::image::SharedImage;
 use crate::rectarea::RectArea;
+use crate::settings::RESOURCE_ARCHIVE_DIRNAME;
 use crate::types::Tile;
-use crate::utils::{parse_hex_string, simplify_string};
+use crate::utils::{parse_hex_string, pyxel_version, simplify_string};
 
 pub struct Tilemap {
     width: u32,
@@ -60,6 +61,14 @@ impl Tilemap {
         self.blt(x, y, &tilemap, 0, 0, width as i32, height as i32, None);
     }
 
+    pub fn resource_name(tilemap_no: u32) -> String {
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "tilemap" + &tilemap_no.to_string()
+    }
+
+    pub(crate) fn clear(&mut self) {
+        self.cls((0, 0));
+    }
+
     pub(crate) fn serialize(&self) -> String {
         /*
         Tilemap* tilemap = graphics_->GetTilemapBank(tilemap_index);
@@ -102,30 +111,25 @@ impl Tilemap {
         "TODO".to_string()
     }
 
-    pub(crate) fn deserialize(&mut self, input: &str, is_old_format: bool) {
-        if is_old_format {
-            self.deserialize_old(input);
-            return;
-        }
+    pub(crate) fn deserialize(&mut self, input: &str) {
+        if pyxel_version() < 15000 {
+            for (i, line) in input.lines().enumerate() {
+                for j in 0..(line.len() / 3) {
+                    let value = parse_hex_string(&line[j * 3..j * 3 + 3].to_string()).unwrap();
+                    let x = value % 32;
+                    let y = value / 32;
 
-        for (i, line) in input.lines().enumerate() {
-            for j in 0..(line.len() / 4) {
-                let x = parse_hex_string(&line[j * 4..j * 4 + 2].to_string()).unwrap();
-                let y = parse_hex_string(&line[j * 4 + 2..j * 4 + 4].to_string()).unwrap();
-
-                self._set_value(j as i32, i as i32, (x as u8, y as u8));
+                    self._set_value(j as i32, i as i32, (x as u8, y as u8));
+                }
             }
-        }
-    }
+        } else {
+            for (i, line) in input.lines().enumerate() {
+                for j in 0..(line.len() / 4) {
+                    let x = parse_hex_string(&line[j * 4..j * 4 + 2].to_string()).unwrap();
+                    let y = parse_hex_string(&line[j * 4 + 2..j * 4 + 4].to_string()).unwrap();
 
-    fn deserialize_old(&mut self, input: &str) {
-        for (i, line) in input.lines().enumerate() {
-            for j in 0..(line.len() / 3) {
-                let value = parse_hex_string(&line[j * 3..j * 3 + 3].to_string()).unwrap();
-                let x = value % 32;
-                let y = value / 32;
-
-                self._set_value(j as i32, i as i32, (x as u8, y as u8));
+                    self._set_value(j as i32, i as i32, (x as u8, y as u8));
+                }
             }
         }
     }
