@@ -5,7 +5,7 @@ use crate::canvas::Canvas;
 use crate::image::SharedImage;
 use crate::rectarea::RectArea;
 use crate::resource::ResourceItem;
-use crate::settings::RESOURCE_ARCHIVE_DIRNAME;
+use crate::settings::{RESOURCE_ARCHIVE_DIRNAME, TILEMAP_SIZE};
 use crate::types::Tile;
 use crate::utils::{parse_hex_string, pyxel_version, simplify_string};
 
@@ -152,7 +152,8 @@ impl ResourceItem for Tilemap {
         if pyxel_version() < 15000 {
             for (i, line) in input.lines().enumerate() {
                 for j in 0..(line.len() / 3) {
-                    let value = parse_hex_string(&line[j * 3..j * 3 + 3].to_string()).unwrap();
+                    let index = j * 3;
+                    let value = parse_hex_string(&line[index..index + 3].to_string()).unwrap();
                     let x = value % 32;
                     let y = value / 32;
 
@@ -162,8 +163,9 @@ impl ResourceItem for Tilemap {
         } else {
             for (i, line) in input.lines().enumerate() {
                 for j in 0..(line.len() / 4) {
-                    let x = parse_hex_string(&line[j * 4..j * 4 + 2].to_string()).unwrap();
-                    let y = parse_hex_string(&line[j * 4 + 2..j * 4 + 4].to_string()).unwrap();
+                    let index = j * 4;
+                    let x = parse_hex_string(&line[index..index + 2].to_string()).unwrap();
+                    let y = parse_hex_string(&line[index + 2..index + 4].to_string()).unwrap();
 
                     self._set_value(j as i32, i as i32, (x as u8, y as u8));
                 }

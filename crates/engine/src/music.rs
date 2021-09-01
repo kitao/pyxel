@@ -3,6 +3,7 @@ use std::sync::Arc;
 
 use crate::resource::ResourceItem;
 use crate::settings::{CHANNEL_COUNT, RESOURCE_ARCHIVE_DIRNAME};
+use crate::utils::parse_hex_string;
 
 #[derive(Clone)]
 pub struct Music {
@@ -89,31 +90,19 @@ impl ResourceItem for Music {
     }
 
     fn deserialize(&mut self, input: &str) {
-        /*
-        Music* music = audio_->GetMusicBank(music_index);
-        std::stringstream ss(str);
+        self.clear();
 
-        PARSE_CHANNEL(ss, music, Channel0);
-        PARSE_CHANNEL(ss, music, Channel1);
-        PARSE_CHANNEL(ss, music, Channel2);
-        PARSE_CHANNEL(ss, music, Channel3);
+        for (i, line) in input.lines().enumerate() {
+            if line == "none" {
+                continue;
+            }
 
-        #define PARSE_CHANNEL(ss, music, channel)                          \
-          do {                                                             \
-            SoundIndexList& data = music->channel();                       \
-            data.clear();                                                  \
-                                                                           \
-            std::string line = GetTrimmedLine(ss);                         \
-                                                                           \
-            if (line != "none") {                                          \
-              for (int32_t i = 0; i < line.size() / 2; i++) {              \
-                int32_t v = std::stoi(line.substr(i * 2, 2), nullptr, 16); \
-                                                                           \
-                data.push_back(v);                                         \
-              }                                                            \
-            }                                                              \
-          } while (false)
-        */
+            for j in 0..line.len() / 2 {
+                let index = j * 2;
+                let value = parse_hex_string(&line[index..index + 2].to_string()).unwrap();
+                self.sequences[i].push(value);
+            }
+        }
     }
 }
 
