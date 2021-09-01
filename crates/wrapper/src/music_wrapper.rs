@@ -73,14 +73,14 @@ impl Music {
         Ok(wrap_pyxel_music(PyxelMusic::new()))
     }
 
-    pub fn set(&self, seqs: Vec<Vec<u32>>) -> PyResult<()> {
-        self.pyxel_music.lock().set(&seqs);
+    pub fn set(&self, sequences: Vec<Vec<u32>>) -> PyResult<()> {
+        self.pyxel_music.lock().set(&sequences);
 
         Ok(())
     }
 
     #[getter]
-    pub fn seqs(&self) -> PyResult<Sequences> {
+    pub fn sequences(&self) -> PyResult<Sequences> {
         Ok(Sequences {
             pyxel_music: self.pyxel_music.clone(),
         })
