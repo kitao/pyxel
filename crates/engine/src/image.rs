@@ -7,7 +7,8 @@ use std::sync::Arc;
 use crate::canvas::{Canvas, CopyArea};
 use crate::rectarea::RectArea;
 use crate::settings::{
-    COLOR_COUNT, FONT_HEIGHT, FONT_ROW_COUNT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, TILE_SIZE,
+    COLOR_COUNT, FONT_HEIGHT, FONT_ROW_COUNT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE,
+    RESOURCE_ARCHIVE_DIRNAME, TILE_SIZE,
 };
 use crate::tilemap::Tilemap;
 use crate::types::{Color, Rgb8};
@@ -242,6 +243,14 @@ impl Image {
         }
 
         self.pal(1, palette1);
+    }
+
+    pub fn resource_name(image_no: u32) -> String {
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "image" + &image_no.to_string()
+    }
+
+    pub(crate) fn clear(&mut self) {
+        self.cls(0);
     }
 
     pub(crate) fn serialize(&self) -> String {
