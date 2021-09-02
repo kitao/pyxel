@@ -44,7 +44,7 @@ build: format
 	cp $(SRC_LIB_DIR)/$(SRC_LIB_NAME) $(DST_LIB_DIR)/$(DST_LIB_NAME)
 
 test: build
-	# cargo test
+	cargo test
 	PYTHONPATH=$(TEST_IMPORT_DIR) python3 -m unittest discover $(PYXEL_TESTS_DIR)
 	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/01_hello_pyxel.py
 	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/02_jump_game.py
