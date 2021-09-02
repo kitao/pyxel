@@ -8,7 +8,7 @@ use crate::canvas::{Canvas, CopyArea};
 use crate::rectarea::RectArea;
 use crate::resource::ResourceItem;
 use crate::settings::{
-    COLOR_COUNT, FONT_HEIGHT, FONT_ROW_COUNT, FONT_WIDTH, IMAGE_SIZE, MAX_FONT_CODE, MIN_FONT_CODE,
+    COLOR_COUNT, FONT_HEIGHT, FONT_ROW_COUNT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE,
     RESOURCE_ARCHIVE_DIRNAME, TILE_SIZE,
 };
 use crate::tilemap::Tilemap;
@@ -333,10 +333,13 @@ impl ResourceItem for Image {
 
     fn deserialize(&mut self, input: &str) {
         for (i, line) in input.lines().enumerate() {
-            for j in 0..line.len() {
-                let value = parse_hex_string(&line[j..j + 1].to_string()).unwrap();
-                self._set_value(j as i32, i as i32, value as Color);
-            }
+            string_loop!(j, value, line, 1, {
+                self._set_value(
+                    j as i32,
+                    i as i32,
+                    parse_hex_string(&value).unwrap() as Color,
+                );
+            });
         }
     }
 }
