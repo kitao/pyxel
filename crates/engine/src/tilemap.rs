@@ -126,6 +126,8 @@ impl ResourceItem for Tilemap {
                 let tile = self._value(j as i32, i as i32);
                 output += &format!("{:02x}{:02x}", tile.0, tile.1);
             }
+
+            output += "\n";
         }
 
         output
