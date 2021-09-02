@@ -78,8 +78,8 @@ impl Input {
             // Mouse Events
             //
             Event::MouseMotion { x, y } => {
-                self.key_values.insert(MOUSE_POS_X, x as KeyValue);
-                self.key_values.insert(MOUSE_POS_Y, y as KeyValue);
+                self.key_values.insert(MOUSE_POS_X, x);
+                self.key_values.insert(MOUSE_POS_Y, y);
             }
             Event::MouseButtonDown { button } => {
                 self.press_key(MOUSE_BUTTON_LEFT + button as Key, frame_count);
@@ -88,8 +88,8 @@ impl Input {
                 self.release_key(MOUSE_BUTTON_LEFT + button as Key, frame_count);
             }
             Event::MouseWheel { x, y } => {
-                *self.key_values.entry(MOUSE_WHEEL_X).or_insert(0) += x as KeyValue;
-                *self.key_values.entry(MOUSE_WHEEL_Y).or_insert(0) += y as KeyValue;
+                *self.key_values.entry(MOUSE_WHEEL_X).or_insert(0) += x;
+                *self.key_values.entry(MOUSE_WHEEL_Y).or_insert(0) += y;
             }
 
             //
@@ -105,7 +105,7 @@ impl Input {
                 };
 
                 self.key_values
-                    .insert(GAMEPAD1_AXIS_LEFTX + axis as Key + offset as Key, value);
+                    .insert(GAMEPAD1_AXIS_LEFTX + axis as Key + offset, value);
             }
             Event::ControllerButtonDown { which, button } => {
                 let offset = if which == 0 {
@@ -148,21 +148,13 @@ impl Input {
     }
 
     fn press_key(&mut self, key: Key, frame_count: u32) {
-        self.key_states.insert(
-            key,
-            KeyState::Pressed {
-                frame_count: frame_count,
-            },
-        );
+        self.key_states
+            .insert(key, KeyState::Pressed { frame_count });
     }
 
     fn release_key(&mut self, key: Key, frame_count: u32) {
-        self.key_states.insert(
-            key,
-            KeyState::Released {
-                frame_count: frame_count,
-            },
-        );
+        self.key_states
+            .insert(key, KeyState::Released { frame_count });
     }
 }
 

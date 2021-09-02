@@ -27,12 +27,12 @@ impl Tilemap {
 
     pub fn without_arc_mutex(width: u32, height: u32, image: SharedImage) -> Tilemap {
         Tilemap {
-            width: width,
-            height: height,
+            width,
+            height,
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
             data: vec![vec![(0, 0); width as usize]; height as usize],
-            image: image,
+            image,
         }
     }
 

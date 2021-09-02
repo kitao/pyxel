@@ -13,12 +13,12 @@ pub struct RectArea {
 impl RectArea {
     pub fn new(left: i32, top: i32, width: u32, height: u32) -> RectArea {
         RectArea {
-            left: left,
-            top: top,
+            left,
+            top,
             right: left + width as i32 - 1,
             bottom: top + height as i32 - 1,
-            width: width,
-            height: height,
+            width,
+            height,
         }
     }
 
