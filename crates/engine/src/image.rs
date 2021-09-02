@@ -309,6 +309,8 @@ impl ResourceItem for Image {
             for j in 0..self.width() {
                 output += &format!("{:1x}", self._value(j as i32, i as i32));
             }
+
+            output += "\n";
         }
 
         output
