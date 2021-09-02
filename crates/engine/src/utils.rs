@@ -1,5 +1,16 @@
 use crate::settings::PYXEL_VERSION;
 
+macro_rules! string_loop {
+    ($index: ident, $piece: ident, $string: ident, $step: expr, $block: block) => {
+        for $index in 0..($string.len() / $step) {
+            let index = $index * $step;
+            let $piece = $string[index..index + $step].to_string();
+
+            $block
+        }
+    };
+}
+
 pub fn remove_whitespace(string: &str) -> String {
     string.replace(&[' ', '\n', '\r', '\t'][..], "")
 }

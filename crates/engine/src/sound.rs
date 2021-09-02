@@ -223,11 +223,9 @@ impl ResourceItem for Sound {
             }
 
             if i == 0 {
-                for j in 0..line.len() / 2 {
-                    let index = j * 2;
-                    let value = parse_hex_string(&line[index..index + 2].to_string()).unwrap();
-                    self.notes.push(value as i8);
-                }
+                string_loop!(j, value, line, 2, {
+                    self.notes.push(parse_hex_string(&value).unwrap() as i8);
+                });
 
                 continue;
             } else if i == 4 {
@@ -243,10 +241,9 @@ impl ResourceItem for Sound {
                 _ => panic!(),
             };
 
-            for j in 0..line.len() {
-                let value = parse_hex_string(&line[j..j + 1].to_string()).unwrap();
-                data.push(value as u8);
-            }
+            string_loop!(j, value, line, 1, {
+                data.push(parse_hex_string(&value).unwrap() as u8);
+            });
         }
     }
 }

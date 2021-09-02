@@ -97,11 +97,9 @@ impl ResourceItem for Music {
                 continue;
             }
 
-            for j in 0..line.len() / 2 {
-                let index = j * 2;
-                let value = parse_hex_string(&line[index..index + 2].to_string()).unwrap();
-                self.sequences[i].push(value);
-            }
+            string_loop!(j, value, line, 2, {
+                self.sequences[i].push(parse_hex_string(&value).unwrap());
+            });
         }
     }
 }
