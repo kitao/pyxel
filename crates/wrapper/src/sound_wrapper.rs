@@ -104,9 +104,7 @@ pub struct Sound {
 }
 
 pub fn wrap_pyxel_sound(pyxel_sound: PyxelSharedSound) -> Sound {
-    Sound {
-        pyxel_sound: pyxel_sound,
-    }
+    Sound { pyxel_sound }
 }
 
 #[pymethods]

@@ -14,9 +14,7 @@ pub struct Tilemap {
 }
 
 pub fn wrap_pyxel_tilemap(pyxel_tilemap: PyxelSharedTilemap) -> Tilemap {
-    Tilemap {
-        pyxel_tilemap: pyxel_tilemap,
-    }
+    Tilemap { pyxel_tilemap }
 }
 
 #[pymethods]

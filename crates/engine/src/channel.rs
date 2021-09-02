@@ -44,7 +44,7 @@ impl Channel {
     }
 
     pub fn play(&mut self, sounds: Vec<Sound>, is_looping: bool) {
-        if sounds.len() == 0 {
+        if sounds.is_empty() {
             return;
         }
 

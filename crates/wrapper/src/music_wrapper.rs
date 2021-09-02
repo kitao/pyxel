@@ -61,9 +61,7 @@ pub struct Music {
 }
 
 pub fn wrap_pyxel_music(pyxel_music: PyxelSharedMusic) -> Music {
-    Music {
-        pyxel_music: pyxel_music,
-    }
+    Music { pyxel_music }
 }
 
 #[pymethods]

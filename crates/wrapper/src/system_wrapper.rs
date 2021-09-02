@@ -9,7 +9,7 @@ use crate::{instance, set_instance};
 
 #[pyfunction]
 #[pyo3(text_signature = "(width, height, *, title, fps, quit_key, capture_sec)")]
-fn init<'a>(
+fn init(
     width: u32,
     height: u32,
     title: Option<&str>,
@@ -67,11 +67,7 @@ fn run(py: Python, update: &PyAny, draw: &PyAny) -> PyResult<()> {
         }
     }
 
-    instance().run(&mut PythonCallback {
-        py: py,
-        update: update,
-        draw: draw,
-    });
+    instance().run(&mut PythonCallback { py, update, draw });
 
     Ok(())
 }

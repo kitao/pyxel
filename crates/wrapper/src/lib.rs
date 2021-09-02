@@ -1,3 +1,5 @@
+#![allow(clippy::too_many_arguments, clippy::many_single_char_names)]
+
 #[macro_use]
 mod utils;
 mod audio_wrapper;
@@ -58,7 +60,7 @@ fn set_current_directory(py: Python) -> PyResult<()> {
     py.eval(
         "os.chdir(os.path.dirname(inspect.stack()[-1].filename) or '.')",
         None,
-        Some(&locals),
+        Some(locals),
     )?;
 
     Ok(())
