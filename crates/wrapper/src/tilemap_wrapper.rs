@@ -25,11 +25,11 @@ impl Tilemap {
             img,
             Image,
             {
-                img.pyxel_image.clone()
+                img.pyxel_image
             },
             u32,
             {
-                instance().image(img).clone()
+                instance().image(img)
             }
         };
 
@@ -60,10 +60,10 @@ impl Tilemap {
         type_switch! {
             img,
             Image, {
-                self.pyxel_tilemap.lock().image = img.pyxel_image.clone();
+                self.pyxel_tilemap.lock().image = img.pyxel_image;
             },
             u32, {
-                self.pyxel_tilemap.lock().image = instance().image(img).clone();
+                self.pyxel_tilemap.lock().image = instance().image(img);
             }
         }
 
