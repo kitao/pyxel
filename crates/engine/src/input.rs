@@ -53,7 +53,7 @@ impl Input {
             // Key Events
             //
             Event::KeyDown { key } => {
-                if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
+                if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
                     self.press_key(key, frame_count);
 
                     if let Some(key) = Input::get_common_key(key) {
@@ -62,7 +62,7 @@ impl Input {
                 }
             }
             Event::KeyUp { key } => {
-                if key >= KEY_MIN_VALUE && key <= KEY_MAX_VALUE {
+                if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
                     self.release_key(key, frame_count);
 
                     if let Some(key) = Input::get_common_key(key) {
@@ -184,11 +184,10 @@ impl Pyxel {
     }
 
     pub fn btn(&self, key: Key) -> bool {
-        if let Some(KeyState::Pressed { .. }) = self.input.key_states.get(&key) {
-            true
-        } else {
-            false
-        }
+        matches!(
+            self.input.key_states.get(&key),
+            Some(KeyState::Pressed { .. })
+        )
     }
 
     pub fn btnp(

@@ -61,12 +61,12 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             return;
         }
 
-        if (x1 - x2).abs() > (y1 - y2).abs() {
-            let start_x: i32;
-            let start_y: i32;
-            let end_x: i32;
-            let end_y: i32;
+        let start_x: i32;
+        let start_y: i32;
+        let end_x: i32;
+        let end_y: i32;
 
+        if (x1 - x2).abs() > (y1 - y2).abs() {
             if x1 < x2 {
                 start_x = x1;
                 start_y = y1;
@@ -90,11 +90,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
                 );
             }
         } else {
-            let start_x: i32;
-            let start_y: i32;
-            let end_x: i32;
-            let end_y: i32;
-
             if y1 < y2 {
                 start_x = x1;
                 start_y = y1;

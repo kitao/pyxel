@@ -302,7 +302,7 @@ impl Pyxel {
 
         let mut screen = self.screen.lock();
         let clip_rect = screen._clip_rect();
-        let palette = screen._palette().clone();
+        let palette = *screen._palette();
 
         screen.clip0();
         screen.pal0();
