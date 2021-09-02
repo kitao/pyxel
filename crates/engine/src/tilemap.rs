@@ -102,50 +102,33 @@ impl ResourceItem for Tilemap {
         RESOURCE_ARCHIVE_DIRNAME.to_string() + "tilemap" + &item_no.to_string()
     }
 
+    fn is_modified(&self) -> bool {
+        for i in 0..self.height() {
+            for j in 0..self.width() {
+                if self._value(j as i32, i as i32) != (0, 0) {
+                    return true;
+                }
+            }
+        }
+
+        false
+    }
+
     fn clear(&mut self) {
         self.cls((0, 0));
     }
 
     fn serialize(&self) -> String {
-        /*
-        Tilemap* tilemap = graphics_->GetTilemapBank(tilemap_index);
-        int32_t** data = tilemap->Data();
-        bool is_editted = false;
+        let mut output = String::new();
 
-        for (int32_t i = 0; i < tilemap->Height(); i++) {
-          for (int32_t j = 0; j < tilemap->Width(); j++) {
-            if (data[i][j] != 0) {
-              is_editted = true;
-              break;
+        for i in 0..self.height() {
+            for j in 0..self.width() {
+                let tile = self._value(j as i32, i as i32);
+                output += &format!("{:02x}{:02x}", tile.0, tile.1);
             }
-          }
-
-          if (is_editted) {
-            break;
-          }
         }
 
-        if (!is_editted) {
-          return "";
-        }
-
-        std::stringstream ss;
-
-        ss << std::hex;
-
-        for (int32_t i = 0; i < tilemap->Height(); i++) {
-          for (int32_t j = 0; j < tilemap->Width(); j++) {
-            ss << std::setw(3) << std::setfill('0') << data[i][j];
-          }
-
-          ss << std::endl;
-        }
-
-        ss << std::dec << tilemap->ImageIndex() << std::endl;
-
-        return ss.str();
-        */
-        "TODO".to_string()
+        output
     }
 
     fn deserialize(&mut self, input: &str) {
