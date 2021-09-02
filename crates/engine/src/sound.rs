@@ -150,68 +150,59 @@ impl ResourceItem for Sound {
         RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{:02}", item_no)
     }
 
+    fn is_modified(&self) -> bool {
+        self.notes.len() != 0
+            || self.tones.len() != 0
+            || self.volumes.len() != 0
+            || self.effects.len() != 0
+    }
+
     fn clear(&mut self) {
-        //
+        self.notes.clear();
+        self.tones.clear();
+        self.volumes.clear();
+        self.effects.clear();
+        self.speed = INITIAL_SPEED;
     }
 
     fn serialize(&self) -> String {
-        /*
-        Sound* sound = audio_->GetSoundBank(sound_index);
+        let mut output = String::new();
 
-        if (sound->Note().size() == 0 && sound->Tone().size() == 0 &&
-            sound->Volume().size() == 0 && sound->Effect().size() == 0) {
-          return "";
-        }
-
-        std::stringstream ss;
-
-        ss << std::hex;
-
-        if (sound->Note().size() > 0) {
-          for (int32_t v : sound->Note()) {
-            if (v < 0) {
-              v = 0xff;
+        if self.notes.len() > 0 {
+            for note in &self.notes {
+                if *note < 0 {
+                    output += "ff";
+                } else {
+                    output += &format!("{:02x}", *note);
+                }
             }
-
-            ss << std::setw(2) << std::setfill('0') << v;
-          }
-          ss << std::endl;
         } else {
-          ss << "none" << std::endl;
+            output += "none";
         }
 
-        if (sound->Tone().size() > 0) {
-          for (int32_t v : sound->Tone()) {
-            ss << v;
-          }
-          ss << std::endl;
-        } else {
-          ss << "none" << std::endl;
+        output += "\n";
+
+        macro_rules! stringify_data {
+            ($name: ident) => {
+                if self.$name.len() > 0 {
+                    for value in &self.$name {
+                        output += &format!("{:1x}", *value);
+                    }
+                } else {
+                    output += "none";
+                }
+
+                output += "\n";
+            };
         }
 
-        if (sound->Volume().size() > 0) {
-          for (int32_t v : sound->Volume()) {
-            ss << v;
-          }
-          ss << std::endl;
-        } else {
-          ss << "none" << std::endl;
-        }
+        stringify_data!(tones);
+        stringify_data!(volumes);
+        stringify_data!(effects);
 
-        if (sound->Effect().size() > 0) {
-          for (int32_t v : sound->Effect()) {
-            ss << v;
-          }
-          ss << std::endl;
-        } else {
-          ss << "none" << std::endl;
-        }
+        output += &format!("{}", self.speed);
 
-        ss << std::dec << sound->Speed() << std::endl;
-
-        return ss.str();
-        */
-        "TODO".to_string()
+        output
     }
 
     fn deserialize(&mut self, input: &str) {

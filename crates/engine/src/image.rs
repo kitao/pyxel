@@ -286,49 +286,32 @@ impl ResourceItem for Image {
         RESOURCE_ARCHIVE_DIRNAME.to_string() + "image" + &item_no.to_string()
     }
 
+    fn is_modified(&self) -> bool {
+        for i in 0..self.height() {
+            for j in 0..self.width() {
+                if self._value(j as i32, i as i32) != 0 {
+                    return true;
+                }
+            }
+        }
+
+        false
+    }
+
     fn clear(&mut self) {
         self.cls(0);
     }
 
     fn serialize(&self) -> String {
-        /*
-        Image* image = graphics_->GetImageBank(image_index);
-        int32_t** data = image->Data();
-        bool is_editted = false;
+        let mut output = String::new();
 
-        for (int32_t i = 0; i < image->Height(); i++) {
-          for (int32_t j = 0; j < image->Width(); j++) {
-            if (data[i][j] != 0) {
-              is_editted = true;
-              break;
+        for i in 0..self.height() {
+            for j in 0..self.width() {
+                output += &format!("{:1x}", self._value(j as i32, i as i32));
             }
-          }
-
-          if (is_editted) {
-            break;
-          }
         }
 
-        if (!is_editted) {
-          return "";
-        }
-
-        std::stringstream ss;
-
-        ss << std::hex;
-
-        for (int32_t i = 0; i < image->Height(); i++) {
-          for (int32_t j = 0; j < image->Width(); j++) {
-            ss << data[i][j];
-          }
-
-          ss << std::endl;
-        }
-
-        return ss.str();
-        */
-
-        "TODO".to_string()
+        output
     }
 
     fn deserialize(&mut self, input: &str) {
