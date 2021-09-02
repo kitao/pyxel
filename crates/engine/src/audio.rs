@@ -34,14 +34,14 @@ impl Audio {
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
 
         let audio_core = Arc::new(Mutex::new(AudioCore {
-            blip_buf: blip_buf,
+            blip_buf,
             channels: channels.clone(),
         }));
 
         let audio = Audio {
-            channels: channels,
-            sounds: sounds,
-            musics: musics,
+            channels,
+            sounds,
+            musics,
         };
 
         platform.start_audio(SAMPLE_RATE, SAMPLE_COUNT, audio_core);
@@ -84,7 +84,7 @@ impl Pyxel {
     }
 
     pub fn play(&mut self, channel_no: u32, sequence: &[u32], is_looping: bool) {
-        if sequence.len() == 0 {
+        if sequence.is_empty() {
             return;
         }
 
@@ -99,7 +99,7 @@ impl Pyxel {
     }
 
     pub fn play_(&mut self, channel_no: u32, sounds: &[Sound], is_looping: bool) {
-        if sounds.len() == 0 {
+        if sounds.is_empty() {
             return;
         }
 

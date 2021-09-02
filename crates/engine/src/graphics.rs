@@ -22,10 +22,7 @@ impl Graphics {
         let images = array![_ => Image::new(IMAGE_SIZE, IMAGE_SIZE); IMAGE_COUNT as usize];
         let tilemaps = array![_ => Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()); TILEMAP_COUNT as usize];
 
-        Graphics {
-            images: images,
-            tilemaps: tilemaps,
-        }
+        Graphics { images, tilemaps }
     }
 
     pub fn new_cursor_image() -> SharedImage {

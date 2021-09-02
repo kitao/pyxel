@@ -25,7 +25,7 @@ impl ToIndex for Color {
 
 impl ToIndex for Tile {
     fn to_index(&self) -> usize {
-        (self.1 as usize) << (size_of_val(&self.1) * 8) + self.0 as usize
+        (self.1 as usize) << ((size_of_val(&self.1) * 8) + self.0 as usize)
     }
 }
 

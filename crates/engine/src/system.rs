@@ -32,7 +32,7 @@ impl System {
             next_update_time: -1.0,
             disable_next_frame_skip: true,
 
-            quit_key: quit_key,
+            quit_key,
             should_quit: false,
 
             fps_profiler: Profiler::new(MEASURE_FRAME_COUNT),
@@ -93,7 +93,7 @@ impl Pyxel {
                 update_count = 1;
 
                 self.system.next_update_time =
-                    self.platform.tick_count() as f64 + self.system.one_frame_time as f64;
+                    self.platform.tick_count() as f64 + self.system.one_frame_time;
             } else {
                 update_count = min(
                     (-sleep_time as f64 / self.system.one_frame_time) as u32,
