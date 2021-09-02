@@ -46,16 +46,13 @@ impl Tilemap {
 
             for j in 0..width {
                 let index = j as usize * 4;
+                let value = parse_hex_string(&src_data[index..index + 4]).unwrap();
 
-                if let Some(value) = parse_hex_string(&src_data[index..index + 4]) {
-                    tilemap._set_value(
-                        j as i32,
-                        i as i32,
-                        (((value >> 8) & 0xff) as u8, (value & 0xff) as u8),
-                    );
-                } else {
-                    panic!("invalid tilemap data");
-                }
+                tilemap._set_value(
+                    j as i32,
+                    i as i32,
+                    (((value >> 8) & 0xff) as u8, (value & 0xff) as u8),
+                );
             }
         }
 
