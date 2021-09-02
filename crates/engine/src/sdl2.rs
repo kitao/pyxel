@@ -86,12 +86,12 @@ impl Platform for Sdl2 {
             .unwrap();
 
         Sdl2 {
-            sdl_context: sdl_context,
-            sdl_timer: sdl_timer,
-            sdl_canvas: sdl_canvas,
-            sdl_texture: sdl_texture,
-            sdl_event_pump: sdl_event_pump,
-            sdl_audio: sdl_audio,
+            sdl_context,
+            sdl_timer,
+            sdl_canvas,
+            sdl_texture,
+            sdl_event_pump,
+            sdl_audio,
             sdl_audio_device: None,
             screen_width: width,
             screen_height: height,
@@ -121,8 +121,7 @@ impl Platform for Sdl2 {
                         for j in 0..scale {
                             let color = image._value(x as i32, y as i32) as usize;
                             let rgb = colors[image._value(x as i32, y as i32) as usize];
-                            let offset =
-                                ((y * scale + i) * pitch as u32 + (x * scale + j) * 4) as usize;
+                            let offset = ((y * scale + i) * pitch + (x * scale + j) * 4) as usize;
 
                             buffer[offset] = ((rgb >> 16) & 0xff) as u8;
                             buffer[offset + 1] = ((rgb >> 8) & 0xff) as u8;
@@ -184,7 +183,7 @@ impl Platform for Sdl2 {
                 // System Events
                 //
                 SdlEvent::Quit { .. } => Event::Quit,
-                SdlEvent::DropFile { filename, .. } => Event::DropFile { filename: filename },
+                SdlEvent::DropFile { filename, .. } => Event::DropFile { filename },
 
                 //
                 // Key Events
@@ -201,7 +200,7 @@ impl Platform for Sdl2 {
                 } => Event::KeyUp {
                     key: scancode as u32,
                 },
-                SdlEvent::TextInput { text, .. } => Event::TextInput { text: text },
+                SdlEvent::TextInput { text, .. } => Event::TextInput { text },
 
                 //
                 // Mouse Events
@@ -226,7 +225,7 @@ impl Platform for Sdl2 {
                         SdlMouseButton::Unknown => MouseButton::Unknown,
                     },
                 },
-                SdlEvent::MouseWheel { x, y, .. } => Event::MouseWheel { x: x, y: y },
+                SdlEvent::MouseWheel { x, y, .. } => Event::MouseWheel { x, y },
 
                 //
                 // Controller Events
@@ -234,7 +233,7 @@ impl Platform for Sdl2 {
                 SdlEvent::ControllerAxisMotion {
                     which, axis, value, ..
                 } => Event::ControllerAxisMotion {
-                    which: which,
+                    which,
                     axis: match axis {
                         SdlAxis::LeftX => ControllerAxis::LeftX,
                         SdlAxis::LeftY => ControllerAxis::LeftY,
@@ -247,7 +246,7 @@ impl Platform for Sdl2 {
                 },
                 SdlEvent::ControllerButtonDown { which, button, .. } => {
                     Event::ControllerButtonDown {
-                        which: which,
+                        which,
                         button: match button {
                             SdlButton::A => ControllerButton::A,
                             SdlButton::B => ControllerButton::B,
@@ -268,7 +267,7 @@ impl Platform for Sdl2 {
                     }
                 }
                 SdlEvent::ControllerButtonUp { which, button, .. } => Event::ControllerButtonUp {
-                    which: which,
+                    which,
                     button: match button {
                         SdlButton::A => ControllerButton::A,
                         SdlButton::B => ControllerButton::B,
@@ -351,7 +350,7 @@ impl Platform for Sdl2 {
         };
         let sdl_audio_device = self
             .sdl_audio
-            .open_playback(None, &spec, |_| AudioContextHolder { audio: audio })
+            .open_playback(None, &spec, |_| AudioContextHolder { audio })
             .unwrap();
 
         sdl_audio_device.resume();

@@ -112,7 +112,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
 
             for i in 0..length {
                 self.pset(
-                    (start_x as f64 + alpha as f64 * i as f64 + 0.5) as i32,
+                    (start_x as f64 + alpha * i as f64 + 0.5) as i32,
                     start_y + i,
                     value,
                 );
@@ -470,12 +470,12 @@ impl CopyArea {
             dst_y: dst_y + top_cut,
             src_x: src_x + if flip_x { right_cut } else { left_cut },
             src_y: src_y + if flip_y { bottom_cut } else { top_cut },
-            sign_x: sign_x,
-            sign_y: sign_y,
-            offset_x: offset_x,
-            offset_y: offset_y,
-            width: width,
-            height: height,
+            sign_x,
+            sign_y,
+            offset_x,
+            offset_y,
+            width,
+            height,
         }
     }
 }

@@ -12,7 +12,7 @@ impl Profiler {
         assert!(measure_frame_count >= 1, "invalid measure frame count");
 
         Profiler {
-            measure_frame_count: measure_frame_count,
+            measure_frame_count,
             frame_count: 0,
             start_time: 0,
             total_time: 0,

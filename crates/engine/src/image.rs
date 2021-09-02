@@ -213,7 +213,7 @@ impl Image {
         let mut y = y;
 
         for c in string.chars() {
-            if c == '\n' as char {
+            if c == '\n' {
                 x = start_x;
                 y += FONT_HEIGHT as i32;
                 continue;
