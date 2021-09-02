@@ -65,11 +65,9 @@ impl Image {
             let src_data = simplify_string(data_str[i as usize]);
 
             for j in 0..width {
-                if let Some(value) = parse_hex_string(&src_data[j as usize..j as usize + 1]) {
-                    image._set_value(j as i32, i as i32, value as Color);
-                } else {
-                    panic!("invalid image data");
-                }
+                let value = parse_hex_string(&src_data[j as usize..j as usize + 1]).unwrap();
+
+                image._set_value(j as i32, i as i32, value as Color);
             }
         }
 

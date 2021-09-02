@@ -19,7 +19,7 @@ pub fn simplify_string(string: &str) -> String {
     remove_whitespace(string).to_ascii_lowercase()
 }
 
-pub fn parse_hex_string(string: &str) -> Option<u32> {
+pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
     let string = string.to_ascii_lowercase();
     let mut result: u32 = 0;
 
@@ -31,25 +31,34 @@ pub fn parse_hex_string(string: &str) -> Option<u32> {
         } else if c >= 'a' && c <= 'f' {
             result += 10 + c as u32 - 'a' as u32;
         } else {
-            return None;
+            return Err("invalid hex string");
         }
     }
 
-    Some(result)
+    Ok(result)
 }
 
-pub fn parse_version_string(string: &str) -> Option<u32> {
+pub fn parse_version_string(string: &str) -> Result<u32, &str> {
     let mut version = 0;
 
-    for number in simplify_string(string).split(".") {
+    for (i, number) in simplify_string(string).split(".").enumerate() {
+        let digit = number.len();
+        let number = if i > 0 && digit == 1 {
+            number.to_string() + "0"
+        } else if i == 0 || digit == 2 {
+            number.to_string()
+        } else {
+            return Err("invalid version string");
+        };
+
         if let Ok(number) = number.parse::<u32>() {
             version = version * 100 + number;
         } else {
-            return None;
+            return Err("invalid version string");
         }
     }
 
-    Some(version)
+    Ok(version)
 }
 
 pub fn pyxel_version() -> u32 {
@@ -72,23 +81,32 @@ mod tests {
 
     #[test]
     fn parse_hex_string_() {
-        assert_eq!(parse_hex_string("100"), Some(256));
-        assert_eq!(parse_hex_string("a2"), Some(162));
-        assert_eq!(parse_hex_string("BC"), Some(188));
-        assert_eq!(parse_hex_string(" "), None);
+        assert_eq!(parse_hex_string("100"), Ok(256));
+        assert_eq!(parse_hex_string("a2"), Ok(162));
+        assert_eq!(parse_hex_string("BC"), Ok(188));
+        assert_eq!(parse_hex_string(" "), Err("invalid hex string"));
     }
 
     #[test]
     fn parse_version_string_() {
-        assert_eq!(parse_version_string("1.2.3"), Some(12030));
-        assert_eq!(parse_version_string("12.34.56"), Some(123456));
-        assert_eq!(parse_version_string("12.34.0"), Some(123400));
+        assert_eq!(parse_version_string("1.2.3"), Ok(12030));
+        assert_eq!(parse_version_string("12.34.5"), Ok(123450));
+        assert_eq!(parse_version_string("12.3.04"), Ok(123004));
+        assert_eq!(
+            parse_version_string("12.345.0"),
+            Err("invalid version string")
+        );
+        assert_eq!(
+            parse_version_string("12.0.345"),
+            Err("invalid version string")
+        );
+        assert_eq!(parse_version_string(" "), Err("invalid version string"));
     }
 
     #[test]
     fn pyxel_version_() {
         assert_eq!(
-            !pyxel_version(),
+            pyxel_version(),
             parse_version_string(PYXEL_VERSION).unwrap(),
         );
     }
