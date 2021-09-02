@@ -1,3 +1,5 @@
+#[macro_use]
+mod utils;
 mod audio;
 mod canvas;
 mod capturer;
@@ -19,7 +21,6 @@ mod sound;
 mod system;
 mod tilemap;
 mod types;
-mod utils;
 
 use crate::audio::Audio;
 use crate::graphics::Graphics;
