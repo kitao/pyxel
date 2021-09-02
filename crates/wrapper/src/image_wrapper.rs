@@ -14,9 +14,7 @@ pub struct Image {
 }
 
 pub fn wrap_pyxel_image(pyxel_image: PyxelSharedImage) -> Image {
-    Image {
-        pyxel_image: pyxel_image,
-    }
+    Image { pyxel_image }
 }
 
 #[pymethods]

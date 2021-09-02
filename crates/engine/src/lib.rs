@@ -1,3 +1,5 @@
+#![allow(clippy::too_many_arguments)]
+
 #[macro_use]
 mod utils;
 mod audio;
@@ -82,7 +84,7 @@ impl Pyxel {
         let graphics = Graphics::new();
         let audio = Audio::new(&mut platform);
 
-        let colors = DEFAULT_COLORS.clone();
+        let colors = DEFAULT_COLORS;
         let screen = Image::new(width, height);
         let cursor = Graphics::new_cursor_image();
         let font = Graphics::new_font_image();
@@ -90,17 +92,17 @@ impl Pyxel {
         platform.set_icon(&ICON_DATA, &DEFAULT_COLORS, ICON_SCALE);
 
         Pyxel {
-            platform: platform,
-            system: system,
-            resource: resource,
-            input: input,
-            graphics: graphics,
-            audio: audio,
+            platform,
+            system,
+            resource,
+            input,
+            graphics,
+            audio,
 
-            colors: colors,
-            screen: screen,
-            cursor: cursor,
-            font: font,
+            colors,
+            screen,
+            cursor,
+            font,
         }
     }
 }

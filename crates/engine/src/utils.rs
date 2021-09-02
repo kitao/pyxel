@@ -26,9 +26,9 @@ pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
     for c in string.chars() {
         result *= 0x10;
 
-        if c >= '0' && c <= '9' {
+        if ('0'..='9').contains(&c) {
             result += c as u32 - '0' as u32;
-        } else if c >= 'a' && c <= 'f' {
+        } else if ('a'..='f').contains(&c) {
             result += 10 + c as u32 - 'a' as u32;
         } else {
             return Err("invalid hex string");
@@ -41,7 +41,7 @@ pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
 pub fn parse_version_string(string: &str) -> Result<u32, &str> {
     let mut version = 0;
 
-    for (i, number) in simplify_string(string).split(".").enumerate() {
+    for (i, number) in simplify_string(string).split('.').enumerate() {
         let digit = number.len();
         let number = if i > 0 && digit == 1 {
             number.to_string() + "0"

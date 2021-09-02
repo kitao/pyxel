@@ -43,7 +43,7 @@ impl Image {
     }
 
     pub fn _set_palette(&mut self, palette: &[Color; COLOR_COUNT as usize]) {
-        self.palette = palette.clone();
+        self.palette = *palette;
     }
 
     pub fn pal(&mut self, src_color: Color, dst_color: Color) {
@@ -230,7 +230,7 @@ impl Image {
             self.blt(
                 x,
                 y,
-                font.clone(),
+                font,
                 src_x,
                 src_y,
                 FONT_WIDTH as i32,

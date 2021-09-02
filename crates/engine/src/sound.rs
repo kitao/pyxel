@@ -55,7 +55,7 @@ impl Sound {
         while let Some(c) = chars.next() {
             let mut note: Note;
 
-            if c >= 'a' && c <= 'g' {
+            if ('a'..='g').contains(&c) {
                 note = match c {
                     'c' => 0,
                     'd' => 2,
@@ -76,7 +76,7 @@ impl Sound {
                     c = chars.next().unwrap_or(0 as char);
                 }
 
-                if c >= '0' && c <= '4' {
+                if ('0'..='4').contains(&c) {
                     note += (c as Note - '0' as Note) * 12;
                 } else {
                     panic!("invalid sound note '{}'", c);
@@ -92,12 +92,9 @@ impl Sound {
     }
 
     pub fn set_tone(&mut self, tone_str: &str) {
-        let tone_str = simplify_string(tone_str);
-        let mut chars = tone_str.chars();
-
         self.tones.clear();
 
-        while let Some(c) = chars.next() {
+        for c in simplify_string(tone_str).chars() {
             let tone = match c {
                 't' => TONE_TRIANGLE,
                 's' => TONE_SQUARE,
@@ -111,13 +108,10 @@ impl Sound {
     }
 
     pub fn set_volume(&mut self, volume_str: &str) {
-        let volume_str = simplify_string(volume_str);
-        let mut chars = volume_str.chars();
-
         self.volumes.clear();
 
-        while let Some(c) = chars.next() {
-            if c >= '0' && c <= '7' {
+        for c in simplify_string(volume_str).chars() {
+            if ('0'..='7').contains(&c) {
                 self.volumes.push((c as u32 - '0' as u32) as Volume);
             } else {
                 panic!("invalid sound volume '{}'", c);
@@ -126,12 +120,9 @@ impl Sound {
     }
 
     pub fn set_effect(&mut self, effect_str: &str) {
-        let effect_str = simplify_string(effect_str);
-        let mut chars = effect_str.chars();
-
         self.effects.clear();
 
-        while let Some(c) = chars.next() {
+        for c in simplify_string(effect_str).chars() {
             let effect = match c {
                 'n' => EFFECT_NONE,
                 's' => EFFECT_SLIDE,
@@ -151,10 +142,10 @@ impl ResourceItem for Sound {
     }
 
     fn is_modified(&self) -> bool {
-        self.notes.len() != 0
-            || self.tones.len() != 0
-            || self.volumes.len() != 0
-            || self.effects.len() != 0
+        !self.notes.is_empty()
+            || !self.tones.is_empty()
+            || !self.volumes.is_empty()
+            || !self.effects.is_empty()
     }
 
     fn clear(&mut self) {
@@ -168,7 +159,7 @@ impl ResourceItem for Sound {
     fn serialize(&self) -> String {
         let mut output = String::new();
 
-        if self.notes.len() > 0 {
+        if !self.notes.is_empty() {
             for note in &self.notes {
                 if *note < 0 {
                     output += "ff";
