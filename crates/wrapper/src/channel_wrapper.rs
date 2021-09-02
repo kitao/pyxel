@@ -13,9 +13,7 @@ pub struct Channel {
 }
 
 pub fn wrap_pyxel_channel(pyxel_channel: PyxelSharedChannel) -> Channel {
-    Channel {
-        pyxel_channel: pyxel_channel,
-    }
+    Channel { pyxel_channel }
 }
 
 #[pymethods]
