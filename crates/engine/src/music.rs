@@ -31,62 +31,36 @@ impl ResourceItem for Music {
         RESOURCE_ARCHIVE_DIRNAME.to_string() + "music" + &item_no.to_string()
     }
 
+    fn is_modified(&self) -> bool {
+        for sequence in self.sequences.iter() {
+            if sequence.len() > 0 {
+                return true;
+            }
+        }
+
+        false
+    }
+
     fn clear(&mut self) {
-        //
+        self.sequences = Default::default();
     }
 
     fn serialize(&self) -> String {
-        /*
-        Music* music = audio_->GetMusicBank(music_index);
+        let mut output = String::new();
 
-        if (music->Channel0().size() == 0 && music->Channel1().size() == 0 &&
-            music->Channel2().size() == 0 && music->Channel3().size() == 0) {
-          return "";
+        for sequence in self.sequences.iter() {
+            if sequence.len() > 0 {
+                for sound_no in sequence {
+                    output += &format!("{:02x}", sound_no);
+                }
+            } else {
+                output += "none";
+            }
+
+            output += "\n";
         }
 
-        std::stringstream ss;
-
-        ss << std::hex;
-
-        if (music->Channel0().size() > 0) {
-          for (int32_t v : music->Channel0()) {
-            ss << std::setw(2) << std::setfill('0') << v;
-          }
-          ss << std::endl;
-        } else {
-          ss << "none" << std::endl;
-        }
-
-        if (music->Channel1().size() > 0) {
-          for (int32_t v : music->Channel1()) {
-            ss << std::setw(2) << std::setfill('0') << v;
-          }
-          ss << std::endl;
-        } else {
-          ss << "none" << std::endl;
-        }
-
-        if (music->Channel2().size() > 0) {
-          for (int32_t v : music->Channel2()) {
-            ss << std::setw(2) << std::setfill('0') << v;
-          }
-          ss << std::endl;
-        } else {
-          ss << "none" << std::endl;
-        }
-
-        if (music->Channel3().size() > 0) {
-          for (int32_t v : music->Channel3()) {
-            ss << std::setw(2) << std::setfill('0') << v;
-          }
-          ss << std::endl;
-        } else {
-          ss << "none" << std::endl;
-        }
-
-        return ss.str();
-        */
-        "TODO".to_string()
+        output
     }
 
     fn deserialize(&mut self, input: &str) {

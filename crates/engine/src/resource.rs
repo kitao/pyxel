@@ -1,13 +1,13 @@
 use std::fs::File;
-use std::io::Read;
+use std::io::{Read, Write};
 use std::path::Path;
-use zip::ZipArchive;
+use zip::{ZipArchive, ZipWriter};
 
 use crate::capturer::Capturer;
 use crate::image::Image;
 use crate::music::Music;
 use crate::settings::{
-    IMAGE_COUNT, MUSIC_COUNT, RESOURCE_ARCHIVE_DIRNAME, SOUND_COUNT, TILEMAP_COUNT,
+    IMAGE_COUNT, MUSIC_COUNT, PYXEL_VERSION, RESOURCE_ARCHIVE_DIRNAME, SOUND_COUNT, TILEMAP_COUNT,
 };
 use crate::sound::Sound;
 use crate::tilemap::Tilemap;
@@ -16,6 +16,7 @@ use crate::Pyxel;
 
 pub trait ResourceItem {
     fn resource_name(item_no: u32) -> String;
+    fn is_modified(&self) -> bool;
     fn clear(&mut self);
     fn serialize(&self) -> String;
     fn deserialize(&mut self, input: &str);
@@ -84,55 +85,47 @@ impl Pyxel {
     }
 
     pub fn save(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
-        // TODO
-        let _ = (filename, image, tilemap, sound, music); // dummy
+        let path = std::path::Path::new(filename);
+        let file = std::fs::File::create(&path).unwrap();
+        let mut zip = ZipWriter::new(file);
 
-        /*
-        std::ofstream ofs(std::filesystem::u8path(filename), std::ios::binary);
+        zip.add_directory(RESOURCE_ARCHIVE_DIRNAME, Default::default())
+            .unwrap();
 
-        if (ofs.fail()) {
-          PYXEL_ERROR("cannot save file '" + filename + "'");
+        let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
+        zip.start_file(version_name, Default::default()).unwrap();
+        zip.write_all(PYXEL_VERSION.as_bytes()).unwrap();
+
+        macro_rules! serialize {
+            ($type: ty, $getter: ident, $count: expr) => {
+                for i in 0..$count {
+                    if self.$getter(i).lock().is_modified() {
+                        zip.start_file(<$type>::resource_name(i), Default::default())
+                            .unwrap();
+                        zip.write_all(self.$getter(i).lock().serialize().as_bytes())
+                            .unwrap();
+                    }
+                }
+            };
         }
 
-        miniz_cpp::zip_file file;
-
-        file.writestr(GetVersionName(), VERSION + '\n');
-
-        for (int32_t i = 0; i < USER_IMAGE_BANK_COUNT; i++) {
-          std::string str = DumpImage(i);
-
-          if (str.size() > 0) {
-            file.writestr(GetImageName(i), str);
-          }
+        if image {
+            serialize!(Image, image, IMAGE_COUNT);
         }
 
-        for (int32_t i = 0; i < TILEMAP_BANK_COUNT; i++) {
-          std::string str = DumpTilemap(i);
-
-          if (str.size() > 0) {
-            file.writestr(GetTilemapName(i), str);
-          }
+        if tilemap {
+            serialize!(Tilemap, tilemap, TILEMAP_COUNT);
         }
 
-        for (int32_t i = 0; i < USER_SOUND_BANK_COUNT; i++) {
-          std::string str = DumpSound(i);
-
-          if (str.size() > 0) {
-            file.writestr(GetSoundName(i), str);
-          }
+        if sound {
+            serialize!(Sound, sound, SOUND_COUNT);
         }
 
-        for (int32_t i = 0; i < MUSIC_BANK_COUNT; i++) {
-          std::string str = DumpMusic(i);
-
-          if (str.size() > 0) {
-            file.writestr(GetMusicName(i), str);
-          }
+        if music {
+            serialize!(Music, music, MUSIC_COUNT);
         }
 
-        file.save(ofs);
-        ofs.close();
-        */
+        zip.finish().unwrap();
     }
 
     pub fn screenshot(&mut self) {
