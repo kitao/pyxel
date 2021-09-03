@@ -39,14 +39,14 @@ impl Sound {
         effect_str: &str,
         speed: Speed,
     ) {
-        self.set_note(note_str);
-        self.set_tone(tone_str);
-        self.set_volume(volume_str);
-        self.set_effect(effect_str);
+        self.set_notes(note_str);
+        self.set_tones(tone_str);
+        self.set_volumes(volume_str);
+        self.set_effects(effect_str);
         self.speed = speed;
     }
 
-    pub fn set_note(&mut self, note_str: &str) {
+    pub fn set_notes(&mut self, note_str: &str) {
         let note_str = simplify_string(note_str);
         let mut chars = note_str.chars();
 
@@ -91,7 +91,7 @@ impl Sound {
         }
     }
 
-    pub fn set_tone(&mut self, tone_str: &str) {
+    pub fn set_tones(&mut self, tone_str: &str) {
         self.tones.clear();
 
         for c in simplify_string(tone_str).chars() {
@@ -107,7 +107,7 @@ impl Sound {
         }
     }
 
-    pub fn set_volume(&mut self, volume_str: &str) {
+    pub fn set_volumes(&mut self, volume_str: &str) {
         self.volumes.clear();
 
         for c in simplify_string(volume_str).chars() {
@@ -119,7 +119,7 @@ impl Sound {
         }
     }
 
-    pub fn set_effect(&mut self, effect_str: &str) {
+    pub fn set_effects(&mut self, effect_str: &str) {
         self.effects.clear();
 
         for c in simplify_string(effect_str).chars() {
