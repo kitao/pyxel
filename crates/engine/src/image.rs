@@ -1,4 +1,6 @@
 use array_macro::array;
+use image::imageops::{self, FilterType};
+use image::{Rgb, RgbImage};
 use parking_lot::Mutex;
 use std::collections::HashMap;
 use std::path::Path;
@@ -127,8 +129,29 @@ impl Image {
     }
 
     pub fn save(&self, filename: &str, colors: &[Rgb8], scale: u32) {
-        // TODO
-        let _ = (filename, colors, scale); // dummy
+        let width = self.width();
+        let height = self.height();
+        let mut image = RgbImage::new(width, height);
+
+        for i in 0..height {
+            for j in 0..width {
+                let rgb = colors[self._value(j as i32, i as i32) as usize];
+                let r = ((rgb >> 16) & 0xff) as u8;
+                let g = ((rgb >> 8) & 0xff) as u8;
+                let b = (rgb & 0xff) as u8;
+
+                image.put_pixel(j, i, Rgb([r, g, b]));
+            }
+        }
+
+        let image = imageops::resize(&image, width * scale, height * scale, FilterType::Nearest);
+        let filename = if filename.to_lowercase().ends_with(".png") {
+            filename.to_string()
+        } else {
+            filename.to_string() + ".png"
+        };
+
+        image.save(&filename).unwrap();
     }
 
     pub fn bltm(
