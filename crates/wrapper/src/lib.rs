@@ -1,4 +1,10 @@
-#![allow(clippy::too_many_arguments, clippy::many_single_char_names)]
+#![warn(clippy::all)]
+#![allow(
+    clippy::many_single_char_names,
+    clippy::too_many_arguments,
+    clippy::zero_ptr
+)]
+#![warn(clippy::cargo)]
 
 #[macro_use]
 mod utils;
