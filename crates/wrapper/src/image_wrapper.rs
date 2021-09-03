@@ -205,7 +205,7 @@ impl Image {
                 self.pyxel_image.lock().blt(
                     as_i32!(x),
                     as_i32!(y),
-                    &instance().image(img).lock(),
+                    instance().image(img).clone(),
                     as_i32!(u),
                     as_i32!(v),
                     as_i32!(w),
@@ -218,7 +218,7 @@ impl Image {
                 self.pyxel_image.lock().blt(
                     as_i32!(x),
                     as_i32!(y),
-                    &img.pyxel_image.lock(),
+                    img.pyxel_image.clone(),
                     as_i32!(u),
                     as_i32!(v),
                     as_i32!(w),
@@ -249,7 +249,7 @@ impl Image {
                 self.pyxel_image.lock().bltm(
                     as_i32!(x),
                     as_i32!(y),
-                    &instance().tilemap(tm).lock(),
+                    instance().tilemap(tm).clone(),
                     as_i32!(u),
                     as_i32!(v),
                     as_i32!(w),
@@ -262,7 +262,7 @@ impl Image {
                 self.pyxel_image.lock().bltm(
                     as_i32!(x),
                     as_i32!(y),
-                    &tm.pyxel_tilemap.lock(),
+                    tm.pyxel_tilemap.clone(),
                     as_i32!(u),
                     as_i32!(v),
                     as_i32!(w),
@@ -286,11 +286,11 @@ impl Image {
         if let Some(font) = font {
             self.pyxel_image
                 .lock()
-                .text(as_i32!(x), as_i32!(y), s, col, &font.pyxel_image.lock());
+                .text(as_i32!(x), as_i32!(y), s, col, font.pyxel_image.clone());
         } else {
             self.pyxel_image
                 .lock()
-                .text(as_i32!(x), as_i32!(y), s, col, &instance().font.lock());
+                .text(as_i32!(x), as_i32!(y), s, col, instance().font.clone());
         }
 
         Ok(())

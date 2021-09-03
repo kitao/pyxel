@@ -1,6 +1,4 @@
 use array_macro::array;
-use parking_lot::Mutex;
-use std::sync::Arc;
 
 use crate::canvas::Canvas;
 use crate::image::{Image, SharedImage};
@@ -26,16 +24,16 @@ impl Graphics {
     }
 
     pub fn new_cursor_image() -> SharedImage {
-        let mut image = Image::without_arc_mutex(CURSOR_WIDTH, CURSOR_HEIGHT);
-        image.set(0, 0, &CURSOR_DATA);
+        let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
+        image.lock().set(0, 0, &CURSOR_DATA);
 
-        Arc::new(Mutex::new(image))
+        image
     }
 
     pub fn new_font_image() -> SharedImage {
         let width = FONT_WIDTH * FONT_ROW_COUNT;
         let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + FONT_ROW_COUNT - 1) / FONT_ROW_COUNT);
-        let mut image = Image::without_arc_mutex(width, height);
+        let image = Image::new(width, height);
 
         for (i, data) in FONT_DATA.iter().enumerate() {
             let row = i as u32 / FONT_ROW_COUNT;
@@ -46,7 +44,7 @@ impl Graphics {
                 for k in 0..FONT_WIDTH {
                     let color = if (data & 0x800000) != 0 { 1 } else { 0 };
 
-                    image._set_value(
+                    image.lock()._set_value(
                         (FONT_WIDTH * col + k) as i32,
                         (FONT_HEIGHT * row + j) as i32,
                         color,
@@ -57,7 +55,7 @@ impl Graphics {
             }
         }
 
-        Arc::new(Mutex::new(image))
+        image
     }
 }
 
@@ -140,7 +138,7 @@ impl Pyxel {
         self.screen.lock().blt(
             x,
             y,
-            &self.graphics.images[image_no as usize].lock(),
+            self.graphics.images[image_no as usize].clone(),
             image_x,
             image_y,
             width,
@@ -153,7 +151,7 @@ impl Pyxel {
         &mut self,
         x: i32,
         y: i32,
-        image: &Image,
+        image: SharedImage,
         image_x: i32,
         image_y: i32,
         width: i32,
@@ -179,7 +177,7 @@ impl Pyxel {
         self.screen.lock().bltm(
             x,
             y,
-            &self.graphics.tilemaps[tilemap_no as usize].lock(),
+            self.graphics.tilemaps[tilemap_no as usize].clone(),
             tilemap_x,
             tilemap_y,
             width,
@@ -192,7 +190,7 @@ impl Pyxel {
         &mut self,
         x: i32,
         y: i32,
-        tilemap: &Tilemap,
+        tilemap: SharedTilemap,
         tilemap_x: i32,
         tilemap_y: i32,
         width: i32,
@@ -207,6 +205,6 @@ impl Pyxel {
     pub fn text(&mut self, x: i32, y: i32, string: &str, color: Color) {
         self.screen
             .lock()
-            .text(x, y, string, color, &self.font.lock());
+            .text(x, y, string, color, self.font.clone());
     }
 }

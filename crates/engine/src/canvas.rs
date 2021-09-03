@@ -1,5 +1,7 @@
+use parking_lot::Mutex;
 use std::cmp::max;
 use std::mem::swap;
+use std::sync::Arc;
 
 use crate::rectarea::RectArea;
 use crate::types::ToIndex;
@@ -338,7 +340,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         &mut self,
         x: i32,
         y: i32,
-        canvas: &Self,
+        canvas: Arc<Mutex<Self>>,
         canvas_x: i32,
         canvas_y: i32,
         width: i32,
@@ -351,7 +353,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             self._clip_rect(),
             canvas_x,
             canvas_y,
-            canvas._self_rect(),
+            canvas.lock()._self_rect(),
             width,
             height,
         );
@@ -373,8 +375,9 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
 
         for i in 0..height {
             for j in 0..width {
-                let value =
-                    canvas._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
+                let value = canvas
+                    .lock()
+                    ._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
 
                 if let Some(transparent) = transparent {
                     if value == transparent {
