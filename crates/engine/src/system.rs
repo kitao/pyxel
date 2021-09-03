@@ -1,4 +1,5 @@
 use std::cmp::min;
+use std::process::exit;
 
 use crate::canvas::Canvas;
 use crate::event::Event;
@@ -141,7 +142,7 @@ impl Pyxel {
         self.system.fps_profiler.start(tick_count);
 
         if self.update_frame(None) {
-            return true;
+            exit(0);
         }
 
         self.draw_frame(None);
