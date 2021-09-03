@@ -8,7 +8,7 @@ use std::path::Path;
 use zip::{ZipArchive, ZipWriter};
 
 use crate::canvas::Canvas;
-use crate::image::Image;
+use crate::image::{Image, SharedImage};
 use crate::music::Music;
 use crate::settings::{
     CAPTURE_SCALE, COLOR_COUNT, IMAGE_COUNT, MUSIC_COUNT, PYXEL_VERSION, RESOURCE_ARCHIVE_DIRNAME,
@@ -20,7 +20,7 @@ use crate::utils::{parse_version_string, pyxel_version};
 use crate::Pyxel;
 
 struct CaptureFrame {
-    frame_image: Image,
+    frame_image: SharedImage,
     frame_count: u32,
 }
 
@@ -46,7 +46,7 @@ impl Resource {
         let capture_frame_count = fps * capture_sec;
         let capture_frames = (0..capture_frame_count)
             .map(|_| CaptureFrame {
-                frame_image: Image::without_arc_mutex(width, height),
+                frame_image: Image::new(width, height),
                 frame_count: 0,
             })
             .collect();
@@ -61,7 +61,7 @@ impl Resource {
         }
     }
 
-    pub fn capture_screen(&mut self, screen: &Image, frame_count: u32) {
+    pub fn capture_screen(&mut self, screen: SharedImage, frame_count: u32) {
         if self.capture_frame_count == 0 {
             return;
         }
@@ -69,16 +69,20 @@ impl Resource {
         self.cur_frame_index = (self.cur_frame_index + 1) % self.capture_frame_count;
         self.cur_frame_count += 1;
 
+        let width = screen.lock().width();
+        let height = screen.lock().height();
+
         self.capture_frames[self.cur_frame_index as usize]
             .frame_image
+            .lock()
             .blt(
                 0,
                 0,
-                screen,
+                screen.clone(),
                 0,
                 0,
-                screen.width() as i32,
-                screen.height() as i32,
+                width as i32,
+                height as i32,
                 None,
             );
         self.capture_frames[self.cur_frame_index as usize].frame_count = frame_count;
@@ -203,6 +207,7 @@ impl Pyxel {
     pub fn screenshot(&mut self) {
         self.resource.capture_frames[self.resource.cur_frame_index as usize]
             .frame_image
+            .lock()
             .save(&Resource::export_path(), &self.colors, CAPTURE_SCALE);
     }
 
@@ -225,8 +230,8 @@ impl Pyxel {
             &self.resource.capture_frames[self.resource.cur_frame_index as usize].frame_image;
         let mut last_frame_count =
             self.resource.capture_frames[self.resource.start_frame_index as usize].frame_count;
-        let width = last_frame_image.width() * CAPTURE_SCALE;
-        let height = last_frame_image.height() * CAPTURE_SCALE;
+        let width = last_frame_image.lock().width() * CAPTURE_SCALE;
+        let height = last_frame_image.lock().height() * CAPTURE_SCALE;
 
         let mut palette = Vec::new();
         for color in self.colors {
@@ -248,7 +253,7 @@ impl Pyxel {
                     let x = j / CAPTURE_SCALE;
                     let y = i / CAPTURE_SCALE;
 
-                    buffer.push(last_frame_image._value(x as i32, y as i32));
+                    buffer.push(last_frame_image.lock()._value(x as i32, y as i32));
                 }
             }
 
@@ -279,13 +284,15 @@ impl Pyxel {
                 for k in 0..width {
                     let x = k / CAPTURE_SCALE;
                     let y = j / CAPTURE_SCALE;
-                    let value = frame_image._value(x as i32, y as i32);
+                    let value = frame_image.lock()._value(x as i32, y as i32);
 
-                    buffer.push(if value != last_frame_image._value(x as i32, y as i32) {
-                        value
-                    } else {
-                        COLOR_COUNT as u8
-                    });
+                    buffer.push(
+                        if value != last_frame_image.lock()._value(x as i32, y as i32) {
+                            value
+                        } else {
+                            COLOR_COUNT as u8
+                        },
+                    );
                 }
             }
 

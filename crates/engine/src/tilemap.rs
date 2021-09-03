@@ -22,24 +22,20 @@ pub type SharedTilemap = Arc<Mutex<Tilemap>>;
 
 impl Tilemap {
     pub fn new(width: u32, height: u32, image: SharedImage) -> SharedTilemap {
-        Arc::new(Mutex::new(Tilemap::without_arc_mutex(width, height, image)))
-    }
-
-    pub fn without_arc_mutex(width: u32, height: u32, image: SharedImage) -> Tilemap {
-        Tilemap {
+        Arc::new(Mutex::new(Tilemap {
             width,
             height,
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
             data: vec![vec![(0, 0); width as usize]; height as usize],
             image,
-        }
+        }))
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = simplify_string(data_str[0]).len() as u32 / 4;
         let height = data_str.len() as u32;
-        let mut tilemap = Tilemap::without_arc_mutex(width, height, self.image.clone());
+        let tilemap = Tilemap::new(width, height, self.image.clone());
 
         for i in 0..height {
             let src_data = simplify_string(data_str[i as usize]);
@@ -48,7 +44,7 @@ impl Tilemap {
                 let index = j as usize * 4;
                 let value = parse_hex_string(&src_data[index..index + 4]).unwrap();
 
-                tilemap._set_value(
+                tilemap.lock()._set_value(
                     j as i32,
                     i as i32,
                     (((value >> 8) & 0xff) as u8, (value & 0xff) as u8),
@@ -56,7 +52,7 @@ impl Tilemap {
             }
         }
 
-        self.blt(x, y, &tilemap, 0, 0, width as i32, height as i32, None);
+        self.blt(x, y, tilemap, 0, 0, width as i32, height as i32, None);
     }
 }
 

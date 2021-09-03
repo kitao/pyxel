@@ -13,7 +13,7 @@ use crate::settings::{
     COLOR_COUNT, FONT_HEIGHT, FONT_ROW_COUNT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE,
     RESOURCE_ARCHIVE_DIRNAME, TILE_SIZE,
 };
-use crate::tilemap::Tilemap;
+use crate::tilemap::SharedTilemap;
 use crate::types::{Color, Rgb8};
 use crate::utils::{parse_hex_string, simplify_string};
 
@@ -28,16 +28,12 @@ pub type SharedImage = Arc<Mutex<Image>>;
 
 impl Image {
     pub fn new(width: u32, height: u32) -> SharedImage {
-        Arc::new(Mutex::new(Image::without_arc_mutex(width, height)))
-    }
-
-    pub fn without_arc_mutex(width: u32, height: u32) -> Image {
-        Image {
+        Arc::new(Mutex::new(Image {
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
             palette: array![i => i as Color; COLOR_COUNT as usize],
             data: vec![vec![0; width as usize]; height as usize],
-        }
+        }))
     }
 
     pub fn _palette(&self) -> &[Color; COLOR_COUNT as usize] {
@@ -61,7 +57,7 @@ impl Image {
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
-        let mut image = Image::without_arc_mutex(width, height);
+        let image = Image::new(width, height);
 
         for i in 0..height {
             let src_data = simplify_string(data_str[i as usize]);
@@ -69,17 +65,17 @@ impl Image {
             for j in 0..width {
                 let value = parse_hex_string(&src_data[j as usize..j as usize + 1]).unwrap();
 
-                image._set_value(j as i32, i as i32, value as Color);
+                image.lock()._set_value(j as i32, i as i32, value as Color);
             }
         }
 
-        self.blt(x, y, &image, 0, 0, width as i32, height as i32, None);
+        self.blt(x, y, image, 0, 0, width as i32, height as i32, None);
     }
 
     pub fn load(&mut self, x: i32, y: i32, filename: &str, colors: &[Rgb8]) {
         let image_file = image::open(&Path::new(&filename)).unwrap().to_rgb8();
         let (width, height) = image_file.dimensions();
-        let mut image = Image::without_arc_mutex(width, height);
+        let image = Image::new(width, height);
         let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
 
         for i in 0..height {
@@ -88,7 +84,7 @@ impl Image {
                 let src_rgb = (p[0], p[1], p[2]);
 
                 if let Some(color) = color_table.get(&src_rgb) {
-                    image._set_value(j as i32, i as i32, *color);
+                    image.lock()._set_value(j as i32, i as i32, *color);
                 } else {
                     let mut closest_color: Color = 0;
                     let mut closest_dist: f64 = f64::MAX;
@@ -109,12 +105,12 @@ impl Image {
                     }
 
                     color_table.insert(src_rgb, closest_color);
-                    image._set_value(j as i32, i as i32, closest_color);
+                    image.lock()._set_value(j as i32, i as i32, closest_color);
                 }
             }
         }
 
-        self.blt(x, y, &image, 0, 0, width as i32, height as i32, None);
+        self.blt(x, y, image, 0, 0, width as i32, height as i32, None);
     }
 
     fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
@@ -158,7 +154,7 @@ impl Image {
         &mut self,
         x: i32,
         y: i32,
-        tilemap: &Tilemap,
+        tilemap: SharedTilemap,
         tilemap_x: i32,
         tilemap_y: i32,
         width: i32,
@@ -188,7 +184,7 @@ impl Image {
             dst_rect,
             tilemap_x,
             tilemap_y,
-            tilemap._self_rect(),
+            tilemap.lock()._self_rect(),
             width,
             height,
         );
@@ -208,13 +204,14 @@ impl Image {
 
         for i in 0..height {
             for j in 0..width {
-                let tile =
-                    tilemap._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
+                let tile = tilemap
+                    .lock()
+                    ._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
 
                 self.blt(
                     x + TILE_SIZE as i32 * j,
                     y + TILE_SIZE as i32 * i,
-                    &tilemap.image.lock(),
+                    tilemap.lock().image.clone(),
                     tile.0 as i32 * TILE_SIZE as i32,
                     tile.1 as i32 * TILE_SIZE as i32,
                     tile_size,
@@ -225,7 +222,7 @@ impl Image {
         }
     }
 
-    pub fn text(&mut self, x: i32, y: i32, string: &str, color: Color, font: &Image) {
+    pub fn text(&mut self, x: i32, y: i32, string: &str, color: Color, font: SharedImage) {
         let color = self._palette_value(color);
         let palette1 = self._palette()[1];
 
@@ -253,7 +250,7 @@ impl Image {
             self.blt(
                 x,
                 y,
-                font,
+                font.clone(),
                 src_x,
                 src_y,
                 FONT_WIDTH as i32,
