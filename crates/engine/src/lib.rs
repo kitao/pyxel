@@ -1,10 +1,11 @@
+#![warn(clippy::all)]
 #![allow(clippy::too_many_arguments)]
+//#![warn(clippy::cargo)]
 
 #[macro_use]
 mod utils;
 mod audio;
 mod canvas;
-mod capturer;
 mod channel;
 mod event;
 mod graphics;
@@ -79,7 +80,7 @@ impl Pyxel {
 
         let mut platform = TargetPlatform::new(title, width, height, DISPLAY_RATIO);
         let system = System::new(fps, quit_key);
-        let resource = Resource::new(width, height, capture_sec * fps);
+        let resource = Resource::new(width, height, fps, capture_sec);
         let input = Input::new();
         let graphics = Graphics::new();
         let audio = Audio::new(&mut platform);

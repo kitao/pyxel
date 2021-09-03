@@ -1,18 +1,28 @@
+use chrono::Local;
+use gif::{DisposalMethod, Encoder, Frame, Repeat};
+use std::borrow::Cow;
+use std::env;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
 use zip::{ZipArchive, ZipWriter};
 
-use crate::capturer::Capturer;
+use crate::canvas::Canvas;
 use crate::image::Image;
 use crate::music::Music;
 use crate::settings::{
-    IMAGE_COUNT, MUSIC_COUNT, PYXEL_VERSION, RESOURCE_ARCHIVE_DIRNAME, SOUND_COUNT, TILEMAP_COUNT,
+    CAPTURE_SCALE, COLOR_COUNT, IMAGE_COUNT, MUSIC_COUNT, PYXEL_VERSION, RESOURCE_ARCHIVE_DIRNAME,
+    SOUND_COUNT, TILEMAP_COUNT,
 };
 use crate::sound::Sound;
 use crate::tilemap::Tilemap;
 use crate::utils::{parse_version_string, pyxel_version};
 use crate::Pyxel;
+
+struct CaptureFrame {
+    frame_image: Image,
+    frame_count: u32,
+}
 
 pub trait ResourceItem {
     fn resource_name(item_no: u32) -> String;
@@ -23,18 +33,80 @@ pub trait ResourceItem {
 }
 
 pub struct Resource {
-    capturer: Capturer,
+    fps: u32,
+    capture_frame_count: u32,
+    capture_frames: Vec<CaptureFrame>,
+    start_frame_index: u32,
+    cur_frame_index: u32,
+    cur_frame_count: u32,
 }
 
 impl Resource {
-    pub fn new(width: u32, height: u32, capture_frame_count: u32) -> Resource {
+    pub fn new(width: u32, height: u32, fps: u32, capture_sec: u32) -> Resource {
+        let capture_frame_count = fps * capture_sec;
+        let capture_frames = (0..capture_frame_count)
+            .map(|_| CaptureFrame {
+                frame_image: Image::without_arc_mutex(width, height),
+                frame_count: 0,
+            })
+            .collect();
+
         Resource {
-            capturer: Capturer::new(width, height, capture_frame_count),
+            fps,
+            capture_frame_count,
+            capture_frames,
+            start_frame_index: 0,
+            cur_frame_index: 0,
+            cur_frame_count: 0,
         }
     }
 
     pub fn capture_screen(&mut self, screen: &Image, frame_count: u32) {
-        self.capturer.capture_screen(screen, frame_count);
+        if self.capture_frame_count == 0 {
+            return;
+        }
+
+        self.cur_frame_index = (self.cur_frame_index + 1) % self.capture_frame_count;
+        self.cur_frame_count += 1;
+
+        self.capture_frames[self.cur_frame_index as usize]
+            .frame_image
+            .blt(
+                0,
+                0,
+                screen,
+                0,
+                0,
+                screen.width() as i32,
+                screen.height() as i32,
+                None,
+            );
+        self.capture_frames[self.cur_frame_index as usize].frame_count = frame_count;
+
+        if self.cur_frame_count > self.capture_frame_count {
+            self.start_frame_index = (self.start_frame_index + 1) % self.capture_frame_count;
+            self.cur_frame_count = self.capture_frame_count;
+        }
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    fn export_path() -> String {
+        Path::new(&env::var("HOME").unwrap())
+            .join("Desktop")
+            .join(Local::now().format("pyxel-%Y%m%d-%H%M%S").to_string())
+            .to_str()
+            .unwrap()
+            .to_string()
+    }
+
+    #[cfg(target_os = "windows")]
+    fn export_path() -> String {
+        Path::new(&env::var("USERPROFILE").unwrap())
+            .join(RegKey::predef(HKEY_LOCAL_MACHINE)
+                .open_subkey("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders")
+                .unwrap()
+                .get_value("Desktop")
+                .unwrap())
     }
 }
 
@@ -129,14 +201,118 @@ impl Pyxel {
     }
 
     pub fn screenshot(&mut self) {
-        self.resource.capturer.screenshot(&self.colors);
+        self.resource.capture_frames[self.resource.cur_frame_index as usize]
+            .frame_image
+            .save(&Resource::export_path(), &self.colors, CAPTURE_SCALE);
     }
 
     pub fn reset_capture(&mut self) {
-        self.resource.capturer.reset_capture();
+        if self.resource.capture_frame_count == 0 {
+            return;
+        }
+
+        self.resource.start_frame_index =
+            (self.resource.cur_frame_index + 1) % self.resource.capture_frame_count;
+        self.resource.cur_frame_count = 0;
     }
 
     pub fn screencast(&mut self) {
-        self.resource.capturer.screencast(&self.colors);
+        if self.resource.capture_frame_count == 0 || self.resource.cur_frame_count == 0 {
+            return;
+        }
+
+        let screen =
+            &self.resource.capture_frames[self.resource.cur_frame_index as usize].frame_image;
+        let width = screen.width();
+        let height = screen.height();
+        let mut image = File::create("target/beacon.gif").unwrap();
+
+        let mut palette = Vec::new();
+        for color in self.colors {
+            palette.push(((color >> 16) & 0xff) as u8);
+            palette.push(((color >> 8) & 0xff) as u8);
+            palette.push((color & 0xff) as u8);
+        }
+        palette.append(&mut vec![0; 3]);
+
+        let mut encoder = Encoder::new(&mut image, width as u16, height as u16, &palette).unwrap();
+        encoder.set_repeat(Repeat::Infinite).unwrap();
+
+        let mut last_screen =
+            &self.resource.capture_frames[self.resource.start_frame_index as usize].frame_image;
+        let mut last_frame_count =
+            &self.resource.capture_frames[self.resource.start_frame_index as usize].frame_count;
+        let mut buffer = Vec::new();
+
+        {
+            for i in 0..height {
+                for j in 0..width {
+                    buffer[(width * i + j) as usize] = last_screen._value(j as i32, i as i32);
+                }
+            }
+
+            let frame = Frame {
+                delay: 0,
+                dispose: DisposalMethod::Keep,
+                transparent: None,
+                needs_user_input: false,
+                top: 0,
+                left: 0,
+                width: width as u16,
+                height: height as u16,
+                interlaced: false,
+                palette: None,
+                buffer: Cow::Borrowed(&*buffer),
+            };
+
+            encoder.write_frame(&frame).unwrap();
+        }
+
+        for i in 0..self.resource.cur_frame_count {
+            let index = (self.resource.start_frame_index + i) % self.resource.capture_frame_count;
+            let screen = &self.resource.capture_frames[index as usize].frame_image;
+            let frame_count = &self.resource.capture_frames[index as usize].frame_count;
+
+            for y in 0..height {
+                for x in 0..width {
+                    let value = screen._value(x as i32, y as i32);
+                    buffer[(width * y + x) as usize] =
+                        if value != last_screen._value(x as i32, y as i32) {
+                            value
+                        } else {
+                            COLOR_COUNT as u8
+                        };
+                }
+            }
+
+            let delay = ((frame_count - last_frame_count) as f64 * 100.0 / self.resource.fps as f64)
+                .round() as u16;
+
+            let frame = Frame {
+                delay,
+                dispose: DisposalMethod::Keep,
+                transparent: Some(COLOR_COUNT as u8),
+                needs_user_input: false,
+                top: 0,
+                left: 0,
+                width: width as u16,
+                height: height as u16,
+                interlaced: false,
+                palette: None,
+                buffer: Cow::Borrowed(&*buffer),
+            };
+
+            encoder.write_frame(&frame).unwrap();
+
+            last_screen = screen;
+            last_frame_count = frame_count;
+        }
+
+        /*
+        // try to optimize the generated GIF file with Gifsicle
+        int32_t res = system(("gifsicle -b -O3 -Okeep-empty " + filename).c_str());
+        */
+
+        self.reset_capture();
     }
 }
