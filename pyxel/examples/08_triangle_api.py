@@ -26,7 +26,7 @@ def draw_triangle(x1, y1, x2, y2, x3, y3, n):
 
 triangle_list = [(100, 24, 7, 143, 193, 143, 7)]
 
-pyxel.init(200, 150, caption="Pyxel Triangle API")
+pyxel.init(200, 150, title="Pyxel Triangle API")
 pyxel.cls(13)
 pyxel.text(6, 6, "tri(x1,y1,x2,y2,x3,y3,col)", 7)
 pyxel.text(6, 14, "trib(x1,y1,x2,y2,x3,y3,col)", 7)
