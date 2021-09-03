@@ -1,6 +1,6 @@
 #![warn(clippy::all)]
 #![allow(clippy::too_many_arguments)]
-//#![warn(clippy::cargo)]
+#![warn(clippy::cargo)]
 
 #[macro_use]
 mod utils;
