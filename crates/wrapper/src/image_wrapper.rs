@@ -37,10 +37,8 @@ impl Image {
         Ok(self.pyxel_image.lock().height())
     }
 
-    pub fn set(&self, x: &PyAny, y: &PyAny, data_str: Vec<&str>) -> PyResult<()> {
-        self.pyxel_image
-            .lock()
-            .set(as_i32!(x), as_i32!(y), &data_str);
+    pub fn set(&self, x: &PyAny, y: &PyAny, data: Vec<&str>) -> PyResult<()> {
+        self.pyxel_image.lock().set(as_i32!(x), as_i32!(y), &data);
 
         Ok(())
     }
