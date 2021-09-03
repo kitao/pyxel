@@ -73,14 +73,12 @@ impl Music {
 
     pub fn set(
         &self,
-        sequence0: Vec<u32>,
-        sequence1: Vec<u32>,
-        sequence2: Vec<u32>,
-        sequence3: Vec<u32>,
+        seq0: Vec<u32>,
+        seq1: Vec<u32>,
+        seq2: Vec<u32>,
+        seq3: Vec<u32>,
     ) -> PyResult<()> {
-        self.pyxel_music
-            .lock()
-            .set(&sequence0, &sequence1, &sequence2, &sequence3);
+        self.pyxel_music.lock().set(&seq0, &seq1, &seq2, &seq3);
 
         Ok(())
     }

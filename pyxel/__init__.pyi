@@ -662,8 +662,8 @@ class Music:
     def __init__(self) -> None: ...
     def set(
         self,
-        sequence0: List[int],
-        sequence1: List[int],
-        sequence2: List[int],
-        sequence3: List[int],
+        seq0: List[int],
+        seq1: List[int],
+        seq2: List[int],
+        seq3: List[int],
     ) -> None: ...
