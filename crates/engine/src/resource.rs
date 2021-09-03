@@ -221,11 +221,12 @@ impl Pyxel {
             return;
         }
 
-        let screen =
+        let mut last_frame_image =
             &self.resource.capture_frames[self.resource.cur_frame_index as usize].frame_image;
-        let width = screen.width();
-        let height = screen.height();
-        let mut image = File::create("target/beacon.gif").unwrap();
+        let mut last_frame_count =
+            self.resource.capture_frames[self.resource.start_frame_index as usize].frame_count;
+        let width = last_frame_image.width() * CAPTURE_SCALE;
+        let height = last_frame_image.height() * CAPTURE_SCALE;
 
         let mut palette = Vec::new();
         for color in self.colors {
@@ -235,76 +236,79 @@ impl Pyxel {
         }
         palette.append(&mut vec![0; 3]);
 
+        let mut image = File::create(Resource::export_path() + ".gif").unwrap();
         let mut encoder = Encoder::new(&mut image, width as u16, height as u16, &palette).unwrap();
         encoder.set_repeat(Repeat::Infinite).unwrap();
 
-        let mut last_screen =
-            &self.resource.capture_frames[self.resource.start_frame_index as usize].frame_image;
-        let mut last_frame_count =
-            &self.resource.capture_frames[self.resource.start_frame_index as usize].frame_count;
-        let mut buffer = Vec::new();
-
         {
+            let mut buffer = Vec::new();
+
             for i in 0..height {
                 for j in 0..width {
-                    buffer[(width * i + j) as usize] = last_screen._value(j as i32, i as i32);
+                    let x = j / CAPTURE_SCALE;
+                    let y = i / CAPTURE_SCALE;
+
+                    buffer.push(last_frame_image._value(x as i32, y as i32));
                 }
             }
 
-            let frame = Frame {
-                delay: 0,
-                dispose: DisposalMethod::Keep,
-                transparent: None,
-                needs_user_input: false,
-                top: 0,
-                left: 0,
-                width: width as u16,
-                height: height as u16,
-                interlaced: false,
-                palette: None,
-                buffer: Cow::Borrowed(&*buffer),
-            };
-
-            encoder.write_frame(&frame).unwrap();
+            encoder
+                .write_frame(&Frame {
+                    delay: 0,
+                    dispose: DisposalMethod::Keep,
+                    transparent: None,
+                    needs_user_input: false,
+                    top: 0,
+                    left: 0,
+                    width: width as u16,
+                    height: height as u16,
+                    interlaced: false,
+                    palette: None,
+                    buffer: Cow::Borrowed(&*buffer),
+                })
+                .unwrap();
         }
 
         for i in 0..self.resource.cur_frame_count {
             let index = (self.resource.start_frame_index + i) % self.resource.capture_frame_count;
-            let screen = &self.resource.capture_frames[index as usize].frame_image;
-            let frame_count = &self.resource.capture_frames[index as usize].frame_count;
+            let frame_image = &self.resource.capture_frames[index as usize].frame_image;
+            let frame_count = self.resource.capture_frames[index as usize].frame_count;
+            let mut buffer = Vec::new();
 
-            for y in 0..height {
-                for x in 0..width {
-                    let value = screen._value(x as i32, y as i32);
-                    buffer[(width * y + x) as usize] =
-                        if value != last_screen._value(x as i32, y as i32) {
-                            value
-                        } else {
-                            COLOR_COUNT as u8
-                        };
+            for j in 0..height {
+                for k in 0..width {
+                    let x = k / CAPTURE_SCALE;
+                    let y = j / CAPTURE_SCALE;
+                    let value = frame_image._value(x as i32, y as i32);
+
+                    buffer.push(if value != last_frame_image._value(x as i32, y as i32) {
+                        value
+                    } else {
+                        COLOR_COUNT as u8
+                    });
                 }
             }
 
             let delay = ((frame_count - last_frame_count) as f64 * 100.0 / self.resource.fps as f64)
                 .round() as u16;
 
-            let frame = Frame {
-                delay,
-                dispose: DisposalMethod::Keep,
-                transparent: Some(COLOR_COUNT as u8),
-                needs_user_input: false,
-                top: 0,
-                left: 0,
-                width: width as u16,
-                height: height as u16,
-                interlaced: false,
-                palette: None,
-                buffer: Cow::Borrowed(&*buffer),
-            };
+            encoder
+                .write_frame(&Frame {
+                    delay,
+                    dispose: DisposalMethod::Keep,
+                    transparent: Some(COLOR_COUNT as u8),
+                    needs_user_input: false,
+                    top: 0,
+                    left: 0,
+                    width: width as u16,
+                    height: height as u16,
+                    interlaced: false,
+                    palette: None,
+                    buffer: Cow::Borrowed(&*buffer),
+                })
+                .unwrap();
 
-            encoder.write_frame(&frame).unwrap();
-
-            last_screen = screen;
+            last_frame_image = frame_image;
             last_frame_count = frame_count;
         }
 
