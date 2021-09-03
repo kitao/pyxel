@@ -268,7 +268,7 @@ mod tests {
 
         sound
             .lock()
-            .set_note(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ");
+            .set_notes(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ");
         assert_eq!(&sound.lock().notes, &vec![0, 15, -1, 28, 41, 55, -1, 8, 23]);
     }
 
@@ -276,7 +276,7 @@ mod tests {
     fn set_tone() {
         let sound = Sound::new();
 
-        sound.lock().set_tone(" t s p n ");
+        sound.lock().set_tones(" t s p n ");
         assert_eq!(
             &sound.lock().tones,
             &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
@@ -287,7 +287,7 @@ mod tests {
     fn set_volume() {
         let sound = Sound::new();
 
-        sound.lock().set_volume(" 0 1 2 3 4 5 6 7 ");
+        sound.lock().set_volumes(" 0 1 2 3 4 5 6 7 ");
         assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3, 4, 5, 6, 7]);
     }
 
@@ -295,7 +295,7 @@ mod tests {
     fn set_effect() {
         let sound = Sound::new();
 
-        sound.lock().set_effect(" n s v f ");
+        sound.lock().set_effects(" n s v f ");
         assert_eq!(
             &sound.lock().effects,
             &vec![EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, EFFECT_FADEOUT]
