@@ -19,10 +19,17 @@ impl Music {
         }))
     }
 
-    pub fn set(&mut self, sequences: &[Vec<u32>]) {
-        for i in 0..CHANNEL_COUNT {
-            self.sequences[i as usize] = sequences[i as usize].clone();
-        }
+    pub fn set(
+        &mut self,
+        sequence0: &[u32],
+        sequence1: &[u32],
+        sequence2: &[u32],
+        sequence3: &[u32],
+    ) {
+        self.sequences[0] = sequence0.to_vec();
+        self.sequences[1] = sequence1.to_vec();
+        self.sequences[2] = sequence2.to_vec();
+        self.sequences[3] = sequence3.to_vec();
     }
 }
 
@@ -97,7 +104,7 @@ mod tests {
 
         music
             .lock()
-            .set(&[vec![0, 1, 2], vec![1, 2, 3], vec![2, 3, 4], vec![3, 4, 5]]);
+            .set(&[0, 1, 2], &[1, 2, 3], &[2, 3, 4], &[3, 4, 5]);
 
         for i in 0..CHANNEL_COUNT {
             assert_eq!(&music.lock().sequences[i as usize], &vec![i, i + 1, i + 2]);
