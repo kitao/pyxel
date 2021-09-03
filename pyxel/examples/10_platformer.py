@@ -5,10 +5,10 @@ import pyxel
 CHARA_WIDTH = 8
 CHARA_HEIGHT = 8
 
-CHIP_SPACE = 0
-CHIP_BLOCK = 1
-CHIP_FLOOR = 2
-CHIP_SPAWN = 32
+CHIP_SPACE = (0, 0)
+CHIP_BLOCK = (1, 0)
+CHIP_FLOOR = (2, 0)
+CHIP_SPAWN = (0, 1)
 
 enemy_list = []
 
@@ -18,10 +18,7 @@ player = None
 
 
 def get_tilemap(x, y):
-    if x < 0 or x > 255 or y < 0 or y > 255:
-        return 0
-
-    return pyxel.tilemap(0).get(x, y)
+    return pyxel.tilemap(0).pget(x, y)
 
 
 def check_tilemap_collision(x, y, dx, dy):
@@ -160,9 +157,7 @@ class Enemy1:
         self.dx = self.direction
         self.dy = min(self.dy + 1, 3)
 
-        if check_floor(self.x, self.y + 8) or check_floor(
-            self.x + 7, self.y + 8
-        ):
+        if check_floor(self.x, self.y + 8) or check_floor(self.x + 7, self.y + 8):
             if self.direction < 0 and (
                 check_floor(self.x - 1, self.y + 4)
                 or not check_floor(self.x - 1, self.y + 8)
@@ -199,9 +194,7 @@ class Enemy2:
         self.dx = self.direction
         self.dy = min(self.dy + 1, 3)
 
-        if check_floor(self.x, self.y + 8) or check_floor(
-            self.x + 7, self.y + 8
-        ):
+        if check_floor(self.x, self.y + 8) or check_floor(self.x + 7, self.y + 8):
             if self.is_falling:
                 self.is_falling = False
                 if player.x < self.x:
@@ -273,13 +266,13 @@ class Enemy3Bullet:
 
 class App:
     def __init__(self):
-        pyxel.init(128, 128)
+        pyxel.init(128, 128, title="Pyxel Platformer")
 
         pyxel.load("assets/platformer.pyxres")
 
-        pyxel.image(0).copy(0, 8, 0, 0, 0, 8, 8)
-        pyxel.image(0).copy(8, 8, 0, 0, 0, 8, 8)
-        pyxel.image(0).copy(16, 8, 0, 0, 0, 8, 8)
+        # pyxel.image(0).blt(0, 8, 0, 0, 0, 8, 8)
+        # pyxel.image(0).blt(8, 8, 0, 0, 0, 8, 8)
+        # pyxel.image(0).blt(16, 8, 0, 0, 0, 8, 8)
 
         global player
         player = Player(0, 0)
