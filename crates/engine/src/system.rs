@@ -247,9 +247,9 @@ impl Pyxel {
         self.draw_perf_monitor();
         self.draw_cursor();
         self.platform
-            .render_screen(&self.screen.lock(), &self.colors, BACKGROUND_COLOR);
+            .render_screen(self.screen.clone(), &self.colors, BACKGROUND_COLOR);
         self.resource
-            .capture_screen(&self.screen.lock(), self.system.frame_count);
+            .capture_screen(self.screen.clone(), self.system.frame_count);
 
         self.system.draw_profiler.end(self.platform.tick_count());
 
@@ -308,7 +308,7 @@ impl Pyxel {
         screen.clip0();
         screen.pal0();
 
-        screen.blt(x, y, &self.cursor.lock(), 0, 0, width, height, Some(0));
+        screen.blt(x, y, self.cursor.clone(), 0, 0, width, height, Some(0));
 
         screen._set_clip_rect(clip_rect);
         screen._set_palette(&palette);

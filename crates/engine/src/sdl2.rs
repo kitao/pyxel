@@ -22,7 +22,7 @@ use std::sync::Arc;
 
 use crate::canvas::Canvas;
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
-use crate::image::Image;
+use crate::image::{Image, SharedImage};
 use crate::platform::{AudioCallback, Platform};
 use crate::types::Rgb8;
 use crate::utils::simplify_string;
@@ -107,8 +107,8 @@ impl Platform for Sdl2 {
     fn set_icon(&mut self, data_str: &[&str], colors: &[Rgb8], scale: u32) {
         let width = simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
-        let mut image = Image::without_arc_mutex(width, height);
-        image.set(0, 0, data_str);
+        let image = Image::new(width, height);
+        image.lock().set(0, 0, data_str);
 
         let mut sdl_surface =
             SdlSurface::new(width * scale, height * scale, SdlPixelFormat::RGBA32).unwrap();
@@ -119,8 +119,8 @@ impl Platform for Sdl2 {
                 for x in 0..width {
                     for i in 0..scale {
                         for j in 0..scale {
-                            let color = image._value(x as i32, y as i32) as usize;
-                            let rgb = colors[image._value(x as i32, y as i32) as usize];
+                            let color = image.lock()._value(x as i32, y as i32) as usize;
+                            let rgb = colors[image.lock()._value(x as i32, y as i32) as usize];
                             let offset = ((y * scale + i) * pitch + (x * scale + j) * 4) as usize;
 
                             buffer[offset] = ((rgb >> 16) & 0xff) as u8;
@@ -297,16 +297,16 @@ impl Platform for Sdl2 {
         }
     }
 
-    fn render_screen(&mut self, screen: &Image, colors: &[Rgb8], bg_color: Rgb8) {
-        let width = screen.width();
-        let height = screen.height();
+    fn render_screen(&mut self, screen: SharedImage, colors: &[Rgb8], bg_color: Rgb8) {
+        let width = screen.lock().width();
+        let height = screen.lock().height();
 
         self.sdl_texture
             .with_lock(None, |buffer: &mut [u8], pitch: usize| {
                 for i in 0..height as usize {
                     for j in 0..width as usize {
                         let offset = i * pitch + j * 3;
-                        let color = colors[screen._value(j as i32, i as i32) as usize];
+                        let color = colors[screen.lock()._value(j as i32, i as i32) as usize];
 
                         buffer[offset] = ((color >> 16) & 0xff) as u8;
                         buffer[offset + 1] = ((color >> 8) & 0xff) as u8;
