@@ -161,15 +161,15 @@ impl Input {
 
 impl Pyxel {
     pub fn mouse_x(&self) -> i32 {
-        *self.input.key_values.get(&MOUSE_POS_X).unwrap()
+        *self.input.key_values.get(&MOUSE_POS_X).unwrap_or(&0)
     }
 
     pub fn mouse_y(&self) -> i32 {
-        *self.input.key_values.get(&MOUSE_POS_Y).unwrap()
+        *self.input.key_values.get(&MOUSE_POS_Y).unwrap_or(&0)
     }
 
     pub fn mouse_wheel(&self) -> i32 {
-        *self.input.key_values.get(&MOUSE_WHEEL_Y).unwrap()
+        *self.input.key_values.get(&MOUSE_WHEEL_Y).unwrap_or(&0)
     }
 
     pub fn text_input(&self) -> &str {
