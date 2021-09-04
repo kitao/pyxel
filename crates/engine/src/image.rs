@@ -59,13 +59,17 @@ impl Image {
         let height = data_str.len() as u32;
         let image = Image::new(width, height);
 
-        for i in 0..height {
-            let src_data = simplify_string(data_str[i as usize]);
+        {
+            let mut image = image.lock();
 
-            for j in 0..width {
-                let value = parse_hex_string(&src_data[j as usize..j as usize + 1]).unwrap();
+            for i in 0..height {
+                let src_data = simplify_string(data_str[i as usize]);
 
-                image.lock()._set_value(j as i32, i as i32, value as Color);
+                for j in 0..width {
+                    let value = parse_hex_string(&src_data[j as usize..j as usize + 1]).unwrap();
+
+                    image._set_value(j as i32, i as i32, value as Color);
+                }
             }
         }
 
@@ -76,36 +80,40 @@ impl Image {
         let image_file = image::open(&Path::new(&filename)).unwrap().to_rgb8();
         let (width, height) = image_file.dimensions();
         let image = Image::new(width, height);
-        let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
 
-        for i in 0..height {
-            for j in 0..width {
-                let p = image_file.get_pixel(j, i);
-                let src_rgb = (p[0], p[1], p[2]);
+        {
+            let mut image = image.lock();
+            let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
 
-                if let Some(color) = color_table.get(&src_rgb) {
-                    image.lock()._set_value(j as i32, i as i32, *color);
-                } else {
-                    let mut closest_color: Color = 0;
-                    let mut closest_dist: f64 = f64::MAX;
+            for i in 0..height {
+                for j in 0..width {
+                    let p = image_file.get_pixel(j, i);
+                    let src_rgb = (p[0], p[1], p[2]);
 
-                    for k in 0..COLOR_COUNT {
-                        let pal_color = colors[k as usize];
-                        let pal_rgb = (
-                            ((pal_color >> 16) & 0xff) as u8,
-                            ((pal_color >> 8) & 0xff) as u8,
-                            (pal_color & 0xff) as u8,
-                        );
-                        let dist = Image::color_dist(src_rgb, pal_rgb);
+                    if let Some(color) = color_table.get(&src_rgb) {
+                        image._set_value(j as i32, i as i32, *color);
+                    } else {
+                        let mut closest_color: Color = 0;
+                        let mut closest_dist: f64 = f64::MAX;
 
-                        if dist < closest_dist {
-                            closest_color = k as Color;
-                            closest_dist = dist;
+                        for k in 0..COLOR_COUNT {
+                            let pal_color = colors[k as usize];
+                            let pal_rgb = (
+                                ((pal_color >> 16) & 0xff) as u8,
+                                ((pal_color >> 8) & 0xff) as u8,
+                                (pal_color & 0xff) as u8,
+                            );
+                            let dist = Image::color_dist(src_rgb, pal_rgb);
+
+                            if dist < closest_dist {
+                                closest_color = k as Color;
+                                closest_dist = dist;
+                            }
                         }
-                    }
 
-                    color_table.insert(src_rgb, closest_color);
-                    image.lock()._set_value(j as i32, i as i32, closest_color);
+                        color_table.insert(src_rgb, closest_color);
+                        image._set_value(j as i32, i as i32, closest_color);
+                    }
                 }
             }
         }
@@ -177,6 +185,7 @@ impl Image {
             (right - left + 1) as u32,
             (bottom - top + 1) as u32,
         );
+        let tilemap = tilemap.lock();
 
         let copy_area = CopyArea::new(
             x / TILE_SIZE as i32,
@@ -184,11 +193,10 @@ impl Image {
             dst_rect,
             tilemap_x,
             tilemap_y,
-            tilemap.lock()._self_rect(),
+            tilemap._self_rect(),
             width,
             height,
         );
-
         let src_x = copy_area.src_x;
         let src_y = copy_area.src_y;
         let sign_x = copy_area.sign_x;
@@ -204,14 +212,13 @@ impl Image {
 
         for i in 0..height {
             for j in 0..width {
-                let tile = tilemap
-                    .lock()
-                    ._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
+                let tile =
+                    tilemap._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
 
                 self.blt(
                     x + TILE_SIZE as i32 * j,
                     y + TILE_SIZE as i32 * i,
-                    tilemap.lock().image.clone(),
+                    tilemap.image.clone(),
                     tile.0 as i32 * TILE_SIZE as i32,
                     tile.1 as i32 * TILE_SIZE as i32,
                     tile_size,

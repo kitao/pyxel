@@ -37,18 +37,22 @@ impl Tilemap {
         let height = data_str.len() as u32;
         let tilemap = Tilemap::new(width, height, self.image.clone());
 
-        for i in 0..height {
-            let src_data = simplify_string(data_str[i as usize]);
+        {
+            let mut tilemap = tilemap.lock();
 
-            for j in 0..width {
-                let index = j as usize * 4;
-                let value = parse_hex_string(&src_data[index..index + 4]).unwrap();
+            for i in 0..height {
+                let src_data = simplify_string(data_str[i as usize]);
 
-                tilemap.lock()._set_value(
-                    j as i32,
-                    i as i32,
-                    (((value >> 8) & 0xff) as u8, (value & 0xff) as u8),
-                );
+                for j in 0..width {
+                    let index = j as usize * 4;
+                    let value = parse_hex_string(&src_data[index..index + 4]).unwrap();
+
+                    tilemap._set_value(
+                        j as i32,
+                        i as i32,
+                        (((value >> 8) & 0xff) as u8, (value & 0xff) as u8),
+                    );
+                }
             }
         }
 
