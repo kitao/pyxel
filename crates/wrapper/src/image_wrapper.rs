@@ -231,6 +231,29 @@ impl Image {
         Ok(())
     }
 
+    pub fn blt_self(
+        &self,
+        x: &PyAny,
+        y: &PyAny,
+        u: &PyAny,
+        v: &PyAny,
+        w: &PyAny,
+        h: &PyAny,
+        colkey: Option<Color>,
+    ) -> PyResult<()> {
+        self.pyxel_image.lock().blt_self(
+            as_i32!(x),
+            as_i32!(y),
+            as_i32!(u),
+            as_i32!(v),
+            as_i32!(w),
+            as_i32!(h),
+            colkey,
+        );
+
+        Ok(())
+    }
+
     pub fn bltm(
         &self,
         x: &PyAny,
