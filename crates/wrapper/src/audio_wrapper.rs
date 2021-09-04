@@ -42,7 +42,7 @@ fn play(ch: u32, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
         },
         Sound,
         {
-            instance().play1_(ch, &snd.pyxel_sound.lock(), r#loop.unwrap_or(false));
+            instance().channel(ch).lock().play1(snd.pyxel_sound.lock().clone(), r#loop.unwrap_or(false));
         },
         Vec<Sound>,
         {
@@ -51,7 +51,7 @@ fn play(ch: u32, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
                 .map(|snd| snd.pyxel_sound.lock().clone())
                 .collect();
 
-            instance().play_(ch, &sounds, r#loop.unwrap_or(false));
+            instance().channel(ch).lock().play(sounds, r#loop.unwrap_or(false));
         }
     }
 
