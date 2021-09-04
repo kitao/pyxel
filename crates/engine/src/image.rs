@@ -169,6 +169,12 @@ impl Image {
         height: i32,
         transparent: Option<Color>,
     ) {
+        let tilemap = if let Some(tilemap) = tilemap.try_lock() {
+            tilemap
+        } else {
+            panic!("unable to lock tilemap in bltm");
+        };
+
         let tile_size = if width < 0 {
             -(TILE_SIZE as i32)
         } else {
@@ -185,7 +191,6 @@ impl Image {
             (right - left + 1) as u32,
             (bottom - top + 1) as u32,
         );
-        let tilemap = tilemap.lock();
 
         let copy_area = CopyArea::new(
             x / TILE_SIZE as i32,
