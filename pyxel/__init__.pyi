@@ -388,12 +388,6 @@ def quit() -> None: ...
 #
 # Resource
 #
-mouse_x: int
-mouse_y: int
-mouse_wheel: int
-text_input: str
-drop_files: List[str]
-
 def load(
     filename: str,
     *,
@@ -417,11 +411,20 @@ def screencast() -> None: ...
 #
 # Input
 #
+mouse_x: int
+mouse_y: int
+mouse_wheel: int
+text_input: str
+drop_files: List[str]
+
 def mouse(visible: bool) -> None: ...
 def btn(key: int) -> bool: ...
 def btnp(key: int, *, hold: Optional[int], repeat: Optional[int]) -> bool: ...
 def btnr(key: int) -> bool: ...
 def btnv(key: int) -> int: ...
+def set_btnp(key: int) -> None: ...
+def set_btnr(key: int) -> None: ...
+def set_btnv(key: int, val: int) -> None: ...
 
 #
 # Graphics
