@@ -137,6 +137,18 @@ impl Platform for Sdl2 {
         self.sdl_context.mouse().show_cursor(show);
     }
 
+    fn move_cursor(&self, x: i32, y: i32) {
+        let (window_x, window_y) = self.sdl_canvas.window().position();
+        let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
+
+        let mouse_x = x * screen_scale as i32 + window_x + screen_x as i32;
+        let mouse_y = y * screen_scale as i32 + window_y + screen_y as i32;
+
+        unsafe {
+            sdl2::sys::SDL_WarpMouseGlobal(mouse_x, mouse_y);
+        }
+    }
+
     fn toggle_fullscreen(&mut self) {
         let window = self.sdl_canvas.window_mut();
 

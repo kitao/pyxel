@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::event::Event;
 use crate::key::*;
+use crate::platform::Platform;
 use crate::types::{Key, KeyValue};
 use crate::Pyxel;
 
@@ -232,18 +233,20 @@ impl Pyxel {
     pub fn btnv(&self, key: Key) -> KeyValue {
         self.input.key_values.get(&key).cloned().unwrap_or(0)
     }
-}
 
-/*
-void Input::Update(Window* window, int32_t frame_count) {
-  if (is_mouse_visible_) {
-    SDL_ShowCursor(true);
-    SDL_SetCursor(mouse_x_ >= 0 && mouse_x_ < window->ScreenWidth() &&
-                          mouse_y_ >= 0 && mouse_y_ < window->ScreenHeight()
-                      ? blank_cursor_
-                      : normal_cursor_);
-  } else {
-    SDL_ShowCursor(false);
-  }
+    pub fn set_btnp(&mut self, key: Key) {
+        self.input.press_key(key, self.frame_count());
+    }
+
+    pub fn set_btnr(&mut self, key: Key) {
+        self.input.release_key(key, self.frame_count());
+    }
+
+    pub fn set_btnv(&mut self, key: Key, key_value: KeyValue) {
+        self.input.key_values.insert(key, key_value);
+
+        if key == MOUSE_POS_X || key == MOUSE_POS_Y {
+            self.platform.move_cursor(self.mouse_x(), self.mouse_y());
+        }
+    }
 }
-*/
