@@ -548,6 +548,16 @@ class Image:
         h: int,
         colkey: Optional[int],
     ) -> None: ...
+    def blt_self(
+        self,
+        x: int,
+        y: int,
+        u: int,
+        v: int,
+        w: int,
+        h: int,
+        colkey: Optional[int],
+    ) -> None: ...
     def bltm(
         self,
         x: int,
@@ -613,6 +623,16 @@ class Tilemap:
         x: int,
         y: int,
         tm: Union[int | Tilemap],
+        u: int,
+        v: int,
+        w: int,
+        h: int,
+        tilekey: Optional[Tuple[int, int]],
+    ) -> None: ...
+    def blt_self(
+        self,
+        x: int,
+        y: int,
         u: int,
         v: int,
         w: int,
