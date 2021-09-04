@@ -35,22 +35,26 @@ impl Graphics {
         let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + FONT_ROW_COUNT - 1) / FONT_ROW_COUNT);
         let image = Image::new(width, height);
 
-        for (i, data) in FONT_DATA.iter().enumerate() {
-            let row = i as u32 / FONT_ROW_COUNT;
-            let col = i as u32 % FONT_ROW_COUNT;
-            let mut data = *data;
+        {
+            let mut image = image.lock();
 
-            for j in 0..FONT_HEIGHT {
-                for k in 0..FONT_WIDTH {
-                    let color = if (data & 0x800000) != 0 { 1 } else { 0 };
+            for (i, data) in FONT_DATA.iter().enumerate() {
+                let row = i as u32 / FONT_ROW_COUNT;
+                let col = i as u32 % FONT_ROW_COUNT;
+                let mut data = *data;
 
-                    image.lock()._set_value(
-                        (FONT_WIDTH * col + k) as i32,
-                        (FONT_HEIGHT * row + j) as i32,
-                        color,
-                    );
+                for j in 0..FONT_HEIGHT {
+                    for k in 0..FONT_WIDTH {
+                        let color = if (data & 0x800000) != 0 { 1 } else { 0 };
 
-                    data <<= 1;
+                        image._set_value(
+                            (FONT_WIDTH * col + k) as i32,
+                            (FONT_HEIGHT * row + j) as i32,
+                            color,
+                        );
+
+                        data <<= 1;
+                    }
                 }
             }
         }
