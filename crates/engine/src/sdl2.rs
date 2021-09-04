@@ -22,10 +22,9 @@ use std::sync::Arc;
 
 use crate::canvas::Canvas;
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
-use crate::image::{Image, SharedImage};
+use crate::image::SharedImage;
 use crate::platform::{AudioCallback, Platform};
 use crate::types::Rgb8;
-use crate::utils::simplify_string;
 
 struct AudioContextHolder {
     audio: Arc<Mutex<dyn AudioCallback + Send>>,
@@ -104,12 +103,10 @@ impl Platform for Sdl2 {
         self.sdl_canvas.window_mut().set_title(title).unwrap();
     }
 
-    fn set_icon(&mut self, data_str: &[&str], colors: &[Rgb8], scale: u32) {
-        let width = simplify_string(data_str[0]).len() as u32;
-        let height = data_str.len() as u32;
-        let image = Image::new(width, height);
-        image.lock().set(0, 0, data_str);
-
+    fn set_icon(&mut self, icon: SharedImage, colors: &[Rgb8], scale: u32) {
+        let icon = icon.lock();
+        let width = icon.width();
+        let height = icon.height();
         let mut sdl_surface =
             SdlSurface::new(width * scale, height * scale, SdlPixelFormat::RGBA32).unwrap();
         let pitch = sdl_surface.pitch();
@@ -119,8 +116,8 @@ impl Platform for Sdl2 {
                 for x in 0..width {
                     for i in 0..scale {
                         for j in 0..scale {
-                            let color = image.lock()._value(x as i32, y as i32) as usize;
-                            let rgb = colors[image.lock()._value(x as i32, y as i32) as usize];
+                            let color = icon._value(x as i32, y as i32) as usize;
+                            let rgb = colors[icon._value(x as i32, y as i32) as usize];
                             let offset = ((y * scale + i) * pitch + (x * scale + j) * 4) as usize;
 
                             buffer[offset] = ((rgb >> 16) & 0xff) as u8;
