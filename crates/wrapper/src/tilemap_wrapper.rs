@@ -222,7 +222,7 @@ impl Tilemap {
                 self.pyxel_tilemap.lock().blt(
                     as_i32!(x),
                     as_i32!(y),
-                    instance().tilemap(tm).clone(),
+                    instance().tilemap(tm),
                     as_i32!(u),
                     as_i32!(v),
                     as_i32!(w),
@@ -235,7 +235,7 @@ impl Tilemap {
                 self.pyxel_tilemap.lock().blt(
                     as_i32!(x),
                     as_i32!(y),
-                    tm.pyxel_tilemap.clone(),
+                    tm.pyxel_tilemap,
                     as_i32!(u),
                     as_i32!(v),
                     as_i32!(w),
