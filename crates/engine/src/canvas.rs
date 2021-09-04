@@ -347,13 +347,72 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         height: i32,
         transparent: Option<T>,
     ) {
+        let canvas = if let Some(canvas) = canvas.try_lock() {
+            canvas
+        } else {
+            panic!("unable to lock copy source in blt");
+        };
+
         let copy_area = CopyArea::new(
             x,
             y,
             self._clip_rect(),
             canvas_x,
             canvas_y,
-            canvas.lock()._self_rect(),
+            canvas._self_rect(),
+            width,
+            height,
+        );
+        let dst_x = copy_area.dst_x;
+        let dst_y = copy_area.dst_y;
+        let src_x = copy_area.src_x;
+        let src_y = copy_area.src_y;
+        let sign_x = copy_area.sign_x;
+        let sign_y = copy_area.sign_y;
+        let offset_x = copy_area.offset_x;
+        let offset_y = copy_area.offset_y;
+        let width = copy_area.width;
+        let height = copy_area.height;
+
+        if width == 0 || height == 0 {
+            return;
+        }
+
+        for i in 0..height {
+            for j in 0..width {
+                let value =
+                    canvas._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
+
+                if let Some(transparent) = transparent {
+                    if value == transparent {
+                        continue;
+                    }
+                }
+
+                let value = self._palette_value(value);
+
+                self._set_value(dst_x + j, dst_y + i, value);
+            }
+        }
+    }
+
+    fn blt_self(
+        &mut self,
+        x: i32,
+        y: i32,
+        canvas_x: i32,
+        canvas_y: i32,
+        width: i32,
+        height: i32,
+        transparent: Option<T>,
+    ) {
+        let copy_area = CopyArea::new(
+            x,
+            y,
+            self._clip_rect(),
+            canvas_x,
+            canvas_y,
+            self._self_rect(),
             width,
             height,
         );
@@ -375,9 +434,8 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
 
         for i in 0..height {
             for j in 0..width {
-                let value = canvas
-                    .lock()
-                    ._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
+                let value =
+                    self._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
 
                 if let Some(transparent) = transparent {
                     if value == transparent {
