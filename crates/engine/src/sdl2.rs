@@ -70,7 +70,7 @@ impl Platform for Sdl2 {
             .resizable()
             .build()
             .unwrap();
-        let mut sdl_canvas = sdl_window.into_canvas().build().unwrap();
+        let mut sdl_canvas = sdl_window.into_canvas().present_vsync().build().unwrap();
         let sdl_texture = sdl_canvas
             .texture_creator()
             .create_texture_streaming(SdlPixelFormat::RGB24, width, height)
@@ -152,8 +152,8 @@ impl Platform for Sdl2 {
     fn toggle_fullscreen(&mut self) {
         let window = self.sdl_canvas.window_mut();
 
-        if window.fullscreen_state() != SdlFullscreenType::True {
-            let _ = window.set_fullscreen(SdlFullscreenType::True);
+        if window.fullscreen_state() == SdlFullscreenType::Off {
+            let _ = window.set_fullscreen(SdlFullscreenType::Desktop);
         } else {
             let _ = window.set_fullscreen(SdlFullscreenType::Off);
         }
@@ -330,7 +330,14 @@ impl Platform for Sdl2 {
             ((bg_color >> 8) & 0xff) as u8,
             (bg_color & 0xff) as u8,
         ));
-        self.sdl_canvas.clear();
+        if false {
+            self.sdl_canvas.clear();
+        } else {
+            let display_size = self.sdl_canvas.output_size().unwrap();
+            self.sdl_canvas
+                .fill_rect(SdlRect::new(0, 0, display_size.0, display_size.1))
+                .unwrap();
+        }
 
         let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
         let dst = SdlRect::new(
