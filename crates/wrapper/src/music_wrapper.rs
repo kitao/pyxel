@@ -7,8 +7,8 @@ use pyxel::SharedMusic as PyxelSharedMusic;
 #[pyclass]
 #[derive(Clone)]
 pub struct Sequence {
-    pub pyxel_music: PyxelSharedMusic,
-    pub channel_no: u32,
+    pyxel_music: PyxelSharedMusic,
+    channel_no: u32,
 }
 
 #[pyproto]

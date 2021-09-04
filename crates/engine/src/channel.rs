@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use crate::oscillator::Oscillator;
 use crate::settings::{EFFECT_NONE, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE};
-use crate::sound::Sound;
+use crate::sound::{SharedSound, Sound};
 use crate::types::{Effect, Note, Tone, Volume};
 
 pub struct Channel {
@@ -43,12 +43,12 @@ impl Channel {
         }
     }
 
-    pub fn play(&mut self, sounds: Vec<Sound>, is_looping: bool) {
+    pub fn play(&mut self, sounds: Vec<SharedSound>, is_looping: bool) {
         if sounds.is_empty() {
             return;
         }
 
-        self.sounds = sounds;
+        self.sounds = sounds.iter().map(|sound| sound.lock().clone()).collect();
         self.is_playing = true;
         self.is_looping = is_looping;
         self.sound_index = 0;
@@ -56,7 +56,7 @@ impl Channel {
         self.tick_count = 0;
     }
 
-    pub fn play1(&mut self, sound: Sound, is_looping: bool) {
+    pub fn play1(&mut self, sound: SharedSound, is_looping: bool) {
         self.play(vec![sound], is_looping);
     }
 
