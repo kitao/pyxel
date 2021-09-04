@@ -34,11 +34,11 @@ DST_LIB_DIR = $(PYXEL_LIB_DIR)
 TEST_IMPORT_DIR = ..
 endif
 
-.PHONY: all build test format clean
+.PHONY: all build test format lint clean
 
 all: build
 
-build: format
+build: format lint
 	cargo build $(CARGO_BUILD_OPT)
 	mkdir -p $(DST_LIB_DIR)
 	cp $(SRC_LIB_DIR)/$(SRC_LIB_NAME) $(DST_LIB_DIR)/$(DST_LIB_NAME)
@@ -59,6 +59,9 @@ test: build
 
 format:
 	cargo fmt -- --emit=files
+
+lint:
+	cargo clippy
 
 clean:
 	cargo clean
