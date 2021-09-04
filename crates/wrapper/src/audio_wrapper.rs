@@ -1,7 +1,5 @@
 use pyo3::prelude::*;
 
-use pyxel::Sound as PyxelSound;
-
 use crate::channel_wrapper::{wrap_pyxel_channel, Channel};
 use crate::instance;
 use crate::music_wrapper::{wrap_pyxel_music, Music};
@@ -42,13 +40,13 @@ fn play(ch: u32, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
         },
         Sound,
         {
-            instance().channel(ch).lock().play1(snd.pyxel_sound.lock().clone(), r#loop.unwrap_or(false));
+            instance().channel(ch).lock().play1(snd.pyxel_sound.clone(), r#loop.unwrap_or(false));
         },
         Vec<Sound>,
         {
-            let sounds: Vec<PyxelSound> = snd
+            let sounds = snd
                 .iter()
-                .map(|snd| snd.pyxel_sound.lock().clone())
+                .map(|snd| snd.pyxel_sound.clone())
                 .collect();
 
             instance().channel(ch).lock().play(sounds, r#loop.unwrap_or(false));

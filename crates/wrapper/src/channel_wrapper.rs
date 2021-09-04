@@ -9,7 +9,7 @@ use crate::sound_wrapper::Sound;
 #[pyclass]
 #[derive(Clone)]
 pub struct Channel {
-    pub pyxel_channel: PyxelSharedChannel,
+    pyxel_channel: PyxelSharedChannel,
 }
 
 pub fn wrap_pyxel_channel(pyxel_channel: PyxelSharedChannel) -> Channel {
@@ -44,13 +44,13 @@ impl Channel {
             {
                 self.pyxel_channel
                     .lock()
-                    .play1(instance().sound(snd).lock().clone(), loop_);
+                    .play1(instance().sound(snd).clone(), loop_);
             },
             Vec<u32>,
             {
                 let snd = snd
                     .iter()
-                    .map(|sound_no| instance().sound(*sound_no).lock().clone())
+                    .map(|sound_no| instance().sound(*sound_no).clone())
                     .collect();
 
                 self.pyxel_channel.lock().play(snd, loop_);
@@ -59,13 +59,13 @@ impl Channel {
             {
                 self.pyxel_channel
                     .lock()
-                    .play1(snd.pyxel_sound.lock().clone(), loop_);
+                    .play1(snd.pyxel_sound.clone(), loop_);
             },
             Vec<Sound>,
             {
                 let snd = snd
                     .iter()
-                    .map(|sound| sound.pyxel_sound.lock().clone())
+                    .map(|sound| sound.pyxel_sound.clone())
                     .collect();
 
                 self.pyxel_channel.lock().play(snd, loop_);
