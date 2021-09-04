@@ -40,7 +40,7 @@ fn play(ch: u32, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
         },
         Sound,
         {
-            instance().channel(ch).lock().play1(snd.pyxel_sound.clone(), r#loop.unwrap_or(false));
+            instance().channel(ch).lock().play1(snd.pyxel_sound, r#loop.unwrap_or(false));
         },
         Vec<Sound>,
         {

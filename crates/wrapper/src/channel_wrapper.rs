@@ -44,13 +44,13 @@ impl Channel {
             {
                 self.pyxel_channel
                     .lock()
-                    .play1(instance().sound(snd).clone(), loop_);
+                    .play1(instance().sound(snd), loop_);
             },
             Vec<u32>,
             {
                 let snd = snd
                     .iter()
-                    .map(|sound_no| instance().sound(*sound_no).clone())
+                    .map(|sound_no| instance().sound(*sound_no))
                     .collect();
 
                 self.pyxel_channel.lock().play(snd, loop_);
@@ -59,7 +59,7 @@ impl Channel {
             {
                 self.pyxel_channel
                     .lock()
-                    .play1(snd.pyxel_sound.clone(), loop_);
+                    .play1(snd.pyxel_sound, loop_);
             },
             Vec<Sound>,
             {
