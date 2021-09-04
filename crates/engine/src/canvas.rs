@@ -350,7 +350,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         let canvas = if let Some(canvas) = canvas.try_lock() {
             canvas
         } else {
-            panic!("unable to lock copy source in blt");
+            panic!("unable to lock canvas in blt");
         };
 
         let copy_area = CopyArea::new(
