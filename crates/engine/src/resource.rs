@@ -75,16 +75,7 @@ impl Resource {
         self.capture_frames[self.cur_frame_index as usize]
             .frame_image
             .lock()
-            .blt(
-                0,
-                0,
-                screen.clone(),
-                0,
-                0,
-                width as i32,
-                height as i32,
-                None,
-            );
+            .blt(0, 0, screen, 0, 0, width as i32, height as i32, None);
         self.capture_frames[self.cur_frame_index as usize].frame_count = frame_count;
 
         if self.cur_frame_count > self.capture_frame_count {

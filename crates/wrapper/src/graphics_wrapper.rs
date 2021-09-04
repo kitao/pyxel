@@ -178,7 +178,7 @@ fn blt(
             instance().screen.lock().blt(
                 as_i32!(x),
                 as_i32!(y),
-                img.pyxel_image.clone(),
+                img.pyxel_image,
                 as_i32!(u),
                 as_i32!(v),
                 as_i32!(w),
@@ -222,7 +222,7 @@ fn bltm(
             instance().screen.lock().bltm(
                 as_i32!(x),
                 as_i32!(y),
-                tm.pyxel_tilemap.clone(),
+                tm.pyxel_tilemap,
                 as_i32!(u),
                 as_i32!(v),
                 as_i32!(w),
