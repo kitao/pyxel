@@ -270,9 +270,9 @@ class App:
 
         pyxel.load("assets/platformer.pyxres")
 
-        pyxel.image(0).blt(0, 8, 0, 0, 0, 8, 8)
-        pyxel.image(0).blt(8, 8, 0, 0, 0, 8, 8)
-        pyxel.image(0).blt(16, 8, 0, 0, 0, 8, 8)
+        pyxel.image(0).blt_self(0, 8, 0, 0, 8, 8)
+        pyxel.image(0).blt_self(8, 8, 0, 0, 8, 8)
+        pyxel.image(0).blt_self(16, 8, 0, 0, 8, 8)
 
         global player
         player = Player(0, 0)
