@@ -90,9 +90,7 @@ impl Pyxel {
         let cursor = Graphics::new_cursor_image();
         let font = Graphics::new_font_image();
 
-        platform.set_icon(&ICON_DATA, &DEFAULT_COLORS, ICON_SCALE);
-
-        Pyxel {
+        let mut pyxel = Pyxel {
             platform,
             system,
             resource,
@@ -104,6 +102,10 @@ impl Pyxel {
             screen,
             cursor,
             font,
-        }
+        };
+
+        pyxel.icon(&ICON_DATA, ICON_SCALE);
+
+        pyxel
     }
 }

@@ -3,11 +3,13 @@ use std::process::exit;
 
 use crate::canvas::Canvas;
 use crate::event::Event;
+use crate::image::Image;
 use crate::key::{KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use crate::platform::Platform;
 use crate::profiler::Profiler;
 use crate::settings::{BACKGROUND_COLOR, MAX_FRAME_SKIP_COUNT, MEASURE_FRAME_COUNT};
 use crate::types::Key;
+use crate::utils::simplify_string;
 use crate::{Pyxel, PyxelCallback};
 
 pub struct System {
@@ -62,7 +64,12 @@ impl Pyxel {
     }
 
     pub fn icon(&mut self, data_str: &[&str], scale: u32) {
-        self.platform.set_icon(data_str, &self.colors, scale);
+        let width = simplify_string(data_str[0]).len() as u32;
+        let height = data_str.len() as u32;
+        let image = Image::new(width, height);
+        image.lock().set(0, 0, data_str);
+
+        self.platform.set_icon(image, &self.colors, scale);
     }
 
     pub fn fullscreen(&mut self) {
