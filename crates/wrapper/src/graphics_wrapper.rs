@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-use pyxel::Color;
+use pyxel::{Canvas, Color};
 
 use crate::image_wrapper::{wrap_pyxel_image, Image};
 use crate::instance;
@@ -175,7 +175,7 @@ fn blt(
         },
         Image,
         {
-            instance().blt_(
+            instance().screen.lock().blt(
                 as_i32!(x),
                 as_i32!(y),
                 img.pyxel_image.clone(),
@@ -219,7 +219,7 @@ fn bltm(
         },
         Tilemap,
         {
-            instance().bltm_(
+            instance().screen.lock().bltm(
                 as_i32!(x),
                 as_i32!(y),
                 tm.pyxel_tilemap.clone(),
