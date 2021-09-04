@@ -14,7 +14,7 @@ path = "src/bin.rs"
 
 [[test]]
 name = "tests"
-path = "tests/main.rs"
+path = "tests/test_pyxel.rs"
 harness = false
 
 [dependencies]
