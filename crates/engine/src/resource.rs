@@ -5,6 +5,7 @@ use std::env;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
+use std::process::Command;
 use zip::{ZipArchive, ZipWriter};
 
 use crate::canvas::Canvas;
@@ -200,6 +201,8 @@ impl Pyxel {
             .frame_image
             .lock()
             .save(&Resource::export_path(), &self.colors, CAPTURE_SCALE);
+
+        self.system.disable_next_frame_skip();
     }
 
     pub fn reset_capture(&mut self) {
@@ -232,7 +235,8 @@ impl Pyxel {
         }
         palette.append(&mut vec![0; 3]);
 
-        let mut image = File::create(Resource::export_path() + ".gif").unwrap();
+        let filename = Resource::export_path() + ".gif";
+        let mut image = File::create(&filename).unwrap();
         let mut encoder = Encoder::new(&mut image, width as u16, height as u16, &palette).unwrap();
         encoder.set_repeat(Repeat::Infinite).unwrap();
 
@@ -310,11 +314,15 @@ impl Pyxel {
             last_frame_count = frame_count;
         }
 
-        /*
         // try to optimize the generated GIF file with Gifsicle
-        int32_t res = system(("gifsicle -b -O3 -Okeep-empty " + filename).c_str());
-        */
+        let _ = Command::new("gifsicle")
+            .arg("-b")
+            .arg("-O3")
+            .arg("-Okeep-empty")
+            .arg(&filename)
+            .output();
 
         self.reset_capture();
+        self.system.disable_next_frame_skip();
     }
 }
