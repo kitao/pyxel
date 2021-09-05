@@ -44,6 +44,10 @@ impl System {
             perf_monitor_enabled: false,
         }
     }
+
+    pub fn disable_next_frame_skip(&mut self) {
+        self.disable_next_frame_skip = true;
+    }
 }
 
 impl Pyxel {
@@ -214,7 +218,6 @@ impl Pyxel {
 
             if self.btnp(KEY_1, None, None) {
                 self.screenshot();
-                self.system.disable_next_frame_skip = true;
             }
 
             if self.btnp(KEY_2, None, None) {
@@ -223,7 +226,6 @@ impl Pyxel {
 
             if self.btnp(KEY_3, None, None) {
                 self.screencast();
-                self.system.disable_next_frame_skip = true;
             }
         }
 
