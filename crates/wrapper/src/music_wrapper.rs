@@ -14,15 +14,33 @@ pub struct Sequence {
 #[pyproto]
 impl PySequenceProtocol for Sequence {
     fn __len__(&self) -> PyResult<usize> {
-        Ok(self.pyxel_music.lock().sequences[self.channel_no as usize].len())
+        sequence_len!(self.pyxel_music.lock().sequences[self.channel_no as usize])
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<u32> {
-        Ok(self.pyxel_music.lock().sequences[self.channel_no as usize][idx as usize])
+        sequence_get!(
+            self.pyxel_music.lock().sequences[self.channel_no as usize],
+            idx
+        )
     }
 
-    fn __setitem__(&mut self, idx: isize, sound_no: u32) -> PyResult<()> {
-        self.pyxel_music.lock().sequences[self.channel_no as usize][idx as usize] = sound_no;
+    fn __setitem__(&mut self, idx: isize, value: u32) -> PyResult<()> {
+        sequence_set!(
+            self.pyxel_music.lock().sequences[self.channel_no as usize],
+            idx,
+            value
+        )
+    }
+
+    fn __delitem__(&mut self, idx: isize) -> PyResult<()> {
+        sequence_del!(
+            self.pyxel_music.lock().sequences[self.channel_no as usize],
+            idx
+        )
+    }
+
+    fn __inplace_concat__(&mut self, other: Vec<u32>) -> PyResult<()> {
+        self.pyxel_music.lock().sequences[self.channel_no as usize].append(&mut other);
 
         Ok(())
     }
@@ -37,20 +55,21 @@ pub struct Sequences {
 #[pyproto]
 impl PySequenceProtocol for Sequences {
     fn __len__(&self) -> PyResult<usize> {
-        Ok(self.pyxel_music.lock().sequences.len())
+        sequence_len!(self.pyxel_music.lock().sequences)
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<Sequence> {
-        Ok(Sequence {
-            pyxel_music: self.pyxel_music.clone(),
-            channel_no: idx as u32,
-        })
+        match sequence_get!(self.pyxel_music.lock().sequences, idx) {
+            Ok(_) => Ok(Sequence {
+                pyxel_music: self.pyxel_music.clone(),
+                channel_no: idx as u32,
+            }),
+            Err(err) => Err(err),
+        }
     }
 
     fn __setitem__(&mut self, idx: isize, sequence: Vec<u32>) -> PyResult<()> {
-        self.pyxel_music.lock().sequences[idx as usize] = sequence;
-
-        Ok(())
+        sequence_set!(self.pyxel_music.lock().sequences, idx, sequence)
     }
 }
 

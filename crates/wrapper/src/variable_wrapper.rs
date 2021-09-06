@@ -12,16 +12,16 @@ struct Colors;
 
 #[pyproto]
 impl PySequenceProtocol for Colors {
-    fn __len__(&self) -> usize {
-        instance().colors.len()
+    fn __len__(&self) -> PyResult<usize> {
+        sequence_len!(instance().colors)
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<Rgb8> {
-        Ok(instance().colors[idx as usize])
+        sequence_get!(instance().colors, idx)
     }
 
-    fn __setitem__(&mut self, idx: isize, value: Rgb8) {
-        instance().colors[idx as usize] = value;
+    fn __setitem__(&mut self, idx: isize, value: Rgb8) -> PyResult<()> {
+        sequence_set!(instance().colors, idx, value)
     }
 }
 
