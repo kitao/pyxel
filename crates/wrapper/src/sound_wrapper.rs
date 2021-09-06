@@ -14,17 +14,15 @@ pub struct Notes {
 #[pyproto]
 impl PySequenceProtocol for Notes {
     fn __len__(&self) -> PyResult<usize> {
-        Ok(self.pyxel_sound.lock().notes.len())
+        sequence_len!(self.pyxel_sound.lock().notes)
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<Note> {
-        Ok(self.pyxel_sound.lock().notes[idx as usize])
+        sequence_get!(self.pyxel_sound.lock().notes, idx)
     }
 
-    fn __setitem__(&mut self, idx: isize, note: Note) -> PyResult<()> {
-        self.pyxel_sound.lock().notes[idx as usize] = note;
-
-        Ok(())
+    fn __setitem__(&mut self, idx: isize, value: Note) -> PyResult<()> {
+        sequence_set!(self.pyxel_sound.lock().notes, idx, value)
     }
 }
 
@@ -37,17 +35,15 @@ pub struct Tones {
 #[pyproto]
 impl PySequenceProtocol for Tones {
     fn __len__(&self) -> PyResult<usize> {
-        Ok(self.pyxel_sound.lock().tones.len())
+        sequence_len!(self.pyxel_sound.lock().tones)
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<Tone> {
-        Ok(self.pyxel_sound.lock().tones[idx as usize])
+        sequence_get!(self.pyxel_sound.lock().tones, idx)
     }
 
-    fn __setitem__(&mut self, idx: isize, tone: Tone) -> PyResult<()> {
-        self.pyxel_sound.lock().tones[idx as usize] = tone;
-
-        Ok(())
+    fn __setitem__(&mut self, idx: isize, value: Tone) -> PyResult<()> {
+        sequence_set!(self.pyxel_sound.lock().tones, idx, value)
     }
 }
 
@@ -60,17 +56,15 @@ pub struct Volumes {
 #[pyproto]
 impl PySequenceProtocol for Volumes {
     fn __len__(&self) -> PyResult<usize> {
-        Ok(self.pyxel_sound.lock().volumes.len())
+        sequence_len!(self.pyxel_sound.lock().volumes)
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<Volume> {
-        Ok(self.pyxel_sound.lock().volumes[idx as usize])
+        sequence_get!(self.pyxel_sound.lock().volumes, idx)
     }
 
-    fn __setitem__(&mut self, idx: isize, volume: Volume) -> PyResult<()> {
-        self.pyxel_sound.lock().volumes[idx as usize] = volume;
-
-        Ok(())
+    fn __setitem__(&mut self, idx: isize, value: Volume) -> PyResult<()> {
+        sequence_set!(self.pyxel_sound.lock().volumes, idx, value)
     }
 }
 
@@ -83,17 +77,15 @@ pub struct Effects {
 #[pyproto]
 impl PySequenceProtocol for Effects {
     fn __len__(&self) -> PyResult<usize> {
-        Ok(self.pyxel_sound.lock().effects.len())
+        sequence_len!(self.pyxel_sound.lock().effects)
     }
 
     fn __getitem__(&self, idx: isize) -> PyResult<Effect> {
-        Ok(self.pyxel_sound.lock().effects[idx as usize])
+        sequence_get!(self.pyxel_sound.lock().effects, idx)
     }
 
-    fn __setitem__(&mut self, idx: isize, effect: Tone) -> PyResult<()> {
-        self.pyxel_sound.lock().effects[idx as usize] = effect;
-
-        Ok(())
+    fn __setitem__(&mut self, idx: isize, value: Effect) -> PyResult<()> {
+        sequence_set!(self.pyxel_sound.lock().effects, idx, value)
     }
 }
 

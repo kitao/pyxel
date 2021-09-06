@@ -39,11 +39,11 @@ impl PySequenceProtocol for Sequence {
         )
     }
 
-    fn __inplace_concat__(&mut self, other: Vec<u32>) -> PyResult<()> {
+    /*fn __inplace_concat__(&mut self, other: Vec<u32>) -> PyResult<()> {
         self.pyxel_music.lock().sequences[self.channel_no as usize].append(&mut other);
 
         Ok(())
-    }
+    }*/
 }
 
 #[pyclass]
