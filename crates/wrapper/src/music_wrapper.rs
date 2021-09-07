@@ -1,3 +1,4 @@
+use pyo3::class::PySequenceProtocol;
 use pyo3::prelude::*;
 
 use pyxel::Music as PyxelMusic;
@@ -35,10 +36,27 @@ impl Sequence {
     define_list_index_method!();
 }
 
+#[pyproto]
+impl PySequenceProtocol for Sequence {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(self, Sequence::list)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<u32> {
+        define_list_get_operator!(self, Sequence::list, index)
+    }
+
+    fn __setitem__(&mut self, index: isize, value: u32) -> PyResult<()> {
+        define_list_set_operator!(self, Sequence::list_mut, index, value)
+    }
+
+    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
+        define_list_del_operator!(self, Sequence::list_mut, index)
+    }
+}
+
 #[pymethods]
 impl Sequence {
-    define_list_get_methods!(u32);
-    define_list_set_methods!(u32);
     define_list_edit_methods!(u32);
 }
 
@@ -68,9 +86,15 @@ impl Sequences {
     define_list_index_method!();
 }
 
-#[pymethods]
-impl Sequences {
-    define_list_get_methods!(Sequence);
+#[pyproto]
+impl PySequenceProtocol for Sequences {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(self, Sequences::list)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<Sequence> {
+        define_list_get_operator!(self, Sequences::list, index)
+    }
 
     fn __setitem__(&mut self, index: isize, value: Vec<u32>) -> PyResult<()> {
         let index = self.index(index);
