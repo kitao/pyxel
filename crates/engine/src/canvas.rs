@@ -432,10 +432,14 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             return;
         }
 
+        let canvas: Vec<Vec<T>> = (0..height)
+            .map(|i| (0..width).map(|j| self._value(j, i)).collect())
+            .collect();
+
         for i in 0..height {
             for j in 0..width {
-                let value =
-                    self._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
+                let value = canvas[(src_y + sign_y * i + offset_y) as usize]
+                    [(src_x + sign_x * j + offset_x) as usize];
 
                 if let Some(transparent) = transparent {
                     if value == transparent {
