@@ -64,75 +64,118 @@ macro_rules! type_switch {
     };
 }
 
-macro_rules! sequence_len {
-    ($vec: expr) => {
-        Ok($vec.len())
-    };
-}
-
-macro_rules! sequence_get {
-    ($vec: expr, $idx: ident) => {
-        if let Some(value) = $vec.get($idx as usize) {
-            Ok(value.clone())
-        } else {
-            Err(pyo3::exceptions::PyIndexError::new_err(
-                "list index out of range",
-            ))
-        }
-    };
-}
-
-macro_rules! sequence_set {
-    ($vec: expr, $idx: ident, $value: ident) => {{
-        $vec[$idx as usize] = $value;
-
-        Ok(())
-    }};
-}
-
-macro_rules! sequence_del {
-    ($vec: expr, $idx: ident) => {
-        if ($idx < $vec.len() as isize) && ($idx >= 0) {
-            $vec.remove($idx as usize);
-            Ok(())
-        } else {
-            Err(pyo3::exceptions::PyIndexError::new_err(
-                "list index out of range",
-            ))
-        }
-    };
-}
-
-/*
-    fn __concat__(&self, other: PyRef<'p, Self>) -> Self {
-        let mut elements = self.elements.clone();
-        elements.extend_from_slice(&other.elements);
-        Self { elements }
-    }
-
-    fn __repeat__(&self, count: isize) -> PyResult<Self> {
-        if count >= 0 {
-            let mut elements = Vec::with_capacity(self.elements.len() * count as usize);
-            for _ in 0..count {
-                elements.extend(&self.elements);
+macro_rules! define_list_index_method {
+    () => {
+        #[allow(dead_code)]
+        fn index(&self, index: isize) -> usize {
+            if index < 0 {
+                (self.list().len() as isize + index) as usize
+            } else {
+                index as usize
             }
-            Ok(Self { elements })
-        } else {
-            Err(PyValueError::new_err("invalid repeat count"))
         }
-    }
+    };
+}
 
-    fn __inplace_concat__(&'p mut self, other: Self::Other) -> Self::Result
-    where
-        Self: PySequenceInplaceConcatProtocol<'p>,
-    {
-        unimplemented!()
-    }
+macro_rules! define_list_get_methods {
+    ($elem_type: ty) => {
+        fn __len__(&self) -> PyResult<usize> {
+            Ok(self.list().len())
+        }
 
-    fn __inplace_repeat__(&'p mut self, count: Self::Index) -> Self::Result
-    where
-        Self: PySequenceInplaceRepeatProtocol<'p>,
-    {
-        unimplemented!()
-    }
-*/
+        fn __getitem__(&self, index: isize) -> PyResult<$elem_type> {
+            let index = self.index(index);
+
+            if index < self.list().len() {
+                Ok(self.list()[index].clone())
+            } else {
+                Err(pyo3::exceptions::PyIndexError::new_err(
+                    "list index out of range",
+                ))
+            }
+        }
+    };
+}
+
+macro_rules! define_list_set_methods {
+    ($elem_type: ty) => {
+        fn __setitem__(&mut self, index: isize, value: $elem_type) -> PyResult<()> {
+            let index = self.index(index);
+
+            if index < self.list().len() {
+                self.list_mut()[index] = value;
+
+                Ok(())
+            } else {
+                Err(pyo3::exceptions::PyIndexError::new_err(
+                    "list assignment index out of range",
+                ))
+            }
+        }
+    };
+}
+
+macro_rules! define_list_edit_methods {
+    ($elem_type: ty) => {
+        fn __delitem__(&mut self, index: isize) -> PyResult<()> {
+            let index = self.index(index);
+
+            if index < self.list().len() {
+                self.list_mut().remove(index);
+
+                Ok(())
+            } else {
+                Err(pyo3::exceptions::PyIndexError::new_err(
+                    "list assignment index out of range",
+                ))
+            }
+        }
+
+        pub fn append(&mut self, value: $elem_type) -> PyResult<()> {
+            self.list_mut().push(value);
+
+            Ok(())
+        }
+
+        pub fn insert(&mut self, index: isize, value: $elem_type) -> PyResult<()> {
+            let index = self.index(index);
+
+            self.list_mut().insert(index as usize, value);
+
+            Ok(())
+        }
+
+        pub fn extend(&mut self, value: Vec<$elem_type>) -> PyResult<()> {
+            self.list_mut().append(&mut value.clone());
+
+            Ok(())
+        }
+
+        pub fn pop(&mut self, index: Option<isize>) -> PyResult<$elem_type> {
+            if self.list().is_empty() {
+                return Err(pyo3::exceptions::PyIndexError::new_err(
+                    "pop from empty list",
+                ));
+            }
+
+            let index = self.index(index.unwrap_or(self.list().len() as isize - 1));
+
+            if index < self.list().len() {
+                let value = self.list()[index as usize];
+                self.list_mut().remove(index);
+
+                Ok(value)
+            } else {
+                Err(pyo3::exceptions::PyIndexError::new_err(
+                    "pop index out of range",
+                ))
+            }
+        }
+
+        pub fn clear(&mut self) -> PyResult<()> {
+            self.list_mut().clear();
+
+            Ok(())
+        }
+    };
+}
