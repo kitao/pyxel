@@ -1,5 +1,3 @@
-use crate::settings::PYXEL_VERSION;
-
 macro_rules! string_loop {
     ($index: ident, $piece: ident, $string: ident, $step: expr, $block: block) => {
         for $index in 0..($string.len() / $step) {
@@ -61,10 +59,6 @@ pub fn parse_version_string(string: &str) -> Result<u32, &str> {
     Ok(version)
 }
 
-pub fn pyxel_version() -> u32 {
-    parse_version_string(PYXEL_VERSION).unwrap()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -101,13 +95,5 @@ mod tests {
             Err("invalid version string")
         );
         assert_eq!(parse_version_string(" "), Err("invalid version string"));
-    }
-
-    #[test]
-    fn pyxel_version_() {
-        assert_eq!(
-            pyxel_version(),
-            parse_version_string(PYXEL_VERSION).unwrap(),
-        );
     }
 }
