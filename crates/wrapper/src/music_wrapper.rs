@@ -1,8 +1,8 @@
-use pyo3::class::PySequenceProtocol;
 use pyo3::prelude::*;
 
 use pyxel::Music as PyxelMusic;
 use pyxel::SharedMusic as PyxelSharedMusic;
+use pyxel::CHANNEL_COUNT;
 
 #[pyclass]
 #[derive(Clone)]
@@ -11,65 +11,80 @@ pub struct Sequence {
     channel_no: u32,
 }
 
-#[pyproto]
-impl PySequenceProtocol for Sequence {
-    fn __len__(&self) -> PyResult<usize> {
-        sequence_len!(self.pyxel_music.lock().sequences[self.channel_no as usize])
+impl Sequence {
+    fn new(pyxel_music: PyxelSharedMusic, channel_no: u32) -> Sequence {
+        Sequence {
+            pyxel_music,
+            channel_no,
+        }
     }
 
-    fn __getitem__(&self, idx: isize) -> PyResult<u32> {
-        sequence_get!(
-            self.pyxel_music.lock().sequences[self.channel_no as usize],
-            idx
-        )
+    fn list(&self) -> &Vec<u32> {
+        unsafe {
+            &*(&self.pyxel_music.lock().sequences[self.channel_no as usize] as *const Vec<u32>)
+        }
     }
 
-    fn __setitem__(&mut self, idx: isize, value: u32) -> PyResult<()> {
-        sequence_set!(
-            self.pyxel_music.lock().sequences[self.channel_no as usize],
-            idx,
-            value
-        )
+    fn list_mut(&mut self) -> &mut Vec<u32> {
+        unsafe {
+            &mut *(&mut self.pyxel_music.lock().sequences[self.channel_no as usize]
+                as *mut Vec<u32>)
+        }
     }
 
-    fn __delitem__(&mut self, idx: isize) -> PyResult<()> {
-        sequence_del!(
-            self.pyxel_music.lock().sequences[self.channel_no as usize],
-            idx
-        )
-    }
+    define_list_index_method!();
+}
 
-    /*fn __inplace_concat__(&mut self, other: Vec<u32>) -> PyResult<()> {
-        self.pyxel_music.lock().sequences[self.channel_no as usize].append(&mut other);
-
-        Ok(())
-    }*/
+#[pymethods]
+impl Sequence {
+    define_list_get_methods!(u32);
+    define_list_set_methods!(u32);
+    define_list_edit_methods!(u32);
 }
 
 #[pyclass]
 #[derive(Clone)]
 pub struct Sequences {
-    pyxel_music: PyxelSharedMusic,
+    sequences: Vec<Sequence>,
 }
 
-#[pyproto]
-impl PySequenceProtocol for Sequences {
-    fn __len__(&self) -> PyResult<usize> {
-        sequence_len!(self.pyxel_music.lock().sequences)
+impl Sequences {
+    fn new(pyxel_music: PyxelSharedMusic) -> Sequences {
+        let sequences = (0..CHANNEL_COUNT)
+            .map(|channel_no| Sequence::new(pyxel_music.clone(), channel_no as u32))
+            .collect();
+
+        Sequences { sequences }
     }
 
-    fn __getitem__(&self, idx: isize) -> PyResult<Sequence> {
-        match sequence_get!(self.pyxel_music.lock().sequences, idx) {
-            Ok(_) => Ok(Sequence {
-                pyxel_music: self.pyxel_music.clone(),
-                channel_no: idx as u32,
-            }),
-            Err(err) => Err(err),
+    fn list(&self) -> &Vec<Sequence> {
+        unsafe { &*(&self.sequences as *const Vec<Sequence>) }
+    }
+
+    fn list_mut(&mut self) -> &mut Vec<Sequence> {
+        unsafe { &mut *(&mut self.sequences as *mut Vec<Sequence>) }
+    }
+
+    define_list_index_method!();
+}
+
+#[pymethods]
+impl Sequences {
+    define_list_get_methods!(Sequence);
+
+    fn __setitem__(&mut self, index: isize, value: Vec<u32>) -> PyResult<()> {
+        let index = self.index(index);
+
+        if index < self.list().len() {
+            let sequence = &self.list_mut()[index];
+            sequence.pyxel_music.lock().sequences[sequence.channel_no as usize] = value;
+
+            Ok(())
+        } else {
+            Err(pyo3::exceptions::PyIndexError::new_err(
+                "list assignment index out of range",
+            ))
         }
-    }
-
-    fn __setitem__(&mut self, idx: isize, sequence: Vec<u32>) -> PyResult<()> {
-        sequence_set!(self.pyxel_music.lock().sequences, idx, sequence)
     }
 }
 
@@ -104,9 +119,7 @@ impl Music {
 
     #[getter]
     pub fn sequences(&self) -> PyResult<Sequences> {
-        Ok(Sequences {
-            pyxel_music: self.pyxel_music.clone(),
-        })
+        Ok(Sequences::new(self.pyxel_music.clone()))
     }
 }
 

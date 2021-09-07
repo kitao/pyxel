@@ -1,4 +1,3 @@
-use pyo3::class::PySequenceProtocol;
 use pyo3::prelude::*;
 
 use pyxel::SharedSound as PyxelSharedSound;
@@ -11,19 +10,27 @@ pub struct Notes {
     pyxel_sound: PyxelSharedSound,
 }
 
-#[pyproto]
-impl PySequenceProtocol for Notes {
-    fn __len__(&self) -> PyResult<usize> {
-        sequence_len!(self.pyxel_sound.lock().notes)
+impl Notes {
+    fn new(pyxel_sound: PyxelSharedSound) -> Notes {
+        Notes { pyxel_sound }
     }
 
-    fn __getitem__(&self, idx: isize) -> PyResult<Note> {
-        sequence_get!(self.pyxel_sound.lock().notes, idx)
+    fn list(&self) -> &[Note] {
+        unsafe { &*(&self.pyxel_sound.lock().notes as *const Vec<Note>) }
     }
 
-    fn __setitem__(&mut self, idx: isize, value: Note) -> PyResult<()> {
-        sequence_set!(self.pyxel_sound.lock().notes, idx, value)
+    fn list_mut(&mut self) -> &mut Vec<Note> {
+        unsafe { &mut *(&mut self.pyxel_sound.lock().notes as *mut Vec<Note>) }
     }
+
+    define_list_index_method!();
+}
+
+#[pymethods]
+impl Notes {
+    define_list_get_methods!(Note);
+    define_list_set_methods!(Note);
+    define_list_edit_methods!(Note);
 }
 
 #[pyclass]
@@ -32,19 +39,27 @@ pub struct Tones {
     pyxel_sound: PyxelSharedSound,
 }
 
-#[pyproto]
-impl PySequenceProtocol for Tones {
-    fn __len__(&self) -> PyResult<usize> {
-        sequence_len!(self.pyxel_sound.lock().tones)
+impl Tones {
+    fn new(pyxel_sound: PyxelSharedSound) -> Tones {
+        Tones { pyxel_sound }
     }
 
-    fn __getitem__(&self, idx: isize) -> PyResult<Tone> {
-        sequence_get!(self.pyxel_sound.lock().tones, idx)
+    fn list(&self) -> &[Tone] {
+        unsafe { &*(&self.pyxel_sound.lock().tones as *const Vec<Tone>) }
     }
 
-    fn __setitem__(&mut self, idx: isize, value: Tone) -> PyResult<()> {
-        sequence_set!(self.pyxel_sound.lock().tones, idx, value)
+    fn list_mut(&mut self) -> &mut Vec<Tone> {
+        unsafe { &mut *(&mut self.pyxel_sound.lock().tones as *mut Vec<Tone>) }
     }
+
+    define_list_index_method!();
+}
+
+#[pymethods]
+impl Tones {
+    define_list_get_methods!(Tone);
+    define_list_set_methods!(Tone);
+    define_list_edit_methods!(Tone);
 }
 
 #[pyclass]
@@ -53,19 +68,27 @@ pub struct Volumes {
     pyxel_sound: PyxelSharedSound,
 }
 
-#[pyproto]
-impl PySequenceProtocol for Volumes {
-    fn __len__(&self) -> PyResult<usize> {
-        sequence_len!(self.pyxel_sound.lock().volumes)
+impl Volumes {
+    fn new(pyxel_sound: PyxelSharedSound) -> Volumes {
+        Volumes { pyxel_sound }
     }
 
-    fn __getitem__(&self, idx: isize) -> PyResult<Volume> {
-        sequence_get!(self.pyxel_sound.lock().volumes, idx)
+    fn list(&self) -> &[Volume] {
+        unsafe { &*(&self.pyxel_sound.lock().volumes as *const Vec<Volume>) }
     }
 
-    fn __setitem__(&mut self, idx: isize, value: Volume) -> PyResult<()> {
-        sequence_set!(self.pyxel_sound.lock().volumes, idx, value)
+    fn list_mut(&mut self) -> &mut Vec<Volume> {
+        unsafe { &mut *(&mut self.pyxel_sound.lock().volumes as *mut Vec<Volume>) }
     }
+
+    define_list_index_method!();
+}
+
+#[pymethods]
+impl Volumes {
+    define_list_get_methods!(Volume);
+    define_list_set_methods!(Volume);
+    define_list_edit_methods!(Volume);
 }
 
 #[pyclass]
@@ -74,19 +97,27 @@ pub struct Effects {
     pyxel_sound: PyxelSharedSound,
 }
 
-#[pyproto]
-impl PySequenceProtocol for Effects {
-    fn __len__(&self) -> PyResult<usize> {
-        sequence_len!(self.pyxel_sound.lock().effects)
+impl Effects {
+    fn new(pyxel_sound: PyxelSharedSound) -> Effects {
+        Effects { pyxel_sound }
     }
 
-    fn __getitem__(&self, idx: isize) -> PyResult<Effect> {
-        sequence_get!(self.pyxel_sound.lock().effects, idx)
+    fn list(&self) -> &[Effect] {
+        unsafe { &*(&self.pyxel_sound.lock().effects as *const Vec<Effect>) }
     }
 
-    fn __setitem__(&mut self, idx: isize, value: Effect) -> PyResult<()> {
-        sequence_set!(self.pyxel_sound.lock().effects, idx, value)
+    fn list_mut(&mut self) -> &mut Vec<Effect> {
+        unsafe { &mut *(&mut self.pyxel_sound.lock().effects as *mut Vec<Effect>) }
     }
+
+    define_list_index_method!();
+}
+
+#[pymethods]
+impl Effects {
+    define_list_get_methods!(Effect);
+    define_list_set_methods!(Effect);
+    define_list_edit_methods!(Effect);
 }
 
 #[pyclass]
@@ -108,30 +139,22 @@ impl Sound {
 
     #[getter]
     pub fn notes(&self) -> PyResult<Notes> {
-        Ok(Notes {
-            pyxel_sound: self.pyxel_sound.clone(),
-        })
+        Ok(Notes::new(self.pyxel_sound.clone()))
     }
 
     #[getter]
     pub fn tones(&self) -> PyResult<Tones> {
-        Ok(Tones {
-            pyxel_sound: self.pyxel_sound.clone(),
-        })
+        Ok(Tones::new(self.pyxel_sound.clone()))
     }
 
     #[getter]
     pub fn volumes(&self) -> PyResult<Volumes> {
-        Ok(Volumes {
-            pyxel_sound: self.pyxel_sound.clone(),
-        })
+        Ok(Volumes::new(self.pyxel_sound.clone()))
     }
 
     #[getter]
     pub fn effects(&self) -> PyResult<Effects> {
-        Ok(Effects {
-            pyxel_sound: self.pyxel_sound.clone(),
-        })
+        Ok(Effects::new(self.pyxel_sound.clone()))
     }
 
     #[getter]
