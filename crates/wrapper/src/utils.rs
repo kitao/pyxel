@@ -77,60 +77,54 @@ macro_rules! define_list_index_method {
     };
 }
 
-macro_rules! define_list_get_methods {
-    ($elem_type: ty) => {
-        fn __len__(&self) -> PyResult<usize> {
-            Ok(self.list().len())
-        }
+macro_rules! define_list_len_operator {
+    ($self: ident, $list: expr) => {
+        Ok($list($self).len())
+    };
+}
 
-        fn __getitem__(&self, index: isize) -> PyResult<$elem_type> {
-            let index = self.index(index);
-
-            if index < self.list().len() {
-                Ok(self.list()[index].clone())
-            } else {
-                Err(pyo3::exceptions::PyIndexError::new_err(
-                    "list index out of range",
-                ))
-            }
+macro_rules! define_list_get_operator {
+    ($self: ident, $list: expr, $index: ident) => {
+        if $index < $list($self).len() as isize {
+            Ok($list($self)[$index as usize].clone())
+        } else {
+            Err(pyo3::exceptions::PyIndexError::new_err(
+                "list index out of range",
+            ))
         }
     };
 }
 
-macro_rules! define_list_set_methods {
-    ($elem_type: ty) => {
-        fn __setitem__(&mut self, index: isize, value: $elem_type) -> PyResult<()> {
-            let index = self.index(index);
+macro_rules! define_list_set_operator {
+    ($self: ident, $list_mut: expr, $index: ident, $value: ident) => {
+        if $index < $list_mut($self).len() as isize {
+            $list_mut($self)[$index as usize] = $value;
 
-            if index < self.list().len() {
-                self.list_mut()[index] = value;
+            Ok(())
+        } else {
+            Err(pyo3::exceptions::PyIndexError::new_err(
+                "list assignment index out of range",
+            ))
+        }
+    };
+}
 
-                Ok(())
-            } else {
-                Err(pyo3::exceptions::PyIndexError::new_err(
-                    "list assignment index out of range",
-                ))
-            }
+macro_rules! define_list_del_operator {
+    ($self: ident, $list_mut: expr, $index: ident) => {
+        if $index < $list_mut($self).len() as isize {
+            $list_mut($self).remove($index as usize);
+
+            Ok(())
+        } else {
+            Err(pyo3::exceptions::PyIndexError::new_err(
+                "list assignment index out of range",
+            ))
         }
     };
 }
 
 macro_rules! define_list_edit_methods {
     ($elem_type: ty) => {
-        fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-            let index = self.index(index);
-
-            if index < self.list().len() {
-                self.list_mut().remove(index);
-
-                Ok(())
-            } else {
-                Err(pyo3::exceptions::PyIndexError::new_err(
-                    "list assignment index out of range",
-                ))
-            }
-        }
-
         pub fn append(&mut self, value: $elem_type) -> PyResult<()> {
             self.list_mut().push(value);
 
