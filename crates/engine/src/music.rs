@@ -70,7 +70,7 @@ impl ResourceItem for Music {
         output
     }
 
-    fn deserialize(&mut self, input: &str) {
+    fn deserialize(&mut self, _version: u32, input: &str) {
         self.clear();
 
         for (i, line) in input.lines().enumerate() {
