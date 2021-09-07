@@ -34,7 +34,7 @@ Die Spezifikationen der Spielkonsole und der APIs für Pyxel beziehen sich auf d
 
 Pyxel ist quelloffen und kostenlos zu verwenden. Fang an, ein Retro-Spiel mit Pyxel zu entwickeln!
 
-## Specifications
+## Spezifikationen
 
 - Läuft unter Windows, Mac, und Linux
 - Code schreiben mit Python3
