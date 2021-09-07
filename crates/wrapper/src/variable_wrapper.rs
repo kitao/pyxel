@@ -1,5 +1,5 @@
 use pyo3::class::PySequenceProtocol;
-use pyo3::exceptions::PyAttributeError;
+use pyo3::exceptions::{PyAttributeError, PyValueError};
 use pyo3::prelude::*;
 
 use pyxel::Rgb8;
@@ -20,22 +20,33 @@ impl Colors {
     fn list_mut(&mut self) -> &mut [Rgb8] {
         &mut instance().colors
     }
+}
 
-    define_list_index_method!();
+#[pymethods]
+impl Colors {
+    pub fn assign(&mut self, list: Vec<Rgb8>) -> PyResult<()> {
+        if self.list().len() == list.len() {
+            self.list_mut()[..].clone_from_slice(&list[..]);
+
+            Ok(())
+        } else {
+            Err(PyValueError::new_err("arrays must all be same length"))
+        }
+    }
 }
 
 #[pyproto]
 impl PySequenceProtocol for Colors {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(self, Colors::list)
+        define_list_len_operator!(Colors::list, self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Rgb8> {
-        define_list_get_operator!(self, Colors::list, index)
+        define_list_get_operator!(Colors::list, self, index)
     }
 
     fn __setitem__(&mut self, index: isize, value: Rgb8) -> PyResult<()> {
-        define_list_set_operator!(self, Colors::list_mut, index, value)
+        define_list_set_operator!(Colors::list_mut, self, index, value)
     }
 }
 

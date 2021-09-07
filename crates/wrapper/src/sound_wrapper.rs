@@ -23,32 +23,30 @@ impl Notes {
     fn list_mut(&mut self) -> &mut Vec<Note> {
         unsafe { &mut *(&mut self.pyxel_sound.lock().notes as *mut Vec<Note>) }
     }
-
-    define_list_index_method!();
-}
-
-#[pyproto]
-impl PySequenceProtocol for Notes {
-    fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(self, Notes::list)
-    }
-
-    fn __getitem__(&self, index: isize) -> PyResult<Note> {
-        define_list_get_operator!(self, Notes::list, index)
-    }
-
-    fn __setitem__(&mut self, index: isize, value: Note) -> PyResult<()> {
-        define_list_set_operator!(self, Notes::list_mut, index, value)
-    }
-
-    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(self, Notes::list_mut, index)
-    }
 }
 
 #[pymethods]
 impl Notes {
     define_list_edit_methods!(Note);
+}
+
+#[pyproto]
+impl PySequenceProtocol for Notes {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(Notes::list, self)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<Note> {
+        define_list_get_operator!(Notes::list, self, index)
+    }
+
+    fn __setitem__(&mut self, index: isize, value: Note) -> PyResult<()> {
+        define_list_set_operator!(Notes::list_mut, self, index, value)
+    }
+
+    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
+        define_list_del_operator!(Notes::list_mut, self, index)
+    }
 }
 
 #[pyclass]
@@ -69,32 +67,30 @@ impl Tones {
     fn list_mut(&mut self) -> &mut Vec<Tone> {
         unsafe { &mut *(&mut self.pyxel_sound.lock().tones as *mut Vec<Tone>) }
     }
-
-    define_list_index_method!();
-}
-
-#[pyproto]
-impl PySequenceProtocol for Tones {
-    fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(self, Tones::list)
-    }
-
-    fn __getitem__(&self, index: isize) -> PyResult<Tone> {
-        define_list_get_operator!(self, Tones::list, index)
-    }
-
-    fn __setitem__(&mut self, index: isize, value: Tone) -> PyResult<()> {
-        define_list_set_operator!(self, Tones::list_mut, index, value)
-    }
-
-    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(self, Tones::list_mut, index)
-    }
 }
 
 #[pymethods]
 impl Tones {
     define_list_edit_methods!(Tone);
+}
+
+#[pyproto]
+impl PySequenceProtocol for Tones {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(Tones::list, self)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<Tone> {
+        define_list_get_operator!(Tones::list, self, index)
+    }
+
+    fn __setitem__(&mut self, index: isize, value: Tone) -> PyResult<()> {
+        define_list_set_operator!(Tones::list_mut, self, index, value)
+    }
+
+    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
+        define_list_del_operator!(Tones::list_mut, self, index)
+    }
 }
 
 #[pyclass]
@@ -115,32 +111,49 @@ impl Volumes {
     fn list_mut(&mut self) -> &mut Vec<Volume> {
         unsafe { &mut *(&mut self.pyxel_sound.lock().volumes as *mut Vec<Volume>) }
     }
-
-    define_list_index_method!();
-}
-
-#[pyproto]
-impl PySequenceProtocol for Volumes {
-    fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(self, Volumes::list)
-    }
-
-    fn __getitem__(&self, index: isize) -> PyResult<Volume> {
-        define_list_get_operator!(self, Volumes::list, index)
-    }
-
-    fn __setitem__(&mut self, index: isize, value: Volume) -> PyResult<()> {
-        define_list_set_operator!(self, Volumes::list_mut, index, value)
-    }
-
-    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(self, Volumes::list_mut, index)
-    }
 }
 
 #[pymethods]
 impl Volumes {
     define_list_edit_methods!(Volume);
+}
+
+#[pyproto]
+impl PySequenceProtocol for Volumes {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(Volumes::list, self)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<Volume> {
+        define_list_get_operator!(Volumes::list, self, index)
+    }
+
+    fn __setitem__(&mut self, index: isize, value: Volume) -> PyResult<()> {
+        define_list_set_operator!(Volumes::list_mut, self, index, value)
+    }
+
+    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
+        define_list_del_operator!(Volumes::list_mut, self, index)
+    }
+}
+
+#[pyproto]
+impl PySequenceProtocol for Effects {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(Effects::list, self)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<Effect> {
+        define_list_get_operator!(Effects::list, self, index)
+    }
+
+    fn __setitem__(&mut self, index: isize, value: Effect) -> PyResult<()> {
+        define_list_set_operator!(Effects::list_mut, self, index, value)
+    }
+
+    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
+        define_list_del_operator!(Effects::list_mut, self, index)
+    }
 }
 
 #[pyclass]
@@ -160,27 +173,6 @@ impl Effects {
 
     fn list_mut(&mut self) -> &mut Vec<Effect> {
         unsafe { &mut *(&mut self.pyxel_sound.lock().effects as *mut Vec<Effect>) }
-    }
-
-    define_list_index_method!();
-}
-
-#[pyproto]
-impl PySequenceProtocol for Effects {
-    fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(self, Effects::list)
-    }
-
-    fn __getitem__(&self, index: isize) -> PyResult<Effect> {
-        define_list_get_operator!(self, Effects::list, index)
-    }
-
-    fn __setitem__(&mut self, index: isize, value: Effect) -> PyResult<()> {
-        define_list_set_operator!(self, Effects::list_mut, index, value)
-    }
-
-    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(self, Effects::list_mut, index)
     }
 }
 
