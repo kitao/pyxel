@@ -1,4 +1,3 @@
-use pyo3::class::PySequenceProtocol;
 use pyo3::exceptions::PyAttributeError;
 use pyo3::prelude::*;
 
@@ -10,19 +9,24 @@ use crate::instance;
 #[pyclass]
 struct Colors;
 
-#[pyproto]
-impl PySequenceProtocol for Colors {
-    fn __len__(&self) -> PyResult<usize> {
-        sequence_len!(instance().colors)
+impl Colors {
+    #[allow(dead_code)]
+    fn list(&self) -> &[Rgb8] {
+        &instance().colors
     }
 
-    fn __getitem__(&self, idx: isize) -> PyResult<Rgb8> {
-        sequence_get!(instance().colors, idx)
+    #[allow(dead_code)]
+    fn list_mut(&mut self) -> &mut [Rgb8] {
+        &mut instance().colors
     }
 
-    fn __setitem__(&mut self, idx: isize, value: Rgb8) -> PyResult<()> {
-        sequence_set!(instance().colors, idx, value)
-    }
+    define_list_index_method!();
+}
+
+#[pymethods]
+impl Colors {
+    define_list_get_methods!(Rgb8);
+    define_list_set_methods!(Rgb8);
 }
 
 #[pyfunction]
