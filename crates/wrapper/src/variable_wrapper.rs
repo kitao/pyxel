@@ -1,3 +1,4 @@
+use pyo3::class::PySequenceProtocol;
 use pyo3::exceptions::PyAttributeError;
 use pyo3::prelude::*;
 
@@ -23,10 +24,19 @@ impl Colors {
     define_list_index_method!();
 }
 
-#[pymethods]
-impl Colors {
-    define_list_get_methods!(Rgb8);
-    define_list_set_methods!(Rgb8);
+#[pyproto]
+impl PySequenceProtocol for Colors {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(self, Colors::list)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<Rgb8> {
+        define_list_get_operator!(self, Colors::list, index)
+    }
+
+    fn __setitem__(&mut self, index: isize, value: Rgb8) -> PyResult<()> {
+        define_list_set_operator!(self, Colors::list_mut, index, value)
+    }
 }
 
 #[pyfunction]
