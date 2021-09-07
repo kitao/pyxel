@@ -38,7 +38,7 @@ endif
 
 all: build
 
-build: format lint
+build: format
 	cargo build $(CARGO_BUILD_OPT)
 	mkdir -p $(DST_LIB_DIR)
 	cp $(SRC_LIB_DIR)/$(SRC_LIB_NAME) $(DST_LIB_DIR)/$(DST_LIB_NAME)
