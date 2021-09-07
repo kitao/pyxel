@@ -3,6 +3,12 @@ name = "pyxel-engine"
 version = "0.1.0"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2018"
+description = "..."
+repository = "<url-to-repository>"
+license = "MIT"
+readme = "README.md"
+categories = ["game-engines"]
+keywords = ["..."]
 
 [lib]
 name = "pyxel"
