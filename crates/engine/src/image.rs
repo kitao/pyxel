@@ -346,7 +346,7 @@ impl ResourceItem for Image {
         output
     }
 
-    fn deserialize(&mut self, input: &str) {
+    fn deserialize(&mut self, _version: u32, input: &str) {
         for (i, line) in input.lines().enumerate() {
             string_loop!(j, value, line, 1, {
                 self._set_value(

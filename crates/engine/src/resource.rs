@@ -17,7 +17,7 @@ use crate::settings::{
 };
 use crate::sound::Sound;
 use crate::tilemap::Tilemap;
-use crate::utils::{parse_version_string, pyxel_version};
+use crate::utils::parse_version_string;
 use crate::Pyxel;
 
 struct CaptureFrame {
@@ -30,7 +30,7 @@ pub trait ResourceItem {
     fn is_modified(&self) -> bool;
     fn clear(&mut self);
     fn serialize(&self) -> String;
-    fn deserialize(&mut self, input: &str);
+    fn deserialize(&mut self, version: u32, input: &str);
 }
 
 pub struct Resource {
@@ -109,14 +109,17 @@ impl Resource {
 impl Pyxel {
     pub fn load(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
         let mut archive = ZipArchive::new(File::open(&Path::new(filename)).unwrap()).unwrap();
+        let version;
 
         {
             let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
             let mut file = archive.by_name(&version_name).unwrap();
             let mut contents = String::new();
-            file.read_to_string(&mut contents).unwrap();
 
-            if parse_version_string(&contents).unwrap() > pyxel_version() {
+            file.read_to_string(&mut contents).unwrap();
+            version = parse_version_string(&contents).unwrap();
+
+            if version > parse_version_string(PYXEL_VERSION).unwrap() {
                 panic!("unsupported resource file version '{}'", contents);
             }
         }
@@ -127,7 +130,7 @@ impl Pyxel {
                     if let Ok(mut file) = archive.by_name(&<$type>::resource_name(i)) {
                         let mut input = String::new();
                         file.read_to_string(&mut input).unwrap();
-                        self.$getter(i).lock().deserialize(&input);
+                        self.$getter(i).lock().deserialize(version, &input);
                     } else {
                         self.$getter(i).lock().clear();
                     }

@@ -7,7 +7,7 @@ use crate::rectarea::RectArea;
 use crate::resource::ResourceItem;
 use crate::settings::RESOURCE_ARCHIVE_DIRNAME;
 use crate::types::Tile;
-use crate::utils::{parse_hex_string, pyxel_version, simplify_string};
+use crate::utils::{parse_hex_string, simplify_string};
 
 pub struct Tilemap {
     width: u32,
@@ -130,8 +130,8 @@ impl ResourceItem for Tilemap {
         output
     }
 
-    fn deserialize(&mut self, input: &str) {
-        if pyxel_version() < 15000 {
+    fn deserialize(&mut self, version: u32, input: &str) {
+        if version < 15000 {
             for (i, line) in input.lines().enumerate() {
                 string_loop!(j, value, line, 3, {
                     let value = parse_hex_string(&value).unwrap();
