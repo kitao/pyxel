@@ -32,32 +32,30 @@ impl Sequence {
                 as *mut Vec<u32>)
         }
     }
-
-    define_list_index_method!();
-}
-
-#[pyproto]
-impl PySequenceProtocol for Sequence {
-    fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(self, Sequence::list)
-    }
-
-    fn __getitem__(&self, index: isize) -> PyResult<u32> {
-        define_list_get_operator!(self, Sequence::list, index)
-    }
-
-    fn __setitem__(&mut self, index: isize, value: u32) -> PyResult<()> {
-        define_list_set_operator!(self, Sequence::list_mut, index, value)
-    }
-
-    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(self, Sequence::list_mut, index)
-    }
 }
 
 #[pymethods]
 impl Sequence {
     define_list_edit_methods!(u32);
+}
+
+#[pyproto]
+impl PySequenceProtocol for Sequence {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(Sequence::list, self)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<u32> {
+        define_list_get_operator!(Sequence::list, self, index)
+    }
+
+    fn __setitem__(&mut self, index: isize, value: u32) -> PyResult<()> {
+        define_list_set_operator!(Sequence::list_mut, self, index, value)
+    }
+
+    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
+        define_list_del_operator!(Sequence::list_mut, self, index)
+    }
 }
 
 #[pyclass]
@@ -78,44 +76,23 @@ impl Sequences {
     fn list(&self) -> &Vec<Sequence> {
         unsafe { &*(&self.sequences as *const Vec<Sequence>) }
     }
-
-    fn list_mut(&mut self) -> &mut Vec<Sequence> {
-        unsafe { &mut *(&mut self.sequences as *mut Vec<Sequence>) }
-    }
-
-    define_list_index_method!();
-}
-
-#[pyproto]
-impl PySequenceProtocol for Sequences {
-    fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(self, Sequences::list)
-    }
-
-    fn __getitem__(&self, index: isize) -> PyResult<Sequence> {
-        define_list_get_operator!(self, Sequences::list, index)
-    }
-
-    fn __setitem__(&mut self, index: isize, value: Vec<u32>) -> PyResult<()> {
-        let index = self.index(index);
-
-        if index < self.list().len() {
-            let sequence = &self.list_mut()[index];
-            sequence.pyxel_music.lock().sequences[sequence.channel_no as usize] = value;
-
-            Ok(())
-        } else {
-            Err(pyo3::exceptions::PyIndexError::new_err(
-                "list assignment index out of range",
-            ))
-        }
-    }
 }
 
 #[pyclass]
 #[derive(Clone)]
 pub struct Music {
     pyxel_music: PyxelSharedMusic,
+}
+
+#[pyproto]
+impl PySequenceProtocol for Sequences {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(Sequences::list, self)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<Sequence> {
+        define_list_get_operator!(Sequences::list, self, index)
+    }
 }
 
 pub fn wrap_pyxel_music(pyxel_music: PyxelSharedMusic) -> Music {
