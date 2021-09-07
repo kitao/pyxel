@@ -1,3 +1,4 @@
+use pyo3::class::PySequenceProtocol;
 use pyo3::prelude::*;
 
 use pyxel::SharedSound as PyxelSharedSound;
@@ -26,10 +27,27 @@ impl Notes {
     define_list_index_method!();
 }
 
+#[pyproto]
+impl PySequenceProtocol for Notes {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(self, Notes::list)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<Note> {
+        define_list_get_operator!(self, Notes::list, index)
+    }
+
+    fn __setitem__(&mut self, index: isize, value: Note) -> PyResult<()> {
+        define_list_set_operator!(self, Notes::list_mut, index, value)
+    }
+
+    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
+        define_list_del_operator!(self, Notes::list_mut, index)
+    }
+}
+
 #[pymethods]
 impl Notes {
-    define_list_get_methods!(Note);
-    define_list_set_methods!(Note);
     define_list_edit_methods!(Note);
 }
 
@@ -55,10 +73,27 @@ impl Tones {
     define_list_index_method!();
 }
 
+#[pyproto]
+impl PySequenceProtocol for Tones {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(self, Tones::list)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<Tone> {
+        define_list_get_operator!(self, Tones::list, index)
+    }
+
+    fn __setitem__(&mut self, index: isize, value: Tone) -> PyResult<()> {
+        define_list_set_operator!(self, Tones::list_mut, index, value)
+    }
+
+    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
+        define_list_del_operator!(self, Tones::list_mut, index)
+    }
+}
+
 #[pymethods]
 impl Tones {
-    define_list_get_methods!(Tone);
-    define_list_set_methods!(Tone);
     define_list_edit_methods!(Tone);
 }
 
@@ -84,10 +119,27 @@ impl Volumes {
     define_list_index_method!();
 }
 
+#[pyproto]
+impl PySequenceProtocol for Volumes {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(self, Volumes::list)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<Volume> {
+        define_list_get_operator!(self, Volumes::list, index)
+    }
+
+    fn __setitem__(&mut self, index: isize, value: Volume) -> PyResult<()> {
+        define_list_set_operator!(self, Volumes::list_mut, index, value)
+    }
+
+    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
+        define_list_del_operator!(self, Volumes::list_mut, index)
+    }
+}
+
 #[pymethods]
 impl Volumes {
-    define_list_get_methods!(Volume);
-    define_list_set_methods!(Volume);
     define_list_edit_methods!(Volume);
 }
 
@@ -113,10 +165,27 @@ impl Effects {
     define_list_index_method!();
 }
 
+#[pyproto]
+impl PySequenceProtocol for Effects {
+    fn __len__(&self) -> PyResult<usize> {
+        define_list_len_operator!(self, Effects::list)
+    }
+
+    fn __getitem__(&self, index: isize) -> PyResult<Effect> {
+        define_list_get_operator!(self, Effects::list, index)
+    }
+
+    fn __setitem__(&mut self, index: isize, value: Effect) -> PyResult<()> {
+        define_list_set_operator!(self, Effects::list_mut, index, value)
+    }
+
+    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
+        define_list_del_operator!(self, Effects::list_mut, index)
+    }
+}
+
 #[pymethods]
 impl Effects {
-    define_list_get_methods!(Effect);
-    define_list_set_methods!(Effect);
     define_list_edit_methods!(Effect);
 }
 
