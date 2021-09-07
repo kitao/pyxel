@@ -73,7 +73,8 @@ def react_on_collision(x, y, dx, dy):
 
 
 def check_floor(x, y):
-    return CHIP_SPACE < get_tilemap(x // 8, y // 8) < CHIP_SPAWN
+    tile = get_tilemap(x // 8, y // 8)
+    return tile == CHIP_BLOCK or tile == CHIP_FLOOR
 
 
 def spawn_enemy(scroll_left, scroll_right):
@@ -83,11 +84,11 @@ def spawn_enemy(scroll_left, scroll_right):
     for x in range(scroll_left, scroll_right + 1):
         for y in range(16):
             val = get_tilemap(x, y)
-            if val == 32:
+            if val == (0, 1):
                 enemy_list.append(Enemy1(x * 8, y * 8))
-            elif val == 33:
+            elif val == (1, 1):
                 enemy_list.append(Enemy2(x * 8, y * 8))
-            elif val == 34:
+            elif val == (2, 1):
                 enemy_list.append(Enemy3(x * 8, y * 8))
 
 
@@ -201,9 +202,9 @@ class Enemy2:
                     self.direction = -1
                 else:
                     self.direction = 1
-            elif self.direction < 0 and check_floor(self.x - 1, self.y + 4):  # 左に壁がある
+            elif self.direction < 0 and check_floor(self.x - 1, self.y + 4):
                 self.direction = 1
-            elif self.direction > 0 and check_floor(self.x + 8, self.y + 4):  # 右に壁がある
+            elif self.direction > 0 and check_floor(self.x + 8, self.y + 4):
                 self.direction = -1
         else:
             self.is_falling = True
