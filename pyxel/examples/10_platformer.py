@@ -4,15 +4,17 @@ import pyxel
 
 CHARA_WIDTH = 8
 CHARA_HEIGHT = 8
+SCROLL_BORDER_X = 80
 
-CHIP_SPACE = (0, 0)
-CHIP_BLOCK = (1, 0)
-CHIP_FLOOR = (2, 0)
-CHIP_SPAWN = (0, 1)
+TILE_SPACE = (0, 0)
+TILE_BLOCK = (1, 0)
+TILE_FLOOR = (2, 0)
+TILE_SPAWN = (0, 1)
+TILE_ENEMY1 = (0, 1)
+TILE_ENEMY2 = (1, 1)
+TILE_ENEMY3 = (2, 1)
 
 enemy_list = []
-
-SCROLL_BORDER_X = 80
 scroll_x = 0
 player = None
 
@@ -29,12 +31,12 @@ def check_tilemap_collision(x, y, dx, dy):
 
     for i in range(y1, y2 + 1):
         for j in range(x1, x2 + 1):
-            if get_tilemap(j, i) == CHIP_BLOCK:
+            if get_tilemap(j, i) == TILE_BLOCK:
                 return True
 
     if dy > 0 and y % 8 == 1:
         for i in range(x1, x2 + 1):
-            if get_tilemap(i, y1 + 1) == CHIP_FLOOR:
+            if get_tilemap(i, y1 + 1) == TILE_FLOOR:
                 return True
 
     return False
@@ -74,7 +76,7 @@ def react_on_collision(x, y, dx, dy):
 
 def check_floor(x, y):
     tile = get_tilemap(x // 8, y // 8)
-    return tile == CHIP_BLOCK or tile == CHIP_FLOOR
+    return tile == TILE_BLOCK or tile == TILE_FLOOR
 
 
 def spawn_enemy(scroll_left, scroll_right):
@@ -84,11 +86,11 @@ def spawn_enemy(scroll_left, scroll_right):
     for x in range(scroll_left, scroll_right + 1):
         for y in range(16):
             val = get_tilemap(x, y)
-            if val == (0, 1):
+            if val == TILE_ENEMY1:
                 enemy_list.append(Enemy1(x * 8, y * 8))
-            elif val == (1, 1):
+            elif val == TILE_ENEMY2:
                 enemy_list.append(Enemy2(x * 8, y * 8))
-            elif val == (2, 1):
+            elif val == TILE_ENEMY3:
                 enemy_list.append(Enemy3(x * 8, y * 8))
 
 
@@ -271,9 +273,8 @@ class App:
 
         pyxel.load("assets/platformer.pyxres")
 
-        pyxel.image(0).blt_self(0, 8, 0, 0, 8, 8)
-        pyxel.image(0).blt_self(8, 8, 0, 0, 8, 8)
-        pyxel.image(0).blt_self(16, 8, 0, 0, 8, 8)
+        # make enemy spawn images invisible
+        pyxel.image(0).rect(0, 8, 24, 8, 0)
 
         global player
         player = Player(0, 0)
