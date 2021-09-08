@@ -58,7 +58,7 @@ Pyxel ist quelloffen und kostenlos zu verwenden. Fang an, ein Retro-Spiel mit Py
 
 Zuerst installiere [Python3](https://www.python.org/) (Version 3.6.8 oder höher).
 
-Wenn du Python mit dem offiziellen Installationsprogramm installiest, **füge Python zu PATH** hinzu, indem du das Feld unten auswählst:
+Wenn du Python mit dem offiziellen Installationsprogramm installiest, klicke auf das Feld unten **Add Python to PATH**, 
 
 <img src="images/python_installer.png">
 
