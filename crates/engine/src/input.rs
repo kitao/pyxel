@@ -15,7 +15,8 @@ pub struct Input {
     is_mouse_visible: bool,
     key_states: HashMap<Key, KeyState>,
     key_values: HashMap<Key, KeyValue>,
-    text_input: String,
+    input_keys: Vec<Key>,
+    input_text: String,
     drop_files: Vec<String>,
 }
 
@@ -25,7 +26,8 @@ impl Input {
             is_mouse_visible: false,
             key_states: HashMap::new(),
             key_values: HashMap::new(),
-            text_input: "".to_string(),
+            input_keys: Vec::new(),
+            input_text: "".to_string(),
             drop_files: Vec::new(),
         }
     }
@@ -37,7 +39,8 @@ impl Input {
     pub fn reset_input_states(&mut self) {
         self.key_values.insert(MOUSE_WHEEL_X, 0);
         self.key_values.insert(MOUSE_WHEEL_Y, 0);
-        self.text_input = "".to_string();
+        self.input_keys.clear();
+        self.input_text = "".to_string();
         self.drop_files.clear();
     }
 
@@ -56,6 +59,7 @@ impl Input {
             Event::KeyDown { key } => {
                 if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
                     self.press_key(key, frame_count);
+                    self.input_keys.push(key);
 
                     if let Some(key) = Input::get_common_key(key) {
                         self.press_key(key, frame_count);
@@ -72,7 +76,7 @@ impl Input {
                 }
             }
             Event::TextInput { text } => {
-                self.text_input += &text;
+                self.input_text += &text;
             }
 
             //
@@ -172,16 +176,16 @@ impl Pyxel {
         *self.input.key_values.get(&MOUSE_WHEEL_Y).unwrap_or(&0)
     }
 
-    pub fn text_input(&self) -> &str {
-        &self.input.text_input
+    pub fn input_keys(&self) -> &Vec<Key> {
+        &self.input.input_keys
+    }
+
+    pub fn input_text(&self) -> &str {
+        &self.input.input_text
     }
 
     pub fn drop_files(&self) -> &Vec<String> {
         &self.input.drop_files
-    }
-
-    pub fn mouse(&mut self, is_visible: bool) {
-        self.input.is_mouse_visible = is_visible;
     }
 
     pub fn btn(&self, key: Key) -> bool {
@@ -234,6 +238,10 @@ impl Pyxel {
         self.input.key_values.get(&key).cloned().unwrap_or(0)
     }
 
+    pub fn mouse(&mut self, is_visible: bool) {
+        self.input.is_mouse_visible = is_visible;
+    }
+
     pub fn set_btnp(&mut self, key: Key) {
         self.input.press_key(key, self.frame_count());
     }
@@ -244,9 +252,11 @@ impl Pyxel {
 
     pub fn set_btnv(&mut self, key: Key, key_value: KeyValue) {
         self.input.key_values.insert(key, key_value);
+    }
 
-        if key == MOUSE_POS_X || key == MOUSE_POS_Y {
-            self.platform.move_cursor(self.mouse_x(), self.mouse_y());
-        }
+    pub fn move_mouse(&mut self, x: i32, y: i32) {
+        self.input.key_values.insert(MOUSE_POS_X, x);
+        self.input.key_values.insert(MOUSE_POS_Y, y);
+        self.platform.move_cursor(x, y);
     }
 }

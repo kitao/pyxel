@@ -66,7 +66,8 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "mouse_x" => instance().mouse_x().to_object(py),
         "mouse_y" => instance().mouse_y().to_object(py),
         "mouse_wheel" => instance().mouse_wheel().to_object(py),
-        "text_input" => instance().text_input().to_object(py),
+        "input_keys" => instance().input_keys().to_object(py),
+        "input_text" => instance().input_text().to_object(py),
         "drop_files" => instance().drop_files().to_object(py),
 
         //
