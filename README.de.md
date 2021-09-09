@@ -58,7 +58,7 @@ Pyxel ist quelloffen und kostenlos zu verwenden. Fang an, ein Retro-Spiel mit Py
 
 Zuerst installiere [Python3](https://www.python.org/) (Version 3.6.8 oder höher).
 
-Wenn du Python mit dem offiziellen Installationsprogramm installiest, klicke auf das Feld unten **Add Python to PATH**, 
+Wenn du Python mit dem offiziellen Installationsprogramm installierst, klicke auf das Feld unten **Add Python to PATH**, 
 
 <img src="images/python_installer.png">
 
@@ -76,7 +76,7 @@ Installier zunächst in der Umgebung, in der der [Homebrew](https://brew.sh/) Pa
 brew install python3 gcc sdl2 sdl2_image gifsicle
 ```
 
-Du kannst Python3 auch auf andere Weise installieren, aber beachte, dass andere Bibliotheken installiert werden müssen.
+Du kannst Python3 auch auf andere Weise installieren, aber beachte, dass zusätzliche Bibliotheken installiert werden müssen.
 
 Starte anschließend die Konsole neu und installiere Pyxel mit dem Befehl `pip3`:
 
@@ -196,7 +196,7 @@ class App:
 App()
 ```
 
-Es ist auch möglich, leichten Code mit den Funktionen `show` und `flip` zu schreiben, um einfache Grafiken und Animationen zu zeichnen.
+Es ist auch möglich, simplen Code mit den Funktionen `show` und `flip` zu schreiben, um einfache Grafiken und Animationen zu zeichnen.
 
 Die Funktion `show` zeigt den Bildschirm und wartet, bis die Taste `ESC` gedrückt wird.
 
@@ -222,9 +222,9 @@ while True:
     pyxel.flip()
 ```
 
-### Spezialeingaben
+### Shortcuts
 
-Die folgenden Spezialeingaben können eingegeben werden, während eine Pyxel-Anwendung läuft:
+Die folgenden Shortcuts können eingegeben werden, während eine Pyxel-Anwendung läuft:
 
 - `Esc`<br>
 Schließt die Anwendung
@@ -273,7 +273,7 @@ Der Modus zum editieren von Tilemaps in welcher Bilder aus der Image Bank in ein
 
 **Sound-Editor:**
 
-Der Modus um Geräusche zu editieren.
+Der Modus um Sounds zu editieren.
 
 <img src="pyxel/editor/screenshots/sound_editor.gif">
 
