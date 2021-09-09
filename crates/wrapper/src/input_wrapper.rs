@@ -5,13 +5,6 @@ use pyxel::{Key, KeyValue};
 use crate::instance;
 
 #[pyfunction]
-fn mouse(visible: bool) -> PyResult<()> {
-    instance().mouse(visible);
-
-    Ok(())
-}
-
-#[pyfunction]
 fn btn(key: Key) -> PyResult<bool> {
     Ok(instance().btn(key))
 }
@@ -30,6 +23,13 @@ fn btnr(key: Key) -> PyResult<bool> {
 #[pyfunction]
 fn btnv(key: Key) -> PyResult<KeyValue> {
     Ok(instance().btnv(key))
+}
+
+#[pyfunction]
+fn mouse(visible: bool) -> PyResult<()> {
+    instance().mouse(visible);
+
+    Ok(())
 }
 
 #[pyfunction]
@@ -53,15 +53,23 @@ pub fn set_btnv(key: Key, val: KeyValue) -> PyResult<()> {
     Ok(())
 }
 
+#[pyfunction]
+pub fn move_mouse(x: i32, y: i32) -> PyResult<()> {
+    instance().move_mouse(x, y);
+
+    Ok(())
+}
+
 pub fn add_input_functions(m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(mouse, m)?)?;
     m.add_function(wrap_pyfunction!(btn, m)?)?;
     m.add_function(wrap_pyfunction!(btnp, m)?)?;
     m.add_function(wrap_pyfunction!(btnr, m)?)?;
     m.add_function(wrap_pyfunction!(btnv, m)?)?;
+    m.add_function(wrap_pyfunction!(mouse, m)?)?;
     m.add_function(wrap_pyfunction!(set_btnp, m)?)?;
     m.add_function(wrap_pyfunction!(set_btnr, m)?)?;
     m.add_function(wrap_pyfunction!(set_btnv, m)?)?;
+    m.add_function(wrap_pyfunction!(move_mouse, m)?)?;
 
     Ok(())
 }
