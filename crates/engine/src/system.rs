@@ -13,10 +13,10 @@ use crate::utils::simplify_string;
 use crate::{Pyxel, PyxelCallback};
 
 pub struct System {
-    frame_count: u32,
     one_frame_time: f64,
     next_update_time: f64,
     disable_next_frame_skip: bool,
+    frame_count: u32,
 
     quit_key: Key,
     should_quit: bool,
@@ -30,10 +30,10 @@ pub struct System {
 impl System {
     pub fn new(fps: u32, quit_key: Key) -> System {
         System {
-            frame_count: 0,
             one_frame_time: 1000.0 / fps as f64,
             next_update_time: -1.0,
             disable_next_frame_skip: true,
+            frame_count: 0,
 
             quit_key,
             should_quit: false,
