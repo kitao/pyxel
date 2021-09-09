@@ -25,14 +25,19 @@ from .tilemap_editor import TileMapEditor
 
 
 class App(Widget):
-    def __init__(self, resource_file):
+    def __init__(self, resource_file, palette):
         resource_file = os.path.join(os.getcwd(), resource_file)
         root, ext = os.path.splitext(resource_file)
         if ext != pyxel.RESOURCE_FILE_EXTENSION:
             resource_file += pyxel.RESOURCE_FILE_EXTENSION
 
+        kwargs = {}
+        if palette:
+            kwargs['palette'] = palette
+
         pyxel.init(
-            APP_WIDTH, APP_HEIGHT, caption="Pyxel Editor - {}".format(resource_file)
+            APP_WIDTH, APP_HEIGHT, caption="Pyxel Editor - {}".format(resource_file),
+            **kwargs
         )
         pyxel.mouse(True)
 

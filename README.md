@@ -255,6 +255,15 @@ After starting Pyxel Editor, the file can be switched by dragging and dropping a
 
 The created resource file can be loaded with the `load` function.
 
+If your game uses a custom palette, you can use it in the editor with this option:
+
+```sh
+pyxeleditor --palette=path/to/palette [pyxel_resource_file]
+```
+
+The palette file must be a text file containing 16 color codes (like `1D2B53`) on 16 lines.
+
+
 Pyxel Editor has the following edit modes.
 
 **Image Editor:**
