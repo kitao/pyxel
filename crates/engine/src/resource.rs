@@ -1,28 +1,39 @@
 use chrono::Local;
-use gif::{DisposalMethod, Encoder, Frame, Repeat};
-use std::borrow::Cow;
+use gifski::new as gifski_new;
+use gifski::Settings;
+use imgref::ImgVec;
+use rgb::RGBA8;
 use std::env;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
-use std::process::Command;
 use zip::{ZipArchive, ZipWriter};
 
 use crate::canvas::Canvas;
 use crate::image::{Image, SharedImage};
 use crate::music::Music;
 use crate::settings::{
-    CAPTURE_SCALE, COLOR_COUNT, IMAGE_COUNT, MUSIC_COUNT, PYXEL_VERSION, RESOURCE_ARCHIVE_DIRNAME,
-    SOUND_COUNT, TILEMAP_COUNT,
+    CAPTURE_SCALE, IMAGE_COUNT, MUSIC_COUNT, PYXEL_VERSION, RESOURCE_ARCHIVE_DIRNAME, SOUND_COUNT,
+    TILEMAP_COUNT,
 };
 use crate::sound::Sound;
 use crate::tilemap::Tilemap;
 use crate::utils::parse_version_string;
 use crate::Pyxel;
 
-struct CaptureFrame {
-    frame_image: SharedImage,
+#[derive(Clone)]
+struct Screen {
+    image: SharedImage,
     frame_count: u32,
+}
+
+pub struct Resource {
+    fps: u32,
+    max_screen_count: u32,
+    screens: Vec<Screen>,
+    start_screen_index: u32,
+    next_screen_index: u32,
+    captured_screen_count: u32,
 }
 
 pub trait ResourceItem {
@@ -33,55 +44,47 @@ pub trait ResourceItem {
     fn deserialize(&mut self, version: u32, input: &str);
 }
 
-pub struct Resource {
-    fps: u32,
-    capture_frame_count: u32,
-    capture_frames: Vec<CaptureFrame>,
-    start_frame_index: u32,
-    cur_frame_index: u32,
-    cur_frame_count: u32,
-}
-
 impl Resource {
     pub fn new(width: u32, height: u32, fps: u32, capture_sec: u32) -> Resource {
-        let capture_frame_count = fps * capture_sec;
-        let capture_frames = (0..capture_frame_count)
-            .map(|_| CaptureFrame {
-                frame_image: Image::new(width, height),
+        let max_screen_count = fps * capture_sec;
+        let screens = (0..max_screen_count)
+            .map(|_| Screen {
+                image: Image::new(width, height),
                 frame_count: 0,
             })
             .collect();
 
         Resource {
             fps,
-            capture_frame_count,
-            capture_frames,
-            start_frame_index: 0,
-            cur_frame_index: 0,
-            cur_frame_count: 0,
+            max_screen_count,
+            screens,
+            start_screen_index: 0,
+            next_screen_index: 0,
+            captured_screen_count: 0,
         }
     }
 
     pub fn capture_screen(&mut self, screen: SharedImage, frame_count: u32) {
-        if self.capture_frame_count == 0 {
+        if self.max_screen_count == 0 {
             return;
         }
-
-        self.cur_frame_index = (self.cur_frame_index + 1) % self.capture_frame_count;
-        self.cur_frame_count += 1;
 
         let width = screen.lock().width();
         let height = screen.lock().height();
 
-        self.capture_frames[self.cur_frame_index as usize]
-            .frame_image
+        self.screens[self.next_screen_index as usize]
+            .image
             .lock()
             .blt(0, 0, screen, 0, 0, width as i32, height as i32, None);
-        self.capture_frames[self.cur_frame_index as usize].frame_count = frame_count;
 
-        if self.cur_frame_count > self.capture_frame_count {
-            self.start_frame_index = (self.start_frame_index + 1) % self.capture_frame_count;
-            self.cur_frame_count = self.capture_frame_count;
+        self.screens[self.next_screen_index as usize].frame_count = frame_count;
+
+        self.next_screen_index = (self.next_screen_index + 1) % self.max_screen_count;
+        self.captured_screen_count += 1;
+
+        if self.captured_screen_count > self.max_screen_count {
+            self.start_screen_index = (self.start_screen_index + 1) % self.max_screen_count;
+            self.captured_screen_count = self.max_screen_count;
         }
     }
 
@@ -200,8 +203,7 @@ impl Pyxel {
     }
 
     pub fn screenshot(&mut self) {
-        self.resource.capture_frames[self.resource.cur_frame_index as usize]
-            .frame_image
+        self.screen
             .lock()
             .save(&Resource::export_path(), &self.colors, CAPTURE_SCALE);
 
@@ -209,121 +211,74 @@ impl Pyxel {
     }
 
     pub fn reset_capture(&mut self) {
-        if self.resource.capture_frame_count == 0 {
+        if self.resource.max_screen_count == 0 {
             return;
         }
 
-        self.resource.start_frame_index =
-            (self.resource.cur_frame_index + 1) % self.resource.capture_frame_count;
-        self.resource.cur_frame_count = 0;
+        self.resource.start_screen_index = 0;
+        self.resource.next_screen_index = 0;
+        self.resource.captured_screen_count = 0;
     }
 
     pub fn screencast(&mut self) {
-        if self.resource.capture_frame_count == 0 || self.resource.cur_frame_count == 0 {
+        if self.resource.max_screen_count == 0 || self.resource.captured_screen_count == 0 {
             return;
         }
 
-        let mut last_frame_image =
-            &self.resource.capture_frames[self.resource.cur_frame_index as usize].frame_image;
-        let mut last_frame_count =
-            self.resource.capture_frames[self.resource.start_frame_index as usize].frame_count;
-        let width = last_frame_image.lock().width() * CAPTURE_SCALE;
-        let height = last_frame_image.lock().height() * CAPTURE_SCALE;
+        let (mut collector, writer) = gifski_new(Settings::default()).unwrap();
 
-        let mut palette = Vec::new();
-        for color in self.colors {
-            palette.push(((color >> 16) & 0xff) as u8);
-            palette.push(((color >> 8) & 0xff) as u8);
-            palette.push((color & 0xff) as u8);
-        }
-        palette.append(&mut vec![0; 3]);
+        let colors = self.colors;
+        let fps = self.resource.fps;
+        let max_screen_count = self.resource.max_screen_count;
+        let screens = self.resource.screens.clone();
+        let start_screen_index = self.resource.start_screen_index;
+        let captured_screen_count = self.resource.captured_screen_count;
+        let start_frame_count = screens[start_screen_index as usize].frame_count;
 
-        let filename = Resource::export_path() + ".gif";
-        let mut image = File::create(&filename).unwrap();
-        let mut encoder = Encoder::new(&mut image, width as u16, height as u16, &palette).unwrap();
-        encoder.set_repeat(Repeat::Infinite).unwrap();
+        let handle = std::thread::spawn(move || {
+            for i in 0..captured_screen_count {
+                let index = (start_screen_index + i) % max_screen_count;
+                let image = &screens[index as usize].image.lock();
+                let width = image.width();
+                let height = image.height();
 
-        {
-            let mut buffer = Vec::new();
+                let imgvec = ImgVec::new(
+                    (0..width * CAPTURE_SCALE * height * CAPTURE_SCALE)
+                        .map(|i| {
+                            let i = i / CAPTURE_SCALE;
+                            let rgb = colors[image
+                                ._value((i % width) as i32, (i / (width * CAPTURE_SCALE)) as i32)
+                                as usize];
 
-            for i in 0..height {
-                for j in 0..width {
-                    let x = j / CAPTURE_SCALE;
-                    let y = i / CAPTURE_SCALE;
+                            RGBA8::new(
+                                ((rgb >> 16) & 0xff) as u8,
+                                ((rgb >> 8) & 0xff) as u8,
+                                (rgb & 0xff) as u8,
+                                0xff,
+                            )
+                        })
+                        .collect(),
+                    (width * CAPTURE_SCALE) as usize,
+                    (height * CAPTURE_SCALE) as usize,
+                );
 
-                    buffer.push(last_frame_image.lock()._value(x as i32, y as i32));
-                }
+                let timestamp = (screens[index as usize].frame_count - start_frame_count + 1)
+                    as f64
+                    / fps as f64;
+
+                collector
+                    .add_frame_rgba(i as usize, imgvec, timestamp)
+                    .unwrap();
             }
+        });
 
-            encoder
-                .write_frame(&Frame {
-                    delay: 0,
-                    dispose: DisposalMethod::Keep,
-                    transparent: None,
-                    needs_user_input: false,
-                    top: 0,
-                    left: 0,
-                    width: width as u16,
-                    height: height as u16,
-                    interlaced: false,
-                    palette: None,
-                    buffer: Cow::Borrowed(&*buffer),
-                })
-                .unwrap();
-        }
+        let mut file = File::create(&(Resource::export_path() + ".gif")).unwrap();
 
-        for i in 0..self.resource.cur_frame_count {
-            let index = (self.resource.start_frame_index + i) % self.resource.capture_frame_count;
-            let frame_image = &self.resource.capture_frames[index as usize].frame_image;
-            let frame_count = self.resource.capture_frames[index as usize].frame_count;
-            let mut buffer = Vec::new();
+        writer
+            .write(&mut file, &mut gifski::progress::NoProgress {})
+            .unwrap();
 
-            for j in 0..height {
-                for k in 0..width {
-                    let x = k / CAPTURE_SCALE;
-                    let y = j / CAPTURE_SCALE;
-                    let value = frame_image.lock()._value(x as i32, y as i32);
-
-                    buffer.push(
-                        if value != last_frame_image.lock()._value(x as i32, y as i32) {
-                            value
-                        } else {
-                            COLOR_COUNT as u8
-                        },
-                    );
-                }
-            }
-
-            let delay = ((frame_count - last_frame_count) as f64 * 100.0 / self.resource.fps as f64)
-                .round() as u16;
-
-            encoder
-                .write_frame(&Frame {
-                    delay,
-                    dispose: DisposalMethod::Keep,
-                    transparent: Some(COLOR_COUNT as u8),
-                    needs_user_input: false,
-                    top: 0,
-                    left: 0,
-                    width: width as u16,
-                    height: height as u16,
-                    interlaced: false,
-                    palette: None,
-                    buffer: Cow::Borrowed(&*buffer),
-                })
-                .unwrap();
-
-            last_frame_image = frame_image;
-            last_frame_count = frame_count;
-        }
-
-        // try to optimize the generated GIF file with Gifsicle
-        let _ = Command::new("gifsicle")
-            .arg("-b")
-            .arg("-O3")
-            .arg("-Okeep-empty")
-            .arg(&filename)
-            .output();
+        handle.join().unwrap();
 
         self.reset_capture();
         self.system.disable_next_frame_skip();
