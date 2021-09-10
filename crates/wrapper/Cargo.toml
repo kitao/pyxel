@@ -14,5 +14,5 @@ keywords = ["..."]
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.14.1", features = ["extension-module", "abi3-py37"] }
+pyo3 = { version = "0.14.5", features = ["extension-module", "abi3-py37"] }
 pyxel-engine = { path = "../engine" }
