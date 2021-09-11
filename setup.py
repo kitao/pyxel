@@ -1,8 +1,19 @@
+import re
+
 import setuptools
+
 from pyxel import VERSION
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    long_description = re.sub(
+        r'(src=")',
+        r"\1https://raw.githubusercontent.com/kitao/pyxel/main/",
+        re.sub(
+            r'(\]\(|href=")(?!http)',
+            r"\1https://github.com/kitao/pyxel/blob/main/",
+            fh.read(),
+        ),
+    )
 
 setuptools.setup(
     name="pyxel",
@@ -39,9 +50,17 @@ setuptools.setup(
         "pyxel.examples.assets",
     ],
     package_data={
-        "": ["*.pyxres", "*.png", "*.gif", "*.dylib", "*.dll", "*.so", "*.exe"]
+        "": [
+            "*.gif",
+            "*.png",
+            "*.pyd",
+            "*.pyi",
+            "*.pyxres",
+            "*.so",
+            "py.typed",
+        ]
     },
-    python_requires=">=3.6.8",
+    python_requires=">=3.7",
     entry_points={
         "console_scripts": [
             "pyxeleditor=pyxel.editor:run",
