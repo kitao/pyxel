@@ -19,5 +19,5 @@ class TestPyxel(unittest.TestCase):
     def test_cls(self):
         pyxel.cls(3)
 
-    def test_text_input(self):
-        pyxel.text_input
+    def test_input_text(self):
+        pyxel.input_text
