@@ -1,0 +1,35 @@
+[package]
+name = "pyxel-core"
+version = "0.1.0"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2018"
+description = "Core library for Pyxel, a retro game engine"
+repository = "<url-to-repository>"
+license = "MIT"
+readme = "README.md"
+categories = ["game-engine", "graphics", "multimedia"]
+keywords = ["game", "gamedev", "python"]
+
+[lib]
+name = "pyxel"
+path = "src/lib.rs"
+
+[[test]]
+name = "tests"
+path = "tests/test_pyxel.rs"
+harness = false
+
+[dependencies]
+array-macro = "2.1.0"
+blip_buf = "0.1.4"
+chrono = "0.4.19"
+gifski = "1.5.0"
+image = "0.23.14"
+imgref = "1.9.1"
+parking_lot = "0.11.2"
+rgb = "0.8.27"
+sdl2 = { version = "0.34.5", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
+zip = { version = "0.5.13", default-features = false, features = ["deflate"] }
+
+[target.'cfg(windows)'.dependencies]
+winreg = "0.9.0"
