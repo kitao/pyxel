@@ -181,7 +181,7 @@ class Blast:
 
 class App:
     def __init__(self):
-        pyxel.init(120, 160, caption="Pyxel Shooter")
+        pyxel.init(120, 160, title="Pyxel Shooter")
 
         pyxel.image(0).set(
             0,
@@ -237,7 +237,7 @@ class App:
             self.update_gameover_scene()
 
     def update_title_scene(self):
-        if pyxel.btnp(pyxel.KEY_ENTER):
+        if pyxel.btnp(pyxel.KEY_RETURN):
             self.scene = SCENE_PLAY
 
     def update_play_scene(self):
@@ -302,7 +302,7 @@ class App:
         cleanup_list(bullet_list)
         cleanup_list(blast_list)
 
-        if pyxel.btnp(pyxel.KEY_ENTER):
+        if pyxel.btnp(pyxel.KEY_RETURN):
             self.scene = SCENE_PLAY
             self.player.x = pyxel.width / 2
             self.player.y = pyxel.height - 20
