@@ -1,6 +1,6 @@
 # <img src="images/pyxel_logo_152x64.png">
 
-[ [English](README.md) | [中文](README.cn.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Deutsch](README.de.md)]
+[ [English](README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
 **Pyxel** ist eine Retro-Spielengine für Python.
 
@@ -58,7 +58,7 @@ Pyxel ist quelloffen und kostenlos zu verwenden. Fang an, ein Retro-Spiel mit Py
 
 Zuerst installiere [Python3](https://www.python.org/) (Version 3.6.8 oder höher).
 
-Wenn du Python mit dem offiziellen Installationsprogramm installierst, klicke auf das Feld unten **Add Python to PATH**, 
+Wenn du Python mit dem offiziellen Installationsprogramm installierst, klicke auf das Feld unten **Add Python to PATH**,
 
 <img src="images/python_installer.png">
 
@@ -300,7 +300,7 @@ Bitte lesen Sie die API-Referenz für die Verwendung dieser Funktionen.
 
 Mit dem Pyxel Packager können Executables erstellt werden, die ohne eine Python-Installation ausgeführt werden können.
 
-Um eine Stand-alone Executable in einer Umgebung, in der der [PyInstaller](https://www.pyinstaller.org/) läuft, zu erstellen, gib die Python-Datei an, die beim Programmstart ausgeführt werden soll, mit dem `pyxelpackager` Befehl wie folgt an: 
+Um eine Stand-alone Executable in einer Umgebung, in der der [PyInstaller](https://www.pyinstaller.org/) läuft, zu erstellen, gib die Python-Datei an, die beim Programmstart ausgeführt werden soll, mit dem `pyxelpackager` Befehl wie folgt an:
 
 ```sh
 pyxelpackager python_file
