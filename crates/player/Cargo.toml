@@ -1,0 +1,19 @@
+[package]
+name = "pyxel-player"
+version = "0.1.0"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2018"
+description = "Standalone player for Pyxel, a retro game engine"
+repository = "<url-to-repository>"
+license = "MIT"
+readme = "README.md"
+categories = ["command-line-utilities", "game-engine", "graphics", "multimedia"]
+keywords = ["game", "gamedev", "python"]
+
+[[bin]]
+name = "pyxel"
+path = "src/bin.rs"
+
+[dependencies]
+pyo3 = { version = "0.14.5", features = ["auto-initialize"] }
+pyxel-core = { path = "../core" }
