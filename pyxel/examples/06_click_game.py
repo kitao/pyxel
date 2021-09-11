@@ -52,7 +52,7 @@ class Bubble:
 
 class App:
     def __init__(self):
-        pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, caption="Pyxel Bubbles")
+        pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="Pyxel Bubbles")
         pyxel.mouse(True)
 
         self.is_exploded = False
@@ -66,7 +66,7 @@ class App:
 
         bubble_count = len(self.bubbles)
 
-        if pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON):
+        if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
             for i in range(bubble_count):
                 bubble = self.bubbles[i]
                 dx = bubble.pos.x - pyxel.mouse_x
