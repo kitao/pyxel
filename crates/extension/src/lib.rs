@@ -73,7 +73,7 @@ fn set_current_directory(py: Python) -> PyResult<()> {
 }
 
 #[pymodule]
-fn pyxel_wrapper(py: Python, m: &PyModule) -> PyResult<()> {
+fn pyxel_extension(py: Python, m: &PyModule) -> PyResult<()> {
     add_image_class(m)?;
     add_tilemap_class(m)?;
     add_channel_class(m)?;

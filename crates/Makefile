@@ -15,12 +15,12 @@ DST_LIB_EXT = pyd
 endif
 
 PYXEL_LIB_DIR = ../pyxel/lib/$(PLATFORM_NAME)
-PYXEL_TESTS_DIR = wrapper/tests
+PYXEL_TESTS_DIR = extension/tests
 PYXEL_EXAMPLES_DIR = ../pyxel/examples
 CARGO_DEBUG_DIR = target/debug
 CARGO_RELEASE_DIR = target/release
-SRC_LIB_NAME = libpyxel_wrapper.$(SRC_LIB_EXT)
-DST_LIB_NAME = pyxel_wrapper.$(DST_LIB_EXT)
+SRC_LIB_NAME = libpyxel_extension.$(SRC_LIB_EXT)
+DST_LIB_NAME = pyxel_extension.$(DST_LIB_EXT)
 
 ifeq ($(RELEASE),)
 CARGO_BUILD_OPT =
