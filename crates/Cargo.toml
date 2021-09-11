@@ -1,0 +1,2 @@
+[workspace]
+members = ["core", "extension", "player"]
