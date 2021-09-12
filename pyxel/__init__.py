@@ -3,7 +3,7 @@ import platform
 system = platform.system()
 
 if system == "Darwin":
-    from .lib.mac.pyxel_extension import *  # type: ignore  # noqa F403
+    from .lib.macos.pyxel_extension import *  # type: ignore  # noqa F403
 elif system == "Windows":
     from .lib.windows.pyxel_extension import *  # type: ignore  # noqa F403
 elif system == "Linux":
