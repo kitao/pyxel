@@ -1,20 +1,20 @@
 ifeq ($(shell uname),Darwin)
-PLATFORM_NAME = mac
+ENV_NAME = mac
 SRC_LIB_EXT = dylib
 DST_LIB_EXT = so
 endif
 ifeq ($(shell uname),Linux)
-PLATFORM_NAME = linux
+ENV_NAME = linux
 SRC_LIB_EXT = so
 DST_LIB_EXT = so
 endif
 ifneq ($(findstring MINGW64,$(shell uname)),)
-PLATFORM_NAME = windows
+ENV_NAME = windows
 SRC_LIB_EXT = dll
 DST_LIB_EXT = pyd
 endif
 
-PYXEL_LIB_DIR = ../pyxel/lib/$(PLATFORM_NAME)
+PYXEL_LIB_DIR = ../pyxel/lib/$(ENV_NAME)
 PYXEL_TESTS_DIR = extension/tests
 PYXEL_EXAMPLES_DIR = ../pyxel/examples
 CARGO_DEBUG_DIR = target/debug
