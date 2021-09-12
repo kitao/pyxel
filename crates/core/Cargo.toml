@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-core"
-version = "0.1.0"
+version = "1.5.0"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2018"
 description = "Core library for Pyxel, a retro game engine"
@@ -23,7 +23,7 @@ harness = false
 array-macro = "2.1.0"
 blip_buf = "0.1.4"
 chrono = "0.4.19"
-gifski = "1.5.0"
+gifski = "1.5.1"
 image = "0.23.14"
 imgref = "1.9.1"
 parking_lot = "0.11.2"
