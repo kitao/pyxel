@@ -17,3 +17,4 @@ path = "src/bin.rs"
 [dependencies]
 pyo3 = { version = "0.14.5", features = ["auto-initialize"] }
 pyxel-core = { path = "../core", version="1.5.0" }
+tempfile = "3.2.0"
