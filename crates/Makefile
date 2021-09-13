@@ -52,31 +52,31 @@ DST_BIN = $(DST_BIN_DIR)/$(PYXEL_BIN_NAME)$(BIN_EXT)
 all: build
 
 build: format
-	cargo build $(CARGO_BUILD_OPT)
-	mkdir -p $(DST_LIB_DIR) $(DST_BIN_DIR)
-	if [ "$(SRC_LIB)" != "$(DST_LIB)" ]; then cp $(SRC_LIB) $(DST_LIB); fi
-	if [ "$(SRC_BIN)" != "$(DST_BIN)" ]; then cp $(SRC_BIN) $(DST_BIN); fi
+	@cargo build $(CARGO_BUILD_OPT)
+	@mkdir -p $(DST_LIB_DIR) $(DST_BIN_DIR)
+	@if [ "$(SRC_LIB)" != "$(DST_LIB)" ]; then cp $(SRC_LIB) $(DST_LIB); fi
+	@if [ "$(SRC_BIN)" != "$(DST_BIN)" ]; then cp $(SRC_BIN) $(DST_BIN); fi
 
 test: build
-	cargo test
-	PYTHONPATH=$(TEST_IMPORT_DIR) python3 -m unittest discover $(PYXEL_TESTS_DIR)
-	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/01_hello_pyxel.py
-	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/02_jump_game.py
-	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/03_draw_api.py
-	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/04_sound_api.py
-	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/05_color_palette.py
-	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/06_click_game.py
-	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/07_snake.py
-	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/08_triangle_api.py
-	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/09_shooter.py
-	PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/10_platformer.py
+	@cargo test
+	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 -m unittest discover $(PYXEL_TESTS_DIR)
+	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/01_hello_pyxel.py
+	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/02_jump_game.py
+	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/03_draw_api.py
+	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/04_sound_api.py
+	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/05_color_palette.py
+	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/06_click_game.py
+	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/07_snake.py
+	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/08_triangle_api.py
+	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/09_shooter.py
+	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/10_platformer.py
 
 format:
-	cargo fmt -- --emit=files
+	@cargo fmt -- --emit=files
 
 lint:
-	cargo clippy
+	@cargo clippy
 
 clean:
-	cargo clean
-	rm -rf $(PYXEL_LIB_DIR) $(PYXEL_BIN_DIR)
+	@cargo clean
+	@rm -rf $(PYXEL_LIB_DIR) $(PYXEL_BIN_DIR)
