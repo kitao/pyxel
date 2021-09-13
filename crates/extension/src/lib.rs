@@ -23,7 +23,6 @@ mod tilemap_wrapper;
 mod variable_wrapper;
 
 use pyo3::prelude::*;
-use pyo3::types::PyDict;
 use std::mem::transmute;
 
 use pyxel::Pyxel;
@@ -59,21 +58,8 @@ pub fn set_instance(pyxel: Pyxel) {
     }
 }
 
-fn set_current_directory(py: Python) -> PyResult<()> {
-    let locals = PyDict::new(py);
-    locals.set_item("os", py.import("os")?)?;
-    locals.set_item("inspect", py.import("inspect")?)?;
-    py.eval(
-        "os.chdir(os.path.dirname(inspect.stack()[-1].filename) or '.')",
-        None,
-        Some(locals),
-    )?;
-
-    Ok(())
-}
-
 #[pymodule]
-fn pyxel_extension(py: Python, m: &PyModule) -> PyResult<()> {
+fn pyxel_extension(_py: Python, m: &PyModule) -> PyResult<()> {
     add_image_class(m)?;
     add_tilemap_class(m)?;
     add_channel_class(m)?;
@@ -88,8 +74,6 @@ fn pyxel_extension(py: Python, m: &PyModule) -> PyResult<()> {
     add_input_functions(m)?;
     add_graphics_functions(m)?;
     add_audio_functions(m)?;
-
-    set_current_directory(py)?;
 
     Ok(())
 }
