@@ -91,7 +91,16 @@ fn print_error(msg: &str) {
 fn execute_python_file(filename: &str) {
     let gil = Python::acquire_gil();
     let py = gil.python();
-    let code = format!("__file__ = '{}'; exec(open(__file__).read())", filename);
+
+    let code = format!(
+        r#"
+import importlib.util
+spec = importlib.util.spec_from_file_location("__main__", "{}")
+file = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(file)
+        "#,
+        filename
+    );
 
     init_import_path(py);
     py.run(&code, None, None).unwrap();
