@@ -1,7 +1,6 @@
-use std::process::exit;
-
 use pyo3::prelude::*;
-use pyo3::types::PyAny;
+use pyo3::types::{PyAny, PyDict};
+use std::process::exit;
 
 use pyxel::{Pyxel, PyxelCallback};
 
@@ -10,6 +9,7 @@ use crate::{instance, set_instance};
 #[pyfunction]
 #[pyo3(text_signature = "(width, height, *, title, fps, quit_key, capture_sec)")]
 fn init(
+    py: Python,
     width: u32,
     height: u32,
     title: Option<&str>,
@@ -17,6 +17,16 @@ fn init(
     quit_key: Option<pyxel::Key>,
     capture_sec: Option<u32>,
 ) -> PyResult<()> {
+    let locals = PyDict::new(py);
+
+    locals.set_item("os", py.import("os")?)?;
+    locals.set_item("inspect", py.import("inspect")?)?;
+    py.run(
+        "os.chdir(os.path.dirname(inspect.stack()[1].filename) or '.')",
+        None,
+        Some(locals),
+    )?;
+
     set_instance(Pyxel::new(width, height, title, fps, quit_key, capture_sec));
 
     Ok(())
