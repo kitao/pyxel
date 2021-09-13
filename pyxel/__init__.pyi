@@ -6,6 +6,7 @@ from typing import Callable, List, Optional, Tuple, Union
 #
 PYXEL_VERSION: str
 
+APPLICATION_FILE_EXTENSION: str
 RESOURCE_FILE_EXTENSION: str
 RESOURCE_ARCHIVE_DIRNAME: str
 
