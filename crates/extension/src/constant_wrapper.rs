@@ -12,6 +12,7 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     //
     add_constant!(PYXEL_VERSION)?;
 
+    add_constant!(APPLICATION_FILE_EXTENSION)?;
     add_constant!(RESOURCE_FILE_EXTENSION)?;
     add_constant!(RESOURCE_ARCHIVE_DIRNAME)?;
 

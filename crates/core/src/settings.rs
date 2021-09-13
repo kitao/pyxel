@@ -41,7 +41,8 @@ pub const ICON_DATA: [&str; ICON_SIZE as usize] = [
 //
 // Resource
 //
-pub const RESOURCE_FILE_EXTENSION: &str = ".pyxres";
+pub const APPLICATION_FILE_EXTENSION: &str = "pyxapp";
+pub const RESOURCE_FILE_EXTENSION: &str = "pyxres";
 pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
 
 pub const CAPTURE_SCALE: u32 = 2;
