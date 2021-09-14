@@ -1,19 +1,28 @@
 mod interpreter;
 mod utils;
 
-const PYXEL_VERSION: &str = "1.5.0";
-
 use std::process::exit;
 use tempfile::tempdir;
 
 use crate::interpreter::Interpreter;
 use crate::utils::{command_args, file_extension};
 
+const PYXEL_IMPORT_PATHS: [&str; 4] = [".", "..", "../..", "../../.."];
+
 fn main() {
+    let interpreter = Interpreter::new();
+
+    interpreter.add_import_paths(&PYXEL_IMPORT_PATHS);
+    interpreter.import("pyxel");
+
+    let (pyxel_ver, app_ext, res_ext) = interpreter.eval::<(String, String, String)>(
+        "(pyxel.PYXEL_VERSION, pyxel.APPLICATION_FILE_EXTENSION, pyxel.RESOURCE_FILE_EXTENSION)",
+    );
+
     let args = command_args();
 
     if args.len() != 2 {
-        print_usage();
+        print_usage(&pyxel_ver);
         return;
     }
 
@@ -22,9 +31,9 @@ fn main() {
 
     if file_ext == "py" {
         execute_python_file(filename);
-    } else if file_ext == "pyxapp" {
+    } else if file_ext == app_ext {
         execute_pyxapp_file(filename);
-    } else if file_ext == "pyxres" {
+    } else if file_ext == res_ext {
         edit_pyxres_file(filename);
     } else if file_ext.is_empty() {
         make_pyxapp_file(filename);
@@ -33,8 +42,8 @@ fn main() {
     }
 }
 
-fn print_usage() {
-    println!("pyxel {}, a retro game engine for Python", PYXEL_VERSION);
+fn print_usage(version: &str) {
+    println!("pyxel {}, a retro game engine for Python", version);
 }
 
 fn print_error(msg: &str) {
@@ -45,12 +54,12 @@ fn print_error(msg: &str) {
 fn execute_python_file(filename: &str) {
     let interpreter = Interpreter::new();
 
+    interpreter.add_import_paths(&PYXEL_IMPORT_PATHS);
     interpreter.run_file(filename);
 }
 
 fn execute_pyxapp_file(filename: &str) {
     let interpreter = Interpreter::new();
-
     let dir = tempdir().unwrap();
 
     dir.close().unwrap();
