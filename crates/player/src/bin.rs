@@ -1,7 +1,11 @@
+#![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
+#![allow(clippy::missing_const_for_fn, clippy::use_self)]
+
 mod interpreter;
 mod utils;
 
 use std::process::exit;
+
 use tempfile::tempdir;
 
 use crate::interpreter::Interpreter;
@@ -77,9 +81,6 @@ fn run_application_file(filename: &str) {
     let dir = tempdir().unwrap();
 
     dir.close().unwrap();
-
-    let _ = filename;
-    let _ = interpreter;
 
     /*
     use std::io::{self, Write};

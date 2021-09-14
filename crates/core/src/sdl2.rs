@@ -54,7 +54,7 @@ pub struct Sdl2 {
 }
 
 impl Platform for Sdl2 {
-    fn new(title: &str, width: u32, height: u32, display_ratio: f64) -> Self {
+    fn new(title: &str, width: u32, height: u32, display_ratio: f64) -> Sdl2 {
         let sdl_context = sdl2::init().unwrap();
         let sdl_video = sdl_context.video().unwrap();
         let sdl_display_mode = sdl_video.desktop_display_mode(0).unwrap();
@@ -183,9 +183,9 @@ impl Platform for Sdl2 {
                         x: cur_mouse_x,
                         y: cur_mouse_y,
                     });
-                } else {
-                    return None;
                 }
+
+                return None;
             }
 
             let event = match sdl_event.unwrap() {
