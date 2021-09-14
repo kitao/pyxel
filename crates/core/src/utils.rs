@@ -65,7 +65,7 @@ mod tests {
 
     #[test]
     fn remove_whitespace_() {
-        assert_eq!(remove_whitespace(" a\n b\r c\t d "), "abcd")
+        assert_eq!(remove_whitespace(" a\n b\r c\t d "), "abcd");
     }
 
     #[test]
