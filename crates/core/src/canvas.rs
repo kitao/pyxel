@@ -1,7 +1,8 @@
-use parking_lot::Mutex;
 use std::cmp::max;
 use std::mem::swap;
 use std::sync::Arc;
+
+use parking_lot::Mutex;
 
 use crate::rectarea::RectArea;
 use crate::types::ToIndex;

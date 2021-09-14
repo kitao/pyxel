@@ -1,7 +1,7 @@
-use pyo3::prelude::*;
-use pyo3::types::{PyAny, PyDict};
 use std::process::exit;
 
+use pyo3::prelude::*;
+use pyo3::types::{PyAny, PyDict};
 use pyxel::{Pyxel, PyxelCallback};
 
 use crate::{instance, set_instance};

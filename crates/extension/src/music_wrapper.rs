@@ -1,6 +1,5 @@
 use pyo3::class::PySequenceProtocol;
 use pyo3::prelude::*;
-
 use pyxel::Music as PyxelMusic;
 use pyxel::SharedMusic as PyxelSharedMusic;
 use pyxel::CHANNEL_COUNT;

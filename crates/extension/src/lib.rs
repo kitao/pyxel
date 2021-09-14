@@ -22,9 +22,9 @@ mod tilemap_wrapper;
 #[allow(non_snake_case)]
 mod variable_wrapper;
 
-use pyo3::prelude::*;
 use std::mem::transmute;
 
+use pyo3::prelude::*;
 use pyxel::Pyxel;
 
 use crate::audio_wrapper::add_audio_functions;

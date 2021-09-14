@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-
 use pyxel::SharedTilemap as PyxelSharedTilemap;
 use pyxel::Tilemap as PyxelTilemap;
 use pyxel::{Canvas, Tile};
