@@ -101,25 +101,17 @@ pub fn wrap_pyxel_music(pyxel_music: PyxelSharedMusic) -> Music {
 #[pymethods]
 impl Music {
     #[new]
-    pub fn new() -> PyResult<Music> {
-        Ok(wrap_pyxel_music(PyxelMusic::new()))
+    pub fn new() -> Music {
+        wrap_pyxel_music(PyxelMusic::new())
     }
 
-    pub fn set(
-        &self,
-        seq0: Vec<u32>,
-        seq1: Vec<u32>,
-        seq2: Vec<u32>,
-        seq3: Vec<u32>,
-    ) -> PyResult<()> {
+    pub fn set(&self, seq0: Vec<u32>, seq1: Vec<u32>, seq2: Vec<u32>, seq3: Vec<u32>) {
         self.pyxel_music.lock().set(&seq0, &seq1, &seq2, &seq3);
-
-        Ok(())
     }
 
     #[getter]
-    pub fn sequences(&self) -> PyResult<Sequences> {
-        Ok(Sequences::new(self.pyxel_music.clone()))
+    pub fn sequences(&self) -> Sequences {
+        Sequences::new(self.pyxel_music.clone())
     }
 }
 

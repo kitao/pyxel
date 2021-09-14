@@ -10,15 +10,13 @@ fn load(
     tilemap: Option<bool>,
     sound: Option<bool>,
     music: Option<bool>,
-) -> PyResult<()> {
+) {
     let image = image.unwrap_or(true);
     let tilemap = tilemap.unwrap_or(true);
     let sound = sound.unwrap_or(true);
     let music = music.unwrap_or(true);
 
     instance().load(filename, image, tilemap, sound, music);
-
-    Ok(())
 }
 
 #[pyfunction]
@@ -29,36 +27,28 @@ fn save(
     tilemap: Option<bool>,
     sound: Option<bool>,
     music: Option<bool>,
-) -> PyResult<()> {
+) {
     let image = image.unwrap_or(true);
     let tilemap = tilemap.unwrap_or(true);
     let sound = sound.unwrap_or(true);
     let music = music.unwrap_or(true);
 
     instance().save(filename, image, tilemap, sound, music);
-
-    Ok(())
 }
 
 #[pyfunction]
-fn screenshot() -> PyResult<()> {
+fn screenshot() {
     instance().screenshot();
-
-    Ok(())
 }
 
 #[pyfunction]
-fn reset_capture() -> PyResult<()> {
+fn reset_capture() {
     instance().reset_capture();
-
-    Ok(())
 }
 
 #[pyfunction]
-fn screencast() -> PyResult<()> {
+fn screencast() {
     instance().screencast();
-
-    Ok(())
 }
 
 pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
