@@ -4,59 +4,49 @@ use pyxel::{Key, KeyValue};
 use crate::instance;
 
 #[pyfunction]
-fn btn(key: Key) -> PyResult<bool> {
-    Ok(instance().btn(key))
+fn btn(key: Key) -> bool {
+    instance().btn(key)
 }
 
 #[pyfunction]
 #[pyo3(text_signature = "(key, *, hold, repeat)")]
-fn btnp(key: Key, hold: Option<u32>, repeat: Option<u32>) -> PyResult<bool> {
-    Ok(instance().btnp(key, hold, repeat))
+fn btnp(key: Key, hold: Option<u32>, repeat: Option<u32>) -> bool {
+    instance().btnp(key, hold, repeat)
 }
 
 #[pyfunction]
-fn btnr(key: Key) -> PyResult<bool> {
-    Ok(instance().btnr(key))
+fn btnr(key: Key) -> bool {
+    instance().btnr(key)
 }
 
 #[pyfunction]
-fn btnv(key: Key) -> PyResult<KeyValue> {
-    Ok(instance().btnv(key))
+fn btnv(key: Key) -> KeyValue {
+    instance().btnv(key)
 }
 
 #[pyfunction]
-fn mouse(visible: bool) -> PyResult<()> {
+fn mouse(visible: bool) {
     instance().mouse(visible);
-
-    Ok(())
 }
 
 #[pyfunction]
-pub fn set_btnp(key: Key) -> PyResult<()> {
+pub fn set_btnp(key: Key) {
     instance().set_btnp(key);
-
-    Ok(())
 }
 
 #[pyfunction]
-pub fn set_btnr(key: Key) -> PyResult<()> {
+pub fn set_btnr(key: Key) {
     instance().set_btnr(key);
-
-    Ok(())
 }
 
 #[pyfunction]
-pub fn set_btnv(key: Key, val: KeyValue) -> PyResult<()> {
+pub fn set_btnv(key: Key, val: KeyValue) {
     instance().set_btnv(key, val);
-
-    Ok(())
 }
 
 #[pyfunction]
-pub fn move_mouse(x: i32, y: i32) -> PyResult<()> {
+pub fn move_mouse(x: i32, y: i32) {
     instance().move_mouse(x, y);
-
-    Ok(())
 }
 
 pub fn add_input_functions(m: &PyModule) -> PyResult<()> {

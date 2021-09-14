@@ -33,28 +33,22 @@ fn init(
 }
 
 #[pyfunction]
-fn title(title: &str) -> PyResult<()> {
+fn title(title: &str) {
     instance().title(title);
-
-    Ok(())
 }
 
 #[pyfunction]
-fn icon(data: Vec<&str>, scale: u32) -> PyResult<()> {
+fn icon(data: Vec<&str>, scale: u32) {
     instance().icon(&data, scale);
-
-    Ok(())
 }
 
 #[pyfunction]
-fn fullscreen() -> PyResult<()> {
+fn fullscreen() {
     instance().fullscreen();
-
-    Ok(())
 }
 
 #[pyfunction]
-fn run(py: Python, update: &PyAny, draw: &PyAny) -> PyResult<()> {
+fn run(py: Python, update: &PyAny, draw: &PyAny) {
     struct PythonCallback<'a> {
         py: Python<'a>,
         update: &'a PyAny,
@@ -78,29 +72,21 @@ fn run(py: Python, update: &PyAny, draw: &PyAny) -> PyResult<()> {
     }
 
     instance().run(&mut PythonCallback { py, update, draw });
-
-    Ok(())
 }
 
 #[pyfunction]
-fn show() -> PyResult<()> {
+fn show() {
     instance().show();
-
-    Ok(())
 }
 
 #[pyfunction]
-fn flip() -> PyResult<()> {
+fn flip() {
     instance().flip();
-
-    Ok(())
 }
 
 #[pyfunction]
-fn quit() -> PyResult<()> {
+fn quit() {
     instance().quit();
-
-    Ok(())
 }
 
 pub fn add_system_functions(m: &PyModule) -> PyResult<()> {

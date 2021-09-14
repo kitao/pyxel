@@ -6,13 +6,13 @@ use crate::instance;
 use crate::tilemap_wrapper::{wrap_pyxel_tilemap, Tilemap};
 
 #[pyfunction]
-fn image(img: u32) -> PyResult<Image> {
-    Ok(wrap_pyxel_image(instance().image(img)))
+fn image(img: u32) -> Image {
+    wrap_pyxel_image(instance().image(img))
 }
 
 #[pyfunction]
-fn tilemap(tm: u32) -> PyResult<Tilemap> {
-    Ok(wrap_pyxel_tilemap(instance().tilemap(tm)))
+fn tilemap(tm: u32) -> Tilemap {
+    wrap_pyxel_tilemap(instance().tilemap(tm))
 }
 
 #[pyfunction]
@@ -47,10 +47,8 @@ fn pal(col1: Option<Color>, col2: Option<Color>) -> PyResult<()> {
 }
 
 #[pyfunction]
-fn cls(col: Color) -> PyResult<()> {
+fn cls(col: Color) {
     instance().cls(col);
-
-    Ok(())
 }
 
 #[pyfunction]
