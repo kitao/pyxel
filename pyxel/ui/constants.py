@@ -1,5 +1,3 @@
-from pyxel import _get_constant_number
-
 WIDGET_HOLD_TIME = 16
 WIDGET_REPEAT_TIME = 2
 WIDGET_CLICK_TIME = 5
@@ -16,6 +14,3 @@ BUTTON_LIGHTING_TIME = 4
 
 INPUT_TEXT_COLOR = 1
 INPUT_FIELD_COLOR = 10
-
-FONT_WIDTH = _get_constant_number("FONT_WIDTH")
-FONT_HEIGHT = _get_constant_number("FONT_HEIGHT")
