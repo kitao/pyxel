@@ -141,7 +141,7 @@ impl Oscillator {
     }
 
     fn note_to_pitch(note: f64) -> f64 {
-        440.0 * 2.0_f64.powf((note - 33.0) / 12.0)
+        440.0 * ((note - 33.0) / 12.0).exp2()
     }
 
     fn triangle(phase: u32) -> f64 {
