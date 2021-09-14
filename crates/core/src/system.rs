@@ -270,26 +270,30 @@ impl Pyxel {
             return;
         }
 
-        let palette1 = self.screen.lock()._palette()[1];
-        let palette2 = self.screen.lock()._palette()[2];
+        let mut screen = self.screen.lock();
+        let clip_rect = screen._clip_rect();
+        let palette1 = screen._palette()[1];
+        let palette2 = screen._palette()[2];
 
-        self.pal(1, 1);
-        self.pal(2, 9);
+        screen.clip0();
+        screen.pal(1, 1);
+        screen.pal(2, 9);
 
         let fps = format!("{:.*}", 2, self.system.fps_profiler.average_fps());
-        self.text(1, 0, &fps, 1);
-        self.text(0, 0, &fps, 2);
+        screen.text(1, 0, &fps, 1, self.font.clone());
+        screen.text(0, 0, &fps, 2, self.font.clone());
 
         let update_time = format!("{:.*}", 2, self.system.update_profiler.average_time());
-        self.text(1, 6, &update_time, 1);
-        self.text(0, 6, &update_time, 2);
+        screen.text(1, 6, &update_time, 1, self.font.clone());
+        screen.text(0, 6, &update_time, 2, self.font.clone());
 
         let draw_time = format!("{:.*}", 2, self.system.draw_profiler.average_time());
-        self.text(1, 12, &draw_time, 1);
-        self.text(0, 12, &draw_time, 2);
+        screen.text(1, 12, &draw_time, 1, self.font.clone());
+        screen.text(0, 12, &draw_time, 2, self.font.clone());
 
-        self.pal(1, palette1);
-        self.pal(2, palette2);
+        screen._set_clip_rect(clip_rect);
+        screen.pal(1, palette1);
+        screen.pal(2, palette2);
     }
 
     fn draw_cursor(&mut self) {
