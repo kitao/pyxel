@@ -193,79 +193,60 @@ pub fn wrap_pyxel_sound(pyxel_sound: PyxelSharedSound) -> Sound {
 #[pymethods]
 impl Sound {
     #[new]
-    pub fn new() -> PyResult<Sound> {
-        Ok(wrap_pyxel_sound(PyxelSound::new()))
+    pub fn new() -> Sound {
+        wrap_pyxel_sound(PyxelSound::new())
     }
 
     #[getter]
-    pub fn notes(&self) -> PyResult<Notes> {
-        Ok(Notes::new(self.pyxel_sound.clone()))
+    pub fn notes(&self) -> Notes {
+        Notes::new(self.pyxel_sound.clone())
     }
 
     #[getter]
-    pub fn tones(&self) -> PyResult<Tones> {
-        Ok(Tones::new(self.pyxel_sound.clone()))
+    pub fn tones(&self) -> Tones {
+        Tones::new(self.pyxel_sound.clone())
     }
 
     #[getter]
-    pub fn volumes(&self) -> PyResult<Volumes> {
-        Ok(Volumes::new(self.pyxel_sound.clone()))
+    pub fn volumes(&self) -> Volumes {
+        Volumes::new(self.pyxel_sound.clone())
     }
 
     #[getter]
-    pub fn effects(&self) -> PyResult<Effects> {
-        Ok(Effects::new(self.pyxel_sound.clone()))
+    pub fn effects(&self) -> Effects {
+        Effects::new(self.pyxel_sound.clone())
     }
 
     #[getter]
-    pub fn get_speed(&self) -> PyResult<Speed> {
-        Ok(self.pyxel_sound.lock().speed)
+    pub fn get_speed(&self) -> Speed {
+        self.pyxel_sound.lock().speed
     }
 
     #[setter]
-    pub fn set_speed(&self, speed: Speed) -> PyResult<()> {
+    pub fn set_speed(&self, speed: Speed) {
         self.pyxel_sound.lock().speed = speed;
-
-        Ok(())
     }
 
-    pub fn set(
-        &self,
-        notes: &str,
-        tones: &str,
-        volumes: &str,
-        effects: &str,
-        speed: Speed,
-    ) -> PyResult<()> {
+    pub fn set(&self, notes: &str, tones: &str, volumes: &str, effects: &str, speed: Speed) {
         self.pyxel_sound
             .lock()
             .set(notes, tones, volumes, effects, speed);
-
-        Ok(())
     }
 
-    pub fn set_notes(&self, notes: &str) -> PyResult<()> {
+    pub fn set_notes(&self, notes: &str) {
         self.pyxel_sound.lock().set_notes(notes);
-
-        Ok(())
     }
 
-    pub fn set_tones(&self, tones: &str) -> PyResult<()> {
+    pub fn set_tones(&self, tones: &str) {
         self.pyxel_sound.lock().set_tones(tones);
-
-        Ok(())
     }
 
-    pub fn set_volumes(&self, volumes: &str) -> PyResult<()> {
+    pub fn set_volumes(&self, volumes: &str) {
         self.pyxel_sound.lock().set_volumes(volumes);
-
-        Ok(())
     }
 
-    pub fn set_effects(&self, effects: &str) -> PyResult<()> {
+    pub fn set_effects(&self, effects: &str) {
         self.pyxel_sound.lock().set_effects(effects);
-
-        Ok(())
     }
 }
 

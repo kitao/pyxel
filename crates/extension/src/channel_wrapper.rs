@@ -18,19 +18,17 @@ pub fn wrap_pyxel_channel(pyxel_channel: PyxelSharedChannel) -> Channel {
 #[pymethods]
 impl Channel {
     #[getter]
-    pub fn get_volume(&self) -> PyResult<Volume> {
-        Ok(self.pyxel_channel.lock().volume)
+    pub fn get_volume(&self) -> Volume {
+        self.pyxel_channel.lock().volume
     }
 
     #[setter]
-    pub fn set_volume(&self, volume: Volume) -> PyResult<()> {
+    pub fn set_volume(&self, volume: Volume) {
         self.pyxel_channel.lock().volume = volume;
-
-        Ok(())
     }
 
-    pub fn play_pos(&self) -> PyResult<Option<(u32, u32)>> {
-        Ok(self.pyxel_channel.lock().play_pos())
+    pub fn play_pos(&self) -> Option<(u32, u32)> {
+        self.pyxel_channel.lock().play_pos()
     }
 
     #[pyo3(text_signature = "($self, snd, *, loop)")]
@@ -74,10 +72,8 @@ impl Channel {
         Ok(())
     }
 
-    pub fn stop(&mut self) -> PyResult<()> {
+    pub fn stop(&mut self) {
         self.pyxel_channel.lock().stop();
-
-        Ok(())
     }
 }
 

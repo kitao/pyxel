@@ -27,18 +27,18 @@ impl Image {
     }
 
     #[staticmethod]
-    pub fn from_image(filename: &str) -> PyResult<Image> {
-        Ok(wrap_pyxel_image(PyxelImage::from_image(filename)))
+    pub fn from_image(filename: &str) -> Image {
+        wrap_pyxel_image(PyxelImage::from_image(filename))
     }
 
     #[getter]
-    pub fn width(&self) -> PyResult<u32> {
-        Ok(self.pyxel_image.lock().width())
+    pub fn width(&self) -> u32 {
+        self.pyxel_image.lock().width()
     }
 
     #[getter]
-    pub fn height(&self) -> PyResult<u32> {
-        Ok(self.pyxel_image.lock().height())
+    pub fn height(&self) -> u32 {
+        self.pyxel_image.lock().height()
     }
 
     pub fn set(&self, x: &PyAny, y: &PyAny, data: Vec<&str>) -> PyResult<()> {
@@ -83,10 +83,8 @@ impl Image {
         Ok(())
     }
 
-    pub fn cls(&self, col: Color) -> PyResult<()> {
+    pub fn cls(&self, col: Color) {
         self.pyxel_image.lock().cls(col);
-
-        Ok(())
     }
 
     pub fn pget(&self, x: &PyAny, y: &PyAny) -> PyResult<Color> {
