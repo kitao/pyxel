@@ -1,6 +1,5 @@
 use pyo3::class::PySequenceProtocol;
 use pyo3::prelude::*;
-
 use pyxel::SharedSound as PyxelSharedSound;
 use pyxel::Sound as PyxelSound;
 use pyxel::{Effect, Note, Speed, Tone, Volume};

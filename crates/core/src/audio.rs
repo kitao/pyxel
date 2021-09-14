@@ -1,7 +1,8 @@
+use std::sync::Arc;
+
 use array_macro::array;
 use blip_buf::BlipBuf;
 use parking_lot::Mutex;
-use std::sync::Arc;
 
 use crate::channel::{Channel, SharedChannel};
 use crate::music::{Music, SharedMusic};

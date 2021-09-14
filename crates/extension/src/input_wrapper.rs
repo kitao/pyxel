@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-
 use pyxel::{Key, KeyValue};
 
 use crate::instance;

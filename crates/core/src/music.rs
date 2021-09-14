@@ -1,5 +1,6 @@
-use parking_lot::Mutex;
 use std::sync::Arc;
+
+use parking_lot::Mutex;
 
 use crate::resource::ResourceItem;
 use crate::settings::{CHANNEL_COUNT, RESOURCE_ARCHIVE_DIRNAME};
