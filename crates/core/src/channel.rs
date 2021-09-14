@@ -1,7 +1,8 @@
-use blip_buf::BlipBuf;
-use parking_lot::Mutex;
 use std::cmp::max;
 use std::sync::Arc;
+
+use blip_buf::BlipBuf;
+use parking_lot::Mutex;
 
 use crate::oscillator::Oscillator;
 use crate::settings::{EFFECT_NONE, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE};

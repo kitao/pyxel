@@ -1,7 +1,6 @@
 use pyo3::class::PySequenceProtocol;
 use pyo3::exceptions::{PyAttributeError, PyValueError};
 use pyo3::prelude::*;
-
 use pyxel::Rgb8;
 
 use crate::image_wrapper::wrap_pyxel_image;

@@ -1,10 +1,11 @@
+use std::collections::HashMap;
+use std::path::Path;
+use std::sync::Arc;
+
 use array_macro::array;
 use image::imageops::{self, FilterType};
 use image::{Rgb, RgbImage};
 use parking_lot::Mutex;
-use std::collections::HashMap;
-use std::path::Path;
-use std::sync::Arc;
 
 use crate::canvas::{Canvas, CopyArea};
 use crate::rectarea::RectArea;

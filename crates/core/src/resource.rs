@@ -1,12 +1,13 @@
+use std::env;
+use std::fs::File;
+use std::io::{Read, Write};
+use std::path::Path;
+
 use chrono::Local;
 use gifski::new as gifski_new;
 use gifski::Settings;
 use imgref::ImgVec;
 use rgb::RGBA8;
-use std::env;
-use std::fs::File;
-use std::io::{Read, Write};
-use std::path::Path;
 use zip::{ZipArchive, ZipWriter};
 
 use crate::canvas::Canvas;
