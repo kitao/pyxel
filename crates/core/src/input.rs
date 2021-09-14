@@ -49,6 +49,7 @@ impl Input {
             //
             // System Events
             //
+            Event::Quit => {}
             Event::DropFile { filename } => {
                 self.drop_files.push(filename);
             }
@@ -134,11 +135,6 @@ impl Input {
 
                 self.release_key(GAMEPAD1_BUTTON_A + button as Key + offset, frame_count);
             }
-
-            //
-            // Default
-            //
-            _ => {}
         }
     }
 
@@ -235,7 +231,7 @@ impl Pyxel {
     }
 
     pub fn btnv(&self, key: Key) -> KeyValue {
-        self.input.key_values.get(&key).cloned().unwrap_or(0)
+        self.input.key_values.get(&key).copied().unwrap_or(0)
     }
 
     pub fn mouse(&mut self, is_visible: bool) {

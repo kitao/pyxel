@@ -160,7 +160,9 @@ impl ResourceItem for Sound {
     fn serialize(&self) -> String {
         let mut output = String::new();
 
-        if !self.notes.is_empty() {
+        if self.notes.is_empty() {
+            output += "none";
+        } else {
             for note in &self.notes {
                 if *note < 0 {
                     output += "ff";
@@ -168,8 +170,6 @@ impl ResourceItem for Sound {
                     output += &format!("{:02x}", *note);
                 }
             }
-        } else {
-            output += "none";
         }
 
         output += "\n";

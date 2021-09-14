@@ -1,6 +1,24 @@
-#![warn(clippy::all)]
-#![allow(clippy::too_many_arguments)]
-#![warn(clippy::cargo)]
+#![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
+#![allow(
+    clippy::cast_lossless,
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss,
+    clippy::default_trait_access,
+    clippy::fn_params_excessive_bools,
+    clippy::missing_const_for_fn,
+    clippy::missing_panics_doc,
+    clippy::module_name_repetitions,
+    clippy::must_use_candidate,
+    clippy::pedantic,
+    clippy::range_plus_one,
+    clippy::suboptimal_flops,
+    clippy::unreadable_literal,
+    clippy::use_self,
+    clippy::too_many_arguments,
+    clippy::too_many_lines,
+    clippy::wildcard_imports
+)]
 
 #[macro_use]
 mod utils;
