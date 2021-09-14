@@ -63,9 +63,6 @@ setuptools.setup(
     entry_points={
         "console_scripts": [
             "pyxel=pyxel:cli",
-            "pyxeleditor=pyxel.editor:run",
-            "pyxelpackager=pyxel.packager:run",
-            "install_pyxel_examples=pyxel.examples:install",
         ]
     },
 )
