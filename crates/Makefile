@@ -72,7 +72,7 @@ test: build
 	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 $(PYXEL_EXAMPLES_DIR)/10_platformer.py
 
 format:
-	@cargo fmt -- --emit=files
+	@cargo +nightly fmt -- --emit=files
 
 lint:
 	@cargo clippy
