@@ -21,22 +21,26 @@ fn main() {
 
     let args = command_args();
 
-    if args.len() != 2 {
+    if args.len() < 2 || args[1] == "-h" || args[1] == "--help" {
         print_usage(&pyxel_ver);
         return;
     }
 
-    let filename = &args[1];
-    let file_ext: &str = &file_extension(filename);
+    if args[1] == "-e" || args[1] == "--examples" {
+        copy_examples();
+        return;
+    }
+
+    let file_ext: &str = &file_extension(&args[1]);
 
     if file_ext == "py" {
-        execute_python_file(filename);
+        run_script_file(&args[1]);
     } else if file_ext == app_ext {
-        execute_pyxapp_file(filename);
+        run_application_file(&args[1]);
     } else if file_ext == res_ext {
-        edit_pyxres_file(filename);
+        edit_resource_file(&args[1]);
     } else if file_ext.is_empty() {
-        make_pyxapp_file(filename);
+        make_application_file(&args[1]);
     } else {
         print_error("invalid file type");
     }
@@ -44,6 +48,16 @@ fn main() {
 
 fn print_usage(version: &str) {
     println!("pyxel {}, a retro game engine for Python", version);
+
+    /*
+    if arg == "-v" or arg == "--version":
+        print("Pyxel Editor {}".format(pyxel.VERSION))
+    else:
+        print("Usage: pyxeleditor [option] [pyxel_resource_file]")
+        print("Options:")
+        print(" -h, --help     This help text")
+        print(" -v, --version  Show version number and quit")
+    */
 }
 
 fn print_error(msg: &str) {
@@ -51,18 +65,21 @@ fn print_error(msg: &str) {
     exit(1);
 }
 
-fn execute_python_file(filename: &str) {
+fn run_script_file(filename: &str) {
     let interpreter = Interpreter::new();
 
     interpreter.add_import_paths(&PYXEL_IMPORT_PATHS);
     interpreter.run_file(filename);
 }
 
-fn execute_pyxapp_file(filename: &str) {
+fn run_application_file(filename: &str) {
     let interpreter = Interpreter::new();
     let dir = tempdir().unwrap();
 
     dir.close().unwrap();
+
+    let _ = filename;
+    let _ = interpreter;
 
     /*
     use std::io::{self, Write};
@@ -76,14 +93,21 @@ fn execute_pyxapp_file(filename: &str) {
     */
 }
 
-fn edit_pyxres_file(filename: &str) {
+fn edit_resource_file(filename: &str) {
     let interpreter = Interpreter::new();
+    let code = format!("pyxel.editor.run({})", filename);
+
+    interpreter.add_import_paths(&PYXEL_IMPORT_PATHS);
+    interpreter.import("pyxel.editor");
+    interpreter.run_code(&code);
+}
+
+fn make_application_file(dirname: &str) {
+    let _ = dirname;
 
     // TODO
 }
 
-fn make_pyxapp_file(dirname: &str) {
-    let _ = dirname;
-
-    // TODO
+fn copy_examples() {
+    //
 }
