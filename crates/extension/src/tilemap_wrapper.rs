@@ -40,18 +40,18 @@ impl Tilemap {
     }
 
     #[getter]
-    pub fn width(&self) -> PyResult<u32> {
-        Ok(self.pyxel_tilemap.lock().width())
+    pub fn width(&self) -> u32 {
+        self.pyxel_tilemap.lock().width()
     }
 
     #[getter]
-    pub fn height(&self) -> PyResult<u32> {
-        Ok(self.pyxel_tilemap.lock().height())
+    pub fn height(&self) -> u32 {
+        self.pyxel_tilemap.lock().height()
     }
 
     #[getter]
-    pub fn image(&self) -> PyResult<Image> {
-        Ok(wrap_pyxel_image(self.pyxel_tilemap.lock().image.clone()))
+    pub fn image(&self) -> Image {
+        wrap_pyxel_image(self.pyxel_tilemap.lock().image.clone())
     }
 
     #[setter]
@@ -95,10 +95,8 @@ impl Tilemap {
         Ok(())
     }
 
-    pub fn cls(&self, tile: Tile) -> PyResult<()> {
+    pub fn cls(&self, tile: Tile) {
         self.pyxel_tilemap.lock().cls(tile);
-
-        Ok(())
     }
 
     pub fn pget(&self, x: &PyAny, y: &PyAny) -> PyResult<Tile> {

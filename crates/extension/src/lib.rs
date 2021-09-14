@@ -1,10 +1,19 @@
-#![warn(clippy::all)]
+#![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 #![allow(
     clippy::many_single_char_names,
+    clippy::missing_const_for_fn,
+    clippy::missing_panics_doc,
+    clippy::must_use_candidate,
+    clippy::needless_pass_by_value,
+    clippy::new_without_default,
+    clippy::redundant_pub_crate,
     clippy::too_many_arguments,
+    clippy::too_many_lines,
+    clippy::unused_self,
+    clippy::use_self,
+    clippy::used_underscore_binding,
     clippy::zero_ptr
 )]
-#![warn(clippy::cargo)]
 
 #[macro_use]
 mod utils;
@@ -44,10 +53,10 @@ static mut INSTANCE: *mut Pyxel = 0 as *mut Pyxel;
 
 pub fn instance() -> &'static mut Pyxel {
     unsafe {
-        if INSTANCE != 0 as *mut Pyxel {
-            &mut *INSTANCE
-        } else {
+        if INSTANCE == 0 as *mut Pyxel {
             panic!("Pyxel is not initialized");
+        } else {
+            &mut *INSTANCE
         }
     }
 }
