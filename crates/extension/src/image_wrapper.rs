@@ -27,6 +27,11 @@ impl Image {
         )))
     }
 
+    #[staticmethod]
+    pub fn from_image(filename: &str) -> PyResult<Image> {
+        Ok(wrap_pyxel_image(PyxelImage::from_image(filename)))
+    }
+
     #[getter]
     pub fn width(&self) -> PyResult<u32> {
         Ok(self.pyxel_image.lock().width())

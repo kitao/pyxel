@@ -36,6 +36,13 @@ impl Image {
         }))
     }
 
+    pub fn from_image(filename: &str) -> SharedImage {
+        let image_file = image::open(&Path::new(&filename)).unwrap().to_rgb8();
+        let (width, height) = image_file.dimensions();
+
+        Image::new(width, height)
+    }
+
     pub fn _palette(&self) -> &[Color; COLOR_COUNT as usize] {
         &self.palette
     }
