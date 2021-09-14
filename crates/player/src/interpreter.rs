@@ -19,10 +19,10 @@ impl<'a> Interpreter {
         self.import("os");
         self.import("sys");
 
-        for path in paths {
+        for path in paths.iter().rev() {
             let code = format!(
                 r#"
-sys.path.append(os.path.join(os.path.dirname("{}"), "{}"))
+sys.path.insert(1, os.path.join(os.path.dirname("{}"), "{}"))
                 "#,
                 command_args()[0],
                 path
