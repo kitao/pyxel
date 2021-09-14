@@ -32,7 +32,7 @@ class App(Widget):
             resource_file += pyxel.RESOURCE_FILE_EXTENSION
 
         pyxel.init(
-            APP_WIDTH, APP_HEIGHT, caption="Pyxel Editor - {}".format(resource_file)
+            APP_WIDTH, APP_HEIGHT, title="Pyxel Editor - {}".format(resource_file)
         )
         pyxel.mouse(True)
 
