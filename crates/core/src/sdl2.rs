@@ -1,3 +1,6 @@
+use std::cmp::min;
+use std::sync::Arc;
+
 use parking_lot::Mutex;
 use sdl2::audio::AudioCallback as SdlAudioCallback;
 use sdl2::audio::AudioDevice as SdlAudioDevice;
@@ -17,8 +20,6 @@ use sdl2::AudioSubsystem as SdlAudio;
 use sdl2::EventPump as SdlEventPump;
 use sdl2::Sdl as SdlContext;
 use sdl2::TimerSubsystem as SdlTimer;
-use std::cmp::min;
-use std::sync::Arc;
 
 use crate::canvas::Canvas;
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};

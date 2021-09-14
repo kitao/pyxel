@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-
 use pyxel::Image as PyxelImage;
 use pyxel::SharedImage as PyxelSharedImage;
 use pyxel::{Canvas, Color};
