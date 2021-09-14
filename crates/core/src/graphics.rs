@@ -45,7 +45,7 @@ impl Graphics {
 
                 for j in 0..FONT_HEIGHT {
                     for k in 0..FONT_WIDTH {
-                        let color = if (data & 0x800000) != 0 { 1 } else { 0 };
+                        let color = if (data & 0x800000) == 0 { 0 } else { 1 };
 
                         image._set_value(
                             (FONT_WIDTH * col + k) as i32,

@@ -40,7 +40,7 @@ impl ResourceItem for Music {
     }
 
     fn is_modified(&self) -> bool {
-        for sequence in self.sequences.iter() {
+        for sequence in &self.sequences {
             if !sequence.is_empty() {
                 return true;
             }
@@ -56,13 +56,13 @@ impl ResourceItem for Music {
     fn serialize(&self) -> String {
         let mut output = String::new();
 
-        for sequence in self.sequences.iter() {
-            if !sequence.is_empty() {
+        for sequence in &self.sequences {
+            if sequence.is_empty() {
+                output += "none";
+            } else {
                 for sound_no in sequence {
                     output += &format!("{:02x}", sound_no);
                 }
-            } else {
-                output += "none";
             }
 
             output += "\n";

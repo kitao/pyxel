@@ -52,7 +52,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         let value = self._palette_value(value);
 
         if self._clip_rect().contains(x, y) {
-            self._set_value(x, y, value)
+            self._set_value(x, y, value);
         }
     }
 
@@ -244,16 +244,17 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         let x_inter = (x1 as f64 + alpha13 * (y2 - y1) as f64 + 0.5) as i32;
 
         for i in y1..=y2 {
-            let x_slider;
-            let x_end;
-
-            if x_inter < x2 {
-                x_slider = (x_inter as f64 + alpha13 * (i - y2) as f64 + 0.5) as i32;
-                x_end = (x2 as f64 + alpha12 * (i - y2) as f64 + 0.5) as i32;
+            let (x_slider, x_end) = if x_inter < x2 {
+                (
+                    (x_inter as f64 + alpha13 * (i - y2) as f64 + 0.5) as i32,
+                    (x2 as f64 + alpha12 * (i - y2) as f64 + 0.5) as i32,
+                )
             } else {
-                x_slider = (x2 as f64 + alpha12 * (i - y2) as f64 + 0.5) as i32;
-                x_end = (x_inter as f64 + alpha13 * (i - y2) as f64 + 0.5) as i32;
-            }
+                (
+                    (x2 as f64 + alpha12 * (i - y2) as f64 + 0.5) as i32,
+                    (x_inter as f64 + alpha13 * (i - y2) as f64 + 0.5) as i32,
+                )
+            };
 
             for j in x_slider..=x_end {
                 self.pset(j, i, value);
@@ -261,16 +262,17 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         }
 
         for i in (y2 + 1)..=y3 {
-            let x_slider;
-            let x_end;
-
-            if x_inter < x2 {
-                x_slider = (x_inter as f64 + alpha13 * (i - y2) as f64 + 0.5) as i32;
-                x_end = (x2 as f64 + alpha23 * (i - y2) as f64 + 0.5) as i32;
+            let (x_slider, x_end) = if x_inter < x2 {
+                (
+                    (x_inter as f64 + alpha13 * (i - y2) as f64 + 0.5) as i32,
+                    (x2 as f64 + alpha23 * (i - y2) as f64 + 0.5) as i32,
+                )
             } else {
-                x_slider = (x2 as f64 + alpha23 * (i - y2) as f64 + 0.5) as i32;
-                x_end = (x_inter as f64 + alpha13 * (i - y2) as f64 + 0.5) as i32;
-            }
+                (
+                    (x2 as f64 + alpha23 * (i - y2) as f64 + 0.5) as i32,
+                    (x_inter as f64 + alpha13 * (i - y2) as f64 + 0.5) as i32,
+                )
+            };
 
             for j in x_slider..=x_end {
                 self.pset(j, i, value);
