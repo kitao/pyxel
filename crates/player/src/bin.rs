@@ -1,17 +1,19 @@
-use cpython::Python;
-use std::env;
-use std::ffi::OsStr;
-use std::path::Path;
+mod interpreter;
+mod utils;
+
+const PYXEL_VERSION: &str = "1.5.0";
+
 use std::process::exit;
 use tempfile::tempdir;
 
-fn main() {
-    let (pyxel_ver, app_file_ext, res_file_ext) = pyxel_settings();
+use crate::interpreter::Interpreter;
+use crate::utils::{command_args, file_extension};
 
-    let args: Vec<String> = env::args().collect();
+fn main() {
+    let args = command_args();
 
     if args.len() != 2 {
-        print_usage(&pyxel_ver);
+        print_usage();
         return;
     }
 
@@ -20,9 +22,9 @@ fn main() {
 
     if file_ext == "py" {
         execute_python_file(filename);
-    } else if file_ext == app_file_ext {
+    } else if file_ext == "pyxapp" {
         execute_pyxapp_file(filename);
-    } else if file_ext == res_file_ext {
+    } else if file_ext == "pyxres" {
         edit_pyxres_file(filename);
     } else if file_ext.is_empty() {
         make_pyxapp_file(filename);
@@ -31,56 +33,8 @@ fn main() {
     }
 }
 
-fn init_import_path(py: Python) {
-    let args: Vec<String> = env::args().collect();
-    let code = format!(
-        r#"
-def init_import_path():
-    import os
-    import sys
-
-    dirname = os.path.dirname("{}")
-
-    sys.path.insert(1, os.path.join(dirname, "../../.."))
-    sys.path.insert(1, os.path.join(dirname, "../.."))
-    sys.path.insert(1, os.path.join(dirname, ".."))
-    sys.path.insert(1, os.path.join(dirname, "."))
-
-init_import_path()
-del init_import_path
-        "#,
-        args[0]
-    );
-
-    py.run(&code, None, None).unwrap();
-}
-
-fn pyxel_settings() -> (String, String, String) {
-    let gil = Python::acquire_gil();
-    let py = gil.python();
-
-    init_import_path(py);
-    py.run("from pyxel import *", None, None).unwrap();
-    py.eval(
-        "(PYXEL_VERSION, APPLICATION_FILE_EXTENSION, RESOURCE_FILE_EXTENSION)",
-        None,
-        None,
-    )
-    .unwrap()
-    .extract(py)
-    .unwrap()
-}
-
-fn file_extension(filename: &str) -> String {
-    Path::new(filename)
-        .extension()
-        .and_then(OsStr::to_str)
-        .unwrap()
-        .to_lowercase()
-}
-
-fn print_usage(version: &str) {
-    println!("pyxel {}, a retro game engine for Python", version);
+fn print_usage() {
+    println!("pyxel {}, a retro game engine for Python", PYXEL_VERSION);
 }
 
 fn print_error(msg: &str) {
@@ -89,28 +43,13 @@ fn print_error(msg: &str) {
 }
 
 fn execute_python_file(filename: &str) {
-    let gil = Python::acquire_gil();
-    let py = gil.python();
+    let interpreter = Interpreter::new();
 
-    let code = format!(
-        r#"
-import importlib.util
-spec = importlib.util.spec_from_file_location("__main__", "{}")
-file = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(file)
-        "#,
-        filename
-    );
-
-    init_import_path(py);
-    py.run(&code, None, None).unwrap();
+    interpreter.run_file(filename);
 }
 
 fn execute_pyxapp_file(filename: &str) {
-    let gil = Python::acquire_gil();
-    let python = gil.python();
-
-    init_import_path(python);
+    let interpreter = Interpreter::new();
 
     let dir = tempdir().unwrap();
 
@@ -129,10 +68,7 @@ fn execute_pyxapp_file(filename: &str) {
 }
 
 fn edit_pyxres_file(filename: &str) {
-    let gil = Python::acquire_gil();
-    let py = gil.python();
-
-    init_import_path(py);
+    let interpreter = Interpreter::new();
 
     // TODO
 }
