@@ -22,12 +22,10 @@ impl Tilemap {
     pub fn new(width: u32, height: u32, img: &PyAny) -> PyResult<Tilemap> {
         let img = type_switch! {
             img,
-            Image,
-            {
+            Image, {
                 img.pyxel_image
             },
-            u32,
-            {
+            u32, {
                 instance().image(img)
             }
         };
@@ -144,31 +142,11 @@ impl Tilemap {
     ) -> PyResult<()> {
         type_switch! {
             tm,
-            u32,
-            {
-                self.pyxel_tilemap.lock().blt(
-                    x,
-                    y,
-                    instance().tilemap(tm),
-                    u,
-                    v,
-                    w,
-                    h,
-                    tilekey,
-                );
+            u32, {
+                self.pyxel_tilemap.lock().blt(x, y, instance().tilemap(tm), u, v, w, h, tilekey);
             },
-            Tilemap,
-            {
-                self.pyxel_tilemap.lock().blt(
-                    x,
-                    y,
-                    tm.pyxel_tilemap,
-                    u,
-                    v,
-                    w,
-                    h,
-                    tilekey,
-                );
+            Tilemap, {
+                self.pyxel_tilemap.lock().blt(x, y, tm.pyxel_tilemap, u, v, w, h, tilekey);
             }
         }
 
