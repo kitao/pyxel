@@ -72,7 +72,7 @@ impl Pyxel {
         self.graphics.tilemaps[image_no as usize].clone()
     }
 
-    pub fn clip(&mut self, x: i32, y: i32, width: u32, height: u32) {
+    pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.screen.lock().clip(x, y, width, height);
     }
 
@@ -92,51 +92,51 @@ impl Pyxel {
         self.screen.lock().cls(color);
     }
 
-    pub fn pget(&mut self, x: i32, y: i32) -> Color {
+    pub fn pget(&mut self, x: f64, y: f64) -> Color {
         self.screen.lock().pget(x, y)
     }
 
-    pub fn pset(&mut self, x: i32, y: i32, color: Color) {
+    pub fn pset(&mut self, x: f64, y: f64, color: Color) {
         self.screen.lock().pset(x, y, color);
     }
 
-    pub fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, color: Color) {
+    pub fn line(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
         self.screen.lock().line(x1, y1, x2, y2, color);
     }
 
-    pub fn rect(&mut self, x: i32, y: i32, width: u32, height: u32, color: Color) {
+    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
         self.screen.lock().rect(x, y, width, height, color);
     }
 
-    pub fn rectb(&mut self, x: i32, y: i32, width: u32, height: u32, color: Color) {
+    pub fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
         self.screen.lock().rectb(x, y, width, height, color);
     }
 
-    pub fn circ(&mut self, x: i32, y: i32, radius: u32, color: Color) {
+    pub fn circ(&mut self, x: f64, y: f64, radius: f64, color: Color) {
         self.screen.lock().circ(x, y, radius, color);
     }
 
-    pub fn circb(&mut self, x: i32, y: i32, radius: u32, color: Color) {
+    pub fn circb(&mut self, x: f64, y: f64, radius: f64, color: Color) {
         self.screen.lock().circb(x, y, radius, color);
     }
 
-    pub fn tri(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, color: Color) {
+    pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
         self.screen.lock().tri(x1, y1, x2, y2, x3, y3, color);
     }
 
-    pub fn trib(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, color: Color) {
+    pub fn trib(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
         self.screen.lock().trib(x1, y1, x2, y2, x3, y3, color);
     }
 
     pub fn blt(
         &mut self,
-        x: i32,
-        y: i32,
+        x: f64,
+        y: f64,
         image_no: u32,
-        image_x: i32,
-        image_y: i32,
-        width: i32,
-        height: i32,
+        image_x: f64,
+        image_y: f64,
+        width: f64,
+        height: f64,
         color_key: Option<Color>,
     ) {
         self.screen.lock().blt(
@@ -153,13 +153,13 @@ impl Pyxel {
 
     pub fn bltm(
         &mut self,
-        x: i32,
-        y: i32,
+        x: f64,
+        y: f64,
         tilemap_no: u32,
-        tilemap_x: i32,
-        tilemap_y: i32,
-        width: i32,
-        height: i32,
+        tilemap_x: f64,
+        tilemap_y: f64,
+        width: f64,
+        height: f64,
         color_key: Option<Color>,
     ) {
         self.screen.lock().bltm(
@@ -174,7 +174,7 @@ impl Pyxel {
         );
     }
 
-    pub fn text(&mut self, x: i32, y: i32, string: &str, color: Color) {
+    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color) {
         self.screen
             .lock()
             .text(x, y, string, color, self.font.clone());

@@ -76,7 +76,16 @@ impl Resource {
         self.screens[self.next_screen_index as usize]
             .image
             .lock()
-            .blt(0, 0, screen, 0, 0, width as i32, height as i32, None);
+            .blt(
+                0.0,
+                0.0,
+                screen,
+                0.0,
+                0.0,
+                width as f64,
+                height as f64,
+                None,
+            );
 
         self.screens[self.next_screen_index as usize].frame_count = frame_count;
 
