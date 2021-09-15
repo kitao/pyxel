@@ -17,6 +17,7 @@ pub struct Channel {
     sound_index: u32,
     note_index: u32,
     tick_count: u32,
+
     pub volume: Volume,
 }
 
@@ -66,7 +67,6 @@ impl Channel {
         self.is_looping = false;
         self.sound_index = 0;
         self.note_index = 0;
-
         self.oscillator.stop();
     }
 
