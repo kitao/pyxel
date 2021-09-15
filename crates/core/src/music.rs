@@ -64,7 +64,6 @@ impl ResourceItem for Music {
                     output += &format!("{:02x}", sound_no);
                 }
             }
-
             output += "\n";
         }
 

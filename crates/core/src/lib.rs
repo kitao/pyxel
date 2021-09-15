@@ -120,7 +120,6 @@ impl Pyxel {
             cursor,
             font,
         };
-
         pyxel.icon(&ICON_DATA, ICON_SCALE);
 
         pyxel
