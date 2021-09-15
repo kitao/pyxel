@@ -9,6 +9,14 @@ macro_rules! string_loop {
     };
 }
 
+pub fn as_i32(x: f64) -> i32 {
+    x.round() as i32
+}
+
+pub fn as_u32(x: f64) -> u32 {
+    x.round() as u32
+}
+
 pub fn remove_whitespace(string: &str) -> String {
     string.replace(&[' ', '\n', '\r', '\t'][..], "")
 }
@@ -62,6 +70,57 @@ pub fn parse_version_string(string: &str) -> Result<u32, &str> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn string_loop_() {
+        let test_string = "TEST_STRING";
+
+        string_loop!(i, value, test_string, 1, {
+            match i {
+                3 => {
+                    assert_eq!(value, "T");
+                }
+                7 => {
+                    assert_eq!(value, "R");
+                }
+                _ => {}
+            }
+        });
+
+        string_loop!(i, value, test_string, 3, {
+            match i {
+                0 => {
+                    assert_eq!(value, "TES");
+                }
+                2 => {
+                    assert_eq!(value, "TRI");
+                }
+                _ => {}
+            }
+        });
+    }
+
+    #[test]
+    fn as_i32_() {
+        assert_eq!(as_i32(0.1), 0);
+        assert_eq!(as_i32(0.49), 0);
+        assert_eq!(as_i32(0.5), 1);
+        assert_eq!(as_i32(1.1), 1);
+        assert_eq!(as_i32(-0.1), 0);
+        assert_eq!(as_i32(-0.49), 0);
+        assert_eq!(as_i32(-0.50), -1);
+        assert_eq!(as_i32(-1.1), -1);
+    }
+
+    #[test]
+    fn as_u32_() {
+        assert_eq!(as_u32(0.1), 0);
+        assert_eq!(as_u32(0.49), 0);
+        assert_eq!(as_u32(0.5), 1);
+        assert_eq!(as_u32(1.1), 1);
+        assert_eq!(as_u32(-0.1), 0);
+        assert_eq!(as_u32(-1.0), 0);
+    }
 
     #[test]
     fn remove_whitespace_() {
