@@ -57,7 +57,16 @@ impl Tilemap {
             }
         }
 
-        self.blt(x, y, tilemap, 0, 0, width as i32, height as i32, None);
+        self.blt(
+            x as f64,
+            y as f64,
+            tilemap,
+            0.0,
+            0.0,
+            width as f64,
+            height as f64,
+            None,
+        );
     }
 }
 
@@ -124,7 +133,6 @@ impl ResourceItem for Tilemap {
                 let tile = self._value(j as i32, i as i32);
                 output += &format!("{:02x}{:02x}", tile.0, tile.1);
             }
-
             output += "\n";
         }
 

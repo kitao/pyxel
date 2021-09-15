@@ -280,16 +280,16 @@ impl Pyxel {
         screen.pal(2, 9);
 
         let fps = format!("{:.*}", 2, self.system.fps_profiler.average_fps());
-        screen.text(1, 0, &fps, 1, self.font.clone());
-        screen.text(0, 0, &fps, 2, self.font.clone());
+        screen.text(1.0, 0.0, &fps, 1, self.font.clone());
+        screen.text(0.0, 0.0, &fps, 2, self.font.clone());
 
         let update_time = format!("{:.*}", 2, self.system.update_profiler.average_time());
-        screen.text(1, 6, &update_time, 1, self.font.clone());
-        screen.text(0, 6, &update_time, 2, self.font.clone());
+        screen.text(1.0, 6.0, &update_time, 1, self.font.clone());
+        screen.text(0.0, 6.0, &update_time, 2, self.font.clone());
 
         let draw_time = format!("{:.*}", 2, self.system.draw_profiler.average_time());
-        screen.text(1, 12, &draw_time, 1, self.font.clone());
-        screen.text(0, 12, &draw_time, 2, self.font.clone());
+        screen.text(1.0, 12.0, &draw_time, 1, self.font.clone());
+        screen.text(0.0, 12.0, &draw_time, 2, self.font.clone());
 
         screen._set_clip_rect(clip_rect);
         screen.pal(1, palette1);
@@ -321,7 +321,16 @@ impl Pyxel {
         screen.clip0();
         screen.pal0();
 
-        screen.blt(x, y, self.cursor.clone(), 0, 0, width, height, Some(0));
+        screen.blt(
+            x as f64,
+            y as f64,
+            self.cursor.clone(),
+            0.0,
+            0.0,
+            width as f64,
+            height as f64,
+            Some(0),
+        );
 
         screen._set_clip_rect(clip_rect);
         screen._set_palette(&palette);
