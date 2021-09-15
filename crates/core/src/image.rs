@@ -16,6 +16,7 @@ use crate::settings::{
 };
 use crate::tilemap::SharedTilemap;
 use crate::types::{Color, Rgb8};
+use crate::utils::as_i32;
 use crate::utils::{parse_hex_string, simplify_string};
 
 pub struct Image {
@@ -75,13 +76,21 @@ impl Image {
 
                 for j in 0..width {
                     let value = parse_hex_string(&src_data[j as usize..j as usize + 1]).unwrap();
-
                     image._set_value(j as i32, i as i32, value as Color);
                 }
             }
         }
 
-        self.blt(x, y, image, 0, 0, width as i32, height as i32, None);
+        self.blt(
+            x as f64,
+            y as f64,
+            image,
+            0.0,
+            0.0,
+            width as f64,
+            height as f64,
+            None,
+        );
     }
 
     pub fn load(&mut self, x: i32, y: i32, filename: &str, colors: &[Rgb8]) {
@@ -126,7 +135,16 @@ impl Image {
             }
         }
 
-        self.blt(x, y, image, 0, 0, width as i32, height as i32, None);
+        self.blt(
+            x as f64,
+            y as f64,
+            image,
+            0.0,
+            0.0,
+            width as f64,
+            height as f64,
+            None,
+        );
     }
 
     fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
@@ -168,13 +186,13 @@ impl Image {
 
     pub fn bltm(
         &mut self,
-        x: i32,
-        y: i32,
+        x: f64,
+        y: f64,
         tilemap: SharedTilemap,
-        tilemap_x: i32,
-        tilemap_y: i32,
-        width: i32,
-        height: i32,
+        tilemap_x: f64,
+        tilemap_y: f64,
+        width: f64,
+        height: f64,
         transparent: Option<Color>,
     ) {
         let tilemap = if let Some(tilemap) = tilemap.try_lock() {
@@ -182,6 +200,13 @@ impl Image {
         } else {
             panic!("unable to lock tilemap in bltm");
         };
+
+        let x = as_i32(x);
+        let y = as_i32(y);
+        let tilemap_x = as_i32(tilemap_x);
+        let tilemap_y = as_i32(tilemap_y);
+        let width = as_i32(width.round());
+        let height = as_i32(height.round());
 
         let tile_size = if width < 0 {
             -(TILE_SIZE as i32)
@@ -200,7 +225,18 @@ impl Image {
             (bottom - top + 1) as u32,
         );
 
-        let copy_area = CopyArea::new(
+        let CopyArea {
+            dst_x: _,
+            dst_y: _,
+            src_x,
+            src_y,
+            sign_x,
+            sign_y,
+            offset_x,
+            offset_y,
+            width,
+            height,
+        } = CopyArea::new(
             x / TILE_SIZE as i32,
             y / TILE_SIZE as i32,
             dst_rect,
@@ -210,14 +246,6 @@ impl Image {
             width,
             height,
         );
-        let src_x = copy_area.src_x;
-        let src_y = copy_area.src_y;
-        let sign_x = copy_area.sign_x;
-        let sign_y = copy_area.sign_y;
-        let offset_x = copy_area.offset_x;
-        let offset_y = copy_area.offset_y;
-        let width = copy_area.width;
-        let height = copy_area.height;
 
         if width == 0 || height == 0 {
             return;
@@ -229,23 +257,25 @@ impl Image {
                     tilemap._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
 
                 self.blt(
-                    x + TILE_SIZE as i32 * j,
-                    y + TILE_SIZE as i32 * i,
+                    (x + TILE_SIZE as i32 * j) as f64,
+                    (y + TILE_SIZE as i32 * i) as f64,
                     tilemap.image.clone(),
-                    tile.0 as i32 * TILE_SIZE as i32,
-                    tile.1 as i32 * TILE_SIZE as i32,
-                    tile_size,
-                    tile_size,
+                    (tile.0 as i32 * TILE_SIZE as i32) as f64,
+                    (tile.1 as i32 * TILE_SIZE as i32) as f64,
+                    tile_size as f64,
+                    tile_size as f64,
                     transparent,
                 );
             }
         }
     }
 
-    pub fn text(&mut self, x: i32, y: i32, string: &str, color: Color, font: SharedImage) {
+    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color, font: SharedImage) {
+        let x = as_i32(x);
+        let y = as_i32(y);
         let color = self._palette_value(color);
-        let palette1 = self._palette()[1];
 
+        let palette1 = self._palette()[1];
         self.pal(1, color);
 
         let start_x = x;
@@ -268,13 +298,13 @@ impl Image {
             let src_y = (code / FONT_ROW_COUNT as i32) * FONT_HEIGHT as i32;
 
             self.blt(
-                x,
-                y,
+                x as f64,
+                y as f64,
                 font.clone(),
-                src_x,
-                src_y,
-                FONT_WIDTH as i32,
-                FONT_HEIGHT as i32,
+                src_x as f64,
+                src_y as f64,
+                FONT_WIDTH as f64,
+                FONT_HEIGHT as f64,
                 Some(0),
             );
 
@@ -347,7 +377,6 @@ impl ResourceItem for Image {
             for j in 0..self.width() {
                 output += &format!("{:1x}", self._value(j as i32, i as i32));
             }
-
             output += "\n";
         }
 
