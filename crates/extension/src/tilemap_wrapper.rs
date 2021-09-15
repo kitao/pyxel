@@ -19,7 +19,7 @@ pub fn wrap_pyxel_tilemap(pyxel_tilemap: PyxelSharedTilemap) -> Tilemap {
 #[pymethods]
 impl Tilemap {
     #[new]
-    pub fn new(width: &PyAny, height: &PyAny, img: &PyAny) -> PyResult<Tilemap> {
+    pub fn new(width: u32, height: u32, img: &PyAny) -> PyResult<Tilemap> {
         let img = type_switch! {
             img,
             Image,
@@ -32,11 +32,7 @@ impl Tilemap {
             }
         };
 
-        Ok(wrap_pyxel_tilemap(PyxelTilemap::new(
-            as_u32!(width),
-            as_u32!(height),
-            img,
-        )))
+        Ok(wrap_pyxel_tilemap(PyxelTilemap::new(width, height, img)))
     }
 
     #[getter]
@@ -69,23 +65,19 @@ impl Tilemap {
         Ok(())
     }
 
-    pub fn set(&mut self, x: &PyAny, y: &PyAny, data: Vec<&str>) -> PyResult<()> {
-        self.pyxel_tilemap.lock().set(as_i32!(x), as_i32!(y), &data);
-
-        Ok(())
+    pub fn set(&mut self, x: i32, y: i32, data: Vec<&str>) {
+        self.pyxel_tilemap.lock().set(x, y, &data);
     }
 
     pub fn clip(
         &self,
-        x: Option<&PyAny>,
-        y: Option<&PyAny>,
-        w: Option<&PyAny>,
-        h: Option<&PyAny>,
+        x: Option<f64>,
+        y: Option<f64>,
+        w: Option<f64>,
+        h: Option<f64>,
     ) -> PyResult<()> {
         if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
-            self.pyxel_tilemap
-                .lock()
-                .clip(as_i32!(x), as_i32!(y), as_u32!(w), as_u32!(h));
+            self.pyxel_tilemap.lock().clip(x, y, w, h);
         } else if let (None, None, None, None) = (x, y, w, h) {
             self.pyxel_tilemap.lock().clip0();
         } else {
@@ -99,117 +91,55 @@ impl Tilemap {
         self.pyxel_tilemap.lock().cls(tile);
     }
 
-    pub fn pget(&self, x: &PyAny, y: &PyAny) -> PyResult<Tile> {
-        Ok(self.pyxel_tilemap.lock().pget(as_i32!(x), as_i32!(y)))
+    pub fn pget(&self, x: f64, y: f64) -> Tile {
+        self.pyxel_tilemap.lock().pget(x, y)
     }
 
-    pub fn pset(&self, x: &PyAny, y: &PyAny, tile: Tile) -> PyResult<()> {
-        self.pyxel_tilemap.lock().pset(as_i32!(x), as_i32!(y), tile);
-
-        Ok(())
+    pub fn pset(&self, x: f64, y: f64, tile: Tile) {
+        self.pyxel_tilemap.lock().pset(x, y, tile);
     }
 
-    pub fn line(&self, x1: &PyAny, y1: &PyAny, x2: &PyAny, y2: &PyAny, tile: Tile) -> PyResult<()> {
-        self.pyxel_tilemap
-            .lock()
-            .line(as_i32!(x1), as_i32!(y1), as_i32!(x2), as_i32!(y2), tile);
-
-        Ok(())
+    pub fn line(&self, x1: f64, y1: f64, x2: f64, y2: f64, tile: Tile) {
+        self.pyxel_tilemap.lock().line(x1, y1, x2, y2, tile);
     }
 
-    pub fn rect(&self, x: &PyAny, y: &PyAny, w: &PyAny, h: &PyAny, tile: Tile) -> PyResult<()> {
-        self.pyxel_tilemap
-            .lock()
-            .rect(as_i32!(x), as_i32!(y), as_u32!(w), as_u32!(h), tile);
-
-        Ok(())
+    pub fn rect(&self, x: f64, y: f64, w: f64, h: f64, tile: Tile) {
+        self.pyxel_tilemap.lock().rect(x, y, w, h, tile);
     }
 
-    pub fn rectb(&self, x: &PyAny, y: &PyAny, w: &PyAny, h: &PyAny, tile: Tile) -> PyResult<()> {
-        self.pyxel_tilemap
-            .lock()
-            .rectb(as_i32!(x), as_i32!(y), as_u32!(w), as_u32!(h), tile);
-
-        Ok(())
+    pub fn rectb(&self, x: f64, y: f64, w: f64, h: f64, tile: Tile) {
+        self.pyxel_tilemap.lock().rectb(x, y, w, h, tile);
     }
 
-    pub fn circ(&self, x: &PyAny, y: &PyAny, r: &PyAny, tile: Tile) -> PyResult<()> {
-        self.pyxel_tilemap
-            .lock()
-            .circ(as_i32!(x), as_i32!(y), as_u32!(r), tile);
-
-        Ok(())
+    pub fn circ(&self, x: f64, y: f64, r: f64, tile: Tile) {
+        self.pyxel_tilemap.lock().circ(x, y, r, tile);
     }
 
-    pub fn circb(&self, x: &PyAny, y: &PyAny, r: &PyAny, tile: Tile) -> PyResult<()> {
-        self.pyxel_tilemap
-            .lock()
-            .circb(as_i32!(x), as_i32!(y), as_u32!(r), tile);
-
-        Ok(())
+    pub fn circb(&self, x: f64, y: f64, r: f64, tile: Tile) {
+        self.pyxel_tilemap.lock().circb(x, y, r, tile);
     }
 
-    pub fn tri(
-        &self,
-        x1: &PyAny,
-        y1: &PyAny,
-        x2: &PyAny,
-        y2: &PyAny,
-        x3: &PyAny,
-        y3: &PyAny,
-        tile: Tile,
-    ) -> PyResult<()> {
-        self.pyxel_tilemap.lock().tri(
-            as_i32!(x1),
-            as_i32!(y1),
-            as_i32!(x2),
-            as_i32!(y2),
-            as_i32!(x3),
-            as_i32!(y3),
-            tile,
-        );
-
-        Ok(())
+    pub fn tri(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: Tile) {
+        self.pyxel_tilemap.lock().tri(x1, y1, x2, y2, x3, y3, tile);
     }
 
-    pub fn trib(
-        &self,
-        x1: &PyAny,
-        y1: &PyAny,
-        x2: &PyAny,
-        y2: &PyAny,
-        x3: &PyAny,
-        y3: &PyAny,
-        tile: Tile,
-    ) -> PyResult<()> {
-        self.pyxel_tilemap.lock().trib(
-            as_i32!(x1),
-            as_i32!(y1),
-            as_i32!(x2),
-            as_i32!(y2),
-            as_i32!(x3),
-            as_i32!(y3),
-            tile,
-        );
-
-        Ok(())
+    pub fn trib(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: Tile) {
+        self.pyxel_tilemap.lock().trib(x1, y1, x2, y2, x3, y3, tile);
     }
 
-    pub fn fill(&self, x: &PyAny, y: &PyAny, tile: Tile) -> PyResult<()> {
-        self.pyxel_tilemap.lock().fill(as_i32!(x), as_i32!(y), tile);
-
-        Ok(())
+    pub fn fill(&self, x: f64, y: f64, tile: Tile) {
+        self.pyxel_tilemap.lock().fill(x, y, tile);
     }
 
     pub fn blt(
         &self,
-        x: &PyAny,
-        y: &PyAny,
+        x: f64,
+        y: f64,
         tm: &PyAny,
-        u: &PyAny,
-        v: &PyAny,
-        w: &PyAny,
-        h: &PyAny,
+        u: f64,
+        v: f64,
+        w: f64,
+        h: f64,
         tilekey: Option<Tile>,
     ) -> PyResult<()> {
         type_switch! {
@@ -217,26 +147,26 @@ impl Tilemap {
             u32,
             {
                 self.pyxel_tilemap.lock().blt(
-                    as_i32!(x),
-                    as_i32!(y),
+                    x,
+                    y,
                     instance().tilemap(tm),
-                    as_i32!(u),
-                    as_i32!(v),
-                    as_i32!(w),
-                    as_i32!(h),
+                    u,
+                    v,
+                    w,
+                    h,
                     tilekey,
                 );
             },
             Tilemap,
             {
                 self.pyxel_tilemap.lock().blt(
-                    as_i32!(x),
-                    as_i32!(y),
+                    x,
+                    y,
                     tm.pyxel_tilemap,
-                    as_i32!(u),
-                    as_i32!(v),
-                    as_i32!(w),
-                    as_i32!(h),
+                    u,
+                    v,
+                    w,
+                    h,
                     tilekey,
                 );
             }
@@ -245,27 +175,10 @@ impl Tilemap {
         Ok(())
     }
 
-    pub fn blt_self(
-        &self,
-        x: &PyAny,
-        y: &PyAny,
-        u: &PyAny,
-        v: &PyAny,
-        w: &PyAny,
-        h: &PyAny,
-        tilekey: Option<Tile>,
-    ) -> PyResult<()> {
-        self.pyxel_tilemap.lock().blt_self(
-            as_i32!(x),
-            as_i32!(y),
-            as_i32!(u),
-            as_i32!(v),
-            as_i32!(w),
-            as_i32!(h),
-            tilekey,
-        );
-
-        Ok(())
+    pub fn blt_self(&self, x: f64, y: f64, u: f64, v: f64, w: f64, h: f64, tilekey: Option<Tile>) {
+        self.pyxel_tilemap
+            .lock()
+            .blt_self(x, y, u, v, w, h, tilekey);
     }
 }
 
