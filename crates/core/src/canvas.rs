@@ -6,6 +6,7 @@ use parking_lot::Mutex;
 
 use crate::rectarea::RectArea;
 use crate::types::ToIndex;
+use crate::utils::{as_i32, as_u32};
 
 pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     fn width(&self) -> u32;
@@ -17,7 +18,12 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
     fn _set_clip_rect(&mut self, clip_rect: RectArea);
     fn _palette_value(&self, value: T) -> T;
 
-    fn clip(&mut self, x: i32, y: i32, width: u32, height: u32) {
+    fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        let x = as_i32(x);
+        let y = as_i32(y);
+        let width = as_u32(width);
+        let height = as_u32(height);
+
         self._set_clip_rect(
             self._self_rect()
                 .intersects(RectArea::new(x, y, width, height)),
@@ -40,7 +46,10 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         }
     }
 
-    fn pget(&mut self, x: i32, y: i32) -> T {
+    fn pget(&mut self, x: f64, y: f64) -> T {
+        let x = as_i32(x);
+        let y = as_i32(y);
+
         if self._self_rect().contains(x, y) {
             self._value(x, y)
         } else {
@@ -48,88 +57,79 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         }
     }
 
-    fn pset(&mut self, x: i32, y: i32, value: T) {
-        let value = self._palette_value(value);
+    fn pset(&mut self, x: f64, y: f64, value: T) {
+        let x = as_i32(x);
+        let y = as_i32(y);
 
         if self._clip_rect().contains(x, y) {
-            self._set_value(x, y, value);
+            self._set_value(x, y, self._palette_value(value));
         }
     }
 
-    fn line(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, value: T) {
-        let value = self._palette_value(value);
+    fn line(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, value: T) {
+        let x1 = as_i32(x1);
+        let y1 = as_i32(y1);
+        let x2 = as_i32(x2);
+        let y2 = as_i32(y2);
 
         if x1 == x2 && y1 == y2 {
-            self.pset(x1, y1, value);
+            self.pset(x1 as f64, y1 as f64, value);
             return;
         }
 
-        let start_x: i32;
-        let start_y: i32;
-        let end_x: i32;
-        let end_y: i32;
-
         if (x1 - x2).abs() > (y1 - y2).abs() {
-            if x1 < x2 {
-                start_x = x1;
-                start_y = y1;
-                end_x = x2;
-                end_y = y2;
+            let (start_x, start_y, end_x, end_y) = if x1 < x2 {
+                (x1, y1, x2, y2)
             } else {
-                start_x = x2;
-                start_y = y2;
-                end_x = x1;
-                end_y = y1;
-            }
+                (x2, y2, x1, y1)
+            };
 
             let length = end_x - start_x + 1;
             let alpha = (end_y - start_y) as f64 / (end_x - start_x) as f64;
 
             for i in 0..length {
                 self.pset(
-                    start_x + i,
-                    (start_y as f64 + alpha * i as f64 + 0.5) as i32,
+                    (start_x + i) as f64,
+                    start_y as f64 + alpha * i as f64,
                     value,
                 );
             }
         } else {
-            if y1 < y2 {
-                start_x = x1;
-                start_y = y1;
-                end_x = x2;
-                end_y = y2;
+            let (start_x, start_y, end_x, end_y) = if y1 < y2 {
+                (x1, y1, x2, y2)
             } else {
-                start_x = x2;
-                start_y = y2;
-                end_x = x1;
-                end_y = y1;
-            }
+                (x2, y2, x1, y1)
+            };
 
             let length = end_y - start_y + 1;
             let alpha = (end_x - start_x) as f64 / (end_y - start_y) as f64;
 
             for i in 0..length {
                 self.pset(
-                    (start_x as f64 + alpha * i as f64 + 0.5) as i32,
-                    start_y + i,
+                    start_x as f64 + alpha * i as f64,
+                    (start_y + i) as f64,
                     value,
                 );
             }
         }
     }
 
-    fn rect(&mut self, x: i32, y: i32, width: u32, height: u32, value: T) {
+    fn rect(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
+        let x = as_i32(x);
+        let y = as_i32(y);
+        let width = as_u32(width);
+        let height = as_u32(height);
         let rect = RectArea::new(x, y, width, height).intersects(self._clip_rect());
 
         if rect.is_empty() {
             return;
         }
 
-        let value = self._palette_value(value);
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
+        let value = self._palette_value(value);
 
         for i in top..=bottom {
             for j in left..=right {
@@ -138,80 +138,87 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         }
     }
 
-    fn rectb(&mut self, x: i32, y: i32, width: u32, height: u32, value: T) {
-        let rect = RectArea::new(x, y, width, height).intersects(self._clip_rect());
+    fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
+        let x = as_i32(x);
+        let y = as_i32(y);
+        let width = as_u32(width);
+        let height = as_u32(height);
+        let rect = RectArea::new(x, y, width, height);
 
-        if rect.is_empty() {
+        if rect.intersects(self._clip_rect()).is_empty() {
             return;
         }
 
-        let value = self._palette_value(value);
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
 
         for i in left..=right {
-            self._set_value(i, top, value);
-            self._set_value(i, bottom, value);
+            self.pset(i as f64, top as f64, value);
+            self.pset(i as f64, bottom as f64, value);
         }
 
         for i in top..=bottom {
-            self._set_value(left, i, value);
-            self._set_value(right, i, value);
+            self.pset(left as f64, i as f64, value);
+            self.pset(right as f64, i as f64, value);
         }
     }
 
-    fn circ(&mut self, x: i32, y: i32, radius: u32, value: T) {
-        let value = self._palette_value(value);
+    fn circ(&mut self, x: f64, y: f64, radius: f64, value: T) {
+        let x = as_i32(x);
+        let y = as_i32(y);
+        let radius = as_u32(radius);
         let sq_radius = radius * radius;
 
         for dx in 0..=radius as i32 {
-            let dy = (((sq_radius as i32 - dx * dx) as f64).sqrt() + 0.5) as i32;
+            let dy = as_i32(((sq_radius as i32 - dx * dx) as f64).sqrt());
 
             if dx > dy {
                 continue;
             }
 
             for i in -dy..=dy {
-                self.pset(x - dx, y + i, value);
-                self.pset(x + dx, y + i, value);
-                self.pset(x + i, y - dx, value);
-                self.pset(x + i, y + dx, value);
+                self.pset((x - dx) as f64, (y + i) as f64, value);
+                self.pset((x + dx) as f64, (y + i) as f64, value);
+                self.pset((x + i) as f64, (y - dx) as f64, value);
+                self.pset((x + i) as f64, (y + dx) as f64, value);
             }
         }
     }
 
-    fn circb(&mut self, x: i32, y: i32, radius: u32, value: T) {
-        let value = self._palette_value(value);
+    fn circb(&mut self, x: f64, y: f64, radius: f64, value: T) {
+        let x = as_i32(x);
+        let y = as_i32(y);
+        let radius = as_u32(radius);
         let sq_radius = radius * radius;
 
         for dx in 0..=radius as i32 {
-            let dy = (((sq_radius as i32 - dx * dx) as f64).sqrt() + 0.5) as i32;
+            let dy = as_i32(((sq_radius as i32 - dx * dx) as f64).sqrt());
 
             if dx > dy {
                 continue;
             }
 
-            self.pset(x - dx, y - dy, value);
-            self.pset(x + dx, y - dy, value);
-            self.pset(x - dx, y + dy, value);
-            self.pset(x + dx, y + dy, value);
+            self.pset((x - dx) as f64, (y - dy) as f64, value);
+            self.pset((x + dx) as f64, (y - dy) as f64, value);
+            self.pset((x - dx) as f64, (y + dy) as f64, value);
+            self.pset((x + dx) as f64, (y + dy) as f64, value);
 
-            self.pset(x - dy, y - dx, value);
-            self.pset(x + dy, y - dx, value);
-            self.pset(x - dy, y + dx, value);
-            self.pset(x + dy, y + dx, value);
+            self.pset((x - dy) as f64, (y - dx) as f64, value);
+            self.pset((x + dy) as f64, (y - dx) as f64, value);
+            self.pset((x - dy) as f64, (y + dx) as f64, value);
+            self.pset((x + dy) as f64, (y + dx) as f64, value);
         }
     }
 
-    fn tri(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, value: T) {
-        let mut x1 = x1;
-        let mut y1 = y1;
-        let mut x2 = x2;
-        let mut y2 = y2;
-        let mut x3 = x3;
-        let mut y3 = y3;
+    fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, value: T) {
+        let mut x1 = as_i32(x1);
+        let mut y1 = as_i32(y1);
+        let mut x2 = as_i32(x2);
+        let mut y2 = as_i32(y2);
+        let mut x3 = as_i32(x3);
+        let mut y3 = as_i32(y3);
 
         if y1 > y2 {
             swap(&mut y1, &mut y2);
@@ -241,65 +248,68 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         } else {
             (x3 - x2) as f64 / (y3 - y2) as f64
         };
-        let x_inter = (x1 as f64 + alpha13 * (y2 - y1) as f64 + 0.5) as i32;
+        let x_inter = as_i32(x1 as f64 + alpha13 * (y2 - y1) as f64);
 
         for i in y1..=y2 {
             let (x_slider, x_end) = if x_inter < x2 {
                 (
-                    (x_inter as f64 + alpha13 * (i - y2) as f64 + 0.5) as i32,
-                    (x2 as f64 + alpha12 * (i - y2) as f64 + 0.5) as i32,
+                    as_i32(x_inter as f64 + alpha13 * (i - y2) as f64),
+                    as_i32(x2 as f64 + alpha12 * (i - y2) as f64),
                 )
             } else {
                 (
-                    (x2 as f64 + alpha12 * (i - y2) as f64 + 0.5) as i32,
-                    (x_inter as f64 + alpha13 * (i - y2) as f64 + 0.5) as i32,
+                    as_i32(x2 as f64 + alpha12 * (i - y2) as f64),
+                    as_i32(x_inter as f64 + alpha13 * (i - y2) as f64),
                 )
             };
 
             for j in x_slider..=x_end {
-                self.pset(j, i, value);
+                self.pset(j as f64, i as f64, value);
             }
         }
 
         for i in (y2 + 1)..=y3 {
             let (x_slider, x_end) = if x_inter < x2 {
                 (
-                    (x_inter as f64 + alpha13 * (i - y2) as f64 + 0.5) as i32,
-                    (x2 as f64 + alpha23 * (i - y2) as f64 + 0.5) as i32,
+                    as_i32(x_inter as f64 + alpha13 * (i - y2) as f64),
+                    as_i32(x2 as f64 + alpha23 * (i - y2) as f64),
                 )
             } else {
                 (
-                    (x2 as f64 + alpha23 * (i - y2) as f64 + 0.5) as i32,
-                    (x_inter as f64 + alpha13 * (i - y2) as f64 + 0.5) as i32,
+                    as_i32(x2 as f64 + alpha23 * (i - y2) as f64),
+                    as_i32(x_inter as f64 + alpha13 * (i - y2) as f64),
                 )
             };
 
             for j in x_slider..=x_end {
-                self.pset(j, i, value);
+                self.pset(j as f64, i as f64, value);
             }
         }
     }
 
-    fn trib(&mut self, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, value: T) {
+    fn trib(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, value: T) {
         self.line(x1, y1, x2, y2, value);
         self.line(x1, y1, x3, y3, value);
         self.line(x2, y2, x3, y3, value);
     }
 
-    fn fill(&mut self, x: i32, y: i32, value: T) {
+    fn fill(&mut self, x: f64, y: f64, value: T) {
+        let x = as_i32(x);
+        let y = as_i32(y);
+
         if !self._clip_rect().contains(x, y) {
             return;
         }
 
         let value = self._palette_value(value);
-        let target_value = self._value(x, y);
+        let dst_value = self._value(x, y);
 
-        if value != target_value {
-            self._fill_rec(x, y, value, target_value);
+        if value != dst_value {
+            self._fill_rec(x, y, value, dst_value);
         }
     }
 
-    fn _fill_rec(&mut self, x: i32, y: i32, value: T, target_value: T) {
+    fn _fill_rec(&mut self, x: i32, y: i32, value: T, dst_value: T) {
         let rect = self._clip_rect();
         let left = rect.left();
         let top = rect.top();
@@ -307,47 +317,47 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         let bottom = rect.bottom();
 
         for i in (x..=left).rev() {
-            if self._value(i, y) != target_value {
+            if self._value(i, y) != dst_value {
                 break;
             }
 
             self._set_value(i, y, value);
 
-            if y > top && self._value(i, y - 1) == target_value {
-                self._fill_rec(i, y - 1, value, target_value);
+            if y > top && self._value(i, y - 1) == dst_value {
+                self._fill_rec(i, y - 1, value, dst_value);
             }
 
-            if y > bottom && self._value(i, y + 1) == target_value {
-                self._fill_rec(i, y + 1, value, target_value);
+            if y > bottom && self._value(i, y + 1) == dst_value {
+                self._fill_rec(i, y + 1, value, dst_value);
             }
         }
 
         for i in x + 1..=right {
-            if self._value(i, y) != target_value {
+            if self._value(i, y) != dst_value {
                 break;
             }
 
             self._set_value(i, y, value);
 
-            if y > top && self._value(i, y - 1) == target_value {
-                self._fill_rec(i, y - 1, value, target_value);
+            if y > top && self._value(i, y - 1) == dst_value {
+                self._fill_rec(i, y - 1, value, dst_value);
             }
 
-            if y > bottom && self._value(i, y + 1) == target_value {
-                self._fill_rec(i, y + 1, value, target_value);
+            if y > bottom && self._value(i, y + 1) == dst_value {
+                self._fill_rec(i, y + 1, value, dst_value);
             }
         }
     }
 
     fn blt(
         &mut self,
-        x: i32,
-        y: i32,
+        x: f64,
+        y: f64,
         canvas: Arc<Mutex<Self>>,
-        canvas_x: i32,
-        canvas_y: i32,
-        width: i32,
-        height: i32,
+        canvas_x: f64,
+        canvas_y: f64,
+        width: f64,
+        height: f64,
         transparent: Option<T>,
     ) {
         let canvas = if let Some(canvas) = canvas.try_lock() {
@@ -356,7 +366,25 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             panic!("unable to lock canvas in blt");
         };
 
-        let copy_area = CopyArea::new(
+        let x = as_i32(x);
+        let y = as_i32(y);
+        let canvas_x = as_i32(canvas_x);
+        let canvas_y = as_i32(canvas_y);
+        let width = as_i32(width);
+        let height = as_i32(height);
+
+        let CopyArea {
+            dst_x,
+            dst_y,
+            src_x,
+            src_y,
+            sign_x,
+            sign_y,
+            offset_x,
+            offset_y,
+            width,
+            height,
+        } = CopyArea::new(
             x,
             y,
             self._clip_rect(),
@@ -366,16 +394,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             width,
             height,
         );
-        let dst_x = copy_area.dst_x;
-        let dst_y = copy_area.dst_y;
-        let src_x = copy_area.src_x;
-        let src_y = copy_area.src_y;
-        let sign_x = copy_area.sign_x;
-        let sign_y = copy_area.sign_y;
-        let offset_x = copy_area.offset_x;
-        let offset_y = copy_area.offset_y;
-        let width = copy_area.width;
-        let height = copy_area.height;
 
         if width == 0 || height == 0 {
             return;
@@ -392,24 +410,40 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
                     }
                 }
 
-                let value = self._palette_value(value);
-
-                self._set_value(dst_x + j, dst_y + i, value);
+                self._set_value(dst_x + j, dst_y + i, self._palette_value(value));
             }
         }
     }
 
     fn blt_self(
         &mut self,
-        x: i32,
-        y: i32,
-        canvas_x: i32,
-        canvas_y: i32,
-        width: i32,
-        height: i32,
+        x: f64,
+        y: f64,
+        canvas_x: f64,
+        canvas_y: f64,
+        width: f64,
+        height: f64,
         transparent: Option<T>,
     ) {
-        let copy_area = CopyArea::new(
+        let x = as_i32(x);
+        let y = as_i32(y);
+        let canvas_x = as_i32(canvas_x);
+        let canvas_y = as_i32(canvas_y);
+        let width = as_i32(width);
+        let height = as_i32(height);
+
+        let CopyArea {
+            dst_x,
+            dst_y,
+            src_x,
+            src_y,
+            sign_x,
+            sign_y,
+            offset_x,
+            offset_y,
+            width,
+            height,
+        } = CopyArea::new(
             x,
             y,
             self._clip_rect(),
@@ -419,17 +453,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             width,
             height,
         );
-
-        let dst_x = copy_area.dst_x;
-        let dst_y = copy_area.dst_y;
-        let src_x = copy_area.src_x;
-        let src_y = copy_area.src_y;
-        let sign_x = copy_area.sign_x;
-        let sign_y = copy_area.sign_y;
-        let offset_x = copy_area.offset_x;
-        let offset_y = copy_area.offset_y;
-        let width = copy_area.width;
-        let height = copy_area.height;
 
         if width == 0 || height == 0 {
             return;
@@ -450,9 +473,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
                     }
                 }
 
-                let value = self._palette_value(value);
-
-                self._set_value(dst_x + j, dst_y + i, value);
+                self._set_value(dst_x + j, dst_y + i, self._palette_value(value));
             }
         }
     }
@@ -506,27 +527,8 @@ impl CopyArea {
 
         let width = max(width - left_cut - right_cut, 0);
         let height = max(height - top_cut - bottom_cut, 0);
-
-        let sign_x: i32;
-        let sign_y: i32;
-        let offset_x: i32;
-        let offset_y: i32;
-
-        if flip_x {
-            sign_x = -1;
-            offset_x = width - 1;
-        } else {
-            sign_x = 1;
-            offset_x = 0;
-        }
-
-        if flip_y {
-            sign_y = -1;
-            offset_y = height - 1;
-        } else {
-            sign_y = 1;
-            offset_y = 0;
-        }
+        let (sign_x, offset_x) = if flip_x { (-1, width - 1) } else { (1, 0) };
+        let (sign_y, offset_y) = if flip_y { (-1, height - 1) } else { (1, 0) };
 
         CopyArea {
             dst_x: dst_x + left_cut,
