@@ -28,26 +28,25 @@ pub struct Audio {
 impl Audio {
     pub fn new<T: Platform>(platform: &mut T) -> Audio {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
+        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
         let channels = array![_ => Channel::new(); CHANNEL_COUNT as usize];
         let sounds = array![_ => Sound::new(); SOUND_COUNT as usize];
         let musics = array![_ => Music::new(); MUSIC_COUNT as usize];
 
-        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
+        platform.start_audio(
+            SAMPLE_RATE,
+            SAMPLE_COUNT,
+            Arc::new(Mutex::new(AudioCore {
+                blip_buf,
+                channels: channels.clone(),
+            })),
+        );
 
-        let audio_core = Arc::new(Mutex::new(AudioCore {
-            blip_buf,
-            channels: channels.clone(),
-        }));
-
-        let audio = Audio {
+        Audio {
             channels,
             sounds,
             musics,
-        };
-
-        platform.start_audio(SAMPLE_RATE, SAMPLE_COUNT, audio_core);
-
-        audio
+        }
     }
 }
 
@@ -59,7 +58,6 @@ impl AudioCallback for AudioCore {
             for channel in &mut self.channels {
                 channel.lock().update(&mut self.blip_buf);
             }
-
             self.blip_buf.end_frame(TICK_CLOCK_COUNT);
 
             samples += self.blip_buf.read_samples(&mut out[samples..], false);

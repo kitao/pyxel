@@ -161,7 +161,7 @@ impl ResourceItem for Sound {
         let mut output = String::new();
 
         if self.notes.is_empty() {
-            output += "none";
+            output += "none\n";
         } else {
             for note in &self.notes {
                 if *note < 0 {
@@ -170,28 +170,25 @@ impl ResourceItem for Sound {
                     output += &format!("{:02x}", *note);
                 }
             }
+            output += "\n";
         }
-
-        output += "\n";
 
         macro_rules! stringify_data {
             ($name: ident) => {
-                if self.$name.len() > 0 {
+                if self.$name.is_empty() {
+                    output += "none\n";
+                } else {
                     for value in &self.$name {
                         output += &format!("{:1x}", *value);
                     }
-                } else {
-                    output += "none";
+                    output += "\n";
                 }
-
-                output += "\n";
             };
         }
 
         stringify_data!(tones);
         stringify_data!(volumes);
         stringify_data!(effects);
-
         output += &format!("{}", self.speed);
 
         output
