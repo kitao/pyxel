@@ -4,30 +4,6 @@ macro_rules! type_error {
     };
 }
 
-macro_rules! as_int {
-    ($type: ty, $var: ident) => {
-        if let Ok($var) = <$type>::extract($var) {
-            $var
-        } else if let Ok($var) = f64::extract($var) {
-            $var as $type
-        } else {
-            type_error!("must be real number");
-        }
-    };
-}
-
-macro_rules! as_i32 {
-    ($var: ident) => {
-        as_int!(i32, $var)
-    };
-}
-
-macro_rules! as_u32 {
-    ($var: ident) => {
-        as_int!(u32, $var)
-    };
-}
-
 macro_rules! type_switch {
     ($var: ident, $type1: ty, $block1: block, $type2: ty, $block2: block) => {
         if let Ok($var) = <$type1>::extract($var) {
