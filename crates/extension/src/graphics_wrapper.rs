@@ -104,11 +104,11 @@ fn blt(
 ) -> PyResult<()> {
     type_switch! {
         img,
-        u32,
-        { instance().blt(x, y, img, u, v, w, h, color_key); },
-        Image,
-        {
-            instance().screen.lock().blt( x, y, img.pyxel_image, u, v, w, h, color_key,);
+        u32, {
+            instance().blt(x, y, img, u, v, w, h, color_key);
+        },
+        Image, {
+            instance().screen.lock().blt(x, y, img.pyxel_image, u, v, w, h, color_key);
         }
     }
 
@@ -128,15 +128,11 @@ fn bltm(
 ) -> PyResult<()> {
     type_switch! {
         tm,
-        u32,
-        {
-            instance().bltm( x, y, tm, u, v, w, h, colkey,);
+        u32, {
+            instance().bltm(x, y, tm, u, v, w, h, colkey);
         },
-        Tilemap,
-        {
-            instance().screen.lock().bltm(
-                x, y, tm.pyxel_tilemap, u, v, w, h, colkey,
-            );
+        Tilemap, {
+            instance().screen.lock().bltm(x, y, tm.pyxel_tilemap, u, v, w, h, colkey);
         }
     }
 

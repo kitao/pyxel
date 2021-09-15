@@ -30,25 +30,17 @@ fn play_pos(ch: u32) -> Option<(u32, u32)> {
 fn play(ch: u32, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
     type_switch! {
         snd,
-        u32,
-        {
+        u32, {
             instance().play1(ch, snd, r#loop.unwrap_or(false));
         },
-        Vec<u32>,
-        {
+        Vec<u32>, {
             instance().play(ch, &snd, r#loop.unwrap_or(false));
         },
-        Sound,
-        {
+        Sound, {
             instance().channel(ch).lock().play1(snd.pyxel_sound, r#loop.unwrap_or(false));
         },
-        Vec<Sound>,
-        {
-            let sounds = snd
-                .iter()
-                .map(|snd| snd.pyxel_sound.clone())
-                .collect();
-
+        Vec<Sound>, {
+            let sounds = snd.iter().map(|snd| snd.pyxel_sound.clone()).collect();
             instance().channel(ch).lock().play(sounds, r#loop.unwrap_or(false));
         }
     }
