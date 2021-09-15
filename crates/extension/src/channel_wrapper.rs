@@ -37,34 +37,18 @@ impl Channel {
 
         type_switch! {
             snd,
-            u32,
-            {
-                self.pyxel_channel
-                    .lock()
-                    .play1(instance().sound(snd), loop_);
+            u32, {
+                self.pyxel_channel.lock().play1(instance().sound(snd), loop_);
             },
-            Vec<u32>,
-            {
-                let snd = snd
-                    .iter()
-                    .map(|sound_no| instance().sound(*sound_no))
-                    .collect();
-
+            Vec<u32>, {
+                let snd = snd.iter().map(|sound_no| instance().sound(*sound_no)).collect();
                 self.pyxel_channel.lock().play(snd, loop_);
             },
-            Sound,
-            {
-                self.pyxel_channel
-                    .lock()
-                    .play1(snd.pyxel_sound, loop_);
+            Sound, {
+                self.pyxel_channel.lock().play1(snd.pyxel_sound, loop_);
             },
-            Vec<Sound>,
-            {
-                let snd = snd
-                    .iter()
-                    .map(|sound| sound.pyxel_sound.clone())
-                    .collect();
-
+            Vec<Sound>, {
+                let snd = snd.iter().map(|sound| sound.pyxel_sound.clone()).collect();
                 self.pyxel_channel.lock().play(snd, loop_);
             }
         }

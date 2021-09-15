@@ -129,17 +129,11 @@ impl Image {
     ) -> PyResult<()> {
         type_switch! {
             img,
-            u32,
-            {
-                self.pyxel_image.lock().blt(
-                    x, y, instance().image(img), u, v, w, h, colkey,
-                );
+            u32, {
+                self.pyxel_image.lock().blt(x, y, instance().image(img), u, v, w, h, colkey);
             },
-            Image,
-            {
-                self.pyxel_image.lock().blt(
-                    x, y, img.pyxel_image, u, v, w, h, colkey,
-                );
+            Image, {
+                self.pyxel_image.lock().blt(x, y, img.pyxel_image, u, v, w, h, colkey);
             }
         }
 
@@ -163,17 +157,11 @@ impl Image {
     ) -> PyResult<()> {
         type_switch! {
             tm,
-            u32,
-            {
-                self.pyxel_image.lock().bltm(
-                    x, y, instance().tilemap(tm), u, v, w, h, colkey,
-                );
+            u32, {
+                self.pyxel_image.lock().bltm(x, y, instance().tilemap(tm), u, v, w, h, colkey);
             },
-            Tilemap,
-            {
-                self.pyxel_image.lock().bltm(
-                    x, y, tm.pyxel_tilemap, u, v, w, h, colkey,
-                );
+            Tilemap, {
+                self.pyxel_image.lock().bltm(x, y, tm.pyxel_tilemap, u, v, w, h, colkey);
             }
         }
 
