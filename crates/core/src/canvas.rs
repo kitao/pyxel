@@ -83,7 +83,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             } else {
                 (x2, y2, x1, y1)
             };
-
             let length = end_x - start_x + 1;
             let alpha = (end_y - start_y) as f64 / (end_x - start_x) as f64;
 
@@ -100,7 +99,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             } else {
                 (x2, y2, x1, y1)
             };
-
             let length = end_y - start_y + 1;
             let alpha = (end_x - start_x) as f64 / (end_y - start_y) as f64;
 

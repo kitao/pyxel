@@ -42,7 +42,6 @@ impl Profiler {
         if self.frame_count >= self.measure_frame_count {
             self.average_time = self.total_time as f64 / self.frame_count as f64;
             self.average_fps = 1000.0 / self.average_time;
-
             self.frame_count = 0;
             self.total_time = 0;
         }
