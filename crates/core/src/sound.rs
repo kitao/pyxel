@@ -103,7 +103,6 @@ impl Sound {
                 'n' => TONE_NOISE,
                 _ => panic!("invalid sound tone '{}'", c),
             };
-
             self.tones.push(tone);
         }
     }
@@ -131,7 +130,6 @@ impl Sound {
                 'f' => EFFECT_FADEOUT,
                 _ => panic!("invalid sound effect '{}'", c),
             };
-
             self.effects.push(effect);
         }
     }
@@ -206,11 +204,9 @@ impl ResourceItem for Sound {
                 string_loop!(j, value, line, 2, {
                     self.notes.push(parse_hex_string(&value).unwrap() as i8);
                 });
-
                 continue;
             } else if i == 4 {
                 self.speed = line.parse().unwrap();
-
                 continue;
             }
 
@@ -245,7 +241,6 @@ mod tests {
     #[test]
     fn set() {
         let sound = Sound::new();
-
         sound.lock().set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
         assert_eq!(&sound.lock().notes, &vec![0, 1, 2, 3]);
         assert_eq!(
@@ -263,7 +258,6 @@ mod tests {
     #[test]
     fn set_note() {
         let sound = Sound::new();
-
         sound
             .lock()
             .set_notes(" c 0 d # 1 r e 2 f 3 g 4 r a - 0 b 1 ");
@@ -273,7 +267,6 @@ mod tests {
     #[test]
     fn set_tone() {
         let sound = Sound::new();
-
         sound.lock().set_tones(" t s p n ");
         assert_eq!(
             &sound.lock().tones,
@@ -284,7 +277,6 @@ mod tests {
     #[test]
     fn set_volume() {
         let sound = Sound::new();
-
         sound.lock().set_volumes(" 0 1 2 3 4 5 6 7 ");
         assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3, 4, 5, 6, 7]);
     }
@@ -292,7 +284,6 @@ mod tests {
     #[test]
     fn set_effect() {
         let sound = Sound::new();
-
         sound.lock().set_effects(" n s v f ");
         assert_eq!(
             &sound.lock().effects,

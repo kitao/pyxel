@@ -41,7 +41,6 @@ impl Image {
     pub fn from_image(filename: &str) -> SharedImage {
         let image_file = image::open(&Path::new(&filename)).unwrap().to_rgb8();
         let (width, height) = image_file.dimensions();
-
         Image::new(width, height)
     }
 
@@ -150,11 +149,9 @@ impl Image {
     fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
         let (r1, g1, b1) = rgb1;
         let (r2, g2, b2) = rgb2;
-
         let dx = (r1 as f64 - r2 as f64) * 0.30;
         let dy = (g1 as f64 - g2 as f64) * 0.59;
         let dz = (b1 as f64 - b2 as f64) * 0.11;
-
         dx * dx + dy * dy + dz * dz
     }
 
@@ -169,7 +166,6 @@ impl Image {
                 let r = ((rgb >> 16) & 0xff) as u8;
                 let g = ((rgb >> 8) & 0xff) as u8;
                 let b = (rgb & 0xff) as u8;
-
                 image.put_pixel(j, i, Rgb([r, g, b]));
             }
         }
@@ -180,7 +176,6 @@ impl Image {
         } else {
             filename.to_string() + ".png"
         };
-
         image.save(&filename).unwrap();
     }
 
@@ -274,7 +269,6 @@ impl Image {
         let x = as_i32(x);
         let y = as_i32(y);
         let color = self._palette_value(color);
-
         let palette1 = self._palette()[1];
         self.pal(1, color);
 

@@ -86,7 +86,6 @@ impl Resource {
                 height as f64,
                 None,
             );
-
         self.screens[self.next_screen_index as usize].frame_count = frame_count;
 
         self.next_screen_index = (self.next_screen_index + 1) % self.max_screen_count;
@@ -123,12 +122,10 @@ impl Pyxel {
     pub fn load(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
         let mut archive = ZipArchive::new(File::open(&Path::new(filename)).unwrap()).unwrap();
         let version;
-
         {
             let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
             let mut file = archive.by_name(&version_name).unwrap();
             let mut contents = String::new();
-
             file.read_to_string(&mut contents).unwrap();
             version = parse_version_string(&contents).unwrap();
 
@@ -251,7 +248,6 @@ impl Pyxel {
                 let image = &screens[index as usize].image.lock();
                 let width = image.width();
                 let height = image.height();
-
                 let imgvec = ImgVec::new(
                     (0..width * CAPTURE_SCALE * height * CAPTURE_SCALE)
                         .map(|i| {
@@ -271,7 +267,6 @@ impl Pyxel {
                     (width * CAPTURE_SCALE) as usize,
                     (height * CAPTURE_SCALE) as usize,
                 );
-
                 let timestamp = (screens[index as usize].frame_count - start_frame_count + 1)
                     as f64
                     / fps as f64;
@@ -283,7 +278,6 @@ impl Pyxel {
         });
 
         let mut file = File::create(&(Resource::export_path() + ".gif")).unwrap();
-
         writer
             .write(&mut file, &mut gifski::progress::NoProgress {})
             .unwrap();
