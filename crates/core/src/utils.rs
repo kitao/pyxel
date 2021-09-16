@@ -3,7 +3,6 @@ macro_rules! string_loop {
         for $index in 0..($string.len() / $step) {
             let index = $index * $step;
             let $piece = $string[index..index + $step].to_string();
-
             $block
         }
     };
@@ -105,11 +104,11 @@ mod tests {
         assert_eq!(as_i32(0.1), 0);
         assert_eq!(as_i32(0.49), 0);
         assert_eq!(as_i32(0.5), 1);
-        assert_eq!(as_i32(1.1), 1);
+        assert_eq!(as_i32(1.49), 1);
         assert_eq!(as_i32(-0.1), 0);
         assert_eq!(as_i32(-0.49), 0);
         assert_eq!(as_i32(-0.50), -1);
-        assert_eq!(as_i32(-1.1), -1);
+        assert_eq!(as_i32(-1.49), -1);
     }
 
     #[test]
@@ -117,9 +116,9 @@ mod tests {
         assert_eq!(as_u32(0.1), 0);
         assert_eq!(as_u32(0.49), 0);
         assert_eq!(as_u32(0.5), 1);
-        assert_eq!(as_u32(1.1), 1);
+        assert_eq!(as_u32(1.49), 1);
         assert_eq!(as_u32(-0.1), 0);
-        assert_eq!(as_u32(-1.0), 0);
+        assert_eq!(as_u32(-3.0), 0);
     }
 
     #[test]
