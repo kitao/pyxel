@@ -17,10 +17,8 @@ pub struct System {
     next_update_time: f64,
     disable_next_frame_skip: bool,
     frame_count: u32,
-
     quit_key: Key,
     should_quit: bool,
-
     fps_profiler: Profiler,
     update_profiler: Profiler,
     draw_profiler: Profiler,
@@ -34,10 +32,8 @@ impl System {
             next_update_time: -1.0,
             disable_next_frame_skip: true,
             frame_count: 0,
-
             quit_key,
             should_quit: false,
-
             fps_profiler: Profiler::new(MEASURE_FRAME_COUNT),
             update_profiler: Profiler::new(MEASURE_FRAME_COUNT),
             draw_profiler: Profiler::new(MEASURE_FRAME_COUNT),
@@ -72,7 +68,6 @@ impl Pyxel {
         let height = data_str.len() as u32;
         let image = Image::new(width, height);
         image.lock().set(0, 0, data_str);
-
         self.platform.set_icon(image, &self.colors, scale);
     }
 
@@ -92,7 +87,6 @@ impl Pyxel {
 
         loop {
             let sleep_time = self.wait_for_update_time();
-
             let tick_count = self.platform.tick_count();
             self.system.fps_profiler.end(tick_count);
             self.system.fps_profiler.start(tick_count);
@@ -100,10 +94,8 @@ impl Pyxel {
             let update_count: u32;
 
             if self.system.disable_next_frame_skip {
-                self.system.disable_next_frame_skip = false;
-
                 update_count = 1;
-
+                self.system.disable_next_frame_skip = false;
                 self.system.next_update_time =
                     self.platform.tick_count() as f64 + self.system.one_frame_time;
             } else {
@@ -111,7 +103,6 @@ impl Pyxel {
                     (-sleep_time as f64 / self.system.one_frame_time) as u32,
                     MAX_FRAME_SKIP_COUNT,
                 ) + 1;
-
                 self.system.next_update_time += self.system.one_frame_time * update_count as f64;
             }
 
