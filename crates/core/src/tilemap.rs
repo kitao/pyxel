@@ -47,7 +47,6 @@ impl Tilemap {
                 for j in 0..width {
                     let index = j as usize * 4;
                     let value = parse_hex_string(&src_data[index..index + 4]).unwrap();
-
                     tilemap._set_value(
                         j as i32,
                         i as i32,
@@ -146,7 +145,6 @@ impl ResourceItem for Tilemap {
                     let value = parse_hex_string(&value).unwrap();
                     let x = value % 32;
                     let y = value / 32;
-
                     self._set_value(j as i32, i as i32, (x as u8, y as u8));
                 });
             }
@@ -155,7 +153,6 @@ impl ResourceItem for Tilemap {
                 string_loop!(j, value, line, 4, {
                     let x = parse_hex_string(&value[0..2].to_string()).unwrap();
                     let y = parse_hex_string(&value[2..4].to_string()).unwrap();
-
                     self._set_value(j as i32, i as i32, (x as u8, y as u8));
                 });
             }

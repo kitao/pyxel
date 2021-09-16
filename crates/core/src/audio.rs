@@ -32,15 +32,12 @@ impl Audio {
         let channels = array![_ => Channel::new(); CHANNEL_COUNT as usize];
         let sounds = array![_ => Sound::new(); SOUND_COUNT as usize];
         let musics = array![_ => Music::new(); MUSIC_COUNT as usize];
+        let audio_core = Arc::new(Mutex::new(AudioCore {
+            blip_buf,
+            channels: channels.clone(),
+        }));
 
-        platform.start_audio(
-            SAMPLE_RATE,
-            SAMPLE_COUNT,
-            Arc::new(Mutex::new(AudioCore {
-                blip_buf,
-                channels: channels.clone(),
-            })),
-        );
+        platform.start_audio(SAMPLE_RATE, SAMPLE_COUNT, audio_core);
 
         Audio {
             channels,
@@ -91,7 +88,6 @@ impl Pyxel {
             .iter()
             .map(|sound_no| self.audio.sounds[*sound_no as usize].clone())
             .collect();
-
         self.audio.channels[channel_no as usize]
             .lock()
             .play(sounds, is_looping);

@@ -17,7 +17,6 @@ pub struct Channel {
     sound_index: u32,
     note_index: u32,
     tick_count: u32,
-
     pub volume: Volume,
 }
 
@@ -129,7 +128,6 @@ impl Channel {
 
     fn circular_note(notes: &[Note], index: u32) -> Note {
         let len = notes.len();
-
         if len > 0 {
             notes[index as usize % len]
         } else {
@@ -139,7 +137,6 @@ impl Channel {
 
     fn circular_tone(tones: &[Tone], index: u32) -> Tone {
         let len = tones.len();
-
         if len > 0 {
             tones[index as usize % len]
         } else {
@@ -149,7 +146,6 @@ impl Channel {
 
     fn circular_volume(volumes: &[Volume], index: u32) -> Volume {
         let len = volumes.len();
-
         if len > 0 {
             volumes[index as usize % len]
         } else {
@@ -159,7 +155,6 @@ impl Channel {
 
     fn circular_effect(effects: &[Effect], index: u32) -> Effect {
         let len = effects.len();
-
         if len > 0 {
             effects[index as usize % len]
         } else {

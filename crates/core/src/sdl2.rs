@@ -72,6 +72,10 @@ impl Platform for Sdl2 {
             .build()
             .unwrap();
         let mut sdl_canvas = sdl_window.into_canvas().present_vsync().build().unwrap();
+        sdl_canvas
+            .window_mut()
+            .set_minimum_size(width, height)
+            .unwrap();
         let sdl_texture = sdl_canvas
             .texture_creator()
             .create_texture_streaming(SdlPixelFormat::RGB24, width, height)
@@ -79,11 +83,6 @@ impl Platform for Sdl2 {
         let sdl_timer = sdl_context.timer().unwrap();
         let sdl_event_pump = sdl_context.event_pump().unwrap();
         let sdl_audio = sdl_context.audio().unwrap();
-
-        sdl_canvas
-            .window_mut()
-            .set_minimum_size(width, height)
-            .unwrap();
 
         Sdl2 {
             sdl_context,
@@ -141,10 +140,8 @@ impl Platform for Sdl2 {
     fn move_cursor(&self, x: i32, y: i32) {
         let (window_x, window_y) = self.sdl_canvas.window().position();
         let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
-
         let mouse_x = x * screen_scale as i32 + window_x + screen_x as i32;
         let mouse_y = y * screen_scale as i32 + window_y + screen_y as i32;
-
         unsafe {
             sdl2::sys::SDL_WarpMouseGlobal(mouse_x, mouse_y);
         }
@@ -152,7 +149,6 @@ impl Platform for Sdl2 {
 
     fn toggle_fullscreen(&mut self) {
         let window = self.sdl_canvas.window_mut();
-
         if window.fullscreen_state() == SdlFullscreenType::Off {
             let _ = window.set_fullscreen(SdlFullscreenType::Desktop);
         } else {
@@ -325,15 +321,13 @@ impl Platform for Sdl2 {
                 }
             })
             .unwrap();
-
         self.sdl_canvas.set_draw_color(SdlColor::RGB(
             ((bg_color >> 16) & 0xff) as u8,
             ((bg_color >> 8) & 0xff) as u8,
             (bg_color & 0xff) as u8,
         ));
-        if false {
-            self.sdl_canvas.clear();
-        } else {
+        {
+            // instread of self.sdl_canvas.clear()
             let display_size = self.sdl_canvas.output_size().unwrap();
             self.sdl_canvas
                 .fill_rect(SdlRect::new(0, 0, display_size.0, display_size.1))
@@ -369,7 +363,6 @@ impl Platform for Sdl2 {
             .sdl_audio
             .open_playback(None, &spec, |_| AudioContextHolder { audio })
             .unwrap();
-
         sdl_audio_device.resume();
 
         self.sdl_audio_device = Some(sdl_audio_device);
@@ -390,16 +383,14 @@ impl Sdl2 {
     }
 
     fn mouse_pos(&self) -> (i32, i32) {
-        let mut mouse_x = 0;
-        let mut mouse_y = 0;
-
-        unsafe {
-            sdl2::sys::SDL_GetGlobalMouseState(&mut mouse_x, &mut mouse_y);
-        }
-
         let (window_x, window_y) = self.sdl_canvas.window().position();
         let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
 
+        let mut mouse_x = 0;
+        let mut mouse_y = 0;
+        unsafe {
+            sdl2::sys::SDL_GetGlobalMouseState(&mut mouse_x, &mut mouse_y);
+        }
         mouse_x = (mouse_x - window_x - screen_x as i32) / screen_scale as i32;
         mouse_y = (mouse_y - window_y - screen_y as i32) / screen_scale as i32;
 

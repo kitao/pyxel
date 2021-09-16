@@ -34,7 +34,6 @@ pub struct Oscillator {
     phase: u32,
     amplitude: i16,
     noise: u32,
-
     slide: Slide,
     vibrato: Vibrato,
     fadeout: FadeOut,
@@ -52,7 +51,6 @@ impl Oscillator {
             phase: 0,
             amplitude: 0,
             noise: 0x8000,
-
             slide: Slide { pitch: 0.0 },
             vibrato: Vibrato { time: 0, phase: 0 },
             fadeout: FadeOut { volume: 0.0 },
@@ -88,7 +86,6 @@ impl Oscillator {
 
             self.time = 0;
             self.amplitude = 0;
-
             return;
         }
 
@@ -173,7 +170,6 @@ impl Oscillator {
             self.noise >>= 1;
             self.noise |= ((self.noise ^ (self.noise >> 1)) & 1) << 15;
         }
-
         (self.noise & 1) as f64 * 2.0 - 1.0
     }
 }
