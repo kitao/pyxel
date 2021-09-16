@@ -444,59 +444,59 @@ font: Image
 def image(img: int) -> Image: ...
 def tilemap(tm: int) -> Tilemap: ...
 def clip(
-    x: Optional[int],
-    y: Optional[int],
-    w: Optional[int],
-    h: Optional[int],
+    x: Optional[float],
+    y: Optional[float],
+    w: Optional[float],
+    h: Optional[float],
 ) -> None: ...
 def pal(col1: Optional[int], col2: Optional[int]) -> None: ...
 def cls(col: int) -> None: ...
-def pget(x: int, y: int) -> int: ...
-def pset(x: int, y: int, col: int) -> None: ...
-def line(x1: int, y1: int, x2: int, y2: int, col: int) -> None: ...
-def rect(x: int, y: int, w: int, h: int, col: int) -> None: ...
-def rectb(x: int, y: int, w: int, h: int, col: int) -> None: ...
-def circ(x: int, y: int, r: int, col: int) -> None: ...
-def circb(x: int, y: int, r: int, col: int) -> None: ...
+def pget(x: float, y: float) -> int: ...
+def pset(x: float, y: float, col: int) -> None: ...
+def line(x1: float, y1: float, x2: float, y2: float, col: int) -> None: ...
+def rect(x: float, y: float, w: float, h: float, col: int) -> None: ...
+def rectb(x: float, y: float, w: float, h: float, col: int) -> None: ...
+def circ(x: float, y: float, r: float, col: int) -> None: ...
+def circb(x: float, y: float, r: float, col: int) -> None: ...
 def tri(
-    x1: int,
-    y1: int,
-    x2: int,
-    y2: int,
-    x3: int,
-    y3: int,
+    x1: float,
+    y1: float,
+    x2: float,
+    y2: float,
+    x3: float,
+    y3: float,
     col: int,
 ) -> None: ...
 def trib(
-    x1: int,
-    y1: int,
-    x2: int,
-    y2: int,
-    x3: int,
-    y3: int,
+    x1: float,
+    y1: float,
+    x2: float,
+    y2: float,
+    x3: float,
+    y3: float,
     col: int,
 ) -> None: ...
 def blt(
-    x: int,
-    y: int,
+    x: float,
+    y: float,
     img: Union[int | Image],
-    image_x: int,
-    image_y: int,
-    w: int,
-    h: int,
+    image_x: float,
+    image_y: float,
+    w: float,
+    h: float,
     color_key: Optional[int],
 ) -> None: ...
 def bltm(
-    x: int,
-    y: int,
+    x: float,
+    y: float,
     tm: Union[int | Tilemap],
-    u: int,
-    v: int,
-    w: int,
-    h: int,
+    u: float,
+    v: float,
+    w: float,
+    h: float,
     colkey: Optional[int],
 ) -> None: ...
-def text(x: int, y: int, string: str, col: int) -> None: ...
+def text(x: float, y: float, string: str, col: int) -> None: ...
 
 #
 # Audio
@@ -529,56 +529,62 @@ class Image:
     def load(self, x: int, y: int, filename: str) -> None: ...
     def save(self, filename: str, scale: int) -> None: ...
     def clip(
-        self, x: Optional[int], y: Optional[int], w: Optional[int], h: Optional[int]
+        self,
+        x: Optional[float],
+        y: Optional[float],
+        w: Optional[float],
+        h: Optional[float],
     ) -> None: ...
     def cls(self, col: int) -> None: ...
-    def pget(self, x: int, y: int) -> int: ...
-    def pset(self, x: int, y: int, col: int) -> None: ...
-    def line(self, x1: int, y1: int, x2: int, y2: int, col: int) -> None: ...
-    def rect(self, x: int, y: int, w: int, h: int, col: int) -> None: ...
-    def rectb(self, x: int, y: int, w: int, h: int, col: int) -> None: ...
-    def circ(self, x: int, y: int, r: int, col: int) -> None: ...
-    def circb(self, x: int, y: int, r: int, col: int) -> None: ...
+    def pget(self, x: float, y: float) -> int: ...
+    def pset(self, x: float, y: float, col: int) -> None: ...
+    def line(self, x1: float, y1: float, x2: float, y2: float, col: int) -> None: ...
+    def rect(self, x: float, y: float, w: float, h: float, col: int) -> None: ...
+    def rectb(self, x: float, y: float, w: float, h: float, col: int) -> None: ...
+    def circ(self, x: float, y: float, r: float, col: int) -> None: ...
+    def circb(self, x: float, y: float, r: float, col: int) -> None: ...
     def tri(
-        self, x1: int, y1: int, x2: int, y2: int, x3: int, y3: int, col: int
+        self, x1: float, y1: float, x2: float, y2: float, x3: float, y3: float, col: int
     ) -> None: ...
     def trib(
-        self, x1: int, y1: int, x2: int, y2: int, x3: int, y3: int, col: int
+        self, x1: float, y1: float, x2: float, y2: float, x3: float, y3: float, col: int
     ) -> None: ...
-    def fill(self, x: int, y: int, col: int) -> None: ...
+    def fill(self, x: float, y: float, col: int) -> None: ...
     def blt(
         self,
-        x: int,
-        y: int,
+        x: float,
+        y: float,
         img: Union[int | Image],
-        u: int,
-        v: int,
-        w: int,
-        h: int,
+        u: float,
+        v: float,
+        w: float,
+        h: float,
         colkey: Optional[int],
     ) -> None: ...
     def blt_self(
         self,
-        x: int,
-        y: int,
-        u: int,
-        v: int,
-        w: int,
-        h: int,
+        x: float,
+        y: float,
+        u: float,
+        v: float,
+        w: float,
+        h: float,
         colkey: Optional[int],
     ) -> None: ...
     def bltm(
         self,
-        x: int,
-        y: int,
+        x: float,
+        y: float,
         tm: Union[int | Tilemap],
-        u: int,
-        v: int,
-        w: int,
-        h: int,
+        u: float,
+        v: float,
+        w: float,
+        h: float,
         colkey: Optional[int],
     ) -> None: ...
-    def text(self, x: int, y: int, s: str, col: int, font: Optional[Image]) -> None: ...
+    def text(
+        self, x: float, y: float, s: str, col: int, font: Optional[Image]
+    ) -> None: ...
 
 #
 # Tilemap class
@@ -591,51 +597,55 @@ class Tilemap:
     def set(self, x: int, y: int, data: List[str]) -> None: ...
     def clip(
         self,
-        x: Optional[int],
-        y: Optional[int],
-        w: Optional[int],
-        h: Optional[int],
+        x: Optional[float],
+        y: Optional[float],
+        w: Optional[float],
+        h: Optional[float],
     ) -> None: ...
     def cls(self, tile: Tuple[int, int]) -> None: ...
-    def pget(self, x: int, y: int) -> Tuple[int, int]: ...
-    def pset(self, x: int, y: int, tile: Tuple[int, int]) -> None: ...
+    def pget(self, x: float, y: float) -> Tuple[int, int]: ...
+    def pset(self, x: float, y: float, tile: Tuple[int, int]) -> None: ...
     def line(
-        self, x1: int, y1: int, x2: int, y2: int, tile: Tuple[int, int]
+        self, x1: float, y1: float, x2: float, y2: float, tile: Tuple[int, int]
     ) -> None: ...
-    def rect(self, x: int, y: int, w: int, h: int, tile: Tuple[int, int]) -> None: ...
-    def rectb(self, x: int, y: int, w: int, h: int, tile: Tuple[int, int]) -> None: ...
-    def circ(self, x: int, y: int, r: int, tile: Tuple[int, int]) -> None: ...
-    def circb(self, x: int, y: int, r: int, tile: Tuple[int, int]) -> None: ...
+    def rect(
+        self, x: float, y: float, w: float, h: float, tile: Tuple[int, int]
+    ) -> None: ...
+    def rectb(
+        self, x: float, y: float, w: float, h: float, tile: Tuple[int, int]
+    ) -> None: ...
+    def circ(self, x: float, y: float, r: float, tile: Tuple[int, int]) -> None: ...
+    def circb(self, x: float, y: float, r: float, tile: Tuple[int, int]) -> None: ...
     def tri(
         self,
-        x1: int,
-        y1: int,
-        x2: int,
-        y2: int,
-        x3: int,
-        y3: int,
+        x1: float,
+        y1: float,
+        x2: float,
+        y2: float,
+        x3: float,
+        y3: float,
         tile: Tuple[int, int],
     ) -> None: ...
     def trib(
         self,
-        x1: int,
-        y1: int,
-        x2: int,
-        y2: int,
-        x3: int,
-        y3: int,
+        x1: float,
+        y1: float,
+        x2: float,
+        y2: float,
+        x3: float,
+        y3: float,
         tile: Tuple[int, int],
     ) -> None: ...
-    def fill(self, x: int, y: int, tile: Tuple[int, int]) -> None: ...
+    def fill(self, x: float, y: float, tile: Tuple[int, int]) -> None: ...
     def blt(
         self,
-        x: int,
-        y: int,
+        x: float,
+        y: float,
         tm: Union[int | Tilemap],
-        u: int,
-        v: int,
-        w: int,
-        h: int,
+        u: float,
+        v: float,
+        w: float,
+        h: float,
         tilekey: Optional[Tuple[int, int]],
     ) -> None: ...
     def blt_self(
