@@ -21,8 +21,8 @@ pub struct Input {
 }
 
 impl Input {
-    pub fn new() -> Input {
-        Input {
+    pub fn new() -> Self {
+        Self {
             is_mouse_visible: false,
             key_states: HashMap::new(),
             key_values: HashMap::new(),
@@ -53,7 +53,6 @@ impl Input {
             Event::DropFile { filename } => {
                 self.drop_files.push(filename);
             }
-
             //
             // Key Events
             //
@@ -61,8 +60,7 @@ impl Input {
                 if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
                     self.press_key(key, frame_count);
                     self.input_keys.push(key);
-
-                    if let Some(key) = Input::get_common_key(key) {
+                    if let Some(key) = Self::get_common_key(key) {
                         self.press_key(key, frame_count);
                     }
                 }
@@ -70,8 +68,7 @@ impl Input {
             Event::KeyUp { key } => {
                 if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
                     self.release_key(key, frame_count);
-
-                    if let Some(key) = Input::get_common_key(key) {
+                    if let Some(key) = Self::get_common_key(key) {
                         self.release_key(key, frame_count);
                     }
                 }
@@ -79,7 +76,6 @@ impl Input {
             Event::TextInput { text } => {
                 self.input_text += &text;
             }
-
             //
             // Mouse Events
             //
@@ -109,7 +105,6 @@ impl Input {
                 } else {
                     return;
                 };
-
                 self.key_values
                     .insert(GAMEPAD1_AXIS_LEFTX + axis as Key + offset, value);
             }
@@ -132,7 +127,6 @@ impl Input {
                 } else {
                     return;
                 };
-
                 self.release_key(GAMEPAD1_BUTTON_A + button as Key + offset, frame_count);
             }
         }
@@ -201,22 +195,17 @@ impl Pyxel {
             if *frame_count == self.frame_count() {
                 return true;
             }
-
             let hold_frame_count = hold_frame_count.unwrap_or(0);
             let period_frame_count = period_frame_count.unwrap_or(0);
-
             if hold_frame_count == 0 || period_frame_count == 0 {
                 return false;
             }
-
             let elapsed_frames =
                 self.frame_count() as i32 - (*frame_count + hold_frame_count) as i32;
-
             if elapsed_frames > 0 && elapsed_frames % period_frame_count as i32 == 0 {
                 return true;
             }
         }
-
         false
     }
 
@@ -226,7 +215,6 @@ impl Pyxel {
                 return true;
             }
         }
-
         false
     }
 

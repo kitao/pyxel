@@ -1,8 +1,10 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 #![allow(
+    clippy::cargo_common_metadata,
     clippy::many_single_char_names,
     clippy::missing_const_for_fn,
     clippy::missing_panics_doc,
+    clippy::multiple_crate_versions,
     clippy::must_use_candidate,
     clippy::needless_pass_by_value,
     clippy::new_without_default,
@@ -10,8 +12,8 @@
     clippy::too_many_arguments,
     clippy::too_many_lines,
     clippy::unused_self,
-    clippy::use_self,
     clippy::used_underscore_binding,
+    clippy::wildcard_dependencies,
     clippy::zero_ptr
 )]
 
@@ -83,6 +85,5 @@ fn pyxel_extension(_py: Python, m: &PyModule) -> PyResult<()> {
     add_input_functions(m)?;
     add_graphics_functions(m)?;
     add_audio_functions(m)?;
-
     Ok(())
 }

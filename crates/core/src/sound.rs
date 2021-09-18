@@ -23,7 +23,7 @@ pub type SharedSound = Arc<Mutex<Sound>>;
 
 impl Sound {
     pub fn new() -> SharedSound {
-        Arc::new(Mutex::new(Sound {
+        Arc::new(Mutex::new(Self {
             notes: Vec::new(),
             tones: Vec::new(),
             volumes: Vec::new(),
@@ -50,12 +50,9 @@ impl Sound {
     pub fn set_notes(&mut self, note_str: &str) {
         let note_str = simplify_string(note_str);
         let mut chars = note_str.chars();
-
         self.notes.clear();
-
         while let Some(c) = chars.next() {
             let mut note: Note;
-
             if ('a'..='g').contains(&c) {
                 note = match c {
                     'c' => 0,
@@ -87,14 +84,12 @@ impl Sound {
             } else {
                 panic!("invalid sound note '{}'", c);
             }
-
             self.notes.push(note);
         }
     }
 
     pub fn set_tones(&mut self, tone_str: &str) {
         self.tones.clear();
-
         for c in simplify_string(tone_str).chars() {
             let tone = match c {
                 't' => TONE_TRIANGLE,
@@ -109,7 +104,6 @@ impl Sound {
 
     pub fn set_volumes(&mut self, volume_str: &str) {
         self.volumes.clear();
-
         for c in simplify_string(volume_str).chars() {
             if ('0'..='7').contains(&c) {
                 self.volumes.push((c as u32 - '0' as u32) as Volume);
@@ -121,7 +115,6 @@ impl Sound {
 
     pub fn set_effects(&mut self, effect_str: &str) {
         self.effects.clear();
-
         for c in simplify_string(effect_str).chars() {
             let effect = match c {
                 'n' => EFFECT_NONE,
@@ -157,7 +150,6 @@ impl ResourceItem for Sound {
 
     fn serialize(&self) -> String {
         let mut output = String::new();
-
         if self.notes.is_empty() {
             output += "none\n";
         } else {
@@ -170,7 +162,6 @@ impl ResourceItem for Sound {
             }
             output += "\n";
         }
-
         macro_rules! stringify_data {
             ($name: ident) => {
                 if self.$name.is_empty() {
@@ -183,23 +174,19 @@ impl ResourceItem for Sound {
                 }
             };
         }
-
         stringify_data!(tones);
         stringify_data!(volumes);
         stringify_data!(effects);
         output += &format!("{}", self.speed);
-
         output
     }
 
     fn deserialize(&mut self, _version: u32, input: &str) {
         self.clear();
-
         for (i, line) in input.lines().enumerate() {
             if line == "none" {
                 continue;
             }
-
             if i == 0 {
                 string_loop!(j, value, line, 2, {
                     self.notes.push(parse_hex_string(&value).unwrap() as i8);
@@ -209,14 +196,12 @@ impl ResourceItem for Sound {
                 self.speed = line.parse().unwrap();
                 continue;
             }
-
             let data = match i {
                 1 => &mut self.tones,
                 2 => &mut self.volumes,
                 3 => &mut self.effects,
                 _ => panic!(),
             };
-
             string_loop!(j, value, line, 1, {
                 data.push(parse_hex_string(&value).unwrap() as u8);
             });

@@ -11,8 +11,8 @@ pub struct Notes {
 }
 
 impl Notes {
-    fn new(pyxel_sound: PyxelSharedSound) -> Notes {
-        Notes { pyxel_sound }
+    fn new(pyxel_sound: PyxelSharedSound) -> Self {
+        Self { pyxel_sound }
     }
 
     fn list(&self) -> &[Note] {
@@ -32,19 +32,19 @@ impl Notes {
 #[pyproto]
 impl PySequenceProtocol for Notes {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Notes::list, self)
+        define_list_len_operator!(Self::list, self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Note> {
-        define_list_get_operator!(Notes::list, self, index)
+        define_list_get_operator!(Self::list, self, index)
     }
 
     fn __setitem__(&mut self, index: isize, value: Note) -> PyResult<()> {
-        define_list_set_operator!(Notes::list_mut, self, index, value)
+        define_list_set_operator!(Self::list_mut, self, index, value)
     }
 
     fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(Notes::list_mut, self, index)
+        define_list_del_operator!(Self::list_mut, self, index)
     }
 }
 
@@ -55,8 +55,8 @@ pub struct Tones {
 }
 
 impl Tones {
-    fn new(pyxel_sound: PyxelSharedSound) -> Tones {
-        Tones { pyxel_sound }
+    fn new(pyxel_sound: PyxelSharedSound) -> Self {
+        Self { pyxel_sound }
     }
 
     fn list(&self) -> &[Tone] {
@@ -76,19 +76,19 @@ impl Tones {
 #[pyproto]
 impl PySequenceProtocol for Tones {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Tones::list, self)
+        define_list_len_operator!(Self::list, self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Tone> {
-        define_list_get_operator!(Tones::list, self, index)
+        define_list_get_operator!(Self::list, self, index)
     }
 
     fn __setitem__(&mut self, index: isize, value: Tone) -> PyResult<()> {
-        define_list_set_operator!(Tones::list_mut, self, index, value)
+        define_list_set_operator!(Self::list_mut, self, index, value)
     }
 
     fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(Tones::list_mut, self, index)
+        define_list_del_operator!(Self::list_mut, self, index)
     }
 }
 
@@ -99,8 +99,8 @@ pub struct Volumes {
 }
 
 impl Volumes {
-    fn new(pyxel_sound: PyxelSharedSound) -> Volumes {
-        Volumes { pyxel_sound }
+    fn new(pyxel_sound: PyxelSharedSound) -> Self {
+        Self { pyxel_sound }
     }
 
     fn list(&self) -> &[Volume] {
@@ -120,38 +120,38 @@ impl Volumes {
 #[pyproto]
 impl PySequenceProtocol for Volumes {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Volumes::list, self)
+        define_list_len_operator!(Self::list, self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Volume> {
-        define_list_get_operator!(Volumes::list, self, index)
+        define_list_get_operator!(Self::list, self, index)
     }
 
     fn __setitem__(&mut self, index: isize, value: Volume) -> PyResult<()> {
-        define_list_set_operator!(Volumes::list_mut, self, index, value)
+        define_list_set_operator!(Self::list_mut, self, index, value)
     }
 
     fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(Volumes::list_mut, self, index)
+        define_list_del_operator!(Self::list_mut, self, index)
     }
 }
 
 #[pyproto]
 impl PySequenceProtocol for Effects {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Effects::list, self)
+        define_list_len_operator!(Self::list, self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Effect> {
-        define_list_get_operator!(Effects::list, self, index)
+        define_list_get_operator!(Self::list, self, index)
     }
 
     fn __setitem__(&mut self, index: isize, value: Effect) -> PyResult<()> {
-        define_list_set_operator!(Effects::list_mut, self, index, value)
+        define_list_set_operator!(Self::list_mut, self, index, value)
     }
 
     fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(Effects::list_mut, self, index)
+        define_list_del_operator!(Self::list_mut, self, index)
     }
 }
 
@@ -162,8 +162,8 @@ pub struct Effects {
 }
 
 impl Effects {
-    fn new(pyxel_sound: PyxelSharedSound) -> Effects {
-        Effects { pyxel_sound }
+    fn new(pyxel_sound: PyxelSharedSound) -> Self {
+        Self { pyxel_sound }
     }
 
     fn list(&self) -> &[Effect] {
@@ -193,7 +193,7 @@ pub fn wrap_pyxel_sound(pyxel_sound: PyxelSharedSound) -> Sound {
 #[pymethods]
 impl Sound {
     #[new]
-    pub fn new() -> Sound {
+    pub fn new() -> Self {
         wrap_pyxel_sound(PyxelSound::new())
     }
 
@@ -256,6 +256,5 @@ pub fn add_sound_class(m: &PyModule) -> PyResult<()> {
     m.add_class::<Volumes>()?;
     m.add_class::<Effects>()?;
     m.add_class::<Sound>()?;
-
     Ok(())
 }

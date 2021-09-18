@@ -24,7 +24,7 @@ pub type SharedChannel = Arc<Mutex<Channel>>;
 
 impl Channel {
     pub(crate) fn new() -> SharedChannel {
-        Arc::new(Mutex::new(Channel {
+        Arc::new(Mutex::new(Self {
             oscillator: Oscillator::new(),
             sounds: Vec::new(),
             is_playing: false,
@@ -48,7 +48,6 @@ impl Channel {
         if sounds.is_empty() {
             return;
         }
-
         self.sounds = sounds.iter().map(|sound| sound.lock().clone()).collect();
         self.is_playing = true;
         self.is_looping = is_looping;
@@ -73,15 +72,12 @@ impl Channel {
         if !self.is_playing {
             return;
         }
-
         let sound = &self.sounds[self.sound_index as usize];
         let speed = max(sound.speed, 1);
-
         if self.tick_count % speed == 0 {
             if self.note_index >= sound.notes.len() as u32 {
                 self.sound_index += 1;
                 self.note_index = 0;
-
                 if self.sound_index >= self.sounds.len() as u32 {
                     if self.is_looping {
                         self.sound_index = 0;
@@ -91,14 +87,12 @@ impl Channel {
                     }
                 }
             }
-
             let sound = &self.sounds[self.sound_index as usize];
-            let note = Channel::circular_note(&sound.notes, self.note_index);
-            let tone = Channel::circular_tone(&sound.tones, self.note_index);
-            let volume = Channel::circular_volume(&sound.volumes, self.note_index);
-            let effect = Channel::circular_effect(&sound.effects, self.note_index);
+            let note = Self::circular_note(&sound.notes, self.note_index);
+            let tone = Self::circular_tone(&sound.tones, self.note_index);
+            let volume = Self::circular_volume(&sound.volumes, self.note_index);
+            let effect = Self::circular_effect(&sound.effects, self.note_index);
             let speed = max(sound.speed, 1);
-
             assert!(note <= MAX_NOTE, "invalid sound note {}", note);
             assert!(tone <= MAX_TONE, "invalid sound tone {}", tone);
             assert!(volume <= MAX_VOLUME, "invalid sound volume {}", volume);
@@ -108,7 +102,6 @@ impl Channel {
                 self.volume
             );
             assert!(effect <= MAX_EFFECT, "invalid sound effect {}", effect);
-
             if note >= 0 && volume > 0 {
                 self.oscillator.play(
                     note as f64,
@@ -118,10 +111,8 @@ impl Channel {
                     speed,
                 );
             }
-
             self.note_index += 1;
         }
-
         self.oscillator.update(blip_buf);
         self.tick_count += 1;
     }

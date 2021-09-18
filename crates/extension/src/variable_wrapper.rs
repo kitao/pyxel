@@ -26,7 +26,6 @@ impl Colors {
     pub fn assign(&mut self, list: Vec<Rgb8>) -> PyResult<()> {
         if self.list().len() == list.len() {
             self.list_mut()[..].clone_from_slice(&list[..]);
-
             Ok(())
         } else {
             Err(PyValueError::new_err("arrays must all be same length"))
@@ -37,15 +36,15 @@ impl Colors {
 #[pyproto]
 impl PySequenceProtocol for Colors {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Colors::list, self)
+        define_list_len_operator!(Self::list, self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Rgb8> {
-        define_list_get_operator!(Colors::list, self, index)
+        define_list_get_operator!(Self::list, self, index)
     }
 
     fn __setitem__(&mut self, index: isize, value: Rgb8) -> PyResult<()> {
-        define_list_set_operator!(Colors::list_mut, self, index, value)
+        define_list_set_operator!(Self::list_mut, self, index, value)
     }
 }
 
@@ -84,13 +83,11 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
             )))
         }
     };
-
     Ok(value)
 }
 
 pub fn add_module_variables(m: &PyModule) -> PyResult<()> {
     m.add_class::<Colors>()?;
     m.add_function(wrap_pyfunction!(__getattr__, m)?)?;
-
     Ok(())
 }

@@ -2,18 +2,16 @@ use std::cmp::min;
 use std::sync::Arc;
 
 use parking_lot::Mutex;
-use sdl2::audio::AudioCallback as SdlAudioCallback;
-use sdl2::audio::AudioDevice as SdlAudioDevice;
-use sdl2::audio::AudioSpecDesired as SdlAudioSpecDesired;
-use sdl2::controller::Axis as SdlAxis;
-use sdl2::controller::Button as SdlButton;
+use sdl2::audio::{
+    AudioCallback as SdlAudioCallback, AudioDevice as SdlAudioDevice,
+    AudioSpecDesired as SdlAudioSpecDesired,
+};
+use sdl2::controller::{Axis as SdlAxis, Button as SdlButton};
 use sdl2::event::Event as SdlEvent;
 use sdl2::mouse::MouseButton as SdlMouseButton;
-use sdl2::pixels::Color as SdlColor;
-use sdl2::pixels::PixelFormatEnum as SdlPixelFormat;
+use sdl2::pixels::{Color as SdlColor, PixelFormatEnum as SdlPixelFormat};
 use sdl2::rect::Rect as SdlRect;
-use sdl2::render::Texture as SdlTexture;
-use sdl2::render::WindowCanvas as SdlCanvas;
+use sdl2::render::{Texture as SdlTexture, WindowCanvas as SdlCanvas};
 use sdl2::surface::Surface as SdlSurface;
 use sdl2::video::FullscreenType as SdlFullscreenType;
 use sdl2::AudioSubsystem as SdlAudio;
@@ -54,7 +52,7 @@ pub struct Sdl2 {
 }
 
 impl Platform for Sdl2 {
-    fn new(title: &str, width: u32, height: u32, display_ratio: f64) -> Sdl2 {
+    fn new(title: &str, width: u32, height: u32, display_ratio: f64) -> Self {
         let sdl_context = sdl2::init().unwrap();
         let sdl_video = sdl_context.video().unwrap();
         let sdl_display_mode = sdl_video.desktop_display_mode(0).unwrap();
@@ -83,8 +81,7 @@ impl Platform for Sdl2 {
         let sdl_timer = sdl_context.timer().unwrap();
         let sdl_event_pump = sdl_context.event_pump().unwrap();
         let sdl_audio = sdl_context.audio().unwrap();
-
-        Sdl2 {
+        Self {
             sdl_context,
             sdl_timer,
             sdl_canvas,
@@ -110,7 +107,6 @@ impl Platform for Sdl2 {
         let mut sdl_surface =
             SdlSurface::new(width * scale, height * scale, SdlPixelFormat::RGBA32).unwrap();
         let pitch = sdl_surface.pitch();
-
         sdl_surface.with_lock_mut(|buffer: &mut [u8]| {
             for y in 0..height {
                 for x in 0..width {
@@ -119,7 +115,6 @@ impl Platform for Sdl2 {
                             let color = icon._value(x as i32, y as i32) as usize;
                             let rgb = colors[icon._value(x as i32, y as i32) as usize];
                             let offset = ((y * scale + i) * pitch + (x * scale + j) * 4) as usize;
-
                             buffer[offset] = ((rgb >> 16) & 0xff) as u8;
                             buffer[offset + 1] = ((rgb >> 8) & 0xff) as u8;
                             buffer[offset + 2] = (rgb & 0xff) as u8;
@@ -129,7 +124,6 @@ impl Platform for Sdl2 {
                 }
             }
         });
-
         self.sdl_canvas.window_mut().set_icon(&sdl_surface);
     }
 
@@ -167,23 +161,18 @@ impl Platform for Sdl2 {
     fn poll_event(&mut self) -> Option<Event> {
         loop {
             let sdl_event = self.sdl_event_pump.poll_event();
-
             if sdl_event.is_none() {
                 let (cur_mouse_x, cur_mouse_y) = self.mouse_pos();
-
                 if cur_mouse_x != self.mouse_x || cur_mouse_y != self.mouse_y {
                     self.mouse_x = cur_mouse_x;
                     self.mouse_y = cur_mouse_y;
-
                     return Some(Event::MouseMotion {
                         x: cur_mouse_x,
                         y: cur_mouse_y,
                     });
                 }
-
                 return None;
             }
-
             let event = match sdl_event.unwrap() {
                 //
                 // System Events
@@ -298,7 +287,6 @@ impl Platform for Sdl2 {
                 //
                 _ => continue,
             };
-
             return Some(event);
         }
     }
@@ -306,14 +294,12 @@ impl Platform for Sdl2 {
     fn render_screen(&mut self, screen: SharedImage, colors: &[Rgb8], bg_color: Rgb8) {
         let width = screen.lock().width();
         let height = screen.lock().height();
-
         self.sdl_texture
             .with_lock(None, |buffer: &mut [u8], pitch: usize| {
                 for i in 0..height as usize {
                     for j in 0..width as usize {
                         let offset = i * pitch + j * 3;
                         let color = colors[screen.lock()._value(j as i32, i as i32) as usize];
-
                         buffer[offset] = ((color >> 16) & 0xff) as u8;
                         buffer[offset + 1] = ((color >> 8) & 0xff) as u8;
                         buffer[offset + 2] = (color & 0xff) as u8;
@@ -333,7 +319,6 @@ impl Platform for Sdl2 {
                 .fill_rect(SdlRect::new(0, 0, display_size.0, display_size.1))
                 .unwrap();
         }
-
         let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
         let dst = SdlRect::new(
             screen_x as i32,
@@ -341,7 +326,6 @@ impl Platform for Sdl2 {
             width * screen_scale,
             height * screen_scale,
         );
-
         self.sdl_canvas
             .copy(&self.sdl_texture, None, Some(dst))
             .unwrap();
@@ -364,7 +348,6 @@ impl Platform for Sdl2 {
             .open_playback(None, &spec, |_| AudioContextHolder { audio })
             .unwrap();
         sdl_audio_device.resume();
-
         self.sdl_audio_device = Some(sdl_audio_device);
     }
 }
@@ -378,14 +361,12 @@ impl Sdl2 {
         );
         let screen_x = (window_width - self.screen_width * screen_scale) / 2;
         let screen_y = (window_height - self.screen_height * screen_scale) / 2;
-
         (screen_x, screen_y, screen_scale)
     }
 
     fn mouse_pos(&self) -> (i32, i32) {
         let (window_x, window_y) = self.sdl_canvas.window().position();
         let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
-
         let mut mouse_x = 0;
         let mut mouse_y = 0;
         unsafe {
@@ -393,7 +374,6 @@ impl Sdl2 {
         }
         mouse_x = (mouse_x - window_x - screen_x as i32) / screen_scale as i32;
         mouse_y = (mouse_y - window_y - screen_y as i32) / screen_scale as i32;
-
         (mouse_x, mouse_y)
     }
 }
