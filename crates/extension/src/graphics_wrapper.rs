@@ -24,7 +24,6 @@ fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyRes
     } else {
         type_error!("clip() takes 0 or 4 arguments");
     }
-
     Ok(())
 }
 
@@ -37,7 +36,6 @@ fn pal(col1: Option<Color>, col2: Option<Color>) -> PyResult<()> {
     } else {
         type_error!("pal() takes 0 or 2 arguments");
     }
-
     Ok(())
 }
 
@@ -111,7 +109,6 @@ fn blt(
             instance().screen.lock().blt(x, y, img.pyxel_image, u, v, w, h, color_key);
         }
     }
-
     Ok(())
 }
 
@@ -135,7 +132,6 @@ fn bltm(
             instance().screen.lock().bltm(x, y, tm.pyxel_tilemap, u, v, w, h, colkey);
         }
     }
-
     Ok(())
 }
 
@@ -162,6 +158,5 @@ pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(blt, m)?)?;
     m.add_function(wrap_pyfunction!(bltm, m)?)?;
     m.add_function(wrap_pyfunction!(text, m)?)?;
-
     Ok(())
 }

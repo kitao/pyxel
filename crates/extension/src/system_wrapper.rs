@@ -18,7 +18,6 @@ fn init(
     capture_sec: Option<u32>,
 ) -> PyResult<()> {
     let locals = PyDict::new(py);
-
     locals.set_item("os", py.import("os")?)?;
     locals.set_item("inspect", py.import("inspect")?)?;
     py.run(
@@ -26,9 +25,7 @@ fn init(
         None,
         Some(locals),
     )?;
-
     set_instance(Pyxel::new(width, height, title, fps, quit_key, capture_sec));
-
     Ok(())
 }
 
@@ -54,7 +51,6 @@ fn run(py: Python, update: &PyAny, draw: &PyAny) {
         update: &'a PyAny,
         draw: &'a PyAny,
     }
-
     impl<'a> PyxelCallback for PythonCallback<'a> {
         fn update(&mut self, _pyxel: &mut Pyxel) {
             if let Err(err) = self.update.call0() {
@@ -70,7 +66,6 @@ fn run(py: Python, update: &PyAny, draw: &PyAny) {
             }
         }
     }
-
     instance().run(&mut PythonCallback { py, update, draw });
 }
 
@@ -98,6 +93,5 @@ pub fn add_system_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(show, m)?)?;
     m.add_function(wrap_pyfunction!(flip, m)?)?;
     m.add_function(wrap_pyfunction!(quit, m)?)?;
-
     Ok(())
 }

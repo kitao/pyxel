@@ -23,7 +23,7 @@ pub type SharedTilemap = Arc<Mutex<Tilemap>>;
 
 impl Tilemap {
     pub fn new(width: u32, height: u32, image: SharedImage) -> SharedTilemap {
-        Arc::new(Mutex::new(Tilemap {
+        Arc::new(Mutex::new(Self {
             width,
             height,
             self_rect: RectArea::new(0, 0, width, height),
@@ -36,14 +36,11 @@ impl Tilemap {
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = simplify_string(data_str[0]).len() as u32 / 4;
         let height = data_str.len() as u32;
-        let tilemap = Tilemap::new(width, height, self.image.clone());
-
+        let tilemap = Self::new(width, height, self.image.clone());
         {
             let mut tilemap = tilemap.lock();
-
             for i in 0..height {
                 let src_data = simplify_string(data_str[i as usize]);
-
                 for j in 0..width {
                     let index = j as usize * 4;
                     let value = parse_hex_string(&src_data[index..index + 4]).unwrap();
@@ -55,7 +52,6 @@ impl Tilemap {
                 }
             }
         }
-
         self.blt(
             x as f64,
             y as f64,
@@ -116,7 +112,6 @@ impl ResourceItem for Tilemap {
                 }
             }
         }
-
         false
     }
 
@@ -126,7 +121,6 @@ impl ResourceItem for Tilemap {
 
     fn serialize(&self) -> String {
         let mut output = String::new();
-
         for i in 0..self.height() {
             for j in 0..self.width() {
                 let tile = self._value(j as i32, i as i32);
@@ -134,7 +128,6 @@ impl ResourceItem for Tilemap {
             }
             output += "\n";
         }
-
         output
     }
 

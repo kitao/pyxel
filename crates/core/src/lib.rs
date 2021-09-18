@@ -1,5 +1,6 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 #![allow(
+    clippy::cargo_common_metadata,
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
     clippy::cast_possible_wrap,
@@ -9,14 +10,15 @@
     clippy::missing_const_for_fn,
     clippy::missing_panics_doc,
     clippy::module_name_repetitions,
+    clippy::multiple_crate_versions,
     clippy::must_use_candidate,
     clippy::pedantic,
     clippy::range_plus_one,
     clippy::suboptimal_flops,
-    clippy::unreadable_literal,
-    clippy::use_self,
     clippy::too_many_arguments,
     clippy::too_many_lines,
+    clippy::unreadable_literal,
+    clippy::wildcard_dependencies,
     clippy::wildcard_imports
 )]
 
@@ -69,7 +71,6 @@ pub struct Pyxel {
     input: Input,
     graphics: Graphics,
     audio: Audio,
-
     pub colors: [Rgb8; COLOR_COUNT as usize],
     pub screen: SharedImage,
     pub cursor: SharedImage,
@@ -89,39 +90,34 @@ impl Pyxel {
         fps: Option<u32>,
         quit_key: Option<Key>,
         capture_sec: Option<u32>,
-    ) -> Pyxel {
+    ) -> Self {
         let title = title.unwrap_or(DEFAULT_TITLE);
         let fps = fps.unwrap_or(DEFAULT_FPS);
         let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
         let capture_sec = capture_sec.unwrap_or(DEFAULT_GIF_SEC);
-
         let mut platform = TargetPlatform::new(title, width, height, DISPLAY_RATIO);
         let system = System::new(fps, quit_key);
         let resource = Resource::new(width, height, fps, capture_sec);
         let input = Input::new();
         let graphics = Graphics::new();
         let audio = Audio::new(&mut platform);
-
         let colors = DEFAULT_COLORS;
         let screen = Image::new(width, height);
         let cursor = Graphics::new_cursor_image();
         let font = Graphics::new_font_image();
-
-        let mut pyxel = Pyxel {
+        let mut pyxel = Self {
             platform,
             system,
             resource,
             input,
             graphics,
             audio,
-
             colors,
             screen,
             cursor,
             font,
         };
         pyxel.icon(&ICON_DATA, ICON_SCALE);
-
         pyxel
     }
 }
