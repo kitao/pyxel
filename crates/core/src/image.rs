@@ -41,6 +41,7 @@ impl Image {
     pub fn from_image(filename: &str) -> SharedImage {
         let image_file = image::open(&Path::new(&filename)).unwrap().to_rgb8();
         let (width, height) = image_file.dimensions();
+
         Self::new(width, height)
     }
 
@@ -66,16 +67,21 @@ impl Image {
         let width = simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
         let image = Self::new(width, height);
+
         {
             let mut image = image.lock();
+
             for i in 0..height {
                 let src_data = simplify_string(data_str[i as usize]);
+
                 for j in 0..width {
                     let value = parse_hex_string(&src_data[j as usize..j as usize + 1]).unwrap();
+
                     image._set_value(j as i32, i as i32, value as Color);
                 }
             }
         }
+
         self.blt(
             x as f64,
             y as f64,
@@ -92,37 +98,46 @@ impl Image {
         let image_file = image::open(&Path::new(&filename)).unwrap().to_rgb8();
         let (width, height) = image_file.dimensions();
         let image = Self::new(width, height);
+
         {
             let mut image = image.lock();
             let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
+
             for i in 0..height {
                 for j in 0..width {
                     let p = image_file.get_pixel(j, i);
                     let src_rgb = (p[0], p[1], p[2]);
+
                     if let Some(color) = color_table.get(&src_rgb) {
                         image._set_value(j as i32, i as i32, *color);
                     } else {
                         let mut closest_color: Color = 0;
                         let mut closest_dist: f64 = f64::MAX;
+
                         for k in 0..COLOR_COUNT {
                             let pal_color = colors[k as usize];
+
                             let pal_rgb = (
                                 ((pal_color >> 16) & 0xff) as u8,
                                 ((pal_color >> 8) & 0xff) as u8,
                                 (pal_color & 0xff) as u8,
                             );
+
                             let dist = Self::color_dist(src_rgb, pal_rgb);
+
                             if dist < closest_dist {
                                 closest_color = k as Color;
                                 closest_dist = dist;
                             }
                         }
+
                         color_table.insert(src_rgb, closest_color);
                         image._set_value(j as i32, i as i32, closest_color);
                     }
                 }
             }
         }
+
         self.blt(
             x as f64,
             y as f64,
@@ -141,6 +156,7 @@ impl Image {
         let dx = (r1 as f64 - r2 as f64) * 0.30;
         let dy = (g1 as f64 - g2 as f64) * 0.59;
         let dz = (b1 as f64 - b2 as f64) * 0.11;
+
         dx * dx + dy * dy + dz * dz
     }
 
@@ -148,21 +164,25 @@ impl Image {
         let width = self.width();
         let height = self.height();
         let mut image = RgbImage::new(width, height);
+
         for i in 0..height {
             for j in 0..width {
                 let rgb = colors[self._value(j as i32, i as i32) as usize];
                 let r = ((rgb >> 16) & 0xff) as u8;
                 let g = ((rgb >> 8) & 0xff) as u8;
                 let b = (rgb & 0xff) as u8;
+
                 image.put_pixel(j, i, Rgb([r, g, b]));
             }
         }
+
         let image = imageops::resize(&image, width * scale, height * scale, FilterType::Nearest);
         let filename = if filename.to_lowercase().ends_with(".png") {
             filename.to_string()
         } else {
             filename.to_string() + ".png"
         };
+
         image.save(&filename).unwrap();
     }
 
@@ -182,27 +202,32 @@ impl Image {
         } else {
             panic!("unable to lock tilemap in bltm");
         };
+
         let x = as_i32(x);
         let y = as_i32(y);
         let tilemap_x = as_i32(tilemap_x);
         let tilemap_y = as_i32(tilemap_y);
         let width = as_i32(width.round());
         let height = as_i32(height.round());
+
         let tile_size = if width < 0 {
             -(TILE_SIZE as i32)
         } else {
             TILE_SIZE as i32
         };
+
         let left = self.clip_rect.left() / TILE_SIZE as i32;
         let top = self.clip_rect.top() / TILE_SIZE as i32;
         let right = (self.clip_rect.right() + TILE_SIZE as i32 - 1) / TILE_SIZE as i32;
         let bottom = (self.clip_rect.bottom() + TILE_SIZE as i32 - 1) / TILE_SIZE as i32;
+
         let dst_rect = RectArea::new(
             left,
             top,
             (right - left + 1) as u32,
             (bottom - top + 1) as u32,
         );
+
         let CopyArea {
             dst_x: _,
             dst_y: _,
@@ -224,13 +249,16 @@ impl Image {
             width,
             height,
         );
+
         if width == 0 || height == 0 {
             return;
         }
+
         for i in 0..height {
             for j in 0..width {
                 let tile =
                     tilemap._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
+
                 self.blt(
                     (x + TILE_SIZE as i32 * j) as f64,
                     (y + TILE_SIZE as i32 * i) as f64,
@@ -250,22 +278,29 @@ impl Image {
         let y = as_i32(y);
         let color = self._palette_value(color);
         let palette1 = self._palette()[1];
+
         self.pal(1, color);
+
         let start_x = x;
         let mut x = x;
         let mut y = y;
+
         for c in string.chars() {
             if c == '\n' {
                 x = start_x;
                 y += FONT_HEIGHT as i32;
+
                 continue;
             }
+
             if c < MIN_FONT_CODE || c > MAX_FONT_CODE {
                 continue;
             }
+
             let code = c as i32 - MIN_FONT_CODE as i32;
             let src_x = (code % FONT_ROW_COUNT as i32) * FONT_WIDTH as i32;
             let src_y = (code / FONT_ROW_COUNT as i32) * FONT_HEIGHT as i32;
+
             self.blt(
                 x as f64,
                 y as f64,
@@ -276,8 +311,10 @@ impl Image {
                 FONT_HEIGHT as f64,
                 Some(0),
             );
+
             x += FONT_WIDTH as i32;
         }
+
         self.pal(1, palette1);
     }
 }
@@ -329,6 +366,7 @@ impl ResourceItem for Image {
                 }
             }
         }
+
         false
     }
 
@@ -338,12 +376,15 @@ impl ResourceItem for Image {
 
     fn serialize(&self) -> String {
         let mut output = String::new();
+
         for i in 0..self.height() {
             for j in 0..self.width() {
                 output += &format!("{:1x}", self._value(j as i32, i as i32));
             }
+
             output += "\n";
         }
+
         output
     }
 

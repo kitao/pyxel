@@ -10,6 +10,7 @@ pub struct Profiler {
 impl Profiler {
     pub fn new(measure_frame_count: u32) -> Self {
         assert!(measure_frame_count >= 1, "invalid measure frame count");
+
         Self {
             measure_frame_count,
             frame_count: 0,
@@ -37,6 +38,7 @@ impl Profiler {
     pub fn end(&mut self, tick_count: u32) {
         self.total_time += tick_count - self.start_time;
         self.frame_count += 1;
+
         if self.frame_count >= self.measure_frame_count {
             self.average_time = self.total_time as f64 / self.frame_count as f64;
             self.average_fps = 1000.0 / self.average_time;
