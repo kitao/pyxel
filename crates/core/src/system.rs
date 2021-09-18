@@ -230,10 +230,10 @@ impl Pyxel {
         }
         let mut screen = self.screen.lock();
         let clip_rect = screen._clip_rect();
-        let palette1 = screen._palette()[1];
-        let palette2 = screen._palette()[2];
         screen.clip0();
+        let palette1 = screen._palette()[1];
         screen.pal(1, 1);
+        let palette2 = screen._palette()[2];
         screen.pal(2, 9);
         let fps = format!("{:.*}", 2, self.system.fps_profiler.average_fps());
         screen.text(1.0, 0.0, &fps, 1, self.font.clone());
@@ -264,8 +264,8 @@ impl Pyxel {
         }
         let mut screen = self.screen.lock();
         let clip_rect = screen._clip_rect();
-        let palette = *screen._palette();
         screen.clip0();
+        let palette = *screen._palette();
         screen.pal0();
         screen.blt(
             x as f64,
