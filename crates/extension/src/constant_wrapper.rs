@@ -367,6 +367,5 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(GAMEPAD2_BUTTON_DPAD_DOWN)?;
     add_constant!(GAMEPAD2_BUTTON_DPAD_LEFT)?;
     add_constant!(GAMEPAD2_BUTTON_DPAD_RIGHT)?;
-
     Ok(())
 }
