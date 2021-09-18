@@ -3,6 +3,7 @@ macro_rules! string_loop {
         for $index in 0..($string.len() / $step) {
             let index = $index * $step;
             let $piece = $string[index..index + $step].to_string();
+
             $block
         }
     };
@@ -27,8 +28,10 @@ pub fn simplify_string(string: &str) -> String {
 pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
     let string = string.to_ascii_lowercase();
     let mut result: u32 = 0;
+
     for c in string.chars() {
         result *= 0x10;
+
         if ('0'..='9').contains(&c) {
             result += c as u32 - '0' as u32;
         } else if ('a'..='f').contains(&c) {
@@ -37,13 +40,16 @@ pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
             return Err("invalid hex string");
         }
     }
+
     Ok(result)
 }
 
 pub fn parse_version_string(string: &str) -> Result<u32, &str> {
     let mut version = 0;
+
     for (i, number) in simplify_string(string).split('.').enumerate() {
         let digit = number.len();
+
         let number = if i > 0 && digit == 1 {
             number.to_string() + "0"
         } else if i == 0 || digit == 2 {
@@ -51,12 +57,14 @@ pub fn parse_version_string(string: &str) -> Result<u32, &str> {
         } else {
             return Err("invalid version string");
         };
+
         if let Ok(number) = number.parse::<u32>() {
             version = version * 100 + number;
         } else {
             return Err("invalid version string");
         }
     }
+
     Ok(version)
 }
 
@@ -67,6 +75,7 @@ mod tests {
     #[test]
     fn string_loop_() {
         let test_string = "TEST_STRING";
+
         string_loop!(i, value, test_string, 1, {
             match i {
                 3 => {
@@ -78,6 +87,7 @@ mod tests {
                 _ => {}
             }
         });
+
         string_loop!(i, value, test_string, 3, {
             match i {
                 0 => {

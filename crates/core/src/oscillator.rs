@@ -64,6 +64,7 @@ impl Oscillator {
         self.volume = volume;
         self.effect = effect;
         self.duration = duration;
+
         if effect == EFFECT_SLIDE {
             self.slide.pitch = (self.pitch - last_pitch) / self.duration as f64;
             self.pitch = last_pitch;
@@ -81,19 +82,25 @@ impl Oscillator {
             if self.amplitude != 0 {
                 blip_buf.add_delta(0, -(self.amplitude as i32));
             }
+
             self.time = 0;
             self.amplitude = 0;
+
             return;
         }
+
         let pitch = self.pitch
             + if self.effect == EFFECT_VIBRATO {
                 self.pitch * Self::triangle(self.vibrato.phase) * VIBRATO_DEPTH
             } else {
                 0.0
             };
+
         let period = (CLOCK_RATE as f64 / pitch / OSCILLATOR_RESOLUTION as f64) as u32;
+
         while self.time < TICK_CLOCK_COUNT {
             let last_amplitude = self.amplitude;
+
             self.phase = (self.phase + 1) % OSCILLATOR_RESOLUTION;
             self.amplitude = (match self.tone {
                 TONE_TRIANGLE => Self::triangle(self.phase) * TRIANGLE_VOLUME_FACTOR,
@@ -104,9 +111,12 @@ impl Oscillator {
             } * MASTER_VOLUME_FACTOR
                 * self.volume
                 * i16::MAX as f64) as i16;
+
             blip_buf.add_delta(self.time, self.amplitude as i32 - last_amplitude as i32);
+
             self.time += period;
         }
+
         match self.effect {
             EFFECT_NONE => {}
             EFFECT_SLIDE => {
@@ -123,6 +133,7 @@ impl Oscillator {
             }
             _ => panic!("invalid effect {}", self.effect),
         }
+
         self.duration -= 1;
         self.time -= TICK_CLOCK_COUNT;
     }
@@ -160,6 +171,7 @@ impl Oscillator {
             self.noise >>= 1;
             self.noise |= ((self.noise ^ (self.noise >> 1)) & 1) << 15;
         }
+
         (self.noise & 1) as f64 * 2.0 - 1.0
     }
 }

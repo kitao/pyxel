@@ -95,16 +95,19 @@ impl Pyxel {
         let fps = fps.unwrap_or(DEFAULT_FPS);
         let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
         let capture_sec = capture_sec.unwrap_or(DEFAULT_GIF_SEC);
+
         let mut platform = TargetPlatform::new(title, width, height, DISPLAY_RATIO);
         let system = System::new(fps, quit_key);
         let resource = Resource::new(width, height, fps, capture_sec);
         let input = Input::new();
         let graphics = Graphics::new();
         let audio = Audio::new(&mut platform);
+
         let colors = DEFAULT_COLORS;
         let screen = Image::new(width, height);
         let cursor = Graphics::new_cursor_image();
         let font = Graphics::new_font_image();
+
         let mut pyxel = Self {
             platform,
             system,
@@ -117,7 +120,9 @@ impl Pyxel {
             cursor,
             font,
         };
+
         pyxel.icon(&ICON_DATA, ICON_SCALE);
+
         pyxel
     }
 }

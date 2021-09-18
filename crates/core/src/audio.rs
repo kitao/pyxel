@@ -28,15 +28,20 @@ pub struct Audio {
 impl Audio {
     pub fn new<T: Platform>(platform: &mut T) -> Self {
         let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
-        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
         let channels = array![_ => Channel::new(); CHANNEL_COUNT as usize];
         let sounds = array![_ => Sound::new(); SOUND_COUNT as usize];
         let musics = array![_ => Music::new(); MUSIC_COUNT as usize];
-        let audio_core = Arc::new(Mutex::new(AudioCore {
-            blip_buf,
-            channels: channels.clone(),
-        }));
-        platform.start_audio(SAMPLE_RATE, SAMPLE_COUNT, audio_core);
+
+        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
+        platform.start_audio(
+            SAMPLE_RATE,
+            SAMPLE_COUNT,
+            Arc::new(Mutex::new(AudioCore {
+                blip_buf,
+                channels: channels.clone(),
+            })),
+        );
+
         Self {
             channels,
             sounds,
@@ -48,10 +53,12 @@ impl Audio {
 impl AudioCallback for AudioCore {
     fn update(&mut self, out: &mut [i16]) {
         let mut samples = self.blip_buf.read_samples(out, false);
+
         while samples < out.len() {
             for channel in &mut self.channels {
                 channel.lock().update(&mut self.blip_buf);
             }
+
             self.blip_buf.end_frame(TICK_CLOCK_COUNT);
             samples += self.blip_buf.read_samples(&mut out[samples..], false);
         }
@@ -79,10 +86,12 @@ impl Pyxel {
         if sequence.is_empty() {
             return;
         }
+
         let sounds = sequence
             .iter()
             .map(|sound_no| self.audio.sounds[*sound_no as usize].clone())
             .collect();
+
         self.audio.channels[channel_no as usize]
             .lock()
             .play(sounds, is_looping);
@@ -96,6 +105,7 @@ impl Pyxel {
 
     pub fn playm(&mut self, music_no: u32, is_looping: bool) {
         let music = self.audio.musics[music_no as usize].clone();
+
         for i in 0..CHANNEL_COUNT {
             self.play(i, &music.lock().sequences[i as usize], is_looping);
         }
