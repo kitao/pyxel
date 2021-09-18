@@ -1,17 +1,12 @@
 import pyxel
 
-from .constants import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
-    MAX_SOUND_LENGTH,
-    PIANO_ROLL_BACKGROUND_COLOR,
-    PIANO_ROLL_CURSOR_EDIT_COLOR,
-    PIANO_ROLL_CURSOR_PLAY_COLOR,
-    PIANO_ROLL_NOTE_COLOR,
-    PIANO_ROLL_REST_COLOR,
-)
+from .settings import (EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_SOUND_LENGTH,
+                       PIANO_ROLL_BACKGROUND_COLOR,
+                       PIANO_ROLL_CURSOR_EDIT_COLOR,
+                       PIANO_ROLL_CURSOR_PLAY_COLOR, PIANO_ROLL_NOTE_COLOR,
+                       PIANO_ROLL_REST_COLOR)
 from .widget import Widget
-from .widget.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+from .widget.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 
 class PianoRoll(Widget):
