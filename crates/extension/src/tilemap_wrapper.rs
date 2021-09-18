@@ -58,7 +58,6 @@ impl Tilemap {
                 self.pyxel_tilemap.lock().image = instance().image(img);
             }
         }
-
         Ok(())
     }
 
