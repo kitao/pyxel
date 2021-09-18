@@ -34,12 +34,10 @@ impl Graphics {
         let image = Image::new(width, height);
         {
             let mut image = image.lock();
-
             for (i, data) in FONT_DATA.iter().enumerate() {
                 let row = i as u32 / FONT_ROW_COUNT;
                 let col = i as u32 % FONT_ROW_COUNT;
                 let mut data = *data;
-
                 for j in 0..FONT_HEIGHT {
                     for k in 0..FONT_WIDTH {
                         image._set_value(

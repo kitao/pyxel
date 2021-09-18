@@ -415,7 +415,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             for j in 0..width {
                 let value = canvas[(src_y + sign_y * i + offset_y) as usize]
                     [(src_x + sign_x * j + offset_x) as usize];
-
                 if let Some(transparent) = transparent {
                     if value == transparent {
                         continue;

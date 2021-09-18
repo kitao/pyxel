@@ -1,9 +1,7 @@
 use crate::key::KEY_ESCAPE;
 use crate::types::{Color, Effect, Key, Note, Rgb8, Speed, Tone, Volume};
 
-//
 // System
-//
 pub const PYXEL_VERSION: &str = "1.5.0";
 
 pub const DEFAULT_TITLE: &str = "Pyxel";
@@ -38,18 +36,14 @@ pub const ICON_DATA: [&str; ICON_SIZE as usize] = [
     "0000000110000000",
 ];
 
-//
 // Resource
-//
 pub const APPLICATION_FILE_EXTENSION: &str = "pyxapp";
 pub const RESOURCE_FILE_EXTENSION: &str = "pyxres";
 pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
 
 pub const CAPTURE_SCALE: u32 = 2;
 
-//
 // Graphics
-//
 pub const COLOR_COUNT: u32 = 16;
 
 pub const IMAGE_COUNT: u32 = 3;
@@ -107,9 +101,7 @@ pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] 
     0x0E24E0, 0x64C460, 0x444440, 0xC464C0, 0x6C0000, 0xEEEEE0,
 ];
 
-//
 // Audio
-//
 pub const CLOCK_RATE: u32 = 1789773; // 1.78 MHz clock rate
 pub const SAMPLE_RATE: u32 = 44100; // 44.1 kHz sample rate
 pub const SAMPLE_COUNT: u32 = SAMPLE_RATE / 10;
