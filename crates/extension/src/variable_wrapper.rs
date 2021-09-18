@@ -51,16 +51,12 @@ impl PySequenceProtocol for Colors {
 #[pyfunction]
 fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
     let value = match name {
-        //
         // System
-        //
         "width" => instance().width().to_object(py),
         "height" => instance().height().to_object(py),
         "frame_count" => instance().frame_count().to_object(py),
 
-        //
         // Input
-        //
         "mouse_x" => instance().mouse_x().to_object(py),
         "mouse_y" => instance().mouse_y().to_object(py),
         "mouse_wheel" => instance().mouse_wheel().to_object(py),
@@ -68,14 +64,13 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "input_text" => instance().input_text().to_object(py),
         "drop_files" => instance().drop_files().to_object(py),
 
-        //
         // Graphics
-        //
         "colors" => Py::new(py, Colors)?.into_py(py),
         "screen" => wrap_pyxel_image(instance().screen.clone()).into_py(py),
         "cursor" => wrap_pyxel_image(instance().cursor.clone()).into_py(py),
         "font" => wrap_pyxel_image(instance().font.clone()).into_py(py),
 
+        // others
         _ => {
             return Err(PyAttributeError::new_err(format!(
                 "module 'pyxel' has no attribute '{}'",

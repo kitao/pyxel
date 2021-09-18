@@ -46,16 +46,12 @@ impl Input {
 
     pub fn process_input_event(&mut self, event: Event, frame_count: u32) {
         match event {
-            //
             // System Events
-            //
             Event::Quit => {}
             Event::DropFile { filename } => {
                 self.drop_files.push(filename);
             }
-            //
             // Key Events
-            //
             Event::KeyDown { key } => {
                 if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
                     self.press_key(key, frame_count);
@@ -76,9 +72,7 @@ impl Input {
             Event::TextInput { text } => {
                 self.input_text += &text;
             }
-            //
             // Mouse Events
-            //
             Event::MouseMotion { x, y } => {
                 self.key_values.insert(MOUSE_POS_X, x);
                 self.key_values.insert(MOUSE_POS_Y, y);
@@ -93,10 +87,7 @@ impl Input {
                 *self.key_values.entry(MOUSE_WHEEL_X).or_insert(0) += x;
                 *self.key_values.entry(MOUSE_WHEEL_Y).or_insert(0) += y;
             }
-
-            //
             // Controller Events
-            //
             Event::ControllerAxisMotion { which, axis, value } => {
                 let offset = if which == 0 {
                     0
@@ -116,7 +107,6 @@ impl Input {
                 } else {
                     return;
                 };
-
                 self.press_key(GAMEPAD1_BUTTON_A + button as Key + offset, frame_count);
             }
             Event::ControllerButtonUp { which, button } => {

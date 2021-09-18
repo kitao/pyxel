@@ -1,9 +1,7 @@
 # flake8: noqa
 from typing import Callable, List, Optional, Tuple, Union
 
-#
 # constants
-#
 PYXEL_VERSION: str
 
 APPLICATION_FILE_EXTENSION: str
@@ -51,9 +49,7 @@ EFFECT_SLIDE: int
 EFFECT_VIBRATO: int
 EFFECT_FADEOUT: int
 
-#
 # key
-#
 KEY_NONE: int
 KEY_A: int
 KEY_B: int
@@ -357,9 +353,7 @@ GAMEPAD2_BUTTON_DPAD_DOWN: int
 GAMEPAD2_BUTTON_DPAD_LEFT: int
 GAMEPAD2_BUTTON_DPAD_RIGHT: int
 
-#
 # System
-#
 width: int
 height: int
 frame_count: int
@@ -382,9 +376,7 @@ def flip() -> None: ...
 def quit() -> None: ...
 def cli() -> None: ...
 
-#
 # Resource
-#
 def load(
     filename: str,
     *,
@@ -405,9 +397,7 @@ def screenshot() -> None: ...
 def reset_capture() -> None: ...
 def screencast() -> None: ...
 
-#
 # Input
-#
 mouse_x: int
 mouse_y: int
 mouse_wheel: int
@@ -425,9 +415,7 @@ def set_btnr(key: int) -> None: ...
 def set_btnv(key: int, val: int) -> None: ...
 def move_mouse(x: int, y: int) -> None: ...
 
-#
 # Graphics
-#
 class Image: ...
 class Tilemap: ...
 
@@ -493,9 +481,7 @@ def bltm(
 ) -> None: ...
 def text(x: float, y: float, string: str, col: int) -> None: ...
 
-#
 # Audio
-#
 class Channel: ...
 class Sound: ...
 class Music: ...
@@ -510,9 +496,7 @@ def play(
 def playm(msc: int, *, loop: Optional[bool]) -> None: ...
 def stop(ch: Optional[int]) -> None: ...
 
-#
 # Image class
-#
 class Image:
     width: int
     height: int
@@ -581,9 +565,7 @@ class Image:
         self, x: float, y: float, s: str, col: int, font: Optional[Image]
     ) -> None: ...
 
-#
 # Tilemap class
-#
 class Tilemap:
     width: int
     height: int
@@ -654,9 +636,7 @@ class Tilemap:
         tilekey: Optional[Tuple[int, int]],
     ) -> None: ...
 
-#
 # Channel class
-#
 class Channel:
     volume: int
     def play_pos(self) -> Optional[Tuple[int, int]]: ...
@@ -665,9 +645,7 @@ class Channel:
     ) -> None: ...
     def stop(self) -> None: ...
 
-#
 # Sound class
-#
 class Sound:
     notes: List[int]
     tones: List[int]
@@ -688,9 +666,7 @@ class Sound:
     def set_volumes(self, volumes: str) -> None: ...
     def set_effects(self, effects: str) -> None: ...
 
-#
 # Music class
-#
 class Music:
     sequences: List[List[int]]
     def __init__(self) -> None: ...

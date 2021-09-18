@@ -123,7 +123,6 @@ impl Pyxel {
             let mut contents = String::new();
             file.read_to_string(&mut contents).unwrap();
             version = parse_version_string(&contents).unwrap();
-
             if version > parse_version_string(PYXEL_VERSION).unwrap() {
                 panic!("unsupported resource file version '{}'", contents);
             }
