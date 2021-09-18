@@ -85,5 +85,6 @@ fn pyxel_extension(_py: Python, m: &PyModule) -> PyResult<()> {
     add_input_functions(m)?;
     add_graphics_functions(m)?;
     add_audio_functions(m)?;
+
     Ok(())
 }

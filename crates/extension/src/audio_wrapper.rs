@@ -44,6 +44,7 @@ fn play(ch: u32, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
             instance().channel(ch).lock().play(sounds, r#loop.unwrap_or(false));
         }
     }
+
     Ok(())
 }
 
@@ -70,5 +71,6 @@ pub fn add_audio_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(play, m)?)?;
     m.add_function(wrap_pyfunction!(playm, m)?)?;
     m.add_function(wrap_pyfunction!(stop, m)?)?;
+
     Ok(())
 }
