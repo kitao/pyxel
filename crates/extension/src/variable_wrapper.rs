@@ -26,6 +26,7 @@ impl Colors {
     pub fn assign(&mut self, list: Vec<Rgb8>) -> PyResult<()> {
         if self.list().len() == list.len() {
             self.list_mut()[..].clone_from_slice(&list[..]);
+
             Ok(())
         } else {
             Err(PyValueError::new_err("arrays must all be same length"))
@@ -78,11 +79,13 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
             )))
         }
     };
+
     Ok(value)
 }
 
 pub fn add_module_variables(m: &PyModule) -> PyResult<()> {
     m.add_class::<Colors>()?;
     m.add_function(wrap_pyfunction!(__getattr__, m)?)?;
+
     Ok(())
 }

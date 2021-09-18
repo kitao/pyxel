@@ -11,12 +11,14 @@ impl<'a> Interpreter {
     pub fn new() -> Self {
         let gil = Python::acquire_gil();
         let locals = PyDict::new(gil.python());
+
         Self { gil, locals }
     }
 
     pub fn add_import_paths(&self, paths: &[&str]) {
         self.import("os");
         self.import("sys");
+
         for path in paths.iter().rev() {
             let code = format!(
                 r#"
@@ -25,12 +27,14 @@ sys.path.insert(1, os.path.join(os.path.dirname("{}"), "{}"))
                 command_args()[0],
                 path
             );
+
             self.run_code(&code);
         }
     }
 
     pub fn import(&self, module: &str) {
         let py = self.gil.python();
+
         self.locals
             .set_item(py, module, py.import(module).unwrap())
             .unwrap();
@@ -41,6 +45,7 @@ sys.path.insert(1, os.path.join(os.path.dirname("{}"), "{}"))
         for<'s> T: FromPyObject<'s>,
     {
         let py = self.gil.python();
+
         py.eval(code, None, Some(&self.locals))
             .unwrap()
             .extract(py)
@@ -57,6 +62,7 @@ sys.path.insert(1, os.path.join(os.path.dirname("{}"), "{}"))
     pub fn run_file(&self, filename: &str) {
         self.import("importlib");
         self.import("importlib.util");
+
         let code = format!(
             r#"
 spec = importlib.util.spec_from_file_location("__main__", "{}")
@@ -66,6 +72,7 @@ del spec, file
             "#,
             filename
         );
+
         self.run_code(&code);
     }
 }
