@@ -19,12 +19,12 @@ pub fn wrap_pyxel_image(pyxel_image: PyxelSharedImage) -> Image {
 #[pymethods]
 impl Image {
     #[new]
-    pub fn new(width: u32, height: u32) -> Image {
+    pub fn new(width: u32, height: u32) -> Self {
         wrap_pyxel_image(PyxelImage::new(width, height))
     }
 
     #[staticmethod]
-    pub fn from_image(filename: &str) -> Image {
+    pub fn from_image(filename: &str) -> Self {
         wrap_pyxel_image(PyxelImage::from_image(filename))
     }
 
@@ -68,7 +68,6 @@ impl Image {
         } else {
             type_error!("clip() takes 0 or 4 arguments");
         }
-
         Ok(())
     }
 
@@ -136,7 +135,6 @@ impl Image {
                 self.pyxel_image.lock().blt(x, y, img.pyxel_image, u, v, w, h, colkey);
             }
         }
-
         Ok(())
     }
 
@@ -164,11 +162,10 @@ impl Image {
                 self.pyxel_image.lock().bltm(x, y, tm.pyxel_tilemap, u, v, w, h, colkey);
             }
         }
-
         Ok(())
     }
 
-    pub fn text(&self, x: f64, y: f64, s: &str, col: Color, font: Option<Image>) {
+    pub fn text(&self, x: f64, y: f64, s: &str, col: Color, font: Option<Self>) {
         if let Some(font) = font {
             self.pyxel_image.lock().text(x, y, s, col, font.pyxel_image);
         } else {
@@ -181,6 +178,5 @@ impl Image {
 
 pub fn add_image_class(m: &PyModule) -> PyResult<()> {
     m.add_class::<Image>()?;
-
     Ok(())
 }

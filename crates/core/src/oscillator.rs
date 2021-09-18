@@ -40,9 +40,9 @@ pub struct Oscillator {
 }
 
 impl Oscillator {
-    pub fn new() -> Oscillator {
-        Oscillator {
-            pitch: Oscillator::note_to_pitch(0.0),
+    pub fn new() -> Self {
+        Self {
+            pitch: Self::note_to_pitch(0.0),
             tone: TONE_TRIANGLE,
             volume: 0.0,
             effect: EFFECT_NONE,
@@ -59,13 +59,11 @@ impl Oscillator {
 
     pub fn play(&mut self, note: f64, tone: Tone, volume: f64, effect: Effect, duration: u32) {
         let last_pitch = self.pitch;
-
-        self.pitch = Oscillator::note_to_pitch(note);
+        self.pitch = Self::note_to_pitch(note);
         self.tone = tone;
         self.volume = volume;
         self.effect = effect;
         self.duration = duration;
-
         if effect == EFFECT_SLIDE {
             self.slide.pitch = (self.pitch - last_pitch) / self.duration as f64;
             self.pitch = last_pitch;
@@ -83,39 +81,32 @@ impl Oscillator {
             if self.amplitude != 0 {
                 blip_buf.add_delta(0, -(self.amplitude as i32));
             }
-
             self.time = 0;
             self.amplitude = 0;
             return;
         }
-
         let pitch = self.pitch
             + if self.effect == EFFECT_VIBRATO {
-                self.pitch * Oscillator::triangle(self.vibrato.phase) * VIBRATO_DEPTH
+                self.pitch * Self::triangle(self.vibrato.phase) * VIBRATO_DEPTH
             } else {
                 0.0
             };
         let period = (CLOCK_RATE as f64 / pitch / OSCILLATOR_RESOLUTION as f64) as u32;
-
         while self.time < TICK_CLOCK_COUNT {
             let last_amplitude = self.amplitude;
-
             self.phase = (self.phase + 1) % OSCILLATOR_RESOLUTION;
             self.amplitude = (match self.tone {
-                TONE_TRIANGLE => Oscillator::triangle(self.phase) * TRIANGLE_VOLUME_FACTOR,
-                TONE_SQUARE => Oscillator::square(self.phase) * SQUARE_VOLUME_FACTOR,
-                TONE_PULSE => Oscillator::pulse(self.phase) * PULSE_VOLUME_FACTOR,
+                TONE_TRIANGLE => Self::triangle(self.phase) * TRIANGLE_VOLUME_FACTOR,
+                TONE_SQUARE => Self::square(self.phase) * SQUARE_VOLUME_FACTOR,
+                TONE_PULSE => Self::pulse(self.phase) * PULSE_VOLUME_FACTOR,
                 TONE_NOISE => self.noise(self.phase) * NOISE_VOLUME_FACTOR,
                 _ => panic!("invalid tone {}", self.tone),
             } * MASTER_VOLUME_FACTOR
                 * self.volume
                 * i16::MAX as f64) as i16;
-
             blip_buf.add_delta(self.time, self.amplitude as i32 - last_amplitude as i32);
-
             self.time += period;
         }
-
         match self.effect {
             EFFECT_NONE => {}
             EFFECT_SLIDE => {
@@ -132,7 +123,6 @@ impl Oscillator {
             }
             _ => panic!("invalid effect {}", self.effect),
         }
-
         self.duration -= 1;
         self.time -= TICK_CLOCK_COUNT;
     }

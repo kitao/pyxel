@@ -12,8 +12,8 @@ pub struct Sequence {
 }
 
 impl Sequence {
-    fn new(pyxel_music: PyxelSharedMusic, channel_no: u32) -> Sequence {
-        Sequence {
+    fn new(pyxel_music: PyxelSharedMusic, channel_no: u32) -> Self {
+        Self {
             pyxel_music,
             channel_no,
         }
@@ -41,19 +41,19 @@ impl Sequence {
 #[pyproto]
 impl PySequenceProtocol for Sequence {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Sequence::list, self)
+        define_list_len_operator!(Self::list, self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<u32> {
-        define_list_get_operator!(Sequence::list, self, index)
+        define_list_get_operator!(Self::list, self, index)
     }
 
     fn __setitem__(&mut self, index: isize, value: u32) -> PyResult<()> {
-        define_list_set_operator!(Sequence::list_mut, self, index, value)
+        define_list_set_operator!(Self::list_mut, self, index, value)
     }
 
     fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(Sequence::list_mut, self, index)
+        define_list_del_operator!(Self::list_mut, self, index)
     }
 }
 
@@ -64,12 +64,11 @@ pub struct Sequences {
 }
 
 impl Sequences {
-    fn new(pyxel_music: PyxelSharedMusic) -> Sequences {
+    fn new(pyxel_music: PyxelSharedMusic) -> Self {
         let sequences = (0..CHANNEL_COUNT)
             .map(|channel_no| Sequence::new(pyxel_music.clone(), channel_no as u32))
             .collect();
-
-        Sequences { sequences }
+        Self { sequences }
     }
 
     fn list(&self) -> &Vec<Sequence> {
@@ -86,11 +85,11 @@ pub struct Music {
 #[pyproto]
 impl PySequenceProtocol for Sequences {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Sequences::list, self)
+        define_list_len_operator!(Self::list, self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Sequence> {
-        define_list_get_operator!(Sequences::list, self, index)
+        define_list_get_operator!(Self::list, self, index)
     }
 }
 
@@ -101,7 +100,7 @@ pub fn wrap_pyxel_music(pyxel_music: PyxelSharedMusic) -> Music {
 #[pymethods]
 impl Music {
     #[new]
-    pub fn new() -> Music {
+    pub fn new() -> Self {
         wrap_pyxel_music(PyxelMusic::new())
     }
 
@@ -119,6 +118,5 @@ pub fn add_music_class(m: &PyModule) -> PyResult<()> {
     m.add_class::<Sequence>()?;
     m.add_class::<Sequences>()?;
     m.add_class::<Music>()?;
-
     Ok(())
 }
