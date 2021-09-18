@@ -1,5 +1,4 @@
 import pyxel
-from pyxel.ui import Widget
 
 from .constants import (
     EDITOR_IMAGE_X,
@@ -12,6 +11,7 @@ from .constants import (
     MUSIC_FIELD_SOUND_NORMAL_COLOR,
     TEXT_LABEL_COLOR,
 )
+from .widget import Widget
 
 
 class MusicField(Widget):

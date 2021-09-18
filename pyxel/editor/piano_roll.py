@@ -1,6 +1,4 @@
 import pyxel
-from pyxel.ui import Widget
-from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 from .constants import (
     EDITOR_IMAGE_X,
@@ -12,6 +10,8 @@ from .constants import (
     PIANO_ROLL_NOTE_COLOR,
     PIANO_ROLL_REST_COLOR,
 )
+from .widget import Widget
+from .widget.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 
 class PianoRoll(Widget):

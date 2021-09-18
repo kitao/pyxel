@@ -6,8 +6,6 @@ from .constants import (
     BUTTON_ENABLED_COLOR,
     BUTTON_PRESSED_COLOR,
     BUTTON_TEXT_COLOR,
-    FONT_HEIGHT,
-    FONT_WIDTH,
 )
 
 
@@ -20,7 +18,12 @@ class TextButton(Button):
 
     def __init__(self, parent, x, y, text, **kwargs):
         super().__init__(
-            parent, x, y, len(text) * FONT_WIDTH + 3, FONT_HEIGHT + 1, **kwargs
+            parent,
+            x,
+            y,
+            len(text) * pyxel.FONT_WIDTH + 3,
+            pyxel.FONT_HEIGHT + 1,
+            **kwargs
         )
 
         self._text = text

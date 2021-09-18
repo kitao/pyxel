@@ -1,5 +1,4 @@
 import pyxel
-from pyxel.ui import Widget
 
 from .constants import (
     TOOL_BUCKET,
@@ -10,6 +9,7 @@ from .constants import (
     TOOL_RECTB,
     TOOL_SELECT,
 )
+from .widget import Widget
 
 
 class Editor(Widget):

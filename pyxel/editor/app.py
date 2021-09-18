@@ -1,14 +1,6 @@
 import os
 
 import pyxel
-from pyxel.ui import ImageButton, RadioButton, Widget
-from pyxel.ui.constants import (
-    WIDGET_BACKGROUND_COLOR,
-    WIDGET_HOLD_TIME,
-    WIDGET_PANEL_COLOR,
-    WIDGET_REPEAT_TIME,
-    WIDGET_SHADOW_COLOR,
-)
 
 from .constants import (
     APP_HEIGHT,
@@ -22,6 +14,14 @@ from .image_editor import ImageEditor
 from .music_editor import MusicEditor
 from .sound_editor import SoundEditor
 from .tilemap_editor import TileMapEditor
+from .widget import ImageButton, RadioButton, Widget
+from .widget.constants import (
+    WIDGET_BACKGROUND_COLOR,
+    WIDGET_HOLD_TIME,
+    WIDGET_PANEL_COLOR,
+    WIDGET_REPEAT_TIME,
+    WIDGET_SHADOW_COLOR,
+)
 
 
 class App(Widget):
