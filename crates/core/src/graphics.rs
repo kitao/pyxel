@@ -19,12 +19,15 @@ impl Graphics {
     pub fn new() -> Self {
         let images = array![_ => Image::new(IMAGE_SIZE, IMAGE_SIZE); IMAGE_COUNT as usize];
         let tilemaps = array![_ => Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()); TILEMAP_COUNT as usize];
+
         Self { images, tilemaps }
     }
 
     pub fn new_cursor_image() -> SharedImage {
         let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
+
         image.lock().set(0, 0, &CURSOR_DATA);
+
         image
     }
 
@@ -32,12 +35,15 @@ impl Graphics {
         let width = FONT_WIDTH * FONT_ROW_COUNT;
         let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + FONT_ROW_COUNT - 1) / FONT_ROW_COUNT);
         let image = Image::new(width, height);
+
         {
             let mut image = image.lock();
+
             for (i, data) in FONT_DATA.iter().enumerate() {
                 let row = i as u32 / FONT_ROW_COUNT;
                 let col = i as u32 % FONT_ROW_COUNT;
                 let mut data = *data;
+
                 for j in 0..FONT_HEIGHT {
                     for k in 0..FONT_WIDTH {
                         image._set_value(
@@ -45,11 +51,13 @@ impl Graphics {
                             (FONT_HEIGHT * row + j) as i32,
                             if (data & 0x800000) == 0 { 0 } else { 1 },
                         );
+
                         data <<= 1;
                     }
                 }
             }
         }
+
         image
     }
 }

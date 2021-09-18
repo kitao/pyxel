@@ -48,12 +48,14 @@ pub trait ResourceItem {
 impl Resource {
     pub fn new(width: u32, height: u32, fps: u32, capture_sec: u32) -> Self {
         let max_screen_count = fps * capture_sec;
+
         let screens = (0..max_screen_count)
             .map(|_| Screen {
                 image: Image::new(width, height),
                 frame_count: 0,
             })
             .collect();
+
         Self {
             fps,
             max_screen_count,
@@ -68,8 +70,10 @@ impl Resource {
         if self.max_screen_count == 0 {
             return;
         }
+
         let width = screen.lock().width();
         let height = screen.lock().height();
+
         self.screens[self.next_screen_index as usize]
             .image
             .lock()
@@ -84,8 +88,10 @@ impl Resource {
                 None,
             );
         self.screens[self.next_screen_index as usize].frame_count = frame_count;
+
         self.next_screen_index = (self.next_screen_index + 1) % self.max_screen_count;
         self.captured_screen_count += 1;
+
         if self.captured_screen_count > self.max_screen_count {
             self.start_screen_index = (self.start_screen_index + 1) % self.max_screen_count;
             self.captured_screen_count = self.max_screen_count;
@@ -116,22 +122,29 @@ impl Resource {
 impl Pyxel {
     pub fn load(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
         let mut archive = ZipArchive::new(File::open(&Path::new(filename)).unwrap()).unwrap();
-        let version;
-        {
+
+        let version = {
             let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
             let mut file = archive.by_name(&version_name).unwrap();
             let mut contents = String::new();
+
             file.read_to_string(&mut contents).unwrap();
-            version = parse_version_string(&contents).unwrap();
+
+            let version = parse_version_string(&contents).unwrap();
+
             if version > parse_version_string(PYXEL_VERSION).unwrap() {
                 panic!("unsupported resource file version '{}'", contents);
             }
-        }
+
+            version
+        };
+
         macro_rules! deserialize {
             ($type: ty, $getter: ident, $count: expr) => {
                 for i in 0..$count {
                     if let Ok(mut file) = archive.by_name(&<$type>::resource_name(i)) {
                         let mut input = String::new();
+
                         file.read_to_string(&mut input).unwrap();
                         self.$getter(i).lock().deserialize(version, &input);
                     } else {
@@ -140,15 +153,19 @@ impl Pyxel {
                 }
             };
         }
+
         if image {
             deserialize!(Image, image, IMAGE_COUNT);
         }
+
         if tilemap {
             deserialize!(Tilemap, tilemap, TILEMAP_COUNT);
         }
+
         if sound {
             deserialize!(Sound, sound, SOUND_COUNT);
         }
+
         if music {
             deserialize!(Music, music, MUSIC_COUNT);
         }
@@ -158,11 +175,17 @@ impl Pyxel {
         let path = std::path::Path::new(filename);
         let file = std::fs::File::create(&path).unwrap();
         let mut zip = ZipWriter::new(file);
+
         zip.add_directory(RESOURCE_ARCHIVE_DIRNAME, Default::default())
             .unwrap();
-        let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
-        zip.start_file(version_name, Default::default()).unwrap();
-        zip.write_all(PYXEL_VERSION.as_bytes()).unwrap();
+
+        {
+            let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
+
+            zip.start_file(version_name, Default::default()).unwrap();
+            zip.write_all(PYXEL_VERSION.as_bytes()).unwrap();
+        }
+
         macro_rules! serialize {
             ($type: ty, $getter: ident, $count: expr) => {
                 for i in 0..$count {
@@ -175,18 +198,23 @@ impl Pyxel {
                 }
             };
         }
+
         if image {
             serialize!(Image, image, IMAGE_COUNT);
         }
+
         if tilemap {
             serialize!(Tilemap, tilemap, TILEMAP_COUNT);
         }
+
         if sound {
             serialize!(Sound, sound, SOUND_COUNT);
         }
+
         if music {
             serialize!(Music, music, MUSIC_COUNT);
         }
+
         zip.finish().unwrap();
     }
 
@@ -201,6 +229,7 @@ impl Pyxel {
         if self.resource.max_screen_count == 0 {
             return;
         }
+
         self.resource.start_screen_index = 0;
         self.resource.next_screen_index = 0;
         self.resource.captured_screen_count = 0;
@@ -210,6 +239,7 @@ impl Pyxel {
         if self.resource.max_screen_count == 0 || self.resource.captured_screen_count == 0 {
             return;
         }
+
         let (mut collector, writer) = gifski_new(Settings::default()).unwrap();
         let colors = self.colors;
         let fps = self.resource.fps;
@@ -218,12 +248,14 @@ impl Pyxel {
         let start_screen_index = self.resource.start_screen_index;
         let captured_screen_count = self.resource.captured_screen_count;
         let start_frame_count = screens[start_screen_index as usize].frame_count;
+
         let handle = std::thread::spawn(move || {
             for i in 0..captured_screen_count {
                 let index = (start_screen_index + i) % max_screen_count;
                 let image = &screens[index as usize].image.lock();
                 let width = image.width();
                 let height = image.height();
+
                 let imgvec = ImgVec::new(
                     (0..width * CAPTURE_SCALE * height * CAPTURE_SCALE)
                         .map(|i| {
@@ -231,6 +263,7 @@ impl Pyxel {
                             let rgb = colors[image
                                 ._value((i % width) as i32, (i / (width * CAPTURE_SCALE)) as i32)
                                 as usize];
+
                             RGBA8::new(
                                 ((rgb >> 16) & 0xff) as u8,
                                 ((rgb >> 8) & 0xff) as u8,
@@ -242,19 +275,25 @@ impl Pyxel {
                     (width * CAPTURE_SCALE) as usize,
                     (height * CAPTURE_SCALE) as usize,
                 );
+
                 let timestamp = (screens[index as usize].frame_count - start_frame_count + 1)
                     as f64
                     / fps as f64;
+
                 collector
                     .add_frame_rgba(i as usize, imgvec, timestamp)
                     .unwrap();
             }
         });
+
         let mut file = File::create(&(Resource::export_path() + ".gif")).unwrap();
+
         writer
             .write(&mut file, &mut gifski::progress::NoProgress {})
             .unwrap();
+
         handle.join().unwrap();
+
         self.reset_capture();
         self.system.disable_next_frame_skip();
     }
