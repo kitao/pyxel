@@ -1,16 +1,11 @@
 import pyxel
 
-from .constants import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
-    MAX_MUSIC_LENGTH,
-    MUSIC_FIELD_BACKGROUND_COLOR,
-    MUSIC_FIELD_CURSOR_EDIT_COLOR,
-    MUSIC_FIELD_CURSOR_PLAY_COLOR,
-    MUSIC_FIELD_SOUND_FOCUS_COLOR,
-    MUSIC_FIELD_SOUND_NORMAL_COLOR,
-    TEXT_LABEL_COLOR,
-)
+from .settings import (EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_MUSIC_LENGTH,
+                       MUSIC_FIELD_BACKGROUND_COLOR,
+                       MUSIC_FIELD_CURSOR_EDIT_COLOR,
+                       MUSIC_FIELD_CURSOR_PLAY_COLOR,
+                       MUSIC_FIELD_SOUND_FOCUS_COLOR,
+                       MUSIC_FIELD_SOUND_NORMAL_COLOR, TEXT_LABEL_COLOR)
 from .widget import Widget
 
 

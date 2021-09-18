@@ -1,6 +1,6 @@
 import pyxel
 
-from .constants import (
+from .settings import (
     EDITOR_IMAGE_X,
     EDITOR_IMAGE_Y,
     MAX_SOUND_LENGTH,
@@ -10,7 +10,7 @@ from .constants import (
     TEXT_LABEL_COLOR,
 )
 from .widget import Widget
-from .widget.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+from .widget.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 tone_key_table = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N]
 effect_key_table = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]

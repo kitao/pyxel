@@ -1,6 +1,6 @@
 import pyxel
 
-from .constants import BUTTON_DISABLED_COLOR, BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
+from .settings import BUTTON_DISABLED_COLOR, BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
 from .toggle_button import ToggleButton
 
 
