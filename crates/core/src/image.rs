@@ -68,10 +68,8 @@ impl Image {
         let image = Self::new(width, height);
         {
             let mut image = image.lock();
-
             for i in 0..height {
                 let src_data = simplify_string(data_str[i as usize]);
-
                 for j in 0..width {
                     let value = parse_hex_string(&src_data[j as usize..j as usize + 1]).unwrap();
                     image._set_value(j as i32, i as i32, value as Color);
@@ -114,7 +112,6 @@ impl Image {
                                 (pal_color & 0xff) as u8,
                             );
                             let dist = Self::color_dist(src_rgb, pal_rgb);
-
                             if dist < closest_dist {
                                 closest_color = k as Color;
                                 closest_dist = dist;

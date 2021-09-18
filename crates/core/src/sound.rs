@@ -65,7 +65,6 @@ impl Sound {
                     _ => panic!("invalid sound note '{}'", c),
                 };
                 let mut c = chars.next().unwrap_or(0 as char);
-
                 if c == '#' {
                     note += 1;
                     c = chars.next().unwrap_or(0 as char);
@@ -73,7 +72,6 @@ impl Sound {
                     note -= 1;
                     c = chars.next().unwrap_or(0 as char);
                 }
-
                 if ('0'..='4').contains(&c) {
                     note += (c as Note - '0' as Note) * 12;
                 } else {
