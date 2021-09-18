@@ -7,9 +7,7 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
         };
     }
 
-    //
     // setting constants
-    //
     add_constant!(PYXEL_VERSION)?;
 
     add_constant!(APPLICATION_FILE_EXTENSION)?;
@@ -57,11 +55,8 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(EFFECT_VIBRATO)?;
     add_constant!(EFFECT_FADEOUT)?;
 
-    //
     // key constants
-    //
     add_constant!(KEY_NONE)?;
-
     add_constant!(KEY_A)?;
     add_constant!(KEY_B)?;
     add_constant!(KEY_C)?;
@@ -304,7 +299,6 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(KEY_APP2)?;
     add_constant!(KEY_AUDIOREWIND)?;
     add_constant!(KEY_AUDIOFASTFORWARD)?;
-
     add_constant!(KEY_SHIFT)?;
     add_constant!(KEY_CTRL)?;
     add_constant!(KEY_ALT)?;
@@ -314,7 +308,6 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(MOUSE_POS_Y)?;
     add_constant!(MOUSE_WHEEL_X)?;
     add_constant!(MOUSE_WHEEL_Y)?;
-
     add_constant!(MOUSE_BUTTON_LEFT)?;
     add_constant!(MOUSE_BUTTON_MIDDLE)?;
     add_constant!(MOUSE_BUTTON_RIGHT)?;
@@ -328,7 +321,6 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(GAMEPAD1_AXIS_RIGHTY)?;
     add_constant!(GAMEPAD1_AXIS_TRIGGERLEFT)?;
     add_constant!(GAMEPAD1_AXIS_TRIGGERRIGHT)?;
-
     add_constant!(GAMEPAD1_BUTTON_A)?;
     add_constant!(GAMEPAD1_BUTTON_B)?;
     add_constant!(GAMEPAD1_BUTTON_X)?;
@@ -351,7 +343,6 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(GAMEPAD2_AXIS_RIGHTY)?;
     add_constant!(GAMEPAD2_AXIS_TRIGGERLEFT)?;
     add_constant!(GAMEPAD2_AXIS_TRIGGERRIGHT)?;
-
     add_constant!(GAMEPAD2_BUTTON_A)?;
     add_constant!(GAMEPAD2_BUTTON_B)?;
     add_constant!(GAMEPAD2_BUTTON_X)?;

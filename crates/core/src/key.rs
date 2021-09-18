@@ -1,7 +1,6 @@
 use crate::types::Key;
 
 pub const KEY_NONE: Key = 0;
-
 pub const KEY_A: Key = 4;
 pub const KEY_B: Key = 5;
 pub const KEY_C: Key = 6;
@@ -244,10 +243,8 @@ pub const KEY_APP1: Key = 283;
 pub const KEY_APP2: Key = 284;
 pub const KEY_AUDIOREWIND: Key = 285;
 pub const KEY_AUDIOFASTFORWARD: Key = 286;
-
 pub const KEY_MIN_VALUE: Key = KEY_A; // not to export
 pub const KEY_MAX_VALUE: Key = KEY_AUDIOFASTFORWARD; // not to export
-
 pub const KEY_SHIFT: Key = 300;
 pub const KEY_CTRL: Key = 301;
 pub const KEY_ALT: Key = 302;
@@ -257,7 +254,6 @@ pub const MOUSE_POS_X: Key = 400;
 pub const MOUSE_POS_Y: Key = 401;
 pub const MOUSE_WHEEL_X: Key = 402;
 pub const MOUSE_WHEEL_Y: Key = 403;
-
 pub const MOUSE_BUTTON_LEFT: Key = 450;
 pub const MOUSE_BUTTON_MIDDLE: Key = 451;
 pub const MOUSE_BUTTON_RIGHT: Key = 452;
@@ -271,7 +267,6 @@ pub const GAMEPAD1_AXIS_RIGHTX: Key = 502;
 pub const GAMEPAD1_AXIS_RIGHTY: Key = 503;
 pub const GAMEPAD1_AXIS_TRIGGERLEFT: Key = 504;
 pub const GAMEPAD1_AXIS_TRIGGERRIGHT: Key = 505;
-
 pub const GAMEPAD1_BUTTON_A: Key = 550;
 pub const GAMEPAD1_BUTTON_B: Key = 551;
 pub const GAMEPAD1_BUTTON_X: Key = 552;
@@ -294,7 +289,6 @@ pub const GAMEPAD2_AXIS_RIGHTX: Key = 602;
 pub const GAMEPAD2_AXIS_RIGHTY: Key = 603;
 pub const GAMEPAD2_AXIS_TRIGGERLEFT: Key = 604;
 pub const GAMEPAD2_AXIS_TRIGGERRIGHT: Key = 605;
-
 pub const GAMEPAD2_BUTTON_A: Key = 650;
 pub const GAMEPAD2_BUTTON_B: Key = 651;
 pub const GAMEPAD2_BUTTON_X: Key = 652;

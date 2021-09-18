@@ -89,20 +89,20 @@ impl Channel {
             }
             let sound = &self.sounds[self.sound_index as usize];
             let note = Self::circular_note(&sound.notes, self.note_index);
-            let tone = Self::circular_tone(&sound.tones, self.note_index);
-            let volume = Self::circular_volume(&sound.volumes, self.note_index);
-            let effect = Self::circular_effect(&sound.effects, self.note_index);
-            let speed = max(sound.speed, 1);
             assert!(note <= MAX_NOTE, "invalid sound note {}", note);
+            let tone = Self::circular_tone(&sound.tones, self.note_index);
             assert!(tone <= MAX_TONE, "invalid sound tone {}", tone);
+            let volume = Self::circular_volume(&sound.volumes, self.note_index);
             assert!(volume <= MAX_VOLUME, "invalid sound volume {}", volume);
-            assert!(
-                self.volume <= MAX_VOLUME,
-                "invalid channel volume {}",
-                self.volume
-            );
+            let effect = Self::circular_effect(&sound.effects, self.note_index);
             assert!(effect <= MAX_EFFECT, "invalid sound effect {}", effect);
+            let speed = max(sound.speed, 1);
             if note >= 0 && volume > 0 {
+                assert!(
+                    self.volume <= MAX_VOLUME,
+                    "invalid channel volume {}",
+                    self.volume
+                );
                 self.oscillator.play(
                     note as f64,
                     tone,
