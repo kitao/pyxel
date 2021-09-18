@@ -174,15 +174,11 @@ impl Platform for Sdl2 {
                 return None;
             }
             let event = match sdl_event.unwrap() {
-                //
                 // System Events
-                //
                 SdlEvent::Quit { .. } => Event::Quit,
                 SdlEvent::DropFile { filename, .. } => Event::DropFile { filename },
 
-                //
                 // Key Events
-                //
                 SdlEvent::KeyDown {
                     scancode: Some(scancode),
                     ..
@@ -197,9 +193,7 @@ impl Platform for Sdl2 {
                 },
                 SdlEvent::TextInput { text, .. } => Event::TextInput { text },
 
-                //
                 // Mouse Events
-                //
                 SdlEvent::MouseButtonDown { mouse_btn, .. } => Event::MouseButtonDown {
                     button: match mouse_btn {
                         SdlMouseButton::Left => MouseButton::Left,
@@ -222,9 +216,7 @@ impl Platform for Sdl2 {
                 },
                 SdlEvent::MouseWheel { x, y, .. } => Event::MouseWheel { x, y },
 
-                //
                 // Controller Events
-                //
                 SdlEvent::ControllerAxisMotion {
                     which, axis, value, ..
                 } => Event::ControllerAxisMotion {
@@ -282,9 +274,7 @@ impl Platform for Sdl2 {
                     },
                 },
 
-                //
-                // Default
-                //
+                // Others
                 _ => continue,
             };
             return Some(event);
