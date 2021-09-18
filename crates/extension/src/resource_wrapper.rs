@@ -15,6 +15,7 @@ fn load(
     let tilemap = tilemap.unwrap_or(true);
     let sound = sound.unwrap_or(true);
     let music = music.unwrap_or(true);
+
     instance().load(filename, image, tilemap, sound, music);
 }
 
@@ -31,6 +32,7 @@ fn save(
     let tilemap = tilemap.unwrap_or(true);
     let sound = sound.unwrap_or(true);
     let music = music.unwrap_or(true);
+
     instance().save(filename, image, tilemap, sound, music);
 }
 
@@ -55,5 +57,6 @@ pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(screenshot, m)?)?;
     m.add_function(wrap_pyfunction!(reset_capture, m)?)?;
     m.add_function(wrap_pyfunction!(screencast, m)?)?;
+
     Ok(())
 }

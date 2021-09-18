@@ -82,10 +82,14 @@ macro_rules! define_list_edit_methods {
                     "pop from empty list",
                 ));
             }
+
             let index = self.adjust_index(index.unwrap_or(self.list().len() as isize - 1));
+
             if index < self.list().len() {
                 let value = self.list()[index as usize];
+
                 self.list_mut().remove(index);
+
                 Ok(value)
             } else {
                 Err(pyo3::exceptions::PyIndexError::new_err(
@@ -96,6 +100,7 @@ macro_rules! define_list_edit_methods {
 
         pub fn clear(&mut self) -> PyResult<()> {
             self.list_mut().clear();
+
             Ok(())
         }
     };
@@ -123,6 +128,7 @@ macro_rules! define_list_set_operator {
     ($list_mut_method: expr, $self: ident, $index: ident, $value: ident) => {
         if $index < $list_mut_method($self).len() as isize {
             $list_mut_method($self)[$index as usize] = $value;
+
             Ok(())
         } else {
             Err(pyo3::exceptions::PyIndexError::new_err(
@@ -136,6 +142,7 @@ macro_rules! define_list_del_operator {
     ($list_mut_method: expr, $self: ident, $index: ident) => {
         if $index < $list_mut_method($self).len() as isize {
             $list_mut_method($self).remove($index as usize);
+
             Ok(())
         } else {
             Err(pyo3::exceptions::PyIndexError::new_err(

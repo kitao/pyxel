@@ -59,5 +59,6 @@ pub fn add_input_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(set_btnr, m)?)?;
     m.add_function(wrap_pyfunction!(set_btnv, m)?)?;
     m.add_function(wrap_pyfunction!(move_mouse, m)?)?;
+
     Ok(())
 }

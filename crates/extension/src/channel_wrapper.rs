@@ -34,6 +34,7 @@ impl Channel {
     #[pyo3(text_signature = "($self, snd, *, loop)")]
     pub fn play(&self, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
         let loop_ = r#loop.unwrap_or(false);
+
         type_switch! {
             snd,
             u32, {
@@ -41,6 +42,7 @@ impl Channel {
             },
             Vec<u32>, {
                 let snd = snd.iter().map(|sound_no| instance().sound(*sound_no)).collect();
+
                 self.pyxel_channel.lock().play(snd, loop_);
             },
             Sound, {
@@ -48,9 +50,11 @@ impl Channel {
             },
             Vec<Sound>, {
                 let snd = snd.iter().map(|sound| sound.pyxel_sound.clone()).collect();
+
                 self.pyxel_channel.lock().play(snd, loop_);
             }
         }
+
         Ok(())
     }
 
@@ -61,5 +65,6 @@ impl Channel {
 
 pub fn add_channel_class(m: &PyModule) -> PyResult<()> {
     m.add_class::<Channel>()?;
+
     Ok(())
 }
