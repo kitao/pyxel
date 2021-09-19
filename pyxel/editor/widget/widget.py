@@ -1,13 +1,8 @@
 import pyxel
 
-from .constants import (
-    WIDGET_CLICK_DIST,
-    WIDGET_CLICK_TIME,
-    WIDGET_HOLD_TIME,
-    WIDGET_PANEL_COLOR,
-    WIDGET_REPEAT_TIME,
-    WIDGET_SHADOW_COLOR,
-)
+from .settings import (WIDGET_CLICK_DIST, WIDGET_CLICK_TIME, WIDGET_HOLD_TIME,
+                       WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME,
+                       WIDGET_SHADOW_COLOR)
 
 
 class Widget:

@@ -1,8 +1,8 @@
 import pyxel
-from pyxel.ui import Widget
-from pyxel.ui.constants import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
+from .settings import EDITOR_IMAGE_X, EDITOR_IMAGE_Y
+from .widget import Widget
+from .widget.settings import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
 
 
 class SoundSelector(Widget):

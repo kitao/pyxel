@@ -1,6 +1,6 @@
 import pyxel
 
-from .constants import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
+from .settings import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
 from .widget import Widget
 
 
