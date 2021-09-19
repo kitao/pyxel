@@ -5,9 +5,9 @@ from .settings import (PANEL_SELECT_BORDER_COLOR, PANEL_SELECT_FRAME_COLOR,
                        TOOL_BUCKET, TOOL_CIRC, TOOL_CIRCB, TOOL_PENCIL,
                        TOOL_RECT, TOOL_RECTB, TOOL_SELECT)
 from .utils import copy_array2d, get_array2d_size, slice_array2d
-from .widget import ScrollBar, Widget
-from .widget.settings import (WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR,
-                              WIDGET_REPEAT_TIME)
+from .widgets import ScrollBar, Widget
+from .widgets.settings import (WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR,
+                               WIDGET_REPEAT_TIME)
 
 
 class DrawingPanel(Widget):

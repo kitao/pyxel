@@ -5,7 +5,7 @@ from .field_cursor import FieldCursor
 from .music_field import MusicField
 from .settings import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_MUSIC_LENGTH, TEXT_LABEL_COLOR
 from .sound_selector import SoundSelector
-from .widget import ImageButton, ImageToggleButton, NumberPicker
+from .widgets import ImageButton, ImageToggleButton, NumberPicker
 
 
 class MusicEditor(Editor):

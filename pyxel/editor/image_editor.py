@@ -8,7 +8,7 @@ from .image_panel import ImagePanel
 from .settings import (EDITOR_IMAGE_X, EDITOR_IMAGE_Y, TEXT_LABEL_COLOR,
                        TOOL_PENCIL)
 from .utils import copy_array2d
-from .widget import ColorPicker, NumberPicker, RadioButton
+from .widgets import ColorPicker, NumberPicker, RadioButton
 
 
 class ImageEditor(Editor):
