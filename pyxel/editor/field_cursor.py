@@ -1,5 +1,6 @@
 import pyxel
-from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+
+from .widget.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 
 class FieldCursor:

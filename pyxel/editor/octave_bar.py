@@ -1,7 +1,7 @@
 import pyxel
-from pyxel.ui import Widget
 
-from .constants import OCTAVE_BAR_BACKGROUND_COLOR, OCTAVE_BAR_COLOR
+from .settings import OCTAVE_BAR_BACKGROUND_COLOR, OCTAVE_BAR_COLOR
+from .widget import Widget
 
 
 class OctaveBar(Widget):
