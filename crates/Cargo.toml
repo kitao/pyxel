@@ -1,2 +1,2 @@
 [workspace]
-members = ["core", "extension", "player"]
+members = ["engine", "wrapper", "cli"]
