@@ -1,8 +1,8 @@
 PYXEL_LIB_DIR = ../pyxel/lib/$(OS_NAME)
-PYXEL_LIB_NAME = pyxel_extension
+PYXEL_LIB_NAME = pyxel_wrapper
 PYXEL_BIN_DIR = ../pyxel/bin/$(OS_NAME)
 PYXEL_BIN_NAME = pyxel
-PYXEL_TESTS_DIR = extension/tests
+PYXEL_TESTS_DIR = wrapper/tests
 PYXEL_EXAMPLES_DIR = ../pyxel/examples
 
 ifeq ($(shell uname),Darwin)
