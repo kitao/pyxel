@@ -1,9 +1,14 @@
 import pyxel
 
-from .settings import (PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR,
-                       TILEMAP_IMAGE_HEIGHT, TILEMAP_IMAGE_WIDTH,
-                       TILEMAP_IMAGE_X, TILEMAP_IMAGE_Y)
-from .widget import Widget
+from .settings import (
+    PANEL_FOCUS_BORDER_COLOR,
+    PANEL_FOCUS_COLOR,
+    TILEMAP_IMAGE_HEIGHT,
+    TILEMAP_IMAGE_WIDTH,
+    TILEMAP_IMAGE_X,
+    TILEMAP_IMAGE_Y,
+)
+from .widgets import Widget
 
 
 class TilemapPanel(Widget):
