@@ -1,9 +1,9 @@
 [package]
-name = "pyxel-core"
+name = "pyxel-engine"
 version = "1.5.0"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2018"
-description = "Core library for Pyxel, a retro game engine"
+description = "A retro game engine for Python and Rust"
 repository = "<url-to-repository>"
 license = "MIT"
 readme = "README.md"

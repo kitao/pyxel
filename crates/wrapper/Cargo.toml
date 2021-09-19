@@ -1,9 +1,9 @@
 [package]
-name = "pyxel-extension"
+name = "pyxel-wrapper"
 version = "1.5.0"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2018"
-description = "Python extension for Pyxel, a retro game engine"
+description = "Python wrapper for Pyxel"
 repository = "<url-to-repository>"
 license = "MIT"
 readme = "README.md"
@@ -15,4 +15,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.14.5", features = ["extension-module", "abi3-py37"] }
-pyxel-core = { path = "../core", version="1.5.0" }
+pyxel-engine = { path = "../engine", version="1.5.0" }
