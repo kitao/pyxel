@@ -70,7 +70,7 @@ pub fn set_instance(pyxel: Pyxel) {
 }
 
 #[pymodule]
-fn pyxel_extension(_py: Python, m: &PyModule) -> PyResult<()> {
+fn pyxel_wrapper(_py: Python, m: &PyModule) -> PyResult<()> {
     add_image_class(m)?;
     add_tilemap_class(m)?;
     add_channel_class(m)?;
