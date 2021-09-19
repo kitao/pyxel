@@ -13,7 +13,7 @@ from .settings import (
 )
 from .tilemap_panel import TilemapPanel
 from .utils import copy_array2d
-from .widget import NumberPicker, RadioButton
+from .widgets import NumberPicker, RadioButton
 
 
 class TileMapEditor(Editor):
