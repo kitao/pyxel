@@ -9,6 +9,8 @@ license = "MIT"
 readme = "README.md"
 categories = ["command-line-utilities", "game-engine", "graphics", "multimedia"]
 keywords = ["game", "gamedev", "python"]
+#include = ["/pyxel"]
+include = ["/src"]
 
 [[bin]]
 name = "pyxel"
