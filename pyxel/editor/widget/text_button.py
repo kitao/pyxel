@@ -1,12 +1,8 @@
 import pyxel
 
 from .button import Button
-from .constants import (
-    BUTTON_DISABLED_COLOR,
-    BUTTON_ENABLED_COLOR,
-    BUTTON_PRESSED_COLOR,
-    BUTTON_TEXT_COLOR,
-)
+from .settings import (BUTTON_DISABLED_COLOR, BUTTON_ENABLED_COLOR,
+                       BUTTON_PRESSED_COLOR, BUTTON_TEXT_COLOR)
 
 
 class TextButton(Button):

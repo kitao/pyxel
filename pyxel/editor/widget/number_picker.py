@@ -1,6 +1,6 @@
 import pyxel
 
-from .constants import INPUT_FIELD_COLOR, INPUT_TEXT_COLOR
+from .settings import INPUT_FIELD_COLOR, INPUT_TEXT_COLOR
 from .text_button import TextButton
 from .widget import Widget
 

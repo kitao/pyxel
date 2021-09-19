@@ -1,7 +1,9 @@
 import pyxel
-from pyxel.ui import NumberPicker, RadioButton
 
-from .constants import (
+from .drawing_panel import DrawingPanel
+from .editor import Editor
+from .image_panel import ImagePanel
+from .settings import (
     EDITOR_IMAGE_X,
     EDITOR_IMAGE_Y,
     TEXT_LABEL_COLOR,
@@ -9,11 +11,9 @@ from .constants import (
     TILEMAP_IMAGE_Y,
     TOOL_PENCIL,
 )
-from .drawing_panel import DrawingPanel
-from .editor import Editor
-from .image_panel import ImagePanel
 from .tilemap_panel import TilemapPanel
-from .utility import copy_array2d
+from .utils import copy_array2d
+from .widget import NumberPicker, RadioButton
 
 
 class TileMapEditor(Editor):

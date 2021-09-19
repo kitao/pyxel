@@ -1,13 +1,14 @@
 import os.path
 
 import pyxel
-from pyxel.ui import ColorPicker, NumberPicker, RadioButton
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, TEXT_LABEL_COLOR, TOOL_PENCIL
 from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
-from .utility import copy_array2d
+from .settings import (EDITOR_IMAGE_X, EDITOR_IMAGE_Y, TEXT_LABEL_COLOR,
+                       TOOL_PENCIL)
+from .utils import copy_array2d
+from .widget import ColorPicker, NumberPicker, RadioButton
 
 
 class ImageEditor(Editor):

@@ -1,12 +1,12 @@
 import pyxel
-from pyxel.ui import Widget
 
-from .constants import (
+from .settings import (
     EDITOR_IMAGE_X,
     EDITOR_IMAGE_Y,
     PIANO_KEYBOARD_PLAY_COLOR,
     PIANO_KEYBOARD_REST_COLOR,
 )
+from .widget import Widget
 
 key_table = [
     pyxel.KEY_Z,

@@ -1,4 +1,4 @@
-from .utility import copy_array2d, fill_array2d, get_array2d_size, new_array2d
+from .utils import copy_array2d, fill_array2d, get_array2d_size, new_array2d
 
 
 class OverlayCanvas:
