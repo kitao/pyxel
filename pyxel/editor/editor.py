@@ -2,7 +2,7 @@ import pyxel
 
 from .settings import (TOOL_BUCKET, TOOL_CIRC, TOOL_CIRCB, TOOL_PENCIL,
                        TOOL_RECT, TOOL_RECTB, TOOL_SELECT)
-from .widget import Widget
+from .widgets import Widget
 
 
 class Editor(Widget):
