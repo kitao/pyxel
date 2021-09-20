@@ -33,14 +33,14 @@ class ImageEditor(Editor):
             self,
             81,
             161,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            parent.image,
             EDITOR_IMAGE_X + 63,
             EDITOR_IMAGE_Y,
             7,
             TOOL_PENCIL,
         )
         self._image_picker = NumberPicker(
-            self, 192, 161, 0, pyxel.USER_IMAGE_BANK_COUNT - 1, 0
+            self, 192, 161, 0, parent.image, 0
         )
 
         self.add_event_handler("undo", self.__on_undo)

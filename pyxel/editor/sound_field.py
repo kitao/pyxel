@@ -31,7 +31,7 @@ class SoundField(Widget):
         return x, y
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_LEFT_BUTTON or self.parent.is_playing:
+        if key != pyxel.MOUSE_BUTTON_LEFT or self.parent.is_playing:
             return
 
         x, y = self._screen_to_view(x, y)
@@ -53,9 +53,9 @@ class SoundField(Widget):
             cursor_y < 1
             or self.parent.is_playing
             or pyxel.btn(pyxel.KEY_SHIFT)
-            or pyxel.btn(pyxel.KEY_CONTROL)
+            or pyxel.btn(pyxel.KEY_CTRL)
             or pyxel.btn(pyxel.KEY_ALT)
-            or pyxel.btn(pyxel.KEY_SUPER)
+            or pyxel.btn(pyxel.KEY_GUI)
         ):
             return
 

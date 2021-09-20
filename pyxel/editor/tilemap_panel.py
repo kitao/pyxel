@@ -26,11 +26,11 @@ class TilemapPanel(Widget):
         return x, y
 
     def __on_mouse_down(self, key, x, y):
-        if key == pyxel.MOUSE_LEFT_BUTTON:
+        if key == pyxel.MOUSE_BUTTON_LEFT:
             self.parent.drawing_x, self.parent.drawing_y = self._screen_to_view(x, y)
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
-        if key == pyxel.MOUSE_LEFT_BUTTON:
+        if key == pyxel.MOUSE_BUTTON_LEFT:
             self.__on_mouse_down(key, x, y)
 
     def __on_mouse_hover(self, x, y):
