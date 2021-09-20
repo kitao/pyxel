@@ -4,24 +4,14 @@ import pyxel
 
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
-from .settings import (
-    APP_HEIGHT,
-    APP_WIDTH,
-    EDITOR_IMAGE_NAME,
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
-    HELP_MESSAGE_COLOR,
-)
+from .settings import (APP_HEIGHT, APP_WIDTH, EDITOR_IMAGE_NAME,
+                       EDITOR_IMAGE_X, EDITOR_IMAGE_Y, HELP_MESSAGE_COLOR)
 from .sound_editor import SoundEditor
 from .tilemap_editor import TileMapEditor
 from .widgets import ImageButton, RadioButton, Widget
-from .widgets.settings import (
-    WIDGET_BACKGROUND_COLOR,
-    WIDGET_HOLD_TIME,
-    WIDGET_PANEL_COLOR,
-    WIDGET_REPEAT_TIME,
-    WIDGET_SHADOW_COLOR,
-)
+from .widgets.settings import (WIDGET_BACKGROUND_COLOR, WIDGET_HOLD_TIME,
+                               WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME,
+                               WIDGET_SHADOW_COLOR)
 
 
 class App(Widget):
@@ -44,6 +34,11 @@ class App(Widget):
 
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
 
+        image_file = os.path.join(
+            os.path.dirname(__file__), "assets", EDITOR_IMAGE_NAME
+        )
+        self.image = pyxel.Image.from_image(image_file)
+
         self._resource_file = resource_file
         self._editor_list = [
             ImageEditor(self),
@@ -55,7 +50,7 @@ class App(Widget):
             self,
             1,
             1,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            self.image,
             EDITOR_IMAGE_X,
             EDITOR_IMAGE_Y,
             4,
@@ -65,7 +60,7 @@ class App(Widget):
             self,
             48,
             1,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            self.image,
             EDITOR_IMAGE_X + 36,
             EDITOR_IMAGE_Y,
         )
@@ -73,7 +68,7 @@ class App(Widget):
             self,
             57,
             1,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            self.image,
             EDITOR_IMAGE_X + 45,
             EDITOR_IMAGE_Y,
         )
@@ -81,7 +76,7 @@ class App(Widget):
             self,
             75,
             1,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            self.image,
             EDITOR_IMAGE_X + 54,
             EDITOR_IMAGE_Y,
         )
@@ -110,13 +105,6 @@ class App(Widget):
             "mouse_hover", self.__on_save_button_mouse_hover
         )
 
-        image_file = os.path.join(
-            os.path.dirname(__file__), "assets", EDITOR_IMAGE_NAME
-        )
-        pyxel.image(pyxel.IMAGE_BANK_FOR_SYSTEM, system=True).load(
-            EDITOR_IMAGE_X, EDITOR_IMAGE_Y, image_file
-        )
-
         self._set_editor(0)
 
         pyxel.run(self.update_widgets, self.draw_widgets)
@@ -128,13 +116,13 @@ class App(Widget):
             widget.is_visible = i == editor
 
     def __on_update(self):
-        if pyxel._drop_file:
-            ext = os.path.splitext(pyxel._drop_file)[1]
+        if pyxel.drop_files:
+            ext = os.path.splitext(pyxel.drop_files[-1])[1]
 
             if ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
 
-                if pyxel.btn(pyxel.KEY_CONTROL) or pyxel.btn(pyxel.KEY_SUPER):
+                if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
                     editor = self._editor_list[self._editor_button.value]
                     editor.reset_history()
 
@@ -165,7 +153,7 @@ class App(Widget):
                     "drop", pyxel._drop_file
                 )
 
-        if pyxel.btn(pyxel.KEY_LEFT_ALT) or pyxel.btn(pyxel.KEY_RIGHT_ALT):
+        if pyxel.btn(pyxel.KEY_LALT) or pyxel.btn(pyxel.KEY_RALT):
             editor = self._editor_button.value
             editor_count = len(self._editor_list)
 
@@ -178,7 +166,7 @@ class App(Widget):
         self._undo_button.is_enabled = editor.can_undo
         self._redo_button.is_enabled = editor.can_redo
 
-        if pyxel.btn(pyxel.KEY_CONTROL) or pyxel.btn(pyxel.KEY_SUPER):
+        if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
             if pyxel.btnp(pyxel.KEY_S):
                 self._save_button.press()
 

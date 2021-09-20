@@ -13,23 +13,21 @@ class MusicEditor(Editor):
         super().__init__(parent)
 
         self._is_playing = False
-        self._play_pos = [0 for _ in range(pyxel.MUSIC_CHANNEL_COUNT)]
+        self._play_pos = [0 for _ in range(pyxel.CHANNEL_COUNT)]
         self.field_cursor = FieldCursor(
             self.get_data,
             self.add_pre_history,
             self.add_post_history,
             MAX_MUSIC_LENGTH,
             16,
-            pyxel.MUSIC_CHANNEL_COUNT,
+            pyxel.CHANNEL_COUNT,
         )
-        self._music_picker = NumberPicker(
-            self, 45, 17, 0, pyxel.MUSIC_BANK_COUNT - 1, 0
-        )
+        self._music_picker = NumberPicker(self, 45, 17, 0, pyxel.MUSIC_COUNT - 1, 0)
         self._play_button = ImageButton(
             self,
             185,
             17,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            parent.image,
             EDITOR_IMAGE_X + 126,
             EDITOR_IMAGE_Y,
         )
@@ -37,7 +35,7 @@ class MusicEditor(Editor):
             self,
             195,
             17,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            parent.image,
             EDITOR_IMAGE_X + 135,
             EDITOR_IMAGE_Y,
         )
@@ -45,7 +43,7 @@ class MusicEditor(Editor):
             self,
             205,
             17,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            parent.image,
             EDITOR_IMAGE_X + 144,
             EDITOR_IMAGE_Y,
         )
