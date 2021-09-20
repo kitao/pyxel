@@ -1,13 +1,20 @@
 import pyxel
 
 from .overlay_canvas import OverlayCanvas
-from .settings import (PANEL_SELECT_BORDER_COLOR, PANEL_SELECT_FRAME_COLOR,
-                       TOOL_BUCKET, TOOL_CIRC, TOOL_CIRCB, TOOL_PENCIL,
-                       TOOL_RECT, TOOL_RECTB, TOOL_SELECT)
+from .settings import (
+    PANEL_SELECT_BORDER_COLOR,
+    PANEL_SELECT_FRAME_COLOR,
+    TOOL_BUCKET,
+    TOOL_CIRC,
+    TOOL_CIRCB,
+    TOOL_PENCIL,
+    TOOL_RECT,
+    TOOL_RECTB,
+    TOOL_SELECT,
+)
 from .utils import copy_array2d, get_array2d_size, slice_array2d
 from .widgets import ScrollBar, Widget
-from .widgets.settings import (WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR,
-                               WIDGET_REPEAT_TIME)
+from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
 
 
 class DrawingPanel(Widget):
@@ -71,7 +78,7 @@ class DrawingPanel(Widget):
         return x, y
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_LEFT_BUTTON:
+        if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
         x, y = self._screen_to_view(x, y)
@@ -126,36 +133,36 @@ class DrawingPanel(Widget):
         self._last_y = y
 
     def __on_mouse_up(self, key, x, y):
-        if key != pyxel.MOUSE_LEFT_BUTTON:
+        if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
         self._is_dragged = False
 
         if TOOL_PENCIL <= self.parent.tool <= TOOL_CIRC:
-            data = (
-                pyxel.tilemap(self.parent.tilemap).data
+            canvas = (
+                pyxel.tilemap(self.parent.tilemap)
                 if self._is_tilemap_mode
-                else pyxel.image(self.parent.image).data
+                else pyxel.image(self.parent.image)
             )
 
             self._add_pre_history(
-                slice_array2d(data, self.viewport_x, self.viewport_y, 16, 16)
+                slice_array2d(canvas, self.viewport_x, self.viewport_y, 16, 16)
             )
 
             for i in range(16):
                 for j in range(16):
                     val = self._overlay_canvas.data[i][j]
                     if val != OverlayCanvas.COLOR_NONE:
-                        data[self.viewport_y + i][self.viewport_x + j] = val
+                        canvas.pset(self.viewport_x + j, self.viewport_y + i, val)
 
             self._overlay_canvas.clear()
 
             self._add_post_history(
-                slice_array2d(data, self.viewport_x, self.viewport_y, 16, 16)
+                slice_array2d(canvas, self.viewport_x, self.viewport_y, 16, 16)
             )
 
     def __on_mouse_click(self, key, x, y):
-        if key == pyxel.MOUSE_RIGHT_BUTTON:
+        if key == pyxel.MOUSE_BUTTON_RIGHT:
             x = self.viewport_x + (x - self.x) // 8
             y = self.viewport_y + (y - self.y) // 8
 
@@ -165,7 +172,7 @@ class DrawingPanel(Widget):
                 self.parent.color = pyxel.image(self.parent.image).data[y][x]
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
-        if key == pyxel.MOUSE_LEFT_BUTTON:
+        if key == pyxel.MOUSE_BUTTON_LEFT:
             x1 = self._press_x
             y1 = self._press_y
             x2 = (x - self.x - 1) // 8
@@ -208,7 +215,7 @@ class DrawingPanel(Widget):
             self._last_x = x2
             self._last_y = y2
 
-        elif key == pyxel.MOUSE_RIGHT_BUTTON:
+        elif key == pyxel.MOUSE_BUTTON_RIGHT:
             self._drag_offset_x -= dx
             self._drag_offset_y -= dy
 
@@ -266,7 +273,7 @@ class DrawingPanel(Widget):
         if (
             self.parent.tool == TOOL_SELECT
             and self._select_x1 >= 0
-            and (pyxel.btn(pyxel.KEY_CONTROL) or pyxel.btn(pyxel.KEY_SUPER))
+            and (pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI))
         ):
             if pyxel.btnp(pyxel.KEY_C):
                 if self._is_tilemap_mode:
@@ -312,9 +319,9 @@ class DrawingPanel(Widget):
 
         if (
             pyxel.btn(pyxel.KEY_SHIFT)
-            or pyxel.btn(pyxel.KEY_CONTROL)
+            or pyxel.btn(pyxel.KEY_CTRL)
             or pyxel.btn(pyxel.KEY_ALT)
-            or pyxel.btn(pyxel.KEY_SUPER)
+            or pyxel.btn(pyxel.KEY_GUI)
         ):
             return
 
@@ -370,9 +377,9 @@ class DrawingPanel(Widget):
                     if val != OverlayCanvas.COLOR_NONE:
                         col = val
                     else:
-                        col = pyxel.image(self.parent.image).data[self.viewport_y + i][
-                            self.viewport_x + j
-                        ]
+                        col = pyxel.image(self.parent.image).pget(
+                            self.viewport_x + j, self.viewport_y + i
+                        )
 
                     pyxel.rect(x, y, 8, 8, col)
 

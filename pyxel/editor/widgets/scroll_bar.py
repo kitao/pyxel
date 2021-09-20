@@ -1,8 +1,7 @@
 import pyxel
 
 from .button import Button
-from .settings import (BUTTON_PRESSED_COLOR, WIDGET_BACKGROUND_COLOR,
-                       WIDGET_PANEL_COLOR)
+from .settings import BUTTON_PRESSED_COLOR, WIDGET_BACKGROUND_COLOR, WIDGET_PANEL_COLOR
 from .widget import Widget
 
 
@@ -92,7 +91,7 @@ class ScrollBar(Widget):
             self.call_event_handler("change", value)
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_LEFT_BUTTON:
+        if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
         x -= self.x

@@ -1,8 +1,13 @@
 import pyxel
 
-from .settings import (WIDGET_CLICK_DIST, WIDGET_CLICK_TIME, WIDGET_HOLD_TIME,
-                       WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME,
-                       WIDGET_SHADOW_COLOR)
+from .settings import (
+    WIDGET_CLICK_DIST,
+    WIDGET_CLICK_TIME,
+    WIDGET_HOLD_TIME,
+    WIDGET_PANEL_COLOR,
+    WIDGET_REPEAT_TIME,
+    WIDGET_SHADOW_COLOR,
+)
 
 
 class Widget:
@@ -256,12 +261,12 @@ class Widget:
         if self.is_hit(mx, my):
             key = None
 
-            if pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON):
-                key = pyxel.MOUSE_LEFT_BUTTON
-            elif pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON):
-                key = pyxel.MOUSE_RIGHT_BUTTON
-            elif pyxel.btnp(pyxel.MOUSE_MIDDLE_BUTTON):
-                key = pyxel.MOUSE_MIDDLE_BUTTON
+            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
+                key = pyxel.MOUSE_BUTTON_LEFT
+            elif pyxel.btnp(pyxel.MOUSE_BUTTON_RIGHT):
+                key = pyxel.MOUSE_BUTTON_RIGHT
+            elif pyxel.btnp(pyxel.MOUSE_BUTTON_MIDDLE):
+                key = pyxel.MOUSE_BUTTON_MIDDLE
 
             if key is not None:
                 self._capture_mouse(key)

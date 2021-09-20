@@ -23,14 +23,12 @@ class TileMapEditor(Editor):
         self._drawing_panel = DrawingPanel(self, is_tilemap_mode=True)
         self._tilemap_panel = TilemapPanel(self)
         self._image_panel = ImagePanel(self, is_tilemap_mode=True)
-        self._tilemap_picker = NumberPicker(
-            self, 48, 161, 0, pyxel.TILEMAP_BANK_COUNT - 1, 0
-        )
+        self._tilemap_picker = NumberPicker(self, 48, 161, 0, parent.image, 0)
         self._tool_button = RadioButton(
             self,
             81,
             161,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            parent.image,
             EDITOR_IMAGE_X + 63,
             EDITOR_IMAGE_Y,
             7,
@@ -41,8 +39,8 @@ class TileMapEditor(Editor):
             192,
             161,
             0,
-            pyxel.USER_IMAGE_BANK_COUNT - 1,
-            pyxel.tilemap(self._tilemap_picker.value).refimg,
+            parent.image,
+            pyxel.tilemap(self._tilemap_picker.value).image,
         )
 
         self.add_event_handler("undo", self.__on_undo)
@@ -125,15 +123,15 @@ class TileMapEditor(Editor):
 
     def __on_update(self):
         start_y = pyxel.frame_count % 8 * 8
-        tilemap_data = pyxel.tilemap(self.tilemap).data
-        image_data = pyxel.image(self.image).data
-        minimap_data = pyxel.image(3, system=True).data
+        tilemap = pyxel.tilemap(self.tilemap)
+        image = pyxel.image(self.image)
+        minimap = self.parent.image
 
         for y in range(start_y, start_y + 8):
             for x in range(64):
-                val = tilemap_data[y * 4 + 1][x * 4 + 1]
-                col = image_data[val // 32 * 8 + 3][val % 32 * 8 + 3]
-                minimap_data[TILEMAP_IMAGE_Y + y][TILEMAP_IMAGE_X + x] = col
+                val = tilemap.pget(x * 4 + 1, y * 4 + 1)
+                col = image.pget(val[0] * 8 + 3, val[1] * 8 + 3)
+                minimap.pset(TILEMAP_IMAGE_X + x, TILEMAP_IMAGE_Y + y, col)
 
         self.check_tool_button_shortcuts()
 
