@@ -40,7 +40,7 @@ class PianoKeyboard(Widget):
     def __init__(self, parent):
         super().__init__(parent, 17, 25, 12, 123)
 
-        self._sound = pyxel.sound(pyxel.SOUND_BANK_FOR_SYSTEM, system=True)
+        self._sound = pyxel.Sound()
         self._sound.set("g2", "p", "3", "n", 30)
         self._mouse_note = None
         self.note = None
@@ -93,14 +93,14 @@ class PianoKeyboard(Widget):
             return octave
 
     def __on_mouse_down(self, key, x, y):
-        if key == pyxel.MOUSE_LEFT_BUTTON:
+        if key == pyxel.MOUSE_BUTTON_LEFT:
             self._mouse_note = self._screen_to_note(x, y)
 
     def __on_mouse_up(self, key, x, y):
         self._mouse_note = None
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
-        if key == pyxel.MOUSE_LEFT_BUTTON:
+        if key == pyxel.MOUSE_BUTTON_LEFT:
             self._mouse_note = self._screen_to_note(x, y)
 
     def __on_mouse_hover(self, x, y):
@@ -111,9 +111,9 @@ class PianoKeyboard(Widget):
             self.parent.field_cursor.y > 0
             or self.parent.is_playing
             or pyxel.btn(pyxel.KEY_SHIFT)
-            or pyxel.btn(pyxel.KEY_CONTROL)
+            or pyxel.btn(pyxel.KEY_CTRL)
             or pyxel.btn(pyxel.KEY_ALT)
-            or pyxel.btn(pyxel.KEY_SUPER)
+            or pyxel.btn(pyxel.KEY_GUI)
         ):
             return
 

@@ -34,21 +34,21 @@ class Button(Widget):
         self.call_event_handler("press")
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_LEFT_BUTTON:
+        if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
         self._is_pressed = True
         self.call_event_handler("press")
 
     def __on_mouse_repeat(self, key, x, y):
-        if key != pyxel.MOUSE_LEFT_BUTTON:
+        if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
         self._is_pressed = True
         self.call_event_handler("repeat")
 
     def __on_mouse_up(self, key, x, y):
-        if key != pyxel.MOUSE_LEFT_BUTTON:
+        if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
         self._is_pressed = False

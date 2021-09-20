@@ -29,7 +29,7 @@ class MusicField(Widget):
         return self.parent.get_data(self._ch)
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_LEFT_BUTTON or self.parent.is_playing:
+        if key != pyxel.MOUSE_BUTTON_LEFT or self.parent.is_playing:
             return
 
         x -= self.x + 21
@@ -50,7 +50,7 @@ class MusicField(Widget):
         pyxel.blt(
             self.x + 20,
             self.y + 1,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
+            self.parent.parent.image,
             EDITOR_IMAGE_X,
             EDITOR_IMAGE_Y + 102,
             191,

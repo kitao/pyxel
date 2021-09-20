@@ -1,7 +1,14 @@
 import pyxel
 
-from .settings import (TOOL_BUCKET, TOOL_CIRC, TOOL_CIRCB, TOOL_PENCIL,
-                       TOOL_RECT, TOOL_RECTB, TOOL_SELECT)
+from .settings import (
+    TOOL_BUCKET,
+    TOOL_CIRC,
+    TOOL_CIRCB,
+    TOOL_PENCIL,
+    TOOL_RECT,
+    TOOL_RECTB,
+    TOOL_SELECT,
+)
 from .widgets import Widget
 
 
@@ -74,9 +81,9 @@ class Editor(Widget):
 
     def check_tool_button_shortcuts(self):
         if (
-            pyxel.btn(pyxel.KEY_CONTROL)
+            pyxel.btn(pyxel.KEY_CTRL)
             or pyxel.btn(pyxel.KEY_ALT)
-            or pyxel.btn(pyxel.KEY_SUPER)
+            or pyxel.btn(pyxel.KEY_GUI)
         ):
             return
 
