@@ -25,7 +25,7 @@ impl Image {
 
     #[staticmethod]
     pub fn from_image(filename: &str) -> Self {
-        wrap_pyxel_image(PyxelImage::from_image(filename))
+        wrap_pyxel_image(PyxelImage::from_image(filename, &instance().colors))
     }
 
     #[getter]
