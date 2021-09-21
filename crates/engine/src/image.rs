@@ -38,11 +38,51 @@ impl Image {
         }))
     }
 
-    pub fn from_image(filename: &str) -> SharedImage {
+    pub fn from_image(filename: &str, colors: &[Rgb8]) -> SharedImage {
         let image_file = image::open(&Path::new(&filename)).unwrap().to_rgb8();
         let (width, height) = image_file.dimensions();
+        let image = Self::new(width, height);
 
-        Self::new(width, height)
+        {
+            let mut image = image.lock();
+            let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
+
+            for i in 0..height {
+                for j in 0..width {
+                    let p = image_file.get_pixel(j, i);
+                    let src_rgb = (p[0], p[1], p[2]);
+
+                    if let Some(color) = color_table.get(&src_rgb) {
+                        image._set_value(j as i32, i as i32, *color);
+                    } else {
+                        let mut closest_color: Color = 0;
+                        let mut closest_dist: f64 = f64::MAX;
+
+                        for k in 0..COLOR_COUNT {
+                            let pal_color = colors[k as usize];
+
+                            let pal_rgb = (
+                                ((pal_color >> 16) & 0xff) as u8,
+                                ((pal_color >> 8) & 0xff) as u8,
+                                (pal_color & 0xff) as u8,
+                            );
+
+                            let dist = Self::color_dist(src_rgb, pal_rgb);
+
+                            if dist < closest_dist {
+                                closest_color = k as Color;
+                                closest_dist = dist;
+                            }
+                        }
+
+                        color_table.insert(src_rgb, closest_color);
+                        image._set_value(j as i32, i as i32, closest_color);
+                    }
+                }
+            }
+        }
+
+        image
     }
 
     pub fn _palette(&self) -> &[Color; COLOR_COUNT as usize] {
@@ -95,48 +135,9 @@ impl Image {
     }
 
     pub fn load(&mut self, x: i32, y: i32, filename: &str, colors: &[Rgb8]) {
-        let image_file = image::open(&Path::new(&filename)).unwrap().to_rgb8();
-        let (width, height) = image_file.dimensions();
-        let image = Self::new(width, height);
-
-        {
-            let mut image = image.lock();
-            let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
-
-            for i in 0..height {
-                for j in 0..width {
-                    let p = image_file.get_pixel(j, i);
-                    let src_rgb = (p[0], p[1], p[2]);
-
-                    if let Some(color) = color_table.get(&src_rgb) {
-                        image._set_value(j as i32, i as i32, *color);
-                    } else {
-                        let mut closest_color: Color = 0;
-                        let mut closest_dist: f64 = f64::MAX;
-
-                        for k in 0..COLOR_COUNT {
-                            let pal_color = colors[k as usize];
-
-                            let pal_rgb = (
-                                ((pal_color >> 16) & 0xff) as u8,
-                                ((pal_color >> 8) & 0xff) as u8,
-                                (pal_color & 0xff) as u8,
-                            );
-
-                            let dist = Self::color_dist(src_rgb, pal_rgb);
-
-                            if dist < closest_dist {
-                                closest_color = k as Color;
-                                closest_dist = dist;
-                            }
-                        }
-
-                        color_table.insert(src_rgb, closest_color);
-                        image._set_value(j as i32, i as i32, closest_color);
-                    }
-                }
-            }
-        }
+        let image = Self::from_image(filename, colors);
+        let width = image.lock().width();
+        let height = image.lock().height();
 
         self.blt(
             x as f64,
