@@ -49,18 +49,18 @@ impl Tilemap {
     }
 
     #[setter]
-    pub fn set_image(&self, img: &PyAny) -> PyResult<()> {
-        type_switch! {
-            img,
-            Image, {
-                self.pyxel_tilemap.lock().image = img.pyxel_image;
-            },
-            u32, {
-                self.pyxel_tilemap.lock().image = instance().image(img);
-            }
-        }
+    pub fn set_image(&self, image: Image) {
+        self.pyxel_tilemap.lock().image = image.pyxel_image;
+    }
 
-        Ok(())
+    #[getter]
+    pub fn image_no(&self) -> Option<u32> {
+        instance().image_no(self.pyxel_tilemap.lock().image.clone())
+    }
+
+    #[setter]
+    pub fn set_image_no(&self, img: u32) {
+        self.pyxel_tilemap.lock().image = instance().image(img);
     }
 
     pub fn set(&mut self, x: i32, y: i32, data: Vec<&str>) {
