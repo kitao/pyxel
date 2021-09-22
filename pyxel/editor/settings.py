@@ -1,9 +1,14 @@
+import os
+
+import pyxel
+
+EDITOR_IMAGE_FILE = "assets/editor_220x160.png"
+EDITOR_IMAGE = pyxel.Image.from_image(
+    os.path.join(os.path.dirname(__file__), EDITOR_IMAGE_FILE)
+)
+
 APP_WIDTH = 240
 APP_HEIGHT = 180
-
-EDITOR_IMAGE_X = 0
-EDITOR_IMAGE_Y = 32
-EDITOR_IMAGE_NAME = "editor_220x160.png"
 
 TILEMAP_IMAGE_X = 0
 TILEMAP_IMAGE_Y = 192

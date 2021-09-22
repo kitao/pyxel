@@ -5,8 +5,7 @@ import pyxel
 from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
-from .settings import (EDITOR_IMAGE_X, EDITOR_IMAGE_Y, TEXT_LABEL_COLOR,
-                       TOOL_PENCIL)
+from .settings import EDITOR_IMAGE, TEXT_LABEL_COLOR, TOOL_PENCIL
 from .utils import copy_array2d
 from .widgets import ColorPicker, NumberPicker, RadioButton
 
@@ -33,15 +32,13 @@ class ImageEditor(Editor):
             self,
             81,
             161,
-            parent.image,
-            EDITOR_IMAGE_X + 63,
-            EDITOR_IMAGE_Y,
+            EDITOR_IMAGE,
+            63,
+            0,
             7,
             TOOL_PENCIL,
         )
-        self._image_picker = NumberPicker(
-            self, 192, 161, 0, parent.image, 0
-        )
+        self._image_picker = NumberPicker(self, 192, 161, 0, EDITOR_IMAGE, 0)
 
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)
