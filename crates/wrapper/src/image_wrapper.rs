@@ -4,7 +4,7 @@ use pyxel::SharedImage as PyxelSharedImage;
 use pyxel::{Canvas, Color, DEFAULT_COLORS};
 
 use crate::tilemap_wrapper::Tilemap;
-use crate::{instance, is_initialized};
+use crate::{instance, instance_exists};
 
 #[pyclass]
 #[derive(Clone)]
@@ -25,7 +25,7 @@ impl Image {
 
     #[staticmethod]
     pub fn from_image(filename: &str) -> Self {
-        let colors = if is_initialized() {
+        let colors = if instance_exists() {
             &instance().colors
         } else {
             &DEFAULT_COLORS
