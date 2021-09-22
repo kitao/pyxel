@@ -22,11 +22,11 @@ impl Tilemap {
     pub fn new(width: u32, height: u32, img: &PyAny) -> PyResult<Self> {
         let img = type_switch! {
             img,
-            Image, {
-                img.pyxel_image
-            },
             u32, {
                 instance().image(img)
+            },
+            Image, {
+                img.pyxel_image
             }
         };
 
@@ -54,12 +54,12 @@ impl Tilemap {
     }
 
     #[getter]
-    pub fn image_no(&self) -> Option<u32> {
+    pub fn refimg(&self) -> Option<u32> {
         instance().image_no(self.pyxel_tilemap.lock().image.clone())
     }
 
     #[setter]
-    pub fn set_image_no(&self, img: u32) {
+    pub fn set_refimg(&self, img: u32) {
         self.pyxel_tilemap.lock().image = instance().image(img);
     }
 
