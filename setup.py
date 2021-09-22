@@ -1,7 +1,6 @@
 import re
 
 import setuptools
-
 from pyxel import VERSION
 
 with open("README.md", "r") as fh:
