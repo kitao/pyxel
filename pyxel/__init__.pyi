@@ -569,7 +569,8 @@ class Image:
 class Tilemap:
     width: int
     height: int
-    iamge: Union[Image | int]
+    image: Image
+    image_no: Optional[int]
     def __init__(self, width: int, height: int, img: Union[Image | int]) -> None: ...
     def set(self, x: int, y: int, data: List[str]) -> None: ...
     def clip(
