@@ -5,7 +5,7 @@ from .field_cursor import FieldCursor
 from .octave_bar import OctaveBar
 from .piano_keyboard import PianoKeyboard
 from .piano_roll import PianoRoll
-from .settings import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_SOUND_LENGTH, TEXT_LABEL_COLOR
+from .settings import EDITOR_IMAGE, MAX_SOUND_LENGTH, TEXT_LABEL_COLOR
 from .sound_field import SoundField
 from .widgets import ImageButton, ImageToggleButton, NumberPicker
 
@@ -26,17 +26,13 @@ class SoundEditor(Editor):
         self._is_playing = False
         self._play_pos = -1
         self._history_data = None
-        self._sound_picker = NumberPicker(self, 45, 17, 0, parent.image, 0)
+        self._sound_picker = NumberPicker(self, 45, 17, 0, EDITOR_IMAGE, 0)
         self._speed_picker = NumberPicker(self, 105, 17, 1, 99, pyxel.sound(0).speed)
-        self._play_button = ImageButton(
-            self, 185, 17, 3, EDITOR_IMAGE_X + 126, EDITOR_IMAGE_Y
-        )
+        self._play_button = ImageButton(self, 185, 17, EDITOR_IMAGE, 126, 0)
         self._stop_button = ImageButton(
-            self, 195, 17, 3, EDITOR_IMAGE_X + 135, EDITOR_IMAGE_Y, is_enabled=False
+            self, 195, 17, EDITOR_IMAGE, 135, 0, is_enabled=False
         )
-        self._loop_button = ImageToggleButton(
-            self, 205, 17, 3, EDITOR_IMAGE_X + 144, EDITOR_IMAGE_Y
-        )
+        self._loop_button = ImageToggleButton(self, 205, 17, EDITOR_IMAGE, 144, 0)
         self._piano_keyboard = PianoKeyboard(self)
         self._piano_roll = PianoRoll(self)
         self._sound_field = SoundField(self)

@@ -1,8 +1,7 @@
 import pyxel
 
 from .settings import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
+    EDITOR_IMAGE,
     MAX_SOUND_LENGTH,
     SOUND_FIELD_DATA_FOCUS_COLOR,
     SOUND_FIELD_DATA_NORMAL_COLOR,
@@ -94,9 +93,9 @@ class SoundField(Widget):
         pyxel.blt(
             self.x,
             self.y,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
-            EDITOR_IMAGE_X,
-            EDITOR_IMAGE_Y + 79,
+            EDITOR_IMAGE,
+            0,
+            79,
             193,
             23,
         )

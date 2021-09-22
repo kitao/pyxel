@@ -1,11 +1,11 @@
 import pyxel
+from pyxel.editor import image_editor
 
 from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
 from .settings import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
+    EDITOR_IMAGE,
     TEXT_LABEL_COLOR,
     TILEMAP_IMAGE_X,
     TILEMAP_IMAGE_Y,
@@ -23,14 +23,14 @@ class TileMapEditor(Editor):
         self._drawing_panel = DrawingPanel(self, is_tilemap_mode=True)
         self._tilemap_panel = TilemapPanel(self)
         self._image_panel = ImagePanel(self, is_tilemap_mode=True)
-        self._tilemap_picker = NumberPicker(self, 48, 161, 0, parent.image, 0)
+        self._tilemap_picker = NumberPicker(self, 48, 161, 0, EDITOR_IMAGE, 0)
         self._tool_button = RadioButton(
             self,
             81,
             161,
-            parent.image,
-            EDITOR_IMAGE_X + 63,
-            EDITOR_IMAGE_Y,
+            EDITOR_IMAGE,
+            63,
+            0,
             7,
             TOOL_PENCIL,
         )
@@ -39,7 +39,7 @@ class TileMapEditor(Editor):
             192,
             161,
             0,
-            parent.image,
+            EDITOR_IMAGE,
             pyxel.tilemap(self._tilemap_picker.value).image,
         )
 

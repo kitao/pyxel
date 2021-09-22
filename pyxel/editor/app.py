@@ -4,14 +4,17 @@ import pyxel
 
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
-from .settings import (APP_HEIGHT, APP_WIDTH, EDITOR_IMAGE_NAME,
-                       EDITOR_IMAGE_X, EDITOR_IMAGE_Y, HELP_MESSAGE_COLOR)
+from .settings import APP_HEIGHT, APP_WIDTH, EDITOR_IMAGE, HELP_MESSAGE_COLOR
 from .sound_editor import SoundEditor
 from .tilemap_editor import TileMapEditor
 from .widgets import ImageButton, RadioButton, Widget
-from .widgets.settings import (WIDGET_BACKGROUND_COLOR, WIDGET_HOLD_TIME,
-                               WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME,
-                               WIDGET_SHADOW_COLOR)
+from .widgets.settings import (
+    WIDGET_BACKGROUND_COLOR,
+    WIDGET_HOLD_TIME,
+    WIDGET_PANEL_COLOR,
+    WIDGET_REPEAT_TIME,
+    WIDGET_SHADOW_COLOR,
+)
 
 
 class App(Widget):
@@ -34,11 +37,6 @@ class App(Widget):
 
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
 
-        image_file = os.path.join(
-            os.path.dirname(__file__), "assets", EDITOR_IMAGE_NAME
-        )
-        self.image = pyxel.Image.from_image(image_file)
-
         self._resource_file = resource_file
         self._editor_list = [
             ImageEditor(self),
@@ -50,9 +48,9 @@ class App(Widget):
             self,
             1,
             1,
-            self.image,
-            EDITOR_IMAGE_X,
-            EDITOR_IMAGE_Y,
+            EDITOR_IMAGE,
+            0,
+            0,
             4,
             0,
         )
@@ -60,25 +58,25 @@ class App(Widget):
             self,
             48,
             1,
-            self.image,
-            EDITOR_IMAGE_X + 36,
-            EDITOR_IMAGE_Y,
+            EDITOR_IMAGE,
+            36,
+            0,
         )
         self._redo_button = ImageButton(
             self,
             57,
             1,
-            self.image,
-            EDITOR_IMAGE_X + 45,
-            EDITOR_IMAGE_Y,
+            EDITOR_IMAGE,
+            45,
+            0,
         )
         self._save_button = ImageButton(
             self,
             75,
             1,
-            self.image,
-            EDITOR_IMAGE_X + 54,
-            EDITOR_IMAGE_Y,
+            EDITOR_IMAGE,
+            54,
+            0,
         )
         self.help_message = ""
 
