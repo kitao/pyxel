@@ -23,7 +23,7 @@ impl Colors {
 
 #[pymethods]
 impl Colors {
-    pub fn assign(&mut self, list: Vec<Rgb8>) -> PyResult<()> {
+    pub fn set(&mut self, list: Vec<Rgb8>) -> PyResult<()> {
         if self.list().len() == list.len() {
             self.list_mut()[..].clone_from_slice(&list[..]);
 
