@@ -1,3 +1,5 @@
+use std::ptr::eq;
+
 use array_macro::array;
 
 use crate::canvas::Canvas;
@@ -65,6 +67,19 @@ impl Graphics {
 impl Pyxel {
     pub fn image(&self, image_no: u32) -> SharedImage {
         self.graphics.images[image_no as usize].clone()
+    }
+
+    pub fn image_no(&self, image: SharedImage) -> Option<u32> {
+        for (i, builtin_image) in self.graphics.images.iter().enumerate() {
+            if eq(
+                &*builtin_image.lock() as *const Image,
+                &*image.lock() as *const Image,
+            ) {
+                return Some(i as u32);
+            }
+        }
+
+        None
     }
 
     pub fn tilemap(&self, image_no: u32) -> SharedTilemap {
