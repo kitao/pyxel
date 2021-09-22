@@ -53,12 +53,12 @@ use crate::variable_wrapper::add_module_variables;
 
 static mut INSTANCE: *mut Pyxel = 0 as *mut Pyxel;
 
-pub fn is_initialized() -> bool {
+pub fn instance_exists() -> bool {
     unsafe { INSTANCE != 0 as *mut Pyxel }
 }
 
 pub fn instance() -> &'static mut Pyxel {
-    if is_initialized() {
+    if instance_exists() {
         unsafe { &mut *INSTANCE }
     } else {
         panic!("Pyxel is not initialized");
