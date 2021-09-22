@@ -3,7 +3,7 @@ import pyxel
 from .editor import Editor
 from .field_cursor import FieldCursor
 from .music_field import MusicField
-from .settings import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, MAX_MUSIC_LENGTH, TEXT_LABEL_COLOR
+from .settings import EDITOR_IMAGE, MAX_MUSIC_LENGTH, TEXT_LABEL_COLOR
 from .sound_selector import SoundSelector
 from .widgets import ImageButton, ImageToggleButton, NumberPicker
 
@@ -27,25 +27,25 @@ class MusicEditor(Editor):
             self,
             185,
             17,
-            parent.image,
-            EDITOR_IMAGE_X + 126,
-            EDITOR_IMAGE_Y,
+            EDITOR_IMAGE,
+            126,
+            0,
         )
         self._stop_button = ImageButton(
             self,
             195,
             17,
-            parent.image,
-            EDITOR_IMAGE_X + 135,
-            EDITOR_IMAGE_Y,
+            EDITOR_IMAGE,
+            135,
+            0,
         )
         self._loop_button = ImageToggleButton(
             self,
             205,
             17,
-            parent.image,
-            EDITOR_IMAGE_X + 144,
-            EDITOR_IMAGE_Y,
+            EDITOR_IMAGE,
+            144,
+            0,
         )
         self._music_field = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
         self._sound_selector = SoundSelector(self)

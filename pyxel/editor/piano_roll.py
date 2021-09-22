@@ -1,8 +1,7 @@
 import pyxel
 
 from .settings import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
+    EDITOR_IMAGE,
     MAX_SOUND_LENGTH,
     PIANO_ROLL_BACKGROUND_COLOR,
     PIANO_ROLL_CURSOR_EDIT_COLOR,
@@ -141,9 +140,9 @@ class PianoRoll(Widget):
         pyxel.blt(
             self.x,
             self.y,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
-            EDITOR_IMAGE_X,
-            EDITOR_IMAGE_Y + 7,
+            EDITOR_IMAGE,
+            0,
+            7,
             193,
             72,
             PIANO_ROLL_BACKGROUND_COLOR,
@@ -151,9 +150,9 @@ class PianoRoll(Widget):
         pyxel.blt(
             self.x,
             self.y + 72,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
-            EDITOR_IMAGE_X,
-            EDITOR_IMAGE_Y + 7,
+            EDITOR_IMAGE,
+            0,
+            7,
             193,
             51,
             PIANO_ROLL_BACKGROUND_COLOR,

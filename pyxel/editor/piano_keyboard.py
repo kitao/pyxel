@@ -1,11 +1,6 @@
 import pyxel
 
-from .settings import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
-    PIANO_KEYBOARD_PLAY_COLOR,
-    PIANO_KEYBOARD_REST_COLOR,
-)
+from .settings import EDITOR_IMAGE, PIANO_KEYBOARD_PLAY_COLOR, PIANO_KEYBOARD_REST_COLOR
 from .widgets import Widget
 
 key_table = [
@@ -140,9 +135,9 @@ class PianoKeyboard(Widget):
         pyxel.blt(
             self.x,
             self.y,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
-            EDITOR_IMAGE_X + 208,
-            EDITOR_IMAGE_Y,
+            EDITOR_IMAGE,
+            208,
+            0,
             12,
             123,
         )

@@ -67,7 +67,13 @@ class RadioButton(Widget):
 
     def __on_draw(self):
         pyxel.blt(
-            self.x, self.y, self._img, self._sx, self._sy, self.width, self.height
+            self.x,
+            self.y,
+            self._img,
+            self._sx,
+            self._sy,
+            self.width,
+            self.height,
         )
 
         pyxel.pal(BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR)
