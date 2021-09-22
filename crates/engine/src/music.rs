@@ -5,6 +5,7 @@ use parking_lot::Mutex;
 use crate::resource::ResourceItem;
 use crate::settings::{CHANNEL_COUNT, RESOURCE_ARCHIVE_DIRNAME};
 use crate::utils::parse_hex_string;
+use crate::Pyxel;
 
 #[derive(Clone)]
 pub struct Music {
@@ -53,7 +54,7 @@ impl ResourceItem for Music {
         self.sequences = Default::default();
     }
 
-    fn serialize(&self) -> String {
+    fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
 
         for sequence in &self.sequences {
@@ -71,7 +72,7 @@ impl ResourceItem for Music {
         output
     }
 
-    fn deserialize(&mut self, _version: u32, input: &str) {
+    fn deserialize(&mut self, _pyxel: &Pyxel, _version: u32, input: &str) {
         self.clear();
 
         for (i, line) in input.lines().enumerate() {

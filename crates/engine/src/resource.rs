@@ -41,8 +41,8 @@ pub trait ResourceItem {
     fn resource_name(item_no: u32) -> String;
     fn is_modified(&self) -> bool;
     fn clear(&mut self);
-    fn serialize(&self) -> String;
-    fn deserialize(&mut self, version: u32, input: &str);
+    fn serialize(&self, pyxel: &Pyxel) -> String;
+    fn deserialize(&mut self, pyxel: &Pyxel, version: u32, input: &str);
 }
 
 impl Resource {
@@ -146,7 +146,7 @@ impl Pyxel {
                         let mut input = String::new();
 
                         file.read_to_string(&mut input).unwrap();
-                        self.$getter(i).lock().deserialize(version, &input);
+                        self.$getter(i).lock().deserialize(self, version, &input);
                     } else {
                         self.$getter(i).lock().clear();
                     }
@@ -192,7 +192,7 @@ impl Pyxel {
                     if self.$getter(i).lock().is_modified() {
                         zip.start_file(<$type>::resource_name(i), Default::default())
                             .unwrap();
-                        zip.write_all(self.$getter(i).lock().serialize().as_bytes())
+                        zip.write_all(self.$getter(i).lock().serialize(self).as_bytes())
                             .unwrap();
                     }
                 }
