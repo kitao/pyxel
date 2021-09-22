@@ -1,10 +1,10 @@
 use pyo3::prelude::*;
 use pyxel::Image as PyxelImage;
 use pyxel::SharedImage as PyxelSharedImage;
-use pyxel::{Canvas, Color};
+use pyxel::{Canvas, Color, DEFAULT_COLORS};
 
-use crate::instance;
 use crate::tilemap_wrapper::Tilemap;
+use crate::{instance, is_initialized};
 
 #[pyclass]
 #[derive(Clone)]
@@ -25,7 +25,13 @@ impl Image {
 
     #[staticmethod]
     pub fn from_image(filename: &str) -> Self {
-        wrap_pyxel_image(PyxelImage::from_image(filename, &instance().colors))
+        let colors = if is_initialized() {
+            &instance().colors
+        } else {
+            &DEFAULT_COLORS
+        };
+
+        wrap_pyxel_image(PyxelImage::from_image(filename, colors))
     }
 
     #[getter]
