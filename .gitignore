@@ -138,5 +138,6 @@ dmypy.json
 cython_debug/
 
 # Pyxel
+.DS_Store
 .vscode/*
 !pyxel/lib/
