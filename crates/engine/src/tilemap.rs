@@ -6,9 +6,10 @@ use crate::canvas::Canvas;
 use crate::image::SharedImage;
 use crate::rectarea::RectArea;
 use crate::resource::ResourceItem;
-use crate::settings::RESOURCE_ARCHIVE_DIRNAME;
+use crate::settings::{RESOURCE_ARCHIVE_DIRNAME, TILEMAP_SIZE};
 use crate::types::Tile;
 use crate::utils::{parse_hex_string, simplify_string};
+use crate::Pyxel;
 
 pub struct Tilemap {
     width: u32,
@@ -125,7 +126,7 @@ impl ResourceItem for Tilemap {
         self.cls((0, 0));
     }
 
-    fn serialize(&self) -> String {
+    fn serialize(&self, pyxel: &Pyxel) -> String {
         let mut output = String::new();
 
         for i in 0..self.height() {
@@ -138,28 +139,32 @@ impl ResourceItem for Tilemap {
             output += "\n";
         }
 
+        output += &format!("{}", pyxel.image_no(self.image.clone()).unwrap_or(0));
+
         output
     }
 
-    fn deserialize(&mut self, version: u32, input: &str) {
-        if version < 15000 {
-            for (i, line) in input.lines().enumerate() {
-                string_loop!(j, value, line, 3, {
-                    let value = parse_hex_string(&value).unwrap();
-                    let x = value % 32;
-                    let y = value / 32;
+    fn deserialize(&mut self, pyxel: &Pyxel, version: u32, input: &str) {
+        for (i, line) in input.lines().enumerate() {
+            if i < TILEMAP_SIZE as usize {
+                if version < 15000 {
+                    string_loop!(j, value, line, 3, {
+                        let value = parse_hex_string(&value).unwrap();
+                        let x = value % 32;
+                        let y = value / 32;
 
-                    self._set_value(j as i32, i as i32, (x as u8, y as u8));
-                });
-            }
-        } else {
-            for (i, line) in input.lines().enumerate() {
-                string_loop!(j, value, line, 4, {
-                    let x = parse_hex_string(&value[0..2].to_string()).unwrap();
-                    let y = parse_hex_string(&value[2..4].to_string()).unwrap();
+                        self._set_value(j as i32, i as i32, (x as u8, y as u8));
+                    });
+                } else {
+                    string_loop!(j, value, line, 4, {
+                        let x = parse_hex_string(&value[0..2].to_string()).unwrap();
+                        let y = parse_hex_string(&value[2..4].to_string()).unwrap();
 
-                    self._set_value(j as i32, i as i32, (x as u8, y as u8));
-                });
+                        self._set_value(j as i32, i as i32, (x as u8, y as u8));
+                    });
+                }
+            } else {
+                self.image = pyxel.image(line.parse().unwrap());
             }
         }
     }

@@ -9,6 +9,7 @@ use crate::settings::{
 };
 use crate::types::{Effect, Note, Speed, Tone, Volume};
 use crate::utils::{parse_hex_string, simplify_string};
+use crate::Pyxel;
 
 #[derive(Clone)]
 pub struct Sound {
@@ -158,7 +159,7 @@ impl ResourceItem for Sound {
         self.speed = INITIAL_SPEED;
     }
 
-    fn serialize(&self) -> String {
+    fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
 
         if self.notes.is_empty() {
@@ -197,7 +198,7 @@ impl ResourceItem for Sound {
         output
     }
 
-    fn deserialize(&mut self, _version: u32, input: &str) {
+    fn deserialize(&mut self, _pyxel: &Pyxel, _version: u32, input: &str) {
         self.clear();
 
         for (i, line) in input.lines().enumerate() {
