@@ -61,6 +61,8 @@ test: build
 
 format:
 	@cargo +nightly fmt -- --emit=files
+	@isort ..
+	@black ..
 
 lint:
 	@cargo clippy
