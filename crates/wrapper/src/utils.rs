@@ -50,7 +50,7 @@ macro_rules! define_list_edit_methods {
             }
         }
 
-        pub fn assign(&mut self, list: Vec<$elem_type>) -> PyResult<()> {
+        pub fn set(&mut self, list: Vec<$elem_type>) -> PyResult<()> {
             *self.list_mut() = list;
 
             Ok(())
