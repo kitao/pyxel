@@ -18,6 +18,7 @@ use crate::tilemap::SharedTilemap;
 use crate::types::{Color, Rgb8};
 use crate::utils::as_i32;
 use crate::utils::{parse_hex_string, simplify_string};
+use crate::Pyxel;
 
 pub struct Image {
     self_rect: RectArea,
@@ -375,7 +376,7 @@ impl ResourceItem for Image {
         self.cls(0);
     }
 
-    fn serialize(&self) -> String {
+    fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
 
         for i in 0..self.height() {
@@ -389,7 +390,7 @@ impl ResourceItem for Image {
         output
     }
 
-    fn deserialize(&mut self, _version: u32, input: &str) {
+    fn deserialize(&mut self, _pyxel: &Pyxel, _version: u32, input: &str) {
         for (i, line) in input.lines().enumerate() {
             string_loop!(j, value, line, 1, {
                 self._set_value(
