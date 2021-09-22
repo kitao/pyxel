@@ -1,8 +1,7 @@
 import pyxel
 
 from .settings import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
+    EDITOR_IMAGE,
     MAX_MUSIC_LENGTH,
     MUSIC_FIELD_BACKGROUND_COLOR,
     MUSIC_FIELD_CURSOR_EDIT_COLOR,
@@ -50,9 +49,9 @@ class MusicField(Widget):
         pyxel.blt(
             self.x + 20,
             self.y + 1,
-            self.parent.parent.image,
-            EDITOR_IMAGE_X,
-            EDITOR_IMAGE_Y + 102,
+            EDITOR_IMAGE,
+            0,
+            102,
             191,
             19,
             MUSIC_FIELD_BACKGROUND_COLOR,
