@@ -1,8 +1,7 @@
 import pyxel
 
-from .settings import EDITOR_IMAGE
-from .widgets import Widget
-from .widgets.settings import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
+from .settings import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR, EDITOR_IMAGE
+from .widget import Widget
 
 
 class SoundSelector(Widget):
