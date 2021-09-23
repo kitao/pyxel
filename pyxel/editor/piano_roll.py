@@ -8,10 +8,9 @@ from .settings import (
     PIANO_ROLL_CURSOR_PLAY_COLOR,
     PIANO_ROLL_NOTE_COLOR,
     PIANO_ROLL_REST_COLOR,
-    WIDGET_HOLD_TIME,
-    WIDGET_REPEAT_TIME,
 )
-from .widget import Widget
+from .widgets import Widget
+from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 
 class PianoRoll(Widget):
