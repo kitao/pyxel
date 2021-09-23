@@ -1,6 +1,6 @@
 import pyxel
 
-from .settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 
 class FieldCursor:

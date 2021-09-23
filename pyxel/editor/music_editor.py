@@ -2,12 +2,10 @@ import pyxel
 
 from .editor import Editor
 from .field_cursor import FieldCursor
-from .image_button import ImageButton
-from .image_toggle_button import ImageToggleButton
 from .music_field import MusicField
-from .number_picker import NumberPicker
 from .settings import EDITOR_IMAGE, MAX_MUSIC_LENGTH, TEXT_LABEL_COLOR
 from .sound_selector import SoundSelector
+from .widgets import ImageButton, ImageToggleButton, NumberPicker
 
 
 class MusicEditor(Editor):
