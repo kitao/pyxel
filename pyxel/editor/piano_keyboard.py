@@ -1,7 +1,7 @@
 import pyxel
 
 from .settings import EDITOR_IMAGE, PIANO_KEYBOARD_PLAY_COLOR, PIANO_KEYBOARD_REST_COLOR
-from .widget import Widget
+from .widgets import Widget
 
 key_table = [
     pyxel.KEY_Z,

@@ -3,8 +3,6 @@ import pyxel
 from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
-from .number_picker import NumberPicker
-from .radio_button import RadioButton
 from .settings import (
     EDITOR_IMAGE,
     TEXT_LABEL_COLOR,
@@ -14,6 +12,7 @@ from .settings import (
 )
 from .tilemap_panel import TilemapPanel
 from .utils import copy_array2d
+from .widgets import NumberPicker, RadioButton
 
 
 class TileMapEditor(Editor):

@@ -8,7 +8,7 @@ from .settings import (
     TILEMAP_IMAGE_X,
     TILEMAP_IMAGE_Y,
 )
-from .widget import Widget
+from .widgets import Widget
 
 
 class TilemapPanel(Widget):

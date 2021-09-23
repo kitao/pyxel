@@ -2,24 +2,19 @@ import os
 
 import pyxel
 
-from .image_button import ImageButton
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
-from .radio_button import RadioButton
-from .settings import (
-    APP_HEIGHT,
-    APP_WIDTH,
-    EDITOR_IMAGE,
-    HELP_MESSAGE_COLOR,
+from .settings import APP_HEIGHT, APP_WIDTH, EDITOR_IMAGE, HELP_MESSAGE_COLOR
+from .sound_editor import SoundEditor
+from .tilemap_editor import TileMapEditor
+from .widgets import ImageButton, RadioButton, Widget
+from .widgets.settings import (
     WIDGET_BACKGROUND_COLOR,
     WIDGET_HOLD_TIME,
     WIDGET_PANEL_COLOR,
     WIDGET_REPEAT_TIME,
     WIDGET_SHADOW_COLOR,
 )
-from .sound_editor import SoundEditor
-from .tilemap_editor import TileMapEditor
-from .widget import Widget
 
 IMAGE_EDITOR = 0
 TILEMAP_EDITOR = 1
