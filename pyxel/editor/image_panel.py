@@ -1,8 +1,9 @@
 import pyxel
 
+from .scroll_bar import ScrollBar
 from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR
 from .utils import slice_array2d
-from .widgets import ScrollBar, Widget
+from .widget import Widget
 
 
 class ImagePanel(Widget):

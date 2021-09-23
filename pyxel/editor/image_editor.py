@@ -1,13 +1,13 @@
-import os.path
-
 import pyxel
 
+from .color_picker import ColorPicker
 from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
+from .number_picker import NumberPicker
+from .radio_button import RadioButton
 from .settings import EDITOR_IMAGE, TEXT_LABEL_COLOR, TOOL_PENCIL
 from .utils import copy_array2d
-from .widgets import ColorPicker, NumberPicker, RadioButton
 
 
 class ImageEditor(Editor):
@@ -38,7 +38,7 @@ class ImageEditor(Editor):
             7,
             TOOL_PENCIL,
         )
-        self._image_picker = NumberPicker(self, 192, 161, 0, EDITOR_IMAGE, 0)
+        self._image_picker = NumberPicker(self, 192, 161, 0, pyxel.IMAGE_COUNT - 1, 0)
 
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)
@@ -90,7 +90,7 @@ class ImageEditor(Editor):
     def __on_undo(self, data):
         img = data["image"]
         x, y = data["pos"]
-        copy_array2d(pyxel.image(img).data, x, y, data["before"])
+        copy_array2d(pyxel.image(img), x, y, data["before"])
 
         self.drawing_x = x
         self.drawing_y = y
@@ -99,18 +99,14 @@ class ImageEditor(Editor):
     def __on_redo(self, data):
         img = data["image"]
         x, y = data["pos"]
-        copy_array2d(pyxel.image(img).data, x, y, data["after"])
+        copy_array2d(pyxel.image(img), x, y, data["after"])
 
         self.drawing_x = x
         self.drawing_y = y
         self.parent.image = img
 
     def __on_drop(self, filename):
-        _, ext = os.path.splitext(filename)
-
-        if ext.lower() == ".png":
-            pyxel.image(self.image).load(0, 0, filename)
-            return
+        pyxel.image(self.image).load(0, 0, filename)
 
     def __on_update(self):
         self.check_tool_button_shortcuts()

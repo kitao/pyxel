@@ -2,12 +2,14 @@ import pyxel
 
 from .editor import Editor
 from .field_cursor import FieldCursor
+from .image_button import ImageButton
+from .image_toggle_button import ImageToggleButton
+from .number_picker import NumberPicker
 from .octave_bar import OctaveBar
 from .piano_keyboard import PianoKeyboard
 from .piano_roll import PianoRoll
 from .settings import EDITOR_IMAGE, MAX_SOUND_LENGTH, TEXT_LABEL_COLOR
 from .sound_field import SoundField
-from .widgets import ImageButton, ImageToggleButton, NumberPicker
 
 
 class SoundEditor(Editor):
