@@ -1,5 +1,3 @@
-use std::ptr::eq;
-
 use array_macro::array;
 
 use crate::canvas::Canvas;
@@ -71,10 +69,7 @@ impl Pyxel {
 
     pub fn image_no(&self, image: SharedImage) -> Option<u32> {
         for (i, builtin_image) in self.graphics.images.iter().enumerate() {
-            if eq(
-                &*builtin_image.lock() as *const Image,
-                &*image.lock() as *const Image,
-            ) {
+            if builtin_image.data_ptr() == image.data_ptr() {
                 return Some(i as u32);
             }
         }
