@@ -146,10 +146,6 @@ impl Image {
         Ok(())
     }
 
-    pub fn blt_self(&self, x: f64, y: f64, u: f64, v: f64, w: f64, h: f64, colkey: Option<Color>) {
-        self.pyxel_image.lock().blt_self(x, y, u, v, w, h, colkey);
-    }
-
     pub fn bltm(
         &self,
         x: f64,

@@ -365,14 +365,14 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         height: f64,
         transparent: Option<T>,
     ) {
-        let canvas = if let Some(canvas) = canvas.try_lock() {
-            canvas
-        } else {
-            panic!("unable to lock canvas in blt");
-        };
+        if self as *mut Self == canvas.data_ptr() {
+            self._blt_self(x, y, canvas_x, canvas_y, width, height, transparent);
+            return;
+        }
 
         let x = as_i32(x);
         let y = as_i32(y);
+        let canvas = canvas.lock();
         let canvas_x = as_i32(canvas_x);
         let canvas_y = as_i32(canvas_y);
         let width = as_i32(width);
@@ -420,7 +420,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         }
     }
 
-    fn blt_self(
+    fn _blt_self(
         &mut self,
         x: f64,
         y: f64,
