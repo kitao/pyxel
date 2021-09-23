@@ -403,42 +403,43 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             return;
         }
 
+        macro_rules! copy_canvas {
+            ($x: ident, $y: ident, $value: expr) => {
+                for $y in 0..height {
+                    for $x in 0..width {
+                        let value = $value;
+
+                        if let Some(transparent) = transparent {
+                            if value == transparent {
+                                continue;
+                            }
+                        }
+
+                        self._set_value(dst_x + $x, dst_y + $y, self._palette_value(value));
+                    }
+                }
+            };
+        }
+
         if self_copy {
             let canvas: Vec<Vec<T>> = (0..height)
                 .map(|i| (0..width).map(|j| self._value(j, i)).collect())
                 .collect();
 
-            for i in 0..height {
-                for j in 0..width {
-                    let value = canvas[(src_y + sign_y * i + offset_y) as usize]
-                        [(src_x + sign_x * j + offset_x) as usize];
-
-                    if let Some(transparent) = transparent {
-                        if value == transparent {
-                            continue;
-                        }
-                    }
-
-                    self._set_value(dst_x + j, dst_y + i, self._palette_value(value));
-                }
-            }
+            copy_canvas!(
+                x,
+                y,
+                canvas[(src_y + sign_y * y + offset_y) as usize]
+                    [(src_x + sign_x * x + offset_x) as usize]
+            );
         } else {
             let canvas = canvas.lock();
 
-            for i in 0..height {
-                for j in 0..width {
-                    let value =
-                        canvas._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
-
-                    if let Some(transparent) = transparent {
-                        if value == transparent {
-                            continue;
-                        }
-                    }
-
-                    self._set_value(dst_x + j, dst_y + i, self._palette_value(value));
-                }
-            }
+            copy_canvas!(
+                x,
+                y,
+                canvas._value(src_x + sign_x * x + offset_x, src_y + sign_y * y + offset_y)
+            );
         }
     }
 }
