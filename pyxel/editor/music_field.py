@@ -10,7 +10,7 @@ from .settings import (
     MUSIC_FIELD_SOUND_NORMAL_COLOR,
     TEXT_LABEL_COLOR,
 )
-from .widget import Widget
+from .widgets import Widget
 
 
 class MusicField(Widget):

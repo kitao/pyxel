@@ -9,7 +9,7 @@ from .settings import (
     TOOL_RECTB,
     TOOL_SELECT,
 )
-from .widget import Widget
+from .widgets import Widget
 
 
 class Editor(Widget):

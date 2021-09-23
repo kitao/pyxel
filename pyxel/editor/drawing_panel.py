@@ -1,7 +1,6 @@
 import pyxel
 
 from .overlay_canvas import OverlayCanvas
-from .scroll_bar import ScrollBar
 from .settings import (
     PANEL_SELECT_BORDER_COLOR,
     PANEL_SELECT_FRAME_COLOR,
@@ -12,12 +11,10 @@ from .settings import (
     TOOL_RECT,
     TOOL_RECTB,
     TOOL_SELECT,
-    WIDGET_HOLD_TIME,
-    WIDGET_PANEL_COLOR,
-    WIDGET_REPEAT_TIME,
 )
 from .utils import copy_array2d, get_array2d_size, slice_array2d
-from .widget import Widget
+from .widgets import ScrollBar, Widget
+from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
 
 
 class DrawingPanel(Widget):
