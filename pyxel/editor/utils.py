@@ -22,7 +22,7 @@ def slice_array2d(arr, x, y, width, height):
 
     for i in range(height):
         for j in range(width):
-            sliced_arr[i][j] = arr[y + i][x + j]
+            sliced_arr[i][j] = arr.pget(x + j, y + i)
 
     return sliced_arr
 
@@ -52,4 +52,4 @@ def copy_array2d(dst, dx, dy, src, sx=0, sy=0, cw=None, ch=None):
 
     for i in range(ch):
         for j in range(cw):
-            dst[dy + i][dx + j] = src[sy + i][sx + j]
+            dst.pset(dx + j, dy + i, src[sy + i][sx + j])

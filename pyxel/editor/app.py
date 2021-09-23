@@ -2,26 +2,36 @@ import os
 
 import pyxel
 
+from .image_button import ImageButton
 from .image_editor import ImageEditor
 from .music_editor import MusicEditor
-from .settings import APP_HEIGHT, APP_WIDTH, EDITOR_IMAGE, HELP_MESSAGE_COLOR
-from .sound_editor import SoundEditor
-from .tilemap_editor import TileMapEditor
-from .widgets import ImageButton, RadioButton, Widget
-from .widgets.settings import (
+from .radio_button import RadioButton
+from .settings import (
+    APP_HEIGHT,
+    APP_WIDTH,
+    EDITOR_IMAGE,
+    HELP_MESSAGE_COLOR,
     WIDGET_BACKGROUND_COLOR,
     WIDGET_HOLD_TIME,
     WIDGET_PANEL_COLOR,
     WIDGET_REPEAT_TIME,
     WIDGET_SHADOW_COLOR,
 )
+from .sound_editor import SoundEditor
+from .tilemap_editor import TileMapEditor
+from .widget import Widget
+
+IMAGE_EDITOR = 0
+TILEMAP_EDITOR = 1
+SOUND_EDITOR = 2
+MUSIC_EDITOR = 3
 
 
 class App(Widget):
     def __init__(self, resource_file):
         resource_file = os.path.join(os.getcwd(), resource_file)
-        root, ext = os.path.splitext(resource_file)
-        if ext != pyxel.RESOURCE_FILE_EXTENSION:
+        file_ext = os.path.splitext(resource_file)[1]
+        if file_ext != pyxel.RESOURCE_FILE_EXTENSION:
             resource_file += pyxel.RESOURCE_FILE_EXTENSION
 
         pyxel.init(
@@ -32,17 +42,14 @@ class App(Widget):
         if os.path.exists(resource_file):
             pyxel.load(resource_file)
 
-        if ext == ".pyxel":
-            resource_file = root + pyxel.RESOURCE_FILE_EXTENSION
-
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
 
         self._resource_file = resource_file
         self._editor_list = [
             ImageEditor(self),
-            TileMapEditor(self),
-            SoundEditor(self),
-            MusicEditor(self),
+            # TileMapEditor(self),
+            # SoundEditor(self),
+            # MusicEditor(self),
         ]
         self._editor_button = RadioButton(
             self,
@@ -103,9 +110,13 @@ class App(Widget):
             "mouse_hover", self.__on_save_button_mouse_hover
         )
 
-        self._set_editor(0)
+        self._set_editor(IMAGE_EDITOR)
 
         pyxel.run(self.update_widgets, self.draw_widgets)
+
+    @property
+    def _editor(self):
+        return self._editor_list[self._editor_button.value]
 
     def _set_editor(self, editor):
         self._editor_button.value = editor
@@ -115,54 +126,52 @@ class App(Widget):
 
     def __on_update(self):
         if pyxel.drop_files:
-            ext = os.path.splitext(pyxel.drop_files[-1])[1]
+            drop_file = pyxel.drop_files[-1]
+            file_ext = os.path.splitext(drop_file)[1]
 
-            if ext == pyxel.RESOURCE_FILE_EXTENSION:
+            if file_ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
 
                 if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
-                    editor = self._editor_list[self._editor_button.value]
-                    editor.reset_history()
+                    editor_index = self._editor_button.value
+                    self._editor.reset_history()
 
-                    if isinstance(editor, ImageEditor):
+                    if editor_index == IMAGE_EDITOR:
                         pyxel.load(
                             pyxel._drop_file, tilemap=False, sound=False, music=False
                         )
-                    elif isinstance(editor, TileMapEditor):
+                    elif editor_index == TILEMAP_EDITOR:
                         pyxel.load(
                             pyxel._drop_file, image=False, sound=False, music=False
                         )
-                    elif isinstance(editor, SoundEditor):
+                    elif editor_index == SOUND_EDITOR:
                         pyxel.load(
                             pyxel._drop_file, image=False, tilemap=False, music=False
                         )
-                    elif isinstance(editor, MusicEditor):
+                    elif editor_index == MUSIC_EDITOR:
                         pyxel.load(
                             pyxel._drop_file, image=False, tilemap=False, sound=False
                         )
                 else:
                     for editor in self._editor_list:
                         editor.reset_history()
-                    pyxel.load(pyxel._drop_file)
+                    pyxel.load(drop_file)
 
-                pyxel._caption(pyxel._drop_file)
+                pyxel._caption(drop_file)
             else:
-                self._editor_list[self._editor_button.value].call_event_handler(
-                    "drop", pyxel._drop_file
-                )
+                self._editor.call_event_handler("drop", drop_file)
 
-        if pyxel.btn(pyxel.KEY_LALT) or pyxel.btn(pyxel.KEY_RALT):
-            editor = self._editor_button.value
+        if pyxel.btn(pyxel.KEY_ALT):
+            editor_index = self._editor_button.value
             editor_count = len(self._editor_list)
 
             if pyxel.btnp(pyxel.KEY_LEFT):
-                self._set_editor((editor - 1) % editor_count)
+                self._set_editor((editor_index - 1) % editor_count)
             elif pyxel.btnp(pyxel.KEY_RIGHT):
-                self._set_editor((editor + 1) % editor_count)
+                self._set_editor((editor_index + 1) % editor_count)
 
-        editor = self._editor_list[self._editor_button.value]
-        self._undo_button.is_enabled = editor.can_undo
-        self._redo_button.is_enabled = editor.can_redo
+        self._undo_button.is_enabled = self._editor.can_undo
+        self._redo_button.is_enabled = self._editor.can_redo
 
         if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
             if pyxel.btnp(pyxel.KEY_S):
@@ -187,10 +196,10 @@ class App(Widget):
         self.help_message = ""
 
     def __on_undo_button_press(self):
-        self._editor_list[self._editor_button.value].undo()
+        self._editor.undo()
 
     def __on_redo_button_press(self):
-        self._editor_list[self._editor_button.value].redo()
+        self._editor.redo()
 
     def __on_save_button_press(self):
         pyxel.save(self._resource_file)
