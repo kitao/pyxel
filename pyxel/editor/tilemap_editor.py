@@ -1,9 +1,10 @@
 import pyxel
-from pyxel.editor import image_editor
 
 from .drawing_panel import DrawingPanel
 from .editor import Editor
 from .image_panel import ImagePanel
+from .number_picker import NumberPicker
+from .radio_button import RadioButton
 from .settings import (
     EDITOR_IMAGE,
     TEXT_LABEL_COLOR,
@@ -13,7 +14,6 @@ from .settings import (
 )
 from .tilemap_panel import TilemapPanel
 from .utils import copy_array2d
-from .widgets import NumberPicker, RadioButton
 
 
 class TileMapEditor(Editor):
@@ -23,7 +23,9 @@ class TileMapEditor(Editor):
         self._drawing_panel = DrawingPanel(self, is_tilemap_mode=True)
         self._tilemap_panel = TilemapPanel(self)
         self._image_panel = ImagePanel(self, is_tilemap_mode=True)
-        self._tilemap_picker = NumberPicker(self, 48, 161, 0, EDITOR_IMAGE, 0)
+        self._tilemap_picker = NumberPicker(
+            self, 48, 161, 0, pyxel.TILEMAP_COUNT - 1, 0
+        )
         self._tool_button = RadioButton(
             self,
             81,
@@ -39,8 +41,8 @@ class TileMapEditor(Editor):
             192,
             161,
             0,
-            EDITOR_IMAGE,
-            pyxel.tilemap(self._tilemap_picker.value).image,
+            pyxel.IMAGE_COUNT - 1,
+            pyxel.tilemap(self._tilemap_picker.value).refimg,
         )
 
         self.add_event_handler("undo", self.__on_undo)
@@ -85,7 +87,7 @@ class TileMapEditor(Editor):
 
     @image.setter
     def image(self, value):
-        self._image_button.value = value
+        self._image_picker.value = value
 
     @property
     def drawing_x(self):
