@@ -152,12 +152,6 @@ impl Tilemap {
 
         Ok(())
     }
-
-    pub fn blt_self(&self, x: f64, y: f64, u: f64, v: f64, w: f64, h: f64, tilekey: Option<Tile>) {
-        self.pyxel_tilemap
-            .lock()
-            .blt_self(x, y, u, v, w, h, tilekey);
-    }
 }
 
 pub fn add_tilemap_class(m: &PyModule) -> PyResult<()> {
