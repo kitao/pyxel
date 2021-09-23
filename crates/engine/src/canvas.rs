@@ -365,18 +365,13 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         height: f64,
         transparent: Option<T>,
     ) {
-        if self as *mut Self == canvas.data_ptr() {
-            self._blt_self(x, y, canvas_x, canvas_y, width, height, transparent);
-            return;
-        }
-
         let x = as_i32(x);
         let y = as_i32(y);
-        let canvas = canvas.lock();
         let canvas_x = as_i32(canvas_x);
         let canvas_y = as_i32(canvas_y);
         let width = as_i32(width);
         let height = as_i32(height);
+        let self_copy = self as *mut Self == canvas.data_ptr();
 
         let CopyArea {
             dst_x,
@@ -395,7 +390,11 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             self._clip_rect(),
             canvas_x,
             canvas_y,
-            canvas._self_rect(),
+            if self_copy {
+                self._self_rect()
+            } else {
+                canvas.lock()._self_rect()
+            },
             width,
             height,
         );
@@ -404,81 +403,41 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
             return;
         }
 
-        for i in 0..height {
-            for j in 0..width {
-                let value =
-                    canvas._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
+        if self_copy {
+            let canvas: Vec<Vec<T>> = (0..height)
+                .map(|i| (0..width).map(|j| self._value(j, i)).collect())
+                .collect();
 
-                if let Some(transparent) = transparent {
-                    if value == transparent {
-                        continue;
+            for i in 0..height {
+                for j in 0..width {
+                    let value = canvas[(src_y + sign_y * i + offset_y) as usize]
+                        [(src_x + sign_x * j + offset_x) as usize];
+
+                    if let Some(transparent) = transparent {
+                        if value == transparent {
+                            continue;
+                        }
                     }
-                }
 
-                self._set_value(dst_x + j, dst_y + i, self._palette_value(value));
+                    self._set_value(dst_x + j, dst_y + i, self._palette_value(value));
+                }
             }
-        }
-    }
+        } else {
+            let canvas = canvas.lock();
 
-    fn _blt_self(
-        &mut self,
-        x: f64,
-        y: f64,
-        canvas_x: f64,
-        canvas_y: f64,
-        width: f64,
-        height: f64,
-        transparent: Option<T>,
-    ) {
-        let x = as_i32(x);
-        let y = as_i32(y);
-        let canvas_x = as_i32(canvas_x);
-        let canvas_y = as_i32(canvas_y);
-        let width = as_i32(width);
-        let height = as_i32(height);
+            for i in 0..height {
+                for j in 0..width {
+                    let value =
+                        canvas._value(src_x + sign_x * j + offset_x, src_y + sign_y * i + offset_y);
 
-        let CopyArea {
-            dst_x,
-            dst_y,
-            src_x,
-            src_y,
-            sign_x,
-            sign_y,
-            offset_x,
-            offset_y,
-            width,
-            height,
-        } = CopyArea::new(
-            x,
-            y,
-            self._clip_rect(),
-            canvas_x,
-            canvas_y,
-            self._self_rect(),
-            width,
-            height,
-        );
-
-        if width == 0 || height == 0 {
-            return;
-        }
-
-        let canvas: Vec<Vec<T>> = (0..height)
-            .map(|i| (0..width).map(|j| self._value(j, i)).collect())
-            .collect();
-
-        for i in 0..height {
-            for j in 0..width {
-                let value = canvas[(src_y + sign_y * i + offset_y) as usize]
-                    [(src_x + sign_x * j + offset_x) as usize];
-
-                if let Some(transparent) = transparent {
-                    if value == transparent {
-                        continue;
+                    if let Some(transparent) = transparent {
+                        if value == transparent {
+                            continue;
+                        }
                     }
-                }
 
-                self._set_value(dst_x + j, dst_y + i, self._palette_value(value));
+                    self._set_value(dst_x + j, dst_y + i, self._palette_value(value));
+                }
             }
         }
     }
