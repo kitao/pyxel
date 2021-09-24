@@ -1,0 +1,4 @@
+.PHONY: all $(MAKECMDGOALS)
+
+all $(MAKECMDGOALS):
+	@$(MAKE) -C crates $(MAKECMDGOALS)
