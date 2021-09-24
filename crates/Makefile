@@ -1,6 +1,6 @@
-BASE_DIR = ..
-PYXEL_DIR = $(BASE_DIR)/pyxel
-CRATES_DIR = $(BASE_DIR)/crates
+ROOT_DIR = ..
+PYXEL_DIR = $(ROOT_DIR)/pyxel
+CRATES_DIR = $(ROOT_DIR)/crates
 LIB_DIR = $(PYXEL_DIR)/lib/$(OS_NAME)
 LIB_NAME = pyxel_wrapper
 TESTS_DIR = $(CRATES_DIR)/wrapper/tests
@@ -33,7 +33,7 @@ CARGO_BUILD_OPT = --release
 CARGO_TARGET_DIR = $(CRATES_DIR)/target/release
 SRC_LIB_DIR = $(CARGO_TARGET_DIR)
 DST_LIB_DIR = $(LIB_DIR)
-TEST_IMPORT_DIR = $(BASE_DIR)
+TEST_IMPORT_DIR = $(ROOT_DIR)
 endif
 
 SRC_LIB = $(SRC_LIB_DIR)/lib$(LIB_NAME)$(SRC_LIB_EXT)
@@ -56,7 +56,7 @@ test: build
 
 format:
 	@cargo +nightly fmt -- --emit=files
-	@isort $(BASE_DIR) && black $(BASE_DIR)
+	@isort $(ROOT_DIR) && black $(ROOT_DIR)
 
 lint:
 	@cargo clippy
