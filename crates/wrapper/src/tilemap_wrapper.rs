@@ -125,10 +125,6 @@ impl Tilemap {
         self.pyxel_tilemap.lock().trib(x1, y1, x2, y2, x3, y3, tile);
     }
 
-    pub fn fill(&self, x: f64, y: f64, tile: Tile) {
-        self.pyxel_tilemap.lock().fill(x, y, tile);
-    }
-
     pub fn blt(
         &self,
         x: f64,
