@@ -2,11 +2,15 @@ import pyxel
 
 
 def _rectb2(self, x1, y1, x2, y2, val):
-    self.rectb(min(x1, x2), min(y1, y2), abs(x1 - x2) + 1, abs(y1 - y2) + 1, val)
+    x1, x2 = min(x1, x2), max(x1, x2)
+    y1, y2 = min(y1, y2), max(y1, y2)
+    self.rectb(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
 def _rect2(self, x1, y1, x2, y2, val):
-    self.rect(min(x1, x2), min(y1, y2), abs(x1 - x2) + 1, abs(y1 - y2) + 1, val)
+    x1, x2 = min(x1, x2), max(x1, x2)
+    y1, y2 = min(y1, y2), max(y1, y2)
+    self.rect(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
 def _in_ellipse(x, y, a, b):
@@ -16,11 +20,14 @@ def _in_ellipse(x, y, a, b):
 
 
 def _ellipb(self, x1, y1, x2, y2, val):
-    a = abs(x1 - x2) / 2
-    b = abs(y1 - y2) / 2
+    x1, x2 = min(x1, x2), max(x1, x2)
+    y1, y2 = min(y1, y2), max(y1, y2)
+
+    a = (x2 - x1) / 2
+    b = (y2 - y1) / 2
 
     if a <= 0.5 or b <= 0.5:
-        self.rect(min(x1, x2), min(y1, y2), abs(x1 - x2), abs(y1 - y2), val)
+        self.rect2(x1, y1, x2, y2, val)
         return
 
     cx = (x1 + x2) / 2
@@ -41,11 +48,14 @@ def _ellipb(self, x1, y1, x2, y2, val):
 
 
 def _ellip(self, x1, y1, x2, y2, val):
-    a = abs(x1 - x2) / 2
-    b = abs(y1 - y2) / 2
+    x1, x2 = min(x1, x2), max(x1, x2)
+    y1, y2 = min(y1, y2), max(y1, y2)
+
+    a = (x2 - x1) / 2
+    b = (y2 - y1) / 2
 
     if a <= 0.5 or b <= 0.5:
-        self.rect(x1, y1, x2, y2, val, False)
+        self.rect2(x1, y1, x2, y2, val)
         return
 
     cx = (x1 + x2) / 2
@@ -54,7 +64,7 @@ def _ellip(self, x1, y1, x2, y2, val):
     for y in range(max(y1, 0), min(y2 + 1, 16)):
         for x in range(max(x1, 0), min(x2 + 1, 16)):
             if _in_ellipse(x - cx, y - cy, a, b):
-                self.psert(x, y, val)
+                self.pset(x, y, val)
 
 
 def _fill(self, x, y, val):
