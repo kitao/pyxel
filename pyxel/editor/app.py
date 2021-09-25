@@ -6,20 +6,11 @@ from .image_editor import ImageEditor
 from .music_editor import MusicEditor
 from .settings import APP_HEIGHT, APP_WIDTH, EDITOR_IMAGE, HELP_MESSAGE_COLOR
 from .sound_editor import SoundEditor
-from .tilemap_editor import TileMapEditor
+from .tilemap_editor import TilemapEditor
 from .widgets import ImageButton, RadioButton, Widget
-from .widgets.settings import (
-    WIDGET_BACKGROUND_COLOR,
-    WIDGET_HOLD_TIME,
-    WIDGET_PANEL_COLOR,
-    WIDGET_REPEAT_TIME,
-    WIDGET_SHADOW_COLOR,
-)
-
-IMAGE_EDITOR = 0
-TILEMAP_EDITOR = 1
-SOUND_EDITOR = 2
-MUSIC_EDITOR = 3
+from .widgets.settings import (WIDGET_BACKGROUND_COLOR, WIDGET_HOLD_TIME,
+                               WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME,
+                               WIDGET_SHADOW_COLOR)
 
 
 class App(Widget):
@@ -29,10 +20,9 @@ class App(Widget):
         if file_ext != pyxel.RESOURCE_FILE_EXTENSION:
             resource_file += pyxel.RESOURCE_FILE_EXTENSION
 
-        pyxel.init(
-            APP_WIDTH, APP_HEIGHT, title="Pyxel Editor - {}".format(resource_file)
-        )
+        pyxel.init(APP_WIDTH, APP_HEIGHT)
         pyxel.mouse(True)
+        App._set_title(resource_file)
 
         if os.path.exists(resource_file):
             pyxel.load(resource_file)
@@ -40,11 +30,11 @@ class App(Widget):
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
 
         self._resource_file = resource_file
-        self._editor_list = [
+        self._editors = [
             ImageEditor(self),
-            # TileMapEditor(self),
-            # SoundEditor(self),
-            # MusicEditor(self),
+            TilemapEditor(self),
+            SoundEditor(self),
+            MusicEditor(self),
         ]
         self._editor_button = RadioButton(
             self,
@@ -105,19 +95,27 @@ class App(Widget):
             "mouse_hover", self.__on_save_button_mouse_hover
         )
 
-        self._set_editor(IMAGE_EDITOR)
+        self.editor_no = 0
 
         pyxel.run(self.update_widgets, self.draw_widgets)
 
     @property
+    def editor_no(self):
+        return self._editor_button.value
+
+    @editor_no.setter
+    def editor_no(self, value):
+        self._editor_button.value = value
+        for i, widget in enumerate(self._editors):
+            widget.is_visible = i == value
+
+    @property
     def _editor(self):
-        return self._editor_list[self._editor_button.value]
+        return self._editors[self._editor_button.value]
 
-    def _set_editor(self, editor):
-        self._editor_button.value = editor
-
-        for i, widget in enumerate(self._editor_list):
-            widget.is_visible = i == editor
+    @staticmethod
+    def _set_title(filename):
+        pyxel.title("Pyxel Editor - {}".format(filename))
 
     def __on_update(self):
         if pyxel.drop_files:
@@ -128,42 +126,36 @@ class App(Widget):
                 pyxel.stop()
 
                 if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
-                    editor_index = self._editor_button.value
                     self._editor.reset_history()
 
-                    if editor_index == IMAGE_EDITOR:
-                        pyxel.load(
-                            pyxel._drop_file, tilemap=False, sound=False, music=False
-                        )
-                    elif editor_index == TILEMAP_EDITOR:
-                        pyxel.load(
-                            pyxel._drop_file, image=False, sound=False, music=False
-                        )
-                    elif editor_index == SOUND_EDITOR:
-                        pyxel.load(
-                            pyxel._drop_file, image=False, tilemap=False, music=False
-                        )
-                    elif editor_index == MUSIC_EDITOR:
-                        pyxel.load(
-                            pyxel._drop_file, image=False, tilemap=False, sound=False
-                        )
-                else:
-                    for editor in self._editor_list:
-                        editor.reset_history()
-                    pyxel.load(drop_file)
+                    load_flag = (
+                        (True, False, False, False),
+                        (False, True, False, False),
+                        (False, False, True, False),
+                        (False, False, False, True),
+                    )[self.editor_no]
 
-                pyxel._caption(drop_file)
+                    pyxel.load(
+                        pyxel._drop_file,
+                        image=load_flag[0],
+                        tilemap=load_flag[1],
+                        sound=load_flag[2],
+                        music=load_flag[3],
+                    )
+                else:
+                    for editor in self._editors:
+                        editor.reset_history()
+
+                    pyxel.load(drop_file)
+                    App._set_title(drop_file)
             else:
                 self._editor.call_event_handler("drop", drop_file)
 
         if pyxel.btn(pyxel.KEY_ALT):
-            editor_index = self._editor_button.value
-            editor_count = len(self._editor_list)
-
             if pyxel.btnp(pyxel.KEY_LEFT):
-                self._set_editor((editor_index - 1) % editor_count)
+                self.editor_no = (self.editor_no - 1) % len(self._editors)
             elif pyxel.btnp(pyxel.KEY_RIGHT):
-                self._set_editor((editor_index + 1) % editor_count)
+                self.editor_no = (self.editor_no + 1) % len(self._editors)
 
         self._undo_button.is_enabled = self._editor.can_undo
         self._redo_button.is_enabled = self._editor.can_redo
@@ -172,12 +164,12 @@ class App(Widget):
             if pyxel.btnp(pyxel.KEY_S):
                 self._save_button.press()
 
-            if editor.can_undo and pyxel.btnp(
+            if self._editor.can_undo and pyxel.btnp(
                 pyxel.KEY_Z, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
             ):
                 self._undo_button.press()
 
-            if editor.can_redo and pyxel.btnp(
+            if self._editor.can_redo and pyxel.btnp(
                 pyxel.KEY_Y, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
             ):
                 self._redo_button.press()
