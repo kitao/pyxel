@@ -298,62 +298,6 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         self.line(x2, y2, x3, y3, value);
     }
 
-    fn fill(&mut self, x: f64, y: f64, value: T) {
-        let x = as_i32(x);
-        let y = as_i32(y);
-
-        if !self._clip_rect().contains(x, y) {
-            return;
-        }
-
-        let value = self._palette_value(value);
-        let dst_value = self._value(x, y);
-
-        if value != dst_value {
-            self._fill_rec(x, y, value, dst_value);
-        }
-    }
-
-    fn _fill_rec(&mut self, x: i32, y: i32, value: T, dst_value: T) {
-        let rect = self._clip_rect();
-        let left = rect.left();
-        let top = rect.top();
-        let right = rect.right();
-        let bottom = rect.bottom();
-
-        for i in (x..=left).rev() {
-            if self._value(i, y) != dst_value {
-                break;
-            }
-
-            self._set_value(i, y, value);
-
-            if y > top && self._value(i, y - 1) == dst_value {
-                self._fill_rec(i, y - 1, value, dst_value);
-            }
-
-            if y > bottom && self._value(i, y + 1) == dst_value {
-                self._fill_rec(i, y + 1, value, dst_value);
-            }
-        }
-
-        for i in x + 1..=right {
-            if self._value(i, y) != dst_value {
-                break;
-            }
-
-            self._set_value(i, y, value);
-
-            if y > top && self._value(i, y - 1) == dst_value {
-                self._fill_rec(i, y - 1, value, dst_value);
-            }
-
-            if y > bottom && self._value(i, y + 1) == dst_value {
-                self._fill_rec(i, y + 1, value, dst_value);
-            }
-        }
-    }
-
     fn blt(
         &mut self,
         x: f64,
