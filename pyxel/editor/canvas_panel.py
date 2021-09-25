@@ -1,6 +1,5 @@
 import pyxel
 
-from .overlay_canvas import OverlayCanvas
 from .settings import (
     PANEL_SELECT_BORDER_COLOR,
     PANEL_SELECT_FRAME_COLOR,
@@ -12,12 +11,83 @@ from .settings import (
     TOOL_RECTB,
     TOOL_SELECT,
 )
-from .utils import copy_array2d, get_array2d_size, slice_array2d
 from .widgets import ScrollBar, Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME
 
 
-class DrawingPanel(Widget):
+def duplicate(self, x, y, width, height):
+    data = [[0] * width for _ in range(height)]
+
+    for i in range(height):
+        for j in range(width):
+            data[i][j] = self.pget(x + j, y + i)
+
+    return data
+
+
+def restore(self, x, y, width, height, data):
+    for i in range(height):
+        for j in range(width):
+            self.pset(x + j, y + i, data[i][j])
+
+
+def in_ellipsis(x, y, a, b):
+    a += 0.41
+    b += 0.41
+    return x * x * b * b + y * y * a * a < a * a * b * b
+
+
+def ellipsisb(self, x1, y1, x2, y2, val):
+    a = (x2 - x1) / 2
+    b = (y2 - y1) / 2
+
+    if a <= 0.5 or b <= 0.5:
+        self.rect(x1, y1, x2, y2, val, False)
+        return
+
+    cx = (x1 + x2) / 2
+    cy = (y1 + y2) / 2
+
+    for y in range(max(y1, 0), min(y2 + 1, 16)):
+        for x in range(max(x1, 0), min(x2 + 1, 16)):
+            dx = x - cx
+            dy = y - cy
+
+            if self.in_ellipse(dx, dy, a, b) and (
+                not self.in_ellipse(dx - 1, dy, a, b)
+                or not self.in_ellipse(dx + 1, dy, a, b)
+                or not self.in_ellipse(dx, dy - 1, a, b)
+                or not self.in_ellipse(dx, dy + 1, a, b)
+            ):
+                self.pset(x, y, val)
+
+
+def ellipsis(self, x1, y1, x2, y2, val):
+    a = (x2 - x1) / 2
+    b = (y2 - y1) / 2
+
+    if a <= 0.5 or b <= 0.5:
+        self.rect(x1, y1, x2, y2, val, False)
+        return
+
+    cx = (x1 + x2) / 2
+    cy = (y1 + y2) / 2
+
+    for y in range(max(y1, 0), min(y2 + 1, 16)):
+        for x in range(max(x1, 0), min(x2 + 1, 16)):
+            if self.in_ellipse(x - cx, y - cy, a, b):
+                self.psert(x, y, val)
+
+
+pyxel.Image.duplicate = pyxel.Tilemap.duplicate = duplicate
+pyxel.Image.restore = pyxel.Tilemap.restore = restore
+pyxel.Image.ellipsisb = pyxel.Tilemap.ellipsisb = ellipsisb
+pyxel.Image.ellipsis = pyxel.Tilemap.ellipsis = ellipsis
+
+del (duplicate, restore, in_ellipsis, ellipsisb, ellipsis)
+
+
+class CanvasPanel(Widget):
     def __init__(self, parent, *, is_tilemap_mode):
         super().__init__(parent, 11, 16, 130, 130)
 
@@ -38,7 +108,10 @@ class DrawingPanel(Widget):
         self._copy_buffer = None
         self._is_dragged = False
         self._is_assist_mode = False
-        self._overlay_canvas = OverlayCanvas()
+        # self._overlay_canvas = OverlayCanvas()
+        self._drawing_canvas = (
+            pyxel.Tilemap(16, 16, 0) if is_tilemap_mode else pyxel.Image(16, 16)
+        )
         self._h_scroll_bar = ScrollBar(
             self, 11, 145, 130, ScrollBar.HORIZONTAL, 32, 2, 0
         )
@@ -92,24 +165,17 @@ class DrawingPanel(Widget):
         if self.parent.tool == TOOL_SELECT:
             self._select_x1 = self._select_x2 = x
             self._select_y1 = self._select_y2 = y
-        elif self.parent.tool == TOOL_PENCIL:
-            self._overlay_canvas.pset(x, y, self.parent.color)
-        elif self.parent.tool == TOOL_RECTB:
-            self._overlay_canvas.rectb(
-                x, y, x, y, self.parent.color, self._is_assist_mode
+        elif self.parent.tool >= TOOL_PENCIL and self.parent.tool <= TOOL_CIRC:
+            self._drawing_canvas.blt(
+                0,
+                0,
+                self.parent.canvas,
+                self.parent.drawing_x,
+                self.parent.drawing_y,
+                16,
+                16,
             )
-        elif self.parent.tool == TOOL_RECT:
-            self._overlay_canvas.rect(
-                x, y, x, y, self.parent.color, self._is_assist_mode
-            )
-        elif self.parent.tool == TOOL_CIRCB:
-            self._overlay_canvas.circb(
-                x, y, x, y, self.parent.color, self._is_assist_mode
-            )
-        elif self.parent.tool == TOOL_CIRC:
-            self._overlay_canvas.circ(
-                x, y, x, y, self.parent.color, self._is_assist_mode
-            )
+            self._drawing_canvas.pset(x, y, self.parent.color)
         elif self.parent.tool == TOOL_BUCKET:
             data = (
                 pyxel.tilemap(self.parent.tilemap).data
@@ -122,7 +188,7 @@ class DrawingPanel(Widget):
             )
 
             dst = slice_array2d(data, self.viewport_x, self.viewport_y, 16, 16)
-            self._overlay_canvas.fill(x, y, self.parent.color, dst)
+            # self._overlay_canvas.fill(x, y, self.parent.color, dst)
             copy_array2d(data, self.viewport_x, self.viewport_y, dst)
 
             self._add_post_history(
@@ -139,26 +205,26 @@ class DrawingPanel(Widget):
         self._is_dragged = False
 
         if TOOL_PENCIL <= self.parent.tool <= TOOL_CIRC:
-            canvas = (
-                pyxel.tilemap(self.parent.tilemap)
-                if self._is_tilemap_mode
-                else pyxel.image(self.parent.image)
-            )
-
             self._add_pre_history(
-                slice_array2d(canvas, self.viewport_x, self.viewport_y, 16, 16)
+                self.parent.canvas.backup(
+                    self.parent.drawing_x, self.parent.drawing_y, 16, 16
+                )
             )
 
-            for i in range(16):
-                for j in range(16):
-                    val = self._overlay_canvas.data[i][j]
-                    if val != OverlayCanvas.COLOR_NONE:
-                        canvas.pset(self.viewport_x + j, self.viewport_y + i, val)
-
-            self._overlay_canvas.clear()
+            self.parent.canvas.blt(
+                self.parent.drawing_x,
+                self.parent.drawing_y,
+                self._drawing_canvas,
+                0,
+                0,
+                16,
+                16,
+            )
 
             self._add_post_history(
-                slice_array2d(canvas, self.viewport_x, self.viewport_y, 16, 16)
+                self.parent.canvas.backup(
+                    self.parent.drawing_x, self.parent.drawing_y, 16, 16
+                )
             )
 
     def __on_mouse_click(self, key, x, y):
@@ -184,33 +250,65 @@ class DrawingPanel(Widget):
                 self._select_x1, self._select_x2 = (x1, x2) if x1 < x2 else (x2, x1)
                 self._select_y1, self._select_y2 = (y1, y2) if y1 < y2 else (y2, y1)
             elif self.parent.tool == TOOL_PENCIL:
-                if self._is_assist_mode:
-                    self._overlay_canvas.clear()
-                    self._overlay_canvas.line(x1, y1, x2, y2, self.parent.color)
-                else:
-                    self._overlay_canvas.line(
-                        self._last_x, self._last_y, x2, y2, self.parent.color
-                    )
+                self._drawing_canvas.pset(x2, y2, self.parent.color)
+                pass
+                # if self._is_assist_mode:
+                #    self._overlay_canvas.clear()
+                #    self._overlay_canvas.line(x1, y1, x2, y2, self.parent.color)
+                # else:
+                #    self._overlay_canvas.line(
+                #        self._last_x, self._last_y, x2, y2, self.parent.color
+                #    )
             elif self.parent.tool == TOOL_RECTB:
-                self._overlay_canvas.clear()
-                self._overlay_canvas.rectb(
-                    x1, y1, x2, y2, self.parent.color, self._is_assist_mode
+                self._drawing_canvas.blt(
+                    0,
+                    0,
+                    self.parent.canvas,
+                    self.parent.drawing_x,
+                    self.parent.drawing_y,
+                    16,
+                    16,
+                )
+                self._drawing_canvas.rectb(
+                    x1, y1, abs(x1 - x2) + 1, abs(y1 - y2) + 1, self.parent.color
                 )
             elif self.parent.tool == TOOL_RECT:
-                self._overlay_canvas.clear()
-                self._overlay_canvas.rect(
-                    x1, y1, x2, y2, self.parent.color, self._is_assist_mode
+                self._drawing_canvas.blt(
+                    0,
+                    0,
+                    self.parent.canvas,
+                    self.parent.drawing_x,
+                    self.parent.drawing_y,
+                    16,
+                    16,
+                )
+                self._drawing_canvas.rect(
+                    x1, y1, abs(x1 - x2) + 1, abs(y1 - y2) + 1, self.parent.color
                 )
             elif self.parent.tool == TOOL_CIRCB:
-                self._overlay_canvas.clear()
-                self._overlay_canvas.circb(
-                    x1, y1, x2, y2, self.parent.color, self._is_assist_mode
+                self._drawing_canvas.blt(
+                    0,
+                    0,
+                    self.parent.canvas,
+                    self.parent.drawing_x,
+                    self.parent.drawing_y,
+                    16,
+                    16,
                 )
+                self._drawing_canvas.circb(
+                    x1, y1, abs(x1 - x2) + 1, abs(y1 - y2) + 1, self.parent.color
+                )
+                pass
+                # self._overlay_canvas.clear()
+                # self._overlay_canvas.circb(
+                #    x1, y1, x2, y2, self.parent.color, self._is_assist_mode
+                # )
             elif self.parent.tool == TOOL_CIRC:
-                self._overlay_canvas.clear()
-                self._overlay_canvas.circ(
-                    x1, y1, x2, y2, self.parent.color, self._is_assist_mode
-                )
+                pass
+                # self._overlay_canvas.clear()
+                # self._overlay_canvas.circ(
+                #    x1, y1, x2, y2, self.parent.color, self._is_assist_mode
+                # )
 
             self._last_x = x2
             self._last_y = y2
@@ -254,6 +352,7 @@ class DrawingPanel(Widget):
             x2 = self._last_x
             y2 = self._last_y
 
+            """
             if self.parent.tool == TOOL_PENCIL:
                 self._overlay_canvas.clear()
                 self._overlay_canvas.line(x1, y1, x2, y2, self.parent.color)
@@ -269,6 +368,7 @@ class DrawingPanel(Widget):
             elif self.parent.tool == TOOL_CIRC:
                 self._overlay_canvas.clear()
                 self._overlay_canvas.circ(x1, y1, x2, y2, self.parent.color, True)
+            """
 
         if (
             self.parent.tool == TOOL_SELECT
@@ -347,6 +447,8 @@ class DrawingPanel(Widget):
         self.draw_panel(self.x, self.y, self.width, self.height)
 
         if self._is_tilemap_mode:
+            pass
+            """
             pyxel.bltm(
                 self.x + 1,
                 self.y + 1,
@@ -367,21 +469,19 @@ class DrawingPanel(Widget):
                         sx = (val % 32) * 8
                         sy = (val // 32) * 8
                         pyxel.blt(x, y, self.parent.image, sx, sy, 8, 8)
+            """
         else:
+            canvas, offset_x, offset_y = (
+                (self._drawing_canvas, 0, 0)
+                if self._is_dragged
+                else (self.parent.canvas, self.parent.drawing_x, self.parent.drawing_y)
+            )
+
             for i in range(16):
                 y = self.y + i * 8 + 1
                 for j in range(16):
                     x = self.x + j * 8 + 1
-
-                    val = self._overlay_canvas.data[i][j]
-                    if val != OverlayCanvas.COLOR_NONE:
-                        col = val
-                    else:
-                        col = pyxel.image(self.parent.image).pget(
-                            self.viewport_x + j, self.viewport_y + i
-                        )
-
-                    pyxel.rect(x, y, 8, 8, col)
+                    pyxel.rect(x, y, 8, 8, canvas.pget(offset_x + j, offset_y + i))
 
         pyxel.line(
             self.x + 1, self.y + 64, self.x + 128, self.y + 64, WIDGET_PANEL_COLOR
@@ -409,3 +509,19 @@ class DrawingPanel(Widget):
 
     def __on_v_scroll_bar_change(self, value):
         self.viewport_y = value * 8
+
+    @staticmethod
+    def _adjust_region(x1, y1, x2, y2, is_assist_mode):
+        if is_assist_mode:
+            dx = x2 - x1
+            dy = y2 - y1
+
+            if abs(dx) > abs(dy):
+                y2 = y1 + abs(dx) * (1 if dy > 0 else -1)
+            else:
+                x2 = x1 + abs(dy) * (1 if dx > 0 else -1)
+
+        x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
+        y1, y2 = (y1, y2) if y1 < y2 else (y2, y1)
+
+        return x1, y1, x2, y2
