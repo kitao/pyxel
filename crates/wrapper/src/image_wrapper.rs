@@ -118,10 +118,6 @@ impl Image {
         self.pyxel_image.lock().trib(x1, y1, x2, y2, x3, y3, col);
     }
 
-    pub fn fill(&self, x: f64, y: f64, col: Color) {
-        self.pyxel_image.lock().fill(x, y, col);
-    }
-
     pub fn blt(
         &self,
         x: f64,
