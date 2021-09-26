@@ -5,7 +5,9 @@ use blip_buf::BlipBuf;
 use parking_lot::Mutex;
 
 use crate::oscillator::Oscillator;
-use crate::settings::{EFFECT_NONE, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE};
+use crate::settings::{
+    CHANNEL_COUNT, EFFECT_NONE, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE,
+};
 use crate::sound::{SharedSound, Sound};
 use crate::types::{Effect, Note, Tone, Volume};
 
@@ -17,13 +19,13 @@ pub struct Channel {
     sound_index: u32,
     note_index: u32,
     tick_count: u32,
-    pub volume: Volume,
+    pub gain: u8,
 }
 
 pub type SharedChannel = Arc<Mutex<Channel>>;
 
 impl Channel {
-    pub(crate) fn new() -> SharedChannel {
+    pub fn new() -> SharedChannel {
         Arc::new(Mutex::new(Self {
             oscillator: Oscillator::new(),
             sounds: Vec::new(),
@@ -32,7 +34,7 @@ impl Channel {
             sound_index: 0,
             note_index: 0,
             tick_count: 0,
-            volume: MAX_VOLUME,
+            gain: u8::MAX / CHANNEL_COUNT as u8,
         }))
     }
 
@@ -103,18 +105,13 @@ impl Channel {
             assert!(note <= MAX_NOTE, "invalid sound note {}", note);
             assert!(tone <= MAX_TONE, "invalid sound tone {}", tone);
             assert!(volume <= MAX_VOLUME, "invalid sound volume {}", volume);
-            assert!(
-                self.volume <= MAX_VOLUME,
-                "invalid channel volume {}",
-                self.volume
-            );
             assert!(effect <= MAX_EFFECT, "invalid sound effect {}", effect);
 
             if note >= 0 && volume > 0 {
                 self.oscillator.play(
                     note as f64,
                     tone,
-                    (volume as f64 / MAX_VOLUME as f64) * (self.volume as f64 / MAX_VOLUME as f64),
+                    (self.gain as f64 * volume as f64) / (u8::MAX as f64 * MAX_VOLUME as f64),
                     effect,
                     speed,
                 );
