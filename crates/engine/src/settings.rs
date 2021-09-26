@@ -115,7 +115,6 @@ pub const CHANNEL_COUNT: u32 = 4;
 pub const SOUND_COUNT: u32 = 64;
 pub const MUSIC_COUNT: u32 = 8;
 
-pub const MASTER_VOLUME_FACTOR: f64 = 1.0 / CHANNEL_COUNT as f64;
 pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0;
 pub const SQUARE_VOLUME_FACTOR: f64 = 0.3;
 pub const PULSE_VOLUME_FACTOR: f64 = 0.3;
