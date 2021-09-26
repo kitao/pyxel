@@ -1,4 +1,9 @@
-.PHONY: _ $(MAKECMDGOALS)
+FORWARD_DIR = crates
 
-_ $(MAKECMDGOALS):
-	@$(MAKE) -C crates $(MAKECMDGOALS)
+.PHONY: noarg $(MAKECMDGOALS)
+
+noarg:
+	@$(MAKE) -C $(FORWARD_DIR)
+
+$(MAKECMDGOALS):
+	@$(MAKE) -C $(FORWARD_DIR) $@
