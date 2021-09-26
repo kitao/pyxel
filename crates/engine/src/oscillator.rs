@@ -1,10 +1,10 @@
 use blip_buf::BlipBuf;
 
 use crate::settings::{
-    CLOCK_RATE, EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, MASTER_VOLUME_FACTOR,
-    NOISE_VOLUME_FACTOR, OSCILLATOR_RESOLUTION, PULSE_VOLUME_FACTOR, SQUARE_VOLUME_FACTOR,
-    TICK_CLOCK_COUNT, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, TRIANGLE_VOLUME_FACTOR,
-    VIBRATO_DEPTH, VIBRATO_FREQUENCY,
+    CLOCK_RATE, EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, NOISE_VOLUME_FACTOR,
+    OSCILLATOR_RESOLUTION, PULSE_VOLUME_FACTOR, SQUARE_VOLUME_FACTOR, TICK_CLOCK_COUNT, TONE_NOISE,
+    TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, TRIANGLE_VOLUME_FACTOR, VIBRATO_DEPTH,
+    VIBRATO_FREQUENCY,
 };
 use crate::types::{Effect, Tone};
 
@@ -108,8 +108,7 @@ impl Oscillator {
                 TONE_PULSE => Self::pulse(self.phase) * PULSE_VOLUME_FACTOR,
                 TONE_NOISE => self.noise(self.phase) * NOISE_VOLUME_FACTOR,
                 _ => panic!("invalid tone {}", self.tone),
-            } * MASTER_VOLUME_FACTOR
-                * self.volume
+            } * self.volume
                 * i16::MAX as f64) as i16;
 
             blip_buf.add_delta(self.time, self.amplitude as i32 - last_amplitude as i32);
