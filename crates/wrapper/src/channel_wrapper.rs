@@ -1,4 +1,5 @@
 use pyo3::prelude::*;
+use pyxel::Channel as PyxelChannel;
 use pyxel::SharedChannel as PyxelSharedChannel;
 use pyxel::Volume;
 
@@ -17,14 +18,19 @@ pub fn wrap_pyxel_channel(pyxel_channel: PyxelSharedChannel) -> Channel {
 
 #[pymethods]
 impl Channel {
+    #[new]
+    pub fn new() -> Self {
+        wrap_pyxel_channel(PyxelChannel::new())
+    }
+
     #[getter]
-    pub fn get_volume(&self) -> Volume {
-        self.pyxel_channel.lock().volume
+    pub fn get_gain(&self) -> Volume {
+        self.pyxel_channel.lock().gain
     }
 
     #[setter]
-    pub fn set_volume(&self, volume: Volume) {
-        self.pyxel_channel.lock().volume = volume;
+    pub fn set_gain(&self, gain: u8) {
+        self.pyxel_channel.lock().gain = gain;
     }
 
     pub fn play_pos(&self) -> Option<(u32, u32)> {
