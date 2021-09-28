@@ -39,7 +39,7 @@ endif
 SRC_LIB = $(SRC_LIB_DIR)/lib$(LIB_NAME)$(SRC_LIB_EXT)
 DST_LIB = $(DST_LIB_DIR)/$(LIB_NAME)$(DST_LIB_EXT)
 
-.PHONY: all build test format lint clean
+.PHONY: all build clean format format_python lint lint_python test
 
 all: build
 
@@ -47,20 +47,25 @@ build: format
 	@cargo build $(CARGO_BUILD_OPT)
 	@mkdir -p $(DST_LIB_DIR) && cp $(SRC_LIB) $(DST_LIB)
 
+clean:
+	@cargo clean
+	@rm -rf $(LIB_DIR)
+
+format:
+	@cargo +nightly fmt -- --emit=files
+
+format_python:
+	@isort $(ROOT_DIR) && black $(ROOT_DIR)
+
+lint:
+	@cargo clippy
+
+lint_python:
+	@flake8 $(ROOT_DIR)/*.py $(PYXEL_DIR)
+
 test: build
 	@cargo test
 	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 -m unittest discover $(TESTS_DIR)
 	@trap break INT; for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
 		PYTHONPATH=$(TEST_IMPORT_DIR) python3 $$example; \
 	done; trap - INT
-
-format:
-	@cargo +nightly fmt -- --emit=files
-	@isort $(ROOT_DIR) && black $(ROOT_DIR)
-
-lint:
-	@cargo clippy
-
-clean:
-	@cargo clean
-	@rm -rf $(LIB_DIR)
