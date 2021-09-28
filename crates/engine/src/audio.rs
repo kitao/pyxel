@@ -1,8 +1,5 @@
-use std::sync::Arc;
-
 use array_macro::array;
 use blip_buf::BlipBuf;
-use parking_lot::Mutex;
 
 use crate::channel::{Channel, SharedChannel};
 use crate::music::{Music, SharedMusic};
@@ -36,10 +33,10 @@ impl Audio {
         platform.start_audio(
             SAMPLE_RATE,
             SAMPLE_COUNT,
-            Arc::new(Mutex::new(AudioCore {
+            new_shared_type!(AudioCore {
                 blip_buf,
                 channels: channels.clone(),
-            })),
+            }),
         );
 
         Self {

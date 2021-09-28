@@ -1,8 +1,6 @@
 use std::cmp::max;
-use std::sync::Arc;
 
 use blip_buf::BlipBuf;
-use parking_lot::Mutex;
 
 use crate::oscillator::Oscillator;
 use crate::settings::{
@@ -22,11 +20,11 @@ pub struct Channel {
     pub gain: u8,
 }
 
-pub type SharedChannel = Arc<Mutex<Channel>>;
+pub type SharedChannel = shared_type!(Channel);
 
 impl Channel {
     pub fn new() -> SharedChannel {
-        Arc::new(Mutex::new(Self {
+        new_shared_type!(Self {
             oscillator: Oscillator::new(),
             sounds: Vec::new(),
             is_playing: false,
@@ -35,7 +33,7 @@ impl Channel {
             note_index: 0,
             tick_count: 0,
             gain: u8::MAX / CHANNEL_COUNT as u8,
-        }))
+        })
     }
 
     pub fn play_pos(&mut self) -> Option<(u32, u32)> {

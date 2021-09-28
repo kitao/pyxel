@@ -1,8 +1,5 @@
 use std::cmp::max;
 use std::mem::swap;
-use std::sync::Arc;
-
-use parking_lot::Mutex;
 
 use crate::rectarea::RectArea;
 use crate::types::ToIndex;
@@ -302,7 +299,7 @@ pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
         &mut self,
         x: f64,
         y: f64,
-        canvas: Arc<Mutex<Self>>,
+        canvas: shared_type!(Self),
         canvas_x: f64,
         canvas_y: f64,
         width: f64,
