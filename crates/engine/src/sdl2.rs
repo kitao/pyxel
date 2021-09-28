@@ -1,7 +1,5 @@
 use std::cmp::min;
-use std::sync::Arc;
 
-use parking_lot::Mutex;
 use sdl2::audio::{
     AudioCallback as SdlAudioCallback, AudioDevice as SdlAudioDevice,
     AudioSpecDesired as SdlAudioSpecDesired,
@@ -26,7 +24,7 @@ use crate::platform::{AudioCallback, Platform};
 use crate::types::Rgb8;
 
 struct AudioContextHolder {
-    audio: Arc<Mutex<dyn AudioCallback + Send>>,
+    audio: shared_type!(dyn AudioCallback + Send),
 }
 
 impl SdlAudioCallback for AudioContextHolder {
@@ -352,7 +350,7 @@ impl Platform for Sdl2 {
         &mut self,
         sample_rate: u32,
         sample_count: u32,
-        audio: Arc<Mutex<dyn AudioCallback + Send>>,
+        audio: shared_type!(dyn AudioCallback + Send),
     ) {
         let spec = SdlAudioSpecDesired {
             freq: Some(sample_rate as i32),

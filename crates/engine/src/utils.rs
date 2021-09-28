@@ -1,3 +1,15 @@
+macro_rules! shared_type {
+    ($type: ty) => {
+        std::sync::Arc<parking_lot::Mutex<$type>>
+    }
+}
+
+macro_rules! new_shared_type {
+    ($expr: expr) => {
+        std::sync::Arc::new(parking_lot::Mutex::new($expr))
+    };
+}
+
 macro_rules! string_loop {
     ($index: ident, $piece: ident, $string: ident, $step: expr, $block: block) => {
         for $index in 0..($string.len() / $step) {

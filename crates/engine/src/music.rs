@@ -1,7 +1,3 @@
-use std::sync::Arc;
-
-use parking_lot::Mutex;
-
 use crate::resource::ResourceItem;
 use crate::settings::{CHANNEL_COUNT, RESOURCE_ARCHIVE_DIRNAME};
 use crate::utils::parse_hex_string;
@@ -12,13 +8,13 @@ pub struct Music {
     pub sequences: [Vec<u32>; CHANNEL_COUNT as usize],
 }
 
-pub type SharedMusic = Arc<Mutex<Music>>;
+pub type SharedMusic = shared_type!(Music);
 
 impl Music {
     pub fn new() -> SharedMusic {
-        Arc::new(Mutex::new(Self {
+        new_shared_type!(Self {
             sequences: Default::default(),
-        }))
+        })
     }
 
     pub fn set(

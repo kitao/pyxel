@@ -1,7 +1,3 @@
-use std::sync::Arc;
-
-use parking_lot::Mutex;
-
 use crate::event::Event;
 use crate::image::SharedImage;
 use crate::types::Rgb8;
@@ -25,6 +21,6 @@ pub trait Platform {
         &mut self,
         sample_rate: u32,
         sample_count: u32,
-        audio_callback: Arc<Mutex<dyn AudioCallback + Send>>,
+        audio_callback: shared_type!(dyn AudioCallback + Send),
     );
 }
