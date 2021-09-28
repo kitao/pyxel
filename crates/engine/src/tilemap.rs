@@ -1,7 +1,3 @@
-use std::sync::Arc;
-
-use parking_lot::Mutex;
-
 use crate::canvas::Canvas;
 use crate::image::SharedImage;
 use crate::rectarea::RectArea;
@@ -20,18 +16,18 @@ pub struct Tilemap {
     pub image: SharedImage,
 }
 
-pub type SharedTilemap = Arc<Mutex<Tilemap>>;
+pub type SharedTilemap = shared_type!(Tilemap);
 
 impl Tilemap {
     pub fn new(width: u32, height: u32, image: SharedImage) -> SharedTilemap {
-        Arc::new(Mutex::new(Self {
+        new_shared_type!(Self {
             width,
             height,
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
             data: vec![vec![(0, 0); width as usize]; height as usize],
             image,
-        }))
+        })
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {

@@ -1,7 +1,3 @@
-use std::sync::Arc;
-
-use parking_lot::Mutex;
-
 use crate::resource::ResourceItem;
 use crate::settings::{
     EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED,
@@ -20,17 +16,17 @@ pub struct Sound {
     pub speed: Speed,
 }
 
-pub type SharedSound = Arc<Mutex<Sound>>;
+pub type SharedSound = shared_type!(Sound);
 
 impl Sound {
     pub fn new() -> SharedSound {
-        Arc::new(Mutex::new(Self {
+        new_shared_type!(Self {
             notes: Vec::new(),
             tones: Vec::new(),
             volumes: Vec::new(),
             effects: Vec::new(),
             speed: INITIAL_SPEED,
-        }))
+        })
     }
 
     pub fn set(

@@ -1,11 +1,9 @@
 use std::collections::HashMap;
 use std::path::Path;
-use std::sync::Arc;
 
 use array_macro::array;
 use image::imageops::{self, FilterType};
 use image::{Rgb, RgbImage};
-use parking_lot::Mutex;
 
 use crate::canvas::{Canvas, CopyArea};
 use crate::rectarea::RectArea;
@@ -27,16 +25,16 @@ pub struct Image {
     data: Vec<Vec<Color>>,
 }
 
-pub type SharedImage = Arc<Mutex<Image>>;
+pub type SharedImage = shared_type!(Image);
 
 impl Image {
     pub fn new(width: u32, height: u32) -> SharedImage {
-        Arc::new(Mutex::new(Self {
+        new_shared_type!(Self {
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
             palette: array![i => i as Color; COLOR_COUNT as usize],
             data: vec![vec![0; width as usize]; height as usize],
-        }))
+        })
     }
 
     pub fn from_image(filename: &str, colors: &[Rgb8]) -> SharedImage {
