@@ -39,7 +39,7 @@ endif
 SRC_LIB = $(SRC_LIB_DIR)/lib$(LIB_NAME)$(SRC_LIB_EXT)
 DST_LIB = $(DST_LIB_DIR)/$(LIB_NAME)$(DST_LIB_EXT)
 
-.PHONY: all build clean format format_python lint lint_python test
+.PHONY: all build clean format format-python lint lint-python test
 
 all: build
 
@@ -54,13 +54,13 @@ clean:
 format:
 	@cargo +nightly fmt -- --emit=files
 
-format_python:
+format-python:
 	@isort $(ROOT_DIR) && black $(ROOT_DIR)
 
 lint:
 	@cargo clippy
 
-lint_python:
+lint-python:
 	@flake8 $(ROOT_DIR)/*.py $(PYXEL_DIR)
 
 test: build
