@@ -2,10 +2,9 @@ use std::cmp::max;
 use std::mem::swap;
 
 use crate::rectarea::RectArea;
-use crate::types::ToIndex;
 use crate::utils::{as_i32, as_u32};
 
-pub trait Canvas<T: Copy + PartialEq + Default + ToIndex> {
+pub trait Canvas<T: Copy + PartialEq + Default> {
     fn width(&self) -> u32;
     fn height(&self) -> u32;
     fn _value(&self, x: i32, y: i32) -> T;
