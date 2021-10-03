@@ -1,0 +1,23 @@
+[package]
+name = "pyxel-editor"
+version = "1.5.0"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2018"
+description = "Resource editor for Pyxel"
+repository = "https://github.com/kitao/pyxel"
+license = "MIT"
+readme = "README.md"
+categories = ["game-engine", "graphics", "multimedia"]
+keywords = ["game", "gamedev", "python"]
+
+[lib]
+name = "pyxel_editor"
+path = "src/lib.rs"
+
+[[test]]
+name = "tests"
+path = "tests/test_editor.rs"
+harness = false
+
+[dependencies]
+pyxel-engine = { path = "../engine", version="1.5.0" }
