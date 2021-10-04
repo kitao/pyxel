@@ -269,6 +269,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
                 self.pset(j as f64, i as f64, value);
             }
         }
+
         for i in (y2 + 1)..=y3 {
             let (x_slider, x_end) = if x_inter < x2 {
                 (
