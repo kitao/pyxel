@@ -5,16 +5,16 @@ import sys
 
 STYLE_RULES = {
     (
-        r"^([ ]*)\S.*$\n^\1(for|while|return|continue|break)",
+        r"^([ ]*)(?!\/\/)\S.*$\n^\1(for|while|return|continue|break)",
         "no blank line before control structure",
     ),
     (
-        r"^([ ]*)(?!.*\,$)\S.*$\n^\1(if)",
+        r"^([ ]*)(?!\/\/|.*\,$)\S.*$\n^\1(if)",
         "no blank line before if statement",
     ),
     (r"^([ ]*)\}$\n^\1(?!.*(\=\>))\S.*$", "no blank line after block"),
     (r"^([ ]*)let.*$\n^\1(?!let )\S.*", "no blank line after let statement"),
-    (r"^([ ]*)(?!let|\/\/)\S+.*$\n\1let", "no blank line before let statement"),
+    (r"^([ ]*)(?!\/\/|let)\S+.*$\n\1let", "no blank line before let statement"),
 }
 
 
