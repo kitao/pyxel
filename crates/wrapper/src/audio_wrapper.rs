@@ -41,6 +41,7 @@ fn play(ch: u32, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
         },
         Vec<Sound>, {
             let sounds = snd.iter().map(|snd| snd.pyxel_sound.clone()).collect();
+
             instance().channel(ch).lock().play(sounds, r#loop.unwrap_or(false));
         }
     }
