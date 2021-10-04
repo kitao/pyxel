@@ -59,6 +59,7 @@ impl Oscillator {
 
     pub fn play(&mut self, note: f64, tone: Tone, volume: f64, effect: Effect, duration: u32) {
         let last_pitch = self.pitch;
+
         self.pitch = Self::note_to_pitch(note);
         self.tone = tone;
         self.volume = volume;
