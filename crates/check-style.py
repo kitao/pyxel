@@ -59,7 +59,9 @@ def check_style(file, rules):
     for result in results:
         (line_number, rule_desc, line_text) = result
         print(
-            "\nwarning: {}\n{}:{}\n{}".format(rule_desc, file, line_number, line_text)
+            "\n{}style{}: {}\n{}:{}\n{}".format(
+                "\033[95m\033[1m", "\033[0m", rule_desc, file, line_number, line_text
+            )
         )
 
 
