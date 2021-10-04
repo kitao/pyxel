@@ -57,10 +57,11 @@ format:
 format-python:
 	@isort $(ROOT_DIR) && black $(ROOT_DIR)
 
-lint:
+lint: format
 	@cargo clippy
+	@python3 check-style.py $(CRATES_DIR)
 
-lint-python:
+lint-python: format-python
 	@flake8 $(ROOT_DIR)/*.py $(PYXEL_DIR)
 
 test: build
