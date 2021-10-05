@@ -8,14 +8,14 @@ STYLE_RULES = {
         "no blank line before control structure",
         r"""
             ^ ([ ]*) (?!//) \S.* $\n
-            ^ \1 (for|while|return|continue|break)
+            ^ \1 (for|while|return|continue|break)[ ;$]
         """,
     ),
     (
         "no blank line before if statement",
         r"""
             ^ ([ ]*) (?!//|.*,$) \S.* $\n
-            ^ \1 (if)
+            ^ \1 if[ ]
         """,
     ),
     (
@@ -28,15 +28,15 @@ STYLE_RULES = {
     (
         "no blank line after let statement",
         r"""
-            ^ ([ ]*) let.* $\n
-            ^ \1 (?!let ) \S.*
+            ^ ([ ]*) let[ ].* $\n
+            ^ \1 (?!let[ ]) \S.*
         """,
     ),
     (
         "no blank line before let statement",
         r"""
-            ^ ([ ]*) (?!\/\/|let) \S.* $\n
-            \1 let
+            ^ ([ ]*) (?!//|let[ ]) \S.* $\n
+            \1 let[ ]
         """,
     ),
 }
@@ -83,8 +83,12 @@ def check_style(file, rules):
     for result in results:
         (rule_desc, line_number, line_text) = result
         print(
-            "\n{}style{}: {}\n{}:{}\n{}".format(
-                "\033[95m\033[1m", "\033[0m", rule_desc, file, line_number, line_text
+            "\n{}: {}\n{}:{}\n{}".format(
+                "\033[95m" + "\033[1m" + "style" + "\033[0m",
+                rule_desc,
+                file,
+                line_number,
+                line_text,
             )
         )
 
