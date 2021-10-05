@@ -5,16 +5,40 @@ import sys
 
 STYLE_RULES = {
     (
-        r"^([ ]*)(?!\/\/)\S.*$\n^\1(for|while|return|continue|break)",
         "no blank line before control structure",
+        r"""
+            ^ ([ ]*) (?!//) \S.* $\n
+            ^ \1 (for|while|return|continue|break)
+        """,
     ),
     (
-        r"^([ ]*)(?!\/\/|.*\,$)\S.*$\n^\1(if)",
         "no blank line before if statement",
+        r"""
+            ^ ([ ]*) (?!//|.*,$) \S.* $\n
+            ^ \1 (if)
+        """,
     ),
-    (r"^([ ]*)\}$\n^\1(?!.*(\=\>))\S.*$", "no blank line after block"),
-    (r"^([ ]*)let.*$\n^\1(?!let )\S.*", "no blank line after let statement"),
-    (r"^([ ]*)(?!\/\/|let)\S+.*$\n\1let", "no blank line before let statement"),
+    (
+        "no blank line after block",
+        r"""
+            ^ ([ ]*) \} $\n
+            ^ \1 (?!.*(=>)) \S.* $
+        """,
+    ),
+    (
+        "no blank line after let statement",
+        r"""
+            ^ ([ ]*) let.* $\n
+            ^ \1 (?!let ) \S.*
+        """,
+    ),
+    (
+        "no blank line before let statement",
+        r"""
+            ^ ([ ]*) (?!\/\/|let) \S.* $\n
+            \1 let
+        """,
+    ),
 }
 
 
@@ -28,8 +52,8 @@ def make_line_table(text):
 
 
 def check_rule(rule, file_text, line_table):
-    (pattern, rule_desc) = rule
-    matches = list(re.finditer(pattern, file_text, flags=re.MULTILINE))
+    (rule_desc, pattern) = rule
+    matches = list(re.finditer(pattern, file_text, flags=re.VERBOSE + re.MULTILINE))
     results = []
 
     for m in matches:
@@ -39,7 +63,7 @@ def check_rule(rule, file_text, line_table):
         line_end = file_text.find("\n", m.end())
         line_text = file_text[line_offset + 1 : line_end]
 
-        results.append((line_number, rule_desc, line_text))
+        results.append((rule_desc, line_number, line_text))
 
     return results
 
@@ -54,10 +78,10 @@ def check_style(file, rules):
     for rule in rules:
         results += check_rule(rule, file_text, line_table)
 
-    results.sort(key=lambda x: x[0])
+    results.sort(key=lambda x: x[1])
 
     for result in results:
-        (line_number, rule_desc, line_text) = result
+        (rule_desc, line_number, line_text) = result
         print(
             "\n{}style{}: {}\n{}:{}\n{}".format(
                 "\033[95m\033[1m", "\033[0m", rule_desc, file, line_number, line_text
