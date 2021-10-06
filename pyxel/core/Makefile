@@ -25,7 +25,7 @@ endif
 endif
 
 ifeq ($(PF),macos)
-CC = g++-10
+CC = g++-11
 SDL2_CFLAGS = `sdl2-config --cflags`
 SDL2_LDFLAGS = `sdl2-config --libs` -lSDL2_image
 TARGET = $(BINDIR)/macos/$(LIBNAME).dylib

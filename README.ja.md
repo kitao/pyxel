@@ -69,7 +69,9 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 pip install -U pyxel
 ```
 
-### Mac
+### Mac (Intel)
+
+もしあなたがMac(M1)を使用しているのであれば、「[その他の環境](#その他の環境)」を試してください。
 
 最初に、[Homebrew](https://brew.sh/)を導入した環境で、以下のコマンドで[Python3](https://www.python.org/) (バージョン3.6.8以上) と必要なパッケージをインストールします。
 

@@ -68,7 +68,7 @@ Ensuite, installez Pyxel avec la commande `pip` suivante dans le terminal :
 pip install -U pyxel
 ```
 
-### Mac
+### Mac (Intel)
 
 D’abord, dans l’environnement où le gestionnaire de paquets [Homebrew](https://brew.sh/) est installé, installez [Python3](https://www.python.org/) (version 3.6.8 ou plus) et les paquets requis avec la commande suivante :
 
