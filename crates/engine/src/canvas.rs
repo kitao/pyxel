@@ -322,13 +322,33 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         transparent: Option<T>,
         palette: Option<&[T]>,
     ) {
+        if eq(self as *const Self, canvas as *const Self) {
+            let copy_width = width.abs() as u32;
+            let copy_height = height.abs() as u32;
+            let mut canvas = Self::new(copy_width, copy_height);
+
+            canvas.blt(
+                0.0,
+                0.0,
+                self,
+                canvas_x,
+                canvas_y,
+                copy_width as f64,
+                copy_height as f64,
+                None,
+                None,
+            );
+            self.blt(x, y, &canvas, 0.0, 0.0, width, height, transparent, palette);
+
+            return;
+        }
+
         let x = as_i32(x);
         let y = as_i32(y);
         let canvas_x = as_i32(canvas_x);
         let canvas_y = as_i32(canvas_y);
         let width = as_i32(width);
         let height = as_i32(height);
-        let self_copy = eq(self as *const Self, canvas as *const Self);
 
         let CopyArea {
             dst_x,
@@ -347,11 +367,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             self.clip_rect,
             canvas_x,
             canvas_y,
-            if self_copy {
-                self.self_rect
-            } else {
-                canvas.self_rect
-            },
+            canvas.self_rect,
             width,
             height,
         );
@@ -360,52 +376,26 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
 
-        macro_rules! copy_canvas {
-            ($x: ident, $y: ident, $value: expr) => {
-                for $y in 0..height {
-                    for $x in 0..width {
-                        let value = $value;
+        for i in 0..height {
+            for j in 0..width {
+                let x = src_x + sign_x * j + offset_x;
+                let y = src_y + sign_y * i + offset_y;
+                let value = canvas.data[y as usize][x as usize];
 
-                        if let Some(transparent) = transparent {
-                            if value == transparent {
-                                continue;
-                            }
-                        }
-
-                        let value = if let Some(palette) = palette {
-                            palette[value.to_index()]
-                        } else {
-                            value
-                        };
-
-                        self.data[(dst_y + $y) as usize][(dst_x + $x) as usize] = value;
+                if let Some(transparent) = transparent {
+                    if value == transparent {
+                        continue;
                     }
                 }
-            };
-        }
 
-        if self_copy {
-            let canvas: Vec<Vec<T>> = (0..height)
-                .map(|i| {
-                    (0..width)
-                        .map(|j| self.data[i as usize][j as usize])
-                        .collect()
-                })
-                .collect();
+                let value = if let Some(palette) = palette {
+                    palette[value.to_index()]
+                } else {
+                    value
+                };
 
-            copy_canvas!(
-                x,
-                y,
-                canvas[(src_y + sign_y * y + offset_y) as usize]
-                    [(src_x + sign_x * x + offset_x) as usize]
-            );
-        } else {
-            copy_canvas!(
-                x,
-                y,
-                canvas.data[(src_y + sign_y * y + offset_y) as usize]
-                    [(src_x + sign_x * x + offset_x) as usize]
-            );
+                self.data[(dst_y + i) as usize][(dst_x + j) as usize] = value;
+            }
         }
     }
 }
