@@ -1,6 +1,5 @@
 use array_macro::array;
 
-use crate::canvas::Canvas;
 use crate::image::{Image, SharedImage};
 use crate::settings::{
     CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, FONT_DATA, FONT_HEIGHT, FONT_ROW_COUNT, FONT_WIDTH,
@@ -46,12 +45,11 @@ impl Graphics {
 
                 for j in 0..FONT_HEIGHT {
                     for k in 0..FONT_WIDTH {
-                        image._set_value(
-                            (FONT_WIDTH * col + k) as i32,
-                            (FONT_HEIGHT * row + j) as i32,
-                            if (data & 0x800000) == 0 { 0 } else { 1 },
-                        );
+                        let x = FONT_WIDTH * col + k;
+                        let y = FONT_HEIGHT * row + j;
+                        let color = if (data & 0x800000) == 0 { 0 } else { 1 };
 
+                        image.canvas.data[y as usize][x as usize] = color;
                         data <<= 1;
                     }
                 }

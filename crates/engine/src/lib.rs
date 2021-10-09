@@ -46,7 +46,6 @@ mod tilemap;
 mod types;
 
 use crate::audio::Audio;
-pub use crate::canvas::Canvas;
 pub use crate::channel::{Channel, SharedChannel};
 use crate::graphics::Graphics;
 pub use crate::image::{Image, SharedImage};
@@ -54,6 +53,7 @@ use crate::input::Input;
 pub use crate::key::*;
 pub use crate::music::{Music, SharedMusic};
 use crate::platform::Platform;
+pub use crate::rectarea::RectArea;
 use crate::resource::Resource;
 use crate::sdl2::Sdl2;
 pub use crate::settings::*;
