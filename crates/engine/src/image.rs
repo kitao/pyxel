@@ -86,6 +86,16 @@ impl Image {
         image
     }
 
+    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
+        let (r1, g1, b1) = rgb1;
+        let (r2, g2, b2) = rgb2;
+        let dx = (r1 as f64 - r2 as f64) * 0.30;
+        let dy = (g1 as f64 - g2 as f64) * 0.59;
+        let dz = (b1 as f64 - b2 as f64) * 0.11;
+
+        dx * dx + dy * dy + dz * dz
+    }
+
     pub fn width(&self) -> u32 {
         self.canvas.width()
     }
@@ -142,16 +152,6 @@ impl Image {
         );
     }
 
-    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
-        let (r1, g1, b1) = rgb1;
-        let (r2, g2, b2) = rgb2;
-        let dx = (r1 as f64 - r2 as f64) * 0.30;
-        let dy = (g1 as f64 - g2 as f64) * 0.59;
-        let dz = (b1 as f64 - b2 as f64) * 0.11;
-
-        dx * dx + dy * dy + dz * dz
-    }
-
     pub fn save(&self, filename: &str, colors: &[Rgb8], scale: u32) {
         let width = self.width();
         let height = self.height();
@@ -169,6 +169,7 @@ impl Image {
         }
 
         let image = imageops::resize(&image, width * scale, height * scale, FilterType::Nearest);
+
         let filename = if filename.to_lowercase().ends_with(".png") {
             filename.to_string()
         } else {
@@ -277,12 +278,6 @@ impl Image {
         height: f64,
         transparent: Option<Color>,
     ) {
-        let tilemap = if let Some(tilemap) = tilemap.try_lock() {
-            tilemap
-        } else {
-            panic!("unable to lock tilemap in bltm");
-        };
-
         let x = as_i32(x);
         let y = as_i32(y);
         let tilemap_x = as_i32(tilemap_x);
@@ -307,6 +302,8 @@ impl Image {
             (right - left + 1) as u32,
             (bottom - top + 1) as u32,
         );
+
+        let tilemap = tilemap.lock();
 
         let CopyArea {
             dst_x: _,
@@ -336,8 +333,9 @@ impl Image {
 
         for i in 0..height {
             for j in 0..width {
-                let tile = tilemap.canvas.data[(src_y + sign_y * i + offset_y) as usize]
-                    [(src_x + sign_x * j + offset_x) as usize];
+                let tile_x = src_x + sign_x * j + offset_x;
+                let tile_y = src_y + sign_y * i + offset_y;
+                let tile = tilemap.canvas.data[tile_y as usize][tile_x as usize];
 
                 self.blt(
                     (x + TILE_SIZE as i32 * j) as f64,
