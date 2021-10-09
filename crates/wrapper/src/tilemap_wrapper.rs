@@ -1,7 +1,7 @@
 use pyo3::prelude::*;
 use pyxel::SharedTilemap as PyxelSharedTilemap;
+use pyxel::Tile;
 use pyxel::Tilemap as PyxelTilemap;
-use pyxel::{Canvas, Tile};
 
 use crate::image_wrapper::{wrap_pyxel_image, Image};
 use crate::instance;
