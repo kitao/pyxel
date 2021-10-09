@@ -1,5 +1,5 @@
 use pyo3::prelude::*;
-use pyxel::{Canvas, Color};
+use pyxel::Color;
 
 use crate::image_wrapper::{wrap_pyxel_image, Image};
 use crate::instance;
