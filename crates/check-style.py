@@ -36,7 +36,15 @@ STYLE_RULES = {
         "no blank line before let statement",
         r"""
             ^ ([ ]*) (?!//|let[ ]) \S.* $\n
-            \1 let[ ]
+            ^ \1 let[ ]
+        """,
+    ),
+    (
+        "no blank line before value statement",
+        r"""
+            ^ ([ ]*) [ ][ ][ ][ ] (?!//) \S.* $\n
+            ^ \1 [ ][ ][ ][ ] (?!.*[,;\}]$) \S.* $\n
+            ^ \1 \} $\n
         """,
     ),
 }
