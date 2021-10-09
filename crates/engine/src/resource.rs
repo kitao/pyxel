@@ -10,7 +10,6 @@ use imgref::ImgVec;
 use rgb::RGBA8;
 use zip::{ZipArchive, ZipWriter};
 
-use crate::canvas::Canvas;
 use crate::image::{Image, SharedImage};
 use crate::music::Music;
 use crate::settings::{
@@ -260,9 +259,9 @@ impl Pyxel {
                     (0..width * CAPTURE_SCALE * height * CAPTURE_SCALE)
                         .map(|i| {
                             let i = i / CAPTURE_SCALE;
-                            let rgb = colors[image
-                                ._value((i % width) as i32, (i / (width * CAPTURE_SCALE)) as i32)
-                                as usize];
+                            let x = i % width;
+                            let y = i / (width * CAPTURE_SCALE);
+                            let rgb = colors[image.canvas.data[y as usize][x as usize] as usize];
 
                             RGBA8::new(
                                 ((rgb >> 16) & 0xff) as u8,

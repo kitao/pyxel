@@ -17,7 +17,6 @@ use sdl2::EventPump as SdlEventPump;
 use sdl2::Sdl as SdlContext;
 use sdl2::TimerSubsystem as SdlTimer;
 
-use crate::canvas::Canvas;
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
 use crate::image::SharedImage;
 use crate::platform::{AudioCallback, Platform};
@@ -118,8 +117,8 @@ impl Platform for Sdl2 {
                 for x in 0..width {
                     for i in 0..scale {
                         for j in 0..scale {
-                            let color = icon._value(x as i32, y as i32) as usize;
-                            let rgb = colors[icon._value(x as i32, y as i32) as usize];
+                            let color = icon.canvas.data[y as usize][x as usize];
+                            let rgb = colors[color as usize];
                             let offset = ((y * scale + i) * pitch + (x * scale + j) * 4) as usize;
 
                             buffer[offset] = ((rgb >> 16) & 0xff) as u8;
@@ -300,13 +299,14 @@ impl Platform for Sdl2 {
     fn render_screen(&mut self, screen: SharedImage, colors: &[Rgb8], bg_color: Rgb8) {
         let width = screen.lock().width();
         let height = screen.lock().height();
+        let screen = screen.lock();
 
         self.sdl_texture
             .with_lock(None, |buffer: &mut [u8], pitch: usize| {
                 for i in 0..height as usize {
                     for j in 0..width as usize {
                         let offset = i * pitch + j * 3;
-                        let color = colors[screen.lock()._value(j as i32, i as i32) as usize];
+                        let color = colors[screen.canvas.data[i][j] as usize];
 
                         buffer[offset] = ((color >> 16) & 0xff) as u8;
                         buffer[offset + 1] = ((color >> 8) & 0xff) as u8;
