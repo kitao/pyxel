@@ -1,18 +1,19 @@
-use crate::canvas::Canvas;
+use crate::canvas::{Canvas, ToIndex};
 use crate::image::SharedImage;
-use crate::rectarea::RectArea;
 use crate::resource::ResourceItem;
 use crate::settings::{RESOURCE_ARCHIVE_DIRNAME, TILEMAP_SIZE};
 use crate::types::Tile;
 use crate::utils::{parse_hex_string, simplify_string};
 use crate::Pyxel;
 
+impl ToIndex for Tile {
+    fn to_index(&self) -> usize {
+        0
+    }
+}
+
 pub struct Tilemap {
-    width: u32,
-    height: u32,
-    self_rect: RectArea,
-    clip_rect: RectArea,
-    data: Vec<Vec<Tile>>,
+    pub(crate) canvas: Canvas<Tile>,
     pub image: SharedImage,
 }
 
@@ -21,13 +22,17 @@ pub type SharedTilemap = shared_type!(Tilemap);
 impl Tilemap {
     pub fn new(width: u32, height: u32, image: SharedImage) -> SharedTilemap {
         new_shared_type!(Self {
-            width,
-            height,
-            self_rect: RectArea::new(0, 0, width, height),
-            clip_rect: RectArea::new(0, 0, width, height),
-            data: vec![vec![(0, 0); width as usize]; height as usize],
+            canvas: Canvas::new(width, height),
             image,
         })
+    }
+
+    pub fn width(&self) -> u32 {
+        self.canvas.width()
+    }
+
+    pub fn height(&self) -> u32 {
+        self.canvas.height()
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
@@ -43,13 +48,10 @@ impl Tilemap {
 
                 for j in 0..width {
                     let index = j as usize * 4;
-                    let value = parse_hex_string(&src_data[index..index + 4]).unwrap();
+                    let tile = parse_hex_string(&src_data[index..index + 4]).unwrap();
 
-                    tilemap._set_value(
-                        j as i32,
-                        i as i32,
-                        (((value >> 8) & 0xff) as u8, (value & 0xff) as u8),
-                    );
+                    tilemap.canvas.data[i as usize][j as usize] =
+                        (((tile >> 8) & 0xff) as u8, (tile & 0xff) as u8);
                 }
             }
         }
@@ -65,39 +67,77 @@ impl Tilemap {
             None,
         );
     }
-}
 
-impl Canvas<Tile> for Tilemap {
-    fn width(&self) -> u32 {
-        self.width
+    pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.canvas.clip(x, y, width, height);
     }
 
-    fn height(&self) -> u32 {
-        self.height
+    pub fn clip0(&mut self) {
+        self.canvas.clip0();
     }
 
-    fn _value(&self, x: i32, y: i32) -> Tile {
-        self.data[y as usize][x as usize]
+    pub fn cls(&mut self, tile: Tile) {
+        self.canvas.cls(tile);
     }
 
-    fn _set_value(&mut self, x: i32, y: i32, value: Tile) {
-        self.data[y as usize][x as usize] = value;
+    pub fn pget(&mut self, x: f64, y: f64) -> Tile {
+        self.canvas.pget(x, y)
     }
 
-    fn _self_rect(&self) -> RectArea {
-        self.self_rect
+    pub fn pset(&mut self, x: f64, y: f64, tile: Tile) {
+        self.canvas.pset(x, y, tile);
     }
 
-    fn _clip_rect(&self) -> RectArea {
-        self.clip_rect
+    pub fn line(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, tile: Tile) {
+        self.canvas.line(x1, y1, x2, y2, tile);
     }
 
-    fn _set_clip_rect(&mut self, clip_rect: RectArea) {
-        self.clip_rect = clip_rect;
+    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64, tile: Tile) {
+        self.canvas.rect(x, y, width, height, tile);
     }
 
-    fn _palette_value(&self, value: Tile) -> Tile {
-        value
+    pub fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, tile: Tile) {
+        self.canvas.rectb(x, y, width, height, tile);
+    }
+
+    pub fn circ(&mut self, x: f64, y: f64, radius: f64, tile: Tile) {
+        self.canvas.circ(x, y, radius, tile);
+    }
+
+    pub fn circb(&mut self, x: f64, y: f64, radius: f64, tile: Tile) {
+        self.canvas.circb(x, y, radius, tile);
+    }
+
+    pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: Tile) {
+        self.canvas.tri(x1, y1, x2, y2, x3, y3, tile);
+    }
+
+    pub fn trib(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: Tile) {
+        self.canvas.trib(x1, y1, x2, y2, x3, y3, tile);
+    }
+
+    pub fn blt(
+        &mut self,
+        x: f64,
+        y: f64,
+        tilemap: shared_type!(Self),
+        tilemap_x: f64,
+        tilemap_y: f64,
+        width: f64,
+        height: f64,
+        transparent: Option<Tile>,
+    ) {
+        self.canvas.blt(
+            x,
+            y,
+            &tilemap.lock().canvas,
+            tilemap_x,
+            tilemap_y,
+            width,
+            height,
+            transparent,
+            None,
+        );
     }
 }
 
@@ -109,7 +149,7 @@ impl ResourceItem for Tilemap {
     fn is_modified(&self) -> bool {
         for i in 0..self.height() {
             for j in 0..self.width() {
-                if self._value(j as i32, i as i32) != (0, 0) {
+                if self.canvas.data[i as usize][j as usize] != (0, 0) {
                     return true;
                 }
             }
@@ -127,7 +167,7 @@ impl ResourceItem for Tilemap {
 
         for i in 0..self.height() {
             for j in 0..self.width() {
-                let tile = self._value(j as i32, i as i32);
+                let tile = self.canvas.data[i as usize][j as usize];
 
                 output += &format!("{:02x}{:02x}", tile.0, tile.1);
             }
@@ -144,19 +184,19 @@ impl ResourceItem for Tilemap {
         for (i, line) in input.lines().enumerate() {
             if i < TILEMAP_SIZE as usize {
                 if version < 15000 {
-                    string_loop!(j, value, line, 3, {
-                        let value = parse_hex_string(&value).unwrap();
-                        let x = value % 32;
-                        let y = value / 32;
+                    string_loop!(j, string, line, 3, {
+                        let tile = parse_hex_string(&string).unwrap();
+                        let x = tile % 32;
+                        let y = tile / 32;
 
-                        self._set_value(j as i32, i as i32, (x as u8, y as u8));
+                        self.canvas.data[i][j] = (x as u8, y as u8);
                     });
                 } else {
-                    string_loop!(j, value, line, 4, {
-                        let x = parse_hex_string(&value[0..2].to_string()).unwrap();
-                        let y = parse_hex_string(&value[2..4].to_string()).unwrap();
+                    string_loop!(j, string, line, 4, {
+                        let x = parse_hex_string(&string[0..2].to_string()).unwrap();
+                        let y = parse_hex_string(&string[2..4].to_string()).unwrap();
 
-                        self._set_value(j as i32, i as i32, (x as u8, y as u8));
+                        self.canvas.data[i][j] = (x as u8, y as u8);
                     });
                 }
             } else {

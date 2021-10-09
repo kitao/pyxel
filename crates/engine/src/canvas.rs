@@ -1,68 +1,84 @@
 use std::cmp::max;
 use std::mem::swap;
+use std::ptr::eq;
 
 use crate::rectarea::RectArea;
 use crate::utils::{as_i32, as_u32};
 
-pub trait Canvas<T: Copy + PartialEq + Default> {
-    fn width(&self) -> u32;
-    fn height(&self) -> u32;
-    fn _value(&self, x: i32, y: i32) -> T;
-    fn _set_value(&mut self, x: i32, y: i32, value: T);
-    fn _self_rect(&self) -> RectArea;
-    fn _clip_rect(&self) -> RectArea;
-    fn _set_clip_rect(&mut self, clip_rect: RectArea);
-    fn _palette_value(&self, value: T) -> T;
+pub trait ToIndex {
+    fn to_index(&self) -> usize;
+}
 
-    fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
+pub struct Canvas<T: Copy + PartialEq + Default + ToIndex> {
+    pub self_rect: RectArea,
+    pub clip_rect: RectArea,
+    pub data: Vec<Vec<T>>,
+}
+
+impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
+    pub fn new(width: u32, height: u32) -> Self {
+        Self {
+            self_rect: RectArea::new(0, 0, width, height),
+            clip_rect: RectArea::new(0, 0, width, height),
+            data: vec![vec![T::default(); width as usize]; height as usize],
+        }
+    }
+
+    pub fn width(&self) -> u32 {
+        self.self_rect.width()
+    }
+
+    pub fn height(&self) -> u32 {
+        self.self_rect.height()
+    }
+
+    pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
         let x = as_i32(x);
         let y = as_i32(y);
         let width = as_u32(width);
         let height = as_u32(height);
 
-        self._set_clip_rect(
-            self._self_rect()
-                .intersects(RectArea::new(x, y, width, height)),
-        );
+        self.clip_rect = self
+            .self_rect
+            .intersects(RectArea::new(x, y, width, height));
     }
 
-    fn clip0(&mut self) {
-        self._set_clip_rect(self._self_rect());
+    pub fn clip0(&mut self) {
+        self.clip_rect = self.self_rect;
     }
 
-    fn cls(&mut self, value: T) {
+    pub fn cls(&mut self, value: T) {
         let width = self.width();
         let height = self.height();
-        let value = self._palette_value(value);
 
         for i in 0..height {
             for j in 0..width {
-                self._set_value(j as i32, i as i32, value);
+                self.data[i as usize][j as usize] = value;
             }
         }
     }
 
-    fn pget(&mut self, x: f64, y: f64) -> T {
+    pub fn pget(&mut self, x: f64, y: f64) -> T {
         let x = as_i32(x);
         let y = as_i32(y);
 
-        if self._self_rect().contains(x, y) {
-            self._value(x, y)
+        if self.self_rect.contains(x, y) {
+            self.data[y as usize][x as usize]
         } else {
             T::default()
         }
     }
 
-    fn pset(&mut self, x: f64, y: f64, value: T) {
+    pub fn pset(&mut self, x: f64, y: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
 
-        if self._clip_rect().contains(x, y) {
-            self._set_value(x, y, self._palette_value(value));
+        if self.clip_rect.contains(x, y) {
+            self.data[y as usize][x as usize] = value;
         }
     }
 
-    fn line(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, value: T) {
+    pub fn line(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, value: T) {
         let x1 = as_i32(x1);
         let y1 = as_i32(y1);
         let x2 = as_i32(x2);
@@ -111,12 +127,12 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         }
     }
 
-    fn rect(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
+    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
         let width = as_u32(width);
         let height = as_u32(height);
-        let rect = RectArea::new(x, y, width, height).intersects(self._clip_rect());
+        let rect = RectArea::new(x, y, width, height).intersects(self.clip_rect);
 
         if rect.is_empty() {
             return;
@@ -126,23 +142,22 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
-        let value = self._palette_value(value);
 
         for i in top..=bottom {
             for j in left..=right {
-                self._set_value(j, i, value);
+                self.data[i as usize][j as usize] = value;
             }
         }
     }
 
-    fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
+    pub fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
         let width = as_u32(width);
         let height = as_u32(height);
         let rect = RectArea::new(x, y, width, height);
 
-        if rect.intersects(self._clip_rect()).is_empty() {
+        if rect.intersects(self.clip_rect).is_empty() {
             return;
         }
 
@@ -162,7 +177,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         }
     }
 
-    fn circ(&mut self, x: f64, y: f64, radius: f64, value: T) {
+    pub fn circ(&mut self, x: f64, y: f64, radius: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
         let radius = as_u32(radius);
@@ -184,7 +199,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         }
     }
 
-    fn circb(&mut self, x: f64, y: f64, radius: f64, value: T) {
+    pub fn circb(&mut self, x: f64, y: f64, radius: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
         let radius = as_u32(radius);
@@ -209,7 +224,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         }
     }
 
-    fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, value: T) {
+    pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, value: T) {
         let mut x1 = as_i32(x1);
         let mut y1 = as_i32(y1);
         let mut x2 = as_i32(x2);
@@ -289,22 +304,23 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         }
     }
 
-    fn trib(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, value: T) {
+    pub fn trib(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, value: T) {
         self.line(x1, y1, x2, y2, value);
         self.line(x1, y1, x3, y3, value);
         self.line(x2, y2, x3, y3, value);
     }
 
-    fn blt(
+    pub fn blt(
         &mut self,
         x: f64,
         y: f64,
-        canvas: shared_type!(Self),
+        canvas: &Self,
         canvas_x: f64,
         canvas_y: f64,
         width: f64,
         height: f64,
         transparent: Option<T>,
+        palette: Option<&[T]>,
     ) {
         let x = as_i32(x);
         let y = as_i32(y);
@@ -312,7 +328,7 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         let canvas_y = as_i32(canvas_y);
         let width = as_i32(width);
         let height = as_i32(height);
-        let self_copy = self as *mut Self == canvas.data_ptr();
+        let self_copy = eq(self as *const Self, canvas as *const Self);
 
         let CopyArea {
             dst_x,
@@ -328,13 +344,13 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
         } = CopyArea::new(
             x,
             y,
-            self._clip_rect(),
+            self.clip_rect,
             canvas_x,
             canvas_y,
             if self_copy {
-                self._self_rect()
+                self.self_rect
             } else {
-                canvas.lock()._self_rect()
+                canvas.self_rect
             },
             width,
             height,
@@ -356,7 +372,13 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
                             }
                         }
 
-                        self._set_value(dst_x + $x, dst_y + $y, self._palette_value(value));
+                        let value = if let Some(palette) = palette {
+                            palette[value.to_index()]
+                        } else {
+                            value
+                        };
+
+                        self.data[(dst_y + $y) as usize][(dst_x + $x) as usize] = value;
                     }
                 }
             };
@@ -364,7 +386,11 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
 
         if self_copy {
             let canvas: Vec<Vec<T>> = (0..height)
-                .map(|i| (0..width).map(|j| self._value(j, i)).collect())
+                .map(|i| {
+                    (0..width)
+                        .map(|j| self.data[i as usize][j as usize])
+                        .collect()
+                })
                 .collect();
 
             copy_canvas!(
@@ -374,12 +400,11 @@ pub trait Canvas<T: Copy + PartialEq + Default> {
                     [(src_x + sign_x * x + offset_x) as usize]
             );
         } else {
-            let canvas = canvas.lock();
-
             copy_canvas!(
                 x,
                 y,
-                canvas._value(src_x + sign_x * x + offset_x, src_y + sign_y * y + offset_y)
+                canvas.data[(src_y + sign_y * y + offset_y) as usize]
+                    [(src_x + sign_x * x + offset_x) as usize]
             );
         }
     }
