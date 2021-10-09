@@ -1,7 +1,6 @@
 use std::cmp::min;
 use std::process::exit;
 
-use crate::canvas::Canvas;
 use crate::event::Event;
 use crate::image::Image;
 use crate::key::{KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
@@ -265,9 +264,9 @@ impl Pyxel {
         }
 
         let mut screen = self.screen.lock();
-        let clip_rect = screen._clip_rect();
-        let palette1 = screen._palette()[1];
-        let palette2 = screen._palette()[2];
+        let clip_rect = screen.canvas.clip_rect;
+        let palette1 = screen.palette[1];
+        let palette2 = screen.palette[2];
 
         screen.clip0();
         screen.pal(1, 1);
@@ -286,7 +285,7 @@ impl Pyxel {
         screen.text(1.0, 12.0, &draw_time, 1, self.font.clone());
         screen.text(0.0, 12.0, &draw_time, 2, self.font.clone());
 
-        screen._set_clip_rect(clip_rect);
+        screen.canvas.clip_rect = clip_rect;
         screen.pal(1, palette1);
         screen.pal(2, palette2);
     }
@@ -310,8 +309,8 @@ impl Pyxel {
         }
 
         let mut screen = self.screen.lock();
-        let clip_rect = screen._clip_rect();
-        let palette = *screen._palette();
+        let clip_rect = screen.canvas.clip_rect;
+        let palette = screen.palette;
 
         screen.clip0();
         screen.pal0();
@@ -327,7 +326,7 @@ impl Pyxel {
             Some(0),
         );
 
-        screen._set_clip_rect(clip_rect);
-        screen._set_palette(&palette);
+        screen.canvas.clip_rect = clip_rect;
+        screen.palette = palette;
     }
 }
