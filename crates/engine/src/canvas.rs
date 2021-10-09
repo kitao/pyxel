@@ -323,8 +323,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         palette: Option<&[T]>,
     ) {
         if eq(self as *const Self, canvas as *const Self) {
-            let copy_width = width.abs() as u32;
-            let copy_height = height.abs() as u32;
+            let copy_width = as_u32(width.abs());
+            let copy_height = as_u32(height.abs());
             let mut canvas = Self::new(copy_width, copy_height);
 
             canvas.blt(
@@ -378,9 +378,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         for i in 0..height {
             for j in 0..width {
-                let x = src_x + sign_x * j + offset_x;
-                let y = src_y + sign_y * i + offset_y;
-                let value = canvas.data[y as usize][x as usize];
+                let value_x = src_x + sign_x * j + offset_x;
+                let value_y = src_y + sign_y * i + offset_y;
+                let value = canvas.data[value_y as usize][value_x as usize];
 
                 if let Some(transparent) = transparent {
                     if value == transparent {

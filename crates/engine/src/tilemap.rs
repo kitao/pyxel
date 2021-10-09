@@ -184,19 +184,17 @@ impl ResourceItem for Tilemap {
         for (i, line) in input.lines().enumerate() {
             if i < TILEMAP_SIZE as usize {
                 if version < 15000 {
-                    string_loop!(j, string, line, 3, {
-                        let tile = parse_hex_string(&string).unwrap();
-                        let x = tile % 32;
-                        let y = tile / 32;
+                    string_loop!(j, tile, line, 3, {
+                        let tile = parse_hex_string(&tile).unwrap();
 
-                        self.canvas.data[i][j] = (x as u8, y as u8);
+                        self.canvas.data[i][j] = ((tile % 32) as u8, (tile / 32) as u8);
                     });
                 } else {
-                    string_loop!(j, string, line, 4, {
-                        let x = parse_hex_string(&string[0..2].to_string()).unwrap();
-                        let y = parse_hex_string(&string[2..4].to_string()).unwrap();
+                    string_loop!(j, tile, line, 4, {
+                        let tile_x = parse_hex_string(&tile[0..2].to_string()).unwrap();
+                        let tile_y = parse_hex_string(&tile[2..4].to_string()).unwrap();
 
-                        self.canvas.data[i][j] = (x as u8, y as u8);
+                        self.canvas.data[i][j] = (tile_x as u8, tile_y as u8);
                     });
                 }
             } else {
