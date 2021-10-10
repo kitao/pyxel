@@ -230,18 +230,22 @@ impl Pyxel {
         self.input.is_mouse_visible = is_visible;
     }
 
+    // advanced API
     pub fn set_btnp(&mut self, key: Key) {
         self.input.press_key(key, self.frame_count());
     }
 
+    // advanced API
     pub fn set_btnr(&mut self, key: Key) {
         self.input.release_key(key, self.frame_count());
     }
 
+    // advanced API
     pub fn set_btnv(&mut self, key: Key, key_value: KeyValue) {
         self.input.key_values.insert(key, key_value);
     }
 
+    // advanced API
     pub fn move_mouse(&mut self, x: i32, y: i32) {
         self.input.key_values.insert(MOUSE_POS_X, x);
         self.input.key_values.insert(MOUSE_POS_Y, y);

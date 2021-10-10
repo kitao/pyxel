@@ -65,6 +65,7 @@ impl Pyxel {
         self.graphics.images[image_no as usize].clone()
     }
 
+    // advanced API
     pub fn image_no(&self, image: SharedImage) -> Option<u32> {
         for (i, builtin_image) in self.graphics.images.iter().enumerate() {
             if builtin_image.data_ptr() == image.data_ptr() {

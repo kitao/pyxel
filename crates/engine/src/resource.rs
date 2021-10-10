@@ -217,6 +217,7 @@ impl Pyxel {
         zip.finish().unwrap();
     }
 
+    // advanced API
     pub fn screenshot(&mut self) {
         self.screen
             .lock()
@@ -224,6 +225,7 @@ impl Pyxel {
         self.system.disable_next_frame_skip();
     }
 
+    // advanced API
     pub fn reset_capture(&mut self) {
         if self.resource.max_screen_count == 0 {
             return;
@@ -234,6 +236,7 @@ impl Pyxel {
         self.resource.captured_screen_count = 0;
     }
 
+    // advanced API
     pub fn screencast(&mut self) {
         if self.resource.max_screen_count == 0 || self.resource.captured_screen_count == 0 {
             return;
