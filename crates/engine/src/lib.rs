@@ -61,7 +61,7 @@ use crate::system::System;
 pub use crate::tilemap::{SharedTilemap, Tilemap};
 pub use crate::types::*;
 
-pub type TargetPlatform = Sdl2;
+type TargetPlatform = Sdl2;
 
 pub struct Pyxel {
     platform: TargetPlatform,
