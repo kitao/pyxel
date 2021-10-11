@@ -12,7 +12,7 @@ from .settings import (
 from .widgets import Widget
 
 
-class Editor(Widget):
+class EditorBase(Widget):
     """
     Events:
         __on_undo(data)
