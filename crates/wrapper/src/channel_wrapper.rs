@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-use pyxel::Channel as PyxelChannel;
 use pyxel::SharedChannel as PyxelSharedChannel;
 use pyxel::Volume;
 
