@@ -1,8 +1,8 @@
 import pyxel
 
-from .drawing_panel import DrawingPanel
-from .editor import Editor
-from .image_panel import ImagePanel
+from .canvas_panel import CanvasPanel
+from .editor_base import EditorBase
+from .image_selector import ImageSelector
 from .settings import (
     EDITOR_IMAGE,
     TEXT_LABEL_COLOR,
@@ -10,18 +10,22 @@ from .settings import (
     TILEMAP_IMAGE_Y,
     TOOL_PENCIL,
 )
-from .tilemap_panel import TilemapPanel
-from .utils import copy_array2d
+from .tilemap_selector import TilemapSelector
 from .widgets import NumberPicker, RadioButton
 
 
-class TileMapEditor(Editor):
+class TilemapEditor(EditorBase):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self._drawing_panel = DrawingPanel(self, is_tilemap_mode=True)
-        self._tilemap_panel = TilemapPanel(self)
-        self._image_panel = ImagePanel(self, is_tilemap_mode=True)
+        self.edit_x = 0
+        self.edit_y = 0
+        self.edit_width = 8
+        self.edit_height = 8
+
+        self._canvas_panel = CanvasPanel(self, is_tilemap_mode=True)
+        self._tilemap_selector = TilemapSelector(self)
+        self._image_selector = ImageSelector(self, is_image_editor=False)
         self._tilemap_picker = NumberPicker(
             self, 48, 161, 0, pyxel.TILEMAP_COUNT - 1, 0
         )
@@ -58,19 +62,23 @@ class TileMapEditor(Editor):
 
     @property
     def tilemap(self):
-        return self._tilemap_picker.value
+        return pyxel.tilemap(self._tilemap_picker.value)
 
-    @tilemap.setter
-    def tilemap(self, value):
-        self._tilemap_button.value = value
+    @property
+    def canvas(self):
+        return self.tilemap
+
+    @property
+    def image(self):
+        return pyxel.image(self._image_picker.value)
 
     @property
     def color(self):
-        return self._image_panel.focused_tiles
+        return self._image_viewer.focused_tiles
 
     @color.setter
     def color(self, value):
-        self._image_panel.set_focus(value % 32 * 8, value // 32 * 8)
+        self._image_viewer.set_focus(value % 32 * 8, value // 32 * 8)
 
     @property
     def tool(self):
@@ -81,52 +89,44 @@ class TileMapEditor(Editor):
         self._tool_button.value = value
 
     @property
-    def image(self):
-        return self._image_picker.value
-
-    @image.setter
-    def image(self, value):
-        self._image_picker.value = value
-
-    @property
     def drawing_x(self):
-        return self._drawing_panel.viewport_x
+        return self._canvas_panel.viewport_x
 
     @drawing_x.setter
     def drawing_x(self, value):
-        self._drawing_panel.viewport_x = value
+        self._canvas_panel.viewport_x = value
 
     @property
     def drawing_y(self):
-        return self._drawing_panel.viewport_y
+        return self._canvas_panel.viewport_y
 
     @drawing_y.setter
     def drawing_y(self, value):
-        self._drawing_panel.viewport_y = value
+        self._canvas_panel.viewport_y = value
 
     def __on_undo(self, data):
         tm = data["tilemap"]
         x, y = data["pos"]
-        copy_array2d(pyxel.tilemap(tm).data, x, y, data["before"])
+        pyxel.tilemap(tm).set_slice(x, y, data["before"])
 
-        self._drawing_panel.viewport_x = x
-        self._drawing_panel.viewport_y = y
+        self._canvas_panel.viewport_x = x
+        self._canvas_panel.viewport_y = y
         self._tilemap_picker.value = tm
 
     def __on_redo(self, data):
         tm = data["tilemap"]
         x, y = data["pos"]
-        copy_array2d(pyxel.tilemap(tm).data, x, y, data["after"])
+        pyxel.tilemap(tm).set_slice(x, y, data["after"])
 
-        self._drawing_panel.viewport_x = x
-        self._drawing_panel.viewport_y = y
+        self._canvas_panel.viewport_x = x
+        self._canvas_panel.viewport_y = y
         self._tilemap_picker.value = tm
 
     def __on_update(self):
         start_y = pyxel.frame_count % 8 * 8
-        tilemap = pyxel.tilemap(self.tilemap)
-        image = pyxel.image(self.image)
-        minimap = self.parent.image
+        tilemap = self.tilemap  # pyxel.tilemap(self.tilemap)
+        image = self.image  # pyxel.image(self.image)
+        minimap = self.image
 
         for y in range(start_y, start_y + 8):
             for x in range(64):

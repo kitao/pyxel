@@ -1,6 +1,6 @@
 import pyxel
 
-from .editor import Editor
+from .editor_base import EditorBase
 from .field_cursor import FieldCursor
 from .octave_bar import OctaveBar
 from .piano_keyboard import PianoKeyboard
@@ -10,7 +10,7 @@ from .sound_field import SoundField
 from .widgets import ImageButton, ImageToggleButton, NumberPicker
 
 
-class SoundEditor(Editor):
+class SoundEditor(EditorBase):
     def __init__(self, parent):
         super().__init__(parent)
 

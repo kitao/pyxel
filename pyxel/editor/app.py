@@ -8,15 +8,20 @@ from .settings import APP_HEIGHT, APP_WIDTH, EDITOR_IMAGE, HELP_MESSAGE_COLOR
 from .sound_editor import SoundEditor
 from .tilemap_editor import TilemapEditor
 from .widgets import ImageButton, RadioButton, Widget
-from .widgets.settings import (WIDGET_BACKGROUND_COLOR, WIDGET_HOLD_TIME,
-                               WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME,
-                               WIDGET_SHADOW_COLOR)
+from .widgets.settings import (
+    WIDGET_BACKGROUND_COLOR,
+    WIDGET_HOLD_TIME,
+    WIDGET_PANEL_COLOR,
+    WIDGET_REPEAT_TIME,
+    WIDGET_SHADOW_COLOR,
+)
 
 
 class App(Widget):
     def __init__(self, resource_file):
         resource_file = os.path.join(os.getcwd(), resource_file)
         file_ext = os.path.splitext(resource_file)[1]
+
         if file_ext != pyxel.RESOURCE_FILE_EXTENSION:
             resource_file += pyxel.RESOURCE_FILE_EXTENSION
 
@@ -28,6 +33,8 @@ class App(Widget):
             pyxel.load(resource_file)
 
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
+
+        self.help_message = ""
 
         self._resource_file = resource_file
         self._editors = [
@@ -70,10 +77,9 @@ class App(Widget):
             54,
             0,
         )
-        self.help_message = ""
 
         self._editor_button.add_event_handler(
-            "change", lambda value: self._set_editor(value)
+            "change", lambda value: self._switch_editor(value)
         )
         self.add_event_handler("update", self.__on_update)
         self.add_event_handler("draw", self.__on_draw)
@@ -95,27 +101,27 @@ class App(Widget):
             "mouse_hover", self.__on_save_button_mouse_hover
         )
 
-        self.editor_no = 0
+        self._switch_editor(0)
 
         pyxel.run(self.update_widgets, self.draw_widgets)
-
-    @property
-    def editor_no(self):
-        return self._editor_button.value
-
-    @editor_no.setter
-    def editor_no(self, value):
-        self._editor_button.value = value
-        for i, widget in enumerate(self._editors):
-            widget.is_visible = i == value
-
-    @property
-    def _editor(self):
-        return self._editors[self._editor_button.value]
 
     @staticmethod
     def _set_title(filename):
         pyxel.title("Pyxel Editor - {}".format(filename))
+
+    @property
+    def _editor_no(self):
+        return self._editor_button.value
+
+    @property
+    def _editor(self):
+        return self._editors[self._editor_no]
+
+    def _switch_editor(self, editor_no):
+        self._editor_button.value = editor_no
+
+        for i, widget in enumerate(self._editors):
+            widget.is_visible = i == editor_no
 
     def __on_update(self):
         if pyxel.drop_files:
@@ -133,7 +139,7 @@ class App(Widget):
                         (False, True, False, False),
                         (False, False, True, False),
                         (False, False, False, True),
-                    )[self.editor_no]
+                    )[self._editor_no]
 
                     pyxel.load(
                         pyxel._drop_file,
@@ -153,9 +159,9 @@ class App(Widget):
 
         if pyxel.btn(pyxel.KEY_ALT):
             if pyxel.btnp(pyxel.KEY_LEFT):
-                self.editor_no = (self.editor_no - 1) % len(self._editors)
+                self._switch_editor((self._editor_no - 1) % len(self._editors))
             elif pyxel.btnp(pyxel.KEY_RIGHT):
-                self.editor_no = (self.editor_no + 1) % len(self._editors)
+                self._switch_editor((self._editor_no + 1) % len(self._editors))
 
         self._undo_button.is_enabled = self._editor.can_undo
         self._redo_button.is_enabled = self._editor.can_redo

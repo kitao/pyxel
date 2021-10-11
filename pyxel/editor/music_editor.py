@@ -1,6 +1,6 @@
 import pyxel
 
-from .editor import Editor
+from .editor_base import EditorBase
 from .field_cursor import FieldCursor
 from .music_field import MusicField
 from .settings import EDITOR_IMAGE, MAX_MUSIC_LENGTH, TEXT_LABEL_COLOR
@@ -8,7 +8,7 @@ from .sound_selector import SoundSelector
 from .widgets import ImageButton, ImageToggleButton, NumberPicker
 
 
-class MusicEditor(Editor):
+class MusicEditor(EditorBase):
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -194,10 +194,10 @@ class MusicEditor(Editor):
         self._stop()
 
     def __on_play_button_mouse_hover(self, x, y):
-        self.parent.help_message = "PLAY:SPACE"
+        self.parent.show_help_message("PLAY:SPACE")
 
     def __on_stop_button_mouse_hover(self, x, y):
-        self.parent.help_message = "STOP:SPACE"
+        self.parent.show_help_message("STOP:SPACE")
 
     def __on_loop_button_mouse_hover(self, x, y):
-        self.parent.help_message = "LOOP:L"
+        self.parent.show_help_message("LOOP:L")
