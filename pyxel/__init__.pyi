@@ -617,7 +617,6 @@ class Tilemap:
 # Channel class
 class Channel:
     gain: int
-    def __init__(self) -> None: ...
     def play_pos(self) -> Optional[Tuple[int, int]]: ...
     def play(
         self, snd: Union[int | List[int] | Sound | List[Sound]], *, loop: Optional[bool]

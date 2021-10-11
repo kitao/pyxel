@@ -18,11 +18,6 @@ pub fn wrap_pyxel_channel(pyxel_channel: PyxelSharedChannel) -> Channel {
 
 #[pymethods]
 impl Channel {
-    #[new]
-    pub fn new() -> Self {
-        wrap_pyxel_channel(PyxelChannel::new())
-    }
-
     #[getter]
     pub fn get_gain(&self) -> Volume {
         self.pyxel_channel.lock().gain
