@@ -1,11 +1,9 @@
-#[macro_export]
 macro_rules! shared_type {
     ($type: ty) => {
         std::sync::Arc<parking_lot::Mutex<$type>>
     }
 }
 
-#[macro_export]
 macro_rules! new_shared_type {
     ($expr: expr) => {
         std::sync::Arc::new(parking_lot::Mutex::new($expr))
