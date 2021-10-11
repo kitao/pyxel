@@ -112,7 +112,10 @@ def _get_slice(self, x, y, width, height):
     return data
 
 
-def _set_slice(self, x, y, width, height, slice):
+def _set_slice(self, x, y, slice):
+    width = len(slice[0])
+    height = len(slice)
+
     for i in range(height):
         for j in range(width):
             self.pset(x + j, y + i, slice[i][j])

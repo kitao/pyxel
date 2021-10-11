@@ -13,20 +13,20 @@ from .settings import (
 class Widget:
     """
     Events:
-        __on_show()
-        __on_hide()
-        __on_enabled()
-        __on_disabled()
-        __on_move(x, y)
-        __on_resize(width, height)
-        __on_mouse_down(key, x, y)
-        __on_mouse_up(key, x, y)
-        __on_mouse_drag(key, x, y, dx, dy)
-        __on_mouse_repeat(key, x, y)
-        __on_mouse_click(key, x, y)
-        __on_mouse_hover(x, y)
-        __on_update()
-        __on_draw()
+        show
+        hide
+        enabled
+        disabled
+        move (x, y)
+        resize (width, height)
+        mouse_down (key, x, y)
+        mouse_up (key, x, y)
+        mouse_drag (key, x, y, dx, dy)
+        mouse_repeat (key, x, y)
+        mouse_click (key, x, y)
+        mouse_hover (x, y)
+        update
+        draw
     """
 
     class CaptureInfo:
@@ -49,7 +49,7 @@ class Widget:
         self._height = None
         self._is_visible = None
         self._is_enabled = None
-        self._event_handler_lists = {}
+        self._event_handlers = {}
 
         self.parent = parent
         self.move(x, y)
@@ -119,20 +119,17 @@ class Widget:
         else:
             self.call_event_handler("disabled")
 
-    def _get_event_handler_list(self, event):
-        if event not in self._event_handler_lists:
-            self._event_handler_lists[event] = []
-
-        return self._event_handler_lists[event]
-
     def add_event_handler(self, event, handler):
-        self._get_event_handler_list(event).append(handler)
+        self._event_handlers.setdefault(event, [])
+        self._event_handlers[event].append(handler)
 
     def remove_event_handler(self, event, handler):
-        self._get_event_handler_list(event).remove(handler)
+        self._event_handlers.setdefault(event, [])
+        self._event_handlers[event].remove(handler)
 
     def call_event_handler(self, event, *args):
-        for handler in self._get_event_handler_list(event):
+        self._event_handlers.setdefault(event, [])
+        for handler in self._event_handlers[event]:
             handler(*args)
 
     def is_hit(self, x, y):

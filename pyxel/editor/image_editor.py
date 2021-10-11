@@ -1,14 +1,13 @@
 import pyxel
 
-from .drawing_panel import DrawingPanel
-from .editor import Editor
-from .image_panel import ImagePanel
+from .canvas_panel import CanvasPanel
+from .editor_base import EditorBase
+from .image_selector import ImageSelector
 from .settings import EDITOR_IMAGE, TEXT_LABEL_COLOR, TOOL_PENCIL
-from .utils import copy_array2d
 from .widgets import ColorPicker, NumberPicker, RadioButton
 
 
-class ImageEditor(Editor):
+class ImageEditor(EditorBase):
     _COLOR_BUTTONS = (
         pyxel.KEY_1,
         pyxel.KEY_2,
@@ -23,8 +22,12 @@ class ImageEditor(Editor):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self._drawing_panel = DrawingPanel(self, is_tilemap_mode=False)
-        self._image_panel = ImagePanel(self, is_tilemap_mode=False)
+        self.edit_x = 0
+        self.edit_y = 0
+        self.edit_width = 16
+        self.edit_height = 16
+
+        self._canvas_panel = CanvasPanel(self, is_tilemap_mode=False)
         self._color_picker = ColorPicker(self, 11, 156, 7, with_shadow=False)
         self._tool_button = RadioButton(
             self,
@@ -37,6 +40,7 @@ class ImageEditor(Editor):
             TOOL_PENCIL,
         )
         self._image_picker = NumberPicker(self, 192, 161, 0, pyxel.IMAGE_COUNT - 1, 0)
+        self._image_selector = ImageSelector(self, is_image_editor=True)
 
         self.add_event_handler("undo", self.__on_undo)
         self.add_event_handler("redo", self.__on_redo)
@@ -53,54 +57,46 @@ class ImageEditor(Editor):
     def color(self):
         return self._color_picker.value
 
-    @color.setter
-    def color(self, value):
-        self._color_picker.value = int(value)
-
     @property
     def tool(self):
         return self._tool_button.value
 
-    @tool.setter
-    def tool(self, value):
-        self._tool_button.value = value
-
     @property
-    def image(self):
+    def image_no(self):
         return self._image_picker.value
 
-    @property
-    def drawing_x(self):
-        return self._drawing_panel.viewport_x
-
-    @drawing_x.setter
-    def drawing_x(self, value):
-        self._drawing_panel.viewport_x = value
+    # @property
+    # def image(self):
+    #    return pyxel.image(self._image_picker.value)
 
     @property
-    def drawing_y(self):
-        return self._drawing_panel.viewport_y
+    def canvas(self):
+        return pyxel.image(self._image_picker.value)
 
-    @drawing_y.setter
-    def drawing_y(self, value):
-        self._drawing_panel.viewport_y = value
+    # @color.setter
+    # def color(self, value):
+    #    self._color_picker.value = int(value)
+
+    # @tool.setter
+    # def tool(self, value):
+    #    self._tool_button.value = value
 
     def __on_undo(self, data):
         img = data["image"]
         x, y = data["pos"]
-        copy_array2d(pyxel.image(img), x, y, data["before"])
+        pyxel.image(img).set_slice(x, y, data["before"])
 
-        self.drawing_x = x
-        self.drawing_y = y
+        self.canvas_x = x
+        self.canvas_y = y
         self.parent.image = img
 
     def __on_redo(self, data):
         img = data["image"]
         x, y = data["pos"]
-        copy_array2d(pyxel.image(img), x, y, data["after"])
+        pyxel.image(img).set_slice(x, y, data["after"])
 
-        self.drawing_x = x
-        self.drawing_y = y
+        self.canvas_x = x
+        self.canvas_y = y
         self.parent.image = img
 
     def __on_drop(self, filename):
@@ -124,4 +120,4 @@ class ImageEditor(Editor):
         pyxel.text(170, 162, "IMAGE", TEXT_LABEL_COLOR)
 
     def __on_color_picker_mouse_hover(self, x, y):
-        self.help_message = "COLOR:1-8/SHIFT+1-8"
+        self.show_help_message("COLOR:1-8/SHIFT+1-8")
