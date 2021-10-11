@@ -53,7 +53,6 @@ use crate::input::Input;
 pub use crate::key::*;
 pub use crate::music::{Music, SharedMusic};
 use crate::platform::Platform;
-pub use crate::rectarea::RectArea;
 use crate::resource::Resource;
 use crate::sdl2::Sdl2;
 pub use crate::settings::*;

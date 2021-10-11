@@ -1,2 +1,2 @@
 [workspace]
-members = ["engine", "editor", "wrapper"]
+members = ["engine", "wrapper"]
