@@ -11,7 +11,7 @@ from .settings import (
 from .widgets import Widget
 
 
-class TilemapPanel(Widget):
+class TilemapSelector(Widget):
     def __init__(self, parent):
         super().__init__(parent, 157, 16, 66, 65)
 
@@ -27,7 +27,7 @@ class TilemapPanel(Widget):
 
     def __on_mouse_down(self, key, x, y):
         if key == pyxel.MOUSE_BUTTON_LEFT:
-            self.parent.drawing_x, self.parent.drawing_y = self._screen_to_view(x, y)
+            self.parent.edit_x, self.parent.edit_y = self._screen_to_view(x, y)
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         if key == pyxel.MOUSE_BUTTON_LEFT:
@@ -35,25 +35,25 @@ class TilemapPanel(Widget):
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
-        self.parent.help_message = "TARGET:CURSOR ({},{})".format(x, y)
+        self.parent.show_help_message("TARGET:CURSOR ({},{})".format(x, y))
 
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
 
-        pyxel.blt(
-            self.x + 1,
-            self.y + 1,
-            3,
-            TILEMAP_IMAGE_X,
-            TILEMAP_IMAGE_Y,
-            TILEMAP_IMAGE_WIDTH,
-            TILEMAP_IMAGE_HEIGHT,
-        )
+        # pyxel.blt(
+        #    self.x + 1,
+        #    self.y + 1,
+        #    3,
+        #    TILEMAP_IMAGE_X,
+        #    TILEMAP_IMAGE_Y,
+        #    TILEMAP_IMAGE_WIDTH,
+        #    TILEMAP_IMAGE_HEIGHT,
+        # )
 
         pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
 
-        x = self.x + self.parent.drawing_x // 4 + 1
-        y = self.y + self.parent.drawing_y // 4 + 1
+        x = self.x + self.parent.edit_x // 4 + 1
+        y = self.y + self.parent.edit_y // 4 + 1
         w = 4
         h = 4
 
