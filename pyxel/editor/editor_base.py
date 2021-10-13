@@ -47,13 +47,13 @@ class EditorBase(Widget):
             return
 
         self._history_index -= 1
-        self.call_event_handler("undo", self._history_list[self._history_index])
+        self.trigger_event("undo", self._history_list[self._history_index])
 
     def redo(self):
         if not self.can_redo:
             return
 
-        self.call_event_handler("redo", self._history_list[self._history_index])
+        self.trigger_event("redo", self._history_list[self._history_index])
         self._history_index += 1
 
     def add_history(self, data):
@@ -66,10 +66,10 @@ class EditorBase(Widget):
         self._history_index = 0
 
     def add_number_picker_help(self, number_picker):
-        number_picker.dec_button.add_event_handler(
+        number_picker.dec_button.add_event_listener(
             "mouse_hover", self.__on_number_picker_dec_mouse_hover
         )
-        number_picker.inc_button.add_event_handler(
+        number_picker.inc_button.add_event_listener(
             "mouse_hover", self.__on_number_picker_inc_mouse_hover
         )
 
@@ -103,7 +103,7 @@ class EditorBase(Widget):
             self._tool_button.value = TOOL_BUCKET
 
     def add_tool_button_help(self, tool_button):
-        tool_button.add_event_handler("mouse_hover", self.__on_tool_button_mouse_hover)
+        tool_button.add_event_listener("mouse_hover", self.__on_tool_button_mouse_hover)
 
     def __on_tool_button_mouse_hover(self, x, y):
         value = self._tool_button.check_value(x, y)
