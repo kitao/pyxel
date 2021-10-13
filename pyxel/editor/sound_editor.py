@@ -39,22 +39,22 @@ class SoundEditor(EditorBase):
         self._left_octave_bar = OctaveBar(self, 12, 25)
         self._right_octave_bar = OctaveBar(self, 224, 25)
 
-        self.add_event_handler("undo", self.__on_undo)
-        self.add_event_handler("redo", self.__on_redo)
-        self.add_event_handler("hide", self.__on_hide)
-        self.add_event_handler("update", self.__on_update)
-        self.add_event_handler("draw", self.__on_draw)
-        self._sound_picker.add_event_handler("change", self.__on_sound_picker_change)
-        self._speed_picker.add_event_handler("change", self.__on_speed_picker_change)
-        self._play_button.add_event_handler("press", self.__on_play_button_press)
-        self._stop_button.add_event_handler("press", self.__on_stop_button_press)
-        self._play_button.add_event_handler(
+        self.add_event_listener("undo", self.__on_undo)
+        self.add_event_listener("redo", self.__on_redo)
+        self.add_event_listener("hide", self.__on_hide)
+        self.add_event_listener("update", self.__on_update)
+        self.add_event_listener("draw", self.__on_draw)
+        self._sound_picker.add_event_listener("change", self.__on_sound_picker_change)
+        self._speed_picker.add_event_listener("change", self.__on_speed_picker_change)
+        self._play_button.add_event_listener("press", self.__on_play_button_press)
+        self._stop_button.add_event_listener("press", self.__on_stop_button_press)
+        self._play_button.add_event_listener(
             "mouse_hover", self.__on_play_button_mouse_hover
         )
-        self._stop_button.add_event_handler(
+        self._stop_button.add_event_listener(
             "mouse_hover", self.__on_stop_button_mouse_hover
         )
-        self._loop_button.add_event_handler(
+        self._loop_button.add_event_listener(
             "mouse_hover", self.__on_loop_button_mouse_hover
         )
         self.add_number_picker_help(self._sound_picker)

@@ -15,10 +15,10 @@ class TilemapSelector(Widget):
     def __init__(self, parent):
         super().__init__(parent, 157, 16, 66, 65)
 
-        self.add_event_handler("mouse_down", self.__on_mouse_down)
-        self.add_event_handler("mouse_drag", self.__on_mouse_drag)
-        self.add_event_handler("mouse_hover", self.__on_mouse_hover)
-        self.add_event_handler("draw", self.__on_draw)
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
+        self.add_event_listener("mouse_drag", self.__on_mouse_drag)
+        self.add_event_listener("mouse_hover", self.__on_mouse_hover)
+        self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_view(self, x, y):
         x = min(max((x - self.x - 1) // 2, 0), 30) * 8

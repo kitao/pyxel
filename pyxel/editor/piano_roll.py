@@ -20,13 +20,13 @@ class PianoRoll(Widget):
         self._press_x = 0
         self._press_y = 0
 
-        self.add_event_handler("mouse_down", self.__on_mouse_down)
-        self.add_event_handler("mouse_up", self.__on_mouse_up)
-        self.add_event_handler("mouse_drag", self.__on_mouse_drag)
-        self.add_event_handler("mouse_click", self.__on_mouse_click)
-        self.add_event_handler("mouse_hover", self.__on_mouse_hover)
-        self.add_event_handler("update", self.__on_update)
-        self.add_event_handler("draw", self.__on_draw)
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
+        self.add_event_listener("mouse_up", self.__on_mouse_up)
+        self.add_event_listener("mouse_drag", self.__on_mouse_drag)
+        self.add_event_listener("mouse_click", self.__on_mouse_click)
+        self.add_event_listener("mouse_hover", self.__on_mouse_hover)
+        self.add_event_listener("update", self.__on_update)
+        self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_view(self, x, y):
         x = min(max((x - self.x - 1) // 4, 0), MAX_SOUND_LENGTH - 1)
