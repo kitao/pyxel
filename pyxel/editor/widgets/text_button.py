@@ -12,8 +12,8 @@ from .settings import (
 class TextButton(Button):
     """
     Events:
-        __on_press()
-        __on_release()
+        press
+        release
     """
 
     def __init__(self, parent, x, y, text, **kwargs):
@@ -28,7 +28,7 @@ class TextButton(Button):
 
         self._text = text
 
-        self.add_event_handler("draw", self.__on_draw)
+        self.add_event_listener("draw", self.__on_draw)
 
     def __on_draw(self):
         x = self.x

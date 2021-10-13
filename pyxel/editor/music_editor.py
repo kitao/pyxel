@@ -50,20 +50,20 @@ class MusicEditor(EditorBase):
         self._music_field = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
         self._sound_selector = SoundSelector(self)
 
-        self.add_event_handler("undo", self.__on_undo)
-        self.add_event_handler("redo", self.__on_redo)
-        self.add_event_handler("hide", self.__on_hide)
-        self.add_event_handler("update", self.__on_update)
-        self.add_event_handler("draw", self.__on_draw)
-        self._play_button.add_event_handler("press", self.__on_play_button_press)
-        self._stop_button.add_event_handler("press", self.__on_stop_button_press)
-        self._play_button.add_event_handler(
+        self.add_event_listener("undo", self.__on_undo)
+        self.add_event_listener("redo", self.__on_redo)
+        self.add_event_listener("hide", self.__on_hide)
+        self.add_event_listener("update", self.__on_update)
+        self.add_event_listener("draw", self.__on_draw)
+        self._play_button.add_event_listener("press", self.__on_play_button_press)
+        self._stop_button.add_event_listener("press", self.__on_stop_button_press)
+        self._play_button.add_event_listener(
             "mouse_hover", self.__on_play_button_mouse_hover
         )
-        self._stop_button.add_event_handler(
+        self._stop_button.add_event_listener(
             "mouse_hover", self.__on_stop_button_mouse_hover
         )
-        self._loop_button.add_event_handler(
+        self._loop_button.add_event_listener(
             "mouse_hover", self.__on_loop_button_mouse_hover
         )
         self.add_number_picker_help(self._music_picker)

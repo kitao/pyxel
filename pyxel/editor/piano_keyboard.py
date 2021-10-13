@@ -41,12 +41,12 @@ class PianoKeyboard(Widget):
         self.note = None
         self._tone = 0
 
-        self.add_event_handler("mouse_down", self.__on_mouse_down)
-        self.add_event_handler("mouse_up", self.__on_mouse_up)
-        self.add_event_handler("mouse_drag", self.__on_mouse_drag)
-        self.add_event_handler("mouse_hover", self.__on_mouse_hover)
-        self.add_event_handler("update", self.__on_update)
-        self.add_event_handler("draw", self.__on_draw)
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
+        self.add_event_listener("mouse_up", self.__on_mouse_up)
+        self.add_event_listener("mouse_drag", self.__on_mouse_drag)
+        self.add_event_listener("mouse_hover", self.__on_mouse_hover)
+        self.add_event_listener("update", self.__on_update)
+        self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_note(self, x, y):
         x -= self.x
