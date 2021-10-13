@@ -42,12 +42,12 @@ class ImageEditor(EditorBase):
         self._image_picker = NumberPicker(self, 192, 161, 0, pyxel.IMAGE_COUNT - 1, 0)
         self._image_selector = ImageSelector(self, is_image_editor=True)
 
-        self.add_event_handler("undo", self.__on_undo)
-        self.add_event_handler("redo", self.__on_redo)
-        self.add_event_handler("drop", self.__on_drop)
-        self.add_event_handler("update", self.__on_update)
-        self.add_event_handler("draw", self.__on_draw)
-        self._color_picker.add_event_handler(
+        self.add_event_listener("undo", self.__on_undo)
+        self.add_event_listener("redo", self.__on_redo)
+        self.add_event_listener("drop", self.__on_drop)
+        self.add_event_listener("update", self.__on_update)
+        self.add_event_listener("draw", self.__on_draw)
+        self._color_picker.add_event_listener(
             "mouse_hover", self.__on_color_picker_mouse_hover
         )
         self.add_tool_button_help(self._tool_button)
