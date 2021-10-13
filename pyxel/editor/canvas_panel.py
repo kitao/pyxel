@@ -42,15 +42,15 @@ class CanvasPanel(Widget):
         )
         self._v_scroll_bar = ScrollBar(self, 140, 16, 130, ScrollBar.VERTICAL, 32, 2, 0)
 
-        self.add_event_handler("mouse_down", self.__on_mouse_down)
-        self.add_event_handler("mouse_up", self.__on_mouse_up)
-        self.add_event_handler("mouse_click", self.__on_mouse_click)
-        self.add_event_handler("mouse_drag", self.__on_mouse_drag)
-        self.add_event_handler("mouse_hover", self.__on_mouse_hover)
-        self.add_event_handler("update", self.__on_update)
-        self.add_event_handler("draw", self.__on_draw)
-        self._h_scroll_bar.add_event_handler("change", self.__on_h_scroll_bar_change)
-        self._v_scroll_bar.add_event_handler("change", self.__on_v_scroll_bar_change)
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
+        self.add_event_listener("mouse_up", self.__on_mouse_up)
+        self.add_event_listener("mouse_click", self.__on_mouse_click)
+        self.add_event_listener("mouse_drag", self.__on_mouse_drag)
+        self.add_event_listener("mouse_hover", self.__on_mouse_hover)
+        self.add_event_listener("update", self.__on_update)
+        self.add_event_listener("draw", self.__on_draw)
+        self._h_scroll_bar.add_event_listener("change", self.__on_h_scroll_bar_change)
+        self._v_scroll_bar.add_event_listener("change", self.__on_v_scroll_bar_change)
 
     def _add_pre_history(self, canvas):
         self._history_data = data = {}

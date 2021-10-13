@@ -78,32 +78,32 @@ class App(Widget):
             0,
         )
 
-        self._editor_button.add_event_handler(
+        self._editor_button.add_event_listener(
             "change", lambda value: self._switch_editor(value)
         )
-        self.add_event_handler("update", self.__on_update)
-        self.add_event_handler("draw", self.__on_draw)
-        self._undo_button.add_event_handler("press", self.__on_undo_button_press)
-        self._undo_button.add_event_handler("repeat", self.__on_undo_button_press)
-        self._redo_button.add_event_handler("press", self.__on_redo_button_press)
-        self._redo_button.add_event_handler("repeat", self.__on_redo_button_press)
-        self._save_button.add_event_handler("press", self.__on_save_button_press)
-        self._editor_button.add_event_handler(
+        self.add_event_listener("update", self.__on_update)
+        self.add_event_listener("draw", self.__on_draw)
+        self._undo_button.add_event_listener("press", self.__on_undo_button_press)
+        self._undo_button.add_event_listener("repeat", self.__on_undo_button_press)
+        self._redo_button.add_event_listener("press", self.__on_redo_button_press)
+        self._redo_button.add_event_listener("repeat", self.__on_redo_button_press)
+        self._save_button.add_event_listener("press", self.__on_save_button_press)
+        self._editor_button.add_event_listener(
             "mouse_hover", self.__on_editor_button_mouse_hover
         )
-        self._undo_button.add_event_handler(
+        self._undo_button.add_event_listener(
             "mouse_hover", self.__on_undo_button_mouse_hover
         )
-        self._redo_button.add_event_handler(
+        self._redo_button.add_event_listener(
             "mouse_hover", self.__on_redo_button_mouse_hover
         )
-        self._save_button.add_event_handler(
+        self._save_button.add_event_listener(
             "mouse_hover", self.__on_save_button_mouse_hover
         )
 
         self._switch_editor(0)
 
-        pyxel.run(self.update_widgets, self.draw_widgets)
+        pyxel.run(self.update_all, self.draw_all)
 
     @staticmethod
     def _set_title(filename):
@@ -155,7 +155,7 @@ class App(Widget):
                     pyxel.load(drop_file)
                     App._set_title(drop_file)
             else:
-                self._editor.call_event_handler("drop", drop_file)
+                self._editor.trigger_event("drop", drop_file)
 
         if pyxel.btn(pyxel.KEY_ALT):
             if pyxel.btnp(pyxel.KEY_LEFT):
