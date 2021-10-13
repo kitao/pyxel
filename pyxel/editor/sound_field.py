@@ -19,10 +19,10 @@ class SoundField(Widget):
     def __init__(self, parent):
         super().__init__(parent, 30, 149, 193, 23)
 
-        self.add_event_handler("mouse_down", self.__on_mouse_down)
-        self.add_event_handler("mouse_hover", self.__on_mouse_hover)
-        self.add_event_handler("update", self.__on_update)
-        self.add_event_handler("draw", self.__on_draw)
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
+        self.add_event_listener("mouse_hover", self.__on_mouse_hover)
+        self.add_event_listener("update", self.__on_update)
+        self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_view(self, x, y):
         x = min(max((x - self.x - 1) // 4, 0), MAX_SOUND_LENGTH - 1)

@@ -8,10 +8,10 @@ class OctaveBar(Widget):
     def __init__(self, parent, x, y):
         super().__init__(parent, x, y, 4, 123)
 
-        self.add_event_handler("mouse_down", self.__on_mouse_down)
-        self.add_event_handler("mouse_drag", self.__on_mouse_drag)
-        self.add_event_handler("mouse_hover", self.__on_mouse_hover)
-        self.add_event_handler("draw", self.__on_draw)
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
+        self.add_event_listener("mouse_drag", self.__on_mouse_drag)
+        self.add_event_listener("mouse_hover", self.__on_mouse_hover)
+        self.add_event_listener("draw", self.__on_draw)
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
