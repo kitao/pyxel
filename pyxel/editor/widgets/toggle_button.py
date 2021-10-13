@@ -1,28 +1,30 @@
 import pyxel
 
-from .widget import Widget
+from .widget import Widget, WidgetVariable
 
 
 class ToggleButton(Widget):
     """
     Events:
-        __on_change(value)
+        checked
+        unchecked
     """
 
-    def __init__(self, parent, x, y, width, height, **kwargs):
-        super().__init__(parent, x, y, width, height, **kwargs)
+    def __init__(self, parent, left, top, width, height, **kwargs):
+        super().__init__(parent, left, top, width, height, **kwargs)
 
-        self._value = False
+        def on_checked_change(value):
+            if value:
+                self.trigger_event("checked")
+            else:
+                self.trigger_event("unchecked")
 
-        self.add_event_handler("mouse_down", self.__on_mouse_down)
+        self.is_checked_var = WidgetVariable(False, on_checked_change)
 
-    @property
-    def value(self):
-        return self._value
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
 
     def press(self):
-        self._value = not self._value
-        self.call_event_handler("change", self._value)
+        self.is_checked_var.v = not self.is_checked_var.v
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:

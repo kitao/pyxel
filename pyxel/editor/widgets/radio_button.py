@@ -21,9 +21,9 @@ class RadioButton(Widget):
         self._btn_count = btn_count
         self._value = None
 
-        self.add_event_handler("mouse_down", self.__on_mouse_down)
-        self.add_event_handler("mouse_drag", self.__on_mouse_drag)
-        self.add_event_handler("draw", self.__on_draw)
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
+        self.add_event_listener("mouse_drag", self.__on_mouse_drag)
+        self.add_event_listener("draw", self.__on_draw)
 
         self.value = value
 
@@ -35,7 +35,7 @@ class RadioButton(Widget):
     def value(self, value):
         if self._value != value:
             self._value = value
-            self.call_event_handler("change", value)
+            self.trigger_event("change", value)
 
     def check_value(self, x, y):
         x -= self.x
