@@ -19,9 +19,9 @@ class MusicField(Widget):
 
         self._ch = ch
 
-        self.add_event_handler("mouse_down", self.__on_mouse_down)
-        self.add_event_handler("mouse_hover", self.__on_mouse_hover)
-        self.add_event_handler("draw", self.__on_draw)
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
+        self.add_event_listener("mouse_hover", self.__on_mouse_hover)
+        self.add_event_listener("draw", self.__on_draw)
 
     @property
     def data(self):

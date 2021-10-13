@@ -24,13 +24,13 @@ class NumberPicker(Widget):
         self.dec_button = TextButton(self, x, y, "-")
         self.inc_button = TextButton(self, x + width - 7, y, "+")
 
-        self.add_event_handler("enabled", self.__on_enabled)
-        self.add_event_handler("disabled", self.__on_disabled)
-        self.add_event_handler("draw", self.__on_draw)
-        self.dec_button.add_event_handler("press", self.__on_dec_button_press)
-        self.dec_button.add_event_handler("repeat", self.__on_dec_button_press)
-        self.inc_button.add_event_handler("press", self.__on_inc_button_press)
-        self.inc_button.add_event_handler("repeat", self.__on_inc_button_press)
+        self.add_event_listener("enabled", self.__on_enabled)
+        self.add_event_listener("disabled", self.__on_disabled)
+        self.add_event_listener("draw", self.__on_draw)
+        self.dec_button.add_event_listener("press", self.__on_dec_button_press)
+        self.dec_button.add_event_listener("repeat", self.__on_dec_button_press)
+        self.inc_button.add_event_listener("press", self.__on_inc_button_press)
+        self.inc_button.add_event_listener("repeat", self.__on_inc_button_press)
 
         self.value = value
 
@@ -42,7 +42,7 @@ class NumberPicker(Widget):
     def value(self, value):
         if self._value != value:
             self._value = value
-            self.call_event_handler("change", value)
+            self.trigger_event("change", value)
 
             self.dec_button.is_enabled = self._value != self._min_value
             self.inc_button.is_enabled = self._value != self._max_value

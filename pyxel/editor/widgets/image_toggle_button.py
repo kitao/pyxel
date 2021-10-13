@@ -17,7 +17,7 @@ class ImageToggleButton(ToggleButton):
         self._sx = sx
         self._sy = sy
 
-        self.add_event_handler("draw", self.__on_draw)
+        self.add_event_listener("draw", self.__on_draw)
 
     def __on_draw(self):
         col = (

@@ -48,14 +48,14 @@ class TilemapEditor(EditorBase):
             pyxel.tilemap(self._tilemap_picker.value).refimg,
         )
 
-        self.add_event_handler("undo", self.__on_undo)
-        self.add_event_handler("redo", self.__on_redo)
-        self.add_event_handler("update", self.__on_update)
-        self.add_event_handler("draw", self.__on_draw)
-        self._tilemap_picker.add_event_handler(
+        self.add_event_listener("undo", self.__on_undo)
+        self.add_event_listener("redo", self.__on_redo)
+        self.add_event_listener("update", self.__on_update)
+        self.add_event_listener("draw", self.__on_draw)
+        self._tilemap_picker.add_event_listener(
             "change", self.__on_tilemap_picker_change
         )
-        self._image_picker.add_event_handler("change", self.__on_image_picker_change)
+        self._image_picker.add_event_listener("change", self.__on_image_picker_change)
         self.add_number_picker_help(self._tilemap_picker)
         self.add_number_picker_help(self._image_picker)
         self.add_tool_button_help(self._tool_button)
