@@ -1,61 +1,63 @@
 import pyxel
 
-from .settings import BUTTON_LIGHTING_TIME
+from .settings import BUTTON_FLASHING_TIME
 from .widget import Widget
 
 
 class Button(Widget):
     """
     Events:
-        __on_press()
-        __on_repeat()
-        __on_release()
+        press
+        repeat
+        release
     """
 
     def __init__(self, parent, x, y, width, height, **kwargs):
         super().__init__(parent, x, y, width, height, **kwargs)
 
         self._is_pressed = False
-        self._is_lighting = False
-        self._lighting_time = 0
+        self._flashing_time = 0
 
-        self.add_event_handler("mouse_down", self.__on_mouse_down)
-        self.add_event_handler("mouse_repeat", self.__on_mouse_repeat)
-        self.add_event_handler("mouse_up", self.__on_mouse_up)
-        self.add_event_handler("update", self.__on_update)
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
+        self.add_event_listener("mouse_repeat", self.__on_mouse_repeat)
+        self.add_event_listener("mouse_up", self.__on_mouse_up)
+        self.add_event_listener("update", self.__on_update)
 
     @property
     def is_pressed(self):
-        return self._is_pressed or self._is_lighting
+        return self._is_pressed
 
     def press(self):
-        self._is_lighting = True
-        self._lighting_time = BUTTON_LIGHTING_TIME
-        self.call_event_handler("press")
+        self._is_pressed = True
+        self._flashing_time = BUTTON_FLASHING_TIME
+        self.trigger_event("press")
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
         self._is_pressed = True
-        self.call_event_handler("press")
+        self._flashing_time = 0
+        self.trigger_event("press")
 
     def __on_mouse_repeat(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
         self._is_pressed = True
-        self.call_event_handler("repeat")
+        self._flashing_time = 0
+        self.trigger_event("repeat")
 
     def __on_mouse_up(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
         self._is_pressed = False
-        self.call_event_handler("release")
+        self._flashing_time = 0
+        self.trigger_event("release")
 
     def __on_update(self):
-        if self._lighting_time > 0:
-            self._lighting_time -= 1
+        if self._flashing_time > 0:
+            self._flashing_time -= 1
         else:
-            self._is_lighting = False
+            self._is_pressed = False
