@@ -1,35 +1,30 @@
 import pyxel
 
-from .widget import Widget
+from .widget import Widget, WidgetVariable
 
 
 class ColorPicker(Widget):
     """
+    Variables:
+        is_visible_var
+        is_enabled_var
+        value_var
+
     Events:
-        __on_change(value)
+        change (value)
     """
 
     def __init__(self, parent, x, y, value, *, with_shadow=False, **kwargs):
         super().__init__(parent, x, y, 65, 17, **kwargs)
 
         self._with_shadow = with_shadow
-        self._value = None
+        self.value_var = WidgetVariable(
+            0, lambda value: self.trigger_event("change", value)
+        )
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("draw", self.__on_draw)
-
-        self.value = value
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        if self._value != value:
-            self._value = value
-            self.trigger_event("change", value)
 
     def check_value(self, x, y):
         x -= self.x + 1
@@ -55,7 +50,7 @@ class ColorPicker(Widget):
         value = self.check_value(x, y)
 
         if value is not None:
-            self.value = value
+            self.value_var.v = value
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         self.__on_mouse_down(key, x, y)
@@ -72,7 +67,7 @@ class ColorPicker(Widget):
                 col = i * 8 + j
                 pyxel.rect(x, y, 7, 7, col)
 
-        x = self.x + (self._value % 8) * 8 + 3
-        y = self.y + (self._value // 8) * 8 + 2
-        col = 7 if self._value < 6 else 0
+        x = self.x + (self.value_var.v % 8) * 8 + 3
+        y = self.y + (self.value_var.v // 8) * 8 + 2
+        col = 7 if self.value_var.v < 6 else 0
         pyxel.text(x, y, "+", col)

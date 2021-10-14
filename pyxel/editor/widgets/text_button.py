@@ -11,6 +11,10 @@ from .settings import (
 
 class TextButton(Button):
     """
+    Variables:
+        is_visible_var
+        is_enabled_var
+
     Events:
         press
         release
@@ -36,9 +40,9 @@ class TextButton(Button):
         w = self.width
         h = self.height
         col = (
-            BUTTON_PRESSED_COLOR
-            if self.is_pressed
-            else (BUTTON_ENABLED_COLOR if self.is_enabled else BUTTON_DISABLED_COLOR)
+            BUTTON_DISABLED_COLOR
+            if self.is_enabled_var.v
+            else (BUTTON_PRESSED_COLOR if self.is_pressing else BUTTON_ENABLED_COLOR)
         )
 
         pyxel.line(x + 1, y, x + w - 2, y, col)

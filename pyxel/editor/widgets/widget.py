@@ -1,8 +1,13 @@
 import pyxel
 
-from .settings import (WIDGET_CLICK_DIST, WIDGET_CLICK_TIME, WIDGET_HOLD_TIME,
-                       WIDGET_PANEL_COLOR, WIDGET_REPEAT_TIME,
-                       WIDGET_SHADOW_COLOR)
+from .settings import (
+    WIDGET_CLICK_DIST,
+    WIDGET_CLICK_TIME,
+    WIDGET_HOLD_TIME,
+    WIDGET_PANEL_COLOR,
+    WIDGET_REPEAT_TIME,
+    WIDGET_SHADOW_COLOR,
+)
 
 
 class WidgetVariable:
@@ -33,6 +38,10 @@ class MouseCaptureInfo:
 
 class Widget:
     """
+    Variables:
+        is_visible_var
+        is_enabled_var
+
     Events:
         show
         hide
