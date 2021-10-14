@@ -6,17 +6,21 @@ from .settings import BUTTON_DISABLED_COLOR, BUTTON_ENABLED_COLOR, BUTTON_PRESSE
 
 class ImageButton(Button):
     """
+    Variables:
+        is_visible_var
+        is_enabled_var
+
     Events:
-        __on_press()
-        __on_release()
+        press
+        release
     """
 
-    def __init__(self, parent, x, y, img, sx, sy, **kwargs):
+    def __init__(self, parent, x, y, img, u, v, **kwargs):
         super().__init__(parent, x, y, 7, 7, **kwargs)
 
         self._img = img
-        self._sx = sx
-        self._sy = sy
+        self._u = u
+        self._v = v
 
         self.add_event_listener("draw", self.__on_draw)
 
@@ -34,8 +38,8 @@ class ImageButton(Button):
             self.x,
             self.y,
             self._img,
-            self._sx,
-            self._sy,
+            self._u,
+            self._v,
             self.width,
             self.height,
             0,
