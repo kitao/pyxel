@@ -7,6 +7,11 @@ from .widget import Widget, WidgetVariable
 
 class ScrollBar(Widget):
     """
+    Variables:
+        is_visible_var
+        is_enabled_var
+        value_var
+
     Events:
         change (value)
     """
