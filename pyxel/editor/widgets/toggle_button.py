@@ -5,6 +5,11 @@ from .widget import Widget, WidgetVariable
 
 class ToggleButton(Widget):
     """
+    Variables:
+        is_visible_var
+        is_enabled_var
+        is_checked_var
+
     Events:
         checked
         unchecked

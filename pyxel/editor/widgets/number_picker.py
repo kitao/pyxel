@@ -2,13 +2,18 @@ import pyxel
 
 from .settings import INPUT_FIELD_COLOR, INPUT_TEXT_COLOR
 from .text_button import TextButton
-from .widget import Widget
+from .widget import Widget, WidgetVariable
 
 
 class NumberPicker(Widget):
     """
+    Variables:
+        is_visible_var
+        is_enabled_var
+        value_var
+
     Events:
-        __on_change(value)
+        change (value)
     """
 
     def __init__(self, parent, x, y, min_value, max_value, value, **kwargs):
@@ -19,56 +24,46 @@ class NumberPicker(Widget):
 
         self._min_value = min_value
         self._max_value = max_value
-        self._value = None
+        self._dec_button = TextButton(self, x, y, "-")
+        self._inc_button = TextButton(self, x + width - 7, y, "+")
 
-        self.dec_button = TextButton(self, x, y, "-")
-        self.inc_button = TextButton(self, x + width - 7, y, "+")
+        def on_value_change(value):
+            self.trigger_event("change", value)
+
+            self._dec_button.is_enabled = self.value_var.v != self._min_value
+            self._inc_button.is_enabled = self.value_var.v != self._max_value
+
+        self.value_var = WidgetVariable(value, on_value_change)
 
         self.add_event_listener("enabled", self.__on_enabled)
         self.add_event_listener("disabled", self.__on_disabled)
         self.add_event_listener("draw", self.__on_draw)
-        self.dec_button.add_event_listener("press", self.__on_dec_button_press)
-        self.dec_button.add_event_listener("repeat", self.__on_dec_button_press)
-        self.inc_button.add_event_listener("press", self.__on_inc_button_press)
-        self.inc_button.add_event_listener("repeat", self.__on_inc_button_press)
-
-        self.value = value
-
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        if self._value != value:
-            self._value = value
-            self.trigger_event("change", value)
-
-            self.dec_button.is_enabled = self._value != self._min_value
-            self.inc_button.is_enabled = self._value != self._max_value
+        self._dec_button.add_event_listener("press", self.__on_dec_button_press)
+        self._dec_button.add_event_listener("repeat", self.__on_dec_button_press)
+        self._inc_button.add_event_listener("press", self.__on_inc_button_press)
+        self._inc_button.add_event_listener("repeat", self.__on_inc_button_press)
 
     def __on_enabled(self):
-        self.dec_button.is_enabled = self._value != self._min_value
-        self.inc_button.is_enabled = self._value != self._max_value
+        self._dec_button.is_enabled_var.v = self.value_var.v != self._min_value
+        self._inc_button.is_enabled_var.v = self.value_var.v != self._max_value
 
     def __on_disabled(self):
-        self.dec_button.is_enabled = False
-        self.inc_button.is_enabled = False
+        self._dec_button.is_enabled_var.v = False
+        self._inc_button.is_enabled_var.v = False
 
     def __on_draw(self):
         pyxel.rect(self.x + 9, self.y, self.width - 18, self.height, INPUT_FIELD_COLOR)
-
         pyxel.text(
             self.x + 11,
             self.y + 1,
-            ("{:>" + str(self._number_len) + "}").format(self._value),
+            ("{:>" + str(self._number_len) + "}").format(self.value_var.v),
             INPUT_TEXT_COLOR,
         )
 
     def __on_dec_button_press(self):
         offset = 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
-        self.value = max(self._value - offset, self._min_value)
+        self.value_var.v = max(self.value_var.v - offset, self._min_value)
 
     def __on_inc_button_press(self):
         offset = 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
-        self.value = min(self._value + offset, self._max_value)
+        self.value_var.v = min(self.value_var.v + offset, self._max_value)
