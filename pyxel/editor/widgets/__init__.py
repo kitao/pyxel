@@ -7,4 +7,4 @@ from .radio_button import RadioButton  # noqa: F401
 from .scroll_bar import ScrollBar  # noqa: F401
 from .text_button import TextButton  # noqa: F401
 from .toggle_button import ToggleButton  # noqa: F401
-from .widget import Widget  # noqa: F401
+from .widget import Widget, WidgetVariable  # noqa: F401
