@@ -14,6 +14,18 @@ class ScrollBar(Widget):
 
     Events:
         change (value)
+        show
+        hide
+        enabled
+        disabled
+        mouse_down (key, x, y)
+        mouse_up (key, x, y)
+        mouse_drag (key, x, y, dx, dy)
+        mouse_repeat (key, x, y)
+        mouse_click (key, x, y)
+        mouse_hover (x, y)
+        update
+        draw
     """
 
     HORIZONTAL = 0
@@ -58,9 +70,8 @@ class ScrollBar(Widget):
             self.dec_button = Button(self, x, y, 7, 6)
             self.inc_button = Button(self, x, y + height - 6, 6, 7)
 
-        self.value_var = WidgetVariable(
-            value, lambda value: self.trigger_event("change", value)
-        )
+        self.value_var = WidgetVariable(value)
+        self.value_var.on_change = lambda value: self.trigger_event("change", value)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
