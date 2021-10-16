@@ -1,6 +1,6 @@
 import pyxel
 
-from .settings import BUTTON_DISABLED_COLOR, BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
+from .settings import BUTTON_ENABLED_COLOR
 from .toggle_button import ToggleButton
 
 
@@ -14,6 +14,18 @@ class ImageToggleButton(ToggleButton):
     Events:
         checked
         unchecked
+        show
+        hide
+        enabled
+        disabled
+        mouse_down (key, x, y)
+        mouse_up (key, x, y)
+        mouse_drag (key, x, y, dx, dy)
+        mouse_repeat (key, x, y)
+        mouse_click (key, x, y)
+        mouse_hover (x, y)
+        update
+        draw
     """
 
     def __init__(self, parent, x, y, img, u, v, **kwargs):
@@ -26,13 +38,7 @@ class ImageToggleButton(ToggleButton):
         self.add_event_listener("draw", self.__on_draw)
 
     def __on_draw(self):
-        col = (
-            (BUTTON_PRESSED_COLOR if self._value else BUTTON_ENABLED_COLOR)
-            if self.is_enabled
-            else BUTTON_DISABLED_COLOR
-        )
-
-        pyxel.pal(BUTTON_ENABLED_COLOR, col)
+        pyxel.pal(BUTTON_ENABLED_COLOR, self.button_color)
         pyxel.blt(
             self.x, self.y, self._img, self._u, self._v, self.width, self.height, 0
         )
