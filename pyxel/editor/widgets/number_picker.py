@@ -14,6 +14,18 @@ class NumberPicker(Widget):
 
     Events:
         change (value)
+        show
+        hide
+        enabled
+        disabled
+        mouse_down (key, x, y)
+        mouse_up (key, x, y)
+        mouse_drag (key, x, y, dx, dy)
+        mouse_repeat (key, x, y)
+        mouse_click (key, x, y)
+        mouse_hover (x, y)
+        update
+        draw
     """
 
     def __init__(self, parent, x, y, min_value, max_value, value, **kwargs):
@@ -27,13 +39,17 @@ class NumberPicker(Widget):
         self._dec_button = TextButton(self, x, y, "-")
         self._inc_button = TextButton(self, x + width - 7, y, "+")
 
+        def on_value_set(value):
+            return min(max(value, min_value), max_value)
+
         def on_value_change(value):
+            self._dec_button.is_enabled_var.v = self.value_var.v > min_value
+            self._inc_button.is_enabled_var.v = self.value_var.v < max_value
             self.trigger_event("change", value)
 
-            self._dec_button.is_enabled = self.value_var.v != self._min_value
-            self._inc_button.is_enabled = self.value_var.v != self._max_value
-
-        self.value_var = WidgetVariable(value, on_value_change)
+        self.value_var = WidgetVariable(value)
+        self.value_var.on_set = on_value_set
+        self.value_var.on_change = on_value_change
 
         self.add_event_listener("enabled", self.__on_enabled)
         self.add_event_listener("disabled", self.__on_disabled)
