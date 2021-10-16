@@ -26,8 +26,8 @@ class WidgetVariable:
 
     @v.setter
     def v(self, value):
-        if self.on_get:
-            value = self.on_get(value)
+        if self.on_set:
+            value = self.on_set(value)
 
         if self._value != value:
             self._value = value
@@ -79,8 +79,6 @@ class Widget:
         self._y = y
         self._width = width
         self._height = height
-        self._is_visible = is_visible
-        self._is_enabled = is_enabled
         self._event_listeners = {}
 
         def on_visible_get(value):
@@ -182,14 +180,14 @@ class Widget:
         capture_widget = Widget._mouse_capture_info.widget
 
         if capture_widget:
-            capture_widget._process_capture()
+            self._process_capture()
         else:
             self._process_input()
 
         self._update()
 
     def _process_input(self):
-        if not self.is_really_visible or not self.is_really_enabled:
+        if not self.is_visible_var.v or not self.is_enabled_var.v:
             return False
 
         for widget in reversed(self._children):
