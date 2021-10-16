@@ -1,6 +1,11 @@
 import pyxel
 
-from .settings import BUTTON_PRESSING_TIME
+from .settings import (
+    BUTTON_DISABLED_COLOR,
+    BUTTON_ENABLED_COLOR,
+    BUTTON_PRESSED_COLOR,
+    BUTTON_PRESSING_TIME,
+)
 from .widget import Widget
 
 
@@ -38,8 +43,13 @@ class Button(Widget):
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("update", self.__on_update)
 
-    def is_pressed(self):
-        return self._pressing_time > 0
+    @property
+    def button_color(self):
+        return (
+            (BUTTON_PRESSED_COLOR if self._pressing_time > 0 else BUTTON_ENABLED_COLOR)
+            if self.is_enabled_var.v
+            else BUTTON_DISABLED_COLOR
+        )
 
     def press(self):
         self._pressing_time = BUTTON_PRESSING_TIME + 1
