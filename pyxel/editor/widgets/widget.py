@@ -11,21 +11,29 @@ from .settings import (
 
 
 class WidgetVariable:
-    def __init__(self, value, on_change=None):
+    def __init__(self, value):
         self._value = value
-        self._on_change = on_change
+        self.on_get = None
+        self.on_set = None
+        self.on_change = None
 
     @property
     def v(self):
-        return self._value
+        if self.on_get:
+            return self.on_get(self._value)
+        else:
+            return self._value
 
     @v.setter
     def v(self, value):
+        if self.on_get:
+            value = self.on_get(value)
+
         if self._value != value:
             self._value = value
 
-            if self._on_change:
-                self._on_change(value)
+            if self.on_change:
+                self.on_change(value)
 
 
 class MouseCaptureInfo:
@@ -71,23 +79,35 @@ class Widget:
         self._y = y
         self._width = width
         self._height = height
+        self._is_visible = is_visible
+        self._is_enabled = is_enabled
         self._event_listeners = {}
 
-        def on_visible_change(value):
-            if value:
-                self.trigger_event("show")
+        def on_visible_get(value):
+            if self._parent:
+                return self._parent.is_visible_var.v and value
             else:
-                self.trigger_event("hide")
+                return value
 
-        self.is_visible_var = WidgetVariable(is_visible, on_visible_change)
+        def on_visible_change(value):
+            self._trigger_visible_event(value)
+
+        self.is_visible_var = WidgetVariable(is_visible)
+        self.is_visible_var.on_get = on_visible_get
+        self.is_visible_var.on_change = on_visible_change
+
+        def on_enabled_get(value):
+            if self._parent:
+                return self._parent.is_enabled_var.v and value
+            else:
+                return value
 
         def on_enabled_change(value):
-            if value:
-                self.trigger_event("enabled")
-            else:
-                self.trigger_event("disabled")
+            self._trigger_enabled_event(value)
 
-        self.is_enabled_var = WidgetVariable(is_enabled, on_enabled_change)
+        self.is_enabled_var = WidgetVariable(is_enabled)
+        self.is_enabled_var.on_get = on_enabled_get
+        self.is_enabled_var.on_change = on_enabled_change
 
     @property
     def x(self):
@@ -144,6 +164,20 @@ class Widget:
         for listener in self._event_listeners[event]:
             listener(*args)
 
+    def _trigger_visible_event(self, is_visible):
+        self.trigger_event("show" if is_visible else "hide")
+
+        for child in self._children:
+            if child.is_visible_var.v == is_visible:
+                child._trigger_visible_event(is_visible)
+
+    def _trigger_enabled_event(self, is_enabled):
+        self.trigger_event("enabled" if is_enabled else "disabled")
+
+        for child in self._children:
+            if child.is_enabled_var.v == is_enabled:
+                child._trigger_enabled_event(is_enabled)
+
     def update_all(self):
         capture_widget = Widget._mouse_capture_info.widget
 
@@ -155,15 +189,12 @@ class Widget:
         self._update()
 
     def _process_input(self):
-        if not self.is_visible_var.v:
+        if not self.is_really_visible or not self.is_really_enabled:
             return False
 
-        if self.is_enabled_var.v:
-            for widget in reversed(self._children):
-                if widget._process_input():
-                    return True
-        else:
-            return False
+        for widget in reversed(self._children):
+            if widget._process_input():
+                return True
 
         x = pyxel.mouse_x
         y = pyxel.mouse_y
