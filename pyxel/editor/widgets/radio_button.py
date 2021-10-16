@@ -13,6 +13,18 @@ class RadioButton(Widget):
 
     Events:
         change (value)
+        show
+        hide
+        enabled
+        disabled
+        mouse_down (key, x, y)
+        mouse_up (key, x, y)
+        mouse_drag (key, x, y, dx, dy)
+        mouse_repeat (key, x, y)
+        mouse_click (key, x, y)
+        mouse_hover (x, y)
+        update
+        draw
     """
 
     def __init__(self, parent, x, y, img, sx, sy, btn_count, value, **kwargs):
@@ -25,9 +37,8 @@ class RadioButton(Widget):
         self._sy = sy
         self._btn_count = btn_count
 
-        self.value_var = WidgetVariable(
-            value, lambda value: self.trigger_event("change", value)
-        )
+        self.value_var = WidgetVariable(value)
+        self.value_var.on_change = lambda value: self.trigger_event("change", value)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
