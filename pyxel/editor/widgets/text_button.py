@@ -1,12 +1,7 @@
 import pyxel
 
 from .button import Button
-from .settings import (
-    BUTTON_DISABLED_COLOR,
-    BUTTON_ENABLED_COLOR,
-    BUTTON_PRESSED_COLOR,
-    BUTTON_TEXT_COLOR,
-)
+from .settings import BUTTON_TEXT_COLOR
 
 
 class TextButton(Button):
@@ -17,7 +12,20 @@ class TextButton(Button):
 
     Events:
         press
+        repeat
         release
+        show
+        hide
+        enabled
+        disabled
+        mouse_down (key, x, y)
+        mouse_up (key, x, y)
+        mouse_drag (key, x, y, dx, dy)
+        mouse_repeat (key, x, y)
+        mouse_click (key, x, y)
+        mouse_hover (x, y)
+        update
+        draw
     """
 
     def __init__(self, parent, x, y, text, **kwargs):
@@ -39,11 +47,7 @@ class TextButton(Button):
         y = self.y
         w = self.width
         h = self.height
-        col = (
-            BUTTON_DISABLED_COLOR
-            if self.is_enabled_var.v
-            else (BUTTON_PRESSED_COLOR if self.is_pressing else BUTTON_ENABLED_COLOR)
-        )
+        col = self.button_color
 
         pyxel.line(x + 1, y, x + w - 2, y, col)
         pyxel.rect(x, y + 1, w, h - 2, col)
