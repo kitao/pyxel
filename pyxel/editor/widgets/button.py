@@ -14,6 +14,18 @@ class Button(Widget):
         press
         repeat
         release
+        show
+        hide
+        enabled
+        disabled
+        mouse_down (key, x, y)
+        mouse_up (key, x, y)
+        mouse_drag (key, x, y, dx, dy)
+        mouse_repeat (key, x, y)
+        mouse_click (key, x, y)
+        mouse_hover (x, y)
+        update
+        draw
     """
 
     def __init__(self, parent, x, y, width, height, **kwargs):
@@ -26,11 +38,12 @@ class Button(Widget):
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("update", self.__on_update)
 
-    def is_pressing(self):
+    def is_pressed(self):
         return self._pressing_time > 0
 
     def press(self):
         self._pressing_time = BUTTON_PRESSING_TIME + 1
+        self.trigger_event("press")
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
