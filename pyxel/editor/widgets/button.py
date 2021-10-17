@@ -7,36 +7,27 @@ from .settings import (
     BUTTON_PRESSING_TIME,
 )
 from .widget import Widget
+from .widget_variable import WidgetVariable
 
 
 class Button(Widget):
     """
     Variables:
-        is_visible_var
-        is_enabled_var
+        is_pressed_var
 
     Events:
         press
         repeat
         release
-        show
-        hide
-        enabled
-        disabled
-        mouse_down (key, x, y)
-        mouse_up (key, x, y)
-        mouse_drag (key, x, y, dx, dy)
-        mouse_repeat (key, x, y)
-        mouse_click (key, x, y)
-        mouse_hover (x, y)
-        update
-        draw
     """
 
     def __init__(self, parent, x, y, width, height, **kwargs):
         super().__init__(parent, x, y, width, height, **kwargs)
 
         self._pressing_time = 0
+        self.is_pressed_var = WidgetVariable(
+            False, on_get=self.__on_pressed_get, on_set=self.__on_pressed_set
+        )
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_repeat", self.__on_mouse_repeat)
@@ -44,20 +35,22 @@ class Button(Widget):
         self.add_event_listener("update", self.__on_update)
 
     @property
-    def is_pressed(self):
-        return self._pressing_time > 0
-
-    @property
     def button_color(self):
         return (
-            (BUTTON_PRESSED_COLOR if self.is_pressed else BUTTON_ENABLED_COLOR)
+            (BUTTON_PRESSED_COLOR if self.is_pressed_var.v else BUTTON_ENABLED_COLOR)
             if self.is_enabled_var.v
             else BUTTON_DISABLED_COLOR
         )
 
-    def press(self):
-        self._pressing_time = BUTTON_PRESSING_TIME + 1
-        self.trigger_event("press")
+    def __on_pressed_get(self, value):
+        return self._pressing_time > 0
+
+    def __on_pressed_set(self, value):
+        if value:
+            self._pressing_time = BUTTON_PRESSING_TIME + 1
+            self.trigger_event("press")
+        else:
+            self._pressing_time = 0
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
