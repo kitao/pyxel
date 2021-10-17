@@ -66,7 +66,6 @@ class NumberPicker(Widget):
     def __on_value_change(self, value):
         self.dec_button.is_enabled_var.v = self.value_var.v > self._min_value
         self.inc_button.is_enabled_var.v = self.value_var.v < self._max_value
-
         self.trigger_event("change", value)
 
     def __on_draw(self):
