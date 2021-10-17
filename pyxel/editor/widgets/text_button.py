@@ -7,25 +7,12 @@ from .settings import BUTTON_TEXT_COLOR
 class TextButton(Button):
     """
     Variables:
-        is_visible_var
-        is_enabled_var
+        is_pressed_var
 
     Events:
         press
         repeat
         release
-        show
-        hide
-        enabled
-        disabled
-        mouse_down (key, x, y)
-        mouse_up (key, x, y)
-        mouse_drag (key, x, y, dx, dy)
-        mouse_repeat (key, x, y)
-        mouse_click (key, x, y)
-        mouse_hover (x, y)
-        update
-        draw
     """
 
     def __init__(self, parent, x, y, text, **kwargs):
