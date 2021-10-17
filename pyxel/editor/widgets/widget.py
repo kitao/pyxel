@@ -135,7 +135,7 @@ class Widget:
         capture_widget = Widget._mouse_capture_info.widget
 
         if capture_widget:
-            self._process_capture()
+            capture_widget._process_capture()
         else:
             self._process_input()
 
