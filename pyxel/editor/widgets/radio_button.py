@@ -1,7 +1,8 @@
 import pyxel
 
 from .settings import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
-from .widget import Widget, WidgetVariable
+from .widget import Widget
+from .widget_variable import WidgetVariable
 
 
 class RadioButton(Widget):
@@ -38,7 +39,7 @@ class RadioButton(Widget):
         self._btn_count = btn_count
 
         self.value_var = WidgetVariable(value)
-        self.value_var.on_change = lambda value: self.trigger_event("change", value)
+        self.value_var.add_event_listener("change", self.__on_value_change)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
@@ -59,6 +60,9 @@ class RadioButton(Widget):
             return index
 
         return None
+
+    def __on_value_change(self, value):
+        self.trigger_event("change", value)
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:

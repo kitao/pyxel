@@ -8,32 +8,7 @@ from .settings import (
     WIDGET_REPEAT_TIME,
     WIDGET_SHADOW_COLOR,
 )
-
-
-class WidgetVariable:
-    def __init__(self, value):
-        self._value = value
-        self.on_get = None
-        self.on_set = None
-        self.on_change = None
-
-    @property
-    def v(self):
-        if self.on_get:
-            return self.on_get(self._value)
-        else:
-            return self._value
-
-    @v.setter
-    def v(self, value):
-        if self.on_set:
-            value = self.on_set(value)
-
-        if self._value != value:
-            self._value = value
-
-            if self.on_change:
-                self.on_change(value)
+from .widget_variable import WidgetVariable
 
 
 class MouseCaptureInfo:
@@ -41,7 +16,7 @@ class MouseCaptureInfo:
     key = None
     time = None
     press_pos = None
-    last_pos = None
+    last_press_pos = None
 
 
 class Widget:
@@ -81,31 +56,13 @@ class Widget:
         self._height = height
         self._event_listeners = {}
 
-        def on_visible_get(value):
-            if self._parent:
-                return self._parent.is_visible_var.v and value
-            else:
-                return value
-
-        def on_visible_change(value):
-            self._trigger_visible_event(value)
-
         self.is_visible_var = WidgetVariable(is_visible)
-        self.is_visible_var.on_get = on_visible_get
-        self.is_visible_var.on_change = on_visible_change
-
-        def on_enabled_get(value):
-            if self._parent:
-                return self._parent.is_enabled_var.v and value
-            else:
-                return value
-
-        def on_enabled_change(value):
-            self._trigger_enabled_event(value)
+        self.is_visible_var.add_event_listener("get", self.__on_visible_get)
+        self.is_visible_var.add_event_listener("change", self.__on_visible_change)
 
         self.is_enabled_var = WidgetVariable(is_enabled)
-        self.is_enabled_var.on_get = on_enabled_get
-        self.is_enabled_var.on_change = on_enabled_change
+        self.is_enabled_var.add_event_listener("get", self.__on_enabled_get)
+        self.is_enabled_var.add_event_listener("change", self.__on_enabled_change)
 
     @property
     def x(self):
@@ -223,7 +180,7 @@ class Widget:
         capture_info.key = key
         capture_info.time = pyxel.frame_count
         capture_info.press_pos = (pyxel.mouse_x, pyxel.mouse_y)
-        capture_info.last_pos = capture_info.press_pos
+        capture_info.last_press_pos = capture_info.press_pos
 
     def _end_capture(self):
         capture_info = Widget._mouse_capture_info
@@ -231,11 +188,11 @@ class Widget:
         capture_info.key = None
         capture_info.time = None
         capture_info.press_pos = None
-        capture_info.last_pos = None
+        capture_info.last_press_pos = None
 
     def _process_capture(self):
         capture_info = Widget._mouse_capture_info
-        last_x, last_y = capture_info.last_pos
+        last_x, last_y = capture_info.last_press_pos
 
         x = pyxel.mouse_x
         y = pyxel.mouse_y
@@ -249,7 +206,7 @@ class Widget:
                 x - last_x,
                 y - last_y,
             )
-            capture_info.last_pos = (x, y)
+            capture_info.last_press_pos = (x, y)
 
         if self.is_hit(x, y):
             self.trigger_event("mouse_hover", x, y)
@@ -302,3 +259,21 @@ class Widget:
             pyxel.line(x + 2, y + h, x + w - 1, y + h, WIDGET_SHADOW_COLOR)
             pyxel.line(x + w, y + 2, x + w, y + h - 1, WIDGET_SHADOW_COLOR)
             pyxel.pset(x + w - 1, y + h - 1, WIDGET_SHADOW_COLOR)
+
+    def __on_visible_get(self, value):
+        if self._parent:
+            return self._parent.is_visible_var.v and value
+        else:
+            return value
+
+    def __on_visible_change(self, value):
+        self._trigger_visible_event(value)
+
+    def __on_enabled_get(self, value):
+        if self._parent:
+            return self._parent.is_enabled_var.v and value
+        else:
+            return value
+
+    def __on_enabled_change(self, value):
+        self._trigger_enabled_event(value)
