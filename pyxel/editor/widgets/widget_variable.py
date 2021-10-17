@@ -1,9 +1,9 @@
 class WidgetVariable:
     def __init__(self, value, *, on_get=None, on_set=None, on_change=None):
         self._value = value
-        self._on_get = None
-        self._on_set = None
-        self._on_change = None
+        self._on_get = on_get
+        self._on_set = on_set
+        self._on_change = on_change
 
     @property
     def v(self):
