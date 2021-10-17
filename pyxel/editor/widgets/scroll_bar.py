@@ -2,7 +2,8 @@ import pyxel
 
 from .button import Button
 from .settings import BUTTON_PRESSED_COLOR, WIDGET_BACKGROUND_COLOR, WIDGET_PANEL_COLOR
-from .widget import Widget, WidgetVariable
+from .widget import Widget
+from .widget_variable import WidgetVariable
 
 
 class ScrollBar(Widget):
@@ -70,18 +71,19 @@ class ScrollBar(Widget):
             self.dec_button = Button(self, x, y, 7, 6)
             self.inc_button = Button(self, x, y + height - 6, 6, 7)
 
+        self.dec_button.add_event_listener("press", self.__on_dec_button_press)
+        self.dec_button.add_event_listener("repeat", self.__on_dec_button_press)
+        self.inc_button.add_event_listener("press", self.__on_inc_button_press)
+        self.inc_button.add_event_listener("repeat", self.__on_inc_button_press)
+
         self.value_var = WidgetVariable(value)
-        self.value_var.on_change = lambda value: self.trigger_event("change", value)
+        self.value_var.add_event_listener("change", self.__on_value_change)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_repeat", self.__on_mouse_repeat)
         self.add_event_listener("draw", self.__on_draw)
-        self.dec_button.add_event_listener("press", self.__on_dec_button_press)
-        self.dec_button.add_event_listener("repeat", self.__on_dec_button_press)
-        self.inc_button.add_event_listener("press", self.__on_inc_button_press)
-        self.inc_button.add_event_listener("repeat", self.__on_inc_button_press)
 
     @property
     def scroll_size(self):
@@ -96,6 +98,15 @@ class ScrollBar(Widget):
     @property
     def slider_pos(self):
         return round(7 + self.scroll_size * self.value_var.v / self.scroll_range)
+
+    def __on_dec_button_press(self):
+        self.value_var.v = max(self._value - 1, 0)
+
+    def __on_inc_button_press(self):
+        self.value_var.v = min(self._value + 1, self.scroll_range - self.slider_range)
+
+    def __on_value_change(self, value):
+        return self.trigger_event("change", value)
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
@@ -167,9 +178,13 @@ class ScrollBar(Widget):
             pyxel.pset(x + w - 3, y + h - 4, WIDGET_PANEL_COLOR)
             pyxel.line(x + w - 4, y + 2, x + w - 4, y + h - 3, WIDGET_PANEL_COLOR)
 
-            x = self.x + self.slider_pos
-            y = self.y + 2
-            pyxel.rect(x, y, self.slider_size, 3, WIDGET_PANEL_COLOR)
+            pyxel.rect(
+                self.x + self.slider_pos,
+                self.y + 2,
+                self.slider_size,
+                3,
+                WIDGET_PANEL_COLOR,
+            )
         else:
             pyxel.rect(x + 1, y + 1, w - 2, 4, dec_color)
             pyxel.rect(x + 1, y + 6, w - 2, h - 12, WIDGET_BACKGROUND_COLOR)
@@ -181,12 +196,10 @@ class ScrollBar(Widget):
             pyxel.pset(x + 3, y + h - 3, WIDGET_PANEL_COLOR)
             pyxel.line(x + 2, y + h - 4, x + w - 3, y + h - 4, WIDGET_PANEL_COLOR)
 
-            x = self.x + 2
-            y = self.y + self.slider_pos
-            pyxel.rect(x, y, 3, self.slider_size, WIDGET_PANEL_COLOR)
-
-    def __on_dec_button_press(self):
-        self.value_var.v = max(self._value - 1, 0)
-
-    def __on_inc_button_press(self):
-        self.value_var.v = min(self._value + 1, self.scroll_range - self.slider_range)
+            pyxel.rect(
+                self.x + 2,
+                self.y + self.slider_pos,
+                3,
+                self.slider_size,
+                WIDGET_PANEL_COLOR,
+            )

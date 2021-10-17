@@ -1,6 +1,7 @@
 import pyxel
 
-from .widget import Widget, WidgetVariable
+from .widget import Widget
+from .widget_variable import WidgetVariable
 
 
 class ColorPicker(Widget):
@@ -20,7 +21,7 @@ class ColorPicker(Widget):
         self._with_shadow = with_shadow
 
         self.value_var = WidgetVariable(0)
-        self.value_var.on_change = lambda value: self.trigger_event("change", value)
+        self.value_var.add_event_listener("change", self.__on_value_change)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
@@ -42,6 +43,9 @@ class ColorPicker(Widget):
             return index_y * 8 + index_x
 
         return None
+
+    def __on_value_change(self, value):
+        self.trigger_event("change", value)
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
