@@ -11,8 +11,6 @@ class ImageButton(Button):
 
     Events:
         press
-        repeat
-        release
     """
 
     def __init__(self, parent, x, y, img, u, v, **kwargs):

@@ -17,8 +17,6 @@ class Button(Widget):
 
     Events:
         press
-        repeat
-        release
     """
 
     def __init__(self, parent, x, y, width, height, **kwargs):
@@ -30,7 +28,7 @@ class Button(Widget):
         )
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
-        self.add_event_listener("mouse_repeat", self.__on_mouse_repeat)
+        self.add_event_listener("mouse_repeat", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("update", self.__on_update)
 
@@ -56,22 +54,13 @@ class Button(Widget):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
-        self._pressing_time = 2
-        self.trigger_event("press")
-
-    def __on_mouse_repeat(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_LEFT:
-            return
-
-        self._pressing_time = 2
-        self.trigger_event("repeat")
+        self.is_pressed_var.v = True
 
     def __on_mouse_up(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
-        self._pressing_time = 0
-        self.trigger_event("release")
+        self.is_pressed_var.v = False
 
     def __on_update(self):
         if self._pressing_time > 0:
