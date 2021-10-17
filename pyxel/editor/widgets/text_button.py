@@ -11,8 +11,6 @@ class TextButton(Button):
 
     Events:
         press
-        repeat
-        release
     """
 
     def __init__(self, parent, x, y, text, **kwargs):
