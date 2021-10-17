@@ -19,9 +19,7 @@ class ColorPicker(Widget):
         super().__init__(parent, x, y, 65, 17, **kwargs)
 
         self._with_shadow = with_shadow
-
-        self.value_var = WidgetVariable(0)
-        self.value_var.add_event_listener("change", self.__on_value_change)
+        self.value_var = WidgetVariable(0, on_change=self.__on_value_change)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)

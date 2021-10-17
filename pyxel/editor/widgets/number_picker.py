@@ -37,6 +37,9 @@ class NumberPicker(Widget):
 
         self._min_value = min_value
         self._max_value = max_value
+        self.value_var = WidgetVariable(
+            value, on_set=self.__on_value_set, on_change=self.__on_value_change
+        )
 
         self.dec_button = TextButton(self, x, y, "-")
         self.dec_button.add_event_listener("press", self.__on_dec_button_press)
@@ -46,11 +49,16 @@ class NumberPicker(Widget):
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
         self.inc_button.add_event_listener("repeat", self.__on_inc_button_press)
 
-        self.value_var = WidgetVariable(value)
-        self.value_var.add_event_listener("set", self.__on_value_set)
-        self.value_var.add_event_listener("change", self.__on_value_change)
-
         self.add_event_listener("draw", self.__on_draw)
+
+    def __on_value_set(self, value):
+        return min(max(value, self._min_value), self._max_value)
+
+    def __on_value_change(self, value):
+        self.dec_button.is_enabled_var.v = self.value_var.v > self._min_value
+        self.inc_button.is_enabled_var.v = self.value_var.v < self._max_value
+
+        self.trigger_event("change", value)
 
     def __on_dec_button_press(self):
         offset = 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
@@ -59,14 +67,6 @@ class NumberPicker(Widget):
     def __on_inc_button_press(self):
         offset = 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
         self.value_var.v = self.value_var.v + offset
-
-    def __on_value_set(self, value):
-        return min(max(value, self._min_value), self._max_value)
-
-    def __on_value_change(self, value):
-        self.dec_button.is_enabled_var.v = self.value_var.v > self._min_value
-        self.inc_button.is_enabled_var.v = self.value_var.v < self._max_value
-        self.trigger_event("change", value)
 
     def __on_draw(self):
         pyxel.rect(self.x + 9, self.y, self.width - 18, self.height, INPUT_FIELD_COLOR)
