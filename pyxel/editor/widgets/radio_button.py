@@ -8,24 +8,10 @@ from .widget_variable import WidgetVariable
 class RadioButton(Widget):
     """
     Variables:
-        is_visible_var
-        is_enabled_var
         value_var
 
     Events:
         change (value)
-        show
-        hide
-        enabled
-        disabled
-        mouse_down (key, x, y)
-        mouse_up (key, x, y)
-        mouse_drag (key, x, y, dx, dy)
-        mouse_repeat (key, x, y)
-        mouse_click (key, x, y)
-        mouse_hover (x, y)
-        update
-        draw
     """
 
     def __init__(self, parent, x, y, img, sx, sy, btn_count, value, **kwargs):
