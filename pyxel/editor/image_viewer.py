@@ -1,15 +1,26 @@
 import pyxel
 
 from .settings import PANEL_FOCUS_BORDER_COLOR, PANEL_FOCUS_COLOR
-from .widgets import ScrollBar, Widget
+from .widgets import ScrollBar, Widget, WidgetVariable
 
 
-class ImageSelector(Widget):
-    def __init__(self, parent, *, is_image_editor):
-        y, height = (16, 130) if is_image_editor else (80, 66)
+class ImageViewer(Widget):
+    SIZE_LARGE = 0
+    SIZE_SMALL = 1
+
+    def __init__(self, parent, size):
+        if size == ImageViewer.SIZE_LARGE:
+            y = 16
+            height = 130
+            slider_range = 16
+        else:
+            y = 80
+            height = 66
+            slider_range = 8
+
         super().__init__(parent, 157, y, 66, height)
 
-        self._is_image_editor = is_image_editor
+        self._size = size
         self._viewport_x = 0
         self._viewport_y = 0
         self._press_x = 0
@@ -17,22 +28,33 @@ class ImageSelector(Widget):
         self._drag_offset_x = 0
         self._drag_offset_y = 0
         # self._tile_table = [list(range(x, x + 32)) for x in range(0, 1024, 32)]
+
+        self.image_x_var = WidgetVariable(0)
+        self.image_y_var = WidgetVariable(0)
+        self.image_w_var = WidgetVariable(16)
+        self.image_h_var = WidgetVariable(16)
+        self.help_message_var = parent.help_message_var
+        self.image_no_var = parent.image_no_var
+        self.focus_x_var = WidgetVariable(0)
+        self.focus_y_var = WidgetVariable(0)
+
+        # horizontal scroll bar
         self._h_scroll_bar = ScrollBar(
-            self, 157, 145, 66, ScrollBar.HORIZONTAL, 32, 8, 0
+            self, 0, 129, 66, ScrollBar.DIR_HORIZONTAL, 32, 8, 0
         )
-        self._v_scroll_bar = (
-            ScrollBar(self, 222, 16, 130, ScrollBar.VERTICAL, 32, 16, 0)
-            if is_image_editor
-            else ScrollBar(self, 222, 80, 66, ScrollBar.VERTICAL, 32, 8, 0)
+        self._h_scroll_bar.add_event_listener("change", self.__on_h_scroll_bar_change)
+
+        # virtical scroll bar
+        self._v_scroll_bar = ScrollBar(
+            self, 65, 0, height, ScrollBar.DIR_VERTICAL, 32, slider_range, 0
         )
+        self._v_scroll_bar.add_event_listener("change", self.__on_v_scroll_bar_change)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
-        self._h_scroll_bar.add_event_listener("change", self.__on_h_scroll_bar_change)
-        self._v_scroll_bar.add_event_listener("change", self.__on_v_scroll_bar_change)
 
     """
     @select_x.setter
@@ -78,11 +100,17 @@ class ImageSelector(Widget):
         y = (y + self._viewport_y - self.y - 1) // 8 * 8
         return x, y
 
+    def __on_h_scroll_bar_change(self, value):
+        self._viewport_x = value * 8
+
+    def __on_v_scroll_bar_change(self, value):
+        self._viewport_y = value * 8
+
     def __on_mouse_down(self, key, x, y):
         if key == pyxel.MOUSE_BUTTON_LEFT:
             x, y = self._screen_to_viewport(x, y)
 
-            if self._is_image_editor:
+            if self._size == ImageViewer.SIZE_LARGE:
                 self.parent.edit_x = min(max(x, 0), 240)
                 self.parent.edit_y = min(max(y, 0), 240)
             else:
@@ -95,7 +123,7 @@ class ImageSelector(Widget):
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         if key == pyxel.MOUSE_BUTTON_LEFT:
-            if self._is_image_editor:
+            if self._size == ImageViewer.SIZE_LARGE:
                 self.__on_mouse_down(key, x, y)
             else:
                 x, y = self._screen_to_viewport(x, y)
@@ -124,13 +152,18 @@ class ImageSelector(Widget):
 
             self._viewport_x = min(max(self._viewport_x, 0), 192)
             self._viewport_y = min(
-                max(self._viewport_y, 0), 128 if self._is_image_editor else 192
+                max(self._viewport_y, 0),
+                128 if self._size == ImageViewer.SIZE_LARGE else 192,
             )
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_viewport(x, y)
-        s = "TARGET:CURSOR IMPORT:DROP" if self._is_image_editor else "VIEW:R-DRAG"
-        self.parent.help_message = s + " ({},{})".format(x, y)
+        s = (
+            "TARGET:CURSOR IMPORT:DROP"
+            if self._size == ImageViewer.SIZE_LARGE
+            else "VIEW:R-DRAG"
+        )
+        self.help_message_var.v = s + " ({},{})".format(x, y)
 
     def __on_update(self):
         pass
@@ -141,7 +174,7 @@ class ImageSelector(Widget):
         pyxel.blt(
             self.x + 1,
             self.y + 1,
-            self.parent.image,
+            self.image_no_var.v,
             self._viewport_x,
             self._viewport_y,
             self.width - 2,
@@ -150,19 +183,13 @@ class ImageSelector(Widget):
 
         pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
 
-        x = self.x + self.parent.edit_x - self._viewport_x + 1
-        y = self.y + self.parent.edit_y - self._viewport_y + 1
-        w = self.parent.edit_width
-        h = self.parent.edit_height
+        x = self.x + self.image_x_var.v - self._viewport_x + 1
+        y = self.y + self.image_y_var.v - self._viewport_y + 1
+        w = self.image_w_var.v
+        h = self.image_h_var.v
 
         pyxel.rectb(x, y, w, h, PANEL_FOCUS_COLOR)
         pyxel.rectb(x + 1, y + 1, w - 2, h - 2, PANEL_FOCUS_BORDER_COLOR)
         pyxel.rectb(x - 1, y - 1, w + 2, h + 2, PANEL_FOCUS_BORDER_COLOR)
 
         pyxel.clip()
-
-    def __on_h_scroll_bar_change(self, value):
-        self._viewport_x = value * 8
-
-    def __on_v_scroll_bar_change(self, value):
-        self._viewport_y = value * 8
