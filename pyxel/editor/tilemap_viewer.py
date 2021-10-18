@@ -11,7 +11,7 @@ from .settings import (
 from .widgets import Widget
 
 
-class TilemapSelector(Widget):
+class TilemapViewer(Widget):
     def __init__(self, parent):
         super().__init__(parent, 157, 16, 66, 65)
 
