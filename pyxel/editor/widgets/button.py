@@ -24,7 +24,7 @@ class Button(Widget):
 
         self._pressing_time = 0
         self.is_pressed_var = WidgetVariable(
-            False, on_get=self.__on_pressed_get, on_set=self.__on_pressed_set
+            False, on_get=self.__on_is_pressed_get, on_set=self.__on_is_pressed_set
         )
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
@@ -40,10 +40,10 @@ class Button(Widget):
             else BUTTON_DISABLED_COLOR
         )
 
-    def __on_pressed_get(self, value):
+    def __on_is_pressed_get(self, value):
         return self._pressing_time > 0
 
-    def __on_pressed_set(self, value):
+    def __on_is_pressed_set(self, value):
         if value:
             self._pressing_time = BUTTON_PRESSING_TIME + 1
             self.trigger_event("press")

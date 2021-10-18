@@ -15,8 +15,8 @@ class ScrollBar(Widget):
         change (value)
     """
 
-    HORIZONTAL = 0
-    VERTICAL = 1
+    DIR_HORIZONTAL = 0
+    DIR_VERTICAL = 1
 
     def __init__(
         self,
@@ -32,10 +32,10 @@ class ScrollBar(Widget):
         with_shadow=True,
         **kwargs
     ):
-        if direction == ScrollBar.HORIZONTAL:
+        if direction == ScrollBar.DIR_HORIZONTAL:
             width = size
             height = 7
-        elif direction == ScrollBar.VERTICAL:
+        elif direction == ScrollBar.DIR_VERTICAL:
             width = 7
             height = size
         else:
@@ -51,7 +51,7 @@ class ScrollBar(Widget):
         self._is_dragged = False
         self.value_var = WidgetVariable(value, on_change=self.__on_value_change)
 
-        if self._direction == ScrollBar.HORIZONTAL:
+        if self._direction == ScrollBar.DIR_HORIZONTAL:
             inc_x, inc_y = width - 6, 0
             btn_w, btn_h = 6, 7
         else:
@@ -75,7 +75,7 @@ class ScrollBar(Widget):
     @property
     def scroll_size(self):
         return (
-            self.width if self._direction == ScrollBar.HORIZONTAL else self.height
+            self.width if self._direction == ScrollBar.DIR_HORIZONTAL else self.height
         ) - 14
 
     @property
@@ -105,7 +105,7 @@ class ScrollBar(Widget):
         y -= self.y
 
         self._drag_offset = (
-            x if self._direction == ScrollBar.HORIZONTAL else y
+            x if self._direction == ScrollBar.DIR_HORIZONTAL else y
         ) - self.slider_pos
 
         if self._drag_offset < 0:
@@ -125,7 +125,7 @@ class ScrollBar(Widget):
         x -= self.x
         y -= self.y
 
-        drag_pos = x if self._direction == ScrollBar.HORIZONTAL else y
+        drag_pos = x if self._direction == ScrollBar.DIR_HORIZONTAL else y
         value = (
             (drag_pos - self._drag_offset - 6) * self.scroll_range / self.scroll_size
         )
@@ -148,7 +148,7 @@ class ScrollBar(Widget):
         inc_color = 6 if self.inc_button.is_pressed_var.v else WIDGET_BACKGROUND_COLOR
         dec_color = 6 if self.dec_button.is_pressed_var.v else WIDGET_BACKGROUND_COLOR
 
-        if self._direction == ScrollBar.HORIZONTAL:
+        if self._direction == ScrollBar.DIR_HORIZONTAL:
             pyxel.rect(x + 1, y + 1, 4, h - 2, dec_color)
             pyxel.rect(x + 6, y + 1, w - 12, h - 2, WIDGET_BACKGROUND_COLOR)
             pyxel.rect(x + w - 5, y + 1, 4, h - 2, inc_color)
