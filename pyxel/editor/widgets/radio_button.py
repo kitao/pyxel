@@ -17,6 +17,7 @@ class RadioButton(Widget):
     def __init__(self, parent, x, y, img, sx, sy, btn_count, value, **kwargs):
         width = btn_count * 9 - 2
         height = 7
+
         super().__init__(parent, x, y, width, height, **kwargs)
 
         self._img = img

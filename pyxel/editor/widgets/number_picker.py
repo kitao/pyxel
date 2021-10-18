@@ -19,6 +19,7 @@ class NumberPicker(Widget):
         self._number_len = max(len(str(min_value)), len(str(max_value)))
         width = self._number_len * 4 + 21
         height = 7
+
         super().__init__(parent, x, y, width, height, **kwargs)
 
         self._min_value = min_value
@@ -27,9 +28,11 @@ class NumberPicker(Widget):
             value, on_set=self.__on_value_set, on_change=self.__on_value_change
         )
 
+        # dec button
         self.dec_button = TextButton(self, 0, 0, "-")
         self.dec_button.add_event_listener("press", self.__on_dec_button_press)
 
+        # inc button
         self.inc_button = TextButton(self, width - 7, 0, "+")
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
 
@@ -45,12 +48,10 @@ class NumberPicker(Widget):
         self.trigger_event("change", value)
 
     def __on_dec_button_press(self):
-        offset = 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
-        self.value_var.v = self.value_var.v - offset
+        self.value_var.v -= 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
 
     def __on_inc_button_press(self):
-        offset = 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
-        self.value_var.v = self.value_var.v + offset
+        self.value_var.v += 10 if pyxel.btn(pyxel.KEY_SHIFT) else 1
 
     def __on_draw(self):
         pyxel.rect(self.x + 9, self.y, self.width - 18, self.height, INPUT_FIELD_COLOR)
