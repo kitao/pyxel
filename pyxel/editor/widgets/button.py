@@ -50,6 +50,8 @@ class Button(Widget):
         else:
             self._pressing_time = 0
 
+        return value
+
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
