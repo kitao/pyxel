@@ -1,7 +1,7 @@
 import pyxel
 
 from .button import Button
-from .settings import BUTTON_PRESSED_COLOR, WIDGET_BACKGROUND_COLOR, WIDGET_PANEL_COLOR
+from .settings import WIDGET_BACKGROUND_COLOR, WIDGET_PANEL_COLOR
 from .widget import Widget
 from .widget_variable import WidgetVariable
 
@@ -52,16 +52,19 @@ class ScrollBar(Widget):
         self.value_var = WidgetVariable(value, on_change=self.__on_value_change)
 
         if self._direction == ScrollBar.HORIZONTAL:
-            self.dec_button = Button(self, x, y, 6, 7)
-            self.inc_button = Button(self, x + width - 6, y, 6, 7)
+            inc_x, inc_y = width - 6, 0
+            btn_w, btn_h = 6, 7
         else:
-            self.dec_button = Button(self, x, y, 7, 6)
-            self.inc_button = Button(self, x, y + height - 6, 6, 7)
+            inc_x, inc_y = 0, height - 6
+            btn_w, btn_h = 7, 6
 
+        # dec button
+        self.dec_button = Button(self, 0, 0, btn_w, btn_h)
         self.dec_button.add_event_listener("press", self.__on_dec_button_press)
-        self.dec_button.add_event_listener("repeat", self.__on_dec_button_press)
+
+        # inc button
+        self.inc_button = Button(self, inc_x, inc_y, btn_w, btn_h)
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
-        self.inc_button.add_event_listener("repeat", self.__on_inc_button_press)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
@@ -87,7 +90,6 @@ class ScrollBar(Widget):
         return self.trigger_event("change", value)
 
     def __on_dec_button_press(self):
-        print("dec")
         self.value_var.v = max(self.value_var.v - 1, 0)
 
     def __on_inc_button_press(self):
@@ -143,16 +145,8 @@ class ScrollBar(Widget):
 
         self.draw_panel(x, y, w, h, with_shadow=self._with_shadow)
 
-        inc_color = (
-            BUTTON_PRESSED_COLOR
-            if self.inc_button.is_pressed_var.v
-            else WIDGET_BACKGROUND_COLOR
-        )
-        dec_color = (
-            BUTTON_PRESSED_COLOR
-            if self.dec_button.is_pressed_var.v
-            else WIDGET_BACKGROUND_COLOR
-        )
+        inc_color = 6 if self.inc_button.is_pressed_var.v else WIDGET_BACKGROUND_COLOR
+        dec_color = 6 if self.dec_button.is_pressed_var.v else WIDGET_BACKGROUND_COLOR
 
         if self._direction == ScrollBar.HORIZONTAL:
             pyxel.rect(x + 1, y + 1, 4, h - 2, dec_color)
