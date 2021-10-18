@@ -1,26 +1,39 @@
 class WidgetVariable:
-    def __init__(self, value, *, on_get=None, on_set=None, on_change=None):
+    """
+    Events:
+        get (value) -> value
+        set (value) -> value
+        change (value)
+    """
+
+    def __init__(self, value):
         self._value = value
-        self._on_get = on_get
-        self._on_set = on_set
-        self._on_change = on_change
+        self._event_listeners = {"get": [], "set": [], "change": []}
 
     @property
     def v(self):
-        if self._on_get:
-            return self._on_get(self._value)
-        else:
-            return self._value
+        value = self._value
+
+        for listener in self._event_listeners["get"]:
+            value = listener(value)
+
+        return value
 
     @v.setter
     def v(self, value):
-        if self._on_set:
-            value = self._on_set(value)
+        for listener in self._event_listeners["set"]:
+            value = listener(value)
 
         if self._value == value:
             return
 
         self._value = value
 
-        if self._on_change:
-            self._on_change(value)
+        for listener in self._event_listeners["change"]:
+            listener(value)
+
+    def add_event_listener(self, event, listener):
+        self._event_listeners[event].append(listener)
+
+    def remove_event_listener(self, event, listener):
+        self._event_listeners[event].remove(listener)
