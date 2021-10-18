@@ -17,9 +17,9 @@ class ToggleButton(Widget):
     def __init__(self, parent, left, top, width, height, **kwargs):
         super().__init__(parent, left, top, width, height, **kwargs)
 
-        self.is_checked_var = WidgetVariable(
-            False, on_change=self.__on_is_checked_change
-        )
+        # is_checked_var
+        self.is_checked_var = WidgetVariable(False)
+        self.is_checked_var.add_event_listener("change", self.__on_is_checked_change)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
 
