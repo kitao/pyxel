@@ -23,9 +23,11 @@ class Button(Widget):
         super().__init__(parent, x, y, width, height, **kwargs)
 
         self._pressing_time = 0
-        self.is_pressed_var = WidgetVariable(
-            False, on_get=self.__on_is_pressed_get, on_set=self.__on_is_pressed_set
-        )
+
+        # is_pressed_var
+        self.is_pressed_var = WidgetVariable(False)
+        self.is_pressed_var.add_event_listener("get", self.__on_is_pressed_get)
+        self.is_pressed_var.add_event_listener("set", self.__on_is_pressed_set)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_repeat", self.__on_mouse_down)

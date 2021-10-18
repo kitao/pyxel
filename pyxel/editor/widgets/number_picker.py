@@ -24,9 +24,11 @@ class NumberPicker(Widget):
 
         self._min_value = min_value
         self._max_value = max_value
-        self.value_var = WidgetVariable(
-            value, on_set=self.__on_value_set, on_change=self.__on_value_change
-        )
+
+        # value_var
+        self.value_var = WidgetVariable(value)
+        self.value_var.add_event_listener("set", self.__on_value_set)
+        self.value_var.add_event_listener("change", self.__on_value_change)
 
         # dec button
         self.dec_button = TextButton(self, 0, 0, "-")

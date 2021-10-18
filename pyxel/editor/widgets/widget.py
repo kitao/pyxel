@@ -55,16 +55,16 @@ class Widget:
         self._width = width
         self._height = height
         self._event_listeners = {}
-        self.is_visible_var = WidgetVariable(
-            is_visible,
-            on_get=self.__on_is_visible_get,
-            on_change=self.__on_is_visible_change,
-        )
-        self.is_enabled_var = WidgetVariable(
-            is_enabled,
-            on_get=self.__on_is_enabled_get,
-            on_change=self.__on_is_enabled_change,
-        )
+
+        # is_visible_var
+        self.is_visible_var = WidgetVariable(is_visible)
+        self.is_visible_var.add_event_listener("get", self.__on_is_visible_get)
+        self.is_visible_var.add_event_listener("change", self.__on_is_visible_change)
+
+        # is_enabled_var
+        self.is_enabled_var = WidgetVariable(is_enabled)
+        self.is_enabled_var.add_event_listener("get", self.__on_is_enabled_get)
+        self.is_enabled_var.add_event_listener("change", self.__on_is_enabled_change)
 
     @property
     def x(self):

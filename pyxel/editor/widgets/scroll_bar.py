@@ -49,7 +49,10 @@ class ScrollBar(Widget):
         self._with_shadow = with_shadow
         self._drag_offset = 0
         self._is_dragged = False
-        self.value_var = WidgetVariable(value, on_change=self.__on_value_change)
+
+        # value_var
+        self.value_var = WidgetVariable(value)
+        self.value_var.add_event_listener("change", self.__on_value_change)
 
         if self._direction == ScrollBar.DIR_HORIZONTAL:
             inc_x, inc_y = width - 6, 0
