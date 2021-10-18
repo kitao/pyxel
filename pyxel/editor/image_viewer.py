@@ -29,18 +29,16 @@ class ImageViewer(Widget):
         self._drag_offset_y = 0
         # self._tile_table = [list(range(x, x + 32)) for x in range(0, 1024, 32)]
 
-        self.image_x_var = WidgetVariable(0)
-        self.image_y_var = WidgetVariable(0)
-        self.image_w_var = WidgetVariable(16)
-        self.image_h_var = WidgetVariable(16)
-        self.help_message_var = parent.help_message_var
-        self.image_no_var = parent.image_no_var
         self.focus_x_var = WidgetVariable(0)
         self.focus_y_var = WidgetVariable(0)
+        self.focus_w_var = WidgetVariable(16)
+        self.focus_h_var = WidgetVariable(16)
+        self.help_message_var = parent.help_message_var
+        self.image_no_var = parent.image_no_var
 
         # horizontal scroll bar
         self._h_scroll_bar = ScrollBar(
-            self, 0, 129, 66, ScrollBar.DIR_HORIZONTAL, 32, 8, 0
+            self, 0, height - 1, 66, ScrollBar.DIR_HORIZONTAL, 32, 8, 0
         )
         self._h_scroll_bar.add_event_listener("change", self.__on_h_scroll_bar_change)
 
@@ -111,11 +109,11 @@ class ImageViewer(Widget):
             x, y = self._screen_to_viewport(x, y)
 
             if self._size == ImageViewer.SIZE_LARGE:
-                self.parent.edit_x = min(max(x, 0), 240)
-                self.parent.edit_y = min(max(y, 0), 240)
+                self.focus_x_var.v = min(max(x, 0), 240)
+                self.focus_y_var.v = min(max(y, 0), 240)
             else:
-                self.parent.edit_x = self._press_x = min(max(x, 0), 248)
-                self.parent.edit_y = self._press_y = min(max(y, 0), 248)
+                self.focus_x_var.v = self._press_x = min(max(x, 0), 248)
+                self.focus_y_var.v = self._press_y = min(max(y, 0), 248)
 
         if key == pyxel.MOUSE_BUTTON_RIGHT:
             self._drag_offset_x = 0
@@ -131,11 +129,11 @@ class ImageViewer(Widget):
                 x = min(max(x, 0), 248)
                 y = min(max(y, 0), 248)
 
-                self.parent.edit_x = min(self._press_x, x)
-                self.parent.edit_y = min(self._press_y, y)
+                self.focus_x_var.v = min(self._press_x, x)
+                self.focus_y_var.v = min(self._press_y, y)
 
-                self.parent.edit_width = min(abs(self._press_x - x) + 8, 64)
-                self.parent.edit_height = min(abs(self._press_y - y) + 8, 64)
+                self.focus_w_var.v = min(abs(self._press_x - x) + 8, 64)
+                self.focus_h_var.v = min(abs(self._press_y - y) + 8, 64)
         elif key == pyxel.MOUSE_BUTTON_RIGHT:
             self._drag_offset_x -= dx
             self._drag_offset_y -= dy
@@ -181,15 +179,13 @@ class ImageViewer(Widget):
             self.height - 2,
         )
 
+        x = self.x + self.focus_x_var.v - self._viewport_x + 1
+        y = self.y + self.focus_y_var.v - self._viewport_y + 1
+        w = self.focus_w_var.v
+        h = self.focus_h_var.v
+
         pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
-
-        x = self.x + self.image_x_var.v - self._viewport_x + 1
-        y = self.y + self.image_y_var.v - self._viewport_y + 1
-        w = self.image_w_var.v
-        h = self.image_h_var.v
-
         pyxel.rectb(x, y, w, h, PANEL_FOCUS_COLOR)
         pyxel.rectb(x + 1, y + 1, w - 2, h - 2, PANEL_FOCUS_BORDER_COLOR)
         pyxel.rectb(x - 1, y - 1, w + 2, h + 2, PANEL_FOCUS_BORDER_COLOR)
-
         pyxel.clip()
