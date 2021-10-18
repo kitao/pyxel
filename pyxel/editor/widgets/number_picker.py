@@ -29,11 +29,9 @@ class NumberPicker(Widget):
 
         self.dec_button = TextButton(self, 0, 0, "-")
         self.dec_button.add_event_listener("press", self.__on_dec_button_press)
-        self.dec_button.add_event_listener("repeat", self.__on_dec_button_press)
 
         self.inc_button = TextButton(self, width - 7, 0, "+")
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
-        self.inc_button.add_event_listener("repeat", self.__on_inc_button_press)
 
         self.add_event_listener("draw", self.__on_draw)
 
