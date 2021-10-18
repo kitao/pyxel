@@ -14,10 +14,13 @@ from .widgets import Widget
 
 class EditorBase(Widget):
     """
+    Variables:
+        help_message_var
+
     Events:
-        __on_undo(data)
-        __on_redo(data)
-        __on_drop(filenames)
+        undo (data)
+        redo (data)
+        drop (filenames)
     """
 
     def __init__(self, parent):
@@ -25,14 +28,7 @@ class EditorBase(Widget):
 
         self._history_list = []
         self._history_index = 0
-
-    @property
-    def help_message(self):
-        return self.parent.help_message
-
-    @help_message.setter
-    def help_message(self, value):
-        self.parent.help_message = value
+        self.help_message_var = parent.help_message_var
 
     @property
     def can_undo(self):
@@ -74,10 +70,10 @@ class EditorBase(Widget):
         )
 
     def __on_number_picker_dec_mouse_hover(self, x, y):
-        self.help_message = "-10:SHIFT+CLICK"
+        self.help_message_var.v = "-10:SHIFT+CLICK"
 
     def __on_number_picker_inc_mouse_hover(self, x, y):
-        self.help_message = "+10:SHIFT+CLICK"
+        self.help_message_var.v = "+10:SHIFT+CLICK"
 
     def check_tool_button_shortcuts(self):
         if (
@@ -88,19 +84,15 @@ class EditorBase(Widget):
             return
 
         if pyxel.btnp(pyxel.KEY_S):
-            self._tool_button.value = TOOL_SELECT
+            self.tool_var.v = TOOL_SELECT
         elif pyxel.btnp(pyxel.KEY_P):
-            self._tool_button.value = TOOL_PENCIL
+            self.tool_var.v = TOOL_PENCIL
         elif pyxel.btnp(pyxel.KEY_R):
-            self._tool_button.value = (
-                TOOL_RECT if pyxel.btn(pyxel.KEY_SHIFT) else TOOL_RECTB
-            )
+            self.tool_var.v = TOOL_RECT if pyxel.btn(pyxel.KEY_SHIFT) else TOOL_RECTB
         elif pyxel.btnp(pyxel.KEY_C):
-            self._tool_button.value = (
-                TOOL_CIRC if pyxel.btn(pyxel.KEY_SHIFT) else TOOL_CIRCB
-            )
+            self.tool_var.v = TOOL_CIRC if pyxel.btn(pyxel.KEY_SHIFT) else TOOL_CIRCB
         elif pyxel.btnp(pyxel.KEY_B):
-            self._tool_button.value = TOOL_BUCKET
+            self.tool_var = TOOL_BUCKET
 
     def add_tool_button_help(self, tool_button):
         tool_button.add_event_listener("mouse_hover", self.__on_tool_button_mouse_hover)
@@ -125,4 +117,4 @@ class EditorBase(Widget):
         else:
             s = ""
 
-        self.help_message = s
+        self.help_message_var.v = s
