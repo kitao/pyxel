@@ -62,12 +62,11 @@ class ColorPicker(Widget):
 
         for i in range(2):
             for j in range(8):
-                x = self.x + j * 8 + 1
-                y = self.y + i * 8 + 1
-                col = i * 8 + j
-                pyxel.rect(x, y, 7, 7, col)
+                pyxel.rect(self.x + j * 8 + 1, self.y + i * 8 + 1, 7, 7, i * 8 + j)
 
-        x = self.x + (self.value_var.v % 8) * 8 + 3
-        y = self.y + (self.value_var.v // 8) * 8 + 2
-        col = 7 if self.value_var.v < 6 else 0
-        pyxel.text(x, y, "+", col)
+        pyxel.text(
+            self.x + (self.value_var.v % 8) * 8 + 3,
+            self.y + (self.value_var.v // 8) * 8 + 2,
+            "+",
+            7 if self.value_var.v < 6 else 0,
+        )
