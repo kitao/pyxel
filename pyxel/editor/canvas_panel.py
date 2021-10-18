@@ -37,10 +37,32 @@ class CanvasPanel(Widget):
         self._temp_canvas = (
             pyxel.Tilemap(16, 16, 0) if is_tilemap_mode else pyxel.Image(16, 16)
         )
+
+        self.tool_var = parent.tool_var
+        self.color_var = parent.color_var
+        self.help_message_var = parent.help_message_var
+        self.canvas_var = parent.canvas_var
+
+        if is_tilemap_mode:
+            self.tilemap_no_var = parent.tilemap_no_var
+        self.image_no_var = parent.image_no_var
+
+        self.focus_x_var = parent.focus_x_var
+        self.focus_y_var = parent.focus_y_var
+        self.focus_w_var = parent.focus_w_var
+        self.focus_h_var = parent.focus_h_var
+
+        # horizontal scroll bar
         self._h_scroll_bar = ScrollBar(
-            self, 11, 145, 130, ScrollBar.HORIZONTAL, 32, 2, 0
+            self, 0, 129, 130, ScrollBar.DIR_HORIZONTAL, 32, 2, 0
         )
-        self._v_scroll_bar = ScrollBar(self, 140, 16, 130, ScrollBar.VERTICAL, 32, 2, 0)
+        self._h_scroll_bar.add_event_listener("change", self.__on_h_scroll_bar_change)
+
+        # vertical scroll bar
+        self._v_scroll_bar = ScrollBar(
+            self, 129, 0, 130, ScrollBar.DIR_VERTICAL, 32, 2, 0
+        )
+        self._v_scroll_bar.add_event_listener("change", self.__on_v_scroll_bar_change)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
@@ -49,18 +71,16 @@ class CanvasPanel(Widget):
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
-        self._h_scroll_bar.add_event_listener("change", self.__on_h_scroll_bar_change)
-        self._v_scroll_bar.add_event_listener("change", self.__on_v_scroll_bar_change)
 
     def _add_pre_history(self, canvas):
         self._history_data = data = {}
 
         if self._is_tilemap_mode:
-            data["tilemap"] = self.parent.tilemap_no
+            data["tilemap"] = self.tilemap_no_var.v
         else:
-            data["image"] = self.parent.image_no
+            data["image"] = self.image_no_var.v
 
-        data["pos"] = (self.parent.edit_x, self.parent.edit_y)
+        data["pos"] = (self.focus_x_var.v, self.focus_y_var.v)
         data["before"] = canvas.copy()
 
     def _add_post_history(self, canvas):
@@ -79,12 +99,18 @@ class CanvasPanel(Widget):
         self._temp_canvas.blt(
             0,
             0,
-            self.parent.canvas,
-            self.parent.edit_x,
-            self.parent.edit_y,
+            self.canvas_var.v,
+            self.focus_x_var.v,
+            self.focus_y_var.v,
             16,
             16,
         )
+
+    def __on_h_scroll_bar_change(self, value):
+        self.focus_x_var.v = value * 8
+
+    def __on_v_scroll_bar_change(self, value):
+        self.focus_y_var.v = value * 8
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
@@ -98,26 +124,26 @@ class CanvasPanel(Widget):
         self._is_dragged = True
         self._is_assist_mode = False
 
-        if self.parent.tool == TOOL_SELECT:
+        if self.tool_var.v == TOOL_SELECT:
             self._select_x1 = self._select_x2 = x
             self._select_y1 = self._select_y2 = y
-        elif self.parent.tool >= TOOL_PENCIL and self.parent.tool <= TOOL_CIRC:
+        elif self.tool_var.v >= TOOL_PENCIL and self.tool_var.v <= TOOL_CIRC:
             self._reset_temp_canvas()
-            self._temp_canvas.pset(x, y, self.parent.color)
-        elif self.parent.tool == TOOL_BUCKET:
+            self._temp_canvas.pset(x, y, self.color_var.v)
+        elif self.tool_var.v == TOOL_BUCKET:
             self._reset_temp_canvas()
 
             self._add_pre_history(
-                self.parent.canvas.get_slice(
-                    self.parent.edit_x, self.parent.edit_y, 16, 16
+                self.canvas_var.v.get_slice(
+                    self.focus_x_var.v, self.focus_y_var.v, 16, 16
                 )
             )
 
-            self.canvas.fill(x, y, self.parent.color)
+            self.canvas.fill(x, y, self.color_var.v)
 
             self.canvas.blt(
-                self.parent.edit_x,
-                self.parent.edit_y,
+                self.focus_x_var.v,
+                self.focus_y_var.v,
                 self._temp_canvas,
                 0,
                 0,
@@ -126,8 +152,8 @@ class CanvasPanel(Widget):
             )
 
             self._add_post_history(
-                self.parent.canvas.get_slice(
-                    self.parent.edit_x, self.parent.edit_y, 16, 16
+                self.canvas_var.v.get_slice(
+                    self.focus_x_var.v, self.focus_y_var.v, 16, 16
                 )
             )
 
@@ -140,16 +166,16 @@ class CanvasPanel(Widget):
 
         self._is_dragged = False
 
-        if TOOL_PENCIL <= self.parent.tool <= TOOL_CIRC:
+        if TOOL_PENCIL <= self.tool_var.v <= TOOL_CIRC:
             self._add_pre_history(
-                self.parent.canvas.get_slice(
-                    self.parent.edit_x, self.parent.edit_y, 16, 16
+                self.canvas_var.v.get_slice(
+                    self.focus_x_var.v, self.focus_y_var.v, 16, 16
                 )
             )
 
-            self.parent.canvas.blt(
-                self.parent.edit_x,
-                self.parent.edit_y,
+            self.canvas_var.v.blt(
+                self.focus_x_var.v,
+                self.focus_y_var.v,
                 self._temp_canvas,
                 0,
                 0,
@@ -158,20 +184,20 @@ class CanvasPanel(Widget):
             )
 
             self._add_post_history(
-                self.parent.canvas.get_slice(
-                    self.parent.edit_x, self.parent.edit_y, 16, 16
+                self.canvas_var.v.get_slice(
+                    self.focus_x_var.v, self.focus_y_var.v, 16, 16
                 )
             )
 
     def __on_mouse_click(self, key, x, y):
         if key == pyxel.MOUSE_BUTTON_RIGHT:
-            x = self.parent.edit_x + (x - self.x) // 8
-            y = self.parent.edit_y + (y - self.y) // 8
+            x = self.focus_x_var.v + (x - self.x) // 8
+            y = self.focus_y_var.v + (y - self.y) // 8
 
             if self._is_tilemap_mode:
-                self.parent.color = pyxel.tilemap(self.parent.tilemap).data[y][x]
+                self.color_var.v = pyxel.tilemap(self.tilemap_var.v).data[y][x]
             else:
-                self.parent.color = pyxel.image(self.parent.image).data[y][x]
+                self.color_var.v = pyxel.image(self.image_var.v).data[y][x]
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         if key == pyxel.MOUSE_BUTTON_LEFT:
@@ -180,43 +206,43 @@ class CanvasPanel(Widget):
             x2 = (x - self.x - 1) // 8
             y2 = (y - self.y - 1) // 8
 
-            if self.parent.tool == TOOL_SELECT:
+            if self.tool_var.v == TOOL_SELECT:
                 x2 = min(max(x2, 0), 15)
                 y2 = min(max(y2, 0), 15)
                 self._select_x1, self._select_x2 = (x1, x2) if x1 < x2 else (x2, x1)
                 self._select_y1, self._select_y2 = (y1, y2) if y1 < y2 else (y2, y1)
-            elif self.parent.tool == TOOL_PENCIL:
+            elif self.tool_var.v == TOOL_PENCIL:
                 if self._is_assist_mode:
                     self._overlay_canvas.clear()
-                    self._overlay_canvas.line(x1, y1, x2, y2, self.parent.color)
+                    self._overlay_canvas.line(x1, y1, x2, y2, self.color_var.v)
                 else:
                     self._temp_canvas.line(
-                        self._last_x, self._last_y, x2, y2, self.parent.color
+                        self._last_x, self._last_y, x2, y2, self.color_var.v
                     )
-            elif self.parent.tool == TOOL_RECTB:
+            elif self.tool_var.v == TOOL_RECTB:
                 self._reset_temp_canvas()
                 self._temp_canvas.rectb2(
                     x1,
                     y1,
                     x2,
                     y2,
-                    self.parent.color,
+                    self.color_var.v,
                 )
-            elif self.parent.tool == TOOL_RECT:
+            elif self.tool_var.v == TOOL_RECT:
                 self._reset_temp_canvas()
                 self._temp_canvas.rect2(
                     x1,
                     y1,
                     x2,
                     y2,
-                    self.parent.color,
+                    self.color_var.v,
                 )
-            elif self.parent.tool == TOOL_CIRCB:
+            elif self.tool_var.v == TOOL_CIRCB:
                 self._reset_temp_canvas()
-                self._temp_canvas.ellipb(x1, y1, x2, y2, self.parent.color)
-            elif self.parent.tool == TOOL_CIRC:
+                self._temp_canvas.ellipb(x1, y1, x2, y2, self.color_var.v)
+            elif self.tool_var.v == TOOL_CIRC:
                 self._reset_temp_canvas()
-                self._temp_canvas.ellip(x1, y1, x2, y2, self.parent.color)
+                self._temp_canvas.ellip(x1, y1, x2, y2, self.color_var.v)
 
             self._last_x = x2
             self._last_y = y2
@@ -227,19 +253,19 @@ class CanvasPanel(Widget):
 
             if abs(self._drag_offset_x) >= 16:
                 offset = self._drag_offset_x // 16
-                self.parent.edit_x += offset * 8
+                self.focus_x_var.v += offset * 8
                 self._drag_offset_x -= offset * 16
 
             if abs(self._drag_offset_y) >= 16:
                 offset = self._drag_offset_y // 16
-                self.parent.edit_y += offset * 8
+                self.focus_y_var.v += offset * 8
                 self._drag_offset_y -= offset * 16
 
-            self.parent.edit_x = min(max(self.parent.edit_x, 0), 240)
-            self.parent.edit_y = min(max(self.parent.edit_y, 0), 240)
+            self.focus_x_var.v = min(max(self.focus_x_var.v, 0), 240)
+            self.focus_y_var.v = min(max(self.focus_y_var.v, 0), 240)
 
     def __on_mouse_hover(self, x, y):
-        if self.parent.tool == TOOL_SELECT:
+        if self.tool_var.v == TOOL_SELECT:
             s = "COPY:CTRL+C PASTE:CTRL+V"
         elif self._is_dragged:
             s = "ASSIST:SHIFT"
@@ -247,23 +273,23 @@ class CanvasPanel(Widget):
             s = "PICK:R-CLICK VIEW:R-DRAG"
 
         x, y = self._screen_to_view(x, y)
-        x += self.parent.edit_x
-        y += self.parent.edit_y
-        self.parent.help_message = s + " ({},{})".format(x, y)
+        x += self.focus_x_var.v
+        y += self.focus_y_var.v
+        self.help_message_var.v = s + " ({},{})".format(x, y)
 
     def __on_update(self):
         if self._is_dragged and not self._is_assist_mode and pyxel.btn(pyxel.KEY_SHIFT):
             self._is_assist_mode = True
 
         if (
-            self.parent.tool == TOOL_SELECT
+            self.tool_var.v == TOOL_SELECT
             and self._select_x1 >= 0
             and (pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI))
         ):
             if pyxel.btnp(pyxel.KEY_C):
-                self._copy_buffer = self.parent.canvas.get_slice(
-                    self.parent.edit_x + self._select_x1,
-                    self.parent.edit_y + self._select_y1,
+                self._copy_buffer = self.canvas_var.v.get_slice(
+                    self.focus_x_var.v + self._select_x1,
+                    self.focus_y_var.v + self._select_y1,
                     self._select_x2 - self._select_x1 + 1,
                     self._select_y2 - self._select_y1 + 1,
                 )
@@ -273,22 +299,22 @@ class CanvasPanel(Widget):
                 height -= max(self._select_y1 + height - 16, 0)
 
                 self._add_pre_history(
-                    self.parent.canvas.get_slice(
-                        self.parent.edit_x, self.parent.edit_y, 16, 16
+                    self.canvas_var.v.get_slice(
+                        self.focus_x_var.v, self.focus_y_var.v, 16, 16
                     )
                 )
 
-                self.parent.canvas.set_slice(
-                    self.parent.edit_x + self._select_x1,
-                    self.parent.edit_y + self._select_y1,
+                self.canvas_var.v.set_slice(
+                    self.focus_x_var.v + self._select_x1,
+                    self.focus_y_var.v + self._select_y1,
                     width,
                     height,
                     self._copy_buffer,
                 )
 
                 self._add_post_history(
-                    self.parent.canvas.get_slice(
-                        self.parent.edit_x, self.parent.edit_y, 16, 16
+                    self.canvas_var.v.get_slice(
+                        self.focus_x_var.v, self.focus_y_var.v, 16, 16
                     )
                 )
 
@@ -301,22 +327,22 @@ class CanvasPanel(Widget):
             return
 
         if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            self.parent.edit_x -= 8
+            self.focus_x_var.v -= 8
 
         if pyxel.btnp(pyxel.KEY_RIGHT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            self.parent.edit_x += 8
+            self.focus_x_var.v += 8
 
         if pyxel.btnp(pyxel.KEY_UP, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            self.parent.edit_y -= 8
+            self.focus_y_var.v -= 8
 
         if pyxel.btnp(pyxel.KEY_DOWN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
-            self.parent.edit_y += 8
+            self.focus_y_var.v += 8
 
-        self.parent.edit_x = min(max(self.parent.edit_x, 0), 240)
-        self.parent.edit_y = min(max(self.parent.edit_y, 0), 240)
+        self.focus_x_var.v = min(max(self.focus_x_var.v, 0), 240)
+        self.focus_y_var.v = min(max(self.focus_y_var.v, 0), 240)
 
-        self._h_scroll_bar.value = self.parent.edit_x // 8
-        self._v_scroll_bar.value = self.parent.edit_y // 8
+        self._h_scroll_bar.value = self.focus_x_var.v // 8
+        self._v_scroll_bar.value = self.focus_y_var.v // 8
 
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
@@ -328,8 +354,8 @@ class CanvasPanel(Widget):
                 self.x + 1,
                 self.y + 1,
                 self.parent.tilemap,
-                self.parent.edit_x,
-                self.parent.edit_y,
+                self.parent.focus_x,
+                self.parent.focus_y,
                 16,
                 16,
             )
@@ -349,7 +375,7 @@ class CanvasPanel(Widget):
             canvas, offset_x, offset_y = (
                 (self._temp_canvas, 0, 0)
                 if self._is_dragged
-                else (self.parent.canvas, self.parent.edit_x, self.parent.edit_y)
+                else (self.canvas_var.v, self.focus_x_var.v, self.focus_y_var.v)
             )
 
             for i in range(16):
@@ -365,7 +391,7 @@ class CanvasPanel(Widget):
             self.x + 64, self.y + 1, self.x + 64, self.y + 128, WIDGET_PANEL_COLOR
         )
 
-        if self.parent.tool == TOOL_SELECT and self._select_x1 >= 0:
+        if self.tool_var.v == TOOL_SELECT and self._select_x1 >= 0:
             pyxel.clip(self.x + 1, self.y + 1, self.x + 128, self.y + 128)
 
             x = self._select_x1 * 8 + 12
@@ -378,12 +404,6 @@ class CanvasPanel(Widget):
             pyxel.rectb(x - 1, y - 1, w + 2, h + 2, PANEL_SELECT_BORDER_COLOR)
 
             pyxel.clip()
-
-    def __on_h_scroll_bar_change(self, value):
-        self.parent.edit_x = value * 8
-
-    def __on_v_scroll_bar_change(self, value):
-        self.parent.edit_y = value * 8
 
     @staticmethod
     def _adjust_region(x1, y1, x2, y2, is_assist_mode):
