@@ -56,10 +56,14 @@ class Widget:
         self._height = height
         self._event_listeners = {}
         self.is_visible_var = WidgetVariable(
-            is_visible, on_get=self.__on_visible_get, on_change=self.__on_visible_change
+            is_visible,
+            on_get=self.__on_is_visible_get,
+            on_change=self.__on_is_visible_change,
         )
         self.is_enabled_var = WidgetVariable(
-            is_enabled, on_get=self.__on_enabled_get, on_change=self.__on_enabled_change
+            is_enabled,
+            on_get=self.__on_is_enabled_get,
+            on_change=self.__on_is_enabled_change,
         )
 
     @property
@@ -116,20 +120,6 @@ class Widget:
 
         for listener in self._event_listeners[event]:
             listener(*args)
-
-    def _trigger_visible_event(self, is_visible):
-        self.trigger_event("show" if is_visible else "hide")
-
-        for child in self._children:
-            if child.is_visible_var.v == is_visible:
-                child._trigger_visible_event(is_visible)
-
-    def _trigger_enabled_event(self, is_enabled):
-        self.trigger_event("enabled" if is_enabled else "disabled")
-
-        for child in self._children:
-            if child.is_enabled_var.v == is_enabled:
-                child._trigger_enabled_event(is_enabled)
 
     def update_all(self):
         capture_widget = Widget._mouse_capture_info.widget
@@ -258,20 +248,34 @@ class Widget:
             pyxel.line(x + w, y + 2, x + w, y + h - 1, WIDGET_SHADOW_COLOR)
             pyxel.pset(x + w - 1, y + h - 1, WIDGET_SHADOW_COLOR)
 
-    def __on_visible_get(self, value):
+    def __on_is_visible_get(self, value):
         if self._parent:
             return self._parent.is_visible_var.v and value
         else:
             return value
 
-    def __on_visible_change(self, value):
+    def __on_is_visible_change(self, value):
         self._trigger_visible_event(value)
 
-    def __on_enabled_get(self, value):
+    def _trigger_visible_event(self, is_visible):
+        self.trigger_event("show" if is_visible else "hide")
+
+        for child in self._children:
+            if child.is_visible_var.v == is_visible:
+                child._trigger_visible_event(is_visible)
+
+    def __on_is_enabled_get(self, value):
         if self._parent:
             return self._parent.is_enabled_var.v and value
         else:
             return value
 
-    def __on_enabled_change(self, value):
+    def __on_is_enabled_change(self, value):
         self._trigger_enabled_event(value)
+
+    def _trigger_enabled_event(self, is_enabled):
+        self.trigger_event("enabled" if is_enabled else "disabled")
+
+        for child in self._children:
+            if child.is_enabled_var.v == is_enabled:
+                child._trigger_enabled_event(is_enabled)
