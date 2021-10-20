@@ -40,12 +40,7 @@ class MusicEditor(EditorBase):
             0,
         )
         self._loop_button = ImageToggleButton(
-            self,
-            205,
-            17,
-            EDITOR_IMAGE,
-            144,
-            0,
+            self, 205, 17, EDITOR_IMAGE, 144, 0, False
         )
         self._music_field = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
         self._sound_selector = SoundSelector(self)
