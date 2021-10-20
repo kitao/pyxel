@@ -10,8 +10,7 @@ class WidgetVariable:
         self._value = value
         self._event_listeners = {"get": [], "set": [], "change": []}
 
-    @property
-    def v(self):
+    def get(self):
         value = self._value
 
         for listener in self._event_listeners["get"]:
@@ -19,8 +18,7 @@ class WidgetVariable:
 
         return value
 
-    @v.setter
-    def v(self, value):
+    def set(self, value):
         for listener in self._event_listeners["set"]:
             value = listener(value)
 
