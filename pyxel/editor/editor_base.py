@@ -20,7 +20,7 @@ class EditorBase(Widget):
     Events:
         undo (data)
         redo (data)
-        drop (filenames)
+        drop (filename)
     """
 
     def __init__(self, parent):
@@ -28,7 +28,8 @@ class EditorBase(Widget):
 
         self._history_list = []
         self._history_index = 0
-        self.help_message_var = parent.help_message_var
+
+        self.copy_variable("help_message_var", parent)
 
     @property
     def can_undo(self):
@@ -70,10 +71,10 @@ class EditorBase(Widget):
         )
 
     def __on_number_picker_dec_mouse_hover(self, x, y):
-        self.help_message_var.v = "-10:SHIFT+CLICK"
+        self.help_message_var = "-10:SHIFT+CLICK"
 
     def __on_number_picker_inc_mouse_hover(self, x, y):
-        self.help_message_var.v = "+10:SHIFT+CLICK"
+        self.help_message_var = "+10:SHIFT+CLICK"
 
     def check_tool_button_shortcuts(self):
         if (
@@ -84,13 +85,13 @@ class EditorBase(Widget):
             return
 
         if pyxel.btnp(pyxel.KEY_S):
-            self.tool_var.v = TOOL_SELECT
+            self.tool_var = TOOL_SELECT
         elif pyxel.btnp(pyxel.KEY_P):
-            self.tool_var.v = TOOL_PENCIL
+            self.tool_var = TOOL_PENCIL
         elif pyxel.btnp(pyxel.KEY_R):
-            self.tool_var.v = TOOL_RECT if pyxel.btn(pyxel.KEY_SHIFT) else TOOL_RECTB
+            self.tool_var = TOOL_RECT if pyxel.btn(pyxel.KEY_SHIFT) else TOOL_RECTB
         elif pyxel.btnp(pyxel.KEY_C):
-            self.tool_var.v = TOOL_CIRC if pyxel.btn(pyxel.KEY_SHIFT) else TOOL_CIRCB
+            self.tool_var = TOOL_CIRC if pyxel.btn(pyxel.KEY_SHIFT) else TOOL_CIRCB
         elif pyxel.btnp(pyxel.KEY_B):
             self.tool_var = TOOL_BUCKET
 
@@ -117,4 +118,4 @@ class EditorBase(Widget):
         else:
             s = ""
 
-        self.help_message_var.v = s
+        self.help_message_var = s
