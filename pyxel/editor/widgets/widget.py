@@ -263,10 +263,10 @@ class Widget:
             widget_variable.add_event_listener("get", on_get)
 
         if on_set:
-            widget_variable.add_event_listener("set", on_get)
+            widget_variable.add_event_listener("set", on_set)
 
         if on_change:
-            widget_variable.add_event_listener("change", on_get)
+            widget_variable.add_event_listener("change", on_change)
 
         setattr(self, member_name, widget_variable)
 
