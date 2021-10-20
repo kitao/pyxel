@@ -51,12 +51,6 @@ class ScrollBar(Widget):
         self._drag_offset = 0
         self._is_dragged = False
 
-        self.add_event_listener("mouse_down", self.__on_mouse_down)
-        self.add_event_listener("mouse_up", self.__on_mouse_up)
-        self.add_event_listener("mouse_drag", self.__on_mouse_drag)
-        self.add_event_listener("mouse_repeat", self.__on_mouse_repeat)
-        self.add_event_listener("draw", self.__on_draw)
-
         # value_var
         self.make_variable("value_var", value, on_change=self.__on_value_change)
 
@@ -75,6 +69,13 @@ class ScrollBar(Widget):
         self.inc_button = Button(self, inc_x, inc_y, btn_w, btn_h)
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
 
+        # event listeners
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
+        self.add_event_listener("mouse_up", self.__on_mouse_up)
+        self.add_event_listener("mouse_drag", self.__on_mouse_drag)
+        self.add_event_listener("mouse_repeat", self.__on_mouse_repeat)
+        self.add_event_listener("draw", self.__on_draw)
+
     @property
     def scroll_size(self):
         return (self.height if self._is_vertical else self.width) - 14
@@ -86,6 +87,15 @@ class ScrollBar(Widget):
     @property
     def slider_pos(self):
         return round(7 + self.scroll_size * self.value_var / self.scroll_range)
+
+    def __on_value_change(self, value):
+        return self.trigger_event("change", value)
+
+    def __on_dec_button_press(self):
+        self.value_var = max(self.value_var - 1, 0)
+
+    def __on_inc_button_press(self):
+        self.value_var = min(self.value_var + 1, self.scroll_range - self.slider_range)
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
@@ -170,12 +180,3 @@ class ScrollBar(Widget):
                 3,
                 WIDGET_PANEL_COLOR,
             )
-
-    def __on_value_change(self, value):
-        return self.trigger_event("change", value)
-
-    def __on_dec_button_press(self):
-        self.value_var = max(self.value_var - 1, 0)
-
-    def __on_inc_button_press(self):
-        self.value_var = min(self.value_var + 1, self.scroll_range - self.slider_range)

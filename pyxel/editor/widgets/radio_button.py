@@ -26,6 +26,7 @@ class RadioButton(Widget):
         # value_var
         self.make_variable("value_var", value, on_change=self.__on_value_change)
 
+        # event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("draw", self.__on_draw)
