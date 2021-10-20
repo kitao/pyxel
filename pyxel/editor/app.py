@@ -7,7 +7,7 @@ from .music_editor import MusicEditor
 from .settings import APP_HEIGHT, APP_WIDTH, EDITOR_IMAGE, HELP_MESSAGE_COLOR
 from .sound_editor import SoundEditor
 from .tilemap_editor import TilemapEditor
-from .widgets import ImageButton, RadioButton, Widget, WidgetVariable
+from .widgets import ImageButton, RadioButton, Widget
 from .widgets.settings import (
     WIDGET_BACKGROUND_COLOR,
     WIDGET_HOLD_TIME,
@@ -20,6 +20,7 @@ from .widgets.settings import (
 class App(Widget):
     """
     Variables:
+        editor_no_var
         help_message_var
 
     Events:
@@ -43,7 +44,9 @@ class App(Widget):
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
 
         self._resource_file = resource_file
-        self.help_message_var = WidgetVariable("")
+
+        # help_message_var
+        self.make_variable("help_message_var", "")
 
         # editor button
         self._editor_button = RadioButton(
@@ -60,7 +63,7 @@ class App(Widget):
         self._editor_button.add_event_listener(
             "mouse_hover", self.__on_editor_button_mouse_hover
         )
-        self._editor_no_var = self._editor_button.value_var
+        self.copy_variable("editor_no_var", self._editor_button, "value_var")
 
         # undo button
         self._undo_button = ImageButton(
@@ -104,22 +107,24 @@ class App(Widget):
             "mouse_hover", self.__on_save_button_mouse_hover
         )
 
-        self.add_event_listener("update", self.__on_update)
-        self.add_event_listener("draw", self.__on_draw)
-
+        # editors
         self._editors = [
             ImageEditor(self),
             TilemapEditor(self),
             SoundEditor(self),
             MusicEditor(self),
         ]
-        self.__on_editor_button_change(self._editor_no_var.v)
+        self.__on_editor_button_change(self.editor_no_var)
+
+        # event listeners
+        self.add_event_listener("update", self.__on_update)
+        self.add_event_listener("draw", self.__on_draw)
 
         pyxel.run(self.update_all, self.draw_all)
 
     @property
     def _editor(self):
-        return self._editors[self._editor_no_var.v]
+        return self._editors[self.editor_no_var]
 
     @staticmethod
     def _set_title(filename):
@@ -127,28 +132,28 @@ class App(Widget):
 
     def __on_editor_button_change(self, value):
         for i, editor in enumerate(self._editors):
-            editor.is_visible_var.v = i == value
+            editor.is_visible_var = i == value
 
     def __on_editor_button_mouse_hover(self, x, y):
-        self.help_message_var.v = "EDITOR:ALT+LEFT/RIGHT"
+        self.help_message_var = "EDITOR:ALT+LEFT/RIGHT"
 
     def __on_undo_button_press(self):
         self._editor.undo()
 
     def __on_undo_button_mouse_hover(self, x, y):
-        self.help_message_var.v = "UNDO:CTRL+Z"
+        self.help_message_var = "UNDO:CTRL+Z"
 
     def __on_redo_button_press(self):
         self._editor.redo()
 
     def __on_redo_button_mouse_hover(self, x, y):
-        self.help_message_var.v = "REDO:CTRL+Y"
+        self.help_message_var = "REDO:CTRL+Y"
 
     def __on_save_button_press(self):
         pyxel.save(self._resource_file)
 
     def __on_save_button_mouse_hover(self, x, y):
-        self.help_message_var.v = "SAVE:CTRL+S"
+        self.help_message_var = "SAVE:CTRL+S"
 
     def __on_update(self):
         if pyxel.drop_files:
@@ -166,7 +171,7 @@ class App(Widget):
                         (False, True, False, False),
                         (False, False, True, False),
                         (False, False, False, True),
-                    )[self._editor_no_var.v]
+                    )[self.editor_no_var]
 
                     pyxel.load(
                         pyxel._drop_file,
@@ -186,12 +191,12 @@ class App(Widget):
 
         if pyxel.btn(pyxel.KEY_ALT):
             if pyxel.btnp(pyxel.KEY_LEFT):
-                self._editor_no_var.v = (self._editor_no_var.v - 1) % len(self._editors)
+                self.editor_no_var = (self.editor_no_var - 1) % len(self._editors)
             elif pyxel.btnp(pyxel.KEY_RIGHT):
-                self._editor_no_var.v = (self._editor_no_var.v + 1) % len(self._editors)
+                self.editor_no_var = (self.editor_no_var + 1) % len(self._editors)
 
-        self._undo_button.is_enabled_var.v = self._editor.can_undo
-        self._redo_button.is_enabled_var.v = self._editor.can_redo
+        self._undo_button.is_enabled_var = self._editor.can_undo
+        self._redo_button.is_enabled_var = self._editor.can_redo
 
         if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
             if pyxel.btnp(pyxel.KEY_S):
@@ -211,6 +216,6 @@ class App(Widget):
         pyxel.cls(WIDGET_BACKGROUND_COLOR)
         pyxel.rect(0, 0, 240, 9, WIDGET_PANEL_COLOR)
         pyxel.line(0, 9, 239, 9, WIDGET_SHADOW_COLOR)
-        pyxel.text(93, 2, self.help_message_var.v, HELP_MESSAGE_COLOR)
+        pyxel.text(93, 2, self.help_message_var, HELP_MESSAGE_COLOR)
 
-        self.help_message_var.v = ""
+        self.help_message_var = ""
