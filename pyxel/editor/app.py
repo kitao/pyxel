@@ -22,9 +22,6 @@ class App(Widget):
     Variables:
         editor_no_var
         help_message_var
-
-    Events:
-        drop (drop_file)
     """
 
     def __init__(self, resource_file):
