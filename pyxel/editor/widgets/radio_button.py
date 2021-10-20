@@ -2,7 +2,6 @@ import pyxel
 
 from .settings import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
 from .widget import Widget
-from .widget_variable import WidgetVariable
 
 
 class RadioButton(Widget):
@@ -17,7 +16,6 @@ class RadioButton(Widget):
     def __init__(self, parent, x, y, img, sx, sy, btn_count, value, **kwargs):
         width = btn_count * 9 - 2
         height = 7
-
         super().__init__(parent, x, y, width, height, **kwargs)
 
         self._img = img
@@ -26,8 +24,7 @@ class RadioButton(Widget):
         self._btn_count = btn_count
 
         # value_var
-        self.value_var = WidgetVariable(value)
-        self.value_var.add_event_listener("change", self.__on_value_change)
+        self.make_variable("value_var", value, on_change=self.__on_value_change)
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
@@ -59,7 +56,7 @@ class RadioButton(Widget):
         value = self.check_value(x, y)
 
         if value is not None:
-            self.value_var.v = value
+            self.value_var = value
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         self.__on_mouse_down(key, x, y)
@@ -77,10 +74,10 @@ class RadioButton(Widget):
 
         pyxel.pal(BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR)
         pyxel.blt(
-            self.x + self.value_var.v * 9,
+            self.x + self.value_var * 9,
             self.y,
             self._img,
-            self._sx + self.value_var.v * 9,
+            self._sx + self.value_var * 9,
             self._sy,
             7,
             7,

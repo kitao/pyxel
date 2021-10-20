@@ -7,7 +7,6 @@ from .settings import (
     BUTTON_PRESSING_TIME,
 )
 from .widget import Widget
-from .widget_variable import WidgetVariable
 
 
 class Button(Widget):
@@ -24,10 +23,13 @@ class Button(Widget):
 
         self._pressing_time = 0
 
-        # is_pressed_var
-        self.is_pressed_var = WidgetVariable(False)
-        self.is_pressed_var.add_event_listener("get", self.__on_is_pressed_get)
-        self.is_pressed_var.add_event_listener("set", self.__on_is_pressed_set)
+        # is_pressed_ver
+        self.make_variable(
+            "is_pressed_var",
+            False,
+            on_get=self.__on_is_pressed_get,
+            on_set=self.__on_is_pressed_set,
+        )
 
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_repeat", self.__on_mouse_down)
@@ -37,8 +39,8 @@ class Button(Widget):
     @property
     def button_color(self):
         return (
-            (BUTTON_PRESSED_COLOR if self.is_pressed_var.v else BUTTON_ENABLED_COLOR)
-            if self.is_enabled_var.v
+            (BUTTON_PRESSED_COLOR if self.is_pressed_var else BUTTON_ENABLED_COLOR)
+            if self.is_enabled_var
             else BUTTON_DISABLED_COLOR
         )
 
@@ -58,13 +60,13 @@ class Button(Widget):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
-        self.is_pressed_var.v = True
+        self.is_pressed_var = True
 
     def __on_mouse_up(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
-        self.is_pressed_var.v = False
+        self.is_pressed_var = False
 
     def __on_update(self):
         if self._pressing_time > 0:

@@ -8,4 +8,3 @@ from .scroll_bar import ScrollBar  # noqa: F401
 from .text_button import TextButton  # noqa: F401
 from .toggle_button import ToggleButton  # noqa: F401
 from .widget import Widget  # noqa: F401
-from .widget_variable import WidgetVariable  # noqa: F401

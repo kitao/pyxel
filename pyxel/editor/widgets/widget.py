@@ -57,14 +57,20 @@ class Widget:
         self._event_listeners = {}
 
         # is_visible_var
-        self.is_visible_var = WidgetVariable(is_visible)
-        self.is_visible_var.add_event_listener("get", self.__on_is_visible_get)
-        self.is_visible_var.add_event_listener("change", self.__on_is_visible_change)
+        self.make_variable(
+            "is_visible_var",
+            is_visible,
+            on_get=self.__on_is_visible_get,
+            on_change=self.__on_is_visible_change,
+        )
 
         # is_enabled_var
-        self.is_enabled_var = WidgetVariable(is_enabled)
-        self.is_enabled_var.add_event_listener("get", self.__on_is_enabled_get)
-        self.is_enabled_var.add_event_listener("change", self.__on_is_enabled_change)
+        self.make_variable(
+            "is_enabled_var",
+            is_enabled,
+            on_get=self.__on_is_enabled_get,
+            on_change=self.__on_is_enabled_change,
+        )
 
     @property
     def x(self):
@@ -132,7 +138,7 @@ class Widget:
         self._update()
 
     def _process_input(self):
-        if not self.is_visible_var.v or not self.is_enabled_var.v:
+        if not self.is_visible_var or not self.is_enabled_var:
             return False
 
         for widget in reversed(self._children):
@@ -217,7 +223,7 @@ class Widget:
             self._end_capture()
 
     def _update(self):
-        if not self.is_visible_var.v:
+        if not self.is_visible_var:
             return
 
         self.trigger_event("update")
@@ -226,7 +232,7 @@ class Widget:
             child._update()
 
     def draw_all(self):
-        if not self.is_visible_var.v:
+        if not self.is_visible_var:
             return
 
         self.trigger_event("draw")
@@ -248,9 +254,70 @@ class Widget:
             pyxel.line(x + w, y + 2, x + w, y + h - 1, WIDGET_SHADOW_COLOR)
             pyxel.pset(x + w - 1, y + h - 1, WIDGET_SHADOW_COLOR)
 
+    def make_variable(self, name, value, *, on_get=None, on_set=None, on_change=None):
+        member_name = self._widget_variable_name(name)
+
+        widget_variable = WidgetVariable(value)
+
+        if on_get:
+            widget_variable.add_event_listener("get", on_get)
+
+        if on_set:
+            widget_variable.add_event_listener("set", on_get)
+
+        if on_change:
+            widget_variable.add_event_listener("change", on_get)
+
+        setattr(self, member_name, widget_variable)
+
+        def getter(self):
+            return getattr(self, member_name).get()
+
+        def setter(self, value):
+            getattr(self, member_name).set(value)
+
+        setattr(self.__class__, name, property(getter, setter))
+
+    def copy_variable(self, name, org_widget, org_name=None):
+        new_member_name = self._widget_variable_name(name)
+        member_name = self._widget_variable_name(org_name or name)
+
+        widget_variable = getattr(org_widget, member_name)
+
+        setattr(self, new_member_name, widget_variable)
+
+        def getter(self):
+            return getattr(self, new_member_name).get()
+
+        def setter(self, value):
+            getattr(self, new_member_name).set(value)
+
+        setattr(self.__class__, name, property(getter, setter))
+
+    def bind_variable(self, name, bind_widget, bind_name=None):
+        member_name1 = self._widget_variable_name(name)
+        member_name2 = self._widget_variable_name(bind_name or name)
+
+        widget_variable1 = getattr(self, member_name1)
+        widget_variable2 = getattr(bind_widget, member_name2)
+
+        def on_change1(value):
+            widget_variable2.set(value)
+
+        widget_variable1.add_event_listener("change", on_change1)
+
+        def on_change2(value):
+            widget_variable1.set(value)
+
+        widget_variable2.add_event_listener("change", on_change2)
+
+    @staticmethod
+    def _widget_variable_name(name):
+        return "_widget_variable_" + name
+
     def __on_is_visible_get(self, value):
         if self._parent:
-            return self._parent.is_visible_var.v and value
+            return self._parent.is_visible_var and value
         else:
             return value
 
@@ -261,12 +328,12 @@ class Widget:
         self.trigger_event("show" if is_visible else "hide")
 
         for child in self._children:
-            if child.is_visible_var.v == is_visible:
+            if child.is_visible_var == is_visible:
                 child._trigger_visible_event(is_visible)
 
     def __on_is_enabled_get(self, value):
         if self._parent:
-            return self._parent.is_enabled_var.v and value
+            return self._parent.is_enabled_var and value
         else:
             return value
 
@@ -277,5 +344,5 @@ class Widget:
         self.trigger_event("enabled" if is_enabled else "disabled")
 
         for child in self._children:
-            if child.is_enabled_var.v == is_enabled:
+            if child.is_enabled_var == is_enabled:
                 child._trigger_enabled_event(is_enabled)
