@@ -14,13 +14,14 @@ class ImageToggleButton(ToggleButton):
         unchecked
     """
 
-    def __init__(self, parent, x, y, img, u, v, **kwargs):
-        super().__init__(parent, x, y, 7, 7, **kwargs)
+    def __init__(self, parent, x, y, img, u, v, value, **kwargs):
+        super().__init__(parent, x, y, 7, 7, value, **kwargs)
 
         self._img = img
         self._u = u
         self._v = v
 
+        # event listeners
         self.add_event_listener("draw", self.__on_draw)
 
     def __on_draw(self):

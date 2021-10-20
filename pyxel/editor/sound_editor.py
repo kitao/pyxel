@@ -32,7 +32,9 @@ class SoundEditor(EditorBase):
         self._stop_button = ImageButton(
             self, 195, 17, EDITOR_IMAGE, 135, 0, is_enabled=False
         )
-        self._loop_button = ImageToggleButton(self, 205, 17, EDITOR_IMAGE, 144, 0)
+        self._loop_button = ImageToggleButton(
+            self, 205, 17, EDITOR_IMAGE, 144, 0, False
+        )
         self._piano_keyboard = PianoKeyboard(self)
         self._piano_roll = PianoRoll(self)
         self._sound_field = SoundField(self)
