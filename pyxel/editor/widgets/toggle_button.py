@@ -14,13 +14,16 @@ class ToggleButton(Widget):
         unchecked
     """
 
-    def __init__(self, parent, left, top, width, height, **kwargs):
+    def __init__(self, parent, left, top, width, height, value, **kwargs):
         super().__init__(parent, left, top, width, height, **kwargs)
 
-        self.add_event_listener("mouse_down", self.__on_mouse_down)
-
         # is_checked_var
-        self.make_variable("is_checked_var", on_change=self.__on_is_checked_change)
+        self.make_variable(
+            "is_checked_var", value, on_change=self.__on_is_checked_change
+        )
+
+        # event listeners
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
 
     @property
     def button_color(self):
@@ -30,14 +33,14 @@ class ToggleButton(Widget):
             else BUTTON_DISABLED_COLOR
         )
 
-    def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_LEFT:
-            return
-
-        self.is_checked_var = not self.is_checked_var
-
     def __on_is_checked_change(self, value):
         if value:
             self.trigger_event("checked")
         else:
             self.trigger_event("unchecked")
+
+    def __on_mouse_down(self, key, x, y):
+        if key != pyxel.MOUSE_BUTTON_LEFT:
+            return
+
+        self.is_checked_var = not self.is_checked_var
