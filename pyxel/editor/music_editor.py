@@ -22,25 +22,27 @@ class MusicEditor(EditorBase):
             16,
             pyxel.CHANNEL_COUNT,
         )
-        self._music_picker = NumberPicker(self, 45, 17, 0, pyxel.MUSIC_COUNT - 1, 0)
+        self._music_picker = NumberPicker(
+            self, 45, 17, min_value=0, max_value=pyxel.MUSIC_COUNT - 1, value=0
+        )
         self._play_button = ImageButton(
             self,
             185,
             17,
-            EDITOR_IMAGE,
-            126,
-            0,
+            img=EDITOR_IMAGE,
+            u=126,
+            v=0,
         )
         self._stop_button = ImageButton(
             self,
             195,
             17,
-            EDITOR_IMAGE,
-            135,
-            0,
+            img=EDITOR_IMAGE,
+            u=135,
+            v=0,
         )
         self._loop_button = ImageToggleButton(
-            self, 205, 17, EDITOR_IMAGE, 144, 0, False
+            self, 205, 17, img=EDITOR_IMAGE, u=144, v=0, is_checked=False
         )
         self._music_field = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
         self._sound_selector = SoundSelector(self)

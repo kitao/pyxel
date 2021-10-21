@@ -16,7 +16,7 @@ class MouseCaptureInfo:
     key = None
     time = None
     press_pos = None
-    last_press_pos = None
+    last_pos = None
 
 
 class Widget:
@@ -147,14 +147,14 @@ class Widget:
         y = pyxel.mouse_y
 
         if self.is_hit(x, y):
-            key = None
-
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
                 key = pyxel.MOUSE_BUTTON_LEFT
             elif pyxel.btnp(pyxel.MOUSE_BUTTON_RIGHT):
                 key = pyxel.MOUSE_BUTTON_RIGHT
             elif pyxel.btnp(pyxel.MOUSE_BUTTON_MIDDLE):
                 key = pyxel.MOUSE_BUTTON_MIDDLE
+            else:
+                key = None
 
             if key is not None:
                 self._start_capture(key)
@@ -172,7 +172,7 @@ class Widget:
         capture_info.key = key
         capture_info.time = pyxel.frame_count
         capture_info.press_pos = (pyxel.mouse_x, pyxel.mouse_y)
-        capture_info.last_press_pos = capture_info.press_pos
+        capture_info.last_pos = capture_info.press_pos
 
     def _end_capture(self):
         capture_info = Widget._mouse_capture_info
@@ -180,11 +180,11 @@ class Widget:
         capture_info.key = None
         capture_info.time = None
         capture_info.press_pos = None
-        capture_info.last_press_pos = None
+        capture_info.last_pos = None
 
     def _process_capture(self):
         capture_info = Widget._mouse_capture_info
-        last_x, last_y = capture_info.last_press_pos
+        last_x, last_y = capture_info.last_pos
 
         x = pyxel.mouse_x
         y = pyxel.mouse_y
@@ -198,7 +198,7 @@ class Widget:
                 x - last_x,
                 y - last_y,
             )
-            capture_info.last_press_pos = (x, y)
+            capture_info.last_pos = (x, y)
 
         if self.is_hit(x, y):
             self.trigger_event("mouse_hover", x, y)
@@ -254,6 +254,7 @@ class Widget:
 
     def new_var(self, name, value):
         member_name = self._widget_var_name(name)
+
         widget_var = WidgetVar(value)
         setattr(self, member_name, widget_var)
 
@@ -265,17 +266,18 @@ class Widget:
 
         setattr(self.__class__, name, property(getter, setter))
 
-    def copy_var(self, name, org_widget, org_name=None):
-        new_member_name = self._widget_var_name(name)
-        org_member_name = self._widget_var_name(org_name or name)
-        widget_var = getattr(org_widget, org_member_name)
-        setattr(self, new_member_name, widget_var)
+    def copy_var(self, name, src_widget, src_name=None):
+        member_name = self._widget_var_name(name)
+
+        src_member_name = self._widget_var_name(src_name or name)
+        widget_var = getattr(src_widget, src_member_name)
+        setattr(self, member_name, widget_var)
 
         def getter(self):
-            return getattr(self, new_member_name).get()
+            return getattr(self, member_name).get()
 
         def setter(self, value):
-            getattr(self, new_member_name).set(value)
+            getattr(self, member_name).set(value)
 
         setattr(self.__class__, name, property(getter, setter))
 
