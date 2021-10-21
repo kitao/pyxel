@@ -8,7 +8,7 @@ from .settings import (
     WIDGET_REPEAT_TIME,
     WIDGET_SHADOW_COLOR,
 )
-from .widget_variable import WidgetVariable
+from .widget_var import WidgetVar
 
 
 class MouseCaptureInfo:
@@ -57,19 +57,17 @@ class Widget:
         self._event_listeners = {}
 
         # is_visible_var
-        self.make_variable(
-            "is_visible_var",
-            is_visible,
-            on_get=self.__on_is_visible_get,
-            on_change=self.__on_is_visible_change,
+        self.new_var("is_visible_var", is_visible)
+        self.add_var_event_listener("is_visible_var", "get", self.__on_is_visible_get)
+        self.add_var_event_listener(
+            "is_visible_var", "change", self.__on_is_visible_change
         )
 
         # is_enabled_var
-        self.make_variable(
-            "is_enabled_var",
-            is_enabled,
-            on_get=self.__on_is_enabled_get,
-            on_change=self.__on_is_enabled_change,
+        self.new_var("is_enabled_var", is_enabled)
+        self.add_var_event_listener("is_enabled_var", "get", self.__on_is_enabled_get)
+        self.add_var_event_listener(
+            "is_enabled_var", "change", self.__on_is_enabled_change
         )
 
     @property
@@ -254,21 +252,10 @@ class Widget:
             pyxel.line(x + w, y + 2, x + w, y + h - 1, WIDGET_SHADOW_COLOR)
             pyxel.pset(x + w - 1, y + h - 1, WIDGET_SHADOW_COLOR)
 
-    def make_variable(self, name, value, *, on_get=None, on_set=None, on_change=None):
-        member_name = self._widget_variable_name(name)
-
-        widget_variable = WidgetVariable(value)
-
-        if on_get:
-            widget_variable.add_event_listener("get", on_get)
-
-        if on_set:
-            widget_variable.add_event_listener("set", on_set)
-
-        if on_change:
-            widget_variable.add_event_listener("change", on_change)
-
-        setattr(self, member_name, widget_variable)
+    def new_var(self, name, value):
+        member_name = self._widget_var_name(name)
+        widget_var = WidgetVar(value)
+        setattr(self, member_name, widget_var)
 
         def getter(self):
             return getattr(self, member_name).get()
@@ -278,13 +265,11 @@ class Widget:
 
         setattr(self.__class__, name, property(getter, setter))
 
-    def copy_variable(self, name, org_widget, org_name=None):
-        new_member_name = self._widget_variable_name(name)
-        member_name = self._widget_variable_name(org_name or name)
-
-        widget_variable = getattr(org_widget, member_name)
-
-        setattr(self, new_member_name, widget_variable)
+    def copy_var(self, name, org_widget, org_name=None):
+        new_member_name = self._widget_var_name(name)
+        org_member_name = self._widget_var_name(org_name or name)
+        widget_var = getattr(org_widget, org_member_name)
+        setattr(self, new_member_name, widget_var)
 
         def getter(self):
             return getattr(self, new_member_name).get()
@@ -294,26 +279,19 @@ class Widget:
 
         setattr(self.__class__, name, property(getter, setter))
 
-    def bind_variable(self, name, bind_widget, bind_name=None):
-        member_name1 = self._widget_variable_name(name)
-        member_name2 = self._widget_variable_name(bind_name or name)
+    def add_var_event_listener(self, name, event, listener):
+        member_name = self._widget_var_name(name)
+        widget_var = getattr(self, member_name)
+        widget_var.add_event_listener(event, listener)
 
-        widget_variable1 = getattr(self, member_name1)
-        widget_variable2 = getattr(bind_widget, member_name2)
-
-        def on_change1(value):
-            widget_variable2.set(value)
-
-        widget_variable1.add_event_listener("change", on_change1)
-
-        def on_change2(value):
-            widget_variable1.set(value)
-
-        widget_variable2.add_event_listener("change", on_change2)
+    def remove_var_event_listener(self, name, event, listener):
+        member_name = self._widget_var_name(name)
+        widget_var = getattr(self, member_name)
+        widget_var.remove_event_listener(event, listener)
 
     @staticmethod
-    def _widget_variable_name(name):
-        return "_widget_variable_" + name
+    def _widget_var_name(name):
+        return "_widget_var_" + name
 
     def __on_is_visible_get(self, value):
         if self._parent:
