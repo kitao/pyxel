@@ -29,7 +29,7 @@ class EditorBase(Widget):
         self._history_list = []
         self._history_index = 0
 
-        self.copy_variable("help_message_var", parent)
+        self.copy_var("help_message_var", parent)
 
     @property
     def can_undo(self):
