@@ -13,18 +13,17 @@ class RadioButton(Widget):
         change (value)
     """
 
-    def __init__(self, parent, x, y, img, sx, sy, btn_count, value, **kwargs):
-        width = btn_count * 9 - 2
-        height = 7
-        super().__init__(parent, x, y, width, height, **kwargs)
+    def __init__(self, parent, x, y, *, img, u, v, btn_count, value, **kwargs):
+        super().__init__(parent, x, y, btn_count * 9 - 2, 7, **kwargs)
 
         self._img = img
-        self._sx = sx
-        self._sy = sy
+        self._u = u
+        self._v = v
         self._btn_count = btn_count
 
         # value_var
-        self.make_variable("value_var", value, on_change=self.__on_value_change)
+        self.new_var("value_var", value)
+        self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
         # event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
@@ -67,8 +66,8 @@ class RadioButton(Widget):
             self.x,
             self.y,
             self._img,
-            self._sx,
-            self._sy,
+            self._u,
+            self._v,
             self.width,
             self.height,
         )
@@ -78,8 +77,8 @@ class RadioButton(Widget):
             self.x + self.value_var * 9,
             self.y,
             self._img,
-            self._sx + self.value_var * 9,
-            self._sy,
+            self._u + self.value_var * 9,
+            self._v,
             7,
             7,
         )

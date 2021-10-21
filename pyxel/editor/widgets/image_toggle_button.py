@@ -14,8 +14,8 @@ class ImageToggleButton(ToggleButton):
         unchecked
     """
 
-    def __init__(self, parent, x, y, img, u, v, value, **kwargs):
-        super().__init__(parent, x, y, 7, 7, value, **kwargs)
+    def __init__(self, parent, x, y, *, img, u, v, is_checked, **kwargs):
+        super().__init__(parent, x, y, 7, 7, is_checked=is_checked, **kwargs)
 
         self._img = img
         self._u = u
