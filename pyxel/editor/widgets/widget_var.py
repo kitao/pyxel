@@ -1,4 +1,4 @@
-class WidgetVariable:
+class WidgetVar:
     """
     Events:
         get (value) -> value
