@@ -13,7 +13,7 @@ class ImageButton(Button):
         press
     """
 
-    def __init__(self, parent, x, y, img, u, v, **kwargs):
+    def __init__(self, parent, x, y, *, img, u, v, **kwargs):
         super().__init__(parent, x, y, 7, 7, **kwargs)
 
         self._img = img

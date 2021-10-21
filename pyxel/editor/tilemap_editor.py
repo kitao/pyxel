@@ -5,66 +5,71 @@ from .editor_base import EditorBase
 from .image_viewer import ImageViewer
 from .settings import EDITOR_IMAGE, TEXT_LABEL_COLOR, TOOL_PENCIL
 from .tilemap_viewer import TilemapViewer
-from .widgets import NumberPicker, RadioButton, WidgetVariable
+from .widgets import NumberPicker, RadioButton
 
 
 class TilemapEditor(EditorBase):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.canvas_var = WidgetVariable(None, on_get=self.__on_canvas_get)
-        self.color_var = None  # TODO
+        # canvas_var
+        self.new_var("canvas_var", None)
+        self.add_var_event_listener("canvas_var", "set", self.__on_canvas_get)
+
+        # color_var
+        self.new_var("color_var", None)  # TODO
 
         # tool button
         self._tool_button = RadioButton(
             self,
             81,
             161,
-            EDITOR_IMAGE,
-            63,
-            0,
-            7,
-            TOOL_PENCIL,
+            img=EDITOR_IMAGE,
+            u=63,
+            v=0,
+            btn_count=7,
+            value=TOOL_PENCIL,
         )
         self.add_tool_button_help(self._tool_button)
-        self.tool_var = self._tool_button.value_var
+        self.copy_var("tool_var", self._tool_button, "value_var")
 
         # tilemap picker
         self._tilemap_picker = NumberPicker(
-            self, 48, 161, 0, pyxel.TILEMAP_COUNT - 1, 0
+            self, 48, 161, min_value=0, max_value=pyxel.TILEMAP_COUNT - 1, value=0
         )
         self._tilemap_picker.add_event_listener(
             "change", self.__on_tilemap_picker_change
         )
         self.add_number_picker_help(self._tilemap_picker)
-        self.tilemap_no_var = self._tilemap_picker.value_var
+        self.copy_var("tilemap_no_var", self._tilemap_picker, "value_var")
 
         # tilemap viewer
         self._tilemap_viewer = TilemapViewer(self)
-        self.focus_x_var = self._tilemap_viewer.focus_x_var
-        self.focus_y_var = self._tilemap_viewer.focus_y_var
-        self.focus_w_var = self._tilemap_viewer.focus_w_var
-        self.focus_h_var = self._tilemap_viewer.focus_h_var
+        self.copy_var("focus_x_var", self._tilemap_viewer, "focus_x_var")
+        self.copy_var("focus_y_var", self._tilemap_viewer, "focus_y_var")
+        self.copy_var("focus_w_var", self._tilemap_viewer, "focus_w_var")
+        self.copy_var("focus_h_var", self._tilemap_viewer, "focus_h_var")
 
         # image picker
         self._image_picker = NumberPicker(
             self,
             192,
             161,
-            0,
-            pyxel.IMAGE_COUNT - 1,
-            pyxel.tilemap(self.tilemap_no_var.v).refimg,
+            min_value=0,
+            max_value=pyxel.IMAGE_COUNT - 1,
+            value=pyxel.tilemap(self.tilemap_no_var).refimg,
         )
         self._image_picker.add_event_listener("change", self.__on_image_picker_change)
         self.add_number_picker_help(self._image_picker)
-        self.image_no_var = self._image_picker.value_var
+        self.copy_var("image_no_var", self._image_picker, "value_var")
 
         # image viewer
-        self._image_viewer = ImageViewer(self, ImageViewer.SIZE_SMALL)
+        self._image_viewer = ImageViewer(self)
 
         # canvas panel
-        self._canvas_panel = CanvasPanel(self, is_tilemap_mode=True)
+        self._canvas_panel = CanvasPanel(self)
 
+        # event listeners
         self.add_event_listener("undo", self.__on_undo)
         self.add_event_listener("redo", self.__on_redo)
         self.add_event_listener("update", self.__on_update)
@@ -95,10 +100,10 @@ class TilemapEditor(EditorBase):
     #    self._canvas_panel.viewport_y = value
 
     def __on_canvas_get(self, value):
-        return pyxel.tilemap(self.tilemap_no_var.v)
+        return pyxel.tilemap(self.tilemap_no_var)
 
     def __on_tilemap_picker_change(self, value):
-        self.image_no_var.v = pyxel.tilemap(value).refimg
+        self.image_no_var = pyxel.tilemap(value).refimg
 
     def __on_image_picker_change(self, value):
         pyxel.tilemap(self._tilemap_picker.value).refimg = value
@@ -109,9 +114,9 @@ class TilemapEditor(EditorBase):
 
         pyxel.tilemap(tm).set_slice(x, y, data["before"])
 
-        self.focus_x_var.v = x
-        self.focus_y_var.v = y
-        self.tilemap_no_var.v = tm
+        self.focus_x_var = x
+        self.focus_y_var = y
+        self.tilemap_no_var = tm
 
     def __on_redo(self, data):
         tm = data["tilemap"]
@@ -119,9 +124,9 @@ class TilemapEditor(EditorBase):
 
         pyxel.tilemap(tm).set_slice(x, y, data["after"])
 
-        self.focus_x_var.v = x
-        self.focus_y_var.v = y
-        self.tilemap_no_var.v = tm
+        self.focus_x_var = x
+        self.focus_y_var = y
+        self.tilemap_no_var = tm
 
     def __on_update(self):
         self.check_tool_button_shortcuts()
