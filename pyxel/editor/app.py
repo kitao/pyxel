@@ -43,33 +43,33 @@ class App(Widget):
         self._resource_file = resource_file
 
         # help_message_var
-        self.make_variable("help_message_var", "")
+        self.new_var("help_message_var", "")
 
         # editor button
         self._editor_button = RadioButton(
             self,
             1,
             1,
-            EDITOR_IMAGE,
-            0,
-            0,
-            4,
-            0,
+            img=EDITOR_IMAGE,
+            u=0,
+            v=0,
+            btn_count=4,
+            value=0,
         )
         self._editor_button.add_event_listener("change", self.__on_editor_button_change)
         self._editor_button.add_event_listener(
             "mouse_hover", self.__on_editor_button_mouse_hover
         )
-        self.copy_variable("editor_no_var", self._editor_button, "value_var")
+        self.copy_var("editor_no_var", self._editor_button, "value_var")
 
         # undo button
         self._undo_button = ImageButton(
             self,
             48,
             1,
-            EDITOR_IMAGE,
-            36,
-            0,
+            img=EDITOR_IMAGE,
+            u=36,
+            v=0,
         )
         self._undo_button.add_event_listener("press", self.__on_undo_button_press)
         self._undo_button.add_event_listener(
@@ -81,9 +81,9 @@ class App(Widget):
             self,
             57,
             1,
-            EDITOR_IMAGE,
-            45,
-            0,
+            img=EDITOR_IMAGE,
+            u=45,
+            v=0,
         )
         self._redo_button.add_event_listener("press", self.__on_redo_button_press)
         self._redo_button.add_event_listener(
@@ -95,9 +95,9 @@ class App(Widget):
             self,
             75,
             1,
-            EDITOR_IMAGE,
-            54,
-            0,
+            img=EDITOR_IMAGE,
+            u=54,
+            v=0,
         )
         self._save_button.add_event_listener("press", self.__on_save_button_press)
         self._save_button.add_event_listener(
