@@ -26,14 +26,18 @@ class SoundEditor(EditorBase):
         self._is_playing = False
         self._play_pos = -1
         self._history_data = None
-        self._sound_picker = NumberPicker(self, 45, 17, 0, EDITOR_IMAGE, 0)
-        self._speed_picker = NumberPicker(self, 105, 17, 1, 99, pyxel.sound(0).speed)
-        self._play_button = ImageButton(self, 185, 17, EDITOR_IMAGE, 126, 0)
+        self._sound_picker = NumberPicker(
+            self, 45, 17, min_value=0, max_value=pyxel.SOUND_COUNT - 1, value=0
+        )
+        self._speed_picker = NumberPicker(
+            self, 105, 17, min_value=1, max_value=99, value=pyxel.sound(0).speed
+        )
+        self._play_button = ImageButton(self, 185, 17, img=EDITOR_IMAGE, u=126, v=0)
         self._stop_button = ImageButton(
-            self, 195, 17, EDITOR_IMAGE, 135, 0, is_enabled=False
+            self, 195, 17, img=EDITOR_IMAGE, u=135, v=0, is_enabled=False
         )
         self._loop_button = ImageToggleButton(
-            self, 205, 17, EDITOR_IMAGE, 144, 0, False
+            self, 205, 17, img=EDITOR_IMAGE, u=144, v=0, is_checked=False
         )
         self._piano_keyboard = PianoKeyboard(self)
         self._piano_roll = PianoRoll(self)

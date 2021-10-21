@@ -24,12 +24,9 @@ class Button(Widget):
         self._pressing_time = 0
 
         # is_pressed_var
-        self.make_variable(
-            "is_pressed_var",
-            False,
-            on_get=self.__on_is_pressed_get,
-            on_set=self.__on_is_pressed_set,
-        )
+        self.new_var("is_pressed_var", False)
+        self.add_var_event_listener("is_pressed_var", "get", self.__on_is_pressed_get)
+        self.add_var_event_listener("is_pressed_var", "set", self.__on_is_pressed_set)
 
         # event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)

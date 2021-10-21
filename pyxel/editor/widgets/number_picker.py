@@ -14,30 +14,26 @@ class NumberPicker(Widget):
         change (value)
     """
 
-    def __init__(self, parent, x, y, min_value, max_value, value, **kwargs):
+    def __init__(self, parent, x, y, *, min_value, max_value, value, **kwargs):
         self._number_len = max(len(str(min_value)), len(str(max_value)))
         width = self._number_len * 4 + 21
-        height = 7
 
-        super().__init__(parent, x, y, width, height, **kwargs)
+        super().__init__(parent, x, y, width, 7, **kwargs)
 
         self._min_value = min_value
         self._max_value = max_value
 
         # value_var
-        self.make_variable(
-            "value_var",
-            value,
-            on_set=self.__on_value_set,
-            on_change=self.__on_value_change,
-        )
+        self.new_var("value_var", value)
+        self.add_var_event_listener("value_var", "set", self.__on_value_set)
+        self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
         # dec button
-        self.dec_button = TextButton(self, 0, 0, "-")
+        self.dec_button = TextButton(self, 0, 0, text="-")
         self.dec_button.add_event_listener("press", self.__on_dec_button_press)
 
         # inc button
-        self.inc_button = TextButton(self, width - 7, 0, "+")
+        self.inc_button = TextButton(self, width - 7, 0, text="+")
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
 
         # event listeners

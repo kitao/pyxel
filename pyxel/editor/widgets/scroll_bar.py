@@ -19,11 +19,11 @@ class ScrollBar(Widget):
         parent,
         x,
         y,
-        size,
+        *,
+        length,
         scroll_range,
         slider_range,
         value,
-        *,
         is_vertical=False,
         is_horizontal=False,
         with_shadow=True,
@@ -34,13 +34,11 @@ class ScrollBar(Widget):
 
         if is_vertical:
             width = 7
-            height = size
-
+            height = length
             self._is_vertical = True
         else:
-            width = size
+            width = length
             height = 7
-
             self._is_vertical = False
 
         super().__init__(parent, x, y, width, height, **kwargs)
@@ -52,14 +50,19 @@ class ScrollBar(Widget):
         self._is_dragged = False
 
         # value_var
-        self.make_variable("value_var", value, on_change=self.__on_value_change)
+        self.new_var("value_var", value)
+        self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
         if self._is_vertical:
-            inc_x, inc_y = 0, height - 6
-            btn_w, btn_h = 7, 6
+            inc_x = 0
+            inc_y = height - 6
+            btn_w = 7
+            btn_h = 6
         else:
-            inc_x, inc_y = width - 6, 0
-            btn_w, btn_h = 6, 7
+            inc_x = width - 6
+            inc_y = 0
+            btn_w = 6
+            btn_h = 7
 
         # dec button
         self.dec_button = Button(self, 0, 0, btn_w, btn_h)
@@ -77,19 +80,19 @@ class ScrollBar(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     @property
-    def scroll_size(self):
+    def _scroll_size(self):
         return (self.height if self._is_vertical else self.width) - 14
 
     @property
-    def slider_size(self):
-        return round(self.scroll_size * self.slider_range / self.scroll_range)
+    def _slider_size(self):
+        return round(self._scroll_size * self.slider_range / self.scroll_range)
 
     @property
-    def slider_pos(self):
-        return round(7 + self.scroll_size * self.value_var / self.scroll_range)
+    def _slider_pos(self):
+        return round(7 + self._scroll_size * self.value_var / self.scroll_range)
 
     def __on_value_change(self, value):
-        return self.trigger_event("change", value)
+        self.trigger_event("change", value)
 
     def __on_dec_button_press(self):
         self.value_var = max(self.value_var - 1, 0)
@@ -104,11 +107,11 @@ class ScrollBar(Widget):
         x -= self.x
         y -= self.y
 
-        self._drag_offset = (y if self._is_vertical else x) - self.slider_pos
+        self._drag_offset = (y if self._is_vertical else x) - self._slider_pos
 
         if self._drag_offset < 0:
             self.__on_dec_button_press()
-        elif self._drag_offset >= self.slider_size:
+        elif self._drag_offset >= self._slider_size:
             self.__on_inc_button_press()
         else:
             self._is_dragged = True
@@ -125,7 +128,7 @@ class ScrollBar(Widget):
 
         drag_pos = y if self._is_vertical else x
         value = (
-            (drag_pos - self._drag_offset - 6) * self.scroll_range / self.scroll_size
+            (drag_pos - self._drag_offset - 6) * self.scroll_range / self._scroll_size
         )
         self.value_var = int(min(max(value, 0), self.scroll_range - self.slider_range))
 
@@ -157,9 +160,9 @@ class ScrollBar(Widget):
 
             pyxel.rect(
                 self.x + 2,
-                self.y + self.slider_pos,
+                self.y + self._slider_pos,
                 3,
-                self.slider_size,
+                self._slider_size,
                 WIDGET_PANEL_COLOR,
             )
         else:
@@ -174,9 +177,9 @@ class ScrollBar(Widget):
             pyxel.line(x + w - 4, y + 2, x + w - 4, y + h - 3, WIDGET_PANEL_COLOR)
 
             pyxel.rect(
-                self.x + self.slider_pos,
+                self.x + self._slider_pos,
                 self.y + 2,
-                self.slider_size,
+                self._slider_size,
                 3,
                 WIDGET_PANEL_COLOR,
             )

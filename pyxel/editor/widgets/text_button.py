@@ -13,7 +13,7 @@ class TextButton(Button):
         press
     """
 
-    def __init__(self, parent, x, y, text, **kwargs):
+    def __init__(self, parent, x, y, *, text, **kwargs):
         super().__init__(
             parent,
             x,
