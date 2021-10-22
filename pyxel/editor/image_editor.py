@@ -14,6 +14,14 @@ class ImageEditor(EditorBase):
         tool_var
         image_no_var
         canvas_var
+        focus_x_var
+        focus_y_var
+        help_message_var
+
+    Events:
+        undo (data)
+        redo (data)
+        drop (filename)
     """
 
     _COLOR_BUTTONS = (
@@ -68,8 +76,6 @@ class ImageEditor(EditorBase):
         self._image_viewer = ImageViewer(self)
         self.copy_var("focus_x_var", self._image_viewer)
         self.copy_var("focus_y_var", self._image_viewer)
-        self.copy_var("focus_w_var", self._image_viewer)
-        self.copy_var("focus_h_var", self._image_viewer)
 
         # canvas panel
         self._canvas_panel = CanvasPanel(self)
@@ -88,24 +94,24 @@ class ImageEditor(EditorBase):
         self.help_message_var = "COLOR:1-8/SHIFT+1-8"
 
     def __on_undo(self, data):
-        img = data["image"]
+        image_no = data["image_no"]
         x, y = data["pos"]
 
-        pyxel.image(img).set_slice(x, y, data["before"])
+        pyxel.image(image_no).set_slice(x, y, data["before"])
 
         self.canvas_x = x
         self.canvas_y = y
-        self.parent.image = img
+        self.image_no_var = image_no
 
     def __on_redo(self, data):
-        img = data["image"]
+        image_no = data["image_no"]
         x, y = data["pos"]
 
-        pyxel.image(img).set_slice(x, y, data["after"])
+        pyxel.image(image_no).set_slice(x, y, data["after"])
 
         self.canvas_x = x
         self.canvas_y = y
-        self.parent.image = img
+        self.image_no_var = image_no
 
     def __on_drop(self, filename):
         pyxel.image(self.image).load(0, 0, filename)
