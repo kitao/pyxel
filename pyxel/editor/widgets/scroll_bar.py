@@ -20,31 +20,28 @@ class ScrollBar(Widget):
         x,
         y,
         *,
-        length,
-        scroll_range,
-        slider_range,
+        width=None,
+        height=None,
+        scroll_amount,
+        slider_amount,
         value,
-        is_vertical=False,
-        is_horizontal=False,
         with_shadow=True,
         **kwargs
     ):
-        if is_vertical == is_horizontal:
-            raise ValueError("should choose vertical or horizontal")
+        if width is None and height is None or width is not None and height is not None:
+            raise ValueError("either width or height should be specified")
 
-        if is_vertical:
-            width = 7
-            height = length
-            self._is_vertical = True
-        else:
-            width = length
+        if width is not None:
             height = 7
             self._is_vertical = False
+        else:
+            width = 7
+            self._is_vertical = True
 
         super().__init__(parent, x, y, width, height, **kwargs)
 
-        self.scroll_range = scroll_range
-        self.slider_range = slider_range
+        self.scroll_amount = scroll_amount
+        self.slider_amount = slider_amount
         self._with_shadow = with_shadow
         self._drag_offset = 0
         self._is_dragged = False
@@ -85,11 +82,11 @@ class ScrollBar(Widget):
 
     @property
     def _slider_size(self):
-        return round(self._scroll_size * self.slider_range / self.scroll_range)
+        return round(self._scroll_size * self.slider_amount / self.scroll_amount)
 
     @property
     def _slider_pos(self):
-        return round(7 + self._scroll_size * self.value_var / self.scroll_range)
+        return round(7 + self._scroll_size * self.value_var / self.scroll_amount)
 
     def __on_value_change(self, value):
         self.trigger_event("change", value)
@@ -98,7 +95,9 @@ class ScrollBar(Widget):
         self.value_var = max(self.value_var - 1, 0)
 
     def __on_inc_button_press(self):
-        self.value_var = min(self.value_var + 1, self.scroll_range - self.slider_range)
+        self.value_var = min(
+            self.value_var + 1, self.scroll_amount - self.slider_amount
+        )
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
@@ -128,9 +127,11 @@ class ScrollBar(Widget):
 
         drag_pos = y if self._is_vertical else x
         value = (
-            (drag_pos - self._drag_offset - 6) * self.scroll_range / self._scroll_size
+            (drag_pos - self._drag_offset - 6) * self.scroll_amount / self._scroll_size
         )
-        self.value_var = int(min(max(value, 0), self.scroll_range - self.slider_range))
+        self.value_var = int(
+            min(max(value, 0), self.scroll_amount - self.slider_amount)
+        )
 
     def __on_mouse_repeat(self, key, x, y):
         if not self._is_dragged:
