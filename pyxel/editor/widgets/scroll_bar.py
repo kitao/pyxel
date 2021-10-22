@@ -31,12 +31,12 @@ class ScrollBar(Widget):
         if width is None and height is None or width is not None and height is not None:
             raise ValueError("either width or height should be specified")
 
-        if width is not None:
-            height = 7
-            self._is_vertical = False
-        else:
+        if height is not None:
             width = 7
             self._is_vertical = True
+        else:
+            height = 7
+            self._is_vertical = False
 
         super().__init__(parent, x, y, width, height, **kwargs)
 
@@ -48,6 +48,7 @@ class ScrollBar(Widget):
 
         # value_var
         self.new_var("value_var", value)
+        self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
         if self._is_vertical:
@@ -87,6 +88,9 @@ class ScrollBar(Widget):
     @property
     def _slider_pos(self):
         return round(7 + self._scroll_size * self.value_var / self.scroll_amount)
+
+    def __on_value_set(self, value):
+        return min(max(value, 0), self.scroll_amount)
 
     def __on_value_change(self, value):
         self.trigger_event("change", value)
