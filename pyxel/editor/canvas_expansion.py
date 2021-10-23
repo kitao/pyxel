@@ -128,4 +128,4 @@ pyxel.Image.ellipb = pyxel.Tilemap.ellipb = _ellipb
 pyxel.Image.ellip = pyxel.Tilemap.ellip = _ellip
 pyxel.Image.fill = pyxel.Tilemap.fill = _fill
 pyxel.Image.get_slice = pyxel.Tilemap.get_slice = _get_slice
-pyxel.Image.set_slice = pyxel.Tilemap.set_slicde = _set_slice
+pyxel.Image.set_slice = pyxel.Tilemap.set_slice = _set_slice
