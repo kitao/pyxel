@@ -14,10 +14,15 @@ class TilemapEditor(EditorBase):
         color_var
         tool_var
         image_no_var
-        tilemap_no_var
         canvas_var
         focus_x_var
         focus_y_var
+
+        tilemap_no_var
+        tile_x_var
+        tile_y_var
+        tile_w_var
+        tile_h_var
 
     Events:
         undo (data)
@@ -33,8 +38,7 @@ class TilemapEditor(EditorBase):
         self.add_var_event_listener("canvas_var", "get", self.__on_canvas_get)
 
         # color_var
-        self.new_var("color_var", None)
-        self.add_var_event_listener("color_var", "get", self.__on_color_get)
+        self.new_var("color_var", (255, 255))
 
         # tool button
         self._tool_button = RadioButton(
@@ -96,9 +100,6 @@ class TilemapEditor(EditorBase):
 
     def __on_canvas_get(self, value):
         return pyxel.tilemap(self.tilemap_no_var)
-
-    def __on_color_get(self, value):
-        return (self.tile_x_var, self.tile_y_var, self.tile_w_var, self.tile_h_var)
 
     def __on_tilemap_picker_change(self, value):
         self.image_no_var = pyxel.tilemap(value).refimg
