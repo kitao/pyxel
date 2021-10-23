@@ -73,38 +73,34 @@ def _ellip(self, x1, y1, x2, y2, val):
 
 
 def _fill(self, x, y, val):
-    _fill_rec(self, x, y, val)
-
-
-def _fill_rec(self, x, y, val, dst):
     dst_val = self.pget(x, y)
 
     if dst_val == val:
         return
 
     for i in range(x, -1, -1):
-        if dst[y][i] != dst_val:
+        if self.pget(i, y) != dst_val:
             break
 
-        dst[y][i] = val
+        self.pset(i, y, val)
 
-        if y > 0 and dst[y - 1][i] == dst_val:
-            self._fill_rec(i, y - 1, val, dst)
+        if y > 0 and self.pget(i, y - 1) == dst_val:
+            self.fill(i, y - 1, val)
 
-        if y < 15 and dst[y + 1][i] == dst_val:
-            self._fill_rec(i, y + 1, val, dst)
+        if y < 15 and self.pget(i, y + 1) == dst_val:
+            self.fill(i, y + 1, val)
 
     for i in range(x + 1, 16):
-        if dst[y][i] != dst_val:
+        if self.pget(i, y) != dst_val:
             return
 
-        dst[y][i] = val
+        self.pset(i, y, val)
 
-        if y > 0 and dst[y - 1][i] == dst_val:
-            self._fill_rec(i, y - 1, val, dst)
+        if y > 0 and self.pget(i, y - 1) == dst_val:
+            self.fill(i, y - 1, val)
 
-        if y < 15 and dst[y + 1][i] == dst_val:
-            self._fill_rec(i, y + 1, val, dst)
+        if y < 15 and self.pget(i, y + 1) == dst_val:
+            self.fill(i, y + 1, val)
 
 
 def _get_slice(self, x, y, width, height):
