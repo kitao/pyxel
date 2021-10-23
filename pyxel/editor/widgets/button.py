@@ -48,7 +48,6 @@ class Button(Widget):
     def __on_is_pressed_set(self, value):
         if value:
             self._pressing_time = BUTTON_PRESSING_TIME + 1
-
             self.trigger_event("press")
         else:
             self._pressing_time = 0
