@@ -5,58 +5,69 @@ from .widgets import Widget
 
 
 class TilemapViewer(Widget):
+    """
+    Variables:
+        tilemap_no_var
+        focus_x_var
+        focus_y_var
+        help_message_var
+    """
+
     def __init__(self, parent):
         super().__init__(parent, 157, 16, 66, 65)
 
         self._tilemap_image = pyxel.Image(64, 63)
 
+        self.copy_var("tilemap_no_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # focus variables
+        # focus_x_var
         self.new_var("focus_x_var", 0)
+
+        # focus_y_var
         self.new_var("focus_y_var", 0)
-        self.new_var("focus_w_var", 8)
-        self.new_var("focus_h_var", 8)
 
         # event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
+        self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
-    def __on_mouse_down(self, key, x, y):
-        if key == pyxel.MOUSE_BUTTON_LEFT:
-            self.focus_x_var, self.focus_y_var = self._screen_to_view(x, y)
+    def _screen_to_focus(self, x, y):
+        x = min(max((x - self.x - 1) // 2, 0), 30)
+        y = min(max((y - self.y - 1) // 2, 0), 30)
 
-    def __on_mouse_drag(self, key, x, y, dx, dy):
-        if key == pyxel.MOUSE_BUTTON_LEFT:
-            self.__on_mouse_down(key, x, y)
-
-    def __on_mouse_hover(self, x, y):
-        x, y = self._screen_to_view(x, y)
-        self.help_message_var = "TARGET:CURSOR ({},{})".format(x, y)
-
-    def _screen_to_view(self, x, y):
-        x = min(max((x - self.x - 1) // 2, 0), 30) * 8
-        y = min(max((y - self.y - 1) // 2, 0), 30) * 8
         return x, y
 
-    # def __on_update(self):
-    #    pass
-    # start_y = pyxel.frame_count % 8 * 8
-    # tilemap = self.tilemap  # pyxel.tilemap(self.tilemap)
-    # image = self.image  # pyxel.image(self.image)
-    # minimap = self.image
+    def __on_mouse_down(self, key, x, y):
+        if key != pyxel.MOUSE_BUTTON_LEFT:
+            return
 
-    # for y in range(start_y, start_y + 8):
-    #    for x in range(64):
-    #        val = tilemap.pget(x * 4 + 1, y * 4 + 1)
-    #        col = image.pget(val[0] * 8 + 3, val[1] * 8 + 3)
-    #        minimap.pset(TILEMAP_IMAGE_X + x, TILEMAP_IMAGE_Y + y, col)
+        self.focus_x_var, self.focus_y_var = self._screen_to_focus(x, y)
+
+    def __on_mouse_drag(self, key, x, y, dx, dy):
+        self.__on_mouse_down(key, x, y)
+
+    def __on_mouse_hover(self, x, y):
+        x, y = self._screen_to_focus(x, y)
+
+        self.help_message_var = "TARGET:CURSOR ({},{})".format(x * 8, y * 8)
+
+    def __on_update(self):
+        tilemap = pyxel.tilemap(self.tilemap_no_var)
+        image = tilemap.image
+        start_y = pyxel.frame_count % 8 * 8
+
+        for y in range(start_y, start_y + 8):
+            for x in range(64):
+                tile = tilemap.pget(x * 4 + 1, y * 4 + 1)
+                col = image.pget(tile[0] * 8 + 3, tile[1] * 8 + 3)
+
+                self._tilemap_image.pset(x, y, col)
 
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
-
         pyxel.blt(
             self.x + 1,
             self.y + 1,
@@ -67,8 +78,8 @@ class TilemapViewer(Widget):
             self._tilemap_image.height,
         )
 
-        x = self.x + self.focus_x_var // 4 + 1
-        y = self.y + self.focus_y_var // 4 + 1
+        x = self.x + self.focus_x_var * 2 + 1
+        y = self.y + self.focus_y_var * 2 + 1
 
         pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
         pyxel.rectb(x, y, 4, 4, PANEL_FOCUS_COLOR)

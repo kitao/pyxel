@@ -9,15 +9,32 @@ from .widgets import NumberPicker, RadioButton
 
 
 class TilemapEditor(EditorBase):
+    """
+    Variables:
+        color_var
+        tool_var
+        image_no_var
+        tilemap_no_var
+        canvas_var
+        focus_x_var
+        focus_y_var
+
+    Events:
+        undo (data)
+        redo (data)
+        drop (filename)
+    """
+
     def __init__(self, parent):
         super().__init__(parent)
 
         # canvas_var
         self.new_var("canvas_var", None)
-        self.add_var_event_listener("canvas_var", "set", self.__on_canvas_get)
+        self.add_var_event_listener("canvas_var", "get", self.__on_canvas_get)
 
         # color_var
-        self.new_var("color_var", None)  # TODO
+        self.new_var("color_var", None)
+        self.add_var_event_listener("color_var", "get", self.__on_color_get)
 
         # tool button
         self._tool_button = RadioButton(
@@ -47,8 +64,6 @@ class TilemapEditor(EditorBase):
         self._tilemap_viewer = TilemapViewer(self)
         self.copy_var("focus_x_var", self._tilemap_viewer, "focus_x_var")
         self.copy_var("focus_y_var", self._tilemap_viewer, "focus_y_var")
-        self.copy_var("focus_w_var", self._tilemap_viewer, "focus_w_var")
-        self.copy_var("focus_h_var", self._tilemap_viewer, "focus_h_var")
 
         # image picker
         self._image_picker = NumberPicker(
@@ -65,6 +80,10 @@ class TilemapEditor(EditorBase):
 
         # image viewer
         self._image_viewer = ImageViewer(self)
+        self.copy_var("tile_x_var", self._image_viewer, "focus_x_var")
+        self.copy_var("tile_y_var", self._image_viewer, "focus_y_var")
+        self.copy_var("tile_w_var", self._image_viewer, "focus_w_var")
+        self.copy_var("tile_h_var", self._image_viewer, "focus_h_var")
 
         # canvas panel
         self._canvas_panel = CanvasPanel(self)
@@ -75,32 +94,11 @@ class TilemapEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
-    # @property
-    # def color(self):
-    #    return self._image_viewer.focused_tiles
-
-    # @color.setter
-    # def color(self, value):
-    #    self._image_viewer.set_focus(value % 32 * 8, value // 32 * 8)
-
-    # @property
-    # def drawing_x(self):
-    #    return self._canvas_panel.viewport_x
-
-    # @drawing_x.setter
-    # def drawing_x(self, value):
-    #    self._canvas_panel.viewport_x = value
-
-    # @property
-    # def drawing_y(self):
-    #    return self._canvas_panel.viewport_y
-
-    # @drawing_y.setter
-    # def drawing_y(self, value):
-    #    self._canvas_panel.viewport_y = value
-
     def __on_canvas_get(self, value):
         return pyxel.tilemap(self.tilemap_no_var)
+
+    def __on_color_get(self, value):
+        return (self.tile_x_var, self.tile_y_var, self.tile_w_var, self.tile_h_var)
 
     def __on_tilemap_picker_change(self, value):
         self.image_no_var = pyxel.tilemap(value).refimg
@@ -109,24 +107,20 @@ class TilemapEditor(EditorBase):
         pyxel.tilemap(self._tilemap_picker.value).refimg = value
 
     def __on_undo(self, data):
-        tm = data["tilemap"]
-        x, y = data["pos"]
+        self.tilemap_no_var = data["tilemap_no"]
+        self.focus_x_var, self.focus_y_var = data["focus_pos"]
 
-        pyxel.tilemap(tm).set_slice(x, y, data["before"])
-
-        self.focus_x_var = x
-        self.focus_y_var = y
-        self.tilemap_no_var = tm
+        self.canvas_var.set_slice(
+            self.focus_x_var * 8, self.focus_y_var * 8, data["previous_canvas"]
+        )
 
     def __on_redo(self, data):
-        tm = data["tilemap"]
-        x, y = data["pos"]
+        self.tilemap_no_var = data["tilemap_no"]
+        self.focus_x_var, self.focus_y_var = data["focus_pos"]
 
-        pyxel.tilemap(tm).set_slice(x, y, data["after"])
-
-        self.focus_x_var = x
-        self.focus_y_var = y
-        self.tilemap_no_var = tm
+        self.canvas_var.set_slice(
+            self.focus_x_var * 8, self.focus_y_var * 8, data["later_canvas"]
+        )
 
     def __on_update(self):
         self.check_tool_button_shortcuts()

@@ -94,24 +94,20 @@ class ImageEditor(EditorBase):
         self.help_message_var = "COLOR:1-8/SHIFT+1-8"
 
     def __on_undo(self, data):
-        image_no = data["image_no"]
-        x, y = data["pos"]
+        self.image_no_var = data["image_no"]
+        self.focus_x_var, self.focus_y_var = data["focus_pos"]
 
-        pyxel.image(image_no).set_slice(x, y, data["before"])
-
-        self.canvas_x = x
-        self.canvas_y = y
-        self.image_no_var = image_no
+        self.canvas_var.set_slice(
+            self.focus_x_var * 8, self.focus_y_var * 8, data["previous_canvas"]
+        )
 
     def __on_redo(self, data):
-        image_no = data["image_no"]
-        x, y = data["pos"]
+        self.image_no_var = data["image_no"]
+        self.focus_x_var, self.focus_y_var = data["focus_pos"]
 
-        pyxel.image(image_no).set_slice(x, y, data["after"])
-
-        self.canvas_x = x
-        self.canvas_y = y
-        self.image_no_var = image_no
+        self.canvas_var.set_slice(
+            self.focus_x_var * 8, self.focus_y_var * 8, data["later_canvas"]
+        )
 
     def __on_drop(self, filename):
         pyxel.image(self.image).load(0, 0, filename)
@@ -126,7 +122,8 @@ class ImageEditor(EditorBase):
 
                     if pyxel.btn(pyxel.KEY_SHIFT):
                         col += 8
-                    self._color_picker.value = col
+
+                    self.color_var = col
 
                     break
 
