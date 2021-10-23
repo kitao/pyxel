@@ -33,7 +33,7 @@ class OctaveBar(Widget):
         self.__on_mouse_down(key, x, y)
 
     def __on_mouse_hover(self, x, y):
-        self.parent.help_message = "OCTAVE:PAGEUP/PAGEDOWN"
+        self.help_message_var = "OCTAVE:PAGEUP/PAGEDOWN"
 
     def __on_draw(self):
         x = self.x + 1
