@@ -185,22 +185,22 @@ class App(Widget):
             elif pyxel.btnp(pyxel.KEY_RIGHT):
                 self.editor_no_var = (self.editor_no_var + 1) % len(self._editors)
 
-        self._undo_button.is_enabled_var = self._editor.can_undo
-        self._redo_button.is_enabled_var = self._editor.can_redo
-
         if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
             if pyxel.btnp(pyxel.KEY_S):
-                self._save_button.press()
+                self._save_button.is_pressed_var = True
 
             if self._editor.can_undo and pyxel.btnp(
                 pyxel.KEY_Z, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
             ):
-                self._undo_button.press()
+                self._undo_button.is_pressed_var = True
 
             if self._editor.can_redo and pyxel.btnp(
                 pyxel.KEY_Y, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
             ):
-                self._redo_button.press()
+                self._redo_button.is_pressed_var = True
+
+        self._undo_button.is_enabled_var = self._editor.can_undo
+        self._redo_button.is_enabled_var = self._editor.can_redo
 
     def __on_draw(self):
         pyxel.cls(WIDGET_BACKGROUND_COLOR)
