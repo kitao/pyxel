@@ -16,9 +16,8 @@ class NumberPicker(Widget):
 
     def __init__(self, parent, x, y, *, min_value, max_value, value, **kwargs):
         self._number_len = max(len(str(min_value)), len(str(max_value)))
-        width = self._number_len * 4 + 21
 
-        super().__init__(parent, x, y, width, 7, **kwargs)
+        super().__init__(parent, x, y, self._number_len * 4 + 21, 7, **kwargs)
 
         self._min_value = min_value
         self._max_value = max_value
@@ -33,7 +32,7 @@ class NumberPicker(Widget):
         self.dec_button.add_event_listener("press", self.__on_dec_button_press)
 
         # inc button
-        self.inc_button = TextButton(self, width - 7, 0, text="+")
+        self.inc_button = TextButton(self, self.width - 7, 0, text="+")
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
 
         # event listeners

@@ -85,14 +85,6 @@ class Widget:
             return self._y
 
     @property
-    def x2(self):
-        return self.x + self.width - 1
-
-    @property
-    def y2(self):
-        return self.y + self.height - 1
-
-    @property
     def width(self):
         return self._width
 
@@ -101,7 +93,10 @@ class Widget:
         return self._height
 
     def is_hit(self, x, y):
-        return self.x <= x <= self.x2 and self.y <= y <= self.y2
+        x -= self.x
+        y -= self.y
+
+        return 0 <= x <= self.width - 1 and 0 <= y <= self.height - 1
 
     def set_pos(self, x, y):
         self._x = x
@@ -254,8 +249,8 @@ class Widget:
 
     def new_var(self, name, value):
         member_name = self._widget_var_name(name)
-
         widget_var = WidgetVar(value)
+
         setattr(self, member_name, widget_var)
 
         def getter(self):
@@ -268,9 +263,9 @@ class Widget:
 
     def copy_var(self, name, src_widget, src_name=None):
         member_name = self._widget_var_name(name)
-
         src_member_name = self._widget_var_name(src_name or name)
         widget_var = getattr(src_widget, src_member_name)
+
         setattr(self, member_name, widget_var)
 
         def getter(self):
@@ -284,11 +279,13 @@ class Widget:
     def add_var_event_listener(self, name, event, listener):
         member_name = self._widget_var_name(name)
         widget_var = getattr(self, member_name)
+
         widget_var.add_event_listener(event, listener)
 
     def remove_var_event_listener(self, name, event, listener):
         member_name = self._widget_var_name(name)
         widget_var = getattr(self, member_name)
+
         widget_var.remove_event_listener(event, listener)
 
     @staticmethod

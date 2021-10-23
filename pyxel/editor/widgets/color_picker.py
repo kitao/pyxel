@@ -30,18 +30,14 @@ class ColorPicker(Widget):
         x -= self.x + 1
         y -= self.y + 1
 
-        index_x = min(max(x // 8, 0), 7)
-        index_y = min(max(y // 8, 0), 1)
+        if (
+            not (0 <= x <= self.width - 2 and 0 <= y <= self.height - 2)
+            or x % 8 == 7
+            or y == 7
+        ):
+            return None
 
-        x1 = index_x * 8
-        y1 = index_y * 8
-        x2 = x1 + 6
-        y2 = x2 + 6
-
-        if x1 <= x <= x2 and y1 <= y <= y2:
-            return index_y * 8 + index_x
-
-        return None
+        return (y // 8) * 8 + x // 8
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
@@ -64,11 +60,13 @@ class ColorPicker(Widget):
             for j in range(8):
                 pyxel.rect(self.x + j * 8 + 1, self.y + i * 8 + 1, 7, 7, i * 8 + j)
 
+        col = self.value_var
+
         pyxel.text(
-            self.x + (self.value_var % 8) * 8 + 3,
-            self.y + (self.value_var // 8) * 8 + 2,
+            self.x + (col % 8) * 8 + 3,
+            self.y + (col // 8) * 8 + 2,
             "+",
-            7 if self.value_var < 6 else 0,
+            7 if col < 6 else 0,
         )
 
     def __on_value_change(self, value):
