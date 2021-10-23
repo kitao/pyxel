@@ -24,7 +24,7 @@ class Button(Widget):
         self._pressing_time = 0
 
         # is_pressed_var
-        self.new_var("is_pressed_var", False)
+        self.new_var("is_pressed_var", None)
         self.add_var_event_listener("is_pressed_var", "get", self.__on_is_pressed_get)
         self.add_var_event_listener("is_pressed_var", "set", self.__on_is_pressed_set)
 
@@ -48,11 +48,12 @@ class Button(Widget):
     def __on_is_pressed_set(self, value):
         if value:
             self._pressing_time = BUTTON_PRESSING_TIME + 1
+
             self.trigger_event("press")
         else:
             self._pressing_time = 0
 
-        return value
+        return None
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
