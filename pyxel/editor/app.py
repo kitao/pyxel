@@ -163,19 +163,12 @@ class App(Widget):
                 if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
                     self._editor.reset_history()
 
-                    load_flag = (
-                        (True, False, False, False),
-                        (False, True, False, False),
-                        (False, False, True, False),
-                        (False, False, False, True),
-                    )[self.editor_no_var]
-
                     pyxel.load(
                         pyxel._drop_file,
-                        image=load_flag[0],
-                        tilemap=load_flag[1],
-                        sound=load_flag[2],
-                        music=load_flag[3],
+                        image=(self.editor_no_var == 0),
+                        tilemap=(self.editor_no_var == 1),
+                        sound=(self.editor_no_var == 2),
+                        music=(self.editor_no_var == 3),
                     )
                 else:
                     for editor in self._editors:
