@@ -33,9 +33,11 @@ class ScrollBar(Widget):
 
         if height is not None:
             width = 7
+
             self._is_vertical = True
         else:
             height = 7
+
             self._is_vertical = False
 
         super().__init__(parent, x, y, width, height, **kwargs)
@@ -133,6 +135,7 @@ class ScrollBar(Widget):
         value = (
             (drag_pos - self._drag_offset - 6) * self.scroll_amount / self._scroll_size
         )
+
         self.value_var = int(
             min(max(value, 0), self.scroll_amount - self.slider_amount)
         )
@@ -149,13 +152,13 @@ class ScrollBar(Widget):
 
         self.draw_panel(x, y, w, h, with_shadow=self._with_shadow)
 
-        inc_color = 6 if self.inc_button.is_pressed_var else WIDGET_BACKGROUND_COLOR
-        dec_color = 6 if self.dec_button.is_pressed_var else WIDGET_BACKGROUND_COLOR
+        inc_col = 6 if self.inc_button.is_pressed_var else WIDGET_BACKGROUND_COLOR
+        dec_col = 6 if self.dec_button.is_pressed_var else WIDGET_BACKGROUND_COLOR
 
         if self._is_vertical:
-            pyxel.rect(x + 1, y + 1, w - 2, 4, dec_color)
+            pyxel.rect(x + 1, y + 1, w - 2, 4, dec_col)
             pyxel.rect(x + 1, y + 6, w - 2, h - 12, WIDGET_BACKGROUND_COLOR)
-            pyxel.rect(x + 1, y + h - 5, w - 2, 4, inc_color)
+            pyxel.rect(x + 1, y + h - 5, w - 2, 4, inc_col)
 
             pyxel.pset(x + 3, y + 2, WIDGET_PANEL_COLOR)
             pyxel.line(x + 2, y + 3, x + w - 3, y + 3, WIDGET_PANEL_COLOR)
@@ -171,9 +174,9 @@ class ScrollBar(Widget):
                 WIDGET_PANEL_COLOR,
             )
         else:
-            pyxel.rect(x + 1, y + 1, 4, h - 2, dec_color)
+            pyxel.rect(x + 1, y + 1, 4, h - 2, dec_col)
             pyxel.rect(x + 6, y + 1, w - 12, h - 2, WIDGET_BACKGROUND_COLOR)
-            pyxel.rect(x + w - 5, y + 1, 4, h - 2, inc_color)
+            pyxel.rect(x + w - 5, y + 1, 4, h - 2, inc_col)
 
             pyxel.pset(x + 2, y + 3, WIDGET_PANEL_COLOR)
             pyxel.line(x + 3, y + 2, x + 3, y + h - 3, WIDGET_PANEL_COLOR)
