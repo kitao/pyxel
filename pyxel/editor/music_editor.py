@@ -9,22 +9,38 @@ from .widgets import ImageButton, ImageToggleButton, NumberPicker
 
 
 class MusicEditor(EditorBase):
+    """
+    Variables:
+        music_no_var
+    """
+
     def __init__(self, parent):
         super().__init__(parent)
 
-        self._is_playing = False
-        self._play_pos = [0 for _ in range(pyxel.CHANNEL_COUNT)]
+        # is_playing_var
+        self.new_var("is_playing_var", None)
+        self.add_var_event_listener(
+            "is_playing_var", "get", self.__on_is_playing_var_get
+        )
+
+        # field cursor
         self.field_cursor = FieldCursor(
-            self.get_data,
-            self.add_pre_history,
-            self.add_post_history,
+            self.get_seq,
+            pyxel.CHANNEL_COUNT,
             MAX_MUSIC_LENGTH,
             16,
-            pyxel.CHANNEL_COUNT,
+            self.add_pre_history,
+            self.add_post_history,
         )
+
+        # music picker
         self._music_picker = NumberPicker(
             self, 45, 17, min_value=0, max_value=pyxel.MUSIC_COUNT - 1, value=0
         )
+        self.add_number_picker_help(self._music_picker)
+        self.copy_var("music_no_var", self._music_picker, "value_var")
+
+        # play button
         self._play_button = ImageButton(
             self,
             185,
@@ -33,6 +49,12 @@ class MusicEditor(EditorBase):
             u=126,
             v=0,
         )
+        self._play_button.add_event_listener("press", self.__on_play_button_press)
+        self._play_button.add_event_listener(
+            "mouse_hover", self.__on_play_button_mouse_hover
+        )
+
+        # stop button
         self._stop_button = ImageButton(
             self,
             195,
@@ -41,58 +63,43 @@ class MusicEditor(EditorBase):
             u=135,
             v=0,
         )
+        self._stop_button.add_event_listener("press", self.__on_stop_button_press)
+        self._stop_button.add_event_listener(
+            "mouse_hover", self.__on_stop_button_mouse_hover
+        )
+
+        # loop button
         self._loop_button = ImageToggleButton(
             self, 205, 17, img=EDITOR_IMAGE, u=144, v=0, is_checked=False
         )
+        self._loop_button.add_event_listener(
+            "mouse_hover", self.__on_loop_button_mouse_hover
+        )
+
+        # music field
         self._music_field = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
+
+        # sound selector
         self._sound_selector = SoundSelector(self)
 
+        # event listeners
         self.add_event_listener("undo", self.__on_undo)
         self.add_event_listener("redo", self.__on_redo)
         self.add_event_listener("hide", self.__on_hide)
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
-        self._play_button.add_event_listener("press", self.__on_play_button_press)
-        self._stop_button.add_event_listener("press", self.__on_stop_button_press)
-        self._play_button.add_event_listener(
-            "mouse_hover", self.__on_play_button_mouse_hover
-        )
-        self._stop_button.add_event_listener(
-            "mouse_hover", self.__on_stop_button_mouse_hover
-        )
-        self._loop_button.add_event_listener(
-            "mouse_hover", self.__on_loop_button_mouse_hover
-        )
-        self.add_number_picker_help(self._music_picker)
-
-    @property
-    def music(self):
-        return self._music_picker.value
-
-    @property
-    def is_playing(self):
-        return self._is_playing
 
     def play_pos(self, ch):
         return self._play_pos[ch]
 
-    def get_data(self, value):
-        music = pyxel.music(self._music_picker.value)
+    def get_seq(self, index):
+        music = pyxel.music(self.music_no_var)
 
-        if value == 0:
-            data = music.ch0
-        elif value == 1:
-            data = music.ch1
-        elif value == 2:
-            data = music.ch2
-        elif value == 3:
-            data = music.ch3
-
-        return data
+        return music.sequences[index]
 
     def add_pre_history(self, x, y):
         self._history_data = data = {}
-        data["music"] = self._music_picker.value
+        data["music"] = self.music_no_var
         data["cursor_before"] = (x, y)
         data["before"] = self.field_cursor.data[:]
 
@@ -105,30 +112,29 @@ class MusicEditor(EditorBase):
             self.add_history(self._history_data)
 
     def _play(self):
-        self._is_playing = True
-
         for i in range(pyxel.MUSIC_CHANNEL_COUNT):
             self._play_pos[i] = 0
 
-        self._music_picker.is_enabled = False
-        self._play_button.is_enabled = False
-        self._stop_button.is_enabled = True
-        self._loop_button.is_enabled = False
+        self._music_picker.is_enabled_var = False
+        self._play_button.is_enabled_var = False
+        self._stop_button.is_enabled_var = True
+        self._loop_button.is_enabled_var = False
 
-        pyxel.playm(self._music_picker.value, loop=self._loop_button.value)
+        pyxel.playm(self.music_no_var, loop=self._loop_button.value)
 
     def _stop(self):
-        self._is_playing = False
+        # for i in range(pyxel.CHANNEL_COUNT):
+        #    self._play_pos[i] = -1
 
-        for i in range(pyxel.MUSIC_CHANNEL_COUNT):
-            self._play_pos[i] = -1
-
-        self._music_picker.is_enabled = True
-        self._play_button.is_enabled = True
-        self._stop_button.is_enabled = False
-        self._loop_button.is_enabled = True
+        self._music_picker.is_enabled_var = True
+        self._play_button.is_enabled_var = True
+        self._stop_button.is_enabled_var = False
+        self._loop_button.is_enabled_var = True
 
         pyxel.stop()
+
+    def __on_is_playing_var_get(self, value):
+        return pyxel.play_pos(0) is not None
 
     def __on_undo(self, data):
         self._stop()
@@ -152,9 +158,7 @@ class MusicEditor(EditorBase):
         self._stop()
 
     def __on_update(self):
-        if self._is_playing:
-            self._is_playing = False
-
+        if self.is_playing_var:
             for i in range(pyxel.MUSIC_CHANNEL_COUNT):
                 if pyxel.play_pos(i) >= 0:
                     self._is_playing = True
@@ -169,13 +173,13 @@ class MusicEditor(EditorBase):
             else:
                 self._play_button.press()
 
-        if self._is_playing:
+        if self.is_playing_var:
             return
 
-        if not self._play_button.is_enabled:
+        if not self._play_button.is_enabled_var:
             self._stop()
 
-        if self._loop_button.is_enabled and pyxel.btnp(pyxel.KEY_L):
+        if self._loop_button.is_enabled_var and pyxel.btnp(pyxel.KEY_L):
             self._loop_button.press()
 
         self.field_cursor.process_input()
