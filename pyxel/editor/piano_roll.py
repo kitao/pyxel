@@ -20,6 +20,13 @@ class PianoRoll(Widget):
         self._press_x = 0
         self._press_y = 0
 
+        self.field_cursor = parent.field_cursor
+        self.get_seq = parent.get_seq
+
+        self.copy_var("play_pos_var", parent)
+        self.copy_var("help_message_var", parent)
+
+        # event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
@@ -42,7 +49,7 @@ class PianoRoll(Widget):
         self._press_x = x
         self._press_y = y
 
-        self.parent.field_cursor.move(x, 0)
+        self.field_cursor.move(x, 0)
 
     def __on_mouse_up(self, key, x, y):
         pass
@@ -68,7 +75,7 @@ class PianoRoll(Widget):
 
         self.parent.add_pre_history(x, 0)
 
-        data = self.parent.field_cursor.data
+        data = self.field_cursor.data
         padding_length = self._press_x + 1 - len(data)
         if padding_length > 0:
             data.extend([-1] * padding_length)
@@ -76,7 +83,7 @@ class PianoRoll(Widget):
         self._press_x = x
         self._press_y = y
 
-        self.parent.field_cursor.move(x, 0)
+        self.field_cursor.move(x, 0)
 
         dx = x2 - x1
         dy = y2 - y1
@@ -97,9 +104,9 @@ class PianoRoll(Widget):
 
         x, y = self._screen_to_view(x, y)
 
-        self.parent.field_cursor.move(x, 0)
+        self.field_cursor.move(x, 0)
 
-        data = self.parent.field_cursor.data
+        data = self.field_cursor.data
 
         self.parent.add_pre_history(x, 0)
 
@@ -112,29 +119,29 @@ class PianoRoll(Widget):
         self.parent.add_post_history(x, 0)
 
     def __on_mouse_hover(self, x, y):
-        self.parent.help_message = "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
+        self.help_message = "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
 
     def __on_update(self):
-        cursor_y = self.parent.field_cursor.y
+        cursor_y = self.field_cursor.y
 
-        if cursor_y > 0 or self.parent.is_playing:
+        if cursor_y > 0 or self.play_pos_var >= 0:
             return
 
         if (
-            pyxel.btnp(pyxel.KEY_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME)
+            pyxel.btnp(pyxel.KEY_RETURN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME)
             or pyxel.btnp(pyxel.KEY_KP_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME)
         ) and self.parent.keyboard_note is not None:
-            self.parent.field_cursor.insert(self.parent.keyboard_note)
+            self.field_cursor.insert(self.parent.keyboard_note)
 
     def __on_draw(self):
         pyxel.rect(self.x, self.y, self.width, self.height, 7)
 
-        if self.parent.is_playing:
-            x = (self.parent.play_pos % 100) * 4 + 31
+        if self.play_pos_var >= 0:
+            x = (self.play_pos_var % 100) * 4 + 31
             pyxel.rect(x, 25, 3, 123, PIANO_ROLL_CURSOR_PLAY_COLOR)
         else:
-            if self.parent.field_cursor.y == 0:
-                x = self.parent.field_cursor.x * 4 + 31
+            if self.field_cursor.y == 0:
+                x = self.field_cursor.x * 4 + 31
                 pyxel.rect(x, 25, 3, 123, PIANO_ROLL_CURSOR_EDIT_COLOR)
 
         pyxel.blt(
@@ -158,7 +165,7 @@ class PianoRoll(Widget):
             PIANO_ROLL_BACKGROUND_COLOR,
         )
 
-        for i, note in enumerate(self.parent.get_data(0)):
+        for i, note in enumerate(self.get_seq(0)):
             x = i * 4 + 31
             y = 143 - note * 2
             pyxel.rect(

@@ -14,21 +14,33 @@ from .widgets import Widget
 
 
 class MusicField(Widget):
+    """
+    Variables:
+        is_playing_var
+        help_message_var
+    """
+
     def __init__(self, parent, x, y, ch):
         super().__init__(parent, x, y, 218, 21)
 
         self._ch = ch
+        self.get_seq = parent.get_seq
+        self.field_cursor = parent.field_cursor
 
+        self.copy_var("is_playing_var", parent)
+        self.copy_var("help_message_var", parent)
+
+        # event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("draw", self.__on_draw)
 
     @property
     def data(self):
-        return self.parent.get_data(self._ch)
+        return self.get_seq(self._ch)
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_LEFT or self.parent.is_playing:
+        if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
 
         x -= self.x + 21
@@ -40,11 +52,10 @@ class MusicField(Widget):
         self.parent.field_cursor.move(x // 12 + (y // 10) * 16, self._ch)
 
     def __on_mouse_hover(self, x, y):
-        self.parent.help_message = "SOUND:SOUND_BUTTON/BS/DEL"
+        self.help_message_var = "SOUND:SOUND_BUTTON/BS/DEL"
 
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
-
         pyxel.text(self.x + 5, self.y + 8, "CH{}".format(self._ch), TEXT_LABEL_COLOR)
         pyxel.blt(
             self.x + 20,
@@ -59,7 +70,7 @@ class MusicField(Widget):
 
         data = self.data
 
-        if self.parent.is_playing:
+        if self.is_playing_var:
             play_pos = self.parent.play_pos(self._ch)
 
             if play_pos < 0 or not data:
@@ -70,8 +81,8 @@ class MusicField(Widget):
                 cursor_y = self._ch
                 cursor_col = MUSIC_FIELD_CURSOR_PLAY_COLOR
         else:
-            cursor_x = self.parent.field_cursor.x
-            cursor_y = self.parent.field_cursor.y
+            cursor_x = self.field_cursor.x
+            cursor_y = self.field_cursor.y
             cursor_col = MUSIC_FIELD_CURSOR_EDIT_COLOR
 
         if cursor_y == self._ch:
