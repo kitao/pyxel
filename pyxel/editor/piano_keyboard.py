@@ -32,6 +32,13 @@ key_table = [
 
 
 class PianoKeyboard(Widget):
+    """
+    Variables:
+        is_playing_var
+        play_pos_var
+        help_message_var
+    """
+
     def __init__(self, parent):
         super().__init__(parent, 17, 25, 12, 123)
 
@@ -40,7 +47,14 @@ class PianoKeyboard(Widget):
         self._mouse_note = None
         self.note = None
         self._tone = 0
+        self.field_cursor = parent.field_cursor
+        self.get_seq = parent.get_seq
 
+        self.copy_var("is_playing_var", parent)
+        self.copy_var("play_pos_var", parent)
+        self.copy_var("help_message_var", parent)
+
+        # event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
@@ -99,12 +113,12 @@ class PianoKeyboard(Widget):
             self._mouse_note = self._screen_to_note(x, y)
 
     def __on_mouse_hover(self, x, y):
-        self.parent.help_message = "PLAY:Z/S/X..Q/2/W..A TONE:1"
+        self.help_message_var = "PLAY:Z/S/X..Q/2/W..A TONE:1"
 
     def __on_update(self):
         if (
-            self.parent.field_cursor.y > 0
-            or self.parent.is_playing
+            self.field_cursor.y > 0
+            or self.is_playing_var
             or pyxel.btn(pyxel.KEY_SHIFT)
             or pyxel.btn(pyxel.KEY_CTRL)
             or pyxel.btn(pyxel.KEY_ALT)
@@ -142,20 +156,20 @@ class PianoKeyboard(Widget):
             123,
         )
 
-        data = self.parent.get_data(0)
+        data = self.get_seq(0)
 
         if (
-            self.parent.is_playing
+            self.is_playing_var
             and not data
-            or not self.parent.is_playing
+            or not self.is_playing_var
             and self.note is None
         ):
             return
 
-        note = data[self.parent.play_pos] if self.parent.is_playing else self.note
+        note = data[self.play_pos_var] if self.is_playing_var else self.note
+        key = note % 12
         x = self.x
         y = self.y + (59 - note) * 2
-        key = note % 12
 
         if note == -1:
             pyxel.rect(x, y + 1, 12, 2, PIANO_KEYBOARD_REST_COLOR)

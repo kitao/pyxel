@@ -16,9 +16,20 @@ effect_key_table = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
 
 
 class SoundField(Widget):
+    """
+    Variables:
+    """
+
     def __init__(self, parent):
         super().__init__(parent, 30, 149, 193, 23)
 
+        self.field_cursor = parent.field_cursor
+        self.get_seq = parent.get_seq
+
+        self.copy_var("play_pos_var", parent)
+        self.copy_var("help_message_var", parent)
+
+        # event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("update", self.__on_update)
@@ -39,14 +50,14 @@ class SoundField(Widget):
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
         if y == 0:
-            self.parent.help_message = "TONE:T/S/P/N/BS/DEL"
+            self.help_message_var = "TONE:T/S/P/N/BS/DEL"
         elif y == 1:
-            self.parent.help_message = "VOLUME:0-7/BS/DEL"
+            self.help_message_var = "VOLUME:0-7/BS/DEL"
         elif y == 2:
-            self.parent.help_message = "EFFECT:N/S/V/F/BS/DEL"
+            self.help_message_var = "EFFECT:N/S/V/F/BS/DEL"
 
     def __on_update(self):
-        cursor_y = self.parent.field_cursor.y
+        cursor_y = self.field_cursor.y
 
         if (
             cursor_y < 1
@@ -101,17 +112,17 @@ class SoundField(Widget):
         )
 
         data_str = []
-        data_str.append("".join(["TSPN"[v] for v in self.parent.get_data(1)]))
-        data_str.append("".join([str(v) for v in self.parent.get_data(2)]))
-        data_str.append("".join(["NSVF"[v] for v in self.parent.get_data(3)]))
+        data_str.append("".join(["TSPN"[v] for v in self.get_seq(1)]))
+        data_str.append("".join([str(v) for v in self.get_seq(2)]))
+        data_str.append("".join(["NSVF"[v] for v in self.get_seq(3)]))
 
         for i in range(3):
             pyxel.text(31, 150 + i * 8, data_str[i], SOUND_FIELD_DATA_NORMAL_COLOR)
 
-        cursor_y = self.parent.field_cursor.y
-        cursor_x = self.parent.field_cursor.x
+        cursor_y = self.field_cursor.y
+        cursor_x = self.field_cursor.x
 
-        if self.parent.is_playing or cursor_y == 0:
+        if self.play_pos_var >= 0 or cursor_y == 0:
             return
 
         x = cursor_x * 4 + 31

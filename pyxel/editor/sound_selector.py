@@ -6,6 +6,12 @@ from .widgets.settings import BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR
 
 
 class SoundSelector(Widget):
+    """
+    Variables:
+        is_playing_var
+        help_message_var
+    """
+
     def __init__(self, parent):
         super().__init__(parent, 11, 129, 218, 44)
 
@@ -13,6 +19,9 @@ class SoundSelector(Widget):
         self._preview_sound = None
         self._last_preview_sound = None
 
+        self.copy_var("is_playing_var", parent)
+
+        # event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_repeat", self.__on_mouse_down)
@@ -60,10 +69,10 @@ class SoundSelector(Widget):
         self._pressed_sound = None
 
     def __on_mouse_hover(self, x, y):
-        self.parent.help_message = "PREVIEW:HOVER INSERT:CLICK"
+        self.help_message_var = "PREVIEW:HOVER INSERT:CLICK"
 
     def __on_update(self):
-        if self.parent.is_playing:
+        if self.is_playing_var:
             return
 
         mx = pyxel.mouse_x
@@ -89,8 +98,8 @@ class SoundSelector(Widget):
         self.draw_panel(self.x, self.y, self.width, self.height)
         pyxel.blt(self.x + 6, self.y + 5, EDITOR_IMAGE, 0, 121, 206, 34)
 
-        for i in range(pyxel.USER_SOUND_BANK_COUNT):
-            if pyxel.sound(i).note:
+        for i in range(pyxel.SOUND_COUNT):
+            if pyxel.sound(i).notes:
                 self._draw_sound_button(i, BUTTON_ENABLED_COLOR)
 
         if self._pressed_sound is not None:
