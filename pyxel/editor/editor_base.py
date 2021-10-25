@@ -25,10 +25,8 @@ class EditorBase(Widget):
 
     def __init__(self, parent):
         super().__init__(parent, 0, 0, 0, 0, is_visible=False)
-
         self._history_list = []
         self._history_index = 0
-
         self.copy_var("help_message_var", parent)
 
     @property
@@ -100,7 +98,6 @@ class EditorBase(Widget):
 
     def __on_tool_button_mouse_hover(self, x, y):
         value = self._tool_button.check_value(x, y)
-
         if value == TOOL_SELECT:
             s = "SELECT:S"
         elif value == TOOL_PENCIL:
@@ -117,5 +114,4 @@ class EditorBase(Widget):
             s = "BUCKET:B"
         else:
             s = ""
-
         self.help_message_var = s
