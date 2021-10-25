@@ -21,24 +21,18 @@ class ImageViewer(Widget):
             y = 80
             height = 66
             slider_amount = 8
-
             self._is_tilemap_mode = True
-
             self.copy_var("tilemap_no_var", parent)
         else:
             y = 16
             height = 130
             slider_amount = 16
-
             self._is_tilemap_mode = False
-
         super().__init__(parent, 157, y, 66, height)
-
         self._press_x = 0
         self._press_y = 0
         self._drag_offset_x = 0
         self._drag_offset_y = 0
-
         self.copy_var("image_no_var", parent)
         self.copy_var("help_message_var", parent)
 
@@ -91,7 +85,6 @@ class ImageViewer(Widget):
     def _screen_to_focus(self, x, y):
         x = self.viewport_x_var + (x - self.x - 1) // 8
         y = self.viewport_y_var + (y - self.y - 1) // 8
-
         return x, y
 
     def __on_focus_x_set(self, value):
@@ -102,7 +95,6 @@ class ImageViewer(Widget):
         fw = self.focus_w_var
         vx = self.viewport_x_var
         vw = 8
-
         self.viewport_x_var += min(fx - vx, 0) + max(fx + fw - vx - vw, 0)
 
     def __on_focus_y_set(self, value):
@@ -113,13 +105,11 @@ class ImageViewer(Widget):
         fh = self.focus_h_var
         vy = self.viewport_y_var
         vh = 8 if self._is_tilemap_mode else 16
-
         self.viewport_y_var += min(fy - vy, 0) + max(fy + fh - vy - vh, 0)
 
     def __on_mouse_down(self, key, x, y):
         if key == pyxel.MOUSE_BUTTON_LEFT:
             self.focus_x_var, self.focus_y_var = self._screen_to_focus(x, y)
-
             self._press_x = self.focus_x_var
             self._press_y = self.focus_y_var
 
@@ -132,12 +122,9 @@ class ImageViewer(Widget):
             if self._is_tilemap_mode:
                 last_focus_x = self.focus_x_var
                 last_focus_y = self.focus_y_var
-
                 self._focus_x_var, self._focus_y_var = self._screen_to_focus(x, y)
-
                 self.focus_w_var = min(abs(self._focus_x_var - self._press_x) + 1, 8)
                 self.focus_h_var = min(abs(self._focus_y_var - self._press_y) + 1, 8)
-
                 self.focus_x_var = min(self._focus_x_var, last_focus_x)
                 self.focus_y_var = min(self._focus_y_var, last_focus_y)
             else:
@@ -149,24 +136,23 @@ class ImageViewer(Widget):
 
             if abs(self._drag_offset_x) >= 8:
                 offset = self._drag_offset_x // 8
-
                 self.viewport_x_var += offset
                 self._drag_offset_x -= offset * 8
 
             if abs(self._drag_offset_y) >= 8:
                 offset = self._drag_offset_y // 8
-
                 self.viewport_y_var += offset
                 self._drag_offset_y -= offset * 8
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_focus(x, y)
         s = "VIEW:R-DRAG" if self._is_tilemap_mode else "TARGET:CURSOR IMPORT:DROP"
-
         self.help_message_var = s + " ({},{})".format(x * 8, y * 8)
 
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
+
+        # image
         pyxel.blt(
             self.x + 1,
             self.y + 1,
@@ -177,11 +163,11 @@ class ImageViewer(Widget):
             self.height - 2,
         )
 
+        # focus
         x = self.x + (self.focus_x_var - self.viewport_x_var) * 8 + 1
         y = self.y + (self.focus_y_var - self.viewport_y_var) * 8 + 1
         w = self.focus_w_var * 8
         h = self.focus_h_var * 8
-
         pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
         pyxel.rectb(x, y, w, h, PANEL_FOCUS_COLOR)
         pyxel.rectb(x + 1, y + 1, w - 2, h - 2, PANEL_FOCUS_BORDER_COLOR)
