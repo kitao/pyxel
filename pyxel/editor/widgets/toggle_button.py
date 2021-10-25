@@ -28,20 +28,16 @@ class ToggleButton(Widget):
 
     @property
     def button_color(self):
-        return (
-            (BUTTON_PRESSED_COLOR if self.is_checked_var else BUTTON_ENABLED_COLOR)
-            if self.is_enabled_var
-            else BUTTON_DISABLED_COLOR
-        )
+        if not self.is_enabled_var:
+            return BUTTON_DISABLED_COLOR
+        elif self.is_pressed_var:
+            return BUTTON_PRESSED_COLOR
+        else:
+            return BUTTON_ENABLED_COLOR
 
     def __on_is_checked_change(self, value):
-        if value:
-            self.trigger_event("checked")
-        else:
-            self.trigger_event("unchecked")
+        self.trigger_event("checked" if value else "unchecked")
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_LEFT:
-            return
-
-        self.is_checked_var = not self.is_checked_var
+        if key == pyxel.MOUSE_BUTTON_LEFT:
+            self.is_checked_var = not self.is_checked_var
