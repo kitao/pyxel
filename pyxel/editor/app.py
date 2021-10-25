@@ -25,21 +25,18 @@ class App(Widget):
     """
 
     def __init__(self, resource_file):
-        resource_file = os.path.join(os.getcwd(), resource_file)
-        file_ext = os.path.splitext(resource_file)[1]
-
-        if file_ext != pyxel.RESOURCE_FILE_EXTENSION:
-            resource_file += pyxel.RESOURCE_FILE_EXTENSION
-
         pyxel.init(APP_WIDTH, APP_HEIGHT)
         pyxel.mouse(True)
-        App._set_title(resource_file)
 
+        resource_file = os.path.join(os.getcwd(), resource_file)
+        file_ext = os.path.splitext(resource_file)[1]
+        if file_ext != pyxel.RESOURCE_FILE_EXTENSION:
+            resource_file += pyxel.RESOURCE_FILE_EXTENSION
+        App._set_title(resource_file)
         if os.path.exists(resource_file):
             pyxel.load(resource_file)
 
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
-
         self._resource_file = resource_file
 
         # help_message_var
@@ -153,16 +150,14 @@ class App(Widget):
         self.help_message_var = "SAVE:CTRL+S"
 
     def __on_update(self):
+        # file drop
         if pyxel.drop_files:
             drop_file = pyxel.drop_files[-1]
             file_ext = os.path.splitext(drop_file)[1]
-
             if file_ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
-
                 if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
                     self._editor.reset_history()
-
                     pyxel.load(
                         pyxel._drop_file,
                         image=(self.editor_no_var == 0),
@@ -173,28 +168,33 @@ class App(Widget):
                 else:
                     for editor in self._editors:
                         editor.reset_history()
-
                     pyxel.load(drop_file)
                     App._set_title(drop_file)
             else:
                 self._editor.trigger_event("drop", drop_file)
 
         if pyxel.btn(pyxel.KEY_ALT):
+            # alt+left: switch editor
             if pyxel.btnp(pyxel.KEY_LEFT):
                 self.editor_no_var = (self.editor_no_var - 1) % len(self._editors)
+
+            # alt+right: switch editor
             elif pyxel.btnp(pyxel.KEY_RIGHT):
                 self.editor_no_var = (self.editor_no_var + 1) % len(self._editors)
 
         if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
+            # ctrl+s: save
             if pyxel.btnp(pyxel.KEY_S):
                 self._save_button.is_pressed_var = True
 
+            # ctrl+z: undo
             if self._editor.can_undo and pyxel.btnp(
                 pyxel.KEY_Z, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
             ):
                 self._undo_button.is_pressed_var = True
 
-            if self._editor.can_redo and pyxel.btnp(
+            # ctrl+y: redo
+            elif self._editor.can_redo and pyxel.btnp(
                 pyxel.KEY_Y, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
             ):
                 self._redo_button.is_pressed_var = True
@@ -207,5 +207,4 @@ class App(Widget):
         pyxel.rect(0, 0, 240, 9, WIDGET_PANEL_COLOR)
         pyxel.line(0, 9, 239, 9, WIDGET_SHADOW_COLOR)
         pyxel.text(93, 2, self.help_message_var, HELP_MESSAGE_COLOR)
-
         self.help_message_var = ""
