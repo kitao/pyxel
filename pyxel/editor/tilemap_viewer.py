@@ -15,9 +15,7 @@ class TilemapViewer(Widget):
 
     def __init__(self, parent):
         super().__init__(parent, 157, 16, 66, 65)
-
         self._tilemap_image = pyxel.Image(64, 63)
-
         self.copy_var("tilemap_no_var", parent)
         self.copy_var("help_message_var", parent)
 
@@ -37,37 +35,33 @@ class TilemapViewer(Widget):
     def _screen_to_focus(self, x, y):
         x = min(max((x - self.x - 1) // 2, 0), 30)
         y = min(max((y - self.y - 1) // 2, 0), 30)
-
         return x, y
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_LEFT:
-            return
-
-        self.focus_x_var, self.focus_y_var = self._screen_to_focus(x, y)
+        if key == pyxel.MOUSE_BUTTON_LEFT:
+            self.focus_x_var, self.focus_y_var = self._screen_to_focus(x, y)
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         self.__on_mouse_down(key, x, y)
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_focus(x, y)
-
         self.help_message_var = "TARGET:CURSOR ({},{})".format(x * 8, y * 8)
 
     def __on_update(self):
         tilemap = pyxel.tilemap(self.tilemap_no_var)
         image = tilemap.image
         start_y = pyxel.frame_count % 8 * 8
-
         for y in range(start_y, start_y + 8):
             for x in range(64):
                 tile = tilemap.pget(x * 4 + 1, y * 4 + 1)
                 col = image.pget(tile[0] * 8 + 3, tile[1] * 8 + 3)
-
                 self._tilemap_image.pset(x, y, col)
 
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
+
+        # tilemap
         pyxel.blt(
             self.x + 1,
             self.y + 1,
@@ -78,9 +72,9 @@ class TilemapViewer(Widget):
             self._tilemap_image.height,
         )
 
+        # focus
         x = self.x + self.focus_x_var * 2 + 1
         y = self.y + self.focus_y_var * 2 + 1
-
         pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
         pyxel.rectb(x, y, 4, 4, PANEL_FOCUS_COLOR)
         pyxel.rectb(x - 1, y - 1, 6, 6, PANEL_FOCUS_BORDER_COLOR)
