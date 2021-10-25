@@ -37,7 +37,6 @@ class ImageEditor(EditorBase):
 
     def __init__(self, parent):
         super().__init__(parent)
-
         self.copy_var("help_message_var", parent)
 
         # canvas_var
@@ -96,7 +95,6 @@ class ImageEditor(EditorBase):
     def __on_undo(self, data):
         self.image_no_var = data["image_no"]
         self.focus_x_var, self.focus_y_var = data["focus_pos"]
-
         self.canvas_var.set_slice(
             self.focus_x_var * 8, self.focus_y_var * 8, data["previous_canvas"]
         )
@@ -104,7 +102,6 @@ class ImageEditor(EditorBase):
     def __on_redo(self, data):
         self.image_no_var = data["image_no"]
         self.focus_x_var, self.focus_y_var = data["focus_pos"]
-
         self.canvas_var.set_slice(
             self.focus_x_var * 8, self.focus_y_var * 8, data["later_canvas"]
         )
@@ -115,16 +112,14 @@ class ImageEditor(EditorBase):
     def __on_update(self):
         self.check_tool_button_shortcuts()
 
+        # color shortcuts
         if not pyxel.btn(pyxel.KEY_ALT):
             for btn in self._COLOR_BUTTONS:
                 if pyxel.btnp(btn):
                     col = btn - pyxel.KEY_1
-
                     if pyxel.btn(pyxel.KEY_SHIFT):
                         col += 8
-
                     self.color_var = col
-
                     break
 
     def __on_draw(self):
