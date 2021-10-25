@@ -12,10 +12,8 @@ class WidgetVar:
 
     def get(self):
         value = self._value
-
         for listener in self._event_listeners["get"]:
             value = listener(value)
-
         return value
 
     def set(self, value):
@@ -26,7 +24,6 @@ class WidgetVar:
             return
 
         self._value = value
-
         for listener in self._event_listeners["change"]:
             listener(value)
 

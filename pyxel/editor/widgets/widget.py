@@ -47,7 +47,6 @@ class Widget:
     ):
         if parent:
             parent._children.append(self)
-
         self._parent = parent
         self._children = []
         self._x = x
@@ -74,15 +73,15 @@ class Widget:
     def x(self):
         if self._parent:
             return self._parent.x + self._x
-        else:
-            return self._x
+
+        return self._x
 
     @property
     def y(self):
         if self._parent:
             return self._parent.y + self._y
-        else:
-            return self._y
+
+        return self._y
 
     @property
     def width(self):
@@ -95,7 +94,6 @@ class Widget:
     def is_hit(self, x, y):
         x -= self.x
         y -= self.y
-
         return 0 <= x <= self.width - 1 and 0 <= y <= self.height - 1
 
     def set_pos(self, x, y):
@@ -116,18 +114,15 @@ class Widget:
 
     def trigger_event(self, event, *args):
         self._event_listeners.setdefault(event, [])
-
         for listener in self._event_listeners[event]:
             listener(*args)
 
     def update_all(self):
         capture_widget = Widget._mouse_capture_info.widget
-
         if capture_widget:
             capture_widget._process_capture()
         else:
             self._process_input()
-
         self._update()
 
     def _process_input(self):
@@ -140,7 +135,6 @@ class Widget:
 
         x = pyxel.mouse_x
         y = pyxel.mouse_y
-
         if self.is_hit(x, y):
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
                 key = pyxel.MOUSE_BUTTON_LEFT
@@ -150,13 +144,10 @@ class Widget:
                 key = pyxel.MOUSE_BUTTON_MIDDLE
             else:
                 key = None
-
             if key is not None:
                 self._start_capture(key)
                 self.trigger_event("mouse_down", key, x, y)
-
             self.trigger_event("mouse_hover", x, y)
-
             return True
 
         return False
@@ -180,10 +171,8 @@ class Widget:
     def _process_capture(self):
         capture_info = Widget._mouse_capture_info
         last_x, last_y = capture_info.last_pos
-
         x = pyxel.mouse_x
         y = pyxel.mouse_y
-
         if x != last_x or y != last_y:
             self.trigger_event(
                 "mouse_drag",
@@ -203,16 +192,13 @@ class Widget:
 
         if pyxel.btnr(capture_info.key):
             self.trigger_event("mouse_up", capture_info.key, x, y)
-
             press_x, press_y = capture_info.press_pos
-
             if (
                 pyxel.frame_count <= capture_info.time + WIDGET_CLICK_TIME
                 and abs(x - press_x) <= WIDGET_CLICK_DIST
                 and abs(y - press_y) <= WIDGET_CLICK_DIST
             ):
                 self.trigger_event("mouse_click", capture_info.key, x, y)
-
             self._end_capture()
 
     def _update(self):
@@ -220,7 +206,6 @@ class Widget:
             return
 
         self.trigger_event("update")
-
         for child in self._children:
             child._update()
 
@@ -229,7 +214,6 @@ class Widget:
             return
 
         self.trigger_event("draw")
-
         for child in self._children:
             child.draw_all()
 
@@ -237,11 +221,9 @@ class Widget:
     def draw_panel(x, y, width, height, *, with_shadow=True):
         w = width
         h = height
-
         pyxel.line(x + 1, y, x + w - 2, y, WIDGET_PANEL_COLOR)
         pyxel.rect(x, y + 1, w, h - 2, WIDGET_PANEL_COLOR)
         pyxel.line(x + 1, y + h - 1, x + w - 2, y + h - 1, WIDGET_PANEL_COLOR)
-
         if with_shadow:
             pyxel.line(x + 2, y + h, x + w - 1, y + h, WIDGET_SHADOW_COLOR)
             pyxel.line(x + w, y + 2, x + w, y + h - 1, WIDGET_SHADOW_COLOR)
@@ -250,7 +232,6 @@ class Widget:
     def new_var(self, name, value):
         member_name = self._widget_var_name(name)
         widget_var = WidgetVar(value)
-
         setattr(self, member_name, widget_var)
 
         def getter(self):
@@ -265,7 +246,6 @@ class Widget:
         member_name = self._widget_var_name(name)
         src_member_name = self._widget_var_name(src_name or name)
         widget_var = getattr(src_widget, src_member_name)
-
         setattr(self, member_name, widget_var)
 
         def getter(self):
@@ -279,13 +259,11 @@ class Widget:
     def add_var_event_listener(self, name, event, listener):
         member_name = self._widget_var_name(name)
         widget_var = getattr(self, member_name)
-
         widget_var.add_event_listener(event, listener)
 
     def remove_var_event_listener(self, name, event, listener):
         member_name = self._widget_var_name(name)
         widget_var = getattr(self, member_name)
-
         widget_var.remove_event_listener(event, listener)
 
     @staticmethod
@@ -303,7 +281,6 @@ class Widget:
 
     def _trigger_visible_event(self, is_visible):
         self.trigger_event("show" if is_visible else "hide")
-
         for child in self._children:
             if child.is_visible_var == is_visible:
                 child._trigger_visible_event(is_visible)
@@ -319,7 +296,6 @@ class Widget:
 
     def _trigger_enabled_event(self, is_enabled):
         self.trigger_event("enabled" if is_enabled else "disabled")
-
         for child in self._children:
             if child.is_enabled_var == is_enabled:
                 child._trigger_enabled_event(is_enabled)

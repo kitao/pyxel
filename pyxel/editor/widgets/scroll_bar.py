@@ -33,15 +33,11 @@ class ScrollBar(Widget):
 
         if height is not None:
             width = 7
-
             self._is_vertical = True
         else:
             height = 7
-
             self._is_vertical = False
-
         super().__init__(parent, x, y, width, height, **kwargs)
-
         self.scroll_amount = scroll_amount
         self.slider_amount = slider_amount
         self._with_shadow = with_shadow
@@ -53,22 +49,23 @@ class ScrollBar(Widget):
         self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
+        # dec button
         if self._is_vertical:
-            inc_x = 0
-            inc_y = height - 6
             btn_w = 7
             btn_h = 6
         else:
-            inc_x = width - 6
-            inc_y = 0
             btn_w = 6
             btn_h = 7
-
-        # dec button
         self.dec_button = Button(self, 0, 0, btn_w, btn_h)
         self.dec_button.add_event_listener("press", self.__on_dec_button_press)
 
         # inc button
+        if self._is_vertical:
+            inc_x = 0
+            inc_y = height - 6
+        else:
+            inc_x = width - 6
+            inc_y = 0
         self.inc_button = Button(self, inc_x, inc_y, btn_w, btn_h)
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
 
@@ -111,9 +108,7 @@ class ScrollBar(Widget):
 
         x -= self.x
         y -= self.y
-
         self._drag_offset = (y if self._is_vertical else x) - self._slider_pos
-
         if self._drag_offset < 0:
             self.__on_dec_button_press()
         elif self._drag_offset >= self._slider_size:
@@ -130,12 +125,10 @@ class ScrollBar(Widget):
 
         x -= self.x
         y -= self.y
-
         drag_pos = y if self._is_vertical else x
         value = (
             (drag_pos - self._drag_offset - 6) * self.scroll_amount / self._scroll_size
         )
-
         self.value_var = int(
             min(max(value, 0), self.scroll_amount - self.slider_amount)
         )
@@ -149,23 +142,25 @@ class ScrollBar(Widget):
         y = self.y
         w = self.width
         h = self.height
-
         self.draw_panel(x, y, w, h, with_shadow=self._with_shadow)
 
         inc_col = 6 if self.inc_button.is_pressed_var else WIDGET_BACKGROUND_COLOR
         dec_col = 6 if self.dec_button.is_pressed_var else WIDGET_BACKGROUND_COLOR
-
         if self._is_vertical:
+            # border
             pyxel.rect(x + 1, y + 1, w - 2, 4, dec_col)
             pyxel.rect(x + 1, y + 6, w - 2, h - 12, WIDGET_BACKGROUND_COLOR)
             pyxel.rect(x + 1, y + h - 5, w - 2, 4, inc_col)
 
+            # up arrow
             pyxel.pset(x + 3, y + 2, WIDGET_PANEL_COLOR)
             pyxel.line(x + 2, y + 3, x + w - 3, y + 3, WIDGET_PANEL_COLOR)
 
+            # down arrow
             pyxel.pset(x + 3, y + h - 3, WIDGET_PANEL_COLOR)
             pyxel.line(x + 2, y + h - 4, x + w - 3, y + h - 4, WIDGET_PANEL_COLOR)
 
+            # slider
             pyxel.rect(
                 self.x + 2,
                 self.y + self._slider_pos,
@@ -174,16 +169,20 @@ class ScrollBar(Widget):
                 WIDGET_PANEL_COLOR,
             )
         else:
+            # border
             pyxel.rect(x + 1, y + 1, 4, h - 2, dec_col)
             pyxel.rect(x + 6, y + 1, w - 12, h - 2, WIDGET_BACKGROUND_COLOR)
             pyxel.rect(x + w - 5, y + 1, 4, h - 2, inc_col)
 
+            # left arrow
             pyxel.pset(x + 2, y + 3, WIDGET_PANEL_COLOR)
             pyxel.line(x + 3, y + 2, x + 3, y + h - 3, WIDGET_PANEL_COLOR)
 
+            # right arrow
             pyxel.pset(x + w - 3, y + h - 4, WIDGET_PANEL_COLOR)
             pyxel.line(x + w - 4, y + 2, x + w - 4, y + h - 3, WIDGET_PANEL_COLOR)
 
+            # slider
             pyxel.rect(
                 self.x + self._slider_pos,
                 self.y + 2,

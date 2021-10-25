@@ -16,9 +16,8 @@ class NumberPicker(Widget):
 
     def __init__(self, parent, x, y, *, min_value, max_value, value, **kwargs):
         self._number_len = max(len(str(min_value)), len(str(max_value)))
-
-        super().__init__(parent, x, y, self._number_len * 4 + 21, 7, **kwargs)
-
+        width = self._number_len * 4 + 21
+        super().__init__(parent, x, y, width, 7, **kwargs)
         self._min_value = min_value
         self._max_value = max_value
 
