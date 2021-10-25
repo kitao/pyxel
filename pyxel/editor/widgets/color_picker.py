@@ -29,13 +29,14 @@ class ColorPicker(Widget):
         x -= self.x + 1
         y -= self.y + 1
         if (
-            not (0 <= x <= self.width - 2 and 0 <= y <= self.height - 2)
-            or x % 8 == 7
-            or y == 7
+            0 <= x <= self.width - 2
+            and 0 <= y <= self.height - 2
+            and x % 8 != 7
+            and y != 7
         ):
+            return (y // 8) * 8 + x // 8
+        else:
             return None
-
-        return (y // 8) * 8 + x // 8
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:

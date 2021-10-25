@@ -35,11 +35,12 @@ class Button(Widget):
 
     @property
     def button_color(self):
-        return (
-            (BUTTON_PRESSED_COLOR if self.is_pressed_var else BUTTON_ENABLED_COLOR)
-            if self.is_enabled_var
-            else BUTTON_DISABLED_COLOR
-        )
+        if not self.is_enabled_var:
+            return BUTTON_DISABLED_COLOR
+        elif self.is_pressed_var:
+            return BUTTON_PRESSED_COLOR
+        else:
+            return BUTTON_ENABLED_COLOR
 
     def __on_is_pressed_get(self, value):
         return self._pressing_time > 0
@@ -53,16 +54,12 @@ class Button(Widget):
         return None
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_LEFT:
-            return
-
-        self.is_pressed_var = True
+        if key == pyxel.MOUSE_BUTTON_LEFT:
+            self.is_pressed_var = True
 
     def __on_mouse_up(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_LEFT:
-            return
-
-        self.is_pressed_var = False
+        if key == pyxel.MOUSE_BUTTON_LEFT:
+            self.is_pressed_var = False
 
     def __on_update(self):
         if self._pressing_time > 0:

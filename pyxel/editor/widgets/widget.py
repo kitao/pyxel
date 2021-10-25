@@ -71,17 +71,11 @@ class Widget:
 
     @property
     def x(self):
-        if self._parent:
-            return self._parent.x + self._x
-
-        return self._x
+        return (self._parent.x + self._x) if self.parent else self._x
 
     @property
     def y(self):
-        if self._parent:
-            return self._parent.y + self._y
-
-        return self._y
+        return (self._parent.y + self._y) if self.parent else self._y
 
     @property
     def width(self):
@@ -271,10 +265,7 @@ class Widget:
         return "_widget_var_" + name
 
     def __on_is_visible_get(self, value):
-        if self._parent:
-            return self._parent.is_visible_var and value
-        else:
-            return value
+        return (self._parent.is_visible_var and value) if self._parent else value
 
     def __on_is_visible_change(self, value):
         self._trigger_visible_event(value)
@@ -286,10 +277,7 @@ class Widget:
                 child._trigger_visible_event(is_visible)
 
     def __on_is_enabled_get(self, value):
-        if self._parent:
-            return self._parent.is_enabled_var and value
-        else:
-            return value
+        return (self._parent.is_enabled_var and value) if self._parent else value
 
     def __on_is_enabled_change(self, value):
         self._trigger_enabled_event(value)

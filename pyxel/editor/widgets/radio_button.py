@@ -37,10 +37,7 @@ class RadioButton(Widget):
         y1 = 0
         x2 = x1 + 6
         y2 = y1 + 6
-        if x1 <= x <= x2 and y1 <= y <= y2:
-            return index
-
-        return None
+        return index if x1 <= x <= x2 and y1 <= y <= y2 else None
 
     def __on_value_change(self, value):
         self.trigger_event("change", value)
