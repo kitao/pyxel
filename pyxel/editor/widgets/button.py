@@ -20,7 +20,6 @@ class Button(Widget):
 
     def __init__(self, parent, x, y, width, height, **kwargs):
         super().__init__(parent, x, y, width, height, **kwargs)
-
         self._pressing_time = 0
 
         # is_pressed_var
@@ -51,7 +50,6 @@ class Button(Widget):
             self.trigger_event("press")
         else:
             self._pressing_time = 0
-
         return None
 
     def __on_mouse_down(self, key, x, y):

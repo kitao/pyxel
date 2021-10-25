@@ -14,7 +14,6 @@ class ColorPicker(Widget):
 
     def __init__(self, parent, x, y, value, *, with_shadow=False, **kwargs):
         super().__init__(parent, x, y, 65, 17, **kwargs)
-
         self._with_shadow = with_shadow
 
         # valur_var
@@ -29,7 +28,6 @@ class ColorPicker(Widget):
     def check_value(self, x, y):
         x -= self.x + 1
         y -= self.y + 1
-
         if (
             not (0 <= x <= self.width - 2 and 0 <= y <= self.height - 2)
             or x % 8 == 7
@@ -44,7 +42,6 @@ class ColorPicker(Widget):
             return
 
         value = self.check_value(x, y)
-
         if value is not None:
             self.value_var = value
 
@@ -56,12 +53,13 @@ class ColorPicker(Widget):
             self.x, self.y, self.width, self.height, with_shadow=self._with_shadow
         )
 
+        # colors
         for i in range(2):
             for j in range(8):
                 pyxel.rect(self.x + j * 8 + 1, self.y + i * 8 + 1, 7, 7, i * 8 + j)
 
+        # cursor
         col = self.value_var
-
         pyxel.text(
             self.x + (col % 8) * 8 + 3,
             self.y + (col // 8) * 8 + 2,

@@ -22,7 +22,6 @@ class TextButton(Button):
             pyxel.FONT_HEIGHT + 1,
             **kwargs
         )
-
         self._text = text
 
         # event listeners
@@ -34,7 +33,6 @@ class TextButton(Button):
         w = self.width
         h = self.height
         col = self.button_color
-
         pyxel.line(x + 1, y, x + w - 2, y, col)
         pyxel.rect(x, y + 1, w, h - 2, col)
         pyxel.line(x + 1, y + h - 1, x + w - 2, y + h - 1, col)
