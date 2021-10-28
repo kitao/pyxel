@@ -1,11 +1,11 @@
 use crate::resource::ResourceItem;
-use crate::settings::{CHANNEL_COUNT, RESOURCE_ARCHIVE_DIRNAME};
+use crate::settings::{NUM_CHANNELS, RESOURCE_ARCHIVE_DIRNAME};
 use crate::utils::parse_hex_string;
 use crate::Pyxel;
 
 #[derive(Clone)]
 pub struct Music {
-    pub sequences: [Vec<u32>; CHANNEL_COUNT as usize],
+    pub sequences: [Vec<u32>; NUM_CHANNELS as usize],
 }
 
 pub type SharedMusic = shared_type!(Music);
@@ -42,7 +42,6 @@ impl ResourceItem for Music {
                 return true;
             }
         }
-
         false
     }
 
@@ -52,7 +51,6 @@ impl ResourceItem for Music {
 
     fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
-
         for sequence in &self.sequences {
             if sequence.is_empty() {
                 output += "none";
@@ -61,21 +59,17 @@ impl ResourceItem for Music {
                     output += &format!("{:02x}", sound_no);
                 }
             }
-
             output += "\n";
         }
-
         output
     }
 
     fn deserialize(&mut self, _pyxel: &Pyxel, _version: u32, input: &str) {
         self.clear();
-
         for (i, line) in input.lines().enumerate() {
             if line == "none" {
                 continue;
             }
-
             string_loop!(j, value, line, 2, {
                 self.sequences[i].push(parse_hex_string(&value).unwrap());
             });
@@ -90,8 +84,7 @@ mod tests {
     #[test]
     fn new() {
         let music = Music::new();
-
-        for i in 0..CHANNEL_COUNT {
+        for i in 0..NUM_CHANNELS {
             assert_eq!(music.lock().sequences[i as usize].len(), 0);
         }
     }
@@ -99,12 +92,10 @@ mod tests {
     #[test]
     fn set() {
         let music = Music::new();
-
         music
             .lock()
             .set(&[0, 1, 2], &[1, 2, 3], &[2, 3, 4], &[3, 4, 5]);
-
-        for i in 0..CHANNEL_COUNT {
+        for i in 0..NUM_CHANNELS {
             assert_eq!(&music.lock().sequences[i as usize], &vec![i, i + 1, i + 2]);
         }
     }

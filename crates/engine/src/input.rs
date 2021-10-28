@@ -101,7 +101,6 @@ impl Input {
                 } else {
                     return;
                 };
-
                 self.key_values
                     .insert(GAMEPAD1_AXIS_LEFTX + axis as Key + offset, value);
             }
@@ -124,7 +123,6 @@ impl Input {
                 } else {
                     return;
                 };
-
                 self.release_key(GAMEPAD1_BUTTON_A + button as Key + offset, frame_count);
             }
         }
@@ -193,22 +191,17 @@ impl Pyxel {
             if *frame_count == self.frame_count() {
                 return true;
             }
-
             let hold_frame_count = hold_frame_count.unwrap_or(0);
             let period_frame_count = period_frame_count.unwrap_or(0);
-
             if hold_frame_count == 0 || period_frame_count == 0 {
                 return false;
             }
-
             let elapsed_frames =
                 self.frame_count() as i32 - (*frame_count + hold_frame_count) as i32;
-
             if elapsed_frames > 0 && elapsed_frames % period_frame_count as i32 == 0 {
                 return true;
             }
         }
-
         false
     }
 
@@ -218,7 +211,6 @@ impl Pyxel {
                 return true;
             }
         }
-
         false
     }
 
