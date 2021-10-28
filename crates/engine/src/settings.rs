@@ -12,8 +12,8 @@ pub const DEFAULT_GIF_SEC: u32 = 10;
 
 pub const DISPLAY_RATIO: f64 = 0.8;
 pub const BACKGROUND_COLOR: Rgb8 = 0x101018;
-pub const MAX_FRAME_SKIP_COUNT: u32 = 9;
-pub const MEASURE_FRAME_COUNT: u32 = 10;
+pub const MAX_SKIP_FRAMES: u32 = 9;
+pub const NUM_MEASURE_FRAMES: u32 = 10;
 
 pub const ICON_SIZE: u32 = 16;
 pub const ICON_SCALE: u32 = 4;
@@ -44,16 +44,16 @@ pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
 pub const CAPTURE_SCALE: u32 = 2;
 
 // Graphics
-pub const COLOR_COUNT: u32 = 16;
+pub const NUM_COLORS: u32 = 16;
 
-pub const IMAGE_COUNT: u32 = 3;
+pub const NUM_IMAGES: u32 = 3;
 pub const IMAGE_SIZE: u32 = 256;
 
-pub const TILEMAP_COUNT: u32 = 8;
+pub const NUM_TILEMAPS: u32 = 8;
 pub const TILEMAP_SIZE: u32 = 256;
 pub const TILE_SIZE: u32 = 8;
 
-pub const DEFAULT_COLORS: [Rgb8; COLOR_COUNT as usize] = [
+pub const DEFAULT_COLORS: [Rgb8; NUM_COLORS as usize] = [
     0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, 0xd4186c,
     0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0,
 ];
@@ -83,7 +83,7 @@ pub const CURSOR_DATA: [&str; CURSOR_HEIGHT as usize] = [
 
 pub const MIN_FONT_CODE: char = 32 as char;
 pub const MAX_FONT_CODE: char = 127 as char;
-pub const FONT_ROW_COUNT: u32 = 16;
+pub const NUM_FONT_ROWS: u32 = 16;
 
 pub const FONT_WIDTH: u32 = 4;
 pub const FONT_HEIGHT: u32 = 6;
@@ -104,16 +104,16 @@ pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] 
 // Audio
 pub const CLOCK_RATE: u32 = 1789773; // 1.78 MHz clock rate
 pub const SAMPLE_RATE: u32 = 44100; // 44.1 kHz sample rate
-pub const SAMPLE_COUNT: u32 = SAMPLE_RATE / 10;
+pub const NUM_SAMPLES: u32 = SAMPLE_RATE / 10;
 
-pub const TICK_CLOCK_COUNT: u32 = CLOCK_RATE / 120;
+pub const NUM_CLOCKS_PER_TICK: u32 = CLOCK_RATE / 120;
 pub const OSCILLATOR_RESOLUTION: u32 = 32;
 pub const VIBRATO_DEPTH: f64 = 0.025;
 pub const VIBRATO_FREQUENCY: f64 = 6.0;
 
-pub const CHANNEL_COUNT: u32 = 4;
-pub const SOUND_COUNT: u32 = 64;
-pub const MUSIC_COUNT: u32 = 8;
+pub const NUM_CHANNELS: u32 = 4;
+pub const NUM_SOUNDS: u32 = 64;
+pub const NUM_MUSICS: u32 = 8;
 
 pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0;
 pub const SQUARE_VOLUME_FACTOR: f64 = 0.3;
