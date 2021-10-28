@@ -37,7 +37,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y = as_i32(y);
         let width = as_u32(width);
         let height = as_u32(height);
-
         self.clip_rect = self
             .self_rect
             .intersects(RectArea::new(x, y, width, height));
@@ -50,7 +49,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn cls(&mut self, value: T) {
         let width = self.width();
         let height = self.height();
-
         for i in 0..height {
             for j in 0..width {
                 self.data[i as usize][j as usize] = value;
@@ -61,7 +59,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn pget(&mut self, x: f64, y: f64) -> T {
         let x = as_i32(x);
         let y = as_i32(y);
-
         if self.self_rect.contains(x, y) {
             self.data[y as usize][x as usize]
         } else {
@@ -72,7 +69,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn pset(&mut self, x: f64, y: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
-
         if self.clip_rect.contains(x, y) {
             self.data[y as usize][x as usize] = value;
         }
@@ -83,23 +79,16 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y1 = as_i32(y1);
         let x2 = as_i32(x2);
         let y2 = as_i32(y2);
-
         if x1 == x2 && y1 == y2 {
             self.pset(x1 as f64, y1 as f64, value);
-
-            return;
-        }
-
-        if (x1 - x2).abs() > (y1 - y2).abs() {
+        } else if (x1 - x2).abs() > (y1 - y2).abs() {
             let (start_x, start_y, end_x, end_y) = if x1 < x2 {
                 (x1, y1, x2, y2)
             } else {
                 (x2, y2, x1, y1)
             };
-
             let length = end_x - start_x + 1;
             let alpha = (end_y - start_y) as f64 / (end_x - start_x) as f64;
-
             for i in 0..length {
                 self.pset(
                     (start_x + i) as f64,
@@ -113,10 +102,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             } else {
                 (x2, y2, x1, y1)
             };
-
             let length = end_y - start_y + 1;
             let alpha = (end_x - start_x) as f64 / (end_y - start_y) as f64;
-
             for i in 0..length {
                 self.pset(
                     start_x as f64 + alpha * i as f64,
@@ -133,16 +120,13 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let width = as_u32(width);
         let height = as_u32(height);
         let rect = RectArea::new(x, y, width, height).intersects(self.clip_rect);
-
         if rect.is_empty() {
             return;
         }
-
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
-
         for i in top..=bottom {
             for j in left..=right {
                 self.data[i as usize][j as usize] = value;
@@ -156,21 +140,17 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let width = as_u32(width);
         let height = as_u32(height);
         let rect = RectArea::new(x, y, width, height);
-
         if rect.intersects(self.clip_rect).is_empty() {
             return;
         }
-
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
-
         for i in left..=right {
             self.pset(i as f64, top as f64, value);
             self.pset(i as f64, bottom as f64, value);
         }
-
         for i in top..=bottom {
             self.pset(left as f64, i as f64, value);
             self.pset(right as f64, i as f64, value);
@@ -182,14 +162,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y = as_i32(y);
         let radius = as_u32(radius);
         let sq_radius = radius * radius;
-
         for dx in 0..=radius as i32 {
             let dy = as_i32(((sq_radius as i32 - dx * dx) as f64).sqrt());
-
             if dx > dy {
                 continue;
             }
-
             for i in -dy..=dy {
                 self.pset((x - dx) as f64, (y + i) as f64, value);
                 self.pset((x + dx) as f64, (y + i) as f64, value);
@@ -204,14 +181,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y = as_i32(y);
         let radius = as_u32(radius);
         let sq_radius = radius * radius;
-
         for dx in 0..=radius as i32 {
             let dy = as_i32(((sq_radius as i32 - dx * dx) as f64).sqrt());
-
             if dx > dy {
                 continue;
             }
-
             self.pset((x - dx) as f64, (y - dy) as f64, value);
             self.pset((x + dx) as f64, (y - dy) as f64, value);
             self.pset((x - dx) as f64, (y + dy) as f64, value);
@@ -231,17 +205,14 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let mut y2 = as_i32(y2);
         let mut x3 = as_i32(x3);
         let mut y3 = as_i32(y3);
-
         if y1 > y2 {
             swap(&mut y1, &mut y2);
             swap(&mut x1, &mut x2);
         }
-
         if y1 > y3 {
             swap(&mut y1, &mut y3);
             swap(&mut x1, &mut x3);
         }
-
         if y2 > y3 {
             swap(&mut y2, &mut y3);
             swap(&mut x2, &mut x3);
@@ -252,19 +223,16 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         } else {
             (x2 - x1) as f64 / (y2 - y1) as f64
         };
-
         let alpha13 = if y3 == y1 {
             0.0
         } else {
             (x3 - x1) as f64 / (y3 - y1) as f64
         };
-
         let alpha23 = if y3 == y2 {
             0.0
         } else {
             (x3 - x2) as f64 / (y3 - y2) as f64
         };
-
         let x_inter = as_i32(x1 as f64 + alpha13 * (y2 - y1) as f64);
 
         for i in y1..=y2 {
@@ -279,12 +247,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                     as_i32(x_inter as f64 + alpha13 * (i - y2) as f64),
                 )
             };
-
             for j in x_slider..=x_end {
                 self.pset(j as f64, i as f64, value);
             }
         }
-
         for i in (y2 + 1)..=y3 {
             let (x_slider, x_end) = if x_inter < x2 {
                 (
@@ -297,7 +263,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                     as_i32(x_inter as f64 + alpha13 * (i - y2) as f64),
                 )
             };
-
             for j in x_slider..=x_end {
                 self.pset(j as f64, i as f64, value);
             }
@@ -326,7 +291,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             let copy_width = as_u32(width.abs());
             let copy_height = as_u32(height.abs());
             let mut canvas = Self::new(copy_width, copy_height);
-
             canvas.blt(
                 0.0,
                 0.0,
@@ -339,7 +303,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 None,
             );
             self.blt(x, y, &canvas, 0.0, 0.0, width, height, transparent, palette);
-
             return;
         }
 
@@ -349,7 +312,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let canvas_y = as_i32(canvas_y);
         let width = as_i32(width);
         let height = as_i32(height);
-
         let CopyArea {
             dst_x,
             dst_y,
@@ -371,29 +333,24 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             width,
             height,
         );
-
         if width == 0 || height == 0 {
             return;
         }
-
         for i in 0..height {
             for j in 0..width {
                 let value_x = src_x + sign_x * j + offset_x;
                 let value_y = src_y + sign_y * i + offset_y;
                 let value = canvas.data[value_y as usize][value_x as usize];
-
                 if let Some(transparent) = transparent {
                     if value == transparent {
                         continue;
                     }
                 }
-
                 let value = if let Some(palette) = palette {
                     palette[value.to_index()]
                 } else {
                     value
                 };
-
                 self.data[(dst_y + i) as usize][(dst_x + j) as usize] = value;
             }
         }
@@ -431,7 +388,6 @@ impl CopyArea {
 
         let left_cut = max(max(src_rect.left() - src_x, dst_rect.left() - dst_x), 0);
         let top_cut = max(max(src_rect.top() - src_y, dst_rect.top() - dst_y), 0);
-
         let right_cut = max(
             max(
                 src_x + width - 1 - src_rect.right(),
@@ -439,7 +395,6 @@ impl CopyArea {
             ),
             0,
         );
-
         let bottom_cut = max(
             max(
                 src_y + height - 1 - src_rect.bottom(),

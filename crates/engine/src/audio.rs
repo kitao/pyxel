@@ -5,34 +5,33 @@ use crate::channel::{Channel, SharedChannel};
 use crate::music::{Music, SharedMusic};
 use crate::platform::{AudioCallback, Platform};
 use crate::settings::{
-    CHANNEL_COUNT, CLOCK_RATE, MUSIC_COUNT, SAMPLE_COUNT, SAMPLE_RATE, SOUND_COUNT,
-    TICK_CLOCK_COUNT,
+    CLOCK_RATE, NUM_CHANNELS, NUM_CLOCKS_PER_TICK, NUM_MUSICS, NUM_SAMPLES, NUM_SOUNDS, SAMPLE_RATE,
 };
 use crate::sound::{SharedSound, Sound};
 use crate::Pyxel;
 
 struct AudioCore {
     blip_buf: BlipBuf,
-    channels: [SharedChannel; CHANNEL_COUNT as usize],
+    channels: [SharedChannel; NUM_CHANNELS as usize],
 }
 
 pub struct Audio {
-    channels: [SharedChannel; CHANNEL_COUNT as usize],
-    sounds: [SharedSound; SOUND_COUNT as usize],
-    musics: [SharedMusic; MUSIC_COUNT as usize],
+    channels: [SharedChannel; NUM_CHANNELS as usize],
+    sounds: [SharedSound; NUM_SOUNDS as usize],
+    musics: [SharedMusic; NUM_MUSICS as usize],
 }
 
 impl Audio {
     pub fn new<T: Platform>(platform: &mut T) -> Self {
-        let mut blip_buf = BlipBuf::new(SAMPLE_COUNT);
-        let channels = array![_ => Channel::new(); CHANNEL_COUNT as usize];
-        let sounds = array![_ => Sound::new(); SOUND_COUNT as usize];
-        let musics = array![_ => Music::new(); MUSIC_COUNT as usize];
-
+        let mut blip_buf = BlipBuf::new(NUM_SAMPLES);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
+        let channels = array![_ => Channel::new(); NUM_CHANNELS as usize];
+        let sounds = array![_ => Sound::new(); NUM_SOUNDS as usize];
+        let musics = array![_ => Music::new(); NUM_MUSICS as usize];
+
         platform.start_audio(
             SAMPLE_RATE,
-            SAMPLE_COUNT,
+            NUM_SAMPLES,
             new_shared_type!(AudioCore {
                 blip_buf,
                 channels: channels.clone(),
@@ -50,13 +49,11 @@ impl Audio {
 impl AudioCallback for AudioCore {
     fn update(&mut self, out: &mut [i16]) {
         let mut samples = self.blip_buf.read_samples(out, false);
-
         while samples < out.len() {
             for channel in &mut self.channels {
                 channel.lock().update(&mut self.blip_buf);
             }
-
-            self.blip_buf.end_frame(TICK_CLOCK_COUNT);
+            self.blip_buf.end_frame(NUM_CLOCKS_PER_TICK);
             samples += self.blip_buf.read_samples(&mut out[samples..], false);
         }
     }
@@ -89,7 +86,6 @@ impl Pyxel {
             .iter()
             .map(|sound_no| self.audio.sounds[*sound_no as usize].clone())
             .collect();
-
         self.audio.channels[channel_no as usize]
             .lock()
             .play(sounds, is_looping);
@@ -103,8 +99,7 @@ impl Pyxel {
 
     pub fn playm(&mut self, music_no: u32, is_looping: bool) {
         let music = self.audio.musics[music_no as usize].clone();
-
-        for i in 0..CHANNEL_COUNT {
+        for i in 0..NUM_CHANNELS {
             self.play(i, &music.lock().sequences[i as usize], is_looping);
         }
     }
@@ -114,7 +109,7 @@ impl Pyxel {
     }
 
     pub fn stop0(&mut self) {
-        for i in 0..CHANNEL_COUNT {
+        for i in 0..NUM_CHANNELS {
             self.stop(i);
         }
     }

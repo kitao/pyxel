@@ -64,7 +64,6 @@ impl RectArea {
         let bottom = min(self.bottom, rect.bottom);
         let width = right - left + 1;
         let height = bottom - top + 1;
-
         if width > 0 && height > 0 {
             Self::new(left, top, width as u32, height as u32)
         } else {
@@ -80,7 +79,6 @@ mod tests {
     #[test]
     fn new() {
         let rect1 = RectArea::new(1, 2, 3, 4);
-
         assert_eq!(rect1.left(), 1);
         assert_eq!(rect1.top(), 2);
         assert_eq!(rect1.right(), 3);
@@ -89,7 +87,6 @@ mod tests {
         assert_eq!(rect1.height(), 4);
 
         let rect2 = RectArea::new(10, 20, 0, 40);
-
         assert_eq!(rect2.left(), 10);
         assert_eq!(rect2.top(), 20);
         assert_eq!(rect2.right(), 9);
@@ -98,7 +95,6 @@ mod tests {
         assert_eq!(rect2.height(), 40);
 
         let rect3 = RectArea::new(100, 200, 300, 0);
-
         assert_eq!(rect3.left(), 100);
         assert_eq!(rect3.top(), 200);
         assert_eq!(rect3.right(), 399);
@@ -110,22 +106,18 @@ mod tests {
     #[test]
     fn is_empty() {
         let rect1 = RectArea::new(1, 2, 3, 4);
-
         assert!(!rect1.is_empty());
 
         let rect2 = RectArea::new(1, 2, 0, 4);
-
         assert!(rect2.is_empty());
 
         let rect3 = RectArea::new(1, 2, 3, 0);
-
         assert!(rect3.is_empty());
     }
 
     #[test]
     fn contains() {
         let rect1 = RectArea::new(1, 2, 3, 3);
-
         assert!(rect1.contains(1, 2));
         assert!(rect1.contains(3, 4));
         assert!(!rect1.contains(0, 2));
@@ -134,12 +126,10 @@ mod tests {
         assert!(!rect1.contains(3, 5));
 
         let rect2 = RectArea::new(1, 2, 0, 4);
-
         assert!(!rect2.contains(1, 2));
         assert!(!rect2.contains(1, 4));
 
         let rect3 = RectArea::new(1, 2, 3, 0);
-
         assert!(!rect3.contains(1, 2));
         assert!(!rect3.contains(3, 2));
     }
@@ -151,7 +141,6 @@ mod tests {
         let rect3 = RectArea::new(5, 6, 10, 20);
         let rect4 = RectArea::new(1, 2, 3, 4);
         let rect5 = RectArea::new(0, 0, 0, 0);
-
         assert_eq!(rect1.intersects(rect2), RectArea::new(11, 22, 29, 38));
         assert_eq!(rect1.intersects(rect3), RectArea::new(10, 20, 5, 6));
         assert!(rect1.intersects(rect4).is_empty());
