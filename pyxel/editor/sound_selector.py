@@ -98,7 +98,7 @@ class SoundSelector(Widget):
         self.draw_panel(self.x, self.y, self.width, self.height)
         pyxel.blt(self.x + 6, self.y + 5, EDITOR_IMAGE, 0, 121, 206, 34)
 
-        for i in range(pyxel.SOUND_COUNT):
+        for i in range(pyxel.NUM_SOUNDS):
             if pyxel.sound(i).notes:
                 self._draw_sound_button(i, BUTTON_ENABLED_COLOR)
 

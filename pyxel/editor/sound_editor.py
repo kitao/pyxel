@@ -21,9 +21,7 @@ class SoundEditor(EditorBase):
 
     def __init__(self, parent):
         super().__init__(parent)
-
         self._history_data = None
-
         self.copy_var("help_message_var", parent)
 
         # octave_var
@@ -41,7 +39,7 @@ class SoundEditor(EditorBase):
 
         # sound picker
         self._sound_picker = NumberPicker(
-            self, 45, 17, min_value=0, max_value=pyxel.SOUND_COUNT - 1, value=0
+            self, 45, 17, min_value=0, max_value=pyxel.NUM_SOUNDS - 1, value=0
         )
         self._sound_picker.add_event_listener("change", self.__on_sound_picker_change)
         self.add_number_picker_help(self._sound_picker)
@@ -116,7 +114,6 @@ class SoundEditor(EditorBase):
 
     def get_seq(self, index):
         sound = pyxel.sound(self.sound_no_var)
-
         if index == 0:
             data = sound.notes
         elif index == 1:
@@ -125,20 +122,18 @@ class SoundEditor(EditorBase):
             data = sound.volumes
         elif index == 3:
             data = sound.effects
-
         return data
 
     def add_pre_history(self, x, y):
         self._history_data = data = {}
         data["sound_no"] = self.sound_no_var
         data["cursor_before"] = (x, y)
-        data["before"] = self.field_cursor.data[:]
+        data["before"] = self.field_cursor.seq[:]
 
     def add_post_history(self, x, y):
         data = self._history_data
         data["cursor_after"] = (x, y)
-        data["after"] = self.field_cursor.data[:]
-
+        data["after"] = self.field_cursor.seq[:]
         if data["before"] != data["after"]:
             self.add_history(self._history_data)
 
@@ -148,7 +143,6 @@ class SoundEditor(EditorBase):
         self._play_button.is_enabled_var = False
         self._stop_button.is_enabled_var = True
         self._loop_button.is_enabled_var = False
-
         pyxel.play(0, self.sound_no_var, loop=self.is_looping_var)
 
     def _stop(self):
@@ -157,7 +151,6 @@ class SoundEditor(EditorBase):
         self._play_button.is_enabled_var = True
         self._stop_button.is_enabled_var = False
         self._loop_button.is_enabled_var = True
-
         pyxel.stop(0)
 
     def __on_is_playing_var_get(self, value):
@@ -165,11 +158,10 @@ class SoundEditor(EditorBase):
 
     def __on_play_pos_get(self, value):
         play_pos = pyxel.play_pos(0)
-
         if play_pos is None:
             return -1
         else:
-            play_pos[0]
+            return play_pos[0]
 
     def __on_sound_picker_change(self, value):
         sound = pyxel.sound(value)
@@ -196,14 +188,12 @@ class SoundEditor(EditorBase):
 
     def __on_undo(self, data):
         self._stop()
-
         self._sound_picker.value_var = data["sound"]
         self.field_cursor.move(*data["cursor_before"])
         self.field_cursor.data[:] = data["before"]
 
     def __on_redo(self, data):
         self._stop()
-
         self._sound_picker.value_var = data["sound"]
         self.field_cursor.move(*data["cursor_after"])
         self.field_cursor.data[:] = data["after"]
@@ -217,23 +207,18 @@ class SoundEditor(EditorBase):
             self._speed_picker.value_var = sound.speed
 
         if pyxel.btnp(pyxel.KEY_SPACE):
-            if self.play_pos_var >= 0:
+            if self.is_playing_var:
                 self._stop_button.is_pressed_var = True
+                return
             else:
                 self._play_button.is_pressed_var = True
 
-        if self.play_pos_var >= 0:
-            return
-
         if not self._play_button.is_enabled_var:
             self._stop()
-
         if self._loop_button.is_enabled_var and pyxel.btnp(pyxel.KEY_L):
             self._loop_button.is_pressed_var = True
-
         if pyxel.btnp(pyxel.KEY_PAGEUP):
             self.octave = min(self.octave + 1, 3)
-
         if pyxel.btnp(pyxel.KEY_PAGEDOWN):
             self.octave = max(self.octave - 1, 0)
 
