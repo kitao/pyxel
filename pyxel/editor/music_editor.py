@@ -26,7 +26,7 @@ class MusicEditor(EditorBase):
         # field cursor
         self.field_cursor = FieldCursor(
             self.get_seq,
-            pyxel.CHANNEL_COUNT,
+            pyxel.NUM_CHANNELS,
             MAX_MUSIC_LENGTH,
             16,
             self.add_pre_history,
@@ -35,7 +35,7 @@ class MusicEditor(EditorBase):
 
         # music picker
         self._music_picker = NumberPicker(
-            self, 45, 17, min_value=0, max_value=pyxel.MUSIC_COUNT - 1, value=0
+            self, 45, 17, min_value=0, max_value=pyxel.NUM_MUSICS - 1, value=0
         )
         self.add_number_picker_help(self._music_picker)
         self.copy_var("music_no_var", self._music_picker, "value_var")
@@ -94,7 +94,6 @@ class MusicEditor(EditorBase):
 
     def get_seq(self, index):
         music = pyxel.music(self.music_no_var)
-
         return music.sequences[index]
 
     def add_pre_history(self, x, y):
@@ -107,30 +106,26 @@ class MusicEditor(EditorBase):
         data = self._history_data
         data["cursor_after"] = (x, y)
         data["after"] = self.field_cursor.data[:]
-
         if data["before"] != data["after"]:
             self.add_history(self._history_data)
 
     def _play(self):
-        for i in range(pyxel.MUSIC_CHANNEL_COUNT):
+        for i in range(pyxel.MUSIC_NUM_CHANNELS):
             self._play_pos[i] = 0
-
         self._music_picker.is_enabled_var = False
         self._play_button.is_enabled_var = False
         self._stop_button.is_enabled_var = True
         self._loop_button.is_enabled_var = False
-
         pyxel.playm(self.music_no_var, loop=self._loop_button.value)
 
     def _stop(self):
-        # for i in range(pyxel.CHANNEL_COUNT):
+        # for i in range(pyxel.NUM_CHANNELS):
         #    self._play_pos[i] = -1
 
         self._music_picker.is_enabled_var = True
         self._play_button.is_enabled_var = True
         self._stop_button.is_enabled_var = False
         self._loop_button.is_enabled_var = True
-
         pyxel.stop()
 
     def __on_is_playing_var_get(self, value):
@@ -138,17 +133,14 @@ class MusicEditor(EditorBase):
 
     def __on_undo(self, data):
         self._stop()
-
         self._music_picker.value = data["music"]
         self.field_cursor.move(*data["cursor_before"])
         self.field_cursor.data[:] = data["before"]
 
     def __on_redo(self, data):
         self._stop()
-
         dat = data["after"]
         dat_len = len(dat)
-
         self._music_picker.value = data["music"]
         self.field_cursor.move(*data["cursor_after"])
         self.field_cursor.data[:dat_len] = dat
@@ -159,7 +151,7 @@ class MusicEditor(EditorBase):
 
     def __on_update(self):
         if self.is_playing_var:
-            for i in range(pyxel.MUSIC_CHANNEL_COUNT):
+            for i in range(pyxel.MUSIC_NUM_CHANNELS):
                 if pyxel.play_pos(i) >= 0:
                     self._is_playing = True
                     play_pos = pyxel.play_pos(i)
