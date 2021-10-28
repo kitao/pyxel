@@ -2,60 +2,52 @@ use array_macro::array;
 
 use crate::image::{Image, SharedImage};
 use crate::settings::{
-    CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, FONT_DATA, FONT_HEIGHT, FONT_ROW_COUNT, FONT_WIDTH,
-    IMAGE_COUNT, IMAGE_SIZE, TILEMAP_COUNT, TILEMAP_SIZE,
+    CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, FONT_DATA, FONT_HEIGHT, FONT_WIDTH, IMAGE_SIZE,
+    NUM_FONT_ROWS, NUM_IMAGES, NUM_TILEMAPS, TILEMAP_SIZE,
 };
 use crate::tilemap::{SharedTilemap, Tilemap};
 use crate::types::Color;
 use crate::Pyxel;
 
 pub struct Graphics {
-    images: [SharedImage; IMAGE_COUNT as usize],
-    tilemaps: [SharedTilemap; TILEMAP_COUNT as usize],
+    images: [SharedImage; NUM_IMAGES as usize],
+    tilemaps: [SharedTilemap; NUM_TILEMAPS as usize],
 }
 
 impl Graphics {
     pub fn new() -> Self {
-        let images = array![_ => Image::new(IMAGE_SIZE, IMAGE_SIZE); IMAGE_COUNT as usize];
-        let tilemaps = array![_ => Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()); TILEMAP_COUNT as usize];
-
+        let images = array![_ => Image::new(IMAGE_SIZE, IMAGE_SIZE); NUM_IMAGES as usize];
+        let tilemaps = array![_ => Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()); NUM_TILEMAPS as usize];
         Self { images, tilemaps }
     }
 
     pub fn new_cursor_image() -> SharedImage {
         let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
-
         image.lock().set(0, 0, &CURSOR_DATA);
-
         image
     }
 
     pub fn new_font_image() -> SharedImage {
-        let width = FONT_WIDTH * FONT_ROW_COUNT;
-        let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + FONT_ROW_COUNT - 1) / FONT_ROW_COUNT);
+        let width = FONT_WIDTH * NUM_FONT_ROWS;
+        let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + NUM_FONT_ROWS - 1) / NUM_FONT_ROWS);
         let image = Image::new(width, height);
-
         {
             let mut image = image.lock();
-
             for (i, data) in FONT_DATA.iter().enumerate() {
-                let row = i as u32 / FONT_ROW_COUNT;
-                let col = i as u32 % FONT_ROW_COUNT;
+                let row = i as u32 / NUM_FONT_ROWS;
+                let col = i as u32 % NUM_FONT_ROWS;
                 let mut data = *data;
-
                 for j in 0..FONT_HEIGHT {
                     for k in 0..FONT_WIDTH {
                         let x = FONT_WIDTH * col + k;
                         let y = FONT_HEIGHT * row + j;
                         let color = if (data & 0x800000) == 0 { 0 } else { 1 };
-
                         image.canvas.data[y as usize][x as usize] = color;
                         data <<= 1;
                     }
                 }
             }
         }
-
         image
     }
 }
@@ -72,7 +64,6 @@ impl Pyxel {
                 return Some(i as u32);
             }
         }
-
         None
     }
 

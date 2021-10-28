@@ -39,23 +39,18 @@ impl Tilemap {
         let width = simplify_string(data_str[0]).len() as u32 / 4;
         let height = data_str.len() as u32;
         let tilemap = Self::new(width, height, self.image.clone());
-
         {
             let mut tilemap = tilemap.lock();
-
             for i in 0..height {
                 let src_data = simplify_string(data_str[i as usize]);
-
                 for j in 0..width {
                     let index = j as usize * 4;
                     let tile = parse_hex_string(&src_data[index..index + 4]).unwrap();
-
                     tilemap.canvas.data[i as usize][j as usize] =
                         (((tile >> 8) & 0xff) as u8, (tile & 0xff) as u8);
                 }
             }
         }
-
         self.blt(
             x as f64,
             y as f64,
@@ -154,7 +149,6 @@ impl ResourceItem for Tilemap {
                 }
             }
         }
-
         false
     }
 
@@ -164,19 +158,14 @@ impl ResourceItem for Tilemap {
 
     fn serialize(&self, pyxel: &Pyxel) -> String {
         let mut output = String::new();
-
         for i in 0..self.height() {
             for j in 0..self.width() {
                 let tile = self.canvas.data[i as usize][j as usize];
-
                 output += &format!("{:02x}{:02x}", tile.0, tile.1);
             }
-
             output += "\n";
         }
-
         output += &format!("{}", pyxel.image_no(self.image.clone()).unwrap_or(0));
-
         output
     }
 
@@ -186,14 +175,12 @@ impl ResourceItem for Tilemap {
                 if version < 15000 {
                     string_loop!(j, tile, line, 3, {
                         let tile = parse_hex_string(&tile).unwrap();
-
                         self.canvas.data[i][j] = ((tile % 32) as u8, (tile / 32) as u8);
                     });
                 } else {
                     string_loop!(j, tile, line, 4, {
                         let tile_x = parse_hex_string(&tile[0..2].to_string()).unwrap();
                         let tile_y = parse_hex_string(&tile[2..4].to_string()).unwrap();
-
                         self.canvas.data[i][j] = (tile_x as u8, tile_y as u8);
                     });
                 }

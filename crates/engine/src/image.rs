@@ -9,7 +9,7 @@ use crate::canvas::{Canvas, CopyArea, ToIndex};
 use crate::rectarea::RectArea;
 use crate::resource::ResourceItem;
 use crate::settings::{
-    COLOR_COUNT, FONT_HEIGHT, FONT_ROW_COUNT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE,
+    FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_COLORS, NUM_FONT_ROWS,
     RESOURCE_ARCHIVE_DIRNAME, TILE_SIZE,
 };
 use crate::tilemap::SharedTilemap;
@@ -26,7 +26,7 @@ impl ToIndex for Color {
 
 pub struct Image {
     pub(crate) canvas: Canvas<Color>,
-    pub(crate) palette: [Color; COLOR_COUNT as usize],
+    pub(crate) palette: [Color; NUM_COLORS as usize],
 }
 
 pub type SharedImage = shared_type!(Image);
@@ -35,7 +35,7 @@ impl Image {
     pub fn new(width: u32, height: u32) -> SharedImage {
         new_shared_type!(Self {
             canvas: Canvas::new(width, height),
-            palette: array![i => i as Color; COLOR_COUNT as usize],
+            palette: array![i => i as Color; NUM_COLORS as usize],
         })
     }
 
@@ -43,46 +43,37 @@ impl Image {
         let image_file = image::open(&Path::new(&filename)).unwrap().to_rgb8();
         let (width, height) = image_file.dimensions();
         let image = Self::new(width, height);
-
         {
             let mut image = image.lock();
             let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
-
             for i in 0..height {
                 for j in 0..width {
                     let p = image_file.get_pixel(j, i);
                     let src_rgb = (p[0], p[1], p[2]);
-
                     if let Some(color) = color_table.get(&src_rgb) {
                         image.canvas.data[i as usize][j as usize] = *color;
                     } else {
                         let mut closest_color: Color = 0;
                         let mut closest_dist: f64 = f64::MAX;
-
-                        for k in 0..COLOR_COUNT {
+                        for k in 0..NUM_COLORS {
                             let pal_color = colors[k as usize];
-
                             let pal_rgb = (
                                 ((pal_color >> 16) & 0xff) as u8,
                                 ((pal_color >> 8) & 0xff) as u8,
                                 (pal_color & 0xff) as u8,
                             );
-
                             let dist = Self::color_dist(src_rgb, pal_rgb);
-
                             if dist < closest_dist {
                                 closest_color = k as Color;
                                 closest_dist = dist;
                             }
                         }
-
                         color_table.insert(src_rgb, closest_color);
                         image.canvas.data[i as usize][j as usize] = closest_color;
                     }
                 }
             }
         }
-
         image
     }
 
@@ -92,7 +83,6 @@ impl Image {
         let dx = (r1 as f64 - r2 as f64) * 0.30;
         let dy = (g1 as f64 - g2 as f64) * 0.59;
         let dz = (b1 as f64 - b2 as f64) * 0.11;
-
         dx * dx + dy * dy + dz * dz
     }
 
@@ -108,21 +98,16 @@ impl Image {
         let width = simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
         let image = Self::new(width, height);
-
         {
             let mut image = image.lock();
-
             for i in 0..height {
                 let src_data = simplify_string(data_str[i as usize]);
-
                 for j in 0..width {
                     let color = parse_hex_string(&src_data[j as usize..j as usize + 1]).unwrap();
-
                     image.canvas.data[i as usize][j as usize] = color as Color;
                 }
             }
         }
-
         self.blt(
             x as f64,
             y as f64,
@@ -139,7 +124,6 @@ impl Image {
         let image = Self::from_image(filename, colors);
         let width = image.lock().width();
         let height = image.lock().height();
-
         self.blt(
             x as f64,
             y as f64,
@@ -156,7 +140,6 @@ impl Image {
         let width = self.width();
         let height = self.height();
         let mut image = RgbImage::new(width, height);
-
         for i in 0..height {
             for j in 0..width {
                 let rgb = colors[self.canvas.data[i as usize][j as usize] as usize];
@@ -167,15 +150,12 @@ impl Image {
                 image.put_pixel(j, i, Rgb([r, g, b]));
             }
         }
-
         let image = imageops::resize(&image, width * scale, height * scale, FilterType::Nearest);
-
         let filename = if filename.to_lowercase().ends_with(".png") {
             filename.to_string()
         } else {
             filename.to_string() + ".png"
         };
-
         image.save(&filename).unwrap();
     }
 
@@ -192,7 +172,7 @@ impl Image {
     }
 
     pub fn pal0(&mut self) {
-        for i in 0..COLOR_COUNT {
+        for i in 0..NUM_COLORS {
             self.palette[i as usize] = i as Color;
         }
     }
@@ -352,33 +332,24 @@ impl Image {
     }
 
     pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color, font: SharedImage) {
-        let x = as_i32(x);
-        let y = as_i32(y);
+        let mut x = as_i32(x);
+        let mut y = as_i32(y);
         let color = self.palette[color as usize];
         let palette1 = self.palette[1];
-
         self.pal(1, color);
-
         let start_x = x;
-        let mut x = x;
-        let mut y = y;
-
         for c in string.chars() {
             if c == '\n' {
                 x = start_x;
                 y += FONT_HEIGHT as i32;
-
                 continue;
             }
-
             if c < MIN_FONT_CODE || c > MAX_FONT_CODE {
                 continue;
             }
-
             let code = c as i32 - MIN_FONT_CODE as i32;
-            let src_x = (code % FONT_ROW_COUNT as i32) * FONT_WIDTH as i32;
-            let src_y = (code / FONT_ROW_COUNT as i32) * FONT_HEIGHT as i32;
-
+            let src_x = (code % NUM_FONT_ROWS as i32) * FONT_WIDTH as i32;
+            let src_y = (code / NUM_FONT_ROWS as i32) * FONT_HEIGHT as i32;
             self.blt(
                 x as f64,
                 y as f64,
@@ -389,10 +360,8 @@ impl Image {
                 FONT_HEIGHT as f64,
                 Some(0),
             );
-
             x += FONT_WIDTH as i32;
         }
-
         self.pal(1, palette1);
     }
 }
@@ -410,7 +379,6 @@ impl ResourceItem for Image {
                 }
             }
         }
-
         false
     }
 
@@ -420,15 +388,12 @@ impl ResourceItem for Image {
 
     fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
-
         for i in 0..self.height() {
             for j in 0..self.width() {
                 output += &format!("{:1x}", self.canvas.data[i as usize][j as usize]);
             }
-
             output += "\n";
         }
-
         output
     }
 
