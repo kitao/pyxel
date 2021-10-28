@@ -56,7 +56,7 @@ class TilemapEditor(EditorBase):
 
         # tilemap picker
         self._tilemap_picker = NumberPicker(
-            self, 48, 161, min_value=0, max_value=pyxel.TILEMAP_COUNT - 1, value=0
+            self, 48, 161, min_value=0, max_value=pyxel.NUM_TILEMAPS - 1, value=0
         )
         self._tilemap_picker.add_event_listener(
             "change", self.__on_tilemap_picker_change
@@ -75,7 +75,7 @@ class TilemapEditor(EditorBase):
             192,
             161,
             min_value=0,
-            max_value=pyxel.IMAGE_COUNT - 1,
+            max_value=pyxel.NUM_IMAGES - 1,
             value=pyxel.tilemap(self.tilemap_no_var).refimg,
         )
         self._image_picker.add_event_listener("change", self.__on_image_picker_change)

@@ -66,7 +66,7 @@ class ImageEditor(EditorBase):
 
         # image picker
         self._image_picker = NumberPicker(
-            self, 192, 161, min_value=0, max_value=pyxel.IMAGE_COUNT - 1, value=0
+            self, 192, 161, min_value=0, max_value=pyxel.NUM_IMAGES - 1, value=0
         )
         self.add_number_picker_help(self._image_picker)
         self.copy_var("image_no_var", self._image_picker, "value_var")
