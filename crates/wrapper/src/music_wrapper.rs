@@ -2,7 +2,7 @@ use pyo3::class::PySequenceProtocol;
 use pyo3::prelude::*;
 use pyxel::Music as PyxelMusic;
 use pyxel::SharedMusic as PyxelSharedMusic;
-use pyxel::CHANNEL_COUNT;
+use pyxel::NUM_CHANNELS;
 
 #[pyclass]
 #[derive(Clone)]
@@ -65,7 +65,7 @@ pub struct Sequences {
 
 impl Sequences {
     fn new(pyxel_music: PyxelSharedMusic) -> Self {
-        let sequences = (0..CHANNEL_COUNT)
+        let sequences = (0..NUM_CHANNELS)
             .map(|channel_no| Sequence::new(pyxel_music.clone(), channel_no as u32))
             .collect();
 

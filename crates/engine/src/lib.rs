@@ -70,7 +70,7 @@ pub struct Pyxel {
     input: Input,
     graphics: Graphics,
     audio: Audio,
-    pub colors: [Rgb8; COLOR_COUNT as usize],
+    pub colors: [Rgb8; NUM_COLORS as usize],
     pub screen: SharedImage,
     pub cursor: SharedImage,
     pub font: SharedImage,
@@ -119,9 +119,7 @@ impl Pyxel {
             cursor,
             font,
         };
-
         pyxel.icon(&ICON_DATA, ICON_SCALE);
-
         pyxel
     }
 }

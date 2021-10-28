@@ -2,8 +2,8 @@ use blip_buf::BlipBuf;
 
 use crate::settings::{
     CLOCK_RATE, EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, NOISE_VOLUME_FACTOR,
-    OSCILLATOR_RESOLUTION, PULSE_VOLUME_FACTOR, SQUARE_VOLUME_FACTOR, TICK_CLOCK_COUNT, TONE_NOISE,
-    TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, TRIANGLE_VOLUME_FACTOR, VIBRATO_DEPTH,
+    NUM_CLOCKS_PER_TICK, OSCILLATOR_RESOLUTION, PULSE_VOLUME_FACTOR, SQUARE_VOLUME_FACTOR,
+    TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, TRIANGLE_VOLUME_FACTOR, VIBRATO_DEPTH,
     VIBRATO_FREQUENCY,
 };
 use crate::types::{Effect, Tone};
@@ -83,10 +83,8 @@ impl Oscillator {
             if self.amplitude != 0 {
                 blip_buf.add_delta(0, -(self.amplitude as i32));
             }
-
             self.time = 0;
             self.amplitude = 0;
-
             return;
         }
 
@@ -96,12 +94,10 @@ impl Oscillator {
             } else {
                 0.0
             };
-
         let period = (CLOCK_RATE as f64 / pitch / OSCILLATOR_RESOLUTION as f64) as u32;
 
-        while self.time < TICK_CLOCK_COUNT {
+        while self.time < NUM_CLOCKS_PER_TICK {
             let last_amplitude = self.amplitude;
-
             self.phase = (self.phase + 1) % OSCILLATOR_RESOLUTION;
             self.amplitude = (match self.tone {
                 TONE_TRIANGLE => Self::triangle(self.phase) * TRIANGLE_VOLUME_FACTOR,
@@ -111,9 +107,7 @@ impl Oscillator {
                 _ => panic!("invalid tone {}", self.tone),
             } * self.volume
                 * i16::MAX as f64) as i16;
-
             blip_buf.add_delta(self.time, self.amplitude as i32 - last_amplitude as i32);
-
             self.time += period;
         }
 
@@ -123,7 +117,7 @@ impl Oscillator {
                 self.pitch += self.slide.pitch;
             }
             EFFECT_VIBRATO => {
-                self.vibrato.time += TICK_CLOCK_COUNT;
+                self.vibrato.time += NUM_CLOCKS_PER_TICK;
                 self.vibrato.phase = (self.vibrato.phase + self.vibrato.time / VIBRATO_PERIOD)
                     % OSCILLATOR_RESOLUTION;
                 self.vibrato.time %= VIBRATO_PERIOD;
@@ -135,7 +129,7 @@ impl Oscillator {
         }
 
         self.duration -= 1;
-        self.time -= TICK_CLOCK_COUNT;
+        self.time -= NUM_CLOCKS_PER_TICK;
     }
 
     fn note_to_pitch(note: f64) -> f64 {
@@ -171,7 +165,6 @@ impl Oscillator {
             self.noise >>= 1;
             self.noise |= ((self.noise ^ (self.noise >> 1)) & 1) << 15;
         }
-
         (self.noise & 1) as f64 * 2.0 - 1.0
     }
 }

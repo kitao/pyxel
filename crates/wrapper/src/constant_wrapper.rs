@@ -14,10 +14,10 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(RESOURCE_FILE_EXTENSION)?;
     add_constant!(RESOURCE_ARCHIVE_DIRNAME)?;
 
-    add_constant!(COLOR_COUNT)?;
-    add_constant!(IMAGE_COUNT)?;
+    add_constant!(NUM_COLORS)?;
+    add_constant!(NUM_IMAGES)?;
     add_constant!(IMAGE_SIZE)?;
-    add_constant!(TILEMAP_COUNT)?;
+    add_constant!(NUM_TILEMAPS)?;
     add_constant!(TILEMAP_SIZE)?;
     add_constant!(TILE_SIZE)?;
 
@@ -41,9 +41,9 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(FONT_WIDTH)?;
     add_constant!(FONT_HEIGHT)?;
 
-    add_constant!(CHANNEL_COUNT)?;
-    add_constant!(SOUND_COUNT)?;
-    add_constant!(MUSIC_COUNT)?;
+    add_constant!(NUM_CHANNELS)?;
+    add_constant!(NUM_SOUNDS)?;
+    add_constant!(NUM_MUSICS)?;
 
     add_constant!(TONE_TRIANGLE)?;
     add_constant!(TONE_SQUARE)?;
