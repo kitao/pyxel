@@ -71,11 +71,11 @@ class Widget:
 
     @property
     def x(self):
-        return (self._parent.x + self._x) if self.parent else self._x
+        return (self._parent.x + self._x) if self._parent else self._x
 
     @property
     def y(self):
-        return (self._parent.y + self._y) if self.parent else self._y
+        return (self._parent.y + self._y) if self._parent else self._y
 
     @property
     def width(self):
