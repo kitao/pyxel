@@ -30,7 +30,7 @@ class ToggleButton(Widget):
     def button_color(self):
         if not self.is_enabled_var:
             return BUTTON_DISABLED_COLOR
-        elif self.is_pressed_var:
+        elif self.is_checked_var:
             return BUTTON_PRESSED_COLOR
         else:
             return BUTTON_ENABLED_COLOR
