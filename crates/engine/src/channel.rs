@@ -13,7 +13,7 @@ pub struct Channel {
     oscillator: Oscillator,
     sounds: Vec<Sound>,
     is_playing: bool,
-    is_looping: bool,
+    should_loop: bool,
     sound_index: u32,
     note_index: u32,
     tick_count: u32,
@@ -28,7 +28,7 @@ impl Channel {
             oscillator: Oscillator::new(),
             sounds: Vec::new(),
             is_playing: false,
-            is_looping: false,
+            should_loop: false,
             sound_index: 0,
             note_index: 0,
             tick_count: 0,
@@ -44,25 +44,25 @@ impl Channel {
         }
     }
 
-    pub fn play(&mut self, sounds: Vec<SharedSound>, is_looping: bool) {
+    pub fn play(&mut self, sounds: Vec<SharedSound>, should_loop: bool) {
         if sounds.is_empty() {
             return;
         }
         self.sounds = sounds.iter().map(|sound| sound.lock().clone()).collect();
         self.is_playing = true;
-        self.is_looping = is_looping;
+        self.should_loop = should_loop;
         self.sound_index = 0;
         self.note_index = 0;
         self.tick_count = 0;
     }
 
-    pub fn play1(&mut self, sound: SharedSound, is_looping: bool) {
-        self.play(vec![sound], is_looping);
+    pub fn play1(&mut self, sound: SharedSound, should_loop: bool) {
+        self.play(vec![sound], should_loop);
     }
 
     pub fn stop(&mut self) {
         self.is_playing = false;
-        self.is_looping = false;
+        self.should_loop = false;
         self.sound_index = 0;
         self.note_index = 0;
         self.oscillator.stop();
@@ -79,7 +79,7 @@ impl Channel {
                 self.sound_index += 1;
                 self.note_index = 0;
                 if self.sound_index >= self.sounds.len() as u32 {
-                    if self.is_looping {
+                    if self.should_loop {
                         self.sound_index = 0;
                     } else {
                         self.stop();
@@ -98,7 +98,6 @@ impl Channel {
             let effect = Self::circular_effect(&sound.effects, self.note_index);
             assert!(effect <= MAX_EFFECT, "invalid sound effect {}", effect);
             let speed = max(sound.speed, 1);
-
             if note >= 0 && volume > 0 {
                 self.oscillator.play(
                     note as f64,

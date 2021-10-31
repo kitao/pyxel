@@ -35,13 +35,13 @@ pub enum ControllerButton {
 }
 
 pub enum Event {
-    // System Events
+    // System events
     Quit,
     DropFile {
         filename: String,
     },
 
-    // Key Events
+    // Key events
     KeyDown {
         key: u32,
     },
@@ -52,7 +52,7 @@ pub enum Event {
         text: String,
     },
 
-    // Mouse Events
+    // Mouse events
     MouseMotion {
         x: i32,
         y: i32,
@@ -68,7 +68,7 @@ pub enum Event {
         y: i32,
     },
 
-    // Controller Events
+    // Controller events
     ControllerAxisMotion {
         which: u32,
         axis: ControllerAxis,
