@@ -3,18 +3,15 @@ use crate::types::{Color, Effect, Key, Note, Rgb8, Speed, Tone, Volume};
 
 // System
 pub const PYXEL_VERSION: &str = "1.5.0";
-
 pub const DEFAULT_TITLE: &str = "Pyxel";
 pub const DEFAULT_SCALE: u32 = 4;
 pub const DEFAULT_FPS: u32 = 30;
 pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
 pub const DEFAULT_GIF_SEC: u32 = 10;
-
 pub const DISPLAY_RATIO: f64 = 0.8;
 pub const BACKGROUND_COLOR: Rgb8 = 0x101018;
 pub const MAX_SKIP_FRAMES: u32 = 9;
 pub const NUM_MEASURE_FRAMES: u32 = 10;
-
 pub const ICON_SIZE: u32 = 16;
 pub const ICON_SCALE: u32 = 4;
 pub const ICON_DATA: [&str; ICON_SIZE as usize] = [
@@ -40,24 +37,19 @@ pub const ICON_DATA: [&str; ICON_SIZE as usize] = [
 pub const APPLICATION_FILE_EXTENSION: &str = ".pyxapp";
 pub const RESOURCE_FILE_EXTENSION: &str = ".pyxres";
 pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
-
 pub const CAPTURE_SCALE: u32 = 2;
 
 // Graphics
 pub const NUM_COLORS: u32 = 16;
-
 pub const NUM_IMAGES: u32 = 3;
 pub const IMAGE_SIZE: u32 = 256;
-
 pub const NUM_TILEMAPS: u32 = 8;
 pub const TILEMAP_SIZE: u32 = 256;
 pub const TILE_SIZE: u32 = 8;
-
 pub const DEFAULT_COLORS: [Rgb8; NUM_COLORS as usize] = [
     0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, 0xd4186c,
     0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0,
 ];
-
 pub const COLOR_BLACK: Color = 0;
 pub const COLOR_NAVY: Color = 1;
 pub const COLOR_PURPLE: Color = 2;
@@ -74,17 +66,14 @@ pub const COLOR_CYAN: Color = 12;
 pub const COLOR_GRAY: Color = 13;
 pub const COLOR_PINK: Color = 14;
 pub const COLOR_PEACH: Color = 15;
-
 pub const CURSOR_WIDTH: u32 = 8;
 pub const CURSOR_HEIGHT: u32 = 8;
 pub const CURSOR_DATA: [&str; CURSOR_HEIGHT as usize] = [
     "11111100", "17776100", "17761000", "17676100", "16167610", "11016761", "00001610", "00000100",
 ];
-
 pub const MIN_FONT_CODE: char = 32 as char;
 pub const MAX_FONT_CODE: char = 127 as char;
 pub const NUM_FONT_ROWS: u32 = 16;
-
 pub const FONT_WIDTH: u32 = 4;
 pub const FONT_HEIGHT: u32 = 6;
 pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] = [
@@ -105,34 +94,27 @@ pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] 
 pub const CLOCK_RATE: u32 = 1789773; // 1.78 MHz clock rate
 pub const SAMPLE_RATE: u32 = 44100; // 44.1 kHz sample rate
 pub const NUM_SAMPLES: u32 = SAMPLE_RATE / 10;
-
 pub const NUM_CLOCKS_PER_TICK: u32 = CLOCK_RATE / 120;
 pub const OSCILLATOR_RESOLUTION: u32 = 32;
 pub const VIBRATO_DEPTH: f64 = 0.025;
 pub const VIBRATO_FREQUENCY: f64 = 6.0;
-
 pub const NUM_CHANNELS: u32 = 4;
 pub const NUM_SOUNDS: u32 = 64;
 pub const NUM_MUSICS: u32 = 8;
-
 pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0;
 pub const SQUARE_VOLUME_FACTOR: f64 = 0.3;
 pub const PULSE_VOLUME_FACTOR: f64 = 0.3;
 pub const NOISE_VOLUME_FACTOR: f64 = 0.6;
-
 pub const TONE_TRIANGLE: Tone = 0;
 pub const TONE_SQUARE: Tone = 1;
 pub const TONE_PULSE: Tone = 2;
 pub const TONE_NOISE: Tone = 3;
-
 pub const EFFECT_NONE: Effect = 0;
 pub const EFFECT_SLIDE: Effect = 1;
 pub const EFFECT_VIBRATO: Effect = 2;
 pub const EFFECT_FADEOUT: Effect = 3;
-
 pub const MAX_TONE: Tone = 3;
 pub const MAX_NOTE: Note = 59; // 5 octaves
 pub const MAX_VOLUME: Volume = 7;
 pub const MAX_EFFECT: Effect = 3;
-
 pub const INITIAL_SPEED: Speed = 30;
