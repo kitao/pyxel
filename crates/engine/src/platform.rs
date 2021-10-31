@@ -20,7 +20,7 @@ pub trait Platform {
     fn start_audio(
         &mut self,
         sample_rate: u32,
-        sample_count: u32,
+        num_samples: u32,
         audio_callback: shared_type!(dyn AudioCallback + Send),
     );
 }
