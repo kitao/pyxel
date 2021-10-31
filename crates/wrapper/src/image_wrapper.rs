@@ -30,7 +30,6 @@ impl Image {
         } else {
             &DEFAULT_COLORS
         };
-
         wrap_pyxel_image(PyxelImage::from_image(filename, colors))
     }
 
@@ -74,7 +73,6 @@ impl Image {
         } else {
             type_error!("clip() takes 0 or 4 arguments");
         }
-
         Ok(())
     }
 
@@ -138,7 +136,6 @@ impl Image {
                 self.pyxel_image.lock().blt(x, y, img.pyxel_image, u, v, w, h, colkey);
             }
         }
-
         Ok(())
     }
 
@@ -162,7 +159,6 @@ impl Image {
                 self.pyxel_image.lock().bltm(x, y, tm.pyxel_tilemap, u, v, w, h, colkey);
             }
         }
-
         Ok(())
     }
 
@@ -179,6 +175,5 @@ impl Image {
 
 pub fn add_image_class(m: &PyModule) -> PyResult<()> {
     m.add_class::<Image>()?;
-
     Ok(())
 }
