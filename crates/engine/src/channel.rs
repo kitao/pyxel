@@ -87,7 +87,6 @@ impl Channel {
                     }
                 }
             }
-
             let sound = &self.sounds[self.sound_index as usize];
             let note = Self::circular_note(&sound.notes, self.note_index);
             assert!(note <= MAX_NOTE, "invalid sound note {}", note);

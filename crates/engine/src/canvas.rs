@@ -82,7 +82,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
         if x1 == x2 && y1 == y2 {
             self.pset(x1 as f64, y1 as f64, value);
-            //
         } else if (x1 - x2).abs() > (y1 - y2).abs() {
             let (start_x, start_y, end_x, end_y) = if x1 < x2 {
                 (x1, y1, x2, y2)
@@ -98,7 +97,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                     value,
                 );
             }
-            //
         } else {
             let (start_x, start_y, end_x, end_y) = if y1 < y2 {
                 (x1, y1, x2, y2)
@@ -126,7 +124,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if rect.is_empty() {
             return;
         }
-
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
@@ -147,7 +144,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if rect.intersects(self.clip_rect).is_empty() {
             return;
         }
-
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
@@ -414,6 +410,7 @@ impl CopyArea {
         let height = max(height - top_cut - bottom_cut, 0);
         let (sign_x, offset_x) = if flip_x { (-1, width - 1) } else { (1, 0) };
         let (sign_y, offset_y) = if flip_y { (-1, height - 1) } else { (1, 0) };
+
         Self {
             dst_x: dst_x + left_cut,
             dst_y: dst_y + top_cut,
