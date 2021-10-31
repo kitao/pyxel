@@ -326,13 +326,13 @@ impl Platform for Sdl2 {
     fn start_audio(
         &mut self,
         sample_rate: u32,
-        sample_count: u32,
+        num_samples: u32,
         audio: shared_type!(dyn AudioCallback + Send),
     ) {
         let spec = SdlAudioSpecDesired {
             freq: Some(sample_rate as i32),
             channels: Some(1),
-            samples: Some(sample_count as u16),
+            samples: Some(num_samples as u16),
         };
         let sdl_audio_device = self
             .sdl_audio
