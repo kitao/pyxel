@@ -140,6 +140,7 @@ impl Pyxel {
                 }
             };
         }
+
         if image {
             deserialize!(Image, image, NUM_IMAGES);
         }
@@ -162,10 +163,10 @@ impl Pyxel {
             .unwrap();
         {
             let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
-
             zip.start_file(version_name, Default::default()).unwrap();
             zip.write_all(PYXEL_VERSION.as_bytes()).unwrap();
         }
+
         macro_rules! serialize {
             ($type: ty, $getter: ident, $count: expr) => {
                 for i in 0..$count {
@@ -178,6 +179,7 @@ impl Pyxel {
                 }
             };
         }
+
         if image {
             serialize!(Image, image, NUM_IMAGES);
         }
@@ -193,7 +195,7 @@ impl Pyxel {
         zip.finish().unwrap();
     }
 
-    // advanced API
+    // Advanced API
     pub fn screenshot(&mut self) {
         self.screen
             .lock()
@@ -201,7 +203,7 @@ impl Pyxel {
         self.system.disable_next_frame_skip();
     }
 
-    // advanced API
+    // Advanced API
     pub fn reset_capture(&mut self) {
         if self.resource.max_screen_count == 0 {
             return;
@@ -211,7 +213,7 @@ impl Pyxel {
         self.resource.captured_screen_count = 0;
     }
 
-    // advanced API
+    // Advanced API
     pub fn screencast(&mut self) {
         if self.resource.max_screen_count == 0 || self.resource.captured_screen_count == 0 {
             return;
