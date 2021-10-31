@@ -60,7 +60,7 @@ impl AudioCallback for AudioCore {
 }
 
 impl Pyxel {
-    // advanced API
+    // Advanced API
     pub fn channel(&self, channel_no: u32) -> SharedChannel {
         self.audio.channels[channel_no as usize].clone()
     }
@@ -77,30 +77,29 @@ impl Pyxel {
         self.audio.channels[channel_no as usize].lock().play_pos()
     }
 
-    pub fn play(&mut self, channel_no: u32, sequence: &[u32], is_looping: bool) {
+    pub fn play(&mut self, channel_no: u32, sequence: &[u32], should_loop: bool) {
         if sequence.is_empty() {
             return;
         }
-
         let sounds = sequence
             .iter()
             .map(|sound_no| self.audio.sounds[*sound_no as usize].clone())
             .collect();
         self.audio.channels[channel_no as usize]
             .lock()
-            .play(sounds, is_looping);
+            .play(sounds, should_loop);
     }
 
-    pub fn play1(&mut self, channel_no: u32, sound_no: u32, is_looping: bool) {
+    pub fn play1(&mut self, channel_no: u32, sound_no: u32, should_loop: bool) {
         self.audio.channels[channel_no as usize]
             .lock()
-            .play1(self.audio.sounds[sound_no as usize].clone(), is_looping);
+            .play1(self.audio.sounds[sound_no as usize].clone(), should_loop);
     }
 
-    pub fn playm(&mut self, music_no: u32, is_looping: bool) {
+    pub fn playm(&mut self, music_no: u32, should_loop: bool) {
         let music = self.audio.musics[music_no as usize].clone();
         for i in 0..NUM_CHANNELS {
-            self.play(i, &music.lock().sequences[i as usize], is_looping);
+            self.play(i, &music.lock().sequences[i as usize], should_loop);
         }
     }
 
