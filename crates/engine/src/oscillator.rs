@@ -92,6 +92,7 @@ impl Oscillator {
                 0.0
             };
         let period = (CLOCK_RATE as f64 / pitch / OSCILLATOR_RESOLUTION as f64) as u32;
+
         while self.time < NUM_CLOCKS_PER_TICK {
             let last_amplitude = self.amplitude;
             self.phase = (self.phase + 1) % OSCILLATOR_RESOLUTION;
@@ -106,6 +107,7 @@ impl Oscillator {
             blip_buf.add_delta(self.time, self.amplitude as i32 - last_amplitude as i32);
             self.time += period;
         }
+
         match self.effect {
             EFFECT_NONE => {}
             EFFECT_SLIDE => {
@@ -122,6 +124,7 @@ impl Oscillator {
             }
             _ => panic!("invalid effect {}", self.effect),
         }
+
         self.duration -= 1;
         self.time -= NUM_CLOCKS_PER_TICK;
     }
