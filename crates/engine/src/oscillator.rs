@@ -59,13 +59,11 @@ impl Oscillator {
 
     pub fn play(&mut self, note: f64, tone: Tone, volume: f64, effect: Effect, duration: u32) {
         let last_pitch = self.pitch;
-
         self.pitch = Self::note_to_pitch(note);
         self.tone = tone;
         self.volume = volume;
         self.effect = effect;
         self.duration = duration;
-
         if effect == EFFECT_SLIDE {
             self.slide.pitch = (self.pitch - last_pitch) / self.duration as f64;
             self.pitch = last_pitch;
@@ -87,7 +85,6 @@ impl Oscillator {
             self.amplitude = 0;
             return;
         }
-
         let pitch = self.pitch
             + if self.effect == EFFECT_VIBRATO {
                 self.pitch * Self::triangle(self.vibrato.phase) * VIBRATO_DEPTH
@@ -95,7 +92,6 @@ impl Oscillator {
                 0.0
             };
         let period = (CLOCK_RATE as f64 / pitch / OSCILLATOR_RESOLUTION as f64) as u32;
-
         while self.time < NUM_CLOCKS_PER_TICK {
             let last_amplitude = self.amplitude;
             self.phase = (self.phase + 1) % OSCILLATOR_RESOLUTION;
@@ -110,7 +106,6 @@ impl Oscillator {
             blip_buf.add_delta(self.time, self.amplitude as i32 - last_amplitude as i32);
             self.time += period;
         }
-
         match self.effect {
             EFFECT_NONE => {}
             EFFECT_SLIDE => {
@@ -127,7 +122,6 @@ impl Oscillator {
             }
             _ => panic!("invalid effect {}", self.effect),
         }
-
         self.duration -= 1;
         self.time -= NUM_CLOCKS_PER_TICK;
     }
