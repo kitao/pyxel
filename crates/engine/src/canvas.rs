@@ -49,9 +49,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn cls(&mut self, value: T) {
         let width = self.width();
         let height = self.height();
-        for i in 0..height {
-            for j in 0..width {
-                self.data[i as usize][j as usize] = value;
+        for y in 0..height {
+            for x in 0..width {
+                self.data[y as usize][x as usize] = value;
             }
         }
     }
@@ -79,8 +79,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y1 = as_i32(y1);
         let x2 = as_i32(x2);
         let y2 = as_i32(y2);
+
         if x1 == x2 && y1 == y2 {
             self.pset(x1 as f64, y1 as f64, value);
+            //
         } else if (x1 - x2).abs() > (y1 - y2).abs() {
             let (start_x, start_y, end_x, end_y) = if x1 < x2 {
                 (x1, y1, x2, y2)
@@ -89,13 +91,14 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             };
             let length = end_x - start_x + 1;
             let alpha = (end_y - start_y) as f64 / (end_x - start_x) as f64;
-            for i in 0..length {
+            for xi in 0..length {
                 self.pset(
-                    (start_x + i) as f64,
-                    start_y as f64 + alpha * i as f64,
+                    (start_x + xi) as f64,
+                    start_y as f64 + alpha * xi as f64,
                     value,
                 );
             }
+            //
         } else {
             let (start_x, start_y, end_x, end_y) = if y1 < y2 {
                 (x1, y1, x2, y2)
@@ -104,10 +107,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             };
             let length = end_y - start_y + 1;
             let alpha = (end_x - start_x) as f64 / (end_y - start_y) as f64;
-            for i in 0..length {
+            for yi in 0..length {
                 self.pset(
-                    start_x as f64 + alpha * i as f64,
-                    (start_y + i) as f64,
+                    start_x as f64 + alpha * yi as f64,
+                    (start_y + yi) as f64,
                     value,
                 );
             }
@@ -123,13 +126,14 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if rect.is_empty() {
             return;
         }
+
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
-        for i in top..=bottom {
-            for j in left..=right {
-                self.data[i as usize][j as usize] = value;
+        for y in top..=bottom {
+            for x in left..=right {
+                self.data[y as usize][x as usize] = value;
             }
         }
     }
@@ -143,17 +147,18 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if rect.intersects(self.clip_rect).is_empty() {
             return;
         }
+
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
-        for i in left..=right {
-            self.pset(i as f64, top as f64, value);
-            self.pset(i as f64, bottom as f64, value);
+        for x in left..=right {
+            self.pset(x as f64, top as f64, value);
+            self.pset(x as f64, bottom as f64, value);
         }
-        for i in top..=bottom {
-            self.pset(left as f64, i as f64, value);
-            self.pset(right as f64, i as f64, value);
+        for y in top..=bottom {
+            self.pset(left as f64, y as f64, value);
+            self.pset(right as f64, y as f64, value);
         }
     }
 
@@ -235,36 +240,36 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         };
         let x_inter = as_i32(x1 as f64 + alpha13 * (y2 - y1) as f64);
 
-        for i in y1..=y2 {
+        for y in y1..=y2 {
             let (x_slider, x_end) = if x_inter < x2 {
                 (
-                    as_i32(x_inter as f64 + alpha13 * (i - y2) as f64),
-                    as_i32(x2 as f64 + alpha12 * (i - y2) as f64),
+                    as_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
+                    as_i32(x2 as f64 + alpha12 * (y - y2) as f64),
                 )
             } else {
                 (
-                    as_i32(x2 as f64 + alpha12 * (i - y2) as f64),
-                    as_i32(x_inter as f64 + alpha13 * (i - y2) as f64),
+                    as_i32(x2 as f64 + alpha12 * (y - y2) as f64),
+                    as_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
                 )
             };
-            for j in x_slider..=x_end {
-                self.pset(j as f64, i as f64, value);
+            for x in x_slider..=x_end {
+                self.pset(x as f64, y as f64, value);
             }
         }
-        for i in (y2 + 1)..=y3 {
+        for y in (y2 + 1)..=y3 {
             let (x_slider, x_end) = if x_inter < x2 {
                 (
-                    as_i32(x_inter as f64 + alpha13 * (i - y2) as f64),
-                    as_i32(x2 as f64 + alpha23 * (i - y2) as f64),
+                    as_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
+                    as_i32(x2 as f64 + alpha23 * (y - y2) as f64),
                 )
             } else {
                 (
-                    as_i32(x2 as f64 + alpha23 * (i - y2) as f64),
-                    as_i32(x_inter as f64 + alpha13 * (i - y2) as f64),
+                    as_i32(x2 as f64 + alpha23 * (y - y2) as f64),
+                    as_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
                 )
             };
-            for j in x_slider..=x_end {
-                self.pset(j as f64, i as f64, value);
+            for x in x_slider..=x_end {
+                self.pset(x as f64, y as f64, value);
             }
         }
     }
@@ -312,6 +317,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let canvas_y = as_i32(canvas_y);
         let width = as_i32(width);
         let height = as_i32(height);
+
         let CopyArea {
             dst_x,
             dst_y,
@@ -336,6 +342,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if width == 0 || height == 0 {
             return;
         }
+
         for i in 0..height {
             for j in 0..width {
                 let value_x = src_x + sign_x * j + offset_x;
@@ -407,7 +414,6 @@ impl CopyArea {
         let height = max(height - top_cut - bottom_cut, 0);
         let (sign_x, offset_x) = if flip_x { (-1, width - 1) } else { (1, 0) };
         let (sign_y, offset_y) = if flip_y { (-1, height - 1) } else { (1, 0) };
-
         Self {
             dst_x: dst_x + left_cut,
             dst_y: dst_y + top_cut,
