@@ -1,5 +1,6 @@
 use crate::types::Key;
 
+// Keyboard
 pub const KEY_NONE: Key = 0;
 pub const KEY_A: Key = 4;
 pub const KEY_B: Key = 5;
@@ -250,6 +251,7 @@ pub const KEY_CTRL: Key = 301;
 pub const KEY_ALT: Key = 302;
 pub const KEY_GUI: Key = 303;
 
+// Mouse
 pub const MOUSE_POS_X: Key = 400;
 pub const MOUSE_POS_Y: Key = 401;
 pub const MOUSE_WHEEL_X: Key = 402;
@@ -261,6 +263,7 @@ pub const MOUSE_BUTTON_X1: Key = 453;
 pub const MOUSE_BUTTON_X2: Key = 454;
 pub const MOUSE_BUTTON_UNKOWN: Key = 455;
 
+// Gamepad1
 pub const GAMEPAD1_AXIS_LEFTX: Key = 500;
 pub const GAMEPAD1_AXIS_LEFTY: Key = 501;
 pub const GAMEPAD1_AXIS_RIGHTX: Key = 502;
@@ -283,6 +286,7 @@ pub const GAMEPAD1_BUTTON_DPAD_DOWN: Key = 562;
 pub const GAMEPAD1_BUTTON_DPAD_LEFT: Key = 563;
 pub const GAMEPAD1_BUTTON_DPAD_RIGHT: Key = 564;
 
+// Gamepad2
 pub const GAMEPAD2_AXIS_LEFTX: Key = 600;
 pub const GAMEPAD2_AXIS_LEFTY: Key = 601;
 pub const GAMEPAD2_AXIS_RIGHTX: Key = 602;
