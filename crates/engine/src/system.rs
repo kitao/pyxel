@@ -12,8 +12,8 @@ use crate::utils::simplify_string;
 use crate::{Pyxel, PyxelCallback};
 
 pub struct System {
-    one_frame_time: f64,
-    next_update_time: f64,
+    one_frame_ms: f64,
+    next_update_ms: f64,
     disable_next_frame_skip: bool,
     frame_count: u32,
     quit_key: Key,
@@ -21,14 +21,14 @@ pub struct System {
     fps_profiler: Profiler,
     update_profiler: Profiler,
     draw_profiler: Profiler,
-    perf_monitor_enabled: bool,
+    enable_perf_monitor: bool,
 }
 
 impl System {
     pub fn new(fps: u32, quit_key: Key) -> Self {
         Self {
-            one_frame_time: 1000.0 / fps as f64,
-            next_update_time: -1.0,
+            one_frame_ms: 1000.0 / fps as f64,
+            next_update_ms: -1.0,
             disable_next_frame_skip: true,
             frame_count: 0,
             quit_key,
@@ -36,7 +36,7 @@ impl System {
             fps_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             update_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             draw_profiler: Profiler::new(NUM_MEASURE_FRAMES),
-            perf_monitor_enabled: false,
+            enable_perf_monitor: false,
         }
     }
 
@@ -58,12 +58,12 @@ impl Pyxel {
         self.system.frame_count
     }
 
-    // advanced API
+    // Advanced API
     pub fn title(&mut self, title: &str) {
         self.platform.set_title(title);
     }
 
-    // advanced API
+    // Advanced API
     pub fn icon(&mut self, data_str: &[&str], scale: u32) {
         let width = simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
@@ -77,30 +77,33 @@ impl Pyxel {
     }
 
     pub fn run<T: PyxelCallback>(&mut self, callback: &mut T) {
-        self.system.next_update_time =
-            self.platform.tick_count() as f64 + self.system.one_frame_time;
+        self.system.next_update_ms = self.platform.tick_count() as f64 + self.system.one_frame_ms;
         if self.update_frame(Some(callback)) {
             return;
         }
         self.draw_frame(Some(callback));
+
         loop {
             let sleep_time = self.wait_for_update_time();
+
             let tick_count = self.platform.tick_count();
             self.system.fps_profiler.end(tick_count);
             self.system.fps_profiler.start(tick_count);
+
             let update_count: u32;
             if self.system.disable_next_frame_skip {
                 update_count = 1;
                 self.system.disable_next_frame_skip = false;
-                self.system.next_update_time =
-                    self.platform.tick_count() as f64 + self.system.one_frame_time;
+                self.system.next_update_ms =
+                    self.platform.tick_count() as f64 + self.system.one_frame_ms;
             } else {
                 update_count = min(
-                    (-sleep_time as f64 / self.system.one_frame_time) as u32,
+                    (-sleep_time as f64 / self.system.one_frame_ms) as u32,
                     MAX_SKIP_FRAMES,
                 ) + 1;
-                self.system.next_update_time += self.system.one_frame_time * update_count as f64;
+                self.system.next_update_ms += self.system.one_frame_ms * update_count as f64;
             }
+
             for i in 0..update_count {
                 if self.update_frame(Some(callback)) {
                     return;
@@ -123,15 +126,17 @@ impl Pyxel {
     }
 
     pub fn flip(&mut self) -> bool {
-        if self.system.next_update_time < 0.0 {
-            self.system.next_update_time = self.platform.tick_count() as f64;
+        if self.system.next_update_ms < 0.0 {
+            self.system.next_update_ms = self.platform.tick_count() as f64;
         } else {
             self.wait_for_update_time();
         }
-        self.system.next_update_time += self.system.one_frame_time;
+        self.system.next_update_ms += self.system.one_frame_ms;
+
         let tick_count = self.platform.tick_count();
         self.system.fps_profiler.end(tick_count);
         self.system.fps_profiler.start(tick_count);
+
         if self.update_frame(None) {
             exit(0);
         }
@@ -147,6 +152,7 @@ impl Pyxel {
         self.system
             .update_profiler
             .start(self.platform.tick_count());
+
         self.process_events();
         self.check_special_input();
         if self.system.should_quit {
@@ -158,6 +164,7 @@ impl Pyxel {
         if self.system.should_quit {
             return true;
         }
+
         self.system.update_profiler.end(self.platform.tick_count());
         false
     }
@@ -183,7 +190,7 @@ impl Pyxel {
                 self.platform.toggle_fullscreen();
             }
             if self.btnp(KEY_0, None, None) {
-                self.system.perf_monitor_enabled = !self.system.perf_monitor_enabled;
+                self.system.enable_perf_monitor = !self.system.enable_perf_monitor;
             }
             if self.btnp(KEY_1, None, None) {
                 self.screenshot();
@@ -202,7 +209,7 @@ impl Pyxel {
 
     fn wait_for_update_time(&mut self) -> i32 {
         loop {
-            let sleep_time = self.system.next_update_time - self.platform.tick_count() as f64;
+            let sleep_time = self.system.next_update_ms - self.platform.tick_count() as f64;
             if sleep_time <= 0.0 {
                 return sleep_time as i32;
             }
@@ -228,7 +235,7 @@ impl Pyxel {
     }
 
     fn draw_perf_monitor(&mut self) {
-        if !self.system.perf_monitor_enabled {
+        if !self.system.enable_perf_monitor {
             return;
         }
         let mut screen = self.screen.lock();
