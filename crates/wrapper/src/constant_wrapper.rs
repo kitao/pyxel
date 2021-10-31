@@ -7,7 +7,7 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
         };
     }
 
-    // setting constants
+    // Settings
     add_constant!(PYXEL_VERSION)?;
 
     add_constant!(APPLICATION_FILE_EXTENSION)?;
@@ -20,7 +20,6 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(NUM_TILEMAPS)?;
     add_constant!(TILEMAP_SIZE)?;
     add_constant!(TILE_SIZE)?;
-
     add_constant!(COLOR_BLACK)?;
     add_constant!(COLOR_NAVY)?;
     add_constant!(COLOR_PURPLE)?;
@@ -37,25 +36,22 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(COLOR_GRAY)?;
     add_constant!(COLOR_PINK)?;
     add_constant!(COLOR_PEACH)?;
-
     add_constant!(FONT_WIDTH)?;
     add_constant!(FONT_HEIGHT)?;
 
     add_constant!(NUM_CHANNELS)?;
     add_constant!(NUM_SOUNDS)?;
     add_constant!(NUM_MUSICS)?;
-
     add_constant!(TONE_TRIANGLE)?;
     add_constant!(TONE_SQUARE)?;
     add_constant!(TONE_PULSE)?;
     add_constant!(TONE_NOISE)?;
-
     add_constant!(EFFECT_NONE)?;
     add_constant!(EFFECT_SLIDE)?;
     add_constant!(EFFECT_VIBRATO)?;
     add_constant!(EFFECT_FADEOUT)?;
 
-    // key constants
+    // Key
     add_constant!(KEY_NONE)?;
     add_constant!(KEY_A)?;
     add_constant!(KEY_B)?;

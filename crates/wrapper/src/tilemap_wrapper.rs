@@ -29,7 +29,6 @@ impl Tilemap {
                 img.pyxel_image
             }
         };
-
         Ok(wrap_pyxel_tilemap(PyxelTilemap::new(width, height, img)))
     }
 
@@ -81,7 +80,6 @@ impl Tilemap {
         } else {
             type_error!("clip() takes 0 or 4 arguments");
         }
-
         Ok(())
     }
 
@@ -145,13 +143,11 @@ impl Tilemap {
                 self.pyxel_tilemap.lock().blt(x, y, tm.pyxel_tilemap, u, v, w, h, tilekey);
             }
         }
-
         Ok(())
     }
 }
 
 pub fn add_tilemap_class(m: &PyModule) -> PyResult<()> {
     m.add_class::<Tilemap>()?;
-
     Ok(())
 }

@@ -72,6 +72,5 @@ pub fn add_audio_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(play, m)?)?;
     m.add_function(wrap_pyfunction!(playm, m)?)?;
     m.add_function(wrap_pyfunction!(stop, m)?)?;
-
     Ok(())
 }
