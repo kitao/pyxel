@@ -46,13 +46,13 @@ impl Input {
 
     pub fn process_input_event(&mut self, event: Event, frame_count: u32) {
         match event {
-            // System Events
+            // System events
             Event::Quit => {}
             Event::DropFile { filename } => {
                 self.drop_files.push(filename);
             }
 
-            // Key Events
+            // Key events
             Event::KeyDown { key } => {
                 if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
                     self.press_key(key, frame_count);
@@ -76,7 +76,7 @@ impl Input {
                 self.input_text += &text;
             }
 
-            // Mouse Events
+            // Mouse events
             Event::MouseMotion { x, y } => {
                 self.key_values.insert(MOUSE_POS_X, x);
                 self.key_values.insert(MOUSE_POS_Y, y);
@@ -92,7 +92,7 @@ impl Input {
                 *self.key_values.entry(MOUSE_WHEEL_Y).or_insert(0) += y;
             }
 
-            // Controller Events
+            // Controller events
             Event::ControllerAxisMotion { which, axis, value } => {
                 let offset = if which == 0 {
                     0
@@ -222,22 +222,22 @@ impl Pyxel {
         self.input.is_mouse_visible = is_visible;
     }
 
-    // advanced API
+    // Advanced API
     pub fn set_btnp(&mut self, key: Key) {
         self.input.press_key(key, self.frame_count());
     }
 
-    // advanced API
+    // Advanced API
     pub fn set_btnr(&mut self, key: Key) {
         self.input.release_key(key, self.frame_count());
     }
 
-    // advanced API
+    // Advanced API
     pub fn set_btnv(&mut self, key: Key, key_value: KeyValue) {
         self.input.key_values.insert(key, key_value);
     }
 
-    // advanced API
+    // Advanced API
     pub fn move_mouse(&mut self, x: i32, y: i32) {
         self.input.key_values.insert(MOUSE_POS_X, x);
         self.input.key_values.insert(MOUSE_POS_Y, y);
