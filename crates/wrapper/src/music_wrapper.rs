@@ -68,7 +68,6 @@ impl Sequences {
         let sequences = (0..NUM_CHANNELS)
             .map(|channel_no| Sequence::new(pyxel_music.clone(), channel_no as u32))
             .collect();
-
         Self { sequences }
     }
 
@@ -119,6 +118,5 @@ pub fn add_music_class(m: &PyModule) -> PyResult<()> {
     m.add_class::<Sequence>()?;
     m.add_class::<Sequences>()?;
     m.add_class::<Music>()?;
-
     Ok(())
 }

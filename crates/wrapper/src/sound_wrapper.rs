@@ -256,6 +256,5 @@ pub fn add_sound_class(m: &PyModule) -> PyResult<()> {
     m.add_class::<Volumes>()?;
     m.add_class::<Effects>()?;
     m.add_class::<Sound>()?;
-
     Ok(())
 }
