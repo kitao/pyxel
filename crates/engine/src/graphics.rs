@@ -33,14 +33,14 @@ impl Graphics {
         let image = Image::new(width, height);
         {
             let mut image = image.lock();
-            for (i, data) in FONT_DATA.iter().enumerate() {
-                let row = i as u32 / NUM_FONT_ROWS;
-                let col = i as u32 % NUM_FONT_ROWS;
+            for (fi, data) in FONT_DATA.iter().enumerate() {
+                let row = fi as u32 / NUM_FONT_ROWS;
+                let col = fi as u32 % NUM_FONT_ROWS;
                 let mut data = *data;
-                for j in 0..FONT_HEIGHT {
-                    for k in 0..FONT_WIDTH {
-                        let x = FONT_WIDTH * col + k;
-                        let y = FONT_HEIGHT * row + j;
+                for yi in 0..FONT_HEIGHT {
+                    for xi in 0..FONT_WIDTH {
+                        let x = FONT_WIDTH * col + xi;
+                        let y = FONT_HEIGHT * row + yi;
                         let color = if (data & 0x800000) == 0 { 0 } else { 1 };
                         image.canvas.data[y as usize][x as usize] = color;
                         data <<= 1;
@@ -57,7 +57,7 @@ impl Pyxel {
         self.graphics.images[image_no as usize].clone()
     }
 
-    // advanced API
+    // Advanced API
     pub fn image_no(&self, image: SharedImage) -> Option<u32> {
         for (i, builtin_image) in self.graphics.images.iter().enumerate() {
             if builtin_image.data_ptr() == image.data_ptr() {
