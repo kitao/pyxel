@@ -78,6 +78,7 @@ impl Platform for Sdl2 {
         let sdl_timer = sdl_context.timer().unwrap();
         let sdl_event_pump = sdl_context.event_pump().unwrap();
         let sdl_audio = sdl_context.audio().unwrap();
+
         Self {
             sdl_context,
             sdl_timer,
@@ -107,11 +108,11 @@ impl Platform for Sdl2 {
         sdl_surface.with_lock_mut(|buffer: &mut [u8]| {
             for y in 0..height {
                 for x in 0..width {
-                    for i in 0..scale {
-                        for j in 0..scale {
+                    for sy in 0..scale {
+                        for sx in 0..scale {
                             let color = icon.canvas.data[y as usize][x as usize];
                             let rgb = colors[color as usize];
-                            let offset = ((y * scale + i) * pitch + (x * scale + j) * 4) as usize;
+                            let offset = ((y * scale + sy) * pitch + (x * scale + sx) * 4) as usize;
                             buffer[offset] = ((rgb >> 16) & 0xff) as u8;
                             buffer[offset + 1] = ((rgb >> 8) & 0xff) as u8;
                             buffer[offset + 2] = (rgb & 0xff) as u8;
@@ -171,11 +172,11 @@ impl Platform for Sdl2 {
                 return None;
             }
             let event = match sdl_event.unwrap() {
-                // System Events
+                // System events
                 SdlEvent::Quit { .. } => Event::Quit,
                 SdlEvent::DropFile { filename, .. } => Event::DropFile { filename },
 
-                // Key Events
+                // Key events
                 SdlEvent::KeyDown {
                     scancode: Some(scancode),
                     ..
@@ -190,7 +191,7 @@ impl Platform for Sdl2 {
                 },
                 SdlEvent::TextInput { text, .. } => Event::TextInput { text },
 
-                // Mouse Events
+                // Mouse events
                 SdlEvent::MouseButtonDown { mouse_btn, .. } => Event::MouseButtonDown {
                     button: match mouse_btn {
                         SdlMouseButton::Left => MouseButton::Left,
@@ -213,7 +214,7 @@ impl Platform for Sdl2 {
                 },
                 SdlEvent::MouseWheel { x, y, .. } => Event::MouseWheel { x, y },
 
-                // Controller Events
+                // Controller events
                 SdlEvent::ControllerAxisMotion {
                     which, axis, value, ..
                 } => Event::ControllerAxisMotion {
@@ -300,13 +301,15 @@ impl Platform for Sdl2 {
             ((bg_color >> 8) & 0xff) as u8,
             (bg_color & 0xff) as u8,
         ));
+
+        // Instread of self.sdl_canvas.clear()
         {
-            // instread of self.sdl_canvas.clear()
             let display_size = self.sdl_canvas.output_size().unwrap();
             self.sdl_canvas
                 .fill_rect(SdlRect::new(0, 0, display_size.0, display_size.1))
                 .unwrap();
         }
+
         let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
         let dst = SdlRect::new(
             screen_x as i32,
