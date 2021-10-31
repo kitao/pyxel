@@ -46,17 +46,17 @@ impl Image {
         {
             let mut image = image.lock();
             let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
-            for i in 0..height {
-                for j in 0..width {
-                    let p = image_file.get_pixel(j, i);
+            for y in 0..height {
+                for x in 0..width {
+                    let p = image_file.get_pixel(x, y);
                     let src_rgb = (p[0], p[1], p[2]);
                     if let Some(color) = color_table.get(&src_rgb) {
-                        image.canvas.data[i as usize][j as usize] = *color;
+                        image.canvas.data[y as usize][x as usize] = *color;
                     } else {
                         let mut closest_color: Color = 0;
                         let mut closest_dist: f64 = f64::MAX;
-                        for k in 0..NUM_COLORS {
-                            let pal_color = colors[k as usize];
+                        for i in 0..NUM_COLORS {
+                            let pal_color = colors[i as usize];
                             let pal_rgb = (
                                 ((pal_color >> 16) & 0xff) as u8,
                                 ((pal_color >> 8) & 0xff) as u8,
@@ -64,12 +64,12 @@ impl Image {
                             );
                             let dist = Self::color_dist(src_rgb, pal_rgb);
                             if dist < closest_dist {
-                                closest_color = k as Color;
+                                closest_color = i as Color;
                                 closest_dist = dist;
                             }
                         }
                         color_table.insert(src_rgb, closest_color);
-                        image.canvas.data[i as usize][j as usize] = closest_color;
+                        image.canvas.data[y as usize][x as usize] = closest_color;
                     }
                 }
             }
@@ -100,11 +100,11 @@ impl Image {
         let image = Self::new(width, height);
         {
             let mut image = image.lock();
-            for i in 0..height {
-                let src_data = simplify_string(data_str[i as usize]);
-                for j in 0..width {
-                    let color = parse_hex_string(&src_data[j as usize..j as usize + 1]).unwrap();
-                    image.canvas.data[i as usize][j as usize] = color as Color;
+            for y in 0..height {
+                let src_data = simplify_string(data_str[y as usize]);
+                for x in 0..width {
+                    let color = parse_hex_string(&src_data[x as usize..x as usize + 1]).unwrap();
+                    image.canvas.data[y as usize][x as usize] = color as Color;
                 }
             }
         }
@@ -140,14 +140,13 @@ impl Image {
         let width = self.width();
         let height = self.height();
         let mut image = RgbImage::new(width, height);
-        for i in 0..height {
-            for j in 0..width {
-                let rgb = colors[self.canvas.data[i as usize][j as usize] as usize];
+        for y in 0..height {
+            for x in 0..width {
+                let rgb = colors[self.canvas.data[y as usize][x as usize] as usize];
                 let r = ((rgb >> 16) & 0xff) as u8;
                 let g = ((rgb >> 8) & 0xff) as u8;
                 let b = (rgb & 0xff) as u8;
-
-                image.put_pixel(j, i, Rgb([r, g, b]));
+                image.put_pixel(x, y, Rgb([r, g, b]));
             }
         }
         let image = imageops::resize(&image, width * scale, height * scale, FilterType::Nearest);
@@ -264,25 +263,21 @@ impl Image {
         let tilemap_y = as_i32(tilemap_y);
         let width = as_i32(width.round());
         let height = as_i32(height.round());
-
         let tile_size = if width < 0 {
             -(TILE_SIZE as i32)
         } else {
             TILE_SIZE as i32
         };
-
         let left = self.canvas.clip_rect.left() / TILE_SIZE as i32;
         let top = self.canvas.clip_rect.top() / TILE_SIZE as i32;
         let right = (self.canvas.clip_rect.right() + TILE_SIZE as i32 - 1) / TILE_SIZE as i32;
         let bottom = (self.canvas.clip_rect.bottom() + TILE_SIZE as i32 - 1) / TILE_SIZE as i32;
-
         let dst_rect = RectArea::new(
             left,
             top,
             (right - left + 1) as u32,
             (bottom - top + 1) as u32,
         );
-
         let tilemap = tilemap.lock();
 
         let CopyArea {
@@ -306,20 +301,18 @@ impl Image {
             width,
             height,
         );
-
         if width == 0 || height == 0 {
             return;
         }
 
-        for i in 0..height {
-            for j in 0..width {
-                let tile_x = src_x + sign_x * j + offset_x;
-                let tile_y = src_y + sign_y * i + offset_y;
+        for yi in 0..height {
+            for xi in 0..width {
+                let tile_x = src_x + sign_x * xi + offset_x;
+                let tile_y = src_y + sign_y * yi + offset_y;
                 let tile = tilemap.canvas.data[tile_y as usize][tile_x as usize];
-
                 self.blt(
-                    (x + TILE_SIZE as i32 * j) as f64,
-                    (y + TILE_SIZE as i32 * i) as f64,
+                    (x + TILE_SIZE as i32 * xi) as f64,
+                    (y + TILE_SIZE as i32 * yi) as f64,
                     tilemap.image.clone(),
                     (tile.0 as i32 * TILE_SIZE as i32) as f64,
                     (tile.1 as i32 * TILE_SIZE as i32) as f64,
@@ -372,9 +365,9 @@ impl ResourceItem for Image {
     }
 
     fn is_modified(&self) -> bool {
-        for i in 0..self.height() {
-            for j in 0..self.width() {
-                if self.canvas.data[i as usize][j as usize] != 0 {
+        for y in 0..self.height() {
+            for x in 0..self.width() {
+                if self.canvas.data[y as usize][x as usize] != 0 {
                     return true;
                 }
             }
@@ -388,9 +381,9 @@ impl ResourceItem for Image {
 
     fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
-        for i in 0..self.height() {
-            for j in 0..self.width() {
-                output += &format!("{:1x}", self.canvas.data[i as usize][j as usize]);
+        for y in 0..self.height() {
+            for x in 0..self.width() {
+                output += &format!("{:1x}", self.canvas.data[y as usize][x as usize]);
             }
             output += "\n";
         }
