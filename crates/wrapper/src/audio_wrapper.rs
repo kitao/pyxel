@@ -45,7 +45,6 @@ fn play(ch: u32, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
             instance().channel(ch).lock().play(sounds, r#loop.unwrap_or(false));
         }
     }
-
     Ok(())
 }
 
