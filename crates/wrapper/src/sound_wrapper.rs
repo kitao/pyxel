@@ -4,6 +4,22 @@ use pyxel::SharedSound as PyxelSharedSound;
 use pyxel::Sound as PyxelSound;
 use pyxel::{Effect, Note, Speed, Tone, Volume};
 
+macro_rules! define_private_methods_for_list {
+    ($type: ident, $elems: ident) => {
+        fn new(pyxel_sound: PyxelSharedSound) -> Self {
+            Self { pyxel_sound }
+        }
+
+        fn list(&self) -> &[$type] {
+            unsafe { &*(&self.pyxel_sound.lock().$elems as *const Vec<$type>) }
+        }
+
+        fn list_mut(&mut self) -> &mut Vec<$type> {
+            unsafe { &mut *(&mut self.pyxel_sound.lock().$elems as *mut Vec<$type>) }
+        }
+    };
+}
+
 #[pyclass]
 #[derive(Clone)]
 pub struct Notes {
@@ -11,40 +27,32 @@ pub struct Notes {
 }
 
 impl Notes {
-    fn new(pyxel_sound: PyxelSharedSound) -> Self {
-        Self { pyxel_sound }
-    }
-
-    fn list(&self) -> &[Note] {
-        unsafe { &*(&self.pyxel_sound.lock().notes as *const Vec<Note>) }
-    }
-
-    fn list_mut(&mut self) -> &mut Vec<Note> {
-        unsafe { &mut *(&mut self.pyxel_sound.lock().notes as *mut Vec<Note>) }
-    }
-}
-
-#[pymethods]
-impl Notes {
-    define_list_edit_methods!(Note);
+    define_private_methods_for_list!(Note, notes);
 }
 
 #[pyproto]
 impl PySequenceProtocol for Notes {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Self::list, self)
+        impl_len_method_for_list!(self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Note> {
-        define_list_get_operator!(Self::list, self, index)
+        impl_getitem_method_for_list!(self, index)
     }
 
     fn __setitem__(&mut self, index: isize, value: Note) -> PyResult<()> {
-        define_list_set_operator!(Self::list_mut, self, index, value)
+        impl_setitem_method_for_list!(self, index, value)
+    }
+}
+
+#[pymethods]
+impl Notes {
+    pub fn from_list(&mut self, list: Vec<Note>) -> PyResult<()> {
+        impl_from_list_method_for_list!(self, list)
     }
 
-    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(Self::list_mut, self, index)
+    pub fn to_list(&self) -> PyResult<Vec<Note>> {
+        impl_to_list_method_for_list!(self)
     }
 }
 
@@ -55,40 +63,32 @@ pub struct Tones {
 }
 
 impl Tones {
-    fn new(pyxel_sound: PyxelSharedSound) -> Self {
-        Self { pyxel_sound }
-    }
-
-    fn list(&self) -> &[Tone] {
-        unsafe { &*(&self.pyxel_sound.lock().tones as *const Vec<Tone>) }
-    }
-
-    fn list_mut(&mut self) -> &mut Vec<Tone> {
-        unsafe { &mut *(&mut self.pyxel_sound.lock().tones as *mut Vec<Tone>) }
-    }
-}
-
-#[pymethods]
-impl Tones {
-    define_list_edit_methods!(Tone);
+    define_private_methods_for_list!(Tone, tones);
 }
 
 #[pyproto]
 impl PySequenceProtocol for Tones {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Self::list, self)
+        impl_len_method_for_list!(self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Tone> {
-        define_list_get_operator!(Self::list, self, index)
+        impl_getitem_method_for_list!(self, index)
     }
 
     fn __setitem__(&mut self, index: isize, value: Tone) -> PyResult<()> {
-        define_list_set_operator!(Self::list_mut, self, index, value)
+        impl_setitem_method_for_list!(self, index, value)
+    }
+}
+
+#[pymethods]
+impl Tones {
+    pub fn from_list(&mut self, list: Vec<Tone>) -> PyResult<()> {
+        impl_from_list_method_for_list!(self, list)
     }
 
-    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(Self::list_mut, self, index)
+    pub fn to_list(&self) -> PyResult<Vec<Tone>> {
+        impl_to_list_method_for_list!(self)
     }
 }
 
@@ -99,59 +99,32 @@ pub struct Volumes {
 }
 
 impl Volumes {
-    fn new(pyxel_sound: PyxelSharedSound) -> Self {
-        Self { pyxel_sound }
-    }
-
-    fn list(&self) -> &[Volume] {
-        unsafe { &*(&self.pyxel_sound.lock().volumes as *const Vec<Volume>) }
-    }
-
-    fn list_mut(&mut self) -> &mut Vec<Volume> {
-        unsafe { &mut *(&mut self.pyxel_sound.lock().volumes as *mut Vec<Volume>) }
-    }
-}
-
-#[pymethods]
-impl Volumes {
-    define_list_edit_methods!(Volume);
+    define_private_methods_for_list!(Volume, volumes);
 }
 
 #[pyproto]
 impl PySequenceProtocol for Volumes {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Self::list, self)
+        impl_len_method_for_list!(self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Volume> {
-        define_list_get_operator!(Self::list, self, index)
+        impl_getitem_method_for_list!(self, index)
     }
 
     fn __setitem__(&mut self, index: isize, value: Volume) -> PyResult<()> {
-        define_list_set_operator!(Self::list_mut, self, index, value)
-    }
-
-    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(Self::list_mut, self, index)
+        impl_setitem_method_for_list!(self, index, value)
     }
 }
 
-#[pyproto]
-impl PySequenceProtocol for Effects {
-    fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Self::list, self)
+#[pymethods]
+impl Volumes {
+    pub fn from_list(&mut self, list: Vec<Volume>) -> PyResult<()> {
+        impl_from_list_method_for_list!(self, list)
     }
 
-    fn __getitem__(&self, index: isize) -> PyResult<Effect> {
-        define_list_get_operator!(Self::list, self, index)
-    }
-
-    fn __setitem__(&mut self, index: isize, value: Effect) -> PyResult<()> {
-        define_list_set_operator!(Self::list_mut, self, index, value)
-    }
-
-    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(Self::list_mut, self, index)
+    pub fn to_list(&self) -> PyResult<Vec<Volume>> {
+        impl_to_list_method_for_list!(self)
     }
 }
 
@@ -162,22 +135,33 @@ pub struct Effects {
 }
 
 impl Effects {
-    fn new(pyxel_sound: PyxelSharedSound) -> Self {
-        Self { pyxel_sound }
+    define_private_methods_for_list!(Effect, effects);
+}
+
+#[pyproto]
+impl PySequenceProtocol for Effects {
+    fn __len__(&self) -> PyResult<usize> {
+        impl_len_method_for_list!(self)
     }
 
-    fn list(&self) -> &[Effect] {
-        unsafe { &*(&self.pyxel_sound.lock().effects as *const Vec<Effect>) }
+    fn __getitem__(&self, index: isize) -> PyResult<Effect> {
+        impl_getitem_method_for_list!(self, index)
     }
 
-    fn list_mut(&mut self) -> &mut Vec<Effect> {
-        unsafe { &mut *(&mut self.pyxel_sound.lock().effects as *mut Vec<Effect>) }
+    fn __setitem__(&mut self, index: isize, value: Effect) -> PyResult<()> {
+        impl_setitem_method_for_list!(self, index, value)
     }
 }
 
 #[pymethods]
 impl Effects {
-    define_list_edit_methods!(Effect);
+    pub fn from_list(&mut self, list: Vec<Effect>) -> PyResult<()> {
+        impl_from_list_method_for_list!(self, list)
+    }
+
+    pub fn to_list(&self) -> PyResult<Vec<Effect>> {
+        impl_to_list_method_for_list!(self)
+    }
 }
 
 #[pyclass]
