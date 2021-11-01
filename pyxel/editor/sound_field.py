@@ -11,8 +11,8 @@ from .settings import (
 from .widgets import Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
-tone_key_table = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N]
-effect_key_table = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
+TONE_KEY_TABLE = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N]
+EFFECT_KEY_TABLE = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
 
 
 class SoundField(Widget):
@@ -26,6 +26,7 @@ class SoundField(Widget):
         self.field_cursor = parent.field_cursor
         self.get_seq = parent.get_seq
 
+        self.copy_var("is_playing_var", parent)
         self.copy_var("play_pos_var", parent)
         self.copy_var("help_message_var", parent)
 
@@ -41,11 +42,11 @@ class SoundField(Widget):
         return x, y
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_LEFT or self.parent.is_playing:
+        if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
 
         x, y = self._screen_to_view(x, y)
-        self.parent.field_cursor.move(x, y + 1)
+        self.field_cursor.move(x, y + 1)
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
@@ -61,7 +62,7 @@ class SoundField(Widget):
 
         if (
             cursor_y < 1
-            or self.parent.is_playing
+            or self.is_playing_var
             or pyxel.btn(pyxel.KEY_SHIFT)
             or pyxel.btn(pyxel.KEY_CTRL)
             or pyxel.btn(pyxel.KEY_ALT)
@@ -72,22 +73,23 @@ class SoundField(Widget):
         value = None
         if cursor_y == 1:
             for i in range(4):
-                if pyxel.btnp(tone_key_table[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+                if pyxel.btnp(TONE_KEY_TABLE[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
                     value = i
                     break
+
         elif cursor_y == 2:
             for i in range(8):
-                if pyxel.btnp(
-                    pyxel.KEY_0 + i, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
-                ) or pyxel.btnp(
-                    pyxel.KEY_KP_0 + i, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+                key = pyxel.KEY_0 if i == 0 else pyxel.KEY_1 + i - 1
+                if pyxel.btnp(key, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME) or pyxel.btnp(
+                    key, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
                 ):
                     value = i
                     break
+
         elif cursor_y == 3:
             for i in range(4):
                 if pyxel.btnp(
-                    effect_key_table[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+                    EFFECT_KEY_TABLE[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
                 ):
                     value = i
                     break
@@ -95,7 +97,7 @@ class SoundField(Widget):
         if value is None:
             return
 
-        self.parent.field_cursor.insert(value)
+        self.field_cursor.insert(value)
 
     def __on_draw(self):
         pyxel.text(self.x - 13, self.y + 1, "TON", TEXT_LABEL_COLOR)
