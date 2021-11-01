@@ -10,41 +10,43 @@ use crate::instance;
 struct Colors;
 
 impl Colors {
-    #[allow(dead_code)]
     fn list(&self) -> &[Rgb8] {
         &instance().colors
     }
 
-    #[allow(dead_code)]
     fn list_mut(&mut self) -> &mut [Rgb8] {
         &mut instance().colors
-    }
-}
-
-#[pymethods]
-impl Colors {
-    pub fn set(&mut self, list: Vec<Rgb8>) -> PyResult<()> {
-        if self.list().len() == list.len() {
-            self.list_mut()[..].clone_from_slice(&list[..]);
-            Ok(())
-        } else {
-            Err(PyValueError::new_err("arrays must all be same length"))
-        }
     }
 }
 
 #[pyproto]
 impl PySequenceProtocol for Colors {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Self::list, self)
+        impl_len_method_for_list!(self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Rgb8> {
-        define_list_get_operator!(Self::list, self, index)
+        impl_getitem_method_for_list!(self, index)
     }
 
     fn __setitem__(&mut self, index: isize, value: Rgb8) -> PyResult<()> {
-        define_list_set_operator!(Self::list_mut, self, index, value)
+        impl_setitem_method_for_list!(self, index, value)
+    }
+}
+
+#[pymethods]
+impl Colors {
+    pub fn from_list(&mut self, list: Vec<Rgb8>) -> PyResult<()> {
+        if self.list().len() == list.len() {
+            self.list_mut()[..].clone_from_slice(&list[..]);
+            Ok(())
+        } else {
+            Err(PyValueError::new_err("list must be same length as array"))
+        }
+    }
+
+    pub fn to_list(&self) -> PyResult<Vec<Rgb8>> {
+        impl_to_list_method_for_list!(self)
     }
 }
 
