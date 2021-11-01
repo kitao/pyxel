@@ -1,8 +1,8 @@
 use pyo3::class::PySequenceProtocol;
+use pyo3::exceptions::PyIndexError;
 use pyo3::prelude::*;
 use pyxel::Music as PyxelMusic;
 use pyxel::SharedMusic as PyxelSharedMusic;
-use pyxel::NUM_CHANNELS;
 
 #[pyclass]
 #[derive(Clone)]
@@ -33,46 +33,56 @@ impl Sequence {
     }
 }
 
-#[pymethods]
-impl Sequence {
-    define_list_edit_methods!(u32);
-}
-
 #[pyproto]
 impl PySequenceProtocol for Sequence {
     fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Self::list, self)
+        impl_len_method_for_list!(self)
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<u32> {
-        define_list_get_operator!(Self::list, self, index)
+        impl_getitem_method_for_list!(self, index)
     }
 
     fn __setitem__(&mut self, index: isize, value: u32) -> PyResult<()> {
-        define_list_set_operator!(Self::list_mut, self, index, value)
+        impl_setitem_method_for_list!(self, index, value)
+    }
+}
+
+#[pymethods]
+impl Sequence {
+    pub fn from_list(&mut self, list: Vec<u32>) -> PyResult<()> {
+        impl_from_list_method_for_list!(self, list)
     }
 
-    fn __delitem__(&mut self, index: isize) -> PyResult<()> {
-        define_list_del_operator!(Self::list_mut, self, index)
+    pub fn to_list(&self) -> PyResult<Vec<u32>> {
+        impl_to_list_method_for_list!(self)
     }
 }
 
 #[pyclass]
 #[derive(Clone)]
 pub struct Sequences {
-    sequences: Vec<Sequence>,
+    pyxel_music: PyxelSharedMusic,
 }
 
 impl Sequences {
     fn new(pyxel_music: PyxelSharedMusic) -> Self {
-        let sequences = (0..NUM_CHANNELS)
-            .map(|channel_no| Sequence::new(pyxel_music.clone(), channel_no as u32))
-            .collect();
-        Self { sequences }
+        Self { pyxel_music }
+    }
+}
+
+#[pyproto]
+impl PySequenceProtocol for Sequences {
+    fn __len__(&self) -> PyResult<usize> {
+        Ok(self.pyxel_music.lock().sequences.len())
     }
 
-    fn list(&self) -> &Vec<Sequence> {
-        unsafe { &*(&self.sequences as *const Vec<Sequence>) }
+    fn __getitem__(&self, index: isize) -> PyResult<Sequence> {
+        if index < self.__len__().unwrap() as isize {
+            Ok(Sequence::new(self.pyxel_music.clone(), index as u32))
+        } else {
+            Err(PyIndexError::new_err("list index out of range"))
+        }
     }
 }
 
@@ -80,17 +90,6 @@ impl Sequences {
 #[derive(Clone)]
 pub struct Music {
     pyxel_music: PyxelSharedMusic,
-}
-
-#[pyproto]
-impl PySequenceProtocol for Sequences {
-    fn __len__(&self) -> PyResult<usize> {
-        define_list_len_operator!(Self::list, self)
-    }
-
-    fn __getitem__(&self, index: isize) -> PyResult<Sequence> {
-        define_list_get_operator!(Self::list, self, index)
-    }
 }
 
 pub fn wrap_pyxel_music(pyxel_music: PyxelSharedMusic) -> Music {
