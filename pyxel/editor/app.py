@@ -25,17 +25,20 @@ class App(Widget):
     """
 
     def __init__(self, resource_file):
-        pyxel.init(APP_WIDTH, APP_HEIGHT)
-        pyxel.mouse(True)
-
+        # determine file path before initializing Pyxel
         resource_file = os.path.join(os.getcwd(), resource_file)
         file_ext = os.path.splitext(resource_file)[1]
         if file_ext != pyxel.RESOURCE_FILE_EXTENSION:
             resource_file += pyxel.RESOURCE_FILE_EXTENSION
+
+        # initialize Pyxel
+        pyxel.init(APP_WIDTH, APP_HEIGHT)
+        pyxel.mouse(True)
         App._set_title(resource_file)
         if os.path.exists(resource_file):
             pyxel.load(resource_file)
 
+        # start initializing application
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
         self._resource_file = resource_file
 
@@ -114,6 +117,7 @@ class App(Widget):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
+        # start application
         pyxel.run(self.update_all, self.draw_all)
 
     @property
