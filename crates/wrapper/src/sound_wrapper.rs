@@ -47,8 +47,8 @@ impl PySequenceProtocol for Notes {
 
 #[pymethods]
 impl Notes {
-    pub fn from_list(&mut self, list: Vec<Note>) -> PyResult<()> {
-        impl_from_list_method_for_list!(self, list)
+    pub fn from_list(&mut self, lst: Vec<Note>) -> PyResult<()> {
+        impl_from_list_method_for_list!(self, lst)
     }
 
     pub fn to_list(&self) -> PyResult<Vec<Note>> {
@@ -83,8 +83,8 @@ impl PySequenceProtocol for Tones {
 
 #[pymethods]
 impl Tones {
-    pub fn from_list(&mut self, list: Vec<Tone>) -> PyResult<()> {
-        impl_from_list_method_for_list!(self, list)
+    pub fn from_list(&mut self, lst: Vec<Tone>) -> PyResult<()> {
+        impl_from_list_method_for_list!(self, lst)
     }
 
     pub fn to_list(&self) -> PyResult<Vec<Tone>> {
@@ -119,8 +119,8 @@ impl PySequenceProtocol for Volumes {
 
 #[pymethods]
 impl Volumes {
-    pub fn from_list(&mut self, list: Vec<Volume>) -> PyResult<()> {
-        impl_from_list_method_for_list!(self, list)
+    pub fn from_list(&mut self, lst: Vec<Volume>) -> PyResult<()> {
+        impl_from_list_method_for_list!(self, lst)
     }
 
     pub fn to_list(&self) -> PyResult<Vec<Volume>> {
@@ -155,8 +155,8 @@ impl PySequenceProtocol for Effects {
 
 #[pymethods]
 impl Effects {
-    pub fn from_list(&mut self, list: Vec<Effect>) -> PyResult<()> {
-        impl_from_list_method_for_list!(self, list)
+    pub fn from_list(&mut self, lst: Vec<Effect>) -> PyResult<()> {
+        impl_from_list_method_for_list!(self, lst)
     }
 
     pub fn to_list(&self) -> PyResult<Vec<Effect>> {
