@@ -6,17 +6,16 @@ from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 class FieldCursor:
     def __init__(
         self,
-        seq_getter,
-        seq_count,
-        max_seq_length,
-        view_length,
+        *,
+        field_getter,
+        max_field_length,
+        field_wrap_length,
         add_pre_history,
         add_post_history,
     ):
-        self._seq_getter = seq_getter
-        self._seq_count = seq_count
-        self._max_seq_length = max_seq_length
-        self._view_length = view_length
+        self._field_getter = field_getter
+        self._max_field_length = max_field_length
+        self._field_wrap_length = field_wrap_length
         self._add_pre_history = add_pre_history
         self._add_post_history = add_post_history
         self._x = 0
@@ -24,93 +23,84 @@ class FieldCursor:
 
     @property
     def x(self):
-        return min(self._x, len(self.seq), self._max_seq_length - 1)
-
-    @property
-    def rightmost_x(self):
-        return min(len(self.seq), self._max_seq_length - 1)
+        return min(self._x, len(self.field), self._max_field_length - 1)
 
     @property
     def y(self):
         return self._y
 
     @property
-    def seq(self):
-        return self._seq_getter(self._y)
+    def field(self):
+        return self._field_getter(self._y)
 
-    def move(self, x, y):
-        self._x = x
+    def move_to(self, x, y):
+        while not self._field_getter(y):
+            y -= 1
+
+        self._x = min(x, self._max_field_length - 1)
         self._y = y
 
     def move_left(self):
-        if self.x > 0:
+        if self._x > 0:
             self._x = self.x - 1
 
     def move_right(self):
-        if self.x < self.rightmost_x:
+        if self._x < min(len(self.field), self._max_field_length - 1):
             self._x += 1
 
     def move_up(self):
-        cursor_view_y = self._x // self._view_length
+        if self._x >= self._field_wrap_length:
+            self._x -= self._field_wrap_length
 
-        if cursor_view_y > 0:
-            self._x -= self._view_length
         elif self._y > 0:
             self._x = (
-                self._view_length * (self.rightmost_x // self._view_length)
-                + self._x % self._view_length
+                self._field_wrap_length * (self._x // self._field_wrap_length) + self._x
             )
             self._y -= 1
 
     def move_down(self):
-        cursor_view_y = self._x // self._view_length
-        seq_view_y = self.rightmost_x // self._view_length
+        if len(self.field) >= self._field_wrap_length:
+            self._x += self._field_wrap_length
+            return
 
-        if cursor_view_y < seq_view_y:
-            self._x += self._view_length
-        elif self._y < self._seq_count - 1:
-            self._y += 1
-            self._x %= self._view_length
+        if not self._field_getter(self._y + 1):
+            return
+
+        self._x %= self._field_wrap_length
+        self._y += 1
 
     def insert(self, value):
-        x = self.x
-        seq = self.sequence
-
         self._add_pre_history(self.x, self.y)
 
-        seq.insert(x, value)
-        seq[:] = seq[: self._max_seq_length]
-
-        self._x = x
+        lst = self.field.to_list()
+        lst.insert(self.x, value)
+        self.field.from_list(lst[: self._max_field_length])
         self.move_right()
 
         self._add_post_history(self.x, self.y)
 
     def backspace(self):
-        x = self.x
-        seq = self.seq
-
-        if x == 0:
+        if self.x == 0:
             return
 
         self._add_pre_history(self.x, self.y)
 
-        del seq[x - 1]
-        if self._x <= self.rightmost_x:
-            self.move_left()
+        lst = self.field.to_list()
+        del lst[self.x - 1]
+        self.field.from_list(lst)
+        self.move_left()
 
         self._add_post_history(self.x, self.y)
 
     def delete(self):
-        x = self.x
-        seq = self.seq
-
-        if x >= len(seq):
+        if self.x >= len(self.field):
             return
 
         self._add_pre_history(self.x, self.y)
 
-        del seq[x]
+        lst = self.field.to_list()
+        del lst[self.x]
+        self.field.from_list(lst)
 
         self._add_post_history(self.x, self.y)
 
