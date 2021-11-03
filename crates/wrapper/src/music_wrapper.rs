@@ -50,8 +50,8 @@ impl PySequenceProtocol for Sequence {
 
 #[pymethods]
 impl Sequence {
-    pub fn from_list(&mut self, list: Vec<u32>) -> PyResult<()> {
-        impl_from_list_method_for_list!(self, list)
+    pub fn from_list(&mut self, lst: Vec<u32>) -> PyResult<()> {
+        impl_from_list_method_for_list!(self, lst)
     }
 
     pub fn to_list(&self) -> PyResult<Vec<u32>> {
