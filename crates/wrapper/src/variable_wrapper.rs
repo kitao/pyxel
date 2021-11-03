@@ -36,9 +36,9 @@ impl PySequenceProtocol for Colors {
 
 #[pymethods]
 impl Colors {
-    pub fn from_list(&mut self, list: Vec<Rgb8>) -> PyResult<()> {
-        if self.list().len() == list.len() {
-            self.list_mut()[..].clone_from_slice(&list[..]);
+    pub fn from_list(&mut self, lst: Vec<Rgb8>) -> PyResult<()> {
+        if self.list().len() == lst.len() {
+            self.list_mut()[..].clone_from_slice(&lst[..]);
             Ok(())
         } else {
             Err(PyValueError::new_err("list must be same length as array"))
