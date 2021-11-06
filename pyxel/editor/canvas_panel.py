@@ -229,8 +229,7 @@ class CanvasPanel(Widget):
         x = self.focus_x_var * 8 + (x - self.x) // 8
         y = self.focus_y_var * 8 + (y - self.y) // 8
         if self._is_tilemap_mode:
-            self.tile_x_var = x
-            self.tile_y_var = y
+            (self.tile_x_var, self.tile_y_var) = self.canvas_var.pget(x, y)
         else:
             self.color_var = self.canvas_var.pget(x, y)
 
