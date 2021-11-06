@@ -45,10 +45,15 @@ impl Channel {
     }
 
     pub fn play(&mut self, sounds: Vec<SharedSound>, should_loop: bool) {
+        let sounds: Vec<Sound> = sounds
+            .iter()
+            .map(|sound| sound.lock().clone())
+            .filter(|sound| !sound.notes.is_empty())
+            .collect();
         if sounds.is_empty() {
             return;
         }
-        self.sounds = sounds.iter().map(|sound| sound.lock().clone()).collect();
+        self.sounds = sounds;
         self.is_playing = true;
         self.should_loop = should_loop;
         self.sound_index = 0;
