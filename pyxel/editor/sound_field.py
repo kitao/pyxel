@@ -24,10 +24,10 @@ class SoundField(Widget):
         super().__init__(parent, 30, 149, 193, 23)
 
         self.field_cursor = parent.field_cursor
-        self.get_seq = parent.get_seq
+        self.get_field = parent.get_field
 
         self.copy_var("is_playing_var", parent)
-        self.copy_var("play_pos_var", parent)
+        # self.copy_var("play_pos_var", parent)
         self.copy_var("help_message_var", parent)
 
         # event listeners
@@ -46,7 +46,7 @@ class SoundField(Widget):
             return
 
         x, y = self._screen_to_view(x, y)
-        self.field_cursor.move(x, y + 1)
+        self.field_cursor.move_to(x, y + 1)
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
@@ -114,9 +114,9 @@ class SoundField(Widget):
         )
 
         data_str = []
-        data_str.append("".join(["TSPN"[v] for v in self.get_seq(1)]))
-        data_str.append("".join([str(v) for v in self.get_seq(2)]))
-        data_str.append("".join(["NSVF"[v] for v in self.get_seq(3)]))
+        data_str.append("".join(["TSPN"[v] for v in self.get_field(1)]))
+        data_str.append("".join([str(v) for v in self.get_field(2)]))
+        data_str.append("".join(["NSVF"[v] for v in self.get_field(3)]))
 
         for i in range(3):
             pyxel.text(31, 150 + i * 8, data_str[i], SOUND_FIELD_DATA_NORMAL_COLOR)
@@ -124,7 +124,7 @@ class SoundField(Widget):
         cursor_y = self.field_cursor.y
         cursor_x = self.field_cursor.x
 
-        if self.play_pos_var >= 0 or cursor_y == 0:
+        if self.is_playing_var or cursor_y == 0:
             return
 
         x = cursor_x * 4 + 31
