@@ -37,6 +37,7 @@ class ScrollBar(Widget):
         else:
             height = 7
             self._is_vertical = False
+
         super().__init__(parent, x, y, width, height, **kwargs)
         self.scroll_amount = scroll_amount
         self.slider_amount = slider_amount
@@ -56,6 +57,7 @@ class ScrollBar(Widget):
         else:
             btn_w = 6
             btn_h = 7
+
         self.dec_button = Button(self, 0, 0, btn_w, btn_h)
         self.dec_button.add_event_listener("press", self.__on_dec_button_press)
 
@@ -66,6 +68,7 @@ class ScrollBar(Widget):
         else:
             inc_x = width - 6
             inc_y = 0
+
         self.inc_button = Button(self, inc_x, inc_y, btn_w, btn_h)
         self.inc_button.add_event_listener("press", self.__on_inc_button_press)
 
@@ -109,6 +112,7 @@ class ScrollBar(Widget):
         x -= self.x
         y -= self.y
         self._drag_offset = (y if self._is_vertical else x) - self._slider_pos
+
         if self._drag_offset < 0:
             self.__on_dec_button_press()
         elif self._drag_offset >= self._slider_size:
