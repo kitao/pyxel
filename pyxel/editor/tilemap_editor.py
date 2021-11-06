@@ -105,7 +105,7 @@ class TilemapEditor(EditorBase):
         self.image_no_var = pyxel.tilemap(value).refimg
 
     def __on_image_picker_change(self, value):
-        pyxel.tilemap(self._tilemap_picker.value).refimg = value
+        pyxel.tilemap(self.tilemap_no_var).refimg = value
 
     def __on_undo(self, data):
         self.tilemap_no_var = data["tilemap_no"]
