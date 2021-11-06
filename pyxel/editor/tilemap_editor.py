@@ -111,14 +111,14 @@ class TilemapEditor(EditorBase):
         self.tilemap_no_var = data["tilemap_no"]
         self.focus_x_var, self.focus_y_var = data["focus_pos"]
         self.canvas_var.set_slice(
-            self.focus_x_var * 8, self.focus_y_var * 8, data["previous_canvas"]
+            self.focus_x_var * 8, self.focus_y_var * 8, data["old_canvas"]
         )
 
     def __on_redo(self, data):
         self.tilemap_no_var = data["tilemap_no"]
         self.focus_x_var, self.focus_y_var = data["focus_pos"]
         self.canvas_var.set_slice(
-            self.focus_x_var * 8, self.focus_y_var * 8, data["later_canvas"]
+            self.focus_x_var * 8, self.focus_y_var * 8, data["new_canvas"]
         )
 
     def __on_update(self):

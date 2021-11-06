@@ -112,20 +112,21 @@ class CanvasPanel(Widget):
 
     def _add_pre_history(self):
         self._history_data = data = {}
-        data["tilemap_no"] = (
-            self.tilemap_no_var if self._is_tilemap_mode else self.image_no_var
-        )
+        if self._is_tilemap_mode:
+            data["tilemap_no"] = self.tilemap_no_var
+        else:
+            data["image_no"] = self.image_no_var
         data["focus_pos"] = (self.focus_x_var, self.focus_y_var)
-        data["previous_canvas"] = self.canvas_var.get_slice(
+        data["old_canvas"] = self.canvas_var.get_slice(
             self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
         )
 
     def _add_post_history(self):
         data = self._history_data
-        data["later_canvas"] = self.canvas_var.get_slice(
+        data["new_canvas"] = self.canvas_var.get_slice(
             self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
         )
-        if data["previous_canvas"] != data["later_canvas"]:
+        if data["old_canvas"] != data["new_canvas"]:
             self.add_history(data)
 
     def _restore_temp_canvas(self):
