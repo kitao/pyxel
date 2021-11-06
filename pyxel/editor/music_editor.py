@@ -12,25 +12,25 @@ class MusicEditor(EditorBase):
     """
     Variables:
         music_no_var
+        should_loop_var
+        is_playing_var
+        help_message_var
     """
 
     def __init__(self, parent):
         super().__init__(parent)
+        self.copy_var("help_message_var", parent)
 
         # is_playing_var
-        self.new_var("is_playing_var", None)
-        self.add_var_event_listener(
-            "is_playing_var", "get", self.__on_is_playing_var_get
-        )
+        self.new_var("is_playing_var", False)
 
         # field cursor
         self.field_cursor = FieldCursor(
-            self.get_seq,
-            pyxel.NUM_CHANNELS,
-            MAX_MUSIC_LENGTH,
-            16,
-            self.add_pre_history,
-            self.add_post_history,
+            max_field_length=MAX_MUSIC_LENGTH,
+            field_wrap_length=16,
+            get_field=self.get_field,
+            add_pre_history=self.add_pre_history,
+            add_post_history=self.add_post_history,
         )
 
         # music picker
@@ -56,12 +56,7 @@ class MusicEditor(EditorBase):
 
         # stop button
         self._stop_button = ImageButton(
-            self,
-            195,
-            17,
-            img=EDITOR_IMAGE,
-            u=135,
-            v=0,
+            self, 195, 17, img=EDITOR_IMAGE, u=135, v=0, is_enabled=False
         )
         self._stop_button.add_event_listener("press", self.__on_stop_button_press)
         self._stop_button.add_event_listener(
@@ -75,6 +70,7 @@ class MusicEditor(EditorBase):
         self._loop_button.add_event_listener(
             "mouse_hover", self.__on_loop_button_mouse_hover
         )
+        self.copy_var("should_loop_var", self._loop_button, "is_checked_var")
 
         # music field
         self._music_field = [MusicField(self, 11, 29 + i * 25, i) for i in range(4)]
@@ -92,78 +88,70 @@ class MusicEditor(EditorBase):
     def play_pos(self, ch):
         return self._play_pos[ch]
 
-    def get_seq(self, index):
+    def get_field(self, index):
+        if index >= pyxel.NUM_CHANNELS:
+            return
+
         music = pyxel.music(self.music_no_var)
         return music.sequences[index]
 
     def add_pre_history(self, x, y):
         self._history_data = data = {}
-        data["music"] = self.music_no_var
+        data["music_no"] = self.music_no_var
         data["cursor_before"] = (x, y)
-        data["before"] = self.field_cursor.data[:]
+        data["before"] = self.field_cursor.field.to_list()
 
     def add_post_history(self, x, y):
         data = self._history_data
         data["cursor_after"] = (x, y)
-        data["after"] = self.field_cursor.data[:]
+        data["after"] = self.field_cursor.field.to_list()
         if data["before"] != data["after"]:
             self.add_history(self._history_data)
 
     def _play(self):
-        for i in range(pyxel.MUSIC_NUM_CHANNELS):
-            self._play_pos[i] = 0
+        self.is_playing_var = True
         self._music_picker.is_enabled_var = False
         self._play_button.is_enabled_var = False
         self._stop_button.is_enabled_var = True
         self._loop_button.is_enabled_var = False
-        pyxel.playm(self.music_no_var, loop=self._loop_button.value)
+        pyxel.playm(self.music_no_var, loop=self.should_loop_var)
 
     def _stop(self):
-        # for i in range(pyxel.NUM_CHANNELS):
-        #    self._play_pos[i] = -1
-
+        self.is_playing_var = False
         self._music_picker.is_enabled_var = True
         self._play_button.is_enabled_var = True
         self._stop_button.is_enabled_var = False
         self._loop_button.is_enabled_var = True
         pyxel.stop()
 
-    def __on_is_playing_var_get(self, value):
-        return pyxel.play_pos(0) is not None
-
     def __on_undo(self, data):
         self._stop()
-        self._music_picker.value = data["music"]
-        self.field_cursor.move(*data["cursor_before"])
-        self.field_cursor.data[:] = data["before"]
+        self.music_no_var = data["music_no"]
+        self.field_cursor.move_to(*data["cursor_before"])
+        self.field_cursor.field.from_list(data["before"])
 
     def __on_redo(self, data):
         self._stop()
-        dat = data["after"]
-        dat_len = len(dat)
-        self._music_picker.value = data["music"]
-        self.field_cursor.move(*data["cursor_after"])
-        self.field_cursor.data[:dat_len] = dat
-        self.field_cursor.data_lengh = dat_len
+        self.music_no_var = data["music_no"]
+        self.field_cursor.move_to(*data["cursor_after"])
+        self.field_cursor.field.from_list(data["after"])
 
     def __on_hide(self):
         self._stop()
 
     def __on_update(self):
         if self.is_playing_var:
-            for i in range(pyxel.MUSIC_NUM_CHANNELS):
-                if pyxel.play_pos(i) >= 0:
-                    self._is_playing = True
-                    play_pos = pyxel.play_pos(i)
-                    self._play_pos[i] = play_pos // 100 if play_pos >= 0 else -1
-                else:
-                    self._play_pos[i] = -1
+            self.is_playing_var = None
+            for i in range(pyxel.NUM_CHANNELS):
+                if pyxel.play_pos(i) is not None:
+                    self.is_playing_var = True
+                    break
 
         if pyxel.btnp(pyxel.KEY_SPACE):
-            if self._is_playing:
-                self._stop_button.press()
+            if self.is_playing_var:
+                self._stop_button.is_pressed_var = True
             else:
-                self._play_button.press()
+                self._play_button.is_pressed_var = True
 
         if self.is_playing_var:
             return
@@ -172,7 +160,7 @@ class MusicEditor(EditorBase):
             self._stop()
 
         if self._loop_button.is_enabled_var and pyxel.btnp(pyxel.KEY_L):
-            self._loop_button.press()
+            self.should_loop_var = not self.should_loop_var
 
         self.field_cursor.process_input()
 
@@ -187,10 +175,10 @@ class MusicEditor(EditorBase):
         self._stop()
 
     def __on_play_button_mouse_hover(self, x, y):
-        self.parent.show_help_message("PLAY:SPACE")
+        self.help_message_var = "PLAY:SPACE"
 
     def __on_stop_button_mouse_hover(self, x, y):
-        self.parent.show_help_message("STOP:SPACE")
+        self.help_message_var = "STOP:SPACE"
 
     def __on_loop_button_mouse_hover(self, x, y):
-        self.parent.show_help_message("LOOP:L")
+        self.help_message_var = "LOOP:L"
