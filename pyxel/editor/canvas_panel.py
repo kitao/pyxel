@@ -306,12 +306,12 @@ class CanvasPanel(Widget):
 
             if abs(self._drag_offset_x) >= 16:
                 offset = self._drag_offset_x // 16
-                self.focus_x_var += offset * 8
+                self.focus_x_var += offset
                 self._drag_offset_x -= offset * 16
 
             if abs(self._drag_offset_y) >= 16:
                 offset = self._drag_offset_y // 16
-                self.focus_y_var += offset * 8
+                self.focus_y_var += offset
                 self._drag_offset_y -= offset * 16
 
     def __on_mouse_hover(self, x, y):
