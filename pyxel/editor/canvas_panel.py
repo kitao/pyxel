@@ -129,7 +129,7 @@ class CanvasPanel(Widget):
         if data["old_canvas"] != data["new_canvas"]:
             self.add_history(data)
 
-    def _restore_edit_canvas(self):
+    def _reset_edit_canvas(self):
         self._edit_canvas.blt(
             0,
             0,
@@ -142,7 +142,7 @@ class CanvasPanel(Widget):
         if self._is_tilemap_mode:
             self._edit_canvas.refimg = self.canvas_var.refimg
 
-    def _complete_edit_canvas(self):
+    def _finish_edit_canvas(self):
         if not self._is_tilemap_mode:
             return
 
@@ -152,7 +152,7 @@ class CanvasPanel(Widget):
                     continue
                 tile = (
                     self.tile_x_var + (j - self._press_x) % self.tile_w_var,
-                    self.tile_y_var + (i - self._press_x) % self.tile_h_var,
+                    self.tile_y_var + (i - self._press_y) % self.tile_h_var,
                 )
                 self._edit_canvas.pset(j, i, tile)
 
@@ -179,19 +179,20 @@ class CanvasPanel(Widget):
         self._is_assist_mode = False
 
         if self.tool_var == TOOL_SELECT:
+            self._reset_edit_canvas()
             self._select_x1 = self._select_x2 = x
             self._select_y1 = self._select_y2 = y
 
         elif self.tool_var >= TOOL_PENCIL and self.tool_var <= TOOL_CIRC:
-            self._restore_edit_canvas()
+            self._reset_edit_canvas()
             self._edit_canvas.pset(x, y, self.color_var)
-            self._complete_edit_canvas()
+            self._finish_edit_canvas()
 
         elif self.tool_var == TOOL_BUCKET:
-            self._restore_edit_canvas()
             self._add_pre_history()
+            self._reset_edit_canvas()
             self._edit_canvas.fill(x, y, self.color_var)
-            self._complete_edit_canvas()
+            self._finish_edit_canvas()
             self.canvas_var.blt(
                 self.focus_x_var * 8,
                 self.focus_y_var * 8,
@@ -256,17 +257,17 @@ class CanvasPanel(Widget):
 
             elif self.tool_var == TOOL_PENCIL:
                 if self._is_assist_mode:
-                    self._restore_edit_canvas()
+                    self._reset_edit_canvas()
                     self._edit_canvas.line(x1, y1, x2, y2, self.color_var)
-                    self._complete_edit_canvas()
+                    self._finish_edit_canvas()
                 else:
                     self._edit_canvas.line(
                         self._last_x, self._last_y, x2, y2, self.color_var
                     )
-                    self._complete_edit_canvas()
+                    self._finish_edit_canvas()
 
             elif self.tool_var == TOOL_RECTB:
-                self._restore_edit_canvas()
+                self._reset_edit_canvas()
                 self._edit_canvas.rectb2(
                     x1,
                     y1,
@@ -274,10 +275,10 @@ class CanvasPanel(Widget):
                     y2,
                     self.color_var,
                 )
-                self._complete_edit_canvas()
+                self._finish_edit_canvas()
 
             elif self.tool_var == TOOL_RECT:
-                self._restore_edit_canvas()
+                self._reset_edit_canvas()
                 self._edit_canvas.rect2(
                     x1,
                     y1,
@@ -285,17 +286,17 @@ class CanvasPanel(Widget):
                     y2,
                     self.color_var,
                 )
-                self._complete_edit_canvas()
+                self._finish_edit_canvas()
 
             elif self.tool_var == TOOL_CIRCB:
-                self._restore_edit_canvas()
+                self._reset_edit_canvas()
                 self._edit_canvas.ellipb(x1, y1, x2, y2, self.color_var)
-                self._complete_edit_canvas()
+                self._finish_edit_canvas()
 
             elif self.tool_var == TOOL_CIRC:
-                self._restore_edit_canvas()
+                self._reset_edit_canvas()
                 self._edit_canvas.ellip(x1, y1, x2, y2, self.color_var)
-                self._complete_edit_canvas()
+                self._finish_edit_canvas()
 
             self._last_x = x2
             self._last_y = y2
