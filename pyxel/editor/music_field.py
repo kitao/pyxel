@@ -24,8 +24,8 @@ class MusicField(Widget):
         super().__init__(parent, x, y, 218, 21)
 
         self._ch = ch
-        self.get_seq = parent.get_seq
         self.field_cursor = parent.field_cursor
+        self.get_field = parent.get_field
 
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
@@ -37,7 +37,7 @@ class MusicField(Widget):
 
     @property
     def data(self):
-        return self.get_seq(self._ch)
+        return self.get_field(self._ch)
 
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
@@ -49,7 +49,7 @@ class MusicField(Widget):
         if x < 0 or y < 0 or x > 188 or y > 16 or x % 12 > 8 or y % 10 > 6:
             return
 
-        self.parent.field_cursor.move(x // 12 + (y // 10) * 16, self._ch)
+        self.field_cursor.move_to(x // 12 + (y // 10) * 16, self._ch)
 
     def __on_mouse_hover(self, x, y):
         self.help_message_var = "SOUND:SOUND_BUTTON/BS/DEL"
@@ -71,13 +71,13 @@ class MusicField(Widget):
         data = self.data
 
         if self.is_playing_var:
-            play_pos = self.parent.play_pos(self._ch)
+            play_pos = pyxel.play_pos(self._ch)
 
-            if play_pos < 0 or not data:
+            if play_pos is None:
                 cursor_x = -1
                 cursor_y = -1
             else:
-                cursor_x = play_pos
+                cursor_x = play_pos[0]
                 cursor_y = self._ch
                 cursor_col = MUSIC_FIELD_CURSOR_PLAY_COLOR
         else:
