@@ -48,6 +48,21 @@ class PianoRoll(Widget):
         y = min(max(59 - (y - self.y - 1) // 2, -1), 59)
         return x, y
 
+    def _set_note(self, x, y):
+        self.add_pre_history(x, 0)
+        self.field_cursor.move_to(x, 0)
+
+        field = self.field_cursor.field
+        field_len = len(field)
+        if x < field_len:
+            field[x] = y
+        else:
+            lst = field.to_list()
+            lst.extend([-1] * (x - field_len) + [y])
+            field.from_list(lst)
+
+        self.add_post_history(x, 0)
+
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
@@ -55,7 +70,7 @@ class PianoRoll(Widget):
         x, y = self._screen_to_view(x, y)
         self._press_x = x
         self._press_y = y
-        self.field_cursor.move_to(x, 0)
+        self._set_note(x, y)
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
@@ -63,43 +78,20 @@ class PianoRoll(Widget):
 
         x, y = self._screen_to_view(x, y)
         if x > self._press_x:
-            x1 = self._press_x
-            y1 = self._press_y
-            x2 = x
-            y2 = y
+            step = 1
         elif x < self._press_x:
-            x1 = x
-            y1 = y
-            x2 = self._press_x
-            y2 = self._press_y
+            step = -1
         else:
             return
 
-        self.add_pre_history(x, 0)
-
-        field = self.field_cursor.field
-        padding_length = self._press_x + 1 - len(field)
-        if padding_length > 0:
-            lst = field.to_list()
-            lst.extend([-1] * padding_length)
-            field.from_list(lst)
+        dx = x - self._press_x
+        dy = y - self._press_y
+        alpha = dy / dx
+        for i in range(step, dx + step, step):
+            self._set_note(self._press_x + i, round(self._press_y + alpha * i))
 
         self._press_x = x
         self._press_y = y
-        self.field_cursor.move_to(x, 0)
-
-        dx = x2 - x1
-        dy = y2 - y1
-        for i in range(dx + 1):
-            value = round(y1 + (dy / dx) * i)
-            if x1 + i >= len(field):
-                lst = field.to_list()
-                lst.append(value)
-                field.from_list(lst)
-            else:
-                field[x1 + i] = value
-
-        self.add_post_history(x, 0)
 
     def __on_mouse_click(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:

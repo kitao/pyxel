@@ -98,14 +98,14 @@ class MusicEditor(EditorBase):
     def add_pre_history(self, x, y):
         self._history_data = data = {}
         data["music_no"] = self.music_no_var
-        data["cursor_before"] = (x, y)
-        data["before"] = self.field_cursor.field.to_list()
+        data["old_cursor_pos"] = (x, y)
+        data["old_field"] = self.field_cursor.field.to_list()
 
     def add_post_history(self, x, y):
         data = self._history_data
-        data["cursor_after"] = (x, y)
-        data["after"] = self.field_cursor.field.to_list()
-        if data["before"] != data["after"]:
+        data["new_cursor_pos"] = (x, y)
+        data["new_field"] = self.field_cursor.field.to_list()
+        if data["old_field"] != data["new_field"]:
             self.add_history(self._history_data)
 
     def _play(self):
@@ -127,14 +127,14 @@ class MusicEditor(EditorBase):
     def __on_undo(self, data):
         self._stop()
         self.music_no_var = data["music_no"]
-        self.field_cursor.move_to(*data["cursor_before"])
-        self.field_cursor.field.from_list(data["before"])
+        self.field_cursor.move_to(*data["old_cursor_pos"])
+        self.field_cursor.field.from_list(data["old_field"])
 
     def __on_redo(self, data):
         self._stop()
         self.music_no_var = data["music_no"]
-        self.field_cursor.move_to(*data["cursor_after"])
-        self.field_cursor.field.from_list(data["after"])
+        self.field_cursor.move_to(*data["new_cursor_pos"])
+        self.field_cursor.field.from_list(data["new_field"])
 
     def __on_hide(self):
         self._stop()

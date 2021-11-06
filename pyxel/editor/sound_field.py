@@ -1,13 +1,9 @@
 import pyxel
 
-from .settings import (
-    EDITOR_IMAGE,
-    MAX_SOUND_LENGTH,
-    SOUND_FIELD_DATA_FOCUS_COLOR,
-    SOUND_FIELD_DATA_NORMAL_COLOR,
-    SOUND_FIELD_FOCUS_COLOR,
-    TEXT_LABEL_COLOR,
-)
+from .settings import (EDITOR_IMAGE, MAX_SOUND_LENGTH,
+                       SOUND_FIELD_DATA_FOCUS_COLOR,
+                       SOUND_FIELD_DATA_NORMAL_COLOR, SOUND_FIELD_FOCUS_COLOR,
+                       TEXT_LABEL_COLOR)
 from .widgets import Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
@@ -18,6 +14,8 @@ EFFECT_KEY_TABLE = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
 class SoundField(Widget):
     """
     Variables:
+        is_playing_var
+        help_message_var
     """
 
     def __init__(self, parent):
@@ -27,10 +25,9 @@ class SoundField(Widget):
         self.get_field = parent.get_field
 
         self.copy_var("is_playing_var", parent)
-        # self.copy_var("play_pos_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # event listeners
+        # Event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("update", self.__on_update)

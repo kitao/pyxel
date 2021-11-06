@@ -38,7 +38,7 @@ class FieldCursor:
         return self._get_field(self._y)
 
     def move_to(self, x, y):
-        while not self._get_field(y):
+        while self._get_field(y) is None:
             y -= 1
 
         self._x = min(x, self._max_field_length - 1)
@@ -89,8 +89,16 @@ class FieldCursor:
         if self.x == 0:
             return
 
-        self.move_left()
-        self.delete()
+        self._add_pre_history(self.x, self.y)
+
+        if self._x > 0:
+            self._x = max(min(self.x, len(self.field)) - 1, 0)
+
+        lst = self.field.to_list()
+        del lst[self.x]
+        self.field.from_list(lst)
+
+        self._add_post_history(self.x, self.y)
 
     def delete(self):
         if self.x >= len(self.field):
