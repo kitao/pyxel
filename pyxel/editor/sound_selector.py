@@ -18,10 +18,12 @@ class SoundSelector(Widget):
         self._pressed_sound = None
         self._preview_sound = None
         self._last_preview_sound = None
+        self.field_cursor = parent.field_cursor
 
         self.copy_var("is_playing_var", parent)
+        self.copy_var("help_message_var", parent)
 
-        # event listeners
+        # Event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_repeat", self.__on_mouse_down)
@@ -38,35 +40,17 @@ class SoundSelector(Widget):
 
         return (y // 9) * 16 + x // 13
 
-    def _draw_sound_button(self, snd, col):
-        pyxel.pal(13, col)
-        x = (snd % 16) * 13
-        y = (snd // 16) * 9
-        pyxel.blt(
-            self.x + x + 6,
-            self.y + y + 5,
-            EDITOR_IMAGE,
-            x,
-            y + 121,
-            11,
-            7,
-        )
-        pyxel.pal()
-
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_LEFT or self.parent.is_playing:
+        if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
 
         self._pressed_sound = self._hit_sound_button(x, y)
-
         if self._pressed_sound is not None:
-            self.parent.field_cursor.insert(self._pressed_sound)
+            self.field_cursor.insert(self._pressed_sound)
 
     def __on_mouse_up(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_LEFT:
-            return
-
-        self._pressed_sound = None
+        if key == pyxel.MOUSE_BUTTON_LEFT:
+            self._pressed_sound = None
 
     def __on_mouse_hover(self, x, y):
         self.help_message_var = "PREVIEW:HOVER INSERT:CLICK"
@@ -80,7 +64,6 @@ class SoundSelector(Widget):
 
         if self.is_hit(mx, my):
             self._preview_sound = self._hit_sound_button(mx, my)
-
             if (
                 self._preview_sound is not None
                 and self._preview_sound != self._last_preview_sound
@@ -89,7 +72,7 @@ class SoundSelector(Widget):
         else:
             self._preview_sound = None
 
-        if self._preview_sound is None and pyxel.play_pos(0):
+        if self._preview_sound is None and pyxel.play_pos(0) is not None:
             pyxel.stop(0)
 
         self._last_preview_sound = self._preview_sound
@@ -104,3 +87,20 @@ class SoundSelector(Widget):
 
         if self._pressed_sound is not None:
             self._draw_sound_button(self._pressed_sound, BUTTON_PRESSED_COLOR)
+
+    def _draw_sound_button(self, snd, col):
+        pyxel.pal(13, col)
+
+        x = (snd % 16) * 13
+        y = (snd // 16) * 9
+        pyxel.blt(
+            self.x + x + 6,
+            self.y + y + 5,
+            EDITOR_IMAGE,
+            x,
+            y + 121,
+            11,
+            7,
+        )
+
+        pyxel.pal()
