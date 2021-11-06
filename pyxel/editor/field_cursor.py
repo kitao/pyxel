@@ -7,15 +7,15 @@ class FieldCursor:
     def __init__(
         self,
         *,
-        field_getter,
         max_field_length,
         field_wrap_length,
+        get_field,
         add_pre_history,
         add_post_history,
     ):
-        self._field_getter = field_getter
         self._max_field_length = max_field_length
         self._field_wrap_length = field_wrap_length
+        self._get_field = get_field
         self._add_pre_history = add_pre_history
         self._add_post_history = add_post_history
         self._x = 0
@@ -23,7 +23,11 @@ class FieldCursor:
 
     @property
     def x(self):
-        return min(self._x, len(self.field), self._max_field_length - 1)
+        return min(self._x, self._rightmost)
+
+    @property
+    def _rightmost(self):
+        return min(len(self.field), self._max_field_length - 1)
 
     @property
     def y(self):
@@ -31,10 +35,10 @@ class FieldCursor:
 
     @property
     def field(self):
-        return self._field_getter(self._y)
+        return self._get_field(self._y)
 
     def move_to(self, x, y):
-        while not self._field_getter(y):
+        while not self._get_field(y):
             y -= 1
 
         self._x = min(x, self._max_field_length - 1)
@@ -42,28 +46,30 @@ class FieldCursor:
 
     def move_left(self):
         if self._x > 0:
-            self._x = self.x - 1
+            self._x = max(min(self.x, len(self.field)) - 1, 0)
 
     def move_right(self):
-        if self._x < min(len(self.field), self._max_field_length - 1):
-            self._x += 1
+        self._x = min(self._x + 1, self._rightmost)
 
     def move_up(self):
         if self._x >= self._field_wrap_length:
             self._x -= self._field_wrap_length
-
         elif self._y > 0:
-            self._x = (
-                self._field_wrap_length * (self._x // self._field_wrap_length) + self._x
-            )
             self._y -= 1
+            self._x = (
+                self._field_wrap_length * (len(self.field) // self._field_wrap_length)
+                + self._x % self._field_wrap_length
+            )
 
     def move_down(self):
-        if len(self.field) >= self._field_wrap_length:
+        if (
+            self.x // self._field_wrap_length
+            < len(self.field) // self._field_wrap_length
+        ):
             self._x += self._field_wrap_length
             return
 
-        if not self._field_getter(self._y + 1):
+        if self._get_field(self._y + 1) is None:
             return
 
         self._x %= self._field_wrap_length
@@ -83,14 +89,8 @@ class FieldCursor:
         if self.x == 0:
             return
 
-        self._add_pre_history(self.x, self.y)
-
-        lst = self.field.to_list()
-        del lst[self.x - 1]
-        self.field.from_list(lst)
         self.move_left()
-
-        self._add_post_history(self.x, self.y)
+        self.delete()
 
     def delete(self):
         if self.x >= len(self.field):
