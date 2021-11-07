@@ -3,11 +3,11 @@ import os
 import shutil
 
 
-def install():
+def copy_pyxel_examples(dirname):
     src_dir = os.path.dirname(__file__)
-    dst_dir = os.path.join(os.getcwd(), "pyxel_examples")
+    dst_dir = os.path.join(dirname, "pyxel_examples")
 
-    print("Install Pyxel examples to {} ...".format(dst_dir))
+    print("Copy Pyxel examples to {} ...".format(dst_dir))
 
     shutil.rmtree(dst_dir, ignore_errors=True)
     os.makedirs(os.path.join(dst_dir, "assets"))
@@ -23,7 +23,3 @@ def install():
 
             print("    {}".format(relpath))
             shutil.copyfile(src, dst)
-
-
-if __name__ == "__main__":
-    install()
