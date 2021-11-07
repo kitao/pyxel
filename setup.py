@@ -1,6 +1,7 @@
 import re
 
 import setuptools
+
 from pyxel import VERSION
 
 with open("README.md", "r") as fh:
@@ -37,19 +38,18 @@ setuptools.setup(
     ],
     packages=[
         "pyxel",
-        "pyxel.core",
+        "pyxel.cli",
         "pyxel.editor",
         "pyxel.editor.assets",
+        "pyxel.editor.widgets",
         "pyxel.examples",
         "pyxel.examples.assets",
         "pyxel.lib.linux",
-        "pyxel.lib.mac",
+        "pyxel.lib.macos",
         "pyxel.lib.windows",
-        "pyxel.ui",
     ],
     package_data={
         "": [
-            "*.gif",
             "*.png",
             "*.pyd",
             "*.pyi",
@@ -61,7 +61,7 @@ setuptools.setup(
     python_requires=">=3.7",
     entry_points={
         "console_scripts": [
-            "pyxel=pyxel:cli",
+            "pyxel=pyxel.cli:main",
         ]
     },
 )
