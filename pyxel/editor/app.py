@@ -34,7 +34,7 @@ class App(Widget):
         # initialize Pyxel
         pyxel.init(APP_WIDTH, APP_HEIGHT)
         pyxel.mouse(True)
-        App._set_title(resource_file)
+        self._set_title(resource_file)
         if os.path.exists(resource_file):
             pyxel.load(resource_file)
 
@@ -173,7 +173,7 @@ class App(Widget):
                     for editor in self._editors:
                         editor.reset_history()
                     pyxel.load(drop_file)
-                    App._set_title(drop_file)
+                    self._set_title(drop_file)
             else:
                 self._editor.trigger_event("drop", drop_file)
 
