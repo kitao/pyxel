@@ -1,9 +1,7 @@
 import pyxel
-from pyxel.ui import Widget
 
-from .constants import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
+from .settings import (
+    EDITOR_IMAGE,
     MAX_MUSIC_LENGTH,
     MUSIC_FIELD_BACKGROUND_COLOR,
     MUSIC_FIELD_CURSOR_EDIT_COLOR,
@@ -12,24 +10,37 @@ from .constants import (
     MUSIC_FIELD_SOUND_NORMAL_COLOR,
     TEXT_LABEL_COLOR,
 )
+from .widgets import Widget
 
 
 class MusicField(Widget):
+    """
+    Variables:
+        is_playing_var
+        help_message_var
+    """
+
     def __init__(self, parent, x, y, ch):
         super().__init__(parent, x, y, 218, 21)
 
         self._ch = ch
+        self.field_cursor = parent.field_cursor
+        self.get_field = parent.get_field
 
-        self.add_event_handler("mouse_down", self.__on_mouse_down)
-        self.add_event_handler("mouse_hover", self.__on_mouse_hover)
-        self.add_event_handler("draw", self.__on_draw)
+        self.copy_var("is_playing_var", parent)
+        self.copy_var("help_message_var", parent)
+
+        # event listeners
+        self.add_event_listener("mouse_down", self.__on_mouse_down)
+        self.add_event_listener("mouse_hover", self.__on_mouse_hover)
+        self.add_event_listener("draw", self.__on_draw)
 
     @property
     def data(self):
-        return self.parent.get_data(self._ch)
+        return self.get_field(self._ch)
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_LEFT_BUTTON or self.parent.is_playing:
+        if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
 
         x -= self.x + 21
@@ -38,21 +49,20 @@ class MusicField(Widget):
         if x < 0 or y < 0 or x > 188 or y > 16 or x % 12 > 8 or y % 10 > 6:
             return
 
-        self.parent.field_cursor.move(x // 12 + (y // 10) * 16, self._ch)
+        self.field_cursor.move_to(x // 12 + (y // 10) * 16, self._ch)
 
     def __on_mouse_hover(self, x, y):
-        self.parent.help_message = "SOUND:SOUND_BUTTON/BS/DEL"
+        self.help_message_var = "SOUND:SOUND_BUTTON/BS/DEL"
 
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
-
         pyxel.text(self.x + 5, self.y + 8, "CH{}".format(self._ch), TEXT_LABEL_COLOR)
         pyxel.blt(
             self.x + 20,
             self.y + 1,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
-            EDITOR_IMAGE_X,
-            EDITOR_IMAGE_Y + 102,
+            EDITOR_IMAGE,
+            0,
+            102,
             191,
             19,
             MUSIC_FIELD_BACKGROUND_COLOR,
@@ -60,19 +70,19 @@ class MusicField(Widget):
 
         data = self.data
 
-        if self.parent.is_playing:
-            play_pos = self.parent.play_pos(self._ch)
+        if self.is_playing_var:
+            play_pos = pyxel.play_pos(self._ch)
 
-            if play_pos < 0 or not data:
+            if play_pos is None:
                 cursor_x = -1
                 cursor_y = -1
             else:
-                cursor_x = play_pos
+                cursor_x = play_pos[0]
                 cursor_y = self._ch
                 cursor_col = MUSIC_FIELD_CURSOR_PLAY_COLOR
         else:
-            cursor_x = self.parent.field_cursor.x
-            cursor_y = self.parent.field_cursor.y
+            cursor_x = self.field_cursor.x
+            cursor_y = self.field_cursor.y
             cursor_col = MUSIC_FIELD_CURSOR_EDIT_COLOR
 
         if cursor_y == self._ch:

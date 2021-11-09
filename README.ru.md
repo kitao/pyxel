@@ -1,32 +1,32 @@
 # <img src="images/pyxel_logo_152x64.png">
 
-[ [English](README.md) | [中文](README.cn.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
+[ [English](README.md) | [中文](README.cn.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Deutsch](README.de.md)]
 
 **Pyxel** -- это игровой движок для Python в стиле ретро.
 
 Благодаря своей простоте, вдохновленной старыми игровыми консолями (например, палитра состоит всего из 16 цветов, и только 4 звука могут быть проиграны одновременно), вы можете легко создавать игры в стиле пиксель-арт.
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py" target="_blank">
+<a href="pyxel/examples/01_hello_pyxel.py" target="_blank">
 <img src="pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py" target="_blank">
+<a href="pyxel/examples/02_jump_game.py" target="_blank">
 <img src="pyxel/examples/screenshots/02_jump_game.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py" target="_blank">
+<a href="pyxel/examples/03_draw_api.py" target="_blank">
 <img src="pyxel/examples/screenshots/03_draw_api.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py" target="_blank">
+<a href="pyxel/examples/04_sound_api.py" target="_blank">
 <img src="pyxel/examples/screenshots/04_sound_api.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
+<a href="pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
 <img src="pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
 </a>
 
-<a href="https://github.com/kitao/pyxel/blob/master/pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
+<a href="pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
 <img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
@@ -124,14 +124,14 @@ install_pyxel_examples
 
 Список примеров, которые будут скопированы:
 
-- [01_hello_pyxel.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/01_hello_pyxel.py) - Простейшее приложение
-- [02_jump_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/02_jump_game.py) - Игра прыжков с простейшими ресурсными файлами Pyxel
-- [03_draw_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/03_draw_api.py) - Демонстрация художественного API
-- [04_sound_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/04_sound_api.py) - Демонстрация звукового API
-- [05_color_palette.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/05_color_palette.py) - Цветовая палитра
-- [06_click_game.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/06_click_game.py) - Игра с кликами мышкой
-- [07_snake.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/07_snake.py) - Змейка с BGM
-- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/master/pyxel/examples/08_triangle_api.py) - Демонстрация API по рисованию треугольных полигонов
+- [01_hello_pyxel.py](examples/01_hello_pyxel.py) - Простейшее приложение
+- [02_jump_game.py](pyxel/examples/02_jump_game.py) - Игра прыжков с простейшими ресурсными файлами Pyxel
+- [03_draw_api.py](pyxel/examples/03_draw_api.py) - Демонстрация художественного API
+- [04_sound_api.py](pyxel/examples/04_sound_api.py) - Демонстрация звукового API
+- [05_color_palette.py](pyxel/examples/05_color_palette.py) - Цветовая палитра
+- [06_click_game.py](pyxel/examples/06_click_game.py) - Игра с кликами мышкой
+- [07_snake.py](pyxel/examples/07_snake.py) - Змейка с BGM
+- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - Демонстрация API по рисованию треугольных полигонов
 
 Эти примеры могут быть выполнены как обычный код Python3:
 
@@ -355,7 +355,7 @@ pyxelpackager имя_файла
 Получить значение колесика мышки
 
 - `btn(клавиша)`<br>
-Получить `Ture`, если `клавиша` нажата, в противном случае получить `False`. ([Список определений клавиш](https://github.com/kitao/pyxel/blob/master/pyxel/__init__.py))
+Получить `Ture`, если `клавиша` нажата, в противном случае получить `False`. ([Список определений клавиш](pyxel/__init__.py))
 
 - `btnp(клавиша, [hold], [period])`<br>
 Получить `True`, если `клавиша` нажата в данный кадр, в противном случае получить `False`. В случае, если указаны параметры `hold` и `period`, `True` будет возвращено каждые `period` кадров, когда `key` уже зажата более `hold` кадров
@@ -566,7 +566,7 @@ pyxelpackager имя_файла
 
 Патчи/фиксы принимаются в форме pull-запросов (PRы). Убедитесь, что проблема, к которой относится pull-запрос, открыта в трекере проблем.
 
-Опубликованный pull-запрос считается опубликованным под лицензией [MIT license](https://github.com/kitao/pyxel/blob/master/LICENSE).
+Опубликованный pull-запрос считается опубликованным под лицензией [MIT license](LICENSE).
 
 ## Прочая информация
 

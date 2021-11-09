@@ -1,125 +1,123 @@
 import pyxel
-from pyxel.ui.constants import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+
+from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 
 class FieldCursor:
     def __init__(
         self,
-        data_getter,
-        pre_history_setter,
-        post_history_setter,
-        data_max_length,
-        data_view_length,
-        data_count,
+        *,
+        max_field_length,
+        field_wrap_length,
+        get_field,
+        add_pre_history,
+        add_post_history,
     ):
-        self._get_data = data_getter
-        self._add_pre_history = pre_history_setter
-        self._add_post_history = post_history_setter
-        self._data_max_length = data_max_length
-        self._data_view_length = data_view_length
-        self._data_count = data_count
+        self._max_field_length = max_field_length
+        self._field_wrap_length = field_wrap_length
+        self._get_field = get_field
+        self._add_pre_history = add_pre_history
+        self._add_post_history = add_post_history
         self._x = 0
         self._y = 0
 
     @property
     def x(self):
-        return min(self._x, len(self.data), self._data_max_length - 1)
+        return min(self._x, self._rightmost)
 
     @property
-    def _max_x(self):
-        return min(len(self.data), self._data_max_length - 1)
+    def _rightmost(self):
+        return min(len(self.field), self._max_field_length - 1)
 
     @property
     def y(self):
         return self._y
 
     @property
-    def data(self):
-        return self._get_data(self._y)
+    def field(self):
+        return self._get_field(self._y)
 
-    def move(self, x, y):
-        self._x = x
+    def move_to(self, x, y):
+        while self._get_field(y) is None:
+            y -= 1
+
+        self._x = min(x, self._max_field_length - 1)
         self._y = y
 
     def move_left(self):
-        if self.x > 0:
-            self._x = self.x - 1
+        if self._x > 0:
+            self._x = max(min(self.x, len(self.field)) - 1, 0)
 
     def move_right(self):
-        if self.x < self._max_x:
-            self._x += 1
+        self._x = min(self._x + 1, self._rightmost)
 
     def move_up(self):
-        cursor_view_y = self._x // self._data_view_length
-
-        if cursor_view_y > 0:
-            self._x -= self._data_view_length
+        if self._x >= self._field_wrap_length:
+            self._x -= self._field_wrap_length
         elif self._y > 0:
             self._y -= 1
-
-            data_view_y = self._max_x // self._data_view_length
             self._x = (
-                self._data_view_length * data_view_y + self._x % self._data_view_length
+                self._field_wrap_length * (len(self.field) // self._field_wrap_length)
+                + self._x % self._field_wrap_length
             )
 
     def move_down(self):
-        cursor_view_y = self._x // self._data_view_length
-        data_view_y = self._max_x // self._data_view_length
+        if (
+            self.x // self._field_wrap_length
+            < len(self.field) // self._field_wrap_length
+        ):
+            self._x += self._field_wrap_length
+            return
 
-        if cursor_view_y < data_view_y:
-            self._x += self._data_view_length
-        elif self._y < self._data_count - 1:
-            self._y += 1
-            self._x %= self._data_view_length
+        if self._get_field(self._y + 1) is None:
+            return
+
+        self._x %= self._field_wrap_length
+        self._y += 1
 
     def insert(self, value):
-        x = self.x
-        data = self.data
-
         self._add_pre_history(self.x, self.y)
 
-        data.insert(x, value)
-        data[:] = data[: self._data_max_length]
-
-        self._x = x
+        lst = self.field.to_list()
+        lst.insert(self.x, value)
+        self.field.from_list(lst[: self._max_field_length])
         self.move_right()
 
         self._add_post_history(self.x, self.y)
 
     def backspace(self):
-        x = self.x
-        data = self.data
-
-        if x == 0:
+        if self.x == 0:
             return
 
         self._add_pre_history(self.x, self.y)
 
-        del data[x - 1]
-        if self._x <= self._max_x:
-            self.move_left()
+        if self._x > 0:
+            self._x = max(min(self.x, len(self.field)) - 1, 0)
+
+        lst = self.field.to_list()
+        del lst[self.x]
+        self.field.from_list(lst)
 
         self._add_post_history(self.x, self.y)
 
     def delete(self):
-        x = self.x
-        data = self.data
-
-        if x >= len(data):
+        if self.x >= len(self.field):
             return
 
         self._add_pre_history(self.x, self.y)
 
-        del data[x]
+        lst = self.field.to_list()
+        del lst[self.x]
+        self.field.from_list(lst)
 
         self._add_post_history(self.x, self.y)
 
     def process_input(self):
         if (
             pyxel.btn(pyxel.KEY_SHIFT)
-            or pyxel.btn(pyxel.KEY_CONTROL)
+            or pyxel.btn(pyxel.KEY_CTRL)
             or pyxel.btn(pyxel.KEY_ALT)
-            or pyxel.btn(pyxel.KEY_SUPER)
+            or pyxel.btn(pyxel.KEY_GUI)
         ):
             return
 

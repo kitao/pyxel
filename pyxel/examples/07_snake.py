@@ -61,7 +61,7 @@ class Snake:
     def __init__(self):
         """Initiate pyxel, set up initial game variables, and run."""
 
-        pyxel.init(WIDTH, HEIGHT, caption="Snake!", fps=20)
+        pyxel.init(WIDTH, HEIGHT, title="Snake!", fps=20)
         define_sound_and_music()
         self.reset()
         pyxel.run(self.update, self.draw)
@@ -145,7 +145,7 @@ class Snake:
         """Check whether the snake has died (out of bounds or doubled up.)"""
 
         head = self.snake[0]
-        if head.x < 0 or head.y <= HEIGHT_SCORE or head.x >= WIDTH or head.y >= HEIGHT:
+        if head.x < 0 or head.y < HEIGHT_SCORE or head.x >= WIDTH or head.y >= HEIGHT:
             self.death_event()
         elif len(self.snake) != len(set(self.snake)):
             self.death_event()
@@ -219,13 +219,13 @@ def define_sound_and_music():
 
     # Sound effects
     pyxel.sound(0).set(
-        note="c3e3g3c4c4", tone="s", volume="4", effect=("n" * 4 + "f"), speed=7
+        notes="c3e3g3c4c4", tones="s", volumes="4", effects=("n" * 4 + "f"), speed=7
     )
     pyxel.sound(1).set(
-        note="f3 b2 f2 b1  f1 f1 f1 f1",
-        tone="p",
-        volume=("4" * 4 + "4321"),
-        effect=("n" * 7 + "f"),
+        notes="f3 b2 f2 b1  f1 f1 f1 f1",
+        tones="p",
+        volumes=("4" * 4 + "4321"),
+        effects=("n" * 7 + "f"),
         speed=9,
     )
 
@@ -253,10 +253,10 @@ def define_sound_and_music():
 
     # Music
     pyxel.sound(2).set(
-        note=melody1 * 2 + melody2 * 2,
-        tone="s",
-        volume=("3"),
-        effect=("nnnsffff"),
+        notes=melody1 * 2 + melody2 * 2,
+        tones="s",
+        volumes=("3"),
+        effects=("nnnsffff"),
         speed=20,
     )
 
@@ -270,13 +270,13 @@ def define_sound_and_music():
     )
 
     pyxel.sound(3).set(
-        note=harmony1 * 2 + harmony2 * 2, tone="t", volume="5", effect="f", speed=20
+        notes=harmony1 * 2 + harmony2 * 2, tones="t", volumes="5", effects="f", speed=20
     )
     pyxel.sound(4).set(
-        note=("f0 r a4 r  f0 f0 a4 r" "f0 r a4 r   f0 f0 a4 f0"),
-        tone="n",
-        volume="6622 6622 6622 6426",
-        effect="f",
+        notes=("f0 r a4 r  f0 f0 a4 r" "f0 r a4 r   f0 f0 a4 f0"),
+        tones="n",
+        volumes="6622 6622 6622 6426",
+        effects="f",
         speed=20,
     )
 

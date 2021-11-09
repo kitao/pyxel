@@ -1,140 +1,127 @@
 import pyxel
-from pyxel.ui import NumberPicker, RadioButton
 
-from .constants import (
-    EDITOR_IMAGE_X,
-    EDITOR_IMAGE_Y,
-    TEXT_LABEL_COLOR,
-    TILEMAP_IMAGE_X,
-    TILEMAP_IMAGE_Y,
-    TOOL_PENCIL,
-)
-from .drawing_panel import DrawingPanel
-from .editor import Editor
-from .image_panel import ImagePanel
-from .tilemap_panel import TilemapPanel
-from .utility import copy_array2d
+from .canvas_panel import CanvasPanel
+from .editor_base import EditorBase
+from .image_viewer import ImageViewer
+from .settings import EDITOR_IMAGE, TEXT_LABEL_COLOR, TOOL_PENCIL
+from .tilemap_viewer import TilemapViewer
+from .widgets import NumberPicker, RadioButton
 
 
-class TileMapEditor(Editor):
+class TilemapEditor(EditorBase):
+    """
+    Variables:
+        color_var
+        tool_var
+        image_no_var
+        canvas_var
+        focus_x_var
+        focus_y_var
+
+        tilemap_no_var
+        tile_x_var
+        tile_y_var
+        tile_w_var
+        tile_h_var
+
+    Events:
+        undo (data)
+        redo (data)
+        drop (filename)
+    """
+
     def __init__(self, parent):
         super().__init__(parent)
 
-        self._drawing_panel = DrawingPanel(self, is_tilemap_mode=True)
-        self._tilemap_panel = TilemapPanel(self)
-        self._image_panel = ImagePanel(self, is_tilemap_mode=True)
-        self._tilemap_picker = NumberPicker(
-            self, 48, 161, 0, pyxel.TILEMAP_BANK_COUNT - 1, 0
-        )
+        # canvas_var
+        self.new_var("canvas_var", None)
+        self.add_var_event_listener("canvas_var", "get", self.__on_canvas_get)
+
+        # color_var
+        self.new_var("color_var", (255, 255))
+
+        # tool button
         self._tool_button = RadioButton(
             self,
             81,
             161,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
-            EDITOR_IMAGE_X + 63,
-            EDITOR_IMAGE_Y,
-            7,
-            TOOL_PENCIL,
+            img=EDITOR_IMAGE,
+            u=63,
+            v=0,
+            btn_count=7,
+            value=TOOL_PENCIL,
         )
+        self.add_tool_button_help(self._tool_button)
+        self.copy_var("tool_var", self._tool_button, "value_var")
+
+        # tilemap picker
+        self._tilemap_picker = NumberPicker(
+            self, 48, 161, min_value=0, max_value=pyxel.NUM_TILEMAPS - 1, value=0
+        )
+        self._tilemap_picker.add_event_listener(
+            "change", self.__on_tilemap_picker_change
+        )
+        self.add_number_picker_help(self._tilemap_picker)
+        self.copy_var("tilemap_no_var", self._tilemap_picker, "value_var")
+
+        # tilemap viewer
+        self._tilemap_viewer = TilemapViewer(self)
+        self.copy_var("focus_x_var", self._tilemap_viewer, "focus_x_var")
+        self.copy_var("focus_y_var", self._tilemap_viewer, "focus_y_var")
+
+        # image picker
         self._image_picker = NumberPicker(
             self,
             192,
             161,
-            0,
-            pyxel.USER_IMAGE_BANK_COUNT - 1,
-            pyxel.tilemap(self._tilemap_picker.value).refimg,
+            min_value=0,
+            max_value=pyxel.NUM_IMAGES - 1,
+            value=pyxel.tilemap(self.tilemap_no_var).refimg,
         )
-
-        self.add_event_handler("undo", self.__on_undo)
-        self.add_event_handler("redo", self.__on_redo)
-        self.add_event_handler("update", self.__on_update)
-        self.add_event_handler("draw", self.__on_draw)
-        self._tilemap_picker.add_event_handler(
-            "change", self.__on_tilemap_picker_change
-        )
-        self._image_picker.add_event_handler("change", self.__on_image_picker_change)
-        self.add_number_picker_help(self._tilemap_picker)
+        self._image_picker.add_event_listener("change", self.__on_image_picker_change)
         self.add_number_picker_help(self._image_picker)
-        self.add_tool_button_help(self._tool_button)
+        self.copy_var("image_no_var", self._image_picker, "value_var")
 
-    @property
-    def tilemap(self):
-        return self._tilemap_picker.value
+        # image viewer
+        self._image_viewer = ImageViewer(self)
+        self.copy_var("tile_x_var", self._image_viewer, "focus_x_var")
+        self.copy_var("tile_y_var", self._image_viewer, "focus_y_var")
+        self.copy_var("tile_w_var", self._image_viewer, "focus_w_var")
+        self.copy_var("tile_h_var", self._image_viewer, "focus_h_var")
 
-    @tilemap.setter
-    def tilemap(self, value):
-        self._tilemap_button.value = value
+        # canvas panel
+        self._canvas_panel = CanvasPanel(self)
 
-    @property
-    def color(self):
-        return self._image_panel.focused_tiles
+        # event listeners
+        self.add_event_listener("undo", self.__on_undo)
+        self.add_event_listener("redo", self.__on_redo)
+        self.add_event_listener("update", self.__on_update)
+        self.add_event_listener("draw", self.__on_draw)
 
-    @color.setter
-    def color(self, value):
-        self._image_panel.set_focus(value % 32 * 8, value // 32 * 8)
+    def __on_canvas_get(self, value):
+        return pyxel.tilemap(self.tilemap_no_var)
 
-    @property
-    def tool(self):
-        return self._tool_button.value
+    def __on_tilemap_picker_change(self, value):
+        self.image_no_var = pyxel.tilemap(value).refimg
 
-    @tool.setter
-    def tool(self, value):
-        self._tool_button.value = value
-
-    @property
-    def image(self):
-        return self._image_picker.value
-
-    @image.setter
-    def image(self, value):
-        self._image_button.value = value
-
-    @property
-    def drawing_x(self):
-        return self._drawing_panel.viewport_x
-
-    @drawing_x.setter
-    def drawing_x(self, value):
-        self._drawing_panel.viewport_x = value
-
-    @property
-    def drawing_y(self):
-        return self._drawing_panel.viewport_y
-
-    @drawing_y.setter
-    def drawing_y(self, value):
-        self._drawing_panel.viewport_y = value
+    def __on_image_picker_change(self, value):
+        pyxel.tilemap(self.tilemap_no_var).refimg = value
 
     def __on_undo(self, data):
-        tm = data["tilemap"]
-        x, y = data["pos"]
-        copy_array2d(pyxel.tilemap(tm).data, x, y, data["before"])
-
-        self._drawing_panel.viewport_x = x
-        self._drawing_panel.viewport_y = y
-        self._tilemap_picker.value = tm
+        self.tilemap_no_var = data["tilemap_no"]
+        self.focus_x_var, self.focus_y_var = data["focus_pos"]
+        self.canvas_var.set_slice(
+            self.focus_x_var * 8, self.focus_y_var * 8, data["old_canvas"]
+        )
 
     def __on_redo(self, data):
-        tm = data["tilemap"]
-        x, y = data["pos"]
-        copy_array2d(pyxel.tilemap(tm).data, x, y, data["after"])
-
-        self._drawing_panel.viewport_x = x
-        self._drawing_panel.viewport_y = y
-        self._tilemap_picker.value = tm
+        self.tilemap_no_var = data["tilemap_no"]
+        self.focus_x_var, self.focus_y_var = data["focus_pos"]
+        self.canvas_var.set_slice(
+            self.focus_x_var * 8, self.focus_y_var * 8, data["new_canvas"]
+        )
 
     def __on_update(self):
-        start_y = pyxel.frame_count % 8 * 8
-        tilemap_data = pyxel.tilemap(self.tilemap).data
-        image_data = pyxel.image(self.image).data
-        minimap_data = pyxel.image(3, system=True).data
-
-        for y in range(start_y, start_y + 8):
-            for x in range(64):
-                val = tilemap_data[y * 4 + 1][x * 4 + 1]
-                col = image_data[val // 32 * 8 + 3][val % 32 * 8 + 3]
-                minimap_data[TILEMAP_IMAGE_Y + y][TILEMAP_IMAGE_X + x] = col
-
         self.check_tool_button_shortcuts()
 
     def __on_draw(self):
@@ -143,9 +130,3 @@ class TileMapEditor(Editor):
         pyxel.text(18, 162, "TILEMAP", TEXT_LABEL_COLOR)
         pyxel.text(18, 162, "TILEMAP", TEXT_LABEL_COLOR)
         pyxel.text(170, 162, "IMAGE", TEXT_LABEL_COLOR)
-
-    def __on_tilemap_picker_change(self, value):
-        self._image_picker.value = pyxel.tilemap(value).refimg
-
-    def __on_image_picker_change(self, value):
-        pyxel.tilemap(self._tilemap_picker.value).refimg = value

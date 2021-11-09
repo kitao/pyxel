@@ -1,0 +1,18 @@
+[package]
+name = "pyxel-wrapper"
+version = "1.5.0"
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
+edition = "2021"
+description = "Python wrapper for Pyxel"
+repository = "https://github.com/kitao/pyxel"
+license = "MIT"
+readme = "README.md"
+categories = ["game-engine", "graphics", "multimedia"]
+keywords = ["game", "gamedev", "python"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.15.0", features = ["extension-module", "abi3-py37"] }
+pyxel-engine = { path = "../engine", version="1.5.0" }

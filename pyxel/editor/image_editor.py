@@ -1,16 +1,29 @@
-import os.path
-
 import pyxel
-from pyxel.ui import ColorPicker, NumberPicker, RadioButton
 
-from .constants import EDITOR_IMAGE_X, EDITOR_IMAGE_Y, TEXT_LABEL_COLOR, TOOL_PENCIL
-from .drawing_panel import DrawingPanel
-from .editor import Editor
-from .image_panel import ImagePanel
-from .utility import copy_array2d
+from .canvas_panel import CanvasPanel
+from .editor_base import EditorBase
+from .image_viewer import ImageViewer
+from .settings import EDITOR_IMAGE, TEXT_LABEL_COLOR, TOOL_PENCIL
+from .widgets import ColorPicker, NumberPicker, RadioButton
 
 
-class ImageEditor(Editor):
+class ImageEditor(EditorBase):
+    """
+    Variables:
+        color_var
+        tool_var
+        image_no_var
+        canvas_var
+        focus_x_var
+        focus_y_var
+        help_message_var
+
+    Events:
+        undo (data)
+        redo (data)
+        drop (filename)
+    """
+
     _COLOR_BUTTONS = (
         pyxel.KEY_1,
         pyxel.KEY_2,
@@ -24,112 +37,92 @@ class ImageEditor(Editor):
 
     def __init__(self, parent):
         super().__init__(parent)
+        self.copy_var("help_message_var", parent)
 
-        self._drawing_panel = DrawingPanel(self, is_tilemap_mode=False)
-        self._image_panel = ImagePanel(self, is_tilemap_mode=False)
+        # canvas_var
+        self.new_var("canvas_var", None)
+        self.add_var_event_listener("canvas_var", "get", self.__on_canvas_get)
+
+        # color picker
         self._color_picker = ColorPicker(self, 11, 156, 7, with_shadow=False)
+        self._color_picker.add_event_listener(
+            "mouse_hover", self.__on_color_picker_mouse_hover
+        )
+        self.copy_var("color_var", self._color_picker, "value_var")
+
+        # tool button
         self._tool_button = RadioButton(
             self,
             81,
             161,
-            pyxel.IMAGE_BANK_FOR_SYSTEM,
-            EDITOR_IMAGE_X + 63,
-            EDITOR_IMAGE_Y,
-            7,
-            TOOL_PENCIL,
-        )
-        self._image_picker = NumberPicker(
-            self, 192, 161, 0, pyxel.USER_IMAGE_BANK_COUNT - 1, 0
-        )
-
-        self.add_event_handler("undo", self.__on_undo)
-        self.add_event_handler("redo", self.__on_redo)
-        self.add_event_handler("drop", self.__on_drop)
-        self.add_event_handler("update", self.__on_update)
-        self.add_event_handler("draw", self.__on_draw)
-        self._color_picker.add_event_handler(
-            "mouse_hover", self.__on_color_picker_mouse_hover
+            img=EDITOR_IMAGE,
+            u=63,
+            v=0,
+            btn_count=7,
+            value=TOOL_PENCIL,
         )
         self.add_tool_button_help(self._tool_button)
+        self.copy_var("tool_var", self._tool_button, "value_var")
+
+        # image picker
+        self._image_picker = NumberPicker(
+            self, 192, 161, min_value=0, max_value=pyxel.NUM_IMAGES - 1, value=0
+        )
         self.add_number_picker_help(self._image_picker)
+        self.copy_var("image_no_var", self._image_picker, "value_var")
 
-    @property
-    def color(self):
-        return self._color_picker.value
+        # image viewer
+        self._image_viewer = ImageViewer(self)
+        self.copy_var("focus_x_var", self._image_viewer)
+        self.copy_var("focus_y_var", self._image_viewer)
 
-    @color.setter
-    def color(self, value):
-        self._color_picker.value = int(value)
+        # canvas panel
+        self._canvas_panel = CanvasPanel(self)
 
-    @property
-    def tool(self):
-        return self._tool_button.value
+        # event listeners
+        self.add_event_listener("undo", self.__on_undo)
+        self.add_event_listener("redo", self.__on_redo)
+        self.add_event_listener("drop", self.__on_drop)
+        self.add_event_listener("update", self.__on_update)
+        self.add_event_listener("draw", self.__on_draw)
 
-    @tool.setter
-    def tool(self, value):
-        self._tool_button.value = value
+    def __on_canvas_get(self, value):
+        return pyxel.image(self.image_no_var)
 
-    @property
-    def image(self):
-        return self._image_picker.value
-
-    @property
-    def drawing_x(self):
-        return self._drawing_panel.viewport_x
-
-    @drawing_x.setter
-    def drawing_x(self, value):
-        self._drawing_panel.viewport_x = value
-
-    @property
-    def drawing_y(self):
-        return self._drawing_panel.viewport_y
-
-    @drawing_y.setter
-    def drawing_y(self, value):
-        self._drawing_panel.viewport_y = value
+    def __on_color_picker_mouse_hover(self, x, y):
+        self.help_message_var = "COLOR:1-8/SHIFT+1-8"
 
     def __on_undo(self, data):
-        img = data["image"]
-        x, y = data["pos"]
-        copy_array2d(pyxel.image(img).data, x, y, data["before"])
-
-        self.drawing_x = x
-        self.drawing_y = y
-        self.parent.image = img
+        self.image_no_var = data["image_no"]
+        self.focus_x_var, self.focus_y_var = data["focus_pos"]
+        self.canvas_var.set_slice(
+            self.focus_x_var * 8, self.focus_y_var * 8, data["old_canvas"]
+        )
 
     def __on_redo(self, data):
-        img = data["image"]
-        x, y = data["pos"]
-        copy_array2d(pyxel.image(img).data, x, y, data["after"])
-
-        self.drawing_x = x
-        self.drawing_y = y
-        self.parent.image = img
+        self.image_no_var = data["image_no"]
+        self.focus_x_var, self.focus_y_var = data["focus_pos"]
+        self.canvas_var.set_slice(
+            self.focus_x_var * 8, self.focus_y_var * 8, data["new_canvas"]
+        )
 
     def __on_drop(self, filename):
-        _, ext = os.path.splitext(filename)
-
-        if ext.lower() == ".png":
-            pyxel.image(self.image).load(0, 0, filename)
-            return
+        pyxel.image(self.image).load(0, 0, filename)
 
     def __on_update(self):
         self.check_tool_button_shortcuts()
 
+        # color shortcuts
         if not pyxel.btn(pyxel.KEY_ALT):
             for btn in self._COLOR_BUTTONS:
                 if pyxel.btnp(btn):
                     col = btn - pyxel.KEY_1
                     if pyxel.btn(pyxel.KEY_SHIFT):
                         col += 8
-                    self._color_picker.value = col
+                    self.color_var = col
                     break
 
     def __on_draw(self):
         self.draw_panel(11, 156, 136, 17)
         self.draw_panel(157, 156, 72, 17)
         pyxel.text(170, 162, "IMAGE", TEXT_LABEL_COLOR)
-
-    def __on_color_picker_mouse_hover(self, x, y):
-        self.help_message = "COLOR:1-8/SHIFT+1-8"

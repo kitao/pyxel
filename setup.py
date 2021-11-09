@@ -1,8 +1,19 @@
+import re
+
 import setuptools
+
 from pyxel import VERSION
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    long_description = re.sub(
+        r'(src=")',
+        r"\1https://raw.githubusercontent.com/kitao/pyxel/main/",
+        re.sub(
+            r'(\]\(|href=")(?!http)',
+            r"\1https://github.com/kitao/pyxel/blob/main/",
+            fh.read(),
+        ),
+    )
 
 setuptools.setup(
     name="pyxel",
@@ -16,37 +27,41 @@ setuptools.setup(
     license="MIT",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
-        "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: MacOS",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: POSIX :: Linux",
+        "Programming Language :: Python :: 3",
         "Topic :: Games/Entertainment",
         "Topic :: Multimedia :: Graphics",
         "Topic :: Multimedia :: Sound/Audio",
     ],
     packages=[
         "pyxel",
-        "pyxel.ui",
-        "pyxel.core",
-        "pyxel.core.bin.macos",
-        "pyxel.core.bin.win32",
-        "pyxel.core.bin.win64",
-        "pyxel.core.bin.linux",
+        "pyxel.cli",
         "pyxel.editor",
         "pyxel.editor.assets",
+        "pyxel.editor.widgets",
         "pyxel.examples",
         "pyxel.examples.assets",
+        "pyxel.lib.linux",
+        "pyxel.lib.macos",
+        "pyxel.lib.windows",
     ],
     package_data={
-        "": ["*.pyxres", "*.png", "*.gif", "*.dylib", "*.dll", "*.so", "*.exe"]
+        "": [
+            "*.png",
+            "*.pyd",
+            "*.pyi",
+            "*.pyxres",
+            "*.so",
+            "py.typed",
+        ]
     },
-    python_requires=">=3.6.8",
+    python_requires=">=3.7",
     entry_points={
         "console_scripts": [
-            "pyxeleditor=pyxel.editor:run",
-            "pyxelpackager=pyxel.packager:run",
-            "install_pyxel_examples=pyxel.examples:install",
+            "pyxel=pyxel.cli:main",
         ]
     },
 )
