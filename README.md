@@ -245,7 +245,7 @@ The attached Pyxel Editor can create images and sounds used in a Pyxel applicati
 Pyxel Editor starts with the following command:
 
 ```sh
-pyxeleditor [pyxel_resource_file]
+pyxel -edit pyxel_resource_file
 ```
 
 If the specified Pyxel resource file (.pyxres) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
@@ -258,7 +258,7 @@ The created resource file can be loaded with the `load` function.
 If your game uses a custom palette, you can use it in the editor with this option:
 
 ```sh
-pyxeleditor --palette=path/to/palette [pyxel_resource_file]
+pyxel -edit pyxel_resource_file palette_file
 ```
 
 The palette file must be a text file containing 16 color codes (like `1D2B53`) on 16 lines.
