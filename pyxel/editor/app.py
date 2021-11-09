@@ -18,14 +18,13 @@ from .widgets.settings import (
 
 
 class App(Widget):
-    def __init__(self, resource_file, palette):
     """
     Variables:
         editor_no_var
         help_message_var
     """
 
-    def __init__(self, resource_file):
+    def __init__(self, resource_file, palette):
         # determine file path before initializing Pyxel
         resource_file = os.path.join(os.getcwd(), resource_file)
         file_ext = os.path.splitext(resource_file)[1]
@@ -36,13 +35,8 @@ class App(Widget):
         if palette:
             kwargs['palette'] = palette
 
-        pyxel.init(
-            APP_WIDTH, APP_HEIGHT, caption="Pyxel Editor - {}".format(resource_file),
-            **kwargs
-        )
-
         # initialize Pyxel
-        pyxel.init(APP_WIDTH, APP_HEIGHT)
+        pyxel.init(APP_WIDTH, APP_HEIGHT, **kwargs)
         pyxel.mouse(True)
         self._set_title(resource_file)
         if os.path.exists(resource_file):
