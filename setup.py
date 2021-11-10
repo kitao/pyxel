@@ -2,7 +2,7 @@ import re
 
 import setuptools
 
-from pyxel import VERSION
+from pyxel import PYXEL_VERSION
 
 with open("README.md", "r") as fh:
     long_description = re.sub(
@@ -17,7 +17,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyxel",
-    version=VERSION,
+    version=PYXEL_VERSION,
     description="A retro game engine for Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -38,7 +38,6 @@ setuptools.setup(
     ],
     packages=[
         "pyxel",
-        "pyxel.cli",
         "pyxel.editor",
         "pyxel.editor.assets",
         "pyxel.editor.widgets",
@@ -61,7 +60,7 @@ setuptools.setup(
     python_requires=">=3.7",
     entry_points={
         "console_scripts": [
-            "pyxel=pyxel.cli:main",
+            "pyxel=pyxel.cli:cli",
         ]
     },
 )
