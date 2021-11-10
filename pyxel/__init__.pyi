@@ -462,7 +462,7 @@ def trib(
 def blt(
     x: float,
     y: float,
-    img: Union[int | Image],
+    img: Union[int, Image],
     image_x: float,
     image_y: float,
     w: float,
@@ -472,7 +472,7 @@ def blt(
 def bltm(
     x: float,
     y: float,
-    tm: Union[int | Tilemap],
+    tm: Union[int, Tilemap],
     u: float,
     v: float,
     w: float,
@@ -491,7 +491,7 @@ def sound(snd: int) -> Sound: ...
 def music(msc: int) -> Music: ...
 def play_pos(ch: int) -> Optional[Tuple[int, int]]: ...
 def play(
-    ch: int, snd: Union[int | List[int] | Sound | List[Sound]], *, loop: Optional[bool]
+    ch: int, snd: Union[int, List[int], Sound, List[Sound]], *, loop: Optional[bool]
 ) -> None: ...
 def playm(msc: int, *, loop: Optional[bool]) -> None: ...
 def stop(ch: Optional[int]) -> None: ...
@@ -531,7 +531,7 @@ class Image:
         self,
         x: float,
         y: float,
-        img: Union[int | Image],
+        img: Union[int, Image],
         u: float,
         v: float,
         w: float,
@@ -542,7 +542,7 @@ class Image:
         self,
         x: float,
         y: float,
-        tm: Union[int | Tilemap],
+        tm: Union[int, Tilemap],
         u: float,
         v: float,
         w: float,
@@ -559,7 +559,7 @@ class Tilemap:
     height: int
     image: Image
     refimg: Optional[int]
-    def __init__(self, width: int, height: int, img: Union[int | Image]) -> None: ...
+    def __init__(self, width: int, height: int, img: Union[int, Image]) -> None: ...
     def set(self, x: int, y: int, data: List[str]) -> None: ...
     def clip(
         self,
@@ -606,7 +606,7 @@ class Tilemap:
         self,
         x: float,
         y: float,
-        tm: Union[int | Tilemap],
+        tm: Union[int, Tilemap],
         u: float,
         v: float,
         w: float,
@@ -619,7 +619,7 @@ class Channel:
     gain: int
     def play_pos(self) -> Optional[Tuple[int, int]]: ...
     def play(
-        self, snd: Union[int | List[int] | Sound | List[Sound]], *, loop: Optional[bool]
+        self, snd: Union[int, List[int], Sound, List[Sound]], *, loop: Optional[bool]
     ) -> None: ...
     def stop(self) -> None: ...
 
