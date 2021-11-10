@@ -1,0 +1,3 @@
+import pyxel
+
+pyxel.cli()
