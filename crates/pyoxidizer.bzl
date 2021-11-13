@@ -5,7 +5,7 @@ def make_exe():
     policy.resources_location_fallback = "filesystem-relative:lib"
 
     python_config = dist.make_python_interpreter_config()
-    python_config.module_search_paths = ["$ORIGIN/lib"]
+    python_config.module_search_paths = ["$ORIGIN/pyxel-lib"]
     python_config.run_module = "pyxel"
 
     exe = dist.to_python_executable(
@@ -14,8 +14,8 @@ def make_exe():
         config=python_config,
     )
 
-    for resource in exe.pip_install([".."]):
-        resource.add_location = "filesystem-relative:lib"
+    for resource in exe.pip_install(["../dist/pyxel-1.5.0-py3-none-any.whl"]):
+        resource.add_location = "filesystem-relative:pyxel-lib"
         exe.add_python_resource(resource)
 
     return exe
