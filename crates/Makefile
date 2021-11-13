@@ -39,13 +39,17 @@ endif
 SRC_LIB = $(SRC_LIB_DIR)/lib$(LIB_NAME)$(SRC_LIB_EXT)
 DST_LIB = $(DST_LIB_DIR)/$(LIB_NAME)$(DST_LIB_EXT)
 
-.PHONY: all build clean format format-python lint lint-python test
+.PHONY: all build clean dist format format-python lint lint-python test
 
 all: build
 
 build: format
 	@cargo build $(CARGO_BUILD_OPT)
 	@mkdir -p $(DST_LIB_DIR) && cp $(SRC_LIB) $(DST_LIB)
+
+dist: build
+	@cd ..; python3 setup.py bdist_wheel
+	@pyoxidizer build $(CARGO_BUILD_OPT)
 
 clean:
 	@cargo clean
@@ -59,7 +63,6 @@ format-python:
 
 lint: format
 	@cargo clippy
-	@python3 check-style.py $(CRATES_DIR)
 
 lint-python: format-python
 	@flake8 $(ROOT_DIR)/*.py $(PYXEL_DIR)
