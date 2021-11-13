@@ -50,8 +50,8 @@ build: format
 
 dist:
 	@cd ..; python3 setup.py bdist_wheel
-	@pyoxidizer build --release
 	$(eval DIST_NAME := $(shell ls $(DIST_DIR)/pyxel-*.whl | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(OS_NAME))
+	@pyoxidizer build --release
 	@cp -r build/*/release/install $(DIST_DIR)/$(DIST_NAME)
 	@rm -f $(DIST_DIR)/$(DIST_NAME).zip
 	@cd $(DIST_DIR); zip -r $(DIST_NAME).zip $(DIST_NAME)
