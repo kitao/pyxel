@@ -1,4 +1,5 @@
 ROOT_DIR = ..
+DIST_DIR = $(ROOT_DIR)/dist
 PYXEL_DIR = $(ROOT_DIR)/pyxel
 CRATES_DIR = $(ROOT_DIR)/crates
 LIB_DIR = $(PYXEL_DIR)/lib/$(OS_NAME)
@@ -47,9 +48,14 @@ build: format
 	@cargo build $(CARGO_BUILD_OPT)
 	@mkdir -p $(DST_LIB_DIR) && cp $(SRC_LIB) $(DST_LIB)
 
-dist: build
+dist:
 	@cd ..; python3 setup.py bdist_wheel
-	@pyoxidizer build $(CARGO_BUILD_OPT)
+	@pyoxidizer build --release
+	$(eval DIST_NAME := $(shell ls $(DIST_DIR)/pyxel-*.whl | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(OS_NAME))
+	@cp -r build/*/release/install $(DIST_DIR)/$(DIST_NAME)
+	@rm -f $(DIST_DIR)/$(DIST_NAME).zip
+	@cd $(DIST_DIR); zip -r $(DIST_NAME).zip $(DIST_NAME)
+	@rm -rf $(DIST_DIR)/$(DIST_NAME)
 
 clean:
 	@cargo clean
