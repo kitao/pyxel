@@ -27,9 +27,6 @@ class App(Widget):
     def __init__(self, resource_file):
         # determine file path before initializing Pyxel
         resource_file = os.path.join(os.getcwd(), resource_file)
-        file_ext = os.path.splitext(resource_file)[1]
-        if file_ext != pyxel.RESOURCE_FILE_EXTENSION:
-            resource_file += pyxel.RESOURCE_FILE_EXTENSION
 
         # initialize Pyxel
         pyxel.init(APP_WIDTH, APP_HEIGHT)
