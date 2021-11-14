@@ -83,7 +83,8 @@ class Snake:
     ##############
 
     def update(self):
-        """Update logic of game. Updates the snake and checks for scoring/win condition."""
+        """Update logic of game.
+        Updates the snake and checks for scoring/win condition."""
 
         if not self.death:
             self.update_direction()
