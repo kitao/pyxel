@@ -1,5 +1,35 @@
 # Change Log
 
+## 1.5.0
+- Reimplemented the core engine in Rust
+- Changed to statically link SDL2 libraries
+- Renamed the key constants to the same as SDL2
+- Added the pyxel command to work standalone without Python
+- Added the cli function to launch commnad line interface
+- Added support for Pyxel application file (.pyxapp)
+- Simplified the init function arguments
+- Removed maximum screen size limit
+- Enabled to change maximum capture time to reduce reserved memory
+- Added support loading varous image formats other than PNG
+- Optimized GIF animation compression
+- Enabled to add the image banks and tilemap banks dynamically
+- Added drawing methods to the Image and Tilmap class
+- Changed the tile format of tilemap to tuple of (x, y)
+- Reanemd the properties of the Sound and Music class
+- Changed the play_pos function to return a tuple of sound and note
+- Supported dynamic palette change with the colors list
+- Added the input_keys and input_text variables to obtain the entered key
+- Added the frop_files variable to obtain the dropped files
+- Added the icon function to set the application icon
+- Added the title function to set the application title
+- Added the fullscreen function to toggle fullscreen manually
+- Added the Channel class which can control the channel volume
+- Added the functions to overwrite key inputs and mouse position
+- Added the functions to capture screen manually
+- Added the example #10 (expected to change)
+- Fixed setup.py so taht images are referenced correctly on PyPI page
+- Added the pyi file for type hinting
+
 ## 1.4.4
 - Added the README in French
 
