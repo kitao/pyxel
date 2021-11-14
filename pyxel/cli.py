@@ -16,8 +16,8 @@ def _print_usage():
     print("    pyxel PYXEL_APP_FILE(.pyxapp)")
     print("    pyxel -run PYTHON_SCRIPT_FILE(.py)")
     print("    pyxel -edit [PYXEL_RESOURCE_FILE(.pyxres)]")
-    print("    pyxel -package-app APP_ROOT_DIR STARTUP_SCRIPT_FILE(.py)")
-    print("    pyxel -copy-examples")
+    print("    pyxel -package APP_ROOT_DIR STARTUP_SCRIPT_FILE(.py)")
+    print("    pyxel -examples")
 
 
 def _complete_extension(filename, ext_with_dot):
@@ -80,7 +80,7 @@ def _edit_pyxel_resource(pyxel_resource_file):
     pyxel.editor.App(pyxel_resource_file)
 
 
-def _package_pyxel_app_file(app_root_dir, startup_script_name):
+def _package_pyxel_app(app_root_dir, startup_script_name):
     _check_dir_exists(app_root_dir)
     startup_script_name = os.path.basename(
         _complete_extension(startup_script_name, ".py")
@@ -125,27 +125,20 @@ def cli():
     num_args = len(sys.argv)
     command = sys.argv[1].lower() if num_args > 1 else ""
 
-    if not command.startswith("-"):
-        if num_args == 2:
-            _launch_pyxel_app(sys.argv[1])
+    if not command.startswith("-") and num_args == 2:
+        _launch_pyxel_app(sys.argv[1])
 
-    elif command == "-run":
-        if num_args == 3:
-            _run_python_script(sys.argv[2])
+    elif command == "-run" and num_args == 3:
+        _run_python_script(sys.argv[2])
 
-    elif command == "-edit":
-        if num_args == 2:
-            _edit_pyxel_resource(None)
-        elif num_args == 3:
-            _edit_pyxel_resource(sys.argv[2])
+    elif command == "-edit" and (num_args == 2 or num_args == 3):
+        _edit_pyxel_resource(sys.argv[2] if num_args == 3 else None)
 
-    elif command == "-package-app":
-        if num_args == 4:
-            _package_pyxel_app_file(sys.argv[2], sys.argv[3])
+    elif command == "-package" and num_args == 4:
+        _package_pyxel_app(sys.argv[2], sys.argv[3])
 
-    elif command == "-copy-examples":
-        if num_args == 2:
-            _copy_pyxel_examples()
+    elif command == "-examples" and num_args == 2:
+        _copy_pyxel_examples()
 
     else:
         _print_usage()
