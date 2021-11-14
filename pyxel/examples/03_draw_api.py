@@ -167,8 +167,9 @@ class App:
 
         x += 4
         y += 8
-        s = "Elapsed frame count is {}\n" "Current mouse position is ({},{})".format(
-            pyxel.frame_count, pyxel.mouse_x, pyxel.mouse_y
+        s = (
+            f"Elapsed frame count is {pyxel.frame_count}\n"
+            f"Current mouse position is ({pyxel.mouse_x},{pyxel.mouse_y})"
         )
 
         pyxel.text(x + 1, y, s, 1)

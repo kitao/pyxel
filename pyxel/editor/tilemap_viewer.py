@@ -46,7 +46,7 @@ class TilemapViewer(Widget):
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_focus(x, y)
-        self.help_message_var = "TARGET:CURSOR ({},{})".format(x * 8, y * 8)
+        self.help_message_var = f"TARGET:CURSOR ({x * 8},{y * 8})"
 
     def __on_update(self):
         tilemap = pyxel.tilemap(self.tilemap_no_var)
