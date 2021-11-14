@@ -147,7 +147,7 @@ class App:
         )
 
         # draw score
-        s = "SCORE {:>4}".format(self.score)
+        s = f"SCORE {self.score:>4}"
         pyxel.text(5, 4, s, 1)
         pyxel.text(4, 4, s, 7)
 

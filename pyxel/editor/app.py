@@ -123,7 +123,7 @@ class App(Widget):
 
     @staticmethod
     def _set_title(filename):
-        pyxel.title("Pyxel Editor - {}".format(filename))
+        pyxel.title(f"Pyxel Editor - {filename}")
 
     def __on_editor_button_change(self, value):
         for i, editor in enumerate(self._editors):
