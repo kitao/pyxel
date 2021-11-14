@@ -324,7 +324,7 @@ class App:
         elif self.scene == SCENE_GAMEOVER:
             self.draw_gameover_scene()
 
-        pyxel.text(39, 4, "SCORE {:5}".format(self.score), 7)
+        pyxel.text(39, 4, f"SCORE {self.score:5}", 7)
 
     def draw_title_scene(self):
         pyxel.text(35, 66, "Pyxel Shooter", pyxel.frame_count % 16)
