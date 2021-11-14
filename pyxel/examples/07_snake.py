@@ -186,7 +186,7 @@ class Snake:
     def draw_score(self):
         """Draw the score at the top."""
 
-        score = "{:04}".format(self.score)
+        score = f"{self.score:04}"
         pyxel.rect(0, 0, WIDTH, HEIGHT_SCORE, COL_SCORE_BACKGROUND)
         pyxel.text(1, 1, score, COL_SCORE)
 
@@ -195,7 +195,7 @@ class Snake:
 
         pyxel.cls(col=COL_DEATH)
         display_text = TEXT_DEATH[:]
-        display_text.insert(1, "{:04}".format(self.score))
+        display_text.insert(1, f"{self.score:04}")
         for i, text in enumerate(display_text):
             y_offset = (pyxel.FONT_HEIGHT + 2) * i
             text_x = self.center_text(text, WIDTH)

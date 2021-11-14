@@ -324,7 +324,7 @@ class CanvasPanel(Widget):
         x, y = self._screen_to_focus(x, y)
         x += self.focus_x_var
         y += self.focus_y_var
-        self.help_message_var = s + " ({},{})".format(x, y)
+        self.help_message_var = s + f" ({x},{y})"
 
     def __on_update(self):
         if self._is_dragged and not self._is_assist_mode and pyxel.btn(pyxel.KEY_SHIFT):

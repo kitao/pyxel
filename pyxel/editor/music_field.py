@@ -56,7 +56,7 @@ class MusicField(Widget):
 
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
-        pyxel.text(self.x + 5, self.y + 8, "CH{}".format(self._ch), TEXT_LABEL_COLOR)
+        pyxel.text(self.x + 5, self.y + 8, f"CH{self._ch}", TEXT_LABEL_COLOR)
         pyxel.blt(
             self.x + 20,
             self.y + 1,
@@ -101,4 +101,4 @@ class MusicField(Widget):
                 if cursor_y == self._ch and cursor_x == i
                 else MUSIC_FIELD_SOUND_NORMAL_COLOR
             )
-            pyxel.text(x, y, "{:0>2}".format(data[i]), col)
+            pyxel.text(x, y, f"{data[i]:0>2}", col)
