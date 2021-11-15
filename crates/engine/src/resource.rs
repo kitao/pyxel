@@ -103,12 +103,15 @@ impl Resource {
 
     #[cfg(target_os = "windows")]
     fn export_path() -> String {
+        let hkey_local_machine = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
+        let shell_folders = hkey_local_machine.open_subkey("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders").unwrap();
+        let desktop: String = shell_folders.get_value("Desktop").unwrap();
         Path::new(&env::var("USERPROFILE").unwrap())
-            .join(RegKey::predef(HKEY_LOCAL_MACHINE)
-                .open_subkey("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders")
-                .unwrap()
-                .get_value("Desktop")
-                .unwrap())
+            .join(desktop)
+            .join(Local::now().format("pyxel-%Y%m%d-%H%M%S").to_string())
+            .to_str()
+            .unwrap()
+            .to_string()
     }
 }
 
