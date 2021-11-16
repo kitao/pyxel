@@ -40,17 +40,18 @@ endif
 SRC_LIB = $(SRC_LIB_DIR)/lib$(LIB_NAME)$(SRC_LIB_EXT)
 DST_LIB = $(DST_LIB_DIR)/$(LIB_NAME)$(DST_LIB_EXT)
 
-.PHONY: all build clean dist format format-python lint lint-python test
+.PHONY: all build clean dist format lint test
 
 all: build
 
-build: format
+build:
 	@cargo build $(CARGO_BUILD_OPT)
 	@mkdir -p $(DST_LIB_DIR) && cp $(SRC_LIB) $(DST_LIB)
 
 dist:
 	@cd ..; python3 setup.py bdist_wheel
 	$(eval DIST_NAME := $(shell ls $(DIST_DIR)/pyxel-*.whl | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(OS_NAME))
+	@rm -rf build
 	@pyoxidizer build --release
 	@cp -r build/*/release/install $(DIST_DIR)/$(DIST_NAME)
 	@rm -f $(DIST_DIR)/$(DIST_NAME).zip
@@ -63,14 +64,10 @@ clean:
 
 format:
 	@cargo +nightly fmt -- --emit=files
-
-format-python:
 	@isort $(ROOT_DIR) && black $(ROOT_DIR)
 
 lint: format
 	@cargo clippy
-
-lint-python: format-python
 	@flake8 $(ROOT_DIR)/*.py $(PYXEL_DIR)
 
 test: build
