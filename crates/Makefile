@@ -7,6 +7,11 @@ LIB_NAME = pyxel_wrapper
 TESTS_DIR = $(CRATES_DIR)/wrapper/tests
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 
+ifneq ($(findstring MINGW64,$(shell uname)),)
+OS_NAME = windows
+SRC_LIB_EXT = .dll
+DST_LIB_EXT = .pyd
+endif
 ifeq ($(shell uname),Darwin)
 OS_NAME = macos
 SRC_LIB_EXT = .dylib
@@ -16,11 +21,6 @@ ifeq ($(shell uname),Linux)
 OS_NAME = linux
 SRC_LIB_EXT = .so
 DST_LIB_EXT = .so
-endif
-ifneq ($(findstring MINGW64,$(shell uname)),)
-OS_NAME = windows
-SRC_LIB_EXT = .dll
-DST_LIB_EXT = .pyd
 endif
 
 ifeq ($(RELEASE),)
@@ -60,7 +60,7 @@ dist:
 
 clean:
 	@cargo clean
-	@rm -rf $(LIB_DIR)
+	@rm -rf $(LIB_DIR)/*
 
 format:
 	@cargo +nightly fmt -- --emit=files
