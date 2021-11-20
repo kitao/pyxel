@@ -142,3 +142,4 @@ cython_debug/
 .vscode/*
 !dist/
 !pyxel/lib/
+!pyxel/lib/windows/*.pyd
