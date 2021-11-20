@@ -1,9 +1,13 @@
 import pyxel
 
-from .settings import (EDITOR_IMAGE, MAX_SOUND_LENGTH,
-                       SOUND_FIELD_DATA_FOCUS_COLOR,
-                       SOUND_FIELD_DATA_NORMAL_COLOR, SOUND_FIELD_FOCUS_COLOR,
-                       TEXT_LABEL_COLOR)
+from .settings import (
+    EDITOR_IMAGE,
+    MAX_SOUND_LENGTH,
+    SOUND_FIELD_DATA_FOCUS_COLOR,
+    SOUND_FIELD_DATA_NORMAL_COLOR,
+    SOUND_FIELD_FOCUS_COLOR,
+    TEXT_LABEL_COLOR,
+)
 from .widgets import Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
