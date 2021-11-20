@@ -9,16 +9,16 @@ EXAMPLES_DIR = $(PYXEL_DIR)/examples
 
 ifeq ($(shell uname),Darwin)
 OS_NAME = macos
-SRC_LIB_EXT = .dylib
-DST_LIB_EXT = .so
+SRC_LIB_NAME = lib$(LIB_NAME).dylib
+DST_LIB_NAME = $(LIB_NAME).so
 else ifeq ($(shell uname),Linux)
 OS_NAME = linux
-SRC_LIB_EXT = .so
-DST_LIB_EXT = .so
+SRC_LIB_NAME = lib$(LIB_NAME).so
+DST_LIB_NAME = $(LIB_NAME).so
 else
 OS_NAME = windows
-SRC_LIB_EXT = .dll
-DST_LIB_EXT = .pyd
+SRC_LIB_NAME = $(LIB_NAME).dll
+DST_LIB_NAME = $(LIB_NAME).pyd
 endif
 
 ifeq ($(RELEASE),)
@@ -35,8 +35,8 @@ DST_LIB_DIR = $(LIB_DIR)
 TEST_IMPORT_DIR = $(ROOT_DIR)
 endif
 
-SRC_LIB = $(SRC_LIB_DIR)/lib$(LIB_NAME)$(SRC_LIB_EXT)
-DST_LIB = $(DST_LIB_DIR)/$(LIB_NAME)$(DST_LIB_EXT)
+SRC_LIB = $(SRC_LIB_DIR)/$(SRC_LIB_NAME)
+DST_LIB = $(DST_LIB_DIR)/$(DST_LIB_NAME)
 
 .PHONY: all build clean dist format lint test
 
