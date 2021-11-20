@@ -27,9 +27,7 @@ gifski = "1.5.1"
 image = "0.23.14"
 imgref = "1.9.1"
 parking_lot = "0.11.2"
+platform-dirs = "0.3.0"
 rgb = "0.8.29"
 sdl2 = { version = "0.35.1", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
 zip = { version = "0.5.13", default-features = false, features = ["deflate"] }
-
-[target.'cfg(windows)'.dependencies]
-winreg = "0.10.1"

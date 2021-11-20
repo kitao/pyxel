@@ -1,4 +1,3 @@
-use std::env;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
@@ -7,6 +6,7 @@ use chrono::Local;
 use gifski::new as gifski_new;
 use gifski::Settings;
 use imgref::ImgVec;
+use platform_dirs::UserDirs;
 use rgb::RGBA8;
 use zip::{ZipArchive, ZipWriter};
 
@@ -91,23 +91,10 @@ impl Resource {
         }
     }
 
-    #[cfg(not(target_os = "windows"))]
     fn export_path() -> String {
-        Path::new(&env::var("HOME").unwrap())
-            .join("Desktop")
-            .join(Local::now().format("pyxel-%Y%m%d-%H%M%S").to_string())
-            .to_str()
+        UserDirs::new()
             .unwrap()
-            .to_string()
-    }
-
-    #[cfg(target_os = "windows")]
-    fn export_path() -> String {
-        let hkey_local_machine = winreg::RegKey::predef(winreg::enums::HKEY_LOCAL_MACHINE);
-        let shell_folders = hkey_local_machine.open_subkey("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders").unwrap();
-        let desktop: String = shell_folders.get_value("Desktop").unwrap();
-        Path::new(&env::var("USERPROFILE").unwrap())
-            .join(desktop)
+            .desktop_dir
             .join(Local::now().format("pyxel-%Y%m%d-%H%M%S").to_string())
             .to_str()
             .unwrap()
@@ -200,6 +187,7 @@ impl Pyxel {
 
     // Advanced API
     pub fn screenshot(&mut self) {
+        println!("{}", &Resource::export_path());
         self.screen
             .lock()
             .save(&Resource::export_path(), &self.colors, CAPTURE_SCALE);
