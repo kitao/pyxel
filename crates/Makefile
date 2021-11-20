@@ -2,23 +2,31 @@ ROOT_DIR = ..
 DIST_DIR = $(ROOT_DIR)/dist
 PYXEL_DIR = $(ROOT_DIR)/pyxel
 CRATES_DIR = $(ROOT_DIR)/crates
-LIB_DIR = $(PYXEL_DIR)/lib/$(OS_NAME)
+LIB_DIR = $(PYXEL_DIR)/lib/$(PLATFORM)
 LIB_NAME = pyxel_wrapper
 TESTS_DIR = $(CRATES_DIR)/wrapper/tests
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 
-ifeq ($(shell uname),Darwin)
-OS_NAME = macos
+ifeq ($(shell which python3 2> /dev/null),)
+PYTHON = python
+else
+PYTHON = python3
+endif
+
+ifneq ($(findstring MINGW64_NT,$(shell uname)),)
+PLATFORM = windows
+SRC_LIB_NAME = $(LIB_NAME).dll
+DST_LIB_NAME = $(LIB_NAME).pyd
+else ifeq ($(shell uname),Darwin)
+PLATFORM = macos
 SRC_LIB_NAME = lib$(LIB_NAME).dylib
 DST_LIB_NAME = $(LIB_NAME).so
 else ifeq ($(shell uname),Linux)
-OS_NAME = linux
+PLATFORM = linux
 SRC_LIB_NAME = lib$(LIB_NAME).so
 DST_LIB_NAME = $(LIB_NAME).so
 else
-OS_NAME = windows
-SRC_LIB_NAME = $(LIB_NAME).dll
-DST_LIB_NAME = $(LIB_NAME).pyd
+$(error "unsupported platform")
 endif
 
 ifeq ($(RELEASE),)
@@ -38,7 +46,7 @@ endif
 SRC_LIB = $(SRC_LIB_DIR)/$(SRC_LIB_NAME)
 DST_LIB = $(DST_LIB_DIR)/$(DST_LIB_NAME)
 
-.PHONY: all build clean dist format lint test
+.PHONY: all build clean dist format lint test wheel
 
 all: build
 
@@ -47,8 +55,7 @@ build:
 	@mkdir -p $(DST_LIB_DIR) && cp $(SRC_LIB) $(DST_LIB)
 
 dist:
-	@cd ..; python3 setup.py bdist_wheel
-	$(eval DIST_NAME := $(shell ls $(DIST_DIR)/pyxel-*.whl | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(OS_NAME))
+	$(eval DIST_NAME := $(shell ls $(DIST_DIR)/pyxel-*.whl | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PLATFORM))
 	@rm -rf build
 	@pyoxidizer build --release
 	@cp -r build/*/release/install $(DIST_DIR)/$(DIST_NAME)
@@ -70,7 +77,10 @@ lint: format
 
 test: build
 	@cargo test
-	@PYTHONPATH=$(TEST_IMPORT_DIR) python3 -m unittest discover $(TESTS_DIR)
+	@PYTHONPATH=$(TEST_IMPORT_DIR) $(PYTHON) -m unittest discover $(TESTS_DIR)
 	@trap break INT; for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
-		PYTHONPATH=$(TEST_IMPORT_DIR) python3 $$example; \
+		PYTHONPATH=$(TEST_IMPORT_DIR) $(PYTHON) $$example; \
 	done; trap - INT
+
+wheel:
+	@cd ..; $(PYTHON) setup.py bdist_wheel
