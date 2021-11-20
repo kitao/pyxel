@@ -187,7 +187,6 @@ impl Pyxel {
 
     // Advanced API
     pub fn screenshot(&mut self) {
-        println!("{}", &Resource::export_path());
         self.screen
             .lock()
             .save(&Resource::export_path(), &self.colors, CAPTURE_SCALE);
