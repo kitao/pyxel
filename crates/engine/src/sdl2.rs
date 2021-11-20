@@ -248,6 +248,12 @@ impl Platform for Sdl2 {
                             SdlButton::DPadDown => ControllerButton::DPadDown,
                             SdlButton::DPadLeft => ControllerButton::DPadLeft,
                             SdlButton::DPadRight => ControllerButton::DPadRight,
+                            SdlButton::Misc1 => ControllerButton::Misc1,
+                            SdlButton::Paddle1 => ControllerButton::Paddle1,
+                            SdlButton::Paddle2 => ControllerButton::Paddle2,
+                            SdlButton::Paddle3 => ControllerButton::Paddle3,
+                            SdlButton::Paddle4 => ControllerButton::Paddle4,
+                            SdlButton::Touchpad => ControllerButton::Touchpad,
                         },
                     }
                 }
@@ -269,6 +275,12 @@ impl Platform for Sdl2 {
                         SdlButton::DPadDown => ControllerButton::DPadDown,
                         SdlButton::DPadLeft => ControllerButton::DPadLeft,
                         SdlButton::DPadRight => ControllerButton::DPadRight,
+                        SdlButton::Misc1 => ControllerButton::Misc1,
+                        SdlButton::Paddle1 => ControllerButton::Paddle1,
+                        SdlButton::Paddle2 => ControllerButton::Paddle2,
+                        SdlButton::Paddle3 => ControllerButton::Paddle3,
+                        SdlButton::Paddle4 => ControllerButton::Paddle4,
+                        SdlButton::Touchpad => ControllerButton::Touchpad,
                     },
                 },
 

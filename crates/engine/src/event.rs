@@ -32,6 +32,12 @@ pub enum ControllerButton {
     DPadDown,
     DPadLeft,
     DPadRight,
+    Misc1,
+    Paddle1,
+    Paddle2,
+    Paddle3,
+    Paddle4,
+    Touchpad,
 }
 
 pub enum Event {
