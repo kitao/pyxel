@@ -13,7 +13,7 @@ else
 PYTHON = python3
 endif
 
-ifneq ($(findstring MINGW64_NT,$(shell uname)),)
+ifneq ($(findstring CYGWIN_NT,$(shell uname)),)
 PLATFORM = windows
 SRC_LIB_NAME = $(LIB_NAME).dll
 DST_LIB_NAME = $(LIB_NAME).pyd
@@ -46,7 +46,7 @@ endif
 SRC_LIB = $(SRC_LIB_DIR)/$(SRC_LIB_NAME)
 DST_LIB = $(DST_LIB_DIR)/$(DST_LIB_NAME)
 
-.PHONY: all build clean dist format lint test wheel
+.PHONY: all build clean dist format test wheel
 
 all: build
 
@@ -69,10 +69,8 @@ clean:
 
 format:
 	@cargo +nightly fmt -- --emit=files
+	@cargo clippy -- --no-deps
 	@isort $(ROOT_DIR) && black $(ROOT_DIR)
-
-lint: format
-	@cargo clippy
 	@flake8 $(ROOT_DIR)/*.py $(PYXEL_DIR)
 
 test: build
