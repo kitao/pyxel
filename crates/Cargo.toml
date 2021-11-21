@@ -1,2 +1,10 @@
 [workspace]
 members = ["engine", "wrapper"]
+
+[profile.dev]
+lto = true
+panic = "abort"
+
+[profile.release]
+lto = true
+panic = "abort"
