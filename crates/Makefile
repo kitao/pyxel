@@ -7,35 +7,42 @@ LIB_NAME = pyxel_wrapper
 TESTS_DIR = $(CRATES_DIR)/wrapper/tests
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 
-ifeq ($(shell which python3 2> /dev/null),)
-PYTHON = python
-else
-PYTHON = python3
-endif
-
-ifneq ($(findstring CYGWIN_NT,$(shell uname)),)
+ifneq ($(findstring MINGW64_NT,$(shell uname)),)
+# Windows (MSYS2 MinGW 64-bit)
 PLATFORM = windows
+PYTHON_DIR = $(LOCALAPPDATA)/Programs/Python/Python310
+PYTHON = $(PYTHON_DIR)/python.exe
 SRC_LIB_NAME = $(LIB_NAME).dll
 DST_LIB_NAME = $(LIB_NAME).pyd
+export DXSDK_DIR = dummy
+export PYO3_CROSS_INCLUDE_DIR = $(PYTHON_DIR)/include
+export PYO3_CROSS_LIB_DIR = $(PYTHON_DIR)/libs
 else ifeq ($(shell uname),Darwin)
+# MacOS
 PLATFORM = macos
+PYTHON = python3
 SRC_LIB_NAME = lib$(LIB_NAME).dylib
 DST_LIB_NAME = $(LIB_NAME).so
 else ifeq ($(shell uname),Linux)
+# Linux
 PLATFORM = linux
+PYTHON = python3
 SRC_LIB_NAME = lib$(LIB_NAME).so
 DST_LIB_NAME = $(LIB_NAME).so
 else
+# Others
 $(error "unsupported platform")
 endif
 
 ifeq ($(RELEASE),)
+# Debug
 CARGO_BUILD_OPT =
 CARGO_TARGET_DIR = $(CRATES_DIR)/target/debug
 SRC_LIB_DIR = $(CARGO_TARGET_DIR)
 DST_LIB_DIR = $(CARGO_TARGET_DIR)
 TEST_IMPORT_DIR = $(TESTS_DIR)/debug_module
 else
+# Release
 CARGO_BUILD_OPT = --release
 CARGO_TARGET_DIR = $(CRATES_DIR)/target/release
 SRC_LIB_DIR = $(CARGO_TARGET_DIR)
@@ -81,4 +88,4 @@ test: build
 	done; trap - INT
 
 wheel:
-	@cd ..; $(PYTHON) setup.py bdist_wheel
+	@cd $(ROOT_DIR); $(PYTHON) setup.py bdist_wheel
