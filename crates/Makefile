@@ -12,6 +12,7 @@ ifneq ($(findstring MINGW64_NT,$(shell uname)),)
 PLATFORM = windows
 PYTHON_DIR = $(LOCALAPPDATA)/Programs/Python/Python310
 PYTHON = $(PYTHON_DIR)/python.exe
+PYOXIDIZER = $(PYTHON_DIR)/Scripts/pyoxidizer.exe
 SRC_LIB_NAME = $(LIB_NAME).dll
 DST_LIB_NAME = $(LIB_NAME).pyd
 export DXSDK_DIR = dummy
@@ -21,12 +22,14 @@ else ifeq ($(shell uname),Darwin)
 # MacOS
 PLATFORM = macos
 PYTHON = python3
+PYOXIDIZER = pyoxidizer
 SRC_LIB_NAME = lib$(LIB_NAME).dylib
 DST_LIB_NAME = $(LIB_NAME).so
 else ifeq ($(shell uname),Linux)
 # Linux
 PLATFORM = linux
 PYTHON = python3
+PYOXIDIZER = pyoxidizer
 SRC_LIB_NAME = lib$(LIB_NAME).so
 DST_LIB_NAME = $(LIB_NAME).so
 else
@@ -64,7 +67,7 @@ build:
 dist:
 	$(eval DIST_NAME := $(shell ls $(DIST_DIR)/pyxel-*.whl | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PLATFORM))
 	@rm -rf build
-	@pyoxidizer build --release
+	@$(PYOXIDIZER) build --release
 	@cp -r build/*/release/install $(DIST_DIR)/$(DIST_NAME)
 	@rm -f $(DIST_DIR)/$(DIST_NAME).zip
 	@cd $(DIST_DIR); zip -r $(DIST_NAME).zip $(DIST_NAME)
