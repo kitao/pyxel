@@ -2,7 +2,7 @@
 name = "pyxel-wrapper"
 version = "1.5.0"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
-edition = "2018"
+edition = "2021"
 description = "Python wrapper for Pyxel"
 repository = "https://github.com/kitao/pyxel"
 license = "MIT"

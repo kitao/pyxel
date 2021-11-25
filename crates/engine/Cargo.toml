@@ -2,7 +2,7 @@
 name = "pyxel-engine"
 version = "1.5.0"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
-edition = "2018"
+edition = "2021"
 description = "A retro game engine for Python and Rust"
 repository = "https://github.com/kitao/pyxel"
 license = "MIT"
@@ -29,5 +29,13 @@ imgref = "1.9.1"
 parking_lot = "0.11.2"
 platform-dirs = "0.3.0"
 rgb = "0.8.29"
-sdl2 = { version = "0.35.1", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
 zip = { version = "0.5.13", default-features = false, features = ["deflate"] }
+
+[target.'cfg(windows)'.dependencies]
+sdl2 = { version = "0.35.1", default-features = false, features = ["bundled", "unsafe_textures"] }
+
+[target.'cfg(macos)'.dependencies]
+sdl2 = { version = "0.35.1", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
+
+[target.'cfg(unix)'.dependencies]
+sdl2 = { version = "0.35.1", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
