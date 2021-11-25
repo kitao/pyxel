@@ -7,31 +7,29 @@ LIB_NAME = pyxel_wrapper
 TESTS_DIR = $(CRATES_DIR)/wrapper/tests
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 
-ifneq ($(findstring MINGW64_NT,$(shell uname)),)
-# Windows (MSYS2 MinGW 64-bit)
+ifneq ($(findstring CYGWIN_NT-,$(shell uname)),)
+# Windows
 PLATFORM = windows
-PYTHON_DIR = $(LOCALAPPDATA)/Programs/Python/Python310
-PYTHON = $(PYTHON_DIR)/python.exe
-PYOXIDIZER = $(PYTHON_DIR)/Scripts/pyoxidizer.exe
+PYTHON = python
 SRC_LIB_NAME = $(LIB_NAME).dll
 DST_LIB_NAME = $(LIB_NAME).pyd
-export DXSDK_DIR = dummy
-export PYO3_CROSS_INCLUDE_DIR = $(PYTHON_DIR)/include
-export PYO3_CROSS_LIB_DIR = $(PYTHON_DIR)/libs
+SRC_SDL2_DLL = $(SRC_LIB_DIR)/SDL2.dll
+DST_SDL2_DLL = $(DST_LIB_DIR)/SDL2.dll
+COPY_SDL2_DLL = if [ ! -f $(DST_SDL2_DLL) ]; then cp $(SRC_SDL2_DLL) $(DST_SDL2_DLL); fi
 else ifeq ($(shell uname),Darwin)
 # MacOS
 PLATFORM = macos
 PYTHON = python3
-PYOXIDIZER = pyoxidizer
 SRC_LIB_NAME = lib$(LIB_NAME).dylib
 DST_LIB_NAME = $(LIB_NAME).so
+COPY_SDL2_DLL =
 else ifeq ($(shell uname),Linux)
 # Linux
 PLATFORM = linux
 PYTHON = python3
-PYOXIDIZER = pyoxidizer
 SRC_LIB_NAME = lib$(LIB_NAME).so
 DST_LIB_NAME = $(LIB_NAME).so
+COPY_SDL2_DLL =
 else
 # Others
 $(error "unsupported platform")
@@ -63,11 +61,12 @@ all: build
 build:
 	@cargo build $(CARGO_BUILD_OPT)
 	@mkdir -p $(DST_LIB_DIR) && cp $(SRC_LIB) $(DST_LIB)
+	@$(COPY_SDL2_DLL)
 
 dist:
 	$(eval DIST_NAME := $(shell ls $(DIST_DIR)/pyxel-*.whl | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PLATFORM))
 	@rm -rf build
-	@$(PYOXIDIZER) build --release
+	@pyoxidizer build --release
 	@cp -r build/*/release/install $(DIST_DIR)/$(DIST_NAME)
 	@rm -f $(DIST_DIR)/$(DIST_NAME).zip
 	@cd $(DIST_DIR); zip -r $(DIST_NAME).zip $(DIST_NAME)
