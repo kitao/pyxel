@@ -14,7 +14,7 @@ def make_exe():
         config=python_config,
     )
 
-    for resource in exe.pip_install(["../dist/pyxel-1.5.0-py3-none-any.whl"]):
+    for resource in exe.pip_install(["dist/pyxel-1.5.0-py3-none-any.whl"]):
         resource.add_location = "filesystem-relative:pyxel-lib"
         exe.add_python_resource(resource)
 
