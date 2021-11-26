@@ -48,6 +48,7 @@ setuptools.setup(
     ],
     package_data={
         "": [
+            "*.dll",
             "*.png",
             "*.pyd",
             "*.pyi",
