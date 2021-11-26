@@ -1,12 +1,13 @@
 ROOT_DIR = .
-DIST_DIR = $(ROOT_DIR)/dist
 PYXEL_DIR = $(ROOT_DIR)/pyxel
-CRATES_DIR = $(ROOT_DIR)/crates
-CARGO_MANIFEST = $(CRATES_DIR)/Cargo.toml
 LIB_DIR = $(PYXEL_DIR)/lib/$(PLATFORM)
 LIB_NAME = pyxel_wrapper
+CRATES_DIR = $(ROOT_DIR)/crates
+CARGO_MANIFEST = $(CRATES_DIR)/Cargo.toml
 TESTS_DIR = $(CRATES_DIR)/wrapper/tests
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
+DIST_DIR = $(ROOT_DIR)/dist
+PYOXIDIZER_DIR = $(ROOT_DIR)/build
 
 ifneq ($(findstring CYGWIN_NT-,$(shell uname)),)
 # Windows
@@ -52,26 +53,22 @@ DST_LIB_DIR = $(LIB_DIR)
 TEST_IMPORT_DIR = $(ROOT_DIR)
 endif
 
-SRC_LIB = $(SRC_LIB_DIR)/$(SRC_LIB_NAME)
-DST_LIB = $(DST_LIB_DIR)/$(DST_LIB_NAME)
-
 .PHONY: all build clean dist format test wheel
 
 all: build
 
 build:
 	@cargo build $(CARGO_BUILD_OPT) --manifest-path $(CARGO_MANIFEST)
-	@mkdir -p $(DST_LIB_DIR) && cp $(SRC_LIB) $(DST_LIB)
+	@mkdir -p $(DST_LIB_DIR) && cp $(SRC_LIB_DIR)/$(SRC_LIB_NAME) $(DST_LIB_DIR)/$(DST_LIB_NAME)
 	@$(COPY_SDL2_DLL)
 
 dist:
 	$(eval DIST_NAME := $(shell ls $(DIST_DIR)/pyxel-*.whl | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PLATFORM))
-	@rm -rf build
+	@rm -rf $(PYOXIDIZER_DIR)
 	@pyoxidizer build --release
-	@cp -r build/*/release/install $(DIST_DIR)/$(DIST_NAME)
-	@rm -f $(DIST_DIR)/$(DIST_NAME).zip
-	@cd $(DIST_DIR) && zip -r $(DIST_NAME).zip $(DIST_NAME)
-	@rm -rf $(DIST_DIR)/$(DIST_NAME)
+	@mv $(PYOXIDIZER_DIR)/*/release/install $(PYOXIDIZER_DIR)/$(DIST_NAME)
+	@cd $(PYOXIDIZER_DIR) && zip -r $(DIST_NAME).zip $(DIST_NAME)
+	@mv -f $(PYOXIDIZER_DIR)/$(DIST_NAME).zip $(DIST_DIR)
 
 clean:
 	@cargo clean --manifest-path $(CARGO_MANIFEST)
