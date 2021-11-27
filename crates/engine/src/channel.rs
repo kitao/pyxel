@@ -80,6 +80,7 @@ impl Channel {
         let sound = &self.sounds[self.sound_index as usize];
         let speed = max(sound.speed, 1);
         if self.tick_count % speed == 0 {
+            self.note_index = self.tick_count / speed;
             if self.note_index >= sound.notes.len() as u32 {
                 self.sound_index += 1;
                 self.note_index = 0;
@@ -111,7 +112,6 @@ impl Channel {
                     speed,
                 );
             }
-            self.note_index += 1;
         }
         self.oscillator.update(blip_buf);
         self.tick_count += 1;
