@@ -59,6 +59,7 @@ def _launch_pyxel_app(pyxel_app_file):
                 startup_script_file = os.path.join(
                     os.path.dirname(setting_file), f.read()
                 )
+                sys.path.append(os.path.dirname(startup_script_file))
                 runpy.run_path(startup_script_file)
                 return
 
@@ -69,6 +70,7 @@ def _launch_pyxel_app(pyxel_app_file):
 def _run_python_script(python_script_file):
     python_script_file = _complete_extension(python_script_file, ".py")
     _check_file_exists(python_script_file)
+    sys.path.append(os.path.dirname(python_script_file))
     runpy.run_path(python_script_file)
 
 
