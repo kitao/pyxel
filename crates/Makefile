@@ -65,9 +65,10 @@ dist:
 	$(eval DIST_NAME := $(shell ls $(DIST_DIR)/pyxel-*.whl | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PLATFORM))
 	@rm -rf $(PYOXIDIZER_DIR)
 	@pyoxidizer build --release
-	@mv $(PYOXIDIZER_DIR)/*/release/install $(PYOXIDIZER_DIR)/$(DIST_NAME)
-	@cd $(PYOXIDIZER_DIR) && zip -r $(DIST_NAME).zip $(DIST_NAME)
-	@mv -f $(PYOXIDIZER_DIR)/$(DIST_NAME).zip $(DIST_DIR)
+	@mv $(PYOXIDIZER_DIR)/*/release/install $(DIST_NAME)
+	@zip -r $(DIST_NAME).zip $(DIST_NAME)
+	@mv -f $(DIST_NAME).zip $(DIST_DIR)
+	@mv $(DIST_NAME) $(PYOXIDIZER_DIR)
 
 clean:
 	@cargo clean
