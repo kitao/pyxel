@@ -57,7 +57,6 @@ impl Input {
                 if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
                     self.press_key(key, frame_count);
                     self.input_keys.push(key);
-
                     if let Some(key) = Self::get_common_key(key) {
                         self.press_key(key, frame_count);
                     }
@@ -66,7 +65,6 @@ impl Input {
             Event::KeyUp { key } => {
                 if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
                     self.release_key(key, frame_count);
-
                     if let Some(key) = Self::get_common_key(key) {
                         self.release_key(key, frame_count);
                     }
@@ -112,7 +110,6 @@ impl Input {
                 } else {
                     return;
                 };
-
                 self.press_key(GAMEPAD1_BUTTON_A + button as Key + offset, frame_count);
             }
             Event::ControllerButtonUp { which, button } => {
