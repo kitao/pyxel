@@ -71,7 +71,7 @@ dist:
 
 clean:
 	@cargo clean
-	@rm -rf $(CRATES_DIR)/build $(PYOXIDIZER_DIR) $(PYXEL_LIB_DIR)
+	@rm -rf $(PYXEL_LIB_DIR)
 
 format:
 	@cargo +nightly fmt -- --emit=files
