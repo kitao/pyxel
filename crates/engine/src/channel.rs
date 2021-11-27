@@ -80,7 +80,9 @@ impl Channel {
         let sound = &self.sounds[self.sound_index as usize];
         let speed = max(sound.speed, 1);
         if self.tick_count % speed == 0 {
-            self.note_index = self.tick_count / speed;
+            if self.tick_count > 0 {
+                self.note_index += 1;
+            }
             if self.note_index >= sound.notes.len() as u32 {
                 self.sound_index += 1;
                 self.note_index = 0;
@@ -93,16 +95,18 @@ impl Channel {
                     }
                 }
             }
+
             let sound = &self.sounds[self.sound_index as usize];
             let note = Self::circular_note(&sound.notes, self.note_index);
             assert!(note <= MAX_NOTE, "invalid sound note {}", note);
-            let tone = Self::circular_tone(&sound.tones, self.note_index);
-            assert!(tone <= MAX_TONE, "invalid sound tone {}", tone);
             let volume = Self::circular_volume(&sound.volumes, self.note_index);
             assert!(volume <= MAX_VOLUME, "invalid sound volume {}", volume);
+            let tone = Self::circular_tone(&sound.tones, self.note_index);
+            assert!(tone <= MAX_TONE, "invalid sound tone {}", tone);
             let effect = Self::circular_effect(&sound.effects, self.note_index);
             assert!(effect <= MAX_EFFECT, "invalid sound effect {}", effect);
             let speed = max(sound.speed, 1);
+
             if note >= 0 && volume > 0 {
                 self.oscillator.play(
                     note as f64,
