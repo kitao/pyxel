@@ -216,6 +216,8 @@ impl Pyxel {
         let start_screen_index = self.resource.start_screen_index;
         let captured_screen_count = self.resource.captured_screen_count;
         let start_frame_count = screens[start_screen_index as usize].frame_count;
+        let mut file = File::create(&(Resource::export_path() + ".gif")).unwrap();
+
         let handle = std::thread::spawn(move || {
             for i in 0..captured_screen_count {
                 let index = (start_screen_index + i) % max_screen_count;
@@ -248,11 +250,12 @@ impl Pyxel {
                     .unwrap();
             }
         });
-        let mut file = File::create(&(Resource::export_path() + ".gif")).unwrap();
+
         writer
             .write(&mut file, &mut gifski::progress::NoProgress {})
             .unwrap();
         handle.join().unwrap();
+
         self.reset_capture();
         self.system.disable_next_frame_skip();
     }
