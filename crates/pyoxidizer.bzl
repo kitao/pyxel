@@ -2,7 +2,7 @@ def make_exe():
     dist = default_python_distribution()  # type: ignore  # noqa F821
 
     policy = dist.make_python_packaging_policy()
-    policy.resources_location_fallback = "filesystem-relative:lib"
+    policy.resources_location_fallback = "filesystem-relative:pyxel-lib"
 
     python_config = dist.make_python_interpreter_config()
     python_config.module_search_paths = ["$ORIGIN/pyxel-lib"]
