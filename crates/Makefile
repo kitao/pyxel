@@ -89,3 +89,4 @@ test: build
 
 wheel:
 	@cd $(ROOT_DIR) && $(PYTHON) setup.py bdist_wheel
+	@rm -rf $(ROOT_DIR)/build $(ROOT_DIR)/*.egg-info
