@@ -6,7 +6,7 @@ CRATES_DIR = $(ROOT_DIR)/crates
 TESTS_DIR = $(CRATES_DIR)/wrapper/tests
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 DIST_DIR = $(ROOT_DIR)/dist
-PYOXIDIZER_DIR = $(ROOT_DIR)/build
+PYOXIDIZER_DIR = $(CRATES_DIR)/build
 
 ifneq ($(findstring CYGWIN_NT-,$(shell uname)),)
 # Windows
