@@ -1,4 +1,3 @@
-import os
 import platform
 
 _system = platform.system()
