@@ -124,6 +124,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if rect.is_empty() {
             return;
         }
+
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
@@ -144,6 +145,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if rect.intersects(self.clip_rect).is_empty() {
             return;
         }
+
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();

@@ -276,6 +276,7 @@ impl Pyxel {
         if x <= -width || x >= self.width() as i32 || y <= -height || y >= self.height() as i32 {
             return;
         }
+
         let mut screen = self.screen.lock();
         let clip_rect = screen.canvas.clip_rect;
         let palette = screen.palette;

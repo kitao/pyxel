@@ -263,11 +263,7 @@ impl Image {
         let tilemap_y = as_i32(tilemap_y);
         let width = as_i32(width.round());
         let height = as_i32(height.round());
-        let tile_size = if width < 0 {
-            -(TILE_SIZE as i32)
-        } else {
-            TILE_SIZE as i32
-        };
+
         let left = self.canvas.clip_rect.left() / TILE_SIZE as i32;
         let top = self.canvas.clip_rect.top() / TILE_SIZE as i32;
         let right = (self.canvas.clip_rect.right() + TILE_SIZE as i32 - 1) / TILE_SIZE as i32;
@@ -278,6 +274,12 @@ impl Image {
             (right - left + 1) as u32,
             (bottom - top + 1) as u32,
         );
+
+        let tile_size = if width < 0 {
+            -(TILE_SIZE as i32)
+        } else {
+            TILE_SIZE as i32
+        };
         let tilemap = tilemap.lock();
 
         let CopyArea {
