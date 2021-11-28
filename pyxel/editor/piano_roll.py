@@ -110,7 +110,7 @@ class PianoRoll(Widget):
         self.add_post_history(x, 0)
 
     def __on_mouse_hover(self, x, y):
-        self.help_message = "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
+        self.help_message_var = "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
 
     def __on_update(self):
         if self.field_cursor.y > 0 or self.is_playing_var:
