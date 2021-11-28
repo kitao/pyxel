@@ -14,6 +14,8 @@ class OctaveBar(Widget):
     def __init__(self, parent, x, y):
         super().__init__(parent, x, y, 4, 123)
 
+        self.field_cursor = parent.field_cursor
+
         self.copy_var("octave_var", parent)
         self.copy_var("help_message_var", parent)
 
@@ -27,6 +29,7 @@ class OctaveBar(Widget):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
 
+        self.field_cursor.move_to(self.field_cursor.x, 0)
         self.octave_var = min(max(3 - ((y - self.y - 12) // 24), 0), 3)
 
     def __on_mouse_drag(self, key, x, y, dx, dy):

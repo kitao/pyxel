@@ -105,8 +105,11 @@ class PianoKeyboard(Widget):
             return octave
 
     def __on_mouse_down(self, key, x, y):
-        if key == pyxel.MOUSE_BUTTON_LEFT:
-            self._mouse_note = self._screen_to_note(x, y)
+        if key != pyxel.MOUSE_BUTTON_LEFT:
+            return
+
+        self.field_cursor.move_to(self.field_cursor.x, 0)
+        self._mouse_note = self._screen_to_note(x, y)
 
     def __on_mouse_up(self, key, x, y):
         self._mouse_note = None
@@ -115,7 +118,7 @@ class PianoKeyboard(Widget):
         self.__on_mouse_down(key, x, y)
 
     def __on_mouse_hover(self, x, y):
-        self.help_message_var = "PLAY:Z/S/X..Q/2/W..A TONE:1"
+        self.help_message_var = "NOTE:Z/S/X..Q/2/W..A+ENTER TONE:1"
 
     def __on_update(self):
         if (
