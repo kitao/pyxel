@@ -464,11 +464,11 @@ def blt(
     x: float,
     y: float,
     img: Union[int, Image],
-    image_x: float,
-    image_y: float,
+    u: float,
+    v: float,
     w: float,
     h: float,
-    color_key: Optional[int],
+    colkey: Optional[int],
 ) -> None: ...
 def bltm(
     x: float,
@@ -480,7 +480,7 @@ def bltm(
     h: float,
     colkey: Optional[int],
 ) -> None: ...
-def text(x: float, y: float, string: str, col: int) -> None: ...
+def text(x: float, y: float, s: str, col: int) -> None: ...
 
 # Audio
 class Channel: ...
