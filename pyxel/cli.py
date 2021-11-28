@@ -13,11 +13,11 @@ import pyxel.editor
 def _print_usage():
     print(f"Pyxel {pyxel.PYXEL_VERSION}, a retro game engine for Python")
     print("usage:")
-    print("    pyxel PYXEL_APP_FILE(.pyxapp)")
-    print("    pyxel -run PYTHON_SCRIPT_FILE(.py)")
-    print("    pyxel -edit [PYXEL_RESOURCE_FILE(.pyxres)]")
-    print("    pyxel -package APP_ROOT_DIR STARTUP_SCRIPT_FILE(.py)")
-    print("    pyxel -examples")
+    print("    pyxel run PYTHON_SCRIPT_FILE(.py)")
+    print("    pyxel play PYXEL_APP_FILE(.pyxapp)")
+    print("    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]")
+    print("    pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE(.py)")
+    print("    pyxel examples")
 
 
 def _complete_extension(filename, ext_with_dot):
@@ -45,7 +45,14 @@ def _check_dir_exists(dirname):
         exit(1)
 
 
-def _launch_pyxel_app(pyxel_app_file):
+def _run_python_script(python_script_file):
+    python_script_file = _complete_extension(python_script_file, ".py")
+    _check_file_exists(python_script_file)
+    sys.path.append(os.path.dirname(python_script_file))
+    runpy.run_path(python_script_file)
+
+
+def _play_pyxel_app(pyxel_app_file):
     pyxel_app_file = _complete_extension(pyxel_app_file, pyxel.APP_FILE_EXTENSION)
     _check_file_exists(pyxel_app_file)
 
@@ -65,13 +72,6 @@ def _launch_pyxel_app(pyxel_app_file):
 
         print(f"file not found: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
         exit(1)
-
-
-def _run_python_script(python_script_file):
-    python_script_file = _complete_extension(python_script_file, ".py")
-    _check_file_exists(python_script_file)
-    sys.path.append(os.path.dirname(python_script_file))
-    runpy.run_path(python_script_file)
 
 
 def _edit_pyxel_resource(pyxel_resource_file):
@@ -127,20 +127,15 @@ def cli():
     num_args = len(sys.argv)
     command = sys.argv[1].lower() if num_args > 1 else ""
 
-    if not command.startswith("-") and num_args == 2:
-        _launch_pyxel_app(sys.argv[1])
-
-    elif command == "-run" and num_args == 3:
+    if command == "run" and num_args == 3:
         _run_python_script(sys.argv[2])
-
-    elif command == "-edit" and (num_args == 2 or num_args == 3):
+    elif command == "play" and num_args == 3:
+        _play_pyxel_app(sys.argv[2])
+    elif command == "edit" and (num_args == 2 or num_args == 3):
         _edit_pyxel_resource(sys.argv[2] if num_args == 3 else None)
-
-    elif command == "-package" and num_args == 4:
+    elif command == "package" and num_args == 4:
         _package_pyxel_app(sys.argv[2], sys.argv[3])
-
-    elif command == "-examples" and num_args == 2:
+    elif command == "examples" and num_args == 2:
         _copy_pyxel_examples()
-
     else:
         _print_usage()
