@@ -31,11 +31,11 @@ platform-dirs = "0.3.0"
 rgb = "0.8.29"
 zip = { version = "0.5.13", default-features = false, features = ["deflate"] }
 
-[target.'cfg(windows)'.dependencies]
+[target.'cfg(target_os = "windows")'.dependencies]
 sdl2 = { version = "0.35.1", default-features = false, features = ["bundled", "unsafe_textures"] }
 
-[target.'cfg(macos)'.dependencies]
+[target.'cfg(target_os = "macos")'.dependencies]
 sdl2 = { version = "0.35.1", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
 
-[target.'cfg(unix)'.dependencies]
+[target.'cfg(target_os = "linux")'.dependencies]
 sdl2 = { version = "0.35.1", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
