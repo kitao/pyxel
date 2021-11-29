@@ -52,23 +52,9 @@ DST_LIB_DIR = $(PYXEL_LIB_DIR)
 TEST_IMPORT_DIR = $(ROOT_DIR)
 endif
 
-.PHONY: all build clean dist format test wheel
+.PHONY: all clean format build test wheel dist
 
 all: build
-
-build:
-	@cargo build $(CARGO_BUILD_OPT)
-	@mkdir -p $(DST_LIB_DIR) && cp $(SRC_LIB_DIR)/$(SRC_LIB_NAME) $(DST_LIB_DIR)/$(DST_LIB_NAME)
-	@$(COPY_SDL2_DLL)
-
-dist:
-	$(eval DIST_NAME := $(shell ls $(DIST_DIR)/pyxel-*.whl | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PLATFORM))
-	@rm -rf $(PYOXIDIZER_DIR)
-	@pyoxidizer build --release
-	@mv $(PYOXIDIZER_DIR)/*/release/install $(DIST_NAME)
-	@zip -r $(DIST_NAME).zip $(DIST_NAME)
-	@mv -f $(DIST_NAME).zip $(DIST_DIR)
-	@mv $(DIST_NAME) $(PYOXIDIZER_DIR)
 
 clean:
 	@cargo clean
@@ -80,6 +66,12 @@ format:
 	@isort $(ROOT_DIR) && black $(ROOT_DIR)
 	@flake8 $(ROOT_DIR)/*.py $(PYXEL_DIR)
 
+build:
+	@rm -rf $(PYXEL_LIB_DIR) $(DIST_DIR)/*.whl
+	@cargo build $(CARGO_BUILD_OPT)
+	@mkdir -p $(DST_LIB_DIR) && cp $(SRC_LIB_DIR)/$(SRC_LIB_NAME) $(DST_LIB_DIR)/$(DST_LIB_NAME)
+	@$(COPY_SDL2_DLL)
+
 test: build
 	@cargo test
 	@PYTHONPATH=$(TEST_IMPORT_DIR) $(PYTHON) -m unittest discover $(TESTS_DIR)
@@ -90,3 +82,12 @@ test: build
 wheel:
 	@cd $(ROOT_DIR) && $(PYTHON) setup.py bdist_wheel
 	@rm -rf $(ROOT_DIR)/build $(ROOT_DIR)/*.egg-info
+
+dist:
+	$(eval DIST_NAME := $(shell ls $(DIST_DIR)/pyxel-*.whl | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PLATFORM))
+	@rm -rf $(PYOXIDIZER_DIR)
+	@pyoxidizer build --release
+	@mv $(PYOXIDIZER_DIR)/*/release/install $(DIST_NAME)
+	@zip -r $(DIST_NAME).zip $(DIST_NAME)
+	@mv -f $(DIST_NAME).zip $(DIST_DIR)
+	@mv $(DIST_NAME) $(PYOXIDIZER_DIR)
