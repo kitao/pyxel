@@ -4,7 +4,7 @@ use sdl2::audio::{
     AudioCallback as SdlAudioCallback, AudioDevice as SdlAudioDevice,
     AudioSpecDesired as SdlAudioSpecDesired,
 };
-use sdl2::controller::{Axis as SdlAxis, Button as SdlButton};
+use sdl2::controller::{Axis as SdlAxis, Button as SdlButton, GameController as SdlGameController};
 use sdl2::event::Event as SdlEvent;
 use sdl2::mouse::MouseButton as SdlMouseButton;
 use sdl2::pixels::{Color as SdlColor, PixelFormatEnum as SdlPixelFormat};
@@ -36,10 +36,12 @@ impl SdlAudioCallback for AudioContextHolder {
 
 pub struct Sdl2 {
     sdl_context: SdlContext,
+    sdl_event_pump: SdlEventPump,
+    sdl_timer: SdlTimer,
     sdl_canvas: SdlCanvas,
     sdl_texture: SdlTexture,
-    sdl_timer: SdlTimer,
-    sdl_event_pump: SdlEventPump,
+    #[allow(dead_code)]
+    sdl_game_controllers: Vec<SdlGameController>,
     sdl_audio: SdlAudio,
     sdl_audio_device: Option<SdlAudioDevice<AudioContextHolder>>,
     screen_width: u32,
@@ -51,6 +53,8 @@ pub struct Sdl2 {
 impl Platform for Sdl2 {
     fn new(title: &str, width: u32, height: u32, display_ratio: f64) -> Self {
         let sdl_context = sdl2::init().unwrap();
+        let sdl_event_pump = sdl_context.event_pump().unwrap();
+        let sdl_timer = sdl_context.timer().unwrap();
         let sdl_video = sdl_context.video().unwrap();
         let sdl_display_mode = sdl_video.desktop_display_mode(0).unwrap();
         let scale = f64::max(
@@ -75,16 +79,22 @@ impl Platform for Sdl2 {
             .texture_creator()
             .create_texture_streaming(SdlPixelFormat::RGB24, width, height)
             .unwrap();
-        let sdl_timer = sdl_context.timer().unwrap();
-        let sdl_event_pump = sdl_context.event_pump().unwrap();
+        let sdl_game_controller = sdl_context.game_controller().unwrap();
+        let mut sdl_game_controllers = Vec::new();
+        for i in 0..sdl_game_controller.num_joysticks().unwrap_or(0) {
+            if let Ok(gc) = sdl_game_controller.open(i) {
+                sdl_game_controllers.push(gc);
+            }
+        }
         let sdl_audio = sdl_context.audio().unwrap();
 
         Self {
             sdl_context,
+            sdl_event_pump,
             sdl_timer,
             sdl_canvas,
             sdl_texture,
-            sdl_event_pump,
+            sdl_game_controllers,
             sdl_audio,
             sdl_audio_device: None,
             screen_width: width,
