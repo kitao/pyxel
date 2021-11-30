@@ -4,7 +4,7 @@
 # Prerequisites:
 #   - make
 #   - cmake
-#   - cargo (with rustup or other tools)
+#   - cargo (with `rustup` or other tools)
 #   - python3 (or python on Windows)
 #   - SDL2 development library for Linux
 #   - pyoxidizer with `cargo install pyoxidizer`
