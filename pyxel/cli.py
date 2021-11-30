@@ -17,7 +17,7 @@ def _print_usage():
     print("    pyxel play PYXEL_APP_FILE(.pyxapp)")
     print("    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]")
     print("    pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE(.py)")
-    print("    pyxel examples")
+    print("    pyxel copy_examples")
 
 
 def _complete_extension(filename, ext_with_dot):
@@ -135,7 +135,7 @@ def cli():
         _edit_pyxel_resource(sys.argv[2] if num_args == 3 else None)
     elif command == "package" and num_args == 4:
         _package_pyxel_app(sys.argv[2], sys.argv[3])
-    elif command == "examples" and num_args == 2:
+    elif command == "copy_examples" and num_args == 2:
         _copy_pyxel_examples()
     else:
         _print_usage()
