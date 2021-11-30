@@ -1,7 +1,6 @@
 import re
 
 import setuptools
-
 from pyxel import PYXEL_VERSION
 
 with open("README.md", "r", encoding="utf-8") as fh:
