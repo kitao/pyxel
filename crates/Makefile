@@ -6,6 +6,8 @@ CRATES_DIR = $(ROOT_DIR)/crates
 TESTS_DIR = $(CRATES_DIR)/wrapper/tests
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 DIST_DIR = $(ROOT_DIR)/dist
+DIST_NAME = $(shell echo $(WHEEL_NAME) | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PLATFORM)
+WHEEL_NAME = $(shell ls $(DIST_DIR)/pyxel-*.whl)
 PYOXIDIZER_DIR = $(CRATES_DIR)/build
 
 ifneq ($(findstring CYGWIN_NT-,$(shell uname)),)
@@ -84,9 +86,8 @@ wheel:
 	@rm -rf $(ROOT_DIR)/build $(ROOT_DIR)/*.egg-info
 
 dist:
-	$(eval DIST_NAME := $(shell ls $(DIST_DIR)/pyxel-*.whl | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PLATFORM))
 	@rm -rf $(PYOXIDIZER_DIR)
-	@pyoxidizer build --release
+	@pyoxidizer build --release --var wheel_name $(WHEEL_NAME)
 	@mv $(PYOXIDIZER_DIR)/*/release/install $(DIST_NAME)
 	@zip -r $(DIST_NAME).zip $(DIST_NAME)
 	@mv -f $(DIST_NAME).zip $(DIST_DIR)
