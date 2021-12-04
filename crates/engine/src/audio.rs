@@ -60,7 +60,6 @@ impl AudioCallback for AudioCore {
 }
 
 impl Pyxel {
-    // Advanced API
     pub fn channel(&self, channel_no: u32) -> SharedChannel {
         self.audio.channels[channel_no as usize].clone()
     }
