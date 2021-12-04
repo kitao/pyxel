@@ -23,12 +23,11 @@ harness = false
 array-macro = "2.1.0"
 blip_buf = "0.1.4"
 chrono = "0.4.19"
-gifski = "1.5.1"
+gif = "0.11.3"
 image = "0.23.14"
-imgref = "1.9.1"
+indexmap = "1.7.0"
 parking_lot = "0.11.2"
 platform-dirs = "0.3.0"
-rgb = "0.8.29"
 zip = { version = "0.5.13", default-features = false, features = ["deflate"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
