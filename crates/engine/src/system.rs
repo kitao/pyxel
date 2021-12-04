@@ -226,7 +226,7 @@ impl Pyxel {
         self.platform
             .render_screen(self.screen.clone(), &self.colors, BACKGROUND_COLOR);
         self.resource
-            .capture_screen(self.screen.clone(), self.system.frame_count);
+            .capture_screen(self.screen.clone(), &self.colors, self.system.frame_count);
         self.system.frame_count += 1;
 
         self.system.draw_profiler.end(self.platform.tick_count());
