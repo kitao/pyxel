@@ -25,14 +25,12 @@ PLATFORM = macos
 PYTHON = python3
 SRC_LIB_NAME = lib$(PYXEL_LIB_NAME).dylib
 DST_LIB_NAME = $(PYXEL_LIB_NAME).so
-COPY_SDL2_DLL =
 else ifeq ($(shell uname),Linux)
 # Linux
 PLATFORM = linux
 PYTHON = python3
 SRC_LIB_NAME = lib$(PYXEL_LIB_NAME).so
 DST_LIB_NAME = $(PYXEL_LIB_NAME).so
-COPY_SDL2_DLL =
 else
 # Others
 $(error "unsupported platform")
