@@ -58,12 +58,10 @@ impl Pyxel {
         self.system.frame_count
     }
 
-    // Advanced API
     pub fn title(&mut self, title: &str) {
         self.platform.set_title(title);
     }
 
-    // Advanced API
     pub fn icon(&mut self, data_str: &[&str], scale: u32) {
         let width = simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
