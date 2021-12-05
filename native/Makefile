@@ -19,6 +19,7 @@ DST_LIB_NAME = $(PYXEL_LIB_NAME).pyd
 SRC_SDL2_DLL = $(SRC_LIB_DIR)/SDL2.dll
 DST_SDL2_DLL = $(DST_LIB_DIR)/SDL2.dll
 COPY_SDL2_DLL = if [ ! -f $(DST_SDL2_DLL) ]; then cp $(SRC_SDL2_DLL) $(DST_SDL2_DLL); fi
+COPY_PYXEL_VBS = cp pyxel.vbs $(DIST_NAME)
 else ifeq ($(shell uname),Darwin)
 # MacOS
 PLATFORM = macos
@@ -87,6 +88,7 @@ dist:
 	@rm -rf $(PYOXIDIZER_DIR)
 	@pyoxidizer build --release --var wheel_name $(WHEEL_NAME)
 	@mv $(PYOXIDIZER_DIR)/*/release/install $(DIST_NAME)
+	@$(COPY_PYXEL_VBS)
 	@zip -r $(DIST_NAME).zip $(DIST_NAME)
 	@mv -f $(DIST_NAME).zip $(DIST_DIR)
 	@mv $(DIST_NAME) $(PYOXIDIZER_DIR)

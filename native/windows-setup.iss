@@ -15,9 +15,9 @@ SetupIconFile=..\images\pyxel_icon_64x64.ico
 UninstallDisplayIcon={app}\unins000.exe,0
 
 [Tasks]
-Name: envPyxapp; Description: "Associate .pyxapp files with Pyxel"
-Name: envPyxres; Description: "Associate .pyxres files with Pyxel"
-Name: envPath; Description: "Add Pyxel to the user PATH"
+Name: envPyxapp; Description: "Associate .pyxapp files with Pyxel {#PyxelVersion}"
+Name: envPyxres; Description: "Associate .pyxres files with Pyxel {#PyxelVersion}"
+Name: envPath; Description: "Add Pyxel {#PyxelVersion} to the user PATH"
 
 [Files]
 Source: "build\pyxel-{#PyxelVersion}-windows\*"; DestDir: "{app}"; Flags: recursesubdirs
@@ -26,13 +26,13 @@ Source: "build\pyxel-{#PyxelVersion}-windows\*"; DestDir: "{app}"; Flags: recurs
 Root: HKA; Subkey: "Software\Classes\.pyxapp\OpenWithProgids"; ValueType: string; ValueName: "Pyxel.pyxapp"; ValueData: ""; Flags: uninsdeletevalue; Tasks: envPyxapp
 Root: HKA; Subkey: "Software\Classes\Pyxel.pyxapp"; ValueType: string; ValueName: ""; ValueData: "Pyxel Application File"; Flags: uninsdeletekey; Tasks: envPyxapp
 Root: HKA; Subkey: "Software\Classes\Pyxel.pyxapp\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\unins000.exe,0"; Tasks: envPyxapp
-Root: HKA; Subkey: "Software\Classes\Pyxel.pyxapp\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\pyxel.exe"" ""play"" ""%1"""; Tasks: envPyxapp
+Root: HKA; Subkey: "Software\Classes\Pyxel.pyxapp\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """WScript"" ""{app}\pyxel.vbs"" ""play"" ""%1"""; Tasks: envPyxapp
 Root: HKA; Subkey: "Software\Classes\Applications\pyxel.exe\SupportedTypes"; ValueType: string; ValueName: ".pyxapp"; ValueData: ""; Tasks: envPyxapp
 
 Root: HKA; Subkey: "Software\Classes\.pyxres\OpenWithProgids"; ValueType: string; ValueName: "Pyxel.pyxres"; ValueData: ""; Flags: uninsdeletevalue; Tasks: envPyxres
 Root: HKA; Subkey: "Software\Classes\Pyxel.pyxres"; ValueType: string; ValueName: ""; ValueData: "Pyxel Resource File"; Flags: uninsdeletekey; Tasks: envPyxres
 Root: HKA; Subkey: "Software\Classes\Pyxel.pyxres\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\unins000.exe,0"; Tasks: envPyxres
-Root: HKA; Subkey: "Software\Classes\Pyxel.pyxres\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\pyxel.exe"" ""edit"" ""%1"""; Tasks: envPyxres
+Root: HKA; Subkey: "Software\Classes\Pyxel.pyxres\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """WScript"" ""{app}\pyxel.vbs"" ""edit"" ""%1"""; Tasks: envPyxres
 Root: HKA; Subkey: "Software\Classes\Applications\pyxel.exe\SupportedTypes"; ValueType: string; ValueName: ".pyxres"; ValueData: ""; Tasks: envPyxres
 
 [Code]
