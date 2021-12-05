@@ -31,7 +31,7 @@
 #   make dist
 #
 
-FORWARD_DIR = crates
+FORWARD_DIR = native
 
 .PHONY: forward $(MAKECMDGOALS)
 
