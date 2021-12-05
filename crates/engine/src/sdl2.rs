@@ -116,19 +116,15 @@ impl Platform for Sdl2 {
             SdlSurface::new(width * scale, height * scale, SdlPixelFormat::RGBA32).unwrap();
         let pitch = sdl_surface.pitch();
         sdl_surface.with_lock_mut(|buffer: &mut [u8]| {
-            for y in 0..height {
-                for x in 0..width {
-                    for sy in 0..scale {
-                        for sx in 0..scale {
-                            let color = icon.canvas.data[y as usize][x as usize];
-                            let rgb = colors[color as usize];
-                            let offset = ((y * scale + sy) * pitch + (x * scale + sx) * 4) as usize;
-                            buffer[offset] = ((rgb >> 16) & 0xff) as u8;
-                            buffer[offset + 1] = ((rgb >> 8) & 0xff) as u8;
-                            buffer[offset + 2] = (rgb & 0xff) as u8;
-                            buffer[offset + 3] = if color > 0 { 0xff } else { 0x00 };
-                        }
-                    }
+            for y in 0..height * scale {
+                for x in 0..width * scale {
+                    let color = icon.canvas.data[(y / scale) as usize][(x / scale) as usize];
+                    let rgb = colors[color as usize];
+                    let offset = (y * pitch + x * 4) as usize;
+                    buffer[offset] = ((rgb >> 16) & 0xff) as u8;
+                    buffer[offset + 1] = ((rgb >> 8) & 0xff) as u8;
+                    buffer[offset + 2] = (rgb & 0xff) as u8;
+                    buffer[offset + 3] = if color > 0 { 0xff } else { 0x00 };
                 }
             }
         });
