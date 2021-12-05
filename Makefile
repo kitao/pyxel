@@ -24,11 +24,14 @@
 # Release build and test:
 #   make clean test RELEASE=1
 #
-# Make Python wheel after release build
+# Make Python wheel after release build:
 #   make wheel
 #
-# Make distribution package after making Python wheel
+# Make distribution packages using Python wheel:
 #   make dist
+#
+# Make Pyxel installer using Windows package:
+#   Build native/windows-setup.iss with Inno Setup
 #
 
 FORWARD_DIR = native
