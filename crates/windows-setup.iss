@@ -12,6 +12,7 @@ OutputBaseFilename=pyxel-{#PyxelVersion}-windows-setup
 OutputDir=..\dist
 PrivilegesRequired=lowest
 SetupIconFile=..\images\pyxel_icon_64x64.ico
+UninstallDisplayIcon={app}\unins000.exe,0
 
 [Tasks]
 Name: envPyxapp; Description: "Associate .pyxapp files with Pyxel"
