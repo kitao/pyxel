@@ -2,13 +2,13 @@ ROOT_DIR = ..
 PYXEL_DIR = $(ROOT_DIR)/pyxel
 PYXEL_LIB_DIR = $(PYXEL_DIR)/lib/$(PLATFORM)
 PYXEL_LIB_NAME = pyxel_wrapper
-CRATES_DIR = $(ROOT_DIR)/crates
-TESTS_DIR = $(CRATES_DIR)/wrapper/tests
+NATIVE_DIR = $(ROOT_DIR)/native
+TESTS_DIR = $(NATIVE_DIR)/wrapper/tests
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 DIST_DIR = $(ROOT_DIR)/dist
 DIST_NAME = $(shell echo $(WHEEL_NAME) | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PLATFORM)
 WHEEL_NAME = $(shell ls $(DIST_DIR)/pyxel-*.whl)
-PYOXIDIZER_DIR = $(CRATES_DIR)/build
+PYOXIDIZER_DIR = $(NATIVE_DIR)/build
 
 ifneq ($(findstring CYGWIN_NT-,$(shell uname)),)
 # Windows
@@ -39,14 +39,14 @@ endif
 ifeq ($(RELEASE),)
 # Debug
 CARGO_BUILD_OPT =
-CARGO_TARGET_DIR = $(CRATES_DIR)/target/debug
+CARGO_TARGET_DIR = $(NATIVE_DIR)/target/debug
 SRC_LIB_DIR = $(CARGO_TARGET_DIR)
 DST_LIB_DIR = $(CARGO_TARGET_DIR)
 TEST_IMPORT_DIR = $(TESTS_DIR)/debug_module
 else
 # Release
 CARGO_BUILD_OPT = --release
-CARGO_TARGET_DIR = $(CRATES_DIR)/target/release
+CARGO_TARGET_DIR = $(NATIVE_DIR)/target/release
 SRC_LIB_DIR = $(CARGO_TARGET_DIR)
 DST_LIB_DIR = $(PYXEL_LIB_DIR)
 TEST_IMPORT_DIR = $(ROOT_DIR)
