@@ -31,7 +31,7 @@
 #   make dist
 #
 # Make Pyxel installer using Windows package:
-#   Build native/windows-setup.iss with Inno Setup
+#   Build native/setup.iss with Inno Setup
 #
 
 FORWARD_DIR = native
