@@ -29,7 +29,7 @@ class App(Widget):
         resource_file = os.path.abspath(resource_file)
 
         # initialize Pyxel
-        pyxel.init(APP_WIDTH, APP_HEIGHT)
+        pyxel.init(APP_WIDTH, APP_HEIGHT, quit_key=pyxel.KEY_NONE)
         pyxel.mouse(True)
         self._set_title(resource_file)
         if os.path.exists(resource_file):
