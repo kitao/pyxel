@@ -37,4 +37,4 @@ sdl2 = { version = "0.35.1", default-features = false, features = ["bundled", "u
 sdl2 = { version = "0.35.1", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-sdl2 = { version = "0.35.1", default-features = false, features = ["unsafe_textures"] }
+sdl2 = { version = "0.35.1", default-features = false, features = ["bundled", "unsafe_textures"] }
