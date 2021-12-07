@@ -1,33 +1,39 @@
 #
 # [How to build]
 #
-# Prerequisites:
-#   - make
+# Prerequisites for Windows:
+#   - Build Tools for Visual Studio 2019
+#   - Cygwin64 with make and zip added
+#   - Inno Setup
+#
+# Common prerequisites:
 #   - cmake
-#   - cargo (with `rustup` or other tools)
-#   - python3 (or python on Windows)
-#   - SDL2 development library for Linux
-#   - pyoxidizer with `cargo install pyoxidizer`
+#   - rustup
+#   - python3 (or python for Windows)
+#   - pyoxidizer by `cargo install pyoxidizer`
 #
 # Format and lint code:
 #   make format
 #
 # Debug build:
-#   make clean build
+#   make clean all
 #
 # Debug build and test:
 #   make clean test
 #
 # Release build:
-#   make clean build RELEASE=1
+#   make clean all RELEASE=1
 #
 # Release build and test:
 #   make clean test RELEASE=1
 #
+# Install Python pakcage after release build:
+#   pip3 install .
+#
 # Make Python wheel after release build:
 #   make wheel
 #
-# Make distribution packages using Python wheel:
+# Make Pyxel distributions using Python wheel:
 #   make dist
 #
 # Make Pyxel installer using Windows package:
