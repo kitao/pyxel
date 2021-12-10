@@ -276,7 +276,7 @@ Pyxel Editorには以下の編集モードがあります。
 
 <img src="pyxel/editor/screenshots/image_editor.gif">
 
-イメージエディタ画面にpngファイルをドラッグ＆ドロップすると、画像を選択中のイメージバンクに読み込むことができます。
+イメージエディタ画面に画像ファイル (png/gif/jpeg) をドラッグ＆ドロップすると、画像を選択中のイメージバンクに読み込むことができます。
 
 **タイルマップエディタ:**
 
@@ -301,7 +301,7 @@ Pyxel Editorには以下の編集モードがあります。
 Pyxel用の画像やタイルマップは以下の方法で作成することもできます。
 
 - `Image.set`や`Tilemap.set`関数で文字列のリストから作成する
-- `Image.load`関数でPyxel向け配色のpngファイルを読み込む
+- `Image.load`関数でPyxel向け配色の画像ファイル(png/gif/jpeg)を読み込む
 
 Pyxel用のサウンドやミュージックは以下の方法で作成することもできます。
 
@@ -468,7 +468,7 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 例：`pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
 
 - `load(x, y, filename)`<br>
-(`x`, `y`) に画像ファイル (png, jpeg, gif) を読み込みます。
+(`x`, `y`) に画像ファイル (png/gif/jpeg) を読み込みます。
 
 - `pget(x, y)`<br>
 (`x`, `y`) のピクセルの色を取得します。
