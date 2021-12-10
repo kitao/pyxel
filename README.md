@@ -439,11 +439,11 @@ Draw a string `s` of color `col` at (`x`, `y`).
 ### Audio
 
 - `sound(snd)`<br>
-Operate the sound `snd` (0-63). (See the Sound class).<br>
+Operate the sound `snd` (0-63). (See the Sound class)<br>
 e.g. `pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
-Operate the music `msc` (0-7). (See the Music class).
+Operate the music `msc` (0-7). (See the Music class)
 
 - `play_pos(ch)`<br>
 Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound-no, note-no)`. Returns `None` when playback is stopped.
