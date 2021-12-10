@@ -244,7 +244,7 @@ Pyxelアプリケーション実行中に、以下の特殊操作を行うこと
 - `Alt(Option)+2`<br>
 画面キャプチャ動画の録画開始時刻をリセットする
 - `Alt(Option)+3`<br>
-画面キャプチャ動画 (gif) をデスクトップに保存する (最大10秒)
+画面キャプチャ動画をデスクトップに保存する (最大10秒)
 - `Alt(Option)+0`<br>
 パフォーマンスモニタ (fps、update時間、draw時間) の表示を切り替える
 - `Alt(Option)+Enter`<br>
@@ -301,7 +301,7 @@ Pyxel Editorには以下の編集モードがあります。
 Pyxel用の画像やタイルマップは以下の方法で作成することもできます。
 
 - `Image.set`や`Tilemap.set`関数で文字列のリストから作成する
-- `Image.load`関数でPyxel向け配色の画像ファイル(png/gif/jpeg)を読み込む
+- `Image.load`関数でPyxel向け配色の画像ファイル (png/gif/jpeg) を読み込む
 
 Pyxel用のサウンドやミュージックは以下の方法で作成することもできます。
 
@@ -338,11 +338,11 @@ pyxel play Pyxelアプリケーションファイル
 経過フレーム数
 
 - `init(width, height, [title], [fps], [quit_key], [capture_sec])`<br>
-Pyxelアプリを画面サイズ (`width`, `height`) で初期化します。`title`でウィンドウタイトル、`fps`で動作フレームレート、`quit_key`でアプリケーション終了キー、`capture_sec`で画面キャプチャ動画の最大録画時間を指定します。<br>
+Pyxelアプリケーションを画面サイズ (`width`, `height`) で初期化します。`title`でウィンドウタイトル、`fps`で動作フレームレート、`quit_key`でアプリケーション終了キー、`capture_sec`で画面キャプチャ動画の最大録画時間を指定します。<br>
 例：`pyxel.init(160, 120, title="Pyxel with Options", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
 
 - `run(update, draw)`<br>
-Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時に`draw`関数を呼びます。
+Pyxelアプリケーションを開始し、フレーム更新時に`update`関数、描画時に`draw`関数を呼びます。
 
 - `show()`<br>
 画面を表示して`Esc`キーが押されるまで待機します。(通常のアプリケーションでは使用しません)
@@ -351,12 +351,12 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 画面を一度更新します。(通常のアプリケーションでは使用しません)
 
 - `quit()`<br>
-現在フレーム終了時にPyxelアプリを終了します。
+現在フレーム終了時にPyxelアプリケーションを終了します。
 
 ### リソース
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-実行スクリプトのディレクトリからリソースファイル (.pyxres) を読み込みます。リソースタイプ (`image/tilemap/sound/music`) に``False``を指定すると、そのリソースは読み込まれません。
+リソースファイル (.pyxres) を読み込みます。リソースタイプ (`image/tilemap/sound/music`) に``False``を指定すると、そのリソースは読み込まれません。
 
 ### 入力
 - `mouse_x`, `mouse_y`<br>
@@ -369,7 +369,7 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 `key`が押されていたら`True`、押されていなければ`False`を返します。([キー定義一覧](pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [period])`<br>
-そのフレームに`key`が押されたら`True`、押されなければ`False`を返します。`hold`と`period`を指定すると、`hold`フレーム以上ボタンを押し続けた際に`period`フレーム間隔で`True`が返ります。
+そのフレームに`key`が押されたら`True`、押されなければ`False`を返します。`hold`と`period`を指定すると、`hold`フレーム以上ボタンを押し続けた時に`period`フレーム間隔で`True`が返ります。
 
 - `btnr(key)`<br>
 そのフレームに`key`が離されたら`True`、離されなければ`False`を返します。
@@ -515,19 +515,19 @@ Pyxelアプリを開始し、フレーム更新時に`update`関数、描画時�
 文字列で音程、音色、音量、エフェクトを設定します。音色、音量、エフェクトの長さが音程より短い場合は、先頭から繰り返されます。
 
 - `set_notes(notes)`<br>
-'CDEFGAB'+'#-'+'0123'または'R'の文字列で音程を設定します。大文字と小文字は区別せず、空白は無視されます。<br>
+'CDEFGAB'+'#-'+'0123'または'R'の文字列で音程を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
 例：`pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-'TSPN'の文字列で音色を設定します。大文字と小文字は区別せず、空白は無視されます。<br>
+'TSPN'の文字列で音色を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
 例：`pyxel.sound(0).set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-'01234567'の文字列で音量を設定します。大文字と小文字は区別せず、空白は無視されます。<br>
+'01234567'の文字列で音量を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
 例：`pyxel.sound(0).set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-'NSVF'の文字列でエフェクトを設定します。大文字と小文字は区別せず、空白は無視されます。<br>
+'NSVF'の文字列でエフェクトを設定します。大文字と小文字は区別されず、空白は無視されます。<br>
 例：`pyxel.sound(0).set_effects("NFNF NVVS")`
 
 ### ミュージッククラス
