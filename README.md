@@ -382,7 +382,7 @@ If `visible` is `True`, show the mouse cursor. If `False`, hide it. Even if the 
 List of the palette display colors. The display color is specified by a 24-bit numerical value. Use `colors.from_list` and `colors.to_list` to directly assign and retrieve Python lists.<br>
 e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
 
-- `image(img, [system])`<br>
+- `image(img)`<br>
 Operate the image bank `img` (0-2). (See the Image class)<br>
 e.g. `pyxel.image(0).load(0, 0, "title.png")`
 
@@ -438,7 +438,7 @@ Draw a string `s` of color `col` at (`x`, `y`).
 
 ### Audio
 
-- `sound(snd, [system])`<br>
+- `sound(snd)`<br>
 Operate the sound `snd` (0-63). (See the Sound class).<br>
 e.g. `pyxel.sound(0).speed = 60`
 
