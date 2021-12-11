@@ -56,7 +56,7 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 
 There are two types of Pyxel, a packaged version and a standalone version.
 
-### Install the Packaged Version
+### Install Packaged Version
 
 The packaged version of Pyxel uses Pyxel as a Python extension module.
 
@@ -78,7 +78,7 @@ After installing [Python3](https://www.python.org/) (version 3.7 or higher), run
 pip3 install -U pyxel
 ```
 
-### Linux
+**Linux**
 
 After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://www.python.org/) (version 3.7 or higher), and `python3-pip`, run the following command:
 
@@ -95,7 +95,7 @@ make clean all RELEASE=1
 pip3 install .
 ```
 
-### Install the Standalone Version
+### Install Standalone Version
 
 The standalone version of Pyxel uses Pyxel as a standalone tool that does not depend on Python.
 
@@ -125,7 +125,7 @@ brew install pyxel
 
 If the above doesn't work, try self-building the packaged version.
 
-### Install Examples
+### Try Pyxel Examples
 
 After installing Pyxel, the examples of Pyxel will be copied to the current directory with the following command:
 
@@ -153,18 +153,9 @@ cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 ```
 
-For the packaged version, it can be executed like a normal Python script:
-
-```sh
-cd pyxel_examples
-python3 01_hello_pyxel.py
-```
-
-(For Windows, type `python` instead of `python3`)
-
 ## How to Use
 
-### Create a Pyxel Application
+### Create Pyxel Application
 
 After importing the Pyxel module in your python script, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
 
@@ -233,6 +224,23 @@ while True:
     pyxel.flip()
 ```
 
+### Run Pyxel Application
+
+The created Python script can be executed with the following command:
+
+```sh
+pyxel run PYTHON_SCRIPT_FILE
+```
+
+For the packaged version, it can be executed like a normal Python script:
+
+```sh
+cd pyxel_examples
+python3 PYTHON_SCRIPT_FILE
+```
+
+(For Windows, type `python` instead of `python3`)
+
 ### Special Controls
 
 The following special controls can be performed while a Pyxel application is running:
@@ -250,7 +258,7 @@ Toggle the performance monitor (fps, update time, and draw time)
 - `Alt(Option)+Enter`<br>
 Toggle full screen
 
-### How to Create a Resource
+### How to Create Resource
 
 Pyxel Editor can create images and sounds used in a Pyxel application.
 
@@ -308,7 +316,7 @@ Pyxel sounds can also be created in the following method:
 
 Please refer to the API reference for usage of these functions.
 
-### How to Distribute an Application
+### How to Distribute Application
 
 Pyxel supports a dedicated application distribution file format (Pyxel application file) that works across platforms.
 
@@ -546,7 +554,7 @@ If you are familiar with your skills, try to create amazing works with [this](py
 
 ## How to Contribute
 
-### Submitting an Issue
+### Submitting Issue
 
 Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests. Before submitting a new issue, ensure that there is no similar open issue.
 
@@ -554,7 +562,7 @@ Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug rep
 
 Anyone manually testing the code and reporting bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) are very welcome!
 
-### Submitting a Pull Request
+### Submitting Pull Request
 
 Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the Issue Tracker.
 

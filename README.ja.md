@@ -125,7 +125,7 @@ brew install pyxel
 
 上記で動作しない場合は、パッケージ版のセルフビルドを試してみてください。
 
-### サンプルのインストール
+### サンプルを実行する
 
 Pyxelのインストール後に、次のコマンドでカレントディレクトリにPyxelのサンプルコードがコピーされます。
 
@@ -152,15 +152,6 @@ pyxel copy_examples
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 ```
-
-パッケージ版であれば、通常のPythonスクリプトと同様に実行することもできます。
-
-```sh
-cd pyxel_examples
-python3 01_hello_pyxel.py
-```
-
-(Windowsの場合は`python3`の代わりに`python`と入力してください)
 
 ## 使い方
 
@@ -232,6 +223,22 @@ while True:
     pyxel.rectb(pyxel.frame_count % 160 - 40, 20, 40, 40, 7)
     pyxel.flip()
 ```
+
+### アプリケーションの実行方法
+
+作成したPythonスクリプトは次のコマンドで実行できます。
+
+```sh
+pyxel run Pythonスクリプトファイル
+```
+
+またパッケージ版であれば、通常のPythonスクリプトと同様に実行することもできます。
+
+```sh
+python3 Pythonスクリプトファイル
+```
+
+(Windowsの場合は`python3`の代わりに`python`と入力してください)
 
 ### 特殊操作
 
