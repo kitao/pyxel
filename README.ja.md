@@ -80,7 +80,7 @@ pip3 install -U pyxel
 
 **Linux**
 
-SDL2パッケージ (Ubuntuの場合は`libsdl2-dev`)、[Python3](https://www.python.org/) (バージョン3.7以上)、`pip3`をインストールした後に、次のコマンドを実行します。
+SDL2パッケージ (Ubuntuの場合は`libsdl2-dev`)、[Python3](https://www.python.org/) (バージョン3.7以上)、`python3-pip`をインストールした後に、次のコマンドを実行します。
 
 ```sh
 pip3 install -U pyxel
