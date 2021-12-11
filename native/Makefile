@@ -59,7 +59,7 @@ all: build
 
 clean:
 	@cargo clean
-	@rm -rf $(PYXEL_LIB_DIR)
+	@rm -f $(PYXEL_LIB_DIR)/*
 
 format:
 	@cargo +nightly fmt -- --emit=files
