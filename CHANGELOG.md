@@ -1,33 +1,34 @@
 # Change Log
 
 ## 1.5.0
-- Reimplemented the core engine in Rust
-- Changed to statically link SDL2 libraries
+- Re-implemented the core engine in Rust
+- Changed to statically link SDL2 libraries for Mac
 - Renamed the key constants to the same as SDL2
 - Added the pyxel command to work standalone without Python
-- Added the cli function to launch commnad line interface
+- Added the cli function to launch command line interface
 - Added support for Pyxel application file (.pyxapp)
+- Added the installer for Windows
 - Simplified the init function arguments
 - Removed maximum screen size limit
 - Enabled to change maximum capture time to reduce reserved memory
-- Added support loading varous image formats other than PNG
+- Added support loading various image formats other than PNG
 - Optimized GIF animation compression
 - Enabled to add the image banks and tilemap banks dynamically
-- Added drawing methods to the Image and Tilmap class
-- Changed the tile format of tilemap to tuple of (x, y)
-- Reanemd the properties of the Sound and Music class
+- Added drawing methods to the Image and Tilemap class
+- Changed the tile format of tilemap to tuple of (x in tile, y in tile)
+- Renamed the properties of the Sound and Music class
 - Changed the play_pos function to return a tuple of sound and note
 - Supported dynamic palette change with the colors list
 - Added the input_keys and input_text variables to obtain the entered key
-- Added the frop_files variable to obtain the dropped files
+- Added the drop_files variable to obtain the dropped files
 - Added the icon function to set the application icon
 - Added the title function to set the application title
 - Added the fullscreen function to toggle fullscreen manually
 - Added the Channel class which can control the channel volume
 - Added the functions to overwrite key inputs and mouse position
 - Added the functions to capture screen manually
-- Added the example #10 (expected to change)
-- Fixed setup.py so taht images are referenced correctly on PyPI page
+- Added the example #10
+- Fixed setup.py so that images are referenced correctly on PyPI page
 - Added the pyi file for type hinting
 
 ## 1.4.4
@@ -59,7 +60,7 @@
 
 ## 1.3.8
 - Modified .gitignore for Windows
-- Changed the installation of PyInstaller to optional
+- Changed the installation of Py installer to optional
 - Changed the way to set the path on Windows
 - Updated the pipfile
 
@@ -146,7 +147,7 @@
 - Fixed the undo/redo for copy and paste in the Pyxel Editor
 
 ## 1.2.5
-- Fixed the pictch of the sound being off
+- Fixed the pitch of the sound being off
 
 ## 1.2.4
 - Fixed to keep the mouse cursor speed on Linux
@@ -329,7 +330,7 @@
 
 ## 0.8.7
 - Fixed the piano keyboard bug when only enter was pressed
-- Fixed the piano keyboard hilights correctly
+- Fixed the piano keyboard highlights correctly
 - Changed the default sound volume to 7
 - Changed the default sound speed to 30
 - Fixed the sound button bug of the Sound Editor
@@ -393,9 +394,9 @@
 ## 0.7.12
 - Added new key definitions which integrates keys on both sides
 - Changed the description of the project
-- Changed the max scren size to 255
+- Changed the max screen size to 255
 - Fixed the key hold time of the btnp API
-- Fixed to work the btnp API correctly in the slow frame rate condtion
+- Fixed to work the btnp API correctly in the slow frame rate condition
 - Changed the screen size of the example #5 and #6
 - Updated the screenshot of the example #5
 
@@ -404,7 +405,7 @@
 - Implemented the widget class for the Pyxel Editor
 - Added the example #6 by ttrkaya
 - Renamed the constant variable for the max screen size
-- Changed to set the defualt scale automatically
+- Changed to set the default scale automatically
 
 ## 0.7.10
 - Added screen size error
