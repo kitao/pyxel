@@ -538,7 +538,7 @@ A two-dimensional list of sounds (0-63) listed by the number of channels
 Set the lists of sound (0-63) of all channels. If an empty list is specified, that channel is not used for playback.<br>
 e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
-### Advaned APIs
+### Advanced APIs
 
 Pyxel has "advanced APIs" that are not mentioned in this reference because they "may confuse users" or "need specialized knowledge to use".
 
