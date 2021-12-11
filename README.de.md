@@ -2,8 +2,6 @@
 
 [ [English](README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
-**NOTE: This manual has not yet been translated for Pyxel version 1.5.0. We are looking for volunteers to translate and check for mistakes!**
-
 **Pyxel** ist eine Retro-Spielengine für Python.
 
 Dank seiner einfachen, von Retro-Spielkonsolen inspirierten, Spezifikationen, wie z. B. dass nur 16 Farben angezeigt werden können und nur 4 Töne gleichzeitig wiedergegeben werden können, kannst du dich frei fühlen, um Spiele im Pixel-Art-Stil zu entwickeln.
@@ -139,8 +137,8 @@ Die zu kopierenden Beispiele lauten wie folgt:
 
 - [01_hello_pyxel.py](pyxel/examples/01_hello_pyxel.py) - Einfaches Fenster
 - [02_jump_game.py](pyxel/examples/02_jump_game.py) - Spring Spiel mit Pyxel-Ressource-Datei
-- [03_draw_api.py](pyxel/examples/03_draw_api.py) - Demonstration of drawing APIs
-- [04_sound_api.py](pyxel/examples/04_sound_api.py) - Demonstration of sound APIs
+- [03_draw_api.py](pyxel/examples/03_draw_api.py) - Demonstration der Zeichen-APIs
+- [04_sound_api.py](pyxel/examples/04_sound_api.py) - Demonstration of Sound-APIs
 - [05_color_palette.py](pyxel/examples/05_color_palette.py) - Farbpalleten Liste
 - [06_click_game.py](pyxel/examples/06_click_game.py) - Maus-Klick-Spiel
 - [07_snake.py](pyxel/examples/07_snake.py) - Snake mit BGM
@@ -202,7 +200,7 @@ App()
 
 Es ist auch möglich, einfachen Code zu schreiben, der die Funktionen `show` und `flip` verwendet, um einfache Grafiken und Animationen zu zeichnen.
 
-`show` function displays the screen and waits until the `Esc` key is pressed.
+Die Funktion `show` zeigt das Fenster an und wartet, bis die Taste `Esc` gedrückt wird.
 
 ```python
 import pyxel
@@ -288,7 +286,7 @@ Per Drag-and-Drop einer Bild-Datei (png/gif/jpeg) auf das Bildeditor-Fenster kan
 
 **Tilemap-Editor:**
 
-Der Modus zum editieren von Tilemaps in welcher Bilder aus der Image Bank in einem tile pattern arrangiert sind.
+Der Modus zum editieren von Tilemaps in welcher Bilder aus der Image Bank in einem Tile-Pattern arrangiert sind.
 
 <img src="pyxel/editor/screenshots/tilemap_editor.gif">
 
@@ -555,7 +553,7 @@ z.B. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 Pyxel verfügt über "fortgeschrittene APIs", die in dieser Referenz nicht erwähnt werden, weil sie "Benutzer verwirren können" oder "spezielles Wissen zur Nutzung erfordern".
 
-Wenn du mit deinen Fähigkeiten vertraut bist, versuche, mit [hiermit](pyxel/__init__.pyi) als Anhaltspunkt erstaunliche Werke zu schaffen!
+Wenn du mit deinen Fähigkeiten vertraut bist, versuche, [hiermit](pyxel/__init__.pyi) als Anhaltspunkt erstaunliche Werke zu schaffen!
 
 ## Wie du beitragen kannst
 
