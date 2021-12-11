@@ -496,7 +496,7 @@ Draw a `tile` at (`x`, `y`). A tile is a tuple of `(x-in-tile, y-in-tile)`.
 ### Sound Class
 
 - `notes`<br>
-List of notes (0-127) (33 = 'A2' = 440Hz)
+List of notes (0-127). The higher the number, the higher the pitch, and at 33 it becomes 'A2'(440Hz). The rest is -1.
 
 - `tones`<br>
 List of tones (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
@@ -548,17 +548,17 @@ If you are familiar with your skills, try to create amazing works with [this](py
 
 ### Submitting an Issue
 
-Use the [issue tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests. Before submitting a new issue, search the issue tracker to ensure that there is no similar open issue.
+Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests. Before submitting a new issue, ensure that there is no similar open issue.
 
-### Operation Check
+### Manual Testing
 
-Those who check the operation and use [Issue Tracker](https://github.com/kitao/pyxel/issues) to report problems or make suggestions for improvement are welcome!
+Anyone manually testing the code and reporting bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) are very welcome!
 
 ### Submitting a Pull Request
 
-Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the issue tracker.
+Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the Issue Tracker.
 
-Submitted pull request is deemed to have agreed to publish under [MIT license](LICENSE).
+Submitted pull request is deemed to have agreed to publish under [MIT License](LICENSE).
 
 ## Other Information
 
@@ -567,4 +567,4 @@ Submitted pull request is deemed to have agreed to publish under [MIT license](L
 
 ## License
 
-Pyxel is under [MIT license](http://en.wikipedia.org/wiki/MIT_License). It can be reused within proprietary software, provided that all copies of the software or its substantial portions include a copy of the terms of the MIT License and also a copyright notice.
+Pyxel is under [MIT License](http://en.wikipedia.org/wiki/MIT_License). It can be reused within proprietary software, provided that all copies of the software or its substantial portions include a copy of the terms of the MIT License and also a copyright notice.
