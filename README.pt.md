@@ -310,21 +310,23 @@ Pyxel sounds can also be created in the following method:
 
 Favor consultar a referência da API para o uso dessas funções.
 
-### Como criar um Executável Autônomo
+### How to Distribute an Application
 
-Usando o Empacotador Pyxel embutido é possível criar um executável autônomo que irá funcionar até em ambientes em que não tenham o Python instalado.
+Pyxel supports a dedicated application distribution file format (Pyxel application file) that works across platforms.
 
-Para criar um executável independente, no ambiente em que [PyInstaller](https://www.pyinstaller.org/) está instalado, especifique o arquivo Python a ser usado para iniciar o aplicativo com o comando `pyxelpackager` da seguinte maneira:
+Create the Pyxel application file (.pyxapp) with the following command:
 
 ```sh
-pyxelpackager python_file
+pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
 ```
 
-Quando o processo estiver completo, um executável será criado na pasta `dist`.
+If the application should include resources or additional modules, place them in the application folder.
 
-Se recursos como os arquivos .pyxres e .png também forem necessários, coloque os dentro da pasta `assets` que eles também serão inclusos.
+The created application file can be executed with the following command:
 
-Também é possível especificar um icone com a opção ``-i icon_file``.
+```sh
+pyxel play PYXEL_APP_FILE
+```
 
 ## Referência da API
 
@@ -435,7 +437,7 @@ Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img`(0-
 <img src="images/image_bank_mechanism.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x-in-tile, y-in-tile)`.
+Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
 
 - `text(x, y, s, col)`<br>
 Desenha uma string `s` de cor `col` em (`x`, `y`)
@@ -450,7 +452,7 @@ e.g. `pyxel.sound(0).speed = 60`
 Opera a música `msc` (0-7) (ver a classe de Musica)
 
 - `play_pos(ch)`<br>
-Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound-no, note-no)`. Returns `None` when playback is stopped.
+Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
 
 - `play(ch, snd, loop=False)`<br>
 Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. If `True` is specified for `loop`, loop playback is performed.
@@ -492,10 +494,10 @@ Set the tilemap at (`x`, `y`) by a list of strings.<br>
 e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `pget(x, y)`<br>
-Get the tile at (`x`, `y`). A tile is a tuple of `(x-in-tile, y-in-tile)`.
+Get the tile at (`x`, `y`). A tile is a tuple of `(x in tile, y in tile)`.
 
 - `pset(x, y, tile)`<br>
-Draw a `tile` at (`x`, `y`). A tile is a tuple of `(x-in-tile, y-in-tile)`.
+Draw a `tile` at (`x`, `y`). A tile is a tuple of `(x in tile, y in tile)`.
 
 ### Classe de Som
 

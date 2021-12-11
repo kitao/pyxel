@@ -432,7 +432,7 @@ e.g. `pyxel.image(0).load(0, 0, "title.png")`
 Скопировать область размеров (`w`, `h`), по координатам (`u`, `v`) набора изображений `img`(0-2) по координатам (`x`, `y`) на экране. Если для `w` и/или `h` установлено отрицательное значение, изображение будет развернуто горизонтально и/или вертикально. Если указан параметр `colkey`, соответствующий цвет будет считаться цветом фона (прозрачным цветом)
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x-in-tile, y-in-tile)`.
+Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
 
 - `text(x, y, s, col)`<br>
 Нарисовать строку текста `s` цвета `col` по координате (`x`, `y`)
@@ -447,7 +447,7 @@ Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of s
 Оперировать музыкой `msc`(0-7) (смотрите класс Music)
 
 - `play_pos(ch)`<br>
-Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound-no, note-no)`. Returns `None` when playback is stopped.
+Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
 
 - `play(ch, snd, loop=False)`<br>
 Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. If `True` is specified for `loop`, loop playback is performed.
@@ -489,10 +489,10 @@ Set the tilemap at (`x`, `y`) by a list of strings.<br>
 e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `pget(x, y)`<br>
-Get the tile at (`x`, `y`). A tile is a tuple of `(x-in-tile, y-in-tile)`.
+Get the tile at (`x`, `y`). A tile is a tuple of `(x in tile, y in tile)`.
 
 - `pset(x, y, tile)`<br>
-Draw a `tile` at (`x`, `y`). A tile is a tuple of `(x-in-tile, y-in-tile)`.
+Draw a `tile` at (`x`, `y`). A tile is a tuple of `(x in tile, y in tile)`.
 
 ### Класс Sound
 
