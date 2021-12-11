@@ -553,7 +553,7 @@ z.B. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 Pyxel verfügt über "fortgeschrittene APIs", die in dieser Referenz nicht erwähnt werden, weil sie "Benutzer verwirren können" oder "spezielles Wissen zur Nutzung erfordern".
 
-Wenn du mit deinen Fähigkeiten vertraut bist, versuche, [hiermit](pyxel/__init__.pyi) als Anhaltspunkt erstaunliche Werke zu schaffen!
+Wenn du mit deinen Fähigkeiten vertraut bist, versuche [hiermit](pyxel/__init__.pyi) als Anhaltspunkt erstaunliche Werke zu schaffen!
 
 ## Wie du beitragen kannst
 
