@@ -80,7 +80,7 @@ pip3 install -U pyxel
 
 ### Linux
 
-After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://www.python.org/) (version 3.7 or higher), and `pip3`, run the following command:
+After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://www.python.org/) (version 3.7 or higher), and `python3-pip`, run the following command:
 
 ```sh
 pip3 install -U pyxel
