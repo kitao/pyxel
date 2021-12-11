@@ -2,6 +2,8 @@
 
 [ [English](README.md) | [中文](README.cn.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Deutsch](README.de.md)]
 
+**NOTE: This manual has not yet been translated for Pyxel version 1.5.0. We are looking for volunteers to translate and check for mistakes!**
+
 **Pyxel** -- это игровой движок для Python в стиле ретро.
 
 Благодаря своей простоте, вдохновленной старыми игровыми консолями (например, палитра состоит всего из 16 цветов, и только 4 звука могут быть проиграны одновременно), вы можете легко создавать игры в стиле пиксель-арт.
@@ -30,15 +32,15 @@
 <img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
-Характеристики игровой консоли и API для Pyxel позаимствованны из замечательной [PICO-8](https://www.lexaloffle.com/pico-8.php) и[TIC-80](https://tic.computer/).
+The specifications of Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic.computer/).
 
 Pyxel -- программа с открытым кодом и бесплатна для использовния. За дело!
 
 ## Характеристики
 
 - Запускается на Windows, Mac и Linux
-- Код пишется на Python3
-- Фиксированная 16-цветная палитра
+- Programming with Python
+- 16 color palette
 - 3 набора изображений 256x256 пикселей
 - 8 тайлмапов 256x256 пикселей
 - 4 канала с 64 определяемыми пользователем звуками
@@ -54,106 +56,119 @@ Pyxel -- программа с открытым кодом и бесплатна
 
 ## Как установить
 
-### Для Windows
+There are two types of Pyxel, a packaged version and a standalone version.
 
-Сначала установите [Python3](https://www.python.org/) (версия 3.6.8 и выше).
+### Install the Packaged Version
 
-Во время установки Python3 с помощью официального установщика, выберите опцию **add Python to PATH**, нажав кнопку внизу:
+The packaged version of Pyxel uses Pyxel as a Python extension module.
 
-<img src="images/python_installer.png">
+Recommended for those who are familiar with managing Python packages using the `pip` command or who want to develop full-fledged Python applications.
 
-Затем установите Pyxel, используя следующую `pip` команду из командной строки:
+**Windows**
+
+After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
 
 ```sh
 pip install -U pyxel
 ```
 
-### Для Mac
+**Mac**
 
-Сначала в среде, где установлен менеджер пакетов [Homebrew](https://brew.sh/), установите [Python3](https://www.python.org/) (версия 3.6.8 или выше) и необходимые пакеты с помощью следующей команды:
-
-```sh
-brew install python3 gcc sdl2 sdl2_image gifsicle
-```
-
-Конечно, вы можете установить Python3 и другим способом, но знайте, что вам нужно установить и другие библиотеки.
-
-Затем **перезапустите терминал** и установите Pyxel, используя следующую `pip3` команду:
+After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
 
 ```sh
 pip3 install -U pyxel
 ```
 
-### Для Linux
+### Linux
 
-Установите [Python3](https://www.python.org/) (версия 3.6.8 или выше) и необходимые пакеты способом, соответствующим вашему дистрибутиву.
-
-**Ubuntu:**
+After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://www.python.org/) (version 3.7 or higher), and `pip3`, run the following command:
 
 ```sh
-sudo apt install python3 python3-pip libsdl2-dev libsdl2-image-dev gifsicle
-sudo -H pip3 install -U pyxel
+pip3 install -U pyxel
 ```
 
-### Для других сред
-
-Чтобы установить Pyxel в среде, отличной от вышеупомянутых (32-bit Linux, Raspberry PI и т.п.), следуйте следующим инструкциям по сборке:
-
-#### Установите необходимые инструменты и пакеты
-
-- C++ build toolchain (вместе с командами gcc и make)
-- libsdl2-dev и libsdl2-image-dev
-- [Python3](https://www.python.org/) (версия 3.6.8 или выше) и команда pip
-
-#### Выполните следующие команды в любой папке
+If the above doesn't work, try self-building by following the steps below after installing `cmake` and `rust`:
 
 ```sh
 git clone https://github.com/kitao/pyxel.git
 cd pyxel
-make -C pyxel/core clean all
+make clean all RELEASE=1
 pip3 install .
 ```
+
+### Install the Standalone Version
+
+The standalone version of Pyxel uses Pyxel as a standalone tool that does not depend on Python.
+
+Recommended for those who want to start programming easily without worrying about Python settings, or those who want to play Pyxel games immediately.
+
+**Windows**
+
+Download and run the latest version of the Windows installer (`pyxel-[version]-windows-setup.exe`) from the [Download Page](https://github.com/kitao/pyxel/releases).
+
+**Mac**
+
+After installing [Homebrew](https://brew.sh/), run the following commands:
+
+```sh
+brew tap kitao/pyxel
+brew install pyxel
+```
+
+**Linux**
+
+After installing the SDL2 package (`libsdl2-dev` for Ubuntu) and installing [Homebrew](https://docs.brew.sh/Homebrew-on-Linux), run the following commands:
+
+```sh
+brew tap kitao/pyxel
+brew install pyxel
+```
+
+If the above doesn't work, try self-building the packaged version.
 
 ### Установите примеры
 
 После установки Pyxel, примеры Pyxel будут скопированы в открытую директорию по выполнении этой команды:
 
 ```sh
-install_pyxel_examples
+pyxel copy_examples
 ```
 
 Список примеров, которые будут скопированы:
 
 - [01_hello_pyxel.py](examples/01_hello_pyxel.py) - Простейшее приложение
 - [02_jump_game.py](pyxel/examples/02_jump_game.py) - Игра прыжков с простейшими ресурсными файлами Pyxel
-- [03_draw_api.py](pyxel/examples/03_draw_api.py) - Демонстрация художественного API
-- [04_sound_api.py](pyxel/examples/04_sound_api.py) - Демонстрация звукового API
+- [03_draw_api.py](pyxel/examples/03_draw_api.py) - Demonstration of drawing APIs
+- [04_sound_api.py](pyxel/examples/04_sound_api.py) - Demonstration of sound APIs
 - [05_color_palette.py](pyxel/examples/05_color_palette.py) - Цветовая палитра
 - [06_click_game.py](pyxel/examples/06_click_game.py) - Игра с кликами мышкой
 - [07_snake.py](pyxel/examples/07_snake.py) - Змейка с BGM
 - [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - Демонстрация API по рисованию треугольных полигонов
+- [09_shooter.py](pyxel/examples/09_shooter.py) - Shoot'em up game with screen transition
+- [10_platformer.py](pyxel/examples/10_platformer.py) - Side-scrolling platform game with map
 
-Эти примеры могут быть выполнены как обычный код Python3:
-
-**Windows:**
+An examples can be executed with the following commands:
 
 ```sh
 cd pyxel_examples
-python 01_hello_pyxel.py
+pyxel run 01_hello_pyxel.py
 ```
 
-**Mac / Linux:**
+For the packaged version, it can be executed like a normal Python script:
 
 ```sh
 cd pyxel_examples
 python3 01_hello_pyxel.py
 ```
 
+(For Windows, type `python` instead of `python3`)
+
 ## Как использовать Pyxel
 
 ### Создание Pyxel-приложения
 
-После импортирования модуля Pyxel в ваш код на Python, сначала укажите размер окна с помощью команды `init`, затем запустите Pyxel-приложение с помощью функции `run`.
+After importing the Pyxel module in your python script, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
 
 ```python
 import pyxel
@@ -194,9 +209,9 @@ class App:
 App()
 ```
 
-Можно также писать простые програмки, используя функции `show` и `flip` для отображения простейшей графики и анимаций.
+It is also possible to write simple code using `show` function and `flip` function to draw simple graphics and animations.
 
-Функция `show` выводит изображение на экран и ждет нажатия клавиши `ESC`.
+`show` function displays the screen and waits until the `Esc` key is pressed.
 
 ```python
 import pyxel
@@ -207,7 +222,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-Функция `flip` обновляет изображение на экране единожды.
+`flip` function updates the screen once.
 
 ```python
 import pyxel
@@ -231,7 +246,7 @@ while True:
 - `Alt(Option)+2`<br>
 Начать захват экрана игры
 - `Alt(Option)+3`<br>
-Сохранить видео, полученное захватом экрана (gif) на рабочий стол (до 30 секунд)
+Сохранить видео, полученное захватом экрана на рабочий стол (до 10 секунд)
 - `Alt(Option)+0`<br>
 Включить/выключить мониториг производительности (fps, время на update, время на draw)
 - `Alt(Option)+Enter`<br>
@@ -239,20 +254,20 @@ while True:
 
 ### Как создать ресурсный файл
 
-Встроенный Pyxel Editor может создавать изображения и звуки, используемые в Pyxel-приложении.
+Pyxel Editor can create images and sounds used in a Pyxel application.
 
-Pyxel Editor запускается с помощью следующей команды:
+It starts with the following command:
 
 ```sh
-pyxeleditor [имя_ресурсного_файла]
+pyxel edit [PYXEL_RESOURCE_FILE]
 ```
 
 Если указанный ресурсный файл (.pyxres) существует, то он будет загружен. В противном случае будет создан файл с указанным именем.
 Если имя файла пропущено, то используется стандартное имя `my_resource.pyxres`
 
-После запуска Pyxel Editor, можно переключаться между различными файлами способом drag-and-drop. Если данное действие произвести, зажав клавишу ``Ctrl``(``Cmd``), то только файл, редактируемый на данный момент, будет загружен. Это действие позволяет комбинировать несколько файлов в один.
+After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down ``Ctrl(Cmd)`` key, only the resource type (Image/Tilemap/Sound/Music) that is currently being edited will be loaded. This operation enables to combine multiple resource files into one.
 
-Созданный ресурсный файл может быть загружен в программу с помощью функции `load`.
+The created resource file can be loaded with `load` function.
 
 Редактор Pyxel Editor оснащем следующими режимами редактирования.
 
@@ -262,7 +277,7 @@ pyxeleditor [имя_ресурсного_файла]
 
 <img src="pyxel/editor/screenshots/image_editor.gif">
 
-Путем перетаскивания png файла на экран редактора изображений, изображение может быть загружено в выбранный набор.
+By dragging and dropping an image file (png/gif/jpeg) onto the Image Editor screen, the image can be loaded into the currently selected image bank.
 
 **Редактор тайлмапов:**
 
@@ -284,32 +299,34 @@ pyxeleditor [имя_ресурсного_файла]
 
 ### Другие методы создания ресурсов
 
-Изображения и тайлмапы Pyxel могут также быть созданы следующим образом:
+Pyxel images and tilemaps can also be created by the following methods:
 
-- Создайте изображение из списка строк с помощью функций `Image.set` или `Tilemap.set`.
-- Загрузите png файл, выполненный в палитре Pyxel, с помощью функции `Image.load`
+- Create an image from a list of strings with `Image.set` function or `Tilemap.set` function
+- Load an image file (png/gif/jpeg) in Pyxel palette with `Image.load` function
 
-Звуки Pyxel могут также быть созданы следующим образом:
+Pyxel sounds can also be created in the following method:
 
-- Создайте звук из строк с помощью функций `Sound.set` или `Music.set`
+- Create a sound from strings with `Sound.set` function or `Music.set` function
 
 Обратитесь к руководству по API (ниже) для получения более подробной информации об использовании этих функций.
 
-### Как создать самостоятельный исполняемый файл
+### How to Distribute an Application
 
-Используя предоставленный Pyxel Packager, можно создать исполняемый файл, который будет запускаться даже в средах, где не установлен Python.
+Pyxel supports a dedicated application distribution file format (Pyxel application file) that works across platforms.
 
-Для создания самостоятельного исполняемого файла, в среде, где установлен [PyInstaller](https://www.pyinstaller.org/), укажите файл Python, используемый для запуска приложения, для команды `pyxelpackager` следующим образом:
+Create the Pyxel application file (.pyxapp) with the following command:
 
 ```sh
-pyxelpackager имя_файла
+pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
 ```
 
-Когда процесс завершится, самостоятельный исполняемый файл будет создане в папке `dist`.
+If the application should include resources or additional modules, place them in the application folder.
 
-Если также необходимы ресурсные файлы .pyxres или .png, разместите их в папке `assets`, и они будут включены.
+The created application file can be executed with the following command:
 
-Также можно выбрать иконку, добавив аргументы ``-i icon_file`` к команде.
+```sh
+pyxel play PYXEL_APP_FILE
+```
 
 ## Руководство по API
 
@@ -321,30 +338,26 @@ pyxelpackager имя_файла
 - `frame_count`<br>
 Количество отрисованных кадров
 
-- `init(width, height, [caption], [scale], [palette], [fps], [quit_key], [fullscreen])`<br>
-Инициализировать Pyxel-приложение с указанными размерами экрана (`width`, `height`). Максимальный размер этих параметров 256<br>
-Также возможно указать название окна с помощью параметра `caption`, масштаб окна параметром `scale`, палитру цветов `palette`, фреймрейт `fps`, клавишу для выхода из приложения `quit_key`, а также запускать ли приложение в полноэкранном режиме или нет с помощью параметра `fullscreen`. Палитра указывается как список из 16 элементов, обозначающий 24-битные цвета.<br>
-Пример: `pyxel.init(160, 120, caption="Pyxel with PICO-8 palette", palette=[0x000000, 0x1D2B53, 0x7E2553, 0x008751, 0xAB5236, 0x5F574F, 0xC2C3C7, 0xFFF1E8, 0xFF004D, 0xFFA300, 0xFFEC27, 0x00E436, 0x29ADFF, 0x83769C, 0xFF77A8, 0xFFCCAA], quit_key=pyxel.KEY_NONE, fullscreen=True)`
+- `init(width, height, [title], [fps], [quit_key], [capture_sec])`<br>
+Initialize the Pyxel application with screen size (`width`, `height`). The following can be specified as options: the window title with `title`, the frame rate with `fps`, the key to quit the application with `quit_key`, and the maximum recording time of the screen capture video with `capture_sec`.<br>
+e.g. `pyxel.init(160, 120, title="Pyxel with Options", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
 
 - `run(update, draw)`<br>
-Запустить Pyxel-приложение, использующее функцию `update` для обновления внутренней логики и `draw` для рисования
-
-- `quit()`<br>
-Завершить работу Pyxel-приложения
-
-- `flip()`<br>
-Принудительно отрисовать кадр (не для использования в настоящих приложениях)
+Start the Pyxel application and call `update` function for frame update and `draw` function for drawing.
 
 - `show()`<br>
-Отрисовать кадр и ждать выхода из приложения (не для использования в настоящих приложениях)
+Show the screen and wait until the `Esc` key is pressed. (Do not use in normal applications)
+
+- `flip()`<br>
+Updates the screen once. (Do not use in normal applications)
+
+- `quit()`<br>
+Quit the Pyxel application at the end of the current frame.
 
 ### Ресурсы
 
-- `save(имя_файла)`<br>
-Сохранить ресурсный файл (.pyxres) в директории исполняемого скрипта
-
-- `load(имя_файла, [image], [tilemap], [sound], [music])`<br>
-Загрузить ресурсный файл (.pyxres) из директории исполняемого скрипта. Если ``False`` указано для типа ресурса, соответствующий ресурс не будет загружен.
+- `load(filename, [image], [tilemap], [sound], [music])`<br>
+Load the resource file (.pyxres). If ``False`` is specified for the resource type (``image/tilemap/sound/music``), the resource will not be loaded.
 
 ### Ввод
 
@@ -355,7 +368,7 @@ pyxelpackager имя_файла
 Получить значение колесика мышки
 
 - `btn(клавиша)`<br>
-Получить `Ture`, если `клавиша` нажата, в противном случае получить `False`. ([Список определений клавиш](pyxel/__init__.py))
+Получить `Ture`, если `клавиша` нажата, в противном случае получить `False`. ([Список определений клавиш](pyxel/__init__.pyi))
 
 - `btnp(клавиша, [hold], [period])`<br>
 Получить `True`, если `клавиша` нажата в данный кадр, в противном случае получить `False`. В случае, если указаны параметры `hold` и `period`, `True` будет возвращено каждые `period` кадров, когда `key` уже зажата более `hold` кадров
@@ -368,9 +381,13 @@ pyxelpackager имя_файла
 
 ### Графика
 
+- `colors`<br>
+List of the palette display colors. The display color is specified by a 24-bit numerical value. Use `colors.from_list` and `colors.to_list` to directly assign and retrieve Python lists.<br>
+e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+
 - `image(img, [system])`<br>
-Оперировать набором изображений `img`(0-2) (смотрите класс Image). Если `system` равно `True`, можно получить доступ к системному набору изображений. 3 для шрифтов и редактора ресурсов. 4 для экрана<br>
-Пример: `pyxel.image(0).load(0, 0, "title.png")`
+Operate the image bank `img` (0-2). (See the Image class)<br>
+e.g. `pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
 Оперировать тайлмапом `tm`(0-7) (смотрите класс Tilemap)
@@ -415,31 +432,31 @@ pyxelpackager имя_файла
 Скопировать область размеров (`w`, `h`), по координатам (`u`, `v`) набора изображений `img`(0-2) по координатам (`x`, `y`) на экране. Если для `w` и/или `h` установлено отрицательное значение, изображение будет развернуто горизонтально и/или вертикально. Если указан параметр `colkey`, соответствующий цвет будет считаться цветом фона (прозрачным цветом)
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Нарисовать из тайлмапа `tm`(0-7) по координатам (`x`, `y`) тайл размером (`w`, `h`), находящийся по координатам (`u`, `v`). Если указан параметр `colkey`, соответствующий цвет будет считаться цветом фона (прозрачным цветом). Тайл тайлмапа рисуется размера 8x8. Если номер тайла равен 0, означает регион (0, 0)-(7, 7) набора изображений, если 1, означает регион (8, 0) - (15, 0)
+Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x-in-tile, y-in-tile)`.
 
 - `text(x, y, s, col)`<br>
 Нарисовать строку текста `s` цвета `col` по координате (`x`, `y`)
 
 ### Аудио
 
-- `sound(snd, [system])`<br>
-Оперировать звуком `snd`(0-63) (смотрите класс Sound). Если `system` равно `True`, можно получить доступ к звуку 64 для системы
+- `sound(snd)`<br>
+Оперировать звуком `snd`(0-63).<br>
 Пример: `pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
 Оперировать музыкой `msc`(0-7) (смотрите класс Music)
 
 - `play_pos(ch)`<br>
-Получить позицию канала `ch`. Сотни и тысячи обозначают номер звука, единицы и десятки обозначают номер ноты. Если проигрывание выключено, будет возвращено `-1`
+Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound-no, note-no)`. Returns `None` when playback is stopped.
 
 - `play(ch, snd, loop=False)`<br>
-Проиграть звук `snd`(0-63) на канале `ch`(0-3). Проиграть по-порядку, если `snd` -- список
+Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. If `True` is specified for `loop`, loop playback is performed.
 
 - `playm(msc, loop=False)`<br>
-Проиграть трек `msc`(0-7)
+Play the music `msc` (0-7). If `True` is specified for `loop`, loop playback is performed.
 
 - `stop([ch])`<br>
-Остановить воспроизведение на всех каналах. Если указан канал `ch`(0-3), остановить только его
+Stops playback of the specified channel `ch` (0-3). `stop()` to stop playing all channels.
 
 ### Класс Image
 
@@ -453,134 +470,102 @@ pyxelpackager имя_файла
 Получить данные изображения в точке (`x`, `y`)
 
 - `set(x, y, data)`<br>
-Установить данные изображения в точке (`x`, `y`) числом или списком строк<br>
-Пример: `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+Set the image at (`x`, `y`) by a list of strings.<br>
+e.g. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
 
-- `load(x, y, имя_файла)`<br>
-Загрузить png изображение из директории исполняемого скрипта с координаты (`x`, `y`)
-
-- `copy(x, y, img, u, v, w, h)`<br>
-Скопировать регион размера (`w`, `h`) с координаты (`u`, `v`) набора изображений `img`(0-3) по координатам (`x`, `y`)
+- `load(x, y, filename)`<br>
+Load the image file (png/gif/jpeg) at (`x`, `y`).
 
 ### Класс Tilemap
 
 - `width`, `height`<br>
 Ширина и высота тайлмапа
 
-- `data`<br>
-Данные тайлмапа (матрица 256x256)
-
 - `refimg`<br>
-Набор изображений, на который ссылается тайлмап
-
-- `get(x, y)`<br>
-Получить данные тайлмапа в точке (`x`, `y`)
+The image bank (0-2) referenced by the tilemap
 
 - `set(x, y, data)`<br>
-Установить данные тайлмапа в точке (`x`, `y`) числом или списком строк<br>
-Пример: `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+Set the tilemap at (`x`, `y`) by a list of strings.<br>
+e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
-- `copy(x, y, tm, u, v, w, h)`<br>
-Скопировать регион размера (`w`, `h`) с координаты (`u`, `v`) тайлмапа `tm`(0-7) по координатам (`x`, `y`)
+- `pget(x, y)`<br>
+Get the tile at (`x`, `y`). A tile is a tuple of `(x-in-tile, y-in-tile)`.
+
+- `pset(x, y, tile)`<br>
+Draw a `tile` at (`x`, `y`). A tile is a tuple of `(x-in-tile, y-in-tile)`.
 
 ### Класс Sound
 
-- `note`<br>
-Список нот(0-127) (33 = 'A2' = 440Hz)
+- `notes`<br>
+List of notes (0-127). The higher the number, the higher the pitch, and at 33 it becomes 'A2'(440Hz). The rest is -1.
 
-- `tone`<br>
-Список тонов(0:Треугольник / 1:Квадрат / 2:Пульс / 3:Шум)
+- `tones`<br>
+List of tones (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
 
-- `volume`<br>
-Список громкости(0-7)
+- `volumes`<br>
+List of volumes (0-7)
 
-- `effect`<br>
-Список эффектов(0:Нет / 1:Слайд / 2:Вибрато / 3:Затихание)
+- `effects`<br>
+List of effects (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
 
 - `speed`<br>
-Длина ноты(120 = 1 секунда в тон)
+Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, the length of one note becomes 1 second.
 
-- `set(note, tone, volume, effect, speed)`<br>
-Установить ноту, тон, громкость и эффект с помощью строки. Если длины строк короче ноты, зацикливается
+- `set(notes, tones, volumes, effects, speed)`<br>
+Set notes, tones, volumes, and effects with a string. If the tones, volumes, and effects length are shorter than the notes, it is repeated from the beginning.
 
-- `set_note(note)`<br>
-Установить ноту с помощью строки, составленной по форме 'CDEFGAB'+'#-'+'0123' или 'R'. Регистр и пробелы игнорируются<br>
-Пример: `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+- `set_notes(notes)`<br>
+Set the notes with a string made of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored.<br>
+e.g. `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
 
-- `set_tone(tone)`<br>
-Установить тон строкой, составленной из 'TSPN'. Регистр и пробелы игнорируются<br>
-Пример: `pyxel.sound(0).set_tone("TTSS PPPN")`
+- `set_tones(tones)`<br>
+Set the tones with a string made of 'TSPN'. Case-insensitive and whitespace is ignored.<br>
+e.g. `pyxel.sound(0).set_tone("TTSS PPPN")`
 
-- `set_volume(volume)`<br>
-Установить громкость с помощью строки, составленной из '01234567'. Регистр и пробелы игнорируютсяd<br>
-Пример: `pyxel.sound(0).set_volume("7777 7531")`
+- `set_volumes(volumes)`<br>
+Set the volumes with a string made of '01234567'. Case-insensitive and whitespace is ignored.<br>
+e.g. `pyxel.sound(0).set_volume("7777 7531")`
 
-- `set_effect(effect)`<br>
-Установить эффект с помощью строки, составленной из 'NSVF'. Регистр и пробелы игнорируются<br>
-Пример: `pyxel.sound(0).set_effect("NFNF NVVS")`
+- `set_effects(effects)`<br>
+Set the effects with a string made of 'NSVF'. Case-insensitive and whitespace is ignored.<br>
+e.g. `pyxel.sound(0).set_effect("NFNF NVVS")`
 
 ### Класс Music
 
-- `ch0`<br>
-Список для проигрывания звуков(0-63) на канале 0. Пустой список означает, что канал не используется для проигрывания
+- `sequences`<br>
+Two-dimensional list of sounds (0-63) listed by the number of channels
 
-- `ch1`<br>
-Список для проигрывания звуков(0-63) на канале 1. Пустой список означает, что канал не используется для проигрывания
+- `set(seq0, seq1, seq2, seq3)`<br>
+Set the lists of sound (0-63) of all channels. If an empty list is specified, that channel is not used for playback.<br>
+e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
-- `ch2`<br>
-Список для проигрывания звуков(0-63) на канале 2. Пустой список означает, что канал не используется для проигрывания
+### Advanced APIs
 
-- `ch3`<br>
-Список для проигрывания звуков(0-63) на канале 3. Пустой список означает, что канал не используется для проигрывания
+Pyxel has "advanced APIs" that are not mentioned in this reference because they "may confuse users" or "need specialized knowledge to use".
 
-- `set(ch0, ch1, ch2, ch3)`<br>
-Установить список звукок для всех каналов. Пустой список означает, что канал не используется для проигрывания
-Пример: `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
-
-- `set_ch0(data)`<br>
-Установить список звуков(0-63) канала 0
-
-- `set_ch1(data)`<br>
-Установить список звуков(0-63) канала 1
-
-- `set_ch2(data)`<br>
-Установить список звуков(0-63) канала 2
-
-- `set_ch3(data)`<br>
-Установить список звуков(0-63) канала 3
+If you are familiar with your skills, try to create amazing works with [this](pyxel/__init__.pyi) as a clue!
 
 ## Как сделать вклад в развитие проекта?
 
-### Опубликование проблемы
+### Submitting an Issue
 
-Используйте [трекер проблем](https://github.com/kitao/pyxel/issues) для опубликования отчетов о багах и предложений о добавлении новых элементов или улучшения работы существующих.
-Пожалуйста, перед опубликованием убедитесь, что в трекере проблем нет похожих публикаций.
+Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests. Before submitting a new issue, ensure that there is no similar open issue.
 
-Для опубликования отчета, воспользуйтесь подходящей формой [отсюда](https://github.com/kitao/pyxel/issues/new/choose).
+### Manual Testing
 
-### Ручное тестирование
+Anyone manually testing the code and reporting bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) are very welcome!
 
-Ручное тестирование кода и написание отчетов о багах, предложений по улучшению в трекере проблем приветствуется!
-
-### Опубликование pull-запроса
+### Submitting a Pull Request
 
 Патчи/фиксы принимаются в форме pull-запросов (PRы). Убедитесь, что проблема, к которой относится pull-запрос, открыта в трекере проблем.
 
-Опубликованный pull-запрос считается опубликованным под лицензией [MIT license](LICENSE).
+Опубликованный pull-запрос считается опубликованным под лицензией [MIT License](LICENSE).
 
 ## Прочая информация
 
-- [Wiki (Англоязычная)](https://github.com/kitao/pyxel/wiki)
-- [Subreddit](https://www.reddit.com/r/pyxel/)
 - [Сервер Discord (Англоязычный)](https://discord.gg/FC7kUZJ)
 - [Сервер Discord (Японский - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## Лицензия
 
-Pyxel пользуется лицензией [MIT license](http://en.wikipedia.org/wiki/MIT_License). Его можно использовать в частном ПО при условии того, что все копии лицензионного ПО содержат копию MIT License terms and the copyright notice.
-
-Pyxel использует следующее ПО:
-
-- [SDL2](https://www.libsdl.org/)
-- [miniz-cpp](https://github.com/tfussell/miniz-cpp)
-- [Gifsicle](https://www.lcdf.org/gifsicle/)
+Pyxel is under [MIT License](http://en.wikipedia.org/wiki/MIT_License). It can be reused within proprietary software, provided that all copies of the software or its substantial portions include a copy of the terms of the MIT License and also a copyright notice.
