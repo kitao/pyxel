@@ -59,7 +59,7 @@ all: build
 
 clean:
 	@cargo clean
-	@rm -f $(PYXEL_LIB_DIR)/*
+	@rm -f $(PYXEL_LIB_DIR)/* $(DIST_DIR)/*.whl
 
 format:
 	@cargo +nightly fmt -- --emit=files
@@ -68,7 +68,6 @@ format:
 	@flake8 $(ROOT_DIR)/*.py $(PYXEL_DIR)
 
 build:
-	@rm -rf $(PYXEL_LIB_DIR) $(DIST_DIR)/*.whl
 	@cargo build $(CARGO_BUILD_OPT)
 	@mkdir -p $(DST_LIB_DIR) && cp $(SRC_LIB_DIR)/$(SRC_LIB_NAME) $(DST_LIB_DIR)/$(DST_LIB_NAME)
 	@$(COPY_SDL2_DLL)
