@@ -6,11 +6,14 @@
 #   - Cygwin64 with make and zip added
 #   - Inno Setup
 #
+# Prerequisites for Linux:
+#   - SDL2 package (libsdl2-dev for Ubuntu)
+#
 # Common prerequisites:
 #   - cmake
-#   - rustup
-#   - python3 (or python for Windows)
-#   - pyoxidizer by `cargo install pyoxidizer`
+#   - rust and cargo
+#   - python3 and pip3 (or python and pip for Windows)
+#   - pyoxidizer
 #
 # Format and lint code:
 #   make format
