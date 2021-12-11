@@ -140,6 +140,3 @@ cython_debug/
 # Pyxel
 .DS_Store
 .vscode/*
-!dist/
-!pyxel/lib/
-!pyxel/lib/windows/*.pyd
