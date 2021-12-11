@@ -58,7 +58,7 @@ Pyxel es de código abierto y de libre uso. Comencemos a crear juegos retro con 
 
 There are two types of Pyxel, a packaged version and a standalone version.
 
-### Install the Packaged Version
+### Install Packaged Version
 
 The packaged version of Pyxel uses Pyxel as a Python extension module.
 
@@ -80,7 +80,7 @@ After installing [Python3](https://www.python.org/) (version 3.7 or higher), run
 pip3 install -U pyxel
 ```
 
-### Linux
+**Linux**
 
 After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://www.python.org/) (version 3.7 or higher), and `python3-pip`, run the following command:
 
@@ -97,7 +97,7 @@ make clean all RELEASE=1
 pip3 install .
 ```
 
-### Install the Standalone Version
+### Install Standalone Version
 
 The standalone version of Pyxel uses Pyxel as a standalone tool that does not depend on Python.
 
@@ -127,7 +127,7 @@ brew install pyxel
 
 If the above doesn't work, try self-building the packaged version.
 
-### Instalar los ejemplos:
+### Try Pyxel Examples
 
 Después de instalar Pyxel, los ejemplos serán copiados al directorio actual con el siguiente comando:
 
@@ -154,15 +154,6 @@ An examples can be executed with the following commands:
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 ```
-
-For the packaged version, it can be executed like a normal Python script:
-
-```sh
-cd pyxel_examples
-python3 01_hello_pyxel.py
-```
-
-(For Windows, type `python` instead of `python3`)
 
 ## Cómo usarlo
 
@@ -234,6 +225,23 @@ while True:
     pyxel.rectb(pyxel.frame_count % 160 - 40, 20, 40, 40, 7)
     pyxel.flip()
 ```
+
+### Run Pyxel Application
+
+The created Python script can be executed with the following command:
+
+```sh
+pyxel run PYTHON_SCRIPT_FILE
+```
+
+For the packaged version, it can be executed like a normal Python script:
+
+```sh
+cd pyxel_examples
+python3 PYTHON_SCRIPT_FILE
+```
+
+(For Windows, type `python` instead of `python3`)
 
 ### Controles especiales
 
@@ -310,7 +318,7 @@ Pyxel sounds can also be created in the following method:
 
 Favor acudir a la referencia del API para el uso de estas funciones.
 
-### How to Distribute an Application
+### How to Distribute Application
 
 Pyxel supports a dedicated application distribution file format (Pyxel application file) that works across platforms.
 
@@ -548,7 +556,7 @@ If you are familiar with your skills, try to create amazing works with [this](py
 
 ## Cómo contribuir
 
-### Submitting an Issue
+### Submitting Issue
 
 Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests. Before submitting a new issue, ensure that there is no similar open issue.
 
@@ -556,7 +564,7 @@ Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug rep
 
 Anyone manually testing the code and reporting bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) are very welcome!
 
-### Submitting a Pull Request
+### Submitting Pull Request
 
 Parches/correcciones son aceptados en forma de pull requests (PRs). Asegurarse que el issue del pull request que apunta este abierto en el issue tracker.
 
