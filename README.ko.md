@@ -254,7 +254,7 @@ Pyxel 애플리케이션 실행 중에, 아래의 특수 조작을 사용할 수
 - `Alt(Option)+3`<br>
 화면 캡처 파일을 바탕 화면에 저장 (최대 10초)
 - `Alt(Option)+0`<br>
-성능 모니터 (fps, update time, and draw time)의 표시/표시 해제
+성능 모니터 (fps, update time, draw time)의 표시/표시 해제
 - `Alt(Option)+Enter`<br>
 전체 화면 전환
 
@@ -560,7 +560,7 @@ Pyxel에는 "사용자를 혼란스럽게 할 수 있거나", "사용하는 데 
 
 ### 매뉴얼 테스팅
 
-코드를 테스트해 주시고, [Issue Tracker](https://github.com/kitao/pyxel/issues) 페이지에서 오류 제보나 개선 제안을 해주시는 분을 환영합니다!
+코드를 테스트해 주시고, [Issue Tracker](https://github.com/kitao/pyxel/issues) 페이지에서 오류 제보나 개선 제안을 해주시는 분들을 환영합니다!
 
 ### 풀 리퀘스트 제출
 
