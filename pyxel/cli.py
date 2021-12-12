@@ -5,6 +5,7 @@ import shutil
 import sys
 import tempfile
 import zipfile
+import multiprocessing
 
 import pyxel
 import pyxel.editor
@@ -67,7 +68,10 @@ def _play_pyxel_app(pyxel_app_file):
                     os.path.dirname(setting_file), f.read()
                 )
                 sys.path.append(os.path.dirname(startup_script_file))
-                runpy.run_path(startup_script_file)
+                p = multiprocessing.Process(target=runpy.run_path,
+                                            args=(startup_script_file,))
+                p.start()
+                p.join()
                 return
 
         print(f"file not found: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
