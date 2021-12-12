@@ -83,7 +83,7 @@ pip3 install -U pyxel
 SDL2 패키지 (Ubuntu의 경우 `libsdl2-dev`), [Python3](https://www.python.org/) (버전 3.7 이상), `python3-pip`를 설치한 후, 다음 명령어를 실행합니다.
 
 ```sh
-pip3 install -U pyxel
+sudo pip3 install -U pyxel
 ```
 
 위의 방법이 제대로 작동하지 않으면, `cmake`, `rust`를 설치한 후 다음 단계에 따라 셀프 빌드를 시도해보세요.
@@ -92,7 +92,7 @@ pip3 install -U pyxel
 git clone https://github.com/kitao/pyxel.git
 cd pyxel
 make clean all RELEASE=1
-pip3 install .
+sudo pip3 install .
 ```
 
 ### 독립 실행형 버전 설치하기
@@ -116,7 +116,7 @@ brew install pyxel
 
 **Linux**
 
-SDL2 패키지 (Ubuntu의 경우 `libsdl2-dev`)와 [Homebrew](https://docs.brew.sh/Homebrew-on-Linux)를 설치한 후, 다음 명령어를 실행합니다.
+SDL2 패키지 (Ubuntu의 경우 `libsdl2-dev`)와 [Homebrew](https://brew.sh/)를 설치한 후, 다음 명령어를 실행합니다.
 
 ```sh
 brew tap kitao/pyxel

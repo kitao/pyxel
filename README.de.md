@@ -83,7 +83,7 @@ pip3 install -U pyxel
 Nach der Installation des SDL2-Packages (`libsdl2-dev` für Ubuntu), [Python3](https://www.python.org/) (version 3.7 oder höher) und `python3-pip`, führe folgenden Befehl aus:
 
 ```sh
-pip3 install -U pyxel
+sudo pip3 install -U pyxel
 ```
 
 Wenn das oben genannte nicht funktioniert, versuche Pyxel selber zu kompilieren, indem du die folgenden Schritte befolgst, wofür `cmake` und `rust` installiert werden müssen:
@@ -92,7 +92,7 @@ Wenn das oben genannte nicht funktioniert, versuche Pyxel selber zu kompilieren,
 git clone https://github.com/kitao/pyxel.git
 cd pyxel
 make clean all RELEASE=1
-pip3 install .
+sudo pip3 install .
 ```
 
 ### Installation der Standalone-Version
@@ -116,7 +116,7 @@ brew install pyxel
 
 **Linux**
 
-Nach der Installation des SDL2-Packages (`libsdl2-dev` für Ubuntu) und [Homebrew](https://docs.brew.sh/Homebrew-on-Linux), führe folgenden Befehl aus:
+Nach der Installation des SDL2-Packages (`libsdl2-dev` für Ubuntu) und [Homebrew](https://brew.sh/), führe folgenden Befehl aus:
 
 ```sh
 brew tap kitao/pyxel
@@ -351,7 +351,7 @@ z.B. `pyxel.init(160, 120, title="Pyxel mit Optionen", fps=60, quit_key=pyxel.KE
 Starte das Pyxel-Programm und rufe die Funktion `update` zum Updaten des Bildschirms und die `draw` Funktion zum anzeigen.
 
 - `show()`<br>
-Zeige das Fenster und warte bis die `Esc` Taste gedrückt wird. (Nicht in normalen Anwendungen benutzen)  
+Zeige das Fenster und warte bis die `Esc` Taste gedrückt wird. (Nicht in normalen Anwendungen benutzen)
 
 - `flip()`<br>
 Updatet das Fenster ein mal. (Nicht in normalen Anwendungen benutzen)
@@ -438,7 +438,7 @@ Kopiere eine Region der Größe (`w`, `h`) von (`u`, `v`) des Image Banks `img`(
 <img src="images/image_bank_mechanism.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Zeichne die Tilemap `tm` (0-7) an der Stelle (`x`, `y`)  entsprechend der Tile-Informationen der Größe (`w`, `h`) von (`u`, `v`). 
+Zeichne die Tilemap `tm` (0-7) an der Stelle (`x`, `y`)  entsprechend der Tile-Informationen der Größe (`w`, `h`) von (`u`, `v`).
 Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). Falls `colkey` angegeben ist, wird es als transparente Farbe behandelt. Die Größe einer Tile ist 8x8 Pixel und wird in der Tilemap als eine Tuple von `(x in Tile, y in Tile)` gespeichert.
 
 - `text(x, y, s, col)`<br>
