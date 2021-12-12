@@ -2,8 +2,6 @@
 
 [ [English](README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
-**NOTE: This manual has not yet been translated for Pyxel version 1.5.0. We are looking for volunteers to translate and check for mistakes!**
-
 **Pyxel**是一个python的经典像素风游戏制作引擎。
 
 由于像素风游戏的机制非常简单（如：最多只能显示16种颜色、播放4种声音等），现在你也可以轻松地享受这种游戏的制作过程。
@@ -32,18 +30,18 @@
 <img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
-The specifications of Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic.computer/).
+Pyxel的设计规范参考了[PICO-8](https://www.lexaloffle.com/pico-8.php)和[TIC-80](https://tic.computer/)。
 
 Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel制作自己的游戏吧！
 
 ## 说明
 
 - 需要在Windows、Mac或Linux上运行
-- Programming with Python
-- 16 color palette
+- 可以使用python进行编程
+- 16色调色板
 - 3个256x256的图像库
 - 8个256x256的瓦片地图
-- 4个声道各含有64个可选音调
+- 4个音轨，每个各可含有64个音符
 - 可任意组合8个音乐
 - 支持键盘、鼠标及游戏手柄输入
 - 图像和音频编辑器
@@ -56,17 +54,17 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 
 ## 如何安装
 
-There are two types of Pyxel, a packaged version and a standalone version.
+Pyxel有两种安装版本：Python包版本和独立版本。
 
-### Install Packaged Version
+### 安装Python包版本
 
-The packaged version of Pyxel uses Pyxel as a Python extension module.
+此版本以Python扩展包的方式使用Pyxel。
 
-Recommended for those who are familiar with managing Python packages using the `pip` command or who want to develop full-fledged Python applications.
+推荐用户：可以熟练使用pip进行Python包管理，或需要基于已经成熟的Python应用进行开发的用户。
 
 **Windows**
 
-After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
+在安装[Python3](https://www.python.org/)（3.7或更高版本）之后，执行以下命令：
 
 ```sh
 pip install -U pyxel
@@ -74,7 +72,7 @@ pip install -U pyxel
 
 **Mac**
 
-After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
+在安装[Python3](https://www.python.org/)（3.7或更高版本）之后，执行以下命令：
 
 ```sh
 pip3 install -U pyxel
@@ -82,13 +80,13 @@ pip3 install -U pyxel
 
 **Linux**
 
-After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://www.python.org/) (version 3.7 or higher), and `python3-pip`, run the following command:
+安装SDL2（Ubuntu下包名为：`libsdl2-dev`），[Python3](https://www.python.org/)（3.7或更高版本），以及`python3-pip`这三个包之后，执行以下命令：
 
 ```sh
 pip3 install -U pyxel
 ```
 
-If the above doesn't work, try self-building by following the steps below after installing `cmake` and `rust`:
+如果以上步骤无效，可以在安装`cmake`和`rust`后，尝试执行以下步骤自行编译：
 
 ```sh
 git clone https://github.com/kitao/pyxel.git
@@ -97,19 +95,19 @@ make clean all RELEASE=1
 pip3 install .
 ```
 
-### Install Standalone Version
+### 安装独立版本
 
-The standalone version of Pyxel uses Pyxel as a standalone tool that does not depend on Python.
+此版本可以直接使用Pyxel而无需依赖Python。
 
-Recommended for those who want to start programming easily without worrying about Python settings, or those who want to play Pyxel games immediately.
+推荐用户：不想进行复杂的Python配置，或想要尽快上手Pyxel游戏的用户。
 
 **Windows**
 
-Download and run the latest version of the Windows installer (`pyxel-[version]-windows-setup.exe`) from the [Download Page](https://github.com/kitao/pyxel/releases).
+从[下载页面](https://github.com/kitao/pyxel/releases)下载并运行最新的Windows安装器（`pyxel-[version]-windows-setup.exe`）。
 
 **Mac**
 
-After installing [Homebrew](https://brew.sh/), run the following commands:
+安装[Homebrew](https://brew.sh/)之后，执行以下命令：
 
 ```sh
 brew tap kitao/pyxel
@@ -118,18 +116,18 @@ brew install pyxel
 
 **Linux**
 
-After installing the SDL2 package (`libsdl2-dev` for Ubuntu) and installing [Homebrew](https://docs.brew.sh/Homebrew-on-Linux), run the following commands:
+安装SDL2（Ubuntu下包名为：`libsdl2-dev`）和[Homebrew](https://docs.brew.sh/Homebrew-on-Linux)之后，执行以下命令：
 
 ```sh
 brew tap kitao/pyxel
 brew install pyxel
 ```
 
-If the above doesn't work, try self-building the packaged version.
+如果以上步骤无效，可以依前述尝试自行编译。
 
-### Try Pyxel Examples
+### 尝试Pyxel例程
 
-安装Pyxel后，可以用以下命令将Pyxe例程复制到当前文件夹：
+以Python包版本为例，安装Pyxel后，用以下命令将Pyxe例程复制到当前文件夹：
 
 ```sh
 pyxel copy_examples
@@ -139,16 +137,16 @@ pyxel copy_examples
 
 - [01_hello_pyxel.py](pyxel/examples/01_hello_pyxel.py) - 最简单的应用
 - [02_jump_game.py](pyxel/examples/02_jump_game.py) - 用Pyxel制作的跳跃游戏
-- [03_draw_api.py](pyxel/examples/03_draw_api.py) - Demonstration of drawing APIs
-- [04_sound_api.py](pyxel/examples/04_sound_api.py) - Demonstration of sound APIs
+- [03_draw_api.py](pyxel/examples/03_draw_api.py) - 绘画API的使用示例
+- [04_sound_api.py](pyxel/examples/04_sound_api.py) - 声音API的使用示例
 - [05_color_palette.py](pyxel/examples/05_color_palette.py) - 调色板列表
 - [06_click_game.py](pyxel/examples/06_click_game.py) - 鼠标点击游戏
 - [07_snake.py](pyxel/examples/07_snake.py) - 带BGM的贪吃蛇游戏
-- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing APIs
+- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - 三角形绘画API的使用示例
 - [09_shooter.py](pyxel/examples/09_shooter.py) - 屏幕过渡射击游戏
-- [10_platformer.py](pyxel/examples/10_platformer.py) - Side-scrolling platform game with map
+- [10_platformer.py](pyxel/examples/10_platformer.py) - 屏幕横向滑动的游戏示例
 
-An examples can be executed with the following commands:
+运行例程，可以使用以下命令：
 
 ```sh
 cd pyxel_examples
@@ -159,7 +157,7 @@ pyxel run 01_hello_pyxel.py
 
 ### 创建Pyxel应用
 
-After importing the Pyxel module in your python script, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
+在python文件中导入Pyxel包后，首先使用`init`函数指定窗口大小，然后使用`run`函数启动Pyxel应用。
 
 ```python
 import pyxel
@@ -200,9 +198,9 @@ class App:
 App()
 ```
 
-It is also possible to write simple code using `show` function and `flip` function to draw simple graphics and animations.
+同样可以使用`show`和`flip`函数来设计简单的图形和动画。
 
-`show` function displays the screen and waits until the `Esc` key is pressed.
+`show`函数进行屏幕显示直到`Esc`键被按下。
 
 ```python
 import pyxel
@@ -213,7 +211,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-`flip` function updates the screen once.
+`flip`刷新一次屏幕图像。
 
 ```python
 import pyxel
@@ -226,22 +224,22 @@ while True:
     pyxel.flip()
 ```
 
-### Run Pyxel Application
+### 运行Pyxel应用
 
-The created Python script can be executed with the following command:
+创建的Python脚本可以使用以下命令执行：
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-For the packaged version, it can be executed like a normal Python script:
+对于python包版本，可以像普通Python脚本一样执行：
 
 ```sh
 cd pyxel_examples
 python3 PYTHON_SCRIPT_FILE
 ```
 
-(For Windows, type `python` instead of `python3`)
+（在Windows中，使用`python`命令来替代`python3`）
 
 ### 快捷键
 
@@ -262,9 +260,9 @@ python3 PYTHON_SCRIPT_FILE
 
 ### 如何创建源文件
 
-Pyxel Editor can create images and sounds used in a Pyxel application.
+在Pyxel应用中使用的图像和音效，可以使用Pyxel编辑器进行制作。
 
-It starts with the following command:
+Pyxel编辑器使用以下命令启动：
 
 ```sh
 pyxel edit [PYXEL_RESOURCE_FILE]
@@ -274,9 +272,9 @@ pyxel edit [PYXEL_RESOURCE_FILE]
 
 若未指定源文件，则命名为`my_resource.pyxres`。
 
-After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down ``Ctrl(Cmd)`` key, only the resource type (Image/Tilemap/Sound/Music) that is currently being edited will be loaded. This operation enables to combine multiple resource files into one.
+Pyxel编辑器启动后，可以拖放其他源文件进行切换。如果源文件被拖拽并在按下``Ctrl(Cmd)``键时释放，则只有当前正在编译的类型（图像、瓦片地图、音效、音乐）会被加载。这个操作允许将多种类型的源文件合并入一个源文件中。
 
-The created resource file can be loaded with `load` function.
+创建的源文件可以使用`load`函数加载。
 
 Pyxel编辑器有以下编辑模式。
 
@@ -286,7 +284,7 @@ Pyxel编辑器有以下编辑模式。
 
 <img src="pyxel/editor/screenshots/image_editor.gif">
 
-By dragging and dropping an image file (png/gif/jpeg) onto the Image Editor screen, the image can be loaded into the currently selected image bank.
+通过将图像文件拖放进图像编辑器，图像可以加载进当前的图像库中。
 
 **瓦片地图(Tilemap)编辑器：**
 
@@ -308,30 +306,30 @@ By dragging and dropping an image file (png/gif/jpeg) onto the Image Editor scre
 
 ### 其他创建源文件的方法
 
-Pyxel images and tilemaps can also be created by the following methods:
+Pyxel图像和瓦片地图也可以通过以下方法创建：
 
-- Create an image from a list of strings with `Image.set` function or `Tilemap.set` function
-- Load an image file (png/gif/jpeg) in Pyxel palette with `Image.load` function
+- 使用`Image.set`或`Tilemap.set`函数，从字符串列表创建图片
+- 使用`Image.load`函数从加载图像文件至pyxel调色板中
 
-Pyxel sounds can also be created in the following method:
+Pyxel声音也可以通过以下方法创建：
 
-- Create a sound from strings with `Sound.set` function or `Music.set` function
+- 使用`Sound.set`或`Music.set`函数，从字符串列表中创建声音
 
 这些函数的具体用法请查阅API参考手册。
 
-### How to Distribute Application
+### 如何发布应用
 
-Pyxel supports a dedicated application distribution file format (Pyxel application file) that works across platforms.
+Pyxel支持跨平台的应用文件格式（Pyxel应用文件）。
 
-Create the Pyxel application file (.pyxapp) with the following command:
+使用以下命令创建Pyxel应用文件（.pyxapp）：
 
 ```sh
 pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
 ```
 
-If the application should include resources or additional modules, place them in the application folder.
+如果应用需要包含源文件或扩展模块，将他们放在应用文件夹。
 
-The created application file can be executed with the following command:
+创建好的应用文件使用以下命令执行：
 
 ```sh
 pyxel play PYXEL_APP_FILE
@@ -345,28 +343,28 @@ pyxel play PYXEL_APP_FILE
 画面的宽和高
 
 - `frame_count`<br>
-经过的帧数
+目前为止，经过的总帧数
 
 - `init(width, height, [title], [fps], [quit_key], [capture_sec])`<br>
-Initialize the Pyxel application with screen size (`width`, `height`). The following can be specified as options: the window title with `title`, the frame rate with `fps`, the key to quit the application with `quit_key`, and the maximum recording time of the screen capture video with `capture_sec`.<br>
-e.g. `pyxel.init(160, 120, title="Pyxel with Options", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
+使用屏幕尺寸（`width`，`height`）初始化Pyxel应用。以下属性为可选配置项：窗口标题`title`，帧率`fps`，应用退出按键`quit_key`，以及屏幕捕获的最长记录时间`capture_sec`。<br>
+示例：`pyxel.init(160, 120, title="Pyxel with Options", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
 
 - `run(update, draw)`<br>
-Start the Pyxel application and call `update` function for frame update and `draw` function for drawing.
+启动Pyxel应用，并调用`update`函数刷新画面帧，并使用`draw`函数渲染画面。
 
 - `show()`<br>
-Show the screen and wait until the `Esc` key is pressed. (Do not use in normal applications)
+显示屏幕直到`Esc`键被按下。（通常应用中建议不要使用）
 
 - `flip()`<br>
-Updates the screen once. (Do not use in normal applications)
+刷新一次屏幕。（通常应用中建议不要使用）
 
 - `quit()`<br>
-Quit the Pyxel application at the end of the current frame.
+在当前帧的最后，退出Pyxel应用。
 
 ### 源文件
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-Load the resource file (.pyxres). If ``False`` is specified for the resource type (``image/tilemap/sound/music``), the resource will not be loaded.
+加载源文件(.pyxres)。如果某文件类型(``image/tilemap/sound/music``)被指定为``False``，则源文件中对应类型不会加载。
 
 ### 输入
 - `mouse_x`, `mouse_y`<br>
@@ -390,15 +388,15 @@ Load the resource file (.pyxres). If ``False`` is specified for the resource typ
 ### 显示
 
 - `colors`<br>
-List of the palette display colors. The display color is specified by a 24-bit numerical value. Use `colors.from_list` and `colors.to_list` to directly assign and retrieve Python lists.<br>
-e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+展示调色板可以显示的颜色列表。颜色以24位数值格式进行展示。使用`colors.from_list`和`colors.to_list`直接指定货检索Python列表。<br>
+示例：`org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
 
 - `image(img)`<br>
-Operate the image bank `img` (0-2). (See the Image class)<br>
-e.g. `pyxel.image(0).load(0, 0, "title.png")`
+直接操作图像库`img` (0-2)。（参考前文Image类）<br>
+示例：`pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
-操作瓦片地图`tm`(0-7)（参考Tilemap类）
+操作瓦片地图`tm`(0-7)（参考前文Tilemap类）
 
 - `clip(x, y, w, h)`<br>
 设置画面绘制区域为从(`x`, `y`)开始的宽度`w`、高度为`h`的区域。`clip()`可以将绘制区域重置为全屏。
@@ -442,7 +440,7 @@ e.g. `pyxel.image(0).load(0, 0, "title.png")`
 <img src="images/image_bank_mechanism.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
+将坐标瓦片地图`tm` (0-7)中坐标(`u`, `v`)开始的大小为(`w`, `h`)的图像信息绘至坐标(`x`, `y`)处。若参数`colkey`被指定，则其颜色视为透明。每个瓦片大小为8x8像素并以`(x in tile, y in tile)`元组存储在瓦片地图中。
 
 - `text(x, y, s, col)`<br>
 用`col`颜色在(`x`, `y`)绘制字符串`s`。
@@ -457,16 +455,16 @@ Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of s
 操作音乐`msc`(0-7)（参考Music类）
 
 - `play_pos(ch)`<br>
-Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
+获取通道`ch` (0-3)中音频重播位置`(sound no, note no)`。若重播被停止则返回`None`。
 
 - `play(ch, snd, loop=False)`<br>
-Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. If `True` is specified for `loop`, loop playback is performed.
+播放通道`ch` (0-3)中的声音snd` (0-63)。如果声音`snd`是一个列表，则按顺序播放。如果`loop`被指定为`True`则循环播放。
 
 - `playm(msc, loop=False)`<br>
-Play the music `msc` (0-7). If `True` is specified for `loop`, loop playback is performed.
+播放音乐`msc` (0-7)。如果`loop`被指定为`True`则循环播放。
 
 - `stop([ch])`<br>
-Stops playback of the specified channel `ch` (0-3). `stop()` to stop playing all channels.
+停止指定通道`ch` (0-3)的重播。`stop()`可以停止所有通道的播放。
 
 ### Image类
 
@@ -480,11 +478,11 @@ Stops playback of the specified channel `ch` (0-3). `stop()` to stop playing all
 获取图像中(`x`, `y`)位置的值。
 
 - `set(x, y, data)`<br>
-Set the image at (`x`, `y`) by a list of strings.<br>
-e.g. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+使用字符串列表设置坐标(`x`, `y`)处的图像。<br>
+示例：`pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
 
 - `load(x, y, filename)`<br>
-Load the image file (png/gif/jpeg) at (`x`, `y`).
+在(`x`, `y`)处加载图像文件(png/gif/jpeg)。
 
 ### Tilemap类
 
@@ -492,78 +490,78 @@ Load the image file (png/gif/jpeg) at (`x`, `y`).
 瓦片地图(tilemap)的宽和高。
 
 - `refimg`<br>
-The image bank (0-2) referenced by the tilemap
+被瓦片地图tilemap引用的图像库(0-2)。
 
 - `set(x, y, data)`<br>
-Set the tilemap at (`x`, `y`) by a list of strings.<br>
-e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+使用字符串列表在坐标(`x`, `y`)处设置瓦片地图。<br>
+示例：`pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `pget(x, y)`<br>
-Get the tile at (`x`, `y`). A tile is a tuple of `(x in tile, y in tile)`.
+得到(`x`, `y`)处的瓦片。瓦片数据为元组`(x in tile, y in tile)`。
 
 - `pset(x, y, tile)`<br>
-Draw a `tile` at (`x`, `y`). A tile is a tuple of `(x in tile, y in tile)`.
+在(`x`, `y`)处画出瓦片`tile`。瓦片数据为元组`(x in tile, y in tile)`。
 
 ### Sound类
 
 - `notes`<br>
-List of notes (0-127). The higher the number, the higher the pitch, and at 33 it becomes 'A2'(440Hz). The rest is -1.
+音符列表(0-127)，数字越高，音调越高。数字达到33时，音调就达到'A2'(440Hz)。其余为-1.
 
 - `tones`<br>
-List of tones (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
+音色列表(0:三角波 / 1:方波 / 2:脉冲 / 3:噪声)
 
 - `volumes`<br>
-List of volumes (0-7)
+音量列表(0-7)
 
 - `effects`<br>
-List of effects (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
+音效列表(0:无 / 1:滑动 / 2:颤音 / 3:淡出)
 
 - `speed`<br>
-Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, the length of one note becomes 1 second.
+播放速度。1为最快，数字越大，速度越慢。数字120时，每个音符长度为1秒。
 
 - `set(notes, tones, volumes, effects, speed)`<br>
-Set notes, tones, volumes, and effects with a string. If the tones, volumes, and effects length are shorter than the notes, it is repeated from the beginning.
+使用字符串设置音符、音色、音量及音效。如果音色、音量及音效的字符串比音符字符串短，则从开头重复。
 
 - `set_notes(notes)`<br>
-Set the notes with a string made of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored.<br>
-e.g. `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+使用由'CDEFGAB'+'#-'+'0123'或'R'组成的字符串设置音符。大小写不敏感，且空格会被忽略。<br>
+示例：`pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-Set the tones with a string made of 'TSPN'. Case-insensitive and whitespace is ignored.<br>
-e.g. `pyxel.sound(0).set_tone("TTSS PPPN")`
+使用由'TSPN'组成的字符串设置音色。大小写不敏感，且空格会被忽略。<br>
+示例：`pyxel.sound(0).set_tone("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-Set the volumes with a string made of '01234567'. Case-insensitive and whitespace is ignored.<br>
-e.g. `pyxel.sound(0).set_volume("7777 7531")`
+使用由'01234567'组成的字符串设置音量。大小写不敏感，且空格会被忽略。<br>
+示例：`pyxel.sound(0).set_volume("7777 7531")`
 
 - `set_effects(effects)`<br>
-Set the effects with a string made of 'NSVF'. Case-insensitive and whitespace is ignored.<br>
-e.g. `pyxel.sound(0).set_effect("NFNF NVVS")`
+使用由'NSVF'组成的字符串设置音效。大小写不敏感，且空格会被忽略。<br>
+示例：`pyxel.sound(0).set_effect("NFNF NVVS")`
 
 ### Music类
 
 - `sequences`<br>
-Two-dimensional list of sounds (0-63) listed by the number of channels
+按通道数顺序展示声音(0-63)的二维列表。
 
 - `set(seq0, seq1, seq2, seq3)`<br>
-Set the lists of sound (0-63) of all channels. If an empty list is specified, that channel is not used for playback.<br>
-e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+设置所有通道的声音(0-63)列表。如果指定了空列表，则对应通道不会用来播放。<br>
+示例：`pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
-### Advanced APIs
+### 高级APIs
 
-Pyxel has "advanced APIs" that are not mentioned in this reference because they "may confuse users" or "need specialized knowledge to use".
+Pyxel还有一些“高级API”，出于“可能令用户感到迷惑”、“需要专业知识”等一些原因，在本文尚未提及。
 
-If you are familiar with your skills, try to create amazing works with [this](pyxel/__init__.pyi) as a clue!
+如果你对自己的技术很熟悉，可以参阅[this](pyxel/__init__.pyi)，尝试挑战自己并创造一些神奇的作品！
 
 ## 如何参与
 
 ### Submitting Issue
 
-Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests. Before submitting a new issue, ensure that there is no similar open issue.
+使用[Issue Tracker](https://github.com/kitao/pyxel/issues)来提交bug报告或功能需求。在创建新issue之前，请确定没有类似的打开的issue。
 
 ### Manual Testing
 
-Anyone manually testing the code and reporting bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) are very welcome!
+欢迎任何人在[Issue Tracker](https://github.com/kitao/pyxel/issues)中手动测试代码、上报bug、提交优化建议等！
 
 ### Submitting Pull Request
 
@@ -573,9 +571,9 @@ Anyone manually testing the code and reporting bugs or suggestions for enhanceme
 
 ## 其他信息
 
-- [Discord server (English)](https://discord.gg/FC7kUZJ)
-- [Discord server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [Discord服务器 (English)](https://discord.gg/FC7kUZJ)
+- [Discord服务器 (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## 许可证
 
-Pyxel is under [MIT License](http://en.wikipedia.org/wiki/MIT_License). It can be reused within proprietary software, provided that all copies of the software or its substantial portions include a copy of the terms of the MIT License and also a copyright notice.
+Pyxel遵循[MIT License](http://en.wikipedia.org/wiki/MIT_License)。您可以在专利软件中重复使用，前提是该软件的所有副本或重要部分均包含 MIT 许可条款的副本和版权声明。
