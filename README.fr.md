@@ -83,7 +83,7 @@ pip3 install -U pyxel
 Après avoir installé le paquet SDL2 (`libsdl2-dev` pour Ubuntu), [Python3](https://www.python.org/) (version 3.7 ou plus), et `python3-pip`, lancez la commande suivante :
 
 ```sh
-pip3 install -U pyxel
+sudo pip3 install -U pyxel
 ```
 
 Si l’installation avec pip ne fonctionne pas, essayez de compiler vous-même en suivant les étapes ci-dessous après avoir installé `cmake` et `rust`:
@@ -92,7 +92,7 @@ Si l’installation avec pip ne fonctionne pas, essayez de compiler vous-même e
 git clone https://github.com/kitao/pyxel.git
 cd pyxel
 make clean all RELEASE=1
-pip3 install .
+sudo pip3 install .
 ```
 
 ### Installer la version standalone
@@ -116,7 +116,7 @@ brew install pyxel
 
 **Linux**
 
-Après avoir installé le paquet SDL2 (`libsdl2-dev` pour Ubuntu) et [Homebrew](https://docs.brew.sh/Homebrew-on-Linux), lancez les commandes suivantes :
+Après avoir installé le paquet SDL2 (`libsdl2-dev` pour Ubuntu) et [Homebrew](https://brew.sh/), lancez les commandes suivantes :
 
 ```sh
 brew tap kitao/pyxel

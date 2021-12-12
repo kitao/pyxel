@@ -83,7 +83,7 @@ pip3 install -U pyxel
 安装SDL2（Ubuntu下包名为：`libsdl2-dev`），[Python3](https://www.python.org/)（3.7或更高版本），以及`python3-pip`这三个包之后，执行以下命令：
 
 ```sh
-pip3 install -U pyxel
+sudo pip3 install -U pyxel
 ```
 
 如果以上步骤无效，可以在安装`cmake`和`rust`后，尝试执行以下步骤自行编译：
@@ -92,7 +92,7 @@ pip3 install -U pyxel
 git clone https://github.com/kitao/pyxel.git
 cd pyxel
 make clean all RELEASE=1
-pip3 install .
+sudo pip3 install .
 ```
 
 ### 安装独立版本
@@ -116,7 +116,7 @@ brew install pyxel
 
 **Linux**
 
-安装SDL2（Ubuntu下包名为：`libsdl2-dev`）和[Homebrew](https://docs.brew.sh/Homebrew-on-Linux)之后，执行以下命令：
+安装SDL2（Ubuntu下包名为：`libsdl2-dev`）和[Homebrew](https://brew.sh/)之后，执行以下命令：
 
 ```sh
 brew tap kitao/pyxel
