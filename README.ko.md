@@ -239,7 +239,7 @@ cd pyxel_examples
 python3 PYTHON_SCRIPT_FILE
 ```
 
-(Windows 환경에서는 `python` 대신 `python3`을 입력해야 합니다)
+(Windows 환경에서는 `python3` 대신 `python`을 입력해야 합니다)
 
 ### 특수 조작
 
