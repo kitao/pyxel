@@ -144,7 +144,7 @@ pyxel copy_examples
 - [07_snake.py](pyxel/examples/07_snake.py) - BGM이 포함된 스네이크 게임
 - [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - Triangle drawing API 데모
 - [09_shooter.py](pyxel/examples/09_shooter.py) - 화면 전환이 있는 슈팅 게임
-- [10_platformer.py](pyxel/examples/10_platformer.py) - 지도가 있는 횡 스크롤 플랫폼 게임
+- [10_platformer.py](pyxel/examples/10_platformer.py) - 맵이 있는 횡 스크롤 플랫폼 게임
 
 다음 명령어를 사용하여 예제 파일을 실행할 수 있습니다.
 
