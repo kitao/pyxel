@@ -39,7 +39,7 @@
 # Make Pyxel distributions using Python wheel:
 #   make dist
 #
-# Make Pyxel installer using Windows package:
+# Make Pyxel installer using Windows distribution:
 #   Build native/setup.iss with Inno Setup
 #
 

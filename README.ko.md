@@ -2,9 +2,7 @@
 
 [ [English](README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
-**NOTE: This manual has not yet been translated for Pyxel version 1.5.0. We are looking for volunteers to translate and check for mistakes!**
-
-**Pyxel (픽셀)** 은 Python을 위한 레트로 게임 엔진입니다.
+**Pyxel**은 Python을 위한 레트로 게임 엔진입니다.
 
 16가지 색상만 사용하거나 동시에 4가지 소리만 재생하는 등 레트로 게임에 나올 법한 사양으로, Python에서 픽셀 아트 스타일의 게임을 마음껏 만들 수 있습니다.
 
@@ -32,23 +30,23 @@
 <img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
 </a>
 
-The specifications of Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic.computer/).
+Pyxel의 사양은 [PICO-8](https://www.lexaloffle.com/pico-8.php)과 [TIC-80](https://tic.computer/)의 디자인을 참고로 하고 있습니다.
 
 Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Pyxel과 함께 레트로 스타일의 게임을 만들어보세요!
 
 ## 사양
 
 - Windows, Mac, Linux 지원
-- Programming with Python
-- 16 color palette
+- Python으로 프로그래밍
+- 16색 팔레트
 - 256x256 크기의 이미지 뱅크 3개
 - 256x256 크기의 타일 맵 8개
-- 4개의 사운드 동시 재생, 64개의 정의 가능한 사운드
+- 4개의 사운드 채널 및 64개의 정의 가능한 사운드
 - 임의의 사운드를 조합 가능한 8개의 음악
 - 키보드, 마우스, 게임패드 입력
 - 이미지/사운드 에디터
 
-### 색상 팔레트
+### 컬러 팔레트
 
 <img src="pyxel/examples/screenshots/05_color_palette.png">
 <br><br>
@@ -56,17 +54,17 @@ Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Py
 
 ## 설치 방법
 
-There are two types of Pyxel, a packaged version and a standalone version.
+Pyxel은 패키지 버전과 독립 실행형(Standalone) 버전의 두 가지 유형이 있습니다.
 
-### Install Packaged Version
+### 패키지 버전 설치하기
 
-The packaged version of Pyxel uses Pyxel as a Python extension module.
+Pyxel의 패키지 버전은 Pyxel을 Python 확장 모듈로 사용합니다.
 
-Recommended for those who are familiar with managing Python packages using the `pip` command or who want to develop full-fledged Python applications.
+이 방식은 `pip` 명령어를 사용한 Python 패키지 관리에 익숙하거나 본격적인 Python 애플리케이션을 개발하려는 사용자에게 추천합니다.
 
 **Windows**
 
-After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
+[Python3](https://www.python.org/) (버전 3.7 이상)을 설치한 후, 다음 명령어를 실행합니다.
 
 ```sh
 pip install -U pyxel
@@ -74,7 +72,7 @@ pip install -U pyxel
 
 **Mac**
 
-After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
+[Python3](https://www.python.org/) (버전 3.7 이상)을 설치한 후, 다음 명령어를 실행합니다.
 
 ```sh
 pip3 install -U pyxel
@@ -82,13 +80,13 @@ pip3 install -U pyxel
 
 **Linux**
 
-After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://www.python.org/) (version 3.7 or higher), and `python3-pip`, run the following command:
+SDL2 패키지 (Ubuntu의 경우 `libsdl2-dev`), [Python3](https://www.python.org/) (버전 3.7 이상), `python3-pip`를 설치한 후, 다음 명령어를 실행합니다.
 
 ```sh
 pip3 install -U pyxel
 ```
 
-If the above doesn't work, try self-building by following the steps below after installing `cmake` and `rust`:
+위의 방법이 제대로 작동하지 않으면, `cmake`, `rust`를 설치한 후 다음 단계에 따라 셀프 빌드를 시도해보세요.
 
 ```sh
 git clone https://github.com/kitao/pyxel.git
@@ -97,19 +95,19 @@ make clean all RELEASE=1
 pip3 install .
 ```
 
-### Install Standalone Version
+### 독립 실행형 버전 설치하기
 
-The standalone version of Pyxel uses Pyxel as a standalone tool that does not depend on Python.
+Pyxel의 독립 실행형 버전은 Python에 의존하지 않는 독립 실행형 도구로 Pyxel을 사용할 수 있습니다.
 
-Recommended for those who want to start programming easily without worrying about Python settings, or those who want to play Pyxel games immediately.
+Python의 각종 설정을 신경 쓰지 않고 간편하게 프로그래밍을 시작하고 싶은 분이나 Pyxel의 게임을 바로 해보고 싶으신 분들에게 추천합니다.
 
 **Windows**
 
-Download and run the latest version of the Windows installer (`pyxel-[version]-windows-setup.exe`) from the [Download Page](https://github.com/kitao/pyxel/releases).
+[다운로드 페이지](https://github.com/kitao/pyxel/releases)에서 최신 버전의 Windows용 설치 파일 (`pyxel-[버전]-windows-setup.exe`)을 다운로드하여 실행합니다.
 
 **Mac**
 
-After installing [Homebrew](https://brew.sh/), run the following commands:
+[Homebrew](https://brew.sh/)를 설치한 후, 다음 명령어를 실행합니다.
 
 ```sh
 brew tap kitao/pyxel
@@ -118,37 +116,37 @@ brew install pyxel
 
 **Linux**
 
-After installing the SDL2 package (`libsdl2-dev` for Ubuntu) and installing [Homebrew](https://docs.brew.sh/Homebrew-on-Linux), run the following commands:
+SDL2 패키지 (Ubuntu의 경우 `libsdl2-dev`)와 [Homebrew](https://docs.brew.sh/Homebrew-on-Linux)를 설치한 후, 다음 명령어를 실행합니다.
 
 ```sh
 brew tap kitao/pyxel
 brew install pyxel
 ```
 
-If the above doesn't work, try self-building the packaged version.
+위의 방법이 제대로 작동하지 않을 경우, 패키지 버전 설치 가이드의 셀프 빌드 방식을 시도해보시기 바랍니다.
 
-### Try Pyxel Examples
+### 예제 실행하기
 
-Pyxel 설치 후, 아래 명령어를 사용해 현재 폴더에 Pyxel 예제를 복사할 수 있습니다:
+Pyxel 설치 후, 다음 명령어를 사용해 현재 폴더에 Pyxel 예제 파일을 복사할 수 있습니다.
 
 ```sh
 pyxel copy_examples
 ```
 
-복사되는 예제는 다음과 같습니다:
+복사되는 예제 파일은 다음과 같습니다:
 
 - [01_hello_pyxel.py](pyxel/examples/01_hello_pyxel.py) - 간단한 애플리케이션
 - [02_jump_game.py](pyxel/examples/02_jump_game.py) - Pyxel 리소스 파일을 사용한 점프 게임
-- [03_draw_api.py](pyxel/examples/03_draw_api.py) - Demonstration of drawing APIs
-- [04_sound_api.py](pyxel/examples/04_sound_api.py) - Demonstration of sound APIs
+- [03_draw_api.py](pyxel/examples/03_draw_api.py) - Drawing API 데모
+- [04_sound_api.py](pyxel/examples/04_sound_api.py) - Sound API 데모
 - [05_color_palette.py](pyxel/examples/05_color_palette.py) - 색상 팔레트 목록
 - [06_click_game.py](pyxel/examples/06_click_game.py) - 마우스 클릭 게임
 - [07_snake.py](pyxel/examples/07_snake.py) - BGM이 포함된 스네이크 게임
-- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing APIs
-- [09_shooter.py](pyxel/examples/09_shooter.py) - 화면 전환으로 슈팅 게임
-- [10_platformer.py](pyxel/examples/10_platformer.py) - Side-scrolling platform game with map
+- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - Triangle drawing API 데모
+- [09_shooter.py](pyxel/examples/09_shooter.py) - 화면 전환이 있는 슈팅 게임
+- [10_platformer.py](pyxel/examples/10_platformer.py) - 맵이 있는 횡 스크롤 플랫폼 게임
 
-An examples can be executed with the following commands:
+다음 명령어를 사용하여 예제 파일을 실행할 수 있습니다.
 
 ```sh
 cd pyxel_examples
@@ -159,7 +157,7 @@ pyxel run 01_hello_pyxel.py
 
 ### Pyxel 애플리케이션 작성 방법
 
-After importing the Pyxel module in your python script, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
+Python 스크립트에서 Pyxel 모듈을 가져온 뒤 `init` 함수로 화면 크기를 지정한 후, `run` 함수로 Pyxel 애플리케이션을 시작합니다.
 
 ```python
 import pyxel
@@ -177,9 +175,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-`run` 함수의 인자로는 프레임 갱신을 처리하는 `update` 함수와, 필요할 때 화면을 그리는 `draw` 함수가 사용됩니다.
+`run` 함수의 인자로는 프레임 갱신을 처리하는 `update` 함수와 필요할 때 화면을 그리는 `draw` 함수가 사용됩니다.
 
-실제 애플리케이션에서는 아래와 같이 클래스에서 Pyxel 코드를 감싸는 것이 좋습니다:
+실제 애플리케이션에서는 아래와 같이 클래스에서 Pyxel 코드를 감싸는 것이 좋습니다.
 
 ```python
 import pyxel
@@ -200,9 +198,9 @@ class App:
 App()
 ```
 
-It is also possible to write simple code using `show` function and `flip` function to draw simple graphics and animations.
+`show`나 `flip` 함수를 이용해 간단한 그래픽이나 애니메이션을 그리는 것도 가능합니다.
 
-`show` function displays the screen and waits until the `Esc` key is pressed.
+`show` 함수는 화면을 표시하고 `Esc` 키가 눌릴 때까지 대기합니다.
 
 ```python
 import pyxel
@@ -213,7 +211,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-`flip` function updates the screen once.
+`flip` 함수는 화면을 한 번 갱신하는 함수입니다.
 
 ```python
 import pyxel
@@ -226,79 +224,80 @@ while True:
     pyxel.flip()
 ```
 
-### Run Pyxel Application
+### Pyxel 애플리케이션 실행 방법
 
-The created Python script can be executed with the following command:
+생성된 Python 스크립트는 다음 명령어를 사용해 실행할 수 있습니다.
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-For the packaged version, it can be executed like a normal Python script:
+패키지 버전의 경우 일반 Python 스크립트와 마찬가지로 실행할 수 있습니다.
 
 ```sh
 cd pyxel_examples
 python3 PYTHON_SCRIPT_FILE
 ```
 
-(For Windows, type `python` instead of `python3`)
+(Windows 환경에서는 `python3` 대신 `python`을 입력해야 합니다)
 
 ### 특수 조작
 
-Pyxel 애플리케이션 실행 중에, 아래의 특수 조작을 사용할 수 있습니다:
+Pyxel 애플리케이션 실행 중에, 아래의 특수 조작을 사용할 수 있습니다.
 
 - `Esc`<br>
 애플리케이션 종료
 - `Alt(Option)+1`<br>
 바탕 화면에 스크린샷 저장
 - `Alt(Option)+2`<br>
-화면 캡쳐의 녹화 시작 시간 초기화
+화면 캡처의 녹화 시작 시간 초기화
 - `Alt(Option)+3`<br>
-화면 캡쳐 파일 을 바탕 화면에 저장 (최대 10초)
+화면 캡처 파일을 바탕 화면에 저장 (최대 10초)
 - `Alt(Option)+0`<br>
-성능 모니터 (fps, update time, and draw time)의 표시/표시 해제
+성능 모니터 (fps, update time, draw time)의 표시/표시 해제
 - `Alt(Option)+Enter`<br>
 전체 화면 전환
 
 ### 리소스의 작성 방법
 
-Pyxel Editor can create images and sounds used in a Pyxel application.
+Pyxel Editor는 Pyxel 애플리케이션에서 사용되는 이미지와 사운드를 생성할 수 있습니다.
 
-It starts with the following command:
+다음 명령어를 사용해 시작할 수 있습니다.
 
 ```sh
 pyxel edit [PYXEL_RESOURCE_FILE]
 ```
 
-지정한 Pyxel 리소스 파일 (.pyxres)이 존재하는 경우에는 해당 파일을 불러오고, 존재하지 않는 경우 지정한 이름으로 새 리소스 파일을 생성합니다. 파일 이름을 생략했을 경우, 기본 파일 이름은 `my_resource.pyxres`입니다.
+지정한 Pyxel 리소스 파일 (.pyxres)이 존재하는 경우에는 해당 파일을 불러오고, 존재하지 않는 경우 지정한 이름으로 새 리소스 파일을 생성합니다.
+파일 이름을 생략했을 경우, 기본 파일 이름은 `my_resource.pyxres`입니다.
 
-After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down ``Ctrl(Cmd)`` key, only the resource type (Image/Tilemap/Sound/Music) that is currently being edited will be loaded. This operation enables to combine multiple resource files into one.
+Pyxel Editor 실행 중 다른 리소스 파일을 드래그 앤 드롭하는 것으로 작업 중인 리소스 파일을 변경할 수 있습니다. ``Ctrl(Cmd)`` 키를 누르면서 리소스 파일을 드래그 앤 드롭하면, 현재 편집 중인 리소스 유형(Image/Tilemap/Sound/Music)만 불러올 수 있습니다. 이를 통해 여러 개의 리소스 파일을 하나로 결합할 수 있습니다.
 
-The created resource file can be loaded with `load` function.
+만들어진 리소스 파일은 `load` 함수를 통해 불러올 수 있습니다.
 
-Pyxel Editor는 다음과 같은 편집 모드가 있습니다:
+Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
-**이미지 에디터:**
+**이미지 편집기:**
 
-이미지 뱅크를 편집하는 화면입니다.
+이미지 뱅크의 이미지를 편집하는 화면입니다.
 
 <img src="pyxel/editor/screenshots/image_editor.gif">
 
-By dragging and dropping an image file (png/gif/jpeg) onto the Image Editor screen, the image can be loaded into the currently selected image bank.
+이미지 편집기 화면에 이미지 파일(png/gif/jpeg)을 드래그 앤 드롭하면, 이미지를 현재 선택된 이미지 뱅크로 불러올 수 있습니다.
 
-**타일 맵 에디터:**
+**타일 맵 편집기:**
 
 이미지 뱅크의 이미지를 타일 모양으로 늘어놓은 타일 맵을 편집하는 화면입니다.
 
 <img src="pyxel/editor/screenshots/tilemap_editor.gif">
 
-**사운드 에디터:**
+**사운드 편집기:**
 
 사운드를 편집하는 화면입니다.
 
 <img src="pyxel/editor/screenshots/sound_editor.gif">
 
-**음악 에디터:**
+**음악 편집기:**
 
 사운드를 플레이 순서대로 늘어놓은 음악을 편집하는 화면입니다.
 
@@ -306,30 +305,30 @@ By dragging and dropping an image file (png/gif/jpeg) onto the Image Editor scre
 
 ### 기타 리소스 작성 방법
 
-Pyxel images and tilemaps can also be created by the following methods:
+Pyxel의 이미지와 타일 맵은 다음과 같은 방법으로 만들 수도 있습니다.
 
-- Create an image from a list of strings with `Image.set` function or `Tilemap.set` function
-- Load an image file (png/gif/jpeg) in Pyxel palette with `Image.load` function
+- `Image.set` 또는 `Tilemap.set` 함수를 사용하여 문자열 리스트에서 이미지 생성
+- `Image.load` 함수를 사용하여 Pyxel 팔레트 이미지 파일(png/gif/jpeg) 불러오기
 
-Pyxel sounds can also be created in the following method:
+Pyxel의 사운드와 음악도 다음과 같은 방법으로 만들 수 있습니다.
 
-- Create a sound from strings with `Sound.set` function or `Music.set` function
+- `Sound.set` 또는 `Music.set` 함수를 사용하여 문자열에서 사운드 생성
 
 각 함수의 사용법은 API 레퍼런스를 참조해주세요.
 
-### How to Distribute Application
+### 애플리케이션 배포 방법
 
-Pyxel supports a dedicated application distribution file format (Pyxel application file) that works across platforms.
+Pyxel은 여러 플랫폼에서 작동하는 전용 애플리케이션 배포 파일 형식 (Pyxel 애플리케이션 파일)을 지원합니다.
 
-Create the Pyxel application file (.pyxapp) with the following command:
+Pyxel 애플리케이션 파일 (.pyxapp)은 다음 명령어를 사용해 생성할 수 있습니다.
 
 ```sh
 pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
 ```
 
-If the application should include resources or additional modules, place them in the application folder.
+애플리케이션에 리소스 또는 추가 모듈이 포함되어야 하는 경우, 애플리케이션이 있는 폴더에 배치하면 됩니다.
 
-The created application file can be executed with the following command:
+생성된 애플리케이션 파일은 다음 명령어를 사용하여 실행할 수 있습니다.
 
 ```sh
 pyxel play PYXEL_APP_FILE
@@ -346,25 +345,25 @@ pyxel play PYXEL_APP_FILE
 경과한 프레임의 수
 
 - `init(width, height, [title], [fps], [quit_key], [capture_sec])`<br>
-Initialize the Pyxel application with screen size (`width`, `height`). The following can be specified as options: the window title with `title`, the frame rate with `fps`, the key to quit the application with `quit_key`, and the maximum recording time of the screen capture video with `capture_sec`.<br>
-e.g. `pyxel.init(160, 120, title="Pyxel with Options", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
+Pyxel 애플리케이션을 화면 크기 (`width`, `height`)로 초기화합니다. 옵션으로 `title`에 창 제목, `fps`에 프레임 속도, `quit_key`에 애플리케이션 종료 키, `capture_sec`에 화면 캡처의 최대 녹화 시간을 지정할 수 있습니다.<br>
+예시: `pyxel.init(160, 120, title="Pyxel with Options", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
 
 - `run(update, draw)`<br>
-Start the Pyxel application and call `update` function for frame update and `draw` function for drawing.
+Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수를, 화면 그리기에 `draw` 함수를 호출합니다.
 
 - `show()`<br>
-Show the screen and wait until the `Esc` key is pressed. (Do not use in normal applications)
+화면을 표시하고 `Esc` 키를 누를 때까지 기다립니다. (일반적인 용도로 사용하지 않음)
 
 - `flip()`<br>
-Updates the screen once. (Do not use in normal applications)
+화면을 한 번 갱신합니다. (일반적인 용도로 사용하지 않음)
 
 - `quit()`<br>
-Quit the Pyxel application at the end of the current frame.
+현재 프레임의 끝에서 Pyxel 애플리케이션을 종료합니다.
 
 ### 리소스
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-Load the resource file (.pyxres). If ``False`` is specified for the resource type (``image/tilemap/sound/music``), the resource will not be loaded.
+리소스 파일 (.pyxres)을 불러옵니다. 리소스 타입 (``image/tilemap/sound/music``)에 ``False``를 지정하면, 해당 리소스는 불러오지 않습니다.
 
 ### 입력
 - `mouse_x`, `mouse_y`<br>
@@ -388,18 +387,18 @@ Load the resource file (.pyxres). If ``False`` is specified for the resource typ
 ### 그래픽
 
 - `colors`<br>
-List of the palette display colors. The display color is specified by a 24-bit numerical value. Use `colors.from_list` and `colors.to_list` to directly assign and retrieve Python lists.<br>
-e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+팔레트의 표시 색상 리스트입니다. 표시 색상은 24-bit 숫자 값으로 지정합니다. `colors.from_list` 및 `colors.to_list`를 사용해 Python 리스트의 형태로 직접 색상을 지정하고 적용할 수 있습니다.<br>
+예시: `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
 
 - `image(img)`<br>
-Operate the image bank `img` (0-2). (See the Image class)<br>
-e.g. `pyxel.image(0).load(0, 0, "title.png")`
+이미지 뱅크 `img` (0-2)를 조작합니다. (이미지 클래스 참조)<br>
+예시: `pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
-타일 맵 `tm`(0-7)을 조작합니다(타일 맵 클래스를 참조).
+타일 맵 `tm` (0-7)을 조작합니다. (타일 맵 클래스 참조)
 
 - `clip(x, y, w, h)`<br>
-화면의 드로잉 영역을 (`x`, `y`)로 설정하고, 폭을 `w`, 높이를 `h`로 설정합니다. `clip()`과 같이 사용하면 드로잉 영역을 초기 상태(전체 화면)으로 돌립니다.
+화면의 드로잉 영역을 (`x`, `y`)로 설정하고, 너비를 `w`, 높이를 `h`로 설정합니다. `clip()`과 같이 사용하면 드로잉 영역을 초기 상태(전체 화면)으로 돌립니다.
 
 - `pal(col1, col2)`<br>
 드로잉 시 `col1`를 `col2`로 대체합니다. `pal()`과 같이 사용하면 초기 상태로 돌립니다.
@@ -411,7 +410,7 @@ e.g. `pyxel.image(0).load(0, 0, "title.png")`
 (`x`, `y`) 좌표의 색상 값을 가져옵니다.
 
 - `pset(x, y, col)`<br>
-`col` 색을 사용해 (`x`, `y`) 좌표에 픽셀을 찍습니다.
+`col` 색을 사용해 (`x`, `y`) 좌표에 픽셀을 그립니다.
 
 - `line(x1, y1, x2, y2, col)`<br>
 `col` 색을 사용해 (`x1`, `y1`)부터 (`x2`, `y2`)까지 직선을 그립니다.
@@ -435,12 +434,12 @@ e.g. `pyxel.image(0).load(0, 0, "title.png")`
 꼭짓점 좌표 (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`)를 기준으로 `col` 색상의 삼각형 테두리를 그립니다. (테두리 안쪽에 색상을 채우지 않음)
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-이미지 뱅크 `img`(0-2)의 (`u`, `v`)부터 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 마이너스로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다.
+이미지 뱅크 `img`(0-2)의 (`u`, `v`)부터 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 음수로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다.
 
 <img src="images/image_bank_mechanism.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
+타일 맵 `tm` (0-7)의 (`u`, `v`)부터 가로 `w`, 세로 `h`개의 타일을 (`x`, `y`) 위치에 그립니다. `colkey`에 색을 지정하면 투명색으로 취급합니다. 타일 하나의 크기는 8x8 픽셀이며 `(x in tile, y in tile)`의 튜플로 타일 맵에 저장되어 있습니다.
 
 - `text(x, y, s, col)`<br>
 `col` 색을 사용해 문자열 `s`를 (`x`, `y`) 좌표에 그립니다.
@@ -448,41 +447,41 @@ Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of s
 ### 오디오
 
 - `sound(snd)`<br>
-사운드 `snd`(0-63) 를 조작합니다. (사운드 클래스를 참조)<br>
-예: `pyxel.sound(0).speed = 60`
+사운드 `snd`(0-63) 를 조작합니다. (사운드 클래스 참조)<br>
+예시: `pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
-음악 `msc`(0-7) 를 조작합니다(음악 클래스를 참조).
+음악 `msc`(0-7) 를 조작합니다. (음악 클래스 참조)
 
 - `play_pos(ch)`<br>
-Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
+채널 `ch` (0-3)의 사운드 재생 위치를 `(sound no, note no)` 형태의 튜플로 가져옵니다. 재생 중이 아닐 경우 `None`을 반환합니다.
 
 - `play(ch, snd, loop=False)`<br>
-Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. If `True` is specified for `loop`, loop playback is performed.
+채널 `ch` (0-3)에서 사운드 `snd` (0-63)를 재생합니다. `snd`가 리스트일 경우, 순서대로 재생됩니다. `loop`에 `True`를 지정하면 계속 반복합니다.
 
 - `playm(msc, loop=False)`<br>
-Play the music `msc` (0-7). If `True` is specified for `loop`, loop playback is performed.
+음악 `msc` (0-7)을 재생합니다. `loop`에 `True`를 지정하면 계속 반복합니다.
 
 - `stop([ch])`<br>
-Stops playback of the specified channel `ch` (0-3). `stop()` to stop playing all channels.
+지정된 채널 `ch` (0-3)의 재생을 중지합니다. `stop()`을 사용해 모든 채널의 재생을 중지할 수도 있습니다.
 
 ### 이미지 클래스
 
 - `width`, `height`<br>
-이미지의 가로/세로 크기
-
-- `data`<br>
-이미지의 데이터 (256x256 크기의 2차원 리스트)
-
-- `get(x, y)`<br>
-이미지의 (`x`,`y`) 데이터를 가져옵니다.
+이미지의 가로, 세로 크기
 
 - `set(x, y, data)`<br>
-Set the image at (`x`, `y`) by a list of strings.<br>
-e.g. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+(`x`, `y`)에 문자열 리스트를 사용해 이미지를 설정합니다.<br>
+예시: `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
 
 - `load(x, y, filename)`<br>
-Load the image file (png/gif/jpeg) at (`x`, `y`).
+(`x`, `y`)에 이미지 파일(png/gif/jpeg)을 불러옵니다.
+
+- `pget(x, y)`<br>
+(`x`, `y`)에서 픽셀 색상을 가져옵니다.
+
+- `pset(x, y, col)`<br>
+(`x`, `y`)에 색상 `col`의 픽셀을 그립니다.
 
 ### 타일 맵 클래스
 
@@ -490,90 +489,90 @@ Load the image file (png/gif/jpeg) at (`x`, `y`).
 타일 맵의 가로/세로 크기
 
 - `refimg`<br>
-The image bank (0-2) referenced by the tilemap
+타일 맵이 참조하는 이미지 뱅크 (0-2)
 
 - `set(x, y, data)`<br>
-Set the tilemap at (`x`, `y`) by a list of strings.<br>
-e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+(`x`, `y`)에 문자열 리스트를 사용해 타일 맵을 설정합니다.<br>
+예시: `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `pget(x, y)`<br>
-Get the tile at (`x`, `y`). A tile is a tuple of `(x in tile, y in tile)`.
+(`x`, `y`)에서 타일을 가져옵니다. 타일은 `(x in tile, y in tile)`의 튜플 형태입니다.
 
 - `pset(x, y, tile)`<br>
-Draw a `tile` at (`x`, `y`). A tile is a tuple of `(x in tile, y in tile)`.
+(`x`, `y`)에 `tile`을 그립니다. 타일은 `(x in tile, y in tile)`의 튜플 형태입니다.
 
 ### 사운드 클래스
 
 - `notes`<br>
-List of notes (0-127). The higher the number, the higher the pitch, and at 33 it becomes 'A2'(440Hz). The rest is -1.
+음정 리스트 (0-127). 숫자가 높을수록 피치가 높아지며 33에서는 'A2'(440Hz)가 됩니다. 쉼표는 -1입니다.
 
 - `tones`<br>
-List of tones (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
+음색 리스트 (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
 
 - `volumes`<br>
-List of volumes (0-7)
+음량 리스트 (0-7)
 
 - `effects`<br>
-List of effects (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
+효과 리스트 (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
 
 - `speed`<br>
-Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, the length of one note becomes 1 second.
+재생 속도. 1이 가장 빠르며 숫자가 커질수록 재생 속도가 느려집니다. 120에서는 한 음의 길이가 1초가 됩니다.
 
 - `set(notes, tones, volumes, effects, speed)`<br>
-Set notes, tones, volumes, and effects with a string. If the tones, volumes, and effects length are shorter than the notes, it is repeated from the beginning.
+문자열을 사용해 음정, 음색, 음량 및 효과를 설정합니다. 음색, 음량, 효과의 길이가 음정보다 짧으면 처음부터 반복됩니다.
 
 - `set_notes(notes)`<br>
-Set the notes with a string made of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored.<br>
-e.g. `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+'CDEFGAB'+'#-'+'0123' 또는 'R' 문자열로 음정을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
+예시: `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-Set the tones with a string made of 'TSPN'. Case-insensitive and whitespace is ignored.<br>
-e.g. `pyxel.sound(0).set_tone("TTSS PPPN")`
+'TSPN' 문자열로 음색을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
+예시: `pyxel.sound(0).set_tone("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-Set the volumes with a string made of '01234567'. Case-insensitive and whitespace is ignored.<br>
-e.g. `pyxel.sound(0).set_volume("7777 7531")`
+'01234567' 문자열로 음량을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
+예시: `pyxel.sound(0).set_volume("7777 7531")`
 
 - `set_effects(effects)`<br>
-Set the effects with a string made of 'NSVF'. Case-insensitive and whitespace is ignored.<br>
-e.g. `pyxel.sound(0).set_effect("NFNF NVVS")`
+'NSVF' 문자열로 효과를 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
+예시: `pyxel.sound(0).set_effect("NFNF NVVS")`
 
 ### 음악 클래스
 
 - `sequences`<br>
-Two-dimensional list of sounds (0-63) listed by the number of channels
+사운드 (0-63)를 채널 수만큼 나열한 2차원 리스트
 
 - `set(seq0, seq1, seq2, seq3)`<br>
-Set the lists of sound (0-63) of all channels. If an empty list is specified, that channel is not used for playback.<br>
-e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+모든 채널의 사운드 (0-63) 리스트를 지정합니다. 빈 리스트가 지정되면 해당 채널은 재생에 사용되지 않습니다.<br>
+예시: `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
-### Advanced APIs
+### 고급 사용자용 API
 
-Pyxel has "advanced APIs" that are not mentioned in this reference because they "may confuse users" or "need specialized knowledge to use".
+Pyxel에는 "사용자를 혼란스럽게 할 수 있거나", "사용하는 데 전문 지식이 필요함"의 이유로 여기에 언급되지 않은 "고급 사용자용 API"가 존재합니다.
 
-If you are familiar with your skills, try to create amazing works with [this](pyxel/__init__.pyi) as a clue!
+이러한 것을 다루는 데 능숙하시다면, [여기](pyxel/__init__.pyi)를 참고해 깜짝 놀랄 만한 작품 만들기에 도전해보세요!
 
-## 컨트리뷰션 방법
+## 기여 방법
 
-### Submitting Issue
+### 문제 보고
 
-Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests. Before submitting a new issue, ensure that there is no similar open issue.
+오류 제보나 기능 건의는 [이슈 트래커](https://github.com/kitao/pyxel/issues)에서 받고 있습니다. 새 이슈를 작성하기 전에 비슷한 내용의 이슈가 없는지 확인 부탁드립니다.
 
-### Manual Testing
+### 매뉴얼 테스팅
 
-Anyone manually testing the code and reporting bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) are very welcome!
+코드를 테스트해 주시고, [Issue Tracker](https://github.com/kitao/pyxel/issues) 페이지에서 오류 제보나 개선 제안을 해주시는 분들을 환영합니다!
 
-### Submitting Pull Request
+### 풀 리퀘스트 제출
 
-패치나 수정 요청은 풀 리퀘스트(PR)로 받고 있습니다. 제출하기 전에 문제가 이미 해결되지 않았는지 [Issue Tracker](https://github.com/kitao/pyxel/issues) 페이지에서 확인 부탁드립니다.
+패치나 수정 요청은 풀 리퀘스트(PR)로 받고 있습니다. 제출하기 전에 문제가 이미 해결되지 않았는지 이슈 트래커 페이지에서 확인 부탁드립니다.
 
-제출한 풀 리퀘스트는 [MIT License](LICENSE)에 따라 게시하기를 동의한 것으로 간주됩니다.
+제출한 풀 리퀘스트는 [MIT License](LICENSE)에 따라 게시하는 데 동의한 것으로 간주합니다.
 
 ## 기타 정보
 
-- [Discord server (English)](https://discord.gg/FC7kUZJ)
-- [Discord server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [디스코드 서버 (English)](https://discord.gg/FC7kUZJ)
+- [디스코드 서버 (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## 라이선스 정보
 
-Pyxel is under [MIT License](http://en.wikipedia.org/wiki/MIT_License). It can be reused within proprietary software, provided that all copies of the software or its substantial portions include a copy of the terms of the MIT License and also a copyright notice.
+Pyxel은 [MIT 라이선스](http://en.wikipedia.org/wiki/MIT_License)를 따릅니다. 소프트웨어의 모든 사본 또는 그 상당 부분에 MIT 라이선스 조항의 사본 및 저작권 통지가 포함되어 있다면 독점 소프트웨어 내에서 재사용할 수 있습니다.
