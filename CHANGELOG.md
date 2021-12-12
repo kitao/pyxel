@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.5.1
+- Updated the README in German
+- Updated the README in Chinese
+- Updated the README in Korean
+- Fixed file permission error when running pyxapp
+
 ## 1.5.0
 - Re-implemented the core engine in Rust
 - Changed to statically link SDL2 libraries for Mac
