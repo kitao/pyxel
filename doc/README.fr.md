@@ -49,7 +49,7 @@ Pyxel est open source et libre d’usage. Commençons à faire un jeu-vidéo ré
 ### Palette de couleurs
 
 <img src="images/05_color_palette.png">
-<br>
+
 <img src="images/pyxel_palette.png">
 
 ## Comment installer

@@ -51,7 +51,7 @@ Pyxel es de código abierto y de libre uso. Comencemos a crear juegos retro con 
 ### Paleta de Colores
 
 <img src="images/05_color_palette.png">
-<br>
+
 <img src="images/pyxel_palette.png">
 
 ## Cómo instalar
