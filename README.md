@@ -49,7 +49,7 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 ### Color Palette
 
 <img src="doc/images/05_color_palette.png">
-<br><br>
+<br>
 <img src="doc/images/pyxel_palette.png">
 
 ## How to Install
