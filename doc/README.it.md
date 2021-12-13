@@ -51,7 +51,7 @@ Pyxel è open source e libero da usare. Cominciamo a fare giochi rétro con Pyxe
 ### Palette colori
 
 <img src="images/05_color_palette.png">
-<br>
+
 <img src="images/pyxel_palette.png">
 
 ## Come installare

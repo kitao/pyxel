@@ -49,7 +49,7 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 ### 调色板
 
 <img src="images/05_color_palette.png">
-<br>
+
 <img src="images/pyxel_palette.png">
 
 ## 如何安装
