@@ -51,7 +51,7 @@ Pyxel -- программа с открытым кодом и бесплатна
 ### Цветовая Палитра
 
 <img src="images/05_color_palette.png">
-<br>
+
 <img src="images/pyxel_palette.png">
 
 ## Как установить
