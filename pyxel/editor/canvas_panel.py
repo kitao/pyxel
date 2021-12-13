@@ -322,8 +322,8 @@ class CanvasPanel(Widget):
         else:
             s = "PICK:R-CLICK VIEW:R-DRAG"
         x, y = self._screen_to_focus(x, y)
-        x += self.focus_x_var
-        y += self.focus_y_var
+        x += self.focus_x_var * 8
+        y += self.focus_y_var * 8
         self.help_message_var = s + f" ({x},{y})"
 
     def __on_update(self):
@@ -339,8 +339,8 @@ class CanvasPanel(Widget):
             # ctrl+c: copy
             if pyxel.btnp(pyxel.KEY_C):
                 self._copy_buffer = self.canvas_var.get_slice(
-                    self.focus_x_var + self._select_x1,
-                    self.focus_y_var + self._select_y1,
+                    self.focus_x_var * 8 + self._select_x1,
+                    self.focus_y_var * 8 + self._select_y1,
                     self._select_x2 - self._select_x1 + 1,
                     self._select_y2 - self._select_y1 + 1,
                 )
