@@ -1,33 +1,33 @@
 # <img src="images/pyxel_logo_152x64.png">
 
-[ [English](README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
+[ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
 **Pyxel (ピクセル)** はPython向けのレトロゲームエンジンです。
 
 使える色は16色のみ、同時に再生できる音は4音までなど、レトロゲーム機を意識したシンプルな仕様で、Pythonでドット絵スタイルのゲームづくりが気軽に楽しめます。
 
-<a href="pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
+<a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
+<img src="images/01_hello_pyxel.gif" width="48%">
 </a>
 
-<a href="pyxel/examples/02_jump_game.py" target="_blank">
-<img src="pyxel/examples/screenshots/02_jump_game.gif" width="48%">
+<a href="../pyxel/examples/02_jump_game.py" target="_blank">
+<img src="images/02_jump_game.gif" width="48%">
 </a>
 
-<a href="pyxel/examples/03_draw_api.py" target="_blank">
-<img src="pyxel/examples/screenshots/03_draw_api.gif" width="48%">
+<a href="../pyxel/examples/03_draw_api.py" target="_blank">
+<img src="images/03_draw_api.gif" width="48%">
 </a>
 
-<a href="pyxel/examples/04_sound_api.py" target="_blank">
-<img src="pyxel/examples/screenshots/04_sound_api.gif" width="48%">
+<a href="../pyxel/examples/04_sound_api.py" target="_blank">
+<img src="images/04_sound_api.gif" width="48%">
 </a>
 
-<a href="pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
-<img src="pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
+<a href="images/image_tilemap_editor.gif" target="_blank">
+<img src="images/image_tilemap_editor.gif" width="48%">
 </a>
 
-<a href="pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
-<img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
+<a href="images/sound_music_editor.gif" target="_blank">
+<img src="images/sound_music_editor.gif" width="48%">
 </a>
 
 Pyxelの仕様やAPIは、[PICO-8](https://www.lexaloffle.com/pico-8.php)や[TIC-80](https://tic.computer/)のデザインを参考にしています。
@@ -48,7 +48,7 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 ### カラーパレット
 
-<img src="pyxel/examples/screenshots/05_color_palette.png">
+<img src="images/05_color_palette.png">
 <br><br>
 <img src="images/pyxel_palette.png">
 
@@ -135,16 +135,16 @@ pyxel copy_examples
 
 コピーされるサンプルは以下の通りです。
 
-- [01_hello_pyxel.py](pyxel/examples/01_hello_pyxel.py) - シンプルなアプリケーション
-- [02_jump_game.py](pyxel/examples/02_jump_game.py) - Pyxelリソースファイルを使ったジャンプゲーム
-- [03_draw_api.py](pyxel/examples/03_draw_api.py) - 描画APIのデモ
-- [04_sound_api.py](pyxel/examples/04_sound_api.py) - サウンドAPIのデモ
-- [05_color_palette.py](pyxel/examples/05_color_palette.py) - カラーパレット一覧
-- [06_click_game.py](pyxel/examples/06_click_game.py) - マウスクリックゲーム
-- [07_snake.py](pyxel/examples/07_snake.py) - BGM付きスネークゲーム
-- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - 三角形描画APIのデモ
-- [09_shooter.py](pyxel/examples/09_shooter.py) - 画面遷移のあるシューティングゲーム
-- [10_platformer.py](pyxel/examples/10_platformer.py) - マップのある横スクロールアクションゲーム
+- [01_hello_pyxel.py](../pyxel/examples/01_hello_pyxel.py) - シンプルなアプリケーション
+- [02_jump_game.py](../pyxel/examples/02_jump_game.py) - Pyxelリソースファイルを使ったジャンプゲーム
+- [03_draw_api.py](../pyxel/examples/03_draw_api.py) - 描画APIのデモ
+- [04_sound_api.py](../pyxel/examples/04_sound_api.py) - サウンドAPIのデモ
+- [05_color_palette.py](../pyxel/examples/05_color_palette.py) - カラーパレット一覧
+- [06_click_game.py](../pyxel/examples/06_click_game.py) - マウスクリックゲーム
+- [07_snake.py](../pyxel/examples/07_snake.py) - BGM付きスネークゲーム
+- [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - 三角形描画APIのデモ
+- [09_shooter.py](../pyxel/examples/09_shooter.py) - 画面遷移のあるシューティングゲーム
+- [10_platformer.py](../pyxel/examples/10_platformer.py) - マップのある横スクロールアクションゲーム
 
 サンプルは以下のコマンドで実行できます。
 
@@ -281,7 +281,7 @@ Pyxel Editorには以下の編集モードがあります。
 
 イメージバンクの画像を編集する画面です。
 
-<img src="pyxel/editor/screenshots/image_editor.gif">
+<img src="images/image_editor.gif">
 
 イメージエディタ画面に画像ファイル (png/gif/jpeg) をドラッグ＆ドロップすると、画像を選択中のイメージバンクに読み込むことができます。
 
@@ -289,19 +289,19 @@ Pyxel Editorには以下の編集モードがあります。
 
 イメージバンクの画像をタイル状に並べたタイルマップを編集する画面です。
 
-<img src="pyxel/editor/screenshots/tilemap_editor.gif">
+<img src="images/tilemap_editor.gif">
 
 **サウンドエディタ:**
 
 サウンドを編集する画面です。
 
-<img src="pyxel/editor/screenshots/sound_editor.gif">
+<img src="images/sound_editor.gif">
 
 **ミュージックエディタ:**
 
 サウンドを再生順に並べたミュージックを編集する画面です。
 
-<img src="pyxel/editor/screenshots/music_editor.gif">
+<img src="images/music_editor.gif">
 
 ### その他のリソース作成方法
 
@@ -373,7 +373,7 @@ Pyxelアプリケーションを開始し、フレーム更新時に`update`関�
 現在のマウスホイールの値
 
 - `btn(key)`<br>
-`key`が押されていたら`True`、押されていなければ`False`を返します。([キー定義一覧](pyxel/__init__.pyi))
+`key`が押されていたら`True`、押されていなければ`False`を返します。([キー定義一覧](../pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [period])`<br>
 そのフレームに`key`が押されたら`True`、押されなければ`False`を返します。`hold`と`period`を指定すると、`hold`フレーム以上ボタンを押し続けた時に`period`フレーム間隔で`True`が返ります。
@@ -550,7 +550,7 @@ Pyxelアプリケーションを開始し、フレーム更新時に`update`関�
 
 Pyxelには「ユーザーを混乱させる可能性がある」「使うために専門の知識が必要」などの理由から、このリファレンスには記載していない「上級者向けAPI」があります。
 
-腕に覚えのある方は、[こちら](pyxel/__init__.pyi)を手がかりにして、あっと驚くような作品づくりに挑戦してみてください！
+腕に覚えのある方は、[こちら](../pyxel/__init__.pyi)を手がかりにして、あっと驚くような作品づくりに挑戦してみてください！
 
 ## コントリビューション方法
 
@@ -566,7 +566,7 @@ Pyxelには「ユーザーを混乱させる可能性がある」「使うため
 
 パッチや修正はプルリクエスト (PR) として受け付けています。提出の前に問題がすでに解決済みでないか[Issue Tracker](https://github.com/kitao/pyxel/issues)で確認をお願いします。
 
-提出されたプルリクエストは[MITライセンス](LICENSE)で公開することに同意したものと見なされます。
+提出されたプルリクエストは[MITライセンス](../LICENSE)で公開することに同意したものと見なされます。
 
 ## その他の情報
 
@@ -575,4 +575,4 @@ Pyxelには「ユーザーを混乱させる可能性がある」「使うため
 
 ## ライセンス
 
-Pyxelは[MITライセンス](http://en.wikipedia.org/wiki/MIT_License)です。ソースコードやライセンス表示用のファイル等で、[著作権とライセンス全文](LICENSE)の表示を行えば、自由に販売や配布をすることができます。
+Pyxelは[MITライセンス](../LICENSE)です。ソースコードやライセンス表示用のファイル等で、[著作権とライセンス全文](LICENSE)の表示を行えば、自由に販売や配布をすることができます。

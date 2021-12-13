@@ -1,60 +1,60 @@
 # <img src="images/pyxel_logo_152x64.png">
 
-[ [English](README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
+[ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
 **NOTE: This manual has not yet been translated for Pyxel version 1.5.0. We are looking for volunteers to translate and check for mistakes!**
 
-**Pyxel** é uma engine de jogos retrô para Python.
+**Pyxel** è un game engine rétro per Python.
 
-Graças às suas especificações simples inspiradas em consoles de jogos retrô, assim como permitir a exibição de apenas 16 cores e apenas 4 sons poderem ser reproduzidos ao mesmo tempo, você pode se sentir à vontade para fazer jogos em estilo pixel art.
+Grazie alle sue specifiche limitate ispirate dalle console di videogiochi rétro, come al fatto che solo 16 colori possono essere mostrati e solo 4 suoni possono essere suonati allo stesso tempo, puoi sentirti libero di creare giochi stile pixel art.
 
-<a href="pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
+<a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
+<img src="images/01_hello_pyxel.gif" width="48%">
 </a>
 
-<a href="pyxel/examples/02_jump_game.py" target="_blank">
-<img src="pyxel/examples/screenshots/02_jump_game.gif" width="48%">
+<a href="../pyxel/examples/02_jump_game.py" target="_blank">
+<img src="images/02_jump_game.gif" width="48%">
 </a>
 
-<a href="pyxel/examples/03_draw_api.py" target="_blank">
-<img src="pyxel/examples/screenshots/03_draw_api.gif" width="48%">
+<a href="../pyxel/examples/03_draw_api.py" target="_blank">
+<img src="images/03_draw_api.gif" width="48%">
 </a>
 
-<a href="pyxel/examples/04_sound_api.py" target="_blank">
-<img src="pyxel/examples/screenshots/04_sound_api.gif" width="48%">
+<a href="../pyxel/examples/04_sound_api.py" target="_blank">
+<img src="images/04_sound_api.gif" width="48%">
 </a>
 
-<a href="pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
-<img src="pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
+<a href="images/image_tilemap_editor.gif" target="_blank">
+<img src="images/image_tilemap_editor.gif" width="48%">
 </a>
 
-<a href="pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
-<img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
+<a href="images/sound_music_editor.gif" target="_blank">
+<img src="images/sound_music_editor.gif" width="48%">
 </a>
 
 The specifications of Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic.computer/).
 
-Pyxel é open source e livre para utilização. Vamos começar fazendo um jogo retrô com Pyxel!
+Pyxel è open source e libero da usare. Cominciamo a fare giochi rétro con Pyxel!
 
-## Especificações
+## Specifiche
 
-- Executável no Windows, Mac e Linux
+- Funziona su Windows, Mac, e Linux
 - Programming with Python
 - 16 color palette
-- 3 bancos de imagens de tamanho 256x256
-- 8 tilemaps de tamanho 256x256
-- 4 canais com 64 sons definíveis
-- 8 músicas que podem combinar sons arbitrários
-- Entrada de teclado, mouse e joystick
-- Editor de imagem e som
+- 3 banche di immagini di dimensioni 256x256
+- 8 tilemap di dimensioni 256x256
+- 4 canali con 64 suoni definibili
+- 8 musiche che possono combinare suoni arbitrari
+- Input di tastiera, mouse, e controller
+- Editor suoni e immagini
 
-### Paleta de cores
+### Palette colori
 
-<img src="pyxel/examples/screenshots/05_color_palette.png">
+<img src="images/05_color_palette.png">
 <br><br>
 <img src="images/pyxel_palette.png">
 
-## Como instalar
+## Come installare
 
 There are two types of Pyxel, a packaged version and a standalone version.
 
@@ -129,24 +129,24 @@ If the above doesn't work, try self-building the packaged version.
 
 ### Try Pyxel Examples
 
-Após instalar o Pyxel, os exemplos serão copiados para o diretório atual com o seguinte comando:
+Dopo aver installato Pyxel, gli esempi di Pyxel saranno copiati nella corrente cartella con il comando seguente:
 
 ```sh
 pyxel copy_examples
 ```
 
-Os exemplos copiados são os seguintes:
+Gli esempi da copiare sono i seguenti:
 
-- [01_hello_pyxel.py](pyxel/examples/01_hello_pyxel.py) - Aplicação simples
-- [02_jump_game.py](pyxel/examples/02_jump_game.py) - Jogo de pulo com o arquivo de recursos do Pyxel
-- [03_draw_api.py](pyxel/examples/03_draw_api.py) - Demonstration of drawing APIs
-- [04_sound_api.py](pyxel/examples/04_sound_api.py) - Demonstration of sound APIs
-- [05_color_palette.py](pyxel/examples/05_color_palette.py) - Lista da paleta de cores
-- [06_click_game.py](pyxel/examples/06_click_game.py) - Jogo de clique com mouse
-- [07_snake.py](pyxel/examples/07_snake.py) - Jogo Snake com BGM
-- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing APIs
-- [09_shooter.py](pyxel/examples/09_shooter.py) - Jogo de tiro com transição de tela
-- [10_platformer.py](pyxel/examples/10_platformer.py) - Side-scrolling platform game with map
+- [01_hello_pyxel.py](../pyxel/examples/01_hello_pyxel.py) - Applicazione più semplice
+- [02_jump_game.py](../pyxel/examples/02_jump_game.py) - Un gioco di salto con file Pyxel di risorsa
+- [03_draw_api.py](../pyxel/examples/03_draw_api.py) - Demonstration of drawing APIs
+- [04_sound_api.py](../pyxel/examples/04_sound_api.py) - Demonstration of sound APIs
+- [05_color_palette.py](../pyxel/examples/05_color_palette.py) - Lista di colori nella palette
+- [06_click_game.py](../pyxel/examples/06_click_game.py) - Gioco punta e clicca
+- [07_snake.py](../pyxel/examples/07_snake.py) - Gioco snake con colonna sonora
+- [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing APIs
+- [09_shooter.py](../pyxel/examples/09_shooter.py) - Gioco shoot'em up con transizioni schermo
+- [10_platformer.py](../pyxel/examples/10_platformer.py) - Side-scrolling platform game with map
 
 An examples can be executed with the following commands:
 
@@ -155,9 +155,9 @@ cd pyxel_examples
 pyxel run 01_hello_pyxel.py
 ```
 
-## Como usar
+## Come usare
 
-### Criando uma aplicação Pyxel
+### Creare una applicazione Pyxel
 
 After importing the Pyxel module in your python script, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
 
@@ -177,9 +177,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-Os argumentos da função `run` são as funções `update`, para atualizar cada frame, e `draw` para desenhar a tela quando for necessário.
+I parametri della funzione `run` sono passate alla funzione `update` per aggiornare ogni frame e alla funzione `draw` per disegnare lo schermo quando necessario.
 
-Em uma aplicação real, é recomendado colocar código pyxel em uma classe, como feito abaixo:
+In una effettiva applicazione, è consigliato ricoprire codice pyxel in una classe come qui sotto:
 
 ```python
 import pyxel
@@ -243,24 +243,24 @@ python3 PYTHON_SCRIPT_FILE
 
 (For Windows, type `python` instead of `python3`)
 
-### Controles Especiais
+### Controlli speciali
 
-Os seguintes controles especiais podem ser executados quando uma aplicação Pyxel estiver sendo executada:
+I controlli seguenti speciali possono essere eseguite mentre viene eseguita un'applicazione Pyxel:
 
 - `Esc`<br>
-Encerra a aplicação
+Esci dall'applicazione
 - `Alt(Option)+1`<br>
-Salva uma captura de tela para a área de trabalho
+Salva uno screenshot sul desktop
 - `Alt(Option)+2`<br>
-Reinicia o momento inicial do vídeo de captura de tela.
+Resetta il tempo d'inizio della registrazione schermo
 - `Alt(Option)+3`<br>
-Salva um vídeo de captura de tela na área de trabalho (até 10 segundos)
+Salva la registrazione schermo sul desktop (fino a 10 secondi)
 - `Alt(Option)+0`<br>
-Ativa/desativa o monitor de performance (fps, tempo de update e tempo de draw)
+Alterna il monitor di performance (fps, tempo d'aggiornamento, e tempo di disegno)
 - `Alt(Option)+Enter`<br>
-Ativa/desativa tela cheia
+Alterna schermo intero
 
-### Como criar um Recurso
+### Come creare una risorsa
 
 Pyxel Editor can create images and sounds used in a Pyxel application.
 
@@ -270,42 +270,42 @@ It starts with the following command:
 pyxel edit [PYXEL_RESOURCE_FILE]
 ```
 
-Se o arquivo de recursos Pyxel (.pyxres) existir, o arquivo será carregado, e se ele não existir, um novo arquivo com o nome especificado será criado.
-Se o arquivo de recursos for omitido, o nome será `my_resource.pyxres`.
+Se il file di risorsa Pyxel (.pyxres) specificato esiste, allora il file viene caricato, e se non esiste, un nuovo file con quel nome viene creato.
+Se il file risorsa viene omesso, il nome è `my_resource.pyxres`.
 
 After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down ``Ctrl(Cmd)`` key, only the resource type (Image/Tilemap/Sound/Music) that is currently being edited will be loaded. This operation enables to combine multiple resource files into one.
 
 The created resource file can be loaded with `load` function.
 
-O Editor Pyxel possuí os seguintes modos de edição.
+L'editor Pyxel ha le seguenti modalità di modifica.
 
-**Editor de Imagem:**
+**Editor Immagini:**
 
-O modo para editar bancos de imagem.
+La modalità per modificare banche d'immagini.
 
-<img src="pyxel/editor/screenshots/image_editor.gif">
+<img src="images/image_editor.gif">
 
 By dragging and dropping an image file (png/gif/jpeg) onto the Image Editor screen, the image can be loaded into the currently selected image bank.
 
-**Editor de Tilemap:**
+**Editor Tilemap:**
 
-O modo para editar tilemaps em que imagens dos bancos de imagens são organizados em um padrão de tiles.
+La modalità per modificare tilemap immagini delle banche immagini sono posizionate in un modo a piastrelle.
 
-<img src="pyxel/editor/screenshots/tilemap_editor.gif">
+<img src="images/tilemap_editor.gif">
 
-**Editor de Som:**
+**Editor Suoni:**
 
-O modo para editar sons.
+Modalità per modificare suoni.
 
-<img src="pyxel/editor/screenshots/sound_editor.gif">
+<img src="images/sound_editor.gif">
 
-**Editor de Musica:**
+**Editor Musica:**
 
-O modo para editar músicas nas quais os sons são organizados na ordem de execução.
+La modalità per modificare musica in cui i suoni sono posizionati in ordine per poi essere risuonati.
 
-<img src="pyxel/editor/screenshots/music_editor.gif">
+<img src="images/music_editor.gif">
 
-### Outros métodos de criação de recursos
+### Altri metodi per creare risorse
 
 Pyxel images and tilemaps can also be created by the following methods:
 
@@ -316,7 +316,7 @@ Pyxel sounds can also be created in the following method:
 
 - Create a sound from strings with `Sound.set` function or `Music.set` function
 
-Favor consultar a referência da API para o uso dessas funções.
+Riferirsi al manuale dell'API per l'uso di queste funzioni.
 
 ### How to Distribute Application
 
@@ -336,15 +336,15 @@ The created application file can be executed with the following command:
 pyxel play PYXEL_APP_FILE
 ```
 
-## Referência da API
+## Manuale API
 
 ### Sistema
 
 - `width`, `height`<br>
-A largura e a altura da tela
+Lunghezza e altezza dello schermo
 
 - `frame_count`<br>
-O número dos quadros decorridos
+Numero di frame passati
 
 - `init(width, height, [title], [fps], [quit_key], [capture_sec])`<br>
 Initialize the Pyxel application with screen size (`width`, `height`). The following can be specified as options: the window title with `title`, the frame rate with `fps`, the key to quit the application with `quit_key`, and the maximum recording time of the screen capture video with `capture_sec`.<br>
@@ -362,31 +362,31 @@ Updates the screen once. (Do not use in normal applications)
 - `quit()`<br>
 Quit the Pyxel application at the end of the current frame.
 
-### Recurso
+### Risorse
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
 Load the resource file (.pyxres). If ``False`` is specified for the resource type (``image/tilemap/sound/music``), the resource will not be loaded.
 
-### Entrada
+### Input
 - `mouse_x`, `mouse_y`<br>
-A posição atual do cursor do mouse
+La posizione corrente del cursore del mouse
 
 - `mouse_wheel`<br>
-O valor atual da roda de rolagem do mouse
+Il valore corrente della rotella del mouse
 
 - `btn(key)`<br>
-Retorna `True` se `key` é pressionada, caso contrário retorna `False` ([lista de definições de teclas](pyxel/__init__.pyi))
+Ritorna `True` se `key` è premuto, altrimenti ritorna `False` ([lista definizione tasti](../pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [period])`<br>
-Retorna `True` se `key` for pressionada naquele quadro, caso contrário retorna `False`. Quando `hold` e `period` são especificados, `True` será retornado durante o intervalo de quadros `period`, no qual `key` estiver pressionada por mais que `hold` quadros
+Ritorna `True` se `key` è premuto quel frame, altrimenti ritorna `False`. Quando `hold` e `period` sono specificati, `True` sarà ritornato all'intervallo frame `period` quando `key` è premuto per più di `hold` frame
 
 - `btnr(key)`<br>
-Retorna `True` se `key` for solta naquele quadro, caso contrário retorna `False`
+Ritorna `True` se `key` è rilasciato quel frame, altrimenti ritorna `False`
 
 - `mouse(visible)`<br>
-Se `visible` for `True`, mostra o cursor do mouse. Se for `False`, esconde. Mesmo se o cursor do mouse não for visível, sua posição é atualizada.
+Se `visible` è `True`, mostra il cursore mouse. Se `False`, nascondilo. Anche se il cursore mouse non è mostrato, la sua posizione è aggiornata.
 
-### Gráficos
+### Grafica
 
 - `colors`<br>
 List of the palette display colors. The display color is specified by a 24-bit numerical value. Use `colors.from_list` and `colors.to_list` to directly assign and retrieve Python lists.<br>
@@ -396,51 +396,47 @@ e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.co
 Operate the image bank `img` (0-2). (See the Image class)<br>
 e.g. `pyxel.image(0).load(0, 0, "title.png")`
 
-- `image(img, [system])`<br>
-Opera o banco de imagens `img`(0-2) (veja a classe de Imagem). Se `system` for `True`, o banco de imagens do sistema pode ser acessado. 3 é para a fonte e o editor de recursos. 4 é para tela<br>
-e.g. `pyxel.image(0).load(0, 0, "title.png")`
-
 - `tilemap(tm)`<br>
-Opera o tilemap `tm`(0-7) (ver a classe de Tilemap)
+Opera la tilemap `tm`(0-7) (vedere la classe Tilemap)
 
 - `clip(x, y, w, h)`<br>
-Define a área de desenho da tela de (`x`, `y`) para a largura `w` e altura `h`. Redefina a área de desenho para tela cheia com `clip()`
+Imposta l'area di disegno dello schermo da (`x`, `y`) a lunghezza `w` e altezza `h`. Resettare l'area di disegno a schermo intero con `clip()`
 
 - `pal(col1, col2)`<br>
-Substitui a cor `col1` com `col2` ao desenhar. Use `pal()` para voltar para a paleta inicial
+Rimpiazza colore `col1` con `col2` al momento di disegno. `pal()` per tornare alla palette iniziale
 
 - `cls(col)`<br>
-Limpar a tela com a cor `col`
+Riempie lo schermo con `col`
 
 - `pget(x, y)`<br>
-Captura a cor de um pixel em (`x`, `y`)
+Ritorna il colore del pixel su (`x`, `y`)
 
 - `pset(x, y, col)`<br>
-Desenha um pixel de cor `col` em (`x`, `y`)
+Disegna un pixel di colore `col` su (`x`, `y`)
 
 - `line(x1, y1, x2, y2, col)`<br>
-Desenha uma linha da cor `col` de (`x1`, `y1`) até (`x2`, `y2`)
+Disegna una linea di colore `col` da (`x1`, `y1`) a (`x2`, `y2`)
 
 - `rect(x, y, w, h, col)`<br>
-Desenha um retângulo de largura `w`, altura `h` e cor `col` a partir de (`x`, `y`)
+Disegna un rettangolo con lunghezza `w`, altezza `h` e colore `col` da (`x`, `y`)
 
 - `rectb(x, y, w, h, col)`<br>
-Desenha o contorno de um retângulo de largura `w`, altura `h` e cor `col` a partir de (`x`, `y`)
+Disegna il contorno di un rettangolo di lunghezza `w`, altezza `h` e colore `col` da (`x`, `y`)
 
 - `circ(x, y, r, col)`<br>
-Desenha um círculo de raio `r` e cor `col` em (`x`, `y`)
+Disegna un cerchio di raggio `r` e colore `col` su (`x`, `y`)
 
 - `circb(x, y, r, col)`<br>
-Desenha o contorno de um círculo de raio `r` e cor `col` em (`x`, `y`)
+Disegna il contorno di un cerchio di raggio `r` e colore `col` su (`x`, `y`)
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
-Desenha um triangulo com os vértices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e cor `col`
+Disegna un triangolo con vertici (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e colore `col`
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
-Desenha o contorno de um triangulo com os vértices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e cor `col`
+Disegna il contorno di un triangolo con vertici (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e colore `col`
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img`(0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente
+Copia la regione di grandezza (`w`, `h`) da (`u`, `v`) della banca immagini `img`(0-2) a (`x`, `y`). Se un valore negativo è impostato per `w` e/o `h`, sarà invertito orizzontalmente o verticalmente. Se `colkey` è specificato, verrà trattato come colore trasparente
 
 <img src="images/image_bank_mechanism.png">
 
@@ -448,16 +444,16 @@ Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img`(0-
 Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
 
 - `text(x, y, s, col)`<br>
-Desenha uma string `s` de cor `col` em (`x`, `y`)
+Disegna una stringa `s` di colore `col` su (`x`, `y`)
 
-### Áudio
+### Audio
 
 - `sound(snd)`<br>
-Opera o som `snd`(0-63). (ver a classe de Som)<br>
-e.g. `pyxel.sound(0).speed = 60`
+Opera il suono `snd`(0-63). (Vedere classe Sound).<br>
+per esempio: `pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
-Opera a música `msc` (0-7) (ver a classe de Musica)
+Opera la musica `msc`(0-7) (vedere la classe Music)
 
 - `play_pos(ch)`<br>
 Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
@@ -471,16 +467,16 @@ Play the music `msc` (0-7). If `True` is specified for `loop`, loop playback is 
 - `stop([ch])`<br>
 Stops playback of the specified channel `ch` (0-3). `stop()` to stop playing all channels.
 
-### Classe de Imagem
+### Image Class
 
 - `width`, `height`<br>
-Largura e altura da imagem
+La lunghezza e l'altezza dell'immagine
 
 - `data`<br>
-Os dados da imagem (lista bidimensional de 256x256)
+I dati dell'immagine (lista bidimensionale da 256x256)
 
 - `get(x, y)`<br>
-Pega os dados da imagem em (`x`, `y`)
+Trova i dati dell'immagine su (`x`, `y`)
 
 - `set(x, y, data)`<br>
 Set the image at (`x`, `y`) by a list of strings.<br>
@@ -489,10 +485,10 @@ e.g. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
 - `load(x, y, filename)`<br>
 Load the image file (png/gif/jpeg) at (`x`, `y`).
 
-### Classe de Tilemap
+### Classe Tilemap
 
 - `width`, `height`<br>
-A largura e a altura do tilemap
+Lunghezza e altezza della tilemap
 
 - `refimg`<br>
 The image bank (0-2) referenced by the tilemap
@@ -507,7 +503,7 @@ Get the tile at (`x`, `y`). A tile is a tuple of `(x in tile, y in tile)`.
 - `pset(x, y, tile)`<br>
 Draw a `tile` at (`x`, `y`). A tile is a tuple of `(x in tile, y in tile)`.
 
-### Classe de Som
+### Classe Sound
 
 - `notes`<br>
 List of notes (0-127). The higher the number, the higher the pitch, and at 33 it becomes 'A2'(440Hz). The rest is -1.
@@ -543,7 +539,7 @@ e.g. `pyxel.sound(0).set_volume("7777 7531")`
 Set the effects with a string made of 'NSVF'. Case-insensitive and whitespace is ignored.<br>
 e.g. `pyxel.sound(0).set_effect("NFNF NVVS")`
 
-### Classe de Musica
+### Music Class
 
 - `sequences`<br>
 Two-dimensional list of sounds (0-63) listed by the number of channels
@@ -556,9 +552,9 @@ e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 Pyxel has "advanced APIs" that are not mentioned in this reference because they "may confuse users" or "need specialized knowledge to use".
 
-If you are familiar with your skills, try to create amazing works with [this](pyxel/__init__.pyi) as a clue!
+If you are familiar with your skills, try to create amazing works with [this](../pyxel/__init__.pyi) as a clue!
 
-## Como Contribuir
+## Come contribuire
 
 ### Submitting Issue
 
@@ -570,15 +566,15 @@ Anyone manually testing the code and reporting bugs or suggestions for enhanceme
 
 ### Submitting Pull Request
 
-Patches/correções serão aceitas na forma de pull requests (PRs). Tenha certeza de que o que o pull request tenta resolver esteja em aberto no issue tracker.
+Patch/fix sono accettati in forma di pull request (PR). Assicurarsi che il problema per cui si emetta una pull request sia aperto nel tracciante di problemi.
 
-Será considerado que todo pull request tenha concordado a ser publicado sob a [licença MIT](LICENSE).
+Le pull request emesse sono presupposte di accettare di essere pubblicate sotto la [licenza MIT](../LICENSE).
 
-## Outras informações
+## Altre informazioni
 
-- [Discord server (English)](https://discord.gg/FC7kUZJ)
-- [Discord server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [Server Discord (Inglese)](https://discord.gg/FC7kUZJ)
+- [Server Discord (Giapponese - 日本語版)](https://discord.gg/qHA5BCS)
 
-## Licença
+## Licenza
 
-Pyxel is under [MIT License](http://en.wikipedia.org/wiki/MIT_License). It can be reused within proprietary software, provided that all copies of the software or its substantial portions include a copy of the terms of the MIT License and also a copyright notice.
+Pyxel is under [MIT License](../LICENSE). It can be reused within proprietary software, provided that all copies of the software or its substantial portions include a copy of the terms of the MIT License and also a copyright notice.

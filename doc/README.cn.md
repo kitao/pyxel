@@ -1,33 +1,33 @@
 # <img src="images/pyxel_logo_152x64.png">
 
-[ [English](README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
+[ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
 **Pyxel**是一个python的经典像素风游戏制作引擎。
 
 由于像素风游戏的机制非常简单（如：最多只能显示16种颜色、播放4种声音等），现在你也可以轻松地享受这种游戏的制作过程。
 
-<a href="pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
+<a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
+<img src="images/01_hello_pyxel.gif" width="48%">
 </a>
 
-<a href="pyxel/examples/02_jump_game.py" target="_blank">
-<img src="pyxel/examples/screenshots/02_jump_game.gif" width="48%">
+<a href="../pyxel/examples/02_jump_game.py" target="_blank">
+<img src="images/02_jump_game.gif" width="48%">
 </a>
 
-<a href="pyxel/examples/03_draw_api.py" target="_blank">
-<img src="pyxel/examples/screenshots/03_draw_api.gif" width="48%">
+<a href="../pyxel/examples/03_draw_api.py" target="_blank">
+<img src="images/03_draw_api.gif" width="48%">
 </a>
 
-<a href="pyxel/examples/04_sound_api.py" target="_blank">
-<img src="pyxel/examples/screenshots/04_sound_api.gif" width="48%">
+<a href="../pyxel/examples/04_sound_api.py" target="_blank">
+<img src="images/04_sound_api.gif" width="48%">
 </a>
 
-<a href="pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
-<img src="pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
+<a href="images/image_tilemap_editor.gif" target="_blank">
+<img src="images/image_tilemap_editor.gif" width="48%">
 </a>
 
-<a href="pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
-<img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
+<a href="images/sound_music_editor.gif" target="_blank">
+<img src="images/sound_music_editor.gif" width="48%">
 </a>
 
 Pyxel的设计规范参考了[PICO-8](https://www.lexaloffle.com/pico-8.php)和[TIC-80](https://tic.computer/)。
@@ -48,7 +48,7 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 
 ### 调色板
 
-<img src="pyxel/examples/screenshots/05_color_palette.png">
+<img src="images/05_color_palette.png">
 <br><br>
 <img src="images/pyxel_palette.png">
 
@@ -135,16 +135,16 @@ pyxel copy_examples
 
 例程包含：
 
-- [01_hello_pyxel.py](pyxel/examples/01_hello_pyxel.py) - 最简单的应用
-- [02_jump_game.py](pyxel/examples/02_jump_game.py) - 用Pyxel制作的跳跃游戏
-- [03_draw_api.py](pyxel/examples/03_draw_api.py) - 绘画API的使用示例
-- [04_sound_api.py](pyxel/examples/04_sound_api.py) - 声音API的使用示例
-- [05_color_palette.py](pyxel/examples/05_color_palette.py) - 调色板列表
-- [06_click_game.py](pyxel/examples/06_click_game.py) - 鼠标点击游戏
-- [07_snake.py](pyxel/examples/07_snake.py) - 带BGM的贪吃蛇游戏
-- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - 三角形绘画API的使用示例
-- [09_shooter.py](pyxel/examples/09_shooter.py) - 屏幕过渡射击游戏
-- [10_platformer.py](pyxel/examples/10_platformer.py) - 屏幕横向滑动的游戏示例
+- [01_hello_pyxel.py](../pyxel/examples/01_hello_pyxel.py) - 最简单的应用
+- [02_jump_game.py](../pyxel/examples/02_jump_game.py) - 用Pyxel制作的跳跃游戏
+- [03_draw_api.py](../pyxel/examples/03_draw_api.py) - 绘画API的使用示例
+- [04_sound_api.py](../pyxel/examples/04_sound_api.py) - 声音API的使用示例
+- [05_color_palette.py](../pyxel/examples/05_color_palette.py) - 调色板列表
+- [06_click_game.py](../pyxel/examples/06_click_game.py) - 鼠标点击游戏
+- [07_snake.py](../pyxel/examples/07_snake.py) - 带BGM的贪吃蛇游戏
+- [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - 三角形绘画API的使用示例
+- [09_shooter.py](../pyxel/examples/09_shooter.py) - 屏幕过渡射击游戏
+- [10_platformer.py](../pyxel/examples/10_platformer.py) - 屏幕横向滑动的游戏示例
 
 运行例程，可以使用以下命令：
 
@@ -282,7 +282,7 @@ Pyxel编辑器有以下编辑模式。
 
 此模式用来编辑图像库。
 
-<img src="pyxel/editor/screenshots/image_editor.gif">
+<img src="images/image_editor.gif">
 
 通过将图像文件拖放进图像编辑器，图像可以加载进当前的图像库中。
 
@@ -290,19 +290,19 @@ Pyxel编辑器有以下编辑模式。
 
 此模式用来编辑瓦片地图，其中图像库的图像以瓦片的样式排列。
 
-<img src="pyxel/editor/screenshots/tilemap_editor.gif">
+<img src="images/tilemap_editor.gif">
 
 **音频编辑器：**
 
 此模式用来编辑音频。
 
-<img src="pyxel/editor/screenshots/sound_editor.gif">
+<img src="images/sound_editor.gif">
 
 **音乐编辑器：**
 
 此模式用来编辑将录音有序编排形成的音乐。
 
-<img src="pyxel/editor/screenshots/music_editor.gif">
+<img src="images/music_editor.gif">
 
 ### 其他创建源文件的方法
 
@@ -374,7 +374,7 @@ pyxel play PYXEL_APP_FILE
 当前鼠标滚轮的值。
 
 - `btn(key)`<br>
-如果`key`被按下则返回`True`，否则返回`False`([按键定义列表](pyxel/__init__.pyi))。
+如果`key`被按下则返回`True`，否则返回`False`([按键定义列表](../pyxel/__init__.pyi))。
 
 - `btnp(key, [hold], [period])`<br>
 如果`key`被按下则返回`True`。若设置了`hold`和`period`参数，则当`key`被按下持续`hold`帧时，在`period`帧间隙返回`True`。
@@ -551,7 +551,7 @@ pyxel play PYXEL_APP_FILE
 
 Pyxel还有一些“高级API”，出于“可能令用户感到迷惑”、“需要专业知识”等一些原因，在本文尚未提及。
 
-如果你对自己的技术很熟悉，可以参阅[this](pyxel/__init__.pyi)，尝试挑战自己并创造一些神奇的作品！
+如果你对自己的技术很熟悉，可以参阅[this](../pyxel/__init__.pyi)，尝试挑战自己并创造一些神奇的作品！
 
 ## 如何参与
 
@@ -567,7 +567,7 @@ Pyxel还有一些“高级API”，出于“可能令用户感到迷惑”、“
 
 可以通过pull requests(PRs)形式来提交补丁或修复。请确认你的pull request对应的issue地址在issue tracker中依然是open状态。
 
-一旦提交pull request，则默认同意在[MIT License](LICENSE)的许可下发布。
+一旦提交pull request，则默认同意在[MIT License](../LICENSE)的许可下发布。
 
 ## 其他信息
 
@@ -576,4 +576,4 @@ Pyxel还有一些“高级API”，出于“可能令用户感到迷惑”、“
 
 ## 许可证
 
-Pyxel遵循[MIT License](http://en.wikipedia.org/wiki/MIT_License)。您可以在专利软件中重复使用，前提是该软件的所有副本或重要部分均包含 MIT 许可条款的副本和版权声明。
+Pyxel遵循[MIT License](../LICENSE)。您可以在专利软件中重复使用，前提是该软件的所有副本或重要部分均包含 MIT 许可条款的副本和版权声明。
