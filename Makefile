@@ -43,7 +43,7 @@
 #   Build native/setup.iss with Inno Setup
 #
 
-FORWARD_DIR = native
+FORWARD_DIR = lib
 
 .PHONY: forward $(MAKECMDGOALS)
 
