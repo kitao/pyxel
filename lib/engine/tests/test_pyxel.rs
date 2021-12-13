@@ -89,6 +89,17 @@ impl PyxelCallback for App {
         pyxel.rectb(self.x + 15.0, 45.0, 15.0, 10.0, pyxel::COLOR_WHITE);
 
         pyxel.blt(0.0, 0.0, 0, 0.0, 0.0, 8.0, 8.0, None);
+
+        pyxel.screen.lock().blt(
+            50.0,
+            50.0,
+            pyxel.screen.clone(),
+            0.0,
+            0.0,
+            100.0,
+            100.0,
+            None,
+        );
     }
 }
 
