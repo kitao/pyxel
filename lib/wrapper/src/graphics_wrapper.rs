@@ -98,15 +98,15 @@ fn blt(
     v: f64,
     w: f64,
     h: f64,
-    color_key: Option<Color>,
+    colkey: Option<Color>,
 ) -> PyResult<()> {
     type_switch! {
         img,
         u32, {
-            instance().blt(x, y, img, u, v, w, h, color_key);
+            instance().blt(x, y, img, u, v, w, h, colkey);
         },
         Image, {
-            instance().screen.lock().blt(x, y, img.pyxel_image, u, v, w, h, color_key);
+            instance().screen.lock().blt(x, y, img.pyxel_image, u, v, w, h, colkey);
         }
     }
     Ok(())

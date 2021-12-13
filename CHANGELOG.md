@@ -5,6 +5,7 @@
 - Updated the README in Chinese
 - Updated the README in Korean
 - Fixed file permission error when running pyxapp
+- Fixed an argument name of the blt function
 
 ## 1.5.0
 - Re-implemented the core engine in Rust
