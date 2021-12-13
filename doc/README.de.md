@@ -372,7 +372,7 @@ Die aktuelle Position der Maus
 Der aktuelle Wert des Scrollrads
 
 - `btn(key)`<br>
-Return `True` falls `key` gedrückt ist, sonst return `False` ([key definition list](../pyxel/__init__.pyi))
+Return `True` falls `key` gedrückt ist, sonst return `False` ([Liste der Schlüsseldefinitionen](../pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [period])`<br>
 Return `True` falls `key` gedrückt ist, sonst return `False`. Wenn `hold` und `period` angegeben sind, wird `True` am `period` Bildintervall returned, falls `key` für mehr als `hold` Frames gedrückt ist
