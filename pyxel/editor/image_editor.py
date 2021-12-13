@@ -107,7 +107,7 @@ class ImageEditor(EditorBase):
         )
 
     def __on_drop(self, filename):
-        pyxel.image(self.image).load(0, 0, filename)
+        pyxel.image(self.image_no_var).load(0, 0, filename)
 
     def __on_update(self):
         self.check_tool_button_shortcuts()
