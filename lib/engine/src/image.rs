@@ -14,8 +14,7 @@ use crate::settings::{
 };
 use crate::tilemap::SharedTilemap;
 use crate::types::{Color, Rgb8};
-use crate::utils::as_i32;
-use crate::utils::{parse_hex_string, simplify_string};
+use crate::utils::{as_i32, as_u32, parse_hex_string, simplify_string};
 use crate::Pyxel;
 
 impl ToIndex for Color {
@@ -233,17 +232,45 @@ impl Image {
         height: f64,
         transparent: Option<Color>,
     ) {
-        self.canvas.blt(
-            x,
-            y,
-            &image.lock().canvas,
-            image_x,
-            image_y,
-            width,
-            height,
-            transparent,
-            Some(&self.palette),
-        );
+        if let Some(image) = image.try_lock() {
+            self.canvas.blt(
+                x,
+                y,
+                &image.canvas,
+                image_x,
+                image_y,
+                width,
+                height,
+                transparent,
+                Some(&self.palette),
+            );
+        } else {
+            let copy_width = as_u32(width.abs());
+            let copy_height = as_u32(height.abs());
+            let mut canvas = Canvas::new(copy_width, copy_height);
+            canvas.blt(
+                0.0,
+                0.0,
+                &self.canvas,
+                image_x,
+                image_y,
+                copy_width as f64,
+                copy_height as f64,
+                None,
+                None,
+            );
+            self.canvas.blt(
+                x,
+                y,
+                &canvas,
+                0.0,
+                0.0,
+                width,
+                height,
+                transparent,
+                Some(&self.palette),
+            );
+        }
     }
 
     pub fn bltm(

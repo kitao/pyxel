@@ -3,7 +3,7 @@ use crate::image::SharedImage;
 use crate::resource::ResourceItem;
 use crate::settings::{RESOURCE_ARCHIVE_DIRNAME, TILEMAP_SIZE};
 use crate::types::Tile;
-use crate::utils::{parse_hex_string, simplify_string};
+use crate::utils::{as_u32, parse_hex_string, simplify_string};
 use crate::Pyxel;
 
 impl ToIndex for Tile {
@@ -122,17 +122,36 @@ impl Tilemap {
         height: f64,
         transparent: Option<Tile>,
     ) {
-        self.canvas.blt(
-            x,
-            y,
-            &tilemap.lock().canvas,
-            tilemap_x,
-            tilemap_y,
-            width,
-            height,
-            transparent,
-            None,
-        );
+        if let Some(tilemap) = tilemap.try_lock() {
+            self.canvas.blt(
+                x,
+                y,
+                &tilemap.canvas,
+                tilemap_x,
+                tilemap_y,
+                width,
+                height,
+                transparent,
+                None,
+            );
+        } else {
+            let copy_width = as_u32(width.abs());
+            let copy_height = as_u32(height.abs());
+            let mut canvas = Canvas::new(copy_width, copy_height);
+            canvas.blt(
+                0.0,
+                0.0,
+                &self.canvas,
+                tilemap_x,
+                tilemap_y,
+                copy_width as f64,
+                copy_height as f64,
+                None,
+                None,
+            );
+            self.canvas
+                .blt(x, y, &canvas, 0.0, 0.0, width, height, transparent, None);
+        }
     }
 }
 

@@ -1,6 +1,5 @@
 use std::cmp::max;
 use std::mem::swap;
-use std::ptr::eq;
 
 use crate::rectarea::RectArea;
 use crate::utils::{as_i32, as_u32};
@@ -290,25 +289,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         transparent: Option<T>,
         palette: Option<&[T]>,
     ) {
-        if eq(self as *const Self, canvas as *const Self) {
-            let copy_width = as_u32(width.abs());
-            let copy_height = as_u32(height.abs());
-            let mut canvas = Self::new(copy_width, copy_height);
-            canvas.blt(
-                0.0,
-                0.0,
-                self,
-                canvas_x,
-                canvas_y,
-                copy_width as f64,
-                copy_height as f64,
-                None,
-                None,
-            );
-            self.blt(x, y, &canvas, 0.0, 0.0, width, height, transparent, palette);
-            return;
-        }
-
         let x = as_i32(x);
         let y = as_i32(y);
         let canvas_x = as_i32(canvas_x);
