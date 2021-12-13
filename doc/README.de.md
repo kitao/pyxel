@@ -49,7 +49,7 @@ Pyxel ist quelloffen und kostenlos zu verwenden. Fang an, ein Retro-Spiel mit Py
 ### Farbpalette
 
 <img src="images/05_color_palette.png">
-<br><br>
+<br>
 <img src="images/pyxel_palette.png">
 
 ## Installationsanleitung
