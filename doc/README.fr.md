@@ -1,33 +1,33 @@
 # <img src="images/pyxel_logo_152x64.png">
 
-[ [English](README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
+[ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
 **Pyxel** est un moteur de jeu-vidéo rétro pour Python.
 
 Grâce à ses spécifications simples inspirées par les consoles rétro, comme le fait que seulement 16 couleurs peuvent être affichées et que seulement 4 sons peuvent être joués en même temps, vous pouvez vous sentir libres de créer des jeux-vidéos dans le style pixel art.
 
-<a href="pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="pyxel/examples/screenshots/01_hello_pyxel.gif" width="48%">
+<a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
+<img src="images/01_hello_pyxel.gif" width="48%">
 </a>
 
-<a href="pyxel/examples/02_jump_game.py" target="_blank">
-<img src="pyxel/examples/screenshots/02_jump_game.gif" width="48%">
+<a href="../pyxel/examples/02_jump_game.py" target="_blank">
+<img src="images/02_jump_game.gif" width="48%">
 </a>
 
-<a href="pyxel/examples/03_draw_api.py" target="_blank">
-<img src="pyxel/examples/screenshots/03_draw_api.gif" width="48%">
+<a href="../pyxel/examples/03_draw_api.py" target="_blank">
+<img src="images/03_draw_api.gif" width="48%">
 </a>
 
-<a href="pyxel/examples/04_sound_api.py" target="_blank">
-<img src="pyxel/examples/screenshots/04_sound_api.gif" width="48%">
+<a href="../pyxel/examples/04_sound_api.py" target="_blank">
+<img src="images/04_sound_api.gif" width="48%">
 </a>
 
-<a href="pyxel/editor/screenshots/image_tilemap_editor.gif" target="_blank">
-<img src="pyxel/editor/screenshots/image_tilemap_editor.gif" width="48%">
+<a href="images/image_tilemap_editor.gif" target="_blank">
+<img src="images/image_tilemap_editor.gif" width="48%">
 </a>
 
-<a href="pyxel/editor/screenshots/sound_music_editor.gif" target="_blank">
-<img src="pyxel/editor/screenshots/sound_music_editor.gif" width="48%">
+<a href="images/sound_music_editor.gif" target="_blank">
+<img src="images/sound_music_editor.gif" width="48%">
 </a>
 
 Les spécifications de Pyxel font référence à [PICO-8](https://www.lexaloffle.com/pico-8.php) et [TIC-80](https://tic.computer/).
@@ -48,7 +48,7 @@ Pyxel est open source et libre d’usage. Commençons à faire un jeu-vidéo ré
 
 ### Palette de couleurs
 
-<img src="pyxel/examples/screenshots/05_color_palette.png">
+<img src="images/05_color_palette.png">
 <br><br>
 <img src="images/pyxel_palette.png">
 
@@ -135,16 +135,16 @@ pyxel copy_examples
 
 Les exemples copiés sont les suivants :
 
-- [01_hello_pyxel.py](pyxel/examples/01_hello_pyxel.py) - Application simple
-- [02_jump_game.py](pyxel/examples/02_jump_game.py) - Jeu de saut avec les fichiers de ressources Pyxel
-- [03_draw_api.py](pyxel/examples/03_draw_api.py) - Démonstration des APIs de dessin
-- [04_sound_api.py](pyxel/examples/04_sound_api.py) - Démonstration des APIs de son
-- [05_color_palette.py](pyxel/examples/05_color_palette.py) - Liste des couleurs de la palette
-- [06_click_game.py](pyxel/examples/06_click_game.py) - Jeu de point and click
-- [07_snake.py](pyxel/examples/07_snake.py) - Jeu du Snake avec une bande son
-- [08_triangle_api.py](pyxel/examples/08_triangle_api.py) - Démonstration des APIs de dessin de triangle
-- [09_shooter.py](pyxel/examples/09_shooter.py) - Jeu de shoot'em up avec changement d’écran
-- [10_platformer.py](pyxel/examples/10_platformer.py) - Jeu de plateforme avec scroll, et une carte
+- [01_hello_pyxel.py](../pyxel/examples/01_hello_pyxel.py) - Application simple
+- [02_jump_game.py](../pyxel/examples/02_jump_game.py) - Jeu de saut avec les fichiers de ressources Pyxel
+- [03_draw_api.py](../pyxel/examples/03_draw_api.py) - Démonstration des APIs de dessin
+- [04_sound_api.py](../pyxel/examples/04_sound_api.py) - Démonstration des APIs de son
+- [05_color_palette.py](../pyxel/examples/05_color_palette.py) - Liste des couleurs de la palette
+- [06_click_game.py](../pyxel/examples/06_click_game.py) - Jeu de point and click
+- [07_snake.py](../pyxel/examples/07_snake.py) - Jeu du Snake avec une bande son
+- [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Démonstration des APIs de dessin de triangle
+- [09_shooter.py](../pyxel/examples/09_shooter.py) - Jeu de shoot'em up avec changement d’écran
+- [10_platformer.py](../pyxel/examples/10_platformer.py) - Jeu de plateforme avec scroll, et une carte
 
 Les exemples peuvent être lancés avec les commandes suivantes :
 
@@ -281,7 +281,7 @@ L’éditeur Pyxel a les modes suivants.
 
 Mode pour éditer la banque d’images.
 
-<img src="pyxel/editor/screenshots/image_editor.gif">
+<img src="images/image_editor.gif">
 
 En glissant-déposant un fichier images (png/gif/jpeg) dans l’éditeur d’image, l’image peut être chargée dans la banque d’images actuellement sélectionnée.
 
@@ -289,19 +289,19 @@ En glissant-déposant un fichier images (png/gif/jpeg) dans l’éditeur d’ima
 
 Mode pour éditer les tilemaps dans lesquelles les images des banques d’images sont ordonnées en motif de tuiles.
 
-<img src="pyxel/editor/screenshots/tilemap_editor.gif">
+<img src="images/tilemap_editor.gif">
 
 **Éditeur de sons :**
 
 Mode pour éditer les sons.
 
-<img src="pyxel/editor/screenshots/sound_editor.gif">
+<img src="images/sound_editor.gif">
 
 **Éditeur de musiques :**
 
 Mode pour éditer les musiques dans lesquelles les sons sont ordonnés par ordre de lecture.
 
-<img src="pyxel/editor/screenshots/music_editor.gif">
+<img src="images/music_editor.gif">
 
 ### Autres méthodes pour créer des ressources
 
@@ -373,7 +373,7 @@ La position actuelle du curseur de la souris
 La valeur actuelle de la molette de la souris
 
 - `btn(key)`<br>
-Renvoie `True` si la touche `key` est appuyée, sinon renvoie `False` ([liste des touches](pyxel/__init__.pyi))
+Renvoie `True` si la touche `key` est appuyée, sinon renvoie `False` ([liste des touches](../pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [period])`<br>
 Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`. Quand `hold` et `period` sont spécifiés, `True` sera renvoyé à l’intervalle de frame `period` quand la touche `key` est appuyée pendant plus de `hold` frames
@@ -550,7 +550,7 @@ Par exemple `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 Pyxel a des "APIs avancées" qui ne sont pas présentées ici car elles peuvent amener de la confusion ou qu’elles nécessitent des connaissances spécifiques pour être utilisées.
 
-Si vous savez ce que vous faîtes, essayez de créer des applications incroyables avec [ceci](pyxel/__init__.pyi) comme indice !
+Si vous savez ce que vous faîtes, essayez de créer des applications incroyables avec [ceci](../pyxel/__init__.pyi) comme indice !
 
 ## Comment contribuer
 
@@ -566,7 +566,7 @@ Toutes les personnes testant le code et rapportant des bugs ou des suggestions d
 
 Les patchs/fixs sont acceptés sous forme de pull requests (PRs). Faites attention à ce que le ticket que la pull request corrige soit ouvert.
 
-En proposant une pull request, vous acceptez qu’elle soit publiée sous la [licence MIT](LICENSE).
+En proposant une pull request, vous acceptez qu’elle soit publiée sous la [licence MIT](../LICENSE).
 
 ## Autres informations
 
@@ -575,4 +575,4 @@ En proposant une pull request, vous acceptez qu’elle soit publiée sous la [li
 
 ## License
 
-Pyxel est sous [licence MIT](http://en.wikipedia.org/wiki/MIT_License). Elle peut être réutilisée dans un logiciel propriétaire à condition que toutes les copies du logiciel sous licence comprennent une copie des termes de la licence MIT et de l'avis de copyright.
+Pyxel est sous [licence MIT](../LICENSE). Elle peut être réutilisée dans un logiciel propriétaire à condition que toutes les copies du logiciel sous licence comprennent une copie des termes de la licence MIT et de l'avis de copyright.
