@@ -9,6 +9,7 @@
 - Fixed a bug when self-copying with the blt function
 - Changed the release build method for Makefile
 - Restored the editor to quit with Esc key
+- Fixed a bug of the scrolling area of the editor
 
 ## 1.5.0
 - Re-implemented the core engine in Rust
