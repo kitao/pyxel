@@ -8,6 +8,7 @@
 - Fixed an argument name of the blt function
 - Fixed a bug when self-copying with the blt function
 - Changed the release build method for Makefile
+- Restored the editor to quit with Esc key
 
 ## 1.5.0
 - Re-implemented the core engine in Rust
