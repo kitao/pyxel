@@ -32,6 +32,7 @@
 #
 # Install Python pakcage after release build:
 #   pip3 install .
+#   (Prefix `sudo` for Linux)
 #
 # Make Python wheel after release build:
 #   make wheel
