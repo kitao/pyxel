@@ -91,7 +91,7 @@ Wenn das oben genannte nicht funktioniert, versuche Pyxel selber zu kompilieren,
 ```sh
 git clone https://github.com/kitao/pyxel.git
 cd pyxel
-make clean all RELEASE=1
+make clean all
 sudo pip3 install .
 ```
 

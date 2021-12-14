@@ -91,7 +91,7 @@ Si l’installation avec pip ne fonctionne pas, essayez de compiler vous-même e
 ```sh
 git clone https://github.com/kitao/pyxel.git
 cd pyxel
-make clean all RELEASE=1
+make clean all
 sudo pip3 install .
 ```
 

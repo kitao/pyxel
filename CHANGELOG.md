@@ -7,6 +7,7 @@
 - Fixed file permission error when running pyxapp
 - Fixed an argument name of the blt function
 - Fixed a bug when self-copying with the blt function
+- Changed the release build method for Makefile
 
 ## 1.5.0
 - Re-implemented the core engine in Rust

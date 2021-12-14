@@ -37,7 +37,7 @@ else
 $(error "unsupported platform")
 endif
 
-ifeq ($(RELEASE),)
+ifneq ($(DEBUG),)
 # Debug
 CARGO_BUILD_OPT =
 CARGO_TARGET_DIR = $(LIB_DIR)/target/debug
