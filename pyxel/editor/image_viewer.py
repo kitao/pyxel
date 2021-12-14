@@ -83,8 +83,8 @@ class ImageViewer(Widget):
         self.add_event_listener("draw", self.__on_draw)
 
     def _screen_to_focus(self, x, y):
-        x = self.viewport_x_var + (x - self.x - 1) // 8
-        y = self.viewport_y_var + (y - self.y - 1) // 8
+        x = min(max(self.viewport_x_var + (x - self.x - 1) // 8, 0), 31)
+        y = min(max(self.viewport_y_var + (y - self.y - 1) // 8, 0), 31)
         return x, y
 
     def __on_focus_x_set(self, value):
