@@ -11,6 +11,8 @@ pub trait ToIndex {
 pub struct Canvas<T: Copy + PartialEq + Default + ToIndex> {
     pub self_rect: RectArea,
     pub clip_rect: RectArea,
+    pub camera_x: i32,
+    pub camera_y: i32,
     pub data: Vec<Vec<T>>,
 }
 
@@ -19,6 +21,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         Self {
             self_rect: RectArea::new(0, 0, width, height),
             clip_rect: RectArea::new(0, 0, width, height),
+            camera_x: 0,
+            camera_y: 0,
             data: vec![vec![T::default(); width as usize]; height as usize],
         }
     }
@@ -45,6 +49,16 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.clip_rect = self.self_rect;
     }
 
+    pub fn camera(&mut self, x: f64, y: f64) {
+        self.camera_x = as_i32(x);
+        self.camera_y = as_i32(y);
+    }
+
+    pub fn camera0(&mut self) {
+        self.camera_x = 0;
+        self.camera_y = 0;
+    }
+
     pub fn cls(&mut self, value: T) {
         let width = self.width();
         let height = self.height();
@@ -66,8 +80,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn pset(&mut self, x: f64, y: f64, value: T) {
-        let x = as_i32(x);
-        let y = as_i32(y);
+        let x = as_i32(x) - self.camera_x;
+        let y = as_i32(y) - self.camera_y;
         if self.clip_rect.contains(x, y) {
             self.data[y as usize][x as usize] = value;
         }
@@ -115,8 +129,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
-        let x = as_i32(x);
-        let y = as_i32(y);
+        let x = as_i32(x) - self.camera_x;
+        let y = as_i32(y) - self.camera_y;
         let width = as_u32(width);
         let height = as_u32(height);
         let rect = RectArea::new(x, y, width, height).intersects(self.clip_rect);
@@ -289,8 +303,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         transparent: Option<T>,
         palette: Option<&[T]>,
     ) {
-        let x = as_i32(x);
-        let y = as_i32(y);
+        let x = as_i32(x) - self.camera_x;
+        let y = as_i32(y) - self.camera_y;
         let canvas_x = as_i32(canvas_x);
         let canvas_y = as_i32(canvas_y);
         let width = as_i32(width);

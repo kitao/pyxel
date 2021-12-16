@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.5.2
+- Added the camera function
+
 ## 1.5.1
 - Updated the README in German
 - Updated the README in Chinese

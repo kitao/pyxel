@@ -28,6 +28,18 @@ fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyRes
 }
 
 #[pyfunction]
+fn camera(x: Option<f64>, y: Option<f64>) -> PyResult<()> {
+    if let (Some(x), Some(y)) = (x, y) {
+        instance().camera(x, y);
+    } else if let (None, None) = (x, y) {
+        instance().camera0();
+    } else {
+        type_error!("camera() takes 0 or 2 arguments");
+    }
+    Ok(())
+}
+
+#[pyfunction]
 fn pal(col1: Option<Color>, col2: Option<Color>) -> PyResult<()> {
     if let (Some(col1), Some(col2)) = (col1, col2) {
         instance().pal(col1, col2);
@@ -144,6 +156,7 @@ pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(image, m)?)?;
     m.add_function(wrap_pyfunction!(tilemap, m)?)?;
     m.add_function(wrap_pyfunction!(clip, m)?)?;
+    m.add_function(wrap_pyfunction!(camera, m)?)?;
     m.add_function(wrap_pyfunction!(pal, m)?)?;
     m.add_function(wrap_pyfunction!(cls, m)?)?;
     m.add_function(wrap_pyfunction!(pget, m)?)?;
