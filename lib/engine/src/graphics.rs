@@ -78,6 +78,14 @@ impl Pyxel {
         self.screen.lock().clip0();
     }
 
+    pub fn camera(&mut self, x: f64, y: f64) {
+        self.screen.lock().camera(x, y);
+    }
+
+    pub fn camera0(&mut self) {
+        self.screen.lock().camera0();
+    }
+
     pub fn pal(&mut self, src_color: Color, dst_color: Color) {
         self.screen.lock().pal(src_color, dst_color);
     }

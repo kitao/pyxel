@@ -71,6 +71,14 @@ impl Tilemap {
         self.canvas.clip0();
     }
 
+    pub fn camera(&mut self, x: f64, y: f64) {
+        self.canvas.camera(x, y);
+    }
+
+    pub fn camera0(&mut self) {
+        self.canvas.camera0();
+    }
+
     pub fn cls(&mut self, tile: Tile) {
         self.canvas.cls(tile);
     }

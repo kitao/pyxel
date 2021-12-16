@@ -238,9 +238,12 @@ impl Pyxel {
         }
         let mut screen = self.screen.lock();
         let clip_rect = screen.canvas.clip_rect;
+        let camera_x = screen.canvas.camera_x;
+        let camera_y = screen.canvas.camera_y;
         let palette1 = screen.palette[1];
         let palette2 = screen.palette[2];
         screen.clip0();
+        screen.camera0();
         screen.pal(1, 1);
         screen.pal(2, 9);
 
@@ -257,6 +260,8 @@ impl Pyxel {
         screen.text(0.0, 12.0, &draw_time, 2, self.font.clone());
 
         screen.canvas.clip_rect = clip_rect;
+        screen.canvas.camera_x = camera_x;
+        screen.canvas.camera_y = camera_y;
         screen.pal(1, palette1);
         screen.pal(2, palette2);
     }
@@ -277,9 +282,13 @@ impl Pyxel {
 
         let mut screen = self.screen.lock();
         let clip_rect = screen.canvas.clip_rect;
+        let camera_x = screen.canvas.camera_x;
+        let camera_y = screen.canvas.camera_y;
         let palette = screen.palette;
         screen.clip0();
+        screen.camera0();
         screen.pal0();
+
         screen.blt(
             x as f64,
             y as f64,
@@ -290,7 +299,10 @@ impl Pyxel {
             height as f64,
             Some(0),
         );
+
         screen.canvas.clip_rect = clip_rect;
+        screen.canvas.camera_x = camera_x;
+        screen.canvas.camera_y = camera_y;
         screen.palette = palette;
     }
 }
