@@ -25,7 +25,7 @@ CARGO_BUILD = cargo build $(BUILD_OPT) --target=$(TARGET)
 COPY_FILES = \
 	cp $(SRC_LIB_FILE) $(DST_LIB_FILE) && \
 	cp -f $(TARGET_DIR)/SDL2.dll $(PYXEL_LIB_DIR)
-COPY_VBS = cp -f $(BUILD_DIR)/pyxel.vbs $(DIST_DIR)
+COPY_VBS = cp -f $(BUILD_DIR)/pyxel.vbs $(DIST_NAME)
 
 # MacOS
 else ifeq ($(shell uname),Darwin)
@@ -98,7 +98,7 @@ wheel:
 	@rm -rf $(ROOT_DIR)/build $(ROOT_DIR)/*.egg-info
 
 dist:
-	@rm -rf $(PYOXIDIZER_DIR)
+	@rm -rf $(PYOXIDIZER_DIR) $(DIST_NAME) $(DIST_NAME).zip
 	@pyoxidizer build --release --var wheel_name $(WHEEL_NAME)
 	@mv $(PYOXIDIZER_DIR)/*/release/install $(DIST_NAME)
 	@$(COPY_VBS)
