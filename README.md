@@ -400,6 +400,9 @@ Operate the tilemap `tm` (0-7). (See the Tilemap class)
 - `clip(x, y, w, h)`<br>
 Set the drawing area of the screen from (`x`, `y`) to width `w` and height `h`. Reset the drawing area to full screen with `clip()`.
 
+- `camera(x, y)`<br>
+Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
+
 - `pal(col1, col2)`<br>
 Replace color `col1` with `col2` at drawing. `pal()` to reset to the initial palette.
 

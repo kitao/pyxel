@@ -399,6 +399,9 @@ Bediene die Tilemap `tm`(0-7) (siehe die Tilemap class)
 - `clip(x, y, w, h)`<br>
 Setze den Bildausschnitt von (`x`, `y`) zu Breite `w` und Höhe `h`. Setze den Bildausschnitt zurück zum Follbild mit `clip()`
 
+- `camera(x, y)`<br>
+Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
+
 - `pal(col1, col2)`<br>
 Ersetze Farbe `col1` mit `col2` beim zeichnen. Mit `pal()` lässt sich die Pallete auf die initiale zurücksetzen
 
