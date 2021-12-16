@@ -76,6 +76,17 @@ impl Image {
         Ok(())
     }
 
+    pub fn camera(&self, x: Option<f64>, y: Option<f64>) -> PyResult<()> {
+        if let (Some(x), Some(y)) = (x, y) {
+            self.pyxel_image.lock().camera(x, y);
+        } else if let (None, None) = (x, y) {
+            self.pyxel_image.lock().camera0();
+        } else {
+            type_error!("camera() takes 0 or 2 arguments");
+        }
+        Ok(())
+    }
+
     pub fn cls(&self, col: Color) {
         self.pyxel_image.lock().cls(col);
     }
