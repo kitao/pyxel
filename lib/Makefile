@@ -46,7 +46,9 @@ CARGO_CLEAN = \
 	cargo clean --target=$(TARGET1) && \
 	cargo clean --target=$(TARGET2)
 CARGO_BUILD = \
+	rustup target add $(TARGET1) && \
 	$(CARGO_VARS) cargo build $(BUILD_OPT) --target=$(TARGET1) && \
+	rustup target add $(TARGET2) && \
 	$(CARGO_VARS) cargo build $(BUILD_OPT) --target=$(TARGET2)
 COPY_FILES = lipo -create -output $(DST_LIB_FILE) $(SRC_LIB_FILE1) $(SRC_LIB_FILE2)
 
