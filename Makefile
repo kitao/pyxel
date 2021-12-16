@@ -6,6 +6,9 @@
 #   - Cygwin64 with make and zip added
 #   - Inno Setup
 #
+# Prerequisites for Mac:
+#   - Xcode
+#
 # Prerequisites for Linux:
 #   - SDL2 package (libsdl2-dev for Ubuntu)
 #
@@ -18,23 +21,17 @@
 # Format and lint code:
 #   make format
 #
-# Debug build:
-#   make clean all DEBUG=1
-#
-# Debug build and test:
-#   make clean test DEBUG=1
-#
-# Release build:
+# Build:
 #   make clean all
 #
-# Release build and test:
+# Build and test:
 #   make clean test
 #
-# Install Python pakcage after release build:
+# Install Python pakcage after build:
 #   pip3 install .
 #   (Prefix `sudo` for Linux)
 #
-# Make Python wheel after release build:
+# Make Python wheel after build on all platforms:
 #   make wheel
 #
 # Make Pyxel distributions using Python wheel:
