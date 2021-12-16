@@ -12,6 +12,7 @@
 - Restored the editor to quit with Esc key
 - Fixed a bug of the scrolling area of the editor
 - Supported the Universal Binary for M1 Mac
+- Reduced the git repository size
 
 ## 1.5.0
 - Re-implemented the core engine in Rust
