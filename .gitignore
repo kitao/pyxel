@@ -152,6 +152,7 @@ cython_debug/
 #.idea/
 
 # Pyxel
+*.dll
 .DS_Store
 .vscode/*
 !pyxel/lib
