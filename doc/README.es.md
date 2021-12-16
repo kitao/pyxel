@@ -56,7 +56,7 @@ Pyel es de código abierto y gratuito. ¡Empecemos haciendo un juego retro con P
 
 Hay dos tipos de Pyxel, una versión como paquete y una versión que independiente.
 
-### Instalar la versión paquete 
+### Instalar la versión paquete
 
 La versión empaquetada de Pyxel utiliza Pyxel como un módulo de extensión de Python.
 
@@ -86,7 +86,7 @@ Después de instalar los paquetes SDL2 (`libsdl2-dev` para Ubuntu), [Python3](ht
 sudo pip3 install -U pyxel
 ```
 
-Si los pasos mencionados previamente no funcionan, intente compilarla usted mismo, siguiendo los siguientes comandos después de instalar `cmake` and `rust`: 
+Si los pasos mencionados previamente no funcionan, intente compilarla usted mismo, siguiendo los siguientes comandos después de instalar `cmake` and `rust`:
 
 ```sh
 git clone https://github.com/kitao/pyxel.git
@@ -246,7 +246,7 @@ Salir de la aplicación
 - `Alt(Option)+1`<br>
 Guardar la captura de pantalla al escritorio
 - `Alt(Option)+2`<br>
-Restablecer la hora de inicio de la grabación del vídeo de captura de pantalla 
+Restablecer la hora de inicio de la grabación del vídeo de captura de pantalla
 - `Alt(Option)+3`<br>
 Guarda la captura de video en el escritorio (hasta 10 segundos)
 - `Alt(Option)+0`<br>
@@ -346,7 +346,7 @@ Inicializa la aplicación de pyxel con el tamaño (`width`, `height`). Los sigui
 por ejemplo: `pyxel.init(160, 120, title="Pyxel with Options", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
 
 - `run(update, draw)`<br>
-Comienza la aplicación de Pyxel y llama la función `update` para actualizar cada fotograma y la función `draw` para dibujar. 
+Comienza la aplicación de Pyxel y llama la función `update` para actualizar cada fotograma y la función `draw` para dibujar.
 
 - `show()`<br>
 Muestra la pantalla y espera hasta que la tecla `Esc` sea pulsada. (No lo utilice en aplicaciones normales)
@@ -378,7 +378,7 @@ Devuelve `True` si `key` es presionada en ese cuadro, si no devuelve `False`. Cu
 Devuelve `True` si se suelta la tecla `key` en ese frame, si no, devuelve `False`.
 
 - `mouse(visible)`<br>
-Si `visible` es `True`, muestra el cursor del ratón. Si es `False`, no lo muestra. Incluso si el cursor no se muestra, su posición se actualiza. 
+Si `visible` es `True`, muestra el cursor del ratón. Si es `False`, no lo muestra. Incluso si el cursor no se muestra, su posición se actualiza.
 
 ### Gráficos
 
@@ -395,7 +395,10 @@ Operate the tilemap `tm` (0-7). (See the Tilemap class)
 Opera el mapa `tm` (0-7). (Vea la clase del mapa)
 
 - `clip(x, y, w, h)`<br>
-Establezca el área de dibujo de la pantalla de (`x`, `y`) a una anchura `w` y a una altura `h`. Reinicia el área de dibujo a todo el área de la pantalla con `clip()`. 
+Establezca el área de dibujo de la pantalla de (`x`, `y`) a una anchura `w` y a una altura `h`. Reinicia el área de dibujo a todo el área de la pantalla con `clip()`.
+
+- `camera(x, y)`<br>
+Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
 
 - `pal(col1, col2)`<br>
 Reemplaza el color `col1` con `col2` para dibujarlo. Utiliza `pal()` para resetear la paleta de colores y volver a la paleta que viene por defecto por defecto con Pyxel.
@@ -513,7 +516,7 @@ Lista de tonos(0:Triangular / 1:Cuadrada / 2:Pulsada / 3:Ruido)
 Lista de efectos de sonido (0:Nada / 1:Slide / 2:Vibrato / 3:FadeOut)
 
 - `speed`<br>
-La velocidad de reproducción, 1 es la más rápida y al incrementar este número, la velocidad de reproducción disminuye. Cuando vale 120, la longitud de una nota es de 1 segundo. 
+La velocidad de reproducción, 1 es la más rápida y al incrementar este número, la velocidad de reproducción disminuye. Cuando vale 120, la longitud de una nota es de 1 segundo.
 
 - `set(notes, tones, volumes, effects, speed)`<br>
 Fija las notas, los tonos, el volumen y los efectos con una string. Si los tonos, el volumen, la longitud de los efectos son más cortos que la nota, se repetirá desde el principio.

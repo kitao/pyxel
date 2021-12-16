@@ -400,6 +400,9 @@ Utilise la tilemap `tm`(0-7) (voir la classe Tilemap)
 - `clip(x, y, w, h)`<br>
 Défini la zone de dessin (`x`, `y`) avec une largeur `w` et une hauteur `h`. Réinitialiser la zone de dessin au plein écran avec `clip()`
 
+- `camera(x, y)`<br>
+Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
+
 - `pal(col1, col2)`<br>
 Remplace la couleur `col1` avec `col2` au dessin. `pal()` pour réinitialiser la palette de couleurs
 

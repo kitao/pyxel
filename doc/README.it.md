@@ -402,6 +402,9 @@ Opera la tilemap `tm`(0-7) (vedere la classe Tilemap)
 - `clip(x, y, w, h)`<br>
 Imposta l'area di disegno dello schermo da (`x`, `y`) a lunghezza `w` e altezza `h`. Resettare l'area di disegno a schermo intero con `clip()`
 
+- `camera(x, y)`<br>
+Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
+
 - `pal(col1, col2)`<br>
 Rimpiazza colore `col1` con `col2` al momento di disegno. `pal()` per tornare alla palette iniziale
 

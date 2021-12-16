@@ -401,6 +401,9 @@ pyxel play PYXEL_APP_FILE
 - `clip(x, y, w, h)`<br>
 设置画面绘制区域为从(`x`, `y`)开始的宽度`w`、高度为`h`的区域。`clip()`可以将绘制区域重置为全屏。
 
+- `camera(x, y)`<br>
+Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
+
 - `pal(col1, col2)`<br>
 绘制时用`col1`颜色代替`col2`颜色。`pal()`可以重置为初始色调。
 
