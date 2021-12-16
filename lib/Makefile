@@ -2,55 +2,70 @@ ROOT_DIR = ..
 PYXEL_DIR = $(ROOT_DIR)/pyxel
 PYXEL_LIB_DIR = $(PYXEL_DIR)/lib/$(PLATFORM)
 PYXEL_LIB_NAME = pyxel_wrapper
-LIB_DIR = $(ROOT_DIR)/lib
-TESTS_DIR = $(LIB_DIR)/wrapper/tests
+BUILD_DIR = $(ROOT_DIR)/lib
+BUILD_OPT = --release
+TESTS_DIR = $(BUILD_DIR)/wrapper/tests
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 DIST_DIR = $(ROOT_DIR)/dist
 DIST_NAME = $(shell echo $(WHEEL_NAME) | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PLATFORM)
 WHEEL_NAME = $(shell ls $(DIST_DIR)/pyxel-*.whl)
-PYOXIDIZER_DIR = $(LIB_DIR)/build
+PYOXIDIZER_DIR = $(BUILD_DIR)/build
 
-ifneq ($(findstring CYGWIN_NT-,$(shell uname)),)
 # Windows
+ifneq ($(findstring CYGWIN_NT-,$(shell uname)),)
 PLATFORM = windows
 PYTHON = python
-SRC_LIB_NAME = $(PYXEL_LIB_NAME).dll
-DST_LIB_NAME = $(PYXEL_LIB_NAME).pyd
-SRC_SDL2_DLL = $(SRC_LIB_DIR)/SDL2.dll
-DST_SDL2_DLL = $(DST_LIB_DIR)/SDL2.dll
-COPY_SDL2_DLL = if [ ! -f $(DST_SDL2_DLL) ]; then cp $(SRC_SDL2_DLL) $(DST_SDL2_DLL); fi
-COPY_PYXEL_VBS = cp pyxel.vbs $(DIST_NAME)
-else ifeq ($(shell uname),Darwin)
+TARGET = x86_64-pc-windows-msvc
+TARGET_DIR = $(BUILD_DIR)/target/$(TARGET)/release
+SRC_LIB_FILE = $(TARGET_DIR)/lib$(PYXEL_LIB_NAME).dll
+DST_LIB_FILE = $(PYXEL_LIB_DIR)/$(PYXEL_LIB_NAME).pyd
+
+CARGO_CLEAN = cargo clean --target=$(TARGET)
+CARGO_BUILD = cargo build $(BUILD_OPT) --target=$(TARGET)
+COPY_FILES = \
+	cp $(SRC_LIB_FILE) $(DST_LIB_FILE) && \
+	cp -f $(TARGET_DIR)/SDL2.dll $(PYXEL_LIB_DIR) && \
+	cp $(BUILD_DIR)/pyxel.vbs $(DIST_NAME)
+
 # MacOS
+else ifeq ($(shell uname),Darwin)
 PLATFORM = macos
 PYTHON = python3
-SRC_LIB_NAME = lib$(PYXEL_LIB_NAME).dylib
-DST_LIB_NAME = $(PYXEL_LIB_NAME).so
-else ifeq ($(shell uname),Linux)
+TARGET1 = x86_64-apple-darwin
+TARGET2 = aarch64-apple-darwin
+TARGET_DIR1 = $(BUILD_DIR)/target/$(TARGET1)/release
+TARGET_DIR2 = $(BUILD_DIR)/target/$(TARGET2)/release
+SRC_LIB_FILE1 = $(TARGET_DIR1)/lib$(PYXEL_LIB_NAME).dylib
+SRC_LIB_FILE2 = $(TARGET_DIR2)/lib$(PYXEL_LIB_NAME).dylib
+DST_LIB_FILE = $(PYXEL_LIB_DIR)/$(PYXEL_LIB_NAME).so
+
+CARGO_VARS = \
+	SDKROOT=$(shell xcrun -sdk macosx --show-sdk-path) \
+	MACOSX_DEPLOYMENT_TARGET=$(shell xcrun -sdk macosx --show-sdk-platform-version)
+CARGO_CLEAN = \
+	cargo clean --target=$(TARGET1) && \
+	cargo clean --target=$(TARGET2)
+CARGO_BUILD = \
+	$(CARGO_VARS) cargo build $(BUILD_OPT) --target=$(TARGET1) && \
+	$(CARGO_VARS) cargo build $(BUILD_OPT) --target=$(TARGET2)
+COPY_FILES = lipo -create -output $(DST_LIB_FILE) $(SRC_LIB_FILE1) $(SRC_LIB_FILE2)
+
 # Linux
+else ifeq ($(shell uname),Linux)
 PLATFORM = linux
 PYTHON = python3
-SRC_LIB_NAME = lib$(PYXEL_LIB_NAME).so
-DST_LIB_NAME = $(PYXEL_LIB_NAME).so
-else
-# Others
-$(error "unsupported platform")
-endif
+TARGET = x86_64-unknown-linux-gnu
+TARGET_DIR = $(BUILD_DIR)/target/$(TARGET)/release
+SRC_LIB_FILE = $(TARGET_DIR)/lib$(PYXEL_LIB_NAME).so
+DST_LIB_FILE = $(PYXEL_LIB_DIR)/$(PYXEL_LIB_NAME).so
 
-ifneq ($(DEBUG),)
-# Debug
-CARGO_BUILD_OPT =
-CARGO_TARGET_DIR = $(LIB_DIR)/target/debug
-SRC_LIB_DIR = $(CARGO_TARGET_DIR)
-DST_LIB_DIR = $(CARGO_TARGET_DIR)
-TEST_IMPORT_DIR = $(TESTS_DIR)/debug_module
+CARGO_CLEAN = cargo clean --target=$(TARGET)
+CARGO_BUILD = cargo build $(BUILD_OPT) --target=$(TARGET)
+COPY_FILES = cp $(SRC_LIB_FILE) $(DST_LIB_FILE)
+
+# Others
 else
-# Release
-CARGO_BUILD_OPT = --release
-CARGO_TARGET_DIR = $(LIB_DIR)/target/release
-SRC_LIB_DIR = $(CARGO_TARGET_DIR)
-DST_LIB_DIR = $(PYXEL_LIB_DIR)
-TEST_IMPORT_DIR = $(ROOT_DIR)
+$(error "unsupported platform")
 endif
 
 .PHONY: all clean format build test wheel dist
@@ -58,7 +73,7 @@ endif
 all: build
 
 clean:
-	@cargo clean
+	@$(CARGO_CLEAN)
 	@rm -f $(PYXEL_LIB_DIR)/* $(DIST_DIR)/*.whl
 
 format:
@@ -68,13 +83,12 @@ format:
 	@flake8 $(ROOT_DIR)/*.py $(PYXEL_DIR)
 
 build:
-	@cargo build $(CARGO_BUILD_OPT)
-	@mkdir -p $(DST_LIB_DIR) && cp $(SRC_LIB_DIR)/$(SRC_LIB_NAME) $(DST_LIB_DIR)/$(DST_LIB_NAME)
-	@$(COPY_SDL2_DLL)
+	$(CARGO_BUILD)
+	@$(COPY_FILES)
 
 test: build
 	@cargo test
-	@PYTHONPATH=$(TEST_IMPORT_DIR) $(PYTHON) -m unittest discover $(TESTS_DIR)
+	@PYTHONPATH=$(ROOT_DIR) $(PYTHON) -m unittest discover $(TESTS_DIR)
 	@trap break INT; for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
 		PYTHONPATH=$(TEST_IMPORT_DIR) $(PYTHON) $$example; \
 	done; trap - INT
