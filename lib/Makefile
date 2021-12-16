@@ -17,15 +17,15 @@ PLATFORM = windows
 PYTHON = python
 TARGET = x86_64-pc-windows-msvc
 TARGET_DIR = $(BUILD_DIR)/target/$(TARGET)/release
-SRC_LIB_FILE = $(TARGET_DIR)/lib$(PYXEL_LIB_NAME).dll
+SRC_LIB_FILE = $(TARGET_DIR)/$(PYXEL_LIB_NAME).dll
 DST_LIB_FILE = $(PYXEL_LIB_DIR)/$(PYXEL_LIB_NAME).pyd
 
 CARGO_CLEAN = cargo clean --target=$(TARGET)
 CARGO_BUILD = cargo build $(BUILD_OPT) --target=$(TARGET)
 COPY_FILES = \
 	cp $(SRC_LIB_FILE) $(DST_LIB_FILE) && \
-	cp -f $(TARGET_DIR)/SDL2.dll $(PYXEL_LIB_DIR) && \
-	cp $(BUILD_DIR)/pyxel.vbs $(DIST_NAME)
+	cp -f $(TARGET_DIR)/SDL2.dll $(PYXEL_LIB_DIR)
+COPY_VBS = cp -f $(BUILD_DIR)/pyxel.vbs $(DIST_DIR)
 
 # MacOS
 else ifeq ($(shell uname),Darwin)
@@ -90,7 +90,7 @@ test: build
 	@cargo test
 	@PYTHONPATH=$(ROOT_DIR) $(PYTHON) -m unittest discover $(TESTS_DIR)
 	@trap break INT; for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
-		PYTHONPATH=$(TEST_IMPORT_DIR) $(PYTHON) $$example; \
+		PYTHONPATH=$(ROOT_DIR) $(PYTHON) $$example; \
 	done; trap - INT
 
 wheel:
@@ -101,7 +101,7 @@ dist:
 	@rm -rf $(PYOXIDIZER_DIR)
 	@pyoxidizer build --release --var wheel_name $(WHEEL_NAME)
 	@mv $(PYOXIDIZER_DIR)/*/release/install $(DIST_NAME)
-	@$(COPY_PYXEL_VBS)
+	@$(COPY_VBS)
 	@zip -r $(DIST_NAME).zip $(DIST_NAME)
 	@mv -f $(DIST_NAME).zip $(DIST_DIR)
 	@mv $(DIST_NAME) $(PYOXIDIZER_DIR)
