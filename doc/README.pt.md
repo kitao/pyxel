@@ -406,6 +406,9 @@ Opera o tilemap `tm`(0-7) (ver a classe de Tilemap)
 - `clip(x, y, w, h)`<br>
 Define a área de desenho da tela de (`x`, `y`) para a largura `w` e altura `h`. Redefina a área de desenho para tela cheia com `clip()`
 
+- `camera(x, y)`<br>
+Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
+
 - `pal(col1, col2)`<br>
 Substitui a cor `col1` com `col2` ao desenhar. Use `pal()` para voltar para a paleta inicial
 
