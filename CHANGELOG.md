@@ -4,12 +4,14 @@
 - Updated the README in German
 - Updated the README in Chinese
 - Updated the README in Korean
+- Updated the README in Spanish
 - Fixed file permission error when running pyxapp
 - Fixed an argument name of the blt function
 - Fixed a bug when self-copying with the blt function
 - Changed the release build method for Makefile
 - Restored the editor to quit with Esc key
 - Fixed a bug of the scrolling area of the editor
+- Supported the Universal Binary for M1 Mac
 
 ## 1.5.0
 - Re-implemented the core engine in Rust
