@@ -19,6 +19,8 @@ TARGET = x86_64-pc-windows-msvc
 TARGET_DIR = $(BUILD_DIR)/target/$(TARGET)/release
 SRC_LIB_FILE = $(TARGET_DIR)/$(PYXEL_LIB_NAME).dll
 DST_LIB_FILE = $(PYXEL_LIB_DIR)/$(PYXEL_LIB_NAME).pyd
+ISCC = '/cygdrive/c/Program Files (x86)/Inno Setup 6/ISCC.exe'
+ISCC_FILE = $(BUILD_DIR)/setup.iss
 
 CARGO_CLEAN = cargo clean --target=$(TARGET)
 CARGO_BUILD = cargo build $(BUILD_OPT) --target=$(TARGET)
@@ -26,6 +28,7 @@ COPY_FILES = \
 	cp $(SRC_LIB_FILE) $(DST_LIB_FILE) && \
 	cp -f $(TARGET_DIR)/SDL2.dll $(PYXEL_LIB_DIR)
 COPY_VBS = cp -f $(BUILD_DIR)/pyxel.vbs $(DIST_NAME)
+BUILD_INSTALLER = $(ISCC) $(ISCC_FILE)
 
 # MacOS
 else ifeq ($(shell uname),Darwin)
@@ -107,3 +110,4 @@ dist:
 	@zip -r $(DIST_NAME).zip $(DIST_NAME)
 	@mv -f $(DIST_NAME).zip $(DIST_DIR)
 	@mv $(DIST_NAME) $(PYOXIDIZER_DIR)
+	@$(BUILD_INSTALLER)
