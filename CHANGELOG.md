@@ -2,12 +2,16 @@
 
 ## 1.5.2
 - Added the camera function
+- Added support for crates.io
+- Updated the README in Portuguess
+- Added the script to update the version numbers
 
 ## 1.5.1
 - Updated the README in German
 - Updated the README in Chinese
 - Updated the README in Korean
 - Updated the README in Spanish
+- Updated the README in French
 - Fixed file permission error when running pyxapp
 - Fixed an argument name of the blt function
 - Fixed a bug when self-copying with the blt function
