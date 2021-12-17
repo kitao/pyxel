@@ -155,4 +155,5 @@ cython_debug/
 *.dll
 .DS_Store
 .vscode/*
+!lib
 !pyxel/lib
