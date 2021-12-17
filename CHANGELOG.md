@@ -4,7 +4,7 @@
 - Added the camera function
 - Added support for crates.io
 - Updated the README in Portuguess
-- Added the script to update the version numbers
+- Added the script to update the version number
 
 ## 1.5.1
 - Updated the README in German
