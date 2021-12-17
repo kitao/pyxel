@@ -1,10 +1,10 @@
 # <img src="images/pyxel_logo_152x64.png">
 
-[ [English](README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
+[ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
 **NOTE: This manual has not yet been translated for Pyxel version 1.5.0. We are looking for volunteers to translate and check for mistakes!**
 
-**Pyxel** é uma engine de jogos retrô para Python.
+**Pyxel** é um motor de jogos retrô para Python.
 
 Graças às suas especificações simples inspiradas em consoles de jogos retrô, assim como permitir a exibição de apenas 16 cores e apenas 4 sons poderem ser reproduzidos ao mesmo tempo, você pode se sentir à vontade para fazer jogos em estilo pixel art.
 
@@ -32,20 +32,20 @@ Graças às suas especificações simples inspiradas em consoles de jogos retrô
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-The specifications of Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic.computer/).
+As especificações do Pyxel fazem referência aos incríveis [PICO-8](https://www.lexaloffle.com/pico-8.php) e [TIC-80](https://tic.computer/).
 
 Pyxel é open source e livre para utilização. Vamos começar fazendo um jogo retrô com Pyxel!
 
 ## Especificações
 
-- Executável no Windows, Mac e Linux
-- Programming with Python
-- 16 color palette
+- Roda em Windows, Mac e Linux
+- Programação com Python
+- Paleta de 16 cores
 - 3 bancos de imagens de tamanho 256x256
 - 8 tilemaps de tamanho 256x256
 - 4 canais com 64 sons definíveis
 - 8 músicas que podem combinar sons arbitrários
-- Entrada de teclado, mouse e joystick
+- Entradas de teclado, mouse e joystick
 - Editor de imagem e som
 
 ### Paleta de cores
@@ -56,17 +56,17 @@ Pyxel é open source e livre para utilização. Vamos começar fazendo um jogo r
 
 ## Como instalar
 
-There are two types of Pyxel, a packaged version and a standalone version.
+Existem dois tipos de Pyxel, uma versão empacotada e uma versão independente.
 
-### Install Packaged Version
+### Instalando a versão empacotada
 
-The packaged version of Pyxel uses Pyxel as a Python extension module.
+A versão empacotada do Pyxel usa o Pyxel como um módulo de extensão do Python.
 
-Recommended for those who are familiar with managing Python packages using the `pip` command or who want to develop full-fledged Python applications.
+Recomendado para as pessoas que estejam familiarizadas com o gerenciamento de pacotes Python usando o comando `pip` ou que queiram desenvolver aplicações Python completas.
 
 **Windows**
 
-After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
+Após instalar o [Python3](https://www.python.org/) (versão 3.7 ou superior), execute o seguinte comando:
 
 ```sh
 pip install -U pyxel
@@ -74,7 +74,7 @@ pip install -U pyxel
 
 **Mac**
 
-After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
+Após instalar o [Python3](https://www.python.org/) (versão 3.7 ou superior), execute o seguinte comando:
 
 ```sh
 pip3 install -U pyxel
@@ -82,13 +82,13 @@ pip3 install -U pyxel
 
 **Linux**
 
-After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://www.python.org/) (version 3.7 or higher), and `python3-pip`, run the following command:
+Após instalar o pacote SDL2 (`libsdl2-dev` no Ubuntu), [Python3](https://www.python.org/) (versão 3.7 ou superior), e `python3-pip`, execute o seguinte comando:
 
 ```sh
 sudo pip3 install -U pyxel
 ```
 
-If the above doesn't work, try self-building by following the steps below after installing `cmake` and `rust`:
+Se o comando acima não funcionou, tente a compilação manual seguindo os próximos passos após instalar o `cmake` e o `rust`:
 
 ```sh
 git clone https://github.com/kitao/pyxel.git
@@ -97,19 +97,19 @@ make clean all
 sudo pip3 install .
 ```
 
-### Install Standalone Version
+### Instalando a versão independente
 
-The standalone version of Pyxel uses Pyxel as a standalone tool that does not depend on Python.
+A versão independente do Pyxel usa o Pyxel como uma ferramenta independente que não depende do Python.
 
-Recommended for those who want to start programming easily without worrying about Python settings, or those who want to play Pyxel games immediately.
+Recomendado para as pessoas que queiram começar a programar sem se preocupar com as configurações do Python, ou que queiram jogar jogos Pyxel imediatamente.
 
 **Windows**
 
-Download and run the latest version of the Windows installer (`pyxel-[version]-windows-setup.exe`) from the [Download Page](https://github.com/kitao/pyxel/releases).
+Baixe e execute a versão mais recente do instalador Windows (`pyxel-[version]-windows-setup.exe`) da [Página de download](https://github.com/kitao/pyxel/releases).
 
 **Mac**
 
-After installing [Homebrew](https://brew.sh/), run the following commands:
+Após instalar o [Homebrew](https://brew.sh/), execute o seguinte comando:
 
 ```sh
 brew tap kitao/pyxel
@@ -118,16 +118,16 @@ brew install pyxel
 
 **Linux**
 
-After installing the SDL2 package (`libsdl2-dev` for Ubuntu) and installing [Homebrew](https://brew.sh/), run the following commands:
+Após instalar o pacote SDL2 (`libsdl2-dev` no Ubuntu) e instalar o [Homebrew](https://brew.sh/), execute os seguintes comandos:
 
 ```sh
 brew tap kitao/pyxel
 brew install pyxel
 ```
 
-If the above doesn't work, try self-building the packaged version.
+Se os passos acima não funcionarem, tente a compilação manual da versão empacotada.
 
-### Try Pyxel Examples
+### Testando os exemplos Pyxel
 
 Após instalar o Pyxel, os exemplos serão copiados para o diretório atual com o seguinte comando:
 
@@ -148,7 +148,7 @@ Os exemplos copiados são os seguintes:
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Jogo de tiro com transição de tela
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Side-scrolling platform game with map
 
-An examples can be executed with the following commands:
+Os exemplos podem ser executados com os seguintes comandos:
 
 ```sh
 cd pyxel_examples
@@ -159,7 +159,7 @@ pyxel run 01_hello_pyxel.py
 
 ### Criando uma aplicação Pyxel
 
-After importing the Pyxel module in your python script, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
+Após importar o módulo Pyxel em seu script Python, especifique o tamanho da janela com a função `init`, em seguida inicialize a aplicação Pyxel com a função `run`.
 
 ```python
 import pyxel
@@ -200,9 +200,9 @@ class App:
 App()
 ```
 
-It is also possible to write simple code using `show` function and `flip` function to draw simple graphics and animations.
+Também é possível escrever um código simples usando a função `show` e a função `flip` para desenhar gráficos básicos e animações.
 
-`show` function displays the screen and waits until the `Esc` key is pressed.
+A função `show` mostra a tela e espera até que a tecla `Esc` seja pressionada.
 
 ```python
 import pyxel
@@ -213,7 +213,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-`flip` function updates the screen once.
+A função `flip` atualiza a tela uma vez.
 
 ```python
 import pyxel
@@ -226,15 +226,15 @@ while True:
     pyxel.flip()
 ```
 
-### Run Pyxel Application
+### Executando uma aplicação Pyxel
 
-The created Python script can be executed with the following command:
+O script Python criado pode ser executado com o seguinte comando:
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-For the packaged version, it can be executed like a normal Python script:
+Para a versão empacotada, ele também pode ser executado como um script Python comum:
 
 ```sh
 cd pyxel_examples
@@ -262,9 +262,9 @@ Ativa/desativa tela cheia
 
 ### Como criar um Recurso
 
-Pyxel Editor can create images and sounds used in a Pyxel application.
+O Editor Pyxel pode criar imagens e sons usados em uma aplicação Pyxel.
 
-It starts with the following command:
+Ele é inicializado com o seguinte comando:
 
 ```sh
 pyxel edit [PYXEL_RESOURCE_FILE]
@@ -273,9 +273,9 @@ pyxel edit [PYXEL_RESOURCE_FILE]
 Se o arquivo de recursos Pyxel (.pyxres) existir, o arquivo será carregado, e se ele não existir, um novo arquivo com o nome especificado será criado.
 Se o arquivo de recursos for omitido, o nome será `my_resource.pyxres`.
 
-After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down ``Ctrl(Cmd)`` key, only the resource type (Image/Tilemap/Sound/Music) that is currently being edited will be loaded. This operation enables to combine multiple resource files into one.
+Após iniciar o Editor Pyxel, o arquivo pode ser trocado arrastando e soltando outro arquivo de recursos. Se o arquivo for arrastado segurando a tecla ``Ctrl(Cmd)``, somente o recurso (Imagem/Tilemap/Som/Musica) que estiver sendo editado no momento será carregado. Esta operação possibilita a combinar múltiplos arquivos de recursos em um só.
 
-The created resource file can be loaded with `load` function.
+O arquivo recursos criado pode ser carregado através da função `load`.
 
 O Editor Pyxel possuí os seguintes modos de edição.
 
@@ -285,7 +285,7 @@ O modo para editar bancos de imagem.
 
 <img src="images/image_editor.gif">
 
-By dragging and dropping an image file (png/gif/jpeg) onto the Image Editor screen, the image can be loaded into the currently selected image bank.
+Arrastando e soltando um arquivo de imagem (png/gif/jpeg) dentro da tela do Editor de Imagens faz com que a imagem possa ser carregada no banco de imagens selecionado no momento.
 
 **Editor de Tilemap:**
 
@@ -307,30 +307,30 @@ O modo para editar músicas nas quais os sons são organizados na ordem de execu
 
 ### Outros métodos de criação de recursos
 
-Pyxel images and tilemaps can also be created by the following methods:
+Imagens e tilemaps Pyxel também podem ser criados pelos seguintes métodos:
 
-- Create an image from a list of strings with `Image.set` function or `Tilemap.set` function
-- Load an image file (png/gif/jpeg) in Pyxel palette with `Image.load` function
+- Criar uma imagem de uma lista de strings com a função `Image.set` ou com a função `Tilemap.set`
+- Carregar um arquivo de imagem (png/gif/jpeg) na paleta Pyxel com a função `Image.load`
 
-Pyxel sounds can also be created in the following method:
+Sons Pyxel também podem ser criados com o seguinte método:
 
-- Create a sound from strings with `Sound.set` function or `Music.set` function
+- Criar um som de uma strings com a função `Sound.set` ou com a função `Music.set`
 
 Favor consultar a referência da API para o uso dessas funções.
 
-### How to Distribute Application
+### Como distribuir uma aplicação
 
-Pyxel supports a dedicated application distribution file format (Pyxel application file) that works across platforms.
+O Pyxel suporta um formato de arquivo de distribuição dedicado (arquivo de aplicação Pyxel) que é multiplataforma.
 
-Create the Pyxel application file (.pyxapp) with the following command:
+Crie um arquivo de aplicação Pyxel (.pyxapp) com o seguinte comando:
 
 ```sh
 pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
 ```
 
-If the application should include resources or additional modules, place them in the application folder.
+Se a aplicação precisa incluir recursos ou módulos adicionais, coloque eles na pasta da aplicação.
 
-The created application file can be executed with the following command:
+O arquivo de aplicação pode ser executado com o seguinte comando:
 
 ```sh
 pyxel play PYXEL_APP_FILE
