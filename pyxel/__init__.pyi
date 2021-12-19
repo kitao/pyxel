@@ -363,10 +363,10 @@ def init(
     width: int,
     height: int,
     *,
-    title: Optional[str],
-    fps: Optional[int],
-    quit_key: Optional[int],
-    capture_sec: Optional[int],
+    title: Optional[str] = None,
+    fps: Optional[int] = None,
+    quit_key: Optional[int] = None,
+    capture_sec: Optional[int] = None,
 ): ...
 def title(title: str) -> None: ...
 def icon(data: List[str], scale: int) -> None: ...
@@ -381,18 +381,18 @@ def cli() -> None: ...
 def load(
     filename: str,
     *,
-    image: Optional[bool],
-    tilemap: Optional[bool],
-    sound: Optional[bool],
-    music: Optional[bool],
+    image: Optional[bool] = None,
+    tilemap: Optional[bool] = None,
+    sound: Optional[bool] = None,
+    music: Optional[bool] = None,
 ) -> None: ...
 def save(
     filename: str,
     *,
-    image: Optional[bool],
-    tilemap: Optional[bool],
-    sound: Optional[bool],
-    music: Optional[bool],
+    image: Optional[bool] = None,
+    tilemap: Optional[bool] = None,
+    sound: Optional[bool] = None,
+    music: Optional[bool] = None,
 ) -> None: ...
 def screenshot() -> None: ...
 def reset_capture() -> None: ...
@@ -407,7 +407,7 @@ input_text: str
 drop_files: List[str]
 
 def btn(key: int) -> bool: ...
-def btnp(key: int, *, hold: Optional[int], repeat: Optional[int]) -> bool: ...
+def btnp(key: int, *, hold: Optional[int] = None, repeat: Optional[int] = None) -> bool: ...
 def btnr(key: int) -> bool: ...
 def btnv(key: int) -> int: ...
 def mouse(visible: bool) -> None: ...
@@ -428,16 +428,16 @@ font: Image
 def image(img: int) -> Image: ...
 def tilemap(tm: int) -> Tilemap: ...
 def clip(
-    x: Optional[float],
-    y: Optional[float],
-    w: Optional[float],
-    h: Optional[float],
+    x: Optional[float] = None,
+    y: Optional[float] = None,
+    w: Optional[float] = None,
+    h: Optional[float] = None,
 ) -> None: ...
 def camera(
-    x: Optional[float],
-    y: Optional[float],
+    x: Optional[float] = None,
+    y: Optional[float] = None,
 ) -> None: ...
-def pal(col1: Optional[int], col2: Optional[int]) -> None: ...
+def pal(col1: Optional[int] = None, col2: Optional[int] = None) -> None: ...
 def cls(col: int) -> None: ...
 def pget(x: float, y: float) -> int: ...
 def pset(x: float, y: float, col: int) -> None: ...
@@ -472,7 +472,7 @@ def blt(
     v: float,
     w: float,
     h: float,
-    colkey: Optional[int],
+    colkey: Optional[int] = None,
 ) -> None: ...
 def bltm(
     x: float,
@@ -482,7 +482,7 @@ def bltm(
     v: float,
     w: float,
     h: float,
-    colkey: Optional[int],
+    colkey: Optional[int] = None,
 ) -> None: ...
 def text(x: float, y: float, s: str, col: int) -> None: ...
 
@@ -496,10 +496,10 @@ def sound(snd: int) -> Sound: ...
 def music(msc: int) -> Music: ...
 def play_pos(ch: int) -> Optional[Tuple[int, int]]: ...
 def play(
-    ch: int, snd: Union[int, List[int], Sound, List[Sound]], *, loop: Optional[bool]
+    ch: int, snd: Union[int, List[int], Sound, List[Sound]], *, loop: Optional[bool] = None
 ) -> None: ...
-def playm(msc: int, *, loop: Optional[bool]) -> None: ...
-def stop(ch: Optional[int]) -> None: ...
+def playm(msc: int, *, loop: Optional[bool] = None) -> None: ...
+def stop(ch: Optional[int] = None) -> None: ...
 
 # Image class
 class Image:
@@ -512,17 +512,17 @@ class Image:
     def save(self, filename: str, scale: int) -> None: ...
     def clip(
         self,
-        x: Optional[float],
-        y: Optional[float],
-        w: Optional[float],
-        h: Optional[float],
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        w: Optional[float] = None,
+        h: Optional[float] = None,
     ) -> None: ...
     def camera(
         self,
-        x: Optional[float],
-        y: Optional[float],
+        x: Optional[float] = None,
+        y: Optional[float] = None,
     ) -> None: ...
-    def pal(self, col1: Optional[int], col2: Optional[int]) -> None: ...
+    def pal(self, col1: Optional[int] = None, col2: Optional[int] = None) -> None: ...
     def cls(self, col: int) -> None: ...
     def pget(self, x: float, y: float) -> int: ...
     def pset(self, x: float, y: float, col: int) -> None: ...
@@ -546,7 +546,7 @@ class Image:
         v: float,
         w: float,
         h: float,
-        colkey: Optional[int],
+        colkey: Optional[int] = None,
     ) -> None: ...
     def bltm(
         self,
@@ -557,10 +557,10 @@ class Image:
         v: float,
         w: float,
         h: float,
-        colkey: Optional[int],
+        colkey: Optional[int] = None,
     ) -> None: ...
     def text(
-        self, x: float, y: float, s: str, col: int, font: Optional[Image]
+        self, x: float, y: float, s: str, col: int, font: Optional[Image] = None
     ) -> None: ...
 
 # Tilemap class
@@ -573,15 +573,15 @@ class Tilemap:
     def set(self, x: int, y: int, data: List[str]) -> None: ...
     def clip(
         self,
-        x: Optional[float],
-        y: Optional[float],
-        w: Optional[float],
-        h: Optional[float],
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        w: Optional[float] = None,
+        h: Optional[float] = None,
     ) -> None: ...
     def camera(
         self,
-        x: Optional[float],
-        y: Optional[float],
+        x: Optional[float] = None,
+        y: Optional[float] = None,
     ) -> None: ...
     def cls(self, tile: Tuple[int, int]) -> None: ...
     def pget(self, x: float, y: float) -> Tuple[int, int]: ...
@@ -626,7 +626,7 @@ class Tilemap:
         v: float,
         w: float,
         h: float,
-        tilekey: Optional[Tuple[int, int]],
+        tilekey: Optional[Tuple[int, int]] = None,
     ) -> None: ...
 
 # Channel class
@@ -634,7 +634,7 @@ class Channel:
     gain: int
     def play_pos(self) -> Optional[Tuple[int, int]]: ...
     def play(
-        self, snd: Union[int, List[int], Sound, List[Sound]], *, loop: Optional[bool]
+        self, snd: Union[int, List[int], Sound, List[Sound]], *, loop: Optional[bool] = None
     ) -> None: ...
     def stop(self) -> None: ...
 
