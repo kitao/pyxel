@@ -292,34 +292,24 @@ impl Image {
         height: f64,
         transparent: Option<Color>,
     ) {
-        let x = as_i32(x);
-        let y = as_i32(y);
+        let x = as_i32(x) - self.canvas.camera_x;
+        let y = as_i32(y) - self.canvas.camera_y;
         let tilemap_x = as_i32(tilemap_x);
         let tilemap_y = as_i32(tilemap_y);
-        let width = as_i32(width.round());
-        let height = as_i32(height.round());
+        let width = as_i32(width);
+        let height = as_i32(height);
 
-        let left = self.canvas.clip_rect.left() / TILE_SIZE as i32;
-        let top = self.canvas.clip_rect.top() / TILE_SIZE as i32;
-        let right = (self.canvas.clip_rect.right() + TILE_SIZE as i32 - 1) / TILE_SIZE as i32;
-        let bottom = (self.canvas.clip_rect.bottom() + TILE_SIZE as i32 - 1) / TILE_SIZE as i32;
-        let dst_rect = RectArea::new(
-            left,
-            top,
-            (right - left + 1) as u32,
-            (bottom - top + 1) as u32,
+        let tilemap = tilemap.lock();
+        let tilemap_rect = RectArea::new(
+            tilemap.canvas.self_rect.left() * TILE_SIZE as i32,
+            tilemap.canvas.self_rect.top() * TILE_SIZE as i32,
+            tilemap.canvas.self_rect.width() * TILE_SIZE,
+            tilemap.canvas.self_rect.height() * TILE_SIZE,
         );
 
-        let tile_size = if width < 0 {
-            -(TILE_SIZE as i32)
-        } else {
-            TILE_SIZE as i32
-        };
-        let tilemap = tilemap.lock();
-
         let CopyArea {
-            dst_x: _,
-            dst_y: _,
+            dst_x,
+            dst_y,
             src_x,
             src_y,
             sign_x,
@@ -329,12 +319,12 @@ impl Image {
             width,
             height,
         } = CopyArea::new(
-            x / TILE_SIZE as i32,
-            y / TILE_SIZE as i32,
-            dst_rect,
+            x,
+            y,
+            self.canvas.clip_rect,
             tilemap_x,
             tilemap_y,
-            tilemap.canvas.self_rect,
+            tilemap_rect,
             width,
             height,
         );
@@ -342,21 +332,27 @@ impl Image {
             return;
         }
 
+        let image = tilemap.image.lock();
         for yi in 0..height {
             for xi in 0..width {
-                let tile_x = src_x + sign_x * xi + offset_x;
-                let tile_y = src_y + sign_y * yi + offset_y;
+                let tilemap_x = src_x + sign_x * xi + offset_x;
+                let tilemap_y = src_y + sign_y * yi + offset_y;
+
+                let tile_x = tilemap_x / TILE_SIZE as i32;
+                let tile_y = tilemap_y / TILE_SIZE as i32;
                 let tile = tilemap.canvas.data[tile_y as usize][tile_x as usize];
-                self.blt(
-                    (x + TILE_SIZE as i32 * xi) as f64,
-                    (y + TILE_SIZE as i32 * yi) as f64,
-                    tilemap.image.clone(),
-                    (tile.0 as i32 * TILE_SIZE as i32) as f64,
-                    (tile.1 as i32 * TILE_SIZE as i32) as f64,
-                    tile_size as f64,
-                    tile_size as f64,
-                    transparent,
-                );
+
+                let value_x = tile.0 as i32 * TILE_SIZE as i32 + tilemap_x % TILE_SIZE as i32;
+                let value_y = tile.1 as i32 * TILE_SIZE as i32 + tilemap_y % TILE_SIZE as i32;
+                let value = image.canvas.data[value_y as usize][value_x as usize];
+
+                if let Some(transparent) = transparent {
+                    if value == transparent {
+                        continue;
+                    }
+                }
+                let value = self.palette[value.to_index()];
+                self.canvas.data[(dst_y + yi) as usize][(dst_x + xi) as usize] = value;
             }
         }
     }
