@@ -15,15 +15,14 @@ PYOXIDIZER_DIR = $(BUILD_DIR)/build
 ifneq ($(findstring CYGWIN_NT-,$(shell uname)),)
 PLATFORM = windows
 PYTHON = python
-TARGET = x86_64-pc-windows-msvc
-TARGET_DIR = $(BUILD_DIR)/target/$(TARGET)/release
+TARGET_DIR = $(BUILD_DIR)/release
 SRC_LIB_FILE = $(TARGET_DIR)/$(PYXEL_LIB_NAME).dll
 DST_LIB_FILE = $(PYXEL_LIB_DIR)/$(PYXEL_LIB_NAME).pyd
 ISCC = '/cygdrive/c/Program Files (x86)/Inno Setup 6/ISCC.exe'
 ISCC_FILE = $(BUILD_DIR)/setup.iss
 
-CARGO_CLEAN = cargo clean --target=$(TARGET)
-CARGO_BUILD = cargo build $(BUILD_OPT) --target=$(TARGET)
+CARGO_CLEAN = cargo clean
+CARGO_BUILD = cargo build $(BUILD_OPT)
 COPY_FILES = \
 	cp $(SRC_LIB_FILE) $(DST_LIB_FILE) && \
 	cp -f $(TARGET_DIR)/SDL2.dll $(PYXEL_LIB_DIR)
@@ -59,13 +58,12 @@ COPY_FILES = lipo -create -output $(DST_LIB_FILE) $(SRC_LIB_FILE1) $(SRC_LIB_FIL
 else ifeq ($(shell uname),Linux)
 PLATFORM = linux
 PYTHON = python3
-TARGET = x86_64-unknown-linux-gnu
-TARGET_DIR = $(BUILD_DIR)/target/$(TARGET)/release
+TARGET_DIR = $(BUILD_DIR)/target/release
 SRC_LIB_FILE = $(TARGET_DIR)/lib$(PYXEL_LIB_NAME).so
 DST_LIB_FILE = $(PYXEL_LIB_DIR)/$(PYXEL_LIB_NAME).so
 
-CARGO_CLEAN = cargo clean --target=$(TARGET)
-CARGO_BUILD = cargo build $(BUILD_OPT) --target=$(TARGET)
+CARGO_CLEAN = cargo clean
+CARGO_BUILD = cargo build $(BUILD_OPT)
 COPY_FILES = cp $(SRC_LIB_FILE) $(DST_LIB_FILE)
 
 # Others
