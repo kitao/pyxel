@@ -6,24 +6,24 @@ CHARA_WIDTH = 8
 CHARA_HEIGHT = 8
 SCROLL_BORDER_X = 80
 
+BRICK_TILE_X = 4
+
 TILE_SPACE = (0, 0)
-TILE_BLOCK = (1, 0)
-TILE_FLOOR = (2, 0)
-TILE_SPAWN = (0, 1)
-TILE_ENEMY1 = (0, 1)
-TILE_ENEMY2 = (1, 1)
-TILE_ENEMY3 = (2, 1)
+TILE_FLOOR = (1, 0)
+TILE_SPAWN1 = (0, 1)
+TILE_SPAWN2 = (1, 1)
+TILE_SPAWN3 = (2, 1)
 
 enemy_list = []
 scroll_x = 0
 player = None
 
 
-def get_tilemap(x, y):
+def get_tile(x, y):
     return pyxel.tilemap(0).pget(x, y)
 
 
-def check_tilemap_collision(x, y, dx, dy):
+def detect_collision(x, y, dy):
     x1 = x // 8
     y1 = y // 8
     x2 = (x + CHARA_WIDTH - 1) // 8
@@ -31,12 +31,12 @@ def check_tilemap_collision(x, y, dx, dy):
 
     for i in range(y1, y2 + 1):
         for j in range(x1, x2 + 1):
-            if get_tilemap(j, i) == TILE_BLOCK:
+            if get_tile(j, i)[0] >= BRICK_TILE_X:
                 return True
 
     if dy > 0 and y % 8 == 1:
         for i in range(x1, x2 + 1):
-            if get_tilemap(i, y1 + 1) == TILE_FLOOR:
+            if get_tile(i, y1 + 1) == TILE_FLOOR:
                 return True
 
     return False
@@ -49,34 +49,34 @@ def react_on_collision(x, y, dx, dy):
     if abs_dx > abs_dy:
         sign = 1 if dx > 0 else -1
         for i in range(abs_dx):
-            if check_tilemap_collision(x + sign, y, dx, dy):
+            if detect_collision(x + sign, y, dy):
                 break
             x += sign
 
         sign = 1 if dy > 0 else -1
         for i in range(abs_dy):
-            if check_tilemap_collision(x, y + sign, dx, dy):
+            if detect_collision(x, y + sign, dy):
                 break
             y += sign
     else:
         sign = 1 if dy > 0 else -1
         for i in range(abs_dy):
-            if check_tilemap_collision(x, y + sign, dx, dy):
+            if detect_collision(x, y + sign, dy):
                 break
             y += sign
 
         sign = 1 if dx > 0 else -1
         for i in range(abs_dx):
-            if check_tilemap_collision(x + sign, y, dx, dy):
+            if detect_collision(x + sign, y, dy):
                 break
             x += sign
 
     return x, y, dx, dy
 
 
-def check_floor(x, y):
-    tile = get_tilemap(x // 8, y // 8)
-    return tile == TILE_BLOCK or tile == TILE_FLOOR
+def is_impassable(x, y):
+    tile = get_tile(x // 8, y // 8)
+    return tile == TILE_FLOOR or tile[0] >= BRICK_TILE_X
 
 
 def spawn_enemy(scroll_left, scroll_right):
@@ -85,12 +85,12 @@ def spawn_enemy(scroll_left, scroll_right):
 
     for x in range(scroll_left, scroll_right + 1):
         for y in range(16):
-            val = get_tilemap(x, y)
-            if val == TILE_ENEMY1:
+            val = get_tile(x, y)
+            if val == TILE_SPAWN1:
                 enemy_list.append(Enemy1(x * 8, y * 8))
-            elif val == TILE_ENEMY2:
+            elif val == TILE_SPAWN2:
                 enemy_list.append(Enemy2(x * 8, y * 8))
-            elif val == TILE_ENEMY3:
+            elif val == TILE_SPAWN3:
                 enemy_list.append(Enemy3(x * 8, y * 8))
 
 
@@ -110,15 +110,18 @@ class Player:
         self.y = y
         self.dx = 0
         self.dy = 0
+        self.direction = 1
 
     def update(self):
         global scroll_x
 
         if pyxel.btn(pyxel.KEY_LEFT):
             self.dx = -2
+            self.direction = -1
 
         if pyxel.btn(pyxel.KEY_RIGHT):
             self.dx = 2
+            self.direction = 1
 
         self.dy = min(self.dy + 1, 3)
 
@@ -144,46 +147,13 @@ class Player:
             spawn_enemy(last_scroll_x + 128, scroll_x + 127)
 
     def draw(self):
-        pyxel.rectb(self.x - scroll_x, self.y, 8, 8, 9)
+        if self.direction < 0:
+            pyxel.blt(self.x, self.y, 0, 0, 16, -8, 8, 0)
+        else:
+            pyxel.blt(self.x, self.y, 0, 0, 16, 8, 8, 0)
 
 
 class Enemy1:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.dx = 0
-        self.dy = 0
-        self.direction = 1
-        self.alive = True
-
-    def update(self):
-        self.dx = self.direction
-        self.dy = min(self.dy + 1, 3)
-
-        if check_floor(self.x, self.y + 8) or check_floor(self.x + 7, self.y + 8):
-            if self.direction < 0 and (
-                check_floor(self.x - 1, self.y + 4)
-                or not check_floor(self.x - 1, self.y + 8)
-            ):
-                self.direction = 1
-            elif self.direction > 0 and (
-                check_floor(self.x + 8, self.y + 4)
-                or not check_floor(self.x + 7, self.y + 8)
-            ):
-                self.direction = -1
-
-        self.x, self.y, self.dx, self.dy = react_on_collision(
-            self.x, self.y, self.dx, self.dy
-        )
-
-    def draw(self):
-        if self.direction < 0:
-            pyxel.blt(self.x - scroll_x, self.y, 0, 24, 0, 8, 8, 0)
-        else:
-            pyxel.blt(self.x - scroll_x, self.y, 0, 32, 0, 8, 8, 0)
-
-
-class Enemy2:
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -197,16 +167,16 @@ class Enemy2:
         self.dx = self.direction
         self.dy = min(self.dy + 1, 3)
 
-        if check_floor(self.x, self.y + 8) or check_floor(self.x + 7, self.y + 8):
+        if is_impassable(self.x, self.y + 8) or is_impassable(self.x + 7, self.y + 8):
             if self.is_falling:
                 self.is_falling = False
                 if player.x < self.x:
                     self.direction = -1
                 else:
                     self.direction = 1
-            elif self.direction < 0 and check_floor(self.x - 1, self.y + 4):
+            elif self.direction < 0 and is_impassable(self.x - 1, self.y + 4):
                 self.direction = 1
-            elif self.direction > 0 and check_floor(self.x + 8, self.y + 4):
+            elif self.direction > 0 and is_impassable(self.x + 8, self.y + 4):
                 self.direction = -1
         else:
             self.is_falling = True
@@ -221,9 +191,45 @@ class Enemy2:
 
     def draw(self):
         if self.direction < 0:
-            pyxel.blt(self.x - scroll_x, self.y, 0, 40, 0, 8, 8, 0)
+            pyxel.blt(self.x, self.y, 0, 0, 24, -8, 8, 0)
         else:
-            pyxel.blt(self.x - scroll_x, self.y, 0, 48, 0, 8, 8, 0)
+            pyxel.blt(self.x, self.y, 0, 0, 24, 8, 8, 0)
+
+
+class Enemy2:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.dx = 0
+        self.dy = 0
+        self.direction = 1
+        self.alive = True
+
+    def update(self):
+        self.dx = self.direction
+        self.dy = min(self.dy + 1, 3)
+
+        if is_impassable(self.x, self.y + 8) or is_impassable(self.x + 7, self.y + 8):
+            if self.direction < 0 and (
+                is_impassable(self.x - 1, self.y + 4)
+                or not is_impassable(self.x - 1, self.y + 8)
+            ):
+                self.direction = 1
+            elif self.direction > 0 and (
+                is_impassable(self.x + 8, self.y + 4)
+                or not is_impassable(self.x + 7, self.y + 8)
+            ):
+                self.direction = -1
+
+        self.x, self.y, self.dx, self.dy = react_on_collision(
+            self.x, self.y, self.dx, self.dy
+        )
+
+    def draw(self):
+        if self.direction < 0:
+            pyxel.blt(self.x, self.y, 0, 16, 24, -8, 8, 0)
+        else:
+            pyxel.blt(self.x, self.y, 0, 16, 24, 8, 8, 0)
 
 
 class Enemy3:
@@ -248,7 +254,7 @@ class Enemy3:
                 self.rest_time = 60
 
     def draw(self):
-        pyxel.blt(self.x - scroll_x, self.y, 0, 56, 0, 8, 8, 0)
+        pyxel.blt(self.x, self.y, 0, 0, 32, 8, 8, 0)
 
 
 class Enemy3Bullet:
@@ -264,7 +270,7 @@ class Enemy3Bullet:
         self.y += self.dy
 
     def draw(self):
-        pyxel.blt(self.x - scroll_x, self.y, 0, 64, 0, 8, 8, 0)
+        pyxel.blt(self.x, self.y, 0, 16, 32, 8, 8, 0)
 
 
 class App:
@@ -274,7 +280,7 @@ class App:
         pyxel.load("assets/platformer.pyxres")
 
         # make enemy spawn images invisible
-        pyxel.image(0).rect(0, 8, 24, 8, 0)
+        pyxel.image(0).rect(0, 8, 24, 8, 2)
 
         global player
         player = Player(0, 0)
@@ -300,9 +306,13 @@ class App:
 
     def draw(self):
         pyxel.cls(0)
-        pyxel.bltm(-(scroll_x % 8), 0, 0, scroll_x // 8, 0, 17, 16)
-        player.draw()
 
+        pyxel.camera()
+        pyxel.bltm(0, 0, 0, (scroll_x // 4) % 128, 128, 128, 128)
+        pyxel.bltm(0, 0, 0, scroll_x, 0, 128, 128, 2)
+
+        pyxel.camera(scroll_x, 0)
+        player.draw()
         for enemy in enemy_list:
             enemy.draw()
 
