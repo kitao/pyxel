@@ -160,7 +160,7 @@ class App:
 
         y += 15
 
-        pyxel.bltm(x, y, 0, 0, 0, 11, 2, 2)
+        pyxel.bltm(x, y, 0, 0, 0, 88, 16, 2)
 
     def test_text(self, x, y):
         pyxel.text(x, y, "text(x,y,s,col)", 7)
