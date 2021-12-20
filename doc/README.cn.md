@@ -443,7 +443,7 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 <img src="images/image_bank_mechanism.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-将坐标瓦片地图`tm` (0-7)中坐标(`u`, `v`)开始的大小为(`w`, `h`)的图像信息绘至坐标(`x`, `y`)处。若参数`colkey`被指定，则其颜色视为透明。每个瓦片大小为8x8像素并以`(x in tile, y in tile)`元组存储在瓦片地图中。
+Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color.
 
 - `text(x, y, s, col)`<br>
 用`col`颜色在(`x`, `y`)绘制字符串`s`。

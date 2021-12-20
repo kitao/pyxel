@@ -439,7 +439,7 @@ Copia la región de tamaño (`w`, `h`) desde la posición (`u`, `v`) del banco d
 <img src="doc/images/image_bank_mechanism.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Dibuje el mapa `tm` (0-7) a (`x`, `y`) de acuerdo con la información del tamaño de cada celda de tamaño (`w`, `h`) a (`u`, `v`). Si `colkey` se especifica, se tratará ese color como transparente. El tamaño de cada celda o azulejo es de 8x8 pixeles y se almacena en el mapa como una tupla `(x in tile, y in tile)`.
+Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color.
 
 - `text(x, y, s, col)`<br>
 Dibuja un string `s` del color`col` en (`x`, `y`).

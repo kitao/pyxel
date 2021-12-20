@@ -442,7 +442,7 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 <img src="images/image_bank_mechanism.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-타일 맵 `tm` (0-7)의 (`u`, `v`)부터 가로 `w`, 세로 `h`개의 타일을 (`x`, `y`) 위치에 그립니다. `colkey`에 색을 지정하면 투명색으로 취급합니다. 타일 하나의 크기는 8x8 픽셀이며 `(x in tile, y in tile)`의 튜플로 타일 맵에 저장되어 있습니다.
+Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color.
 
 - `text(x, y, s, col)`<br>
 `col` 색을 사용해 문자열 `s`를 (`x`, `y`) 좌표에 그립니다.
