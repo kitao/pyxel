@@ -441,8 +441,7 @@ Kopiere eine Region der Größe (`w`, `h`) von (`u`, `v`) des Image Banks `img`(
 <img src="images/image_bank_mechanism.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Zeichne die Tilemap `tm` (0-7) an der Stelle (`x`, `y`)  entsprechend der Tile-Informationen der Größe (`w`, `h`) von (`u`, `v`).
-Draw the tilemap `tm` (0-7) to (`x`, `y`) according to the tile information of size (`w`, `h`) from (`u`, `v`). Falls `colkey` angegeben ist, wird es als transparente Farbe behandelt. Die Größe einer Tile ist 8x8 Pixel und wird in der Tilemap als eine Tuple von `(x in Tile, y in Tile)` gespeichert.
+Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color.
 
 - `text(x, y, s, col)`<br>
 Zeichne einen String `s` der Farbe `col` bei (`x`, `y`)
