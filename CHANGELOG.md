@@ -8,6 +8,7 @@
 - Added the script to update the version number
 - Fixed the type hints for the optional arguments
 - Fixed the Makefile for ARM Linux
+- Added support for GLIBC 2.27
 
 ## 1.5.1
 - Updated the README in German
