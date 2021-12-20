@@ -2,9 +2,12 @@
 
 ## 1.5.2
 - Added the camera function
+- Changed the arguments of the bltm function
 - Added support for crates.io
 - Updated the README in Portuguess
 - Added the script to update the version number
+- Fixed the type hints for the optional arguments
+- Fixed the Makefile for ARM Linux
 
 ## 1.5.1
 - Updated the README in German
