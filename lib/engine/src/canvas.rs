@@ -335,10 +335,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
 
-        for i in 0..height {
-            for j in 0..width {
-                let value_x = src_x + sign_x * j + offset_x;
-                let value_y = src_y + sign_y * i + offset_y;
+        for yi in 0..height {
+            for xi in 0..width {
+                let value_x = src_x + sign_x * xi + offset_x;
+                let value_y = src_y + sign_y * yi + offset_y;
                 let value = canvas.data[value_y as usize][value_x as usize];
                 if let Some(transparent) = transparent {
                     if value == transparent {
@@ -350,7 +350,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 } else {
                     value
                 };
-                self.data[(dst_y + i) as usize][(dst_x + j) as usize] = value;
+                self.data[(dst_y + yi) as usize][(dst_x + xi) as usize] = value;
             }
         }
     }
