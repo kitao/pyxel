@@ -8,7 +8,7 @@
 - Added the camera function
 - Changed the arguments of the bltm function
 - Added support for crates.io
-- Updated the README in Portuguess
+- Updated the README in Portuguese
 - Added the script to update the version number
 - Fixed the type hints for the optional arguments
 - Fixed the Makefile for ARM Linux
