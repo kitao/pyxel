@@ -391,10 +391,10 @@ class CanvasPanel(Widget):
                 self.x + 1,
                 self.y + 1,
                 canvas,
-                offset_x,
-                offset_y,
-                16,
-                16,
+                offset_x * 8,
+                offset_y * 8,
+                128,
+                128,
             )
         else:
             for i in range(16):
