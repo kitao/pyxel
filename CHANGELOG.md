@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.5.3
+- Fixed the tilemap editor
+- Replaced the asset for the example #10
+
 ## 1.5.2
 - Added the camera function
 - Changed the arguments of the bltm function
