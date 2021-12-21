@@ -3,6 +3,7 @@
 ## 1.5.3
 - Fixed the tilemap editor
 - Replaced the asset for the example #10
+- Fixed the typo in the READMEs
 
 ## 1.5.2
 - Added the camera function
