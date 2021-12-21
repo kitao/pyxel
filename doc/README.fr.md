@@ -2,9 +2,9 @@
 
 [ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) ]
 
-**Pyxel** est un moteur de jeu-vidéo rétro pour Python.
+**Pyxel** est un moteur de jeu vidéo rétro pour Python.
 
-Grâce à ses spécifications simples inspirées par les consoles rétro, comme le fait que seulement 16 couleurs peuvent être affichées et que seulement 4 sons peuvent être joués en même temps, vous pouvez vous sentir libres de créer des jeux-vidéos dans le style pixel art.
+Grâce à ses spécifications simples inspirées par les consoles rétro, comme le fait que seulement 16 couleurs peuvent être affichées et que seulement 4 sons peuvent être joués en même temps, vous pouvez vous sentir libres de créer des jeux vidéo dans le style pixel art.
 
 <a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
 <img src="images/01_hello_pyxel.gif" width="48%">
@@ -32,7 +32,7 @@ Grâce à ses spécifications simples inspirées par les consoles rétro, comme 
 
 Les spécifications de Pyxel font référence à [PICO-8](https://www.lexaloffle.com/pico-8.php) et [TIC-80](https://tic.computer/).
 
-Pyxel est open source et libre d’usage. Commençons à faire un jeu-vidéo rétro avec Pyxel !
+Pyxel est open source et libre d’usage. Commençons à faire un jeu vidéo rétro avec Pyxel !
 
 ## Spécifications
 
