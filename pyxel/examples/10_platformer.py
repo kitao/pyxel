@@ -111,6 +111,7 @@ class Player:
         self.dx = 0
         self.dy = 0
         self.direction = 1
+        self.is_falling = False
 
     def update(self):
         global scroll_x
@@ -128,9 +129,11 @@ class Player:
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.dy = -6
 
+        last_y = self.y
         self.x, self.y, self.dx, self.dy = react_on_collision(
             self.x, self.y, self.dx, self.dy
         )
+        self.is_falling = self.y > last_y
 
         if self.x < scroll_x:
             self.x = scroll_x
@@ -147,10 +150,9 @@ class Player:
             spawn_enemy(last_scroll_x + 128, scroll_x + 127)
 
     def draw(self):
-        if self.direction < 0:
-            pyxel.blt(self.x, self.y, 0, 0, 16, -8, 8, 0)
-        else:
-            pyxel.blt(self.x, self.y, 0, 0, 16, 8, 8, 0)
+        u = (2 if self.is_falling else pyxel.frame_count // 3 % 2) * 8
+        w = 8 if self.direction > 0 else -8
+        pyxel.blt(self.x, self.y, 0, u, 16, w, 8, 1)
 
 
 class Enemy1:
@@ -190,10 +192,9 @@ class Enemy1:
             self.y = -8
 
     def draw(self):
-        if self.direction < 0:
-            pyxel.blt(self.x, self.y, 0, 0, 24, -8, 8, 0)
-        else:
-            pyxel.blt(self.x, self.y, 0, 0, 24, 8, 8, 0)
+        u = pyxel.frame_count // 4 % 2 * 8
+        w = 8 if self.direction > 0 else -8
+        pyxel.blt(self.x, self.y, 0, u, 24, w, 8, 1)
 
 
 class Enemy2:
@@ -226,10 +227,9 @@ class Enemy2:
         )
 
     def draw(self):
-        if self.direction < 0:
-            pyxel.blt(self.x, self.y, 0, 16, 24, -8, 8, 0)
-        else:
-            pyxel.blt(self.x, self.y, 0, 16, 24, 8, 8, 0)
+        u = pyxel.frame_count // 4 % 2 * 8 + 16
+        w = 8 if self.direction > 0 else -8
+        pyxel.blt(self.x, self.y, 0, u, 24, w, 8, 1)
 
 
 class Enemy3:
@@ -254,7 +254,8 @@ class Enemy3:
                 self.rest_time = 60
 
     def draw(self):
-        pyxel.blt(self.x, self.y, 0, 0, 32, 8, 8, 0)
+        u = pyxel.frame_count // 8 % 2 * 8
+        pyxel.blt(self.x, self.y, 0, u, 32, 8, 8, 1)
 
 
 class Enemy3Bullet:
@@ -270,7 +271,8 @@ class Enemy3Bullet:
         self.y += self.dy
 
     def draw(self):
-        pyxel.blt(self.x, self.y, 0, 16, 32, 8, 8, 0)
+        u = pyxel.frame_count // 2 % 2 * 8 + 16
+        pyxel.blt(self.x, self.y, 0, u, 32, 8, 8, 1)
 
 
 class App:
@@ -280,7 +282,7 @@ class App:
         pyxel.load("assets/platformer.pyxres")
 
         # make enemy spawn images invisible
-        pyxel.image(0).rect(0, 8, 24, 8, 2)
+        pyxel.image(0).rect(0, 8, 24, 8, 1)
 
         global player
         player = Player(0, 0)
@@ -309,7 +311,7 @@ class App:
 
         pyxel.camera()
         pyxel.bltm(0, 0, 0, (scroll_x // 4) % 128, 128, 128, 128)
-        pyxel.bltm(0, 0, 0, scroll_x, 0, 128, 128, 2)
+        pyxel.bltm(0, 0, 0, scroll_x, 0, 128, 128, 1)
 
         pyxel.camera(scroll_x, 0)
         player.draw()
