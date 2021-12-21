@@ -133,7 +133,10 @@ impl Resource {
 
 impl Pyxel {
     pub fn load(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
-        let mut archive = ZipArchive::new(File::open(&Path::new(filename)).unwrap()).unwrap();
+        let mut archive = ZipArchive::new(
+            File::open(&Path::new(filename)).expect(format!("Unable to open file '{}'", filename)),
+        )
+        .expect(format!("Unable to parse zip archive '{}'", filename));
         let version = {
             let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
             let mut file = archive.by_name(&version_name).unwrap();
@@ -176,7 +179,8 @@ impl Pyxel {
 
     pub fn save(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
         let path = std::path::Path::new(filename);
-        let file = std::fs::File::create(&path).unwrap();
+        let file =
+            std::fs::File::create(&path).expect(format!("Unable to open file '{}'", filename));
         let mut zip = ZipWriter::new(file);
         zip.add_directory(RESOURCE_ARCHIVE_DIRNAME, Default::default())
             .unwrap();
