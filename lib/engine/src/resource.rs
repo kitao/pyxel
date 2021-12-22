@@ -133,7 +133,11 @@ impl Resource {
 
 impl Pyxel {
     pub fn load(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
-        let mut archive = ZipArchive::new(File::open(&Path::new(filename)).unwrap()).unwrap();
+        let mut archive = ZipArchive::new(
+            File::open(&Path::new(filename))
+                .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename)),
+        )
+        .unwrap_or_else(|_| panic!("Unable to parse zip archive '{}'", filename));
         let version = {
             let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
             let mut file = archive.by_name(&version_name).unwrap();
@@ -141,7 +145,7 @@ impl Pyxel {
             file.read_to_string(&mut contents).unwrap();
             let version = parse_version_string(&contents).unwrap();
             if version > parse_version_string(PYXEL_VERSION).unwrap() {
-                panic!("unsupported resource file version '{}'", contents);
+                panic!("Unsupported resource file version '{}'", contents);
             }
             version
         };
@@ -176,7 +180,8 @@ impl Pyxel {
 
     pub fn save(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
         let path = std::path::Path::new(filename);
-        let file = std::fs::File::create(&path).unwrap();
+        let file = std::fs::File::create(&path)
+            .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename));
         let mut zip = ZipWriter::new(file);
         zip.add_directory(RESOURCE_ARCHIVE_DIRNAME, Default::default())
             .unwrap();
@@ -236,7 +241,9 @@ impl Pyxel {
         }
         let width = self.width();
         let height = self.height();
-        let mut file = File::create(&(Resource::export_path() + ".gif")).unwrap();
+        let filename = Resource::export_path() + ".gif";
+        let mut file = File::create(&filename)
+            .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename));
         let mut encoder = Encoder::new(
             &mut file,
             (width * CAPTURE_SCALE) as u16,

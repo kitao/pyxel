@@ -6,9 +6,9 @@ import pyxel
 SCREEN_WIDTH = 256
 SCREEN_HEIGHT = 256
 
-BUBBLE_MAX_SPEED = 1.8
-BUBBLE_INITIAL_COUNT = 50
-BUBBLE_EXPLODE_COUNT = 11
+MAX_BUBBLE_SPEED = 1.8
+NUM_INITIAL_BUBBLES = 50
+NUM_EXPLODE_BUBBLES = 11
 
 
 class Vec2:
@@ -27,8 +27,8 @@ class Bubble:
         )
 
         self.vel = Vec2(
-            random.uniform(-BUBBLE_MAX_SPEED, BUBBLE_MAX_SPEED),
-            random.uniform(-BUBBLE_MAX_SPEED, BUBBLE_MAX_SPEED),
+            random.uniform(-MAX_BUBBLE_SPEED, MAX_BUBBLE_SPEED),
+            random.uniform(-MAX_BUBBLE_SPEED, MAX_BUBBLE_SPEED),
         )
 
         self.color = random.randint(1, 15)
@@ -56,7 +56,7 @@ class App:
         pyxel.mouse(True)
 
         self.is_exploded = False
-        self.bubbles = [Bubble() for _ in range(BUBBLE_INITIAL_COUNT)]
+        self.bubbles = [Bubble() for _ in range(NUM_INITIAL_BUBBLES)]
 
         pyxel.run(self.update, self.draw)
 
@@ -64,20 +64,20 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        bubble_count = len(self.bubbles)
+        num_bubbles = len(self.bubbles)
 
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):
-            for i in range(bubble_count):
+            for i in range(num_bubbles):
                 bubble = self.bubbles[i]
                 dx = bubble.pos.x - pyxel.mouse_x
                 dy = bubble.pos.y - pyxel.mouse_y
 
                 if dx * dx + dy * dy < bubble.r * bubble.r:
                     self.is_exploded = True
-                    new_r = math.sqrt(bubble.r * bubble.r / BUBBLE_EXPLODE_COUNT)
+                    new_r = math.sqrt(bubble.r * bubble.r / NUM_EXPLODE_BUBBLES)
 
-                    for j in range(BUBBLE_EXPLODE_COUNT):
-                        angle = math.pi * 2 * j / BUBBLE_EXPLODE_COUNT
+                    for j in range(NUM_EXPLODE_BUBBLES):
+                        angle = math.pi * 2 * j / NUM_EXPLODE_BUBBLES
 
                         new_bubble = Bubble()
                         new_bubble.r = new_r
@@ -87,14 +87,14 @@ class App:
                         new_bubble.pos.y = bubble.pos.y + (bubble.r + new_r) * math.sin(
                             angle
                         )
-                        new_bubble.vel.x = math.cos(angle) * BUBBLE_MAX_SPEED
-                        new_bubble.vel.y = math.sin(angle) * BUBBLE_MAX_SPEED
+                        new_bubble.vel.x = math.cos(angle) * MAX_BUBBLE_SPEED
+                        new_bubble.vel.y = math.sin(angle) * MAX_BUBBLE_SPEED
                         self.bubbles.append(new_bubble)
 
                     del self.bubbles[i]
                     break
 
-        for i in range(bubble_count - 1, -1, -1):
+        for i in range(num_bubbles - 1, -1, -1):
             bi = self.bubbles[i]
             bi.update()
 
@@ -115,7 +115,7 @@ class App:
 
                     del self.bubbles[i]
                     del self.bubbles[j]
-                    bubble_count -= 1
+                    num_bubbles -= 1
                     break
 
     def draw(self):

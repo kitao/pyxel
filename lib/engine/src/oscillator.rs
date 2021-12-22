@@ -101,7 +101,7 @@ impl Oscillator {
                 TONE_SQUARE => Self::square(self.phase) * SQUARE_VOLUME_FACTOR,
                 TONE_PULSE => Self::pulse(self.phase) * PULSE_VOLUME_FACTOR,
                 TONE_NOISE => self.noise(self.phase) * NOISE_VOLUME_FACTOR,
-                _ => panic!("invalid tone {}", self.tone),
+                _ => panic!("Invalid tone '{}'", self.tone),
             } * self.volume
                 * i16::MAX as f64) as i16;
             blip_buf.add_delta(self.time, self.amplitude as i32 - last_amplitude as i32);
@@ -122,7 +122,7 @@ impl Oscillator {
             EFFECT_FADEOUT => {
                 self.volume += self.fadeout.volume;
             }
-            _ => panic!("invalid effect {}", self.effect),
+            _ => panic!("Invalid effect '{}'", self.effect),
         }
 
         self.duration -= 1;
