@@ -40,7 +40,7 @@ impl Image {
 
     pub fn from_image(filename: &str, colors: &[Rgb8]) -> SharedImage {
         let image_file = image::open(&Path::new(&filename))
-            .expect(&format!("Unable to open file '{}'", filename))
+            .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename))
             .to_rgb8();
         let (width, height) = image_file.dimensions();
         let image = Self::new(width, height);
@@ -158,7 +158,7 @@ impl Image {
         };
         image
             .save(&filename)
-            .expect(&format!("Unable to open file '{}'", filename));
+            .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename));
     }
 
     pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
