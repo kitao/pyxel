@@ -401,7 +401,7 @@ Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수�
 화면의 드로잉 영역을 (`x`, `y`)로 설정하고, 너비를 `w`, 높이를 `h`로 설정합니다. `clip()`과 같이 사용하면 드로잉 영역을 초기 상태(전체 화면)으로 돌립니다.
 
 - `camera(x, y)`<br>
-Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
+화면의 좌측 상단 좌표를 (`x`, `y`)로 변경합니다. `camera()`로 좌표를 (`0`, `0`)으로 초기화할 수 있습니다.
 
 - `pal(col1, col2)`<br>
 드로잉 시 `col1`를 `col2`로 대체합니다. `pal()`과 같이 사용하면 초기 상태로 돌립니다.
@@ -437,12 +437,12 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 꼭짓점 좌표 (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`)를 기준으로 `col` 색상의 삼각형 테두리를 그립니다. (테두리 안쪽에 색상을 채우지 않음)
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-이미지 뱅크 `img`(0-2)의 (`u`, `v`)부터 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 음수로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다.
+이미지 뱅크 `img`(0-2)의 (`u`, `v`)로부터 크기 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 음수로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다.
 
 <img src="images/image_bank_mechanism.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
+타일 맵 `tm` (0-7)의 (`u`, `v`)로부터 크기 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 음수로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다. 타일 하나의 크기는 8x8 픽셀이며 `(x in tile, y in tile)`의 튜플로 타일 맵에 저장되어 있습니다.
 
 - `text(x, y, s, col)`<br>
 `col` 색을 사용해 문자열 `s`를 (`x`, `y`) 좌표에 그립니다.
@@ -563,13 +563,13 @@ Pyxel에는 "사용자를 혼란스럽게 할 수 있거나", "사용하는 데 
 
 ### 매뉴얼 테스팅
 
-코드를 테스트해 주시고, [Issue Tracker](https://github.com/kitao/pyxel/issues) 페이지에서 오류 제보나 개선 제안을 해주시는 분들을 환영합니다!
+코드를 테스트해 주시고, [이슈 트래커](https://github.com/kitao/pyxel/issues) 페이지에서 오류 제보나 개선 제안을 해주시는 분들을 환영합니다!
 
 ### 풀 리퀘스트 제출
 
 패치나 수정 요청은 풀 리퀘스트(PR)로 받고 있습니다. 제출하기 전에 문제가 이미 해결되지 않았는지 이슈 트래커 페이지에서 확인 부탁드립니다.
 
-제출한 풀 리퀘스트는 [MIT License](../LICENSE)에 따라 게시하는 데 동의한 것으로 간주합니다.
+제출한 풀 리퀘스트는 [MIT 라이선스](../LICENSE)에 따라 게시하는 데 동의한 것으로 간주합니다.
 
 ## 기타 정보
 
