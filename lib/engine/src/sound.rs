@@ -59,7 +59,7 @@ impl Sound {
                     'g' => 7,
                     'a' => 9,
                     'b' => 11,
-                    _ => panic!("invalid sound note '{}'", c),
+                    _ => panic!("Invalid sound note '{}'", c),
                 };
                 let mut c = chars.next().unwrap_or(0 as char);
                 if c == '#' {
@@ -72,12 +72,12 @@ impl Sound {
                 if ('0'..='4').contains(&c) {
                     note += (c as Note - '0' as Note) * 12;
                 } else {
-                    panic!("invalid sound note '{}'", c);
+                    panic!("Invalid sound note '{}'", c);
                 }
             } else if c == 'r' {
                 note = -1;
             } else {
-                panic!("invalid sound note '{}'", c);
+                panic!("Invalid sound note '{}'", c);
             }
             self.notes.push(note);
         }
@@ -91,7 +91,7 @@ impl Sound {
                 's' => TONE_SQUARE,
                 'p' => TONE_PULSE,
                 'n' => TONE_NOISE,
-                _ => panic!("invalid sound tone '{}'", c),
+                _ => panic!("Invalid sound tone '{}'", c),
             };
             self.tones.push(tone);
         }
@@ -103,7 +103,7 @@ impl Sound {
             if ('0'..='7').contains(&c) {
                 self.volumes.push((c as u32 - '0' as u32) as Volume);
             } else {
-                panic!("invalid sound volume '{}'", c);
+                panic!("Invalid sound volume '{}'", c);
             }
         }
     }
@@ -116,7 +116,7 @@ impl Sound {
                 's' => EFFECT_SLIDE,
                 'v' => EFFECT_VIBRATO,
                 'f' => EFFECT_FADEOUT,
-                _ => panic!("invalid sound effect '{}'", c),
+                _ => panic!("Invalid sound effect '{}'", c),
             };
             self.effects.push(effect);
         }
