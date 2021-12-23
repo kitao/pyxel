@@ -27,7 +27,6 @@ def _ellipb(self, x1, y1, x2, y2, val):
     if a <= 0.5 or b <= 0.5:
         self.rect2(x1, y1, x2, y2, val)
         return
-
     cx = (x1 + x2) / 2
     cy = (y1 + y2) / 2
     for y in range(max(y1, 0), min(y2 + 1, 16)):
@@ -51,7 +50,6 @@ def _ellip(self, x1, y1, x2, y2, val):
     if a <= 0.5 or b <= 0.5:
         self.rect2(x1, y1, x2, y2, val)
         return
-
     cx = (x1 + x2) / 2
     cy = (y1 + y2) / 2
     for y in range(max(y1, 0), min(y2 + 1, 16)):
@@ -64,7 +62,6 @@ def _fill(self, x, y, val):
     dst_val = self.pget(x, y)
     if dst_val == val:
         return
-
     for i in range(x, -1, -1):
         if self.pget(i, y) != dst_val:
             break
@@ -73,7 +70,6 @@ def _fill(self, x, y, val):
             self.fill(i, y - 1, val)
         if y < 15 and self.pget(i, y + 1) == dst_val:
             self.fill(i, y + 1, val)
-
     for i in range(x + 1, 16):
         if self.pget(i, y) != dst_val:
             break
