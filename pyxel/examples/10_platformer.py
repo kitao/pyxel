@@ -40,23 +40,23 @@ def push_back(x, y, dx, dy):
     abs_dy = abs(dy)
     if abs_dx > abs_dy:
         sign = 1 if dx > 0 else -1
-        for i in range(abs_dx):
+        for _ in range(abs_dx):
             if detect_collision(x + sign, y, dy):
                 break
             x += sign
         sign = 1 if dy > 0 else -1
-        for i in range(abs_dy):
+        for _ in range(abs_dy):
             if detect_collision(x, y + sign, dy):
                 break
             y += sign
     else:
         sign = 1 if dy > 0 else -1
-        for i in range(abs_dy):
+        for _ in range(abs_dy):
             if detect_collision(x, y + sign, dy):
                 break
             y += sign
         sign = 1 if dx > 0 else -1
-        for i in range(abs_dx):
+        for _ in range(abs_dx):
             if detect_collision(x + sign, y, dy):
                 break
             x += sign
