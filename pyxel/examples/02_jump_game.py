@@ -11,7 +11,7 @@ class App:
         self.player_x = 72
         self.player_y = -16
         self.player_dy = 0
-        self.is_player_alive = True
+        self.is_alive = True
         self.far_cloud = [(-10, 75), (40, 65), (90, 60)]
         self.near_cloud = [(10, 25), (70, 35), (120, 15)]
         self.floor = [(i * 60, randint(8, 104), True) for i in range(4)]
@@ -38,18 +38,18 @@ class App:
         self.player_dy = min(self.player_dy + 1, 8)
 
         if self.player_y > pyxel.height:
-            if self.is_player_alive:
-                self.is_player_alive = False
+            if self.is_alive:
+                self.is_alive = False
                 pyxel.play(3, 5)
             if self.player_y > 600:
                 self.score = 0
                 self.player_x = 72
                 self.player_y = -16
                 self.player_dy = 0
-                self.is_player_alive = True
+                self.is_alive = True
 
-    def update_floor(self, x, y, is_active):
-        if is_active:
+    def update_floor(self, x, y, is_alive):
+        if is_alive:
             if (
                 self.player_x + 16 >= x
                 and self.player_x <= x + 40
@@ -57,7 +57,7 @@ class App:
                 and self.player_y <= y + 8
                 and self.player_dy > 0
             ):
-                is_active = False
+                is_alive = False
                 self.score += 10
                 self.player_dy = -12
                 pyxel.play(3, 3)
@@ -67,12 +67,12 @@ class App:
         if x < -40:
             x += 240
             y = randint(8, 104)
-            is_active = True
-        return x, y, is_active
+            is_alive = True
+        return x, y, is_alive
 
-    def update_fruit(self, x, y, kind, is_active):
-        if is_active and abs(x - self.player_x) < 12 and abs(y - self.player_y) < 12:
-            is_active = False
+    def update_fruit(self, x, y, kind, is_alive):
+        if is_alive and abs(x - self.player_x) < 12 and abs(y - self.player_y) < 12:
+            is_alive = False
             self.score += (kind + 1) * 100
             self.player_dy = min(self.player_dy, -8)
             pyxel.play(3, 4)
@@ -81,8 +81,8 @@ class App:
             x += 240
             y = randint(0, 104)
             kind = randint(0, 2)
-            is_active = True
-        return (x, y, kind, is_active)
+            is_alive = True
+        return (x, y, kind, is_alive)
 
     def draw(self):
         pyxel.cls(12)
@@ -93,7 +93,7 @@ class App:
         # Draw mountain
         pyxel.blt(0, 88, 0, 0, 64, 160, 24, 12)
 
-        # Draw forest
+        # Draw trees
         offset = pyxel.frame_count % 160
         for i in range(2):
             pyxel.blt(i * 160 - offset, 104, 0, 0, 48, 160, 16, 12)
@@ -109,12 +109,12 @@ class App:
                 pyxel.blt(x + i * 160 - offset, y, 0, 0, 32, 56, 8, 12)
 
         # Draw floors
-        for x, y, is_active in self.floor:
+        for x, y, is_alive in self.floor:
             pyxel.blt(x, y, 0, 0, 16, 40, 8, 12)
 
         # Draw fruits
-        for x, y, kind, is_active in self.fruit:
-            if is_active:
+        for x, y, kind, is_alive in self.fruit:
+            if is_alive:
                 pyxel.blt(x, y, 0, 32 + kind * 16, 0, 16, 16, 12)
 
         # Draw player
