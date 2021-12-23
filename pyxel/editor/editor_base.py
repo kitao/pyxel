@@ -40,14 +40,12 @@ class EditorBase(Widget):
     def undo(self):
         if not self.can_undo:
             return
-
         self._history_index -= 1
         self.trigger_event("undo", self._history_list[self._history_index])
 
     def redo(self):
         if not self.can_redo:
             return
-
         self.trigger_event("redo", self._history_list[self._history_index])
         self._history_index += 1
 
@@ -81,7 +79,6 @@ class EditorBase(Widget):
             or pyxel.btn(pyxel.KEY_GUI)
         ):
             return
-
         if pyxel.btnp(pyxel.KEY_S):
             self.tool_var = TOOL_SELECT
         elif pyxel.btnp(pyxel.KEY_P):
