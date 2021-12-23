@@ -346,7 +346,7 @@ O número dos quadros decorridos
 
 - `init(width, height, [title], [fps], [quit_key], [capture_sec])`<br>
 Inicializa a aplicação Pyxel com tamanho de tela (`width`, `height`). As seguintes opções podem ser especificadas: o título da janela com `title`, a taxa de quadros com `fps`, a tecla para fechar a aplicação com `quit_key`, o tempo máximo de gravação do vídeo da captura de tela `capture_sec`.<br>
-e.g. `pyxel.init(160, 120, title="Pyxel with Options", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
+Ex. `pyxel.init(160, 120, title="Pyxel with Options", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
 
 - `run(update, draw)`<br>
 Roda a aplicação Pyxel e chama a função `update` para atualizar os quadros e a função `draw` para desenhá-los.
@@ -388,11 +388,11 @@ Se `visible` for `True`, mostra o cursor do mouse. Se for `False`, esconde. Mesm
 
 - `colors`<br>
 Lista da paleta de cores da tela. A cor da tela é especificada por um valor numérico de 24 bits. Use `colors.from_list` e `colors.to_list` para atribuir e pegar listas do Python.<br>
-e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+Ex. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
 
 - `image(img)`<br>
-Opera o banco de images `img` (0-2). (veja a classe de Imagem)<br>
-e.g. `pyxel.image(0).load(0, 0, "title.png")`
+Opera o banco de imagens `img` (0-2). (veja a classe de Imagem)<br>
+Ex. `pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
 Opera o tilemap `tm`(0-7) (ver a classe de Tilemap)
@@ -401,7 +401,7 @@ Opera o tilemap `tm`(0-7) (ver a classe de Tilemap)
 Define a área de desenho da tela de (`x`, `y`) para a largura `w` e altura `h`. Redefina a área de desenho para tela cheia com `clip()`
 
 - `camera(x, y)`<br>
-Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
+Altera as coordenadas do canto superior esquerdo da tela para (`x`, `y`). Redefina as coordenadas do canto superior esquerdo para (`0`, `0`) com `camera()`.
 
 - `pal(col1, col2)`<br>
 Substitui a cor `col1` com `col2` ao desenhar. Use `pal()` para voltar para a paleta inicial
@@ -437,12 +437,12 @@ Desenha um triangulo com os vértices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e
 Desenha o contorno de um triangulo com os vértices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e cor `col`
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img`(0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente
+Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img` (0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente
 
 <img src="images/image_bank_mechanism.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
+Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do tilemap `tm` (0-7) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente. O tamanho de um tile é de 8x8 pixels e é armazenado em um tilemap como uma tupla de `(x in tile, y in tile)`.
 
 - `text(x, y, s, col)`<br>
 Desenha uma string `s` de cor `col` em (`x`, `y`)
@@ -451,13 +451,13 @@ Desenha uma string `s` de cor `col` em (`x`, `y`)
 
 - `sound(snd)`<br>
 Opera o som `snd`(0-63). (ver a classe de Som)<br>
-e.g. `pyxel.sound(0).speed = 60`
+Ex. `pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
 Opera a música `msc` (0-7) (ver a classe de Musica)
 
 - `play_pos(ch)`<br>
-Obtem a posição do canal `ch` (0-3) da reprodução de som como uma tupla de `(sound no, note no)`. Retorna `None` quando a reprodução para.
+Obtém a posição do canal `ch` (0-3) da reprodução de som como uma tupla de `(sound no, note no)`. Retorna `None` quando a reprodução para.
 
 - `play(ch, snd, loop=False)`<br>
 Reproduz o som `snd` (0-63) no canal `ch` (0-3). Se `snd` é uma lista, os sons serão reproduzidos em ordem. Se `True` for especificado para `loop`, a reprodução será feita em laço.
@@ -475,7 +475,7 @@ Largura e altura da imagem
 
 - `set(x, y, data)`<br>
 Define a imagem em (`x`, `y`) por uma lista de strings.<br>
-e.g. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+Ex. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
 
 - `load(x, y, filename)`<br>
 Carrega um arquivo de imagem (png/gif/jpeg) em (`x`, `y`).
@@ -496,7 +496,7 @@ O banco de imagem (0-2) referenciado pelo tilemap
 
 - `set(x, y, data)`<br>
 Define o tilemap em (`x`, `y`) por uma lista de strings.<br>
-e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+Ex. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `pget(x, y)`<br>
 Pega o tile em (`x`, `y`). Um tile é uma tupla de `(x in tile, y in tile)`.
@@ -526,19 +526,19 @@ Define as notas, tons, volumes e efeitos com uma string. Se os tons, volumes e e
 
 - `set_notes(notes)`<br>
 Define as notas com uma string 'CDEFGAB'+'#-'+'0123' ou 'R'. É insensível à maiúsculas ou minúsculas e espaços em branco são ignorados.<br>
-e.g. `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+Ex. `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
 Define os tons com uma string composta por 'TSPN'. É insensível à maiúsculas ou minúsculas e espaços em branco são ignorados.<br>
-e.g. `pyxel.sound(0).set_tone("TTSS PPPN")`
+Ex. `pyxel.sound(0).set_tone("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
 Define os volumes com uma string composta por '01234567'. É insensível à maiúsculas ou minúsculas e espaços em branco são ignorados.<br>
-e.g. `pyxel.sound(0).set_volume("7777 7531")`
+Ex. `pyxel.sound(0).set_volume("7777 7531")`
 
 - `set_effects(effects)`<br>
 Define os efeitos com uma string composta por 'NSVF'. É insensível à maiúsculas ou minúsculas e espaços em branco são ignorados.<br>
-e.g. `pyxel.sound(0).set_effect("NFNF NVVS")`
+Ex. `pyxel.sound(0).set_effect("NFNF NVVS")`
 
 ### Classe de Musica
 
@@ -547,13 +547,13 @@ Lista bidimensional de sons (0-63) listados pelo número de canais
 
 - `set(seq0, seq1, seq2, seq3)`<br>
 Define as listas de sons (0-63) para todos os canais. Se uma lista vazia for especificada, aquele canal não será utilizado para reprodução de sons.<br>
-e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+Ex. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
-### Advanced APIs
+### APIs Avançadas
 
 Pyxel possui "APIs avançadas" que não são mencionadas nesse manual de referência pois elas podem "confundir usuários" ou "precisam de conhecimento especializado para usar".
 
-Se você está familiarizado com suas habilidades, pode tentar criar projetos incríveis utilizando [this](../pyxel/__init__.pyi) como pista!
+Se você está familiarizado com suas habilidades, tente criar projetos incríveis utilizando [isto](../pyxel/__init__.pyi) como pista!
 
 ## Como Contribuir
 
