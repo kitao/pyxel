@@ -42,22 +42,20 @@ class PianoKeyboard(Widget):
 
     def __init__(self, parent):
         super().__init__(parent, 17, 25, 12, 123)
-
         self._preview_sound = pyxel.Sound()
         self._preview_sound.set("g2", "p", "3", "n", 30)
         self._preview_tone = 0
         self._mouse_note = None
         self.field_cursor = parent.field_cursor
         self.get_field = parent.get_field
-
         self.copy_var("octave_var", parent)
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # note_var
+        # Initialize note_var
         self.new_var("note_var", None)
 
-        # Event listeners
+        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
@@ -68,15 +66,12 @@ class PianoKeyboard(Widget):
     def _screen_to_note(self, x, y):
         x -= self.x
         y -= self.y
-
         octave = (4 - y // 24) * 12
         y %= 24
-
         if octave > 59:
             return 59
         if octave < 0:
             return -1
-
         if x <= 6:
             if 2 <= y <= 4:
                 return octave + 10
@@ -88,7 +83,6 @@ class PianoKeyboard(Widget):
                 return octave + 3
             elif 20 <= y <= 22:
                 return octave + 1
-
         if y <= 2:
             return octave + 11
         elif y <= 6:
@@ -107,7 +101,6 @@ class PianoKeyboard(Widget):
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
-
         self.field_cursor.move_to(self.field_cursor.x, 0)
         self._mouse_note = self._screen_to_note(x, y)
 
@@ -130,19 +123,15 @@ class PianoKeyboard(Widget):
             or pyxel.btn(pyxel.KEY_GUI)
         ):
             return
-
         if pyxel.btnp(pyxel.KEY_1):
             self._preview_tone = (self._preview_tone + 1) % 4
-
         self.note_var = self._mouse_note
         for i, key in enumerate(key_table):
             if pyxel.btn(key):
                 self.note_var = self.octave_var * 12 + i
                 break
-
         if pyxel.btn(pyxel.KEY_A):
             self.note_var = -1
-
         if self.note_var is not None:
             self._preview_sound.notes[0] = self.note_var
             self._preview_sound.tones[0] = self._preview_tone
@@ -160,7 +149,6 @@ class PianoKeyboard(Widget):
             12,
             123,
         )
-
         notes = self.get_field(0)
         if (
             self.is_playing_var
@@ -169,12 +157,10 @@ class PianoKeyboard(Widget):
             and self.note_var is None
         ):
             return
-
         note = notes[pyxel.play_pos(0)[1]] if self.is_playing_var else self.note_var
         key = note % 12
         x = self.x
         y = self.y + (59 - note) * 2
-
         if note == -1:
             pyxel.rect(x, y + 1, 12, 2, PIANO_KEYBOARD_REST_COLOR)
         elif key == 0 or key == 5:

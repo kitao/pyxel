@@ -19,15 +19,15 @@ class TilemapViewer(Widget):
         self.copy_var("tilemap_no_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # focus_x_var
+        # Initialize focus_x_var
         self.new_var("focus_x_var", 0)
         self.add_var_event_listener("focus_x_var", "set", self.__on_focus_x_set)
 
-        # focus_y_var
+        # Initialize focus_y_var
         self.new_var("focus_y_var", 0)
         self.add_var_event_listener("focus_y_var", "set", self.__on_focus_y_set)
 
-        # event listeners
+        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
@@ -69,7 +69,7 @@ class TilemapViewer(Widget):
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
 
-        # tilemap
+        # Draw tilemap
         pyxel.blt(
             self.x + 1,
             self.y + 1,
@@ -80,7 +80,7 @@ class TilemapViewer(Widget):
             self._tilemap_image.height,
         )
 
-        # focus
+        # Draw focus
         x = self.x + self.focus_x_var * 2 + 1
         y = self.y + self.focus_y_var * 2 + 1
         pyxel.clip(self.x + 1, self.y + 1, self.width - 2, self.height - 2)
