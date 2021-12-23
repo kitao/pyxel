@@ -54,9 +54,9 @@ class ColorPicker(Widget):
         )
 
         # Draw colors
-        for i in range(2):
-            for j in range(8):
-                pyxel.rect(self.x + j * 8 + 1, self.y + i * 8 + 1, 7, 7, i * 8 + j)
+        for yi in range(2):
+            for xi in range(8):
+                pyxel.rect(self.x + xi * 8 + 1, self.y + yi * 8 + 1, 7, 7, yi * 8 + xi)
 
         # Draw cursor
         col = self.value_var

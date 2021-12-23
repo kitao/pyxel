@@ -56,11 +56,9 @@ def _run_python_script(python_script_file):
 def _play_pyxel_app(pyxel_app_file):
     pyxel_app_file = _complete_extension(pyxel_app_file, pyxel.APP_FILE_EXTENSION)
     _check_file_exists(pyxel_app_file)
-
     with tempfile.TemporaryDirectory() as temp_dir:
         zf = zipfile.ZipFile(pyxel_app_file)
         zf.extractall(temp_dir)
-
         pattern = os.path.join(temp_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
         for setting_file in glob.glob(pattern):
             with open(setting_file, "r") as f:
@@ -74,7 +72,6 @@ def _play_pyxel_app(pyxel_app_file):
                 p.start()
                 p.join()
                 return
-
         print(f"file not found: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
         exit(1)
 
@@ -93,14 +90,11 @@ def _package_pyxel_app(app_root_dir, startup_script_name):
         _complete_extension(startup_script_name, ".py")
     )
     _check_file_exists(os.path.join(app_root_dir, startup_script_name))
-
     setting_file = os.path.join(app_root_dir, pyxel.APP_STARTUP_SCRIPT_FILE)
     with open(setting_file, "w") as f:
         f.write(startup_script_name)
-
     pyxel_app_file = os.path.basename(app_root_dir) + pyxel.APP_FILE_EXTENSION
     app_parent_dir = os.path.dirname(os.path.abspath(app_root_dir))
-
     with zipfile.ZipFile(
         pyxel_app_file,
         "w",
@@ -111,16 +105,13 @@ def _package_pyxel_app(app_root_dir, startup_script_name):
             arcname = os.path.relpath(file, app_parent_dir)
             zf.write(file, arcname)
             print(f"added '{arcname}'")
-
     os.remove(setting_file)
 
 
 def _copy_pyxel_examples():
     src_dir = os.path.join(os.path.dirname(__file__), "examples")
     dst_dir = "pyxel_examples"
-
     shutil.rmtree(dst_dir, ignore_errors=True)
-
     for src_file in _files_in_dir(src_dir):
         dst_file = os.path.join(dst_dir, os.path.relpath(src_file, src_dir))
         os.makedirs(os.path.dirname(dst_file), exist_ok=True)
@@ -131,7 +122,6 @@ def _copy_pyxel_examples():
 def cli():
     num_args = len(sys.argv)
     command = sys.argv[1].lower() if num_args > 1 else ""
-
     if command == "run" and num_args == 3:
         _run_python_script(sys.argv[2])
     elif command == "play" and num_args == 3:
