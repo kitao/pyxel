@@ -4,6 +4,7 @@
 - Added the file operation error messages
 - Refined the python code
 - Updated the README in Korean
+- Changed to stop updating when the window is inactive
 
 ## 1.5.3
 - Fixed the tilemap editor
