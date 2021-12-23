@@ -33,14 +33,14 @@ class TilemapEditor(EditorBase):
     def __init__(self, parent):
         super().__init__(parent)
 
-        # canvas_var
+        # Initialize canvas_var
         self.new_var("canvas_var", None)
         self.add_var_event_listener("canvas_var", "get", self.__on_canvas_get)
 
-        # color_var
+        # Initialize color_var
         self.new_var("color_var", (255, 255))
 
-        # tool button
+        # Initialize tool button
         self._tool_button = RadioButton(
             self,
             81,
@@ -48,13 +48,13 @@ class TilemapEditor(EditorBase):
             img=EDITOR_IMAGE,
             u=63,
             v=0,
-            btn_count=7,
+            num_buttons=7,
             value=TOOL_PENCIL,
         )
         self.add_tool_button_help(self._tool_button)
         self.copy_var("tool_var", self._tool_button, "value_var")
 
-        # tilemap picker
+        # Initialize tilemap picker
         self._tilemap_picker = NumberPicker(
             self, 48, 161, min_value=0, max_value=pyxel.NUM_TILEMAPS - 1, value=0
         )
@@ -64,12 +64,12 @@ class TilemapEditor(EditorBase):
         self.add_number_picker_help(self._tilemap_picker)
         self.copy_var("tilemap_no_var", self._tilemap_picker, "value_var")
 
-        # tilemap viewer
+        # Initialize tilemap viewer
         self._tilemap_viewer = TilemapViewer(self)
         self.copy_var("focus_x_var", self._tilemap_viewer, "focus_x_var")
         self.copy_var("focus_y_var", self._tilemap_viewer, "focus_y_var")
 
-        # image picker
+        # Initialize image picker
         self._image_picker = NumberPicker(
             self,
             192,
@@ -82,17 +82,17 @@ class TilemapEditor(EditorBase):
         self.add_number_picker_help(self._image_picker)
         self.copy_var("image_no_var", self._image_picker, "value_var")
 
-        # image viewer
+        # Initialize image viewer
         self._image_viewer = ImageViewer(self)
         self.copy_var("tile_x_var", self._image_viewer, "focus_x_var")
         self.copy_var("tile_y_var", self._image_viewer, "focus_y_var")
         self.copy_var("tile_w_var", self._image_viewer, "focus_w_var")
         self.copy_var("tile_h_var", self._image_viewer, "focus_h_var")
 
-        # canvas panel
+        # Initialize canvas panel
         self._canvas_panel = CanvasPanel(self)
 
-        # event listeners
+        # Set event listeners
         self.add_event_listener("undo", self.__on_undo)
         self.add_event_listener("redo", self.__on_redo)
         self.add_event_listener("update", self.__on_update)
