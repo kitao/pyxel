@@ -40,7 +40,6 @@ class FieldCursor:
     def move_to(self, x, y):
         while self._get_field(y) is None:
             y -= 1
-
         self._x = min(x, self._max_field_length - 1)
         self._y = y
 
@@ -68,48 +67,37 @@ class FieldCursor:
         ):
             self._x += self._field_wrap_length
             return
-
         if self._get_field(self._y + 1) is None:
             return
-
         self._x %= self._field_wrap_length
         self._y += 1
 
     def insert(self, value):
         self._add_pre_history(self.x, self.y)
-
         lst = self.field.to_list()
         lst.insert(self.x, value)
         self.field.from_list(lst[: self._max_field_length])
         self.move_right()
-
         self._add_post_history(self.x, self.y)
 
     def backspace(self):
         if self.x == 0:
             return
-
         self._add_pre_history(self.x, self.y)
-
         if self._x > 0:
             self._x = max(min(self.x, len(self.field)) - 1, 0)
-
         lst = self.field.to_list()
         del lst[self.x]
         self.field.from_list(lst)
-
         self._add_post_history(self.x, self.y)
 
     def delete(self):
         if self.x >= len(self.field):
             return
-
         self._add_pre_history(self.x, self.y)
-
         lst = self.field.to_list()
         del lst[self.x]
         self.field.from_list(lst)
-
         self._add_post_history(self.x, self.y)
 
     def process_input(self):
@@ -120,21 +108,15 @@ class FieldCursor:
             or pyxel.btn(pyxel.KEY_GUI)
         ):
             return
-
         if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             self.move_left()
-
         if pyxel.btnp(pyxel.KEY_RIGHT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             self.move_right()
-
         if pyxel.btnp(pyxel.KEY_UP, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             self.move_up()
-
         if pyxel.btnp(pyxel.KEY_DOWN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             self.move_down()
-
         if pyxel.btnp(pyxel.KEY_BACKSPACE, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             self.backspace()
-
         if pyxel.btnp(pyxel.KEY_DELETE, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             self.delete()
