@@ -47,6 +47,12 @@ pub enum Event {
         filename: String,
     },
 
+    // Window events
+    FocusGained,
+    FocusLost,
+    Maximized,
+    Minimized,
+
     // Key events
     KeyDown {
         key: u32,

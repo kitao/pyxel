@@ -5,7 +5,7 @@ use sdl2::audio::{
     AudioSpecDesired as SdlAudioSpecDesired,
 };
 use sdl2::controller::{Axis as SdlAxis, Button as SdlButton, GameController as SdlGameController};
-use sdl2::event::Event as SdlEvent;
+use sdl2::event::{Event as SdlEvent, WindowEvent as SdlWindowEvent};
 use sdl2::mouse::MouseButton as SdlMouseButton;
 use sdl2::pixels::{Color as SdlColor, PixelFormatEnum as SdlPixelFormat};
 use sdl2::rect::Rect as SdlRect;
@@ -181,6 +181,15 @@ impl Platform for Sdl2 {
                 // System events
                 SdlEvent::Quit { .. } => Event::Quit,
                 SdlEvent::DropFile { filename, .. } => Event::DropFile { filename },
+
+                // Window events
+                SdlEvent::Window { win_event, .. } => match win_event {
+                    SdlWindowEvent::FocusGained => Event::FocusGained,
+                    SdlWindowEvent::FocusLost => Event::FocusLost,
+                    SdlWindowEvent::Maximized => Event::Maximized,
+                    SdlWindowEvent::Minimized => Event::Minimized,
+                    _ => continue,
+                },
 
                 // Key events
                 SdlEvent::KeyDown {
@@ -358,6 +367,18 @@ impl Platform for Sdl2 {
             .unwrap();
         sdl_audio_device.resume();
         self.sdl_audio_device = Some(sdl_audio_device);
+    }
+
+    fn pause_audio(&mut self) {
+        if let Some(audio_device) = &self.sdl_audio_device {
+            audio_device.pause();
+        }
+    }
+
+    fn resume_audio(&mut self) {
+        if let Some(audio_device) = &self.sdl_audio_device {
+            audio_device.resume();
+        }
     }
 }
 
