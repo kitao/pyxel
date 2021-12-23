@@ -2,7 +2,6 @@ import pyxel
 
 from .settings import (
     EDITOR_IMAGE,
-    MAX_MUSIC_LENGTH,
     MUSIC_FIELD_BACKGROUND_COLOR,
     MUSIC_FIELD_CURSOR_EDIT_COLOR,
     MUSIC_FIELD_CURSOR_PLAY_COLOR,
@@ -22,15 +21,13 @@ class MusicField(Widget):
 
     def __init__(self, parent, x, y, ch):
         super().__init__(parent, x, y, 218, 21)
-
         self._ch = ch
         self.field_cursor = parent.field_cursor
         self.get_field = parent.get_field
-
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # event listeners
+        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("draw", self.__on_draw)
@@ -42,19 +39,17 @@ class MusicField(Widget):
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
-
         x -= self.x + 21
         y -= self.y + 2
-
         if x < 0 or y < 0 or x > 188 or y > 16 or x % 12 > 8 or y % 10 > 6:
             return
-
         self.field_cursor.move_to(x // 12 + (y // 10) * 16, self._ch)
 
     def __on_mouse_hover(self, x, y):
         self.help_message_var = "SOUND:SOUND_BUTTON/BS/DEL"
 
     def __on_draw(self):
+        # Draw frame
         self.draw_panel(self.x, self.y, self.width, self.height)
         pyxel.text(self.x + 5, self.y + 8, f"CH{self._ch}", TEXT_LABEL_COLOR)
         pyxel.blt(
@@ -68,11 +63,9 @@ class MusicField(Widget):
             MUSIC_FIELD_BACKGROUND_COLOR,
         )
 
-        data = self.data
-
+        # Draw cursor
         if self.is_playing_var:
             play_pos = pyxel.play_pos(self._ch)
-
             if play_pos is None:
                 cursor_x = -1
                 cursor_y = -1
@@ -84,16 +77,13 @@ class MusicField(Widget):
             cursor_x = self.field_cursor.x
             cursor_y = self.field_cursor.y
             cursor_col = MUSIC_FIELD_CURSOR_EDIT_COLOR
-
         if cursor_y == self._ch:
             x = self.x + (cursor_x % 16) * 12 + 21
             y = self.y + (cursor_y - self._ch + cursor_x // 16) * 10 + 2
             pyxel.rect(x, y, 9, 7, cursor_col)
 
-        for i in range(MAX_MUSIC_LENGTH):
-            if i >= len(data):
-                break
-
+        # Draw sounds
+        for i in range(len(self.data)):
             x = self.x + 22 + (i % 16) * 12
             y = self.y + (i // 16) * 10 + 3
             col = (
@@ -101,4 +91,4 @@ class MusicField(Widget):
                 if cursor_y == self._ch and cursor_x == i
                 else MUSIC_FIELD_SOUND_NORMAL_COLOR
             )
-            pyxel.text(x, y, f"{data[i]:0>2}", col)
+            pyxel.text(x, y, f"{self.data[i]:0>2}", col)
