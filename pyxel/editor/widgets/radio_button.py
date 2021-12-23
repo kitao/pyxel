@@ -13,18 +13,18 @@ class RadioButton(Widget):
         change (value)
     """
 
-    def __init__(self, parent, x, y, *, img, u, v, btn_count, value, **kwargs):
-        super().__init__(parent, x, y, btn_count * 9 - 2, 7, **kwargs)
+    def __init__(self, parent, x, y, *, img, u, v, num_buttons, value, **kwargs):
+        super().__init__(parent, x, y, num_buttons * 9 - 2, 7, **kwargs)
         self._img = img
         self._u = u
         self._v = v
-        self._btn_count = btn_count
+        self._num_buttons = num_buttons
 
-        # value_var
+        # Initialize value_var
         self.new_var("value_var", value)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
-        # event listeners
+        # Initialize event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("draw", self.__on_draw)
@@ -32,7 +32,7 @@ class RadioButton(Widget):
     def check_value(self, x, y):
         x -= self.x
         y -= self.y
-        index = min(max(x // 9, 0), self._btn_count - 1)
+        index = min(max(x // 9, 0), self._num_buttons - 1)
         x1 = index * 9
         y1 = 0
         x2 = x1 + 6
@@ -45,7 +45,6 @@ class RadioButton(Widget):
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
-
         value = self.check_value(x, y)
         if value is not None:
             self.value_var = value

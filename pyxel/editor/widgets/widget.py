@@ -55,14 +55,14 @@ class Widget:
         self._height = height
         self._event_listeners = {}
 
-        # is_visible_var
+        # Initialize is_visible_var
         self.new_var("is_visible_var", is_visible)
         self.add_var_event_listener("is_visible_var", "get", self.__on_is_visible_get)
         self.add_var_event_listener(
             "is_visible_var", "change", self.__on_is_visible_change
         )
 
-        # is_enabled_var
+        # Initialize is_enabled_var
         self.new_var("is_enabled_var", is_enabled)
         self.add_var_event_listener("is_enabled_var", "get", self.__on_is_enabled_get)
         self.add_var_event_listener(
@@ -122,11 +122,9 @@ class Widget:
     def _process_input(self):
         if not self.is_visible_var or not self.is_enabled_var:
             return False
-
         for widget in reversed(self._children):
             if widget._process_input():
                 return True
-
         x = pyxel.mouse_x
         y = pyxel.mouse_y
         if self.is_hit(x, y):
@@ -143,7 +141,6 @@ class Widget:
                 self.trigger_event("mouse_down", key, x, y)
             self.trigger_event("mouse_hover", x, y)
             return True
-
         return False
 
     def _start_capture(self, key):
@@ -198,7 +195,6 @@ class Widget:
     def _update(self):
         if not self.is_visible_var:
             return
-
         self.trigger_event("update")
         for child in self._children:
             child._update()
@@ -206,7 +202,6 @@ class Widget:
     def draw_all(self):
         if not self.is_visible_var:
             return
-
         self.trigger_event("draw")
         for child in self._children:
             child.draw_all()
