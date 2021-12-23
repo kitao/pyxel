@@ -70,7 +70,7 @@ class CanvasPanel(Widget):
         self.copy_var("focus_y_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # horizontal scroll bar
+        # Initialize horizontal scroll bar
         self._h_scroll_bar = ScrollBar(
             self,
             0,
@@ -83,7 +83,7 @@ class CanvasPanel(Widget):
         self._h_scroll_bar.add_event_listener("change", self.__on_h_scroll_bar_change)
         self.add_var_event_listener("focus_x_var", "change", self.__on_focus_x_change)
 
-        # vertical scroll bar
+        # Initialize vertical scroll bar
         self._v_scroll_bar = ScrollBar(
             self,
             129,
@@ -96,7 +96,7 @@ class CanvasPanel(Widget):
         self._v_scroll_bar.add_event_listener("change", self.__on_v_scroll_bar_change)
         self.add_var_event_listener("focus_y_var", "change", self.__on_focus_y_change)
 
-        # event listeners
+        # Initialize event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
         self.add_event_listener("mouse_click", self.__on_mouse_click)
@@ -145,7 +145,6 @@ class CanvasPanel(Widget):
     def _finish_edit_canvas(self):
         if not self._is_tilemap_mode:
             return
-
         for i in range(16):
             for j in range(16):
                 if self._edit_canvas.pget(j, i) != (255, 255):
@@ -171,23 +170,19 @@ class CanvasPanel(Widget):
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
-
         x, y = self._screen_to_focus(x, y)
         self._press_x = self._last_x = x
         self._press_y = self._last_y = y
         self._is_dragged = True
         self._is_assist_mode = False
-
         if self.tool_var == TOOL_SELECT:
             self._reset_edit_canvas()
             self._select_x1 = self._select_x2 = x
             self._select_y1 = self._select_y2 = y
-
         elif self.tool_var >= TOOL_PENCIL and self.tool_var <= TOOL_CIRC:
             self._reset_edit_canvas()
             self._edit_canvas.pset(x, y, self.color_var)
             self._finish_edit_canvas()
-
         elif self.tool_var == TOOL_BUCKET:
             self._add_pre_history()
             self._reset_edit_canvas()
@@ -207,7 +202,6 @@ class CanvasPanel(Widget):
     def __on_mouse_up(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
-
         self._is_dragged = False
         if TOOL_PENCIL <= self.tool_var <= TOOL_CIRC:
             self._add_pre_history()
@@ -225,7 +219,6 @@ class CanvasPanel(Widget):
     def __on_mouse_click(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_RIGHT:
             return
-
         x = self.focus_x_var * 8 + (x - self.x) // 8
         y = self.focus_y_var * 8 + (y - self.y) // 8
         if self._is_tilemap_mode:
@@ -303,12 +296,10 @@ class CanvasPanel(Widget):
         elif key == pyxel.MOUSE_BUTTON_RIGHT:
             self._drag_offset_x -= dx
             self._drag_offset_y -= dy
-
             if abs(self._drag_offset_x) >= 16:
                 offset = self._drag_offset_x // 16
                 self.focus_x_var += offset
                 self._drag_offset_x -= offset * 16
-
             if abs(self._drag_offset_y) >= 16:
                 offset = self._drag_offset_y // 16
                 self.focus_y_var += offset
@@ -336,7 +327,7 @@ class CanvasPanel(Widget):
         if self.tool_var == TOOL_SELECT and (
             pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
         ):
-            # ctrl+c: copy
+            # Ctrl+C: Copy
             if pyxel.btnp(pyxel.KEY_C):
                 self._copy_buffer = self.canvas_var.get_slice(
                     self.focus_x_var * 8 + self._select_x1,
@@ -345,7 +336,7 @@ class CanvasPanel(Widget):
                     self._select_y2 - self._select_y1 + 1,
                 )
 
-            # ctrl+v: paste
+            # Ctrl+V: Paste
             if self._copy_buffer is not None and pyxel.btnp(pyxel.KEY_V):
                 self._add_pre_history()
                 width = len(self._copy_buffer[0])
@@ -367,7 +358,7 @@ class CanvasPanel(Widget):
         ):
             return
 
-        # move focus
+        # Move focus
         if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             self.focus_x_var -= 1
         if pyxel.btnp(pyxel.KEY_RIGHT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
@@ -380,7 +371,7 @@ class CanvasPanel(Widget):
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
 
-        # edit panel
+        # Draw edit panel
         canvas, offset_x, offset_y = (
             (self._edit_canvas, 0, 0)
             if self._is_dragged
@@ -413,7 +404,7 @@ class CanvasPanel(Widget):
             self.x + 64, self.y + 1, self.x + 64, self.y + 128, WIDGET_PANEL_COLOR
         )
 
-        # selection area
+        # Draw selection area
         if self.tool_var == TOOL_SELECT and self._select_x1 >= 0:
             x = self._select_x1 * 8 + 12
             y = self._select_y1 * 8 + 17
