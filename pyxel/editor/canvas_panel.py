@@ -145,15 +145,15 @@ class CanvasPanel(Widget):
     def _finish_edit_canvas(self):
         if not self._is_tilemap_mode:
             return
-        for i in range(16):
-            for j in range(16):
-                if self._edit_canvas.pget(j, i) != (255, 255):
+        for y in range(16):
+            for x in range(16):
+                if self._edit_canvas.pget(x, y) != (255, 255):
                     continue
                 tile = (
-                    self.tile_x_var + (j - self._press_x) % self.tile_w_var,
-                    self.tile_y_var + (i - self._press_y) % self.tile_h_var,
+                    self.tile_x_var + (x - self._press_x) % self.tile_w_var,
+                    self.tile_y_var + (y - self._press_y) % self.tile_h_var,
                 )
-                self._edit_canvas.pset(j, i, tile)
+                self._edit_canvas.pset(x, y, tile)
 
     def __on_h_scroll_bar_change(self, value):
         self.focus_x_var = value
@@ -388,14 +388,14 @@ class CanvasPanel(Widget):
                 128,
             )
         else:
-            for i in range(16):
-                for j in range(16):
+            for yi in range(16):
+                for xi in range(16):
                     pyxel.rect(
-                        self.x + j * 8 + 1,
-                        self.y + i * 8 + 1,
+                        self.x + xi * 8 + 1,
+                        self.y + yi * 8 + 1,
                         8,
                         8,
-                        canvas.pget(offset_x + j, offset_y + i),
+                        canvas.pget(offset_x + xi, offset_y + yi),
                     )
         pyxel.line(
             self.x + 1, self.y + 64, self.x + 128, self.y + 64, WIDGET_PANEL_COLOR
