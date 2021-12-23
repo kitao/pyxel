@@ -36,23 +36,23 @@ class ImageViewer(Widget):
         self.copy_var("image_no_var", parent)
         self.copy_var("help_message_var", parent)
 
-        # focus_x_var
+        # Initialize focus_x_var
         self.new_var("focus_x_var", 0)
         self.add_var_event_listener("focus_x_var", "set", self.__on_focus_x_set)
         self.add_var_event_listener("focus_x_var", "change", self.__on_focus_x_change)
 
-        # focus_y_var
+        # Initialize focus_y_var
         self.new_var("focus_y_var", 0)
         self.add_var_event_listener("focus_y_var", "set", self.__on_focus_y_set)
         self.add_var_event_listener("focus_y_var", "change", self.__on_focus_y_change)
 
-        # focus_w_var
+        # Initialize focus_w_var
         self.new_var("focus_w_var", 1 if self._is_tilemap_mode else 2)
 
-        # focus_h_var
+        # Initialize focus_h_var
         self.new_var("focus_h_var", 1 if self._is_tilemap_mode else 2)
 
-        # horizontal scroll bar
+        # Initialize horizontal scroll bar
         self._h_scroll_bar = ScrollBar(
             self,
             0,
@@ -64,7 +64,7 @@ class ImageViewer(Widget):
         )
         self.copy_var("viewport_x_var", self._h_scroll_bar, "value_var")
 
-        # virtical scroll bar
+        # Initialize virtical scroll bar
         self._v_scroll_bar = ScrollBar(
             self,
             65,
@@ -76,7 +76,7 @@ class ImageViewer(Widget):
         )
         self.copy_var("viewport_y_var", self._v_scroll_bar, "value_var")
 
-        # event listeners
+        # Set event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
@@ -112,7 +112,6 @@ class ImageViewer(Widget):
             self.focus_x_var, self.focus_y_var = self._screen_to_focus(x, y)
             self._press_x = self.focus_x_var
             self._press_y = self.focus_y_var
-
         elif key == pyxel.MOUSE_BUTTON_RIGHT:
             self._drag_offset_x = 0
             self._drag_offset_y = 0
@@ -129,16 +128,13 @@ class ImageViewer(Widget):
                 self.focus_y_var = min(self._focus_y_var, last_focus_y)
             else:
                 self.__on_mouse_down(key, x, y)
-
         elif key == pyxel.MOUSE_BUTTON_RIGHT:
             self._drag_offset_x -= dx
             self._drag_offset_y -= dy
-
             if abs(self._drag_offset_x) >= 8:
                 offset = self._drag_offset_x // 8
                 self.viewport_x_var += offset
                 self._drag_offset_x -= offset * 8
-
             if abs(self._drag_offset_y) >= 8:
                 offset = self._drag_offset_y // 8
                 self.viewport_y_var += offset
@@ -152,7 +148,7 @@ class ImageViewer(Widget):
     def __on_draw(self):
         self.draw_panel(self.x, self.y, self.width, self.height)
 
-        # image
+        # Draw image
         pyxel.blt(
             self.x + 1,
             self.y + 1,
@@ -163,7 +159,7 @@ class ImageViewer(Widget):
             self.height - 2,
         )
 
-        # focus
+        # Draw focus
         x = self.x + (self.focus_x_var - self.viewport_x_var) * 8 + 1
         y = self.y + (self.focus_y_var - self.viewport_y_var) * 8 + 1
         w = self.focus_w_var * 8
