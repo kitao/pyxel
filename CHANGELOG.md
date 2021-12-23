@@ -2,6 +2,7 @@
 
 ## 1.5.4
 - Added the file operation error messages
+- Refined the python code
 
 ## 1.5.3
 - Fixed the tilemap editor
