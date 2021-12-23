@@ -25,24 +25,24 @@ class App(Widget):
     """
 
     def __init__(self, resource_file):
-        # get absolute path of resource file before initializing Pyxel
+        # Get absolute path of resource file before initializing Pyxel
         resource_file = os.path.abspath(resource_file)
 
-        # initialize Pyxel
+        # Initialize Pyxel
         pyxel.init(APP_WIDTH, APP_HEIGHT)
         pyxel.mouse(True)
         self._set_title(resource_file)
         if os.path.exists(resource_file):
             pyxel.load(resource_file)
 
-        # start initializing application
+        # Start initializing application
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
         self._resource_file = resource_file
 
-        # help_message_var
+        # Initialize help_message_var
         self.new_var("help_message_var", "")
 
-        # editor button
+        # Initialize editor button
         self._editor_button = RadioButton(
             self,
             1,
@@ -50,7 +50,7 @@ class App(Widget):
             img=EDITOR_IMAGE,
             u=0,
             v=0,
-            btn_count=4,
+            num_buttons=4,
             value=0,
         )
         self._editor_button.add_event_listener("change", self.__on_editor_button_change)
@@ -59,7 +59,7 @@ class App(Widget):
         )
         self.copy_var("editor_no_var", self._editor_button, "value_var")
 
-        # undo button
+        # Initialize undo button
         self._undo_button = ImageButton(
             self,
             48,
@@ -73,7 +73,7 @@ class App(Widget):
             "mouse_hover", self.__on_undo_button_mouse_hover
         )
 
-        # redo button
+        # Initialize redo button
         self._redo_button = ImageButton(
             self,
             57,
@@ -87,7 +87,7 @@ class App(Widget):
             "mouse_hover", self.__on_redo_button_mouse_hover
         )
 
-        # save button
+        # Initialize save button
         self._save_button = ImageButton(
             self,
             75,
@@ -101,7 +101,7 @@ class App(Widget):
             "mouse_hover", self.__on_save_button_mouse_hover
         )
 
-        # editors
+        # Initialize editors
         self._editors = [
             ImageEditor(self),
             TilemapEditor(self),
@@ -110,11 +110,11 @@ class App(Widget):
         ]
         self.__on_editor_button_change(self.editor_no_var)
 
-        # event listeners
+        # Set event listeners
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
-        # start application
+        # Start application
         pyxel.run(self.update_all, self.draw_all)
 
     @property
@@ -151,7 +151,6 @@ class App(Widget):
         self.help_message_var = "SAVE:CTRL+S"
 
     def __on_update(self):
-        # file drop
         if pyxel.drop_files:
             drop_file = pyxel.drop_files[-1]
             file_ext = os.path.splitext(drop_file)[1]
@@ -175,11 +174,11 @@ class App(Widget):
                 self._editor.trigger_event("drop", drop_file)
 
         if pyxel.btn(pyxel.KEY_ALT):
-            # alt+left: switch editor
+            # Alt+Left: Switch editor
             if pyxel.btnp(pyxel.KEY_LEFT):
                 self.editor_no_var = (self.editor_no_var - 1) % len(self._editors)
 
-            # alt+right: switch editor
+            # Alt+Right: Switch editor
             elif pyxel.btnp(pyxel.KEY_RIGHT):
                 self.editor_no_var = (self.editor_no_var + 1) % len(self._editors)
 
@@ -187,17 +186,17 @@ class App(Widget):
         self._redo_button.is_enabled_var = self._editor.can_redo
 
         if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
-            # ctrl+s: save
+            # Ctrl+S: Save
             if pyxel.btnp(pyxel.KEY_S):
                 self._save_button.is_pressed_var = True
 
-            # ctrl+z: undo
+            # Ctrl+Z: Undo
             if self._editor.can_undo and pyxel.btnp(
                 pyxel.KEY_Z, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
             ):
                 self._undo_button.is_pressed_var = True
 
-            # ctrl+y: redo
+            # Ctrl+Y: Redo
             elif self._editor.can_redo and pyxel.btnp(
                 pyxel.KEY_Y, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
             ):
