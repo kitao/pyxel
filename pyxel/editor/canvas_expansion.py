@@ -62,38 +62,38 @@ def _fill(self, x, y, val):
     dst_val = self.pget(x, y)
     if dst_val == val:
         return
-    for i in range(x, -1, -1):
-        if self.pget(i, y) != dst_val:
+    for xi in range(x, -1, -1):
+        if self.pget(xi, y) != dst_val:
             break
-        self.pset(i, y, val)
-        if y > 0 and self.pget(i, y - 1) == dst_val:
-            self.fill(i, y - 1, val)
-        if y < 15 and self.pget(i, y + 1) == dst_val:
-            self.fill(i, y + 1, val)
-    for i in range(x + 1, 16):
-        if self.pget(i, y) != dst_val:
+        self.pset(xi, y, val)
+        if y > 0 and self.pget(xi, y - 1) == dst_val:
+            self.fill(xi, y - 1, val)
+        if y < 15 and self.pget(xi, y + 1) == dst_val:
+            self.fill(xi, y + 1, val)
+    for xi in range(x + 1, 16):
+        if self.pget(xi, y) != dst_val:
             break
-        self.pset(i, y, val)
-        if y > 0 and self.pget(i, y - 1) == dst_val:
-            self.fill(i, y - 1, val)
-        if y < 15 and self.pget(i, y + 1) == dst_val:
-            self.fill(i, y + 1, val)
+        self.pset(xi, y, val)
+        if y > 0 and self.pget(xi, y - 1) == dst_val:
+            self.fill(xi, y - 1, val)
+        if y < 15 and self.pget(xi, y + 1) == dst_val:
+            self.fill(xi, y + 1, val)
 
 
 def _get_slice(self, x, y, width, height):
     data = [[0] * width for _ in range(height)]
-    for i in range(height):
-        for j in range(width):
-            data[i][j] = self.pget(x + j, y + i)
+    for yi in range(height):
+        for xi in range(width):
+            data[yi][xi] = self.pget(x + xi, y + yi)
     return data
 
 
 def _set_slice(self, x, y, slice):
     width = len(slice[0])
     height = len(slice)
-    for i in range(height):
-        for j in range(width):
-            self.pset(x + j, y + i, slice[i][j])
+    for yi in range(height):
+        for xi in range(width):
+            self.pset(x + xi, y + yi, slice[yi][xi])
 
 
 pyxel.Image.rectb2 = pyxel.Tilemap.rectb2 = _rectb2
