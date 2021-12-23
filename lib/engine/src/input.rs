@@ -52,6 +52,12 @@ impl Input {
                 self.drop_files.push(filename);
             }
 
+            // Window Events
+            Event::FocusGained => {}
+            Event::FocusLost => {}
+            Event::Maximized => {}
+            Event::Minimized => {}
+
             // Key events
             Event::KeyDown { key } => {
                 if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {

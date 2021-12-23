@@ -23,4 +23,6 @@ pub trait Platform {
         num_samples: u32,
         audio_callback: shared_type!(dyn AudioCallback + Send),
     );
+    fn pause_audio(&mut self);
+    fn resume_audio(&mut self);
 }

@@ -18,6 +18,7 @@ pub struct System {
     frame_count: u32,
     quit_key: Key,
     should_quit: bool,
+    is_paused: bool,
     fps_profiler: Profiler,
     update_profiler: Profiler,
     draw_profiler: Profiler,
@@ -33,6 +34,7 @@ impl System {
             frame_count: 0,
             quit_key,
             should_quit: false,
+            is_paused: false,
             fps_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             update_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             draw_profiler: Profiler::new(NUM_MEASURE_FRAMES),
@@ -150,8 +152,10 @@ impl Pyxel {
         self.system
             .update_profiler
             .start(self.platform.tick_count());
-
         self.process_events();
+        if self.system.is_paused {
+            return false;
+        }
         self.check_special_input();
         if self.system.should_quit {
             return true;
@@ -162,7 +166,6 @@ impl Pyxel {
         if self.system.should_quit {
             return true;
         }
-
         self.system.update_profiler.end(self.platform.tick_count());
         false
     }
@@ -174,9 +177,20 @@ impl Pyxel {
                 Event::Quit => {
                     self.system.should_quit = true;
                 }
+                Event::FocusGained | Event::Maximized => {
+                    self.system.is_paused = false;
+                    self.system.disable_next_frame_skip = true;
+                    self.platform.resume_audio();
+                }
+                Event::FocusLost | Event::Minimized => {
+                    self.system.is_paused = true;
+                    self.platform.pause_audio();
+                }
                 _ => {
-                    self.input
-                        .process_input_event(event, self.system.frame_count);
+                    if !self.system.is_paused {
+                        self.input
+                            .process_input_event(event, self.system.frame_count);
+                    }
                 }
             }
         }
@@ -216,8 +230,10 @@ impl Pyxel {
     }
 
     fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
+        if self.system.is_paused {
+            return;
+        }
         self.system.draw_profiler.start(self.platform.tick_count());
-
         if let Some(callback) = callback {
             callback.draw(self);
         }
@@ -228,7 +244,6 @@ impl Pyxel {
         self.resource
             .capture_screen(self.screen.clone(), &self.colors, self.system.frame_count);
         self.system.frame_count += 1;
-
         self.system.draw_profiler.end(self.platform.tick_count());
     }
 
