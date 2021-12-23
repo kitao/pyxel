@@ -3,6 +3,7 @@
 ## 1.5.4
 - Added the file operation error messages
 - Refined the python code
+- Updated the README in Korean
 
 ## 1.5.3
 - Fixed the tilemap editor
