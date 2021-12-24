@@ -358,7 +358,7 @@ Show the screen and wait until the `Esc` key is pressed. (Do not use in normal a
 Updates the screen once. (Do not use in normal applications)
 
 - `quit()`<br>
-Quit the Pyxel application at the end of the current frame.
+Quit the Pyxel application.
 
 ### Resource
 
