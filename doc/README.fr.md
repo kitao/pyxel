@@ -358,7 +358,7 @@ Affiche l’écran jusqu’à ce que la touche `Esc` soit appuyée. (Ne pas util
 Met à jour l’écran une fois. (Ne pas utiliser dans des applications normales)
 
 - `quit()`<br>
-Quitte l’application Pyxel à la fin de la frame actuelle.
+Quitte l’application Pyxel.
 
 ### Ressources
 

@@ -17,7 +17,6 @@ pub struct System {
     disable_next_frame_skip: bool,
     frame_count: u32,
     quit_key: Key,
-    should_quit: bool,
     is_paused: bool,
     fps_profiler: Profiler,
     update_profiler: Profiler,
@@ -33,7 +32,6 @@ impl System {
             disable_next_frame_skip: true,
             frame_count: 0,
             quit_key,
-            should_quit: false,
             is_paused: false,
             fps_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             update_profiler: Profiler::new(NUM_MEASURE_FRAMES),
@@ -78,9 +76,7 @@ impl Pyxel {
 
     pub fn run<T: PyxelCallback>(&mut self, callback: &mut T) {
         self.system.next_update_ms = self.platform.tick_count() as f64 + self.system.one_frame_ms;
-        if self.update_frame(Some(callback)) {
-            return;
-        }
+        self.update_frame(Some(callback));
         self.draw_frame(Some(callback));
 
         loop {
@@ -105,9 +101,7 @@ impl Pyxel {
             }
 
             for i in 0..update_count {
-                if self.update_frame(Some(callback)) {
-                    return;
-                }
+                self.update_frame(Some(callback));
                 if i < update_count - 1 {
                     self.system.frame_count += 1;
                 }
@@ -118,9 +112,7 @@ impl Pyxel {
 
     pub fn show(&mut self) {
         loop {
-            if self.update_frame(None) {
-                break;
-            }
+            self.update_frame(None);
             self.draw_frame(None);
         }
     }
@@ -136,38 +128,28 @@ impl Pyxel {
         let tick_count = self.platform.tick_count();
         self.system.fps_profiler.end(tick_count);
         self.system.fps_profiler.start(tick_count);
-
-        if self.update_frame(None) {
-            exit(0);
-        }
+        self.update_frame(None);
         self.draw_frame(None);
         false
     }
 
     pub fn quit(&mut self) {
-        self.system.should_quit = true;
+        exit(0);
     }
 
-    fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) -> bool {
+    fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
         self.system
             .update_profiler
             .start(self.platform.tick_count());
         self.process_events();
         if self.system.is_paused {
-            return false;
+            return;
         }
         self.check_special_input();
-        if self.system.should_quit {
-            return true;
-        }
         if let Some(callback) = callback {
             callback.update(self);
         }
-        if self.system.should_quit {
-            return true;
-        }
         self.system.update_profiler.end(self.platform.tick_count());
-        false
     }
 
     fn process_events(&mut self) {
@@ -175,7 +157,7 @@ impl Pyxel {
         while let Some(event) = self.platform.poll_event() {
             match event {
                 Event::Quit => {
-                    self.system.should_quit = true;
+                    exit(0);
                 }
                 Event::FocusGained | Event::Maximized => {
                     self.system.is_paused = false;
@@ -215,7 +197,7 @@ impl Pyxel {
             }
         }
         if self.btnp(self.system.quit_key, None, None) {
-            self.system.should_quit = true;
+            exit(0);
         }
     }
 

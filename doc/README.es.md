@@ -355,7 +355,7 @@ Muestra la pantalla y espera hasta que la tecla `Esc` sea pulsada. (No lo utilic
 Actualiza la pantalla una vez (No lo utilice en aplicaciones normales)
 
 - `quit()`<br>
-Salir de la aplicación al final del fotograma actual
+Salir de la aplicación
 
 ### Recursos
 

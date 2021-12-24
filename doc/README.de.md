@@ -357,7 +357,7 @@ Zeige das Fenster und warte bis die `Esc` Taste gedrückt wird. (Nicht in normal
 Updatet das Fenster ein mal. (Nicht in normalen Anwendungen benutzen)
 
 - `quit()`<br>
-Beende das Pyxel-Programm nach dem aktuellen Bild.
+Beende das Pyxel-Programm.
 
 ### Ressourcen
 

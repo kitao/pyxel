@@ -359,7 +359,7 @@ pyxel play PYXEL_APP_FILE
 刷新一次屏幕。（通常应用中建议不要使用）
 
 - `quit()`<br>
-在当前帧的最后，退出Pyxel应用。
+退出Pyxel应用。
 
 ### 源文件
 
