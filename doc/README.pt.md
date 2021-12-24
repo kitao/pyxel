@@ -358,7 +358,7 @@ Mostra a tela e espera até a tecla `Esc` ser pressionada. (Não utilizar em apl
 Atualiza a tela uma vez. (Não utilizar em aplicações normais)
 
 - `quit()`<br>
-Feche a aplicação Pyxel atual ao final do quadro atual.
+Feche a aplicação Pyxel.
 
 ### Recurso
 
