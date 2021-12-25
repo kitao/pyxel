@@ -204,7 +204,7 @@ class Snake:
 
     @staticmethod
     def center_text(text, page_width, char_width=pyxel.FONT_WIDTH):
-        """Helper function for calcuating the start x value for centered text."""
+        """Helper function for calculating the start x value for centered text."""
 
         text_width = len(text) * char_width
         return (page_width - text_width) // 2
