@@ -261,7 +261,7 @@ pub const MOUSE_BUTTON_MIDDLE: Key = 451;
 pub const MOUSE_BUTTON_RIGHT: Key = 452;
 pub const MOUSE_BUTTON_X1: Key = 453;
 pub const MOUSE_BUTTON_X2: Key = 454;
-pub const MOUSE_BUTTON_UNKOWN: Key = 455;
+pub const MOUSE_BUTTON_UNKNOWN: Key = 455;
 
 // Gamepad1
 pub const GAMEPAD1_AXIS_LEFTX: Key = 500;
