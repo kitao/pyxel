@@ -64,7 +64,7 @@ class ImageViewer(Widget):
         )
         self.copy_var("viewport_x_var", self._h_scroll_bar, "value_var")
 
-        # Initialize virtical scroll bar
+        # Initialize vertical scroll bar
         self._v_scroll_bar = ScrollBar(
             self,
             65,
