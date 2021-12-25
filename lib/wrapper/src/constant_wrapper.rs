@@ -310,7 +310,7 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(MOUSE_BUTTON_RIGHT)?;
     add_constant!(MOUSE_BUTTON_X1)?;
     add_constant!(MOUSE_BUTTON_X2)?;
-    add_constant!(MOUSE_BUTTON_UNKOWN)?;
+    add_constant!(MOUSE_BUTTON_UNKNOWN)?;
 
     add_constant!(GAMEPAD1_AXIS_LEFTX)?;
     add_constant!(GAMEPAD1_AXIS_LEFTY)?;
