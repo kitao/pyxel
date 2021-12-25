@@ -364,27 +364,43 @@ impl Pyxel {
                     }
                 }
 
-                let diff_width = if min_x > max_x {
-                    0
-                } else {
+                let diff_width = if min_x < max_x {
                     (max_x - min_x + 1) as u32
-                };
-                let diff_height = if min_y > max_y {
-                    0
                 } else {
+                    0
+                };
+                let diff_height = if min_y < max_y {
                     (max_y - min_y + 1) as u32
+                } else {
+                    0
                 };
                 buffer = Resource::scale_buffer(&buffer, diff_width, diff_height, CAPTURE_SCALE);
+                let frame_top: u16;
+                let frame_left: u16;
+                let frame_width: u16;
+                let frame_height: u16;
+                if buffer.is_empty() {
+                    frame_top = 0;
+                    frame_left = 0;
+                    frame_width = 1;
+                    frame_height = 1;
+                    buffer.push(0);
+                } else {
+                    frame_top = (min_y as u16) * CAPTURE_SCALE as u16;
+                    frame_left = (min_x as u16) * CAPTURE_SCALE as u16;
+                    frame_width = (diff_width * CAPTURE_SCALE) as u16;
+                    frame_height = (diff_height * CAPTURE_SCALE) as u16;
+                }
                 encoder
                     .write_frame(&Frame {
                         delay: screen.delay,
                         dispose: DisposalMethod::Keep,
                         transparent: Some(0),
                         needs_user_input: false,
-                        top: (min_y as u16) * CAPTURE_SCALE as u16,
-                        left: (min_x as u16) * CAPTURE_SCALE as u16,
-                        width: (diff_width * CAPTURE_SCALE) as u16,
-                        height: (diff_height * CAPTURE_SCALE) as u16,
+                        top: frame_top,
+                        left: frame_left,
+                        width: frame_width,
+                        height: frame_height,
                         interlaced: false,
                         palette: Some(palette),
                         buffer: Cow::Borrowed(&buffer),
