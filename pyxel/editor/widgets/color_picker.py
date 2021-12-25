@@ -16,7 +16,7 @@ class ColorPicker(Widget):
         super().__init__(parent, x, y, 65, 17, **kwargs)
         self._with_shadow = with_shadow
 
-        # Initialize valur_var
+        # Initialize value_var
         self.new_var("value_var", value)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
