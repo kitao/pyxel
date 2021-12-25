@@ -184,9 +184,17 @@ impl Platform for Sdl2 {
 
                 // Window events
                 SdlEvent::Window { win_event, .. } => match win_event {
-                    SdlWindowEvent::FocusGained => Event::FocusGained,
+                    SdlWindowEvent::FocusGained => {
+                        self.mouse_x = i32::MIN;
+                        self.mouse_y = i32::MIN;
+                        Event::FocusGained
+                    }
                     SdlWindowEvent::FocusLost => Event::FocusLost,
-                    SdlWindowEvent::Maximized => Event::Maximized,
+                    SdlWindowEvent::Maximized => {
+                        self.mouse_x = i32::MIN;
+                        self.mouse_y = i32::MIN;
+                        Event::Maximized
+                    }
                     SdlWindowEvent::Minimized => Event::Minimized,
                     _ => continue,
                 },
@@ -329,7 +337,7 @@ impl Platform for Sdl2 {
             (bg_color & 0xff) as u8,
         ));
 
-        // Instread of self.sdl_canvas.clear()
+        // Instead of self.sdl_canvas.clear()
         {
             let display_size = self.sdl_canvas.output_size().unwrap();
             self.sdl_canvas

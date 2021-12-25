@@ -6,6 +6,7 @@
 - Updated the README in Korean
 - Updated the README in Portuguese
 - Changed to stop updating when the window is inactive
+- Changed to the quit to end the application immediately
 
 ## 1.5.3
 - Fixed the tilemap editor
