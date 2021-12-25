@@ -8,6 +8,8 @@
 - Changed to stop updating when the window is inactive
 - Changed to the quit to end the application immediately
 - Fixed the animated GIF recorder
+- Modified the vibrato depth parameter
+- Added the SFX and BGM to the example #10
 
 ## 1.5.3
 - Fixed the tilemap editor
