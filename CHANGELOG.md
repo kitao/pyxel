@@ -138,7 +138,7 @@
 
 ## 1.3.1
 - Improved the animated GIF making method
-- Added the README in Portguese
+- Added the README in Portuguese
 - Fixed to work with Python 3.7 on Windows
 - Changed the color change shortcuts to ignore the alt keys
 
