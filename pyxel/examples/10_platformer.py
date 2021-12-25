@@ -113,6 +113,7 @@ class Player:
         self.dy = min(self.dy + 1, 3)
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.dy = -6
+            pyxel.play(3, 8)
         self.x, self.y, self.dx, self.dy = push_back(self.x, self.y, self.dx, self.dy)
         if self.x < scroll_x:
             self.x = scroll_x
@@ -236,6 +237,7 @@ class App:
         global player
         player = Player(0, 0)
         spawn_enemy(0, 127)
+        pyxel.playm(0, loop=True)
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -276,6 +278,7 @@ def game_over():
     player.dy = 0
     enemies = []
     spawn_enemy(0, 127)
+    pyxel.play(3, 9)
 
 
 App()
