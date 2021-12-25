@@ -52,7 +52,7 @@ impl Input {
                 self.drop_files.push(filename);
             }
 
-            // Window Events
+            // Window events
             Event::FocusGained => {}
             Event::FocusLost => {}
             Event::Maximized => {}
