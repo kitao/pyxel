@@ -81,11 +81,9 @@ impl Pyxel {
 
         loop {
             let sleep_time = self.wait_for_update_time();
-
             let tick_count = self.platform.tick_count();
             self.system.fps_profiler.end(tick_count);
             self.system.fps_profiler.start(tick_count);
-
             let update_count: u32;
             if self.system.disable_next_frame_skip {
                 update_count = 1;
@@ -99,7 +97,6 @@ impl Pyxel {
                 ) + 1;
                 self.system.next_update_ms += self.system.one_frame_ms * update_count as f64;
             }
-
             for i in 0..update_count {
                 self.update_frame(Some(callback));
                 if i < update_count - 1 {
@@ -117,20 +114,18 @@ impl Pyxel {
         }
     }
 
-    pub fn flip(&mut self) -> bool {
+    pub fn flip(&mut self) {
         if self.system.next_update_ms < 0.0 {
             self.system.next_update_ms = self.platform.tick_count() as f64;
         } else {
             self.wait_for_update_time();
         }
         self.system.next_update_ms += self.system.one_frame_ms;
-
         let tick_count = self.platform.tick_count();
         self.system.fps_profiler.end(tick_count);
         self.system.fps_profiler.start(tick_count);
         self.update_frame(None);
         self.draw_frame(None);
-        false
     }
 
     pub fn quit(&mut self) {
@@ -157,7 +152,7 @@ impl Pyxel {
         while let Some(event) = self.platform.poll_event() {
             match event {
                 Event::Quit => {
-                    exit(0);
+                    self.quit();
                 }
                 Event::FocusGained | Event::Maximized => {
                     self.system.is_paused = false;
@@ -197,7 +192,7 @@ impl Pyxel {
             }
         }
         if self.btnp(self.system.quit_key, None, None) {
-            exit(0);
+            self.quit();
         }
     }
 
@@ -276,7 +271,6 @@ impl Pyxel {
         if x <= -width || x >= self.width() as i32 || y <= -height || y >= self.height() as i32 {
             return;
         }
-
         let mut screen = self.screen.lock();
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
@@ -285,7 +279,6 @@ impl Pyxel {
         screen.clip0();
         screen.camera0();
         screen.pal0();
-
         screen.blt(
             x as f64,
             y as f64,
@@ -296,7 +289,6 @@ impl Pyxel {
             height as f64,
             Some(0),
         );
-
         screen.canvas.clip_rect = clip_rect;
         screen.canvas.camera_x = camera_x;
         screen.canvas.camera_y = camera_y;
