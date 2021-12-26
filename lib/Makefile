@@ -6,6 +6,7 @@ BUILD_DIR = $(ROOT_DIR)/lib
 BUILD_OPT = --release
 TESTS_DIR = $(BUILD_DIR)/wrapper/tests
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
+TEST_RESOURCE = $(EXAMPLES_DIR)/assets/resource_example.pyxres;
 DIST_DIR = $(ROOT_DIR)/dist
 DIST_NAME = $(shell echo $(WHEEL_NAME) | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PLATFORM)
 WHEEL_NAME = $(shell ls $(DIST_DIR)/pyxel-*.whl)
@@ -93,8 +94,9 @@ test: build
 	@cargo test
 	@PYTHONPATH=$(ROOT_DIR) $(PYTHON) -m unittest discover $(TESTS_DIR)
 	@trap break INT; for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
-		PYTHONPATH=$(ROOT_DIR) $(PYTHON) $$example; \
+		PYTHONPATH=$(ROOT_DIR) $(PYTHON) -m pyxel run $$example; \
 	done; trap - INT
+	PYTHONPATH=$(ROOT_DIR) $(PYTHON) -m pyxel edit $(TEST_RESOURCE)
 
 wheel:
 	@cd $(ROOT_DIR) && $(PYTHON) setup.py bdist_wheel
