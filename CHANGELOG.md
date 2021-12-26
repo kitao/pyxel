@@ -10,6 +10,10 @@
 - Fixed the animated GIF recorder
 - Modified the vibrato depth parameter
 - Added the SFX and BGM to the example #10
+- Fixed the play button bug in the Sound Editor
+- Fixed the editing method for the piano roll
+- Added the capture_scale option to the init
+- Added the scale option to the screenshot and screencast
 
 ## 1.5.3
 - Fixed the tilemap editor
