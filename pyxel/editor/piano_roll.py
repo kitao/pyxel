@@ -76,6 +76,7 @@ class PianoRoll(Widget):
         elif x < self._press_x:
             step = -1
         else:
+            self._set_note(x, y)
             return
         dx = x - self._press_x
         dy = y - self._press_y
