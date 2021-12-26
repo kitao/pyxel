@@ -14,6 +14,7 @@
 - Fixed the editing method for the piano roll
 - Added the capture_scale option to the init
 - Added the scale option to the screenshot and screencast
+- Improved the sound playback response
 
 ## 1.5.3
 - Fixed the tilemap editor
