@@ -344,8 +344,8 @@ pyxel play PYXEL_APP_FILE
 - `frame_count`<br>
 경과한 프레임의 수
 
-- `init(width, height, [title], [fps], [quit_key], [capture_sec])`<br>
-Pyxel 애플리케이션을 화면 크기 (`width`, `height`)로 초기화합니다. 옵션으로 `title`에 창 제목, `fps`에 프레임 속도, `quit_key`에 애플리케이션 종료 키, `capture_sec`에 화면 캡처의 최대 녹화 시간을 지정할 수 있습니다.<br>
+- `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
+Pyxel 애플리케이션을 화면 크기 (`width`, `height`)로 초기화합니다. 옵션으로 `title`에 창 제목, `fps`에 프레임 속도, `quit_key`에 애플리케이션 종료 키, the scale of the screen capture with `capture_scale`, `capture_sec`에 화면 캡처의 최대 녹화 시간을 지정할 수 있습니다.<br>
 예시: `pyxel.init(160, 120, title="Pyxel with Options", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
 
 - `run(update, draw)`<br>

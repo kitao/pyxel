@@ -344,8 +344,8 @@ La largeur et la hauteur de l’écran
 - `frame_count`<br>
 Le nombre de frames passées
 
-- `init(width, height, [title], [fps], [quit_key], [capture_sec])`<br>
-Initialise l’application Pyxel avec un écran de taille(`width`, `height`). Il est possible de passer en option : le titre de la fenêtre avec `title`, le nombre de frame par seconde avec `fps`, la touche pour quitter l’application avec `quit_key`, and le temps maximum d’enregistrement vidéo avec `capture_sec`.<br>
+- `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
+Initialise l’application Pyxel avec un écran de taille(`width`, `height`). Il est possible de passer en option : le titre de la fenêtre avec `title`, le nombre de frame par seconde avec `fps`, la touche pour quitter l’application avec `quit_key`, the scale of the screen capture with `capture_scale`, and le temps maximum d’enregistrement vidéo avec `capture_sec`.<br>
 Par exemple : `pyxel.init(160, 120, title="Pyxel with Options", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
 
 - `run(update, draw)`<br>
