@@ -107,9 +107,7 @@ impl ScreenRecord {
                 }
             }
         }
-        if buffer.is_empty() {
-            buffer = vec![0];
-        } else {
+        if !buffer.is_empty() {
             let width = rgb_image[0].len() as u32;
             let height = rgb_image.len() as u32;
             let mut scaled_buffer: Vec<u8> = Vec::new();
@@ -383,8 +381,9 @@ impl Pyxel {
             let rgb_image = screen_record.to_rgb_image();
             let (diff_rect, diff_image) =
                 ScreenRecord::make_diff_image(&mut base_rgb_image, &rgb_image);
-            let (palette, buffer) = ScreenRecord::make_gif_buffer(&diff_image, scale);
-            let (top, left, width, height): (u16, u16, u16, u16) = if buffer.len() == 1 {
+            let (palette, mut buffer) = ScreenRecord::make_gif_buffer(&diff_image, scale);
+            let (top, left, width, height): (u16, u16, u16, u16) = if buffer.is_empty() {
+                buffer = vec![0];
                 (0, 0, 1, 1)
             } else {
                 (
