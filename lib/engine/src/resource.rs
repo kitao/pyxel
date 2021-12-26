@@ -11,8 +11,9 @@ use zip::{ZipArchive, ZipWriter};
 
 use crate::image::{Image, SharedImage};
 use crate::music::Music;
+use crate::rectarea::RectArea;
 use crate::settings::{
-    CAPTURE_SCALE, NUM_COLORS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS, PYXEL_VERSION,
+    NUM_COLORS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS, PYXEL_VERSION,
     RESOURCE_ARCHIVE_DIRNAME,
 };
 use crate::sound::Sound;
@@ -22,17 +23,125 @@ use crate::utils::parse_version_string;
 use crate::Pyxel;
 
 #[derive(Clone)]
-struct Screen {
+struct ScreenRecord {
     image: SharedImage,
     colors: [Rgb8; NUM_COLORS as usize],
     frame_count: u32,
     delay: u16,
 }
 
+impl ScreenRecord {
+    fn to_rgb_image(&self) -> Vec<Vec<Rgb8>> {
+        let image = &self.image.lock();
+        let width = image.width();
+        let height = image.height();
+        let mut rgb_image: Vec<Vec<Rgb8>> = Vec::new();
+        for y in 0..height {
+            let mut rgb_line: Vec<Rgb8> = Vec::new();
+            for x in 0..width {
+                let rgb = self.colors[image.canvas.data[y as usize][x as usize] as usize];
+                rgb_line.push(rgb);
+            }
+            rgb_image.push(rgb_line);
+        }
+        rgb_image
+    }
+
+    fn make_diff_image(
+        base_image: &mut Vec<Vec<Rgb8>>,
+        target_image: &[Vec<Rgb8>],
+    ) -> (RectArea, Vec<Vec<Rgb8>>) {
+        let mut min_x = i16::MAX;
+        let mut min_y = i16::MAX;
+        let mut max_x = i16::MIN;
+        let mut max_y = i16::MIN;
+        let mut diff_image: Vec<Vec<Rgb8>> = Vec::new();
+        for y in 0..base_image.len() {
+            let mut diff_line: Vec<Rgb8> = Vec::new();
+            for x in 0..base_image[y].len() {
+                let rgb = target_image[y][x];
+                if rgb == base_image[y][x] {
+                    diff_line.push(0xffffffff);
+                } else {
+                    min_x = min_x.min(x as i16);
+                    min_y = min_y.min(y as i16);
+                    max_x = max_x.max(x as i16);
+                    max_y = max_y.max(y as i16);
+                    base_image[y][x] = rgb;
+                    diff_line.push(rgb);
+                }
+            }
+            diff_image.push(diff_line);
+        }
+        if min_x > max_x || min_y > max_y {
+            return (RectArea::new(0, 0, 0, 0), Vec::new());
+        }
+        diff_image = diff_image[min_y as usize..=max_y as usize].to_vec();
+        for diff_line in &mut diff_image {
+            *diff_line = diff_line[min_x as usize..=max_x as usize].to_vec();
+        }
+        (
+            RectArea::new(
+                min_x as i32,
+                min_y as i32,
+                diff_image[0].len() as u32,
+                diff_image.len() as u32,
+            ),
+            diff_image,
+        )
+    }
+
+    fn make_gif_buffer(rgb_image: &[Vec<Rgb8>], scale: u32) -> (Vec<u8>, Vec<u8>) {
+        let mut color_table = IndexMap::<Rgb8, u8>::new();
+        color_table.insert(0xffffffff, 0);
+        let mut num_colors = 1;
+        let mut buffer = Vec::new();
+        for rgb_line in rgb_image {
+            for rgb in rgb_line {
+                if let Some(index) = color_table.get(rgb) {
+                    buffer.push(*index);
+                } else {
+                    color_table.insert(*rgb, num_colors);
+                    buffer.push(num_colors);
+                    num_colors += 1;
+                }
+            }
+        }
+        if buffer.is_empty() {
+            buffer = vec![0];
+        } else {
+            let width = rgb_image[0].len() as u32;
+            let height = rgb_image.len() as u32;
+            let mut scaled_buffer: Vec<u8> = Vec::new();
+            for y in 0..height * scale {
+                for x in 0..width * scale {
+                    let index = (y / scale) * width + x / scale;
+                    scaled_buffer.push(buffer[index as usize])
+                }
+            }
+            buffer = scaled_buffer;
+        }
+        let mut palette: Vec<u8> = Vec::new();
+        for (rgb, _) in color_table {
+            if rgb > 0xffffff {
+                palette.push(0xff);
+                palette.push(0x00);
+                palette.push(0xff);
+            } else {
+                palette.push(((rgb >> 16) & 0xff) as u8);
+                palette.push(((rgb >> 8) & 0xff) as u8);
+                palette.push((rgb & 0xff) as u8);
+            }
+        }
+        (palette, buffer)
+    }
+}
+
 pub struct Resource {
     fps: u32,
+    capture_scale: u32,
     max_screens: u32,
-    screens: Vec<Screen>,
+    screens: Vec<ScreenRecord>,
     start_screen_index: u32,
     next_screen_index: u32,
     num_screens: u32,
@@ -47,10 +156,11 @@ pub trait ResourceItem {
 }
 
 impl Resource {
-    pub fn new(width: u32, height: u32, fps: u32, capture_sec: u32) -> Self {
+    pub fn new(width: u32, height: u32, fps: u32, capture_scale: u32, capture_sec: u32) -> Self {
+        let capture_scale = u32::max(capture_scale, 1);
         let max_screens = fps * capture_sec;
         let screens = (0..max_screens)
-            .map(|_| Screen {
+            .map(|_| ScreenRecord {
                 image: Image::new(width, height),
                 colors: [0; NUM_COLORS as usize],
                 frame_count: 0,
@@ -59,6 +169,7 @@ impl Resource {
             .collect();
         Self {
             fps,
+            capture_scale,
             max_screens,
             screens,
             start_screen_index: 0,
@@ -119,15 +230,9 @@ impl Resource {
             .to_string()
     }
 
-    fn scale_buffer(buffer: &[u8], width: u32, height: u32, scale: u32) -> Vec<u8> {
-        let mut scaled_buffer: Vec<u8> = Vec::new();
-        for y in 0..height * scale {
-            for x in 0..width * scale {
-                let index = (y / scale) * width + x / scale;
-                scaled_buffer.push(buffer[index as usize])
-            }
-        }
-        scaled_buffer
+    fn screen_record(&self, index: u32) -> &ScreenRecord {
+        let index = (self.start_screen_index + index) % self.max_screens;
+        &self.screens[index as usize]
     }
 }
 
@@ -219,10 +324,11 @@ impl Pyxel {
         zip.finish().unwrap();
     }
 
-    pub fn screenshot(&mut self) {
+    pub fn screenshot(&mut self, scale: Option<u32>) {
+        let scale = u32::max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.screen
             .lock()
-            .save(&Resource::export_path(), &self.colors, CAPTURE_SCALE);
+            .save(&Resource::export_path(), &self.colors, scale);
         self.system.disable_next_frame_skip();
     }
 
@@ -235,179 +341,71 @@ impl Pyxel {
         self.resource.num_screens = 0;
     }
 
-    pub fn screencast(&mut self) {
-        if self.resource.max_screens == 0 || self.resource.num_screens == 0 {
+    pub fn screencast(&mut self, scale: Option<u32>) {
+        if self.resource.num_screens == 0 {
             return;
         }
         let width = self.width();
         let height = self.height();
+        let scale = u32::max(scale.unwrap_or(self.resource.capture_scale), 1);
+        let scaled_width = (width * scale) as u16;
+        let scaled_height = (height * scale) as u16;
         let filename = Resource::export_path() + ".gif";
         let mut file = File::create(&filename)
             .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename));
-        let mut encoder = Encoder::new(
-            &mut file,
-            (width * CAPTURE_SCALE) as u16,
-            (height * CAPTURE_SCALE) as u16,
-            &[],
-        )
-        .unwrap();
+        let mut encoder = Encoder::new(&mut file, scaled_width, scaled_height, &[]).unwrap();
         encoder.set_repeat(Repeat::Infinite).unwrap();
-        let mut prev_rgb_image: Vec<Vec<Rgb8>> = Vec::new();
-        for i in 0..self.resource.num_screens {
-            let index = (self.resource.start_screen_index + i) % self.resource.max_screens;
-            let screen = &self.resource.screens[index as usize];
-            let colors = &screen.colors;
-            let image = &screen.image.lock();
 
-            let mut rgb_image: Vec<Vec<Rgb8>> = Vec::new();
-            for y in 0..height {
-                let mut rgb_line: Vec<Rgb8> = Vec::new();
-                for x in 0..width {
-                    rgb_line.push(colors[image.canvas.data[y as usize][x as usize] as usize]);
-                }
-                rgb_image.push(rgb_line);
-            }
+        let screen = &self.resource.screen_record(0);
+        let mut base_rgb_image = screen.to_rgb_image();
+        let (palette, buffer) = ScreenRecord::make_gif_buffer(&base_rgb_image, scale);
+        encoder
+            .write_frame(&Frame {
+                delay: screen.delay,
+                dispose: DisposalMethod::Any,
+                transparent: None,
+                needs_user_input: false,
+                top: 0,
+                left: 0,
+                width: scaled_width,
+                height: scaled_height,
+                interlaced: false,
+                palette: Some(palette),
+                buffer: Cow::Borrowed(&buffer),
+            })
+            .unwrap();
 
-            if i == 0 {
-                let mut buffer: Vec<u8> = Vec::new();
-                let mut color_table = IndexMap::<Rgb8, u8>::new();
-                let mut num_colors = 0;
-                for y in 0..height {
-                    for x in 0..width {
-                        let rgb = rgb_image[y as usize][x as usize];
-                        if let Some(index) = color_table.get(&rgb) {
-                            buffer.push(*index);
-                        } else {
-                            color_table.insert(rgb, num_colors);
-                            buffer.push(num_colors);
-                            num_colors += 1;
-                        }
-                    }
-                }
-
-                let mut palette: Vec<u8> = Vec::new();
-                for (rgb, _) in color_table {
-                    palette.push(((rgb >> 16) & 0xff) as u8);
-                    palette.push(((rgb >> 8) & 0xff) as u8);
-                    palette.push((rgb & 0xff) as u8);
-                }
-
-                buffer = Resource::scale_buffer(&buffer, width, height, CAPTURE_SCALE);
-                encoder
-                    .write_frame(&Frame {
-                        delay: screen.delay,
-                        dispose: DisposalMethod::Any,
-                        transparent: None,
-                        needs_user_input: false,
-                        top: 0,
-                        left: 0,
-                        width: (width * CAPTURE_SCALE) as u16,
-                        height: (height * CAPTURE_SCALE) as u16,
-                        interlaced: false,
-                        palette: Some(palette),
-                        buffer: Cow::Borrowed(&buffer),
-                    })
-                    .unwrap();
+        for i in 1..self.resource.num_screens {
+            let screen = &self.resource.screen_record(i);
+            let rgb_image = screen.to_rgb_image();
+            let (diff_rect, diff_image) =
+                ScreenRecord::make_diff_image(&mut base_rgb_image, &rgb_image);
+            let (palette, buffer) = ScreenRecord::make_gif_buffer(&diff_image, scale);
+            let (top, left, width, height): (u16, u16, u16, u16) = if buffer.len() == 1 {
+                (0, 0, 1, 1)
             } else {
-                let mut min_x = width as i16;
-                let mut min_y = height as i16;
-                let mut max_x = -1_i16;
-                let mut max_y = -1_i16;
-
-                let mut diff_buffer: Vec<Vec<u8>> = Vec::new();
-                let mut color_table = IndexMap::<Rgb8, u8>::new();
-                color_table.insert(0xffffffff, 0);
-                let mut num_colors = 1;
-                for y in 0..height {
-                    let mut diff_line: Vec<u8> = Vec::new();
-                    for x in 0..width {
-                        let cur_rgb = rgb_image[y as usize][x as usize];
-                        let prev_rgb = prev_rgb_image[y as usize][x as usize];
-                        if cur_rgb == prev_rgb {
-                            diff_line.push(0);
-                            continue;
-                        }
-
-                        min_x = min_x.min(x as i16);
-                        min_y = min_y.min(y as i16);
-                        max_x = max_x.max(x as i16);
-                        max_y = max_y.max(y as i16);
-
-                        if let Some(index) = color_table.get(&cur_rgb) {
-                            diff_line.push(*index);
-                        } else {
-                            color_table.insert(cur_rgb, num_colors);
-                            diff_line.push(num_colors);
-                            num_colors += 1;
-                        }
-                    }
-                    diff_buffer.push(diff_line);
-                }
-
-                let mut buffer: Vec<u8> = Vec::new();
-                for y in min_y..=max_y {
-                    for x in min_x..=max_x {
-                        buffer.push(diff_buffer[y as usize][x as usize]);
-                    }
-                }
-
-                let mut palette: Vec<u8> = Vec::new();
-                for (rgb, _) in color_table {
-                    if rgb > 0xffffff {
-                        palette.push(0xff);
-                        palette.push(0x00);
-                        palette.push(0xff);
-                    } else {
-                        palette.push(((rgb >> 16) & 0xff) as u8);
-                        palette.push(((rgb >> 8) & 0xff) as u8);
-                        palette.push((rgb & 0xff) as u8);
-                    }
-                }
-
-                let diff_width = if min_x < max_x {
-                    (max_x - min_x + 1) as u32
-                } else {
-                    0
-                };
-                let diff_height = if min_y < max_y {
-                    (max_y - min_y + 1) as u32
-                } else {
-                    0
-                };
-                buffer = Resource::scale_buffer(&buffer, diff_width, diff_height, CAPTURE_SCALE);
-                let frame_top: u16;
-                let frame_left: u16;
-                let frame_width: u16;
-                let frame_height: u16;
-                if buffer.is_empty() {
-                    frame_top = 0;
-                    frame_left = 0;
-                    frame_width = 1;
-                    frame_height = 1;
-                    buffer.push(0);
-                } else {
-                    frame_top = (min_y as u16) * CAPTURE_SCALE as u16;
-                    frame_left = (min_x as u16) * CAPTURE_SCALE as u16;
-                    frame_width = (diff_width * CAPTURE_SCALE) as u16;
-                    frame_height = (diff_height * CAPTURE_SCALE) as u16;
-                }
-                encoder
-                    .write_frame(&Frame {
-                        delay: screen.delay,
-                        dispose: DisposalMethod::Keep,
-                        transparent: Some(0),
-                        needs_user_input: false,
-                        top: frame_top,
-                        left: frame_left,
-                        width: frame_width,
-                        height: frame_height,
-                        interlaced: false,
-                        palette: Some(palette),
-                        buffer: Cow::Borrowed(&buffer),
-                    })
-                    .unwrap();
-            }
-            prev_rgb_image = rgb_image;
+                (
+                    diff_rect.top() as u16 * scale as u16,
+                    diff_rect.left() as u16 * scale as u16,
+                    (diff_rect.width() * scale) as u16,
+                    (diff_rect.height() * scale) as u16,
+                )
+            };
+            encoder
+                .write_frame(&Frame {
+                    delay: screen.delay,
+                    dispose: DisposalMethod::Keep,
+                    transparent: Some(0),
+                    needs_user_input: false,
+                    top,
+                    left,
+                    width,
+                    height,
+                    interlaced: false,
+                    palette: Some(palette),
+                    buffer: Cow::Borrowed(&buffer),
+                })
+                .unwrap();
         }
         self.reset_capture();
         self.system.disable_next_frame_skip();
