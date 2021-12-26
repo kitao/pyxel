@@ -15,6 +15,7 @@ fn init(
     title: Option<&str>,
     fps: Option<u32>,
     quit_key: Option<pyxel::Key>,
+    capture_scale: Option<u32>,
     capture_sec: Option<u32>,
 ) -> PyResult<()> {
     let locals = PyDict::new(py);
@@ -25,7 +26,15 @@ fn init(
         None,
         Some(locals),
     )?;
-    set_instance(Pyxel::new(width, height, title, fps, quit_key, capture_sec));
+    set_instance(Pyxel::new(
+        width,
+        height,
+        title,
+        fps,
+        quit_key,
+        capture_scale,
+        capture_sec,
+    ));
     Ok(())
 }
 

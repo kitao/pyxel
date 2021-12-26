@@ -35,8 +35,8 @@ fn save(
 }
 
 #[pyfunction]
-fn screenshot() {
-    instance().screenshot();
+fn screenshot(scale: Option<u32>) {
+    instance().screenshot(scale);
 }
 
 #[pyfunction]
@@ -45,8 +45,8 @@ fn reset_capture() {
 }
 
 #[pyfunction]
-fn screencast() {
-    instance().screencast();
+fn screencast(scale: Option<u32>) {
+    instance().screencast(scale);
 }
 
 pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
