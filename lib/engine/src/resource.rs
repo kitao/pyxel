@@ -140,11 +140,11 @@ impl ScreenRecord {
 pub struct Resource {
     fps: u32,
     capture_scale: u32,
-    max_screens: u32,
-    screens: Vec<ScreenRecord>,
-    start_screen_index: u32,
-    next_screen_index: u32,
-    num_screens: u32,
+    max_screen_records: u32,
+    num_screen_records: u32,
+    screen_records: Vec<ScreenRecord>,
+    screen_records_start_index: u32,
+    screen_records_next_index: u32,
 }
 
 pub trait ResourceItem {
@@ -158,8 +158,8 @@ pub trait ResourceItem {
 impl Resource {
     pub fn new(width: u32, height: u32, fps: u32, capture_scale: u32, capture_sec: u32) -> Self {
         let capture_scale = u32::max(capture_scale, 1);
-        let max_screens = fps * capture_sec;
-        let screens = (0..max_screens)
+        let max_screen_records = fps * capture_sec;
+        let screen_records = (0..max_screen_records)
             .map(|_| ScreenRecord {
                 image: Image::new(width, height),
                 colors: [0; NUM_COLORS as usize],
@@ -170,11 +170,11 @@ impl Resource {
         Self {
             fps,
             capture_scale,
-            max_screens,
-            screens,
-            start_screen_index: 0,
-            next_screen_index: 0,
-            num_screens: 0,
+            max_screen_records,
+            num_screen_records: 0,
+            screen_records,
+            screen_records_start_index: 0,
+            screen_records_next_index: 0,
         }
     }
 
@@ -184,17 +184,18 @@ impl Resource {
         colors: &[Rgb8; NUM_COLORS as usize],
         frame_count: u32,
     ) {
-        if self.max_screens == 0 {
+        if self.max_screen_records == 0 {
             return;
         }
-        let prev_frame_count = self.screens
-            [((self.next_screen_index + self.max_screens - 1) % self.max_screens) as usize]
-            .frame_count;
-        let screen = &mut self.screens[self.next_screen_index as usize];
+        let prev_frame_count =
+            self.screen_records[((self.screen_records_next_index + self.max_screen_records - 1)
+                % self.max_screen_records) as usize]
+                .frame_count;
+        let screen_record = &mut self.screen_records[self.screen_records_next_index as usize];
         let width = screen_image.lock().width();
         let height = screen_image.lock().height();
-        screen.colors = *colors;
-        screen.image.lock().blt(
+        screen_record.colors = *colors;
+        screen_record.image.lock().blt(
             0.0,
             0.0,
             screen_image,
@@ -204,19 +205,21 @@ impl Resource {
             height as f64,
             None,
         );
-        screen.frame_count = frame_count;
-        screen.delay = ((100.0 / self.fps as f64)
-            * if self.num_screens == 0 {
+        screen_record.frame_count = frame_count;
+        screen_record.delay = ((100.0 / self.fps as f64)
+            * if self.num_screen_records == 0 {
                 1.0
             } else {
-                (screen.frame_count - prev_frame_count) as f64
+                (screen_record.frame_count - prev_frame_count) as f64
             }
             + 0.5) as u16;
-        self.next_screen_index = (self.next_screen_index + 1) % self.max_screens;
-        self.num_screens += 1;
-        if self.num_screens > self.max_screens {
-            self.start_screen_index = (self.start_screen_index + 1) % self.max_screens;
-            self.num_screens = self.max_screens;
+        self.screen_records_next_index =
+            (self.screen_records_next_index + 1) % self.max_screen_records;
+        self.num_screen_records += 1;
+        if self.num_screen_records > self.max_screen_records {
+            self.screen_records_start_index =
+                (self.screen_records_start_index + 1) % self.max_screen_records;
+            self.num_screen_records = self.max_screen_records;
         }
     }
 
@@ -231,8 +234,8 @@ impl Resource {
     }
 
     fn screen_record(&self, index: u32) -> &ScreenRecord {
-        let index = (self.start_screen_index + index) % self.max_screens;
-        &self.screens[index as usize]
+        let index = (self.screen_records_start_index + index) % self.max_screen_records;
+        &self.screen_records[index as usize]
     }
 }
 
@@ -333,16 +336,16 @@ impl Pyxel {
     }
 
     pub fn reset_capture(&mut self) {
-        if self.resource.max_screens == 0 {
+        if self.resource.max_screen_records == 0 {
             return;
         }
-        self.resource.start_screen_index = 0;
-        self.resource.next_screen_index = 0;
-        self.resource.num_screens = 0;
+        self.resource.screen_records_start_index = 0;
+        self.resource.screen_records_next_index = 0;
+        self.resource.num_screen_records = 0;
     }
 
     pub fn screencast(&mut self, scale: Option<u32>) {
-        if self.resource.num_screens == 0 {
+        if self.resource.num_screen_records == 0 {
             return;
         }
         let width = self.width();
@@ -356,12 +359,12 @@ impl Pyxel {
         let mut encoder = Encoder::new(&mut file, scaled_width, scaled_height, &[]).unwrap();
         encoder.set_repeat(Repeat::Infinite).unwrap();
 
-        let screen = &self.resource.screen_record(0);
-        let mut base_rgb_image = screen.to_rgb_image();
+        let screen_record = &self.resource.screen_record(0);
+        let mut base_rgb_image = screen_record.to_rgb_image();
         let (palette, buffer) = ScreenRecord::make_gif_buffer(&base_rgb_image, scale);
         encoder
             .write_frame(&Frame {
-                delay: screen.delay,
+                delay: screen_record.delay,
                 dispose: DisposalMethod::Any,
                 transparent: None,
                 needs_user_input: false,
@@ -375,9 +378,9 @@ impl Pyxel {
             })
             .unwrap();
 
-        for i in 1..self.resource.num_screens {
-            let screen = &self.resource.screen_record(i);
-            let rgb_image = screen.to_rgb_image();
+        for i in 1..self.resource.num_screen_records {
+            let screen_record = &self.resource.screen_record(i);
+            let rgb_image = screen_record.to_rgb_image();
             let (diff_rect, diff_image) =
                 ScreenRecord::make_diff_image(&mut base_rgb_image, &rgb_image);
             let (palette, buffer) = ScreenRecord::make_gif_buffer(&diff_image, scale);
@@ -393,7 +396,7 @@ impl Pyxel {
             };
             encoder
                 .write_frame(&Frame {
-                    delay: screen.delay,
+                    delay: screen_record.delay,
                     dispose: DisposalMethod::Keep,
                     transparent: Some(0),
                     needs_user_input: false,
