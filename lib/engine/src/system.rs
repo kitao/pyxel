@@ -182,13 +182,13 @@ impl Pyxel {
                 self.system.enable_perf_monitor = !self.system.enable_perf_monitor;
             }
             if self.btnp(KEY_1, None, None) {
-                self.screenshot();
+                self.screenshot(None);
             }
             if self.btnp(KEY_2, None, None) {
                 self.reset_capture();
             }
             if self.btnp(KEY_3, None, None) {
-                self.screencast();
+                self.screencast(None);
             }
         }
         if self.btnp(self.system.quit_key, None, None) {
