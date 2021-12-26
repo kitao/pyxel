@@ -88,16 +88,18 @@ impl Pyxel {
         title: Option<&str>,
         fps: Option<u32>,
         quit_key: Option<Key>,
+        capture_scale: Option<u32>,
         capture_sec: Option<u32>,
     ) -> Self {
         let title = title.unwrap_or(DEFAULT_TITLE);
         let fps = fps.unwrap_or(DEFAULT_FPS);
         let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
-        let capture_sec = capture_sec.unwrap_or(DEFAULT_GIF_SEC);
+        let capture_scale = capture_scale.unwrap_or(DEFAULT_CAPTURE_SCALE);
+        let capture_sec = capture_sec.unwrap_or(DEFAULT_CAPTURE_SEC);
 
         let mut platform = TargetPlatform::new(title, width, height, DISPLAY_RATIO);
         let system = System::new(fps, quit_key);
-        let resource = Resource::new(width, height, fps, capture_sec);
+        let resource = Resource::new(width, height, fps, capture_scale, capture_sec);
         let input = Input::new();
         let graphics = Graphics::new();
         let audio = Audio::new(&mut platform);

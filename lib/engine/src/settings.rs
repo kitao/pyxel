@@ -7,7 +7,8 @@ pub const DEFAULT_TITLE: &str = "Pyxel";
 pub const DEFAULT_SCALE: u32 = 4;
 pub const DEFAULT_FPS: u32 = 30;
 pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
-pub const DEFAULT_GIF_SEC: u32 = 10;
+pub const DEFAULT_CAPTURE_SCALE: u32 = 2;
+pub const DEFAULT_CAPTURE_SEC: u32 = 10;
 pub const DISPLAY_RATIO: f64 = 0.8;
 pub const BACKGROUND_COLOR: Rgb8 = 0x101018;
 pub const MAX_SKIP_FRAMES: u32 = 9;
@@ -38,7 +39,6 @@ pub const APP_FILE_EXTENSION: &str = ".pyxapp";
 pub const APP_STARTUP_SCRIPT_FILE: &str = ".pyxapp_startup_script";
 pub const RESOURCE_FILE_EXTENSION: &str = ".pyxres";
 pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
-pub const CAPTURE_SCALE: u32 = 2;
 
 // Graphics
 pub const NUM_COLORS: u32 = 16;

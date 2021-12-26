@@ -104,7 +104,15 @@ impl PyxelCallback for App {
 }
 
 pub fn main() {
-    let mut pyxel = Pyxel::new(200, 150, Some("Hello, Pyxel in Rust!"), None, None, None);
+    let mut pyxel = Pyxel::new(
+        200,
+        150,
+        Some("Hello, Pyxel in Rust!"),
+        None,
+        None,
+        None,
+        None,
+    );
     let mut app = App::new(&mut pyxel);
 
     pyxel.run(&mut app);

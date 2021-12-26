@@ -52,7 +52,7 @@ class Bubble:
 
 class App:
     def __init__(self):
-        pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="Pyxel Bubbles")
+        pyxel.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="Pyxel Bubbles", capture_scale=1)
         pyxel.mouse(True)
 
         self.is_exploded = False
