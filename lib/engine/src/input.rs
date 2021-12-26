@@ -227,10 +227,19 @@ impl Pyxel {
 
     pub fn set_btnp(&mut self, key: Key) {
         self.input.press_key(key, self.frame_count());
+        if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
+            self.input.input_keys.push(key);
+            if let Some(key) = Input::get_common_key(key) {
+                self.input.press_key(key, self.frame_count());
+            }
+        }
     }
 
     pub fn set_btnr(&mut self, key: Key) {
         self.input.release_key(key, self.frame_count());
+        if let Some(key) = Input::get_common_key(key) {
+            self.input.release_key(key, self.frame_count());
+        }
     }
 
     pub fn set_btnv(&mut self, key: Key, key_value: KeyValue) {
