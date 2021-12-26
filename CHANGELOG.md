@@ -15,6 +15,7 @@
 - Added the capture_scale option to the init
 - Added the scale option to the screenshot and screencast
 - Improved the sound playback response
+- Added the screen video of the example #10
 
 ## 1.5.3
 - Fixed the tilemap editor
