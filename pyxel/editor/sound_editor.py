@@ -204,6 +204,8 @@ class SoundEditor(EditorBase):
                 return
             else:
                 self._play_button.is_pressed_var = True
+        if not self._play_button.is_enabled_var and not self.is_playing_var:
+            self._stop()
         if self._loop_button.is_enabled_var and pyxel.btnp(pyxel.KEY_L):
             self.should_loop_var = not self.should_loop_var
         if pyxel.btnp(pyxel.KEY_PAGEUP):
