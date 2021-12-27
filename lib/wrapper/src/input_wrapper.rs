@@ -40,12 +40,12 @@ pub fn set_btnr(key: Key) {
 }
 
 #[pyfunction]
-pub fn set_btnv(key: Key, val: KeyValue) {
+pub fn set_btnv(key: Key, val: f64) {
     instance().set_btnv(key, val);
 }
 
 #[pyfunction]
-pub fn move_mouse(x: i32, y: i32) {
+pub fn move_mouse(x: f64, y: f64) {
     instance().move_mouse(x, y);
 }
 
