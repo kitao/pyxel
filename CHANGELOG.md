@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.5.5
+- Fixed to record the screen video more accurately
+
 ## 1.5.4
 - Added the file operation error messages
 - Refined the python code
