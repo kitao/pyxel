@@ -72,6 +72,14 @@ pub fn parse_version_string(string: &str) -> Result<u32, &str> {
     Ok(version)
 }
 
+pub fn add_file_extension(filename: &str, ext: &str) -> String {
+    if filename.to_lowercase().ends_with(ext) {
+        filename.to_string()
+    } else {
+        filename.to_string() + ext
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
