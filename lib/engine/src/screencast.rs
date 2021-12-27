@@ -176,17 +176,19 @@ impl Screencast {
 
     fn make_diff_image(
         base_image: &mut Vec<Vec<Rgb8>>,
-        image: &[Vec<Rgb8>],
+        new_image: &[Vec<Rgb8>],
     ) -> (RectArea, Vec<Vec<Rgb8>>) {
         let mut min_x = i16::MAX;
         let mut min_y = i16::MAX;
         let mut max_x = i16::MIN;
         let mut max_y = i16::MIN;
+        let width = base_image[0].len();
+        let height = base_image.len();
         let mut diff_image: Vec<Vec<Rgb8>> = Vec::new();
-        for y in 0..base_image.len() {
+        for y in 0..height {
             let mut diff_line: Vec<Rgb8> = Vec::new();
-            for x in 0..base_image[y].len() {
-                let rgb = image[y][x];
+            for x in 0..width {
+                let rgb = new_image[y][x];
                 if rgb == base_image[y][x] {
                     diff_line.push(TRANSPARENT);
                 } else {
@@ -227,8 +229,8 @@ impl Screencast {
         color_table.insert(TRANSPARENT, 0);
         let mut num_colors = 1;
         let mut buffer = Vec::new();
-        for row in image {
-            for rgb in row {
+        for line in image {
+            for rgb in line {
                 if let Some(index) = color_table.get(rgb) {
                     buffer.push(*index);
                 } else {
@@ -243,11 +245,13 @@ impl Screencast {
             buffer = vec![0];
             RectArea::new(0, 0, 1, 1)
         } else {
-            let width = image[0].len() as u32;
-            let height = image.len() as u32;
+            let width = rect.width();
+            let height = rect.height();
+            let scaled_width = width * scale;
+            let scaled_height = height * scale;
             let mut scaled_buffer: Vec<u8> = Vec::new();
-            for y in 0..height * scale {
-                for x in 0..width * scale {
+            for y in 0..scaled_height {
+                for x in 0..scaled_width {
                     let index = (y / scale) * width + x / scale;
                     scaled_buffer.push(buffer[index as usize])
                 }
@@ -256,8 +260,8 @@ impl Screencast {
             RectArea::new(
                 rect.left() * scale as i32,
                 rect.top() * scale as i32,
-                rect.width() * scale,
-                rect.height() * scale,
+                scaled_width,
+                scaled_height,
             )
         };
 
