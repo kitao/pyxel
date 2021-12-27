@@ -14,7 +14,7 @@ use crate::settings::{
 };
 use crate::tilemap::SharedTilemap;
 use crate::types::{Color, Rgb8};
-use crate::utils::{as_i32, as_u32, parse_hex_string, simplify_string};
+use crate::utils::{add_file_extension, as_i32, as_u32, parse_hex_string, simplify_string};
 use crate::Pyxel;
 
 impl ToIndex for Color {
@@ -151,11 +151,7 @@ impl Image {
             }
         }
         let image = imageops::resize(&image, width * scale, height * scale, FilterType::Nearest);
-        let filename = if filename.to_lowercase().ends_with(".png") {
-            filename.to_string()
-        } else {
-            filename.to_string() + ".png"
-        };
+        let filename = add_file_extension(filename, ".png");
         image
             .save(&filename)
             .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename));
