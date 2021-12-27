@@ -241,7 +241,7 @@ impl Screencast {
 
         let rect = if buffer.is_empty() {
             buffer = vec![0];
-            RectArea::new(0, 0, 0, 0)
+            RectArea::new(0, 0, 1, 1)
         } else {
             let width = image[0].len() as u32;
             let height = image.len() as u32;
