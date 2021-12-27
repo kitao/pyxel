@@ -38,6 +38,7 @@ mod platform;
 mod profiler;
 mod rectarea;
 mod resource;
+mod screencast;
 mod sdl2;
 mod settings;
 mod sound;
@@ -99,7 +100,7 @@ impl Pyxel {
 
         let mut platform = TargetPlatform::new(title, width, height, DISPLAY_RATIO);
         let system = System::new(fps, quit_key);
-        let resource = Resource::new(width, height, fps, capture_scale, capture_sec);
+        let resource = Resource::new(fps, capture_scale, capture_sec);
         let input = Input::new();
         let graphics = Graphics::new();
         let audio = Audio::new(&mut platform);
