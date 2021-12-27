@@ -4,6 +4,7 @@ use crate::event::Event;
 use crate::key::*;
 use crate::platform::Platform;
 use crate::types::{Key, KeyValue};
+use crate::utils::as_i32;
 use crate::Pyxel;
 
 enum KeyState {
@@ -242,11 +243,14 @@ impl Pyxel {
         }
     }
 
-    pub fn set_btnv(&mut self, key: Key, key_value: KeyValue) {
+    pub fn set_btnv(&mut self, key: Key, key_value: f64) {
+        let key_value = as_i32(key_value);
         self.input.key_values.insert(key, key_value);
     }
 
-    pub fn move_mouse(&mut self, x: i32, y: i32) {
+    pub fn move_mouse(&mut self, x: f64, y: f64) {
+        let x = as_i32(x);
+        let y = as_i32(y);
         self.input.key_values.insert(MOUSE_POS_X, x);
         self.input.key_values.insert(MOUSE_POS_Y, y);
         self.platform.move_cursor(x, y);

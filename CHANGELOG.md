@@ -2,6 +2,7 @@
 
 ## 1.5.5
 - Fixed to record the screen video more accurately
+- Changed the move_mouse and set_btnv to get floating numbers
 
 ## 1.5.4
 - Added the file operation error messages
