@@ -7,6 +7,7 @@
 - Changed the capture scale of the example #7
 - Updated the example videos
 - Updated the Pyxel editor videos
+- Modified the melody of the example #10
 
 ## 1.5.4
 - Added the file operation error messages
