@@ -4,6 +4,7 @@
 - Fixed to record the screen video more accurately
 - Renamed the move_mouse to set_mouse_pos
 - Changed the set_mouse_pos and set_btnv to get floating numbers
+- Updated the example videos
 
 ## 1.5.4
 - Added the file operation error messages
