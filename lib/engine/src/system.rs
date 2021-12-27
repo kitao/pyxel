@@ -67,7 +67,8 @@ impl Pyxel {
         let height = data_str.len() as u32;
         let image = Image::new(width, height);
         image.lock().set(0, 0, data_str);
-        self.platform.set_icon(image, &self.colors, scale);
+        self.platform
+            .set_icon(&image.lock().canvas.data, &self.colors, scale);
     }
 
     pub fn fullscreen(&mut self) {
@@ -216,10 +217,16 @@ impl Pyxel {
         }
         self.draw_perf_monitor();
         self.draw_cursor();
-        self.platform
-            .render_screen(self.screen.clone(), &self.colors, BACKGROUND_COLOR);
-        self.resource
-            .capture_screen(self.screen.clone(), &self.colors, self.system.frame_count);
+        self.platform.render_screen(
+            &self.screen.lock().canvas.data,
+            &self.colors,
+            BACKGROUND_COLOR,
+        );
+        self.resource.capture_screen(
+            &self.screen.lock().canvas.data,
+            &self.colors,
+            self.system.frame_count,
+        );
         self.system.frame_count += 1;
         self.system.draw_profiler.end(self.platform.tick_count());
     }
