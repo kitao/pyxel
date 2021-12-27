@@ -45,8 +45,8 @@ pub fn set_btnv(key: Key, val: f64) {
 }
 
 #[pyfunction]
-pub fn move_mouse(x: f64, y: f64) {
-    instance().move_mouse(x, y);
+pub fn set_mouse_pos(x: f64, y: f64) {
+    instance().set_mouse_pos(x, y);
 }
 
 pub fn add_input_functions(m: &PyModule) -> PyResult<()> {
@@ -58,6 +58,6 @@ pub fn add_input_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(set_btnp, m)?)?;
     m.add_function(wrap_pyfunction!(set_btnr, m)?)?;
     m.add_function(wrap_pyfunction!(set_btnv, m)?)?;
-    m.add_function(wrap_pyfunction!(move_mouse, m)?)?;
+    m.add_function(wrap_pyfunction!(set_mouse_pos, m)?)?;
     Ok(())
 }
