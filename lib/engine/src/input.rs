@@ -248,7 +248,7 @@ impl Pyxel {
         self.input.key_values.insert(key, key_value);
     }
 
-    pub fn move_mouse(&mut self, x: f64, y: f64) {
+    pub fn set_mouse_pos(&mut self, x: f64, y: f64) {
         let x = as_i32(x);
         let y = as_i32(y);
         self.input.key_values.insert(MOUSE_POS_X, x);

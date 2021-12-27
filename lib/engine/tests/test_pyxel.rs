@@ -10,8 +10,7 @@ impl App {
         let app = App { x: 0.0, y: 0.0 };
 
         pyxel.mouse(true);
-        pyxel.set_btnv(pyxel::MOUSE_POS_X, 0.0);
-        pyxel.set_btnv(pyxel::MOUSE_POS_Y, 0.0);
+        pyxel.set_mouse_pos(10.0, 10.0);
 
         pyxel.image(0).lock().set(
             0,
