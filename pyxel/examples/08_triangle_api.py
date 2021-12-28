@@ -15,9 +15,9 @@ def draw_triangle(x1, y1, x2, y2, x3, y3, n):
     w2 = (y2 + y3) / 2
     h3 = (x3 + x1) / 2
     w3 = (y3 + y1) / 2
-    triangle_list.append((x1, y1, h1, w1, h3, w3, n - 1))
-    triangle_list.append((h1, w1, x2, y2, h2, w2, n - 1))
-    triangle_list.append((h3, w3, h2, w2, x3, y3, n - 1))
+    triangles.append((x1, y1, h1, w1, h3, w3, n - 1))
+    triangles.append((h1, w1, x2, y2, h2, w2, n - 1))
+    triangles.append((h3, w3, h2, w2, x3, y3, n - 1))
 
 
 pyxel.init(200, 150, title="Pyxel Triangle API")
@@ -25,10 +25,11 @@ pyxel.cls(13)
 pyxel.text(6, 6, "tri(x1,y1,x2,y2,x3,y3,col)", 7)
 pyxel.text(6, 14, "trib(x1,y1,x2,y2,x3,y3,col)", 7)
 
-triangle_list = [(100, 24, 7, 143, 193, 143, 7)]
-
+triangles = [(100, 24, 7, 143, 193, 143, 7)]
 while True:
-    if triangle_list:
-        t = triangle_list.pop(0)
-        draw_triangle(*t)
+    if pyxel.btnp(pyxel.KEY_Q):
+        pyxel.quit()
+    if triangles:
+        triangle = triangles.pop(0)
+        draw_triangle(*triangle)
     pyxel.flip()
