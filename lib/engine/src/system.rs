@@ -79,6 +79,7 @@ impl Pyxel {
         self.system.next_update_ms = self.platform.tick_count() as f64 + self.system.one_frame_ms;
         self.update_frame(Some(callback));
         self.draw_frame(Some(callback));
+        self.system.frame_count += 1;
 
         loop {
             let sleep_time = self.wait_for_update_time();
@@ -98,13 +99,13 @@ impl Pyxel {
                 ) + 1;
                 self.system.next_update_ms += self.system.one_frame_ms * update_count as f64;
             }
-            for i in 0..update_count {
+            for _ in 1..update_count {
                 self.update_frame(Some(callback));
-                if i < update_count - 1 {
-                    self.system.frame_count += 1;
-                }
+                self.system.frame_count += 1;
             }
+            self.update_frame(Some(callback));
             self.draw_frame(Some(callback));
+            self.system.frame_count += 1;
         }
     }
 
@@ -112,10 +113,12 @@ impl Pyxel {
         loop {
             self.update_frame(None);
             self.draw_frame(None);
+            self.system.frame_count += 1;
         }
     }
 
     pub fn flip(&mut self) {
+        self.system.frame_count += 1;
         if self.system.next_update_ms < 0.0 {
             self.system.next_update_ms = self.platform.tick_count() as f64;
         } else {
@@ -227,7 +230,6 @@ impl Pyxel {
             &self.colors,
             self.system.frame_count,
         );
-        self.system.frame_count += 1;
         self.system.draw_profiler.end(self.platform.tick_count());
     }
 

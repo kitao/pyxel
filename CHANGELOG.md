@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.5.6
+- Fixed the categories of the Pyxel crates
+- Fixed the key input bug of flip
+
 ## 1.5.5
 - Fixed to record the screen video with collect interval
 - Renamed the input setters to setbtn, setbtnv and setmpos
