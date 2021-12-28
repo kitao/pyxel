@@ -1,7 +1,7 @@
 # flake8: noqa
 from typing import Callable, List, Optional, Tuple, Union
 
-# constants
+# Constants
 PYXEL_VERSION: str
 
 APP_FILE_EXTENSION: str
@@ -50,8 +50,50 @@ EFFECT_SLIDE: int
 EFFECT_VIBRATO: int
 EFFECT_FADEOUT: int
 
-# key
-KEY_NONE: int
+# Keys
+KEY_BACKSPACE: int
+KEY_TAB: int
+KEY_RETURN: int
+KEY_ESCAPE: int
+KEY_SPACE: int
+KEY_EXCLAIM: int
+KEY_QUOTEDBL: int
+KEY_HASH: int
+KEY_DOLLAR: int
+KEY_PERCENT: int
+KEY_AMPERSAND: int
+KEY_QUOTE: int
+KEY_LEFTPAREN: int
+KEY_RIGHTPAREN: int
+KEY_ASTERISK: int
+KEY_PLUS: int
+KEY_COMMA: int
+KEY_MINUS: int
+KEY_PERIOD: int
+KEY_SLASH: int
+KEY_0: int
+KEY_1: int
+KEY_2: int
+KEY_3: int
+KEY_4: int
+KEY_5: int
+KEY_6: int
+KEY_7: int
+KEY_8: int
+KEY_9: int
+KEY_COLON: int
+KEY_SEMICOLON: int
+KEY_LESS: int
+KEY_EQUALS: int
+KEY_GREATER: int
+KEY_QUESTION: int
+KEY_AT: int
+KEY_LEFTBRACKET: int
+KEY_BACKSLASH: int
+KEY_RIGHTBRACKET: int
+KEY_CARET: int
+KEY_UNDERSCORE: int
+KEY_BACKQUOTE: int
 KEY_A: int
 KEY_B: int
 KEY_C: int
@@ -78,33 +120,7 @@ KEY_W: int
 KEY_X: int
 KEY_Y: int
 KEY_Z: int
-KEY_1: int
-KEY_2: int
-KEY_3: int
-KEY_4: int
-KEY_5: int
-KEY_6: int
-KEY_7: int
-KEY_8: int
-KEY_9: int
-KEY_0: int
-KEY_RETURN: int
-KEY_ESCAPE: int
-KEY_BACKSPACE: int
-KEY_TAB: int
-KEY_SPACE: int
-KEY_MINUS: int
-KEY_EQUALS: int
-KEY_LEFTBRACKET: int
-KEY_RIGHTBRACKET: int
-KEY_BACKSLASH: int
-KEY_NONUSHASH: int
-KEY_SEMICOLON: int
-KEY_APOSTROPHE: int
-KEY_GRAVE: int
-KEY_COMMA: int
-KEY_PERIOD: int
-KEY_SLASH: int
+KEY_DELETE: int
 KEY_CAPSLOCK: int
 KEY_F1: int
 KEY_F2: int
@@ -124,7 +140,6 @@ KEY_PAUSE: int
 KEY_INSERT: int
 KEY_HOME: int
 KEY_PAGEUP: int
-KEY_DELETE: int
 KEY_END: int
 KEY_PAGEDOWN: int
 KEY_RIGHT: int
@@ -148,7 +163,6 @@ KEY_KP_8: int
 KEY_KP_9: int
 KEY_KP_0: int
 KEY_KP_PERIOD: int
-KEY_NONUSBACKSLASH: int
 KEY_APPLICATION: int
 KEY_POWER: int
 KEY_KP_EQUALS: int
@@ -180,24 +194,6 @@ KEY_VOLUMEUP: int
 KEY_VOLUMEDOWN: int
 KEY_KP_COMMA: int
 KEY_KP_EQUALSAS400: int
-KEY_INTERNATIONAL1: int
-KEY_INTERNATIONAL2: int
-KEY_INTERNATIONAL3: int
-KEY_INTERNATIONAL4: int
-KEY_INTERNATIONAL5: int
-KEY_INTERNATIONAL6: int
-KEY_INTERNATIONAL7: int
-KEY_INTERNATIONAL8: int
-KEY_INTERNATIONAL9: int
-KEY_LANG1: int
-KEY_LANG2: int
-KEY_LANG3: int
-KEY_LANG4: int
-KEY_LANG5: int
-KEY_LANG6: int
-KEY_LANG7: int
-KEY_LANG8: int
-KEY_LANG9: int
 KEY_ALTERASE: int
 KEY_SYSREQ: int
 KEY_CANCEL: int
@@ -290,10 +286,7 @@ KEY_KBDILLUMDOWN: int
 KEY_KBDILLUMUP: int
 KEY_EJECT: int
 KEY_SLEEP: int
-KEY_APP1: int
-KEY_APP2: int
-KEY_AUDIOREWIND: int
-KEY_AUDIOFASTFORWARD: int
+KEY_NONE: int
 KEY_SHIFT: int
 KEY_CTRL: int
 KEY_ALT: int
@@ -414,10 +407,9 @@ def btnp(
 def btnr(key: int) -> bool: ...
 def btnv(key: int) -> int: ...
 def mouse(visible: bool) -> None: ...
-def set_btnp(key: int) -> None: ...
-def set_btnr(key: int) -> None: ...
-def set_btnv(key: int, val: float) -> None: ...
-def set_mouse_pos(x: float, y: float) -> None: ...
+def setbtn(key: int, state: bool) -> None: ...
+def setbtnv(key: int, val: float) -> None: ...
+def setmpos(x: float, y: float) -> None: ...
 
 # Graphics
 class Image: ...
