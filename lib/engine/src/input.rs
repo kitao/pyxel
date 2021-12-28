@@ -60,21 +60,19 @@ impl Input {
             Event::Minimized => {}
 
             // Key events
-            Event::KeyDown { key } => {
-                if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
-                    self.press_key(key, frame_count);
-                    self.input_keys.push(key);
-                    if let Some(key) = Self::get_common_key(key) {
-                        self.press_key(key, frame_count);
-                    }
+            Event::KeyDown { keycode } => {
+                self.press_key(keycode, frame_count);
+                if let Some(keycode) = to_integrated_key(keycode) {
+                    self.press_key(keycode, frame_count);
+                }
+                if is_keyboard_key(keycode) {
+                    self.input_keys.push(keycode);
                 }
             }
-            Event::KeyUp { key } => {
-                if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
-                    self.release_key(key, frame_count);
-                    if let Some(key) = Self::get_common_key(key) {
-                        self.release_key(key, frame_count);
-                    }
+            Event::KeyUp { keycode } => {
+                self.release_key(keycode, frame_count);
+                if let Some(keycode) = to_integrated_key(keycode) {
+                    self.release_key(keycode, frame_count);
                 }
             }
             Event::TextInput { text } => {
@@ -129,16 +127,6 @@ impl Input {
                 };
                 self.release_key(GAMEPAD1_BUTTON_A + button as Key + offset, frame_count);
             }
-        }
-    }
-
-    fn get_common_key(key: Key) -> Option<Key> {
-        match key {
-            KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
-            KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),
-            KEY_LALT | KEY_RALT => Some(KEY_ALT),
-            KEY_LGUI | KEY_RGUI => Some(KEY_GUI),
-            _ => None,
         }
     }
 
@@ -226,29 +214,29 @@ impl Pyxel {
         self.input.is_mouse_visible = is_visible;
     }
 
-    pub fn set_btnp(&mut self, key: Key) {
-        self.input.press_key(key, self.frame_count());
-        if (KEY_MIN_VALUE..=KEY_MAX_VALUE).contains(&key) {
-            self.input.input_keys.push(key);
-            if let Some(key) = Input::get_common_key(key) {
+    pub fn setbtn(&mut self, key: Key, key_state: bool) {
+        if key_state {
+            self.input.press_key(key, self.frame_count());
+            if let Some(key) = to_integrated_key(key) {
                 self.input.press_key(key, self.frame_count());
+            }
+            if is_keyboard_key(key) {
+                self.input.input_keys.push(key);
+            }
+        } else {
+            self.input.release_key(key, self.frame_count());
+            if let Some(key) = to_integrated_key(key) {
+                self.input.release_key(key, self.frame_count());
             }
         }
     }
 
-    pub fn set_btnr(&mut self, key: Key) {
-        self.input.release_key(key, self.frame_count());
-        if let Some(key) = Input::get_common_key(key) {
-            self.input.release_key(key, self.frame_count());
-        }
-    }
-
-    pub fn set_btnv(&mut self, key: Key, key_value: f64) {
+    pub fn setbtnv(&mut self, key: Key, key_value: f64) {
         let key_value = as_i32(key_value);
         self.input.key_values.insert(key, key_value);
     }
 
-    pub fn set_mouse_pos(&mut self, x: f64, y: f64) {
+    pub fn setmpos(&mut self, x: f64, y: f64) {
         let x = as_i32(x);
         let y = as_i32(y);
         self.input.key_values.insert(MOUSE_POS_X, x);

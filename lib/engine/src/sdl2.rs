@@ -199,16 +199,16 @@ impl Platform for Sdl2 {
 
                 // Key events
                 SdlEvent::KeyDown {
-                    scancode: Some(scancode),
+                    keycode: Some(keycode),
                     ..
                 } => Event::KeyDown {
-                    key: scancode as u32,
+                    keycode: keycode as u32,
                 },
                 SdlEvent::KeyUp {
-                    scancode: Some(scancode),
+                    keycode: Some(keycode),
                     ..
                 } => Event::KeyUp {
-                    key: scancode as u32,
+                    keycode: keycode as u32,
                 },
                 SdlEvent::TextInput { text, .. } => Event::TextInput { text },
 
