@@ -1,10 +1,10 @@
 # Change Log
 
 ## 1.5.5
-- Fixed to record the screen video more accurately
-- Renamed the move_mouse to set_mouse_pos
-- Changed the set_mouse_pos and set_btnv to get floating numbers
-- Changed the capture scale of the example #7
+- Fixed to record the screen video with collect interval
+- Renamed the input setters to setbtn, setbtnv and setmpos
+- Changed the input setters to get floating numbers
+- Changed the key definitions to SDL2 Keycode base
 - Updated the example videos
 - Updated the Pyxel editor videos
 - Modified the melody of the example #10

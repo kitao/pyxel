@@ -55,10 +55,10 @@ pub enum Event {
 
     // Key events
     KeyDown {
-        key: u32,
+        keycode: u32,
     },
     KeyUp {
-        key: u32,
+        keycode: u32,
     },
     TextInput {
         text: String,
