@@ -8,6 +8,7 @@
 #
 # Prerequisites for Mac:
 #   - Xcode
+#   - `sudo xcode-select --switch /Applications/Xcode.app`
 #
 # Prerequisites for Linux:
 #   - SDL2 package (libsdl2-dev for Ubuntu)
