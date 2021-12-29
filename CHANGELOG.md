@@ -3,6 +3,8 @@
 ## 1.5.6
 - Fixed the categories of the Pyxel crates
 - Fixed the key input bug of flip
+- Changed the Makefile to be usable in MinGW shell
+- Updated the READMEs
 
 ## 1.5.5
 - Fixed to record the screen video with collect interval
