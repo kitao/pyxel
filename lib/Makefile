@@ -13,7 +13,7 @@ WHEEL_NAME = $(shell ls $(DIST_DIR)/pyxel-*.whl)
 PYOXIDIZER_DIR = $(BUILD_DIR)/build
 
 # Windows
-ifneq ($(findstring CYGWIN_NT-,$(shell uname)),)
+ifneq ($(findstring _NT-,$(shell uname)),)
 PLATFORM = windows
 PYTHON = python
 TARGET_DIR = $(BUILD_DIR)/target/release
