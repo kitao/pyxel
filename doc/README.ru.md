@@ -346,7 +346,7 @@ pyxel play ФАЙЛ_PYXEL_ПРИЛОЖЕНИЯ
 
 - `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
 Инициализирует Pyxel-приложение с указанными размерами экрана (`width`, `height`). Дополнительно могут быть заданы: заголовок окна с помощью параметра `title`, количество кадров в секунду с помощью параметра `fps`, клавиша для выхода из приложения — `quit_key`, коэффициент масштабирования при захвате экрана — `capture_scale` и максимальное время записи при захвате экрана с помощью `capture_sec`.<br>
-Пример: `pyxel.init(160, 120, title="Pyxel with Options", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
+Пример: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
 
 - `run(update, draw)`<br>
 Запустить Pyxel-приложение, использующее функцию `update` для обновления внутренней логики и `draw` для рисования.
