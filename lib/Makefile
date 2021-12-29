@@ -10,7 +10,7 @@ DIST_NAME = $(shell echo $(WHEEL_NAME) | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PL
 WHEEL_NAME = $(shell ls $(DIST_DIR)/pyxel-*.whl)
 PYOXIDIZER_DIR = $(LIB_DIR)/build
 
-ifneq ($(findstring CYGWIN_NT-,$(shell uname)),)
+ifneq ($(findstring _NT-,$(shell uname)),)
 # Windows
 PLATFORM = windows
 PYTHON = python
