@@ -473,7 +473,7 @@ Pyxelアプリケーションを終了します。
 
 - `set(x, y, data)`<br>
 (`x`, `y`) に文字列のリストでイメージを設定します。<br>
-例：`pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+例：`pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
 (`x`, `y`) に画像ファイル (png/gif/jpeg) を読み込みます。

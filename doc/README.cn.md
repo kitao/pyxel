@@ -480,7 +480,7 @@ Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to 
 
 - `set(x, y, data)`<br>
 使用字符串列表设置坐标(`x`, `y`)处的图像。<br>
-示例：`pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+示例：`pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
 在(`x`, `y`)处加载图像文件(png/gif/jpeg)。

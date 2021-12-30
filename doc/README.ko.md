@@ -473,7 +473,7 @@ Pyxel 애플리케이션을 종료합니다.
 
 - `set(x, y, data)`<br>
 (`x`, `y`)에 문자열 리스트를 사용해 이미지를 설정합니다.<br>
-예시: `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+예시: `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
 (`x`, `y`)에 이미지 파일(png/gif/jpeg)을 불러옵니다.
