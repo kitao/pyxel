@@ -470,7 +470,7 @@ La anchura y la altura de una imagen
 
 - `set(x, y, data)`<br>
 Define la imagen en (`x`, `y`) por una lista de strings. <br>
-Ejemplo: `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+Ejemplo: `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
 Carga el archivo con la imagen (png/gif/jpeg) en (`x`, `y`)
