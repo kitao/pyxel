@@ -479,7 +479,7 @@ Renvoie les données de l’image à (`x`, `y`)
 
 - `set(x, y, data)`<br>
 Met la valeur de l’image à (`x`, `y`) suivant une liste de chaînes.<br>
-Par exemple `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+Par exemple `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
 Charge l’image (png/gif/jpeg) à (`x`, `y`).

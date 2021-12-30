@@ -481,7 +481,7 @@ Erhalte die Daten des Bildes an der Position (`x`, `y`)
 
 - `set(x, y, data)`<br>
 Setzen des Bildes an (`x`, `y`) durch eine Liste von strings.<br>
-z.B. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+z.B. `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
 Lade die Bild-Datei (png/gif/jpeg) at (`x`, `y`).

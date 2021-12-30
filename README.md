@@ -473,7 +473,7 @@ The width and height of the image
 
 - `set(x, y, data)`<br>
 Set the image at (`x`, `y`) by a list of strings.<br>
-e.g. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+e.g. `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
 Load the image file (png/gif/jpeg) at (`x`, `y`).

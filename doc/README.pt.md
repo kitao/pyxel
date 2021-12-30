@@ -473,7 +473,7 @@ Largura e altura da imagem
 
 - `set(x, y, data)`<br>
 Define a imagem em (`x`, `y`) por uma lista de strings.<br>
-Ex. `pyxel.image(0).set(10, 10, ["1234", "5678", "9abc", "defg"])`
+Ex. `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
 Carrega um arquivo de imagem (png/gif/jpeg) em (`x`, `y`).
