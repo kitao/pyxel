@@ -23,7 +23,7 @@ def make_sha256(file):
         return hashlib.sha256(file.read()).hexdigest()
 
 
-def update_links():
+def update_formula():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     macos_file = find_file("macos")
     assert macos_file
@@ -46,4 +46,4 @@ def update_links():
 
 
 if __name__ == "__main__":
-    update_links()
+    update_formula()
