@@ -93,9 +93,9 @@ build:
 test: build
 	@cargo test
 	@PYTHONPATH=$(ROOT_DIR) $(PYTHON) -m unittest discover $(TESTS_DIR)
-	@trap break INT; for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
+	@for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
 		PYTHONPATH=$(ROOT_DIR) $(PYTHON) -m pyxel run $$example; \
-	done; trap - INT
+	done
 	PYTHONPATH=$(ROOT_DIR) $(PYTHON) -m pyxel edit $(TEST_RESOURCE)
 
 wheel:
