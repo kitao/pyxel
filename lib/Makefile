@@ -19,7 +19,7 @@ PYTHON = python
 TARGET_DIR = $(BUILD_DIR)/target/release
 SRC_LIB_FILE = $(TARGET_DIR)/$(PYXEL_LIB_NAME).dll
 DST_LIB_FILE = $(PYXEL_LIB_DIR)/$(PYXEL_LIB_NAME).pyd
-ISCC = '/cygdrive/c/Program Files (x86)/Inno Setup 6/ISCC.exe'
+ISCC = 'iscc'
 ISCC_FILE = $(BUILD_DIR)/setup.iss
 
 CARGO_CLEAN = cargo clean
