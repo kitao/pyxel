@@ -3,6 +3,7 @@
 ## 1.5.6
 - Fixed the categories of the Pyxel crates
 - Fixed the key input bug of flip
+- Added shortcuts for the Tilemap Editor
 - Changed the Makefile to be usable in MinGW shell
 - Updated the READMEs
 
@@ -33,7 +34,7 @@
 - Added the screen video of the example #10
 
 ## 1.5.3
-- Fixed the tilemap editor
+- Fixed the Tilemap Editor
 - Replaced the asset for the example #10
 - Fixed the typo in the READMEs
 
