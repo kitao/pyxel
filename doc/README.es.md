@@ -343,7 +343,7 @@ El número de fotogramas que han pasado
 
 - `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
 Inicializa la aplicación de pyxel con el tamaño (`width`, `height`). Los siguientes parámetros pueden ser especificados como opciones: el título con `title`, el ratio de fotogramas por segundo con `fps`, para salir de la aplicación `quit_key`, the scale of the screen capture with `capture_scale` y el tiempo máximo para grabar la pantalla con `capture_sec`. <br>
-por ejemplo: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
+por ejemplo: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
 Comienza la aplicación de Pyxel y llama la función `update` para actualizar cada fotograma y la función `draw` para dibujar.

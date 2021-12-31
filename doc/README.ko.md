@@ -346,7 +346,7 @@ pyxel play PYXEL_APP_FILE
 
 - `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
 Pyxel 애플리케이션을 화면 크기 (`width`, `height`)로 초기화합니다. 옵션으로 `title`에 창 제목, `fps`에 프레임 속도, `quit_key`에 애플리케이션 종료 키, the scale of the screen capture with `capture_scale`, `capture_sec`에 화면 캡처의 최대 녹화 시간을 지정할 수 있습니다.<br>
-예시: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
+예시: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
 Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수를, 화면 그리기에 `draw` 함수를 호출합니다.
