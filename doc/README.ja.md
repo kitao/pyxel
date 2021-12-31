@@ -346,7 +346,7 @@ pyxel play Pyxelアプリケーションファイル
 
 - `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
 Pyxelアプリケーションを画面サイズ (`width`, `height`) で初期化します。`title`でウィンドウタイトル、`fps`で動作フレームレート、`quit_key`でアプリケーション終了キー、`capture_scale`で画面キャプチャの倍率、`capture_sec`で画面キャプチャ動画の最大録画時間を指定します。<br>
-例：`pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_sec=0)`
+例：`pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
 Pyxelアプリケーションを開始し、フレーム更新時に`update`関数、描画時に`draw`関数を呼びます。
