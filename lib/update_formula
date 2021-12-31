@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+
+import glob
+import hashlib
+import os
+import re
+
+DIST_DIR = "../dist"
+FORMULA_FILE = "../../homebrew-pyxel/pyxel.rb"
+
+
+def find_file(platform):
+    files = sorted(glob.glob(os.path.join(DIST_DIR, f"pyxel-*-{platform}.zip")))
+    return files and files[-1] or None
+
+
+def get_version(file):
+    return re.match(r".*pyxel-(.*)-.*.zip", file).group(1)
+
+
+def make_sha256(file):
+    with open(file, "rb") as file:
+        return hashlib.sha256(file.read()).hexdigest()
+
+
+def update_links():
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    macos_file = find_file("macos")
+    assert macos_file
+    linux_file = find_file("linux")
+    assert linux_file
+    version = get_version(macos_file)
+    assert version == get_version(linux_file)
+    macos_sha256 = make_sha256(macos_file)
+    linux_sha256 = make_sha256(linux_file)
+
+    with open(FORMULA_FILE, "r") as f:
+        formula = f.read()
+    formula = re.sub("/v.*/", f"/v{version}/", formula)
+    formula = re.sub("pyxel-.*-", f"pyxel-{version}-", formula)
+    formula = re.sub('sha256 ".*"', f'sha256_ "{macos_sha256}"', formula, 1)
+    formula = re.sub('sha256 ".*"', f'sha256_ "{linux_sha256}"', formula, 1)
+    formula = re.sub("sha256_", "sha256", formula)
+    with open(FORMULA_FILE, "w") as f:
+        f.write(formula)
+
+
+if __name__ == "__main__":
+    update_links()
