@@ -145,6 +145,7 @@ Die zu kopierenden Beispiele lauten wie folgt:
 - [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing APIs
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Shoot'em up mit Displayübergängen
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Side-Scroller Platform Spiel mit Karte
+- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
 
 Führe eines der Beispiele mit folgendem Befehl aus:
 
@@ -438,8 +439,12 @@ Zeichne die Umrisse eines Dreiecks mit den Scheitelpunkten (`x1`, `y1`), (`x2`, 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Kopiere eine Region der Größe (`w`, `h`) von (`u`, `v`) des Image Banks `img`(0-2) zur Position (`x`, `y`). Falls `w` und/oder `h` negativ ist, wird der Ausschnitt horizontal und/oder vertical gespiegelt. Falls `colkey` angegeben ist, wird der Auschnitt als transparentes Farbe behandelt
 
+<img src="images/11_blt_figure.png">
+
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
+
+<img src="images/11_bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
 Zeichne einen String `s` der Farbe `col` bei (`x`, `y`)

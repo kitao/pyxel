@@ -145,6 +145,7 @@ Os exemplos copiados são os seguintes:
 - [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Demonstração da API de desenho de triângulos
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Jogo de tiro com transição de tela
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Jogo side-scrolling de plataforma com mapa
+- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
 
 Os exemplos podem ser executados com os seguintes comandos:
 
@@ -439,8 +440,12 @@ Desenha o contorno de um triangulo com os vértices (`x1`, `y1`), (`x2`, `y2`), 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img` (0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente
 
+<img src="images/11_blt_figure.png">
+
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do tilemap `tm` (0-7) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente. O tamanho de um tile é de 8x8 pixels e é armazenado em um tilemap como uma tupla de `(x in tile, y in tile)`.
+
+<img src="images/11_bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
 Desenha uma string `s` de cor `col` em (`x`, `y`)

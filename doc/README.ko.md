@@ -145,6 +145,7 @@ pyxel copy_examples
 - [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Triangle drawing API 데모
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 화면 전환이 있는 슈팅 게임
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - 맵이 있는 횡 스크롤 플랫폼 게임
+- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
 
 다음 명령어를 사용하여 예제 파일을 실행할 수 있습니다.
 
@@ -439,8 +440,12 @@ Pyxel 애플리케이션을 종료합니다.
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 이미지 뱅크 `img`(0-2)의 (`u`, `v`)로부터 크기 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 음수로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다.
 
+<img src="images/11_blt_figure.png">
+
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 타일 맵 `tm` (0-7)의 (`u`, `v`)로부터 크기 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 음수로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다. 타일 하나의 크기는 8x8 픽셀이며 `(x in tile, y in tile)`의 튜플로 타일 맵에 저장되어 있습니다.
+
+<img src="images/11_bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
 `col` 색을 사용해 문자열 `s`를 (`x`, `y`) 좌표에 그립니다.
