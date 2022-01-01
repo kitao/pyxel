@@ -145,6 +145,7 @@ Les exemples copiés sont les suivants :
 - [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Démonstration des APIs de dessin de triangle
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Jeu de shoot'em up avec changement d’écran
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Jeu de plateforme avec scroll, et une carte
+- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
 
 Les exemples peuvent être lancés avec les commandes suivantes :
 
@@ -439,8 +440,12 @@ Dessine les contours d’un triangle avec les sommets (`x1`, `y1`), (`x2`, `y2`)
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copie la région de taille (`w`, `h`) de (`u`, `v`) de la banque d’image `img`(0-2) à (`x`, `y`). Si une valeur négative est mise pour `w` et/ou `h`, la copie sera inversée horizontalement et/ou verticalement. Si `colkey` est spécifié, il sera traité comme une couleur transparente
 
+<img src="images/11_blt_figure.png">
+
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
+
+<img src="images/11_bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
 Dessine une chaîne de caractères `s` de couleur `col` à (`x`, `y`)
