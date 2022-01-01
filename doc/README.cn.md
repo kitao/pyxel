@@ -441,12 +441,12 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 将尺寸为(`w`, `h`)的区域从图像库的(`u`, `v`)复制到(`x`, `y`)。若`w`或`h`为负值，则在水平或垂直方向上翻转。若指定了`colkey`的值，则视作透明颜色。
 
-<img src="images/11_blt_figure.png">
+<img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
 
-<img src="images/11_bltm_figure.png">
+<img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
 用`col`颜色在(`x`, `y`)绘制字符串`s`。
