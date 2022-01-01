@@ -39,7 +39,7 @@ def scale_image(image, scale):
     return scaled_image
 
 
-def make_figure1():
+def make_blt_figure():
     figure = pyxel.Image(pyxel.width, pyxel.height)
     figure.cls(BG_COLOR)
     image1 = pyxel.Image(32, 24)
@@ -75,7 +75,7 @@ def make_figure1():
     return figure
 
 
-def make_figure2():
+def make_bltm_figure():
     figure = pyxel.Image(pyxel.width, pyxel.height)
     figure.cls(BG_COLOR)
     image1 = pyxel.Image(32, 24)
@@ -109,11 +109,11 @@ def make_figure2():
 
 pyxel.init(223, 92, title="Offscreen Rendering")
 pyxel.load("assets/offscreen.pyxres")
-figure1 = make_figure1()
-figure2 = make_figure2()
+blt_figure = make_blt_figure()
+bltm_figure = make_bltm_figure()
 while True:
     if pyxel.btnp(pyxel.KEY_Q):
         pyxel.quit()
-    figure = figure1 if (pyxel.frame_count // 120) % 2 == 0 else figure2
+    figure = blt_figure if (pyxel.frame_count // 120) % 2 == 0 else bltm_figure
     pyxel.blt(0, 0, figure, 0, 0, figure.width, figure.height)
     pyxel.flip()
