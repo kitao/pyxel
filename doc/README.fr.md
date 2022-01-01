@@ -440,12 +440,12 @@ Dessine les contours d’un triangle avec les sommets (`x1`, `y1`), (`x2`, `y2`)
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copie la région de taille (`w`, `h`) de (`u`, `v`) de la banque d’image `img`(0-2) à (`x`, `y`). Si une valeur négative est mise pour `w` et/ou `h`, la copie sera inversée horizontalement et/ou verticalement. Si `colkey` est spécifié, il sera traité comme une couleur transparente
 
-<img src="images/11_blt_figure.png">
+<img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
 
-<img src="images/11_bltm_figure.png">
+<img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
 Dessine une chaîne de caractères `s` de couleur `col` à (`x`, `y`)
