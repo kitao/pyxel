@@ -440,12 +440,12 @@ Pyxelアプリケーションを終了します。
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 イメージバンク`img` (0-2) の (`u`, `v`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーします。`w`、`h`それぞれに負の値を設定すると水平、垂直方向に反転します。`colkey`に色を指定すると透明色として扱われます。
 
-<img src="images/11_blt_figure.png">
+<img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 タイルマップ`tm` (0-7) の (`u`, `v`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーします。`w`、`h`それぞれに負の値を設定すると水平、垂直方向に反転します。`colkey`に色を指定すると透明色として扱われます。1タイルのサイズは8x8ピクセルで、`(タイルx座標, タイルy座標)`のタプルとしてタイルマップに格納されています。
 
-<img src="images/11_bltm_figure.png">
+<img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
 色`col`の文字列`s`を (`x`, `y`) に描画します。

@@ -440,12 +440,12 @@ Draw the outline of a triangle with vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img` (0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color.
 
-<img src="doc/images/11_blt_figure.png">
+<img src="doc/images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
 
-<img src="doc/images/11_bltm_figure.png">
+<img src="doc/images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
 Draw a string `s` of color `col` at (`x`, `y`).

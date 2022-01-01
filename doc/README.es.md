@@ -437,12 +437,12 @@ Dibuja el perímetro de un triángulo con los vertices (`x1`, `y1`), (`x2`, `y2`
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copia la región de tamaño (`w`, `h`) desde la posición (`u`, `v`) del banco de imágenes `img` (0-2) a (`x`, `y`). Si es negativo el valor para la `w` y/o la `h`, se representará invirtiendo horizontalmente o verticalmente. Si `colkey` se especifica, se tratará ese color como transparente.
 
-<img src="images/11_blt_figure.png">
+<img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
 
-<img src="images/11_bltm_figure.png">
+<img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
 Dibuja un string `s` del color`col` en (`x`, `y`).
