@@ -145,7 +145,7 @@ pyxel copy_examples
 - [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - 三角形描画APIのデモ
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 画面遷移のあるシューティングゲーム
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - マップのある横スクロールアクションゲーム
-- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
+- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Imageクラスによるオフスクリーン描画
 
 サンプルは以下のコマンドで実行できます。
 
