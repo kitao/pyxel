@@ -49,8 +49,6 @@ def make_blt_figure():
     image2.blt(0, 0, 0, 0, 32, 32, 24)
     image2 = scale_image(image2, 3)
 
-    x = 10
-    y = 12
     col = 7
     bcol = 0
 
@@ -61,6 +59,8 @@ def make_blt_figure():
         line_with_border(figure, x + 71, y + 23, x + 71, y + 46, col, bcol)
         text_with_border(figure, x + 70, y + 33, "h", col, bcol)
 
+    x = 10
+    y = 12
     figure.blt(x, y, image1, 0, 0, image1.width, image1.height)
     text_with_border(figure, x + 1, y - 7, "Screen", col, bcol)
     text_with_border(figure, x + 38, y + 16, "(x,y)", col, bcol)
