@@ -32,7 +32,7 @@ Gracias a sus características simples inspiradas en las consolas de juegos retr
 
 Las especificaciones de Pyxel están referenciados a los increíbles [PICO-8](https://www.lexaloffle.com/pico-8.php) y [TIC-80](https://tic.computer/)
 
-Pyel es de código abierto y gratuito. ¡Empecemos haciendo un juego retro con Pyxel!
+Pyxel es de código abierto y gratuito. ¡Empecemos haciendo un juego retro con Pyxel!
 
 ## Características
 
@@ -54,7 +54,7 @@ Pyel es de código abierto y gratuito. ¡Empecemos haciendo un juego retro con P
 
 ## Como instalarlo
 
-Hay dos tipos de Pyxel, una versión como paquete y una versión que independiente.
+Hay dos tipos de Pyxel, una versión como paquete y una versión independiente.
 
 ### Instalar la versión paquete
 
@@ -122,7 +122,7 @@ Después de instalar el paquete SDL2, (`libsdl2-dev` para Ubuntu) e instalar [Ho
 brew tap kitao/pyxel
 brew install pyxel
 ```
-Si los pasos mencionados previamente no funcionan, intenta construir / compilar tu la versión empaquetada.
+Si los pasos mencionados previamente no funcionan, intenta construir / compilar tú la versión empaquetada.
 
 ### Prueba los ejemplos de Pyxel
 
@@ -143,7 +143,7 @@ Los ejemplos serán copiados de la siguiente manera:
 - [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Demostración de dibujo de triángulos con la API
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Juego de nave espacial con transiciones de pantalla
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Juego con desplazamiento lateral con plataformas con mapa
-- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
+- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Rendimiento fuera de la pantalla con la clase Image
 
 Los ejemplos se pueden ejecutar con el siguiente comando:
 
@@ -174,7 +174,7 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-Los argumentos de la función `run` son la función `update`para actualizar cada fotograma y la función `draw` para dibujar la pantalla cuando sea necesario.
+Los argumentos de la función `run` son la función `update` para actualizar cada fotograma y la función `draw` para dibujar la pantalla cuando sea necesario.
 
 En una aplicación, es recomendable envolver el código de pyxel en una clase como la siguiente:
 
@@ -223,7 +223,7 @@ while True:
 
 ### Corre aplicaciones Pyxel
 
-El código generado puede ser ejecutado con el siguiente comando
+El código generado puede ser ejecutado con el siguiente comando:
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
@@ -251,7 +251,6 @@ Restablecer la hora de inicio de la grabación del vídeo de captura de pantalla
 - `Alt(Option)+3`<br>
 Guarda la captura de video en el escritorio (hasta 10 segundos)
 - `Alt(Option)+0`<br>
-Toggle the performance monitor (fps, update time, and draw time)
 Activa el monitor de monitorización (fps, el tiempo que tarda en actualizar la pantalla y el tiempo que tarda en dibujar)
 - `Alt(Option)+Enter`<br>
 Activar el modo de pantalla completa
@@ -303,7 +302,7 @@ El módulo para editar música en el que organiza los sonidos del editor de soni
 
 ### Otros recursos en la creación de métodos
 
-Las imágenes de pyxel y el mapa también se pueden crear de las siguientes maneras:
+Las imágenes de Pyxel y el mapa también se pueden crear de las siguientes maneras:
 
 - Crea una imagen de una lista de strings con la función `Image.set` o la función `Tilemap.set`
 - Carga un archivo de imagen (png/gif/jpeg) en la paleta de Pyxel con la función `Image.load`
@@ -392,14 +391,13 @@ Opera la imagen del banco de imágenes `img`(0-2). (Vea la clase Imágenes)<br>
 Ejemplo: `pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
-Operate the tilemap `tm` (0-7). (See the Tilemap class)
 Opera el mapa `tm` (0-7). (Vea la clase del mapa)
 
 - `clip(x, y, w, h)`<br>
 Establezca el área de dibujo de la pantalla de (`x`, `y`) a una anchura `w` y a una altura `h`. Reinicia el área de dibujo a todo el área de la pantalla con `clip()`.
 
 - `camera(x, y)`<br>
-Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
+Cambie las coordenadas de la esquina superior izquierda de la pantalla a (`x`,` y`). Restablezca las coordenadas de la esquina superior izquierda a (`0`,` 0`) con `camera()`.
 
 - `pal(col1, col2)`<br>
 Reemplaza el color `col1` con `col2` para dibujarlo. Utiliza `pal()` para resetear la paleta de colores y volver a la paleta que viene por defecto por defecto con Pyxel.
@@ -440,7 +438,7 @@ Copia la región de tamaño (`w`, `h`) desde la posición (`u`, `v`) del banco d
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
+Copie la región de tamaño (`w`,` h`) de (`u`,` v`) del mapa de mosaicos `tm` (0-7) a (` x`, `y`). Si se establece un valor negativo para `w` y / o` h`, se invertirá horizontal y / o verticalmente. Si se especifica "colkey", se trata como un color transparente. El tamaño de un mosaico es de 8x8 píxeles y se almacena en un mapa de mosaicos como una tupla de `(x in tile, y in tile)`.
 
 <img src="images/bltm_figure.png">
 
