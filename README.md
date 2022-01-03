@@ -1,4 +1,4 @@
-# <img src="doc/images/pyxel_logo_152x64.png">
+# <img src="doc/images/pyxel_logo_152x64.png"> <iframe src="https://ghbtns.com/github-btn.html?user=twbs&repo=bootstrap&type=star&count=true&size=large" frameborder="0" scrolling="0" width="170" height="30" title="GitHub"></iframe>
 
 [ [English](README.md) | [中文](doc/README.cn.md) | [Deutsch](doc/README.de.md) | [Español](doc/README.es.md) | [Français](doc/README.fr.md) | [Italiano](doc/README.it.md) | [日本語](doc/README.ja.md) | [한국어](doc/README.ko.md) | [Português](doc/README.pt.md) | [Русский](doc/README.ru.md) ]
 
