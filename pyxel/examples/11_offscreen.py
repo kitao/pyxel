@@ -69,7 +69,7 @@ def make_blt_figure():
     x = 116
     figure.blt(x, y, image2, 0, 0, image2.width, image2.height)
     text_with_border(figure, x + 1, y - 7, "Image Bank", col, bcol)
-    text_with_border(figure, x + 38, y + 16, "(u,v)", col, bcol)
+    pset_with_border(figure, x + 47, y + 23, col, bcol)
     draw_w_and_h(x, y)
 
     return figure
