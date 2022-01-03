@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.5.7
+- Fixed an instruction in the example #11
+
 ## 1.5.6
 - Fixed the categories of the Pyxel crates
 - Fixed the key input bug of flip
