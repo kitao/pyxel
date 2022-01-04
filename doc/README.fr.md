@@ -444,7 +444,7 @@ Copie la région de taille (`w`, `h`) de (`u`, `v`) de la banque d’image `img`
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copie la région de taill (`w`, `h`) de (`u`, `v`) de la tilemap `tm` (0-7) à (`x`, `y`). Si une valeur négative est mise pour `w` (ou `h`), la copie sera inversée horizontalement (ou verticalement). Si `colkey` est spécifiée, elle sera traitée comme une couleur transparente. La taille d’une tuile est 8x8 pixels et elle est storée dans une tilemap en tant que paire `(tile_x, tile_y)`.
+Copie la région de taille (`w`, `h`) de (`u`, `v`) de la tilemap `tm` (0-7) à (`x`, `y`). Si une valeur négative est mise pour `w` (ou `h`), la copie sera inversée horizontalement (ou verticalement). Si `colkey` est spécifiée, elle sera traitée comme une couleur transparente. La taille d’une tuile est 8x8 pixels et elle est stockée dans une tilemap en tant que paire `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 
@@ -553,7 +553,7 @@ Liste à deux dimensions de sons (0-63) listés par leur numéro de canal.
 Met les listes de sons (0-63) de tous les canaux. Si une liste vide est passée, ce canal n’est pas utilisé.<br>
 Par exemple `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
-### Advanced APIs
+### APIs avancées
 
 Pyxel a des "APIs avancées" qui ne sont pas présentées ici car elles peuvent amener de la confusion ou qu’elles nécessitent des connaissances spécifiques pour être utilisées.
 
