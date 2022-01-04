@@ -553,9 +553,9 @@ Liste à deux dimensions de sons (0-63) listés par leur numéro de canal.
 Met les listes de sons (0-63) de tous les canaux. Si une liste vide est passée, ce canal n’est pas utilisé.<br>
 Par exemple `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
-### APIs avancées
+### API avancée
 
-Pyxel a des "APIs avancées" qui ne sont pas présentées ici car elles peuvent amener de la confusion ou qu’elles nécessitent des connaissances spécifiques pour être utilisées.
+Pyxel a une "API avancée" qui n’est pas présentée ici car elle peut porter à confusion ou qu’elle nécessite des connaissances spécifiques pour être utilisée.
 
 Si vous savez ce que vous faîtes, essayez de créer des applications incroyables avec [ceci](../pyxel/__init__.pyi) comme indice !
 
