@@ -438,7 +438,7 @@ Copia la región de tamaño (`w`, `h`) desde la posición (`u`, `v`) del banco d
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copie la región de tamaño (`w`,` h`) de (`u`,` v`) del mapa de mosaicos `tm` (0-7) a (` x`, `y`). Si se establece un valor negativo para `w` y / o` h`, se invertirá horizontal y / o verticalmente. Si se especifica "colkey", se trata como un color transparente. El tamaño de un mosaico es de 8x8 píxeles y se almacena en un mapa de mosaicos como una tupla de `(x in tile, y in tile)`.
+Copie la región de tamaño (`w`,` h`) de (`u`,` v`) del mapa de mosaicos `tm` (0-7) a (` x`, `y`). Si se establece un valor negativo para `w` y / o` h`, se invertirá horizontal y / o verticalmente. Si se especifica "colkey", se trata como un color transparente. El tamaño de un mosaico es de 8x8 píxeles y se almacena en un mapa de mosaicos como una tupla de `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 
@@ -497,10 +497,10 @@ Establece el mapa a (`x`, `y`) por una lista de strings<br>
 Ejemplo: `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `pget(x, y)`<br>
-Obtén la celda del mapa de la posición (`x`, `y`). Una celda es una tupla formada por `(x in tile, y in tile)`
+Obtén la celda del mapa de la posición (`x`, `y`). Una celda es una tupla formada por `(tile_x, tile_y)`
 
 - `pset(x, y, tile)`<br>
-Dibuja una `tile` en (`x`, `y`). Una celda es una tupla formada por `(x in tile, y in tile)`
+Dibuja una `tile` en (`x`, `y`). Una celda es una tupla formada por `(tile_x, tile_y)`
 
 ### Sound Class
 

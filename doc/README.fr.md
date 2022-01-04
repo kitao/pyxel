@@ -444,7 +444,7 @@ Copie la région de taille (`w`, `h`) de (`u`, `v`) de la banque d’image `img`
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copie la région de taill (`w`, `h`) de (`u`, `v`) de la tilemap `tm` (0-7) à (`x`, `y`). Si une valeur négative est mise pour `w` (ou `h`), la copie sera inversée horizontalement (ou verticalement). Si `colkey` est spécifiée, elle sera traitée comme une couleur transparente. La taille d’une tuile est 8x8 pixels et elle est storée dans une tilemap en tant que paire `(x dans tuile, y dans tuile)`.
+Copie la région de taill (`w`, `h`) de (`u`, `v`) de la tilemap `tm` (0-7) à (`x`, `y`). Si une valeur négative est mise pour `w` (ou `h`), la copie sera inversée horizontalement (ou verticalement). Si `colkey` est spécifiée, elle sera traitée comme une couleur transparente. La taille d’une tuile est 8x8 pixels et elle est storée dans une tilemap en tant que paire `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 
@@ -503,10 +503,10 @@ Met la tilemap à (`x`, `y`) suivant une liste de chaînes.<br>
 Par exemple `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `pget(x, y)`<br>
-Renvoie la tile à (`x`, `y`). Une tile est un tuple `(x in tile, y in tile)`.
+Renvoie la tile à (`x`, `y`). Une tile est un tuple `(tile_x, tile_y)`.
 
 - `pset(x, y, tile)`<br>
-Dessine une `tile` à (`x`, `y`). Une tile est un tuple `(x in tile, y in tile)`.
+Dessine une `tile` à (`x`, `y`). Une tile est un tuple `(tile_x, tile_y)`.
 
 ### Classe Sound
 

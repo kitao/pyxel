@@ -443,7 +443,7 @@ Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img` (0
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do tilemap `tm` (0-7) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente. O tamanho de um tile é de 8x8 pixels e é armazenado em um tilemap como uma tupla de `(x in tile, y in tile)`.
+Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do tilemap `tm` (0-7) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente. O tamanho de um tile é de 8x8 pixels e é armazenado em um tilemap como uma tupla de `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 
@@ -502,10 +502,10 @@ Define o tilemap em (`x`, `y`) por uma lista de strings.<br>
 Ex. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `pget(x, y)`<br>
-Pega o tile em (`x`, `y`). Um tile é uma tupla de `(x in tile, y in tile)`.
+Pega o tile em (`x`, `y`). Um tile é uma tupla de `(tile_x, tile_y)`.
 
 - `pset(x, y, tile)`<br>
-Desenha um `tile` em (`x`, `y`). Um tile é uma tupla de `(x in tile, y in tile)`.
+Desenha um `tile` em (`x`, `y`). Um tile é uma tupla de `(tile_x, tile_y)`.
 
 ### Classe de Som
 

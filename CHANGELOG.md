@@ -2,6 +2,7 @@
 
 ## 1.5.7
 - Fixed the example #11 images
+- Updated the READMEs
 
 ## 1.5.6
 - Fixed the categories of the Pyxel crates
@@ -82,7 +83,7 @@
 - Optimized GIF animation compression
 - Enabled to add the image banks and tilemap banks dynamically
 - Added drawing methods to the Image and Tilemap class
-- Changed the tile format of tilemap to tuple of (x in tile, y in tile)
+- Changed the tile format of tilemap to tuple of (tile_x, tile_y)
 - Renamed the properties of the Sound and Music class
 - Changed the play_pos function to return a tuple of sound and note
 - Supported dynamic palette change with the colors list

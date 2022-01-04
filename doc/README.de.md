@@ -442,7 +442,7 @@ Kopiere eine Region der Größe (`w`, `h`) von (`u`, `v`) des Image Banks `img`(
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(x in tile, y in tile)`.
+Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 
@@ -504,10 +504,10 @@ Setzen der Tilemap an (`x`, `y`) durch eine Liste von strings.<br>
 z.B. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `pget(x, y)`<br>
-Gibt die Tile bei (`x`, `y`). Ein Tile ist eine Tuple von `(x in tile, y in tile)`.
+Gibt die Tile bei (`x`, `y`). Ein Tile ist eine Tuple von `(tile_x, tile_y)`.
 
 - `pset(x, y, tile)`<br>
-Zeichne eine `tile` bei (`x`, `y`). Ein Tile ist eine Tuple von `(x in tile, y in tile)`.
+Zeichne eine `tile` bei (`x`, `y`). Ein Tile ist eine Tuple von `(tile_x, tile_y)`.
 
 ### Sound Klasse
 
