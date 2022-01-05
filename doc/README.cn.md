@@ -67,7 +67,7 @@ Pyxel有两种安装版本：Python包版本和独立版本。
 在安装[Python3](https://www.python.org/)（3.7或更高版本）之后，执行以下命令：
 
 ```sh
-pip install -U pyxel
+pip install pyxel
 ```
 
 **Mac**
@@ -75,7 +75,7 @@ pip install -U pyxel
 在安装[Python3](https://www.python.org/)（3.7或更高版本）之后，执行以下命令：
 
 ```sh
-pip3 install -U pyxel
+pip3 install pyxel
 ```
 
 **Linux**
@@ -83,7 +83,7 @@ pip3 install -U pyxel
 安装SDL2（Ubuntu下包名为：`libsdl2-dev`），[Python3](https://www.python.org/)（3.7或更高版本），以及`python3-pip`这三个包之后，执行以下命令：
 
 ```sh
-sudo pip3 install -U pyxel
+sudo pip3 install pyxel
 ```
 
 如果以上步骤无效，可以在安装`cmake`和`rust`后，尝试执行以下步骤自行编译：
