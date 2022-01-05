@@ -143,9 +143,16 @@ impl Platform for Sdl2 {
         }
     }
 
-    fn toggle_fullscreen(&mut self) {
+    fn is_fullscreen(&self) -> bool {
+        self.sdl_canvas.window().fullscreen_state() != SdlFullscreenType::Off
+    }
+
+    fn set_fullscreen(&mut self, is_fullscreen: bool) {
+        if is_fullscreen == self.is_fullscreen() {
+            return;
+        }
         let window = self.sdl_canvas.window_mut();
-        if window.fullscreen_state() == SdlFullscreenType::Off {
+        if is_fullscreen {
             let _ = window.set_fullscreen(SdlFullscreenType::Desktop);
         } else {
             let _ = window.set_fullscreen(SdlFullscreenType::Off);
