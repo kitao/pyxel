@@ -4,7 +4,6 @@ use crate::types::{Color, Effect, Key, Note, Rgb8, Speed, Tone, Volume};
 // System
 pub const PYXEL_VERSION: &str = "1.5.7";
 pub const DEFAULT_TITLE: &str = "Pyxel";
-pub const DEFAULT_SCALE: u32 = 4;
 pub const DEFAULT_FPS: u32 = 30;
 pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
 pub const DEFAULT_CAPTURE_SCALE: u32 = 2;
