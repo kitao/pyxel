@@ -15,9 +15,9 @@ SetupIconFile=..\doc\images\pyxel_icon_64x64.ico
 UninstallDisplayIcon={app}\unins000.exe,0
 
 [Tasks]
-Name: envPyxapp; Description: "Associate .pyxapp files with Pyxel {#PyxelVersion}"
-Name: envPyxres; Description: "Associate .pyxres files with Pyxel {#PyxelVersion}"
-Name: envPath; Description: "Add Pyxel {#PyxelVersion} to the user PATH"
+Name: envPyxapp; Description: "Associate .pyxapp files with Pyxel"
+Name: envPyxres; Description: "Associate .pyxres files with Pyxel"
+Name: envPath; Description: "Add Pyxel to the user PATH"
 
 [Files]
 Source: "build\pyxel-{#PyxelVersion}-windows\*"; DestDir: "{app}"; Flags: recursesubdirs
