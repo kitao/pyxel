@@ -6,6 +6,9 @@
 - Added the module search path option to the Pyxel command
 - Changed the default install directory on Windows
 - Added tests for the package and play options
+- Renamed setbtn, setbtnv, and setmpos
+- Changed fullscreen to take an argument
+- Added the is_fullscreen function
 
 ## 1.5.6
 - Fixed the categories of the Pyxel crates
