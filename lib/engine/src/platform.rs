@@ -11,7 +11,8 @@ pub trait Platform {
     fn set_icon(&mut self, image: &[Vec<Color>], colors: &[Rgb8], scale: u32);
     fn show_cursor(&self, show: bool);
     fn move_cursor(&self, x: i32, y: i32);
-    fn toggle_fullscreen(&mut self);
+    fn is_fullscreen(&self) -> bool;
+    fn set_fullscreen(&mut self, is_fullscreen: bool);
     fn tick_count(&self) -> u32;
     fn sleep(&mut self, ms: u32);
     fn poll_event(&mut self) -> Option<Event>;
