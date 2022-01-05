@@ -69,7 +69,7 @@ Recommended for those who are familiar with managing Python packages using the `
 After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
 
 ```sh
-pip install -U pyxel
+pip install pyxel
 ```
 
 **Mac**
@@ -77,7 +77,7 @@ pip install -U pyxel
 After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
 
 ```sh
-pip3 install -U pyxel
+pip3 install pyxel
 ```
 
 **Linux**
@@ -85,7 +85,7 @@ pip3 install -U pyxel
 After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://www.python.org/) (version 3.7 or higher), and `python3-pip`, run the following command:
 
 ```sh
-sudo pip3 install -U pyxel
+sudo pip3 install pyxel
 ```
 
 If the above doesn't work, try self-building by following the steps below after installing `cmake` and `rust`:
