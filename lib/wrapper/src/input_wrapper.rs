@@ -30,18 +30,18 @@ fn mouse(visible: bool) {
 }
 
 #[pyfunction]
-pub fn setbtn(key: Key, state: bool) {
-    instance().setbtn(key, state);
+pub fn set_btn(key: Key, state: bool) {
+    instance().set_btn(key, state);
 }
 
 #[pyfunction]
-pub fn setbtnv(key: Key, val: f64) {
-    instance().setbtnv(key, val);
+pub fn set_btnv(key: Key, val: f64) {
+    instance().set_btnv(key, val);
 }
 
 #[pyfunction]
-pub fn setmpos(x: f64, y: f64) {
-    instance().setmpos(x, y);
+pub fn set_mouse_pos(x: f64, y: f64) {
+    instance().set_mouse_pos(x, y);
 }
 
 pub fn add_input_functions(m: &PyModule) -> PyResult<()> {
@@ -50,8 +50,8 @@ pub fn add_input_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(btnr, m)?)?;
     m.add_function(wrap_pyfunction!(btnv, m)?)?;
     m.add_function(wrap_pyfunction!(mouse, m)?)?;
-    m.add_function(wrap_pyfunction!(setbtn, m)?)?;
-    m.add_function(wrap_pyfunction!(setbtnv, m)?)?;
-    m.add_function(wrap_pyfunction!(setmpos, m)?)?;
+    m.add_function(wrap_pyfunction!(set_btn, m)?)?;
+    m.add_function(wrap_pyfunction!(set_btnv, m)?)?;
+    m.add_function(wrap_pyfunction!(set_mouse_pos, m)?)?;
     Ok(())
 }

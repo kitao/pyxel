@@ -214,7 +214,7 @@ impl Pyxel {
         self.input.is_mouse_visible = is_visible;
     }
 
-    pub fn setbtn(&mut self, key: Key, key_state: bool) {
+    pub fn set_btn(&mut self, key: Key, key_state: bool) {
         if key_state {
             self.input.press_key(key, self.frame_count());
             if let Some(key) = to_integrated_key(key) {
@@ -231,12 +231,12 @@ impl Pyxel {
         }
     }
 
-    pub fn setbtnv(&mut self, key: Key, key_value: f64) {
+    pub fn set_btnv(&mut self, key: Key, key_value: f64) {
         let key_value = as_i32(key_value);
         self.input.key_values.insert(key, key_value);
     }
 
-    pub fn setmpos(&mut self, x: f64, y: f64) {
+    pub fn set_mouse_pos(&mut self, x: f64, y: f64) {
         let x = as_i32(x);
         let y = as_i32(y);
         self.input.key_values.insert(MOUSE_POS_X, x);
