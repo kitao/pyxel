@@ -345,11 +345,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                         continue;
                     }
                 }
-                let value = if let Some(palette) = palette {
-                    palette[value.to_index()]
-                } else {
-                    value
-                };
+                let value = palette.map_or(value, |palette| palette[value.to_index()]);
                 self.data[(dst_y + yi) as usize][(dst_x + xi) as usize] = value;
             }
         }
