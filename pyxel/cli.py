@@ -19,6 +19,7 @@ def _print_usage():
     print("    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]")
     print("    pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE(.py)")
     print("    pyxel copy_examples")
+    print("    pyxel module_search_path")
 
 
 def _complete_extension(filename, ext_with_dot):
@@ -119,6 +120,11 @@ def _copy_pyxel_examples():
         print(f"copied '{dst_file}'")
 
 
+def _print_module_search_path():
+    module_search_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    print(module_search_path)
+
+
 def cli():
     num_args = len(sys.argv)
     command = sys.argv[1].lower() if num_args > 1 else ""
@@ -132,5 +138,7 @@ def cli():
         _package_pyxel_app(sys.argv[2], sys.argv[3])
     elif command == "copy_examples" and num_args == 2:
         _copy_pyxel_examples()
+    elif command == "module_search_path" and num_args == 2:
+        _print_module_search_path()
     else:
         _print_usage()
