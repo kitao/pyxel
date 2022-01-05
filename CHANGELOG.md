@@ -3,6 +3,8 @@
 ## 1.5.7
 - Fixed the example #11 images
 - Updated the READMEs
+- Added the module search path option to the Pyxel command
+- Changed the default install directory on Windows
 
 ## 1.5.6
 - Fixed the categories of the Pyxel crates
