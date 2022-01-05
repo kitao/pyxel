@@ -57,6 +57,7 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "width" => instance().width().to_object(py),
         "height" => instance().height().to_object(py),
         "frame_count" => instance().frame_count().to_object(py),
+        "is_fullscreen" => instance().is_fullscreen().to_object(py),
 
         // Input
         "mouse_x" => instance().mouse_x().to_object(py),

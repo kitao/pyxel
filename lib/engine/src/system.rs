@@ -71,8 +71,12 @@ impl Pyxel {
             .set_icon(&image.lock().canvas.data, &self.colors, scale);
     }
 
-    pub fn fullscreen(&mut self) {
-        self.platform.toggle_fullscreen();
+    pub fn is_fullscreen(&self) -> bool {
+        self.platform.is_fullscreen()
+    }
+
+    pub fn fullscreen(&mut self, is_fullscreen: bool) {
+        self.platform.set_fullscreen(is_fullscreen);
     }
 
     pub fn run<T: PyxelCallback>(&mut self, callback: &mut T) {
@@ -180,7 +184,7 @@ impl Pyxel {
     fn check_special_input(&mut self) {
         if self.btn(KEY_ALT) {
             if self.btnp(KEY_RETURN, None, None) {
-                self.platform.toggle_fullscreen();
+                self.fullscreen(!self.is_fullscreen());
             }
             if self.btnp(KEY_0, None, None) {
                 self.system.enable_perf_monitor = !self.system.enable_perf_monitor;

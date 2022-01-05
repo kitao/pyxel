@@ -49,8 +49,8 @@ fn icon(data: Vec<&str>, scale: u32) {
 }
 
 #[pyfunction]
-fn fullscreen() {
-    instance().fullscreen();
+fn fullscreen(full: bool) {
+    instance().fullscreen(full);
 }
 
 #[pyfunction]
