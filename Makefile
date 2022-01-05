@@ -7,8 +7,8 @@
 #   - Inno Setup
 #
 # Prerequisites for Mac:
-#   - Xcode
-#   - `sudo xcode-select --switch /Applications/Xcode.app`
+#   - Xcode and `sudo xcode-select --switch /Applications/Xcode.app`
+#   - rustup
 #
 # Prerequisites for Linux:
 #   - SDL2 package (libsdl2-dev for Ubuntu)
