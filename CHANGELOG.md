@@ -5,6 +5,7 @@
 - Updated the READMEs
 - Added the module search path option to the Pyxel command
 - Changed the default install directory on Windows
+- Added tests for the package and play options
 
 ## 1.5.6
 - Fixed the categories of the Pyxel crates
