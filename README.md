@@ -2,6 +2,10 @@
 
 [ [English](README.md) | [中文](doc/README.cn.md) | [Deutsch](doc/README.de.md) | [Español](doc/README.es.md) | [Français](doc/README.fr.md) | [Italiano](doc/README.it.md) | [日本語](doc/README.ja.md) | [한국어](doc/README.ko.md) | [Português](doc/README.pt.md) | [Русский](doc/README.ru.md) ]
 
+[![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
+[![GitHub forks](https://img.shields.io/github/forks/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&logo=github%20sponsors&style=social)](https://github.com/sponsors/kitao)
+
 **Pyxel** is a retro game engine for Python.
 
 Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
