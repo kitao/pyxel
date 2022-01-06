@@ -8,7 +8,7 @@
 - Added tests for the package and play options
 - Renamed setbtn, setbtnv, and setmpos
 - Changed fullscreen to take an argument
-- Added the is_fullscreen function
+- Added the is_fullscreen variable
 
 ## 1.5.6
 - Fixed the categories of the Pyxel crates
