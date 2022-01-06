@@ -10,7 +10,7 @@ impl App {
         let app = App { x: 0.0, y: 0.0 };
 
         pyxel.mouse(true);
-        pyxel.setmpos(10.0, 10.0);
+        pyxel.set_mouse_pos(10.0, 10.0);
 
         pyxel.image(0).lock().set(
             0,
@@ -74,6 +74,10 @@ impl PyxelCallback for App {
         if pyxel.frame_count() < 60 {
             self.x += (pyxel.frame_count() % 2) as f64;
             self.y -= 1.0;
+        }
+
+        if pyxel.btnp(pyxel::KEY_F, None, None) {
+            pyxel.fullscreen(!pyxel.is_fullscreen())
         }
 
         if pyxel.btnp(pyxel::KEY_Q, None, None) {
