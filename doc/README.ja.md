@@ -150,12 +150,14 @@ pyxel copy_examples
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 画面遷移のあるシューティングゲーム
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - マップのある横スクロールアクションゲーム
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Imageクラスによるオフスクリーン描画
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
 
 サンプルは以下のコマンドで実行できます。
 
 ```sh
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
+pyxel play 30SecondsOfDaylight.pyxapp
 ```
 
 ## 使い方
