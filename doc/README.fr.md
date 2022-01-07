@@ -150,12 +150,14 @@ Les exemples copiés sont les suivants :
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Jeu de shoot'em up avec changement d’écran
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Jeu de plateforme avec défilement horizontal et une carte
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Rendu hors écran avec la classe Image
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
 
 Les exemples peuvent être lancés avec les commandes suivantes :
 
 ```sh
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
+pyxel play 30SecondsOfDaylight.pyxapp
 ```
 
 ## Comment utiliser

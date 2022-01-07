@@ -150,12 +150,14 @@ pyxel copy_examples
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Игра жанра «убей всех» с переходом между экранами
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Платформер с боковым скроллингом и картой
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
 
 Эти примеры могут быть запущены следующей командой:
 
 ```sh
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
+pyxel play 30SecondsOfDaylight.pyxapp
 ```
 
 ## Как использовать Pyxel
