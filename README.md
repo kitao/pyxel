@@ -580,8 +580,10 @@ Submitted pull request is deemed to have agreed to publish under [MIT License](L
 
 ## Other Information
 
-- [Discord server (English)](https://discord.gg/FC7kUZJ)
-- [Discord server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
+- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## License
 

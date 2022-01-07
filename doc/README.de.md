@@ -582,8 +582,10 @@ Bei einem eingereichten Pull-Request wird davon ausgegangen, dass der Veröffent
 
 ## Weitere Informationen
 
+- [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
+- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Discord Server (English)](https://discord.gg/FC7kUZJ)
-- [Discord Server (Japanisch - 日本語版)](https://discord.gg/qHA5BCS)
+- [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## Lizenz
 

@@ -580,8 +580,10 @@ Pyxelには「ユーザーを混乱させる可能性がある」「使うため
 
 ## その他の情報
 
-- [Discord server (English)](https://discord.gg/FC7kUZJ)
-- [Discord server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
+- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## ライセンス
 

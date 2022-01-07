@@ -575,8 +575,10 @@ Los pull request enviados se consideran acordados para poder publicarse bajo la 
 
 ## Otra Información
 
-- [Servidor de Discord (Inglés)](https://discord.gg/FC7kUZJ)
-- [Servidor de Discord (Japonés - 日本語版)](https://discord.gg/qHA5BCS)
+- [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
+- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## Licencia
 
