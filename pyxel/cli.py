@@ -24,7 +24,7 @@ def _print_usage():
 
 def _complete_extension(filename, ext_with_dot):
     file_ext = os.path.splitext(filename)[1]
-    if file_ext.lower() == ext_with_dot.lower():
+    if file_ext == ext_with_dot:
         return filename
     else:
         return filename + ext_with_dot
@@ -87,9 +87,7 @@ def _edit_pyxel_resource(pyxel_resource_file):
 
 def _package_pyxel_app(app_root_dir, startup_script_name):
     _check_dir_exists(app_root_dir)
-    startup_script_name = os.path.basename(
-        _complete_extension(startup_script_name, ".py")
-    )
+    startup_script_name = _complete_extension(startup_script_name, ".py")
     _check_file_exists(os.path.join(app_root_dir, startup_script_name))
     setting_file = os.path.join(app_root_dir, pyxel.APP_STARTUP_SCRIPT_FILE)
     with open(setting_file, "w") as f:
@@ -127,7 +125,7 @@ def _print_module_search_path():
 
 def cli():
     num_args = len(sys.argv)
-    command = sys.argv[1].lower() if num_args > 1 else ""
+    command = sys.argv[1] if num_args > 1 else ""
     if command == "run" and num_args == 3:
         _run_python_script(sys.argv[2])
     elif command == "play" and num_args == 3:
