@@ -590,3 +590,7 @@ Le pull request emesse sono presupposte di accettare di essere pubblicate sotto 
 ## Licenza
 
 Pyxel is under [MIT License](../LICENSE). It can be reused within proprietary software, provided that all copies of the software or its substantial portions include a copy of the terms of the MIT License and also a copyright notice.
+
+# Reclutare Sponsor
+
+Pyxel è alla ricerca di sponsor su GitHub Sponsor. Prendi in considerazione la sponsorizzazione di Pyxel per la manutenzione continua e l'aggiunta di funzionalità. Gli sponsor possono consultare Pyxel come vantaggio. Si prega di vedere [qui](https://github.com/sponsors/kitao) per i dettagli.
