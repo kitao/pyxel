@@ -578,7 +578,7 @@ Los pull request enviados se consideran acordados para poder publicarse bajo la 
 ## Otra Información
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
-- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Ejemplos de usuarios](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Discord Server (English)](https://discord.gg/FC7kUZJ)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
@@ -588,4 +588,4 @@ Pyxel esta bajo la [Licencia MIT](../LICENSE). Puede ser reutilizada con el soft
 
 ## Reclutamiento de patrocinadores
 
-Pyxel está buscando patrocinadores en patrocinadores de GitHub. Considere patrocinar Pyxel para un mantenimiento continuo y adiciones de funciones. Los patrocinadores pueden consultar sobre Pyxel como un beneficio. Consulte [aquí](https://github.com/sponsors/kitao) para obtener más detalles.
+Pyxel está buscando patrocinadores en GitHub Sponsors. Considere patrocinar Pyxel para un mantenimiento continuo y adiciones de funciones. Los patrocinadores pueden consultar sobre Pyxel como un beneficio. Consulte [aquí](https://github.com/sponsors/kitao) para obtener más detalles.
