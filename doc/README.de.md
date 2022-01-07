@@ -150,12 +150,14 @@ Die zu kopierenden Beispiele lauten wie folgt:
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Shoot'em up mit Displayübergängen
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Side-Scroller Platform Spiel mit Karte
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
 
 Führe eines der Beispiele mit folgendem Befehl aus:
 
 ```sh
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
+pyxel play 30SecondsOfDaylight.pyxapp
 ```
 
 ## Verwendung

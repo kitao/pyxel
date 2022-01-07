@@ -150,12 +150,14 @@ pyxel copy_examples
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 屏幕过渡射击游戏
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - 屏幕横向滑动的游戏示例
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
 
 运行例程，可以使用以下命令：
 
 ```sh
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
+pyxel play 30SecondsOfDaylight.pyxapp
 ```
 
 ## 使用教程
