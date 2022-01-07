@@ -148,7 +148,7 @@ Los ejemplos serán copiados de la siguiente manera:
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Juego de nave espacial con transiciones de pantalla
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Juego con desplazamiento lateral con plataformas con mapa
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Rendimiento fuera de la pantalla con la clase Image
-- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - El primer ganador del Jam de Pyxel, por [Adam](https://twitter.com/helpcomputer0)
 
 Los ejemplos se pueden ejecutar con el siguiente comando:
 
@@ -578,7 +578,7 @@ Los pull request enviados se consideran acordados para poder publicarse bajo la 
 ## Otra Información
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
-- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Ejemplos de usuarios](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Discord Server (English)](https://discord.gg/FC7kUZJ)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
@@ -588,4 +588,4 @@ Pyxel esta bajo la [Licencia MIT](../LICENSE). Puede ser reutilizada con el soft
 
 ## Reclutamiento de patrocinadores
 
-Pyxel está buscando patrocinadores en patrocinadores de GitHub. Considere patrocinar Pyxel para un mantenimiento continuo y adiciones de funciones. Los patrocinadores pueden consultar sobre Pyxel como un beneficio. Consulte [aquí](https://github.com/sponsors/kitao) para obtener más detalles.
+Pyxel está buscando patrocinadores en GitHub Sponsors. Considere patrocinar Pyxel para un mantenimiento continuo y adiciones de funciones. Los patrocinadores pueden consultar sobre Pyxel como un beneficio. Consulte [aquí](https://github.com/sponsors/kitao) para obtener más detalles.
