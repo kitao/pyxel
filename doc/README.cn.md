@@ -581,8 +581,10 @@ Pyxel还有一些“高级API”，出于“可能令用户感到迷惑”、“
 
 ## 其他信息
 
-- [Discord服务器 (English)](https://discord.gg/FC7kUZJ)
-- [Discord服务器 (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
+- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## 许可证
 
