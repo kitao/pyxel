@@ -589,3 +589,7 @@ Pyxel还有一些“高级API”，出于“可能令用户感到迷惑”、“
 ## 许可证
 
 Pyxel遵循[MIT License](../LICENSE)。您可以在专利软件中重复使用，前提是该软件的所有副本或重要部分均包含 MIT 许可条款的副本和版权声明。
+
+# 招募赞助商
+
+Pyxel 正在 GitHub 赞助商上寻找赞助商。 考虑赞助 Pyxel 以进行持续维护和功能添加。 赞助商可以咨询 Pyxel 作为一个好处。 详情请参阅[此处](https://github.com/sponsors/kitao)。
