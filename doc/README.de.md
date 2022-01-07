@@ -591,6 +591,6 @@ Bei einem eingereichten Pull-Request wird davon ausgegangen, dass der Veröffent
 
 Pyxel steht unter der [MIT-Lizenz](../LICENSE). Es kann innerhalb proprietärer Software wiederverwendet werden, vorausgesetzt, dass alle Kopien der Software oder ihrer wesentlichen Teile eine Kopie der Bedingungen der MIT-Lizenz und auch einen Copyright-Hinweis enthalten.
 
-# Sponsoren Werben
+## Sponsoren Werben
 
 Pyxel sucht Sponsoren auf GitHub Sponsors. Ziehen Sie in Erwägung, Pyxel für die fortlaufende Wartung und Funktionserweiterungen zu sponsern. Sponsoren können sich über Pyxel als Vorteil beraten. Weitere Informationen finden Sie [hier](https://github.com/sponsors/kitao).
