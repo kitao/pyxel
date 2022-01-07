@@ -581,8 +581,10 @@ Pyxel имеет «расширенные API», не упомянутые в э
 
 ## Прочая информация
 
-- [Сервер Discord (Англоязычный)](https://discord.gg/FC7kUZJ)
-- [Сервер Discord (Японский - 日本語版)](https://discord.gg/qHA5BCS)
+- [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
+- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## Лицензия
 
