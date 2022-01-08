@@ -96,11 +96,14 @@ test: build
 	@for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
 		$(PYXEL_COMMAND) run $$example; \
 	done
+	@$(PYXEL_COMMAND) play $(EXAMPLES_DIR)/30SecondsOfDaylight.pyxapp
 	@$(PYXEL_COMMAND) edit $(EXAMPLES_DIR)/assets/sample.pyxres
+
+	@rm -rf testapp testapp.pyxapp
 	@mkdir -p testapp/assets
-	@cp $(EXAMPLES_DIR)/10_*.py testapp
+	@cp $(EXAMPLES_DIR)/10_platformer.py testapp
 	@cp $(EXAMPLES_DIR)/assets/platformer.pyxres testapp/assets
-	@$(PYXEL_COMMAND) package testapp testapp/*.py
+	@$(PYXEL_COMMAND) package testapp 10_platformer.py
 	@$(PYXEL_COMMAND) play testapp.pyxapp
 	@rm -rf testapp testapp.pyxapp
 
