@@ -71,7 +71,7 @@ Pyxel의 패키지 버전은 Pyxel을 Python 확장 모듈로 사용합니다.
 [Python3](https://www.python.org/) (버전 3.7 이상)을 설치한 후, 다음 명령어를 실행합니다.
 
 ```sh
-pip install pyxel
+pip install -U pyxel
 ```
 
 **Mac**
@@ -79,7 +79,7 @@ pip install pyxel
 [Python3](https://www.python.org/) (버전 3.7 이상)을 설치한 후, 다음 명령어를 실행합니다.
 
 ```sh
-pip3 install pyxel
+pip3 install -U pyxel
 ```
 
 **Linux**
@@ -87,7 +87,7 @@ pip3 install pyxel
 SDL2 패키지 (Ubuntu의 경우 `libsdl2-dev`), [Python3](https://www.python.org/) (버전 3.7 이상), `python3-pip`를 설치한 후, 다음 명령어를 실행합니다.
 
 ```sh
-sudo pip3 install pyxel
+sudo pip3 install -U pyxel
 ```
 
 위의 방법이 제대로 작동하지 않으면, `cmake`, `rust`를 설치한 후 다음 단계에 따라 셀프 빌드를 시도해보세요.

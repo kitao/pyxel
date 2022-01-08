@@ -71,7 +71,7 @@ Lo recomendado para ellos que estén familiarizados con el manejo de paquetes en
 Después de instalar [Python3](https://www.python.org/) (versión 3.7 o superior), ejecute el siguiente comando:
 
 ```sh
-pip install pyxel
+pip install -U pyxel
 ```
 
 **Mac**
@@ -79,7 +79,7 @@ pip install pyxel
 Después de instalar [Python3](https://www.python.org/) (versión 3.7 o superior), ejecute el siguiente comando:
 
 ```sh
-pip3 install pyxel
+pip3 install -U pyxel
 ```
 
 **Linux**
@@ -87,7 +87,7 @@ pip3 install pyxel
 Después de instalar los paquetes SDL2 (`libsdl2-dev` para Ubuntu), [Python3](https://www.python.org/) (versión 3.7 or superior), y `python3-pip`, ejecute el siguiente comando:
 
 ```sh
-sudo pip3 install pyxel
+sudo pip3 install -U pyxel
 ```
 
 Si los pasos mencionados previamente no funcionan, intente compilarla usted mismo, siguiendo los siguientes comandos después de instalar `cmake` and `rust`:
