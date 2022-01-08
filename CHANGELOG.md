@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.5.8
+- Fixed a pyxapp to be included in Python wheel
+
 ## 1.5.7
 - Fixed the example #11 images
 - Added the module search path option to the Pyxel command
