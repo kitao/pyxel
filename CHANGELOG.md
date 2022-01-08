@@ -2,6 +2,7 @@
 
 ## 1.5.8
 - Fixed a pyxapp to be included in Python wheel
+- Resolved the clippy warnings
 
 ## 1.5.7
 - Fixed the example #11 images
