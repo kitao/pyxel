@@ -19,7 +19,7 @@ fn tilemap(tm: u32) -> Tilemap {
 fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyResult<()> {
     if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
         instance().clip(x, y, w, h);
-    } else if let (None, None, None, None) = (x, y, w, h) {
+    } else if (x, y, w, h) == (None, None, None, None) {
         instance().clip0();
     } else {
         type_error!("clip() takes 0 or 4 arguments");
@@ -31,7 +31,7 @@ fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyRes
 fn camera(x: Option<f64>, y: Option<f64>) -> PyResult<()> {
     if let (Some(x), Some(y)) = (x, y) {
         instance().camera(x, y);
-    } else if let (None, None) = (x, y) {
+    } else if (x, y) == (None, None) {
         instance().camera0();
     } else {
         type_error!("camera() takes 0 or 2 arguments");
@@ -43,7 +43,7 @@ fn camera(x: Option<f64>, y: Option<f64>) -> PyResult<()> {
 fn pal(col1: Option<Color>, col2: Option<Color>) -> PyResult<()> {
     if let (Some(col1), Some(col2)) = (col1, col2) {
         instance().pal(col1, col2);
-    } else if let (None, None) = (col1, col2) {
+    } else if (col1, col2) == (None, None) {
         instance().pal0();
     } else {
         type_error!("pal() takes 0 or 2 arguments");

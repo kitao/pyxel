@@ -6,6 +6,7 @@
     clippy::missing_panics_doc,
     clippy::multiple_crate_versions,
     clippy::must_use_candidate,
+    clippy::needless_option_as_deref,
     clippy::needless_pass_by_value,
     clippy::new_without_default,
     clippy::pedantic,

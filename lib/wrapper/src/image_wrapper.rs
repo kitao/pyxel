@@ -68,7 +68,7 @@ impl Image {
     ) -> PyResult<()> {
         if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
             self.pyxel_image.lock().clip(x, y, w, h);
-        } else if let (None, None, None, None) = (x, y, w, h) {
+        } else if (x, y, w, h) == (None, None, None, None) {
             self.pyxel_image.lock().clip0();
         } else {
             type_error!("clip() takes 0 or 4 arguments");
@@ -79,7 +79,7 @@ impl Image {
     pub fn camera(&self, x: Option<f64>, y: Option<f64>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
             self.pyxel_image.lock().camera(x, y);
-        } else if let (None, None) = (x, y) {
+        } else if (x, y) == (None, None) {
             self.pyxel_image.lock().camera0();
         } else {
             type_error!("camera() takes 0 or 2 arguments");
