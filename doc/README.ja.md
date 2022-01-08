@@ -71,7 +71,7 @@ Pyxelにはパッケージ版とスタンドアロン版の2種類がありま�
 [Python3](https://www.python.org/) (バージョン3.7以上) をインストールした後に、次のコマンドを実行します。
 
 ```sh
-pip install pyxel
+pip install -U pyxel
 ```
 
 **Mac**
@@ -79,7 +79,7 @@ pip install pyxel
 [Python3](https://www.python.org/) (バージョン3.7以上) をインストールした後に、次のコマンドを実行します。
 
 ```sh
-pip3 install pyxel
+pip3 install -U pyxel
 ```
 
 **Linux**
@@ -87,7 +87,7 @@ pip3 install pyxel
 SDL2パッケージ (Ubuntuの場合は`libsdl2-dev`)、[Python3](https://www.python.org/) (バージョン3.7以上)、`python3-pip`をインストールした後に、次のコマンドを実行します。
 
 ```sh
-sudo pip3 install pyxel
+sudo pip3 install -U pyxel
 ```
 
 上記で動作しない場合は、`cmake`、`rust`をインストールした後に、以下の手順でセルフビルドを試してみてください。
