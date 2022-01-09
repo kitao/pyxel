@@ -62,18 +62,9 @@ impl Input {
             // Key events
             Event::KeyDown { keycode } => {
                 self.press_key(keycode, frame_count);
-                if let Some(keycode) = to_integrated_key(keycode) {
-                    self.press_key(keycode, frame_count);
-                }
-                if is_keyboard_key(keycode) {
-                    self.input_keys.push(keycode);
-                }
             }
             Event::KeyUp { keycode } => {
                 self.release_key(keycode, frame_count);
-                if let Some(keycode) = to_integrated_key(keycode) {
-                    self.release_key(keycode, frame_count);
-                }
             }
             Event::TextInput { text } => {
                 self.input_text += &text;
@@ -133,11 +124,22 @@ impl Input {
     fn press_key(&mut self, key: Key, frame_count: u32) {
         self.key_states
             .insert(key, KeyState::Pressed { frame_count });
+        if let Some(key) = to_integrated_key(key) {
+            self.key_states
+                .insert(key, KeyState::Pressed { frame_count });
+        }
+        if is_keyboard_key(key) {
+            self.input_keys.push(key);
+        }
     }
 
     fn release_key(&mut self, key: Key, frame_count: u32) {
         self.key_states
             .insert(key, KeyState::Released { frame_count });
+        if let Some(key) = to_integrated_key(key) {
+            self.key_states
+                .insert(key, KeyState::Released { frame_count });
+        }
     }
 }
 
@@ -217,17 +219,8 @@ impl Pyxel {
     pub fn set_btn(&mut self, key: Key, key_state: bool) {
         if key_state {
             self.input.press_key(key, self.frame_count());
-            if let Some(key) = to_integrated_key(key) {
-                self.input.press_key(key, self.frame_count());
-            }
-            if is_keyboard_key(key) {
-                self.input.input_keys.push(key);
-            }
         } else {
             self.input.release_key(key, self.frame_count());
-            if let Some(key) = to_integrated_key(key) {
-                self.input.release_key(key, self.frame_count());
-            }
         }
     }
 
