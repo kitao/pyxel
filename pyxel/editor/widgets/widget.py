@@ -1,8 +1,6 @@
 import pyxel
 
 from .settings import (
-    WIDGET_CLICK_DIST,
-    WIDGET_CLICK_TIME,
     WIDGET_HOLD_TIME,
     WIDGET_PANEL_COLOR,
     WIDGET_REPEAT_TIME,
@@ -34,7 +32,6 @@ class Widget:
         mouse_up (key, x, y)
         mouse_drag (key, x, y, dx, dy)
         mouse_repeat (key, x, y)
-        mouse_click (key, x, y)
         mouse_hover (x, y)
         update
         draw
@@ -183,13 +180,6 @@ class Widget:
 
         if pyxel.btnr(capture_info.key):
             self.trigger_event("mouse_up", capture_info.key, x, y)
-            press_x, press_y = capture_info.press_pos
-            if (
-                pyxel.frame_count <= capture_info.time + WIDGET_CLICK_TIME
-                and abs(x - press_x) <= WIDGET_CLICK_DIST
-                and abs(y - press_y) <= WIDGET_CLICK_DIST
-            ):
-                self.trigger_event("mouse_click", capture_info.key, x, y)
             self._end_capture()
 
     def _update(self):
