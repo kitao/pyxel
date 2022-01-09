@@ -97,6 +97,7 @@ test: build
 		$(PYXEL_COMMAND) run $$example; \
 	done
 	@$(PYXEL_COMMAND) play $(EXAMPLES_DIR)/30SecondsOfDaylight.pyxapp
+	@$(PYXEL_COMMAND) play $(EXAMPLES_DIR)/megaball.pyxapp
 	@$(PYXEL_COMMAND) edit $(EXAMPLES_DIR)/assets/sample.pyxres
 
 	@rm -rf testapp testapp.pyxapp
