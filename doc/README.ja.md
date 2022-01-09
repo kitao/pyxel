@@ -151,6 +151,7 @@ pyxel copy_examples
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - マップのある横スクロールアクションゲーム
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Imageクラスによるオフスクリーン描画
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
+- [megaball](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
 
 サンプルは以下のコマンドで実行できます。
 

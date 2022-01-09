@@ -1,9 +1,10 @@
 # Change Log
 
-## 1.5.9
+## 1.6.0
 - Fixed the pip command option in the READMEs
 - Fixed to ensure that key inputs are detected
 - Removed the unused click event from the Widget class
+- Bundled the arcade ball physics game by Adam
 
 ## 1.5.8
 - Fixed a pyxapp to be included in Python wheel
