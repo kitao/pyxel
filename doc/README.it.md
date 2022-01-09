@@ -153,7 +153,7 @@ Gli esempi da copiare sono i seguenti:
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Side-scrolling platform game with map
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
 
 An examples can be executed with the following commands:
 

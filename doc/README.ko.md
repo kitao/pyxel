@@ -151,7 +151,7 @@ pyxel copy_examples
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - 맵이 있는 횡 스크롤 플랫폼 게임
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
 
 다음 명령어를 사용하여 예제 파일을 실행할 수 있습니다.
 
