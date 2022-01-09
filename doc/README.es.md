@@ -149,7 +149,7 @@ Los ejemplos serán copiados de la siguiente manera:
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Juego con desplazamiento lateral con plataformas con mapa
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Rendimiento fuera de la pantalla con la clase Image
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - El primer ganador del Jam de Pyxel, por [Adam](https://twitter.com/helpcomputer0)
-- [megaball.pyxapp](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](images/megaball.gif) - Juego arcade de física de bolas, por [Adam](https://twitter.com/helpcomputer0)
 
 Los ejemplos se pueden ejecutar con el siguiente comando:
 
