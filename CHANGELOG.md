@@ -2,6 +2,7 @@
 
 ## 1.5.9
 - Fixed the pip command option in the READMEs
+- Fixed to ensure that key inputs are detected
 
 ## 1.5.8
 - Fixed a pyxapp to be included in Python wheel
