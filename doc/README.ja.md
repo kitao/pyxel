@@ -150,8 +150,8 @@ pyxel copy_examples
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 画面遷移のあるシューティングゲーム
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - マップのある横スクロールアクションゲーム
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Imageクラスによるオフスクリーン描画
-- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - [Adam](https://twitter.com/helpcomputer0)制作の第1回Pyxel Jam優勝ゲーム
+- [megaball](images/megaball.gif) - [Adam](https://twitter.com/helpcomputer0)制作のアーケードボール物理ゲーム
 
 サンプルは以下のコマンドで実行できます。
 
