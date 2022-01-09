@@ -151,7 +151,7 @@ pyxel copy_examples
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - 屏幕横向滑动的游戏示例
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
 
 运行例程，可以使用以下命令：
 

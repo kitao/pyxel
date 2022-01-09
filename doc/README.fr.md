@@ -151,7 +151,7 @@ Les exemples copiés sont les suivants :
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Jeu de plateforme avec défilement horizontal et une carte
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Rendu hors écran avec la classe Image
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
 
 Les exemples peuvent être lancés avec les commandes suivantes :
 
