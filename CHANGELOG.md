@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.6.1
+- Fixed the pyxel play command on Windows
+- Updated the READMEs
+
 ## 1.6.0
 - Fixed the pip command option in the READMEs
 - Fixed to ensure that key inputs are detected
