@@ -12,7 +12,7 @@
 
 **Pyxel** è un game engine rétro per Python.
 
-Grazie alle sue specifiche limitate ispirate dalle console di videogiochi rétro, come al fatto che solo 16 colori possono essere mostrati e solo 4 suoni possono essere suonati allo stesso tempo, puoi sentirti libero di creare giochi stile pixel art.
+Grazie alle sue specifiche limitate ispirate dalle console di videogiochi rétro, come al fatto che solo 16 colori possono essere mostrati e solo 4 suoni possono essere riprodotti allo stesso tempo, puoi sentirti libero di creare giochi stile pixel art.
 
 <a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
 <img src="images/01_hello_pyxel.gif" width="48%">
@@ -38,15 +38,15 @@ Grazie alle sue specifiche limitate ispirate dalle console di videogiochi rétro
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-The specifications of Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic.computer/).
+Le specifiche di Pyxel si rifanno alle eccezionali [PICO-8](https://www.lexaloffle.com/pico-8.php) e [TIC-80](https://tic.computer/).
 
 Pyxel è open source e libero da usare. Cominciamo a fare giochi rétro con Pyxel!
 
 ## Specifiche
 
 - Funziona su Windows, Mac, e Linux
-- Programming with Python
-- 16 color palette
+- Programmazione con Python
+- Palette a 16 colori
 - 3 banche di immagini di dimensioni 256x256
 - 8 tilemap di dimensioni 256x256
 - 4 canali con 64 suoni definibili
@@ -62,7 +62,7 @@ Pyxel è open source e libero da usare. Cominciamo a fare giochi rétro con Pyxe
 
 ## Come installare
 
-There are two types of Pyxel, a packaged version and a standalone version.
+Ci sono due tipi di Pyxel, una versione pacchettizzata ed una versione standalone.
 
 ### Install Packaged Version
 
