@@ -149,9 +149,9 @@ pyxel copy_examples
 - [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Triangle drawing API 데모
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 화면 전환이 있는 슈팅 게임
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - 맵이 있는 횡 스크롤 플랫폼 게임
-- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
-- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball.pyxapp](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - 이미지 클래스를 사용한 오프스크린 렌더링
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 제 1회 Pyxel Jam 우승 작품 ([Adam](https://twitter.com/helpcomputer0) 제작)
+- [megaball.pyxapp](images/megaball.gif) - 아케이드 볼 물리 게임 ([Adam](https://twitter.com/helpcomputer0) 제작)
 
 다음 명령어를 사용하여 예제 파일을 실행할 수 있습니다.
 
@@ -353,7 +353,7 @@ pyxel play PYXEL_APP_FILE
 경과한 프레임의 수
 
 - `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
-Pyxel 애플리케이션을 화면 크기 (`width`, `height`)로 초기화합니다. 옵션으로 `title`에 창 제목, `fps`에 프레임 속도, `quit_key`에 애플리케이션 종료 키, the scale of the screen capture with `capture_scale`, `capture_sec`에 화면 캡처의 최대 녹화 시간을 지정할 수 있습니다.<br>
+Pyxel 애플리케이션을 화면 크기 (`width`, `height`)로 초기화합니다. 옵션으로 `title`에 창 제목, `fps`에 프레임 속도, `quit_key`에 애플리케이션 종료 키, `capture_scale`에 화면 캡처의 배율, `capture_sec`에 화면 캡처의 최대 녹화 시간을 지정할 수 있습니다.<br>
 예시: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
@@ -594,4 +594,4 @@ Pyxel은 [MIT 라이선스](../LICENSE)를 따릅니다. 소프트웨어의 모�
 
 ## 스폰서 모집
 
-Pyxel은 GitHub Sponsors에서 스폰서를 모집합니다. Pyxel의 유지 보수 및 기능 추가 지속을 위해 스폰서가되는 것을 고려하십시오. 스폰서는 보너스로 Pyxel에 대한 상담을 할 수 있습니다. 자세한 내용은 [여기](https://github.com/sponsors/kitao)를 참조하십시오.
+Pyxel은 GitHub Sponsors에서 스폰서를 모집하고 있습니다. Pyxel의 유지 보수 및 기능 추가를 위해 스폰서가 되는 것을 고려해보세요. 스폰서가 되면 혜택으로 Pyxel에 대한 상담을 받을 수 있습니다. 자세한 내용은 [여기](https://github.com/sponsors/kitao)를 참조하세요.
