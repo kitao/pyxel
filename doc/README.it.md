@@ -88,13 +88,13 @@ pip3 install -U pyxel
 
 **Linux**
 
-After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://www.python.org/) (version 3.7 or higher), and `python3-pip`, run the following command:
+Dopo aver installato il pacchetto SDL2 (`libsdl2-dev` per Ubuntu), [Python3](https://www.python.org/) (versione 3.7 o superiore), e `python3-pip`, eseguire il seguente comando:
 
 ```sh
 sudo pip3 install -U pyxel
 ```
 
-If the above doesn't work, try self-building by following the steps below after installing `cmake` and `rust`:
+Se quanto sopra non funziona, provare a buildare manualmente seguendo i passaggi seguenti dopo aver installato `cmake` e `rust`:
 
 ```sh
 git clone https://github.com/kitao/pyxel.git
@@ -103,19 +103,19 @@ make clean all
 sudo pip3 install .
 ```
 
-### Install Standalone Version
+### Installare la versione standalone
 
-The standalone version of Pyxel uses Pyxel as a standalone tool that does not depend on Python.
+La versione standalone di Pyxel usa Pyxel come strumento standalone che non dipende da Python.
 
-Recommended for those who want to start programming easily without worrying about Python settings, or those who want to play Pyxel games immediately.
+Raccomandato per coloro che vogliono iniziare a programmare con facilità senza doversi preoccupare delle impostazioni di Python, o coloro che vogliono eseguire immediatamente giochi Pyxel.
 
 **Windows**
 
-Download and run the latest version of the Windows installer (`pyxel-[version]-windows-setup.exe`) from the [Download Page](https://github.com/kitao/pyxel/releases).
+Scaricare e lanciare la versione più recente dell'installer per Windows (`pyxel-[version]-windows-setup.exe`) dalla [pagina di download](https://github.com/kitao/pyxel/releases).
 
 **Mac**
 
-After installing [Homebrew](https://brew.sh/), run the following commands:
+Dopo aver installato [Homebrew](https://brew.sh/), lanciare i seguenti comandi:
 
 ```sh
 brew tap kitao/pyxel
@@ -124,16 +124,16 @@ brew install pyxel
 
 **Linux**
 
-After installing the SDL2 package (`libsdl2-dev` for Ubuntu) and installing [Homebrew](https://brew.sh/), run the following commands:
+Dopo aver installato il pacchetto SDL2 (`libsdl2-dev` per Ubuntu) e [Homebrew](https://brew.sh/), lanciare i seguenti comandi:
 
 ```sh
 brew tap kitao/pyxel
 brew install pyxel
 ```
 
-If the above doesn't work, try self-building the packaged version.
+Se quanto sopra non funziona, provare a buildare manualmente la versione pacchettizzata.
 
-### Try Pyxel Examples
+### Provare gli esempi di Pyxel
 
 Dopo aver installato Pyxel, gli esempi di Pyxel saranno copiati nella corrente cartella con il comando seguente:
 
@@ -145,19 +145,19 @@ Gli esempi da copiare sono i seguenti:
 
 - [01_hello_pyxel.py](../pyxel/examples/01_hello_pyxel.py) - Applicazione più semplice
 - [02_jump_game.py](../pyxel/examples/02_jump_game.py) - Un gioco di salto con file Pyxel di risorsa
-- [03_draw_api.py](../pyxel/examples/03_draw_api.py) - Demonstration of drawing APIs
-- [04_sound_api.py](../pyxel/examples/04_sound_api.py) - Demonstration of sound APIs
+- [03_draw_api.py](../pyxel/examples/03_draw_api.py) - Dimostrazione delle API di disegno
+- [04_sound_api.py](../pyxel/examples/04_sound_api.py) - Dimostrazione delle API del suono
 - [05_color_palette.py](../pyxel/examples/05_color_palette.py) - Lista di colori nella palette
 - [06_click_game.py](../pyxel/examples/06_click_game.py) - Gioco punta e clicca
 - [07_snake.py](../pyxel/examples/07_snake.py) - Gioco snake con colonna sonora
-- [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing APIs
+- [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Dimostrazione delle API per il disegno di un triangolo
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Gioco shoot'em up con transizioni schermo
-- [10_platformer.py](../pyxel/examples/10_platformer.py) - Side-scrolling platform game with map
-- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
-- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball.pyxapp](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [10_platformer.py](../pyxel/examples/10_platformer.py) - Gioco a piattaforme a scorrimento orizzontale con mappa
+- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Renderizzazione fuori campo con la classe Image
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - Gioco vincitore del primo Pyxel Jam sviluppato da [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](images/megaball.gif) - Gioco arcade di palla basato sulla fisica sviluppato da [Adam](https://twitter.com/helpcomputer0)
 
-An examples can be executed with the following commands:
+Un esempio può essere eseguito con i seguenti comandi:
 
 ```sh
 cd pyxel_examples
