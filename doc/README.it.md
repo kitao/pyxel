@@ -64,15 +64,15 @@ Pyxel è open source e libero da usare. Cominciamo a fare giochi rétro con Pyxe
 
 Ci sono due tipi di Pyxel, una versione pacchettizzata ed una versione standalone.
 
-### Install Packaged Version
+### Installare la versione pacchettizzata
 
-The packaged version of Pyxel uses Pyxel as a Python extension module.
+La versione pacchettizzata di Pyxel utilizza Pyxel come modulo di estensione Python.
 
-Recommended for those who are familiar with managing Python packages using the `pip` command or who want to develop full-fledged Python applications.
+Raccomandata per coloro che hanno familiarità con la gestione dei pacchetti Python utilizzando il comando `pip` o per chi vuole sviluppare applicazioni Python complete.
 
 **Windows**
 
-After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
+Dopo aver installato [Python3](https://www.python.org/) (versione 3.7 o superiore), eseguire il seguente comando:
 
 ```sh
 pip install -U pyxel
@@ -80,7 +80,7 @@ pip install -U pyxel
 
 **Mac**
 
-After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
+Dopo aver installato [Python3](https://www.python.org/) (versione 3.7 o superiore), eseguire il seguente comando:
 
 ```sh
 pip3 install -U pyxel
