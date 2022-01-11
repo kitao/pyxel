@@ -1,3 +1,3 @@
-import pyxel
+from . import cli
 
-pyxel.cli()
+cli.cli()
