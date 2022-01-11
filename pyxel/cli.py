@@ -7,7 +7,6 @@ import tempfile
 import zipfile
 
 import pyxel
-import pyxel.editor
 
 
 def _print_usage():
@@ -73,6 +72,8 @@ def _play_pyxel_app(pyxel_app_file):
 
 
 def _edit_pyxel_resource(pyxel_resource_file):
+    import pyxel.editor
+
     pyxel_resource_file = pyxel_resource_file or "my_resource"
     pyxel_resource_file = _complete_extension(
         pyxel_resource_file, pyxel.RESOURCE_FILE_EXTENSION

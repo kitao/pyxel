@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.6.2
+- Added the Ko-fi button to the READMEs
+- Removed the cli function
+
 ## 1.6.1
 - Fixed the pyxel play command on Windows
 - Updated the READMEs
