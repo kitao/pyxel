@@ -169,7 +169,7 @@ pyxel play 30SecondsOfDaylight.pyxapp
 
 ### Creare una applicazione Pyxel
 
-After importing the Pyxel module in your python script, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
+Dopo aver importato il modulo Pyxel nel tuo script Python, prima specifica la dimensione della finestra con la funzione `init`, dopodichè lancia l'applicazione Pyxel con la funzione `run`.
 
 ```python
 import pyxel
@@ -187,9 +187,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-I parametri della funzione `run` sono passate alla funzione `update` per aggiornare ogni frame e alla funzione `draw` per disegnare lo schermo quando necessario.
+I parametri della funzione `run` sono passati alla funzione `update` per aggiornare ogni frame e alla funzione `draw` per disegnare lo schermo quando necessario.
 
-In una effettiva applicazione, è consigliato ricoprire codice pyxel in una classe come qui sotto:
+In un'applicazione reale, è consigliato includere il codice Pyxel in una classe come qui sotto:
 
 ```python
 import pyxel
@@ -210,9 +210,9 @@ class App:
 App()
 ```
 
-It is also possible to write simple code using `show` function and `flip` function to draw simple graphics and animations.
+È anche possibile scrivere semplice codice utilizzando la funzione `show` e la funzione `flip` per disegnare grafica e animazioni basiche.
 
-`show` function displays the screen and waits until the `Esc` key is pressed.
+La funzione `show` mostra lo schermo e attende fino a quando non viene premuto il pulsante `Esc`.
 
 ```python
 import pyxel
@@ -223,7 +223,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-`flip` function updates the screen once.
+La funzione `flip` aggiorna lo schermo una volta sola.
 
 ```python
 import pyxel
@@ -236,22 +236,22 @@ while True:
     pyxel.flip()
 ```
 
-### Run Pyxel Application
+### Eseguire applicazioni Pyxel
 
-The created Python script can be executed with the following command:
+Lo script Python creato può essere eseguito con il seguente comando:
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-For the packaged version, it can be executed like a normal Python script:
+Per la versione pacchettizzata, può essere eseguito come un normale script Python:
 
 ```sh
 cd pyxel_examples
 python3 PYTHON_SCRIPT_FILE
 ```
 
-(For Windows, type `python` instead of `python3`)
+(Per Windows, digita `python` anzichè `python3`)
 
 ### Controlli speciali
 
