@@ -24,10 +24,11 @@ class App(Widget):
         help_message_var
     """
 
-    def __init__(self, resource_file, palette_file):
-        # Get absolute path of resource files before initializing Pyxel
+    def __init__(self, resource_file):
+        # Get absolute path of resource file before initializing Pyxel
         resource_file = os.path.abspath(resource_file)
-        palette_file = os.path.abspath(palette_file)
+        base_name = os.path.splitext(resource_file)[0]
+        palette_file = base_name + '.pyxpal'
 
         # Initialize Pyxel
         pyxel.init(APP_WIDTH, APP_HEIGHT)
