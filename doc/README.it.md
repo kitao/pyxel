@@ -272,9 +272,9 @@ Alterna schermo intero
 
 ### Come creare una risorsa
 
-Pyxel Editor can create images and sounds used in a Pyxel application.
+L'Editor Pyxel può creare immagini e suoni utilizzati in un'applicazione Pyxel.
 
-It starts with the following command:
+Si avvia con il seguente comando:
 
 ```sh
 pyxel edit [PYXEL_RESOURCE_FILE]
@@ -283,9 +283,9 @@ pyxel edit [PYXEL_RESOURCE_FILE]
 Se il file di risorsa Pyxel (.pyxres) specificato esiste, allora il file viene caricato, e se non esiste, un nuovo file con quel nome viene creato.
 Se il file risorsa viene omesso, il nome è `my_resource.pyxres`.
 
-After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down ``Ctrl(Cmd)`` key, only the resource type (Image/Tilemap/Sound/Music) that is currently being edited will be loaded. This operation enables to combine multiple resource files into one.
+Dopo aver avviato l'Editor Pyxel, il file può essere scambiato trascinando e rilasciando un altro file risorsa. Se il file risorsa è trascinato e rilasciato tenendo premuto il pulsante ``Ctrl(Cmd)``, sarà caricato solo il tipo di risorsa (Immagine/Tilemap/Suono/Musica) che si sta attualmente modificando. Questa operazione consente di combinare più file risorsa in uno.
 
-The created resource file can be loaded with `load` function.
+Il file risorsa creato può essere caricato con la funzione `load`.
 
 L'editor Pyxel ha le seguenti modalità di modifica.
 
@@ -295,7 +295,7 @@ La modalità per modificare banche d'immagini.
 
 <img src="images/image_editor.gif">
 
-By dragging and dropping an image file (png/gif/jpeg) onto the Image Editor screen, the image can be loaded into the currently selected image bank.
+Trascinando e rilasciando un file immagine (png/gif/jpeg) sullo schermo dell'Editor Immagine, l'immagine può essere caricata all'interno del banco d'immagine attualmente selezionato.
 
 **Editor Tilemap:**
 
@@ -317,30 +317,30 @@ La modalità per modificare musica in cui i suoni sono posizionati in ordine per
 
 ### Altri metodi per creare risorse
 
-Pyxel images and tilemaps can also be created by the following methods:
+Le immagini e le tilemap Pyxel possono essere create mediante i seguenti metodi:
 
-- Create an image from a list of strings with `Image.set` function or `Tilemap.set` function
-- Load an image file (png/gif/jpeg) in Pyxel palette with `Image.load` function
+- Creare un'immagine da una lista di stringhe con la funzione `Image.set` o la funzione `Tilemap.set`
+- Caricare un file immagine (png/gif/jpeg) nella palette di Pyxel con la funzione `Image.load`
 
-Pyxel sounds can also be created in the following method:
+I suoni Pyxel possono anche essere creati nel modo seguente:
 
-- Create a sound from strings with `Sound.set` function or `Music.set` function
+- Creare un suono con le stringhe con la funzione `Sound.set` o la funzione `Music.set`
 
 Riferirsi al manuale dell'API per l'uso di queste funzioni.
 
-### How to Distribute Application
+### Come distribuire l'applicazione
 
-Pyxel supports a dedicated application distribution file format (Pyxel application file) that works across platforms.
+Pyxel supporta un formato file dedicato per la distribuzione dell'applicazione (Pyxel application file) che funziona su tutte le piattaforme.
 
-Create the Pyxel application file (.pyxapp) with the following command:
+Creare il file applicazione Pyxel (.pyxapp) con il seguente comando:
 
 ```sh
 pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
 ```
 
-If the application should include resources or additional modules, place them in the application folder.
+Se l'applicazione dovrebbe includere risorse o moduli aggiuntivi, posizionarli nella cartella dell'applicazione.
 
-The created application file can be executed with the following command:
+Il file applicazione creato può essere eseguito con il seguente comando:
 
 ```sh
 pyxel play PYXEL_APP_FILE
