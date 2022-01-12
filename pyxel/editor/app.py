@@ -24,16 +24,24 @@ class App(Widget):
         help_message_var
     """
 
-    def __init__(self, resource_file):
-        # Get absolute path of resource file before initializing Pyxel
+    def __init__(self, resource_file, palette_file):
+        # Get absolute path of resource files before initializing Pyxel
         resource_file = os.path.abspath(resource_file)
+        palette_file = os.path.abspath(palette_file)
 
         # Initialize Pyxel
         pyxel.init(APP_WIDTH, APP_HEIGHT)
         pyxel.mouse(True)
         self._set_title(resource_file)
+
         if os.path.exists(resource_file):
             pyxel.load(resource_file)
+
+        if os.path.exists(palette_file):
+            with open(palette_file) as file:
+                palette = [int(line.lstrip("#"), 16)
+                           for line in file.read().splitlines()]
+            pyxel.colors.from_list(palette)
 
         # Start initializing application
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)

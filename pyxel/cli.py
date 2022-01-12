@@ -21,11 +21,11 @@ def _print_usage():
 
 
 def _complete_extension(filename, ext_with_dot):
-    file_ext = os.path.splitext(filename)[1]
+    base, file_ext = os.path.splitext(filename)
     if file_ext == ext_with_dot:
         return filename
     else:
-        return filename + ext_with_dot
+        return base + ext_with_dot
 
 
 def _files_in_dir(dirname):
@@ -78,7 +78,8 @@ def _edit_pyxel_resource(pyxel_resource_file):
     pyxel_resource_file = _complete_extension(
         pyxel_resource_file, pyxel.RESOURCE_FILE_EXTENSION
     )
-    pyxel.editor.App(pyxel_resource_file)
+    pyxel_palette_file = _complete_extension(pyxel_resource_file, ".pyxpal")
+    pyxel.editor.App(pyxel_resource_file, pyxel_palette_file)
 
 
 def _package_pyxel_app(app_root_dir, startup_script_name):
