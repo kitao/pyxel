@@ -14,6 +14,7 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(APP_STARTUP_SCRIPT_FILE)?;
     add_constant!(RESOURCE_FILE_EXTENSION)?;
     add_constant!(RESOURCE_ARCHIVE_DIRNAME)?;
+    add_constant!(PALETTE_FILE_EXTENSION)?;
 
     add_constant!(NUM_COLORS)?;
     add_constant!(NUM_IMAGES)?;

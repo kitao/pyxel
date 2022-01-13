@@ -38,6 +38,7 @@ pub const APP_FILE_EXTENSION: &str = ".pyxapp";
 pub const APP_STARTUP_SCRIPT_FILE: &str = ".pyxapp_startup_script";
 pub const RESOURCE_FILE_EXTENSION: &str = ".pyxres";
 pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
+pub const PALETTE_FILE_EXTENSION: &str = ".pyxpal";
 
 // Graphics
 pub const NUM_COLORS: u32 = 16;

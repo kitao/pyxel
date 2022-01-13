@@ -28,7 +28,7 @@ class App(Widget):
         # Get absolute path of resource file before initializing Pyxel
         resource_file = os.path.abspath(resource_file)
         base_name = os.path.splitext(resource_file)[0]
-        palette_file = base_name + '.pyxpal'
+        palette_file = base_name + pyxel.PALETTE_FILE_EXTENSION
 
         # Initialize Pyxel
         pyxel.init(APP_WIDTH, APP_HEIGHT)
