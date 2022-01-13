@@ -357,25 +357,25 @@ Lunghezza e altezza dello schermo
 Numero di frame passati
 
 - `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
-Inizializza l'applicazione Pyxel con la dimensione dello schermo (`width`, `height`). I seguenti possono essere specificati come opzioni: il titolo della finestra con `title`, il frame rate con `fps`, il pulsante per uscire dall'applicazione con `quit_key`, la scala della cattura dello schermo con `capture_scale`, and the maximum recording time of the screen capture video with `capture_sec`.<br>
+Inizializza l'applicazione Pyxel con la dimensione dello schermo (`width`, `height`). I seguenti possono essere specificati come opzioni: il titolo della finestra con `title`, il frame rate con `fps`, il pulsante per uscire dall'applicazione con `quit_key`, la scala della cattura dello schermo con `capture_scale`, ed il tempo di registrazione massimo del video di cattura dello schermo con `capture_sec`.<br>
 e.g. `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
-Start the Pyxel application and call `update` function for frame update and `draw` function for drawing.
+Avvia l'applicazione Pyxel e chiama la funzione `update` per l'aggiornamento del frame e la funzione `draw` per disegnare.
 
 - `show()`<br>
-Show the screen and wait until the `Esc` key is pressed. (Do not use in normal applications)
+Mostra lo schermo e attende fino a quando il pulsante `Esc` non viene premuto. (Non usare in applicazioni normali)
 
 - `flip()`<br>
-Updates the screen once. (Do not use in normal applications)
+Aggiorna lo schermo una volta sola. (Non usare in applicazioni normali)
 
 - `quit()`<br>
-Quit the Pyxel application.
+Esci dall'applicazione Pyxel.
 
 ### Risorse
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-Load the resource file (.pyxres). If ``False`` is specified for the resource type (``image/tilemap/sound/music``), the resource will not be loaded.
+Carica il file risorsa (.pyxres). Se ``False`` è specificato per il tipo di risorsa (``image/tilemap/sound/music``), la risorsa non sarà caricata.
 
 ### Input
 - `mouse_x`, `mouse_y`<br>
@@ -399,21 +399,21 @@ Se `visible` è `True`, mostra il cursore mouse. Se `False`, nascondilo. Anche s
 ### Grafica
 
 - `colors`<br>
-List of the palette display colors. The display color is specified by a 24-bit numerical value. Use `colors.from_list` and `colors.to_list` to directly assign and retrieve Python lists.<br>
+Lista della palette colori del display. Il colore del display è specificato tramite un valore numerico a 24-bit. Usare `colors.from_list` e `colors.to_list` per assegnare direttamente e recuperare le liste Python.<br>
 e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
 
 - `image(img)`<br>
-Operate the image bank `img` (0-2). (See the Image class)<br>
+Opera il banco immagine `img` (0-2). (Vedere la classe Image)<br>
 e.g. `pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
-Opera la tilemap `tm`(0-7) (vedere la classe Tilemap)
+Opera la tilemap `tm`(0-7) (Vedere la classe Tilemap)
 
 - `clip(x, y, w, h)`<br>
 Imposta l'area di disegno dello schermo da (`x`, `y`) a lunghezza `w` e altezza `h`. Resettare l'area di disegno a schermo intero con `clip()`
 
 - `camera(x, y)`<br>
-Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
+Cambia le coordinate dell'angolo superiore sinistro dello schermo in (`x`, `y`). Resetta le coordinate dell'angolo superiore sinistro a (`0`, `0`) con `camera()`.
 
 - `pal(col1, col2)`<br>
 Rimpiazza colore `col1` con `col2` al momento di disegno. `pal()` per tornare alla palette iniziale
@@ -454,7 +454,7 @@ Copia la regione di grandezza (`w`, `h`) da (`u`, `v`) della banca immagini `img
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
+Copia la regione di dimensione (`w`, `h`) da (`u`, `v`) della tilemap `tm` (0-7) a (`x`, `y`). Se un valore negativo è stato impostato per `w` e/o `h`, sarà rovesciata orizzontalmente e/o verticalmente. Se `colkey` è specificato, viene trattato come colore trasparente. La dimensione di una tile tile è di 8x8 pixel ed è memorizzata in una tilemap come una tupla di `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 
@@ -468,19 +468,19 @@ Opera il suono `snd`(0-63). (Vedere classe Sound).<br>
 per esempio: `pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
-Opera la musica `msc`(0-7) (vedere la classe Music)
+Opera la musica `msc`(0-7) (Vedere la classe Music)
 
 - `play_pos(ch)`<br>
-Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
+Ottiene la posizione del suono in riproduzione del canale `ch` (0-3) come una tupla di `(sound no, note no)`. Ritorna `None` quando la riproduzione è interrotta.
 
 - `play(ch, snd, loop=False)`<br>
-Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. If `True` is specified for `loop`, loop playback is performed.
+Riproduce il suono `snd` (0-63) sul canale `ch` (0-3). Se `snd` è una lista, verrà riprodotta in ordine. Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
 
 - `playm(msc, loop=False)`<br>
-Play the music `msc` (0-7). If `True` is specified for `loop`, loop playback is performed.
+Riproduce la musica `msc` (0-7). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
 
 - `stop([ch])`<br>
-Stops playback of the specified channel `ch` (0-3). `stop()` to stop playing all channels.
+Interrompe la riproduzione del canale `ch` (0-3) specificato. `stop()` per interrompere tutti i canali.
 
 ### Image Class
 
@@ -494,11 +494,11 @@ I dati dell'immagine (lista bidimensionale da 256x256)
 Trova i dati dell'immagine su (`x`, `y`)
 
 - `set(x, y, data)`<br>
-Set the image at (`x`, `y`) by a list of strings.<br>
+Imposta l'immagine a (`x`, `y`) tramite una lista di stringhe.<br>
 e.g. `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-Load the image file (png/gif/jpeg) at (`x`, `y`).
+Carica il file immagine (png/gif/jpeg) in (`x`, `y`).
 
 ### Classe Tilemap
 
@@ -506,22 +506,22 @@ Load the image file (png/gif/jpeg) at (`x`, `y`).
 Lunghezza e altezza della tilemap
 
 - `refimg`<br>
-The image bank (0-2) referenced by the tilemap
+Il banco immagine (0-2) referenziato dalla tilemap
 
 - `set(x, y, data)`<br>
-Set the tilemap at (`x`, `y`) by a list of strings.<br>
+Imposta la tilemap a (`x`, `y`) mediante una lista di stringhe.<br>
 e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
 
 - `pget(x, y)`<br>
-Get the tile at (`x`, `y`). A tile is a tuple of `(tile_x, tile_y)`.
+Prende la tile in (`x`, `y`). Una tile è una tupla di `(tile_x, tile_y)`.
 
 - `pset(x, y, tile)`<br>
-Draw a `tile` at (`x`, `y`). A tile is a tuple of `(tile_x, tile_y)`.
+Disegna una `tile` in (`x`, `y`). Una tile è una tupla di `(tile_x, tile_y)`.
 
 ### Classe Sound
 
 - `notes`<br>
-List of notes (0-127). The higher the number, the higher the pitch, and at 33 it becomes 'A2'(440Hz). The rest is -1.
+Lista di note (0-127). Più alto il numero, più alto il tono, e a 33 diventa 'A2'(440Hz). Il resto è -1.
 
 - `tones`<br>
 List of tones (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
