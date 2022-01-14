@@ -8,12 +8,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: make clean all
+    - uses: actions/upload-artifact@v2
+      with:
+        name: windows-lib
+        path: pyxel/lib/windows/pyxel_wrapper.pyd
 
   build-macos:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
     - run: make clean all
+    - uses: actions/upload-artifact@v2
+      with:
+        name: macos-lib
+        path: pyxel/lib/macos/pyxel_wrapper.so
 
   build-linux:
     runs-on: ubuntu-18.04
@@ -30,11 +38,22 @@ jobs:
 
   make-wheel:
     runs-on: ubuntu-latest
-    needs: [build-linux]
+    needs: [build-windows, build-macos, build-linux]
     steps:
     - run: echo Hello, world!
     - uses: actions/download-artifact@v2
       with:
+        name: windows-lib
+        path: pyxel/lib/windows
+    - uses: actions/download-artifact@v2
+      with:
+        name: macos-lib
+        path: pyxel/lib/macos
+    - uses: actions/download-artifact@v2
+      with:
         name: linux-lib
         path: pyxel/lib/linux
+    - run: ls pyxel/lib/windows
+    - run: ls pyxel/lib/macos
     - run: ls pyxel/lib/linux
+    - run: make wheel
