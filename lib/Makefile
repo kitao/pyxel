@@ -28,7 +28,7 @@ COPY_FILES = \
 	cp $(SRC_LIB_FILE) $(DST_LIB_FILE) && \
 	cp -f $(TARGET_DIR)/SDL2.dll $(PYXEL_LIB_DIR)
 COPY_VBS = cp -f $(BUILD_DIR)/pyxel.vbs $(DIST_NAME)
-BUILD_INSTALLER = $(ISCC) $(ISCC_FILE)
+#BUILD_INSTALLER = $(ISCC) $(ISCC_FILE)
 
 # MacOS
 else ifeq ($(shell uname),Darwin)
