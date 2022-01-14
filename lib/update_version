@@ -28,6 +28,7 @@ def update_version():
     replace_file("engine/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file("wrapper/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file("wrapper/Cargo.toml", '(engine", version.*)".*"', f'\\1"{version}"')
+    replace_file("../setup.py", '(version=.*)".*"', f'\\1"{version}"')
     replace_file("setup.iss", '(PyxelVersion.*)".*"', f'\\1"{version}"')
 
 
