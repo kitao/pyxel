@@ -49,6 +49,7 @@ jobs:
       with:
         name: windows-lib
         path: pyxel/lib/windows
+    - run: ls pyxel/lib/windows
 
     - uses: actions/download-artifact@v2
       with:
