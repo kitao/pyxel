@@ -122,6 +122,7 @@ jobs:
     runs_on: macos-latest
     needs: [package-windows, package-macos, package-linux]
     if: ${{ github.event.inputs.release-tag != '' }}
+    steps:
     - run: echo Release
     - uses: actions/create-release@v1
       env:
