@@ -119,19 +119,19 @@ jobs:
         path: dist/*.zip
 
   release:
-    runs_on: ubuntu-18.04
-    #needs: [package-windows, package-macos, package-linux]
-    #if: ${{ github.event.inputs.release-tag != '' && github.event.inputs.release_name != '' }}
+    runs-on: ubuntu-18.04
+    needs: [package-windows, package-macos, package-linux]
+    if: ${{ github.event.inputs.release-tag != '' && github.event.inputs.release_name != '' }}
     steps:
     - run: echo Release
-    #- uses: actions/create-release@v1
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #  with:
-    #    tag_name: ${{ github.event.inputs.release-tag }}
-    #    release_name: ${{ github.event.inputs.release-name }}
-    #    draft: false
-    #    prerelease: true
+    - uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.event.inputs.release-tag }}
+        release_name: ${{ github.event.inputs.release-name }}
+        draft: false
+        prerelease: true
     #uses: actions/upload-release-asset@v1
     #env:
     #  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
