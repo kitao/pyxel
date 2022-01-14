@@ -12,7 +12,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: windows-lib
-        path: pyxel/lib/windows/pyxel_wrapper.pyd
+        path: pyxel/lib/windows/*
 
   build-macos:
     runs-on: macos-latest
@@ -23,7 +23,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: macos-lib
-        path: pyxel/lib/macos/pyxel_wrapper.so
+        path: pyxel/lib/macos/*
 
   build-linux:
     runs-on: ubuntu-18.04
@@ -37,7 +37,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: linux-lib
-        path: pyxel/lib/linux/pyxel_wrapper.so
+        path: pyxel/lib/linux/*
 
   make-wheel:
     runs-on: ubuntu-latest
@@ -61,3 +61,21 @@ jobs:
         path: pyxel/lib/linux
 
     - run: make wheel
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: pyxel-wheel
+        path: dist/*.whl
+
+  package-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: cargo install pyoxidizer
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: pyxel-wheel
+        path: dist
+
+    - run: make dist
