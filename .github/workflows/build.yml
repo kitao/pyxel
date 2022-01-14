@@ -40,7 +40,7 @@ jobs:
         path: pyxel/lib/linux/*
 
   make-wheel:
-    runs-on: macos-latest
+    runs-on: linux-latest
     needs: [build-windows, build-macos, build-linux]
     steps:
     - uses: actions/checkout@v2
@@ -67,19 +67,19 @@ jobs:
         name: pyxel-wheel
         path: dist/*.whl
 
-  package-windows:
-    runs-on: windows-latest
-    needs: [make-wheel]
-    steps:
-    - uses: actions/checkout@v2
-    - run: pip install pyoxidizer
-
-    - uses: actions/download-artifact@v2
-      with:
-        name: pyxel-wheel
-        path: dist
-
-    - run: make dist
+#  package-windows:
+#    runs-on: windows-latest
+#    needs: [make-wheel]
+#    steps:
+#    - uses: actions/checkout@v2
+#    - run: pip install pyoxidizer
+#
+#    - uses: actions/download-artifact@v2
+#      with:
+#        name: pyxel-wheel
+#        path: dist
+#
+#    - run: make dist
 
   package-macos:
     runs-on: macos-latest
@@ -95,6 +95,11 @@ jobs:
 
     - run: make dist
 
+    - uses: actions/upload-artifact@v2
+      with:
+        name: pyxel-macos-zip
+        path: dist/*.zip
+
   package-linux:
     runs-on: linux-latest
     needs: [make-wheel]
@@ -108,3 +113,8 @@ jobs:
         path: dist
 
     - run: make dist
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: pyxel-linux-zip
+        path: dist/*.zip
