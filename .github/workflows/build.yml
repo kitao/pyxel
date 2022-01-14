@@ -28,11 +28,10 @@ jobs:
   build-linux:
     runs-on: ubuntu-18.04
     steps:
+    - uses: actions/checkout@v2
     - run: sudo add-apt-repository ppa:deadsnakes/ppa
     - run: sudo apt-get install -y python3.9 libsdl2-dev
     - run: sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
-
-    - uses: actions/checkout@v2
     - run: make clean all
 
     - uses: actions/upload-artifact@v2
@@ -44,6 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-windows, build-macos, build-linux]
     steps:
+    - uses: actions/checkout@v2
+
     - uses: actions/download-artifact@v2
       with:
         name: windows-lib
@@ -59,5 +60,4 @@ jobs:
         name: linux-lib
         path: pyxel/lib/linux
 
-    - uses: actions/checkout@v2
     - run: make wheel
