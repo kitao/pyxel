@@ -69,6 +69,7 @@ jobs:
 
   package-windows:
     runs-on: windows-latest
+    needs: [make-wheel]
     steps:
     - uses: actions/checkout@v2
     - run: cargo install pyoxidizer
