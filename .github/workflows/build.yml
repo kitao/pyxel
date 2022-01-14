@@ -12,12 +12,14 @@ jobs:
   build-macos:
     runs-on: macos-latest
     steps:
-    - run: echo Hello, MacOS!
+    - uses: actions/checkout@v2
+    - run: make clean all
 
   build-linux:
     runs-on: ubuntu-18.04
     steps:
-    - run: echo Hello, Linux!
+    - uses: actions/checkout@v2
+    - run: make clean all
 
   build-all:
     runs-on: ubuntu-latest
