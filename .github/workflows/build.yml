@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - run: |
-      make clean all
+      echo hello
 
   build-macos:
     runs-on: macos-latest
