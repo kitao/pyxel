@@ -6,7 +6,7 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-    - run |
+    - run: |
       make clean all
 
   build-macos:
