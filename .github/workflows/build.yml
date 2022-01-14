@@ -28,7 +28,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: sudo add-apt-repository ppa:deadsnakes/ppa
-    - run: sudo apt-get install -y python3.9 libsdl2-dev
+    - run: sudo apt install -y python3.9 libsdl2-dev
     - run: sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
     - run: make clean all
     - uses: actions/upload-artifact@v2
