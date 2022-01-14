@@ -1,6 +1,6 @@
 name: Build
 
-on: [workflow_dispatch]
+on: workflow_dispatch
 
 jobs:
   build-windows:
@@ -8,7 +8,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: make clean all
-
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-windows-lib
@@ -19,7 +18,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: make clean all
-
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-macos-lib
@@ -33,7 +31,6 @@ jobs:
     - run: sudo apt-get install -y python3.9 libsdl2-dev
     - run: sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
     - run: make clean all
-
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-linux-lib
@@ -44,86 +41,71 @@ jobs:
     needs: [build-windows, build-macos, build-linux]
     steps:
     - uses: actions/checkout@v2
-
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-windows-lib
         path: pyxel/lib/windows
-
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-macos-lib
         path: pyxel/lib/macos
-
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-linux-lib
         path: pyxel/lib/linux
-
     - run: make wheel
-
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-wheel
         path: dist/*.whl
 
-#  package-windows:
-#    runs-on: windows-latest
-#    needs: [make-wheel]
-#    steps:
-#    - uses: actions/checkout@v2
-#    - run: pip install pyoxidizer
-#
-#    - uses: actions/download-artifact@v2
-#      with:
-#        name: pyxel-wheel
-#        path: dist
-#
-#    - run: make dist
-#
-#    - uses: actions/upload-artifact@v2
-#      with:
-#        name: pyxel-windows-zip
-#        path: dist/*.zip
-#
-#    - uses: actions/upload-artifact@v2
-#      with:
-#        name: pyxel-windows-exe
-#        path: dist/*.exe
-
-  package-macos:
-    runs-on: macos-latest
-    needs: [make-wheel]
+  package-windows:
+    runs-on: windows-latest
+    needs: make-wheel
     steps:
     - uses: actions/checkout@v2
-    - run: brew install pyoxidizer
-
+    - run: pip install pyoxidizer
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-wheel
         path: dist
-
     - run: make dist
+    - uses: actions/upload-artifact@v2
+      with:
+        name: pyxel-windows-zip
+        path: dist/*.zip
+    - uses: actions/upload-artifact@v2
+      with:
+        name: pyxel-windows-exe
+        path: dist/*.exe
 
+  package-macos:
+    runs-on: macos-latest
+    needs: make-wheel
+    steps:
+    - uses: actions/checkout@v2
+    - run: brew install pyoxidizer
+    - uses: actions/download-artifact@v2
+      with:
+        name: pyxel-wheel
+        path: dist
+    - run: make dist
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-macos-zip
         path: dist/*.zip
 
   package-linux:
-    runs-on: ubuntu-latest
-    needs: [make-wheel]
+    runs-on: ubuntu-18.04
+    needs: make-wheel
     steps:
     - uses: actions/checkout@v2
     - run: brew install pyoxidizer
-
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-wheel
         path: dist
-
     - run: make dist
-
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-linux-zip
