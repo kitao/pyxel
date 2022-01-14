@@ -2,6 +2,7 @@
 
 ## 1.6.2
 - Fixed the play command to remove working directories
+- Added the GitHub Actions workflow to build
 - Removed the cli function
 - Updated the READMEs
 
