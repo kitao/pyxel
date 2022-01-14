@@ -117,6 +117,7 @@ dist:
 	@pyoxidizer build --release --var wheel_name $(WHEEL_NAME)
 	@mv $(PYOXIDIZER_DIR)/*/release/install $(DIST_NAME)
 	@$(COPY_VBS)
+	@echo *****check*****
 	@zip -r $(DIST_NAME).zip $(DIST_NAME)
 	@mv -f $(DIST_NAME).zip $(DIST_DIR)
 	@mv $(DIST_NAME) $(PYOXIDIZER_DIR)
