@@ -49,7 +49,6 @@ jobs:
       with:
         name: windows-lib
         path: pyxel/lib/windows
-    - run: ls pyxel/lib/windows
 
     - uses: actions/download-artifact@v2
       with:
@@ -73,7 +72,35 @@ jobs:
     needs: [make-wheel]
     steps:
     - uses: actions/checkout@v2
-    - run: cargo install pyoxidizer
+    - run: pip install pyoxidizer
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: pyxel-wheel
+        path: dist
+
+    - run: make dist
+
+  package-macos:
+    runs-on: macos-latest
+    needs: [make-wheel]
+    steps:
+    - uses: actions/checkout@v2
+    - run: brew install pyoxidizer
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: pyxel-wheel
+        path: dist
+
+    - run: make dist
+
+  package-linux:
+    runs-on: linux-latest
+    needs: [make-wheel]
+    steps:
+    - uses: actions/checkout@v2
+    - run: brew install pyoxidizer
 
     - uses: actions/download-artifact@v2
       with:
