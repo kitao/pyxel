@@ -1,6 +1,10 @@
 name: Build
 
-on: workflow_dispatch
+on:
+  workflow_dispatch
+    inputs:
+      tag:
+        description: 'Release tag'
 
 jobs:
   build-windows:
