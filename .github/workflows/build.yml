@@ -40,7 +40,7 @@ jobs:
         path: pyxel/lib/linux/*
 
   make-wheel:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     needs: [build-windows, build-macos, build-linux]
     steps:
     - uses: actions/checkout@v2
