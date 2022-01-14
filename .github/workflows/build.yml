@@ -19,8 +19,9 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - run: sudo add-apt-repository ppa:deadsnakes/ppa
-    - run: sudo apt-get install -y python3.9
+    - run: sudo apt-get install -y python3.9 libsdl2-dev
     - run: sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
+    - run: sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 2
     - uses: actions/checkout@v2
     - run: make clean all
 
