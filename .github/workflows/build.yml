@@ -6,7 +6,7 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-    - run: echo Hello
+    - use: actions/checkout@v2
     - run: make clean all
 
   build-macos:
