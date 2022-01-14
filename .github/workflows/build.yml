@@ -118,12 +118,12 @@ jobs:
         name: pyxel-linux-zip
         path: dist/*.zip
 
-  #release:
-  #  runs_on: macos-latest
-  #  needs: [package-windows, package-macos, package-linux]
-  #  if: ${{ github.event.inputs.release-tag != '' && github.event.inputs.release_name != '' }}
-  #  steps:
-  #  - run: echo Release
+  release:
+    runs_on: ubuntu-18.04
+    needs: [package-windows, package-macos, package-linux]
+    #if: ${{ github.event.inputs.release-tag != '' && github.event.inputs.release_name != '' }}
+    steps:
+    - run: echo Release
     #- uses: actions/create-release@v1
     #  env:
     #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
