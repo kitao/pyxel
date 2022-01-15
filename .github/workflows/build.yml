@@ -1,18 +1,19 @@
 name: Build
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      release-tag:
-        description: 'Release tag'
-      release-name:
-        description: 'Release name'
+      checkout-ref:
+        type: string
+        default: ''
 
 jobs:
   build-windows:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.checkout-ref }}
     - run: make clean all
     - uses: actions/upload-artifact@v2
       with:
@@ -23,6 +24,8 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.checkout-ref }}
     - run: make clean all
     - uses: actions/upload-artifact@v2
       with:
@@ -33,9 +36,12 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - run: sudo add-apt-repository ppa:deadsnakes/ppa
-    - run: sudo apt install -y python3.9 libsdl2-dev
-    - run: sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
+      with:
+        ref: ${{ inputs.checkout-ref }}
+    - run: |
+        sudo add-apt-repository ppa:deadsnakes/ppa
+        sudo apt install -y python3.9 libsdl2-dev
+        sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
     - run: make clean all
     - uses: actions/upload-artifact@v2
       with:
@@ -47,6 +53,8 @@ jobs:
     needs: [build-windows, build-macos, build-linux]
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.checkout-ref }}
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-windows-lib
@@ -70,8 +78,11 @@ jobs:
     needs: make-wheel
     steps:
     - uses: actions/checkout@v2
-    - run: choco install zip
-    - run: pip install pyoxidizer
+      with:
+        ref: ${{ inputs.checkout-ref }}
+    - run: |
+        choco install zip
+        pip install pyoxidizer
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-wheel
@@ -91,6 +102,8 @@ jobs:
     needs: make-wheel
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.checkout-ref }}
     - run: brew install pyoxidizer
     - uses: actions/download-artifact@v2
       with:
@@ -107,6 +120,8 @@ jobs:
     needs: make-wheel
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.checkout-ref }}
     - run: brew install pyoxidizer
     - uses: actions/download-artifact@v2
       with:
@@ -117,26 +132,3 @@ jobs:
       with:
         name: pyxel-linux-zip
         path: dist/*.zip
-
-  release:
-    runs-on: ubuntu-18.04
-    needs: [package-windows, package-macos, package-linux]
-    if: ${{ github.event.inputs.release-tag != '' && github.event.inputs.release_name != '' }}
-    steps:
-    - run: echo Release
-    - uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.event.inputs.release-tag }}
-        release_name: ${{ github.event.inputs.release-name }}
-        draft: false
-        prerelease: true
-    #uses: actions/upload-release-asset@v1
-    #env:
-    #  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #with:
-    #  upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #  asset_path: ./src/artifacts/Linux.zip
-    #  asset_name: go_linux_amd64.zip
-    #  asset_content_type: application/zip
