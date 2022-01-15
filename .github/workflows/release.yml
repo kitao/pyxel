@@ -5,10 +5,12 @@ on:
     inputs:
       release-tag:
         type: string
-        description: 'Release tag'
+        required: true
+        default: 'vX.X.X'
       release-name:
         type: string
-        description: 'Release name'
+        required: true
+        default: 'Pyxel X.X.X'
 
 jobs:
   create-release:
