@@ -3,7 +3,7 @@ name: Publish
 on:
   release:
     types: published
-  workflow-dispatch:
+  workflow_dispatch:
 
 jobs:
   publish-packages:
@@ -26,4 +26,5 @@ jobs:
         repository: kitao/homebrew-pyxel
         event-type: update
         client-payload: '{"version": "${{ env.VERSION }}"}'
+    - uses: actions/checkout@v2
     - uses: actions/checkout@v2
