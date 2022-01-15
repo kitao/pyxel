@@ -11,4 +11,4 @@ jobs:
   call-workflow:
     uses: kitao/pyxel/.github/workflows/build.yml@main
     with:
-      checkout-ref: ${{ inputs.checkout-ref }}
+      checkout-ref: ${{ github.event.inputs.checkout-ref }}
