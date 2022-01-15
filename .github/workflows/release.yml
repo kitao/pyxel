@@ -55,8 +55,10 @@ jobs:
       with:
         name: pyxel-linux-zip
         path: dist
+    - run: ls
+    - run: ls dist/
     - uses: alexellis/upload-assets@0.2.2
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         asset_paths: '["dist/*"]'
