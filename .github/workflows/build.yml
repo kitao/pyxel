@@ -7,9 +7,14 @@ on:
         type: string
         default: ''
 
+env:
+  WINDOWS: windows-latest
+  MACOS: macos-latest
+  LINUX: ubuntu-18.04
+
 jobs:
   build-windows:
-    runs-on: windows-latest
+    runs-on: ${{ WINDOWS }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -23,7 +28,7 @@ jobs:
         path: pyxel/lib/windows/*
 
   build-macos:
-    runs-on: macos-latest
+    runs-on: ${{ MACOS }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -37,7 +42,7 @@ jobs:
         path: pyxel/lib/macos/*
 
   build-linux:
-    runs-on: ubuntu-18.04
+    runs-on: ${{ LINUX }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -55,7 +60,7 @@ jobs:
         path: pyxel/lib/linux/*
 
   make-wheel:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     needs: [build-windows, build-macos, build-linux]
     steps:
     - uses: actions/checkout@v2
@@ -80,7 +85,7 @@ jobs:
         path: dist/*.whl
 
   package-windows:
-    runs-on: windows-latest
+    runs-on: ${{ WINDOWS }}
     needs: make-wheel
     steps:
     - uses: actions/checkout@v2
@@ -93,7 +98,9 @@ jobs:
       with:
         name: pyxel-wheel
         path: dist
-    - run: make dist
+    - run: |
+        make dist
+        lib/build/pyxel-*/pyxel
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-windows-zip
@@ -104,7 +111,7 @@ jobs:
         path: dist/*.exe
 
   package-macos:
-    runs-on: macos-latest
+    runs-on: ${{ MACOS }}
     needs: make-wheel
     steps:
     - uses: actions/checkout@v2
@@ -115,14 +122,16 @@ jobs:
       with:
         name: pyxel-wheel
         path: dist
-    - run: make dist
+    - run: |
+        make dist
+        lib/build/pyxel-*/pyxel
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-macos-zip
         path: dist/*.zip
 
   package-linux:
-    runs-on: ubuntu-18.04
+    runs-on: ${{ LINUX }}
     needs: make-wheel
     steps:
     - uses: actions/checkout@v2
@@ -133,7 +142,9 @@ jobs:
       with:
         name: pyxel-wheel
         path: dist
-    - run: make dist
+    - run: |
+        make dist
+        lib/build/pyxel-*/pyxel
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-linux-zip
