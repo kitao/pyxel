@@ -524,60 +524,60 @@ Disegna una `tile` in (`x`, `y`). Una tile è una tupla di `(tile_x, tile_y)`.
 Lista di note (0-127). Più alto il numero, più alto il tono, e a 33 diventa 'A2'(440Hz). Il resto è -1.
 
 - `tones`<br>
-List of tones (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
+Lista di tonalità (0:Triangolo / 1:Quadrato / 2:Ritmo / 3:Rumore)
 
 - `volumes`<br>
-List of volumes (0-7)
+Lista di volumi (0-7)
 
 - `effects`<br>
-List of effects (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
+Lista di effetti (0:Nessuno / 1:Scorrimento / 2:Vibrato / 3:Dissolvenza)
 
 - `speed`<br>
-Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, the length of one note becomes 1 second.
+Velocità di riproduzione. 1 è il più veloce, e più grande è il numero, più è lenta la velocità di riproduzione. A 120, la lunghezza di una nota diventa 1 secondo.
 
 - `set(notes, tones, volumes, effects, speed)`<br>
-Set notes, tones, volumes, and effects with a string. If the tones, volumes, and effects length are shorter than the notes, it is repeated from the beginning.
+Imposta note, tonalità, volumi, ed effetti con una stringa. Se il numero di tonalità, volumi, ed effetti è inferiore alle note, vengono ripetuti dall'inizio.
 
 - `set_notes(notes)`<br>
-Set the notes with a string made of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored.<br>
+Imposta le note con una stringa composta da 'CDEFGAB'+'#-'+'0123' o 'R'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
 e.g. `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-Set the tones with a string made of 'TSPN'. Case-insensitive and whitespace is ignored.<br>
+Imposta le tonalità con una stringa formata da 'TSPN'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
 e.g. `pyxel.sound(0).set_tone("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-Set the volumes with a string made of '01234567'. Case-insensitive and whitespace is ignored.<br>
+Imposta i volumi con una stringa formata da '01234567'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
 e.g. `pyxel.sound(0).set_volume("7777 7531")`
 
 - `set_effects(effects)`<br>
-Set the effects with a string made of 'NSVF'. Case-insensitive and whitespace is ignored.<br>
+Imposta gli effetti con una stringa formata da 'NSVF'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
 e.g. `pyxel.sound(0).set_effect("NFNF NVVS")`
 
 ### Music Class
 
 - `sequences`<br>
-Two-dimensional list of sounds (0-63) listed by the number of channels
+Lista bidimensionale di suoni (0-63) elencati in base al numero di canali.
 
 - `set(seq0, seq1, seq2, seq3)`<br>
-Set the lists of sound (0-63) of all channels. If an empty list is specified, that channel is not used for playback.<br>
+Imposta l'elenco di suoni (0-63) di tutti i canali. Se è indicata una lista vuota, quel canale non viene utilizzato per la riproduzione.<br>
 e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 ### Advanced APIs
 
-Pyxel has "advanced APIs" that are not mentioned in this reference because they "may confuse users" or "need specialized knowledge to use".
+Pyxel ha "API avanzate" che non sono menzionate in questa documentazione perchè "potrebbero confondere gli utenti" oppure "necessitano di conoscenze specifiche per poter essere utilizzate".
 
-If you are familiar with your skills, try to create amazing works with [this](../pyxel/__init__.pyi) as a clue!
+Se ti senti confidente sulle tue competenze, prova a creare lavori incredibili con [this](../pyxel/__init__.pyi) come idea!
 
 ## Come contribuire
 
-### Submitting Issue
+### Inviare Issue
 
-Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests. Before submitting a new issue, ensure that there is no similar open issue.
+Usa l'[Issue Tracker](https://github.com/kitao/pyxel/issues) per inviare segnalazioni su bug e richieste di funzionalità/migliorie. Prima di inviare una nuova issue, assicurati che non ci sia una issue simile aperta.
 
 ### Manual Testing
 
-Anyone manually testing the code and reporting bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) are very welcome!
+Chiunque è il benvenuto per testare manualmente il codice e riportare bug o suggerimenti per miglioramenti nell'[Issue Tracker](https://github.com/kitao/pyxel/issues)!
 
 ### Submitting Pull Request
 
@@ -594,7 +594,7 @@ Le pull request emesse sono presupposte di accettare di essere pubblicate sotto 
 
 ## Licenza
 
-Pyxel is under [MIT License](../LICENSE). It can be reused within proprietary software, provided that all copies of the software or its substantial portions include a copy of the terms of the MIT License and also a copyright notice.
+Pyxel è sotto [Licenza MIT](../LICENSE). Può essere riutilizzato all'interno di software proprietario, stabilito che tutte le copie del software o di sue porzioni sostanziali includano una copia dei termini della Licenza MIT ed anche un avviso di copyright.
 
 ## Reclutare Sponsor
 
