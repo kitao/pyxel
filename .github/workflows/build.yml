@@ -39,13 +39,13 @@ jobs:
   build-linux:
     runs-on: ubuntu-18.04
     steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: ${{ inputs.checkout-ref }}
     - run: |
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt install -y python3.9 libsdl2-dev
         sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.checkout-ref }}
     - run: |
         make clean all
         python3 -m pyxel
@@ -83,12 +83,12 @@ jobs:
     runs-on: windows-latest
     needs: make-wheel
     steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: ${{ inputs.checkout-ref }}
     - run: |
         choco install zip
         pip install pyoxidizer
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.checkout-ref }}
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-wheel
@@ -109,10 +109,10 @@ jobs:
     runs-on: macos-latest
     needs: make-wheel
     steps:
+    - run: brew install pyoxidizer
     - uses: actions/checkout@v2
       with:
         ref: ${{ inputs.checkout-ref }}
-    - run: brew install pyoxidizer
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-wheel
@@ -129,10 +129,14 @@ jobs:
     runs-on: ubuntu-18.04
     needs: make-wheel
     steps:
+    - run: |
+        sudo add-apt-repository ppa:deadsnakes/ppa
+        sudo apt install -y python3.9 libsdl2-dev
+        sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
+        brew install pyoxidizer
     - uses: actions/checkout@v2
       with:
         ref: ${{ inputs.checkout-ref }}
-    - run: brew install pyoxidizer
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-wheel
