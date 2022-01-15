@@ -1,14 +1,7 @@
 name: Manual Build
 
-on:
-  workflow_dispatch:
-    inputs:
-      checkout-ref:
-        type: string
-        default: ''
+on: workflow_dispatch
 
 jobs:
   call-build:
     uses: kitao/pyxel/.github/workflows/build.yml@main
-    with:
-      checkout-ref: ${{ github.event.inputs.checkout-ref }}
