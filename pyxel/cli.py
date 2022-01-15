@@ -1,9 +1,9 @@
 import glob
 import os
+import pathlib
 import runpy
 import shutil
 import sys
-import tempfile
 import zipfile
 
 import pyxel
@@ -45,6 +45,22 @@ def _check_dir_exists(dirname):
         exit(1)
 
 
+def _make_app_dir():
+    play_dir = os.path.expanduser("~/.pyxel/play")
+    pathlib.Path(play_dir).mkdir(parents=True, exist_ok=True)
+
+    for path in glob.glob(os.path.join(play_dir, "*")):
+        pid = int(os.path.basename(path))
+        try:
+            os.kill(pid, 0)
+        except OSError:
+            shutil.rmtree(path)
+
+    app_dir = os.path.join(play_dir, str(os.getpid()))
+    os.mkdir(app_dir)
+    return app_dir
+
+
 def _run_python_script(python_script_file):
     python_script_file = _complete_extension(python_script_file, ".py")
     _check_file_exists(python_script_file)
@@ -55,20 +71,18 @@ def _run_python_script(python_script_file):
 def _play_pyxel_app(pyxel_app_file):
     pyxel_app_file = _complete_extension(pyxel_app_file, pyxel.APP_FILE_EXTENSION)
     _check_file_exists(pyxel_app_file)
-    with tempfile.TemporaryDirectory() as temp_dir:
-        zf = zipfile.ZipFile(pyxel_app_file)
-        zf.extractall(temp_dir)
-        pattern = os.path.join(temp_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
-        for setting_file in glob.glob(pattern):
-            with open(setting_file, "r") as f:
-                startup_script_file = os.path.join(
-                    os.path.dirname(setting_file), f.read()
-                )
-                sys.path.append(os.path.dirname(startup_script_file))
-                runpy.run_path(startup_script_file)
-                return
-        print(f"file not found: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
-        exit(1)
+    app_dir = _make_app_dir()
+    zf = zipfile.ZipFile(pyxel_app_file)
+    zf.extractall(app_dir)
+    pattern = os.path.join(app_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
+    for setting_file in glob.glob(pattern):
+        with open(setting_file, "r") as f:
+            startup_script_file = os.path.join(os.path.dirname(setting_file), f.read())
+            sys.path.append(os.path.dirname(startup_script_file))
+            runpy.run_path(startup_script_file)
+            return
+    print(f"file not found: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
+    exit(1)
 
 
 def _edit_pyxel_resource(pyxel_resource_file):

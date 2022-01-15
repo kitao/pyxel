@@ -1,8 +1,11 @@
 # Change Log
 
 ## 1.6.2
-- Added the Ko-fi button to the READMEs
+- Fixed the play command to remove working directories
+- Fixed the key repeat bug
+- Added the GitHub Actions workflow to build
 - Removed the cli function
+- Updated the READMEs
 
 ## 1.6.1
 - Fixed the pyxel play command on Windows

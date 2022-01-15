@@ -207,12 +207,14 @@ impl Platform for Sdl2 {
                 // Key events
                 SdlEvent::KeyDown {
                     keycode: Some(keycode),
+                    repeat: false,
                     ..
                 } => Event::KeyDown {
                     keycode: keycode as u32,
                 },
                 SdlEvent::KeyUp {
                     keycode: Some(keycode),
+                    repeat: false,
                     ..
                 } => Event::KeyUp {
                     keycode: keycode as u32,
