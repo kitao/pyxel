@@ -1,7 +1,0 @@
-name: Manual Build
-
-on: workflow_dispatch
-
-jobs:
-  build:
-    uses: kitao/pyxel/.github/workflows/build.yml@main
