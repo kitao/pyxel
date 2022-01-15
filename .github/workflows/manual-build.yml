@@ -1,4 +1,4 @@
-name: Trigger to build
+name: Manual Build
 
 on:
   workflow_dispatch:
