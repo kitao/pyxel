@@ -14,7 +14,9 @@ jobs:
     - uses: actions/checkout@v2
       with:
         ref: ${{ inputs.checkout-ref }}
-    - run: make clean all
+    - run: |
+        make clean all
+        python -m pyxel
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-windows-lib
@@ -26,7 +28,9 @@ jobs:
     - uses: actions/checkout@v2
       with:
         ref: ${{ inputs.checkout-ref }}
-    - run: make clean all
+    - run: |
+        make clean all
+        python3 -m pyxel
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-macos-lib
@@ -42,7 +46,9 @@ jobs:
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt install -y python3.9 libsdl2-dev
         sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
-    - run: make clean all
+    - run: |
+        make clean all
+        python3 -m pyxel
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-linux-lib
