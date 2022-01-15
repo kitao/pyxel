@@ -1,10 +1,11 @@
 name: Trigger to build
 
-on: workflow_dispatch
-  inputs:
-    checkout-ref:
-      type: string
-      default: ''
+on:
+  workflow_dispatch:
+    inputs:
+      checkout-ref:
+        type: string
+        default: ''
 
 jobs:
   call-workflow:
