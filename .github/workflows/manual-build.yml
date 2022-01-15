@@ -3,5 +3,5 @@ name: Manual Build
 on: workflow_dispatch
 
 jobs:
-  call-build:
+  build:
     uses: kitao/pyxel/.github/workflows/build.yml@main
