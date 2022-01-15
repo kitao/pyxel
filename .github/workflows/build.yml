@@ -1,19 +1,12 @@
 name: Build
 
-on:
-  workflow_call:
-    inputs:
-      checkout-ref:
-        type: string
-        default: ''
+on: workflow_call
 
 jobs:
   build-windows:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ inputs.checkout-ref }}
     - run: |
         make clean all
         python -m pyxel
@@ -26,8 +19,6 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ inputs.checkout-ref }}
     - run: |
         make clean all
         python3 -m pyxel
@@ -44,8 +35,6 @@ jobs:
         sudo apt install -y python3.9 libsdl2-dev
         sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ inputs.checkout-ref }}
     - run: |
         make clean all
         python3 -m pyxel
@@ -59,8 +48,6 @@ jobs:
     needs: [build-windows, build-macos, build-linux]
     steps:
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ inputs.checkout-ref }}
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-windows-lib
@@ -87,8 +74,6 @@ jobs:
         choco install zip
         pip install pyoxidizer
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ inputs.checkout-ref }}
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-wheel
@@ -111,8 +96,6 @@ jobs:
     steps:
     - run: brew install pyoxidizer
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ inputs.checkout-ref }}
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-wheel
@@ -135,8 +118,6 @@ jobs:
         sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
         brew install pyoxidizer
     - uses: actions/checkout@v2
-      with:
-        ref: ${{ inputs.checkout-ref }}
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-wheel
