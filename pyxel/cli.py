@@ -4,7 +4,6 @@ import pathlib
 import runpy
 import shutil
 import sys
-import tempfile
 import zipfile
 
 import pyxel
