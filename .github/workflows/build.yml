@@ -7,14 +7,9 @@ on:
         type: string
         default: ''
 
-env:
-  WINDOWS: windows-latest
-  MACOS: macos-latest
-  LINUX: ubuntu-18.04
-
 jobs:
   build-windows:
-    runs-on: ${{ env.WINDOWS }}
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
       with:
@@ -28,7 +23,7 @@ jobs:
         path: pyxel/lib/windows/*
 
   build-macos:
-    runs-on: ${{ env.MACOS }}
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
       with:
@@ -42,7 +37,7 @@ jobs:
         path: pyxel/lib/macos/*
 
   build-linux:
-    runs-on: ${{ env.LINUX }}
+    runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
       with:
@@ -85,7 +80,7 @@ jobs:
         path: dist/*.whl
 
   package-windows:
-    runs-on: ${{ env.WINDOWS }}
+    runs-on: windows-latest
     needs: make-wheel
     steps:
     - uses: actions/checkout@v2
@@ -111,7 +106,7 @@ jobs:
         path: dist/*.exe
 
   package-macos:
-    runs-on: ${{ env.MACOS }}
+    runs-on: macos-latest
     needs: make-wheel
     steps:
     - uses: actions/checkout@v2
@@ -131,7 +126,7 @@ jobs:
         path: dist/*.zip
 
   package-linux:
-    runs-on: ${{ env.LINUX }}
+    runs-on: ubuntu-18.04
     needs: make-wheel
     steps:
     - uses: actions/checkout@v2
