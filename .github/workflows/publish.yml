@@ -11,7 +11,7 @@ jobs:
     steps:
     - run: |
         VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
-        echo "{VERSION}={$VERSION}" >> $GITHUB_ENV
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
         echo "VERSION = $VERSION"
     #- uses: actions/setup-python@v2
     #  with:

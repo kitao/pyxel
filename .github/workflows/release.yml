@@ -9,13 +9,13 @@ jobs:
   build:
     uses: kitao/pyxel/.github/workflows/build.yml@main
 
-  release:
+  create-release:
     runs-on: ubuntu-latest
     needs: build
     steps:
     - run: |
         VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
-        echo "{VERSION}={$VERSION}" >> $GITHUB_ENV
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - uses: actions/create-release@v1
       id: create_release
       env:
