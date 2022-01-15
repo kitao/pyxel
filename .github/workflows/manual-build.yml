@@ -8,7 +8,7 @@ on:
         default: ''
 
 jobs:
-  call-workflow:
+  call-build:
     uses: kitao/pyxel/.github/workflows/build.yml@main
     with:
       checkout-ref: ${{ github.event.inputs.checkout-ref }}
