@@ -26,9 +26,4 @@ jobs:
         repository: kitao/homebrew-pyxel
         event-type: update
         client-payload: '{"version": "${{ env.VERSION }}"}'
-    - run: |
-        cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
-        cd lib/engine
-    #    cargo publish
-        cd ../wrapper
-    #    cargo publish
+    - uses: actions/checkout@v2
