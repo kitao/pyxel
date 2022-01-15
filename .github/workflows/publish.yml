@@ -16,7 +16,7 @@ jobs:
     - run: pip3 install twine
     - run: |
         wget https://github.com/kitao/pyxel/releases/download/v${{ env.VERSION }}/pyxel-${{ env.VERSION }}-py3-none-any.whl
-        twine upload *.whl
+    #    twine upload *.whl
     #  env:
     #    TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
     #    TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
