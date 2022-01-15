@@ -12,7 +12,6 @@ jobs:
     - run: |
         VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
         echo "VERSION=${VERSION}" >> $GITHUB_ENV
-        echo "VERSION = $VERSION"
     #- uses: actions/setup-python@v2
     #  with:
     #    python-version: '3.x'
@@ -21,7 +20,9 @@ jobs:
     #    python -m pip install --upgrade pip
     #    pip install setuptools wheel twine
     - run: pip install twine
-    - run: twine upload dist/*.whl
+    - run: |
+        wget https://github.com/kitao/pyxel/releases/download/v${{ env.VERSION }}/pyxel-${{ env.VERSION }}-py3-none-any.whl
+        twine upload *.whl
     #  env:
     #    TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
     #    TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
