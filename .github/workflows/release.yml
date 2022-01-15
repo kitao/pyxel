@@ -1,16 +1,9 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      release-tag:
-        type: string
-        required: true
-        default: 'vX.X.X'
-      release-name:
-        type: string
-        required: true
-        default: 'Pyxel X.X.X'
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   call-build:
@@ -26,8 +19,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.event.inputs.release-tag }}
-        release_name: ${{ github.event.inputs.release-name }}
+        tag_name: ${{ github.ref }}
+        release_name: ${{ github.ref_name }}
         draft: true
         prerelease: true
 
