@@ -8,7 +8,8 @@ on:
       release-name:
         description: 'Release name'
 
-  release:
+jobs:
+  create-release:
     runs-on: ubuntu-18.04
     needs: [package-windows, package-macos, package-linux]
     if: ${{ github.event.inputs.release-tag != '' && github.event.inputs.release_name != '' }}
@@ -21,11 +22,13 @@ on:
         release_name: ${{ github.event.inputs.release-name }}
         draft: false
         prerelease: true
-    #- uses: actions/upload-release-asset@v1
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #  with:
-    #    upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #    asset_path: ./src/artifacts/Linux.zip
-    #    asset_name: go_linux_amd64.zip
-    #    asset_content_type: application/zip
+
+  upload-files:
+    - uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./src/artifacts/Linux.zip
+        asset_name: go_linux_amd64.zip
+        asset_content_type: application/zip
