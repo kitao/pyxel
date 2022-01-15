@@ -3,7 +3,6 @@ name: Publish
 on:
   release:
     types: published
-  workflow_dispatch:
 
 jobs:
   publish-packages:
@@ -11,15 +10,14 @@ jobs:
     steps:
     - run: |
         VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
-        echo "VERSION=1.6.1" >> $GITHUB_ENV
-    #    echo "VERSION=${VERSION}" >> $GITHUB_ENV
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - run: pip3 install twine
     - run: |
         wget https://github.com/kitao/pyxel/releases/download/v${{ env.VERSION }}/pyxel-${{ env.VERSION }}-py3-none-any.whl
-    #    twine upload *.whl
-    #  env:
-    #    TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-    #    TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        twine upload *.whl
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
     - uses: peter-evans/repository-dispatch@v1
       with:
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
@@ -31,4 +29,6 @@ jobs:
     - run: |
         cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
         cd lib/engine
+        cargo publish
         cd ../wrapper
+        cargo publish
