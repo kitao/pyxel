@@ -28,3 +28,9 @@ jobs:
         client-payload: '{"version": "${{ env.VERSION }}"}'
     - uses: actions/checkout@v2
     - uses: actions/checkout@v2
+    - run: |
+        cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        cd lib/engine
+        cargo publish
+        cd ../wrapper
+        cargo publish
