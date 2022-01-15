@@ -209,12 +209,12 @@ impl Pyxel {
             }
             let hold_frame_count = hold_frame_count.unwrap_or(0);
             let period_frame_count = period_frame_count.unwrap_or(0);
-            if hold_frame_count == 0 || period_frame_count == 0 {
+            if period_frame_count == 0 {
                 return false;
             }
             let elapsed_frames =
                 self.frame_count() as i32 - (*frame_count + hold_frame_count) as i32;
-            if elapsed_frames > 0 && elapsed_frames % period_frame_count as i32 == 0 {
+            if elapsed_frames >= 0 && elapsed_frames % period_frame_count as i32 == 0 {
                 return true;
             }
         }
