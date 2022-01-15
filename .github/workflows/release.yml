@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  call-build:
+  build:
     uses: kitao/pyxel/.github/workflows/build.yml@main
 
   release:
@@ -15,8 +15,7 @@ jobs:
     steps:
     - run: |
         VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
-        echo "VERSION = $VERSION"
-        echo "::set-env name=VERSION::$(echo $VERSION)"
+        echo "{VERSION}={$VERSION}" >> $GITHUB_ENV
     - uses: actions/create-release@v1
       id: create_release
       env:
