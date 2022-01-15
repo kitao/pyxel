@@ -31,7 +31,7 @@ jobs:
         draft: true
         prerelease: true
 
-  upload-files:
+  release-artifacts:
     runs-on: ubuntu-latest
     needs: create-release
     steps:
@@ -57,6 +57,6 @@ jobs:
         path: dist
     - uses: alexellis/upload-assets@0.2.2
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ github.token }}
       with:
         asset_paths: '["dist/*"]'
