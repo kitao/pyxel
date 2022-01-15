@@ -14,7 +14,7 @@ env:
 
 jobs:
   build-windows:
-    runs-on: ${{ WINDOWS }}
+    runs-on: ${{ env.WINDOWS }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -28,7 +28,7 @@ jobs:
         path: pyxel/lib/windows/*
 
   build-macos:
-    runs-on: ${{ MACOS }}
+    runs-on: ${{ env.MACOS }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -42,7 +42,7 @@ jobs:
         path: pyxel/lib/macos/*
 
   build-linux:
-    runs-on: ${{ LINUX }}
+    runs-on: ${{ env.LINUX }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -85,7 +85,7 @@ jobs:
         path: dist/*.whl
 
   package-windows:
-    runs-on: ${{ WINDOWS }}
+    runs-on: ${{ env.WINDOWS }}
     needs: make-wheel
     steps:
     - uses: actions/checkout@v2
@@ -111,7 +111,7 @@ jobs:
         path: dist/*.exe
 
   package-macos:
-    runs-on: ${{ MACOS }}
+    runs-on: ${{ env.MACOS }}
     needs: make-wheel
     steps:
     - uses: actions/checkout@v2
@@ -131,7 +131,7 @@ jobs:
         path: dist/*.zip
 
   package-linux:
-    runs-on: ${{ LINUX }}
+    runs-on: ${{ env.LINUX }}
     needs: make-wheel
     steps:
     - uses: actions/checkout@v2
