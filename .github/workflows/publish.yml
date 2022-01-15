@@ -11,7 +11,7 @@ jobs:
     steps:
     - run: |
         VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
-        echo "VERSION=${1.6.1}" >> $GITHUB_ENV
+        echo "VERSION=1.6.1" >> $GITHUB_ENV
     #    echo "VERSION=${VERSION}" >> $GITHUB_ENV
     - run: pip3 install twine
     - run: |
