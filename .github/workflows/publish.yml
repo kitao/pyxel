@@ -13,10 +13,7 @@ jobs:
         VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
         echo "{VERSION}={$VERSION}" >> $GITHUB_ENV
         echo "VERSION = $VERSION"
-
-    #- uses: actions/checkout@v2
-    #- name: Set up Python
-    #  uses: actions/setup-python@v2
+    #- uses: actions/setup-python@v2
     #  with:
     #    python-version: '3.x'
     #- name: Install dependencies
@@ -28,7 +25,6 @@ jobs:
     #    TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
     #    TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
     #  run: twine upload dist/*.whl
-
     - uses: peter-evans/repository-dispatch@v1
       with:
         token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
