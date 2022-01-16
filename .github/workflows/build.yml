@@ -80,7 +80,7 @@ jobs:
         path: dist
     - run: |
         make dist
-#        lib/build/pyxel-*/pyxel
+        lib/build/pyxel-1.6.2-windows/pyxel
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-windows-zip
