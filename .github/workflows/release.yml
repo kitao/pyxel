@@ -24,7 +24,7 @@ jobs:
         tag_name: ${{ github.ref }}
         release_name: Pyxel ${{ env.VERSION }}
         draft: true
-        prerelease: true
+        prerelease: false
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-wheel
