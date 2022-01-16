@@ -3,36 +3,34 @@ name: Publish
 on:
   release:
     types: published
-  workflow_dispatch:
 
 jobs:
-  publish-packages:
+  publish-wheel:
     runs-on: ubuntu-latest
     steps:
     - run: |
         VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
-        echo "VERSION=1.6.2" >> $GITHUB_ENV
-#        echo "VERSION=${VERSION}" >> $GITHUB_ENV
-#    - uses: peter-evans/repository-dispatch@v1
-#      with:
-#        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-#        repository: kitao/homebrew-pyxel
-#        event-type: update
-#        client-payload: '{"version": "${{ env.VERSION }}"}'
-#    - run: |
-#        pip3 install twine
-#        wget https://github.com/kitao/pyxel/releases/download/v${{ env.VERSION }}/pyxel-${{ env.VERSION }}-py3-none-any.whl
-#        twine upload *.whl
-#      env:
-#        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-#        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        repository: kitao/homebrew-pyxel
+        event-type: update
+        client-payload: '{"version": "${{ env.VERSION }}"}'
     - run: |
-        sudo add-apt-repository ppa:deadsnakes/ppa
-        sudo apt install -y python3.9 libsdl2-dev
-        sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
+        pip3 install twine
+        wget https://github.com/kitao/pyxel/releases/download/v${{ env.VERSION }}/pyxel-${{ env.VERSION }}-py3-none-any.whl
+        twine upload *.whl
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+
+  publish-crates:
+    runs-on: macos-latest
+    steps:
     - uses: actions/checkout@v2
     - run: |
-        make clean all
+        make
         cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
         cd lib/engine
         cargo publish
