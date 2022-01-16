@@ -46,7 +46,7 @@ def _check_dir_exists(dirname):
 
 
 def _make_app_dir():
-    play_dir = os.path.expanduser("~/.pyxel/play")
+    play_dir = os.path.expanduser(os.path.join(pyxel.PYXEL_WORKING_DIR, "play"))
     pathlib.Path(play_dir).mkdir(parents=True, exist_ok=True)
 
     for path in glob.glob(os.path.join(play_dir, "*")):
