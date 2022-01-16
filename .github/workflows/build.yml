@@ -80,7 +80,8 @@ jobs:
         path: dist
     - run: |
         make dist
-        `find lib/build/pyxel-* -maxdepth 0`/pyxel.exe
+        lib/build/pyxel-*/pyxel.exe
+      shell: bash
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-windows-zip
