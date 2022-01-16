@@ -2,6 +2,7 @@
 
 ## 1.6.6
 - Integrated the release and public actions
+- Added the PYXEL_WORKING_DIR constant
 
 ## 1.6.5
 - Fixed the GitHub Actions workflow to publish
