@@ -13,19 +13,23 @@ jobs:
         VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
         echo "VERSION=1.6.2" >> $GITHUB_ENV
 #        echo "VERSION=${VERSION}" >> $GITHUB_ENV
-    - uses: peter-evans/repository-dispatch@v1
-      with:
-        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        repository: kitao/homebrew-pyxel
-        event-type: update
-        client-payload: '{"version": "${{ env.VERSION }}"}'
+#    - uses: peter-evans/repository-dispatch@v1
+#      with:
+#        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+#        repository: kitao/homebrew-pyxel
+#        event-type: update
+#        client-payload: '{"version": "${{ env.VERSION }}"}'
+#    - run: |
+#        pip3 install twine
+#        wget https://github.com/kitao/pyxel/releases/download/v${{ env.VERSION }}/pyxel-${{ env.VERSION }}-py3-none-any.whl
+#        twine upload *.whl
+#      env:
+#        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+#        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
     - run: |
-        pip3 install twine
-        wget https://github.com/kitao/pyxel/releases/download/v${{ env.VERSION }}/pyxel-${{ env.VERSION }}-py3-none-any.whl
-        twine upload *.whl
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        sudo add-apt-repository ppa:deadsnakes/ppa
+        sudo apt install -y python3.9 libsdl2-dev
+        sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
     - uses: actions/checkout@v2
     - run: |
         make clean all
