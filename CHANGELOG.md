@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.6.3
+- Fixed the GitHub Actions workflow to publish
+
 ## 1.6.2
 - Fixed the play command to remove working directories
 - Fixed the key repeat bug
