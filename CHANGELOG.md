@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.6.6
+- Integrated the release and public actions
+
 ## 1.6.5
 - Fixed the GitHub Actions workflow to publish
 
