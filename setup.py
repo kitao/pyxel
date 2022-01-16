@@ -15,7 +15,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pyxel",
-    version="1.6.4",
+    version="1.6.5",
     description="A retro game engine for Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
