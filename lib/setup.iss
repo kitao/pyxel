@@ -1,4 +1,4 @@
-#define PyxelVersion "1.6.5"
+#define PyxelVersion "1.6.6"
 
 [Setup]
 AppName=Pyxel
