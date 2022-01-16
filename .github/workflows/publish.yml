@@ -3,9 +3,10 @@ name: Publish
 on:
   release:
     types: published
+  workflow_dispatch:
 
 jobs:
-  publish-wheel:
+  publish-packages:
     runs-on: ubuntu-latest
     steps:
     - run: |
@@ -20,14 +21,10 @@ jobs:
     - run: |
         pip3 install twine
         wget https://github.com/kitao/pyxel/releases/download/v${{ env.VERSION }}/pyxel-${{ env.VERSION }}-py3-none-any.whl
-        twine upload *.whl
+#        twine upload *.whl
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-
-  publish-crates:
-    runs-on: linux-latest
-    steps:
     - uses: actions/checkout@v2
     - run: |
         cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
