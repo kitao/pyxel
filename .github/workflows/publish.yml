@@ -26,13 +26,13 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
 
   publish-crates:
-    runs-on: macos-latest
+    runs-on: linux-latest
     steps:
     - uses: actions/checkout@v2
     - run: |
-        make
         cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
         cd lib/engine
         cargo publish
+        sleep 10
         cd ../wrapper
         cargo publish

@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.6.4
+- Fixed the GitHub Actions workflow to publish
+
 ## 1.6.3
 - Fixed the GitHub Actions workflow to publish
 
