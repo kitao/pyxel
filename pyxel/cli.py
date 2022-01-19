@@ -1,9 +1,11 @@
 import glob
 import os
 import pathlib
+import re
 import runpy
 import shutil
 import sys
+import urllib.request
 import zipfile
 
 import pyxel
@@ -11,6 +13,7 @@ import pyxel
 
 def _print_usage():
     print(f"Pyxel {pyxel.PYXEL_VERSION}, a retro game engine for Python")
+    _check_newer_version()
     print("usage:")
     print("    pyxel run PYTHON_SCRIPT_FILE(.py)")
     print("    pyxel play PYXEL_APP_FILE(.pyxapp)")
@@ -18,6 +21,29 @@ def _print_usage():
     print("    pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE(.py)")
     print("    pyxel copy_examples")
     print("    pyxel module_search_path")
+
+
+def _check_newer_version():
+    url = "https://www.github.com/kitao/pyxel"
+    req = urllib.request.Request(url)
+    latest_version = None
+    try:
+        with urllib.request.urlopen(req, timeout=3) as res:
+            pattern = r"/kitao/pyxel/releases/tag/v(\d+\.\d+\.\d+)"
+            text = res.read().decode("utf-8")
+            result = re.search(pattern, text)
+            if result:
+                latest_version = result.group(1)
+    except urllib.error.URLError:
+        return
+    if not latest_version:
+        return
+
+    def parse_version(version):
+        return list(map(int, version.split(".")))
+
+    if parse_version(latest_version) > parse_version(pyxel.PYXEL_VERSION):
+        print(f"(A newer version, Pyxel {latest_version} is available now!)")
 
 
 def _complete_extension(filename, ext_with_dot):
