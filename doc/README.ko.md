@@ -472,10 +472,10 @@ Pyxel 애플리케이션을 종료합니다.
 - `play_pos(ch)`<br>
 채널 `ch` (0-3)의 사운드 재생 위치를 `(sound no, note no)` 형태의 튜플로 가져옵니다. 재생 중이 아닐 경우 `None`을 반환합니다.
 
-- `play(ch, snd, loop=False)`<br>
+- `play(ch, snd, [loop])`<br>
 채널 `ch` (0-3)에서 사운드 `snd` (0-63)를 재생합니다. `snd`가 리스트일 경우, 순서대로 재생됩니다. `loop`에 `True`를 지정하면 계속 반복합니다.
 
-- `playm(msc, loop=False)`<br>
+- `playm(msc, [loop])`<br>
 음악 `msc` (0-7)을 재생합니다. `loop`에 `True`를 지정하면 계속 반복합니다.
 
 - `stop([ch])`<br>

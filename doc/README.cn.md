@@ -473,10 +473,10 @@ Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to 
 - `play_pos(ch)`<br>
 获取通道`ch` (0-3)中音频重播位置`(sound no, note no)`。若重播被停止则返回`None`。
 
-- `play(ch, snd, loop=False)`<br>
-播放通道`ch` (0-3)中的声音snd` (0-63)。如果声音`snd`是一个列表，则按顺序播放。如果`loop`被指定为`True`则循环播放。
+- `play(ch, snd, [loop])`<br>
+播放通道`ch` (0-3)中的声音`snd` (0-63)。如果声音`snd`是一个列表，则按顺序播放。如果`loop`被指定为`True`则循环播放。
 
-- `playm(msc, loop=False)`<br>
+- `playm(msc, [loop])`<br>
 播放音乐`msc` (0-7)。如果`loop`被指定为`True`则循环播放。
 
 - `stop([ch])`<br>
