@@ -137,13 +137,18 @@ class SoundEditor(EditorBase):
         if data["old_field"] != data["new_field"]:
             self.add_history(self._history_data)
 
-    def _play(self):
+    def _play(self, is_partial):
         self._sound_picker.is_enabled_var = False
         self._speed_picker.is_enabled_var = False
         self._play_button.is_enabled_var = False
         self._stop_button.is_enabled_var = True
         self._loop_button.is_enabled_var = False
-        pyxel.play(0, self.sound_no_var, loop=self.should_loop_var)
+        pyxel.play(
+            0,
+            self.sound_no_var,
+            pos=self.field_cursor.x if is_partial else None,
+            loop=self.should_loop_var,
+        )
 
     def _stop(self):
         self._sound_picker.is_enabled_var = True
@@ -165,10 +170,10 @@ class SoundEditor(EditorBase):
         sound.speed = value
 
     def __on_play_button_press(self):
-        self._play()
+        self._play(pyxel.btn(pyxel.KEY_SHIFT))
 
     def __on_play_button_mouse_hover(self, x, y):
-        self.help_message_var = "PLAY:SPACE"
+        self.help_message_var = "PLAY:SPACE PART-PLAY:SHIFT+SPACE"
 
     def __on_stop_button_press(self):
         self._stop()
