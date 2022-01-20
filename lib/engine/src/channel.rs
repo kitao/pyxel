@@ -44,36 +44,21 @@ impl Channel {
         }
     }
 
-    pub fn play(&mut self, sounds: Vec<SharedSound>, note_index: Option<u32>, should_loop: bool) {
+    pub fn play(&mut self, sounds: Vec<SharedSound>, should_loop: bool) {
         let sounds: Vec<Sound> = sounds.iter().map(|sound| sound.lock().clone()).collect();
         if sounds.is_empty() || sounds.iter().all(|sound| sound.notes.is_empty()) {
             return;
         }
-        self.sound_index = 0;
-        self.note_index = note_index.unwrap_or(0);
-        loop {
-            let sound_len = sounds[self.sound_index as usize].notes.len() as u32;
-            if self.note_index < sound_len {
-                break;
-            }
-            self.note_index -= sound_len;
-            self.sound_index += 1;
-            if self.sound_index >= sounds.len() as u32 {
-                if should_loop {
-                    self.sound_index = 0;
-                } else {
-                    return;
-                }
-            }
-        }
         self.sounds = sounds;
         self.is_playing = true;
         self.should_loop = should_loop;
+        self.sound_index = 0;
+        self.note_index = 0;
         self.tick_count = 0;
     }
 
-    pub fn play1(&mut self, sound: SharedSound, note_index: Option<u32>, should_loop: bool) {
-        self.play(vec![sound], note_index, should_loop);
+    pub fn play1(&mut self, sound: SharedSound, should_loop: bool) {
+        self.play(vec![sound], should_loop);
     }
 
     pub fn stop(&mut self) {
