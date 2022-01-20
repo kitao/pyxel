@@ -471,11 +471,11 @@ Bediene die Musik `msc`(0-7) (siehe die Music class)
 - `play_pos(ch)`<br>
 Ermittelt die Tonwiedergabeposition des Kanals `ch` (0-3) als Tupel von `(Ton-Nr., Noten-Nr.)`. Gibt `None` zurück, wenn die Wiedergabe gestoppt ist.
 
-- `play(ch, snd, loop=False)`<br>
-Spielt den Ton `snd` (0-63) auf Kanal `ch` (0-3). Falls `snd` eine Liste ist, wird es in der Reihenfolge abgespielt. Falls `True` für `loop` angeben ist, wird eine Schleifenwiedergabe durchgeführt.
+- `play(ch, snd, [pos], [loop])`<br>
+Spielt den Ton `snd` (0-63) auf Kanal `ch` (0-3). Falls `snd` eine Liste ist, wird es in der Reihenfolge abgespielt. Die Notennummer zum Starten der Wiedergabe kann mit `pos` angegeben werden. Falls `True` für `loop` angeben ist, wird eine Schleifenwiedergabe durchgeführt.
 
-- `playm(msc, loop=False)`<br>
-Spielt die Musik `msc` (0-7). Falls `True` für `loop` angegeben ist, wird eine Schleifenwiedergabe durchgeführt.
+- `playm(msc, [pos], [loop])`<br>
+Spielt die Musik `msc` (0-7). Die Notennummer zum Starten der Wiedergabe kann mit `pos` angegeben werden. Falls `True` für `loop` angegeben ist, wird eine Schleifenwiedergabe durchgeführt.
 
 - `stop([ch])`<br>
 Stoppt die Wiedergabe des angegebenen Kanals `ch` (0-3). `stop()`, um die Wiedergabe aller Kanäle zu stoppen.
