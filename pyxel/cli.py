@@ -61,7 +61,7 @@ def _check_newer_version():
     def parse_version(version):
         return list(map(int, version.split(".")))
 
-    if parse_version(latest_version) < parse_version(pyxel.PYXEL_VERSION):
+    if parse_version(latest_version) > parse_version(pyxel.PYXEL_VERSION):
         print(f"A newer version, Pyxel {latest_version} is available now.")
 
 
