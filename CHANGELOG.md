@@ -4,8 +4,8 @@
 - Integrated the release and public actions
 - Added the PYXEL_WORKING_DIR constant
 - Added a mechanism to check the latest version
-- Added a pos option to the play and playm functions
 - Fixed a bug of the play_pos function
+- Added a pos option to the play and playm functions
 - Added a partial playback feature to the Music Editor
 - Updated the READMEs
 
