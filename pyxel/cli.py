@@ -11,9 +11,27 @@ import zipfile
 import pyxel
 
 
+def cli():
+    num_args = len(sys.argv)
+    command = sys.argv[1] if num_args > 1 else ""
+    if command == "run" and num_args == 3:
+        _run_python_script(sys.argv[2])
+    elif command == "play" and num_args == 3:
+        _play_pyxel_app(sys.argv[2])
+    elif command == "edit" and (num_args == 2 or num_args == 3):
+        _edit_pyxel_resource(sys.argv[2] if num_args == 3 else None)
+    elif command == "package" and num_args == 4:
+        _package_pyxel_app(sys.argv[2], sys.argv[3])
+    elif command == "copy_examples" and num_args == 2:
+        _copy_pyxel_examples()
+    elif command == "module_search_path" and num_args == 2:
+        _print_module_search_path()
+    else:
+        _print_usage()
+
+
 def _print_usage():
     print(f"Pyxel {pyxel.PYXEL_VERSION}, a retro game engine for Python")
-    _check_newer_version()
     print("usage:")
     print("    pyxel run PYTHON_SCRIPT_FILE(.py)")
     print("    pyxel play PYXEL_APP_FILE(.pyxapp)")
@@ -21,6 +39,7 @@ def _print_usage():
     print("    pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE(.py)")
     print("    pyxel copy_examples")
     print("    pyxel module_search_path")
+    _check_newer_version()
 
 
 def _check_newer_version():
@@ -42,8 +61,8 @@ def _check_newer_version():
     def parse_version(version):
         return list(map(int, version.split(".")))
 
-    if parse_version(latest_version) > parse_version(pyxel.PYXEL_VERSION):
-        print(f"(A newer version, Pyxel {latest_version} is available now!)")
+    if parse_version(latest_version) < parse_version(pyxel.PYXEL_VERSION):
+        print(f"A newer version, Pyxel {latest_version} is available now.")
 
 
 def _complete_extension(filename, ext_with_dot):
@@ -157,22 +176,3 @@ def _copy_pyxel_examples():
 def _print_module_search_path():
     module_search_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     print(module_search_path)
-
-
-def cli():
-    num_args = len(sys.argv)
-    command = sys.argv[1] if num_args > 1 else ""
-    if command == "run" and num_args == 3:
-        _run_python_script(sys.argv[2])
-    elif command == "play" and num_args == 3:
-        _play_pyxel_app(sys.argv[2])
-    elif command == "edit" and (num_args == 2 or num_args == 3):
-        _edit_pyxel_resource(sys.argv[2] if num_args == 3 else None)
-    elif command == "package" and num_args == 4:
-        _package_pyxel_app(sys.argv[2], sys.argv[3])
-    elif command == "copy_examples" and num_args == 2:
-        _copy_pyxel_examples()
-    elif command == "module_search_path" and num_args == 2:
-        _print_module_search_path()
-    else:
-        _print_usage()
