@@ -472,11 +472,11 @@ Opera la musica `msc`(0-7) (Vedere la classe Music)
 - `play_pos(ch)`<br>
 Ottiene la posizione del suono in riproduzione del canale `ch` (0-3) come una tupla di `(sound no, note no)`. Ritorna `None` quando la riproduzione è interrotta.
 
-- `play(ch, snd, [pos], [loop])`<br>
-Riproduce il suono `snd` (0-63) sul canale `ch` (0-3). Se `snd` è una lista, verrà riprodotta in ordine. Il numero della nota per avviare la riproduzione può essere specificato con `pos`. Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
+- `play(ch, snd, loop=False)`<br>
+Riproduce il suono `snd` (0-63) sul canale `ch` (0-3). Se `snd` è una lista, verrà riprodotta in ordine. Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
 
-- `playm(msc, [pos], [loop])`<br>
-Riproduce la musica `msc` (0-7). Il numero della nota per avviare la riproduzione può essere specificato con `pos`. Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
+- `playm(msc, loop=False)`<br>
+Riproduce la musica `msc` (0-7). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
 
 - `stop([ch])`<br>
 Interrompe la riproduzione del canale `ch` (0-3) specificato. `stop()` per interrompere tutti i canali.
