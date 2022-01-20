@@ -26,32 +26,32 @@ fn play_pos(ch: u32) -> Option<(u32, u32)> {
 }
 
 #[pyfunction]
-#[pyo3(text_signature = "(ch, snd, *, loop)")]
-fn play(ch: u32, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
+#[pyo3(text_signature = "(ch, snd, *, pos, loop)")]
+fn play(ch: u32, snd: &PyAny, pos: Option<u32>, r#loop: Option<bool>) -> PyResult<()> {
     type_switch! {
         snd,
         u32, {
-            instance().play1(ch, snd, r#loop.unwrap_or(false));
+            instance().play1(ch, snd, pos, r#loop.unwrap_or(false));
         },
         Vec<u32>, {
-            instance().play(ch, &snd, r#loop.unwrap_or(false));
+            instance().play(ch, &snd, pos, r#loop.unwrap_or(false));
         },
         Sound, {
-            instance().channel(ch).lock().play1(snd.pyxel_sound, r#loop.unwrap_or(false));
+            instance().channel(ch).lock().play1(snd.pyxel_sound, pos, r#loop.unwrap_or(false));
         },
         Vec<Sound>, {
             let sounds = snd.iter().map(|snd| snd.pyxel_sound.clone()).collect();
 
-            instance().channel(ch).lock().play(sounds, r#loop.unwrap_or(false));
+            instance().channel(ch).lock().play(sounds, pos, r#loop.unwrap_or(false));
         }
     }
     Ok(())
 }
 
 #[pyfunction]
-#[pyo3(text_signature = "(msc, *, loop)")]
-fn playm(msc: u32, r#loop: Option<bool>) {
-    instance().playm(msc, r#loop.unwrap_or(false));
+#[pyo3(text_signature = "(msc, *, pos, loop)")]
+fn playm(msc: u32, pos: Option<u32>, r#loop: Option<bool>) {
+    instance().playm(msc, pos, r#loop.unwrap_or(false));
 }
 
 #[pyfunction]
