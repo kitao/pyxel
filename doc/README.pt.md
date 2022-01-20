@@ -472,11 +472,11 @@ Opera a música `msc` (0-7) (ver a classe de Musica)
 - `play_pos(ch)`<br>
 Obtém a posição do canal `ch` (0-3) da reprodução de som como uma tupla de `(sound no, note no)`. Retorna `None` quando a reprodução para.
 
-- `play(ch, snd, loop=False)`<br>
-Reproduz o som `snd` (0-63) no canal `ch` (0-3). Se `snd` é uma lista, os sons serão reproduzidos em ordem. Se `True` for especificado para `loop`, a reprodução será feita em laço.
+- `play(ch, snd, [pos], [loop])`<br>
+Reproduz o som `snd` (0-63) no canal `ch` (0-3). Se `snd` é uma lista, os sons serão reproduzidos em ordem. O número da nota para iniciar a reprodução pode ser especificado com `pos`. Se `True` for especificado para `loop`, a reprodução será feita em laço.
 
-- `playm(msc, loop=False)`<br>
-Reproduz a música `msc` (0-7). Se `True` for especificado para `loop`, a reprodução será feita em laço.
+- `playm(msc, [pos], [loop])`<br>
+Reproduz a música `msc` (0-7). O número da nota para iniciar a reprodução pode ser especificado com `pos`. Se `True` for especificado para `loop`, a reprodução será feita em laço.
 
 - `stop([ch])`<br>
 Para a reprodução do canal `ch` (0-3). `stop()` para parar a reprodução de todos os canais.
