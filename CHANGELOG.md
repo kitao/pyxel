@@ -5,6 +5,7 @@
 - Added the PYXEL_WORKING_DIR constant
 - Added a mechanism to check the latest version
 - Fixed a bug of the play_pos function
+- Updated the READMEs
 
 ## 1.6.5
 - Fixed the GitHub Actions workflow to publish

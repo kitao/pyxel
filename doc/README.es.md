@@ -467,10 +467,10 @@ Reproduce la música  `msc` (0-7). (Vea la clase Música)
 - `play_pos(ch)`<br>
 Obtenga la posición de la reproducción de la música de un canal  `ch` (0-3) como la tupla `(sound no, note no)`, no quiere decir número. Devuelve `None` cuando la música cesa.
 
-- `play(ch, snd, loop=False)`<br>
+- `play(ch, snd, [loop])`<br>
 Reproduce el sonido `snd` (0-63) en el canal `ch` (0-3). Si el `snd` está en una lista, será reproducido en orden. Si `True` se especifica para `loop`, la reproducción se realizará en bucle.
 
-- `playm(msc, loop=False)`<br>
+- `playm(msc, [loop])`<br>
 Reproduce la música `msc` (0-7). Si `True` se especifica para `loop`, la reproducción en bucle tendrá lugar.
 
 - `stop([ch])`<br>
