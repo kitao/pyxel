@@ -31,26 +31,26 @@ impl Channel {
         self.pyxel_channel.lock().play_pos()
     }
 
-    #[pyo3(text_signature = "($self, snd, *, pos, loop)")]
-    pub fn play(&self, snd: &PyAny, pos: Option<u32>, r#loop: Option<bool>) -> PyResult<()> {
+    #[pyo3(text_signature = "($self, snd, *, loop)")]
+    pub fn play(&self, snd: &PyAny, r#loop: Option<bool>) -> PyResult<()> {
         let loop_ = r#loop.unwrap_or(false);
         type_switch! {
             snd,
             u32, {
-                self.pyxel_channel.lock().play1(instance().sound(snd), pos, loop_);
+                self.pyxel_channel.lock().play1(instance().sound(snd), loop_);
             },
             Vec<u32>, {
                 let snd = snd.iter().map(|sound_no| instance().sound(*sound_no)).collect();
 
-                self.pyxel_channel.lock().play(snd, pos, loop_);
+                self.pyxel_channel.lock().play(snd, loop_);
             },
             Sound, {
-                self.pyxel_channel.lock().play1(snd.pyxel_sound, pos, loop_);
+                self.pyxel_channel.lock().play1(snd.pyxel_sound, loop_);
             },
             Vec<Sound>, {
                 let snd = snd.iter().map(|sound| sound.pyxel_sound.clone()).collect();
 
-                self.pyxel_channel.lock().play(snd, pos, loop_);
+                self.pyxel_channel.lock().play(snd, loop_);
             }
         }
         Ok(())
