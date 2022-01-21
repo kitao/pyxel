@@ -50,7 +50,6 @@ impl Channel {
             return;
         }
         self.sounds = sounds;
-        self.is_playing = true;
         self.should_loop = should_loop;
         self.sound_index = 0;
         self.note_index = 0;
@@ -73,6 +72,7 @@ impl Channel {
                 }
             }
         }
+        self.is_playing = true;
     }
 
     pub fn play1(&mut self, sound: SharedSound, start_tick: Option<u32>, should_loop: bool) {
@@ -81,9 +81,6 @@ impl Channel {
 
     pub fn stop(&mut self) {
         self.is_playing = false;
-        self.should_loop = false;
-        self.sound_index = 0;
-        self.note_index = 0;
         self.oscillator.stop();
     }
 
