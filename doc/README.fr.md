@@ -473,11 +473,11 @@ Utilise la musique `msc` (0-7) (voir la classe Music)
 - `play_pos(ch)`<br>
 Récupère la position du son du canal `ch` (0-3) comme un tuple `(sound no, note no)`. Renvoie `None` quand le son est arrêté.
 
-- `play(ch, snd, [loop])`<br>
-Joue le son `snd` (0-63) sur le canal `ch` (0-3). Si `snd` est une liste, les sons seront joués dans l’ordre. Si `loop` est à `True`, le son est joué en boucle.
+- `play(ch, snd, [tick], [loop])`<br>
+Joue le son `snd` (0-63) sur le canal `ch` (0-3). Si `snd` est une liste, les sons seront joués dans l’ordre. La position de début de lecture peut être spécifiée par `tick` (1 tick = 1/120 secondes). Si `loop` est à `True`, le son est joué en boucle.
 
-- `playm(msc, [loop])`<br>
-Joue la musique `msc` (0-7). Si `loop` est mis à `True`, la musique est joué en boucle.
+- `playm(msc, [tick], [loop])`<br>
+Joue la musique `msc` (0-7). La position de début de lecture peut être spécifiée par `tick` (1 tick = 1/120 secondes). Si `loop` est mis à `True`, la musique est joué en boucle.
 
 - `stop([ch])`<br>
 Arrête le son du canal spécifié `ch` (0-3). `stop()` arrête tous les canaux.
