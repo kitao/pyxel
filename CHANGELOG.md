@@ -5,6 +5,9 @@
 - Added the PYXEL_WORKING_DIR constant
 - Added a mechanism to check the latest version
 - Fixed a bug of the play_pos function
+- Added a tick option to the play and playm functions
+- Added a partial playback feature to the resource editor
+- Fixed a mouse click handling in the sound editor
 - Updated the READMEs
 
 ## 1.6.5
