@@ -61,9 +61,9 @@ impl App {
             25,
         );
 
-        pyxel.play(0, &[0, 1], true);
-        pyxel.play(1, &[2, 3], true);
-        pyxel.play(2, &[4], true);
+        pyxel.play(0, &[0, 1], None, true);
+        pyxel.play(1, &[2, 3], None, true);
+        pyxel.play(2, &[4], None, true);
 
         app
     }
