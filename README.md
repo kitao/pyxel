@@ -472,11 +472,11 @@ Operate the music `msc` (0-7). (See the Music class)
 - `play_pos(ch)`<br>
 Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
 
-- `play(ch, snd, [loop])`<br>
-Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. If `True` is specified for `loop`, loop playback is performed.
+- `play(ch, snd, [tick], [loop])`<br>
+Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. The playback start position can be specified by `tick` (1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
 
-- `playm(msc, [loop])`<br>
-Play the music `msc` (0-7). If `True` is specified for `loop`, loop playback is performed.
+- `playm(msc, [tick], [loop])`<br>
+Play the music `msc` (0-7). The playback start position can be specified by `tick` (1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
 
 - `stop([ch])`<br>
 Stops playback of the specified channel `ch` (0-3). `stop()` to stop playing all channels.
