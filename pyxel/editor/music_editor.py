@@ -107,13 +107,19 @@ class MusicEditor(EditorBase):
         if data["old_field"] != data["new_field"]:
             self.add_history(self._history_data)
 
-    def _play(self):
+    def _play(self, is_partial):
         self.is_playing_var = True
         self._music_picker.is_enabled_var = False
         self._play_button.is_enabled_var = False
         self._stop_button.is_enabled_var = True
         self._loop_button.is_enabled_var = False
-        pyxel.playm(self.music_no_var, loop=self.should_loop_var)
+        tick = 0
+        if is_partial:
+            for i in range(self.field_cursor.x):
+                music = pyxel.music(self.music_no_var)
+                sound = pyxel.sound(music.sequences[self.field_cursor.y][i])
+                tick += len(sound.notes) * sound.speed
+        pyxel.playm(self.music_no_var, tick=tick, loop=self.should_loop_var)
 
     def _stop(self):
         self.is_playing_var = False
@@ -163,13 +169,13 @@ class MusicEditor(EditorBase):
         pyxel.text(23, 18, "MUSIC", TEXT_LABEL_COLOR)
 
     def __on_play_button_press(self):
-        self._play()
+        self._play(pyxel.btn(pyxel.KEY_SHIFT))
 
     def __on_stop_button_press(self):
         self._stop()
 
     def __on_play_button_mouse_hover(self, x, y):
-        self.help_message_var = "PLAY:SPACE"
+        self.help_message_var = "PLAY:SPACE PART-PLAY:SHIFT+SPACE"
 
     def __on_stop_button_mouse_hover(self, x, y):
         self.help_message_var = "STOP:SPACE"
