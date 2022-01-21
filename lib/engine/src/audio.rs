@@ -76,7 +76,13 @@ impl Pyxel {
         self.audio.channels[channel_no as usize].lock().play_pos()
     }
 
-    pub fn play(&mut self, channel_no: u32, sequence: &[u32], should_loop: bool) {
+    pub fn play(
+        &mut self,
+        channel_no: u32,
+        sequence: &[u32],
+        start_tick: Option<u32>,
+        should_loop: bool,
+    ) {
         if sequence.is_empty() {
             return;
         }
@@ -86,19 +92,32 @@ impl Pyxel {
             .collect();
         self.audio.channels[channel_no as usize]
             .lock()
-            .play(sounds, should_loop);
+            .play(sounds, start_tick, should_loop);
     }
 
-    pub fn play1(&mut self, channel_no: u32, sound_no: u32, should_loop: bool) {
-        self.audio.channels[channel_no as usize]
-            .lock()
-            .play1(self.audio.sounds[sound_no as usize].clone(), should_loop);
+    pub fn play1(
+        &mut self,
+        channel_no: u32,
+        sound_no: u32,
+        start_tick: Option<u32>,
+        should_loop: bool,
+    ) {
+        self.audio.channels[channel_no as usize].lock().play1(
+            self.audio.sounds[sound_no as usize].clone(),
+            start_tick,
+            should_loop,
+        );
     }
 
-    pub fn playm(&mut self, music_no: u32, should_loop: bool) {
+    pub fn playm(&mut self, music_no: u32, start_tick: Option<u32>, should_loop: bool) {
         let music = self.audio.musics[music_no as usize].clone();
         for i in 0..NUM_CHANNELS {
-            self.play(i, &music.lock().sequences[i as usize], should_loop);
+            self.play(
+                i,
+                &music.lock().sequences[i as usize],
+                start_tick,
+                should_loop,
+            );
         }
     }
 
