@@ -99,7 +99,6 @@ class CanvasPanel(Widget):
         # Initialize event listeners
         self.add_event_listener("mouse_down", self.__on_mouse_down)
         self.add_event_listener("mouse_up", self.__on_mouse_up)
-        self.add_event_listener("mouse_click", self.__on_mouse_click)
         self.add_event_listener("mouse_drag", self.__on_mouse_drag)
         self.add_event_listener("mouse_hover", self.__on_mouse_hover)
         self.add_event_listener("update", self.__on_update)
@@ -168,7 +167,15 @@ class CanvasPanel(Widget):
         self._v_scroll_bar.value_var = value
 
     def __on_mouse_down(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_LEFT:
+        if key == pyxel.MOUSE_BUTTON_RIGHT:
+            x = self.focus_x_var * 8 + (x - self.x) // 8
+            y = self.focus_y_var * 8 + (y - self.y) // 8
+            if self._is_tilemap_mode:
+                (self.tile_x_var, self.tile_y_var) = self.canvas_var.pget(x, y)
+            else:
+                self.color_var = self.canvas_var.pget(x, y)
+            return
+        elif key != pyxel.MOUSE_BUTTON_LEFT:
             return
         x, y = self._screen_to_focus(x, y)
         self._press_x = self._last_x = x
@@ -215,16 +222,6 @@ class CanvasPanel(Widget):
                 16,
             )
             self._add_post_history()
-
-    def __on_mouse_click(self, key, x, y):
-        if key != pyxel.MOUSE_BUTTON_RIGHT:
-            return
-        x = self.focus_x_var * 8 + (x - self.x) // 8
-        y = self.focus_y_var * 8 + (y - self.y) // 8
-        if self._is_tilemap_mode:
-            (self.tile_x_var, self.tile_y_var) = self.canvas_var.pget(x, y)
-        else:
-            self.color_var = self.canvas_var.pget(x, y)
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         if key == pyxel.MOUSE_BUTTON_LEFT:
