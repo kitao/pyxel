@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.6.7
+- Fixed a file drop bug
+- Changed to pause only when minimized
+
 ## 1.6.6
 - Integrated the release and public actions
 - Added the PYXEL_WORKING_DIR constant
