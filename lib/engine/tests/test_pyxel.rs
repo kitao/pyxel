@@ -6,9 +6,16 @@ pub struct App {
 }
 
 impl App {
-    fn new(pyxel: &mut Pyxel) -> App {
-        let app = App { x: 0.0, y: 0.0 };
-
+    fn init() {
+        let mut pyxel = Pyxel::new(
+            200,
+            150,
+            Some("Hello, Pyxel in Rust!"),
+            None,
+            None,
+            None,
+            None,
+        );
         pyxel.mouse(true);
         pyxel.set_mouse_pos(10.0, 10.0);
 
@@ -28,7 +35,6 @@ impl App {
             "vffn fnff vffs vfnn",
             25,
         );
-
         pyxel.sound(1).lock().set(
             "r a1b1c2 b1b1c2d2 g2g2g2g2 c2c2d2e2 f2f2f2e2 f2e2d2c2 d2d2d2d2 g2g2r r ",
             "s",
@@ -36,7 +42,6 @@ impl App {
             "nnff vfff vvvv vfff svff vfff vvvv svnn",
             25,
         );
-
         pyxel.sound(2).lock().set(
             "c1g1c1g1 c1g1c1g1 b0g1b0g1 b0g1b0g1 a0e1a0e1 a0e1a0e1 g0d1g0d1 g0d1g0d1",
             "t",
@@ -44,7 +49,6 @@ impl App {
             "n",
             25,
         );
-
         pyxel.sound(3).lock().set(
             "f0c1f0c1 g0d1g0d1 c1g1c1g1 a0e1a0e1 f0c1f0c1 f0c1f0c1 g0d1g0d1 g0d1g0d1",
             "t",
@@ -52,7 +56,6 @@ impl App {
             "n",
             25,
         );
-
         pyxel.sound(4).lock().set(
             "f0ra4r f0ra4r f0ra4r f0f0a4r",
             "n",
@@ -65,7 +68,8 @@ impl App {
         pyxel.play(1, &[2, 3], None, true);
         pyxel.play(2, &[4], None, true);
 
-        app
+        let mut app = App { x: 0.0, y: 0.0 };
+        pyxel.run(&mut app);
     }
 }
 
@@ -107,16 +111,5 @@ impl PyxelCallback for App {
 }
 
 pub fn main() {
-    let mut pyxel = Pyxel::new(
-        200,
-        150,
-        Some("Hello, Pyxel in Rust!"),
-        None,
-        None,
-        None,
-        None,
-    );
-    let mut app = App::new(&mut pyxel);
-
-    pyxel.run(&mut app);
+    App::init();
 }
