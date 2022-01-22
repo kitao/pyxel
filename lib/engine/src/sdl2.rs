@@ -6,6 +6,7 @@ use sdl2::audio::{
 };
 use sdl2::controller::{Axis as SdlAxis, Button as SdlButton, GameController as SdlGameController};
 use sdl2::event::{Event as SdlEvent, WindowEvent as SdlWindowEvent};
+use sdl2::hint;
 use sdl2::mouse::MouseButton as SdlMouseButton;
 use sdl2::pixels::{Color as SdlColor, PixelFormatEnum as SdlPixelFormat};
 use sdl2::rect::Rect as SdlRect;
@@ -86,6 +87,7 @@ impl Platform for Sdl2 {
             }
         }
         let sdl_audio = sdl_context.audio().unwrap();
+        hint::set("SDL_MOUSE_FOCUS_CLICKTHROUGH", "1");
 
         Self {
             sdl_context,
@@ -185,7 +187,10 @@ impl Platform for Sdl2 {
             let event = match sdl_event.unwrap() {
                 // System events
                 SdlEvent::Quit { .. } => Event::Quit,
-                SdlEvent::DropFile { filename, .. } => Event::DropFile { filename },
+                SdlEvent::DropFile { filename, .. } => {
+                    self.sdl_canvas.window_mut().raise();
+                    Event::DropFile { filename }
+                }
 
                 // Window events
                 SdlEvent::Window { win_event, .. } => match win_event {
