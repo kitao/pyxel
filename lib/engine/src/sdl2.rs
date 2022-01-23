@@ -195,7 +195,7 @@ impl Platform for Sdl2 {
                 // Window events
                 SdlEvent::Window { win_event, .. } => match win_event {
                     SdlWindowEvent::Shown => Event::Shown,
-                    SdlWindowEvent::Minimized => Event::Hidden,
+                    SdlWindowEvent::Hidden | SdlWindowEvent::Minimized => Event::Hidden,
                     _ => continue,
                 },
 
