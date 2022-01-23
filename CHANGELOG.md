@@ -1,8 +1,7 @@
 # Change Log
 
 ## 1.6.8
-- Fixed the window to be active when a file is dropped
-- Fixed to receive mouse event when window is activated
+- Fixed to receive mouse input when window is activated
 
 ## 1.6.7
 - Fixed a file drop bug
