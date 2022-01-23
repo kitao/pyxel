@@ -187,18 +187,11 @@ impl Platform for Sdl2 {
             let event = match sdl_event.unwrap() {
                 // System events
                 SdlEvent::Quit { .. } => Event::Quit,
-                SdlEvent::DropFile { filename, .. } => {
-                    self.sdl_canvas.window_mut().raise();
-                    Event::DropFile { filename }
-                }
+                SdlEvent::DropFile { filename, .. } => Event::DropFile { filename },
 
                 // Window events
                 SdlEvent::Window { win_event, .. } => match win_event {
-                    SdlWindowEvent::Shown => {
-                        self.mouse_x = i32::MIN;
-                        self.mouse_y = i32::MIN;
-                        Event::Shown
-                    }
+                    SdlWindowEvent::Shown => Event::Shown,
                     SdlWindowEvent::Minimized => Event::Hidden,
                     _ => continue,
                 },
