@@ -187,7 +187,10 @@ impl Platform for Sdl2 {
             let event = match sdl_event.unwrap() {
                 // System events
                 SdlEvent::Quit { .. } => Event::Quit,
-                SdlEvent::DropFile { filename, .. } => Event::DropFile { filename },
+                SdlEvent::DropFile { filename, .. } => {
+                    self.sdl_canvas.window_mut().raise();
+                    Event::DropFile { filename }
+                }
 
                 // Window events
                 SdlEvent::Window { win_event, .. } => match win_event {
