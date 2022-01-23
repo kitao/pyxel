@@ -126,12 +126,24 @@ impl Pyxel {
         self.screen.lock().circb(x, y, radius, color);
     }
 
+    pub fn ellip(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
+        self.screen.lock().ellip(x, y, width, height, color);
+    }
+
+    pub fn ellipb(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
+        self.screen.lock().ellipb(x, y, width, height, color);
+    }
+
     pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
         self.screen.lock().tri(x1, y1, x2, y2, x3, y3, color);
     }
 
     pub fn trib(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
         self.screen.lock().trib(x1, y1, x2, y2, x3, y3, color);
+    }
+
+    pub fn fill(&mut self, x: f64, y: f64, color: Color) {
+        self.screen.lock().fill(x, y, color);
     }
 
     pub fn blt(
