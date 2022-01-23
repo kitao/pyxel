@@ -1,5 +1,6 @@
 # <img src="images/pyxel_logo_152x64.png">
 
+[![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
 [![GitHub forks](https://img.shields.io/github/forks/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&logo=github%20sponsors&style=social)](https://github.com/sponsors/kitao)
@@ -471,11 +472,11 @@ Opera la musica `msc`(0-7) (Vedere la classe Music)
 - `play_pos(ch)`<br>
 Ottiene la posizione del suono in riproduzione del canale `ch` (0-3) come una tupla di `(sound no, note no)`. Ritorna `None` quando la riproduzione è interrotta.
 
-- `play(ch, snd, loop=False)`<br>
-Riproduce il suono `snd` (0-63) sul canale `ch` (0-3). Se `snd` è una lista, verrà riprodotta in ordine. Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
+- `play(ch, snd, [tick], [loop])`<br>
+Riproduce il suono `snd` (0-63) sul canale `ch` (0-3). Se `snd` è una lista, verrà riprodotta in ordine. La posizione di inizio della riproduzione può essere specificata da `tick` (1 tick = 1/120 secondi). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
 
-- `playm(msc, loop=False)`<br>
-Riproduce la musica `msc` (0-7). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
+- `playm(msc, [tick], [loop])`<br>
+Riproduce la musica `msc` (0-7). La posizione di inizio della riproduzione può essere specificata da `tick` (1 tick = 1/120 secondi). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
 
 - `stop([ch])`<br>
 Interrompe la riproduzione del canale `ch` (0-3) specificato. `stop()` per interrompere tutti i canali.

@@ -3,6 +3,7 @@ from typing import Callable, List, Optional, Tuple, Union
 
 # Constants
 PYXEL_VERSION: str
+PYXEL_WORKING_DIR: str
 
 APP_FILE_EXTENSION: str
 APP_STARTUP_SCRIPT_FILE: str
@@ -495,9 +496,12 @@ def play(
     ch: int,
     snd: Union[int, List[int], Sound, List[Sound]],
     *,
+    tick: Optional[int] = None,
     loop: Optional[bool] = None,
 ) -> None: ...
-def playm(msc: int, *, loop: Optional[bool] = None) -> None: ...
+def playm(
+    msc: int, *, tick: Optional[int] = None, loop: Optional[bool] = None
+) -> None: ...
 def stop(ch: Optional[int] = None) -> None: ...
 
 # Image class
@@ -636,6 +640,7 @@ class Channel:
         self,
         snd: Union[int, List[int], Sound, List[Sound]],
         *,
+        tick: Optional[int] = None,
         loop: Optional[bool] = None,
     ) -> None: ...
     def stop(self) -> None: ...

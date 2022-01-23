@@ -8,7 +8,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: |
-        make clean all
+        make
         python -m pyxel
     - uses: actions/upload-artifact@v2
       with:
@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: |
-        make clean all
+        make
         python3 -m pyxel
     - uses: actions/upload-artifact@v2
       with:
@@ -36,7 +36,7 @@ jobs:
         sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
     - uses: actions/checkout@v2
     - run: |
-        make clean all
+        make
         python3 -m pyxel
     - uses: actions/upload-artifact@v2
       with:
@@ -80,7 +80,8 @@ jobs:
         path: dist
     - run: |
         make dist
-#        lib/build/pyxel-*/pyxel
+        lib/build/pyxel-*/pyxel.exe
+      shell: bash
     - uses: actions/upload-artifact@v2
       with:
         name: pyxel-windows-zip

@@ -44,32 +44,43 @@ impl Channel {
         }
     }
 
-    pub fn play(&mut self, sounds: Vec<SharedSound>, should_loop: bool) {
-        let sounds: Vec<Sound> = sounds
-            .iter()
-            .map(|sound| sound.lock().clone())
-            .filter(|sound| !sound.notes.is_empty())
-            .collect();
-        if sounds.is_empty() {
+    pub fn play(&mut self, sounds: Vec<SharedSound>, start_tick: Option<u32>, should_loop: bool) {
+        let sounds: Vec<Sound> = sounds.iter().map(|sound| sound.lock().clone()).collect();
+        if sounds.is_empty() || sounds.iter().all(|sound| sound.notes.is_empty()) {
             return;
         }
         self.sounds = sounds;
-        self.is_playing = true;
         self.should_loop = should_loop;
         self.sound_index = 0;
         self.note_index = 0;
-        self.tick_count = 0;
+        self.tick_count = start_tick.unwrap_or(0);
+        loop {
+            let sound = &self.sounds[self.sound_index as usize];
+            let sound_ticks = sound.notes.len() as u32 * sound.speed;
+            if self.tick_count < sound_ticks {
+                self.note_index = self.tick_count / sound.speed;
+                self.tick_count %= sound.speed;
+                break;
+            }
+            self.tick_count -= sound_ticks;
+            self.sound_index += 1;
+            if self.sound_index >= self.sounds.len() as u32 {
+                if should_loop {
+                    self.sound_index = 0;
+                } else {
+                    return;
+                }
+            }
+        }
+        self.is_playing = true;
     }
 
-    pub fn play1(&mut self, sound: SharedSound, should_loop: bool) {
-        self.play(vec![sound], should_loop);
+    pub fn play1(&mut self, sound: SharedSound, start_tick: Option<u32>, should_loop: bool) {
+        self.play(vec![sound], start_tick, should_loop);
     }
 
     pub fn stop(&mut self) {
         self.is_playing = false;
-        self.should_loop = false;
-        self.sound_index = 0;
-        self.note_index = 0;
         self.oscillator.stop();
     }
 
@@ -77,13 +88,13 @@ impl Channel {
         if !self.is_playing {
             return;
         }
-        let sound = &self.sounds[self.sound_index as usize];
+        let mut sound = &self.sounds[self.sound_index as usize];
         let speed = max(sound.speed, 1);
         if self.tick_count % speed == 0 {
             if self.tick_count > 0 {
                 self.note_index += 1;
             }
-            if self.note_index >= sound.notes.len() as u32 {
+            while self.note_index >= sound.notes.len() as u32 {
                 self.sound_index += 1;
                 self.note_index = 0;
                 if self.sound_index >= self.sounds.len() as u32 {
@@ -94,9 +105,9 @@ impl Channel {
                         return;
                     }
                 }
+                sound = &self.sounds[self.sound_index as usize];
             }
 
-            let sound = &self.sounds[self.sound_index as usize];
             let note = Self::circular_note(&sound.notes, self.note_index);
             assert!(note <= MAX_NOTE, "invalid sound note {}", note);
             let volume = Self::circular_volume(&sound.volumes, self.note_index);

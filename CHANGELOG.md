@@ -1,5 +1,26 @@
 # Change Log
 
+## 1.6.8
+- Fixed to receive mouse input when window is activated
+- Fixed the window to be active when a file is dropped
+
+## 1.6.7
+- Fixed a file drop bug
+- Changed to pause only when minimized
+
+## 1.6.6
+- Integrated the release and public actions
+- Added the PYXEL_WORKING_DIR constant
+- Added a mechanism to check the latest version
+- Fixed a bug of the play_pos function
+- Added a tick option to the play and playm functions
+- Added a partial playback feature to the resource editor
+- Fixed a mouse click handling in the sound editor
+- Updated the READMEs
+
+## 1.6.5
+- Fixed the GitHub Actions workflow to publish
+
 ## 1.6.2
 - Fixed the play command to remove working directories
 - Fixed the key repeat bug

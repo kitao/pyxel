@@ -23,8 +23,8 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         release_name: Pyxel ${{ env.VERSION }}
-        draft: true
-        prerelease: true
+        draft: false
+        prerelease: false
     - uses: actions/download-artifact@v2
       with:
         name: pyxel-wheel
@@ -63,3 +63,45 @@ jobs:
               data: await fs.readFileSync(`${asset_dir}/${file}`)
             });
           }
+
+  update-formula:
+    runs-on: ubuntu-latest
+    needs: create-release
+    steps:
+    - run: |
+        VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        repository: kitao/homebrew-pyxel
+        event-type: update
+        client-payload: '{"version": "${{ env.VERSION }}"}'
+
+  publish-wheel:
+    runs-on: ubuntu-latest
+    needs: create-release
+    steps:
+    - run: |
+        VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
+        echo "VERSION=${VERSION}" >> $GITHUB_ENV
+    - run: |
+        pip3 install twine
+        wget https://github.com/kitao/pyxel/releases/download/v${{ env.VERSION }}/pyxel-${{ env.VERSION }}-py3-none-any.whl
+        twine upload *.whl
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+
+  publish-crates:
+    runs-on: macos-latest
+    needs: create-release
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        cd lib/engine
+        cargo publish
+        sleep 10
+        cd ../wrapper
+        cargo publish

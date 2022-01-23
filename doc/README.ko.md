@@ -1,5 +1,6 @@
 # <img src="images/pyxel_logo_152x64.png">
 
+[![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
 [![GitHub forks](https://img.shields.io/github/forks/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&logo=github%20sponsors&style=social)](https://github.com/sponsors/kitao)
@@ -471,11 +472,11 @@ Pyxel 애플리케이션을 종료합니다.
 - `play_pos(ch)`<br>
 채널 `ch` (0-3)의 사운드 재생 위치를 `(sound no, note no)` 형태의 튜플로 가져옵니다. 재생 중이 아닐 경우 `None`을 반환합니다.
 
-- `play(ch, snd, loop=False)`<br>
-채널 `ch` (0-3)에서 사운드 `snd` (0-63)를 재생합니다. `snd`가 리스트일 경우, 순서대로 재생됩니다. `loop`에 `True`를 지정하면 계속 반복합니다.
+- `play(ch, snd, [tick], [loop])`<br>
+채널 `ch` (0-3)에서 사운드 `snd` (0-63)를 재생합니다. `snd`가 리스트일 경우, 순서대로 재생됩니다. 재생 시작 위치는 `tick` (1 tick = 1/120초)으로 지정할 수 있습니다. `loop`에 `True`를 지정하면 계속 반복합니다.
 
-- `playm(msc, loop=False)`<br>
-음악 `msc` (0-7)을 재생합니다. `loop`에 `True`를 지정하면 계속 반복합니다.
+- `playm(msc, [tick], [loop])`<br>
+음악 `msc` (0-7)을 재생합니다. 재생 시작 위치는 `tick` (1 tick = 1/120초)으로 지정할 수 있습니다. `loop`에 `True`를 지정하면 계속 반복합니다.
 
 - `stop([ch])`<br>
 지정된 채널 `ch` (0-3)의 재생을 중지합니다. `stop()`을 사용해 모든 채널의 재생을 중지할 수도 있습니다.

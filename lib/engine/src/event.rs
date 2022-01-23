@@ -48,10 +48,8 @@ pub enum Event {
     },
 
     // Window events
-    FocusGained,
-    FocusLost,
-    Maximized,
-    Minimized,
+    Shown,
+    Hidden,
 
     // Key events
     KeyDown {

@@ -9,6 +9,7 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
 
     // Settings
     add_constant!(PYXEL_VERSION)?;
+    add_constant!(PYXEL_WORKING_DIR)?;
 
     add_constant!(APP_FILE_EXTENSION)?;
     add_constant!(APP_STARTUP_SCRIPT_FILE)?;

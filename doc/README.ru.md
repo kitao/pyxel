@@ -1,5 +1,6 @@
 # <img src="images/pyxel_logo_152x64.png">
 
+[![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
 [![GitHub forks](https://img.shields.io/github/forks/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&logo=github%20sponsors&style=social)](https://github.com/sponsors/kitao)
@@ -472,11 +473,11 @@ pyxel play ФАЙЛ_PYXEL_ПРИЛОЖЕНИЯ
 - `play_pos(ch)`<br>
 Получить позицию канала `ch` (0-3) в виде кортежа `(номер звука, номер ноты)`. Возвращает `None` если проигрывание выключено.
 
-- `play(ch, snd, loop=False)`<br>
-Проиграть звук `snd` (0-63) на канале `ch` (0-3). Если `snd` — список, он будет проигран по порядку. Если в в качестве значения `loop` передано `True`, проигрывание будет зациклено.
+- `play(ch, snd, [tick], [loop])`<br>
+Проиграть звук `snd` (0-63) на канале `ch` (0-3). Если `snd` — список, он будет проигран по порядку. Позиция начала воспроизведения может быть указана с помощью `tick` (1 tick = 1/120 секунды). Если в в качестве значения `loop` передано `True`, проигрывание будет зациклено.
 
-- `playm(msc, loop=False)`<br>
-Проиграть трек `msc` (0-7). Если в в качестве значения `loop` передано `True`, проигрывание будет зациклено.
+- `playm(msc, [tick], [loop])`<br>
+Проиграть трек `msc` (0-7). Позиция начала воспроизведения может быть указана с помощью `tick` (1 tick = 1/120 секунды). Если в в качестве значения `loop` передано `True`, проигрывание будет зациклено.
 
 - `stop([ch])`<br>
 Остановить воспроизведение на канале `ch` (0-3). `stop()` останавливает воспроизведение на всех каналах.

@@ -162,12 +162,12 @@ impl Pyxel {
                 Event::Quit => {
                     self.quit();
                 }
-                Event::FocusGained | Event::Maximized => {
+                Event::Shown => {
                     self.system.is_paused = false;
                     self.system.disable_next_frame_skip = true;
                     self.platform.resume_audio();
                 }
-                Event::FocusLost | Event::Minimized => {
+                Event::Hidden => {
                     self.system.is_paused = true;
                     self.platform.pause_audio();
                 }

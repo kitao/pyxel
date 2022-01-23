@@ -57,10 +57,8 @@ impl Input {
             }
 
             // Window events
-            Event::FocusGained => {}
-            Event::FocusLost => {}
-            Event::Maximized => {}
-            Event::Minimized => {}
+            Event::Shown => {}
+            Event::Hidden => {}
 
             // Key events
             Event::KeyDown { keycode } => {

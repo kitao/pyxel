@@ -1,5 +1,6 @@
 # <img src="images/pyxel_logo_152x64.png">
 
+[![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
 [![GitHub forks](https://img.shields.io/github/forks/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/kitao?label=Sponsor%20me&logo=github%20sponsors&style=social)](https://github.com/sponsors/kitao)
@@ -471,11 +472,11 @@ Pyxelアプリケーションを終了します。
 - `play_pos(ch)`<br>
 チャンネル`ch` (0-3) のサウンド再生位置を`(サウンド番号, ノート番号)`のタプルとして取得します。再生停止時は`None`を返します。
 
-- `play(ch, snd, [loop])`<br>
-チャンネル`ch` (0-3) でサウンド`snd` (0-63) を再生します。`snd`がリストの場合順に再生されます。`loop`に`True`を指定するとループ再生します。
+- `play(ch, snd, [tick], [loop])`<br>
+チャンネル`ch` (0-3) でサウンド`snd` (0-63) を再生します。`snd`がリストの場合順に再生されます。再生開始位置は`tick` (1 tick = 1/120秒) で指定できます。`loop`に`True`を指定するとループ再生します。
 
-- `playm(msc, [loop])`<br>
-ミュージック`msc` (0-7) を再生します。`loop`に`True`を指定するとループ再生します。
+- `playm(msc, [tick], [loop])`<br>
+ミュージック`msc` (0-7) を再生します。再生開始位置は`tick` (1 tick = 1/120秒) で指定できます。`loop`に`True`を指定するとループ再生します。
 
 - `stop([ch])`<br>
 指定したチャンネル`ch` (0-3) の再生を停止します。`stop()`で全チャンネルの再生を停止します。
