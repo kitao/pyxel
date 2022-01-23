@@ -92,6 +92,16 @@ fn circb(x: f64, y: f64, r: f64, col: Color) {
 }
 
 #[pyfunction]
+fn ellip(x: f64, y: f64, w: f64, h: f64, col: Color) {
+    instance().ellip(x, y, w, h, col);
+}
+
+#[pyfunction]
+fn ellipb(x: f64, y: f64, w: f64, h: f64, col: Color) {
+    instance().ellipb(x, y, w, h, col);
+}
+
+#[pyfunction]
 fn tri(x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: Color) {
     instance().tri(x1, y1, x2, y2, x3, y3, col);
 }
@@ -99,6 +109,11 @@ fn tri(x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: Color) {
 #[pyfunction]
 fn trib(x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: Color) {
     instance().trib(x1, y1, x2, y2, x3, y3, col);
+}
+
+#[pyfunction]
+fn fill(x: f64, y: f64, col: Color) {
+    instance().fill(x, y, col);
 }
 
 #[pyfunction]
@@ -166,8 +181,11 @@ pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(rectb, m)?)?;
     m.add_function(wrap_pyfunction!(circ, m)?)?;
     m.add_function(wrap_pyfunction!(circb, m)?)?;
+    m.add_function(wrap_pyfunction!(ellip, m)?)?;
+    m.add_function(wrap_pyfunction!(ellipb, m)?)?;
     m.add_function(wrap_pyfunction!(tri, m)?)?;
     m.add_function(wrap_pyfunction!(trib, m)?)?;
+    m.add_function(wrap_pyfunction!(fill, m)?)?;
     m.add_function(wrap_pyfunction!(blt, m)?)?;
     m.add_function(wrap_pyfunction!(bltm, m)?)?;
     m.add_function(wrap_pyfunction!(text, m)?)?;
