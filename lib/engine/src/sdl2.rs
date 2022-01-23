@@ -194,18 +194,12 @@ impl Platform for Sdl2 {
 
                 // Window events
                 SdlEvent::Window { win_event, .. } => match win_event {
-                    SdlWindowEvent::FocusGained => {
+                    SdlWindowEvent::Shown => {
                         self.mouse_x = i32::MIN;
                         self.mouse_y = i32::MIN;
-                        Event::FocusGained
+                        Event::Shown
                     }
-                    SdlWindowEvent::FocusLost => Event::FocusLost,
-                    SdlWindowEvent::Maximized => {
-                        self.mouse_x = i32::MIN;
-                        self.mouse_y = i32::MIN;
-                        Event::Maximized
-                    }
-                    SdlWindowEvent::Minimized => Event::Minimized,
+                    SdlWindowEvent::Minimized => Event::Hidden,
                     _ => continue,
                 },
 
