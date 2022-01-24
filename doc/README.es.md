@@ -436,11 +436,20 @@ Dibuja un círculo de radio `r` y color `col` en (`x`, `y`).
 - `circb(x, y, r, col)`<br>
 Dibuja una circunferencia de radio `r` y color `col` en (`x`, `y`).
 
+- `ellip(x, y, w, h, col)`<br>
+Dibuja una elipsis de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
+
+- `ellipb(x, y, w, h, col)`<br>
+Dibuja el contorno de una elipsis de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
+
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
 Dibuja un triángulo con los vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) y color `col`.
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
 Dibuja el perímetro de un triángulo con los vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) y color `col`.
+
+- `fill(x, y, col)`<br>
+Dibuja una elipsis de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copia la región de tamaño (`w`, `h`) desde la posición (`u`, `v`) del banco de imágenes `img` (0-2) a (`x`, `y`). Si es negativo el valor para la `w` y/o la `h`, se representará invirtiendo horizontalmente o verticalmente. Si `colkey` se especifica, se tratará ese color como transparente.

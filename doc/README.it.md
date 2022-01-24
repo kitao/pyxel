@@ -441,11 +441,20 @@ Disegna un cerchio di raggio `r` e colore `col` su (`x`, `y`)
 - `circb(x, y, r, col)`<br>
 Disegna il contorno di un cerchio di raggio `r` e colore `col` su (`x`, `y`)
 
+- `ellip(x, y, w, h, col)`<br>
+Disegna un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
+
+- `ellipb(x, y, w, h, col)`<br>
+Disegna il contorno di un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
+
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
 Disegna un triangolo con vertici (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e colore `col`
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
 Disegna il contorno di un triangolo con vertici (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e colore `col`
+
+- `fill(x, y, col)`<br>
+Disegna un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copia la regione di grandezza (`w`, `h`) da (`u`, `v`) della banca immagini `img`(0-2) a (`x`, `y`). Se un valore negativo è impostato per `w` e/o `h`, sarà invertito orizzontalmente o verticalmente. Se `colkey` è specificato, verrà trattato come colore trasparente
