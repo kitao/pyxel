@@ -152,9 +152,9 @@ Os exemplos copiados são os seguintes:
 - [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Demonstração da API de desenho de triângulos
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Jogo de tiro com transição de tela
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Jogo side-scrolling de plataforma com mapa
-- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
-- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball.pyxapp](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Renderização fora do ecrã com classe de Image
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1º jogo vencedor de Pyxel Jam de [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](images/megaball.gif) - Jogo de física de bola arcade por [Adam](https://twitter.com/helpcomputer0)
 
 Os exemplos podem ser executados com os seguintes comandos:
 
@@ -441,11 +441,20 @@ Desenha um círculo de raio `r` e cor `col` em (`x`, `y`)
 - `circb(x, y, r, col)`<br>
 Desenha o contorno de um círculo de raio `r` e cor `col` em (`x`, `y`)
 
+- `ellip(x, y, w, h, col)`<br>
+Desenhar uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
+
+- `ellipb(x, y, w, h, col)`<br>
+Desenhar o contorno de uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
+
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
 Desenha um triangulo com os vértices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e cor `col`
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
 Desenha o contorno de um triangulo com os vértices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e cor `col`
+
+- `fill(x, y, col)`<br>
+Desenhar uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img` (0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente
