@@ -441,10 +441,10 @@ Desenha um círculo de raio `r` e cor `col` em (`x`, `y`)
 - `circb(x, y, r, col)`<br>
 Desenha o contorno de um círculo de raio `r` e cor `col` em (`x`, `y`)
 
-- `ellip(x, y, w, h, col)`<br>
+- `elp(x, y, w, h, col)`<br>
 Desenhar uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
 
-- `ellipb(x, y, w, h, col)`<br>
+- `elpb(x, y, w, h, col)`<br>
 Desenhar o contorno de uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
