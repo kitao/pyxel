@@ -1,4 +1,4 @@
-use std::cmp::max;
+use std::cmp::{max, min};
 use std::mem::swap;
 
 use crate::rectarea::RectArea;
@@ -214,6 +214,75 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
+    fn in_ellipse(dx: f64, dy: f64, a: f64, b: f64) -> bool {
+        let a = a - 0.1;
+        let b = b - 0.1;
+        dx * dx * b * b + dy * dy * a * a < a * a * b * b
+    }
+
+    pub fn ellip(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
+        let x = as_i32(x);
+        let y = as_i32(y);
+        let width = as_i32(width);
+        let height = as_i32(height);
+        if width <= 2 || height <= 2 {
+            self.rect(x as f64, y as f64, width as f64, height as f64, value);
+            return;
+        }
+        let x = x - self.camera_x;
+        let y = y - self.camera_y;
+        let x1 = max(x, self.clip_rect.left());
+        let y1 = max(y, self.clip_rect.top());
+        let x2 = min(x + width - 1, self.clip_rect.right());
+        let y2 = min(y + height - 1, self.clip_rect.bottom());
+        let cx = x as f64 + width as f64 / 2.0 - 0.5;
+        let cy = y as f64 + height as f64 / 2.0 - 0.5;
+        let a = width as f64 / 2.0;
+        let b = height as f64 / 2.0;
+        for yi in y1..=y2 {
+            for xi in x1..=x2 {
+                if Self::in_ellipse(xi as f64 - cx, yi as f64 - cy, a, b) {
+                    self.data[yi as usize][xi as usize] = value;
+                }
+            }
+        }
+    }
+
+    pub fn ellipb(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
+        let x = as_i32(x);
+        let y = as_i32(y);
+        let width = as_i32(width);
+        let height = as_i32(height);
+        if width <= 2 || height <= 2 {
+            self.rect(x as f64, y as f64, width as f64, height as f64, value);
+            return;
+        }
+        let x = x - self.camera_x;
+        let y = y - self.camera_y;
+        let x1 = max(x, self.clip_rect.left());
+        let y1 = max(y, self.clip_rect.top());
+        let x2 = min(x + width - 1, self.clip_rect.right());
+        let y2 = min(y + height - 1, self.clip_rect.bottom());
+        let cx = x as f64 + width as f64 / 2.0 - 0.5;
+        let cy = y as f64 + height as f64 / 2.0 - 0.5;
+        let a = width as f64 / 2.0;
+        let b = height as f64 / 2.0;
+        for yi in y1..=y2 {
+            for xi in x1..=x2 {
+                let dx = xi as f64 - cx;
+                let dy = yi as f64 - cy;
+                if Self::in_ellipse(dx, dy, a, b)
+                    && !(Self::in_ellipse(dx - 1.0, dy, a, b)
+                        || Self::in_ellipse(dx + 1.0, dy, a, b)
+                        || Self::in_ellipse(dx, dy - 1.0, a, b)
+                        || Self::in_ellipse(dx, dy + 1.0, a, b))
+                {
+                    self.data[yi as usize][xi as usize] = value;
+                }
+            }
+        }
+    }
+
     pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, value: T) {
         let mut x1 = as_i32(x1);
         let mut y1 = as_i32(y1);
@@ -289,6 +358,49 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.line(x1, y1, x2, y2, value);
         self.line(x1, y1, x3, y3, value);
         self.line(x2, y2, x3, y3, value);
+    }
+
+    pub fn fill(&mut self, x: f64, y: f64, value: T) {
+        let x = as_i32(x) - self.camera_x;
+        let y = as_i32(y) - self.camera_y;
+        let dst_value = self.pget(x as f64, y as f64);
+        if value != dst_value {
+            self.fill_rec(x, y, value, dst_value);
+        }
+    }
+
+    fn fill_rec(&mut self, x: i32, y: i32, value: T, dst_value: T) {
+        if self.data[y as usize][x as usize] != dst_value {
+            return;
+        }
+        let mut xi = x;
+        while xi >= self.clip_rect.left() {
+            if self.data[y as usize][xi as usize] != dst_value {
+                break;
+            }
+            self.data[y as usize][xi as usize] = value;
+            if y > self.clip_rect.top() {
+                self.fill_rec(xi, y - 1, value, dst_value)
+            }
+            if y < self.clip_rect.bottom() {
+                self.fill_rec(xi, y + 1, value, dst_value)
+            }
+            xi -= 1;
+        }
+        let mut xi = x + 1;
+        while xi <= self.clip_rect.right() {
+            if self.data[y as usize][xi as usize] != dst_value {
+                break;
+            }
+            self.data[y as usize][xi as usize] = value;
+            if y > self.clip_rect.top() {
+                self.fill_rec(xi, y - 1, value, dst_value)
+            }
+            if y < self.clip_rect.bottom() {
+                self.fill_rec(xi, y + 1, value, dst_value)
+            }
+            xi += 1;
+        }
     }
 
     pub fn blt(
