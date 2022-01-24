@@ -214,10 +214,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    fn in_ellipse(dx: f64, dy: f64, a: f64, b: f64) -> bool {
+    fn in_ellipse(x: f64, y: f64, a: f64, b: f64) -> bool {
         let a = a - 0.1;
         let b = b - 0.1;
-        dx * dx * b * b + dy * dy * a * a < a * a * b * b
+        x * x * b * b + y * y * a * a < a * a * b * b
     }
 
     pub fn ellip(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
@@ -237,11 +237,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y2 = min(y + height - 1, self.clip_rect.bottom());
         let cx = x as f64 + width as f64 / 2.0 - 0.5;
         let cy = y as f64 + height as f64 / 2.0 - 0.5;
-        let a = width as f64 / 2.0;
-        let b = height as f64 / 2.0;
+        let ra = width as f64 / 2.0;
+        let rb = height as f64 / 2.0;
         for yi in y1..=y2 {
             for xi in x1..=x2 {
-                if Self::in_ellipse(xi as f64 - cx, yi as f64 - cy, a, b) {
+                if Self::in_ellipse(xi as f64 - cx, yi as f64 - cy, ra, rb) {
                     self.data[yi as usize][xi as usize] = value;
                 }
             }
@@ -265,17 +265,17 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y2 = min(y + height - 1, self.clip_rect.bottom());
         let cx = x as f64 + width as f64 / 2.0 - 0.5;
         let cy = y as f64 + height as f64 / 2.0 - 0.5;
-        let a = width as f64 / 2.0;
-        let b = height as f64 / 2.0;
+        let ra = width as f64 / 2.0;
+        let rb = height as f64 / 2.0;
         for yi in y1..=y2 {
             for xi in x1..=x2 {
                 let dx = xi as f64 - cx;
                 let dy = yi as f64 - cy;
-                if Self::in_ellipse(dx, dy, a, b)
-                    && (!Self::in_ellipse(dx - 1.0, dy, a, b)
-                        || !Self::in_ellipse(dx + 1.0, dy, a, b)
-                        || !Self::in_ellipse(dx, dy - 1.0, a, b)
-                        || !Self::in_ellipse(dx, dy + 1.0, a, b))
+                if Self::in_ellipse(dx, dy, ra, rb)
+                    && (!Self::in_ellipse(dx - 1.0, dy, ra, rb)
+                        || !Self::in_ellipse(dx + 1.0, dy, ra, rb)
+                        || !Self::in_ellipse(dx, dy - 1.0, ra, rb)
+                        || !Self::in_ellipse(dx, dy + 1.0, ra, rb))
                 {
                     self.data[yi as usize][xi as usize] = value;
                 }
