@@ -272,10 +272,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 let dx = xi as f64 - cx;
                 let dy = yi as f64 - cy;
                 if Self::in_ellipse(dx, dy, a, b)
-                    && !(Self::in_ellipse(dx - 1.0, dy, a, b)
-                        || Self::in_ellipse(dx + 1.0, dy, a, b)
-                        || Self::in_ellipse(dx, dy - 1.0, a, b)
-                        || Self::in_ellipse(dx, dy + 1.0, a, b))
+                    && (!Self::in_ellipse(dx - 1.0, dy, a, b)
+                        || !Self::in_ellipse(dx + 1.0, dy, a, b)
+                        || !Self::in_ellipse(dx, dy - 1.0, a, b)
+                        || !Self::in_ellipse(dx, dy + 1.0, a, b))
                 {
                     self.data[yi as usize][xi as usize] = value;
                 }
