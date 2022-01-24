@@ -436,11 +436,11 @@ Dibuja un círculo de radio `r` y color `col` en (`x`, `y`).
 - `circb(x, y, r, col)`<br>
 Dibuja una circunferencia de radio `r` y color `col` en (`x`, `y`).
 
-- `ellip(x, y, w, h, col)`<br>
-Dibuja una elipsis de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
+- `elp(x, y, w, h, col)`<br>
+Dibuja una elipse de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
 
-- `ellipb(x, y, w, h, col)`<br>
-Dibuja el contorno de una elipsis de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
+- `elpb(x, y, w, h, col)`<br>
+Dibuja el contorno de una elipse de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
 Dibuja un triángulo con los vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) y color `col`.
