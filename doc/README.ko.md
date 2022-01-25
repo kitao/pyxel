@@ -441,10 +441,10 @@ Pyxel 애플리케이션을 종료합니다.
 - `circb(x, y, r, col)`<br>
 반경 `r`, `col` 색의 원 테두리를 (`x`, `y`) 좌표에 그립니다. (테두리 안쪽에 색상을 채우지 않음)
 
-- `elps(x, y, w, h, col)`<br>
+- `elp(x, y, w, h, col)`<br>
 (`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 타원을 그립니다.
 
-- `elpsb(x, y, w, h, col)`<br>
+- `elpb(x, y, w, h, col)`<br>
 (`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 타원 윤곽선을 그립니다.
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
