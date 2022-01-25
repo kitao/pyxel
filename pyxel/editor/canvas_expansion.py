@@ -22,7 +22,7 @@ def _elps2(self, x1, y1, x2, y2, val):
 def _elpsb2(self, x1, y1, x2, y2, val):
     x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
     y1, y2 = (y1, y2) if y1 < y2 else (y2, y1)
-    self.elpb(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
+    self.elpsb(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
 def _get_slice(self, x, y, width, height):
