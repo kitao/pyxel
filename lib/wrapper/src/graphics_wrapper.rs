@@ -92,13 +92,13 @@ fn circb(x: f64, y: f64, r: f64, col: Color) {
 }
 
 #[pyfunction]
-fn ellip(x: f64, y: f64, w: f64, h: f64, col: Color) {
-    instance().ellip(x, y, w, h, col);
+fn elp(x: f64, y: f64, w: f64, h: f64, col: Color) {
+    instance().elp(x, y, w, h, col);
 }
 
 #[pyfunction]
-fn ellipb(x: f64, y: f64, w: f64, h: f64, col: Color) {
-    instance().ellipb(x, y, w, h, col);
+fn elpb(x: f64, y: f64, w: f64, h: f64, col: Color) {
+    instance().elpb(x, y, w, h, col);
 }
 
 #[pyfunction]
