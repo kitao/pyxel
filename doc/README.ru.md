@@ -37,7 +37,7 @@
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Спецификации Pyxel вдохновлены великолепными [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic.computer/).
+Спецификации Pyxel вдохновлены великолепными [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
 
 Pyxel -- программа с открытым кодом и бесплатна для использовния. За дело!
 
@@ -152,9 +152,9 @@ pyxel copy_examples
 - [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Демонстрация API по рисованию треугольных полигонов
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Игра жанра «убей всех» с переходом между экранами
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Платформер с боковым скроллингом и картой
-- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
-- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball.pyxapp](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Внеэкранный рендеринг с помощью класса Image
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1-я победная игра Pyxel Jam от [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](images/megaball.gif) - Аркадная игра с физикой мяча от [Adam](https://twitter.com/helpcomputer0)
 
 Эти примеры могут быть запущены следующей командой:
 
@@ -442,11 +442,20 @@ pyxel play ФАЙЛ_PYXEL_ПРИЛОЖЕНИЯ
 - `circb(x, y, r, col)`<br>
 Нарисовать окружность радиуса `r` и цвета `col` центром в (`x`, `y`)
 
+- `elp(x, y, w, h, col)`<br>
+Нарисуйте эллипс шириной `w`, высотой `h` и цветом `col` из (`x`, `y`).
+
+- `elpb(x, y, w, h, col)`<br>
+Нарисуйте контур эллипса шириной `w`, высотой `h` и цветом `col` из (`x`, `y`).
+
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
 Нарисовать треугольник с вершинами в координатах (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) и цвета `col`
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
 Нарисовать контур треугольника с вершинами в координатах (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) и цвета `col`
+
+- `fill(x, y, col)`<br>
+Нарисуйте эллипс шириной `w`, высотой `h` и цветом `col` из (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Скопировать область размеров (`w`, `h`), по координатам (`u`, `v`) набора изображений `img`(0-2) по координатам (`x`, `y`) на экране. Если для `w` и/или `h` установлено отрицательное значение, изображение будет развернуто горизонтально и/или вертикально. Если указан параметр `colkey`, соответствующий цвет будет считаться цветом фона (прозрачным цветом)

@@ -37,7 +37,7 @@ Grâce à ses spécifications simples inspirées par les consoles rétro, comme 
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Les spécifications de Pyxel sont inspirées par à [PICO-8](https://www.lexaloffle.com/pico-8.php) et [TIC-80](https://tic.computer/).
+Les spécifications de Pyxel sont inspirées par à [PICO-8](https://www.lexaloffle.com/pico-8.php) et [TIC-80](https://tic80.com/).
 
 Pyxel est un logiciel libre et open source. Commençons à faire un jeu vidéo rétro avec Pyxel !
 
@@ -153,8 +153,8 @@ Les exemples copiés sont les suivants :
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Jeu de shoot'em up avec changement d’écran
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Jeu de plateforme avec défilement horizontal et une carte
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Rendu hors écran avec la classe Image
-- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball.pyxapp](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1er jeu gagnant du Pyxel Jam par [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](images/megaball.gif) - Jeu physique de balles d'arcade par [Adam](https://twitter.com/helpcomputer0)
 
 Les exemples peuvent être lancés avec les commandes suivantes :
 
@@ -442,11 +442,20 @@ Dessine un cercle de rayon `r` et de couleur `col` à (`x`, `y`)
 - `circb(x, y, r, col)`<br>
 Dessine le contour d’un cercle de rayon `r` et de couleur `col` à (`x`, `y`)
 
+- `elp(x, y, w, h, col)`<br>
+Dessinez une ellipse de largeur `w`, de hauteur `h` et de couleur `col` à partir de (`x`, `y`).
+
+- `elpb(x, y, w, h, col)`<br>
+Dessinez le contour d'une ellipse de largeur `w`, de hauteur `h` et de couleur `col` à partir de (`x`, `y`).
+
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
 Dessine un triangle avec les sommets (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) et de couleur `col`
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
 Dessine les contours d’un triangle avec les sommets (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) et de couleur `col`
+
+- `fill(x, y, col)`<br>
+Dessine une ellipse de largeur `w`, de hauteur `h` et de couleur `col` à partir de (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copie la région de taille (`w`, `h`) de (`u`, `v`) de la banque d’image `img` (0-2) à (`x`, `y`). Si une valeur négative est mise pour `w` (ou `h`), la copie sera inversée horizontalement (ou verticalement). Si `colkey` est spécifiée, elle sera traitée comme une couleur transparente.

@@ -177,17 +177,13 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let x = as_i32(x);
         let y = as_i32(y);
         let radius = as_u32(radius);
-        let sq_radius = radius * radius;
-        for dx in 0..=radius as i32 {
-            let dy = as_i32(((sq_radius as i32 - dx * dx) as f64).sqrt());
-            if dx > dy {
-                continue;
-            }
-            for i in -dy..=dy {
-                self.pset((x - dx) as f64, (y + i) as f64, value);
-                self.pset((x + dx) as f64, (y + i) as f64, value);
-                self.pset((x + i) as f64, (y - dx) as f64, value);
-                self.pset((x + i) as f64, (y + dx) as f64, value);
+        for xi in 0..=radius as i32 {
+            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f64, radius as f64, xi);
+            for yi in y1..=y2 {
+                self.pset((x + x1) as f64, (y + yi) as f64, value);
+                self.pset((x + x2) as f64, (y + yi) as f64, value);
+                self.pset((x + yi) as f64, (y + x1) as f64, value);
+                self.pset((x + yi) as f64, (y + x2) as f64, value);
             }
         }
     }
@@ -196,22 +192,84 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let x = as_i32(x);
         let y = as_i32(y);
         let radius = as_u32(radius);
-        let sq_radius = radius * radius;
-        for dx in 0..=radius as i32 {
-            let dy = as_i32(((sq_radius as i32 - dx * dx) as f64).sqrt());
-            if dx > dy {
-                continue;
-            }
-            self.pset((x - dx) as f64, (y - dy) as f64, value);
-            self.pset((x + dx) as f64, (y - dy) as f64, value);
-            self.pset((x - dx) as f64, (y + dy) as f64, value);
-            self.pset((x + dx) as f64, (y + dy) as f64, value);
+        for xi in 0..=radius as i32 {
+            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f64, radius as f64, xi);
+            self.pset((x + x1) as f64, (y + y1) as f64, value);
+            self.pset((x + x2) as f64, (y + y1) as f64, value);
+            self.pset((x + x1) as f64, (y + y2) as f64, value);
+            self.pset((x + x2) as f64, (y + y2) as f64, value);
 
-            self.pset((x - dy) as f64, (y - dx) as f64, value);
-            self.pset((x + dy) as f64, (y - dx) as f64, value);
-            self.pset((x - dy) as f64, (y + dx) as f64, value);
-            self.pset((x + dy) as f64, (y + dx) as f64, value);
+            self.pset((x + y1) as f64, (y + x1) as f64, value);
+            self.pset((x + y1) as f64, (y + x2) as f64, value);
+            self.pset((x + y2) as f64, (y + x1) as f64, value);
+            self.pset((x + y2) as f64, (y + x2) as f64, value);
         }
+    }
+
+    pub fn elp(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
+        let x = as_i32(x);
+        let y = as_i32(y);
+        let width = as_u32(width);
+        let height = as_u32(height);
+        let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
+        for xi in x..(x + width as i32 / 2) + 1 {
+            let (x1, y1, x2, y2) = Self::ellipse_area(cx, cy, ra, rb, xi);
+            for yi in y1..=y2 {
+                self.pset(x1 as f64, yi as f64, value);
+                self.pset(x2 as f64, yi as f64, value);
+            }
+        }
+        for yi in y..(y + height as i32 / 2) + 1 {
+            let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
+            for xi in x1..=x2 {
+                self.pset(xi as f64, y1 as f64, value);
+                self.pset(xi as f64, y2 as f64, value);
+            }
+        }
+    }
+
+    pub fn elpb(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
+        let x = as_i32(x);
+        let y = as_i32(y);
+        let width = as_u32(width);
+        let height = as_u32(height);
+        let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
+        for xi in x..(x + width as i32 / 2) + 1 {
+            let (x1, y1, x2, y2) = Self::ellipse_area(cx, cy, ra, rb, xi);
+            self.pset(x1 as f64, y1 as f64, value);
+            self.pset(x2 as f64, y1 as f64, value);
+            self.pset(x1 as f64, y2 as f64, value);
+            self.pset(x2 as f64, y2 as f64, value);
+        }
+        for yi in y..(y + height as i32 / 2) + 1 {
+            let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
+            self.pset(x1 as f64, y1 as f64, value);
+            self.pset(x2 as f64, y1 as f64, value);
+            self.pset(x1 as f64, y2 as f64, value);
+            self.pset(x2 as f64, y2 as f64, value);
+        }
+    }
+
+    fn ellipse_params(x: i32, y: i32, width: u32, height: u32) -> (f64, f64, f64, f64) {
+        let ra = (width - 1) as f64 / 2.0;
+        let rb = (height - 1) as f64 / 2.0;
+        let cx = x as f64 + ra;
+        let cy = y as f64 + rb;
+        (ra, rb, cx, cy)
+    }
+
+    fn ellipse_area(cx: f64, cy: f64, ra: f64, rb: f64, x: i32) -> (i32, i32, i32, i32) {
+        let dx = x as f64 - cx;
+        let dy = if ra > 0.0 {
+            rb * (1.0 - dx * dx / (ra * ra)).sqrt()
+        } else {
+            rb
+        };
+        let x1 = as_i32(cx - dx - 0.01);
+        let y1 = as_i32(cy - dy - 0.01);
+        let x2 = as_i32(cx + dx + 0.01);
+        let y2 = as_i32(cy + dy + 0.01);
+        (x1, y1, x2, y2)
     }
 
     pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, value: T) {
@@ -289,6 +347,49 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.line(x1, y1, x2, y2, value);
         self.line(x1, y1, x3, y3, value);
         self.line(x2, y2, x3, y3, value);
+    }
+
+    pub fn fill(&mut self, x: f64, y: f64, value: T) {
+        let x = as_i32(x) - self.camera_x;
+        let y = as_i32(y) - self.camera_y;
+        let dst_value = self.pget(x as f64, y as f64);
+        if value != dst_value {
+            self.fill_rec(x, y, value, dst_value);
+        }
+    }
+
+    fn fill_rec(&mut self, x: i32, y: i32, value: T, dst_value: T) {
+        if self.data[y as usize][x as usize] != dst_value {
+            return;
+        }
+        let mut xi = x;
+        while xi >= self.clip_rect.left() {
+            if self.data[y as usize][xi as usize] != dst_value {
+                break;
+            }
+            self.data[y as usize][xi as usize] = value;
+            if y > self.clip_rect.top() {
+                self.fill_rec(xi, y - 1, value, dst_value)
+            }
+            if y < self.clip_rect.bottom() {
+                self.fill_rec(xi, y + 1, value, dst_value)
+            }
+            xi -= 1;
+        }
+        let mut xi = x + 1;
+        while xi <= self.clip_rect.right() {
+            if self.data[y as usize][xi as usize] != dst_value {
+                break;
+            }
+            self.data[y as usize][xi as usize] = value;
+            if y > self.clip_rect.top() {
+                self.fill_rec(xi, y - 1, value, dst_value)
+            }
+            if y < self.clip_rect.bottom() {
+                self.fill_rec(xi, y + 1, value, dst_value)
+            }
+            xi += 1;
+        }
     }
 
     pub fn blt(

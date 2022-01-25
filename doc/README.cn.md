@@ -37,7 +37,7 @@
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Pyxel的设计规范参考了[PICO-8](https://www.lexaloffle.com/pico-8.php)和[TIC-80](https://tic.computer/)。
+Pyxel的设计规范参考了[PICO-8](https://www.lexaloffle.com/pico-8.php)和[TIC-80](https://tic80.com/)。
 
 Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel制作自己的游戏吧！
 
@@ -152,9 +152,9 @@ pyxel copy_examples
 - [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - 三角形绘画API的使用示例
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 屏幕过渡射击游戏
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - 屏幕横向滑动的游戏示例
-- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
-- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball.pyxapp](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - 用图像类进行屏外渲染
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 第1届Pyxel Jam比赛获胜者是[Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](images/megaball.gif) - 商场球类物理游戏[Adam](https://twitter.com/helpcomputer0)
 
 运行例程，可以使用以下命令：
 
@@ -442,11 +442,20 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 - `circb(x, y, r, col)`<br>
 用`col`颜色绘制圆心为(`x`, `y`)，半径为`r`的圆形边框。
 
+- `elp(x, y, w, h, col)`<br>
+从(`x`, `y`)画一个宽度`w`, 高度`h`, 颜色`col`的椭圆。
+
+- `elpb(x, y, w, h, col)`<br>
+从(`x`, `y`)画出一个宽`w`, 高`h`, 颜色`col`的椭圆轮廓。
+
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
 用`col`颜色绘制顶点分别为(`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`)的三角形。
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
 用`col`颜色绘制顶点分别为(`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`)的三角形边框。
+
+- `fill(x, y, col)`<br>
+从(`x`, `y`)画一个宽度`w`, 高度`h`, 颜色`col`的椭圆。
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 将尺寸为(`w`, `h`)的区域从图像库的(`u`, `v`)复制到(`x`, `y`)。若`w`或`h`为负值，则在水平或垂直方向上翻转。若指定了`colkey`的值，则视作透明颜色。
@@ -454,7 +463,7 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
+从瓦片图`tm`（0-7）的（`u`，`v`）复制大小为（`w`，`h`）的区域到（`x`，`y`）。如果为`w`和/或`h`设置了负值，它将在水平和/或垂直方向上反转。如果指定了 `colkey`，将被视为透明色。瓦片的大小是8x8像素，以`(tile_x, tile_y)`的元组形式存储在瓦片图中。
 
 <img src="images/bltm_figure.png">
 

@@ -37,7 +37,7 @@ Gracias a sus características simples inspiradas en las consolas de juegos retr
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Las especificaciones de Pyxel están referenciados a los increíbles [PICO-8](https://www.lexaloffle.com/pico-8.php) y [TIC-80](https://tic.computer/)
+Las especificaciones de Pyxel están referenciados a los increíbles [PICO-8](https://www.lexaloffle.com/pico-8.php) y [TIC-80](https://tic80.com/)
 
 Pyxel es de código abierto y gratuito. ¡Empecemos haciendo un juego retro con Pyxel!
 
@@ -436,11 +436,20 @@ Dibuja un círculo de radio `r` y color `col` en (`x`, `y`).
 - `circb(x, y, r, col)`<br>
 Dibuja una circunferencia de radio `r` y color `col` en (`x`, `y`).
 
+- `elp(x, y, w, h, col)`<br>
+Dibuja una elipse de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
+
+- `elpb(x, y, w, h, col)`<br>
+Dibuja el contorno de una elipse de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
+
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
 Dibuja un triángulo con los vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) y color `col`.
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
 Dibuja el perímetro de un triángulo con los vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) y color `col`.
+
+- `fill(x, y, col)`<br>
+Dibuja una elipsis de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copia la región de tamaño (`w`, `h`) desde la posición (`u`, `v`) del banco de imágenes `img` (0-2) a (`x`, `y`). Si es negativo el valor para la `w` y/o la `h`, se representará invirtiendo horizontalmente o verticalmente. Si `colkey` se especifica, se tratará ese color como transparente.

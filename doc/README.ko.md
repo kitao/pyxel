@@ -37,7 +37,7 @@
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Pyxel의 사양은 [PICO-8](https://www.lexaloffle.com/pico-8.php)과 [TIC-80](https://tic.computer/)의 디자인을 참고로 하고 있습니다.
+Pyxel의 사양은 [PICO-8](https://www.lexaloffle.com/pico-8.php)과 [TIC-80](https://tic80.com/)의 디자인을 참고로 하고 있습니다.
 
 Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Pyxel과 함께 레트로 스타일의 게임을 만들어보세요!
 
@@ -441,11 +441,20 @@ Pyxel 애플리케이션을 종료합니다.
 - `circb(x, y, r, col)`<br>
 반경 `r`, `col` 색의 원 테두리를 (`x`, `y`) 좌표에 그립니다. (테두리 안쪽에 색상을 채우지 않음)
 
+- `elp(x, y, w, h, col)`<br>
+(`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 타원을 그립니다.
+
+- `elpb(x, y, w, h, col)`<br>
+(`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 타원 윤곽선을 그립니다.
+
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
 꼭짓점 좌표 (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`)를 기준으로 `col` 색상의 삼각형을 그립니다.
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
 꼭짓점 좌표 (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`)를 기준으로 `col` 색상의 삼각형 테두리를 그립니다. (테두리 안쪽에 색상을 채우지 않음)
+
+- `fill(x, y, col)`<br>
+(`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 줄임표를 그립니다.
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 이미지 뱅크 `img`(0-2)의 (`u`, `v`)로부터 크기 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 음수로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다.

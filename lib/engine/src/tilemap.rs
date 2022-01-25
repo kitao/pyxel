@@ -111,12 +111,24 @@ impl Tilemap {
         self.canvas.circb(x, y, radius, tile);
     }
 
+    pub fn elp(&mut self, x: f64, y: f64, width: f64, height: f64, tile: Tile) {
+        self.canvas.elp(x, y, width, height, tile);
+    }
+
+    pub fn elpb(&mut self, x: f64, y: f64, width: f64, height: f64, tile: Tile) {
+        self.canvas.elpb(x, y, width, height, tile);
+    }
+
     pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: Tile) {
         self.canvas.tri(x1, y1, x2, y2, x3, y3, tile);
     }
 
     pub fn trib(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: Tile) {
         self.canvas.trib(x1, y1, x2, y2, x3, y3, tile);
+    }
+
+    pub fn fill(&mut self, x: f64, y: f64, tile: Tile) {
+        self.canvas.fill(x, y, tile);
     }
 
     pub fn blt(

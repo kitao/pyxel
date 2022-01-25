@@ -14,6 +14,7 @@
     clippy::must_use_candidate,
     clippy::pedantic,
     clippy::range_plus_one,
+    clippy::redundant_feature_names,
     clippy::suboptimal_flops,
     clippy::too_many_arguments,
     clippy::too_many_lines,

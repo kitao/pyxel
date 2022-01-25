@@ -37,7 +37,7 @@ Dank seiner einfachen, von Retro-Spielkonsolen inspirierten, Spezifikationen, wi
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Die Spezifikationen von Pyxel beziehen sich auf die genialen [PICO-8](https://www.lexaloffle.com/pico-8.php) und [TIC-80](https://tic.computer/).
+Die Spezifikationen von Pyxel beziehen sich auf die genialen [PICO-8](https://www.lexaloffle.com/pico-8.php) und [TIC-80](https://tic80.com/).
 
 Pyxel ist quelloffen und kostenlos zu verwenden. Fang an, ein Retro-Spiel mit Pyxel zu entwickeln!
 
@@ -152,9 +152,9 @@ Die zu kopierenden Beispiele lauten wie folgt:
 - [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing APIs
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Shoot'em up mit Displayübergängen
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Side-Scroller Platform Spiel mit Karte
-- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
-- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball.pyxapp](images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen-Rendering mit der Klasse Image
+- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1. Pyxel Jam Gewinnspiel von [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](images/megaball.gif) - Arcade Ball Physik Spiel von [Adam](https://twitter.com/helpcomputer0)
 
 Führe eines der Beispiele mit folgendem Befehl aus:
 
@@ -440,11 +440,20 @@ Zeichne einen Kreis mit dem Radius `r` und Farbe `col` an der Stelle (`x`, `y`)
 - `circb(x, y, r, col)`<br>
 Zeichne die Umrisse eines Kreises mit dem Radius `r` und Farbe `col` an der Stelle (`x`, `y`)
 
+- `elp(x, y, w, h, col)`<br>
+Zeichne eine Ellipse mit der Breite `w`, der Höhe `h` und der Farbe `col` von (`x`, `y`).
+
+- `elpb(x, y, w, h, col)`<br>
+Zeichne den Umriss einer Ellipse der Breite `w`, der Höhe `h` und der Farbe `col` von (`x`, `y`).
+
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
 Zeichne ein Dreieck mit den Scheitelpunkten (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) und Farbe `col`
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
 Zeichne die Umrisse eines Dreiecks mit den Scheitelpunkten (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) und Farbe `col`
+
+- `fill(x, y, col)`<br>
+Zeichne eine Ellipse mit der Breite `w`, der Höhe `h` und der Farbe `col` von (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Kopiere eine Region der Größe (`w`, `h`) von (`u`, `v`) des Image Banks `img`(0-2) zur Position (`x`, `y`). Falls `w` und/oder `h` negativ ist, wird der Ausschnitt horizontal und/oder vertical gespiegelt. Falls `colkey` angegeben ist, wird der Auschnitt als transparentes Farbe behandelt
@@ -452,7 +461,7 @@ Kopiere eine Region der Größe (`w`, `h`) von (`u`, `v`) des Image Banks `img`(
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
+Kopiert den Bereich der Größe (`w`, `h`) von (`u`, `v`) der Tilemap `tm` (0-7) nach (`x`, `y`). Wenn ein negativer Wert für `w` und/oder `h` angegeben wird, wird es horizontal und/oder vertikal umgekehrt. Wenn `colkey` angegeben ist, wird es als transparente Farbe behandelt. Die Größe einer Kachel ist 8x8 Pixel und wird in einer Tilemap als Tupel von `(tile_x, tile_y)` gespeichert.
 
 <img src="images/bltm_figure.png">
 
