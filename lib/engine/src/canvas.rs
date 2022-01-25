@@ -191,31 +191,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    fn ellipse_params(x: i32, y: i32, width: u32, height: u32) -> (f64, f64, f64, f64) {
-        let ra = (width - 1) as f64 / 2.0;
-        let rb = (height - 1) as f64 / 2.0;
-        let cx = x as f64 + ra;
-        let cy = y as f64 + rb;
-        (ra, rb, cx, cy)
-    }
-
-    fn ellipse_area(cx: f64, cy: f64, ra: f64, rb: f64, x: i32) -> Option<(i32, i32, i32, i32)> {
-        let dx = x as f64 - cx;
-        let dy = if ra > 0.0 {
-            rb * (1.0 - dx * dx / (ra * ra)).sqrt()
-        } else {
-            rb
-        };
-        if dx * rb > dy * ra {
-            return None;
-        }
-        let x1 = as_i32(cx - dx - 0.001);
-        let y1 = as_i32(cy - dy - 0.001);
-        let x2 = as_i32(cx + dx + 0.001);
-        let y2 = as_i32(cy + dy + 0.001);
-        Some((x1, y1, x2, y2))
-    }
-
     pub fn circb(&mut self, x: f64, y: f64, radius: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
@@ -236,6 +211,31 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             self.pset((x - dy) as f64, (y + dx) as f64, value);
             self.pset((x + dy) as f64, (y + dx) as f64, value);
         }
+    }
+
+    fn ellipse_params(x: i32, y: i32, width: u32, height: u32) -> (f64, f64, f64, f64) {
+        let ra = (width - 1) as f64 / 2.0;
+        let rb = (height - 1) as f64 / 2.0;
+        let cx = x as f64 + ra;
+        let cy = y as f64 + rb;
+        (ra, rb, cx, cy)
+    }
+
+    fn ellipse_area(cx: f64, cy: f64, ra: f64, rb: f64, x: i32) -> Option<(i32, i32, i32, i32)> {
+        let dx = x as f64 - cx;
+        let dy = if ra > 0.0 {
+            rb * (1.0 - dx * dx / (ra * ra)).sqrt()
+        } else {
+            rb
+        };
+        if dx * rb > dy * ra {
+            return None;
+        }
+        let x1 = as_i32(cx - dx - f64::EPSILON);
+        let y1 = as_i32(cy - dy - f64::EPSILON);
+        let x2 = as_i32(cx + dx + f64::EPSILON);
+        let y2 = as_i32(cy + dy + f64::EPSILON);
+        Some((x1, y1, x2, y2))
     }
 
     pub fn elps(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
