@@ -92,13 +92,13 @@ fn circb(x: f64, y: f64, r: f64, col: Color) {
 }
 
 #[pyfunction]
-fn elps(x: f64, y: f64, w: f64, h: f64, col: Color) {
-    instance().elps(x, y, w, h, col);
+fn elp(x: f64, y: f64, w: f64, h: f64, col: Color) {
+    instance().elp(x, y, w, h, col);
 }
 
 #[pyfunction]
-fn elpsb(x: f64, y: f64, w: f64, h: f64, col: Color) {
-    instance().elpsb(x, y, w, h, col);
+fn elpb(x: f64, y: f64, w: f64, h: f64, col: Color) {
+    instance().elpb(x, y, w, h, col);
 }
 
 #[pyfunction]
@@ -181,8 +181,8 @@ pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(rectb, m)?)?;
     m.add_function(wrap_pyfunction!(circ, m)?)?;
     m.add_function(wrap_pyfunction!(circb, m)?)?;
-    m.add_function(wrap_pyfunction!(elps, m)?)?;
-    m.add_function(wrap_pyfunction!(elpsb, m)?)?;
+    m.add_function(wrap_pyfunction!(elp, m)?)?;
+    m.add_function(wrap_pyfunction!(elpb, m)?)?;
     m.add_function(wrap_pyfunction!(tri, m)?)?;
     m.add_function(wrap_pyfunction!(trib, m)?)?;
     m.add_function(wrap_pyfunction!(fill, m)?)?;

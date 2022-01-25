@@ -279,12 +279,12 @@ class CanvasPanel(Widget):
 
             elif self.tool_var == TOOL_CIRCB:
                 self._reset_edit_canvas()
-                self._edit_canvas.elpsb2(x1, y1, x2, y2, self.color_var)
+                self._edit_canvas.elpb2(x1, y1, x2, y2, self.color_var)
                 self._finish_edit_canvas()
 
             elif self.tool_var == TOOL_CIRC:
                 self._reset_edit_canvas()
-                self._edit_canvas.elps2(x1, y1, x2, y2, self.color_var)
+                self._edit_canvas.elp2(x1, y1, x2, y2, self.color_var)
                 self._finish_edit_canvas()
 
             self._last_x = x2
