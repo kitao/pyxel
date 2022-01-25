@@ -265,10 +265,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         } else {
             rb
         };
-        let x1 = as_i32(cx - dx - f64::EPSILON);
-        let y1 = as_i32(cy - dy - f64::EPSILON);
-        let x2 = as_i32(cx + dx + f64::EPSILON);
-        let y2 = as_i32(cy + dy + f64::EPSILON);
+        let x1 = as_i32(cx - dx - 0.01);
+        let y1 = as_i32(cy - dy - 0.01);
+        let x2 = as_i32(cx + dx + 0.01);
+        let y2 = as_i32(cy + dy + 0.01);
         (x1, y1, x2, y2)
     }
 
