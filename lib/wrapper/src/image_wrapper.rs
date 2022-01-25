@@ -119,12 +119,12 @@ impl Image {
         self.pyxel_image.lock().circb(x, y, r, col);
     }
 
-    pub fn elps(&self, x: f64, y: f64, w: f64, h: f64, col: Color) {
-        self.pyxel_image.lock().elps(x, y, w, h, col);
+    pub fn elp(&self, x: f64, y: f64, w: f64, h: f64, col: Color) {
+        self.pyxel_image.lock().elp(x, y, w, h, col);
     }
 
-    pub fn elpsb(&self, x: f64, y: f64, w: f64, h: f64, col: Color) {
-        self.pyxel_image.lock().elpsb(x, y, w, h, col);
+    pub fn elpb(&self, x: f64, y: f64, w: f64, h: f64, col: Color) {
+        self.pyxel_image.lock().elpb(x, y, w, h, col);
     }
 
     pub fn tri(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: Color) {
