@@ -13,16 +13,16 @@ def _rectb2(self, x1, y1, x2, y2, val):
     self.rectb(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
-def _ellip2(self, x1, y1, x2, y2, val):
+def _elp2(self, x1, y1, x2, y2, val):
     x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
     y1, y2 = (y1, y2) if y1 < y2 else (y2, y1)
-    self.ellip(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
+    self.elp(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
-def _ellipb2(self, x1, y1, x2, y2, val):
+def _elpb2(self, x1, y1, x2, y2, val):
     x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
     y1, y2 = (y1, y2) if y1 < y2 else (y2, y1)
-    self.ellipb(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
+    self.elpb(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
 def _get_slice(self, x, y, width, height):
