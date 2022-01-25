@@ -441,10 +441,10 @@ Draw a circle of radius `r` and color `col` at (`x`, `y`).
 - `circb(x, y, r, col)`<br>
 Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`).
 
-- `elps(x, y, w, h, col)`<br>
+- `elp(x, y, w, h, col)`<br>
 Draw an ellipse of width `w`, height `h` and color `col` from (`x`, `y`).
 
-- `elpsb(x, y, w, h, col)`<br>
+- `elpb(x, y, w, h, col)`<br>
 Draw the outline of an ellipse of width `w`, height `h` and color `col` from (`x`, `y`).
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
