@@ -219,14 +219,14 @@ impl Image {
             .circb(x, y, radius, self.palette[color as usize]);
     }
 
-    pub fn elps(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
+    pub fn elp(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
         self.canvas
-            .elps(x, y, width, height, self.palette[color as usize]);
+            .elp(x, y, width, height, self.palette[color as usize]);
     }
 
-    pub fn elpsb(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
+    pub fn elpb(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
         self.canvas
-            .elpsb(x, y, width, height, self.palette[color as usize]);
+            .elpb(x, y, width, height, self.palette[color as usize]);
     }
 
     pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
