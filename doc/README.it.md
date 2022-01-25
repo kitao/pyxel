@@ -441,10 +441,10 @@ Disegna un cerchio di raggio `r` e colore `col` su (`x`, `y`)
 - `circb(x, y, r, col)`<br>
 Disegna il contorno di un cerchio di raggio `r` e colore `col` su (`x`, `y`)
 
-- `elps(x, y, w, h, col)`<br>
+- `elp(x, y, w, h, col)`<br>
 Disegna un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
 
-- `elpsb(x, y, w, h, col)`<br>
+- `elpb(x, y, w, h, col)`<br>
 Disegna il contorno di un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>

@@ -442,10 +442,10 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 - `circb(x, y, r, col)`<br>
 用`col`颜色绘制圆心为(`x`, `y`)，半径为`r`的圆形边框。
 
-- `elps(x, y, w, h, col)`<br>
+- `elp(x, y, w, h, col)`<br>
 从(`x`, `y`)画一个宽度`w`, 高度`h`, 颜色`col`的椭圆。
 
-- `elpsb(x, y, w, h, col)`<br>
+- `elpb(x, y, w, h, col)`<br>
 从(`x`, `y`)画出一个宽`w`, 高`h`, 颜色`col`的椭圆轮廓。
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
