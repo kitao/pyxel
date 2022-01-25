@@ -1,4 +1,4 @@
-use std::cmp::{max, min};
+use std::cmp::max;
 use std::mem::swap;
 
 use crate::rectarea::RectArea;
@@ -176,7 +176,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn circ(&mut self, x: f64, y: f64, radius: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
-        let radius = as_u32(radius);
         let sq_radius = radius * radius;
         for dx in 0..=radius as i32 {
             let dy = as_i32(((sq_radius as i32 - dx * dx) as f64).sqrt());
@@ -190,6 +189,31 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 self.pset((x + i) as f64, (y + dx) as f64, value);
             }
         }
+    }
+
+    fn ellipse_params(x: i32, y: i32, width: u32, height: u32) -> (f64, f64, f64, f64) {
+        let ra = (width - 1) as f64 / 2.0;
+        let rb = (height - 1) as f64 / 2.0;
+        let cx = x as f64 + ra;
+        let cy = y as f64 + rb;
+        (ra, rb, cx, cy)
+    }
+
+    fn ellipse_area(cx: f64, cy: f64, ra: f64, rb: f64, x: i32) -> Option<(i32, i32, i32, i32)> {
+        let dx = x as f64 - cx;
+        let dy = if ra > 0.0 {
+            rb * (1.0 - dx * dx / (ra * ra)).sqrt()
+        } else {
+            rb
+        };
+        if dx * rb > dy * ra {
+            return None;
+        }
+        let x1 = as_i32(cx - dx - 0.001);
+        let y1 = as_i32(cy - dy - 0.001);
+        let x2 = as_i32(cx + dx + 0.001);
+        let y2 = as_i32(cy + dy + 0.001);
+        Some((x1, y1, x2, y2))
     }
 
     pub fn circb(&mut self, x: f64, y: f64, radius: f64, value: T) {
@@ -214,71 +238,50 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    fn in_ellipse(x: f64, y: f64, a: f64, b: f64) -> bool {
-        let a = a - 0.1;
-        let b = b - 0.1;
-        x * x * b * b + y * y * a * a < a * a * b * b
-    }
-
-    pub fn ellip(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
+    pub fn elps(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
-        let width = as_i32(width);
-        let height = as_i32(height);
-        if width <= 2 || height <= 2 {
-            self.rect(x as f64, y as f64, width as f64, height as f64, value);
-            return;
+        let width = as_u32(width);
+        let height = as_u32(height);
+        let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
+        for xi in x..(x + width as i32 / 2) + 1 {
+            if let Some((x1, y1, x2, y2)) = Self::ellipse_area(cx, cy, ra, rb, xi) {
+                for yi in y1..=y2 {
+                    self.pset(x1 as f64, yi as f64, value);
+                    self.pset(x2 as f64, yi as f64, value);
+                }
+            }
         }
-        let x = x - self.camera_x;
-        let y = y - self.camera_y;
-        let x1 = max(x, self.clip_rect.left());
-        let y1 = max(y, self.clip_rect.top());
-        let x2 = min(x + width - 1, self.clip_rect.right());
-        let y2 = min(y + height - 1, self.clip_rect.bottom());
-        let cx = x as f64 + width as f64 / 2.0 - 0.5;
-        let cy = y as f64 + height as f64 / 2.0 - 0.5;
-        let ra = width as f64 / 2.0;
-        let rb = height as f64 / 2.0;
-        for yi in y1..=y2 {
-            for xi in x1..=x2 {
-                if Self::in_ellipse(xi as f64 - cx, yi as f64 - cy, ra, rb) {
-                    self.data[yi as usize][xi as usize] = value;
+        for yi in y..(y + height as i32 / 2) + 1 {
+            if let Some((y1, x1, y2, x2)) = Self::ellipse_area(cy, cx, rb, ra, yi) {
+                for xi in x1..=x2 {
+                    self.pset(xi as f64, y1 as f64, value);
+                    self.pset(xi as f64, y2 as f64, value);
                 }
             }
         }
     }
 
-    pub fn ellipb(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
+    pub fn elpsb(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
-        let width = as_i32(width);
-        let height = as_i32(height);
-        if width <= 2 || height <= 2 {
-            self.rect(x as f64, y as f64, width as f64, height as f64, value);
-            return;
+        let width = as_u32(width);
+        let height = as_u32(height);
+        let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
+        for xi in x..(x + width as i32 / 2) + 1 {
+            if let Some((x1, y1, x2, y2)) = Self::ellipse_area(cx, cy, ra, rb, xi) {
+                self.pset(x1 as f64, y1 as f64, value);
+                self.pset(x2 as f64, y1 as f64, value);
+                self.pset(x1 as f64, y2 as f64, value);
+                self.pset(x2 as f64, y2 as f64, value);
+            }
         }
-        let x = x - self.camera_x;
-        let y = y - self.camera_y;
-        let x1 = max(x, self.clip_rect.left());
-        let y1 = max(y, self.clip_rect.top());
-        let x2 = min(x + width - 1, self.clip_rect.right());
-        let y2 = min(y + height - 1, self.clip_rect.bottom());
-        let cx = x as f64 + width as f64 / 2.0 - 0.5;
-        let cy = y as f64 + height as f64 / 2.0 - 0.5;
-        let ra = width as f64 / 2.0;
-        let rb = height as f64 / 2.0;
-        for yi in y1..=y2 {
-            for xi in x1..=x2 {
-                let dx = xi as f64 - cx;
-                let dy = yi as f64 - cy;
-                if Self::in_ellipse(dx, dy, ra, rb)
-                    && (!Self::in_ellipse(dx - 1.0, dy, ra, rb)
-                        || !Self::in_ellipse(dx + 1.0, dy, ra, rb)
-                        || !Self::in_ellipse(dx, dy - 1.0, ra, rb)
-                        || !Self::in_ellipse(dx, dy + 1.0, ra, rb))
-                {
-                    self.data[yi as usize][xi as usize] = value;
-                }
+        for yi in y..(y + height as i32 / 2) + 1 {
+            if let Some((y1, x1, y2, x2)) = Self::ellipse_area(cy, cx, rb, ra, yi) {
+                self.pset(x1 as f64, y1 as f64, value);
+                self.pset(x2 as f64, y1 as f64, value);
+                self.pset(x1 as f64, y2 as f64, value);
+                self.pset(x2 as f64, y2 as f64, value);
             }
         }
     }
