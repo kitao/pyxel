@@ -37,7 +37,7 @@ Grazie alle sue specifiche limitate ispirate dalle console di videogiochi rétro
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Le specifiche di Pyxel si rifanno alle eccezionali [PICO-8](https://www.lexaloffle.com/pico-8.php) e [TIC-80](https://tic80.com/).
+Le specifiche e le API di Pyxel sono ispirate da [PICO-8](https://www.lexaloffle.com/pico-8.php) e [TIC-80](https://tic80.com/).
 
 Pyxel è open source e libero da usare. Cominciamo a fare giochi rétro con Pyxel!
 

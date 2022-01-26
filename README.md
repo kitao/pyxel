@@ -37,7 +37,7 @@ Thanks to its simple specifications inspired by retro gaming consoles, such as o
 <img src="doc/images/sound_music_editor.gif" width="48%">
 </a>
 
-The specifications of Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
+Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
 
 Pyxel is open source and free to use. Let's start making a retro game with Pyxel!
 
