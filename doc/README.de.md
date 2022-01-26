@@ -37,7 +37,7 @@ Dank seiner einfachen, von Retro-Spielkonsolen inspirierten, Spezifikationen, wi
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Die Spezifikationen von Pyxel beziehen sich auf die genialen [PICO-8](https://www.lexaloffle.com/pico-8.php) und [TIC-80](https://tic80.com/).
+Die Spezifikationen und APIs von Pyxel sind inspiriert von [PICO-8](https://www.lexaloffle.com/pico-8.php) und [TIC-80](https://tic80.com/).
 
 Pyxel ist quelloffen und kostenlos zu verwenden. Fang an, ein Retro-Spiel mit Pyxel zu entwickeln!
 
