@@ -370,12 +370,15 @@ impl Platform for Sdl2 {
             channels: Some(1),
             samples: Some(num_samples as u16),
         };
-        let sdl_audio_device = self
-            .sdl_audio
-            .open_playback(None, &spec, |_| AudioContextHolder { audio })
-            .unwrap();
-        sdl_audio_device.resume();
-        self.sdl_audio_device = Some(sdl_audio_device);
+        self.sdl_audio_device = if let Ok(sdl_audio_device) =
+            self.sdl_audio
+                .open_playback(None, &spec, |_| AudioContextHolder { audio })
+        {
+            sdl_audio_device.resume();
+            Some(sdl_audio_device)
+        } else {
+            None
+        };
     }
 
     fn pause_audio(&mut self) {
