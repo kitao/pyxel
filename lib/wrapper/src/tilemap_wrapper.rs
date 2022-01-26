@@ -126,12 +126,12 @@ impl Tilemap {
         self.pyxel_tilemap.lock().circb(x, y, r, tile);
     }
 
-    pub fn elp(&self, x: f64, y: f64, w: f64, h: f64, tile: Tile) {
-        self.pyxel_tilemap.lock().elp(x, y, w, h, tile);
+    pub fn elli(&self, x: f64, y: f64, w: f64, h: f64, tile: Tile) {
+        self.pyxel_tilemap.lock().elli(x, y, w, h, tile);
     }
 
-    pub fn elpb(&self, x: f64, y: f64, w: f64, h: f64, tile: Tile) {
-        self.pyxel_tilemap.lock().elpb(x, y, w, h, tile);
+    pub fn ellib(&self, x: f64, y: f64, w: f64, h: f64, tile: Tile) {
+        self.pyxel_tilemap.lock().ellib(x, y, w, h, tile);
     }
 
     pub fn tri(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: Tile) {
