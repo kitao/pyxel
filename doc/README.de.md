@@ -440,10 +440,10 @@ Zeichne einen Kreis mit dem Radius `r` und Farbe `col` an der Stelle (`x`, `y`)
 - `circb(x, y, r, col)`<br>
 Zeichne die Umrisse eines Kreises mit dem Radius `r` und Farbe `col` an der Stelle (`x`, `y`)
 
-- `elp(x, y, w, h, col)`<br>
+- `elli(x, y, w, h, col)`<br>
 Zeichne eine Ellipse mit der Breite `w`, der Höhe `h` und der Farbe `col` von (`x`, `y`).
 
-- `elpb(x, y, w, h, col)`<br>
+- `ellib(x, y, w, h, col)`<br>
 Zeichne den Umriss einer Ellipse der Breite `w`, der Höhe `h` und der Farbe `col` von (`x`, `y`).
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>

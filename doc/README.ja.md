@@ -441,10 +441,10 @@ Pyxelアプリケーションを終了します。
 - `circb(x, y, r, col)`<br>
 半径`r`、色`col`の円の輪郭線を (`x`, `y`) に描画します。
 
-- `elp(x, y, w, h, col)`<br>
+- `elli(x, y, w, h, col)`<br>
 幅`w`、高さ`h`、色`col`の楕円を (`x`, `y`) に描画します。
 
-- `elpb(x, y, w, h, col)`<br>
+- `ellib(x, y, w, h, col)`<br>
 幅`w`、高さ`h`、色`col`の楕円の輪郭線を (`x`, `y`) に描画します。
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
