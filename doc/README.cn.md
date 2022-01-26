@@ -37,7 +37,7 @@
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Pyxel的设计规范参考了[PICO-8](https://www.lexaloffle.com/pico-8.php)和[TIC-80](https://tic80.com/)。
+Pyxel的规范和API受到[PICO-8](https://www.lexaloffle.com/pico-8.php)和[TIC-80](https://tic80.com/)的启发。
 
 Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel制作自己的游戏吧！
 

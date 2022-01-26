@@ -37,7 +37,7 @@
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Спецификации Pyxel вдохновлены великолепными [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
+Спецификации и API Pyxel вдохновлены [PICO-8](https://www.lexaloffle.com/pico-8.php) и [TIC-80](https://tic80.com/).
 
 Pyxel -- программа с открытым кодом и бесплатна для использовния. За дело!
 
