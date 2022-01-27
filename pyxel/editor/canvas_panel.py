@@ -416,7 +416,7 @@ class CanvasPanel(Widget):
             y = self._select_y1 * 8 + 17
             w = self._select_x2 * 8 - x + 20
             h = self._select_y2 * 8 - y + 25
-            pyxel.clip(self.x + 1, self.y + 1, 128, 128)
+            pyxel.clip(self.x + 1, self.y + 1, self.x + 128, self.y + 128)
             pyxel.rectb(x, y, w, h, PANEL_SELECT_FRAME_COLOR)
             pyxel.rectb(x + 1, y + 1, w - 2, h - 2, PANEL_SELECT_BORDER_COLOR)
             pyxel.rectb(x - 1, y - 1, w + 2, h + 2, PANEL_SELECT_BORDER_COLOR)
