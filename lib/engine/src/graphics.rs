@@ -74,10 +74,6 @@ impl Pyxel {
         self.screen.lock().clip(x, y, width, height);
     }
 
-    pub fn clip2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64) {
-        self.screen.lock().clip2(x1, y1, x2, y2);
-    }
-
     pub fn clip0(&mut self) {
         self.screen.lock().clip0();
     }
@@ -118,16 +114,8 @@ impl Pyxel {
         self.screen.lock().rect(x, y, width, height, color);
     }
 
-    pub fn rect2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
-        self.screen.lock().rect2(x1, y1, x2, y2, color);
-    }
-
     pub fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
         self.screen.lock().rectb(x, y, width, height, color);
-    }
-
-    pub fn rectb2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
-        self.screen.lock().rectb2(x1, y1, x2, y2, color);
     }
 
     pub fn circ(&mut self, x: f64, y: f64, radius: f64, color: Color) {
@@ -142,16 +130,8 @@ impl Pyxel {
         self.screen.lock().elli(x, y, width, height, color);
     }
 
-    pub fn elli2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
-        self.screen.lock().elli2(x1, y1, x2, y2, color);
-    }
-
     pub fn ellib(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
         self.screen.lock().ellib(x, y, width, height, color);
-    }
-
-    pub fn ellib2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
-        self.screen.lock().ellib2(x1, y1, x2, y2, color);
     }
 
     pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
