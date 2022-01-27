@@ -28,6 +28,11 @@ fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyRes
 }
 
 #[pyfunction]
+fn clip2(x1: f64, y1: f64, x2: f64, y2: f64) {
+    instance().clip2(x1, y1, x2, y2);
+}
+
+#[pyfunction]
 fn camera(x: Option<f64>, y: Option<f64>) -> PyResult<()> {
     if let (Some(x), Some(y)) = (x, y) {
         instance().camera(x, y);
@@ -77,8 +82,18 @@ fn rect(x: f64, y: f64, w: f64, h: f64, col: Color) {
 }
 
 #[pyfunction]
+fn rect2(x1: f64, y1: f64, x2: f64, y2: f64, col: Color) {
+    instance().rect2(x1, y1, x2, y2, col);
+}
+
+#[pyfunction]
 fn rectb(x: f64, y: f64, w: f64, h: f64, col: Color) {
     instance().rectb(x, y, w, h, col);
+}
+
+#[pyfunction]
+fn rectb2(x1: f64, y1: f64, x2: f64, y2: f64, col: Color) {
+    instance().rectb2(x1, y1, x2, y2, col);
 }
 
 #[pyfunction]
@@ -97,8 +112,18 @@ fn elli(x: f64, y: f64, w: f64, h: f64, col: Color) {
 }
 
 #[pyfunction]
+fn elli2(x1: f64, y1: f64, x2: f64, y2: f64, col: Color) {
+    instance().elli2(x1, y1, x2, y2, col);
+}
+
+#[pyfunction]
 fn ellib(x: f64, y: f64, w: f64, h: f64, col: Color) {
     instance().ellib(x, y, w, h, col);
+}
+
+#[pyfunction]
+fn ellib2(x1: f64, y1: f64, x2: f64, y2: f64, col: Color) {
+    instance().ellib2(x1, y1, x2, y2, col);
 }
 
 #[pyfunction]
@@ -171,6 +196,7 @@ pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(image, m)?)?;
     m.add_function(wrap_pyfunction!(tilemap, m)?)?;
     m.add_function(wrap_pyfunction!(clip, m)?)?;
+    m.add_function(wrap_pyfunction!(clip2, m)?)?;
     m.add_function(wrap_pyfunction!(camera, m)?)?;
     m.add_function(wrap_pyfunction!(pal, m)?)?;
     m.add_function(wrap_pyfunction!(cls, m)?)?;
@@ -178,11 +204,15 @@ pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(pset, m)?)?;
     m.add_function(wrap_pyfunction!(line, m)?)?;
     m.add_function(wrap_pyfunction!(rect, m)?)?;
+    m.add_function(wrap_pyfunction!(rect2, m)?)?;
     m.add_function(wrap_pyfunction!(rectb, m)?)?;
+    m.add_function(wrap_pyfunction!(rectb2, m)?)?;
     m.add_function(wrap_pyfunction!(circ, m)?)?;
     m.add_function(wrap_pyfunction!(circb, m)?)?;
     m.add_function(wrap_pyfunction!(elli, m)?)?;
+    m.add_function(wrap_pyfunction!(elli2, m)?)?;
     m.add_function(wrap_pyfunction!(ellib, m)?)?;
+    m.add_function(wrap_pyfunction!(ellib2, m)?)?;
     m.add_function(wrap_pyfunction!(tri, m)?)?;
     m.add_function(wrap_pyfunction!(trib, m)?)?;
     m.add_function(wrap_pyfunction!(fill, m)?)?;
