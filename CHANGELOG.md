@@ -1,10 +1,5 @@
 # Change Log
 
-## 1.6.9
-- Added the clip2 function
-- Added the rect2 and rectb2 functions
-- Added the elli2 and ellib2 functions
-
 ## 1.6.8
 - Fixed to receive mouse input when window is activated
 - Fixed the window to be active when a file is dropped
