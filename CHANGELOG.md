@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.6.9
+- Fixed the select tool of the resource editor
+
 ## 1.6.8
 - Fixed to receive mouse input when window is activated
 - Fixed the window to be active when a file is dropped
