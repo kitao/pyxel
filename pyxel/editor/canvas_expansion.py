@@ -13,16 +13,16 @@ def _rectb2(self, x1, y1, x2, y2, val):
     self.rectb(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
-def _elp2(self, x1, y1, x2, y2, val):
+def _elli2(self, x1, y1, x2, y2, val):
     x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
     y1, y2 = (y1, y2) if y1 < y2 else (y2, y1)
-    self.elp(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
+    self.elli(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
-def _elpb2(self, x1, y1, x2, y2, val):
+def _ellib2(self, x1, y1, x2, y2, val):
     x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
     y1, y2 = (y1, y2) if y1 < y2 else (y2, y1)
-    self.elpb(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
+    self.ellib(x1, y1, x2 - x1 + 1, y2 - y1 + 1, val)
 
 
 def _get_slice(self, x, y, width, height):
@@ -43,7 +43,7 @@ def _set_slice(self, x, y, slice):
 
 pyxel.Image.rect2 = pyxel.Tilemap.rect2 = _rect2
 pyxel.Image.rectb2 = pyxel.Tilemap.rectb2 = _rectb2
-pyxel.Image.elp2 = pyxel.Tilemap.elp2 = _elp2
-pyxel.Image.elpb2 = pyxel.Tilemap.elpb2 = _elpb2
+pyxel.Image.elli2 = pyxel.Tilemap.elli2 = _elli2
+pyxel.Image.ellib2 = pyxel.Tilemap.ellib2 = _ellib2
 pyxel.Image.get_slice = pyxel.Tilemap.get_slice = _get_slice
 pyxel.Image.set_slice = pyxel.Tilemap.set_slice = _set_slice

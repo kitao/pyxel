@@ -37,7 +37,7 @@ Thanks to its simple specifications inspired by retro gaming consoles, such as o
 <img src="doc/images/sound_music_editor.gif" width="48%">
 </a>
 
-The specifications of Pyxel are referring to awesome [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
+Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
 
 Pyxel is open source and free to use. Let's start making a retro game with Pyxel!
 
@@ -441,10 +441,10 @@ Draw a circle of radius `r` and color `col` at (`x`, `y`).
 - `circb(x, y, r, col)`<br>
 Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`).
 
-- `elp(x, y, w, h, col)`<br>
+- `elli(x, y, w, h, col)`<br>
 Draw an ellipse of width `w`, height `h` and color `col` from (`x`, `y`).
 
-- `elpb(x, y, w, h, col)`<br>
+- `ellib(x, y, w, h, col)`<br>
 Draw the outline of an ellipse of width `w`, height `h` and color `col` from (`x`, `y`).
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>

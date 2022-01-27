@@ -3,8 +3,9 @@
 ## 1.6.8
 - Fixed to receive mouse input when window is activated
 - Fixed the window to be active when a file is dropped
-- Added the elp and elpb functions
+- Added the elli and ellib functions
 - Added the fill function
+- Fixed to work even when audio is not installed
 - Updated the READMEs
 
 ## 1.6.7

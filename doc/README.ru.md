@@ -37,7 +37,7 @@
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Спецификации Pyxel вдохновлены великолепными [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
+Спецификации и API Pyxel вдохновлены [PICO-8](https://www.lexaloffle.com/pico-8.php) и [TIC-80](https://tic80.com/).
 
 Pyxel -- программа с открытым кодом и бесплатна для использовния. За дело!
 
@@ -442,10 +442,10 @@ pyxel play ФАЙЛ_PYXEL_ПРИЛОЖЕНИЯ
 - `circb(x, y, r, col)`<br>
 Нарисовать окружность радиуса `r` и цвета `col` центром в (`x`, `y`)
 
-- `elp(x, y, w, h, col)`<br>
+- `elli(x, y, w, h, col)`<br>
 Нарисуйте эллипс шириной `w`, высотой `h` и цветом `col` из (`x`, `y`).
 
-- `elpb(x, y, w, h, col)`<br>
+- `ellib(x, y, w, h, col)`<br>
 Нарисуйте контур эллипса шириной `w`, высотой `h` и цветом `col` из (`x`, `y`).
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>

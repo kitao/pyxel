@@ -206,7 +206,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    pub fn elp(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
+    pub fn elli(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
         let width = as_u32(width);
@@ -228,7 +228,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    pub fn elpb(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
+    pub fn ellib(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
         let width = as_u32(width);

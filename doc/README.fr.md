@@ -37,7 +37,7 @@ Grâce à ses spécifications simples inspirées par les consoles rétro, comme 
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Les spécifications de Pyxel sont inspirées par à [PICO-8](https://www.lexaloffle.com/pico-8.php) et [TIC-80](https://tic80.com/).
+Les spécifications et les API de Pyxel sont inspirées de [PICO-8](https://www.lexaloffle.com/pico-8.php) et [TIC-80](https://tic80.com/).
 
 Pyxel est un logiciel libre et open source. Commençons à faire un jeu vidéo rétro avec Pyxel !
 
@@ -442,10 +442,10 @@ Dessine un cercle de rayon `r` et de couleur `col` à (`x`, `y`)
 - `circb(x, y, r, col)`<br>
 Dessine le contour d’un cercle de rayon `r` et de couleur `col` à (`x`, `y`)
 
-- `elp(x, y, w, h, col)`<br>
+- `elli(x, y, w, h, col)`<br>
 Dessinez une ellipse de largeur `w`, de hauteur `h` et de couleur `col` à partir de (`x`, `y`).
 
-- `elpb(x, y, w, h, col)`<br>
+- `ellib(x, y, w, h, col)`<br>
 Dessinez le contour d'une ellipse de largeur `w`, de hauteur `h` et de couleur `col` à partir de (`x`, `y`).
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>

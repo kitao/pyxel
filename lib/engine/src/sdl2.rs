@@ -194,8 +194,10 @@ impl Platform for Sdl2 {
 
                 // Window events
                 SdlEvent::Window { win_event, .. } => match win_event {
-                    SdlWindowEvent::Shown => Event::Shown,
-                    SdlWindowEvent::Minimized => Event::Hidden,
+                    SdlWindowEvent::Shown
+                    | SdlWindowEvent::Maximized
+                    | SdlWindowEvent::Restored => Event::Shown,
+                    SdlWindowEvent::Hidden | SdlWindowEvent::Minimized => Event::Hidden,
                     _ => continue,
                 },
 
@@ -370,12 +372,15 @@ impl Platform for Sdl2 {
             channels: Some(1),
             samples: Some(num_samples as u16),
         };
-        let sdl_audio_device = self
-            .sdl_audio
-            .open_playback(None, &spec, |_| AudioContextHolder { audio })
-            .unwrap();
-        sdl_audio_device.resume();
-        self.sdl_audio_device = Some(sdl_audio_device);
+        self.sdl_audio_device = if let Ok(sdl_audio_device) =
+            self.sdl_audio
+                .open_playback(None, &spec, |_| AudioContextHolder { audio })
+        {
+            sdl_audio_device.resume();
+            Some(sdl_audio_device)
+        } else {
+            None
+        };
     }
 
     fn pause_audio(&mut self) {

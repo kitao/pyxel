@@ -37,14 +37,14 @@ Gracias a sus características simples inspiradas en las consolas de juegos retr
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Las especificaciones de Pyxel están referenciados a los increíbles [PICO-8](https://www.lexaloffle.com/pico-8.php) y [TIC-80](https://tic80.com/)
+Las especificaciones y API de Pyxel se inspiran en [PICO-8](https://www.lexaloffle.com/pico-8.php) y [TIC-80](https://tic80.com/).
 
 Pyxel es de código abierto y gratuito. ¡Empecemos haciendo un juego retro con Pyxel!
 
 ## Características
 
 - Se ejecuta en Windows, Mac(Intel y M1) y Linux
-- Programación con python
+- Programación con Python
 - Paleta de 16 colores
 - 3 bancos de imágenes de 256x256
 - 8 mapas de 256x256
@@ -63,11 +63,11 @@ Pyxel es de código abierto y gratuito. ¡Empecemos haciendo un juego retro con 
 
 Hay dos tipos de Pyxel, una versión como paquete y una versión independiente.
 
-### Instalar la versión paquete
+### Instalar la versión empaquetada
 
 La versión empaquetada de Pyxel utiliza Pyxel como un módulo de extensión de Python.
 
-Lo recomendado para ellos que estén familiarizados con el manejo de paquetes en Python es utilizar el comando `pip` o para los que quieran desarrollar una aplicación completa.
+Es lo recomendado para aquellos que estén familiarizados con el manejo de paquetes en Python mediante el comando `pip` o para los que quieran desarrollar una aplicación completa.
 
 **Windows**
 
@@ -93,7 +93,7 @@ Después de instalar los paquetes SDL2 (`libsdl2-dev` para Ubuntu), [Python3](ht
 sudo pip3 install -U pyxel
 ```
 
-Si los pasos mencionados previamente no funcionan, intente compilarla usted mismo, siguiendo los siguientes comandos después de instalar `cmake` and `rust`:
+Si los pasos mencionados arriba no funcionan, intente compilarla usted mismo, siguiendo los siguientes comandos después de instalar `cmake` and `rust`:
 
 ```sh
 git clone https://github.com/kitao/pyxel.git
@@ -133,7 +133,7 @@ Si los pasos mencionados previamente no funcionan, intenta construir / compilar 
 
 ### Prueba los ejemplos de Pyxel
 
-Después de instalar Pyxel, los ejemplos de Pyxel se copiarán a la carpeta actual, con el siguiente comando:
+Después de instalar Pyxel, los ejemplos de Pyxel se copiarán a la carpeta actual con el siguiente comando:
 
 ```sh
 pyxel copy_examples
@@ -166,7 +166,7 @@ pyxel play 30SecondsOfDaylight.pyxapp
 
 ### Crear una aplicación Pyxel
 
-Tras importar el módulo Pyxel en el código de python, especifique la dimensión de la ventana con la función `init`, luego, inicie la aplicación con la función `run`.
+Tras importar el módulo Pyxel en el código de Python, especifique la dimensión de la ventana con la función `init`, luego, inicie la aplicación con la función `run`.
 
 ```python
 import pyxel
@@ -239,7 +239,7 @@ El código generado puede ser ejecutado con el siguiente comando:
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-Para la versión empaquetada, se puede ejecutar de la siguiente manera, como un script normal de Python:
+Para la versión empaquetada, se puede ejecutar como un script normal de Python:
 
 ```sh
 cd pyxel_examples
@@ -257,7 +257,7 @@ Salir de la aplicación
 - `Alt(Option)+1`<br>
 Guardar la captura de pantalla al escritorio
 - `Alt(Option)+2`<br>
-Restablecer la hora de inicio de la grabación del vídeo de captura de pantalla
+Restablecer el momento de inicio de la grabación del vídeo de captura de pantalla
 - `Alt(Option)+3`<br>
 Guarda la captura de video en el escritorio (hasta 10 segundos)
 - `Alt(Option)+0`<br>
@@ -306,7 +306,7 @@ El modo para editar el sonido.
 
 **Editor de música:**
 
-El módulo para editar música en el que organiza los sonidos del editor de sonidos para poder reproducirlos.
+El modo para editar música en el que organiza los sonidos del editor de sonidos para poder reproducirlos.
 
 <img src="doc/images/music_editor.gif">
 
@@ -352,7 +352,7 @@ La anchura y la altura de la pantalla
 El número de fotogramas que han pasado
 
 - `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
-Inicializa la aplicación de pyxel con el tamaño (`width`, `height`). Los siguientes parámetros pueden ser especificados como opciones: el título con `title`, el ratio de fotogramas por segundo con `fps`, para salir de la aplicación `quit_key`, la escala de captura de pantalla con `capture_scale` y el tiempo máximo para grabar la pantalla con `capture_sec`. <br>
+Inicializa la aplicación de Pyxel con el tamaño (`width`, `height`). Los siguientes parámetros pueden ser especificados como opciones: el título con `title`, el ratio de fotogramas por segundo con `fps`, la tecla para salir de la aplicación con `quit_key`, la escala de captura de pantalla con `capture_scale` y el tiempo máximo para grabar la pantalla con `capture_sec`. <br>
 por ejemplo: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
@@ -383,7 +383,7 @@ EL valor actual de la rueda del ratón
 Devuelve True si key es presionada, si no devuelve False (lista de definición de teclas)
 
 - `btnp(key, [hold], [period])`<br>
-Devuelve `True` si `key` es presionada en ese cuadro, si no devuelve `False`. Cuando `hold` y `period` son definidos, devuelve `True` en el intervalo de cuadro `period` cuando la `key` es sostenida por más cuadros que el valor `hold`.
+Devuelve `True` si `key` es presionada en ese cuadro, si no devuelve `False`. Cuando `hold` y `period` son definidos, devuelve `True` en el intervalo de cuadro `period` cuando `key` es sostenida por más cuadros que el valor `hold`.
 - `btnr(key)`<br>
 Devuelve `True` si se suelta la tecla `key` en ese frame, si no, devuelve `False`.
 
@@ -397,11 +397,11 @@ Lista de la paleta de colores que se pueden representar. El color del display se
 Ejemplo: `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
 
 - `image(img)`<br>
-Opera la imagen del banco de imágenes `img`(0-2). (Vea la clase Imágenes)<br>
+Opera la imagen del banco de imágenes `img`(0-2). (Vea la clase Image)<br>
 Ejemplo: `pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
-Opera el mapa `tm` (0-7). (Vea la clase del mapa)
+Opera el mapa `tm` (0-7). (Vea la clase Tilemap)
 
 - `clip(x, y, w, h)`<br>
 Establezca el área de dibujo de la pantalla de (`x`, `y`) a una anchura `w` y a una altura `h`. Reinicia el área de dibujo a todo el área de la pantalla con `clip()`.
@@ -436,10 +436,10 @@ Dibuja un círculo de radio `r` y color `col` en (`x`, `y`).
 - `circb(x, y, r, col)`<br>
 Dibuja una circunferencia de radio `r` y color `col` en (`x`, `y`).
 
-- `elp(x, y, w, h, col)`<br>
+- `elli(x, y, w, h, col)`<br>
 Dibuja una elipse de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
 
-- `elpb(x, y, w, h, col)`<br>
+- `ellib(x, y, w, h, col)`<br>
 Dibuja el contorno de una elipse de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
@@ -467,11 +467,11 @@ Dibuja un string `s` del color`col` en (`x`, `y`).
 ### Audio
 
 - `sound(snd)`<br>
-Opera el sonido `snd` (0-63). (Vea la clase Sonido)<br>
+Opera el sonido `snd` (0-63). (Vea la clase Sound)<br>
 Ejemplo: `pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
-Reproduce la música  `msc` (0-7). (Vea la clase Música)
+Reproduce la música  `msc` (0-7). (Vea la clase Music)
 
 - `play_pos(ch)`<br>
 Obtenga la posición de la reproducción de la música de un canal  `ch` (0-3) como la tupla `(sound no, note no)`, no quiere decir número. Devuelve `None` cuando la música cesa.
@@ -485,7 +485,7 @@ Reproduce la música `msc` (0-7). La posición de inicio de la reproducción se 
 - `stop([ch])`<br>
 Para la reproducción del canal `ch` (0-3). `stop()` para detener todos los canales
 
-### Clase Imagen
+### Clase Image
 
 - `width`, `height`<br>
 La anchura y la altura de una imagen
@@ -503,7 +503,7 @@ Obtén el color del pyxel en la posición (`x`, `y`).
 - `pset(x, y, col)`<br>
 Dibuja un pixel del color `col` en las coordenadas (`x`, `y`).
 
-### Clase Mapa de celdas
+### Clase Tilemap
 
 - `width`, `height`<br>
 La anchura y la altura del mapa
@@ -521,7 +521,7 @@ Obtén la celda del mapa de la posición (`x`, `y`). Una celda es una tupla form
 - `pset(x, y, tile)`<br>
 Dibuja una `tile` en (`x`, `y`). Una celda es una tupla formada por `(tile_x, tile_y)`
 
-### Sound Class
+### Clase Sound
 
 - `notes`<br>
 Lista de notas (0-127). Cuanto mayor sea el número, mayor será el pitch (más agudo) y a 33, se convierte en la nota 'A2' (440 Hz). El resto es -1
@@ -557,7 +557,7 @@ Ejemplo: `pyxel.sound(0).set_volume("7777 7531")`
 Fija los efectos con una string hecha con 'NSVF'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
 Ejemplo: `pyxel.sound(0).set_effect("NFNF NVVS")`
 
-### Clase Música
+### Clase Music
 
 - `sequences`<br>
 Lista bi-dimensional de sonidos (0-63) en una lista indexada por el número de canales.
@@ -568,7 +568,7 @@ Ejemplo: `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 ### APIs avanzadas
 
-Pyxel tiene "API avanzadas" que no se mencionan en esta referencia porque "puede confundir a los usuarios" o "necesita unos conocimientos especializados para poder utilizarlas"
+Pyxel tiene "API avanzadas" que no se mencionan en esta referencia porque "puede confundir a los usuarios" o "necesita unos conocimientos especializados para poder utilizarlas".
 
 Si estás familiarizado con tus habilidades. ¡Intenta crear proyectos alucinantes con [esto](../pyxel/__init__.pyi) como pista!
 

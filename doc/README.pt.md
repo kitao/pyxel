@@ -37,7 +37,7 @@ Graças às suas especificações simples inspiradas em consoles de jogos retrô
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-As especificações do Pyxel fazem referência aos incríveis [PICO-8](https://www.lexaloffle.com/pico-8.php) e [TIC-80](https://tic80.com/).
+As especificações e APIs de Pyxel são inspiradas por [PICO-8](https://www.lexaloffle.com/pico-8.php) e [TIC-80](https://tic80.com/).
 
 Pyxel é open source e livre para utilização. Vamos começar fazendo um jogo retrô com Pyxel!
 
@@ -441,10 +441,10 @@ Desenha um círculo de raio `r` e cor `col` em (`x`, `y`)
 - `circb(x, y, r, col)`<br>
 Desenha o contorno de um círculo de raio `r` e cor `col` em (`x`, `y`)
 
-- `elp(x, y, w, h, col)`<br>
+- `elli(x, y, w, h, col)`<br>
 Desenhar uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
 
-- `elpb(x, y, w, h, col)`<br>
+- `ellib(x, y, w, h, col)`<br>
 Desenhar o contorno de uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>

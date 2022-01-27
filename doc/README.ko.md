@@ -37,7 +37,7 @@
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
 
-Pyxel의 사양은 [PICO-8](https://www.lexaloffle.com/pico-8.php)과 [TIC-80](https://tic80.com/)의 디자인을 참고로 하고 있습니다.
+Pyxel의 사양 및 API는 [PICO-8](https://www.lexaloffle.com/pico-8.php) 및 [TIC-80](https://tic80.com/)에서 영감을 받았습니다.
 
 Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Pyxel과 함께 레트로 스타일의 게임을 만들어보세요!
 
@@ -441,10 +441,10 @@ Pyxel 애플리케이션을 종료합니다.
 - `circb(x, y, r, col)`<br>
 반경 `r`, `col` 색의 원 테두리를 (`x`, `y`) 좌표에 그립니다. (테두리 안쪽에 색상을 채우지 않음)
 
-- `elp(x, y, w, h, col)`<br>
+- `elli(x, y, w, h, col)`<br>
 (`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 타원을 그립니다.
 
-- `elpb(x, y, w, h, col)`<br>
+- `ellib(x, y, w, h, col)`<br>
 (`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 타원 윤곽선을 그립니다.
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
