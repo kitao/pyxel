@@ -45,6 +45,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             .intersects(RectArea::new(x, y, width, height));
     }
 
+    pub fn clip2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64) {
+        let (x1, x2) = if x1 < x2 { (x1, x2) } else { (x2, x1) };
+        let (y1, y2) = if y1 < y2 { (y1, y2) } else { (y2, y1) };
+        self.clip(x1, y1, x2 - x1 + 1.0, y2 - y1 + 1.0);
+    }
+
     pub fn clip0(&mut self) {
         self.clip_rect = self.self_rect;
     }
@@ -149,6 +155,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
+    pub fn rect2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, value: T) {
+        let (x1, x2) = if x1 < x2 { (x1, x2) } else { (x2, x1) };
+        let (y1, y2) = if y1 < y2 { (y1, y2) } else { (y2, y1) };
+        self.rect(x1, y1, x2 - x1 + 1.0, y2 - y1 + 1.0, value);
+    }
+
     pub fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
@@ -171,6 +183,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             self.pset(left as f64, y as f64, value);
             self.pset(right as f64, y as f64, value);
         }
+    }
+
+    pub fn rectb2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, value: T) {
+        let (x1, x2) = if x1 < x2 { (x1, x2) } else { (x2, x1) };
+        let (y1, y2) = if y1 < y2 { (y1, y2) } else { (y2, y1) };
+        self.rectb(x1, y1, x2 - x1 + 1.0, y2 - y1 + 1.0, value);
     }
 
     pub fn circ(&mut self, x: f64, y: f64, radius: f64, value: T) {
@@ -228,6 +246,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
+    pub fn elli2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, value: T) {
+        let (x1, x2) = if x1 < x2 { (x1, x2) } else { (x2, x1) };
+        let (y1, y2) = if y1 < y2 { (y1, y2) } else { (y2, y1) };
+        self.elli(x1, y1, x2 - x1 + 1.0, y2 - y1 + 1.0, value);
+    }
+
     pub fn ellib(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
         let x = as_i32(x);
         let y = as_i32(y);
@@ -248,6 +272,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             self.pset(x1 as f64, y2 as f64, value);
             self.pset(x2 as f64, y2 as f64, value);
         }
+    }
+
+    pub fn ellib2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, value: T) {
+        let (x1, x2) = if x1 < x2 { (x1, x2) } else { (x2, x1) };
+        let (y1, y2) = if y1 < y2 { (y1, y2) } else { (y2, y1) };
+        self.ellib(x1, y1, x2 - x1 + 1.0, y2 - y1 + 1.0, value);
     }
 
     fn ellipse_params(x: i32, y: i32, width: u32, height: u32) -> (f64, f64, f64, f64) {
