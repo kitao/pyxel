@@ -161,6 +161,10 @@ impl Image {
         self.canvas.clip(x, y, width, height);
     }
 
+    pub fn clip2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64) {
+        self.canvas.clip2(x1, y1, x2, y2);
+    }
+
     pub fn clip0(&mut self) {
         self.canvas.clip0();
     }
@@ -205,9 +209,19 @@ impl Image {
             .rect(x, y, width, height, self.palette[color as usize]);
     }
 
+    pub fn rect2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
+        self.canvas
+            .rect2(x1, y1, x2, y2, self.palette[color as usize]);
+    }
+
     pub fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
         self.canvas
             .rectb(x, y, width, height, self.palette[color as usize]);
+    }
+
+    pub fn rectb2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
+        self.canvas
+            .rectb2(x1, y1, x2, y2, self.palette[color as usize]);
     }
 
     pub fn circ(&mut self, x: f64, y: f64, radius: f64, color: Color) {
@@ -224,9 +238,19 @@ impl Image {
             .elli(x, y, width, height, self.palette[color as usize]);
     }
 
+    pub fn elli2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
+        self.canvas
+            .elli2(x1, y1, x2, y2, self.palette[color as usize]);
+    }
+
     pub fn ellib(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
         self.canvas
             .ellib(x, y, width, height, self.palette[color as usize]);
+    }
+
+    pub fn ellib2(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
+        self.canvas
+            .ellib2(x1, y1, x2, y2, self.palette[color as usize]);
     }
 
     pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
