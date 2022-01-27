@@ -76,6 +76,10 @@ impl Image {
         Ok(())
     }
 
+    pub fn clip2(&self, x1: f64, y1: f64, x2: f64, y2: f64) {
+        self.pyxel_image.lock().clip2(x1, y1, x2, y2);
+    }
+
     pub fn camera(&self, x: Option<f64>, y: Option<f64>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
             self.pyxel_image.lock().camera(x, y);
@@ -107,8 +111,16 @@ impl Image {
         self.pyxel_image.lock().rect(x, y, w, h, col);
     }
 
+    pub fn rect2(&self, x1: f64, y1: f64, x2: f64, y2: f64, col: Color) {
+        self.pyxel_image.lock().rect2(x1, y1, x2, y2, col);
+    }
+
     pub fn rectb(&self, x: f64, y: f64, w: f64, h: f64, col: Color) {
         self.pyxel_image.lock().rectb(x, y, w, h, col);
+    }
+
+    pub fn rectb2(&self, x1: f64, y1: f64, x2: f64, y2: f64, col: Color) {
+        self.pyxel_image.lock().rectb2(x1, y1, x2, y2, col);
     }
 
     pub fn circ(&self, x: f64, y: f64, r: f64, col: Color) {
@@ -123,8 +135,16 @@ impl Image {
         self.pyxel_image.lock().elli(x, y, w, h, col);
     }
 
+    pub fn elli2(&self, x1: f64, y1: f64, x2: f64, y2: f64, col: Color) {
+        self.pyxel_image.lock().elli2(x1, y1, x2, y2, col);
+    }
+
     pub fn ellib(&self, x: f64, y: f64, w: f64, h: f64, col: Color) {
         self.pyxel_image.lock().ellib(x, y, w, h, col);
+    }
+
+    pub fn ellib2(&self, x1: f64, y1: f64, x2: f64, y2: f64, col: Color) {
+        self.pyxel_image.lock().ellib2(x1, y1, x2, y2, col);
     }
 
     pub fn tri(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: Color) {
