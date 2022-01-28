@@ -330,7 +330,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn fill(&mut self, x: f64, y: f64, value: T) {
         let x = as_i32(x) - self.camera_x;
         let y = as_i32(y) - self.camera_y;
-        let dst_value = self.pget(x as f64, y as f64);
+        if !self.clip_rect.contains(x, y) {
+            return;
+        }
+        let dst_value = self.read_data(x, y);
         if value != dst_value {
             self.fill_rec(x, y, value, dst_value);
         }
