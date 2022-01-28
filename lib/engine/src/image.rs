@@ -363,8 +363,8 @@ impl Image {
     }
 
     pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color, font: SharedImage) {
-        let mut x = as_i32(x);
-        let mut y = as_i32(y);
+        let mut x = as_i32(x); // No need to reflect camera_x
+        let mut y = as_i32(y); // No need to reflect camera_y
         let color = self.palette[color as usize];
         let palette1 = self.palette[1];
         self.pal(1, color);
