@@ -427,15 +427,15 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     fn fill_rec(&mut self, x: i32, y: i32, value: T, dst_value: T) {
-        if self.data[y as usize][x as usize] != dst_value {
+        if self.read_data(x, y) != dst_value {
             return;
         }
         let mut xi = x;
         while xi >= self.clip_rect.left() {
-            if self.data[y as usize][xi as usize] != dst_value {
+            if self.read_data(xi, y) != dst_value {
                 break;
             }
-            self.data[y as usize][xi as usize] = value;
+            self.write_data(xi, y, value);
             if y > self.clip_rect.top() {
                 self.fill_rec(xi, y - 1, value, dst_value)
             }
@@ -446,10 +446,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
         let mut xi = x + 1;
         while xi <= self.clip_rect.right() {
-            if self.data[y as usize][xi as usize] != dst_value {
+            if self.read_data(xi, y) != dst_value {
                 break;
             }
-            self.data[y as usize][xi as usize] = value;
+            self.write_data(xi, y, value);
             if y > self.clip_rect.top() {
                 self.fill_rec(xi, y - 1, value, dst_value)
             }
