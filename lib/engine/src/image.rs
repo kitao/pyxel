@@ -78,15 +78,6 @@ impl Image {
         image
     }
 
-    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
-        let (r1, g1, b1) = rgb1;
-        let (r2, g2, b2) = rgb2;
-        let dx = (r1 as f64 - r2 as f64) * 0.30;
-        let dy = (g1 as f64 - g2 as f64) * 0.59;
-        let dz = (b1 as f64 - b2 as f64) * 0.11;
-        dx * dx + dy * dy + dz * dz
-    }
-
     pub fn width(&self) -> u32 {
         self.canvas.width()
     }
@@ -403,6 +394,15 @@ impl Image {
             x += FONT_WIDTH as i32;
         }
         self.pal(1, palette1);
+    }
+
+    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
+        let (r1, g1, b1) = rgb1;
+        let (r2, g2, b2) = rgb2;
+        let dx = (r1 as f64 - r2 as f64) * 0.30;
+        let dy = (g1 as f64 - g2 as f64) * 0.59;
+        let dz = (b1 as f64 - b2 as f64) * 0.11;
+        dx * dx + dy * dy + dz * dz
     }
 }
 
