@@ -28,7 +28,6 @@ mod constant_wrapper;
 mod graphics_wrapper;
 mod image_wrapper;
 mod input_wrapper;
-mod math_wrapper;
 mod music_wrapper;
 mod resource_wrapper;
 mod sound_wrapper;
@@ -48,7 +47,6 @@ use crate::constant_wrapper::add_module_constants;
 use crate::graphics_wrapper::add_graphics_functions;
 use crate::image_wrapper::add_image_class;
 use crate::input_wrapper::add_input_functions;
-use crate::math_wrapper::add_math_functions;
 use crate::music_wrapper::add_music_class;
 use crate::resource_wrapper::add_resource_functions;
 use crate::sound_wrapper::add_sound_class;
@@ -92,7 +90,6 @@ fn pyxel_wrapper(_py: Python, m: &PyModule) -> PyResult<()> {
     add_input_functions(m)?;
     add_graphics_functions(m)?;
     add_audio_functions(m)?;
-    add_math_functions(m)?;
 
     Ok(())
 }
