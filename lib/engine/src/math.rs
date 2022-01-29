@@ -21,13 +21,13 @@ impl Math {
 }
 
 impl Pyxel {
-    pub fn sgn(&self, x: f64) -> f64 {
+    pub fn sgn(&self, x: f64) -> i32 {
         if x > 0.0 {
-            1.0
+            1
         } else if x < 0.0 {
-            -1.0
+            -1
         } else {
-            0.0
+            0
         }
     }
 
