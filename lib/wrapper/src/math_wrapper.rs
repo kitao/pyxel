@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use crate::instance;
 
 #[pyfunction]
-fn sgn(x: f64) -> f64 {
+fn sgn(x: f64) -> i32 {
     instance().sgn(x)
 }
 
@@ -43,7 +43,7 @@ fn rndi(a: i32, b: i32) -> i32 {
 }
 
 #[pyfunction]
-fn noise(x: f64, y: Option<f64>, z: Option<f64>) -> f64 {
+pub fn noise(x: f64, y: Option<f64>, z: Option<f64>) -> f64 {
     let y = y.unwrap_or(0.0);
     let z = z.unwrap_or(0.0);
     instance().noise(x, y, z)
