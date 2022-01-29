@@ -33,7 +33,6 @@ mod graphics;
 mod image;
 mod input;
 mod key;
-mod math;
 mod music;
 mod oscillator;
 mod platform;
@@ -54,7 +53,6 @@ use crate::graphics::Graphics;
 pub use crate::image::{Image, SharedImage};
 use crate::input::Input;
 pub use crate::key::*;
-pub use crate::math::Math;
 pub use crate::music::{Music, SharedMusic};
 use crate::platform::Platform;
 use crate::resource::Resource;
@@ -74,7 +72,6 @@ pub struct Pyxel {
     input: Input,
     graphics: Graphics,
     audio: Audio,
-    math: Math,
     pub colors: [Rgb8; NUM_COLORS as usize],
     pub screen: SharedImage,
     pub cursor: SharedImage,
@@ -108,7 +105,6 @@ impl Pyxel {
         let input = Input::new();
         let graphics = Graphics::new();
         let audio = Audio::new(&mut platform);
-        let math = Math::new(&mut platform);
 
         let colors = DEFAULT_COLORS;
         let screen = Image::new(width, height);
@@ -122,7 +118,6 @@ impl Pyxel {
             input,
             graphics,
             audio,
-            math,
             colors,
             screen,
             cursor,
