@@ -7,10 +7,12 @@ fn ceil(x: f64) -> i32 {
     instance().ceil(x)
 }
 
+#[pyfunction]
 fn floor(x: f64) -> i32 {
     instance().floor(x)
 }
 
+#[pyfunction]
 fn sgn(x: f64) -> f64 {
     instance().sgn(x)
 }
@@ -63,6 +65,8 @@ fn noise(x: f64, y: Option<f64>, z: Option<f64>) -> f64 {
 }
 
 pub fn add_math_functions(m: &PyModule) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(ceil, m)?)?;
+    m.add_function(wrap_pyfunction!(floor, m)?)?;
     m.add_function(wrap_pyfunction!(sgn, m)?)?;
     m.add_function(wrap_pyfunction!(sqrt, m)?)?;
     m.add_function(wrap_pyfunction!(sin, m)?)?;
