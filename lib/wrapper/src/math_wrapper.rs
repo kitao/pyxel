@@ -43,6 +43,11 @@ fn rndi(a: i32, b: i32) -> i32 {
 }
 
 #[pyfunction]
+fn nseed(seed: u32) {
+    instance().nseed(seed);
+}
+
+#[pyfunction]
 fn noise(x: f64, y: Option<f64>, z: Option<f64>) -> f64 {
     let y = y.unwrap_or(0.0);
     let z = z.unwrap_or(0.0);
@@ -58,6 +63,7 @@ pub fn add_math_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(srand, m)?)?;
     m.add_function(wrap_pyfunction!(rnd, m)?)?;
     m.add_function(wrap_pyfunction!(rndi, m)?)?;
+    m.add_function(wrap_pyfunction!(nseed, m)?)?;
     m.add_function(wrap_pyfunction!(noise, m)?)?;
     Ok(())
 }
