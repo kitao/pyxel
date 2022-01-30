@@ -33,13 +33,13 @@ fn srand(seed: u32) {
 }
 
 #[pyfunction]
-fn rndi(a: i32, b: i32) -> i32 {
-    instance().rndi(a, b)
+fn rnd() -> f64 {
+    instance().rnd()
 }
 
 #[pyfunction]
-fn rndf(a: f64, b: f64) -> f64 {
-    instance().rndf(a, b)
+fn rndi(a: i32, b: i32) -> i32 {
+    instance().rndi(a, b)
 }
 
 #[pyfunction]
@@ -61,8 +61,8 @@ pub fn add_math_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(cos, m)?)?;
     m.add_function(wrap_pyfunction!(atan2, m)?)?;
     m.add_function(wrap_pyfunction!(srand, m)?)?;
+    m.add_function(wrap_pyfunction!(rnd, m)?)?;
     m.add_function(wrap_pyfunction!(rndi, m)?)?;
-    m.add_function(wrap_pyfunction!(rndf, m)?)?;
     m.add_function(wrap_pyfunction!(nseed, m)?)?;
     m.add_function(wrap_pyfunction!(noise, m)?)?;
     Ok(())
