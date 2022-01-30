@@ -171,7 +171,7 @@
 - Changed the gcc version for Mac
 - Added the example #9
 - Added the Noguchi's tilemap for reference
-- Added figures for the API reference in the READEMEs
+- Added figures for the API reference in the READMEs
 
 ## 1.4.1
 - Changed to use gcc compiler on Mac
