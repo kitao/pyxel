@@ -1,6 +1,3 @@
-import math
-import random
-
 import pyxel
 
 SCREEN_WIDTH = 256
@@ -19,19 +16,19 @@ class Vec2:
 
 class Bubble:
     def __init__(self):
-        self.r = random.uniform(3, 10)
+        self.r = pyxel.rndf(3, 10)
 
         self.pos = Vec2(
-            random.uniform(self.r, SCREEN_WIDTH - self.r),
-            random.uniform(self.r, SCREEN_HEIGHT - self.r),
+            pyxel.rndf(self.r, SCREEN_WIDTH - self.r),
+            pyxel.rndf(self.r, SCREEN_HEIGHT - self.r),
         )
 
         self.vel = Vec2(
-            random.uniform(-MAX_BUBBLE_SPEED, MAX_BUBBLE_SPEED),
-            random.uniform(-MAX_BUBBLE_SPEED, MAX_BUBBLE_SPEED),
+            pyxel.rndf(-MAX_BUBBLE_SPEED, MAX_BUBBLE_SPEED),
+            pyxel.rndf(-MAX_BUBBLE_SPEED, MAX_BUBBLE_SPEED),
         )
 
-        self.color = random.randint(1, 15)
+        self.color = pyxel.rndi(1, 15)
 
     def update(self):
         self.pos.x += self.vel.x
@@ -74,21 +71,21 @@ class App:
 
                 if dx * dx + dy * dy < bubble.r * bubble.r:
                     self.is_exploded = True
-                    new_r = math.sqrt(bubble.r * bubble.r / NUM_EXPLODE_BUBBLES)
+                    new_r = pyxel.sqrt(bubble.r * bubble.r / NUM_EXPLODE_BUBBLES)
 
                     for j in range(NUM_EXPLODE_BUBBLES):
-                        angle = math.pi * 2 * j / NUM_EXPLODE_BUBBLES
+                        angle = 360 * j / NUM_EXPLODE_BUBBLES
 
                         new_bubble = Bubble()
                         new_bubble.r = new_r
-                        new_bubble.pos.x = bubble.pos.x + (bubble.r + new_r) * math.cos(
-                            angle
-                        )
-                        new_bubble.pos.y = bubble.pos.y + (bubble.r + new_r) * math.sin(
-                            angle
-                        )
-                        new_bubble.vel.x = math.cos(angle) * MAX_BUBBLE_SPEED
-                        new_bubble.vel.y = math.sin(angle) * MAX_BUBBLE_SPEED
+                        new_bubble.pos.x = bubble.pos.x + (
+                            bubble.r + new_r
+                        ) * pyxel.cos(angle)
+                        new_bubble.pos.y = bubble.pos.y + (
+                            bubble.r + new_r
+                        ) * pyxel.sin(angle)
+                        new_bubble.vel.x = pyxel.cos(angle) * MAX_BUBBLE_SPEED
+                        new_bubble.vel.y = pyxel.sin(angle) * MAX_BUBBLE_SPEED
                         self.bubbles.append(new_bubble)
 
                     del self.bubbles[i]
@@ -106,7 +103,7 @@ class App:
 
                 if dx * dx + dy * dy < total_r * total_r:
                     new_bubble = Bubble()
-                    new_bubble.r = math.sqrt(bi.r * bi.r + bj.r * bj.r)
+                    new_bubble.r = pyxel.sqrt(bi.r * bi.r + bj.r * bj.r)
                     new_bubble.pos.x = (bi.pos.x * bi.r + bj.pos.x * bj.r) / total_r
                     new_bubble.pos.y = (bi.pos.y * bi.r + bj.pos.y * bj.r) / total_r
                     new_bubble.vel.x = (bi.vel.x * bi.r + bj.vel.x * bj.r) / total_r

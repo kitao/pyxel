@@ -1,5 +1,3 @@
-import math
-
 import pyxel
 
 TRANSPARENT_COLOR = 2
@@ -69,8 +67,8 @@ def is_wall(x, y):
 
 
 def spawn_enemy(left_x, right_x):
-    left_x = math.ceil(left_x / 8)
-    right_x = math.floor(right_x / 8)
+    left_x = pyxel.ceil(left_x / 8)
+    right_x = pyxel.floor(right_x / 8)
     for x in range(left_x, right_x + 1):
         for y in range(16):
             tile = get_tile(x, y)
@@ -200,7 +198,7 @@ class Enemy3:
             dy = player.y - self.y
             sq_dist = dx * dx + dy * dy
             if sq_dist < 60 ** 2:
-                dist = math.sqrt(sq_dist)
+                dist = pyxel.sqrt(sq_dist)
                 enemies.append(Enemy3Bullet(self.x, self.y, dx / dist, dy / dist))
                 self.time_to_fire = 60
 

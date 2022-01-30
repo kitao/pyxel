@@ -1,5 +1,3 @@
-from random import randint
-
 import pyxel
 
 
@@ -14,8 +12,10 @@ class App:
         self.is_alive = True
         self.far_cloud = [(-10, 75), (40, 65), (90, 60)]
         self.near_cloud = [(10, 25), (70, 35), (120, 15)]
-        self.floor = [(i * 60, randint(8, 104), True) for i in range(4)]
-        self.fruit = [(i * 60, randint(0, 104), randint(0, 2), True) for i in range(4)]
+        self.floor = [(i * 60, pyxel.rndi(8, 104), True) for i in range(4)]
+        self.fruit = [
+            (i * 60, pyxel.rndi(0, 104), pyxel.rndi(0, 2), True) for i in range(4)
+        ]
         pyxel.playm(0, loop=True)
         pyxel.run(self.update, self.draw)
 
@@ -66,7 +66,7 @@ class App:
         x -= 4
         if x < -40:
             x += 240
-            y = randint(8, 104)
+            y = pyxel.rndi(8, 104)
             is_alive = True
         return x, y, is_alive
 
@@ -79,8 +79,8 @@ class App:
         x -= 2
         if x < -40:
             x += 240
-            y = randint(0, 104)
-            kind = randint(0, 2)
+            y = pyxel.rndi(0, 104)
+            kind = pyxel.rndi(0, 2)
             is_alive = True
         return (x, y, kind, is_alive)
 

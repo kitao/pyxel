@@ -1,5 +1,3 @@
-import math
-
 import pyxel
 
 
@@ -62,8 +60,8 @@ class App:
         pyxel.clip()
         if not self.clip_test_is_enabled:
             return
-        x = math.sin(pyxel.frame_count * 0.02) * 39 + 40
-        y = math.sin(pyxel.frame_count * 0.03) * 29 + 30
+        x = pyxel.sin(pyxel.frame_count * 1.14) * 39 + 40
+        y = pyxel.sin(pyxel.frame_count * 1.71) * 29 + 30
         w = 120
         h = 90
         pyxel.text(x, y - 8, "clip(x,y,w,h)", 14)
@@ -123,7 +121,7 @@ class App:
     def test_blt(self, x, y):
         pyxel.text(x, y, "blt(x,y,img,u,v,\n    w,h,[colkey])", 7)
         y += 15
-        offset = math.sin(pyxel.frame_count * 0.1) * 2
+        offset = pyxel.sin(pyxel.frame_count * 5.73) * 2
         pyxel.blt(x, y, 0, 0, 0, 16, 16)
         pyxel.blt(x + offset + 19, y, 0, 0, 0, 16, 16, 13)
         pyxel.blt(x + 38, y, 0, 0, 0, -16, 16, 13)

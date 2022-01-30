@@ -1,5 +1,3 @@
-import math
-
 import pyxel
 
 
@@ -112,7 +110,7 @@ class App:
 
         for i in range(3):
             x = 140 + i * 16
-            y = 123 + math.sin(pyxel.frame_count * 0.1 + i * 2.1) * 5
+            y = 123 + pyxel.sin(pyxel.frame_count * 5.73 + i * 120.3) * 5
             col = 15 if pyxel.play_pos(i) else 13
             pyxel.pal(1, col)
             pyxel.blt(x, y, 0, 0, 0, 8, 8, 0)
