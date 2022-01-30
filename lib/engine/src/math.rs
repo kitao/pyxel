@@ -57,12 +57,11 @@ impl Pyxel {
         self.math.rng = Xoshiro256StarStar::seed_from_u64(seed as u64);
     }
 
-    pub fn rndi(&mut self, a: i32, b: i32) -> i32 {
-        let (a, b) = if a < b { (a, b) } else { (b, a) };
-        self.math.rng.gen_range(a..=b)
+    pub fn rnd(&mut self) -> f64 {
+        self.math.rng.gen::<f64>()
     }
 
-    pub fn rndf(&mut self, a: f64, b: f64) -> f64 {
+    pub fn rndi(&mut self, a: i32, b: i32) -> i32 {
         let (a, b) = if a < b { (a, b) } else { (b, a) };
         self.math.rng.gen_range(a..=b)
     }
