@@ -1,5 +1,3 @@
-from random import random
-
 import pyxel
 
 SCENE_TITLE = 0
@@ -58,7 +56,11 @@ class Background:
         self.stars = []
         for i in range(NUM_STARS):
             self.stars.append(
-                (random() * pyxel.width, random() * pyxel.height, random() * 1.5 + 1)
+                (
+                    pyxel.rndi(0, pyxel.width - 1),
+                    pyxel.rndi(0, pyxel.height - 1),
+                    pyxel.rndf(1, 2.5),
+                )
             )
 
     def update(self):
@@ -130,7 +132,7 @@ class Enemy:
         self.w = ENEMY_WIDTH
         self.h = ENEMY_HEIGHT
         self.dir = 1
-        self.timer_offset = int(random() * 60)
+        self.timer_offset = pyxel.rndi(0, 59)
         self.is_alive = True
         enemies.append(self)
 
@@ -224,7 +226,7 @@ class App:
 
     def update_play_scene(self):
         if pyxel.frame_count % 6 == 0:
-            Enemy(random() * (pyxel.width - PLAYER_WIDTH), 0)
+            Enemy(pyxel.rndi(0, pyxel.width - ENEMY_WIDTH), 0)
 
         for enemy in enemies:
             for bullet in bullets:
