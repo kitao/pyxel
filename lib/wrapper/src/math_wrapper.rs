@@ -3,6 +3,14 @@ use pyo3::prelude::*;
 use crate::instance;
 
 #[pyfunction]
+fn ceil(x: f64) -> i32 {
+    instance().ceil(x)
+}
+
+fn floor(x: f64) -> i32 {
+    instance().floor(x)
+}
+
 fn sgn(x: f64) -> f64 {
     instance().sgn(x)
 }
@@ -28,18 +36,18 @@ fn atan2(y: f64, x: f64) -> f64 {
 }
 
 #[pyfunction]
-fn srand(seed: u32) {
-    instance().srand(seed);
-}
-
-#[pyfunction]
-fn rnd() -> f64 {
-    instance().rnd()
+fn rseed(seed: u32) {
+    instance().rseed(seed);
 }
 
 #[pyfunction]
 fn rndi(a: i32, b: i32) -> i32 {
     instance().rndi(a, b)
+}
+
+#[pyfunction]
+fn rndf(a: f64, b: f64) -> f64 {
+    instance().rndf(a, b)
 }
 
 #[pyfunction]
@@ -60,9 +68,9 @@ pub fn add_math_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sin, m)?)?;
     m.add_function(wrap_pyfunction!(cos, m)?)?;
     m.add_function(wrap_pyfunction!(atan2, m)?)?;
-    m.add_function(wrap_pyfunction!(srand, m)?)?;
-    m.add_function(wrap_pyfunction!(rnd, m)?)?;
+    m.add_function(wrap_pyfunction!(rseed, m)?)?;
     m.add_function(wrap_pyfunction!(rndi, m)?)?;
+    m.add_function(wrap_pyfunction!(rndf, m)?)?;
     m.add_function(wrap_pyfunction!(nseed, m)?)?;
     m.add_function(wrap_pyfunction!(noise, m)?)?;
     Ok(())
