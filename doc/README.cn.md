@@ -491,7 +491,7 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 - `stop([ch])`<br>
 停止指定通道`ch` (0-3)的重播。`stop()`可以停止所有通道的播放。
 
-### Math
+### 数学
 
 - `ceil(x)`<br>
 返回大于或等于`x`的最小的整数。

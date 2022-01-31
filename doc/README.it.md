@@ -490,7 +490,7 @@ Riproduce la musica `msc` (0-7). La posizione di inizio della riproduzione può 
 - `stop([ch])`<br>
 Interrompe la riproduzione del canale `ch` (0-3) specificato. `stop()` per interrompere tutti i canali.
 
-### Math
+### Matematica
 
 - `ceil(x)`<br>
 Restituisce il più piccolo intero maggiore o uguale a `x`.

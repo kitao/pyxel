@@ -485,7 +485,7 @@ Reproduce la música `msc` (0-7). La posición de inicio de la reproducción se 
 - `stop([ch])`<br>
 Para la reproducción del canal `ch` (0-3). `stop()` para detener todos los canales
 
-### Math
+### Matemáticas
 
 - `ceil(x)`<br>
 Devuelve el menor número entero mayor o igual a `x`.
