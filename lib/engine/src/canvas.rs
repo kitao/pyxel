@@ -64,7 +64,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let height = self.height();
         for y in 0..height {
             for x in 0..width {
-                self.data[y as usize][x as usize] = value;
+                self.write_data(x as i32, y as i32, value);
             }
         }
     }
@@ -73,7 +73,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let x = as_i32(x);
         let y = as_i32(y);
         if self.self_rect.contains(x, y) {
-            self.data[y as usize][x as usize]
+            self.read_data(x, y)
         } else {
             T::default()
         }
@@ -82,19 +82,17 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn pset(&mut self, x: f64, y: f64, value: T) {
         let x = as_i32(x) - self.camera_x;
         let y = as_i32(y) - self.camera_y;
-        if self.clip_rect.contains(x, y) {
-            self.data[y as usize][x as usize] = value;
-        }
+        self.write_clipped_data(x, y, value);
     }
 
     pub fn line(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, value: T) {
-        let x1 = as_i32(x1);
-        let y1 = as_i32(y1);
-        let x2 = as_i32(x2);
-        let y2 = as_i32(y2);
+        let x1 = as_i32(x1) - self.camera_x;
+        let y1 = as_i32(y1) - self.camera_y;
+        let x2 = as_i32(x2) - self.camera_x;
+        let y2 = as_i32(y2) - self.camera_y;
 
         if x1 == x2 && y1 == y2 {
-            self.pset(x1 as f64, y1 as f64, value);
+            self.write_clipped_data(x1, y1, value);
         } else if (x1 - x2).abs() > (y1 - y2).abs() {
             let (start_x, start_y, end_x, end_y) = if x1 < x2 {
                 (x1, y1, x2, y2)
@@ -104,11 +102,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             let length = end_x - start_x + 1;
             let alpha = (end_y - start_y) as f64 / (end_x - start_x) as f64;
             for xi in 0..length {
-                self.pset(
-                    (start_x + xi) as f64,
-                    start_y as f64 + alpha * xi as f64,
-                    value,
-                );
+                self.write_clipped_data(start_x + xi, start_y + as_i32(alpha * xi as f64), value);
             }
         } else {
             let (start_x, start_y, end_x, end_y) = if y1 < y2 {
@@ -119,11 +113,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             let length = end_y - start_y + 1;
             let alpha = (end_x - start_x) as f64 / (end_y - start_y) as f64;
             for yi in 0..length {
-                self.pset(
-                    start_x as f64 + alpha * yi as f64,
-                    (start_y + yi) as f64,
-                    value,
-                );
+                self.write_clipped_data(start_x + as_i32(alpha * yi as f64), start_y + yi, value);
             }
         }
     }
@@ -137,148 +127,124 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if rect.is_empty() {
             return;
         }
-
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
         for y in top..=bottom {
             for x in left..=right {
-                self.data[y as usize][x as usize] = value;
+                self.write_data(x, y, value);
             }
         }
     }
 
     pub fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
-        let x = as_i32(x);
-        let y = as_i32(y);
+        let x = as_i32(x) - self.camera_x;
+        let y = as_i32(y) - self.camera_y;
         let width = as_u32(width);
         let height = as_u32(height);
         let rect = RectArea::new(x, y, width, height);
         if rect.intersects(self.clip_rect).is_empty() {
             return;
         }
-
         let left = rect.left();
         let top = rect.top();
         let right = rect.right();
         let bottom = rect.bottom();
         for x in left..=right {
-            self.pset(x as f64, top as f64, value);
-            self.pset(x as f64, bottom as f64, value);
+            self.write_clipped_data(x, top, value);
+            self.write_clipped_data(x, bottom, value);
         }
         for y in top..=bottom {
-            self.pset(left as f64, y as f64, value);
-            self.pset(right as f64, y as f64, value);
+            self.write_clipped_data(left, y, value);
+            self.write_clipped_data(right, y, value);
         }
     }
 
     pub fn circ(&mut self, x: f64, y: f64, radius: f64, value: T) {
-        let x = as_i32(x);
-        let y = as_i32(y);
+        let x = as_i32(x) - self.camera_x;
+        let y = as_i32(y) - self.camera_y;
         let radius = as_u32(radius);
         for xi in 0..=radius as i32 {
             let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f64, radius as f64, xi);
             for yi in y1..=y2 {
-                self.pset((x + x1) as f64, (y + yi) as f64, value);
-                self.pset((x + x2) as f64, (y + yi) as f64, value);
-                self.pset((x + yi) as f64, (y + x1) as f64, value);
-                self.pset((x + yi) as f64, (y + x2) as f64, value);
+                self.write_clipped_data(x + x1, y + yi, value);
+                self.write_clipped_data(x + x2, y + yi, value);
+                self.write_clipped_data(x + yi, y + x1, value);
+                self.write_clipped_data(x + yi, y + x2, value);
             }
         }
     }
 
     pub fn circb(&mut self, x: f64, y: f64, radius: f64, value: T) {
-        let x = as_i32(x);
-        let y = as_i32(y);
+        let x = as_i32(x) - self.camera_x;
+        let y = as_i32(y) - self.camera_y;
         let radius = as_u32(radius);
         for xi in 0..=radius as i32 {
             let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f64, radius as f64, xi);
-            self.pset((x + x1) as f64, (y + y1) as f64, value);
-            self.pset((x + x2) as f64, (y + y1) as f64, value);
-            self.pset((x + x1) as f64, (y + y2) as f64, value);
-            self.pset((x + x2) as f64, (y + y2) as f64, value);
+            self.write_clipped_data(x + x1, y + y1, value);
+            self.write_clipped_data(x + x2, y + y1, value);
+            self.write_clipped_data(x + x1, y + y2, value);
+            self.write_clipped_data(x + x2, y + y2, value);
 
-            self.pset((x + y1) as f64, (y + x1) as f64, value);
-            self.pset((x + y1) as f64, (y + x2) as f64, value);
-            self.pset((x + y2) as f64, (y + x1) as f64, value);
-            self.pset((x + y2) as f64, (y + x2) as f64, value);
+            self.write_clipped_data(x + y1, y + x1, value);
+            self.write_clipped_data(x + y1, y + x2, value);
+            self.write_clipped_data(x + y2, y + x1, value);
+            self.write_clipped_data(x + y2, y + x2, value);
         }
     }
 
     pub fn elli(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
-        let x = as_i32(x);
-        let y = as_i32(y);
+        let x = as_i32(x) - self.camera_x;
+        let y = as_i32(y) - self.camera_y;
         let width = as_u32(width);
         let height = as_u32(height);
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
         for xi in x..(x + width as i32 / 2) + 1 {
             let (x1, y1, x2, y2) = Self::ellipse_area(cx, cy, ra, rb, xi);
             for yi in y1..=y2 {
-                self.pset(x1 as f64, yi as f64, value);
-                self.pset(x2 as f64, yi as f64, value);
+                self.write_clipped_data(x1, yi, value);
+                self.write_clipped_data(x2, yi, value);
             }
         }
         for yi in y..(y + height as i32 / 2) + 1 {
             let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
             for xi in x1..=x2 {
-                self.pset(xi as f64, y1 as f64, value);
-                self.pset(xi as f64, y2 as f64, value);
+                self.write_clipped_data(xi, y1, value);
+                self.write_clipped_data(xi, y2, value);
             }
         }
     }
 
     pub fn ellib(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
-        let x = as_i32(x);
-        let y = as_i32(y);
+        let x = as_i32(x) - self.camera_x;
+        let y = as_i32(y) - self.camera_y;
         let width = as_u32(width);
         let height = as_u32(height);
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
         for xi in x..(x + width as i32 / 2) + 1 {
             let (x1, y1, x2, y2) = Self::ellipse_area(cx, cy, ra, rb, xi);
-            self.pset(x1 as f64, y1 as f64, value);
-            self.pset(x2 as f64, y1 as f64, value);
-            self.pset(x1 as f64, y2 as f64, value);
-            self.pset(x2 as f64, y2 as f64, value);
+            self.write_clipped_data(x1, y1, value);
+            self.write_clipped_data(x2, y1, value);
+            self.write_clipped_data(x1, y2, value);
+            self.write_clipped_data(x2, y2, value);
         }
         for yi in y..(y + height as i32 / 2) + 1 {
             let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
-            self.pset(x1 as f64, y1 as f64, value);
-            self.pset(x2 as f64, y1 as f64, value);
-            self.pset(x1 as f64, y2 as f64, value);
-            self.pset(x2 as f64, y2 as f64, value);
+            self.write_clipped_data(x1, y1, value);
+            self.write_clipped_data(x2, y1, value);
+            self.write_clipped_data(x1, y2, value);
+            self.write_clipped_data(x2, y2, value);
         }
     }
 
-    fn ellipse_params(x: i32, y: i32, width: u32, height: u32) -> (f64, f64, f64, f64) {
-        let ra = (width - 1) as f64 / 2.0;
-        let rb = (height - 1) as f64 / 2.0;
-        let cx = x as f64 + ra;
-        let cy = y as f64 + rb;
-        (ra, rb, cx, cy)
-    }
-
-    fn ellipse_area(cx: f64, cy: f64, ra: f64, rb: f64, x: i32) -> (i32, i32, i32, i32) {
-        let dx = x as f64 - cx;
-        let dy = if ra > 0.0 {
-            rb * (1.0 - dx * dx / (ra * ra)).sqrt()
-        } else {
-            rb
-        };
-        let x1 = as_i32(cx - dx - 0.01);
-        let y1 = as_i32(cy - dy - 0.01);
-        let x2 = as_i32(cx + dx + 0.01);
-        let y2 = as_i32(cy + dy + 0.01);
-        (x1, y1, x2, y2)
-    }
-
     pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, value: T) {
-        let mut x1 = as_i32(x1);
-        let mut y1 = as_i32(y1);
-        let mut x2 = as_i32(x2);
-        let mut y2 = as_i32(y2);
-        let mut x3 = as_i32(x3);
-        let mut y3 = as_i32(y3);
+        let mut x1 = as_i32(x1) - self.camera_x;
+        let mut y1 = as_i32(y1) - self.camera_y;
+        let mut x2 = as_i32(x2) - self.camera_x;
+        let mut y2 = as_i32(y2) - self.camera_y;
+        let mut x3 = as_i32(x3) - self.camera_x;
+        let mut y3 = as_i32(y3) - self.camera_y;
         if y1 > y2 {
             swap(&mut y1, &mut y2);
             swap(&mut x1, &mut x2);
@@ -322,7 +288,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 )
             };
             for x in x_slider..=x_end {
-                self.pset(x as f64, y as f64, value);
+                self.write_clipped_data(x, y, value);
             }
         }
         for y in (y2 + 1)..=y3 {
@@ -338,7 +304,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 )
             };
             for x in x_slider..=x_end {
-                self.pset(x as f64, y as f64, value);
+                self.write_clipped_data(x, y, value);
             }
         }
     }
@@ -352,43 +318,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn fill(&mut self, x: f64, y: f64, value: T) {
         let x = as_i32(x) - self.camera_x;
         let y = as_i32(y) - self.camera_y;
-        let dst_value = self.pget(x as f64, y as f64);
-        if value != dst_value {
-            self.fill_rec(x, y, value, dst_value);
-        }
-    }
-
-    fn fill_rec(&mut self, x: i32, y: i32, value: T, dst_value: T) {
-        if self.data[y as usize][x as usize] != dst_value {
+        if !self.clip_rect.contains(x, y) {
             return;
         }
-        let mut xi = x;
-        while xi >= self.clip_rect.left() {
-            if self.data[y as usize][xi as usize] != dst_value {
-                break;
-            }
-            self.data[y as usize][xi as usize] = value;
-            if y > self.clip_rect.top() {
-                self.fill_rec(xi, y - 1, value, dst_value)
-            }
-            if y < self.clip_rect.bottom() {
-                self.fill_rec(xi, y + 1, value, dst_value)
-            }
-            xi -= 1;
-        }
-        let mut xi = x + 1;
-        while xi <= self.clip_rect.right() {
-            if self.data[y as usize][xi as usize] != dst_value {
-                break;
-            }
-            self.data[y as usize][xi as usize] = value;
-            if y > self.clip_rect.top() {
-                self.fill_rec(xi, y - 1, value, dst_value)
-            }
-            if y < self.clip_rect.bottom() {
-                self.fill_rec(xi, y + 1, value, dst_value)
-            }
-            xi += 1;
+        let dst_value = self.read_data(x, y);
+        if value != dst_value {
+            self.fill_rec(x, y, value, dst_value);
         }
     }
 
@@ -440,15 +375,85 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             for xi in 0..width {
                 let value_x = src_x + sign_x * xi + offset_x;
                 let value_y = src_y + sign_y * yi + offset_y;
-                let value = canvas.data[value_y as usize][value_x as usize];
+                let value = canvas.read_data(value_x, value_y);
                 if let Some(transparent) = transparent {
                     if value == transparent {
                         continue;
                     }
                 }
                 let value = palette.map_or(value, |palette| palette[value.to_index()]);
-                self.data[(dst_y + yi) as usize][(dst_x + xi) as usize] = value;
+                self.write_data(dst_x + xi, dst_y + yi, value);
             }
+        }
+    }
+
+    fn read_data(&self, x: i32, y: i32) -> T {
+        self.data[y as usize][x as usize]
+    }
+
+    fn write_data(&mut self, x: i32, y: i32, value: T) {
+        self.data[y as usize][x as usize] = value;
+    }
+
+    fn write_clipped_data(&mut self, x: i32, y: i32, value: T) {
+        if self.clip_rect.contains(x, y) {
+            self.data[y as usize][x as usize] = value;
+        }
+    }
+
+    fn ellipse_params(x: i32, y: i32, width: u32, height: u32) -> (f64, f64, f64, f64) {
+        let ra = (width - 1) as f64 / 2.0;
+        let rb = (height - 1) as f64 / 2.0;
+        let cx = x as f64 + ra;
+        let cy = y as f64 + rb;
+        (ra, rb, cx, cy)
+    }
+
+    fn ellipse_area(cx: f64, cy: f64, ra: f64, rb: f64, x: i32) -> (i32, i32, i32, i32) {
+        let dx = x as f64 - cx;
+        let dy = if ra > 0.0 {
+            rb * (1.0 - dx * dx / (ra * ra)).sqrt()
+        } else {
+            rb
+        };
+        let x1 = as_i32(cx - dx - 0.01);
+        let y1 = as_i32(cy - dy - 0.01);
+        let x2 = as_i32(cx + dx + 0.01);
+        let y2 = as_i32(cy + dy + 0.01);
+        (x1, y1, x2, y2)
+    }
+
+    fn fill_rec(&mut self, x: i32, y: i32, value: T, dst_value: T) {
+        if self.read_data(x, y) != dst_value {
+            return;
+        }
+        let mut xi = x;
+        while xi >= self.clip_rect.left() {
+            if self.read_data(xi, y) != dst_value {
+                break;
+            }
+            self.write_data(xi, y, value);
+            if y > self.clip_rect.top() {
+                self.fill_rec(xi, y - 1, value, dst_value)
+            }
+            if y < self.clip_rect.bottom() {
+                self.fill_rec(xi, y + 1, value, dst_value)
+            }
+            xi -= 1;
+        }
+        let mut xi = x + 1;
+        while xi <= self.clip_rect.right() {
+            if self.read_data(xi, y) != dst_value {
+                break;
+            }
+            self.write_data(xi, y, value);
+            if y > self.clip_rect.top() {
+                self.fill_rec(xi, y - 1, value, dst_value)
+            }
+            if y < self.clip_rect.bottom() {
+                self.fill_rec(xi, y + 1, value, dst_value)
+            }
+            xi += 1;
         }
     }
 }

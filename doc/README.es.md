@@ -485,6 +485,44 @@ Reproduce la música `msc` (0-7). La posición de inicio de la reproducción se 
 - `stop([ch])`<br>
 Para la reproducción del canal `ch` (0-3). `stop()` para detener todos los canales
 
+### Matemáticas
+
+- `ceil(x)`<br>
+Devuelve el menor número entero mayor o igual a `x`.
+
+- `floor(x)`<br>
+Devuelve el mayor entero menor o igual a `x`.
+
+- `sgn(x)`<br>
+Devuelve 1 cuando `x` es positivo, 0 cuando es cero y -1 cuando es negativo.
+
+- `sqrt(x)`<br>
+Devuelve la raíz cuadrada de `x`.
+
+- `sin(deg)`<br>
+Devuelve el seno de `deg` grados.
+
+- `cos(deg)`<br>
+Devuelve el coseno de `deg` grados.
+
+- `atan2(y, x)`<br>
+Devuelve la arctangente de `y`/`x` en grados.
+
+- `rseed(seed: int)`<br>
+Establece la semilla del generador de números aleatorios.
+
+- `rndi(a, b)`<br>
+Devuelve un número entero aleatorio mayor o igual que `a` y menor o igual que `b`.
+
+- `rndf(a, b)`<br>
+Devuelve un decimal aleatorio mayor o igual que `a` y menor o igual que `b`.
+
+- `nseed(seed)`<br>
+Establece la semilla de ruido Perlin.
+
+- `noise(x, [y], [z])`<br>
+Devuelve el valor del ruido Perlin para las coordenadas especificadas.
+
 ### Clase Image
 
 - `width`, `height`<br>

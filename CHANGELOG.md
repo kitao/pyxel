@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.6.9
+- Fixed the select tool of the resource editor
+- Refactored the drawing functions
+- Added utility functions for math
+- Fixed the play command bug on Windows
+
 ## 1.6.8
 - Fixed to receive mouse input when window is activated
 - Fixed the window to be active when a file is dropped
@@ -166,7 +172,7 @@
 - Changed the gcc version for Mac
 - Added the example #9
 - Added the Noguchi's tilemap for reference
-- Added figures for the API reference in the READEMEs
+- Added figures for the API reference in the READMEs
 
 ## 1.4.1
 - Changed to use gcc compiler on Mac

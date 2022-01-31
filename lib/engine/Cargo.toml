@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-engine"
-version = "1.6.8"
+version = "1.6.9"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 description = "Core engine for Pyxel, a retro game engine for Python"
@@ -26,8 +26,11 @@ chrono = "0.4.19"
 gif = "0.11.3"
 image = "0.23.14"
 indexmap = "1.7.0"
+noise = "0.7.0"
 parking_lot = "0.11.2"
 platform-dirs = "0.3.0"
+rand = "0.8.4"
+rand_xoshiro = "0.6.0"
 zip = { version = "0.5.13", default-features = false, features = ["deflate"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]

@@ -491,6 +491,44 @@ Joue la musique `msc` (0-7). La position de début de lecture peut être spécif
 - `stop([ch])`<br>
 Arrête le son du canal spécifié `ch` (0-3). `stop()` arrête tous les canaux.
 
+### Mathématiques
+
+- `ceil(x)`<br>
+Renvoie le plus petit nombre entier supérieur ou égal à `x`.
+
+- `floor(x)`<br>
+Renvoie le plus grand nombre entier inférieur ou égal à `x`.
+
+- `sgn(x)`<br>
+Renvoie 1 lorsque `x` est positif, 0 lorsqu'il est nul, et -1 lorsqu'il est négatif.
+
+- `sqrt(x)`<br>
+Renvoie la racine carrée de `x`.
+
+- `sin(deg)`<br>
+Renvoie le sinus de `deg` degrés.
+
+- `cos(deg)`<br>
+Renvoie le cosinus de `deg` degrés.
+
+- `atan2(y, x)`<br>
+Retourne l'arctangente de `y`/`x` en degrés.
+
+- `rseed(seed: int)`<br>
+Définit la graine du générateur de nombres aléatoires.
+
+- `rndi(a, b)`<br>
+Renvoie un nombre entier aléatoire supérieur ou égal à `a` et inférieur ou égal à `b`.
+
+- `rndf(a, b)`<br>
+Renvoie une décimale aléatoire supérieure ou égale à `a` et inférieure ou égale à `b`.
+
+- `nseed(seed)`<br>
+Définit la graine du bruit de Perlin.
+
+- `noise(x, [y], [z])`<br>
+Renvoie la valeur du bruit de Perlin pour les coordonnées spécifiées.
+
 ### Classe Image
 
 - `width`, `height`<br>

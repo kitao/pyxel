@@ -489,8 +489,43 @@ Spielt die Musik `msc` (0-7). Die Startposition der Wiedergabe kann durch `tick`
 - `stop([ch])`<br>
 Stoppt die Wiedergabe des angegebenen Kanals `ch` (0-3). `stop()`, um die Wiedergabe aller Kanäle zu stoppen.
 
-- `play_pos(ch)`<br>
-Erhalte die Sound-Playback-Position des Kanals `ch`. Die 100's und 1000's zeigen die Soundnummer und die 1's und 10's zeigen die Notennummer. Wenn playback gestoppt ist, return `-1`
+### Mathematik
+
+- `ceil(x)`<br>
+Gibt die kleinste ganze Zahl größer oder gleich `x` zurück.
+
+- `floor(x)`<br>
+Gibt die größte ganze Zahl kleiner oder gleich `x` zurück.
+
+- `sgn(x)`<br>
+Gibt 1 zurück, wenn `x` positiv ist, 0, wenn es Null ist, und -1, wenn es negativ ist.
+
+- `sqrt(x)`<br>
+Gibt die Quadratwurzel von `x` zurück.
+
+- `sin(deg)`<br>
+Gibt den Sinus von `deg` Grad zurück.
+
+- `cos(deg)`<br>
+Gibt den Kosinus von `deg` Grad zurück.
+
+- `atan2(y, x)`<br>
+Gibt den Arkustangens von `y`/`x` in Grad zurück.
+
+- `rseed(seed: int)`<br>
+Setzt den Seed des Zufallszahlengenerators.
+
+- `rndi(a, b)`<br>
+Gibt eine zufällige ganze Zahl zurück, die größer oder gleich `a` und kleiner oder gleich `b` ist.
+
+- `rndf(a, b)`<br>
+Gibt eine zufällige Dezimalzahl zurück, die größer oder gleich `a` und kleiner oder gleich `b` ist.
+
+- `nseed(seed)`<br>
+Setzt den Seed des Perlin-Rauschens.
+
+- `noise(x, [y], [z])`<br>
+Gibt den Perlin-Rauschwert für die angegebenen Koordinaten zurück.
 
 ### Image Klasse
 

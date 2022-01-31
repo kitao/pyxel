@@ -491,6 +491,44 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 - `stop([ch])`<br>
 停止指定通道`ch` (0-3)的重播。`stop()`可以停止所有通道的播放。
 
+### 数学
+
+- `ceil(x)`<br>
+返回大于或等于`x`的最小的整数。
+
+- `floor(x)`<br>
+返回小于或等于`x`的最大整数。
+
+- `sgn(x)`<br>
+当`x`是正数时返回1，当它是零时返回0，当它是负数时返回1。
+
+- `sqrt(x)`<br>
+返回`x`的平方根。
+
+- `sin(deg)`<br>
+返回`deg`度的正弦。
+
+- `cos(deg)`<br>
+返回`deg`度的余弦。
+
+- `atan2(y, x)`<br>
+返回`y`/`x`的正切，单位是度。
+
+- `rseed(seed: int)`<br>
+设置随机数发生器的种子。
+
+- `rndi(a, b)`<br>
+返回一个大于或等于`a`且小于或等于`b`的随机整数。
+
+- `rndf(a, b)`<br>
+返回一个大于或等于`a`且小于或等于`b`的随机小数。
+
+- `nseed(seed)`<br>
+设置佩林噪声的种子。
+
+- `noise(x, [y], [z])`<br>
+返回指定坐标的佩林噪声值。
+
 ### Image类
 
 - `width`, `height`<br>

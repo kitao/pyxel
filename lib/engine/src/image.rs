@@ -78,15 +78,6 @@ impl Image {
         image
     }
 
-    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
-        let (r1, g1, b1) = rgb1;
-        let (r2, g2, b2) = rgb2;
-        let dx = (r1 as f64 - r2 as f64) * 0.30;
-        let dy = (g1 as f64 - g2 as f64) * 0.59;
-        let dz = (b1 as f64 - b2 as f64) * 0.11;
-        dx * dx + dy * dy + dz * dz
-    }
-
     pub fn width(&self) -> u32 {
         self.canvas.width()
     }
@@ -372,8 +363,8 @@ impl Image {
     }
 
     pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color, font: SharedImage) {
-        let mut x = as_i32(x);
-        let mut y = as_i32(y);
+        let mut x = as_i32(x); // No need to reflect camera_x
+        let mut y = as_i32(y); // No need to reflect camera_y
         let color = self.palette[color as usize];
         let palette1 = self.palette[1];
         self.pal(1, color);
@@ -403,6 +394,15 @@ impl Image {
             x += FONT_WIDTH as i32;
         }
         self.pal(1, palette1);
+    }
+
+    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
+        let (r1, g1, b1) = rgb1;
+        let (r2, g2, b2) = rgb2;
+        let dx = (r1 as f64 - r2 as f64) * 0.30;
+        let dy = (g1 as f64 - g2 as f64) * 0.59;
+        let dz = (b1 as f64 - b2 as f64) * 0.11;
+        dx * dx + dy * dy + dz * dz
     }
 }
 

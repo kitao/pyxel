@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-wrapper"
-version = "1.6.8"
+version = "1.6.9"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 description = "Python wrapper for Pyxel, a retro game engine for Python"
@@ -15,4 +15,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.15.1", features = ["abi3-py37", "extension-module"] }
-pyxel-engine = { path = "../engine", version="1.6.8" }
+pyxel-engine = { path = "../engine", version="1.6.9" }
+sysinfo = "0.23.0"

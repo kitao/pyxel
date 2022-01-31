@@ -490,6 +490,44 @@ Reproduz a música `msc` (0-7). A posição inicial da reprodução pode ser esp
 - `stop([ch])`<br>
 Para a reprodução do canal `ch` (0-3). `stop()` para parar a reprodução de todos os canais.
 
+### Matemática
+
+- `ceil(x)`<br>
+Devolve o menor inteiro maior ou igual a `x`.
+
+- `floor(x)`<br>
+Devolve o maior inteiro menor ou igual a `x`.
+
+- `sgn(x)`<br>
+Retorna 1 quando o `x` é positivo, 0 quando é zero, e -1 quando é negativo.
+
+- `sqrt(x)`<br>
+Devolve a raiz quadrada de `x`.
+
+- `sin(deg)`<br>
+Devolve o seno de `deg` graus.
+
+- `cos(deg)`<br>
+Retorna o cosseno de `deg` graus.
+
+- `atan2(y, x)`<br>
+Devolve o arctangente de `y`/`x` em graus.
+
+- `rseed(seed: int)`<br>
+Define a semente do gerador do número aleatório.
+
+- `rndi(a, b)`<br>
+Retorna um inteiro aleatório maior ou igual a `a' e menor ou igual a `b'.
+
+- `rndf(a, b)`<br>
+Devolve uma decimal aleatória maior ou igual a `a` e menor ou igual a `b`.
+
+- `nseed(seed)`<br>
+Define a semente do ruído de Perlin.
+
+- `noise(x, [y], [z])`<br>
+Retorna o valor do ruído Perlin para as coordenadas especificadas.
+
 ### Classe de Imagem
 
 - `width`, `height`<br>

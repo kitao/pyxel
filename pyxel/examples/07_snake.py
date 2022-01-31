@@ -14,7 +14,6 @@ Created by Marcus Croucher in 2018.
 """
 
 from collections import deque, namedtuple
-from random import randint
 
 import pyxel
 
@@ -138,8 +137,8 @@ class Snake:
 
         self.apple = self.snake[0]
         while self.apple in snake_pixels:
-            x = randint(0, WIDTH - 1)
-            y = randint(HEIGHT_SCORE + 1, HEIGHT - 1)
+            x = pyxel.rndi(0, WIDTH - 1)
+            y = pyxel.rndi(HEIGHT_SCORE + 1, HEIGHT - 1)
             self.apple = Point(x, y)
 
     def check_death(self):
