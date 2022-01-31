@@ -511,7 +511,7 @@ Pyxelアプリケーションを終了します。
 `deg`度(Degree)の余弦を返します。
 
 - `atan2(y, x)`<br>
-atan(y/x)を度(Degree)で返します。
+`y`/`x`の逆正接を度(Degree)で返します。
 
 - `rseed(seed: int)`<br>
 乱数生成器のシードを設定します。
