@@ -494,40 +494,40 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 ### Math
 
 - `ceil(x)`<br>
-Returns the smallest integer greater than or equal to `x`.
+返回大于或等于`x`的最小的整数。
 
 - `floor(x)`<br>
-Returns the largest integer less than or equal to `x`.
+返回小于或等于`x`的最大整数。
 
 - `sgn(x)`<br>
-Returns 1 when `x` is positive, 0 when it is zero, and -1 when it is negative.
+当`x`是正数时返回1，当它是零时返回0，当它是负数时返回1。
 
 - `sqrt(x)`<br>
-Returns the square root of `x`.
+返回`x`的平方根。
 
 - `sin(deg)`<br>
-Returns the sine of `deg` degrees.
+返回`deg`度的正弦。
 
 - `cos(deg)`<br>
-Returns the cosine of `deg` degrees.
+返回`deg`度的余弦。
 
 - `atan2(y, x)`<br>
-Returns the arctangent of `y`/`x` in degrees.
+返回`y`/`x`的正切，单位是度。
 
 - `rseed(seed: int)`<br>
-Sets the seed of the random number generator.
+设置随机数发生器的种子。
 
 - `rndi(a, b)`<br>
-Returns an random integer greater than or equal to `a` and less than or equal to `b`.
+返回一个大于或等于`a`且小于或等于`b`的随机整数。
 
 - `rndf(a, b)`<br>
-Returns a random decimal greater than or equal to `a` and less than or equal to `b`.
+返回一个大于或等于`a`且小于或等于`b`的随机小数。
 
 - `nseed(seed)`<br>
-Sets the seed of Perlin noise.
+设置佩林噪声的种子。
 
 - `noise(x, [y], [z])`<br>
-Returns the Perlin noise value for the specified coordinates.
+返回指定坐标的佩林噪声值。
 
 ### Image类
 
