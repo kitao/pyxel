@@ -492,40 +492,40 @@ Stoppt die Wiedergabe des angegebenen Kanals `ch` (0-3). `stop()`, um die Wieder
 ### Math
 
 - `ceil(x)`<br>
-Returns the smallest integer greater than or equal to `x`.
+Gibt die kleinste ganze Zahl größer oder gleich `x` zurück.
 
 - `floor(x)`<br>
-Returns the largest integer less than or equal to `x`.
+Gibt die größte ganze Zahl kleiner oder gleich `x` zurück.
 
 - `sgn(x)`<br>
-Returns 1 when `x` is positive, 0 when it is zero, and -1 when it is negative.
+Gibt 1 zurück, wenn `x` positiv ist, 0, wenn es Null ist, und -1, wenn es negativ ist.
 
 - `sqrt(x)`<br>
-Returns the square root of `x`.
+Gibt die Quadratwurzel von `x` zurück.
 
 - `sin(deg)`<br>
-Returns the sine of `deg` degrees.
+Gibt den Sinus von `deg` Grad zurück.
 
 - `cos(deg)`<br>
-Returns the cosine of `deg` degrees.
+Gibt den Kosinus von `deg` Grad zurück.
 
 - `atan2(y, x)`<br>
-Returns the arctangent of `y`/`x` in degrees.
+Gibt den Arkustangens von `y`/`x` in Grad zurück.
 
 - `rseed(seed: int)`<br>
-Sets the seed of the random number generator.
+Setzt den Seed des Zufallszahlengenerators.
 
 - `rndi(a, b)`<br>
-Returns an random integer greater than or equal to `a` and less than or equal to `b`.
+Gibt eine zufällige ganze Zahl zurück, die größer oder gleich `a` und kleiner oder gleich `b` ist.
 
 - `rndf(a, b)`<br>
-Returns a random decimal greater than or equal to `a` and less than or equal to `b`.
+Gibt eine zufällige Dezimalzahl zurück, die größer oder gleich `a` und kleiner oder gleich `b` ist.
 
 - `nseed(seed)`<br>
-Sets the seed of Perlin noise.
+Setzt den Seed des Perlin-Rauschens.
 
 - `noise(x, [y], [z])`<br>
-Returns the Perlin noise value for the specified coordinates.
+Gibt den Perlin-Rauschwert für die angegebenen Koordinaten zurück.
 
 ### Image Klasse
 

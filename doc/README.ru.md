@@ -494,40 +494,40 @@ pyxel play ФАЙЛ_PYXEL_ПРИЛОЖЕНИЯ
 ### Math
 
 - `ceil(x)`<br>
-Returns the smallest integer greater than or equal to `x`.
+Возвращает наименьшее целое число, большее или равное `x`.
 
 - `floor(x)`<br>
-Returns the largest integer less than or equal to `x`.
+Возвращает наибольшее целое число, меньшее или равное `x`.
 
 - `sgn(x)`<br>
-Returns 1 when `x` is positive, 0 when it is zero, and -1 when it is negative.
+Возвращает 1, если `x` положительно, 0, если оно равно нулю, и -1, если оно отрицательно.
 
 - `sqrt(x)`<br>
-Returns the square root of `x`.
+Возвращает квадратный корень из `x`.
 
 - `sin(deg)`<br>
-Returns the sine of `deg` degrees.
+Возвращает синус градуса `deg`.
 
 - `cos(deg)`<br>
-Returns the cosine of `deg` degrees.
+Возвращает косинус градуса `deg`.
 
 - `atan2(y, x)`<br>
-Returns the arctangent of `y`/`x` in degrees.
+Возвращает арктангенс угла `y`/`x` в градусах.
 
 - `rseed(seed: int)`<br>
-Sets the seed of the random number generator.
+Устанавливает затравку генератора случайных чисел.
 
 - `rndi(a, b)`<br>
-Returns an random integer greater than or equal to `a` and less than or equal to `b`.
+Возвращает случайное целое число, большее или равное `a` и меньшее или равное `b`.
 
 - `rndf(a, b)`<br>
-Returns a random decimal greater than or equal to `a` and less than or equal to `b`.
+Возвращает случайную десятичную дробь, большую или равную `a` и меньшую или равную `b`.
 
 - `nseed(seed)`<br>
-Sets the seed of Perlin noise.
+Устанавливает семя шума Перлина.
 
 - `noise(x, [y], [z])`<br>
-Returns the Perlin noise value for the specified coordinates.
+Возвращает значение шума Перлина для указанных координат.
 
 ### Класс Image
 
