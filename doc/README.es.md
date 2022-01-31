@@ -488,40 +488,40 @@ Para la reproducción del canal `ch` (0-3). `stop()` para detener todos los cana
 ### Math
 
 - `ceil(x)`<br>
-Returns the smallest integer greater than or equal to `x`.
+Devuelve el menor número entero mayor o igual a `x`.
 
 - `floor(x)`<br>
-Returns the largest integer less than or equal to `x`.
+Devuelve el mayor entero menor o igual a `x`.
 
 - `sgn(x)`<br>
-Returns 1 when `x` is positive, 0 when it is zero, and -1 when it is negative.
+Devuelve 1 cuando `x` es positivo, 0 cuando es cero y -1 cuando es negativo.
 
 - `sqrt(x)`<br>
-Returns the square root of `x`.
+Devuelve la raíz cuadrada de `x`.
 
 - `sin(deg)`<br>
-Returns the sine of `deg` degrees.
+Devuelve el seno de `deg` grados.
 
 - `cos(deg)`<br>
-Returns the cosine of `deg` degrees.
+Devuelve el coseno de `deg` grados.
 
 - `atan2(y, x)`<br>
-Returns the arctangent of `y`/`x` in degrees.
+Devuelve la arctangente de `y`/`x` en grados.
 
 - `rseed(seed: int)`<br>
-Sets the seed of the random number generator.
+Establece la semilla del generador de números aleatorios.
 
 - `rndi(a, b)`<br>
-Returns an random integer greater than or equal to `a` and less than or equal to `b`.
+Devuelve un número entero aleatorio mayor o igual que `a` y menor o igual que `b`.
 
 - `rndf(a, b)`<br>
-Returns a random decimal greater than or equal to `a` and less than or equal to `b`.
+Devuelve un decimal aleatorio mayor o igual que `a` y menor o igual que `b`.
 
 - `nseed(seed)`<br>
-Sets the seed of Perlin noise.
+Establece la semilla de ruido Perlin.
 
 - `noise(x, [y], [z])`<br>
-Returns the Perlin noise value for the specified coordinates.
+Devuelve el valor del ruido Perlin para las coordenadas especificadas.
 
 ### Clase Image
 

@@ -493,40 +493,40 @@ Interrompe la riproduzione del canale `ch` (0-3) specificato. `stop()` per inter
 ### Math
 
 - `ceil(x)`<br>
-Returns the smallest integer greater than or equal to `x`.
+Restituisce il più piccolo intero maggiore o uguale a `x`.
 
 - `floor(x)`<br>
-Returns the largest integer less than or equal to `x`.
+Restituisce il più grande intero minore o uguale a `x`.
 
 - `sgn(x)`<br>
-Returns 1 when `x` is positive, 0 when it is zero, and -1 when it is negative.
+Restituisce 1 quando `x` è positivo, 0 quando è zero e -1 quando è negativo.
 
 - `sqrt(x)`<br>
-Returns the square root of `x`.
+Restituisce la radice quadrata di `x`.
 
 - `sin(deg)`<br>
-Returns the sine of `deg` degrees.
+Restituisce il seno di `deg` gradi.
 
 - `cos(deg)`<br>
-Returns the cosine of `deg` degrees.
+Restituisce il coseno di `deg` gradi.
 
 - `atan2(y, x)`<br>
-Returns the arctangent of `y`/`x` in degrees.
+Restituisce l'arcotangente di `y`/`x` in gradi.
 
 - `rseed(seed: int)`<br>
-Sets the seed of the random number generator.
+Imposta il seme del generatore di numeri casuali.
 
 - `rndi(a, b)`<br>
-Returns an random integer greater than or equal to `a` and less than or equal to `b`.
+Restituisce un numero intero casuale maggiore o uguale a `a` e minore o uguale a `b`.
 
 - `rndf(a, b)`<br>
-Returns a random decimal greater than or equal to `a` and less than or equal to `b`.
+Restituisce un decimale casuale maggiore o uguale a `a` e minore o uguale a `b`.
 
 - `nseed(seed)`<br>
-Sets the seed of Perlin noise.
+Imposta il seme del rumore di Perlin.
 
 - `noise(x, [y], [z])`<br>
-Returns the Perlin noise value for the specified coordinates.
+Restituisce il valore del rumore di Perlin per le coordinate specificate.
 
 ### Image Class
 

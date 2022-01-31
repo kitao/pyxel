@@ -494,40 +494,40 @@ Arrête le son du canal spécifié `ch` (0-3). `stop()` arrête tous les canaux.
 ### Math
 
 - `ceil(x)`<br>
-Returns the smallest integer greater than or equal to `x`.
+Renvoie le plus petit nombre entier supérieur ou égal à `x`.
 
 - `floor(x)`<br>
-Returns the largest integer less than or equal to `x`.
+Renvoie le plus grand nombre entier inférieur ou égal à `x`.
 
 - `sgn(x)`<br>
-Returns 1 when `x` is positive, 0 when it is zero, and -1 when it is negative.
+Renvoie 1 lorsque `x` est positif, 0 lorsqu'il est nul, et -1 lorsqu'il est négatif.
 
 - `sqrt(x)`<br>
-Returns the square root of `x`.
+Renvoie la racine carrée de `x`.
 
 - `sin(deg)`<br>
-Returns the sine of `deg` degrees.
+Renvoie le sinus de `deg` degrés.
 
 - `cos(deg)`<br>
-Returns the cosine of `deg` degrees.
+Renvoie le cosinus de `deg` degrés.
 
 - `atan2(y, x)`<br>
-Returns the arctangent of `y`/`x` in degrees.
+Retourne l'arctangente de `y`/`x` en degrés.
 
 - `rseed(seed: int)`<br>
-Sets the seed of the random number generator.
+Définit la graine du générateur de nombres aléatoires.
 
 - `rndi(a, b)`<br>
-Returns an random integer greater than or equal to `a` and less than or equal to `b`.
+Renvoie un nombre entier aléatoire supérieur ou égal à `a` et inférieur ou égal à `b`.
 
 - `rndf(a, b)`<br>
-Returns a random decimal greater than or equal to `a` and less than or equal to `b`.
+Renvoie une décimale aléatoire supérieure ou égale à `a` et inférieure ou égale à `b`.
 
 - `nseed(seed)`<br>
-Sets the seed of Perlin noise.
+Définit la graine du bruit de Perlin.
 
 - `noise(x, [y], [z])`<br>
-Returns the Perlin noise value for the specified coordinates.
+Renvoie la valeur du bruit de Perlin pour les coordonnées spécifiées.
 
 ### Classe Image
 

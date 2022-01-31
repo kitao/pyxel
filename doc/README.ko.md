@@ -493,40 +493,40 @@ Pyxel 애플리케이션을 종료합니다.
 ### Math
 
 - `ceil(x)`<br>
-Returns the smallest integer greater than or equal to `x`.
+`x`보다 크거나 같은 가장 작은 정수를 반환합니다.
 
 - `floor(x)`<br>
-Returns the largest integer less than or equal to `x`.
+`x`보다 작거나 같은 가장 큰 정수를 반환합니다.
 
 - `sgn(x)`<br>
-Returns 1 when `x` is positive, 0 when it is zero, and -1 when it is negative.
+x가 양수이면 1, 0이면 0, 음수이면 -1을 반환합니다.
 
 - `sqrt(x)`<br>
-Returns the square root of `x`.
+`x`의 제곱근을 반환합니다.
 
 - `sin(deg)`<br>
-Returns the sine of `deg` degrees.
+`deg` 각도의 사인을 반환합니다.
 
 - `cos(deg)`<br>
-Returns the cosine of `deg` degrees.
+`deg` 각도의 코사인을 반환합니다.
 
 - `atan2(y, x)`<br>
-Returns the arctangent of `y`/`x` in degrees.
+`y`/`x`의 아크탄젠트를 도 단위로 반환합니다.
 
 - `rseed(seed: int)`<br>
-Sets the seed of the random number generator.
+난수 생성기의 시드를 설정합니다.
 
 - `rndi(a, b)`<br>
-Returns an random integer greater than or equal to `a` and less than or equal to `b`.
+`a`보다 크거나 같고 `b`보다 작거나 같은 임의의 정수를 반환합니다.
 
 - `rndf(a, b)`<br>
-Returns a random decimal greater than or equal to `a` and less than or equal to `b`.
+`a`보다 크거나 같고 `b`보다 작거나 같은 임의의 소수를 반환합니다.
 
 - `nseed(seed)`<br>
-Sets the seed of Perlin noise.
+Perlin 노이즈의 시드를 설정합니다.
 
 - `noise(x, [y], [z])`<br>
-Returns the Perlin noise value for the specified coordinates.
+지정된 좌표에 대한 Perlin 노이즈 값을 반환합니다.
 
 ### 이미지 클래스
 
