@@ -3,6 +3,7 @@ use std::process::exit;
 use pyo3::prelude::*;
 use pyo3::types::{PyAny, PyDict};
 use pyxel::{Pyxel, PyxelCallback};
+use sysinfo::{Pid, PidExt, System, SystemExt};
 
 use crate::{instance, set_instance};
 
@@ -95,6 +96,12 @@ fn quit() {
     instance().quit();
 }
 
+#[pyfunction]
+fn process_exists(pid: u32) -> bool {
+    let system = System::new_all();
+    system.process(Pid::from_u32(pid)).is_some()
+}
+
 pub fn add_system_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(init, m)?)?;
     m.add_function(wrap_pyfunction!(title, m)?)?;
@@ -104,5 +111,6 @@ pub fn add_system_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(show, m)?)?;
     m.add_function(wrap_pyfunction!(flip, m)?)?;
     m.add_function(wrap_pyfunction!(quit, m)?)?;
+    m.add_function(wrap_pyfunction!(process_exists, m)?)?;
     Ok(())
 }
