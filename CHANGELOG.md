@@ -4,6 +4,7 @@
 - Fixed the select tool of the resource editor
 - Refactored the drawing functions
 - Added utility functions for math
+- Fixed the play command bug on Windows
 
 ## 1.6.8
 - Fixed to receive mouse input when window is activated

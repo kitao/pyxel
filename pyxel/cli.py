@@ -93,14 +93,10 @@ def _check_dir_exists(dirname):
 def _make_app_dir():
     play_dir = os.path.expanduser(os.path.join(pyxel.PYXEL_WORKING_DIR, "play"))
     pathlib.Path(play_dir).mkdir(parents=True, exist_ok=True)
-
     for path in glob.glob(os.path.join(play_dir, "*")):
         pid = int(os.path.basename(path))
-        try:
-            os.kill(pid, 0)
-        except OSError:
+        if not pyxel.process_exists(pid):
             shutil.rmtree(path)
-
     app_dir = os.path.join(play_dir, str(os.getpid()))
     os.mkdir(app_dir)
     return app_dir
