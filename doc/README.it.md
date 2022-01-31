@@ -490,6 +490,44 @@ Riproduce la musica `msc` (0-7). La posizione di inizio della riproduzione può 
 - `stop([ch])`<br>
 Interrompe la riproduzione del canale `ch` (0-3) specificato. `stop()` per interrompere tutti i canali.
 
+### Math
+
+- `ceil(x)`<br>
+Returns the smallest integer greater than or equal to `x`.
+
+- `floor(x)`<br>
+Returns the largest integer less than or equal to `x`.
+
+- `sgn(x)`<br>
+Returns 1 when `x` is positive, 0 when it is zero, and -1 when it is negative.
+
+- `sqrt(x)`<br>
+Returns the square root of `x`.
+
+- `sin(deg)`<br>
+Returns the sine of `deg` degrees.
+
+- `cos(deg)`<br>
+Returns the cosine of `deg` degrees.
+
+- `atan2(y, x)`<br>
+Returns the arctangent of `y`/`x` in degrees.
+
+- `rseed(seed: int)`<br>
+Sets the seed of the random number generator.
+
+- `rndi(a, b)`<br>
+Returns an random integer greater than or equal to `a` and less than or equal to `b`.
+
+- `rndf(a, b)`<br>
+Returns a random decimal greater than or equal to `a` and less than or equal to `b`.
+
+- `nseed(seed)`<br>
+Sets the seed of Perlin noise.
+
+- `noise(x, [y], [z])`<br>
+Returns the Perlin noise value for the specified coordinates.
+
 ### Image Class
 
 - `width`, `height`<br>
