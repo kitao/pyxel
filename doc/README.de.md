@@ -489,7 +489,7 @@ Spielt die Musik `msc` (0-7). Die Startposition der Wiedergabe kann durch `tick`
 - `stop([ch])`<br>
 Stoppt die Wiedergabe des angegebenen Kanals `ch` (0-3). `stop()`, um die Wiedergabe aller Kanäle zu stoppen.
 
-### Math
+### Mathematik
 
 - `ceil(x)`<br>
 Gibt die kleinste ganze Zahl größer oder gleich `x` zurück.

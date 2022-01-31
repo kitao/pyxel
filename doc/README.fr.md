@@ -491,7 +491,7 @@ Joue la musique `msc` (0-7). La position de début de lecture peut être spécif
 - `stop([ch])`<br>
 Arrête le son du canal spécifié `ch` (0-3). `stop()` arrête tous les canaux.
 
-### Math
+### Mathématiques
 
 - `ceil(x)`<br>
 Renvoie le plus petit nombre entier supérieur ou égal à `x`.
