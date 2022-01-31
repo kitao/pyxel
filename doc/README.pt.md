@@ -490,7 +490,7 @@ Reproduz a música `msc` (0-7). A posição inicial da reprodução pode ser esp
 - `stop([ch])`<br>
 Para a reprodução do canal `ch` (0-3). `stop()` para parar a reprodução de todos os canais.
 
-### Math
+### Matemática
 
 - `ceil(x)`<br>
 Devolve o menor inteiro maior ou igual a `x`.
