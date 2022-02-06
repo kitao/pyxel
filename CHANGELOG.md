@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.7.0
+- Fixed type hint definitions
+- Changed the location of working directory
+
 ## 1.6.9
 - Fixed the select tool of the resource editor
 - Refactored the drawing functions
