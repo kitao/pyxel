@@ -101,7 +101,8 @@ class PianoKeyboard(Widget):
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
-        self.field_cursor.move_to(self.field_cursor.x, 0)
+        if self.field_cursor.y > 0:
+            self.field_cursor.move_to(self.field_cursor.x, 0, False)
         self._mouse_note = self._screen_to_note(x, y)
 
     def __on_mouse_up(self, key, x, y):

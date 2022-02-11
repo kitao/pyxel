@@ -5,7 +5,8 @@ from .settings import (
     MAX_SOUND_LENGTH,
     SOUND_FIELD_DATA_FOCUS_COLOR,
     SOUND_FIELD_DATA_NORMAL_COLOR,
-    SOUND_FIELD_FOCUS_COLOR,
+    SOUND_FIELD_FOCUS_EDIT_COLOR,
+    SOUND_FIELD_FOCUS_SELECT_COLOR,
     TEXT_LABEL_COLOR,
 )
 from .widgets import Widget
@@ -44,7 +45,7 @@ class SoundField(Widget):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
         x, y = self._screen_to_view(x, y)
-        self.field_cursor.move_to(x, y + 1)
+        self.field_cursor.move_to(x, y + 1, pyxel.btn(pyxel.KEY_SHIFT))
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_view(x, y)
@@ -121,8 +122,17 @@ class SoundField(Widget):
             return
         x = cursor_x * 4 + 31
         y = cursor_y * 8 + 142
-        pyxel.rect(x, y - 1, 4, 7, SOUND_FIELD_FOCUS_COLOR)
+        w = self.field_cursor.width * 4
+        col = (
+            SOUND_FIELD_FOCUS_SELECT_COLOR
+            if self.field_cursor.is_selecting
+            else SOUND_FIELD_FOCUS_EDIT_COLOR
+        )
+        pyxel.rect(x, y - 1, w, 7, col)
         if cursor_x < len(data_str[cursor_y - 1]):
             pyxel.text(
-                x, y, data_str[cursor_y - 1][cursor_x], SOUND_FIELD_DATA_FOCUS_COLOR
+                x,
+                y,
+                data_str[cursor_y - 1][cursor_x : cursor_x + self.field_cursor.width],
+                SOUND_FIELD_DATA_FOCUS_COLOR,
             )
