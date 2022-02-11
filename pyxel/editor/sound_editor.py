@@ -183,13 +183,13 @@ class SoundEditor(EditorBase):
     def __on_undo(self, data):
         self._stop()
         self.sound_no_var = data["sound_no"]
-        self.field_cursor.move_to(*data["old_cursor_pos"])
+        self.field_cursor.move_to(*data["old_cursor_pos"], False)
         self.field_cursor.field.from_list(data["old_field"])
 
     def __on_redo(self, data):
         self._stop()
         self.sound_no_var = data["sound_no"]
-        self.field_cursor.move_to(*data["new_cursor_pos"])
+        self.field_cursor.move_to(*data["new_cursor_pos"], False)
         self.field_cursor.field.from_list(data["new_field"])
 
     def __on_hide(self):
