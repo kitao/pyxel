@@ -5,6 +5,7 @@ from .settings import (
     MUSIC_FIELD_BACKGROUND_COLOR,
     MUSIC_FIELD_CURSOR_EDIT_COLOR,
     MUSIC_FIELD_CURSOR_PLAY_COLOR,
+    MUSIC_FIELD_CURSOR_SELECT_COLOR,
     MUSIC_FIELD_SOUND_FOCUS_COLOR,
     MUSIC_FIELD_SOUND_NORMAL_COLOR,
     TEXT_LABEL_COLOR,
@@ -43,7 +44,9 @@ class MusicField(Widget):
         y -= self.y + 2
         if x < 0 or y < 0 or x > 188 or y > 16 or x % 12 > 8 or y % 10 > 6:
             return
-        self.field_cursor.move_to(x // 12 + (y // 10) * 16, self._ch)
+        self.field_cursor.move_to(
+            x // 12 + (y // 10) * 16, self._ch, pyxel.btn(pyxel.KEY_SHIFT)
+        )
 
     def __on_mouse_hover(self, x, y):
         self.help_message_var = "SOUND:SOUND_BUTTON/BS/DEL"
@@ -72,15 +75,23 @@ class MusicField(Widget):
             else:
                 cursor_x = play_pos[0]
                 cursor_y = self._ch
+                cursor_width = 1
                 cursor_col = MUSIC_FIELD_CURSOR_PLAY_COLOR
         else:
             cursor_x = self.field_cursor.x
             cursor_y = self.field_cursor.y
-            cursor_col = MUSIC_FIELD_CURSOR_EDIT_COLOR
+            cursor_width = self.field_cursor.width
+            cursor_col = (
+                MUSIC_FIELD_CURSOR_SELECT_COLOR
+                if self.field_cursor.is_selecting
+                else MUSIC_FIELD_CURSOR_EDIT_COLOR
+            )
         if cursor_y == self._ch:
-            x = self.x + (cursor_x % 16) * 12 + 21
-            y = self.y + (cursor_y - self._ch + cursor_x // 16) * 10 + 2
-            pyxel.rect(x, y, 9, 7, cursor_col)
+            for i in range(len(self.data) + 1):
+                if cursor_x <= i < cursor_x + cursor_width:
+                    x = self.x + (i % 16) * 12 + 21
+                    y = self.y + (cursor_y - self._ch + i // 16) * 10 + 2
+                    pyxel.rect(x, y, 9, 7, cursor_col)
 
         # Draw sounds
         for i in range(len(self.data)):
@@ -88,7 +99,7 @@ class MusicField(Widget):
             y = self.y + (i // 16) * 10 + 3
             col = (
                 MUSIC_FIELD_SOUND_FOCUS_COLOR
-                if cursor_y == self._ch and cursor_x == i
+                if cursor_y == self._ch and cursor_x <= i < cursor_x + cursor_width
                 else MUSIC_FIELD_SOUND_NORMAL_COLOR
             )
             pyxel.text(x, y, f"{self.data[i]:0>2}", col)
