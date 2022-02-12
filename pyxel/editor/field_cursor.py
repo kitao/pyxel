@@ -12,6 +12,7 @@ class FieldCursor:
         get_field,
         add_pre_history,
         add_post_history,
+        cross_filed_copying,
     ):
         self._max_field_length = max_field_length
         self._field_wrap_length = (
@@ -22,9 +23,11 @@ class FieldCursor:
         self._get_field = get_field
         self._add_pre_history = add_pre_history
         self._add_post_history = add_post_history
+        self._cross_field_copying = cross_filed_copying
         self._cursor_x = 0
         self._cursor_y = 0
         self._anchor_x = None
+        self._copy_field = None
 
     @property
     def x(self):
@@ -135,14 +138,13 @@ class FieldCursor:
         self._add_pre_history(self.x, self.y)
         lst = self.field.to_list()
         x = self.x
-        width = self.width
         if self.is_selecting:
-            lst[x : x + width] = []
+            lst[x : x + self.width] = []
         if not isinstance(value, list):
             value = [value]
         lst[x:x] = value
         self.field.from_list(lst[: self._max_field_length])
-        self.move_to(x + 1, self.y, False)
+        self.move_to(x + len(value), self.y, False)
         self._add_post_history(self.x, self.y)
 
     def backspace(self):
@@ -166,16 +168,58 @@ class FieldCursor:
             return
         self._add_pre_history(self.x, self.y)
         lst = self.field.to_list()
-        del lst[self.x]
+        x = self.x
+        width = self.width
+        lst[x : x + width] = []
         self.field.from_list(lst)
+        self.move_to(x, self.y, False)
         self._add_post_history(self.x, self.y)
 
+    def select_all(self):
+        if len(self.field) == 0:
+            return
+        self._cursor_x = 0
+        self._anchor_x = len(self.field) - 1
+
+    def copy(self):
+        if not self.is_selecting:
+            return
+        lst = self.field.to_list()
+        self._copy_field = (self.y, lst[self.x : self.x + self.width])
+
+    def cut(self):
+        if not self.is_selecting:
+            return
+        self.copy()
+        self.delete()
+
+    def paste(self):
+        if self._copy_field is None:
+            return
+        (y, field) = self._copy_field
+        if not self._cross_field_copying and self.y != y:
+            return
+        self.insert(field)
+
     def process_input(self):
-        if (
-            pyxel.btn(pyxel.KEY_CTRL)
-            or pyxel.btn(pyxel.KEY_ALT)
-            or pyxel.btn(pyxel.KEY_GUI)
-        ):
+        if pyxel.btn(pyxel.KEY_ALT):
+            return
+        if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
+            # Ctrl+A: Select all
+            if pyxel.btnp(pyxel.KEY_A):
+                self.select_all()
+
+            # Ctrl+C: Copy
+            if pyxel.btnp(pyxel.KEY_C):
+                self.copy()
+
+            # Ctrl+X: Cut
+            if pyxel.btnp(pyxel.KEY_X):
+                self.cut()
+
+            # Ctrl+V: Paste
+            if pyxel.btnp(pyxel.KEY_V):
+                self.paste()
             return
         with_select_key = pyxel.btn(pyxel.KEY_SHIFT)
         if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
