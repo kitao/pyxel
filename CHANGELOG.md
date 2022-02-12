@@ -3,6 +3,8 @@
 ## 1.7.0
 - Fixed type hint definitions
 - Changed the location of working directory
+- Added Ctrl+A and Ctrl+X shortcuts for the Image/Tilemap Editor
+- Added copy and paste feature for the Sound/Music Editor
 
 ## 1.6.9
 - Fixed the select tool of the resource editor
