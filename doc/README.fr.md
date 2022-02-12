@@ -153,6 +153,7 @@ Les exemples copiés sont les suivants :
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Jeu de shoot'em up avec changement d’écran
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Jeu de plateforme avec défilement horizontal et une carte
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Rendu hors écran avec la classe Image
+- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - Animation du bruit de Perlin
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1er jeu gagnant du Pyxel Jam par [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - Jeu physique de balles d'arcade par [Adam](https://twitter.com/helpcomputer0)
 

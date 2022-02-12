@@ -153,6 +153,7 @@ pyxel copy_examples
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 画面遷移のあるシューティングゲーム
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - マップのある横スクロールアクションゲーム
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Imageクラスによるオフスクリーン描画
+- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - パーリンノイズアニメーション
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 第1回Pyxel Jam優勝ゲーム ([Adam](https://twitter.com/helpcomputer0)制作)
 - [megaball.pyxapp](images/megaball.gif) - アーケードボール物理ゲーム ([Adam](https://twitter.com/helpcomputer0)制作)
 
