@@ -346,7 +346,7 @@ class CanvasPanel(Widget):
                 h = self._select_y2 - self._select_y1 + 1
                 self._copy_buffer = self.canvas_var.get_slice(x, y, w, h)
                 self._add_pre_history()
-                self.canvas_var.rect(x, y, w, h, 0)
+                self.canvas_var.rect(x, y, w, h, (0, 0) if self._is_tilemap_mode else 0)
                 self._add_post_history()
 
             # Ctrl+V: Paste
