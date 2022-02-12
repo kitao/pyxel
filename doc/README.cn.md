@@ -153,6 +153,7 @@ pyxel copy_examples
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 屏幕过渡射击游戏
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - 屏幕横向滑动的游戏示例
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - 用图像类进行屏外渲染
+- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - 佩林噪音动画
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 第1届Pyxel Jam比赛获胜者是[Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - 商场球类物理游戏[Adam](https://twitter.com/helpcomputer0)
 
