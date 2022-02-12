@@ -31,6 +31,7 @@ class MusicEditor(EditorBase):
             get_field=self.get_field,
             add_pre_history=self.add_pre_history,
             add_post_history=self.add_post_history,
+            cross_filed_copying=True,
         )
 
         # Initialize music picker
