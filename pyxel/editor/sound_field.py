@@ -27,6 +27,7 @@ class SoundField(Widget):
         super().__init__(parent, 30, 149, 193, 23)
         self.field_cursor = parent.field_cursor
         self.get_field = parent.get_field
+        self.get_field_help_message = parent.get_field_help_message
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
 
@@ -48,13 +49,7 @@ class SoundField(Widget):
         self.field_cursor.move_to(x, y + 1, pyxel.btn(pyxel.KEY_SHIFT))
 
     def __on_mouse_hover(self, x, y):
-        x, y = self._screen_to_view(x, y)
-        if y == 0:
-            self.help_message_var = "TONE:T/S/P/N/BS/DEL"
-        elif y == 1:
-            self.help_message_var = "VOLUME:0-7/BS/DEL"
-        elif y == 2:
-            self.help_message_var = "EFFECT:N/S/V/F/BS/DEL"
+        self.help_message_var = self.get_field_help_message()
 
     def __on_update(self):
         cursor_y = self.field_cursor.y

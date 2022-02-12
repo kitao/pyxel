@@ -32,6 +32,7 @@ class SoundEditor(EditorBase):
             get_field=self.get_field,
             add_pre_history=self.add_pre_history,
             add_post_history=self.add_post_history,
+            cross_filed_copying=False,
         )
 
         # Initialize octave_var
@@ -136,6 +137,19 @@ class SoundEditor(EditorBase):
         data["new_field"] = self.field_cursor.field.to_list()
         if data["old_field"] != data["new_field"]:
             self.add_history(self._history_data)
+
+    def get_field_help_message(self):
+        cursor_y = self.field_cursor.y
+        if cursor_y == 0:
+            return "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
+        elif cursor_y == 1:
+            return "TONE:T/S/P/N/BS/DEL"
+        elif cursor_y == 2:
+            return "VOLUME:0-7/BS/DEL"
+        elif cursor_y == 3:
+            return "EFFECT:N/S/V/F/BS/DEL"
+        else:
+            return ""
 
     def _play(self, is_partial):
         self._sound_picker.is_enabled_var = False
