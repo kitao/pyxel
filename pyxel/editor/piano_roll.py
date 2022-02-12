@@ -30,6 +30,7 @@ class PianoRoll(Widget):
         self.get_field = parent.get_field
         self.add_pre_history = parent.add_pre_history
         self.add_post_history = parent.add_post_history
+        self.get_field_help_message = parent.get_field_help_message
         self.copy_var("note_var", parent)
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
@@ -97,7 +98,7 @@ class PianoRoll(Widget):
         self._set_note(x, y)
 
     def __on_mouse_hover(self, x, y):
-        self.help_message_var = "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
+        self.help_message_var = self.get_field_help_message()
 
     def __on_update(self):
         if self.field_cursor.y > 0 or self.is_playing_var:
