@@ -5,7 +5,7 @@ use crate::Pyxel;
 
 #[derive(Clone)]
 pub struct Music {
-    pub sequences: [Vec<u32>; NUM_CHANNELS as usize],
+    pub sounds: [Vec<u32>; NUM_CHANNELS as usize],
 }
 
 pub type SharedMusic = shared_type!(Music);
@@ -13,21 +13,15 @@ pub type SharedMusic = shared_type!(Music);
 impl Music {
     pub fn new() -> SharedMusic {
         new_shared_type!(Self {
-            sequences: Default::default(),
+            sounds: Default::default(),
         })
     }
 
-    pub fn set(
-        &mut self,
-        sequence0: &[u32],
-        sequence1: &[u32],
-        sequence2: &[u32],
-        sequence3: &[u32],
-    ) {
-        self.sequences[0] = sequence0.to_vec();
-        self.sequences[1] = sequence1.to_vec();
-        self.sequences[2] = sequence2.to_vec();
-        self.sequences[3] = sequence3.to_vec();
+    pub fn set(&mut self, sounds0: &[u32], sounds1: &[u32], sounds2: &[u32], sounds3: &[u32]) {
+        self.sounds[0] = sounds0.to_vec();
+        self.sounds[1] = sounds1.to_vec();
+        self.sounds[2] = sounds2.to_vec();
+        self.sounds[3] = sounds3.to_vec();
     }
 }
 
@@ -37,8 +31,8 @@ impl ResourceItem for Music {
     }
 
     fn is_modified(&self) -> bool {
-        for sequence in &self.sequences {
-            if !sequence.is_empty() {
+        for sndseq in &self.sounds {
+            if !sndseq.is_empty() {
                 return true;
             }
         }
@@ -46,12 +40,12 @@ impl ResourceItem for Music {
     }
 
     fn clear(&mut self) {
-        self.sequences = Default::default();
+        self.sounds = Default::default();
     }
 
     fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
-        for sequence in &self.sequences {
+        for sequence in &self.sounds {
             if sequence.is_empty() {
                 output += "none";
             } else {
@@ -71,7 +65,7 @@ impl ResourceItem for Music {
                 continue;
             }
             string_loop!(j, value, line, 2, {
-                self.sequences[i].push(parse_hex_string(&value).unwrap());
+                self.sounds[i].push(parse_hex_string(&value).unwrap());
             });
         }
     }
@@ -85,7 +79,7 @@ mod tests {
     fn new() {
         let music = Music::new();
         for i in 0..NUM_CHANNELS {
-            assert_eq!(music.lock().sequences[i as usize].len(), 0);
+            assert_eq!(music.lock().sounds[i as usize].len(), 0);
         }
     }
 
@@ -96,7 +90,7 @@ mod tests {
             .lock()
             .set(&[0, 1, 2], &[1, 2, 3], &[2, 3, 4], &[3, 4, 5]);
         for i in 0..NUM_CHANNELS {
-            assert_eq!(&music.lock().sequences[i as usize], &vec![i, i + 1, i + 2]);
+            assert_eq!(&music.lock().sounds[i as usize], &vec![i, i + 1, i + 2]);
         }
     }
 }
