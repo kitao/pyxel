@@ -696,7 +696,7 @@ class Sound:
 
 # Music class
 class Music:
-    sequences: List[List[int]]
+    sounds: List[List[int]]
     def __init__(self) -> None: ...
     def set(
         self,
