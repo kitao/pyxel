@@ -112,12 +112,7 @@ impl Pyxel {
     pub fn playm(&mut self, music_no: u32, start_tick: Option<u32>, should_loop: bool) {
         let music = self.audio.musics[music_no as usize].clone();
         for i in 0..NUM_CHANNELS {
-            self.play(
-                i,
-                &music.lock().sequences[i as usize],
-                start_tick,
-                should_loop,
-            );
+            self.play(i, &music.lock().sounds[i as usize], start_tick, should_loop);
         }
     }
 
