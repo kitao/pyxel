@@ -324,6 +324,11 @@ class CanvasPanel(Widget):
         if self.tool_var == TOOL_SELECT and (
             pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
         ):
+            # Ctrl+A: Select all
+            if pyxel.btnp(pyxel.KEY_A):
+                self._select_x1 = self._select_y1 = 0
+                self._select_x2 = self._select_y2 = 15
+
             # Ctrl+C: Copy
             if pyxel.btnp(pyxel.KEY_C):
                 self._copy_buffer = self.canvas_var.get_slice(
@@ -332,6 +337,17 @@ class CanvasPanel(Widget):
                     self._select_x2 - self._select_x1 + 1,
                     self._select_y2 - self._select_y1 + 1,
                 )
+
+            # Ctrl+X: Cut
+            if pyxel.btnp(pyxel.KEY_X):
+                x = self.focus_x_var * 8 + self._select_x1
+                y = self.focus_y_var * 8 + self._select_y1
+                w = self._select_x2 - self._select_x1 + 1
+                h = self._select_y2 - self._select_y1 + 1
+                self._copy_buffer = self.canvas_var.get_slice(x, y, w, h)
+                self._add_pre_history()
+                self.canvas_var.rect(x, y, w, h, (0, 0) if self._is_tilemap_mode else 0)
+                self._add_post_history()
 
             # Ctrl+V: Paste
             if self._copy_buffer is not None and pyxel.btnp(pyxel.KEY_V):

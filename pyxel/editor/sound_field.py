@@ -5,7 +5,8 @@ from .settings import (
     MAX_SOUND_LENGTH,
     SOUND_FIELD_DATA_FOCUS_COLOR,
     SOUND_FIELD_DATA_NORMAL_COLOR,
-    SOUND_FIELD_FOCUS_COLOR,
+    SOUND_FIELD_FOCUS_EDIT_COLOR,
+    SOUND_FIELD_FOCUS_SELECT_COLOR,
     TEXT_LABEL_COLOR,
 )
 from .widgets import Widget
@@ -26,6 +27,7 @@ class SoundField(Widget):
         super().__init__(parent, 30, 149, 193, 23)
         self.field_cursor = parent.field_cursor
         self.get_field = parent.get_field
+        self.get_field_help_message = parent.get_field_help_message
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
 
@@ -44,16 +46,10 @@ class SoundField(Widget):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
         x, y = self._screen_to_view(x, y)
-        self.field_cursor.move_to(x, y + 1)
+        self.field_cursor.move_to(x, y + 1, pyxel.btn(pyxel.KEY_SHIFT))
 
     def __on_mouse_hover(self, x, y):
-        x, y = self._screen_to_view(x, y)
-        if y == 0:
-            self.help_message_var = "TONE:T/S/P/N/BS/DEL"
-        elif y == 1:
-            self.help_message_var = "VOLUME:0-7/BS/DEL"
-        elif y == 2:
-            self.help_message_var = "EFFECT:N/S/V/F/BS/DEL"
+        self.help_message_var = self.get_field_help_message()
 
     def __on_update(self):
         cursor_y = self.field_cursor.y
@@ -121,8 +117,17 @@ class SoundField(Widget):
             return
         x = cursor_x * 4 + 31
         y = cursor_y * 8 + 142
-        pyxel.rect(x, y - 1, 4, 7, SOUND_FIELD_FOCUS_COLOR)
+        w = self.field_cursor.width * 4
+        col = (
+            SOUND_FIELD_FOCUS_SELECT_COLOR
+            if self.field_cursor.is_selecting
+            else SOUND_FIELD_FOCUS_EDIT_COLOR
+        )
+        pyxel.rect(x, y - 1, w, 7, col)
         if cursor_x < len(data_str[cursor_y - 1]):
             pyxel.text(
-                x, y, data_str[cursor_y - 1][cursor_x], SOUND_FIELD_DATA_FOCUS_COLOR
+                x,
+                y,
+                data_str[cursor_y - 1][cursor_x : cursor_x + self.field_cursor.width],
+                SOUND_FIELD_DATA_FOCUS_COLOR,
             )

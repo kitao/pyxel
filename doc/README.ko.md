@@ -153,6 +153,7 @@ pyxel copy_examples
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 화면 전환이 있는 슈팅 게임
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - 맵이 있는 횡 스크롤 플랫폼 게임
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - 이미지 클래스를 사용한 오프스크린 렌더링
+- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - 펄린 노이즈 애니메이션
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 제 1회 Pyxel Jam 우승 작품 ([Adam](https://twitter.com/helpcomputer0) 제작)
 - [megaball.pyxapp](images/megaball.gif) - 아케이드 볼 물리 게임 ([Adam](https://twitter.com/helpcomputer0) 제작)
 

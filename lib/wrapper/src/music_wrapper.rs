@@ -6,12 +6,12 @@ use pyxel::SharedMusic as PyxelSharedMusic;
 
 #[pyclass]
 #[derive(Clone)]
-pub struct Sequence {
+pub struct Sounds {
     pyxel_music: PyxelSharedMusic,
     channel_no: u32,
 }
 
-impl Sequence {
+impl Sounds {
     fn new(pyxel_music: PyxelSharedMusic, channel_no: u32) -> Self {
         Self {
             pyxel_music,
@@ -20,21 +20,18 @@ impl Sequence {
     }
 
     fn list(&self) -> &Vec<u32> {
-        unsafe {
-            &*(&self.pyxel_music.lock().sequences[self.channel_no as usize] as *const Vec<u32>)
-        }
+        unsafe { &*(&self.pyxel_music.lock().sounds[self.channel_no as usize] as *const Vec<u32>) }
     }
 
     fn list_mut(&mut self) -> &mut Vec<u32> {
         unsafe {
-            &mut *(&mut self.pyxel_music.lock().sequences[self.channel_no as usize]
-                as *mut Vec<u32>)
+            &mut *(&mut self.pyxel_music.lock().sounds[self.channel_no as usize] as *mut Vec<u32>)
         }
     }
 }
 
 #[pyproto]
-impl PySequenceProtocol for Sequence {
+impl PySequenceProtocol for Sounds {
     fn __len__(&self) -> PyResult<usize> {
         impl_len_method_for_list!(self)
     }
@@ -49,7 +46,7 @@ impl PySequenceProtocol for Sequence {
 }
 
 #[pymethods]
-impl Sequence {
+impl Sounds {
     pub fn from_list(&mut self, lst: Vec<u32>) -> PyResult<()> {
         impl_from_list_method_for_list!(self, lst)
     }
@@ -61,25 +58,25 @@ impl Sequence {
 
 #[pyclass]
 #[derive(Clone)]
-pub struct Sequences {
+pub struct SoundsList {
     pyxel_music: PyxelSharedMusic,
 }
 
-impl Sequences {
+impl SoundsList {
     fn new(pyxel_music: PyxelSharedMusic) -> Self {
         Self { pyxel_music }
     }
 }
 
 #[pyproto]
-impl PySequenceProtocol for Sequences {
+impl PySequenceProtocol for SoundsList {
     fn __len__(&self) -> PyResult<usize> {
-        Ok(self.pyxel_music.lock().sequences.len())
+        Ok(self.pyxel_music.lock().sounds.len())
     }
 
-    fn __getitem__(&self, index: isize) -> PyResult<Sequence> {
+    fn __getitem__(&self, index: isize) -> PyResult<Sounds> {
         if index < self.__len__().unwrap() as isize {
-            Ok(Sequence::new(self.pyxel_music.clone(), index as u32))
+            Ok(Sounds::new(self.pyxel_music.clone(), index as u32))
         } else {
             Err(PyIndexError::new_err("list index out of range"))
         }
@@ -108,14 +105,14 @@ impl Music {
     }
 
     #[getter]
-    pub fn sequences(&self) -> Sequences {
-        Sequences::new(self.pyxel_music.clone())
+    pub fn sounds(&self) -> SoundsList {
+        SoundsList::new(self.pyxel_music.clone())
     }
 }
 
 pub fn add_music_class(m: &PyModule) -> PyResult<()> {
-    m.add_class::<Sequence>()?;
-    m.add_class::<Sequences>()?;
+    m.add_class::<Sounds>()?;
+    m.add_class::<SoundsList>()?;
     m.add_class::<Music>()?;
     Ok(())
 }

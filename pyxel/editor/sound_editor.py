@@ -32,6 +32,7 @@ class SoundEditor(EditorBase):
             get_field=self.get_field,
             add_pre_history=self.add_pre_history,
             add_post_history=self.add_post_history,
+            cross_filed_copying=False,
         )
 
         # Initialize octave_var
@@ -137,6 +138,19 @@ class SoundEditor(EditorBase):
         if data["old_field"] != data["new_field"]:
             self.add_history(self._history_data)
 
+    def get_field_help_message(self):
+        cursor_y = self.field_cursor.y
+        if cursor_y == 0:
+            return "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
+        elif cursor_y == 1:
+            return "TONE:T/S/P/N/BS/DEL"
+        elif cursor_y == 2:
+            return "VOLUME:0-7/BS/DEL"
+        elif cursor_y == 3:
+            return "EFFECT:N/S/V/F/BS/DEL"
+        else:
+            return ""
+
     def _play(self, is_partial):
         self._sound_picker.is_enabled_var = False
         self._speed_picker.is_enabled_var = False
@@ -183,13 +197,13 @@ class SoundEditor(EditorBase):
     def __on_undo(self, data):
         self._stop()
         self.sound_no_var = data["sound_no"]
-        self.field_cursor.move_to(*data["old_cursor_pos"])
+        self.field_cursor.move_to(*data["old_cursor_pos"], False)
         self.field_cursor.field.from_list(data["old_field"])
 
     def __on_redo(self, data):
         self._stop()
         self.sound_no_var = data["sound_no"]
-        self.field_cursor.move_to(*data["new_cursor_pos"])
+        self.field_cursor.move_to(*data["new_cursor_pos"], False)
         self.field_cursor.field.from_list(data["new_field"])
 
     def __on_hide(self):

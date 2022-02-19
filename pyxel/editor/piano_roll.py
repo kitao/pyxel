@@ -6,6 +6,7 @@ from .settings import (
     PIANO_ROLL_BACKGROUND_COLOR,
     PIANO_ROLL_CURSOR_EDIT_COLOR,
     PIANO_ROLL_CURSOR_PLAY_COLOR,
+    PIANO_ROLL_CURSOR_SELECT_COLOR,
     PIANO_ROLL_NOTE_COLOR,
     PIANO_ROLL_REST_COLOR,
 )
@@ -29,6 +30,7 @@ class PianoRoll(Widget):
         self.get_field = parent.get_field
         self.add_pre_history = parent.add_pre_history
         self.add_post_history = parent.add_post_history
+        self.get_field_help_message = parent.get_field_help_message
         self.copy_var("note_var", parent)
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
@@ -48,7 +50,7 @@ class PianoRoll(Widget):
 
     def _set_note(self, x, y):
         self.add_pre_history(x, 0)
-        self.field_cursor.move_to(x, 0)
+        self.field_cursor.move_to(x, 0, pyxel.btn(pyxel.KEY_SHIFT))
         field = self.field_cursor.field
         field_len = len(field)
         if x < field_len:
@@ -65,7 +67,7 @@ class PianoRoll(Widget):
         x, y = self._screen_to_view(x, y)
         self._press_x = x
         self._press_y = y
-        self.field_cursor.move_to(x, 0)
+        self.field_cursor.move_to(x, 0, pyxel.btn(pyxel.KEY_SHIFT))
 
     def __on_mouse_drag(self, key, x, y, dx, dy):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
@@ -96,7 +98,7 @@ class PianoRoll(Widget):
         self._set_note(x, y)
 
     def __on_mouse_hover(self, x, y):
-        self.help_message_var = "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
+        self.help_message_var = self.get_field_help_message()
 
     def __on_update(self):
         if self.field_cursor.y > 0 or self.is_playing_var:
@@ -115,7 +117,13 @@ class PianoRoll(Widget):
             pyxel.rect(x, 25, 3, 123, PIANO_ROLL_CURSOR_PLAY_COLOR)
         elif self.field_cursor.y == 0:
             x = self.field_cursor.x * 4 + 31
-            pyxel.rect(x, 25, 3, 123, PIANO_ROLL_CURSOR_EDIT_COLOR)
+            w = self.field_cursor.width * 4 - 1
+            col = (
+                PIANO_ROLL_CURSOR_SELECT_COLOR
+                if self.field_cursor.is_selecting
+                else PIANO_ROLL_CURSOR_EDIT_COLOR
+            )
+            pyxel.rect(x, 25, w, 123, col)
         pyxel.blt(
             self.x,
             self.y,

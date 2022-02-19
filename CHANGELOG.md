@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.7.0
+- Fixed type hint definitions
+- Changed the location of working directory
+- Added Ctrl+A and Ctrl+X shortcuts for the Image/Tilemap Editor
+- Added copy and paste feature for the Sound/Music Editor
+- Added the example #12
+- Renamed sequences of Music class to sounds
+
 ## 1.6.9
 - Fixed the select tool of the resource editor
 - Refactored the drawing functions
