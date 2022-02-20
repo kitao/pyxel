@@ -5,8 +5,8 @@
 - Changed the location of working directory
 - Added Ctrl+A and Ctrl+X shortcuts for the Image/Tilemap Editor
 - Added copy and paste feature for the Sound/Music Editor
+- Renamed the sequences property of the Music class to snds_list
 - Added the example #12
-- Renamed sequences of Music class to sounds
 
 ## 1.6.9
 - Fixed the select tool of the resource editor
