@@ -20,12 +20,15 @@ impl Sounds {
     }
 
     fn list(&self) -> &Vec<u32> {
-        unsafe { &*(&self.pyxel_music.lock().sounds[self.channel_no as usize] as *const Vec<u32>) }
+        unsafe {
+            &*(&self.pyxel_music.lock().sounds_list[self.channel_no as usize] as *const Vec<u32>)
+        }
     }
 
     fn list_mut(&mut self) -> &mut Vec<u32> {
         unsafe {
-            &mut *(&mut self.pyxel_music.lock().sounds[self.channel_no as usize] as *mut Vec<u32>)
+            &mut *(&mut self.pyxel_music.lock().sounds_list[self.channel_no as usize]
+                as *mut Vec<u32>)
         }
     }
 }
@@ -71,7 +74,7 @@ impl SoundsList {
 #[pyproto]
 impl PySequenceProtocol for SoundsList {
     fn __len__(&self) -> PyResult<usize> {
-        Ok(self.pyxel_music.lock().sounds.len())
+        Ok(self.pyxel_music.lock().sounds_list.len())
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Sounds> {
@@ -100,12 +103,12 @@ impl Music {
         wrap_pyxel_music(PyxelMusic::new())
     }
 
-    pub fn set(&self, seq0: Vec<u32>, seq1: Vec<u32>, seq2: Vec<u32>, seq3: Vec<u32>) {
-        self.pyxel_music.lock().set(&seq0, &seq1, &seq2, &seq3);
+    pub fn set(&self, snds0: Vec<u32>, snds1: Vec<u32>, snds2: Vec<u32>, snds3: Vec<u32>) {
+        self.pyxel_music.lock().set(&snds0, &snds1, &snds2, &snds3);
     }
 
     #[getter]
-    pub fn sounds(&self) -> SoundsList {
+    pub fn snds_list(&self) -> SoundsList {
         SoundsList::new(self.pyxel_music.clone())
     }
 }

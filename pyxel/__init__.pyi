@@ -696,12 +696,12 @@ class Sound:
 
 # Music class
 class Music:
-    sounds: List[List[int]]
+    snds_list: List[List[int]]
     def __init__(self) -> None: ...
     def set(
         self,
-        seq0: List[int],
-        seq1: List[int],
-        seq2: List[int],
-        seq3: List[int],
+        snds0: List[int],
+        snds1: List[int],
+        snds2: List[int],
+        snds3: List[int],
     ) -> None: ...
