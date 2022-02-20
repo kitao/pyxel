@@ -604,12 +604,12 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 
 ### Music类
 
-- `sounds`<br>
-二维的声音列表(0-63)，带有要使用的通道数量。
+- `sequences`<br>
+按通道数顺序展示声音(0-63)的二维列表。
 
-- `set(*sounds)`<br>
-设置要使用的通道的声音列表（0-63）。如果指定了一个空的列表，该通道就不会被用于播放。<br>
-示例：`pyxel.music(0).set([0, 1], [2, 3], [], [4])`
+- `set(seq0, seq1, seq2, seq3)`<br>
+设置所有通道的声音(0-63)列表。如果指定了空列表，则对应通道不会用来播放。<br>
+示例：`pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 ### 高级APIs
 
