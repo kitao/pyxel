@@ -1,7 +1,6 @@
 use pyo3::class::PySequenceProtocol;
 use pyo3::exceptions::PyIndexError;
 use pyo3::prelude::*;
-use pyo3::types::PyTuple;
 use pyxel::Music as PyxelMusic;
 use pyxel::SharedMusic as PyxelSharedMusic;
 
@@ -101,21 +100,8 @@ impl Music {
         wrap_pyxel_music(PyxelMusic::new())
     }
 
-    #[args(sounds = "*")]
-    pub fn set(&self, sounds: &PyTuple) -> PyResult<()> {
-        let mut sounds_list = Vec::new();
-        for i in 0..sounds.len() {
-            let snds = sounds.get_item(i).unwrap();
-            sounds_list.push(type_switch! {
-                snds,
-                Vec::<u32>,
-                {
-                    snds
-                }
-            });
-        }
-        self.pyxel_music.lock().set(&sounds_list);
-        Ok(())
+    pub fn set(&self, seq0: Vec<u32>, seq1: Vec<u32>, seq2: Vec<u32>, seq3: Vec<u32>) {
+        self.pyxel_music.lock().set(&seq0, &seq1, &seq2, &seq3);
     }
 
     #[getter]
