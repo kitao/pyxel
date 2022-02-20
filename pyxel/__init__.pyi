@@ -698,10 +698,4 @@ class Sound:
 class Music:
     sounds: List[List[int]]
     def __init__(self) -> None: ...
-    def set(
-        self,
-        seq0: List[int],
-        seq1: List[int],
-        seq2: List[int],
-        seq3: List[int],
-    ) -> None: ...
+    def set(self, *sounds: List[int]) -> None: ...

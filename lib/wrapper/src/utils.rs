@@ -5,6 +5,14 @@ macro_rules! type_error {
 }
 
 macro_rules! type_switch {
+    ($var: ident, $type1: ty, $block1: block) => {
+        if let Ok($var) = <$type1>::extract($var) {
+            $block1
+        } else {
+            type_error!(format!("must be {}", stringify!($type1)));
+        }
+    };
+
     ($var: ident, $type1: ty, $block1: block, $type2: ty, $block2: block) => {
         if let Ok($var) = <$type1>::extract($var) {
             $block1

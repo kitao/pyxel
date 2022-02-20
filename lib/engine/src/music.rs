@@ -1,27 +1,22 @@
 use crate::resource::ResourceItem;
-use crate::settings::{NUM_CHANNELS, RESOURCE_ARCHIVE_DIRNAME};
+use crate::settings::RESOURCE_ARCHIVE_DIRNAME;
 use crate::utils::parse_hex_string;
 use crate::Pyxel;
 
 #[derive(Clone)]
 pub struct Music {
-    pub sounds: [Vec<u32>; NUM_CHANNELS as usize],
+    pub sounds: Vec<Vec<u32>>,
 }
 
 pub type SharedMusic = shared_type!(Music);
 
 impl Music {
     pub fn new() -> SharedMusic {
-        new_shared_type!(Self {
-            sounds: Default::default(),
-        })
+        new_shared_type!(Self { sounds: Vec::new() })
     }
 
-    pub fn set(&mut self, sounds0: &[u32], sounds1: &[u32], sounds2: &[u32], sounds3: &[u32]) {
-        self.sounds[0] = sounds0.to_vec();
-        self.sounds[1] = sounds1.to_vec();
-        self.sounds[2] = sounds2.to_vec();
-        self.sounds[3] = sounds3.to_vec();
+    pub fn set(&mut self, sounds: &[Vec<u32>]) {
+        self.sounds = sounds.to_vec();
     }
 }
 
@@ -31,25 +26,20 @@ impl ResourceItem for Music {
     }
 
     fn is_modified(&self) -> bool {
-        for sndseq in &self.sounds {
-            if !sndseq.is_empty() {
-                return true;
-            }
-        }
-        false
+        self.sounds.iter().any(|sounds| !sounds.is_empty())
     }
 
     fn clear(&mut self) {
-        self.sounds = Default::default();
+        self.sounds.clear();
     }
 
     fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
-        for sequence in &self.sounds {
-            if sequence.is_empty() {
+        for sounds in &self.sounds {
+            if sounds.is_empty() {
                 output += "none";
             } else {
-                for sound_no in sequence {
+                for sound_no in sounds {
                     output += &format!("{:02x}", sound_no);
                 }
             }
@@ -61,6 +51,7 @@ impl ResourceItem for Music {
     fn deserialize(&mut self, _pyxel: &Pyxel, _version: u32, input: &str) {
         self.clear();
         for (i, line) in input.lines().enumerate() {
+            self.sounds.push(Vec::new());
             if line == "none" {
                 continue;
             }
@@ -78,9 +69,7 @@ mod tests {
     #[test]
     fn new() {
         let music = Music::new();
-        for i in 0..NUM_CHANNELS {
-            assert_eq!(music.lock().sounds[i as usize].len(), 0);
-        }
+        assert!(music.lock().sounds.is_empty());
     }
 
     #[test]
@@ -88,8 +77,8 @@ mod tests {
         let music = Music::new();
         music
             .lock()
-            .set(&[0, 1, 2], &[1, 2, 3], &[2, 3, 4], &[3, 4, 5]);
-        for i in 0..NUM_CHANNELS {
+            .set(&[vec![0, 1, 2], vec![1, 2, 3], vec![2, 3, 4], vec![3, 4, 5]]);
+        for i in 0..4 {
             assert_eq!(&music.lock().sounds[i as usize], &vec![i, i + 1, i + 2]);
         }
     }
