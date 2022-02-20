@@ -598,12 +598,12 @@ Ejemplo: `pyxel.sound(0).set_effect("NFNF NVVS")`
 
 ### Clase Music
 
-- `sequences`<br>
-Lista bi-dimensional de sonidos (0-63) en una lista indexada por el número de canales.
+- `sounds`<br>
+Lista bidimensional de sonidos (0-63) con el número de canales a utilizar.
 
-- `set(seq0, seq1, seq2, seq3)`<br>
-Fija la lista de sonidos (0-63) de todos los canales. Si se referencia una lista vacía, ese canal no se utilizará para reproducir el sonido.<br>
-Ejemplo: `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+- `set(*sounds)`<br>
+Establece las listas de sonido (0-63) de los canales que se van a utilizar. Si se especifica una lista vacía, ese canal no se utiliza para la reproducción.<br>
+Ejemplo: `pyxel.music(0).set([0, 1], [2, 3], [], [4])`
 
 ### APIs avanzadas
 
