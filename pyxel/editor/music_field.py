@@ -6,8 +6,8 @@ from .settings import (
     MUSIC_FIELD_CURSOR_EDIT_COLOR,
     MUSIC_FIELD_CURSOR_PLAY_COLOR,
     MUSIC_FIELD_CURSOR_SELECT_COLOR,
-    MUSIC_FIELD_SOUND_FOCUS_COLOR,
     MUSIC_FIELD_SOUND_NORMAL_COLOR,
+    MUSIC_FIELD_SOUND_SELECT_COLOR,
     TEXT_LABEL_COLOR,
 )
 from .widgets import Widget
@@ -98,7 +98,7 @@ class MusicField(Widget):
             x = self.x + 22 + (i % 16) * 12
             y = self.y + (i // 16) * 10 + 3
             col = (
-                MUSIC_FIELD_SOUND_FOCUS_COLOR
+                MUSIC_FIELD_SOUND_SELECT_COLOR
                 if cursor_y == self._ch and cursor_x <= i < cursor_x + cursor_width
                 else MUSIC_FIELD_SOUND_NORMAL_COLOR
             )
