@@ -3,10 +3,10 @@ import pyxel
 from .settings import (
     EDITOR_IMAGE,
     MAX_SOUND_LENGTH,
-    SOUND_FIELD_DATA_FOCUS_COLOR,
+    SOUND_FIELD_CURSOR_EDIT_COLOR,
+    SOUND_FIELD_CURSOR_SELECT_COLOR,
     SOUND_FIELD_DATA_NORMAL_COLOR,
-    SOUND_FIELD_FOCUS_EDIT_COLOR,
-    SOUND_FIELD_FOCUS_SELECT_COLOR,
+    SOUND_FIELD_DATA_SELECT_COLOR,
     TEXT_LABEL_COLOR,
 )
 from .widgets import Widget
@@ -119,9 +119,9 @@ class SoundField(Widget):
         y = cursor_y * 8 + 142
         w = self.field_cursor.width * 4
         col = (
-            SOUND_FIELD_FOCUS_SELECT_COLOR
+            SOUND_FIELD_CURSOR_SELECT_COLOR
             if self.field_cursor.is_selecting
-            else SOUND_FIELD_FOCUS_EDIT_COLOR
+            else SOUND_FIELD_CURSOR_EDIT_COLOR
         )
         pyxel.rect(x, y - 1, w, 7, col)
         if cursor_x < len(data_str[cursor_y - 1]):
@@ -129,5 +129,5 @@ class SoundField(Widget):
                 x,
                 y,
                 data_str[cursor_y - 1][cursor_x : cursor_x + self.field_cursor.width],
-                SOUND_FIELD_DATA_FOCUS_COLOR,
+                SOUND_FIELD_DATA_SELECT_COLOR,
             )
