@@ -4,7 +4,7 @@ use crate::instance;
 
 #[pyfunction]
 #[pyo3(text_signature = "(filename, *, image, tilemap, sound, music)")]
-fn load(
+fn load_(
     filename: &str,
     image: Option<bool>,
     tilemap: Option<bool>,
@@ -50,7 +50,7 @@ fn screencast(scale: Option<u32>) {
 }
 
 pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(load, m)?)?;
+    m.add_function(wrap_pyfunction!(load_, m)?)?;
     m.add_function(wrap_pyfunction!(save, m)?)?;
     m.add_function(wrap_pyfunction!(screenshot, m)?)?;
     m.add_function(wrap_pyfunction!(reset_capture, m)?)?;
