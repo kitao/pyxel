@@ -56,11 +56,7 @@ fn playm(msc: u32, tick: Option<u32>, r#loop: Option<bool>) {
 
 #[pyfunction]
 fn stop(ch: Option<u32>) {
-    if let Some(ch) = ch {
-        instance().stop(ch);
-    } else {
-        instance().stop0();
-    }
+    ch.map_or_else(|| instance().stop0(), |ch| instance().stop(ch));
 }
 
 pub fn add_audio_functions(m: &PyModule) -> PyResult<()> {
