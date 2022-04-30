@@ -387,8 +387,8 @@ The current value of the mouse wheel
 - `btn(key)`<br>
 Return `True` if `key` is pressed, otherwise return `False`. ([Key definition list](pyxel/__init__.pyi))
 
-- `btnp(key, [hold], [period])`<br>
-Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `period` are specified, `True` will be returned at the `period` frame interval when the `key` is held down for more than `hold` frames.
+- `btnp(key, [hold], [repeat])`<br>
+Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `repeat` are specified, `True` will be returned at the `repeat` frame interval when the `key` is held down for more than `hold` frames.
 
 - `btnr(key)`<br>
 Return `True` if `key` is released at that frame, otherwise return `False`.

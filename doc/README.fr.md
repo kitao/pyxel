@@ -388,8 +388,8 @@ La valeur actuelle de la molette de la souris
 - `btn(key)`<br>
 Renvoie `True` si la touche `key` est appuyée, sinon renvoie `False` ([liste des touches](../pyxel/__init__.pyi))
 
-- `btnp(key, [hold], [period])`<br>
-Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`. Quand `hold` et `period` sont spécifiés, `True` sera renvoyé à l’intervalle de frame `period` quand la touche `key` est appuyée pendant plus de `hold` frames
+- `btnp(key, [hold], [repeat])`<br>
+Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`. Quand `hold` et `repeat` sont spécifiés, `True` sera renvoyé à l’intervalle de frame `repeat` quand la touche `key` est appuyée pendant plus de `hold` frames
 
 - `btnr(key)`<br>
 Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`

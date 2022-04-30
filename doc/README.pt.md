@@ -387,8 +387,8 @@ O valor atual da roda de rolagem do mouse
 - `btn(key)`<br>
 Retorna `True` se `key` é pressionada, caso contrário retorna `False` ([lista de definições de teclas](../pyxel/__init__.pyi))
 
-- `btnp(key, [hold], [period])`<br>
-Retorna `True` se `key` for pressionada naquele quadro, caso contrário retorna `False`. Quando `hold` e `period` são especificados, `True` será retornado durante o intervalo de quadros `period`, no qual `key` estiver pressionada por mais que `hold` quadros
+- `btnp(key, [hold], [repeat])`<br>
+Retorna `True` se `key` for pressionada naquele quadro, caso contrário retorna `False`. Quando `hold` e `repeat` são especificados, `True` será retornado durante o intervalo de quadros `repeat`, no qual `key` estiver pressionada por mais que `hold` quadros
 
 - `btnr(key)`<br>
 Retorna `True` se `key` for solta naquele quadro, caso contrário retorna `False`

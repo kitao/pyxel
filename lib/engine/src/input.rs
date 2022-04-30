@@ -193,7 +193,7 @@ impl Pyxel {
         &self,
         key: Key,
         hold_frame_count: Option<u32>,
-        period_frame_count: Option<u32>,
+        repeat_frame_count: Option<u32>,
     ) -> bool {
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Released {
@@ -206,13 +206,13 @@ impl Pyxel {
                 return false;
             }
             let hold_frame_count = hold_frame_count.unwrap_or(0);
-            let period_frame_count = period_frame_count.unwrap_or(0);
-            if period_frame_count == 0 {
+            let repeat_frame_count = repeat_frame_count.unwrap_or(0);
+            if repeat_frame_count == 0 {
                 return false;
             }
             let elapsed_frames =
                 self.frame_count() as i32 - (*frame_count + hold_frame_count) as i32;
-            if elapsed_frames >= 0 && elapsed_frames % period_frame_count as i32 == 0 {
+            if elapsed_frames >= 0 && elapsed_frames % repeat_frame_count as i32 == 0 {
                 return true;
             }
         }
