@@ -387,8 +387,8 @@ Pyxel 애플리케이션을 종료합니다.
 - `btn(key)`<br>
 `key`가 눌리고 있으면 `True`, 눌리고 있지 않으면 `False`를 반환합니다. ([키 정의 리스트](../pyxel/__init__.pyi))
 
-- `btnp(key, [hold], [period])`<br>
-해당 프레임에 `key`가 눌리면 `True`, 눌리지 않으면 `False`를 반환합니다. `hold`와 `period`를 지정하면, `hold` 프레임 이상 `key`가 눌린 상태인 경우 `period` 프레임 간격으로 `True`를 반환합니다.
+- `btnp(key, [hold], [repeat])`<br>
+해당 프레임에 `key`가 눌리면 `True`, 눌리지 않으면 `False`를 반환합니다. `hold`와 `repeat`를 지정하면, `hold` 프레임 이상 `key`가 눌린 상태인 경우 `repeat` 프레임 간격으로 `True`를 반환합니다.
 
 - `btnr(key)`<br>
 해당 프레임에 `key`가 떼어지면 `True`, 아니면 `False`를 반환합니다.

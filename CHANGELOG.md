@@ -8,6 +8,7 @@
 - Renamed the sequences property of the Music class to snds_list
 - Added the example #12
 - Updated external library versions
+- Fixed a parameter name of the btnp function
 
 ## 1.6.9
 - Fixed the select tool of the resource editor
