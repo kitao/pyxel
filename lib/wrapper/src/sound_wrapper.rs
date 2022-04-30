@@ -1,4 +1,3 @@
-use pyo3::class::PySequenceProtocol;
 use pyo3::prelude::*;
 use pyxel::SharedSound as PyxelSharedSound;
 use pyxel::Sound as PyxelSound;
@@ -30,8 +29,8 @@ impl Notes {
     define_private_methods_for_list!(Note, notes);
 }
 
-#[pyproto]
-impl PySequenceProtocol for Notes {
+#[pymethods]
+impl Notes {
     fn __len__(&self) -> PyResult<usize> {
         impl_len_method_for_list!(self)
     }
@@ -43,10 +42,7 @@ impl PySequenceProtocol for Notes {
     fn __setitem__(&mut self, index: isize, value: Note) -> PyResult<()> {
         impl_setitem_method_for_list!(self, index, value)
     }
-}
 
-#[pymethods]
-impl Notes {
     pub fn from_list(&mut self, lst: Vec<Note>) -> PyResult<()> {
         impl_from_list_method_for_list!(self, lst)
     }
@@ -66,8 +62,8 @@ impl Tones {
     define_private_methods_for_list!(Tone, tones);
 }
 
-#[pyproto]
-impl PySequenceProtocol for Tones {
+#[pymethods]
+impl Tones {
     fn __len__(&self) -> PyResult<usize> {
         impl_len_method_for_list!(self)
     }
@@ -79,10 +75,7 @@ impl PySequenceProtocol for Tones {
     fn __setitem__(&mut self, index: isize, value: Tone) -> PyResult<()> {
         impl_setitem_method_for_list!(self, index, value)
     }
-}
 
-#[pymethods]
-impl Tones {
     pub fn from_list(&mut self, lst: Vec<Tone>) -> PyResult<()> {
         impl_from_list_method_for_list!(self, lst)
     }
@@ -102,8 +95,8 @@ impl Volumes {
     define_private_methods_for_list!(Volume, volumes);
 }
 
-#[pyproto]
-impl PySequenceProtocol for Volumes {
+#[pymethods]
+impl Volumes {
     fn __len__(&self) -> PyResult<usize> {
         impl_len_method_for_list!(self)
     }
@@ -115,10 +108,7 @@ impl PySequenceProtocol for Volumes {
     fn __setitem__(&mut self, index: isize, value: Volume) -> PyResult<()> {
         impl_setitem_method_for_list!(self, index, value)
     }
-}
 
-#[pymethods]
-impl Volumes {
     pub fn from_list(&mut self, lst: Vec<Volume>) -> PyResult<()> {
         impl_from_list_method_for_list!(self, lst)
     }
@@ -138,8 +128,8 @@ impl Effects {
     define_private_methods_for_list!(Effect, effects);
 }
 
-#[pyproto]
-impl PySequenceProtocol for Effects {
+#[pymethods]
+impl Effects {
     fn __len__(&self) -> PyResult<usize> {
         impl_len_method_for_list!(self)
     }
@@ -151,10 +141,7 @@ impl PySequenceProtocol for Effects {
     fn __setitem__(&mut self, index: isize, value: Effect) -> PyResult<()> {
         impl_setitem_method_for_list!(self, index, value)
     }
-}
 
-#[pymethods]
-impl Effects {
     pub fn from_list(&mut self, lst: Vec<Effect>) -> PyResult<()> {
         impl_from_list_method_for_list!(self, lst)
     }
