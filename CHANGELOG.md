@@ -2,6 +2,7 @@
 
 ## 1.7.1
 - Fixed the description for Tilemap.set in the READMEs
+- Fixed the link to the example #12 in the READMEs
 
 ## 1.7.0
 - Fixed type hint definitions

@@ -153,7 +153,7 @@ Die zu kopierenden Beispiele lauten wie folgt:
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Shoot'em up mit Displayübergängen
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Side-Scroller Platform Spiel mit Karte
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen-Rendering mit der Klasse Image
-- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - Perlin-Lärm-Animation
+- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - Perlin-Lärm-Animation
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1. Pyxel Jam Gewinnspiel von [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - Arcade Ball Physik Spiel von [Adam](https://twitter.com/helpcomputer0)
 
