@@ -383,8 +383,8 @@ EL valor actual de la rueda del ratón
 - `btn(key)`<br>
 Devuelve True si key es presionada, si no devuelve False (lista de definición de teclas)
 
-- `btnp(key, [hold], [period])`<br>
-Devuelve `True` si `key` es presionada en ese cuadro, si no devuelve `False`. Cuando `hold` y `period` son definidos, devuelve `True` en el intervalo de cuadro `period` cuando `key` es sostenida por más cuadros que el valor `hold`.
+- `btnp(key, [hold], [repeat])`<br>
+Devuelve `True` si `key` es presionada en ese cuadro, si no devuelve `False`. Cuando `hold` y `repeat` son definidos, devuelve `True` en el intervalo de cuadro `repeat` cuando `key` es sostenida por más cuadros que el valor `hold`.
 - `btnr(key)`<br>
 Devuelve `True` si se suelta la tecla `key` en ese frame, si no, devuelve `False`.
 

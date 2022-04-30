@@ -387,8 +387,8 @@ Il valore corrente della rotella del mouse
 - `btn(key)`<br>
 Ritorna `True` se `key` è premuto, altrimenti ritorna `False` ([lista definizione tasti](../pyxel/__init__.pyi))
 
-- `btnp(key, [hold], [period])`<br>
-Ritorna `True` se `key` è premuto quel frame, altrimenti ritorna `False`. Quando `hold` e `period` sono specificati, `True` sarà ritornato all'intervallo frame `period` quando `key` è premuto per più di `hold` frame
+- `btnp(key, [hold], [repeat])`<br>
+Ritorna `True` se `key` è premuto quel frame, altrimenti ritorna `False`. Quando `hold` e `repeat` sono specificati, `True` sarà ritornato all'intervallo frame `repeat` quando `key` è premuto per più di `hold` frame
 
 - `btnr(key)`<br>
 Ritorna `True` se `key` è rilasciato quel frame, altrimenti ritorna `False`

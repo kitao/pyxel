@@ -387,8 +387,8 @@ Pyxelアプリケーションを終了します。
 - `btn(key)`<br>
 `key`が押されていたら`True`、押されていなければ`False`を返します。([キー定義一覧](../pyxel/__init__.pyi))
 
-- `btnp(key, [hold], [period])`<br>
-そのフレームに`key`が押されたら`True`、押されなければ`False`を返します。`hold`と`period`を指定すると、`hold`フレーム以上ボタンを押し続けた時に`period`フレーム間隔で`True`が返ります。
+- `btnp(key, [hold], [repeat])`<br>
+そのフレームに`key`が押されたら`True`、押されなければ`False`を返します。`hold`と`repeat`を指定すると、`hold`フレーム以上ボタンを押し続けた時に`repeat`フレーム間隔で`True`が返ります。
 
 - `btnr(key)`<br>
 そのフレームに`key`が離されたら`True`、離されなければ`False`を返します。

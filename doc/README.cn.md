@@ -388,8 +388,8 @@ pyxel play PYXEL_APP_FILE
 - `btn(key)`<br>
 如果`key`被按下则返回`True`，否则返回`False`([按键定义列表](../pyxel/__init__.pyi))。
 
-- `btnp(key, [hold], [period])`<br>
-如果`key`被按下则返回`True`。若设置了`hold`和`period`参数，则当`key`被按下持续`hold`帧时，在`period`帧间隙返回`True`。
+- `btnp(key, [hold], [repeat])`<br>
+如果`key`被按下则返回`True`。若设置了`hold`和`repeat`参数，则当`key`被按下持续`hold`帧时，在`repeat`帧间隙返回`True`。
 
 - `btnr(key)`<br>
 如果`key`被松开，则在此帧返回`True`，否则返回`False`。
