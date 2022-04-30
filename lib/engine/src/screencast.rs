@@ -175,7 +175,7 @@ impl Screencast {
     }
 
     fn make_diff_image(
-        base_image: &mut Vec<Vec<Rgb8>>,
+        base_image: &mut [Vec<Rgb8>],
         new_image: &[Vec<Rgb8>],
     ) -> (RectArea, Vec<Vec<Rgb8>>) {
         let mut min_x = i16::MAX;
