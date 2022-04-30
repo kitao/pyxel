@@ -7,6 +7,7 @@
 - Added copy and paste feature for the Sound/Music Editor
 - Renamed the sequences property of the Music class to snds_list
 - Added the example #12
+- Updated external library versions
 
 ## 1.6.9
 - Fixed the select tool of the resource editor
