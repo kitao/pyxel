@@ -552,7 +552,7 @@ El banco de imágenes (0-2) que referencia el mapa
 
 - `set(x, y, data)`<br>
 Establece el mapa a (`x`, `y`) por una lista de strings<br>
-Ejemplo: `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+Ejemplo: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 Obtén la celda del mapa de la posición (`x`, `y`). Una celda es una tupla formada por `(tile_x, tile_y)`

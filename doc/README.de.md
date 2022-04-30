@@ -556,7 +556,7 @@ Die von der Tilemap referenzierte Image-Bank (0-2)
 
 - `set(x, y, data)`<br>
 Setzen der Tilemap an (`x`, `y`) durch eine Liste von strings.<br>
-z.B. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+z.B. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 Gibt die Tile bei (`x`, `y`). Ein Tile ist eine Tuple von `(tile_x, tile_y)`.
