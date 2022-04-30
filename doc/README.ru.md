@@ -153,7 +153,7 @@ pyxel copy_examples
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Игра жанра «убей всех» с переходом между экранами
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Платформер с боковым скроллингом и картой
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Внеэкранный рендеринг с помощью класса Image
-- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - Анимация шума Перлина
+- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - Анимация шума Перлина
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1-я победная игра Pyxel Jam от [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - Аркадная игра с физикой мяча от [Adam](https://twitter.com/helpcomputer0)
 
