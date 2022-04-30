@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.7.1
+- Fixed the description for Tilemap.set in the READMEs
+
 ## 1.7.0
 - Fixed type hint definitions
 - Changed the location of working directory

@@ -558,7 +558,7 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 
 - `set(x, y, data)`<br>
 使用字符串列表在坐标(`x`, `y`)处设置瓦片地图。<br>
-示例：`pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+示例：`pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 得到(`x`, `y`)处的瓦片。瓦片数据为元组`(tile_x, tile_y)`。

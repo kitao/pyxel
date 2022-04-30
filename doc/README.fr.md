@@ -558,7 +558,7 @@ La banque d’image (0-2) référencée par la tilemap
 
 - `set(x, y, data)`<br>
 Met la tilemap à (`x`, `y`) suivant une liste de chaînes.<br>
-Par exemple `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+Par exemple `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 Renvoie la tile à (`x`, `y`). Une tile est un tuple `(tile_x, tile_y)`.
