@@ -1,4 +1,3 @@
-use pyo3::class::PySequenceProtocol;
 use pyo3::exceptions::PyIndexError;
 use pyo3::prelude::*;
 use pyxel::Music as PyxelMusic;
@@ -33,8 +32,8 @@ impl Sounds {
     }
 }
 
-#[pyproto]
-impl PySequenceProtocol for Sounds {
+#[pymethods]
+impl Sounds {
     fn __len__(&self) -> PyResult<usize> {
         impl_len_method_for_list!(self)
     }
@@ -46,10 +45,7 @@ impl PySequenceProtocol for Sounds {
     fn __setitem__(&mut self, index: isize, value: u32) -> PyResult<()> {
         impl_setitem_method_for_list!(self, index, value)
     }
-}
 
-#[pymethods]
-impl Sounds {
     pub fn from_list(&mut self, lst: Vec<u32>) -> PyResult<()> {
         impl_from_list_method_for_list!(self, lst)
     }
@@ -71,8 +67,8 @@ impl SoundsList {
     }
 }
 
-#[pyproto]
-impl PySequenceProtocol for SoundsList {
+#[pymethods]
+impl SoundsList {
     fn __len__(&self) -> PyResult<usize> {
         Ok(self.pyxel_music.lock().sounds_list.len())
     }
