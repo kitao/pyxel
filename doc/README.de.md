@@ -153,7 +153,7 @@ Die zu kopierenden Beispiele lauten wie folgt:
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Shoot'em up mit Displayübergängen
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Side-Scroller Platform Spiel mit Karte
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen-Rendering mit der Klasse Image
-- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - Perlin-Lärm-Animation
+- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - Perlin-Lärm-Animation
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1. Pyxel Jam Gewinnspiel von [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - Arcade Ball Physik Spiel von [Adam](https://twitter.com/helpcomputer0)
 
@@ -386,8 +386,8 @@ Der aktuelle Wert des Scrollrads
 - `btn(key)`<br>
 Return `True` falls `key` gedrückt ist, sonst return `False` ([Liste der Schlüsseldefinitionen](../pyxel/__init__.pyi))
 
-- `btnp(key, [hold], [period])`<br>
-Return `True` falls `key` gedrückt ist, sonst return `False`. Wenn `hold` und `period` angegeben sind, wird `True` am `period` Bildintervall returned, falls `key` für mehr als `hold` Frames gedrückt ist
+- `btnp(key, [hold], [repeat])`<br>
+Return `True` falls `key` gedrückt ist, sonst return `False`. Wenn `hold` und `repeat` angegeben sind, wird `True` am `repeat` Bildintervall returned, falls `key` für mehr als `hold` Frames gedrückt ist
 
 - `btnr(key)`<br>
 Return `True` falls `key` in dem Frame losgelassen wird, sonst return `False`
@@ -556,7 +556,7 @@ Die von der Tilemap referenzierte Image-Bank (0-2)
 
 - `set(x, y, data)`<br>
 Setzen der Tilemap an (`x`, `y`) durch eine Liste von strings.<br>
-z.B. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+z.B. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 Gibt die Tile bei (`x`, `y`). Ein Tile ist eine Tuple von `(tile_x, tile_y)`.
@@ -635,7 +635,7 @@ Bei einem eingereichten Pull-Request wird davon ausgegangen, dass der Veröffent
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## Lizenz

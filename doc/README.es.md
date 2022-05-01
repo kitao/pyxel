@@ -151,7 +151,7 @@ Los ejemplos serán copiados de la siguiente manera:
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Juego de nave espacial con transiciones de pantalla
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Juego con desplazamiento lateral con plataformas con mapa
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Rendimiento fuera de la pantalla con la clase Image
-- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - Animación del ruido Perlin
+- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - Animación del ruido Perlin
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - El primer ganador del Jam de Pyxel, por [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - Juego arcade de física de bolas, por [Adam](https://twitter.com/helpcomputer0)
 
@@ -383,8 +383,8 @@ EL valor actual de la rueda del ratón
 - `btn(key)`<br>
 Devuelve True si key es presionada, si no devuelve False (lista de definición de teclas)
 
-- `btnp(key, [hold], [period])`<br>
-Devuelve `True` si `key` es presionada en ese cuadro, si no devuelve `False`. Cuando `hold` y `period` son definidos, devuelve `True` en el intervalo de cuadro `period` cuando `key` es sostenida por más cuadros que el valor `hold`.
+- `btnp(key, [hold], [repeat])`<br>
+Devuelve `True` si `key` es presionada en ese cuadro, si no devuelve `False`. Cuando `hold` y `repeat` son definidos, devuelve `True` en el intervalo de cuadro `repeat` cuando `key` es sostenida por más cuadros que el valor `hold`.
 - `btnr(key)`<br>
 Devuelve `True` si se suelta la tecla `key` en ese frame, si no, devuelve `False`.
 
@@ -552,7 +552,7 @@ El banco de imágenes (0-2) que referencia el mapa
 
 - `set(x, y, data)`<br>
 Establece el mapa a (`x`, `y`) por una lista de strings<br>
-Ejemplo: `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+Ejemplo: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 Obtén la celda del mapa de la posición (`x`, `y`). Una celda es una tupla formada por `(tile_x, tile_y)`
@@ -631,7 +631,7 @@ Los pull request enviados se consideran acordados para poder publicarse bajo la 
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [Ejemplos de usuarios](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## Licencia

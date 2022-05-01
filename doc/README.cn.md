@@ -153,7 +153,7 @@ pyxel copy_examples
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 屏幕过渡射击游戏
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - 屏幕横向滑动的游戏示例
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - 用图像类进行屏外渲染
-- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - 佩林噪音动画
+- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - 佩林噪音动画
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 第1届Pyxel Jam比赛获胜者是[Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - 商场球类物理游戏[Adam](https://twitter.com/helpcomputer0)
 
@@ -388,8 +388,8 @@ pyxel play PYXEL_APP_FILE
 - `btn(key)`<br>
 如果`key`被按下则返回`True`，否则返回`False`([按键定义列表](../pyxel/__init__.pyi))。
 
-- `btnp(key, [hold], [period])`<br>
-如果`key`被按下则返回`True`。若设置了`hold`和`period`参数，则当`key`被按下持续`hold`帧时，在`period`帧间隙返回`True`。
+- `btnp(key, [hold], [repeat])`<br>
+如果`key`被按下则返回`True`。若设置了`hold`和`repeat`参数，则当`key`被按下持续`hold`帧时，在`repeat`帧间隙返回`True`。
 
 - `btnr(key)`<br>
 如果`key`被松开，则在此帧返回`True`，否则返回`False`。
@@ -558,7 +558,7 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 
 - `set(x, y, data)`<br>
 使用字符串列表在坐标(`x`, `y`)处设置瓦片地图。<br>
-示例：`pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+示例：`pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 得到(`x`, `y`)处的瓦片。瓦片数据为元组`(tile_x, tile_y)`。
@@ -637,7 +637,7 @@ Pyxel还有一些“高级API”，出于“可能令用户感到迷惑”、“
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## 许可证

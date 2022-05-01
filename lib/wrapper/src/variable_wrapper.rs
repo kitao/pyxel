@@ -1,4 +1,3 @@
-use pyo3::class::PySequenceProtocol;
 use pyo3::exceptions::{PyAttributeError, PyValueError};
 use pyo3::prelude::*;
 use pyxel::Rgb8;
@@ -19,8 +18,8 @@ impl Colors {
     }
 }
 
-#[pyproto]
-impl PySequenceProtocol for Colors {
+#[pymethods]
+impl Colors {
     fn __len__(&self) -> PyResult<usize> {
         impl_len_method_for_list!(self)
     }
@@ -32,10 +31,7 @@ impl PySequenceProtocol for Colors {
     fn __setitem__(&mut self, index: isize, value: Rgb8) -> PyResult<()> {
         impl_setitem_method_for_list!(self, index, value)
     }
-}
 
-#[pymethods]
-impl Colors {
     pub fn from_list(&mut self, lst: Vec<Rgb8>) -> PyResult<()> {
         if self.list().len() == lst.len() {
             self.list_mut()[..].clone_from_slice(&lst[..]);

@@ -153,7 +153,7 @@ Gli esempi da copiare sono i seguenti:
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Gioco shoot'em up con transizioni schermo
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Gioco a piattaforme a scorrimento orizzontale con mappa
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Renderizzazione fuori campo con la classe Image
-- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - Animazione del rumore di Perlin
+- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - Animazione del rumore di Perlin
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - Gioco vincitore del primo Pyxel Jam sviluppato da [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - Gioco arcade di palla basato sulla fisica sviluppato da [Adam](https://twitter.com/helpcomputer0)
 
@@ -387,8 +387,8 @@ Il valore corrente della rotella del mouse
 - `btn(key)`<br>
 Ritorna `True` se `key` è premuto, altrimenti ritorna `False` ([lista definizione tasti](../pyxel/__init__.pyi))
 
-- `btnp(key, [hold], [period])`<br>
-Ritorna `True` se `key` è premuto quel frame, altrimenti ritorna `False`. Quando `hold` e `period` sono specificati, `True` sarà ritornato all'intervallo frame `period` quando `key` è premuto per più di `hold` frame
+- `btnp(key, [hold], [repeat])`<br>
+Ritorna `True` se `key` è premuto quel frame, altrimenti ritorna `False`. Quando `hold` e `repeat` sono specificati, `True` sarà ritornato all'intervallo frame `repeat` quando `key` è premuto per più di `hold` frame
 
 - `btnr(key)`<br>
 Ritorna `True` se `key` è rilasciato quel frame, altrimenti ritorna `False`
@@ -557,7 +557,7 @@ Il banco immagine (0-2) referenziato dalla tilemap
 
 - `set(x, y, data)`<br>
 Imposta la tilemap a (`x`, `y`) mediante una lista di stringhe.<br>
-e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+e.g. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 Prende la tile in (`x`, `y`). Una tile è una tupla di `(tile_x, tile_y)`.
@@ -636,7 +636,7 @@ Le pull request emesse sono presupposte di accettare di essere pubblicate sotto 
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## Licenza

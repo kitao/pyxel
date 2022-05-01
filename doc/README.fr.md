@@ -153,7 +153,7 @@ Les exemples copiés sont les suivants :
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Jeu de shoot'em up avec changement d’écran
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Jeu de plateforme avec défilement horizontal et une carte
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Rendu hors écran avec la classe Image
-- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - Animation du bruit de Perlin
+- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - Animation du bruit de Perlin
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1er jeu gagnant du Pyxel Jam par [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - Jeu physique de balles d'arcade par [Adam](https://twitter.com/helpcomputer0)
 
@@ -388,8 +388,8 @@ La valeur actuelle de la molette de la souris
 - `btn(key)`<br>
 Renvoie `True` si la touche `key` est appuyée, sinon renvoie `False` ([liste des touches](../pyxel/__init__.pyi))
 
-- `btnp(key, [hold], [period])`<br>
-Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`. Quand `hold` et `period` sont spécifiés, `True` sera renvoyé à l’intervalle de frame `period` quand la touche `key` est appuyée pendant plus de `hold` frames
+- `btnp(key, [hold], [repeat])`<br>
+Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`. Quand `hold` et `repeat` sont spécifiés, `True` sera renvoyé à l’intervalle de frame `repeat` quand la touche `key` est appuyée pendant plus de `hold` frames
 
 - `btnr(key)`<br>
 Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`
@@ -558,7 +558,7 @@ La banque d’image (0-2) référencée par la tilemap
 
 - `set(x, y, data)`<br>
 Met la tilemap à (`x`, `y`) suivant une liste de chaînes.<br>
-Par exemple `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+Par exemple `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 Renvoie la tile à (`x`, `y`). Une tile est un tuple `(tile_x, tile_y)`.
@@ -637,7 +637,7 @@ En proposant une pull request, vous acceptez qu’elle soit publiée sous la [li
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## License

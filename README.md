@@ -387,8 +387,8 @@ The current value of the mouse wheel
 - `btn(key)`<br>
 Return `True` if `key` is pressed, otherwise return `False`. ([Key definition list](pyxel/__init__.pyi))
 
-- `btnp(key, [hold], [period])`<br>
-Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `period` are specified, `True` will be returned at the `period` frame interval when the `key` is held down for more than `hold` frames.
+- `btnp(key, [hold], [repeat])`<br>
+Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `repeat` are specified, `True` will be returned at the `repeat` frame interval when the `key` is held down for more than `hold` frames.
 
 - `btnr(key)`<br>
 Return `True` if `key` is released at that frame, otherwise return `False`.
@@ -557,7 +557,7 @@ The image bank (0-2) referenced by the tilemap
 
 - `set(x, y, data)`<br>
 Set the tilemap at (`x`, `y`) by a list of strings.<br>
-e.g. `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+e.g. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 Get the tile at (`x`, `y`). A tile is a tuple of `(tile_x, tile_y)`.
@@ -636,7 +636,7 @@ Submitted pull request is deemed to have agreed to publish under [MIT License](L
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## License

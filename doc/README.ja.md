@@ -153,7 +153,7 @@ pyxel copy_examples
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 画面遷移のあるシューティングゲーム
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - マップのある横スクロールアクションゲーム
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Imageクラスによるオフスクリーン描画
-- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - パーリンノイズアニメーション
+- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - パーリンノイズアニメーション
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 第1回Pyxel Jam優勝ゲーム ([Adam](https://twitter.com/helpcomputer0)制作)
 - [megaball.pyxapp](images/megaball.gif) - アーケードボール物理ゲーム ([Adam](https://twitter.com/helpcomputer0)制作)
 
@@ -387,8 +387,8 @@ Pyxelアプリケーションを終了します。
 - `btn(key)`<br>
 `key`が押されていたら`True`、押されていなければ`False`を返します。([キー定義一覧](../pyxel/__init__.pyi))
 
-- `btnp(key, [hold], [period])`<br>
-そのフレームに`key`が押されたら`True`、押されなければ`False`を返します。`hold`と`period`を指定すると、`hold`フレーム以上ボタンを押し続けた時に`period`フレーム間隔で`True`が返ります。
+- `btnp(key, [hold], [repeat])`<br>
+そのフレームに`key`が押されたら`True`、押されなければ`False`を返します。`hold`と`repeat`を指定すると、`hold`フレーム以上ボタンを押し続けた時に`repeat`フレーム間隔で`True`が返ります。
 
 - `btnr(key)`<br>
 そのフレームに`key`が離されたら`True`、離されなければ`False`を返します。
@@ -557,7 +557,7 @@ Perlinノイズのシードを設定します。
 
 - `set(x, y, data)`<br>
 (`x`, `y`) に文字列のリストでタイルマップを設定します。<br>
-例：`pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+例：`pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 (`x`, `y`) のタイルを取得します。タイルは`(tile_x, tile_y)`のタプルです。
@@ -636,7 +636,7 @@ Pyxelには「ユーザーを混乱させる可能性がある」「使うため
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## ライセンス

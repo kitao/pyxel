@@ -153,7 +153,7 @@ pyxel copy_examples
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - 화면 전환이 있는 슈팅 게임
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - 맵이 있는 횡 스크롤 플랫폼 게임
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - 이미지 클래스를 사용한 오프스크린 렌더링
-- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - 펄린 노이즈 애니메이션
+- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - 펄린 노이즈 애니메이션
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 제 1회 Pyxel Jam 우승 작품 ([Adam](https://twitter.com/helpcomputer0) 제작)
 - [megaball.pyxapp](images/megaball.gif) - 아케이드 볼 물리 게임 ([Adam](https://twitter.com/helpcomputer0) 제작)
 
@@ -387,8 +387,8 @@ Pyxel 애플리케이션을 종료합니다.
 - `btn(key)`<br>
 `key`가 눌리고 있으면 `True`, 눌리고 있지 않으면 `False`를 반환합니다. ([키 정의 리스트](../pyxel/__init__.pyi))
 
-- `btnp(key, [hold], [period])`<br>
-해당 프레임에 `key`가 눌리면 `True`, 눌리지 않으면 `False`를 반환합니다. `hold`와 `period`를 지정하면, `hold` 프레임 이상 `key`가 눌린 상태인 경우 `period` 프레임 간격으로 `True`를 반환합니다.
+- `btnp(key, [hold], [repeat])`<br>
+해당 프레임에 `key`가 눌리면 `True`, 눌리지 않으면 `False`를 반환합니다. `hold`와 `repeat`를 지정하면, `hold` 프레임 이상 `key`가 눌린 상태인 경우 `repeat` 프레임 간격으로 `True`를 반환합니다.
 
 - `btnr(key)`<br>
 해당 프레임에 `key`가 떼어지면 `True`, 아니면 `False`를 반환합니다.
@@ -557,7 +557,7 @@ Perlin 노이즈의 시드를 설정합니다.
 
 - `set(x, y, data)`<br>
 (`x`, `y`)에 문자열 리스트를 사용해 타일 맵을 설정합니다.<br>
-예시: `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+예시: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 (`x`, `y`)에서 타일을 가져옵니다. 타일은 `(tile_x, tile_y)`의 튜플 형태입니다.
@@ -636,7 +636,7 @@ Pyxel에는 "사용자를 혼란스럽게 할 수 있거나", "사용하는 데 
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## 라이선스 정보

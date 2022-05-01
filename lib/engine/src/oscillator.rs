@@ -50,7 +50,7 @@ impl Oscillator {
             time: 0,
             phase: 0,
             amplitude: 0,
-            noise: 0x8000,
+            noise: 1,
             slide: Slide { pitch: 0.0 },
             vibrato: Vibrato { time: 0, phase: 0 },
             fadeout: FadeOut { volume: 0.0 },
@@ -159,8 +159,9 @@ impl Oscillator {
 
     fn noise(&mut self, phase: u32) -> f64 {
         if phase % 8 == 0 {
+            let feedback = (self.noise & 1) ^ (self.noise >> 1 & 1);
             self.noise >>= 1;
-            self.noise |= ((self.noise ^ (self.noise >> 1)) & 1) << 15;
+            self.noise |= feedback << 14;
         }
         (self.noise & 1) as f64 * 2.0 - 1.0
     }

@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.7.1
+- Fixed the description for Tilemap.set in the READMEs
+- Fixed the link to the example #12 in the READMEs
+- Updated links for Discord Servers in the READMEs
+
 ## 1.7.0
 - Fixed type hint definitions
 - Changed the location of working directory
@@ -7,6 +12,8 @@
 - Added copy and paste feature for the Sound/Music Editor
 - Renamed the sequences property of the Music class to snds_list
 - Added the example #12
+- Updated external library versions
+- Fixed a parameter name of the btnp function
 
 ## 1.6.9
 - Fixed the select tool of the resource editor

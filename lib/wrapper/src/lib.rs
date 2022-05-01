@@ -14,9 +14,12 @@
     clippy::redundant_pub_crate,
     clippy::too_many_arguments,
     clippy::too_many_lines,
+    clippy::transmute_undefined_repr,
     clippy::unused_self,
+    clippy::use_self,
     clippy::used_underscore_binding,
     clippy::wildcard_dependencies,
+    clippy::wrong_self_convention,
     clippy::zero_ptr
 )]
 

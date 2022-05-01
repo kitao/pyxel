@@ -153,7 +153,7 @@ pyxel copy_examples
 - [09_shooter.py](../pyxel/examples/09_shooter.py) - Игра жанра «убей всех» с переходом между экранами
 - [10_platformer.py](../pyxel/examples/10_platformer.py) - Платформер с боковым скроллингом и картой
 - [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Внеэкранный рендеринг с помощью класса Image
-- [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - Анимация шума Перлина
+- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - Анимация шума Перлина
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1-я победная игра Pyxel Jam от [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - Аркадная игра с физикой мяча от [Adam](https://twitter.com/helpcomputer0)
 
@@ -388,8 +388,8 @@ pyxel play ФАЙЛ_PYXEL_ПРИЛОЖЕНИЯ
 - `btn(клавиша)`<br>
 Получить `Ture`, если `клавиша` нажата, в противном случае получить `False`. ([Список определений клавиш](../pyxel/__init__.pyi))
 
-- `btnp(клавиша, [hold], [period])`<br>
-Получить `True`, если `клавиша` нажата в данный кадр, в противном случае получить `False`. В случае, если указаны параметры `hold` и `period`, `True` будет возвращено каждые `period` кадров, когда `key` уже зажата более `hold` кадров
+- `btnp(клавиша, [hold], [repeat])`<br>
+Получить `True`, если `клавиша` нажата в данный кадр, в противном случае получить `False`. В случае, если указаны параметры `hold` и `repeat`, `True` будет возвращено каждые `repeat` кадров, когда `key` уже зажата более `hold` кадров
 
 - `btnr(клавиша)`<br>
 Получить `True`, если `клавиша` была отпущена в данный кадр, в противном случае получить `False`
@@ -558,7 +558,7 @@ pyxel play ФАЙЛ_PYXEL_ПРИЛОЖЕНИЯ
 
 - `set(x, y, data)`<br>
 Установить данные карты тайлов в точке (`x`, `y`) списком строк.<br>
-Пример: `pyxel.tilemap(0).set(0, 0, ["000102", "202122", "a0a1a2", "b0b1b2"])`
+Пример: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
 Получить тайл в координатах (`x`, `y`). Возвращаемое значение представляет собой кортеж `(tile_x, tile_y)`.
@@ -637,7 +637,7 @@ Pyxel имеет «расширенные API», не упомянутые в э
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Discord Server (English)](https://discord.gg/FC7kUZJ)
+- [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 
 ## Лицензия
