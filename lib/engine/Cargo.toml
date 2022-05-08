@@ -20,24 +20,24 @@ path = "tests/test_pyxel.rs"
 harness = false
 
 [dependencies]
-array-macro = "2.1.3"
-blip_buf = "0.1.4"
-chrono = "0.4.19"
-gif = "0.11.3"
-image = "0.24.2"
-indexmap = "1.8.1"
-noise = "0.7.0"
-parking_lot = "0.12.0"
-platform-dirs = "0.3.0"
-rand = "0.8.5"
-rand_xoshiro = "0.6.0"
-zip = { version = "0.6.2", default-features = false, features = ["deflate"] }
+array-macro = "2.1"
+blip_buf = "0.1"
+chrono = "0.4"
+gif = "0.11"
+image = "0.24"
+indexmap = "1.8"
+noise = "0.7"
+parking_lot = "0.12"
+platform-dirs = "0.3"
+rand = "0.8"
+rand_xoshiro = "0.6"
+zip = { version = "0.6", default-features = false, features = ["deflate"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
-sdl2 = { version = "0.35.2", default-features = false, features = ["bundled", "unsafe_textures"] }
+sdl2 = { version = "0.35", default-features = false, features = ["bundled", "unsafe_textures"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
-sdl2 = { version = "0.35.2", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
+sdl2 = { version = "0.35", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-sdl2 = { version = "0.35.2", default-features = false, features = ["unsafe_textures"] }
+sdl2 = { version = "0.35", default-features = false, features = ["unsafe_textures"] }
