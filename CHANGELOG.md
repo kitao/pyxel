@@ -4,6 +4,7 @@
 - Fixed the description for Tilemap.set in the READMEs
 - Fixed the link to the example #12 in the READMEs
 - Updated links for Discord Servers in the READMEs
+- Changed the way to set the crate versions
 
 ## 1.7.0
 - Fixed type hint definitions
