@@ -16,7 +16,6 @@ Grazie alle sue specifiche limitate ispirate dalle console di videogiochi rétro
 <a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
 <img src="images/01_hello_pyxel.gif" width="48%">
 </a>
-
 <a href="../pyxel/examples/02_jump_game.py" target="_blank">
 <img src="images/02_jump_game.gif" width="48%">
 </a>
@@ -24,7 +23,6 @@ Grazie alle sue specifiche limitate ispirate dalle console di videogiochi rétro
 <a href="../pyxel/examples/03_draw_api.py" target="_blank">
 <img src="images/03_draw_api.gif" width="48%">
 </a>
-
 <a href="../pyxel/examples/04_sound_api.py" target="_blank">
 <img src="images/04_sound_api.gif" width="48%">
 </a>
@@ -32,7 +30,6 @@ Grazie alle sue specifiche limitate ispirate dalle console di videogiochi rétro
 <a href="images/image_tilemap_editor.gif" target="_blank">
 <img src="images/image_tilemap_editor.gif" width="48%">
 </a>
-
 <a href="images/sound_music_editor.gif" target="_blank">
 <img src="images/sound_music_editor.gif" width="48%">
 </a>
