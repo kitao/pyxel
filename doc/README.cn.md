@@ -13,12 +13,14 @@
 
 由于像素风游戏的机制非常简单（如：最多只能显示16种颜色、播放4种声音等），现在你也可以轻松地享受这种游戏的制作过程。
 
+<p>
 <img src="images/01_hello_pyxel.gif" width="320">
 <img src="images/02_jump_game.gif" width="320">
 <img src="images/03_draw_api.gif" width="320">
 <img src="images/04_sound_api.gif" width="320">
 <img src="images/image_tilemap_editor.gif" width="320">
 <img src="images/sound_music_editor.gif" width="320">
+</p>
 
 Pyxel的规范和API受到[PICO-8](https://www.lexaloffle.com/pico-8.php)和[TIC-80](https://tic80.com/)的启发。
 
