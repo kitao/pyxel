@@ -13,12 +13,12 @@
 
 Gracias a sus características simples inspiradas en las consolas de juegos retro, como el solo mostrar 16 colores y el reproducir 4 sonidos al mismo tiempo, puedes sentirte libre de disfrutar creando juegos en estilo pixel art.
 
-[<img src="images/01_hello_pyxel.gif" width="320">](../pyxel/examples/01_hello_pyxel.py)
-[<img src="images/02_jump_game.gif" width="320">](../pyxel/examples/02_jump_game.py)
-[<img src="images/03_draw_api.gif" width="320">](../pyxel/examples/03_draw_api.py)
-[<img src="images/04_sound_api.gif" width="320">](../pyxel/examples/04_sound_api.py)
-[<img src="images/image_tilemap_editor.gif" width="320">](images/image_tilemap_editor.gif)
-[<img src="images/sound_music_editor.gif" width="320">](images/sound_music_editor.gif)
+<img src="images/01_hello_pyxel.gif" width="320">
+<img src="images/02_jump_game.gif" width="320">
+<img src="images/03_draw_api.gif" width="320">
+<img src="images/04_sound_api.gif" width="320">
+<img src="images/image_tilemap_editor.gif" width="320">
+<img src="images/sound_music_editor.gif" width="320">
 
 Las especificaciones y API de Pyxel se inspiran en [PICO-8](https://www.lexaloffle.com/pico-8.php) y [TIC-80](https://tic80.com/).
 
