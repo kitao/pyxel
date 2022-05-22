@@ -14,24 +14,24 @@
 16가지 색상만 사용하거나 동시에 4가지 소리만 재생하는 등 레트로 게임에 나올 법한 사양으로, Python에서 픽셀 아트 스타일의 게임을 마음껏 만들 수 있습니다.
 
 <a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="images/01_hello_pyxel.gif" style="width: 48%; height: auto;">
+<img src="images/01_hello_pyxel.gif" width="400">
 </a>
 <a href="../pyxel/examples/02_jump_game.py" target="_blank">
-<img src="images/02_jump_game.gif" style="width: 48%; height: auto;">
+<img src="images/02_jump_game.gif" width="400">
 </a>
 
 <a href="../pyxel/examples/03_draw_api.py" target="_blank">
-<img src="images/03_draw_api.gif" style="width: 48%; height: auto;">
+<img src="images/03_draw_api.gif" width="400">
 </a>
 <a href="../pyxel/examples/04_sound_api.py" target="_blank">
-<img src="images/04_sound_api.gif" style="width: 48%; height: auto;">
+<img src="images/04_sound_api.gif" width="400">
 </a>
 
 <a href="images/image_tilemap_editor.gif" target="_blank">
-<img src="images/image_tilemap_editor.gif" style="width: 48%; height: auto;">
+<img src="images/image_tilemap_editor.gif" width="400">
 </a>
 <a href="images/sound_music_editor.gif" target="_blank">
-<img src="images/sound_music_editor.gif" style="width: 48%; height: auto;">
+<img src="images/sound_music_editor.gif" width="400">
 </a>
 
 Pyxel의 사양 및 API는 [PICO-8](https://www.lexaloffle.com/pico-8.php) 및 [TIC-80](https://tic80.com/)에서 영감을 받았습니다.

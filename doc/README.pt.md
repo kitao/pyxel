@@ -14,24 +14,24 @@
 Graças às suas especificações simples inspiradas em consoles de jogos retrô, assim como permitir a exibição de apenas 16 cores e apenas 4 sons poderem ser reproduzidos ao mesmo tempo, você pode se sentir à vontade para fazer jogos em estilo pixel art.
 
 <a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="images/01_hello_pyxel.gif" style="width: 48%; height: auto;">
+<img src="images/01_hello_pyxel.gif" width="400">
 </a>
 <a href="../pyxel/examples/02_jump_game.py" target="_blank">
-<img src="images/02_jump_game.gif" style="width: 48%; height: auto;">
+<img src="images/02_jump_game.gif" width="400">
 </a>
 
 <a href="../pyxel/examples/03_draw_api.py" target="_blank">
-<img src="images/03_draw_api.gif" style="width: 48%; height: auto;">
+<img src="images/03_draw_api.gif" width="400">
 </a>
 <a href="../pyxel/examples/04_sound_api.py" target="_blank">
-<img src="images/04_sound_api.gif" style="width: 48%; height: auto;">
+<img src="images/04_sound_api.gif" width="400">
 </a>
 
 <a href="images/image_tilemap_editor.gif" target="_blank">
-<img src="images/image_tilemap_editor.gif" style="width: 48%; height: auto;">
+<img src="images/image_tilemap_editor.gif" width="400">
 </a>
 <a href="images/sound_music_editor.gif" target="_blank">
-<img src="images/sound_music_editor.gif" style="width: 48%; height: auto;">
+<img src="images/sound_music_editor.gif" width="400">
 </a>
 
 As especificações e APIs de Pyxel são inspiradas por [PICO-8](https://www.lexaloffle.com/pico-8.php) e [TIC-80](https://tic80.com/).
