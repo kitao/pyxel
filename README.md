@@ -13,26 +13,12 @@
 
 Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
 
-<p>
-<a href="pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="doc/images/01_hello_pyxel.gif" width="320">
-</a>
-<a href="pyxel/examples/02_jump_game.py" target="_blank">
-<img src="doc/images/02_jump_game.gif" width="320">
-</a>
-<a href="pyxel/examples/03_draw_api.py" target="_blank">
-<img src="doc/images/03_draw_api.gif" width="320">
-</a>
-<a href="pyxel/examples/04_sound_api.py" target="_blank">
-<img src="doc/images/04_sound_api.gif" width="320">
-</a>
-<a href="doc/images/image_tilemap_editor.gif" target="_blank">
-<img src="doc/images/image_tilemap_editor.gif" width="320">
-</a>
-<a href="doc/images/sound_music_editor.gif" target="_blank">
-<img src="doc/images/sound_music_editor.gif" width="320">
-</a>
-</p>
+[<img src="doc/images/01_hello_pyxel.gif" width="320">](pyxel/examples/01_hello_pyxel.py)
+[<img src="doc/images/02_jump_game.gif" width="320">](pyxel/examples/02_jump_game.py)
+[<img src="doc/images/03_draw_api.gif" width="320">](pyxel/examples/03_draw_api.py)
+[<img src="doc/images/04_sound_api.gif" width="320">](pyxel/examples/04_sound_api.py)
+[<img src="doc/images/image_tilemap_editor.gif" width="320">](doc/images/image_tilemap_editor.gif)
+[<img src="doc/images/sound_music_editor.gif" width="320">](doc/images/sound_music_editor.gif)
 
 Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
 
