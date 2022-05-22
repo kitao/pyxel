@@ -13,12 +13,14 @@
 
 Благодаря своей простоте, вдохновленной старыми игровыми консолями (например, палитра состоит всего из 16 цветов, и только 4 звука могут быть проиграны одновременно), вы можете легко создавать игры в стиле пиксель-арт.
 
+<p>
 <img src="images/01_hello_pyxel.gif" width="320">
 <img src="images/02_jump_game.gif" width="320">
 <img src="images/03_draw_api.gif" width="320">
 <img src="images/04_sound_api.gif" width="320">
 <img src="images/image_tilemap_editor.gif" width="320">
 <img src="images/sound_music_editor.gif" width="320">
+</p>
 
 Спецификации и API Pyxel вдохновлены [PICO-8](https://www.lexaloffle.com/pico-8.php) и [TIC-80](https://tic80.com/).
 
