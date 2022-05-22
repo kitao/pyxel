@@ -14,24 +14,24 @@
 由于像素风游戏的机制非常简单（如：最多只能显示16种颜色、播放4种声音等），现在你也可以轻松地享受这种游戏的制作过程。
 
 <a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="images/01_hello_pyxel.gif" width=48%>
+<img src="images/01_hello_pyxel.gif" style="width: 48%; height: auto;">
 </a>
 <a href="../pyxel/examples/02_jump_game.py" target="_blank">
-<img src="images/02_jump_game.gif" width=48%>
+<img src="images/02_jump_game.gif" style="width: 48%; height: auto;">
 </a>
 
 <a href="../pyxel/examples/03_draw_api.py" target="_blank">
-<img src="images/03_draw_api.gif" width=48%>
+<img src="images/03_draw_api.gif" style="width: 48%; height: auto;">
 </a>
 <a href="../pyxel/examples/04_sound_api.py" target="_blank">
-<img src="images/04_sound_api.gif" width=48%>
+<img src="images/04_sound_api.gif" style="width: 48%; height: auto;">
 </a>
 
 <a href="images/image_tilemap_editor.gif" target="_blank">
-<img src="images/image_tilemap_editor.gif" width=48%>
+<img src="images/image_tilemap_editor.gif" style="width: 48%; height: auto;">
 </a>
 <a href="images/sound_music_editor.gif" target="_blank">
-<img src="images/sound_music_editor.gif" width=48%>
+<img src="images/sound_music_editor.gif" style="width: 48%; height: auto;">
 </a>
 
 Pyxel的规范和API受到[PICO-8](https://www.lexaloffle.com/pico-8.php)和[TIC-80](https://tic80.com/)的启发。
