@@ -14,24 +14,24 @@
 使える色は16色のみ、同時に再生できる音は4音までなど、レトロゲーム機を意識したシンプルな仕様で、Pythonでドット絵スタイルのゲームづくりが気軽に楽しめます。
 
 <a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="images/01_hello_pyxel.gif" style="width: 48%; height: auto;">
+<img src="images/01_hello_pyxel.gif" width="400">
 </a>
 <a href="../pyxel/examples/02_jump_game.py" target="_blank">
-<img src="images/02_jump_game.gif" style="width: 48%; height: auto;">
+<img src="images/02_jump_game.gif" width="400">
 </a>
 
 <a href="../pyxel/examples/03_draw_api.py" target="_blank">
-<img src="images/03_draw_api.gif" style="width: 48%; height: auto;">
+<img src="images/03_draw_api.gif" width="400">
 </a>
 <a href="../pyxel/examples/04_sound_api.py" target="_blank">
-<img src="images/04_sound_api.gif" style="width: 48%; height: auto;">
+<img src="images/04_sound_api.gif" width="400">
 </a>
 
 <a href="images/image_tilemap_editor.gif" target="_blank">
-<img src="images/image_tilemap_editor.gif" style="width: 48%; height: auto;">
+<img src="images/image_tilemap_editor.gif" width="400">
 </a>
 <a href="images/sound_music_editor.gif" target="_blank">
-<img src="images/sound_music_editor.gif" style="width: 48%; height: auto;">
+<img src="images/sound_music_editor.gif" width="400">
 </a>
 
 Pyxelの仕様やAPIは、[PICO-8](https://www.lexaloffle.com/pico-8.php)や[TIC-80](https://tic80.com/)を参考にしています。
