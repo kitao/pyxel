@@ -13,12 +13,14 @@
 
 Dank seiner einfachen, von Retro-Spielkonsolen inspirierten, Spezifikationen, wie z. B. dass nur 16 Farben angezeigt werden können und nur 4 Töne gleichzeitig wiedergegeben werden können, kannst du dich frei fühlen, um Spiele im Pixel-Art-Stil zu entwickeln.
 
+<p>
 <img src="images/01_hello_pyxel.gif" width="320">
 <img src="images/02_jump_game.gif" width="320">
 <img src="images/03_draw_api.gif" width="320">
 <img src="images/04_sound_api.gif" width="320">
 <img src="images/image_tilemap_editor.gif" width="320">
 <img src="images/sound_music_editor.gif" width="320">
+</p>
 
 Die Spezifikationen und APIs von Pyxel sind inspiriert von [PICO-8](https://www.lexaloffle.com/pico-8.php) und [TIC-80](https://tic80.com/).
 
