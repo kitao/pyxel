@@ -15,22 +15,22 @@ Thanks to its simple specifications inspired by retro gaming consoles, such as o
 
 <p>
 <a href="pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="doc/images/01_hello_pyxel.gif" width="48%">
+<img src="doc/images/01_hello_pyxel.gif" width="320">
 </a>
 <a href="pyxel/examples/02_jump_game.py" target="_blank">
-<img src="doc/images/02_jump_game.gif" width="48%">
+<img src="doc/images/02_jump_game.gif" width="320">
 </a>
 <a href="pyxel/examples/03_draw_api.py" target="_blank">
-<img src="doc/images/03_draw_api.gif" width="48%">
+<img src="doc/images/03_draw_api.gif" width="320">
 </a>
 <a href="pyxel/examples/04_sound_api.py" target="_blank">
-<img src="doc/images/04_sound_api.gif" width="48%">
+<img src="doc/images/04_sound_api.gif" width="320">
 </a>
 <a href="doc/images/image_tilemap_editor.gif" target="_blank">
-<img src="doc/images/image_tilemap_editor.gif" width="48%">
+<img src="doc/images/image_tilemap_editor.gif" width="320">
 </a>
 <a href="doc/images/sound_music_editor.gif" target="_blank">
-<img src="doc/images/sound_music_editor.gif" width="48%">
+<img src="doc/images/sound_music_editor.gif" width="320">
 </a>
 </p>
 
