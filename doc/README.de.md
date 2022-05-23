@@ -340,8 +340,8 @@ Die Breite und Höhe des Fensters
 - `frame_count`<br>
 Die Anzahl der bereits gezeigten Bilder
 
-- `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
-Initialisiere die Bildschirmgröße der Pyxel-Anwendung  (`width`, `height`). Folgenden kann als Option engegeben werden: den Titel des Fensters mit `title`, die Framerate mit `fps`, die Taste zum Beenden des Programms `quit_key`, the scale of the screen capture with `capture_scale`, und die maximale Aufnahmezeit des Bildschirmaufnahmevideos mit `capture_sec`.<br>
+- `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
+Initialisiere die Bildschirmgröße der Pyxel-Anwendung  (`width`, `height`). Folgenden kann als Option engegeben werden: den Titel des Fensters mit `title`, die Framerate mit `fps`, die Taste zum Beenden des Programms `quit_key`, den Maßstab der Anzeige mit `display_scale`, den Maßstab der Bildschirmaufnahme mit `capture_scale`, und die maximale Aufnahmezeit des Bildschirmaufnahmevideos mit `capture_sec`.<br>
 z.B. `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>

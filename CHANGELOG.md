@@ -6,6 +6,7 @@
 - Fixed the examples layout in the READMEs
 - Updated links for Discord Servers in the READMEs
 - Changed the way to set the crate versions
+- Added the display_scale to the init function
 
 ## 1.7.0
 - Fixed type hint definitions

@@ -60,7 +60,9 @@ class Snake:
     def __init__(self):
         """Initiate pyxel, set up initial game variables, and run."""
 
-        pyxel.init(WIDTH, HEIGHT, title="Snake!", fps=20, capture_scale=6)
+        pyxel.init(
+            WIDTH, HEIGHT, title="Snake!", fps=20, display_scale=12, capture_scale=6
+        )
         define_sound_and_music()
         self.reset()
         pyxel.run(self.update, self.draw)

@@ -15,6 +15,7 @@ impl App {
             None,
             None,
             None,
+            None,
         );
         pyxel.mouse(true);
         pyxel.set_mouse_pos(10.0, 10.0);
