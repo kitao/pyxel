@@ -361,6 +361,7 @@ def init(
     title: Optional[str] = None,
     fps: Optional[int] = None,
     quit_key: Optional[int] = None,
+    display_scale: Optional[int] = None,
     capture_scale: Optional[int] = None,
     capture_sec: Optional[int] = None,
 ) -> None: ...

@@ -337,8 +337,8 @@ La anchura y la altura de la pantalla
 - `frame_count`<br>
 El número de fotogramas que han pasado
 
-- `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
-Inicializa la aplicación de Pyxel con el tamaño (`width`, `height`). Los siguientes parámetros pueden ser especificados como opciones: el título con `title`, el ratio de fotogramas por segundo con `fps`, la tecla para salir de la aplicación con `quit_key`, la escala de captura de pantalla con `capture_scale` y el tiempo máximo para grabar la pantalla con `capture_sec`. <br>
+- `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
+Inicializa la aplicación de Pyxel con el tamaño (`width`, `height`). Los siguientes parámetros pueden ser especificados como opciones: el título con `title`, el ratio de fotogramas por segundo con `fps`, la tecla para salir de la aplicación con `quit_key`, la escala de la pantalla con `display_scale`, la escala de captura de pantalla con `capture_scale` y el tiempo máximo para grabar la pantalla con `capture_sec`. <br>
 por ejemplo: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
