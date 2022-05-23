@@ -8,7 +8,9 @@ use sysinfo::{Pid, PidExt, System, SystemExt};
 use crate::{instance, set_instance};
 
 #[pyfunction]
-#[pyo3(text_signature = "(width, height, *, title, fps, quit_key, capture_sec)")]
+#[pyo3(
+    text_signature = "(width, height, *, title, fps, quit_key, display_scale, capture_scale, capture_sec)"
+)]
 fn init(
     py: Python,
     width: u32,
@@ -16,6 +18,7 @@ fn init(
     title: Option<&str>,
     fps: Option<u32>,
     quit_key: Option<pyxel::Key>,
+    display_scale: Option<u32>,
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,
 ) -> PyResult<()> {
@@ -33,6 +36,7 @@ fn init(
         title,
         fps,
         quit_key,
+        display_scale,
         capture_scale,
         capture_sec,
     ));

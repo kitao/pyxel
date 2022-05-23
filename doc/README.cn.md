@@ -342,8 +342,8 @@ pyxel play PYXEL_APP_FILE
 - `frame_count`<br>
 目前为止，经过的总帧数
 
-- `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
-使用屏幕尺寸（`width`，`height`）初始化Pyxel应用。以下属性为可选配置项：窗口标题`title`，帧率`fps`，应用退出按键`quit_key`, the scale of the screen capture with `capture_scale`，以及屏幕捕获的最长记录时间`capture_sec`。<br>
+- `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
+使用屏幕尺寸（`width`，`height`）初始化Pyxel应用。以下属性为可选配置项：窗口标题`title`，帧率`fps`，应用退出按键`quit_key`, 用 "display_scale "来决定显示的比例, 用 "capture_scale "来决定屏幕捕捉的比例，以及屏幕捕获的最长记录时间`capture_sec`。<br>
 示例：`pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>

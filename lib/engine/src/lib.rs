@@ -93,6 +93,7 @@ impl Pyxel {
         title: Option<&str>,
         fps: Option<u32>,
         quit_key: Option<Key>,
+        display_scale: Option<u32>,
         capture_scale: Option<u32>,
         capture_sec: Option<u32>,
     ) -> Self {
@@ -102,7 +103,7 @@ impl Pyxel {
         let capture_scale = capture_scale.unwrap_or(DEFAULT_CAPTURE_SCALE);
         let capture_sec = capture_sec.unwrap_or(DEFAULT_CAPTURE_SEC);
 
-        let mut platform = TargetPlatform::new(title, width, height, DISPLAY_RATIO);
+        let mut platform = TargetPlatform::new(title, width, height, display_scale, DISPLAY_RATIO);
         let system = System::new(fps, quit_key);
         let resource = Resource::new(fps, capture_scale, capture_sec);
         let input = Input::new();
