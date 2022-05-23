@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-engine"
-version = "1.7.0"
+version = "1.7.1"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 description = "Core engine for Pyxel, a retro game engine for Python"
