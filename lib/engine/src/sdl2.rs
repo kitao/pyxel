@@ -51,27 +51,15 @@ pub struct Sdl2 {
 }
 
 impl Platform for Sdl2 {
-    fn new(
-        title: &str,
-        width: u32,
-        height: u32,
-        display_scale: Option<u32>,
-        display_ratio: f64,
-    ) -> Self {
+    fn new<F: Fn(u32, u32) -> u32>(title: &str, width: u32, height: u32, get_scale: F) -> Self {
         let sdl_context = sdl2::init().unwrap();
         let sdl_event_pump = sdl_context.event_pump().unwrap();
         let sdl_timer = sdl_context.timer().unwrap();
         let sdl_video = sdl_context.video().unwrap();
         let sdl_display_mode = sdl_video.desktop_display_mode(0).unwrap();
-        let display_scale = display_scale.unwrap_or(f64::max(
-            f64::min(
-                sdl_display_mode.w as f64 / width as f64,
-                sdl_display_mode.h as f64 / height as f64,
-            ) * display_ratio,
-            1.0,
-        ) as u32);
+        let scale = get_scale(sdl_display_mode.w as u32, sdl_display_mode.h as u32);
         let sdl_window = sdl_video
-            .window(title, width * display_scale, height * display_scale)
+            .window(title, width * scale, height * scale)
             .position_centered()
             .resizable()
             .build()
