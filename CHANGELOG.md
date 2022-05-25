@@ -7,6 +7,7 @@
 - Updated links for Discord Servers in the READMEs
 - Changed the way to set the crate versions
 - Added a display_scale option to the init function
+- Changed the default window size slightly smaller
 
 ## 1.7.0
 - Fixed type hint definitions
