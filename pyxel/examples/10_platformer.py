@@ -197,7 +197,7 @@ class Enemy3:
             dx = player.x - self.x
             dy = player.y - self.y
             sq_dist = dx * dx + dy * dy
-            if sq_dist < 60 ** 2:
+            if sq_dist < 60**2:
                 dist = pyxel.sqrt(sq_dist)
                 enemies.append(Enemy3Bullet(self.x, self.y, dx / dist, dy / dist))
                 self.time_to_fire = 60
