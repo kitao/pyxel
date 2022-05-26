@@ -13,29 +13,14 @@
 
 Gracias a sus características simples inspiradas en las consolas de juegos retro, como el solo mostrar 16 colores y el reproducir 4 sonidos al mismo tiempo, puedes sentirte libre de disfrutar creando juegos en estilo pixel art.
 
-<a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="images/01_hello_pyxel.gif" width="48%">
-</a>
-
-<a href="../pyxel/examples/02_jump_game.py" target="_blank">
-<img src="images/02_jump_game.gif" width="48%">
-</a>
-
-<a href="../pyxel/examples/03_draw_api.py" target="_blank">
-<img src="images/03_draw_api.gif" width="48%">
-</a>
-
-<a href="../pyxel/examples/04_sound_api.py" target="_blank">
-<img src="images/04_sound_api.gif" width="48%">
-</a>
-
-<a href="images/image_tilemap_editor.gif" target="_blank">
-<img src="images/image_tilemap_editor.gif" width="48%">
-</a>
-
-<a href="images/sound_music_editor.gif" target="_blank">
-<img src="images/sound_music_editor.gif" width="48%">
-</a>
+<p>
+<img src="images/01_hello_pyxel.gif" width="320">
+<img src="images/02_jump_game.gif" width="320">
+<img src="images/03_draw_api.gif" width="320">
+<img src="images/04_sound_api.gif" width="320">
+<img src="images/image_tilemap_editor.gif" width="320">
+<img src="images/sound_music_editor.gif" width="320">
+</p>
 
 Las especificaciones y API de Pyxel se inspiran en [PICO-8](https://www.lexaloffle.com/pico-8.php) y [TIC-80](https://tic80.com/).
 
@@ -352,8 +337,8 @@ La anchura y la altura de la pantalla
 - `frame_count`<br>
 El número de fotogramas que han pasado
 
-- `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
-Inicializa la aplicación de Pyxel con el tamaño (`width`, `height`). Los siguientes parámetros pueden ser especificados como opciones: el título con `title`, el ratio de fotogramas por segundo con `fps`, la tecla para salir de la aplicación con `quit_key`, la escala de captura de pantalla con `capture_scale` y el tiempo máximo para grabar la pantalla con `capture_sec`. <br>
+- `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
+Inicializa la aplicación de Pyxel con el tamaño (`width`, `height`). Los siguientes parámetros pueden ser especificados como opciones: el título con `title`, el ratio de fotogramas por segundo con `fps`, la tecla para salir de la aplicación con `quit_key`, la escala de la pantalla con `display_scale`, la escala de captura de pantalla con `capture_scale` y el tiempo máximo para grabar la pantalla con `capture_sec`. <br>
 por ejemplo: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>

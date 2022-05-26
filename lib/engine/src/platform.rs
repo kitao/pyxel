@@ -6,7 +6,7 @@ pub trait AudioCallback {
 }
 
 pub trait Platform {
-    fn new(title: &str, width: u32, height: u32, display_ratio: f64) -> Self;
+    fn new<F: Fn(u32, u32) -> u32>(title: &str, width: u32, height: u32, get_scale: F) -> Self;
     fn set_title(&mut self, title: &str);
     fn set_icon(&mut self, image: &[Vec<Color>], colors: &[Rgb8], scale: u32);
     fn show_cursor(&self, show: bool);

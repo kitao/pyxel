@@ -3,7 +3,11 @@
 ## 1.7.1
 - Fixed the description for Tilemap.set in the READMEs
 - Fixed the link to the example #12 in the READMEs
+- Fixed the examples layout in the READMEs
 - Updated links for Discord Servers in the READMEs
+- Changed the way to set the crate versions
+- Added a display_scale option to the init function
+- Changed the default window size slightly smaller
 
 ## 1.7.0
 - Fixed type hint definitions

@@ -13,29 +13,14 @@
 
 16가지 색상만 사용하거나 동시에 4가지 소리만 재생하는 등 레트로 게임에 나올 법한 사양으로, Python에서 픽셀 아트 스타일의 게임을 마음껏 만들 수 있습니다.
 
-<a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="images/01_hello_pyxel.gif" width="48%">
-</a>
-
-<a href="../pyxel/examples/02_jump_game.py" target="_blank">
-<img src="images/02_jump_game.gif" width="48%">
-</a>
-
-<a href="../pyxel/examples/03_draw_api.py" target="_blank">
-<img src="images/03_draw_api.gif" width="48%">
-</a>
-
-<a href="../pyxel/examples/04_sound_api.py" target="_blank">
-<img src="images/04_sound_api.gif" width="48%">
-</a>
-
-<a href="images/image_tilemap_editor.gif" target="_blank">
-<img src="images/image_tilemap_editor.gif" width="48%">
-</a>
-
-<a href="images/sound_music_editor.gif" target="_blank">
-<img src="images/sound_music_editor.gif" width="48%">
-</a>
+<p>
+<img src="images/01_hello_pyxel.gif" width="320">
+<img src="images/02_jump_game.gif" width="320">
+<img src="images/03_draw_api.gif" width="320">
+<img src="images/04_sound_api.gif" width="320">
+<img src="images/image_tilemap_editor.gif" width="320">
+<img src="images/sound_music_editor.gif" width="320">
+</p>
 
 Pyxel의 사양 및 API는 [PICO-8](https://www.lexaloffle.com/pico-8.php) 및 [TIC-80](https://tic80.com/)에서 영감을 받았습니다.
 
@@ -356,8 +341,8 @@ pyxel play PYXEL_APP_FILE
 - `frame_count`<br>
 경과한 프레임의 수
 
-- `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
-Pyxel 애플리케이션을 화면 크기 (`width`, `height`)로 초기화합니다. 옵션으로 `title`에 창 제목, `fps`에 프레임 속도, `quit_key`에 애플리케이션 종료 키, `capture_scale`에 화면 캡처의 배율, `capture_sec`에 화면 캡처의 최대 녹화 시간을 지정할 수 있습니다.<br>
+- `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
+Pyxel 애플리케이션을 화면 크기 (`width`, `height`)로 초기화합니다. 옵션으로 `title`에 창 제목, `fps`에 프레임 속도, `quit_key`에 애플리케이션 종료 키, `display_scale`을 사용한 디스플레이 크기, `capture_scale`에 화면 캡처의 배율, `capture_sec`에 화면 캡처의 최대 녹화 시간을 지정할 수 있습니다.<br>
 예시: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>

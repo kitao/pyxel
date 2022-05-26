@@ -2,14 +2,14 @@ use crate::key::KEY_ESCAPE;
 use crate::types::{Color, Effect, Key, Note, Rgb8, Speed, Tone, Volume};
 
 // System
-pub const PYXEL_VERSION: &str = "1.7.0";
+pub const PYXEL_VERSION: &str = "1.7.1";
 pub const PYXEL_WORKING_DIR: &str = ".pyxel";
 pub const DEFAULT_TITLE: &str = "Pyxel";
 pub const DEFAULT_FPS: u32 = 30;
 pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
 pub const DEFAULT_CAPTURE_SCALE: u32 = 2;
 pub const DEFAULT_CAPTURE_SEC: u32 = 10;
-pub const DISPLAY_RATIO: f64 = 0.8;
+pub const DISPLAY_RATIO: f64 = 0.75;
 pub const BACKGROUND_COLOR: Rgb8 = 0x101018;
 pub const MAX_SKIP_FRAMES: u32 = 9;
 pub const NUM_MEASURE_FRAMES: u32 = 10;

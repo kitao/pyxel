@@ -13,29 +13,14 @@
 
 由于像素风游戏的机制非常简单（如：最多只能显示16种颜色、播放4种声音等），现在你也可以轻松地享受这种游戏的制作过程。
 
-<a href="../pyxel/examples/01_hello_pyxel.py" target="_blank">
-<img src="images/01_hello_pyxel.gif" width="48%">
-</a>
-
-<a href="../pyxel/examples/02_jump_game.py" target="_blank">
-<img src="images/02_jump_game.gif" width="48%">
-</a>
-
-<a href="../pyxel/examples/03_draw_api.py" target="_blank">
-<img src="images/03_draw_api.gif" width="48%">
-</a>
-
-<a href="../pyxel/examples/04_sound_api.py" target="_blank">
-<img src="images/04_sound_api.gif" width="48%">
-</a>
-
-<a href="images/image_tilemap_editor.gif" target="_blank">
-<img src="images/image_tilemap_editor.gif" width="48%">
-</a>
-
-<a href="images/sound_music_editor.gif" target="_blank">
-<img src="images/sound_music_editor.gif" width="48%">
-</a>
+<p>
+<img src="images/01_hello_pyxel.gif" width="320">
+<img src="images/02_jump_game.gif" width="320">
+<img src="images/03_draw_api.gif" width="320">
+<img src="images/04_sound_api.gif" width="320">
+<img src="images/image_tilemap_editor.gif" width="320">
+<img src="images/sound_music_editor.gif" width="320">
+</p>
 
 Pyxel的规范和API受到[PICO-8](https://www.lexaloffle.com/pico-8.php)和[TIC-80](https://tic80.com/)的启发。
 
@@ -357,8 +342,8 @@ pyxel play PYXEL_APP_FILE
 - `frame_count`<br>
 目前为止，经过的总帧数
 
-- `init(width, height, [title], [fps], [quit_key], [capture_scale], [capture_sec])`<br>
-使用屏幕尺寸（`width`，`height`）初始化Pyxel应用。以下属性为可选配置项：窗口标题`title`，帧率`fps`，应用退出按键`quit_key`, the scale of the screen capture with `capture_scale`，以及屏幕捕获的最长记录时间`capture_sec`。<br>
+- `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
+使用屏幕尺寸（`width`，`height`）初始化Pyxel应用。以下属性为可选配置项：窗口标题`title`，帧率`fps`，应用退出按键`quit_key`, 用 "display_scale "来决定显示的比例, 用 "capture_scale "来决定屏幕捕捉的比例，以及屏幕捕获的最长记录时间`capture_sec`。<br>
 示例：`pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
