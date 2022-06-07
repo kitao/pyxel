@@ -573,19 +573,19 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 
 - `set_notes(notes)`<br>
 使用由'CDEFGAB'+'#-'+'0123'或'R'组成的字符串设置音符。大小写不敏感，且空格会被忽略。<br>
-示例：`pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+示例：`pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
 使用由'TSPN'组成的字符串设置音色。大小写不敏感，且空格会被忽略。<br>
-示例：`pyxel.sound(0).set_tone("TTSS PPPN")`
+示例：`pyxel.sound(0).set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
 使用由'01234567'组成的字符串设置音量。大小写不敏感，且空格会被忽略。<br>
-示例：`pyxel.sound(0).set_volume("7777 7531")`
+示例：`pyxel.sound(0).set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
 使用由'NSVF'组成的字符串设置音效。大小写不敏感，且空格会被忽略。<br>
-示例：`pyxel.sound(0).set_effect("NFNF NVVS")`
+示例：`pyxel.sound(0).set_effects("NFNF NVVS")`
 
 ### Music类
 

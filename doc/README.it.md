@@ -572,19 +572,19 @@ Imposta note, tonalità, volumi, ed effetti con una stringa. Se il numero di ton
 
 - `set_notes(notes)`<br>
 Imposta le note con una stringa composta da 'CDEFGAB'+'#-'+'0123' o 'R'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
-e.g. `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+e.g. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
 Imposta le tonalità con una stringa formata da 'TSPN'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
-e.g. `pyxel.sound(0).set_tone("TTSS PPPN")`
+e.g. `pyxel.sound(0).set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
 Imposta i volumi con una stringa formata da '01234567'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
-e.g. `pyxel.sound(0).set_volume("7777 7531")`
+e.g. `pyxel.sound(0).set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
 Imposta gli effetti con una stringa formata da 'NSVF'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
-e.g. `pyxel.sound(0).set_effect("NFNF NVVS")`
+e.g. `pyxel.sound(0).set_effects("NFNF NVVS")`
 
 ### Music Class
 
