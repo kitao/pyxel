@@ -567,19 +567,19 @@ Fija las notas, los tonos, el volumen y los efectos con una string. Si los tonos
 
 - `set_notes(notes)`<br>
 Fija las notas con un string hecho por 'CDEFGAB'+'#-'+'0123' o 'R'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
-Ejemplo: `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+Ejemplo: `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
 Fija las notas con un string hecho con 'TSPN'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
-Ejemplo: `pyxel.sound(0).set_tone("TTSS PPPN")`
+Ejemplo: `pyxel.sound(0).set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
 Fija el volumen con una string hecha de '01234567'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
-Ejemplo: `pyxel.sound(0).set_volume("7777 7531")`
+Ejemplo: `pyxel.sound(0).set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
 Fija los efectos con una string hecha con 'NSVF'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
-Ejemplo: `pyxel.sound(0).set_effect("NFNF NVVS")`
+Ejemplo: `pyxel.sound(0).set_effects("NFNF NVVS")`
 
 ### Clase Music
 

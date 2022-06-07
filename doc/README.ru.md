@@ -573,19 +573,19 @@ pyxel play ФАЙЛ_PYXEL_ПРИЛОЖЕНИЯ
 
 - `set_notes(notes)`<br>
 Установить ноты с помощью строки, составленной по форме 'CDEFGAB'+'#-'+'0123' или 'R'. Регистр и пробелы игнорируются.<br>
-Пример: `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+Пример: `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
 Установить тоны строкой, составленной из 'TSPN'. Регистр и пробелы игнорируются.<br>
-Пример: `pyxel.sound(0).set_tone("TTSS PPPN")`
+Пример: `pyxel.sound(0).set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
 Установить громкость с помощью строки, составленной из '01234567'. Регистр и пробелы игнорируются.<br>
-Пример: `pyxel.sound(0).set_volume("7777 7531")`
+Пример: `pyxel.sound(0).set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
 Установить эффекты с помощью строки, составленной из 'NSVF'. Регистр и пробелы игнорируются.<br>
-Пример: `pyxel.sound(0).set_effect("NFNF NVVS")`
+Пример: `pyxel.sound(0).set_effects("NFNF NVVS")`
 
 ### Класс Music
 

@@ -572,19 +572,19 @@ Perlin 노이즈의 시드를 설정합니다.
 
 - `set_notes(notes)`<br>
 'CDEFGAB'+'#-'+'0123' 또는 'R' 문자열로 음정을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
-예시: `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+예시: `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
 'TSPN' 문자열로 음색을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
-예시: `pyxel.sound(0).set_tone("TTSS PPPN")`
+예시: `pyxel.sound(0).set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
 '01234567' 문자열로 음량을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
-예시: `pyxel.sound(0).set_volume("7777 7531")`
+예시: `pyxel.sound(0).set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
 'NSVF' 문자열로 효과를 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
-예시: `pyxel.sound(0).set_effect("NFNF NVVS")`
+예시: `pyxel.sound(0).set_effects("NFNF NVVS")`
 
 ### 음악 클래스
 

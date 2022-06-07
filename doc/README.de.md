@@ -571,19 +571,19 @@ Legt Noten, Töne, Lautstärken und Effekte mit einer Zeichenfolge fest. Wenn di
 
 - `set_notes(notes)`<br>
 Setzt die Noten mit einem string aus 'CDEFGAB'+'#-'+'0123' oder 'R'. Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
-z.B. `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+z.B. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
 Setzt die Töne mit einem string aus 'TSPN'. Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
-z.B. `pyxel.sound(0).set_tone("TTSS PPPN")`
+z.B. `pyxel.sound(0).set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
 Setzt die Lautstärke mit einer Zeichenkette aus '01234567'.  Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
-z.B. `pyxel.sound(0).set_volume("7777 7531")`
+z.B. `pyxel.sound(0).set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
 Setzt die Effekte mit einer Zeichenkette aus 'NSVF'. Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
-z.B. `pyxel.sound(0).set_effect("NFNF NVVS")`
+z.B. `pyxel.sound(0).set_effects("NFNF NVVS")`
 
 ### Musik Klasse
 
