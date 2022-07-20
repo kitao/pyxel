@@ -1,3 +1,5 @@
+use std::fmt::Write as _;
+
 use crate::resource::ResourceItem;
 use crate::settings::{
     EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED,
@@ -152,7 +154,7 @@ impl ResourceItem for Sound {
                 if *note < 0 {
                     output += "ff";
                 } else {
-                    output += &format!("{:02x}", *note);
+                    let _ = write!(output, "{:02x}", *note);
                 }
             }
             output += "\n";
@@ -164,7 +166,7 @@ impl ResourceItem for Sound {
                     output += "none\n";
                 } else {
                     for value in &self.$name {
-                        output += &format!("{:1x}", *value);
+                        let _ = write!(output, "{:1x}", *value);
                     }
                     output += "\n";
                 }
@@ -174,7 +176,7 @@ impl ResourceItem for Sound {
         stringify_data!(tones);
         stringify_data!(volumes);
         stringify_data!(effects);
-        output += &format!("{}", self.speed);
+        let _ = write!(output, "{}", self.speed);
         output
     }
 
