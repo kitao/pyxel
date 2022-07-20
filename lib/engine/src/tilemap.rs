@@ -1,3 +1,5 @@
+use std::fmt::Write as _;
+
 use crate::canvas::{Canvas, ToIndex};
 use crate::image::SharedImage;
 use crate::resource::ResourceItem;
@@ -200,11 +202,15 @@ impl ResourceItem for Tilemap {
         for y in 0..self.height() {
             for x in 0..self.width() {
                 let tile = self.canvas.data[y as usize][x as usize];
-                output += &format!("{:02x}{:02x}", tile.0, tile.1);
+                let _ = write!(output, "{:02x}{:02x}", tile.0, tile.1);
             }
             output += "\n";
         }
-        output += &format!("{}", pyxel.image_no(self.image.clone()).unwrap_or(0));
+        let _ = write!(
+            output,
+            "{}",
+            pyxel.image_no(self.image.clone()).unwrap_or(0)
+        );
         output
     }
 

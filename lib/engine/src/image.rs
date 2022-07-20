@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fmt::Write as _;
 use std::path::Path;
 
 use array_macro::array;
@@ -430,7 +431,7 @@ impl ResourceItem for Image {
         let mut output = String::new();
         for y in 0..self.height() {
             for x in 0..self.width() {
-                output += &format!("{:1x}", self.canvas.data[y as usize][x as usize]);
+                let _ = write!(output, "{:1x}", self.canvas.data[y as usize][x as usize]);
             }
             output += "\n";
         }
