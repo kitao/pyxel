@@ -4,6 +4,7 @@
 - Fixed function names in the READMEs
 - Added a configuration for isort
 - Added flip functions to the resource editor
+- Fixed clippy warnings
 
 ## 1.7.1
 - Fixed the description for Tilemap.set in the READMEs

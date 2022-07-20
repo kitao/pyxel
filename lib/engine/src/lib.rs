@@ -12,6 +12,7 @@
     clippy::module_name_repetitions,
     clippy::multiple_crate_versions,
     clippy::must_use_candidate,
+    clippy::negative_feature_names,
     clippy::pedantic,
     clippy::range_plus_one,
     clippy::redundant_feature_names,
