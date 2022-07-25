@@ -573,19 +573,19 @@ Met les valeurs de notes, tones, volumes et effects avec une chaîne. Si les ton
 
 - `set_notes(notes)`<br>
 Met les notes avec une chaîne de 'CDEFGAB'+'#-'+'0123' ou 'R'. Insensible à la casse et les espaces sont ignorés.<br>
-Par exemple `pyxel.sound(0).set_note("G2B-2D3R RF3F3F3")`
+Par exemple `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
 Met les tons avec une chaîne de 'TSPN'. Insensible à la casse et les espaces sont ignorés.<br>
-Par exemple `pyxel.sound(0).set_tone("TTSS PPPN")`
+Par exemple `pyxel.sound(0).set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
 Met les volumes avec une chaîne de '01234567'. Insensible à la casse et les espaces sont ignorés.<br>
-Par exemple `pyxel.sound(0).set_volume("7777 7531")`
+Par exemple `pyxel.sound(0).set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
 Met les effets avec une chaîne de 'NSVF'. Insensible à la casse et les espaces sont ignorés.<br>
-Par exemple `pyxel.sound(0).set_effect("NFNF NVVS")`
+Par exemple `pyxel.sound(0).set_effects("NFNF NVVS")`
 
 ### Classe Music
 

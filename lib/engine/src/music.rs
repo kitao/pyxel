@@ -1,3 +1,5 @@
+use std::fmt::Write as _;
+
 use crate::resource::ResourceItem;
 use crate::settings::{NUM_CHANNELS, RESOURCE_ARCHIVE_DIRNAME};
 use crate::utils::parse_hex_string;
@@ -45,7 +47,7 @@ impl ResourceItem for Music {
                 output += "none";
             } else {
                 for sound_no in sounds {
-                    output += &format!("{:02x}", sound_no);
+                    let _ = write!(output, "{:02x}", sound_no);
                 }
             }
             output += "\n";

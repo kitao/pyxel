@@ -304,7 +304,7 @@ class CanvasPanel(Widget):
 
     def __on_mouse_hover(self, x, y):
         if self.tool_var == TOOL_SELECT:
-            s = "COPY:CTRL+C PASTE:CTRL+V"
+            s = "COPY:CTRL+C/X/V FLIP:H/V"
         elif self._is_dragged:
             s = "ASSIST:SHIFT"
         else:
@@ -361,6 +361,27 @@ class CanvasPanel(Widget):
                     self.focus_y_var * 8 + self._select_y1,
                     self._copy_buffer,
                 )
+                self._add_post_history()
+
+        if self.tool_var == TOOL_SELECT:
+            # H: Flip horizontal
+            if pyxel.btnp(pyxel.KEY_H):
+                x = self.focus_x_var * 8 + self._select_x1
+                y = self.focus_y_var * 8 + self._select_y1
+                w = self._select_x2 - self._select_x1 + 1
+                h = self._select_y2 - self._select_y1 + 1
+                self._add_pre_history()
+                self.canvas_var.blt(x, y, self.canvas_var, x, y, -w, h)
+                self._add_post_history()
+
+            # V: Flip vertical
+            if pyxel.btnp(pyxel.KEY_V):
+                x = self.focus_x_var * 8 + self._select_x1
+                y = self.focus_y_var * 8 + self._select_y1
+                w = self._select_x2 - self._select_x1 + 1
+                h = self._select_y2 - self._select_y1 + 1
+                self._add_pre_history()
+                self.canvas_var.blt(x, y, self.canvas_var, x, y, w, -h)
                 self._add_post_history()
 
         # Move tile focus
