@@ -1,4 +1,5 @@
-use crate::blipbuf::BlipBuf;
+use blip_buf::BlipBuf;
+
 use crate::settings::{
     CLOCK_RATE, EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, NOISE_VOLUME_FACTOR,
     NUM_CLOCKS_PER_TICK, OSCILLATOR_RESOLUTION, PULSE_VOLUME_FACTOR, SQUARE_VOLUME_FACTOR,
@@ -103,10 +104,7 @@ impl Oscillator {
                 _ => panic!("Invalid tone '{}'", self.tone),
             } * self.volume
                 * i16::MAX as f64) as i16;
-            blip_buf.add_delta(
-                self.time as u64,
-                self.amplitude as i32 - last_amplitude as i32,
-            );
+            blip_buf.add_delta(self.time, self.amplitude as i32 - last_amplitude as i32);
             self.time += period;
         }
 
