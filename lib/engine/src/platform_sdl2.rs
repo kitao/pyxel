@@ -34,7 +34,7 @@ impl SdlAudioCallback for AudioContextHolder {
     }
 }
 
-pub struct Sdl2 {
+pub struct PlatformSdl2 {
     sdl_context: SdlContext,
     sdl_event_pump: SdlEventPump,
     sdl_timer: SdlTimer,
@@ -50,7 +50,7 @@ pub struct Sdl2 {
     mouse_y: i32,
 }
 
-impl Platform for Sdl2 {
+impl Platform for PlatformSdl2 {
     fn new<F: Fn(u32, u32) -> u32>(title: &str, width: u32, height: u32, get_scale: F) -> Self {
         let sdl_context = sdl2::init().unwrap();
         let sdl_event_pump = sdl_context.event_pump().unwrap();
@@ -390,7 +390,7 @@ impl Platform for Sdl2 {
     }
 }
 
-impl Sdl2 {
+impl PlatformSdl2 {
     fn screen_pos_scale(&self) -> (u32, u32, u32) {
         let (window_width, window_height) = self.sdl_canvas.window().size();
         let screen_scale = min(

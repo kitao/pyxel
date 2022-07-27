@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.7.3
+- Renamed inner SDL2 module to PlatformSdl2
+
 ## 1.7.2
 - Fixed function names in the READMEs
 - Added a configuration for isort
