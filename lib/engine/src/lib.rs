@@ -38,11 +38,11 @@ mod math;
 mod music;
 mod oscillator;
 mod platform;
+mod platform_sdl2;
 mod profiler;
 mod rectarea;
 mod resource;
 mod screencast;
-mod sdl2;
 mod settings;
 mod sound;
 mod system;
@@ -58,15 +58,15 @@ pub use crate::key::*;
 pub use crate::math::Math;
 pub use crate::music::{Music, SharedMusic};
 use crate::platform::Platform;
+use crate::platform_sdl2::PlatformSdl2;
 use crate::resource::Resource;
-use crate::sdl2::Sdl2;
 pub use crate::settings::*;
 pub use crate::sound::{SharedSound, Sound};
 use crate::system::System;
 pub use crate::tilemap::{SharedTilemap, Tilemap};
 pub use crate::types::*;
 
-type TargetPlatform = Sdl2;
+type TargetPlatform = PlatformSdl2;
 
 pub struct Pyxel {
     platform: TargetPlatform,
