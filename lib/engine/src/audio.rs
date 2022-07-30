@@ -1,6 +1,6 @@
 use array_macro::array;
-use blip_buf::BlipBuf;
 
+use crate::blipbuf::BlipBuf;
 use crate::channel::{Channel, SharedChannel};
 use crate::music::{Music, SharedMusic};
 use crate::platform::{AudioCallback, Platform};
@@ -23,7 +23,7 @@ pub struct Audio {
 
 impl Audio {
     pub fn new<T: Platform>(platform: &mut T) -> Self {
-        let mut blip_buf = BlipBuf::new(NUM_SAMPLES);
+        let mut blip_buf = BlipBuf::new(NUM_SAMPLES as usize);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
         let channels = array![_ => Channel::new(); NUM_CHANNELS as usize];
         let sounds = array![_ => Sound::new(); NUM_SOUNDS as usize];
@@ -53,7 +53,7 @@ impl AudioCallback for AudioCore {
             for channel in &mut self.channels {
                 channel.lock().update(&mut self.blip_buf);
             }
-            self.blip_buf.end_frame(NUM_CLOCKS_PER_TICK);
+            self.blip_buf.end_frame(NUM_CLOCKS_PER_TICK as u64);
             samples += self.blip_buf.read_samples(&mut out[samples..], false);
         }
     }
