@@ -4,7 +4,7 @@ on: [workflow_call, workflow_dispatch]
 
 jobs:
   build-windows:
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
     - uses: actions/checkout@v2
     - run: |
@@ -16,7 +16,7 @@ jobs:
         path: pyxel/lib/windows/*
 
   build-macos:
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
     - uses: actions/checkout@v2
     - run: |
@@ -28,12 +28,10 @@ jobs:
         path: pyxel/lib/macos/*
 
   build-linux:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
     - run: |
-        sudo add-apt-repository ppa:deadsnakes/ppa
-        sudo apt install -y python3.9 libsdl2-dev
-        sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
+        sudo apt install -y libsdl2-dev
     - uses: actions/checkout@v2
     - run: |
         make
@@ -44,7 +42,7 @@ jobs:
         path: pyxel/lib/linux/*
 
   make-wheel:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [build-windows, build-macos, build-linux]
     steps:
     - uses: actions/checkout@v2
@@ -67,7 +65,7 @@ jobs:
         path: dist/*.whl
 
   package-windows:
-    runs-on: windows-latest
+    runs-on: windows-2022
     needs: make-wheel
     steps:
     - run: |
@@ -92,7 +90,7 @@ jobs:
         path: dist/*.exe
 
   package-macos:
-    runs-on: macos-latest
+    runs-on: macos-11
     needs: make-wheel
     steps:
     - run: brew install pyoxidizer
@@ -110,13 +108,10 @@ jobs:
         path: dist/*.zip
 
   package-linux:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs: make-wheel
     steps:
     - run: |
-        sudo add-apt-repository ppa:deadsnakes/ppa
-        sudo apt install -y python3.9 libsdl2-dev
-        sudo ln -nfs /usr/bin/python3.9 /usr/bin/python3
         brew install pyoxidizer
     - uses: actions/checkout@v2
     - uses: actions/download-artifact@v2
