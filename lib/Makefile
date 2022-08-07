@@ -12,8 +12,13 @@ DIST_NAME = $(shell echo $(WHEEL_NAME) | sed -E 's/.*(pyxel-.*)-py3.*/\1/')-$(PL
 WHEEL_NAME = $(shell ls $(DIST_DIR)/pyxel-*.whl)
 PYOXIDIZER_DIR = $(BUILD_DIR)/build
 
+# WASM
+ifneq ($(WASM),)
+PLATFORM = wasm
+TARGET = wasm32-unknown-emscripten
+
 # Windows
-ifneq ($(findstring _NT-,$(shell uname)),)
+else ifneq ($(findstring _NT-,$(shell uname)),)
 PLATFORM = windows
 PYTHON = python
 TARGET_DIR = $(BUILD_DIR)/target/release
@@ -34,26 +39,30 @@ BUILD_INSTALLER = $(ISCC) $(ISCC_FILE)
 else ifeq ($(shell uname),Darwin)
 PLATFORM = macos
 PYTHON = python3
-TARGET1 = x86_64-apple-darwin
-TARGET2 = aarch64-apple-darwin
+TARGET1 = aarch64-apple-darwin
+TARGET2 = x86_64-apple-darwin
 TARGET_DIR1 = $(BUILD_DIR)/target/$(TARGET1)/release
 TARGET_DIR2 = $(BUILD_DIR)/target/$(TARGET2)/release
 SRC_LIB_FILE1 = $(TARGET_DIR1)/lib$(PYXEL_LIB_NAME).dylib
 SRC_LIB_FILE2 = $(TARGET_DIR2)/lib$(PYXEL_LIB_NAME).dylib
 DST_LIB_FILE = $(PYXEL_LIB_DIR)/$(PYXEL_LIB_NAME).so
 
-CARGO_VARS = \
-	SDKROOT=$(shell xcrun -sdk macosx --show-sdk-path) \
-	MACOSX_DEPLOYMENT_TARGET=$(shell xcrun -sdk macosx --show-sdk-platform-version)
+ifeq ($(shell arch),arm64)
 CARGO_CLEAN = \
-	cargo clean --target=$(TARGET1) && \
-	cargo clean --target=$(TARGET2)
+	cargo clean --target $(TARGET1)
 CARGO_BUILD = \
 	rustup target add $(TARGET1) && \
-	$(CARGO_VARS) cargo build $(BUILD_OPT) --target=$(TARGET1) && \
-	rustup target add $(TARGET2) && \
-	$(CARGO_VARS) cargo build $(BUILD_OPT) --target=$(TARGET2)
+	cargo build $(BUILD_OPT) --target $(TARGET1)
+COPY_FILES = cp $(SRC_LIB_FILE1) $(DST_LIB_FILE)
+else
+CARGO_CLEAN = \
+	cargo clean --target $(TARGET1) -target $(TARGET2)
+CARGO_BUILD = \
+	rustup target add $(TARGET1) $(TARGET2) && \
+	cargo build $(BUILD_OPT) --target $(TARGET1) && \
+	cargo build $(BUILD_OPT) --target $(TARGET2)
 COPY_FILES = lipo -create -output $(DST_LIB_FILE) $(SRC_LIB_FILE1) $(SRC_LIB_FILE2)
+endif
 
 # Linux
 else ifeq ($(shell uname),Linux)
