@@ -56,7 +56,7 @@ CARGO_BUILD = \
 COPY_FILES = cp $(SRC_LIB_FILE1) $(DST_LIB_FILE)
 else
 CARGO_CLEAN = \
-	cargo clean --target $(TARGET1) -target $(TARGET2)
+	cargo clean --target $(TARGET1) --target $(TARGET2)
 CARGO_BUILD = \
 	rustup target add $(TARGET1) $(TARGET2) && \
 	cargo build $(BUILD_OPT) --target $(TARGET1) && \
