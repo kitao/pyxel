@@ -3,8 +3,9 @@
 ## 1.7.3
 - Changed to include the blip-buf module
 - Renamed inner SDL2 module to PlatformSdl2
-- Added the emscripten target
 - Specified the platform versions in the workflows
+- Modified the Makefile for Apple silicon Mac
+- Added the WASM target (WIP)
 
 ## 1.7.2
 - Fixed function names in the READMEs
