@@ -16,7 +16,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.16", features = ["abi3-py37", "extension-module"] }
-pyxel-engine = { path = "../engine", version="1.7.2" }
+pyxel-engine = { path = "../pyxel-engine", version="1.7.2" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 sysinfo = "0.23"
