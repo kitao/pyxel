@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.7.3
+## 1.8.0
 - Changed to include the blip-buf module
 - Renamed inner SDL2 module to PlatformSdl2
 - Specified the platform versions in the workflows
