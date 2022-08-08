@@ -1,0 +1,4 @@
+black
+flake8
+isort
+maturin==0.13.2b3
