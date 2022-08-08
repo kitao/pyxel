@@ -4,11 +4,11 @@ import os
 import re
 import sys
 
-LIB_DIR = "."
+ROOT_DIR = ".."
 
 
 def replace_file(file, pattern, repl):
-    with open(os.path.join(LIB_DIR, file), "r") as f:
+    with open(file, "r") as f:
         code = f.read()
     code = re.sub(pattern, repl, code, 1)
     with open(file, "w") as f:
@@ -19,16 +19,17 @@ def update_version():
     if len(sys.argv) < 2:
         print("update_version VERSION")
         exit(1)
-
+    os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ROOT_DIR))
     version = sys.argv[1]
-    replace_file("engine/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"')
-    replace_file("engine/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
-    replace_file("wrapper/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
-    replace_file("wrapper/Cargo.toml", '(engine", version.*)".*"', f'\\1"{version}"')
-    replace_file("../setup.py", '(version=.*)".*"', f'\\1"{version}"')
-    replace_file("setup.iss", '(PyxelVersion.*)".*"', f'\\1"{version}"')
+    replace_file(
+        "src/pyxel-engine/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
+    )
+    replace_file("src/pyxel-engine/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
+    replace_file("src/pyxel-wrapper/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
+    replace_file(
+        "src/pyxel-wrapper/Cargo.toml", '(engine", version.*)".*"', f'\\1"{version}"'
+    )
 
 
 if __name__ == "__main__":
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     update_version()
