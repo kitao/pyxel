@@ -21,7 +21,7 @@ classifiers = [
 ]
 
 [tool.maturin]
-manifest-path = "lib/wrapper/Cargo.toml"
+manifest-path = "src/pyxel-wrapper/Cargo.toml"
 
 [project.scripts]
 pyxel = "pyxel.cli:cli"
