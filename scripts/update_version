@@ -22,12 +22,14 @@ def update_version():
     os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ROOT_DIR))
     version = sys.argv[1]
     replace_file(
-        "src/pyxel-engine/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
+        "crates/pyxel-engine/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
     )
-    replace_file("src/pyxel-engine/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
-    replace_file("src/pyxel-wrapper/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
+    replace_file("crates/pyxel-engine/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file(
-        "src/pyxel-wrapper/Cargo.toml", '(engine", version.*)".*"', f'\\1"{version}"'
+        "crates/pyxel-wrapper/Cargo.toml", '(version.*)".*"', f'\\1"{version}"'
+    )
+    replace_file(
+        "crates/pyxel-wrapper/Cargo.toml", '(engine", version.*)".*"', f'\\1"{version}"'
     )
 
 
