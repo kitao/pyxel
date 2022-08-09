@@ -65,14 +65,14 @@ format:
 	@flake8 $(ROOT_DIR)/*.py $(PYXEL_DIR)
 
 build:
-	maturin build --release
-	mkdir -p $(DIST_DIR)
-	cp $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl $(DIST_DIR)
-	pip install --force-reinstall $(DIST_DIR)/*.whl
+	@maturin build --release
+	@mkdir -p $(DIST_DIR)
+	@cp $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl $(DIST_DIR)
+	@pip install --force-reinstall $(DIST_DIR)/*.whl
 
 test: build
-	cd $(CRATES_DIR)/pyxel-engine; cargo test --release
-	python -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
+	@cd $(CRATES_DIR)/pyxel-engine; cargo test --release
+	@python -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 
 	@for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
 		pyxel run $$example; \
