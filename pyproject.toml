@@ -8,7 +8,7 @@ version = "1.8.0"
 description = "A retro game engine for Python"
 readme = "README.md"
 requires-python = ">=3.7"
-license = { file = "LICENSE" }
+license = { text = "MIT" }
 authors = [{ name = "Takashi Kitao", email = "takashi.kitao@gmail.com" }]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -29,3 +29,4 @@ pyxel = "pyxel.cli:cli"
 
 [tool.maturin]
 manifest-path = "crates/pyxel-wrapper/Cargo.toml"
+python-source = "python"

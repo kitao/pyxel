@@ -23,4 +23,3 @@ sysinfo = "0.23"
 
 [package.metadata.maturin]
 name = "pyxel.pyxel_wrapper"
-python-source = "python"
