@@ -1,32 +1,35 @@
 #
 # [How to build]
 #
-# Common prerequisites:
+# Required tools:
+#	[Common]
 #	- cmake
 #	- rustup
-#	- python3
+#	- python 3.7+
 #
-# Prerequisites for Windows:
+#	[Windows]
 #	- Build Tools for Visual Studio 2019
 #	- Cygwin64 with make and zip added
 #
-# Prerequisites for Linux:
-#	- SDL2 package (libsdl2-dev for Ubuntu)
+#	[Linux]
+#	- SDL2 package (e.g. libsdl2-dev for Ubuntu)
 #
-# Format and lint code:
-#	(After `rustup install nightly`)
+# Advance preparation:
+#	rustup install nightly
+#	python3 -m venv .venv
+#	source .venv/bin/activate
+#	pip install -r requirements.txt
+#
+# Format and lint the code:
 #	make format
 #
-# Build:
-#	(After activating the virtual environment)
+# Build the package:
 #	make clean all
 #
-# Build and test:
-#	(After activating the virtual environment)
+# Build and test the package:
 #	make clean test
 #
-# Install Pyxel after build:
-#	(After deactivating the virtual environment)
+# Install the package:
 #	pip3 install dist/*.whl
 #	(Prefix `sudo` may be needed on Linux)
 #
