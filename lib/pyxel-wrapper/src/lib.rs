@@ -8,6 +8,7 @@
     clippy::must_use_candidate,
     clippy::needless_option_as_deref,
     clippy::needless_pass_by_value,
+    clippy::negative_feature_names,
     clippy::new_without_default,
     clippy::pedantic,
     clippy::redundant_feature_names,
