@@ -1,17 +1,17 @@
-# [target.x86_64-apple-darwin]
-# rustflags = [
-#    "-C", "link-arg=-undefined",
-#    "-C", "link-arg=dynamic_lookup",
-# ]
+[target.x86_64-apple-darwin]
+rustflags = [
+    "-Clink-arg=-undefined",
+    "-Clink-arg=dynamic_lookup",
+]
 
-# [target.aarch64-apple-darwin]
-# rustflags = [
-#    "-C", "link-arg=-undefined",
-#    "-C", "link-arg=dynamic_lookup",
-# ]
+[target.aarch64-apple-darwin]
+rustflags = [
+    "-Clink-arg=-undefined",
+    "-Clink-arg=dynamic_lookup",
+]
 
 [target.wasm32-unknown-emscripten]
 rustflags = [
-    "-C", "link-arg=-sUSE_SDL=2",
-    "-C", "link-arg=-Wl,--no-entry",
+    "-Clink-arg=-sUSE_SDL=2",
+    "-Clink-arg=-Wl,--no-entry",
 ]
