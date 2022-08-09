@@ -41,18 +41,11 @@ CRATES_DIR = $(ROOT_DIR)/crates
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 CRATES = $(wildcard $(CRATES_DIR)/*)
 EXAMPLES = $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py)
+WASM_TARGET = wasm32-unknown-emscripten
 
-.PHONY: all clean format build test
+.PHONY: all format clean build test wasm-clean wasm-build
 
 all: build
-
-clean:
-	@for crate in $(CRATES); do \
-		cd $$crate; \
-		cargo clean; \
-		cd -; \
-	done
-	@rm -rf $(DIST_DIR)
 
 format:
 	@for crate in $(CRATES); do \
@@ -63,6 +56,14 @@ format:
 	done
 	@isort $(ROOT_DIR) && black $(ROOT_DIR)
 	@flake8 $(ROOT_DIR)/*.py $(PYXEL_DIR)
+
+clean:
+	@for crate in $(CRATES); do \
+		cd $$crate; \
+		cargo clean; \
+		cd -; \
+	done
+	@rm -f $(DIST_DIR)/*$(shell arch)*.whl
 
 build:
 	@maturin build --release
@@ -88,3 +89,17 @@ test: build
 	@pyxel package testapp 10_platformer.py
 	@pyxel play testapp.pyxapp
 	@rm -rf testapp testapp.pyxapp
+
+wasm-clean:
+	@for crate in $(CRATES); do \
+		cd $$crate; \
+		cargo clean --target $(WASM_TARGET); \
+		cd -; \
+	done
+	@rm -f $(DIST_DIR)/*wasm32*.whl
+
+wasm-build:
+	@RUSTUP_TOOLCHAIN=nightly rustup target add $(WASM_TARGET)
+	@RUSTUP_TOOLCHAIN=nightly maturin build --release --target $(WASM_TARGET)
+	@mkdir -p $(DIST_DIR)
+	@cp $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl $(DIST_DIR)
