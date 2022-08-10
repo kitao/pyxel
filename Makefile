@@ -28,11 +28,17 @@
 # Install the package:
 #	make install
 #
-# Build the package:
+# Build and install the package:
 #	make clean all
 #
-# Build and test the package:
+# Build, install, and test the package:
 #	make clean test
+#
+# Build for the specified target:
+#	make clean build TARGET=target_name
+#
+# Build for the specified target with Nightly Rust
+#	make clean build NIGHTLY=1 TARGET=target_name
 #
 
 ROOT_DIR = .
@@ -43,7 +49,15 @@ SCRIPTS_DIR = $(ROOT_DIR)/scripts
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 CRATES = $(wildcard $(CRATES_DIR)/*)
 EXAMPLES = $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py)
-WASM_TARGET = wasm32-unknown-emscripten
+
+ifneq ($(NIGHTLY),)
+RUST_ENV = RUSTUP_TOOLCHAIN=nightly
+endif
+
+ifneq ($(TARGET),)
+ADD_TARGET = $(RUST_ENV) rustup target add $(TARGET)
+TARGET_OPT = --target $(TARGET)
+endif
 
 .PHONY: all format clean build install test wasm-clean wasm-build
 
@@ -62,13 +76,14 @@ format:
 clean:
 	@for crate in $(CRATES); do \
 		cd $$crate; \
-		cargo clean; \
+		$(RUST_ENV) cargo clean $(TARGET_OPT); \
 		cd -; \
 	done
 
 build:
+	@$(ADD_TARGET)
 	@$(SCRIPTS_DIR)/update_readme
-	@maturin build --release
+	@$(RUST_ENV) maturin build --release $(TARGET_OPT)
 	@mkdir -p $(DIST_DIR)
 	@cp $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl $(DIST_DIR)
 
@@ -95,14 +110,7 @@ test: build install
 	@rm -rf testapp testapp.pyxapp
 
 wasm-clean:
-	@for crate in $(CRATES); do \
-		cd $$crate; \
-		cargo clean --target $(WASM_TARGET); \
-		cd -; \
-	done
+	@make clean NIGHTLY=1 TARGET=wasm32-unknown-emscripten
 
 wasm-build:
-	@RUSTUP_TOOLCHAIN=nightly rustup target add $(WASM_TARGET)
-	@RUSTUP_TOOLCHAIN=nightly maturin build --release --target $(WASM_TARGET)
-	@mkdir -p $(DIST_DIR)
-	@cp $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl $(DIST_DIR)
+	@make build NIGHTLY=1 TARGET=wasm32-unknown-emscripten
