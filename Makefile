@@ -2,22 +2,21 @@
 # [How to build]
 #
 # Required tools:
-#	[Common]
 #	- cmake
 #	- rustup
 #	- python 3.7+
+#	- Emscripten (only for WASM build)
 #
 #	[Windows]
-#	- Build Tools for Visual Studio 2019
-#	- Cygwin64 with make and zip added
 #
 #	[Linux]
-#	- SDL2 package (e.g. libsdl2-dev for Ubuntu)
+#	- SDL2 (e.g. libsdl2-dev for Ubuntu)
 #
 # Advance preparation:
 #	rustup install nightly
 #	python3 -m venv .venv
 #	source .venv/bin/activate
+#	pip install -U pip
 #	pip install -r requirements.txt
 #
 # Format and lint the code:
@@ -44,9 +43,13 @@ CRATES = $(wildcard $(CRATES_DIR)/*)
 EXAMPLES = $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py)
 WASM_TARGET = wasm32-unknown-emscripten
 
-.PHONY: all format clean build test wasm-clean wasm-build
+ifeq ($(TARGET),)
+TARGET = $(shell rustc -Vv | grep host | cut -c 7-)
+endif
 
-all: build
+.PHONY: all format clean build install test wasm-clean wasm-build
+
+all: build install
 
 format:
 	@for crate in $(CRATES); do \
@@ -64,16 +67,17 @@ clean:
 		cargo clean; \
 		cd -; \
 	done
-	@rm -f $(DIST_DIR)/*$(shell arch)*.whl
 
 build:
 	@$(SCRIPTS_DIR)/update_readme
 	@maturin build --release
 	@mkdir -p $(DIST_DIR)
 	@cp $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl $(DIST_DIR)
-	@pip install --force-reinstall $(DIST_DIR)/*.whl
 
-test: build
+install:
+	@pip install --force-reinstall $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl
+
+test: build install
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test --release
 	@python -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 
@@ -98,7 +102,6 @@ wasm-clean:
 		cargo clean --target $(WASM_TARGET); \
 		cd -; \
 	done
-	@rm -f $(DIST_DIR)/*wasm32*.whl
 
 wasm-build:
 	@RUSTUP_TOOLCHAIN=nightly rustup target add $(WASM_TARGET)
