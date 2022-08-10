@@ -45,10 +45,6 @@ CRATES = $(wildcard $(CRATES_DIR)/*)
 EXAMPLES = $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py)
 WASM_TARGET = wasm32-unknown-emscripten
 
-ifeq ($(TARGET),)
-TARGET = $(shell rustc -Vv | grep host | cut -c 7-)
-endif
-
 .PHONY: all format clean build install test wasm-clean wasm-build
 
 all: build install
