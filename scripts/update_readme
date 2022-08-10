@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+import os
+import re
+
+ROOT_DIR = ".."
+RELPATH_README = "README.md"
+ABSPATH_README = "doc/README-abspath.md"
+
+
+def update_readme():
+    os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ROOT_DIR))
+    with open(RELPATH_README, "r", encoding="utf-8") as fh:
+        text = re.sub(
+            r'(src=")',
+            r"\1https://raw.githubusercontent.com/kitao/pyxel/main/",
+            re.sub(
+                r'(\]\(|href=")(?!http)',
+                r"\1https://github.com/kitao/pyxel/blob/main/",
+                fh.read(),
+            ),
+        )
+    with open(ABSPATH_README, "w", encoding="utf-8") as fh:
+        fh.write(text)
+
+
+if __name__ == "__main__":
+    update_readme()
