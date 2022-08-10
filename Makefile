@@ -38,6 +38,7 @@ ROOT_DIR = .
 DIST_DIR = $(ROOT_DIR)/dist
 PYXEL_DIR = $(ROOT_DIR)/python/pyxel
 CRATES_DIR = $(ROOT_DIR)/crates
+SCRIPTS_DIR = $(ROOT_DIR)/scripts
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 CRATES = $(wildcard $(CRATES_DIR)/*)
 EXAMPLES = $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py)
@@ -66,6 +67,7 @@ clean:
 	@rm -f $(DIST_DIR)/*$(shell arch)*.whl
 
 build:
+	@$(SCRIPTS_DIR)/update_readme
 	@maturin build --release
 	@mkdir -p $(DIST_DIR)
 	@cp $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl $(DIST_DIR)
