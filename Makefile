@@ -22,15 +22,17 @@
 # Format and lint the code:
 #	make format
 #
+# Build the package
+#	make clean build
+#
+# Install the package:
+#	make install
+#
 # Build the package:
 #	make clean all
 #
 # Build and test the package:
 #	make clean test
-#
-# Install the package:
-#	pip3 install dist/*.whl
-#	(Prefix `sudo` may be needed on Linux)
 #
 
 ROOT_DIR = .
