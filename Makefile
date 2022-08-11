@@ -14,10 +14,8 @@
 #
 # Advance preparation:
 #	rustup install nightly
-#	python3 -m venv .venv
-#	source .venv/bin/activate
-#	pip install -U pip
-#	pip install -r requirements.txt
+#	scripts/setup_venv
+#	source .venv/vin/activate
 #
 # Format and lint the code:
 #	make format
@@ -25,7 +23,7 @@
 # Build the package
 #	make clean build
 #
-# Install the package:
+# Install the last built package:
 #	make install
 #
 # Build and install the package:
