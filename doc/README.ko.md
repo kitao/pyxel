@@ -46,15 +46,7 @@ Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Py
 
 ## 설치 방법
 
-Pyxel은 패키지 버전과 독립 실행형(Standalone) 버전의 두 가지 유형이 있습니다.
-
-### 패키지 버전 설치하기
-
-Pyxel의 패키지 버전은 Pyxel을 Python 확장 모듈로 사용합니다.
-
-이 방식은 `pip` 명령어를 사용한 Python 패키지 관리에 익숙하거나 본격적인 Python 애플리케이션을 개발하려는 사용자에게 추천합니다.
-
-**Windows**
+### Windows
 
 [Python3](https://www.python.org/) (버전 3.7 이상)을 설치한 후, 다음 명령어를 실행합니다.
 
@@ -62,7 +54,7 @@ Pyxel의 패키지 버전은 Pyxel을 Python 확장 모듈로 사용합니다.
 pip install -U pyxel
 ```
 
-**Mac**
+### Mac
 
 [Python3](https://www.python.org/) (버전 3.7 이상)을 설치한 후, 다음 명령어를 실행합니다.
 
@@ -70,7 +62,7 @@ pip install -U pyxel
 pip3 install -U pyxel
 ```
 
-**Linux**
+### Linux
 
 SDL2 패키지 (Ubuntu의 경우 `libsdl2-dev`), [Python3](https://www.python.org/) (버전 3.7 이상), `python3-pip`를 설치한 후, 다음 명령어를 실행합니다.
 
@@ -78,44 +70,7 @@ SDL2 패키지 (Ubuntu의 경우 `libsdl2-dev`), [Python3](https://www.python.or
 sudo pip3 install -U pyxel
 ```
 
-위의 방법이 제대로 작동하지 않으면, `cmake`, `rust`를 설치한 후 다음 단계에 따라 셀프 빌드를 시도해보세요.
-
-```sh
-git clone https://github.com/kitao/pyxel.git
-cd pyxel
-make clean all
-sudo pip3 install .
-```
-
-### 독립 실행형 버전 설치하기
-
-Pyxel의 독립 실행형 버전은 Python에 의존하지 않는 독립 실행형 도구로 Pyxel을 사용할 수 있습니다.
-
-Python의 각종 설정을 신경 쓰지 않고 간편하게 프로그래밍을 시작하고 싶은 분이나 Pyxel의 게임을 바로 해보고 싶으신 분들에게 추천합니다.
-
-**Windows**
-
-[다운로드 페이지](https://github.com/kitao/pyxel/releases)에서 최신 버전의 Windows용 설치 파일 (`pyxel-[버전]-windows-setup.exe`)을 다운로드하여 실행합니다.
-
-**Mac**
-
-[Homebrew](https://brew.sh/)를 설치한 후, 다음 명령어를 실행합니다.
-
-```sh
-brew tap kitao/pyxel
-brew install pyxel
-```
-
-**Linux**
-
-SDL2 패키지 (Ubuntu의 경우 `libsdl2-dev`)와 [Homebrew](https://brew.sh/)를 설치한 후, 다음 명령어를 실행합니다.
-
-```sh
-brew tap kitao/pyxel
-brew install pyxel
-```
-
-위의 방법이 제대로 작동하지 않을 경우, 패키지 버전 설치 가이드의 셀프 빌드 방식을 시도해보시기 바랍니다.
+위의 방법이 작동하지 않으면 [Makefile](../Makefile)의 지침에 따라 자체 빌드를 시도하십시오.
 
 ### 예제 실행하기
 
