@@ -22,22 +22,22 @@
 #	make format
 #
 # Build a package in the dist directory
-#	make clean build
+#	make build
 #
 # Install the last built wheel with pip:
 #	make install
 #
 # Build the package and install it in the current venv:
-#	make clean all
+#	make all
 #
 # Build and test the package in the current venv:
-#	make clean test
+#	make test
 #
 # Build the package for the specified target:
-#	make clean build TARGET=target_triple
+#	make build TARGET=target_triple
 #
 # Build the package for the specified target with Nightly Rust
-#	make clean build NIGHTLY=1 TARGET=target_triple
+#	make build NIGHTLY=1 TARGET=target_triple
 #
 
 ROOT_DIR = .
