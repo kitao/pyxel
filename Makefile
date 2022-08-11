@@ -8,6 +8,7 @@
 #	- Emscripten (only for WASM build)
 #
 #	[Windows]
+#	- TBD
 #
 #	[Linux]
 #	- SDL2 (e.g. libsdl2-dev for Ubuntu)
@@ -17,26 +18,26 @@
 #	scripts/setup_venv
 #	source .venv/vin/activate
 #
-# Format and lint the code:
+# Format the source files and documents:
 #	make format
 #
-# Build the package
+# Build a package in the dist directory
 #	make clean build
 #
-# Install the last built package:
+# Install the last built wheel with pip:
 #	make install
 #
-# Build and install the package:
+# Build the package and install it in the current venv:
 #	make clean all
 #
-# Build, install, and test the package:
+# Build and test the package in the current venv:
 #	make clean test
 #
-# Build for the specified target:
-#	make clean build TARGET=target_name
+# Build the package for the specified target:
+#	make clean build TARGET=target_triple
 #
-# Build for the specified target with Nightly Rust
-#	make clean build NIGHTLY=1 TARGET=target_name
+# Build the package for the specified target with Nightly Rust
+#	make clean build NIGHTLY=1 TARGET=target_triple
 #
 
 ROOT_DIR = .
@@ -50,38 +51,41 @@ EXAMPLES = $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py)
 
 ifneq ($(NIGHTLY),)
 RUST_ENV = RUSTUP_TOOLCHAIN=nightly
+else
+RUST_ENV =
 endif
 
 ifneq ($(TARGET),)
 ADD_TARGET = $(RUST_ENV) rustup target add $(TARGET)
-TARGET_OPT = --target $(TARGET)
+RUST_ARGS = --relrease --target $(TARGET)
+else
+RUST_ARGS = --release
 endif
 
-.PHONY: all format clean build install test wasm-clean wasm-build
+.PHONY: all clean format build install test wasm-clean wasm-build
 
 all: build install
+
+clean:
+	@for crate in $(CRATES); do \
+		cd $$crate; \
+		$(RUST_ENV) cargo clean $(RUST_ARGS); \
+		cd -; \
+	done
 
 format:
 	@for crate in $(CRATES); do \
 		cd $$crate; \
 		cargo +nightly fmt -- --emit=files; \
-		cargo clippy -- --no-deps; \
 		cd -; \
 	done
-	@isort $(ROOT_DIR) && black $(ROOT_DIR)
-	@flake8 $(ROOT_DIR)/*.py $(PYXEL_DIR)
-
-clean:
-	@for crate in $(CRATES); do \
-		cd $$crate; \
-		$(RUST_ENV) cargo clean $(TARGET_OPT); \
-		cd -; \
-	done
-
-build:
-	@$(ADD_TARGET)
+	@isort $(ROOT_DIR)
+	@black $(ROOT_DIR)
 	@$(SCRIPTS_DIR)/update_readme
-	@$(RUST_ENV) maturin build --release $(TARGET_OPT)
+
+build: format
+	@$(ADD_TARGET)
+	@$(RUST_ENV) maturin build $(RUST_ARGS)
 	@mkdir -p $(DIST_DIR)
 	@cp $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl $(DIST_DIR)
 
@@ -89,7 +93,7 @@ install:
 	@pip install --force-reinstall $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl
 
 test: build install
-	@cd $(CRATES_DIR)/pyxel-engine; cargo test --release
+	@cd $(CRATES_DIR)/pyxel-engine; $(RUST_ENV) cargo test $(RUST_ARGS)
 	@python -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 
 	@for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
