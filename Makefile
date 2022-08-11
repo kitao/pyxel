@@ -62,7 +62,7 @@ else
 RUST_ARGS = --release
 endif
 
-.PHONY: all clean format build install test wasm-clean wasm-build
+.PHONY: all clean distclean format build install test wasm-clean wasm-build
 
 all: build install
 
@@ -72,6 +72,12 @@ clean:
 		$(RUST_ENV) cargo clean $(RUST_ARGS); \
 		cd -; \
 	done
+
+distclean:
+	@for crate in $(CRATES); do \
+		rm -rf $$crate/target; \
+	done
+	@rm -rf $(DIST_DIR)
 
 format:
 	@for crate in $(CRATES); do \
