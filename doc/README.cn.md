@@ -46,15 +46,7 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 
 ## 如何安装
 
-Pyxel有两种安装版本：Python包版本和独立版本。
-
-### 安装Python包版本
-
-此版本以Python扩展包的方式使用Pyxel。
-
-推荐用户：可以熟练使用pip进行Python包管理，或需要基于已经成熟的Python应用进行开发的用户。
-
-**Windows**
+### Windows
 
 在安装[Python3](https://www.python.org/)（3.7或更高版本）之后，执行以下命令：
 
@@ -62,7 +54,7 @@ Pyxel有两种安装版本：Python包版本和独立版本。
 pip install -U pyxel
 ```
 
-**Mac**
+### Mac
 
 在安装[Python3](https://www.python.org/)（3.7或更高版本）之后，执行以下命令：
 
@@ -70,7 +62,7 @@ pip install -U pyxel
 pip3 install -U pyxel
 ```
 
-**Linux**
+### Linux
 
 安装SDL2（Ubuntu下包名为：`libsdl2-dev`），[Python3](https://www.python.org/)（3.7或更高版本），以及`python3-pip`这三个包之后，执行以下命令：
 
@@ -78,44 +70,7 @@ pip3 install -U pyxel
 sudo pip3 install -U pyxel
 ```
 
-如果以上步骤无效，可以在安装`cmake`和`rust`后，尝试执行以下步骤自行编译：
-
-```sh
-git clone https://github.com/kitao/pyxel.git
-cd pyxel
-make clean all
-sudo pip3 install .
-```
-
-### 安装独立版本
-
-此版本可以直接使用Pyxel而无需依赖Python。
-
-推荐用户：不想进行复杂的Python配置，或想要尽快上手Pyxel游戏的用户。
-
-**Windows**
-
-从[下载页面](https://github.com/kitao/pyxel/releases)下载并运行最新的Windows安装器（`pyxel-[version]-windows-setup.exe`）。
-
-**Mac**
-
-安装[Homebrew](https://brew.sh/)之后，执行以下命令：
-
-```sh
-brew tap kitao/pyxel
-brew install pyxel
-```
-
-**Linux**
-
-安装SDL2（Ubuntu下包名为：`libsdl2-dev`）和[Homebrew](https://brew.sh/)之后，执行以下命令：
-
-```sh
-brew tap kitao/pyxel
-brew install pyxel
-```
-
-如果以上步骤无效，可以依前述尝试自行编译。
+如果上述方法不奏效，请根据[Makefile](../Makefile)中的说明尝试自我构建。
 
 ### 尝试Pyxel例程
 

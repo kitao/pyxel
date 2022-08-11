@@ -46,15 +46,7 @@ Pyxel est un logiciel libre et open source. Commençons à faire un jeu vidéo r
 
 ## Comment installer
 
-Il y a deux moyens d’utiliser Pyxel, avec la version packagée ou avec la version standalone.
-
-### Installer la version packagée
-
-La version packagée de Pyxel utilise Pyxel comme un module Python.
-
-Cette version est recommandée pour les personnes qui sont familières avec la gestion de paquets Python et l’utilisatiion de `pip`, ou pour celles qui veulent développer des applications Python.
-
-**Windows**
+### Windows
 
 Après avoir installé [Python3](https://www.python.org/) (version 3.7 ou plus), lancez la commande suivante :
 
@@ -62,7 +54,7 @@ Après avoir installé [Python3](https://www.python.org/) (version 3.7 ou plus),
 pip install -U pyxel
 ```
 
-**Mac**
+### Mac
 
 Après avoir installé [Python3](https://www.python.org/) (version 3.7 ou plus), lancez la commande suivante :
 
@@ -70,7 +62,7 @@ Après avoir installé [Python3](https://www.python.org/) (version 3.7 ou plus),
 pip3 install -U pyxel
 ```
 
-**Linux**
+### Linux
 
 Après avoir installé le paquet SDL2 (`libsdl2-dev` pour Ubuntu), [Python3](https://www.python.org/) (version 3.7 ou plus), et `python3-pip`, lancez la commande suivante :
 
@@ -78,44 +70,7 @@ Après avoir installé le paquet SDL2 (`libsdl2-dev` pour Ubuntu), [Python3](htt
 sudo pip3 install -U pyxel
 ```
 
-Si l’installation avec pip ne fonctionne pas, essayez de compiler vous-même en suivant les étapes ci-dessous après avoir installé `cmake` et `rust`:
-
-```sh
-git clone https://github.com/kitao/pyxel.git
-cd pyxel
-make clean all
-sudo pip3 install .
-```
-
-### Installer la version standalone
-
-La version standalone de Pyxel utilise Pyxel comme un outil indépendant de Python.
-
-Cette version est recommandée pour les personnes qui commencent à programmer ou qui ne veulent pas s’embêter avec les paramètres de Python, ou pour celles qui veulent jouer immédiatement.
-
-**Windows**
-
-Téléchargez et lancez la dernière version de installeur Windows (`pyxel-[version]-windows-setup.exe`) depuis la [page des versions](https://github.com/kitao/pyxel/releases).
-
-**Mac**
-
-Après avoir installé [Homebrew](https://brew.sh/), lancez les commandes suivantes :
-
-```sh
-brew tap kitao/pyxel
-brew install pyxel
-```
-
-**Linux**
-
-Après avoir installé le paquet SDL2 (`libsdl2-dev` pour Ubuntu) et [Homebrew](https://brew.sh/), lancez les commandes suivantes :
-
-```sh
-brew tap kitao/pyxel
-brew install pyxel
-```
-
-Si les commandes au-dessus ne fonctionnent pas, vous pouvez essayer de compiler vous-même la version packagée.
+Si ce qui précède ne fonctionne pas, essayez l'autoconstruction en suivant les instructions de [Makefile](../Makefile).
 
 ### Lancer les exemples de Pyxel
 

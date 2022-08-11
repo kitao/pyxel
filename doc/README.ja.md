@@ -46,15 +46,7 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 ## インストール方法
 
-Pyxelにはパッケージ版とスタンドアロン版の2種類があります。
-
-### パッケージ版のインストール
-
-パッケージ版Pyxelでは、Pythonの拡張モジュールとしてPyxelを使用します。
-
-`pip`コマンドを使ったPythonのパッケージ管理に慣れている方や、本格的なPythonアプリケーションを開発したい方におすすめです。
-
-**Windows**
+### Windows
 
 [Python3](https://www.python.org/) (バージョン3.7以上) をインストールした後に、次のコマンドを実行します。
 
@@ -62,7 +54,7 @@ Pyxelにはパッケージ版とスタンドアロン版の2種類がありま�
 pip install -U pyxel
 ```
 
-**Mac**
+### Mac
 
 [Python3](https://www.python.org/) (バージョン3.7以上) をインストールした後に、次のコマンドを実行します。
 
@@ -70,7 +62,7 @@ pip install -U pyxel
 pip3 install -U pyxel
 ```
 
-**Linux**
+### Linux
 
 SDL2パッケージ (Ubuntuの場合は`libsdl2-dev`)、[Python3](https://www.python.org/) (バージョン3.7以上)、`python3-pip`をインストールした後に、次のコマンドを実行します。
 
@@ -78,44 +70,7 @@ SDL2パッケージ (Ubuntuの場合は`libsdl2-dev`)、[Python3](https://www.py
 sudo pip3 install -U pyxel
 ```
 
-上記で動作しない場合は、`cmake`、`rust`をインストールした後に、以下の手順でセルフビルドを試してみてください。
-
-```sh
-git clone https://github.com/kitao/pyxel.git
-cd pyxel
-make clean all
-sudo pip3 install .
-```
-
-### スタンドアロン版のインストール
-
-スタンドアロン版Pyxelでは、Pythonに依存しない単体のツールとしてPyxelを使用します。
-
-Pythonの設定を気にせず手軽にプログラミングを始めたい方や、Pyxelのゲームをすぐに遊んでみたいという方におすすめです。
-
-**Windows**
-
-[ダウンロードページ](https://github.com/kitao/pyxel/releases)から、最新版のWindows向けインストーラー (`pyxel-[バージョン名]-windows-setup.exe`) をダウンロードして実行します。
-
-**Mac**
-
-[Homebrew](https://brew.sh/)導入後に、以下のコマンドを実行します。
-
-```sh
-brew tap kitao/pyxel
-brew install pyxel
-```
-
-**Linux**
-
-SDL2パッケージ (Ubuntuの場合は`libsdl2-dev`) のインストールと[Homebrew](https://brew.sh/)の導入後に、以下のコマンドを実行します。
-
-```sh
-brew tap kitao/pyxel
-brew install pyxel
-```
-
-上記で動作しない場合は、パッケージ版のセルフビルドを試してみてください。
+上記で動作しない場合は、[Makefile](../Makefile)に記載されている手順に従ってセルフビルドを試してください。
 
 ### サンプルを実行する
 
