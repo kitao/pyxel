@@ -13,7 +13,7 @@
 #	- SDL2 (e.g. libsdl2-dev for Ubuntu)
 #
 #	[WASM]
-#	- Emscripten 3.1.14
+#	- Emscripten
 #
 # Advance preparation:
 #	rustup install nightly
@@ -23,6 +23,9 @@
 # Build the package in the dist directory
 #	make build
 #
+# Build the package for the specified target:
+#	make build TARGET=target_triple
+#
 # Build the package and install it in the current venv:
 #	make all
 #
@@ -31,12 +34,6 @@
 #
 # Build the package for WASM in the dist directory
 #	make wasm-build
-#
-# Build the package for the specified target:
-#	make build TARGET=target_triple
-#
-# Build the package for the specified target with Nightly Rust
-#	make build NIGHTLY=1 TARGET=target_triple
 #
 
 ROOT_DIR = .
@@ -48,18 +45,16 @@ EXAMPLES_DIR = $(PYXEL_DIR)/examples
 CRATES = $(wildcard $(CRATES_DIR)/*)
 EXAMPLES = $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py)
 
-ifneq ($(NIGHTLY),)
-RUST_ENV = RUSTUP_TOOLCHAIN=nightly
+ifeq ($(TARGET),)
+ADD_TARGET =
+RUSTC_OPTS = --release
 else
-RUST_ENV =
+ADD_TARGET = rustup target add $(TARGET)
+RUSTC_OPTS = --release --target $(TARGET)
 endif
 
-ifneq ($(TARGET),)
-ADD_TARGET = $(RUST_ENV) rustup target add $(TARGET)
-RUST_ARGS = --release --target $(TARGET)
-else
-RUST_ARGS = --release
-endif
+WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly MATURIN_EMSCRIPTEN_VERSION=3.1.14
+WASM_TARGET = wasm32-unknown-emscripten
 
 .PHONY: all clean distclean format build install test wasm-clean wasm-build
 
@@ -68,7 +63,7 @@ all: build install
 clean:
 	@for crate in $(CRATES); do \
 		cd $$crate; \
-		$(RUST_ENV) cargo clean $(RUST_ARGS); \
+		cargo clean $(RUSTC_OPTS); \
 		cd -; \
 	done
 
@@ -90,7 +85,7 @@ format:
 
 build: format
 	@$(ADD_TARGET)
-	@$(RUST_ENV) maturin build $(RUST_ARGS)
+	@maturin build $(RUSTC_OPTS)
 	@mkdir -p $(DIST_DIR)
 	@cp $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl $(DIST_DIR)
 
@@ -98,7 +93,7 @@ install:
 	@pip install --force-reinstall $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl
 
 test: build install
-	@cd $(CRATES_DIR)/pyxel-engine; $(RUST_ENV) cargo test $(RUST_ARGS)
+	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(RUSTC_OPTS)
 	@python -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 
 	@for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
@@ -117,7 +112,7 @@ test: build install
 	@rm -rf testapp testapp.pyxapp
 
 wasm-clean:
-	@make clean NIGHTLY=1 TARGET=wasm32-unknown-emscripten
+	@$(WASM_ENVVARS) make clean TARGET=$(WASM_TARGET)
 
 wasm-build:
-	@make build NIGHTLY=1 TARGET=wasm32-unknown-emscripten
+	@$(WASM_ENVVARS) make build TARGET=$(WASM_TARGET)
