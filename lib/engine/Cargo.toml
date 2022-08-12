@@ -21,7 +21,6 @@ harness = false
 
 [dependencies]
 array-macro = "2.1"
-blip_buf = "0.1"
 chrono = "0.4"
 gif = "0.11"
 image = "0.24"
@@ -40,4 +39,7 @@ sdl2 = { version = "0.35", default-features = false, features = ["bundled", "uns
 sdl2 = { version = "0.35", default-features = false, features = ["bundled", "static-link", "unsafe_textures"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
+sdl2 = { version = "0.35", default-features = false, features = ["unsafe_textures"] }
+
+[target.'cfg(target_os = "emscripten")'.dependencies]
 sdl2 = { version = "0.35", default-features = false, features = ["unsafe_textures"] }
