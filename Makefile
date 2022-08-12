@@ -18,20 +18,17 @@
 #	scripts/setup_venv
 #	source .venv/vin/activate
 #
-# Format the source files and documents:
-#	make format
-#
-# Build a package in the dist directory
+# Build the package in the dist directory
 #	make build
-#
-# Install the last built wheel with pip:
-#	make install
 #
 # Build the package and install it in the current venv:
 #	make all
 #
 # Build and test the package in the current venv:
 #	make test
+#
+# Build the package for WASM in the dist directory
+#	make wasm-build
 #
 # Build the package for the specified target:
 #	make build TARGET=target_triple
@@ -57,7 +54,7 @@ endif
 
 ifneq ($(TARGET),)
 ADD_TARGET = $(RUST_ENV) rustup target add $(TARGET)
-RUST_ARGS = --relrease --target $(TARGET)
+RUST_ARGS = --release --target $(TARGET)
 else
 RUST_ARGS = --release
 endif
