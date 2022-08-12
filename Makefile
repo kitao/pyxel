@@ -5,13 +5,15 @@
 #	- cmake
 #	- rustup
 #	- python 3.7+
-#	- Emscripten (only for WASM build)
 #
 #	[Windows]
 #	- TBD
 #
 #	[Linux]
 #	- SDL2 (e.g. libsdl2-dev for Ubuntu)
+#
+#	[WASM]
+#	- Emscripten 3.1.14
 #
 # Advance preparation:
 #	rustup install nightly
