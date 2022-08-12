@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.21.0/full/pyodide.js"></script>
+</head>
+
+<body>
+    <script type="text/javascript">
+        async function main() {
+            let pyodide = await loadPyodide();
+            await pyodide.loadPackage("micropip");
+            const micropip = pyodide.pyimport("micropip");
+            await micropip.install("pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl");
+            await pyodide.runPython(`
+                import pyxel
+                print("PYXEL_VERSION = ", pyxel.PYXEL_VERSION)
+                print("KEY_BACKSPACE = ", pyxel.KEY_BACKSPACE)
+            `);
+        }
+        main();
+    </script>
+</body>
+
+</html>
