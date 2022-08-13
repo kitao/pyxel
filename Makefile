@@ -13,7 +13,7 @@
 #	- SDL2 (e.g. libsdl2-dev for Ubuntu)
 #
 #	[WASM]
-#	- Emscripten
+#	- Emscripten 3.1.14
 #
 # Advance preparation:
 #	rustup install nightly
@@ -53,7 +53,7 @@ ADD_TARGET = rustup target add $(TARGET)
 BUILD_OPTS = --release --target $(TARGET)
 endif
 
-WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly MATURIN_EMSCRIPTEN_VERSION=3.1.14
+WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly
 WASM_TARGET = wasm32-unknown-emscripten
 
 .PHONY: all clean distclean format build install test clean-wasm build-wasm
