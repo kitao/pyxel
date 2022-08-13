@@ -21,19 +21,19 @@
 #	source .venv/vin/activate
 #
 # Build the package in the dist directory
-#	make build
+#	make clean build
 #
 # Build the package for the specified target:
-#	make build TARGET=target_triple
+#	make clean build TARGET=target_triple
 #
 # Build the package and install it in the current venv:
-#	make all
+#	make clean all
 #
 # Build and test the package in the current venv:
-#	make test
+#	make clean test
 #
 # Build the package for WASM in the dist directory
-#	make wasm-build
+#	make clean-wasm build-wasm
 #
 
 ROOT_DIR = .
@@ -47,23 +47,23 @@ EXAMPLES = $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py)
 
 ifeq ($(TARGET),)
 ADD_TARGET =
-RUSTC_OPTS = --release
+BUILD_OPTS = --release
 else
 ADD_TARGET = rustup target add $(TARGET)
-RUSTC_OPTS = --release --target $(TARGET)
+BUILD_OPTS = --release --target $(TARGET)
 endif
 
 WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly MATURIN_EMSCRIPTEN_VERSION=3.1.14
 WASM_TARGET = wasm32-unknown-emscripten
 
-.PHONY: all clean distclean format build install test wasm-clean wasm-build
+.PHONY: all clean distclean format build install test clean-wasm build-wasm
 
 all: build install
 
 clean:
 	@for crate in $(CRATES); do \
 		cd $$crate; \
-		cargo clean $(RUSTC_OPTS); \
+		cargo clean $(BUILD_OPTS); \
 		cd -; \
 	done
 
@@ -85,7 +85,8 @@ format:
 
 build: format
 	@$(ADD_TARGET)
-	@maturin build $(RUSTC_OPTS)
+	@rm -f $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl
+	@maturin build $(BUILD_OPTS)
 	@mkdir -p $(DIST_DIR)
 	@cp $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl $(DIST_DIR)
 
@@ -93,7 +94,7 @@ install:
 	@pip install --force-reinstall $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl
 
 test: build install
-	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(RUSTC_OPTS)
+	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
 	@python -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 
 	@for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
@@ -111,8 +112,8 @@ test: build install
 	@pyxel play testapp.pyxapp
 	@rm -rf testapp testapp.pyxapp
 
-wasm-clean:
+clean-wasm:
 	@$(WASM_ENVVARS) make clean TARGET=$(WASM_TARGET)
 
-wasm-build:
+build-wasm:
 	@$(WASM_ENVVARS) make build TARGET=$(WASM_TARGET)
