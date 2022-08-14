@@ -106,7 +106,7 @@ test: build install
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
 	@python -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 
-	@for example in $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py); do \
+	@for example in $(EXAMPLES); do \
 		pyxel run $$example; \
 	done
 	@pyxel play $(EXAMPLES_DIR)/30SecondsOfDaylight.pyxapp
