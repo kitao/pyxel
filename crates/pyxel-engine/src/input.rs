@@ -134,7 +134,7 @@ impl Input {
             self.input_keys.push(key);
         }
         if let Some(key) = to_integrated_key(key) {
-            self.press_key(key, frame_count)
+            self.press_key(key, frame_count);
         }
     }
 
@@ -147,7 +147,7 @@ impl Input {
         }
         self.key_states.insert(key, (frame_count, key_state));
         if let Some(key) = to_integrated_key(key) {
-            self.release_key(key, frame_count)
+            self.release_key(key, frame_count);
         }
     }
 }
