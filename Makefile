@@ -42,8 +42,8 @@ PYXEL_DIR = $(ROOT_DIR)/python/pyxel
 CRATES_DIR = $(ROOT_DIR)/crates
 SCRIPTS_DIR = $(ROOT_DIR)/scripts
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
-CRATES = $(wildcard $(CRATES_DIR)/*)
-EXAMPLES = $(wildcard $(EXAMPLES_DIR)/[0-9][0-9]_*.py)
+CRATES = $(wildcard $(CRATES_DIR)/pyxel-*)
+EXAMPLES = $(wildcard $(EXAMPLES_DIR)/*.py)
 
 ifeq ($(TARGET),)
 ADD_TARGET =
