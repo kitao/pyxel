@@ -157,7 +157,7 @@ pub struct Sound {
     pub pyxel_sound: PyxelSharedSound,
 }
 
-pub fn wrap_pyxel_sound(pyxel_sound: PyxelSharedSound) -> Sound {
+pub const fn wrap_pyxel_sound(pyxel_sound: PyxelSharedSound) -> Sound {
     Sound { pyxel_sound }
 }
 

@@ -36,7 +36,7 @@ impl Input {
         }
     }
 
-    pub fn is_mouse_visible(&self) -> bool {
+    pub const fn is_mouse_visible(&self) -> bool {
         self.is_mouse_visible
     }
 
@@ -165,7 +165,7 @@ impl Pyxel {
         *self.input.key_values.get(&MOUSE_WHEEL_Y).unwrap_or(&0)
     }
 
-    pub fn input_keys(&self) -> &Vec<Key> {
+    pub const fn input_keys(&self) -> &Vec<Key> {
         &self.input.input_keys
     }
 
@@ -173,7 +173,7 @@ impl Pyxel {
         &self.input.input_text
     }
 
-    pub fn drop_files(&self) -> &Vec<String> {
+    pub const fn drop_files(&self) -> &Vec<String> {
         &self.input.drop_files
     }
 

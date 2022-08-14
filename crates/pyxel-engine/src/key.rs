@@ -306,7 +306,7 @@ pub fn is_keyboard_key(key: Key) -> bool {
     !(MOUSE_POS_X..=GAMEPAD2_BUTTON_DPAD_RIGHT).contains(&key)
 }
 
-pub fn to_integrated_key(key: Key) -> Option<Key> {
+pub const fn to_integrated_key(key: Key) -> Option<Key> {
     match key {
         KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
         KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),

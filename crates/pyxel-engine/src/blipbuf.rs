@@ -136,7 +136,7 @@ impl BlipBuf {
         }
     }
 
-    pub fn samples_avail(&self) -> i32 {
+    pub const fn samples_avail(&self) -> i32 {
         self.avail
     }
 

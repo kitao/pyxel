@@ -79,11 +79,11 @@ impl Image {
         image
     }
 
-    pub fn width(&self) -> u32 {
+    pub const fn width(&self) -> u32 {
         self.canvas.width()
     }
 
-    pub fn height(&self) -> u32 {
+    pub const fn height(&self) -> u32 {
         self.canvas.height()
     }
 

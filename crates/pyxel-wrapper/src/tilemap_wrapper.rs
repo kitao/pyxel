@@ -12,7 +12,7 @@ pub struct Tilemap {
     pub pyxel_tilemap: PyxelSharedTilemap,
 }
 
-pub fn wrap_pyxel_tilemap(pyxel_tilemap: PyxelSharedTilemap) -> Tilemap {
+pub const fn wrap_pyxel_tilemap(pyxel_tilemap: PyxelSharedTilemap) -> Tilemap {
     Tilemap { pyxel_tilemap }
 }
 

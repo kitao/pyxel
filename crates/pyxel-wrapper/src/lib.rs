@@ -1,7 +1,6 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 #![allow(
     clippy::borrow_deref_ref,
-    clippy::missing_const_for_fn,
     clippy::new_without_default,
     clippy::pedantic,
     clippy::redundant_pub_crate,
