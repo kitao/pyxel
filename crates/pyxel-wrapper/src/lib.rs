@@ -1,25 +1,12 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 #![allow(
-    clippy::cargo_common_metadata,
-    clippy::many_single_char_names,
+    clippy::borrow_deref_ref,
     clippy::missing_const_for_fn,
-    clippy::missing_panics_doc,
-    clippy::multiple_crate_versions,
-    clippy::must_use_candidate,
-    clippy::needless_option_as_deref,
-    clippy::needless_pass_by_value,
-    clippy::negative_feature_names,
     clippy::new_without_default,
     clippy::pedantic,
-    clippy::redundant_feature_names,
     clippy::redundant_pub_crate,
     clippy::too_many_arguments,
-    clippy::too_many_lines,
-    clippy::transmute_undefined_repr,
-    clippy::unused_self,
     clippy::use_self,
-    clippy::used_underscore_binding,
-    clippy::wildcard_dependencies,
     clippy::wrong_self_convention,
     clippy::zero_ptr
 )]
