@@ -56,7 +56,7 @@ endif
 WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly
 WASM_TARGET = wasm32-unknown-emscripten
 
-.PHONY: all clean distclean format build install test clean-wasm build-wasm
+.PHONY: all clean distclean lint format build install test clean-wasm build-wasm server
 
 all: build install
 
@@ -72,6 +72,14 @@ distclean:
 		rm -rf $$crate/target; \
 	done
 	@rm -rf $(DIST_DIR)
+
+lint:
+	@for crate in $(CRATES); do \
+		cd $$crate; \
+		cargo clippy -q -- --no-deps; \
+		cd -; \
+	done
+	@flake8 $(SCRIPTS_DIR) $(PYXEL_DIR)
 
 format:
 	@for crate in $(CRATES); do \
@@ -115,3 +123,6 @@ clean-wasm:
 
 build-wasm:
 	@$(WASM_ENVVARS) make build TARGET=$(WASM_TARGET)
+
+server:
+	@$(SCRIPTS_DIR)/start_server
