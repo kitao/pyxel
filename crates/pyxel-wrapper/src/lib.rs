@@ -1,11 +1,22 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 #![allow(
+    clippy::borrow_as_ptr,
     clippy::borrow_deref_ref,
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss,
+    clippy::many_single_char_names,
+    clippy::missing_panics_doc,
+    clippy::must_use_candidate,
+    clippy::needless_pass_by_value,
     clippy::new_without_default,
-    clippy::pedantic,
     clippy::redundant_pub_crate,
     clippy::too_many_arguments,
+    clippy::too_many_lines,
+    clippy::unnecessary_wraps,
+    clippy::unused_self,
     clippy::use_self,
+    clippy::used_underscore_binding,
     clippy::wrong_self_convention,
     clippy::zero_ptr
 )]
