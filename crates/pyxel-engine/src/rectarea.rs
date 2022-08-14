@@ -1,6 +1,6 @@
 use std::cmp::{max, min};
 
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub struct RectArea {
     left: i32,
     top: i32,
@@ -11,7 +11,7 @@ pub struct RectArea {
 }
 
 impl RectArea {
-    pub fn new(left: i32, top: i32, width: u32, height: u32) -> Self {
+    pub const fn new(left: i32, top: i32, width: u32, height: u32) -> Self {
         Self {
             left,
             top,
@@ -22,35 +22,35 @@ impl RectArea {
         }
     }
 
-    pub fn left(&self) -> i32 {
+    pub const fn left(&self) -> i32 {
         self.left
     }
 
-    pub fn top(&self) -> i32 {
+    pub const fn top(&self) -> i32 {
         self.top
     }
 
-    pub fn right(&self) -> i32 {
+    pub const fn right(&self) -> i32 {
         self.right
     }
 
-    pub fn bottom(&self) -> i32 {
+    pub const fn bottom(&self) -> i32 {
         self.bottom
     }
 
-    pub fn width(&self) -> u32 {
+    pub const fn width(&self) -> u32 {
         self.width
     }
 
-    pub fn height(&self) -> u32 {
+    pub const fn height(&self) -> u32 {
         self.height
     }
 
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.width == 0 || self.height == 0
     }
 
-    pub fn contains(&self, x: i32, y: i32) -> bool {
+    pub const fn contains(&self, x: i32, y: i32) -> bool {
         x >= self.left
             && x < self.left + self.width as i32
             && y >= self.top

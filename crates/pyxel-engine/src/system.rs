@@ -54,7 +54,7 @@ impl Pyxel {
         self.screen.lock().height()
     }
 
-    pub fn frame_count(&self) -> u32 {
+    pub const fn frame_count(&self) -> u32 {
         self.system.frame_count
     }
 

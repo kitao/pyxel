@@ -143,7 +143,7 @@ impl Oscillator {
         }
     }
 
-    fn square(phase: u32) -> f64 {
+    const fn square(phase: u32) -> f64 {
         if phase < OSCILLATOR_RESOLUTION / 2 {
             1.0
         } else {
@@ -151,7 +151,7 @@ impl Oscillator {
         }
     }
 
-    fn pulse(phase: u32) -> f64 {
+    const fn pulse(phase: u32) -> f64 {
         if phase < OSCILLATOR_RESOLUTION / 4 {
             1.0
         } else {
