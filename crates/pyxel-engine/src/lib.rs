@@ -1,10 +1,5 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
-#![allow(
-    clippy::missing_const_for_fn,
-    clippy::pedantic,
-    clippy::suboptimal_flops,
-    clippy::too_many_arguments
-)]
+#![allow(clippy::pedantic, clippy::suboptimal_flops, clippy::too_many_arguments)]
 
 #[macro_use]
 mod utils;

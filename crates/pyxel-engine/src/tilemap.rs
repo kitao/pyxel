@@ -29,11 +29,11 @@ impl Tilemap {
         })
     }
 
-    pub fn width(&self) -> u32 {
+    pub const fn width(&self) -> u32 {
         self.canvas.width()
     }
 
-    pub fn height(&self) -> u32 {
+    pub const fn height(&self) -> u32 {
         self.canvas.height()
     }
 
@@ -224,8 +224,8 @@ impl ResourceItem for Tilemap {
                     });
                 } else {
                     string_loop!(x, tile, line, 4, {
-                        let tile_x = parse_hex_string(&tile[0..2].to_string()).unwrap();
-                        let tile_y = parse_hex_string(&tile[2..4].to_string()).unwrap();
+                        let tile_x = parse_hex_string(&tile[0..2]).unwrap();
+                        let tile_y = parse_hex_string(&tile[2..4]).unwrap();
                         self.canvas.data[y][x] = (tile_x as u8, tile_y as u8);
                     });
                 }

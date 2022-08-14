@@ -88,7 +88,7 @@ pub struct Music {
     pyxel_music: PyxelSharedMusic,
 }
 
-pub fn wrap_pyxel_music(pyxel_music: PyxelSharedMusic) -> Music {
+pub const fn wrap_pyxel_music(pyxel_music: PyxelSharedMusic) -> Music {
     Music { pyxel_music }
 }
 

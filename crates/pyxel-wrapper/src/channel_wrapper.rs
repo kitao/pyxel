@@ -11,7 +11,7 @@ pub struct Channel {
     pyxel_channel: PyxelSharedChannel,
 }
 
-pub fn wrap_pyxel_channel(pyxel_channel: PyxelSharedChannel) -> Channel {
+pub const fn wrap_pyxel_channel(pyxel_channel: PyxelSharedChannel) -> Channel {
     Channel { pyxel_channel }
 }
 

@@ -12,7 +12,7 @@ pub struct Image {
     pub pyxel_image: PyxelSharedImage,
 }
 
-pub fn wrap_pyxel_image(pyxel_image: PyxelSharedImage) -> Image {
+pub const fn wrap_pyxel_image(pyxel_image: PyxelSharedImage) -> Image {
     Image { pyxel_image }
 }
 
