@@ -1,6 +1,5 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 #![allow(
-    clippy::borrow_as_ptr,
     clippy::borrow_deref_ref,
     clippy::cast_possible_truncation,
     clippy::cast_possible_wrap,
@@ -13,7 +12,6 @@
     clippy::redundant_pub_crate,
     clippy::too_many_arguments,
     clippy::too_many_lines,
-    clippy::unnecessary_wraps,
     clippy::unused_self,
     clippy::use_self,
     clippy::used_underscore_binding,
