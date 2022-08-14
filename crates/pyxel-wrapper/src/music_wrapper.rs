@@ -1,3 +1,5 @@
+use std::ptr;
+
 use pyo3::exceptions::PyIndexError;
 use pyo3::prelude::*;
 use pyxel::Music as PyxelMusic;
@@ -19,15 +21,12 @@ impl Sounds {
     }
 
     fn list(&self) -> &Vec<u32> {
-        unsafe {
-            &*(&self.pyxel_music.lock().sounds_list[self.channel_no as usize] as *const Vec<u32>)
-        }
+        unsafe { &*ptr::addr_of!(self.pyxel_music.lock().sounds_list[self.channel_no as usize]) }
     }
 
     fn list_mut(&mut self) -> &mut Vec<u32> {
         unsafe {
-            &mut *(&mut self.pyxel_music.lock().sounds_list[self.channel_no as usize]
-                as *mut Vec<u32>)
+            &mut *ptr::addr_of_mut!(self.pyxel_music.lock().sounds_list[self.channel_no as usize])
         }
     }
 }
@@ -69,12 +68,12 @@ impl SoundsList {
 
 #[pymethods]
 impl SoundsList {
-    fn __len__(&self) -> PyResult<usize> {
-        Ok(self.pyxel_music.lock().sounds_list.len())
+    fn __len__(&self) -> usize {
+        self.pyxel_music.lock().sounds_list.len()
     }
 
     fn __getitem__(&self, index: isize) -> PyResult<Sounds> {
-        if index < self.__len__().unwrap() as isize {
+        if index < self.__len__() as isize {
             Ok(Sounds::new(self.pyxel_music.clone(), index as u32))
         } else {
             Err(PyIndexError::new_err("list index out of range"))
