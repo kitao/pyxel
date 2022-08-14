@@ -35,6 +35,9 @@
 # Build the package for WASM in the dist directory
 #	make clean-wasm build-wasm
 #
+# Start the web server:
+#	scriptes/start-server
+#
 
 ROOT_DIR = .
 DIST_DIR = $(ROOT_DIR)/dist
@@ -56,7 +59,7 @@ endif
 WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly
 WASM_TARGET = wasm32-unknown-emscripten
 
-.PHONY: all clean distclean lint format build install test clean-wasm build-wasm server
+.PHONY: all clean distclean lint format build install test clean-wasm build-wasm
 
 all: build install
 
@@ -123,6 +126,3 @@ clean-wasm:
 
 build-wasm:
 	@$(WASM_ENVVARS) make build TARGET=$(WASM_TARGET)
-
-server:
-	@$(SCRIPTS_DIR)/start_server
