@@ -4,6 +4,7 @@ use std::path::Path;
 
 use chrono::Local;
 use platform_dirs::UserDirs;
+use zip::write::FileOptions as ZipFileOptions;
 use zip::{ZipArchive, ZipWriter};
 
 use crate::image::Image;
@@ -114,10 +115,10 @@ impl Pyxel {
         let file = std::fs::File::create(&path)
             .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename));
         let mut zip = ZipWriter::new(file);
-        zip.add_directory(RESOURCE_ARCHIVE_DIRNAME, zip::write::FileOptions::default())
+        zip.add_directory(RESOURCE_ARCHIVE_DIRNAME, ZipFileOptions::default())
             .unwrap();
         let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
-        zip.start_file(version_name, zip::write::FileOptions::default())
+        zip.start_file(version_name, ZipFileOptions::default())
             .unwrap();
         zip.write_all(PYXEL_VERSION.as_bytes()).unwrap();
 
@@ -125,7 +126,7 @@ impl Pyxel {
             ($type: ty, $getter: ident, $count: expr) => {
                 for i in 0..$count {
                     if self.$getter(i).lock().is_modified() {
-                        zip.start_file(<$type>::resource_name(i), Default::default())
+                        zip.start_file(<$type>::resource_name(i), ZipFileOptions::default())
                             .unwrap();
                         zip.write_all(self.$getter(i).lock().serialize(self).as_bytes())
                             .unwrap();
