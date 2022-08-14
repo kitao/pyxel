@@ -434,10 +434,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             }
             self.write_data(xi, y, value);
             if y > self.clip_rect.top() {
-                self.fill_rec(xi, y - 1, value, dst_value)
+                self.fill_rec(xi, y - 1, value, dst_value);
             }
             if y < self.clip_rect.bottom() {
-                self.fill_rec(xi, y + 1, value, dst_value)
+                self.fill_rec(xi, y + 1, value, dst_value);
             }
             xi -= 1;
         }
@@ -448,10 +448,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             }
             self.write_data(xi, y, value);
             if y > self.clip_rect.top() {
-                self.fill_rec(xi, y - 1, value, dst_value)
+                self.fill_rec(xi, y - 1, value, dst_value);
             }
             if y < self.clip_rect.bottom() {
-                self.fill_rec(xi, y + 1, value, dst_value)
+                self.fill_rec(xi, y + 1, value, dst_value);
             }
             xi += 1;
         }

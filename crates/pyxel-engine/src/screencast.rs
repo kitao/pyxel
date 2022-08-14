@@ -253,7 +253,7 @@ impl Screencast {
             for y in 0..scaled_height {
                 for x in 0..scaled_width {
                     let index = (y / scale) * width + x / scale;
-                    scaled_buffer.push(buffer[index as usize])
+                    scaled_buffer.push(buffer[index as usize]);
                 }
             }
             buffer = scaled_buffer;

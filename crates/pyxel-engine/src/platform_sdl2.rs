@@ -149,9 +149,9 @@ impl Platform for PlatformSdl2 {
         }
         let window = self.sdl_canvas.window_mut();
         if is_fullscreen {
-            let _ = window.set_fullscreen(SdlFullscreenType::Desktop);
+            let _droppable = window.set_fullscreen(SdlFullscreenType::Desktop);
         } else {
-            let _ = window.set_fullscreen(SdlFullscreenType::Off);
+            let _droppable = window.set_fullscreen(SdlFullscreenType::Off);
         }
     }
 
