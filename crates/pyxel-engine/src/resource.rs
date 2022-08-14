@@ -75,9 +75,11 @@ impl Pyxel {
             contents
         };
         let version = parse_version_string(&contents).unwrap();
-        if version > parse_version_string(PYXEL_VERSION).unwrap() {
-            panic!("Unsupported resource file version '{}'", contents);
-        }
+        assert!(
+            version <= parse_version_string(PYXEL_VERSION).unwrap(),
+            "Unsupported resource file version '{}'",
+            contents
+        );
 
         macro_rules! deserialize {
             ($type: ty, $getter: ident, $count: expr) => {
@@ -112,10 +114,11 @@ impl Pyxel {
         let file = std::fs::File::create(&path)
             .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename));
         let mut zip = ZipWriter::new(file);
-        zip.add_directory(RESOURCE_ARCHIVE_DIRNAME, Default::default())
+        zip.add_directory(RESOURCE_ARCHIVE_DIRNAME, zip::write::FileOptions::default())
             .unwrap();
         let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
-        zip.start_file(version_name, Default::default()).unwrap();
+        zip.start_file(version_name, zip::write::FileOptions::default())
+            .unwrap();
         zip.write_all(PYXEL_VERSION.as_bytes()).unwrap();
 
         macro_rules! serialize {
