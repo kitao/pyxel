@@ -1,27 +1,9 @@
 #![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 #![allow(
-    clippy::cargo_common_metadata,
-    clippy::cast_lossless,
-    clippy::cast_possible_truncation,
-    clippy::cast_possible_wrap,
-    clippy::cast_sign_loss,
-    clippy::default_trait_access,
-    clippy::fn_params_excessive_bools,
     clippy::missing_const_for_fn,
-    clippy::missing_panics_doc,
-    clippy::module_name_repetitions,
-    clippy::multiple_crate_versions,
-    clippy::must_use_candidate,
-    clippy::negative_feature_names,
     clippy::pedantic,
-    clippy::range_plus_one,
-    clippy::redundant_feature_names,
     clippy::suboptimal_flops,
-    clippy::too_many_arguments,
-    clippy::too_many_lines,
-    clippy::unreadable_literal,
-    clippy::wildcard_dependencies,
-    clippy::wildcard_imports
+    clippy::too_many_arguments
 )]
 
 #[macro_use]
