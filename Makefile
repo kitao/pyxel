@@ -26,16 +26,13 @@
 # Build the package for the specified target:
 #	make clean build TARGET=target_triple
 #
-# Build the package and install it in the current venv:
-#	make clean all
-#
 # Build and test the package in the current venv:
 #	make clean test
 #
 # Build the package for WASM in the dist directory
 #	make clean-wasm build-wasm
 #
-# Start the web server:
+# Start a web server for the WASM version package:
 #	scriptes/start-server
 #
 
@@ -61,7 +58,7 @@ WASM_TARGET = wasm32-unknown-emscripten
 
 .PHONY: all clean distclean lint format build install test clean-wasm build-wasm
 
-all: build install
+all: build
 
 clean:
 	@for crate in $(CRATES); do \
