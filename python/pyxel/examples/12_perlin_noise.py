@@ -9,8 +9,6 @@ class App:
     def update(self):
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
-        if pyxel.frame_count == 300:
-            pyxel.screencast()
 
     def draw(self):
         pyxel.cls(0)
