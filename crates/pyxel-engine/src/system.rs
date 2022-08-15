@@ -80,36 +80,19 @@ impl Pyxel {
     }
 
     pub fn run<T: PyxelCallback>(&mut self, callback: &mut T) {
-        self.system.next_update_ms = self.platform.tick_count() as f64 + self.system.one_frame_ms;
-        self.update_frame(Some(callback));
-        self.draw_frame(Some(callback));
-        self.system.frame_count += 1;
-
+        #[cfg(not(target_os = "emscripten"))]
         loop {
-            let sleep_time = self.wait_for_update_time();
-            let tick_count = self.platform.tick_count();
-            self.system.fps_profiler.end(tick_count);
-            self.system.fps_profiler.start(tick_count);
-            let update_count: u32;
-            if self.system.disable_next_frame_skip {
-                update_count = 1;
-                self.system.disable_next_frame_skip = false;
-                self.system.next_update_ms =
-                    self.platform.tick_count() as f64 + self.system.one_frame_ms;
-            } else {
-                update_count = min(
-                    (-sleep_time as f64 / self.system.one_frame_ms) as u32,
-                    MAX_SKIP_FRAMES,
-                ) + 1;
-                self.system.next_update_ms += self.system.one_frame_ms * update_count as f64;
-            }
-            for _ in 1..update_count {
-                self.update_frame(Some(callback));
-                self.system.frame_count += 1;
-            }
-            self.update_frame(Some(callback));
-            self.draw_frame(Some(callback));
-            self.system.frame_count += 1;
+            self.run_one_frame(callback);
+            self.wait_for_update_time();
+        }
+
+        #[cfg(target_os = "emscripten")]
+        {
+            let main_loop = move || {
+                println!("main loop for Emscripten test");
+                //self.run_one_frame(callback);
+            };
+            emscripten::set_main_loop_callback(main_loop);
         }
     }
 
@@ -138,6 +121,43 @@ impl Pyxel {
 
     pub fn quit(&mut self) {
         exit(0);
+    }
+
+    fn run_one_frame<T: PyxelCallback>(&mut self, callback: &mut T) {
+        let tick_count = self.platform.tick_count();
+        let sleep_ms = self.system.next_update_ms - tick_count as f64;
+        if sleep_ms > 0.0 {
+            return;
+        }
+        if self.system.frame_count == 0 {
+            self.system.next_update_ms = tick_count as f64 + self.system.one_frame_ms;
+            self.update_frame(Some(callback));
+            self.draw_frame(Some(callback));
+            self.system.frame_count += 1;
+        } else {
+            self.system.fps_profiler.end(tick_count);
+            self.system.fps_profiler.start(tick_count);
+            let update_count: u32;
+            if self.system.disable_next_frame_skip {
+                update_count = 1;
+                self.system.disable_next_frame_skip = false;
+                self.system.next_update_ms =
+                    self.platform.tick_count() as f64 + self.system.one_frame_ms;
+            } else {
+                update_count = min(
+                    (-sleep_ms / self.system.one_frame_ms) as u32,
+                    MAX_SKIP_FRAMES,
+                ) + 1;
+                self.system.next_update_ms += self.system.one_frame_ms * update_count as f64;
+            }
+            for _ in 1..update_count {
+                self.update_frame(Some(callback));
+                self.system.frame_count += 1;
+            }
+            self.update_frame(Some(callback));
+            self.draw_frame(Some(callback));
+            self.system.frame_count += 1;
+        }
     }
 
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
@@ -204,13 +224,13 @@ impl Pyxel {
         }
     }
 
-    fn wait_for_update_time(&mut self) -> i32 {
+    fn wait_for_update_time(&mut self) {
         loop {
-            let sleep_time = self.system.next_update_ms - self.platform.tick_count() as f64;
-            if sleep_time <= 0.0 {
-                return sleep_time as i32;
+            let sleep_ms = self.system.next_update_ms - self.platform.tick_count() as f64;
+            if sleep_ms <= 0.0 {
+                return;
             }
-            self.platform.sleep((sleep_time / 2.0) as u32);
+            self.platform.sleep((sleep_ms / 2.0) as u32);
         }
     }
 
@@ -306,5 +326,55 @@ impl Pyxel {
         screen.canvas.camera_x = camera_x;
         screen.canvas.camera_y = camera_y;
         screen.palette = palette;
+    }
+}
+
+#[cfg(target_os = "emscripten")]
+mod emscripten {
+    use std::cell::RefCell;
+    use std::os::raw::c_int;
+
+    #[allow(non_camel_case_types)]
+    type em_callback_func = unsafe extern "C" fn();
+
+    extern "C" {
+        pub fn emscripten_set_main_loop(
+            func: em_callback_func,
+            fps: c_int,
+            simulate_infinite_loop: c_int,
+        );
+        pub fn emscripten_cancel_main_loop();
+    }
+
+    thread_local! {
+        static MAIN_LOOP_CLOSURE: RefCell<Option<Box<dyn FnMut()>>> = RefCell::new(None);
+    }
+
+    pub fn set_main_loop_callback<F: FnMut() + 'static>(callback: F) {
+        MAIN_LOOP_CLOSURE.with(|d| {
+            *d.borrow_mut() = Some(Box::new(callback));
+        });
+
+        unsafe extern "C" fn wrapper<F: FnMut()>() {
+            MAIN_LOOP_CLOSURE.with(|z| {
+                if let Some(closure) = &mut *z.borrow_mut() {
+                    (*closure)();
+                }
+            });
+        }
+
+        unsafe {
+            emscripten_set_main_loop(wrapper::<F>, 0, 1);
+        }
+    }
+
+    pub fn cancel_main_loop() {
+        unsafe {
+            emscripten_cancel_main_loop();
+        }
+
+        MAIN_LOOP_CLOSURE.with(|d| {
+            *d.borrow_mut() = None;
+        });
     }
 }
