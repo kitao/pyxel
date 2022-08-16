@@ -88,11 +88,9 @@ impl Pyxel {
 
         #[cfg(target_os = "emscripten")]
         {
-            let main_loop = move || {
-                println!("main loop for Emscripten test");
+            emscripten::set_main_loop_callback(move || {
                 //self.run_one_frame(callback);
-            };
-            emscripten::set_main_loop_callback(main_loop);
+            });
         }
     }
 
