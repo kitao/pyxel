@@ -5,6 +5,7 @@
 - Renamed inner SDL2 module to PlatformSdl2
 - Specified the platform versions in the workflows
 - Added fall death to the example #10
+- Fixed the example #12 not to capture the screen
 - Added WASM target (WIP)
 
 ## 1.7.2
