@@ -9,18 +9,16 @@ use crate::tilemap::{SharedTilemap, Tilemap};
 use crate::types::Color;
 use crate::Pyxel;
 
-singleton!(Graphics);
-
 pub struct Graphics {
     images: [SharedImage; NUM_IMAGES as usize],
     tilemaps: [SharedTilemap; NUM_TILEMAPS as usize],
 }
 
 impl Graphics {
-    pub fn init() {
+    pub fn new() -> Self {
         let images = array![_ => Image::new(IMAGE_SIZE, IMAGE_SIZE); NUM_IMAGES as usize];
         let tilemaps = array![_ => Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()); NUM_TILEMAPS as usize];
-        Self::set_instance(Self { images, tilemaps });
+        Self { images, tilemaps }
     }
 
     pub fn new_cursor_image() -> SharedImage {
@@ -56,11 +54,11 @@ impl Graphics {
 
 impl Pyxel {
     pub fn image(&self, image_no: u32) -> SharedImage {
-        Graphics::instance().images[image_no as usize].clone()
+        self.graphics.images[image_no as usize].clone()
     }
 
     pub fn image_no(&self, image: SharedImage) -> Option<u32> {
-        for (i, builtin_image) in Graphics::instance().images.iter().enumerate() {
+        for (i, builtin_image) in self.graphics.images.iter().enumerate() {
             if builtin_image.data_ptr() == image.data_ptr() {
                 return Some(i as u32);
             }
@@ -69,7 +67,7 @@ impl Pyxel {
     }
 
     pub fn tilemap(&self, image_no: u32) -> SharedTilemap {
-        Graphics::instance().tilemaps[image_no as usize].clone()
+        self.graphics.tilemaps[image_no as usize].clone()
     }
 
     pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
@@ -162,7 +160,7 @@ impl Pyxel {
         self.screen.lock().blt(
             x,
             y,
-            Graphics::instance().images[image_no as usize].clone(),
+            self.graphics.images[image_no as usize].clone(),
             image_x,
             image_y,
             width,
@@ -185,7 +183,7 @@ impl Pyxel {
         self.screen.lock().bltm(
             x,
             y,
-            Graphics::instance().tilemaps[tilemap_no as usize].clone(),
+            self.graphics.tilemaps[tilemap_no as usize].clone(),
             tilemap_x,
             tilemap_y,
             width,
