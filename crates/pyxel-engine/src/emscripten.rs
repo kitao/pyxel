@@ -18,6 +18,10 @@ thread_local! {
 }
 
 pub fn set_main_loop_callback<F: FnMut()>(callback: F) {
+    let callback = move || {
+        println!("dummy");
+    };
+
     MAIN_LOOP_CLOSURE.with(|d| {
         *d.borrow_mut() = Some(Box::new(callback));
     });
