@@ -96,10 +96,10 @@ build: format
 	@rm -f $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS)
 
-install:
+install: build
 	@pip install --force-reinstall $(DIST_DIR)/*$(shell arch).whl
 
-test: build install
+test: install
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
 	@python -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 
