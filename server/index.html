@@ -2,10 +2,12 @@
 <html>
 
 <head>
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.21.0/full/pyodide.js"></script>
+    <!--<script src="https://cdn.jsdelivr.net/pyodide/v0.21.0/full/pyodide.js"></script>-->
+    <script src="pyodide/pyodide.js"></script>
 </head>
 
 <body>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     <script type="text/javascript">
         async function main() {
             let pyodide = await loadPyodide();
