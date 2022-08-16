@@ -29,6 +29,7 @@ impl Audio {
         let sounds = array![_ => Sound::new(); NUM_SOUNDS as usize];
         let musics = array![_ => Music::new(); NUM_MUSICS as usize];
 
+        #[cfg(not(target_os = "emscripten"))]
         platform.start_audio(
             SAMPLE_RATE,
             NUM_SAMPLES,
