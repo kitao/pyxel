@@ -18,9 +18,7 @@ use crate::sound::Sound;
 use crate::tilemap::Tilemap;
 use crate::types::{Color, Rgb8};
 use crate::utils::parse_version_string;
-use crate::{Pyxel, System};
-
-singleton!(Resource);
+use crate::Pyxel;
 
 pub trait ResourceItem {
     fn resource_name(item_no: u32) -> String;
@@ -36,11 +34,11 @@ pub struct Resource {
 }
 
 impl Resource {
-    pub fn init(fps: u32, capture_scale: u32, capture_sec: u32) {
-        Self::set_instance(Self {
+    pub fn new(fps: u32, capture_scale: u32, capture_sec: u32) -> Self {
+        Self {
             capture_scale: u32::max(capture_scale, 1),
             screencast: Screencast::new(fps, capture_sec),
-        });
+        }
     }
 
     pub fn capture_screen(
@@ -154,19 +152,19 @@ impl Pyxel {
 
     pub fn screenshot(&mut self, scale: Option<u32>) {
         let filename = Resource::export_path();
-        let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
+        let scale = u32::max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.screen.lock().save(&filename, &self.colors, scale);
-        System::instance().disable_next_frame_skip();
+        self.system.disable_next_frame_skip();
     }
 
     pub fn reset_capture(&mut self) {
-        Resource::instance().screencast.reset();
+        self.resource.screencast.reset();
     }
 
     pub fn screencast(&mut self, scale: Option<u32>) {
         let filename = Resource::export_path();
-        let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
-        Resource::instance().screencast.save(&filename, scale);
-        System::instance().disable_next_frame_skip();
+        let scale = u32::max(scale.unwrap_or(self.resource.capture_scale), 1);
+        self.resource.screencast.save(&filename, scale);
+        self.system.disable_next_frame_skip();
     }
 }

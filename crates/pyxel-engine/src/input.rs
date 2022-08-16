@@ -2,11 +2,10 @@ use std::collections::HashMap;
 
 use crate::event::Event;
 use crate::key::*;
+use crate::platform::Platform;
 use crate::types::{Key, KeyValue};
 use crate::utils::as_i32;
-use crate::{Platform, Pyxel};
-
-singleton!(Input);
+use crate::Pyxel;
 
 #[derive(PartialEq)]
 enum KeyState {
@@ -26,15 +25,15 @@ pub struct Input {
 }
 
 impl Input {
-    pub fn init() {
-        Self::set_instance(Self {
+    pub fn new() -> Self {
+        Self {
             is_mouse_visible: false,
             key_states: HashMap::new(),
             key_values: HashMap::new(),
             input_keys: Vec::new(),
             input_text: "".to_string(),
             drop_files: Vec::new(),
-        });
+        }
     }
 
     pub const fn is_mouse_visible(&self) -> bool {
@@ -155,34 +154,31 @@ impl Input {
 
 impl Pyxel {
     pub fn mouse_x(&self) -> i32 {
-        *Input::instance().key_values.get(&MOUSE_POS_X).unwrap_or(&0)
+        *self.input.key_values.get(&MOUSE_POS_X).unwrap_or(&0)
     }
 
     pub fn mouse_y(&self) -> i32 {
-        *Input::instance().key_values.get(&MOUSE_POS_Y).unwrap_or(&0)
+        *self.input.key_values.get(&MOUSE_POS_Y).unwrap_or(&0)
     }
 
     pub fn mouse_wheel(&self) -> i32 {
-        *Input::instance()
-            .key_values
-            .get(&MOUSE_WHEEL_Y)
-            .unwrap_or(&0)
+        *self.input.key_values.get(&MOUSE_WHEEL_Y).unwrap_or(&0)
     }
 
-    pub fn input_keys(&self) -> &Vec<Key> {
-        &Input::instance().input_keys
+    pub const fn input_keys(&self) -> &Vec<Key> {
+        &self.input.input_keys
     }
 
     pub fn input_text(&self) -> &str {
-        &Input::instance().input_text
+        &self.input.input_text
     }
 
-    pub fn drop_files(&self) -> &Vec<String> {
-        &Input::instance().drop_files
+    pub const fn drop_files(&self) -> &Vec<String> {
+        &self.input.drop_files
     }
 
     pub fn btn(&self, key: Key) -> bool {
-        if let Some((frame_count, key_state)) = Input::instance().key_states.get(&key) {
+        if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Pressed
                 || *key_state == KeyState::ReleasedAndPressed
                 || *frame_count == self.frame_count() && *key_state == KeyState::PressedAndReleased
@@ -199,7 +195,7 @@ impl Pyxel {
         hold_frame_count: Option<u32>,
         repeat_frame_count: Option<u32>,
     ) -> bool {
-        if let Some((frame_count, key_state)) = Input::instance().key_states.get(&key) {
+        if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Released {
                 return false;
             }
@@ -224,7 +220,7 @@ impl Pyxel {
     }
 
     pub fn btnr(&self, key: Key) -> bool {
-        if let Some((frame_count, key_state)) = Input::instance().key_states.get(&key) {
+        if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Pressed {
                 return false;
             }
@@ -236,31 +232,31 @@ impl Pyxel {
     }
 
     pub fn btnv(&self, key: Key) -> KeyValue {
-        Input::instance().key_values.get(&key).copied().unwrap_or(0)
+        self.input.key_values.get(&key).copied().unwrap_or(0)
     }
 
     pub fn mouse(&mut self, is_visible: bool) {
-        Input::instance().is_mouse_visible = is_visible;
+        self.input.is_mouse_visible = is_visible;
     }
 
     pub fn set_btn(&mut self, key: Key, key_state: bool) {
         if key_state {
-            Input::instance().press_key(key, self.frame_count());
+            self.input.press_key(key, self.frame_count());
         } else {
-            Input::instance().release_key(key, self.frame_count());
+            self.input.release_key(key, self.frame_count());
         }
     }
 
     pub fn set_btnv(&mut self, key: Key, key_value: f64) {
         let key_value = as_i32(key_value);
-        Input::instance().key_values.insert(key, key_value);
+        self.input.key_values.insert(key, key_value);
     }
 
     pub fn set_mouse_pos(&mut self, x: f64, y: f64) {
         let x = as_i32(x);
         let y = as_i32(y);
-        Input::instance().key_values.insert(MOUSE_POS_X, x);
-        Input::instance().key_values.insert(MOUSE_POS_Y, y);
-        Platform::instance().move_cursor(x, y);
+        self.input.key_values.insert(MOUSE_POS_X, x);
+        self.input.key_values.insert(MOUSE_POS_Y, y);
+        self.platform.move_cursor(x, y);
     }
 }
