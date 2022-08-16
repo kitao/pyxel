@@ -89,7 +89,7 @@ impl Pyxel {
         #[cfg(target_os = "emscripten")]
         {
             emscripten::set_main_loop_callback(move || {
-                //self.run_one_frame(callback);
+                self.run_one_frame(callback);
             });
         }
     }
@@ -330,6 +330,7 @@ impl Pyxel {
 #[cfg(target_os = "emscripten")]
 mod emscripten {
     use std::cell::RefCell;
+    use std::mem::transmute;
     use std::os::raw::c_int;
 
     #[allow(non_camel_case_types)]
@@ -348,9 +349,12 @@ mod emscripten {
         static MAIN_LOOP_CLOSURE: RefCell<Option<Box<dyn FnMut()>>> = RefCell::new(None);
     }
 
-    pub fn set_main_loop_callback<F: FnMut() + 'static>(callback: F) {
+    pub fn set_main_loop_callback<F: FnMut()>(callback: F) {
+        let callback =
+            unsafe { transmute::<Box<dyn FnMut()>, Box<dyn FnMut()>>(Box::new(callback)) };
+
         MAIN_LOOP_CLOSURE.with(|d| {
-            *d.borrow_mut() = Some(Box::new(callback));
+            *d.borrow_mut() = Some(callback);
         });
 
         unsafe extern "C" fn wrapper<F: FnMut()>() {
