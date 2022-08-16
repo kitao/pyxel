@@ -1,27 +1,3 @@
-macro_rules! singleton {
-    ($type: ty) => {
-        static mut INSTANCE: *mut $type = 0 as *mut $type;
-
-        impl $type {
-            fn set_instance(instance: Self) {
-                use std::mem::transmute;
-                unsafe {
-                    INSTANCE = transmute(Box::new(instance));
-                }
-            }
-
-            pub fn instance_exists() -> bool {
-                unsafe { INSTANCE != 0 as *mut Self }
-            }
-
-            pub fn instance() -> &'static mut Self {
-                assert!(Self::instance_exists(), "Pyxel is not initialized");
-                unsafe { &mut *INSTANCE }
-            }
-        }
-    };
-}
-
 macro_rules! shared_type {
     ($type: ty) => {
         std::sync::Arc<parking_lot::Mutex<$type>>
