@@ -21,8 +21,10 @@ pub struct Audio {
     musics: [SharedMusic; NUM_MUSICS as usize],
 }
 
+unsafe_singleton!(Audio);
+
 impl Audio {
-    pub fn new() -> Self {
+    pub fn init() {
         let mut blip_buf = BlipBuf::new(NUM_SAMPLES as usize);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
         let channels = array![_ => Channel::new(); NUM_CHANNELS as usize];
@@ -39,11 +41,11 @@ impl Audio {
             }),
         );
 
-        Self {
+        Self::set_instance(Self {
             channels,
             sounds,
             musics,
-        }
+        });
     }
 }
 
@@ -62,19 +64,21 @@ impl AudioCallback for AudioCore {
 
 impl Pyxel {
     pub fn channel(&self, channel_no: u32) -> SharedChannel {
-        self.audio.channels[channel_no as usize].clone()
+        Audio::instance().channels[channel_no as usize].clone()
     }
 
     pub fn sound(&self, sound_no: u32) -> SharedSound {
-        self.audio.sounds[sound_no as usize].clone()
+        Audio::instance().sounds[sound_no as usize].clone()
     }
 
     pub fn music(&self, music_no: u32) -> SharedMusic {
-        self.audio.musics[music_no as usize].clone()
+        Audio::instance().musics[music_no as usize].clone()
     }
 
     pub fn play_pos(&mut self, channel_no: u32) -> Option<(u32, u32)> {
-        self.audio.channels[channel_no as usize].lock().play_pos()
+        Audio::instance().channels[channel_no as usize]
+            .lock()
+            .play_pos()
     }
 
     pub fn play(
@@ -89,11 +93,13 @@ impl Pyxel {
         }
         let sounds = sequence
             .iter()
-            .map(|sound_no| self.audio.sounds[*sound_no as usize].clone())
+            .map(|sound_no| Audio::instance().sounds[*sound_no as usize].clone())
             .collect();
-        self.audio.channels[channel_no as usize]
-            .lock()
-            .play(sounds, start_tick, should_loop);
+        Audio::instance().channels[channel_no as usize].lock().play(
+            sounds,
+            start_tick,
+            should_loop,
+        );
     }
 
     pub fn play1(
@@ -103,15 +109,17 @@ impl Pyxel {
         start_tick: Option<u32>,
         should_loop: bool,
     ) {
-        self.audio.channels[channel_no as usize].lock().play1(
-            self.audio.sounds[sound_no as usize].clone(),
-            start_tick,
-            should_loop,
-        );
+        Audio::instance().channels[channel_no as usize]
+            .lock()
+            .play1(
+                Audio::instance().sounds[sound_no as usize].clone(),
+                start_tick,
+                should_loop,
+            );
     }
 
     pub fn playm(&mut self, music_no: u32, start_tick: Option<u32>, should_loop: bool) {
-        let music = self.audio.musics[music_no as usize].clone();
+        let music = Audio::instance().musics[music_no as usize].clone();
         for i in 0..NUM_CHANNELS {
             self.play(
                 i,
@@ -123,7 +131,9 @@ impl Pyxel {
     }
 
     pub fn stop(&mut self, channel_no: u32) {
-        self.audio.channels[channel_no as usize].lock().stop();
+        Audio::instance().channels[channel_no as usize]
+            .lock()
+            .stop();
     }
 
     pub fn stop0(&mut self) {
