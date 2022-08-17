@@ -71,14 +71,7 @@ pub static SCREEN: Lazy<SharedImage> = Lazy::new(|| Image::new(1, 1));
 pub static CURSOR: Lazy<SharedImage> = Lazy::new(|| Graphics::new_cursor_image());
 pub static FONT: Lazy<SharedImage> = Lazy::new(|| Graphics::new_font_image());
 
-pub struct Pyxel {
-    system: System,
-    resource: Resource,
-    input: Input,
-    graphics: Graphics,
-    audio: Audio,
-    math: Math,
-}
+pub struct Pyxel;
 
 pub trait PyxelCallback {
     fn update(&mut self, pyxel: &mut Pyxel);
@@ -107,21 +100,14 @@ impl Pyxel {
 
         SCREEN.lock().resize(width, height);
         Platform::init(title, width, height, display_scale);
-        let system = System::new(fps, quit_key);
-        let resource = Resource::new(fps, capture_scale, capture_sec);
-        let input = Input::new();
-        let graphics = Graphics::new();
-        let audio = Audio::new();
-        let math = Math::new();
+        System::init(fps, quit_key);
+        Resource::init(fps, capture_scale, capture_sec);
+        Input::init();
+        Graphics::init();
+        Audio::init();
+        Math::init();
 
-        let mut pyxel = Self {
-            system,
-            resource,
-            input,
-            graphics,
-            audio,
-            math,
-        };
+        let mut pyxel = Self {};
         pyxel.icon(&ICON_DATA, ICON_SCALE);
         pyxel
     }
