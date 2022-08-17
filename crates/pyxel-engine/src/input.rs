@@ -257,6 +257,6 @@ impl Pyxel {
         let y = as_i32(y);
         self.input.key_values.insert(MOUSE_POS_X, x);
         self.input.key_values.insert(MOUSE_POS_Y, y);
-        self.platform.move_cursor(x, y);
+        Platform::instance().move_cursor(x, y);
     }
 }

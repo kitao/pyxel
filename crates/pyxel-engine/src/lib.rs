@@ -35,7 +35,6 @@ mod math;
 mod music;
 mod oscillator;
 mod platform;
-mod platform_sdl2;
 mod profiler;
 mod rectarea;
 mod resource;
@@ -54,8 +53,7 @@ use crate::input::Input;
 pub use crate::key::*;
 pub use crate::math::Math;
 pub use crate::music::{Music, SharedMusic};
-use crate::platform::Platform;
-use crate::platform_sdl2::PlatformSdl2;
+use crate::platform::{DisplayScale, Platform};
 use crate::resource::Resource;
 pub use crate::settings::*;
 pub use crate::sound::{SharedSound, Sound};
@@ -63,10 +61,7 @@ use crate::system::System;
 pub use crate::tilemap::{SharedTilemap, Tilemap};
 pub use crate::types::*;
 
-type TargetPlatform = PlatformSdl2;
-
 pub struct Pyxel {
-    platform: TargetPlatform,
     system: System,
     resource: Resource,
     input: Input,
@@ -98,25 +93,21 @@ impl Pyxel {
         let title = title.unwrap_or(DEFAULT_TITLE);
         let fps = fps.unwrap_or(DEFAULT_FPS);
         let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
+        let display_scale = if let Some(scale) = display_scale {
+            DisplayScale::Scale(scale)
+        } else {
+            DisplayScale::Ratio(DISPLAY_RATIO)
+        };
         let capture_scale = capture_scale.unwrap_or(DEFAULT_CAPTURE_SCALE);
         let capture_sec = capture_sec.unwrap_or(DEFAULT_CAPTURE_SEC);
 
-        let mut platform =
-            TargetPlatform::new(title, width, height, |screen_width, screen_height| {
-                display_scale.unwrap_or(f64::max(
-                    f64::min(
-                        screen_width as f64 / width as f64,
-                        screen_height as f64 / height as f64,
-                    ) * DISPLAY_RATIO,
-                    1.0,
-                ) as u32)
-            });
+        Platform::init(title, width, height, display_scale);
         let system = System::new(fps, quit_key);
         let resource = Resource::new(fps, capture_scale, capture_sec);
         let input = Input::new();
         let graphics = Graphics::new();
-        let audio = Audio::new(&mut platform);
-        let math = Math::new(&mut platform);
+        let audio = Audio::new();
+        let math = Math::new();
 
         let colors = DEFAULT_COLORS;
         let screen = Image::new(width, height);
@@ -124,7 +115,6 @@ impl Pyxel {
         let font = Graphics::new_font_image();
 
         let mut pyxel = Self {
-            platform,
             system,
             resource,
             input,
