@@ -14,11 +14,13 @@ pub struct Graphics {
     tilemaps: [SharedTilemap; NUM_TILEMAPS as usize],
 }
 
+unsafe_singleton!(Graphics);
+
 impl Graphics {
-    pub fn new() -> Self {
+    pub fn init() {
         let images = array![_ => Image::new(IMAGE_SIZE, IMAGE_SIZE); NUM_IMAGES as usize];
         let tilemaps = array![_ => Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()); NUM_TILEMAPS as usize];
-        Self { images, tilemaps }
+        Self::set_instance(Self { images, tilemaps });
     }
 
     pub fn new_cursor_image() -> SharedImage {
@@ -54,11 +56,11 @@ impl Graphics {
 
 impl Pyxel {
     pub fn image(&self, image_no: u32) -> SharedImage {
-        self.graphics.images[image_no as usize].clone()
+        Graphics::instance().images[image_no as usize].clone()
     }
 
     pub fn image_no(&self, image: SharedImage) -> Option<u32> {
-        for (i, builtin_image) in self.graphics.images.iter().enumerate() {
+        for (i, builtin_image) in Graphics::instance().images.iter().enumerate() {
             if builtin_image.data_ptr() == image.data_ptr() {
                 return Some(i as u32);
             }
@@ -67,7 +69,7 @@ impl Pyxel {
     }
 
     pub fn tilemap(&self, image_no: u32) -> SharedTilemap {
-        self.graphics.tilemaps[image_no as usize].clone()
+        Graphics::instance().tilemaps[image_no as usize].clone()
     }
 
     pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
@@ -160,7 +162,7 @@ impl Pyxel {
         SCREEN.lock().blt(
             x,
             y,
-            self.graphics.images[image_no as usize].clone(),
+            Graphics::instance().images[image_no as usize].clone(),
             image_x,
             image_y,
             width,
@@ -183,7 +185,7 @@ impl Pyxel {
         SCREEN.lock().bltm(
             x,
             y,
-            self.graphics.tilemaps[tilemap_no as usize].clone(),
+            Graphics::instance().tilemaps[tilemap_no as usize].clone(),
             tilemap_x,
             tilemap_y,
             width,

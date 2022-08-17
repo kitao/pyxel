@@ -3,9 +3,11 @@ use std::process::exit;
 
 use crate::event::Event;
 use crate::image::Image;
+use crate::input::Input;
 use crate::key::{KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use crate::platform::Platform;
 use crate::profiler::Profiler;
+use crate::resource::Resource;
 use crate::settings::{BACKGROUND_COLOR, MAX_SKIP_FRAMES, NUM_MEASURE_FRAMES};
 use crate::types::Key;
 use crate::utils::simplify_string;
@@ -24,9 +26,11 @@ pub struct System {
     enable_perf_monitor: bool,
 }
 
+unsafe_singleton!(System);
+
 impl System {
-    pub fn new(fps: u32, quit_key: Key) -> Self {
-        Self {
+    pub fn init(fps: u32, quit_key: Key) {
+        Self::set_instance(Self {
             one_frame_ms: 1000.0 / fps as f64,
             next_update_ms: -1.0,
             disable_next_frame_skip: true,
@@ -37,7 +41,7 @@ impl System {
             update_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             draw_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             enable_perf_monitor: false,
-        }
+        });
     }
 
     pub fn disable_next_frame_skip(&mut self) {
@@ -54,8 +58,8 @@ impl Pyxel {
         SCREEN.lock().height()
     }
 
-    pub const fn frame_count(&self) -> u32 {
-        self.system.frame_count
+    pub fn frame_count(&self) -> u32 {
+        System::instance().frame_count
     }
 
     pub fn title(&mut self, title: &str) {
@@ -95,58 +99,59 @@ impl Pyxel {
 
     fn run_one_frame<T: PyxelCallback>(&mut self, callback: &mut T) {
         let tick_count = Platform::instance().tick_count();
-        let sleep_ms = self.system.next_update_ms - tick_count as f64;
+        let sleep_ms = System::instance().next_update_ms - tick_count as f64;
         if sleep_ms > 0.0 {
             //self.wait_for_update_time();
             return;
         }
-        if self.system.frame_count == 0 {
-            self.system.next_update_ms = tick_count as f64 + self.system.one_frame_ms;
+        if System::instance().frame_count == 0 {
+            System::instance().next_update_ms = tick_count as f64 + System::instance().one_frame_ms;
         } else {
-            self.system.fps_profiler.end(tick_count);
-            self.system.fps_profiler.start(tick_count);
+            System::instance().fps_profiler.end(tick_count);
+            System::instance().fps_profiler.start(tick_count);
             let update_count: u32;
-            if self.system.disable_next_frame_skip {
+            if System::instance().disable_next_frame_skip {
                 update_count = 1;
-                self.system.disable_next_frame_skip = false;
-                self.system.next_update_ms =
-                    Platform::instance().tick_count() as f64 + self.system.one_frame_ms;
+                System::instance().disable_next_frame_skip = false;
+                System::instance().next_update_ms =
+                    Platform::instance().tick_count() as f64 + System::instance().one_frame_ms;
             } else {
                 update_count = min(
-                    (-sleep_ms / self.system.one_frame_ms) as u32,
+                    (-sleep_ms / System::instance().one_frame_ms) as u32,
                     MAX_SKIP_FRAMES,
                 ) + 1;
-                self.system.next_update_ms += self.system.one_frame_ms * update_count as f64;
+                System::instance().next_update_ms +=
+                    System::instance().one_frame_ms * update_count as f64;
             }
             for _ in 1..update_count {
                 self.update_frame(Some(callback));
-                self.system.frame_count += 1;
+                System::instance().frame_count += 1;
             }
         }
         self.update_frame(Some(callback));
         self.draw_frame(Some(callback));
-        self.system.frame_count += 1;
+        System::instance().frame_count += 1;
     }
 
     pub fn show(&mut self) {
         loop {
             self.update_frame(None);
             self.draw_frame(None);
-            self.system.frame_count += 1;
+            System::instance().frame_count += 1;
         }
     }
 
     pub fn flip(&mut self) {
-        self.system.frame_count += 1;
-        if self.system.next_update_ms < 0.0 {
-            self.system.next_update_ms = Platform::instance().tick_count() as f64;
+        System::instance().frame_count += 1;
+        if System::instance().next_update_ms < 0.0 {
+            System::instance().next_update_ms = Platform::instance().tick_count() as f64;
         } else {
             self.wait_for_update_time();
         }
-        self.system.next_update_ms += self.system.one_frame_ms;
+        System::instance().next_update_ms += System::instance().one_frame_ms;
         let tick_count = Platform::instance().tick_count();
-        self.system.fps_profiler.end(tick_count);
-        self.system.fps_profiler.start(tick_count);
+        System::instance().fps_profiler.end(tick_count);
+        System::instance().fps_profiler.start(tick_count);
         self.update_frame(None);
         self.draw_frame(None);
     }
@@ -156,42 +161,42 @@ impl Pyxel {
     }
 
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
-        self.system
+        System::instance()
             .update_profiler
             .start(Platform::instance().tick_count());
         self.process_events();
-        if self.system.is_paused {
+        if System::instance().is_paused {
             return;
         }
         self.check_special_input();
         if let Some(callback) = callback {
             callback.update(self);
         }
-        self.system
+        System::instance()
             .update_profiler
             .end(Platform::instance().tick_count());
     }
 
     fn process_events(&mut self) {
-        self.input.reset_input_states();
+        Input::instance().reset_input_states();
         while let Some(event) = Platform::instance().poll_event() {
             match event {
                 Event::Quit => {
                     self.quit();
                 }
                 Event::Shown => {
-                    self.system.is_paused = false;
-                    self.system.disable_next_frame_skip = true;
+                    System::instance().is_paused = false;
+                    System::instance().disable_next_frame_skip = true;
                     Platform::instance().resume_audio();
                 }
                 Event::Hidden => {
-                    self.system.is_paused = true;
+                    System::instance().is_paused = true;
                     Platform::instance().pause_audio();
                 }
                 _ => {
-                    if !self.system.is_paused {
-                        self.input
-                            .process_input_event(event, self.system.frame_count);
+                    if !System::instance().is_paused {
+                        Input::instance()
+                            .process_input_event(event, System::instance().frame_count);
                     }
                 }
             }
@@ -204,7 +209,7 @@ impl Pyxel {
                 self.fullscreen(!self.is_fullscreen());
             }
             if self.btnp(KEY_0, None, None) {
-                self.system.enable_perf_monitor = !self.system.enable_perf_monitor;
+                System::instance().enable_perf_monitor = !System::instance().enable_perf_monitor;
             }
             if self.btnp(KEY_1, None, None) {
                 self.screenshot(None);
@@ -216,14 +221,15 @@ impl Pyxel {
                 self.screencast(None);
             }
         }
-        if self.btnp(self.system.quit_key, None, None) {
+        if self.btnp(System::instance().quit_key, None, None) {
             self.quit();
         }
     }
 
     fn wait_for_update_time(&mut self) {
         loop {
-            let sleep_ms = self.system.next_update_ms - Platform::instance().tick_count() as f64;
+            let sleep_ms =
+                System::instance().next_update_ms - Platform::instance().tick_count() as f64;
             if sleep_ms <= 0.0 {
                 return;
             }
@@ -232,10 +238,10 @@ impl Pyxel {
     }
 
     fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
-        if self.system.is_paused {
+        if System::instance().is_paused {
             return;
         }
-        self.system
+        System::instance()
             .draw_profiler
             .start(Platform::instance().tick_count());
         if let Some(callback) = callback {
@@ -248,18 +254,18 @@ impl Pyxel {
             &*COLORS.lock(),
             BACKGROUND_COLOR,
         );
-        self.resource.capture_screen(
+        Resource::instance().capture_screen(
             &SCREEN.lock().canvas.data,
             &*COLORS.lock(),
-            self.system.frame_count,
+            System::instance().frame_count,
         );
-        self.system
+        System::instance()
             .draw_profiler
             .end(Platform::instance().tick_count());
     }
 
     fn draw_perf_monitor(&mut self) {
-        if !self.system.enable_perf_monitor {
+        if !System::instance().enable_perf_monitor {
             return;
         }
         let mut screen = SCREEN.lock();
@@ -273,15 +279,19 @@ impl Pyxel {
         screen.pal(1, 1);
         screen.pal(2, 9);
 
-        let fps = format!("{:.*}", 2, self.system.fps_profiler.average_fps());
+        let fps = format!("{:.*}", 2, System::instance().fps_profiler.average_fps());
         screen.text(1.0, 0.0, &fps, 1);
         screen.text(0.0, 0.0, &fps, 2);
 
-        let update_time = format!("{:.*}", 2, self.system.update_profiler.average_time());
+        let update_time = format!(
+            "{:.*}",
+            2,
+            System::instance().update_profiler.average_time()
+        );
         screen.text(1.0, 6.0, &update_time, 1);
         screen.text(0.0, 6.0, &update_time, 2);
 
-        let draw_time = format!("{:.*}", 2, self.system.draw_profiler.average_time());
+        let draw_time = format!("{:.*}", 2, System::instance().draw_profiler.average_time());
         screen.text(1.0, 12.0, &draw_time, 1);
         screen.text(0.0, 12.0, &draw_time, 2);
 
@@ -297,7 +307,7 @@ impl Pyxel {
         let y = self.mouse_y();
         Platform::instance()
             .show_cursor(x < 0 || x >= self.width() as i32 || y < 0 || y >= self.height() as i32);
-        if !self.input.is_mouse_visible() {
+        if !Input::instance().is_mouse_visible() {
             return;
         }
         let width = CURSOR.lock().width() as i32;
