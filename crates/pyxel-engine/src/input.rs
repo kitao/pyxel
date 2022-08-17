@@ -5,7 +5,6 @@ use crate::key::*;
 use crate::platform::Platform;
 use crate::types::{Key, KeyValue};
 use crate::utils::as_i32;
-use crate::Pyxel;
 
 #[derive(PartialEq)]
 enum KeyState {
@@ -154,114 +153,106 @@ impl Input {
     }
 }
 
-impl Pyxel {
-    pub fn mouse_x(&self) -> i32 {
-        *Input::instance().key_values.get(&MOUSE_POS_X).unwrap_or(&0)
-    }
+pub fn mouse_x() -> i32 {
+    *Input::instance().key_values.get(&MOUSE_POS_X).unwrap_or(&0)
+}
 
-    pub fn mouse_y(&self) -> i32 {
-        *Input::instance().key_values.get(&MOUSE_POS_Y).unwrap_or(&0)
-    }
+pub fn mouse_y() -> i32 {
+    *Input::instance().key_values.get(&MOUSE_POS_Y).unwrap_or(&0)
+}
 
-    pub fn mouse_wheel(&self) -> i32 {
-        *Input::instance()
-            .key_values
-            .get(&MOUSE_WHEEL_Y)
-            .unwrap_or(&0)
-    }
+pub fn mouse_wheel() -> i32 {
+    *Input::instance()
+        .key_values
+        .get(&MOUSE_WHEEL_Y)
+        .unwrap_or(&0)
+}
 
-    pub fn input_keys(&self) -> &Vec<Key> {
-        &Input::instance().input_keys
-    }
+pub fn input_keys() -> &'static Vec<Key> {
+    &Input::instance().input_keys
+}
 
-    pub fn input_text(&self) -> &str {
-        &Input::instance().input_text
-    }
+pub fn input_text() -> &'static str {
+    &Input::instance().input_text
+}
 
-    pub fn drop_files(&self) -> &Vec<String> {
-        &Input::instance().drop_files
-    }
+pub fn drop_files() -> &'static Vec<String> {
+    &Input::instance().drop_files
+}
 
-    pub fn btn(&self, key: Key) -> bool {
-        if let Some((frame_count, key_state)) = Input::instance().key_states.get(&key) {
-            if *key_state == KeyState::Pressed
-                || *key_state == KeyState::ReleasedAndPressed
-                || *frame_count == self.frame_count() && *key_state == KeyState::PressedAndReleased
-            {
-                return true;
-            }
-        }
-        false
-    }
-
-    pub fn btnp(
-        &self,
-        key: Key,
-        hold_frame_count: Option<u32>,
-        repeat_frame_count: Option<u32>,
-    ) -> bool {
-        if let Some((frame_count, key_state)) = Input::instance().key_states.get(&key) {
-            if *key_state == KeyState::Released {
-                return false;
-            }
-            if *frame_count == self.frame_count() {
-                return true;
-            }
-            if *key_state == KeyState::PressedAndReleased {
-                return false;
-            }
-            let hold_frame_count = hold_frame_count.unwrap_or(0);
-            let repeat_frame_count = repeat_frame_count.unwrap_or(0);
-            if repeat_frame_count == 0 {
-                return false;
-            }
-            let elapsed_frames =
-                self.frame_count() as i32 - (*frame_count + hold_frame_count) as i32;
-            if elapsed_frames >= 0 && elapsed_frames % repeat_frame_count as i32 == 0 {
-                return true;
-            }
-        }
-        false
-    }
-
-    pub fn btnr(&self, key: Key) -> bool {
-        if let Some((frame_count, key_state)) = Input::instance().key_states.get(&key) {
-            if *key_state == KeyState::Pressed {
-                return false;
-            }
-            if *frame_count == self.frame_count() {
-                return true;
-            }
-        }
-        false
-    }
-
-    pub fn btnv(&self, key: Key) -> KeyValue {
-        Input::instance().key_values.get(&key).copied().unwrap_or(0)
-    }
-
-    pub fn mouse(&mut self, is_visible: bool) {
-        Input::instance().is_mouse_visible = is_visible;
-    }
-
-    pub fn set_btn(&mut self, key: Key, key_state: bool) {
-        if key_state {
-            Input::instance().press_key(key, self.frame_count());
-        } else {
-            Input::instance().release_key(key, self.frame_count());
+pub fn btn(key: Key) -> bool {
+    if let Some((frame_count, key_state)) = Input::instance().key_states.get(&key) {
+        if *key_state == KeyState::Pressed
+            || *key_state == KeyState::ReleasedAndPressed
+            || *frame_count == crate::frame_count() && *key_state == KeyState::PressedAndReleased
+        {
+            return true;
         }
     }
+    false
+}
 
-    pub fn set_btnv(&mut self, key: Key, key_value: f64) {
-        let key_value = as_i32(key_value);
-        Input::instance().key_values.insert(key, key_value);
+pub fn btnp(key: Key, hold_frame_count: Option<u32>, repeat_frame_count: Option<u32>) -> bool {
+    if let Some((frame_count, key_state)) = Input::instance().key_states.get(&key) {
+        if *key_state == KeyState::Released {
+            return false;
+        }
+        if *frame_count == crate::frame_count() {
+            return true;
+        }
+        if *key_state == KeyState::PressedAndReleased {
+            return false;
+        }
+        let hold_frame_count = hold_frame_count.unwrap_or(0);
+        let repeat_frame_count = repeat_frame_count.unwrap_or(0);
+        if repeat_frame_count == 0 {
+            return false;
+        }
+        let elapsed_frames = crate::frame_count() as i32 - (*frame_count + hold_frame_count) as i32;
+        if elapsed_frames >= 0 && elapsed_frames % repeat_frame_count as i32 == 0 {
+            return true;
+        }
     }
+    false
+}
 
-    pub fn set_mouse_pos(&mut self, x: f64, y: f64) {
-        let x = as_i32(x);
-        let y = as_i32(y);
-        Input::instance().key_values.insert(MOUSE_POS_X, x);
-        Input::instance().key_values.insert(MOUSE_POS_Y, y);
-        Platform::instance().move_cursor(x, y);
+pub fn btnr(key: Key) -> bool {
+    if let Some((frame_count, key_state)) = Input::instance().key_states.get(&key) {
+        if *key_state == KeyState::Pressed {
+            return false;
+        }
+        if *frame_count == crate::frame_count() {
+            return true;
+        }
     }
+    false
+}
+
+pub fn btnv(key: Key) -> KeyValue {
+    Input::instance().key_values.get(&key).copied().unwrap_or(0)
+}
+
+pub fn mouse(is_visible: bool) {
+    Input::instance().is_mouse_visible = is_visible;
+}
+
+pub fn set_btn(key: Key, key_state: bool) {
+    if key_state {
+        Input::instance().press_key(key, crate::frame_count());
+    } else {
+        Input::instance().release_key(key, crate::frame_count());
+    }
+}
+
+pub fn set_btnv(key: Key, key_value: f64) {
+    let key_value = as_i32(key_value);
+    Input::instance().key_values.insert(key, key_value);
+}
+
+pub fn set_mouse_pos(x: f64, y: f64) {
+    let x = as_i32(x);
+    let y = as_i32(y);
+    Input::instance().key_values.insert(MOUSE_POS_X, x);
+    Input::instance().key_values.insert(MOUSE_POS_Y, y);
+    Platform::instance().move_cursor(x, y);
 }

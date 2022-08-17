@@ -6,7 +6,6 @@ use crate::resource::ResourceItem;
 use crate::settings::{RESOURCE_ARCHIVE_DIRNAME, TILEMAP_SIZE};
 use crate::types::Tile;
 use crate::utils::{as_u32, parse_hex_string, simplify_string};
-use crate::Pyxel;
 
 impl ToIndex for Tile {
     fn to_index(&self) -> usize {
@@ -197,7 +196,7 @@ impl ResourceItem for Tilemap {
         self.cls((0, 0));
     }
 
-    fn serialize(&self, pyxel: &Pyxel) -> String {
+    fn serialize(&self) -> String {
         let mut output = String::new();
         for y in 0..self.height() {
             for x in 0..self.width() {
@@ -209,12 +208,12 @@ impl ResourceItem for Tilemap {
         let _ = write!(
             output,
             "{}",
-            pyxel.image_no(self.image.clone()).unwrap_or(0)
+            crate::image_no(self.image.clone()).unwrap_or(0)
         );
         output
     }
 
-    fn deserialize(&mut self, pyxel: &Pyxel, version: u32, input: &str) {
+    fn deserialize(&mut self, version: u32, input: &str) {
         for (y, line) in input.lines().enumerate() {
             if y < TILEMAP_SIZE as usize {
                 if version < 15000 {
@@ -230,7 +229,7 @@ impl ResourceItem for Tilemap {
                     });
                 }
             } else {
-                self.image = pyxel.image(line.parse().unwrap());
+                self.image = crate::image(line.parse().unwrap());
             }
         }
     }

@@ -5,7 +5,6 @@ use pyo3::prelude::*;
 use pyxel::{Rgb8, COLORS, CURSOR, FONT, SCREEN};
 
 use crate::image_wrapper::wrap_pyxel_image;
-use crate::instance;
 
 #[pyclass]
 struct Colors;
@@ -52,18 +51,18 @@ impl Colors {
 fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
     let value = match name {
         // System
-        "width" => instance().width().to_object(py),
-        "height" => instance().height().to_object(py),
-        "frame_count" => instance().frame_count().to_object(py),
-        "is_fullscreen" => instance().is_fullscreen().to_object(py),
+        "width" => pyxel::width().to_object(py),
+        "height" => pyxel::height().to_object(py),
+        "frame_count" => pyxel::frame_count().to_object(py),
+        "is_fullscreen" => pyxel::is_fullscreen().to_object(py),
 
         // Input
-        "mouse_x" => instance().mouse_x().to_object(py),
-        "mouse_y" => instance().mouse_y().to_object(py),
-        "mouse_wheel" => instance().mouse_wheel().to_object(py),
-        "input_keys" => instance().input_keys().to_object(py),
-        "input_text" => instance().input_text().to_object(py),
-        "drop_files" => instance().drop_files().to_object(py),
+        "mouse_x" => pyxel::mouse_x().to_object(py),
+        "mouse_y" => pyxel::mouse_y().to_object(py),
+        "mouse_wheel" => pyxel::mouse_wheel().to_object(py),
+        "input_keys" => pyxel::input_keys().to_object(py),
+        "input_text" => pyxel::input_text().to_object(py),
+        "drop_files" => pyxel::drop_files().to_object(py),
 
         // Graphics
         "colors" => Py::new(py, Colors)?.into_py(py),
