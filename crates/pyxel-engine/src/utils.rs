@@ -30,8 +30,8 @@ macro_rules! shared_type {
 }
 
 macro_rules! new_shared_type {
-    ($expr: expr) => {
-        std::sync::Arc::new(parking_lot::Mutex::new($expr))
+    ($value: expr) => {
+        std::sync::Arc::new(parking_lot::Mutex::new($value))
     };
 }
 
