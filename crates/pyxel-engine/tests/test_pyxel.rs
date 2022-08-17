@@ -70,7 +70,7 @@ impl App {
         pyxel::play(2, &[4], None, true);
 
         let mut app = App { x: 0.0, y: 0.0 };
-        pyxel::run(&mut app);
+        pyxel::run(app);
     }
 }
 

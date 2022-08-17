@@ -48,6 +48,37 @@ impl System {
         self.disable_next_frame_skip = true;
     }
 
+    fn run_one_frame(&mut self, callback: &mut dyn PyxelCallback) {
+        let tick_count = Platform::instance().tick_count();
+        let sleep_ms = self.next_update_ms - tick_count as f64;
+        if sleep_ms > 0.0 {
+            //self.wait_for_update_time();
+            return;
+        }
+        if self.frame_count == 0 {
+            self.next_update_ms = tick_count as f64 + self.one_frame_ms;
+        } else {
+            self.fps_profiler.end(tick_count);
+            self.fps_profiler.start(tick_count);
+            let update_count: u32;
+            if self.disable_next_frame_skip {
+                update_count = 1;
+                self.disable_next_frame_skip = false;
+                self.next_update_ms = Platform::instance().tick_count() as f64 + self.one_frame_ms;
+            } else {
+                update_count = min((-sleep_ms / self.one_frame_ms) as u32, MAX_SKIP_FRAMES) + 1;
+                self.next_update_ms += self.one_frame_ms * update_count as f64;
+            }
+            for _ in 1..update_count {
+                self.update_frame(Some(callback));
+                self.frame_count += 1;
+            }
+        }
+        self.update_frame(Some(callback));
+        self.draw_frame(Some(callback));
+        self.frame_count += 1;
+    }
+
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
         self.update_profiler
             .start(Platform::instance().tick_count());
@@ -108,37 +139,6 @@ impl System {
         if crate::btnp(self.quit_key, None, None) {
             crate::quit();
         }
-    }
-
-    fn run_one_frame<T: PyxelCallback>(&mut self, callback: &mut T) {
-        let tick_count = Platform::instance().tick_count();
-        let sleep_ms = self.next_update_ms - tick_count as f64;
-        if sleep_ms > 0.0 {
-            //self.wait_for_update_time();
-            return;
-        }
-        if self.frame_count == 0 {
-            self.next_update_ms = tick_count as f64 + self.one_frame_ms;
-        } else {
-            self.fps_profiler.end(tick_count);
-            self.fps_profiler.start(tick_count);
-            let update_count: u32;
-            if self.disable_next_frame_skip {
-                update_count = 1;
-                self.disable_next_frame_skip = false;
-                self.next_update_ms = Platform::instance().tick_count() as f64 + self.one_frame_ms;
-            } else {
-                update_count = min((-sleep_ms / self.one_frame_ms) as u32, MAX_SKIP_FRAMES) + 1;
-                self.next_update_ms += self.one_frame_ms * update_count as f64;
-            }
-            for _ in 1..update_count {
-                self.update_frame(Some(callback));
-                self.frame_count += 1;
-            }
-        }
-        self.update_frame(Some(callback));
-        self.draw_frame(Some(callback));
-        self.frame_count += 1;
     }
 
     fn wait_for_update_time(&self) {
@@ -280,19 +280,17 @@ pub fn fullscreen(is_fullscreen: bool) {
     Platform::instance().set_fullscreen(is_fullscreen);
 }
 
-pub fn run<T: PyxelCallback>(callback: &mut T) {
-    #[cfg(not(target_os = "emscripten"))]
+#[cfg(not(target_os = "emscripten"))]
+pub fn run<T: PyxelCallback>(mut callback: T) {
     loop {
-        System::instance().run_one_frame(callback);
+        System::instance().run_one_frame(&mut callback);
         System::instance().wait_for_update_time();
     }
+}
 
-    #[cfg(target_os = "emscripten")]
-    {
-        emscripten::set_main_loop_callback(move || {
-            System::instance().run_one_frame(callback);
-        });
-    }
+#[cfg(target_os = "emscripten")]
+pub fn run<T: PyxelCallback>(callback: T) {
+    emscripten::set_main_loop_callback(callback);
 }
 
 pub fn show() {
@@ -328,6 +326,8 @@ mod emscripten {
     use std::mem::transmute;
     use std::os::raw::c_int;
 
+    use crate::{PyxelCallback, System};
+
     #[allow(non_camel_case_types)]
     type em_callback_func = unsafe extern "C" fn();
 
@@ -341,39 +341,39 @@ mod emscripten {
     }
 
     thread_local! {
-        static MAIN_LOOP_CLOSURE: RefCell<Option<Box<dyn FnMut()>>> = RefCell::new(None);
+        static PYXEL_CALLBACK: RefCell<Option<Box<dyn PyxelCallback>>> = RefCell::new(None);
     }
 
-    pub fn set_main_loop_callback<F: FnMut()>(callback: F) {
-        let callback =
-            unsafe { transmute::<Box<dyn FnMut()>, Box<dyn FnMut()>>(Box::new(callback)) };
+    pub fn set_main_loop_callback<T: PyxelCallback>(callback: T) {
+        println!("for buying time");
+        println!("for buying time");
+        println!("for buying time");
+        println!("for buying time");
+        println!("for buying time");
 
-        MAIN_LOOP_CLOSURE.with(|d| {
-            *d.borrow_mut() = Some(callback);
+        PYXEL_CALLBACK.with(|d| {
+            *d.borrow_mut() = Some(unsafe {
+                transmute::<Box<dyn PyxelCallback>, Box<dyn PyxelCallback>>(Box::new(callback))
+            });
         });
 
-        unsafe extern "C" fn wrapper<F: FnMut()>() {
-            MAIN_LOOP_CLOSURE.with(|z| {
-                if let Some(closure) = &mut *z.borrow_mut() {
-                    println!("loop!!");
-                    (*closure)();
-                    println!("loop end!!");
+        unsafe extern "C" fn main_loop<T: PyxelCallback>() {
+            PYXEL_CALLBACK.with(|d| {
+                if let Some(callback) = &mut *d.borrow_mut() {
+                    System::instance().run_one_frame(&mut **callback);
                 }
             });
         }
 
         unsafe {
-            emscripten_set_main_loop(wrapper::<F>, 0, 1);
+            emscripten_set_main_loop(main_loop::<T>, 0, 1);
         }
     }
 
     pub fn cancel_main_loop() {
+        // Should I call this function in quit()?
         unsafe {
             emscripten_cancel_main_loop();
         }
-
-        MAIN_LOOP_CLOSURE.with(|d| {
-            *d.borrow_mut() = None;
-        });
     }
 }
