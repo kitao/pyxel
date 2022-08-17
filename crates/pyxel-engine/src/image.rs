@@ -14,9 +14,9 @@ use crate::settings::{
     RESOURCE_ARCHIVE_DIRNAME, TILE_SIZE,
 };
 use crate::tilemap::SharedTilemap;
-use crate::types::{Color, Rgb8};
+use crate::types::Color;
 use crate::utils::{add_file_extension, as_i32, as_u32, parse_hex_string, simplify_string};
-use crate::Pyxel;
+use crate::{Pyxel, COLORS, FONT};
 
 impl ToIndex for Color {
     fn to_index(&self) -> usize {
@@ -39,7 +39,8 @@ impl Image {
         })
     }
 
-    pub fn from_image(filename: &str, colors: &[Rgb8]) -> SharedImage {
+    pub fn from_image(filename: &str) -> SharedImage {
+        let colors = &*COLORS.lock();
         let image_file = image::open(&Path::new(&filename))
             .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename))
             .to_rgb8();
@@ -87,6 +88,10 @@ impl Image {
         self.canvas.height()
     }
 
+    pub fn resize(&mut self, width: u32, height: u32) {
+        self.canvas = Canvas::new(width, height);
+    }
+
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
@@ -113,8 +118,8 @@ impl Image {
         );
     }
 
-    pub fn load(&mut self, x: i32, y: i32, filename: &str, colors: &[Rgb8]) {
-        let image = Self::from_image(filename, colors);
+    pub fn load(&mut self, x: i32, y: i32, filename: &str) {
+        let image = Self::from_image(filename);
         let width = image.lock().width();
         let height = image.lock().height();
         self.blt(
@@ -129,7 +134,8 @@ impl Image {
         );
     }
 
-    pub fn save(&self, filename: &str, colors: &[Rgb8], scale: u32) {
+    pub fn save(&self, filename: &str, scale: u32) {
+        let colors = COLORS.lock();
         let width = self.width();
         let height = self.height();
         let mut image = RgbImage::new(width, height);
@@ -363,7 +369,7 @@ impl Image {
         }
     }
 
-    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color, font: SharedImage) {
+    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color) {
         let mut x = as_i32(x); // No need to reflect camera_x
         let mut y = as_i32(y); // No need to reflect camera_y
         let color = self.palette[color as usize];
@@ -385,7 +391,7 @@ impl Image {
             self.blt(
                 x as f64,
                 y as f64,
-                font.clone(),
+                FONT.clone(),
                 src_x as f64,
                 src_y as f64,
                 FONT_WIDTH as f64,
