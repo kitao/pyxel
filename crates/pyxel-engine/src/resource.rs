@@ -18,7 +18,7 @@ use crate::sound::Sound;
 use crate::tilemap::Tilemap;
 use crate::types::{Color, Rgb8};
 use crate::utils::parse_version_string;
-use crate::Pyxel;
+use crate::{Pyxel, SCREEN};
 
 pub trait ResourceItem {
     fn resource_name(item_no: u32) -> String;
@@ -153,7 +153,7 @@ impl Pyxel {
     pub fn screenshot(&mut self, scale: Option<u32>) {
         let filename = Resource::export_path();
         let scale = u32::max(scale.unwrap_or(self.resource.capture_scale), 1);
-        self.screen.lock().save(&filename, &self.colors, scale);
+        SCREEN.lock().save(&filename, scale);
         self.system.disable_next_frame_skip();
     }
 

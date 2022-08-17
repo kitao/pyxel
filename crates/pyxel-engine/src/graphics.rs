@@ -7,7 +7,7 @@ use crate::settings::{
 };
 use crate::tilemap::{SharedTilemap, Tilemap};
 use crate::types::Color;
-use crate::Pyxel;
+use crate::{Pyxel, SCREEN};
 
 pub struct Graphics {
     images: [SharedImage; NUM_IMAGES as usize],
@@ -71,79 +71,79 @@ impl Pyxel {
     }
 
     pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.screen.lock().clip(x, y, width, height);
+        SCREEN.lock().clip(x, y, width, height);
     }
 
     pub fn clip0(&mut self) {
-        self.screen.lock().clip0();
+        SCREEN.lock().clip0();
     }
 
     pub fn camera(&mut self, x: f64, y: f64) {
-        self.screen.lock().camera(x, y);
+        SCREEN.lock().camera(x, y);
     }
 
     pub fn camera0(&mut self) {
-        self.screen.lock().camera0();
+        SCREEN.lock().camera0();
     }
 
     pub fn pal(&mut self, src_color: Color, dst_color: Color) {
-        self.screen.lock().pal(src_color, dst_color);
+        SCREEN.lock().pal(src_color, dst_color);
     }
 
     pub fn pal0(&mut self) {
-        self.screen.lock().pal0();
+        SCREEN.lock().pal0();
     }
 
     pub fn cls(&mut self, color: Color) {
-        self.screen.lock().cls(color);
+        SCREEN.lock().cls(color);
     }
 
     pub fn pget(&mut self, x: f64, y: f64) -> Color {
-        self.screen.lock().pget(x, y)
+        SCREEN.lock().pget(x, y)
     }
 
     pub fn pset(&mut self, x: f64, y: f64, color: Color) {
-        self.screen.lock().pset(x, y, color);
+        SCREEN.lock().pset(x, y, color);
     }
 
     pub fn line(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
-        self.screen.lock().line(x1, y1, x2, y2, color);
+        SCREEN.lock().line(x1, y1, x2, y2, color);
     }
 
     pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
-        self.screen.lock().rect(x, y, width, height, color);
+        SCREEN.lock().rect(x, y, width, height, color);
     }
 
     pub fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
-        self.screen.lock().rectb(x, y, width, height, color);
+        SCREEN.lock().rectb(x, y, width, height, color);
     }
 
     pub fn circ(&mut self, x: f64, y: f64, radius: f64, color: Color) {
-        self.screen.lock().circ(x, y, radius, color);
+        SCREEN.lock().circ(x, y, radius, color);
     }
 
     pub fn circb(&mut self, x: f64, y: f64, radius: f64, color: Color) {
-        self.screen.lock().circb(x, y, radius, color);
+        SCREEN.lock().circb(x, y, radius, color);
     }
 
     pub fn elli(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
-        self.screen.lock().elli(x, y, width, height, color);
+        SCREEN.lock().elli(x, y, width, height, color);
     }
 
     pub fn ellib(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
-        self.screen.lock().ellib(x, y, width, height, color);
+        SCREEN.lock().ellib(x, y, width, height, color);
     }
 
     pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
-        self.screen.lock().tri(x1, y1, x2, y2, x3, y3, color);
+        SCREEN.lock().tri(x1, y1, x2, y2, x3, y3, color);
     }
 
     pub fn trib(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
-        self.screen.lock().trib(x1, y1, x2, y2, x3, y3, color);
+        SCREEN.lock().trib(x1, y1, x2, y2, x3, y3, color);
     }
 
     pub fn fill(&mut self, x: f64, y: f64, color: Color) {
-        self.screen.lock().fill(x, y, color);
+        SCREEN.lock().fill(x, y, color);
     }
 
     pub fn blt(
@@ -157,7 +157,7 @@ impl Pyxel {
         height: f64,
         color_key: Option<Color>,
     ) {
-        self.screen.lock().blt(
+        SCREEN.lock().blt(
             x,
             y,
             self.graphics.images[image_no as usize].clone(),
@@ -180,7 +180,7 @@ impl Pyxel {
         height: f64,
         color_key: Option<Color>,
     ) {
-        self.screen.lock().bltm(
+        SCREEN.lock().bltm(
             x,
             y,
             self.graphics.tilemaps[tilemap_no as usize].clone(),
@@ -193,8 +193,6 @@ impl Pyxel {
     }
 
     pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color) {
-        self.screen
-            .lock()
-            .text(x, y, string, color, self.font.clone());
+        SCREEN.lock().text(x, y, string, color);
     }
 }

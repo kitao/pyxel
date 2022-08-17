@@ -1,10 +1,10 @@
 use pyo3::prelude::*;
+use pyxel::Color;
 use pyxel::Image as PyxelImage;
 use pyxel::SharedImage as PyxelSharedImage;
-use pyxel::{Color, DEFAULT_COLORS};
 
+use crate::instance;
 use crate::tilemap_wrapper::Tilemap;
-use crate::{instance, instance_exists};
 
 #[pyclass]
 #[derive(Clone)]
@@ -25,12 +25,7 @@ impl Image {
 
     #[staticmethod]
     pub fn from_image(filename: &str) -> Self {
-        let colors = if instance_exists() {
-            &instance().colors
-        } else {
-            &DEFAULT_COLORS
-        };
-        wrap_pyxel_image(PyxelImage::from_image(filename, colors))
+        wrap_pyxel_image(PyxelImage::from_image(filename))
     }
 
     #[getter]
@@ -48,15 +43,11 @@ impl Image {
     }
 
     pub fn load(&self, x: i32, y: i32, filename: &str) {
-        self.pyxel_image
-            .lock()
-            .load(x, y, filename, &instance().colors);
+        self.pyxel_image.lock().load(x, y, filename);
     }
 
     pub fn save(&self, filename: &str, scale: u32) {
-        self.pyxel_image
-            .lock()
-            .save(filename, &instance().colors, scale);
+        self.pyxel_image.lock().save(filename, scale);
     }
 
     pub fn clip(
@@ -185,14 +176,8 @@ impl Image {
         Ok(())
     }
 
-    pub fn text(&self, x: f64, y: f64, s: &str, col: Color, font: Option<Self>) {
-        if let Some(font) = font {
-            self.pyxel_image.lock().text(x, y, s, col, font.pyxel_image);
-        } else {
-            self.pyxel_image
-                .lock()
-                .text(x, y, s, col, instance().font.clone());
-        }
+    pub fn text(&self, x: f64, y: f64, s: &str, col: Color) {
+        self.pyxel_image.lock().text(x, y, s, col);
     }
 }
 

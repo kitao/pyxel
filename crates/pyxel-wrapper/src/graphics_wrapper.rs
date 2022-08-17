@@ -1,5 +1,5 @@
 use pyo3::prelude::*;
-use pyxel::Color;
+use pyxel::{Color, SCREEN};
 
 use crate::image_wrapper::{wrap_pyxel_image, Image};
 use crate::instance;
@@ -133,7 +133,7 @@ fn blt(
             instance().blt(x, y, img, u, v, w, h, colkey);
         },
         Image, {
-            instance().screen.lock().blt(x, y, img.pyxel_image, u, v, w, h, colkey);
+            SCREEN.lock().blt(x, y, img.pyxel_image, u, v, w, h, colkey);
         }
     }
     Ok(())
@@ -156,7 +156,7 @@ fn bltm(
             instance().bltm(x, y, tm, u, v, w, h, colkey);
         },
         Tilemap, {
-            instance().screen.lock().bltm(x, y, tm.pyxel_tilemap, u, v, w, h, colkey);
+            SCREEN.lock().bltm(x, y, tm.pyxel_tilemap, u, v, w, h, colkey);
         }
     }
     Ok(())
