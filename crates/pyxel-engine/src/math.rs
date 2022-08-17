@@ -4,7 +4,7 @@ use noise::{NoiseFn, Perlin, Seedable};
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256StarStar;
 
-use crate::Platform;
+use crate::platform::Platform;
 use crate::Pyxel;
 
 pub struct Math {
@@ -13,8 +13,8 @@ pub struct Math {
 }
 
 impl Math {
-    pub fn new<T: Platform>(platform: &mut T) -> Self {
-        let seed = platform.tick_count();
+    pub fn new() -> Self {
+        let seed = Platform::instance().tick_count();
         let rng = Xoshiro256StarStar::seed_from_u64(seed as u64);
         let perlin = Perlin::new();
         perlin.set_seed(seed);

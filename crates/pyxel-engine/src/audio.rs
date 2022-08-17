@@ -22,7 +22,7 @@ pub struct Audio {
 }
 
 impl Audio {
-    pub fn new<T: Platform>(platform: &mut T) -> Self {
+    pub fn new() -> Self {
         let mut blip_buf = BlipBuf::new(NUM_SAMPLES as usize);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
         let channels = array![_ => Channel::new(); NUM_CHANNELS as usize];
@@ -30,7 +30,7 @@ impl Audio {
         let musics = array![_ => Music::new(); NUM_MUSICS as usize];
 
         #[cfg(not(target_os = "emscripten"))]
-        platform.start_audio(
+        Platform::instance().start_audio(
             SAMPLE_RATE,
             NUM_SAMPLES,
             new_shared_type!(AudioCore {
