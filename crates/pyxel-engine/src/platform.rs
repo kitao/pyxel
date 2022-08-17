@@ -107,6 +107,7 @@ impl Platform {
         }
         let sdl_audio = sdl_context.audio().unwrap();
         sdl_hint::set("SDL_MOUSE_FOCUS_CLICKTHROUGH", "1");
+
         Self::set_instance(Self {
             sdl_context,
             sdl_event_pump,

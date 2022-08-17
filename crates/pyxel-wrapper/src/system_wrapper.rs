@@ -2,11 +2,9 @@ use std::process::exit;
 
 use pyo3::prelude::*;
 use pyo3::types::{PyAny, PyDict};
-use pyxel::{Pyxel, PyxelCallback};
+use pyxel::PyxelCallback;
 #[cfg(not(target_os = "emscripten"))]
 use sysinfo::{Pid, PidExt, System, SystemExt};
-
-use crate::{instance, set_instance};
 
 #[pyfunction]
 #[pyo3(
@@ -31,7 +29,7 @@ fn init(
         None,
         Some(locals),
     )?;
-    set_instance(Pyxel::new(
+    pyxel::init(
         width,
         height,
         title,
@@ -40,23 +38,23 @@ fn init(
         display_scale,
         capture_scale,
         capture_sec,
-    ));
+    );
     Ok(())
 }
 
 #[pyfunction]
 fn title(title: &str) {
-    instance().title(title);
+    pyxel::title(title);
 }
 
 #[pyfunction]
 fn icon(data: Vec<&str>, scale: u32) {
-    instance().icon(&data, scale);
+    pyxel::icon(&data, scale);
 }
 
 #[pyfunction]
 fn fullscreen(full: bool) {
-    instance().fullscreen(full);
+    pyxel::fullscreen(full);
 }
 
 #[pyfunction]
@@ -68,14 +66,14 @@ fn run(py: Python, update: &PyAny, draw: &PyAny) {
     }
 
     impl<'a> PyxelCallback for PythonCallback<'a> {
-        fn update(&mut self, _pyxel: &mut Pyxel) {
+        fn update(&mut self) {
             if let Err(err) = self.update.call0() {
                 err.print(self.py);
                 exit(1);
             }
         }
 
-        fn draw(&mut self, _pyxel: &mut Pyxel) {
+        fn draw(&mut self) {
             if let Err(err) = self.draw.call0() {
                 err.print(self.py);
                 exit(1);
@@ -83,22 +81,22 @@ fn run(py: Python, update: &PyAny, draw: &PyAny) {
         }
     }
 
-    instance().run(&mut PythonCallback { py, update, draw });
+    pyxel::run(&mut PythonCallback { py, update, draw });
 }
 
 #[pyfunction]
 fn show() {
-    instance().show();
+    pyxel::show();
 }
 
 #[pyfunction]
 fn flip() {
-    instance().flip();
+    pyxel::flip();
 }
 
 #[pyfunction]
 fn quit() {
-    instance().quit();
+    pyxel::quit();
 }
 
 #[cfg(not(target_os = "emscripten"))]

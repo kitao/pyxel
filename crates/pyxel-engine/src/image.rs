@@ -16,7 +16,7 @@ use crate::settings::{
 use crate::tilemap::SharedTilemap;
 use crate::types::Color;
 use crate::utils::{add_file_extension, as_i32, as_u32, parse_hex_string, simplify_string};
-use crate::{Pyxel, COLORS, FONT};
+use crate::{COLORS, FONT};
 
 impl ToIndex for Color {
     fn to_index(&self) -> usize {
@@ -433,7 +433,7 @@ impl ResourceItem for Image {
         self.cls(0);
     }
 
-    fn serialize(&self, _pyxel: &Pyxel) -> String {
+    fn serialize(&self) -> String {
         let mut output = String::new();
         for y in 0..self.height() {
             for x in 0..self.width() {
@@ -444,7 +444,7 @@ impl ResourceItem for Image {
         output
     }
 
-    fn deserialize(&mut self, _pyxel: &Pyxel, _version: u32, input: &str) {
+    fn deserialize(&mut self, _version: u32, input: &str) {
         for (i, line) in input.lines().enumerate() {
             string_loop!(j, color, line, 1, {
                 self.canvas.data[i][j] = parse_hex_string(&color).unwrap() as Color;

@@ -8,11 +8,23 @@ use crate::settings::{
     CLOCK_RATE, NUM_CHANNELS, NUM_CLOCKS_PER_TICK, NUM_MUSICS, NUM_SAMPLES, NUM_SOUNDS, SAMPLE_RATE,
 };
 use crate::sound::{SharedSound, Sound};
-use crate::Pyxel;
 
 struct AudioCore {
     blip_buf: BlipBuf,
     channels: [SharedChannel; NUM_CHANNELS as usize],
+}
+
+impl AudioCallback for AudioCore {
+    fn update(&mut self, out: &mut [i16]) {
+        let mut samples = self.blip_buf.read_samples(out, false);
+        while samples < out.len() {
+            for channel in &mut self.channels {
+                channel.lock().update(&mut self.blip_buf);
+            }
+            self.blip_buf.end_frame(NUM_CLOCKS_PER_TICK as u64);
+            samples += self.blip_buf.read_samples(&mut out[samples..], false);
+        }
+    }
 }
 
 pub struct Audio {
@@ -49,96 +61,67 @@ impl Audio {
     }
 }
 
-impl AudioCallback for AudioCore {
-    fn update(&mut self, out: &mut [i16]) {
-        let mut samples = self.blip_buf.read_samples(out, false);
-        while samples < out.len() {
-            for channel in &mut self.channels {
-                channel.lock().update(&mut self.blip_buf);
-            }
-            self.blip_buf.end_frame(NUM_CLOCKS_PER_TICK as u64);
-            samples += self.blip_buf.read_samples(&mut out[samples..], false);
-        }
-    }
+pub fn channel(channel_no: u32) -> SharedChannel {
+    Audio::instance().channels[channel_no as usize].clone()
 }
 
-impl Pyxel {
-    pub fn channel(&self, channel_no: u32) -> SharedChannel {
-        Audio::instance().channels[channel_no as usize].clone()
-    }
+pub fn sound(sound_no: u32) -> SharedSound {
+    Audio::instance().sounds[sound_no as usize].clone()
+}
 
-    pub fn sound(&self, sound_no: u32) -> SharedSound {
-        Audio::instance().sounds[sound_no as usize].clone()
-    }
+pub fn music(music_no: u32) -> SharedMusic {
+    Audio::instance().musics[music_no as usize].clone()
+}
 
-    pub fn music(&self, music_no: u32) -> SharedMusic {
-        Audio::instance().musics[music_no as usize].clone()
-    }
+pub fn play_pos(channel_no: u32) -> Option<(u32, u32)> {
+    Audio::instance().channels[channel_no as usize]
+        .lock()
+        .play_pos()
+}
 
-    pub fn play_pos(&mut self, channel_no: u32) -> Option<(u32, u32)> {
-        Audio::instance().channels[channel_no as usize]
-            .lock()
-            .play_pos()
+pub fn play(channel_no: u32, sequence: &[u32], start_tick: Option<u32>, should_loop: bool) {
+    if sequence.is_empty() {
+        return;
     }
+    let sounds = sequence
+        .iter()
+        .map(|sound_no| Audio::instance().sounds[*sound_no as usize].clone())
+        .collect();
+    Audio::instance().channels[channel_no as usize]
+        .lock()
+        .play(sounds, start_tick, should_loop);
+}
 
-    pub fn play(
-        &mut self,
-        channel_no: u32,
-        sequence: &[u32],
-        start_tick: Option<u32>,
-        should_loop: bool,
-    ) {
-        if sequence.is_empty() {
-            return;
-        }
-        let sounds = sequence
-            .iter()
-            .map(|sound_no| Audio::instance().sounds[*sound_no as usize].clone())
-            .collect();
-        Audio::instance().channels[channel_no as usize].lock().play(
-            sounds,
+pub fn play1(channel_no: u32, sound_no: u32, start_tick: Option<u32>, should_loop: bool) {
+    Audio::instance().channels[channel_no as usize]
+        .lock()
+        .play1(
+            Audio::instance().sounds[sound_no as usize].clone(),
+            start_tick,
+            should_loop,
+        );
+}
+
+pub fn playm(music_no: u32, start_tick: Option<u32>, should_loop: bool) {
+    let music = Audio::instance().musics[music_no as usize].clone();
+    for i in 0..NUM_CHANNELS {
+        crate::play(
+            i,
+            &music.lock().sounds_list[i as usize],
             start_tick,
             should_loop,
         );
     }
+}
 
-    pub fn play1(
-        &mut self,
-        channel_no: u32,
-        sound_no: u32,
-        start_tick: Option<u32>,
-        should_loop: bool,
-    ) {
-        Audio::instance().channels[channel_no as usize]
-            .lock()
-            .play1(
-                Audio::instance().sounds[sound_no as usize].clone(),
-                start_tick,
-                should_loop,
-            );
-    }
+pub fn stop(channel_no: u32) {
+    Audio::instance().channels[channel_no as usize]
+        .lock()
+        .stop();
+}
 
-    pub fn playm(&mut self, music_no: u32, start_tick: Option<u32>, should_loop: bool) {
-        let music = Audio::instance().musics[music_no as usize].clone();
-        for i in 0..NUM_CHANNELS {
-            self.play(
-                i,
-                &music.lock().sounds_list[i as usize],
-                start_tick,
-                should_loop,
-            );
-        }
-    }
-
-    pub fn stop(&mut self, channel_no: u32) {
-        Audio::instance().channels[channel_no as usize]
-            .lock()
-            .stop();
-    }
-
-    pub fn stop0(&mut self) {
-        for i in 0..NUM_CHANNELS {
-            self.stop(i);
-        }
+pub fn stop0() {
+    for i in 0..NUM_CHANNELS {
+        crate::stop(i);
     }
 }

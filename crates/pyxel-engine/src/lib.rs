@@ -51,18 +51,32 @@ use once_cell::sync::Lazy;
 use parking_lot::Mutex;
 
 use crate::audio::Audio;
+pub use crate::audio::{channel, music, play, play1, play_pos, playm, sound, stop, stop0};
 pub use crate::channel::{Channel, SharedChannel};
 use crate::graphics::Graphics;
+pub use crate::graphics::{
+    blt, bltm, camera, camera0, circ, circb, clip, clip0, cls, elli, ellib, fill, image, image_no,
+    line, pal, pal0, pget, pset, rect, rectb, text, tilemap, tri, trib,
+};
 pub use crate::image::{Image, SharedImage};
 use crate::input::Input;
+pub use crate::input::{
+    btn, btnp, btnr, btnv, drop_files, input_keys, input_text, mouse, mouse_wheel, mouse_x,
+    mouse_y, set_btn, set_btnv, set_mouse_pos,
+};
 pub use crate::key::*;
-pub use crate::math::Math;
+use crate::math::Math;
+pub use crate::math::{atan2, ceil, cos, floor, noise, nseed, rndf, rndi, rseed, sgn, sin, sqrt};
 pub use crate::music::{Music, SharedMusic};
 use crate::platform::{DisplayScale, Platform};
 use crate::resource::Resource;
+pub use crate::resource::{load, reset_capture, save, screencast, screenshot};
 pub use crate::settings::*;
 pub use crate::sound::{SharedSound, Sound};
 use crate::system::System;
+pub use crate::system::{
+    flip, frame_count, fullscreen, height, icon, is_fullscreen, quit, run, show, title, width,
+};
 pub use crate::tilemap::{SharedTilemap, Tilemap};
 pub use crate::types::*;
 
@@ -71,44 +85,36 @@ pub static SCREEN: Lazy<SharedImage> = Lazy::new(|| Image::new(1, 1));
 pub static CURSOR: Lazy<SharedImage> = Lazy::new(|| Graphics::new_cursor_image());
 pub static FONT: Lazy<SharedImage> = Lazy::new(|| Graphics::new_font_image());
 
-pub struct Pyxel;
-
 pub trait PyxelCallback {
-    fn update(&mut self, pyxel: &mut Pyxel);
-    fn draw(&mut self, pyxel: &mut Pyxel);
+    fn update(&mut self);
+    fn draw(&mut self);
 }
 
-impl Pyxel {
-    pub fn new(
-        width: u32,
-        height: u32,
-        title: Option<&str>,
-        fps: Option<u32>,
-        quit_key: Option<Key>,
-        display_scale: Option<u32>,
-        capture_scale: Option<u32>,
-        capture_sec: Option<u32>,
-    ) -> Self {
-        let title = title.unwrap_or(DEFAULT_TITLE);
-        let fps = fps.unwrap_or(DEFAULT_FPS);
-        let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
-        let display_scale = display_scale.map_or(DisplayScale::Ratio(DISPLAY_RATIO), |scale| {
-            DisplayScale::Scale(scale)
-        });
-        let capture_scale = capture_scale.unwrap_or(DEFAULT_CAPTURE_SCALE);
-        let capture_sec = capture_sec.unwrap_or(DEFAULT_CAPTURE_SEC);
-
-        SCREEN.lock().resize(width, height);
-        Platform::init(title, width, height, display_scale);
-        System::init(fps, quit_key);
-        Resource::init(fps, capture_scale, capture_sec);
-        Input::init();
-        Graphics::init();
-        Audio::init();
-        Math::init();
-
-        let mut pyxel = Self {};
-        pyxel.icon(&ICON_DATA, ICON_SCALE);
-        pyxel
-    }
+pub fn init(
+    width: u32,
+    height: u32,
+    title: Option<&str>,
+    fps: Option<u32>,
+    quit_key: Option<Key>,
+    display_scale: Option<u32>,
+    capture_scale: Option<u32>,
+    capture_sec: Option<u32>,
+) {
+    let title = title.unwrap_or(DEFAULT_TITLE);
+    let fps = fps.unwrap_or(DEFAULT_FPS);
+    let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
+    let display_scale = display_scale.map_or(DisplayScale::Ratio(DISPLAY_RATIO), |scale| {
+        DisplayScale::Scale(scale)
+    });
+    let capture_scale = capture_scale.unwrap_or(DEFAULT_CAPTURE_SCALE);
+    let capture_sec = capture_sec.unwrap_or(DEFAULT_CAPTURE_SEC);
+    SCREEN.lock().resize(width, height);
+    Platform::init(title, width, height, display_scale);
+    System::init(fps, quit_key);
+    crate::icon(&ICON_DATA, ICON_SCALE);
+    Resource::init(fps, capture_scale, capture_sec);
+    Input::init();
+    Graphics::init();
+    Audio::init();
+    Math::init();
 }

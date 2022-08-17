@@ -3,7 +3,6 @@ use pyxel::Color;
 use pyxel::Image as PyxelImage;
 use pyxel::SharedImage as PyxelSharedImage;
 
-use crate::instance;
 use crate::tilemap_wrapper::Tilemap;
 
 #[pyclass]
@@ -144,7 +143,7 @@ impl Image {
         type_switch! {
             img,
             u32, {
-                self.pyxel_image.lock().blt(x, y, instance().image(img), u, v, w, h, colkey);
+                self.pyxel_image.lock().blt(x, y, pyxel::image(img), u, v, w, h, colkey);
             },
             Image, {
                 self.pyxel_image.lock().blt(x, y, img.pyxel_image, u, v, w, h, colkey);
@@ -167,7 +166,7 @@ impl Image {
         type_switch! {
             tm,
             u32, {
-                self.pyxel_image.lock().bltm(x, y, instance().tilemap(tm), u, v, w, h, colkey);
+                self.pyxel_image.lock().bltm(x, y, pyxel::tilemap(tm), u, v, w, h, colkey);
             },
             Tilemap, {
                 self.pyxel_image.lock().bltm(x, y, tm.pyxel_tilemap, u, v, w, h, colkey);

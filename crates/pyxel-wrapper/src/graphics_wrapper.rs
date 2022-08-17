@@ -2,25 +2,24 @@ use pyo3::prelude::*;
 use pyxel::{Color, SCREEN};
 
 use crate::image_wrapper::{wrap_pyxel_image, Image};
-use crate::instance;
 use crate::tilemap_wrapper::{wrap_pyxel_tilemap, Tilemap};
 
 #[pyfunction]
 fn image(img: u32) -> Image {
-    wrap_pyxel_image(instance().image(img))
+    wrap_pyxel_image(pyxel::image(img))
 }
 
 #[pyfunction]
 fn tilemap(tm: u32) -> Tilemap {
-    wrap_pyxel_tilemap(instance().tilemap(tm))
+    wrap_pyxel_tilemap(pyxel::tilemap(tm))
 }
 
 #[pyfunction]
 fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyResult<()> {
     if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
-        instance().clip(x, y, w, h);
+        pyxel::clip(x, y, w, h);
     } else if (x, y, w, h) == (None, None, None, None) {
-        instance().clip0();
+        pyxel::clip0();
     } else {
         type_error!("clip() takes 0 or 4 arguments");
     }
@@ -30,9 +29,9 @@ fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyRes
 #[pyfunction]
 fn camera(x: Option<f64>, y: Option<f64>) -> PyResult<()> {
     if let (Some(x), Some(y)) = (x, y) {
-        instance().camera(x, y);
+        pyxel::camera(x, y);
     } else if (x, y) == (None, None) {
-        instance().camera0();
+        pyxel::camera0();
     } else {
         type_error!("camera() takes 0 or 2 arguments");
     }
@@ -42,9 +41,9 @@ fn camera(x: Option<f64>, y: Option<f64>) -> PyResult<()> {
 #[pyfunction]
 fn pal(col1: Option<Color>, col2: Option<Color>) -> PyResult<()> {
     if let (Some(col1), Some(col2)) = (col1, col2) {
-        instance().pal(col1, col2);
+        pyxel::pal(col1, col2);
     } else if (col1, col2) == (None, None) {
-        instance().pal0();
+        pyxel::pal0();
     } else {
         type_error!("pal() takes 0 or 2 arguments");
     }
@@ -53,67 +52,67 @@ fn pal(col1: Option<Color>, col2: Option<Color>) -> PyResult<()> {
 
 #[pyfunction]
 fn cls(col: Color) {
-    instance().cls(col);
+    pyxel::cls(col);
 }
 
 #[pyfunction]
 fn pget(x: f64, y: f64) -> Color {
-    instance().pget(x, y)
+    pyxel::pget(x, y)
 }
 
 #[pyfunction]
 fn pset(x: f64, y: f64, col: Color) {
-    instance().pset(x, y, col);
+    pyxel::pset(x, y, col);
 }
 
 #[pyfunction]
 fn line(x1: f64, y1: f64, x2: f64, y2: f64, col: Color) {
-    instance().line(x1, y1, x2, y2, col);
+    pyxel::line(x1, y1, x2, y2, col);
 }
 
 #[pyfunction]
 fn rect(x: f64, y: f64, w: f64, h: f64, col: Color) {
-    instance().rect(x, y, w, h, col);
+    pyxel::rect(x, y, w, h, col);
 }
 
 #[pyfunction]
 fn rectb(x: f64, y: f64, w: f64, h: f64, col: Color) {
-    instance().rectb(x, y, w, h, col);
+    pyxel::rectb(x, y, w, h, col);
 }
 
 #[pyfunction]
 fn circ(x: f64, y: f64, r: f64, col: Color) {
-    instance().circ(x, y, r, col);
+    pyxel::circ(x, y, r, col);
 }
 
 #[pyfunction]
 fn circb(x: f64, y: f64, r: f64, col: Color) {
-    instance().circb(x, y, r, col);
+    pyxel::circb(x, y, r, col);
 }
 
 #[pyfunction]
 fn elli(x: f64, y: f64, w: f64, h: f64, col: Color) {
-    instance().elli(x, y, w, h, col);
+    pyxel::elli(x, y, w, h, col);
 }
 
 #[pyfunction]
 fn ellib(x: f64, y: f64, w: f64, h: f64, col: Color) {
-    instance().ellib(x, y, w, h, col);
+    pyxel::ellib(x, y, w, h, col);
 }
 
 #[pyfunction]
 fn tri(x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: Color) {
-    instance().tri(x1, y1, x2, y2, x3, y3, col);
+    pyxel::tri(x1, y1, x2, y2, x3, y3, col);
 }
 
 #[pyfunction]
 fn trib(x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: Color) {
-    instance().trib(x1, y1, x2, y2, x3, y3, col);
+    pyxel::trib(x1, y1, x2, y2, x3, y3, col);
 }
 
 #[pyfunction]
 fn fill(x: f64, y: f64, col: Color) {
-    instance().fill(x, y, col);
+    pyxel::fill(x, y, col);
 }
 
 #[pyfunction]
@@ -130,7 +129,7 @@ fn blt(
     type_switch! {
         img,
         u32, {
-            instance().blt(x, y, img, u, v, w, h, colkey);
+            pyxel::blt(x, y, img, u, v, w, h, colkey);
         },
         Image, {
             SCREEN.lock().blt(x, y, img.pyxel_image, u, v, w, h, colkey);
@@ -153,7 +152,7 @@ fn bltm(
     type_switch! {
         tm,
         u32, {
-            instance().bltm(x, y, tm, u, v, w, h, colkey);
+            pyxel::bltm(x, y, tm, u, v, w, h, colkey);
         },
         Tilemap, {
             SCREEN.lock().bltm(x, y, tm.pyxel_tilemap, u, v, w, h, colkey);
@@ -164,7 +163,7 @@ fn bltm(
 
 #[pyfunction]
 fn text(x: f64, y: f64, s: &str, col: Color) {
-    instance().text(x, y, s, col);
+    pyxel::text(x, y, s, col);
 }
 
 pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
