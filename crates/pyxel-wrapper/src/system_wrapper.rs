@@ -81,7 +81,7 @@ fn run(py: Python, update: &PyAny, draw: &PyAny) {
         }
     }
 
-    pyxel::run(&mut PythonCallback { py, update, draw });
+    pyxel::run(PythonCallback { py, update, draw });
 }
 
 #[pyfunction]
