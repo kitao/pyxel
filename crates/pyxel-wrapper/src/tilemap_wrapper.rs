@@ -4,7 +4,6 @@ use pyxel::Tile;
 use pyxel::Tilemap as PyxelTilemap;
 
 use crate::image_wrapper::{wrap_pyxel_image, Image};
-use crate::instance;
 
 #[pyclass]
 #[derive(Clone)]
@@ -23,7 +22,7 @@ impl Tilemap {
         let img = type_switch! {
             img,
             u32, {
-                instance().image(img)
+                pyxel::image(img)
             },
             Image, {
                 img.pyxel_image
@@ -54,12 +53,12 @@ impl Tilemap {
 
     #[getter]
     pub fn refimg(&self) -> Option<u32> {
-        instance().image_no(self.pyxel_tilemap.lock().image.clone())
+        pyxel::image_no(self.pyxel_tilemap.lock().image.clone())
     }
 
     #[setter]
     pub fn set_refimg(&self, img: u32) {
-        self.pyxel_tilemap.lock().image = instance().image(img);
+        self.pyxel_tilemap.lock().image = pyxel::image(img);
     }
 
     pub fn set(&mut self, x: i32, y: i32, data: Vec<&str>) {
@@ -160,7 +159,7 @@ impl Tilemap {
         type_switch! {
             tm,
             u32, {
-                self.pyxel_tilemap.lock().blt(x, y, instance().tilemap(tm), u, v, w, h, tilekey);
+                self.pyxel_tilemap.lock().blt(x, y, pyxel::tilemap(tm), u, v, w, h, tilekey);
             },
             Tilemap, {
                 self.pyxel_tilemap.lock().blt(x, y, tm.pyxel_tilemap, u, v, w, h, tilekey);

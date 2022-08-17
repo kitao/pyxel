@@ -7,7 +7,7 @@ use crate::settings::{
 };
 use crate::tilemap::{SharedTilemap, Tilemap};
 use crate::types::Color;
-use crate::{Pyxel, SCREEN};
+use crate::SCREEN;
 
 pub struct Graphics {
     images: [SharedImage; NUM_IMAGES as usize],
@@ -54,147 +54,143 @@ impl Graphics {
     }
 }
 
-impl Pyxel {
-    pub fn image(&self, image_no: u32) -> SharedImage {
-        Graphics::instance().images[image_no as usize].clone()
-    }
+pub fn image(image_no: u32) -> SharedImage {
+    Graphics::instance().images[image_no as usize].clone()
+}
 
-    pub fn image_no(&self, image: SharedImage) -> Option<u32> {
-        for (i, builtin_image) in Graphics::instance().images.iter().enumerate() {
-            if builtin_image.data_ptr() == image.data_ptr() {
-                return Some(i as u32);
-            }
+pub fn image_no(image: SharedImage) -> Option<u32> {
+    for (i, builtin_image) in Graphics::instance().images.iter().enumerate() {
+        if builtin_image.data_ptr() == image.data_ptr() {
+            return Some(i as u32);
         }
-        None
     }
+    None
+}
 
-    pub fn tilemap(&self, image_no: u32) -> SharedTilemap {
-        Graphics::instance().tilemaps[image_no as usize].clone()
-    }
+pub fn tilemap(image_no: u32) -> SharedTilemap {
+    Graphics::instance().tilemaps[image_no as usize].clone()
+}
 
-    pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        SCREEN.lock().clip(x, y, width, height);
-    }
+pub fn clip(x: f64, y: f64, width: f64, height: f64) {
+    SCREEN.lock().clip(x, y, width, height);
+}
 
-    pub fn clip0(&mut self) {
-        SCREEN.lock().clip0();
-    }
+pub fn clip0() {
+    SCREEN.lock().clip0();
+}
 
-    pub fn camera(&mut self, x: f64, y: f64) {
-        SCREEN.lock().camera(x, y);
-    }
+pub fn camera(x: f64, y: f64) {
+    SCREEN.lock().camera(x, y);
+}
 
-    pub fn camera0(&mut self) {
-        SCREEN.lock().camera0();
-    }
+pub fn camera0() {
+    SCREEN.lock().camera0();
+}
 
-    pub fn pal(&mut self, src_color: Color, dst_color: Color) {
-        SCREEN.lock().pal(src_color, dst_color);
-    }
+pub fn pal(src_color: Color, dst_color: Color) {
+    SCREEN.lock().pal(src_color, dst_color);
+}
 
-    pub fn pal0(&mut self) {
-        SCREEN.lock().pal0();
-    }
+pub fn pal0() {
+    SCREEN.lock().pal0();
+}
 
-    pub fn cls(&mut self, color: Color) {
-        SCREEN.lock().cls(color);
-    }
+pub fn cls(color: Color) {
+    SCREEN.lock().cls(color);
+}
 
-    pub fn pget(&mut self, x: f64, y: f64) -> Color {
-        SCREEN.lock().pget(x, y)
-    }
+pub fn pget(x: f64, y: f64) -> Color {
+    SCREEN.lock().pget(x, y)
+}
 
-    pub fn pset(&mut self, x: f64, y: f64, color: Color) {
-        SCREEN.lock().pset(x, y, color);
-    }
+pub fn pset(x: f64, y: f64, color: Color) {
+    SCREEN.lock().pset(x, y, color);
+}
 
-    pub fn line(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
-        SCREEN.lock().line(x1, y1, x2, y2, color);
-    }
+pub fn line(x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
+    SCREEN.lock().line(x1, y1, x2, y2, color);
+}
 
-    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
-        SCREEN.lock().rect(x, y, width, height, color);
-    }
+pub fn rect(x: f64, y: f64, width: f64, height: f64, color: Color) {
+    SCREEN.lock().rect(x, y, width, height, color);
+}
 
-    pub fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
-        SCREEN.lock().rectb(x, y, width, height, color);
-    }
+pub fn rectb(x: f64, y: f64, width: f64, height: f64, color: Color) {
+    SCREEN.lock().rectb(x, y, width, height, color);
+}
 
-    pub fn circ(&mut self, x: f64, y: f64, radius: f64, color: Color) {
-        SCREEN.lock().circ(x, y, radius, color);
-    }
+pub fn circ(x: f64, y: f64, radius: f64, color: Color) {
+    SCREEN.lock().circ(x, y, radius, color);
+}
 
-    pub fn circb(&mut self, x: f64, y: f64, radius: f64, color: Color) {
-        SCREEN.lock().circb(x, y, radius, color);
-    }
+pub fn circb(x: f64, y: f64, radius: f64, color: Color) {
+    SCREEN.lock().circb(x, y, radius, color);
+}
 
-    pub fn elli(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
-        SCREEN.lock().elli(x, y, width, height, color);
-    }
+pub fn elli(x: f64, y: f64, width: f64, height: f64, color: Color) {
+    SCREEN.lock().elli(x, y, width, height, color);
+}
 
-    pub fn ellib(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
-        SCREEN.lock().ellib(x, y, width, height, color);
-    }
+pub fn ellib(x: f64, y: f64, width: f64, height: f64, color: Color) {
+    SCREEN.lock().ellib(x, y, width, height, color);
+}
 
-    pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
-        SCREEN.lock().tri(x1, y1, x2, y2, x3, y3, color);
-    }
+pub fn tri(x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
+    SCREEN.lock().tri(x1, y1, x2, y2, x3, y3, color);
+}
 
-    pub fn trib(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
-        SCREEN.lock().trib(x1, y1, x2, y2, x3, y3, color);
-    }
+pub fn trib(x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
+    SCREEN.lock().trib(x1, y1, x2, y2, x3, y3, color);
+}
 
-    pub fn fill(&mut self, x: f64, y: f64, color: Color) {
-        SCREEN.lock().fill(x, y, color);
-    }
+pub fn fill(x: f64, y: f64, color: Color) {
+    SCREEN.lock().fill(x, y, color);
+}
 
-    pub fn blt(
-        &mut self,
-        x: f64,
-        y: f64,
-        image_no: u32,
-        image_x: f64,
-        image_y: f64,
-        width: f64,
-        height: f64,
-        color_key: Option<Color>,
-    ) {
-        SCREEN.lock().blt(
-            x,
-            y,
-            Graphics::instance().images[image_no as usize].clone(),
-            image_x,
-            image_y,
-            width,
-            height,
-            color_key,
-        );
-    }
+pub fn blt(
+    x: f64,
+    y: f64,
+    image_no: u32,
+    image_x: f64,
+    image_y: f64,
+    width: f64,
+    height: f64,
+    color_key: Option<Color>,
+) {
+    SCREEN.lock().blt(
+        x,
+        y,
+        Graphics::instance().images[image_no as usize].clone(),
+        image_x,
+        image_y,
+        width,
+        height,
+        color_key,
+    );
+}
 
-    pub fn bltm(
-        &mut self,
-        x: f64,
-        y: f64,
-        tilemap_no: u32,
-        tilemap_x: f64,
-        tilemap_y: f64,
-        width: f64,
-        height: f64,
-        color_key: Option<Color>,
-    ) {
-        SCREEN.lock().bltm(
-            x,
-            y,
-            Graphics::instance().tilemaps[tilemap_no as usize].clone(),
-            tilemap_x,
-            tilemap_y,
-            width,
-            height,
-            color_key,
-        );
-    }
+pub fn bltm(
+    x: f64,
+    y: f64,
+    tilemap_no: u32,
+    tilemap_x: f64,
+    tilemap_y: f64,
+    width: f64,
+    height: f64,
+    color_key: Option<Color>,
+) {
+    SCREEN.lock().bltm(
+        x,
+        y,
+        Graphics::instance().tilemaps[tilemap_no as usize].clone(),
+        tilemap_x,
+        tilemap_y,
+        width,
+        height,
+        color_key,
+    );
+}
 
-    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color) {
-        SCREEN.lock().text(x, y, string, color);
-    }
+pub fn text(x: f64, y: f64, string: &str, color: Color) {
+    SCREEN.lock().text(x, y, string, color);
 }

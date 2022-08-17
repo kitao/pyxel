@@ -36,10 +36,7 @@ mod tilemap_wrapper;
 #[allow(non_snake_case)]
 mod variable_wrapper;
 
-use std::mem::transmute;
-
 use pyo3::prelude::*;
-use pyxel::Pyxel;
 
 use crate::audio_wrapper::add_audio_functions;
 use crate::channel_wrapper::add_channel_class;
@@ -54,26 +51,6 @@ use crate::sound_wrapper::add_sound_class;
 use crate::system_wrapper::add_system_functions;
 use crate::tilemap_wrapper::add_tilemap_class;
 use crate::variable_wrapper::add_module_variables;
-
-static mut INSTANCE: *mut Pyxel = 0 as *mut Pyxel;
-
-pub fn instance_exists() -> bool {
-    unsafe { INSTANCE != 0 as *mut Pyxel }
-}
-
-pub fn instance() -> &'static mut Pyxel {
-    if instance_exists() {
-        unsafe { &mut *INSTANCE }
-    } else {
-        panic!("Pyxel is not initialized");
-    }
-}
-
-pub fn set_instance(pyxel: Pyxel) {
-    unsafe {
-        INSTANCE = transmute(Box::new(pyxel));
-    }
-}
 
 #[pymodule]
 fn pyxel_wrapper(_py: Python, m: &PyModule) -> PyResult<()> {

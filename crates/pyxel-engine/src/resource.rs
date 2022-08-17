@@ -19,14 +19,14 @@ use crate::system::System;
 use crate::tilemap::Tilemap;
 use crate::types::{Color, Rgb8};
 use crate::utils::parse_version_string;
-use crate::{Pyxel, SCREEN};
+use crate::SCREEN;
 
 pub trait ResourceItem {
     fn resource_name(item_no: u32) -> String;
     fn is_modified(&self) -> bool;
     fn clear(&mut self);
-    fn serialize(&self, pyxel: &Pyxel) -> String;
-    fn deserialize(&mut self, pyxel: &Pyxel, version: u32, input: &str);
+    fn serialize(&self) -> String;
+    fn deserialize(&mut self, version: u32, input: &str);
 }
 
 pub struct Resource {
@@ -64,110 +64,108 @@ impl Resource {
     }
 }
 
-impl Pyxel {
-    pub fn load(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
-        let mut archive = ZipArchive::new(
-            File::open(&Path::new(&filename))
-                .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename)),
-        )
-        .unwrap_or_else(|_| panic!("Unable to parse zip archive '{}'", filename));
-        let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
-        let contents = {
-            let mut file = archive.by_name(&version_name).unwrap();
-            let mut contents = String::new();
-            file.read_to_string(&mut contents).unwrap();
-            contents
+pub fn load(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
+    let mut archive = ZipArchive::new(
+        File::open(&Path::new(&filename))
+            .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename)),
+    )
+    .unwrap_or_else(|_| panic!("Unable to parse zip archive '{}'", filename));
+    let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
+    let contents = {
+        let mut file = archive.by_name(&version_name).unwrap();
+        let mut contents = String::new();
+        file.read_to_string(&mut contents).unwrap();
+        contents
+    };
+    let version = parse_version_string(&contents).unwrap();
+    assert!(
+        version <= parse_version_string(PYXEL_VERSION).unwrap(),
+        "Unsupported resource file version '{}'",
+        contents
+    );
+
+    macro_rules! deserialize {
+        ($type: ty, $getter: ident, $count: expr) => {
+            for i in 0..$count {
+                if let Ok(mut file) = archive.by_name(&<$type>::resource_name(i)) {
+                    let mut input = String::new();
+                    file.read_to_string(&mut input).unwrap();
+                    crate::$getter(i).lock().deserialize(version, &input);
+                } else {
+                    crate::$getter(i).lock().clear();
+                }
+            }
         };
-        let version = parse_version_string(&contents).unwrap();
-        assert!(
-            version <= parse_version_string(PYXEL_VERSION).unwrap(),
-            "Unsupported resource file version '{}'",
-            contents
-        );
+    }
 
-        macro_rules! deserialize {
-            ($type: ty, $getter: ident, $count: expr) => {
-                for i in 0..$count {
-                    if let Ok(mut file) = archive.by_name(&<$type>::resource_name(i)) {
-                        let mut input = String::new();
-                        file.read_to_string(&mut input).unwrap();
-                        self.$getter(i).lock().deserialize(self, version, &input);
-                    } else {
-                        self.$getter(i).lock().clear();
-                    }
+    if image {
+        deserialize!(Image, image, NUM_IMAGES);
+    }
+    if tilemap {
+        deserialize!(Tilemap, tilemap, NUM_TILEMAPS);
+    }
+    if sound {
+        deserialize!(Sound, sound, NUM_SOUNDS);
+    }
+    if music {
+        deserialize!(Music, music, NUM_MUSICS);
+    }
+}
+
+pub fn save(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
+    let path = std::path::Path::new(&filename);
+    let file = std::fs::File::create(&path)
+        .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename));
+    let mut zip = ZipWriter::new(file);
+    zip.add_directory(RESOURCE_ARCHIVE_DIRNAME, ZipFileOptions::default())
+        .unwrap();
+    let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
+    zip.start_file(version_name, ZipFileOptions::default())
+        .unwrap();
+    zip.write_all(PYXEL_VERSION.as_bytes()).unwrap();
+
+    macro_rules! serialize {
+        ($type: ty, $getter: ident, $count: expr) => {
+            for i in 0..$count {
+                if crate::$getter(i).lock().is_modified() {
+                    zip.start_file(<$type>::resource_name(i), ZipFileOptions::default())
+                        .unwrap();
+                    zip.write_all(crate::$getter(i).lock().serialize().as_bytes())
+                        .unwrap();
                 }
-            };
-        }
-
-        if image {
-            deserialize!(Image, image, NUM_IMAGES);
-        }
-        if tilemap {
-            deserialize!(Tilemap, tilemap, NUM_TILEMAPS);
-        }
-        if sound {
-            deserialize!(Sound, sound, NUM_SOUNDS);
-        }
-        if music {
-            deserialize!(Music, music, NUM_MUSICS);
-        }
+            }
+        };
     }
 
-    pub fn save(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
-        let path = std::path::Path::new(&filename);
-        let file = std::fs::File::create(&path)
-            .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename));
-        let mut zip = ZipWriter::new(file);
-        zip.add_directory(RESOURCE_ARCHIVE_DIRNAME, ZipFileOptions::default())
-            .unwrap();
-        let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
-        zip.start_file(version_name, ZipFileOptions::default())
-            .unwrap();
-        zip.write_all(PYXEL_VERSION.as_bytes()).unwrap();
-
-        macro_rules! serialize {
-            ($type: ty, $getter: ident, $count: expr) => {
-                for i in 0..$count {
-                    if self.$getter(i).lock().is_modified() {
-                        zip.start_file(<$type>::resource_name(i), ZipFileOptions::default())
-                            .unwrap();
-                        zip.write_all(self.$getter(i).lock().serialize(self).as_bytes())
-                            .unwrap();
-                    }
-                }
-            };
-        }
-
-        if image {
-            serialize!(Image, image, NUM_IMAGES);
-        }
-        if tilemap {
-            serialize!(Tilemap, tilemap, NUM_TILEMAPS);
-        }
-        if sound {
-            serialize!(Sound, sound, NUM_SOUNDS);
-        }
-        if music {
-            serialize!(Music, music, NUM_MUSICS);
-        }
-        zip.finish().unwrap();
+    if image {
+        serialize!(Image, image, NUM_IMAGES);
     }
-
-    pub fn screenshot(&mut self, scale: Option<u32>) {
-        let filename = Resource::export_path();
-        let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
-        SCREEN.lock().save(&filename, scale);
-        System::instance().disable_next_frame_skip();
+    if tilemap {
+        serialize!(Tilemap, tilemap, NUM_TILEMAPS);
     }
-
-    pub fn reset_capture(&mut self) {
-        Resource::instance().screencast.reset();
+    if sound {
+        serialize!(Sound, sound, NUM_SOUNDS);
     }
-
-    pub fn screencast(&mut self, scale: Option<u32>) {
-        let filename = Resource::export_path();
-        let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
-        Resource::instance().screencast.save(&filename, scale);
-        System::instance().disable_next_frame_skip();
+    if music {
+        serialize!(Music, music, NUM_MUSICS);
     }
+    zip.finish().unwrap();
+}
+
+pub fn screenshot(scale: Option<u32>) {
+    let filename = Resource::export_path();
+    let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
+    SCREEN.lock().save(&filename, scale);
+    System::instance().disable_next_frame_skip();
+}
+
+pub fn reset_capture() {
+    Resource::instance().screencast.reset();
+}
+
+pub fn screencast(scale: Option<u32>) {
+    let filename = Resource::export_path();
+    let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
+    Resource::instance().screencast.save(&filename, scale);
+    System::instance().disable_next_frame_skip();
 }

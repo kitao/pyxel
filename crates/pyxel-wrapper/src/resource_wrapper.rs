@@ -1,7 +1,5 @@
 use pyo3::prelude::*;
 
-use crate::instance;
-
 #[pyfunction]
 #[pyo3(text_signature = "(filename, *, image, tilemap, sound, music)")]
 fn load(
@@ -15,7 +13,7 @@ fn load(
     let tilemap = tilemap.unwrap_or(true);
     let sound = sound.unwrap_or(true);
     let music = music.unwrap_or(true);
-    instance().load(filename, image, tilemap, sound, music);
+    pyxel::load(filename, image, tilemap, sound, music);
 }
 
 #[pyfunction]
@@ -31,22 +29,22 @@ fn save(
     let tilemap = tilemap.unwrap_or(true);
     let sound = sound.unwrap_or(true);
     let music = music.unwrap_or(true);
-    instance().save(filename, image, tilemap, sound, music);
+    pyxel::save(filename, image, tilemap, sound, music);
 }
 
 #[pyfunction]
 fn screenshot(scale: Option<u32>) {
-    instance().screenshot(scale);
+    pyxel::screenshot(scale);
 }
 
 #[pyfunction]
 fn reset_capture() {
-    instance().reset_capture();
+    pyxel::reset_capture();
 }
 
 #[pyfunction]
 fn screencast(scale: Option<u32>) {
-    instance().screencast(scale);
+    pyxel::screencast(scale);
 }
 
 pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
