@@ -59,7 +59,7 @@ macro_rules! impl_getitem_method_for_list {
 }
 
 macro_rules! impl_setitem_method_for_list {
-    ($self: ident, $index: ident, $value: ident) => {
+    ($self: ident, $index: ident, $value: expr) => {
         if $index < $self.list_mut().len() as isize {
             $self.list_mut()[$index as usize] = $value;
             Ok(())

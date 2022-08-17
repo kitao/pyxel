@@ -4,7 +4,7 @@ use pyxel::Sound as PyxelSound;
 use pyxel::{Effect, Note, Speed, Tone, Volume};
 
 macro_rules! define_private_methods_for_list {
-    ($type: ident, $elems: ident) => {
+    ($type: ty, $elems: ident) => {
         fn new(pyxel_sound: PyxelSharedSound) -> Self {
             Self { pyxel_sound }
         }
