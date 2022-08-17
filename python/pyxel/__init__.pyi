@@ -584,9 +584,7 @@ class Image:
         h: float,
         colkey: Optional[int] = None,
     ) -> None: ...
-    def text(
-        self, x: float, y: float, s: str, col: int, font: Optional[Image] = None
-    ) -> None: ...
+    def text(self, x: float, y: float, s: str, col: int) -> None: ...
 
 # Tilemap class
 class Tilemap:

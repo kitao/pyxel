@@ -9,7 +9,7 @@ use crate::profiler::Profiler;
 use crate::settings::{BACKGROUND_COLOR, MAX_SKIP_FRAMES, NUM_MEASURE_FRAMES};
 use crate::types::Key;
 use crate::utils::simplify_string;
-use crate::{Pyxel, PyxelCallback};
+use crate::{Pyxel, PyxelCallback, COLORS, CURSOR, SCREEN};
 
 pub struct System {
     one_frame_ms: f64,
@@ -47,11 +47,11 @@ impl System {
 
 impl Pyxel {
     pub fn width(&self) -> u32 {
-        self.screen.lock().width()
+        SCREEN.lock().width()
     }
 
     pub fn height(&self) -> u32 {
-        self.screen.lock().height()
+        SCREEN.lock().height()
     }
 
     pub const fn frame_count(&self) -> u32 {
@@ -67,7 +67,7 @@ impl Pyxel {
         let height = data_str.len() as u32;
         let image = Image::new(width, height);
         image.lock().set(0, 0, data_str);
-        Platform::instance().set_icon(&image.lock().canvas.data, &self.colors, scale);
+        Platform::instance().set_icon(&image.lock().canvas.data, &*COLORS.lock(), scale);
     }
 
     pub fn is_fullscreen(&self) -> bool {
@@ -102,9 +102,6 @@ impl Pyxel {
         }
         if self.system.frame_count == 0 {
             self.system.next_update_ms = tick_count as f64 + self.system.one_frame_ms;
-            self.update_frame(Some(callback));
-            self.draw_frame(Some(callback));
-            self.system.frame_count += 1;
         } else {
             self.system.fps_profiler.end(tick_count);
             self.system.fps_profiler.start(tick_count);
@@ -125,10 +122,10 @@ impl Pyxel {
                 self.update_frame(Some(callback));
                 self.system.frame_count += 1;
             }
-            self.update_frame(Some(callback));
-            self.draw_frame(Some(callback));
-            self.system.frame_count += 1;
         }
+        self.update_frame(Some(callback));
+        self.draw_frame(Some(callback));
+        self.system.frame_count += 1;
     }
 
     pub fn show(&mut self) {
@@ -247,13 +244,13 @@ impl Pyxel {
         self.draw_perf_monitor();
         self.draw_cursor();
         Platform::instance().render_screen(
-            &self.screen.lock().canvas.data,
-            &self.colors,
+            &SCREEN.lock().canvas.data,
+            &*COLORS.lock(),
             BACKGROUND_COLOR,
         );
         self.resource.capture_screen(
-            &self.screen.lock().canvas.data,
-            &self.colors,
+            &SCREEN.lock().canvas.data,
+            &*COLORS.lock(),
             self.system.frame_count,
         );
         self.system
@@ -265,7 +262,7 @@ impl Pyxel {
         if !self.system.enable_perf_monitor {
             return;
         }
-        let mut screen = self.screen.lock();
+        let mut screen = SCREEN.lock();
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
@@ -277,16 +274,16 @@ impl Pyxel {
         screen.pal(2, 9);
 
         let fps = format!("{:.*}", 2, self.system.fps_profiler.average_fps());
-        screen.text(1.0, 0.0, &fps, 1, self.font.clone());
-        screen.text(0.0, 0.0, &fps, 2, self.font.clone());
+        screen.text(1.0, 0.0, &fps, 1);
+        screen.text(0.0, 0.0, &fps, 2);
 
         let update_time = format!("{:.*}", 2, self.system.update_profiler.average_time());
-        screen.text(1.0, 6.0, &update_time, 1, self.font.clone());
-        screen.text(0.0, 6.0, &update_time, 2, self.font.clone());
+        screen.text(1.0, 6.0, &update_time, 1);
+        screen.text(0.0, 6.0, &update_time, 2);
 
         let draw_time = format!("{:.*}", 2, self.system.draw_profiler.average_time());
-        screen.text(1.0, 12.0, &draw_time, 1, self.font.clone());
-        screen.text(0.0, 12.0, &draw_time, 2, self.font.clone());
+        screen.text(1.0, 12.0, &draw_time, 1);
+        screen.text(0.0, 12.0, &draw_time, 2);
 
         screen.canvas.clip_rect = clip_rect;
         screen.canvas.camera_x = camera_x;
@@ -303,12 +300,12 @@ impl Pyxel {
         if !self.input.is_mouse_visible() {
             return;
         }
-        let width = self.cursor.lock().width() as i32;
-        let height = self.cursor.lock().height() as i32;
+        let width = CURSOR.lock().width() as i32;
+        let height = CURSOR.lock().height() as i32;
         if x <= -width || x >= self.width() as i32 || y <= -height || y >= self.height() as i32 {
             return;
         }
-        let mut screen = self.screen.lock();
+        let mut screen = SCREEN.lock();
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
@@ -319,7 +316,7 @@ impl Pyxel {
         screen.blt(
             x as f64,
             y as f64,
-            self.cursor.clone(),
+            CURSOR.clone(),
             0.0,
             0.0,
             width as f64,

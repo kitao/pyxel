@@ -98,10 +98,10 @@ impl PyxelCallback for App {
 
         pyxel.blt(0.0, 0.0, 0, 0.0, 0.0, 8.0, 8.0, None);
 
-        pyxel.screen.lock().blt(
+        pyxel::SCREEN.lock().blt(
             50.0,
             50.0,
-            pyxel.screen.clone(),
+            pyxel::SCREEN.clone(),
             0.0,
             0.0,
             100.0,

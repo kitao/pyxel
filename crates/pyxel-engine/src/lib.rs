@@ -12,12 +12,14 @@
     clippy::must_use_candidate,
     clippy::needless_pass_by_value,
     clippy::range_plus_one,
+    clippy::redundant_closure,
     clippy::suboptimal_flops,
     clippy::too_many_arguments,
     clippy::too_many_lines,
     clippy::unreadable_literal,
     clippy::unused_self,
-    clippy::wildcard_imports
+    clippy::wildcard_imports,
+    clippy::zero_ptr
 )]
 
 #[macro_use]
@@ -45,6 +47,9 @@ mod system;
 mod tilemap;
 mod types;
 
+use once_cell::sync::Lazy;
+use parking_lot::Mutex;
+
 use crate::audio::Audio;
 pub use crate::channel::{Channel, SharedChannel};
 use crate::graphics::Graphics;
@@ -61,6 +66,11 @@ use crate::system::System;
 pub use crate::tilemap::{SharedTilemap, Tilemap};
 pub use crate::types::*;
 
+pub static COLORS: Mutex<[Rgb8; NUM_COLORS as usize]> = Mutex::new(DEFAULT_COLORS);
+pub static SCREEN: Lazy<SharedImage> = Lazy::new(|| Image::new(1, 1));
+pub static CURSOR: Lazy<SharedImage> = Lazy::new(|| Graphics::new_cursor_image());
+pub static FONT: Lazy<SharedImage> = Lazy::new(|| Graphics::new_font_image());
+
 pub struct Pyxel {
     system: System,
     resource: Resource,
@@ -68,10 +78,6 @@ pub struct Pyxel {
     graphics: Graphics,
     audio: Audio,
     math: Math,
-    pub colors: [Rgb8; NUM_COLORS as usize],
-    pub screen: SharedImage,
-    pub cursor: SharedImage,
-    pub font: SharedImage,
 }
 
 pub trait PyxelCallback {
@@ -93,14 +99,13 @@ impl Pyxel {
         let title = title.unwrap_or(DEFAULT_TITLE);
         let fps = fps.unwrap_or(DEFAULT_FPS);
         let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
-        let display_scale = if let Some(scale) = display_scale {
+        let display_scale = display_scale.map_or(DisplayScale::Ratio(DISPLAY_RATIO), |scale| {
             DisplayScale::Scale(scale)
-        } else {
-            DisplayScale::Ratio(DISPLAY_RATIO)
-        };
+        });
         let capture_scale = capture_scale.unwrap_or(DEFAULT_CAPTURE_SCALE);
         let capture_sec = capture_sec.unwrap_or(DEFAULT_CAPTURE_SEC);
 
+        SCREEN.lock().resize(width, height);
         Platform::init(title, width, height, display_scale);
         let system = System::new(fps, quit_key);
         let resource = Resource::new(fps, capture_scale, capture_sec);
@@ -109,11 +114,6 @@ impl Pyxel {
         let audio = Audio::new();
         let math = Math::new();
 
-        let colors = DEFAULT_COLORS;
-        let screen = Image::new(width, height);
-        let cursor = Graphics::new_cursor_image();
-        let font = Graphics::new_font_image();
-
         let mut pyxel = Self {
             system,
             resource,
@@ -121,10 +121,6 @@ impl Pyxel {
             graphics,
             audio,
             math,
-            colors,
-            screen,
-            cursor,
-            font,
         };
         pyxel.icon(&ICON_DATA, ICON_SCALE);
         pyxel
