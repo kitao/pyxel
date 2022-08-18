@@ -1,3 +1,4 @@
+#[allow(unused_macros)]
 macro_rules! singleton {
     ($type: ty) => {
         static INSTANCE: once_cell::sync::OnceCell<parking_lot::Mutex<$type>> =
