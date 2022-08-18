@@ -89,7 +89,7 @@ impl Image {
     }
 
     pub fn resize(&mut self, width: u32, height: u32) {
-        self.canvas = Canvas::new(width, height);
+        self.canvas.resize(width, height);
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {

@@ -36,6 +36,10 @@ impl Tilemap {
         self.canvas.height()
     }
 
+    pub fn resize(&mut self, width: u32, height: u32) {
+        self.canvas.resize(width, height);
+    }
+
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = simplify_string(data_str[0]).len() as u32 / 4;
         let height = data_str.len() as u32;
