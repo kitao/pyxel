@@ -28,8 +28,6 @@ mod audio;
 mod blipbuf;
 mod canvas;
 mod channel;
-#[cfg(target_os = "emscripten")]
-mod emscripten;
 mod event;
 mod graphics;
 mod image;
