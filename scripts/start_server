@@ -6,6 +6,4 @@ SERVER_DIR=server
 WHEEL=pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl
 
 cd `dirname $0`/$ROOT_DIR
-rm $SERVER_DIR/*.whl
-cp $DIST_DIR/$WHEEL $SERVER_DIR/$WHEEL
 python3 -m http.server --directory $SERVER_DIR 8000
