@@ -6,6 +6,7 @@
 - Specified the platform versions in the workflows
 - Added fall death to the example #10
 - Fixed the example #12 not to capture the screen
+- Added the resize method for Image and Tilemap classes
 - Added WASM target (WIP)
 
 ## 1.7.2
