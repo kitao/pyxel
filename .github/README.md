@@ -1,4 +1,4 @@
-# <img src="../../docs/images/pyxel_logo_152x64.png">
+# <img src="../docs/images/pyxel_logo_152x64.png">
 
 [![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
@@ -7,19 +7,19 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H27VDKD)
 
-[ [English](README.md) | [中文](../../docs/README.cn.md) | [Deutsch](../../docs/README.de.md) | [Español](../../docs/README.es.md) | [Français](../../docs/README.fr.md) | [Italiano](../../docs/README.it.md) | [日本語](../../docs/README.ja.md) | [한국어](../../docs/README.ko.md) | [Português](../../docs/README.pt.md) | [Русский](../../docs/README.ru.md) ]
+[ [English](README.md) | [中文](../docs/README.cn.md) | [Deutsch](../docs/README.de.md) | [Español](../docs/README.es.md) | [Français](../docs/README.fr.md) | [Italiano](../docs/README.it.md) | [日本語](../docs/README.ja.md) | [한국어](../docs/README.ko.md) | [Português](../docs/README.pt.md) | [Русский](../docs/README.ru.md) ]
 
 **Pyxel** is a retro game engine for Python.
 
 Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
 
 <p>
-<img src="../../docs/images/01_hello_pyxel.gif" width="320">
-<img src="../../docs/images/02_jump_game.gif" width="320">
-<img src="../../docs/images/03_draw_api.gif" width="320">
-<img src="../../docs/images/04_sound_api.gif" width="320">
-<img src="../../docs/images/image_tilemap_editor.gif" width="320">
-<img src="../../docs/images/sound_music_editor.gif" width="320">
+<img src="../docs/images/01_hello_pyxel.gif" width="320">
+<img src="../docs/images/02_jump_game.gif" width="320">
+<img src="../docs/images/03_draw_api.gif" width="320">
+<img src="../docs/images/04_sound_api.gif" width="320">
+<img src="../docs/images/image_tilemap_editor.gif" width="320">
+<img src="../docs/images/sound_music_editor.gif" width="320">
 </p>
 
 Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
