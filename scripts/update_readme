@@ -5,7 +5,7 @@ import re
 
 ROOT_DIR = ".."
 RELPATH_README = "README.md"
-ABSPATH_README = "doc/README-abspath.md"
+ABSPATH_README = "docs/README-abspath.md"
 
 
 def update_readme():
