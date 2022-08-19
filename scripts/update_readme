@@ -5,7 +5,7 @@ import re
 
 ROOT_DIR = ".."
 RELPATH_README = ".github/README.md"
-ABSPATH_README = "docs/README.md"
+ABSPATH_README = "docs/README.en.md"
 
 
 def update_readme():
@@ -13,10 +13,10 @@ def update_readme():
     with open(RELPATH_README, "r", encoding="utf-8") as fh:
         text = re.sub(
             r'(src=")',
-            r"\1https://raw.githubusercontent.com/kitao/pyxel/main/",
+            r"\1https://raw.githubusercontent.com/kitao/pyxel/main/.github/",
             re.sub(
                 r'(\]\(|href=")(?!http)',
-                r"\1https://github.com/kitao/pyxel/blob/main/",
+                r"\1https://github.com/kitao/pyxel/blob/main/.github/",
                 fh.read(),
             ),
         )
