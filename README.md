@@ -1,4 +1,4 @@
-# <img src="doc/images/pyxel_logo_152x64.png">
+# <img src="docs/images/pyxel_logo_152x64.png">
 
 [![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
@@ -7,19 +7,19 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H27VDKD)
 
-[ [English](README.md) | [中文](doc/README.cn.md) | [Deutsch](doc/README.de.md) | [Español](doc/README.es.md) | [Français](doc/README.fr.md) | [Italiano](doc/README.it.md) | [日本語](doc/README.ja.md) | [한국어](doc/README.ko.md) | [Português](doc/README.pt.md) | [Русский](doc/README.ru.md) ]
+[ [English](README.md) | [中文](docs/README.cn.md) | [Deutsch](docs/README.de.md) | [Español](docs/README.es.md) | [Français](docs/README.fr.md) | [Italiano](docs/README.it.md) | [日本語](docs/README.ja.md) | [한국어](docs/README.ko.md) | [Português](docs/README.pt.md) | [Русский](docs/README.ru.md) ]
 
 **Pyxel** is a retro game engine for Python.
 
 Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
 
 <p>
-<img src="doc/images/01_hello_pyxel.gif" width="320">
-<img src="doc/images/02_jump_game.gif" width="320">
-<img src="doc/images/03_draw_api.gif" width="320">
-<img src="doc/images/04_sound_api.gif" width="320">
-<img src="doc/images/image_tilemap_editor.gif" width="320">
-<img src="doc/images/sound_music_editor.gif" width="320">
+<img src="docs/images/01_hello_pyxel.gif" width="320">
+<img src="docs/images/02_jump_game.gif" width="320">
+<img src="docs/images/03_draw_api.gif" width="320">
+<img src="docs/images/04_sound_api.gif" width="320">
+<img src="docs/images/image_tilemap_editor.gif" width="320">
+<img src="docs/images/sound_music_editor.gif" width="320">
 </p>
 
 Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
@@ -40,21 +40,13 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 
 ### Color Palette
 
-<img src="doc/images/05_color_palette.png">
+<img src="docs/images/05_color_palette.png">
 
-<img src="doc/images/pyxel_palette.png">
+<img src="docs/images/pyxel_palette.png">
 
 ## How to Install
 
-There are two types of Pyxel, a packaged version and a standalone version.
-
-### Install Packaged Version
-
-The packaged version of Pyxel uses Pyxel as a Python extension module.
-
-Recommended for those who are familiar with managing Python packages using the `pip` command or who want to develop full-fledged Python applications.
-
-**Windows**
+### Windows
 
 After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
 
@@ -62,7 +54,7 @@ After installing [Python3](https://www.python.org/) (version 3.7 or higher), run
 pip install -U pyxel
 ```
 
-**Mac**
+### Mac
 
 After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
 
@@ -70,7 +62,7 @@ After installing [Python3](https://www.python.org/) (version 3.7 or higher), run
 pip3 install -U pyxel
 ```
 
-**Linux**
+### Linux
 
 After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://www.python.org/) (version 3.7 or higher), and `python3-pip`, run the following command:
 
@@ -78,44 +70,7 @@ After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://
 sudo pip3 install -U pyxel
 ```
 
-If the above doesn't work, try self-building by following the steps below after installing `cmake` and `rust`:
-
-```sh
-git clone https://github.com/kitao/pyxel.git
-cd pyxel
-make clean all
-sudo pip3 install .
-```
-
-### Install Standalone Version
-
-The standalone version of Pyxel uses Pyxel as a standalone tool that does not depend on Python.
-
-Recommended for those who want to start programming easily without worrying about Python settings, or those who want to play Pyxel games immediately.
-
-**Windows**
-
-Download and run the latest version of the Windows installer (`pyxel-[version]-windows-setup.exe`) from the [Download Page](https://github.com/kitao/pyxel/releases).
-
-**Mac**
-
-After installing [Homebrew](https://brew.sh/), run the following commands:
-
-```sh
-brew tap kitao/pyxel
-brew install pyxel
-```
-
-**Linux**
-
-After installing the SDL2 package (`libsdl2-dev` for Ubuntu) and installing [Homebrew](https://brew.sh/), run the following commands:
-
-```sh
-brew tap kitao/pyxel
-brew install pyxel
-```
-
-If the above doesn't work, try self-building the packaged version.
+If the above doesn't work, try self-building according to the instructions in [Makefile](Makefile).
 
 ### Try Pyxel Examples
 
@@ -139,8 +94,8 @@ The examples to be copied are as follows:
 - [10_platformer.py](pyxel/examples/10_platformer.py) - Side-scrolling platform game with map
 - [11_offscreen.py](pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
 - [12_perlin_noise.py](pyxel/examples/12_perlin_noise.py) - Perlin noise animation
-- [30SecondsOfDaylight.pyxapp](doc/images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball.pyxapp](doc/images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [30SecondsOfDaylight.pyxapp](docs/images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](docs/images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
 
 An examples can be executed with the following commands:
 
@@ -278,7 +233,7 @@ Pyxel Editor has the following edit modes.
 
 The mode to edit the image banks.
 
-<img src="doc/images/image_editor.gif">
+<img src="docs/images/image_editor.gif">
 
 By dragging and dropping an image file (png/gif/jpeg) onto the Image Editor screen, the image can be loaded into the currently selected image bank.
 
@@ -286,19 +241,19 @@ By dragging and dropping an image file (png/gif/jpeg) onto the Image Editor scre
 
 The mode to edit tilemaps in which images of the image banks are arranged in a tile pattern.
 
-<img src="doc/images/tilemap_editor.gif">
+<img src="docs/images/tilemap_editor.gif">
 
 **Sound Editor:**
 
 The mode to edit sounds.
 
-<img src="doc/images/sound_editor.gif">
+<img src="docs/images/sound_editor.gif">
 
 **Music Editor:**
 
 The mode to edit musics in which the sounds are arranged in order of playback.
 
-<img src="doc/images/music_editor.gif">
+<img src="docs/images/music_editor.gif">
 
 ### Other Resource Creation Methods
 
@@ -445,12 +400,12 @@ Fill the area connected with the same color as (`x`, `y`) with color `col`.
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img` (0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color.
 
-<img src="doc/images/blt_figure.png">
+<img src="docs/images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
 Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
 
-<img src="doc/images/bltm_figure.png">
+<img src="docs/images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
 Draw a string `s` of color `col` at (`x`, `y`).

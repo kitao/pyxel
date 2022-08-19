@@ -1,0 +1,11 @@
+{
+    "files.exclude": {
+        "server/dist/*": true,
+        "server/pyxel/*": true,
+        "server/pyodide/*": true,
+    },
+    "rust-analyzer.linkedProjects": [
+        "crates/pyxel-engine/Cargo.toml",
+        "crates/pyxel-wrapper/Cargo.toml"
+    ],
+}

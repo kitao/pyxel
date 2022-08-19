@@ -1,0 +1,4 @@
+black
+flake8
+isort
+maturin
