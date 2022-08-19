@@ -6,7 +6,7 @@ build-backend = "maturin"
 name = "pyxel"
 version = "1.8.0"
 description = "A retro game engine for Python"
-readme = "../../doc/README-abspath.md"
+readme = "../../docs/README-abspath.md"
 requires-python = ">=3.7"
 license = { file = "../../LICENSE" }
 authors = [{ name = "Takashi Kitao", email = "takashi.kitao@gmail.com" }]
