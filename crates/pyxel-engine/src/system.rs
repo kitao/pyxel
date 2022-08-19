@@ -52,11 +52,10 @@ impl System {
         self.disable_next_frame_skip = true;
     }
 
-    pub fn run_one_frame(&mut self, callback: &mut dyn PyxelCallback) {
+    fn run_one_frame(&mut self, callback: &mut dyn PyxelCallback) {
         let tick_count = Platform::instance().tick_count();
         let sleep_ms = self.next_update_ms - tick_count as f64;
         if sleep_ms > 0.0 {
-            //self.wait_for_update_time();
             return;
         }
         if self.frame_count == 0 {
@@ -288,9 +287,10 @@ pub fn fullscreen(is_fullscreen: bool) {
 
 #[cfg(not(target_os = "emscripten"))]
 pub fn run<T: PyxelCallback>(mut callback: T) {
+    let system = System::instance();
     loop {
-        System::instance().run_one_frame(&mut callback);
-        System::instance().wait_for_update_time();
+        system.run_one_frame(&mut callback);
+        system.wait_for_update_time();
     }
 }
 
@@ -300,26 +300,28 @@ pub fn run<T: PyxelCallback>(callback: T) {
 }
 
 pub fn show() {
+    let system = System::instance();
     loop {
-        System::instance().update_frame(None);
-        System::instance().draw_frame(None);
-        System::instance().frame_count += 1;
+        system.update_frame(None);
+        system.draw_frame(None);
+        system.frame_count += 1;
     }
 }
 
 pub fn flip() {
-    System::instance().frame_count += 1;
-    if System::instance().next_update_ms < 0.0 {
-        System::instance().next_update_ms = Platform::instance().tick_count() as f64;
+    let system = System::instance();
+    system.frame_count += 1;
+    if system.next_update_ms < 0.0 {
+        system.next_update_ms = Platform::instance().tick_count() as f64;
     } else {
-        System::instance().wait_for_update_time();
+        system.wait_for_update_time();
     }
-    System::instance().next_update_ms += System::instance().one_frame_ms;
+    system.next_update_ms += system.one_frame_ms;
     let tick_count = Platform::instance().tick_count();
-    System::instance().fps_profiler.end(tick_count);
-    System::instance().fps_profiler.start(tick_count);
-    System::instance().update_frame(None);
-    System::instance().draw_frame(None);
+    system.fps_profiler.end(tick_count);
+    system.fps_profiler.start(tick_count);
+    system.update_frame(None);
+    system.draw_frame(None);
 }
 
 pub fn quit() {
