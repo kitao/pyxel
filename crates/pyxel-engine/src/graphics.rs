@@ -190,7 +190,7 @@ pub fn blt(
     crate::screen().lock().blt(
         x,
         y,
-        Graphics::instance().images[image_no as usize].clone(),
+        crate::image(image_no),
         image_x,
         image_y,
         width,
@@ -212,7 +212,7 @@ pub fn bltm(
     crate::screen().lock().bltm(
         x,
         y,
-        Graphics::instance().tilemaps[tilemap_no as usize].clone(),
+        crate::tilemap(tilemap_no),
         tilemap_x,
         tilemap_y,
         width,
