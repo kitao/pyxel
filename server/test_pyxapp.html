@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>pyodide</title>
+    <script src="pyodide/pyodide.js"></script>
+</head>
+
+<body>
+    <button id="start" type="button" disabled>Loading...</button> <br>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    <script type="text/javascript">
+        var pyodide;
+        async function main() {
+            const extension = "pyxapp"
+            const filename = (new URLSearchParams(location.search)).get(extension) || "megaball";
+            pyodide = await loadPyodide();
+            await pyodide.loadPackage("micropip");
+            const micropip = pyodide.pyimport("micropip");
+            await micropip.install("dist/pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl")
+            let zipResponse = await fetch(`pyxel/examples/${filename}.${extension}`);
+            let zipBinary = await zipResponse.arrayBuffer();
+            pyodide.unpackArchive(zipBinary, "zip");
+            const startButton = document.getElementById("start")
+            for (let name of pyodide.FS.readdir(filename)) {
+                if (name.endsWith(".pyxapp_startup_script")) {
+                    const startup = pyodide.FS.readFile(`${filename}/${name}`, { encoding: "utf8" })
+                    const script = pyodide.FS.readFile(`${filename}/${startup}`, { encoding: "utf8" })
+                    pyodide.FS.chdir(pyodide.FS.lookupPath(`${filename}/${startup}`, { parent: true }).path);
+                    startButton.addEventListener("click", () => pyodide.runPython(
+                        `import os; import sys;sys.path.append(os.getcwd());\n${script}`));
+                    break;
+                }
+            }
+            startButton.disabled = false
+            startButton.innerText = "Start"
+        }
+        main()
+    </script>
+</body>
+
+</html>

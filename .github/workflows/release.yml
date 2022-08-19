@@ -10,7 +10,7 @@ jobs:
     uses: kitao/pyxel/.github/workflows/build.yml@main
 
   create-release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: build
     steps:
     - run: |
@@ -65,7 +65,7 @@ jobs:
           }
 
   update-formula:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: create-release
     steps:
     - run: |
@@ -79,7 +79,7 @@ jobs:
         client-payload: '{"version": "${{ env.VERSION }}"}'
 
   publish-wheel:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: create-release
     steps:
     - run: |
@@ -94,7 +94,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
 
   publish-crates:
-    runs-on: macos-latest
+    runs-on: macos-11
     needs: create-release
     steps:
     - uses: actions/checkout@v2
