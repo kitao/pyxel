@@ -61,10 +61,6 @@ impl Tilemap {
         self.pyxel_tilemap.lock().image = pyxel::image(img);
     }
 
-    pub fn resize(&self, width: u32, height: u32) {
-        self.pyxel_tilemap.lock().resize(width, height);
-    }
-
     pub fn set(&mut self, x: i32, y: i32, data: Vec<&str>) {
         self.pyxel_tilemap.lock().set(x, y, &data);
     }
