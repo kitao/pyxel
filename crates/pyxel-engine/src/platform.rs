@@ -124,11 +124,11 @@ impl Platform {
         });
     }
 
-    pub fn screen_width(&self) -> u32 {
+    pub const fn screen_width(&self) -> u32 {
         self.screen_width
     }
 
-    pub fn screen_height(&self) -> u32 {
+    pub const fn screen_height(&self) -> u32 {
         self.screen_height
     }
 

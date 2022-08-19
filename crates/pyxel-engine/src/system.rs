@@ -17,7 +17,7 @@ pub trait PyxelCallback {
     fn draw(&mut self);
 }
 
-pub(crate) struct System {
+pub struct System {
     one_frame_ms: f64,
     next_update_ms: f64,
     disable_next_frame_skip: bool,
@@ -240,7 +240,7 @@ impl System {
         screen.blt(
             x as f64,
             y as f64,
-            crate::cursor().clone(),
+            crate::cursor(),
             0.0,
             0.0,
             width as f64,
