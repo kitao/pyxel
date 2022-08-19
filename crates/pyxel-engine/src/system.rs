@@ -11,9 +11,13 @@ use crate::resource::Resource;
 use crate::settings::{BACKGROUND_COLOR, MAX_SKIP_FRAMES, NUM_MEASURE_FRAMES};
 use crate::types::Key;
 use crate::utils::simplify_string;
-use crate::{PyxelCallback, COLORS, CURSOR, SCREEN};
 
-pub struct System {
+pub trait PyxelCallback {
+    fn update(&mut self);
+    fn draw(&mut self);
+}
+
+pub(crate) struct System {
     one_frame_ms: f64,
     next_update_ms: f64,
     disable_next_frame_skip: bool,
@@ -162,13 +166,13 @@ impl System {
         self.draw_perf_monitor();
         self.draw_cursor();
         Platform::instance().render_screen(
-            &SCREEN.lock().canvas.data,
-            &*COLORS.lock(),
+            &crate::screen().lock().canvas.data,
+            &*crate::colors().lock(),
             BACKGROUND_COLOR,
         );
         Resource::instance().capture_screen(
-            &SCREEN.lock().canvas.data,
-            &*COLORS.lock(),
+            &crate::screen().lock().canvas.data,
+            &crate::colors().lock(),
             self.frame_count,
         );
         self.draw_profiler.end(Platform::instance().tick_count());
@@ -178,7 +182,8 @@ impl System {
         if !self.enable_perf_monitor {
             return;
         }
-        let mut screen = SCREEN.lock();
+        let screen = crate::screen();
+        let mut screen = screen.lock();
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
@@ -217,13 +222,14 @@ impl System {
         if !Input::instance().is_mouse_visible() {
             return;
         }
-        let width = CURSOR.lock().width() as i32;
-        let height = CURSOR.lock().height() as i32;
+        let width = crate::cursor().lock().width() as i32;
+        let height = crate::cursor().lock().height() as i32;
         if x <= -width || x >= crate::width() as i32 || y <= -height || y >= crate::height() as i32
         {
             return;
         }
-        let mut screen = SCREEN.lock();
+        let screen = crate::screen();
+        let mut screen = screen.lock();
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
@@ -234,7 +240,7 @@ impl System {
         screen.blt(
             x as f64,
             y as f64,
-            CURSOR.clone(),
+            crate::cursor().clone(),
             0.0,
             0.0,
             width as f64,
@@ -249,11 +255,11 @@ impl System {
 }
 
 pub fn width() -> u32 {
-    SCREEN.lock().width()
+    Platform::instance().screen_width()
 }
 
 pub fn height() -> u32 {
-    SCREEN.lock().height()
+    Platform::instance().screen_height()
 }
 
 pub fn frame_count() -> u32 {
@@ -269,7 +275,7 @@ pub fn icon(data_str: &[&str], scale: u32) {
     let height = data_str.len() as u32;
     let image = Image::new(width, height);
     image.lock().set(0, 0, data_str);
-    Platform::instance().set_icon(&image.lock().canvas.data, &*COLORS.lock(), scale);
+    Platform::instance().set_icon(&image.lock().canvas.data, &*crate::colors().lock(), scale);
 }
 
 pub fn is_fullscreen() -> bool {

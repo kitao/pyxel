@@ -47,17 +47,14 @@ mod system;
 mod tilemap;
 mod types;
 
-use once_cell::sync::Lazy;
-use parking_lot::Mutex;
-
 use crate::audio::Audio;
 pub use crate::audio::{channel, music, play, play1, play_pos, playm, sound, stop, stop0};
-use crate::canvas::Canvas;
 pub use crate::channel::{Channel, SharedChannel};
 use crate::graphics::Graphics;
 pub use crate::graphics::{
-    blt, bltm, camera, camera0, circ, circb, clip, clip0, cls, elli, ellib, fill, image, image_no,
-    line, pal, pal0, pget, pset, rect, rectb, text, tilemap, tri, trib,
+    blt, bltm, camera, camera0, circ, circb, clip, clip0, cls, colors, cursor, elli, ellib, fill,
+    font, image, image_no, line, pal, pal0, pget, pset, rect, rectb, screen, text, tilemap, tri,
+    trib,
 };
 pub use crate::image::{Image, SharedImage};
 use crate::input::Input;
@@ -77,19 +74,10 @@ pub use crate::sound::{SharedSound, Sound};
 use crate::system::System;
 pub use crate::system::{
     flip, frame_count, fullscreen, height, icon, is_fullscreen, quit, run, show, title, width,
+    PyxelCallback,
 };
 pub use crate::tilemap::{SharedTilemap, Tilemap};
 pub use crate::types::*;
-
-pub static COLORS: Mutex<[Rgb8; NUM_COLORS as usize]> = Mutex::new(DEFAULT_COLORS);
-pub static SCREEN: Lazy<SharedImage> = Lazy::new(|| Image::new(1, 1));
-pub static CURSOR: Lazy<SharedImage> = Lazy::new(|| Graphics::new_cursor_image());
-pub static FONT: Lazy<SharedImage> = Lazy::new(|| Graphics::new_font_image());
-
-pub trait PyxelCallback {
-    fn update(&mut self);
-    fn draw(&mut self);
-}
 
 pub fn init(
     width: u32,
@@ -109,7 +97,6 @@ pub fn init(
     });
     let capture_scale = capture_scale.unwrap_or(DEFAULT_CAPTURE_SCALE);
     let capture_sec = capture_sec.unwrap_or(DEFAULT_CAPTURE_SEC);
-    SCREEN.lock().canvas = Canvas::new(width, height);
     Platform::init(title, width, height, display_scale);
     System::init(fps, quit_key);
     crate::icon(&ICON_DATA, ICON_SCALE);
