@@ -52,6 +52,7 @@ use parking_lot::Mutex;
 
 use crate::audio::Audio;
 pub use crate::audio::{channel, music, play, play1, play_pos, playm, sound, stop, stop0};
+use crate::canvas::Canvas;
 pub use crate::channel::{Channel, SharedChannel};
 use crate::graphics::Graphics;
 pub use crate::graphics::{
@@ -108,7 +109,7 @@ pub fn init(
     });
     let capture_scale = capture_scale.unwrap_or(DEFAULT_CAPTURE_SCALE);
     let capture_sec = capture_sec.unwrap_or(DEFAULT_CAPTURE_SEC);
-    SCREEN.lock().resize(width, height);
+    SCREEN.lock().canvas = Canvas::new(width, height);
     Platform::init(title, width, height, display_scale);
     System::init(fps, quit_key);
     crate::icon(&ICON_DATA, ICON_SCALE);
