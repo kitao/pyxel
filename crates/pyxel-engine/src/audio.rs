@@ -73,9 +73,7 @@ pub fn music(music_no: u32) -> SharedMusic {
 }
 
 pub fn play_pos(channel_no: u32) -> Option<(u32, u32)> {
-    Audio::instance().channels[channel_no as usize]
-        .lock()
-        .play_pos()
+    crate::channel(channel_no).lock().play_pos()
 }
 
 pub fn play(channel_no: u32, sequence: &[u32], start_tick: Option<u32>, should_loop: bool) {
@@ -84,39 +82,29 @@ pub fn play(channel_no: u32, sequence: &[u32], start_tick: Option<u32>, should_l
     }
     let sounds = sequence
         .iter()
-        .map(|sound_no| Audio::instance().sounds[*sound_no as usize].clone())
+        .map(|sound_no| crate::sound(*sound_no))
         .collect();
-    Audio::instance().channels[channel_no as usize]
+    crate::channel(channel_no)
         .lock()
         .play(sounds, start_tick, should_loop);
 }
 
 pub fn play1(channel_no: u32, sound_no: u32, start_tick: Option<u32>, should_loop: bool) {
-    Audio::instance().channels[channel_no as usize]
+    crate::channel(channel_no)
         .lock()
-        .play1(
-            Audio::instance().sounds[sound_no as usize].clone(),
-            start_tick,
-            should_loop,
-        );
+        .play1(crate::sound(sound_no), start_tick, should_loop);
 }
 
 pub fn playm(music_no: u32, start_tick: Option<u32>, should_loop: bool) {
-    let music = Audio::instance().musics[music_no as usize].clone();
+    let music = crate::music(music_no);
+    let music = music.lock();
     for i in 0..NUM_CHANNELS {
-        crate::play(
-            i,
-            &music.lock().sounds_list[i as usize],
-            start_tick,
-            should_loop,
-        );
+        crate::play(i, &music.sounds_list[i as usize], start_tick, should_loop);
     }
 }
 
 pub fn stop(channel_no: u32) {
-    Audio::instance().channels[channel_no as usize]
-        .lock()
-        .stop();
+    crate::channel(channel_no).lock().stop();
 }
 
 pub fn stop0() {
