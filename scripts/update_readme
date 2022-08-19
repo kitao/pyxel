@@ -4,8 +4,8 @@ import os
 import re
 
 ROOT_DIR = ".."
-RELPATH_README = "README.md"
-ABSPATH_README = "docs/README-abspath.md"
+RELPATH_README = ".github/README.md"
+ABSPATH_README = "docs/README.md"
 
 
 def update_readme():
