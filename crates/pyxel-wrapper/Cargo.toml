@@ -6,7 +6,7 @@ edition = "2021"
 description = "Python wrapper for Pyxel, a retro game engine for Python"
 repository = "https://github.com/kitao/pyxel"
 license = "MIT"
-readme = "README.md"
+readme = "../../README.en.md"
 categories = ["game-engines", "graphics", "multimedia"]
 keywords = ["game", "gamedev", "python"]
 
