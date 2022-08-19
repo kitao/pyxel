@@ -35,10 +35,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.self_rect.height()
     }
 
-    pub fn resize(&mut self, width: u32, height: u32) {
-        self.data = vec![vec![T::default(); width as usize]; height as usize];
-    }
-
     pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
         let x = as_i32(x);
         let y = as_i32(y);

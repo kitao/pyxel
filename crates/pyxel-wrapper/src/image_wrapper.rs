@@ -37,10 +37,6 @@ impl Image {
         self.pyxel_image.lock().height()
     }
 
-    pub fn resize(&self, width: u32, height: u32) {
-        self.pyxel_image.lock().resize(width, height);
-    }
-
     pub fn set(&self, x: i32, y: i32, data: Vec<&str>) {
         self.pyxel_image.lock().set(x, y, &data);
     }
