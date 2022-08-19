@@ -66,9 +66,9 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
 
         // Graphics
         "colors" => Py::new(py, Colors)?.into_py(py),
-        "screen" => wrap_pyxel_image(pyxel::screen().clone()).into_py(py),
-        "cursor" => wrap_pyxel_image(pyxel::cursor().clone()).into_py(py),
-        "font" => wrap_pyxel_image(pyxel::font().clone()).into_py(py),
+        "screen" => wrap_pyxel_image(pyxel::screen()).into_py(py),
+        "cursor" => wrap_pyxel_image(pyxel::cursor()).into_py(py),
+        "font" => wrap_pyxel_image(pyxel::font()).into_py(py),
 
         // Others
         _ => {
