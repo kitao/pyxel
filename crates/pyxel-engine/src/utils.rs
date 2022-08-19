@@ -1,27 +1,3 @@
-#[allow(unused_macros)]
-macro_rules! singleton {
-    ($type: ty) => {
-        static INSTANCE: once_cell::sync::OnceCell<parking_lot::Mutex<$type>> =
-            once_cell::sync::OnceCell::new();
-
-        impl $type {
-            pub fn set_instance(instance: Self) {
-                INSTANCE.set(parking_lot::Mutex::new(instance)).unwrap();
-            }
-
-            pub fn instance() -> &'static parking_lot::Mutex<Self> {
-                INSTANCE.get().expect(&format!("Pyxel is not initialized"));
-            }
-        }
-
-        impl std::fmt::Debug for $type {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                f.debug_struct(stringify!($type)).finish()
-            }
-        }
-    };
-}
-
 macro_rules! unsafe_singleton {
     ($type: ty) => {
         static mut INSTANCE: *mut $type = 0 as *mut $type;
