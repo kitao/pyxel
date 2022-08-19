@@ -124,6 +124,14 @@ impl Platform {
         });
     }
 
+    pub fn screen_width(&self) -> u32 {
+        self.screen_width
+    }
+
+    pub fn screen_height(&self) -> u32 {
+        self.screen_height
+    }
+
     pub fn set_title(&mut self, title: &str) {
         self.sdl_canvas.window_mut().set_title(title).unwrap();
     }

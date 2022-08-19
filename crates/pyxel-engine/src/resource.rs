@@ -19,7 +19,6 @@ use crate::system::System;
 use crate::tilemap::Tilemap;
 use crate::types::{Color, Rgb8};
 use crate::utils::parse_version_string;
-use crate::SCREEN;
 
 pub trait ResourceItem {
     fn resource_name(item_no: u32) -> String;
@@ -155,7 +154,7 @@ pub fn save(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool
 pub fn screenshot(scale: Option<u32>) {
     let filename = Resource::export_path();
     let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
-    SCREEN.lock().save(&filename, scale);
+    crate::screen().lock().save(&filename, scale);
     System::instance().disable_next_frame_skip();
 }
 
