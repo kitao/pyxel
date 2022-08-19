@@ -1,0 +1,11 @@
+#!/bin/sh
+
+ROOT_DIR=..
+VENV=.venv
+
+cd `dirname $0`/$ROOT_DIR
+rm -rf $VENV
+python3 -m venv $VENV
+source $VENV/bin/activate
+pip3 install -U pip
+pip3 install -r requirements.txt

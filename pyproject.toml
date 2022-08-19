@@ -1,0 +1,32 @@
+[build-system]
+requires = ["maturin>=0.13,<0.14"]
+build-backend = "maturin"
+
+[project]
+name = "pyxel"
+version = "1.8.0"
+description = "A retro game engine for Python"
+readme = "../../docs/README-abspath.md"
+requires-python = ">=3.7"
+license = { file = "../../LICENSE" }
+authors = [{ name = "Takashi Kitao", email = "takashi.kitao@gmail.com" }]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Rust",
+    "Topic :: Games/Entertainment",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Multimedia :: Sound/Audio",
+]
+urls = { homepage = "https://github.com/kitao/pyxel" }
+
+[project.scripts]
+pyxel = "pyxel.cli:cli"
+
+[tool.maturin]
+manifest-path = "crates/pyxel-wrapper/Cargo.toml"
+python-source = "python"
