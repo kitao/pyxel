@@ -2,7 +2,7 @@ use std::process::exit;
 
 use pyo3::prelude::*;
 use pyo3::types::{PyAny, PyDict};
-use pyxel::PyxelCallback;
+use pyxel::{Key, PyxelCallback};
 #[cfg(not(target_os = "emscripten"))]
 use sysinfo::{Pid, PidExt, System, SystemExt};
 
@@ -16,7 +16,7 @@ fn init(
     height: u32,
     title: Option<&str>,
     fps: Option<u32>,
-    quit_key: Option<pyxel::Key>,
+    quit_key: Option<Key>,
     display_scale: Option<u32>,
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,

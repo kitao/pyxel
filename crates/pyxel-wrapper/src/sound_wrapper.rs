@@ -1,7 +1,7 @@
 use pyo3::prelude::*;
-use pyxel::SharedSound as PyxelSharedSound;
-use pyxel::Sound as PyxelSound;
-use pyxel::{Effect, Note, Speed, Tone, Volume};
+use pyxel::{
+    Effect, Note, SharedSound as PyxelSharedSound, Sound as PyxelSound, Speed, Tone, Volume,
+};
 
 macro_rules! define_private_methods_for_list {
     ($type: ty, $elems: ident) => {

@@ -2,7 +2,7 @@ use std::ptr;
 
 use pyo3::exceptions::{PyAttributeError, PyValueError};
 use pyo3::prelude::*;
-use pyxel::{Rgb8, COLORS, CURSOR, FONT, SCREEN};
+use pyxel::Rgb8;
 
 use crate::image_wrapper::wrap_pyxel_image;
 
@@ -11,11 +11,11 @@ struct Colors;
 
 impl Colors {
     fn list(&self) -> &[Rgb8] {
-        unsafe { &*ptr::addr_of!(*COLORS.lock()) }
+        unsafe { &*ptr::addr_of!(*pyxel::colors().lock()) }
     }
 
     fn list_mut(&mut self) -> &mut [Rgb8] {
-        unsafe { &mut *ptr::addr_of_mut!(*COLORS.lock()) }
+        unsafe { &mut *ptr::addr_of_mut!(*pyxel::colors().lock()) }
     }
 }
 
@@ -66,9 +66,9 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
 
         // Graphics
         "colors" => Py::new(py, Colors)?.into_py(py),
-        "screen" => wrap_pyxel_image(SCREEN.clone()).into_py(py),
-        "cursor" => wrap_pyxel_image(CURSOR.clone()).into_py(py),
-        "font" => wrap_pyxel_image(FONT.clone()).into_py(py),
+        "screen" => wrap_pyxel_image(pyxel::screen().clone()).into_py(py),
+        "cursor" => wrap_pyxel_image(pyxel::cursor().clone()).into_py(py),
+        "font" => wrap_pyxel_image(pyxel::font().clone()).into_py(py),
 
         // Others
         _ => {

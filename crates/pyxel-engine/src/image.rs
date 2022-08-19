@@ -16,7 +16,6 @@ use crate::settings::{
 use crate::tilemap::SharedTilemap;
 use crate::types::Color;
 use crate::utils::{add_file_extension, as_i32, as_u32, parse_hex_string, simplify_string};
-use crate::{COLORS, FONT};
 
 impl ToIndex for Color {
     fn to_index(&self) -> usize {
@@ -40,7 +39,7 @@ impl Image {
     }
 
     pub fn from_image(filename: &str) -> SharedImage {
-        let colors = &*COLORS.lock();
+        let colors = crate::colors().lock();
         let image_file = image::open(&Path::new(&filename))
             .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename))
             .to_rgb8();
@@ -131,7 +130,7 @@ impl Image {
     }
 
     pub fn save(&self, filename: &str, scale: u32) {
-        let colors = COLORS.lock();
+        let colors = crate::colors().lock();
         let width = self.width();
         let height = self.height();
         let mut image = RgbImage::new(width, height);
@@ -387,7 +386,7 @@ impl Image {
             self.blt(
                 x as f64,
                 y as f64,
-                FONT.clone(),
+                crate::font(),
                 src_x as f64,
                 src_y as f64,
                 FONT_WIDTH as f64,

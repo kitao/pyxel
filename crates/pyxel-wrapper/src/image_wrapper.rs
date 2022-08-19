@@ -1,7 +1,5 @@
 use pyo3::prelude::*;
-use pyxel::Color;
-use pyxel::Image as PyxelImage;
-use pyxel::SharedImage as PyxelSharedImage;
+use pyxel::{Color, Image as PyxelImage, SharedImage as PyxelSharedImage};
 
 use crate::tilemap_wrapper::Tilemap;
 

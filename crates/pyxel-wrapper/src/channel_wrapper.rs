@@ -1,6 +1,5 @@
 use pyo3::prelude::*;
-use pyxel::SharedChannel as PyxelSharedChannel;
-use pyxel::Volume;
+use pyxel::{SharedChannel as PyxelSharedChannel, Volume};
 
 use crate::sound_wrapper::Sound;
 
