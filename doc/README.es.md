@@ -230,7 +230,7 @@ EL Editor de Pyxel tiene los siguientes modos de edición:
 
 El modo para editar el banco de imágenes.
 
-<img src="doc/images/image_editor.gif">
+<img src="images/image_editor.gif">
 
 Arrastrando y soltando un archivo de imagen (png/jpg/gif) en el editor de imágenes, la imagen será cargada en el banco de imágenes seleccionado.
 
@@ -238,19 +238,19 @@ Arrastrando y soltando un archivo de imagen (png/jpg/gif) en el editor de imáge
 
 El modo para editar el mapa de losas o mapa en el que las imágenes en el banco de imágenes están organizados en un patrón de azulejos o baldosas
 
-<img src="doc/images/tilemap_editor.gif">
+<img src="images/tilemap_editor.gif">
 
 **Editor de sonido:**
 
 El modo para editar el sonido.
 
-<img src="doc/images/sound_editor.gif">
+<img src="images/sound_editor.gif">
 
 **Editor de música:**
 
 El modo para editar música en el que organiza los sonidos del editor de sonidos para poder reproducirlos.
 
-<img src="doc/images/music_editor.gif">
+<img src="images/music_editor.gif">
 
 ### Otros recursos en la creación de métodos
 
