@@ -6,6 +6,7 @@
 - Specified the platform versions in the workflows
 - Added fall death to the example #10
 - Fixed the example #12 not to capture the screen
+- Consolidated tool settings into pyproject.toml
 - Added WASM target (WIP)
 
 ## 1.7.2
