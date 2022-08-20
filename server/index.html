@@ -13,7 +13,7 @@
             let pyodide = await loadPyodide();
             await pyodide.loadPackage("micropip");
             const micropip = pyodide.pyimport("micropip");
-            await micropip.install("../dist/pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl");
+            await micropip.install("pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl");
             await pyodide.runPython(`
                 import pyxel
                 pyxel.init(200, 100)
