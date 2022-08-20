@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>02_jump_game</title>
+    <script src="pyodide/pyodide.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    <script type="text/javascript">
+        assets = ["cat_16x16.png",
+            "jump_game.pyxres",
+            "noguchi_128x128.png",
+            "offscreen.pyxres",
+            "platformer.pyxres",
+            "pyxel_logo_38x16.png",
+            "sample.pyxres",
+            "tileset_24x32.png",]
+        async function main() {
+            const filename = "02_jump_game.py"
+            const pyodide = await loadPyodide();
+            await pyodide.loadPackage("micropip")
+            const micropip = pyodide.pyimport("micropip")
+            await micropip.install("pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl")
+            pyodide.FS.mkdir("assets")
+            for (let assetName of assets) {
+                const asset = await fetch(`../python/pyxel/examples/assets/${assetName}`)
+                const assetData = new Uint8Array(await asset.arrayBuffer())
+                pyodide.FS.writeFile(`assets/${assetName}`, assetData, { encoding: 'binary' })
+            }
+            const response = await fetch(`../python/pyxel/examples/${filename}`)
+            const startButton = document.getElementById("start")
+            const script = await response.text()
+            pyodide.runPython(script)
+        }
+        main()
+    </script>
+</body>
+
+</html>
