@@ -17,8 +17,8 @@
             pyodide = await loadPyodide();
             await pyodide.loadPackage("micropip");
             const micropip = pyodide.pyimport("micropip");
-            await micropip.install("dist/pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl")
-            let zipResponse = await fetch(`pyxel/examples/${filename}.${extension}`);
+            await micropip.install("pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl")
+            let zipResponse = await fetch(`../python/pyxel/examples/${filename}.${extension}`);
             let zipBinary = await zipResponse.arrayBuffer();
             pyodide.unpackArchive(zipBinary, "zip");
             const startButton = document.getElementById("start")
