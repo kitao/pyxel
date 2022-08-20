@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>test</title>
+    <script src="pyodide/pyodide.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    <script type="text/javascript">
+        async function main() {
+            let pyodide = await loadPyodide();
+            await pyodide.loadPackage("micropip");
+            const micropip = pyodide.pyimport("micropip");
+            await micropip.install("pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl");
+            await pyodide.runPython(`
+                import pyxel
+                pyxel.init(200, 100)
+
+                x = 0
+
+                def update():
+                    global x
+                    x += 1
+
+                def draw():
+                    pyxel.cls(2)
+                    pyxel.line(0,0, 100, 100, 7)
+                    pyxel.rect(40, 40, 40, 40, 8)
+                    pyxel.circ(x, 20, 20, 3)
+
+                pyxel.run(update, draw)
+            `);
+        }
+        main();
+    </script>
+</body>
+
+</html>

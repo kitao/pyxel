@@ -2,12 +2,11 @@
 <html>
 
 <head>
-    <title>pyodide</title>
+    <title>megaball</title>
     <script src="pyodide/pyodide.js"></script>
 </head>
 
 <body>
-    <button id="start" type="button" disabled>Loading...</button> <br>
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     <script type="text/javascript">
         var pyodide;
@@ -27,13 +26,10 @@
                     const startup = pyodide.FS.readFile(`${filename}/${name}`, { encoding: "utf8" })
                     const script = pyodide.FS.readFile(`${filename}/${startup}`, { encoding: "utf8" })
                     pyodide.FS.chdir(pyodide.FS.lookupPath(`${filename}/${startup}`, { parent: true }).path);
-                    startButton.addEventListener("click", () => pyodide.runPython(
-                        `import os; import sys;sys.path.append(os.getcwd());\n${script}`));
+                    pyodide.runPython(`import os; import sys;sys.path.append(os.getcwd());\n${script}`);
                     break;
                 }
             }
-            startButton.disabled = false
-            startButton.innerText = "Start"
         }
         main()
     </script>
