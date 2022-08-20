@@ -2,3 +2,4 @@ black
 flake8
 isort
 maturin
+pyproject-flake8
