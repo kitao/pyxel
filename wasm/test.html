@@ -2,7 +2,6 @@
 <html>
 
 <head>
-    <title>test</title>
     <script src="pyodide/pyodide.js"></script>
 </head>
 
@@ -10,10 +9,11 @@
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     <script type="text/javascript">
         async function main() {
+            const PYXEL_WHEEL = "pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl";
             let pyodide = await loadPyodide();
             await pyodide.loadPackage("micropip");
             const micropip = pyodide.pyimport("micropip");
-            await micropip.install("pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl");
+            await micropip.install(PYXEL_WHEEL);
             await pyodide.runPython(`
                 import pyxel
                 pyxel.init(200, 100)
