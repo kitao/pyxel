@@ -6,14 +6,16 @@
 </head>
 
 <body>
+    <div id="loading">Loading...</div>
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     <script type="text/javascript">
+        const PYXEL_WHEEL = "pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl";
         async function main() {
-            const PYXEL_WHEEL = "pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl";
             let pyodide = await loadPyodide();
             await pyodide.loadPackage("micropip");
             const micropip = pyodide.pyimport("micropip");
             await micropip.install(PYXEL_WHEEL);
+            document.getElementById("loading").remove();
             await pyodide.runPython(`
                 import pyxel
                 pyxel.init(200, 100)
