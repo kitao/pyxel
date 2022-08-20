@@ -26,14 +26,14 @@
 # Build the package for the specified target:
 #	make clean build TARGET=target_triple
 #
-# Build and test the package in the current venv:
+# Test the package in the current venv:
 #	make clean test
 #
 # Build the package for WASM in the dist directory
 #	make clean-wasm build-wasm
 #
-# Start a web server for the WASM version package:
-#	scriptes/start-server
+# Test the package for WASM in localhost:8000/server/
+#	make clean-wasm test-wasm
 #
 
 ROOT_DIR = .
@@ -56,7 +56,7 @@ endif
 WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly
 WASM_TARGET = wasm32-unknown-emscripten
 
-.PHONY: all clean distclean lint format build install test clean-wasm build-wasm
+.PHONY: all clean distclean lint format build install test clean-wasm build-wasm install-wasm test-wasm
 
 all: build
 
@@ -97,11 +97,11 @@ build: format
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS)
 
 install: build
-	@pip install --force-reinstall $(DIST_DIR)/*$(shell arch).whl
+	@pip install --force-reinstall $(DIST_DIR)/*_$(shell arch).whl
 
 test: install
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
-	@python -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
+	@python3 -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 
 	@for example in $(EXAMPLES); do \
 		pyxel run $$example; \
@@ -123,3 +123,9 @@ clean-wasm:
 
 build-wasm:
 	@$(WASM_ENVVARS) make build TARGET=$(WASM_TARGET)
+
+install-wasm: build-wasm
+	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(ROOT_DIR)/server
+
+test-wasm: install-wasm
+	@$(SCRIPTS_DIR)/start_server
