@@ -2,10 +2,6 @@
 
 ROOT_DIR=..
 START_DIR=.
-DIST_DIR=dist
-SERVER_DIR=server
-WHEEL=*-emscripten_*.whl
 
 cd `dirname $0`/$ROOT_DIR
-cp -f $DIST_DIR/$WHEEL $SERVER_DIR
 python3 -m http.server --directory $START_DIR 8000
