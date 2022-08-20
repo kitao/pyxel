@@ -32,7 +32,7 @@
 # Build the package for WASM in the dist directory
 #	make clean-wasm build-wasm
 #
-# Test the package for WASM in localhost:8000/server/
+# Test the package for WASM in localhost:8000/wasm/
 #	make clean-wasm test-wasm
 #
 
@@ -125,7 +125,7 @@ build-wasm:
 	@$(WASM_ENVVARS) make build TARGET=$(WASM_TARGET)
 
 install-wasm: build-wasm
-	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(ROOT_DIR)/server
+	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(ROOT_DIR)/wasm
 
 test-wasm: install-wasm
 	@$(SCRIPTS_DIR)/start_server
