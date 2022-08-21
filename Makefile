@@ -18,7 +18,7 @@
 # Advance preparation:
 #	rustup install nightly
 #	scripts/setup_venv
-#	source .venv/vin/activate
+#	source .venv/bin/activate
 #
 # Build the package in the dist directory
 #	make clean build
@@ -97,7 +97,7 @@ build: format
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS)
 
 install: build
-	@pip install --force-reinstall $(DIST_DIR)/*_$(shell arch).whl
+	@pip3 install --force-reinstall $(DIST_DIR)/*_$(shell arch).whl
 
 test: install
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
