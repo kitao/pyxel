@@ -33,7 +33,3 @@ python-source = "python"
 
 [tool.isort]
 profile = "black"
-
-[tool.pflake8]
-max-line-length = 88
-ignore = ["E203", "W503", "W504"]
