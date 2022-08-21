@@ -96,10 +96,8 @@ build: format
 	@rm -f $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS)
 
-install: build
+test: build
 	@pip3 install --force-reinstall $(DIST_DIR)/*_$(shell arch).whl
-
-test: install
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
 	@python3 -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 
@@ -124,8 +122,6 @@ clean-wasm:
 build-wasm:
 	@$(WASM_ENVVARS) make build TARGET=$(WASM_TARGET)
 
-install-wasm: build-wasm
+test-wasm: build-wasm
 	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(ROOT_DIR)/wasm
-
-test-wasm: install-wasm
 	@$(SCRIPTS_DIR)/start_server
