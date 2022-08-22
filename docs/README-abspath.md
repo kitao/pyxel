@@ -7,7 +7,7 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H27VDKD)
 
-[ [English](https://github.com/kitao/pyxel/blob/main\/README.md) | [中文](https://github.com/kitao/pyxel/blob/main\/docs/README.cn.md) | [Deutsch](https://github.com/kitao/pyxel/blob/main\/docs/README.de.md) | [Español](https://github.com/kitao/pyxel/blob/main\/docs/README.es.md) | [Français](https://github.com/kitao/pyxel/blob/main\/docs/README.fr.md) | [Italiano](https://github.com/kitao/pyxel/blob/main\/docs/README.it.md) | [日本語](https://github.com/kitao/pyxel/blob/main\/docs/README.ja.md) | [한국어](https://github.com/kitao/pyxel/blob/main\/docs/README.ko.md) | [Português](https://github.com/kitao/pyxel/blob/main\/docs/README.pt.md) | [Русский](https://github.com/kitao/pyxel/blob/main\/docs/README.ru.md) ]
+[ [English](https://github.com/kitao/pyxel/blob/main/README.md) | [中文](https://github.com/kitao/pyxel/blob/main/docs/README.cn.md) | [Deutsch](https://github.com/kitao/pyxel/blob/main/docs/README.de.md) | [Español](https://github.com/kitao/pyxel/blob/main/docs/README.es.md) | [Français](https://github.com/kitao/pyxel/blob/main/docs/README.fr.md) | [Italiano](https://github.com/kitao/pyxel/blob/main/docs/README.it.md) | [日本語](https://github.com/kitao/pyxel/blob/main/docs/README.ja.md) | [한국어](https://github.com/kitao/pyxel/blob/main/docs/README.ko.md) | [Português](https://github.com/kitao/pyxel/blob/main/docs/README.pt.md) | [Русский](https://github.com/kitao/pyxel/blob/main/docs/README.ru.md) ]
 
 **Pyxel** is a retro game engine for Python.
 
@@ -70,7 +70,7 @@ After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://
 sudo pip3 install -U pyxel
 ```
 
-If the above doesn't work, try self-building according to the instructions in [Makefile](https://github.com/kitao/pyxel/blob/main\/Makefile).
+If the above doesn't work, try self-building according to the instructions in [Makefile](https://github.com/kitao/pyxel/blob/main/Makefile).
 
 ### Try Pyxel Examples
 
@@ -82,20 +82,20 @@ pyxel copy_examples
 
 The examples to be copied are as follows:
 
-- [01_hello_pyxel.py](https://github.com/kitao/pyxel/blob/main\/pyxel/examples/01_hello_pyxel.py) - Simplest application
-- [02_jump_game.py](https://github.com/kitao/pyxel/blob/main\/pyxel/examples/02_jump_game.py) - Jump game with Pyxel resource file
-- [03_draw_api.py](https://github.com/kitao/pyxel/blob/main\/pyxel/examples/03_draw_api.py) - Demonstration of drawing APIs
-- [04_sound_api.py](https://github.com/kitao/pyxel/blob/main\/pyxel/examples/04_sound_api.py) - Demonstration of sound APIs
-- [05_color_palette.py](https://github.com/kitao/pyxel/blob/main\/pyxel/examples/05_color_palette.py) - Color palette list
-- [06_click_game.py](https://github.com/kitao/pyxel/blob/main\/pyxel/examples/06_click_game.py) - Mouse click game
-- [07_snake.py](https://github.com/kitao/pyxel/blob/main\/pyxel/examples/07_snake.py) - Snake game with BGM
-- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/main\/pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing APIs
-- [09_shooter.py](https://github.com/kitao/pyxel/blob/main\/pyxel/examples/09_shooter.py) - Shoot'em up game with screen transition
-- [10_platformer.py](https://github.com/kitao/pyxel/blob/main\/pyxel/examples/10_platformer.py) - Side-scrolling platform game with map
-- [11_offscreen.py](https://github.com/kitao/pyxel/blob/main\/pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
-- [12_perlin_noise.py](https://github.com/kitao/pyxel/blob/main\/pyxel/examples/12_perlin_noise.py) - Perlin noise animation
-- [30SecondsOfDaylight.pyxapp](https://github.com/kitao/pyxel/blob/main\/docs/images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball.pyxapp](https://github.com/kitao/pyxel/blob/main\/docs/images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [01_hello_pyxel.py](https://github.com/kitao/pyxel/blob/main/pyxel/examples/01_hello_pyxel.py) - Simplest application
+- [02_jump_game.py](https://github.com/kitao/pyxel/blob/main/pyxel/examples/02_jump_game.py) - Jump game with Pyxel resource file
+- [03_draw_api.py](https://github.com/kitao/pyxel/blob/main/pyxel/examples/03_draw_api.py) - Demonstration of drawing APIs
+- [04_sound_api.py](https://github.com/kitao/pyxel/blob/main/pyxel/examples/04_sound_api.py) - Demonstration of sound APIs
+- [05_color_palette.py](https://github.com/kitao/pyxel/blob/main/pyxel/examples/05_color_palette.py) - Color palette list
+- [06_click_game.py](https://github.com/kitao/pyxel/blob/main/pyxel/examples/06_click_game.py) - Mouse click game
+- [07_snake.py](https://github.com/kitao/pyxel/blob/main/pyxel/examples/07_snake.py) - Snake game with BGM
+- [08_triangle_api.py](https://github.com/kitao/pyxel/blob/main/pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing APIs
+- [09_shooter.py](https://github.com/kitao/pyxel/blob/main/pyxel/examples/09_shooter.py) - Shoot'em up game with screen transition
+- [10_platformer.py](https://github.com/kitao/pyxel/blob/main/pyxel/examples/10_platformer.py) - Side-scrolling platform game with map
+- [11_offscreen.py](https://github.com/kitao/pyxel/blob/main/pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
+- [12_perlin_noise.py](https://github.com/kitao/pyxel/blob/main/pyxel/examples/12_perlin_noise.py) - Perlin noise animation
+- [30SecondsOfDaylight.pyxapp](https://github.com/kitao/pyxel/blob/main/docs/images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](https://github.com/kitao/pyxel/blob/main/docs/images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
 
 An examples can be executed with the following commands:
 
@@ -325,7 +325,7 @@ The current position of the mouse cursor
 The current value of the mouse wheel
 
 - `btn(key)`<br>
-Return `True` if `key` is pressed, otherwise return `False`. ([Key definition list](https://github.com/kitao/pyxel/blob/main\/pyxel/__init__.pyi))
+Return `True` if `key` is pressed, otherwise return `False`. ([Key definition list](https://github.com/kitao/pyxel/blob/main/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
 Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `repeat` are specified, `True` will be returned at the `repeat` frame interval when the `key` is held down for more than `hold` frames.
@@ -554,7 +554,7 @@ e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 Pyxel has "advanced APIs" that are not mentioned in this reference because they "may confuse users" or "need specialized knowledge to use".
 
-If you are familiar with your skills, try to create amazing works with [this](https://github.com/kitao/pyxel/blob/main\/pyxel/__init__.pyi) as a clue!
+If you are familiar with your skills, try to create amazing works with [this](https://github.com/kitao/pyxel/blob/main/pyxel/__init__.pyi) as a clue!
 
 ## How to Contribute
 
@@ -570,7 +570,7 @@ Anyone manually testing the code and reporting bugs or suggestions for enhanceme
 
 Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the Issue Tracker.
 
-Submitted pull request is deemed to have agreed to publish under [MIT License](https://github.com/kitao/pyxel/blob/main\/LICENSE).
+Submitted pull request is deemed to have agreed to publish under [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE).
 
 ## Other Information
 
@@ -581,7 +581,7 @@ Submitted pull request is deemed to have agreed to publish under [MIT License](h
 
 ## License
 
-Pyxel is under [MIT License](https://github.com/kitao/pyxel/blob/main\/LICENSE). It can be reused within proprietary software, provided that all copies of the software or its substantial portions include a copy of the terms of the MIT License and also a copyright notice.
+Pyxel is under [MIT License](https://github.com/kitao/pyxel/blob/main/LICENSE). It can be reused within proprietary software, provided that all copies of the software or its substantial portions include a copy of the terms of the MIT License and also a copyright notice.
 
 ## Recruiting Sponsors
 
