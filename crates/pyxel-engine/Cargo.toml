@@ -36,7 +36,6 @@ zip = { version = "0.6", default-features = false, features = ["deflate"] }
 [target.'cfg(target_os = "windows")'.dependencies]
 sdl2 = { version = "0.35", default-features = false, features = [
     "bundled",
-    "static-link",
     "unsafe_textures",
 ] }
 
