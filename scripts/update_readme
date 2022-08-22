@@ -11,20 +11,17 @@ ABSPATH_README = "docs/README-abspath.md"
 def update_readme():
     os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ROOT_DIR))
     relpath_dir = os.path.dirname(RELPATH_README)
+    relpath_dir = ("/" if relpath_dir else "") + relpath_dir + "/"
     with open(RELPATH_README, "r", encoding="utf-8") as fh:
         text = fh.read()
         text = re.sub(
             r'(\]\(|href=")(?!http)',
-            os.path.join(r"\1https://github.com/kitao/pyxel/blob/main", relpath_dir)
-            + "/",
+            r"\1https://github.com/kitao/pyxel/blob/main" + relpath_dir,
             text,
         )
         text = re.sub(
             r'(src=")',
-            os.path.join(
-                r"\1https://raw.githubusercontent.com/kitao/pyxel/main" + relpath_dir
-            )
-            + "/",
+            r"\1https://raw.githubusercontent.com/kitao/pyxel/main" + relpath_dir,
             text,
         )
     with open(ABSPATH_README, "w", encoding="utf-8") as fh:
