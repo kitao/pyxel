@@ -17,8 +17,7 @@
 #
 # Advance preparation:
 #	rustup install nightly
-#	scripts/setup_venv
-#	source .venv/bin/activate
+#	pip3 install -r requirements.txt
 #
 # Build the package in the dist directory
 #	make clean build
@@ -48,9 +47,11 @@ EXAMPLES = $(wildcard $(EXAMPLES_DIR)/*.py)
 ifeq ($(TARGET),)
 ADD_TARGET =
 BUILD_OPTS = --release
+BUILD_DIR = $(CRATES_DIR)/pyxel-wrapper/target/release
 else
 ADD_TARGET = rustup target add $(TARGET)
 BUILD_OPTS = --release --target $(TARGET)
+BUILD_DIR = $(CRATES_DIR)/pyxel-wrapper/target/$(TARGET)/release
 endif
 
 WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly
@@ -95,9 +96,13 @@ build: format
 	@$(ADD_TARGET)
 	@rm -f $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS)
+	@SDL2=$(BUILD_DIR)/SDL2.dll; \
+	if [ -e $$SDL2 ]; then \
+		cp -f $$SDL2 $(PYXEL_DIR); \
+	fi
 
 test: build
-	@pip3 install --force-reinstall $(DIST_DIR)/*_$(shell arch).whl
+	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
 	@python3 -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 
