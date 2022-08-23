@@ -1,15 +1,15 @@
 #!/bin/sh
 
 ROOT_DIR=..
-VENV=.venv
+VENV_DIR=venv
 
 cd `dirname $0`/$ROOT_DIR
-rm -rf $VENV
-python3 -m venv $VENV
+rm -rf $VENV_DIR
+python3 -m venv $VENV_DIR
 if [ "$COMSPEC" == "" ]; then
-    source $VENV/bin/activate
+    source $VENV_DIR/bin/activate
 else
-    . $VENV/Scripts/activate
+    source $VENV_DIR/Scripts/activate
 fi
 pip3 install -U pip
 pip3 install -r requirements.txt
