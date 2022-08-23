@@ -82,18 +82,18 @@ pyxel copy_examples
 
 Список примеров, которые будут скопированы:
 
-- [01_hello_pyxel.py](../pyxel/examples/01_hello_pyxel.py) - Простейшее приложение
-- [02_jump_game.py](../pyxel/examples/02_jump_game.py) - Игра прыжков с простейшими ресурсными файлами Pyxel
-- [03_draw_api.py](../pyxel/examples/03_draw_api.py) - Демонстрация API для рисования
-- [04_sound_api.py](../pyxel/examples/04_sound_api.py) - Демонстрация API для работы со звуком
-- [05_color_palette.py](../pyxel/examples/05_color_palette.py) - Цветовая палитра
-- [06_click_game.py](../pyxel/examples/06_click_game.py) - Игра с кликами мышкой
-- [07_snake.py](../pyxel/examples/07_snake.py) - Змейка с BGM
-- [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Демонстрация API по рисованию треугольных полигонов
-- [09_shooter.py](../pyxel/examples/09_shooter.py) - Игра жанра «убей всех» с переходом между экранами
-- [10_platformer.py](../pyxel/examples/10_platformer.py) - Платформер с боковым скроллингом и картой
-- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Внеэкранный рендеринг с помощью класса Image
-- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - Анимация шума Перлина
+- [01_hello_pyxel.py](../python/pyxel/examples/01_hello_pyxel.py) - Простейшее приложение
+- [02_jump_game.py](../python/pyxel/examples/02_jump_game.py) - Игра прыжков с простейшими ресурсными файлами Pyxel
+- [03_draw_api.py](../python/pyxel/examples/03_draw_api.py) - Демонстрация API для рисования
+- [04_sound_api.py](../python/pyxel/examples/04_sound_api.py) - Демонстрация API для работы со звуком
+- [05_color_palette.py](../python/pyxel/examples/05_color_palette.py) - Цветовая палитра
+- [06_click_game.py](../python/pyxel/examples/06_click_game.py) - Игра с кликами мышкой
+- [07_snake.py](../python/pyxel/examples/07_snake.py) - Змейка с BGM
+- [08_triangle_api.py](../python/pyxel/examples/08_triangle_api.py) - Демонстрация API по рисованию треугольных полигонов
+- [09_shooter.py](../python/pyxel/examples/09_shooter.py) - Игра жанра «убей всех» с переходом между экранами
+- [10_platformer.py](../python/pyxel/examples/10_platformer.py) - Платформер с боковым скроллингом и картой
+- [11_offscreen.py](../python/pyxel/examples/11_offscreen.py) - Внеэкранный рендеринг с помощью класса Image
+- [12_perlin_noise.py](../python/pyxel/examples/12_perlin_noise.py) - Анимация шума Перлина
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1-я победная игра Pyxel Jam от [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - Аркадная игра с физикой мяча от [Adam](https://twitter.com/helpcomputer0)
 

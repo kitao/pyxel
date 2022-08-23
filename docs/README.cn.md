@@ -82,18 +82,18 @@ pyxel copy_examples
 
 例程包含：
 
-- [01_hello_pyxel.py](../pyxel/examples/01_hello_pyxel.py) - 最简单的应用
-- [02_jump_game.py](../pyxel/examples/02_jump_game.py) - 用Pyxel制作的跳跃游戏
-- [03_draw_api.py](../pyxel/examples/03_draw_api.py) - 绘画API的使用示例
-- [04_sound_api.py](../pyxel/examples/04_sound_api.py) - 声音API的使用示例
-- [05_color_palette.py](../pyxel/examples/05_color_palette.py) - 调色板列表
-- [06_click_game.py](../pyxel/examples/06_click_game.py) - 鼠标点击游戏
-- [07_snake.py](../pyxel/examples/07_snake.py) - 带BGM的贪吃蛇游戏
-- [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - 三角形绘画API的使用示例
-- [09_shooter.py](../pyxel/examples/09_shooter.py) - 屏幕过渡射击游戏
-- [10_platformer.py](../pyxel/examples/10_platformer.py) - 屏幕横向滑动的游戏示例
-- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - 用图像类进行屏外渲染
-- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - 佩林噪音动画
+- [01_hello_pyxel.py](../python/pyxel/examples/01_hello_pyxel.py) - 最简单的应用
+- [02_jump_game.py](../python/pyxel/examples/02_jump_game.py) - 用Pyxel制作的跳跃游戏
+- [03_draw_api.py](../python/pyxel/examples/03_draw_api.py) - 绘画API的使用示例
+- [04_sound_api.py](../python/pyxel/examples/04_sound_api.py) - 声音API的使用示例
+- [05_color_palette.py](../python/pyxel/examples/05_color_palette.py) - 调色板列表
+- [06_click_game.py](../python/pyxel/examples/06_click_game.py) - 鼠标点击游戏
+- [07_snake.py](../python/pyxel/examples/07_snake.py) - 带BGM的贪吃蛇游戏
+- [08_triangle_api.py](../python/pyxel/examples/08_triangle_api.py) - 三角形绘画API的使用示例
+- [09_shooter.py](../python/pyxel/examples/09_shooter.py) - 屏幕过渡射击游戏
+- [10_platformer.py](../python/pyxel/examples/10_platformer.py) - 屏幕横向滑动的游戏示例
+- [11_offscreen.py](../python/pyxel/examples/11_offscreen.py) - 用图像类进行屏外渲染
+- [12_perlin_noise.py](../python/pyxel/examples/12_perlin_noise.py) - 佩林噪音动画
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 第1届Pyxel Jam比赛获胜者是[Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - 商场球类物理游戏[Adam](https://twitter.com/helpcomputer0)
 
