@@ -6,6 +6,10 @@ VENV=.venv
 cd `dirname $0`/$ROOT_DIR
 rm -rf $VENV
 python3 -m venv $VENV
-source $VENV/bin/activate
+if [ "$COMSPEC" == "" ]; then
+    source $VENV/bin/activate
+else
+    $VENV/Scripts/activate.bat
+fi
 pip3 install -U pip
 pip3 install -r requirements.txt
