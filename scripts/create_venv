@@ -9,7 +9,7 @@ python3 -m venv $VENV
 if [ "$COMSPEC" == "" ]; then
     source $VENV/bin/activate
 else
-    $VENV/Scripts/activate.bat
+    . $VENV/Scripts/activate
 fi
 pip3 install -U pip
 pip3 install -r requirements.txt
