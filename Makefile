@@ -11,6 +11,8 @@
 #	- Git Bash
 #
 #	[Linux]
+#	- python3-pip
+#	- python3-venv
 #	- SDL2 (e.g. libsdl2-dev for Ubuntu)
 #
 #	[WASM]
@@ -45,8 +47,6 @@ PYXEL_DIR = $(ROOT_DIR)/python/pyxel
 CRATES_DIR = $(ROOT_DIR)/crates
 SCRIPTS_DIR = $(ROOT_DIR)/scripts
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
-CRATES = $(wildcard $(CRATES_DIR)/pyxel-*)
-EXAMPLES = $(wildcard $(EXAMPLES_DIR)/*.py)
 SRC_SDL2 = $(CRATES_DIR)/pyxel-wrapper/target/$(TARGET)/release/SDL2.dll
 DST_SDL2 = $(PYXEL_DIR)/SDL2.dll
 
@@ -61,37 +61,26 @@ endif
 WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly
 WASM_TARGET = wasm32-unknown-emscripten
 
-.PHONY: all clean distclean lint format build install test clean-wasm build-wasm install-wasm test-wasm
+.PHONY: all clean distclean lint format build test clean-wasm build-wasm test-wasm
 
 all: build
 
 clean:
-	@for crate in $(CRATES); do \
-		cd $$crate; \
-		cargo clean $(BUILD_OPTS); \
-		cd -; \
-	done
+	@cd $(CRATES_DIR)/pyxel-engine; cargo clean $(BUILD_OPTS)
+	@cd $(CRATES_DIR)/pyxel-wrapper; cargo clean $(BUILD_OPTS)
 
 distclean:
-	@for crate in $(CRATES); do \
-		rm -rf $$crate/target; \
-	done
-	@rm -rf $(DIST_DIR)
+	@rm -rf $(CRATES_DIR)/pyxel-engine/target
+	@rm -rf $(CRATES_DIR)/pyxel-wrapper/target
 
 lint:
-	@for crate in $(CRATES); do \
-		cd $$crate; \
-		cargo clippy -q -- --no-deps; \
-		cd -; \
-	done
+	@cd $(CRATES_DIR)/pyxel-engine; cargo clippy -q -- --no-deps
+	@cd $(CRATES_DIR)/pyxel-wrapper; cargo clippy -q -- --no-deps
 	@flake8 $(SCRIPTS_DIR) $(PYXEL_DIR)
 
 format:
-	@for crate in $(CRATES); do \
-		cd $$crate; \
-		cargo +nightly fmt -- --emit=files; \
-		cd -; \
-	done
+	@cd $(CRATES_DIR)/pyxel-engine; cargo +nightly fmt -- --emit=files
+	@cd $(CRATES_DIR)/pyxel-wrapper; cargo +nightly fmt -- --emit=files
 	@isort $(ROOT_DIR)
 	@black $(ROOT_DIR)
 	@$(SCRIPTS_DIR)/update_readme
@@ -107,13 +96,22 @@ build: format
 	fi
 
 test: build
-	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
+	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
 	@python3 -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 
-	@for example in $(EXAMPLES); do \
-		pyxel run $$example; \
-	done
+	@pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
+	@pyxel run $(EXAMPLES_DIR)/02_jump_game.py
+	@pyxel run $(EXAMPLES_DIR)/03_draw_api.py
+	@pyxel run $(EXAMPLES_DIR)/04_sound_api.py
+	@pyxel run $(EXAMPLES_DIR)/05_color_palette.py
+	@pyxel run $(EXAMPLES_DIR)/06_click_game.py
+	@pyxel run $(EXAMPLES_DIR)/07_snake.py
+	@pyxel run $(EXAMPLES_DIR)/08_triangle_api.py
+	@pyxel run $(EXAMPLES_DIR)/09_shooter.py
+	@pyxel run $(EXAMPLES_DIR)/10_platformer.py
+	@pyxel run $(EXAMPLES_DIR)/11_offscreen.py
+	@pyxel run $(EXAMPLES_DIR)/12_perlin_noise.py
 	@pyxel play $(EXAMPLES_DIR)/30SecondsOfDaylight.pyxapp
 	@pyxel play $(EXAMPLES_DIR)/megaball.pyxapp
 	@pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
