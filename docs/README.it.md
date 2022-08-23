@@ -82,18 +82,18 @@ pyxel copy_examples
 
 Gli esempi da copiare sono i seguenti:
 
-- [01_hello_pyxel.py](../pyxel/examples/01_hello_pyxel.py) - Applicazione più semplice
-- [02_jump_game.py](../pyxel/examples/02_jump_game.py) - Un gioco di salto con file Pyxel di risorsa
-- [03_draw_api.py](../pyxel/examples/03_draw_api.py) - Dimostrazione delle API di disegno
-- [04_sound_api.py](../pyxel/examples/04_sound_api.py) - Dimostrazione delle API del suono
-- [05_color_palette.py](../pyxel/examples/05_color_palette.py) - Lista di colori nella palette
-- [06_click_game.py](../pyxel/examples/06_click_game.py) - Gioco punta e clicca
-- [07_snake.py](../pyxel/examples/07_snake.py) - Gioco snake con colonna sonora
-- [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Dimostrazione delle API per il disegno di un triangolo
-- [09_shooter.py](../pyxel/examples/09_shooter.py) - Gioco shoot'em up con transizioni schermo
-- [10_platformer.py](../pyxel/examples/10_platformer.py) - Gioco a piattaforme a scorrimento orizzontale con mappa
-- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Renderizzazione fuori campo con la classe Image
-- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - Animazione del rumore di Perlin
+- [01_hello_pyxel.py](../python/pyxel/examples/01_hello_pyxel.py) - Applicazione più semplice
+- [02_jump_game.py](../python/pyxel/examples/02_jump_game.py) - Un gioco di salto con file Pyxel di risorsa
+- [03_draw_api.py](../python/pyxel/examples/03_draw_api.py) - Dimostrazione delle API di disegno
+- [04_sound_api.py](../python/pyxel/examples/04_sound_api.py) - Dimostrazione delle API del suono
+- [05_color_palette.py](../python/pyxel/examples/05_color_palette.py) - Lista di colori nella palette
+- [06_click_game.py](../python/pyxel/examples/06_click_game.py) - Gioco punta e clicca
+- [07_snake.py](../python/pyxel/examples/07_snake.py) - Gioco snake con colonna sonora
+- [08_triangle_api.py](../python/pyxel/examples/08_triangle_api.py) - Dimostrazione delle API per il disegno di un triangolo
+- [09_shooter.py](../python/pyxel/examples/09_shooter.py) - Gioco shoot'em up con transizioni schermo
+- [10_platformer.py](../python/pyxel/examples/10_platformer.py) - Gioco a piattaforme a scorrimento orizzontale con mappa
+- [11_offscreen.py](../python/pyxel/examples/11_offscreen.py) - Renderizzazione fuori campo con la classe Image
+- [12_perlin_noise.py](../python/pyxel/examples/12_perlin_noise.py) - Animazione del rumore di Perlin
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - Gioco vincitore del primo Pyxel Jam sviluppato da [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - Gioco arcade di palla basato sulla fisica sviluppato da [Adam](https://twitter.com/helpcomputer0)
 

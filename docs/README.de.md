@@ -82,18 +82,18 @@ pyxel copy_examples
 
 Die zu kopierenden Beispiele lauten wie folgt:
 
-- [01_hello_pyxel.py](../pyxel/examples/01_hello_pyxel.py) - Einfaches Fenster
-- [02_jump_game.py](../pyxel/examples/02_jump_game.py) - Spring Spiel mit Pyxel-Ressource-Datei
-- [03_draw_api.py](../pyxel/examples/03_draw_api.py) - Demonstration der Zeichen-APIs
-- [04_sound_api.py](../pyxel/examples/04_sound_api.py) - Demonstration of Sound-APIs
-- [05_color_palette.py](../pyxel/examples/05_color_palette.py) - Farbpalleten Liste
-- [06_click_game.py](../pyxel/examples/06_click_game.py) - Maus-Klick-Spiel
-- [07_snake.py](../pyxel/examples/07_snake.py) - Snake mit BGM
-- [08_triangle_api.py](../pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing APIs
-- [09_shooter.py](../pyxel/examples/09_shooter.py) - Shoot'em up mit Displayübergängen
-- [10_platformer.py](../pyxel/examples/10_platformer.py) - Side-Scroller Platform Spiel mit Karte
-- [11_offscreen.py](../pyxel/examples/11_offscreen.py) - Offscreen-Rendering mit der Klasse Image
-- [12_perlin_noise.py](../pyxel/examples/12_perlin_noise.py) - Perlin-Lärm-Animation
+- [01_hello_pyxel.py](../python/pyxel/examples/01_hello_pyxel.py) - Einfaches Fenster
+- [02_jump_game.py](../python/pyxel/examples/02_jump_game.py) - Spring Spiel mit Pyxel-Ressource-Datei
+- [03_draw_api.py](../python/pyxel/examples/03_draw_api.py) - Demonstration der Zeichen-APIs
+- [04_sound_api.py](../python/pyxel/examples/04_sound_api.py) - Demonstration of Sound-APIs
+- [05_color_palette.py](../python/pyxel/examples/05_color_palette.py) - Farbpalleten Liste
+- [06_click_game.py](../python/pyxel/examples/06_click_game.py) - Maus-Klick-Spiel
+- [07_snake.py](../python/pyxel/examples/07_snake.py) - Snake mit BGM
+- [08_triangle_api.py](../python/pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing APIs
+- [09_shooter.py](../python/pyxel/examples/09_shooter.py) - Shoot'em up mit Displayübergängen
+- [10_platformer.py](../python/pyxel/examples/10_platformer.py) - Side-Scroller Platform Spiel mit Karte
+- [11_offscreen.py](../python/pyxel/examples/11_offscreen.py) - Offscreen-Rendering mit der Klasse Image
+- [12_perlin_noise.py](../python/pyxel/examples/12_perlin_noise.py) - Perlin-Lärm-Animation
 - [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 1. Pyxel Jam Gewinnspiel von [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](images/megaball.gif) - Arcade Ball Physik Spiel von [Adam](https://twitter.com/helpcomputer0)
 
