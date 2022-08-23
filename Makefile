@@ -13,7 +13,7 @@
 #	[Linux]
 #	- python3-pip
 #	- python3-venv
-#	- SDL2 (e.g. libsdl2-dev for Ubuntu)
+#	- libsdl2-dev
 #
 #	[WASM]
 #	- Emscripten 3.1.14
