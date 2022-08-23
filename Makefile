@@ -2,12 +2,13 @@
 # [How to build]
 #
 # Required tools:
+#	- make
 #	- cmake
 #	- rustup
 #	- python 3.7+
 #
 #	[Windows]
-#	- TBD
+#	- Git Bash
 #
 #	[Linux]
 #	- SDL2 (e.g. libsdl2-dev for Ubuntu)
@@ -17,6 +18,9 @@
 #
 # Advance preparation:
 #	rustup install nightly
+#	git clone --depth 1 https://github.com/kitao/pyxel.git
+#	cd pyxel
+#	(Create and activate a venv if you prefer)
 #	pip3 install -r requirements.txt
 #
 # Build the package in the dist directory
@@ -25,7 +29,7 @@
 # Build the package for the specified target:
 #	make clean build TARGET=target_triple
 #
-# Test the package in the current venv:
+# Build, install, and test the package in the current Python
 #	make clean test
 #
 # Build the package for WASM in the dist directory
