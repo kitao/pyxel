@@ -9,4 +9,3 @@ python3 -m venv $VENV_DIR
 source $VENV_DIR/*/activate
 python3 -m pip install -U pip
 pip3 install -r requirements.txt
-deactivate
