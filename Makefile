@@ -43,15 +43,15 @@ SCRIPTS_DIR = $(ROOT_DIR)/scripts
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 CRATES = $(wildcard $(CRATES_DIR)/pyxel-*)
 EXAMPLES = $(wildcard $(EXAMPLES_DIR)/*.py)
+SRC_SDL2 = $(CRATES_DIR)/pyxel-wrapper/target/$(TARGET)/release/SDL2.dll
+DST_SDL2 = $(PYXEL_DIR)/SDL2.dll
 
 ifeq ($(TARGET),)
 ADD_TARGET =
 BUILD_OPTS = --release
-BUILD_DIR = $(CRATES_DIR)/pyxel-wrapper/target/release
 else
 ADD_TARGET = rustup target add $(TARGET)
 BUILD_OPTS = --release --target $(TARGET)
-BUILD_DIR = $(CRATES_DIR)/pyxel-wrapper/target/$(TARGET)/release
 endif
 
 WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly
@@ -94,11 +94,12 @@ format:
 
 build: format
 	@$(ADD_TARGET)
-	@rm -f $(CRATES_DIR)/pyxel-wrapper/target/wheels/*.whl
+	@rm -f $(DST_SDL2)
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS)
-	@SDL2=$(BUILD_DIR)/SDL2.dll; \
-	if [ -e $$SDL2 ]; then \
-		cp -f $$SDL2 $(PYXEL_DIR); \
+	@if [ -e $(SRC_SDL2) ]; then \
+		cp $(SRC_SDL2) $(DST_SDL2); \
+		maturin build -o $(DIST_DIR) $(BUILD_OPTS); \
+		rm $(DST_SDL2); \
 	fi
 
 test: build
