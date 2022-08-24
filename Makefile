@@ -2,7 +2,6 @@
 # [How to build]
 #
 # Required tools:
-#	- make
 #	- cmake
 #	- rustup
 #	- python 3.7+
@@ -49,6 +48,16 @@ SCRIPTS_DIR = $(ROOT_DIR)/scripts
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 SRC_SDL2 = $(CRATES_DIR)/pyxel-wrapper/target/$(TARGET)/release/SDL2.dll
 DST_SDL2 = $(PYXEL_DIR)/SDL2.dll
+WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly
+WASM_TARGET = wasm32-unknown-emscripten
+
+ifeq ($(COMSPEC),)
+PYTHON = python3
+PIP = pip3
+else # Windows
+PYTHON = python
+PIP = pip
+endif
 
 ifeq ($(TARGET),)
 ADD_TARGET =
@@ -57,9 +66,6 @@ else
 ADD_TARGET = rustup target add $(TARGET)
 BUILD_OPTS = --release --target $(TARGET)
 endif
-
-WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly
-WASM_TARGET = wasm32-unknown-emscripten
 
 .PHONY: all clean distclean lint format build test clean-wasm build-wasm test-wasm
 
@@ -97,8 +103,8 @@ build: format
 
 test: build
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
-	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
-	@python3 -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
+	@$(PIP) install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
+	@$(PYTHON) -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 
 	@pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
 	@pyxel run $(EXAMPLES_DIR)/02_jump_game.py
