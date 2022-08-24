@@ -3,7 +3,7 @@
 ROOT_DIR=..
 VENV_DIR=venv
 
-if [ "$COMSPEC" == "" ]; then
+if [ "$COMSPEC" = "" ]; then
     PYTHON=python3
     PIP=pip3
 else # Windows
@@ -14,6 +14,6 @@ fi
 cd `dirname $0`/$ROOT_DIR
 rm -rf $VENV_DIR
 $PYTHON -m venv $VENV_DIR
-source $VENV_DIR/*/activate
+. $VENV_DIR/*/activate
 $PYTHON -m pip install -U pip
 $PIP install -r requirements.txt
