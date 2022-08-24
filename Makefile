@@ -2,6 +2,8 @@
 # [How to build]
 #
 # Required tools:
+#	- git
+#	- make
 #	- cmake
 #	- rustup
 #	- python 3.7+
