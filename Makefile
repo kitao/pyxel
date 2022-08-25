@@ -62,10 +62,10 @@ PIP = pip
 endif
 
 ifeq ($(TARGET),)
-ADD_TARGET =
+ENSURE_TARGET =
 BUILD_OPTS = --release
 else
-ADD_TARGET = rustup target add $(TARGET)
+ENSURE_TARGET = rustup target add $(TARGET)
 BUILD_OPTS = --release --target $(TARGET)
 endif
 
@@ -94,7 +94,7 @@ format:
 	@$(SCRIPTS_DIR)/update_readme
 
 build: format
-	@$(ADD_TARGET)
+	@$(ENSURE_TARGET)
 	@rm -f $(DST_SDL2)
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS)
 	@if [ -e $(SRC_SDL2) ]; then \
