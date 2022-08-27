@@ -20,4 +20,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Build
         run: |
+          rustup install nightly
+          ce pyxel
+          pip3 install -r requirements.txt
           make TARGET=${{ matrix.target }}
