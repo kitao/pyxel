@@ -5,6 +5,7 @@ on: [workflow_call, workflow_dispatch]
 jobs:
   macos:
     runs-on: macos-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -14,6 +15,10 @@ jobs:
         with:
           python-version: '3.10'
           architecture: x64
+
+      - name: Install Python packages
+        run: |
+          pip3 install -r requirements.txt
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -27,9 +32,8 @@ jobs:
         with:
           toolchain: nightly
           profile: minimal
-          components: rustfmt
 
-      - name: Build for x86_64
+      - name: Build for x86_64 and amd64
         run: |
-          pip3 install -r requirements.txt
           make TARGET=x86_64-apple-darwin
+          make TARGET=aarch64-apple-darwin
