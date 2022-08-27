@@ -55,7 +55,7 @@ jobs:
           components: rustfmt
 
       - name: Install Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
           architecture: ${{ matrix.arch }}
@@ -69,7 +69,7 @@ jobs:
           make TARGET=${{ matrix.target }}
 
       - name: Upload wheels
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: pyxel-wheels
           path: dist
