@@ -11,7 +11,7 @@ jobs:
           #- i686-pc-windows-msvc
           - x86_64-apple-darwin
           - aarch64-apple-darwin
-          - aarch64-unknown-linux-gnu
+          - x86_64-unknown-linux-gnu
         include:
           - target: x86_64-pc-windows-msvc
             os: windows-latest
@@ -35,10 +35,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Install packages for Linux
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt install -y g++ libsdl2-dev
+      #- name: Install packages for Linux
+      #  if: runner.os == 'Linux'
+      #  run: |
+      #    sudo apt install -y libsdl2-dev
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
