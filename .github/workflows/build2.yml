@@ -7,18 +7,8 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
-          architecture: x64
-
-      - name: Install Python packages
-        run: |
-          pip3 install -r requirements.txt
+      - name: Check-out repository
+        uses: actions/checkout@v3
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -32,8 +22,25 @@ jobs:
         with:
           toolchain: nightly
           profile: minimal
+          components: rustfmt
 
-      - name: Build for x86_64 and amd64
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+          architecture: x64
+
+      - name: Install Python packages
+        run: |
+          pip3 install -r requirements.txt
+
+      - name: Build wheels
         run: |
           make TARGET=x86_64-apple-darwin
           make TARGET=aarch64-apple-darwin
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v2
+      with:
+        name: wheels
+        path: dist
