@@ -23,4 +23,4 @@ jobs:
           rustup install nightly
           ce pyxel
           pip3 install -r requirements.txt
-          make TARGET=${{ matrix.target }}
+          make
