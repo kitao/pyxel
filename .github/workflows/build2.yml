@@ -39,8 +39,8 @@ jobs:
           make TARGET=x86_64-apple-darwin
           make TARGET=aarch64-apple-darwin
 
-    - name: Upload wheels
-      uses: actions/upload-artifact@v2
-      with:
-        name: wheels
-        path: dist
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: wheels
+          path: dist
