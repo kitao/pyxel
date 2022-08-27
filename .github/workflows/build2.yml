@@ -3,11 +3,11 @@ name: Build2
 on: [workflow_call, workflow_dispatch]
 
 jobs:
-  macos:
+  build-macos:
     runs-on: macos-latest
 
     steps:
-      - name: Check-out repository
+      - name: Check out repository
         uses: actions/checkout@v3
 
       - name: Install Rust
@@ -42,5 +42,50 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
-          name: wheels
+          name: pyxel-wheels
+          path: dist
+
+  build-windows:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        target: [x86, x64]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+
+      - name: Install Nightly Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          components: rustfmt
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+          architecture: ${{ matrix.target }}
+
+      - name: Install Python packages
+        run: |
+          pip3 install -r requirements.txt
+
+      - name: Build wheels
+        run: |
+          make
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v2
+        with:
+          name: pyxel-wheels
           path: dist
