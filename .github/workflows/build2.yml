@@ -13,11 +13,11 @@ jobs:
           - target: x86_64-pc-windows-msvc
             os: windows-latest
 
-    runs-on: $ { { matrix.os } }
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Setup code
         uses: actions/checkout@v2
       - name: Build
         run: |
-          make TARGET=$ { { matrix.target } }
+          make TARGET=${{ matrix.target }}
