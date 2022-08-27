@@ -11,7 +11,7 @@ jobs:
           - x86_64-pc-windows-msvc
         include:
           - target: x86_64-pc-windows-msvc
-              os: windows-latest
+            os: windows-latest
 
     runs-on: $ { { matrix.os } }
 
