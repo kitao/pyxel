@@ -3,125 +3,73 @@ name: Build
 on: [workflow_call, workflow_dispatch]
 
 jobs:
-  build-windows:
-    runs-on: windows-2022
-    steps:
-    - uses: actions/checkout@v2
-    - run: |
-        make
-        python -m pyxel
-    - uses: actions/upload-artifact@v2
-      with:
-        name: pyxel-windows-lib
-        path: pyxel/lib/windows/*
+  build:
+    strategy:
+      matrix:
+        target:
+          - x86_64-pc-windows-msvc
+          #- i686-pc-windows-msvc
+          - x86_64-apple-darwin
+          - aarch64-apple-darwin
+          - aarch64-unknown-linux-gnu
+        include:
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            arch: x64
+          - target: i686-pc-windows-msvc
+            os: windows-latest
+            arch: x86
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            arch: x64
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            arch: x64
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+            arch: x64
 
-  build-macos:
-    runs-on: macos-11
-    steps:
-    - uses: actions/checkout@v2
-    - run: |
-        make
-        python3 -m pyxel
-    - uses: actions/upload-artifact@v2
-      with:
-        name: pyxel-macos-lib
-        path: pyxel/lib/macos/*
+    runs-on: ${{ matrix.os }}
 
-  build-linux:
-    runs-on: ubuntu-20.04
     steps:
-    - run: |
-        sudo apt install -y libsdl2-dev
-    - uses: actions/checkout@v2
-    - run: |
-        make
-        python3 -m pyxel
-    - uses: actions/upload-artifact@v2
-      with:
-        name: pyxel-linux-lib
-        path: pyxel/lib/linux/*
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-  make-wheel:
-    runs-on: ubuntu-20.04
-    needs: [build-windows, build-macos, build-linux]
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
-      with:
-        name: pyxel-windows-lib
-        path: pyxel/lib/windows
-    - uses: actions/download-artifact@v2
-      with:
-        name: pyxel-macos-lib
-        path: pyxel/lib/macos
-    - uses: actions/download-artifact@v2
-      with:
-        name: pyxel-linux-lib
-        path: pyxel/lib/linux
-    - run: make wheel
-    - uses: actions/upload-artifact@v2
-      with:
-        name: pyxel-wheel
-        path: dist/*.whl
+      - name: Install packages for Linux
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt install -y g++ libsdl2-dev
 
-  package-windows:
-    runs-on: windows-2022
-    needs: make-wheel
-    steps:
-    - run: |
-        choco install zip
-        pip install pyoxidizer
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
-      with:
-        name: pyxel-wheel
-        path: dist
-    - run: |
-        make dist
-        lib/build/pyxel-*/pyxel.exe
-      shell: bash
-    - uses: actions/upload-artifact@v2
-      with:
-        name: pyxel-windows-zip
-        path: dist/*.zip
-    - uses: actions/upload-artifact@v2
-      with:
-        name: pyxel-windows-exe
-        path: dist/*.exe
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
 
-  package-macos:
-    runs-on: macos-11
-    needs: make-wheel
-    steps:
-    - run: brew install pyoxidizer
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
-      with:
-        name: pyxel-wheel
-        path: dist
-    - run: |
-        make dist
-        lib/build/pyxel-*/pyxel
-    - uses: actions/upload-artifact@v2
-      with:
-        name: pyxel-macos-zip
-        path: dist/*.zip
+      - name: Install Nightly Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          components: rustfmt
 
-  package-linux:
-    runs-on: ubuntu-20.04
-    needs: make-wheel
-    steps:
-    - run: |
-        brew install pyoxidizer
-    - uses: actions/checkout@v2
-    - uses: actions/download-artifact@v2
-      with:
-        name: pyxel-wheel
-        path: dist
-    - run: |
-        make dist
-        lib/build/pyxel-*/pyxel
-    - uses: actions/upload-artifact@v2
-      with:
-        name: pyxel-linux-zip
-        path: dist/*.zip
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          architecture: ${{ matrix.arch }}
+
+      - name: Install Python packages
+        run: |
+          pip3 install -r requirements.txt
+
+      - name: Build wheels
+        run: |
+          make TARGET=${{ matrix.target }}
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          name: pyxel-wheels
+          path: dist
