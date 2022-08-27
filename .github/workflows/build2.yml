@@ -35,6 +35,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
+      - name: Install SDL2 on Linux
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt install -y libsdl2-dev
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
