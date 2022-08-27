@@ -3,24 +3,33 @@ name: Build2
 on: [workflow_call, workflow_dispatch]
 
 jobs:
-  build:
-
-    strategy:
-      matrix:
-        target:
-          - aarch64-apple-darwin
-        include:
-          - target: aarch64-apple-darwin
-            os: macos-latest
-
-    runs-on: ${{ matrix.os }}
-
+  macos:
+    runs-on: macos-latest
     steps:
-      - name: Setup code
+      - name: Checkout code
         uses: actions/checkout@v2
-      - name: Build
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+          architecture: x64
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+
+      - name: Install Nightly Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          components: rustfmt
+
+      - name: Build for x86_64
         run: |
-          rustup install nightly
-          ce pyxel
           pip3 install -r requirements.txt
-          make
+          make TARGET=x86_64-apple-darwin
