@@ -3,11 +3,12 @@
 ## 1.8.0
 - Changed to include the blip-buf module
 - Renamed inner SDL2 module to PlatformSdl2
-- Specified the platform versions in the workflows
 - Added fall death to the example #10
 - Fixed the example #12 not to capture the screen
 - Consolidated tool settings into pyproject.toml
-- Added WASM target (WIP)
+- Fixed to work without audio
+- Changed to build wheels for each platform
+- Added WASM target (experimental)
 
 ## 1.7.2
 - Fixed function names in the READMEs
