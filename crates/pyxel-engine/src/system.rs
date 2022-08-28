@@ -354,13 +354,18 @@ mod emscripten {
         println!("I don't know why, but I have to wait a little longer.");
         println!("I don't know why, but I have to wait a little longer.");
 
-        unsafe extern "C" fn main_loop<T: PyxelCallback>(args:*mut c_void) {
+        unsafe extern "C" fn main_loop<T: PyxelCallback>(args: *mut c_void) {
             let callback = args as *mut T;
             System::instance().run_one_frame(&mut *callback);
         }
 
         unsafe {
-            emscripten_set_main_loop_arg(main_loop::<T>, Box::into_raw(Box::new(callback)) as *mut c_void, 0, 1);
+            emscripten_set_main_loop_arg(
+                main_loop::<T>,
+                Box::into_raw(Box::new(callback)) as *mut c_void,
+                0,
+                1,
+            );
         }
     }
 
