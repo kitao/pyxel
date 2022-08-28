@@ -330,26 +330,21 @@ pub fn quit() {
 
 #[cfg(target_os = "emscripten")]
 mod emscripten {
-    use std::cell::RefCell;
-    use std::mem::transmute;
-    use std::os::raw::c_int;
+    use std::os::raw::{c_int, c_void};
 
     use crate::{PyxelCallback, System};
 
     #[allow(non_camel_case_types)]
-    type em_callback_func = unsafe extern "C" fn();
+    type em_arg_callback_func = unsafe extern "C" fn(*mut c_void);
 
     extern "C" {
-        pub fn emscripten_set_main_loop(
-            func: em_callback_func,
+        pub fn emscripten_set_main_loop_arg(
+            func: em_arg_callback_func,
+            arg: *mut c_void,
             fps: c_int,
             simulate_infinite_loop: c_int,
         );
         pub fn emscripten_cancel_main_loop();
-    }
-
-    thread_local! {
-        static PYXEL_CALLBACK: RefCell<Option<Box<dyn PyxelCallback>>> = RefCell::new(None);
     }
 
     pub fn start_main_loop<T: PyxelCallback>(callback: T) {
@@ -359,22 +354,13 @@ mod emscripten {
         println!("I don't know why, but I have to wait a little longer.");
         println!("I don't know why, but I have to wait a little longer.");
 
-        PYXEL_CALLBACK.with(|d| {
-            *d.borrow_mut() = Some(unsafe {
-                transmute::<Box<dyn PyxelCallback>, Box<dyn PyxelCallback>>(Box::new(callback))
-            });
-        });
-
-        unsafe extern "C" fn main_loop<T: PyxelCallback>() {
-            PYXEL_CALLBACK.with(|d| {
-                if let Some(callback) = &mut *d.borrow_mut() {
-                    System::instance().run_one_frame(&mut **callback);
-                }
-            });
+        unsafe extern "C" fn main_loop<T: PyxelCallback>(args:*mut c_void) {
+            let callback = args as *mut T;
+            System::instance().run_one_frame(&mut *callback);
         }
 
         unsafe {
-            emscripten_set_main_loop(main_loop::<T>, 0, 1);
+            emscripten_set_main_loop_arg(main_loop::<T>, Box::into_raw(Box::new(callback)) as *mut c_void, 0, 1);
         }
     }
 
