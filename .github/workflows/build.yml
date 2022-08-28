@@ -10,9 +10,9 @@ jobs:
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             arch: x64
-          #- target: i686-pc-windows-msvc
-          #  os: windows-latest
-          #  arch: x86
+          - target: i686-pc-windows-msvc
+            os: windows-latest
+            arch: x86
           - target: x86_64-apple-darwin
             os: macos-latest
             arch: x64
@@ -33,6 +33,12 @@ jobs:
       #  if: runner.os == 'Linux'
       #  run: |
       #    sudo apt install -y libsdl2-dev
+
+      - name: Set up MSVC environment
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
