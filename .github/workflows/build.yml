@@ -22,9 +22,9 @@ jobs:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
             arch: x64
-          - target: aarch64-unknown-linux-gnu
-            os: ubuntu-latest
-            arch: x64
+          #- target: aarch64-unknown-linux-gnu
+          #  os: ubuntu-latest
+          #  arch: x64
 
     runs-on: ${{ matrix.os }}
 
@@ -32,10 +32,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Install Linux packages
-        if: matrix.target == 'aarch64-unknown-linux-gnu'
-        run: |
-          sudo apt install -y g++-aarch64-linux-gnu
+      #- name: Install Linux packages
+      #  if: matrix.target == 'aarch64-unknown-linux-gnu'
+      #  run: |
+      #    sudo apt install -y g++-aarch64-linux-gnu
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
