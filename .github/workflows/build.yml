@@ -22,17 +22,15 @@ jobs:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
             arch: x64
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+            arch: x64
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-
-      #- name: Install packages for Linux
-      #  if: runner.os == 'Linux'
-      #  run: |
-      #    sudo apt install -y libsdl2-dev
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
