@@ -50,7 +50,7 @@ pub struct Platform {
     sdl_texture: SdlTexture,
     #[allow(dead_code)]
     sdl_game_controllers: Vec<SdlGameController>,
-    sdl_audio: SdlAudio,
+    sdl_audio: Option<SdlAudio>,
     sdl_audio_device: Option<SdlAudioDevice<AudioContextHolder>>,
     screen_width: u32,
     screen_height: u32,
@@ -105,7 +105,12 @@ impl Platform {
                 sdl_game_controllers.push(gc);
             }
         }
-        let sdl_audio = sdl_context.audio().unwrap();
+        let sdl_audio = if let Ok(sdl_audio) = sdl_context.audio() {
+            Some(sdl_audio)
+        } else {
+            println!("Unable to initialize the audio subsystem");
+            None
+        };
         sdl_hint::set("SDL_MOUSE_FOCUS_CLICKTHROUGH", "1");
 
         Self::set_instance(Self {
@@ -399,15 +404,17 @@ impl Platform {
             channels: Some(1),
             samples: Some(num_samples as u16),
         };
-        self.sdl_audio_device = if let Ok(sdl_audio_device) =
-            self.sdl_audio
-                .open_playback(None, &spec, |_| AudioContextHolder { audio })
-        {
-            sdl_audio_device.resume();
-            Some(sdl_audio_device)
-        } else {
-            None
-        };
+        self.sdl_audio_device = self.sdl_audio.as_ref().and_then(|sdl_audio| {
+            if let Ok(sdl_audio_device) =
+                sdl_audio.open_playback(None, &spec, |_| AudioContextHolder { audio })
+            {
+                sdl_audio_device.resume();
+                Some(sdl_audio_device)
+            } else {
+                println!("Unable to open a new audio device");
+                None
+            }
+        });
     }
 
     pub fn pause_audio(&mut self) {
