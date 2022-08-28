@@ -34,12 +34,6 @@ jobs:
       #  run: |
       #    sudo apt install -y libsdl2-dev
 
-      - name: Set up MSVC environment
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: ${{ matrix.arch }}
-
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
