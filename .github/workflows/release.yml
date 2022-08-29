@@ -6,8 +6,12 @@ on:
       - 'v*.*.*'
 
 jobs:
+  build:
+    uses: kitao/pyxel/.github/workflows/build.yml@main
+
   release:
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Build wheels
         uses: kitao/pyxel/.github/workflows/build.yml@main
