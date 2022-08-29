@@ -28,7 +28,7 @@ Pyxel è open source e libero da usare. Cominciamo a fare giochi rétro con Pyxe
 
 ## Specifiche
 
-- Funziona su Windows, Mac, e Linux
+- Funziona su Windows, Mac, Linux e sui browser web
 - Programmazione con Python
 - Palette a 16 colori
 - 3 banche di immagini di dimensioni 256x256
