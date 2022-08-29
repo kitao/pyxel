@@ -9,14 +9,10 @@ jobs:
   build:
     uses: kitao/pyxel/.github/workflows/build.yml@main
 
-
   release:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Build wheels
-        uses: kitao/pyxel/.github/workflows/build.yml@main
-
       - name: Get Pyxel version
         run: |
           PYXEL_VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
