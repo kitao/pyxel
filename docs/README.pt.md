@@ -28,7 +28,7 @@ Pyxel é open source e livre para utilização. Vamos começar fazendo um jogo r
 
 ## Especificações
 
-- Roda em Windows, Mac e Linux
+- Funciona em Windows, Mac, Linux e navegadores web
 - Programação com Python
 - Paleta de 16 cores
 - 3 bancos de imagens de tamanho 256x256

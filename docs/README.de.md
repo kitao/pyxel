@@ -28,7 +28,7 @@ Pyxel ist quelloffen und kostenlos zu verwenden. Fang an, ein Retro-Spiel mit Py
 
 ## Spezifikationen
 
-- Läuft unter Windows, Mac, und Linux
+- Läuft auf Windows, Mac, Linux und Webbrowsern
 - Programming with Python
 - 16 color palette
 - 3 Image-Banks in der Größe 256x256
