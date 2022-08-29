@@ -6,102 +6,60 @@ on:
       - 'v*.*.*'
 
 jobs:
-  build:
-    uses: kitao/pyxel/.github/workflows/build.yml@main
-
-  create-release:
-    runs-on: ubuntu-20.04
-    needs: build
+  release:
+    runs-on: ubuntu-latest
     steps:
-    - run: |
-        VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
-        echo "VERSION=${VERSION}" >> $GITHUB_ENV
-    - uses: actions/create-release@v1
-      id: create_release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Pyxel ${{ env.VERSION }}
-        draft: false
-        prerelease: false
-    - uses: actions/download-artifact@v2
-      with:
-        name: pyxel-wheel
-        path: dist
-    - uses: actions/download-artifact@v2
-      with:
-        name: pyxel-windows-zip
-        path: dist
-    - uses: actions/download-artifact@v2
-      with:
-        name: pyxel-windows-exe
-        path: dist
-    - uses: actions/download-artifact@v2
-      with:
-        name: pyxel-macos-zip
-        path: dist
-    - uses: actions/download-artifact@v2
-      with:
-        name: pyxel-linux-zip
-        path: dist
-    - uses: actions/github-script@v3
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          const path = require('path');
-          const fs = require('fs');
-          const asset_dir = 'dist'
-          const release_id = '${{ steps.create_release.outputs.id }}';
-          for (let file of await fs.readdirSync(asset_dir)) {
-            console.log('uploadReleaseAsset', file);
-            await github.repos.uploadReleaseAsset({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: release_id,
-              name: file,
-              data: await fs.readFileSync(`${asset_dir}/${file}`)
-            });
-          }
+      - name: Build wheels
+        uses: kitao/pyxel/.github/workflows/build.yml@main
 
-  update-formula:
-    runs-on: ubuntu-20.04
-    needs: create-release
-    steps:
-    - run: |
-        VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
-        echo "VERSION=${VERSION}" >> $GITHUB_ENV
-    - uses: peter-evans/repository-dispatch@v1
-      with:
-        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        repository: kitao/homebrew-pyxel
-        event-type: update
-        client-payload: '{"version": "${{ env.VERSION }}"}'
+      - name: Get Pyxel version
+        run: |
+          PYXEL_VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
+          echo "PYXEL_VERSION=${PYXEL_VERSION}" >> $GITHUB_ENV
 
-  publish-wheel:
-    runs-on: ubuntu-20.04
-    needs: create-release
-    steps:
-    - run: |
-        VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
-        echo "VERSION=${VERSION}" >> $GITHUB_ENV
-    - run: |
-        pip3 install twine
-        wget https://github.com/kitao/pyxel/releases/download/v${{ env.VERSION }}/pyxel-${{ env.VERSION }}-py3-none-any.whl
-        twine upload *.whl
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      - name: Create release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Pyxel ${{ env.PYXEL_VERSION }}
+          draft: true
 
-  publish-crates:
-    runs-on: macos-11
-    needs: create-release
-    steps:
-    - uses: actions/checkout@v2
-    - run: |
-        cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
-        cd lib/engine
-        cargo publish
-        sleep 10
-        cd ../wrapper
-        cargo publish
+      - name: Download wheels
+        uses: actions/download-artifact@v3
+        with:
+          name: pyxel-wheels
+          path: dist
+
+      - name: Register wheels
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const path = require('path');
+            const fs = require('fs');
+            const asset_dir = 'dist'
+            const release_id = '${{ steps.create_release.outputs.id }}';
+            for (let file of await fs.readdirSync(asset_dir)) {
+              console.log('uploadReleaseAsset', file);
+              await github.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release_id,
+                name: file,
+                data: await fs.readFileSync(`${asset_dir}/${file}`)
+              });
+            }
+
+        - name: Publish wheels
+          run: |
+            python -m pip install -U pip
+            pip install twine
+            rm -f dist/*-emscripten_*.whl
+            ls dist/*.whl
+            #twine upload dist/*.whl
+          env:
+            TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+            TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
