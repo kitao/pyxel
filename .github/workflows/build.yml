@@ -10,21 +10,27 @@ jobs:
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             arch: x64
+
           #- target: i686-pc-windows-msvc
           #  os: windows-latest
           #  arch: x86
+
           - target: x86_64-apple-darwin
             os: macos-latest
             arch: x64
+
           - target: aarch64-apple-darwin
             os: macos-latest
             arch: x64
+
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
             arch: x64
+
           #- target: aarch64-unknown-linux-gnu
           #  os: ubuntu-latest
           #  arch: x64
+
           - target: wasm32-unknown-emscripten
             os: ubuntu-latest
             arch: x64
@@ -39,7 +45,7 @@ jobs:
         if: matrix.target == 'wasm32-unknown-emscripten'
         uses: mymindstorm/setup-emsdk@v11
         with:
-          version: 3.1.14
+          version: '3.1.14'
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -54,6 +60,11 @@ jobs:
           toolchain: nightly
           profile: minimal
           components: rustfmt
+
+      - name: Set Rust toolchain
+        if: matrix.target == 'wasm32-unknown-emscripten'
+        run: |
+          echo "RUSTUP_TOOLCHAIN=nightly" >> $GITHUB_ENV
 
       - name: Install Python
         uses: actions/setup-python@v4
