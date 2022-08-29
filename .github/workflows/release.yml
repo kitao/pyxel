@@ -18,41 +18,19 @@ jobs:
           PYXEL_VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
           echo "PYXEL_VERSION=${PYXEL_VERSION}" >> $GITHUB_ENV
 
-      - name: Create release
-        uses: actions/create-release@v1
-        id: create_release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Pyxel ${{ env.PYXEL_VERSION }}
-          draft: true
-
       - name: Download wheels
         uses: actions/download-artifact@v3
         with:
           name: pyxel-wheels
           path: dist
 
-      - name: Register wheels
-        uses: actions/github-script@v6
+      - name: Create release
+        uses: softprops/action-gh-release@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const path = require('path');
-            const fs = require('fs');
-            const asset_dir = 'dist'
-            const release_id = '${{ steps.create_release.outputs.id }}';
-            for (let file of await fs.readdirSync(asset_dir)) {
-              console.log('uploadReleaseAsset', file);
-              await github.repos.uploadReleaseAsset({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: release_id,
-                name: file,
-                data: await fs.readFileSync(`${asset_dir}/${file}`)
-              });
-            }
+          name: Pyxel ${{ env.PYXEL_VERSION }}
+          tag_name: ${{ github.ref }}
+          files: dist/*
+          draft: true
 
       - name: Publish wheels
         run: |
