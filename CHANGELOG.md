@@ -8,7 +8,7 @@
 - Consolidated tool settings into pyproject.toml
 - Fixed to work without audio
 - Changed to build wheels for each platform
-- Added WASM target (experimental)
+- Added experimental web browser support
 
 ## 1.7.2
 - Fixed function names in the READMEs
