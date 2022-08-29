@@ -36,7 +36,6 @@ jobs:
             arch: x64
 
     runs-on: ${{ matrix.os }}
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
