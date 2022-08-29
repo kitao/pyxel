@@ -37,7 +37,7 @@ jobs:
 
       - name: Install Emscripten
         if: matrix.target == 'wasm32-unknown-emscripten'
-        uses: mymindstorm/setup-emsdk@11
+        uses: mymindstorm/setup-emsdk@v11
         with:
           version: 3.1.14
 
