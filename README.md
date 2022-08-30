@@ -28,7 +28,7 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 
 ## Specifications
 
-- Runs on Windows, Mac, Linux, and Web browsers
+- Runs on Windows, Mac, Linux, and web browsers
 - Programming with Python
 - 16 color palette
 - 256x256 sized 3 image banks
