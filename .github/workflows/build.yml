@@ -115,8 +115,7 @@ jobs:
 
       - name: Install Python packages
         run: |
-          ls
-          pip install -r requirements.txt
+          python -m pip install -r requirements.txt
 
       - name: Build wheels
         run: |
