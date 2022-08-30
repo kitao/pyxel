@@ -115,8 +115,8 @@ jobs:
 
       - name: Install Python packages
         run: |
-          ls /opt/python
-          /opt/python/cp38-cp38/pip install -r requirements.txt
+          ls /opt/python/cp310-cp310
+          /opt/python/cp310-cp310/pip install -r requirements.txt
 
       - name: Build wheels
         run: |
