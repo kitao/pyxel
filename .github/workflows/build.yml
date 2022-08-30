@@ -110,7 +110,7 @@ jobs:
 
       - name: Install required packages
         run: |
-          dnf -y install SDL2-devel
+          yum -y install SDL2-devel
           pip install -r requirements.txt
 
       - name: Build wheels
