@@ -126,7 +126,7 @@ jobs:
       uses: docker/setup-qemu-action@v2
       with:
         image: quay.io/pypa/manylinux2014_aarch64:latest
-        platforms: arm64
+        platforms: all
 
     #- name: Run docker
     #  uses: addnab/docker-run-action@v3
