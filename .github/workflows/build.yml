@@ -120,7 +120,8 @@ jobs:
 
       - name: Build wheels
         run: |
-          make
+          export PATH="$PATH:/opt/python/cp310-cp310/bin"
+          make TARGET="x86_64-unknown-linux-gnu"
           ls dist/*
 
   #build-aarch64-linux:
