@@ -75,7 +75,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: pyxel-wheels
-          path: dist
+          path: dist/*.whl
 
   build-x86_64-linux:
     runs-on: ubuntu-latest
@@ -117,23 +117,26 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: pyxel-wheels
-          path: dist
+          path: dist/*.whl
 
   build-aarch64-linux:
     runs-on: ubuntu-latest
     steps:
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
+
+    - name: Set up Docker Buildx
+      id: buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Run docker
+      uses: addnab/docker-run-action@v3
       with:
         image: quay.io/pypa/manylinux2014_aarch64:latest
-        platforms: all
+        run: |
+          echo "first line"
+          echo "second line"
+          echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
+          python -v
 
-    #- name: Run docker
-    #  uses: addnab/docker-run-action@v3
-    #  with:
-    #    image: quay.io/pypa/manylinux2014_aarch64:latest
-    #    run: |
-    #      echo "first line"
-    #      echo "second line"
-    #      echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
-    #- target: aarch64-unknown-linux-gnu
+    # aarch64-unknown-linux-gnu
