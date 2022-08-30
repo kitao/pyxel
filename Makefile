@@ -48,8 +48,6 @@ PYXEL_DIR = $(ROOT_DIR)/python/pyxel
 CRATES_DIR = $(ROOT_DIR)/crates
 SCRIPTS_DIR = $(ROOT_DIR)/scripts
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
-SRC_SDL2 = $(CRATES_DIR)/pyxel-wrapper/target/$(TARGET)/release/SDL2.dll
-DST_SDL2 = $(PYXEL_DIR)/SDL2.dll
 WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly
 WASM_TARGET = wasm32-unknown-emscripten
 
@@ -91,17 +89,11 @@ format:
 	@cd $(CRATES_DIR)/pyxel-wrapper; cargo +nightly fmt -- --emit=files
 	@isort $(ROOT_DIR)
 	@black $(ROOT_DIR)
-	@$(SCRIPTS_DIR)/update_readme
 
 build: format
 	@$(ENSURE_TARGET)
-	@rm -f $(DST_SDL2)
+	@$(SCRIPTS_DIR)/update_readme
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS)
-	@if [ -e $(SRC_SDL2) ]; then \
-		cp $(SRC_SDL2) $(DST_SDL2); \
-		maturin build -o $(DIST_DIR) $(BUILD_OPTS); \
-		rm $(DST_SDL2); \
-	fi
 
 test: build
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
