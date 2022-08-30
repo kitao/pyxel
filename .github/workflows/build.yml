@@ -115,7 +115,7 @@ jobs:
 
       - name: Build wheels
         run: |
-          sudo apt install libsdl2-dev
+          apt install libsdl2-dev
           export PATH="$PATH:/opt/python/cp310-cp310/bin"
           make TARGET="x86_64-unknown-linux-gnu"
           ls dist/*
