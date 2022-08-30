@@ -116,7 +116,7 @@ jobs:
       - name: Install Python packages
         run: |
           alias pip='/opt/python/cp38-cp38/bin/pip'
-          pip install -r requirements.txt
+          sudo pip install -r requirements.txt
 
       - name: Build wheels
         run: |
