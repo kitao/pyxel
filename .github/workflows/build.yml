@@ -91,6 +91,9 @@ jobs:
       image: quay.io/pypa/manylinux2014_x86_64:latest
 
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -108,6 +111,7 @@ jobs:
       - name: Install Python
         uses: actions/setup-python@v4
         with:
+          python-version: '3.10'
           architecture: x86
           cache: 'pip'
           cache-dependency-path: 'requirements.txt'
