@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.8.1
+- Added i686 Windows support
+
 ## 1.8.0
 - Changed to include the blip-buf module
 - Renamed inner SDL2 module to PlatformSdl2
