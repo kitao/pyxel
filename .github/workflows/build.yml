@@ -84,3 +84,47 @@ jobs:
         with:
           name: pyxel-wheels
           path: dist
+
+  build-x86_64-linux:
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/pypa/manylinux2014_x86_64:latest
+
+    steps:
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+
+      - name: Install Nightly Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          components: rustfmt
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          architecture: ${{ matrix.arch }}
+
+      - name: Install Python packages
+        run: |
+          pip3 install -r requirements.txt
+
+      - name: Build wheels
+        run: |
+          make TARGET=${{ matrix.target }}
+
+  #build-aarch64-linux:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #  - name: Set up QEMU
+  #    id: qemu
+  #    uses: docker/setup-qemu-action@v1
+  #    with:
+  #      image: tonistiigi/binfmt:latest
+  #      platforms: all
