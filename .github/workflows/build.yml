@@ -107,7 +107,7 @@ jobs:
       - name: Install required packages
         run: |
           yum -y install SDL2-devel
-          pip install -r requirements.txt
+          pip3 install -r requirements.txt
 
       - name: Build wheels
         run: |
@@ -132,11 +132,13 @@ jobs:
     - name: Run docker
       uses: addnab/docker-run-action@v3
       with:
-        image: quay.io/pypa/manylinux2014_aarch64:latest
+        image: messense/manylinux2014-cross:aarch64
+        #image: quay.io/pypa/manylinux2014_aarch64:latest
         run: |
           echo "first line"
           echo "second line"
           echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
-          python -v
+          python3 -v
+          rustup
 
     # aarch64-unknown-linux-gnu
