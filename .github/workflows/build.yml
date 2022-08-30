@@ -108,16 +108,15 @@ jobs:
           profile: minimal
           components: rustfmt
 
-      - name: Set Python
-        run: |
-          echo "PATH=${PATH}:/opt/python/cp310-cp310/bin" >> $GITHUB_ENV
-
       - name: Install Python packages
         run: |
+          export PATH="$PATH:/opt/python/cp310-cp310/bin"
           pip install -r requirements.txt
 
       - name: Build wheels
         run: |
+          sudo apt install libsdl2-dev
+          export PATH="$PATH:/opt/python/cp310-cp310/bin"
           make TARGET="x86_64-unknown-linux-gnu"
           ls dist/*
 
