@@ -134,4 +134,5 @@ jobs:
         run: |
           echo "first line"
           echo "second line"
+          echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
     #- target: aarch64-unknown-linux-gnu
