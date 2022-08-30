@@ -109,7 +109,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-          architecture: ${{ matrix.arch }}
+          architecture: x86
 
       - name: Install Python packages
         run: |
@@ -117,7 +117,8 @@ jobs:
 
       - name: Build wheels
         run: |
-          make TARGET=${{ matrix.target }}
+          make
+          ls dist/*
 
   #build-aarch64-linux:
   #  runs-on: ubuntu-latest
