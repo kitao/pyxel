@@ -108,10 +108,10 @@ jobs:
           profile: minimal
           components: rustfmt
 
-      - name: Install Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.8'
+      #- name: Install Python
+      #  uses: actions/setup-python@v4
+      #  with:
+      #    python-version: '3.8'
 
       - name: Install Python packages
         run: |
