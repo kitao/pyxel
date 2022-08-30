@@ -125,9 +125,13 @@ jobs:
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
       with:
-        image: quay.io/pypa/manylinux2014_aarm64:latest
         platforms: arm64
 
+    - name: Run docker
+      uses: addnab/docker-run-action@v3
+      with:
+        image: quay.io/pypa/manylinux2014_aarm64:latest
+        run: |
+          echo "first line"
+          echo "second line"
     #- target: aarch64-unknown-linux-gnu
-    #  os: ubuntu-latest
-    #  arch: x64
