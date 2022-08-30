@@ -109,10 +109,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           architecture: x86
-
-      - name: Install Python packages
-        run: |
-          pip install -r requirements.txt
+          cache: 'pip'
+          cache-dependency-path: 'requirements.txt'
 
       - name: Build wheels
         run: |
