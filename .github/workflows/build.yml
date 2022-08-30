@@ -23,10 +23,6 @@ jobs:
             os: macos-latest
             arch: x64
 
-          - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
-            arch: x64
-
           #- target: aarch64-unknown-linux-gnu
           #  os: ubuntu-latest
           #  arch: x64
@@ -71,7 +67,7 @@ jobs:
           python-version: '3.10'
           architecture: ${{ matrix.arch }}
 
-      - name: Install Python packages
+      - name: Install required packages
         run: |
           pip3 install -r requirements.txt
 
@@ -112,8 +108,9 @@ jobs:
         run: |
           echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
 
-      - name: Install Python packages
+      - name: Install required packages
         run: |
+          dnf -y install SDL2-devel
           pip install -r requirements.txt
 
       - name: Build wheels
