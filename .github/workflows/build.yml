@@ -132,13 +132,14 @@ jobs:
     - name: Run docker
       uses: addnab/docker-run-action@v3
       with:
-        image: messense/manylinux2014-cross:aarch64
-        #image: quay.io/pypa/manylinux2014_aarch64:latest
+        image: quay.io/pypa/manylinux2014_aarch64:latest
         run: |
-          echo "first line"
-          echo "second line"
+          echo "*** Add Python to PATH ***"
           echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
-          python3 -v
-          rustup
 
-    # aarch64-unknown-linux-gnu
+          echo "*** Install required packages ***"
+          yum -y install SDL2-devel
+          pip3 install -r requirements.txt
+
+          echo "*** Build wheels ***"
+          make TARGET="aarch64-unknown-linux-gnu"
