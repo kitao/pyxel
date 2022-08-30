@@ -21,5 +21,8 @@ pyxel-engine = { path = "../pyxel-engine", version = "1.8.0" }
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 sysinfo = "0.23"
 
+[patch.crates-io]
+cmake = { git = "https://github.com/messense/cmake-rs.git", branch = "cross-compile" }
+
 [package.metadata.maturin]
 name = "pyxel.pyxel_wrapper"
