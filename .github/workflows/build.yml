@@ -130,7 +130,7 @@ jobs:
     - name: Run docker
       uses: addnab/docker-run-action@v3
       with:
-        image: quay.io/pypa/manylinux2014_aarm64:latest
+        image: quay.io/pypa/manylinux2014_aarch64:latest
         run: |
           echo "first line"
           echo "second line"
