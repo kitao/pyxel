@@ -125,8 +125,7 @@ jobs:
   #  runs-on: ubuntu-latest
   #  steps:
   #  - name: Set up QEMU
-  #    id: qemu
-  #    uses: docker/setup-qemu-action@v1
+  #    uses: docker/setup-qemu-action@v2
   #    with:
-  #      image: tonistiigi/binfmt:latest
-  #      platforms: all
+  #      image: quay.io/pypa/manylinux2014_aarm64:latest
+  #      platforms: arm64
