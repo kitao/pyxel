@@ -135,10 +135,10 @@ jobs:
         image: quay.io/pypa/manylinux2014_aarch64:latest
         run: |
           echo "*** Add Python to PATH ***"
-          echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
+          export PATH=$PATH:/opt/python/cp310-cp310/bin
 
           echo "*** Install required packages ***"
-          yum -y install SDL2-devel
+          #yum -y install SDL2-devel
           pip3 install -r requirements.txt
 
           echo "*** Build wheels ***"
