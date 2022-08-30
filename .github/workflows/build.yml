@@ -11,9 +11,9 @@ jobs:
             os: windows-latest
             arch: x64
 
-          #- target: i686-pc-windows-msvc
-          #  os: windows-latest
-          #  arch: x86
+          - target: i686-pc-windows-msvc
+            os: windows-latest
+            arch: x86
 
           - target: x86_64-apple-darwin
             os: macos-latest
