@@ -125,14 +125,15 @@ jobs:
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
       with:
+        image: quay.io/pypa/manylinux2014_aarch64:latest
         platforms: arm64
 
-    - name: Run docker
-      uses: addnab/docker-run-action@v3
-      with:
-        image: quay.io/pypa/manylinux2014_aarch64:latest
-        run: |
-          echo "first line"
-          echo "second line"
-          echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
+    #- name: Run docker
+    #  uses: addnab/docker-run-action@v3
+    #  with:
+    #    image: quay.io/pypa/manylinux2014_aarch64:latest
+    #    run: |
+    #      echo "first line"
+    #      echo "second line"
+    #      echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
     #- target: aarch64-unknown-linux-gnu
