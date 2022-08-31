@@ -23,6 +23,7 @@ sysinfo = "0.23"
 
 [patch.crates-io]
 cmake = { git = "https://github.com/messense/cmake-rs.git", branch = "cross-compile" }
+sdl2 = { git = "https://github.com/messense/rust-sdl2.git", branch = "fix-windows-static" }
 
 [package.metadata.maturin]
 name = "pyxel.pyxel_wrapper"
