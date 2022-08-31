@@ -67,6 +67,12 @@ ENSURE_TARGET = rustup target add $(TARGET)
 BUILD_OPTS = --release --target $(TARGET)
 endif
 
+ifeq ($(MATURIN_ZIG),)
+MATURIN_OPTS =
+else
+MATURIN_OPTS = --zig
+endif
+
 .PHONY: all clean distclean lint format build test clean-wasm build-wasm test-wasm
 
 all: build
