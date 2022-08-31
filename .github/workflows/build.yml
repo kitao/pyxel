@@ -86,7 +86,7 @@ jobs:
 
       - name: Build wheels
         run: |
-          ${{ matrix.make }} make TARGET=${{ matrix.target }}
+          ${{ matrix.make }} TARGET=${{ matrix.target }}
 
       - name: Upload wheels
         uses: actions/upload-artifact@v3
