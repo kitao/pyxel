@@ -28,16 +28,6 @@ jobs:
             arch: x64
             make: make
 
-          #- target: x86_64-unknown-linux-gnu
-          #  os: macos-latest
-          #  arch: x64
-          #  make: make ZIG=1
-
-          #- target: aarch64-unknown-linux-gnu
-          #  os: macos-latest
-          #  arch: x64
-          #  make: make ZIG=1
-
           - target: wasm32-unknown-emscripten
             os: ubuntu-latest
             arch: x64
@@ -71,12 +61,6 @@ jobs:
       - name: Install Python packages
         run: |
           pip3 install -r requirements.txt
-
-      - name: Install Zig
-        if: matrix.target == 'x86_64-unknown-linux-gnu' || matrix.target == 'aarch64-unknown-linux-gnu'
-        run: |
-          pip3 install ziglang
-          echo "MATURIN_WITH_ZIG=1" >> $GITHUB_ENV
 
       - name: Install Emscripten
         if: matrix.target == 'wasm32-unknown-emscripten'
