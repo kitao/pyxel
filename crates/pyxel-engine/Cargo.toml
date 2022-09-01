@@ -46,7 +46,5 @@ sdl2 = { version = "0.35", default-features = false, features = [
 ] }
 
 [patch.crates-io]
-sdl2 = { git = "https://github.com/messense/rust-sdl2.git", branch = "fix-windows-static" }
-
-[target.'cfg(not(target_os = "macos"))'.patch.crates-io]
 cmake = { git = "https://github.com/messense/cmake-rs.git", branch = "cross-compile" }
+sdl2 = { git = "https://github.com/messense/rust-sdl2.git", branch = "fix-windows-static" }
