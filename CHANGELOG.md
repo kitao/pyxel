@@ -2,6 +2,9 @@
 
 ## 1.8.1
 - Added i686 Windows support
+- Added aarch64 Linux support
+- Changed to use manylinux for building Linux wheels
+- Fixed links in the READMEs
 
 ## 1.8.0
 - Changed to include the blip-buf module
