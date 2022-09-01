@@ -325,7 +325,7 @@ The current position of the mouse cursor
 The current value of the mouse wheel
 
 - `btn(key)`<br>
-Return `True` if `key` is pressed, otherwise return `False`. ([Key definition list](pyxel/__init__.pyi))
+Return `True` if `key` is pressed, otherwise return `False`. ([Key definition list](python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
 Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `repeat` are specified, `True` will be returned at the `repeat` frame interval when the `key` is held down for more than `hold` frames.
@@ -554,7 +554,7 @@ e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 Pyxel has "advanced APIs" that are not mentioned in this reference because they "may confuse users" or "need specialized knowledge to use".
 
-If you are familiar with your skills, try to create amazing works with [this](pyxel/__init__.pyi) as a clue!
+If you are familiar with your skills, try to create amazing works with [this](python/pyxel/__init__.pyi) as a clue!
 
 ## How to Contribute
 
