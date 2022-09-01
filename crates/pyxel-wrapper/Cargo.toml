@@ -22,7 +22,7 @@ pyxel-engine = { path = "../pyxel-engine", version = "1.8.1" }
 sysinfo = "0.23"
 
 [build-dependencies]
-cc = "1.0.73"
+cc = "1.0"
 
 [patch.crates-io]
 cmake = { git = "https://github.com/messense/cmake-rs.git", branch = "cross-compile" }
