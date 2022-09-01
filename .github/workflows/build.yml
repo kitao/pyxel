@@ -162,9 +162,9 @@ jobs:
           profile: minimal
           components: rustfmt
 
-      - name: Add Python to PATH
-        run: |
-          echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
+      #- name: Add Python to PATH
+      #  run: |
+      #    echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
 
       #- name: Install SDL2
       #  run: |
