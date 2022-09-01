@@ -326,7 +326,7 @@ La position actuelle du curseur de la souris
 La valeur actuelle de la molette de la souris
 
 - `btn(key)`<br>
-Renvoie `True` si la touche `key` est appuyée, sinon renvoie `False` ([liste des touches](../pyxel/__init__.pyi))
+Renvoie `True` si la touche `key` est appuyée, sinon renvoie `False` ([liste des touches](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
 Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`. Quand `hold` et `repeat` sont spécifiés, `True` sera renvoyé à l’intervalle de frame `repeat` quand la touche `key` est appuyée pendant plus de `hold` frames
@@ -555,7 +555,7 @@ Par exemple `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 Pyxel a une "API avancée" qui n’est pas présentée ici car elle peut porter à confusion ou qu’elle nécessite des connaissances spécifiques pour être utilisée.
 
-Si vous savez ce que vous faîtes, essayez de créer des applications incroyables avec [ceci](../pyxel/__init__.pyi) comme indice !
+Si vous savez ce que vous faîtes, essayez de créer des applications incroyables avec [ceci](../python/pyxel/__init__.pyi) comme indice !
 
 ## Comment contribuer
 
