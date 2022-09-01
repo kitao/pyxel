@@ -67,6 +67,12 @@ ENSURE_TARGET = rustup target add $(TARGET)
 BUILD_OPTS = --release --target $(TARGET)
 endif
 
+ifeq ($(ZIG),)
+ZIG_OPT =
+else
+ZIG_OPT = --zig
+endif
+
 .PHONY: all clean distclean lint format build test clean-wasm build-wasm test-wasm
 
 all: build
@@ -93,7 +99,7 @@ format:
 build: format
 	@$(ENSURE_TARGET)
 	@$(SCRIPTS_DIR)/update_readme
-	@maturin build -o $(DIST_DIR) $(BUILD_OPTS)
+	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) $(ZIG_OPT)
 
 test: build
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
