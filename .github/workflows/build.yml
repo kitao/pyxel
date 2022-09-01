@@ -166,9 +166,9 @@ jobs:
         run: |
           echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
 
-      - name: Install SDL2
-        run: |
-          yum -y install SDL2-devel
+      #- name: Install SDL2
+      #  run: |
+      #    yum -y install SDL2-devel
 
       - name: Install Python packages
         run: |
