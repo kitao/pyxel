@@ -325,7 +325,7 @@ A posição atual do cursor do mouse
 O valor atual da roda de rolagem do mouse
 
 - `btn(key)`<br>
-Retorna `True` se `key` é pressionada, caso contrário retorna `False` ([lista de definições de teclas](../pyxel/__init__.pyi))
+Retorna `True` se `key` é pressionada, caso contrário retorna `False` ([lista de definições de teclas](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
 Retorna `True` se `key` for pressionada naquele quadro, caso contrário retorna `False`. Quando `hold` e `repeat` são especificados, `True` será retornado durante o intervalo de quadros `repeat`, no qual `key` estiver pressionada por mais que `hold` quadros
@@ -554,7 +554,7 @@ Ex. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 Pyxel possui "APIs avançadas" que não são mencionadas nesse manual de referência pois elas podem "confundir usuários" ou "precisam de conhecimento especializado para usar".
 
-Se você está familiarizado com suas habilidades, tente criar projetos incríveis utilizando [isto](../pyxel/__init__.pyi) como pista!
+Se você está familiarizado com suas habilidades, tente criar projetos incríveis utilizando [isto](../python/pyxel/__init__.pyi) como pista!
 
 ## Como Contribuir
 
