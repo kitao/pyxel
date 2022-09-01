@@ -28,15 +28,15 @@ jobs:
             arch: x64
             make: make
 
-          - target: x86_64-unknown-linux-gnu
-            os: macos-latest
-            arch: x64
-            make: make ZIG=1
+          #- target: x86_64-unknown-linux-gnu
+          #  os: macos-latest
+          #  arch: x64
+          #  make: make ZIG=1
 
-          - target: aarch64-unknown-linux-gnu
-            os: macos-latest
-            arch: x64
-            make: make ZIG=1
+          #- target: aarch64-unknown-linux-gnu
+          #  os: macos-latest
+          #  arch: x64
+          #  make: make ZIG=1
 
           - target: wasm32-unknown-emscripten
             os: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
           python-version: '3.10'
           architecture: ${{ matrix.arch }}
 
-      - name: Install required packages
+      - name: Install Python packages
         run: |
           pip3 install -r requirements.txt
 
@@ -87,6 +87,50 @@ jobs:
       - name: Build wheels
         run: |
           ${{ matrix.make }} TARGET=${{ matrix.target }}
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          name: pyxel-wheels
+          path: dist/*.whl
+
+  build-x86_64-linux:
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/pypa/manylinux2014_x86_64:latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+
+      - name: Install Nightly Rust
+        uses: actions-rs/toolchain@v1
+          toolchain: nightly
+          profile: minimal
+          components: rustfmt
+
+      - name: Add Python to PATH
+        run: |
+          echo "/opt/python/cp310-cp310/bin" >> $GITHUB_PATH
+
+      #- name: Install SDL2
+      #  run: |
+      #    yum -y install SDL2-devel
+
+      - name: Install Python packages
+        run: |
+          pip3 install -r requirements.txt
+
+      - name: Build wheels
+        run: |
+          make TARGET="x86_64-unknown-linux-gnu"
 
       - name: Upload wheels
         uses: actions/upload-artifact@v3
