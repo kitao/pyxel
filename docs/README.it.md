@@ -325,7 +325,7 @@ La posizione corrente del cursore del mouse
 Il valore corrente della rotella del mouse
 
 - `btn(key)`<br>
-Ritorna `True` se `key` è premuto, altrimenti ritorna `False` ([lista definizione tasti](../pyxel/__init__.pyi))
+Ritorna `True` se `key` è premuto, altrimenti ritorna `False` ([lista definizione tasti](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
 Ritorna `True` se `key` è premuto quel frame, altrimenti ritorna `False`. Quando `hold` e `repeat` sono specificati, `True` sarà ritornato all'intervallo frame `repeat` quando `key` è premuto per più di `hold` frame
@@ -554,7 +554,7 @@ e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 Pyxel ha "API avanzate" che non sono menzionate in questa documentazione perchè "potrebbero confondere gli utenti" oppure "necessitano di conoscenze specifiche per poter essere utilizzate".
 
-Se ti senti confidente sulle tue competenze, prova a creare lavori incredibili con [this](../pyxel/__init__.pyi) come idea!
+Se ti senti confidente sulle tue competenze, prova a creare lavori incredibili con [this](../python/pyxel/__init__.pyi) come idea!
 
 ## Come contribuire
 

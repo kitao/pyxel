@@ -326,7 +326,7 @@ pyxel play PYXEL_APP_FILE
 当前鼠标滚轮的值。
 
 - `btn(key)`<br>
-如果`key`被按下则返回`True`，否则返回`False`([按键定义列表](../pyxel/__init__.pyi))。
+如果`key`被按下则返回`True`，否则返回`False`([按键定义列表](../python/pyxel/__init__.pyi))。
 
 - `btnp(key, [hold], [repeat])`<br>
 如果`key`被按下则返回`True`。若设置了`hold`和`repeat`参数，则当`key`被按下持续`hold`帧时，在`repeat`帧间隙返回`True`。
@@ -555,7 +555,7 @@ Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the 
 
 Pyxel还有一些“高级API”，出于“可能令用户感到迷惑”、“需要专业知识”等一些原因，在本文尚未提及。
 
-如果你对自己的技术很熟悉，可以参阅[this](../pyxel/__init__.pyi)，尝试挑战自己并创造一些神奇的作品！
+如果你对自己的技术很熟悉，可以参阅[this](../python/pyxel/__init__.pyi)，尝试挑战自己并创造一些神奇的作品！
 
 ## 如何参与
 
