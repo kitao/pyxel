@@ -324,7 +324,7 @@ Die aktuelle Position der Maus
 Der aktuelle Wert des Scrollrads
 
 - `btn(key)`<br>
-Return `True` falls `key` gedrückt ist, sonst return `False` ([Liste der Schlüsseldefinitionen](../pyxel/__init__.pyi))
+Return `True` falls `key` gedrückt ist, sonst return `False` ([Liste der Schlüsseldefinitionen](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
 Return `True` falls `key` gedrückt ist, sonst return `False`. Wenn `hold` und `repeat` angegeben sind, wird `True` am `repeat` Bildintervall returned, falls `key` für mehr als `hold` Frames gedrückt ist
@@ -553,7 +553,7 @@ z.B. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 Pyxel verfügt über "fortgeschrittene APIs", die in dieser Referenz nicht erwähnt werden, weil sie "Benutzer verwirren können" oder "spezielles Wissen zur Nutzung erfordern".
 
-Wenn du mit deinen Fähigkeiten vertraut bist, versuche [hiermit](../pyxel/__init__.pyi) als Anhaltspunkt erstaunliche Werke zu schaffen!
+Wenn du mit deinen Fähigkeiten vertraut bist, versuche [hiermit](../python/pyxel/__init__.pyi) als Anhaltspunkt erstaunliche Werke zu schaffen!
 
 ## Wie du beitragen kannst
 
