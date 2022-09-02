@@ -29,12 +29,12 @@ jobs:
             make: make
 
           - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
+            os: macos-latest
             arch: x64
             make: make ZIG=1
 
           - target: aarch64-unknown-linux-gnu
-            os: ubuntu-latest
+            os: macos-latest
             arch: x64
             make: make ZIG=1
 
