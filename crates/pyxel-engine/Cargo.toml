@@ -33,14 +33,20 @@ rand = "0.8"
 rand_xoshiro = "0.6"
 zip = { version = "0.6", default-features = false, features = ["deflate"] }
 
-[target.'cfg(not(any(target_os = "linux", target_os = "emscripten")))'.dependencies]
+[target.'cfg(any(target_os = "windows", target_os = "macos"))'.dependencies]
 sdl2 = { version = "0.35", default-features = false, features = [
     "bundled",
     "static-link",
     "unsafe_textures",
 ] }
 
-[target.'cfg(any(target_os = "linux", target_os = "emscripten"))'.dependencies]
+[target.'cfg(target_os = "linux")'.dependencies]
+sdl2 = { version = "0.35", default-features = false, features = [
+    "bundled",
+    "unsafe_textures",
+] }
+
+[target.'cfg(target_os = "emscripten")'.dependencies]
 sdl2 = { version = "0.35", default-features = false, features = [
     "unsafe_textures",
 ] }
