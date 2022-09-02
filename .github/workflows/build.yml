@@ -120,6 +120,10 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Install SDL2
+        run: |
+          sudo yum -y install SDL2-devel
+
       - name: Build wheels
         run: |
           make TARGET=${{ matrix.target }}
