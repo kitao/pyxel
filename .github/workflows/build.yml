@@ -128,7 +128,7 @@ jobs:
           cd SDL && \
           CFLAGS="-O3 -fPIC" ./configure --build=x86_64-unknown-linux-gnu --host=${{ matrix.target }} --prefix=/usr/${{ matrix.target }}/ && \
           make -j4 && \
-          sudo make -j4 install && \
+          make -j4 install && \
           cd .. && \
           rm -rf SDL
 
