@@ -28,5 +28,8 @@ cc = "1.0"
 cmake = { git = "https://github.com/messense/cmake-rs.git", branch = "cross-compile" }
 sdl2 = { git = "https://github.com/Rust-SDL2/rust-sdl2.git", branch = "master" }
 
+[tool.matuin]
+skip-auditwheel = true
+
 [package.metadata.maturin]
 name = "pyxel.pyxel_wrapper"
