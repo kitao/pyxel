@@ -129,7 +129,10 @@ jobs:
           curl -sqLO https://www.x.org/releases/individual/lib/libX11-${X11_VERSION}.tar.gz
           tar xzf libX11-${X11_VERSION}.tar.gz
           cd libX11-${X11_VERSION}
-          CFLAGS="-O3 -fPIC" ./configure --prefix=/usr/${{ matrix.target }}/
+          CFLAGS="-O3 -fPIC" ./configure \
+            --build=x86_64-unknown-linux-gnu \
+            --host=${{ matrix.target }} \
+            --prefix=/usr/${{ matrix.target }}/
           make -j4
           make -j4 install
           cd ..
