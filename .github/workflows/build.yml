@@ -124,14 +124,15 @@ jobs:
           export CC=$TARGET_CC && \
           export AR=$TARGET_AR && \
           export RANLIB=$TARGET_RANLIB && \
-          echo "Building zlib" && \
-          VERS=2.24.0 && \
-          cd /tmp && \
-          curl -sqLO https://github.com/libsdl-org/SDL/releases/download/release-$VERS/SDL2-$VERS.tar.gz && \
-          tar xzf SDL2-$VERS.tar.gz && cd SDL2-$VERS && \
-          CFLAGS="-O3 -fPIC" ./configure --prefix=/usr/${{ matrix.target }}/ && \
-          make -j4 && make -j4 install && \
-          cd .. && rm -rf SDL2-$VERS.tar.gz SDL2-$VERS
+          git clone --depth 1 https://github.com/libsdl-org/SDL && \
+          cd SDL && \
+          mkdir build && \
+          cd build && \
+          CFLAGS="-O3 -fPIC" ../configure --prefix=/usr/${{ matrix.target }}/ && \
+          make -j4 && \
+          sudo make -j4 install && \
+          cd ../.. && \
+          rm -rf SDL
 
       - name: Build wheels
         run: |
