@@ -78,7 +78,7 @@ jobs:
           name: pyxel-wheels
           path: dist/*.whl
 
-  build-manylinux:
+  build-linux:
     strategy:
       fail-fast: false
       matrix:
