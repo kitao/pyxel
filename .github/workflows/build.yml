@@ -122,21 +122,21 @@ jobs:
       - name: Build and install SDL2
         run: |
           sudo apt install -y libx11-dev
-          #export SDL2_VERSION=2.24.0
-          #export CC=$TARGET_CC
-          #export AR=$TARGET_AR
-          #export RANLIB=$TARGET_RANLIB
-          #curl -sqLO https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/SDL2-$SDL2_VERSION.tar.gz
-          #tar xzf SDL2-$SDL2_VERSION.tar.gz
-          #cd SDL2-$SDL2_VERSION
-          #CFLAGS="-O3 -fPIC" ./configure \
-          #  --build=x86_64-unknown-linux-gnu \
-          #  --host=${{ matrix.target }} \
-          #  --prefix=/usr/${{ matrix.target }}/
-          #make -j4
-          #make -j4 install
-          #cd ..
-          #rm -rf SDL2-$SDL2_VERSION
+          export SDL2_VERSION=2.24.0
+          export CC=$TARGET_CC
+          export AR=$TARGET_AR
+          export RANLIB=$TARGET_RANLIB
+          curl -sqLO https://github.com/libsdl-org/SDL/releases/download/release-$SDL2_VERSION/SDL2-$SDL2_VERSION.tar.gz
+          tar xzf SDL2-$SDL2_VERSION.tar.gz
+          cd SDL2-$SDL2_VERSION
+          CFLAGS="-O3 -fPIC" ./configure \
+            --build=x86_64-unknown-linux-gnu \
+            --host=${{ matrix.target }} \
+            --prefix=/usr/${{ matrix.target }}/
+          make -j4
+          make -j4 install
+          cd ..
+          rm -rf SDL2-$SDL2_VERSION
 
       - name: Build wheels
         run: |
