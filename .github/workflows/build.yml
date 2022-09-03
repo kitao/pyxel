@@ -131,7 +131,7 @@ jobs:
           tar xzf SDL2-$VERS.tar.gz && cd SDL2-$VERS && \
           CFLAGS="-O3 -fPIC" ./configure --prefix=/usr/${{ matrix.target }}/ && \
           make -j4 && make -j4 install && \
-          cd .. && rm -rf SDL2-$VERS.tar.gz SDL2-$VERS && \
+          cd .. && rm -rf SDL2-$VERS.tar.gz SDL2-$VERS
 
       - name: Build wheels
         run: |
