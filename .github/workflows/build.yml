@@ -84,10 +84,10 @@ jobs:
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
-            image: messense/manylinux2014-cross:x86_64
+            image: quay.io/pypa/manylinux2014_x86_64
 
           - target: aarch64-unknown-linux-gnu
-            image: messense/manylinux2014-cross:aarch64
+            image: quay.io/pypa/manylinux2014_aarch64
 
     runs-on: ubuntu-latest
     container:
@@ -122,7 +122,7 @@ jobs:
 
       - name: Install SDL2
         run: |
-          sudo apt -y install libsdl2-dev
+          sudo apt install -y libsdl2-dev
 
       - name: Build wheels
         run: |
