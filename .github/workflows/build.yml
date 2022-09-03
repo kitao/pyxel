@@ -121,7 +121,7 @@ jobs:
 
       - name: Build and install SDL2
         run: |
-          sudo apt install libx11-dev
+          sudo apt install -y libx11-dev
           #export SDL2_VERSION=2.24.0
           #export CC=$TARGET_CC
           #export AR=$TARGET_AR
