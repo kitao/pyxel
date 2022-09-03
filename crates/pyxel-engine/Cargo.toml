@@ -40,12 +40,7 @@ sdl2 = { version = "0.35", default-features = false, features = [
     "unsafe_textures",
 ] }
 
-[target.'cfg(target_os = "linux")'.dependencies]
-sdl2 = { version = "0.35", default-features = false, features = [
-    "unsafe_textures",
-] }
-
-[target.'cfg(target_os = "emscripten")'.dependencies]
+[target.'cfg(any(target_os = "linux", target_os = "emscripten"))'.dependencies]
 sdl2 = { version = "0.35", default-features = false, features = [
     "unsafe_textures",
 ] }
