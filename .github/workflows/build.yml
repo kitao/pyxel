@@ -84,14 +84,13 @@ jobs:
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
-            image: quay.io/pypa/manylinux2014_x86_64
+            image: messense/manylinux2014-cross:x86_64
 
           - target: aarch64-unknown-linux-gnu
-            image: quay.io/pypa/manylinux2014_aarch64
+            image: messense/manylinux2014-cross:aarch64
 
     runs-on: ubuntu-latest
-    container:
-      image: ${{ matrix.image }}
+    container: ${{ matrix.image }}
 
     steps:
       - name: Check out repository
