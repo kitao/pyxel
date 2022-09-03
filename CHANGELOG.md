@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.8.2
+- Fixed to release crates correctly
+
 ## 1.8.1
 - Added i686 Windows support
 - Added aarch64 Linux support
