@@ -136,6 +136,7 @@ jobs:
 
       - name: Build wheels
         run: |
+          export RUSTFLAGS="-L/usr/${{ matrix.target }}/lib"
           make TARGET=${{ matrix.target }}
 
       - name: Upload wheels
