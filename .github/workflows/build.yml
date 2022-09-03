@@ -128,7 +128,7 @@ jobs:
           curl -sqLO https://github.com/libsdl-org/SDL/releases/download/release-$VERSION/SDL2-$VERSION.tar.gz && \
           tar xzf SDL2-$VERSION.tar.gz && \
           cd SDL2-$VERSION && \
-          CFLAGS="-O3 -fPIC" ./configure --build=x86_64-unknown-linux-gnu --host=${{ matrix.target }} --prefix=/usr/${{ matrix.target }}/ && \
+          CFLAGS="-O3 -fPIC" ./configure --build=x86_64-unknown-linux-gnu --host=${{ matrix.target }} --prefix=/usr/${{ matrix.target }}/ --enable-x11-shared --enable-wayland-shared && \
           make -j4 && \
           make -j4 install && \
           cd .. && \
