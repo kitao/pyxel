@@ -124,13 +124,15 @@ jobs:
           export CC=$TARGET_CC && \
           export AR=$TARGET_AR && \
           export RANLIB=$TARGET_RANLIB && \
-          git clone --depth 1 https://github.com/libsdl-org/SDL.git && \
-          cd SDL && \
+          VERSION=2.24.0 && \
+          curl -sqLO https://github.com/libsdl-org/SDL/releases/download/release-$VERSION/SDL2-$VERSION.tar.gz && \
+          tar xzf SDL2-$VERSION.tar.gz && \
+          cd SDL2-$VERSION && \
           CFLAGS="-O3 -fPIC" ./configure --build=x86_64-unknown-linux-gnu --host=${{ matrix.target }} --prefix=/usr/${{ matrix.target }}/ && \
           make -j4 && \
           make -j4 install && \
           cd .. && \
-          rm -rf SDL
+          rm -rf SDL2-$VERSION
 
       - name: Build wheels
         run: |
