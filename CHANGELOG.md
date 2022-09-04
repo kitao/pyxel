@@ -2,10 +2,12 @@
 
 ## 1.8.2
 - Fixed to release crates correctly
+- Added ARMv7 Linux support
+- Added 32-bit Linux support
 
 ## 1.8.1
-- Added i686 Windows support
-- Added aarch64 Linux support
+- Added 32-bit Windows support
+- Added ARM64 Linux support
 - Changed to use manylinux to build Linux wheels
 - Fixed links in the READMEs
 
