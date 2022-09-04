@@ -50,6 +50,7 @@ SCRIPTS_DIR = $(ROOT_DIR)/scripts
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
 WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly
 WASM_TARGET = wasm32-unknown-emscripten
+MATURIN_OPTS = --manylinux 2014 --skip-auditwheel
 
 ifeq ($(COMSPEC),)
 PYTHON = python3
@@ -93,7 +94,7 @@ format:
 build: format
 	@$(ENSURE_TARGET)
 	@$(SCRIPTS_DIR)/update_readme
-	@maturin build -o $(DIST_DIR) $(BUILD_OPTS)
+	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS)
 
 test: build
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
