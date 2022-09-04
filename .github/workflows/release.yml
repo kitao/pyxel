@@ -41,14 +41,14 @@ jobs:
           profile: minimal
           default: true
 
-      #- name: Publish crates
-      #  run: |
-      #    cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      #    cd crates/pyxel-engine
-      #    cargo publish
-      #    sleep 10
-      #    cd ../pyxel-wrapper
-      #    cargo publish
+      - name: Publish crates
+        run: |
+          cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          cd crates/pyxel-engine
+          cargo publish
+          sleep 5
+          cd ../pyxel-wrapper
+          cargo publish
 
       - name: Install Python
         uses: actions/setup-python@v4
