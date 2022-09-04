@@ -2,7 +2,6 @@
 
 ## 1.8.2
 - Fixed to release crates correctly
-- Added ARMv7 Linux support
 - Added 32-bit Linux support
 
 ## 1.8.1
