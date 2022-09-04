@@ -86,8 +86,14 @@ jobs:
           - target: x86_64-unknown-linux-gnu
             image: messense/manylinux2014-cross:x86_64
 
+          - target: i686-unknown-linux-gnu
+            image: messense/manylinux2014-cross:i686
+
           - target: aarch64-unknown-linux-gnu
             image: messense/manylinux2014-cross:aarch64
+
+          - target: armv7-unknown-linux-gnu
+            image: messense/manylinux2014-cross:armv7
 
     runs-on: ubuntu-latest
     container: ${{ matrix.image }}
