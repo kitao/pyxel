@@ -41,19 +41,20 @@ jobs:
           profile: minimal
           default: true
 
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
       - name: Publish crates
         run: |
+          scripts/update_readme
           cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
           cd crates/pyxel-engine
           cargo publish
           sleep 10
           cd ../pyxel-wrapper
           cargo publish
-
-      - name: Install Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
 
       - name: Publish wheels
         run: |
