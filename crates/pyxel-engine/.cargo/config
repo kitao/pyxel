@@ -9,8 +9,3 @@ rustflags = [
     "-C", "link-arg=-undefined",
     "-C", "link-arg=dynamic_lookup",
 ]
-
-#[target.wasm32-unknown-emscripten]
-#rustflags = [
-#    "-C", "link-arg=-sUSE_SDL=2",
-#]

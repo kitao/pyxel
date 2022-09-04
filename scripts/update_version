@@ -32,6 +32,10 @@ def update_version():
     replace_file(
         "crates/pyxel-wrapper/Cargo.toml", '(engine", version.*)".*"', f'\\1"{version}"'
     )
+    replace_file("crates/pyxel-web/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
+    replace_file(
+        "crates/pyxel-web/Cargo.toml", '(wrapper", version.*)".*"', f'\\1"{version}"'
+    )
 
 
 if __name__ == "__main__":
