@@ -3,6 +3,7 @@
 ## 1.8.2
 - Fixed to release crates correctly
 - Added 32-bit Linux support
+- Added a README-abspath
 
 ## 1.8.1
 - Added 32-bit Windows support
