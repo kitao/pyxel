@@ -1,13 +1,4 @@
-import glob
-import os
-import pathlib
-import re
-import runpy
-import shutil
-import sys
-import tempfile
-import urllib.request
-import zipfile
+import glob, os,pathlib ,re ,runpy ,shutil ,sys ,tempfile ,urllib.request ,zipfile
 
 import pyxel
 
