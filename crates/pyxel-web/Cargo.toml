@@ -1,9 +1,9 @@
 [package]
-name = "pyxel-wrapper"
+name = "pyxel-web"
 version = "1.8.3"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
-description = "Python wrapper for Pyxel, a retro game engine for Python"
+description = "Web version of Pyxel, a retro game engine for Python"
 repository = "https://github.com/kitao/pyxel"
 license = "MIT"
 readme = "../../docs/README-abspath.md"
@@ -11,12 +11,11 @@ categories = ["game-engines", "graphics", "multimedia"]
 keywords = ["game", "gamedev", "python"]
 
 [lib]
-name = "pyxel_wrapper"
+name = "pyxel_web"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.16", features = ["abi3-py37", "extension-module"] }
-pyxel-engine = { path = "../pyxel-engine", version = "1.8.3" }
+pyxel-wrapper = { path = "../pyxel-wrapper", version = "1.8.3" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 sysinfo = "0.23"
@@ -27,6 +26,3 @@ cc = "1.0"
 [patch.crates-io]
 cmake = { git = "https://github.com/messense/cmake-rs.git", branch = "cross-compile" }
 sdl2 = { git = "https://github.com/Rust-SDL2/rust-sdl2.git", branch = "master" }
-
-[package.metadata.maturin]
-name = "pyxel.pyxel_wrapper"
