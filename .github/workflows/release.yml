@@ -31,20 +31,6 @@ jobs:
           tag_name: ${{ github.ref }}
           files: dist/*
 
-      - name: Install Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Publish wheels
-        run: |
-          pip install twine
-          rm -f dist/*-emscripten_*.whl
-          twine upload dist/*.whl
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -60,3 +46,17 @@ jobs:
           sleep 10
           cd ../pyxel-wrapper
           cargo publish
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Publish wheels
+        run: |
+          pip install twine
+          rm -f dist/*-emscripten_*.whl
+          twine upload dist/*.whl
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
