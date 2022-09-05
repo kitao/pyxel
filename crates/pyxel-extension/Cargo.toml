@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-extension"
-version = "1.8.2"
+version = "1.8.3"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 description = "Python extension module for Pyxel, a retro game engine for Python"
@@ -16,7 +16,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.16", features = ["abi3-py37", "extension-module"] }
-pyxel-core = { path = "../pyxel-core", version = "1.8.2" }
+pyxel-core = { path = "../pyxel-core", version = "1.8.3" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 sysinfo = "0.23"
