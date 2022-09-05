@@ -23,18 +23,22 @@ def update_version():
     version = sys.argv[1]
     replace_file("pyproject.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file(
-        "crates/pyxel-engine/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
+        "crates/pyxel-core/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
     )
-    replace_file("crates/pyxel-engine/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
+    replace_file("crates/pyxel-core/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file(
-        "crates/pyxel-wrapper/Cargo.toml", '(version.*)".*"', f'\\1"{version}"'
+        "crates/pyxel-extension/Cargo.toml", '(version.*)".*"', f'\\1"{version}"'
     )
     replace_file(
-        "crates/pyxel-wrapper/Cargo.toml", '(engine", version.*)".*"', f'\\1"{version}"'
+        "crates/pyxel-extension/Cargo.toml",
+        '(pyxel-core", version.*)".*"',
+        f'\\1"{version}"',
     )
     replace_file("crates/pyxel-web/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file(
-        "crates/pyxel-web/Cargo.toml", '(wrapper", version.*)".*"', f'\\1"{version}"'
+        "crates/pyxel-web/Cargo.toml",
+        '(pyxel-extension", version.*)".*"',
+        f'\\1"{version}"',
     )
 
 

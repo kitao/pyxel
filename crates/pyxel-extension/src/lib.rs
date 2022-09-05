@@ -53,7 +53,7 @@ use crate::tilemap_wrapper::add_tilemap_class;
 use crate::variable_wrapper::add_module_variables;
 
 #[pymodule]
-fn pyxel_wrapper(_py: Python, m: &PyModule) -> PyResult<()> {
+fn pyxel_extension(_py: Python, m: &PyModule) -> PyResult<()> {
     add_image_class(m)?;
     add_tilemap_class(m)?;
     add_channel_class(m)?;
