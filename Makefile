@@ -73,21 +73,25 @@ endif
 all: build
 
 clean:
-	@cd $(CRATES_DIR)/pyxel-engine; cargo clean $(BUILD_OPTS)
-	@cd $(CRATES_DIR)/pyxel-wrapper; cargo clean $(BUILD_OPTS)
+	@cd $(CRATES_DIR)/pyxel-core; cargo clean $(BUILD_OPTS)
+	@cd $(CRATES_DIR)/pyxel-extension; cargo clean $(BUILD_OPTS)
+	@cd $(CRATES_DIR)/pyxel-web; cargo clean $(BUILD_OPTS)
 
 distclean:
-	@rm -rf $(CRATES_DIR)/pyxel-engine/target
-	@rm -rf $(CRATES_DIR)/pyxel-wrapper/target
+	@rm -rf $(CRATES_DIR)/pyxel-core/target
+	@rm -rf $(CRATES_DIR)/pyxel-extension/target
+	@rm -rf $(CRATES_DIR)/pyxel-web/target
 
 lint:
-	@cd $(CRATES_DIR)/pyxel-engine; cargo clippy -q -- --no-deps
-	@cd $(CRATES_DIR)/pyxel-wrapper; cargo clippy -q -- --no-deps
+	@cd $(CRATES_DIR)/pyxel-core; cargo clippy -q -- --no-deps
+	@cd $(CRATES_DIR)/pyxel-extension; cargo clippy -q -- --no-deps
+	@cd $(CRATES_DIR)/pyxel-web; cargo clippy -q -- --no-deps
 	@flake8 $(SCRIPTS_DIR) $(PYXEL_DIR)
 
 format:
-	@cd $(CRATES_DIR)/pyxel-engine; cargo +nightly fmt -- --emit=files
-	@cd $(CRATES_DIR)/pyxel-wrapper; cargo +nightly fmt -- --emit=files
+	@cd $(CRATES_DIR)/pyxel-core; cargo +nightly fmt -- --emit=files
+	@cd $(CRATES_DIR)/pyxel-extension; cargo +nightly fmt -- --emit=files
+	@cd $(CRATES_DIR)/pyxel-web; cargo +nightly fmt -- --emit=files
 	@isort $(ROOT_DIR)
 	@black $(ROOT_DIR)
 
@@ -97,9 +101,9 @@ build: format
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS)
 
 test: build
-	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
+	@cd $(CRATES_DIR)/pyxel-core; cargo test $(BUILD_OPTS)
 	@$(PIP) install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
-	@$(PYTHON) -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
+	@$(PYTHON) -m unittest discover $(CRATES_DIR)/pyxel-extension/tests
 
 	@pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
 	@pyxel run $(EXAMPLES_DIR)/02_jump_game.py
