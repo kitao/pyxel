@@ -21,10 +21,10 @@ def update_version():
         exit(1)
     os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ROOT_DIR))
     version = sys.argv[1]
-    replace_file("pyproject.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file(
         "crates/pyxel-core/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
     )
+    replace_file("pyproject.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file("crates/pyxel-core/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file(
         "crates/pyxel-extension/Cargo.toml", '(version.*)".*"', f'\\1"{version}"'
