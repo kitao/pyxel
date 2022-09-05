@@ -5,6 +5,5 @@
     "rust-analyzer.linkedProjects": [
         "crates/pyxel-core/Cargo.toml",
         "crates/pyxel-extension/Cargo.toml",
-        "crates/pyxel-web/Cargo.toml"
     ],
 }
