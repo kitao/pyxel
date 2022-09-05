@@ -1,3 +1,3 @@
-# pyxel-wrapper
+# pyxel-extension
 
-Python wrapper for [Pyxel](https://github.com/kitao/pyxel), a retro game engine for Python.
+Python extension module for [Pyxel](https://github.com/kitao/pyxel), a retro game engine for Python.
