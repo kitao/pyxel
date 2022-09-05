@@ -75,23 +75,19 @@ all: build
 clean:
 	@cd $(CRATES_DIR)/pyxel-core; cargo clean $(BUILD_OPTS)
 	@cd $(CRATES_DIR)/pyxel-extension; cargo clean $(BUILD_OPTS)
-	@cd $(CRATES_DIR)/pyxel-web; cargo clean $(BUILD_OPTS)
 
 distclean:
 	@rm -rf $(CRATES_DIR)/pyxel-core/target
 	@rm -rf $(CRATES_DIR)/pyxel-extension/target
-	@rm -rf $(CRATES_DIR)/pyxel-web/target
 
 lint:
 	@cd $(CRATES_DIR)/pyxel-core; cargo clippy -q -- --no-deps
 	@cd $(CRATES_DIR)/pyxel-extension; cargo clippy -q -- --no-deps
-	@cd $(CRATES_DIR)/pyxel-web; cargo clippy -q -- --no-deps
 	@flake8 $(SCRIPTS_DIR) $(PYXEL_DIR)
 
 format:
 	@cd $(CRATES_DIR)/pyxel-core; cargo +nightly fmt -- --emit=files
 	@cd $(CRATES_DIR)/pyxel-extension; cargo +nightly fmt -- --emit=files
-	@cd $(CRATES_DIR)/pyxel-web; cargo +nightly fmt -- --emit=files
 	@isort $(ROOT_DIR)
 	@black $(ROOT_DIR)
 

@@ -49,9 +49,6 @@ jobs:
           sleep 5
           cd ../pyxel-extension
           cargo publish
-          sleep 5
-          cd ../pyxel-web
-          cargo publish
 
       - name: Install Python
         uses: actions/setup-python@v4
