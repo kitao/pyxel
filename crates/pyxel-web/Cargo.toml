@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-web"
-version = "1.8.3"
+version = "1.8.2"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 description = "Web version of Pyxel, a retro game engine for Python"
@@ -15,7 +15,7 @@ name = "pyxel_web"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyxel-wrapper = { path = "../pyxel-wrapper", version = "1.8.3" }
+pyxel-extension = { path = "../pyxel-extension", version = "1.8.2" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 sysinfo = "0.23"
