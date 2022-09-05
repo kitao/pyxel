@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "pyxel"
-version = "1.8.3"
+version = "1.8.2"
 description = "A retro game engine for Python"
 readme = "../../docs/README-abspath.md"
 requires-python = ">=3.7"
@@ -28,7 +28,7 @@ urls = { homepage = "https://github.com/kitao/pyxel" }
 pyxel = "pyxel.cli:cli"
 
 [tool.maturin]
-manifest-path = "crates/pyxel-wrapper/Cargo.toml"
+manifest-path = "crates/pyxel-extension/Cargo.toml"
 python-source = "python"
 
 [tool.isort]
