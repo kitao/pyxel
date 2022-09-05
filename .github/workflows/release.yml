@@ -44,10 +44,13 @@ jobs:
       - name: Publish crates
         run: |
           cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
-          cd crates/pyxel-engine
+          cd crates/pyxel-core
           cargo publish
           sleep 5
-          cd ../pyxel-wrapper
+          cd ../pyxel-extension
+          cargo publish
+          sleep 5
+          cd ../pyxel-web
           cargo publish
 
       - name: Install Python
