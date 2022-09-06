@@ -1,6 +1,7 @@
 # Change Log
 
 ## 1.8.3
+- Added a script to build and copy Pyodide
 - Changed the audio buffer size for WASM
 
 ## 1.8.2
