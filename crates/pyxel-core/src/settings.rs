@@ -94,7 +94,7 @@ pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] 
 // Audio
 pub const CLOCK_RATE: u32 = 1789773; // 1.78 MHz clock rate
 pub const SAMPLE_RATE: u32 = 44100; // 44.1 kHz sample rate
-pub const NUM_SAMPLES: u32 = SAMPLE_RATE / 30;
+pub const NUM_SAMPLES: u32 = 1024; // 2^n ~ SAMPLE_RATE / DEFAULT_FPS;
 pub const NUM_CLOCKS_PER_TICK: u32 = CLOCK_RATE / 120;
 pub const OSCILLATOR_RESOLUTION: u32 = 32;
 pub const VIBRATO_DEPTH: f64 = 0.015;

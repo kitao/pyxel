@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.8.3
+- Changed the audio buffer size for WASM
+
 ## 1.8.2
 - Fixed to release crates correctly
 - Added 32-bit Linux support
