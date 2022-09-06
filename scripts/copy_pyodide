@@ -1,0 +1,37 @@
+#!/bin/sh -e
+
+ROOT_DIR=..
+PROJECTS_DIR=..
+PYODIDE_DIR=$PROJECTS_DIR/pyodide
+SRC_DIR=$PYODIDE_DIR/dist
+DST_DIR=wasm/pyodide
+FILES=(
+    pyodide.js
+    pyodide.js.map
+    pyodide.asm.js
+    pyodide.asm.wasm
+    pyodide.asm.data
+    pyodide_py.tar
+    repodata.json
+    micropip-*.whl
+    pyparsing-*.whl
+    packaging-*.whl
+    distutils-*.zip
+)
+
+cd `dirname $0`/$ROOT_DIR
+if [ -d $PYODIDE_DIR ]; then
+    rm -rf $DST_DIR
+    mkdir -p $DST_DIR
+    for file in "${FILES[@]}"
+    do
+        echo $file
+        cp $SRC_DIR/$file $DST_DIR
+    done
+else
+    cd $PROJECTS_DIR
+    git clone https://github.com/kitao/pyodide
+    cd -
+    cd $PYODIDE_DIR
+    echo "Please run './run_docker' and then 'make' in the container"
+fi
