@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 ROOT_DIR=..
-START_DIR=.
+ORIGIN_DIR=.
 
 cd `dirname $0`/$ROOT_DIR
-python3 -m http.server --directory $START_DIR 8000
+python3 -m http.server --directory $ORIGIN_DIR 8000
