@@ -17,7 +17,7 @@
 #	- libsdl2-dev
 #
 #	[WASM]
-#	- Emscripten 3.1.14
+#	- Emscripten 3.1.20
 #
 # Advance preparation:
 #	rustup install nightly
@@ -130,7 +130,7 @@ clean-wasm:
 
 build-wasm:
 	@$(WASM_ENVVARS) make build TARGET=$(WASM_TARGET)
+	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(ROOT_DIR)/wasm
 
 test-wasm: build-wasm
-	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(ROOT_DIR)/wasm
 	@$(SCRIPTS_DIR)/start_server
