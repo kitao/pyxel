@@ -25,7 +25,6 @@ if [ -d $PYODIDE_DIR ]; then
     mkdir -p $DST_DIR
     for file in "${FILES[@]}"
     do
-        echo $file
         cp $SRC_DIR/$file $DST_DIR
     done
 else
@@ -33,5 +32,6 @@ else
     git clone https://github.com/kitao/pyodide
     cd -
     cd $PYODIDE_DIR
-    echo "Please run './run_docker' and then 'make' in the container"
+    ./run_docker
+    # Then 'make' in the container
 fi
