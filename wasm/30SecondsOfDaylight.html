@@ -8,10 +8,10 @@
 
 <body>
     <div id="loading">Loading...</div>
-    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
     <script type="text/javascript">
         (async function () {
-            let pyxel = await loadPyxel('canvas#canvas');
+            let pyxel = await loadPyxel("canvas");
             document.getElementById("loading").remove();
             pyxel.play("../python/pyxel/examples/30SecondsOfDaylight.pyxapp");
         })();
