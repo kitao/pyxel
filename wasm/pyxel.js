@@ -1,4 +1,5 @@
 const PYXEL_WHEEL = "pyxel-1.8.3-cp37-abi3-emscripten_3_1_20_wasm32.whl";
+const APP_STARTUP_SCRIPT_FILE = ".pyxapp_startup_script";
 
 class Pyxel {
     constructor(pyodide, canvas) {
@@ -17,7 +18,7 @@ class Pyxel {
                 pyodide.FS.mkdir(path);
                 path += "/";
             }
-            const fileResponse = await fetch(baseDir + "/" + file);
+            const fileResponse = await fetch(`${baseDir}/${file}`);
             const fileBinary = new Uint8Array(await fileResponse.arrayBuffer());
             pyodide.FS.writeFile(file, fileBinary, { encoding: "binary" });
         }
@@ -45,7 +46,7 @@ class Pyxel {
             pyodide.unpackArchive(zipBinary, "zip");
             let archiveDir = pyxelAppFile.split("/").pop().split(".").shift();
             for (let file of pyodide.FS.readdir(archiveDir)) {
-                if (file != ".pyxapp_startup_script") {
+                if (file != APP_STARTUP_SCRIPT_FILE) {
                     continue;
                 }
                 const startupFile = pyodide.FS.readFile(`${archiveDir}/${file}`, { encoding: "utf8" });
