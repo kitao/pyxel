@@ -3,8 +3,9 @@
 ROOT_DIR=..
 PROJECTS_DIR=..
 PYODIDE_DIR=$PROJECTS_DIR/pyodide
+PYODIDE_REPO=https://github.com/kitao/pyodide
 SRC_DIR=$PYODIDE_DIR/dist
-DST_DIR=wasm/pyodide
+DST_DIR=wasm/pyodide_sdl2
 FILES=(
     pyodide.js
     pyodide.js.map
@@ -13,10 +14,6 @@ FILES=(
     pyodide.asm.data
     pyodide_py.tar
     repodata.json
-    micropip-*.whl
-    pyparsing-*.whl
-    packaging-*.whl
-    distutils-*.zip
 )
 
 cd `dirname $0`/$ROOT_DIR
@@ -29,7 +26,7 @@ if [ -d $PYODIDE_DIR ]; then
     done
 else
     cd $PROJECTS_DIR
-    git clone https://github.com/kitao/pyodide
+    git clone $PYODIDE_REPO
     cd -
     cd $PYODIDE_DIR
     ./run_docker
