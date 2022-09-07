@@ -2,38 +2,19 @@
 <html>
 
 <head>
-    <script src="pyodide/pyodide.js"></script>
+    <script src="pyodide_sdl2/pyodide.js"></script>
+    <script src="pyxel.js"></script>
 </head>
 
 <body>
     <div id="loading">Loading...</div>
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     <script type="text/javascript">
-        var pyodide;
-        async function main() {
-            const PYXEL_WHEEL = "pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl";
-            const EXTENSION = "pyxapp";
-            const PYXAPP_NAME = "megaball";
-            const pyodide = await loadPyodide();
-            await pyodide.loadPackage("micropip");
-            const micropip = pyodide.pyimport("micropip");
-            await micropip.install(PYXEL_WHEEL);
-            let zipResponse = await fetch(`../python/pyxel/examples/${PYXAPP_NAME}.${EXTENSION}`);
-            let zipBinary = await zipResponse.arrayBuffer();
-            pyodide.unpackArchive(zipBinary, "zip");
-            const startButton = document.getElementById("start");
-            for (let name of pyodide.FS.readdir(PYXAPP_NAME)) {
-                if (name.endsWith(".pyxapp_startup_script")) {
-                    const startup = pyodide.FS.readFile(`${PYXAPP_NAME}/${name}`, { encoding: "utf8" });
-                    const script = pyodide.FS.readFile(`${PYXAPP_NAME}/${startup}`, { encoding: "utf8" });
-                    pyodide.FS.chdir(pyodide.FS.lookupPath(`${PYXAPP_NAME}/${startup}`, { parent: true }).path);
-                    document.getElementById("loading").remove();
-                    pyodide.runPython(`import os; import sys;sys.path.append(os.getcwd());\n${script}`);
-                    break;
-                }
-            }
-        }
-        main();
+        (async function () {
+            let pyxel = await loadPyxel('canvas#canvas');
+            document.getElementById("loading").remove();
+            pyxel.play("../python/pyxel/examples/megaball.pyxapp");
+        })();
     </script>
 </body>
 
