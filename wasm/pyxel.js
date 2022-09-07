@@ -25,32 +25,31 @@ class Pyxel {
 
     run(codeOrFile) {
         if (codeOrFile.endsWith('.py')) {
-            let file = codeOrFile;
-            this._pyodide.runPython(`
-                import runpy
-                runpy.run_path("${file}")
-            `);
+            const file = codeOrFile;
+            const code = this._pyodide.FS.readFile(file, { encoding: "utf8" });
+            const dir = file.substring(0, file.lastIndexOf('/'))
+            this._pyodide.FS.chdir(dir || '.');
+            this._pyodide.runPython(`import os, sys; sys.path.append(os.getcwd()); del os, sys; \n${code} `);
         } else {
-            let code = codeOrFile;
+            const code = codeOrFile;
             this._pyodide.runPython(code);
         }
     }
 
     play(pyxelAppFile) {
         let pyodide = this._pyodide;
+        let pyxel = this;
         (async function () {
             let zipResponse = await fetch(pyxelAppFile);
             let zipBinary = await zipResponse.arrayBuffer();
-            await pyodide.unpackArchive(zipBinary, "zip");
-            let appName = pyxelAppFile.split('/').pop();
-            console.log(appName);
-            for (let file of pyodide.FS.readdir(appName)) {
-                //    if (file != ".pyxapp_startup_script") {
-                //        continue;
-                //    }
-                //    const startup = pyodide.FS.readFile(`${PYXAPP_NAME}/${file}`, { encoding: "utf8" });
-                //    pyodide.FS.chdir(pyodide.FS.lookupPath(`${PYXAPP_NAME}/${startup}`, { parent: true }).path);
-                //    break;
+            pyodide.unpackArchive(zipBinary, "zip");
+            let archiveDir = pyxelAppFile.split('/').pop().split('.').shift();
+            for (let file of pyodide.FS.readdir(archiveDir)) {
+                if (file != ".pyxapp_startup_script") {
+                    continue;
+                }
+                const startupFile = pyodide.FS.readFile(`${archiveDir}/${file}`, { encoding: "utf8" });
+                pyxel.run(`${archiveDir}/${startupFile}`);
             }
         })();
     }
