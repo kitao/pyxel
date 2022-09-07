@@ -17,18 +17,18 @@ class Pyxel {
                 pyodide.FS.mkdir(path);
                 path += "/";
             }
-            const fileResponse = await fetch(baseDir + '/' + file);
+            const fileResponse = await fetch(baseDir + "/" + file);
             const fileBinary = new Uint8Array(await fileResponse.arrayBuffer());
-            pyodide.FS.writeFile(file, fileBinary, { encoding: 'binary' });
+            pyodide.FS.writeFile(file, fileBinary, { encoding: "binary" });
         }
     }
 
     run(codeOrFile) {
-        if (codeOrFile.endsWith('.py')) {
+        if (codeOrFile.endsWith(".py")) {
             const file = codeOrFile;
             const code = this._pyodide.FS.readFile(file, { encoding: "utf8" });
-            const dir = file.substring(0, file.lastIndexOf('/'))
-            this._pyodide.FS.chdir(dir || '.');
+            const dir = file.substring(0, file.lastIndexOf("/"))
+            this._pyodide.FS.chdir(dir || ".");
             this._pyodide.runPython(`import os, sys; sys.path.append(os.getcwd()); del os, sys; \n${code} `);
         } else {
             const code = codeOrFile;
@@ -43,7 +43,7 @@ class Pyxel {
             let zipResponse = await fetch(pyxelAppFile);
             let zipBinary = await zipResponse.arrayBuffer();
             pyodide.unpackArchive(zipBinary, "zip");
-            let archiveDir = pyxelAppFile.split('/').pop().split('.').shift();
+            let archiveDir = pyxelAppFile.split("/").pop().split(".").shift();
             for (let file of pyodide.FS.readdir(archiveDir)) {
                 if (file != ".pyxapp_startup_script") {
                     continue;
@@ -55,8 +55,8 @@ class Pyxel {
     }
 }
 
-async function loadPyxel(canvasQuery) {
-    let canvas = document.querySelector(canvasQuery);
+async function loadPyxel(canvasId) {
+    let canvas = document.getElementById(canvasId);
     let pyodide = await loadPyodide();
     await pyodide.loadPackage(PYXEL_WHEEL);
     return new Pyxel(pyodide, canvas);
