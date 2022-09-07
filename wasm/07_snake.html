@@ -2,40 +2,22 @@
 <html>
 
 <head>
-    <script src="pyodide/pyodide.js"></script>
+    <script src="pyodide_sdl2/pyodide.js"></script>
+    <script src="pyxel.js"></script>
 </head>
 
 <body>
     <div id="loading">Loading...</div>
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     <script type="text/javascript">
-        const PYXEL_WHEEL = "pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl";
-        const ASSET_NAMES = ["cat_16x16.png",
-            "jump_game.pyxres",
-            "noguchi_128x128.png",
-            "offscreen.pyxres",
-            "platformer.pyxres",
-            "pyxel_logo_38x16.png",
-            "sample.pyxres",
-            "tileset_24x32.png",];
-        const SCRIPT_NAME = "07_snake.py";
-        async function main() {
-            const pyodide = await loadPyodide();
-            await pyodide.loadPackage("micropip");
-            const micropip = pyodide.pyimport("micropip");
-            await micropip.install(PYXEL_WHEEL);
-            pyodide.FS.mkdir("assets");
-            for (let assetName of ASSET_NAMES) {
-                const asset = await fetch(`../python/pyxel/examples/assets/${assetName}`);
-                const assetData = new Uint8Array(await asset.arrayBuffer());
-                pyodide.FS.writeFile(`assets/${assetName}`, assetData, { encoding: 'binary' });
-            }
-            const response = await fetch(`../python/pyxel/examples/${SCRIPT_NAME}`);
-            const script = await response.text();
+        (async function () {
+            let pyxel = await loadPyxel('canvas#canvas');
+            await pyxel.fetchFiles("../python/pyxel/examples", [
+                "07_snake.py",
+            ]);
             document.getElementById("loading").remove();
-            pyodide.runPython(script);
-        }
-        main();
+            pyxel.run("07_snake.py");
+        })();
     </script>
 </body>
 

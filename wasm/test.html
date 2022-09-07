@@ -2,21 +2,18 @@
 <html>
 
 <head>
-    <script src="pyodide/pyodide.js"></script>
+    <script src="pyodide_sdl2/pyodide.js"></script>
+    <script src="pyxel.js"></script>
 </head>
 
 <body>
     <div id="loading">Loading...</div>
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     <script type="text/javascript">
-        const PYXEL_WHEEL = "pyxel-1.8.0-cp37-abi3-emscripten_3_1_14_wasm32.whl";
-        async function main() {
-            let pyodide = await loadPyodide();
-            await pyodide.loadPackage("micropip");
-            const micropip = pyodide.pyimport("micropip");
-            await micropip.install(PYXEL_WHEEL);
+        (async function () {
+            let pyxel = await loadPyxel('canvas#canvas');
             document.getElementById("loading").remove();
-            await pyodide.runPython(`
+            pyxel.run(`
                 import pyxel
                 pyxel.init(200, 100)
 
@@ -34,8 +31,7 @@
 
                 pyxel.run(update, draw)
             `);
-        }
-        main();
+        })();
     </script>
 </body>
 
