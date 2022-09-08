@@ -16,17 +16,15 @@ def cli():
     num_args = len(sys.argv)
     command = sys.argv[1] if num_args > 1 else ""
     if command == "run" and num_args == 3:
-        _run_python_script(sys.argv[2])
+        run_python_script(sys.argv[2])
     elif command == "play" and num_args == 3:
-        _play_pyxel_app(sys.argv[2])
+        play_pyxel_app(sys.argv[2])
     elif command == "edit" and (num_args == 2 or num_args == 3):
-        _edit_pyxel_resource(sys.argv[2] if num_args == 3 else None)
+        edit_pyxel_resource(sys.argv[2] if num_args == 3 else None)
     elif command == "package" and num_args == 4:
-        _package_pyxel_app(sys.argv[2], sys.argv[3])
+        package_pyxel_app(sys.argv[2], sys.argv[3])
     elif command == "copy_examples" and num_args == 2:
-        _copy_pyxel_examples()
-    elif command == "module_search_path" and num_args == 2:
-        _print_module_search_path()
+        copy_pyxel_examples()
     else:
         _print_usage()
 
@@ -39,7 +37,6 @@ def _print_usage():
     print("    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]")
     print("    pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE(.py)")
     print("    pyxel copy_examples")
-    print("    pyxel module_search_path")
     _check_newer_version()
 
 
@@ -103,14 +100,14 @@ def _make_app_dir():
     return app_dir
 
 
-def _run_python_script(python_script_file):
+def run_python_script(python_script_file):
     python_script_file = _complete_extension(python_script_file, ".py")
     _check_file_exists(python_script_file)
     sys.path.append(os.path.dirname(python_script_file))
     runpy.run_path(python_script_file)
 
 
-def _play_pyxel_app(pyxel_app_file):
+def play_pyxel_app(pyxel_app_file):
     pyxel_app_file = _complete_extension(pyxel_app_file, pyxel.APP_FILE_EXTENSION)
     _check_file_exists(pyxel_app_file)
     app_dir = _make_app_dir()
@@ -127,7 +124,7 @@ def _play_pyxel_app(pyxel_app_file):
     exit(1)
 
 
-def _edit_pyxel_resource(pyxel_resource_file):
+def edit_pyxel_resource(pyxel_resource_file):
     import pyxel.editor
 
     pyxel_resource_file = pyxel_resource_file or "my_resource"
@@ -137,7 +134,7 @@ def _edit_pyxel_resource(pyxel_resource_file):
     pyxel.editor.App(pyxel_resource_file)
 
 
-def _package_pyxel_app(app_root_dir, startup_script_name):
+def package_pyxel_app(app_root_dir, startup_script_name):
     _check_dir_exists(app_root_dir)
     startup_script_name = _complete_extension(startup_script_name, ".py")
     _check_file_exists(os.path.join(app_root_dir, startup_script_name))
@@ -159,7 +156,7 @@ def _package_pyxel_app(app_root_dir, startup_script_name):
     os.remove(setting_file)
 
 
-def _copy_pyxel_examples():
+def copy_pyxel_examples():
     src_dir = os.path.join(os.path.dirname(__file__), "examples")
     dst_dir = "pyxel_examples"
     shutil.rmtree(dst_dir, ignore_errors=True)
@@ -168,8 +165,3 @@ def _copy_pyxel_examples():
         os.makedirs(os.path.dirname(dst_file), exist_ok=True)
         shutil.copyfile(src_file, dst_file)
         print(f"copied '{dst_file}'")
-
-
-def _print_module_search_path():
-    module_search_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    print(module_search_path)

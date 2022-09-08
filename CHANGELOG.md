@@ -4,6 +4,8 @@
 - Added a script to build and copy Pyodide
 - Changed the audio buffer size for WASM
 - Added a utilify module for WASM
+- Removed the module_search_path option from CLI
+- Changed functions for CLI to public
 
 ## 1.8.2
 - Fixed to release crates correctly
