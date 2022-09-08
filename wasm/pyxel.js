@@ -7,7 +7,7 @@ class Pyxel {
         this._pyodide = pyodide;
     }
 
-    async fetchFiles(baseDir, files) {
+    async loadFiles(baseDir, files) {
         let pyodide = this._pyodide;
         for (let file of files) {
             let dirs = file.split("/");
@@ -24,35 +24,28 @@ class Pyxel {
         }
     }
 
-    run(codeOrFile) {
-        if (codeOrFile.endsWith(".py")) {
-            const file = codeOrFile;
-            const code = this._pyodide.FS.readFile(file, { encoding: "utf8" });
-            const dir = file.substring(0, file.lastIndexOf("/"))
-            this._pyodide.FS.chdir(dir || ".");
-            this._pyodide.runPython(`import os, sys; sys.path.append(os.getcwd()); del os, sys; \n${code} `);
-        } else {
-            const code = codeOrFile;
-            this._pyodide.runPython(code);
-        }
+    exec(pythonScript) {
+        this._pyodide.runPython(pythonScript);
+    }
+
+    run(pythonScriptFile) {
+        this._pyodide.runPython(`import pyxel.cli; pyxel.cli.run_python_script("${pythonScriptFile}")`);
     }
 
     play(pyxelAppFile) {
-        let pyodide = this._pyodide;
-        let pyxel = this;
-        (async function () {
-            let zipResponse = await fetch(pyxelAppFile);
-            let zipBinary = await zipResponse.arrayBuffer();
-            pyodide.unpackArchive(zipBinary, "zip");
-            let archiveDir = pyxelAppFile.split("/").pop().split(".").shift();
-            for (let file of pyodide.FS.readdir(archiveDir)) {
-                if (file != APP_STARTUP_SCRIPT_FILE) {
-                    continue;
-                }
-                const startupFile = pyodide.FS.readFile(`${archiveDir}/${file}`, { encoding: "utf8" });
-                pyxel.run(`${archiveDir}/${startupFile}`);
-            }
-        })();
+        this._pyodide.runPython(`import pyxel.cli; pyxel.cli.play_pyxel_app("${pyxelAppFile}")`);
+    }
+
+    edit(pyxelResourceFile) {
+        this._pyodide.runPython(`import pyxel.cli; pyxel.cli.edit_pyxel_resource("${pyxelResourceFile}")`);
+    }
+
+    package(appRootDir, startupScriptName) {
+        this._pyodide.runPython(`import pyxel.cli; pyxel.cli.package_pyxel_app("${appRootDir}", "${startupScriptName}")`);
+    }
+
+    copyExamples() {
+        this._pyodide.runPython(`import pyxel.cli; pyxel.cli.copy_pyxel_examples()`);
     }
 }
 
