@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="pyodide_sdl2/pyodide.js"></script>
+    <script src="pyxel.js"></script>
+</head>
+
+<body>
+    <div id="loading">Loading...</div>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+    <script type="text/javascript">
+        (async function () {
+            let pyxel = await loadPyxel("canvas");
+            await pyxel.loadFiles("../python/pyxel/examples", [
+                "03_draw_api.py",
+                "assets/cat_16x16.png",
+                "assets/tileset_24x32.png",
+            ]);
+            document.getElementById("loading").remove();
+            pyxel.run("03_draw_api.py");
+        })();
+    </script>
+</body>
+
+</html>
