@@ -7,7 +7,7 @@ class Pyxel {
         this._pyodide = pyodide;
     }
 
-    async loadFiles(baseDir, files) {
+    async fetchFiles(baseDir, files) {
         let pyodide = this._pyodide;
         for (let file of files) {
             let dirs = file.split("/");
