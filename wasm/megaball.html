@@ -12,8 +12,11 @@
     <script type="text/javascript">
         (async function () {
             let pyxel = await loadPyxel("canvas");
+            await pyxel.loadFiles("../python/pyxel/examples", [
+                "megaball.pyxapp",
+            ]);
             document.getElementById("loading").remove();
-            pyxel.play("../python/pyxel/examples/megaball.pyxapp");
+            pyxel.play("megaball.pyxapp");
         })();
     </script>
 </body>
