@@ -13,7 +13,7 @@
         (async function () {
             let pyxel = await loadPyxel("canvas");
             document.getElementById("loading").remove();
-            pyxel.run(`
+            pyxel.exec(`
                 import pyxel
                 pyxel.init(200, 100)
 

@@ -12,8 +12,11 @@
     <script type="text/javascript">
         (async function () {
             let pyxel = await loadPyxel("canvas");
+            await pyxel.loadFiles("../python/pyxel/examples", [
+                "30SecondsOfDaylight.pyxapp",
+            ]);
             document.getElementById("loading").remove();
-            pyxel.play("../python/pyxel/examples/30SecondsOfDaylight.pyxapp");
+            pyxel.play("30SecondsOfDaylight.pyxapp");
         })();
     </script>
 </body>
