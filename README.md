@@ -49,6 +49,10 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
     - [Music Class](#music-class)
     - [Advanced APIs](#advanced-apis)
 - [How to Contribute](#how-to-contribute)
+    - [Building Overview](#building-overview)
+    - [Submitting Issues](#submitting-issues)
+    - [Manual Testing](#manual-testing)
+    - [Submitting Pull Requests](#submitting-pull-requests)
 - [Other Information](#other-information)
 - [License](#license)
 - [Sponsors](#recruiting-sponsors)
@@ -585,7 +589,17 @@ If you are familiar with your skills, try to create amazing works with [this](py
 
 ## How to Contribute
 
-### Submitting Issue
+### Building Overview
+
+Pyxel is built primarily using Rust, and installed via Pip. Ensure you have the *nightly* version of Rust installed with `rustup`, or `make` will generate build errors.
+
+The `make clean build` command will not install the build, so ensure you run ``pip3 install --force-reinstall `ls -rt ./dist/*.whl | tail -n 1` `` followed by `python3 -m unittest discover ./crates/pyxel-extension/tests` to install it.
+
+By default, `make clean test` will build and install Pyxel, and will then run *all* of the tests in the examples directory, so if you do not wish to run some of these examples, you will need to comment them out of the Makefile.
+
+For more information and a direct look at the build tasks, check the [Makefile](Makefile) directly.
+
+### Submitting Issues
 
 Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests. Before submitting a new issue, ensure that there is no similar open issue.
 
@@ -593,7 +607,7 @@ Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug rep
 
 Anyone manually testing the code and reporting bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) are very welcome!
 
-### Submitting Pull Request
+### Submitting Pull Requests
 
 Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the Issue Tracker.
 
