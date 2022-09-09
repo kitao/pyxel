@@ -47,20 +47,6 @@ class Pyxel {
     copyExamples() {
         this._pyodide.runPython(`import pyxel.cli; pyxel.cli.copy_pyxel_examples()`);
     }
-
-    fetchAndPlay(pyxelAppFile, onFetched) {
-        let pyxel = this;
-        (async function () {
-            let PATH = pyxel._pyodide.PATH;
-            let appDir = PATH.dirname(pyxelAppFile);
-            let appName = PATH.basename(pyxelAppFile);
-            await pyxel.fetchFiles(appDir, [appName]);
-            if (onFetched) {
-                onFetched();
-            }
-            pyxel.play(appName);
-        })();
-    }
 }
 
 async function loadPyxel(canvasId) {
