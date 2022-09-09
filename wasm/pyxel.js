@@ -18,8 +18,8 @@ class Pyxel {
                 pyodide.FS.mkdir(path);
                 path += "/";
             }
-            const fileResponse = await fetch(`${baseDir}/${file}`);
-            const fileBinary = new Uint8Array(await fileResponse.arrayBuffer());
+            let fileResponse = await fetch(`${baseDir}/${file}`);
+            let fileBinary = new Uint8Array(await fileResponse.arrayBuffer());
             pyodide.FS.writeFile(file, fileBinary, { encoding: "binary" });
         }
     }
@@ -46,6 +46,20 @@ class Pyxel {
 
     copyExamples() {
         this._pyodide.runPython(`import pyxel.cli; pyxel.cli.copy_pyxel_examples()`);
+    }
+
+    fetchAndPlay(pyxelAppFile, onFetched) {
+        let pyxel = this;
+        (async function () {
+            let PATH = pyxel._pyodide.PATH;
+            let appDir = PATH.dirname(pyxelAppFile);
+            let appName = PATH.basename(pyxelAppFile);
+            await pyxel.fetchFiles(appDir, [appName]);
+            if (onFetched) {
+                onFetched();
+            }
+            pyxel.play(appName);
+        })();
     }
 }
 
