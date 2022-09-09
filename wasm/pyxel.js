@@ -8,19 +8,22 @@ class Pyxel {
     }
 
     async fetchFiles(baseDir, files) {
-        let pyodide = this._pyodide;
+        let FS = this._pyodide.FS;
         for (let file of files) {
             let dirs = file.split("/");
             dirs.pop();
             let path = "";
             for (let dir of dirs) {
                 path += dir;
-                pyodide.FS.mkdir(path);
+                if (!FS.analyzePath(path).exists) {
+                    FS.mkdir(path);
+                }
                 path += "/";
             }
+            console.log(baseDir, file);
             let fileResponse = await fetch(`${baseDir}/${file}`);
             let fileBinary = new Uint8Array(await fileResponse.arrayBuffer());
-            pyodide.FS.writeFile(file, fileBinary, { encoding: "binary" });
+            FS.writeFile(file, fileBinary, { encoding: "binary" });
         }
     }
 
