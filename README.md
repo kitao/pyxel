@@ -26,6 +26,33 @@ Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.
 
 Pyxel is open source and free to use. Let's start making a retro game with Pyxel!
 
+## Contents
+- [Specifications](#specifications)
+- [How to Install](#how-to-install)
+    - [Try Pyxel Examples](#try-pyxel-examples)
+- [How to Use](#how-to-use)
+    - [Create Pyxel Application](#create-pyxel-application)
+    - [Run Pyxel Application](#run-pyxel-application)
+    - [Special Controls](#special-controls)
+    - [How to Create Resources](#how-to-create-resources)
+    - [How to Distribute Applications](#how-to-distribute-applications)
+- [API Reference](#api-reference)
+    - [System](#system)
+    - [Resource](#resource)
+    - [Input](#input)
+    - [Graphics](#graphics)
+    - [Audio](#audio)
+    - [Math](#math)
+    - [Image Class](#image-class)
+    - [Tilemap Class](#tilemap-class)
+    - [Sound Class](#sound-class)
+    - [Music Class](#music-class)
+    - [Advanced APIs](#advanced-apis)
+- [How to Contribute](#how-to-contribute)
+- [Other Information](#other-information)
+- [License](#license)
+- [Sponsors](#recruiting-sponsors)
+
 ## Specifications
 
 - Runs on Windows, Mac, Linux, and web browsers
@@ -210,7 +237,7 @@ Toggle the performance monitor (fps, update time, and draw time)
 - `Alt(Option)+Enter`<br>
 Toggle full screen
 
-### How to Create Resource
+### How to Create Resources
 
 Pyxel Editor can create images and sounds used in a Pyxel application.
 
@@ -268,7 +295,7 @@ Pyxel sounds can also be created in the following method:
 
 Please refer to the API reference for usage of these functions.
 
-### How to Distribute Application
+### How to Distribute Applications
 
 Pyxel supports a dedicated application distribution file format (Pyxel application file) that works across platforms.
 
