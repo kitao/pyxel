@@ -285,18 +285,13 @@ pub fn fullscreen(is_fullscreen: bool) {
     Platform::instance().set_fullscreen(is_fullscreen);
 }
 
-#[cfg(not(target_os = "emscripten"))]
 pub fn run<T: PyxelCallback>(mut callback: T) {
-    let system = System::instance();
-    loop {
-        system.run_one_frame(&mut callback);
-        system.wait_for_update_time();
-    }
-}
+    let main_loop = move || {
+        System::instance().run_one_frame(&mut callback);
+        System::instance().wait_for_update_time();
+    };
 
-#[cfg(target_os = "emscripten")]
-pub fn run<T: PyxelCallback>(callback: T) {
-    emscripten::start_main_loop(callback);
+    Platform::start_main_loop(main_loop);
 }
 
 pub fn show() {
@@ -326,53 +321,4 @@ pub fn flip() {
 
 pub fn quit() {
     exit(0);
-}
-
-#[cfg(target_os = "emscripten")]
-mod emscripten {
-    use std::os::raw::{c_int, c_void};
-
-    use crate::{PyxelCallback, System};
-
-    #[allow(non_camel_case_types)]
-    type em_arg_callback_func = unsafe extern "C" fn(*mut c_void);
-
-    extern "C" {
-        pub fn emscripten_set_main_loop_arg(
-            func: em_arg_callback_func,
-            arg: *mut c_void,
-            fps: c_int,
-            simulate_infinite_loop: c_int,
-        );
-        pub fn emscripten_cancel_main_loop();
-    }
-
-    pub fn start_main_loop<T: PyxelCallback>(callback: T) {
-        println!("I don't know why, but I have to wait a little longer.");
-        println!("I don't know why, but I have to wait a little longer.");
-        println!("I don't know why, but I have to wait a little longer.");
-        println!("I don't know why, but I have to wait a little longer.");
-        println!("I don't know why, but I have to wait a little longer.");
-
-        unsafe extern "C" fn main_loop<T: PyxelCallback>(args: *mut c_void) {
-            let callback = args as *mut T;
-            System::instance().run_one_frame(&mut *callback);
-        }
-
-        unsafe {
-            emscripten_set_main_loop_arg(
-                main_loop::<T>,
-                Box::into_raw(Box::new(callback)) as *mut c_void,
-                0,
-                1,
-            );
-        }
-    }
-
-    #[allow(dead_code)]
-    pub fn end_main_loop() {
-        unsafe {
-            emscripten_cancel_main_loop();
-        }
-    }
 }

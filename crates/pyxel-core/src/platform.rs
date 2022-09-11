@@ -452,4 +452,61 @@ impl Platform {
         mouse_y = (mouse_y - window_y - screen_y as i32) / screen_scale as i32;
         (mouse_x, mouse_y)
     }
+
+    #[allow(unused_mut)]
+    pub fn start_main_loop<F: FnMut()>(mut main_loop: F) {
+        #[cfg(not(target_os = "emscripten"))]
+        loop {
+            main_loop();
+        }
+
+        #[cfg(target_os = "emscripten")]
+        {
+            main_loop();
+            emscripten::start_main_loop(main_loop);
+        }
+    }
+}
+
+#[cfg(target_os = "emscripten")]
+mod emscripten {
+    use std::os::raw::{c_int, c_void};
+
+    #[allow(non_camel_case_types)]
+    type em_arg_callback_func = unsafe extern "C" fn(*mut c_void);
+
+    extern "C" {
+        pub fn emscripten_set_main_loop_arg(
+            func: em_arg_callback_func,
+            arg: *mut c_void,
+            fps: c_int,
+            simulate_infinite_loop: c_int,
+        );
+        pub fn emscripten_cancel_main_loop();
+    }
+
+    unsafe extern "C" fn main_loop_caller<F: FnMut()>(arg: *mut c_void) {
+        let main_loop = arg as *mut F;
+        (*main_loop)();
+    }
+
+    pub fn start_main_loop<F: FnMut()>(mut main_loop: F) {
+        main_loop();
+
+        unsafe {
+            emscripten_set_main_loop_arg(
+                main_loop_caller::<F>,
+                Box::into_raw(Box::new(main_loop)) as *mut c_void,
+                0,
+                1,
+            );
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn stop_main_loop() {
+        unsafe {
+            emscripten_cancel_main_loop();
+        }
+    }
 }
