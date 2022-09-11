@@ -26,37 +26,6 @@ Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.
 
 Pyxel is open source and free to use. Let's start making a retro game with Pyxel!
 
-## Contents
-- [Specifications](#specifications)
-- [How to Install](#how-to-install)
-    - [Try Pyxel Examples](#try-pyxel-examples)
-- [How to Use](#how-to-use)
-    - [Create Pyxel Application](#create-pyxel-application)
-    - [Run Pyxel Application](#run-pyxel-application)
-    - [Special Controls](#special-controls)
-    - [How to Create Resources](#how-to-create-resources)
-    - [How to Distribute Applications](#how-to-distribute-applications)
-- [API Reference](#api-reference)
-    - [System](#system)
-    - [Resource](#resource)
-    - [Input](#input)
-    - [Graphics](#graphics)
-    - [Audio](#audio)
-    - [Math](#math)
-    - [Image Class](#image-class)
-    - [Tilemap Class](#tilemap-class)
-    - [Sound Class](#sound-class)
-    - [Music Class](#music-class)
-    - [Advanced APIs](#advanced-apis)
-- [How to Contribute](#how-to-contribute)
-    - [Building Overview](#building-overview)
-    - [Submitting Issues](#submitting-issues)
-    - [Manual Testing](#manual-testing)
-    - [Submitting Pull Requests](#submitting-pull-requests)
-- [Other Information](#other-information)
-- [License](#license)
-- [Sponsors](#recruiting-sponsors)
-
 ## Specifications
 
 - Runs on Windows, Mac, Linux, and web browsers
