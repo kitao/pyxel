@@ -210,7 +210,7 @@ Toggle the performance monitor (fps, update time, and draw time)
 - `Alt(Option)+Enter`<br>
 Toggle full screen
 
-### How to Create Resource
+### How to Create Resources
 
 Pyxel Editor can create images and sounds used in a Pyxel application.
 
@@ -268,7 +268,7 @@ Pyxel sounds can also be created in the following method:
 
 Please refer to the API reference for usage of these functions.
 
-### How to Distribute Application
+### How to Distribute Applications
 
 Pyxel supports a dedicated application distribution file format (Pyxel application file) that works across platforms.
 
@@ -558,7 +558,7 @@ If you are familiar with your skills, try to create amazing works with [this](ht
 
 ## How to Contribute
 
-### Submitting Issue
+### Submitting Issues
 
 Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests. Before submitting a new issue, ensure that there is no similar open issue.
 
@@ -566,7 +566,7 @@ Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug rep
 
 Anyone manually testing the code and reporting bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) are very welcome!
 
-### Submitting Pull Request
+### Submitting Pull Requests
 
 Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the Issue Tracker.
 
