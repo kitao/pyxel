@@ -73,7 +73,7 @@ pub use crate::settings::*;
 pub use crate::sound::{SharedSound, Sound};
 use crate::system::System;
 pub use crate::system::{
-    flip, frame_count, fullscreen, height, icon, is_fullscreen, quit, run, show, title, width,
+    frame_count, fullscreen, height, icon, is_fullscreen, quit, run, show, title, width,
     PyxelCallback,
 };
 pub use crate::tilemap::{SharedTilemap, Tilemap};

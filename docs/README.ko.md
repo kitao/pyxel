@@ -150,32 +150,6 @@ class App:
 App()
 ```
 
-`show`나 `flip` 함수를 이용해 간단한 그래픽이나 애니메이션을 그리는 것도 가능합니다.
-
-`show` 함수는 화면을 표시하고 `Esc` 키가 눌릴 때까지 대기합니다.
-
-```python
-import pyxel
-
-pyxel.init(120, 120)
-pyxel.cls(1)
-pyxel.circb(60, 60, 40, 7)
-pyxel.show()
-```
-
-`flip` 함수는 화면을 한 번 갱신하는 함수입니다.
-
-```python
-import pyxel
-
-pyxel.init(120, 80)
-
-while True:
-    pyxel.cls(3)
-    pyxel.rectb(pyxel.frame_count % 160 - 40, 20, 40, 40, 7)
-    pyxel.flip()
-```
-
 ### Pyxel 애플리케이션 실행 방법
 
 생성된 Python 스크립트는 다음 명령어를 사용해 실행할 수 있습니다.
@@ -304,10 +278,7 @@ Pyxel 애플리케이션을 화면 크기 (`width`, `height`)로 초기화합니
 Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수를, 화면 그리기에 `draw` 함수를 호출합니다.
 
 - `show()`<br>
-화면을 표시하고 `Esc` 키를 누를 때까지 기다립니다. (일반적인 용도로 사용하지 않음)
-
-- `flip()`<br>
-화면을 한 번 갱신합니다. (일반적인 용도로 사용하지 않음)
+화면을 표시하고 `Esc` 키를 누를 때까지 기다립니다.
 
 - `quit()`<br>
 Pyxel 애플리케이션을 종료합니다.
