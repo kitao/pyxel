@@ -466,7 +466,10 @@ impl Platform {
     }
 
     fn mouse_pos(&self) -> (i32, i32) {
+        #[cfg(not(target_os = "emscripten"))]
         let (window_x, window_y) = self.sdl_canvas.window().position();
+        #[cfg(target_os = "emscripten")]
+        let (window_x, window_y) = (0, 0); // TODO: Confirm the correct way for Emscripten
         let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
         let mut mouse_x = 0;
         let mut mouse_y = 0;
