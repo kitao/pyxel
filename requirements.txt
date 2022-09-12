@@ -1,4 +1,4 @@
 black
 flake8
 isort
-maturin
+maturin==0.13.3b6
