@@ -48,9 +48,9 @@ PYXEL_DIR = $(ROOT_DIR)/python/pyxel
 CRATES_DIR = $(ROOT_DIR)/crates
 SCRIPTS_DIR = $(ROOT_DIR)/scripts
 EXAMPLES_DIR = $(PYXEL_DIR)/examples
-WASM_ENVVARS = RUSTUP_TOOLCHAIN=nightly
+WASM_DIR = $(ROOT_DIR)/wasm
+WASM_ENV = RUSTUP_TOOLCHAIN=nightly
 WASM_TARGET = wasm32-unknown-emscripten
-MATURIN_OPTS = --manylinux 2014 --skip-auditwheel
 
 ifeq ($(COMSPEC),)
 PYTHON = python3
@@ -94,7 +94,8 @@ format:
 build: format
 	@$(ENSURE_TARGET)
 	@$(SCRIPTS_DIR)/update_readme
-	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS)
+	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --skip-auditwheel
+	@maturin sdist -o $(DIST_DIR)
 
 test: build
 	@cd $(CRATES_DIR)/pyxel-core; cargo test $(BUILD_OPTS)
@@ -126,11 +127,13 @@ test: build
 	@rm -rf testapp testapp.pyxapp
 
 clean-wasm:
-	@$(WASM_ENVVARS) make clean TARGET=$(WASM_TARGET)
+	@$(WASM_ENV) make clean TARGET=$(WASM_TARGET)
 
 build-wasm:
-	@$(WASM_ENVVARS) make build TARGET=$(WASM_TARGET)
-	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(ROOT_DIR)/wasm
+	@$(WASM_ENV) make build TARGET=$(WASM_TARGET)
+	@mkdir -p $(WASM_DIR)
+	@rm $(WASM_DIR)/*.whl
+	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(WASM_DIR)
 
 test-wasm: build-wasm
 	@$(SCRIPTS_DIR)/start_server
