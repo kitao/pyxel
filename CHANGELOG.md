@@ -6,6 +6,7 @@
 - Added a utilify module for WASM
 - Removed the module_search_path option from CLI
 - Changed functions for CLI to public
+- Fiexd to stop playing music on quit on WASM
 - Removed the flip function for WASM support
 - Fixed the mouse coordinates in WASM
 
