@@ -150,32 +150,6 @@ class App:
 App()
 ```
 
-また、シンプルなグラフィックスやアニメーションを作成する場合は、`show`関数や`flip`関数を使った簡易的な記述も可能です。
-
-`show`関数は画面を表示して、`Esc`キーが押されるまで待機します。
-
-```python
-import pyxel
-
-pyxel.init(120, 120)
-pyxel.cls(1)
-pyxel.circb(60, 60, 40, 7)
-pyxel.show()
-```
-
-`flip`関数は画面を一度更新します。
-
-```python
-import pyxel
-
-pyxel.init(120, 80)
-
-while True:
-    pyxel.cls(3)
-    pyxel.rectb(pyxel.frame_count % 160 - 40, 20, 40, 40, 7)
-    pyxel.flip()
-```
-
 ### アプリケーションの実行方法
 
 作成したPythonスクリプトは次のコマンドで実行できます。
@@ -304,10 +278,7 @@ Pyxelアプリケーションを画面サイズ (`width`, `height`) で初期化
 Pyxelアプリケーションを開始し、フレーム更新時に`update`関数、描画時に`draw`関数を呼びます。
 
 - `show()`<br>
-画面を表示して`Esc`キーが押されるまで待機します。(通常のアプリケーションでは使用しません)
-
-- `flip()`<br>
-画面を一度更新します。(通常のアプリケーションでは使用しません)
+画面を表示して`Esc`キーが押されるまで待機します。
 
 - `quit()`<br>
 Pyxelアプリケーションを終了します。
