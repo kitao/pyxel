@@ -132,7 +132,6 @@ clean-wasm:
 build-wasm:
 	@$(WASM_ENV) make build TARGET=$(WASM_TARGET)
 	@mkdir -p $(WASM_DIR)
-	@rm $(WASM_DIR)/*.whl
 	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(WASM_DIR)
 
 test-wasm: build-wasm
