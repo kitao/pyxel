@@ -107,13 +107,23 @@ def make_bltm_figure():
     return figure
 
 
-pyxel.init(223, 92, title="Offscreen Rendering")
-pyxel.load("assets/offscreen.pyxres")
-blt_figure = make_blt_figure()
-bltm_figure = make_bltm_figure()
-while True:
-    if pyxel.btnp(pyxel.KEY_Q):
-        pyxel.quit()
-    figure = blt_figure if (pyxel.frame_count // 120) % 2 == 0 else bltm_figure
-    pyxel.blt(0, 0, figure, 0, 0, figure.width, figure.height)
-    pyxel.flip()
+class App:
+    def __init__(self):
+        pyxel.init(223, 92, title="Offscreen Rendering")
+        pyxel.load("assets/offscreen.pyxres")
+        self.blt_figure = make_blt_figure()
+        self.bltm_figure = make_bltm_figure()
+        pyxel.run(self.update, self.draw)
+
+    def update(self):
+        if pyxel.btnp(pyxel.KEY_Q):
+            pyxel.quit()
+
+    def draw(self):
+        figure = (
+            self.blt_figure if (pyxel.frame_count // 120) % 2 == 0 else self.bltm_figure
+        )
+        pyxel.blt(0, 0, figure, 0, 0, figure.width, figure.height)
+
+
+App()
