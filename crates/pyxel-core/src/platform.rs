@@ -1,4 +1,5 @@
 use std::cmp::min;
+use std::process::exit;
 
 use sdl2::audio::{
     AudioCallback as SdlAudioCallback, AudioDevice as SdlAudioDevice,
@@ -429,6 +430,30 @@ impl Platform {
         }
     }
 
+    #[allow(unused_mut)]
+    pub fn run<F: FnMut()>(&mut self, mut main_loop: F) {
+        #[cfg(not(target_os = "emscripten"))]
+        loop {
+            let start_ms = self.tick_count() as f64;
+            main_loop();
+            let elapsed_ms = self.tick_count() as f64 - start_ms;
+            let wait_ms = 1000.0 / 60.0 - elapsed_ms;
+            if wait_ms > 0.0 {
+                self.sleep((wait_ms / 2.0) as u32);
+            }
+        }
+
+        #[cfg(target_os = "emscripten")]
+        emscripten::set_main_loop(main_loop);
+    }
+
+    pub fn quit(&mut self) {
+        self.pause_audio();
+        #[cfg(target_os = "emscripten")]
+        emscripten::cancel_main_loop();
+        exit(0);
+    }
+
     fn screen_pos_scale(&self) -> (u32, u32, u32) {
         let (window_width, window_height) = self.sdl_canvas.window().size();
         let screen_scale = min(
@@ -452,25 +477,6 @@ impl Platform {
         mouse_y = (mouse_y - window_y - screen_y as i32) / screen_scale as i32;
         (mouse_x, mouse_y)
     }
-
-    #[allow(unused_mut)]
-    pub fn start_main_loop<F: FnMut()>(mut main_loop: F) {
-        #[cfg(not(target_os = "emscripten"))]
-        loop {
-            main_loop();
-        }
-
-        #[cfg(target_os = "emscripten")]
-        {
-            main_loop();
-            emscripten::start_main_loop(main_loop);
-        }
-    }
-
-    pub fn stop_main_loop() {
-        #[cfg(target_os = "emscripten")]
-        emscripten::stop_main_loop();
-    }
 }
 
 #[cfg(target_os = "emscripten")]
@@ -490,26 +496,25 @@ mod emscripten {
         pub fn emscripten_cancel_main_loop();
     }
 
-    unsafe extern "C" fn main_loop_caller<F: FnMut()>(arg: *mut c_void) {
-        let main_loop = arg as *mut F;
-        (*main_loop)();
+    unsafe extern "C" fn callback_wrapper<F: FnMut()>(arg: *mut c_void) {
+        let callback = arg as *mut F;
+        (*callback)();
     }
 
-    pub fn start_main_loop<F: FnMut()>(main_loop: F) {
+    pub fn set_main_loop<F: FnMut()>(callback: F) {
         use crate::platform::Platform;
         Platform::instance().sleep(10); // TODO: Clarify why it doesn't work without this waiting time
         unsafe {
             emscripten_set_main_loop_arg(
-                main_loop_caller::<F>,
-                Box::into_raw(Box::new(main_loop)) as *mut c_void,
+                callback_wrapper::<F>,
+                Box::into_raw(Box::new(callback)) as *mut c_void,
                 0,
                 1,
             );
         }
     }
 
-    #[allow(dead_code)]
-    pub fn stop_main_loop() {
+    pub fn cancel_main_loop() {
         unsafe {
             emscripten_cancel_main_loop();
         }

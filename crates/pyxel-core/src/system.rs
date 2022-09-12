@@ -1,5 +1,4 @@
 use std::cmp::min;
-use std::process::exit;
 
 use crate::event::Event;
 use crate::image::Image;
@@ -52,7 +51,7 @@ impl System {
         self.disable_next_frame_skip = true;
     }
 
-    fn run_one_frame(&mut self, callback: &mut dyn PyxelCallback) {
+    fn process_frame(&mut self, callback: &mut dyn PyxelCallback) {
         let tick_count = Platform::instance().tick_count();
         let wait_ms = self.next_update_ms - tick_count as f64;
         if wait_ms > 0.0 {
@@ -141,16 +140,6 @@ impl System {
         }
         if crate::btnp(self.quit_key, None, None) {
             crate::quit();
-        }
-    }
-
-    fn wait_for_update_time(&self) -> bool {
-        let wait_ms = self.next_update_ms - Platform::instance().tick_count() as f64;
-        if wait_ms <= 0.0 {
-            false
-        } else {
-            Platform::instance().sleep((wait_ms / 2.0) as u32);
-            true
         }
     }
 
@@ -287,41 +276,20 @@ pub fn fullscreen(is_fullscreen: bool) {
 
 pub fn run<T: PyxelCallback>(mut callback: T) {
     let main_loop = move || {
-        let system = System::instance();
-        system.wait_for_update_time();
-        system.run_one_frame(&mut callback);
+        System::instance().process_frame(&mut callback);
     };
-    Platform::start_main_loop(main_loop);
+    Platform::instance().run(main_loop);
 }
 
 pub fn show() {
     let main_loop = move || {
         let system = System::instance();
-        system.wait_for_update_time();
         system.update_frame(None);
         system.draw_frame(None);
-        system.frame_count += 1;
     };
-    Platform::start_main_loop(main_loop);
-}
-
-pub fn flip() {
-    let system = System::instance();
-    system.frame_count += 1;
-    if system.next_update_ms < 0.0 {
-        system.next_update_ms = Platform::instance().tick_count() as f64;
-    } else {
-        while system.wait_for_update_time() {}
-    }
-    system.next_update_ms += system.one_frame_ms;
-    let tick_count = Platform::instance().tick_count();
-    system.fps_profiler.end(tick_count);
-    system.fps_profiler.start(tick_count);
-    system.update_frame(None);
-    system.draw_frame(None);
-    Platform::stop_main_loop();
+    Platform::instance().run(main_loop);
 }
 
 pub fn quit() {
-    exit(0);
+    Platform::instance().quit();
 }
