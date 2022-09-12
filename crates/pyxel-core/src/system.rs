@@ -36,7 +36,7 @@ impl System {
     pub fn init(fps: u32, quit_key: Key) {
         Self::set_instance(Self {
             one_frame_ms: 1000.0 / fps as f64,
-            next_update_ms: -1.0,
+            next_update_ms: 0.0,
             disable_next_frame_skip: true,
             frame_count: 0,
             quit_key,
@@ -54,8 +54,8 @@ impl System {
 
     fn run_one_frame(&mut self, callback: &mut dyn PyxelCallback) {
         let tick_count = Platform::instance().tick_count();
-        let sleep_ms = self.next_update_ms - tick_count as f64;
-        if sleep_ms > 0.0 {
+        let wait_ms = self.next_update_ms - tick_count as f64;
+        if wait_ms > 0.0 {
             return;
         }
         if self.frame_count == 0 {
@@ -69,7 +69,7 @@ impl System {
                 self.disable_next_frame_skip = false;
                 self.next_update_ms = Platform::instance().tick_count() as f64 + self.one_frame_ms;
             } else {
-                update_count = min((-sleep_ms / self.one_frame_ms) as u32, MAX_SKIP_FRAMES) + 1;
+                update_count = min((-wait_ms / self.one_frame_ms) as u32, MAX_SKIP_FRAMES) + 1;
                 self.next_update_ms += self.one_frame_ms * update_count as f64;
             }
             for _ in 1..update_count {
@@ -144,13 +144,13 @@ impl System {
         }
     }
 
-    fn wait_for_update_time(&self) {
-        loop {
-            let sleep_ms = self.next_update_ms - Platform::instance().tick_count() as f64;
-            if sleep_ms <= 0.0 {
-                return;
-            }
-            Platform::instance().sleep((sleep_ms / 2.0) as u32);
+    fn wait_for_update_time(&self) -> bool {
+        let wait_ms = self.next_update_ms - Platform::instance().tick_count() as f64;
+        if wait_ms <= 0.0 {
+            false
+        } else {
+            Platform::instance().sleep((wait_ms / 2.0) as u32);
+            true
         }
     }
 
@@ -287,20 +287,22 @@ pub fn fullscreen(is_fullscreen: bool) {
 
 pub fn run<T: PyxelCallback>(mut callback: T) {
     let main_loop = move || {
-        System::instance().run_one_frame(&mut callback);
-        System::instance().wait_for_update_time();
+        let system = System::instance();
+        system.wait_for_update_time();
+        system.run_one_frame(&mut callback);
     };
-
     Platform::start_main_loop(main_loop);
 }
 
 pub fn show() {
-    let system = System::instance();
-    loop {
+    let main_loop = move || {
+        let system = System::instance();
+        system.wait_for_update_time();
         system.update_frame(None);
         system.draw_frame(None);
         system.frame_count += 1;
-    }
+    };
+    Platform::start_main_loop(main_loop);
 }
 
 pub fn flip() {
@@ -309,7 +311,7 @@ pub fn flip() {
     if system.next_update_ms < 0.0 {
         system.next_update_ms = Platform::instance().tick_count() as f64;
     } else {
-        system.wait_for_update_time();
+        while system.wait_for_update_time() {}
     }
     system.next_update_ms += system.one_frame_ms;
     let tick_count = Platform::instance().tick_count();
@@ -317,6 +319,7 @@ pub fn flip() {
     system.fps_profiler.start(tick_count);
     system.update_frame(None);
     system.draw_frame(None);
+    Platform::stop_main_loop();
 }
 
 pub fn quit() {

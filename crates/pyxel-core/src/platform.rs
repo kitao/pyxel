@@ -466,6 +466,11 @@ impl Platform {
             emscripten::start_main_loop(main_loop);
         }
     }
+
+    pub fn stop_main_loop() {
+        #[cfg(target_os = "emscripten")]
+        emscripten::stop_main_loop();
+    }
 }
 
 #[cfg(target_os = "emscripten")]
@@ -490,9 +495,9 @@ mod emscripten {
         (*main_loop)();
     }
 
-    pub fn start_main_loop<F: FnMut()>(mut main_loop: F) {
-        main_loop();
-
+    pub fn start_main_loop<F: FnMut()>(main_loop: F) {
+        use crate::platform::Platform;
+        Platform::instance().sleep(10); // TODO: Clarify why it doesn't work without this waiting time
         unsafe {
             emscripten_set_main_loop_arg(
                 main_loop_caller::<F>,
