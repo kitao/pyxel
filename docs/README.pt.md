@@ -150,32 +150,6 @@ class App:
 App()
 ```
 
-Também é possível escrever um código simples usando a função `show` e a função `flip` para desenhar gráficos básicos e animações.
-
-A função `show` mostra a tela e espera até que a tecla `Esc` seja pressionada.
-
-```python
-import pyxel
-
-pyxel.init(120, 120)
-pyxel.cls(1)
-pyxel.circb(60, 60, 40, 7)
-pyxel.show()
-```
-
-A função `flip` atualiza a tela uma vez.
-
-```python
-import pyxel
-
-pyxel.init(120, 80)
-
-while True:
-    pyxel.cls(3)
-    pyxel.rectb(pyxel.frame_count % 160 - 40, 20, 40, 40, 7)
-    pyxel.flip()
-```
-
 ### Executando uma aplicação Pyxel
 
 O script Python criado pode ser executado com o seguinte comando:
@@ -304,10 +278,7 @@ Ex. `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE,
 Roda a aplicação Pyxel e chama a função `update` para atualizar os quadros e a função `draw` para desenhá-los.
 
 - `show()`<br>
-Mostra a tela e espera até a tecla `Esc` ser pressionada. (Não utilizar em aplicações normais)
-
-- `flip()`<br>
-Atualiza a tela uma vez. (Não utilizar em aplicações normais)
+Mostra a tela e espera até a tecla `Esc` ser pressionada.
 
 - `quit()`<br>
 Feche a aplicação Pyxel.

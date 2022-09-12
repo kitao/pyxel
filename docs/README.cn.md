@@ -150,32 +150,6 @@ class App:
 App()
 ```
 
-同样可以使用`show`和`flip`函数来设计简单的图形和动画。
-
-`show`函数进行屏幕显示直到`Esc`键被按下。
-
-```python
-import pyxel
-
-pyxel.init(120, 120)
-pyxel.cls(1)
-pyxel.circb(60, 60, 40, 7)
-pyxel.show()
-```
-
-`flip`刷新一次屏幕图像。
-
-```python
-import pyxel
-
-pyxel.init(120, 80)
-
-while True:
-    pyxel.cls(3)
-    pyxel.rectb(pyxel.frame_count % 160 - 40, 20, 40, 40, 7)
-    pyxel.flip()
-```
-
 ### 运行Pyxel应用
 
 创建的Python脚本可以使用以下命令执行：
@@ -305,10 +279,7 @@ pyxel play PYXEL_APP_FILE
 启动Pyxel应用，并调用`update`函数刷新画面帧，并使用`draw`函数渲染画面。
 
 - `show()`<br>
-显示屏幕直到`Esc`键被按下。（通常应用中建议不要使用）
-
-- `flip()`<br>
-刷新一次屏幕。（通常应用中建议不要使用）
+显示屏幕直到`Esc`键被按下。
 
 - `quit()`<br>
 退出Pyxel应用。
