@@ -3,7 +3,7 @@
 ROOT_DIR=..
 PROJECTS_DIR=..
 PYODIDE_DIR=$PROJECTS_DIR/pyodide
-PYODIDE_REPO=https://github.com/kitao/pyodide
+PYODIDE_REPO=https://github.com/pyodide/pyodide
 SRC_DIR=$PYODIDE_DIR/dist
 DST_DIR=wasm/pyodide_sdl2
 FILES=(
@@ -29,6 +29,7 @@ else
     git clone $PYODIDE_REPO
     cd -
     cd $PYODIDE_DIR
+    sed -i -e "s/\\(-s MAIN_MODULE=1\\)/\\1 -s USE_SDL=2 -s GL_WORKAROUND_SAFARI_GETCONTEXT_BUG=0/" Makefile.envs
     ./run_docker
     # Then 'make' in the container
 fi
