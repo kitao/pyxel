@@ -7,6 +7,7 @@
 - Removed the module_search_path option from CLI
 - Changed functions for CLI to public
 - Removed the flip function for WASM support
+- Fixed the mouse coordinates in WASM
 
 ## 1.8.2
 - Fixed to release crates correctly
