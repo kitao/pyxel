@@ -59,7 +59,7 @@ jobs:
         run: |
           pip install twine
           rm -f dist/*-emscripten_*.whl
-          twine upload dist/*.whl
+          twine upload dist/*
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}

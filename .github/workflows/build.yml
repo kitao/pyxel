@@ -75,7 +75,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: pyxel-wheels
-          path: dist/*.whl
+          path: dist/*
 
   build-linux:
     strategy:
@@ -147,4 +147,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: pyxel-wheels
-          path: dist/*.whl
+          path: dist/*
