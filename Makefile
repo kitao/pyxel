@@ -77,6 +77,7 @@ clean:
 	@cd $(CRATES_DIR)/pyxel-extension; cargo clean $(BUILD_OPTS)
 
 distclean:
+	@rm -rf $(DIST_DIR)
 	@rm -rf $(CRATES_DIR)/pyxel-core/target
 	@rm -rf $(CRATES_DIR)/pyxel-extension/target
 
