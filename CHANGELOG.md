@@ -9,6 +9,7 @@
 - Fiexd to stop playing music on quit on WASM
 - Removed the flip function for WASM support
 - Fixed the mouse coordinates in WASM
+- Changed to release sdist as well
 
 ## 1.8.2
 - Fixed to release crates correctly
