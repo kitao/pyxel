@@ -70,7 +70,7 @@ SDL2パッケージ (Ubuntuの場合は`libsdl2-dev`)、[Python3](https://www.py
 sudo pip3 install -U pyxel
 ```
 
-上記で動作しない場合は、[Makefile](../Makefile)に記載されている手順に従ってセルフビルドを試してください。
+上記で動作しない場合は、[Makefile](../Makefile)に記載されている手順に従ってセルフビルドを試してみてください。
 
 ### サンプルを実行する
 
