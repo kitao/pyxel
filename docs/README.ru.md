@@ -82,18 +82,18 @@ pyxel copy_examples
 
 Список примеров, которые будут скопированы:
 
-- [01_hello_pyxel.py](https://kitao.github.io/pyxel/wasm/01_hello_pyxel.html) - Простейшее приложение
-- [02_jump_game.py](https://kitao.github.io/pyxel/wasm/02_jump_game.html) - Игра прыжков с простейшими ресурсными файлами Pyxel
-- [03_draw_api.py](https://kitao.github.io/pyxel/wasm/03_draw_api.html) - Демонстрация API для рисования
-- [04_sound_api.py](https://kitao.github.io/pyxel/wasm/04_sound_api.html) - Демонстрация API для работы со звуком
-- [05_color_palette.py](https://kitao.github.io/pyxel/wasm/05_color_palette.html) - Цветовая палитра
-- [06_click_game.py](https://kitao.github.io/pyxel/wasm/06_click_game.html) - Игра с кликами мышкой
-- [07_snake.py](https://kitao.github.io/pyxel/wasm/07_snake.html) - Змейка с BGM
-- [08_triangle_api.py](https://kitao.github.io/pyxel/wasm/08_triangle_api.html) - Демонстрация API по рисованию треугольных полигонов
-- [09_shooter.py](https://kitao.github.io/pyxel/wasm/09_shooter.html) - Игра жанра «убей всех» с переходом между экранами
-- [10_platformer.py](https://kitao.github.io/pyxel/wasm/10_platformer.html) - Платформер с боковым скроллингом и картой
-- [11_offscreen.py](https://kitao.github.io/pyxel/wasm/11_offscreen.html) - Внеэкранный рендеринг с помощью класса Image
-- [12_perlin_noise.py](https://kitao.github.io/pyxel/wasm/12_perlin_noise.html) - Анимация шума Перлина
+- <a href="https://kitao.github.io/pyxel/wasm/01_hello_pyxel.html" target="_blank">01_hello_pyxel.py</a> - Простейшее приложение
+- <a href="https://kitao.github.io/pyxel/wasm/02_jump_game.html" target="_blank">02_jump_game.py</a> - Игра прыжков с простейшими ресурсными файлами Pyxel
+- <a href="https://kitao.github.io/pyxel/wasm/03_draw_api.html" target="_blank">03_draw_api.py</a> - Демонстрация API для рисования
+- <a href="https://kitao.github.io/pyxel/wasm/04_sound_api.html" target="_blank">04_sound_api.py</a> - Демонстрация API для работы со звуком
+- <a href="https://kitao.github.io/pyxel/wasm/05_color_palette.html" target="_blank">05_color_palette.py</a> - Цветовая палитра
+- <a href="https://kitao.github.io/pyxel/wasm/06_click_game.html" target="_blank">06_click_game.py</a> - Игра с кликами мышкой
+- <a href="https://kitao.github.io/pyxel/wasm/07_snake.html" target="_blank">07_snake.py</a> - Змейка с BGM
+- <a href="https://kitao.github.io/pyxel/wasm/08_triangle_api.html" target="_blank">08_triangle_api.py</a> - Демонстрация API по рисованию треугольных полигонов
+- <a href="https://kitao.github.io/pyxel/wasm/09_shooter.html" target="_blank">09_shooter.py</a> - Игра жанра «убей всех» с переходом между экранами
+- <a href="https://kitao.github.io/pyxel/wasm/10_platformer.html" target="_blank">10_platformer.py</a> - Платформер с боковым скроллингом и картой
+- <a href="https://kitao.github.io/pyxel/wasm/11_offscreen.html" target="_blank">11_offscreen.py</a> - Внеэкранный рендеринг с помощью класса Image
+- <a href="https://kitao.github.io/pyxel/wasm/12_perlin_noise.html" target="_blank">12_perlin_noise.py</a> - Анимация шума Перлина
 - [30SecondsOfDaylight.pyxapp](https://kitao.github.io/pyxel/wasm/30SecondsOfDaylight.html) - 1-я победная игра Pyxel Jam от [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](https://kitao.github.io/pyxel/wasm/megaball.html) - Аркадная игра с физикой мяча от [Adam](https://twitter.com/helpcomputer0)
 
