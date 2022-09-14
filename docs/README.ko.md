@@ -82,20 +82,20 @@ pyxel copy_examples
 
 복사되는 예제 파일은 다음과 같습니다:
 
-- [01_hello_pyxel.py](../python/pyxel/examples/01_hello_pyxel.py) - 간단한 애플리케이션
-- [02_jump_game.py](../python/pyxel/examples/02_jump_game.py) - Pyxel 리소스 파일을 사용한 점프 게임
-- [03_draw_api.py](../python/pyxel/examples/03_draw_api.py) - Drawing API 데모
-- [04_sound_api.py](../python/pyxel/examples/04_sound_api.py) - Sound API 데모
-- [05_color_palette.py](../python/pyxel/examples/05_color_palette.py) - 색상 팔레트 목록
-- [06_click_game.py](../python/pyxel/examples/06_click_game.py) - 마우스 클릭 게임
-- [07_snake.py](../python/pyxel/examples/07_snake.py) - BGM이 포함된 스네이크 게임
-- [08_triangle_api.py](../python/pyxel/examples/08_triangle_api.py) - Triangle drawing API 데모
-- [09_shooter.py](../python/pyxel/examples/09_shooter.py) - 화면 전환이 있는 슈팅 게임
-- [10_platformer.py](../python/pyxel/examples/10_platformer.py) - 맵이 있는 횡 스크롤 플랫폼 게임
-- [11_offscreen.py](../python/pyxel/examples/11_offscreen.py) - 이미지 클래스를 사용한 오프스크린 렌더링
-- [12_perlin_noise.py](../python/pyxel/examples/12_perlin_noise.py) - 펄린 노이즈 애니메이션
-- [30SecondsOfDaylight.pyxapp](images/30SecondsOfDaylight.gif) - 제 1회 Pyxel Jam 우승 작품 ([Adam](https://twitter.com/helpcomputer0) 제작)
-- [megaball.pyxapp](images/megaball.gif) - 아케이드 볼 물리 게임 ([Adam](https://twitter.com/helpcomputer0) 제작)
+- [01_hello_pyxel.py](https://kitao.github.io/pyxel/wasm/01_hello_pyxel.html) - 간단한 애플리케이션
+- [02_jump_game.py](https://kitao.github.io/pyxel/wasm/02_jump_game.html) - Pyxel 리소스 파일을 사용한 점프 게임
+- [03_draw_api.py](https://kitao.github.io/pyxel/wasm/03_draw_api.html) - Drawing API 데모
+- [04_sound_api.py](https://kitao.github.io/pyxel/wasm/04_sound_api.html) - Sound API 데모
+- [05_color_palette.py](https://kitao.github.io/pyxel/wasm/05_color_palette.html) - 색상 팔레트 목록
+- [06_click_game.py](https://kitao.github.io/pyxel/wasm/06_click_game.html) - 마우스 클릭 게임
+- [07_snake.py](https://kitao.github.io/pyxel/wasm/07_snake.html) - BGM이 포함된 스네이크 게임
+- [08_triangle_api.py](https://kitao.github.io/pyxel/wasm/08_triangle_api.html) - Triangle drawing API 데모
+- [09_shooter.py](https://kitao.github.io/pyxel/wasm/09_shooter.html) - 화면 전환이 있는 슈팅 게임
+- [10_platformer.py](https://kitao.github.io/pyxel/wasm/10_platformer.html) - 맵이 있는 횡 스크롤 플랫폼 게임
+- [11_offscreen.py](https://kitao.github.io/pyxel/wasm/11_offscreen.html) - 이미지 클래스를 사용한 오프스크린 렌더링
+- [12_perlin_noise.py](https://kitao.github.io/pyxel/wasm/12_perlin_noise.html) - 펄린 노이즈 애니메이션
+- [30SecondsOfDaylight.pyxapp](https://kitao.github.io/pyxel/wasm/30SecondsOfDaylight.html) - 제 1회 Pyxel Jam 우승 작품 ([Adam](https://twitter.com/helpcomputer0) 제작)
+- [megaball.pyxapp](https://kitao.github.io/pyxel/wasm/megaball.html) - 아케이드 볼 물리 게임 ([Adam](https://twitter.com/helpcomputer0) 제작)
 
 다음 명령어를 사용하여 예제 파일을 실행할 수 있습니다.
 
