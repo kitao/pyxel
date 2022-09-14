@@ -9,7 +9,8 @@
 
 <body>
     <div id="loading">Loading...</div>
-    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1
+        style="position: absolute; left: 0px; top: 0px; width: 100vw; height: 100vh;"></canvas>
     <script type="text/javascript">
         (async function () {
             let pyxel = await loadPyxel("canvas");
