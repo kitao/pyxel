@@ -82,18 +82,18 @@ pyxel copy_examples
 
 コピーされるサンプルは以下の通りです。
 
-- <a href="https://kitao.github.io/pyxel/wasm/01_hello_pyxel.html" target="_blank">01_hello_pyxel.py</a> - シンプルなアプリケーション
-- <a href="https://kitao.github.io/pyxel/wasm/02_jump_game.html" target="_blank">02_jump_game.py</a> - Pyxelリソースファイルを使ったジャンプゲーム
-- <a href="https://kitao.github.io/pyxel/wasm/03_draw_api.html" target="_blank">03_draw_api.py</a> - 描画APIのデモ
-- <a href="https://kitao.github.io/pyxel/wasm/04_sound_api.html" target="_blank">04_sound_api.py</a> - サウンドAPIのデモ
-- <a href="https://kitao.github.io/pyxel/wasm/05_color_palette.html" target="_blank">05_color_palette.py</a> - カラーパレット一覧
-- <a href="https://kitao.github.io/pyxel/wasm/06_click_game.html" target="_blank">06_click_game.py</a> - マウスクリックゲーム
-- <a href="https://kitao.github.io/pyxel/wasm/07_snake.html" target="_blank">07_snake.py</a> - BGM付きスネークゲーム
-- <a href="https://kitao.github.io/pyxel/wasm/08_triangle_api.html" target="_blank">08_triangle_api.py</a> - 三角形描画APIのデモ
-- <a href="https://kitao.github.io/pyxel/wasm/09_shooter.html" target="_blank">09_shooter.py</a> - 画面遷移のあるシューティングゲーム
-- <a href="https://kitao.github.io/pyxel/wasm/10_platformer.html" target="_blank">10_platformer.py</a> - マップのある横スクロールアクションゲーム
-- <a href="https://kitao.github.io/pyxel/wasm/11_offscreen.html" target="_blank">11_offscreen.py</a> - Imageクラスによるオフスクリーン描画
-- <a href="https://kitao.github.io/pyxel/wasm/12_perlin_noise.html" target="_blank">12_perlin_noise.py</a> - パーリンノイズアニメーション
+- [01_hello_pyxel.py](https://kitao.github.io/pyxel/wasm/01_hello_pyxel.html) - シンプルなアプリケーション
+- [02_jump_game.py](https://kitao.github.io/pyxel/wasm/02_jump_game.html) - Pyxelリソースファイルを使ったジャンプゲーム
+- [03_draw_api.py](https://kitao.github.io/pyxel/wasm/03_draw_api.html) - 描画APIのデモ
+- [04_sound_api.py](https://kitao.github.io/pyxel/wasm/04_sound_api.html) - サウンドAPIのデモ
+- [05_color_palette.py](https://kitao.github.io/pyxel/wasm/05_color_palette.html) - カラーパレット一覧
+- [06_click_game.py](https://kitao.github.io/pyxel/wasm/06_click_game.html) - マウスクリックゲーム
+- [07_snake.py](https://kitao.github.io/pyxel/wasm/07_snake.html) - BGM付きスネークゲーム
+- [08_triangle_api.py](https://kitao.github.io/pyxel/wasm/08_triangle_api.html) - 三角形描画APIのデモ
+- [09_shooter.py](https://kitao.github.io/pyxel/wasm/09_shooter.html) - 画面遷移のあるシューティングゲーム
+- [10_platformer.py](https://kitao.github.io/pyxel/wasm/10_platformer.html) - マップのある横スクロールアクションゲーム
+- [11_offscreen.py](https://kitao.github.io/pyxel/wasm/11_offscreen.html) - Imageクラスによるオフスクリーン描画
+- [12_perlin_noise.py](https://kitao.github.io/pyxel/wasm/12_perlin_noise.html) - パーリンノイズアニメーション
 - [30SecondsOfDaylight.pyxapp](https://kitao.github.io/pyxel/wasm/30SecondsOfDaylight.html) - 第1回Pyxel Jam優勝ゲーム ([Adam](https://twitter.com/helpcomputer0)制作)
 - [megaball.pyxapp](https://kitao.github.io/pyxel/wasm/megaball.html) - アーケードボール物理ゲーム ([Adam](https://twitter.com/helpcomputer0)制作)
 
