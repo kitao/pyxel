@@ -11,6 +11,7 @@
 - Fixed the mouse coordinates in WASM
 - Changed to release sdist as well
 - Change the background color to brighter
+- Added links for Pyxel on WASM to the READEMEs
 
 ## 1.8.2
 - Fixed to release crates correctly
