@@ -10,6 +10,7 @@
 - Removed the flip function for WASM support
 - Fixed the mouse coordinates in WASM
 - Changed to release sdist as well
+- Change the background color to brighter
 
 ## 1.8.2
 - Fixed to release crates correctly
