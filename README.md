@@ -82,20 +82,20 @@ pyxel copy_examples
 
 The examples to be copied are as follows:
 
-- [01_hello_pyxel.py](python/pyxel/examples/01_hello_pyxel.py) - Simplest application
-- [02_jump_game.py](python/pyxel/examples/02_jump_game.py) - Jump game with Pyxel resource file
-- [03_draw_api.py](python/pyxel/examples/03_draw_api.py) - Demonstration of drawing APIs
-- [04_sound_api.py](python/pyxel/examples/04_sound_api.py) - Demonstration of sound APIs
-- [05_color_palette.py](python/pyxel/examples/05_color_palette.py) - Color palette list
-- [06_click_game.py](python/pyxel/examples/06_click_game.py) - Mouse click game
-- [07_snake.py](python/pyxel/examples/07_snake.py) - Snake game with BGM
-- [08_triangle_api.py](python/pyxel/examples/08_triangle_api.py) - Demonstration of triangle drawing APIs
-- [09_shooter.py](python/pyxel/examples/09_shooter.py) - Shoot'em up game with screen transition
-- [10_platformer.py](python/pyxel/examples/10_platformer.py) - Side-scrolling platform game with map
-- [11_offscreen.py](python/pyxel/examples/11_offscreen.py) - Offscreen rendering with Image class
-- [12_perlin_noise.py](python/pyxel/examples/12_perlin_noise.py) - Perlin noise animation
-- [30SecondsOfDaylight.pyxapp](docs/images/30SecondsOfDaylight.gif) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
-- [megaball.pyxapp](docs/images/megaball.gif) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
+- [01_hello_pyxel.py](https://kitao.github.io/pyxel/wasm/01_hello_pyxel.html) - Simplest application
+- [02_jump_game.py](https://kitao.github.io/pyxel/wasm/02_jump_game.html) - Jump game with Pyxel resource file
+- [03_draw_api.py](https://kitao.github.io/pyxel/wasm/03_draw_api.html) - Demonstration of drawing APIs
+- [04_sound_api.py](https://kitao.github.io/pyxel/wasm/04_sound_api.html) - Demonstration of sound APIs
+- [05_color_palette.py](https://kitao.github.io/pyxel/wasm/05_color_palette.html) - Color palette list
+- [06_click_game.py](https://kitao.github.io/pyxel/wasm/06_click_game.html) - Mouse click game
+- [07_snake.py](https://kitao.github.io/pyxel/wasm/07_snake.html) - Snake game with BGM
+- [08_triangle_api.py](https://kitao.github.io/pyxel/wasm/08_triangle_api.html) - Demonstration of triangle drawing APIs
+- [09_shooter.py](https://kitao.github.io/pyxel/wasm/09_shooter.html) - Shoot'em up game with screen transition
+- [10_platformer.py](https://kitao.github.io/pyxel/wasm/10_platformer.html) - Side-scrolling platform game with map
+- [11_offscreen.py](https://kitao.github.io/pyxel/wasm/11_offscreen.html) - Offscreen rendering with Image class
+- [12_perlin_noise.py](https://kitao.github.io/pyxel/wasm/12_perlin_noise.html) - Perlin noise animation
+- [30SecondsOfDaylight.pyxapp](https://kitao.github.io/pyxel/wasm/30SecondsOfDaylight.html) - 1st Pyxel Jam winning game by [Adam](https://twitter.com/helpcomputer0)
+- [megaball.pyxapp](https://kitao.github.io/pyxel/wasm/megaball.html) - Arcade ball physics game by [Adam](https://twitter.com/helpcomputer0)
 
 An examples can be executed with the following commands:
 
