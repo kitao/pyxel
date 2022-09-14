@@ -28,7 +28,7 @@ Pyxel ist quelloffen und kostenlos zu verwenden. Fang an, ein Retro-Spiel mit Py
 
 ## Spezifikationen
 
-- Läuft unter Windows, Mac, Linux und [Web](https://kitao.github.io/pyxel/wasm/)
+- Läuft unter Windows, Mac, Linux und Web
 - Programming with Python
 - 16 color palette
 - 3 Image-Banks in der Größe 256x256
@@ -71,6 +71,10 @@ sudo pip3 install -U pyxel
 ```
 
 Wenn das oben genannte nicht funktioniert, versuchen Sie, sich selbst gemäß den Anweisungen in [Makefile](../Makefile) zu erstellen.
+
+### Web
+
+Laden Sie die erforderlichen Dateien unter Bezugnahme auf [diese Seite](https://kitao.github.io/pyxel/wasm/) auf den Server hoch.
 
 ### Try Pyxel Examples
 

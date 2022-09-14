@@ -28,7 +28,7 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 
 ## Specifications
 
-- Runs on Windows, Mac, Linux, and [Web](https://kitao.github.io/pyxel/wasm/)
+- Runs on Windows, Mac, Linux, and Web
 - Programming with Python
 - 16 color palette
 - 256x256 sized 3 image banks
@@ -71,6 +71,10 @@ sudo pip3 install -U pyxel
 ```
 
 If the above doesn't work, try self-building according to the instructions in [Makefile](Makefile).
+
+### Web
+
+Upload the necessary files to the server by referring to [this page](https://kitao.github.io/pyxel/wasm/).
 
 ### Try Pyxel Examples
 

@@ -28,7 +28,7 @@ Pyxel es de código abierto y gratuito. ¡Empecemos haciendo un juego retro con 
 
 ## Características
 
-- Funciona en Windows, Mac, Linux y [Web](https://kitao.github.io/pyxel/wasm/)
+- Funciona en Windows, Mac, Linux y Web
 - Programación con Python
 - Paleta de 16 colores
 - 3 bancos de imágenes de 256x256
@@ -71,6 +71,10 @@ sudo pip3 install -U pyxel
 ```
 
 Si lo anterior no funciona, intente la autoconstrucción según las instrucciones de [Makefile](../Makefile).
+
+### Web
+
+Suba los archivos necesarios al servidor con referencia a [esta página](https://kitao.github.io/pyxel/wasm/).
 
 ### Prueba los ejemplos de Pyxel
 
