@@ -28,7 +28,7 @@ Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Py
 
 ## 사양
 
-- Windows, Mac, Linux 및 웹 브라우저에서 실행
+- Windows, Mac, Linux, [Web](https://kitao.github.io/pyxel/wasm/)에서 작동
 - Python으로 프로그래밍
 - 16색 팔레트
 - 256x256 크기의 이미지 뱅크 3개
