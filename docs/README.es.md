@@ -81,18 +81,18 @@ pyxel copy_examples
 ```
 Los ejemplos serán copiados de la siguiente manera:
 
-- [01_hello_pyxel.py](https://kitao.github.io/pyxel/wasm/01_hello_pyxel.html) - Aplicación simple
-- [02_jump_game.py](https://kitao.github.io/pyxel/wasm/02_jump_game.html) - Juego de plataformas con los archivos de recursos Pyxel
-- [03_draw_api.py](https://kitao.github.io/pyxel/wasm/03_draw_api.html) - Demostración de la API para dibujar
-- [04_sound_api.py](https://kitao.github.io/pyxel/wasm/04_sound_api.html) - Demostración de la API de sonidos
-- [05_color_palette.py](https://kitao.github.io/pyxel/wasm/05_color_palette.html) - Lista de la paleta de colores
-- [06_click_game.py](https://kitao.github.io/pyxel/wasm/06_click_game.html) - Juego con clics del ratón
-- [07_snake.py](https://kitao.github.io/pyxel/wasm/07_snake.html) - Juego de serpiente con música de fondo
-- [08_triangle_api.py](https://kitao.github.io/pyxel/wasm/08_triangle_api.html) - Demostración de dibujo de triángulos con la API
-- [09_shooter.py](https://kitao.github.io/pyxel/wasm/09_shooter.html) - Juego de nave espacial con transiciones de pantalla
-- [10_platformer.py](https://kitao.github.io/pyxel/wasm/10_platformer.html) - Juego con desplazamiento lateral con plataformas con mapa
-- [11_offscreen.py](https://kitao.github.io/pyxel/wasm/11_offscreen.html) - Rendimiento fuera de la pantalla con la clase Image
-- [12_perlin_noise.py](https://kitao.github.io/pyxel/wasm/12_perlin_noise.html) - Animación del ruido Perlin
+- <a href="https://kitao.github.io/pyxel/wasm/01_hello_pyxel.html" target="_blank">01_hello_pyxel.py</a> - Aplicación simple
+- <a href="https://kitao.github.io/pyxel/wasm/02_jump_game.html" target="_blank">02_jump_game.py</a> - Juego de plataformas con los archivos de recursos Pyxel
+- <a href="https://kitao.github.io/pyxel/wasm/03_draw_api.html" target="_blank">03_draw_api.py</a> - Demostración de la API para dibujar
+- <a href="https://kitao.github.io/pyxel/wasm/04_sound_api.html" target="_blank">04_sound_api.py</a> - Demostración de la API de sonidos
+- <a href="https://kitao.github.io/pyxel/wasm/05_color_palette.html" target="_blank">05_color_palette.py</a> - Lista de la paleta de colores
+- <a href="https://kitao.github.io/pyxel/wasm/06_click_game.html" target="_blank">06_click_game.py</a> - Juego con clics del ratón
+- <a href="https://kitao.github.io/pyxel/wasm/07_snake.html" target="_blank">07_snake.py</a> - Juego de serpiente con música de fondo
+- <a href="https://kitao.github.io/pyxel/wasm/08_triangle_api.html" target="_blank">08_triangle_api.py</a> - Demostración de dibujo de triángulos con la API
+- <a href="https://kitao.github.io/pyxel/wasm/09_shooter.html" target="_blank">09_shooter.py</a> - Juego de nave espacial con transiciones de pantalla
+- <a href="https://kitao.github.io/pyxel/wasm/10_platformer.html" target="_blank">10_platformer.py</a> - Juego con desplazamiento lateral con plataformas con mapa
+- <a href="https://kitao.github.io/pyxel/wasm/11_offscreen.html" target="_blank">11_offscreen.py</a> - Rendimiento fuera de la pantalla con la clase Image
+- <a href="https://kitao.github.io/pyxel/wasm/12_perlin_noise.html" target="_blank">12_perlin_noise.py</a> - Animación del ruido Perlin
 - [30SecondsOfDaylight.pyxapp](https://kitao.github.io/pyxel/wasm/30SecondsOfDaylight.html) - El primer ganador del Jam de Pyxel, por [Adam](https://twitter.com/helpcomputer0)
 - [megaball.pyxapp](https://kitao.github.io/pyxel/wasm/megaball.html) - Juego arcade de física de bolas, por [Adam](https://twitter.com/helpcomputer0)
 
