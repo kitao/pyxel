@@ -28,7 +28,7 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 ## 仕様
 
-- Windows、Mac、Linux、ウェブブラウザで動作
+- Windows、Mac、Linux、[Web](https://kitao.github.io/pyxel/wasm/)で動作
 - Pythonによるプログラミング
 - 16色パレット
 - 256x256サイズ、3画像バンク

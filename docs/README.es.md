@@ -28,7 +28,7 @@ Pyxel es de código abierto y gratuito. ¡Empecemos haciendo un juego retro con 
 
 ## Características
 
-- Funciona en Windows, Mac, Linux y navegadores web
+- Funciona en Windows, Mac, Linux y [Web](https://kitao.github.io/pyxel/wasm/)
 - Programación con Python
 - Paleta de 16 colores
 - 3 bancos de imágenes de 256x256
