@@ -28,7 +28,7 @@ Pyxel é open source e livre para utilização. Vamos começar fazendo um jogo r
 
 ## Especificações
 
-- Funciona em Windows, Mac, Linux, e [Web](https://kitao.github.io/pyxel/wasm/)
+- Funciona em Windows, Mac, Linux, e Web
 - Programação com Python
 - Paleta de 16 cores
 - 3 bancos de imagens de tamanho 256x256
@@ -71,6 +71,10 @@ sudo pip3 install -U pyxel
 ```
 
 Se o acima mencionado não funcionar, tente auto-construir-se de acordo com as instruções em [Makefile](../Makefile).
+
+### Web
+
+Carregar os ficheiros necessários para o servidor com referência a [esta página](https://kitao.github.io/pyxel/wasm/).
 
 ### Testando os exemplos Pyxel
 

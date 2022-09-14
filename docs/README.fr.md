@@ -28,7 +28,7 @@ Pyxel est un logiciel libre et open source. Commençons à faire un jeu vidéo r
 
 ## Spécifications
 
-- Fonctionne sur Windows, Mac, Linux et [Web](https://kitao.github.io/pyxel/wasm/)
+- Fonctionne sur Windows, Mac, Linux et Web
 - Programmable en Python
 - Palette de 16 couleurs
 - 3 banques d’images de taille 256x256
@@ -71,6 +71,10 @@ sudo pip3 install -U pyxel
 ```
 
 Si ce qui précède ne fonctionne pas, essayez l'autoconstruction en suivant les instructions de [Makefile](../Makefile).
+
+### Web
+
+Téléchargez les fichiers nécessaires sur le serveur en vous référant à [cette page](https://kitao.github.io/pyxel/wasm/).
 
 ### Lancer les exemples de Pyxel
 

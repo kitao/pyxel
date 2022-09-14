@@ -28,7 +28,7 @@ Pyxelはオープンソースで、無料で自由に使えます。Pyxelでレ�
 
 ## 仕様
 
-- Windows、Mac、Linux、[Web](https://kitao.github.io/pyxel/wasm/)で動作
+- Windows、Mac、Linux、Webで動作
 - Pythonによるプログラミング
 - 16色パレット
 - 256x256サイズ、3画像バンク
@@ -71,6 +71,10 @@ sudo pip3 install -U pyxel
 ```
 
 上記で動作しない場合は、[Makefile](../Makefile)に記載されている手順に従ってセルフビルドを試してみてください。
+
+### Web
+
+[こちらのページ](https://kitao.github.io/pyxel/wasm/)を参考に、必要なファイルをサーバーにアップロードしてください。
 
 ### サンプルを実行する
 

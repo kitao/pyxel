@@ -28,7 +28,7 @@ Pyxel è open source e libero da usare. Cominciamo a fare giochi rétro con Pyxe
 
 ## Specifiche
 
-- Funziona su Windows, Mac, Linux e [Web](https://kitao.github.io/pyxel/wasm/)
+- Funziona su Windows, Mac, Linux e Web
 - Programmazione con Python
 - Palette a 16 colori
 - 3 banche di immagini di dimensioni 256x256
@@ -71,6 +71,10 @@ sudo pip3 install -U pyxel
 ```
 
 Se quanto sopra non funziona, provare ad autocostruirsi secondo le istruzioni di [Makefile](../Makefile).
+
+### Web
+
+Caricare i file necessari sul server facendo riferimento a [questa pagina](https://kitao.github.io/pyxel/wasm/).
 
 ### Provare gli esempi di Pyxel
 

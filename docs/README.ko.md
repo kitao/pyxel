@@ -28,7 +28,7 @@ Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Py
 
 ## 사양
 
-- Windows, Mac, Linux, [Web](https://kitao.github.io/pyxel/wasm/)에서 작동
+- Windows, Mac, Linux, Web에서 작동
 - Python으로 프로그래밍
 - 16색 팔레트
 - 256x256 크기의 이미지 뱅크 3개
@@ -71,6 +71,10 @@ sudo pip3 install -U pyxel
 ```
 
 위의 방법이 작동하지 않으면 [Makefile](../Makefile)의 지침에 따라 자체 빌드를 시도하십시오.
+
+### Web
+
+[이 페이지](https://kitao.github.io/pyxel/wasm/)를 참조하여 필요한 파일을 서버에 업로드합니다.
 
 ### 예제 실행하기
 

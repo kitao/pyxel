@@ -28,7 +28,7 @@ Pyxel是开源的，大家可以免费使用。现在就让我们一起用Pyxel�
 
 ## 说明
 
-- 可在Windows、Mac、Linux和[Web](https://kitao.github.io/pyxel/wasm/)上运行
+- 可在Windows、Mac、Linux和Web上运行
 - 可以使用python进行编程
 - 16色调色板
 - 3个256x256的图像库
@@ -71,6 +71,10 @@ sudo pip3 install -U pyxel
 ```
 
 如果上述方法不奏效，请根据[Makefile](../Makefile)中的说明尝试自我构建。
+
+### Web
+
+参照[本页面](https://kitao.github.io/pyxel/wasm/)将必要的文件上传到服务器。
 
 ### 尝试Pyxel例程
 
