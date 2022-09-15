@@ -2,8 +2,8 @@ const PYXEL_WHEEL = "pyxel-1.8.3-cp37-abi3-emscripten_3_1_21_wasm32.whl";
 const APP_STARTUP_SCRIPT_FILE = ".pyxapp_startup_script";
 
 class Pyxel {
-    constructor(pyodide, canvas) {
-        pyodide._module.canvas = canvas;
+    constructor(pyodide) {
+        pyodide._module.canvas = document.getElementById("canvas");
         this._pyodide = pyodide;
     }
 
@@ -52,9 +52,8 @@ class Pyxel {
     }
 }
 
-async function loadPyxel(canvasId) {
-    let canvas = document.getElementById(canvasId);
+async function loadPyxel() {
     let pyodide = await loadPyodide();
     await pyodide.loadPackage(PYXEL_WHEEL);
-    return new Pyxel(pyodide, canvas);
+    return new Pyxel(pyodide);
 }
