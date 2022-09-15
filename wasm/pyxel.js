@@ -3,7 +3,6 @@ const APP_STARTUP_SCRIPT_FILE = ".pyxapp_startup_script";
 
 class Pyxel {
     constructor(pyodide) {
-        pyodide._module.canvas = document.getElementById("canvas");
         this._pyodide = pyodide;
     }
 
