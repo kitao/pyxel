@@ -1,5 +1,7 @@
 body {
     color-scheme: light dark;
+    background-color: Canvas;
+    color: CanvasText;
 }
 
 @media (prefers-color-scheme: light) {
