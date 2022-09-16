@@ -3,24 +3,22 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="pyodide_sdl2/pyodide.js"></script>
-    <script src="pyxel.js"></script>
 </head>
 
 <body>
     <div id="loading">Loading...</div>
     <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1
         style="position: absolute; left: 0px; top: 0px; width: 100vw; height: 100vh;"></canvas>
-    <script type="text/javascript">
+    <script type="module">
+        import { loadPyxel } from "../pyxel.js";
         (async function () {
-            let pyxel = await loadPyxel();
-            await pyxel.fetchFiles("../python/pyxel/examples", [
-                "03_draw_api.py",
-                "assets/cat_16x16.png",
-                "assets/tileset_24x32.png",
+            let pyxel = await loadPyxel("..");
+            await pyxel.fetchFiles("../../python/pyxel/examples", [
+                "01_hello_pyxel.py",
+                "assets/pyxel_logo_38x16.png",
             ]);
             document.getElementById("loading").remove();
-            pyxel.run("03_draw_api.py");
+            pyxel.run("01_hello_pyxel.py");
         })();
     </script>
 </body>
