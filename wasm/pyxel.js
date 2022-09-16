@@ -1,3 +1,5 @@
+import "./pyodide_sdl2/pyodide.js";
+
 const PYXEL_WHEEL = "pyxel-1.8.4-cp37-abi3-emscripten_3_1_21_wasm32.whl";
 const APP_STARTUP_SCRIPT_FILE = ".pyxapp_startup_script";
 
@@ -51,8 +53,8 @@ class Pyxel {
     }
 }
 
-async function loadPyxel() {
+export async function loadPyxel(pyxelWheelDir) {
     let pyodide = await loadPyodide();
-    await pyodide.loadPackage(PYXEL_WHEEL);
+    await pyodide.loadPackage(pyxelWheelDir + "/" + PYXEL_WHEEL);
     return new Pyxel(pyodide);
 }
