@@ -13,7 +13,7 @@
     <script type="module">
         import { loadPyxel } from "../pyxel.js";
         (async function () {
-            let pyxel = await loadPyxel("..");
+            let pyxel = await loadPyxel();
             await pyxel.fetchFiles("../../python/pyxel/examples", [
                 "30SecondsOfDaylight.pyxapp",
             ]);
