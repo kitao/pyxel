@@ -40,5 +40,10 @@ canvas#canvas {
     top: 0px;
     width: 100vw;
     height: 100vh;
-    height: 100dvh;
+}
+
+@supports (-webkit-touch-callout: none) {
+    canvas#canvas {
+        height: -webkit-fill-available;
+    }
 }
