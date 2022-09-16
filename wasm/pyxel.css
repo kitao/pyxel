@@ -1,7 +1,19 @@
 body {
     color-scheme: light dark;
-    background-color: Canvas;
-    color: CanvasText;
+}
+
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: #F7F9FE;
+        color: #202224;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #202124;
+        color: #FFFFFF;
+    }
 }
 
 canvas#canvas {
