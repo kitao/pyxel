@@ -9,12 +9,28 @@ body {
         background-color: #F7F9FE;
         color: #202224;
     }
+
+    a:link {
+        color: #0000E4;
+    }
+
+    a:visited {
+        color: #4E1E86;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
     body {
         background-color: #202124;
         color: #FFFFFF;
+    }
+
+    a:link {
+        color: #CBADEC;
+    }
+
+    a:visited {
+        color: #9E9EF9;
     }
 }
 
