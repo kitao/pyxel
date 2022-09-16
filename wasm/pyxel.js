@@ -59,3 +59,10 @@ export async function loadPyxel() {
     await pyodide.loadPackage(PYXEL_WHEEL_URL);
     return new Pyxel(pyodide);
 }
+
+function setCanvasHeight() {
+    document.querySelector("canvas#canvas").style.height = window.innerHeight + "px";
+}
+
+setCanvasHeight();
+window.addEventListener("resize", setCanvasHeight);
