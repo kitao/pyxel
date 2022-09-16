@@ -1,4 +1,4 @@
-const PYXEL_WHEEL = "pyxel-1.8.3-cp37-abi3-emscripten_3_1_21_wasm32.whl";
+const PYXEL_WHEEL = "pyxel-1.8.4-cp37-abi3-emscripten_3_1_21_wasm32.whl";
 const APP_STARTUP_SCRIPT_FILE = ".pyxapp_startup_script";
 
 class Pyxel {
