@@ -1,6 +1,8 @@
 import "./pyodide_sdl2/pyodide.js";
 
-const PYXEL_WHEEL = "pyxel-1.8.4-cp37-abi3-emscripten_3_1_21_wasm32.whl";
+const SCRIPT_DIR = import.meta.url.substring(0, import.meta.url.lastIndexOf('/'));
+const PYXEL_WHEEL_NAME = "pyxel-1.8.4-cp37-abi3-emscripten_3_1_21_wasm32.whl";
+const PYXEL_WHEEL_URL = SCRIPT_DIR + "/" + PYXEL_WHEEL_NAME;
 
 class Pyxel {
     constructor(pyodide) {
@@ -52,8 +54,8 @@ class Pyxel {
     }
 }
 
-export async function loadPyxel(pyxelWheelDir) {
+export async function loadPyxel() {
     let pyodide = await loadPyodide();
-    await pyodide.loadPackage(pyxelWheelDir + "/" + PYXEL_WHEEL);
+    await pyodide.loadPackage(PYXEL_WHEEL_URL);
     return new Pyxel(pyodide);
 }
