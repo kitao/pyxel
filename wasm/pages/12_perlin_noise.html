@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+    <div id="loading">Loading...</div>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1
+        style="position: absolute; left: 0px; top: 0px; width: 100vw; height: 100vh;"></canvas>
+    <script type="module">
+        import { loadPyxel } from "../pyxel.js";
+        (async function () {
+            let pyxel = await loadPyxel("..");
+            await pyxel.fetchFiles("../../python/pyxel/examples", [
+                "12_perlin_noise.py",
+            ]);
+            document.getElementById("loading").remove();
+            pyxel.run("12_perlin_noise.py");
+        })();
+    </script>
+</body>
+
+</html>
