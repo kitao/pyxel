@@ -3,23 +3,21 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="pyodide_sdl2/pyodide.js"></script>
-    <script src="pyxel.js"></script>
 </head>
 
 <body>
     <div id="loading">Loading...</div>
     <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1
         style="position: absolute; left: 0px; top: 0px; width: 100vw; height: 100vh;"></canvas>
-    <script type="text/javascript">
+    <script type="module">
+        import { loadPyxel } from "../pyxel.js";
         (async function () {
-            let pyxel = await loadPyxel();
-            await pyxel.fetchFiles("../python/pyxel/examples", [
-                "02_jump_game.py",
-                "assets/jump_game.pyxres",
+            let pyxel = await loadPyxel("..");
+            await pyxel.fetchFiles("../../python/pyxel/examples", [
+                "30SecondsOfDaylight.pyxapp",
             ]);
             document.getElementById("loading").remove();
-            pyxel.run("02_jump_game.py");
+            pyxel.play("30SecondsOfDaylight.pyxapp");
         })();
     </script>
 </body>
