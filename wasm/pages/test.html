@@ -3,12 +3,13 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="../../docs/images/pyxel_icon_64x64.ico">
+    <link rel="stylesheet" type="text/css" href="../pyxel.css">
 </head>
 
 <body>
     <div id="loading">Loading...</div>
-    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1
-        style="position: absolute; left: 0px; top: 0px; width: 100vw; height: 100vh;"></canvas>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
     <script type="module">
         import { loadPyxel } from "../pyxel.js";
         (async function () {
@@ -16,8 +17,8 @@
             document.getElementById("loading").remove();
             pyxel.exec(`
                 import pyxel
-                pyxel.init(200, 100)
 
+                pyxel.init(200, 100)
                 x = 0
 
                 def update():
