@@ -51,7 +51,7 @@ class Pyxel {
     }
 }
 
-function scriptDir() {
+function _scriptDir() {
     var scripts = document.getElementsByTagName('script');
     for (const script of scripts) {
         var match = script.src.match(/(^|.*\/)pyxel\.js$/);
@@ -61,22 +61,22 @@ function scriptDir() {
     }
 }
 
-function setPageStyle() {
+function _setPageStyle() {
     var head = document.getElementsByTagName('head').item(0);
     // Set icon
     var link = document.createElement('link');
     link.rel = 'icon';
-    link.href = scriptDir() + '../docs/images/pyxel_icon_64x64.ico';
+    link.href = _scriptDir() + '../docs/images/pyxel_icon_64x64.ico';
     head.appendChild(link);
     // Set stylesheet
     var link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = scriptDir() + 'pyxel.css';
+    link.href = _scriptDir() + 'pyxel.css';
     link.type = 'text/css';
     head.appendChild(link);
 }
 
-function addCanvas() {
+function _addCanvas() {
     if (document.querySelector('canvas#canvas')) {
         return;
     }
@@ -101,7 +101,7 @@ function addCanvas() {
 }
 
 function loadPyxel(callback) {
-    addCanvas();
+    _addCanvas();
     // Load script dynamically
     var script = document.createElement('script');
     script.type = 'text/javascript';
@@ -111,11 +111,11 @@ function loadPyxel(callback) {
     script.onload = async () => {
         // Initialize Pyodide
         let pyodide = await loadPyodide();
-        await pyodide.loadPackage(scriptDir() + PYXEL_WHEEL_NAME);
+        await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_NAME);
         let pyxel = new Pyxel(pyodide);
         // Execute application logic
         callback(pyxel);
     };
 }
 
-setPageStyle();
+_setPageStyle();
