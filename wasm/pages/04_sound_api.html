@@ -2,24 +2,19 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="../../docs/images/pyxel_icon_64x64.ico">
-    <link rel="stylesheet" type="text/css" href="../pyxel.css">
+    <script type="text/javascript" src="../pyxel.js"></script>
 </head>
 
 <body>
     <div id="loading">Loading...</div>
-    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
-    <script type="module">
-        import { loadPyxel } from "../pyxel.js";
-        (async () => {
-            let pyxel = await loadPyxel();
+    <script type="text/javascript">
+        loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles("../../python/pyxel/examples", [
                 "04_sound_api.py",
             ]);
             document.getElementById("loading").remove();
             pyxel.run("04_sound_api.py");
-        })();
+        });
     </script>
 </body>
 
