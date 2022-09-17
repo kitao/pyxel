@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.8.4
+- Modified the background color
+- Made the Pyxel on WASM page compatible with dark mode
+- Fixed the canvas height on iOS
+- Separated Pyodide-SDL2 into a separate repository
+- Changed to use Pyodide-SDL2 via CDN
+- Added instructions for Web platform to the READMEs
+
 ## 1.8.3
 - Added a script to build and copy Pyodide
 - Changed the audio buffer size for WASM
