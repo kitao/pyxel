@@ -74,7 +74,11 @@ sudo pip3 install -U pyxel
 
 ### Web
 
-[이 페이지](https://kitao.github.io/pyxel/wasm/)를 참조하여 필요한 파일을 서버에 업로드합니다.
+[이 페이지](https://kitao.github.io/pyxel/wasm/)를 참조하여 다음과 같이 JavaScript에서 Pyxel 모듈을 가져옵니다.
+
+```javascript
+import { loadPyxel } from "https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js";
+```
 
 ### 예제 실행하기
 
