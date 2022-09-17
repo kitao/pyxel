@@ -74,7 +74,11 @@ Si ce qui précède ne fonctionne pas, essayez l'autoconstruction en suivant les
 
 ### Web
 
-Téléchargez les fichiers nécessaires sur le serveur en vous référant à [cette page](https://kitao.github.io/pyxel/wasm/).
+Référez-vous à [cette page](https://kitao.github.io/pyxel/wasm/) et importez le module Pyxel en JavaScript comme suit :
+
+```javascript
+import { loadPyxel } from "https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js";
+```
 
 ### Lancer les exemples de Pyxel
 
