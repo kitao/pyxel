@@ -65,7 +65,7 @@ jobs:
         if: matrix.target == 'wasm32-unknown-emscripten'
         uses: mymindstorm/setup-emsdk@v11
         with:
-          version: '3.1.14'
+          version: '3.1.21'
 
       - name: Build wheels
         run: |

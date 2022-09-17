@@ -17,11 +17,11 @@
 #	- libsdl2-dev
 #
 #	[WASM]
-#	- Emscripten 3.1.20
+#	- Emscripten 3.1.21
 #
 # Advance preparation:
 #	rustup install nightly
-#	git clone --depth 1 https://github.com/kitao/pyxel.git
+#	git clone --depth=1 https://github.com/kitao/pyxel
 #	cd pyxel
 #	(Create and activate a venv if you prefer)
 #	pip3 install -r requirements.txt
