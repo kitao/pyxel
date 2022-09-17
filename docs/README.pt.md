@@ -74,7 +74,7 @@ Se o acima mencionado não funcionar, tente auto-construir-se de acordo com as i
 
 ### Web
 
-Consulte [esta página](https://kitao.github.io/pyxel/wasm/) e importe o módulo Pyxel em JavaScript como se segue:
+Consulte [esta página](https://kitao.github.io/pyxel/wasm/) e carregue o guião Pyxel como se segue:
 
 ```html
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js"></script>
