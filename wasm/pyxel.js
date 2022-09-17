@@ -1,13 +1,13 @@
-const PYODIDE_SDL2_URL = 'https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@latest/pyodide.js';
+const PYODIDE_SDL2_URL = 'https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@main/pyodide.js';
 const PYXEL_WHEEL_NAME = 'pyxel-1.8.4-cp37-abi3-emscripten_3_1_21_wasm32.whl';
 
 class Pyxel {
     constructor(pyodide) {
-        this._pyodide = pyodide;
+        this.pyodide = pyodide;
     }
 
     async fetchFiles(baseDir, files) {
-        let FS = this._pyodide.FS;
+        let FS = this.pyodide.FS;
         for (let file of files) {
             let dirs = file.split('/');
             dirs.pop();
@@ -27,27 +27,27 @@ class Pyxel {
     }
 
     exec(pythonScript) {
-        this._pyodide.runPython(pythonScript);
+        this.pyodide.runPython(pythonScript);
     }
 
     run(pythonScriptFile) {
-        this._pyodide.runPython(`import pyxel.cli; pyxel.cli.run_python_script("${pythonScriptFile}")`);
+        this.pyodide.runPython(`import pyxel.cli; pyxel.cli.run_python_script("${pythonScriptFile}")`);
     }
 
     play(pyxelAppFile) {
-        this._pyodide.runPython(`import pyxel.cli; pyxel.cli.play_pyxel_app("${pyxelAppFile}")`);
+        this.pyodide.runPython(`import pyxel.cli; pyxel.cli.play_pyxel_app("${pyxelAppFile}")`);
     }
 
     edit(pyxelResourceFile) {
-        this._pyodide.runPython(`import pyxel.cli; pyxel.cli.edit_pyxel_resource("${pyxelResourceFile}")`);
+        this.pyodide.runPython(`import pyxel.cli; pyxel.cli.edit_pyxel_resource("${pyxelResourceFile}")`);
     }
 
     package(appRootDir, startupScriptName) {
-        this._pyodide.runPython(`import pyxel.cli; pyxel.cli.package_pyxel_app("${appRootDir}", "${startupScriptName}")`);
+        this.pyodide.runPython(`import pyxel.cli; pyxel.cli.package_pyxel_app("${appRootDir}", "${startupScriptName}")`);
     }
 
     copyExamples() {
-        this._pyodide.runPython(`import pyxel.cli; pyxel.cli.copy_pyxel_examples()`);
+        this.pyodide.runPython(`import pyxel.cli; pyxel.cli.copy_pyxel_examples()`);
     }
 }
 
