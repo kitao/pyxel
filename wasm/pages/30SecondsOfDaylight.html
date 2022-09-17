@@ -12,7 +12,7 @@
     <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
     <script type="module">
         import { loadPyxel } from "../pyxel.js";
-        (async function () {
+        (async () => {
             let pyxel = await loadPyxel();
             await pyxel.fetchFiles("../../python/pyxel/examples", [
                 "30SecondsOfDaylight.pyxapp",
