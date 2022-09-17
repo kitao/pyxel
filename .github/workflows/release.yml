@@ -42,11 +42,12 @@ jobs:
           default: true
 
       - name: Publish crates
+        continue-on-error: true
         run: |
           cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
           cd crates/pyxel-core
           cargo publish
-          sleep 5
+          sleep 60
           cd ../pyxel-extension
           cargo publish
 
