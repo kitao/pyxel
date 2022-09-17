@@ -66,7 +66,7 @@ function setPageStyle() {
     // Set viewport
     var meta = document.createElement('meta');
     meta.name = 'viewport';
-    meta.content = 'width=device-width, initial-scale=0.1';
+    meta.content = 'width=device-width, initial-scale=1.0';
     head.appendChild(meta);
     // Set icon
     var link = document.createElement('link');
