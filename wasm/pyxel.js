@@ -1,4 +1,4 @@
-import "./pyodide_sdl2/pyodide.js";
+import "https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@latest/pyodide.js";
 
 const SCRIPT_DIR = import.meta.url.substring(0, import.meta.url.lastIndexOf('/'));
 const PYXEL_WHEEL_NAME = "pyxel-1.8.4-cp37-abi3-emscripten_3_1_21_wasm32.whl";
