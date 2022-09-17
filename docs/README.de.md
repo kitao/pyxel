@@ -76,8 +76,8 @@ Wenn das oben genannte nicht funktioniert, versuchen Sie, sich selbst gemäß de
 
 Lesen Sie [diese Seite](https://kitao.github.io/pyxel/wasm/) und importieren Sie das Pyxel-Modul in JavaScript wie folgt:
 
-```javascript
-import { loadPyxel } from "https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js";
+```html
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js"></script>
 ```
 
 ### Try Pyxel Examples
