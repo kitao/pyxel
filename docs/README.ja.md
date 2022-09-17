@@ -74,7 +74,7 @@ sudo pip3 install -U pyxel
 
 ### Web
 
-[こちらのページ](https://kitao.github.io/pyxel/wasm/)を参考に、JavaScriptで次のようにPyxelモジュールをインポートしてください。
+[こちらのページ](https://kitao.github.io/pyxel/wasm/)を参考に、次のようにPyxelスクリプトを読み込んでください。
 
 ```html
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js"></script>

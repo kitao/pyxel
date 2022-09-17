@@ -74,7 +74,7 @@ sudo pip3 install -U pyxel
 
 ### Web
 
-参考[本页面](https://kitao.github.io/pyxel/wasm/)，在JavaScript中导入Pyxel模块，如下所示。
+参考[本页面](https://kitao.github.io/pyxel/wasm/)，按如下方式加载Pyxel脚本。
 
 ```html
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js"></script>
