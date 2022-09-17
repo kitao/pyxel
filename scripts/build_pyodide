@@ -1,0 +1,22 @@
+#!/bin/sh -e
+
+ROOT_DIR=..
+PYODIDE_DIR=../pyodide-sdl2
+PYODIDE_REPO=https://github.com/pyodide/pyodide
+PYODIDE_TAG=0.21.3
+
+cd `dirname $0`/$ROOT_DIR
+if [ -d $PYODIDE_DIR ]; then
+    cd $PYODIDE_DIR
+    rm -rf *
+    git clone -b $PYODIDE_TAG --single-branch --depth=1 $PYODIDE_REPO pyodide_repo
+    cd pyodide_repo
+    sed -i -e "s/\\(-s MAIN_MODULE=1\\)/\\1 -s USE_SDL=2 -s GL_WORKAROUND_SAFARI_GETCONTEXT_BUG=0/" Makefile.envs
+    sed -i -e "s/\\(= Hiwire;\\)/\\1 Module.canvas = document.querySelector('canvas#canvas');/" src/core/pre.js
+    ./run_docker make
+    mv dist/* ..
+    cd ..
+    rm -rf pyodide_repo
+else
+    echo "'$PYODIDE_DIR' directory does not exist"
+fi
