@@ -77,10 +77,15 @@ function setPageStyle() {
 }
 
 function addCanvas() {
-    if (document.querySelector('canvas#canvas') != null) {
+    if (document.querySelector('canvas#canvas')) {
         return;
     }
     var body = document.getElementsByTagName('body').item(0);
+    if (!body) {
+        body = document.createElement('body');
+        document.body = body;
+    }
+    console.log(body);
     var canvas = document.createElement('canvas');
     canvas.id = 'canvas';
     canvas.oncontextmenu = 'event.preventDefault()';
