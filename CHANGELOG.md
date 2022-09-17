@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.8.5
+- Added utility functions to the script for Web
+
 ## 1.8.4
 - Modified the background color
 - Made the Pyxel on WASM page compatible with dark mode
