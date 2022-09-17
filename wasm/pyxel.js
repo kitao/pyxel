@@ -52,24 +52,26 @@ class Pyxel {
 }
 
 function _scriptDir() {
-    var scripts = document.getElementsByTagName('script');
+    let scripts = document.getElementsByTagName('script');
     for (const script of scripts) {
-        var match = script.src.match(/(^|.*\/)pyxel\.js$/);
+        let match = script.src.match(/(^|.*\/)pyxel\.js$/);
         if (match) {
             return match[1];
         }
     }
 }
 
-function _setPageStyle() {
-    var head = document.getElementsByTagName('head').item(0);
-    // Set icon
-    var link = document.createElement('link');
+function _setIcon() {
+    let head = document.getElementsByTagName('head').item(0);
+    let link = document.createElement('link');
     link.rel = 'icon';
     link.href = _scriptDir() + '../docs/images/pyxel_icon_64x64.ico';
     head.appendChild(link);
-    // Set stylesheet
-    var link = document.createElement('link');
+}
+
+function _setStyleSheet() {
+    let head = document.getElementsByTagName('head').item(0);
+    link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = _scriptDir() + 'pyxel.css';
     link.type = 'text/css';
@@ -80,13 +82,13 @@ function _addCanvas() {
     if (document.querySelector('canvas#canvas')) {
         return;
     }
-    var body = document.getElementsByTagName('body').item(0);
+    let body = document.getElementsByTagName('body').item(0);
     if (!body) {
         body = document.createElement('body');
         document.body = body;
     }
     console.log(body);
-    var canvas = document.createElement('canvas');
+    let canvas = document.createElement('canvas');
     canvas.id = 'canvas';
     canvas.oncontextmenu = 'event.preventDefault()';
     canvas.tabindex = -1;
@@ -103,10 +105,10 @@ function _addCanvas() {
 function loadPyxel(callback) {
     _addCanvas();
     // Load script dynamically
-    var script = document.createElement('script');
+    let script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = PYODIDE_SDL2_URL;
-    var firstScript = document.getElementsByTagName('script')[0];
+    let firstScript = document.getElementsByTagName('script')[0];
     firstScript.parentNode.insertBefore(script, firstScript);
     script.onload = async () => {
         // Initialize Pyodide
@@ -118,4 +120,5 @@ function loadPyxel(callback) {
     };
 }
 
-_setPageStyle();
+_setIcon();
+_setStyleSheet();
