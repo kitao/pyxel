@@ -63,11 +63,6 @@ function scriptDir() {
 
 function setPageStyle() {
     var head = document.getElementsByTagName('head').item(0);
-    // Set viewport
-    var meta = document.createElement('meta');
-    meta.name = 'viewport';
-    meta.content = 'width=device-width, initial-scale=1.0';
-    head.appendChild(meta);
     // Set icon
     var link = document.createElement('link');
     link.rel = 'icon';
