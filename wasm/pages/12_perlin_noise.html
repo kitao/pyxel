@@ -8,15 +8,8 @@
 
 <body>
     <div id="loading">Loading...</div>
-    <script type="text/javascript">
-        loadPyxel(async (pyxel) => {
-            await pyxel.fetchFiles('../../python/pyxel/examples', [
-                '12_perlin_noise.py',
-            ]);
-            document.getElementById('loading').remove();
-            pyxel.run('12_perlin_noise.py');
-        });
-    </script>
+    <pyxel-run root="../../python/pyxel/examples" name="12_perlin_noise.py"
+        onstart="document.getElementById('loading').remove()"></pyxel-run>
 </body>
 
 </html>

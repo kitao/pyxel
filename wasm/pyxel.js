@@ -6,10 +6,13 @@ class Pyxel {
         this.pyodide = pyodide;
     }
 
-    async fetchFiles(baseDir, files) {
+    async fetchFiles(root, names) {
         let FS = this.pyodide.FS;
-        for (let file of files) {
-            let dirs = file.split('/');
+        for (let name of names) {
+            if (!name) {
+                continue;
+            }
+            let dirs = name.split('/');
             dirs.pop();
             let path = '';
             for (let dir of dirs) {
@@ -19,35 +22,35 @@ class Pyxel {
                 }
                 path += '/';
             }
-            console.log(baseDir, file);
-            let fileResponse = await fetch(`${baseDir}/${file}`);
+            let fileResponse = await fetch(`${root}/${name}`);
             let fileBinary = new Uint8Array(await fileResponse.arrayBuffer());
-            FS.writeFile(file, fileBinary, { encoding: 'binary' });
+            FS.writeFile(name, fileBinary, { encoding: 'binary' });
+            console.log(`Fetched: ${root}${name}`);
         }
     }
 
     exec(pythonScript) {
-        this.pyodide.runPython(pythonScript);
+        if (pythonScript) {
+            this.pyodide.runPython(pythonScript);
+        }
     }
 
     run(pythonScriptFile) {
-        this.pyodide.runPython(`import pyxel.cli; pyxel.cli.run_python_script("${pythonScriptFile}")`);
+        if (pythonScriptFile) {
+            this.pyodide.runPython(`import pyxel.cli; pyxel.cli.run_python_script("${pythonScriptFile}")`);
+        }
     }
 
     play(pyxelAppFile) {
-        this.pyodide.runPython(`import pyxel.cli; pyxel.cli.play_pyxel_app("${pyxelAppFile}")`);
+        if (pyxelAppFile) {
+            this.pyodide.runPython(`import pyxel.cli; pyxel.cli.play_pyxel_app("${pyxelAppFile}")`);
+        }
     }
 
     edit(pyxelResourceFile) {
-        this.pyodide.runPython(`import pyxel.cli; pyxel.cli.edit_pyxel_resource("${pyxelResourceFile}")`);
-    }
-
-    package(appRootDir, startupScriptName) {
-        this.pyodide.runPython(`import pyxel.cli; pyxel.cli.package_pyxel_app("${appRootDir}", "${startupScriptName}")`);
-    }
-
-    copyExamples() {
-        this.pyodide.runPython(`import pyxel.cli; pyxel.cli.copy_pyxel_examples()`);
+        if (pyxelResourceFile) {
+            this.pyodide.runPython(`import pyxel.cli; pyxel.cli.edit_pyxel_resource("${pyxelResourceFile}")`);
+        }
     }
 }
 
@@ -87,7 +90,6 @@ function _addCanvas() {
         body = document.createElement('body');
         document.body = body;
     }
-    console.log(body);
     let canvas = document.createElement('canvas');
     canvas.id = 'canvas';
     canvas.oncontextmenu = 'event.preventDefault()';
@@ -119,6 +121,95 @@ function loadPyxel(callback) {
         callback(pyxel);
     };
 }
+
+class PyxelAsset extends HTMLElement {
+    static names = [];
+
+    constructor() {
+        super();
+    }
+
+    connectedCallback() {
+        PyxelAsset.names.push(this.name);
+    }
+
+    attributeChangedCallback(name, _oldValue, newValue) {
+        this[name] = newValue;
+    }
+}
+PyxelAsset.observedAttributes = ['name'];
+window.customElements.define('pyxel-asset', PyxelAsset);
+
+class PyxelRun extends HTMLElement {
+    constructor() {
+        super();
+        this.root = '.';
+        this.name = '';
+        this.script = '';
+        this.onstart = '';
+    }
+
+    connectedCallback() {
+        loadPyxel(async (pyxel) => {
+            await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
+            eval(this.onstart);
+            pyxel.run(this.name);
+            pyxel.exec(this.script);
+        });
+    }
+
+    attributeChangedCallback(name, _oldValue, newValue) {
+        this[name] = newValue;
+    }
+}
+PyxelRun.observedAttributes = ['root', 'name', 'script', 'onstart'];
+window.customElements.define('pyxel-run', PyxelRun);
+
+class PyxelPlay extends HTMLElement {
+    constructor() {
+        super();
+        this.root = '.';
+        this.name = '';
+        this.onstart = '';
+    }
+
+    connectedCallback() {
+        loadPyxel(async (pyxel) => {
+            await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
+            eval(this.onstart);
+            pyxel.play(this.name);
+        });
+    }
+
+    attributeChangedCallback(name, _oldValue, newValue) {
+        this[name] = newValue;
+    }
+}
+PyxelPlay.observedAttributes = ['root', 'name', 'onstart'];
+window.customElements.define('pyxel-play', PyxelPlay);
+
+class PyxelEdit extends HTMLElement {
+    constructor() {
+        super();
+        this.root = '.';
+        this.name = '';
+        this.onstart = '';
+    }
+
+    connectedCallback() {
+        loadPyxel(async (pyxel) => {
+            await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
+            eval(this.onstart);
+            pyxel.edit(this.name);
+        });
+    }
+
+    attributeChangedCallback(name, _oldValue, newValue) {
+        this[name] = newValue;
+    }
+}
+PyxelEdit.observedAttributes = ['root', 'name', 'onstart'];
+window.customElements.define('pyxel-edit', PyxelEdit);
 
 _setIcon();
 _setStyleSheet();
