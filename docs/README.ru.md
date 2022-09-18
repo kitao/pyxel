@@ -77,7 +77,7 @@ sudo pip3 install -U pyxel
 Обратитесь к [этой странице](https://kitao.github.io/pyxel/wasm/) и загрузите скрипт Pyxel следующим образом:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@main/wasm/pyxel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
 ```
 
 ### Попробуйте примеры
