@@ -9,6 +9,9 @@ class Pyxel {
     async fetchFiles(root, names) {
         let FS = this.pyodide.FS;
         for (let name of names) {
+            if (!name) {
+                continue;
+            }
             let dirs = name.split('/');
             dirs.pop();
             let path = '';
@@ -143,10 +146,7 @@ class PyxelRun extends HTMLElement {
 
     connectedCallback() {
         loadPyxel(async (pyxel) => {
-            await pyxel.fetchFiles(this.root, PyxelAsset.names);
-            if (this.name) {
-                await pyxel.fetchFiles(this.root, [this.name]);
-            }
+            await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             eval(this.onstart);
             pyxel.run(this.name);
             pyxel.run(this.script);
@@ -170,10 +170,7 @@ class PyxelPlay extends HTMLElement {
 
     connectedCallback() {
         loadPyxel(async (pyxel) => {
-            await pyxel.fetchFiles(this.root, PyxelAsset.names);
-            if (this.name) {
-                await pyxel.fetchFiles(this.root, [this.name]);
-            }
+            await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             eval(this.onstart);
             pyxel.play(this.name);
         });
@@ -196,10 +193,7 @@ class PyxelEdit extends HTMLElement {
 
     connectedCallback() {
         loadPyxel(async (pyxel) => {
-            await pyxel.fetchFiles(this.root, PyxelAsset.names);
-            if (this.name) {
-                await pyxel.fetchFiles(this.root, [this.name]);
-            }
+            await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             eval(this.onstart);
             pyxel.edit(this.name);
         });
