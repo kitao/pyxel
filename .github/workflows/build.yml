@@ -10,27 +10,18 @@ jobs:
           - target: x86_64-pc-windows-msvc
             os: windows-latest
             arch: x64
-            make: make
 
           - target: i686-pc-windows-msvc
             os: windows-latest
             arch: x86
-            make: make
 
           - target: x86_64-apple-darwin
             os: macos-latest
             arch: x64
-            make: make
 
           - target: aarch64-apple-darwin
             os: macos-latest
             arch: x64
-            make: make
-
-          - target: wasm32-unknown-emscripten
-            os: ubuntu-latest
-            arch: x64
-            make: RUSTUP_TOOLCHAIN=nightly make
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -61,15 +52,9 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Install Emscripten
-        if: matrix.target == 'wasm32-unknown-emscripten'
-        uses: mymindstorm/setup-emsdk@v11
-        with:
-          version: '3.1.21'
-
       - name: Build wheels
         run: |
-          ${{ matrix.make }} TARGET=${{ matrix.target }}
+          make TARGET=${{ matrix.target }}
 
       - name: Upload wheels
         uses: actions/upload-artifact@v3
