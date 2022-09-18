@@ -7,6 +7,8 @@ class Pyxel {
     }
 
     async fetchFiles(root, names) {
+        console.log('fetchFiles: ', root);
+        console.log(names);
         let FS = this.pyodide.FS;
         for (let name of names) {
             if (!name) {
@@ -102,17 +104,14 @@ function _addCanvas() {
 
 function loadPyxel(callback) {
     _addCanvas();
-    // Load script dynamically
     let script = document.createElement('script');
     script.src = PYODIDE_SDL2_URL;
     let firstScript = document.getElementsByTagName('script')[0];
     firstScript.parentNode.insertBefore(script, firstScript);
     script.onload = async () => {
-        // Initialize Pyodide
         let pyodide = await loadPyodide();
         await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_NAME);
         let pyxel = new Pyxel(pyodide);
-        // Execute application logic
         callback(pyxel);
     };
 }
@@ -120,22 +119,30 @@ function loadPyxel(callback) {
 class PyxelAsset extends HTMLElement {
     static names = [];
 
+    static get observedAttributes() {
+        return ['name'];
+    }
+
     constructor() {
         super();
     }
 
     connectedCallback() {
+        console.log("pyxel-asset is connected");
         PyxelAsset.names.push(this.name);
     }
 
     attributeChangedCallback(name, _oldValue, newValue) {
+        console.log("pyxel-asset: ", name, newValue);
         this[name] = newValue;
     }
 }
-PyxelAsset.observedAttributes = ['name'];
-window.customElements.define('pyxel-asset', PyxelAsset);
 
 class PyxelRun extends HTMLElement {
+    static get observedAttributes() {
+        return ['root', 'name', 'script', 'onstart'];
+    }
+
     constructor() {
         super();
         this.root = '.';
@@ -145,6 +152,7 @@ class PyxelRun extends HTMLElement {
     }
 
     connectedCallback() {
+        console.log("pyxel-run is connected");
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             eval(this.onstart);
@@ -154,13 +162,16 @@ class PyxelRun extends HTMLElement {
     }
 
     attributeChangedCallback(name, _oldValue, newValue) {
+        console.log("pyxel-run: ", name, newValue);
         this[name] = newValue;
     }
 }
-PyxelRun.observedAttributes = ['root', 'name', 'script', 'onstart'];
-window.customElements.define('pyxel-run', PyxelRun);
 
 class PyxelPlay extends HTMLElement {
+    static get observedAttributes() {
+        return ['root', 'name', 'onstart'];
+    }
+
     constructor() {
         super();
         this.root = '.';
@@ -169,6 +180,7 @@ class PyxelPlay extends HTMLElement {
     }
 
     connectedCallback() {
+        console.log("pyxel-play is connected");
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             eval(this.onstart);
@@ -177,13 +189,16 @@ class PyxelPlay extends HTMLElement {
     }
 
     attributeChangedCallback(name, _oldValue, newValue) {
+        console.log("pyxel-play: ", name, newValue);
         this[name] = newValue;
     }
 }
-PyxelPlay.observedAttributes = ['root', 'name', 'onstart'];
-window.customElements.define('pyxel-play', PyxelPlay);
 
 class PyxelEdit extends HTMLElement {
+    static get observedAttributes() {
+        return ['root', 'name', 'onstart'];
+    }
+
     constructor() {
         super();
         this.root = '.';
@@ -192,7 +207,7 @@ class PyxelEdit extends HTMLElement {
     }
 
     connectedCallback() {
-        console.log("connected pyxel-edit");
+        console.log("pyxel-edit is connected");
         loadPyxel(async (pyxel) => {
             console.log("loaded in pyxel-edit");
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
@@ -208,8 +223,11 @@ class PyxelEdit extends HTMLElement {
         this[name] = newValue;
     }
 }
-PyxelEdit.observedAttributes = ['root', 'name', 'onstart'];
-window.customElements.define('pyxel-edit', PyxelEdit);
 
 _setIcon();
 _setStyleSheet();
+
+window.customElements.define('pyxel-asset', PyxelAsset);
+window.customElements.define('pyxel-run', PyxelRun);
+window.customElements.define('pyxel-play', PyxelPlay);
+window.customElements.define('pyxel-edit', PyxelEdit);
