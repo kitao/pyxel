@@ -7,8 +7,6 @@ class Pyxel {
     }
 
     async fetchFiles(root, names) {
-        console.log('fetchFiles: ', root);
-        console.log(names);
         let FS = this.pyodide.FS;
         for (let name of names) {
             if (!name) {
@@ -27,7 +25,7 @@ class Pyxel {
             let fileResponse = await fetch(`${root}/${name}`);
             let fileBinary = new Uint8Array(await fileResponse.arrayBuffer());
             FS.writeFile(name, fileBinary, { encoding: 'binary' });
-            console.log(`Fetched: ${root}${name}`);
+            console.log(`Fetched ${root}${name}`);
         }
     }
 
@@ -103,7 +101,6 @@ function _addCanvas() {
 }
 
 function loadPyxel(callback) {
-    console.log('loadPyxel is called');
     _addCanvas();
     let script = document.createElement('script');
     script.src = PYODIDE_SDL2_URL;
@@ -129,15 +126,14 @@ class PyxelAsset extends HTMLElement {
     }
 
     connectedCallback() {
-        console.log("pyxel-asset is connected");
         PyxelAsset.names.push(this.name);
     }
 
     attributeChangedCallback(name, _oldValue, newValue) {
-        console.log("pyxel-asset: ", name, newValue);
         this[name] = newValue;
     }
 }
+window.customElements.define('pyxel-asset', PyxelAsset);
 
 class PyxelRun extends HTMLElement {
     static get observedAttributes() {
@@ -153,7 +149,6 @@ class PyxelRun extends HTMLElement {
     }
 
     connectedCallback() {
-        console.log("pyxel-run is connected");
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             eval(this.onstart);
@@ -163,10 +158,10 @@ class PyxelRun extends HTMLElement {
     }
 
     attributeChangedCallback(name, _oldValue, newValue) {
-        console.log("pyxel-run: ", name, newValue);
         this[name] = newValue;
     }
 }
+window.customElements.define('pyxel-run', PyxelRun);
 
 class PyxelPlay extends HTMLElement {
     static get observedAttributes() {
@@ -181,7 +176,6 @@ class PyxelPlay extends HTMLElement {
     }
 
     connectedCallback() {
-        console.log("pyxel-play is connected");
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             eval(this.onstart);
@@ -190,10 +184,10 @@ class PyxelPlay extends HTMLElement {
     }
 
     attributeChangedCallback(name, _oldValue, newValue) {
-        console.log("pyxel-play: ", name, newValue);
         this[name] = newValue;
     }
 }
+window.customElements.define('pyxel-play', PyxelPlay);
 
 class PyxelEdit extends HTMLElement {
     static get observedAttributes() {
@@ -208,29 +202,18 @@ class PyxelEdit extends HTMLElement {
     }
 
     connectedCallback() {
-        console.log("pyxel-edit is connected");
         loadPyxel(async (pyxel) => {
-            console.log("loaded in pyxel-edit");
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            console.log("fetched in pyxel-edit");
             eval(this.onstart);
-            console.log("end onstart in pyxel-edit");
             pyxel.edit(this.name);
         });
     }
 
     attributeChangedCallback(name, _oldValue, newValue) {
-        console.log("add pyxel-edit: ", newValue);
         this[name] = newValue;
     }
 }
+window.customElements.define('pyxel-edit', PyxelEdit);
 
 _setIcon();
 _setStyleSheet();
-
-setTimeout(() => {
-    window.customElements.define('pyxel-asset', PyxelAsset);
-    window.customElements.define('pyxel-run', PyxelRun);
-    window.customElements.define('pyxel-play', PyxelPlay);
-    window.customElements.define('pyxel-edit', PyxelEdit);
-}, 0);
