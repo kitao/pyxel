@@ -1,5 +1,7 @@
 # Change Log
 
+## 1.8.6
+
 ## 1.8.5
 - Fixed the links to the examples in the READMEs
 - Added utility functions to the script for Web
