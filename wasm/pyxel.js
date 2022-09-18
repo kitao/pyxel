@@ -47,9 +47,7 @@ class Pyxel {
     }
 
     edit(pyxelResourceFile) {
-        if (pyxelResourceFile) {
-            this.pyodide.runPython(`import pyxel.cli; pyxel.cli.edit_pyxel_resource("${pyxelResourceFile}")`);
-        }
+        this.pyodide.runPython(`import pyxel.cli; pyxel.cli.edit_pyxel_resource("${pyxelResourceFile}")`);
     }
 }
 
