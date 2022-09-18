@@ -77,7 +77,7 @@ sudo pip3 install -U pyxel
 [이 페이지](https://kitao.github.io/pyxel/wasm/)를 참조하여 다음과 같이 Pyxel 스크립트를 로드합니다.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@main/wasm/pyxel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
 ```
 
 ### 예제 실행하기
