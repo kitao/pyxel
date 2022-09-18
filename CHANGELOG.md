@@ -2,6 +2,7 @@
 
 ## 1.8.5
 - Added utility functions to the script for Web
+- Added custom elements for Web
 
 ## 1.8.4
 - Modified the background color
