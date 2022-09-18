@@ -77,7 +77,7 @@ Se quanto sopra non funziona, provare ad autocostruirsi secondo le istruzioni di
 Fare riferimento a [questa pagina](https://kitao.github.io/pyxel/wasm/) e caricare lo script Pyxel come segue:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@main/wasm/pyxel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
 ```
 
 ### Provare gli esempi di Pyxel
