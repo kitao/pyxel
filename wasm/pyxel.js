@@ -29,15 +29,14 @@ class Pyxel {
         }
     }
 
-    exec(pythonScript) {
-        if (pythonScript) {
-            this.pyodide.runPython(pythonScript);
-        }
-    }
-
     run(pythonScriptFile) {
-        if (pythonScriptFile) {
+        if (!pythonScriptFile) {
+            return;
+        }
+        if (pythonScriptFile.endsWith('.py')) {
             this.pyodide.runPython(`import pyxel.cli; pyxel.cli.run_python_script("${pythonScriptFile}")`);
+        } else {
+            this.pyodide.runPython(pythonScriptFile);
         }
     }
 
@@ -154,7 +153,7 @@ class PyxelRun extends HTMLElement {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             eval(this.onstart);
             pyxel.run(this.name);
-            pyxel.exec(this.script);
+            pyxel.run(this.script);
         });
     }
 
