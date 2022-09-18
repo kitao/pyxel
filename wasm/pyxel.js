@@ -103,6 +103,7 @@ function _addCanvas() {
 }
 
 function loadPyxel(callback) {
+    console.log('loadPyxel is called');
     _addCanvas();
     let script = document.createElement('script');
     script.src = PYODIDE_SDL2_URL;
