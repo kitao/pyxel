@@ -77,7 +77,7 @@ Wenn das oben genannte nicht funktioniert, versuchen Sie, sich selbst gemäß de
 Lesen Sie [diese Seite](https://kitao.github.io/pyxel/wasm/) und laden Sie das Pyxel-Skript wie folgt:
 
 ```html
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/kitao/pyxel@main/wasm/pyxel.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel@main/wasm/pyxel.js"></script>
 ```
 
 ### Try Pyxel Examples

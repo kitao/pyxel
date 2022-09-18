@@ -76,7 +76,6 @@ function _setStyleSheet() {
     link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = _scriptDir() + 'pyxel.css';
-    link.type = 'text/css';
     head.appendChild(link);
 }
 
@@ -107,7 +106,6 @@ function loadPyxel(callback) {
     _addCanvas();
     // Load script dynamically
     let script = document.createElement('script');
-    script.type = 'text/javascript';
     script.src = PYODIDE_SDL2_URL;
     let firstScript = document.getElementsByTagName('script')[0];
     firstScript.parentNode.insertBefore(script, firstScript);
