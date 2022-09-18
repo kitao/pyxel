@@ -228,7 +228,9 @@ class PyxelEdit extends HTMLElement {
 _setIcon();
 _setStyleSheet();
 
-window.customElements.define('pyxel-asset', PyxelAsset);
-window.customElements.define('pyxel-run', PyxelRun);
-window.customElements.define('pyxel-play', PyxelPlay);
-window.customElements.define('pyxel-edit', PyxelEdit);
+setTimeout(() => {
+    window.customElements.define('pyxel-asset', PyxelAsset);
+    window.customElements.define('pyxel-run', PyxelRun);
+    window.customElements.define('pyxel-play', PyxelPlay);
+    window.customElements.define('pyxel-edit', PyxelEdit);
+}, 0);
