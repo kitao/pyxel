@@ -192,14 +192,19 @@ class PyxelEdit extends HTMLElement {
     }
 
     connectedCallback() {
+        console.log("connected pyxel-edit");
         loadPyxel(async (pyxel) => {
+            console.log("loaded in pyxel-edit");
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
+            console.log("fetched in pyxel-edit");
             eval(this.onstart);
+            console.log("end onstart in pyxel-edit");
             pyxel.edit(this.name);
         });
     }
 
     attributeChangedCallback(name, _oldValue, newValue) {
+        console.log("add pyxel-edit: ", newValue);
         this[name] = newValue;
     }
 }
