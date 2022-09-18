@@ -133,7 +133,9 @@ clean-wasm:
 build-wasm:
 	@$(WASM_ENV) make build TARGET=$(WASM_TARGET)
 	@mkdir -p $(WASM_DIR)
-	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(WASM_DIR)
+	@rm -f $(WASM_DIR)/*.whl
+	@mv -f $(DIST_DIR)/*-emscripten_*.whl $(WASM_DIR)
+	@sed -i "" -e "s/\\(PYXEL_WHEEL_NAME =\\).*;/\\1 '`cd $(WASM_DIR) && ls *.whl`';/" $(WASM_DIR)/pyxel.js
 
 test-wasm: build-wasm
 	@$(SCRIPTS_DIR)/start_server
