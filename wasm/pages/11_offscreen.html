@@ -8,16 +8,9 @@
 
 <body>
     <div id="loading">Loading...</div>
-    <script type="text/javascript">
-        loadPyxel(async (pyxel) => {
-            await pyxel.fetchFiles('../../python/pyxel/examples', [
-                '11_offscreen.py',
-                'assets/offscreen.pyxres',
-            ]);
-            document.getElementById('loading').remove();
-            pyxel.run('11_offscreen.py');
-        });
-    </script>
+    <pyxel-asset name="assets/offscreen.pyxres"></pyxel-asset>
+    <pyxel-run root="../../python/pyxel/examples" name="11_offscreen.py"
+        onstart="document.getElementById('loading').remove()"></pyxel-run>
 </body>
 
 </html>
