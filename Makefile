@@ -96,7 +96,6 @@ build: format
 	@$(ENSURE_TARGET)
 	@$(SCRIPTS_DIR)/update_readme
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --skip-auditwheel
-	@maturin sdist -o $(DIST_DIR)
 
 test: build
 	@cd $(CRATES_DIR)/pyxel-core; cargo test $(BUILD_OPTS)
