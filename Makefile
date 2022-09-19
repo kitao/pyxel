@@ -133,9 +133,15 @@ clean-wasm:
 build-wasm:
 	@rm -f $(DIST_DIR)/*-emscripten_*.whl
 	@$(WASM_ENV) make build TARGET=$(WASM_TARGET)
-	@mkdir -p $(WASM_DIR)
-	@rm -f $(WASM_DIR)/*-emscripten_*.whl
-	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(WASM_DIR)
+	@bash -c ' \
+		SRC_WHEEL=`ls $(DIST_DIR)/*-emscripten_*.whl`; \
+		DST_WHEEL=`ls $(WASM_DIR)/*-emscripten_*.whl`; \
+		WHEEL_DIFF=`diff -q <(unzip -p $$SRC_WHEEL) <(unzip -p $$DST_WHEEL)`; \
+		if [ "$$WHEEL_DIFF" != "" ]; then \
+			rm -f $(WASM_DIR)/*.whl; \
+			cp -f $$SRC_WHEEL $(WASM_DIR); \
+		fi \
+	'
 	@sed -i "" -e "s/\\(PYXEL_WHEEL_NAME =\\).*;/\\1 '`cd $(WASM_DIR) && ls *.whl`';/" $(WASM_DIR)/pyxel.js
 
 test-wasm: build-wasm
