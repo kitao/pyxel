@@ -1,2 +1,2 @@
 * text=auto
-*.whl diff=zip
+*.whl diff=whl
