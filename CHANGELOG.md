@@ -1,6 +1,7 @@
 # Change Log
 
 ## 1.8.6
+- Changed not to the sdist wheel
 
 ## 1.8.5
 - Fixed the links to the examples in the READMEs
@@ -24,7 +25,7 @@
 - Fiexd to stop playing music on quit on WASM
 - Removed the flip function for WASM support
 - Fixed the mouse coordinates in WASM
-- Changed to release sdist as well
+- Changed to release the sdist wheel as well
 - Change the background color to brighter
 - Added links for Pyxel on WASM to the READEMEs
 
