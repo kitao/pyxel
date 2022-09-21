@@ -2,6 +2,7 @@
 
 ## 1.8.6
 - Changed not to the sdist wheel
+- Refined the show API
 
 ## 1.8.5
 - Fixed the links to the examples in the READMEs
