@@ -1,2 +1,3 @@
 * text=auto
-*.whl binary diff=zip
+*.whl binary diff=zip linguist-language=Python
+*.pyxapp linguist-language=Python
