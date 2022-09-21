@@ -1,7 +1,7 @@
 use std::cmp::min;
 
 use crate::event::Event;
-use crate::image::Image;
+use crate::image::{Image, SharedImage};
 use crate::input::Input;
 use crate::key::{KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use crate::platform::Platform;
@@ -282,12 +282,36 @@ pub fn run<T: PyxelCallback>(mut callback: T) {
 }
 
 pub fn show() {
-    let main_loop = move || {
-        let system = System::instance();
-        system.update_frame(None);
-        system.draw_frame(None);
-    };
-    Platform::instance().run(main_loop);
+    let image = Image::new(crate::width(), crate::height());
+    image.lock().blt(
+        0.0,
+        0.0,
+        crate::screen(),
+        0.0,
+        0.0,
+        crate::width() as f64,
+        crate::height() as f64,
+        None,
+    );
+    pub struct App {
+        image: SharedImage,
+    }
+    impl PyxelCallback for App {
+        fn update(&mut self) {}
+        fn draw(&mut self) {
+            crate::screen().lock().blt(
+                0.0,
+                0.0,
+                self.image.clone(),
+                0.0,
+                0.0,
+                crate::width() as f64,
+                crate::height() as f64,
+                None,
+            );
+        }
+    }
+    crate::run(App { image });
 }
 
 pub fn quit() {
