@@ -275,10 +275,9 @@ pub fn fullscreen(is_fullscreen: bool) {
 }
 
 pub fn run<T: PyxelCallback>(mut callback: T) {
-    let main_loop = move || {
+    Platform::instance().run(|| {
         System::instance().process_frame(&mut callback);
-    };
-    Platform::instance().run(main_loop);
+    });
 }
 
 pub fn show() {
