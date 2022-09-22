@@ -1,4 +1,5 @@
 use std::cmp::min;
+#[cfg(not(target_os = "emscripten"))]
 use std::process::exit;
 
 use sdl2::audio::{
@@ -449,9 +450,10 @@ impl Platform {
 
     pub fn quit(&mut self) {
         self.pause_audio();
-        #[cfg(target_os = "emscripten")]
-        emscripten::cancel_main_loop();
+        #[cfg(not(target_os = "emscripten"))]
         exit(0);
+        #[cfg(target_os = "emscripten")]
+        emscripten::force_exit(0);
     }
 
     fn screen_pos_scale(&self) -> (u32, u32, u32) {
@@ -496,7 +498,7 @@ mod emscripten {
             fps: c_int,
             simulate_infinite_loop: c_int,
         );
-        pub fn emscripten_cancel_main_loop();
+        pub fn emscripten_force_exit(status: c_int);
     }
 
     unsafe extern "C" fn callback_wrapper<F: FnMut()>(arg: *mut c_void) {
@@ -517,9 +519,9 @@ mod emscripten {
         }
     }
 
-    pub fn cancel_main_loop() {
+    pub fn force_exit(status: i32) {
         unsafe {
-            emscripten_cancel_main_loop();
+            emscripten_force_exit(status);
         }
     }
 }
