@@ -275,7 +275,7 @@ pub fn fullscreen(is_fullscreen: bool) {
 }
 
 pub fn run<T: PyxelCallback>(mut callback: T) {
-    Platform::instance().run(|| {
+    Platform::instance().run(move || {
         System::instance().process_frame(&mut callback);
     });
 }
