@@ -3,6 +3,7 @@
 ## 1.8.6
 - Changed not to the sdist wheel
 - Refined the show API
+- Changed to use emscripten_force_exit for quit
 
 ## 1.8.5
 - Fixed the links to the examples in the READMEs
