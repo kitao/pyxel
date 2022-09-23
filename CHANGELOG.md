@@ -4,6 +4,7 @@
 - Changed not to the sdist wheel
 - Refined the show API
 - Changed to use emscripten_force_exit for quit
+- Fixed a flip bug in the Pyxel Editor
 
 ## 1.8.5
 - Fixed the links to the examples in the READMEs
