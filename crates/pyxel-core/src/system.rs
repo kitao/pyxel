@@ -281,17 +281,6 @@ pub fn run<T: PyxelCallback>(mut callback: T) {
 }
 
 pub fn show() {
-    let image = Image::new(crate::width(), crate::height());
-    image.lock().blt(
-        0.0,
-        0.0,
-        crate::screen(),
-        0.0,
-        0.0,
-        crate::width() as f64,
-        crate::height() as f64,
-        None,
-    );
     pub struct App {
         image: SharedImage,
     }
@@ -310,6 +299,17 @@ pub fn show() {
             );
         }
     }
+    let image = Image::new(crate::width(), crate::height());
+    image.lock().blt(
+        0.0,
+        0.0,
+        crate::screen(),
+        0.0,
+        0.0,
+        crate::width() as f64,
+        crate::height() as f64,
+        None,
+    );
     crate::run(App { image });
 }
 
