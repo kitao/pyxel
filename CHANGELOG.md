@@ -6,6 +6,7 @@
 - Changed to use emscripten_force_exit for quit
 - Surppressed an exception error message on Web
 - Fixed a flip bug in the Pyxel Editor
+- Added directory existence check to the Pyxel Editor
 
 ## 1.8.5
 - Fixed the links to the examples in the READMEs
