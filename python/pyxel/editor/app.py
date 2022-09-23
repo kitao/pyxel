@@ -26,12 +26,16 @@ class App(Widget):
 
     def __init__(self, resource_file):
         # Get absolute path of resource file before initializing Pyxel
+        original_resource_file = resource_file
         resource_file = os.path.abspath(resource_file)
+        if not os.path.exists(os.path.dirname(resource_file)):
+            print(f"Directory for '{original_resource_file}' does not exist")
+            exit(1)
 
         # Initialize Pyxel
         pyxel.init(APP_WIDTH, APP_HEIGHT)
         pyxel.mouse(True)
-        self._set_title(resource_file)
+        self._set_title(original_resource_file)
         if os.path.exists(resource_file):
             pyxel.load(resource_file)
 
