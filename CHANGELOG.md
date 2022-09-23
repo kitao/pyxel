@@ -1,12 +1,15 @@
 # Change Log
 
+## 1.8.7
+- Fixed file existence check in Pyxel Editor
+
 ## 1.8.6
 - Changed not to the sdist wheel
 - Refined the show API
 - Changed to use emscripten_force_exit for quit
 - Surppressed an exception error message on Web
-- Fixed a flip bug in the Pyxel Editor
-- Added directory existence check to the Pyxel Editor
+- Fixed a flip bug in Pyxel Editor
+- Added directory existence check to Pyxel Editor
 
 ## 1.8.5
 - Fixed the links to the examples in the READMEs
@@ -158,7 +161,7 @@
 - Changed the input setters to get floating numbers
 - Changed the key definitions to SDL2 Keycode base
 - Updated the example videos
-- Updated the Pyxel editor videos
+- Updated Pyxel Editor videos
 - Modified the melody of the example #10
 
 ## 1.5.4
@@ -315,7 +318,7 @@
 - Fixed the version check of the resource file
 - Fixed the typo of the PURPLE variables
 - Added the uninitialized error
-- Added support for command key shortcuts in the Pyxel Editor
+- Added support for command key shortcuts in Pyxel Editor
 - Fixed undo and redo of the Sound and Music Editor
 - Changed color comparison method when importing images
 - Updated the SDL to 2.0.10
@@ -333,7 +336,7 @@
 - Modified the install option in the READMEs
 - Added the quit_key option to the init API
 - Added the target options to the load APIs
-- Added the partial load function to the Pyxel Editor
+- Added the partial load function to Pyxel Editor
 - Added the example #8
 - Modified the example #5
 
@@ -352,7 +355,7 @@
 - Updated the instruction for installation in the READMEs
 - Removed dependency on NumPy
 - Changed the search path of the asset folder in the Pyxel Packager
-- Fixed the undo/redo for copy and paste in the Pyxel Editor
+- Fixed the undo/redo for copy and paste in Pyxel Editor
 
 ## 1.2.5
 - Fixed the pitch of the sound being off
@@ -363,7 +366,7 @@
 
 ## 1.2.3
 - Fixed an error of tone playback in the Sound Editor
-- Fixed to keep the image index of tilemaps in the Pyxel Editor
+- Fixed to keep the image index of tilemaps in Pyxel Editor
 
 ## 1.2.2
 - Updated the requirements.txt and Pipfile
@@ -414,7 +417,7 @@
 - Updated the READMEs
 
 ## 1.1.3
-- Fixed how to handle missing files in the Pyxel Editor
+- Fixed how to handle missing files in Pyxel Editor
 - Fixed how to quit the application
 
 ## 1.1.2
@@ -470,7 +473,7 @@
 - Added the description of run_with_profiler function to the manuals
 
 ## 0.9.8
-- Enabled to run the Pyxel Editor without filename
+- Enabled to run Pyxel Editor without filename
 
 ## 0.9.7
 - Confirmed operation on Debian and Fedora
@@ -493,7 +496,7 @@
 - Fixed the range of the sound picker in the Sound Editor
 
 ## 0.9.3
-- Enabled to open a resource file by drop in the Pyxel Editor
+- Enabled to open a resource file by drop in Pyxel Editor
 - Renamed the constants for the mouse buttons
 - Added gamepad support
 - Changed gamepad available for the example #2
@@ -514,7 +517,7 @@
 - Changed the focus UI of the Image Editor
 
 ## 0.9.0
-- Fixed the bug where the Pyxel Editor cursor malfunctions
+- Fixed the bug where Pyxel Editor cursor malfunctions
 - Added new API descriptions to the example #3
 - Updated the screenshot of the example #3
 - Change not to add unnecessary undo history of the editors
@@ -527,7 +530,7 @@
 
 ## 0.8.9
 - Fixed the tilemap to allow the tiles of #256 or higher
-- Updated the screenshots of the Pyxel Editor
+- Updated the screenshots of Pyxel Editor
 - Fixed the cursor movement of the Sound and Music Editors
 - Changed the caption of the example #2
 - Renamed the example #6
@@ -564,7 +567,7 @@
 - Reduced the size of PNG and animated GIF
 - Changed the max length of the sound to 48
 - Added the system option to the sound API
-- Refined the help message of the Pyxel Editor
+- Refined the help message of Pyxel Editor
 - Added the ToggleButton and ImageToggleButton
 - Implemented the Sound Editor except the undo function
 
@@ -580,7 +583,7 @@
 ## 0.8.2
 - Fixed the set, load, and copy methods of the image class
 - Fixed the starting directory of the save and load APIs
-- Modified the usage of the Pyxel Editor
+- Modified the usage of Pyxel Editor
 
 ## 0.8.1
 - Added the run_with_profiler API
@@ -588,15 +591,15 @@
 - Added the bltm API
 - Implemented the Tilemap Editor
 - Added the standard widgets
-- Changed the usage of the Pyxel Editor
-- Added the help messages to the Pyxel Editor
-- Added the description of the Pyxel Editor to the READMEs
+- Changed the usage of Pyxel Editor
+- Added the help messages to Pyxel Editor
+- Added the description of Pyxel Editor to the READMEs
 
 ## 0.8.0
 - Changed the formatter from yapf to black
 - Added the UI module
 - Added the save and load APIs
-- Added the Image Editor as a part of the Pyxel Editor
+- Added the Image Editor as a part of Pyxel Editor
 - Removed the dirname option of the save and load APIs
 
 ## 0.7.12
@@ -610,7 +613,7 @@
 
 ## 0.7.11
 - Changed the Japanese link name in the READMEs
-- Implemented the widget class for the Pyxel Editor
+- Implemented the widget class for Pyxel Editor
 - Added the example #6 by ttrkaya
 - Renamed the constant variable for the max screen size
 - Changed to set the default scale automatically

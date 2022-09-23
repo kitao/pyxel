@@ -28,7 +28,12 @@ class App(Widget):
         # Get absolute path of resource file before initializing Pyxel
         original_resource_file = resource_file
         resource_file = os.path.abspath(resource_file)
-        if not os.path.exists(os.path.dirname(resource_file)):
+
+        # Check if resource file can be saved
+        if os.path.isdir(resource_file):
+            print(f"A directory named '{original_resource_file}' exists")
+            exit(1)
+        if not os.path.isdir(os.path.dirname(resource_file)):
             print(f"Directory for '{original_resource_file}' does not exist")
             exit(1)
 
