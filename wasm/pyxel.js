@@ -1,5 +1,5 @@
 const PYODIDE_SDL2_URL = 'https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20220923/pyodide.js';
-const PYXEL_WHEEL_NAME = 'pyxel-1.8.5-cp37-abi3-emscripten_3_1_21_wasm32.whl';
+const PYXEL_WHEEL_NAME = 'pyxel-1.8.6-cp37-abi3-emscripten_3_1_21_wasm32.whl';
 
 class Pyxel {
     constructor(pyodide) {
