@@ -110,7 +110,9 @@ function loadPyxel(callback) {
         let pyodide = await loadPyodide();
         await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_NAME);
         let pyxel = new Pyxel(pyodide);
-        callback(pyxel);
+        callback(pyxel).catch(e => {
+            if (e !== 'unwind') { throw e; }
+        });
     };
 }
 
