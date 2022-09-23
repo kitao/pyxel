@@ -363,7 +363,9 @@ class CanvasPanel(Widget):
                 )
                 self._add_post_history()
 
-        if self.tool_var == TOOL_SELECT:
+        if self.tool_var == TOOL_SELECT and not (
+            pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
+        ):
             # H: Flip horizontal
             if pyxel.btnp(pyxel.KEY_H):
                 x = self.focus_x_var * 8 + self._select_x1
