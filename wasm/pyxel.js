@@ -200,7 +200,11 @@ class PyxelPlay extends HTMLElement {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             _hideLogo();
-            await pyxel.play(this.name)
+            //await pyxel.play(this.name)
+            document.body.onclick = () => {
+                document.body.onclick = '';
+                pyxel.play(this.name)
+            };
         });
     }
 
@@ -225,7 +229,10 @@ class PyxelEdit extends HTMLElement {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             _hideLogo();
-            await pyxel.edit(this.name);
+            document.body.onclick = () => {
+                document.body.onclick = '';
+                pyxel.edit(this.name);
+            };
         });
     }
 
