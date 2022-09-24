@@ -109,35 +109,33 @@ function _removeMessage() {
 }
 
 function loadPyxel(callback) {
-    setTimeout(() => {
-        _addElements();
+    _addElements();
 
-        // Load and enable NoSleep
+    // Load and enable NoSleep
+    let firstScript = document.getElementsByTagName('script')[0];
+    let noSleepScript = document.createElement('script');
+    noSleepScript.src = NO_SLEEP_URL;
+    firstScript.parentNode.insertBefore(noSleepScript, firstScript);
+    noSleepScript.onload = async () => {
+        let noSleep = new NoSleep();
+        noSleep.enable();
+
+        // Load Pyodide
         let firstScript = document.getElementsByTagName('script')[0];
-        let noSleepScript = document.createElement('script');
-        noSleepScript.src = NO_SLEEP_URL;
-        firstScript.parentNode.insertBefore(noSleepScript, firstScript);
-        noSleepScript.onload = async () => {
-            let noSleep = new NoSleep();
-            noSleep.enable();
+        let pyodideSdl2Script = document.createElement('script');
+        pyodideSdl2Script.src = PYODIDE_SDL2_URL;
+        firstScript.parentNode.insertBefore(pyodideSdl2Script, firstScript);
+        pyodideSdl2Script.onload = async () => {
 
-            // Load Pyodide
-            let firstScript = document.getElementsByTagName('script')[0];
-            let pyodideSdl2Script = document.createElement('script');
-            pyodideSdl2Script.src = PYODIDE_SDL2_URL;
-            firstScript.parentNode.insertBefore(pyodideSdl2Script, firstScript);
-            pyodideSdl2Script.onload = async () => {
-
-                // Initialize Pyodide and Pyxel
-                let pyodide = await loadPyodide();
-                await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_NAME);
-                let pyxel = new Pyxel(pyodide);
-                callback(pyxel).catch(e => {
-                    if (e !== 'unwind') { throw e; }
-                });
-            };
+            // Initialize Pyodide and Pyxel
+            let pyodide = await loadPyodide();
+            await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_NAME);
+            let pyxel = new Pyxel(pyodide);
+            callback(pyxel).catch(e => {
+                if (e !== 'unwind') { throw e; }
+            });
         };
-    }, 1000);
+    };
 }
 
 class PyxelAsset extends HTMLElement {
