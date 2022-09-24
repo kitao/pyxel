@@ -78,34 +78,27 @@ function _setStyleSheet() {
     head.appendChild(link);
 }
 
-function _addCanvas() {
-    if (document.querySelector('canvas#canvas')) {
-        return;
+function _addElements() {
+    let body = document.getElementsByTagName('body').item(0);
+    if (!body) {
+        body = document.createElement('body');
+        document.body = body;
     }
-    let canvas = document.createElement('canvas');
-    canvas.id = 'canvas';
-    canvas.oncontextmenu = 'event.preventDefault()';
-    canvas.tabindex = -1;
-    document.body.appendChild(canvas);
-
-    function adjustCanvasHeight() {
-        document.querySelector('canvas#canvas').style.height = window.innerHeight + 'px';
+    if (!document.querySelector('canvas#canvas')) {
+        let canvas = document.createElement('canvas');
+        canvas.id = 'canvas';
+        canvas.oncontextmenu = 'event.preventDefault()';
+        canvas.tabindex = -1;
+        body.appendChild(canvas);
     }
-
-    adjustCanvasHeight();
-    window.addEventListener('resize', adjustCanvasHeight);
-}
-
-function _addMessage() {
-    if (document.querySelector('div#message')) {
-        return;
+    if (!document.querySelector('div#message')) {
+        let div = document.createElement('div');
+        div.id = 'message';
+        div.oncontextmenu = 'event.preventDefault()';
+        div.tabindex = -1;
+        div.textContent = 'LOADING';
+        body.appendChild(div);
     }
-    let div = document.createElement('div');
-    div.id = 'message';
-    div.oncontextmenu = 'event.preventDefault()';
-    div.tabindex = -1;
-    div.textContent = 'loading';
-    document.body.appendChild(div);
 }
 
 function _removeMessage() {
@@ -116,13 +109,7 @@ function _removeMessage() {
 }
 
 function loadPyxel(callback) {
-    let body = document.getElementsByTagName('body').item(0);
-    if (!body) {
-        body = document.createElement('body');
-        document.body = body;
-    }
-    _addCanvas();
-    _addMessage();
+    _addElements();
 
     // Load and enable NoSleep
     let firstScript = document.getElementsByTagName('script')[0];
