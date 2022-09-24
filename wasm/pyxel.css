@@ -43,20 +43,11 @@ canvas#canvas {
     height: 100dvh;
 }
 
-div#message {
+img#logo {
+    image-rendering: pixelated;
     position: absolute;
     left: 50vw;
     top: 50vh;
     top: 50dvh;
-    padding: 0.4vw 0.6vw 0.4vw 0.6vw;
-    border: 1px solid;
-    border-radius: 0.5vw;
-    transform: translate(-50%, -50%);
-}
-
-div#message {
-    font-size: 1vw;
-    padding: 0.4vw 0.6vw 0.4vw 0.6vw;
-    border: 1px solid;
-    border-radius: 0.5vw;
+    transform: translate(-50%, -50%) scale(2);
 }

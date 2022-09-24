@@ -135,7 +135,7 @@ build-wasm:
 	@mkdir -p $(WASM_DIR)
 	@rm -f $(WASM_DIR)/*-emscripten_*.whl
 	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(WASM_DIR)
-	@sed -i -e "s/\\(PYXEL_WHEEL_NAME =\\).*;/\\1 '`cd $(WASM_DIR) && ls *.whl`';/" $(WASM_DIR)/pyxel.js
+	@sed -i -e "s/\\(PYXEL_WHEEL_PATH =\\).*;/\\1 '`cd $(WASM_DIR) && ls *.whl`';/" $(WASM_DIR)/pyxel.js
 	@rm -f $(WASM_DIR)/pyxel.js-e # for BSD version SED
 
 test-wasm: build-wasm
