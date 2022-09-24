@@ -153,7 +153,7 @@ class PyxelRun extends HTMLElement {
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            eval(this.onstart);
+            await eval(this.onstart);
             pyxel.run(this.name);
             pyxel.run(this.script);
         });
@@ -180,8 +180,10 @@ class PyxelPlay extends HTMLElement {
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            eval(this.onstart);
-            pyxel.play(this.name);
+            await eval(this.onstart);
+            document.body.onclick = () => {
+                pyxel.play(this.name);
+            };
         });
     }
 
@@ -206,7 +208,7 @@ class PyxelEdit extends HTMLElement {
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            eval(this.onstart);
+            await eval(this.onstart);
             pyxel.edit(this.name);
         });
     }
