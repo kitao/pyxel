@@ -1,7 +1,12 @@
+html {
+    height: 100%;
+}
+
 body {
     color-scheme: light dark;
     background-color: Canvas;
     color: CanvasText;
+    height: 100%;
 }
 
 @media (prefers-color-scheme: light) {
