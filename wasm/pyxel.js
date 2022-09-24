@@ -192,17 +192,11 @@ class PyxelPlay extends HTMLElement {
 
     connectedCallback() {
         loadPyxel(async (pyxel) => {
+            let noSleep = new NoSleep();
+            noSleep.enable();
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             await eval(this.onstart);
-            document.body.onclick = () => {
-                let noSleep = new NoSleep();
-                noSleep.enable();
-                try {
-                    pyxel.play(this.name)
-                } catch (e) {
-                    if (e !== 'unwind') { throw e; }
-                }
-            };
+            pyxel.play(this.name)
         });
     }
 
