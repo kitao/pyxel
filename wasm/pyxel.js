@@ -105,6 +105,20 @@ function _addElements() {
 
 function _clickToStart(callback) {
     let logoImg = document.querySelector('img#logo');
+    let userAgent = window.navigator.userAgent.toLowerCase();
+
+    // Browser for PC
+    if (userAgent.indexOf("iphone") < 0 &&
+        userAgent.indexOf("ipad") < 0 &&
+        userAgent.indexOf("android") < 0) {
+        if (logoImg) {
+            logoImg.remove();
+        }
+        callback();
+        return;
+    }
+
+    // Browser for mobile devices
     if (logoImg) {
         logoImg.src = _scriptDir() + CLICK_TO_START_PATH;
     }
