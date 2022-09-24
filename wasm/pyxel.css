@@ -34,7 +34,7 @@ body {
     }
 }
 
-/*div#message {
+div#message {
     position: absolute;
     left: 50%;
     top: 50%;
@@ -42,7 +42,7 @@ body {
     -webkit-transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
     font-size: 1.5vw;
-}*/
+}
 
 canvas#canvas {
     position: absolute;
