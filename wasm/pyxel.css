@@ -2,6 +2,8 @@ body {
     color-scheme: light dark;
     background-color: Canvas;
     color: CanvasText;
+    max-height: 100vh;
+    max-height: 100svh;
 }
 
 @media (prefers-color-scheme: light) {
