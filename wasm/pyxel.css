@@ -2,8 +2,6 @@ body {
     color-scheme: light dark;
     background-color: Canvas;
     color: CanvasText;
-    max-height: 100vh;
-    max-height: 100svh;
 }
 
 @media (prefers-color-scheme: light) {
@@ -42,14 +40,14 @@ canvas#canvas {
     top: 0px;
     width: 100vw;
     height: 100vh;
-    height: 100svh;
+    height: 100dvh;
 }
 
 div#message {
     position: absolute;
     left: 50vw;
     top: 50vh;
-    top: 50svh;
+    top: 50dvh;
     padding: 0.4vw 0.6vw 0.4vw 0.6vw;
     border: 1px solid;
     border-radius: 0.5vw;
