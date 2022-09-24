@@ -103,22 +103,21 @@ function _addCanvas() {
 
 function loadPyxel(callback) {
     _addCanvas();
-
     // Load NoSleep script
     let firstScript = document.getElementsByTagName('script')[0];
     let noSleepScript = document.createElement('script');
     noSleepScript.src = NO_SLEEP_URL;
     firstScript.parentNode.insertBefore(noSleepScript, firstScript);
-
-    // Load Pyodide script
     noSleepScript.onload = async () => {
+        // Load Pyodide script
         let firstScript = document.getElementsByTagName('script')[0];
         let pyodideSdl2Script = document.createElement('script');
         pyodideSdl2Script.src = PYODIDE_SDL2_URL;
         firstScript.parentNode.insertBefore(pyodideSdl2Script, firstScript);
-
-        // Load Pyodide and Pyxel wheel
         pyodideSdl2Script.onload = async () => {
+            // Initialize Pyodide and Pyxel
+            let noSleep = new NoSleep();
+            noSleep.enable();
             let pyodide = await loadPyodide();
             await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_NAME);
             let pyxel = new Pyxel(pyodide);
@@ -192,8 +191,6 @@ class PyxelPlay extends HTMLElement {
 
     connectedCallback() {
         loadPyxel(async (pyxel) => {
-            let noSleep = new NoSleep();
-            noSleep.enable();
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             await eval(this.onstart);
             pyxel.play(this.name)
