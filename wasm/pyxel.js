@@ -101,6 +101,9 @@ function _addElements() {
         logoImg.tabindex = -1;
         body.appendChild(logoImg);
     }
+    body.style.display = 'none';
+    body.offsetHeight;
+    body.style.display = '';
 }
 
 function _isMobileDevice() {
