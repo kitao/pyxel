@@ -1,6 +1,7 @@
 const NO_SLEEP_URL = 'https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js';
 const PYODIDE_SDL2_URL = 'https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20220923/pyodide.js';
-const PYXEL_WHEEL_NAME = 'pyxel-1.8.6-cp37-abi3-emscripten_3_1_21_wasm32.whl';
+const PYXEL_LOGO_PATH = '../docs/images/pyxel_logo_152x64.png';
+const PYXEL_WHEEL_PATH = 'pyxel-1.8.6-cp37-abi3-emscripten_3_1_21_wasm32.whl';
 
 class Pyxel {
     constructor(pyodide) {
@@ -85,26 +86,26 @@ function _addElements() {
         document.body = body;
     }
     if (!document.querySelector('canvas#canvas')) {
-        let canvas = document.createElement('canvas');
-        canvas.id = 'canvas';
-        canvas.oncontextmenu = 'event.preventDefault()';
-        canvas.tabindex = -1;
-        body.appendChild(canvas);
+        let sdlCanvas = document.createElement('canvas');
+        sdlCanvas.id = 'canvas';
+        sdlCanvas.oncontextmenu = 'event.preventDefault()';
+        sdlCanvas.tabindex = -1;
+        body.appendChild(sdlCanvas);
     }
-    if (!document.querySelector('div#message')) {
-        let div = document.createElement('div');
-        div.id = 'message';
-        div.oncontextmenu = 'event.preventDefault()';
-        div.tabindex = -1;
-        div.textContent = 'LOADING';
-        body.appendChild(div);
+    if (!document.querySelector('img#logo')) {
+        let logoImg = document.createElement('img');
+        logoImg.id = 'logo';
+        logoImg.src = _scriptDir() + PYXEL_LOGO_PATH;
+        logoImg.oncontextmenu = 'event.preventDefault()';
+        logoImg.tabindex = -1;
+        body.appendChild(logoImg);
     }
 }
 
-function _removeMessage() {
-    let message = document.querySelector('div#message');
-    if (message) {
-        message.remove();
+function _hideLogo() {
+    let logoImg = document.querySelector('img#logo');
+    if (logoImg) {
+        logoImg.remove();
     }
 }
 
@@ -127,7 +128,7 @@ async function loadPyxel(callback) {
 
             // Initialize Pyodide and Pyxel
             let pyodide = await loadPyodide();
-            await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_NAME);
+            await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
             let pyxel = new Pyxel(pyodide);
             await callback(pyxel).catch(e => {
                 if (e !== 'unwind') { throw e; }
@@ -172,7 +173,7 @@ class PyxelRun extends HTMLElement {
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            _removeMessage();
+            _hideLogo();
             await pyxel.run(this.name);
             await pyxel.run(this.script);
         });
@@ -198,7 +199,7 @@ class PyxelPlay extends HTMLElement {
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            _removeMessage();
+            _hideLogo();
             await pyxel.play(this.name)
         });
     }
@@ -223,7 +224,7 @@ class PyxelEdit extends HTMLElement {
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            _removeMessage();
+            _hideLogo();
             await pyxel.edit(this.name);
         });
     }
