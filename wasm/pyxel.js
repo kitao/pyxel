@@ -90,17 +90,13 @@ function _addElements() {
         canvas.oncontextmenu = 'event.preventDefault()';
         canvas.tabindex = -1;
         body.appendChild(canvas);
-
-        function adjustCanvasHeight() {
+        window.addEventListener('resize', () => {
             canvas.style.position = 'absolute';
             canvas.style.left = '0px';
             canvas.style.top = '0px';
             canvas.style.width = window.innerWidth + 'px';
             canvas.style.height = window.innerHeight + 'px';
-        }
-
-        adjustCanvasHeight();
-        window.addEventListener('resize', adjustCanvasHeight);
+        });
     }
     if (!document.querySelector('div#message')) {
         let div = document.createElement('div');
@@ -109,17 +105,14 @@ function _addElements() {
         div.tabindex = -1;
         div.textContent = 'LOADING';
         body.appendChild(div);
-
-        function adjustMessageTop() {
+        window.addEventListener('resize', () => {
             div.style.position = 'absolute';
             div.style.transform = 'translate(-50%, -50%)';
             div.style.left = window.innerWidth / 2 + 'px';
             div.style.top = window.innerHeight / 2 + 'px';
-        }
-
-        adjustMessageTop();
-        window.addEventListener('resize', adjustMessageTop);
+        });
     }
+    window.dispatchEvent(new Event('resize'));
 }
 
 function _removeMessage() {
