@@ -112,9 +112,7 @@ function _addElements() {
             div.style.top = window.innerHeight / 2 + 'px';
         });
     }
-    setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
-    }, 0);
+    window.dispatchEvent(new Event('resize'));
 }
 
 function _removeMessage() {
