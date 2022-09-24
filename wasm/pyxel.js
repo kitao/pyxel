@@ -82,16 +82,11 @@ function _addCanvas() {
     if (document.querySelector('canvas#canvas')) {
         return;
     }
-    let body = document.getElementsByTagName('body').item(0);
-    if (!body) {
-        body = document.createElement('body');
-        document.body = body;
-    }
     let canvas = document.createElement('canvas');
     canvas.id = 'canvas';
     canvas.oncontextmenu = 'event.preventDefault()';
     canvas.tabindex = -1;
-    body.appendChild(canvas);
+    document.body.appendChild(canvas);
 
     function adjustCanvasHeight() {
         document.querySelector('canvas#canvas').style.height = window.innerHeight + 'px';
@@ -101,29 +96,58 @@ function _addCanvas() {
     window.addEventListener('resize', adjustCanvasHeight);
 }
 
+function _addMessage() {
+    if (document.querySelector('div#message')) {
+        return;
+    }
+    let div = document.createElement('div');
+    div.id = 'message';
+    div.oncontextmenu = 'event.preventDefault()';
+    div.tabindex = -1;
+    div.textContent = 'loading';
+    document.body.appendChild(div);
+}
+
 function loadPyxel(callback) {
+    let body = document.getElementsByTagName('body').item(0);
+    if (!body) {
+        body = document.createElement('body');
+        document.body = body;
+    }
     _addCanvas();
-    // Load NoSleep script
+    _addMessage();
+
+    // Load and enable NoSleep
     let firstScript = document.getElementsByTagName('script')[0];
     let noSleepScript = document.createElement('script');
     noSleepScript.src = NO_SLEEP_URL;
     firstScript.parentNode.insertBefore(noSleepScript, firstScript);
     noSleepScript.onload = async () => {
-        // Load Pyodide script
+        let noSleep = new NoSleep();
+        noSleep.enable();
+
+        // Load Pyodide
         let firstScript = document.getElementsByTagName('script')[0];
         let pyodideSdl2Script = document.createElement('script');
         pyodideSdl2Script.src = PYODIDE_SDL2_URL;
         firstScript.parentNode.insertBefore(pyodideSdl2Script, firstScript);
         pyodideSdl2Script.onload = async () => {
+
             // Initialize Pyodide and Pyxel
-            let noSleep = new NoSleep();
-            noSleep.enable();
             let pyodide = await loadPyodide();
             await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_NAME);
             let pyxel = new Pyxel(pyodide);
-            callback(pyxel).catch(e => {
-                if (e !== 'unwind') { throw e; }
-            });
+
+            let message = document.querySelector('div#message');
+            message.textContent = 'click to start';
+
+            document.body.onclick = () => {
+                message.remove();
+                document.body.onclick = '';
+                callback(pyxel).catch(e => {
+                    if (e !== 'unwind') { throw e; }
+                });
+            }
         };
     };
 }
