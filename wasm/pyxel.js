@@ -109,8 +109,6 @@ function _removeMessage() {
 }
 
 function loadPyxel(callback) {
-    _addElements();
-
     // Load and enable NoSleep
     let firstScript = document.getElementsByTagName('script')[0];
     let noSleepScript = document.createElement('script');
@@ -238,3 +236,4 @@ window.customElements.define('pyxel-edit', PyxelEdit);
 
 _setIcon();
 _setStyleSheet();
+_addElements();
