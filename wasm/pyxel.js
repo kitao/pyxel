@@ -103,22 +103,23 @@ function _addElements() {
     }
 }
 
+function _isMobileDevice() {
+    let userAgent = navigator.userAgent.toLowerCase();
+    return userAgent.indexOf("iphone") > -1 ||
+        userAgent.indexOf("ipad") > -1 ||
+        userAgent.indexOf("android") > -1 ||
+        userAgent.indexOf("macintosh") > -1 && 'ontouchend' in document;
+}
+
 function _tapToStart(callback) {
     let logoImg = document.querySelector('img#logo');
-    let userAgent = window.navigator.userAgent.toLowerCase();
-
-    // Browser for PC
-    if (userAgent.indexOf("iphone") < 0 &&
-        userAgent.indexOf("ipad") < 0 &&
-        userAgent.indexOf("android") < 0) {
+    if (!_isMobileDevice()) {
         if (logoImg) {
             logoImg.remove();
         }
         callback();
         return;
     }
-
-    // Browser for mobile devices
     if (logoImg) {
         logoImg.src = _scriptDir() + TAP_TO_START_PATH;
     }
