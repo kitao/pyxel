@@ -36,6 +36,26 @@ body {
     }
 }
 
+canvas#canvas {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100vw;
+    height: 100vh;
+    height: 100svh;
+}
+
+div#message {
+    position: absolute;
+    left: 50vw;
+    top: 50vh;
+    top: 50svh;
+    padding: 0.4vw 0.6vw 0.4vw 0.6vw;
+    border: 1px solid;
+    border-radius: 0.5vw;
+    transform: translate(-50%, -50%);
+}
+
 div#message {
     font-size: 1vw;
     padding: 0.4vw 0.6vw 0.4vw 0.6vw;
