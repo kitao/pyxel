@@ -108,6 +108,13 @@ function _addMessage() {
     document.body.appendChild(div);
 }
 
+function _removeMessage() {
+    let message = document.querySelector('div#message');
+    if (message) {
+        message.remove();
+    }
+}
+
 function loadPyxel(callback) {
     let body = document.getElementsByTagName('body').item(0);
     if (!body) {
@@ -137,17 +144,9 @@ function loadPyxel(callback) {
             let pyodide = await loadPyodide();
             await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_NAME);
             let pyxel = new Pyxel(pyodide);
-
-            let message = document.querySelector('div#message');
-            message.textContent = 'click to start';
-
-            document.body.onclick = () => {
-                message.remove();
-                document.body.onclick = '';
-                callback(pyxel).catch(e => {
-                    if (e !== 'unwind') { throw e; }
-                });
-            }
+            callback(pyxel).catch(e => {
+                if (e !== 'unwind') { throw e; }
+            });
         };
     };
 }
@@ -175,7 +174,7 @@ window.customElements.define('pyxel-asset', PyxelAsset);
 
 class PyxelRun extends HTMLElement {
     static get observedAttributes() {
-        return ['root', 'name', 'script', 'onstart'];
+        return ['root', 'name', 'script'];
     }
 
     constructor() {
@@ -183,15 +182,14 @@ class PyxelRun extends HTMLElement {
         this.root = '.';
         this.name = '';
         this.script = '';
-        this.onstart = '';
     }
 
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            await eval(this.onstart);
-            pyxel.run(this.name);
-            pyxel.run(this.script);
+            _removeMessage();
+            await pyxel.run(this.name);
+            await pyxel.run(this.script);
         });
     }
 
@@ -203,21 +201,20 @@ window.customElements.define('pyxel-run', PyxelRun);
 
 class PyxelPlay extends HTMLElement {
     static get observedAttributes() {
-        return ['root', 'name', 'onstart'];
+        return ['root', 'name'];
     }
 
     constructor() {
         super();
         this.root = '.';
         this.name = '';
-        this.onstart = '';
     }
 
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            await eval(this.onstart);
-            pyxel.play(this.name)
+            _removeMessage();
+            await pyxel.play(this.name)
         });
     }
 
@@ -229,21 +226,20 @@ window.customElements.define('pyxel-play', PyxelPlay);
 
 class PyxelEdit extends HTMLElement {
     static get observedAttributes() {
-        return ['root', 'name', 'onstart'];
+        return ['root', 'name'];
     }
 
     constructor() {
         super();
         this.root = '.';
         this.name = '';
-        this.onstart = '';
     }
 
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            await eval(this.onstart);
-            pyxel.edit(this.name);
+            _removeMessage();
+            await pyxel.edit(this.name);
         });
     }
 
