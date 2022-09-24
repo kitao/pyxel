@@ -1,3 +1,4 @@
+const NO_SLEEP_URL = 'https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js';
 const PYODIDE_SDL2_URL = 'https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20220923/pyodide.js';
 const PYXEL_WHEEL_NAME = 'pyxel-1.8.6-cp37-abi3-emscripten_3_1_21_wasm32.whl';
 
@@ -102,17 +103,29 @@ function _addCanvas() {
 
 function loadPyxel(callback) {
     _addCanvas();
-    let script = document.createElement('script');
-    script.src = PYODIDE_SDL2_URL;
+
+    // Load NoSleep script
     let firstScript = document.getElementsByTagName('script')[0];
-    firstScript.parentNode.insertBefore(script, firstScript);
-    script.onload = async () => {
-        let pyodide = await loadPyodide();
-        await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_NAME);
-        let pyxel = new Pyxel(pyodide);
-        callback(pyxel).catch(e => {
-            if (e !== 'unwind') { throw e; }
-        });
+    let noSleepScript = document.createElement('script');
+    noSleepScript.src = NO_SLEEP_URL;
+    firstScript.parentNode.insertBefore(noSleepScript, firstScript);
+
+    // Load Pyodide script
+    noSleepScript.onload = async () => {
+        let firstScript = document.getElementsByTagName('script')[0];
+        let pyodideSdl2Script = document.createElement('script');
+        pyodideSdl2Script.src = PYODIDE_SDL2_URL;
+        firstScript.parentNode.insertBefore(pyodideSdl2Script, firstScript);
+
+        // Load Pyodide and Pyxel wheel
+        pyodideSdl2Script.onload = async () => {
+            let pyodide = await loadPyodide();
+            await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_NAME);
+            let pyxel = new Pyxel(pyodide);
+            callback(pyxel).catch(e => {
+                if (e !== 'unwind') { throw e; }
+            });
+        };
     };
 }
 
@@ -182,7 +195,13 @@ class PyxelPlay extends HTMLElement {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
             await eval(this.onstart);
             document.body.onclick = () => {
-                pyxel.play(this.name);
+                let noSleep = new NoSleep();
+                noSleep.enable();
+                try {
+                    pyxel.play(this.name)
+                } catch (e) {
+                    if (e !== 'unwind') { throw e; }
+                }
             };
         });
     }
