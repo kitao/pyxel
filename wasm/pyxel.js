@@ -96,8 +96,8 @@ function _addCanvas() {
         document.querySelector('canvas#canvas').style.height = window.innerHeight + 'px';
     }
 
-    //adjustCanvasHeight();
-    //window.addEventListener('resize', adjustCanvasHeight);
+    adjustCanvasHeight();
+    window.addEventListener('resize', adjustCanvasHeight);
 }
 
 function loadPyxel(callback) {
