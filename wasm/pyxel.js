@@ -1,6 +1,7 @@
 const NO_SLEEP_URL = 'https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js';
 const PYODIDE_SDL2_URL = 'https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20220923/pyodide.js';
 const PYXEL_LOGO_PATH = '../docs/images/pyxel_logo_152x64.png';
+const CLICK_TO_START_PATH = '../docs/images/click_to_start_228x28.png';
 const PYXEL_WHEEL_PATH = 'pyxel-1.8.6-cp37-abi3-emscripten_3_1_21_wasm32.whl';
 
 class Pyxel {
@@ -102,11 +103,24 @@ function _addElements() {
     }
 }
 
-function _hideLogo() {
+function _clickToStart(callback) {
     let logoImg = document.querySelector('img#logo');
     if (logoImg) {
-        logoImg.remove();
+        logoImg.src = _scriptDir() + CLICK_TO_START_PATH;
     }
+    document.body.onclick = () => {
+        document.body.onclick = '';
+        if (logoImg) {
+            logoImg.remove();
+        }
+        try {
+            callback();
+        } catch (e) {
+            if (e !== 'unwind') {
+                throw e;
+            }
+        }
+    };
 }
 
 async function loadPyxel(callback) {
@@ -173,9 +187,10 @@ class PyxelRun extends HTMLElement {
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            _hideLogo();
-            await pyxel.run(this.name);
-            await pyxel.run(this.script);
+            _clickToStart(() => {
+                pyxel.run(this.name);
+                pyxel.run(this.script);
+            });
         });
     }
 
@@ -199,12 +214,9 @@ class PyxelPlay extends HTMLElement {
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            _hideLogo();
-            //await pyxel.play(this.name)
-            document.body.onclick = () => {
-                document.body.onclick = '';
-                pyxel.play(this.name)
-            };
+            _clickToStart(() => {
+                pyxel.play(this.name);
+            });
         });
     }
 
@@ -228,11 +240,9 @@ class PyxelEdit extends HTMLElement {
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            _hideLogo();
-            document.body.onclick = () => {
-                document.body.onclick = '';
+            _clickToStart(() => {
                 pyxel.edit(this.name);
-            };
+            });
         });
     }
 
