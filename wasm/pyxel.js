@@ -1,7 +1,7 @@
 const NO_SLEEP_URL = 'https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js';
 const PYODIDE_SDL2_URL = 'https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20220923/pyodide.js';
 const PYXEL_LOGO_PATH = '../docs/images/pyxel_logo_152x64.png';
-const CLICK_TO_START_PATH = '../docs/images/click_to_start_228x28.png';
+const TAP_TO_START_PATH = '../docs/images/tap_to_start_196x28.png';
 const PYXEL_WHEEL_PATH = 'pyxel-1.8.6-cp37-abi3-emscripten_3_1_21_wasm32.whl';
 
 class Pyxel {
@@ -103,7 +103,7 @@ function _addElements() {
     }
 }
 
-function _clickToStart(callback) {
+function _tapToStart(callback) {
     let logoImg = document.querySelector('img#logo');
     let userAgent = window.navigator.userAgent.toLowerCase();
 
@@ -120,7 +120,7 @@ function _clickToStart(callback) {
 
     // Browser for mobile devices
     if (logoImg) {
-        logoImg.src = _scriptDir() + CLICK_TO_START_PATH;
+        logoImg.src = _scriptDir() + TAP_TO_START_PATH;
     }
     document.body.onclick = () => {
         document.body.onclick = '';
@@ -201,7 +201,7 @@ class PyxelRun extends HTMLElement {
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            _clickToStart(() => {
+            _tapToStart(() => {
                 pyxel.run(this.name);
                 pyxel.run(this.script);
             });
@@ -228,7 +228,7 @@ class PyxelPlay extends HTMLElement {
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            _clickToStart(() => {
+            _tapToStart(() => {
                 pyxel.play(this.name);
             });
         });
@@ -254,7 +254,7 @@ class PyxelEdit extends HTMLElement {
     connectedCallback() {
         loadPyxel(async (pyxel) => {
             await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-            _clickToStart(() => {
+            _tapToStart(() => {
                 pyxel.edit(this.name);
             });
         });
