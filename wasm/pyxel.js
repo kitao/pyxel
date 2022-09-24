@@ -96,7 +96,7 @@ function _addElements() {
         div.id = 'message';
         div.oncontextmenu = 'event.preventDefault()';
         div.tabindex = -1;
-        div.textContent = 'LOADING...';
+        div.textContent = 'LOADING';
         body.appendChild(div);
     }
 }
