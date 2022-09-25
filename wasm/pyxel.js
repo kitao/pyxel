@@ -103,8 +103,7 @@ function _addElements() {
     }
     setTimeout(() => {
         console.assert(document.documentElement.offsetHeight > 0); // Force to reflow
-        window.scrollTo(0, 1); // Hide address bar in mobile Chrome
-    }, 500);
+    }, 1000);
 }
 
 function _isMobileDevice() {
