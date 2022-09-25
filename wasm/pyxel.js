@@ -109,9 +109,6 @@ function _addElements() {
     img.tabindex = -1;
     body.appendChild(img);
   }
-  setTimeout(() => {
-    window.scrollTo(0, 1);
-  }, 1);
 }
 
 function _isMobileDevice() {
