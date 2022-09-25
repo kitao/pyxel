@@ -92,9 +92,7 @@ function _addElements() {
         sdlCanvas.oncontextmenu = 'event.preventDefault()';
         sdlCanvas.tabindex = -1;
         window.addEventListener('resize', () => {
-            let height = window.innerHeight + 'px';
-            document.body.style.height = height;
-            sdlCanvas.style.height = height;
+            sdlCanvas.style.height = window.visualViewport.height + 'px';
         });
         body.appendChild(sdlCanvas);
     }
@@ -105,7 +103,7 @@ function _addElements() {
         logoImg.oncontextmenu = 'event.preventDefault()';
         logoImg.tabindex = -1;
         window.addEventListener('resize', () => {
-            logoImg.style.top = window.innerHeight / 2 + 'px';
+            logoImg.style.top = window.visualViewport.height / 2 + 'px';
         });
         body.appendChild(logoImg);
     }
