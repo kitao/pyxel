@@ -39,15 +39,11 @@ canvas#canvas {
     left: 0px;
     top: 0px;
     width: 100vw;
-    height: 100vh;
-    height: 100dvh;
 }
 
 img#logo {
     image-rendering: pixelated;
     position: absolute;
     left: 50vw;
-    top: 50vh;
-    top: 50dvh;
     transform: translate(-50%, -50%) scale(1.5);
 }
