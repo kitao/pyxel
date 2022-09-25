@@ -77,6 +77,9 @@ function _setStyleSheet() {
     link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = _scriptDir() + 'pyxel.css';
+    link.onload = () => {
+        _addElements();
+    };
     head.appendChild(link);
 }
 
@@ -269,4 +272,4 @@ window.customElements.define('pyxel-edit', PyxelEdit);
 
 _setIcon();
 _setStyleSheet();
-_addElements();
+//_addElements();
