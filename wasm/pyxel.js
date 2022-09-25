@@ -158,7 +158,6 @@ async function loadPyxel(callback) {
         let pyodide = await loadPyodide();
         await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
         let pyxel = new Pyxel(pyodide);
-        document.body.appendChild(document.createElement('style')); // Force to relayout
         await callback(pyxel).catch(e => {
             if (e !== 'unwind') { throw e; }
         });
