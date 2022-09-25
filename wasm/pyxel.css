@@ -1,51 +1,51 @@
 body {
-    color-scheme: light dark;
-    background-color: Canvas;
-    color: CanvasText;
+  color-scheme: light dark;
+  background-color: Canvas;
+  color: CanvasText;
 }
 
 @media (prefers-color-scheme: light) {
-    body {
-        background-color: #F7F9FE;
-        color: #202224;
-    }
+  body {
+    background-color: #f7f9fe;
+    color: #202224;
+  }
 
-    a:link {
-        color: #0000E4;
-    }
+  a:link {
+    color: #0000e4;
+  }
 
-    a:visited {
-        color: #4E1E86;
-    }
+  a:visited {
+    color: #4e1e86;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
-    body {
-        background-color: #202124;
-        color: #FFFFFF;
-    }
+  body {
+    background-color: #202124;
+    color: #ffffff;
+  }
 
-    a:link {
-        color: #CBADEC;
-    }
+  a:link {
+    color: #cbadec;
+  }
 
-    a:visited {
-        color: #9E9EF9;
-    }
+  a:visited {
+    color: #9e9ef9;
+  }
 }
 
 canvas#canvas {
-    position: fixed;
-    left: 0px;
-    top: 0px;
-    width: 100%;
-    height: 100%;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
 }
 
 img#logo {
-    image-rendering: pixelated;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%) scale(1.5);
+  image-rendering: pixelated;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(1.5);
 }
