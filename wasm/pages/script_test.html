@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <script src="../pyxel.js"></script>
-    <!-- For actual use, please use this link: "https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js" -->
-</head>
+    <!-- For actual use, use "https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js" -->
+  </head>
 
-<body>
-    <pyxel-run script="
+  <body>
+    <pyxel-run
+      script="
         import pyxel
 
         pyxel.init(200, 100)
         x = 0
 
         def update():
-            global x
-            x += 1
+          global x
+          x += 1
 
         def draw():
-            pyxel.cls(2)
-            pyxel.line(0,0, 100, 100, 7)
-            pyxel.rect(40, 40, 40, 40, 8)
-            pyxel.circ(x, 20, 20, 3)
+          pyxel.cls(2)
+          pyxel.line(0,0, 100, 100, 7)
+          pyxel.rect(40, 40, 40, 40, 8)
+          pyxel.circ(x, 20, 20, 3)
 
         pyxel.run(update, draw)
-    " onstart="document.getElementById('loading').remove()"></pyxel-run>
-</body>
-
+      "
+    ></pyxel-run>
+  </body>
 </html>
