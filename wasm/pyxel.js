@@ -91,6 +91,9 @@ function _addElements() {
         sdlCanvas.id = 'canvas';
         sdlCanvas.oncontextmenu = 'event.preventDefault()';
         sdlCanvas.tabindex = -1;
+        window.addEventListener('resize', () => {
+            sdlCanvas.style.height = window.innerHeight + 'px';
+        });
         body.appendChild(sdlCanvas);
     }
     if (!document.querySelector('img#logo')) {
@@ -99,11 +102,12 @@ function _addElements() {
         logoImg.src = _scriptDir() + PYXEL_LOGO_PATH;
         logoImg.oncontextmenu = 'event.preventDefault()';
         logoImg.tabindex = -1;
+        window.addEventListener('resize', () => {
+            logoImg.style.top = window.innerHeight / 2 + 'px';
+        });
         body.appendChild(logoImg);
     }
-    body.style.display = 'none';
-    body.offsetHeight;
-    body.style.display = '';
+    window.dispatchEvent(new Event('resize'));
 }
 
 function _isMobileDevice() {
