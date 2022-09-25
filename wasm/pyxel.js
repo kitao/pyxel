@@ -2,9 +2,10 @@ const NO_SLEEP_URL =
   "https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js";
 const PYODIDE_SDL2_URL =
   "https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20220923/pyodide.js";
-const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_152x64.png";
-const TAP_TO_START_PATH = "../docs/images/tap_to_start_196x28.png";
 const PYXEL_WHEEL_PATH = "pyxel-1.8.7-cp37-abi3-emscripten_3_1_21_wasm32.whl";
+const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_152x64.png";
+const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_228x28.png";
+const CLICK_TO_START_PATH = "../docs/images/click_to_start_228x28.png";
 
 class Pyxel {
   constructor(pyodide) {
@@ -121,17 +122,12 @@ function _isMobileDevice() {
   );
 }
 
-function _tapToStart(callback) {
+function _waitForInput(callback) {
   let img = document.querySelector("img#logo");
-  if (!_isMobileDevice()) {
-    if (img) {
-      img.remove();
-    }
-    callback();
-    return;
-  }
   if (img) {
-    img.src = _scriptDir() + TAP_TO_START_PATH;
+    img.src =
+      _scriptDir() +
+      (_isMobileDevice() ? TOUCH_TO_START_PATH : CLICK_TO_START_PATH);
   }
   document.body.onclick = () => {
     document.body.onclick = "";
@@ -212,7 +208,7 @@ class PyxelRun extends HTMLElement {
   connectedCallback() {
     loadPyxel(async (pyxel) => {
       await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-      _tapToStart(() => {
+      _waitForInput(() => {
         pyxel.run(this.name);
         pyxel.run(this.script);
       });
@@ -239,7 +235,7 @@ class PyxelPlay extends HTMLElement {
   connectedCallback() {
     loadPyxel(async (pyxel) => {
       await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-      _tapToStart(() => {
+      _waitForInput(() => {
         pyxel.play(this.name);
       });
     });
@@ -265,7 +261,7 @@ class PyxelEdit extends HTMLElement {
   connectedCallback() {
     loadPyxel(async (pyxel) => {
       await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
-      _tapToStart(() => {
+      _waitForInput(() => {
         pyxel.edit(this.name);
       });
     });
