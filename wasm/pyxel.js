@@ -101,7 +101,10 @@ function _addElements() {
         logoImg.tabindex = -1;
         body.appendChild(logoImg);
     }
-    console.assert(document.documentElement.offsetHeight > 0); // Force to reflow
+    setTimeout(() => {
+        console.assert(document.documentElement.offsetHeight > 0); // Force to reflow
+        window.scrollTo(0, 1); // Hide address bar in mobile Chrome
+    }, 500);
 }
 
 function _isMobileDevice() {
