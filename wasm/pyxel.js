@@ -77,9 +77,6 @@ function _setStyleSheet() {
     link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = _scriptDir() + 'pyxel.css';
-    link.onload = () => {
-        _addElements();
-    };
     head.appendChild(link);
 }
 
@@ -90,19 +87,19 @@ function _addElements() {
         document.body = body;
     }
     if (!document.querySelector('canvas#canvas')) {
-        let sdlCanvas = document.createElement('canvas');
-        sdlCanvas.id = 'canvas';
-        sdlCanvas.oncontextmenu = 'event.preventDefault()';
-        sdlCanvas.tabindex = -1;
-        body.appendChild(sdlCanvas);
+        let canvas = document.createElement('canvas');
+        canvas.id = 'canvas';
+        canvas.oncontextmenu = 'event.preventDefault()';
+        canvas.tabindex = -1;
+        body.appendChild(canvas);
     }
     if (!document.querySelector('img#logo')) {
-        let logoImg = document.createElement('img');
-        logoImg.id = 'logo';
-        logoImg.src = _scriptDir() + PYXEL_LOGO_PATH;
-        logoImg.oncontextmenu = 'event.preventDefault()';
-        logoImg.tabindex = -1;
-        body.appendChild(logoImg);
+        let img = document.createElement('img');
+        img.id = 'logo';
+        img.src = _scriptDir() + PYXEL_LOGO_PATH;
+        img.oncontextmenu = 'event.preventDefault()';
+        img.tabindex = -1;
+        body.appendChild(img);
     }
 }
 
@@ -115,21 +112,21 @@ function _isMobileDevice() {
 }
 
 function _tapToStart(callback) {
-    let logoImg = document.querySelector('img#logo');
+    let img = document.querySelector('img#logo');
     if (!_isMobileDevice()) {
-        if (logoImg) {
-            logoImg.remove();
+        if (img) {
+            img.remove();
         }
         callback();
         return;
     }
-    if (logoImg) {
-        logoImg.src = _scriptDir() + TAP_TO_START_PATH;
+    if (img) {
+        img.src = _scriptDir() + TAP_TO_START_PATH;
     }
     document.body.onclick = () => {
         document.body.onclick = '';
-        if (logoImg) {
-            logoImg.remove();
+        if (img) {
+            img.remove();
         }
         try {
             callback();
@@ -143,29 +140,27 @@ function _tapToStart(callback) {
 
 async function loadPyxel(callback) {
     // Load and enable NoSleep
-    let firstScript = document.getElementsByTagName('script')[0];
-    let noSleepScript = document.createElement('script');
-    noSleepScript.src = NO_SLEEP_URL;
-    firstScript.parentNode.insertBefore(noSleepScript, firstScript);
-    noSleepScript.onload = async () => {
+    var firstScript = document.getElementsByTagName('script')[0];
+    var script = document.createElement('script');
+    script.src = NO_SLEEP_URL;
+    firstScript.parentNode.insertBefore(script, firstScript);
+    script.onload = async () => {
         let noSleep = new NoSleep();
         noSleep.enable();
+    }
 
-        // Load Pyodide
-        let firstScript = document.getElementsByTagName('script')[0];
-        let pyodideSdl2Script = document.createElement('script');
-        pyodideSdl2Script.src = PYODIDE_SDL2_URL;
-        firstScript.parentNode.insertBefore(pyodideSdl2Script, firstScript);
-        pyodideSdl2Script.onload = async () => {
-
-            // Initialize Pyodide and Pyxel
-            let pyodide = await loadPyodide();
-            await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
-            let pyxel = new Pyxel(pyodide);
-            await callback(pyxel).catch(e => {
-                if (e !== 'unwind') { throw e; }
-            });
-        };
+    // Load and initialize Pyodide
+    var firstScript = document.getElementsByTagName('script')[0];
+    var script = document.createElement('script');
+    script.src = PYODIDE_SDL2_URL;
+    firstScript.parentNode.insertBefore(script, firstScript);
+    script.onload = async () => {
+        let pyodide = await loadPyodide();
+        await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
+        let pyxel = new Pyxel(pyodide);
+        await callback(pyxel).catch(e => {
+            if (e !== 'unwind') { throw e; }
+        });
     };
 }
 
@@ -272,4 +267,4 @@ window.customElements.define('pyxel-edit', PyxelEdit);
 
 _setIcon();
 _setStyleSheet();
-//_addElements();
+_addElements();
