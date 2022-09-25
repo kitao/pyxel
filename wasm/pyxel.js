@@ -92,7 +92,9 @@ function _addElements() {
         sdlCanvas.oncontextmenu = 'event.preventDefault()';
         sdlCanvas.tabindex = -1;
         window.addEventListener('resize', () => {
-            sdlCanvas.style.height = window.innerHeight + 'px';
+            let height = window.innerHeight + 'px';
+            document.body.style.height = height;
+            sdlCanvas.style.height = height;
         });
         body.appendChild(sdlCanvas);
     }
