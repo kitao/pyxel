@@ -101,10 +101,6 @@ function _addElements() {
         img.tabindex = -1;
         body.appendChild(img);
     }
-    /*addEventListener('resize', () => {
-        body.style.height = `{window.innerHeight}px`;
-    });*/
-    //body.scrollTo((body.scrollWidth - body.clientWidth) / 2, (body.scrollHeight - body.clientHeight) / 2);
 }
 
 function _isMobileDevice() {
