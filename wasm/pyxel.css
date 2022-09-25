@@ -1,14 +1,7 @@
-html {
-    height: 100vh;
-    height: 100dvh;
-}
-
 body {
     color-scheme: light dark;
     background-color: Canvas;
     color: CanvasText;
-    max-height: 100vh;
-    max-height: 100dvh;
 }
 
 @media (prefers-color-scheme: light) {

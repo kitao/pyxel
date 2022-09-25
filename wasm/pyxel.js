@@ -101,9 +101,6 @@ function _addElements() {
         logoImg.tabindex = -1;
         body.appendChild(logoImg);
     }
-    setTimeout(() => {
-        console.assert(document.documentElement.offsetHeight > 0); // Force to reflow
-    }, 1000);
 }
 
 function _isMobileDevice() {
