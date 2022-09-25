@@ -101,6 +101,9 @@ function _addElements() {
         img.tabindex = -1;
         body.appendChild(img);
     }
+    addEventListener('resize', () => {
+        document.body.style.height = `{window.innerHeight}px`;
+    });
 }
 
 function _isMobileDevice() {
