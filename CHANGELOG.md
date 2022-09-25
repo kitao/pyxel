@@ -2,6 +2,10 @@
 
 ## 1.8.7
 - Fixed file existence check in Pyxel Editor
+- Fixed to play sounds for Web on mobile devices
+- Removed the onstart attribute from the custom elements
+- Changed to display Pyxel logo while loading
+- Added "tap to start" menu for Web on mobile devices
 
 ## 1.8.6
 - Changed not to the sdist wheel
