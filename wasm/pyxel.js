@@ -2,7 +2,7 @@ const NO_SLEEP_URL = 'https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSl
 const PYODIDE_SDL2_URL = 'https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20220923/pyodide.js';
 const PYXEL_LOGO_PATH = '../docs/images/pyxel_logo_152x64.png';
 const TAP_TO_START_PATH = '../docs/images/tap_to_start_196x28.png';
-const PYXEL_WHEEL_PATH = 'pyxel-1.8.6-cp37-abi3-emscripten_3_1_21_wasm32.whl';
+const PYXEL_WHEEL_PATH = 'pyxel-1.8.7-cp37-abi3-emscripten_3_1_21_wasm32.whl';
 
 class Pyxel {
     constructor(pyodide) {
