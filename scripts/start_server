@@ -3,5 +3,11 @@
 ROOT_DIR=..
 ORIGIN_DIR=.
 
+if [ "$COMSPEC" = "" ]; then
+    PYTHON=python3
+else # Windows
+    PYTHON=python
+fi
+
 cd `dirname $0`/$ROOT_DIR
-python3 -m http.server --directory $ORIGIN_DIR 8000
+$PYTHON -m http.server --directory $ORIGIN_DIR 8000
