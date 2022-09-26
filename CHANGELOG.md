@@ -3,6 +3,7 @@
 ## 1.8.8
 
 - Changed to wait for user input on the PC web
+- Changed the server script to detect Windows
 
 ## 1.8.7
 
