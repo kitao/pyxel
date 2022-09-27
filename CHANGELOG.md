@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.9
+
+- Changed the color scheme for the web
+
 ## 1.8.8
 
 - Changed to wait for user input on the PC web
