@@ -1,37 +1,14 @@
 body {
-  color-scheme: light dark;
-  background-color: Canvas;
-  color: CanvasText;
+  background-color: #202124;
+  color: #ffffff;
 }
 
-@media (prefers-color-scheme: light) {
-  body {
-    background-color: #f7f9fe;
-    color: #202224;
-  }
-
-  a:link {
-    color: #0000e4;
-  }
-
-  a:visited {
-    color: #4e1e86;
-  }
+a:link {
+  color: #cbadec;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #202124;
-    color: #ffffff;
-  }
-
-  a:link {
-    color: #cbadec;
-  }
-
-  a:visited {
-    color: #9e9ef9;
-  }
+a:visited {
+  color: #9e9ef9;
 }
 
 canvas#canvas {
