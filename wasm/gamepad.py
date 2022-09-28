@@ -1,6 +1,6 @@
 import pyxel
 
-SCREEN_WDITH = 282
+SCREEN_WDITH = 197
 SCREEN_HEIGHT = 98
 
 CROSS_KEY_X = 12
@@ -8,16 +8,10 @@ CROSS_KEY_Y = 12
 CROSS_KEY_WIDTH = 24
 CROSS_KEY_LENGTH = 25
 
-SYSTEM_BUTTON_X = 111
-SYSTEM_BUTTON_Y = 74
-SYSTEM_BUTTON_WIDTH = 24
-SYSTEM_BUTTON_HEIGHT = 12
-SYSTEM_BUTTON_MARGIN = 12
-
-BUTTON_X = 185
-BUTTON_Y = 1
-BUTTON_WIDTH = 34
-BUTTON_MARGIN = 28
+BUTTON_X = 104
+BUTTON_Y = 5
+BUTTON_WIDTH = 32
+BUTTON_MARGIN = 24
 
 
 def draw_gamepad(x, y, color):
@@ -55,32 +49,6 @@ def draw_gamepad(x, y, color):
     pyxel.pset(cx4 - 1, cy2 + 1, color)
     pyxel.pset(cx4 - 1, cy3 - 1, color)
 
-    sx1 = SYSTEM_BUTTON_X + x
-    sx2 = sx1 + SYSTEM_BUTTON_WIDTH - 1
-    sx3 = sx1 + SYSTEM_BUTTON_WIDTH + SYSTEM_BUTTON_MARGIN
-    sx4 = sx3 + SYSTEM_BUTTON_WIDTH - 1
-
-    sy1 = SYSTEM_BUTTON_Y + y
-    sy2 = sy1 + SYSTEM_BUTTON_HEIGHT - 1
-
-    pyxel.line(sx1 + 2, sy1, sx2 - 2, sy1, color)
-    pyxel.line(sx1 + 2, sy2, sx2 - 2, sy2, color)
-    pyxel.line(sx1, sy1 + 2, sx1, sy2 - 2, color)
-    pyxel.line(sx2, sy1 + 2, sx2, sy2 - 2, color)
-    pyxel.pset(sx1 + 1, sy1 + 1, color)
-    pyxel.pset(sx2 - 1, sy1 + 1, color)
-    pyxel.pset(sx1 + 1, sy2 - 1, color)
-    pyxel.pset(sx2 - 1, sy2 - 1, color)
-
-    pyxel.line(sx3 + 2, sy1, sx4 - 2, sy1, color)
-    pyxel.line(sx3 + 2, sy2, sx4 - 2, sy2, color)
-    pyxel.line(sx3, sy1 + 2, sx3, sy2 - 2, color)
-    pyxel.line(sx4, sy1 + 2, sx4, sy2 - 2, color)
-    pyxel.pset(sx3 + 1, sy1 + 1, color)
-    pyxel.pset(sx4 - 1, sy1 + 1, color)
-    pyxel.pset(sx3 + 1, sy2 - 1, color)
-    pyxel.pset(sx4 - 1, sy2 - 1, color)
-
     bx1 = BUTTON_X + x
     bx2 = bx1 + BUTTON_WIDTH + BUTTON_MARGIN
     bx3 = bx1 + BUTTON_WIDTH / 2 + BUTTON_MARGIN / 2
@@ -95,47 +63,41 @@ def draw_gamepad(x, y, color):
     pyxel.ellib(bx3, by2, BUTTON_WIDTH, BUTTON_WIDTH, color)
 
 
-show_guide = False
+class App:
+    def __init__(self):
+        pyxel.init(SCREEN_WDITH, SCREEN_HEIGHT, capture_scale=1)
+        self.show_guide = False
+        pyxel.run(self.update, self.draw)
+
+    def update(self):
+        if pyxel.btnp(pyxel.KEY_SPACE):
+            self.show_guide = not self.show_guide
+
+    def draw(self):
+        pyxel.cls(0)
+
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                draw_gamepad(j, i, 1)
+        draw_gamepad(0, 0, 12)
+
+        pyxel.line(98, 0, 98, pyxel.height - 1, 3)
+
+        if self.show_guide:
+            pyxel.rectb(0, 38, 12, 24, 8)
+            pyxel.rectb(38, 0, 24, 12, 8)
+            pyxel.rectb(86, 38, 12, 24, 8)
+            pyxel.rectb(38, 86, 24, 12, 8)
+
+            pyxel.rectb(99, 45, 5, 8, 8)
+            pyxel.rectb(192, 45, 5, 8, 8)
+            pyxel.rectb(144, 0, 8, 5, 8)
+            pyxel.rectb(144, 93, 8, 5, 8)
+
+            pyxel.rectb(99, 0, 33, 33, 8)
+            pyxel.rectb(164, 0, 33, 33, 8)
+            pyxel.rectb(99, 65, 33, 33, 8)
+            pyxel.rectb(164, 65, 33, 33, 8)
 
 
-def update():
-    if pyxel.btnp(pyxel.KEY_SPACE):
-        global show_guide
-        show_guide = not show_guide
-
-
-def draw():
-    pyxel.cls(0)
-
-    for i in range(-1, 2):
-        for j in range(-1, 2):
-            draw_gamepad(j, i, 1)
-    draw_gamepad(0, 0, 7)
-
-    pyxel.line(98, 1, 98, 96, 8)
-    pyxel.line(100, 61, 181, 61, 8)
-    pyxel.line(183, 1, 183, 96, 8)
-
-    if show_guide:
-        pyxel.rectb(0, 38, 12, 24, 3)
-        pyxel.rectb(38, 0, 24, 12, 3)
-        pyxel.rectb(86, 38, 12, 24, 3)
-        pyxel.rectb(38, 86, 24, 12, 3)
-
-        pyxel.rectb(99, 74, 12, 12, 3)
-        pyxel.rectb(135, 74, 12, 12, 3)
-        pyxel.rectb(171, 74, 12, 12, 3)
-        pyxel.rectb(111, 62, 24, 12, 3)
-        pyxel.rectb(147, 62, 24, 12, 3)
-        pyxel.rectb(111, 86, 24, 12, 3)
-        pyxel.rectb(147, 86, 24, 12, 3)
-
-        pyxel.rectb(184, 0, 98, 98, 9)
-        pyxel.rectb(185, 1, 31, 31, 3)
-        pyxel.rectb(250, 1, 31, 31, 3)
-        pyxel.rectb(185, 66, 31, 31, 3)
-        pyxel.rectb(250, 66, 31, 31, 3)
-
-
-pyxel.init(SCREEN_WDITH, SCREEN_HEIGHT, capture_scale=4)
-pyxel.run(update, draw)
+App()
