@@ -3,9 +3,11 @@ const NO_SLEEP_URL =
 const PYODIDE_SDL2_URL =
   "https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20220923/pyodide.js";
 const PYXEL_WHEEL_PATH = "pyxel-1.8.8-cp37-abi3-emscripten_3_1_21_wasm32.whl";
-const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_152x64.png";
-const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_228x28.png";
-const CLICK_TO_START_PATH = "../docs/images/click_to_start_228x28.png";
+const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_228x96.png";
+const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_342x42.png";
+const CLICK_TO_START_PATH = "../docs/images/click_to_start_342x42.png";
+const VPAD_CROSS_PATH = "../docs/images/vpad_cross_98x98.png";
+const VPAD_BUTTON_PATH = "../docs/images/vpad_button_98x98.png";
 
 class Pyxel {
   constructor(pyodide) {
@@ -90,26 +92,24 @@ function _setStyleSheet() {
 }
 
 function _addElements() {
-  let body = document.getElementsByTagName("body").item(0);
-  if (!body) {
-    body = document.createElement("body");
+  if (!document.getElementsByTagName("body").item(0)) {
+    let body = document.createElement("body");
     document.body = body;
   }
-  let canvas = document.querySelector("canvas#canvas")
-  if (!canvas) {
-    canvas = document.createElement("canvas");
+  if (!document.querySelector("canvas#canvas")) {
+    let canvas = document.createElement("canvas");
     canvas.id = "canvas";
+    canvas.oncontextmenu = (event) => event.preventDefault();
     canvas.tabindex = -1;
-    body.appendChild(canvas);
+    document.body.appendChild(canvas);
   }
-  canvas.oncontextmenu = (event) => event.preventDefault();
   if (!document.querySelector("img#logo")) {
     let img = document.createElement("img");
     img.id = "logo";
     img.src = _scriptDir() + PYXEL_LOGO_PATH;
     img.oncontextmenu = (event) => event.preventDefault();
     img.tabindex = -1;
-    body.appendChild(img);
+    document.body.appendChild(img);
   }
 }
 
@@ -143,6 +143,28 @@ function _waitForInput(callback) {
       }
     }
   };
+}
+
+function _addVirtualGamepad(mode) {
+  if (mode !== "enabled" && !(mode === "auto" && _isMobileDevice())) {
+    return;
+  }
+  if (!document.querySelector("img#vpad-cross")) {
+    let img = document.createElement("img");
+    img.id = "vpad-cross";
+    img.src = _scriptDir() + VPAD_CROSS_PATH;
+    img.oncontextmenu = (event) => event.preventDefault();
+    img.tabindex = -1;
+    document.body.appendChild(img);
+  }
+  if (!document.querySelector("img#vpad-button")) {
+    let img = document.createElement("img");
+    img.id = "vpad-button";
+    img.src = _scriptDir() + VPAD_BUTTON_PATH;
+    img.oncontextmenu = (event) => event.preventDefault();
+    img.tabindex = -1;
+    document.body.appendChild(img);
+  }
 }
 
 async function _loadScript(scriptSrc) {
@@ -193,7 +215,7 @@ window.customElements.define("pyxel-asset", PyxelAsset);
 
 class PyxelRun extends HTMLElement {
   static get observedAttributes() {
-    return ["root", "name", "script"];
+    return ["root", "name", "script", "vpad"];
   }
 
   constructor() {
@@ -201,12 +223,14 @@ class PyxelRun extends HTMLElement {
     this.root = ".";
     this.name = "";
     this.script = "";
+    this.vpad = "disabled";
   }
 
   connectedCallback() {
     loadPyxel(async (pyxel) => {
       await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
       _waitForInput(() => {
+        _addVirtualGamepad(this.vpad);
         pyxel.run(this.name);
         pyxel.run(this.script);
       });
@@ -221,19 +245,21 @@ window.customElements.define("pyxel-run", PyxelRun);
 
 class PyxelPlay extends HTMLElement {
   static get observedAttributes() {
-    return ["root", "name"];
+    return ["root", "name", "vpad"];
   }
 
   constructor() {
     super();
     this.root = ".";
     this.name = "";
+    this.vpad = "disabled";
   }
 
   connectedCallback() {
     loadPyxel(async (pyxel) => {
       await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
       _waitForInput(() => {
+        _addVirtualGamepad(this.vpad);
         pyxel.play(this.name);
       });
     });
@@ -247,19 +273,21 @@ window.customElements.define("pyxel-play", PyxelPlay);
 
 class PyxelEdit extends HTMLElement {
   static get observedAttributes() {
-    return ["root", "name"];
+    return ["root", "name", "vpad"];
   }
 
   constructor() {
     super();
     this.root = ".";
     this.name = "";
+    this.vpad = "disabled";
   }
 
   connectedCallback() {
     loadPyxel(async (pyxel) => {
       await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
       _waitForInput(() => {
+        _addVirtualGamepad(this.vpad);
         pyxel.edit(this.name);
       });
     });
