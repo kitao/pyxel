@@ -21,8 +21,27 @@ canvas#canvas {
 
 img#logo {
   image-rendering: pixelated;
+  pointer-events: none;
   position: fixed;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%) scale(1.5);
+  transform: translate(-50%, -50%);
+}
+
+img#vpad_cross {
+  image-rendering: pixelated;
+  pointer-events: none;
+  position: fixed;
+  left: 0%;
+  bottom: 0%;
+  min-width: 20vmax;
+}
+
+img#vpad_button {
+  image-rendering: pixelated;
+  pointer-events: none;
+  position: fixed;
+  right: 0%;
+  bottom: 0%;
+  min-width: 20vmax;
 }
