@@ -28,7 +28,7 @@ img#logo {
   transform: translate(-50%, -50%);
 }
 
-img#vpad_cross {
+img#vpad-cross {
   image-rendering: pixelated;
   pointer-events: none;
   position: fixed;
@@ -37,7 +37,7 @@ img#vpad_cross {
   min-width: 20vmax;
 }
 
-img#vpad_button {
+img#vpad-button {
   image-rendering: pixelated;
   pointer-events: none;
   position: fixed;
