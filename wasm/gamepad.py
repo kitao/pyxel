@@ -79,7 +79,7 @@ class App:
         for i in range(-1, 2):
             for j in range(-1, 2):
                 draw_gamepad(j, i, 1)
-        draw_gamepad(0, 0, 13)
+        draw_gamepad(0, 0, 12)
 
         pyxel.line(98, 0, 98, pyxel.height - 1, 3)
 
