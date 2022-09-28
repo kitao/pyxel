@@ -95,18 +95,19 @@ function _addElements() {
     body = document.createElement("body");
     document.body = body;
   }
-  if (!document.querySelector("canvas#canvas")) {
-    let canvas = document.createElement("canvas");
+  let canvas = document.querySelector("canvas#canvas")
+  if (!canvas) {
+    canvas = document.createElement("canvas");
     canvas.id = "canvas";
-    canvas.oncontextmenu = "event.preventDefault()";
     canvas.tabindex = -1;
     body.appendChild(canvas);
   }
+  canvas.oncontextmenu = (event) => event.preventDefault();
   if (!document.querySelector("img#logo")) {
     let img = document.createElement("img");
     img.id = "logo";
     img.src = _scriptDir() + PYXEL_LOGO_PATH;
-    img.oncontextmenu = "event.preventDefault()";
+    img.oncontextmenu = (event) => event.preventDefault();
     img.tabindex = -1;
     body.appendChild(img);
   }
