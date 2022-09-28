@@ -165,6 +165,7 @@ function _addVirtualGamepad(mode) {
     img.tabindex = -1;
     document.body.appendChild(img);
   }
+  document.querySelector("canvas#canvas").style.height = "80%";
 }
 
 async function _loadScript(scriptSrc) {
