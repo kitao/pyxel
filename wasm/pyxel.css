@@ -1,6 +1,6 @@
 body {
-  background-color: #202124;
   color: #ffffff;
+  background-color: #202124;
 }
 
 a:link {
@@ -17,31 +17,32 @@ canvas#canvas {
   top: 0%;
   width: 100%;
   height: 100%;
+  image-rendering: pixelated;
 }
 
 img#logo {
-  image-rendering: pixelated;
-  pointer-events: none;
   position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  image-rendering: pixelated;
+  pointer-events: none;
 }
 
 img#vpad-cross {
-  image-rendering: pixelated;
-  pointer-events: none;
   position: fixed;
   left: 0%;
-  bottom: 0%;
+  bottom: 5%;
   min-width: 20vmax;
+  image-rendering: pixelated;
+  pointer-events: none;
 }
 
 img#vpad-button {
-  image-rendering: pixelated;
-  pointer-events: none;
   position: fixed;
   right: 0%;
-  bottom: 0%;
+  bottom: 5%;
   min-width: 20vmax;
+  image-rendering: pixelated;
+  pointer-events: none;
 }
