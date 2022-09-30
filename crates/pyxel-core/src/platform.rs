@@ -344,6 +344,36 @@ impl Platform {
                         SdlButton::Touchpad => ControllerButton::Touchpad,
                     },
                 },
+                SdlEvent::JoyButtonUp {
+                    timestamp: _,
+                    which,
+                    button_idx,
+                } => Event::ControllerButtonUp {
+                    which,
+                    button: match button_idx {
+                        12 => ControllerButton::DPadUp,
+                        13 => ControllerButton::DPadDown,
+                        14 => ControllerButton::DPadLeft,
+                        15 => ControllerButton::DPadRight,
+                        _ => {
+                            continue;
+                        }
+                    },
+                },
+                SdlEvent::JoyButtonDown {
+                    timestamp: _,
+                    which,
+                    button_idx,
+                } => Event::ControllerButtonDown {
+                    which,
+                    button: match button_idx {
+                        12 => ControllerButton::DPadUp,
+                        13 => ControllerButton::DPadDown,
+                        14 => ControllerButton::DPadLeft,
+                        15 => ControllerButton::DPadRight,
+                        _ => continue,
+                    },
+                },
 
                 // Others
                 _ => continue,
