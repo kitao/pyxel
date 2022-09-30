@@ -33,7 +33,7 @@ class Pyxel {
       let fileResponse = await fetch(`${root}/${name}`);
       let fileBinary = new Uint8Array(await fileResponse.arrayBuffer());
       FS.writeFile(name, fileBinary, { encoding: "binary" });
-      console.log(`Fetched ${root}${name}`);
+      console.log(`Fetched '${root}${name}'`);
     }
   }
 
@@ -91,26 +91,43 @@ function _setStyleSheet() {
   head.appendChild(link);
 }
 
+function _touchHandler(event) {
+  if (event.touches.length > 1) {
+    event.preventDefault();
+  }
+}
+
 function _addElements() {
+  // Add body
   if (!document.getElementsByTagName("body").item(0)) {
     let body = document.createElement("body");
+    body.style.overflow = "hidden";
+    body.style.touchAction = "none";
     document.body = body;
   }
-  if (!document.querySelector("canvas#canvas")) {
-    let canvas = document.createElement("canvas");
-    canvas.id = "canvas";
-    canvas.oncontextmenu = (event) => event.preventDefault();
-    canvas.tabindex = -1;
-    document.body.appendChild(canvas);
-  }
-  if (!document.querySelector("img#logo")) {
-    let img = document.createElement("img");
-    img.id = "logo";
-    img.src = _scriptDir() + PYXEL_LOGO_PATH;
-    img.oncontextmenu = (event) => event.preventDefault();
-    img.tabindex = -1;
-    document.body.appendChild(img);
-  }
+
+  // Add canvas for SDL2
+  let canvas = document.createElement("canvas");
+  canvas.id = "canvas";
+  canvas.tabindex = -1;
+  document.body.appendChild(canvas);
+
+  // Add image for logo
+  let img = document.createElement("img");
+  img.id = "logo";
+  img.src = _scriptDir() + PYXEL_LOGO_PATH;
+  img.tabindex = -1;
+  document.body.appendChild(img);
+
+  // Prevent normal operation
+  document.addEventListener("touchstart", _touchHandler, { passive: false });
+  document.addEventListener("touchmove", _touchHandler, { passive: false });
+  document.oncontextmenu = (event) => event.preventDefault();
+
+  // Enable gamepad
+  window.addEventListener("gamepadconnected", (event) => {
+    console.log(`Connected '${event.gamepad.id}'`);
+  });
 }
 
 function _isMobileDevice() {
@@ -137,35 +154,100 @@ function _waitForInput(callback) {
     }
     try {
       callback();
-    } catch (e) {
-      if (e !== "unwind") {
-        throw e;
+    } catch (error) {
+      if (error !== "unwind") {
+        throw error;
       }
     }
   };
 }
 
 function _addVirtualGamepad(mode) {
-  if (mode !== "enabled" && !(mode === "auto" && _isMobileDevice())) {
+  if (mode !== "enabled" || !_isMobileDevice()) {
     return;
   }
-  if (!document.querySelector("img#vpad-cross")) {
-    let img = document.createElement("img");
-    img.id = "vpad-cross";
-    img.src = _scriptDir() + VPAD_CROSS_PATH;
-    img.oncontextmenu = (event) => event.preventDefault();
-    img.tabindex = -1;
-    document.body.appendChild(img);
-  }
-  if (!document.querySelector("img#vpad-button")) {
-    let img = document.createElement("img");
-    img.id = "vpad-button";
-    img.src = _scriptDir() + VPAD_BUTTON_PATH;
-    img.oncontextmenu = (event) => event.preventDefault();
-    img.tabindex = -1;
-    document.body.appendChild(img);
-  }
+
+  // Make canvas smaller
   document.querySelector("canvas#canvas").style.height = "80%";
+
+  // Add virtual cross key
+  let imgCross = document.createElement("img");
+  imgCross.id = "vpad-cross";
+  imgCross.src = _scriptDir() + VPAD_CROSS_PATH;
+  imgCross.tabindex = -1;
+  document.body.appendChild(imgCross);
+
+  // Add virtual buttons
+  let imgButton = document.createElement("img");
+  imgButton.id = "vpad-button";
+  imgButton.src = _scriptDir() + VPAD_BUTTON_PATH;
+  imgButton.tabindex = -1;
+  document.body.appendChild(imgButton);
+
+  // Register virtual gamepad
+  var gamepad = {
+    connected: true,
+    axes: [0, 0, 0, 0],
+    buttons: [],
+    id: "Virtual Gamepad for Pyxel",
+    index: 0,
+    mapping: "standard",
+    timestamp: Math.floor(Date.now() / 1000),
+  };
+  for (let i = 0; i < 18; i++) {
+    gamepad.buttons.push({ pressed: false, touched: false, value: 0 });
+  }
+  console.log(navigator.getGamepads());
+  navigator.getGamepads = () => {
+    return [gamepad];
+  };
+  console.log(navigator.getGamepads());
+  let event = new Event("gamepadconnected");
+  event.gamepad = gamepad;
+  window.dispatchEvent(event);
+  let touchHandler = (event) => {
+    gamepad.buttons[15].pressed = true;
+    gamepad.timestamp = Math.floor(Date.now() / 1000);
+    event.preventDefault();
+  };
+
+  // Set touch event handler
+  let crossRect = imgCross.getBoundingClientRect();
+  let buttonRect = imgButton.getBoundingClientRect();
+  let onTouchStart = (event) => {
+    for (let i = 0; i < gamepad.buttons.length; i++) {
+      gamepad.buttons[i].pressed = false;
+    }
+    for (let i = 0; i < event.touches.length; i++) {
+      let x = event.touches[i].clientX;
+      let y = event.touches[i].clientY;
+      let size = crossRect.width;
+      let crossX = (x - crossRect.left) / size - 0.5;
+      let crossY = (y - crossRect.bottom) / size + 0.5;
+      let buttonX = (x - buttonRect.right) / size + 0.5;
+      let buttonY = (y - buttonRect.bottom) / size + 0.5;
+      if (Math.abs(crossX) <= 0.5 && Math.abs(crossY) <= 0.5) {
+        gamepad.buttons[14].pressed = true;
+      }
+      if (Math.abs(buttonX) <= 0.5 && Math.abs(buttonY) <= 0.5) {
+        gamepad.buttons[15].pressed = true;
+      }
+    }
+    gamepad.timestamp = Math.floor(Date.now() / 1000);
+    event.preventDefault();
+  };
+  let onTouchEnd = (event) => {
+    for (let i = 0; i < gamepad.buttons.length; i++) {
+      gamepad.buttons[i].pressed = false;
+    }
+    gamepad.timestamp = Math.floor(Date.now() / 1000);
+    event.preventDefault();
+  };
+  document.removeEventListener("touchstart", _touchHandler);
+  document.removeEventListener("touchmove", _touchHandler);
+  document.addEventListener("touchstart", onTouchStart, { passive: false });
+  document.addEventListener("touchmove", onTouchStart, { passive: false });
+  document.addEventListener("touchend", onTouchEnd, { passive: false });
 }
 
 async function _loadScript(scriptSrc) {
@@ -186,9 +268,9 @@ async function loadPyxel(callback) {
   let pyodide = await loadPyodide();
   await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
   let pyxel = new Pyxel(pyodide);
-  await callback(pyxel).catch((e) => {
-    if (e !== "unwind") {
-      throw e;
+  await callback(pyxel).catch((error) => {
+    if (error !== "unwind") {
+      throw error;
     }
   });
 }
@@ -281,7 +363,6 @@ class PyxelEdit extends HTMLElement {
     super();
     this.root = ".";
     this.name = "";
-    this.vpad = "disabled";
   }
 
   connectedCallback() {
