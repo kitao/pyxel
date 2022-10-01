@@ -6,6 +6,7 @@
 - Added a virtual gamepad surppot for the web
 - Added a gamepad support to examples
 - Added a gamepad attribute to HTML custom elements
+- Modified key assigns for Pyxel applications
 
 ## 1.8.8
 
