@@ -33,7 +33,7 @@ class Pyxel {
       let fileResponse = await fetch(`${root}/${name}`);
       let fileBinary = new Uint8Array(await fileResponse.arrayBuffer());
       FS.writeFile(name, fileBinary, { encoding: "binary" });
-      console.log(`Fetched '${root}${name}'`);
+      console.log(`Fetched: ${root}${name}`);
     }
   }
 
@@ -126,7 +126,7 @@ function _addElements() {
 
   // Enable gamepad
   window.addEventListener("gamepadconnected", (event) => {
-    console.log(`Connected '${event.gamepad.id}'`);
+    console.log(`Connected: ${event.gamepad.id}`);
   });
 }
 
@@ -192,7 +192,7 @@ function _addVirtualGamepad(mode) {
     id: "Virtual Gamepad for Pyxel",
     index: 0,
     mapping: "standard",
-    timestamp: Math.floor(Date.now() / 1000),
+    timestamp: Date.now(),
   };
   for (let i = 0; i < 18; i++) {
     gamepad.buttons.push({ pressed: false, touched: false, value: 0 });
@@ -207,7 +207,7 @@ function _addVirtualGamepad(mode) {
   window.dispatchEvent(event);
   let touchHandler = (event) => {
     gamepad.buttons[15].pressed = true;
-    gamepad.timestamp = Math.floor(Date.now() / 1000);
+    gamepad.timestamp = Date.now();
     event.preventDefault();
   };
 
@@ -219,28 +219,51 @@ function _addVirtualGamepad(mode) {
       gamepad.buttons[i].pressed = false;
     }
     for (let i = 0; i < event.touches.length; i++) {
-      let x = event.touches[i].clientX;
-      let y = event.touches[i].clientY;
+      let { clientX, clientY } = event.touches[i];
       let size = crossRect.width;
-      let crossX = (x - crossRect.left) / size - 0.5;
-      let crossY = (y - crossRect.bottom) / size + 0.5;
-      let buttonX = (x - buttonRect.right) / size + 0.5;
-      let buttonY = (y - buttonRect.bottom) / size + 0.5;
-      if (Math.abs(crossX) <= 0.5 && Math.abs(crossY) <= 0.5) {
-        gamepad.buttons[14].pressed = true;
+      let crossX = (clientX - crossRect.left) / size - 0.5;
+      let crossY = (clientY - crossRect.bottom) / size + 0.5;
+      let buttonX = (clientX - buttonRect.right) / size + 0.5;
+      let buttonY = (clientY - buttonRect.bottom) / size + 0.5;
+      if (crossX ** 2 + crossY ** 2 <= 0.5 ** 2) {
+        let angle = (Math.atan2(-crossY, crossX) * 180) / Math.PI;
+        if (angle > 22.5 && angle < 157.5) {
+          gamepad.buttons[12].pressed = true; // Up
+        }
+        if (angle > -157.5 && angle < -22.5) {
+          gamepad.buttons[13].pressed = true; // Down
+        }
+        if (Math.abs(angle) <= 67.5) {
+          gamepad.buttons[15].pressed = true; // Right
+        }
+        if (Math.abs(angle) >= 112.5) {
+          gamepad.buttons[14].pressed = true; // Left
+        }
       }
-      if (Math.abs(buttonX) <= 0.5 && Math.abs(buttonY) <= 0.5) {
-        gamepad.buttons[15].pressed = true;
+      if (buttonX ** 2 + buttonY ** 2 <= 0.5 ** 2) {
+        let angle = (Math.atan2(-buttonY, buttonX) * 180) / Math.PI;
+        if (angle > -135 && angle < -45) {
+          gamepad.buttons[0].pressed = true; // A
+        }
+        if (Math.abs(angle) <= 45) {
+          gamepad.buttons[1].pressed = true; // B
+        }
+        if (Math.abs(angle) >= 135) {
+          gamepad.buttons[2].pressed = true; // X
+        }
+        if (angle > 45 && angle < 135) {
+          gamepad.buttons[3].pressed = true; // Y
+        }
       }
     }
-    gamepad.timestamp = Math.floor(Date.now() / 1000);
+    gamepad.timestamp = Date.now();
     event.preventDefault();
   };
   let onTouchEnd = (event) => {
     for (let i = 0; i < gamepad.buttons.length; i++) {
       gamepad.buttons[i].pressed = false;
     }
-    gamepad.timestamp = Math.floor(Date.now() / 1000);
+    gamepad.timestamp = Date.now();
     event.preventDefault();
   };
   document.removeEventListener("touchstart", _touchHandler);
