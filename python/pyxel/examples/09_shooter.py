@@ -221,7 +221,7 @@ class App:
             self.update_gameover_scene()
 
     def update_title_scene(self):
-        if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_Y):
+        if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_X):
             self.scene = SCENE_PLAY
 
     def update_play_scene(self):
@@ -277,7 +277,7 @@ class App:
         cleanup_list(bullets)
         cleanup_list(blasts)
 
-        if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_Y):
+        if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_X):
             self.scene = SCENE_PLAY
             self.player.x = pyxel.width / 2
             self.player.y = pyxel.height - 20
