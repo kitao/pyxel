@@ -96,22 +96,22 @@ class Snake:
         if pyxel.btn(pyxel.KEY_Q):
             pyxel.quit()
 
-        if pyxel.btnp(pyxel.KEY_R):
+        if pyxel.btnp(pyxel.KEY_R) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_Y):
             self.reset()
 
     def update_direction(self):
         """Watch the keys and change direction."""
 
-        if pyxel.btn(pyxel.KEY_UP):
+        if pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP):
             if self.direction is not DOWN:
                 self.direction = UP
-        elif pyxel.btn(pyxel.KEY_DOWN):
+        elif pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN):
             if self.direction is not UP:
                 self.direction = DOWN
-        elif pyxel.btn(pyxel.KEY_LEFT):
+        elif pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
             if self.direction is not RIGHT:
                 self.direction = LEFT
-        elif pyxel.btn(pyxel.KEY_RIGHT):
+        elif pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
             if self.direction is not LEFT:
                 self.direction = RIGHT
 
