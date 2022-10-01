@@ -29,7 +29,7 @@ img#logo {
   pointer-events: none;
 }
 
-img#vpad-cross {
+img#gamepad-cross {
   position: fixed;
   left: 0%;
   bottom: 5%;
@@ -38,7 +38,7 @@ img#vpad-cross {
   pointer-events: none;
 }
 
-img#vpad-button {
+img#gamepad-button {
   position: fixed;
   right: 0%;
   bottom: 5%;

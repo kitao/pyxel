@@ -6,8 +6,8 @@ const PYXEL_WHEEL_PATH = "pyxel-1.8.8-cp37-abi3-emscripten_3_1_21_wasm32.whl";
 const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_228x96.png";
 const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_342x42.png";
 const CLICK_TO_START_PATH = "../docs/images/click_to_start_342x42.png";
-const VPAD_CROSS_PATH = "../docs/images/vpad_cross_98x98.png";
-const VPAD_BUTTON_PATH = "../docs/images/vpad_button_98x98.png";
+const GAMEPAD_CROSS_PATH = "../docs/images/gamepad_cross_98x98.png";
+const GAMEPAD_BUTTON_PATH = "../docs/images/gamepad_button_98x98.png";
 
 class Pyxel {
   constructor(pyodide) {
@@ -169,15 +169,15 @@ function _addVirtualGamepad(mode) {
 
   // Add virtual cross key
   let imgCross = document.createElement("img");
-  imgCross.id = "vpad-cross";
-  imgCross.src = _scriptDir() + VPAD_CROSS_PATH;
+  imgCross.id = "gamepad-cross";
+  imgCross.src = _scriptDir() + GAMEPAD_CROSS_PATH;
   imgCross.tabindex = -1;
   document.body.appendChild(imgCross);
 
   // Add virtual buttons
   let imgButton = document.createElement("img");
-  imgButton.id = "vpad-button";
-  imgButton.src = _scriptDir() + VPAD_BUTTON_PATH;
+  imgButton.id = "gamepad-button";
+  imgButton.src = _scriptDir() + GAMEPAD_BUTTON_PATH;
   imgButton.tabindex = -1;
   document.body.appendChild(imgButton);
 
@@ -311,7 +311,7 @@ window.customElements.define("pyxel-asset", PyxelAsset);
 
 class PyxelRun extends HTMLElement {
   static get observedAttributes() {
-    return ["root", "name", "script", "vpad"];
+    return ["root", "name", "script", "gamepad"];
   }
 
   constructor() {
@@ -319,14 +319,14 @@ class PyxelRun extends HTMLElement {
     this.root = ".";
     this.name = "";
     this.script = "";
-    this.vpad = "disabled";
+    this.gamepad = "disabled";
   }
 
   connectedCallback() {
     loadPyxel(async (pyxel) => {
       await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
       _waitForInput(() => {
-        _addVirtualGamepad(this.vpad);
+        _addVirtualGamepad(this.gamepad);
         pyxel.run(this.name);
         pyxel.run(this.script);
       });
@@ -341,21 +341,21 @@ window.customElements.define("pyxel-run", PyxelRun);
 
 class PyxelPlay extends HTMLElement {
   static get observedAttributes() {
-    return ["root", "name", "vpad"];
+    return ["root", "name", "gamepad"];
   }
 
   constructor() {
     super();
     this.root = ".";
     this.name = "";
-    this.vpad = "disabled";
+    this.gamepad = "disabled";
   }
 
   connectedCallback() {
     loadPyxel(async (pyxel) => {
       await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
       _waitForInput(() => {
-        _addVirtualGamepad(this.vpad);
+        _addVirtualGamepad(this.gamepad);
         pyxel.play(this.name);
       });
     });
@@ -382,7 +382,6 @@ class PyxelEdit extends HTMLElement {
     loadPyxel(async (pyxel) => {
       await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
       _waitForInput(() => {
-        _addVirtualGamepad(this.vpad);
         pyxel.edit(this.name);
       });
     });
