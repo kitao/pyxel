@@ -3,6 +3,9 @@
 ## 1.8.9
 
 - Changed the color scheme for the web
+- Added a virtual gamepad surppot for the web
+- Added a gamepad support to examples
+- Added a gamepad attribute to HTML custom elements
 
 ## 1.8.8
 
