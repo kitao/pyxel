@@ -129,13 +129,11 @@ function _addElements() {
   });
 }
 
-function _isMobileDevice() {
-  let userAgent = navigator.userAgent.toLowerCase();
+function _isTouchDevice() {
   return (
-    userAgent.indexOf("iphone") > -1 ||
-    userAgent.indexOf("ipad") > -1 ||
-    userAgent.indexOf("android") > -1 ||
-    (userAgent.indexOf("macintosh") > -1 && "ontouchend" in document)
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0
   );
 }
 
@@ -144,7 +142,7 @@ function _waitForInput(callback) {
   if (img) {
     img.src =
       _scriptDir() +
-      (_isMobileDevice() ? TOUCH_TO_START_PATH : CLICK_TO_START_PATH);
+      (_isTouchDevice() ? TOUCH_TO_START_PATH : CLICK_TO_START_PATH);
   }
   document.body.onclick = () => {
     document.body.onclick = "";
@@ -162,7 +160,7 @@ function _waitForInput(callback) {
 }
 
 function _addVirtualGamepad(mode) {
-  if (mode !== "enabled" || !_isMobileDevice()) {
+  if (mode !== "enabled" || !_isTouchDevice() || navigator.getGamepads()[0]) {
     return;
   }
 
