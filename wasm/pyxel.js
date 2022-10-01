@@ -91,12 +91,6 @@ function _setStyleSheet() {
   head.appendChild(link);
 }
 
-function _touchHandler(event) {
-  if (event.touches.length > 1) {
-    event.preventDefault();
-  }
-}
-
 function _addElements() {
   // Add body
   if (!document.getElementsByTagName("body").item(0)) {
@@ -120,8 +114,13 @@ function _addElements() {
   document.body.appendChild(img);
 
   // Prevent normal operation
-  document.addEventListener("touchstart", _touchHandler, { passive: false });
-  document.addEventListener("touchmove", _touchHandler, { passive: false });
+  let touchHandler = (event) => {
+    if (event.touches.length > 1) {
+      event.preventDefault();
+    }
+  };
+  document.addEventListener("touchstart", touchHandler, { passive: false });
+  document.addEventListener("touchmove", touchHandler, { passive: false });
   document.oncontextmenu = (event) => event.preventDefault();
 
   // Enable gamepad
@@ -194,7 +193,7 @@ function _addVirtualGamepad(mode) {
     mapping: "standard",
     timestamp: Date.now(),
   };
-  for (let i = 0; i < 18; i++) {
+  for (let i = 0; i < 17; i++) {
     gamepad.buttons.push({ pressed: false, touched: false, value: 0 });
   }
   console.log(navigator.getGamepads());
@@ -205,16 +204,11 @@ function _addVirtualGamepad(mode) {
   let event = new Event("gamepadconnected");
   event.gamepad = gamepad;
   window.dispatchEvent(event);
-  let touchHandler = (event) => {
-    gamepad.buttons[15].pressed = true;
-    gamepad.timestamp = Date.now();
-    event.preventDefault();
-  };
 
   // Set touch event handler
   let crossRect = imgCross.getBoundingClientRect();
   let buttonRect = imgButton.getBoundingClientRect();
-  let onTouchStart = (event) => {
+  let touchHandler = (event) => {
     for (let i = 0; i < gamepad.buttons.length; i++) {
       gamepad.buttons[i].pressed = false;
     }
@@ -266,11 +260,9 @@ function _addVirtualGamepad(mode) {
     gamepad.timestamp = Date.now();
     event.preventDefault();
   };
-  document.removeEventListener("touchstart", _touchHandler);
-  document.removeEventListener("touchmove", _touchHandler);
-  document.addEventListener("touchstart", onTouchStart, { passive: false });
-  document.addEventListener("touchmove", onTouchStart, { passive: false });
-  document.addEventListener("touchend", onTouchEnd, { passive: false });
+  document.addEventListener("touchstart", touchHandler, { passive: false });
+  document.addEventListener("touchmove", touchHandler, { passive: false });
+  document.addEventListener("touchend", touchHandler, { passive: false });
 }
 
 async function _loadScript(scriptSrc) {
@@ -379,7 +371,7 @@ window.customElements.define("pyxel-play", PyxelPlay);
 
 class PyxelEdit extends HTMLElement {
   static get observedAttributes() {
-    return ["root", "name", "vpad"];
+    return ["root", "name"];
   }
 
   constructor() {
