@@ -102,14 +102,14 @@ class Player:
     def update(self):
         global scroll_x
         last_y = self.y
-        if pyxel.btn(pyxel.KEY_LEFT):
+        if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
             self.dx = -2
             self.direction = -1
-        if pyxel.btn(pyxel.KEY_RIGHT):
+        if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
             self.dx = 2
             self.direction = 1
         self.dy = min(self.dy + 1, 3)
-        if pyxel.btnp(pyxel.KEY_SPACE):
+        if pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A):
             self.dy = -6
             pyxel.play(3, 8)
         self.x, self.y, self.dx, self.dy = push_back(self.x, self.y, self.dx, self.dy)
