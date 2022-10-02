@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pyxel Web Launcher</title>
+    <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
+  </head>
+  <body>
+    <script>
+      function printUsage() {
+        document.body.innerHTML = `
+          <h1>Pyxel Web Launcher</h1>
+          Launcher for the WebAssembly version of
+          <a href="https://github.com/kitao/pyxel" target="_blank">Pyxel</a>,
+          a retro game engine for Python.
+          <h2>Usage</h2>
+          <h3>Run Python Script</h3>
+          https://kitao.github.io/pyxel/?run=<i>github_user_name.repo_name.path.to.script_file.without.extension</i>
+          <h3>Play Pyxel Application</h3>
+          https://kitao.github.io/pyxel/?play=<i>github_user_name.repo_name.path.to.pyxapp.without.extension</i>
+          <h3>Edit Pyxel Resource File</h3>
+          https://kitao.github.io/pyxel/?edit=<i>github_user_name.repo_name.path.to.pyxres.without.extension</i>
+        `;
+      }
+
+      const params = new URL(document.location).searchParams;
+      let tag, ext, param;
+      if (params.get("run")) {
+        tag = "pyxel-run";
+        ext = ".py";
+        param = params.get("run");
+      } else if (params.get("play")) {
+        tag = "pyxel-play";
+        ext = ".pyxapp";
+        param = params.get("play");
+      } else if (params.get("edit")) {
+        tag = "pyxel-edit";
+        ext = ".pyxres";
+        param = params.get("edit");
+      } else {
+        printUsage();
+      }
+      if (tag) {
+        let elem = document.createElement(tag);
+        let paths = param.split(".");
+        elem.root =
+          "https://cdn.jsdelivr.net/gh/" + paths.slice(0, -1).join("/");
+        elem.name = paths[paths.length - 1] + ext;
+        console.log(`${tag}: ${elem.root + "/" + elem.name}`);
+        document.body.appendChild(elem);
+      }
+    </script>
+  </body>
+</html>
