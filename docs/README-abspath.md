@@ -74,7 +74,7 @@ If the above doesn't work, try self-building according to the instructions in [M
 
 ### Web
 
-Refer to [this page](https://kitao.github.io/pyxel/wasm/) and load the Pyxel script as follows:
+Refer to [this page](https://kitao.github.io/pyxel/wasm/examples.html) and load the Pyxel script as follows:
 
 ```html
 <script src="https://raw.githubusercontent.com/kitao/pyxel/main//https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
@@ -180,17 +180,17 @@ python3 PYTHON_SCRIPT_FILE
 The following special controls can be performed while a Pyxel application is running:
 
 - `Esc`<br>
-Quit the application
+  Quit the application
 - `Alt(Option)+1`<br>
-Save the screenshot to the desktop
+  Save the screenshot to the desktop
 - `Alt(Option)+2`<br>
-Reset the recording start time of the screen capture video
+  Reset the recording start time of the screen capture video
 - `Alt(Option)+3`<br>
-Save the screen capture video to the desktop (up to 10 seconds)
+  Save the screen capture video to the desktop (up to 10 seconds)
 - `Alt(Option)+0`<br>
-Toggle the performance monitor (fps, update time, and draw time)
+  Toggle the performance monitor (fps, update time, and draw time)
 - `Alt(Option)+Enter`<br>
-Toggle full screen
+  Toggle full screen
 
 ### How to Create Resources
 
@@ -205,7 +205,7 @@ pyxel edit [PYXEL_RESOURCE_FILE]
 If the specified Pyxel resource file (.pyxres) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
 If the resource file is omitted, the name is `my_resource.pyxres`.
 
-After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down ``Ctrl(Cmd)`` key, only the resource type (Image/Tilemap/Sound/Music) that is currently being edited will be loaded. This operation enables to combine multiple resource files into one.
+After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down `Ctrl(Cmd)` key, only the resource type (Image/Tilemap/Sound/Music) that is currently being edited will be loaded. This operation enables to combine multiple resource files into one.
 
 The created resource file can be loaded with `load` function.
 
@@ -273,261 +273,262 @@ pyxel play PYXEL_APP_FILE
 ### System
 
 - `width`, `height`<br>
-The width and height of the screen
+  The width and height of the screen
 
 - `frame_count`<br>
-The number of the elapsed frames
+  The number of the elapsed frames
 
 - `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
-Initialize the Pyxel application with screen size (`width`, `height`). The following can be specified as options: the window title with `title`, the frame rate with `fps`, the key to quit the application with `quit_key`, the scale of the display with `display_scale`, the scale of the screen capture with `capture_scale`, and the maximum recording time of the screen capture video with `capture_sec`.<br>
-e.g. `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
+  Initialize the Pyxel application with screen size (`width`, `height`). The following can be specified as options: the window title with `title`, the frame rate with `fps`, the key to quit the application with `quit_key`, the scale of the display with `display_scale`, the scale of the screen capture with `capture_scale`, and the maximum recording time of the screen capture video with `capture_sec`.<br>
+  e.g. `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
-Start the Pyxel application and call `update` function for frame update and `draw` function for drawing.
+  Start the Pyxel application and call `update` function for frame update and `draw` function for drawing.
 
 - `show()`<br>
-Show the screen and wait until the `Esc` key is pressed.
+  Show the screen and wait until the `Esc` key is pressed.
 
 - `quit()`<br>
-Quit the Pyxel application.
+  Quit the Pyxel application.
 
 ### Resource
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-Load the resource file (.pyxres). If ``False`` is specified for the resource type (``image/tilemap/sound/music``), the resource will not be loaded.
+  Load the resource file (.pyxres). If `False` is specified for the resource type (`image/tilemap/sound/music`), the resource will not be loaded.
 
 ### Input
+
 - `mouse_x`, `mouse_y`<br>
-The current position of the mouse cursor
+  The current position of the mouse cursor
 
 - `mouse_wheel`<br>
-The current value of the mouse wheel
+  The current value of the mouse wheel
 
 - `btn(key)`<br>
-Return `True` if `key` is pressed, otherwise return `False`. ([Key definition list](https://github.com/kitao/pyxel/blob/main//python/pyxel/__init__.pyi))
+  Return `True` if `key` is pressed, otherwise return `False`. ([Key definition list](https://github.com/kitao/pyxel/blob/main//python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
-Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `repeat` are specified, `True` will be returned at the `repeat` frame interval when the `key` is held down for more than `hold` frames.
+  Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `repeat` are specified, `True` will be returned at the `repeat` frame interval when the `key` is held down for more than `hold` frames.
 
 - `btnr(key)`<br>
-Return `True` if `key` is released at that frame, otherwise return `False`.
+  Return `True` if `key` is released at that frame, otherwise return `False`.
 
 - `mouse(visible)`<br>
-If `visible` is `True`, show the mouse cursor. If `False`, hide it. Even if the mouse cursor is not displayed, its position is updated.
+  If `visible` is `True`, show the mouse cursor. If `False`, hide it. Even if the mouse cursor is not displayed, its position is updated.
 
 ### Graphics
 
 - `colors`<br>
-List of the palette display colors. The display color is specified by a 24-bit numerical value. Use `colors.from_list` and `colors.to_list` to directly assign and retrieve Python lists.<br>
-e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+  List of the palette display colors. The display color is specified by a 24-bit numerical value. Use `colors.from_list` and `colors.to_list` to directly assign and retrieve Python lists.<br>
+  e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
 
 - `image(img)`<br>
-Operate the image bank `img` (0-2). (See the Image class)<br>
-e.g. `pyxel.image(0).load(0, 0, "title.png")`
+  Operate the image bank `img` (0-2). (See the Image class)<br>
+  e.g. `pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
-Operate the tilemap `tm` (0-7). (See the Tilemap class)
+  Operate the tilemap `tm` (0-7). (See the Tilemap class)
 
 - `clip(x, y, w, h)`<br>
-Set the drawing area of the screen from (`x`, `y`) to width `w` and height `h`. Reset the drawing area to full screen with `clip()`.
+  Set the drawing area of the screen from (`x`, `y`) to width `w` and height `h`. Reset the drawing area to full screen with `clip()`.
 
 - `camera(x, y)`<br>
-Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
+  Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
 
 - `pal(col1, col2)`<br>
-Replace color `col1` with `col2` at drawing. `pal()` to reset to the initial palette.
+  Replace color `col1` with `col2` at drawing. `pal()` to reset to the initial palette.
 
 - `cls(col)`<br>
-Clear screen with color `col`.
+  Clear screen with color `col`.
 
 - `pget(x, y)`<br>
-Get the color of the pixel at (`x`, `y`).
+  Get the color of the pixel at (`x`, `y`).
 
 - `pset(x, y, col)`<br>
-Draw a pixel of color `col` at (`x`, `y`).
+  Draw a pixel of color `col` at (`x`, `y`).
 
 - `line(x1, y1, x2, y2, col)`<br>
-Draw a line of color `col` from (`x1`, `y1`) to (`x2`, `y2`).
+  Draw a line of color `col` from (`x1`, `y1`) to (`x2`, `y2`).
 
 - `rect(x, y, w, h, col)`<br>
-Draw a rectangle of width `w`, height `h` and color `col` from (`x`, `y`).
+  Draw a rectangle of width `w`, height `h` and color `col` from (`x`, `y`).
 
 - `rectb(x, y, w, h, col)`<br>
-Draw the outline of a rectangle of width `w`, height `h` and color `col` from (`x`, `y`).
+  Draw the outline of a rectangle of width `w`, height `h` and color `col` from (`x`, `y`).
 
 - `circ(x, y, r, col)`<br>
-Draw a circle of radius `r` and color `col` at (`x`, `y`).
+  Draw a circle of radius `r` and color `col` at (`x`, `y`).
 
 - `circb(x, y, r, col)`<br>
-Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`).
+  Draw the outline of a circle of radius `r` and color `col` at (`x`, `y`).
 
 - `elli(x, y, w, h, col)`<br>
-Draw an ellipse of width `w`, height `h` and color `col` from (`x`, `y`).
+  Draw an ellipse of width `w`, height `h` and color `col` from (`x`, `y`).
 
 - `ellib(x, y, w, h, col)`<br>
-Draw the outline of an ellipse of width `w`, height `h` and color `col` from (`x`, `y`).
+  Draw the outline of an ellipse of width `w`, height `h` and color `col` from (`x`, `y`).
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
-Draw a triangle with vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) and color `col`.
+  Draw a triangle with vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) and color `col`.
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
-Draw the outline of a triangle with vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) and color `col`.
+  Draw the outline of a triangle with vertices (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) and color `col`.
 
 - `fill(x, y, col)`<br>
-Fill the area connected with the same color as (`x`, `y`) with color `col`.
+  Fill the area connected with the same color as (`x`, `y`) with color `col`.
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img` (0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img` (0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
-Draw a string `s` of color `col` at (`x`, `y`).
+  Draw a string `s` of color `col` at (`x`, `y`).
 
 ### Audio
 
 - `sound(snd)`<br>
-Operate the sound `snd` (0-63). (See the Sound class)<br>
-e.g. `pyxel.sound(0).speed = 60`
+  Operate the sound `snd` (0-63). (See the Sound class)<br>
+  e.g. `pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
-Operate the music `msc` (0-7). (See the Music class)
+  Operate the music `msc` (0-7). (See the Music class)
 
 - `play_pos(ch)`<br>
-Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
+  Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
 
 - `play(ch, snd, [tick], [loop])`<br>
-Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. The playback start position can be specified by `tick` (1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
+  Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. The playback start position can be specified by `tick` (1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
 
 - `playm(msc, [tick], [loop])`<br>
-Play the music `msc` (0-7). The playback start position can be specified by `tick` (1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
+  Play the music `msc` (0-7). The playback start position can be specified by `tick` (1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
 
 - `stop([ch])`<br>
-Stops playback of the specified channel `ch` (0-3). `stop()` to stop playing all channels.
+  Stops playback of the specified channel `ch` (0-3). `stop()` to stop playing all channels.
 
 ### Math
 
 - `ceil(x)`<br>
-Returns the smallest integer greater than or equal to `x`.
+  Returns the smallest integer greater than or equal to `x`.
 
 - `floor(x)`<br>
-Returns the largest integer less than or equal to `x`.
+  Returns the largest integer less than or equal to `x`.
 
 - `sgn(x)`<br>
-Returns 1 when `x` is positive, 0 when it is zero, and -1 when it is negative.
+  Returns 1 when `x` is positive, 0 when it is zero, and -1 when it is negative.
 
 - `sqrt(x)`<br>
-Returns the square root of `x`.
+  Returns the square root of `x`.
 
 - `sin(deg)`<br>
-Returns the sine of `deg` degrees.
+  Returns the sine of `deg` degrees.
 
 - `cos(deg)`<br>
-Returns the cosine of `deg` degrees.
+  Returns the cosine of `deg` degrees.
 
 - `atan2(y, x)`<br>
-Returns the arctangent of `y`/`x` in degrees.
+  Returns the arctangent of `y`/`x` in degrees.
 
 - `rseed(seed: int)`<br>
-Sets the seed of the random number generator.
+  Sets the seed of the random number generator.
 
 - `rndi(a, b)`<br>
-Returns an random integer greater than or equal to `a` and less than or equal to `b`.
+  Returns an random integer greater than or equal to `a` and less than or equal to `b`.
 
 - `rndf(a, b)`<br>
-Returns a random decimal greater than or equal to `a` and less than or equal to `b`.
+  Returns a random decimal greater than or equal to `a` and less than or equal to `b`.
 
 - `nseed(seed)`<br>
-Sets the seed of Perlin noise.
+  Sets the seed of Perlin noise.
 
 - `noise(x, [y], [z])`<br>
-Returns the Perlin noise value for the specified coordinates.
+  Returns the Perlin noise value for the specified coordinates.
 
 ### Image Class
 
 - `width`, `height`<br>
-The width and height of the image
+  The width and height of the image
 
 - `set(x, y, data)`<br>
-Set the image at (`x`, `y`) by a list of strings.<br>
-e.g. `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  Set the image at (`x`, `y`) by a list of strings.<br>
+  e.g. `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-Load the image file (png/gif/jpeg) at (`x`, `y`).
+  Load the image file (png/gif/jpeg) at (`x`, `y`).
 
 - `pget(x, y)`<br>
-Get the pixel color at (`x`, `y`).
+  Get the pixel color at (`x`, `y`).
 
 - `pset(x, y, col)`<br>
-Draw a pixel of color `col` at (`x`, `y`).
+  Draw a pixel of color `col` at (`x`, `y`).
 
 ### Tilemap Class
 
 - `width`, `height`<br>
-The width and height of the tilemap
+  The width and height of the tilemap
 
 - `refimg`<br>
-The image bank (0-2) referenced by the tilemap
+  The image bank (0-2) referenced by the tilemap
 
 - `set(x, y, data)`<br>
-Set the tilemap at (`x`, `y`) by a list of strings.<br>
-e.g. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  Set the tilemap at (`x`, `y`) by a list of strings.<br>
+  e.g. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
-Get the tile at (`x`, `y`). A tile is a tuple of `(tile_x, tile_y)`.
+  Get the tile at (`x`, `y`). A tile is a tuple of `(tile_x, tile_y)`.
 
 - `pset(x, y, tile)`<br>
-Draw a `tile` at (`x`, `y`). A tile is a tuple of `(tile_x, tile_y)`.
+  Draw a `tile` at (`x`, `y`). A tile is a tuple of `(tile_x, tile_y)`.
 
 ### Sound Class
 
 - `notes`<br>
-List of notes (0-127). The higher the number, the higher the pitch, and at 33 it becomes 'A2'(440Hz). The rest is -1.
+  List of notes (0-127). The higher the number, the higher the pitch, and at 33 it becomes 'A2'(440Hz). The rest is -1.
 
 - `tones`<br>
-List of tones (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
+  List of tones (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
 
 - `volumes`<br>
-List of volumes (0-7)
+  List of volumes (0-7)
 
 - `effects`<br>
-List of effects (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
+  List of effects (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
 
 - `speed`<br>
-Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, the length of one note becomes 1 second.
+  Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, the length of one note becomes 1 second.
 
 - `set(notes, tones, volumes, effects, speed)`<br>
-Set notes, tones, volumes, and effects with a string. If the tones, volumes, and effects length are shorter than the notes, it is repeated from the beginning.
+  Set notes, tones, volumes, and effects with a string. If the tones, volumes, and effects length are shorter than the notes, it is repeated from the beginning.
 
 - `set_notes(notes)`<br>
-Set the notes with a string made of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored.<br>
-e.g. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
+  Set the notes with a string made of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored.<br>
+  e.g. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-Set the tones with a string made of 'TSPN'. Case-insensitive and whitespace is ignored.<br>
-e.g. `pyxel.sound(0).set_tones("TTSS PPPN")`
+  Set the tones with a string made of 'TSPN'. Case-insensitive and whitespace is ignored.<br>
+  e.g. `pyxel.sound(0).set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-Set the volumes with a string made of '01234567'. Case-insensitive and whitespace is ignored.<br>
-e.g. `pyxel.sound(0).set_volumes("7777 7531")`
+  Set the volumes with a string made of '01234567'. Case-insensitive and whitespace is ignored.<br>
+  e.g. `pyxel.sound(0).set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-Set the effects with a string made of 'NSVF'. Case-insensitive and whitespace is ignored.<br>
-e.g. `pyxel.sound(0).set_effects("NFNF NVVS")`
+  Set the effects with a string made of 'NSVF'. Case-insensitive and whitespace is ignored.<br>
+  e.g. `pyxel.sound(0).set_effects("NFNF NVVS")`
 
 ### Music Class
 
 - `snds_list`<br>
-Two-dimensional list of sounds (0-63) with the number of channels
+  Two-dimensional list of sounds (0-63) with the number of channels
 
 - `set(snds0, snds1, snds2, snds3)`<br>
-Set the lists of sound (0-63) of all channels. If an empty list is specified, that channel is not used for playback.<br>
-e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+  Set the lists of sound (0-63) of all channels. If an empty list is specified, that channel is not used for playback.<br>
+  e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 ### Advanced APIs
 
