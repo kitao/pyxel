@@ -132,11 +132,7 @@ clean-wasm:
 build-wasm:
 	@rm -f $(DIST_DIR)/*-emscripten_*.whl
 	@$(WASM_ENV) make build TARGET=$(WASM_TARGET)
-	@mkdir -p $(WASM_DIR)
-	@rm -f $(WASM_DIR)/*-emscripten_*.whl
-	@cp -f $(DIST_DIR)/*-emscripten_*.whl $(WASM_DIR)
-	@sed -i -e "s/\\(PYXEL_WHEEL_PATH =\\).*;/\\1 \\\"`cd $(WASM_DIR) && ls *.whl`\\\";/" $(WASM_DIR)/pyxel.js
-	@rm -f $(WASM_DIR)/pyxel.js-e # for BSD version SED
+	@$(SCRIPTS_DIR)/update_wheel
 
 test-wasm: build-wasm
 	@$(SCRIPTS_DIR)/start_server
