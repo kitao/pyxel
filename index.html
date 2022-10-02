@@ -7,7 +7,10 @@
   <body>
     <script>
       function printUsage() {
+        document.body.style.overflow = "";
+        document.body.style.touchAction = "";
         document.body.innerHTML = `
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <h1>Pyxel Web Launcher</h1>
           <p>
             Launcher tool for the WebAssembly version of
