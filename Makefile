@@ -94,7 +94,7 @@ format:
 
 build: format
 	@$(ENSURE_TARGET)
-	@$(SCRIPTS_DIR)/update_readme
+	@$(SCRIPTS_DIR)/make_abspath_readme
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --skip-auditwheel
 
 test: build
