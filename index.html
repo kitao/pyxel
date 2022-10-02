@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Pyxel Web Launcher</title>
+    <title>Pyxel Web</title>
     <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
   </head>
   <body>
     <script>
       function printUsage() {
         document.body.innerHTML = `
-          <h1>Pyxel Web Launcher</h1>
-          Launcher for the WebAssembly version of
+          <h1>Pyxel Web</h1>
+          <p>WebAssembly version of
           <a href="https://github.com/kitao/pyxel" target="_blank">Pyxel</a>,
-          a retro game engine for Python.
+          a retro game engine for Python.</p>
+          <p>Example page of Pyxel Web is <a href="wasm/examples.html" target="_blank">here</a>.</p>
+
           <h2>Usage</h2>
           <h3>Run Python Script</h3>
           https://kitao.github.io/pyxel/?run=<i>github_user_name.repo_name.path.to.script_file.without.extension</i>
@@ -19,11 +21,13 @@
           https://kitao.github.io/pyxel/?play=<i>github_user_name.repo_name.path.to.pyxapp.without.extension</i>
           <h3>Edit Pyxel Resource File</h3>
           https://kitao.github.io/pyxel/?edit=<i>github_user_name.repo_name.path.to.pyxres.without.extension</i>
+          <h3>When enabling the virtual GamePad</h3>
+          Add "&gamepad=enabled" to the end of the URL
         `;
       }
 
       const params = new URL(document.location).searchParams;
-      let tag, ext, param;
+      let tag, ext, param, gamepad;
       if (params.get("run")) {
         tag = "pyxel-run";
         ext = ".py";
@@ -39,6 +43,9 @@
       } else {
         printUsage();
       }
+      if (params.get("gamepad") === "enabled") {
+        gamepad = "enabled";
+      }
       if (tag) {
         let elem = document.createElement(tag);
         let paths = param.split(".");
@@ -46,6 +53,10 @@
           "https://cdn.jsdelivr.net/gh/" + paths.slice(0, -1).join("/");
         elem.name = paths[paths.length - 1] + ext;
         console.log(`${tag}: ${elem.root + "/" + elem.name}`);
+        if (gamepad) {
+          elem.gamepad = gamepad;
+          console.log(`${tag}: GamePad is enabled`);
+        }
         document.body.appendChild(elem);
       }
     </script>
