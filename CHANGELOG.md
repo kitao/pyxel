@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.10
+
+- Added Pyxel Web Launcher
+
 ## 1.8.9
 
 - Changed the color scheme for the web
