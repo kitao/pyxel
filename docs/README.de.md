@@ -74,11 +74,9 @@ Wenn das oben genannte nicht funktioniert, versuchen Sie, sich selbst gemäß de
 
 ### Web
 
-Lesen Sie [diese Seite](https://kitao.github.io/pyxel/wasm/examples.html) und laden Sie das Pyxel-Skript wie folgt:
+Wenn Sie den Pyxel Web Launcher oder benutzerdefinierte Elemente für HTML verwenden, können Sie Pyxel in einem Webbrowser ohne jegliche Installation ausführen.
 
-```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
-```
+Eine genaue Anleitung finden Sie auf [dieser Seite](https://kitao.github.io/pyxel/).
 
 ### Try Pyxel Examples
 

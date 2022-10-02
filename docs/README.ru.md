@@ -74,11 +74,9 @@ sudo pip3 install -U pyxel
 
 ### Web
 
-Обратитесь к [этой странице](https://kitao.github.io/pyxel/wasm/examples.html) и загрузите скрипт Pyxel следующим образом:
+Используя Pyxel Web Launcher или пользовательские элементы для HTML, вы можете запустить Pyxel в веб-браузере без какой-либо работы по установке.
 
-```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
-```
+Для получения конкретных инструкций, пожалуйста, обратитесь к [этой странице](https://kitao.github.io/pyxel/).
 
 ### Попробуйте примеры
 
