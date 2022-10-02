@@ -74,11 +74,9 @@ sudo pip3 install -U pyxel
 
 ### Web
 
-参考[本页面](https://kitao.github.io/pyxel/wasm/examples.html)，按如下方式加载 Pyxel 脚本。
+使用 Pyxel Web Launcher 或 HTML 的自定义元素，你可以在 Web 浏览器中运行 Pyxel，而无需任何安装工作。
 
-```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
-```
+具体说明请参考[本页面](https://kitao.github.io/pyxel/)。
 
 ### 尝试 Pyxel 例程
 
