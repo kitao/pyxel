@@ -52,12 +52,9 @@
         elem.root =
           "https://cdn.jsdelivr.net/gh/" + paths.slice(0, -1).join("/");
         elem.name = paths[paths.length - 1] + ext;
-        console.log(`${tag}: ${elem.root + "/" + elem.name}`);
-        if (gamepad) {
-          elem.gamepad = gamepad;
-          console.log(`${tag}: GamePad is enabled`);
-        }
+        elem.gamepad = gamepad;
         document.body.appendChild(elem);
+        console.log(`${tag}: ${elem.root + "/" + elem.name}`);
       }
     </script>
   </body>
