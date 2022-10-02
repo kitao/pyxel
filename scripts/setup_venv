@@ -1,7 +1,9 @@
-#!/bin/sh -e
+#!/bin/bash
 
-ROOT_DIR=..
-VENV_DIR=venv
+set -e
+cd `dirname $0`
+
+VENV_DIR=../venv
 
 if [ "$COMSPEC" = "" ]; then
     PYTHON=python3
@@ -11,7 +13,6 @@ else # Windows
     PIP=pip
 fi
 
-cd `dirname $0`/$ROOT_DIR
 rm -rf $VENV_DIR
 $PYTHON -m venv $VENV_DIR
 . $VENV_DIR/*/activate
