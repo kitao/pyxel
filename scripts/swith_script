@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -eu
+cd `dirname $0`
+
+HTML_DIR=../wasm/pages
+TEST_FILE=`find $HTML_DIR/*.html | head -n 1`
+TEST_REGEX="src=\\\"\.\./pyxel.js\\\""
+REPLACE_REGEX="src=\\\".*/pyxel.js\\\""
+RELPATH_SCRIPT="src=\\\"../pyxel.js\\\""
+ABSPATH_SCRIPT="src=\\\"https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js\\\""
+
+if grep "$TEST_REGEX" $TEST_FILE > /dev/null; then
+    find $HTML_DIR/*.html | xargs sed -i -e "s#$REPLACE_REGEX#$ABSPATH_SCRIPT#"
+else
+    find $HTML_DIR/*.html | xargs sed -i -e "s#$REPLACE_REGEX#$RELPATH_SCRIPT#"
+fi
+rm -f $HTML_DIR/*.html-e
