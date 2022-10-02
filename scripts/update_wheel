@@ -11,5 +11,5 @@ SCRIPT_NAME=$WASM_DIR/pyxel.js
 mkdir -p $WASM_DIR
 rm -f $WASM_DIR/*-emscripten_*.whl
 cp -f $DIST_DIR/*-emscripten_*.whl $WASM_DIR
-sed -i -e "s#\\(PYXEL*WHEEL_PATH =\\).*;#\\1 \\\"$WHEEL_NAME\\\";#" $SCRIPT_NAME
+sed -i -e "s#\\(PYXEL_WHEEL_PATH =\\).*;#\\1 \\\"$WHEEL_NAME\\\";#" $SCRIPT_NAME
 rm -f $SCRIPT_NAME-e
