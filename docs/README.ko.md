@@ -74,7 +74,7 @@ sudo pip3 install -U pyxel
 
 ### Web
 
-[이 페이지](https://kitao.github.io/pyxel/wasm/)를 참조하여 다음과 같이 Pyxel 스크립트를 로드합니다.
+[이 페이지](https://kitao.github.io/pyxel/wasm/examples.html)를 참조하여 다음과 같이 Pyxel 스크립트를 로드합니다.
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
@@ -180,17 +180,17 @@ python3 PYTHON_SCRIPT_FILE
 Pyxel 애플리케이션 실행 중에, 아래의 특수 조작을 사용할 수 있습니다.
 
 - `Esc`<br>
-애플리케이션 종료
+  애플리케이션 종료
 - `Alt(Option)+1`<br>
-바탕 화면에 스크린샷 저장
+  바탕 화면에 스크린샷 저장
 - `Alt(Option)+2`<br>
-화면 캡처의 녹화 시작 시간 초기화
+  화면 캡처의 녹화 시작 시간 초기화
 - `Alt(Option)+3`<br>
-화면 캡처 파일을 바탕 화면에 저장 (최대 10초)
+  화면 캡처 파일을 바탕 화면에 저장 (최대 10초)
 - `Alt(Option)+0`<br>
-성능 모니터 (fps, update time, draw time)의 표시/표시 해제
+  성능 모니터 (fps, update time, draw time)의 표시/표시 해제
 - `Alt(Option)+Enter`<br>
-전체 화면 전환
+  전체 화면 전환
 
 ### 리소스의 작성 방법
 
@@ -205,7 +205,7 @@ pyxel edit [PYXEL_RESOURCE_FILE]
 지정한 Pyxel 리소스 파일 (.pyxres)이 존재하는 경우에는 해당 파일을 불러오고, 존재하지 않는 경우 지정한 이름으로 새 리소스 파일을 생성합니다.
 파일 이름을 생략했을 경우, 기본 파일 이름은 `my_resource.pyxres`입니다.
 
-Pyxel Editor 실행 중 다른 리소스 파일을 드래그 앤 드롭하는 것으로 작업 중인 리소스 파일을 변경할 수 있습니다. ``Ctrl(Cmd)`` 키를 누르면서 리소스 파일을 드래그 앤 드롭하면, 현재 편집 중인 리소스 유형(Image/Tilemap/Sound/Music)만 불러올 수 있습니다. 이를 통해 여러 개의 리소스 파일을 하나로 결합할 수 있습니다.
+Pyxel Editor 실행 중 다른 리소스 파일을 드래그 앤 드롭하는 것으로 작업 중인 리소스 파일을 변경할 수 있습니다. `Ctrl(Cmd)` 키를 누르면서 리소스 파일을 드래그 앤 드롭하면, 현재 편집 중인 리소스 유형(Image/Tilemap/Sound/Music)만 불러올 수 있습니다. 이를 통해 여러 개의 리소스 파일을 하나로 결합할 수 있습니다.
 
 만들어진 리소스 파일은 `load` 함수를 통해 불러올 수 있습니다.
 
@@ -273,261 +273,262 @@ pyxel play PYXEL_APP_FILE
 ### 시스템
 
 - `width`, `height`<br>
-화면의 가로/세로 크기
+  화면의 가로/세로 크기
 
 - `frame_count`<br>
-경과한 프레임의 수
+  경과한 프레임의 수
 
 - `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
-Pyxel 애플리케이션을 화면 크기 (`width`, `height`)로 초기화합니다. 옵션으로 `title`에 창 제목, `fps`에 프레임 속도, `quit_key`에 애플리케이션 종료 키, `display_scale`을 사용한 디스플레이 크기, `capture_scale`에 화면 캡처의 배율, `capture_sec`에 화면 캡처의 최대 녹화 시간을 지정할 수 있습니다.<br>
-예시: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
+  Pyxel 애플리케이션을 화면 크기 (`width`, `height`)로 초기화합니다. 옵션으로 `title`에 창 제목, `fps`에 프레임 속도, `quit_key`에 애플리케이션 종료 키, `display_scale`을 사용한 디스플레이 크기, `capture_scale`에 화면 캡처의 배율, `capture_sec`에 화면 캡처의 최대 녹화 시간을 지정할 수 있습니다.<br>
+  예시: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
-Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수를, 화면 그리기에 `draw` 함수를 호출합니다.
+  Pyxel 애플리케이션을 실행하며, 프레임 갱신 시 `update` 함수를, 화면 그리기에 `draw` 함수를 호출합니다.
 
 - `show()`<br>
-화면을 표시하고 `Esc` 키를 누를 때까지 기다립니다.
+  화면을 표시하고 `Esc` 키를 누를 때까지 기다립니다.
 
 - `quit()`<br>
-Pyxel 애플리케이션을 종료합니다.
+  Pyxel 애플리케이션을 종료합니다.
 
 ### 리소스
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-리소스 파일 (.pyxres)을 불러옵니다. 리소스 타입 (``image/tilemap/sound/music``)에 ``False``를 지정하면, 해당 리소스는 불러오지 않습니다.
+  리소스 파일 (.pyxres)을 불러옵니다. 리소스 타입 (`image/tilemap/sound/music`)에 `False`를 지정하면, 해당 리소스는 불러오지 않습니다.
 
 ### 입력
+
 - `mouse_x`, `mouse_y`<br>
-마우스 커서의 현재 좌표를 나타냅니다.
+  마우스 커서의 현재 좌표를 나타냅니다.
 
 - `mouse_wheel`<br>
-마우스 휠의 현재 값을 나타냅니다.
+  마우스 휠의 현재 값을 나타냅니다.
 
 - `btn(key)`<br>
-`key`가 눌리고 있으면 `True`, 눌리고 있지 않으면 `False`를 반환합니다. ([키 정의 리스트](../python/pyxel/__init__.pyi))
+  `key`가 눌리고 있으면 `True`, 눌리고 있지 않으면 `False`를 반환합니다. ([키 정의 리스트](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
-해당 프레임에 `key`가 눌리면 `True`, 눌리지 않으면 `False`를 반환합니다. `hold`와 `repeat`를 지정하면, `hold` 프레임 이상 `key`가 눌린 상태인 경우 `repeat` 프레임 간격으로 `True`를 반환합니다.
+  해당 프레임에 `key`가 눌리면 `True`, 눌리지 않으면 `False`를 반환합니다. `hold`와 `repeat`를 지정하면, `hold` 프레임 이상 `key`가 눌린 상태인 경우 `repeat` 프레임 간격으로 `True`를 반환합니다.
 
 - `btnr(key)`<br>
-해당 프레임에 `key`가 떼어지면 `True`, 아니면 `False`를 반환합니다.
+  해당 프레임에 `key`가 떼어지면 `True`, 아니면 `False`를 반환합니다.
 
 - `mouse(visible)`<br>
-`visible`이 `True`인 경우 마우스 커서를 표시하고, `False`라면 표시하지 않습니다. 마우스 커서가 보이지 않아도 마우스 커서의 좌표는 갱신됩니다.
+  `visible`이 `True`인 경우 마우스 커서를 표시하고, `False`라면 표시하지 않습니다. 마우스 커서가 보이지 않아도 마우스 커서의 좌표는 갱신됩니다.
 
 ### 그래픽
 
 - `colors`<br>
-팔레트의 표시 색상 리스트입니다. 표시 색상은 24-bit 숫자 값으로 지정합니다. `colors.from_list` 및 `colors.to_list`를 사용해 Python 리스트의 형태로 직접 색상을 지정하고 적용할 수 있습니다.<br>
-예시: `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+  팔레트의 표시 색상 리스트입니다. 표시 색상은 24-bit 숫자 값으로 지정합니다. `colors.from_list` 및 `colors.to_list`를 사용해 Python 리스트의 형태로 직접 색상을 지정하고 적용할 수 있습니다.<br>
+  예시: `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
 
 - `image(img)`<br>
-이미지 뱅크 `img` (0-2)를 조작합니다. (이미지 클래스 참조)<br>
-예시: `pyxel.image(0).load(0, 0, "title.png")`
+  이미지 뱅크 `img` (0-2)를 조작합니다. (이미지 클래스 참조)<br>
+  예시: `pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
-타일 맵 `tm` (0-7)을 조작합니다. (타일 맵 클래스 참조)
+  타일 맵 `tm` (0-7)을 조작합니다. (타일 맵 클래스 참조)
 
 - `clip(x, y, w, h)`<br>
-화면의 드로잉 영역을 (`x`, `y`)로 설정하고, 너비를 `w`, 높이를 `h`로 설정합니다. `clip()`과 같이 사용하면 드로잉 영역을 초기 상태(전체 화면)으로 돌립니다.
+  화면의 드로잉 영역을 (`x`, `y`)로 설정하고, 너비를 `w`, 높이를 `h`로 설정합니다. `clip()`과 같이 사용하면 드로잉 영역을 초기 상태(전체 화면)으로 돌립니다.
 
 - `camera(x, y)`<br>
-화면의 좌측 상단 좌표를 (`x`, `y`)로 변경합니다. `camera()`로 좌표를 (`0`, `0`)으로 초기화할 수 있습니다.
+  화면의 좌측 상단 좌표를 (`x`, `y`)로 변경합니다. `camera()`로 좌표를 (`0`, `0`)으로 초기화할 수 있습니다.
 
 - `pal(col1, col2)`<br>
-드로잉 시 `col1`를 `col2`로 대체합니다. `pal()`과 같이 사용하면 초기 상태로 돌립니다.
+  드로잉 시 `col1`를 `col2`로 대체합니다. `pal()`과 같이 사용하면 초기 상태로 돌립니다.
 
 - `cls(col)`<br>
-화면을 `col` 색으로 지웁니다.
+  화면을 `col` 색으로 지웁니다.
 
 - `pget(x, y)`<br>
-(`x`, `y`) 좌표의 색상 값을 가져옵니다.
+  (`x`, `y`) 좌표의 색상 값을 가져옵니다.
 
 - `pset(x, y, col)`<br>
-`col` 색을 사용해 (`x`, `y`) 좌표에 픽셀을 그립니다.
+  `col` 색을 사용해 (`x`, `y`) 좌표에 픽셀을 그립니다.
 
 - `line(x1, y1, x2, y2, col)`<br>
-`col` 색을 사용해 (`x1`, `y1`)부터 (`x2`, `y2`)까지 직선을 그립니다.
+  `col` 색을 사용해 (`x1`, `y1`)부터 (`x2`, `y2`)까지 직선을 그립니다.
 
 - `rect(x, y, w, h, col)`<br>
-가로 `w`, 세로 `h`의 크기로 `col` 색을 사용해 직사각형을 (`x`, `y`) 좌표에 그립니다.
+  가로 `w`, 세로 `h`의 크기로 `col` 색을 사용해 직사각형을 (`x`, `y`) 좌표에 그립니다.
 
 - `rectb(x, y, w, h, col)`<br>
-가로 `w`, 세로 `h`의 크기로 `col` 색을 사용해 직사각형 테두리를 (`x`, `y`) 좌표에 그립니다. (테두리 안쪽에 색상을 채우지 않음)
+  가로 `w`, 세로 `h`의 크기로 `col` 색을 사용해 직사각형 테두리를 (`x`, `y`) 좌표에 그립니다. (테두리 안쪽에 색상을 채우지 않음)
 
 - `circ(x, y, r, col)`<br>
-반경 `r`, `col` 색의 원을 (`x`, `y`) 좌표에 그립니다.
+  반경 `r`, `col` 색의 원을 (`x`, `y`) 좌표에 그립니다.
 
 - `circb(x, y, r, col)`<br>
-반경 `r`, `col` 색의 원 테두리를 (`x`, `y`) 좌표에 그립니다. (테두리 안쪽에 색상을 채우지 않음)
+  반경 `r`, `col` 색의 원 테두리를 (`x`, `y`) 좌표에 그립니다. (테두리 안쪽에 색상을 채우지 않음)
 
 - `elli(x, y, w, h, col)`<br>
-(`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 타원을 그립니다.
+  (`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 타원을 그립니다.
 
 - `ellib(x, y, w, h, col)`<br>
-(`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 타원 윤곽선을 그립니다.
+  (`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 타원 윤곽선을 그립니다.
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
-꼭짓점 좌표 (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`)를 기준으로 `col` 색상의 삼각형을 그립니다.
+  꼭짓점 좌표 (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`)를 기준으로 `col` 색상의 삼각형을 그립니다.
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
-꼭짓점 좌표 (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`)를 기준으로 `col` 색상의 삼각형 테두리를 그립니다. (테두리 안쪽에 색상을 채우지 않음)
+  꼭짓점 좌표 (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`)를 기준으로 `col` 색상의 삼각형 테두리를 그립니다. (테두리 안쪽에 색상을 채우지 않음)
 
 - `fill(x, y, col)`<br>
-(`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 줄임표를 그립니다.
+  (`x`, `y`)에서 너비 `w`, 높이 `h` 및 색상 `col`의 줄임표를 그립니다.
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-이미지 뱅크 `img`(0-2)의 (`u`, `v`)로부터 크기 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 음수로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다.
+  이미지 뱅크 `img`(0-2)의 (`u`, `v`)로부터 크기 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 음수로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다.
 
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-타일 맵 `tm` (0-7)의 (`u`, `v`)로부터 크기 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 음수로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다. 타일 하나의 크기는 8x8 픽셀이며 `(tile_x, tile_y)`의 튜플로 타일 맵에 저장되어 있습니다.
+  타일 맵 `tm` (0-7)의 (`u`, `v`)로부터 크기 (`w`, `h`)까지의 영역을 (`x`, `y`) 좌표에 복사합니다. `w`, `h`의 값을 음수로 설정하면, 각각 수평, 수직 방향으로 반전됩니다. `colkey`로 색을 지정하면 투명 색상으로 처리됩니다. 타일 하나의 크기는 8x8 픽셀이며 `(tile_x, tile_y)`의 튜플로 타일 맵에 저장되어 있습니다.
 
 <img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
-`col` 색을 사용해 문자열 `s`를 (`x`, `y`) 좌표에 그립니다.
+  `col` 색을 사용해 문자열 `s`를 (`x`, `y`) 좌표에 그립니다.
 
 ### 오디오
 
 - `sound(snd)`<br>
-사운드 `snd`(0-63) 를 조작합니다. (사운드 클래스 참조)<br>
-예시: `pyxel.sound(0).speed = 60`
+  사운드 `snd`(0-63) 를 조작합니다. (사운드 클래스 참조)<br>
+  예시: `pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
-음악 `msc`(0-7) 를 조작합니다. (음악 클래스 참조)
+  음악 `msc`(0-7) 를 조작합니다. (음악 클래스 참조)
 
 - `play_pos(ch)`<br>
-채널 `ch` (0-3)의 사운드 재생 위치를 `(sound no, note no)` 형태의 튜플로 가져옵니다. 재생 중이 아닐 경우 `None`을 반환합니다.
+  채널 `ch` (0-3)의 사운드 재생 위치를 `(sound no, note no)` 형태의 튜플로 가져옵니다. 재생 중이 아닐 경우 `None`을 반환합니다.
 
 - `play(ch, snd, [tick], [loop])`<br>
-채널 `ch` (0-3)에서 사운드 `snd` (0-63)를 재생합니다. `snd`가 리스트일 경우, 순서대로 재생됩니다. 재생 시작 위치는 `tick` (1 tick = 1/120초)으로 지정할 수 있습니다. `loop`에 `True`를 지정하면 계속 반복합니다.
+  채널 `ch` (0-3)에서 사운드 `snd` (0-63)를 재생합니다. `snd`가 리스트일 경우, 순서대로 재생됩니다. 재생 시작 위치는 `tick` (1 tick = 1/120초)으로 지정할 수 있습니다. `loop`에 `True`를 지정하면 계속 반복합니다.
 
 - `playm(msc, [tick], [loop])`<br>
-음악 `msc` (0-7)을 재생합니다. 재생 시작 위치는 `tick` (1 tick = 1/120초)으로 지정할 수 있습니다. `loop`에 `True`를 지정하면 계속 반복합니다.
+  음악 `msc` (0-7)을 재생합니다. 재생 시작 위치는 `tick` (1 tick = 1/120초)으로 지정할 수 있습니다. `loop`에 `True`를 지정하면 계속 반복합니다.
 
 - `stop([ch])`<br>
-지정된 채널 `ch` (0-3)의 재생을 중지합니다. `stop()`을 사용해 모든 채널의 재생을 중지할 수도 있습니다.
+  지정된 채널 `ch` (0-3)의 재생을 중지합니다. `stop()`을 사용해 모든 채널의 재생을 중지할 수도 있습니다.
 
 ### 수학
 
 - `ceil(x)`<br>
-`x`보다 크거나 같은 가장 작은 정수를 반환합니다.
+  `x`보다 크거나 같은 가장 작은 정수를 반환합니다.
 
 - `floor(x)`<br>
-`x`보다 작거나 같은 가장 큰 정수를 반환합니다.
+  `x`보다 작거나 같은 가장 큰 정수를 반환합니다.
 
 - `sgn(x)`<br>
-x가 양수이면 1, 0이면 0, 음수이면 -1을 반환합니다.
+  x가 양수이면 1, 0이면 0, 음수이면 -1을 반환합니다.
 
 - `sqrt(x)`<br>
-`x`의 제곱근을 반환합니다.
+  `x`의 제곱근을 반환합니다.
 
 - `sin(deg)`<br>
-`deg` 각도의 사인을 반환합니다.
+  `deg` 각도의 사인을 반환합니다.
 
 - `cos(deg)`<br>
-`deg` 각도의 코사인을 반환합니다.
+  `deg` 각도의 코사인을 반환합니다.
 
 - `atan2(y, x)`<br>
-`y`/`x`의 아크탄젠트를 도 단위로 반환합니다.
+  `y`/`x`의 아크탄젠트를 도 단위로 반환합니다.
 
 - `rseed(seed: int)`<br>
-난수 생성기의 시드를 설정합니다.
+  난수 생성기의 시드를 설정합니다.
 
 - `rndi(a, b)`<br>
-`a`보다 크거나 같고 `b`보다 작거나 같은 임의의 정수를 반환합니다.
+  `a`보다 크거나 같고 `b`보다 작거나 같은 임의의 정수를 반환합니다.
 
 - `rndf(a, b)`<br>
-`a`보다 크거나 같고 `b`보다 작거나 같은 임의의 소수를 반환합니다.
+  `a`보다 크거나 같고 `b`보다 작거나 같은 임의의 소수를 반환합니다.
 
 - `nseed(seed)`<br>
-Perlin 노이즈의 시드를 설정합니다.
+  Perlin 노이즈의 시드를 설정합니다.
 
 - `noise(x, [y], [z])`<br>
-지정된 좌표에 대한 Perlin 노이즈 값을 반환합니다.
+  지정된 좌표에 대한 Perlin 노이즈 값을 반환합니다.
 
 ### 이미지 클래스
 
 - `width`, `height`<br>
-이미지의 가로, 세로 크기
+  이미지의 가로, 세로 크기
 
 - `set(x, y, data)`<br>
-(`x`, `y`)에 문자열 리스트를 사용해 이미지를 설정합니다.<br>
-예시: `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  (`x`, `y`)에 문자열 리스트를 사용해 이미지를 설정합니다.<br>
+  예시: `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-(`x`, `y`)에 이미지 파일(png/gif/jpeg)을 불러옵니다.
+  (`x`, `y`)에 이미지 파일(png/gif/jpeg)을 불러옵니다.
 
 - `pget(x, y)`<br>
-(`x`, `y`)에서 픽셀 색상을 가져옵니다.
+  (`x`, `y`)에서 픽셀 색상을 가져옵니다.
 
 - `pset(x, y, col)`<br>
-(`x`, `y`)에 색상 `col`의 픽셀을 그립니다.
+  (`x`, `y`)에 색상 `col`의 픽셀을 그립니다.
 
 ### 타일 맵 클래스
 
 - `width`, `height`<br>
-타일 맵의 가로/세로 크기
+  타일 맵의 가로/세로 크기
 
 - `refimg`<br>
-타일 맵이 참조하는 이미지 뱅크 (0-2)
+  타일 맵이 참조하는 이미지 뱅크 (0-2)
 
 - `set(x, y, data)`<br>
-(`x`, `y`)에 문자열 리스트를 사용해 타일 맵을 설정합니다.<br>
-예시: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  (`x`, `y`)에 문자열 리스트를 사용해 타일 맵을 설정합니다.<br>
+  예시: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
-(`x`, `y`)에서 타일을 가져옵니다. 타일은 `(tile_x, tile_y)`의 튜플 형태입니다.
+  (`x`, `y`)에서 타일을 가져옵니다. 타일은 `(tile_x, tile_y)`의 튜플 형태입니다.
 
 - `pset(x, y, tile)`<br>
-(`x`, `y`)에 `tile`을 그립니다. 타일은 `(tile_x, tile_y)`의 튜플 형태입니다.
+  (`x`, `y`)에 `tile`을 그립니다. 타일은 `(tile_x, tile_y)`의 튜플 형태입니다.
 
 ### 사운드 클래스
 
 - `notes`<br>
-음정 리스트 (0-127). 숫자가 높을수록 피치가 높아지며 33에서는 'A2'(440Hz)가 됩니다. 쉼표는 -1입니다.
+  음정 리스트 (0-127). 숫자가 높을수록 피치가 높아지며 33에서는 'A2'(440Hz)가 됩니다. 쉼표는 -1입니다.
 
 - `tones`<br>
-음색 리스트 (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
+  음색 리스트 (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
 
 - `volumes`<br>
-음량 리스트 (0-7)
+  음량 리스트 (0-7)
 
 - `effects`<br>
-효과 리스트 (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
+  효과 리스트 (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
 
 - `speed`<br>
-재생 속도. 1이 가장 빠르며 숫자가 커질수록 재생 속도가 느려집니다. 120에서는 한 음의 길이가 1초가 됩니다.
+  재생 속도. 1이 가장 빠르며 숫자가 커질수록 재생 속도가 느려집니다. 120에서는 한 음의 길이가 1초가 됩니다.
 
 - `set(notes, tones, volumes, effects, speed)`<br>
-문자열을 사용해 음정, 음색, 음량 및 효과를 설정합니다. 음색, 음량, 효과의 길이가 음정보다 짧으면 처음부터 반복됩니다.
+  문자열을 사용해 음정, 음색, 음량 및 효과를 설정합니다. 음색, 음량, 효과의 길이가 음정보다 짧으면 처음부터 반복됩니다.
 
 - `set_notes(notes)`<br>
-'CDEFGAB'+'#-'+'0123' 또는 'R' 문자열로 음정을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
-예시: `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
+  'CDEFGAB'+'#-'+'0123' 또는 'R' 문자열로 음정을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
+  예시: `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-'TSPN' 문자열로 음색을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
-예시: `pyxel.sound(0).set_tones("TTSS PPPN")`
+  'TSPN' 문자열로 음색을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
+  예시: `pyxel.sound(0).set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-'01234567' 문자열로 음량을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
-예시: `pyxel.sound(0).set_volumes("7777 7531")`
+  '01234567' 문자열로 음량을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
+  예시: `pyxel.sound(0).set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-'NSVF' 문자열로 효과를 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
-예시: `pyxel.sound(0).set_effects("NFNF NVVS")`
+  'NSVF' 문자열로 효과를 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
+  예시: `pyxel.sound(0).set_effects("NFNF NVVS")`
 
 ### 음악 클래스
 
 - `snds_list`<br>
-채널 수가 포함된 2차원 사운드 목록(0-63).
+  채널 수가 포함된 2차원 사운드 목록(0-63).
 
 - `set(snds0, snds1, snds2, snds3)`<br>
-모든 채널의 사운드 (0-63) 리스트를 지정합니다. 빈 리스트가 지정되면 해당 채널은 재생에 사용되지 않습니다.<br>
-예시: `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+  모든 채널의 사운드 (0-63) 리스트를 지정합니다. 빈 리스트가 지정되면 해당 채널은 재생에 사용되지 않습니다.<br>
+  예시: `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 ### 고급 사용자용 API
 

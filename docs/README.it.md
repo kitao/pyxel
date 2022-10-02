@@ -74,7 +74,7 @@ Se quanto sopra non funziona, provare ad autocostruirsi secondo le istruzioni di
 
 ### Web
 
-Fare riferimento a [questa pagina](https://kitao.github.io/pyxel/wasm/) e caricare lo script Pyxel come segue:
+Fare riferimento a [questa pagina](https://kitao.github.io/pyxel/wasm/examples.html) e caricare lo script Pyxel come segue:
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
@@ -180,17 +180,17 @@ python3 PYTHON_SCRIPT_FILE
 I controlli seguenti speciali possono essere eseguite mentre viene eseguita un'applicazione Pyxel:
 
 - `Esc`<br>
-Esci dall'applicazione
+  Esci dall'applicazione
 - `Alt(Option)+1`<br>
-Salva uno screenshot sul desktop
+  Salva uno screenshot sul desktop
 - `Alt(Option)+2`<br>
-Resetta il tempo d'inizio della registrazione schermo
+  Resetta il tempo d'inizio della registrazione schermo
 - `Alt(Option)+3`<br>
-Salva la registrazione schermo sul desktop (fino a 10 secondi)
+  Salva la registrazione schermo sul desktop (fino a 10 secondi)
 - `Alt(Option)+0`<br>
-Alterna il monitor di performance (fps, tempo d'aggiornamento, e tempo di disegno)
+  Alterna il monitor di performance (fps, tempo d'aggiornamento, e tempo di disegno)
 - `Alt(Option)+Enter`<br>
-Alterna schermo intero
+  Alterna schermo intero
 
 ### Come creare una risorsa
 
@@ -205,7 +205,7 @@ pyxel edit [PYXEL_RESOURCE_FILE]
 Se il file di risorsa Pyxel (.pyxres) specificato esiste, allora il file viene caricato, e se non esiste, un nuovo file con quel nome viene creato.
 Se il file risorsa viene omesso, il nome è `my_resource.pyxres`.
 
-Dopo aver avviato l'Editor Pyxel, il file può essere scambiato trascinando e rilasciando un altro file risorsa. Se il file risorsa è trascinato e rilasciato tenendo premuto il pulsante ``Ctrl(Cmd)``, sarà caricato solo il tipo di risorsa (Immagine/Tilemap/Suono/Musica) che si sta attualmente modificando. Questa operazione consente di combinare più file risorsa in uno.
+Dopo aver avviato l'Editor Pyxel, il file può essere scambiato trascinando e rilasciando un altro file risorsa. Se il file risorsa è trascinato e rilasciato tenendo premuto il pulsante `Ctrl(Cmd)`, sarà caricato solo il tipo di risorsa (Immagine/Tilemap/Suono/Musica) che si sta attualmente modificando. Questa operazione consente di combinare più file risorsa in uno.
 
 Il file risorsa creato può essere caricato con la funzione `load`.
 
@@ -273,261 +273,262 @@ pyxel play PYXEL_APP_FILE
 ### Sistema
 
 - `width`, `height`<br>
-Lunghezza e altezza dello schermo
+  Lunghezza e altezza dello schermo
 
 - `frame_count`<br>
-Numero di frame passati
+  Numero di frame passati
 
 - `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
-Inizializza l'applicazione Pyxel con la dimensione dello schermo (`width`, `height`). I seguenti possono essere specificati come opzioni: il titolo della finestra con `title`, il frame rate con `fps`, il pulsante per uscire dall'applicazione con `quit_key`, la scala del display con `display_scale`, la scala della cattura dello schermo con `capture_scale`, ed il tempo di registrazione massimo del video di cattura dello schermo con `capture_sec`.<br>
-e.g. `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
+  Inizializza l'applicazione Pyxel con la dimensione dello schermo (`width`, `height`). I seguenti possono essere specificati come opzioni: il titolo della finestra con `title`, il frame rate con `fps`, il pulsante per uscire dall'applicazione con `quit_key`, la scala del display con `display_scale`, la scala della cattura dello schermo con `capture_scale`, ed il tempo di registrazione massimo del video di cattura dello schermo con `capture_sec`.<br>
+  e.g. `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
-Avvia l'applicazione Pyxel e chiama la funzione `update` per l'aggiornamento del frame e la funzione `draw` per disegnare.
+  Avvia l'applicazione Pyxel e chiama la funzione `update` per l'aggiornamento del frame e la funzione `draw` per disegnare.
 
 - `show()`<br>
-Mostra lo schermo e attende fino a quando il pulsante `Esc` non viene premuto.
+  Mostra lo schermo e attende fino a quando il pulsante `Esc` non viene premuto.
 
 - `quit()`<br>
-Esci dall'applicazione Pyxel.
+  Esci dall'applicazione Pyxel.
 
 ### Risorse
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-Carica il file risorsa (.pyxres). Se ``False`` è specificato per il tipo di risorsa (``image/tilemap/sound/music``), la risorsa non sarà caricata.
+  Carica il file risorsa (.pyxres). Se `False` è specificato per il tipo di risorsa (`image/tilemap/sound/music`), la risorsa non sarà caricata.
 
 ### Input
+
 - `mouse_x`, `mouse_y`<br>
-La posizione corrente del cursore del mouse
+  La posizione corrente del cursore del mouse
 
 - `mouse_wheel`<br>
-Il valore corrente della rotella del mouse
+  Il valore corrente della rotella del mouse
 
 - `btn(key)`<br>
-Ritorna `True` se `key` è premuto, altrimenti ritorna `False` ([lista definizione tasti](../python/pyxel/__init__.pyi))
+  Ritorna `True` se `key` è premuto, altrimenti ritorna `False` ([lista definizione tasti](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
-Ritorna `True` se `key` è premuto quel frame, altrimenti ritorna `False`. Quando `hold` e `repeat` sono specificati, `True` sarà ritornato all'intervallo frame `repeat` quando `key` è premuto per più di `hold` frame
+  Ritorna `True` se `key` è premuto quel frame, altrimenti ritorna `False`. Quando `hold` e `repeat` sono specificati, `True` sarà ritornato all'intervallo frame `repeat` quando `key` è premuto per più di `hold` frame
 
 - `btnr(key)`<br>
-Ritorna `True` se `key` è rilasciato quel frame, altrimenti ritorna `False`
+  Ritorna `True` se `key` è rilasciato quel frame, altrimenti ritorna `False`
 
 - `mouse(visible)`<br>
-Se `visible` è `True`, mostra il cursore mouse. Se `False`, nascondilo. Anche se il cursore mouse non è mostrato, la sua posizione è aggiornata.
+  Se `visible` è `True`, mostra il cursore mouse. Se `False`, nascondilo. Anche se il cursore mouse non è mostrato, la sua posizione è aggiornata.
 
 ### Grafica
 
 - `colors`<br>
-Lista della palette colori del display. Il colore del display è specificato tramite un valore numerico a 24-bit. Usare `colors.from_list` e `colors.to_list` per assegnare direttamente e recuperare le liste Python.<br>
-e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+  Lista della palette colori del display. Il colore del display è specificato tramite un valore numerico a 24-bit. Usare `colors.from_list` e `colors.to_list` per assegnare direttamente e recuperare le liste Python.<br>
+  e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
 
 - `image(img)`<br>
-Opera il banco immagine `img` (0-2). (Vedere la classe Image)<br>
-e.g. `pyxel.image(0).load(0, 0, "title.png")`
+  Opera il banco immagine `img` (0-2). (Vedere la classe Image)<br>
+  e.g. `pyxel.image(0).load(0, 0, "title.png")`
 
 - `tilemap(tm)`<br>
-Opera la tilemap `tm`(0-7) (Vedere la classe Tilemap)
+  Opera la tilemap `tm`(0-7) (Vedere la classe Tilemap)
 
 - `clip(x, y, w, h)`<br>
-Imposta l'area di disegno dello schermo da (`x`, `y`) a lunghezza `w` e altezza `h`. Resettare l'area di disegno a schermo intero con `clip()`
+  Imposta l'area di disegno dello schermo da (`x`, `y`) a lunghezza `w` e altezza `h`. Resettare l'area di disegno a schermo intero con `clip()`
 
 - `camera(x, y)`<br>
-Cambia le coordinate dell'angolo superiore sinistro dello schermo in (`x`, `y`). Resetta le coordinate dell'angolo superiore sinistro a (`0`, `0`) con `camera()`.
+  Cambia le coordinate dell'angolo superiore sinistro dello schermo in (`x`, `y`). Resetta le coordinate dell'angolo superiore sinistro a (`0`, `0`) con `camera()`.
 
 - `pal(col1, col2)`<br>
-Rimpiazza colore `col1` con `col2` al momento di disegno. `pal()` per tornare alla palette iniziale
+  Rimpiazza colore `col1` con `col2` al momento di disegno. `pal()` per tornare alla palette iniziale
 
 - `cls(col)`<br>
-Riempie lo schermo con `col`
+  Riempie lo schermo con `col`
 
 - `pget(x, y)`<br>
-Ritorna il colore del pixel su (`x`, `y`)
+  Ritorna il colore del pixel su (`x`, `y`)
 
 - `pset(x, y, col)`<br>
-Disegna un pixel di colore `col` su (`x`, `y`)
+  Disegna un pixel di colore `col` su (`x`, `y`)
 
 - `line(x1, y1, x2, y2, col)`<br>
-Disegna una linea di colore `col` da (`x1`, `y1`) a (`x2`, `y2`)
+  Disegna una linea di colore `col` da (`x1`, `y1`) a (`x2`, `y2`)
 
 - `rect(x, y, w, h, col)`<br>
-Disegna un rettangolo con lunghezza `w`, altezza `h` e colore `col` da (`x`, `y`)
+  Disegna un rettangolo con lunghezza `w`, altezza `h` e colore `col` da (`x`, `y`)
 
 - `rectb(x, y, w, h, col)`<br>
-Disegna il contorno di un rettangolo di lunghezza `w`, altezza `h` e colore `col` da (`x`, `y`)
+  Disegna il contorno di un rettangolo di lunghezza `w`, altezza `h` e colore `col` da (`x`, `y`)
 
 - `circ(x, y, r, col)`<br>
-Disegna un cerchio di raggio `r` e colore `col` su (`x`, `y`)
+  Disegna un cerchio di raggio `r` e colore `col` su (`x`, `y`)
 
 - `circb(x, y, r, col)`<br>
-Disegna il contorno di un cerchio di raggio `r` e colore `col` su (`x`, `y`)
+  Disegna il contorno di un cerchio di raggio `r` e colore `col` su (`x`, `y`)
 
 - `elli(x, y, w, h, col)`<br>
-Disegna un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
+  Disegna un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
 
 - `ellib(x, y, w, h, col)`<br>
-Disegna il contorno di un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
+  Disegna il contorno di un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
-Disegna un triangolo con vertici (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e colore `col`
+  Disegna un triangolo con vertici (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e colore `col`
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
-Disegna il contorno di un triangolo con vertici (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e colore `col`
+  Disegna il contorno di un triangolo con vertici (`x1`, `y1`), (`x2`, `y2`), (`x3`, `y3`) e colore `col`
 
 - `fill(x, y, col)`<br>
-Disegna un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
+  Disegna un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-Copia la regione di grandezza (`w`, `h`) da (`u`, `v`) della banca immagini `img`(0-2) a (`x`, `y`). Se un valore negativo è impostato per `w` e/o `h`, sarà invertito orizzontalmente o verticalmente. Se `colkey` è specificato, verrà trattato come colore trasparente
+  Copia la regione di grandezza (`w`, `h`) da (`u`, `v`) della banca immagini `img`(0-2) a (`x`, `y`). Se un valore negativo è impostato per `w` e/o `h`, sarà invertito orizzontalmente o verticalmente. Se `colkey` è specificato, verrà trattato come colore trasparente
 
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-Copia la regione di dimensione (`w`, `h`) da (`u`, `v`) della tilemap `tm` (0-7) a (`x`, `y`). Se un valore negativo è stato impostato per `w` e/o `h`, sarà rovesciata orizzontalmente e/o verticalmente. Se `colkey` è specificato, viene trattato come colore trasparente. La dimensione di una tile tile è di 8x8 pixel ed è memorizzata in una tilemap come una tupla di `(tile_x, tile_y)`.
+  Copia la regione di dimensione (`w`, `h`) da (`u`, `v`) della tilemap `tm` (0-7) a (`x`, `y`). Se un valore negativo è stato impostato per `w` e/o `h`, sarà rovesciata orizzontalmente e/o verticalmente. Se `colkey` è specificato, viene trattato come colore trasparente. La dimensione di una tile tile è di 8x8 pixel ed è memorizzata in una tilemap come una tupla di `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
-Disegna una stringa `s` di colore `col` su (`x`, `y`)
+  Disegna una stringa `s` di colore `col` su (`x`, `y`)
 
 ### Audio
 
 - `sound(snd)`<br>
-Opera il suono `snd`(0-63). (Vedere classe Sound).<br>
-per esempio: `pyxel.sound(0).speed = 60`
+  Opera il suono `snd`(0-63). (Vedere classe Sound).<br>
+  per esempio: `pyxel.sound(0).speed = 60`
 
 - `music(msc)`<br>
-Opera la musica `msc`(0-7) (Vedere la classe Music)
+  Opera la musica `msc`(0-7) (Vedere la classe Music)
 
 - `play_pos(ch)`<br>
-Ottiene la posizione del suono in riproduzione del canale `ch` (0-3) come una tupla di `(sound no, note no)`. Ritorna `None` quando la riproduzione è interrotta.
+  Ottiene la posizione del suono in riproduzione del canale `ch` (0-3) come una tupla di `(sound no, note no)`. Ritorna `None` quando la riproduzione è interrotta.
 
 - `play(ch, snd, [tick], [loop])`<br>
-Riproduce il suono `snd` (0-63) sul canale `ch` (0-3). Se `snd` è una lista, verrà riprodotta in ordine. La posizione di inizio della riproduzione può essere specificata da `tick` (1 tick = 1/120 secondi). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
+  Riproduce il suono `snd` (0-63) sul canale `ch` (0-3). Se `snd` è una lista, verrà riprodotta in ordine. La posizione di inizio della riproduzione può essere specificata da `tick` (1 tick = 1/120 secondi). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
 
 - `playm(msc, [tick], [loop])`<br>
-Riproduce la musica `msc` (0-7). La posizione di inizio della riproduzione può essere specificata da `tick` (1 tick = 1/120 secondi). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
+  Riproduce la musica `msc` (0-7). La posizione di inizio della riproduzione può essere specificata da `tick` (1 tick = 1/120 secondi). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
 
 - `stop([ch])`<br>
-Interrompe la riproduzione del canale `ch` (0-3) specificato. `stop()` per interrompere tutti i canali.
+  Interrompe la riproduzione del canale `ch` (0-3) specificato. `stop()` per interrompere tutti i canali.
 
 ### Matematica
 
 - `ceil(x)`<br>
-Restituisce il più piccolo intero maggiore o uguale a `x`.
+  Restituisce il più piccolo intero maggiore o uguale a `x`.
 
 - `floor(x)`<br>
-Restituisce il più grande intero minore o uguale a `x`.
+  Restituisce il più grande intero minore o uguale a `x`.
 
 - `sgn(x)`<br>
-Restituisce 1 quando `x` è positivo, 0 quando è zero e -1 quando è negativo.
+  Restituisce 1 quando `x` è positivo, 0 quando è zero e -1 quando è negativo.
 
 - `sqrt(x)`<br>
-Restituisce la radice quadrata di `x`.
+  Restituisce la radice quadrata di `x`.
 
 - `sin(deg)`<br>
-Restituisce il seno di `deg` gradi.
+  Restituisce il seno di `deg` gradi.
 
 - `cos(deg)`<br>
-Restituisce il coseno di `deg` gradi.
+  Restituisce il coseno di `deg` gradi.
 
 - `atan2(y, x)`<br>
-Restituisce l'arcotangente di `y`/`x` in gradi.
+  Restituisce l'arcotangente di `y`/`x` in gradi.
 
 - `rseed(seed: int)`<br>
-Imposta il seme del generatore di numeri casuali.
+  Imposta il seme del generatore di numeri casuali.
 
 - `rndi(a, b)`<br>
-Restituisce un numero intero casuale maggiore o uguale a `a` e minore o uguale a `b`.
+  Restituisce un numero intero casuale maggiore o uguale a `a` e minore o uguale a `b`.
 
 - `rndf(a, b)`<br>
-Restituisce un decimale casuale maggiore o uguale a `a` e minore o uguale a `b`.
+  Restituisce un decimale casuale maggiore o uguale a `a` e minore o uguale a `b`.
 
 - `nseed(seed)`<br>
-Imposta il seme del rumore di Perlin.
+  Imposta il seme del rumore di Perlin.
 
 - `noise(x, [y], [z])`<br>
-Restituisce il valore del rumore di Perlin per le coordinate specificate.
+  Restituisce il valore del rumore di Perlin per le coordinate specificate.
 
 ### Image Class
 
 - `width`, `height`<br>
-La lunghezza e l'altezza dell'immagine
+  La lunghezza e l'altezza dell'immagine
 
 - `data`<br>
-I dati dell'immagine (lista bidimensionale da 256x256)
+  I dati dell'immagine (lista bidimensionale da 256x256)
 
 - `get(x, y)`<br>
-Trova i dati dell'immagine su (`x`, `y`)
+  Trova i dati dell'immagine su (`x`, `y`)
 
 - `set(x, y, data)`<br>
-Imposta l'immagine a (`x`, `y`) tramite una lista di stringhe.<br>
-e.g. `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  Imposta l'immagine a (`x`, `y`) tramite una lista di stringhe.<br>
+  e.g. `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-Carica il file immagine (png/gif/jpeg) in (`x`, `y`).
+  Carica il file immagine (png/gif/jpeg) in (`x`, `y`).
 
 ### Classe Tilemap
 
 - `width`, `height`<br>
-Lunghezza e altezza della tilemap
+  Lunghezza e altezza della tilemap
 
 - `refimg`<br>
-Il banco immagine (0-2) referenziato dalla tilemap
+  Il banco immagine (0-2) referenziato dalla tilemap
 
 - `set(x, y, data)`<br>
-Imposta la tilemap a (`x`, `y`) mediante una lista di stringhe.<br>
-e.g. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  Imposta la tilemap a (`x`, `y`) mediante una lista di stringhe.<br>
+  e.g. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
-Prende la tile in (`x`, `y`). Una tile è una tupla di `(tile_x, tile_y)`.
+  Prende la tile in (`x`, `y`). Una tile è una tupla di `(tile_x, tile_y)`.
 
 - `pset(x, y, tile)`<br>
-Disegna una `tile` in (`x`, `y`). Una tile è una tupla di `(tile_x, tile_y)`.
+  Disegna una `tile` in (`x`, `y`). Una tile è una tupla di `(tile_x, tile_y)`.
 
 ### Classe Sound
 
 - `notes`<br>
-Lista di note (0-127). Più alto il numero, più alto il tono, e a 33 diventa 'A2'(440Hz). Il resto è -1.
+  Lista di note (0-127). Più alto il numero, più alto il tono, e a 33 diventa 'A2'(440Hz). Il resto è -1.
 
 - `tones`<br>
-Lista di tonalità (0:Triangolo / 1:Quadrato / 2:Ritmo / 3:Rumore)
+  Lista di tonalità (0:Triangolo / 1:Quadrato / 2:Ritmo / 3:Rumore)
 
 - `volumes`<br>
-Lista di volumi (0-7)
+  Lista di volumi (0-7)
 
 - `effects`<br>
-Lista di effetti (0:Nessuno / 1:Scorrimento / 2:Vibrato / 3:Dissolvenza)
+  Lista di effetti (0:Nessuno / 1:Scorrimento / 2:Vibrato / 3:Dissolvenza)
 
 - `speed`<br>
-Velocità di riproduzione. 1 è il più veloce, e più grande è il numero, più è lenta la velocità di riproduzione. A 120, la lunghezza di una nota diventa 1 secondo.
+  Velocità di riproduzione. 1 è il più veloce, e più grande è il numero, più è lenta la velocità di riproduzione. A 120, la lunghezza di una nota diventa 1 secondo.
 
 - `set(notes, tones, volumes, effects, speed)`<br>
-Imposta note, tonalità, volumi, ed effetti con una stringa. Se il numero di tonalità, volumi, ed effetti è inferiore alle note, vengono ripetuti dall'inizio.
+  Imposta note, tonalità, volumi, ed effetti con una stringa. Se il numero di tonalità, volumi, ed effetti è inferiore alle note, vengono ripetuti dall'inizio.
 
 - `set_notes(notes)`<br>
-Imposta le note con una stringa composta da 'CDEFGAB'+'#-'+'0123' o 'R'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
-e.g. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
+  Imposta le note con una stringa composta da 'CDEFGAB'+'#-'+'0123' o 'R'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
+  e.g. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-Imposta le tonalità con una stringa formata da 'TSPN'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
-e.g. `pyxel.sound(0).set_tones("TTSS PPPN")`
+  Imposta le tonalità con una stringa formata da 'TSPN'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
+  e.g. `pyxel.sound(0).set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-Imposta i volumi con una stringa formata da '01234567'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
-e.g. `pyxel.sound(0).set_volumes("7777 7531")`
+  Imposta i volumi con una stringa formata da '01234567'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
+  e.g. `pyxel.sound(0).set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-Imposta gli effetti con una stringa formata da 'NSVF'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
-e.g. `pyxel.sound(0).set_effects("NFNF NVVS")`
+  Imposta gli effetti con una stringa formata da 'NSVF'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
+  e.g. `pyxel.sound(0).set_effects("NFNF NVVS")`
 
 ### Music Class
 
 - `snds_list`<br>
-Lista bidimensionale di suoni (0-63) con il numero di canali.
+  Lista bidimensionale di suoni (0-63) con il numero di canali.
 
 - `set(snds0, snds1, snds2, snds3)`<br>
-Imposta l'elenco di suoni (0-63) di tutti i canali. Se è indicata una lista vuota, quel canale non viene utilizzato per la riproduzione.<br>
-e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+  Imposta l'elenco di suoni (0-63) di tutti i canali. Se è indicata una lista vuota, quel canale non viene utilizzato per la riproduzione.<br>
+  e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
 
 ### Advanced APIs
 
