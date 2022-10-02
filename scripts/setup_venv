@@ -4,6 +4,7 @@ set -e
 cd `dirname $0`
 
 VENV_DIR=../venv
+REQUIREMENTS=../requirements.txt
 
 if [ "$COMSPEC" = "" ]; then
     PYTHON=python3
@@ -17,4 +18,4 @@ rm -rf $VENV_DIR
 $PYTHON -m venv $VENV_DIR
 . $VENV_DIR/*/activate
 $PYTHON -m pip install -U pip
-$PIP install -r requirements.txt
+$PIP install -r $REQUIREMENTS
