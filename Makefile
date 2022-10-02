@@ -94,7 +94,7 @@ format:
 
 build: format
 	@$(ENSURE_TARGET)
-	@$(SCRIPTS_DIR)/make_readme
+	@$(SCRIPTS_DIR)/make_abspath_readme
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --skip-auditwheel
 
 test: build
@@ -132,7 +132,7 @@ clean-wasm:
 build-wasm:
 	@rm -f $(DIST_DIR)/*-emscripten_*.whl
 	@$(WASM_ENV) make build TARGET=$(WASM_TARGET)
-	@$(SCRIPTS_DIR)/update_wheel
+	@$(SCRIPTS_DIR)/update_wasm_wheel
 
 test-wasm: build-wasm
-	@$(SCRIPTS_DIR)/start_server
+	@$(SCRIPTS_DIR)/start_test_server
