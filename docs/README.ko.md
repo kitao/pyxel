@@ -74,11 +74,9 @@ sudo pip3 install -U pyxel
 
 ### Web
 
-[이 페이지](https://kitao.github.io/pyxel/wasm/examples.html)를 참조하여 다음과 같이 Pyxel 스크립트를 로드합니다.
+Pyxel Web Launcher 또는 HTML용 사용자 정의 요소를 사용하면 설치 작업 없이 웹 브라우저에서 Pyxel을 실행할 수 있습니다.
 
-```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
-```
+구체적인 지침은 [이 페이지](https://kitao.github.io/pyxel/)를 참조하십시오.
 
 ### 예제 실행하기
 

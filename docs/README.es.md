@@ -74,11 +74,9 @@ Si lo anterior no funciona, intente la autoconstrucción según las instruccione
 
 ### Web
 
-Consulte [esta página](https://kitao.github.io/pyxel/wasm/examples.html) y cargue el script Pyxel de la siguiente manera:
+Usando el Pyxel Web Launcher o elementos personalizados para HTML, puedes ejecutar Pyxel en un navegador web sin ningún trabajo de instalación.
 
-```html
-<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js"></script>
-```
+Para obtener instrucciones específicas, consulte [esta página](https://kitao.github.io/pyxel/).
 
 ### Prueba los ejemplos de Pyxel
 
