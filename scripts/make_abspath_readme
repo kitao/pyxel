@@ -8,7 +8,7 @@ RELPATH_README = "README.md"
 ABSPATH_README = "docs/README-abspath.md"
 
 
-def make_readme():
+def make_abspath_readme():
     os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ROOT_DIR))
     relpath_dir = os.path.dirname(RELPATH_README) + "/"
     with open(RELPATH_README, "r", encoding="utf-8") as fh:
@@ -28,4 +28,4 @@ def make_readme():
 
 
 if __name__ == "__main__":
-    make_readme()
+    make_abspath_readme()
