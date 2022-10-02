@@ -182,7 +182,7 @@ function _addVirtualGamepad(mode) {
   document.body.appendChild(imgButton);
 
   // Register virtual gamepad
-  var gamepad = {
+  let gamepad = {
     connected: true,
     axes: [0, 0, 0, 0],
     buttons: [],
@@ -265,8 +265,8 @@ function _addVirtualGamepad(mode) {
 
 async function _loadScript(scriptSrc) {
   await new Promise((resolve) => {
-    var firstScript = document.getElementsByTagName("script")[0];
-    var script = document.createElement("script");
+    let firstScript = document.getElementsByTagName("script")[0];
+    let script = document.createElement("script");
     script.src = scriptSrc;
     firstScript.parentNode.insertBefore(script, firstScript);
     script.onload = () => resolve();
