@@ -3,7 +3,7 @@
 set -eu
 cd `dirname $0`
 
-HTML_DIR=../wasm/pages
+HTML_DIR=../wasm/examples
 TEST_FILE=`find $HTML_DIR/*.html | head -n 1`
 TEST_REGEX="src=\\\"\.\./pyxel.js\\\""
 REPLACE_REGEX="src=\\\".*/pyxel.js\\\""
