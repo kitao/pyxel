@@ -3,6 +3,7 @@
 ## 1.8.11
 
 - Changed to use the latest CDN
+- Changed to cancel frame skip when delay time is large
 
 ## 1.8.10
 
