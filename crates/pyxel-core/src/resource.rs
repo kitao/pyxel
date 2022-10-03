@@ -15,7 +15,6 @@ use crate::settings::{
     RESOURCE_ARCHIVE_DIRNAME,
 };
 use crate::sound::Sound;
-use crate::system::System;
 use crate::tilemap::Tilemap;
 use crate::types::{Color, Rgb8};
 use crate::utils::parse_version_string;
