@@ -12,11 +12,9 @@ RELPATH_SRC2="src=\\\"../pyxel.js\\\""
 ABSPATH_SRC="src=\\\"https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js\\\""
 
 if grep "$TEST_REGEX" $INDEX_HTML > /dev/null; then
-    echo AAAA
     sed -i -e "s#$REPLACE_REGEX#$RELPATH_SRC1#" $INDEX_HTML
     find $EXAMPLES_DIR/*.html | xargs sed -i -e "s#$REPLACE_REGEX#$RELPATH_SRC2#"
 else
-    echo BBBB
     sed -i -e "s#$REPLACE_REGEX#$ABSPATH_SRC#" $INDEX_HTML
     find $EXAMPLES_DIR/*.html | xargs sed -i -e "s#$REPLACE_REGEX#$ABSPATH_SRC#"
 fi
