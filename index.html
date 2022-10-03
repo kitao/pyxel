@@ -10,7 +10,10 @@
         document.body.style.overflow = "";
         document.body.style.touchAction = "";
         document.body.innerHTML = `
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+          />
           <h1>Pyxel Web Launcher</h1>
           <p>
             Launcher tool for the WebAssembly version of
@@ -28,25 +31,21 @@
 
           <h2>Usage</h2>
           <h3>Run a Python Script using Pyxel</h3>
-          <p>
-            https://kitao.github.io/pyxel/?run=<i
-              >github_user_name.repo_name.dir_name.script_file_without_extension</i
-            >
+          <p class="code">
+            https://kitao.github.io/pyxel/?run=github_user_name.repo_name.dir_name.script_file_without_extension
           </p>
           <h3>Play a Pyxel Application (.pyxapp)</h3>
-          <p>
-            https://kitao.github.io/pyxel/?play=<i
-              >github_user_name.repo_name.dir_name.pyxapp_without_extension</i
-            >
+          <p class="code">
+            https://kitao.github.io/pyxel/?play=github_user_name.repo_name.dir_name.pyxapp_without_extension
           </p>
           <h3>Edit a Pyxel Resource File (.pyxres)</h3>
-          <p>
-            https://kitao.github.io/pyxel/?edit=<i
-              >github_user_name.repo_name.dir_name.pyxres_without_extension</i
-            >
+          <p class="code">
+            https://kitao.github.io/pyxel/?edit=github_user_name.repo_name.dir_name.pyxres_without_extension
           </p>
           <h3>Enable a virtual gamepad</h3>
-          <p>Add "&gamepad=enabled" to the end of the URL</p>
+          <p>
+            Add <span class="code">&gamepad=enabled</span> to the end of the URL
+          </p>
         `;
       }
 
