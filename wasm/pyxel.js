@@ -152,6 +152,14 @@ function _waitForInput(callback) {
     try {
       callback();
     } catch (error) {
+      if (error.name === "PythonError") {
+        document.body.style.overflow = "";
+        document.body.style.touchAction = "";
+        document.body.innerHTML = `
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <pre>${error.message}</pre>
+        `;
+      }
       if (error !== "unwind") {
         throw error;
       }
