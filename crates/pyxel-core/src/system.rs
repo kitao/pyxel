@@ -5,7 +5,7 @@ use crate::key::{KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use crate::platform::Platform;
 use crate::profiler::Profiler;
 use crate::resource::Resource;
-use crate::settings::{BACKGROUND_COLOR, MAX_UPDATE_FRAMES, NUM_MEASURE_FRAMES};
+use crate::settings::{BACKGROUND_COLOR, MAX_ELAPSED_MS, NUM_MEASURE_FRAMES};
 use crate::types::Key;
 use crate::utils::simplify_string;
 
@@ -45,8 +45,8 @@ impl System {
 
     fn process_frame(&mut self, callback: &mut dyn PyxelCallback) {
         let tick_count = Platform::instance().tick_count();
-        let wait_ms = self.next_update_ms - tick_count as f64;
-        if wait_ms > 0.0 {
+        let elapsed_ms = tick_count as f64 - self.next_update_ms;
+        if elapsed_ms < 0.0 {
             return;
         }
         if self.frame_count == 0 {
@@ -54,11 +54,12 @@ impl System {
         } else {
             self.fps_profiler.end(tick_count);
             self.fps_profiler.start(tick_count);
-            let mut update_count = (-wait_ms / self.one_frame_ms) as u32 + 1;
-            if update_count > MAX_UPDATE_FRAMES {
+            let update_count: u32;
+            if elapsed_ms > MAX_ELAPSED_MS as f64 {
                 update_count = 1;
                 self.next_update_ms = Platform::instance().tick_count() as f64 + self.one_frame_ms;
             } else {
+                update_count = (elapsed_ms / self.one_frame_ms) as u32 + 1;
                 self.next_update_ms += self.one_frame_ms * update_count as f64;
             }
             for _ in 1..update_count {
