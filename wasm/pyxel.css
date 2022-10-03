@@ -11,6 +11,16 @@ a:visited {
   color: #9e9ef9;
 }
 
+pre {
+  white-space: pre-wrap;
+}
+
+.code {
+  color: #edc7b0;
+  font-family: monospace;
+  font-size: large;
+}
+
 canvas#canvas {
   position: fixed;
   left: 0%;
