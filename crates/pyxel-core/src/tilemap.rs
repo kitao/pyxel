@@ -216,7 +216,7 @@ impl ResourceItem for Tilemap {
     fn deserialize(&mut self, version: u32, input: &str) {
         for (y, line) in input.lines().enumerate() {
             if y < TILEMAP_SIZE as usize {
-                if version < 15000 {
+                if version < 10500 {
                     string_loop!(x, tile, line, 3, {
                         let tile = parse_hex_string(&tile).unwrap();
                         self.canvas.data[y][x] = ((tile % 32) as u8, (tile / 32) as u8);
