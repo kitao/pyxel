@@ -135,4 +135,8 @@ build-wasm:
 	@$(SCRIPTS_DIR)/update_wasm_wheel
 
 test-wasm: build-wasm
-	@$(SCRIPTS_DIR)/start_test_server
+	$(SCRIPTS_DIR)/switch_html_scripts local
+	@bash -c " \
+		trap '$(SCRIPTS_DIR)/switch_html_scripts cdn' INT TERM; \
+		$(SCRIPTS_DIR)/start_test_server \
+	"
