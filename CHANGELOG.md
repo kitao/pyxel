@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.11
+
+- Changed to use the latest CDN
+
 ## 1.8.10
 
 - Added Pyxel Web Launcher
