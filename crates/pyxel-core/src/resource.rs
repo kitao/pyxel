@@ -155,7 +155,6 @@ pub fn screenshot(scale: Option<u32>) {
     let filename = Resource::export_path();
     let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
     crate::screen().lock().save(&filename, scale);
-    System::instance().disable_next_frame_skip();
 }
 
 pub fn reset_capture() {
@@ -166,5 +165,4 @@ pub fn screencast(scale: Option<u32>) {
     let filename = Resource::export_path();
     let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
     Resource::instance().screencast.save(&filename, scale);
-    System::instance().disable_next_frame_skip();
 }
