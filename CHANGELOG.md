@@ -3,6 +3,7 @@
 ## 1.8.10
 
 - Added Pyxel Web Launcher
+- Changed to show an error message from Python on the web
 
 ## 1.8.9
 
