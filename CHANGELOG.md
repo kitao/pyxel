@@ -4,6 +4,7 @@
 
 - Changed to use the latest CDN
 - Changed to cancel frame skip when delay time is large
+- Fixed the version number check
 
 ## 1.8.10
 
