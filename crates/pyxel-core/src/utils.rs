@@ -78,7 +78,7 @@ pub fn parse_version_string(string: &str) -> Result<u32, &str> {
     for (i, number) in simplify_string(string).split('.').enumerate() {
         let digit = number.len();
         let number = if i > 0 && digit == 1 {
-            number.to_string() + "0"
+            "0".to_string() + number
         } else if i == 0 || digit == 2 {
             number.to_string()
         } else {
@@ -174,9 +174,9 @@ mod tests {
 
     #[test]
     fn parse_version_string_() {
-        assert_eq!(parse_version_string("1.2.3"), Ok(12030));
-        assert_eq!(parse_version_string("12.34.5"), Ok(123450));
-        assert_eq!(parse_version_string("12.3.04"), Ok(123004));
+        assert_eq!(parse_version_string("1.2.3"), Ok(10203));
+        assert_eq!(parse_version_string("12.34.5"), Ok(123405));
+        assert_eq!(parse_version_string("12.3.04"), Ok(120304));
         assert_eq!(
             parse_version_string("12.345.0"),
             Err("invalid version string")
