@@ -3,16 +3,22 @@
 set -eu
 cd `dirname $0`
 
-HTML_DIR=../wasm/examples
-TEST_FILE=`find $HTML_DIR/*.html | head -n 1`
-TEST_REGEX="src=\\\"\.\./pyxel.js\\\""
+INDEX_HTML=../index.html
+EXAMPLES_DIR=../wasm/examples
+TEST_REGEX="src=\\\"https:.*/pyxel.js\\\""
 REPLACE_REGEX="src=\\\".*/pyxel.js\\\""
-RELPATH_SCRIPT="src=\\\"../pyxel.js\\\""
-ABSPATH_SCRIPT="src=\\\"https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js\\\""
+RELPATH_SRC1="src=\\\"wasm/pyxel.js\\\""
+RELPATH_SRC2="src=\\\"../pyxel.js\\\""
+ABSPATH_SRC="src=\\\"https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js\\\""
 
-if grep "$TEST_REGEX" $TEST_FILE > /dev/null; then
-    find $HTML_DIR/*.html | xargs sed -i -e "s#$REPLACE_REGEX#$ABSPATH_SCRIPT#"
+if grep "$TEST_REGEX" $INDEX_HTML > /dev/null; then
+    echo AAAA
+    sed -i -e "s#$REPLACE_REGEX#$RELPATH_SRC1#" $INDEX_HTML
+    find $EXAMPLES_DIR/*.html | xargs sed -i -e "s#$REPLACE_REGEX#$RELPATH_SRC2#"
 else
-    find $HTML_DIR/*.html | xargs sed -i -e "s#$REPLACE_REGEX#$RELPATH_SCRIPT#"
+    echo BBBB
+    sed -i -e "s#$REPLACE_REGEX#$ABSPATH_SRC#" $INDEX_HTML
+    find $EXAMPLES_DIR/*.html | xargs sed -i -e "s#$REPLACE_REGEX#$ABSPATH_SRC#"
 fi
-rm -f $HTML_DIR/*.html-e
+rm -f $INDEX_HTML-e
+rm -f $EXAMPLES_DIR/*.html-e
