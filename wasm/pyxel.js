@@ -36,9 +36,9 @@ class Pyxel {
     }
   }
 
-  edit(pyxelResourceFile) {
+  edit(pyxelResourceFile, initialEditor) {
     this.pyodide.runPython(
-      `import pyxel.cli; pyxel.cli.edit_pyxel_resource("${pyxelResourceFile}")`
+      `import pyxel.cli; pyxel.cli.edit_pyxel_resource("${pyxelResourceFile}", "${initialEditor}")`
     );
   }
 }
@@ -395,19 +395,20 @@ window.customElements.define("pyxel-play", PyxelPlay);
 
 class PyxelEdit extends HTMLElement {
   static get observedAttributes() {
-    return ["root", "name"];
+    return ["root", "name", "editor"];
   }
 
   constructor() {
     super();
     this.root = ".";
     this.name = "";
+    this.editor = "image";
   }
 
   connectedCallback() {
     loadPyxel(this.root, async (pyxel) => {
       _waitForInput(() => {
-        pyxel.edit(this.name);
+        pyxel.edit(this.name, this.editor);
       });
     });
   }
