@@ -225,7 +225,9 @@ EL Editor de Pyxel tiene los siguientes modos de edición:
 
 El modo para editar el banco de imágenes.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
+</a>
 
 Arrastrando y soltando un archivo de imagen (png/jpg/gif) en el editor de imágenes, la imagen será cargada en el banco de imágenes seleccionado.
 
@@ -233,19 +235,25 @@ Arrastrando y soltando un archivo de imagen (png/jpg/gif) en el editor de imáge
 
 El modo para editar el mapa de losas o mapa en el que las imágenes en el banco de imágenes están organizados en un patrón de azulejos o baldosas
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
+</a>
 
 **Editor de sonido:**
 
 El modo para editar el sonido.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
+</a>
 
 **Editor de música:**
 
 El modo para editar música en el que organiza los sonidos del editor de sonidos para poder reproducirlos.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
+</a>
 
 ### Otros recursos en la creación de métodos
 

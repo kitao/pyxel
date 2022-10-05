@@ -225,7 +225,9 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 이미지 뱅크의 이미지를 편집하는 화면입니다.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
+</a>
 
 이미지 편집기 화면에 이미지 파일(png/gif/jpeg)을 드래그 앤 드롭하면, 이미지를 현재 선택된 이미지 뱅크로 불러올 수 있습니다.
 
@@ -233,19 +235,25 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 이미지 뱅크의 이미지를 타일 모양으로 늘어놓은 타일 맵을 편집하는 화면입니다.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
+</a>
 
 **사운드 편집기:**
 
 사운드를 편집하는 화면입니다.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
+</a>
 
 **음악 편집기:**
 
 사운드를 플레이 순서대로 늘어놓은 음악을 편집하는 화면입니다.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
+</a>
 
 ### 기타 리소스 작성 방법
 
