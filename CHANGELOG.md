@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.14
+
+- Added the link to Web examples in the READMEs
+
 ## 1.8.13
 
 - Changed to specify the Pyxel version in CDN links
