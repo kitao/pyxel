@@ -24,7 +24,7 @@ class App(Widget):
         help_message_var
     """
 
-    def __init__(self, resource_file, initial_editor):
+    def __init__(self, resource_file, starting_editor):
         # Get absolute path of resource file before initializing Pyxel
         original_resource_file = resource_file
         resource_file = os.path.abspath(resource_file)
@@ -61,7 +61,7 @@ class App(Widget):
             v=0,
             num_buttons=4,
             value={"image": 0, "tilemap": 1, "sound": 2, "music": 3}.get(
-                initial_editor, 0
+                starting_editor, 0
             ),
         )
         self._editor_button.add_event_listener("change", self.__on_editor_button_change)
