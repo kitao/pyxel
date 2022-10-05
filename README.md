@@ -26,10 +26,10 @@ Thanks to its simple specifications inspired by retro gaming consoles, such as o
 <a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">
 <img src="docs/images/04_sound_api.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/pyxel_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="docs/images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/pyxel_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="docs/images/sound_music_editor.gif" width="320">
 </a>
 </p>
