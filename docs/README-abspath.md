@@ -14,12 +14,24 @@
 Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
 
 <p>
+<a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/01_hello_pyxel.gif" width="320">
+</a>
+<a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/02_jump_game.gif" width="320">
+</a>
+<a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/03_draw_api.gif" width="320">
+</a>
+<a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/04_sound_api.gif" width="320">
+</a>
+<a href="https://kitao.github.io/pyxel/wasm/examples/pyxel_editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/image_tilemap_editor.gif" width="320">
+</a>
+<a href="https://kitao.github.io/pyxel/wasm/examples/pyxel_editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/sound_music_editor.gif" width="320">
+</a>
 </p>
 
 Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
