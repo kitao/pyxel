@@ -3,6 +3,7 @@
 ## 1.8.13
 
 - Changed to specify the Pyxel version in CDN links
+- Fixed link to the examples
 
 ## 1.8.12
 
