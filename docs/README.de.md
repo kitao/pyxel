@@ -14,12 +14,24 @@
 Dank seiner einfachen, von Retro-Spielkonsolen inspirierten, Spezifikationen, wie z. B. dass nur 16 Farben angezeigt werden können und nur 4 Töne gleichzeitig wiedergegeben werden können, kannst du dich frei fühlen, um Spiele im Pixel-Art-Stil zu entwickeln.
 
 <p>
+<a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">
 <img src="images/01_hello_pyxel.gif" width="320">
+</a>
+<a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">
 <img src="images/02_jump_game.gif" width="320">
+</a>
+<a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">
 <img src="images/03_draw_api.gif" width="320">
+</a>
+<a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">
 <img src="images/04_sound_api.gif" width="320">
+</a>
+<a href="https://kitao.github.io/pyxel/wasm/examples/pyxel_editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
+</a>
+<a href="https://kitao.github.io/pyxel/wasm/examples/pyxel_editor.html">
 <img src="images/sound_music_editor.gif" width="320">
+</a>
 </p>
 
 Die Spezifikationen und APIs von Pyxel sind inspiriert von [PICO-8](https://www.lexaloffle.com/pico-8.php) und [TIC-80](https://tic80.com/).
