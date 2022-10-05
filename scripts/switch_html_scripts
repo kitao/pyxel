@@ -8,7 +8,7 @@ EXAMPLES_DIR=../wasm/examples
 REPLACE_REGEX="src=\\\".*/pyxel.js\\\""
 LOCAL_SRC1="src=\\\"wasm/pyxel.js\\\""
 LOCAL_SRC2="src=\\\"../pyxel.js\\\""
-CDN_SRC="src=\\\"https://cdn.jsdelivr.net/gh/kitao/pyxel@latest/wasm/pyxel.js\\\""
+CDN_SRC="src=\\\"https://cdn.jsdelivr.net/gh/kitao/pyxel@v1.8.12/wasm/pyxel.js\\\""
 
 if [ $1 == "local" ]; then
     sed -i -e "s#$REPLACE_REGEX#$LOCAL_SRC1#" $INDEX_HTML
