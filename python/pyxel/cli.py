@@ -124,14 +124,14 @@ def play_pyxel_app(pyxel_app_file):
     exit(1)
 
 
-def edit_pyxel_resource(pyxel_resource_file, initial_editor="image"):
+def edit_pyxel_resource(pyxel_resource_file, starting_editor="image"):
     import pyxel.editor
 
     pyxel_resource_file = pyxel_resource_file or "my_resource"
     pyxel_resource_file = _complete_extension(
         pyxel_resource_file, pyxel.RESOURCE_FILE_EXTENSION
     )
-    pyxel.editor.App(pyxel_resource_file, initial_editor)
+    pyxel.editor.App(pyxel_resource_file, starting_editor)
 
 
 def package_pyxel_app(app_root_dir, startup_script_name):

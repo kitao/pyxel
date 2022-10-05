@@ -36,9 +36,9 @@ class Pyxel {
     }
   }
 
-  edit(pyxelResourceFile, initialEditor) {
+  edit(pyxelResourceFile, startingEditor) {
     this.pyodide.runPython(
-      `import pyxel.cli; pyxel.cli.edit_pyxel_resource("${pyxelResourceFile}", "${initialEditor}")`
+      `import pyxel.cli; pyxel.cli.edit_pyxel_resource("${pyxelResourceFile}", "${startingEditor}")`
     );
   }
 }
