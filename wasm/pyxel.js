@@ -2,7 +2,7 @@ const NO_SLEEP_URL =
   "https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js";
 const PYODIDE_SDL2_URL =
   "https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20220923/pyodide.js";
-const PYXEL_WHEEL_PATH = "pyxel-1.8.11-cp37-abi3-emscripten_3_1_21_wasm32.whl";
+const PYXEL_WHEEL_PATH = "pyxel-1.8.12-cp37-abi3-emscripten_3_1_21_wasm32.whl";
 const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_228x96.png";
 const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_342x42.png";
 const CLICK_TO_START_PATH = "../docs/images/click_to_start_342x42.png";
@@ -181,11 +181,9 @@ function _addVirtualGamepad(mode) {
   for (let i = 0; i < 17; i++) {
     gamepad.buttons.push({ pressed: false, touched: false, value: 0 });
   }
-  console.log(navigator.getGamepads());
   navigator.getGamepads = () => {
     return [gamepad];
   };
-  console.log(navigator.getGamepads());
   let event = new Event("gamepadconnected");
   event.gamepad = gamepad;
   window.dispatchEvent(event);
