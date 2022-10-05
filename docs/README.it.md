@@ -225,7 +225,9 @@ L'editor Pyxel ha le seguenti modalità di modifica.
 
 La modalità per modificare banche d'immagini.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
+</a>
 
 Trascinando e rilasciando un file immagine (png/gif/jpeg) sullo schermo dell'Editor Immagine, l'immagine può essere caricata all'interno del banco d'immagine attualmente selezionato.
 
@@ -233,19 +235,25 @@ Trascinando e rilasciando un file immagine (png/gif/jpeg) sullo schermo dell'Edi
 
 La modalità per modificare tilemap immagini delle banche immagini sono posizionate in un modo a piastrelle.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
+</a>
 
 **Editor Suoni:**
 
 Modalità per modificare suoni.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
+</a>
 
 **Editor Musica:**
 
 La modalità per modificare musica in cui i suoni sono posizionati in ordine per poi essere risuonati.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
+</a>
 
 ### Altri metodi per creare risorse
 

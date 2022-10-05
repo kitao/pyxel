@@ -225,7 +225,9 @@ Pyxel Editor には以下の編集モードがあります。
 
 イメージバンクの画像を編集する画面です。
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
+</a>
 
 イメージエディタ画面に画像ファイル (png/gif/jpeg) をドラッグ＆ドロップすると、画像を選択中のイメージバンクに読み込むことができます。
 
@@ -233,19 +235,25 @@ Pyxel Editor には以下の編集モードがあります。
 
 イメージバンクの画像をタイル状に並べたタイルマップを編集する画面です。
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
+</a>
 
 **サウンドエディタ:**
 
 サウンドを編集する画面です。
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
+</a>
 
 **ミュージックエディタ:**
 
 サウンドを再生順に並べたミュージックを編集する画面です。
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
+</a>
 
 ### その他のリソース作成方法
 
