@@ -4,7 +4,7 @@
 
 - Changed to specify the Pyxel version in CDN links
 - Fixed link to the examples
-- Added an initial editor parameter to Pyxel Editor
+- Added a starting editor parameter to Pyxel Editor
 
 ## 1.8.12
 
