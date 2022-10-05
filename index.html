@@ -51,7 +51,7 @@
       }
 
       const params = new URL(document.location).searchParams;
-      let tag, ext, param, gamepad;
+      let tag, ext, param;
       if (params.get("run")) {
         tag = "pyxel-run";
         ext = ".py";
@@ -67,16 +67,14 @@
       } else {
         printUsage();
       }
-      if (params.get("gamepad") === "enabled") {
-        gamepad = "enabled";
-      }
       if (tag) {
         let elem = document.createElement(tag);
         let paths = param.split(".");
         elem.root =
           "https://cdn.jsdelivr.net/gh/" + paths.slice(0, -1).join("/");
         elem.name = paths[paths.length - 1] + ext;
-        elem.gamepad = gamepad;
+        elem.gamepad = params.get("gamepad");
+        elem.editor = params.get("editor");
         document.body.appendChild(elem);
         console.log(`${tag}: ${elem.root + "/" + elem.name}`);
       }
