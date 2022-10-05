@@ -26,10 +26,10 @@ Grazie alle sue specifiche limitate ispirate dalle console di videogiochi rétro
 <a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">
 <img src="images/04_sound_api.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/pyxel_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/pyxel_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
