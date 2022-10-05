@@ -8,12 +8,13 @@ EXAMPLES_DIR=../wasm/examples
 REPLACE_REGEX="src=\\\".*/pyxel.js\\\""
 LOCAL_SRC1="src=\\\"wasm/pyxel.js\\\""
 LOCAL_SRC2="src=\\\"../pyxel.js\\\""
-CDN_SRC="src=\\\"https://cdn.jsdelivr.net/gh/kitao/pyxel@v1.8.12/wasm/pyxel.js\\\""
+WHEEL_VERSION=`find ../wasm/*.whl | sed "s/.*pyxel-\([^-]*\)-.*/\1/"`
+CDN_SRC="src=\\\"https://cdn.jsdelivr.net/gh/kitao/pyxel@v$WHEEL_VERSION/wasm/pyxel.js\\\""
 
-if [ $1 == "local" ]; then
+if [ "$1" == "local" ]; then
     sed -i -e "s#$REPLACE_REGEX#$LOCAL_SRC1#" $INDEX_HTML
     find $EXAMPLES_DIR/*.html | xargs sed -i -e "s#$REPLACE_REGEX#$LOCAL_SRC2#"
-elif [ $1 == "cdn" ]; then
+elif [ "$1" == "cdn" ]; then
     sed -i -e "s#$REPLACE_REGEX#$CDN_SRC#" $INDEX_HTML
     find $EXAMPLES_DIR/*.html | xargs sed -i -e "s#$REPLACE_REGEX#$CDN_SRC#"
 else
