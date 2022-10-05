@@ -225,7 +225,9 @@ pyxel edit [имя_ресурсного_файла]
 
 Режим редактирования наборов изображений.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
+</a>
 
 Изображение (png/gif/jpeg) может быть загружено в выбранный набор путем перетаскивания png файла на экран редактора изображений.
 
@@ -233,19 +235,25 @@ pyxel edit [имя_ресурсного_файла]
 
 Режим редактирования тайлмапов, в котором изоражения расположены в плиточном порядке.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
+</a>
 
 **Редактор звука:**
 
 Режим для редактирования звуковых файлов.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
+</a>
 
 **Редактор музыки:**
 
 Режим для редактирования музыки, в которой звуки расставлены в порядке проигрывания.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
+</a>
 
 ### Другие методы создания ресурсов
 

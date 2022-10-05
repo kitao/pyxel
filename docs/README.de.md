@@ -224,7 +224,9 @@ Der Pyxel Editor hat die folgenden Bearbeitungsmodi
 
 Der Modus zum Editieren von Image Banks.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
+</a>
 
 Per Drag-and-Drop einer Bild-Datei (png/gif/jpeg) auf das Bildeditor-Fenster kann das Bild in die aktuell ausgewählte Image-Bank geladen werden.
 
@@ -232,19 +234,25 @@ Per Drag-and-Drop einer Bild-Datei (png/gif/jpeg) auf das Bildeditor-Fenster kan
 
 Der Modus zum editieren von Tilemaps in welcher Bilder aus der Image Bank in einem Tile-Pattern arrangiert sind.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
+</a>
 
 **Sound-Editor:**
 
 Der Modus um Sounds zu editieren.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
+</a>
 
 **Musik-Editor:**
 
 Der Modus um Sounds in Wiedergabereihenfolge zu Musik zusammenzufügen.
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
+</a>
 
 ### Andere Methoden der Ressourcenerstellung
 

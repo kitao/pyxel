@@ -226,7 +226,9 @@ Pyxel 编辑器有以下编辑模式。
 
 此模式用来编辑图像库。
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
+</a>
 
 通过将图像文件拖放进图像编辑器，图像可以加载进当前的图像库中。
 
@@ -234,19 +236,25 @@ Pyxel 编辑器有以下编辑模式。
 
 此模式用来编辑瓦片地图，其中图像库的图像以瓦片的样式排列。
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
+</a>
 
 **音频编辑器：**
 
 此模式用来编辑音频。
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
+</a>
 
 **音乐编辑器：**
 
 此模式用来编辑将录音有序编排形成的音乐。
 
+<a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
+</a>
 
 ### 其他创建源文件的方法
 
