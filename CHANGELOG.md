@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.12
+
+- Changed to auto load files without the pyxel-asset element
+
 ## 1.8.11
 
 - Changed to use the latest CDN
