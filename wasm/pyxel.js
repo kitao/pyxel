@@ -8,6 +8,7 @@ const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_342x42.png";
 const CLICK_TO_START_PATH = "../docs/images/click_to_start_342x42.png";
 const GAMEPAD_CROSS_PATH = "../docs/images/gamepad_cross_98x98.png";
 const GAMEPAD_BUTTON_PATH = "../docs/images/gamepad_button_98x98.png";
+const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 
 class Pyxel {
   constructor(pyodide) {
@@ -268,26 +269,23 @@ async function loadPyxel(root, callback) {
   let pyodide = await loadPyodide();
   await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
   let pyxel = new Pyxel(pyodide);
+  let FS = pyodide.FS;
+  FS.mkdir(PYXEL_WORKING_DIRECTORY);
+  FS.chdir(PYXEL_WORKING_DIRECTORY);
 
   // Create function to load file
-  let FS = pyodide.FS;
   let loadFile = (filename) => {
     // Check filename
+    if (filename.startsWith("<")) {
+      return;
+    }
     if (!filename.startsWith("/")) {
       filename = FS.cwd() + "/" + filename;
     }
-    if (!filename.startsWith("/home/pyodide/")) {
+    if (!filename.startsWith(PYXEL_WORKING_DIRECTORY)) {
       return;
     }
-    filename = filename.slice(14);
-    if (
-      filename.startsWith("<") ||
-      filename === "lib" ||
-      filename.startsWith("lib/") ||
-      filename.startsWith("pyxel/")
-    ) {
-      return;
-    }
+    filename = filename.slice(PYXEL_WORKING_DIRECTORY.length + 1);
     if (FS.analyzePath(filename).exists) {
       return;
     }
@@ -314,7 +312,7 @@ async function loadPyxel(root, callback) {
       path += "/";
     }
 
-    // Copy file
+    // Write file to Emscripten file system
     pyodide.FS.writeFile(filename, fileBinary, { encoding: "binary" });
     console.log(`Loaded '${root}${filename}'`);
   };
