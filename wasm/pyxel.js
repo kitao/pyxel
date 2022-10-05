@@ -14,29 +14,6 @@ class Pyxel {
     this.pyodide = pyodide;
   }
 
-  async fetchFiles(root, names) {
-    let FS = this.pyodide.FS;
-    for (let name of names) {
-      if (!name) {
-        continue;
-      }
-      let dirs = name.split("/");
-      dirs.pop();
-      let path = "";
-      for (let dir of dirs) {
-        path += dir;
-        if (!FS.analyzePath(path).exists) {
-          FS.mkdir(path);
-        }
-        path += "/";
-      }
-      let fileResponse = await fetch(`${root}/${name}`);
-      let fileBinary = new Uint8Array(await fileResponse.arrayBuffer());
-      FS.writeFile(name, fileBinary, { encoding: "binary" });
-      console.log(`Fetched: ${root}${name}`);
-    }
-  }
-
   run(pythonScriptFile) {
     if (!pythonScriptFile) {
       return;
@@ -125,7 +102,7 @@ function _addElements() {
 
   // Enable gamepad
   window.addEventListener("gamepadconnected", (event) => {
-    console.log(`Connected: ${event.gamepad.id}`);
+    console.log(`Connected '${event.gamepad.id}'`);
   });
 }
 
@@ -282,7 +259,8 @@ async function _loadScript(scriptSrc) {
   });
 }
 
-async function loadPyxel(callback) {
+async function loadPyxel(root, callback) {
+  // Load libraries
   await _loadScript(NO_SLEEP_URL);
   let noSleep = new NoSleep();
   noSleep.enable();
@@ -290,33 +268,78 @@ async function loadPyxel(callback) {
   let pyodide = await loadPyodide();
   await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
   let pyxel = new Pyxel(pyodide);
+
+  // Create function to load file
+  let FS = pyodide.FS;
+  let loadFile = (filename) => {
+    // Check filename
+    if (!filename.startsWith("/")) {
+      filename = FS.cwd() + "/" + filename;
+    }
+    if (!filename.startsWith("/home/pyodide/")) {
+      return;
+    }
+    filename = filename.slice(14);
+    if (
+      filename.startsWith("<") ||
+      filename === "lib" ||
+      filename.startsWith("lib/") ||
+      filename.startsWith("pyxel/")
+    ) {
+      return;
+    }
+    if (FS.analyzePath(filename).exists) {
+      return;
+    }
+
+    // Download file
+    let request = new XMLHttpRequest();
+    request.overrideMimeType("text/plain; charset=x-user-defined");
+    request.open("GET", `${root}/${filename}`, false);
+    request.send();
+    if (request.status !== 200) {
+      return;
+    }
+    let fileBinary = Uint8Array.from(request.response, (c) => c.charCodeAt(0));
+
+    // Secure directories
+    let dirs = filename.split("/");
+    dirs.pop();
+    let path = "";
+    for (let dir of dirs) {
+      path += dir;
+      if (!FS.analyzePath(path).exists) {
+        FS.mkdir(path);
+      }
+      path += "/";
+    }
+
+    // Copy file
+    pyodide.FS.writeFile(filename, fileBinary, { encoding: "binary" });
+    console.log(`Loaded '${root}${filename}'`);
+  };
+
+  // Hook file operations
+  let open = FS.open;
+  FS.open = (path, flags, mode) => {
+    if (flags === 557056) {
+      loadFile(path);
+    }
+    return open(path, flags, mode);
+  };
+  let stat = FS.stat;
+  FS.stat = (path) => {
+    loadFile(path);
+    return stat(path);
+  };
+
+  // Invoke callback
   await callback(pyxel).catch((error) => {
     if (error !== "unwind") {
       throw error;
     }
   });
 }
-
-class PyxelAsset extends HTMLElement {
-  static names = [];
-
-  static get observedAttributes() {
-    return ["name"];
-  }
-
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {
-    PyxelAsset.names.push(this.name);
-  }
-
-  attributeChangedCallback(name, _oldValue, newValue) {
-    this[name] = newValue;
-  }
-}
-window.customElements.define("pyxel-asset", PyxelAsset);
 
 class PyxelRun extends HTMLElement {
   static get observedAttributes() {
@@ -332,8 +355,7 @@ class PyxelRun extends HTMLElement {
   }
 
   connectedCallback() {
-    loadPyxel(async (pyxel) => {
-      await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
+    loadPyxel(this.root, async (pyxel) => {
       _waitForInput(() => {
         _addVirtualGamepad(this.gamepad);
         pyxel.run(this.name);
@@ -361,8 +383,7 @@ class PyxelPlay extends HTMLElement {
   }
 
   connectedCallback() {
-    loadPyxel(async (pyxel) => {
-      await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
+    loadPyxel(this.root, async (pyxel) => {
       _waitForInput(() => {
         _addVirtualGamepad(this.gamepad);
         pyxel.play(this.name);
@@ -388,8 +409,7 @@ class PyxelEdit extends HTMLElement {
   }
 
   connectedCallback() {
-    loadPyxel(async (pyxel) => {
-      await pyxel.fetchFiles(this.root, PyxelAsset.names.concat(this.name));
+    loadPyxel(this.root, async (pyxel) => {
       _waitForInput(() => {
         pyxel.edit(this.name);
       });
