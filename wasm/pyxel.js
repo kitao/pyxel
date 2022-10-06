@@ -1,7 +1,7 @@
 const NO_SLEEP_URL =
   "https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js";
 const PYODIDE_SDL2_URL =
-  "https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20220923/pyodide.js";
+  "https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20221006/pyodide.js";
 const PYXEL_WHEEL_PATH = "pyxel-1.8.13-cp37-abi3-emscripten_3_1_21_wasm32.whl";
 const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_228x96.png";
 const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_342x42.png";
@@ -144,6 +144,13 @@ function _waitForInput(callback) {
       }
     }
   };
+}
+
+async function _installBuiltinPackages(pyodide, packages) {
+  if (!packages) {
+    return;
+  }
+  await pyodide.loadPackage(packages.split(","));
 }
 
 function _addVirtualGamepad(mode) {
@@ -339,7 +346,7 @@ async function loadPyxel(root, callback) {
 
 class PyxelRun extends HTMLElement {
   static get observedAttributes() {
-    return ["root", "name", "script", "gamepad"];
+    return ["root", "name", "script", "packages", "gamepad"];
   }
 
   constructor() {
@@ -347,11 +354,13 @@ class PyxelRun extends HTMLElement {
     this.root = ".";
     this.name = "";
     this.script = "";
+    this.packages = "";
     this.gamepad = "disabled";
   }
 
   connectedCallback() {
     loadPyxel(this.root, async (pyxel) => {
+      await _installBuiltinPackages(pyxel.pyodide, this.packages);
       _waitForInput(() => {
         _addVirtualGamepad(this.gamepad);
         pyxel.run(this.name);
@@ -368,18 +377,20 @@ window.customElements.define("pyxel-run", PyxelRun);
 
 class PyxelPlay extends HTMLElement {
   static get observedAttributes() {
-    return ["root", "name", "gamepad"];
+    return ["root", "name", "packages", "gamepad"];
   }
 
   constructor() {
     super();
     this.root = ".";
     this.name = "";
+    this.packages = "";
     this.gamepad = "disabled";
   }
 
   connectedCallback() {
     loadPyxel(this.root, async (pyxel) => {
+      await _installBuiltinPackages(pyxel.pyodide, this.packages);
       _waitForInput(() => {
         _addVirtualGamepad(this.gamepad);
         pyxel.play(this.name);
