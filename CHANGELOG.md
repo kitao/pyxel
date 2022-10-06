@@ -3,12 +3,14 @@
 ## 1.8.14
 
 - Added the link to Web examples in the READMEs
+- Added the packages attribute to HTML custom elements
+- Updated Pyodide-SDL2 to support additional packages
 
 ## 1.8.13
 
 - Changed to specify the Pyxel version in CDN links
 - Fixed link to the examples
-- Added a starting editor parameter to Pyxel Editor
+- Added the starting editor parameter to Pyxel Editor
 
 ## 1.8.12
 
@@ -28,9 +30,9 @@
 ## 1.8.9
 
 - Changed the color scheme for the web
-- Added a virtual gamepad surppot for the web
-- Added a gamepad support to examples
-- Added a gamepad attribute to HTML custom elements
+- Added virtual gamepad surppot for the web
+- Added gamepad support to examples
+- Added the gamepad attribute to HTML custom elements
 - Modified key assigns for Pyxel applications
 
 ## 1.8.8
