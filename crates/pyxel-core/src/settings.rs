@@ -2,7 +2,7 @@ use crate::key::KEY_ESCAPE;
 use crate::types::{Color, Effect, Key, Note, Rgb8, Speed, Tone, Volume};
 
 // System
-pub const PYXEL_VERSION: &str = "1.8.13";
+pub const PYXEL_VERSION: &str = "1.8.14";
 pub const PYXEL_WORKING_DIR: &str = ".pyxel";
 pub const DEFAULT_TITLE: &str = "Pyxel";
 pub const DEFAULT_FPS: u32 = 30;
