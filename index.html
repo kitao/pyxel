@@ -31,29 +31,34 @@
           </p>
 
           <h2>Usage</h2>
-          <h3>Run a Python Script using Pyxel</h3>
+          <h3>Run a Python script using Pyxel</h3>
           <p class="code">
             https://kitao.github.io/pyxel/?run=user_name.repo_name.dir_name.script_without_extension
           </p>
           <p>
-            Add <span class="code">&gamepad=enabled</span> to the end of the URL
-            to enable the virtual gamepad
+            Add <span class="code">&packages=package1,package2,...</span> to
+            install <a href="https://pyodide.org/en/stable/usage/packages-in-pyodide.html" target="_blank">packages builtin in Pyodide</a>.
+          </p>
+          <p>
+            Add <span class="code">&gamepad=enabled</span> to enable the virtual
+            gamepad.
           </p>
           <h3>Play a Pyxel Application (.pyxapp)</h3>
           <p class="code">
             https://kitao.github.io/pyxel/?play=user_name.repo_name.dir_name.pyxapp_without_extension
           </p>
           <p>
-            Add <span class="code">&gamepad=enabled</span> to the end of the URL
-            to enable the virtual gamepad
+            As well as running a Python script,
+            <span class="code">packages</span> and
+            <span class="code">gamepad</span> queries can be used.
           </p>
           <h3>Edit a Pyxel Resource File (.pyxres)</h3>
           <p class="code">
             https://kitao.github.io/pyxel/?edit=user_name.repo_name.dir_name.pyxres_without_extension
           </p>
           <p>
-            Add <span class="code">&editor="image/tilemap/sound/music"</span> to
-            the end of the URL to change the starting editor
+            Add <span class="code">&editor=image/tilemap/sound/music</span> to
+            change the starting editor.
           </p>
         `;
       }
@@ -81,6 +86,7 @@
         elem.root =
           "https://cdn.jsdelivr.net/gh/" + paths.slice(0, -1).join("/");
         elem.name = paths[paths.length - 1] + ext;
+        elem.packages = params.get("packages");
         elem.gamepad = params.get("gamepad");
         elem.editor = params.get("editor");
         document.body.appendChild(elem);
