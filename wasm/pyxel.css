@@ -30,10 +30,21 @@ canvas#canvas {
   image-rendering: pixelated;
 }
 
-img#logo {
+img#pyxel-logo {
   position: fixed;
   left: 50%;
   top: 50%;
+  min-width: 20vmax;
+  transform: translate(-50%, -50%);
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+img#input-prompt {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  min-width: 25vmax;
   transform: translate(-50%, -50%);
   image-rendering: pixelated;
   pointer-events: none;
