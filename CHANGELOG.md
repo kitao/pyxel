@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.15
+
+- Changed the splash image size for the web
+
 ## 1.8.14
 
 - Added the link to Web examples in the READMEs
