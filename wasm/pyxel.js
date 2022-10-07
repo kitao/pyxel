@@ -3,9 +3,9 @@ const NO_SLEEP_URL =
 const PYODIDE_SDL2_URL =
   "https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20221006/pyodide.js";
 const PYXEL_WHEEL_PATH = "pyxel-1.8.14-cp37-abi3-emscripten_3_1_21_wasm32.whl";
-const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_228x96.png";
-const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_342x42.png";
-const CLICK_TO_START_PATH = "../docs/images/click_to_start_342x42.png";
+const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_76x32.png";
+const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_114x14.png";
+const CLICK_TO_START_PATH = "../docs/images/click_to_start_114x14.png";
 const GAMEPAD_CROSS_PATH = "../docs/images/gamepad_cross_98x98.png";
 const GAMEPAD_BUTTON_PATH = "../docs/images/gamepad_button_98x98.png";
 const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
@@ -86,7 +86,7 @@ function _addElements() {
 
   // Add image for logo
   let img = document.createElement("img");
-  img.id = "logo";
+  img.id = "pyxel-logo";
   img.src = _scriptDir() + PYXEL_LOGO_PATH;
   img.tabindex = -1;
   document.body.appendChild(img);
@@ -116,11 +116,15 @@ function _isTouchDevice() {
 }
 
 function _waitForInput(callback) {
-  let img = document.querySelector("img#logo");
+  let img = document.querySelector("img#pyxel-logo");
   if (img) {
+    img.remove();
+    img = document.createElement("img");
+    img.id = "input-prompt";
     img.src =
       _scriptDir() +
       (_isTouchDevice() ? TOUCH_TO_START_PATH : CLICK_TO_START_PATH);
+    document.body.appendChild(img);
   }
   document.body.onclick = () => {
     document.body.onclick = "";
