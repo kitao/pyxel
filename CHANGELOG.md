@@ -3,6 +3,7 @@
 ## 1.8.15
 
 - Changed the splash image size for the web
+- Suppressed position shift at startup in Mobile Chrome
 
 ## 1.8.14
 
