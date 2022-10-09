@@ -10,37 +10,10 @@ const GAMEPAD_CROSS_PATH = "../docs/images/gamepad_cross_98x98.png";
 const GAMEPAD_BUTTON_PATH = "../docs/images/gamepad_button_98x98.png";
 const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 
-class Pyxel {
-  constructor(pyodide) {
-    this.pyodide = pyodide;
-  }
-
-  run(pythonScriptFile) {
-    if (!pythonScriptFile) {
-      return;
-    }
-    if (pythonScriptFile.endsWith(".py")) {
-      this.pyodide.runPython(
-        `import pyxel.cli; pyxel.cli.run_python_script("${pythonScriptFile}")`
-      );
-    } else {
-      this.pyodide.runPython(pythonScriptFile);
-    }
-  }
-
-  play(pyxelAppFile) {
-    if (pyxelAppFile) {
-      this.pyodide.runPython(
-        `import pyxel.cli; pyxel.cli.play_pyxel_app("${pyxelAppFile}")`
-      );
-    }
-  }
-
-  edit(pyxelResourceFile, startingEditor) {
-    this.pyodide.runPython(
-      `import pyxel.cli; pyxel.cli.edit_pyxel_resource("${pyxelResourceFile}", "${startingEditor}")`
-    );
-  }
+function _setup() {
+  _setIcon();
+  _setStyleSheet();
+  _registerCustomElements();
 }
 
 function _scriptDir() {
@@ -54,30 +27,49 @@ function _scriptDir() {
 }
 
 function _setIcon() {
-  let head = document.getElementsByTagName("head").item(0);
   let link = document.createElement("link");
   link.rel = "icon";
   link.href = _scriptDir() + "../docs/images/pyxel_icon_64x64.ico";
-  head.appendChild(link);
+  document.head.appendChild(link);
 }
 
 function _setStyleSheet() {
-  let head = document.getElementsByTagName("head").item(0);
   link = document.createElement("link");
   link.rel = "stylesheet";
   link.href = _scriptDir() + "pyxel.css";
-  head.appendChild(link);
+  document.head.appendChild(link);
 }
 
-function _addElements() {
-  // Add body
-  if (!document.getElementsByTagName("body").item(0)) {
-    let body = document.createElement("body");
-    body.style.overflow = "hidden";
-    body.style.touchAction = "none";
-    document.body = body;
-  }
+async function launchPyxel(params) {
+  await _allowGamepadConnection();
+  await _preventNormalOperations();
+  await _createElements();
+  let pyodide = await _loadPyodideAndPyxel();
+  await _hookFileOperations(pyodide, params.root || ".");
+  await _waitForInput();
+  await _executePyxelCommand(pyodide, params);
+}
 
+function _allowGamepadConnection() {
+  window.addEventListener("gamepadconnected", (event) => {
+    console.log(`Connected '${event.gamepad.id}'`);
+  });
+}
+
+function _preventNormalOperations() {
+  let touchHandler = (event) => {
+    if (event.touches.length > 1) {
+      event.preventDefault();
+    }
+  };
+  document.addEventListener("touchstart", touchHandler, { passive: false });
+  document.addEventListener("touchmove", touchHandler, { passive: false });
+  document.oncontextmenu = (event) => event.preventDefault();
+  document.body.style.overflow = "hidden";
+  document.body.style.touchAction = "none";
+}
+
+function _createElements() {
   // Add canvas for SDL2
   let canvas = document.createElement("canvas");
   canvas.id = "canvas";
@@ -90,21 +82,91 @@ function _addElements() {
   img.src = _scriptDir() + PYXEL_LOGO_PATH;
   img.tabindex = -1;
   document.body.appendChild(img);
+}
 
-  // Prevent normal operation
-  let touchHandler = (event) => {
-    if (event.touches.length > 1) {
-      event.preventDefault();
-    }
-  };
-  document.addEventListener("touchstart", touchHandler, { passive: false });
-  document.addEventListener("touchmove", touchHandler, { passive: false });
-  document.oncontextmenu = (event) => event.preventDefault();
-
-  // Enable gamepad
-  window.addEventListener("gamepadconnected", (event) => {
-    console.log(`Connected '${event.gamepad.id}'`);
+async function _loadScript(scriptSrc) {
+  await new Promise((resolve) => {
+    let firstScript = document.getElementsByTagName("script")[0];
+    let script = document.createElement("script");
+    script.src = scriptSrc;
+    firstScript.parentNode.insertBefore(script, firstScript);
+    script.onload = () => resolve();
   });
+}
+
+async function _loadPyodideAndPyxel() {
+  await _loadScript(NO_SLEEP_URL);
+  let noSleep = new NoSleep();
+  noSleep.enable();
+  await _loadScript(PYODIDE_SDL2_URL);
+  let pyodide = await loadPyodide();
+  await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
+  let FS = pyodide.FS;
+  FS.mkdir(PYXEL_WORKING_DIRECTORY);
+  FS.chdir(PYXEL_WORKING_DIRECTORY);
+  return pyodide;
+}
+
+async function _hookFileOperations(pyodide, root) {
+  let fs = pyodide.FS;
+
+  // Create function to load file
+  let loadFile = (filename) => {
+    // Check filename
+    if (filename.startsWith("<")) {
+      return;
+    }
+    if (!filename.startsWith("/")) {
+      filename = fs.cwd() + "/" + filename;
+    }
+    if (!filename.startsWith(PYXEL_WORKING_DIRECTORY)) {
+      return;
+    }
+    filename = filename.slice(PYXEL_WORKING_DIRECTORY.length + 1);
+    if (fs.analyzePath(filename).exists) {
+      return;
+    }
+
+    // Download file
+    let request = new XMLHttpRequest();
+    request.overrideMimeType("text/plain; charset=x-user-defined");
+    request.open("GET", `${root}/${filename}`, false);
+    request.send();
+    if (request.status !== 200) {
+      return;
+    }
+    let fileBinary = Uint8Array.from(request.response, (c) => c.charCodeAt(0));
+
+    // Secure directories
+    let dirs = filename.split("/");
+    dirs.pop();
+    let path = "";
+    for (let dir of dirs) {
+      path += dir;
+      if (!fs.analyzePath(path).exists) {
+        fs.mkdir(path);
+      }
+      path += "/";
+    }
+
+    // Write file to Emscripten file system
+    fs.writeFile(filename, fileBinary, { encoding: "binary" });
+    console.log(`Loaded '${root}${filename}'`);
+  };
+
+  // Hook file operations
+  let open = fs.open;
+  fs.open = (path, flags, mode) => {
+    if (flags === 557056) {
+      loadFile(path);
+    }
+    return open(path, flags, mode);
+  };
+  let stat = fs.stat;
+  fs.stat = (path) => {
+    loadFile(path);
+    return stat(path);
+  };
 }
 
 function _isTouchDevice() {
@@ -115,7 +177,7 @@ function _isTouchDevice() {
   );
 }
 
-function _waitForInput(callback) {
+async function _waitForInput() {
   let img = document.querySelector("img#pyxel-logo");
   if (img) {
     img.remove();
@@ -126,28 +188,10 @@ function _waitForInput(callback) {
       (_isTouchDevice() ? TOUCH_TO_START_PATH : CLICK_TO_START_PATH);
     document.body.appendChild(img);
   }
-  document.body.onclick = () => {
-    document.body.onclick = "";
-    if (img) {
-      img.remove();
-    }
-    try {
-      callback();
-    } catch (error) {
-      if (error.name === "PythonError") {
-        document.oncontextmenu = null;
-        document.body.style.overflow = "";
-        document.body.style.touchAction = "";
-        document.body.innerHTML = `
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <pre>${error.message}</pre>
-        `;
-      }
-      if (error !== "unwind") {
-        throw error;
-      }
-    }
-  };
+  await _waitForEvent(document.body, "click");
+  if (img) {
+    img.remove();
+  }
 }
 
 async function _installBuiltinPackages(pyodide, packages) {
@@ -247,129 +291,84 @@ function _addVirtualGamepad(mode) {
     gamepad.timestamp = Date.now();
     event.preventDefault();
   };
-  let onTouchEnd = (event) => {
-    for (let i = 0; i < gamepad.buttons.length; i++) {
-      gamepad.buttons[i].pressed = false;
-    }
-    gamepad.timestamp = Date.now();
-    event.preventDefault();
-  };
   document.addEventListener("touchstart", touchHandler, { passive: false });
   document.addEventListener("touchmove", touchHandler, { passive: false });
   document.addEventListener("touchend", touchHandler, { passive: false });
 }
 
-async function _loadScript(scriptSrc) {
-  await new Promise((resolve) => {
-    let firstScript = document.getElementsByTagName("script")[0];
-    let script = document.createElement("script");
-    script.src = scriptSrc;
-    firstScript.parentNode.insertBefore(script, firstScript);
-    script.onload = () => resolve();
-  });
-}
-
-async function loadPyxel(root, callback) {
-  // Load libraries
-  await _loadScript(NO_SLEEP_URL);
-  let noSleep = new NoSleep();
-  noSleep.enable();
-  await _loadScript(PYODIDE_SDL2_URL);
-  let pyodide = await loadPyodide();
-  await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
-  let pyxel = new Pyxel(pyodide);
-  let FS = pyodide.FS;
-  FS.mkdir(PYXEL_WORKING_DIRECTORY);
-  FS.chdir(PYXEL_WORKING_DIRECTORY);
-
-  // Create function to load file
-  let loadFile = (filename) => {
-    // Check filename
-    if (filename.startsWith("<")) {
-      return;
-    }
-    if (!filename.startsWith("/")) {
-      filename = FS.cwd() + "/" + filename;
-    }
-    if (!filename.startsWith(PYXEL_WORKING_DIRECTORY)) {
-      return;
-    }
-    filename = filename.slice(PYXEL_WORKING_DIRECTORY.length + 1);
-    if (FS.analyzePath(filename).exists) {
-      return;
-    }
-
-    // Download file
-    let request = new XMLHttpRequest();
-    request.overrideMimeType("text/plain; charset=x-user-defined");
-    request.open("GET", `${root}/${filename}`, false);
-    request.send();
-    if (request.status !== 200) {
-      return;
-    }
-    let fileBinary = Uint8Array.from(request.response, (c) => c.charCodeAt(0));
-
-    // Secure directories
-    let dirs = filename.split("/");
-    dirs.pop();
-    let path = "";
-    for (let dir of dirs) {
-      path += dir;
-      if (!FS.analyzePath(path).exists) {
-        FS.mkdir(path);
+async function _executePyxelCommand(pyodide, params) {
+  let command = params.command;
+  let name = params.name || "";
+  let script = params.script || "";
+  let packages = params.packages || "";
+  let gamepad = params.gamepad || "disabled";
+  let editor = params.editor || "image";
+  if (command === "run" || command === "play") {
+    await _installBuiltinPackages(pyodide, packages);
+  }
+  if (command === "run" || command === "play") {
+    _addVirtualGamepad(gamepad);
+  }
+  let pythonCode = "";
+  switch (command) {
+    case "run":
+      if (name) {
+        pythonCode = `import pyxel.cli; pyxel.cli.run_python_script("${name}")`;
+      } else if (script) {
+        pythonCode = script;
       }
-      path += "/";
-    }
-
-    // Write file to Emscripten file system
-    pyodide.FS.writeFile(filename, fileBinary, { encoding: "binary" });
-    console.log(`Loaded '${root}${filename}'`);
-  };
-
-  // Hook file operations
-  let open = FS.open;
-  FS.open = (path, flags, mode) => {
-    if (flags === 557056) {
-      loadFile(path);
-    }
-    return open(path, flags, mode);
-  };
-  let stat = FS.stat;
-  FS.stat = (path) => {
-    loadFile(path);
-    return stat(path);
-  };
-
-  // Invoke callback
-  await callback(pyxel).catch((error) => {
-    if (error !== "unwind") {
+      break;
+    case "play":
+      pythonCode = `import pyxel.cli; pyxel.cli.play_pyxel_app("${name}")`;
+      break;
+    case "edit":
+      pythonCode = `import pyxel.cli; pyxel.cli.edit_pyxel_resource("${name}", "${editor}")`;
+      break;
+  }
+  try {
+    pyodide.runPython(pythonCode);
+  } catch (error) {
+    if (error.name === "PythonError") {
+      document.oncontextmenu = null;
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+      document.body.innerHTML = `
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <pre>${error.message}</pre>
+        `;
+    } else if (error !== "unwind") {
       throw error;
     }
+  }
+}
+
+function _waitForEvent(target, event) {
+  return new Promise((resolve) => {
+    let listener = (...args) => {
+      target.removeEventListener(event, listener);
+      resolve(...args);
+    };
+    target.addEventListener(event, listener);
   });
 }
 
-class PyxelRun extends HTMLElement {
+class PyxelRunElement extends HTMLElement {
   static get observedAttributes() {
     return ["root", "name", "script", "packages", "gamepad"];
   }
 
   constructor() {
     super();
-    this.root = ".";
-    this.name = "";
-    this.script = "";
-    this.packages = "";
-    this.gamepad = "disabled";
   }
 
   connectedCallback() {
-    loadPyxel(this.root, async (pyxel) => {
-      await _installBuiltinPackages(pyxel.pyodide, this.packages);
-      _waitForInput(() => {
-        _addVirtualGamepad(this.gamepad);
-        pyxel.run(this.name);
-        pyxel.run(this.script);
-      });
+    launchPyxel({
+      command: "run",
+      root: this.root,
+      name: this.name,
+      script: this.script,
+      packages: this.packages,
+      gamepad: this.gamepad,
     });
   }
 
@@ -377,28 +376,23 @@ class PyxelRun extends HTMLElement {
     this[name] = newValue;
   }
 }
-window.customElements.define("pyxel-run", PyxelRun);
 
-class PyxelPlay extends HTMLElement {
+class PyxelPlayElement extends HTMLElement {
   static get observedAttributes() {
     return ["root", "name", "packages", "gamepad"];
   }
 
   constructor() {
     super();
-    this.root = ".";
-    this.name = "";
-    this.packages = "";
-    this.gamepad = "disabled";
   }
 
   connectedCallback() {
-    loadPyxel(this.root, async (pyxel) => {
-      await _installBuiltinPackages(pyxel.pyodide, this.packages);
-      _waitForInput(() => {
-        _addVirtualGamepad(this.gamepad);
-        pyxel.play(this.name);
-      });
+    launchPyxel({
+      command: "play",
+      root: this.root,
+      name: this.name,
+      packages: this.packages,
+      gamepad: this.gamepad,
     });
   }
 
@@ -406,25 +400,22 @@ class PyxelPlay extends HTMLElement {
     this[name] = newValue;
   }
 }
-window.customElements.define("pyxel-play", PyxelPlay);
 
-class PyxelEdit extends HTMLElement {
+class PyxelEditElement extends HTMLElement {
   static get observedAttributes() {
     return ["root", "name", "editor"];
   }
 
   constructor() {
     super();
-    this.root = ".";
-    this.name = "";
-    this.editor = "image";
   }
 
   connectedCallback() {
-    loadPyxel(this.root, async (pyxel) => {
-      _waitForInput(() => {
-        pyxel.edit(this.name, this.editor);
-      });
+    launchPyxel({
+      command: "edit",
+      root: this.root,
+      name: this.name,
+      editor: this.editor,
     });
   }
 
@@ -432,8 +423,11 @@ class PyxelEdit extends HTMLElement {
     this[name] = newValue;
   }
 }
-window.customElements.define("pyxel-edit", PyxelEdit);
 
-_setIcon();
-_setStyleSheet();
-_addElements();
+function _registerCustomElements() {
+  window.customElements.define("pyxel-run", PyxelRunElement);
+  window.customElements.define("pyxel-play", PyxelPlayElement);
+  window.customElements.define("pyxel-edit", PyxelEditElement);
+}
+
+_setup();
