@@ -79,34 +79,32 @@
         `;
       }
 
-      const params = new URL(document.location).searchParams;
-      let tag, ext, param;
-      if (params.get("run")) {
-        tag = "pyxel-run";
+      let queries = new URL(document.location).searchParams;
+      let command, paths, ext;
+      if (queries.get("run")) {
+        command = "run";
+        paths = queries.get("run").split(".");
         ext = ".py";
-        param = params.get("run");
-      } else if (params.get("play")) {
-        tag = "pyxel-play";
+      } else if (queries.get("play")) {
+        command = "play";
+        paths = queries.get("play").split(".");
         ext = ".pyxapp";
-        param = params.get("play");
-      } else if (params.get("edit")) {
-        tag = "pyxel-edit";
+      } else if (queries.get("edit")) {
+        command = "edit";
+        paths = queries.get("edit").split(".");
         ext = ".pyxres";
-        param = params.get("edit");
       } else {
         printUsage();
       }
-      if (tag) {
-        let elem = document.createElement(tag);
-        let paths = param.split(".");
-        elem.root =
-          "https://cdn.jsdelivr.net/gh/" + paths.slice(0, -1).join("/");
-        elem.name = paths[paths.length - 1] + ext;
-        elem.packages = params.get("packages");
-        elem.gamepad = params.get("gamepad");
-        elem.editor = params.get("editor");
-        document.body.appendChild(elem);
-        console.log(`${tag}: ${elem.root + "/" + elem.name}`);
+      if (command) {
+        launchPyxel({
+          root: "https://cdn.jsdelivr.net/gh/" + paths.slice(0, -1).join("/"),
+          command: command,
+          name: paths[paths.length - 1] + ext,
+          packages: queries.get("packages"),
+          gamepad: queries.get("gamepad"),
+          editor: queries.get("editor"),
+        });
       }
     </script>
   </body>
