@@ -44,6 +44,7 @@ canvas#canvas {
 
 img#pyxel-logo {
   position: absolute;
+  z-index: 1;
   left: 50%;
   top: 50%;
   min-width: 20vmax;
@@ -54,6 +55,7 @@ img#pyxel-logo {
 
 img#input-prompt {
   position: absolute;
+  z-index: 1;
   left: 50%;
   top: 50%;
   min-width: 25vmax;
@@ -64,6 +66,7 @@ img#input-prompt {
 
 img#gamepad-cross {
   position: absolute;
+  z-index: 1;
   left: 0%;
   bottom: 5%;
   min-width: 20vmax;
@@ -73,6 +76,7 @@ img#gamepad-cross {
 
 img#gamepad-button {
   position: absolute;
+  z-index: 1;
   right: 0%;
   bottom: 5%;
   min-width: 20vmax;
