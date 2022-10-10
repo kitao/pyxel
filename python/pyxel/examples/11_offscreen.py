@@ -94,7 +94,7 @@ def make_bltm_figure():
 
     col = 8
     bcol = 7
-    text_with_border(figure, x + 3, y + 10, "(0,0) (0,0) (0,1) (0,2)", col, bcol)
+    text_with_border(figure, x + 3, y + 10, "(0,0) (0,0) (1,0) (0,2)", col, bcol)
     text_with_border(figure, x + 3, y + 34, "(3,2) (0,0) (0,0) (1,2)", col, bcol)
     text_with_border(figure, x + 3, y + 58, "(3,2) (2,2) (0,0) (0,2)", col, bcol)
 
