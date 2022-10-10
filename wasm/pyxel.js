@@ -195,7 +195,7 @@ async function _waitForInput() {
   let logoImage = document.querySelector("img#pyxel-logo");
   logoImage.remove();
   let promptImage = document.createElement("img");
-  promptImage.id = "input-prompt";
+  promptImage.id = "pyxel-prompt";
   promptImage.src =
     _scriptDir() +
     (_isTouchDevice() ? TOUCH_TO_START_PATH : CLICK_TO_START_PATH);
@@ -222,14 +222,14 @@ function _addVirtualGamepad(mode) {
   // Add virtual cross key
   let pyxelScreen = document.querySelector("div#pyxel-screen");
   let crossImage = document.createElement("img");
-  crossImage.id = "gamepad-cross";
+  crossImage.id = "pyxel-gamepad-cross";
   crossImage.src = _scriptDir() + GAMEPAD_CROSS_PATH;
   crossImage.tabindex = -1;
   pyxelScreen.appendChild(crossImage);
 
   // Add virtual buttons
   let buttonImage = document.createElement("img");
-  buttonImage.id = "gamepad-button";
+  buttonImage.id = "pyxel-gamepad-button";
   buttonImage.src = _scriptDir() + GAMEPAD_BUTTON_PATH;
   buttonImage.tabindex = -1;
   pyxelScreen.appendChild(buttonImage);
