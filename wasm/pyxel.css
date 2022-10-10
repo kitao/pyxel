@@ -21,8 +21,20 @@ pre {
   font-size: large;
 }
 
-canvas#canvas {
+div#pyxel-screen {
+  background-color: #202124;
+}
+
+.default-pyxel-screen {
   position: fixed;
+  left: 0%;
+  top: 0%;
+  width: 100%;
+  height: 100%;
+}
+
+canvas#canvas {
+  position: absolute;
   left: 0%;
   top: 0%;
   width: 100%;
@@ -31,7 +43,7 @@ canvas#canvas {
 }
 
 img#pyxel-logo {
-  position: fixed;
+  position: absolute;
   left: 50%;
   top: 50%;
   min-width: 20vmax;
@@ -41,7 +53,7 @@ img#pyxel-logo {
 }
 
 img#input-prompt {
-  position: fixed;
+  position: absolute;
   left: 50%;
   top: 50%;
   min-width: 25vmax;
@@ -51,7 +63,7 @@ img#input-prompt {
 }
 
 img#gamepad-cross {
-  position: fixed;
+  position: absolute;
   left: 0%;
   bottom: 5%;
   min-width: 20vmax;
@@ -60,7 +72,7 @@ img#gamepad-cross {
 }
 
 img#gamepad-button {
-  position: fixed;
+  position: absolute;
   right: 0%;
   bottom: 5%;
   min-width: 20vmax;

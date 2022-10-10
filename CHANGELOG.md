@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.8.16
+
+- Added access analytics code for the web pages
+- Enabled to launch Pyxel Web from JavaScript
+- Enabled to change a screen div
+
 ## 1.8.15
 
 - Changed the splash image size for the web
