@@ -5,6 +5,7 @@
 - Added access analytics code for the web pages
 - Enabled to launch Pyxel Web from JavaScript
 - Enabled to change a screen div
+- Fixed the bltm figure for the READMEs
 
 ## 1.8.15
 
