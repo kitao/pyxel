@@ -66,9 +66,6 @@ function _preventNormalOperations() {
   };
   document.addEventListener("touchstart", touchHandler, { passive: false });
   document.addEventListener("touchmove", touchHandler, { passive: false });
-  document.oncontextmenu = (event) => event.preventDefault();
-  document.body.style.overflow = "hidden";
-  document.body.style.touchAction = "none";
 }
 
 function _createElements() {
@@ -81,6 +78,7 @@ function _createElements() {
   } else if (getComputedStyle(pyxelScreen).position === "static") {
     pyxelScreen.style.position = "relative";
   }
+  pyxelScreen.oncontextmenu = (event) => event.preventDefault();
 
   // Add canvas for SDL2
   let sdl2Canvas = document.createElement("canvas");
@@ -336,9 +334,6 @@ async function _executePyxelCommand(pyodide, params) {
     pyodide.runPython(pythonCode);
   } catch (error) {
     if (error.name === "PythonError") {
-      document.oncontextmenu = null;
-      document.body.style.overflow = "";
-      document.body.style.touchAction = "";
       document.body.innerHTML = `
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <pre>${error.message}</pre>
