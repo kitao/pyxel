@@ -6,6 +6,7 @@
 - Enabled to launch Pyxel Web from JavaScript
 - Enabled to change a screen div
 - Fixed the bltm figure for the READMEs
+- Fixed to display message when screenshot failed
 
 ## 1.8.15
 
