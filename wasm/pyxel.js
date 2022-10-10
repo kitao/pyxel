@@ -44,7 +44,7 @@ async function launchPyxel(params) {
   console.log("Launch Pyxel");
   console.log(params);
   await _allowGamepadConnection();
-  await _preventNormalOperations();
+  await _suppressPinchOperations();
   await _createElements();
   let pyodide = await _loadPyodideAndPyxel();
   await _hookFileOperations(pyodide, params.root || ".");
@@ -58,7 +58,7 @@ function _allowGamepadConnection() {
   });
 }
 
-function _preventNormalOperations() {
+function _suppressPinchOperations() {
   let touchHandler = (event) => {
     if (event.touches.length > 1) {
       event.preventDefault();
