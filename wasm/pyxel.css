@@ -1,21 +1,21 @@
-body {
+.pyxel-scheme {
   color: #ffffff;
   background-color: #202124;
 }
 
-a:link {
+.pyxel-scheme a:link {
   color: #a9c1ff;
 }
 
-a:visited {
+.pyxel-scheme a:visited {
   color: #7696de;
 }
 
-pre {
+.pyxel-scheme pre {
   white-space: pre-wrap;
 }
 
-.code {
+.pyxel-scheme .code {
   color: #d38441;
   font-family: monospace;
   font-size: large;
@@ -23,14 +23,15 @@ pre {
 
 div#pyxel-screen {
   background-color: #202124;
+  border: none;
 }
 
 .default-pyxel-screen {
   position: fixed;
   left: 0%;
   top: 0%;
-  width: 100%;
-  height: 100%;
+  width: 100.1%;
+  height: 100.1%;
 }
 
 canvas#canvas {
@@ -53,7 +54,7 @@ img#pyxel-logo {
   pointer-events: none;
 }
 
-img#input-prompt {
+img#pyxel-prompt {
   position: absolute;
   z-index: 1;
   left: 50%;
@@ -64,7 +65,7 @@ img#input-prompt {
   pointer-events: none;
 }
 
-img#gamepad-cross {
+img#pyxel-gamepad-cross {
   position: absolute;
   z-index: 1;
   left: 0%;
@@ -74,7 +75,7 @@ img#gamepad-cross {
   pointer-events: none;
 }
 
-img#gamepad-button {
+img#pyxel-gamepad-button {
   position: absolute;
   z-index: 1;
   right: 0%;
