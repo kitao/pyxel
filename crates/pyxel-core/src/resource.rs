@@ -153,7 +153,7 @@ pub fn save(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool
 
 pub fn screenshot(scale: Option<u32>) {
     Resource::export_path().map_or_else(
-        || println!("Failed to save screenthot to desktop"),
+        || println!("Failed to save screenshot to desktop"),
         |filename| {
             let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
             crate::screen().lock().save(&filename, scale);
