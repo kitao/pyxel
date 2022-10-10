@@ -2,7 +2,7 @@ const NO_SLEEP_URL =
   "https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js";
 const PYODIDE_SDL2_URL =
   "https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@20221006/pyodide.js";
-const PYXEL_WHEEL_PATH = "pyxel-1.8.15-cp37-abi3-emscripten_3_1_21_wasm32.whl";
+const PYXEL_WHEEL_PATH = "pyxel-1.8.16-cp37-abi3-emscripten_3_1_21_wasm32.whl";
 const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_114x14.png";
 const CLICK_TO_START_PATH = "../docs/images/click_to_start_114x14.png";
@@ -120,10 +120,10 @@ async function _loadPyodideAndPyxel() {
 }
 
 async function _hookFileOperations(pyodide, root) {
-  // Create function to load file
+  // Create function to copy file
   let fs = pyodide.FS;
-  let loadFile = (filename) => {
-    // Check filename
+  let copyFile = (filename) => {
+    // Check file
     if (filename.startsWith("<")) {
       return;
     }
@@ -134,14 +134,16 @@ async function _hookFileOperations(pyodide, root) {
       return;
     }
     filename = filename.slice(PYXEL_WORKING_DIRECTORY.length + 1);
-    if (fs.analyzePath(filename).exists) {
+    let srcFile = `${root}/${filename}`;
+    let dstFile = `${PYXEL_WORKING_DIRECTORY}/${filename}`;
+    if (fs.analyzePath(dstFile).exists) {
       return;
     }
 
     // Download file
     let request = new XMLHttpRequest();
     request.overrideMimeType("text/plain; charset=x-user-defined");
-    request.open("GET", `${root}/${filename}`, false);
+    request.open("GET", srcFile, false);
     request.send();
     if (request.status !== 200) {
       return;
@@ -161,21 +163,23 @@ async function _hookFileOperations(pyodide, root) {
     }
 
     // Write file to Emscripten file system
-    fs.writeFile(filename, fileBinary, { encoding: "binary" });
-    console.log(`Loaded '${root}${filename}'`);
+    fs.writeFile(dstFile, fileBinary, {
+      encoding: "binary",
+    });
+    console.log(`Copied '${srcFile}' to '${dstFile}'`);
   };
 
   // Hook file operations
   let open = fs.open;
   fs.open = (path, flags, mode) => {
     if (flags === 557056) {
-      loadFile(path);
+      copyFile(path);
     }
     return open(path, flags, mode);
   };
   let stat = fs.stat;
   fs.stat = (path) => {
-    loadFile(path);
+    copyFile(path);
     return stat(path);
   };
 }
