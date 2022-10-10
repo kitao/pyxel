@@ -51,14 +51,15 @@ impl Resource {
         self.screencast.capture(image, colors, frame_count);
     }
 
-    fn export_path() -> String {
-        UserDirs::new()
-            .unwrap()
-            .desktop_dir
-            .join(Local::now().format("pyxel-%Y%m%d-%H%M%S").to_string())
-            .to_str()
-            .unwrap()
-            .to_string()
+    fn export_path() -> Option<String> {
+        UserDirs::new().map(|user_dirs| {
+            user_dirs
+                .desktop_dir
+                .join(Local::now().format("pyxel-%Y%m%d-%H%M%S").to_string())
+                .to_str()
+                .unwrap()
+                .to_string()
+        })
     }
 }
 
@@ -151,9 +152,13 @@ pub fn save(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool
 }
 
 pub fn screenshot(scale: Option<u32>) {
-    let filename = Resource::export_path();
-    let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
-    crate::screen().lock().save(&filename, scale);
+    Resource::export_path().map_or_else(
+        || println!("Failed to save screenthot to desktop"),
+        |filename| {
+            let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
+            crate::screen().lock().save(&filename, scale);
+        },
+    );
 }
 
 pub fn reset_capture() {
@@ -161,7 +166,11 @@ pub fn reset_capture() {
 }
 
 pub fn screencast(scale: Option<u32>) {
-    let filename = Resource::export_path();
-    let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
-    Resource::instance().screencast.save(&filename, scale);
+    Resource::export_path().map_or_else(
+        || println!("Failed to save screen capture video to desktop"),
+        |filename| {
+            let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
+            Resource::instance().screencast.save(&filename, scale);
+        },
+    );
 }
