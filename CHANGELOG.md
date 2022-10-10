@@ -3,6 +3,7 @@
 ## 1.8.17
 
 - Limited control restriction for the web
+- Separated the color scheme for the web
 
 ## 1.8.16
 
