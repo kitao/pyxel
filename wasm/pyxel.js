@@ -78,6 +78,8 @@ function _createElements() {
     pyxelScreen.id = "pyxel-screen";
     pyxelScreen.classList.add("default-pyxel-screen");
     document.body.appendChild(pyxelScreen);
+  } else if (getComputedStyle(pyxelScreen).position === "static") {
+    pyxelScreen.style.position = "relative";
   }
 
   // Add canvas for SDL2
