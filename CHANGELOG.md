@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.17
+
+- Limited control restriction for the web
+
 ## 1.8.16
 
 - Added access analytics code for the web pages
