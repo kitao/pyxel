@@ -27,20 +27,22 @@ function _scriptDir() {
 }
 
 function _setIcon() {
-  let link = document.createElement("link");
-  link.rel = "icon";
-  link.href = _scriptDir() + "../docs/images/pyxel_icon_64x64.ico";
-  document.head.appendChild(link);
+  let iconLink = document.createElement("link");
+  iconLink.rel = "icon";
+  iconLink.href = _scriptDir() + "../docs/images/pyxel_icon_64x64.ico";
+  document.head.appendChild(iconLink);
 }
 
 function _setStyleSheet() {
-  link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = _scriptDir() + "pyxel.css";
-  document.head.appendChild(link);
+  styleSheetLink = document.createElement("link");
+  styleSheetLink.rel = "stylesheet";
+  styleSheetLink.href = _scriptDir() + "pyxel.css";
+  document.head.appendChild(styleSheetLink);
 }
 
 async function launchPyxel(params) {
+  console.log("Launch Pyxel");
+  console.log(params);
   await _allowGamepadConnection();
   await _preventNormalOperations();
   await _createElements();
@@ -70,27 +72,35 @@ function _preventNormalOperations() {
 }
 
 function _createElements() {
+  let pyxelScreen = document.querySelector("div#pyxel-screen");
+  if (!pyxelScreen) {
+    pyxelScreen = document.createElement("div");
+    pyxelScreen.id = "pyxel-screen";
+    pyxelScreen.classList.add("default-pyxel-screen");
+    document.body.appendChild(pyxelScreen);
+  }
+
   // Add canvas for SDL2
-  let canvas = document.createElement("canvas");
-  canvas.id = "canvas";
-  canvas.tabindex = -1;
-  document.body.appendChild(canvas);
+  let sdl2Canvas = document.createElement("canvas");
+  sdl2Canvas.id = "canvas";
+  sdl2Canvas.tabindex = -1;
+  pyxelScreen.appendChild(sdl2Canvas);
 
   // Add image for logo
-  let img = document.createElement("img");
-  img.id = "pyxel-logo";
-  img.src = _scriptDir() + PYXEL_LOGO_PATH;
-  img.tabindex = -1;
-  document.body.appendChild(img);
+  let logoImage = document.createElement("img");
+  logoImage.id = "pyxel-logo";
+  logoImage.src = _scriptDir() + PYXEL_LOGO_PATH;
+  logoImage.tabindex = -1;
+  pyxelScreen.appendChild(logoImage);
 }
 
 async function _loadScript(scriptSrc) {
   await new Promise((resolve) => {
     let firstScript = document.getElementsByTagName("script")[0];
-    let script = document.createElement("script");
-    script.src = scriptSrc;
-    firstScript.parentNode.insertBefore(script, firstScript);
-    script.onload = () => resolve();
+    let newScript = document.createElement("script");
+    newScript.src = scriptSrc;
+    firstScript.parentNode.insertBefore(newScript, firstScript);
+    newScript.onload = () => resolve();
   });
 }
 
@@ -108,9 +118,8 @@ async function _loadPyodideAndPyxel() {
 }
 
 async function _hookFileOperations(pyodide, root) {
-  let fs = pyodide.FS;
-
   // Create function to load file
+  let fs = pyodide.FS;
   let loadFile = (filename) => {
     // Check filename
     if (filename.startsWith("<")) {
@@ -178,20 +187,17 @@ function _isTouchDevice() {
 }
 
 async function _waitForInput() {
-  let img = document.querySelector("img#pyxel-logo");
-  if (img) {
-    img.remove();
-    img = document.createElement("img");
-    img.id = "input-prompt";
-    img.src =
-      _scriptDir() +
-      (_isTouchDevice() ? TOUCH_TO_START_PATH : CLICK_TO_START_PATH);
-    document.body.appendChild(img);
-  }
+  let pyxelScreen = document.querySelector("div#pyxel-screen");
+  let logoImage = document.querySelector("img#pyxel-logo");
+  logoImage.remove();
+  let promptImage = document.createElement("img");
+  promptImage.id = "input-prompt";
+  promptImage.src =
+    _scriptDir() +
+    (_isTouchDevice() ? TOUCH_TO_START_PATH : CLICK_TO_START_PATH);
+  pyxelScreen.appendChild(promptImage);
   await _waitForEvent(document.body, "click");
-  if (img) {
-    img.remove();
-  }
+  promptImage.remove();
 }
 
 async function _installBuiltinPackages(pyodide, packages) {
@@ -210,18 +216,19 @@ function _addVirtualGamepad(mode) {
   document.querySelector("canvas#canvas").style.height = "80%";
 
   // Add virtual cross key
-  let imgCross = document.createElement("img");
-  imgCross.id = "gamepad-cross";
-  imgCross.src = _scriptDir() + GAMEPAD_CROSS_PATH;
-  imgCross.tabindex = -1;
-  document.body.appendChild(imgCross);
+  let pyxelScreen = document.querySelector("div#pyxel-screen");
+  let crossImage = document.createElement("img");
+  crossImage.id = "gamepad-cross";
+  crossImage.src = _scriptDir() + GAMEPAD_CROSS_PATH;
+  crossImage.tabindex = -1;
+  pyxelScreen.appendChild(crossImage);
 
   // Add virtual buttons
-  let imgButton = document.createElement("img");
-  imgButton.id = "gamepad-button";
-  imgButton.src = _scriptDir() + GAMEPAD_BUTTON_PATH;
-  imgButton.tabindex = -1;
-  document.body.appendChild(imgButton);
+  let buttonImage = document.createElement("img");
+  buttonImage.id = "gamepad-button";
+  buttonImage.src = _scriptDir() + GAMEPAD_BUTTON_PATH;
+  buttonImage.tabindex = -1;
+  pyxelScreen.appendChild(buttonImage);
 
   // Register virtual gamepad
   let gamepad = {
@@ -244,8 +251,8 @@ function _addVirtualGamepad(mode) {
   window.dispatchEvent(event);
 
   // Set touch event handler
-  let crossRect = imgCross.getBoundingClientRect();
-  let buttonRect = imgButton.getBoundingClientRect();
+  let crossRect = crossImage.getBoundingClientRect();
+  let buttonRect = buttonImage.getBoundingClientRect();
   let touchHandler = (event) => {
     for (let i = 0; i < gamepad.buttons.length; i++) {
       gamepad.buttons[i].pressed = false;
@@ -297,32 +304,26 @@ function _addVirtualGamepad(mode) {
 }
 
 async function _executePyxelCommand(pyodide, params) {
-  let command = params.command;
-  let name = params.name || "";
-  let script = params.script || "";
-  let packages = params.packages || "";
-  let gamepad = params.gamepad || "disabled";
-  let editor = params.editor || "image";
-  if (command === "run" || command === "play") {
-    await _installBuiltinPackages(pyodide, packages);
+  if (params.command === "run" || params.command === "play") {
+    await _installBuiltinPackages(pyodide, params.packages);
   }
-  if (command === "run" || command === "play") {
-    _addVirtualGamepad(gamepad);
+  if (params.command === "run" || params.command === "play") {
+    _addVirtualGamepad(params.gamepad);
   }
   let pythonCode = "";
-  switch (command) {
+  switch (params.command) {
     case "run":
-      if (name) {
-        pythonCode = `import pyxel.cli; pyxel.cli.run_python_script("${name}")`;
-      } else if (script) {
-        pythonCode = script;
+      if (params.name) {
+        pythonCode = `import pyxel.cli; pyxel.cli.run_python_script("${params.name}")`;
+      } else if (params.script) {
+        pythonCode = params.script;
       }
       break;
     case "play":
-      pythonCode = `import pyxel.cli; pyxel.cli.play_pyxel_app("${name}")`;
+      pythonCode = `import pyxel.cli; pyxel.cli.play_pyxel_app("${params.name}")`;
       break;
     case "edit":
-      pythonCode = `import pyxel.cli; pyxel.cli.edit_pyxel_resource("${name}", "${editor}")`;
+      pythonCode = `import pyxel.cli; pyxel.cli.edit_pyxel_resource("${params.name}", "${params.editor}")`;
       break;
   }
   try {
