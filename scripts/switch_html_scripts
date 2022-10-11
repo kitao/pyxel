@@ -3,23 +3,22 @@
 set -e
 cd `dirname $0`
 
-INDEX_HTML=../index.html
+LAUNCHER_HTML=../wasm/launcher/index.html
 EXAMPLES_DIR=../wasm/examples
-REPLACE_REGEX="src=\\\".*/pyxel.js\\\""
-LOCAL_SRC1="src=\\\"wasm/pyxel.js\\\""
-LOCAL_SRC2="src=\\\"../pyxel.js\\\""
 WHEEL_VERSION=`find ../wasm/*.whl | sed "s/.*pyxel-\([^-]*\)-.*/\1/"`
+SRC_REGEX="src=\\\".*/pyxel.js\\\""
+LOCAL_SRC="src=\\\"../pyxel.js\\\""
 CDN_SRC="src=\\\"https://cdn.jsdelivr.net/gh/kitao/pyxel@v$WHEEL_VERSION/wasm/pyxel.js\\\""
 
 if [ "$1" == "local" ]; then
-    sed -i -e "s#$REPLACE_REGEX#$LOCAL_SRC1#" $INDEX_HTML
-    find $EXAMPLES_DIR/*.html | xargs sed -i -e "s#$REPLACE_REGEX#$LOCAL_SRC2#"
+    sed -i -e "s#$SRC_REGEX#$LOCAL_SRC#" $LAUNCHER_HTML
+    find $EXAMPLES_DIR/*.html | xargs sed -i -e "s#$SRC_REGEX#$LOCAL_SRC#"
 elif [ "$1" == "cdn" ]; then
-    sed -i -e "s#$REPLACE_REGEX#$CDN_SRC#" $INDEX_HTML
-    find $EXAMPLES_DIR/*.html | xargs sed -i -e "s#$REPLACE_REGEX#$CDN_SRC#"
+    sed -i -e "s#$SRC_REGEX#$CDN_SRC#" $LAUNCHER_HTML
+    find $EXAMPLES_DIR/*.html | xargs sed -i -e "s#$SRC_REGEX#$CDN_SRC#"
 else
     echo "switch_html_scripts local_or_cdn"
     exit 0
 fi
-rm -f $INDEX_HTML-e
+rm -f $LAUNCHER_HTML-e
 rm -f $EXAMPLES_DIR/*.html-e
