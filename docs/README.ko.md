@@ -88,7 +88,7 @@ sudo pip3 install -U pyxel
 
 Pyxel Web Launcher 또는 HTML용 사용자 정의 요소를 사용하면 설치 작업 없이 웹 브라우저에서 Pyxel을 실행할 수 있습니다.
 
-구체적인 지침은 [이 페이지](https://kitao.github.io/pyxel/)를 참조하십시오.
+구체적인 지침은 [이 페이지](https://kitao.github.io/pyxel/wasm/launcher/)를 참조하십시오.
 
 ### 예제 실행하기
 

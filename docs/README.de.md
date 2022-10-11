@@ -88,7 +88,7 @@ Wenn das oben genannte nicht funktioniert, versuchen Sie, sich selbst gemäß de
 
 Wenn Sie den Pyxel Web Launcher oder benutzerdefinierte Elemente für HTML verwenden, können Sie Pyxel in einem Webbrowser ohne jegliche Installation ausführen.
 
-Eine genaue Anleitung finden Sie auf [dieser Seite](https://kitao.github.io/pyxel/).
+Eine genaue Anleitung finden Sie auf [dieser Seite](https://kitao.github.io/pyxel/wasm/launcher/).
 
 ### Try Pyxel Examples
 
