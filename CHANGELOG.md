@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.18
+
+- Fixed the name of the startup script to be main
+
 ## 1.8.17
 
 - Limited control restriction for the web
