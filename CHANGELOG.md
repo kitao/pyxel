@@ -3,6 +3,7 @@
 ## 1.8.18
 
 - Fixed the name of the startup script to be main
+- Changed file structure and launcher URL
 
 ## 1.8.17
 
