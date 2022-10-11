@@ -29,8 +29,8 @@ div#pyxel-screen {
   position: fixed;
   left: 0%;
   top: 0%;
-  width: 100%;
-  height: 100%;
+  width: calc(100% + 1px);
+  height: calc(100% + 1px);
 }
 
 canvas#canvas {
