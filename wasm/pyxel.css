@@ -22,11 +22,11 @@
 }
 
 div#pyxel-screen {
+  position: absolute;
   background-color: #202124;
 }
 
 .default-pyxel-screen {
-  position: absolute;
   left: 0%;
   top: 0%;
   width: 100%;
