@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.20
+
+- Changed not to set the position style for the screen div
+
 ## 1.8.19
 
 - Fixed URLs in the launcher page
