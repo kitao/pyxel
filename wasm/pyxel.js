@@ -108,7 +108,7 @@ async function _createScreenElements() {
     pyxelScreen.classList.add("default-pyxel-screen");
     document.body.appendChild(pyxelScreen);
   } else if (getComputedStyle(pyxelScreen).position === "static") {
-    pyxelScreen.style.position = "relative";
+    pyxelScreen.style.position = "absolute";
   }
   pyxelScreen.oncontextmenu = (event) => event.preventDefault();
   window.addEventListener("resize", _updateScreenElementsSize);
