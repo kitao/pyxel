@@ -4,6 +4,7 @@
 
 - Fixed URLs in the launcher page
 - Fixed resizing of screen elements correctly
+- Suppressed screen flickering at startup for the web
 
 ## 1.8.18
 
