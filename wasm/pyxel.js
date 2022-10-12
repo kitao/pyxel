@@ -10,7 +10,7 @@ const GAMEPAD_CROSS_PATH = "../docs/images/gamepad_cross_98x98.png";
 const GAMEPAD_BUTTON_PATH = "../docs/images/gamepad_button_98x98.png";
 const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 
-function _setup() {
+function _initialize() {
   _setIcon();
   _setStyleSheet();
   _registerCustomElements();
@@ -43,11 +43,11 @@ function _setStyleSheet() {
 async function launchPyxel(params) {
   console.log("Launch Pyxel");
   console.log(params);
-  await _allowGamepadConnection();
-  await _suppressPinchOperations();
-  await _createElements();
+  _allowGamepadConnection();
+  _suppressPinchOperations();
+  await _createScreenElements();
   let pyodide = await _loadPyodideAndPyxel();
-  await _hookFileOperations(pyodide, params.root || ".");
+  _hookFileOperations(pyodide, params.root || ".");
   await _waitForInput();
   await _executePyxelCommand(pyodide, params);
 }
@@ -68,7 +68,39 @@ function _suppressPinchOperations() {
   document.addEventListener("touchmove", touchHandler, { passive: false });
 }
 
-function _createElements() {
+function _updateScreenElementsSize() {
+  let pyxelScreen = document.querySelector("div#pyxel-screen");
+  let { width, height } = pyxelScreen.getBoundingClientRect();
+  let screenSize = Math.max(width, height);
+  let logoImage = document.querySelector("img#pyxel-logo");
+  if (logoImage) {
+    logoImage.style.minWidth = `${screenSize * 0.2}px`;
+  }
+  let promptImage = document.querySelector("img#pyxel-prompt");
+  if (promptImage) {
+    promptImage.style.minWidth = `${screenSize * 0.25}px`;
+  }
+  let crossImage = document.querySelector("img#pyxel-gamepad-cross");
+  if (crossImage) {
+    crossImage.style.minWidth = `${screenSize * 0.2}px`;
+  }
+  let buttonImage = document.querySelector("img#pyxel-gamepad-button");
+  if (buttonImage) {
+    buttonImage.style.minWidth = `${screenSize * 0.2}px`;
+  }
+}
+
+function _waitForEvent(target, event) {
+  return new Promise((resolve) => {
+    let listener = (...args) => {
+      target.removeEventListener(event, listener);
+      resolve(...args);
+    };
+    target.addEventListener(event, listener);
+  });
+}
+
+async function _createScreenElements() {
   let pyxelScreen = document.querySelector("div#pyxel-screen");
   if (!pyxelScreen) {
     pyxelScreen = document.createElement("div");
@@ -79,6 +111,7 @@ function _createElements() {
     pyxelScreen.style.position = "relative";
   }
   pyxelScreen.oncontextmenu = (event) => event.preventDefault();
+  window.addEventListener("resize", _updateScreenElementsSize);
 
   // Add canvas for SDL2
   let sdl2Canvas = document.createElement("canvas");
@@ -91,17 +124,20 @@ function _createElements() {
   logoImage.id = "pyxel-logo";
   logoImage.src = _scriptDir() + PYXEL_LOGO_PATH;
   logoImage.tabindex = -1;
+  await _waitForEvent(logoImage, "load");
   pyxelScreen.appendChild(logoImage);
+  _updateScreenElementsSize();
+  setTimeout(() => {
+    _updateScreenElementsSize();
+  }, 50);
 }
 
 async function _loadScript(scriptSrc) {
-  await new Promise((resolve) => {
-    let firstScript = document.getElementsByTagName("script")[0];
-    let newScript = document.createElement("script");
-    newScript.src = scriptSrc;
-    firstScript.parentNode.insertBefore(newScript, firstScript);
-    newScript.onload = () => resolve();
-  });
+  let script = document.createElement("script");
+  script.src = scriptSrc;
+  let firstScript = document.getElementsByTagName("script")[0];
+  firstScript.parentNode.insertBefore(script, firstScript);
+  await _waitForEvent(script, "load");
 }
 
 async function _loadPyodideAndPyxel() {
@@ -117,7 +153,7 @@ async function _loadPyodideAndPyxel() {
   return pyodide;
 }
 
-async function _hookFileOperations(pyodide, root) {
+function _hookFileOperations(pyodide, root) {
   // Create function to copy file
   let fs = pyodide.FS;
   let copyFile = (filename) => {
@@ -199,7 +235,9 @@ async function _waitForInput() {
   promptImage.src =
     _scriptDir() +
     (_isTouchDevice() ? TOUCH_TO_START_PATH : CLICK_TO_START_PATH);
+  await _waitForEvent(promptImage, "load");
   pyxelScreen.appendChild(promptImage);
+  _updateScreenElementsSize();
   await _waitForEvent(document.body, "click");
   promptImage.remove();
 }
@@ -225,14 +263,20 @@ function _addVirtualGamepad(mode) {
   crossImage.id = "pyxel-gamepad-cross";
   crossImage.src = _scriptDir() + GAMEPAD_CROSS_PATH;
   crossImage.tabindex = -1;
-  pyxelScreen.appendChild(crossImage);
+  crossImage.onload = () => {
+    pyxelScreen.appendChild(crossImage);
+    _updateScreenElementsSize();
+  };
 
   // Add virtual buttons
   let buttonImage = document.createElement("img");
   buttonImage.id = "pyxel-gamepad-button";
   buttonImage.src = _scriptDir() + GAMEPAD_BUTTON_PATH;
   buttonImage.tabindex = -1;
-  pyxelScreen.appendChild(buttonImage);
+  buttonImage.onload = () => {
+    pyxelScreen.appendChild(buttonImage);
+    _updateScreenElementsSize();
+  };
 
   // Register virtual gamepad
   let gamepad = {
@@ -255,9 +299,9 @@ function _addVirtualGamepad(mode) {
   window.dispatchEvent(event);
 
   // Set touch event handler
-  let crossRect = crossImage.getBoundingClientRect();
-  let buttonRect = buttonImage.getBoundingClientRect();
   let touchHandler = (event) => {
+    let crossRect = crossImage.getBoundingClientRect();
+    let buttonRect = buttonImage.getBoundingClientRect();
     for (let i = 0; i < gamepad.buttons.length; i++) {
       gamepad.buttons[i].pressed = false;
     }
@@ -344,16 +388,6 @@ async function _executePyxelCommand(pyodide, params) {
   }
 }
 
-function _waitForEvent(target, event) {
-  return new Promise((resolve) => {
-    let listener = (...args) => {
-      target.removeEventListener(event, listener);
-      resolve(...args);
-    };
-    target.addEventListener(event, listener);
-  });
-}
-
 class PyxelRunElement extends HTMLElement {
   static get observedAttributes() {
     return ["root", "name", "script", "packages", "gamepad"];
@@ -432,4 +466,4 @@ function _registerCustomElements() {
   window.customElements.define("pyxel-edit", PyxelEditElement);
 }
 
-_setup();
+_initialize();
