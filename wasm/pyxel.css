@@ -29,8 +29,8 @@ div#pyxel-screen {
   position: fixed;
   left: 0%;
   top: 0%;
-  width: calc(100% + 1px);
-  height: calc(100% + 1px);
+  width: 100%;
+  height: 100%;
 }
 
 canvas#canvas {
@@ -46,7 +46,6 @@ img#pyxel-logo {
   position: absolute;
   left: 50%;
   top: 50%;
-  min-width: 20vmax;
   transform: translate(-50%, -50%);
   image-rendering: pixelated;
   pointer-events: none;
@@ -56,7 +55,6 @@ img#pyxel-prompt {
   position: absolute;
   left: 50%;
   top: 50%;
-  min-width: 25vmax;
   transform: translate(-50%, -50%);
   image-rendering: pixelated;
   pointer-events: none;
@@ -64,18 +62,16 @@ img#pyxel-prompt {
 
 img#pyxel-gamepad-cross {
   position: absolute;
-  left: 0%;
+  left: 1%;
   bottom: 5%;
-  min-width: 20vmax;
   image-rendering: pixelated;
   pointer-events: none;
 }
 
 img#pyxel-gamepad-button {
   position: absolute;
-  right: 0%;
+  right: 1%;
   bottom: 5%;
-  min-width: 20vmax;
   image-rendering: pixelated;
   pointer-events: none;
 }
