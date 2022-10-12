@@ -107,8 +107,6 @@ async function _createScreenElements() {
     pyxelScreen.id = "pyxel-screen";
     pyxelScreen.classList.add("default-pyxel-screen");
     document.body.appendChild(pyxelScreen);
-  } else if (getComputedStyle(pyxelScreen).position === "static") {
-    pyxelScreen.style.position = "absolute";
   }
   pyxelScreen.oncontextmenu = (event) => event.preventDefault();
   window.addEventListener("resize", _updateScreenElementsSize);
@@ -125,11 +123,9 @@ async function _createScreenElements() {
   logoImage.src = _scriptDir() + PYXEL_LOGO_PATH;
   logoImage.tabindex = -1;
   await _waitForEvent(logoImage, "load");
+  await new Promise((resolve) => setTimeout(resolve, 50));
   pyxelScreen.appendChild(logoImage);
   _updateScreenElementsSize();
-  setTimeout(() => {
-    _updateScreenElementsSize();
-  }, 50);
 }
 
 async function _loadScript(scriptSrc) {
