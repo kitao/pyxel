@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.8.19
+
+- Fixed URLs in the launcher page
+- Fixed resizing of screen elements correctly
+
 ## 1.8.18
 
 - Fixed the name of the startup script to be main
