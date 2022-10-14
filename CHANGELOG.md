@@ -3,6 +3,7 @@
 ## 1.8.20
 
 - Changed not to set the position style for the screen div
+- Added a packages attribute to the script_test example
 
 ## 1.8.19
 
