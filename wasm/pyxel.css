@@ -1,14 +1,34 @@
+:root {
+  --pyxel-black: #000000;
+  --pyxel-navy: #2b335f;
+  --pyxel-purple: #7e2072;
+  --pyxel-green: #19959c;
+  --pyxel-brown: #8b4852;
+  --pyxel-dark-blue: #395c98;
+  --pyxel-light-blue: #a9c1ff;
+  --pyxel-white: #eeeeee;
+  --pyxel-red: #d4186c;
+  --pyxel-orange: #d38441;
+  --pyxel-yellow: #e9c35b;
+  --pyxel-lime: #70c6a9;
+  --pyxel-cyan: #7696de;
+  --pyxel-gray: #a3a3a3;
+  --pyxel-pink: #ff9798;
+  --pyxel-peach: #edc7b0;
+  --pyxel-background-color: #202224;
+}
+
 .pyxel-scheme {
   color: #ffffff;
-  background-color: #202124;
+  background-color: var(--pyxel-background-color);
 }
 
 .pyxel-scheme a:link {
-  color: #a9c1ff;
+  color: var(--pyxel-light-blue);
 }
 
 .pyxel-scheme a:visited {
-  color: #7696de;
+  color: var(--pyxel-cyan);
 }
 
 .pyxel-scheme pre {
@@ -16,13 +36,13 @@
 }
 
 .pyxel-scheme .code {
-  color: #d38441;
+  color: var(--pyxel-orange);
   font-family: monospace;
   font-size: large;
 }
 
 div#pyxel-screen {
-  background-color: #202124;
+  background-color: var(--pyxel-background-color);
 }
 
 .default-pyxel-screen {
@@ -46,6 +66,7 @@ img#pyxel-logo {
   position: absolute;
   left: 50%;
   top: 50%;
+  --min-width-ratio: 0.2;
   transform: translate(-50%, -50%);
   image-rendering: pixelated;
   pointer-events: none;
@@ -55,6 +76,7 @@ img#pyxel-prompt {
   position: absolute;
   left: 50%;
   top: 50%;
+  --min-width-ratio: 0.25;
   transform: translate(-50%, -50%);
   image-rendering: pixelated;
   pointer-events: none;
@@ -64,6 +86,7 @@ img#pyxel-gamepad-cross {
   position: absolute;
   left: 1%;
   bottom: 5%;
+  --min-width-ratio: 0.2;
   image-rendering: pixelated;
   pointer-events: none;
 }
@@ -72,6 +95,7 @@ img#pyxel-gamepad-button {
   position: absolute;
   right: 1%;
   bottom: 5%;
+  --min-width-ratio: 0.2;
   image-rendering: pixelated;
   pointer-events: none;
 }
