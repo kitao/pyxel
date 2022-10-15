@@ -199,10 +199,6 @@ impl Platform {
         self.sdl_timer.ticks()
     }
 
-    pub fn sleep(&mut self, ms: u32) {
-        self.sdl_timer.delay(ms);
-    }
-
     pub fn poll_event(&mut self) -> Option<Event> {
         loop {
             let sdl_event = self.sdl_event_pump.poll_event();
@@ -473,7 +469,6 @@ impl Platform {
                 self.sleep((wait_ms / 2.0) as u32);
             }
         }
-
         #[cfg(target_os = "emscripten")]
         emscripten::set_main_loop(main_loop);
     }
@@ -532,17 +527,14 @@ mod emscripten {
     }
 
     unsafe extern "C" fn callback_wrapper<F: FnMut()>(arg: *mut c_void) {
-        let callback = arg as *mut F;
-        (*callback)();
+        (*arg.cast::<F>())();
     }
 
     pub fn set_main_loop<F: FnMut()>(callback: F) {
-        use crate::platform::Platform;
-        Platform::instance().sleep(10); // TODO: Clarify why it doesn't work without this waiting time
         unsafe {
             emscripten_set_main_loop_arg(
                 callback_wrapper::<F>,
-                Box::into_raw(Box::new(callback)) as *mut c_void,
+                Box::into_raw(Box::new(callback)).cast::<std::ffi::c_void>(),
                 0,
                 1,
             );
