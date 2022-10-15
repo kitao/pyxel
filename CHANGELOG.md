@@ -3,6 +3,7 @@
 ## 1.8.21
 
 - Changed to use CSS variables for the web
+- Removed unnecessary sleep for the web
 
 ## 1.8.20
 
