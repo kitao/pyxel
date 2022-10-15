@@ -199,6 +199,11 @@ impl Platform {
         self.sdl_timer.ticks()
     }
 
+    #[allow(dead_code)]
+    pub fn sleep(&mut self, ms: u32) {
+        self.sdl_timer.delay(ms);
+    }
+
     pub fn poll_event(&mut self) -> Option<Event> {
         loop {
             let sdl_event = self.sdl_event_pump.poll_event();
