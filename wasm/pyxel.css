@@ -66,8 +66,8 @@ img#pyxel-logo {
   position: absolute;
   left: 50%;
   top: 50%;
-  --min-width-ratio: 0.2;
   transform: translate(-50%, -50%);
+  --min-width-ratio: 0.2;
   image-rendering: pixelated;
   pointer-events: none;
 }
@@ -76,8 +76,8 @@ img#pyxel-prompt {
   position: absolute;
   left: 50%;
   top: 50%;
-  --min-width-ratio: 0.25;
   transform: translate(-50%, -50%);
+  --min-width-ratio: 0.25;
   image-rendering: pixelated;
   pointer-events: none;
 }
