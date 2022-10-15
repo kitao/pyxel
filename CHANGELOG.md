@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.21
+
+- Changed to use CSS variables for the web
+
 ## 1.8.20
 
 - Changed not to set the position style for the screen div

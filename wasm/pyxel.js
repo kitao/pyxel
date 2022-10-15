@@ -68,26 +68,25 @@ function _suppressPinchOperations() {
   document.addEventListener("touchmove", touchHandler, { passive: false });
 }
 
+function _setMinWidthFromRatio(selector, screenSize) {
+  let elem = document.querySelector(selector);
+  if (!elem) {
+    return;
+  }
+  let minWidthRatio = parseFloat(
+    getComputedStyle(elem).getPropertyValue("--min-width-ratio")
+  );
+  elem.style.minWidth = `${screenSize * minWidthRatio}px`;
+}
+
 function _updateScreenElementsSize() {
   let pyxelScreen = document.querySelector("div#pyxel-screen");
   let { width, height } = pyxelScreen.getBoundingClientRect();
   let screenSize = Math.max(width, height);
-  let logoImage = document.querySelector("img#pyxel-logo");
-  if (logoImage) {
-    logoImage.style.minWidth = `${screenSize * 0.2}px`;
-  }
-  let promptImage = document.querySelector("img#pyxel-prompt");
-  if (promptImage) {
-    promptImage.style.minWidth = `${screenSize * 0.25}px`;
-  }
-  let crossImage = document.querySelector("img#pyxel-gamepad-cross");
-  if (crossImage) {
-    crossImage.style.minWidth = `${screenSize * 0.2}px`;
-  }
-  let buttonImage = document.querySelector("img#pyxel-gamepad-button");
-  if (buttonImage) {
-    buttonImage.style.minWidth = `${screenSize * 0.2}px`;
-  }
+  _setMinWidthFromRatio("img#pyxel-logo", screenSize);
+  _setMinWidthFromRatio("img#pyxel-prompt", screenSize);
+  _setMinWidthFromRatio("img#pyxel-gamepad-cross", screenSize);
+  _setMinWidthFromRatio("img#pyxel-gamepad-button", screenSize);
 }
 
 function _waitForEvent(target, event) {
