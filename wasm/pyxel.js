@@ -357,16 +357,25 @@ async function _executePyxelCommand(pyodide, params) {
   switch (params.command) {
     case "run":
       if (params.name) {
-        pythonCode = `import pyxel.cli; pyxel.cli.run_python_script("${params.name}")`;
+        pythonCode = `
+          import pyxel.cli
+          pyxel.cli.run_python_script("${params.name}")
+        `;
       } else if (params.script) {
         pythonCode = params.script;
       }
       break;
     case "play":
-      pythonCode = `import pyxel.cli; pyxel.cli.play_pyxel_app("${params.name}")`;
+      pythonCode = `
+        import pyxel.cli
+        pyxel.cli.play_pyxel_app("${params.name}")
+      `;
       break;
     case "edit":
-      pythonCode = `import pyxel.cli; pyxel.cli.edit_pyxel_resource("${params.name}", "${params.editor}")`;
+      pythonCode = `
+        import pyxel.cli
+        pyxel.cli.edit_pyxel_resource("${params.name}", "${params.editor}")
+      `;
       break;
   }
   try {
