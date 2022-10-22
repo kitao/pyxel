@@ -21,7 +21,6 @@ harness = false
 
 [dependencies]
 array-macro = "2.1"
-chrono = "0.4"
 gif = "0.11"
 image = "0.24"
 indexmap = "1.8"
@@ -32,6 +31,9 @@ platform-dirs = "0.3"
 rand = "0.8"
 rand_xoshiro = "0.6"
 zip = { version = "0.6", default-features = false, features = ["deflate"] }
+
+[target.'cfg(any(target_os = "windows", target_os = "macos", target_os = "linux"))'.dependencies]
+chrono = "0.4"
 
 [target.'cfg(any(target_os = "windows", target_os = "macos"))'.dependencies]
 sdl2 = { version = "0.35", default-features = false, features = [
