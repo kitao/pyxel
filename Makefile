@@ -82,8 +82,8 @@ distclean:
 	@rm -rf $(CRATES_DIR)/pyxel-extension/target
 
 lint:
-	@cd $(CRATES_DIR)/pyxel-core; cargo clippy -q -- --no-deps
-	@cd $(CRATES_DIR)/pyxel-extension; cargo clippy -q -- --no-deps
+	@cd $(CRATES_DIR)/pyxel-core; cargo clippy -q --all-targets --all-features -- --no-deps
+	@cd $(CRATES_DIR)/pyxel-extension; cargo clippy -q --all-targets --all-features -- --no-deps
 	@flake8 $(SCRIPTS_DIR) $(PYXEL_DIR)
 
 format:
