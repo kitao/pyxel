@@ -2,6 +2,8 @@ use std::cmp::min;
 #[cfg(not(target_os = "emscripten"))]
 use std::process::exit;
 
+#[cfg(not(target_os = "emscripten"))]
+use chrono::Local;
 use sdl2::audio::{
     AudioCallback as SdlAudioCallback, AudioDevice as SdlAudioDevice,
     AudioSpecDesired as SdlAudioSpecDesired,
@@ -486,6 +488,31 @@ impl Platform {
         emscripten::force_exit(0);
     }
 
+    pub fn local_time_string() -> String {
+        #[cfg(not(target_os = "emscripten"))]
+        return Local::now().format("%Y%m%d-%H%M%S").to_string();
+
+        #[cfg(target_os = "emscripten")]
+        {
+            let script = "
+                let now = new Date();
+                let year = now.getFullYear();
+                let month = now.getMonth() + 1;
+                let date = now.getDate();
+                let hour = now.getHours();
+                let min = now.getMinutes();
+                let sec = now.getSeconds();
+                `${year}${month}${date}-${hour}${min}${sec}`
+            ";
+            emscripten::run_script_string(script)
+        }
+    }
+
+    pub fn save_file_on_web_browser(_filename: &str) {
+        #[cfg(target_os = "emscripten")]
+        emscripten::run_script(&format!("_savePyxelFile('{}');", _filename));
+    }
+
     fn screen_pos_scale(&self) -> (u32, u32, u32) {
         let (window_width, window_height) = self.sdl_canvas.window().size();
         let screen_scale = min(
@@ -516,7 +543,8 @@ impl Platform {
 
 #[cfg(target_os = "emscripten")]
 mod emscripten {
-    use std::os::raw::{c_int, c_void};
+    use std::ffi::{CStr, CString};
+    use std::os::raw::{c_char, c_int, c_void};
 
     #[allow(non_camel_case_types)]
     type em_arg_callback_func = unsafe extern "C" fn(*mut c_void);
@@ -529,6 +557,8 @@ mod emscripten {
             simulate_infinite_loop: c_int,
         );
         pub fn emscripten_force_exit(status: c_int);
+        pub fn emscripten_run_script(script: *const c_char);
+        pub fn emscripten_run_script_string(script: *const c_char) -> *const c_char;
     }
 
     unsafe extern "C" fn callback_wrapper<F: FnMut()>(arg: *mut c_void) {
@@ -549,6 +579,23 @@ mod emscripten {
     pub fn force_exit(status: i32) {
         unsafe {
             emscripten_force_exit(status);
+        }
+    }
+
+    pub fn run_script(script: &str) {
+        let script = CString::new(script).unwrap();
+        unsafe {
+            emscripten_run_script(script.as_ptr());
+        }
+    }
+
+    pub fn run_script_string(script: &str) -> String {
+        let script = CString::new(script).unwrap();
+        unsafe {
+            return CStr::from_ptr(emscripten_run_script_string(script.as_ptr()))
+                .to_str()
+                .unwrap()
+                .to_string();
         }
     }
 }

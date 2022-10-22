@@ -149,7 +149,7 @@ async function _loadPyodideAndPyxel() {
 }
 
 function _hookFileOperations(pyodide, root) {
-  // Create function to copy file
+  // Define function to copy file
   let fs = pyodide.FS;
   let copyFile = (filename) => {
     // Check file
@@ -210,6 +210,24 @@ function _hookFileOperations(pyodide, root) {
   fs.stat = (path) => {
     copyFile(path);
     return stat(path);
+  };
+
+  // Define function to save file
+  _savePyxelFile = (filename) => {
+    let a = document.createElement("a");
+    a.download = filename;
+    a.href = URL.createObjectURL(
+      new Blob([fs.readFile(filename)], {
+        type: "application/octet-stream",
+      })
+    );
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    }, 2000);
   };
 }
 
@@ -372,6 +390,11 @@ async function _executePyxelCommand(pyodide, params) {
       `;
       break;
     case "edit":
+      document.addEventListener("keydown", (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+          event.preventDefault();
+        }
+      });
       pythonCode = `
         import pyxel.cli
         pyxel.cli.edit_pyxel_resource("${params.name}", "${params.editor}")

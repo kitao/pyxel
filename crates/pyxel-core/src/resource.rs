@@ -1,14 +1,14 @@
 use std::fs::File;
 use std::io::{Read, Write};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
-use chrono::Local;
 use platform_dirs::UserDirs;
 use zip::write::FileOptions as ZipFileOptions;
 use zip::{ZipArchive, ZipWriter};
 
 use crate::image::Image;
 use crate::music::Music;
+use crate::platform::Platform;
 use crate::screencast::Screencast;
 use crate::settings::{
     NUM_COLORS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS, PYXEL_VERSION,
@@ -51,15 +51,14 @@ impl Resource {
         self.screencast.capture(image, colors, frame_count);
     }
 
-    fn export_path() -> Option<String> {
-        UserDirs::new().map(|user_dirs| {
-            user_dirs
-                .desktop_dir
-                .join(Local::now().format("pyxel-%Y%m%d-%H%M%S").to_string())
-                .to_str()
-                .unwrap()
-                .to_string()
-        })
+    fn export_path() -> String {
+        let desktop_dir = if let Some(user_dirs) = UserDirs::new() {
+            user_dirs.desktop_dir
+        } else {
+            PathBuf::new()
+        };
+        let basename = "pyxel-".to_string() + &Platform::local_time_string();
+        desktop_dir.join(basename).to_str().unwrap().to_string()
     }
 }
 
@@ -149,16 +148,14 @@ pub fn save(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool
         serialize!(Music, music, NUM_MUSICS);
     }
     zip.finish().unwrap();
+    Platform::save_file_on_web_browser(filename);
 }
 
 pub fn screenshot(scale: Option<u32>) {
-    Resource::export_path().map_or_else(
-        || println!("Failed to save screenshot to desktop"),
-        |filename| {
-            let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
-            crate::screen().lock().save(&filename, scale);
-        },
-    );
+    let filename = Resource::export_path();
+    let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
+    crate::screen().lock().save(&filename, scale);
+    Platform::save_file_on_web_browser(&(filename + ".png"));
 }
 
 pub fn reset_capture() {
@@ -166,11 +163,8 @@ pub fn reset_capture() {
 }
 
 pub fn screencast(scale: Option<u32>) {
-    Resource::export_path().map_or_else(
-        || println!("Failed to save screen capture video to desktop"),
-        |filename| {
-            let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
-            Resource::instance().screencast.save(&filename, scale);
-        },
-    );
+    let filename = Resource::export_path();
+    let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
+    Resource::instance().screencast.save(&filename, scale);
+    Platform::save_file_on_web_browser(&(filename + ".gif"));
 }
