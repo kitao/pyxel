@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.8.22
+
+- Added file save function for the web
+- Changed to prevent web browser ctrl+s action in Pyxel Editor
+
 ## 1.8.21
 
 - Changed to use CSS variables for the web
