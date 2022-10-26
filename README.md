@@ -13,7 +13,7 @@
 
 Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
 
-<img src="docs/images/pyxel_300000_downloads.png" width="480">
+<div><video src="https://user-images.githubusercontent.com/678802/197919312-61de8cae-a24e-40c3-8cd5-ce5b3a224871.mp4" width="480" autoplay loop></video></div>
 
 The motivation for the development of Pyxel is the feedback from users. Please give Pyxel a star on GitHub!
 
