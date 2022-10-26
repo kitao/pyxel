@@ -13,6 +13,10 @@
 
 Dank seiner einfachen, von Retro-Spielkonsolen inspirierten, Spezifikationen, wie z. B. dass nur 16 Farben angezeigt werden können und nur 4 Töne gleichzeitig wiedergegeben werden können, kannst du dich frei fühlen, um Spiele im Pixel-Art-Stil zu entwickeln.
 
+<video src="images/pyxel_300000_downloads.mp4" width="480" autoplay loop></video>
+
+Die Motivation für die Entwicklung von Pyxel ist das Feedback der Nutzer. Bitte geben Sie Pyxel einen Stern auf GitHub!
+
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">
 <img src="images/01_hello_pyxel.gif" width="320">
@@ -575,6 +579,7 @@ Bei einem eingereichten Pull-Request wird davon ausgegangen, dass der Veröffent
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [Developer's Twitter account](https://twitter.com/kitao)
 
 ## Lizenz
 

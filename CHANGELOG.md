@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.23
+
+- Added a video and a message to users to the READMEs
+
 ## 1.8.22
 
 - Added file save function for the web
