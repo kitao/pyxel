@@ -13,6 +13,10 @@
 
 Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
 
+<video src="docs/images/pyxel_300000_downloads.mp4" width="480" autoplay loop></video>
+
+The motivation for the development of Pyxel is the feedback from users. Please give Pyxel a star on GitHub!
+
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">
 <img src="docs/images/01_hello_pyxel.gif" width="320">
@@ -576,6 +580,7 @@ Submitted pull request is deemed to have agreed to publish under [MIT License](L
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [Developer's Twitter account](https://twitter.com/kitao)
 
 ## License
 
