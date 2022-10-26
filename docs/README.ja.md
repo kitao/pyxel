@@ -13,7 +13,9 @@
 
 使える色は 16 色のみ、同時に再生できる音は 4 音までなど、レトロゲーム機を意識したシンプルな仕様で、Python でドット絵スタイルのゲームづくりが気軽に楽しめます。
 
+<a href="https://user-images.githubusercontent.com/678802/197921009-00c41319-9efd-4fe2-a5b0-4ca29ab0ba6c.mp4">
 <img src="images/pyxel_300000_downloads.png" width="480">
+</a>
 
 Pyxel 開発のモチベーションはユーザーの皆さんからのフィードバックです。GitHub で Pyxel へのスター登録をよろしくお願いします！
 
