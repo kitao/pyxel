@@ -13,6 +13,10 @@
 
 Благодаря своей простоте, вдохновленной старыми игровыми консолями (например, палитра состоит всего из 16 цветов, и только 4 звука могут быть проиграны одновременно), вы можете легко создавать игры в стиле пиксель-арт.
 
+<video src="images/pyxel_300000_downloads.mp4" width="480" autoplay loop></video>
+
+Мотивацией для разработки Pyxel является обратная связь от пользователей. Пожалуйста, дайте Pyxel звезду на GitHub!
+
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">
 <img src="images/01_hello_pyxel.gif" width="320">
@@ -576,6 +580,7 @@ Pyxel имеет «расширенные API», не упомянутые в э
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [Developer's Twitter account](https://twitter.com/kitao)
 
 ## Лицензия
 
