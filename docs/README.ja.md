@@ -13,6 +13,10 @@
 
 使える色は 16 色のみ、同時に再生できる音は 4 音までなど、レトロゲーム機を意識したシンプルな仕様で、Python でドット絵スタイルのゲームづくりが気軽に楽しめます。
 
+<video src="images/pyxel_300000_downloads.mp4" width="480" autoplay loop></video>
+
+Pyxel 開発のモチベーションはユーザーの皆さんからのフィードバックです。GitHub で Pyxel へのスター登録をよろしくお願いします！
+
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">
 <img src="images/01_hello_pyxel.gif" width="320">
@@ -576,6 +580,7 @@ Pyxel には「ユーザーを混乱させる可能性がある」「使うた�
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [Developer's Twitter account](https://twitter.com/kitao)
 
 ## ライセンス
 

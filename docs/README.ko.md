@@ -13,6 +13,10 @@
 
 16가지 색상만 사용하거나 동시에 4가지 소리만 재생하는 등 레트로 게임에 나올 법한 사양으로, Python에서 픽셀 아트 스타일의 게임을 마음껏 만들 수 있습니다.
 
+<video src="images/pyxel_300000_downloads.mp4" width="480" autoplay loop></video>
+
+Pyxel 개발의 동기는 사용자의 피드백입니다. GitHub에서 Pyxel에 별점을 주세요!
+
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">
 <img src="images/01_hello_pyxel.gif" width="320">
@@ -576,6 +580,7 @@ Pyxel에는 "사용자를 혼란스럽게 할 수 있거나", "사용하는 데 
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [Developer's Twitter account](https://twitter.com/kitao)
 
 ## 라이선스 정보
 

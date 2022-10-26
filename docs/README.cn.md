@@ -13,6 +13,10 @@
 
 由于像素风游戏的机制非常简单（如：最多只能显示 16 种颜色、播放 4 种声音等），现在你也可以轻松地享受这种游戏的制作过程。
 
+<video src="images/pyxel_300000_downloads.mp4" width="480" autoplay loop></video>
+
+Pyxel 开发的动力来自于用户的反馈。请在 GitHub 上给 Pyxel 一颗星吧！
+
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">
 <img src="images/01_hello_pyxel.gif" width="320">
@@ -577,6 +581,7 @@ Pyxel 还有一些“高级 API”，出于“可能令用户感到迷惑”、�
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Discord Server (English)](https://discord.gg/Z87eYHN)
 - [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [Developer's Twitter account](https://twitter.com/kitao)
 
 ## 许可证
 
