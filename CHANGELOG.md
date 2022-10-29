@@ -2,7 +2,7 @@
 
 ## 1.8.23
 
-- Added an image and a message to users to the READMEs
+- Added a video and a message to users to the READMEs
 
 ## 1.8.22
 

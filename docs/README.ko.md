@@ -13,9 +13,7 @@
 
 16가지 색상만 사용하거나 동시에 4가지 소리만 재생하는 등 레트로 게임에 나올 법한 사양으로, Python에서 픽셀 아트 스타일의 게임을 마음껏 만들 수 있습니다.
 
-<a href="https://user-images.githubusercontent.com/678802/197921009-00c41319-9efd-4fe2-a5b0-4ca29ab0ba6c.mp4">
-<img src="images/pyxel_300000_downloads.png" width="480">
-</a>
+<img src="images/pyxel_300000_downloads.gif" width="480">
 
 Pyxel 개발의 동기는 사용자의 피드백입니다. GitHub에서 Pyxel에 별점을 주세요!
 
