@@ -1,8 +1,10 @@
 # Change Log
 
-## 1.8.23
+## 1.9.0
 
 - Added a video and a message to users to the READMEs
+- Updated the Pyodide
+- Updated to the Emscripten version to 3.1.24
 
 ## 1.8.22
 
