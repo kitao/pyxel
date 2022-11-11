@@ -32,7 +32,7 @@ impl Input {
             key_states: HashMap::new(),
             key_values: HashMap::new(),
             input_keys: Vec::new(),
-            input_text: "".to_string(),
+            input_text: String::new(),
             drop_files: Vec::new(),
         });
     }
@@ -45,7 +45,7 @@ impl Input {
         self.key_values.insert(MOUSE_WHEEL_X, 0);
         self.key_values.insert(MOUSE_WHEEL_Y, 0);
         self.input_keys.clear();
-        self.input_text = "".to_string();
+        self.input_text = String::new();
         self.drop_files.clear();
     }
 
