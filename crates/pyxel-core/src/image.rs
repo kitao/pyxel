@@ -40,7 +40,7 @@ impl Image {
 
     pub fn from_image(filename: &str) -> SharedImage {
         let colors = crate::colors().lock();
-        let image_file = image::open(&Path::new(&filename))
+        let image_file = image::open(Path::new(&filename))
             .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename))
             .to_rgb8();
         let (width, height) = image_file.dimensions();
