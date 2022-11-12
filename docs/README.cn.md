@@ -180,10 +180,9 @@ App()
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-对于 python 包版本，可以像普通 Python 脚本一样执行：
+它也可以像普通的 Python 脚本一样被执行：
 
 ```sh
-cd pyxel_examples
 python3 PYTHON_SCRIPT_FILE
 ```
 
@@ -283,7 +282,7 @@ Pyxel 支持跨平台的应用文件格式（Pyxel 应用文件）。
 pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
 ```
 
-如果应用需要包含源文件或扩展模块，将他们放在应用文件夹。
+如果应用程序应包括资源或其他模块，请将它们放在应用程序目录中。
 
 创建好的应用文件使用以下命令执行：
 

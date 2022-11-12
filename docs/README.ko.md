@@ -180,10 +180,9 @@ App()
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-패키지 버전의 경우 일반 Python 스크립트와 마찬가지로 실행할 수 있습니다.
+일반 Python 스크립트처럼 실행할 수도 있습니다.
 
 ```sh
-cd pyxel_examples
 python3 PYTHON_SCRIPT_FILE
 ```
 
@@ -282,7 +281,7 @@ Pyxel 애플리케이션 파일 (.pyxapp)은 다음 명령어를 사용해 생�
 pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
 ```
 
-애플리케이션에 리소스 또는 추가 모듈이 포함되어야 하는 경우, 애플리케이션이 있는 폴더에 배치하면 됩니다.
+응용 프로그램에 리소스 또는 추가 모듈이 포함되어야 하는 경우 응용 프로그램 디렉터리에 배치합니다.
 
 생성된 애플리케이션 파일은 다음 명령어를 사용하여 실행할 수 있습니다.
 

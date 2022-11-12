@@ -180,10 +180,9 @@ Lo script Python creato può essere eseguito con il seguente comando:
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-Per la versione pacchettizzata, può essere eseguito come un normale script Python:
+Può anche essere eseguito come un normale script Python:
 
 ```sh
-cd pyxel_examples
 python3 PYTHON_SCRIPT_FILE
 ```
 
@@ -282,7 +281,7 @@ Creare il file applicazione Pyxel (.pyxapp) con il seguente comando:
 pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
 ```
 
-Se l'applicazione dovrebbe includere risorse o moduli aggiuntivi, posizionarli nella cartella dell'applicazione.
+Se l'applicazione deve includere risorse o moduli aggiuntivi, collocarli nella directory dell'applicazione.
 
 Il file applicazione creato può essere eseguito con il seguente comando:
 
