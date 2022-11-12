@@ -280,7 +280,7 @@ Pyxels a un format de fichier spécifique (fichier d’application Pyxel) qui fo
 Créez le fichier d’application Pyxel (.pyxapp) avec la commande suivante :
 
 ```sh
-pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
+pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
 Si l'application doit inclure des ressources ou des modules supplémentaires, placez-les dans le répertoire de l'application.
