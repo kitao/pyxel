@@ -278,7 +278,7 @@ Pyxel은 여러 플랫폼에서 작동하는 전용 애플리케이션 배포 �
 Pyxel 애플리케이션 파일 (.pyxapp)은 다음 명령어를 사용해 생성할 수 있습니다.
 
 ```sh
-pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
+pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
 응용 프로그램에 리소스 또는 추가 모듈이 포함되어야 하는 경우 응용 프로그램 디렉터리에 배치합니다.
