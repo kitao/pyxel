@@ -131,20 +131,20 @@ def run_python_script(python_script_file):
 
 
 def watch_and_run_python_script(watch_dir, python_script_file):
+    _check_dir_exists(watch_dir)
+    watch_info_file = os.path.join(
+        os.path.dirname(os.path.abspath(python_script_file)),
+        pyxel.WATCH_INFO_FILE,
+    )
     try:
-        print(f"start watching '{watch_dir}' (Ctrl+C to stop)")
-        window_state_file = os.path.join(
-            os.path.dirname(os.path.abspath(python_script_file)),
-            pyxel.WINDOW_STATE_FILE,
-        )
-        if not os.path.isfile(window_state_file):
-            should_remove_window_state_file = True
-            with open(window_state_file, "w") as f:
-                f.write("")
+        print(f"start watching '{watch_dir}'")
         signal.signal(signal.SIGTERM, lambda: sys.exit(1))
+        if not os.path.isfile(watch_info_file):
+            with open(watch_info_file, "w") as f:
+                f.write("")
         timestamps = _timestamps_in_dir(watch_dir)
         worker = _run_python_script_in_separate_process(python_script_file)
-        while True:
+        while os.path.isfile(watch_info_file):
             time.sleep(0.5)
             last_timestamps = timestamps
             timestamps = _timestamps_in_dir(watch_dir)
@@ -153,13 +153,14 @@ def watch_and_run_python_script(watch_dir, python_script_file):
                 worker.terminate()
                 worker = _run_python_script_in_separate_process(python_script_file)
     except KeyboardInterrupt:
-        print("\r", end="")
-        print("stopped watching")
+        pass
     finally:
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
         signal.signal(signal.SIGINT, signal.SIG_IGN)
-        if should_remove_window_state_file and os.path.isfile(window_state_file):
-            os.remove(window_state_file)
+        if os.path.isfile(watch_info_file):
+            os.remove(watch_info_file)
+        print("\r", end="")
+        print("stopped watching")
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
