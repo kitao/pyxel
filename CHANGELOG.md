@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.9.1
+
+- Enabled to keep window state
+- Added the watch command for live coding
+- Renamed PYXEL_VERSION to VERSION
+- Renamed PYXEL_WORKING_DIR to WORKING_DIR
+- Added the WINDOW_STATE_FILE constant
+
 ## 1.9.0
 
 - Added a video and a message to users to the READMEs
