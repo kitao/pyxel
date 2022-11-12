@@ -1,5 +1,5 @@
 use std::cmp::min;
-use std::fs::{canonicalize, read_to_string, write};
+use std::fs::{canonicalize, read_to_string, remove_file, write};
 use std::path::PathBuf;
 #[cfg(not(target_os = "emscripten"))]
 use std::process::exit;
@@ -25,7 +25,7 @@ use sdl2::Sdl as SdlContext;
 use sdl2::TimerSubsystem as SdlTimer;
 
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
-use crate::settings::WINDOW_STATE_FILE;
+use crate::settings::WATCH_INFO_FILE;
 use crate::types::{Color, Rgb8};
 
 pub enum DisplayScale {
@@ -69,7 +69,7 @@ pub struct Platform {
     screen_height: u32,
     mouse_x: i32,
     mouse_y: i32,
-    window_state_file: Option<PathBuf>,
+    watch_info_file: Option<PathBuf>,
     window_state: WindowState,
 }
 
@@ -141,11 +141,11 @@ impl Platform {
             screen_height,
             mouse_x: i32::MIN,
             mouse_y: i32::MIN,
-            window_state_file: None,
+            watch_info_file: None,
             window_state: WindowState::Window(0, 0, 0, 0),
         });
-        Self::instance().load_window_state();
-        Self::instance().save_window_state();
+        Self::instance().load_watch_info();
+        Self::instance().save_watch_info();
     }
 
     pub const fn screen_width(&self) -> u32 {
@@ -441,7 +441,7 @@ impl Platform {
             .copy(&self.sdl_texture, None, Some(dst))
             .unwrap();
         self.sdl_canvas.present();
-        self.save_window_state();
+        self.save_watch_info();
     }
 
     pub fn start_audio(
@@ -501,6 +501,7 @@ impl Platform {
 
     pub fn quit(&mut self) {
         self.pause_audio();
+        self.remove_watch_info();
         #[cfg(not(target_os = "emscripten"))]
         exit(0);
         #[cfg(target_os = "emscripten")]
@@ -559,32 +560,32 @@ impl Platform {
         (mouse_x, mouse_y)
     }
 
-    fn load_window_state(&mut self) {
-        if !PathBuf::from(WINDOW_STATE_FILE).exists() {
-            self.window_state_file = None;
+    fn load_watch_info(&mut self) {
+        if !PathBuf::from(WATCH_INFO_FILE).exists() {
+            self.watch_info_file = None;
             return;
         }
-        let window_state_file = canonicalize(&PathBuf::from(WINDOW_STATE_FILE)).unwrap();
-        let buf = read_to_string(&window_state_file).unwrap();
-        let buf: Vec<&str> = buf.split('\n').collect();
-        if !buf.is_empty() && buf[0] == "fullscreen" {
+        let watch_info_file = canonicalize(&PathBuf::from(WATCH_INFO_FILE)).unwrap();
+        let watch_info = read_to_string(&watch_info_file).unwrap();
+        let watch_info: Vec<&str> = watch_info.split('\n').collect();
+        if !watch_info.is_empty() && watch_info[0] == "fullscreen" {
             self.set_fullscreen(true);
-        } else if buf.len() >= 4 {
+        } else if watch_info.len() >= 4 {
             self.set_fullscreen(false);
             self.sdl_canvas.window_mut().set_position(
-                sdl2::video::WindowPos::Positioned(buf[0].parse().unwrap()),
-                sdl2::video::WindowPos::Positioned(buf[1].parse().unwrap()),
+                sdl2::video::WindowPos::Positioned(watch_info[0].parse().unwrap()),
+                sdl2::video::WindowPos::Positioned(watch_info[1].parse().unwrap()),
             );
-            let _droppable = self
-                .sdl_canvas
-                .window_mut()
-                .set_size(buf[2].parse().unwrap(), buf[3].parse().unwrap());
+            let _droppable = self.sdl_canvas.window_mut().set_size(
+                watch_info[2].parse().unwrap(),
+                watch_info[3].parse().unwrap(),
+            );
         }
-        self.window_state_file = Some(window_state_file);
+        self.watch_info_file = Some(watch_info_file);
     }
 
-    fn save_window_state(&mut self) {
-        if self.window_state_file.is_none() {
+    fn save_watch_info(&mut self) {
+        if self.watch_info_file.is_none() {
             return;
         }
         let is_fullscreen = self.is_fullscreen();
@@ -599,7 +600,7 @@ impl Platform {
             return;
         }
         self.window_state = window_state;
-        let buf = if is_fullscreen {
+        let watch_info = if is_fullscreen {
             String::from("fullscreen\n")
         } else {
             format!(
@@ -607,7 +608,16 @@ impl Platform {
                 window_x, window_y, window_width, window_height
             )
         };
-        write(self.window_state_file.as_ref().unwrap(), buf).unwrap();
+        let watch_info_file = self.watch_info_file.as_ref().unwrap();
+        let _droppable = write(watch_info_file, watch_info);
+    }
+
+    fn remove_watch_info(&self) {
+        if let Some(watch_info_file) = self.watch_info_file.as_ref() {
+            if watch_info_file.exists() {
+                let _droppable = remove_file(watch_info_file);
+            }
+        }
     }
 }
 
