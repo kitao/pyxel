@@ -11,8 +11,7 @@ use crate::music::Music;
 use crate::platform::Platform;
 use crate::screencast::Screencast;
 use crate::settings::{
-    NUM_COLORS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS, PYXEL_VERSION,
-    RESOURCE_ARCHIVE_DIRNAME,
+    NUM_COLORS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS, RESOURCE_ARCHIVE_DIRNAME, VERSION,
 };
 use crate::sound::Sound;
 use crate::tilemap::Tilemap;
@@ -77,7 +76,7 @@ pub fn load(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool
     };
     let version = parse_version_string(&contents).unwrap();
     assert!(
-        version <= parse_version_string(PYXEL_VERSION).unwrap(),
+        version <= parse_version_string(VERSION).unwrap(),
         "Unsupported resource file version '{}'",
         contents
     );
@@ -120,7 +119,7 @@ pub fn save(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool
     let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
     zip.start_file(version_name, ZipFileOptions::default())
         .unwrap();
-    zip.write_all(PYXEL_VERSION.as_bytes()).unwrap();
+    zip.write_all(VERSION.as_bytes()).unwrap();
 
     macro_rules! serialize {
         ($type: ty, $getter: ident, $count: expr) => {
