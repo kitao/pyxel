@@ -219,7 +219,7 @@ function _hookFileOperations(pyodide, root) {
   // Define function to save file
   _savePyxelFile = (filename) => {
     let a = document.createElement("a");
-    a.download = filename;
+    a.download = filename.split(/[\\/]/).pop();
     a.href = URL.createObjectURL(
       new Blob([fs.readFile(filename)], {
         type: "application/octet-stream",

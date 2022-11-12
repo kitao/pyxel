@@ -6,6 +6,7 @@
 - Renamed PYXEL_VERSION to VERSION
 - Renamed PYXEL_WORKING_DIR to WORKING_DIR
 - Added the WATCH_INFO_FILE constant
+- Fixed filename for downloads in Pyxel Web
 
 ## 1.9.0
 
