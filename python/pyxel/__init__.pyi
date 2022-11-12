@@ -2,8 +2,9 @@
 from typing import Callable, List, Optional, Tuple, Union
 
 # Constants
-PYXEL_VERSION: str
-PYXEL_WORKING_DIR: str
+VERSION: str
+WORKING_DIR: str
+WINDOW_STATE_FILE: str
 
 APP_FILE_EXTENSION: str
 APP_STARTUP_SCRIPT_FILE: str
