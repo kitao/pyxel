@@ -123,7 +123,7 @@ test: build
 	@mkdir -p testapp/assets
 	@cp $(EXAMPLES_DIR)/10_platformer.py testapp
 	@cp $(EXAMPLES_DIR)/assets/platformer.pyxres testapp/assets
-	@pyxel package testapp 10_platformer.py
+	@pyxel package testapp testapp/10_platformer.py
 	@pyxel play testapp.pyxapp
 	@rm -rf testapp testapp.pyxapp
 
