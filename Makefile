@@ -114,6 +114,7 @@ test: build
 	@pyxel run $(EXAMPLES_DIR)/10_platformer.py
 	@pyxel run $(EXAMPLES_DIR)/11_offscreen.py
 	@pyxel run $(EXAMPLES_DIR)/12_perlin_noise.py
+	@pyxel watch $(EXAMPLES_DIR) $(EXAMPLES_DIR)/01_hello_pyxel.py
 	@pyxel play $(EXAMPLES_DIR)/30SecondsOfDaylight.pyxapp
 	@pyxel play $(EXAMPLES_DIR)/megaball.pyxapp
 	@pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
