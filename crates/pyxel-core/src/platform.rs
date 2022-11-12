@@ -1,4 +1,6 @@
 use std::cmp::min;
+use std::fs::{canonicalize, read_to_string, write};
+use std::path::PathBuf;
 #[cfg(not(target_os = "emscripten"))]
 use std::process::exit;
 
@@ -23,11 +25,18 @@ use sdl2::Sdl as SdlContext;
 use sdl2::TimerSubsystem as SdlTimer;
 
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
+use crate::settings::WINDOW_STATE_FILE;
 use crate::types::{Color, Rgb8};
 
 pub enum DisplayScale {
     Scale(u32),
     Ratio(f64),
+}
+
+#[derive(PartialEq)]
+enum WindowState {
+    Window(i32, i32, u32, u32),
+    Fullscreen,
 }
 
 pub trait AudioCallback {
@@ -60,6 +69,8 @@ pub struct Platform {
     screen_height: u32,
     mouse_x: i32,
     mouse_y: i32,
+    window_state_file: Option<PathBuf>,
+    window_state: WindowState,
 }
 
 unsafe_singleton!(Platform);
@@ -109,14 +120,14 @@ impl Platform {
                 sdl_game_controllers.push(gc);
             }
         }
-        let sdl_audio = if let Ok(sdl_audio) = sdl_context.audio() {
-            Some(sdl_audio)
-        } else {
-            println!("Unable to initialize the audio subsystem");
-            None
-        };
+        let sdl_audio = sdl_context.audio().map_or_else(
+            |_| {
+                println!("Unable to initialize the audio subsystem");
+                None
+            },
+            |sdl_audio| Some(sdl_audio),
+        );
         sdl_hint::set("SDL_MOUSE_FOCUS_CLICKTHROUGH", "1");
-
         Self::set_instance(Self {
             sdl_context,
             sdl_event_pump,
@@ -130,7 +141,11 @@ impl Platform {
             screen_height,
             mouse_x: i32::MIN,
             mouse_y: i32::MIN,
+            window_state_file: None,
+            window_state: WindowState::Window(0, 0, 0, 0),
         });
+        Self::instance().load_window_state();
+        Self::instance().save_window_state();
     }
 
     pub const fn screen_width(&self) -> u32 {
@@ -426,6 +441,7 @@ impl Platform {
             .copy(&self.sdl_texture, None, Some(dst))
             .unwrap();
         self.sdl_canvas.present();
+        self.save_window_state();
     }
 
     pub fn start_audio(
@@ -440,15 +456,18 @@ impl Platform {
             samples: Some(num_samples as u16),
         };
         self.sdl_audio_device = self.sdl_audio.as_ref().and_then(|sdl_audio| {
-            if let Ok(sdl_audio_device) =
-                sdl_audio.open_playback(None, &spec, |_| AudioContextHolder { audio })
-            {
-                sdl_audio_device.resume();
-                Some(sdl_audio_device)
-            } else {
-                println!("Unable to open a new audio device");
-                None
-            }
+            sdl_audio
+                .open_playback(None, &spec, |_| AudioContextHolder { audio })
+                .map_or_else(
+                    |_| {
+                        println!("Unable to open a new audio device");
+                        None
+                    },
+                    |sdl_audio_device| {
+                        sdl_audio_device.resume();
+                        Some(sdl_audio_device)
+                    },
+                )
         });
     }
 
@@ -538,6 +557,57 @@ impl Platform {
         mouse_x = (mouse_x - window_x - screen_x as i32) / screen_scale as i32;
         mouse_y = (mouse_y - window_y - screen_y as i32) / screen_scale as i32;
         (mouse_x, mouse_y)
+    }
+
+    fn load_window_state(&mut self) {
+        if !PathBuf::from(WINDOW_STATE_FILE).exists() {
+            self.window_state_file = None;
+            return;
+        }
+        let window_state_file = canonicalize(&PathBuf::from(WINDOW_STATE_FILE)).unwrap();
+        let buf = read_to_string(&window_state_file).unwrap();
+        let buf: Vec<&str> = buf.split('\n').collect();
+        if !buf.is_empty() && buf[0] == "fullscreen" {
+            self.set_fullscreen(true);
+        } else if buf.len() >= 4 {
+            self.set_fullscreen(false);
+            self.sdl_canvas.window_mut().set_position(
+                sdl2::video::WindowPos::Positioned(buf[0].parse().unwrap()),
+                sdl2::video::WindowPos::Positioned(buf[1].parse().unwrap()),
+            );
+            let _droppable = self
+                .sdl_canvas
+                .window_mut()
+                .set_size(buf[2].parse().unwrap(), buf[3].parse().unwrap());
+        }
+        self.window_state_file = Some(window_state_file);
+    }
+
+    fn save_window_state(&mut self) {
+        if self.window_state_file.is_none() {
+            return;
+        }
+        let is_fullscreen = self.is_fullscreen();
+        let (window_x, window_y) = self.sdl_canvas.window().position();
+        let (window_width, window_height) = self.sdl_canvas.window().size();
+        let window_state = if is_fullscreen {
+            WindowState::Fullscreen
+        } else {
+            WindowState::Window(window_x, window_y, window_width, window_height)
+        };
+        if window_state == self.window_state {
+            return;
+        }
+        self.window_state = window_state;
+        let buf = if is_fullscreen {
+            String::from("fullscreen\n")
+        } else {
+            format!(
+                "{}\n{}\n{}\n{}\n",
+                window_x, window_y, window_width, window_height
+            )
+        };
+        write(self.window_state_file.as_ref().unwrap(), buf).unwrap();
     }
 }
 

@@ -1,11 +1,14 @@
 import glob
+import multiprocessing
 import os
 import pathlib
 import re
 import runpy
 import shutil
+import signal
 import sys
 import tempfile
+import time
 import urllib.request
 import zipfile
 
@@ -17,6 +20,8 @@ def cli():
     command = sys.argv[1] if num_args > 1 else ""
     if command == "run" and num_args == 3:
         run_python_script(sys.argv[2])
+    if command == "watch" and num_args == 4:
+        watch_and_run_python_script(sys.argv[2], sys.argv[3])
     elif command == "play" and num_args == 3:
         play_pyxel_app(sys.argv[2])
     elif command == "edit" and (num_args == 2 or num_args == 3):
@@ -30,9 +35,10 @@ def cli():
 
 
 def _print_usage():
-    print(f"Pyxel {pyxel.PYXEL_VERSION}, a retro game engine for Python")
+    print(f"Pyxel {pyxel.VERSION}, a retro game engine for Python")
     print("usage:")
     print("    pyxel run PYTHON_SCRIPT_FILE(.py)")
+    print("    pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE(.py)")
     print("    pyxel play PYXEL_APP_FILE(.pyxapp)")
     print("    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]")
     print("    pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE(.py)")
@@ -59,7 +65,7 @@ def _check_newer_version():
     def parse_version(version):
         return list(map(int, version.split(".")))
 
-    if parse_version(latest_version) > parse_version(pyxel.PYXEL_VERSION):
+    if parse_version(latest_version) > parse_version(pyxel.VERSION):
         print(f"A new version, Pyxel {latest_version}, is available.")
 
 
@@ -89,7 +95,7 @@ def _check_dir_exists(dirname):
 
 
 def _make_app_dir():
-    play_dir = os.path.join(tempfile.gettempdir(), pyxel.PYXEL_WORKING_DIR, "play")
+    play_dir = os.path.join(tempfile.gettempdir(), pyxel.WORKING_DIR, "play")
     pathlib.Path(play_dir).mkdir(parents=True, exist_ok=True)
     for path in glob.glob(os.path.join(play_dir, "*")):
         pid = int(os.path.basename(path))
@@ -100,11 +106,62 @@ def _make_app_dir():
     return app_dir
 
 
+def _timestamps_in_dir(dirname):
+    files = _files_in_dir(dirname)
+    timestamps = {}
+    for file in files:
+        timestamps[file] = os.path.getmtime(file)
+    return timestamps
+
+
+def _run_python_script_in_separate_process(python_script_file):
+    worker = multiprocessing.Process(
+        target=run_python_script, args=(python_script_file,)
+    )
+    worker.daemon = True
+    worker.start()
+    return worker
+
+
 def run_python_script(python_script_file):
     python_script_file = _complete_extension(python_script_file, ".py")
     _check_file_exists(python_script_file)
     sys.path.append(os.path.dirname(python_script_file))
     runpy.run_path(python_script_file, run_name="__main__")
+
+
+def watch_and_run_python_script(watch_dir, python_script_file):
+    try:
+        print(f"start watching '{watch_dir}' (Ctrl+C to stop)")
+        window_state_file = os.path.join(
+            os.path.dirname(os.path.abspath(python_script_file)),
+            pyxel.WINDOW_STATE_FILE,
+        )
+        if not os.path.isfile(window_state_file):
+            should_remove_window_state_file = True
+            with open(window_state_file, "w") as f:
+                f.write("")
+        signal.signal(signal.SIGTERM, lambda: sys.exit(1))
+        timestamps = _timestamps_in_dir(watch_dir)
+        worker = _run_python_script_in_separate_process(python_script_file)
+        while True:
+            time.sleep(0.5)
+            last_timestamps = timestamps
+            timestamps = _timestamps_in_dir(watch_dir)
+            if timestamps != last_timestamps:
+                print(f"rerun {python_script_file}")
+                worker.terminate()
+                worker = _run_python_script_in_separate_process(python_script_file)
+    except KeyboardInterrupt:
+        print("\r", end="")
+        print("stopped watching")
+    finally:
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        if should_remove_window_state_file and os.path.isfile(window_state_file):
+            os.remove(window_state_file)
+        signal.signal(signal.SIGTERM, signal.SIG_DFL)
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 def play_pyxel_app(pyxel_app_file):
