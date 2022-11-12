@@ -91,7 +91,7 @@ impl System {
         while let Some(event) = Platform::instance().poll_event() {
             match event {
                 Event::Quit => {
-                    crate::quit();
+                    return;
                 }
                 Event::Shown => {
                     self.is_paused = false;
