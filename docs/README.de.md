@@ -180,10 +180,9 @@ Das erstellte Python-Skript kann mit dem folgenden Befehl ausgeführt werden:
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-In der Package-Version kann es wie ein normales Python-Skript ausgeführt werden:
+Es kann auch wie ein normales Python-Skript ausgeführt werden:
 
 ```sh
-cd pyxel_examples
 python3 PYTHON_SCRIPT_FILE
 ```
 
@@ -281,7 +280,7 @@ Erstelle die Pyxel-Anwendungsdatei (.pyxapp) mit folgendem Befehl:
 pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
 ```
 
-Wenn die Anwendung Ressourcen oder zusätzliche Module enthalten soll, legen Sie diese in den Anwendungsordner.
+Wenn die Anwendung Ressourcen oder zusätzliche Module enthalten soll, legen Sie diese in das Anwendungsverzeichnis.
 
 Die erstellte Anwendungsdatei kann mit dem folgenden Befehl ausgeführt werden:
 
