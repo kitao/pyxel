@@ -41,7 +41,7 @@ def _print_usage():
     print("    pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE(.py)")
     print("    pyxel play PYXEL_APP_FILE(.pyxapp)")
     print("    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]")
-    print("    pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE(.py)")
+    print("    pyxel package APP_DIR STARTUP_SCRIPT_FILE(.py)")
     print("    pyxel copy_examples")
     _check_newer_version()
 
@@ -94,6 +94,12 @@ def _check_dir_exists(dirname):
         exit(1)
 
 
+def _check_file_under_dir(filename, dirname):
+    if os.path.relpath(filename, dirname).startswith(".."):
+        print("specified file is not under the directory")
+        exit(1)
+
+
 def _make_app_dir():
     play_dir = os.path.join(tempfile.gettempdir(), pyxel.WORKING_DIR, "play")
     pathlib.Path(play_dir).mkdir(parents=True, exist_ok=True)
@@ -132,6 +138,9 @@ def run_python_script(python_script_file):
 
 def watch_and_run_python_script(watch_dir, python_script_file):
     _check_dir_exists(watch_dir)
+    python_script_file = _complete_extension(python_script_file, ".py")
+    _check_file_exists(python_script_file)
+    _check_file_under_dir(python_script_file, watch_dir)
     watch_info_file = os.path.join(
         os.path.dirname(os.path.abspath(python_script_file)),
         pyxel.WATCH_INFO_FILE,
@@ -192,21 +201,22 @@ def edit_pyxel_resource(pyxel_resource_file, starting_editor="image"):
     pyxel.editor.App(pyxel_resource_file, starting_editor)
 
 
-def package_pyxel_app(app_root_dir, startup_script_name):
-    _check_dir_exists(app_root_dir)
-    startup_script_name = _complete_extension(startup_script_name, ".py")
-    _check_file_exists(os.path.join(app_root_dir, startup_script_name))
-    setting_file = os.path.join(app_root_dir, pyxel.APP_STARTUP_SCRIPT_FILE)
+def package_pyxel_app(app_dir, startup_script_file):
+    _check_dir_exists(app_dir)
+    startup_script_file = _complete_extension(startup_script_file, ".py")
+    _check_file_exists(startup_script_file)
+    _check_file_under_dir(startup_script_file, app_dir)
+    setting_file = os.path.join(app_dir, pyxel.APP_STARTUP_SCRIPT_FILE)
     with open(setting_file, "w") as f:
-        f.write(startup_script_name)
-    pyxel_app_file = os.path.basename(app_root_dir) + pyxel.APP_FILE_EXTENSION
-    app_parent_dir = os.path.dirname(os.path.abspath(app_root_dir))
+        f.write(os.path.relpath(startup_script_file, app_dir))
+    pyxel_app_file = os.path.basename(app_dir) + pyxel.APP_FILE_EXTENSION
+    app_parent_dir = os.path.dirname(os.path.abspath(app_dir))
     with zipfile.ZipFile(
         pyxel_app_file,
         "w",
         compression=zipfile.ZIP_DEFLATED,
     ) as zf:
-        files = [setting_file] + _files_in_dir(app_root_dir)
+        files = [setting_file] + _files_in_dir(app_dir)
         for file in files:
             arcname = os.path.relpath(file, app_parent_dir)
             zf.write(file, arcname)
