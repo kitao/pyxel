@@ -279,7 +279,7 @@ Pyxel 支持跨平台的应用文件格式（Pyxel 应用文件）。
 使用以下命令创建 Pyxel 应用文件（.pyxapp）：
 
 ```sh
-pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
+pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
 如果应用程序应包括资源或其他模块，请将它们放在应用程序目录中。

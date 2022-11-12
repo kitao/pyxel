@@ -278,7 +278,7 @@ Pyxel soporta un archivo dedicado para distribuir el código (formato de aplicac
 Cree la aplicación (.pyxapp) con el siguiente comando:
 
 ```sh
-pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
+pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
 Si la aplicación debe incluir recursos o módulos adicionales, colóquelos en el directorio de la aplicación.
