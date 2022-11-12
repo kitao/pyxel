@@ -4,7 +4,7 @@ use crate::types::{Color, Effect, Key, Note, Rgb8, Speed, Tone, Volume};
 // System
 pub const VERSION: &str = "1.9.1";
 pub const WORKING_DIR: &str = ".pyxel";
-pub const WINDOW_STATE_FILE: &str = ".pyxel_window_state";
+pub const WATCH_INFO_FILE: &str = ".pyxel_watch_info";
 pub const DEFAULT_TITLE: &str = "Pyxel";
 pub const DEFAULT_FPS: u32 = 30;
 pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
