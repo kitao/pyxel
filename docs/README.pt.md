@@ -278,7 +278,7 @@ O Pyxel suporta um formato de arquivo de distribuição dedicado (arquivo de apl
 Crie um arquivo de aplicação Pyxel (.pyxapp) com o seguinte comando:
 
 ```sh
-pyxel package APP_ROOT_DIR STARTUP_SCRIPT_FILE
+pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
 Se a candidatura deve incluir recursos ou módulos adicionais, coloque-os no directório da candidatura.
