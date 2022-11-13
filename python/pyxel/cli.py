@@ -5,7 +5,6 @@ import pathlib
 import re
 import runpy
 import shutil
-import signal
 import sys
 import tempfile
 import time
@@ -129,9 +128,23 @@ def _run_python_script_in_separate_process(python_script_file):
     return worker
 
 
+def _watch_info_file(python_script_file):
+    return os.path.join(
+        os.path.dirname(os.path.abspath(python_script_file)),
+        pyxel.WATCH_INFO_FILE,
+    )
+
+
+def _remove_watch_info_file(python_script_file):
+    watch_info_file = _watch_info_file(python_script_file)
+    if os.path.isfile(watch_info_file):
+        os.remove(watch_info_file)
+
+
 def run_python_script(python_script_file):
     python_script_file = _complete_extension(python_script_file, ".py")
     _check_file_exists(python_script_file)
+    _remove_watch_info_file(python_script_file)
     sys.path.append(os.path.dirname(python_script_file))
     runpy.run_path(python_script_file, run_name="__main__")
 
@@ -141,13 +154,9 @@ def watch_and_run_python_script(watch_dir, python_script_file):
     python_script_file = _complete_extension(python_script_file, ".py")
     _check_file_exists(python_script_file)
     _check_file_under_dir(python_script_file, watch_dir)
-    watch_info_file = os.path.join(
-        os.path.dirname(os.path.abspath(python_script_file)),
-        pyxel.WATCH_INFO_FILE,
-    )
     try:
         print(f"start watching '{watch_dir}' (Ctrl+C to stop)")
-        signal.signal(signal.SIGTERM, lambda: sys.exit(1))
+        watch_info_file = _watch_info_file(python_script_file)
         if not os.path.isfile(watch_info_file):
             with open(watch_info_file, "w") as f:
                 f.write("")
@@ -165,12 +174,7 @@ def watch_and_run_python_script(watch_dir, python_script_file):
         print("\r", end="")
         print("stopped watching")
     finally:
-        signal.signal(signal.SIGTERM, signal.SIG_IGN)
-        signal.signal(signal.SIGINT, signal.SIG_IGN)
-        if os.path.isfile(watch_info_file):
-            os.remove(watch_info_file)
-        signal.signal(signal.SIGTERM, signal.SIG_DFL)
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        _remove_watch_info_file(python_script_file)
 
 
 def play_pyxel_app(pyxel_app_file):
@@ -205,6 +209,7 @@ def package_pyxel_app(app_dir, startup_script_file):
     startup_script_file = _complete_extension(startup_script_file, ".py")
     _check_file_exists(startup_script_file)
     _check_file_under_dir(startup_script_file, app_dir)
+    _remove_watch_info_file(startup_script_file)
     setting_file = os.path.join(app_dir, pyxel.APP_STARTUP_SCRIPT_FILE)
     with open(setting_file, "w") as f:
         f.write(os.path.relpath(startup_script_file, app_dir))
