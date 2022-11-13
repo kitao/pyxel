@@ -146,9 +146,8 @@ def watch_and_run_python_script(watch_dir, python_script_file):
     )
     try:
         print(f"start watching '{watch_dir}' (Ctrl+C to stop)")
-        if not os.path.isfile(watch_info_file):
-            with open(watch_info_file, "w") as f:
-                f.write("valid\n")
+        with open(watch_info_file, "w") as f:
+            f.write("valid\n")
         timestamps = _timestamps_in_dir(watch_dir)
         worker = _run_python_script_in_separate_process(python_script_file)
         while True:
@@ -158,8 +157,10 @@ def watch_and_run_python_script(watch_dir, python_script_file):
             if timestamps != last_timestamps:
                 print(f"rerun {python_script_file}")
                 worker.terminate()
-                with open(watch_info_file) as f:
-                    watch_info = f.read()
+                watch_info = ""
+                if os.path.isfile(watch_info_file):
+                    with open(watch_info_file) as f:
+                        watch_info = f.read()
                 if not watch_info.startswith("valid\n"):
                     watch_info = "valid\n" + watch_info
                 with open(watch_info_file, "w") as f:
