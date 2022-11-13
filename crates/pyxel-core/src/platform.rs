@@ -1,5 +1,5 @@
 use std::cmp::min;
-use std::fs::{canonicalize, read_to_string, remove_file, write};
+use std::fs::{canonicalize, read_to_string, write};
 use std::path::PathBuf;
 #[cfg(not(target_os = "emscripten"))]
 use std::process::exit;
@@ -501,7 +501,6 @@ impl Platform {
 
     pub fn quit(&mut self) {
         self.pause_audio();
-        self.remove_watch_info();
         #[cfg(not(target_os = "emscripten"))]
         exit(0);
         #[cfg(target_os = "emscripten")]
@@ -610,14 +609,6 @@ impl Platform {
         };
         let watch_info_file = self.watch_info_file.as_ref().unwrap();
         let _droppable = write(watch_info_file, watch_info);
-    }
-
-    fn remove_watch_info(&self) {
-        if let Some(watch_info_file) = self.watch_info_file.as_ref() {
-            if watch_info_file.exists() {
-                let _droppable = remove_file(watch_info_file);
-            }
-        }
     }
 }
 
