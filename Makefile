@@ -101,7 +101,6 @@ test: build
 	@cd $(CRATES_DIR)/pyxel-core; cargo test $(BUILD_OPTS)
 	@$(PIP) install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
 	@$(PYTHON) -m unittest discover $(CRATES_DIR)/pyxel-extension/tests
-
 	@pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
 	@pyxel run $(EXAMPLES_DIR)/02_jump_game.py
 	@pyxel run $(EXAMPLES_DIR)/03_draw_api.py
@@ -114,11 +113,9 @@ test: build
 	@pyxel run $(EXAMPLES_DIR)/10_platformer.py
 	@pyxel run $(EXAMPLES_DIR)/11_offscreen.py
 	@pyxel run $(EXAMPLES_DIR)/12_perlin_noise.py
-	@pyxel watch $(EXAMPLES_DIR) $(EXAMPLES_DIR)/01_hello_pyxel.py
 	@pyxel play $(EXAMPLES_DIR)/30SecondsOfDaylight.pyxapp
 	@pyxel play $(EXAMPLES_DIR)/megaball.pyxapp
 	@pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
-
 	@rm -rf testapp testapp.pyxapp
 	@mkdir -p testapp/assets
 	@cp $(EXAMPLES_DIR)/10_platformer.py testapp
@@ -126,6 +123,7 @@ test: build
 	@pyxel package testapp testapp/10_platformer.py
 	@pyxel play testapp.pyxapp
 	@rm -rf testapp testapp.pyxapp
+	@pyxel watch $(EXAMPLES_DIR) $(EXAMPLES_DIR)/01_hello_pyxel.py
 
 clean-wasm:
 	@$(WASM_ENV) make clean TARGET=$(WASM_TARGET)
