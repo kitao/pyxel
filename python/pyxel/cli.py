@@ -146,14 +146,14 @@ def watch_and_run_python_script(watch_dir, python_script_file):
         pyxel.WATCH_INFO_FILE,
     )
     try:
-        print(f"start watching '{watch_dir}'")
+        print(f"start watching '{watch_dir}' (Ctrl+C to stop)")
         signal.signal(signal.SIGTERM, lambda: sys.exit(1))
         if not os.path.isfile(watch_info_file):
             with open(watch_info_file, "w") as f:
                 f.write("")
         timestamps = _timestamps_in_dir(watch_dir)
         worker = _run_python_script_in_separate_process(python_script_file)
-        while os.path.isfile(watch_info_file):
+        while True:
             time.sleep(0.5)
             last_timestamps = timestamps
             timestamps = _timestamps_in_dir(watch_dir)
@@ -162,14 +162,13 @@ def watch_and_run_python_script(watch_dir, python_script_file):
                 worker.terminate()
                 worker = _run_python_script_in_separate_process(python_script_file)
     except KeyboardInterrupt:
-        pass
+        print("\r", end="")
+        print("stopped watching")
     finally:
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
         signal.signal(signal.SIGINT, signal.SIG_IGN)
         if os.path.isfile(watch_info_file):
             os.remove(watch_info_file)
-        print("\r", end="")
-        print("stopped watching")
         signal.signal(signal.SIGTERM, signal.SIG_DFL)
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
