@@ -566,7 +566,7 @@ impl Platform {
         }
         let watch_info_file = canonicalize(&PathBuf::from(WATCH_INFO_FILE)).unwrap();
         let watch_info = read_to_string(&watch_info_file).unwrap();
-        let watch_info: Vec<&str> = watch_info.split('\n').collect();
+        let watch_info: Vec<&str> = watch_info.lines().collect();
         if watch_info.is_empty() || watch_info[0] != "valid" {
             let _droppable = remove_file(watch_info_file);
             return;
