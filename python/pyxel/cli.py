@@ -121,7 +121,7 @@ def _timestamps_in_dir(dirname):
 
 def _run_python_script_in_separate_process(python_script_file):
     worker = multiprocessing.Process(
-        target=run_python_script, args=(python_script_file,)
+        target=run_python_script, args=(python_script_file, False)
     )
     worker.daemon = True
     worker.start()
@@ -141,10 +141,11 @@ def _remove_watch_info_file(python_script_file):
         os.remove(watch_info_file)
 
 
-def run_python_script(python_script_file):
+def run_python_script(python_script_file, remove_watch_info_file=True):
     python_script_file = _complete_extension(python_script_file, ".py")
     _check_file_exists(python_script_file)
-    _remove_watch_info_file(python_script_file)
+    if remove_watch_info_file:
+        _remove_watch_info_file(python_script_file)
     sys.path.append(os.path.dirname(python_script_file))
     runpy.run_path(python_script_file, run_name="__main__")
 
