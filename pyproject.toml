@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "pyxel"
-version = "1.9.1"
+version = "1.9.2"
 description = "A retro game engine for Python"
 readme = "docs/README-abspath.md"
 requires-python = ">=3.7"
