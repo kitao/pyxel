@@ -1,5 +1,5 @@
 use std::cmp::min;
-use std::fs::{canonicalize, read_to_string, write};
+use std::fs::{canonicalize, read_to_string, remove_file, write};
 use std::path::PathBuf;
 #[cfg(not(target_os = "emscripten"))]
 use std::process::exit;
@@ -567,17 +567,21 @@ impl Platform {
         let watch_info_file = canonicalize(&PathBuf::from(WATCH_INFO_FILE)).unwrap();
         let watch_info = read_to_string(&watch_info_file).unwrap();
         let watch_info: Vec<&str> = watch_info.split('\n').collect();
-        if !watch_info.is_empty() && watch_info[0] == "fullscreen" {
+        if watch_info.is_empty() || watch_info[0] != "valid" {
+            let _droppable = remove_file(watch_info_file);
+            return;
+        }
+        if watch_info.len() >= 2 && watch_info[1] == "fullscreen" {
             self.set_fullscreen(true);
-        } else if watch_info.len() >= 4 {
+        } else if watch_info.len() >= 5 {
             self.set_fullscreen(false);
             self.sdl_canvas.window_mut().set_position(
-                sdl2::video::WindowPos::Positioned(watch_info[0].parse().unwrap()),
                 sdl2::video::WindowPos::Positioned(watch_info[1].parse().unwrap()),
+                sdl2::video::WindowPos::Positioned(watch_info[2].parse().unwrap()),
             );
             let _droppable = self.sdl_canvas.window_mut().set_size(
-                watch_info[2].parse().unwrap(),
                 watch_info[3].parse().unwrap(),
+                watch_info[4].parse().unwrap(),
             );
         }
         self.watch_info_file = Some(watch_info_file);
