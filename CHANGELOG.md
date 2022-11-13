@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.2
+
+- Fixed the watch command to work on Windows
+
 ## 1.9.1
 
 - Added the watch command for live coding
