@@ -209,11 +209,12 @@ def package_pyxel_app(app_dir, startup_script_file):
     startup_script_file = _complete_extension(startup_script_file, ".py")
     _check_file_exists(startup_script_file)
     _check_file_under_dir(startup_script_file, app_dir)
+    app_dir = os.path.abspath(app_dir)
     setting_file = os.path.join(app_dir, pyxel.APP_STARTUP_SCRIPT_FILE)
     with open(setting_file, "w") as f:
         f.write(os.path.relpath(startup_script_file, app_dir))
     pyxel_app_file = os.path.basename(app_dir) + pyxel.APP_FILE_EXTENSION
-    app_parent_dir = os.path.dirname(os.path.abspath(app_dir))
+    app_parent_dir = os.path.dirname(app_dir)
     with zipfile.ZipFile(
         pyxel_app_file,
         "w",
@@ -221,6 +222,8 @@ def package_pyxel_app(app_dir, startup_script_file):
     ) as zf:
         files = [setting_file] + _files_in_dir(app_dir)
         for file in files:
+            if os.path.basename(file) == pyxel_app_file or "/__pycache__/" in file:
+                continue
             arcname = os.path.relpath(file, app_parent_dir)
             zf.write(file, arcname)
             print(f"added '{arcname}'")
