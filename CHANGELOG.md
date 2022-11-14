@@ -3,6 +3,7 @@
 ## 1.9.3
 
 - Limited depth to be checked to 3 for the watch command
+- Fixed the package command to accept various file specifications
 
 ## 1.9.2
 
