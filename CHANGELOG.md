@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.3
+
+- Limited depth to be checked to 3 for the watch command
+
 ## 1.9.2
 
 - Fixed the watch command to work on Windows
