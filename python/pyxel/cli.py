@@ -112,7 +112,10 @@ def _make_app_dir():
 
 
 def _timestamps_in_dir(dirname):
-    files = _files_in_dir(dirname)
+    paths = glob.glob(os.path.join(dirname, "*"))
+    paths += glob.glob(os.path.join(dirname, "*/*"))
+    paths += glob.glob(os.path.join(dirname, "*/*/*"))
+    files = filter(os.path.isfile, paths)
     timestamps = {}
     for file in files:
         timestamps[file] = os.path.getmtime(file)
