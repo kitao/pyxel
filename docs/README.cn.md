@@ -212,7 +212,7 @@ python3 PYTHON_SCRIPT_FILE
 Pyxel 编辑器使用以下命令启动：
 
 ```sh
-pyxel edit [PYXEL_RESOURCE_FILE]
+pyxel edit PYXEL_RESOURCE_FILE
 ```
 
 若指定 Pyxel 源文件（.pyxres）存在，则加载文件，若不存在，则以指定文件名新建文件。
