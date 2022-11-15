@@ -5,6 +5,7 @@
 - Limited depth to be checked to 3 for the watch command
 - Fixed the package command to accept various file specifications
 - Removed extra files from sample Pyxel apps
+- Added running message to the watch command
 
 ## 1.9.2
 
