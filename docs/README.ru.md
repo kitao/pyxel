@@ -212,7 +212,7 @@ python3 PYTHON_SCRIPT_FILE
 Он запускается следующей командой:
 
 ```sh
-pyxel edit [PYXEL_RESOURCE_FILE]
+pyxel edit PYXEL_RESOURCE_FILE
 ```
 
 Если указанный ресурсный файл (.pyxres) существует, то он будет загружен. В противном случае будет создан файл с указанным именем.

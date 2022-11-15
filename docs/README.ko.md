@@ -212,7 +212,7 @@ Pyxel Editor는 Pyxel 애플리케이션에서 사용되는 이미지와 사운�
 다음 명령어를 사용해 시작할 수 있습니다.
 
 ```sh
-pyxel edit [PYXEL_RESOURCE_FILE]
+pyxel edit PYXEL_RESOURCE_FILE
 ```
 
 지정한 Pyxel 리소스 파일 (.pyxres)이 존재하는 경우에는 해당 파일을 불러오고, 존재하지 않는 경우 지정한 이름으로 새 리소스 파일을 생성합니다.
