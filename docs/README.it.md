@@ -212,7 +212,7 @@ L'Editor Pyxel può creare immagini e suoni utilizzati in un'applicazione Pyxel.
 Si avvia con il seguente comando:
 
 ```sh
-pyxel edit [PYXEL_RESOURCE_FILE]
+pyxel edit PYXEL_RESOURCE_FILE
 ```
 
 Se il file di risorsa Pyxel (.pyxres) specificato esiste, allora il file viene caricato, e se non esiste, un nuovo file con quel nome viene creato.
