@@ -212,7 +212,7 @@ Der Pyxel Editor kann Bilder und Töne erstellen, die in einer Pyxel-Anwendung v
 Starte den Editor mit folgendem Befehl:
 
 ```sh
-pyxel edit [PYXEL_RESOURCE_FILE]
+pyxel edit PYXEL_RESOURCE_FILE
 ```
 
 Wenn die angegebene Pyxel-Datei (.pyxres) existiert, wird die Datei geladen, wenn nicht, wird eine neue Datei mit dem angegebenen Namen erstellt. Wenn die Datei nicht angegeben wird, lautet der Name my_resource.pyxres.

@@ -212,7 +212,7 @@ Pyxel Editor を使って、Pyxel アプリケーションで使用する画像�
 Pyxel Editor は次のコマンドで起動します。
 
 ```sh
-pyxel edit [Pyxelリソースファイル]
+pyxel edit Pyxelリソースファイル
 ```
 
 指定した Pyxel リソースファイル (.pyxres) が存在する場合は読み込み、存在しない場合は指定した名前で新規にファイルを作成します。リソースファイルを省略した場合は`my_resource.pyxres`がファイル名になります。
