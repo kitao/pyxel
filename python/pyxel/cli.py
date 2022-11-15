@@ -151,10 +151,15 @@ def watch_and_run_python_script(watch_dir, python_script_file):
         print(f"start watching '{watch_dir}' (Ctrl+C to stop)")
         with open(watch_info_file, "w") as f:
             f.write("valid\n")
+        cur_time = last_time = time.time()
         timestamps = _timestamps_in_dir(watch_dir)
         worker = _run_python_script_in_separate_process(python_script_file)
         while True:
             time.sleep(0.5)
+            cur_time = time.time()
+            if cur_time - last_time >= 10:
+                last_time = cur_time
+                print(f"watching '{watch_dir}' (Ctrl+C to stop)")
             last_timestamps = timestamps
             timestamps = _timestamps_in_dir(watch_dir)
             if timestamps != last_timestamps:
