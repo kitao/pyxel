@@ -2,7 +2,7 @@ use crate::key::KEY_ESCAPE;
 use crate::types::{Color, Effect, Key, Note, Rgb8, Speed, Tone, Volume};
 
 // System
-pub const VERSION: &str = "1.9.3";
+pub const VERSION: &str = "1.9.4";
 pub const WORKING_DIR: &str = ".pyxel";
 pub const WATCH_INFO_FILE: &str = ".pyxel_watch_info";
 pub const DEFAULT_TITLE: &str = "Pyxel";
