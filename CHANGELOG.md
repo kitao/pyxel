@@ -1,5 +1,10 @@
 # Change Log
 
+# 1.9.4
+
+- Fixed error handling of the pyxel command
+- Added the app2exe command to build an executable
+
 ## 1.9.3
 
 - Limited depth to be checked to 3 for the watch command
@@ -273,7 +278,7 @@
 ## 1.5.7
 
 - Fixed the example #11 images
-- Added the module search path option to the Pyxel command
+- Added the module search path option to the pyxel command
 - Changed the default install directory on Windows
 - Added tests for the package and play options
 - Renamed setbtn, setbtnv, and setmpos
