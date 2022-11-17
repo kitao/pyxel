@@ -5,6 +5,7 @@ import pathlib
 import re
 import runpy
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -27,6 +28,8 @@ def cli():
         edit_pyxel_resource(sys.argv[2] if num_args == 3 else None)
     elif command == "package" and num_args == 4:
         package_pyxel_app(sys.argv[2], sys.argv[3])
+    elif command == "app2exe" and num_args == 3:
+        create_executable_from_pyxel_app(sys.argv[2])
     elif command == "copy_examples" and num_args == 2:
         copy_pyxel_examples()
     else:
@@ -41,6 +44,7 @@ def _print_usage():
     print("    pyxel play PYXEL_APP_FILE(.pyxapp)")
     print("    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]")
     print("    pyxel package APP_DIR STARTUP_SCRIPT_FILE(.py)")
+    print("    pyxel app2exe PYXEL_APP_FILE(.pyxapp)")
     print("    pyxel copy_examples")
     _check_newer_version()
 
@@ -84,22 +88,22 @@ def _files_in_dir(dirname):
 def _check_file_exists(filename):
     if not os.path.isfile(filename):
         print(f"no such file: '{filename}'")
-        exit(1)
+        sys.exit(1)
 
 
 def _check_dir_exists(dirname):
     if not os.path.isdir(dirname):
         print(f"no such directory: '{dirname}'")
-        exit(1)
+        sys.exit(1)
 
 
 def _check_file_under_dir(filename, dirname):
     if os.path.relpath(filename, dirname).startswith(".."):
         print("specified file is not under the directory")
-        exit(1)
+        sys.exit(1)
 
 
-def _make_app_dir():
+def _create_app_dir():
     play_dir = os.path.join(tempfile.gettempdir(), pyxel.WORKING_DIR, "play")
     pathlib.Path(play_dir).mkdir(parents=True, exist_ok=True)
     for path in glob.glob(os.path.join(play_dir, "*")):
@@ -185,7 +189,7 @@ def watch_and_run_python_script(watch_dir, python_script_file):
 def play_pyxel_app(pyxel_app_file):
     pyxel_app_file = _complete_extension(pyxel_app_file, pyxel.APP_FILE_EXTENSION)
     _check_file_exists(pyxel_app_file)
-    app_dir = _make_app_dir()
+    app_dir = _create_app_dir()
     zf = zipfile.ZipFile(pyxel_app_file)
     zf.extractall(app_dir)
     pattern = os.path.join(app_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
@@ -196,7 +200,7 @@ def play_pyxel_app(pyxel_app_file):
             runpy.run_path(startup_script_file, run_name="__main__")
             return
     print(f"file not found: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
-    exit(1)
+    sys.exit(1)
 
 
 def edit_pyxel_resource(pyxel_resource_file, starting_editor="image"):
@@ -233,6 +237,31 @@ def package_pyxel_app(app_dir, startup_script_file):
             zf.write(file, arcname)
             print(f"added '{arcname}'")
     os.remove(setting_file)
+
+
+def create_executable_from_pyxel_app(pyxel_app_file):
+    pyxel_app_file = _complete_extension(pyxel_app_file, pyxel.APP_FILE_EXTENSION)
+    _check_file_exists(pyxel_app_file)
+    app2exe_dir = os.path.join(tempfile.gettempdir(), pyxel.WORKING_DIR, "app2exe")
+    if os.path.isdir(app2exe_dir):
+        shutil.rmtree(app2exe_dir)
+    pathlib.Path(app2exe_dir).mkdir(parents=True, exist_ok=True)
+    pyxel_app_name = os.path.splitext(os.path.basename(pyxel_app_file))[0]
+    startup_script_file = os.path.join(app2exe_dir, pyxel_app_name + ".py")
+    with open(startup_script_file, "w") as f:
+        f.write(
+            "import os, pyxel.cli; pyxel.cli.play_pyxel_app("
+            f"os.path.join(os.path.dirname(__file__), '{pyxel_app_name}.pyxapp'))"
+        )
+    if subprocess.call("pyinstaller -h", shell=True) != 0:
+        print("Pyinstaller is not found. Please install it.")
+        sys.exit(1)
+    subprocess.call(
+        "pyinstaller --distpath . --onefile "
+        f"--add-data {pyxel_app_file}{os.pathsep}. {startup_script_file}",
+        shell=True,
+    )
+    shutil.rmtree(app2exe_dir)
 
 
 def copy_pyxel_examples():
