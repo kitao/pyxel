@@ -260,7 +260,6 @@ def create_executable_from_pyxel_app(pyxel_app_file):
     subprocess.run(
         "pyinstaller --distpath . --onefile "
         f"--add-data {pyxel_app_file}{os.pathsep}. {startup_script_file}",
-        capture_output=True,
         shell=True,
     )
     if os.path.isdir(app2exe_dir):
