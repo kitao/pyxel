@@ -253,15 +253,21 @@ def create_executable_from_pyxel_app(pyxel_app_file):
             "import os, pyxel.cli; pyxel.cli.play_pyxel_app("
             f"os.path.join(os.path.dirname(__file__), '{pyxel_app_name}.pyxapp'))"
         )
-    if subprocess.call("pyinstaller -h", shell=True) != 0:
+    cp = subprocess.run("pyinstaller -h", capture_output=True, shell=True)
+    if cp.returncode != 0:
         print("Pyinstaller is not found. Please install it.")
         sys.exit(1)
-    subprocess.call(
+    subprocess.run(
         "pyinstaller --distpath . --onefile "
         f"--add-data {pyxel_app_file}{os.pathsep}. {startup_script_file}",
+        capture_output=True,
         shell=True,
     )
-    shutil.rmtree(app2exe_dir)
+    if os.path.isdir(app2exe_dir):
+        shutil.rmtree(app2exe_dir)
+    spec_file = os.path.splitext(pyxel_app_file)[0] + ".spec"
+    if os.path.isfile(spec_file):
+        os.remove(spec_file)
 
 
 def copy_pyxel_examples():
