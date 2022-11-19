@@ -3,11 +3,12 @@
 # 1.9.5
 
 - Fixed to work without body tag in Pyxel Web
+- Added the app2html command to create an HTML page
 
 # 1.9.4
 
 - Fixed error handling of the pyxel command
-- Added the app2exe command to build an executable
+- Added the app2exe command to create an executable
 
 ## 1.9.3
 
