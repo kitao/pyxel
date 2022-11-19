@@ -290,6 +290,8 @@ pyxel package アプリケーションのディレクトリ 起動スクリプ�
 pyxel play Pyxelアプリケーションファイル
 ```
 
+Pyxel アプリケーションファイルは、'pyxel app2exe'コマンドや'pyxel app2html'コマンドで、実行可能ファイルや HTML ファイルに変換することもできます。
+
 ## API リファレンス
 
 ### システム
