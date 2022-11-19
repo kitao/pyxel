@@ -289,6 +289,8 @@ Il file applicazione creato può essere eseguito con il seguente comando:
 pyxel play PYXEL_APP_FILE
 ```
 
+Il file di applicazione Pyxel può anche essere convertito in un file eseguibile o in un file HTML con i comandi `pyxel app2exe` o `pyxel app2html`.
+
 ## Manuale API
 
 ### Sistema

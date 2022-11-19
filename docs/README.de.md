@@ -288,6 +288,8 @@ Die erstellte Anwendungsdatei kann mit dem folgenden Befehl ausgeführt werden:
 pyxel play PYXEL_APP_FILE
 ```
 
+Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxel app2html` in eine ausführbare Datei oder eine HTML-Datei umgewandelt werden.
+
 ## API-Referenz
 
 ### System

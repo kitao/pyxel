@@ -289,6 +289,8 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 pyxel play PYXEL_APP_FILE
 ```
 
+Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명령을 사용하여 실행 파일 또는 HTML 파일로 변환할 수도 있습니다.
+
 ## API 레퍼런스
 
 ### 시스템
