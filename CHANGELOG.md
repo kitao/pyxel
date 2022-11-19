@@ -1,5 +1,9 @@
 # Change Log
 
+# 1.9.5
+
+- Fixed to work without body tag in Pyxel Web
+
 # 1.9.4
 
 - Fixed error handling of the pyxel command
