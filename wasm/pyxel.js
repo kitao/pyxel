@@ -106,6 +106,9 @@ async function _createScreenElements() {
     pyxelScreen = document.createElement("div");
     pyxelScreen.id = "pyxel-screen";
     pyxelScreen.classList.add("default-pyxel-screen");
+    if (!document.body) {
+      document.body = document.createElement("body");
+    }
     document.body.appendChild(pyxelScreen);
   }
   pyxelScreen.oncontextmenu = (event) => event.preventDefault();
@@ -368,6 +371,15 @@ function _addVirtualGamepad(mode) {
   document.addEventListener("touchend", touchHandler, { passive: false });
 }
 
+function _copyFileFromBase64(pyodide, name, base64) {
+  if (!name || !base64) {
+    return;
+  }
+  let filename = `${PYXEL_WORKING_DIRECTORY}/${name}`;
+  let binary = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  pyodide.FS.writeFile(filename, binary, { encoding: "binary" });
+}
+
 async function _executePyxelCommand(pyodide, params) {
   if (params.command === "run" || params.command === "play") {
     await _installBuiltinPackages(pyodide, params.packages);
@@ -375,6 +387,7 @@ async function _executePyxelCommand(pyodide, params) {
   if (params.command === "run" || params.command === "play") {
     _addVirtualGamepad(params.gamepad);
   }
+  _copyFileFromBase64(pyodide, params.name, params.base64);
   let pythonCode = "";
   switch (params.command) {
     case "run":
