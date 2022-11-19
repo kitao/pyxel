@@ -1,3 +1,4 @@
+import base64
 import glob
 import multiprocessing
 import os
@@ -30,6 +31,8 @@ def cli():
         package_pyxel_app(sys.argv[2], sys.argv[3])
     elif command == "app2exe" and num_args == 3:
         create_executable_from_pyxel_app(sys.argv[2])
+    elif command == "app2html" and num_args == 3:
+        create_html_from_pyxel_app(sys.argv[2])
     elif command == "copy_examples" and num_args == 2:
         copy_pyxel_examples()
     else:
@@ -45,6 +48,7 @@ def _print_usage():
     print("    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]")
     print("    pyxel package APP_DIR STARTUP_SCRIPT_FILE(.py)")
     print("    pyxel app2exe PYXEL_APP_FILE(.pyxapp)")
+    print("    pyxel app2html PYXEL_APP_FILE(.pyxapp)")
     print("    pyxel copy_examples")
     _check_newer_version()
 
@@ -267,6 +271,25 @@ def create_executable_from_pyxel_app(pyxel_app_file):
     spec_file = os.path.splitext(pyxel_app_file)[0] + ".spec"
     if os.path.isfile(spec_file):
         os.remove(spec_file)
+
+
+def create_html_from_pyxel_app(pyxel_app_file):
+    pyxel_app_file = _complete_extension(pyxel_app_file, pyxel.APP_FILE_EXTENSION)
+    _check_file_exists(pyxel_app_file)
+    base64_string = ""
+    with open(pyxel_app_file, "rb") as f:
+        base64_string = base64.b64encode(f.read()).decode()
+    pyxel_app_name = os.path.splitext(os.path.basename(pyxel_app_file))[0]
+    with open(pyxel_app_name + ".html", "w") as f:
+        f.write(
+            "<!DOCTYPE html>\n"
+            '<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js">'
+            "</script>\n"
+            "<script>\n"
+            f'launchPyxel({{ command: "play", name: "{pyxel_app_name}.pyxapp", '
+            f'gamepad: "enabled", base64: "{base64_string}" }});\n'
+            "</script>\n"
+        )
 
 
 def copy_pyxel_examples():
