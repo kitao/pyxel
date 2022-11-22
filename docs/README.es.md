@@ -18,22 +18,22 @@ Gracias a sus características simples inspiradas en las consolas de juegos retr
 La motivación para el desarrollo de Pyxel es el feedback de los usuarios. Por favor, ¡dale una estrella a Pyxel en GitHub!
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html" target="_blank">
 <img src="images/01_hello_pyxel.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html" target="_blank">
 <img src="images/02_jump_game.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html" target="_blank">
 <img src="images/03_draw_api.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html" target="_blank">
 <img src="images/04_sound_api.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html" target="_blank">
 <img src="images/image_tilemap_editor.gif" width="320">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html" target="_blank">
 <img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
@@ -108,86 +108,86 @@ Los ejemplos serán copiados de la siguiente manera:
 <tr>
 <td>01_hello_pyxel.py</td>
 <td>Aplicación simple</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>02_jump_game.py</td>
 <td>Juego de plataformas con los archivos de recursos Pyxel</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>03_draw_api.py</td>
 <td>Demostración de la API para dibujar</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>04_sound_api.py</td>
 <td>Demostración de la API de sonidos</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>05_color_palette.py</td>
 <td>Lista de la paleta de colores</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>06_click_game.py</td>
 <td>Juego con clics del ratón</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>07_snake.py</td>
 <td>Juego de serpiente con música de fondo</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>08_triangle_api.py</td>
 <td>Demostración de dibujo de triángulos con la API</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>09_shooter.py</td>
 <td>Juego de nave espacial con transiciones de pantalla</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>10_platformer.py</td>
 <td>Juego con desplazamiento lateral con plataformas con mapa</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>11_offscreen.py</td>
 <td>Rendimiento fuera de la pantalla con la clase Image</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>12_perlin_noise.py</td>
 <td>Animación del ruido Perlin</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
 <td>El primer ganador del Jam de Pyxel, por Adam</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
-<td><a href="https://github.com/kitao/30SecondsOfDaylight">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/kitao/30SecondsOfDaylight" target="_blank">Code</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
 <td>Juego arcade de física de bolas, por Adam</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
-<td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html" target="_blank">Demo</a></td>
+<td><a href="https://github.com/helpcomputer/megaball" target="_blank">Code</a></td>
 </tr>
 </table>
 
@@ -300,7 +300,7 @@ EL Editor de Pyxel tiene los siguientes modos de edición:
 
 El modo para editar el banco de imágenes.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html" target="_blank">
 <img src="images/image_editor.gif">
 </a>
 
@@ -310,7 +310,7 @@ Arrastrando y soltando un archivo de imagen (png/jpg/gif) en el editor de imáge
 
 El modo para editar el mapa de losas o mapa en el que las imágenes en el banco de imágenes están organizados en un patrón de azulejos o baldosas
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html" target="_blank">
 <img src="images/tilemap_editor.gif">
 </a>
 
@@ -318,7 +318,7 @@ El modo para editar el mapa de losas o mapa en el que las imágenes en el banco 
 
 El modo para editar el sonido.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html" target="_blank">
 <img src="images/sound_editor.gif">
 </a>
 
@@ -326,7 +326,7 @@ El modo para editar el sonido.
 
 El modo para editar música en el que organiza los sonidos del editor de sonidos para poder reproducirlos.
 
-<a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
+<a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html" target="_blank">
 <img src="images/music_editor.gif">
 </a>
 
