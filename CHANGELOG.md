@@ -1,5 +1,9 @@
 # Change Log
 
+# 1.9.6
+
+- Added a link to the code to the examples list
+
 # 1.9.5
 
 - Fixed to work without body tag in Pyxel Web
