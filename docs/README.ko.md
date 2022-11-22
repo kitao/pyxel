@@ -104,20 +104,92 @@ pyxel copy_examples
 
 복사되는 예제 파일은 다음과 같습니다:
 
-- [01_hello_pyxel.py](https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html) - 간단한 애플리케이션
-- [02_jump_game.py](https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html) - Pyxel 리소스 파일을 사용한 점프 게임
-- [03_draw_api.py](https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html) - Drawing API 데모
-- [04_sound_api.py](https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html) - Sound API 데모
-- [05_color_palette.py](https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html) - 색상 팔레트 목록
-- [06_click_game.py](https://kitao.github.io/pyxel/wasm/examples/06_click_game.html) - 마우스 클릭 게임
-- [07_snake.py](https://kitao.github.io/pyxel/wasm/examples/07_snake.html) - BGM이 포함된 스네이크 게임
-- [08_triangle_api.py](https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html) - Triangle drawing API 데모
-- [09_shooter.py](https://kitao.github.io/pyxel/wasm/examples/09_shooter.html) - 화면 전환이 있는 슈팅 게임
-- [10_platformer.py](https://kitao.github.io/pyxel/wasm/examples/10_platformer.html) - 맵이 있는 횡 스크롤 플랫폼 게임
-- [11_offscreen.py](https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html) - 이미지 클래스를 사용한 오프스크린 렌더링
-- [12_perlin_noise.py](https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html) - 펄린 노이즈 애니메이션
-- [30SecondsOfDaylight.pyxapp](https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html) - 제 1회 Pyxel Jam 우승 작품 ([Adam](https://twitter.com/helpcomputer0) 제작)
-- [megaball.pyxapp](https://kitao.github.io/pyxel/wasm/examples/megaball.html) - 아케이드 볼 물리 게임 ([Adam](https://twitter.com/helpcomputer0) 제작)
+<table>
+<tr>
+<td>01_hello_pyxel.py</td>
+<td>간단한 애플리케이션</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Code</a></td>
+</tr>
+<tr>
+<td>02_jump_game.py</td>
+<td>Pyxel 리소스 파일을 사용한 점프 게임</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Code</a></td>
+</tr>
+<tr>
+<td>03_draw_api.py</td>
+<td>Drawing API 데모</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">Code</a></td>
+</tr>
+<tr>
+<td>04_sound_api.py</td>
+<td>Sound API 데모</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Code</a></td>
+</tr>
+<tr>
+<td>05_color_palette.py</td>
+<td>색상 팔레트 목록</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Code</a></td>
+</tr>
+<tr>
+<td>06_click_game.py</td>
+<td>마우스 클릭 게임</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Code</a></td>
+</tr>
+<tr>
+<td>07_snake.py</td>
+<td>BGM이 포함된 스네이크 게임</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Code</a></td>
+</tr>
+<tr>
+<td>08_triangle_api.py</td>
+<td>Triangle drawing API 데모</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Code</a></td>
+</tr>
+<tr>
+<td>09_shooter.py</td>
+<td>화면 전환이 있는 슈팅 게임</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Code</a></td>
+</tr>
+<tr>
+<td>10_platformer.py</td>
+<td>맵이 있는 횡 스크롤 플랫폼 게임</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Code</a></td>
+</tr>
+<tr>
+<td>11_offscreen.py</td>
+<td>이미지 클래스를 사용한 오프스크린 렌더링</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Code</a></td>
+</tr>
+<tr>
+<td>12_perlin_noise.py</td>
+<td>펄린 노이즈 애니메이션</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
+</tr>
+<tr>
+<td>30SecondsOfDaylight.pyxapp</td>
+<td>제 1회 Pyxel Jam 우승 작품 (Adam 제작)</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
+<td><a href="https://github.com/kitao/30SecondsOfDaylight">Code</a></td>
+</tr>
+<tr>
+<td>megaball.pyxapp</td>
+<td>아케이드 볼 물리 게임 (Adam 제작)</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
+<td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
+</tr>
+</table>
 
 다음 명령어를 사용하여 예제 파일을 실행할 수 있습니다.
 

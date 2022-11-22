@@ -104,20 +104,92 @@ pyxel copy_examples
 
 Les exemples copiés sont les suivants :
 
-- [01_hello_pyxel.py](https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html) - Application simple
-- [02_jump_game.py](https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html) - Jeu de saut avec les fichiers de ressources Pyxel
-- [03_draw_api.py](https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html) - Démonstration de l’API de dessin
-- [04_sound_api.py](https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html) - Démonstration de l’API de son
-- [05_color_palette.py](https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html) - Liste des couleurs de la palette
-- [06_click_game.py](https://kitao.github.io/pyxel/wasm/examples/06_click_game.html) - Jeu de type pointer et cliquer
-- [07_snake.py](https://kitao.github.io/pyxel/wasm/examples/07_snake.html) - Jeu du Snake avec une bande son
-- [08_triangle_api.py](https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html) - Démonstration de l’API de dessin de triangle
-- [09_shooter.py](https://kitao.github.io/pyxel/wasm/examples/09_shooter.html) - Jeu de shoot'em up avec changement d’écran
-- [10_platformer.py](https://kitao.github.io/pyxel/wasm/examples/10_platformer.html) - Jeu de plateforme avec défilement horizontal et une carte
-- [11_offscreen.py](https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html) - Rendu hors écran avec la classe Image
-- [12_perlin_noise.py](https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html) - Animation du bruit de Perlin
-- [30SecondsOfDaylight.pyxapp](https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html) - 1er jeu gagnant du Pyxel Jam par [Adam](https://twitter.com/helpcomputer0)
-- [megaball.pyxapp](https://kitao.github.io/pyxel/wasm/examples/megaball.html) - Jeu physique de balles d'arcade par [Adam](https://twitter.com/helpcomputer0)
+<table>
+<tr>
+<td>01_hello_pyxel.py</td>
+<td>Application simple</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Code</a></td>
+</tr>
+<tr>
+<td>02_jump_game.py</td>
+<td>Jeu de saut avec les fichiers de ressources Pyxel</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Code</a></td>
+</tr>
+<tr>
+<td>03_draw_api.py</td>
+<td>Démonstration de l’API de dessin</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">Code</a></td>
+</tr>
+<tr>
+<td>04_sound_api.py</td>
+<td>Démonstration de l’API de son</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Code</a></td>
+</tr>
+<tr>
+<td>05_color_palette.py</td>
+<td>Liste des couleurs de la palette</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Code</a></td>
+</tr>
+<tr>
+<td>06_click_game.py</td>
+<td>Jeu de type pointer et cliquer</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Code</a></td>
+</tr>
+<tr>
+<td>07_snake.py</td>
+<td>Jeu du Snake avec une bande son</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Code</a></td>
+</tr>
+<tr>
+<td>08_triangle_api.py</td>
+<td>Démonstration de l’API de dessin de triangle</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Code</a></td>
+</tr>
+<tr>
+<td>09_shooter.py</td>
+<td>Jeu de shoot'em up avec changement d’écran</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Code</a></td>
+</tr>
+<tr>
+<td>10_platformer.py</td>
+<td>Jeu de plateforme avec défilement horizontal et une carte</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Code</a></td>
+</tr>
+<tr>
+<td>11_offscreen.py</td>
+<td>Rendu hors écran avec la classe Image</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Code</a></td>
+</tr>
+<tr>
+<td>12_perlin_noise.py</td>
+<td>Animation du bruit de Perlin</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
+</tr>
+<tr>
+<td>30SecondsOfDaylight.pyxapp</td>
+<td>1er jeu gagnant du Pyxel Jam par Adam</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
+<td><a href="https://github.com/kitao/30SecondsOfDaylight">Code</a></td>
+</tr>
+<tr>
+<td>megaball.pyxapp</td>
+<td>Jeu physique de balles d'arcade par Adam</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
+<td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
+</tr>
+</table>
 
 Les exemples peuvent être lancés avec les commandes suivantes :
 
