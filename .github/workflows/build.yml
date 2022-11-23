@@ -76,13 +76,9 @@ jobs:
 
       - name: Install Rust
         run: |
-          #apt-get update
-          #apt-get install -y build-essential curl
-          #apt-get update
           curl https://sh.rustup.rs -sSf | bash -s -- -y
-          echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
+          # echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
           source "$HOME/.cargo/env"
-          rustup update
           rustup install nightly
           rustup component add rustfmt --toolchain nightly
 
