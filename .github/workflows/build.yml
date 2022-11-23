@@ -32,6 +32,7 @@ jobs:
         run: |
           rustup update
           rustup install nightly
+          rustup component add rustfmt --toolchain nightly-${{ matrix.arch }}
 
       - name: Install Python
         uses: actions/setup-python@v4
