@@ -15,9 +15,9 @@ jobs:
             os: windows-2022
             arch: x86
 
-          - target: x86_64-apple-darwin
-            os: macos-12
-            arch: x64
+          #- target: x86_64-apple-darwin
+          #  os: macos-12
+          #  arch: x64
 
           - target: aarch64-apple-darwin
             os: macos-12
@@ -29,12 +29,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
+        uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: stable
 
       - name: Install Nightly Rust
-        uses: dtolnay/rust-toolchain@master
+        uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: nightly
           components: rustfmt
@@ -80,12 +80,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
+        uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: stable
 
       - name: Install Nightly Rust
-        uses: dtolnay/rust-toolchain@master
+        uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: nightly
           components: rustfmt
