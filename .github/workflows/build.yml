@@ -29,10 +29,18 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Rust
-        run: |
-          rustup update
-          rustup install nightly
-          rustup component add rustfmt --toolchain nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+
+      - name: Install Nightly Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          components: rustfmt
 
       - name: Install Python
         uses: actions/setup-python@v4
@@ -75,11 +83,18 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Rust
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          rustup update
-          rustup install nightly
-          rustup component add rustfmt --toolchain nightly
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+
+      - name: Install Nightly Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          components: rustfmt
 
       - name: Install Python
         uses: actions/setup-python@v4
