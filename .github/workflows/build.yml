@@ -80,12 +80,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Rust
-        use: dtolnay/rust-toolchain@master
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
 
       - name: Install Nightly Rust
-        use: dtolnay/rust-toolchain@master
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly
           components: rustfmt
