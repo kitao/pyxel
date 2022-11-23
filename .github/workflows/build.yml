@@ -76,6 +76,7 @@ jobs:
 
       - name: Install Rust
         run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
           rustup update
           rustup install nightly
           rustup component add rustfmt --toolchain nightly
