@@ -21,9 +21,6 @@ pyxel-core = { path = "../pyxel-core", version = "1.9.5" }
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 sysinfo = "0.26"
 
-[build-dependencies]
-cc = "1.0"
-
 [patch.crates-io]
 sdl2 = { git = "https://github.com/Rust-SDL2/rust-sdl2.git", branch = "master" }
 
