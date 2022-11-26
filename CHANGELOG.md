@@ -4,6 +4,7 @@
 
 - Added a link to the code to the examples list
 - Changed the save location of watch command information
+- Restored the flip function for non-web platforms only
 
 # 1.9.5
 
