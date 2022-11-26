@@ -271,7 +271,7 @@ pub fn run<T: PyxelCallback>(mut callback: T) {
 }
 
 pub fn show() {
-    struct App {
+    pub struct App {
         image: SharedImage,
     }
     impl PyxelCallback for App {
@@ -301,23 +301,6 @@ pub fn show() {
         None,
     );
     crate::run(App { image });
-}
-
-pub fn flip() {
-    struct App;
-    impl PyxelCallback for App {
-        fn update(&mut self) {}
-        fn draw(&mut self) {}
-    }
-    let mut app = App;
-    let frame_count = crate::frame_count();
-    while frame_count == crate::frame_count() {
-        let wait_ms = System::instance().next_update_ms - Platform::instance().tick_count() as f64;
-        if wait_ms > 0.0 {
-            Platform::instance().sleep((wait_ms / 2.0) as u32);
-        }
-        System::instance().process_frame(&mut app);
-    }
 }
 
 pub fn quit() {
