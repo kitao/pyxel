@@ -3,6 +3,7 @@
 # 1.9.6
 
 - Added a link to the code to the examples list
+- Changed the save location of watch command information
 
 # 1.9.5
 

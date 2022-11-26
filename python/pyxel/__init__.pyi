@@ -4,7 +4,7 @@ from typing import Callable, List, Optional, Tuple, Union
 # Constants
 VERSION: str
 WORKING_DIR: str
-WATCH_INFO_FILE: str
+WATCH_INFO_FILE_ENVVAR: str
 
 APP_FILE_EXTENSION: str
 APP_STARTUP_SCRIPT_FILE: str

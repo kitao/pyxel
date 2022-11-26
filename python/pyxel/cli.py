@@ -119,6 +119,19 @@ def _create_app_dir():
     return app_dir
 
 
+def _create_watch_info_file():
+    watch_dir = os.path.join(tempfile.gettempdir(), pyxel.WORKING_DIR, "watch")
+    pathlib.Path(watch_dir).mkdir(parents=True, exist_ok=True)
+    for path in glob.glob(os.path.join(watch_dir, "*")):
+        pid = int(os.path.basename(path))
+        if not pyxel.process_exists(pid):
+            os.remove(path)
+    watch_info_file = os.path.join(watch_dir, str(os.getpid()))
+    with open(watch_info_file, "w") as f:
+        f.write("")
+    return watch_info_file
+
+
 def _timestamps_in_dir(dirname):
     paths = glob.glob(os.path.join(dirname, "*"))
     paths += glob.glob(os.path.join(dirname, "*/*"))
@@ -151,14 +164,9 @@ def watch_and_run_python_script(watch_dir, python_script_file):
     python_script_file = _complete_extension(python_script_file, ".py")
     _check_file_exists(python_script_file)
     _check_file_under_dir(python_script_file, watch_dir)
-    watch_info_file = os.path.join(
-        os.path.dirname(os.path.abspath(python_script_file)),
-        pyxel.WATCH_INFO_FILE,
-    )
+    os.environ[pyxel.WATCH_INFO_FILE_ENVVAR] = _create_watch_info_file()
     try:
         print(f"start watching '{watch_dir}' (Ctrl+C to stop)")
-        with open(watch_info_file, "w") as f:
-            f.write("valid\n")
         cur_time = last_time = time.time()
         timestamps = _timestamps_in_dir(watch_dir)
         worker = _run_python_script_in_separate_process(python_script_file)
@@ -173,21 +181,10 @@ def watch_and_run_python_script(watch_dir, python_script_file):
             if timestamps != last_timestamps:
                 print(f"rerun {python_script_file}")
                 worker.terminate()
-                watch_info = ""
-                if os.path.isfile(watch_info_file):
-                    with open(watch_info_file) as f:
-                        watch_info = f.read()
-                if not watch_info.startswith("valid\n"):
-                    watch_info = "valid\n" + watch_info
-                with open(watch_info_file, "w") as f:
-                    f.write(watch_info)
                 worker = _run_python_script_in_separate_process(python_script_file)
     except KeyboardInterrupt:
         print("\r", end="")
         print("stopped watching")
-    finally:
-        if os.path.isfile(watch_info_file):
-            os.remove(watch_info_file)
 
 
 def play_pyxel_app(pyxel_app_file):
