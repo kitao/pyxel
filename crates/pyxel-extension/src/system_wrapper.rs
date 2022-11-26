@@ -90,6 +90,11 @@ fn show() {
 }
 
 #[pyfunction]
+fn flip() {
+    pyxel::flip();
+}
+
+#[pyfunction]
 fn quit() {
     pyxel::quit();
 }
@@ -108,6 +113,7 @@ pub fn add_system_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
     m.add_function(wrap_pyfunction!(run, m)?)?;
     m.add_function(wrap_pyfunction!(show, m)?)?;
+    m.add_function(wrap_pyfunction!(flip, m)?)?;
     m.add_function(wrap_pyfunction!(quit, m)?)?;
     #[cfg(not(target_os = "emscripten"))]
     m.add_function(wrap_pyfunction!(process_exists, m)?)?;
