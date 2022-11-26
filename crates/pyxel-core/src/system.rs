@@ -271,7 +271,7 @@ pub fn run<T: PyxelCallback>(mut callback: T) {
 }
 
 pub fn show() {
-    pub struct App {
+    struct App {
         image: SharedImage,
     }
     impl PyxelCallback for App {
