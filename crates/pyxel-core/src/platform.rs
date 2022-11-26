@@ -216,7 +216,6 @@ impl Platform {
         self.sdl_timer.ticks()
     }
 
-    #[allow(dead_code)]
     pub fn sleep(&mut self, ms: u32) {
         self.sdl_timer.delay(ms);
     }
@@ -566,7 +565,7 @@ impl Platform {
             return;
         }
         let watch_info = read_to_string(self.watch_info_file.as_ref().unwrap()).unwrap();
-        let watch_info: Vec<&str> = watch_info.split(" ").collect();
+        let watch_info: Vec<&str> = watch_info.split(' ').collect();
         if watch_info.len() == 1 && watch_info[0] == "fullscreen" {
             self.set_fullscreen(true);
         } else if watch_info.len() == 4 {
