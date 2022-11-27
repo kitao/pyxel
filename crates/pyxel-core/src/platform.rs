@@ -216,6 +216,7 @@ impl Platform {
         self.sdl_timer.ticks()
     }
 
+    #[allow(dead_code)]
     pub fn sleep(&mut self, ms: u32) {
         self.sdl_timer.delay(ms);
     }
