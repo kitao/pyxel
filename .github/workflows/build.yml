@@ -32,7 +32,7 @@ jobs:
         if: matrix.target == 'x86_64-apple-darwin'
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "13"
+          xcode-version: "12"
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
