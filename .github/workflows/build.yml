@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set Xcode version
-        if: matrix.target == "x86_64-apple-darwin"
+        if: matrix.target == 'x86_64-apple-darwin'
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: "13"
