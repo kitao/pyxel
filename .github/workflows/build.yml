@@ -28,6 +28,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
+      - name: Set Xcode version
+        if: matrix.target == 'x86_64-apple-darwin'
+        run: sudo xcode-select -s '/Applications/Xcode_13.4.1.app/Contents/Developer'
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -46,12 +50,10 @@ jobs:
           architecture: ${{ matrix.arch }}
 
       - name: Install Python packages
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Build wheels
-        run: |
-          make TARGET=${{ matrix.target }}
+        run: make TARGET=${{ matrix.target }}
 
       - name: Upload wheels
         uses: actions/upload-artifact@v3
@@ -96,8 +98,7 @@ jobs:
           python-version: "3.10"
 
       - name: Install Python packages
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Build and install SDL2
         run: |
