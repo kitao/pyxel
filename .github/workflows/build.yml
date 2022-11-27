@@ -28,12 +28,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
-      - name: Set Xcode version
-        if: matrix.target == 'x86_64-apple-darwin'
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: "12"
-
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
