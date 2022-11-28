@@ -8,19 +8,19 @@ jobs:
       matrix:
         include:
           - target: x86_64-pc-windows-msvc
-            os: windows-latest
+            os: windows-2022
             arch: x64
 
           - target: i686-pc-windows-msvc
-            os: windows-latest
+            os: windows-2022
             arch: x86
 
           - target: x86_64-apple-darwin
-            os: macos-latest
+            os: macos-12
             arch: x64
 
           - target: aarch64-apple-darwin
-            os: macos-latest
+            os: macos-12
             arch: x64
 
     runs-on: ${{ matrix.os }}
@@ -70,7 +70,7 @@ jobs:
           - target: aarch64-unknown-linux-gnu
             image: messense/manylinux2014-cross:aarch64
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container: ${{ matrix.image }}
 
     steps:
