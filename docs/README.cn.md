@@ -75,8 +75,10 @@ pip install -U pyxel
 在安装[Python3](https://www.python.org/)（3.7 或更高版本）之后，执行以下命令：
 
 ```sh
-pip3 install -U pyxel
+python3 -m pip install -U pyxel
 ```
+
+如果你使用默认安装在 Mac 上的 Python3，请在上述命令的开头加上`sudo`以启用 pyxel 命令。
 
 ### Linux
 

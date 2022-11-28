@@ -75,8 +75,10 @@ pip install -U pyxel
 After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
 
 ```sh
-pip3 install -U pyxel
+python3 -m pip install -U pyxel
 ```
+
+If you use Python3, which is installed by default on Mac, please add `sudo` to the beginning of the above command to enable the pyxel command.
 
 ### Linux
 
