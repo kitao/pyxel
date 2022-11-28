@@ -4,6 +4,7 @@
 
 - Added a link to the code to the examples list
 - Changed the save location of watch command information
+- Added instructions on how to install Pyxel on Mac
 
 # 1.9.5
 
