@@ -75,8 +75,10 @@ pip install -U pyxel
 [Python3](https://www.python.org/) (バージョン 3.7 以上) をインストールした後に、次のコマンドを実行します。
 
 ```sh
-pip3 install -U pyxel
+python3 -m pip install -U pyxel
 ```
+
+Mac に標準でインストールされている Python3 を使用する場合は、pyxel コマンドを有効にするために、上記コマンドの先頭に`sudo`を追加してください。
 
 ### Linux
 
