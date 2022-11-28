@@ -33,10 +33,12 @@ pub enum DisplayScale {
     Ratio(f64),
 }
 
-#[derive(PartialEq)]
-enum WindowState {
-    Window(i32, i32, u32, u32),
-    Fullscreen,
+#[derive(Default, PartialEq)]
+struct WindowState {
+    x: i32,
+    y: i32,
+    width: u32,
+    height: u32,
 }
 
 pub trait AudioCallback {
@@ -94,16 +96,29 @@ impl Platform {
             },
             1,
         );
-        let sdl_window = sdl_video
-            .window(
-                title,
-                screen_width * display_scale,
-                screen_height * display_scale,
-            )
-            .position_centered()
-            .resizable()
-            .build()
-            .unwrap();
+        let watch_info_file = Self::watch_info_file();
+        let sdl_window = Self::load_watch_info(&watch_info_file).map_or_else(
+            || {
+                sdl_video
+                    .window(
+                        title,
+                        screen_width * display_scale,
+                        screen_height * display_scale,
+                    )
+                    .position_centered()
+                    .resizable()
+                    .build()
+                    .unwrap()
+            },
+            |window_state| {
+                sdl_video
+                    .window(title, window_state.width, window_state.height)
+                    .position(window_state.x, window_state.y)
+                    .resizable()
+                    .build()
+                    .unwrap()
+            },
+        );
         let mut sdl_canvas = sdl_window.into_canvas().present_vsync().build().unwrap();
         sdl_canvas
             .window_mut()
@@ -141,10 +156,9 @@ impl Platform {
             screen_height,
             mouse_x: i32::MIN,
             mouse_y: i32::MIN,
-            watch_info_file: None,
-            window_state: WindowState::Window(0, 0, 0, 0),
+            watch_info_file,
+            window_state: WindowState::default(),
         });
-        Self::instance().load_watch_info();
         Self::instance().save_watch_info();
     }
 
@@ -559,53 +573,46 @@ impl Platform {
         (mouse_x, mouse_y)
     }
 
-    fn load_watch_info(&mut self) {
-        if let Ok(watch_info_file) = envvar(WATCH_INFO_FILE_ENVVAR) {
-            self.watch_info_file = Some(watch_info_file);
-        } else {
-            return;
+    fn watch_info_file() -> Option<String> {
+        envvar(WATCH_INFO_FILE_ENVVAR).map_or(None, |watch_info_file| Some(watch_info_file))
+    }
+
+    fn load_watch_info(watch_info_file: &Option<String>) -> Option<WindowState> {
+        if watch_info_file.is_none() {
+            return None;
         }
-        let watch_info = read_to_string(self.watch_info_file.as_ref().unwrap()).unwrap();
+        let watch_info_file = watch_info_file.as_ref().unwrap();
+        let watch_info = read_to_string(watch_info_file).unwrap();
         let watch_info: Vec<&str> = watch_info.split(' ').collect();
-        if watch_info.len() == 1 && watch_info[0] == "fullscreen" {
-            self.set_fullscreen(true);
-        } else if watch_info.len() == 4 {
-            self.set_fullscreen(false);
-            self.sdl_canvas.window_mut().set_position(
-                sdl2::video::WindowPos::Positioned(watch_info[0].parse().unwrap()),
-                sdl2::video::WindowPos::Positioned(watch_info[1].parse().unwrap()),
-            );
-            let _droppable = self.sdl_canvas.window_mut().set_size(
-                watch_info[2].parse().unwrap(),
-                watch_info[3].parse().unwrap(),
-            );
+        if watch_info.len() == 4 {
+            Some(WindowState {
+                x: watch_info[0].parse().unwrap(),
+                y: watch_info[1].parse().unwrap(),
+                width: watch_info[2].parse().unwrap(),
+                height: watch_info[3].parse().unwrap(),
+            })
+        } else {
+            None
         }
     }
 
     fn save_watch_info(&mut self) {
-        if self.watch_info_file.is_none() {
+        if self.watch_info_file.is_none() || self.is_fullscreen() {
             return;
         }
-        let is_fullscreen = self.is_fullscreen();
-        let (window_x, window_y) = self.sdl_canvas.window().position();
-        let (window_width, window_height) = self.sdl_canvas.window().size();
-        let window_state = if is_fullscreen {
-            WindowState::Fullscreen
-        } else {
-            WindowState::Window(window_x, window_y, window_width, window_height)
+        let (x, y) = self.sdl_canvas.window().position();
+        let (width, height) = self.sdl_canvas.window().size();
+        let window_state = WindowState {
+            x,
+            y,
+            width,
+            height,
         };
         if window_state == self.window_state {
             return;
         }
         self.window_state = window_state;
-        let watch_info = if is_fullscreen {
-            String::from("fullscreen")
-        } else {
-            format!(
-                "{} {} {} {}",
-                window_x, window_y, window_width, window_height
-            )
-        };
+        let watch_info = format!("{} {} {} {}", x, y, width, height);
         write(self.watch_info_file.as_ref().unwrap(), watch_info).unwrap();
     }
 }
