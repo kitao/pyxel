@@ -3,8 +3,9 @@
 # 1.9.6
 
 - Added a link to the code to the examples list
-- Changed the save location of watch command information
+- Changed the save location of the watch command information
 - Added instructions on how to install Pyxel on Mac
+- Adjusted window resizing timing of the watch command
 
 # 1.9.5
 
