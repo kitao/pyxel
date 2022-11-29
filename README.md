@@ -78,7 +78,7 @@ After installing [Python3](https://www.python.org/) (version 3.7 or higher), run
 python3 -m pip install -U pyxel
 ```
 
-If you use Python3, which is installed by default on Mac, please add `sudo` to the beginning of the above command to enable the pyxel command.
+If you use Python3, which is installed by default on Mac, please add `sudo` to the beginning of the above command to enable `pyxel` command.
 
 ### Linux
 
@@ -246,7 +246,7 @@ class App:
 App()
 ```
 
-When creating simple graphics without animation, the `show` function can be used to make the code more concise.
+When creating simple graphics without animation, `show` function can be used to make the code more concise.
 
 ```python
 import pyxel
