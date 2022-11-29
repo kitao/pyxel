@@ -246,6 +246,17 @@ class App:
 App()
 ```
 
+アニメーションのないシンプルなグラフィックスを作成する場合は、`show`関数を使用してコードをより簡潔に記述することも可能です。
+
+```python
+import pyxel
+
+pyxel.init(120, 120)
+pyxel.cls(1)
+pyxel.circb(60, 60, 40, 7)
+pyxel.show()
+```
+
 ### アプリケーションの実行方法
 
 作成した Python スクリプトは次のコマンドで実行できます。
