@@ -3,6 +3,7 @@
 # 1.9.7
 
 - Simplified utility scripts
+- Added show command description to the READMEs
 
 # 1.9.6
 

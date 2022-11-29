@@ -246,6 +246,17 @@ class App:
 App()
 ```
 
+当创建没有动画的简单图形时，可以使用`show`函数来使代码更加简洁。
+
+```python
+import pyxel
+
+pyxel.init(120, 120)
+pyxel.cls(1)
+pyxel.circb(60, 60, 40, 7)
+pyxel.show()
+```
+
 ### 运行 Pyxel 应用
 
 创建的 Python 脚本可以使用以下命令执行：

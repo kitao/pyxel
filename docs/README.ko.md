@@ -246,6 +246,17 @@ class App:
 App()
 ```
 
+애니메이션 없이 간단한 그래픽을 만들 때 `show` 기능을 사용하면 코드를 더 간결하게 만들 수 있습니다.
+
+```python
+import pyxel
+
+pyxel.init(120, 120)
+pyxel.cls(1)
+pyxel.circb(60, 60, 40, 7)
+pyxel.show()
+```
+
 ### Pyxel 애플리케이션 실행 방법
 
 생성된 Python 스크립트는 다음 명령어를 사용해 실행할 수 있습니다.
