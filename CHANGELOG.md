@@ -1,5 +1,9 @@
 # Change Log
 
+# 1.9.7
+
+- Simplified utility scripts
+
 # 1.9.6
 
 - Added a link to the code to the examples list

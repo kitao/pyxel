@@ -17,7 +17,7 @@
 #	- libsdl2-dev
 #
 #	[WASM]
-#	- Emscripten 3.1.21
+#	- Emscripten 3.1.24
 #
 # Advance preparation:
 #	rustup install nightly
@@ -51,14 +51,6 @@ EXAMPLES_DIR = $(PYXEL_DIR)/examples
 WASM_DIR = $(ROOT_DIR)/wasm
 WASM_ENV = RUSTUP_TOOLCHAIN=nightly
 WASM_TARGET = wasm32-unknown-emscripten
-
-ifeq ($(COMSPEC),)
-PYTHON = python3
-PIP = pip3
-else # Windows
-PYTHON = python
-PIP = pip
-endif
 
 ifeq ($(TARGET),)
 ENSURE_TARGET =
@@ -99,8 +91,8 @@ build: format
 
 test: build
 	@cd $(CRATES_DIR)/pyxel-core; cargo test $(BUILD_OPTS)
-	@$(PIP) install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
-	@$(PYTHON) -m unittest discover $(CRATES_DIR)/pyxel-extension/tests
+	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
+	@python3 -m unittest discover $(CRATES_DIR)/pyxel-extension/tests
 	@pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
 	@pyxel run $(EXAMPLES_DIR)/02_jump_game.py
 	@pyxel run $(EXAMPLES_DIR)/03_draw_api.py

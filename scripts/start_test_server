@@ -5,10 +5,4 @@ cd `dirname $0`
 
 ORIGIN_DIR=..
 
-if [ "$COMSPEC" = "" ]; then
-    PYTHON=python3
-else # Windows
-    PYTHON=python
-fi
-
-$PYTHON -m http.server --directory $ORIGIN_DIR 8000
+python3 -m http.server --directory $ORIGIN_DIR 8000
