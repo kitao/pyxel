@@ -78,7 +78,7 @@ Après avoir installé [Python3](https://www.python.org/) (version 3.7 ou plus),
 python3 -m pip install -U pyxel
 ```
 
-Si vous utilisez Python3, qui est installé par défaut sur Mac, veuillez ajouter `sudo` au début de la commande ci-dessus pour activer la commande pyxel.
+Si vous utilisez Python3, qui est installé par défaut sur Mac, veuillez ajouter `sudo` au début de la commande ci-dessus pour activer la commande `pyxel`.
 
 ### Linux
 

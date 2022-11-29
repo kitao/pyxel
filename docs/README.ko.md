@@ -78,7 +78,7 @@ pip install -U pyxel
 python3 -m pip install -U pyxel
 ```
 
-Mac에 기본적으로 설치되는 Python3를 사용하는 경우 위 명령의 시작 부분에 `sudo`를 추가하여 pyxel 명령을 활성화하십시오.
+Mac에 기본적으로 설치되는 Python3를 사용하는 경우 위 명령의 시작 부분에 `sudo`를 추가하여 `pyxel` 명령을 활성화하십시오.
 
 ### Linux
 
