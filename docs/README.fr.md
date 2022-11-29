@@ -246,6 +246,17 @@ class App:
 App()
 ```
 
+Lors de la création de graphiques simples sans animation, la fonction `show` peut être utilisée pour rendre le code plus concis.
+
+```python
+import pyxel
+
+pyxel.init(120, 120)
+pyxel.cls(1)
+pyxel.circb(60, 60, 40, 7)
+pyxel.show()
+```
+
 ### Lancer une application Pyxel
 
 Le script Python créé peut être lancé en utilisant la commande suivante :
