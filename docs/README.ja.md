@@ -78,7 +78,7 @@ pip install -U pyxel
 python3 -m pip install -U pyxel
 ```
 
-Mac に標準でインストールされている Python3 を使用する場合は、pyxel コマンドを有効にするために、上記コマンドの先頭に`sudo`を追加してください。
+Mac に標準でインストールされている Python3 を使用する場合は、`pyxel` コマンドを有効にするために、上記コマンドの先頭に`sudo`を追加してください。
 
 ### Linux
 
