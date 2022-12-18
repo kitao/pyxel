@@ -78,7 +78,7 @@ After installing [Python3](https://www.python.org/) (version 3.7 or higher), run
 python3 -m pip install -U pyxel
 ```
 
-If you use Python3, which is installed by default on Mac, please add `sudo` to the beginning of the above command to enable the pyxel command.
+If you use Python3, which is installed by default on Mac, please add `sudo` to the beginning of the above command to enable `pyxel` command.
 
 ### Linux
 
@@ -180,6 +180,12 @@ The examples to be copied are as follows:
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
 </tr>
 <tr>
+<td>13_flip.py</td>
+<td>Animation with flip (for non-web)</td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/13_flip.gif">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_flip.py">Code</a></td>
+</tr>
+<tr>
 <td>30SecondsOfDaylight.pyxapp</td>
 <td>1st Pyxel Jam winning game by Adam</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
@@ -246,7 +252,7 @@ class App:
 App()
 ```
 
-When creating simple graphics without animation, the `show` function can be used to make the code more concise.
+When creating simple graphics without animation, `show` function can be used to make the code more concise.
 
 ```python
 import pyxel
@@ -395,6 +401,9 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 
 - `show()`<br>
   Show the screen and wait until the `Esc` key is pressed.
+
+- `flip()`<br>
+  Refrech the screen by one frame. The application exits when the `Esc` key is pressed. This function only works on non-web platforms.
 
 - `quit()`<br>
   Quit the Pyxel application.

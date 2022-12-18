@@ -169,7 +169,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>11_offscreen.py</td>
-<td>用图像类进行屏外渲染</td>
+<td>用 Image 类进行屏外渲染</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Code</a></td>
 </tr>
@@ -178,6 +178,12 @@ pyxel copy_examples
 <td>佩林噪音动画</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
+</tr>
+<tr>
+<td>13_flip.py</td>
+<td>使用 flip 的动画（用于非网络）</td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/13_flip.gif">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_flip.py">Code</a></td>
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
@@ -396,6 +402,9 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 
 - `show()`<br>
   显示屏幕直到`Esc`键被按下。
+
+- `flip()`<br>
+  将屏幕重新调整一帧。当按下`Esc`键时，应用程序退出。这个功能只在非网络平台上工作。
 
 - `quit()`<br>
   退出 Pyxel 应用。
