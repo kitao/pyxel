@@ -180,6 +180,12 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
 </tr>
 <tr>
+<td>13_flip.py</td>
+<td>Анимация с помощью flip (для не-веб)</td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/13_flip.gif">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_flip.py">Code</a></td>
+</tr>
+<tr>
 <td>30SecondsOfDaylight.pyxapp</td>
 <td>1-я победная игра Pyxel Jam от Adam</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
@@ -395,6 +401,9 @@ pyxel play PYXEL_APP_FILE
 
 - `show()`<br>
   Отрисовать кадр и ждать выхода из приложения по нажатию клавиши `Esc`.
+
+- `flip()`<br>
+  Уменьшить экран на один кадр. Приложение завершается при нажатии клавиши `Esc`. Эта функция работает только на не-веб-платформах.
 
 - `quit()`<br>
   Завершить работу Pyxel-приложения.
