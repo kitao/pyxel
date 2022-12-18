@@ -180,6 +180,12 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
 </tr>
 <tr>
+<td>13_flip.py</td>
+<td>flip によるアニメーション (非Web向け)</td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/13_flip.gif">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_flip.py">Code</a></td>
+</tr>
+<tr>
 <td>30SecondsOfDaylight.pyxapp</td>
 <td>第 1 回 Pyxel Jam 優勝ゲーム (Adam制作)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
@@ -396,6 +402,9 @@ Pyxel アプリケーションファイルは、'pyxel app2exe'コマンドや'p
 
 - `show()`<br>
   画面を表示して`Esc`キーが押されるまで待機します。
+
+- `flip()`<br>
+  画面を 1 フレーム更新します。`ESC`を押すとアプリケーションは終了します。この関数は Web 以外のプラットフォームでのみ動作します。
 
 - `quit()`<br>
   Pyxel アプリケーションを終了します。

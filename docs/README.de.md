@@ -180,6 +180,12 @@ Die zu kopierenden Beispiele lauten wie folgt:
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
 </tr>
 <tr>
+<td>13_flip.py</td>
+<td>Animation mit flip (für Nicht-Web)</td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/13_flip.gif">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_flip.py">Code</a></td>
+</tr>
+<tr>
 <td>30SecondsOfDaylight.pyxapp</td>
 <td>1. Pyxel Jam Gewinnspiel von Adam</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
@@ -394,6 +400,9 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 - `show()`<br>
   Zeige das Fenster und warte bis die `Esc` Taste gedrückt wird.
+
+- `flip()`<br>
+  Verschiebt den Bildschirm um ein Bild. Die Anwendung wird beendet, wenn die Taste `Esc` gedrückt wird. Diese Funktion funktioniert nur auf Nicht-Web-Plattformen.
 
 - `quit()`<br>
   Beende das Pyxel-Programm.
