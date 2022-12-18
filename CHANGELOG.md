@@ -4,6 +4,8 @@
 
 - Simplified utility scripts
 - Added show command description to the READMEs
+- Restored the flip function for non-web only
+- Added the example #13
 
 # 1.9.6
 
