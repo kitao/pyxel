@@ -82,8 +82,8 @@ impl System {
         self.check_special_input();
         if let Some(callback) = callback {
             callback.update();
+            self.update_profiler.end(Platform::instance().tick_count());
         }
-        self.update_profiler.end(Platform::instance().tick_count());
     }
 
     fn process_events(&mut self) {
@@ -301,6 +301,42 @@ pub fn show() {
         None,
     );
     crate::run(App { image });
+}
+
+pub fn flip() {
+    #[cfg(target_os = "emscripten")]
+    panic!("flip is not supported on Web");
+
+    #[cfg(not(target_os = "emscripten"))]
+    {
+        let system = System::instance();
+        system
+            .update_profiler
+            .end(Platform::instance().tick_count());
+        system.draw_frame(None);
+        system.frame_count += 1;
+        let mut tick_count;
+        let mut elapsed_ms;
+        loop {
+            tick_count = Platform::instance().tick_count();
+            elapsed_ms = tick_count as f64 - system.next_update_ms;
+            let wait_ms =
+                System::instance().next_update_ms - Platform::instance().tick_count() as f64;
+            if wait_ms > 0.0 {
+                Platform::instance().sleep((wait_ms / 2.0) as u32);
+            } else {
+                break;
+            }
+        }
+        system.fps_profiler.end(tick_count);
+        system.fps_profiler.start(tick_count);
+        if elapsed_ms > MAX_ELAPSED_MS as f64 {
+            system.next_update_ms = Platform::instance().tick_count() as f64 + system.one_frame_ms;
+        } else {
+            system.next_update_ms += system.one_frame_ms;
+        }
+        system.update_frame(None);
+    }
 }
 
 pub fn quit() {
