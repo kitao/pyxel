@@ -180,6 +180,12 @@ Les exemples copiés sont les suivants :
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
 </tr>
 <tr>
+<td>13_flip.py</td>
+<td>Animazione con flip (per non web)</td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/13_flip.gif">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_flip.py">Code</a></td>
+</tr>
+<tr>
 <td>30SecondsOfDaylight.pyxapp</td>
 <td>1er jeu gagnant du Pyxel Jam par Adam</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
@@ -397,6 +403,9 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
 
 - `show()`<br>
   Affiche l’écran jusqu’à ce que la touche `Esc` soit appuyée.
+
+- `flip()`<br>
+  Rafraîchit l'écran d'une image. L'application se termine lorsque la touche `Esc` est pressée. Cette fonction ne fonctionne que sur les plateformes non-web.
 
 - `quit()`<br>
   Quitte l’application Pyxel.

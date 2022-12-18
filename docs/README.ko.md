@@ -169,7 +169,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>11_offscreen.py</td>
-<td>이미지 클래스를 사용한 오프스크린 렌더링</td>
+<td>Image 클래스를 사용한 오프스크린 렌더링</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Code</a></td>
 </tr>
@@ -178,6 +178,12 @@ pyxel copy_examples
 <td>펄린 노이즈 애니메이션</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
+</tr>
+<tr>
+<td>13_flip.py</td>
+<td>flip 을 사용한 애니메이션(비웹용)</td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/13_flip.gif">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_flip.py">Code</a></td>
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
@@ -395,6 +401,9 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 - `show()`<br>
   화면을 표시하고 `Esc` 키를 누를 때까지 기다립니다.
+
+- `flip()`<br>
+  화면을 한 프레임씩 새로 고칩니다. `Esc` 키를 누르면 애플리케이션이 종료됩니다. 이 기능은 웹이 아닌 플랫폼에서만 작동합니다.
 
 - `quit()`<br>
   Pyxel 애플리케이션을 종료합니다.
