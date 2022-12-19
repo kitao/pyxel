@@ -180,10 +180,10 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
 </tr>
 <tr>
-<td>13_flip.py</td>
-<td>使用 flip 的动画（用于非网络）</td>
+<td>13_simple_animation.py</td>
+<td>具有 flip 功能的动画（非网络）</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/13_flip.gif">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_flip.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_simple_animation.py">Code</a></td>
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
