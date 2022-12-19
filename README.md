@@ -180,10 +180,10 @@ The examples to be copied are as follows:
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
 </tr>
 <tr>
-<td>13_flip.py</td>
-<td>Animation with flip (for non-web)</td>
+<td>13_simple_animation.py</td>
+<td>Animation with flip function (for non-web)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/13_flip.gif">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_flip.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_simple_animation.py">Code</a></td>
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
