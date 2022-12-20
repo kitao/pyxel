@@ -1,5 +1,9 @@
 # Change Log
 
+# 1.9.8
+
+- Modified description for the example #13
+
 # 1.9.7
 
 - Simplified utility scripts

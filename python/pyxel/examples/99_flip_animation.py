@@ -1,7 +1,7 @@
 import pyxel
 
 phase = 0
-pyxel.init(128, 128, title="Flip Animation (for non-web only)")
+pyxel.init(128, 128, title="Flip Animation")
 
 while True:
     if pyxel.btnp(pyxel.KEY_Q):
