@@ -180,10 +180,10 @@ Les exemples copiés sont les suivants :
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
 </tr>
 <tr>
-<td>13_simple_animation.py</td>
+<td>99_flip_animation.py</td>
 <td>Animation avec la fonction flip (pour le non-web)</td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/13_flip.gif">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_simple_animation.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
