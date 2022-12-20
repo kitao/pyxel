@@ -412,7 +412,7 @@ Pyxel アプリケーションファイルは、'pyxel app2exe'コマンドや'p
 ### リソース
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-  リソースファイル (.pyxres) を読み込みます。リソースタイプ (`image/tilemap/sound/music`) に`False`を指定すると、そのリソースは読み込まれません。
+  リソースファイル (.pyxres) を読み込みます。リソースタイプ (`image/tilemap/sound/music`) に`False`を指定すると、そのリソースは読み込まれません。また、同名のパレットファイル (.pyxpal) がリソースファイルと同じ場所に存在する場合は、パレットの表示色も変更されます。パレットファイルは表示色を改行区切りの 16 進数で入力します。パレットファイルを使うことで Pyxel Editor の表示色も変更可能です。
 
 ### 入力
 

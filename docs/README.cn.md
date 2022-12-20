@@ -412,7 +412,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 ### 源文件
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-  加载源文件(.pyxres)。如果某文件类型(`image/tilemap/sound/music`)被指定为`False`，则源文件中对应类型不会加载。
+  加载源文件(.pyxres)。如果某文件类型(`image/tilemap/sound/music`)被指定为`False`，则源文件中对应类型不会加载。如果在与资源文件相同的位置存在一个同名的调色板文件（.pyxpal），调色板的显示颜色也将被改变。调色板文件是一个显示颜色的十六进制条目，用换行符分隔。调色板文件也可以用来改变 Pyxel Editor 中显示的颜色。
 
 ### 输入
 
