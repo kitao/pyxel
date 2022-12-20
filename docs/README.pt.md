@@ -411,7 +411,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
 ### Recurso
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-  Carrega o arquivo de recursos (.pyxres). Se `False` for especificado para o tipo de recurso (`image/tilemap/sound/music`), o recurso não será carregado.
+  Carrega o arquivo de recursos (.pyxres). Se `False` for especificado para o tipo de recurso (`image/tilemap/sound/music`), o recurso não será carregado. Se existir um ficheiro de palete (.pyxpal) com o mesmo nome no mesmo local que o ficheiro de recurso, a cor de apresentação da palete também será alterada. O ficheiro de palete é uma entrada hexadecimal das cores do visor, separada por novas linhas. O ficheiro de palete também pode ser utilizado para alterar as cores exibidas no Pyxel Editor.
 
 ### Entrada
 

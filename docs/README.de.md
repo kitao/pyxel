@@ -410,7 +410,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 ### Ressourcen
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-  Lade die Ressourcen-Datei (.pyxres). Falls `False` für den Ressourcentyp angegeben ist (`image/tilemap/sound/music`), wird die Ressource nicht geladen.
+  Lade die Ressourcen-Datei (.pyxres). Falls `False` für den Ressourcentyp angegeben ist (`image/tilemap/sound/music`), wird die Ressource nicht geladen. Wenn eine gleichnamige Palettendatei (.pyxpal) am gleichen Ort wie die Ressourcendatei vorhanden ist, wird die Farbe der Palettenanzeige ebenfalls geändert. Die Palettendatei ist ein hexadezimaler Eintrag der Anzeigefarben, getrennt durch Zeilenumbrüche. Die Palettendatei kann auch verwendet werden, um die im Pyxel Editor angezeigten Farben zu ändern.
 
 ### Eingabe
 
