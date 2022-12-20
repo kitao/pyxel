@@ -81,8 +81,7 @@ impl System {
         loop {
             tick_count = Platform::instance().tick_count();
             elapsed_ms = tick_count as f64 - self.next_update_ms;
-            let wait_ms =
-                System::instance().next_update_ms - Platform::instance().tick_count() as f64;
+            let wait_ms = self.next_update_ms - Platform::instance().tick_count() as f64;
             if wait_ms > 0.0 {
                 Platform::instance().sleep((wait_ms / 2.0) as u32);
             } else {
