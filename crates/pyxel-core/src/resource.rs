@@ -123,7 +123,7 @@ pub fn load(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool
             .replace('\r', "\n")
             .split('\n')
             .filter(|s| !s.is_empty())
-            .map(|s| u32::from_str_radix(s, 16).unwrap() as Rgb8)
+            .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb8)
             .take(NUM_COLORS as usize)
             .collect();
         crate::colors().lock()[..colors.len()].copy_from_slice(&colors);
