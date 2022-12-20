@@ -5,7 +5,7 @@
 - Simplified utility scripts
 - Added show command description to the READMEs
 - Restored the flip function for non-web only
-- Added the example #13
+- Added the example #99 (for non-web only)
 - Added Pyxel palette file (.pyxpal) support
 
 # 1.9.6
