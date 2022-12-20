@@ -181,7 +181,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>flip 기능이 있는 애니메이션(웹이 아닌 경우)</td>
+<td>flip 기능이 있는 애니메이션 (웹 플랫폼이 아닌 경우에만 해당)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
 </tr>
