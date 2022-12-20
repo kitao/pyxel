@@ -413,7 +413,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
 ### Ressources
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-  Charge la ressource (.pyxres). Si `False` est spécifié pour un type de ressource (`image/tilemap/sound/music`), la ressource ne sera pas chargée.
+  Charge la ressource (.pyxres). Si `False` est spécifié pour un type de ressource (`image/tilemap/sound/music`), la ressource ne sera pas chargée. Si un fichier de palette (.pyxpal) du même nom existe au même endroit que le fichier de ressources, la couleur d'affichage de la palette sera également modifiée. Le fichier de palette est une entrée hexadécimale des couleurs d'affichage, séparées par des nouvelles lignes. Le fichier de palette peut également être utilisé pour modifier les couleurs affichées dans l'éditeur Pyxel.
 
 ### Entrées
 

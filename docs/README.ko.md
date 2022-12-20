@@ -411,7 +411,7 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 ### 리소스
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-  리소스 파일 (.pyxres)을 불러옵니다. 리소스 타입 (`image/tilemap/sound/music`)에 `False`를 지정하면, 해당 리소스는 불러오지 않습니다.
+  리소스 파일 (.pyxres)을 불러옵니다. 리소스 타입 (`image/tilemap/sound/music`)에 `False`를 지정하면, 해당 리소스는 불러오지 않습니다. 동일한 이름의 팔레트 파일(.pyxpal)이 리소스 파일과 동일한 위치에 존재하는 경우 팔레트 표시 색상도 변경됩니다. 팔레트 파일은 줄 바꿈으로 구분된 디스플레이 색상의 16진수 항목입니다. 팔레트 파일은 Pyxel Editor에 표시되는 색상을 변경하는 데에도 사용할 수 있습니다.
 
 ### 입력
 

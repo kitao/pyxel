@@ -411,7 +411,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 ### Resource
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-  Load the resource file (.pyxres). If `False` is specified for the resource type (`image/tilemap/sound/music`), the resource will not be loaded.
+  Load the resource file (.pyxres). If `False` is specified for the resource type (`image/tilemap/sound/music`), the resource will not be loaded. If a palette file (.pyxpal) of the same name exists in the same location as the resource file, the palette display color will also be changed. The palette file is a hexadecimal entry of the display colors, separated by newlines. The palette file can also be used to change the colors displayed in Pyxel Editor.
 
 ### Input
 

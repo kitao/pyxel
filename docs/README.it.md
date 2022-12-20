@@ -411,7 +411,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 ### Risorse
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>
-  Carica il file risorsa (.pyxres). Se `False` è specificato per il tipo di risorsa (`image/tilemap/sound/music`), la risorsa non sarà caricata.
+  Carica il file risorsa (.pyxres). Se `False` è specificato per il tipo di risorsa (`image/tilemap/sound/music`), la risorsa non sarà caricata. Se nella stessa posizione del file di risorse esiste un file di tavolozza (.pyxpal) con lo stesso nome, anche il colore di visualizzazione della tavolozza verrà modificato. Il file della tavolozza è una voce esadecimale dei colori di visualizzazione, separata da linee nuove. Il file della tavolozza può essere utilizzato anche per modificare i colori visualizzati nell'Editor Pyxel.
 
 ### Input
 
