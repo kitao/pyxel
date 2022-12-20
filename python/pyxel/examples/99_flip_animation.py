@@ -17,3 +17,4 @@ while True:
             pyxel.circ(x + offset_x, y + offset_y, 1, color)
     phase += 360 / 30
     pyxel.flip()
+    # Please note that flip function only works on non-Web platforms
