@@ -181,7 +181,7 @@ Gli esempi da copiare sono i seguenti:
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>Animazione con funzione flip (per non web)</td>
+<td>Animazione con funzione flip (solo per piattaforme non web)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
 </tr>
