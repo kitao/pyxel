@@ -110,18 +110,17 @@ pub fn load(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool
     }
 
     // Try to load Pyxel palette file
-    let filename = if let Some(i) = filename.rfind('.') {
-        &filename[..i]
-    } else {
-        filename
-    };
-    let filename = filename.to_string() + PALETTE_FILE_EXTENSION;
+    let filename = filename
+        .rfind('.')
+        .map_or(filename, |i| &filename[..i])
+        .to_string()
+        + PALETTE_FILE_EXTENSION;
     if let Ok(mut file) = File::open(Path::new(&filename)) {
         let mut contents = String::new();
         file.read_to_string(&mut contents).unwrap();
         let colors: Vec<Rgb8> = contents
             .replace("\r\n", "\n")
-            .replace("\r", "\n")
+            .replace('\r', "\n")
             .split('\n')
             .filter(|s| !s.is_empty())
             .map(|s| u32::from_str_radix(s, 16).unwrap() as Rgb8)
