@@ -72,6 +72,7 @@ impl System {
         self.frame_count += 1;
     }
 
+    #[allow(dead_code)]
     fn process_frame_for_flip(&mut self) {
         self.update_profiler.end(Platform::instance().tick_count());
         self.draw_frame(None);
