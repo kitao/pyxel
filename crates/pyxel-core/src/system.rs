@@ -8,6 +8,7 @@ use crate::resource::Resource;
 use crate::settings::{BACKGROUND_COLOR, MAX_ELAPSED_MS, NUM_MEASURE_FRAMES};
 use crate::types::Key;
 use crate::utils::simplify_string;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 pub trait PyxelCallback {
     fn update(&mut self);
@@ -24,6 +25,7 @@ pub struct System {
     update_profiler: Profiler,
     draw_profiler: Profiler,
     enable_perf_monitor: bool,
+    start_system_time: SystemTime,
 }
 
 unsafe_singleton!(System);
@@ -40,6 +42,7 @@ impl System {
             update_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             draw_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             enable_perf_monitor: false,
+            start_system_time: SystemTime::now(),
         });
     }
 
@@ -289,6 +292,16 @@ pub fn is_fullscreen() -> bool {
 
 pub fn fullscreen(is_fullscreen: bool) {
     Platform::instance().set_fullscreen(is_fullscreen);
+}
+
+pub fn tstamp() -> u64 {
+    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
+}
+
+pub fn time() -> u128 {
+    let since_start = SystemTime::now()
+        .duration_since(System::instance().start_system_time).unwrap();
+    since_start.as_millis()
 }
 
 pub fn run<T: PyxelCallback>(mut callback: T) {

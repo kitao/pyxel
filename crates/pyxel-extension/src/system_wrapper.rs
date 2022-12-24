@@ -58,6 +58,16 @@ fn fullscreen(full: bool) {
 }
 
 #[pyfunction]
+fn time() {
+    pyxel::time();
+}
+
+#[pyfunction]
+fn tstamp() {
+    pyxel::tstamp();
+}
+
+#[pyfunction]
 fn run(py: Python, update: &PyAny, draw: &PyAny) {
     struct PythonCallback<'a> {
         py: Python<'a>,
