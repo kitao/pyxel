@@ -58,13 +58,13 @@ fn fullscreen(full: bool) {
 }
 
 #[pyfunction]
-fn time() {
-    pyxel::time();
+fn tstamp() {
+    pyxel::tstamp();
 }
 
 #[pyfunction]
-fn tstamp() {
-    pyxel::tstamp();
+fn ticks() {
+    pyxel::ticks();
 }
 
 #[pyfunction]

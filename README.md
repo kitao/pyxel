@@ -408,6 +408,12 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 - `quit()`<br>
   Quit the Pyxel application.
 
+- `tstamp()`<br>
+  Returns the number of seconds since epoch.
+
+- `ticks()`<br>
+  Returns the number of milliseconds since init.
+
 ### Resource
 
 - `load(filename, [image], [tilemap], [sound], [music])`<br>

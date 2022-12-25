@@ -25,7 +25,6 @@ pub struct System {
     update_profiler: Profiler,
     draw_profiler: Profiler,
     enable_perf_monitor: bool,
-    start_system_time: SystemTime,
 }
 
 unsafe_singleton!(System);
@@ -42,7 +41,6 @@ impl System {
             update_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             draw_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             enable_perf_monitor: false,
-            start_system_time: SystemTime::now(),
         });
     }
 
@@ -298,10 +296,8 @@ pub fn tstamp() -> u64 {
     SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
 }
 
-pub fn time() -> u128 {
-    let since_start = SystemTime::now()
-        .duration_since(System::instance().start_system_time).unwrap();
-    since_start.as_millis()
+pub fn ticks() -> u32 {
+    Platform::instance().tick_count()
 }
 
 pub fn run<T: PyxelCallback>(mut callback: T) {
