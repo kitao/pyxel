@@ -22,8 +22,8 @@ class TestPyxel(unittest.TestCase):
     def test_input_text(self):
         pyxel.input_text
 
-    def test_time(self):
-        pyxel.time()
+    def test_ticks(self):
+        pyxel.ticks()
 
     def test_tstamp(self):
         pyxel.tstamp()
