@@ -121,6 +121,8 @@ pub fn add_system_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(title, m)?)?;
     m.add_function(wrap_pyfunction!(icon, m)?)?;
     m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
+    m.add_function(wrap_pyfunction!(tstamp, m)?)?;
+    m.add_function(wrap_pyfunction!(ticks, m)?)?;
     m.add_function(wrap_pyfunction!(run, m)?)?;
     m.add_function(wrap_pyfunction!(show, m)?)?;
     m.add_function(wrap_pyfunction!(flip, m)?)?;
