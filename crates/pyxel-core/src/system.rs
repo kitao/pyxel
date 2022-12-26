@@ -1,3 +1,5 @@
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use crate::event::Event;
 use crate::image::{Image, SharedImage};
 use crate::input::Input;
@@ -8,7 +10,6 @@ use crate::resource::Resource;
 use crate::settings::{BACKGROUND_COLOR, MAX_ELAPSED_MS, NUM_MEASURE_FRAMES};
 use crate::types::Key;
 use crate::utils::simplify_string;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 pub trait PyxelCallback {
     fn update(&mut self);
@@ -293,7 +294,10 @@ pub fn fullscreen(is_fullscreen: bool) {
 }
 
 pub fn tstamp() -> u64 {
-    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
 }
 
 pub fn ticks() -> u32 {
