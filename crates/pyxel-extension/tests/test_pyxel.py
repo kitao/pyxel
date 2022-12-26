@@ -23,7 +23,7 @@ class TestPyxel(unittest.TestCase):
         pyxel.input_text
 
     def test_ticks(self):
-        pyxel.ticks()
+        assert pyxel.ticks() is not None
 
     def test_tstamp(self):
-        pyxel.tstamp()
+        assert pyxel.tstamp() is not None
