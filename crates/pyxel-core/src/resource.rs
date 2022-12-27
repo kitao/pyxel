@@ -11,8 +11,8 @@ use crate::music::Music;
 use crate::platform::Platform;
 use crate::screencast::Screencast;
 use crate::settings::{
-    NUM_COLORS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS, PALETTE_FILE_EXTENSION,
-    RESOURCE_ARCHIVE_DIRNAME, VERSION,
+    NUM_COLORS, NUM_DOUBLED_COLORS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
+    PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_DIRNAME, VERSION,
 };
 use crate::sound::Sound;
 use crate::tilemap::Tilemap;
@@ -45,7 +45,7 @@ impl Resource {
     pub fn capture_screen(
         &mut self,
         image: &[Vec<Color>],
-        colors: &[Rgb8; NUM_COLORS as usize],
+        colors: &[Rgb8; NUM_DOUBLED_COLORS as usize],
         frame_count: u32,
     ) {
         self.screencast.capture(image, colors, frame_count);
