@@ -70,6 +70,7 @@ class TilemapViewer(Widget):
         self.draw_panel(self.x, self.y, self.width, self.height)
 
         # Draw tilemap
+        pyxel.pal_user()
         pyxel.blt(
             self.x + 1,
             self.y + 1,
@@ -79,6 +80,7 @@ class TilemapViewer(Widget):
             self._tilemap_image.width,
             self._tilemap_image.height,
         )
+        pyxel.pal()
 
         # Draw focus
         x = self.x + self.focus_x_var * 2 + 1
