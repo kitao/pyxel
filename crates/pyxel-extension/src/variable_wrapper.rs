@@ -1,6 +1,6 @@
 use std::ptr;
 
-use pyo3::exceptions::{PyAttributeError, PyValueError};
+use pyo3::exceptions::PyAttributeError;
 use pyo3::prelude::*;
 use pyxel::Rgb8;
 
@@ -34,12 +34,9 @@ impl Colors {
     }
 
     pub fn from_list(&mut self, lst: Vec<Rgb8>) -> PyResult<()> {
-        if self.list().len() == lst.len() {
-            self.list_mut()[..].clone_from_slice(&lst[..]);
-            Ok(())
-        } else {
-            Err(PyValueError::new_err("list must be same length as array"))
-        }
+        let copy_size = usize::min(self.list().len() as usize, lst.len());
+        self.list_mut()[..copy_size].clone_from_slice(&lst[..copy_size]);
+        Ok(())
     }
 
     pub fn to_list(&self) -> PyResult<Vec<Rgb8>> {

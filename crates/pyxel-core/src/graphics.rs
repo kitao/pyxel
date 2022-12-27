@@ -4,12 +4,12 @@ use parking_lot::Mutex;
 use crate::image::{Image, SharedImage};
 use crate::settings::{
     CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, DEFAULT_COLORS, FONT_DATA, FONT_HEIGHT, FONT_WIDTH,
-    IMAGE_SIZE, NUM_COLORS, NUM_FONT_ROWS, NUM_IMAGES, NUM_TILEMAPS, TILEMAP_SIZE,
+    IMAGE_SIZE, NUM_DOUBLED_COLORS, NUM_FONT_ROWS, NUM_IMAGES, NUM_TILEMAPS, TILEMAP_SIZE,
 };
 use crate::tilemap::{SharedTilemap, Tilemap};
 use crate::types::{Color, Rgb8};
 
-static COLORS: Mutex<[Rgb8; NUM_COLORS as usize]> = Mutex::new(DEFAULT_COLORS);
+static COLORS: Mutex<[Rgb8; NUM_DOUBLED_COLORS as usize]> = Mutex::new(DEFAULT_COLORS);
 
 pub struct Graphics {
     screen: SharedImage,
@@ -68,7 +68,7 @@ impl Graphics {
     }
 }
 
-pub fn colors() -> &'static Mutex<[Rgb8; NUM_COLORS as usize]> {
+pub fn colors() -> &'static Mutex<[Rgb8; NUM_DOUBLED_COLORS as usize]> {
     &COLORS
 }
 
