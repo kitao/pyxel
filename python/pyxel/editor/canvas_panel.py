@@ -423,6 +423,7 @@ class CanvasPanel(Widget):
             else (self.canvas_var, self.focus_x_var * 8, self.focus_y_var * 8)
         )
         if self._is_tilemap_mode:
+            pyxel.pal_user()
             pyxel.bltm(
                 self.x + 1,
                 self.y + 1,
@@ -432,7 +433,9 @@ class CanvasPanel(Widget):
                 128,
                 128,
             )
+            pyxel.pal()
         else:
+            pyxel.pal_user()
             for yi in range(16):
                 for xi in range(16):
                     pyxel.rect(
@@ -442,6 +445,7 @@ class CanvasPanel(Widget):
                         8,
                         canvas.pget(offset_x + xi, offset_y + yi),
                     )
+            pyxel.pal()
         pyxel.line(
             self.x + 1, self.y + 64, self.x + 128, self.y + 64, WIDGET_PANEL_COLOR
         )
