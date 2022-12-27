@@ -40,6 +40,7 @@ class App(Widget):
         # Initialize Pyxel
         pyxel.init(APP_WIDTH, APP_HEIGHT)
         pyxel.mouse(True)
+        pyxel.pal2()
         self._set_title(original_resource_file)
         if os.path.exists(resource_file):
             pyxel.load(resource_file)
