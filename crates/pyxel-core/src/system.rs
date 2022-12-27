@@ -8,6 +8,7 @@ use crate::resource::Resource;
 use crate::settings::{BACKGROUND_COLOR, MAX_ELAPSED_MS, NUM_MEASURE_FRAMES};
 use crate::types::Key;
 use crate::utils::simplify_string;
+use crate::NUM_COLORS;
 
 pub trait PyxelCallback {
     fn update(&mut self);
@@ -196,8 +197,8 @@ impl System {
         let palette2 = screen.palette[2];
         screen.clip0();
         screen.camera0();
-        screen.pal(1, 1);
-        screen.pal(2, 9);
+        screen.pal(1, NUM_COLORS as u8 + 1);
+        screen.pal(2, NUM_COLORS as u8 + 9);
 
         let fps = format!("{:.*}", 2, self.fps_profiler.average_fps());
         screen.text(1.0, 0.0, &fps, 1);
@@ -241,7 +242,9 @@ impl System {
         let palette = screen.palette;
         screen.clip0();
         screen.camera0();
-        screen.pal0();
+        for i in 0..NUM_COLORS {
+            screen.pal(i as u8, (NUM_COLORS + i) as u8);
+        }
         screen.blt(
             x as f64,
             y as f64,
