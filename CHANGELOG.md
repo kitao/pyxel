@@ -4,6 +4,7 @@
 
 - Modified description for the example #13
 - Added system palette colors besides normal palette colors
+- Changed to keep the default palette color in Pyxel Editor
 
 # 1.9.7
 
