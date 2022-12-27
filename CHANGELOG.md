@@ -3,6 +3,7 @@
 # 1.9.8
 
 - Modified description for the example #13
+- Added system palette colors besides normal palette colors
 
 # 1.9.7
 
