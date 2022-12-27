@@ -54,17 +54,21 @@ class ColorPicker(Widget):
         )
 
         # Draw colors
+        pyxel.pal_user()
         for yi in range(2):
             for xi in range(8):
                 pyxel.rect(self.x + xi * 8 + 1, self.y + yi * 8 + 1, 7, 7, yi * 8 + xi)
+        pyxel.pal()
 
         # Draw cursor
         col = self.value_var
+        rgb = pyxel.colors[col]
+        brightness = ((rgb & 0xFF0000) >> 16) + ((rgb & 0x00FF00) >> 8) + (rgb & 0xFF)
         pyxel.text(
             self.x + (col % 8) * 8 + 3,
             self.y + (col // 8) * 8 + 2,
             "+",
-            7 if col < 6 else 0,
+            7 if brightness < 0x70 * 3 else 0,
         )
 
     def __on_value_change(self, value):
