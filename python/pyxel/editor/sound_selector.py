@@ -78,7 +78,7 @@ class SoundSelector(Widget):
             self._draw_sound_button(self._pressed_sound, BUTTON_PRESSED_COLOR)
 
     def _draw_sound_button(self, snd, col):
-        pyxel.pal(13, col)
+        pyxel.pal2(13, col)
         x = (snd % 16) * 13
         y = (snd // 16) * 9
         pyxel.blt(
@@ -90,4 +90,4 @@ class SoundSelector(Widget):
             11,
             7,
         )
-        pyxel.pal()
+        pyxel.pal2()
