@@ -33,10 +33,9 @@ impl Colors {
         impl_setitem_method_for_list!(self, index, value)
     }
 
-    pub fn from_list(&mut self, lst: Vec<Rgb8>) -> PyResult<()> {
+    pub fn from_list(&mut self, lst: Vec<Rgb8>) {
         let copy_size = usize::min(self.list().len() as usize, lst.len());
         self.list_mut()[..copy_size].clone_from_slice(&lst[..copy_size]);
-        Ok(())
     }
 
     pub fn to_list(&self) -> PyResult<Vec<Rgb8>> {
