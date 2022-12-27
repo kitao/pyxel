@@ -5,7 +5,7 @@ use gif::{DisposalMethod, Encoder, Frame, Repeat};
 use indexmap::IndexMap;
 
 use crate::rectarea::RectArea;
-use crate::settings::NUM_COLORS;
+use crate::settings::NUM_DOUBLED_COLORS;
 use crate::types::{Color, Rgb8};
 use crate::utils::add_file_extension;
 
@@ -13,7 +13,7 @@ const TRANSPARENT: Rgb8 = 0xffffffff;
 
 struct Screen {
     image: Vec<Vec<Color>>,
-    colors: [Rgb8; NUM_COLORS as usize],
+    colors: [Rgb8; NUM_DOUBLED_COLORS as usize],
     frame_count: u32,
 }
 
@@ -56,7 +56,7 @@ impl Screencast {
         let screens = (0..max_screens)
             .map(|_| Screen {
                 image: Vec::new(),
-                colors: [0; NUM_COLORS as usize],
+                colors: [0; NUM_DOUBLED_COLORS as usize],
                 frame_count: 0,
             })
             .collect();
@@ -92,7 +92,7 @@ impl Screencast {
     pub fn capture(
         &mut self,
         image: &[Vec<Color>],
-        colors: &[Rgb8; NUM_COLORS as usize],
+        colors: &[Rgb8; NUM_DOUBLED_COLORS as usize],
         frame_count: u32,
     ) {
         if self.screens.is_empty() {
