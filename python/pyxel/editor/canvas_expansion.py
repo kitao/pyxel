@@ -1,5 +1,21 @@
 import pyxel
 
+_pyxel_pal = pyxel.pal
+
+
+def _pal(src_color=None, dst_color=None):
+    if src_color or dst_color:
+        _pyxel_pal(src_color, pyxel.NUM_COLORS + dst_color)
+        _pyxel_pal(src_color, pyxel.NUM_COLORS + dst_color)
+    else:
+        for i in range(pyxel.NUM_COLORS):
+            _pyxel_pal(i, pyxel.NUM_COLORS + i)
+
+
+def _pal_user():
+    for i in range(pyxel.NUM_COLORS):
+        _pyxel_pal(i, i)
+
 
 def _rect2(self, x1, y1, x2, y2, val):
     x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
@@ -41,6 +57,8 @@ def _set_slice(self, x, y, slice):
             self.pset(x + xi, y + yi, slice[yi][xi])
 
 
+pyxel.pal = _pal
+pyxel.pal_user = _pal_user
 pyxel.Image.rect2 = pyxel.Tilemap.rect2 = _rect2
 pyxel.Image.rectb2 = pyxel.Tilemap.rectb2 = _rectb2
 pyxel.Image.elli2 = pyxel.Tilemap.elli2 = _elli2

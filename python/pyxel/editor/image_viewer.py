@@ -153,6 +153,7 @@ class ImageViewer(Widget):
         self.draw_panel(self.x, self.y, self.width, self.height)
 
         # Draw image
+        pyxel.pal_user()
         pyxel.blt(
             self.x + 1,
             self.y + 1,
@@ -162,6 +163,7 @@ class ImageViewer(Widget):
             self.width - 2,
             self.height - 2,
         )
+        pyxel.pal()
 
         # Draw focus
         x = self.x + (self.focus_x_var - self.viewport_x_var) * 8 + 1
