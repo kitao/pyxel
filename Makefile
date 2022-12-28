@@ -17,7 +17,7 @@
 #	- libsdl2-dev
 #
 #	[WASM]
-#	- Emscripten 3.1.24
+#	- Emscripten 3.1.28
 #
 # Advance preparation:
 #	rustup install nightly
