@@ -5,6 +5,8 @@
 - Modified description for the example #13
 - Added system palette colors besides normal palette colors
 - Changed to keep the default palette color in Pyxel Editor
+- Updated the version of Emscripten to 3.1.28
+- Updated the source of Pyodide-SDL2
 
 # 1.9.7
 
