@@ -92,9 +92,9 @@ Si ce qui précède ne fonctionne pas, essayez l'autoconstruction en suivant les
 
 ### Web
 
-En utilisant le Pyxel Web Launcher ou des éléments personnalisés pour HTML, vous pouvez exécuter Pyxel dans un navigateur web sans aucun travail d'installation.
+La version web de Pyxel ne nécessite pas d'installation de Python ou de Pyxel et fonctionne aussi bien sur les PC que sur les smartphones et tablettes avec des navigateurs web pris en charge.
 
-Pour des instructions spécifiques, veuillez vous référer à [cette page](https://kitao.github.io/pyxel/wasm/launcher/).
+Pour des instructions spécifiques, veuillez vous référer à [cette page](https://github.com/kitao/pyxel/wiki/How-To-Use-Pyxel-Web).
 
 ### Lancer les exemples de Pyxel
 
