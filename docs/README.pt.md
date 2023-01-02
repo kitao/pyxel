@@ -70,6 +70,8 @@ Após instalar o [Python3](https://www.python.org/) (versão 3.7 ou superior), e
 pip install -U pyxel
 ```
 
+Se instalar Python utilizando o instalador oficial, verifique a caixa de verificação `Add Python 3.x to PATH` para activar o comando `pyxel`.
+
 ### Mac
 
 Após instalar o [Python3](https://www.python.org/) (versão 3.7 ou superior), execute o seguinte comando:
