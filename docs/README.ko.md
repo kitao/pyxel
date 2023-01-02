@@ -70,6 +70,8 @@ Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Py
 pip install -U pyxel
 ```
 
+공식 설치 프로그램을 사용하여 Python을 설치하는 경우 `pyxel` 명령을 활성화하려면 `Add Python 3.x to PATH` 확인란을 선택하십시오.
+
 ### Mac
 
 [Python3](https://www.python.org/) (버전 3.7 이상)을 설치한 후, 다음 명령어를 실행합니다.
