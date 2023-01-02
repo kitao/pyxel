@@ -70,6 +70,8 @@ After installing [Python3](https://www.python.org/) (version 3.7 or higher), run
 pip install -U pyxel
 ```
 
+If you install Python using the official installer, please check the `Add Python 3.x to PATH` checkbox to enable `pyxel` command.
+
 ### Mac
 
 After installing [Python3](https://www.python.org/) (version 3.7 or higher), run the following command:
