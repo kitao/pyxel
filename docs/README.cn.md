@@ -70,6 +70,8 @@ Pyxel 是开源的，大家可以免费使用。现在就让我们一起用 Pyxe
 pip install -U pyxel
 ```
 
+如果你使用官方安装程序安装 Python，请勾选`Add Python 3.x to PATH`复选框以启用`pyxel`命令。
+
 ### Mac
 
 在安装[Python3](https://www.python.org/)（3.7 或更高版本）之后，执行以下命令：
