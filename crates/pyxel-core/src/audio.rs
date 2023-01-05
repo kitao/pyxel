@@ -1,4 +1,4 @@
-use array_macro::array;
+use std::array;
 
 use crate::blipbuf::BlipBuf;
 use crate::channel::{Channel, SharedChannel};
@@ -39,9 +39,9 @@ impl Audio {
     pub fn init() {
         let mut blip_buf = BlipBuf::new(NUM_SAMPLES as usize);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
-        let channels = array![_ => Channel::new(); NUM_CHANNELS as usize];
-        let sounds = array![_ => Sound::new(); NUM_SOUNDS as usize];
-        let musics = array![_ => Music::new(); NUM_MUSICS as usize];
+        let channels = array::from_fn(|_| Channel::new());
+        let sounds = array::from_fn(|_| Sound::new());
+        let musics = array::from_fn(|_| Music::new());
 
         Platform::instance().start_audio(
             SAMPLE_RATE,
