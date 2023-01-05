@@ -65,9 +65,9 @@ impl Resource {
 pub fn load(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
     let mut archive = ZipArchive::new(
         File::open(Path::new(&filename))
-            .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename)),
+            .unwrap_or_else(|_| panic!("Unable to open file '{filename}'")),
     )
-    .unwrap_or_else(|_| panic!("Unable to parse zip archive '{}'", filename));
+    .unwrap_or_else(|_| panic!("Unable to parse zip archive '{filename}'"));
     let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
     let contents = {
         let mut file = archive.by_name(&version_name).unwrap();
@@ -132,8 +132,8 @@ pub fn load(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool
 
 pub fn save(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
     let path = std::path::Path::new(&filename);
-    let file = std::fs::File::create(path)
-        .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename));
+    let file =
+        std::fs::File::create(path).unwrap_or_else(|_| panic!("Unable to open file '{filename}'"));
     let mut zip = ZipWriter::new(file);
     zip.add_directory(RESOURCE_ARCHIVE_DIRNAME, ZipFileOptions::default())
         .unwrap();
