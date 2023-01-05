@@ -1,5 +1,9 @@
 # Change Log
 
+# 1.9.9
+
+- Suppressed clippy warnings
+
 # 1.9.8
 
 - Modified description for the example #13

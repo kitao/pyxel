@@ -41,7 +41,7 @@ impl Image {
     pub fn from_image(filename: &str) -> SharedImage {
         let colors = crate::colors().lock();
         let image_file = image::open(Path::new(&filename))
-            .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename))
+            .unwrap_or_else(|_| panic!("Unable to open file '{filename}'"))
             .to_rgb8();
         let (width, height) = image_file.dimensions();
         let image = Self::new(width, height);
@@ -147,7 +147,7 @@ impl Image {
         let filename = add_file_extension(filename, ".png");
         image
             .save(&filename)
-            .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename));
+            .unwrap_or_else(|_| panic!("Unable to open file '{filename}'"));
     }
 
     pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
