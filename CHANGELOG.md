@@ -4,6 +4,7 @@
 
 - Suppressed clippy warnings
 - Updated Pyodide version to 0.22.0
+- Enabled to start with a gamepad in Pyxel Web
 
 # 1.9.8
 
