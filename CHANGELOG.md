@@ -3,13 +3,14 @@
 # 1.9.9
 
 - Suppressed clippy warnings
+- Updated Pyodide version to 0.22.0
 
 # 1.9.8
 
 - Modified description for the example #13
 - Added system palette colors besides normal palette colors
 - Changed to keep the default palette color in Pyxel Editor
-- Updated the version of Emscripten to 3.1.28
+- Updated Emscripten to 3.1.28
 - Updated the source of Pyodide-SDL2
 
 # 1.9.7
@@ -61,8 +62,8 @@
 ## 1.9.0
 
 - Added a video and a message to users to the READMEs
-- Updated the Pyodide
-- Updated to the Emscripten version to 3.1.24
+- Updated Pyodide
+- Updated Emscripten version to 3.1.24
 
 ## 1.8.22
 
@@ -116,7 +117,7 @@
 
 ## 1.8.13
 
-- Changed to specify the Pyxel version in CDN links
+- Changed to specify Pyxel version in CDN links
 - Fixed link to the examples
 - Added the starting editor parameter to Pyxel Editor
 
@@ -435,7 +436,7 @@
 ## 1.4.2
 
 - Updated the installation instructions in the READMEs
-- Changed the gcc version for Mac
+- Changed gcc version for Mac
 - Added the example #9
 - Added the Noguchi's tilemap for reference
 - Added figures for the API reference in the READMEs
@@ -465,7 +466,7 @@
 ## 1.3.7
 
 - Updated the library download script
-- Updated the SDL2 version for Windows
+- Updated SDL2 version for Windows
 - Improved the animated GIF making method
 
 ## 1.3.6
@@ -488,7 +489,7 @@
 ## 1.3.3
 
 - Fixed the way to quit the Pyxel application
-- Fixed the Python version check
+- Fixed Python version check
 
 ## 1.3.2
 
