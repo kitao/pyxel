@@ -5,7 +5,6 @@
 - Suppressed clippy warnings
 - Updated Emscripten to 3.1.29
 - Updated Pyodide version to 0.22.0
-- Enabled to start with a gamepad in Pyxel Web
 
 # 1.9.8
 
