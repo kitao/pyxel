@@ -1,4 +1,5 @@
-use array_macro::array;
+use std::array;
+
 use parking_lot::Mutex;
 
 use crate::image::{Image, SharedImage};
@@ -26,8 +27,9 @@ impl Graphics {
         let screen = Image::new(crate::width(), crate::height());
         let cursor = Self::new_cursor_image();
         let font = Self::new_font_image();
-        let images = array![_ => Image::new(IMAGE_SIZE, IMAGE_SIZE); NUM_IMAGES as usize];
-        let tilemaps = array![_ => Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()); NUM_TILEMAPS as usize];
+        let images = array::from_fn(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE));
+        let tilemaps =
+            array::from_fn(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()));
         Self::set_instance(Self {
             screen,
             cursor,
