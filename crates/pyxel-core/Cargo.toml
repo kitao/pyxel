@@ -3,6 +3,7 @@ name = "pyxel-core"
 version = "1.9.8"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
+rust-version = "1.63"
 description = "Core engine for Pyxel, a retro game engine for Python"
 repository = "https://github.com/kitao/pyxel"
 license = "MIT"
@@ -20,7 +21,6 @@ path = "tests/test_pyxel.rs"
 harness = false
 
 [dependencies]
-array-macro = "2.1"
 gif = "0.12"
 image = "0.24"
 indexmap = "1.9"

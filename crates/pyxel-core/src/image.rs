@@ -1,8 +1,8 @@
+use std::array;
 use std::collections::HashMap;
 use std::fmt::Write as _;
 use std::path::Path;
 
-use array_macro::array;
 use image::imageops::{self, FilterType};
 use image::{Rgb, RgbImage};
 
@@ -34,7 +34,7 @@ impl Image {
     pub fn new(width: u32, height: u32) -> SharedImage {
         new_shared_type!(Self {
             canvas: Canvas::new(width, height),
-            palette: array![i => i as Color; NUM_COLORS as usize],
+            palette: array::from_fn(|i| i as Color),
         })
     }
 
