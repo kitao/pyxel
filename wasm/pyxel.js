@@ -2,7 +2,7 @@ const NO_SLEEP_URL =
   "https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js";
 const PYODIDE_SDL2_URL =
   "https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@0.22.0/pyodide.js";
-const PYXEL_WHEEL_PATH = "pyxel-1.9.9-cp37-abi3-emscripten_3_1_29_wasm32.whl";
+const PYXEL_WHEEL_PATH = "pyxel-1.9.8-cp37-abi3-emscripten_3_1_29_wasm32.whl";
 const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_114x14.png";
 const CLICK_TO_START_PATH = "../docs/images/click_to_start_114x14.png";
@@ -44,12 +44,19 @@ function _setStyleSheet() {
 async function launchPyxel(params) {
   console.log("Launch Pyxel");
   console.log(params);
+  _allowGamepadConnection();
   _suppressPinchOperations();
   await _createScreenElements();
   let pyodide = await _loadPyodideAndPyxel();
   _hookFileOperations(pyodide, params.root || ".");
   await _waitForInput();
   await _executePyxelCommand(pyodide, params);
+}
+
+function _allowGamepadConnection() {
+  window.addEventListener("gamepadconnected", (event) => {
+    console.log(`Connected '${event.gamepad.id}'`);
+  });
 }
 
 function _suppressPinchOperations() {
@@ -240,15 +247,6 @@ function _isTouchDevice() {
   );
 }
 
-function _allowGamepadConnection() {
-  window.addEventListener("gamepadconnected", (event) => {
-    console.log(`Connected '${event.gamepad.id}'`);
-    if (document.body) {
-      document.body.dispatchEvent(new MouseEvent("click"));
-    }
-  });
-}
-
 async function _waitForInput() {
   let pyxelScreen = document.querySelector("div#pyxel-screen");
   let logoImage = document.querySelector("img#pyxel-logo");
@@ -261,7 +259,6 @@ async function _waitForInput() {
   await _waitForEvent(promptImage, "load");
   pyxelScreen.appendChild(promptImage);
   _updateScreenElementsSize();
-  _allowGamepadConnection();
   await _waitForEvent(document.body, "click");
   promptImage.remove();
 }
