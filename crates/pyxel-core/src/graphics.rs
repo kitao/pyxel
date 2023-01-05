@@ -59,7 +59,7 @@ impl Graphics {
                     for xi in 0..FONT_WIDTH {
                         let x = FONT_WIDTH * col + xi;
                         let y = FONT_HEIGHT * row + yi;
-                        let color = if (data & 0x800000) == 0 { 0 } else { 1 };
+                        let color = u8::from((data & 0x800000) != 0);
                         image.canvas.data[y as usize][x as usize] = color;
                         data <<= 1;
                     }

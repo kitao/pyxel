@@ -543,7 +543,7 @@ impl Platform {
 
     pub fn save_file_on_web_browser(_filename: &str) {
         #[cfg(target_os = "emscripten")]
-        emscripten::run_script(&format!("_savePyxelFile('{}');", _filename));
+        emscripten::run_script(&format!("_savePyxelFile('{_filename}');"));
     }
 
     fn screen_pos_scale(&self) -> (u32, u32, u32) {
@@ -612,7 +612,7 @@ impl Platform {
             return;
         }
         self.window_state = window_state;
-        let watch_info = format!("{} {} {} {}", x, y, width, height);
+        let watch_info = format!("{x} {y} {width} {height}");
         write(self.watch_info_file.as_ref().unwrap(), watch_info).unwrap();
     }
 }

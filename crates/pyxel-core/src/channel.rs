@@ -108,13 +108,13 @@ impl Channel {
             }
 
             let note = Self::circular_note(&sound.notes, self.note_index);
-            assert!(note <= MAX_NOTE, "invalid sound note {}", note);
+            assert!(note <= MAX_NOTE, "invalid sound note {note}");
             let volume = Self::circular_volume(&sound.volumes, self.note_index);
-            assert!(volume <= MAX_VOLUME, "invalid sound volume {}", volume);
+            assert!(volume <= MAX_VOLUME, "invalid sound volume {volume}");
             let tone = Self::circular_tone(&sound.tones, self.note_index);
-            assert!(tone <= MAX_TONE, "invalid sound tone {}", tone);
+            assert!(tone <= MAX_TONE, "invalid sound tone {tone}");
             let effect = Self::circular_effect(&sound.effects, self.note_index);
-            assert!(effect <= MAX_EFFECT, "invalid sound effect {}", effect);
+            assert!(effect <= MAX_EFFECT, "invalid sound effect {effect}");
             let speed = max(sound.speed, 1);
 
             if note >= 0 && volume > 0 {

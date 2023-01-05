@@ -115,8 +115,8 @@ impl Screencast {
             return;
         }
         let filename = add_file_extension(filename, ".gif");
-        let mut file = File::create(&filename)
-            .unwrap_or_else(|_| panic!("Unable to open file '{}'", filename));
+        let mut file =
+            File::create(&filename).unwrap_or_else(|_| panic!("Unable to open file '{filename}'"));
         let screen = self.screen(0);
         let width = screen.width();
         let height = screen.height();
