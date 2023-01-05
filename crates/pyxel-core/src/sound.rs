@@ -60,7 +60,7 @@ impl Sound {
                     'g' => 7,
                     'a' => 9,
                     'b' => 11,
-                    _ => panic!("Invalid sound note '{}'", c),
+                    _ => panic!("Invalid sound note '{c}'"),
                 };
                 let mut c = chars.next().unwrap_or(0 as char);
                 if c == '#' {
@@ -73,12 +73,12 @@ impl Sound {
                 if ('0'..='4').contains(&c) {
                     note += (c as Note - '0' as Note) * 12;
                 } else {
-                    panic!("Invalid sound note '{}'", c);
+                    panic!("Invalid sound note '{c}'");
                 }
             } else if c == 'r' {
                 note = -1;
             } else {
-                panic!("Invalid sound note '{}'", c);
+                panic!("Invalid sound note '{c}'");
             }
             self.notes.push(note);
         }
@@ -92,7 +92,7 @@ impl Sound {
                 's' => TONE_SQUARE,
                 'p' => TONE_PULSE,
                 'n' => TONE_NOISE,
-                _ => panic!("Invalid sound tone '{}'", c),
+                _ => panic!("Invalid sound tone '{c}'"),
             };
             self.tones.push(tone);
         }
@@ -104,7 +104,7 @@ impl Sound {
             if ('0'..='7').contains(&c) {
                 self.volumes.push((c as u32 - '0' as u32) as Volume);
             } else {
-                panic!("Invalid sound volume '{}'", c);
+                panic!("Invalid sound volume '{c}'");
             }
         }
     }
@@ -117,7 +117,7 @@ impl Sound {
                 's' => EFFECT_SLIDE,
                 'v' => EFFECT_VIBRATO,
                 'f' => EFFECT_FADEOUT,
-                _ => panic!("Invalid sound effect '{}'", c),
+                _ => panic!("Invalid sound effect '{c}'"),
             };
             self.effects.push(effect);
         }
@@ -126,7 +126,7 @@ impl Sound {
 
 impl ResourceItem for Sound {
     fn resource_name(item_no: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{:02}", item_no)
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{item_no:02}")
     }
 
     fn is_modified(&self) -> bool {
