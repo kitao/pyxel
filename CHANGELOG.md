@@ -228,7 +228,7 @@
 
 - Fixed function names in the READMEs
 - Added a configuration for isort
-- Added flip functions to the resource editor
+- Added flip functions to Pyxel Editor
 - Fixed clippy warnings
 
 ## 1.7.1
@@ -245,8 +245,8 @@
 
 - Fixed type hint definitions
 - Changed the location of working directory
-- Added Ctrl+A and Ctrl+X shortcuts for the Image/Tilemap Editor
-- Added copy and paste feature for the Sound/Music Editor
+- Added Ctrl+A and Ctrl+X shortcuts for Image/Tilemap Editor
+- Added copy and paste feature for Sound/Music Editor
 - Renamed the sequences property of the Music class to snds_list
 - Added the example #12
 - Updated external library versions
@@ -254,7 +254,7 @@
 
 ## 1.6.9
 
-- Fixed the select tool of the resource editor
+- Fixed the select tool of Pyxel Editor
 - Refactored the drawing functions
 - Added utility functions for math
 - Fixed the play command bug on Windows
@@ -280,8 +280,8 @@
 - Added a mechanism to check the latest version
 - Fixed a bug of the play_pos function
 - Added a tick option to the play and playm functions
-- Added a partial playback feature to the resource editor
-- Fixed a mouse click handling in the sound editor
+- Added a partial playback feature to Pyxel Editor
+- Fixed a mouse click handling in Sound Editor
 - Updated the READMEs
 
 ## 1.6.5
@@ -330,7 +330,7 @@
 
 - Fixed the categories of the Pyxel crates
 - Fixed the key input bug of flip
-- Added shortcuts for the Tilemap Editor
+- Added shortcuts for Tilemap Editor
 - Added the example #11
 - Changed the Makefile to be usable in MinGW shell
 - Updated the READMEs
@@ -356,7 +356,7 @@
 - Fixed the animated GIF recorder
 - Modified the vibrato depth parameter
 - Added the SFX and BGM to the example #10
-- Fixed the play button bug in the Sound Editor
+- Fixed the play button bug in Sound Editor
 - Fixed the editing method for the piano roll
 - Added the capture_scale option to the init
 - Added the scale option to the screenshot and screencast
@@ -365,7 +365,7 @@
 
 ## 1.5.3
 
-- Fixed the Tilemap Editor
+- Fixed Tilemap Editor
 - Replaced the asset for the example #10
 - Fixed the typo in the READMEs
 
@@ -391,8 +391,8 @@
 - Fixed an argument name of the blt function
 - Fixed a bug when self-copying with the blt function
 - Changed the release build method for Makefile
-- Restored the editor to quit with Esc key
-- Fixed a bug of the scrolling area of the editor
+- Restored Pyxel Editor to quit with Esc key
+- Fixed a bug of the scrolling area of Pyxel Editor
 - Supported the Universal Binary for M1 Mac
 - Reduced the git repository size
 
@@ -520,7 +520,7 @@
 - Fixed the typo of the PURPLE variables
 - Added the uninitialized error
 - Added support for command key shortcuts in Pyxel Editor
-- Fixed undo and redo of the Sound and Music Editor
+- Fixed undo and redo of Sound/Music Editor
 - Changed color comparison method when importing images
 - Updated the SDL to 2.0.10
 - Updated the SDL_image to 2.0.5
@@ -574,7 +574,7 @@
 
 ## 1.2.3
 
-- Fixed an error of tone playback in the Sound Editor
+- Fixed an error of tone playback in Sound Editor
 - Fixed to keep the image index of tilemaps in Pyxel Editor
 
 ## 1.2.2
@@ -620,8 +620,8 @@
 
 - Optimized the sound and music APIs
 - Added the color class for the default palette
-- Added the shortcut to select a color to the Image Editor
-- Fixed the sound preview bug of the Sound Editor
+- Added the shortcut to select a color to Image Editor
+- Fixed the sound preview bug of Sound Editor
 - Enabled to quit from anywhere
 - Added the flip API
 
@@ -649,7 +649,7 @@
 - Added the description of the included libraries to the READMEs
 - Updated the screenshots of the example #3 and #4
 - Fixed game controller input
-- Improved the performance of the Tilemap Editor
+- Improved the performance of Tilemap Editor
 
 ## 1.1.1
 
@@ -723,7 +723,7 @@
 - Updated the description for Linux in the manuals
 - Reverted to check the version number of glfw strictly
 - Increased the sound buffer size
-- Fixed the range of the sound picker in the Sound Editor
+- Fixed the range of the sound picker in Sound Editor
 
 ## 0.9.3
 
@@ -739,15 +739,15 @@
 
 ## 0.9.2
 
-- Enabled to import png by drop in the Image Editor
+- Enabled to import png by drop in Image Editor
 - Fixed the crash bug caused by unsupported keys
-- Enabled to play the piano with mouse in the Sound Editor
+- Enabled to play the piano with mouse in Sound Editor
 - Enabled to repeat undo/redo shortcuts
 
 ## 0.9.1
 
-- Fixed the color pick bug of the Image Editor
-- Changed the focus UI of the Image Editor
+- Fixed the color pick bug of Image Editor
+- Changed the focus UI of Image Editor
 
 ## 0.9.0
 
@@ -756,8 +756,8 @@
 - Updated the screenshot of the example #3
 - Change not to add unnecessary undo history of the editors
 - Added the setting files for Pipenv
-- Modified the cursor design of the Image and Tilemap Editors
-- Enabled to change the focus size of the Tilemap Editor
+- Modified the cursor design of Image/Tilemap Editor
+- Enabled to change the focus size of Tilemap Editor
 - Added the link to the subreddit in the manuals
 - Changed to exports all constants for keys before init is called
 - Added the contribution section to the manuals
@@ -766,7 +766,7 @@
 
 - Fixed the tilemap to allow the tiles of #256 or higher
 - Updated the screenshots of Pyxel Editor
-- Fixed the cursor movement of the Sound and Music Editors
+- Fixed the cursor movement of Sound/Music Editor
 - Changed the caption of the example #2
 - Renamed the example #6
 - Fixed the error when saving long animated GIF
@@ -781,18 +781,18 @@
 - Fixed the piano keyboard highlights correctly
 - Changed the default sound volume to 7
 - Changed the default sound speed to 30
-- Fixed the sound button bug of the Sound Editor
+- Fixed the sound button bug of Sound Editor
 
 ## 0.8.6
 
-- Changed the operation method of the Sound Editor
+- Changed the operation method of Sound Editor
 - Changed to allow sound of length 0
-- Implemented the Music Editor
+- Implemented Music Editor
 - Changed the example #2 to use resource file
 
 ## 0.8.5
 
-- Implemented the undo function of the Sound Editor
+- Implemented the undo function of Sound Editor
 - Changed the click tolerance time
 - Removed the length limitation of the sound
 - Added the music and playm APIs
@@ -809,11 +809,11 @@
 - Added the system option to the sound API
 - Refined the help message of Pyxel Editor
 - Added the ToggleButton and ImageToggleButton
-- Implemented the Sound Editor except the undo function
+- Implemented Sound Editor except the undo function
 
 ## 0.8.3
 
-- Fixed the right click bug in the Tilemap Editor
+- Fixed the right click bug in Tilemap Editor
 - Fixed the key callback bug
 - Added the get method to the Image class
 - Changed the set method of the Image class to accept a number as data
@@ -832,7 +832,7 @@
 - Added the run_with_profiler API
 - Added the Tilemap class
 - Added the bltm API
-- Implemented the Tilemap Editor
+- Implemented Tilemap Editor
 - Added the standard widgets
 - Changed the usage of Pyxel Editor
 - Added the help messages to Pyxel Editor
@@ -843,7 +843,7 @@
 - Changed the formatter from yapf to black
 - Added the UI module
 - Added the save and load APIs
-- Added the Image Editor as a part of Pyxel Editor
+- Added Image Editor as a part of Pyxel Editor
 - Removed the dirname option of the save and load APIs
 
 ## 0.7.12
