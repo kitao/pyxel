@@ -521,14 +521,17 @@ impl Platform {
                 self.sleep((wait_ms / 2.0) as u32);
             }
         }
+
         #[cfg(target_os = "emscripten")]
         emscripten::set_main_loop(main_loop);
     }
 
     pub fn quit(&mut self) {
         self.pause_audio();
+
         #[cfg(not(target_os = "emscripten"))]
         exit(0);
+
         #[cfg(target_os = "emscripten")]
         emscripten::force_exit(0);
     }
