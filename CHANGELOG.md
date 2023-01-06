@@ -8,6 +8,7 @@
 - Updated Pyodide version to 0.22.0
 - Fixed gamepad input bug
 - Enabled dynamic addition of gamepads
+- Changed a help message for Tilemap Editor
 
 # 1.9.8
 
