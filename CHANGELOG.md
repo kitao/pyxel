@@ -5,6 +5,8 @@
 - Suppressed clippy warnings
 - Updated Emscripten to 3.1.29
 - Updated Pyodide version to 0.22.0
+- Fixed gamepad input bug
+- Enabled dynamic addition of gamepads
 
 # 1.9.8
 

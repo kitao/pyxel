@@ -21,6 +21,7 @@ use sdl2::surface::Surface as SdlSurface;
 use sdl2::video::FullscreenType as SdlFullscreenType;
 use sdl2::AudioSubsystem as SdlAudio;
 use sdl2::EventPump as SdlEventPump;
+use sdl2::GameControllerSubsystem as SdlGameControllerSubsystem;
 use sdl2::Sdl as SdlContext;
 use sdl2::TimerSubsystem as SdlTimer;
 
@@ -63,7 +64,7 @@ pub struct Platform {
     sdl_timer: SdlTimer,
     sdl_canvas: SdlCanvas,
     sdl_texture: SdlTexture,
-    #[allow(dead_code)]
+    sdl_game_controller_subsytem: SdlGameControllerSubsystem,
     sdl_game_controllers: Vec<SdlGameController>,
     sdl_audio: Option<SdlAudio>,
     sdl_audio_device: Option<SdlAudioDevice<AudioContextHolder>>,
@@ -128,13 +129,7 @@ impl Platform {
             .texture_creator()
             .create_texture_streaming(SdlPixelFormat::RGB24, screen_width, screen_height)
             .unwrap();
-        let sdl_game_controller = sdl_context.game_controller().unwrap();
-        let mut sdl_game_controllers = Vec::new();
-        for i in 0..sdl_game_controller.num_joysticks().unwrap_or(0) {
-            if let Ok(gc) = sdl_game_controller.open(i) {
-                sdl_game_controllers.push(gc);
-            }
-        }
+        let sdl_game_controller_subsytem = sdl_context.game_controller().unwrap();
         let sdl_audio = sdl_context.audio().map_or_else(
             |_| {
                 println!("Unable to initialize the audio subsystem");
@@ -149,7 +144,8 @@ impl Platform {
             sdl_timer,
             sdl_canvas,
             sdl_texture,
-            sdl_game_controllers,
+            sdl_game_controller_subsytem,
+            sdl_game_controllers: Vec::new(),
             sdl_audio,
             sdl_audio_device: None,
             screen_width,
@@ -308,10 +304,24 @@ impl Platform {
                 SdlEvent::MouseWheel { x, y, .. } => Event::MouseWheel { x, y },
 
                 // Controller events
+                SdlEvent::JoyDeviceAdded {
+                    timestamp: _,
+                    which,
+                } => {
+                    if let Ok(gc) = self.sdl_game_controller_subsytem.open(which) {
+                        self.sdl_game_controllers.push(gc);
+                    }
+                    continue;
+                }
+                SdlEvent::JoyDeviceRemoved { .. } => {
+                    self.sdl_game_controllers
+                        .retain(SdlGameController::attached);
+                    continue;
+                }
                 SdlEvent::ControllerAxisMotion {
                     which, axis, value, ..
                 } => Event::ControllerAxisMotion {
-                    which,
+                    which: self.gamepad_index(which),
                     axis: match axis {
                         SdlAxis::LeftX => ControllerAxis::LeftX,
                         SdlAxis::LeftY => ControllerAxis::LeftY,
@@ -324,7 +334,7 @@ impl Platform {
                 },
                 SdlEvent::ControllerButtonDown { which, button, .. } => {
                     Event::ControllerButtonDown {
-                        which,
+                        which: self.gamepad_index(which),
                         button: match button {
                             SdlButton::A => ControllerButton::A,
                             SdlButton::B => ControllerButton::B,
@@ -351,7 +361,7 @@ impl Platform {
                     }
                 }
                 SdlEvent::ControllerButtonUp { which, button, .. } => Event::ControllerButtonUp {
-                    which,
+                    which: self.gamepad_index(which),
                     button: match button {
                         SdlButton::A => ControllerButton::A,
                         SdlButton::B => ControllerButton::B,
@@ -376,12 +386,13 @@ impl Platform {
                         SdlButton::Touchpad => ControllerButton::Touchpad,
                     },
                 },
+                #[cfg(target_os = "emscripten")]
                 SdlEvent::JoyButtonUp {
                     timestamp: _,
                     which,
                     button_idx,
                 } => Event::ControllerButtonUp {
-                    which,
+                    which: self.gamepad_index(which),
                     button: match button_idx {
                         12 => ControllerButton::DPadUp,
                         13 => ControllerButton::DPadDown,
@@ -392,12 +403,13 @@ impl Platform {
                         }
                     },
                 },
+                #[cfg(target_os = "emscripten")]
                 SdlEvent::JoyButtonDown {
                     timestamp: _,
                     which,
                     button_idx,
                 } => Event::ControllerButtonDown {
-                    which,
+                    which: self.gamepad_index(which),
                     button: match button_idx {
                         12 => ControllerButton::DPadUp,
                         13 => ControllerButton::DPadDown,
@@ -571,6 +583,13 @@ impl Platform {
         mouse_x = (mouse_x - window_x - screen_x as i32) / screen_scale as i32;
         mouse_y = (mouse_y - window_y - screen_y as i32) / screen_scale as i32;
         (mouse_x, mouse_y)
+    }
+
+    fn gamepad_index(&self, game_controller_id: u32) -> u32 {
+        self.sdl_game_controllers
+            .iter()
+            .position(|gc| gc.instance_id() == game_controller_id)
+            .unwrap() as u32
     }
 
     fn watch_info_file() -> Option<String> {
