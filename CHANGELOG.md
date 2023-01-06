@@ -2,6 +2,7 @@
 
 # 1.9.9
 
+- Changed not to use array macro
 - Suppressed clippy warnings
 - Updated Emscripten to 3.1.29
 - Updated Pyodide version to 0.22.0
