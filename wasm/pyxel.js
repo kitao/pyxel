@@ -270,8 +270,19 @@ async function _installBuiltinPackages(pyodide, packages) {
   await pyodide.loadPackage(packages.split(","));
 }
 
+_virtualGamepadStates = [
+  false, // Up
+  false, // Down
+  false, // Left
+  false, // Right
+  false, // A
+  false, // B
+  false, // X
+  false, // Y
+];
+
 function _addVirtualGamepad(mode) {
-  if (mode !== "enabled" || !_isTouchDevice() || navigator.getGamepads()[0]) {
+  if (mode !== "enabled" || !_isTouchDevice()) {
     return;
   }
 
@@ -299,32 +310,12 @@ function _addVirtualGamepad(mode) {
     _updateScreenElementsSize();
   };
 
-  // Register virtual gamepad
-  let gamepad = {
-    connected: true,
-    axes: [0, 0, 0, 0],
-    buttons: [],
-    id: "Virtual Gamepad for Pyxel",
-    index: 0,
-    mapping: "standard",
-    timestamp: Date.now(),
-  };
-  for (let i = 0; i < 17; i++) {
-    gamepad.buttons.push({ pressed: false, touched: false, value: 0 });
-  }
-  navigator.getGamepads = () => {
-    return [gamepad];
-  };
-  let event = new Event("gamepadconnected");
-  event.gamepad = gamepad;
-  window.dispatchEvent(event);
-
   // Set touch event handler
   let touchHandler = (event) => {
     let crossRect = crossImage.getBoundingClientRect();
     let buttonRect = buttonImage.getBoundingClientRect();
-    for (let i = 0; i < gamepad.buttons.length; i++) {
-      gamepad.buttons[i].pressed = false;
+    for (let i = 0; i < _virtualGamepadStates.length; i++) {
+      _virtualGamepadStates[i] = false;
     }
     for (let i = 0; i < event.touches.length; i++) {
       let { clientX, clientY } = event.touches[i];
@@ -336,35 +327,34 @@ function _addVirtualGamepad(mode) {
       if (crossX ** 2 + crossY ** 2 <= 0.5 ** 2) {
         let angle = (Math.atan2(-crossY, crossX) * 180) / Math.PI;
         if (angle > 22.5 && angle < 157.5) {
-          gamepad.buttons[12].pressed = true; // Up
+          _virtualGamepadStates[0] = true; // Up
         }
         if (angle > -157.5 && angle < -22.5) {
-          gamepad.buttons[13].pressed = true; // Down
-        }
-        if (Math.abs(angle) <= 67.5) {
-          gamepad.buttons[15].pressed = true; // Right
+          _virtualGamepadStates[1] = true; // Down
         }
         if (Math.abs(angle) >= 112.5) {
-          gamepad.buttons[14].pressed = true; // Left
+          _virtualGamepadStates[2] = true; // Left
+        }
+        if (Math.abs(angle) <= 67.5) {
+          _virtualGamepadStates[3] = true; // Right
         }
       }
       if (buttonX ** 2 + buttonY ** 2 <= 0.5 ** 2) {
         let angle = (Math.atan2(-buttonY, buttonX) * 180) / Math.PI;
         if (angle > -135 && angle < -45) {
-          gamepad.buttons[0].pressed = true; // A
+          _virtualGamepadStates[4] = true; // A
         }
         if (Math.abs(angle) <= 45) {
-          gamepad.buttons[1].pressed = true; // B
+          _virtualGamepadStates[5] = true; // B
         }
         if (Math.abs(angle) >= 135) {
-          gamepad.buttons[2].pressed = true; // X
+          _virtualGamepadStates[6] = true; // X
         }
         if (angle > 45 && angle < 135) {
-          gamepad.buttons[3].pressed = true; // Y
+          _virtualGamepadStates[7] = true; // Y
         }
       }
     }
-    gamepad.timestamp = Date.now();
     event.preventDefault();
   };
   document.addEventListener("touchstart", touchHandler, { passive: false });

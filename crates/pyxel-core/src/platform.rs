@@ -74,6 +74,8 @@ pub struct Platform {
     mouse_y: i32,
     watch_info_file: Option<String>,
     window_state: WindowState,
+    #[cfg(target_os = "emscripten")]
+    virtual_gamepad_states: [bool; 8],
 }
 
 unsafe_singleton!(Platform);
@@ -154,6 +156,8 @@ impl Platform {
             mouse_y: i32::MIN,
             watch_info_file,
             window_state: WindowState::default(),
+            #[cfg(target_os = "emscripten")]
+            virtual_gamepad_states: [false; 8],
         });
         Self::instance().save_watch_info();
     }
@@ -243,6 +247,38 @@ impl Platform {
                         x: cur_mouse_x,
                         y: cur_mouse_y,
                     });
+                }
+                #[cfg(target_os = "emscripten")]
+                {
+                    const INDEX_TO_BUTTON: [ControllerButton; 8] = [
+                        ControllerButton::DPadUp,
+                        ControllerButton::DPadDown,
+                        ControllerButton::DPadLeft,
+                        ControllerButton::DPadRight,
+                        ControllerButton::A,
+                        ControllerButton::B,
+                        ControllerButton::X,
+                        ControllerButton::Y,
+                    ];
+                    for (i, button) in INDEX_TO_BUTTON.iter().enumerate() {
+                        let button_state =
+                            emscripten::run_script_int(&format!("_virtualGamepadStates[{i}];"))
+                                != 0;
+                        if button_state != self.virtual_gamepad_states[i] {
+                            self.virtual_gamepad_states[i] = button_state;
+                            return if button_state {
+                                Some(Event::ControllerButtonDown {
+                                    which: 0,
+                                    button: *button,
+                                })
+                            } else {
+                                Some(Event::ControllerButtonUp {
+                                    which: 0,
+                                    button: *button,
+                                })
+                            };
+                        }
+                    }
                 }
                 return None;
             }
@@ -447,15 +483,7 @@ impl Platform {
             ((bg_color >> 8) & 0xff) as u8,
             (bg_color & 0xff) as u8,
         ));
-
-        // Instead of self.sdl_canvas.clear()
-        {
-            let display_size = self.sdl_canvas.output_size().unwrap();
-            self.sdl_canvas
-                .fill_rect(SdlRect::new(0, 0, display_size.0, display_size.1))
-                .unwrap();
-        }
-
+        self.sdl_canvas.clear();
         let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
         let dst = SdlRect::new(
             screen_x as i32,
@@ -556,9 +584,9 @@ impl Platform {
         }
     }
 
-    pub fn save_file_on_web_browser(_filename: &str) {
-        #[cfg(target_os = "emscripten")]
-        emscripten::run_script(&format!("_savePyxelFile('{_filename}');"));
+    #[cfg(target_os = "emscripten")]
+    pub fn save_file_on_web_browser(filename: &str) {
+        emscripten::run_script(&format!("_savePyxelFile('{filename}');"));
     }
 
     fn screen_pos_scale(&self) -> (u32, u32, u32) {
@@ -656,6 +684,7 @@ mod emscripten {
         );
         pub fn emscripten_force_exit(status: c_int);
         pub fn emscripten_run_script(script: *const c_char);
+        pub fn emscripten_run_script_int(script: *const c_char) -> c_int;
         pub fn emscripten_run_script_string(script: *const c_char) -> *const c_char;
     }
 
@@ -685,6 +714,11 @@ mod emscripten {
         unsafe {
             emscripten_run_script(script.as_ptr());
         }
+    }
+
+    pub fn run_script_int(script: &str) -> i32 {
+        let script = CString::new(script).unwrap();
+        unsafe { emscripten_run_script_int(script.as_ptr()) }
     }
 
     pub fn run_script_string(script: &str) -> String {
