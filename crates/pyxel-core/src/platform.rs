@@ -724,10 +724,10 @@ mod emscripten {
     pub fn run_script_string(script: &str) -> String {
         let script = CString::new(script).unwrap();
         unsafe {
-            return CStr::from_ptr(emscripten_run_script_string(script.as_ptr()))
+            CStr::from_ptr(emscripten_run_script_string(script.as_ptr()))
                 .to_str()
                 .unwrap()
-                .to_string();
+                .to_string()
         }
     }
 }
