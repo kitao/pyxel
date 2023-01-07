@@ -168,6 +168,7 @@ pub fn save(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool
         serialize!(Music, music, NUM_MUSICS);
     }
     zip.finish().unwrap();
+    #[cfg(target_os = "emscripten")]
     Platform::save_file_on_web_browser(filename);
 }
 
@@ -175,6 +176,7 @@ pub fn screenshot(scale: Option<u32>) {
     let filename = Resource::export_path();
     let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
     crate::screen().lock().save(&filename, scale);
+    #[cfg(target_os = "emscripten")]
     Platform::save_file_on_web_browser(&(filename + ".png"));
 }
 
@@ -186,5 +188,6 @@ pub fn screencast(scale: Option<u32>) {
     let filename = Resource::export_path();
     let scale = u32::max(scale.unwrap_or(Resource::instance().capture_scale), 1);
     Resource::instance().screencast.save(&filename, scale);
+    #[cfg(target_os = "emscripten")]
     Platform::save_file_on_web_browser(&(filename + ".gif"));
 }
