@@ -1,5 +1,10 @@
 # Change Log
 
+# 1.9.10
+
+- Changed to use the clear function of SDL2
+- Fixed virtual and real gamepads working at the same time
+
 # 1.9.9
 
 - Changed not to use array macro

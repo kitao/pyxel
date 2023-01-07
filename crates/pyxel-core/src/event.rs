@@ -1,3 +1,4 @@
+#[derive(Copy, Clone)]
 pub enum MouseButton {
     Left,
     Middle,
@@ -7,6 +8,7 @@ pub enum MouseButton {
     Unknown,
 }
 
+#[derive(Copy, Clone)]
 pub enum ControllerAxis {
     LeftX,
     LeftY,
@@ -16,6 +18,7 @@ pub enum ControllerAxis {
     TriggerRight,
 }
 
+#[derive(Copy, Clone)]
 pub enum ControllerButton {
     A,
     B,
@@ -40,6 +43,7 @@ pub enum ControllerButton {
     Touchpad,
 }
 
+#[derive(Clone)]
 pub enum Event {
     // System events
     Quit,
