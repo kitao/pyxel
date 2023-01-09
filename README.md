@@ -439,7 +439,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 
 - `colors`<br>
   List of the palette display colors. The display color is specified by a 24-bit numerical value. Use `colors.from_list` and `colors.to_list` to directly assign and retrieve Python lists.<br>
-  e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+  e.g. `org_colors = pyxel.colors.to_list(); org_colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
 
 - `image(img)`<br>
   Operate the image bank `img` (0-2). (See the Image class)<br>
