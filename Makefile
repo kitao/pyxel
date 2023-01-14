@@ -51,6 +51,7 @@ EXAMPLES_DIR = $(PYXEL_DIR)/examples
 WASM_DIR = $(ROOT_DIR)/wasm
 WASM_ENV = RUSTUP_TOOLCHAIN=nightly
 WASM_TARGET = wasm32-unknown-emscripten
+CLIPPY_OPTS = -q --all-targets --all-features -- --no-deps
 
 ifeq ($(TARGET),)
 ENSURE_TARGET =
@@ -74,8 +75,10 @@ distclean:
 	@rm -rf $(CRATES_DIR)/pyxel-extension/target
 
 lint:
-	@cd $(CRATES_DIR)/pyxel-core; cargo clippy -q --all-targets --all-features -- --no-deps
-	@cd $(CRATES_DIR)/pyxel-extension; cargo clippy -q --all-targets --all-features -- --no-deps
+	@cd $(CRATES_DIR)/pyxel-core; cargo clippy $(CLIPPY_OPTS)
+	@cd $(CRATES_DIR)/pyxel-core; $(WASM_ENV) cargo clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
+	@cd $(CRATES_DIR)/pyxel-extension; cargo clippy $(CLIPPY_OPTS)
+	@cd $(CRATES_DIR)/pyxel-extension; $(WASM_ENV) cargo clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
 	@flake8 $(SCRIPTS_DIR) $(PYXEL_DIR)
 
 format:
