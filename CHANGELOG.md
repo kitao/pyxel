@@ -1,5 +1,11 @@
 # Change Log
 
+# 1.9.11
+
+- Changed Makefile to lint Emscripten code
+- Suppressed clippy warnings
+- Modified the instruction for Pyxel.colors list
+
 # 1.9.10
 
 - Changed to use the clear function of SDL2

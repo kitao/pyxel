@@ -438,7 +438,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 - `colors`<br>
   Liste der Anzeigefarben der Palette. Die Anzeigefarbe wird durch einen numerischen 24-Bit-Wert angegeben. Verwende `colors.from_list` und `colors.to_list`, um Python-Listen direkt zuzuweisen und abzurufen.<br>
-  z.B. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+  z.B. `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `image(img)`<br>
   Bediene die Image-Bank `img` (0-2). (Siehe die Klasse Image)<br>
