@@ -439,7 +439,7 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 - `colors`<br>
   팔레트의 표시 색상 리스트입니다. 표시 색상은 24-bit 숫자 값으로 지정합니다. `colors.from_list` 및 `colors.to_list`를 사용해 Python 리스트의 형태로 직접 색상을 지정하고 적용할 수 있습니다.<br>
-  예시: `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+  예시: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `image(img)`<br>
   이미지 뱅크 `img` (0-2)를 조작합니다. (이미지 클래스 참조)<br>

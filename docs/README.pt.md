@@ -439,7 +439,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
 
 - `colors`<br>
   Lista da paleta de cores da tela. A cor da tela é especificada por um valor numérico de 24 bits. Use `colors.from_list` e `colors.to_list` para atribuir e pegar listas do Python.<br>
-  Ex. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+  Ex. `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `image(img)`<br>
   Opera o banco de imagens `img` (0-2). (veja a classe de Imagem)<br>

@@ -439,7 +439,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 
 - `colors`<br>
   Lista della palette colori del display. Il colore del display è specificato tramite un valore numerico a 24-bit. Usare `colors.from_list` e `colors.to_list` per assegnare direttamente e recuperare le liste Python.<br>
-  e.g. `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+  e.g. `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `image(img)`<br>
   Opera il banco immagine `img` (0-2). (Vedere la classe Image)<br>
