@@ -62,7 +62,7 @@ pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
     let mut result: u32 = 0;
     for c in string.chars() {
         result *= 0x10;
-        if ('0'..='9').contains(&c) {
+        if c.is_ascii_digit() {
             result += c as u32 - '0' as u32;
         } else if ('a'..='f').contains(&c) {
             result += 10 + c as u32 - 'a' as u32;
