@@ -439,7 +439,7 @@ pyxel play PYXEL_APP_FILE
 
 - `colors`<br>
   Список цветов палитры. Цвет кодируется 24-битным целым числом. Используйте `colors.from_list` и `colors.to_list` для установки и получения списка Python.<br>
-  Пример: `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+  Пример: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `image(img, [system])`<br>
   Оперировать набором изображений `img` (0-2) (смотрите класс Image).<br>

@@ -438,7 +438,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 
 - `colors`<br>
   Lista de la paleta de colores que se pueden representar. El color del display se especifica con un valor numérico de 24 bits. Utiliza `colors.from_list` y `colors.to_list` para directamente asignar y leer una lista de Python.
-  Ejemplo: `org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+  Ejemplo: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `image(img)`<br>
   Opera la imagen del banco de imágenes `img`(0-2). (Vea la clase Image)<br>
