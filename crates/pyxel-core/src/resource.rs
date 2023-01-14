@@ -78,8 +78,7 @@ pub fn load(filename: &str, image: bool, tilemap: bool, sound: bool, music: bool
     let version = parse_version_string(&contents).unwrap();
     assert!(
         version <= parse_version_string(VERSION).unwrap(),
-        "Unsupported resource file version '{}'",
-        contents
+        "Unsupported resource file version '{contents}'"
     );
 
     macro_rules! deserialize {
