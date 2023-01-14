@@ -440,7 +440,7 @@ Pyxel アプリケーションファイルは、'pyxel app2exe'コマンドや'p
 
 - `colors`<br>
   パレットの表示色リスト。表示色は 24 ビット数値で指定します。Python リストを直接代入、取得する場合は`colors.from_list`と`colors.to_list`を使用してください。<br>
-  例：`org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+  例：`old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `image(img)`<br>
   イメージバンク`img` (0-2) を操作します。(イメージクラスを参照のこと)<br>

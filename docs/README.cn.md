@@ -440,7 +440,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 
 - `colors`<br>
   展示调色板可以显示的颜色列表。颜色以 24 位数值格式进行展示。使用`colors.from_list`和`colors.to_list`直接指定货检索 Python 列表。<br>
-  示例：`org_colors = pyxel.colors.to_list(); pyxel.colors[15] = 0x112233; pyxel.colors.from_list(org_colors)`
+  示例：`old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `image(img)`<br>
   直接操作图像库`img` (0-2)。（参考前文 Image 类）<br>
