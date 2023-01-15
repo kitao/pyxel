@@ -6,6 +6,7 @@
 - Suppressed clippy warnings
 - Modified the instruction for Pyxel.colors list
 - Added error messages for Pyxel command
+- Fixed the default filename of Pyxel Editor for web
 
 # 1.9.10
 

@@ -403,6 +403,7 @@ async function _executePyxelCommand(pyodide, params) {
           event.preventDefault();
         }
       });
+      params.name ||= "";
       pythonCode = `
         import pyxel.cli
         pyxel.cli.edit_pyxel_resource("${params.name}", "${params.editor}")
