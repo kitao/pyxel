@@ -17,40 +17,47 @@ import pyxel
 
 
 def cli():
+    commands = [
+        (["run", "PYTHON_SCRIPT_FILE(.py)"], run_python_script),
+        (
+            ["watch", "WATCH_DIR", "PYTHON_SCRIPT_FILE(.py)"],
+            watch_and_run_python_script,
+        ),
+        (["play", "PYXEL_APP_FILE(.pyxapp)"], play_pyxel_app),
+        (["edit", "[PYXEL_RESOURCE_FILE(.pyxres)]"], edit_pyxel_resource),
+        (["package", "APP_DIR", "STARTUP_SCRIPT_FILE(.py)"], package_pyxel_app),
+        (["app2exe", "PYXEL_APP_FILE(.pyxapp)"], create_executable_from_pyxel_app),
+        (["app2html", "PYXEL_APP_FILE(.pyxapp)"], create_html_from_pyxel_app),
+        (["copy_examples"], copy_pyxel_examples),
+    ]
+
+    def print_usage(command_name=None):
+        print("usage:")
+        for command in commands:
+            if command_name is None or command[0] == command_name:
+                print(f"    pyxel {' '.join(command[0])}")
+        _check_newer_version()
+
     num_args = len(sys.argv)
-    command = sys.argv[1] if num_args > 1 else ""
-    if command == "run" and num_args == 3:
-        run_python_script(sys.argv[2])
-    if command == "watch" and num_args == 4:
-        watch_and_run_python_script(sys.argv[2], sys.argv[3])
-    elif command == "play" and num_args == 3:
-        play_pyxel_app(sys.argv[2])
-    elif command == "edit" and (num_args == 2 or num_args == 3):
-        edit_pyxel_resource(sys.argv[2] if num_args == 3 else None)
-    elif command == "package" and num_args == 4:
-        package_pyxel_app(sys.argv[2], sys.argv[3])
-    elif command == "app2exe" and num_args == 3:
-        create_executable_from_pyxel_app(sys.argv[2])
-    elif command == "app2html" and num_args == 3:
-        create_html_from_pyxel_app(sys.argv[2])
-    elif command == "copy_examples" and num_args == 2:
-        copy_pyxel_examples()
-    else:
-        _print_usage()
-
-
-def _print_usage():
-    print(f"Pyxel {pyxel.VERSION}, a retro game engine for Python")
-    print("usage:")
-    print("    pyxel run PYTHON_SCRIPT_FILE(.py)")
-    print("    pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE(.py)")
-    print("    pyxel play PYXEL_APP_FILE(.pyxapp)")
-    print("    pyxel edit [PYXEL_RESOURCE_FILE(.pyxres)]")
-    print("    pyxel package APP_DIR STARTUP_SCRIPT_FILE(.py)")
-    print("    pyxel app2exe PYXEL_APP_FILE(.pyxapp)")
-    print("    pyxel app2html PYXEL_APP_FILE(.pyxapp)")
-    print("    pyxel copy_examples")
-    _check_newer_version()
+    if num_args <= 1:
+        print(f"Pyxel {pyxel.VERSION}, a retro game engine for Python")
+        print_usage()
+        return
+    for command in commands:
+        if sys.argv[1] != command[0][0]:
+            continue
+        max_args = len(command[0]) + 1
+        min_args = max_args - len(list(filter(lambda s: s.startswith("["), command[0])))
+        if min_args <= num_args <= max_args:
+            command[1](*sys.argv[2:])
+            return
+        else:
+            print("invalid number of parameters")
+            print_usage(command[0])
+            sys.exit(1)
+    print(f"invalid command: '{sys.argv[1]}'")
+    print_usage()
+    sys.exit(1)
 
 
 def _check_newer_version():
@@ -204,7 +211,7 @@ def play_pyxel_app(pyxel_app_file):
     sys.exit(1)
 
 
-def edit_pyxel_resource(pyxel_resource_file, starting_editor="image"):
+def edit_pyxel_resource(pyxel_resource_file=None, starting_editor="image"):
     import pyxel.editor
 
     pyxel_resource_file = pyxel_resource_file or "my_resource"

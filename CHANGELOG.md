@@ -5,6 +5,7 @@
 - Changed Makefile to lint Emscripten code
 - Suppressed clippy warnings
 - Modified the instruction for Pyxel.colors list
+- Added error messages for Pyxel command
 
 # 1.9.10
 
