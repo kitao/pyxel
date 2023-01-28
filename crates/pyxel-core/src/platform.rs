@@ -64,7 +64,7 @@ pub struct Platform {
     sdl_timer: SdlTimer,
     sdl_canvas: SdlCanvas,
     sdl_texture: SdlTexture,
-    sdl_game_controller_subsytem: SdlGameControllerSubsystem,
+    sdl_game_controller_subsystem: Option<SdlGameControllerSubsystem>,
     sdl_game_controllers: Vec<SdlGameController>,
     sdl_audio: Option<SdlAudio>,
     sdl_audio_device: Option<SdlAudioDevice<AudioContextHolder>>,
@@ -131,7 +131,13 @@ impl Platform {
             .texture_creator()
             .create_texture_streaming(SdlPixelFormat::RGB24, screen_width, screen_height)
             .unwrap();
-        let sdl_game_controller_subsytem = sdl_context.game_controller().unwrap();
+        let sdl_game_controller_subsystem = sdl_context.game_controller().map_or_else(
+            |_| {
+                println!("Unable to initialize the game controller subsystem");
+                None
+            },
+            |sdl_game_controller_subsystem| Some(sdl_game_controller_subsystem),
+        );
         let sdl_audio = sdl_context.audio().map_or_else(
             |_| {
                 println!("Unable to initialize the audio subsystem");
@@ -146,7 +152,7 @@ impl Platform {
             sdl_timer,
             sdl_canvas,
             sdl_texture,
-            sdl_game_controller_subsytem,
+            sdl_game_controller_subsystem,
             sdl_game_controllers: Vec::new(),
             sdl_audio,
             sdl_audio_device: None,
@@ -344,8 +350,15 @@ impl Platform {
                     timestamp: _,
                     which,
                 } => {
-                    if let Ok(gc) = self.sdl_game_controller_subsytem.open(which) {
-                        self.sdl_game_controllers.push(gc);
+                    if self.sdl_game_controller_subsystem.is_some() {
+                        if let Ok(gc) = self
+                            .sdl_game_controller_subsystem
+                            .as_mut()
+                            .unwrap()
+                            .open(which)
+                        {
+                            self.sdl_game_controllers.push(gc);
+                        }
                     }
                     continue;
                 }
