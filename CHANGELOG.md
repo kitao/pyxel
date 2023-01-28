@@ -1,5 +1,9 @@
 # Change Log
 
+# 1.9.12
+
+- Added support for environments without game controllers
+
 # 1.9.11
 
 - Changed Makefile to lint Emscripten code
