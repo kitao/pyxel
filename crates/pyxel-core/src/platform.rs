@@ -10,7 +10,9 @@ use sdl2::audio::{
     AudioCallback as SdlAudioCallback, AudioDevice as SdlAudioDevice,
     AudioSpecDesired as SdlAudioSpecDesired,
 };
-use sdl2::controller::{Axis as SdlAxis, Button as SdlButton, GameController as SdlGameController};
+use sdl2::controller::{
+    Axis as SdlAxis, Button as SdlButton, GameController as SdlGameControllerState,
+};
 use sdl2::event::{Event as SdlEvent, WindowEvent as SdlWindowEvent};
 use sdl2::hint as sdl_hint;
 use sdl2::mouse::MouseButton as SdlMouseButton;
@@ -18,10 +20,10 @@ use sdl2::pixels::{Color as SdlColor, PixelFormatEnum as SdlPixelFormat};
 use sdl2::rect::Rect as SdlRect;
 use sdl2::render::{Texture as SdlTexture, WindowCanvas as SdlCanvas};
 use sdl2::surface::Surface as SdlSurface;
-use sdl2::video::FullscreenType as SdlFullscreenType;
+use sdl2::video::FullscreenType as SdlFullscreen;
 use sdl2::AudioSubsystem as SdlAudio;
 use sdl2::EventPump as SdlEventPump;
-use sdl2::GameControllerSubsystem as SdlGameControllerSubsystem;
+use sdl2::GameControllerSubsystem as SdlGameController;
 use sdl2::Sdl as SdlContext;
 use sdl2::TimerSubsystem as SdlTimer;
 
@@ -64,8 +66,8 @@ pub struct Platform {
     sdl_timer: SdlTimer,
     sdl_canvas: SdlCanvas,
     sdl_texture: SdlTexture,
-    sdl_game_controller_subsystem: Option<SdlGameControllerSubsystem>,
-    sdl_game_controllers: Vec<SdlGameController>,
+    sdl_game_controller: Option<SdlGameController>,
+    sdl_game_controller_states: Vec<SdlGameControllerState>,
     sdl_audio: Option<SdlAudio>,
     sdl_audio_device: Option<SdlAudioDevice<AudioContextHolder>>,
     screen_width: u32,
@@ -131,12 +133,12 @@ impl Platform {
             .texture_creator()
             .create_texture_streaming(SdlPixelFormat::RGB24, screen_width, screen_height)
             .unwrap();
-        let sdl_game_controller_subsystem = sdl_context.game_controller().map_or_else(
+        let sdl_game_controller = sdl_context.game_controller().map_or_else(
             |_| {
                 println!("Unable to initialize the game controller subsystem");
                 None
             },
-            |sdl_game_controller_subsystem| Some(sdl_game_controller_subsystem),
+            |sdl_game_controller| Some(sdl_game_controller),
         );
         let sdl_audio = sdl_context.audio().map_or_else(
             |_| {
@@ -152,8 +154,8 @@ impl Platform {
             sdl_timer,
             sdl_canvas,
             sdl_texture,
-            sdl_game_controller_subsystem,
-            sdl_game_controllers: Vec::new(),
+            sdl_game_controller,
+            sdl_game_controller_states: Vec::new(),
             sdl_audio,
             sdl_audio_device: None,
             screen_width,
@@ -217,7 +219,7 @@ impl Platform {
     }
 
     pub fn is_fullscreen(&self) -> bool {
-        self.sdl_canvas.window().fullscreen_state() != SdlFullscreenType::Off
+        self.sdl_canvas.window().fullscreen_state() != SdlFullscreen::Off
     }
 
     pub fn set_fullscreen(&mut self, is_fullscreen: bool) {
@@ -226,9 +228,9 @@ impl Platform {
         }
         let window = self.sdl_canvas.window_mut();
         if is_fullscreen {
-            let _droppable = window.set_fullscreen(SdlFullscreenType::Desktop);
+            let _droppable = window.set_fullscreen(SdlFullscreen::Desktop);
         } else {
-            let _droppable = window.set_fullscreen(SdlFullscreenType::Off);
+            let _droppable = window.set_fullscreen(SdlFullscreen::Off);
         }
     }
 
@@ -350,21 +352,16 @@ impl Platform {
                     timestamp: _,
                     which,
                 } => {
-                    if self.sdl_game_controller_subsystem.is_some() {
-                        if let Ok(gc) = self
-                            .sdl_game_controller_subsystem
-                            .as_mut()
-                            .unwrap()
-                            .open(which)
-                        {
-                            self.sdl_game_controllers.push(gc);
+                    if self.sdl_game_controller.is_some() {
+                        if let Ok(gc) = self.sdl_game_controller.as_mut().unwrap().open(which) {
+                            self.sdl_game_controller_states.push(gc);
                         }
                     }
                     continue;
                 }
                 SdlEvent::JoyDeviceRemoved { .. } => {
-                    self.sdl_game_controllers
-                        .retain(SdlGameController::attached);
+                    self.sdl_game_controller_states
+                        .retain(SdlGameControllerState::attached);
                     continue;
                 }
                 SdlEvent::ControllerAxisMotion {
@@ -630,7 +627,7 @@ impl Platform {
     }
 
     fn gamepad_index(&self, game_controller_id: u32) -> u32 {
-        self.sdl_game_controllers
+        self.sdl_game_controller_states
             .iter()
             .position(|gc| gc.instance_id() == game_controller_id)
             .unwrap() as u32
