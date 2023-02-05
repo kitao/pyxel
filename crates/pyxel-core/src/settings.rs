@@ -124,3 +124,4 @@ pub const MAX_NOTE: Note = 59; // 5 octaves
 pub const MAX_VOLUME: Volume = 7;
 pub const MAX_EFFECT: Effect = 3;
 pub const INITIAL_SPEED: Speed = 30;
+pub const INITIAL_GAIN: u8 = 32;
