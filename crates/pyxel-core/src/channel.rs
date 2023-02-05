@@ -3,7 +3,7 @@ use std::cmp::max;
 use crate::blipbuf::BlipBuf;
 use crate::oscillator::Oscillator;
 use crate::settings::{
-    EFFECT_NONE, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, NUM_CHANNELS, TONE_TRIANGLE,
+    EFFECT_NONE, INITIAL_GAIN, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE,
 };
 use crate::sound::{SharedSound, Sound};
 use crate::types::{Effect, Note, Tone, Volume};
@@ -31,7 +31,7 @@ impl Channel {
             sound_index: 0,
             note_index: 0,
             tick_count: 0,
-            gain: u8::MAX / NUM_CHANNELS as u8,
+            gain: INITIAL_GAIN,
         })
     }
 

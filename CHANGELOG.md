@@ -3,6 +3,7 @@
 # 1.9.12
 
 - Added support for environments without game controllers
+- Adjusted the initial gain of the sound
 
 # 1.9.11
 
