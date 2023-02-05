@@ -4,6 +4,7 @@
 
 - Added support for environments without game controllers
 - Adjusted the initial gain of the sound
+- Updated Emscripten to 3.1.31
 
 # 1.9.11
 
