@@ -20,15 +20,49 @@
     <script>
       function printUsage() {
         document.body.innerHTML = `
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <h1>Pyxel Web Launcher</h1>
           <p>
             Launcher tool for the WebAssembly version of
-            <a href="https://github.com/kitao/pyxel">Pyxel</a>, a retro game
-            engine for Python.
+            <a href="https://github.com/kitao/pyxel">Pyxel</a>, a retro game engine
+            for Python.
+          </p>
+          <table>
+            <tr>
+              <td style="width: 15em">Startup File URL on GitHub</td>
+              <td><input type="text" size="60" id="startup-file" /></td>
+            </tr>
+            <tr>
+              <td>Enable Virtual Gamepad</td>
+              <td><input type="checkbox" id="virtual-gamepad" checked /></td>
+            </tr>
+            <tr>
+              <td>Additional Packages</td>
+              <td><input type="text" size="60" id="additional-packages" /></td>
+            </tr>
+            <tr>
+              <td>Application Launch URL</td>
+              <td>
+                <b><a href="" target="_blank" id="launch-url"></a></b>
+              </td>
+            </tr>
+          </table>
+          <p>
+            <li>
+              Startup file type should be .py or .pyxres like
+              https://github.com/user/repo/blob/main/src/main.py
+            </li>
+            <li>
+              Only
+              <a href="https://pyodide.org/en/stable/usage/packages-in-pyodide.html"
+                >packages supported by Pyodide</a
+              >
+              can be used as additonal packages
+            </li>
+            <li>
+              If there are multiple additional packages, separate them with commas
+              like a,b,c
+            </li>
           </p>
           <p>
             For specific instructions, please refer to
@@ -37,6 +71,47 @@
             >.
           </p>
         `;
+        document
+          .getElementById("startup-file")
+          .addEventListener("input", generateLaunchUrl);
+        document
+          .getElementById("virtual-gamepad")
+          .addEventListener("change", generateLaunchUrl);
+        document
+          .getElementById("additional-packages")
+          .addEventListener("input", generateLaunchUrl);
+      }
+
+      function generateLaunchUrl() {
+        const startupFile = document.getElementById("startup-file").value;
+        const virtualGamepad =
+          document.getElementById("virtual-gamepad").checked;
+        const additionalPackages = document.getElementById(
+          "additional-packages"
+        ).value;
+        const launchUrlHref = document.getElementById("launch-url");
+        launchUrlHref.textContent = launchUrlHref.href = "";
+        if (
+          !startupFile.startsWith("https://github.com/") ||
+          !(startupFile.endsWith(".py") || startupFile.endsWith(".pyxapp")) ||
+          additionalPackages.match(/[^a-zA-Z0-9,]/)
+        ) {
+          return;
+        }
+        const paths = startupFile.split("/");
+        const dottedPath = paths.slice(3, 5).concat(paths.slice(7)).join(".");
+        const filePath = dottedPath.split(".").slice(0, -1).join(".");
+        const fileExt = dottedPath.split(".").slice(-1)[0];
+        var launchUrl = "https://kitao.github.io/pyxel/wasm/launcher/?";
+        launchUrl += fileExt == "py" ? "run" : "play";
+        launchUrl += "=" + filePath;
+        if (virtualGamepad) {
+          launchUrl += "&gamepad=enabled";
+        }
+        if (additionalPackages != "") {
+          launchUrl += "&packages=" + additionalPackages;
+        }
+        launchUrlHref.textContent = launchUrlHref.href = launchUrl;
       }
 
       let queries = new URL(document.location).searchParams;

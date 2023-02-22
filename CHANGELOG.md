@@ -1,5 +1,9 @@
 # Change Log
 
+# 1.9.13
+
+- Added URL generator to Pyxel Web Launcher
+
 # 1.9.12
 
 - Added support for environments without game controllers
