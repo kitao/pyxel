@@ -44,11 +44,14 @@ impl Resource {
 
     pub fn capture_screen(
         &mut self,
-        image: &[Vec<Color>],
+        width: u32,
+        height: u32,
+        image: &[Color],
         colors: &[Rgb8; NUM_DOUBLED_COLORS as usize],
         frame_count: u32,
     ) {
-        self.screencast.capture(image, colors, frame_count);
+        self.screencast
+            .capture(width, height, image, colors, frame_count);
     }
 
     fn export_path() -> String {
