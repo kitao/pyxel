@@ -35,6 +35,18 @@ impl Image {
         self.pyxel_image.lock().height()
     }
 
+    pub fn data_ptr(&self, py: Python) -> PyObject {
+        let mut pyxel_image = self.pyxel_image.lock();
+        let python_code = format!(
+            "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
+            pyxel_image.width() * pyxel_image.height(),
+            pyxel_image.data_ptr()
+        );
+        let locals = pyo3::types::PyDict::new(py);
+        py.run(&python_code, None, Some(locals)).unwrap();
+        locals.get_item("c_uint8_array").unwrap().to_object(py)
+    }
+
     pub fn set(&self, x: i32, y: i32, data: Vec<&str>) {
         self.pyxel_image.lock().set(x, y, &data);
     }

@@ -53,7 +53,7 @@ impl Image {
                     let p = image_file.get_pixel(x, y);
                     let src_rgb = (p[0], p[1], p[2]);
                     if let Some(color) = color_table.get(&src_rgb) {
-                        image.canvas.data[y as usize][x as usize] = *color;
+                        image.canvas.write_data(x as usize, y as usize, *color);
                     } else {
                         let mut closest_color: Color = 0;
                         let mut closest_dist: f64 = f64::MAX;
@@ -71,7 +71,9 @@ impl Image {
                             }
                         }
                         color_table.insert(src_rgb, closest_color);
-                        image.canvas.data[y as usize][x as usize] = closest_color;
+                        image
+                            .canvas
+                            .write_data(x as usize, y as usize, closest_color);
                     }
                 }
             }
@@ -87,6 +89,10 @@ impl Image {
         self.canvas.height()
     }
 
+    pub fn data_ptr(&mut self) -> *mut Color {
+        self.canvas.data_ptr()
+    }
+
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
@@ -97,7 +103,9 @@ impl Image {
                 let src_data = simplify_string(data_str[y as usize]);
                 for x in 0..width {
                     let color = parse_hex_string(&src_data[x as usize..x as usize + 1]).unwrap();
-                    image.canvas.data[y as usize][x as usize] = color as Color;
+                    image
+                        .canvas
+                        .write_data(x as usize, y as usize, color as Color);
                 }
             }
         }
@@ -136,7 +144,7 @@ impl Image {
         let mut image = RgbImage::new(width, height);
         for y in 0..height {
             for x in 0..width {
-                let rgb = colors[self.canvas.data[y as usize][x as usize] as usize];
+                let rgb = colors[self.canvas.read_data(x as usize, y as usize) as usize];
                 let r = ((rgb >> 16) & 0xff) as u8;
                 let g = ((rgb >> 8) & 0xff) as u8;
                 let b = (rgb & 0xff) as u8;
@@ -347,11 +355,11 @@ impl Image {
 
                 let tile_x = tilemap_x / TILE_SIZE as i32;
                 let tile_y = tilemap_y / TILE_SIZE as i32;
-                let tile = tilemap.canvas.data[tile_y as usize][tile_x as usize];
+                let tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
 
                 let value_x = tile.0 as i32 * TILE_SIZE as i32 + tilemap_x % TILE_SIZE as i32;
                 let value_y = tile.1 as i32 * TILE_SIZE as i32 + tilemap_y % TILE_SIZE as i32;
-                let value = image.canvas.data[value_y as usize][value_x as usize];
+                let value = image.canvas.read_data(value_x as usize, value_y as usize);
 
                 if let Some(transparent) = transparent {
                     if value == transparent {
@@ -359,7 +367,8 @@ impl Image {
                     }
                 }
                 let value = self.palette[value.to_index()];
-                self.canvas.data[(dst_y + yi) as usize][(dst_x + xi) as usize] = value;
+                self.canvas
+                    .write_data((dst_x + xi) as usize, (dst_y + yi) as usize, value);
             }
         }
     }
@@ -416,7 +425,7 @@ impl ResourceItem for Image {
     fn is_modified(&self) -> bool {
         for y in 0..self.height() {
             for x in 0..self.width() {
-                if self.canvas.data[y as usize][x as usize] != 0 {
+                if self.canvas.read_data(x as usize, y as usize) != 0 {
                     return true;
                 }
             }
@@ -432,7 +441,11 @@ impl ResourceItem for Image {
         let mut output = String::new();
         for y in 0..self.height() {
             for x in 0..self.width() {
-                let _ = write!(output, "{:1x}", self.canvas.data[y as usize][x as usize]);
+                let _ = write!(
+                    output,
+                    "{:1x}",
+                    self.canvas.read_data(x as usize, y as usize)
+                );
             }
             output += "\n";
         }
@@ -442,7 +455,8 @@ impl ResourceItem for Image {
     fn deserialize(&mut self, _version: u32, input: &str) {
         for (i, line) in input.lines().enumerate() {
             string_loop!(j, color, line, 1, {
-                self.canvas.data[i][j] = parse_hex_string(&color).unwrap() as Color;
+                self.canvas
+                    .write_data(j, i, parse_hex_string(&color).unwrap() as Color);
             });
         }
     }

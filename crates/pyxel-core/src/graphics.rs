@@ -60,7 +60,7 @@ impl Graphics {
                         let x = FONT_WIDTH * col + xi;
                         let y = FONT_HEIGHT * row + yi;
                         let color = u8::from((data & 0x800000) != 0);
-                        image.canvas.data[y as usize][x as usize] = color;
+                        image.canvas.write_data(x as usize, y as usize, color);
                         data <<= 1;
                     }
                 }

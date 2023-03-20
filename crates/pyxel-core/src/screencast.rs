@@ -12,28 +12,20 @@ use crate::utils::add_file_extension;
 const TRANSPARENT: Rgb8 = 0xffffffff;
 
 struct Screen {
-    image: Vec<Vec<Color>>,
+    width: u32,
+    height: u32,
+    image: Vec<Color>,
     colors: [Rgb8; NUM_DOUBLED_COLORS as usize],
     frame_count: u32,
 }
 
 impl Screen {
-    fn width(&self) -> u32 {
-        self.image[0].len() as u32
-    }
-
-    fn height(&self) -> u32 {
-        self.image.len() as u32
-    }
-
     fn to_rgb_image(&self) -> Vec<Vec<Rgb8>> {
-        let width = self.width();
-        let height = self.height();
         let mut rgb_image: Vec<Vec<Rgb8>> = Vec::new();
-        for y in 0..height {
+        for y in 0..self.height {
             let mut rgb_line: Vec<Rgb8> = Vec::new();
-            for x in 0..width {
-                let rgb = self.colors[self.image[y as usize][x as usize] as usize];
+            for x in 0..self.width {
+                let rgb = self.colors[self.image[(self.width * y + x) as usize] as usize];
                 rgb_line.push(rgb);
             }
             rgb_image.push(rgb_line);
@@ -55,6 +47,8 @@ impl Screencast {
         let max_screens = fps * capture_sec;
         let screens = (0..max_screens)
             .map(|_| Screen {
+                width: 0,
+                height: 0,
                 image: Vec::new(),
                 colors: [0; NUM_DOUBLED_COLORS as usize],
                 frame_count: 0,
@@ -91,7 +85,9 @@ impl Screencast {
 
     pub fn capture(
         &mut self,
-        image: &[Vec<Color>],
+        width: u32,
+        height: u32,
+        image: &[Color],
         colors: &[Rgb8; NUM_DOUBLED_COLORS as usize],
         frame_count: u32,
     ) {
@@ -104,6 +100,8 @@ impl Screencast {
         }
         let mut screen = &mut self.screens
             [((self.capture_start_index + self.num_captured_screens) % self.max_screens) as usize];
+        screen.width = width;
+        screen.height = height;
         screen.colors = *colors;
         screen.image = image.to_vec();
         screen.frame_count = frame_count;
@@ -118,12 +116,10 @@ impl Screencast {
         let mut file =
             File::create(&filename).unwrap_or_else(|_| panic!("Unable to open file '{filename}'"));
         let screen = self.screen(0);
-        let width = screen.width();
-        let height = screen.height();
         let mut encoder = Encoder::new(
             &mut file,
-            (width * scale) as u16,
-            (height * scale) as u16,
+            (screen.width * scale) as u16,
+            (screen.height * scale) as u16,
             &[],
         )
         .unwrap();
@@ -131,8 +127,11 @@ impl Screencast {
 
         // Write first frame
         let mut base_image = screen.to_rgb_image();
-        let (rect, palette, buffer) =
-            Self::make_gif_buffer(RectArea::new(0, 0, width, height), &base_image, scale);
+        let (rect, palette, buffer) = Self::make_gif_buffer(
+            RectArea::new(0, 0, screen.width, screen.height),
+            &base_image,
+            scale,
+        );
         encoder
             .write_frame(&Frame {
                 delay: self.screen_delay(0),
