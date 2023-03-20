@@ -4,6 +4,7 @@
 
 - Added URL generator to Pyxel Web Launcher
 - Added a data_ptr method to the Image and Tilemap class
+- Updated Emscripten to 3.1.34
 
 # 1.9.12
 
