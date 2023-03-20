@@ -15,7 +15,7 @@ name = "pyxel_extension"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.17", features = ["abi3-py37", "extension-module"] }
+pyo3 = { version = "0.18", features = ["abi3-py37", "extension-module"] }
 pyxel-core = { path = "../pyxel-core", version = "1.9.12" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
