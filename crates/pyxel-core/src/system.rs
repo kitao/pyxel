@@ -171,16 +171,24 @@ impl System {
         }
         self.draw_perf_monitor();
         self.draw_cursor();
-        Platform::instance().render_screen(
-            &crate::screen().lock().canvas.data,
-            &*crate::colors().lock(),
-            BACKGROUND_COLOR,
-        );
-        Resource::instance().capture_screen(
-            &crate::screen().lock().canvas.data,
-            &crate::colors().lock(),
-            self.frame_count,
-        );
+        let screen = crate::screen();
+        {
+            let screen = screen.lock();
+            Platform::instance().render_screen(
+                screen.canvas.width(),
+                screen.canvas.height(),
+                &screen.canvas.data,
+                &*crate::colors().lock(),
+                BACKGROUND_COLOR,
+            );
+            Resource::instance().capture_screen(
+                screen.width(),
+                screen.height(),
+                &screen.canvas.data,
+                &crate::colors().lock(),
+                self.frame_count,
+            );
+        }
         self.draw_profiler.end(Platform::instance().tick_count());
     }
 
@@ -282,8 +290,15 @@ pub fn icon(data_str: &[&str], scale: u32) {
     let width = simplify_string(data_str[0]).len() as u32;
     let height = data_str.len() as u32;
     let image = Image::new(width, height);
-    image.lock().set(0, 0, data_str);
-    Platform::instance().set_icon(&image.lock().canvas.data, &*crate::colors().lock(), scale);
+    let mut image = image.lock();
+    image.set(0, 0, data_str);
+    Platform::instance().set_icon(
+        width,
+        height,
+        &image.canvas.data,
+        &*crate::colors().lock(),
+        scale,
+    );
 }
 
 pub fn is_fullscreen() -> bool {

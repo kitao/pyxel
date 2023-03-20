@@ -13,7 +13,7 @@ pub struct Canvas<T: Copy + PartialEq + Default + ToIndex> {
     pub clip_rect: RectArea,
     pub camera_x: i32,
     pub camera_y: i32,
-    pub data: Vec<Vec<T>>,
+    pub data: Vec<T>,
 }
 
 impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
@@ -23,7 +23,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             clip_rect: RectArea::new(0, 0, width, height),
             camera_x: 0,
             camera_y: 0,
-            data: vec![vec![T::default(); width as usize]; height as usize],
+            data: vec![T::default(); (width * height) as usize],
         }
     }
 
@@ -33,6 +33,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
     pub const fn height(&self) -> u32 {
         self.self_rect.height()
+    }
+
+    pub fn data_ptr(&mut self) -> *mut T {
+        self.data.as_mut_ptr()
     }
 
     pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
@@ -64,7 +68,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let height = self.height();
         for y in 0..height {
             for x in 0..width {
-                self.write_data(x as i32, y as i32, value);
+                self.write_data(x as usize, y as usize, value);
             }
         }
     }
@@ -72,8 +76,8 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn pget(&mut self, x: f64, y: f64) -> T {
         let x = as_i32(x);
         let y = as_i32(y);
-        if self.self_rect.contains(x, y) {
-            self.read_data(x, y)
+        if self.clip_rect.contains(x, y) {
+            self.read_data(x as usize, y as usize)
         } else {
             T::default()
         }
@@ -82,7 +86,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     pub fn pset(&mut self, x: f64, y: f64, value: T) {
         let x = as_i32(x) - self.camera_x;
         let y = as_i32(y) - self.camera_y;
-        self.write_clipped_data(x, y, value);
+        self.write_data_with_clipping(x, y, value);
     }
 
     pub fn line(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, value: T) {
@@ -92,7 +96,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let y2 = as_i32(y2) - self.camera_y;
 
         if x1 == x2 && y1 == y2 {
-            self.write_clipped_data(x1, y1, value);
+            self.write_data_with_clipping(x1, y1, value);
         } else if (x1 - x2).abs() > (y1 - y2).abs() {
             let (start_x, start_y, end_x, end_y) = if x1 < x2 {
                 (x1, y1, x2, y2)
@@ -102,7 +106,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             let length = end_x - start_x + 1;
             let alpha = (end_y - start_y) as f64 / (end_x - start_x) as f64;
             for xi in 0..length {
-                self.write_clipped_data(start_x + xi, start_y + as_i32(alpha * xi as f64), value);
+                self.write_data_with_clipping(
+                    start_x + xi,
+                    start_y + as_i32(alpha * xi as f64),
+                    value,
+                );
             }
         } else {
             let (start_x, start_y, end_x, end_y) = if y1 < y2 {
@@ -113,7 +121,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             let length = end_y - start_y + 1;
             let alpha = (end_x - start_x) as f64 / (end_y - start_y) as f64;
             for yi in 0..length {
-                self.write_clipped_data(start_x + as_i32(alpha * yi as f64), start_y + yi, value);
+                self.write_data_with_clipping(
+                    start_x + as_i32(alpha * yi as f64),
+                    start_y + yi,
+                    value,
+                );
             }
         }
     }
@@ -133,7 +145,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let bottom = rect.bottom();
         for y in top..=bottom {
             for x in left..=right {
-                self.write_data(x, y, value);
+                self.write_data(x as usize, y as usize, value);
             }
         }
     }
@@ -152,12 +164,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let right = rect.right();
         let bottom = rect.bottom();
         for x in left..=right {
-            self.write_clipped_data(x, top, value);
-            self.write_clipped_data(x, bottom, value);
+            self.write_data_with_clipping(x, top, value);
+            self.write_data_with_clipping(x, bottom, value);
         }
         for y in top..=bottom {
-            self.write_clipped_data(left, y, value);
-            self.write_clipped_data(right, y, value);
+            self.write_data_with_clipping(left, y, value);
+            self.write_data_with_clipping(right, y, value);
         }
     }
 
@@ -168,10 +180,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         for xi in 0..=radius as i32 {
             let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f64, radius as f64, xi);
             for yi in y1..=y2 {
-                self.write_clipped_data(x + x1, y + yi, value);
-                self.write_clipped_data(x + x2, y + yi, value);
-                self.write_clipped_data(x + yi, y + x1, value);
-                self.write_clipped_data(x + yi, y + x2, value);
+                self.write_data_with_clipping(x + x1, y + yi, value);
+                self.write_data_with_clipping(x + x2, y + yi, value);
+                self.write_data_with_clipping(x + yi, y + x1, value);
+                self.write_data_with_clipping(x + yi, y + x2, value);
             }
         }
     }
@@ -182,15 +194,15 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let radius = as_u32(radius);
         for xi in 0..=radius as i32 {
             let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f64, radius as f64, xi);
-            self.write_clipped_data(x + x1, y + y1, value);
-            self.write_clipped_data(x + x2, y + y1, value);
-            self.write_clipped_data(x + x1, y + y2, value);
-            self.write_clipped_data(x + x2, y + y2, value);
+            self.write_data_with_clipping(x + x1, y + y1, value);
+            self.write_data_with_clipping(x + x2, y + y1, value);
+            self.write_data_with_clipping(x + x1, y + y2, value);
+            self.write_data_with_clipping(x + x2, y + y2, value);
 
-            self.write_clipped_data(x + y1, y + x1, value);
-            self.write_clipped_data(x + y1, y + x2, value);
-            self.write_clipped_data(x + y2, y + x1, value);
-            self.write_clipped_data(x + y2, y + x2, value);
+            self.write_data_with_clipping(x + y1, y + x1, value);
+            self.write_data_with_clipping(x + y1, y + x2, value);
+            self.write_data_with_clipping(x + y2, y + x1, value);
+            self.write_data_with_clipping(x + y2, y + x2, value);
         }
     }
 
@@ -203,15 +215,15 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         for xi in x..(x + width as i32 / 2) + 1 {
             let (x1, y1, x2, y2) = Self::ellipse_area(cx, cy, ra, rb, xi);
             for yi in y1..=y2 {
-                self.write_clipped_data(x1, yi, value);
-                self.write_clipped_data(x2, yi, value);
+                self.write_data_with_clipping(x1, yi, value);
+                self.write_data_with_clipping(x2, yi, value);
             }
         }
         for yi in y..(y + height as i32 / 2) + 1 {
             let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
             for xi in x1..=x2 {
-                self.write_clipped_data(xi, y1, value);
-                self.write_clipped_data(xi, y2, value);
+                self.write_data_with_clipping(xi, y1, value);
+                self.write_data_with_clipping(xi, y2, value);
             }
         }
     }
@@ -224,17 +236,17 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
         for xi in x..(x + width as i32 / 2) + 1 {
             let (x1, y1, x2, y2) = Self::ellipse_area(cx, cy, ra, rb, xi);
-            self.write_clipped_data(x1, y1, value);
-            self.write_clipped_data(x2, y1, value);
-            self.write_clipped_data(x1, y2, value);
-            self.write_clipped_data(x2, y2, value);
+            self.write_data_with_clipping(x1, y1, value);
+            self.write_data_with_clipping(x2, y1, value);
+            self.write_data_with_clipping(x1, y2, value);
+            self.write_data_with_clipping(x2, y2, value);
         }
         for yi in y..(y + height as i32 / 2) + 1 {
             let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
-            self.write_clipped_data(x1, y1, value);
-            self.write_clipped_data(x2, y1, value);
-            self.write_clipped_data(x1, y2, value);
-            self.write_clipped_data(x2, y2, value);
+            self.write_data_with_clipping(x1, y1, value);
+            self.write_data_with_clipping(x2, y1, value);
+            self.write_data_with_clipping(x1, y2, value);
+            self.write_data_with_clipping(x2, y2, value);
         }
     }
 
@@ -288,7 +300,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 )
             };
             for x in x_slider..=x_end {
-                self.write_clipped_data(x, y, value);
+                self.write_data_with_clipping(x, y, value);
             }
         }
         for y in (y2 + 1)..=y3 {
@@ -304,7 +316,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 )
             };
             for x in x_slider..=x_end {
-                self.write_clipped_data(x, y, value);
+                self.write_data_with_clipping(x, y, value);
             }
         }
     }
@@ -321,7 +333,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if !self.clip_rect.contains(x, y) {
             return;
         }
-        let dst_value = self.read_data(x, y);
+        let dst_value = self.read_data(x as usize, y as usize);
         if value != dst_value {
             self.fill_rec(x, y, value, dst_value);
         }
@@ -375,29 +387,32 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             for xi in 0..width {
                 let value_x = src_x + sign_x * xi + offset_x;
                 let value_y = src_y + sign_y * yi + offset_y;
-                let value = canvas.read_data(value_x, value_y);
+                let value = canvas.read_data(value_x as usize, value_y as usize);
                 if let Some(transparent) = transparent {
                     if value == transparent {
                         continue;
                     }
                 }
                 let value = palette.map_or(value, |palette| palette[value.to_index()]);
-                self.write_data(dst_x + xi, dst_y + yi, value);
+                self.write_data((dst_x + xi) as usize, (dst_y + yi) as usize, value);
             }
         }
     }
 
-    fn read_data(&self, x: i32, y: i32) -> T {
-        self.data[y as usize][x as usize]
+    pub fn read_data(&self, x: usize, y: usize) -> T {
+        let width = self.width() as usize;
+        self.data[width * y + x]
     }
 
-    fn write_data(&mut self, x: i32, y: i32, value: T) {
-        self.data[y as usize][x as usize] = value;
+    pub fn write_data(&mut self, x: usize, y: usize, value: T) {
+        let width = self.width() as usize;
+        self.data[width * y + x] = value;
     }
 
-    fn write_clipped_data(&mut self, x: i32, y: i32, value: T) {
+    fn write_data_with_clipping(&mut self, x: i32, y: i32, value: T) {
         if self.clip_rect.contains(x, y) {
-            self.data[y as usize][x as usize] = value;
+            let width = self.width() as usize;
+            self.data[width * y as usize + x as usize] = value;
         }
     }
 
@@ -424,15 +439,15 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     fn fill_rec(&mut self, x: i32, y: i32, value: T, dst_value: T) {
-        if self.read_data(x, y) != dst_value {
+        if self.read_data(x as usize, y as usize) != dst_value {
             return;
         }
         let mut xi = x;
         while xi >= self.clip_rect.left() {
-            if self.read_data(xi, y) != dst_value {
+            if self.read_data(xi as usize, y as usize) != dst_value {
                 break;
             }
-            self.write_data(xi, y, value);
+            self.write_data(xi as usize, y as usize, value);
             if y > self.clip_rect.top() {
                 self.fill_rec(xi, y - 1, value, dst_value);
             }
@@ -443,10 +458,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
         let mut xi = x + 1;
         while xi <= self.clip_rect.right() {
-            if self.read_data(xi, y) != dst_value {
+            if self.read_data(xi as usize, y as usize) != dst_value {
                 break;
             }
-            self.write_data(xi, y, value);
+            self.write_data(xi as usize, y as usize, value);
             if y > self.clip_rect.top() {
                 self.fill_rec(xi, y - 1, value, dst_value);
             }
