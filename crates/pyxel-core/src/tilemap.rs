@@ -36,6 +36,10 @@ impl Tilemap {
         self.canvas.height()
     }
 
+    pub fn data_ptr(&mut self) -> *mut Tile {
+        self.canvas.data_ptr()
+    }
+
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = simplify_string(data_str[0]).len() as u32 / 4;
         let height = data_str.len() as u32;
@@ -47,8 +51,11 @@ impl Tilemap {
                 for x in 0..width {
                     let index = x as usize * 4;
                     let tile = parse_hex_string(&src_data[index..index + 4]).unwrap();
-                    tilemap.canvas.data[y as usize][x as usize] =
-                        (((tile >> 8) & 0xff) as u8, (tile & 0xff) as u8);
+                    tilemap.canvas.write_data(
+                        x as usize,
+                        y as usize,
+                        (((tile >> 8) & 0xff) as u8, (tile & 0xff) as u8),
+                    );
                 }
             }
         }
@@ -184,7 +191,7 @@ impl ResourceItem for Tilemap {
     fn is_modified(&self) -> bool {
         for y in 0..self.height() {
             for x in 0..self.width() {
-                if self.canvas.data[y as usize][x as usize] != (0, 0) {
+                if self.canvas.read_data(x as usize, y as usize) != (0, 0) {
                     return true;
                 }
             }
@@ -200,7 +207,7 @@ impl ResourceItem for Tilemap {
         let mut output = String::new();
         for y in 0..self.height() {
             for x in 0..self.width() {
-                let tile = self.canvas.data[y as usize][x as usize];
+                let tile = self.canvas.read_data(x as usize, y as usize);
                 let _ = write!(output, "{:02x}{:02x}", tile.0, tile.1);
             }
             output += "\n";
@@ -219,13 +226,14 @@ impl ResourceItem for Tilemap {
                 if version < 10500 {
                     string_loop!(x, tile, line, 3, {
                         let tile = parse_hex_string(&tile).unwrap();
-                        self.canvas.data[y][x] = ((tile % 32) as u8, (tile / 32) as u8);
+                        self.canvas
+                            .write_data(x, y, ((tile % 32) as u8, (tile / 32) as u8));
                     });
                 } else {
                     string_loop!(x, tile, line, 4, {
                         let tile_x = parse_hex_string(&tile[0..2]).unwrap();
                         let tile_y = parse_hex_string(&tile[2..4]).unwrap();
-                        self.canvas.data[y][x] = (tile_x as u8, tile_y as u8);
+                        self.canvas.write_data(x, y, (tile_x as u8, tile_y as u8));
                     });
                 }
             } else {

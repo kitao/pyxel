@@ -59,6 +59,18 @@ impl Tilemap {
         self.pyxel_tilemap.lock().image = pyxel::image(img);
     }
 
+    pub fn data_ptr(&self, py: Python) -> PyObject {
+        let mut pyxel_tilemap = self.pyxel_tilemap.lock();
+        let python_code = format!(
+            "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
+            pyxel_tilemap.width() * pyxel_tilemap.height(),
+            pyxel_tilemap.data_ptr()
+        );
+        let locals = pyo3::types::PyDict::new(py);
+        py.run(&python_code, None, Some(locals)).unwrap();
+        locals.get_item("c_uint8_array").unwrap().to_object(py)
+    }
+
     pub fn set(&mut self, x: i32, y: i32, data: Vec<&str>) {
         self.pyxel_tilemap.lock().set(x, y, &data);
     }

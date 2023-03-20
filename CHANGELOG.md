@@ -3,6 +3,7 @@
 # 1.9.13
 
 - Added URL generator to Pyxel Web Launcher
+- Added a data_ptr method to the Image and Tilemap class
 
 # 1.9.12
 
