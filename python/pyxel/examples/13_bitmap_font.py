@@ -1,5 +1,3 @@
-import codecs
-
 import pyxel
 
 
@@ -69,24 +67,14 @@ class BDFRenderer:
             x += font[0] + 1
 
 
-def iso2022_jp(unicode_str):
-    jisx0208_bytes = codecs.encode(unicode_str, "iso2022_jp")
-    jisx0208_bytes = jisx0208_bytes.replace(b"\x1b$B", b"").replace(b"\x1b(B", b"")
-    codes = [
-        (jisx0208_bytes[i] << 8) + jisx0208_bytes[i + 1]
-        for i in range(0, len(jisx0208_bytes), 2)
-    ]
-    return codes
-
-
 pyxel.init(128, 128, title="Bitmap Font")
 pyxel.load("assets/sample.pyxres")
-bdf_renderer1 = BDFRenderer("assets/umplus_j10r.bdf")
-bdf_renderer2 = BDFRenderer("assets/umplus_j12r.bdf")
+bdf1 = BDFRenderer("assets/umplus_j10r.bdf")
+bdf2 = BDFRenderer("assets/umplus_j12r.bdf")
 
 pyxel.cls(1)
 pyxel.blt(0, 0, 1, 0, 0, 128, 128)
-bdf_renderer1.draw_text(26, 7, "Pyxel!︎", 11)
-bdf_renderer2.draw_text(4, 97, "気軽に楽しく", 14, 0)
-bdf_renderer2.draw_text(4, 112, "プログラミング！", 14, 0)
+bdf1.draw_text(26, 7, "Pyxel!︎", 11)
+bdf2.draw_text(4, 97, "気軽に楽しく", 14, 0)
+bdf2.draw_text(4, 112, "プログラミング！", 14, 0)
 pyxel.show()
