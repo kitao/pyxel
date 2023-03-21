@@ -74,7 +74,7 @@ bdf2 = BDFRenderer("assets/umplus_j12r.bdf")
 
 pyxel.cls(1)
 pyxel.blt(0, 0, 1, 0, 0, 128, 128)
-bdf1.draw_text(26, 7, "Pyxel!︎", 11)
+bdf1.draw_text(26, 7, "Pyxel!︎", 1)
 bdf2.draw_text(4, 97, "気軽に楽しく", 14, 0)
 bdf2.draw_text(4, 112, "プログラミング！", 14, 0)
 pyxel.show()
