@@ -108,6 +108,7 @@ test: build
 	@pyxel run $(EXAMPLES_DIR)/10_platformer.py
 	@pyxel run $(EXAMPLES_DIR)/11_offscreen.py
 	@pyxel run $(EXAMPLES_DIR)/12_perlin_noise.py
+	@pyxel run $(EXAMPLES_DIR)/13_bitmap_font.py
 	@pyxel run $(EXAMPLES_DIR)/99_flip_animation.py
 	@pyxel play $(EXAMPLES_DIR)/30SecondsOfDaylight.pyxapp
 	@pyxel play $(EXAMPLES_DIR)/megaball.pyxapp
