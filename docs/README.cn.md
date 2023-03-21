@@ -182,6 +182,12 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
 </tr>
 <tr>
+<td>13_bitmap_font.py</td>
+<td>绘制一个位图字体</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/13_bitmap_font.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Code</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>具有 flip 功能的动画（仅在非网络平台上）</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
