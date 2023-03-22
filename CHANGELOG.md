@@ -1,5 +1,9 @@
 # Change Log
 
+# 1.9.14
+
+- Modified the layout of the example #13
+
 # 1.9.13
 
 - Added URL generator to Pyxel Web Launcher
