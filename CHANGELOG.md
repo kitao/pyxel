@@ -3,6 +3,7 @@
 # 1.9.14
 
 - Modified the layout of the example #13
+- Fixed bounding box handling for BDF font rendering
 
 # 1.9.13
 
