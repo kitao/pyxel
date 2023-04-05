@@ -429,19 +429,31 @@ class PyxelRunElement extends HTMLElement {
     return ["root", "name", "script", "packages", "gamepad"];
   }
 
+  hasLaunchPyxel = false
+
   constructor() {
     super();
+    this.observer = new MutationObserver(() => {
+      if (!this.hasLaunchPyxel) {
+        this.hasLaunchPyxel = true
+        launchPyxel({
+          command: "run",
+          root: this.root,
+          name: this.name,
+          script: this.textContent || this.script,
+          packages: this.packages,
+          gamepad: this.gamepad,
+        });
+      }
+    });
   }
 
   connectedCallback() {
-    launchPyxel({
-      command: "run",
-      root: this.root,
-      name: this.name,
-      script: this.script,
-      packages: this.packages,
-      gamepad: this.gamepad,
-    });
+    this.observer.observe(this, { subtree: true, childList: true, characterData: true });
+  }
+  
+  disconnectedCallback() {
+    this.observer.disconnect();
   }
 
   attributeChangedCallback(name, _oldValue, newValue) {
