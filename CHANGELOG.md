@@ -1,5 +1,9 @@
 # Change Log
 
+# 1.9.15
+
+- Changed how platforms are specified in Rust
+
 # 1.9.14
 
 - Modified the layout of the example #13
