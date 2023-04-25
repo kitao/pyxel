@@ -71,7 +71,7 @@ class Background:
             self.stars[i] = (x, y, speed)
 
     def draw(self):
-        for (x, y, speed) in self.stars:
+        for x, y, speed in self.stars:
             pyxel.pset(x, y, STAR_COLOR_HIGH if speed > 1.8 else STAR_COLOR_LOW)
 
 
