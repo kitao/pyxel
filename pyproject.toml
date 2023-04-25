@@ -32,7 +32,7 @@ manifest-path = "crates/pyxel-extension/Cargo.toml"
 python-source = "python"
 
 [tool.maturin.target."x86_64-apple-darwin"]
-macos-deployment-target = "10.9"
+macos-deployment-target = "10.7"
 
 [tool.isort]
 profile = "black"
