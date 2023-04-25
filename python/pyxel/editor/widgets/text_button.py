@@ -20,7 +20,7 @@ class TextButton(Button):
             y,
             len(text) * pyxel.FONT_WIDTH + 3,
             pyxel.FONT_HEIGHT + 1,
-            **kwargs
+            **kwargs,
         )
         self._text = text
 

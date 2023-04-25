@@ -26,7 +26,7 @@ class ScrollBar(Widget):
         slider_amount,
         value,
         with_shadow=True,
-        **kwargs
+        **kwargs,
     ):
         if width is None and height is None or width is not None and height is not None:
             raise ValueError("Either width or height should be specified")
