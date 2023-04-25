@@ -1,8 +1,7 @@
 const NO_SLEEP_URL =
   "https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js";
-const PYODIDE_SDL2_URL =
-  "https://cdn.jsdelivr.net/gh/kitao/pyodide-sdl2@0.22.1/pyodide.js";
-const PYXEL_WHEEL_PATH = "pyxel-1.9.14-cp37-abi3-emscripten_3_1_34_wasm32.whl";
+const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.23.1/full/pyodide.js";
+const PYXEL_WHEEL_PATH = "pyxel-1.9.14-cp37-abi3-emscripten_3_1_36_wasm32.whl";
 const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_114x14.png";
 const CLICK_TO_START_PATH = "../docs/images/click_to_start_114x14.png";
@@ -46,8 +45,8 @@ async function launchPyxel(params) {
   console.log(params);
   _allowGamepadConnection();
   _suppressPinchOperations();
-  await _createScreenElements();
-  let pyodide = await _loadPyodideAndPyxel();
+  let canvas = await _createScreenElements();
+  let pyodide = await _loadPyodideAndPyxel(canvas);
   _hookFileOperations(pyodide, params.root || ".");
   await _waitForInput();
   await _executePyxelCommand(pyodide, params);
@@ -129,6 +128,8 @@ async function _createScreenElements() {
   await new Promise((resolve) => setTimeout(resolve, 50));
   pyxelScreen.appendChild(logoImage);
   _updateScreenElementsSize();
+
+  return sdl2Canvas;
 }
 
 async function _loadScript(scriptSrc) {
@@ -139,12 +140,14 @@ async function _loadScript(scriptSrc) {
   await _waitForEvent(script, "load");
 }
 
-async function _loadPyodideAndPyxel() {
+async function _loadPyodideAndPyxel(canvas) {
   await _loadScript(NO_SLEEP_URL);
   let noSleep = new NoSleep();
   noSleep.enable();
-  await _loadScript(PYODIDE_SDL2_URL);
+  await _loadScript(PYODIDE_URL);
   let pyodide = await loadPyodide();
+  pyodide._api._skip_unwind_fatal_error = true;
+  pyodide.canvas.setCanvas2D(canvas);
   await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
   let FS = pyodide.FS;
   FS.mkdir(PYXEL_WORKING_DIRECTORY);
