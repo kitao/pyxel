@@ -23,6 +23,3 @@ sysinfo = "0.26"
 
 [patch.crates-io]
 sdl2 = { git = "https://github.com/Rust-SDL2/rust-sdl2.git", branch = "master" }
-
-[package.metadata.maturin]
-name = "pyxel.pyxel_extension"

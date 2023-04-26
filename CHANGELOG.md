@@ -3,6 +3,7 @@
 # 1.9.15
 
 - Changed how platforms are specified in Rust
+- Changed to use the official Pyodide instead of the customized version
 
 # 1.9.14
 
