@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "pyxel"
-version = "1.9.14"
+version = "1.9.15"
 description = "A retro game engine for Python"
 readme = "docs/README-abspath.md"
 requires-python = ">=3.7"
@@ -29,6 +29,7 @@ pyxel = "pyxel.cli:cli"
 
 [tool.maturin]
 manifest-path = "crates/pyxel-extension/Cargo.toml"
+module-name = "pyxel.pyxel_extension"
 python-source = "python"
 
 [tool.maturin.target."x86_64-apple-darwin"]
