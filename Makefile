@@ -90,7 +90,7 @@ format:
 build: format
 	@$(ENSURE_TARGET)
 	@$(SCRIPTS_DIR)/make_abspath_readme
-	@RUST_LOG=maturin=debug maturin build -o $(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --skip-auditwheel
+	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --skip-auditwheel
 
 test: build
 	@cd $(CRATES_DIR)/pyxel-core; cargo test $(BUILD_OPTS)
