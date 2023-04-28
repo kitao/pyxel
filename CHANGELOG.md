@@ -4,6 +4,7 @@
 
 - Changed how platforms are specified in Rust
 - Changed to use the official Pyodide instead of the customized version
+- Updated Emscripten to 3.1.36
 
 # 1.9.14
 
