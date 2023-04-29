@@ -46,7 +46,7 @@ impl ResourceItem for Music {
                 output += "none";
             } else {
                 for sound_no in sounds {
-                    let _ = write!(output, "{sound_no:02x}");
+                    let _guard = write!(output, "{sound_no:02x}");
                 }
             }
             output += "\n";
