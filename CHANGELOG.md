@@ -2,7 +2,7 @@
 
 # 1.9.15
 
-- Changed how platforms are specified in Rust
+- Changed the platform specification method in Rust for FreeBSD
 - Changed to use the official Pyodide instead of the customized version
 - Updated Emscripten to 3.1.36
 
