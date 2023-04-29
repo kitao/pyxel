@@ -153,7 +153,7 @@ impl ResourceItem for Sound {
                 if *note < 0 {
                     output += "ff";
                 } else {
-                    let _ = write!(output, "{:02x}", *note);
+                    let _guard = write!(output, "{:02x}", *note);
                 }
             }
             output += "\n";
@@ -165,7 +165,7 @@ impl ResourceItem for Sound {
                     output += "none\n";
                 } else {
                     for value in &self.$name {
-                        let _ = write!(output, "{:1x}", *value);
+                        let _guard = write!(output, "{:1x}", *value);
                     }
                     output += "\n";
                 }
@@ -175,7 +175,7 @@ impl ResourceItem for Sound {
         stringify_data!(tones);
         stringify_data!(volumes);
         stringify_data!(effects);
-        let _ = write!(output, "{}", self.speed);
+        let _guard = write!(output, "{}", self.speed);
         output
     }
 

@@ -208,11 +208,11 @@ impl ResourceItem for Tilemap {
         for y in 0..self.height() {
             for x in 0..self.width() {
                 let tile = self.canvas.read_data(x as usize, y as usize);
-                let _ = write!(output, "{:02x}{:02x}", tile.0, tile.1);
+                let _guard = write!(output, "{:02x}{:02x}", tile.0, tile.1);
             }
             output += "\n";
         }
-        let _ = write!(
+        let _guard = write!(
             output,
             "{}",
             crate::image_no(self.image.clone()).unwrap_or(0)

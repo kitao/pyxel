@@ -441,7 +441,7 @@ impl ResourceItem for Image {
         let mut output = String::new();
         for y in 0..self.height() {
             for x in 0..self.width() {
-                let _ = write!(
+                let _guard = write!(
                     output,
                     "{:1x}",
                     self.canvas.read_data(x as usize, y as usize)
