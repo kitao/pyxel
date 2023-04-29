@@ -5,6 +5,7 @@
 - Changed the platform specification method in Rust for FreeBSD
 - Changed to use the official Pyodide instead of the customized version
 - Updated Emscripten to 3.1.36
+- Expanded the supported macOS 10.12+ (Intel), 11.0+ (Apple Silicon)
 
 # 1.9.14
 
