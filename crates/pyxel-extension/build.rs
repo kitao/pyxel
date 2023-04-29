@@ -30,7 +30,7 @@ fn macos_link_search_path() -> Option<String> {
     let stdout = String::from_utf8_lossy(&output.stdout);
     for line in stdout.lines() {
         if line.contains("libraries: =") {
-            let path = line.split('=').skip(1).next()?;
+            let path = line.split('=').nth(1)?;
             return Some(format!("{}/lib/darwin", path));
         }
     }
