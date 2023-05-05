@@ -17,10 +17,11 @@
 #	- libsdl2-dev
 #
 #	[WASM]
-#	- Emscripten 3.1.29
+#	- Emscripten 3.1.36
 #
 # Advance preparation:
 #	rustup install nightly
+#	embuilder build sdl2 --pic # Only for WASM
 #	git clone --depth=1 https://github.com/kitao/pyxel
 #	cd pyxel
 #	(Create and activate a venv if you prefer)
