@@ -1,5 +1,9 @@
 # Change Log
 
+# 1.9.16
+
+- Disabled quit by ESC key in Pyxel Editor
+
 # 1.9.15
 
 - Changed the platform specification method in Rust for FreeBSD
