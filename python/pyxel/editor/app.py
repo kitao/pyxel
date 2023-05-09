@@ -38,7 +38,7 @@ class App(Widget):
             exit(1)
 
         # Initialize Pyxel
-        pyxel.init(APP_WIDTH, APP_HEIGHT)
+        pyxel.init(APP_WIDTH, APP_HEIGHT, quit_key=pyxel.KEY_NONE)
         pyxel.mouse(True)
         pyxel.pal2()
         self._set_title(original_resource_file)
