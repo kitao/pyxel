@@ -1,6 +1,6 @@
 use std::f64::consts;
 
-use noise::{NoiseFn, Perlin};
+use noise::{NoiseFn, Perlin, Seedable};
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256StarStar;
 
@@ -17,7 +17,7 @@ impl Math {
     pub fn init() {
         let seed = Platform::instance().tick_count();
         let rng = Xoshiro256StarStar::seed_from_u64(seed as u64);
-        let perlin = Perlin::new(seed);
+        let perlin = Perlin::new().set_seed(seed);
         Self::set_instance(Self { rng, perlin });
     }
 }
@@ -75,7 +75,7 @@ pub fn rndf(a: f64, b: f64) -> f64 {
 }
 
 pub fn nseed(seed: u32) {
-    Math::instance().perlin = Perlin::new(seed);
+    Math::instance().perlin = Perlin::new().set_seed(seed);
 }
 
 pub fn noise(x: f64, y: f64, z: f64) -> f64 {
