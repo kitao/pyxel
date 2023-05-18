@@ -3,6 +3,7 @@
 # 1.9.16
 
 - Disabled quit by ESC key in Pyxel Editor
+- Fixed the nseed function
 
 # 1.9.15
 
