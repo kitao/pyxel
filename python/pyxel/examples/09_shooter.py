@@ -51,6 +51,20 @@ def cleanup_list(list):
             i += 1
 
 
+def load_bgm(filename, snd1, snd2, snd3, msc):
+    # Loads a json file for 8bit BGM generator by frenchbread.
+    # Each track is stored in snd1, snd2 and snd3 of the sound
+    # respectively and registered in msd of the music.
+    import json
+
+    with open(filename, "rt") as file:
+        bgm = json.loads(file.read())
+        pyxel.sound(snd1).set(*bgm[0])
+        pyxel.sound(snd2).set(*bgm[1])
+        pyxel.sound(snd3).set(*bgm[2])
+        pyxel.music(msc).set([snd1], [snd2], [snd3], [])
+
+
 class Background:
     def __init__(self):
         self.stars = []
@@ -101,7 +115,7 @@ class Player:
             Bullet(
                 self.x + (PLAYER_WIDTH - BULLET_WIDTH) / 2, self.y - BULLET_HEIGHT / 2
             )
-            pyxel.play(0, 0)
+            pyxel.play(3, 0)
 
     def draw(self):
         pyxel.blt(self.x, self.y, 0, 0, 0, self.w, self.h, 0)
@@ -202,10 +216,13 @@ class App:
         )
         pyxel.sound(0).set("a3a2c1a1", "p", "7", "s", 5)
         pyxel.sound(1).set("a3a2c2c2", "n", "7742", "s", 10)
+        load_bgm("assets/bgm_title.json", 2, 3, 4, 0)
+        load_bgm("assets/bgm_play.json", 5, 6, 7, 1)
         self.scene = SCENE_TITLE
         self.score = 0
         self.background = Background()
         self.player = Player(pyxel.width / 2, pyxel.height - 20)
+        pyxel.playm(0, loop=True)
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -223,6 +240,7 @@ class App:
     def update_title_scene(self):
         if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_X):
             self.scene = SCENE_PLAY
+            pyxel.playm(1, loop=True)
 
     def update_play_scene(self):
         if pyxel.frame_count % 6 == 0:
@@ -241,7 +259,7 @@ class App:
                     blasts.append(
                         Blast(enemy.x + ENEMY_WIDTH / 2, enemy.y + ENEMY_HEIGHT / 2)
                     )
-                    pyxel.play(1, 1)
+                    pyxel.play(3, 1)
                     self.score += 10
 
         for enemy in enemies:
@@ -258,8 +276,9 @@ class App:
                         self.player.y + PLAYER_HEIGHT / 2,
                     )
                 )
-                pyxel.play(1, 1)
+                pyxel.play(3, 1)
                 self.scene = SCENE_GAMEOVER
+                pyxel.playm(0, loop=True)
 
         self.player.update()
         update_list(bullets)
@@ -285,6 +304,7 @@ class App:
             enemies.clear()
             bullets.clear()
             blasts.clear()
+            pyxel.playm(1, loop=True)
 
     def draw(self):
         pyxel.cls(0)
