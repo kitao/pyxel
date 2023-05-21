@@ -195,15 +195,21 @@ Die zu kopierenden Beispiele lauten wie folgt:
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
-<td>1. Pyxel Jam Gewinnspiel von Adam</td>
+<td>1. Pyxel Jam Gewinnspiel von <a href="https://twitter.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
 <td><a href="https://github.com/kitao/30SecondsOfDaylight">Code</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
-<td>Arcade Ball Physik Spiel von Adam</td>
+<td>Arcade Ball Physik Spiel von <a href="https://twitter.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
 <td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
+</tr>
+<tr>
+<td>8bit-bgm-gen.pyxapp</td>
+<td>Hintergrundmusikgenerator von <a href="https://twitter.com/frenchbread1222">frenchbread</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Demo</a></td>
+<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Code</a></td>
 </tr>
 </table>
 
