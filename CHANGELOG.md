@@ -4,7 +4,7 @@
 
 - Disabled quit by ESC key in Pyxel Editor
 - Fixed the nseed function
-- Bundled 8bit BGM generator by frenchbred
+- Bundled 8bit BGM generator by frenchbread
 - Added BGMs by 8bit BGM generator to the example 9
 
 ## 1.9.15
