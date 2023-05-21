@@ -195,15 +195,21 @@ The examples to be copied are as follows:
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
-<td>1st Pyxel Jam winning game by Adam</td>
+<td>1st Pyxel Jam winning game by <a href="https://twitter.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
 <td><a href="https://github.com/kitao/30SecondsOfDaylight">Code</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
-<td>Arcade ball physics game by Adam</td>
+<td>Arcade ball physics game by <a href="https://twitter.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
 <td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
+</tr>
+<tr>
+<td>8bit-bgm-gen.pyxapp</td>
+<td>Background music generator by <a href="https://twitter.com/frenchbread1222">frenchbread</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Demo</a></td>
+<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Code</a></td>
 </tr>
 </table>
 
