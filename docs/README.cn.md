@@ -195,15 +195,21 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
-<td>第 1 届 Pyxel Jam 比赛获胜者是Adam</td>
+<td>第 1 届 Pyxel Jam 比赛获胜者是<a href="https://twitter.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
 <td><a href="https://github.com/kitao/30SecondsOfDaylight">Code</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
-<td>商场球类物理游戏Adam</td>
+<td>商场球类物理游戏<a href="https://twitter.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
 <td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
+</tr>
+<tr>
+<td>8bit-bgm-gen.pyxapp</td>
+<td>背景音乐生成器由<a href="https://twitter.com/frenchbread1222">frenchbread</a>制作</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Demo</a></td>
+<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Code</a></td>
 </tr>
 </table>
 
