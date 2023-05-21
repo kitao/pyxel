@@ -51,7 +51,7 @@ def cleanup_list(list):
             i += 1
 
 
-def load_bgm(filename, snd1, snd2, snd3, msc):
+def load_bgm(msc, filename, snd1, snd2, snd3):
     # Loads a json file for 8bit BGM generator by frenchbread.
     # Each track is stored in snd1, snd2 and snd3 of the sound
     # respectively and registered in msd of the music.
@@ -216,8 +216,8 @@ class App:
         )
         pyxel.sound(0).set("a3a2c1a1", "p", "7", "s", 5)
         pyxel.sound(1).set("a3a2c2c2", "n", "7742", "s", 10)
-        load_bgm("assets/bgm_title.json", 2, 3, 4, 0)
-        load_bgm("assets/bgm_play.json", 5, 6, 7, 1)
+        load_bgm(0, "assets/bgm_title.json", 2, 3, 4)
+        load_bgm(1, "assets/bgm_play.json", 5, 6, 7)
         self.scene = SCENE_TITLE
         self.score = 0
         self.background = Background()
