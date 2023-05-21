@@ -113,6 +113,7 @@ test: build
 	@pyxel run $(EXAMPLES_DIR)/99_flip_animation.py
 	@pyxel play $(EXAMPLES_DIR)/30SecondsOfDaylight.pyxapp
 	@pyxel play $(EXAMPLES_DIR)/megaball.pyxapp
+	@pyxel play $(EXAMPLES_DIR)/8bit-bgm-gen.pyxapp
 	@pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
 	@rm -rf testapp testapp.pyxapp
 	@mkdir -p testapp/assets
