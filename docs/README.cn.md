@@ -13,7 +13,7 @@
 
 由于像素风游戏的机制非常简单（如：最多只能显示 16 种颜色、播放 4 种声音等），现在你也可以轻松地享受这种游戏的制作过程。
 
-<img src="images/pyxel_300000_downloads.gif" width="480">
+<img src="images/pyxel_message.png" width="480">
 
 Pyxel 开发的动力来自于用户的反馈。请在 GitHub 上给 Pyxel 一颗星吧！
 
