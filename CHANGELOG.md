@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.17
+
+- Replaced an image in the READMEs
+
 ## 1.9.16
 
 - Disabled quit by ESC key in Pyxel Editor
