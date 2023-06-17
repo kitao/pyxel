@@ -687,8 +687,6 @@ Pyxel에는 "사용자를 혼란스럽게 할 수 있거나", "사용하는 데 
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Discord Server (English)](https://discord.gg/Z87eYHN)
-- [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
 - [Developer's Twitter account](https://twitter.com/kitao)
 
 ## 라이선스 정보
