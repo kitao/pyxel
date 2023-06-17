@@ -685,9 +685,7 @@ Los pull request enviados se consideran acordados para poder publicarse bajo la 
 ## Otra Información
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
-- [Ejemplos de usuarios](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Discord Server (English)](https://discord.gg/Z87eYHN)
-- [Discord Server (Japanese - 日本語版)](https://discord.gg/qHA5BCS)
+- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Developer's Twitter account](https://twitter.com/kitao)
 
 ## Licencia
