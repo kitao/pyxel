@@ -417,7 +417,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
   Show the screen and wait until the `Esc` key is pressed.
 
 - `flip()`<br>
-  Refrech the screen by one frame. The application exits when the `Esc` key is pressed. This function only works on non-web platforms.
+  Refresh the screen by one frame. The application exits when the `Esc` key is pressed. This function only works on non-web platforms.
 
 - `quit()`<br>
   Quit the Pyxel application.
