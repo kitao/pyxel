@@ -637,7 +637,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Define as notas, tons, volumes e efeitos com uma string. Se os tons, volumes e efeitos são mais curtos que as notas, elas se repetirão do começo.
 
 - `set_notes(notes)`<br>
-  Define as notas com uma string 'CDEFGAB'+'#-'+'0123' ou 'R'. É insensível à maiúsculas ou minúsculas e espaços em branco são ignorados.<br>
+  Define as notas com uma string 'CDEFGAB'+'#-'+'01234' ou 'R'. É insensível à maiúsculas ou minúsculas e espaços em branco são ignorados.<br>
   Ex. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>

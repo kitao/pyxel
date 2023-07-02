@@ -636,7 +636,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Legt Noten, Töne, Lautstärken und Effekte mit einer Zeichenfolge fest. Wenn die Länge der Töne, Lautstärken und Effekte kürzer ist als die der Noten, wird sie von Anfang an wiederholt.
 
 - `set_notes(notes)`<br>
-  Setzt die Noten mit einem string aus 'CDEFGAB'+'#-'+'0123' oder 'R'. Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
+  Setzt die Noten mit einem string aus 'CDEFGAB'+'#-'+'01234' oder 'R'. Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
   z.B. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
