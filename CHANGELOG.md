@@ -4,6 +4,7 @@
 
 - Replaced an image in the READMEs
 - Fixed the app2exe command to include modules correctly
+- Added support for Raspberry Pi (ARMv7)
 
 ## 1.9.16
 
