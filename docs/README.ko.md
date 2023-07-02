@@ -637,7 +637,7 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   문자열을 사용해 음정, 음색, 음량 및 효과를 설정합니다. 음색, 음량, 효과의 길이가 음정보다 짧으면 처음부터 반복됩니다.
 
 - `set_notes(notes)`<br>
-  'CDEFGAB'+'#-'+'0123' 또는 'R' 문자열로 음정을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
+  'CDEFGAB'+'#-'+'01234' 또는 'R' 문자열로 음정을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
   예시: `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>

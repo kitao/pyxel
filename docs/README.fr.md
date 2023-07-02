@@ -639,7 +639,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
   Met les valeurs de notes, tones, volumes et effects avec une chaîne. Si les tons, volumes et effets sont plus courts que les notes, ils sont répétés depuis le début.
 
 - `set_notes(notes)`<br>
-  Met les notes avec une chaîne de 'CDEFGAB'+'#-'+'0123' ou 'R'. Insensible à la casse et les espaces sont ignorés.<br>
+  Met les notes avec une chaîne de 'CDEFGAB'+'#-'+'01234' ou 'R'. Insensible à la casse et les espaces sont ignorés.<br>
   Par exemple `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
