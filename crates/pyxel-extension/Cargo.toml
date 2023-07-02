@@ -15,11 +15,11 @@ name = "pyxel_extension"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.18", features = ["abi3-py37", "extension-module"] }
+pyo3 = { version = "0.19", features = ["abi3-py37", "extension-module"] }
 pyxel-core = { path = "../pyxel-core", version = "1.9.17" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
-sysinfo = "0.26"
+sysinfo = "0.29"
 
 [patch.crates-io]
 sdl2 = { git = "https://github.com/Rust-SDL2/rust-sdl2.git", branch = "master" }
