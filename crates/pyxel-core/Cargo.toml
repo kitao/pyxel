@@ -23,9 +23,9 @@ harness = false
 [dependencies]
 gif = "0.12"
 image = "0.24"
-indexmap = "1.9"
+indexmap = "2.0"
 noise = "0.7"
-once_cell = "1.16"
+once_cell = "1.18"
 parking_lot = "0.12"
 platform-dirs = "0.3"
 rand = "0.8"
