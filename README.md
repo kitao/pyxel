@@ -637,7 +637,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
   Set notes, tones, volumes, and effects with a string. If the tones, volumes, and effects length are shorter than the notes, it is repeated from the beginning.
 
 - `set_notes(notes)`<br>
-  Set the notes with a string made of 'CDEFGAB'+'#-'+'0123' or 'R'. Case-insensitive and whitespace is ignored.<br>
+  Set the notes with a string made of 'CDEFGAB'+'#-'+'01234' or 'R'. Case-insensitive and whitespace is ignored.<br>
   e.g. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
