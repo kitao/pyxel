@@ -636,7 +636,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Fija las notas, los tonos, el volumen y los efectos con una string. Si los tonos, el volumen, la longitud de los efectos son más cortos que la nota, se repetirá desde el principio.
 
 - `set_notes(notes)`<br>
-  Fija las notas con un string hecho por 'CDEFGAB'+'#-'+'0123' o 'R'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
+  Fija las notas con un string hecho por 'CDEFGAB'+'#-'+'01234' o 'R'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
   Ejemplo: `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
