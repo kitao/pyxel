@@ -98,7 +98,7 @@ impl Screencast {
             self.capture_start_index = (self.capture_start_index + 1) % self.max_screens;
             self.num_captured_screens -= 1;
         }
-        let mut screen = &mut self.screens
+        let screen = &mut self.screens
             [((self.capture_start_index + self.num_captured_screens) % self.max_screens) as usize];
         screen.width = width;
         screen.height = height;
