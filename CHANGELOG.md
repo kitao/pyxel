@@ -6,6 +6,7 @@
 - Fixed the app2exe command to include modules correctly
 - Added support for Raspberry Pi (ARMv7)
 - Updated Emscripten to 3.1.42
+- Updated Pyodide to 0.23.3
 - Updated the version of crates
 
 ## 1.9.16
