@@ -15,6 +15,8 @@ import zipfile
 
 import pyxel
 
+from .import_parser import parse_imports
+
 
 def cli():
     commands = [
@@ -194,7 +196,7 @@ def watch_and_run_python_script(watch_dir, python_script_file):
         print("stopped watching")
 
 
-def play_pyxel_app(pyxel_app_file):
+def _extract_pyxel_app(pyxel_app_file):
     pyxel_app_file = _complete_extension(pyxel_app_file, pyxel.APP_FILE_EXTENSION)
     _check_file_exists(pyxel_app_file)
     app_dir = _create_app_dir()
@@ -203,10 +205,16 @@ def play_pyxel_app(pyxel_app_file):
     pattern = os.path.join(app_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
     for setting_file in glob.glob(pattern):
         with open(setting_file, "r") as f:
-            startup_script_file = os.path.join(os.path.dirname(setting_file), f.read())
-            sys.path.append(os.path.dirname(startup_script_file))
-            runpy.run_path(startup_script_file, run_name="__main__")
-            return
+            return os.path.join(os.path.dirname(setting_file), f.read())
+    return None
+
+
+def play_pyxel_app(pyxel_app_file):
+    startup_script_file = _extract_pyxel_app(pyxel_app_file)
+    if startup_script_file:
+        sys.path.append(os.path.dirname(startup_script_file))
+        runpy.run_path(startup_script_file, run_name="__main__")
+        return
     print(f"file not found: '{pyxel.APP_STARTUP_SCRIPT_FILE}'")
     sys.exit(1)
 
@@ -265,11 +273,14 @@ def create_executable_from_pyxel_app(pyxel_app_file):
     if cp.returncode != 0:
         print("Pyinstaller is not found. Please install it.")
         sys.exit(1)
-    subprocess.run(
-        "pyinstaller --distpath . --onefile "
-        f"--add-data {pyxel_app_file}{os.pathsep}. {startup_script_file}",
-        shell=True,
-    )
+    command = f"{sys.executable} -m PyInstaller --distpath . --onefile "
+    command += f"--add-data {pyxel_app_file}{os.pathsep}. "
+    modules = parse_imports(_extract_pyxel_app(pyxel_app_file))["system"]
+    print(f"detected modules: {', '.join(modules)}")
+    command += "".join([f"--hidden-import {module} " for module in modules])
+    command += startup_script_file
+    print("run PyInstaller")
+    subprocess.run(command, shell=True)
     if os.path.isdir(app2exe_dir):
         shutil.rmtree(app2exe_dir)
     spec_file = os.path.splitext(pyxel_app_file)[0] + ".spec"
