@@ -16,6 +16,7 @@
     clippy::needless_pass_by_value,
     clippy::range_plus_one,
     clippy::redundant_closure,
+    clippy::significant_drop_tightening,
     clippy::suboptimal_flops,
     clippy::too_many_arguments,
     clippy::too_many_lines,
