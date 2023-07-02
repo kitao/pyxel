@@ -637,7 +637,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Imposta note, tonalità, volumi, ed effetti con una stringa. Se il numero di tonalità, volumi, ed effetti è inferiore alle note, vengono ripetuti dall'inizio.
 
 - `set_notes(notes)`<br>
-  Imposta le note con una stringa composta da 'CDEFGAB'+'#-'+'0123' o 'R'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
+  Imposta le note con una stringa composta da 'CDEFGAB'+'#-'+'01234' o 'R'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
   e.g. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
