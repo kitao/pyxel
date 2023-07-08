@@ -387,6 +387,8 @@ async function _executePyxelCommand(pyodide, params) {
     case "run":
       if (params.name) {
         pythonCode = `
+          import pyxel.utils
+          pyxel.utils.check_imports_for_wasm("${params.name}")
           import pyxel.cli
           pyxel.cli.run_python_script("${params.name}")
         `;
