@@ -70,9 +70,7 @@ def parse_imports(filename):
     }
 
 
-def check_imported_python_scripts(filename):
-    if os.path.splitext(filename)[1] != ".py":
-        return
+def _check_imports_for_wasm_recursively(filename, checked_files):
     dir_path = os.path.dirname(filename)
     scripts = []
     with open(filename) as file:
@@ -88,7 +86,7 @@ def check_imported_python_scripts(filename):
                 if node.module:
                     module_path = os.path.join(
                         dir_path,
-                        *(+[".."] * (node.level - 1)),
+                        *([".."] * (node.level - 1)),
                         node.module.replace(".", os.sep),
                     )
                     scripts.append(os.path.join(module_path, "__init__.py"))
@@ -102,5 +100,12 @@ def check_imported_python_scripts(filename):
                     scripts.append(os.path.join(module_path, "__init__.py"))
                     scripts.append(module_path + ".py")
     for script in scripts:
-        print("********", script)
-        os.path.isfile(script)
+        if script in checked_files:
+            continue
+        checked_files.add(script)
+        if os.path.isfile(script):
+            _check_imports_for_wasm_recursively(script, checked_files)
+
+
+def check_imports_for_wasm(filename):
+    _check_imports_for_wasm_recursively(filename, set())

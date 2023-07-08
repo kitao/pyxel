@@ -3,6 +3,7 @@
 ## 1.9.18
 
 - Added the windowed option to PyInstaller
+- Fixed the import of Python scripts on WASM
 
 ## 1.9.17
 
