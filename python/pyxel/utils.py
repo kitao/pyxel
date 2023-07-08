@@ -33,11 +33,9 @@ def _parse_imports_recursively(imports, filename, parsed_files):
         elif isinstance(node, ast.ImportFrom):
             if node.module:
                 module_path = os.path.join(
-                    *(
-                        [dir_path]
-                        + [".."] * (node.level - 1)
-                        + [node.module.replace(".", os.sep)]
-                    )
+                    dir_path,
+                    *([".."] * (node.level - 1)),
+                    node.module.replace(".", os.sep),
                 )
                 module_filename = _to_module_filename(module_path)
                 if module_filename:
@@ -48,11 +46,9 @@ def _parse_imports_recursively(imports, filename, parsed_files):
             else:
                 for alias in node.names:
                     module_path = os.path.join(
-                        *(
-                            [dir_path]
-                            + [".."] * (node.level - 1)
-                            + [alias.name.replace(".", os.sep)]
-                        )
+                        dir_path,
+                        *([".."] * (node.level - 1)),
+                        alias.name.replace(".", os.sep),
                     )
                     module_filename = _to_module_filename(module_path)
                     if module_filename:
@@ -72,3 +68,39 @@ def parse_imports(filename):
         "system": sorted(imports["system"]),
         "local": sorted(imports["local"]),
     }
+
+
+def check_imported_python_scripts(filename):
+    if os.path.splitext(filename)[1] != ".py":
+        return
+    dir_path = os.path.dirname(filename)
+    scripts = []
+    with open(filename) as file:
+        root = ast.parse(file.read())
+    for node in ast.walk(root):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                module_path = os.path.join(dir_path, alias.name.replace(".", os.sep))
+                scripts.append(os.path.join(module_path, "__init__.py"))
+                scripts.append(module_path + ".py")
+        elif isinstance(node, ast.ImportFrom):
+            for alias in node.names:
+                if node.module:
+                    module_path = os.path.join(
+                        dir_path,
+                        *(+[".."] * (node.level - 1)),
+                        node.module.replace(".", os.sep),
+                    )
+                    scripts.append(os.path.join(module_path, "__init__.py"))
+                    scripts.append(module_path + ".py")
+                else:
+                    module_path = os.path.join(
+                        dir_path,
+                        *([".."] * (node.level - 1)),
+                        alias.name.replace(".", os.sep),
+                    )
+                    scripts.append(os.path.join(module_path, "__init__.py"))
+                    scripts.append(module_path + ".py")
+    for script in scripts:
+        print("********", script)
+        os.path.isfile(script)
