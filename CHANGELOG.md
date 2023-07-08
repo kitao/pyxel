@@ -2,7 +2,7 @@
 
 ## 1.9.18
 
-- Added the windowed option to PyInstaller
+- Added the windowed and icon options to PyInstaller
 
 ## 1.9.17
 

@@ -272,7 +272,7 @@ def create_executable_from_pyxel_app(pyxel_app_file):
     if cp.returncode != 0:
         print("Pyinstaller is not found. Please install it.")
         sys.exit(1)
-    command = f"{sys.executable} -m PyInstaller --onefile --windowed --distpath . "
+    command = f"{sys.executable} -m PyInstaller --windowed --onefile --distpath . "
     command += f"--add-data {pyxel_app_file}{os.pathsep}. "
     modules = pyxel.utils.parse_imports(_extract_pyxel_app(pyxel_app_file))["system"]
     print(f"detected modules: {', '.join(modules)}")
