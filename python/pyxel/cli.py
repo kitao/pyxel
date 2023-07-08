@@ -14,8 +14,7 @@ import urllib.request
 import zipfile
 
 import pyxel
-
-from .import_parser import parse_imports
+import pyxel.utils
 
 
 def cli():
@@ -273,9 +272,9 @@ def create_executable_from_pyxel_app(pyxel_app_file):
     if cp.returncode != 0:
         print("Pyinstaller is not found. Please install it.")
         sys.exit(1)
-    command = f"{sys.executable} -m PyInstaller --distpath . --onefile "
+    command = f"{sys.executable} -m PyInstaller --onefile --windowed --distpath . "
     command += f"--add-data {pyxel_app_file}{os.pathsep}. "
-    modules = parse_imports(_extract_pyxel_app(pyxel_app_file))["system"]
+    modules = pyxel.utils.parse_imports(_extract_pyxel_app(pyxel_app_file))["system"]
     print(f"detected modules: {', '.join(modules)}")
     command += "".join([f"--hidden-import {module} " for module in modules])
     command += startup_script_file
