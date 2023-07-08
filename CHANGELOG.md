@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.18
+
+- Added the windowed option to PyInstaller
+
 ## 1.9.17
 
 - Replaced an image in the READMEs
