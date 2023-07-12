@@ -277,10 +277,9 @@ def create_executable_from_pyxel_app(pyxel_app_file):
     modules = pyxel.utils.list_imported_modules(_extract_pyxel_app(pyxel_app_file))[
         "system"
     ]
-    print(f"detected modules: {', '.join(modules)}")
     command += "".join([f"--hidden-import {module} " for module in modules])
     command += startup_script_file
-    print("run PyInstaller")
+    print(command)
     subprocess.run(command, shell=True)
     if os.path.isdir(app2exe_dir):
         shutil.rmtree(app2exe_dir)
