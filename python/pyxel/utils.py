@@ -13,10 +13,10 @@ def _to_module_filename(module_path):
     return None
 
 
-def _parse_imports_recursively(imports, filename, parsed_files):
-    if filename in parsed_files:
+def _list_imported_modules(imports, filename, checked_files):
+    if filename in checked_files:
         return
-    parsed_files.add(filename)
+    checked_files.add(filename)
     dir_path = os.path.dirname(filename)
     with open(filename) as file:
         root = ast.parse(file.read())
@@ -27,7 +27,7 @@ def _parse_imports_recursively(imports, filename, parsed_files):
                 module_filename = _to_module_filename(module_path)
                 if module_filename:
                     imports["local"].add(os.path.relpath(module_filename))
-                    _parse_imports_recursively(imports, module_filename, parsed_files)
+                    _list_imported_modules(imports, module_filename, checked_files)
                 else:
                     imports["system"].add(alias.name)
         elif isinstance(node, ast.ImportFrom):
@@ -40,7 +40,7 @@ def _parse_imports_recursively(imports, filename, parsed_files):
                 module_filename = _to_module_filename(module_path)
                 if module_filename:
                     imports["local"].add(os.path.relpath(module_filename))
-                    _parse_imports_recursively(imports, module_filename, parsed_files)
+                    _list_imported_modules(imports, module_filename, checked_files)
                 elif node.level == 0:
                     imports["system"].add(node.module)
             else:
@@ -53,17 +53,15 @@ def _parse_imports_recursively(imports, filename, parsed_files):
                     module_filename = _to_module_filename(module_path)
                     if module_filename:
                         imports["local"].add(module_filename)
-                        _parse_imports_recursively(
-                            imports, module_filename, parsed_files
-                        )
+                        _list_imported_modules(imports, module_filename, checked_files)
                     else:
                         imports["system"].add(alias.name)
 
 
-def parse_imports(filename):
+def list_imported_modules(filename):
     imports = {"system": set(), "local": set()}
-    parsed_files = set()
-    _parse_imports_recursively(imports, filename, parsed_files)
+    checked_files = set()
+    _list_imported_modules(imports, filename, checked_files)
     return {
         "system": sorted(imports["system"]),
         "local": sorted(imports["local"]),
