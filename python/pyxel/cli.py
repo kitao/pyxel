@@ -274,7 +274,9 @@ def create_executable_from_pyxel_app(pyxel_app_file):
         sys.exit(1)
     command = f"{sys.executable} -m PyInstaller --windowed --onefile --distpath . "
     command += f"--add-data {pyxel_app_file}{os.pathsep}. "
-    modules = pyxel.utils.parse_imports(_extract_pyxel_app(pyxel_app_file))["system"]
+    modules = pyxel.utils.list_imported_modules(_extract_pyxel_app(pyxel_app_file))[
+        "system"
+    ]
     print(f"detected modules: {', '.join(modules)}")
     command += "".join([f"--hidden-import {module} " for module in modules])
     command += startup_script_file
