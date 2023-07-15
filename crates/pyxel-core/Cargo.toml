@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-core"
-version = "1.9.18"
+version = "2.0.0"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 rust-version = "1.63"
@@ -31,21 +31,7 @@ platform-dirs = "0.3"
 rand = "0.8"
 rand_xoshiro = "0.6"
 zip = { version = "0.6", default-features = false, features = ["deflate"] }
+pyxel-platform = { path = "../pyxel-platform", version = "2.0.0" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 chrono = "0.4"
-
-[target.'cfg(any(target_os = "windows", target_os = "macos"))'.dependencies]
-sdl2 = { version = "0.35", default-features = false, features = [
-    "bundled",
-    "static-link",
-    "unsafe_textures",
-] }
-
-[target.'cfg(not(any(target_os = "windows", target_os="macos")))'.dependencies]
-sdl2 = { version = "0.35", default-features = false, features = [
-    "unsafe_textures",
-] }
-
-[patch.crates-io]
-sdl2 = { git = "https://github.com/Rust-SDL2/rust-sdl2.git", branch = "master" }
