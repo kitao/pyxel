@@ -1,0 +1,17 @@
+[package]
+name = "pyxel-platform"
+version = "2.0.0"
+authors = ["takashi kitao <takashi.kitao@gmail.com>"]
+edition = "2021"
+description = "platform abstraction layer for pyxel, a retro game engine for python"
+repository = "https://github.com/kitao/pyxel"
+license = "mit"
+readme = "readme.md"
+categories = ["game-engines", "graphics", "multimedia"]
+keywords = ["game", "gamedev", "python"]
+
+[lib]
+name = "pyxel_platform"
+
+[dependencies]
+pyxel-platform = { path = "../pyxel-plataform", version = "2.0.0" }
