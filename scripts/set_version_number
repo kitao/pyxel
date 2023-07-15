@@ -25,7 +25,15 @@ def set_version_numbers():
         "crates/pyxel-core/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
     )
     replace_file("pyproject.toml", '(version.*)".*"', f'\\1"{version}"')
+    replace_file(
+        "crates/pyxel-platform/Cargo.toml", '(version.*)".*"', f'\\1"{version}"'
+    )
     replace_file("crates/pyxel-core/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
+    replace_file(
+        "crates/pyxel-core/Cargo.toml",
+        '(pyxel-platform", version.*)".*"',
+        f'\\1"{version}"',
+    )
     replace_file(
         "crates/pyxel-extension/Cargo.toml", '(version.*)".*"', f'\\1"{version}"'
     )
