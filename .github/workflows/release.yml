@@ -45,6 +45,9 @@ jobs:
         continue-on-error: true
         run: |
           cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          cd crates/pyxel-platform
+          cargo publish
+          sleep 60
           cd crates/pyxel-core
           cargo publish
           sleep 60
