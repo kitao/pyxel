@@ -66,24 +66,29 @@ endif
 all: build
 
 clean:
-	@cd $(CRATES_DIR)/pyxel-core; cargo clean $(BUILD_OPTS)
-	@cd $(CRATES_DIR)/pyxel-extension; cargo clean $(BUILD_OPTS)
+	@cd $(CRATES_DIR)/pyxel-platform; cargo clean $(BUILD_OPTS)
+	@cd $(CRATES_DIR)/pyxel-engine; cargo clean $(BUILD_OPTS)
+	@cd $(CRATES_DIR)/pyxel-wrapper; cargo clean $(BUILD_OPTS)
 
 distclean:
 	@rm -rf $(DIST_DIR)
-	@rm -rf $(CRATES_DIR)/pyxel-core/target
-	@rm -rf $(CRATES_DIR)/pyxel-extension/target
+	@rm -rf $(CRATES_DIR)/pyxel-platform/target
+	@rm -rf $(CRATES_DIR)/pyxel-engine/target
+	@rm -rf $(CRATES_DIR)/pyxel-wrapper/target
 
 lint:
-	@cd $(CRATES_DIR)/pyxel-core; cargo clippy $(CLIPPY_OPTS)
-	@cd $(CRATES_DIR)/pyxel-core; $(WASM_ENV) cargo clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
-	@cd $(CRATES_DIR)/pyxel-extension; cargo clippy $(CLIPPY_OPTS)
-	@cd $(CRATES_DIR)/pyxel-extension; $(WASM_ENV) cargo clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
+	@cd $(CRATES_DIR)/pyxel-platform; cargo clippy $(CLIPPY_OPTS)
+	@cd $(CRATES_DIR)/pyxel-platform; $(WASM_ENV) cargo clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
+	@cd $(CRATES_DIR)/pyxel-engine; cargo clippy $(CLIPPY_OPTS)
+	@cd $(CRATES_DIR)/pyxel-engine; $(WASM_ENV) cargo clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
+	@cd $(CRATES_DIR)/pyxel-wrapper; cargo clippy $(CLIPPY_OPTS)
+	@cd $(CRATES_DIR)/pyxel-wrapper; $(WASM_ENV) cargo clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
 	@flake8 $(SCRIPTS_DIR) $(PYXEL_DIR)
 
 format:
-	@cd $(CRATES_DIR)/pyxel-core; cargo +nightly fmt -- --emit=files
-	@cd $(CRATES_DIR)/pyxel-extension; cargo +nightly fmt -- --emit=files
+	@cd $(CRATES_DIR)/pyxel-platform; cargo +nightly fmt -- --emit=files
+	@cd $(CRATES_DIR)/pyxel-engine; cargo +nightly fmt -- --emit=files
+	@cd $(CRATES_DIR)/pyxel-wrapper; cargo +nightly fmt -- --emit=files
 	@isort $(ROOT_DIR)
 	@black $(ROOT_DIR)
 
@@ -93,9 +98,9 @@ build: format
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --skip-auditwheel
 
 test: build
-	@cd $(CRATES_DIR)/pyxel-core; cargo test $(BUILD_OPTS)
+	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
 	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
-	@python3 -m unittest discover $(CRATES_DIR)/pyxel-extension/tests
+	@python3 -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 	@pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
 	@pyxel run $(EXAMPLES_DIR)/02_jump_game.py
 	@pyxel run $(EXAMPLES_DIR)/03_draw_api.py
