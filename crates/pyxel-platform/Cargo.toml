@@ -1,17 +1,27 @@
 [package]
 name = "pyxel-platform"
 version = "2.0.0"
-authors = ["takashi kitao <takashi.kitao@gmail.com>"]
+authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
-description = "platform abstraction layer for pyxel, a retro game engine for python"
+description = "Platform abstraction layer for pyxel, a retro game engine for python"
 repository = "https://github.com/kitao/pyxel"
-license = "mit"
-readme = "readme.md"
+license = "MIT"
+readme = "README.md"
 categories = ["game-engines", "graphics", "multimedia"]
 keywords = ["game", "gamedev", "python"]
 
 [lib]
 name = "pyxel_platform"
+path = "src/lib.rs"
 
 [dependencies]
-pyxel-platform = { path = "../pyxel-plataform", version = "2.0.0" }
+glow = "0.12"
+once_cell = "1.18"
+parking_lot = "0.12"
+
+[build-dependencies]
+bindgen = "0.66"
+cmake = "0.1"
+flate2 = "1.0"
+reqwest = { version = "0.11", features = ["blocking", "json"] }
+tar = "0.4"
