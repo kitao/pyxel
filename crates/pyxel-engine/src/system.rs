@@ -1,8 +1,9 @@
+use pyxel_platform as platform;
+
 use crate::event::Event;
 use crate::image::{Image, SharedImage};
 use crate::input::Input;
 use crate::key::{KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
-use crate::platform::Platform;
 use crate::profiler::Profiler;
 use crate::resource::Resource;
 use crate::settings::{BACKGROUND_COLOR, MAX_ELAPSED_MS, NUM_MEASURE_FRAMES};
@@ -45,7 +46,7 @@ impl System {
     }
 
     fn process_frame(&mut self, callback: &mut dyn PyxelCallback) {
-        let tick_count = Platform::instance().tick_count();
+        let tick_count = platform::ticks();
         let elapsed_ms = tick_count as f64 - self.next_update_ms;
         if elapsed_ms < 0.0 {
             return;
@@ -58,7 +59,7 @@ impl System {
             let update_count: u32;
             if elapsed_ms > MAX_ELAPSED_MS as f64 {
                 update_count = 1;
-                self.next_update_ms = Platform::instance().tick_count() as f64 + self.one_frame_ms;
+                self.next_update_ms = platform::ticks() as f64 + self.one_frame_ms;
             } else {
                 update_count = (elapsed_ms / self.one_frame_ms) as u32 + 1;
                 self.next_update_ms += self.one_frame_ms * update_count as f64;
@@ -75,17 +76,17 @@ impl System {
 
     #[cfg(not(target_os = "emscripten"))]
     fn process_frame_for_flip(&mut self) {
-        self.update_profiler.end(Platform::instance().tick_count());
+        self.update_profiler.end(platform::ticks());
         self.draw_frame(None);
         self.frame_count += 1;
         let mut tick_count;
         let mut elapsed_ms;
         loop {
-            tick_count = Platform::instance().tick_count();
+            tick_count = platform::ticks();
             elapsed_ms = tick_count as f64 - self.next_update_ms;
-            let wait_ms = self.next_update_ms - Platform::instance().tick_count() as f64;
+            let wait_ms = self.next_update_ms - platform::ticks() as f64;
             if wait_ms > 0.0 {
-                Platform::instance().sleep((wait_ms / 2.0) as u32);
+                platform::sleep((wait_ms / 2.0) as u32);
             } else {
                 break;
             }
@@ -93,7 +94,7 @@ impl System {
         self.fps_profiler.end(tick_count);
         self.fps_profiler.start(tick_count);
         if elapsed_ms > MAX_ELAPSED_MS as f64 {
-            self.next_update_ms = Platform::instance().tick_count() as f64 + self.one_frame_ms;
+            self.next_update_ms = platform::ticks() as f64 + self.one_frame_ms;
         } else {
             self.next_update_ms += self.one_frame_ms;
         }
@@ -101,8 +102,7 @@ impl System {
     }
 
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
-        self.update_profiler
-            .start(Platform::instance().tick_count());
+        self.update_profiler.start(platform::ticks());
         self.process_events();
         if self.is_paused {
             return;
@@ -110,7 +110,7 @@ impl System {
         self.check_special_input();
         if let Some(callback) = callback {
             callback.update();
-            self.update_profiler.end(Platform::instance().tick_count());
+            self.update_profiler.end(platform::ticks());
         }
     }
 
@@ -119,15 +119,15 @@ impl System {
         while let Some(event) = Platform::instance().poll_event() {
             match event {
                 Event::Quit => {
-                    Platform::instance().quit();
+                    platform::quit();
                 }
                 Event::Shown => {
                     self.is_paused = false;
-                    Platform::instance().resume_audio();
+                    platform::resume_audio();
                 }
                 Event::Hidden => {
                     self.is_paused = true;
-                    Platform::instance().pause_audio();
+                    platform::pause_audio();
                 }
                 _ => {
                     if !self.is_paused {
@@ -165,7 +165,7 @@ impl System {
         if self.is_paused {
             return;
         }
-        self.draw_profiler.start(Platform::instance().tick_count());
+        self.draw_profiler.start(platform::ticks());
         if let Some(callback) = callback {
             callback.draw();
         }
@@ -189,7 +189,7 @@ impl System {
                 self.frame_count,
             );
         }
-        self.draw_profiler.end(Platform::instance().tick_count());
+        self.draw_profiler.end(platform::ticks());
     }
 
     fn draw_perf_monitor(&mut self) {

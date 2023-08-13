@@ -2,13 +2,13 @@ use std::fs::File;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
+use chrono::Local;
 use platform_dirs::UserDirs;
 use zip::write::FileOptions as ZipFileOptions;
 use zip::{ZipArchive, ZipWriter};
 
 use crate::image::Image;
 use crate::music::Music;
-use crate::platform::Platform;
 use crate::screencast::Screencast;
 use crate::settings::{
     NUM_COLORS, NUM_DOUBLED_COLORS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
@@ -60,8 +60,28 @@ impl Resource {
         } else {
             PathBuf::new()
         };
-        let basename = "pyxel-".to_string() + &Platform::local_time_string();
+        let basename = "pyxel-".to_string() + &Self::local_time_string();
         desktop_dir.join(basename).to_str().unwrap().to_string()
+    }
+
+    fn local_time_string() -> String {
+        #[cfg(not(target_os = "emscripten"))]
+        return Local::now().format("%Y%m%d-%H%M%S").to_string();
+
+        #[cfg(target_os = "emscripten")]
+        {
+            let script = "
+                let now = new Date();
+                let year = now.getFullYear();
+                let month = now.getMonth() + 1;
+                let date = now.getDate();
+                let hour = now.getHours();
+                let min = now.getMinutes();
+                let sec = now.getSeconds();
+                `${year}${month}${date}-${hour}${min}${sec}`
+            ";
+            emscripten::run_script_string(script)
+        }
     }
 }
 
