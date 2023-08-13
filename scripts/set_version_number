@@ -22,24 +22,24 @@ def set_version_numbers():
     os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ROOT_DIR))
     version = sys.argv[1]
     replace_file(
-        "crates/pyxel-core/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
+        "crates/pyxel-engine/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
     )
     replace_file("pyproject.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file(
         "crates/pyxel-platform/Cargo.toml", '(version.*)".*"', f'\\1"{version}"'
     )
-    replace_file("crates/pyxel-core/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
+    replace_file("crates/pyxel-engine/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file(
-        "crates/pyxel-core/Cargo.toml",
+        "crates/pyxel-engine/Cargo.toml",
         '(pyxel-platform", version.*)".*"',
         f'\\1"{version}"',
     )
     replace_file(
-        "crates/pyxel-extension/Cargo.toml", '(version.*)".*"', f'\\1"{version}"'
+        "crates/pyxel-wrapper/Cargo.toml", '(version.*)".*"', f'\\1"{version}"'
     )
     replace_file(
-        "crates/pyxel-extension/Cargo.toml",
-        '(pyxel-core", version.*)".*"',
+        "crates/pyxel-wrapper/Cargo.toml",
+        '(pyxel-engine", version.*)".*"',
         f'\\1"{version}"',
     )
 

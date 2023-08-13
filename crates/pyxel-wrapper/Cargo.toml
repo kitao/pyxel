@@ -11,12 +11,12 @@ categories = ["game-engines", "graphics", "multimedia"]
 keywords = ["game", "gamedev", "python"]
 
 [lib]
-name = "pyxel_extension"
+name = "pyxel_wrapper"
 crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.19", features = ["abi3-py37", "extension-module"] }
-pyxel-core = { path = "../pyxel-core", version = "2.0.0" }
+pyxel-core = { path = "../pyxel-engine", version = "2.0.0" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 sysinfo = "0.29"

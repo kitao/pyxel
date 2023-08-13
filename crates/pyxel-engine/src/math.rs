@@ -1,10 +1,9 @@
 use std::f64::consts;
 
 use noise::{NoiseFn, Perlin, Seedable};
+use pyxel_platform as platform;
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256StarStar;
-
-use crate::platform::Platform;
 
 pub struct Math {
     rng: Xoshiro256StarStar,
@@ -15,7 +14,7 @@ unsafe_singleton!(Math);
 
 impl Math {
     pub fn init() {
-        let seed = Platform::instance().tick_count();
+        let seed = platform::ticks();
         let rng = Xoshiro256StarStar::seed_from_u64(seed as u64);
         let perlin = Perlin::new().set_seed(seed);
         Self::set_instance(Self { rng, perlin });
