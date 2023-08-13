@@ -48,10 +48,10 @@ jobs:
           cd crates/pyxel-platform
           cargo publish
           sleep 60
-          cd crates/pyxel-core
+          cd crates/pyxel-engine
           cargo publish
           sleep 60
-          cd ../pyxel-extension
+          cd ../pyxel-wrapper
           cargo publish
 
       - name: Install Python
