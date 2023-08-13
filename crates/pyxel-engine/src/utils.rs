@@ -1,6 +1,6 @@
 macro_rules! unsafe_singleton {
     ($type: ty) => {
-        static mut INSTANCE: *mut $type = 0 as *mut $type;
+        static mut INSTANCE: *mut $type = std::ptr::null_mut();
 
         impl $type {
             pub fn set_instance(instance: Self) {
@@ -11,7 +11,7 @@ macro_rules! unsafe_singleton {
 
             pub fn instance() -> &'static mut Self {
                 unsafe {
-                    assert!(INSTANCE != 0 as *mut Self, "Pyxel is not initialized");
+                    assert!(!INSTANCE.is_null(), "Pyxel is not initialized");
                     &mut *INSTANCE
                 }
             }

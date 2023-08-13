@@ -28,8 +28,8 @@ urls = { homepage = "https://github.com/kitao/pyxel" }
 pyxel = "pyxel.cli:cli"
 
 [tool.maturin]
-manifest-path = "crates/pyxel-extension/Cargo.toml"
-module-name = "pyxel.pyxel_extension"
+manifest-path = "crates/pyxel-wrapper/Cargo.toml"
+module-name = "pyxel.pyxel_wrapper"
 python-source = "python"
 
 [tool.maturin.target."x86_64-apple-darwin"]
