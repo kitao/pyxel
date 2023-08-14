@@ -1,9 +1,10 @@
 {
-    "files.exclude": {
-        "server/pyodide/*": true,
-    },
-    "rust-analyzer.linkedProjects": [
-        "crates/pyxel-core/Cargo.toml",
-        "crates/pyxel-extension/Cargo.toml",
-    ],
+  "files.exclude": {
+    "server/pyodide/*": true
+  },
+  "rust-analyzer.linkedProjects": [
+    "crates/pyxel-platform/Cargo.toml",
+    "crates/pyxel-engine/Cargo.toml",
+    "crates/pyxel-wrapper/Cargo.toml"
+  ]
 }
