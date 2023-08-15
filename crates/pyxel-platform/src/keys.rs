@@ -380,17 +380,3 @@ pub const GAMEPAD4_BUTTON_DPAD_UP: Key = GAMEPAD4_KEY_START_INDEX + 17;
 pub const GAMEPAD4_BUTTON_DPAD_DOWN: Key = GAMEPAD4_KEY_START_INDEX + 18;
 pub const GAMEPAD4_BUTTON_DPAD_LEFT: Key = GAMEPAD4_KEY_START_INDEX + 19;
 pub const GAMEPAD4_BUTTON_DPAD_RIGHT: Key = GAMEPAD4_KEY_START_INDEX + 20;
-
-pub fn is_keyboard_key(key: Key) -> bool {
-    key < MOUSE_KEY_START_INDEX
-}
-
-pub const fn to_integrated_key(key: Key) -> Option<Key> {
-    match key {
-        KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
-        KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),
-        KEY_LALT | KEY_RALT => Some(KEY_ALT),
-        KEY_LGUI | KEY_RGUI => Some(KEY_GUI),
-        _ => None,
-    }
-}
