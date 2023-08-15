@@ -3,6 +3,7 @@ use crate::sdl2_sys::*;
 pub type Key = u32;
 pub type KeyValue = i32;
 
+// Unknown
 pub const KEY_UNKNOWN: Key = SDLK_UNKNOWN;
 
 // Keyboard
