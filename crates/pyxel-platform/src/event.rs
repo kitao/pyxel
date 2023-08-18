@@ -4,7 +4,7 @@ use std::str;
 
 use crate::keys::*;
 use crate::sdl2_sys::*;
-use crate::window::window;
+use crate::window::WINDOW;
 
 #[derive(Clone)]
 pub enum Event {
@@ -243,7 +243,7 @@ pub fn poll_events() -> Vec<Event> {
             }
             SDL_DROPFILE => {
                 unsafe {
-                    SDL_RaiseWindow(window());
+                    SDL_RaiseWindow(WINDOW);
                 }
                 let filename = unsafe { CStr::from_ptr(sdl_event.drop.file) };
                 let filename = filename.to_string_lossy().into_owned();
