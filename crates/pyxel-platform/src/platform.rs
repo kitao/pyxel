@@ -1,4 +1,3 @@
-use crate::event::*;
 use crate::sdl2_sys::*;
 
 pub fn init() {
