@@ -11,5 +11,6 @@ pub use crate::platform::{
     set_mouse_visible, sleep,
 };
 pub use crate::window::{
-    create_window, gl, is_fullscreen, set_fullscreen, set_window_icon, set_window_title,
+    create_window, gl, is_fullscreen, set_fullscreen, set_window_icon, set_window_pos,
+    set_window_size, set_window_title, window_pos, window_size,
 };
