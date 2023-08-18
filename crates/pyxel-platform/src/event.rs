@@ -3,8 +3,8 @@ use std::mem;
 use std::str;
 
 use crate::keys::*;
-use crate::platform::window;
 use crate::sdl2_sys::*;
+use crate::window::window;
 
 #[derive(Clone)]
 pub enum Event {
