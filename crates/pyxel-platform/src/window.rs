@@ -6,22 +6,12 @@ use glow::Context;
 
 use crate::sdl2_sys::*;
 
-static mut WINDOW: *mut SDL_Window = ptr::null_mut();
+pub(crate) static mut WINDOW: *mut SDL_Window = ptr::null_mut();
 static mut GL: *mut Context = ptr::null_mut();
 //static mut RENDERER: *mut SDL_Renderer = ptr::null_mut();
 
-pub(crate) fn window() -> &'static mut SDL_Window {
-    unsafe {
-        assert!(!WINDOW.is_null(), "Pyxel is not initialized");
-        &mut *WINDOW
-    }
-}
-
 pub fn gl() -> &'static mut Context {
-    unsafe {
-        assert!(!GL.is_null(), "Pyxel is not initialized");
-        &mut *GL
-    }
+    unsafe { &mut *GL }
 }
 
 pub fn create_window(title: &str, width: u32, height: u32) {
@@ -141,11 +131,11 @@ pub fn create_window(title: &str, width: u32, height: u32) {
 pub fn set_window_title(title: &str) {
     let title = CString::new(title).unwrap();
     unsafe {
-        SDL_SetWindowTitle(window(), title.as_ptr());
+        SDL_SetWindowTitle(WINDOW, title.as_ptr());
     }
 }
 
-pub fn set_window_icon(image: &[Vec<u32>]) {
+pub fn set_window_icon(width: u32, height: u32, pixels: &[u32]) {
     /*
     let mut sdl_surface =
         SdlSurface::new(width * scale, height * scale, SdlPixelFormat::RGBA32).unwrap();
@@ -167,8 +157,38 @@ pub fn set_window_icon(image: &[Vec<u32>]) {
     */
 }
 
+pub fn window_pos() -> (i32, i32) {
+    let mut x: i32 = 0;
+    let mut y: i32 = 0;
+    unsafe {
+        SDL_GetWindowPosition(WINDOW, &mut x as *mut i32, &mut y as *mut i32);
+    }
+    (x, y)
+}
+
+pub fn set_window_pos(x: i32, y: i32) {
+    unsafe {
+        SDL_SetWindowPosition(WINDOW, x, y);
+    }
+}
+
+pub fn window_size() -> (u32, u32) {
+    let mut width: i32 = 0;
+    let mut height: i32 = 0;
+    unsafe {
+        SDL_GetWindowSize(WINDOW, &mut width as *mut i32, &mut height as *mut i32);
+    }
+    (width as u32, height as u32)
+}
+
+pub fn set_window_size(width: u32, height: u32) {
+    unsafe {
+        SDL_SetWindowSize(WINDOW, width as i32, height as i32);
+    }
+}
+
 pub fn is_fullscreen() -> bool {
-    (unsafe { SDL_GetWindowFlags(window()) } & SDL_WINDOW_FULLSCREEN) != 0
+    (unsafe { SDL_GetWindowFlags(WINDOW) } & SDL_WINDOW_FULLSCREEN) != 0
 }
 
 pub fn set_fullscreen(fullscreen: bool) {
@@ -178,6 +198,6 @@ pub fn set_fullscreen(fullscreen: bool) {
         0
     };
     unsafe {
-        SDL_SetWindowFullscreen(window(), fullscreen);
+        SDL_SetWindowFullscreen(WINDOW, fullscreen);
     }
 }
