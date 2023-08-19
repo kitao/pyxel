@@ -1,5 +1,5 @@
 use pyo3::prelude::*;
-use pyxel::{SharedTilemap as PyxelSharedTilemap, Tile, Tilemap as PyxelTilemap};
+use pyxel_engine::{SharedTilemap as PyxelSharedTilemap, Tile, Tilemap as PyxelTilemap};
 
 use crate::image_wrapper::{wrap_pyxel_image, Image};
 
@@ -20,7 +20,7 @@ impl Tilemap {
         let img = type_switch! {
             img,
             u32, {
-                pyxel::image(img)
+                pyxel_engine::image(img)
             },
             Image, {
                 img.pyxel_image
@@ -51,12 +51,12 @@ impl Tilemap {
 
     #[getter]
     pub fn refimg(&self) -> Option<u32> {
-        pyxel::image_no(self.pyxel_tilemap.lock().image.clone())
+        pyxel_engine::image_no(self.pyxel_tilemap.lock().image.clone())
     }
 
     #[setter]
     pub fn set_refimg(&self, img: u32) {
-        self.pyxel_tilemap.lock().image = pyxel::image(img);
+        self.pyxel_tilemap.lock().image = pyxel_engine::image(img);
     }
 
     pub fn data_ptr(&self, py: Python) -> PyObject {
@@ -169,7 +169,7 @@ impl Tilemap {
         type_switch! {
             tm,
             u32, {
-                self.pyxel_tilemap.lock().blt(x, y, pyxel::tilemap(tm), u, v, w, h, tilekey);
+                self.pyxel_tilemap.lock().blt(x, y, pyxel_engine::tilemap(tm), u, v, w, h, tilekey);
             },
             Tilemap, {
                 self.pyxel_tilemap.lock().blt(x, y, tm.pyxel_tilemap, u, v, w, h, tilekey);

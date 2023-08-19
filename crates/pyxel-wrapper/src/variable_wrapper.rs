@@ -2,7 +2,7 @@ use std::ptr;
 
 use pyo3::exceptions::PyAttributeError;
 use pyo3::prelude::*;
-use pyxel::Rgb8;
+use pyxel_engine::Rgb8;
 
 use crate::image_wrapper::wrap_pyxel_image;
 
@@ -11,11 +11,11 @@ struct Colors;
 
 impl Colors {
     fn list(&self) -> &[Rgb8] {
-        unsafe { &*ptr::addr_of!(*pyxel::colors().lock()) }
+        unsafe { &*ptr::addr_of!(*pyxel_engine::colors().lock()) }
     }
 
     fn list_mut(&mut self) -> &mut [Rgb8] {
-        unsafe { &mut *ptr::addr_of_mut!(*pyxel::colors().lock()) }
+        unsafe { &mut *ptr::addr_of_mut!(*pyxel_engine::colors().lock()) }
     }
 }
 
@@ -47,24 +47,23 @@ impl Colors {
 fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
     let value = match name {
         // System
-        "width" => pyxel::width().to_object(py),
-        "height" => pyxel::height().to_object(py),
-        "frame_count" => pyxel::frame_count().to_object(py),
-        "is_fullscreen" => pyxel::is_fullscreen().to_object(py),
+        "width" => pyxel_engine::width().to_object(py),
+        "height" => pyxel_engine::height().to_object(py),
+        "frame_count" => pyxel_engine::frame_count().to_object(py),
+        "is_fullscreen" => pyxel_engine::is_fullscreen().to_object(py),
 
         // Input
-        "mouse_x" => pyxel::mouse_x().to_object(py),
-        "mouse_y" => pyxel::mouse_y().to_object(py),
-        "mouse_wheel" => pyxel::mouse_wheel().to_object(py),
-        "input_keys" => pyxel::input_keys().to_object(py),
-        "input_text" => pyxel::input_text().to_object(py),
-        "drop_files" => pyxel::drop_files().to_object(py),
+        "mouse_x" => pyxel_engine::mouse_x().to_object(py),
+        "mouse_y" => pyxel_engine::mouse_y().to_object(py),
+        "mouse_wheel" => pyxel_engine::mouse_wheel().to_object(py),
+        "input_text" => pyxel_engine::input_text().to_object(py),
+        "drop_files" => pyxel_engine::drop_files().to_object(py),
 
         // Graphics
         "colors" => Py::new(py, Colors)?.into_py(py),
-        "screen" => wrap_pyxel_image(pyxel::screen()).into_py(py),
-        "cursor" => wrap_pyxel_image(pyxel::cursor()).into_py(py),
-        "font" => wrap_pyxel_image(pyxel::font()).into_py(py),
+        "screen" => wrap_pyxel_image(pyxel_engine::screen()).into_py(py),
+        "cursor" => wrap_pyxel_image(pyxel_engine::cursor()).into_py(py),
+        "font" => wrap_pyxel_image(pyxel_engine::font()).into_py(py),
 
         // Others
         _ => {
