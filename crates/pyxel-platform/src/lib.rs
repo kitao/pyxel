@@ -1,9 +1,8 @@
 mod event;
+pub mod keys;
 mod platform;
 mod sdl2_sys;
 mod window;
-
-pub mod keys;
 
 pub use crate::event::{poll_events, Event};
 pub use crate::platform::{

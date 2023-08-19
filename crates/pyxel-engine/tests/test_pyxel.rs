@@ -1,4 +1,4 @@
-use pyxel::PyxelCallback;
+use pyxel_engine::{self as pyxel, PyxelCallback};
 
 pub struct App {
     x: f64,

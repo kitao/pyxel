@@ -6,22 +6,22 @@ use crate::sound_wrapper::{wrap_pyxel_sound, Sound};
 
 #[pyfunction]
 fn channel(ch: u32) -> Channel {
-    wrap_pyxel_channel(pyxel::channel(ch))
+    wrap_pyxel_channel(pyxel_engine::channel(ch))
 }
 
 #[pyfunction]
 fn sound(snd: u32) -> Sound {
-    wrap_pyxel_sound(pyxel::sound(snd))
+    wrap_pyxel_sound(pyxel_engine::sound(snd))
 }
 
 #[pyfunction]
 fn music(msc: u32) -> Music {
-    wrap_pyxel_music(pyxel::music(msc))
+    wrap_pyxel_music(pyxel_engine::music(msc))
 }
 
 #[pyfunction]
 fn play_pos(ch: u32) -> Option<(u32, u32)> {
-    pyxel::play_pos(ch)
+    pyxel_engine::play_pos(ch)
 }
 
 #[pyfunction]
@@ -30,18 +30,18 @@ fn play(ch: u32, snd: &PyAny, tick: Option<u32>, r#loop: Option<bool>) -> PyResu
     type_switch! {
         snd,
         u32, {
-            pyxel::play1(ch, snd, tick, r#loop.unwrap_or(false));
+            pyxel_engine::play1(ch, snd, tick, r#loop.unwrap_or(false));
         },
         Vec<u32>, {
-            pyxel::play(ch, &snd, tick, r#loop.unwrap_or(false));
+            pyxel_engine::play(ch, &snd, tick, r#loop.unwrap_or(false));
         },
         Sound, {
-            pyxel::channel(ch).lock().play1(snd.pyxel_sound, tick, r#loop.unwrap_or(false));
+            pyxel_engine::channel(ch).lock().play1(snd.pyxel_sound, tick, r#loop.unwrap_or(false));
         },
         Vec<Sound>, {
             let sounds = snd.iter().map(|snd| snd.pyxel_sound.clone()).collect();
 
-            pyxel::channel(ch).lock().play(sounds, tick, r#loop.unwrap_or(false));
+            pyxel_engine::channel(ch).lock().play(sounds, tick, r#loop.unwrap_or(false));
         }
     }
     Ok(())
@@ -50,12 +50,12 @@ fn play(ch: u32, snd: &PyAny, tick: Option<u32>, r#loop: Option<bool>) -> PyResu
 #[pyfunction]
 #[pyo3(text_signature = "(msc, *, tick, loop)")]
 fn playm(msc: u32, tick: Option<u32>, r#loop: Option<bool>) {
-    pyxel::playm(msc, tick, r#loop.unwrap_or(false));
+    pyxel_engine::playm(msc, tick, r#loop.unwrap_or(false));
 }
 
 #[pyfunction]
 fn stop(ch: Option<u32>) {
-    ch.map_or_else(pyxel::stop0, pyxel::stop);
+    ch.map_or_else(pyxel_engine::stop0, pyxel_engine::stop);
 }
 
 pub fn add_audio_functions(m: &PyModule) -> PyResult<()> {

@@ -2,7 +2,7 @@ use std::ptr;
 
 use pyo3::exceptions::PyIndexError;
 use pyo3::prelude::*;
-use pyxel::{Music as PyxelMusic, SharedMusic as PyxelSharedMusic};
+use pyxel_engine::{Music as PyxelMusic, SharedMusic as PyxelSharedMusic};
 
 #[pyclass]
 #[derive(Clone)]

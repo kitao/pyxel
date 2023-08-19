@@ -2,64 +2,64 @@ use pyo3::prelude::*;
 
 #[pyfunction]
 fn ceil(x: f64) -> i32 {
-    pyxel::ceil(x)
+    pyxel_engine::ceil(x)
 }
 
 #[pyfunction]
 fn floor(x: f64) -> i32 {
-    pyxel::floor(x)
+    pyxel_engine::floor(x)
 }
 
 #[pyfunction]
 fn sgn(x: f64) -> f64 {
-    pyxel::sgn(x)
+    pyxel_engine::sgn(x)
 }
 
 #[pyfunction]
 fn sqrt(x: f64) -> f64 {
-    pyxel::sqrt(x)
+    pyxel_engine::sqrt(x)
 }
 
 #[pyfunction]
 fn sin(deg: f64) -> f64 {
-    pyxel::sin(deg)
+    pyxel_engine::sin(deg)
 }
 
 #[pyfunction]
 fn cos(deg: f64) -> f64 {
-    pyxel::cos(deg)
+    pyxel_engine::cos(deg)
 }
 
 #[pyfunction]
 fn atan2(y: f64, x: f64) -> f64 {
-    pyxel::atan2(y, x)
+    pyxel_engine::atan2(y, x)
 }
 
 #[pyfunction]
 fn rseed(seed: u32) {
-    pyxel::rseed(seed);
+    pyxel_engine::rseed(seed);
 }
 
 #[pyfunction]
 fn rndi(a: i32, b: i32) -> i32 {
-    pyxel::rndi(a, b)
+    pyxel_engine::rndi(a, b)
 }
 
 #[pyfunction]
 fn rndf(a: f64, b: f64) -> f64 {
-    pyxel::rndf(a, b)
+    pyxel_engine::rndf(a, b)
 }
 
 #[pyfunction]
 fn nseed(seed: u32) {
-    pyxel::nseed(seed);
+    pyxel_engine::nseed(seed);
 }
 
 #[pyfunction]
 fn noise(x: f64, y: Option<f64>, z: Option<f64>) -> f64 {
     let y = y.unwrap_or(0.0);
     let z = z.unwrap_or(0.0);
-    pyxel::noise(x, y, z)
+    pyxel_engine::noise(x, y, z)
 }
 
 pub fn add_math_functions(m: &PyModule) -> PyResult<()> {
