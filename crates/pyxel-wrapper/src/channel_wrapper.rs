@@ -1,5 +1,5 @@
 use pyo3::prelude::*;
-use pyxel::{SharedChannel as PyxelSharedChannel, Volume};
+use pyxel_engine::{SharedChannel as PyxelSharedChannel, Volume};
 
 use crate::sound_wrapper::Sound;
 
@@ -35,10 +35,10 @@ impl Channel {
         type_switch! {
             snd,
             u32, {
-                self.pyxel_channel.lock().play1(pyxel::sound(snd), tick, loop_);
+                self.pyxel_channel.lock().play1(pyxel_engine::sound(snd), tick, loop_);
             },
             Vec<u32>, {
-                let snd = snd.iter().map(|sound_no| pyxel::sound(*sound_no)).collect();
+                let snd = snd.iter().map(|sound_no| pyxel_engine::sound(*sound_no)).collect();
 
                 self.pyxel_channel.lock().play(snd, tick, loop_);
             },

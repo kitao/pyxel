@@ -13,7 +13,7 @@ fn load(
     let tilemap = tilemap.unwrap_or(true);
     let sound = sound.unwrap_or(true);
     let music = music.unwrap_or(true);
-    pyxel::load(filename, image, tilemap, sound, music);
+    pyxel_engine::load(filename, image, tilemap, sound, music);
 }
 
 #[pyfunction]
@@ -29,22 +29,22 @@ fn save(
     let tilemap = tilemap.unwrap_or(true);
     let sound = sound.unwrap_or(true);
     let music = music.unwrap_or(true);
-    pyxel::save(filename, image, tilemap, sound, music);
+    pyxel_engine::save(filename, image, tilemap, sound, music);
 }
 
 #[pyfunction]
 fn screenshot(scale: Option<u32>) {
-    pyxel::screenshot(scale);
+    pyxel_engine::screenshot(scale);
 }
 
 #[pyfunction]
 fn reset_capture() {
-    pyxel::reset_capture();
+    pyxel_engine::reset_capture();
 }
 
 #[pyfunction]
 fn screencast(scale: Option<u32>) {
-    pyxel::screencast(scale);
+    pyxel_engine::screencast(scale);
 }
 
 pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
