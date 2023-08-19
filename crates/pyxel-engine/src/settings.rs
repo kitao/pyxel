@@ -1,5 +1,4 @@
-use crate::key::KEY_ESCAPE;
-use crate::types::{Color, Effect, Key, Note, Rgb8, Speed, Tone, Volume};
+use crate::{Color, Effect, Key, Note, Rgb8, Speed, Tone, Volume, KEY_ESCAPE};
 
 // System
 pub const VERSION: &str = "2.0.0";
