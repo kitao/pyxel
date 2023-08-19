@@ -1,12 +1,15 @@
 use std::cmp::max;
 
 use crate::blipbuf::BlipBuf;
-use crate::oscillator::Oscillator;
+use crate::oscillator::{Effect, Oscillator, Tone};
 use crate::settings::{
     EFFECT_NONE, INITIAL_GAIN, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE,
 };
 use crate::sound::{SharedSound, Sound};
-use crate::types::{Effect, Note, Tone, Volume};
+
+pub type Note = i8;
+pub type Volume = u8;
+pub type Speed = u32;
 
 pub struct Channel {
     oscillator: Oscillator,

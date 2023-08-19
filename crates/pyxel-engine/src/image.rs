@@ -14,8 +14,10 @@ use crate::settings::{
     RESOURCE_ARCHIVE_DIRNAME, TILE_SIZE,
 };
 use crate::tilemap::SharedTilemap;
-use crate::types::Color;
 use crate::utils::{add_file_extension, as_i32, as_u32, parse_hex_string, simplify_string};
+
+pub type Rgb8 = u32;
+pub type Color = u8;
 
 impl ToIndex for Color {
     fn to_index(&self) -> usize {

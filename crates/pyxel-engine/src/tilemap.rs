@@ -4,8 +4,9 @@ use crate::canvas::{Canvas, ToIndex};
 use crate::image::SharedImage;
 use crate::resource::ResourceItem;
 use crate::settings::{RESOURCE_ARCHIVE_DIRNAME, TILEMAP_SIZE};
-use crate::types::Tile;
 use crate::utils::{as_u32, parse_hex_string, simplify_string};
+
+pub type Tile = (u8, u8);
 
 impl ToIndex for Tile {
     fn to_index(&self) -> usize {
