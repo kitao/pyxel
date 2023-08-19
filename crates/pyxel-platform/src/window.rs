@@ -14,7 +14,7 @@ pub fn gl() -> &'static mut Context {
     unsafe { &mut *GL }
 }
 
-pub fn create_window(title: &str, width: u32, height: u32) {
+pub(crate) fn init_window(title: &str, width: u32, height: u32) {
     unsafe {
         let title = CString::new(title).unwrap();
         WINDOW = SDL_CreateWindow(
@@ -41,23 +41,6 @@ pub fn create_window(title: &str, width: u32, height: u32) {
     }
 
     /*
-    let sdl_context = sdl2::init().unwrap();
-    let sdl_event_pump = sdl_context.event_pump().unwrap();
-    let sdl_timer = sdl_context.timer().unwrap();
-    let sdl_video = sdl_context.video().unwrap();
-    let sdl_display_mode = sdl_video.desktop_display_mode(0).unwrap();
-    let display_scale = u32::max(
-        match display_scale {
-            DisplayScale::Scale(scale) => scale,
-            DisplayScale::Ratio(ratio) => {
-                (f64::min(
-                    sdl_display_mode.w as f64 / screen_width as f64,
-                    sdl_display_mode.h as f64 / screen_height as f64,
-                ) * ratio) as u32
-            }
-        },
-        1,
-    );
     let watch_info_file = Self::watch_info_file();
     let sdl_window = Self::load_watch_info(&watch_info_file).map_or_else(
         || {
@@ -126,6 +109,12 @@ pub fn create_window(title: &str, width: u32, height: u32) {
     });
     Self::instance().save_watch_info();
     */
+}
+
+pub fn swap_window() {
+    unsafe {
+        SDL_GL_SwapWindow(WINDOW);
+    }
 }
 
 pub fn set_window_title(title: &str) {
@@ -200,4 +189,18 @@ pub fn set_fullscreen(fullscreen: bool) {
     unsafe {
         SDL_SetWindowFullscreen(WINDOW, fullscreen);
     }
+}
+
+pub fn display_size() -> (u32, u32) {
+    let mut current = SDL_DisplayMode {
+        format: 0,
+        w: 0,
+        h: 0,
+        refresh_rate: 0,
+        driverdata: std::ptr::null_mut(),
+    };
+    if unsafe { SDL_GetCurrentDisplayMode(0, &mut current as *mut SDL_DisplayMode) } != 0 {
+        panic!("Failed to get display size");
+    }
+    (current.w as u32, current.h as u32)
 }
