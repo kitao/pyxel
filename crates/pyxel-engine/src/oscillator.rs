@@ -5,7 +5,9 @@ use crate::settings::{
     TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, TRIANGLE_VOLUME_FACTOR, VIBRATO_DEPTH,
     VIBRATO_FREQUENCY,
 };
-use crate::types::{Effect, Tone};
+
+pub type Tone = u8;
+pub type Effect = u8;
 
 const VIBRATO_PERIOD: u32 =
     (CLOCK_RATE as f64 / VIBRATO_FREQUENCY / OSCILLATOR_RESOLUTION as f64) as u32;

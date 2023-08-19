@@ -1,11 +1,12 @@
 use std::fmt::Write as _;
 
+use crate::channel::{Note, Speed, Volume};
+use crate::oscillator::{Effect, Tone};
 use crate::resource::ResourceItem;
 use crate::settings::{
     EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED,
     RESOURCE_ARCHIVE_DIRNAME, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
 };
-use crate::types::{Effect, Note, Speed, Tone, Volume};
 use crate::utils::{parse_hex_string, simplify_string};
 
 #[derive(Clone)]

@@ -1,4 +1,8 @@
-use crate::{Color, Effect, Key, Note, Rgb8, Speed, Tone, Volume, KEY_ESCAPE};
+use pyxel_platform::keys::{Key, KEY_ESCAPE};
+
+use crate::channel::{Note, Speed, Volume};
+use crate::image::{Color, Rgb8};
+use crate::oscillator::{Effect, Tone};
 
 // System
 pub const VERSION: &str = "2.0.0";
