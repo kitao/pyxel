@@ -11,10 +11,12 @@ use crate::image::Image;
 use crate::music::Music;
 use crate::screencast::Screencast;
 use crate::settings::{
-    NUM_COLORS, NUM_DOUBLED_COLORS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
-    PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_DIRNAME, VERSION,
+    DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, NUM_COLORS, NUM_DOUBLED_COLORS, NUM_IMAGES,
+    NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS, PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_DIRNAME,
+    VERSION,
 };
 use crate::sound::Sound;
+use crate::system::System;
 use crate::tilemap::Tilemap;
 use crate::utils::parse_version_string;
 use crate::{Color, Rgb8};
@@ -35,10 +37,12 @@ pub struct Resource {
 unsafe_singleton!(Resource);
 
 impl Resource {
-    pub fn init(fps: u32, capture_scale: u32, capture_sec: u32) {
+    pub fn init(capture_scale: Option<u32>, capture_sec: Option<u32>) {
+        let capture_scale = capture_scale.unwrap_or(DEFAULT_CAPTURE_SCALE);
+        let capture_sec = capture_sec.unwrap_or(DEFAULT_CAPTURE_SEC);
         Self::set_instance(Self {
             capture_scale: u32::max(capture_scale, 1),
-            screencast: Screencast::new(fps, capture_sec),
+            screencast: Screencast::new(System::instance().fps(), capture_sec),
         });
     }
 

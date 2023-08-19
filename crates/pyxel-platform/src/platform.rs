@@ -1,13 +1,14 @@
 use std::process::exit;
 
 use crate::sdl2_sys::*;
+use crate::window::init_window;
 
-pub fn init() {
-    unsafe {
-        if SDL_Init(SDL_INIT_VIDEO) < 0 {
-            panic!("Failed to initialize SDL2");
-        }
+pub fn init<'a, F: FnOnce() -> (&'a str, u32, u32)>(window_params: F) {
+    if unsafe { SDL_Init(SDL_INIT_VIDEO) } < 0 {
+        panic!("Failed to initialize SDL2");
     }
+    let (title, width, height) = window_params();
+    init_window(title, width, height);
 }
 
 pub fn run<F: FnMut()>(mut main_loop: F) {
@@ -27,8 +28,6 @@ pub fn run<F: FnMut()>(mut main_loop: F) {
 }
 
 pub fn quit() {
-    set_audio_enabled(false);
-
     unsafe {
         SDL_Quit();
     }
@@ -48,20 +47,6 @@ pub fn sleep(ms: u32) {
     unsafe {
         SDL_Delay(ms);
     }
-}
-
-pub fn display_size() -> (u32, u32) {
-    let mut current = SDL_DisplayMode {
-        format: 0,
-        w: 0,
-        h: 0,
-        refresh_rate: 0,
-        driverdata: std::ptr::null_mut(),
-    };
-    if unsafe { SDL_GetCurrentDisplayMode(0, &mut current as *mut SDL_DisplayMode) } != 0 {
-        panic!("Failed to get display size");
-    }
-    (current.w as u32, current.h as u32)
 }
 
 pub fn set_audio_enabled(enabled: bool) {
@@ -110,24 +95,7 @@ use sdl2::audio::{
 use sdl2::controller::{
     Axis as SdlAxis, Button as SdlButton, GameController as SdlGameControllerState,
 };
-use sdl2::event::{Event as SdlEvent, WindowEvent as SdlWindowEvent};
-use sdl2::hint as sdl_hint;
-use sdl2::mouse::MouseButton as SdlMouseButton;
-use sdl2::pixels::{Color as SdlColor, PixelFormatEnum as SdlPixelFormat};
-use sdl2::rect::Rect as SdlRect;
-use sdl2::render::{Texture as SdlTexture, WindowCanvas as SdlCanvas};
-use sdl2::surface::Surface as SdlSurface;
-use sdl2::AudioSubsystem as SdlAudio;
-use sdl2::GameControllerSubsystem as SdlGameController;
-
-use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
 use crate::settings::WATCH_INFO_FILE_ENVVAR;
-use crate::types::{Color, Rgb8};
-
-pub enum DisplayScale {
-    Scale(u32),
-    Ratio(f64),
-}
 
 #[derive(Default, PartialEq)]
 struct WindowState {
@@ -154,17 +122,11 @@ impl SdlAudioCallback for AudioContextHolder {
 }
 
 pub struct Platform {
-    sdl_context: SdlContext,
-    sdl_event_pump: SdlEventPump,
-    sdl_timer: SdlTimer,
-    sdl_canvas: SdlCanvas,
     sdl_texture: SdlTexture,
     sdl_game_controller: Option<SdlGameController>,
     sdl_game_controller_states: Vec<SdlGameControllerState>,
     sdl_audio: Option<SdlAudio>,
     sdl_audio_device: Option<SdlAudioDevice<AudioContextHolder>>,
-    screen_width: u32,
-    screen_height: u32,
     mouse_x: i32,
     mouse_y: i32,
     watch_info_file: Option<String>,
@@ -173,136 +135,7 @@ pub struct Platform {
     virtual_gamepad_states: [bool; 8],
 }
 
-unsafe_singleton!(Platform);
-
 impl Platform {
-    pub fn init(title: &str, screen_width: u32, screen_height: u32, display_scale: DisplayScale) {
-        let sdl_context = sdl2::init().unwrap();
-        let sdl_event_pump = sdl_context.event_pump().unwrap();
-        let sdl_timer = sdl_context.timer().unwrap();
-        let sdl_video = sdl_context.video().unwrap();
-        let sdl_display_mode = sdl_video.desktop_display_mode(0).unwrap();
-        let display_scale = u32::max(
-            match display_scale {
-                DisplayScale::Scale(scale) => scale,
-                DisplayScale::Ratio(ratio) => {
-                    (f64::min(
-                        sdl_display_mode.w as f64 / screen_width as f64,
-                        sdl_display_mode.h as f64 / screen_height as f64,
-                    ) * ratio) as u32
-                }
-            },
-            1,
-        );
-        let watch_info_file = Self::watch_info_file();
-        let sdl_window = Self::load_watch_info(&watch_info_file).map_or_else(
-            || {
-                sdl_video
-                    .window(
-                        title,
-                        screen_width * display_scale,
-                        screen_height * display_scale,
-                    )
-                    .position_centered()
-                    .resizable()
-                    .build()
-                    .unwrap()
-            },
-            |window_state| {
-                sdl_video
-                    .window(title, window_state.width, window_state.height)
-                    .position(window_state.x, window_state.y)
-                    .resizable()
-                    .build()
-                    .unwrap()
-            },
-        );
-        let mut sdl_canvas = sdl_window.into_canvas().present_vsync().build().unwrap();
-        sdl_canvas
-            .window_mut()
-            .set_minimum_size(screen_width, screen_height)
-            .unwrap();
-        let sdl_texture = sdl_canvas
-            .texture_creator()
-            .create_texture_streaming(SdlPixelFormat::RGB24, screen_width, screen_height)
-            .unwrap();
-        let sdl_game_controller = sdl_context.game_controller().map_or_else(
-            |_| {
-                println!("Unable to initialize the game controller subsystem");
-                None
-            },
-            |sdl_game_controller| Some(sdl_game_controller),
-        );
-        let sdl_audio = sdl_context.audio().map_or_else(
-            |_| {
-                println!("Unable to initialize the audio subsystem");
-                None
-            },
-            |sdl_audio| Some(sdl_audio),
-        );
-        sdl_hint::set("SDL_MOUSE_FOCUS_CLICKTHROUGH", "1");
-        Self::instance().save_watch_info();
-    }
-
-    pub const fn screen_width(&self) -> u32 {
-        self.screen_width
-    }
-
-    pub const fn screen_height(&self) -> u32 {
-        self.screen_height
-    }
-
-
-    pub fn tick_count(&self) -> u32 {
-        self.sdl_timer.ticks()
-    }
-
-    #[allow(dead_code)]
-    pub fn sleep(&mut self, ms: u32) {
-        self.sdl_timer.delay(ms);
-    }
-
-    pub fn render_screen(
-        &mut self,
-        width: u32,
-        height: u32,
-        image: &[Color],
-        colors: &[Rgb8],
-        bg_color: Rgb8,
-    ) {
-        self.sdl_texture
-            .with_lock(None, |buffer: &mut [u8], pitch: usize| {
-                for i in 0..height as usize {
-                    for j in 0..width as usize {
-                        let color = colors[image[width as usize * i + j] as usize];
-                        let offset = pitch * i + 3 * j;
-                        buffer[offset] = ((color >> 16) & 0xff) as u8;
-                        buffer[offset + 1] = ((color >> 8) & 0xff) as u8;
-                        buffer[offset + 2] = (color & 0xff) as u8;
-                    }
-                }
-            })
-            .unwrap();
-        self.sdl_canvas.set_draw_color(SdlColor::RGB(
-            ((bg_color >> 16) & 0xff) as u8,
-            ((bg_color >> 8) & 0xff) as u8,
-            (bg_color & 0xff) as u8,
-        ));
-        self.sdl_canvas.clear();
-        let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
-        let dst = SdlRect::new(
-            screen_x as i32,
-            screen_y as i32,
-            width * screen_scale,
-            height * screen_scale,
-        );
-        self.sdl_canvas
-            .copy(&self.sdl_texture, None, Some(dst))
-            .unwrap();
-        self.sdl_canvas.present();
-        self.save_watch_info();
-    }
-
     pub fn start_audio(
         &mut self,
         sample_rate: u32,
@@ -340,33 +173,6 @@ impl Platform {
         if let Some(audio_device) = &self.sdl_audio_device {
             audio_device.resume();
         }
-    }
-
-    #[allow(unused_mut)]
-    pub fn run<F: FnMut()>(&mut self, mut main_loop: F) {
-        #[cfg(not(target_os = "emscripten"))]
-        loop {
-            let start_ms = self.tick_count() as f64;
-            main_loop();
-            let elapsed_ms = self.tick_count() as f64 - start_ms;
-            let wait_ms = 1000.0 / 60.0 - elapsed_ms;
-            if wait_ms > 0.0 {
-                self.sleep((wait_ms / 2.0) as u32);
-            }
-        }
-
-        #[cfg(target_os = "emscripten")]
-        emscripten::set_main_loop(main_loop);
-    }
-
-    pub fn quit(&mut self) {
-        self.pause_audio();
-
-        #[cfg(not(target_os = "emscripten"))]
-        exit(0);
-
-        #[cfg(target_os = "emscripten")]
-        emscripten::force_exit(0);
     }
 
     #[cfg(target_os = "emscripten")]
@@ -451,6 +257,7 @@ impl Platform {
         write(self.watch_info_file.as_ref().unwrap(), watch_info).unwrap();
     }
 }
+*/
 
 #[cfg(target_os = "emscripten")]
 mod emscripten {
@@ -516,4 +323,3 @@ mod emscripten {
         }
     }
 }
-*/

@@ -1,3 +1,4 @@
+use glow::HasContext;
 use pyxel_platform::keys::{Key, KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use pyxel_platform::Event;
 
@@ -9,17 +10,21 @@ use crate::math::Math;
 use crate::profiler::Profiler;
 use crate::resource::Resource;
 use crate::settings::{
-    BACKGROUND_COLOR, DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, DEFAULT_FPS, DEFAULT_QUIT_KEY,
-    DEFAULT_TITLE, ICON_DATA, ICON_SCALE, MAX_ELAPSED_MS, NUM_COLORS, NUM_MEASURE_FRAMES,
+    BACKGROUND_COLOR, DEFAULT_FPS, DEFAULT_QUIT_KEY, DEFAULT_TITLE, ICON_DATA, ICON_SCALE,
+    MAX_ELAPSED_MS, NUM_COLORS, NUM_MEASURE_FRAMES,
 };
 use crate::utils::simplify_string;
+use crate::DISPLAY_RATIO;
 
 pub trait PyxelCallback {
     fn update(&mut self);
     fn draw(&mut self);
 }
 
-pub(crate) struct System {
+pub struct System {
+    width: u32,
+    height: u32,
+    fps: u32,
     one_frame_ms: f64,
     next_update_ms: f64,
     frame_count: u32,
@@ -34,8 +39,34 @@ pub(crate) struct System {
 unsafe_singleton!(System);
 
 impl System {
-    pub fn init(fps: u32, quit_key: Key) {
+    pub fn init(
+        width: u32,
+        height: u32,
+        title: Option<&str>,
+        fps: Option<u32>,
+        quit_key: Option<Key>,
+        display_scale: Option<u32>,
+    ) {
+        let title = title.unwrap_or(DEFAULT_TITLE);
+        let fps = fps.unwrap_or(DEFAULT_FPS);
+        let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
+
+        pyxel_platform::init(|| {
+            let display_scale = (if let Some(display_scale) = display_scale {
+                display_scale
+            } else {
+                let (display_width, display_height) = pyxel_platform::display_size();
+                ((display_width as f64 / width as f64).min(display_height as f64 / height as f64)
+                    * DISPLAY_RATIO) as u32
+            })
+            .max(1);
+            (title, width * display_scale, height * display_scale)
+        });
+
         Self::set_instance(Self {
+            width,
+            height,
+            fps,
             one_frame_ms: 1000.0 / fps as f64,
             next_update_ms: 0.0,
             frame_count: 0,
@@ -46,6 +77,12 @@ impl System {
             draw_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             perf_monitor_enabled: false,
         });
+
+        crate::icon(&ICON_DATA, ICON_SCALE);
+    }
+
+    pub fn fps(&self) -> u32 {
+        self.fps
     }
 
     fn process_frame(&mut self, callback: &mut dyn PyxelCallback) {
@@ -188,6 +225,13 @@ impl System {
         let screen = crate::screen();
         {
             let screen = screen.lock();
+            let gl = pyxel_platform::gl();
+            unsafe {
+                gl.clear_color(1.0, 0.0, 0.0, 1.0);
+                gl.clear(glow::COLOR_BUFFER_BIT);
+            }
+            pyxel_platform::swap_window();
+
             /*pyxel_Platform::instance().render_screen(
                 screen.canvas.width(),
                 screen.canvas.height(),
@@ -195,13 +239,13 @@ impl System {
                 &*crate::colors().lock(),
                 BACKGROUND_COLOR,
             );*/
-            /*Resource::instance().capture_screen(
+            Resource::instance().capture_screen(
                 screen.width(),
                 screen.height(),
                 &screen.canvas.data,
                 &crate::colors().lock(),
                 self.frame_count,
-            );*/
+            );
         }
         self.draw_profiler.end(pyxel_platform::elapsed_time());
     }
@@ -294,18 +338,8 @@ pub fn init(
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,
 ) {
-    let title = title.unwrap_or(DEFAULT_TITLE);
-    let fps = fps.unwrap_or(DEFAULT_FPS);
-    let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
-    /*let display_scale = display_scale.map_or(DisplayScale::Ratio(DISPLAY_RATIO), |scale| {
-        DisplayScale::Scale(scale)
-    });*/
-    let capture_scale = capture_scale.unwrap_or(DEFAULT_CAPTURE_SCALE);
-    let capture_sec = capture_sec.unwrap_or(DEFAULT_CAPTURE_SEC);
-    //Platform::init(title, width, height, display_scale);
-    System::init(fps, quit_key);
-    crate::icon(&ICON_DATA, ICON_SCALE);
-    Resource::init(fps, capture_scale, capture_sec);
+    System::init(width, height, title, fps, quit_key, display_scale);
+    Resource::init(capture_scale, capture_sec);
     Input::init();
     Graphics::init();
     Audio::init();
@@ -313,13 +347,11 @@ pub fn init(
 }
 
 pub fn width() -> u32 {
-    100
-    //Platform::instance().screen_width()
+    System::instance().width
 }
 
 pub fn height() -> u32 {
-    100
-    //Platform::instance().screen_height()
+    System::instance().height
 }
 
 pub fn frame_count() -> u32 {
