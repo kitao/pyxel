@@ -2,7 +2,7 @@ use std::process::exit;
 
 use pyo3::prelude::*;
 use pyo3::types::{PyAny, PyDict};
-use pyxel::{Key, PyxelCallback};
+use pyxel_engine::{Key, PyxelCallback};
 #[cfg(not(target_os = "emscripten"))]
 use sysinfo::{Pid, PidExt, System, SystemExt};
 
@@ -29,7 +29,7 @@ fn init(
         None,
         Some(locals),
     )?;
-    pyxel::init(
+    pyxel_engine::init(
         width,
         height,
         title,
@@ -44,17 +44,17 @@ fn init(
 
 #[pyfunction]
 fn title(title: &str) {
-    pyxel::title(title);
+    pyxel_engine::title(title);
 }
 
 #[pyfunction]
 fn icon(data: Vec<&str>, scale: u32) {
-    pyxel::icon(&data, scale);
+    pyxel_engine::icon(&data, scale);
 }
 
 #[pyfunction]
 fn fullscreen(full: bool) {
-    pyxel::fullscreen(full);
+    pyxel_engine::fullscreen(full);
 }
 
 #[pyfunction]
@@ -81,22 +81,22 @@ fn run(py: Python, update: &PyAny, draw: &PyAny) {
         }
     }
 
-    pyxel::run(PythonCallback { py, update, draw });
+    pyxel_engine::run(PythonCallback { py, update, draw });
 }
 
 #[pyfunction]
 fn show() {
-    pyxel::show();
+    pyxel_engine::show();
 }
 
 #[pyfunction]
 fn flip() {
-    pyxel::flip();
+    pyxel_engine::flip();
 }
 
 #[pyfunction]
 fn quit() {
-    pyxel::quit();
+    pyxel_engine::quit();
 }
 
 #[cfg(not(target_os = "emscripten"))]

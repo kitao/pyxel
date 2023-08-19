@@ -1,5 +1,5 @@
 use pyo3::prelude::*;
-use pyxel::{
+use pyxel_engine::{
     Effect, Note, SharedSound as PyxelSharedSound, Sound as PyxelSound, Speed, Tone, Volume,
 };
 

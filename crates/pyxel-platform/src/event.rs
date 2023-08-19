@@ -29,34 +29,34 @@ fn to_unified_key(key: Key) -> Option<Key> {
 }
 
 pub fn poll_events() -> Vec<Event> {
-    let mut events = Vec::new();
+    let mut pyxel_events = Vec::new();
     let mut sdl_event: SDL_Event = unsafe { mem::zeroed() };
     while unsafe { SDL_PollEvent(&mut sdl_event as *mut _) } != 0 {
         match unsafe { sdl_event.type_ } {
             SDL_WINDOWEVENT => match unsafe { sdl_event.window.event } as u32 {
                 SDL_WINDOWEVENT_SHOWN | SDL_WINDOWEVENT_MAXIMIZED | SDL_WINDOWEVENT_RESTORED => {
-                    events.push(Event::WindowShown);
+                    pyxel_events.push(Event::WindowShown);
                 }
                 SDL_WINDOWEVENT_HIDDEN | SDL_WINDOWEVENT_MINIMIZED => {
-                    events.push(Event::WindowHidden);
+                    pyxel_events.push(Event::WindowHidden);
                 }
                 _ => {}
             },
             SDL_KEYDOWN => {
                 if unsafe { sdl_event.key.repeat } == 0 {
                     let key = unsafe { sdl_event.key.keysym.sym } as Key;
-                    events.push(Event::KeyPressed { key });
+                    pyxel_events.push(Event::KeyPressed { key });
                     if let Some(unified_key) = to_unified_key(key) {
-                        events.push(Event::KeyPressed { key: unified_key });
+                        pyxel_events.push(Event::KeyPressed { key: unified_key });
                     }
                 }
             }
             SDL_KEYUP => {
                 if unsafe { sdl_event.key.repeat } == 0 {
                     let key = unsafe { sdl_event.key.keysym.sym } as Key;
-                    events.push(Event::KeyReleased { key });
+                    pyxel_events.push(Event::KeyReleased { key });
                     if let Some(unified_key) = to_unified_key(key) {
-                        events.push(Event::KeyReleased { key: unified_key });
+                        pyxel_events.push(Event::KeyReleased { key: unified_key });
                     }
                 }
             }
@@ -70,7 +70,7 @@ pub fn poll_events() -> Vec<Event> {
                     _ => KEY_UNKNOWN,
                 };
                 if key != KEY_UNKNOWN {
-                    events.push(Event::KeyPressed { key });
+                    pyxel_events.push(Event::KeyPressed { key });
                 }
             }
             SDL_MOUSEBUTTONUP => {
@@ -83,15 +83,15 @@ pub fn poll_events() -> Vec<Event> {
                     _ => KEY_UNKNOWN,
                 };
                 if key != KEY_UNKNOWN {
-                    events.push(Event::KeyReleased { key });
+                    pyxel_events.push(Event::KeyReleased { key });
                 }
             }
             SDL_MOUSEWHEEL => {
-                events.push(Event::KeyValueChanged {
+                pyxel_events.push(Event::KeyValueChanged {
                     key: MOUSE_WHEEL_X,
                     value: unsafe { sdl_event.wheel.x },
                 });
-                events.push(Event::KeyValueChanged {
+                pyxel_events.push(Event::KeyValueChanged {
                     key: MOUSE_WHEEL_Y,
                     value: unsafe { sdl_event.wheel.y },
                 });
@@ -238,7 +238,7 @@ pub fn poll_events() -> Vec<Event> {
                 };
                 if let Ok(text) = text {
                     let text = text.to_string();
-                    events.push(Event::TextInput { text });
+                    pyxel_events.push(Event::TextInput { text });
                 }
             }
             SDL_DROPFILE => {
@@ -247,13 +247,13 @@ pub fn poll_events() -> Vec<Event> {
                 }
                 let filename = unsafe { CStr::from_ptr(sdl_event.drop.file) };
                 let filename = filename.to_string_lossy().into_owned();
-                events.push(Event::FileDropped { filename });
+                pyxel_events.push(Event::FileDropped { filename });
                 unsafe {
                     SDL_free(sdl_event.drop.file as *mut _);
                 }
             }
             SDL_QUIT => {
-                events.push(Event::Quit);
+                pyxel_events.push(Event::Quit);
             }
             _ => {}
         }
@@ -291,5 +291,5 @@ pub fn poll_events() -> Vec<Event> {
         }
     }
 
-    events
+    pyxel_events
 }

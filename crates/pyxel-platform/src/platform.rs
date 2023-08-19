@@ -1,3 +1,5 @@
+use std::process::exit;
+
 use crate::sdl2_sys::*;
 
 pub fn init() {
@@ -25,7 +27,17 @@ pub fn run<F: FnMut()>(mut main_loop: F) {
 }
 
 pub fn quit() {
-    //
+    set_audio_enabled(false);
+
+    unsafe {
+        SDL_Quit();
+    }
+
+    #[cfg(not(target_os = "emscripten"))]
+    exit(0);
+
+    #[cfg(target_os = "emscripten")]
+    emscripten::force_exit(0);
 }
 
 pub fn elapsed_time() -> u32 {
@@ -53,7 +65,19 @@ pub fn display_size() -> (u32, u32) {
 }
 
 pub fn set_audio_enabled(enabled: bool) {
-    //
+    if enabled {
+        /*
+        if let Some(audio_device) = &self.sdl_audio_device {
+            audio_device.resume();
+        }
+        */
+    } else {
+        /*
+        if let Some(audio_device) = &self.sdl_audio_device {
+            audio_device.pause();
+        }
+        */
+    }
 }
 
 pub fn set_mouse_visible(visible: bool) {
@@ -74,11 +98,8 @@ pub fn set_mouse_pos(x: i32, y: i32) {
 }
 
 /*
-use std::cmp::min;
 use std::env::var as envvar;
 use std::fs::{read_to_string, write};
-#[cfg(not(target_os = "emscripten"))]
-use std::process::exit;
 
 #[cfg(not(target_os = "emscripten"))]
 use chrono::Local;
@@ -96,12 +117,8 @@ use sdl2::pixels::{Color as SdlColor, PixelFormatEnum as SdlPixelFormat};
 use sdl2::rect::Rect as SdlRect;
 use sdl2::render::{Texture as SdlTexture, WindowCanvas as SdlCanvas};
 use sdl2::surface::Surface as SdlSurface;
-use sdl2::video::FullscreenType as SdlFullscreen;
 use sdl2::AudioSubsystem as SdlAudio;
-use sdl2::EventPump as SdlEventPump;
 use sdl2::GameControllerSubsystem as SdlGameController;
-use sdl2::Sdl as SdlContext;
-use sdl2::TimerSubsystem as SdlTimer;
 
 use crate::event::{ControllerAxis, ControllerButton, Event, MouseButton};
 use crate::settings::WATCH_INFO_FILE_ENVVAR;
