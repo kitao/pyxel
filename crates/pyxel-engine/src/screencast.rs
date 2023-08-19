@@ -6,8 +6,8 @@ use indexmap::IndexMap;
 
 use crate::rectarea::RectArea;
 use crate::settings::NUM_DOUBLED_COLORS;
-use crate::types::{Color, Rgb8};
 use crate::utils::add_file_extension;
+use crate::{Color, Rgb8};
 
 const TRANSPARENT: Rgb8 = 0xffffffff;
 

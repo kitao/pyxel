@@ -3,7 +3,7 @@ use std::array;
 use crate::blipbuf::BlipBuf;
 use crate::channel::{Channel, SharedChannel};
 use crate::music::{Music, SharedMusic};
-use crate::platform::{AudioCallback, Platform};
+//use crate::platform::{AudioCallback, Platform};
 use crate::settings::{
     CLOCK_RATE, NUM_CHANNELS, NUM_CLOCKS_PER_TICK, NUM_MUSICS, NUM_SAMPLES, NUM_SOUNDS, SAMPLE_RATE,
 };
@@ -14,7 +14,7 @@ struct AudioCore {
     channels: [SharedChannel; NUM_CHANNELS as usize],
 }
 
-impl AudioCallback for AudioCore {
+/*impl AudioCallback for AudioCore {
     fn update(&mut self, out: &mut [i16]) {
         let mut samples = self.blip_buf.read_samples(out, false);
         while samples < out.len() {
@@ -25,7 +25,7 @@ impl AudioCallback for AudioCore {
             samples += self.blip_buf.read_samples(&mut out[samples..], false);
         }
     }
-}
+}*/
 
 pub struct Audio {
     channels: [SharedChannel; NUM_CHANNELS as usize],
@@ -43,14 +43,14 @@ impl Audio {
         let sounds = array::from_fn(|_| Sound::new());
         let musics = array::from_fn(|_| Music::new());
 
-        Platform::instance().start_audio(
+        /*Platform::instance().start_audio(
             SAMPLE_RATE,
             NUM_SAMPLES,
             new_shared_type!(AudioCore {
                 blip_buf,
                 channels: channels.clone(),
             }),
-        );
+        );*/
 
         Self::set_instance(Self {
             channels,

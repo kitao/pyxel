@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use pyxel_platform::keys::*;
+use pyxel_platform::keys::{Key, KeyValue, MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y};
 
 use crate::utils::as_i32;
 
@@ -33,9 +33,9 @@ impl Input {
         });
     }
 
-    /*pub const fn is_mouse_visible(&self) -> bool {
-        self.is_mouse_visible
-    }*/
+    pub const fn is_mouse_visible(&self) -> bool {
+        self.mouse_visible
+    }
 
     pub fn reset_input_states(&mut self) {
         self.key_values.insert(MOUSE_WHEEL_X, 0);

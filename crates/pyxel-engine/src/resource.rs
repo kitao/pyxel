@@ -16,8 +16,8 @@ use crate::settings::{
 };
 use crate::sound::Sound;
 use crate::tilemap::Tilemap;
-use crate::types::{Color, Rgb8};
 use crate::utils::parse_version_string;
+use crate::{Color, Rgb8};
 
 pub trait ResourceItem {
     fn resource_name(item_no: u32) -> String;
