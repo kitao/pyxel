@@ -5,7 +5,7 @@ use std::path::Path;
 
 use tar::Archive;
 
-const SDL2_VERSION: &str = "2.28.1";
+const SDL2_VERSION: &str = "2.28.2";
 
 fn main() {
     let target = var("TARGET").unwrap();
