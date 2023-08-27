@@ -2,6 +2,7 @@ use std::ffi::CStr;
 use std::mem;
 use std::str;
 
+use crate::controller::{add_controller, remove_controller};
 use crate::keys::*;
 use crate::sdl2_sys::*;
 use crate::window::WINDOW;
@@ -95,6 +96,14 @@ pub fn poll_events() -> Vec<Event> {
                     key: MOUSE_WHEEL_Y,
                     value: unsafe { sdl_event.wheel.y },
                 });
+            }
+            SDL_CONTROLLERDEVICEADDED => {
+                //#[cfg(target_os = "emscripten")]
+                add_controller(unsafe { sdl_event.cdevice.which } as i32);
+            }
+            SDL_CONTROLLERDEVICEREMOVED => {
+                //#[cfg(target_os = "emscripten")]
+                remove_controller(unsafe { sdl_event.cdevice.which });
             }
             SDL_CONTROLLERAXISMOTION => {
                 /*
@@ -233,8 +242,10 @@ pub fn poll_events() -> Vec<Event> {
                     */
             }
             SDL_TEXTINPUT => {
-                let text = unsafe {
-                    str::from_utf8(&*(&sdl_event.text.text as *const [i8] as *const [u8]))
+                let text = {
+                    str::from_utf8(unsafe {
+                        &*(&sdl_event.text.text as *const [i8] as *const [u8])
+                    })
                 };
                 if let Ok(text) = text {
                     let text = text.to_string();
