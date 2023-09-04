@@ -1,14 +1,13 @@
 use std::ffi::CString;
 use std::mem;
-use std::ptr;
+use std::ptr::null_mut;
 
 use glow::Context;
 
 use crate::sdl2_sys::*;
 
-pub(crate) static mut WINDOW: *mut SDL_Window = ptr::null_mut();
-static mut GL: *mut Context = ptr::null_mut();
-//static mut RENDERER: *mut SDL_Renderer = ptr::null_mut();
+pub(crate) static mut WINDOW: *mut SDL_Window = null_mut();
+static mut GL: *mut Context = null_mut();
 
 pub fn gl() -> &'static mut Context {
     unsafe { &mut *GL }
@@ -28,10 +27,6 @@ pub(crate) fn init_window(title: &str, width: u32, height: u32) {
         if WINDOW.is_null() {
             panic!("Failed to create window");
         }
-        /*RENDERER = SDL_CreateRenderer(WINDOW, -1, 0);
-        if RENDERER.is_null() {
-            panic!("Failed to create renderer");
-        }*/
         if SDL_GL_CreateContext(WINDOW).is_null() {
             panic!("Failed to create OpenGL context");
         }
@@ -45,15 +40,8 @@ pub(crate) fn init_window(title: &str, width: u32, height: u32) {
     let sdl_window = Self::load_watch_info(&watch_info_file).map_or_else(
         || {
             sdl_video
-                .window(
-                    title,
-                    screen_width * display_scale,
-                    screen_height * display_scale,
-                )
                 .position_centered()
                 .resizable()
-                .build()
-                .unwrap()
         },
         |window_state| {
             sdl_video
@@ -64,46 +52,8 @@ pub(crate) fn init_window(title: &str, width: u32, height: u32) {
                 .unwrap()
         },
     );
-    let mut sdl_canvas = sdl_window.into_canvas().present_vsync().build().unwrap();
-    sdl_canvas
-        .window_mut()
-        .set_minimum_size(screen_width, screen_height)
-        .unwrap();
-    let sdl_texture = sdl_canvas
-        .texture_creator()
-        .create_texture_streaming(SdlPixelFormat::RGB24, screen_width, screen_height)
-        .unwrap();
-    let sdl_game_controller = sdl_context.game_controller().map_or_else(
-        |_| {
-            println!("Unable to initialize the game controller subsystem");
-            None
-        },
-        |sdl_game_controller| Some(sdl_game_controller),
-    );
-    let sdl_audio = sdl_context.audio().map_or_else(
-        |_| {
-            println!("Unable to initialize the audio subsystem");
-            None
-        },
-        |sdl_audio| Some(sdl_audio),
-    );
     sdl_hint::set("SDL_MOUSE_FOCUS_CLICKTHROUGH", "1");
     Self::set_instance(Self {
-        sdl_context,
-        sdl_event_pump,
-        sdl_timer,
-        sdl_canvas,
-        sdl_texture,
-        sdl_game_controller,
-        sdl_game_controller_states: Vec::new(),
-        sdl_audio,
-        sdl_audio_device: None,
-        screen_width,
-        screen_height,
-        mouse_x: i32::MIN,
-        mouse_y: i32::MIN,
-        watch_info_file,
-        window_state: WindowState::default(),
         #[cfg(target_os = "emscripten")]
         virtual_gamepad_states: [false; 8],
     });
@@ -197,10 +147,24 @@ pub fn display_size() -> (u32, u32) {
         w: 0,
         h: 0,
         refresh_rate: 0,
-        driverdata: std::ptr::null_mut(),
+        driverdata: null_mut(),
     };
     if unsafe { SDL_GetCurrentDisplayMode(0, &mut current as *mut SDL_DisplayMode) } != 0 {
         panic!("Failed to get display size");
     }
     (current.w as u32, current.h as u32)
+}
+
+pub fn set_mouse_visible(visible: bool) {
+    let visible = if visible { SDL_ENABLE } else { SDL_DISABLE };
+    unsafe {
+        SDL_ShowCursor(visible as i32);
+    }
+}
+
+pub fn set_mouse_pos(x: i32, y: i32) {
+    let (window_x, window_y) = window_pos();
+    unsafe {
+        SDL_WarpMouseGlobal(window_x + x, window_y + y);
+    }
 }
