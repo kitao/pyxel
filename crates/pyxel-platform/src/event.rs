@@ -2,6 +2,7 @@ use std::ffi::CStr;
 use std::mem;
 use std::str;
 
+#[cfg(target_os = "emscripten")]
 use crate::controller::{add_controller, remove_controller};
 use crate::keys::*;
 use crate::sdl2_sys::*;
@@ -97,14 +98,6 @@ pub fn poll_events() -> Vec<Event> {
                     value: unsafe { sdl_event.wheel.y },
                 });
             }
-            SDL_CONTROLLERDEVICEADDED => {
-                //#[cfg(target_os = "emscripten")]
-                add_controller(unsafe { sdl_event.cdevice.which } as i32);
-            }
-            SDL_CONTROLLERDEVICEREMOVED => {
-                //#[cfg(target_os = "emscripten")]
-                remove_controller(unsafe { sdl_event.cdevice.which });
-            }
             SDL_CONTROLLERAXISMOTION => {
                 /*
                 SdlEvent::ControllerAxisMotion {
@@ -181,6 +174,14 @@ pub fn poll_events() -> Vec<Event> {
                 */
             }
             #[cfg(target_os = "emscripten")]
+            SDL_JOYDEVICEADDED => {
+                add_controller(unsafe { sdl_event.jdevice.which } as i32);
+            }
+            #[cfg(target_os = "emscripten")]
+            SDL_JOYDEVICEREMOVED => {
+                remove_controller(unsafe { sdl_event.jdevice.which } as i32);
+            }
+            #[cfg(target_os = "emscripten")]
             SDL_JOYBUTTONDOWN => {
                 /*
                 SdlEvent::JoyButtonDown {
@@ -216,31 +217,6 @@ pub fn poll_events() -> Vec<Event> {
                 }
                 */
             }
-            #[cfg(target_os = "emscripten")]
-            SDL_JOYDEVICEADDED => {
-                /*
-                SdlEvent::JoyDeviceAdded {
-                timestamp: _,
-                which,
-                } => {
-                if self.sdl_game_controller.is_some() {
-                if let Ok(gc) = self.sdl_game_controller.as_mut().unwrap().open(which) {
-                self.sdl_game_controller_states.push(gc);
-                }
-                }
-                continue;
-                    */
-            }
-            #[cfg(target_os = "emscripten")]
-            SDL_JOYDEVICEREMOVED => {
-                /*
-                SdlEvent::JoyDeviceRemoved { .. } => {
-                self.sdl_game_controller_states
-                .retain(SdlGameControllerState::attached);
-                continue;
-                }
-                    */
-            }
             SDL_TEXTINPUT => {
                 let text = {
                     str::from_utf8(unsafe {
@@ -267,38 +243,6 @@ pub fn poll_events() -> Vec<Event> {
                 pyxel_events.push(Event::Quit);
             }
             _ => {}
-        }
-    }
-
-    #[cfg(target_os = "emscripten")]
-    {
-        const INDEX_TO_BUTTON: [ControllerButton; 8] = [
-            ControllerButton::DPadUp,
-            ControllerButton::DPadDown,
-            ControllerButton::DPadLeft,
-            ControllerButton::DPadRight,
-            ControllerButton::A,
-            ControllerButton::B,
-            ControllerButton::X,
-            ControllerButton::Y,
-        ];
-        for (i, button) in INDEX_TO_BUTTON.iter().enumerate() {
-            let button_state =
-                emscripten::run_script_int(&format!("_virtualGamepadStates[{i}];")) != 0;
-            if button_state != self.virtual_gamepad_states[i] {
-                self.virtual_gamepad_states[i] = button_state;
-                return if button_state {
-                    Some(Event::ControllerButtonDown {
-                        which: 0,
-                        button: *button,
-                    })
-                } else {
-                    Some(Event::ControllerButtonUp {
-                        which: 0,
-                        button: *button,
-                    })
-                };
-            }
         }
     }
 
