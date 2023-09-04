@@ -4,7 +4,7 @@ use crate::sdl2_sys::*;
 use crate::window::init_window;
 
 pub fn init<'a, F: FnOnce() -> (&'a str, u32, u32)>(window_params: F) {
-    if unsafe { SDL_Init(SDL_INIT_VIDEO) } < 0 {
+    if unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) } < 0 {
         panic!("Failed to initialize SDL2");
     }
     let (title, width, height) = window_params();
@@ -49,49 +49,12 @@ pub fn sleep(ms: u32) {
     }
 }
 
-pub fn set_audio_enabled(enabled: bool) {
-    if enabled {
-        /*
-        if let Some(audio_device) = &self.sdl_audio_device {
-            audio_device.resume();
-        }
-        */
-    } else {
-        /*
-        if let Some(audio_device) = &self.sdl_audio_device {
-            audio_device.pause();
-        }
-        */
-    }
-}
-
-pub fn set_mouse_visible(visible: bool) {
-    let visible = if visible { SDL_ENABLE } else { SDL_DISABLE };
-    unsafe {
-        SDL_ShowCursor(visible as i32);
-    }
-}
-
-pub fn set_mouse_pos(x: i32, y: i32) {
-    unsafe {
-        SDL_WarpMouseGlobal(x, y);
-    }
-    /*let (window_x, window_y) = self.sdl_canvas.window().position();
-    let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
-    let mouse_x = x * screen_scale as i32 + window_x + screen_x as i32;
-    let mouse_y = y * screen_scale as i32 + window_y + screen_y as i32;*/
-}
-
 /*
 use std::env::var as envvar;
 use std::fs::{read_to_string, write};
 
 #[cfg(not(target_os = "emscripten"))]
 use chrono::Local;
-use sdl2::audio::{
-    AudioCallback as SdlAudioCallback, AudioDevice as SdlAudioDevice,
-    AudioSpecDesired as SdlAudioSpecDesired,
-};
 use sdl2::controller::{
     Axis as SdlAxis, Button as SdlButton, GameController as SdlGameControllerState,
 };
@@ -105,28 +68,10 @@ struct WindowState {
     height: u32,
 }
 
-pub trait AudioCallback {
-    fn update(&mut self, out: &mut [i16]);
-}
-
-struct AudioContextHolder {
-    audio: shared_type!(dyn AudioCallback + Send),
-}
-
-impl SdlAudioCallback for AudioContextHolder {
-    type Channel = i16;
-
-    fn callback(&mut self, out: &mut [i16]) {
-        self.audio.lock().update(out);
-    }
-}
-
 pub struct Platform {
     sdl_texture: SdlTexture,
     sdl_game_controller: Option<SdlGameController>,
     sdl_game_controller_states: Vec<SdlGameControllerState>,
-    sdl_audio: Option<SdlAudio>,
-    sdl_audio_device: Option<SdlAudioDevice<AudioContextHolder>>,
     mouse_x: i32,
     mouse_y: i32,
     watch_info_file: Option<String>,
@@ -136,45 +81,6 @@ pub struct Platform {
 }
 
 impl Platform {
-    pub fn start_audio(
-        &mut self,
-        sample_rate: u32,
-        num_samples: u32,
-        audio: shared_type!(dyn AudioCallback + Send),
-    ) {
-        let spec = SdlAudioSpecDesired {
-            freq: Some(sample_rate as i32),
-            channels: Some(1),
-            samples: Some(num_samples as u16),
-        };
-        self.sdl_audio_device = self.sdl_audio.as_ref().and_then(|sdl_audio| {
-            sdl_audio
-                .open_playback(None, &spec, |_| AudioContextHolder { audio })
-                .map_or_else(
-                    |_| {
-                        println!("Unable to open a new audio device");
-                        None
-                    },
-                    |sdl_audio_device| {
-                        sdl_audio_device.resume();
-                        Some(sdl_audio_device)
-                    },
-                )
-        });
-    }
-
-    pub fn pause_audio(&mut self) {
-        if let Some(audio_device) = &self.sdl_audio_device {
-            audio_device.pause();
-        }
-    }
-
-    pub fn resume_audio(&mut self) {
-        if let Some(audio_device) = &self.sdl_audio_device {
-            audio_device.resume();
-        }
-    }
-
     #[cfg(target_os = "emscripten")]
     pub fn save_file_on_web_browser(filename: &str) {
         emscripten::run_script(&format!("_savePyxelFile('{filename}');"));
