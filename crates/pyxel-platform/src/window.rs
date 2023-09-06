@@ -1,13 +1,13 @@
 use std::ffi::CString;
 use std::mem;
-use std::ptr::null_mut;
+use std::ptr;
 
 use glow::Context;
 
 use crate::sdl2_sys::*;
 
-pub(crate) static mut WINDOW: *mut SDL_Window = null_mut();
-static mut GL: *mut Context = null_mut();
+pub(crate) static mut WINDOW: *mut SDL_Window = ptr::null_mut();
+static mut GL: *mut Context = ptr::null_mut();
 
 pub fn gl() -> &'static mut Context {
     unsafe { &mut *GL }
@@ -147,7 +147,7 @@ pub fn display_size() -> (u32, u32) {
         w: 0,
         h: 0,
         refresh_rate: 0,
-        driverdata: null_mut(),
+        driverdata: ptr::null_mut(),
     };
     if unsafe { SDL_GetCurrentDisplayMode(0, &mut current as *mut SDL_DisplayMode) } != 0 {
         panic!("Failed to get display size");
