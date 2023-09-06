@@ -28,10 +28,10 @@ noise = "0.7"
 once_cell = "1.18"
 parking_lot = "0.12"
 platform-dirs = "0.3"
+pyxel-platform = { path = "../pyxel-platform", version = "2.0.0" }
 rand = "0.8"
 rand_xoshiro = "0.6"
 zip = { version = "0.6", default-features = false, features = ["deflate"] }
-pyxel-platform = { path = "../pyxel-platform", version = "2.0.0" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 chrono = "0.4"
