@@ -1,8 +1,6 @@
-use pyxel_platform::keys::{Key, KEY_ESCAPE};
+use once_cell::sync::Lazy;
 
-use crate::channel::{Note, Speed, Volume};
-use crate::image::{Color, Rgb8};
-use crate::oscillator::{Effect, Tone};
+use crate::prelude::*;
 
 // System
 pub const VERSION: &str = "2.0.0";
@@ -47,17 +45,14 @@ pub const PALETTE_FILE_EXTENSION: &str = ".pyxpal";
 
 // Graphics
 pub const NUM_COLORS: u32 = 16;
-pub const NUM_DOUBLED_COLORS: u32 = NUM_COLORS * 2;
 pub const NUM_IMAGES: u32 = 3;
 pub const IMAGE_SIZE: u32 = 256;
 pub const NUM_TILEMAPS: u32 = 8;
 pub const TILEMAP_SIZE: u32 = 256;
 pub const TILE_SIZE: u32 = 8;
-pub const DEFAULT_COLORS: [Rgb8; NUM_DOUBLED_COLORS as usize] = [
+pub const DEFAULT_COLORS: [Rgb8; NUM_COLORS as usize] = [
     0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, 0xd4186c,
-    0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0, // User colors
-    0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, 0xd4186c,
-    0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0, // System colors
+    0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0,
 ];
 pub const COLOR_BLACK: Color = 0;
 pub const COLOR_NAVY: Color = 1;
@@ -80,6 +75,11 @@ pub const CURSOR_HEIGHT: u32 = 8;
 pub const CURSOR_DATA: [&str; CURSOR_HEIGHT as usize] = [
     "11111100", "17776100", "17761000", "17676100", "16167610", "11016761", "00001610", "00000100",
 ];
+pub static CURSOR_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
+    let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
+    image.lock().set(0, 0, &CURSOR_DATA);
+    image
+});
 pub const MIN_FONT_CODE: char = 32 as char;
 pub const MAX_FONT_CODE: char = 127 as char;
 pub const NUM_FONT_ROWS: u32 = 16;
@@ -98,6 +98,29 @@ pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] 
     0x06aa62, 0x068880, 0x06c6c0, 0x4e4460, 0x0aaa60, 0x0aaa40, 0x0aaee0, 0x0a44a0, 0x0aa624,
     0x0e24e0, 0x64c460, 0x444440, 0xc464c0, 0x6c0000, 0xeeeee0,
 ];
+pub static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
+    let width = FONT_WIDTH * NUM_FONT_ROWS;
+    let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + NUM_FONT_ROWS - 1) / NUM_FONT_ROWS);
+    let image = Image::new(width, height);
+    {
+        let mut image = image.lock();
+        for (fi, data) in FONT_DATA.iter().enumerate() {
+            let row = fi as u32 / NUM_FONT_ROWS;
+            let col = fi as u32 % NUM_FONT_ROWS;
+            let mut data = *data;
+            for yi in 0..FONT_HEIGHT {
+                for xi in 0..FONT_WIDTH {
+                    let x = FONT_WIDTH * col + xi;
+                    let y = FONT_HEIGHT * row + yi;
+                    let color = u8::from((data & 0x800000) != 0);
+                    image.canvas.write_data(x as usize, y as usize, color);
+                    data <<= 1;
+                }
+            }
+        }
+    }
+    image
+});
 
 // Audio
 pub const CLOCK_RATE: u32 = 1789773; // 1.78 MHz clock rate
