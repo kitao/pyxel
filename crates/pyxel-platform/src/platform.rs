@@ -1,14 +1,14 @@
-use std::process::exit;
+use std::process;
 
 use crate::sdl2_sys::*;
-use crate::window::init_window;
+use crate::window;
 
 pub fn init<'a, F: FnOnce() -> (&'a str, u32, u32)>(window_params: F) {
     if unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) } < 0 {
         panic!("Failed to initialize SDL2");
     }
     let (title, width, height) = window_params();
-    init_window(title, width, height);
+    window::init_window(title, width, height);
 }
 
 pub fn run<F: FnMut()>(mut main_loop: F) {
@@ -33,7 +33,7 @@ pub fn quit() {
     }
 
     #[cfg(not(target_os = "emscripten"))]
-    exit(0);
+    process::exit(0);
 
     #[cfg(target_os = "emscripten")]
     emscripten::force_exit(0);
