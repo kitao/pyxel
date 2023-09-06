@@ -38,7 +38,9 @@ mod input;
 mod math;
 mod music;
 mod oscillator;
+pub mod prelude;
 mod profiler;
+mod pyxel;
 mod rectarea;
 mod resource;
 mod screencast;
@@ -46,29 +48,3 @@ mod settings;
 mod sound;
 mod system;
 mod tilemap;
-
-pub use pyxel_platform::keys::*;
-
-pub use crate::audio::{channel, music, play, play1, play_pos, playm, sound, stop, stop0};
-pub use crate::channel::{Channel, Note, SharedChannel, Speed, Volume};
-pub use crate::graphics::{
-    blt, bltm, camera, camera0, circ, circb, clip, clip0, cls, colors, cursor, elli, ellib, fill,
-    font, image, image_no, line, pal, pal0, pget, pset, rect, rectb, screen, text, tilemap, tri,
-    trib,
-};
-pub use crate::image::{Color, Image, Rgb8, SharedImage};
-pub use crate::input::{
-    btn, btnp, btnr, btnv, drop_files, input_text, mouse, mouse_wheel, mouse_x, mouse_y,
-    set_mouse_pos,
-};
-pub use crate::math::{atan2, ceil, cos, floor, noise, nseed, rndf, rndi, rseed, sgn, sin, sqrt};
-pub use crate::music::{Music, SharedMusic};
-pub use crate::oscillator::{Effect, Tone};
-pub use crate::resource::{load, reset_capture, save, screencast, screenshot};
-pub use crate::settings::*;
-pub use crate::sound::{SharedSound, Sound};
-pub use crate::system::{
-    flip, frame_count, fullscreen, height, icon, init, is_fullscreen, quit, run, show, title,
-    width, PyxelCallback,
-};
-pub use crate::tilemap::{SharedTilemap, Tile, Tilemap};
