@@ -1,81 +1,83 @@
-use std::f64::consts;
+use std::f64::consts::PI;
 
 use noise::{NoiseFn, Perlin, Seedable};
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256StarStar;
 
-pub struct Math {
+use crate::prelude::*;
+
+pub(crate) struct Math {
     rng: Xoshiro256StarStar,
     perlin: Perlin,
 }
 
-unsafe_singleton!(Math);
-
 impl Math {
-    pub fn init() {
+    pub fn new() -> Self {
         let seed = pyxel_platform::elapsed_time();
         let rng = Xoshiro256StarStar::seed_from_u64(seed as u64);
         let perlin = Perlin::new().set_seed(seed);
-        Self::set_instance(Self { rng, perlin });
+        Self { rng, perlin }
     }
 }
 
-pub fn ceil(x: f64) -> i32 {
-    f64::ceil(x) as i32
-}
-
-pub fn floor(x: f64) -> i32 {
-    f64::floor(x) as i32
-}
-
-pub fn sgn(x: f64) -> f64 {
-    if x > 0.0 {
-        1.0
-    } else if x < 0.0 {
-        -1.0
-    } else {
-        0.0
+impl Pyxel {
+    pub fn ceil(&self, x: f64) -> i32 {
+        f64::ceil(x) as i32
     }
-}
 
-pub fn sqrt(x: f64) -> f64 {
-    if x == 0.0 {
-        f64::MAX
-    } else {
-        f64::sqrt(x)
+    pub fn floor(&self, x: f64) -> i32 {
+        f64::floor(x) as i32
     }
-}
 
-pub fn sin(deg: f64) -> f64 {
-    f64::sin(deg * consts::PI / 180.0)
-}
+    pub fn sgn(&self, x: f64) -> f64 {
+        if x > 0.0 {
+            1.0
+        } else if x < 0.0 {
+            -1.0
+        } else {
+            0.0
+        }
+    }
 
-pub fn cos(deg: f64) -> f64 {
-    f64::cos(deg * consts::PI / 180.0)
-}
+    pub fn sqrt(&self, x: f64) -> f64 {
+        if x == 0.0 {
+            f64::MAX
+        } else {
+            f64::sqrt(x)
+        }
+    }
 
-pub fn atan2(y: f64, x: f64) -> f64 {
-    f64::atan2(y, x) * 180.0 / consts::PI
-}
+    pub fn sin(&self, deg: f64) -> f64 {
+        f64::sin(deg * PI / 180.0)
+    }
 
-pub fn rseed(seed: u32) {
-    Math::instance().rng = Xoshiro256StarStar::seed_from_u64(seed as u64);
-}
+    pub fn cos(&self, deg: f64) -> f64 {
+        f64::cos(deg * PI / 180.0)
+    }
 
-pub fn rndi(a: i32, b: i32) -> i32 {
-    let (a, b) = if a < b { (a, b) } else { (b, a) };
-    Math::instance().rng.gen_range(a..=b)
-}
+    pub fn atan2(&self, y: f64, x: f64) -> f64 {
+        f64::atan2(y, x) * 180.0 / PI
+    }
 
-pub fn rndf(a: f64, b: f64) -> f64 {
-    let (a, b) = if a < b { (a, b) } else { (b, a) };
-    Math::instance().rng.gen_range(a..=b)
-}
+    pub fn rseed(&mut self, seed: u32) {
+        self.math.rng = Xoshiro256StarStar::seed_from_u64(seed as u64);
+    }
 
-pub fn nseed(seed: u32) {
-    Math::instance().perlin = Perlin::new().set_seed(seed);
-}
+    pub fn rndi(&mut self, a: i32, b: i32) -> i32 {
+        let (a, b) = if a < b { (a, b) } else { (b, a) };
+        self.math.rng.gen_range(a..=b)
+    }
 
-pub fn noise(x: f64, y: f64, z: f64) -> f64 {
-    Math::instance().perlin.get([x, y, z])
+    pub fn rndf(&mut self, a: f64, b: f64) -> f64 {
+        let (a, b) = if a < b { (a, b) } else { (b, a) };
+        self.math.rng.gen_range(a..=b)
+    }
+
+    pub fn nseed(&mut self, seed: u32) {
+        self.math.perlin = Perlin::new().set_seed(seed);
+    }
+
+    pub fn noise(&mut self, x: f64, y: f64, z: f64) -> f64 {
+        self.math.perlin.get([x, y, z])
+    }
 }
