@@ -1,6 +1,6 @@
 #[cfg(target_os = "emscripten")]
 mod controller {
-    use std::ptr::null_mut;
+    use std::ptr;
 
     use crate::sdl2_sys::*;
 

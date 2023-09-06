@@ -1,4 +1,4 @@
-use std::ptr::null_mut;
+use std::ptr;
 
 use crate::sdl2_sys::*;
 
@@ -14,7 +14,7 @@ pub(crate) fn init_audio(freqency: u32, channels: u8, samples: u16) {
         padding: 0,
         size: 0,
         callback: None,
-        userdata: null_mut(),
+        userdata: ptr::null_mut(),
     };
     let mut obtained = SDL_AudioSpec {
         freq: 0,
@@ -25,7 +25,7 @@ pub(crate) fn init_audio(freqency: u32, channels: u8, samples: u16) {
         padding: 0,
         size: 0,
         callback: None,
-        userdata: null_mut(),
+        userdata: ptr::null_mut(),
     };
     //AUDIO_DEVICE_ID = SDL_OpenAudioDevice(device, iscapture, desired, obtained, allowed_changes);
 }
