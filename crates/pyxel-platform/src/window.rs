@@ -130,14 +130,14 @@ pub fn is_fullscreen() -> bool {
     (unsafe { SDL_GetWindowFlags(WINDOW) } & SDL_WINDOW_FULLSCREEN) != 0
 }
 
-pub fn set_fullscreen(fullscreen: bool) {
-    let fullscreen = if fullscreen {
+pub fn set_fullscreen(full: bool) {
+    let full = if full {
         SDL_WINDOW_FULLSCREEN_DESKTOP
     } else {
         0
     };
     unsafe {
-        SDL_SetWindowFullscreen(WINDOW, fullscreen);
+        SDL_SetWindowFullscreen(WINDOW, full);
     }
 }
 
