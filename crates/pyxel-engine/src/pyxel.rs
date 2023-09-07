@@ -1,3 +1,5 @@
+use std::sync::atomic::{AtomicBool, Ordering};
+
 use crate::audio::Audio;
 use crate::graphics::Graphics;
 use crate::input::Input;
@@ -5,6 +7,8 @@ use crate::math::Math;
 use crate::prelude::*;
 use crate::resource::Resource;
 use crate::system::System;
+
+static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 pub struct Pyxel {
     // System
@@ -55,6 +59,10 @@ impl Pyxel {
         capture_scale: Option<u32>,
         capture_sec: Option<u32>,
     ) -> Self {
+        if IS_INITIALIZED.swap(true, Ordering::Relaxed) {
+            panic!("Pyxel already initialized");
+        }
+
         // System
         let title = title.unwrap_or(DEFAULT_TITLE);
         let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
