@@ -3,7 +3,7 @@ use once_cell::sync::Lazy;
 use crate::prelude::*;
 
 // System
-pub const VERSION: &str = "2.0.0";
+pub const PYXEL_VERSION: &str = "2.0.0";
 pub const WORKING_DIR: &str = ".pyxel";
 pub const WATCH_INFO_FILE_ENVVAR: &str = "PYXEL_WATCH_INFO_FILE";
 pub const DEFAULT_TITLE: &str = "Pyxel";
