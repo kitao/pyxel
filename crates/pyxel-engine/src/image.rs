@@ -7,14 +7,10 @@ use image::imageops::{self, FilterType};
 use image::{Rgb, RgbImage};
 
 use crate::canvas::{Canvas, CopyArea, ToIndex};
+use crate::prelude::*;
 use crate::rectarea::RectArea;
 use crate::resource::ResourceItem;
-use crate::settings::{
-    FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_COLORS, NUM_FONT_ROWS,
-    RESOURCE_ARCHIVE_DIRNAME, TILE_SIZE,
-};
-use crate::tilemap::SharedTilemap;
-use crate::utils::{add_file_extension, as_i32, as_u32, parse_hex_string, simplify_string};
+use crate::utils;
 
 pub type Rgb8 = u32;
 pub type Color = u8;
@@ -40,9 +36,8 @@ impl Image {
         })
     }
 
-    pub fn from_image(filename: &str) -> SharedImage {
-        let colors = crate::colors().lock();
-        let image_file = image::open(Path::new(&filename))
+    pub fn from_image(filename: &str, colors: &[Rgb8]) -> SharedImage {
+        let image_file = ::image::open(Path::new(&filename))
             .unwrap_or_else(|_| panic!("Unable to open file '{filename}'"))
             .to_rgb8();
         let (width, height) = image_file.dimensions();
@@ -96,15 +91,16 @@ impl Image {
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
-        let width = simplify_string(data_str[0]).len() as u32;
+        let width = utils::simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
         let image = Self::new(width, height);
         {
             let mut image = image.lock();
             for y in 0..height {
-                let src_data = simplify_string(data_str[y as usize]);
+                let src_data = utils::simplify_string(data_str[y as usize]);
                 for x in 0..width {
-                    let color = parse_hex_string(&src_data[x as usize..x as usize + 1]).unwrap();
+                    let color =
+                        utils::parse_hex_string(&src_data[x as usize..x as usize + 1]).unwrap();
                     image
                         .canvas
                         .write_data(x as usize, y as usize, color as Color);
@@ -123,8 +119,8 @@ impl Image {
         );
     }
 
-    pub fn load(&mut self, x: i32, y: i32, filename: &str) {
-        let image = Self::from_image(filename);
+    pub fn load(&mut self, x: i32, y: i32, filename: &str, colors: &[Rgb8]) {
+        let image = Self::from_image(filename, colors);
         let width = image.lock().width();
         let height = image.lock().height();
         self.blt(
@@ -139,8 +135,7 @@ impl Image {
         );
     }
 
-    pub fn save(&self, filename: &str, scale: u32) {
-        let colors = crate::colors().lock();
+    pub fn save(&self, filename: &str, scale: u32, colors: &[Rgb8]) {
         let width = self.width();
         let height = self.height();
         let mut image = RgbImage::new(width, height);
@@ -154,7 +149,7 @@ impl Image {
             }
         }
         let image = imageops::resize(&image, width * scale, height * scale, FilterType::Nearest);
-        let filename = add_file_extension(filename, ".png");
+        let filename = utils::add_file_extension(filename, ".png");
         image
             .save(&filename)
             .unwrap_or_else(|_| panic!("Unable to open file '{filename}'"));
@@ -270,8 +265,8 @@ impl Image {
                 Some(&self.palette),
             );
         } else {
-            let copy_width = as_u32(width.abs());
-            let copy_height = as_u32(height.abs());
+            let copy_width = utils::f64_to_u32(width.abs());
+            let copy_height = utils::f64_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
             canvas.blt(
                 0.0,
@@ -309,12 +304,12 @@ impl Image {
         height: f64,
         transparent: Option<Color>,
     ) {
-        let x = as_i32(x) - self.canvas.camera_x;
-        let y = as_i32(y) - self.canvas.camera_y;
-        let tilemap_x = as_i32(tilemap_x);
-        let tilemap_y = as_i32(tilemap_y);
-        let width = as_i32(width);
-        let height = as_i32(height);
+        let x = utils::f64_to_i32(x) - self.canvas.camera_x;
+        let y = utils::f64_to_i32(y) - self.canvas.camera_y;
+        let tilemap_x = utils::f64_to_i32(tilemap_x);
+        let tilemap_y = utils::f64_to_i32(tilemap_y);
+        let width = utils::f64_to_i32(width);
+        let height = utils::f64_to_i32(height);
 
         let tilemap = tilemap.lock();
         let tilemap_rect = RectArea::new(
@@ -375,9 +370,9 @@ impl Image {
         }
     }
 
-    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color) {
-        let mut x = as_i32(x); // No need to reflect camera_x
-        let mut y = as_i32(y); // No need to reflect camera_y
+    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color, font: SharedImage) {
+        let mut x = utils::f64_to_i32(x); // No need to reflect camera_x
+        let mut y = utils::f64_to_i32(y); // No need to reflect camera_y
         let color = self.palette[color as usize];
         let palette1 = self.palette[1];
         self.pal(1, color);
@@ -397,7 +392,7 @@ impl Image {
             self.blt(
                 x as f64,
                 y as f64,
-                crate::font(),
+                font.clone(),
                 src_x as f64,
                 src_y as f64,
                 FONT_WIDTH as f64,
@@ -439,7 +434,7 @@ impl ResourceItem for Image {
         self.cls(0);
     }
 
-    fn serialize(&self) -> String {
+    fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
         for y in 0..self.height() {
             for x in 0..self.width() {
@@ -454,11 +449,11 @@ impl ResourceItem for Image {
         output
     }
 
-    fn deserialize(&mut self, _version: u32, input: &str) {
+    fn deserialize(&mut self, _pyxel: &Pyxel, _version: u32, input: &str) {
         for (i, line) in input.lines().enumerate() {
             string_loop!(j, color, line, 1, {
                 self.canvas
-                    .write_data(j, i, parse_hex_string(&color).unwrap() as Color);
+                    .write_data(j, i, utils::parse_hex_string(&color).unwrap() as Color);
             });
         }
     }
