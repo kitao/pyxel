@@ -370,14 +370,14 @@ impl Image {
         }
     }
 
-    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color, font: SharedImage) {
+    pub fn text(&mut self, x: f64, y: f64, text: &str, color: Color, font: SharedImage) {
         let mut x = utils::f64_to_i32(x); // No need to reflect camera_x
         let mut y = utils::f64_to_i32(y); // No need to reflect camera_y
         let color = self.palette[color as usize];
         let palette1 = self.palette[1];
         self.pal(1, color);
         let start_x = x;
-        for c in string.chars() {
+        for c in text.chars() {
             if c == '\n' {
                 x = start_x;
                 y += FONT_HEIGHT as i32;
