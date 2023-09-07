@@ -32,11 +32,11 @@ pub struct Pyxel {
     // Graphics
     pub(crate) graphics: Graphics,
     pub colors: Vec<Rgb8>,
+    pub images: Vec<SharedImage>,
+    pub tilemaps: Vec<SharedTilemap>,
     pub screen: SharedImage,
     pub cursor: SharedImage,
     pub font: SharedImage,
-    pub images: Vec<SharedImage>,
-    pub tilemaps: Vec<SharedTilemap>,
 
     // Audio
     pub(crate) audio: Audio,
@@ -86,15 +86,15 @@ impl Pyxel {
         let colors = (0..NUM_COLORS)
             .map(|i| DEFAULT_COLORS[i as usize])
             .collect();
-        let screen = Image::new(width, height);
-        let cursor = CURSOR_IMAGE.clone();
-        let font = FONT_IMAGE.clone();
         let images: Vec<_> = (0..NUM_IMAGES)
             .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
             .collect();
         let tilemaps: Vec<_> = (0..NUM_TILEMAPS)
             .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()))
             .collect();
+        let screen = Image::new(width, height);
+        let cursor = CURSOR_IMAGE.clone();
+        let font = FONT_IMAGE.clone();
 
         // Audio
         let audio = Audio::new();
@@ -120,11 +120,11 @@ impl Pyxel {
             dropped_files,
             graphics,
             colors,
+            images,
+            tilemaps,
             screen,
             cursor,
             font,
-            images,
-            tilemaps,
             audio,
             channels,
             sounds,
