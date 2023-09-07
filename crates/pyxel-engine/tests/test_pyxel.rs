@@ -7,7 +7,7 @@ pub struct App {
 
 impl App {
     fn init() {
-        let mut pyxel = Pyxel::init(
+        let mut pyxel = Pyxel::new(
             200,
             150,
             Some("Hello, Pyxel in Rust!"),
