@@ -4,10 +4,9 @@ use std::fs::File;
 use gif::{DisposalMethod, Encoder, Frame, Repeat};
 use indexmap::IndexMap;
 
+use crate::prelude::*;
 use crate::rectarea::RectArea;
-use crate::settings::NUM_DOUBLED_COLORS;
-use crate::utils::add_file_extension;
-use crate::{Color, Rgb8};
+use crate::utils;
 
 const TRANSPARENT: Rgb8 = 0xffffffff;
 
@@ -15,7 +14,7 @@ struct Screen {
     width: u32,
     height: u32,
     image: Vec<Color>,
-    colors: [Rgb8; NUM_DOUBLED_COLORS as usize],
+    colors: Vec<Rgb8>,
     frame_count: u32,
 }
 
@@ -50,7 +49,7 @@ impl Screencast {
                 width: 0,
                 height: 0,
                 image: Vec::new(),
-                colors: [0; NUM_DOUBLED_COLORS as usize],
+                colors: Vec::new(),
                 frame_count: 0,
             })
             .collect();
@@ -88,7 +87,7 @@ impl Screencast {
         width: u32,
         height: u32,
         image: &[Color],
-        colors: &[Rgb8; NUM_DOUBLED_COLORS as usize],
+        colors: &[Rgb8],
         frame_count: u32,
     ) {
         if self.screens.is_empty() {
@@ -102,7 +101,7 @@ impl Screencast {
             [((self.capture_start_index + self.num_captured_screens) % self.max_screens) as usize];
         screen.width = width;
         screen.height = height;
-        screen.colors = *colors;
+        screen.colors = colors.to_vec();
         screen.image = image.to_vec();
         screen.frame_count = frame_count;
         self.num_captured_screens += 1;
@@ -112,7 +111,7 @@ impl Screencast {
         if self.num_captured_screens == 0 {
             return;
         }
-        let filename = add_file_extension(filename, ".gif");
+        let filename = utils::add_file_extension(filename, ".gif");
         let mut file =
             File::create(&filename).unwrap_or_else(|_| panic!("Unable to open file '{filename}'"));
         let screen = self.screen(0);

@@ -1,8 +1,8 @@
 use std::fmt::Write as _;
 
+use crate::prelude::*;
 use crate::resource::ResourceItem;
-use crate::settings::{NUM_CHANNELS, RESOURCE_ARCHIVE_DIRNAME};
-use crate::utils::parse_hex_string;
+use crate::utils;
 
 #[derive(Clone)]
 pub struct Music {
@@ -39,7 +39,7 @@ impl ResourceItem for Music {
         self.sounds_list = Default::default();
     }
 
-    fn serialize(&self) -> String {
+    fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
         for sounds in &self.sounds_list {
             if sounds.is_empty() {
@@ -54,14 +54,14 @@ impl ResourceItem for Music {
         output
     }
 
-    fn deserialize(&mut self, _version: u32, input: &str) {
+    fn deserialize(&mut self, _pyxel: &Pyxel, _version: u32, input: &str) {
         self.clear();
         for (i, line) in input.lines().enumerate() {
             if line == "none" {
                 continue;
             }
             string_loop!(j, value, line, 2, {
-                self.sounds_list[i].push(parse_hex_string(&value).unwrap());
+                self.sounds_list[i].push(utils::parse_hex_string(&value).unwrap());
             });
         }
     }

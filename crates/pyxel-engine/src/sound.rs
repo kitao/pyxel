@@ -1,13 +1,8 @@
 use std::fmt::Write as _;
 
-use crate::channel::{Note, Speed, Volume};
-use crate::oscillator::{Effect, Tone};
+use crate::prelude::*;
 use crate::resource::ResourceItem;
-use crate::settings::{
-    EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED,
-    RESOURCE_ARCHIVE_DIRNAME, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
-};
-use crate::utils::{parse_hex_string, simplify_string};
+use crate::utils;
 
 #[derive(Clone)]
 pub struct Sound {
@@ -47,7 +42,7 @@ impl Sound {
     }
 
     pub fn set_notes(&mut self, note_str: &str) {
-        let note_str = simplify_string(note_str);
+        let note_str = utils::simplify_string(note_str);
         let mut chars = note_str.chars();
         self.notes.clear();
         while let Some(c) = chars.next() {
@@ -87,7 +82,7 @@ impl Sound {
 
     pub fn set_tones(&mut self, tone_str: &str) {
         self.tones.clear();
-        for c in simplify_string(tone_str).chars() {
+        for c in utils::simplify_string(tone_str).chars() {
             let tone = match c {
                 't' => TONE_TRIANGLE,
                 's' => TONE_SQUARE,
@@ -101,7 +96,7 @@ impl Sound {
 
     pub fn set_volumes(&mut self, volume_str: &str) {
         self.volumes.clear();
-        for c in simplify_string(volume_str).chars() {
+        for c in utils::simplify_string(volume_str).chars() {
             if ('0'..='7').contains(&c) {
                 self.volumes.push((c as u32 - '0' as u32) as Volume);
             } else {
@@ -112,7 +107,7 @@ impl Sound {
 
     pub fn set_effects(&mut self, effect_str: &str) {
         self.effects.clear();
-        for c in simplify_string(effect_str).chars() {
+        for c in utils::simplify_string(effect_str).chars() {
             let effect = match c {
                 'n' => EFFECT_NONE,
                 's' => EFFECT_SLIDE,
@@ -145,7 +140,7 @@ impl ResourceItem for Sound {
         self.speed = INITIAL_SPEED;
     }
 
-    fn serialize(&self) -> String {
+    fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
         if self.notes.is_empty() {
             output += "none\n";
@@ -180,7 +175,7 @@ impl ResourceItem for Sound {
         output
     }
 
-    fn deserialize(&mut self, _version: u32, input: &str) {
+    fn deserialize(&mut self, _pyxel: &Pyxel, _version: u32, input: &str) {
         self.clear();
         for (i, line) in input.lines().enumerate() {
             if line == "none" {
@@ -188,7 +183,8 @@ impl ResourceItem for Sound {
             }
             if i == 0 {
                 string_loop!(j, value, line, 2, {
-                    self.notes.push(parse_hex_string(&value).unwrap() as i8);
+                    self.notes
+                        .push(utils::parse_hex_string(&value).unwrap() as i8);
                 });
                 continue;
             } else if i == 4 {
@@ -202,7 +198,7 @@ impl ResourceItem for Sound {
                 _ => panic!(),
             };
             string_loop!(j, value, line, 1, {
-                data.push(parse_hex_string(&value).unwrap() as u8);
+                data.push(utils::parse_hex_string(&value).unwrap() as u8);
             });
         }
     }
