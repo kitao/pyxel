@@ -27,24 +27,26 @@
 )]
 
 #[macro_use]
-mod utils;
-mod audio;
-mod blipbuf;
-mod canvas;
-mod channel;
-mod graphics;
-mod image;
-mod input;
-mod math;
-mod music;
-mod oscillator;
+pub mod utils;
+pub mod audio;
+pub mod blipbuf;
+pub mod canvas;
+pub mod channel;
+pub mod graphics;
+pub mod image;
+pub mod input;
+pub mod math;
+pub mod music;
+pub mod oscillator;
 pub mod prelude;
-mod profiler;
-mod pyxel;
-mod rectarea;
-mod resource;
-mod screencast;
-mod settings;
-mod sound;
-mod system;
-mod tilemap;
+pub mod profiler;
+pub mod pyxel;
+pub mod rectarea;
+pub mod resource;
+pub mod screencast;
+pub mod settings;
+pub mod sound;
+pub mod system;
+pub mod tilemap;
+
+pub use pyxel_platform::keys;
