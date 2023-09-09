@@ -1,22 +1,23 @@
 use pyo3::prelude::*;
-use pyxel_engine::{SharedChannel as PyxelSharedChannel, Volume};
+use pyxel_engine as pyxel;
 
+use crate::pyxel_singleton::pyxel;
 use crate::sound_wrapper::Sound;
 
 #[pyclass]
 #[derive(Clone)]
 pub struct Channel {
-    pyxel_channel: PyxelSharedChannel,
+    pyxel_channel: pyxel::SharedChannel,
 }
 
-pub const fn wrap_pyxel_channel(pyxel_channel: PyxelSharedChannel) -> Channel {
+pub const fn wrap_pyxel_channel(pyxel_channel: pyxel::SharedChannel) -> Channel {
     Channel { pyxel_channel }
 }
 
 #[pymethods]
 impl Channel {
     #[getter]
-    pub fn get_gain(&self) -> Volume {
+    pub fn get_gain(&self) -> pyxel::Volume {
         self.pyxel_channel.lock().gain
     }
 
@@ -35,20 +36,19 @@ impl Channel {
         type_switch! {
             snd,
             u32, {
-                self.pyxel_channel.lock().play1(pyxel_engine::sound(snd), tick, loop_);
+                let sound = pyxel().sounds[snd as usize].clone();
+                self.pyxel_channel.lock().play1(sound, tick, loop_);
             },
             Vec<u32>, {
-                let snd = snd.iter().map(|sound_no| pyxel_engine::sound(*sound_no)).collect();
-
-                self.pyxel_channel.lock().play(snd, tick, loop_);
+                let sounds = snd.iter().map(|snd| pyxel().sounds[*snd as usize].clone()).collect();
+                self.pyxel_channel.lock().play(sounds, tick, loop_);
             },
             Sound, {
                 self.pyxel_channel.lock().play1(snd.pyxel_sound, tick, loop_);
             },
             Vec<Sound>, {
-                let snd = snd.iter().map(|sound| sound.pyxel_sound.clone()).collect();
-
-                self.pyxel_channel.lock().play(snd, tick, loop_);
+                let sounds = snd.iter().map(|sound| sound.pyxel_sound.clone()).collect();
+                self.pyxel_channel.lock().play(sounds, tick, loop_);
             }
         }
         Ok(())

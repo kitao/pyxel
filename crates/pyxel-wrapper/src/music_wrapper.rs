@@ -2,17 +2,17 @@ use std::ptr;
 
 use pyo3::exceptions::PyIndexError;
 use pyo3::prelude::*;
-use pyxel_engine::{Music as PyxelMusic, SharedMusic as PyxelSharedMusic};
+use pyxel_engine as pyxel;
 
 #[pyclass]
 #[derive(Clone)]
 pub struct Sounds {
-    pyxel_music: PyxelSharedMusic,
+    pyxel_music: pyxel::SharedMusic,
     channel_no: u32,
 }
 
 impl Sounds {
-    fn new(pyxel_music: PyxelSharedMusic, channel_no: u32) -> Self {
+    fn new(pyxel_music: pyxel::SharedMusic, channel_no: u32) -> Self {
         Self {
             pyxel_music,
             channel_no,
@@ -56,11 +56,11 @@ impl Sounds {
 #[pyclass]
 #[derive(Clone)]
 pub struct SoundsList {
-    pyxel_music: PyxelSharedMusic,
+    pyxel_music: pyxel::SharedMusic,
 }
 
 impl SoundsList {
-    fn new(pyxel_music: PyxelSharedMusic) -> Self {
+    fn new(pyxel_music: pyxel::SharedMusic) -> Self {
         Self { pyxel_music }
     }
 }
@@ -83,10 +83,10 @@ impl SoundsList {
 #[pyclass]
 #[derive(Clone)]
 pub struct Music {
-    pyxel_music: PyxelSharedMusic,
+    pyxel_music: pyxel::SharedMusic,
 }
 
-pub const fn wrap_pyxel_music(pyxel_music: PyxelSharedMusic) -> Music {
+pub const fn wrap_pyxel_music(pyxel_music: pyxel::SharedMusic) -> Music {
     Music { pyxel_music }
 }
 
@@ -94,7 +94,7 @@ pub const fn wrap_pyxel_music(pyxel_music: PyxelSharedMusic) -> Music {
 impl Music {
     #[new]
     pub fn new() -> Self {
-        wrap_pyxel_music(PyxelMusic::new())
+        wrap_pyxel_music(pyxel::Music::new())
     }
 
     pub fn set(&self, snds0: Vec<u32>, snds1: Vec<u32>, snds2: Vec<u32>, snds3: Vec<u32>) {

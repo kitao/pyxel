@@ -92,9 +92,7 @@ pub fn init(
 
     // Graphics
     let graphics = Graphics::new();
-    let colors = (0..NUM_COLORS)
-        .map(|i| DEFAULT_COLORS[i as usize])
-        .collect();
+    let colors = DEFAULT_COLORS.to_vec();
     let images: Vec<_> = (0..NUM_IMAGES)
         .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
         .collect();

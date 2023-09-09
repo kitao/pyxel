@@ -1,11 +1,9 @@
 use pyo3::prelude::*;
-use pyxel_engine::{
-    Effect, Note, SharedSound as PyxelSharedSound, Sound as PyxelSound, Speed, Tone, Volume,
-};
+use pyxel_engine as pyxel;
 
 macro_rules! define_private_methods_for_list {
     ($type: ty, $elems: ident) => {
-        fn new(pyxel_sound: PyxelSharedSound) -> Self {
+        fn new(pyxel_sound: pyxel::SharedSound) -> Self {
             Self { pyxel_sound }
         }
 
@@ -22,11 +20,11 @@ macro_rules! define_private_methods_for_list {
 #[pyclass]
 #[derive(Clone)]
 pub struct Notes {
-    pyxel_sound: PyxelSharedSound,
+    pyxel_sound: pyxel::SharedSound,
 }
 
 impl Notes {
-    define_private_methods_for_list!(Note, notes);
+    define_private_methods_for_list!(pyxel::Note, notes);
 }
 
 #[pymethods]
@@ -35,19 +33,19 @@ impl Notes {
         impl_len_method_for_list!(self)
     }
 
-    fn __getitem__(&self, index: isize) -> PyResult<Note> {
+    fn __getitem__(&self, index: isize) -> PyResult<pyxel::Note> {
         impl_getitem_method_for_list!(self, index)
     }
 
-    fn __setitem__(&mut self, index: isize, value: Note) -> PyResult<()> {
+    fn __setitem__(&mut self, index: isize, value: pyxel::Note) -> PyResult<()> {
         impl_setitem_method_for_list!(self, index, value)
     }
 
-    pub fn from_list(&mut self, lst: Vec<Note>) -> PyResult<()> {
+    pub fn from_list(&mut self, lst: Vec<pyxel::Note>) -> PyResult<()> {
         impl_from_list_method_for_list!(self, lst)
     }
 
-    pub fn to_list(&self) -> PyResult<Vec<Note>> {
+    pub fn to_list(&self) -> PyResult<Vec<pyxel::Note>> {
         impl_to_list_method_for_list!(self)
     }
 }
@@ -55,11 +53,11 @@ impl Notes {
 #[pyclass]
 #[derive(Clone)]
 pub struct Tones {
-    pyxel_sound: PyxelSharedSound,
+    pyxel_sound: pyxel::SharedSound,
 }
 
 impl Tones {
-    define_private_methods_for_list!(Tone, tones);
+    define_private_methods_for_list!(pyxel::Tone, tones);
 }
 
 #[pymethods]
@@ -68,19 +66,19 @@ impl Tones {
         impl_len_method_for_list!(self)
     }
 
-    fn __getitem__(&self, index: isize) -> PyResult<Tone> {
+    fn __getitem__(&self, index: isize) -> PyResult<pyxel::Tone> {
         impl_getitem_method_for_list!(self, index)
     }
 
-    fn __setitem__(&mut self, index: isize, value: Tone) -> PyResult<()> {
+    fn __setitem__(&mut self, index: isize, value: pyxel::Tone) -> PyResult<()> {
         impl_setitem_method_for_list!(self, index, value)
     }
 
-    pub fn from_list(&mut self, lst: Vec<Tone>) -> PyResult<()> {
+    pub fn from_list(&mut self, lst: Vec<pyxel::Tone>) -> PyResult<()> {
         impl_from_list_method_for_list!(self, lst)
     }
 
-    pub fn to_list(&self) -> PyResult<Vec<Tone>> {
+    pub fn to_list(&self) -> PyResult<Vec<pyxel::Tone>> {
         impl_to_list_method_for_list!(self)
     }
 }
@@ -88,11 +86,11 @@ impl Tones {
 #[pyclass]
 #[derive(Clone)]
 pub struct Volumes {
-    pyxel_sound: PyxelSharedSound,
+    pyxel_sound: pyxel::SharedSound,
 }
 
 impl Volumes {
-    define_private_methods_for_list!(Volume, volumes);
+    define_private_methods_for_list!(pyxel::Volume, volumes);
 }
 
 #[pymethods]
@@ -101,19 +99,19 @@ impl Volumes {
         impl_len_method_for_list!(self)
     }
 
-    fn __getitem__(&self, index: isize) -> PyResult<Volume> {
+    fn __getitem__(&self, index: isize) -> PyResult<pyxel::Volume> {
         impl_getitem_method_for_list!(self, index)
     }
 
-    fn __setitem__(&mut self, index: isize, value: Volume) -> PyResult<()> {
+    fn __setitem__(&mut self, index: isize, value: pyxel::Volume) -> PyResult<()> {
         impl_setitem_method_for_list!(self, index, value)
     }
 
-    pub fn from_list(&mut self, lst: Vec<Volume>) -> PyResult<()> {
+    pub fn from_list(&mut self, lst: Vec<pyxel::Volume>) -> PyResult<()> {
         impl_from_list_method_for_list!(self, lst)
     }
 
-    pub fn to_list(&self) -> PyResult<Vec<Volume>> {
+    pub fn to_list(&self) -> PyResult<Vec<pyxel::Volume>> {
         impl_to_list_method_for_list!(self)
     }
 }
@@ -121,11 +119,11 @@ impl Volumes {
 #[pyclass]
 #[derive(Clone)]
 pub struct Effects {
-    pyxel_sound: PyxelSharedSound,
+    pyxel_sound: pyxel::SharedSound,
 }
 
 impl Effects {
-    define_private_methods_for_list!(Effect, effects);
+    define_private_methods_for_list!(pyxel::Effect, effects);
 }
 
 #[pymethods]
@@ -134,19 +132,19 @@ impl Effects {
         impl_len_method_for_list!(self)
     }
 
-    fn __getitem__(&self, index: isize) -> PyResult<Effect> {
+    fn __getitem__(&self, index: isize) -> PyResult<pyxel::Effect> {
         impl_getitem_method_for_list!(self, index)
     }
 
-    fn __setitem__(&mut self, index: isize, value: Effect) -> PyResult<()> {
+    fn __setitem__(&mut self, index: isize, value: pyxel::Effect) -> PyResult<()> {
         impl_setitem_method_for_list!(self, index, value)
     }
 
-    pub fn from_list(&mut self, lst: Vec<Effect>) -> PyResult<()> {
+    pub fn from_list(&mut self, lst: Vec<pyxel::Effect>) -> PyResult<()> {
         impl_from_list_method_for_list!(self, lst)
     }
 
-    pub fn to_list(&self) -> PyResult<Vec<Effect>> {
+    pub fn to_list(&self) -> PyResult<Vec<pyxel::Effect>> {
         impl_to_list_method_for_list!(self)
     }
 }
@@ -154,10 +152,10 @@ impl Effects {
 #[pyclass]
 #[derive(Clone)]
 pub struct Sound {
-    pub pyxel_sound: PyxelSharedSound,
+    pub pyxel_sound: pyxel::SharedSound,
 }
 
-pub const fn wrap_pyxel_sound(pyxel_sound: PyxelSharedSound) -> Sound {
+pub const fn wrap_pyxel_sound(pyxel_sound: pyxel::SharedSound) -> Sound {
     Sound { pyxel_sound }
 }
 
@@ -165,7 +163,7 @@ pub const fn wrap_pyxel_sound(pyxel_sound: PyxelSharedSound) -> Sound {
 impl Sound {
     #[new]
     pub fn new() -> Self {
-        wrap_pyxel_sound(PyxelSound::new())
+        wrap_pyxel_sound(pyxel::Sound::new())
     }
 
     #[getter]
@@ -189,16 +187,16 @@ impl Sound {
     }
 
     #[getter]
-    pub fn get_speed(&self) -> Speed {
+    pub fn get_speed(&self) -> pyxel::Speed {
         self.pyxel_sound.lock().speed
     }
 
     #[setter]
-    pub fn set_speed(&self, speed: Speed) {
+    pub fn set_speed(&self, speed: pyxel::Speed) {
         self.pyxel_sound.lock().speed = speed;
     }
 
-    pub fn set(&self, notes: &str, tones: &str, volumes: &str, effects: &str, speed: Speed) {
+    pub fn set(&self, notes: &str, tones: &str, volumes: &str, effects: &str, speed: pyxel::Speed) {
         self.pyxel_sound
             .lock()
             .set(notes, tones, volumes, effects, speed);
