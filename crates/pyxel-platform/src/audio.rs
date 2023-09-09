@@ -1,10 +1,9 @@
-use std::ptr;
+use std::ptr::null_mut;
 
+use crate::platform::platform;
 use crate::sdl2_sys::*;
 
-static mut AUDIO_DEVICE_ID: u32 = 0;
-
-pub(crate) fn init_audio(freqency: u32, channels: u8, samples: u16) {
+pub fn init_audio(freqency: u32, channels: u8, samples: u16) -> SDL_AudioDeviceID {
     let desired = SDL_AudioSpec {
         freq: freqency as i32,
         format: AUDIO_S16 as u16,
@@ -14,7 +13,7 @@ pub(crate) fn init_audio(freqency: u32, channels: u8, samples: u16) {
         padding: 0,
         size: 0,
         callback: None,
-        userdata: ptr::null_mut(),
+        userdata: null_mut(),
     };
     let mut obtained = SDL_AudioSpec {
         freq: 0,
@@ -25,16 +24,18 @@ pub(crate) fn init_audio(freqency: u32, channels: u8, samples: u16) {
         padding: 0,
         size: 0,
         callback: None,
-        userdata: ptr::null_mut(),
+        userdata: null_mut(),
     };
-    //AUDIO_DEVICE_ID = SDL_OpenAudioDevice(device, iscapture, desired, obtained, allowed_changes);
+    //unsafe { SDL_OpenAudioDevice(device, iscapture, desired, obtained, allowed_changes) }
+    0
 }
 
 pub fn set_audio_enabled(enabled: bool) {
     let pause_on = if enabled { 0 } else { 1 };
-    unsafe {
-        if AUDIO_DEVICE_ID != 0 {
-            SDL_PauseAudioDevice(AUDIO_DEVICE_ID, pause_on);
+    let audio_device_id = platform().audio_device_id;
+    if audio_device_id != 0 {
+        unsafe {
+            SDL_PauseAudioDevice(audio_device_id, pause_on);
         }
     }
 }
