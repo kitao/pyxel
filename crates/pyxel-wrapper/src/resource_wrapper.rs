@@ -1,5 +1,7 @@
 use pyo3::prelude::*;
 
+use crate::pyxel_singleton::pyxel;
+
 #[pyfunction]
 #[pyo3(text_signature = "(filename, *, image, tilemap, sound, music)")]
 fn load(
@@ -13,7 +15,7 @@ fn load(
     let tilemap = tilemap.unwrap_or(true);
     let sound = sound.unwrap_or(true);
     let music = music.unwrap_or(true);
-    pyxel_engine::load(filename, image, tilemap, sound, music);
+    pyxel().load(filename, image, tilemap, sound, music);
 }
 
 #[pyfunction]
@@ -29,29 +31,29 @@ fn save(
     let tilemap = tilemap.unwrap_or(true);
     let sound = sound.unwrap_or(true);
     let music = music.unwrap_or(true);
-    pyxel_engine::save(filename, image, tilemap, sound, music);
+    pyxel().save(filename, image, tilemap, sound, music);
 }
 
 #[pyfunction]
 fn screenshot(scale: Option<u32>) {
-    pyxel_engine::screenshot(scale);
+    pyxel().screenshot(scale);
 }
 
 #[pyfunction]
-fn reset_capture() {
-    pyxel_engine::reset_capture();
+fn reset_screencast() {
+    pyxel().reset_screencast();
 }
 
 #[pyfunction]
 fn screencast(scale: Option<u32>) {
-    pyxel_engine::screencast(scale);
+    pyxel().screencast(scale);
 }
 
 pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(load, m)?)?;
     m.add_function(wrap_pyfunction!(save, m)?)?;
     m.add_function(wrap_pyfunction!(screenshot, m)?)?;
-    m.add_function(wrap_pyfunction!(reset_capture, m)?)?;
     m.add_function(wrap_pyfunction!(screencast, m)?)?;
+    m.add_function(wrap_pyfunction!(reset_screencast, m)?)?;
     Ok(())
 }

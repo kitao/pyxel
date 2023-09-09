@@ -1,28 +1,39 @@
 use pyo3::prelude::*;
-use pyxel_engine::{Color, Image as PyxelImage, SharedImage as PyxelSharedImage};
+use pyxel_engine as pyxel;
 
+use crate::pyxel_singleton::{is_pyxel_initialized, pyxel};
 use crate::tilemap_wrapper::Tilemap;
 
 #[pyclass]
 #[derive(Clone)]
 pub struct Image {
-    pub pyxel_image: PyxelSharedImage,
+    pub pyxel_image: pyxel::SharedImage,
 }
 
-pub const fn wrap_pyxel_image(pyxel_image: PyxelSharedImage) -> Image {
+pub const fn wrap_pyxel_image(pyxel_image: pyxel::SharedImage) -> Image {
     Image { pyxel_image }
+}
+
+macro_rules! pyxel_colors {
+    () => {
+        if is_pyxel_initialized() {
+            &pyxel().colors
+        } else {
+            &pyxel::DEFAULT_COLORS
+        }
+    };
 }
 
 #[pymethods]
 impl Image {
     #[new]
     pub fn new(width: u32, height: u32) -> Self {
-        wrap_pyxel_image(PyxelImage::new(width, height))
+        wrap_pyxel_image(pyxel::Image::new(width, height))
     }
 
     #[staticmethod]
     pub fn from_image(filename: &str) -> Self {
-        wrap_pyxel_image(PyxelImage::from_image(filename))
+        wrap_pyxel_image(pyxel::Image::from_image(filename, pyxel_colors!()))
     }
 
     #[getter]
@@ -52,11 +63,15 @@ impl Image {
     }
 
     pub fn load(&self, x: i32, y: i32, filename: &str) {
-        self.pyxel_image.lock().load(x, y, filename);
+        self.pyxel_image
+            .lock()
+            .load(x, y, filename, pyxel_colors!());
     }
 
     pub fn save(&self, filename: &str, scale: u32) {
-        self.pyxel_image.lock().save(filename, scale);
+        self.pyxel_image
+            .lock()
+            .save(filename, scale, pyxel_colors!());
     }
 
     pub fn clip(
@@ -87,55 +102,55 @@ impl Image {
         Ok(())
     }
 
-    pub fn cls(&self, col: Color) {
+    pub fn cls(&self, col: pyxel::Color) {
         self.pyxel_image.lock().cls(col);
     }
 
-    pub fn pget(&self, x: f64, y: f64) -> Color {
+    pub fn pget(&self, x: f64, y: f64) -> pyxel::Color {
         self.pyxel_image.lock().pget(x, y)
     }
 
-    pub fn pset(&self, x: f64, y: f64, col: Color) {
+    pub fn pset(&self, x: f64, y: f64, col: pyxel::Color) {
         self.pyxel_image.lock().pset(x, y, col);
     }
 
-    pub fn line(&self, x1: f64, y1: f64, x2: f64, y2: f64, col: Color) {
+    pub fn line(&self, x1: f64, y1: f64, x2: f64, y2: f64, col: pyxel::Color) {
         self.pyxel_image.lock().line(x1, y1, x2, y2, col);
     }
 
-    pub fn rect(&self, x: f64, y: f64, w: f64, h: f64, col: Color) {
+    pub fn rect(&self, x: f64, y: f64, w: f64, h: f64, col: pyxel::Color) {
         self.pyxel_image.lock().rect(x, y, w, h, col);
     }
 
-    pub fn rectb(&self, x: f64, y: f64, w: f64, h: f64, col: Color) {
+    pub fn rectb(&self, x: f64, y: f64, w: f64, h: f64, col: pyxel::Color) {
         self.pyxel_image.lock().rectb(x, y, w, h, col);
     }
 
-    pub fn circ(&self, x: f64, y: f64, r: f64, col: Color) {
+    pub fn circ(&self, x: f64, y: f64, r: f64, col: pyxel::Color) {
         self.pyxel_image.lock().circ(x, y, r, col);
     }
 
-    pub fn circb(&self, x: f64, y: f64, r: f64, col: Color) {
+    pub fn circb(&self, x: f64, y: f64, r: f64, col: pyxel::Color) {
         self.pyxel_image.lock().circb(x, y, r, col);
     }
 
-    pub fn elli(&self, x: f64, y: f64, w: f64, h: f64, col: Color) {
+    pub fn elli(&self, x: f64, y: f64, w: f64, h: f64, col: pyxel::Color) {
         self.pyxel_image.lock().elli(x, y, w, h, col);
     }
 
-    pub fn ellib(&self, x: f64, y: f64, w: f64, h: f64, col: Color) {
+    pub fn ellib(&self, x: f64, y: f64, w: f64, h: f64, col: pyxel::Color) {
         self.pyxel_image.lock().ellib(x, y, w, h, col);
     }
 
-    pub fn tri(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: Color) {
+    pub fn tri(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: pyxel::Color) {
         self.pyxel_image.lock().tri(x1, y1, x2, y2, x3, y3, col);
     }
 
-    pub fn trib(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: Color) {
+    pub fn trib(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: pyxel::Color) {
         self.pyxel_image.lock().trib(x1, y1, x2, y2, x3, y3, col);
     }
 
-    pub fn fill(&self, x: f64, y: f64, col: Color) {
+    pub fn fill(&self, x: f64, y: f64, col: pyxel::Color) {
         self.pyxel_image.lock().fill(x, y, col);
     }
 
@@ -148,12 +163,13 @@ impl Image {
         v: f64,
         w: f64,
         h: f64,
-        colkey: Option<Color>,
+        colkey: Option<pyxel::Color>,
     ) -> PyResult<()> {
         type_switch! {
             img,
             u32, {
-                self.pyxel_image.lock().blt(x, y, pyxel_engine::image(img), u, v, w, h, colkey);
+                let image = pyxel().images[img as usize].clone();
+                self.pyxel_image.lock().blt(x, y, image, u, v, w, h, colkey);
             },
             Image, {
                 self.pyxel_image.lock().blt(x, y, img.pyxel_image, u, v, w, h, colkey);
@@ -171,12 +187,13 @@ impl Image {
         v: f64,
         w: f64,
         h: f64,
-        colkey: Option<Color>,
+        colkey: Option<pyxel::Color>,
     ) -> PyResult<()> {
         type_switch! {
             tm,
             u32, {
-                self.pyxel_image.lock().bltm(x, y, pyxel_engine::tilemap(tm), u, v, w, h, colkey);
+                let tilemap = pyxel().tilemaps[tm as usize].clone();
+                self.pyxel_image.lock().bltm(x, y, tilemap, u, v, w, h, colkey);
             },
             Tilemap, {
                 self.pyxel_image.lock().bltm(x, y, tm.pyxel_tilemap, u, v, w, h, colkey);
@@ -185,8 +202,13 @@ impl Image {
         Ok(())
     }
 
-    pub fn text(&self, x: f64, y: f64, s: &str, col: Color) {
-        self.pyxel_image.lock().text(x, y, s, col);
+    pub fn text(&self, x: f64, y: f64, text: &str, col: pyxel::Color) {
+        let font = if is_pyxel_initialized() {
+            pyxel().font.clone()
+        } else {
+            pyxel::FONT_IMAGE.clone()
+        };
+        self.pyxel_image.lock().text(x, y, text, col, font);
     }
 }
 

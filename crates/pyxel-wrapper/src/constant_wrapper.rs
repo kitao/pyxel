@@ -1,9 +1,10 @@
 use pyo3::prelude::*;
+use pyxel_engine as pyxel;
 
 pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     macro_rules! add_constant {
         ($name: ident) => {
-            m.add(stringify!($name), pyxel_engine::$name)
+            m.add(stringify!($name), pyxel::$name)
         };
     }
 
@@ -349,6 +350,50 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(GAMEPAD2_BUTTON_DPAD_DOWN)?;
     add_constant!(GAMEPAD2_BUTTON_DPAD_LEFT)?;
     add_constant!(GAMEPAD2_BUTTON_DPAD_RIGHT)?;
+
+    add_constant!(GAMEPAD3_AXIS_LEFTX)?;
+    add_constant!(GAMEPAD3_AXIS_LEFTY)?;
+    add_constant!(GAMEPAD3_AXIS_RIGHTX)?;
+    add_constant!(GAMEPAD3_AXIS_RIGHTY)?;
+    add_constant!(GAMEPAD3_AXIS_TRIGGERLEFT)?;
+    add_constant!(GAMEPAD3_AXIS_TRIGGERRIGHT)?;
+    add_constant!(GAMEPAD3_BUTTON_A)?;
+    add_constant!(GAMEPAD3_BUTTON_B)?;
+    add_constant!(GAMEPAD3_BUTTON_X)?;
+    add_constant!(GAMEPAD3_BUTTON_Y)?;
+    add_constant!(GAMEPAD3_BUTTON_BACK)?;
+    add_constant!(GAMEPAD3_BUTTON_GUIDE)?;
+    add_constant!(GAMEPAD3_BUTTON_START)?;
+    add_constant!(GAMEPAD3_BUTTON_LEFTSTICK)?;
+    add_constant!(GAMEPAD3_BUTTON_RIGHTSTICK)?;
+    add_constant!(GAMEPAD3_BUTTON_LEFTSHOULDER)?;
+    add_constant!(GAMEPAD3_BUTTON_RIGHTSHOULDER)?;
+    add_constant!(GAMEPAD3_BUTTON_DPAD_UP)?;
+    add_constant!(GAMEPAD3_BUTTON_DPAD_DOWN)?;
+    add_constant!(GAMEPAD3_BUTTON_DPAD_LEFT)?;
+    add_constant!(GAMEPAD3_BUTTON_DPAD_RIGHT)?;
+
+    add_constant!(GAMEPAD4_AXIS_LEFTX)?;
+    add_constant!(GAMEPAD4_AXIS_LEFTY)?;
+    add_constant!(GAMEPAD4_AXIS_RIGHTX)?;
+    add_constant!(GAMEPAD4_AXIS_RIGHTY)?;
+    add_constant!(GAMEPAD4_AXIS_TRIGGERLEFT)?;
+    add_constant!(GAMEPAD4_AXIS_TRIGGERRIGHT)?;
+    add_constant!(GAMEPAD4_BUTTON_A)?;
+    add_constant!(GAMEPAD4_BUTTON_B)?;
+    add_constant!(GAMEPAD4_BUTTON_X)?;
+    add_constant!(GAMEPAD4_BUTTON_Y)?;
+    add_constant!(GAMEPAD4_BUTTON_BACK)?;
+    add_constant!(GAMEPAD4_BUTTON_GUIDE)?;
+    add_constant!(GAMEPAD4_BUTTON_START)?;
+    add_constant!(GAMEPAD4_BUTTON_LEFTSTICK)?;
+    add_constant!(GAMEPAD4_BUTTON_RIGHTSTICK)?;
+    add_constant!(GAMEPAD4_BUTTON_LEFTSHOULDER)?;
+    add_constant!(GAMEPAD4_BUTTON_RIGHTSHOULDER)?;
+    add_constant!(GAMEPAD4_BUTTON_DPAD_UP)?;
+    add_constant!(GAMEPAD4_BUTTON_DPAD_DOWN)?;
+    add_constant!(GAMEPAD4_BUTTON_DPAD_LEFT)?;
+    add_constant!(GAMEPAD4_BUTTON_DPAD_RIGHT)?;
 
     Ok(())
 }
