@@ -1,6 +1,7 @@
-use crate::prelude::*;
+use crate::image::{Color, SharedImage};
+use crate::pyxel::Pyxel;
 
-pub(crate) struct Graphics {}
+pub struct Graphics {}
 
 impl Graphics {
     pub fn new() -> Self {
