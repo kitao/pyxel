@@ -1,4 +1,4 @@
-use std::cmp;
+use std::cmp::{max, min};
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub struct RectArea {
@@ -58,10 +58,10 @@ impl RectArea {
     }
 
     pub fn intersects(&self, rect: Self) -> Self {
-        let left = cmp::max(self.left, rect.left);
-        let top = cmp::max(self.top, rect.top);
-        let right = cmp::min(self.right, rect.right);
-        let bottom = cmp::min(self.bottom, rect.bottom);
+        let left = max(self.left, rect.left);
+        let top = max(self.top, rect.top);
+        let right = min(self.right, rect.right);
+        let bottom = min(self.bottom, rect.bottom);
         let width = right - left + 1;
         let height = bottom - top + 1;
         if width > 0 && height > 0 {

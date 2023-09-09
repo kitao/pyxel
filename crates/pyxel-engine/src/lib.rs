@@ -27,26 +27,36 @@
 )]
 
 #[macro_use]
-pub mod utils;
-pub mod audio;
-pub mod blipbuf;
-pub mod canvas;
-pub mod channel;
-pub mod graphics;
-pub mod image;
-pub mod input;
-pub mod math;
-pub mod music;
-pub mod oscillator;
-pub mod prelude;
-pub mod profiler;
-pub mod pyxel;
-pub mod rectarea;
-pub mod resource;
-pub mod screencast;
-pub mod settings;
-pub mod sound;
-pub mod system;
-pub mod tilemap;
+mod utils;
+mod audio;
+mod blipbuf;
+mod canvas;
+mod channel;
+mod graphics;
+mod image;
+mod input;
+mod math;
+mod music;
+mod oscillator;
+mod profiler;
+mod pyxel;
+mod rectarea;
+mod resource;
+mod screencast;
+mod settings;
+mod sound;
+mod system;
+mod tilemap;
 
-pub use pyxel_platform::keys;
+use pyxel_platform::keys;
+
+pub use crate::channel::{Channel, Note, SharedChannel, Speed, Volume};
+pub use crate::image::{Color, Image, Rgb8, SharedImage};
+pub use crate::keys::*;
+pub use crate::music::{Music, SharedMusic};
+pub use crate::oscillator::{Effect, Tone};
+pub use crate::pyxel::{init, Pyxel};
+pub use crate::settings::*;
+pub use crate::sound::{SharedSound, Sound};
+pub use crate::system::PyxelCallback;
+pub use crate::tilemap::{SharedTilemap, Tile, Tilemap};

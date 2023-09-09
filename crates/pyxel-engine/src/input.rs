@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
-use crate::prelude::*;
-use crate::utils;
+use crate::keys::{Key, KeyValue, MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y};
+use crate::pyxel::Pyxel;
+use crate::utils::f64_to_i32;
 
 #[derive(PartialEq)]
 enum KeyState {
@@ -11,7 +12,7 @@ enum KeyState {
     ReleasedAndPressed,
 }
 
-pub(crate) struct Input {
+pub struct Input {
     mouse_visible: bool,
     key_states: HashMap<Key, (u32, KeyState)>,
     key_values: HashMap<Key, KeyValue>,
@@ -69,6 +70,10 @@ impl Pyxel {
 
     pub(crate) fn add_dropped_file(&mut self, filename: &str) {
         self.dropped_files.push(filename.to_string());
+    }
+
+    pub(crate) fn is_mouse_visible(&self) -> bool {
+        self.input.mouse_visible
     }
 }
 
@@ -130,10 +135,6 @@ impl Pyxel {
         self.input.key_values.get(&key).copied().unwrap_or(0)
     }
 
-    pub(crate) fn is_mouse_visible(&self) -> bool {
-        self.input.mouse_visible
-    }
-
     pub fn mouse(&mut self, visible: bool) {
         self.input.mouse_visible = visible;
     }
@@ -149,8 +150,8 @@ impl Pyxel {
     }*/
 
     pub fn set_mouse_pos(&mut self, x: f64, y: f64) {
-        let x = utils::f64_to_i32(x);
-        let y = utils::f64_to_i32(y);
+        let x = f64_to_i32(x);
+        let y = f64_to_i32(y);
         self.input.key_values.insert(MOUSE_POS_X, x);
         self.input.key_values.insert(MOUSE_POS_Y, y);
         pyxel_platform::set_mouse_pos(x, y);

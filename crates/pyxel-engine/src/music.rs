@@ -1,8 +1,10 @@
 use std::fmt::Write as _;
 
-use crate::prelude::*;
+use crate::pyxel::Pyxel;
 use crate::resource::ResourceItem;
-use crate::utils;
+use crate::settings::NUM_CHANNELS;
+use crate::settings::RESOURCE_ARCHIVE_DIRNAME;
+use crate::utils::parse_hex_string;
 
 #[derive(Clone)]
 pub struct Music {
@@ -61,7 +63,7 @@ impl ResourceItem for Music {
                 continue;
             }
             string_loop!(j, value, line, 2, {
-                self.sounds_list[i].push(utils::parse_hex_string(&value).unwrap());
+                self.sounds_list[i].push(parse_hex_string(&value).unwrap());
             });
         }
     }
