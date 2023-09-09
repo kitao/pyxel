@@ -1,12 +1,12 @@
 use std::ffi::CStr;
-use std::mem;
-use std::str;
+use std::mem::zeroed;
+use std::str::from_utf8 as str_from_utf8;
 
 #[cfg(target_os = "emscripten")]
 use crate::controller::{add_controller, remove_controller};
 use crate::keys::*;
+use crate::platform::platform;
 use crate::sdl2_sys::*;
-use crate::window::WINDOW;
 
 #[derive(Clone)]
 pub enum Event {
@@ -32,7 +32,7 @@ fn to_unified_key(key: Key) -> Option<Key> {
 
 pub fn poll_events() -> Vec<Event> {
     let mut pyxel_events = Vec::new();
-    let mut sdl_event: SDL_Event = unsafe { mem::zeroed() };
+    let mut sdl_event: SDL_Event = unsafe { zeroed() };
     while unsafe { SDL_PollEvent(&mut sdl_event as *mut _) } != 0 {
         match unsafe { sdl_event.type_ } {
             SDL_WINDOWEVENT => match unsafe { sdl_event.window.event } as u32 {
@@ -219,9 +219,7 @@ pub fn poll_events() -> Vec<Event> {
             }
             SDL_TEXTINPUT => {
                 let text = {
-                    str::from_utf8(unsafe {
-                        &*(&sdl_event.text.text as *const [i8] as *const [u8])
-                    })
+                    str_from_utf8(unsafe { &*(&sdl_event.text.text as *const [i8] as *const [u8]) })
                 };
                 if let Ok(text) = text {
                     let text = text.to_string();
@@ -230,7 +228,7 @@ pub fn poll_events() -> Vec<Event> {
             }
             SDL_DROPFILE => {
                 unsafe {
-                    SDL_RaiseWindow(WINDOW);
+                    SDL_RaiseWindow(platform().window);
                 }
                 let filename = unsafe { CStr::from_ptr(sdl_event.drop.file) };
                 let filename = filename.to_string_lossy().into_owned();
