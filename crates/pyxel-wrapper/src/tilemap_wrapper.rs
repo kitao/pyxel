@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-use pyxel_engine as pyxel;
 
 use crate::image_wrapper::{wrap_pyxel_image, Image};
 use crate::pyxel_singleton::pyxel;
