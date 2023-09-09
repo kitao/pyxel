@@ -2,9 +2,11 @@ use std::process::exit;
 
 use pyo3::prelude::*;
 use pyo3::types::{PyAny, PyDict};
-use pyxel_engine::{Key, PyxelCallback};
+use pyxel_engine as pyxel;
 #[cfg(not(target_os = "emscripten"))]
 use sysinfo::{Pid, PidExt, System, SystemExt};
+
+use crate::pyxel_singleton::{pyxel, set_pyxel_instance};
 
 #[pyfunction]
 #[pyo3(
@@ -16,7 +18,7 @@ fn init(
     height: u32,
     title: Option<&str>,
     fps: Option<u32>,
-    quit_key: Option<Key>,
+    quit_key: Option<pyxel::Key>,
     display_scale: Option<u32>,
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,
@@ -29,7 +31,7 @@ fn init(
         None,
         Some(locals),
     )?;
-    pyxel_engine::init(
+    set_pyxel_instance(pyxel::init(
         width,
         height,
         title,
@@ -38,23 +40,23 @@ fn init(
         display_scale,
         capture_scale,
         capture_sec,
-    );
+    ));
     Ok(())
 }
 
 #[pyfunction]
 fn title(title: &str) {
-    pyxel_engine::title(title);
+    pyxel().title(title);
 }
 
 #[pyfunction]
 fn icon(data: Vec<&str>, scale: u32) {
-    pyxel_engine::icon(&data, scale);
+    pyxel().icon(&data, scale);
 }
 
 #[pyfunction]
 fn fullscreen(full: bool) {
-    pyxel_engine::fullscreen(full);
+    pyxel().fullscreen(full);
 }
 
 #[pyfunction]
@@ -65,15 +67,15 @@ fn run(py: Python, update: &PyAny, draw: &PyAny) {
         draw: &'a PyAny,
     }
 
-    impl<'a> PyxelCallback for PythonCallback<'a> {
-        fn update(&mut self) {
+    impl<'a> pyxel::PyxelCallback for PythonCallback<'a> {
+        fn update(&mut self, pyxel: &mut pyxel::Pyxel) {
             if let Err(err) = self.update.call0() {
                 err.print(self.py);
                 exit(1);
             }
         }
 
-        fn draw(&mut self) {
+        fn draw(&mut self, pyxel: &mut pyxel::Pyxel) {
             if let Err(err) = self.draw.call0() {
                 err.print(self.py);
                 exit(1);
@@ -81,22 +83,22 @@ fn run(py: Python, update: &PyAny, draw: &PyAny) {
         }
     }
 
-    pyxel_engine::run(PythonCallback { py, update, draw });
+    pyxel().run(PythonCallback { py, update, draw });
 }
 
 #[pyfunction]
 fn show() {
-    pyxel_engine::show();
+    pyxel().show();
 }
 
 #[pyfunction]
 fn flip() {
-    pyxel_engine::flip();
+    pyxel().flip();
 }
 
 #[pyfunction]
 fn quit() {
-    pyxel_engine::quit();
+    pyxel().quit();
 }
 
 #[cfg(not(target_os = "emscripten"))]
