@@ -29,6 +29,7 @@ mod image_wrapper;
 mod input_wrapper;
 mod math_wrapper;
 mod music_wrapper;
+mod pyxel_singleton;
 mod resource_wrapper;
 mod sound_wrapper;
 mod system_wrapper;
@@ -38,37 +39,23 @@ mod variable_wrapper;
 
 use pyo3::prelude::*;
 
-use crate::audio_wrapper::add_audio_functions;
-use crate::channel_wrapper::add_channel_class;
-use crate::constant_wrapper::add_module_constants;
-use crate::graphics_wrapper::add_graphics_functions;
-use crate::image_wrapper::add_image_class;
-use crate::input_wrapper::add_input_functions;
-use crate::math_wrapper::add_math_functions;
-use crate::music_wrapper::add_music_class;
-use crate::resource_wrapper::add_resource_functions;
-use crate::sound_wrapper::add_sound_class;
-use crate::system_wrapper::add_system_functions;
-use crate::tilemap_wrapper::add_tilemap_class;
-use crate::variable_wrapper::add_module_variables;
-
 #[pymodule]
 fn pyxel_wrapper(_py: Python, m: &PyModule) -> PyResult<()> {
-    add_image_class(m)?;
-    add_tilemap_class(m)?;
-    add_channel_class(m)?;
-    add_sound_class(m)?;
-    add_music_class(m)?;
+    crate::image_wrapper::add_image_class(m)?;
+    crate::tilemap_wrapper::add_tilemap_class(m)?;
+    crate::channel_wrapper::add_channel_class(m)?;
+    crate::sound_wrapper::add_sound_class(m)?;
+    crate::music_wrapper::add_music_class(m)?;
 
-    add_module_constants(m)?;
-    add_module_variables(m)?;
+    crate::constant_wrapper::add_module_constants(m)?;
+    crate::variable_wrapper::add_module_variables(m)?;
 
-    add_system_functions(m)?;
-    add_resource_functions(m)?;
-    add_input_functions(m)?;
-    add_graphics_functions(m)?;
-    add_audio_functions(m)?;
-    add_math_functions(m)?;
+    crate::system_wrapper::add_system_functions(m)?;
+    crate::resource_wrapper::add_resource_functions(m)?;
+    crate::input_wrapper::add_input_functions(m)?;
+    crate::graphics_wrapper::add_graphics_functions(m)?;
+    crate::audio_wrapper::add_audio_functions(m)?;
+    crate::math_wrapper::add_math_functions(m)?;
 
     Ok(())
 }
