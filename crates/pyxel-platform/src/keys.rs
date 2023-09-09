@@ -1,4 +1,4 @@
-use paste;
+use paste::paste;
 
 use crate::sdl2_sys::*;
 
@@ -292,7 +292,7 @@ pub const GAMEPAD_KEY_INDEX_INTERVAL: Key = 1000;
 
 macro_rules! define_gamepad_keys {
     ($gamepad_name:ident, $start_index:expr) => {
-        paste::paste! {
+        paste! {
             pub const [<$gamepad_name _AXIS_LEFTX>]: Key  = $start_index + 0;
             pub const [<$gamepad_name _AXIS_LEFTY>]: Key  = $start_index + 1;
             pub const [<$gamepad_name _AXIS_RIGHTX>]: Key  = $start_index + 2;
