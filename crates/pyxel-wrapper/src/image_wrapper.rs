@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-use pyxel_engine as pyxel;
 
 use crate::pyxel_singleton::{is_pyxel_initialized, pyxel};
 use crate::tilemap_wrapper::Tilemap;

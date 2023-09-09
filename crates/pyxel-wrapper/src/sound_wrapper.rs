@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-use pyxel_engine as pyxel;
 
 macro_rules! define_private_methods_for_list {
     ($type: ty, $elems: ident) => {

@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-use pyxel_engine as pyxel;
 
 pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     macro_rules! add_constant {

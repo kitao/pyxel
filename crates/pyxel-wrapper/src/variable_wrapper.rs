@@ -3,7 +3,6 @@ use std::ptr;
 
 use pyo3::exceptions::PyAttributeError;
 use pyo3::prelude::*;
-use pyxel_engine as pyxel;
 
 use crate::image_wrapper::wrap_pyxel_image;
 use crate::pyxel_singleton::pyxel;
@@ -45,6 +44,12 @@ impl Colors {
     }
 }
 
+#[pyclass]
+struct Images;
+
+#[pyclass]
+struct Tilemaps;
+
 #[pyfunction]
 fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
     let value = match name {
@@ -62,6 +67,8 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
 
         // Graphics
         "colors" => Py::new(py, Colors)?.into_py(py),
+        "images" => Py::new(py, Images)?.into_py(py),
+        "tilemaps" => Py::new(py, Tilemaps)?.into_py(py),
         "screen" => wrap_pyxel_image(pyxel().screen.clone()).into_py(py),
         "cursor" => wrap_pyxel_image(pyxel().cursor.clone()).into_py(py),
         "font" => wrap_pyxel_image(pyxel().font.clone()).into_py(py),
