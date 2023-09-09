@@ -1,22 +1,18 @@
 use std::ffi::CString;
-use std::mem;
-use std::ptr;
+use std::mem::transmute;
+use std::ptr::null_mut;
 
-use glow::Context;
+use glow::Context as GlowContext;
 
+use crate::platform::platform;
 use crate::sdl2_sys::*;
 
-pub(crate) static mut WINDOW: *mut SDL_Window = ptr::null_mut();
-static mut GL: *mut Context = ptr::null_mut();
-
-pub fn gl() -> &'static mut Context {
-    unsafe { &mut *GL }
-}
-
-pub(crate) fn init_window(title: &str, width: u32, height: u32) {
+pub fn init_window(title: &str, width: u32, height: u32) -> (*mut SDL_Window, *mut GlowContext) {
+    let window;
+    let gl;
     unsafe {
         let title = CString::new(title).unwrap();
-        WINDOW = SDL_CreateWindow(
+        window = SDL_CreateWindow(
             title.as_ptr(),
             SDL_WINDOWPOS_UNDEFINED_MASK as i32,
             SDL_WINDOWPOS_UNDEFINED_MASK as i32,
@@ -24,16 +20,17 @@ pub(crate) fn init_window(title: &str, width: u32, height: u32) {
             height as i32,
             SDL_WINDOW_OPENGL,
         );
-        if WINDOW.is_null() {
+        if window.is_null() {
             panic!("Failed to create window");
         }
-        if SDL_GL_CreateContext(WINDOW).is_null() {
+        if SDL_GL_CreateContext(window).is_null() {
             panic!("Failed to create OpenGL context");
         }
-        GL = mem::transmute(Box::new(Context::from_loader_function(|s| {
+        gl = transmute(Box::new(GlowContext::from_loader_function(|s| {
             SDL_GL_GetProcAddress(s.as_ptr() as *const _) as *const _
         })));
     }
+    (window, gl)
 
     /*
     let watch_info_file = Self::watch_info_file();
@@ -61,16 +58,20 @@ pub(crate) fn init_window(title: &str, width: u32, height: u32) {
     */
 }
 
+pub fn glow_context() -> &'static mut GlowContext {
+    unsafe { &mut *platform().glow_context }
+}
+
 pub fn swap_window() {
     unsafe {
-        SDL_GL_SwapWindow(WINDOW);
+        SDL_GL_SwapWindow(platform().window);
     }
 }
 
 pub fn set_window_title(title: &str) {
     let title = CString::new(title).unwrap();
     unsafe {
-        SDL_SetWindowTitle(WINDOW, title.as_ptr());
+        SDL_SetWindowTitle(platform().window, title.as_ptr());
     }
 }
 
@@ -100,14 +101,14 @@ pub fn window_pos() -> (i32, i32) {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     unsafe {
-        SDL_GetWindowPosition(WINDOW, &mut x as *mut i32, &mut y as *mut i32);
+        SDL_GetWindowPosition(platform().window, &mut x as *mut i32, &mut y as *mut i32);
     }
     (x, y)
 }
 
 pub fn set_window_pos(x: i32, y: i32) {
     unsafe {
-        SDL_SetWindowPosition(WINDOW, x, y);
+        SDL_SetWindowPosition(platform().window, x, y);
     }
 }
 
@@ -115,19 +116,23 @@ pub fn window_size() -> (u32, u32) {
     let mut width: i32 = 0;
     let mut height: i32 = 0;
     unsafe {
-        SDL_GetWindowSize(WINDOW, &mut width as *mut i32, &mut height as *mut i32);
+        SDL_GetWindowSize(
+            platform().window,
+            &mut width as *mut i32,
+            &mut height as *mut i32,
+        );
     }
     (width as u32, height as u32)
 }
 
 pub fn set_window_size(width: u32, height: u32) {
     unsafe {
-        SDL_SetWindowSize(WINDOW, width as i32, height as i32);
+        SDL_SetWindowSize(platform().window, width as i32, height as i32);
     }
 }
 
 pub fn is_fullscreen() -> bool {
-    (unsafe { SDL_GetWindowFlags(WINDOW) } & SDL_WINDOW_FULLSCREEN) != 0
+    (unsafe { SDL_GetWindowFlags(platform().window) } & SDL_WINDOW_FULLSCREEN) != 0
 }
 
 pub fn set_fullscreen(full: bool) {
@@ -137,7 +142,7 @@ pub fn set_fullscreen(full: bool) {
         0
     };
     unsafe {
-        SDL_SetWindowFullscreen(WINDOW, full);
+        SDL_SetWindowFullscreen(platform().window, full);
     }
 }
 
@@ -147,7 +152,7 @@ pub fn display_size() -> (u32, u32) {
         w: 0,
         h: 0,
         refresh_rate: 0,
-        driverdata: ptr::null_mut(),
+        driverdata: null_mut(),
     };
     if unsafe { SDL_GetCurrentDisplayMode(0, &mut current as *mut SDL_DisplayMode) } != 0 {
         panic!("Failed to get display size");

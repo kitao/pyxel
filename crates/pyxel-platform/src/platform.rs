@@ -1,14 +1,42 @@
-use std::process;
+use std::mem::transmute;
+use std::process::exit;
+use std::ptr::null_mut;
 
+use glow::Context as GlowContext;
+
+use crate::audio::init_audio;
 use crate::sdl2_sys::*;
-use crate::window;
+use crate::window::init_window;
+
+pub struct Platform {
+    pub window: *mut SDL_Window,
+    pub glow_context: *mut GlowContext,
+    pub controllers: Vec<*mut SDL_GameController>,
+    pub audio_device_id: SDL_AudioDeviceID,
+}
+
+static mut PLATFORM: *mut Platform = null_mut();
+
+pub fn platform() -> &'static mut Platform {
+    unsafe { &mut *PLATFORM }
+}
 
 pub fn init<'a, F: FnOnce() -> (&'a str, u32, u32)>(window_params: F) {
     if unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) } < 0 {
         panic!("Failed to initialize SDL2");
     }
     let (title, width, height) = window_params();
-    window::init_window(title, width, height);
+    let (window, glow_context) = init_window(title, width, height);
+    let controllers = Vec::new();
+    let audio_device_id = init_audio(0, 0, 0);
+    unsafe {
+        PLATFORM = transmute(Box::new(Platform {
+            window,
+            glow_context,
+            controllers,
+            audio_device_id,
+        }));
+    }
 }
 
 pub fn run<F: FnMut()>(mut main_loop: F) {
@@ -33,7 +61,7 @@ pub fn quit() {
     }
 
     #[cfg(not(target_os = "emscripten"))]
-    process::exit(0);
+    exit(0);
 
     #[cfg(target_os = "emscripten")]
     emscripten::force_exit(0);
