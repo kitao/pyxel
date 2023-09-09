@@ -5,16 +5,6 @@ use crate::pyxel_singleton::pyxel;
 use crate::tilemap_wrapper::{wrap_pyxel_tilemap, Tilemap};
 
 #[pyfunction]
-fn image(img: u32) -> Image {
-    wrap_pyxel_image(pyxel().images[img as usize].clone())
-}
-
-#[pyfunction]
-fn tilemap(tm: u32) -> Tilemap {
-    wrap_pyxel_tilemap(pyxel().tilemaps[tm as usize].clone())
-}
-
-#[pyfunction]
 fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyResult<()> {
     if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
         pyxel().clip(x, y, w, h);
@@ -166,9 +156,17 @@ fn text(x: f64, y: f64, text: &str, col: pyxel::Color) {
     pyxel().text(x, y, text, col);
 }
 
+#[pyfunction]
+fn image(img: u32) -> Image {
+    wrap_pyxel_image(pyxel().images[img as usize].clone())
+}
+
+#[pyfunction]
+fn tilemap(tm: u32) -> Tilemap {
+    wrap_pyxel_tilemap(pyxel().tilemaps[tm as usize].clone())
+}
+
 pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(image, m)?)?;
-    m.add_function(wrap_pyfunction!(tilemap, m)?)?;
     m.add_function(wrap_pyfunction!(clip, m)?)?;
     m.add_function(wrap_pyfunction!(camera, m)?)?;
     m.add_function(wrap_pyfunction!(pal, m)?)?;
@@ -188,5 +186,10 @@ pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(blt, m)?)?;
     m.add_function(wrap_pyfunction!(bltm, m)?)?;
     m.add_function(wrap_pyfunction!(text, m)?)?;
+
+    // Duplicated functions
+    m.add_function(wrap_pyfunction!(image, m)?)?;
+    m.add_function(wrap_pyfunction!(tilemap, m)?)?;
+
     Ok(())
 }
