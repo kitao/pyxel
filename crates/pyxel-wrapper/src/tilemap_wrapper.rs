@@ -1,15 +1,16 @@
 use pyo3::prelude::*;
-use pyxel_engine::{SharedTilemap as PyxelSharedTilemap, Tile, Tilemap as PyxelTilemap};
+use pyxel_engine as pyxel;
 
 use crate::image_wrapper::{wrap_pyxel_image, Image};
+use crate::pyxel_singleton::pyxel;
 
 #[pyclass]
 #[derive(Clone)]
 pub struct Tilemap {
-    pub pyxel_tilemap: PyxelSharedTilemap,
+    pub pyxel_tilemap: pyxel::SharedTilemap,
 }
 
-pub const fn wrap_pyxel_tilemap(pyxel_tilemap: PyxelSharedTilemap) -> Tilemap {
+pub const fn wrap_pyxel_tilemap(pyxel_tilemap: pyxel::SharedTilemap) -> Tilemap {
     Tilemap { pyxel_tilemap }
 }
 
@@ -20,13 +21,13 @@ impl Tilemap {
         let img = type_switch! {
             img,
             u32, {
-                pyxel_engine::image(img)
+                pyxel().images[img as usize].clone()
             },
             Image, {
                 img.pyxel_image
             }
         };
-        Ok(wrap_pyxel_tilemap(PyxelTilemap::new(width, height, img)))
+        Ok(wrap_pyxel_tilemap(pyxel::Tilemap::new(width, height, img)))
     }
 
     #[getter]
@@ -51,12 +52,12 @@ impl Tilemap {
 
     #[getter]
     pub fn refimg(&self) -> Option<u32> {
-        pyxel_engine::image_no(self.pyxel_tilemap.lock().image.clone())
+        pyxel().image_no(self.pyxel_tilemap.lock().image.clone())
     }
 
     #[setter]
     pub fn set_refimg(&self, img: u32) {
-        self.pyxel_tilemap.lock().image = pyxel_engine::image(img);
+        self.pyxel_tilemap.lock().image = pyxel().images[img as usize].clone();
     }
 
     pub fn data_ptr(&self, py: Python) -> PyObject {
@@ -103,55 +104,55 @@ impl Tilemap {
         Ok(())
     }
 
-    pub fn cls(&self, tile: Tile) {
+    pub fn cls(&self, tile: pyxel::Tile) {
         self.pyxel_tilemap.lock().cls(tile);
     }
 
-    pub fn pget(&self, x: f64, y: f64) -> Tile {
+    pub fn pget(&self, x: f64, y: f64) -> pyxel::Tile {
         self.pyxel_tilemap.lock().pget(x, y)
     }
 
-    pub fn pset(&self, x: f64, y: f64, tile: Tile) {
+    pub fn pset(&self, x: f64, y: f64, tile: pyxel::Tile) {
         self.pyxel_tilemap.lock().pset(x, y, tile);
     }
 
-    pub fn line(&self, x1: f64, y1: f64, x2: f64, y2: f64, tile: Tile) {
+    pub fn line(&self, x1: f64, y1: f64, x2: f64, y2: f64, tile: pyxel::Tile) {
         self.pyxel_tilemap.lock().line(x1, y1, x2, y2, tile);
     }
 
-    pub fn rect(&self, x: f64, y: f64, w: f64, h: f64, tile: Tile) {
+    pub fn rect(&self, x: f64, y: f64, w: f64, h: f64, tile: pyxel::Tile) {
         self.pyxel_tilemap.lock().rect(x, y, w, h, tile);
     }
 
-    pub fn rectb(&self, x: f64, y: f64, w: f64, h: f64, tile: Tile) {
+    pub fn rectb(&self, x: f64, y: f64, w: f64, h: f64, tile: pyxel::Tile) {
         self.pyxel_tilemap.lock().rectb(x, y, w, h, tile);
     }
 
-    pub fn circ(&self, x: f64, y: f64, r: f64, tile: Tile) {
+    pub fn circ(&self, x: f64, y: f64, r: f64, tile: pyxel::Tile) {
         self.pyxel_tilemap.lock().circ(x, y, r, tile);
     }
 
-    pub fn circb(&self, x: f64, y: f64, r: f64, tile: Tile) {
+    pub fn circb(&self, x: f64, y: f64, r: f64, tile: pyxel::Tile) {
         self.pyxel_tilemap.lock().circb(x, y, r, tile);
     }
 
-    pub fn elli(&self, x: f64, y: f64, w: f64, h: f64, tile: Tile) {
+    pub fn elli(&self, x: f64, y: f64, w: f64, h: f64, tile: pyxel::Tile) {
         self.pyxel_tilemap.lock().elli(x, y, w, h, tile);
     }
 
-    pub fn ellib(&self, x: f64, y: f64, w: f64, h: f64, tile: Tile) {
+    pub fn ellib(&self, x: f64, y: f64, w: f64, h: f64, tile: pyxel::Tile) {
         self.pyxel_tilemap.lock().ellib(x, y, w, h, tile);
     }
 
-    pub fn tri(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: Tile) {
+    pub fn tri(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: pyxel::Tile) {
         self.pyxel_tilemap.lock().tri(x1, y1, x2, y2, x3, y3, tile);
     }
 
-    pub fn trib(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: Tile) {
+    pub fn trib(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: pyxel::Tile) {
         self.pyxel_tilemap.lock().trib(x1, y1, x2, y2, x3, y3, tile);
     }
 
-    pub fn fill(&self, x: f64, y: f64, tile: Tile) {
+    pub fn fill(&self, x: f64, y: f64, tile: pyxel::Tile) {
         self.pyxel_tilemap.lock().fill(x, y, tile);
     }
 
@@ -164,12 +165,13 @@ impl Tilemap {
         v: f64,
         w: f64,
         h: f64,
-        tilekey: Option<Tile>,
+        tilekey: Option<pyxel::Tile>,
     ) -> PyResult<()> {
         type_switch! {
             tm,
             u32, {
-                self.pyxel_tilemap.lock().blt(x, y, pyxel_engine::tilemap(tm), u, v, w, h, tilekey);
+                let tilemap = pyxel().tilemaps[tm as usize].clone();
+                self.pyxel_tilemap.lock().blt(x, y, tilemap, u, v, w, h, tilekey);
             },
             Tilemap, {
                 self.pyxel_tilemap.lock().blt(x, y, tm.pyxel_tilemap, u, v, w, h, tilekey);
