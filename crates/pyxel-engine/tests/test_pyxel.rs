@@ -1,4 +1,4 @@
-use pyxel_engine as pyxel;
+use pyxel::{Pyxel, PyxelCallback};
 
 pub struct App {
     x: f64,
@@ -74,8 +74,8 @@ impl App {
     }
 }
 
-impl pyxel::PyxelCallback for App {
-    fn update(&mut self, pyxel: &mut pyxel::Pyxel) {
+impl PyxelCallback for App {
+    fn update(&mut self, pyxel: &mut Pyxel) {
         if pyxel.frame_count < 60 {
             self.x += (pyxel.frame_count % 2) as f64;
             self.y -= 1.0;
@@ -86,7 +86,7 @@ impl pyxel::PyxelCallback for App {
         }
     }
 
-    fn draw(&mut self, pyxel: &mut pyxel::Pyxel) {
+    fn draw(&mut self, pyxel: &mut Pyxel) {
         pyxel.cls(3);
         pyxel.pset(self.x, 20.0, 7);
         pyxel.rect(self.x + 10.0, 25.0, 15.0, 10.0, 8);

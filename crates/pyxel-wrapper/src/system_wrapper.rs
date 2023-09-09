@@ -2,7 +2,7 @@ use std::process::exit;
 
 use pyo3::prelude::*;
 use pyo3::types::{PyAny, PyDict};
-use pyxel_engine as pyxel;
+use pyxel::{Pyxel, PyxelCallback};
 #[cfg(not(target_os = "emscripten"))]
 use sysinfo::{Pid, PidExt, System, SystemExt};
 
@@ -67,15 +67,15 @@ fn run(py: Python, update: &PyAny, draw: &PyAny) {
         draw: &'a PyAny,
     }
 
-    impl<'a> pyxel::PyxelCallback for PythonCallback<'a> {
-        fn update(&mut self, pyxel: &mut pyxel::Pyxel) {
+    impl<'a> PyxelCallback for PythonCallback<'a> {
+        fn update(&mut self, pyxel: &mut Pyxel) {
             if let Err(err) = self.update.call0() {
                 err.print(self.py);
                 exit(1);
             }
         }
 
-        fn draw(&mut self, pyxel: &mut pyxel::Pyxel) {
+        fn draw(&mut self, pyxel: &mut Pyxel) {
             if let Err(err) = self.draw.call0() {
                 err.print(self.py);
                 exit(1);

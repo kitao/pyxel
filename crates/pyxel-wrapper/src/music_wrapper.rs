@@ -2,7 +2,6 @@ use std::ptr;
 
 use pyo3::exceptions::PyIndexError;
 use pyo3::prelude::*;
-use pyxel_engine as pyxel;
 
 #[pyclass]
 #[derive(Clone)]
