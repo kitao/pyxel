@@ -1,8 +1,13 @@
+use std::cmp::max;
+
 use glow::HasContext;
 use pyxel_platform::Event;
 
-use crate::prelude::*;
+use crate::image::{Image, SharedImage};
+use crate::keys::{Key, KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use crate::profiler::Profiler;
+use crate::pyxel::Pyxel;
+use crate::settings::{DISPLAY_RATIO, MAX_ELAPSED_MS, NUM_COLORS, NUM_MEASURE_FRAMES};
 use crate::utils;
 
 pub trait PyxelCallback {
@@ -10,7 +15,7 @@ pub trait PyxelCallback {
     fn draw(&mut self, pyxel: &mut Pyxel);
 }
 
-pub(crate) struct System {
+pub struct System {
     one_frame_ms: f64,
     next_update_ms: f64,
     quit_key: Key,
@@ -31,14 +36,18 @@ impl System {
         display_scale: Option<u32>,
     ) -> System {
         pyxel_platform::init(|| {
-            let display_scale = (if let Some(display_scale) = display_scale {
-                display_scale
-            } else {
-                let (display_width, display_height) = pyxel_platform::display_size();
-                ((display_width as f64 / width as f64).min(display_height as f64 / height as f64)
-                    * DISPLAY_RATIO) as u32
-            })
-            .max(1);
+            let display_scale = max(
+                if let Some(display_scale) = display_scale {
+                    display_scale
+                } else {
+                    let (display_width, display_height) = pyxel_platform::display_size();
+                    (f64::min(
+                        display_width as f64 / width as f64,
+                        display_height as f64 / height as f64,
+                    ) * DISPLAY_RATIO) as u32
+                },
+                1,
+            );
             (title, width * display_scale, height * display_scale)
         });
         Self {
@@ -203,7 +212,7 @@ impl Pyxel {
         self.draw_perf_monitor();
         self.draw_cursor();
         {
-            let gl = pyxel_platform::gl();
+            let gl = pyxel_platform::glow_context();
             unsafe {
                 gl.clear_color(1.0, 0.0, 0.0, 1.0);
                 gl.clear(glow::COLOR_BUFFER_BIT);

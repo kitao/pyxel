@@ -1,9 +1,12 @@
 use once_cell::sync::Lazy;
 
-use crate::prelude::*;
+use crate::channel::{Note, Speed, Volume};
+use crate::image::{Color, Image, Rgb8, SharedImage};
+use crate::keys::{Key, KEY_ESCAPE};
+use crate::oscillator::{Effect, Tone};
 
 // System
-pub const PYXEL_VERSION: &str = "2.0.0";
+pub const VERSION: &str = "2.0.0";
 pub const WORKING_DIR: &str = ".pyxel";
 pub const WATCH_INFO_FILE_ENVVAR: &str = "PYXEL_WATCH_INFO_FILE";
 pub const DEFAULT_TITLE: &str = "Pyxel";

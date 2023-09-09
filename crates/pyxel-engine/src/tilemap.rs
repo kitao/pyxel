@@ -1,9 +1,11 @@
 use std::fmt::Write as _;
 
 use crate::canvas::{Canvas, ToIndex};
-use crate::prelude::*;
+use crate::image::SharedImage;
+use crate::pyxel::Pyxel;
 use crate::resource::ResourceItem;
-use crate::utils;
+use crate::settings::{RESOURCE_ARCHIVE_DIRNAME, TILEMAP_SIZE};
+use crate::utils::{f64_to_u32, parse_hex_string, simplify_string};
 
 pub type Tile = (u8, u8);
 
@@ -41,16 +43,16 @@ impl Tilemap {
     }
 
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
-        let width = utils::simplify_string(data_str[0]).len() as u32 / 4;
+        let width = simplify_string(data_str[0]).len() as u32 / 4;
         let height = data_str.len() as u32;
         let tilemap = Self::new(width, height, self.image.clone());
         {
             let mut tilemap = tilemap.lock();
             for y in 0..height {
-                let src_data = utils::simplify_string(data_str[y as usize]);
+                let src_data = simplify_string(data_str[y as usize]);
                 for x in 0..width {
                     let index = x as usize * 4;
-                    let tile = utils::parse_hex_string(&src_data[index..index + 4]).unwrap();
+                    let tile = parse_hex_string(&src_data[index..index + 4]).unwrap();
                     tilemap.canvas.write_data(
                         x as usize,
                         y as usize,
@@ -163,8 +165,8 @@ impl Tilemap {
                 None,
             );
         } else {
-            let copy_width = utils::f64_to_u32(width.abs());
-            let copy_height = utils::f64_to_u32(height.abs());
+            let copy_width = f64_to_u32(width.abs());
+            let copy_height = f64_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
             canvas.blt(
                 0.0,
@@ -225,14 +227,14 @@ impl ResourceItem for Tilemap {
             if y < TILEMAP_SIZE as usize {
                 if version < 10500 {
                     string_loop!(x, tile, line, 3, {
-                        let tile = utils::parse_hex_string(&tile).unwrap();
+                        let tile = parse_hex_string(&tile).unwrap();
                         self.canvas
                             .write_data(x, y, ((tile % 32) as u8, (tile / 32) as u8));
                     });
                 } else {
                     string_loop!(x, tile, line, 4, {
-                        let tile_x = utils::parse_hex_string(&tile[0..2]).unwrap();
-                        let tile_y = utils::parse_hex_string(&tile[2..4]).unwrap();
+                        let tile_x = parse_hex_string(&tile[0..2]).unwrap();
+                        let tile_y = parse_hex_string(&tile[2..4]).unwrap();
                         self.canvas.write_data(x, y, (tile_x as u8, tile_y as u8));
                     });
                 }
