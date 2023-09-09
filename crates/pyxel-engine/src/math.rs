@@ -4,9 +4,9 @@ use noise::{NoiseFn, Perlin, Seedable};
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256StarStar;
 
-use crate::prelude::*;
+use crate::pyxel::Pyxel;
 
-pub(crate) struct Math {
+pub struct Math {
     rng: Xoshiro256StarStar,
     perlin: Perlin,
 }
