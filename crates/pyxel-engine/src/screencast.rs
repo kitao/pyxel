@@ -1,12 +1,13 @@
 use std::borrow::Cow;
+use std::cmp::{max, min};
 use std::fs::File;
 
 use gif::{DisposalMethod, Encoder, Frame, Repeat};
 use indexmap::IndexMap;
 
-use crate::prelude::*;
+use crate::image::{Color, Rgb8};
 use crate::rectarea::RectArea;
-use crate::utils;
+use crate::utils::add_file_extension;
 
 const TRANSPARENT: Rgb8 = 0xffffffff;
 
@@ -111,7 +112,7 @@ impl Screencast {
         if self.num_captured_screens == 0 {
             return;
         }
-        let filename = utils::add_file_extension(filename, ".gif");
+        let filename = add_file_extension(filename, ".gif");
         let mut file =
             File::create(&filename).unwrap_or_else(|_| panic!("Unable to open file '{filename}'"));
         let screen = self.screen(0);
@@ -190,10 +191,10 @@ impl Screencast {
                 if rgb == base_image[y][x] {
                     diff_line.push(TRANSPARENT);
                 } else {
-                    min_x = min_x.min(x as i16);
-                    min_y = min_y.min(y as i16);
-                    max_x = max_x.max(x as i16);
-                    max_y = max_y.max(y as i16);
+                    min_x = min(min_x, x as i16);
+                    min_y = min(min_y, y as i16);
+                    max_x = max(max_x, x as i16);
+                    max_y = max(max_y, y as i16);
                     base_image[y][x] = rgb;
                     diff_line.push(rgb);
                 }

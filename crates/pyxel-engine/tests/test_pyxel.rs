@@ -1,4 +1,4 @@
-use pyxel_engine::prelude::*;
+use pyxel_engine as pyxel;
 
 pub struct App {
     x: f64,
@@ -7,7 +7,7 @@ pub struct App {
 
 impl App {
     fn init() {
-        let mut pyxel = Pyxel::new(
+        let mut pyxel = pyxel::init(
             200,
             150,
             Some("Hello, Pyxel in Rust!"),
@@ -74,23 +74,23 @@ impl App {
     }
 }
 
-impl PyxelCallback for App {
-    fn update(&mut self, pyxel: &mut Pyxel) {
+impl pyxel::PyxelCallback for App {
+    fn update(&mut self, pyxel: &mut pyxel::Pyxel) {
         if pyxel.frame_count < 60 {
             self.x += (pyxel.frame_count % 2) as f64;
             self.y -= 1.0;
         }
 
-        if pyxel.btnp(KEY_Q, None, None) {
+        if pyxel.btnp(pyxel::KEY_Q, None, None) {
             pyxel.quit();
         }
     }
 
-    fn draw(&mut self, pyxel: &mut Pyxel) {
+    fn draw(&mut self, pyxel: &mut pyxel::Pyxel) {
         pyxel.cls(3);
         pyxel.pset(self.x, 20.0, 7);
         pyxel.rect(self.x + 10.0, 25.0, 15.0, 10.0, 8);
-        pyxel.rectb(self.x + 15.0, 45.0, 15.0, 10.0, COLOR_WHITE);
+        pyxel.rectb(self.x + 15.0, 45.0, 15.0, 10.0, pyxel::COLOR_WHITE);
 
         pyxel.blt(0.0, 0.0, 0, 0.0, 0.0, 8.0, 8.0, None);
 
