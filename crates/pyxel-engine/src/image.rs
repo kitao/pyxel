@@ -7,9 +7,14 @@ use image::imageops::{self, FilterType};
 use image::{Rgb, RgbImage};
 
 use crate::canvas::{Canvas, CopyArea, ToIndex};
-use crate::prelude::*;
+use crate::pyxel::Pyxel;
 use crate::rectarea::RectArea;
 use crate::resource::ResourceItem;
+use crate::settings::{
+    FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_COLORS, NUM_FONT_ROWS,
+    RESOURCE_ARCHIVE_DIRNAME, TILE_SIZE,
+};
+use crate::tilemap::SharedTilemap;
 use crate::utils;
 
 pub type Rgb8 = u32;
