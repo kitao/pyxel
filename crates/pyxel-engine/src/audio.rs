@@ -1,6 +1,8 @@
 use crate::blipbuf::BlipBuf;
 //use crate::platform::{AudioCallback, Platform};
-use crate::prelude::*;
+use crate::channel::SharedChannel;
+use crate::pyxel::Pyxel;
+use crate::settings::*;
 
 struct AudioCore {
     blip_buf: BlipBuf,
@@ -20,7 +22,7 @@ struct AudioCore {
     }
 }*/
 
-pub(crate) struct Audio {}
+pub struct Audio {}
 
 impl Audio {
     pub fn new() -> Self {
