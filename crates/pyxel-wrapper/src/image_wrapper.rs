@@ -201,13 +201,13 @@ impl Image {
         Ok(())
     }
 
-    pub fn text(&self, x: f64, y: f64, text: &str, col: pyxel::Color) {
+    pub fn text(&self, x: f64, y: f64, s: &str, col: pyxel::Color) {
         let font = if is_pyxel_initialized() {
             pyxel().font.clone()
         } else {
             pyxel::FONT_IMAGE.clone()
         };
-        self.pyxel_image.lock().text(x, y, text, col, font);
+        self.pyxel_image.lock().text(x, y, s, col, font);
     }
 }
 
