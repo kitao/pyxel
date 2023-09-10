@@ -45,48 +45,6 @@ impl Resource {
 }
 
 impl Pyxel {
-    pub(crate) fn capture_screen(&mut self) {
-        self.resource.screencast.capture(
-            self.width,
-            self.height,
-            &self.screen.lock().canvas.data,
-            &self.colors,
-            self.frame_count,
-        );
-    }
-
-    fn export_path() -> String {
-        let desktop_dir = if let Some(user_dirs) = UserDirs::new() {
-            user_dirs.desktop_dir
-        } else {
-            PathBuf::new()
-        };
-        let basename = "pyxel-".to_string() + &Self::local_time_string();
-        desktop_dir.join(basename).to_str().unwrap().to_string()
-    }
-
-    fn local_time_string() -> String {
-        #[cfg(not(target_os = "emscripten"))]
-        return Local::now().format("%Y%m%d-%H%M%S").to_string();
-
-        #[cfg(target_os = "emscripten")]
-        {
-            let script = "
-            let now = new Date();
-            let year = now.getFullYear();
-            let month = now.getMonth() + 1;
-            let date = now.getDate();
-            let hour = now.getHours();
-            let min = now.getMinutes();
-            let sec = now.getSeconds();
-            `${year}${month}${date}-${hour}${min}${sec}`
-        ";
-            emscripten::run_script_string(script)
-        }
-    }
-}
-
-impl Pyxel {
     pub fn load(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
         let mut archive = ZipArchive::new(
             File::open(Path::new(&filename))
@@ -198,6 +156,7 @@ impl Pyxel {
         #[cfg(target_os = "emscripten")]
         Platform::save_file_on_web_browser(filename);
     }
+
     pub fn screenshot(&self, scale: Option<u32>) {
         let filename = Self::export_path();
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
@@ -216,5 +175,45 @@ impl Pyxel {
 
     pub fn reset_screencast(&mut self) {
         self.resource.screencast.reset();
+    }
+
+    pub(crate) fn capture_screen(&mut self) {
+        self.resource.screencast.capture(
+            self.width,
+            self.height,
+            &self.screen.lock().canvas.data,
+            &self.colors,
+            self.frame_count,
+        );
+    }
+
+    fn export_path() -> String {
+        let desktop_dir = if let Some(user_dirs) = UserDirs::new() {
+            user_dirs.desktop_dir
+        } else {
+            PathBuf::new()
+        };
+        let basename = "pyxel-".to_string() + &Self::local_time_string();
+        desktop_dir.join(basename).to_str().unwrap().to_string()
+    }
+
+    fn local_time_string() -> String {
+        #[cfg(not(target_os = "emscripten"))]
+        return Local::now().format("%Y%m%d-%H%M%S").to_string();
+
+        #[cfg(target_os = "emscripten")]
+        {
+            let script = "
+            let now = new Date();
+            let year = now.getFullYear();
+            let month = now.getMonth() + 1;
+            let date = now.getDate();
+            let hour = now.getHours();
+            let min = now.getMinutes();
+            let sec = now.getSeconds();
+            `${year}${month}${date}-${hour}${min}${sec}`
+        ";
+            emscripten::run_script_string(script)
+        }
     }
 }
