@@ -21,11 +21,21 @@ pub fn platform() -> &'static mut Platform {
     unsafe { &mut *PLATFORM }
 }
 
-pub fn init<'a, F: FnOnce() -> (&'a str, u32, u32)>(window_params: F) {
+pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
     if unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) } < 0 {
         panic!("Failed to initialize SDL2");
     }
-    let (title, width, height) = window_params();
+    let mut display_mode = SDL_DisplayMode {
+        format: 0,
+        w: 0,
+        h: 0,
+        refresh_rate: 0,
+        driverdata: null_mut(),
+    };
+    if unsafe { SDL_GetCurrentDisplayMode(0, &mut display_mode as *mut SDL_DisplayMode) } != 0 {
+        panic!("Failed to get display size");
+    }
+    let (title, width, height) = window_params(display_mode.w as u32, display_mode.h as u32);
     let (window, glow_context) = init_window(title, width, height);
     let controllers = Vec::new();
     let audio_device_id = init_audio(0, 0, 0);
