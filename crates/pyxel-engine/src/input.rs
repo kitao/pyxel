@@ -139,6 +139,14 @@ impl Pyxel {
         self.input.mouse_visible = visible;
     }
 
+    pub fn set_mouse_pos(&mut self, x: f64, y: f64) {
+        let x = f64_to_i32(x);
+        let y = f64_to_i32(y);
+        self.input.key_values.insert(MOUSE_POS_X, x);
+        self.input.key_values.insert(MOUSE_POS_Y, y);
+        pyxel_platform::set_mouse_pos(x, y);
+    }
+
     /*pub fn mouse_x(&self) -> i32 {
         let input = self.input();
         *input.key_values.get(&MOUSE_POS_X).unwrap_or(&0)
@@ -148,14 +156,6 @@ impl Pyxel {
         let input = self.input();
         *input.key_values.get(&MOUSE_POS_Y).unwrap_or(&0)
     }*/
-
-    pub fn set_mouse_pos(&mut self, x: f64, y: f64) {
-        let x = f64_to_i32(x);
-        let y = f64_to_i32(y);
-        self.input.key_values.insert(MOUSE_POS_X, x);
-        self.input.key_values.insert(MOUSE_POS_Y, y);
-        pyxel_platform::set_mouse_pos(x, y);
-    }
 
     /*pub fn mouse_wheel(&self) -> i32 {
         let input = self.input();
