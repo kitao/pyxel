@@ -146,20 +146,6 @@ pub fn set_fullscreen(full: bool) {
     }
 }
 
-pub fn display_size() -> (u32, u32) {
-    let mut current = SDL_DisplayMode {
-        format: 0,
-        w: 0,
-        h: 0,
-        refresh_rate: 0,
-        driverdata: null_mut(),
-    };
-    if unsafe { SDL_GetCurrentDisplayMode(0, &mut current as *mut SDL_DisplayMode) } != 0 {
-        panic!("Failed to get display size");
-    }
-    (current.w as u32, current.h as u32)
-}
-
 pub fn set_mouse_visible(visible: bool) {
     let visible = if visible { SDL_ENABLE } else { SDL_DISABLE };
     unsafe {
