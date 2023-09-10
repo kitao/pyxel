@@ -3,6 +3,10 @@ use std::ptr::null_mut;
 use crate::platform::platform;
 use crate::sdl2_sys::*;
 
+pub trait AudioCallback {
+    fn update(&mut self, out: &mut [i16]);
+}
+
 pub fn init_audio(freqency: u32, channels: u8, samples: u16) -> SDL_AudioDeviceID {
     let desired = SDL_AudioSpec {
         freq: freqency as i32,
@@ -38,10 +42,6 @@ pub fn set_audio_enabled(enabled: bool) {
             SDL_PauseAudioDevice(audio_device_id, pause_on);
         }
     }
-}
-
-pub trait AudioCallback {
-    fn update(&mut self, out: &mut [i16]);
 }
 
 /*

@@ -20,16 +20,6 @@ pub enum Event {
     Quit,
 }
 
-fn to_unified_key(key: Key) -> Option<Key> {
-    match key {
-        KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
-        KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),
-        KEY_LALT | KEY_RALT => Some(KEY_ALT),
-        KEY_LGUI | KEY_RGUI => Some(KEY_GUI),
-        _ => None,
-    }
-}
-
 pub fn poll_events() -> Vec<Event> {
     let mut pyxel_events = Vec::new();
     let mut sdl_event: SDL_Event = unsafe { zeroed() };
@@ -245,4 +235,14 @@ pub fn poll_events() -> Vec<Event> {
     }
 
     pyxel_events
+}
+
+fn to_unified_key(key: Key) -> Option<Key> {
+    match key {
+        KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
+        KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),
+        KEY_LALT | KEY_RALT => Some(KEY_ALT),
+        KEY_LGUI | KEY_RGUI => Some(KEY_GUI),
+        _ => None,
+    }
 }
