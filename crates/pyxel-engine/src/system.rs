@@ -35,12 +35,11 @@ impl System {
         quit_key: Key,
         display_scale: Option<u32>,
     ) -> System {
-        pyxel_platform::init(|| {
+        pyxel_platform::init(|display_width, display_height| {
             let display_scale = max(
                 if let Some(display_scale) = display_scale {
                     display_scale
                 } else {
-                    let (display_width, display_height) = pyxel_platform::display_size();
                     (f64::min(
                         display_width as f64 / width as f64,
                         display_height as f64 / height as f64,
@@ -64,81 +63,82 @@ impl System {
 }
 
 impl Pyxel {
-    fn process_frame(&mut self, callback: &mut dyn PyxelCallback) {
-        let tick_count = pyxel_platform::elapsed_time();
-        let elapsed_ms = tick_count as f64 - self.system.next_update_ms;
-        if elapsed_ms < 0.0 {
-            return;
-        }
-        if self.frame_count == 0 {
-            self.system.next_update_ms = tick_count as f64 + self.system.one_frame_ms;
-        } else {
-            self.system.fps_profiler.end(tick_count);
-            self.system.fps_profiler.start(tick_count);
-            let update_count: u32;
-            if elapsed_ms > MAX_ELAPSED_MS as f64 {
-                update_count = 1;
-                self.system.next_update_ms =
-                    pyxel_platform::elapsed_time() as f64 + self.system.one_frame_ms;
-            } else {
-                update_count = (elapsed_ms / self.system.one_frame_ms) as u32 + 1;
-                self.system.next_update_ms += self.system.one_frame_ms * update_count as f64;
-            }
-            for _ in 1..update_count {
-                self.update_frame(Some(callback));
-                self.frame_count += 1;
-            }
-        }
-        self.update_frame(Some(callback));
-        self.draw_frame(Some(callback));
-        self.frame_count += 1;
+    pub fn run<T: PyxelCallback>(&mut self, mut callback: T) {
+        pyxel_platform::run(move || {
+            self.process_frame(&mut callback);
+        });
     }
 
-    #[cfg(not(target_os = "emscripten"))]
-    fn process_frame_for_flip(&mut self) {
-        self.system
-            .update_profiler
-            .end(pyxel_platform::elapsed_time());
-        self.draw_frame(None);
-        self.frame_count += 1;
-        let mut tick_count;
-        let mut elapsed_ms;
-        loop {
-            tick_count = pyxel_platform::elapsed_time();
-            elapsed_ms = tick_count as f64 - self.system.next_update_ms;
-            let wait_ms = self.system.next_update_ms - pyxel_platform::elapsed_time() as f64;
-            if wait_ms > 0.0 {
-                pyxel_platform::sleep((wait_ms / 2.0) as u32);
-            } else {
-                break;
+    pub fn show(&mut self) {
+        struct App {
+            image: SharedImage,
+        }
+
+        impl PyxelCallback for App {
+            fn update(&mut self, _pyxel: &mut Pyxel) {}
+            fn draw(&mut self, pyxel: &mut Pyxel) {
+                pyxel.screen.lock().blt(
+                    0.0,
+                    0.0,
+                    self.image.clone(),
+                    0.0,
+                    0.0,
+                    pyxel.width as f64,
+                    pyxel.height as f64,
+                    None,
+                );
             }
         }
-        self.system.fps_profiler.end(tick_count);
-        self.system.fps_profiler.start(tick_count);
-        if elapsed_ms > MAX_ELAPSED_MS as f64 {
-            self.system.next_update_ms =
-                pyxel_platform::elapsed_time() as f64 + self.system.one_frame_ms;
-        } else {
-            self.system.next_update_ms += self.system.one_frame_ms;
-        }
-        self.update_frame(None);
+
+        let image = Image::new(self.width, self.height);
+        image.lock().blt(
+            0.0,
+            0.0,
+            self.screen.clone(),
+            0.0,
+            0.0,
+            self.width as f64,
+            self.height as f64,
+            None,
+        );
+        self.run(App { image });
     }
 
-    fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
-        self.system
-            .update_profiler
-            .start(pyxel_platform::elapsed_time());
-        self.process_events();
-        if self.system.paused {
-            return;
+    pub fn flip(&mut self) {
+        #[cfg(target_os = "emscripten")]
+        panic!("flip is not supported on Web");
+
+        #[cfg(not(target_os = "emscripten"))]
+        {
+            self.process_frame_for_flip();
         }
-        self.check_special_input();
-        if let Some(callback) = callback {
-            callback.update(self);
-            self.system
-                .update_profiler
-                .end(pyxel_platform::elapsed_time());
-        }
+    }
+
+    pub fn quit(&self) {
+        pyxel_platform::quit();
+    }
+
+    pub fn title(&self, title: &str) {
+        pyxel_platform::set_window_title(title);
+    }
+
+    pub fn icon(&self, data_str: &[&str], scale: u32) {
+        let width = utils::simplify_string(data_str[0]).len() as u32;
+        let height = data_str.len() as u32;
+        let image = Image::new(width, height);
+        let mut image = image.lock();
+        image.set(0, 0, data_str);
+        /*pyxel_platform::set_icon(
+            width,
+            height,
+            &image.canvas.data,
+            &*crate::colors().lock(),
+            scale,
+        );*/
+    }
+
+    pub fn fullscreen(&self, full: bool) {
+        pyxel_platform::set_fullscreen(full)
     }
 
     fn process_events(&mut self) {
@@ -199,38 +199,21 @@ impl Pyxel {
         }
     }
 
-    fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
+    fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
+        self.system
+            .update_profiler
+            .start(pyxel_platform::elapsed_time());
+        self.process_events();
         if self.system.paused {
             return;
         }
-        self.system
-            .draw_profiler
-            .start(pyxel_platform::elapsed_time());
+        self.check_special_input();
         if let Some(callback) = callback {
-            callback.draw(self);
+            callback.update(self);
+            self.system
+                .update_profiler
+                .end(pyxel_platform::elapsed_time());
         }
-        self.draw_perf_monitor();
-        self.draw_cursor();
-        {
-            let gl = pyxel_platform::glow_context();
-            unsafe {
-                gl.clear_color(1.0, 0.0, 0.0, 1.0);
-                gl.clear(glow::COLOR_BUFFER_BIT);
-            }
-            pyxel_platform::swap_window();
-
-            /*pyxel_Platform::instance().render_screen(
-                screen.canvas.width(),
-                screen.canvas.height(),
-                &screen.canvas.data,
-                &*crate::colors().lock(),
-                BACKGROUND_COLOR,
-            );*/
-            self.capture_screen();
-        }
-        self.system
-            .draw_profiler
-            .end(pyxel_platform::elapsed_time());
     }
 
     fn draw_perf_monitor(&self) {
@@ -306,84 +289,98 @@ impl Pyxel {
         screen.canvas.camera_y = camera_y;
         screen.palette = palette;
     }
-}
 
-impl Pyxel {
-    pub fn title(&self, title: &str) {
-        pyxel_platform::set_window_title(title);
-    }
-
-    pub fn icon(&self, data_str: &[&str], scale: u32) {
-        let width = utils::simplify_string(data_str[0]).len() as u32;
-        let height = data_str.len() as u32;
-        let image = Image::new(width, height);
-        let mut image = image.lock();
-        image.set(0, 0, data_str);
-        /*pyxel_platform::set_icon(
-            width,
-            height,
-            &image.canvas.data,
-            &*crate::colors().lock(),
-            scale,
-        );*/
-    }
-
-    pub fn fullscreen(&self, full: bool) {
-        pyxel_platform::set_fullscreen(full)
-    }
-
-    pub fn run<T: PyxelCallback>(&mut self, mut callback: T) {
-        pyxel_platform::run(move || {
-            self.process_frame(&mut callback);
-        });
-    }
-
-    pub fn show(&mut self) {
-        struct App {
-            image: SharedImage,
+    fn draw_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
+        if self.system.paused {
+            return;
         }
+        self.system
+            .draw_profiler
+            .start(pyxel_platform::elapsed_time());
+        if let Some(callback) = callback {
+            callback.draw(self);
+        }
+        self.draw_perf_monitor();
+        self.draw_cursor();
+        {
+            let gl = pyxel_platform::glow_context();
+            unsafe {
+                gl.clear_color(1.0, 0.0, 0.0, 1.0);
+                gl.clear(glow::COLOR_BUFFER_BIT);
+            }
+            pyxel_platform::swap_window();
 
-        impl PyxelCallback for App {
-            fn update(&mut self, _pyxel: &mut Pyxel) {}
-            fn draw(&mut self, pyxel: &mut Pyxel) {
-                pyxel.screen.lock().blt(
-                    0.0,
-                    0.0,
-                    self.image.clone(),
-                    0.0,
-                    0.0,
-                    pyxel.width as f64,
-                    pyxel.height as f64,
-                    None,
-                );
+            /*pyxel_Platform::instance().render_screen(
+                screen.canvas.width(),
+                screen.canvas.height(),
+                &screen.canvas.data,
+                &*crate::colors().lock(),
+                BACKGROUND_COLOR,
+            );*/
+            self.capture_screen();
+        }
+        self.system
+            .draw_profiler
+            .end(pyxel_platform::elapsed_time());
+    }
+
+    fn process_frame(&mut self, callback: &mut dyn PyxelCallback) {
+        let tick_count = pyxel_platform::elapsed_time();
+        let elapsed_ms = tick_count as f64 - self.system.next_update_ms;
+        if elapsed_ms < 0.0 {
+            return;
+        }
+        if self.frame_count == 0 {
+            self.system.next_update_ms = tick_count as f64 + self.system.one_frame_ms;
+        } else {
+            self.system.fps_profiler.end(tick_count);
+            self.system.fps_profiler.start(tick_count);
+            let update_count: u32;
+            if elapsed_ms > MAX_ELAPSED_MS as f64 {
+                update_count = 1;
+                self.system.next_update_ms =
+                    pyxel_platform::elapsed_time() as f64 + self.system.one_frame_ms;
+            } else {
+                update_count = (elapsed_ms / self.system.one_frame_ms) as u32 + 1;
+                self.system.next_update_ms += self.system.one_frame_ms * update_count as f64;
+            }
+            for _ in 1..update_count {
+                self.update_frame(Some(callback));
+                self.frame_count += 1;
             }
         }
-
-        let image = Image::new(self.width, self.height);
-        image.lock().blt(
-            0.0,
-            0.0,
-            self.screen.clone(),
-            0.0,
-            0.0,
-            self.width as f64,
-            self.height as f64,
-            None,
-        );
-        self.run(App { image });
+        self.update_frame(Some(callback));
+        self.draw_frame(Some(callback));
+        self.frame_count += 1;
     }
 
-    pub fn flip(&mut self) {
-        #[cfg(target_os = "emscripten")]
-        panic!("flip is not supported on Web");
-
-        #[cfg(not(target_os = "emscripten"))]
-        {
-            self.process_frame_for_flip();
+    #[cfg(not(target_os = "emscripten"))]
+    fn process_frame_for_flip(&mut self) {
+        self.system
+            .update_profiler
+            .end(pyxel_platform::elapsed_time());
+        self.draw_frame(None);
+        self.frame_count += 1;
+        let mut tick_count;
+        let mut elapsed_ms;
+        loop {
+            tick_count = pyxel_platform::elapsed_time();
+            elapsed_ms = tick_count as f64 - self.system.next_update_ms;
+            let wait_ms = self.system.next_update_ms - pyxel_platform::elapsed_time() as f64;
+            if wait_ms > 0.0 {
+                pyxel_platform::sleep((wait_ms / 2.0) as u32);
+            } else {
+                break;
+            }
         }
-    }
-
-    pub fn quit(&self) {
-        pyxel_platform::quit();
+        self.system.fps_profiler.end(tick_count);
+        self.system.fps_profiler.start(tick_count);
+        if elapsed_ms > MAX_ELAPSED_MS as f64 {
+            self.system.next_update_ms =
+                pyxel_platform::elapsed_time() as f64 + self.system.one_frame_ms;
+        } else {
+            self.system.next_update_ms += self.system.one_frame_ms;
+        }
+        self.update_frame(None);
     }
 }
