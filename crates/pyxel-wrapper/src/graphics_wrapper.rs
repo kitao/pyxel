@@ -152,8 +152,8 @@ fn bltm(
 }
 
 #[pyfunction]
-fn text(x: f64, y: f64, text: &str, col: pyxel::Color) {
-    pyxel().text(x, y, text, col);
+fn text(x: f64, y: f64, s: &str, col: pyxel::Color) {
+    pyxel().text(x, y, s, col);
 }
 
 #[pyfunction]
