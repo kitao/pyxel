@@ -63,21 +63,6 @@ impl Screencast {
         }
     }
 
-    fn screen(&self, index: u32) -> &Screen {
-        &self.screens[((self.capture_start_index + index) % self.max_screens) as usize]
-    }
-
-    fn screen_delay(&self, index: u32) -> u16 {
-        let frame_count = self.screen(index).frame_count;
-        let next_frame_count = self.screen(index + 1).frame_count;
-        let num_elapsed_frames = if frame_count > next_frame_count {
-            1
-        } else {
-            next_frame_count - frame_count
-        };
-        (100.0 / self.fps as f64 * num_elapsed_frames as f64 + 0.5) as u16
-    }
-
     pub fn reset(&mut self) {
         self.capture_start_index = 0;
         self.num_captured_screens = 0;
@@ -173,50 +158,19 @@ impl Screencast {
         self.reset();
     }
 
-    fn make_diff_image(
-        base_image: &mut [Vec<Rgb8>],
-        new_image: &[Vec<Rgb8>],
-    ) -> (RectArea, Vec<Vec<Rgb8>>) {
-        let mut min_x = i16::MAX;
-        let mut min_y = i16::MAX;
-        let mut max_x = i16::MIN;
-        let mut max_y = i16::MIN;
-        let width = base_image[0].len();
-        let height = base_image.len();
-        let mut diff_image: Vec<Vec<Rgb8>> = Vec::new();
-        for y in 0..height {
-            let mut diff_line: Vec<Rgb8> = Vec::new();
-            for x in 0..width {
-                let rgb = new_image[y][x];
-                if rgb == base_image[y][x] {
-                    diff_line.push(TRANSPARENT);
-                } else {
-                    min_x = min(min_x, x as i16);
-                    min_y = min(min_y, y as i16);
-                    max_x = max(max_x, x as i16);
-                    max_y = max(max_y, y as i16);
-                    base_image[y][x] = rgb;
-                    diff_line.push(rgb);
-                }
-            }
-            diff_image.push(diff_line);
-        }
-        if min_x > max_x || min_y > max_y {
-            return (RectArea::new(0, 0, 0, 0), Vec::new());
-        }
-        diff_image = diff_image[min_y as usize..=max_y as usize].to_vec();
-        for diff_line in &mut diff_image {
-            *diff_line = diff_line[min_x as usize..=max_x as usize].to_vec();
-        }
-        (
-            RectArea::new(
-                min_x as i32,
-                min_y as i32,
-                diff_image[0].len() as u32,
-                diff_image.len() as u32,
-            ),
-            diff_image,
-        )
+    fn screen(&self, index: u32) -> &Screen {
+        &self.screens[((self.capture_start_index + index) % self.max_screens) as usize]
+    }
+
+    fn screen_delay(&self, index: u32) -> u16 {
+        let frame_count = self.screen(index).frame_count;
+        let next_frame_count = self.screen(index + 1).frame_count;
+        let num_elapsed_frames = if frame_count > next_frame_count {
+            1
+        } else {
+            next_frame_count - frame_count
+        };
+        (100.0 / self.fps as f64 * num_elapsed_frames as f64 + 0.5) as u16
     }
 
     fn make_gif_buffer(
@@ -277,5 +231,51 @@ impl Screencast {
             }
         }
         (rect, palette, buffer)
+    }
+
+    fn make_diff_image(
+        base_image: &mut [Vec<Rgb8>],
+        new_image: &[Vec<Rgb8>],
+    ) -> (RectArea, Vec<Vec<Rgb8>>) {
+        let mut min_x = i16::MAX;
+        let mut min_y = i16::MAX;
+        let mut max_x = i16::MIN;
+        let mut max_y = i16::MIN;
+        let width = base_image[0].len();
+        let height = base_image.len();
+        let mut diff_image: Vec<Vec<Rgb8>> = Vec::new();
+        for y in 0..height {
+            let mut diff_line: Vec<Rgb8> = Vec::new();
+            for x in 0..width {
+                let rgb = new_image[y][x];
+                if rgb == base_image[y][x] {
+                    diff_line.push(TRANSPARENT);
+                } else {
+                    min_x = min(min_x, x as i16);
+                    min_y = min(min_y, y as i16);
+                    max_x = max(max_x, x as i16);
+                    max_y = max(max_y, y as i16);
+                    base_image[y][x] = rgb;
+                    diff_line.push(rgb);
+                }
+            }
+            diff_image.push(diff_line);
+        }
+        if min_x > max_x || min_y > max_y {
+            return (RectArea::new(0, 0, 0, 0), Vec::new());
+        }
+        diff_image = diff_image[min_y as usize..=max_y as usize].to_vec();
+        for diff_line in &mut diff_image {
+            *diff_line = diff_line[min_x as usize..=max_x as usize].to_vec();
+        }
+        (
+            RectArea::new(
+                min_x as i32,
+                min_y as i32,
+                diff_image[0].len() as u32,
+                diff_image.len() as u32,
+            ),
+            diff_image,
+        )
     }
 }
