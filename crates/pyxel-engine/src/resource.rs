@@ -204,15 +204,15 @@ impl Pyxel {
         #[cfg(target_os = "emscripten")]
         {
             let script = "
-            let now = new Date();
-            let year = now.getFullYear();
-            let month = now.getMonth() + 1;
-            let date = now.getDate();
-            let hour = now.getHours();
-            let min = now.getMinutes();
-            let sec = now.getSeconds();
-            `${year}${month}${date}-${hour}${min}${sec}`
-        ";
+                let now = new Date();
+                let year = now.getFullYear();
+                let month = now.getMonth() + 1;
+                let date = now.getDate();
+                let hour = now.getHours();
+                let min = now.getMinutes();
+                let sec = now.getSeconds();
+                `${year}${month}${date}-${hour}${min}${sec}`
+            ";
             emscripten::run_script_string(script)
         }
     }
