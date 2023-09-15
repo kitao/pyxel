@@ -1,13 +1,10 @@
-use std::cmp::max;
-
-use glow::HasContext;
 use pyxel_platform::Event;
 
-use crate::image::{Image, SharedImage};
+use crate::image::{Color, Image, SharedImage};
 use crate::keys::{Key, KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use crate::profiler::Profiler;
 use crate::pyxel::Pyxel;
-use crate::settings::{DISPLAY_RATIO, MAX_ELAPSED_MS, NUM_COLORS, NUM_MEASURE_FRAMES};
+use crate::settings::{MAX_ELAPSED_MS, NUM_COLORS, NUM_MEASURE_FRAMES};
 use crate::utils;
 
 pub trait PyxelCallback {
@@ -27,28 +24,7 @@ pub struct System {
 }
 
 impl System {
-    pub fn new(
-        width: u32,
-        height: u32,
-        title: &str,
-        fps: u32,
-        quit_key: Key,
-        display_scale: Option<u32>,
-    ) -> System {
-        pyxel_platform::init(|display_width, display_height| {
-            let display_scale = max(
-                if let Some(display_scale) = display_scale {
-                    display_scale
-                } else {
-                    (f64::min(
-                        display_width as f64 / width as f64,
-                        display_height as f64 / height as f64,
-                    ) * DISPLAY_RATIO) as u32
-                },
-                1,
-            );
-            (title, width * display_scale, height * display_scale)
-        });
+    pub fn new(fps: u32, quit_key: Key) -> System {
         Self {
             one_frame_ms: 1000.0 / fps as f64,
             next_update_ms: 0.0,
@@ -122,19 +98,40 @@ impl Pyxel {
         pyxel_platform::set_window_title(title);
     }
 
-    pub fn icon(&self, data_str: &[&str], scale: u32) {
+    pub fn icon(&self, data_str: &[&str], scale: u32, transparent: Option<Color>) {
         let width = utils::simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
         let image = Image::new(width, height);
         let mut image = image.lock();
         image.set(0, 0, data_str);
-        /*pyxel_platform::set_icon(
-            width,
-            height,
-            &image.canvas.data,
-            &*crate::colors().lock(),
-            scale,
-        );*/
+        let image_data = &image.canvas.data;
+        let scaled_width = width * scale;
+        let scaled_height = height * scale;
+        let mut rgba_data: Vec<u8> =
+            Vec::with_capacity((scaled_width * scaled_height * 4) as usize);
+        for y in 0..height {
+            for _sy in 0..scale {
+                for x in 0..width {
+                    let color = image_data[(width * y + x) as usize];
+                    let rgb = self.colors[color as usize];
+                    let r = ((rgb >> 16) & 0xff) as u8;
+                    let g = ((rgb >> 8) & 0xff) as u8;
+                    let b = (rgb & 0xff) as u8;
+                    let a = if Some(color) == transparent {
+                        0x00
+                    } else {
+                        0xff
+                    };
+                    for _sx in 0..scale {
+                        rgba_data.push(r);
+                        rgba_data.push(g);
+                        rgba_data.push(b);
+                        rgba_data.push(a);
+                    }
+                }
+            }
+        }
+        pyxel_platform::set_window_icon(scaled_width, scaled_height, &rgba_data);
     }
 
     pub fn fullscreen(&self, full: bool) {
@@ -302,23 +299,7 @@ impl Pyxel {
         }
         self.draw_perf_monitor();
         self.draw_cursor();
-        {
-            let gl = pyxel_platform::glow_context();
-            unsafe {
-                gl.clear_color(1.0, 0.0, 0.0, 1.0);
-                gl.clear(glow::COLOR_BUFFER_BIT);
-            }
-            pyxel_platform::swap_window();
-
-            /*pyxel_Platform::instance().render_screen(
-                screen.canvas.width(),
-                screen.canvas.height(),
-                &screen.canvas.data,
-                &*crate::colors().lock(),
-                BACKGROUND_COLOR,
-            );*/
-            self.capture_screen();
-        }
+        self.render_screen();
         self.system
             .draw_profiler
             .end(pyxel_platform::elapsed_time());

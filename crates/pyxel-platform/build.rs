@@ -128,6 +128,7 @@ fn generate_bindings(sdl2_dir: &str, out_dir: &str) {
         .to_string()
         .replace("SDL_EventType_", "")
         .replace("SDL_KeyCode_", "")
+        .replace("SDL_PixelFormatEnum_", "")
         .replace("SDL_WindowEventID_", "")
         .replace("SDL_WindowFlags_", "");
     write(Path::new(&out_dir).join("bindings.rs"), bindings).expect("Failed to write bindings");

@@ -1,6 +1,5 @@
 use std::ffi::CString;
 use std::mem::transmute;
-use std::ptr::null_mut;
 
 use glow::Context as GlowContext;
 
@@ -75,26 +74,28 @@ pub fn set_window_title(title: &str) {
     }
 }
 
-pub fn set_window_icon(width: u32, height: u32, pixels: &[u32]) {
-    /*
-    let mut sdl_surface =
-        SdlSurface::new(width * scale, height * scale, SdlPixelFormat::RGBA32).unwrap();
-    let pitch = sdl_surface.pitch();
-    sdl_surface.with_lock_mut(|buffer: &mut [u8]| {
-        for y in 0..height * scale {
-            for x in 0..width * scale {
-                let color = image[(width * (y / scale) + x / scale) as usize];
-                let rgb = colors[color as usize];
-                let offset = (y * pitch + x * 4) as usize;
-                buffer[offset] = ((rgb >> 16) & 0xff) as u8;
-                buffer[offset + 1] = ((rgb >> 8) & 0xff) as u8;
-                buffer[offset + 2] = (rgb & 0xff) as u8;
-                buffer[offset + 3] = if color > 0 { 0xff } else { 0x00 };
+pub fn set_window_icon(width: u32, height: u32, rgba_data: &[u8]) {
+    unsafe {
+        let surface = SDL_CreateRGBSurfaceWithFormat(
+            0,
+            width as i32,
+            height as i32,
+            32,
+            SDL_PIXELFORMAT_RGBA8888,
+        );
+        let pixels = (*surface).pixels as *mut u8;
+        let pitch = (*surface).pitch as u32;
+        for y in 0..height {
+            let src_offset = (width * y * 4) as usize;
+            let mut dst_pixels = pixels.add((pitch * y) as usize);
+            for x in 0..(width * 4) {
+                *dst_pixels = rgba_data[src_offset + x as usize];
+                dst_pixels = dst_pixels.add(1);
             }
         }
-    });
-    self.sdl_canvas.window_mut().set_icon(&sdl_surface);
-    */
+        SDL_SetWindowIcon(platform().window, surface);
+        SDL_FreeSurface(surface);
+    }
 }
 
 pub fn window_pos() -> (i32, i32) {
