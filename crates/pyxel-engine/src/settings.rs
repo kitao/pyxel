@@ -20,6 +20,7 @@ pub const MAX_ELAPSED_MS: u32 = 200;
 pub const NUM_MEASURE_FRAMES: u32 = 10;
 pub const ICON_SIZE: u32 = 16;
 pub const ICON_SCALE: u32 = 4;
+pub const ICON_COLKEY: Option<Color> = Some(0);
 pub const ICON_DATA: [&str; ICON_SIZE as usize] = [
     "0000000110000000",
     "0000011F71100000",

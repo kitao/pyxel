@@ -50,8 +50,8 @@ fn title(title: &str) {
 }
 
 #[pyfunction]
-fn icon(data: Vec<&str>, scale: u32) {
-    pyxel().icon(&data, scale);
+fn icon(data: Vec<&str>, scale: u32, colkey: Option<pyxel::Color>) {
+    pyxel().icon(&data, scale, colkey);
 }
 
 #[pyfunction]
@@ -68,14 +68,14 @@ fn run(py: Python, update: &PyAny, draw: &PyAny) {
     }
 
     impl<'a> PyxelCallback for PythonCallback<'a> {
-        fn update(&mut self, pyxel: &mut Pyxel) {
+        fn update(&mut self, _pyxel: &mut Pyxel) {
             if let Err(err) = self.update.call0() {
                 err.print(self.py);
                 exit(1);
             }
         }
 
-        fn draw(&mut self, pyxel: &mut Pyxel) {
+        fn draw(&mut self, _pyxel: &mut Pyxel) {
             if let Err(err) = self.draw.call0() {
                 err.print(self.py);
                 exit(1);
