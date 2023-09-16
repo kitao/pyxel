@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use crate::audio::Audio;
@@ -10,13 +11,14 @@ use crate::math::Math;
 use crate::music::{Music, SharedMusic};
 use crate::resource::Resource;
 use crate::settings::{
-    CURSOR_IMAGE, DEFAULT_COLORS, DEFAULT_FPS, DEFAULT_QUIT_KEY, DEFAULT_TITLE, FONT_IMAGE,
-    ICON_DATA, ICON_SCALE, IMAGE_SIZE, NUM_CHANNELS, NUM_COLORS, NUM_IMAGES, NUM_MUSICS,
+    CURSOR_IMAGE, DEFAULT_COLORS, DEFAULT_FPS, DEFAULT_QUIT_KEY, DEFAULT_TITLE, DISPLAY_RATIO,
+    FONT_IMAGE, ICON_DATA, ICON_SCALE, IMAGE_SIZE, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS,
     NUM_SOUNDS, NUM_TILEMAPS, TILEMAP_SIZE,
 };
 use crate::sound::{SharedSound, Sound};
 use crate::system::System;
 use crate::tilemap::{SharedTilemap, Tilemap};
+use crate::ICON_COLKEY;
 
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
@@ -72,11 +74,29 @@ pub fn init(
         panic!("Pyxel already initialized");
     }
 
-    // System
+    // Default parameters
     let title = title.unwrap_or(DEFAULT_TITLE);
     let quit_key = quit_key.unwrap_or(DEFAULT_QUIT_KEY);
     let fps = fps.unwrap_or(DEFAULT_FPS);
-    let system = System::new(width, height, title, fps, quit_key, display_scale);
+
+    // Platform
+    pyxel_platform::init(|display_width, display_height| {
+        let display_scale = max(
+            if let Some(display_scale) = display_scale {
+                display_scale
+            } else {
+                (f64::min(
+                    display_width as f64 / width as f64,
+                    display_height as f64 / height as f64,
+                ) * DISPLAY_RATIO) as u32
+            },
+            1,
+        );
+        (title, width * display_scale, height * display_scale)
+    });
+
+    // System
+    let system = System::new(fps, quit_key);
     let frame_count = 0;
 
     // Resource
@@ -138,6 +158,6 @@ pub fn init(
         musics,
         math,
     };
-    pyxel.icon(&ICON_DATA, ICON_SCALE);
+    pyxel.icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
     pyxel
 }
