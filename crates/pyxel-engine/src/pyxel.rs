@@ -3,7 +3,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 use crate::audio::Audio;
 use crate::channel::{Channel, SharedChannel};
-use crate::graphics::Graphics;
+use crate::graphics::{Graphics, COLORS, CURSOR_IMAGE, FONT_IMAGE};
 use crate::image::{Image, Rgb8, SharedImage};
 use crate::input::Input;
 use crate::keys::Key;
@@ -11,9 +11,8 @@ use crate::math::Math;
 use crate::music::{Music, SharedMusic};
 use crate::resource::Resource;
 use crate::settings::{
-    CURSOR_IMAGE, DEFAULT_COLORS, DEFAULT_FPS, DEFAULT_QUIT_KEY, DEFAULT_TITLE, DISPLAY_RATIO,
-    FONT_IMAGE, ICON_DATA, ICON_SCALE, IMAGE_SIZE, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS,
-    NUM_SOUNDS, NUM_TILEMAPS, TILEMAP_SIZE,
+    DEFAULT_FPS, DEFAULT_QUIT_KEY, DEFAULT_TITLE, DISPLAY_RATIO, ICON_DATA, ICON_SCALE, IMAGE_SIZE,
+    NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS, TILEMAP_SIZE,
 };
 use crate::sound::{SharedSound, Sound};
 use crate::system::System;
@@ -28,7 +27,6 @@ pub struct Pyxel {
     pub width: u32,
     pub height: u32,
     pub frame_count: u32,
-    pub(crate) fps: u32,
 
     // Resource
     pub(crate) resource: Resource,
@@ -43,7 +41,7 @@ pub struct Pyxel {
 
     // Graphics
     pub(crate) graphics: Graphics,
-    pub colors: Vec<Rgb8>,
+    pub colors: shared_type!(Vec<Rgb8>),
     pub images: Vec<SharedImage>,
     pub tilemaps: Vec<SharedTilemap>,
     pub screen: SharedImage,
@@ -112,7 +110,7 @@ pub fn init(
 
     // Graphics
     let graphics = Graphics::new();
-    let colors = DEFAULT_COLORS.to_vec();
+    let colors = COLORS.clone();
     let images: Vec<_> = (0..NUM_IMAGES)
         .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
         .collect();
@@ -137,7 +135,6 @@ pub fn init(
         width,
         height,
         frame_count,
-        fps,
         resource,
         input,
         mouse_x,

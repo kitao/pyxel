@@ -7,16 +7,12 @@ static mut PYXEL: *mut Pyxel = null_mut();
 
 pub fn pyxel() -> &'static mut Pyxel {
     unsafe {
-        if is_pyxel_initialized() {
+        if PYXEL != null_mut() {
             &mut *PYXEL
         } else {
             panic!("Pyxel not initialized");
         }
     }
-}
-
-pub fn is_pyxel_initialized() -> bool {
-    unsafe { PYXEL != null_mut() }
 }
 
 pub fn set_pyxel_instance(pyxel: Pyxel) {
