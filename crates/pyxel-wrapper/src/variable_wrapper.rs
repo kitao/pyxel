@@ -12,11 +12,11 @@ struct Colors;
 
 impl Colors {
     fn list(&self) -> &[pyxel::Rgb8] {
-        unsafe { &*ptr::addr_of!(*pyxel().colors) }
+        unsafe { &*ptr::addr_of!(*pyxel().colors.lock()) }
     }
 
     fn list_mut(&mut self) -> &mut [pyxel::Rgb8] {
-        unsafe { &mut *ptr::addr_of_mut!(*pyxel().colors) }
+        unsafe { &mut *ptr::addr_of_mut!(*pyxel().colors.lock()) }
     }
 }
 
