@@ -1,7 +1,5 @@
-use once_cell::sync::Lazy;
-
 use crate::channel::{Note, Speed, Volume};
-use crate::image::{Color, Image, Rgb8, SharedImage};
+use crate::image::{Color, Rgb8};
 use crate::keys::{Key, KEY_ESCAPE};
 use crate::oscillator::{Effect, Tone};
 

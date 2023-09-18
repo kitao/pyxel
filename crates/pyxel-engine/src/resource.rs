@@ -13,8 +13,8 @@ use crate::music::Music;
 use crate::pyxel::Pyxel;
 use crate::screencast::Screencast;
 use crate::settings::{
-    DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, NUM_COLORS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS,
-    NUM_TILEMAPS, PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_DIRNAME, VERSION,
+    DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
+    PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_DIRNAME, VERSION,
 };
 use crate::sound::Sound;
 use crate::tilemap::Tilemap;
@@ -108,10 +108,9 @@ impl Pyxel {
                 .split('\n')
                 .filter(|s| !s.is_empty())
                 .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb8)
-                .take(NUM_COLORS as usize)
                 .collect();
-            self.colors.clear();
-            self.colors.extend_from_slice(&colors);
+            self.colors.lock().clear();
+            self.colors.lock().extend(colors.iter());
         }
     }
 
@@ -160,7 +159,7 @@ impl Pyxel {
     pub fn screenshot(&self, scale: Option<u32>) {
         let filename = Self::export_path();
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
-        self.screen.lock().save(&filename, scale, &self.colors);
+        self.screen.lock().save(&filename, scale);
         #[cfg(target_os = "emscripten")]
         Platform::save_file_on_web_browser(&(filename + ".png"));
     }
@@ -182,7 +181,7 @@ impl Pyxel {
             self.width,
             self.height,
             &self.screen.lock().canvas.data,
-            &self.colors,
+            &self.colors.lock(),
             self.frame_count,
         );
     }
