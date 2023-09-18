@@ -4,7 +4,7 @@ use crate::image::{Color, Image, SharedImage};
 use crate::keys::{Key, KEY_0, KEY_1, KEY_2, KEY_3, KEY_ALT, KEY_RETURN};
 use crate::profiler::Profiler;
 use crate::pyxel::Pyxel;
-use crate::settings::{MAX_ELAPSED_MS, NUM_COLORS, NUM_MEASURE_FRAMES};
+use crate::settings::{MAX_ELAPSED_MS, NUM_MEASURE_FRAMES};
 use crate::utils;
 
 pub trait PyxelCallback {
@@ -269,9 +269,6 @@ impl Pyxel {
         let palette = screen.palette;
         screen.clip0();
         screen.camera0();
-        for i in 0..NUM_COLORS {
-            screen.pal(i as u8, (NUM_COLORS + i) as u8);
-        }
         screen.blt(
             x as f64,
             y as f64,
