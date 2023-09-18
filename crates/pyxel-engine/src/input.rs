@@ -29,55 +29,6 @@ impl Input {
 }
 
 impl Pyxel {
-    pub(crate) fn reset_input_states(&mut self) {
-        self.input.key_values.insert(MOUSE_WHEEL_X, 0);
-        self.input.key_values.insert(MOUSE_WHEEL_Y, 0);
-        self.input_text = String::new();
-        self.dropped_files.clear();
-    }
-
-    pub(crate) fn press_key(&mut self, key: Key) {
-        let mut key_state = KeyState::Pressed;
-        if let Some((last_frame_count, last_key_state)) = self.input.key_states.get(&key) {
-            if *last_frame_count == self.frame_count && *last_key_state != KeyState::Pressed {
-                key_state = KeyState::ReleasedAndPressed;
-            }
-        }
-        self.input
-            .key_states
-            .insert(key, (self.frame_count, key_state));
-    }
-
-    pub(crate) fn release_key(&mut self, key: Key) {
-        let mut key_state = KeyState::Released;
-        if let Some((last_frame_count, last_key_state)) = self.input.key_states.get(&key) {
-            if *last_frame_count == self.frame_count && *last_key_state != KeyState::Released {
-                key_state = KeyState::PressedAndReleased;
-            }
-        }
-        self.input
-            .key_states
-            .insert(key, (self.frame_count, key_state));
-    }
-
-    pub(crate) fn change_key_value(&mut self, key: Key, value: KeyValue) {
-        self.input.key_values.insert(key, value);
-    }
-
-    pub(crate) fn add_input_text(&mut self, text: &str) {
-        self.input_text += text;
-    }
-
-    pub(crate) fn add_dropped_file(&mut self, filename: &str) {
-        self.dropped_files.push(filename.to_string());
-    }
-
-    pub(crate) fn is_mouse_visible(&self) -> bool {
-        self.input.mouse_visible
-    }
-}
-
-impl Pyxel {
     pub fn btn(&mut self, key: Key) -> bool {
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Pressed
@@ -161,4 +112,51 @@ impl Pyxel {
         let input = self.input();
         *input.key_values.get(&MOUSE_WHEEL_Y).unwrap_or(&0)
     }*/
+
+    pub(crate) fn reset_input_states(&mut self) {
+        self.input.key_values.insert(MOUSE_WHEEL_X, 0);
+        self.input.key_values.insert(MOUSE_WHEEL_Y, 0);
+        self.input_text = String::new();
+        self.dropped_files.clear();
+    }
+
+    pub(crate) fn press_key(&mut self, key: Key) {
+        let mut key_state = KeyState::Pressed;
+        if let Some((last_frame_count, last_key_state)) = self.input.key_states.get(&key) {
+            if *last_frame_count == self.frame_count && *last_key_state != KeyState::Pressed {
+                key_state = KeyState::ReleasedAndPressed;
+            }
+        }
+        self.input
+            .key_states
+            .insert(key, (self.frame_count, key_state));
+    }
+
+    pub(crate) fn release_key(&mut self, key: Key) {
+        let mut key_state = KeyState::Released;
+        if let Some((last_frame_count, last_key_state)) = self.input.key_states.get(&key) {
+            if *last_frame_count == self.frame_count && *last_key_state != KeyState::Released {
+                key_state = KeyState::PressedAndReleased;
+            }
+        }
+        self.input
+            .key_states
+            .insert(key, (self.frame_count, key_state));
+    }
+
+    pub(crate) fn change_key_value(&mut self, key: Key, value: KeyValue) {
+        self.input.key_values.insert(key, value);
+    }
+
+    pub(crate) fn add_input_text(&mut self, text: &str) {
+        self.input_text += text;
+    }
+
+    pub(crate) fn add_dropped_file(&mut self, filename: &str) {
+        self.dropped_files.push(filename.to_string());
+    }
+
+    pub(crate) fn is_mouse_visible(&self) -> bool {
+        self.input.mouse_visible
+    }
 }
