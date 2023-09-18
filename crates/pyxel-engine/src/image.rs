@@ -7,6 +7,7 @@ use image::imageops::{self, FilterType};
 use image::{Rgb, RgbImage};
 
 use crate::canvas::{Canvas, CopyArea, ToIndex};
+use crate::graphics::{COLORS, FONT_IMAGE};
 use crate::pyxel::Pyxel;
 use crate::rectarea::RectArea;
 use crate::resource::ResourceItem;
@@ -41,7 +42,8 @@ impl Image {
         })
     }
 
-    pub fn from_image(filename: &str, colors: &[Rgb8]) -> SharedImage {
+    pub fn from_image(filename: &str) -> SharedImage {
+        let colors = COLORS.lock();
         let image_file = ::image::open(Path::new(&filename))
             .unwrap_or_else(|_| panic!("Unable to open file '{filename}'"))
             .to_rgb8();
@@ -59,8 +61,7 @@ impl Image {
                     } else {
                         let mut closest_color: Color = 0;
                         let mut closest_dist: f64 = f64::MAX;
-                        for i in 0..NUM_COLORS {
-                            let pal_color = colors[i as usize];
+                        for (i, pal_color) in colors.iter().enumerate() {
                             let pal_rgb = (
                                 ((pal_color >> 16) & 0xff) as u8,
                                 ((pal_color >> 8) & 0xff) as u8,
@@ -124,8 +125,8 @@ impl Image {
         );
     }
 
-    pub fn load(&mut self, x: i32, y: i32, filename: &str, colors: &[Rgb8]) {
-        let image = Self::from_image(filename, colors);
+    pub fn load(&mut self, x: i32, y: i32, filename: &str) {
+        let image = Self::from_image(filename);
         let width = image.lock().width();
         let height = image.lock().height();
         self.blt(
@@ -140,7 +141,8 @@ impl Image {
         );
     }
 
-    pub fn save(&self, filename: &str, scale: u32, colors: &[Rgb8]) {
+    pub fn save(&self, filename: &str, scale: u32) {
+        let colors = COLORS.lock();
         let width = self.width();
         let height = self.height();
         let mut image = RgbImage::new(width, height);
@@ -375,7 +377,7 @@ impl Image {
         }
     }
 
-    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color, font: SharedImage) {
+    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color) {
         let mut x = utils::f64_to_i32(x); // No need to reflect camera_x
         let mut y = utils::f64_to_i32(y); // No need to reflect camera_y
         let color = self.palette[color as usize];
@@ -397,7 +399,7 @@ impl Image {
             self.blt(
                 x as f64,
                 y as f64,
-                font.clone(),
+                FONT_IMAGE.clone(),
                 src_x as f64,
                 src_y as f64,
                 FONT_WIDTH as f64,
