@@ -99,6 +99,7 @@ impl Pyxel {
     }
 
     pub fn icon(&self, data_str: &[&str], scale: u32, transparent: Option<Color>) {
+        let colors = self.colors.lock();
         let width = utils::simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
         let image = Image::new(width, height);
@@ -113,7 +114,7 @@ impl Pyxel {
             for _sy in 0..scale {
                 for x in 0..width {
                     let color = image_data[(width * y + x) as usize];
-                    let rgb = self.colors[color as usize];
+                    let rgb = colors[color as usize];
                     let r = ((rgb >> 16) & 0xff) as u8;
                     let g = ((rgb >> 8) & 0xff) as u8;
                     let b = (rgb & 0xff) as u8;
@@ -229,16 +230,16 @@ impl Pyxel {
         screen.pal(2, 9);
 
         let fps = format!("{:.*}", 2, self.system.fps_profiler.average_fps());
-        screen.text(1.0, 0.0, &fps, 1, self.font.clone());
-        screen.text(0.0, 0.0, &fps, 2, self.font.clone());
+        screen.text(1.0, 0.0, &fps, 1);
+        screen.text(0.0, 0.0, &fps, 2);
 
         let update_time = format!("{:.*}", 2, self.system.update_profiler.average_time());
-        screen.text(1.0, 6.0, &update_time, 1, self.font.clone());
-        screen.text(0.0, 6.0, &update_time, 2, self.font.clone());
+        screen.text(1.0, 6.0, &update_time, 1);
+        screen.text(0.0, 6.0, &update_time, 2);
 
         let draw_time = format!("{:.*}", 2, self.system.draw_profiler.average_time());
-        screen.text(1.0, 12.0, &draw_time, 1, self.font.clone());
-        screen.text(0.0, 12.0, &draw_time, 2, self.font.clone());
+        screen.text(1.0, 12.0, &draw_time, 1);
+        screen.text(0.0, 12.0, &draw_time, 2);
 
         screen.canvas.clip_rect = clip_rect;
         screen.canvas.camera_x = camera_x;
@@ -300,6 +301,7 @@ impl Pyxel {
         self.draw_perf_monitor();
         self.draw_cursor();
         self.render_screen();
+        self.capture_screen();
         self.system
             .draw_profiler
             .end(pyxel_platform::elapsed_time());
