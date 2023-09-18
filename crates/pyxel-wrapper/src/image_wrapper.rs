@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-use crate::pyxel_singleton::{is_pyxel_initialized, pyxel};
+use crate::pyxel_singleton::pyxel;
 use crate::tilemap_wrapper::Tilemap;
 
 #[pyclass]
@@ -13,16 +13,6 @@ pub const fn wrap_pyxel_image(pyxel_image: pyxel::SharedImage) -> Image {
     Image { pyxel_image }
 }
 
-macro_rules! pyxel_colors {
-    () => {
-        if is_pyxel_initialized() {
-            &pyxel().colors
-        } else {
-            &pyxel::DEFAULT_COLORS
-        }
-    };
-}
-
 #[pymethods]
 impl Image {
     #[new]
@@ -32,7 +22,7 @@ impl Image {
 
     #[staticmethod]
     pub fn from_image(filename: &str) -> Self {
-        wrap_pyxel_image(pyxel::Image::from_image(filename, pyxel_colors!()))
+        wrap_pyxel_image(pyxel::Image::from_image(filename))
     }
 
     #[getter]
@@ -62,15 +52,11 @@ impl Image {
     }
 
     pub fn load(&self, x: i32, y: i32, filename: &str) {
-        self.pyxel_image
-            .lock()
-            .load(x, y, filename, pyxel_colors!());
+        self.pyxel_image.lock().load(x, y, filename);
     }
 
     pub fn save(&self, filename: &str, scale: u32) {
-        self.pyxel_image
-            .lock()
-            .save(filename, scale, pyxel_colors!());
+        self.pyxel_image.lock().save(filename, scale);
     }
 
     pub fn clip(
@@ -202,12 +188,7 @@ impl Image {
     }
 
     pub fn text(&self, x: f64, y: f64, s: &str, col: pyxel::Color) {
-        let font = if is_pyxel_initialized() {
-            pyxel().font.clone()
-        } else {
-            pyxel::FONT_IMAGE.clone()
-        };
-        self.pyxel_image.lock().text(x, y, s, col, font);
+        self.pyxel_image.lock().text(x, y, s, col);
     }
 }
 
