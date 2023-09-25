@@ -64,10 +64,10 @@ impl BlipBuf {
 
         let phase_shift = FRAC_BITS - PHASE_BITS;
         let phase = ((fixed >> phase_shift) as i32 & (PHASE_COUNT - 1)) as usize;
-        let phase_rev = PHASE_COUNT as usize - phase;
+        let phase_rev = PHASE_COUNT as usize - phase as usize;
 
         let interp = (fixed >> (phase_shift - DELTA_BITS)) as i32 & (DELTA_UNIT - 1);
-        let delta2 = (delta * interp) >> DELTA_BITS;
+        let delta2 = (delta * interp as i32) >> DELTA_BITS;
         let delta = delta - delta2;
 
         out[0] = out[0]
@@ -114,7 +114,7 @@ impl BlipBuf {
     }
 
     pub fn add_delta_fast(&mut self, time: u64, delta: i32) {
-        let fixed = (time * self.factor + self.offset) >> PRE_SHIFT;
+        let fixed = ((time * self.factor + self.offset) >> PRE_SHIFT) as u64;
         let out = &mut self.buf[(self.avail as usize + (fixed >> FRAC_BITS) as usize)..];
 
         let interp = (fixed >> (FRAC_BITS - DELTA_BITS) & (DELTA_UNIT - 1) as u64) as i32;
@@ -129,14 +129,14 @@ impl BlipBuf {
         assert!(self.avail + samples <= self.buf.capacity() as i32);
 
         let needed = samples as u64 * TIME_UNIT;
-        if needed < self.offset {
+        if needed < self.offset as u64 {
             0
         } else {
             ((needed - self.offset + self.factor - 1) / self.factor) as i32
         }
     }
 
-    pub const fn samples_avail(&self) -> i32 {
+    pub fn samples_avail(&self) -> i32 {
         self.avail
     }
 
@@ -178,7 +178,7 @@ impl BlipBuf {
         self.avail -= count as i32;
 
         self.buf.copy_within(count..(count + remain), 0);
-        self.buf[remain..(remain + count)].fill(0);
+        self.buf[remain..(remain + count as usize)].fill(0);
     }
 }
 
