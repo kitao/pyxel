@@ -1,5 +1,4 @@
 use std::cmp::{max, min};
-use std::collections::HashMap;
 use std::mem::size_of;
 
 use glow::HasContext;
@@ -45,43 +44,105 @@ pub(crate) static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
     image
 });
 
-struct DisplayShader {
-    shader_program: glow::Program,
-    uniform_locations: HashMap<String, glow::NativeUniformLocation>,
-}
-
 pub struct Graphics {
+    plain_shader: glow::Program,
+    vertex_array: glow::VertexArray,
     screen_texture: glow::NativeTexture,
     palette_texture: glow::NativeTexture,
-    vertex_array: glow::VertexArray,
-    plain_shader: DisplayShader,
 }
 
 impl Graphics {
     pub fn new() -> Self {
         unsafe {
             let gl = pyxel_platform::glow_context();
+            let plain_shader = Self::create_plain_shader(gl);
+            let vertex_array = Self::create_vertex_array(gl, &plain_shader);
             let screen_texture = Self::create_screen_texture(gl);
             let palette_texture = Self::create_palette_texture(gl);
-            let vertex_array = Self::create_vertex_array(gl);
-            let plain_shader = Self::create_plain_shader(gl);
             Self {
+                plain_shader,
+                vertex_array,
                 screen_texture,
                 palette_texture,
-                vertex_array,
-                plain_shader,
             }
         }
     }
 
-    unsafe fn create_vertex_array(gl: &mut glow::Context) -> glow::VertexArray {
+    unsafe fn create_plain_shader(gl: &mut glow::Context) -> glow::Program {
+        // Shader version
+        let shader_version: &str = "#version 330 core\n";
+
+        // Vertex shader
+        let vertex_shader_source: &str = r#"
+            in vec2 position;
+            in vec2 texcoord;
+            out vec2 v_texcoord;
+
+            void main() {
+                gl_Position = vec4(position, 0.0, 1.0);
+                v_texcoord = texcoord;
+            }
+        "#;
+        let vertex_shader = gl.create_shader(glow::VERTEX_SHADER).unwrap();
+        gl.shader_source(
+            vertex_shader,
+            &format!("{}{}", shader_version, vertex_shader_source),
+        );
+        gl.compile_shader(vertex_shader);
+        if !gl.get_shader_compile_status(vertex_shader) {
+            panic!("{}", gl.get_shader_info_log(vertex_shader));
+        }
+
+        // Fragment shader
+        let fragment_shader_source: &str = r#"
+            in vec2 v_texcoord;
+            out vec4 color;
+
+            uniform sampler2D u_screen_texture;
+            uniform sampler1D u_palette_texture;
+            uniform uint u_num_colors;
+
+            void main() {
+                float index_color = texture(u_screen_texture, v_texcoord).r * 255.0;
+                float palette_u = (index_color + 0.5) / float(u_num_colors);
+                color = vec4(texture(u_palette_texture, palette_u).rgb, 1.0);
+            }
+        "#;
+        let fragment_shader = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
+        gl.shader_source(
+            fragment_shader,
+            &format!("{}{}", shader_version, fragment_shader_source),
+        );
+        gl.compile_shader(fragment_shader);
+        if !gl.get_shader_compile_status(fragment_shader) {
+            panic!("{}", gl.get_shader_info_log(fragment_shader));
+        }
+
+        // Shader program
+        let shader_program = gl.create_program().unwrap();
+        gl.attach_shader(shader_program, vertex_shader);
+        gl.attach_shader(shader_program, fragment_shader);
+        gl.link_program(shader_program);
+        if !gl.get_program_link_status(shader_program) {
+            panic!("{}", gl.get_program_info_log(shader_program));
+        }
+        /*gl.detach_shader(shader_program, vertex_shader);
+        gl.delete_shader(vertex_shader);
+        gl.detach_shader(shader_program, fragment_shader);
+        gl.delete_shader(fragment_shader);*/
+
+        shader_program
+    }
+
+    unsafe fn create_vertex_array(
+        gl: &mut glow::Context,
+        shader_program: &glow::Program,
+    ) -> glow::VertexArray {
+        let vertices: [f32; 16] = [
+            -1.0, 1.0, 0.0, 0.0, -1.0, -1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, -1.0, 1.0, 1.0,
+        ];
         let vertex_array = gl.create_vertex_array().unwrap();
         let vertex_buffer = gl.create_buffer().unwrap();
-        let element_array = gl.create_buffer().unwrap();
-        let vertices: [f32; 16] = [
-            -1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, -1.0, -1.0, 0.0, 1.0, 1.0, -1.0, 1.0, 1.0,
-        ];
-        let indices: [u32; 4] = [0, 2, 1, 3];
         gl.bind_vertex_array(Some(vertex_array));
         gl.bind_buffer(glow::ARRAY_BUFFER, Some(vertex_buffer));
         gl.buffer_data_u8_slice(
@@ -89,94 +150,27 @@ impl Graphics {
             &vertices.align_to::<u8>().1,
             glow::STATIC_DRAW,
         );
-        gl.bind_buffer(glow::ELEMENT_ARRAY_BUFFER, Some(element_array));
-        gl.buffer_data_u8_slice(
-            glow::ELEMENT_ARRAY_BUFFER,
-            &indices.align_to::<u8>().1,
-            glow::STATIC_DRAW,
-        );
-        gl.vertex_attrib_pointer_f32(0, 2, glow::FLOAT, false, 4 * size_of::<f32>() as i32, 0);
-        gl.enable_vertex_attrib_array(0);
+        let position_location = gl.get_attrib_location(*shader_program, "position").unwrap();
         gl.vertex_attrib_pointer_f32(
-            1,
+            position_location,
+            2,
+            glow::FLOAT,
+            false,
+            4 * size_of::<f32>() as i32,
+            0,
+        );
+        gl.enable_vertex_attrib_array(position_location);
+        let texcoord_location = gl.get_attrib_location(*shader_program, "texcoord").unwrap();
+        gl.vertex_attrib_pointer_f32(
+            texcoord_location,
             2,
             glow::FLOAT,
             false,
             4 * size_of::<f32>() as i32,
             2 * size_of::<f32>() as i32,
         );
-        gl.enable_vertex_attrib_array(1);
+        gl.enable_vertex_attrib_array(texcoord_location);
         vertex_array
-    }
-
-    unsafe fn create_plain_shader(gl: &mut glow::Context) -> DisplayShader {
-        // Vertex shader
-        const VERTEX_SHADER_SOURCE: &str = r#"
-            #ifdef GL_ES
-            precision mediump float;
-            #define MEDIUMP mediump
-            #else
-            #define MEDIUMP
-            #endif
-
-            attribute MEDIUMP vec2 a_position;
-            attribute MEDIUMP vec2 a_texcoord;
-            varying MEDIUMP vec2 v_texcoord;
-
-            void main() {
-                gl_Position = vec4(a_position, 0.0, 1.0);
-                v_texcoord = a_texcoord;
-            }
-        "#;
-        let vertex_shader = gl.create_shader(glow::VERTEX_SHADER).unwrap();
-        gl.shader_source(vertex_shader, VERTEX_SHADER_SOURCE);
-        gl.compile_shader(vertex_shader);
-
-        // Fragment shader
-        const FRAGMENT_SHADER_SOURCE: &str = r#"
-            #ifdef GL_ES
-            precision mediump float;
-            #define MEDIUMP mediump
-            #else
-            #define MEDIUMP
-            #endif
-
-            varying MEDIUMP vec2 v_texcoord;
-            uniform sampler2D u_screen_texture;
-            uniform sampler2D u_palette_texture;
-            uniform MEDIUMP uint u_num_colors;
-
-            void main() {
-                float index_color = texture2D(u_screen_texture, v_texcoord).r * 255.0;
-                float palette_u = index_color / u_num_colors + 0.5;
-                vec3 color = texture2D(u_palette_texture, vec2(palette_u, 0.5)).rgb;
-                gl_FragColor = vec4(color, 1.0);
-            }
-        "#;
-        let fragment_shader = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
-        gl.shader_source(fragment_shader, FRAGMENT_SHADER_SOURCE);
-        gl.compile_shader(fragment_shader);
-
-        // Shader program
-        let shader_program = gl.create_program().unwrap();
-        gl.attach_shader(shader_program, vertex_shader);
-        gl.attach_shader(shader_program, fragment_shader);
-        gl.link_program(shader_program);
-        gl.delete_shader(vertex_shader);
-        gl.delete_shader(fragment_shader);
-
-        // Uniform locations
-        let mut uniform_locations = HashMap::new();
-        let uniforms = ["u_screen_texture", "u_palette_texture", "u_num_colors"];
-        for &uniform in &uniforms {
-            let location = gl.get_uniform_location(shader_program, uniform).unwrap();
-            uniform_locations.insert(String::from(uniform), location);
-        }
-
-        DisplayShader {
-            shader_program,
-            uniform_locations,
-        }
     }
 
     unsafe fn create_screen_texture(gl: &mut glow::Context) -> glow::NativeTexture {
@@ -209,25 +203,20 @@ impl Graphics {
     unsafe fn create_palette_texture(gl: &mut glow::Context) -> glow::NativeTexture {
         let palette_texture = gl.create_texture().unwrap();
         gl.active_texture(glow::TEXTURE1);
-        gl.bind_texture(glow::TEXTURE_2D, Some(palette_texture));
+        gl.bind_texture(glow::TEXTURE_1D, Some(palette_texture));
         gl.tex_parameter_i32(
-            glow::TEXTURE_2D,
+            glow::TEXTURE_1D,
             glow::TEXTURE_MIN_FILTER,
             glow::NEAREST as i32,
         );
         gl.tex_parameter_i32(
-            glow::TEXTURE_2D,
+            glow::TEXTURE_1D,
             glow::TEXTURE_MAG_FILTER,
             glow::NEAREST as i32,
         );
         gl.tex_parameter_i32(
-            glow::TEXTURE_2D,
+            glow::TEXTURE_1D,
             glow::TEXTURE_WRAP_S,
-            glow::CLAMP_TO_EDGE as i32,
-        );
-        gl.tex_parameter_i32(
-            glow::TEXTURE_2D,
-            glow::TEXTURE_WRAP_T,
             glow::CLAMP_TO_EDGE as i32,
         );
         palette_texture
@@ -373,14 +362,33 @@ impl Pyxel {
     pub(crate) fn render_screen(&mut self) {
         unsafe {
             let gl = pyxel_platform::glow_context();
+            self.set_viewport(gl);
             self.clear_window(gl);
+            self.use_plain_shader(gl);
             self.bind_screen_texture(gl);
             self.bind_palette_texture(gl);
-            self.use_plain_shader(gl);
             gl.bind_vertex_array(Some(self.graphics.vertex_array));
-            gl.draw_elements(glow::TRIANGLES, 6, glow::UNSIGNED_INT, 0);
+            gl.draw_arrays(glow::TRIANGLE_STRIP, 0, 4);
             pyxel_platform::swap_window();
         }
+    }
+
+    unsafe fn set_viewport(&self, gl: &mut glow::Context) {
+        let (window_width, window_height) = pyxel_platform::window_size();
+        let screen_scale = max(
+            min(window_width / self.width, window_height / self.height),
+            1,
+        );
+        let screen_width = self.width * screen_scale;
+        let screen_height = self.height * screen_scale;
+        let screen_x = (window_width as i32 - screen_width as i32) / 2;
+        let screen_y = (window_height as i32 - screen_height as i32) / 2;
+        gl.viewport(
+            screen_x as i32,
+            window_height as i32 - screen_y - screen_height as i32,
+            screen_width as i32,
+            screen_height as i32,
+        );
     }
 
     unsafe fn clear_window(&self, gl: &mut glow::Context) {
@@ -389,6 +397,22 @@ impl Pyxel {
         let b = (BACKGROUND_COLOR & 0xff) as f32 / 255.0;
         gl.clear_color(r, g, b, 1.0);
         gl.clear(glow::COLOR_BUFFER_BIT);
+    }
+
+    unsafe fn use_plain_shader(&self, gl: &mut glow::Context) {
+        gl.use_program(Some(self.graphics.plain_shader));
+        let u_screen_texture = gl
+            .get_uniform_location(self.graphics.plain_shader, "u_screen_texture")
+            .unwrap();
+        gl.uniform_1_i32(Some(&u_screen_texture), 0);
+        let u_palette_texture = gl
+            .get_uniform_location(self.graphics.plain_shader, "u_palette_texture")
+            .unwrap();
+        gl.uniform_1_i32(Some(&u_palette_texture), 1);
+        let u_num_colors = gl
+            .get_uniform_location(self.graphics.plain_shader, "u_num_colors")
+            .unwrap();
+        gl.uniform_1_u32(Some(&u_num_colors), self.colors.lock().len() as u32);
     }
 
     unsafe fn bind_screen_texture(&self, gl: &mut glow::Context) {
@@ -408,8 +432,8 @@ impl Pyxel {
     }
 
     unsafe fn bind_palette_texture(&self, gl: &mut glow::Context) {
-        gl.active_texture(glow::TEXTURE0);
-        gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.palette_texture));
+        gl.active_texture(glow::TEXTURE1);
+        gl.bind_texture(glow::TEXTURE_1D, Some(self.graphics.palette_texture));
         let colors = self.colors.lock();
         let mut pixels: Vec<u8> = Vec::with_capacity(colors.len() * 3);
         for rgb8 in &*colors {
@@ -417,41 +441,15 @@ impl Pyxel {
             pixels.push(((rgb8 >> 8) & 0xff) as u8);
             pixels.push((rgb8 & 0xff) as u8);
         }
-        gl.tex_image_2d(
+        gl.tex_image_1d(
             glow::TEXTURE_1D,
             0,
             glow::RGB8 as i32,
             colors.len() as i32,
-            1,
             0,
             glow::RGB,
             glow::UNSIGNED_BYTE,
             Some(&pixels),
-        );
-    }
-
-    unsafe fn use_plain_shader(&self, gl: &mut glow::Context) {
-        let (window_width, window_height) = pyxel_platform::window_size();
-        let screen_scale = max(
-            min(window_width / self.width, window_height / self.width),
-            1,
-        );
-        let screen_width = self.width * screen_scale;
-        let screen_height = self.height * screen_scale;
-        let screen_x = (window_width as i32 - screen_width as i32) / 2;
-        let screen_y = (window_height as i32 - screen_height as i32) / 2;
-        gl.viewport(
-            screen_x as i32,
-            window_height as i32 - screen_y as i32,
-            screen_width as i32,
-            screen_height as i32,
-        );
-        let uniform_locations = &self.graphics.plain_shader.uniform_locations;
-        gl.uniform_1_i32(uniform_locations.get("u_screen_texture"), 0);
-        gl.uniform_1_i32(uniform_locations.get("u_palette_texture"), 1);
-        gl.uniform_1_u32(
-            uniform_locations.get("u_num_colors"),
-            self.colors.lock().len() as u32,
         );
     }
 }
