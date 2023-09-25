@@ -127,6 +127,8 @@ fn generate_bindings(sdl2_dir: &str, out_dir: &str) {
         .expect("Failed to generate bindings")
         .to_string()
         .replace("SDL_EventType_", "")
+        .replace("SDL_GLattr_", "")
+        .replace("SDL_GLprofile_", "")
         .replace("SDL_KeyCode_", "")
         .replace("SDL_PixelFormatEnum_", "")
         .replace("SDL_WindowEventID_", "")
