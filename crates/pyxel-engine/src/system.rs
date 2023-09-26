@@ -1,3 +1,4 @@
+use cfg_if::cfg_if;
 use pyxel_platform::Event;
 
 use crate::image::{Color, Image, SharedImage};
@@ -81,12 +82,12 @@ impl Pyxel {
     }
 
     pub fn flip(&mut self) {
-        #[cfg(target_os = "emscripten")]
-        panic!("flip is not supported on Web");
-
-        #[cfg(not(target_os = "emscripten"))]
-        {
-            self.process_frame_for_flip();
+        cfg_if! {
+            if #[cfg(target_os = "emscripten")] {
+                panic!("flip is not supported on Web");
+            } else {
+                self.process_frame_for_flip();
+            }
         }
     }
 
