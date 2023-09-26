@@ -2,6 +2,7 @@ use std::mem::transmute;
 use std::process::exit;
 use std::ptr::null_mut;
 
+use cfg_if::cfg_if;
 use glow::Context as GlowContext;
 
 use crate::audio::init_audio;
@@ -25,23 +26,26 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
     if unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) } < 0 {
         panic!("Failed to initialize SDL2");
     }
-    #[cfg(not(target_arch = "wasm32"))]
-    unsafe {
-        SDL_GL_SetAttribute(
-            SDL_GL_CONTEXT_PROFILE_MASK,
-            SDL_GL_CONTEXT_PROFILE_CORE as i32,
-        );
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-    }
-    #[cfg(target_arch = "wasm32")]
-    unsafe {
-        SDL_GL_SetAttribute(
-            SDL_GL_CONTEXT_PROFILE_MASK,
-            SDL_GL_CONTEXT_PROFILE_ES as i32,
-        );
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    cfg_if! {
+        if #[cfg(target_os = "emscripten")] {
+            unsafe {
+                SDL_GL_SetAttribute(
+                    SDL_GL_CONTEXT_PROFILE_MASK,
+                    SDL_GL_CONTEXT_PROFILE_ES as i32,
+                );
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+            }
+        } else {
+            unsafe {
+                SDL_GL_SetAttribute(
+                    SDL_GL_CONTEXT_PROFILE_MASK,
+                    SDL_GL_CONTEXT_PROFILE_CORE as i32,
+                );
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+            }
+        }
     }
     let mut display_mode = SDL_DisplayMode {
         format: 0,
@@ -68,19 +72,21 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
 }
 
 pub fn run<F: FnMut()>(mut main_loop: F) {
-    #[cfg(not(target_os = "emscripten"))]
-    loop {
-        let start_ms = elapsed_time() as f64;
-        main_loop();
-        let elapsed_ms = elapsed_time() as f64 - start_ms;
-        let wait_ms = 1000.0 / 60.0 - elapsed_ms;
-        if wait_ms > 0.0 {
-            sleep((wait_ms / 2.0) as u32);
+    cfg_if! {
+        if #[cfg(target_os = "emscripten")] {
+            emscripten::set_main_loop(main_loop);
+        } else {
+            loop {
+                let start_ms = elapsed_time() as f64;
+                main_loop();
+                let elapsed_ms = elapsed_time() as f64 - start_ms;
+                let wait_ms = 1000.0 / 60.0 - elapsed_ms;
+                if wait_ms > 0.0 {
+                    sleep((wait_ms / 2.0) as u32);
+                }
+            }
         }
     }
-
-    #[cfg(target_os = "emscripten")]
-    emscripten::set_main_loop(main_loop);
 }
 
 pub fn quit() {
@@ -88,11 +94,13 @@ pub fn quit() {
         SDL_Quit();
     }
 
-    #[cfg(not(target_os = "emscripten"))]
-    exit(0);
-
-    #[cfg(target_os = "emscripten")]
-    emscripten::force_exit(0);
+    cfg_if! {
+        if #[cfg(target_os = "emscripten")] {
+            emscripten::force_exit(0);
+        } else {
+            exit(0);
+        }
+    }
 }
 
 pub fn elapsed_time() -> u32 {
