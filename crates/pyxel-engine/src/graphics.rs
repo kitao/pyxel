@@ -1,6 +1,7 @@
 use std::cmp::{max, min};
 use std::mem::size_of;
 
+use cfg_if::cfg_if;
 use glow::HasContext;
 use once_cell::sync::Lazy;
 
@@ -70,17 +71,23 @@ impl Graphics {
 
     unsafe fn create_plain_shader(gl: &mut glow::Context) -> glow::Program {
         // Shader version
-        let shader_version: &str = "#version 330 core\n";
+        cfg_if! {
+            if #[cfg(target_os = "emscripten")] {
+                let shader_version: &str = "#version 300 es\nprecision mediump float;\n";
+            } else {
+                let shader_version: &str = "#version 330 core\n";
+            }
+        }
 
         // Vertex shader
         let vertex_shader_source: &str = r#"
-            in vec2 position;
-            in vec2 texcoord;
+            in vec2 in_position;
+            in vec2 in_texcoord;
             out vec2 v_texcoord;
 
             void main() {
-                gl_Position = vec4(position, 0.0, 1.0);
-                v_texcoord = texcoord;
+                gl_Position = vec4(in_position, 0.0, 1.0);
+                v_texcoord = in_texcoord;
             }
         "#;
         let vertex_shader = gl.create_shader(glow::VERTEX_SHADER).unwrap();
@@ -96,7 +103,7 @@ impl Graphics {
         // Fragment shader
         let fragment_shader_source: &str = r#"
             in vec2 v_texcoord;
-            out vec4 color;
+            out vec4 out_color;
 
             uniform sampler2D u_screen_texture;
             uniform sampler1D u_palette_texture;
@@ -105,7 +112,8 @@ impl Graphics {
             void main() {
                 float index_color = texture(u_screen_texture, v_texcoord).r * 255.0;
                 float palette_u = (index_color + 0.5) / float(u_num_colors);
-                color = vec4(texture(u_palette_texture, palette_u).rgb, 1.0);
+                vec4 bgra_color = texture(u_palette_texture, palette_u);
+                out_color = vec4(bgra_color.b, bgra_color.g, bgra_color.r, 1.0);
             }
         "#;
         let fragment_shader = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
@@ -150,26 +158,30 @@ impl Graphics {
             &vertices.align_to::<u8>().1,
             glow::STATIC_DRAW,
         );
-        let position_location = gl.get_attrib_location(*shader_program, "position").unwrap();
+        let in_position = gl
+            .get_attrib_location(*shader_program, "in_position")
+            .unwrap();
         gl.vertex_attrib_pointer_f32(
-            position_location,
+            in_position,
             2,
             glow::FLOAT,
             false,
             4 * size_of::<f32>() as i32,
             0,
         );
-        gl.enable_vertex_attrib_array(position_location);
-        let texcoord_location = gl.get_attrib_location(*shader_program, "texcoord").unwrap();
+        gl.enable_vertex_attrib_array(in_position);
+        let in_texcoord = gl
+            .get_attrib_location(*shader_program, "in_texcoord")
+            .unwrap();
         gl.vertex_attrib_pointer_f32(
-            texcoord_location,
+            in_texcoord,
             2,
             glow::FLOAT,
             false,
             4 * size_of::<f32>() as i32,
             2 * size_of::<f32>() as i32,
         );
-        gl.enable_vertex_attrib_array(texcoord_location);
+        gl.enable_vertex_attrib_array(in_texcoord);
         vertex_array
     }
 
@@ -435,19 +447,14 @@ impl Pyxel {
         gl.active_texture(glow::TEXTURE1);
         gl.bind_texture(glow::TEXTURE_1D, Some(self.graphics.palette_texture));
         let colors = self.colors.lock();
-        let mut pixels: Vec<u8> = Vec::with_capacity(colors.len() * 3);
-        for rgb8 in &*colors {
-            pixels.push(((rgb8 >> 16) & 0xff) as u8);
-            pixels.push(((rgb8 >> 8) & 0xff) as u8);
-            pixels.push((rgb8 & 0xff) as u8);
-        }
+        let pixels = std::slice::from_raw_parts(colors.as_ptr() as *const u8, colors.len() * 4);
         gl.tex_image_1d(
             glow::TEXTURE_1D,
             0,
-            glow::RGB8 as i32,
+            glow::RGBA8 as i32,
             colors.len() as i32,
             0,
-            glow::RGB,
+            glow::RGBA,
             glow::UNSIGNED_BYTE,
             Some(&pixels),
         );
