@@ -20,6 +20,7 @@ path = "tests/test_pyxel.rs"
 harness = false
 
 [dependencies]
+cfg-if = "1.0"
 gif = "0.12"
 glow = "0.12"
 image = "0.24"
