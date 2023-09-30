@@ -13,6 +13,39 @@ use crate::settings::{
     FONT_HEIGHT, FONT_WIDTH, NUM_FONT_ROWS,
 };
 
+const VERTEX_SHADER_SOURCE: &str = r#"
+    in vec2 position;
+    in vec2 texCoord;
+    out vec2 v_texCoord;
+
+    void main() {
+        gl_Position = vec4(position, 0.0, 1.0);
+        v_texCoord = texCoord;
+    }
+"#;
+
+const FRAGMENT_SHADER_SOURCE: &str = r#"
+    in vec2 v_texCoord;
+    out vec4 fragColor;
+
+    uniform sampler2D u_screenTexture;
+    uniform usampler2D u_colorsTexture;
+
+    vec4 getScreenColor(vec2 texCoord) {
+        float indexColor = texture(u_screenTexture, v_texCoord).r * 255.0;
+        float colorU = (indexColor + 0.5) / float(textureSize(u_colorsTexture, 0).x);
+        uint rgb = texture(u_colorsTexture, vec2(colorU, 0.5)).r;
+        uint r = (rgb >> 16) & 0xffu;
+        uint g = (rgb >> 8) & 0xffu;
+        uint b = rgb & 0xffu;
+        return vec4(vec3(r, g, b) / 255.0, 1.0);
+    }
+
+    void main() {
+        fragColor = getScreenColor(v_texCoord);
+    }
+"#;
+
 pub(crate) static COLORS: Lazy<shared_type!(Vec<Rgb8>)> =
     Lazy::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));
 
@@ -51,7 +84,7 @@ pub struct Graphics {
     uniform_locations: HashMap<String, glow::UniformLocation>,
     vertex_array: glow::VertexArray,
     screen_texture: glow::NativeTexture,
-    palette_texture: glow::NativeTexture,
+    colors_texture: glow::NativeTexture,
 }
 
 impl Graphics {
@@ -61,13 +94,13 @@ impl Graphics {
             let (shader_program, uniform_locations) = Self::create_shader_program(gl);
             let vertex_array = Self::create_vertex_array(gl, &shader_program);
             let screen_texture = Self::create_screen_texture(gl);
-            let palette_texture = Self::create_palette_texture(gl);
+            let colors_texture = Self::create_colors_texture(gl);
             Self {
                 shader_program,
                 uniform_locations,
                 vertex_array,
                 screen_texture,
-                palette_texture,
+                colors_texture,
             }
         }
     }
@@ -85,20 +118,10 @@ impl Graphics {
         }
 
         // Vertex shader
-        let vertex_shader_source: &str = r#"
-            in vec2 in_position;
-            in vec2 in_texcoord;
-            out vec2 v_texcoord;
-
-            void main() {
-                gl_Position = vec4(in_position, 0.0, 1.0);
-                v_texcoord = in_texcoord;
-            }
-        "#;
         let vertex_shader = gl.create_shader(glow::VERTEX_SHADER).unwrap();
         gl.shader_source(
             vertex_shader,
-            &format!("{}{}", shader_version, vertex_shader_source),
+            &format!("{}{}", shader_version, VERTEX_SHADER_SOURCE),
         );
         gl.compile_shader(vertex_shader);
         if !gl.get_shader_compile_status(vertex_shader) {
@@ -106,24 +129,10 @@ impl Graphics {
         }
 
         // Fragment shader
-        let fragment_shader_source: &str = r#"
-            in vec2 v_texcoord;
-            out vec4 out_color;
-
-            uniform sampler2D u_screen_texture;
-            uniform sampler1D u_palette_texture;
-            uniform uint u_num_colors;
-
-            void main() {
-                float index_color = texture(u_screen_texture, v_texcoord).r * 255.0;
-                float palette_u = (index_color + 0.5) / float(u_num_colors);
-                out_color = vec4(texture(u_palette_texture, palette_u).rgb, 1.0);
-            }
-        "#;
         let fragment_shader = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
         gl.shader_source(
             fragment_shader,
-            &format!("{}{}", shader_version, fragment_shader_source),
+            &format!("{}{}", shader_version, FRAGMENT_SHADER_SOURCE),
         );
         gl.compile_shader(fragment_shader);
         if !gl.get_shader_compile_status(fragment_shader) {
@@ -145,7 +154,7 @@ impl Graphics {
 
         // Uniform locations
         let mut uniform_locations: HashMap<String, glow::UniformLocation> = HashMap::new();
-        let uniform_names = ["u_screen_texture", "u_palette_texture", "u_num_colors"];
+        let uniform_names = ["u_screenTexture", "u_colorsTexture"];
         for &name in &uniform_names {
             let location = gl.get_uniform_location(shader_program, name).unwrap();
             uniform_locations.insert(name.to_string(), location);
@@ -170,30 +179,26 @@ impl Graphics {
             &vertices.align_to::<u8>().1,
             glow::STATIC_DRAW,
         );
-        let in_position = gl
-            .get_attrib_location(*shader_program, "in_position")
-            .unwrap();
+        let position = gl.get_attrib_location(*shader_program, "position").unwrap();
         gl.vertex_attrib_pointer_f32(
-            in_position,
+            position,
             2,
             glow::FLOAT,
             false,
             4 * size_of::<f32>() as i32,
             0,
         );
-        gl.enable_vertex_attrib_array(in_position);
-        let in_texcoord = gl
-            .get_attrib_location(*shader_program, "in_texcoord")
-            .unwrap();
+        gl.enable_vertex_attrib_array(position);
+        let texcoord = gl.get_attrib_location(*shader_program, "texCoord").unwrap();
         gl.vertex_attrib_pointer_f32(
-            in_texcoord,
+            texcoord,
             2,
             glow::FLOAT,
             false,
             4 * size_of::<f32>() as i32,
             2 * size_of::<f32>() as i32,
         );
-        gl.enable_vertex_attrib_array(in_texcoord);
+        gl.enable_vertex_attrib_array(texcoord);
         vertex_array
     }
 
@@ -224,26 +229,31 @@ impl Graphics {
         screen_texture
     }
 
-    unsafe fn create_palette_texture(gl: &mut glow::Context) -> glow::NativeTexture {
-        let palette_texture = gl.create_texture().unwrap();
+    unsafe fn create_colors_texture(gl: &mut glow::Context) -> glow::NativeTexture {
+        let colors_texture = gl.create_texture().unwrap();
         gl.active_texture(glow::TEXTURE1);
-        gl.bind_texture(glow::TEXTURE_1D, Some(palette_texture));
+        gl.bind_texture(glow::TEXTURE_2D, Some(colors_texture));
         gl.tex_parameter_i32(
-            glow::TEXTURE_1D,
+            glow::TEXTURE_2D,
             glow::TEXTURE_MIN_FILTER,
             glow::NEAREST as i32,
         );
         gl.tex_parameter_i32(
-            glow::TEXTURE_1D,
+            glow::TEXTURE_2D,
             glow::TEXTURE_MAG_FILTER,
             glow::NEAREST as i32,
         );
         gl.tex_parameter_i32(
-            glow::TEXTURE_1D,
+            glow::TEXTURE_2D,
             glow::TEXTURE_WRAP_S,
             glow::CLAMP_TO_EDGE as i32,
         );
-        palette_texture
+        gl.tex_parameter_i32(
+            glow::TEXTURE_2D,
+            glow::TEXTURE_WRAP_T,
+            glow::CLAMP_TO_EDGE as i32,
+        );
+        colors_texture
     }
 }
 
@@ -390,7 +400,7 @@ impl Pyxel {
             self.clear_window(gl);
             self.use_plain_shader(gl);
             self.bind_screen_texture(gl);
-            self.bind_palette_texture(gl);
+            self.bind_colors_texture(gl);
             gl.bind_vertex_array(Some(self.graphics.vertex_array));
             gl.draw_arrays(glow::TRIANGLE_STRIP, 0, 4);
             pyxel_platform::swap_window();
@@ -426,12 +436,10 @@ impl Pyxel {
     unsafe fn use_plain_shader(&self, gl: &mut glow::Context) {
         gl.use_program(Some(self.graphics.shader_program));
         let uniform_locations = &self.graphics.uniform_locations;
-        let u_screen_texture = uniform_locations.get("u_screen_texture").unwrap();
+        let u_screen_texture = uniform_locations.get("u_screenTexture").unwrap();
         gl.uniform_1_i32(Some(&u_screen_texture), 0);
-        let u_palette_texture = uniform_locations.get("u_palette_texture").unwrap();
-        gl.uniform_1_i32(Some(&u_palette_texture), 1);
-        let u_num_colors = uniform_locations.get("u_num_colors").unwrap();
-        gl.uniform_1_u32(Some(&u_num_colors), self.colors.lock().len() as u32);
+        let u_colors_texture = uniform_locations.get("u_colorsTexture").unwrap();
+        gl.uniform_1_i32(Some(&u_colors_texture), 1);
     }
 
     unsafe fn bind_screen_texture(&self, gl: &mut glow::Context) {
@@ -450,25 +458,21 @@ impl Pyxel {
         );
     }
 
-    unsafe fn bind_palette_texture(&self, gl: &mut glow::Context) {
+    unsafe fn bind_colors_texture(&self, gl: &mut glow::Context) {
         gl.active_texture(glow::TEXTURE1);
-        gl.bind_texture(glow::TEXTURE_1D, Some(self.graphics.palette_texture));
+        gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.colors_texture));
         let colors = self.colors.lock();
-        let mut pixels: Vec<u8> = Vec::with_capacity(colors.len() * 3);
-        for rgb8 in &*colors {
-            pixels.push(((rgb8 >> 16) & 0xff) as u8);
-            pixels.push(((rgb8 >> 8) & 0xff) as u8);
-            pixels.push((rgb8 & 0xff) as u8);
-        }
-        gl.tex_image_1d(
-            glow::TEXTURE_1D,
+        let pixels = std::slice::from_raw_parts(colors.as_ptr() as *const u8, colors.len() * 4);
+        gl.tex_image_2d(
+            glow::TEXTURE_2D,
             0,
-            glow::RGB8 as i32,
+            glow::R32UI as i32,
             colors.len() as i32,
+            1,
             0,
-            glow::RGB,
-            glow::UNSIGNED_BYTE,
-            Some(&pixels),
+            glow::RED_INTEGER,
+            glow::UNSIGNED_INT,
+            Some(pixels),
         );
     }
 }
