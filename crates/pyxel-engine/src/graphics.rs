@@ -13,38 +13,17 @@ use crate::settings::{
     FONT_HEIGHT, FONT_WIDTH, NUM_FONT_ROWS,
 };
 
-const VERTEX_SHADER_SOURCE: &str = r#"
-    in vec2 position;
-    in vec2 texCoord;
-    out vec2 v_texCoord;
-
-    void main() {
-        gl_Position = vec4(position, 0.0, 1.0);
-        v_texCoord = texCoord;
+cfg_if! {
+    if #[cfg(target_os = "emscripten")] {
+        const GLSL_VERSION: &str = include_str!("shaders/gles_version.glsl");
+    } else {
+        const GLSL_VERSION: &str = include_str!("shaders/gl_version.glsl");
     }
-"#;
-
-const FRAGMENT_SHADER_SOURCE: &str = r#"
-    in vec2 v_texCoord;
-    out vec4 fragColor;
-
-    uniform sampler2D u_screenTexture;
-    uniform usampler2D u_colorsTexture;
-
-    vec4 getScreenColor(vec2 texCoord) {
-        float indexColor = texture(u_screenTexture, v_texCoord).r * 255.0;
-        float colorU = (indexColor + 0.5) / float(textureSize(u_colorsTexture, 0).x);
-        uint rgb = texture(u_colorsTexture, vec2(colorU, 0.5)).r;
-        uint r = (rgb >> 16) & 0xffu;
-        uint g = (rgb >> 8) & 0xffu;
-        uint b = rgb & 0xffu;
-        return vec4(vec3(r, g, b) / 255.0, 1.0);
-    }
-
-    void main() {
-        fragColor = getScreenColor(v_texCoord);
-    }
-"#;
+}
+const COMMON_VERT: &str = include_str!("shaders/common.vert");
+const COMMON_FRAG: &str = include_str!("shaders/common.frag");
+const CRISP_FRAG: &str = include_str!("shaders/crisp.frag");
+const RETRO_FRAG: &str = include_str!("shaders/retro.frag");
 
 pub(crate) static COLORS: Lazy<shared_type!(Vec<Rgb8>)> =
     Lazy::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));
@@ -108,21 +87,9 @@ impl Graphics {
     unsafe fn create_shader_program(
         gl: &mut glow::Context,
     ) -> (glow::Program, HashMap<String, glow::UniformLocation>) {
-        // Shader version
-        cfg_if! {
-            if #[cfg(target_os = "emscripten")] {
-                let shader_version: &str = "#version 300 es\nprecision mediump float;\n";
-            } else {
-                let shader_version: &str = "#version 330 core\n";
-            }
-        }
-
         // Vertex shader
         let vertex_shader = gl.create_shader(glow::VERTEX_SHADER).unwrap();
-        gl.shader_source(
-            vertex_shader,
-            &format!("{}{}", shader_version, VERTEX_SHADER_SOURCE),
-        );
+        gl.shader_source(vertex_shader, &format!("{}{}", GLSL_VERSION, COMMON_VERT));
         gl.compile_shader(vertex_shader);
         if !gl.get_shader_compile_status(vertex_shader) {
             panic!("{}", gl.get_shader_info_log(vertex_shader));
@@ -132,7 +99,7 @@ impl Graphics {
         let fragment_shader = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
         gl.shader_source(
             fragment_shader,
-            &format!("{}{}", shader_version, FRAGMENT_SHADER_SOURCE),
+            &format!("{}{}{}", GLSL_VERSION, COMMON_FRAG, RETRO_FRAG),
         );
         gl.compile_shader(fragment_shader);
         if !gl.get_shader_compile_status(fragment_shader) {
@@ -154,10 +121,17 @@ impl Graphics {
 
         // Uniform locations
         let mut uniform_locations: HashMap<String, glow::UniformLocation> = HashMap::new();
-        let uniform_names = ["u_screenTexture", "u_colorsTexture"];
-        for &name in &uniform_names {
-            let location = gl.get_uniform_location(shader_program, name).unwrap();
-            uniform_locations.insert(name.to_string(), location);
+        let uniform_names = [
+            "u_windowSize",
+            "u_backgroundColor",
+            "u_screenTexture",
+            "u_colorsTexture",
+        ];
+        for &uniform_name in &uniform_names {
+            let location = gl
+                .get_uniform_location(shader_program, uniform_name)
+                .unwrap();
+            uniform_locations.insert(uniform_name.to_string(), location);
         }
 
         (shader_program, uniform_locations)
@@ -167,9 +141,7 @@ impl Graphics {
         gl: &mut glow::Context,
         shader_program: &glow::Program,
     ) -> glow::VertexArray {
-        let vertices: [f32; 16] = [
-            -1.0, 1.0, 0.0, 0.0, -1.0, -1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, -1.0, 1.0, 1.0,
-        ];
+        let vertices: [f32; 8] = [-1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0];
         let vertex_array = gl.create_vertex_array().unwrap();
         let vertex_buffer = gl.create_buffer().unwrap();
         gl.bind_vertex_array(Some(vertex_array));
@@ -185,20 +157,10 @@ impl Graphics {
             2,
             glow::FLOAT,
             false,
-            4 * size_of::<f32>() as i32,
+            2 * size_of::<f32>() as i32,
             0,
         );
         gl.enable_vertex_attrib_array(position);
-        let texcoord = gl.get_attrib_location(*shader_program, "texCoord").unwrap();
-        gl.vertex_attrib_pointer_f32(
-            texcoord,
-            2,
-            glow::FLOAT,
-            false,
-            4 * size_of::<f32>() as i32,
-            2 * size_of::<f32>() as i32,
-        );
-        gl.enable_vertex_attrib_array(texcoord);
         vertex_array
     }
 
@@ -397,7 +359,7 @@ impl Pyxel {
         unsafe {
             let gl = pyxel_platform::glow_context();
             self.set_viewport(gl);
-            self.clear_window(gl);
+            //self.clear_window(gl);
             self.use_plain_shader(gl);
             self.bind_screen_texture(gl);
             self.bind_colors_texture(gl);
@@ -409,37 +371,30 @@ impl Pyxel {
 
     unsafe fn set_viewport(&self, gl: &mut glow::Context) {
         let (window_width, window_height) = pyxel_platform::window_size();
-        let screen_scale = max(
-            min(window_width / self.width, window_height / self.height),
-            1,
-        );
-        let screen_width = self.width * screen_scale;
-        let screen_height = self.height * screen_scale;
-        let screen_x = (window_width as i32 - screen_width as i32) / 2;
-        let screen_y = (window_height as i32 - screen_height as i32) / 2;
-        gl.viewport(
-            screen_x as i32,
-            window_height as i32 - screen_y - screen_height as i32,
-            screen_width as i32,
-            screen_height as i32,
-        );
-    }
-
-    unsafe fn clear_window(&self, gl: &mut glow::Context) {
-        let r = ((BACKGROUND_COLOR >> 16) & 0xff) as f32 / 255.0;
-        let g = ((BACKGROUND_COLOR >> 8) & 0xff) as f32 / 255.0;
-        let b = (BACKGROUND_COLOR & 0xff) as f32 / 255.0;
-        gl.clear_color(r, g, b, 1.0);
-        gl.clear(glow::COLOR_BUFFER_BIT);
+        gl.viewport(0, 0, window_width as i32, window_height as i32);
     }
 
     unsafe fn use_plain_shader(&self, gl: &mut glow::Context) {
         gl.use_program(Some(self.graphics.shader_program));
         let uniform_locations = &self.graphics.uniform_locations;
-        let u_screen_texture = uniform_locations.get("u_screenTexture").unwrap();
-        gl.uniform_1_i32(Some(&u_screen_texture), 0);
-        let u_colors_texture = uniform_locations.get("u_colorsTexture").unwrap();
-        gl.uniform_1_i32(Some(&u_colors_texture), 1);
+        let window_size_location = uniform_locations.get("u_windowSize").unwrap();
+        let window_size = pyxel_platform::window_size();
+        gl.uniform_2_f32(
+            Some(&window_size_location),
+            window_size.0 as f32,
+            window_size.1 as f32,
+        );
+        let background_color_location = uniform_locations.get("u_backgroundColor").unwrap();
+        gl.uniform_3_f32(
+            Some(&background_color_location),
+            ((BACKGROUND_COLOR >> 16) & 0xff) as f32 / 255.0,
+            ((BACKGROUND_COLOR >> 8) & 0xff) as f32 / 255.0,
+            (BACKGROUND_COLOR & 0xff) as f32 / 255.0,
+        );
+        let screen_texture_location = uniform_locations.get("u_screenTexture").unwrap();
+        gl.uniform_1_i32(Some(&screen_texture_location), 0);
+        let colors_texture_location = uniform_locations.get("u_colorsTexture").unwrap();
+        gl.uniform_1_i32(Some(&colors_texture_location), 1);
     }
 
     unsafe fn bind_screen_texture(&self, gl: &mut glow::Context) {
