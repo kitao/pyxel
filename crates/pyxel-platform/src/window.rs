@@ -17,7 +17,7 @@ pub fn init_window(title: &str, width: u32, height: u32) -> (*mut SDL_Window, *m
             SDL_WINDOWPOS_UNDEFINED_MASK as i32,
             width as i32,
             height as i32,
-            SDL_WINDOW_OPENGL,
+            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE,
         );
         if window.is_null() {
             panic!("Failed to create window");
