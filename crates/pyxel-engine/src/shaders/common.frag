@@ -9,7 +9,7 @@ vec2 getScreenResolution() {
     return textureSize(u_screenTexture, 0);
 }
 
-void getScreenTexCoord(out vec2 screenSize, out vec2 screenFragCoord, out vec2 screenTexCoord) {
+void getScreenParams(out vec2 screenSize, out vec2 screenFragCoord, out vec2 screenTexCoord) {
     vec2 screenResolution = getScreenResolution();
     vec2 screenScaleVec = max(floor(u_windowSize / screenResolution), vec2(1.0));
     float screenScale = min(screenScaleVec.x, screenScaleVec.y);
