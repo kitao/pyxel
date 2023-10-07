@@ -1,3 +1,5 @@
+use std::cmp::{max, min};
+
 use cfg_if::cfg_if;
 use pyxel_platform::Event;
 
@@ -22,6 +24,9 @@ pub struct System {
     update_profiler: Profiler,
     draw_profiler: Profiler,
     perf_monitor_enabled: bool,
+    pub screen_scale: u32,
+    pub screen_x: i32,
+    pub screen_y: i32,
 }
 
 impl System {
@@ -35,6 +40,9 @@ impl System {
             update_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             draw_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             perf_monitor_enabled: false,
+            screen_scale: 0,
+            screen_x: 0,
+            screen_y: 0,
         }
     }
 }
@@ -175,6 +183,18 @@ impl Pyxel {
         }
     }
 
+    fn update_screen_params(&mut self) {
+        let (window_width, window_height) = pyxel_platform::window_size();
+        self.system.screen_scale = max(
+            min(window_width / self.width, window_height / self.height),
+            1,
+        );
+        self.system.screen_x =
+            (window_width as i32 - (self.width * self.system.screen_scale) as i32) / 2;
+        self.system.screen_y =
+            (window_height as i32 - (self.height * self.system.screen_scale) as i32) / 2;
+    }
+
     fn check_special_input(&mut self) {
         if self.btn(KEY_ALT) {
             if self.btnp(KEY_RETURN, None, None) {
@@ -202,6 +222,7 @@ impl Pyxel {
         self.system
             .update_profiler
             .start(pyxel_platform::elapsed_time());
+        self.update_screen_params();
         self.process_events();
         if self.system.paused {
             return;
