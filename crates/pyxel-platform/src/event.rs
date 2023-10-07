@@ -234,6 +234,22 @@ pub fn poll_events() -> Vec<Event> {
         }
     }
 
+    // Mouse cursor movement
+    let mut mouse_x = 0;
+    let mut mouse_y = 0;
+    unsafe { SDL_GetGlobalMouseState(&mut mouse_x, &mut mouse_y) };
+    if mouse_x != platform().mouse_x || mouse_y != platform().mouse_y {
+        let (window_x, window_y) = crate::window_pos();
+        pyxel_events.push(Event::KeyValueChanged {
+            key: MOUSE_POS_X,
+            value: mouse_x - window_x,
+        });
+        pyxel_events.push(Event::KeyValueChanged {
+            key: MOUSE_POS_Y,
+            value: mouse_y - window_y,
+        });
+    }
+
     pyxel_events
 }
 

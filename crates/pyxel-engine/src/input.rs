@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::keys::{Key, KeyValue, MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y};
 use crate::pyxel::Pyxel;
+use crate::system::System;
 use crate::utils::f64_to_i32;
 
 #[derive(PartialEq)]
@@ -145,6 +146,23 @@ impl Pyxel {
     }
 
     pub(crate) fn change_key_value(&mut self, key: Key, value: KeyValue) {
+        let mut value = value;
+        match key {
+            MOUSE_POS_X => {
+                println!("mouse_pox_x: {}", value);
+                value = (value - self.system.screen_x) / self.system.screen_scale as i32;
+                self.mouse_x = value;
+            }
+            MOUSE_POS_Y => {
+                println!("mouse_pox_y: {}", value);
+                value = (value - self.system.screen_y) / self.system.screen_scale as i32;
+                self.mouse_y = value;
+            }
+            MOUSE_WHEEL_Y => {
+                self.mouse_wheel = value;
+            }
+            _ => {}
+        }
         self.input.key_values.insert(key, value);
     }
 
