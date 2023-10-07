@@ -14,6 +14,8 @@ pub struct Platform {
     pub glow_context: *mut GlowContext,
     pub controllers: Vec<*mut SDL_GameController>,
     pub audio_device_id: SDL_AudioDeviceID,
+    pub mouse_x: i32,
+    pub mouse_y: i32,
 }
 
 static mut PLATFORM: *mut Platform = null_mut();
@@ -67,6 +69,8 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
             glow_context,
             controllers,
             audio_device_id,
+            mouse_x: i32::MAX,
+            mouse_y: i32::MAX,
         }));
     }
 }
