@@ -10,7 +10,7 @@ use crate::image::{Color, Image, Rgb8, SharedImage};
 use crate::pyxel::Pyxel;
 use crate::settings::{
     BACKGROUND_COLOR, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, DEFAULT_COLORS, FONT_DATA,
-    FONT_HEIGHT, FONT_WIDTH, NUM_FONT_ROWS,
+    FONT_HEIGHT, FONT_WIDTH, NUM_FONT_ROWS, NUM_SCREEN_SHADERS,
 };
 
 cfg_if! {
@@ -22,9 +22,11 @@ cfg_if! {
 }
 const COMMON_VERT: &str = include_str!("shaders/common.vert");
 const COMMON_FRAG: &str = include_str!("shaders/common.frag");
-const CRISP_FRAG: &str = include_str!("shaders/crisp.frag");
-const RETRO_FRAG: &str = include_str!("shaders/retro.frag");
-const STITCH_FRAG: &str = include_str!("shaders/stitch.frag");
+const SCREEN_FRAGS: [&str; NUM_SCREEN_SHADERS as usize] = [
+    include_str!("shaders/crisp.frag"),
+    include_str!("shaders/retro.frag"),
+    //include_str!("shaders/stitch.frag"),
+];
 
 pub(crate) static COLORS: Lazy<shared_type!(Vec<Rgb8>)> =
     Lazy::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));
@@ -59,10 +61,14 @@ pub(crate) static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
     image
 });
 
-pub struct Graphics {
+pub struct ScreenShader {
     shader_program: glow::Program,
     uniform_locations: HashMap<String, glow::UniformLocation>,
     vertex_array: glow::VertexArray,
+}
+
+pub struct Graphics {
+    screen_shaders: Vec<ScreenShader>,
     screen_texture: glow::NativeTexture,
     colors_texture: glow::NativeTexture,
 }
@@ -71,99 +77,98 @@ impl Graphics {
     pub fn new() -> Self {
         unsafe {
             let gl = pyxel_platform::glow_context();
-            let (shader_program, uniform_locations) = Self::create_shader_program(gl);
-            let vertex_array = Self::create_vertex_array(gl, &shader_program);
+            let screen_shaders = Self::create_screen_shaders(gl);
             let screen_texture = Self::create_screen_texture(gl);
             let colors_texture = Self::create_colors_texture(gl);
             Self {
-                shader_program,
-                uniform_locations,
-                vertex_array,
+                screen_shaders,
                 screen_texture,
                 colors_texture,
             }
         }
     }
 
-    unsafe fn create_shader_program(
-        gl: &mut glow::Context,
-    ) -> (glow::Program, HashMap<String, glow::UniformLocation>) {
-        // Vertex shader
-        let vertex_shader = gl.create_shader(glow::VERTEX_SHADER).unwrap();
-        gl.shader_source(vertex_shader, &format!("{}{}", GLSL_VERSION, COMMON_VERT));
-        gl.compile_shader(vertex_shader);
-        if !gl.get_shader_compile_status(vertex_shader) {
-            panic!("{}", gl.get_shader_info_log(vertex_shader));
-        }
-
-        // Fragment shader
-        let fragment_shader = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
-        gl.shader_source(
-            fragment_shader,
-            &format!("{}{}{}", GLSL_VERSION, COMMON_FRAG, CRISP_FRAG),
-        );
-        gl.compile_shader(fragment_shader);
-        if !gl.get_shader_compile_status(fragment_shader) {
-            panic!("{}", gl.get_shader_info_log(fragment_shader));
-        }
-
-        // Shader program
-        let shader_program = gl.create_program().unwrap();
-        gl.attach_shader(shader_program, vertex_shader);
-        gl.attach_shader(shader_program, fragment_shader);
-        gl.link_program(shader_program);
-        if !gl.get_program_link_status(shader_program) {
-            panic!("{}", gl.get_program_info_log(shader_program));
-        }
-        gl.detach_shader(shader_program, vertex_shader);
-        gl.delete_shader(vertex_shader);
-        gl.detach_shader(shader_program, fragment_shader);
-        gl.delete_shader(fragment_shader);
-
-        // Uniform locations
-        let mut uniform_locations: HashMap<String, glow::UniformLocation> = HashMap::new();
-        let uniform_names = [
-            "u_screenPos",
-            "u_screenSize",
-            "u_screenScale",
-            "u_backgroundColor",
-            "u_screenTexture",
-            "u_colorsTexture",
-        ];
-        for &uniform_name in &uniform_names {
-            if let Some(location) = gl.get_uniform_location(shader_program, uniform_name) {
-                uniform_locations.insert(uniform_name.to_string(), location);
+    unsafe fn create_screen_shaders(gl: &mut glow::Context) -> Vec<ScreenShader> {
+        let mut screen_shaders = Vec::new();
+        for &screen_frag in &SCREEN_FRAGS {
+            // Vertex shader
+            let vertex_shader = gl.create_shader(glow::VERTEX_SHADER).unwrap();
+            gl.shader_source(vertex_shader, &format!("{}{}", GLSL_VERSION, COMMON_VERT));
+            gl.compile_shader(vertex_shader);
+            if !gl.get_shader_compile_status(vertex_shader) {
+                panic!("{}", gl.get_shader_info_log(vertex_shader));
             }
+
+            // Fragment shader
+            let fragment_shader = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
+            gl.shader_source(
+                fragment_shader,
+                &format!("{}{}{}", GLSL_VERSION, COMMON_FRAG, screen_frag),
+            );
+            gl.compile_shader(fragment_shader);
+            if !gl.get_shader_compile_status(fragment_shader) {
+                panic!("{}", gl.get_shader_info_log(fragment_shader));
+            }
+
+            // Shader program
+            let shader_program = gl.create_program().unwrap();
+            gl.attach_shader(shader_program, vertex_shader);
+            gl.attach_shader(shader_program, fragment_shader);
+            gl.link_program(shader_program);
+            if !gl.get_program_link_status(shader_program) {
+                panic!("{}", gl.get_program_info_log(shader_program));
+            }
+            gl.detach_shader(shader_program, vertex_shader);
+            gl.delete_shader(vertex_shader);
+            gl.detach_shader(shader_program, fragment_shader);
+            gl.delete_shader(fragment_shader);
+
+            // Uniform locations
+            let mut uniform_locations: HashMap<String, glow::UniformLocation> = HashMap::new();
+            let uniform_names = [
+                "u_screenPos",
+                "u_screenSize",
+                "u_screenScale",
+                "u_backgroundColor",
+                "u_screenTexture",
+                "u_colorsTexture",
+            ];
+            for &uniform_name in &uniform_names {
+                if let Some(location) = gl.get_uniform_location(shader_program, uniform_name) {
+                    uniform_locations.insert(uniform_name.to_string(), location);
+                }
+            }
+
+            // Vertex array
+            let vertices: [f32; 8] = [-1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0];
+            let vertex_array = gl.create_vertex_array().unwrap();
+            let vertex_buffer = gl.create_buffer().unwrap();
+            gl.bind_vertex_array(Some(vertex_array));
+            gl.bind_buffer(glow::ARRAY_BUFFER, Some(vertex_buffer));
+            gl.buffer_data_u8_slice(
+                glow::ARRAY_BUFFER,
+                &vertices.align_to::<u8>().1,
+                glow::STATIC_DRAW,
+            );
+            let position = gl.get_attrib_location(shader_program, "position").unwrap();
+            gl.vertex_attrib_pointer_f32(
+                position,
+                2,
+                glow::FLOAT,
+                false,
+                2 * size_of::<f32>() as i32,
+                0,
+            );
+            gl.enable_vertex_attrib_array(position);
+
+            // Add screen shader
+            screen_shaders.push(ScreenShader {
+                shader_program,
+                uniform_locations,
+                vertex_array,
+            });
         }
-
-        (shader_program, uniform_locations)
-    }
-
-    unsafe fn create_vertex_array(
-        gl: &mut glow::Context,
-        shader_program: &glow::Program,
-    ) -> glow::VertexArray {
-        let vertices: [f32; 8] = [-1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0];
-        let vertex_array = gl.create_vertex_array().unwrap();
-        let vertex_buffer = gl.create_buffer().unwrap();
-        gl.bind_vertex_array(Some(vertex_array));
-        gl.bind_buffer(glow::ARRAY_BUFFER, Some(vertex_buffer));
-        gl.buffer_data_u8_slice(
-            glow::ARRAY_BUFFER,
-            &vertices.align_to::<u8>().1,
-            glow::STATIC_DRAW,
-        );
-        let position = gl.get_attrib_location(*shader_program, "position").unwrap();
-        gl.vertex_attrib_pointer_f32(
-            position,
-            2,
-            glow::FLOAT,
-            false,
-            2 * size_of::<f32>() as i32,
-            0,
-        );
-        gl.enable_vertex_attrib_array(position);
-        vertex_array
+        screen_shaders
     }
 
     unsafe fn create_screen_texture(gl: &mut glow::Context) -> glow::NativeTexture {
@@ -361,11 +366,9 @@ impl Pyxel {
         unsafe {
             let gl = pyxel_platform::glow_context();
             self.set_viewport(gl);
-            //self.clear_window(gl);
-            self.use_plain_shader(gl);
+            self.use_screen_shader(gl);
             self.bind_screen_texture(gl);
             self.bind_colors_texture(gl);
-            gl.bind_vertex_array(Some(self.graphics.vertex_array));
             gl.draw_arrays(glow::TRIANGLE_STRIP, 0, 4);
             pyxel_platform::swap_window();
         }
@@ -376,9 +379,10 @@ impl Pyxel {
         gl.viewport(0, 0, window_width as i32, window_height as i32);
     }
 
-    unsafe fn use_plain_shader(&self, gl: &mut glow::Context) {
-        gl.use_program(Some(self.graphics.shader_program));
-        let uniform_locations = &self.graphics.uniform_locations;
+    unsafe fn use_screen_shader(&self, gl: &mut glow::Context) {
+        let shader = &self.graphics.screen_shaders[self.system.screen_shader_no as usize];
+        gl.use_program(Some(shader.shader_program));
+        let uniform_locations = &shader.uniform_locations;
         if let Some(location) = uniform_locations.get("u_screenPos") {
             let (_, window_height) = pyxel_platform::window_size();
             gl.uniform_2_f32(
@@ -413,6 +417,7 @@ impl Pyxel {
         if let Some(location) = uniform_locations.get("u_colorsTexture") {
             gl.uniform_1_i32(Some(&location), 1);
         }
+        gl.bind_vertex_array(Some(shader.vertex_array));
     }
 
     unsafe fn bind_screen_texture(&self, gl: &mut glow::Context) {
