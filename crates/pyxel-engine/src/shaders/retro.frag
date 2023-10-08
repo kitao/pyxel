@@ -28,21 +28,21 @@ vec3 getVignettFactor(vec2 screenTexCoord) {
     return color;
 }
 
-float getScanlineFactor(vec2 screenSize, vec2 screenFragCoord, vec2 screenTexCoord) {
-    float scans = clamp(0.35 + 0.35 * sin(screenTexCoord.y * screenSize.y * 1.5), 0.0, 1.0);
+float getScanlineFactor(vec2 screenFragCoord, vec2 screenTexCoord) {
+    float scans = clamp(0.35 + 0.35 * sin(screenTexCoord.y * u_screenSize.y * 1.5), 0.0, 1.0);
     float color = 0.4 + 0.7 * pow(scans, 1.7);
     color *= 1.0 - 0.65 * clamp((mod(screenFragCoord.x, 2.0) - 1.0) * 2.0, 0.0, 1.0);
     return color;
 }
 
 void main() {
-    vec2 screenSize, screenFragCoord, screenTexCoord;
-    getScreenParams(screenSize, screenFragCoord, screenTexCoord);
+    vec2 screenFragCoord, screenTexCoord;
+    getScreenParams(screenFragCoord, screenTexCoord);
     screenTexCoord = warpScreen(screenTexCoord);
     if(isInScreen(screenTexCoord)) {
         vec3 color = getBleedingColor(screenTexCoord);
         color *= getVignettFactor(screenTexCoord);
-        color *= getScanlineFactor(screenSize, screenFragCoord, screenTexCoord);
+        color *= getScanlineFactor(screenFragCoord, screenTexCoord);
         fragColor = vec4(color, 1.0);
     } else {
         fragColor = vec4(u_backgroundColor, 1.0);
