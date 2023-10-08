@@ -24,6 +24,7 @@ const COMMON_VERT: &str = include_str!("shaders/common.vert");
 const COMMON_FRAG: &str = include_str!("shaders/common.frag");
 const CRISP_FRAG: &str = include_str!("shaders/crisp.frag");
 const RETRO_FRAG: &str = include_str!("shaders/retro.frag");
+const STITCH_FRAG: &str = include_str!("shaders/stitch.frag");
 
 pub(crate) static COLORS: Lazy<shared_type!(Vec<Rgb8>)> =
     Lazy::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));
@@ -99,7 +100,7 @@ impl Graphics {
         let fragment_shader = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
         gl.shader_source(
             fragment_shader,
-            &format!("{}{}{}", GLSL_VERSION, COMMON_FRAG, RETRO_FRAG),
+            &format!("{}{}{}", GLSL_VERSION, COMMON_FRAG, CRISP_FRAG),
         );
         gl.compile_shader(fragment_shader);
         if !gl.get_shader_compile_status(fragment_shader) {
@@ -122,16 +123,17 @@ impl Graphics {
         // Uniform locations
         let mut uniform_locations: HashMap<String, glow::UniformLocation> = HashMap::new();
         let uniform_names = [
-            "u_windowSize",
+            "u_screenPos",
+            "u_screenSize",
+            "u_screenScale",
             "u_backgroundColor",
             "u_screenTexture",
             "u_colorsTexture",
         ];
         for &uniform_name in &uniform_names {
-            let location = gl
-                .get_uniform_location(shader_program, uniform_name)
-                .unwrap();
-            uniform_locations.insert(uniform_name.to_string(), location);
+            if let Some(location) = gl.get_uniform_location(shader_program, uniform_name) {
+                uniform_locations.insert(uniform_name.to_string(), location);
+            }
         }
 
         (shader_program, uniform_locations)
@@ -377,24 +379,40 @@ impl Pyxel {
     unsafe fn use_plain_shader(&self, gl: &mut glow::Context) {
         gl.use_program(Some(self.graphics.shader_program));
         let uniform_locations = &self.graphics.uniform_locations;
-        let window_size_location = uniform_locations.get("u_windowSize").unwrap();
-        let window_size = pyxel_platform::window_size();
-        gl.uniform_2_f32(
-            Some(&window_size_location),
-            window_size.0 as f32,
-            window_size.1 as f32,
-        );
-        let background_color_location = uniform_locations.get("u_backgroundColor").unwrap();
-        gl.uniform_3_f32(
-            Some(&background_color_location),
-            ((BACKGROUND_COLOR >> 16) & 0xff) as f32 / 255.0,
-            ((BACKGROUND_COLOR >> 8) & 0xff) as f32 / 255.0,
-            (BACKGROUND_COLOR & 0xff) as f32 / 255.0,
-        );
-        let screen_texture_location = uniform_locations.get("u_screenTexture").unwrap();
-        gl.uniform_1_i32(Some(&screen_texture_location), 0);
-        let colors_texture_location = uniform_locations.get("u_colorsTexture").unwrap();
-        gl.uniform_1_i32(Some(&colors_texture_location), 1);
+        if let Some(location) = uniform_locations.get("u_screenPos") {
+            let (_, window_height) = pyxel_platform::window_size();
+            gl.uniform_2_f32(
+                Some(&location),
+                self.system.screen_x as f32,
+                (window_height as i32
+                    - self.system.screen_y
+                    - (self.height * self.system.screen_scale) as i32) as f32,
+            );
+        }
+        if let Some(location) = uniform_locations.get("u_screenSize") {
+            gl.uniform_2_f32(
+                Some(&location),
+                (self.width * self.system.screen_scale) as f32,
+                (self.height * self.system.screen_scale) as f32,
+            );
+        }
+        if let Some(location) = uniform_locations.get("u_screenScale") {
+            gl.uniform_1_f32(Some(&location), self.system.screen_scale as f32);
+        }
+        if let Some(location) = uniform_locations.get("u_backgroundColor") {
+            gl.uniform_3_f32(
+                Some(&location),
+                ((BACKGROUND_COLOR >> 16) & 0xff) as f32 / 255.0,
+                ((BACKGROUND_COLOR >> 8) & 0xff) as f32 / 255.0,
+                (BACKGROUND_COLOR & 0xff) as f32 / 255.0,
+            );
+        }
+        if let Some(location) = uniform_locations.get("u_screenTexture") {
+            gl.uniform_1_i32(Some(&location), 0);
+        }
+        if let Some(location) = uniform_locations.get("u_colorsTexture") {
+            gl.uniform_1_i32(Some(&location), 1);
+        }
     }
 
     unsafe fn bind_screen_texture(&self, gl: &mut glow::Context) {
