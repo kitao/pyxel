@@ -81,16 +81,15 @@ pub fn set_window_icon(width: u32, height: u32, rgba_data: &[u8]) {
             width as i32,
             height as i32,
             32,
-            SDL_PIXELFORMAT_RGBA8888,
+            SDL_PIXELFORMAT_RGBA32,
         );
         let pixels = (*surface).pixels as *mut u8;
         let pitch = (*surface).pitch as u32;
         for y in 0..height {
             let src_offset = (width * y * 4) as usize;
-            let mut dst_pixels = pixels.add((pitch * y) as usize);
-            for x in 0..(width * 4) {
-                *dst_pixels = rgba_data[src_offset + x as usize];
-                dst_pixels = dst_pixels.add(1);
+            let dst_pixels = pixels.add((pitch * y) as usize);
+            for x in 0..width * 4 {
+                *(dst_pixels.add(x as usize)) = rgba_data[src_offset + x as usize];
             }
         }
         SDL_SetWindowIcon(platform().window, surface);
