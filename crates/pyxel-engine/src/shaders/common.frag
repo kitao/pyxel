@@ -1,22 +1,16 @@
 out vec4 fragColor;
 
-uniform vec2 u_windowSize;
+uniform vec2 u_screenPos;
+uniform vec2 u_screenSize;
+uniform float u_screenScale;
 uniform vec3 u_backgroundColor;
 uniform sampler2D u_screenTexture;
 uniform isampler2D u_colorsTexture;
 
-vec2 getScreenResolution() {
-    return textureSize(u_screenTexture, 0);
-}
-
-void getScreenParams(out vec2 screenSize, out vec2 screenFragCoord, out vec2 screenTexCoord) {
-    vec2 screenResolution = getScreenResolution();
-    vec2 screenScaleVec = max(floor(u_windowSize / screenResolution), vec2(1.0));
-    float screenScale = min(screenScaleVec.x, screenScaleVec.y);
-    screenSize = screenResolution * screenScale;
-    vec2 screenPos = vec2(floor((u_windowSize.x - screenSize.x) / 2.0), ceil((u_windowSize.y - screenSize.y) / 2.0));
-    screenFragCoord = gl_FragCoord.xy - screenPos;
-    screenTexCoord = vec2(screenFragCoord.x, (screenSize.y - screenFragCoord.y)) / screenSize;
+void getScreenParams(out vec2 screenFragCoord, out vec2 screenTexCoord) {
+    screenFragCoord = gl_FragCoord.xy - u_screenPos;
+    screenTexCoord = screenFragCoord / u_screenSize;
+    screenTexCoord.y = 1.0 - screenTexCoord.y;
 }
 
 bool isInScreen(vec2 screenTexCoord) {
