@@ -149,12 +149,10 @@ impl Pyxel {
         let mut value = value;
         match key {
             MOUSE_POS_X => {
-                println!("mouse_pox_x: {}", value);
                 value = (value - self.system.screen_x) / self.system.screen_scale as i32;
                 self.mouse_x = value;
             }
             MOUSE_POS_Y => {
-                println!("mouse_pox_y: {}", value);
                 value = (value - self.system.screen_y) / self.system.screen_scale as i32;
                 self.mouse_y = value;
             }
