@@ -1,6 +1,6 @@
 void main() {
-    vec2 screenSize, screenFragCoord, screenTexCoord;
-    getScreenParams(screenSize, screenFragCoord, screenTexCoord);
+    vec2 screenFragCoord, screenTexCoord;
+    getScreenParams(screenFragCoord, screenTexCoord);
     if(isInScreen(screenTexCoord)) {
         fragColor = getScreenColor(screenTexCoord);
     } else {

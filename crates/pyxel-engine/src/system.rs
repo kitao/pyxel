@@ -24,9 +24,9 @@ pub struct System {
     update_profiler: Profiler,
     draw_profiler: Profiler,
     perf_monitor_enabled: bool,
-    pub screen_scale: u32,
     pub screen_x: i32,
     pub screen_y: i32,
+    pub screen_scale: u32,
 }
 
 impl System {
@@ -40,9 +40,9 @@ impl System {
             update_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             draw_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             perf_monitor_enabled: false,
-            screen_scale: 0,
             screen_x: 0,
             screen_y: 0,
+            screen_scale: 0,
         }
     }
 }
