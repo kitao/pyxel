@@ -39,7 +39,7 @@ void main() {
     vec2 screenFragCoord, screenTexCoord;
     getScreenParams(screenFragCoord, screenTexCoord);
     screenTexCoord = warpScreen(screenTexCoord);
-    if(isInScreen(screenTexCoord)) {
+    if (isInScreen(screenTexCoord)) {
         vec3 color = getBleedingColor(screenTexCoord);
         color *= getVignettFactor(screenTexCoord);
         color *= getScanlineFactor(screenFragCoord, screenTexCoord);
