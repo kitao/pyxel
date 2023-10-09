@@ -150,6 +150,10 @@ impl Pyxel {
         pyxel_platform::set_fullscreen(full)
     }
 
+    pub fn screen_shader(&mut self, screen_shader_no: u32) {
+        self.system.screen_shader_no = screen_shader_no;
+    }
+
     fn process_events(&mut self) {
         self.reset_input_states();
         let events = pyxel_platform::poll_events();
@@ -185,18 +189,6 @@ impl Pyxel {
         }
     }
 
-    fn update_screen_params(&mut self) {
-        let (window_width, window_height) = pyxel_platform::window_size();
-        self.system.screen_scale = max(
-            min(window_width / self.width, window_height / self.height),
-            1,
-        );
-        self.system.screen_x =
-            (window_width as i32 - (self.width * self.system.screen_scale) as i32) / 2;
-        self.system.screen_y =
-            (window_height as i32 - (self.height * self.system.screen_scale) as i32) / 2;
-    }
-
     fn check_special_input(&mut self) {
         if self.btn(KEY_ALT) {
             if self.btnp(KEY_RETURN, None, None) {
@@ -224,11 +216,22 @@ impl Pyxel {
         }
     }
 
+    fn update_screen_params(&mut self) {
+        let (window_width, window_height) = pyxel_platform::window_size();
+        self.system.screen_scale = max(
+            min(window_width / self.width, window_height / self.height),
+            1,
+        );
+        self.system.screen_x =
+            (window_width as i32 - (self.width * self.system.screen_scale) as i32) / 2;
+        self.system.screen_y =
+            (window_height as i32 - (self.height * self.system.screen_scale) as i32) / 2;
+    }
+
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
         self.system
             .update_profiler
             .start(pyxel_platform::elapsed_time());
-        self.update_screen_params();
         self.process_events();
         if self.system.paused {
             return;
@@ -357,6 +360,7 @@ impl Pyxel {
                 self.frame_count += 1;
             }
         }
+        self.update_screen_params();
         self.update_frame(Some(callback));
         self.draw_frame(Some(callback));
         self.frame_count += 1;
@@ -367,6 +371,7 @@ impl Pyxel {
         self.system
             .update_profiler
             .end(pyxel_platform::elapsed_time());
+        self.update_screen_params();
         self.draw_frame(None);
         self.frame_count += 1;
         let mut tick_count;
