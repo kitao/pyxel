@@ -423,6 +423,7 @@ impl Pyxel {
     unsafe fn bind_screen_texture(&self, gl: &mut glow::Context) {
         gl.active_texture(glow::TEXTURE0);
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.screen_texture));
+        gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 1);
         gl.tex_image_2d(
             glow::TEXTURE_2D,
             0,
@@ -439,6 +440,7 @@ impl Pyxel {
     unsafe fn bind_colors_texture(&self, gl: &mut glow::Context) {
         gl.active_texture(glow::TEXTURE1);
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.colors_texture));
+        gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
         let colors = self.colors.lock();
         let pixels = std::slice::from_raw_parts(colors.as_ptr() as *const u8, colors.len() * 4);
         gl.tex_image_2d(
