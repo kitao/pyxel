@@ -10,7 +10,7 @@ use crate::image::{Color, Image, Rgb8, SharedImage};
 use crate::pyxel::Pyxel;
 use crate::settings::{
     BACKGROUND_COLOR, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, DEFAULT_COLORS, FONT_DATA,
-    FONT_HEIGHT, FONT_WIDTH, NUM_FONT_ROWS, NUM_SCREEN_SHADERS,
+    FONT_HEIGHT, FONT_WIDTH, NUM_FONT_ROWS, NUM_SCREEN_TYPES,
 };
 
 cfg_if! {
@@ -22,10 +22,10 @@ cfg_if! {
 }
 const COMMON_VERT: &str = include_str!("shaders/common.vert");
 const COMMON_FRAG: &str = include_str!("shaders/common.frag");
-const SCREEN_FRAGS: [&str; NUM_SCREEN_SHADERS as usize] = [
+const SCREEN_FRAGS: [&str; NUM_SCREEN_TYPES as usize] = [
     include_str!("shaders/crisp.frag"),
     include_str!("shaders/retro.frag"),
-    //include_str!("shaders/stitch.frag"),
+    include_str!("shaders/stitch.frag"),
 ];
 
 pub(crate) static COLORS: Lazy<shared_type!(Vec<Rgb8>)> =
@@ -380,7 +380,7 @@ impl Pyxel {
     }
 
     unsafe fn use_screen_shader(&self, gl: &mut glow::Context) {
-        let shader = &self.graphics.screen_shaders[self.system.screen_shader_no as usize];
+        let shader = &self.graphics.screen_shaders[self.system.screen_type as usize];
         gl.use_program(Some(shader.shader_program));
         let uniform_locations = &shader.uniform_locations;
         if let Some(location) = uniform_locations.get("u_screenPos") {
