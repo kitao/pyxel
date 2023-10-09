@@ -7,7 +7,7 @@ use crate::image::{Color, Image, SharedImage};
 use crate::keys::{Key, KEY_0, KEY_1, KEY_2, KEY_3, KEY_9, KEY_ALT, KEY_RETURN};
 use crate::profiler::Profiler;
 use crate::pyxel::Pyxel;
-use crate::settings::{MAX_ELAPSED_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_SHADERS};
+use crate::settings::{MAX_ELAPSED_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
 use crate::utils;
 
 pub trait PyxelCallback {
@@ -27,7 +27,7 @@ pub struct System {
     pub screen_x: i32,
     pub screen_y: i32,
     pub screen_scale: u32,
-    pub screen_shader_no: u32,
+    pub screen_type: u32,
 }
 
 impl System {
@@ -44,7 +44,7 @@ impl System {
             screen_x: 0,
             screen_y: 0,
             screen_scale: 0,
-            screen_shader_no: 0,
+            screen_type: 2,
         }
     }
 }
@@ -150,8 +150,8 @@ impl Pyxel {
         pyxel_platform::set_fullscreen(full)
     }
 
-    pub fn screen_shader(&mut self, screen_shader_no: u32) {
-        self.system.screen_shader_no = screen_shader_no;
+    pub fn screen_type(&mut self, screen_type: u32) {
+        self.system.screen_type = screen_type;
     }
 
     fn process_events(&mut self) {
@@ -207,8 +207,7 @@ impl Pyxel {
                 self.screencast(None);
             }
             if self.btnp(KEY_9, None, None) {
-                self.system.screen_shader_no =
-                    (self.system.screen_shader_no + 1) % NUM_SCREEN_SHADERS;
+                self.system.screen_type = (self.system.screen_type + 1) % NUM_SCREEN_TYPES;
             }
         }
         if self.btnp(self.system.quit_key, None, None) {
