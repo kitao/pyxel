@@ -18,7 +18,7 @@ impl App {
             None,
         );
         pyxel.mouse(true);
-        pyxel.set_mouse_pos(10.0, 10.0);
+        pyxel.warp_mouse(10.0, 10.0);
 
         pyxel.images[0].lock().set(
             0,
