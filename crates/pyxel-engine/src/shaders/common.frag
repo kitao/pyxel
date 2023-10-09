@@ -17,12 +17,12 @@ bool isInScreen(vec2 screenTexCoord) {
     return all(greaterThanEqual(screenTexCoord, vec2(0.0))) && all(lessThanEqual(screenTexCoord, vec2(1.0)));
 }
 
-vec4 getScreenColor(vec2 screenTexCoord) {
+vec3 getScreenColor(vec2 screenTexCoord) {
     float indexColor = texture(u_screenTexture, screenTexCoord).r * 255.0;
     vec2 colorsTexCoord = vec2((indexColor + 0.5) / float(textureSize(u_colorsTexture, 0).x), 0.5);
     uint rgb = uint(texture(u_colorsTexture, colorsTexCoord).r);
     uint r = (rgb >> 16) & 0xffu;
     uint g = (rgb >> 8) & 0xffu;
     uint b = rgb & 0xffu;
-    return vec4(vec3(r, g, b) / 255.0, 1.0);
+    return vec3(r, g, b) / 255.0;
 }
