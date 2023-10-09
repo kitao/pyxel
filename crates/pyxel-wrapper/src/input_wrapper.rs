@@ -29,8 +29,8 @@ fn mouse(visible: bool) {
 }
 
 #[pyfunction]
-pub fn set_mouse_pos(x: f64, y: f64) {
-    pyxel().set_mouse_pos(x, y);
+pub fn warp_mouse(x: f64, y: f64) {
+    pyxel().warp_mouse(x, y);
 }
 
 pub fn add_input_functions(m: &PyModule) -> PyResult<()> {
@@ -39,6 +39,6 @@ pub fn add_input_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(btnr, m)?)?;
     m.add_function(wrap_pyfunction!(btnv, m)?)?;
     m.add_function(wrap_pyfunction!(mouse, m)?)?;
-    m.add_function(wrap_pyfunction!(set_mouse_pos, m)?)?;
+    m.add_function(wrap_pyfunction!(warp_mouse, m)?)?;
     Ok(())
 }
