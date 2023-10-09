@@ -91,7 +91,7 @@ impl Pyxel {
         self.input.mouse_visible = visible;
     }
 
-    pub fn set_mouse_pos(&mut self, x: f64, y: f64) {
+    pub fn warp_mouse(&mut self, x: f64, y: f64) {
         let x = f64_to_i32(x);
         let y = f64_to_i32(y);
         self.input.key_values.insert(MOUSE_POS_X, x);
