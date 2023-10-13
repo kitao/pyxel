@@ -25,7 +25,6 @@ const COMMON_FRAG: &str = include_str!("shaders/common.frag");
 const SCREEN_FRAGS: [&str; NUM_SCREEN_TYPES as usize] = [
     include_str!("shaders/crisp.frag"),
     include_str!("shaders/retro.frag"),
-    include_str!("shaders/stitch.frag"),
 ];
 
 pub(crate) static COLORS: Lazy<shared_type!(Vec<Rgb8>)> =
