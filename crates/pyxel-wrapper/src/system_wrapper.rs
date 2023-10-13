@@ -60,8 +60,8 @@ fn fullscreen(full: bool) {
 }
 
 #[pyfunction]
-fn screen_type(scr: u32) {
-    pyxel().screen_type(scr)
+fn scrtype(scr: u32) {
+    pyxel().scrtype(scr)
 }
 
 #[pyfunction]
