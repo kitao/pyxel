@@ -44,7 +44,7 @@ impl System {
             screen_x: 0,
             screen_y: 0,
             screen_scale: 0,
-            screen_type: 2,
+            screen_type: 0,
         }
     }
 }
@@ -150,7 +150,7 @@ impl Pyxel {
         pyxel_platform::set_fullscreen(full)
     }
 
-    pub fn screen_type(&mut self, screen_type: u32) {
+    pub fn scrtype(&mut self, screen_type: u32) {
         self.system.screen_type = screen_type;
     }
 
