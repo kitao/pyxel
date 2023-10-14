@@ -87,6 +87,21 @@ impl Image {
         Ok(())
     }
 
+    fn pal(&self, col1: Option<pyxel::Color>, col2: Option<pyxel::Color>) -> PyResult<()> {
+        if let (Some(col1), Some(col2)) = (col1, col2) {
+            self.pyxel_image.lock().pal(col1, col2);
+        } else if (col1, col2) == (None, None) {
+            self.pyxel_image.lock().pal0();
+        } else {
+            type_error!("pal() takes 0 or 2 arguments");
+        }
+        Ok(())
+    }
+
+    fn dither(&self, alpha: f32) {
+        self.pyxel_image.lock().dither(alpha);
+    }
+
     pub fn cls(&self, col: pyxel::Color) {
         self.pyxel_image.lock().cls(col);
     }
