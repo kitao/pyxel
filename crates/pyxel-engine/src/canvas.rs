@@ -1,7 +1,7 @@
 use std::cmp::max;
 use std::mem::swap;
 
-use crate::rectarea::RectArea;
+use crate::rect_area::RectArea;
 use crate::utils::{f64_to_i32, f64_to_u32};
 
 pub trait ToIndex {
@@ -13,7 +13,9 @@ pub struct Canvas<T: Copy + PartialEq + Default + ToIndex> {
     pub clip_rect: RectArea,
     pub camera_x: i32,
     pub camera_y: i32,
+    pub alpha: f32,
     pub data: Vec<T>,
+    should_write: fn(&Canvas<T>, i32, i32) -> bool,
 }
 
 impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
@@ -23,7 +25,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             clip_rect: RectArea::new(0, 0, width, height),
             camera_x: 0,
             camera_y: 0,
+            alpha: 1.0,
             data: vec![T::default(); (width * height) as usize],
+            should_write: Self::should_write_always,
         }
     }
 
@@ -63,14 +67,28 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.camera_y = 0;
     }
 
+    pub fn dither(&mut self, alpha: f32) {
+        self.alpha = alpha;
+        if alpha <= 0.0 {
+            self.should_write = Self::should_write_never;
+        } else if alpha >= 1.0 {
+            self.should_write = Self::should_write_always;
+        } else {
+            self.should_write = Self::should_write;
+        }
+    }
+
     pub fn cls(&mut self, value: T) {
         let width = self.width();
         let height = self.height();
+        let alpha = self.alpha;
+        self.dither(1.0);
         for y in 0..height {
             for x in 0..width {
                 self.write_data(x as usize, y as usize, value);
             }
         }
+        self.dither(alpha);
     }
 
     pub fn pget(&mut self, x: f64, y: f64) -> T {
@@ -405,12 +423,14 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn write_data(&mut self, x: usize, y: usize, value: T) {
-        let width = self.width() as usize;
-        self.data[width * y + x] = value;
+        if self.should_write(x as i32, y as i32) {
+            let width = self.width() as usize;
+            self.data[width * y + x] = value;
+        }
     }
 
     fn write_data_with_clipping(&mut self, x: i32, y: i32, value: T) {
-        if self.clip_rect.contains(x, y) {
+        if self.should_write(x, y) && self.clip_rect.contains(x, y) {
             let width = self.width() as usize;
             self.data[width * y as usize + x as usize] = value;
         }
@@ -470,6 +490,24 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             }
             xi += 1;
         }
+    }
+
+    fn should_write_always(&self, _x: i32, _y: i32) -> bool {
+        true
+    }
+
+    fn should_write_never(&self, _x: i32, _y: i32) -> bool {
+        false
+    }
+
+    fn should_write(&self, x: i32, y: i32) -> bool {
+        const DITHERING_MATRIX: [[f32; 4]; 4] = [
+            [1.0 / 16.0, 9.0 / 16.0, 3.0 / 16.0, 11.0 / 16.0],
+            [13.0 / 16.0, 5.0 / 16.0, 15.0 / 16.0, 7.0 / 16.0],
+            [3.0 / 16.0, 11.0 / 16.0, 1.0 / 16.0, 9.0 / 16.0],
+            [15.0 / 16.0, 7.0 / 16.0, 13.0 / 16.0, 5.0 / 16.0],
+        ];
+        self.alpha > DITHERING_MATRIX[(y % 4) as usize][(x % 4) as usize]
     }
 }
 
