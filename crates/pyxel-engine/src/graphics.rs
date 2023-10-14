@@ -24,6 +24,7 @@ const COMMON_VERT: &str = include_str!("shaders/common.vert");
 const COMMON_FRAG: &str = include_str!("shaders/common.frag");
 const SCREEN_FRAGS: [&str; NUM_SCREEN_TYPES as usize] = [
     include_str!("shaders/crisp.frag"),
+    include_str!("shaders/scale.frag"),
     include_str!("shaders/retro.frag"),
 ];
 
