@@ -41,6 +41,11 @@ fn pal(col1: Option<pyxel::Color>, col2: Option<pyxel::Color>) -> PyResult<()> {
 }
 
 #[pyfunction]
+fn dither(alpha: f32) {
+    pyxel().dither(alpha);
+}
+
+#[pyfunction]
 fn cls(col: pyxel::Color) {
     pyxel().cls(col);
 }
@@ -170,6 +175,7 @@ pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(clip, m)?)?;
     m.add_function(wrap_pyfunction!(camera, m)?)?;
     m.add_function(wrap_pyfunction!(pal, m)?)?;
+    m.add_function(wrap_pyfunction!(dither, m)?)?;
     m.add_function(wrap_pyfunction!(cls, m)?)?;
     m.add_function(wrap_pyfunction!(pget, m)?)?;
     m.add_function(wrap_pyfunction!(pset, m)?)?;
