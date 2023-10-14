@@ -1,5 +1,24 @@
 # Change Log
 
+## 2.0.0
+
+- Changed to use the C version of SDL2
+- Changed to allow resizing of the colors list
+- Changed to use GLSL for rendering the screen
+- Added the srcstyle function to change screen rendring type
+- Added support for the third and fourth gamepads
+- Added the dither function to set dithering type
+- Added images, tilemaps as system lists
+- Marked the image and tilemap functions as deprecated functions
+- Added channels, sounds, and musics as system lists
+- Marked the channel, sounds, adn musics function as deprecated functions
+- Renamed the reset_capture function to reset_screencast
+- Renamed the set_mouse_pos function to warp_mouse
+- Renamed the drop_files variable to dropped_files
+- Removed the is_fullscreen variable
+- Removed the input_keys variable
+- Removed the set_btn and set_btnv functions
+
 ## 1.9.18
 
 - Added the windowed and icon options to PyInstaller
