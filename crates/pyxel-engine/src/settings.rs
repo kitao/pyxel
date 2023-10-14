@@ -95,7 +95,7 @@ pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] 
     0x06aa62, 0x068880, 0x06c6c0, 0x4e4460, 0x0aaa60, 0x0aaa40, 0x0aaee0, 0x0a44a0, 0x0aa624,
     0x0e24e0, 0x64c460, 0x444440, 0xc464c0, 0x6c0000, 0xeeeee0,
 ];
-pub const NUM_SCREEN_TYPES: u32 = 2;
+pub const NUM_SCREEN_TYPES: u32 = 3;
 
 // Audio
 pub const CLOCK_RATE: u32 = 1789773; // 1.78 MHz clock rate
