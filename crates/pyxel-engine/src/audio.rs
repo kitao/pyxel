@@ -1,4 +1,4 @@
-use crate::blipbuf::BlipBuf;
+use crate::blip_buf::BlipBuf;
 //use crate::platform::{AudioCallback, Platform};
 use crate::channel::SharedChannel;
 use crate::pyxel::Pyxel;
