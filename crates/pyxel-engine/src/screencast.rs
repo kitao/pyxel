@@ -6,7 +6,7 @@ use gif::{DisposalMethod, Encoder, Frame, Repeat};
 use indexmap::IndexMap;
 
 use crate::image::{Color, Rgb8};
-use crate::rectarea::RectArea;
+use crate::rect_area::RectArea;
 use crate::utils::add_file_extension;
 
 const TRANSPARENT: Rgb8 = 0xffffffff;
