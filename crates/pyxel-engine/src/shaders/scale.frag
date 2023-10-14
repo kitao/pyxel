@@ -26,42 +26,31 @@ void main() {
         E3 E4 E5
         E6 E7 E8
     */
-    vec3 color = E;
     vec2 offset = fract(screenTexCoord * u_screenSize / u_screenScale) * 3.0;
-    if (D == B && B != F && D != H) {
-        if (offset.x < 1.0 && offset.y >= 2.0) { // E0
-            color = D;
-        } else if (offset.x >= 1.0 && offset.x < 2.0 && offset.y >= 2.0 && E != C) { // E1
-            color = B;
-        } else if (offset.x < 1.0 && offset.y >= 1.0 && offset.y < 2.0 && E != G) { // E3
-            color = D;
-        }
-    }
-    if (B == F && B != D && F != H) {
-        if (offset.x >= 2.0 && offset.y >= 2.0) { // E2
-            color = F;
-        } else if (offset.x >= 1.0 && offset.x < 2.0 && offset.y >= 2.0 && E != A) { // E1
-            color = B;
-        } else if (offset.x >= 2.0 && offset.y >= 1.0 && offset.y < 2.0 && E != I) { // E5
-            color = F;
-        }
-    }
-    if (D == H && D != B && H != F) {
-        if (offset.x < 1.0 && offset.y < 1.0) { // E6
-            color = D;
-        } else if (offset.x < 1.0 && offset.y >= 1.0 && offset.y < 2.0 && E != A) { // E3
-            color = D;
-        } else if (offset.x >= 1.0 && offset.x < 2.0 && offset.y < 1.0 && E != I) { // E7
-            color = H;
-        }
-    }
-    if (H == F && D != H && B != F) {
-        if (offset.x >= 2.0 && offset.y < 1.0) { // E8
-            color = F;
-        } else if (offset.x >= 2.0 && offset.y >= 1.0 && offset.y < 2.0 && E != C) { // E5
-            color = F;
-        } else if (offset.x >= 1.0 && offset.x < 2.0 && offset.y < 1.0 && E != G) { // E7
-            color = H;
+    vec3 color = E;
+    if (B != H && D != F) {
+        if (offset.y >= 2.0) {
+            if (offset.x < 1.0) { // E0
+                color = (D == B) ? D : E;
+            } else if (offset.x >= 2.0) { // E2
+                color = (B == F) ? F : E;
+            } else { // E1
+                color = (D == B && E != C || B == F && E != A) ? B : E;
+            }
+        } else if (offset.y < 1.0) {
+            if (offset.x < 1.0) { // E6
+                color = (D == H) ? D : E;
+            } else if (offset.x >= 2.0) { // E8
+                color = (H == F) ? F : E;
+            } else { // E7
+                color = (D == H && E != I || H == F && E != G) ? H : E;
+            }
+        } else {
+            if (offset.x < 1.0) { // E3
+                color = (D == B && E != G || D == H && E != A) ? D : E;
+            } else if (offset.x >= 2.0) { // E5
+                color = (B == F && E != I || H == F && E != C) ? F : E;
+            }
         }
     }
     fragColor = vec4(color, 1.0);
