@@ -154,33 +154,6 @@ impl Platform {
         emscripten::run_script(&format!("_savePyxelFile('{filename}');"));
     }
 
-    fn screen_pos_scale(&self) -> (u32, u32, u32) {
-        let (window_width, window_height) = self.sdl_canvas.window().size();
-        let screen_scale = min(
-            window_width / self.screen_width,
-            window_height / self.screen_height,
-        );
-        let screen_x = (window_width - self.screen_width * screen_scale) / 2;
-        let screen_y = (window_height - self.screen_height * screen_scale) / 2;
-        (screen_x, screen_y, screen_scale)
-    }
-
-    fn mouse_pos(&self) -> (i32, i32) {
-        #[cfg(not(target_os = "emscripten"))]
-        let (window_x, window_y) = self.sdl_canvas.window().position();
-        #[cfg(target_os = "emscripten")]
-        let (window_x, window_y) = (0, 0);
-        let (screen_x, screen_y, screen_scale) = self.screen_pos_scale();
-        let mut mouse_x = 0;
-        let mut mouse_y = 0;
-        unsafe {
-            sdl2::sys::SDL_GetGlobalMouseState(&mut mouse_x, &mut mouse_y);
-        }
-        mouse_x = (mouse_x - window_x - screen_x as i32) / screen_scale as i32;
-        mouse_y = (mouse_y - window_y - screen_y as i32) / screen_scale as i32;
-        (mouse_x, mouse_y)
-    }
-
     fn gamepad_index(&self, game_controller_id: u32) -> u32 {
         self.sdl_game_controller_states
             .iter()
