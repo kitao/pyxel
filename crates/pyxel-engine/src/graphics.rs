@@ -259,6 +259,10 @@ impl Pyxel {
         self.screen.lock().pal0();
     }
 
+    pub fn dither(&self, alpha: f32) {
+        self.screen.lock().dither(alpha);
+    }
+
     pub fn cls(&self, color: Color) {
         self.screen.lock().cls(color);
     }

@@ -9,7 +9,7 @@ use image::{Rgb, RgbImage};
 use crate::canvas::{Canvas, CopyArea, ToIndex};
 use crate::graphics::{COLORS, FONT_IMAGE};
 use crate::pyxel::Pyxel;
-use crate::rectarea::RectArea;
+use crate::rect_area::RectArea;
 use crate::resource::ResourceItem;
 use crate::settings::{
     FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_COLORS, NUM_FONT_ROWS,
@@ -186,6 +186,10 @@ impl Image {
         for i in 0..NUM_COLORS {
             self.palette[i as usize] = i as Color;
         }
+    }
+
+    pub fn dither(&mut self, alpha: f32) {
+        self.canvas.dither(alpha);
     }
 
     pub fn cls(&mut self, color: Color) {
