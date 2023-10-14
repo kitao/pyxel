@@ -29,7 +29,7 @@
 #[macro_use]
 mod utils;
 mod audio;
-mod blipbuf;
+mod blip_buf;
 mod canvas;
 mod channel;
 mod graphics;
@@ -47,6 +47,7 @@ mod settings;
 mod sound;
 mod system;
 mod tilemap;
+mod window_watcher;
 
 use pyxel_platform::keys;
 
