@@ -254,10 +254,12 @@ impl Pyxel {
         let camera_y = screen.canvas.camera_y;
         let palette1 = screen.palette[1];
         let palette2 = screen.palette[2];
+        let alpha = screen.canvas.alpha;
         screen.clip0();
         screen.camera0();
         screen.pal(1, 1);
         screen.pal(2, 9);
+        screen.dither(1.0);
 
         let fps = format!("{:.*}", 2, self.system.fps_profiler.average_fps());
         screen.text(1.0, 0.0, &fps, 1);
@@ -276,6 +278,7 @@ impl Pyxel {
         screen.canvas.camera_y = camera_y;
         screen.pal(1, palette1);
         screen.pal(2, palette2);
+        screen.dither(alpha);
     }
 
     fn draw_cursor(&self) {
