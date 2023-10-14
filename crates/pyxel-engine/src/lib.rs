@@ -40,7 +40,7 @@ mod music;
 mod oscillator;
 mod profiler;
 mod pyxel;
-mod rectarea;
+mod rect_area;
 mod resource;
 mod screencast;
 mod settings;
