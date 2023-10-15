@@ -1,4 +1,3 @@
-use std::cmp::{max, min};
 use std::collections::HashMap;
 use std::mem::size_of;
 
@@ -24,7 +23,7 @@ const COMMON_VERT: &str = include_str!("shaders/common.vert");
 const COMMON_FRAG: &str = include_str!("shaders/common.frag");
 const SCREEN_FRAGS: [&str; NUM_SCREEN_TYPES as usize] = [
     include_str!("shaders/crisp.frag"),
-    include_str!("shaders/scale.frag"),
+    include_str!("shaders/smooth.frag"),
     include_str!("shaders/retro.frag"),
 ];
 
@@ -384,7 +383,7 @@ impl Pyxel {
     }
 
     unsafe fn use_screen_shader(&self, gl: &mut glow::Context) {
-        let shader = &self.graphics.screen_shaders[self.system.screen_type as usize];
+        let shader = &self.graphics.screen_shaders[self.system.screen_mode as usize];
         gl.use_program(Some(shader.shader_program));
         let uniform_locations = &shader.uniform_locations;
         if let Some(location) = uniform_locations.get("u_screenPos") {
