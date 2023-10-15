@@ -38,14 +38,6 @@ impl Channel {
         })
     }
 
-    pub fn play_pos(&mut self) -> Option<(u32, u32)> {
-        if self.is_playing {
-            Some((self.sound_index, self.note_index))
-        } else {
-            None
-        }
-    }
-
     pub fn play(&mut self, sounds: Vec<SharedSound>, start_tick: Option<u32>, should_loop: bool) {
         let sounds: Vec<Sound> = sounds.iter().map(|sound| sound.lock().clone()).collect();
         if sounds.is_empty() || sounds.iter().all(|sound| sound.notes.is_empty()) {
@@ -84,6 +76,14 @@ impl Channel {
     pub fn stop(&mut self) {
         self.is_playing = false;
         self.oscillator.stop();
+    }
+
+    pub fn play_pos(&mut self) -> Option<(u32, u32)> {
+        if self.is_playing {
+            Some((self.sound_index, self.note_index))
+        } else {
+            None
+        }
     }
 
     pub(crate) fn update(&mut self, blip_buf: &mut BlipBuf) {

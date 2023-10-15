@@ -40,13 +40,13 @@ fn screenshot(scale: Option<u32>) {
 }
 
 #[pyfunction]
-fn reset_screencast() {
-    pyxel().reset_screencast();
+fn screencast(scale: Option<u32>) {
+    pyxel().screencast(scale);
 }
 
 #[pyfunction]
-fn screencast(scale: Option<u32>) {
-    pyxel().screencast(scale);
+fn reset_screencast() {
+    pyxel().reset_screencast();
 }
 
 pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
