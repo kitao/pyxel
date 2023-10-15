@@ -530,9 +530,6 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 - `music(msc)`<br>
   Operate the music `msc` (0-7). (See the Music class)
 
-- `play_pos(ch)`<br>
-  Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
-
 - `play(ch, snd, [tick], [loop])`<br>
   Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. The playback start position can be specified by `tick` (1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
 
@@ -541,6 +538,9 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 
 - `stop([ch])`<br>
   Stops playback of the specified channel `ch` (0-3). `stop()` to stop playing all channels.
+
+- `play_pos(ch)`<br>
+  Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
 
 ### Math
 
