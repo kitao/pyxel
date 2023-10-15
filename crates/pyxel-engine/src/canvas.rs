@@ -74,7 +74,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         } else if alpha >= 1.0 {
             self.should_write = Self::should_write_always;
         } else {
-            self.should_write = Self::should_write;
+            self.should_write = Self::should_write_normal;
         }
     }
 
@@ -423,14 +423,14 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
     }
 
     pub fn write_data(&mut self, x: usize, y: usize, value: T) {
-        if self.should_write(x as i32, y as i32) {
+        if (self.should_write)(self, x as i32, y as i32) {
             let width = self.width() as usize;
             self.data[width * y + x] = value;
         }
     }
 
     fn write_data_with_clipping(&mut self, x: i32, y: i32, value: T) {
-        if self.should_write(x, y) && self.clip_rect.contains(x, y) {
+        if (self.should_write)(self, x, y) && self.clip_rect.contains(x, y) {
             let width = self.width() as usize;
             self.data[width * y as usize + x as usize] = value;
         }
@@ -500,7 +500,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         false
     }
 
-    fn should_write(&self, x: i32, y: i32) -> bool {
+    fn should_write_normal(&self, x: i32, y: i32) -> bool {
         const DITHERING_MATRIX: [[f32; 4]; 4] = [
             [1.0 / 16.0, 9.0 / 16.0, 3.0 / 16.0, 11.0 / 16.0],
             [13.0 / 16.0, 5.0 / 16.0, 15.0 / 16.0, 7.0 / 16.0],
