@@ -531,9 +531,6 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 - `music(msc)`<br>
   操作音乐`msc`(0-7)（参考 Music 类）
 
-- `play_pos(ch)`<br>
-  获取通道`ch` (0-3)中音频重播位置`(sound no, note no)`。若重播被停止则返回`None`。
-
 - `play(ch, snd, [tick], [loop])`<br>
   播放通道`ch` (0-3)中的声音`snd` (0-63)。如果声音`snd`是一个列表，则按顺序播放。播放开始位置可以通过 `tick` (1 tick = 1/120 秒)指定。如果`loop`被指定为`True`则循环播放。
 
@@ -542,6 +539,9 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 
 - `stop([ch])`<br>
   停止指定通道`ch` (0-3)的重播。`stop()`可以停止所有通道的播放。
+
+- `play_pos(ch)`<br>
+  获取通道`ch` (0-3)中音频重播位置`(sound no, note no)`。若重播被停止则返回`None`。
 
 ### 数学
 
