@@ -45,26 +45,6 @@ fn init(
 }
 
 #[pyfunction]
-fn title(title: &str) {
-    pyxel().title(title);
-}
-
-#[pyfunction]
-fn icon(data: Vec<&str>, scale: u32, colkey: Option<pyxel::Color>) {
-    pyxel().icon(&data, scale, colkey);
-}
-
-#[pyfunction]
-fn fullscreen(full: bool) {
-    pyxel().fullscreen(full);
-}
-
-#[pyfunction]
-fn scrtype(scr: u32) {
-    pyxel().scrtype(scr)
-}
-
-#[pyfunction]
 fn run(py: Python, update: &PyAny, draw: &PyAny) {
     struct PythonCallback<'a> {
         py: Python<'a>,
@@ -106,6 +86,26 @@ fn quit() {
     pyxel().quit();
 }
 
+#[pyfunction]
+fn title(title: &str) {
+    pyxel().title(title);
+}
+
+#[pyfunction]
+fn icon(data: Vec<&str>, scale: u32, colkey: Option<pyxel::Color>) {
+    pyxel().icon(&data, scale, colkey);
+}
+
+#[pyfunction]
+fn fullscreen(full: bool) {
+    pyxel().fullscreen(full);
+}
+
+#[pyfunction]
+fn screen_mode(scr: u32) {
+    pyxel().screen_mode(scr)
+}
+
 #[cfg(not(target_os = "emscripten"))]
 #[pyfunction]
 fn process_exists(pid: u32) -> bool {
@@ -115,14 +115,14 @@ fn process_exists(pid: u32) -> bool {
 
 pub fn add_system_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(init, m)?)?;
-    m.add_function(wrap_pyfunction!(title, m)?)?;
-    m.add_function(wrap_pyfunction!(icon, m)?)?;
-    m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
-    m.add_function(wrap_pyfunction!(scrtype, m)?)?;
     m.add_function(wrap_pyfunction!(run, m)?)?;
     m.add_function(wrap_pyfunction!(show, m)?)?;
     m.add_function(wrap_pyfunction!(flip, m)?)?;
     m.add_function(wrap_pyfunction!(quit, m)?)?;
+    m.add_function(wrap_pyfunction!(title, m)?)?;
+    m.add_function(wrap_pyfunction!(icon, m)?)?;
+    m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
+    m.add_function(wrap_pyfunction!(screen_mode, m)?)?;
     #[cfg(not(target_os = "emscripten"))]
     m.add_function(wrap_pyfunction!(process_exists, m)?)?;
     Ok(())
