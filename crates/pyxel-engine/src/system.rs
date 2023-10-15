@@ -27,7 +27,7 @@ pub struct System {
     pub screen_x: i32,
     pub screen_y: i32,
     pub screen_scale: u32,
-    pub screen_type: u32,
+    pub screen_mode: u32,
 }
 
 impl System {
@@ -44,7 +44,7 @@ impl System {
             screen_x: 0,
             screen_y: 0,
             screen_scale: 0,
-            screen_type: 0,
+            screen_mode: 0,
         }
     }
 }
@@ -150,8 +150,8 @@ impl Pyxel {
         pyxel_platform::set_fullscreen(full)
     }
 
-    pub fn scrtype(&mut self, screen_type: u32) {
-        self.system.screen_type = screen_type;
+    pub fn screen_mode(&mut self, screen_mode: u32) {
+        self.system.screen_mode = screen_mode;
     }
 
     fn process_events(&mut self) {
@@ -207,7 +207,7 @@ impl Pyxel {
                 self.screencast(None);
             }
             if self.btnp(KEY_9, None, None) {
-                self.system.screen_type = (self.system.screen_type + 1) % NUM_SCREEN_TYPES;
+                self.system.screen_mode = (self.system.screen_mode + 1) % NUM_SCREEN_TYPES;
             }
         }
         if self.btnp(self.system.quit_key, None, None) {
