@@ -5,8 +5,8 @@
 - Changed to use the C version of SDL2
 - Changed to allow resizing of the colors list
 - Changed to use GLSL for rendering the screen
-- Added the srcstyle function to change screen rendring type
-- Added a shortcut to change the screen type with Alt(Option)+9
+- Added the screen_mode function to change screen rendring type
+- Added a shortcut to change the screen mode with Alt(Option)+9
 - Added support for the third and fourth gamepads
 - Added the dither function to set dithering type
 - Added images, tilemaps as system lists
