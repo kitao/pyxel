@@ -25,10 +25,6 @@ impl Channel {
         self.pyxel_channel.lock().gain = gain;
     }
 
-    pub fn play_pos(&self) -> Option<(u32, u32)> {
-        self.pyxel_channel.lock().play_pos()
-    }
-
     #[pyo3(text_signature = "($self, snd, *, tick, loop)")]
     pub fn play(&self, snd: &PyAny, tick: Option<u32>, r#loop: Option<bool>) -> PyResult<()> {
         let loop_ = r#loop.unwrap_or(false);
@@ -55,6 +51,10 @@ impl Channel {
 
     pub fn stop(&mut self) {
         self.pyxel_channel.lock().stop();
+    }
+
+    pub fn play_pos(&self) -> Option<(u32, u32)> {
+        self.pyxel_channel.lock().play_pos()
     }
 }
 
