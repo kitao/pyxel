@@ -529,9 +529,6 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 - `music(msc)`<br>
   Reproduce la música `msc` (0-7). (Vea la clase Music)
 
-- `play_pos(ch)`<br>
-  Obtenga la posición de la reproducción de la música de un canal `ch` (0-3) como la tupla `(sound no, note no)`, no quiere decir número. Devuelve `None` cuando la música cesa.
-
 - `play(ch, snd, [tick], [loop])`<br>
   Reproduce el sonido `snd` (0-63) en el canal `ch` (0-3). Si el `snd` está en una lista, será reproducido en orden. La posición de inicio de la reproducción se puede especificar mediante un `tick` (1 tick = 1/120 segundos). Si `True` se especifica para `loop`, la reproducción se realizará en bucle.
 
@@ -540,6 +537,9 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 
 - `stop([ch])`<br>
   Para la reproducción del canal `ch` (0-3). `stop()` para detener todos los canales
+
+- `play_pos(ch)`<br>
+  Obtenga la posición de la reproducción de la música de un canal `ch` (0-3) como la tupla `(sound no, note no)`, no quiere decir número. Devuelve `None` cuando la música cesa.
 
 ### Matemáticas
 

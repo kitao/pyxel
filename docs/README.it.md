@@ -530,9 +530,6 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 - `music(msc)`<br>
   Opera la musica `msc`(0-7) (Vedere la classe Music)
 
-- `play_pos(ch)`<br>
-  Ottiene la posizione del suono in riproduzione del canale `ch` (0-3) come una tupla di `(sound no, note no)`. Ritorna `None` quando la riproduzione è interrotta.
-
 - `play(ch, snd, [tick], [loop])`<br>
   Riproduce il suono `snd` (0-63) sul canale `ch` (0-3). Se `snd` è una lista, verrà riprodotta in ordine. La posizione di inizio della riproduzione può essere specificata da `tick` (1 tick = 1/120 secondi). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
 
@@ -541,6 +538,9 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 
 - `stop([ch])`<br>
   Interrompe la riproduzione del canale `ch` (0-3) specificato. `stop()` per interrompere tutti i canali.
+
+- `play_pos(ch)`<br>
+  Ottiene la posizione del suono in riproduzione del canale `ch` (0-3) come una tupla di `(sound no, note no)`. Ritorna `None` quando la riproduzione è interrotta.
 
 ### Matematica
 
