@@ -100,13 +100,13 @@ For specific instructions, please refer to [this page](https://github.com/kitao/
 
 ### Try Pyxel Examples
 
-After installing Pyxel, the examples of Pyxel will be copied to the current directory with the following command:
+After installing Pyxel, you can copy some example projects to the current directory with the following command:
 
 ```sh
 pyxel copy_examples
 ```
 
-The examples to be copied are as follows:
+This will create a new directory `pyxel_examples/` with the following projects:
 
 <table>
 <tr>
@@ -225,7 +225,7 @@ pyxel play 30SecondsOfDaylight.pyxapp
 
 ### Create Pyxel Application
 
-After importing the Pyxel module in your python script, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
+After importing the Pyxel module in your python script, specify the window size with the `init` function first, then starts the Pyxel application with the `run` function.
 
 ```python
 import pyxel
@@ -509,12 +509,12 @@ Pyxel application file also can be converted to an executable or an HTML file wi
   Fill the area connected with the same color as (`x`, `y`) with color `col`.
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img` (0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img` (0-2) to (`x`, `y`). If a negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, that color will be treated as transparent. A resource file must first be loaded using the `load` function in order to copy from the image bank.
 
 <img src="docs/images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If a negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, that color will be treated as transparent. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`. A resource file must first be loaded using the `load` function in order to copy from the image bank.
 
 <img src="docs/images/bltm_figure.png">
 
