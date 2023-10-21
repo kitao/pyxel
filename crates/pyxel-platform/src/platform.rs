@@ -118,32 +118,15 @@ pub fn sleep(ms: u32) {
 }
 
 /*
-use std::env::var as envvar;
-use std::fs::{read_to_string, write};
-
 #[cfg(not(target_os = "emscripten"))]
 use chrono::Local;
 use sdl2::controller::{
     Axis as SdlAxis, Button as SdlButton, GameController as SdlGameControllerState,
 };
-use crate::settings::WATCH_INFO_FILE_ENVVAR;
-
-#[derive(Default, PartialEq)]
-struct WindowState {
-    x: i32,
-    y: i32,
-    width: u32,
-    height: u32,
-}
 
 pub struct Platform {
-    sdl_texture: SdlTexture,
     sdl_game_controller: Option<SdlGameController>,
     sdl_game_controller_states: Vec<SdlGameControllerState>,
-    mouse_x: i32,
-    mouse_y: i32,
-    watch_info_file: Option<String>,
-    window_state: WindowState,
     #[cfg(target_os = "emscripten")]
     virtual_gamepad_states: [bool; 8],
 }
@@ -159,49 +142,6 @@ impl Platform {
             .iter()
             .position(|gc| gc.instance_id() == game_controller_id)
             .unwrap() as u32
-    }
-
-    fn watch_info_file() -> Option<String> {
-        envvar(WATCH_INFO_FILE_ENVVAR).map_or(None, |watch_info_file| Some(watch_info_file))
-    }
-
-    fn load_watch_info(watch_info_file: &Option<String>) -> Option<WindowState> {
-        if watch_info_file.is_none() {
-            return None;
-        }
-        let watch_info_file = watch_info_file.as_ref().unwrap();
-        let watch_info = read_to_string(watch_info_file).unwrap();
-        let watch_info: Vec<&str> = watch_info.split(' ').collect();
-        if watch_info.len() == 4 {
-            Some(WindowState {
-                x: watch_info[0].parse().unwrap(),
-                y: watch_info[1].parse().unwrap(),
-                width: watch_info[2].parse().unwrap(),
-                height: watch_info[3].parse().unwrap(),
-            })
-        } else {
-            None
-        }
-    }
-
-    fn save_watch_info(&mut self) {
-        if self.watch_info_file.is_none() || self.is_fullscreen() {
-            return;
-        }
-        let (x, y) = self.sdl_canvas.window().position();
-        let (width, height) = self.sdl_canvas.window().size();
-        let window_state = WindowState {
-            x,
-            y,
-            width,
-            height,
-        };
-        if window_state == self.window_state {
-            return;
-        }
-        self.window_state = window_state;
-        let watch_info = format!("{x} {y} {width} {height}");
-        write(self.watch_info_file.as_ref().unwrap(), watch_info).unwrap();
     }
 }
 */
