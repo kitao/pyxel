@@ -9,6 +9,7 @@ use crate::profiler::Profiler;
 use crate::pyxel::Pyxel;
 use crate::settings::{MAX_ELAPSED_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
 use crate::utils;
+use crate::watch_info::WatchInfo;
 
 pub trait PyxelCallback {
     fn update(&mut self, pyxel: &mut Pyxel);
@@ -24,6 +25,7 @@ pub struct System {
     update_profiler: Profiler,
     draw_profiler: Profiler,
     perf_monitor_enabled: bool,
+    watch_info: WatchInfo,
     pub screen_x: i32,
     pub screen_y: i32,
     pub screen_scale: u32,
@@ -41,6 +43,7 @@ impl System {
             update_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             draw_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             perf_monitor_enabled: false,
+            watch_info: WatchInfo::new(),
             screen_x: 0,
             screen_y: 0,
             screen_scale: 0,
@@ -328,6 +331,7 @@ impl Pyxel {
         if let Some(callback) = callback {
             callback.draw(self);
         }
+        self.system.watch_info.update();
         self.draw_perf_monitor();
         self.draw_cursor();
         self.render_screen();
