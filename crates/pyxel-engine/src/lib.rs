@@ -55,7 +55,7 @@ pub use crate::channel::{Channel, Note, SharedChannel, Speed, Volume};
 pub use crate::graphics::SharedColors;
 pub use crate::image::{Color, Image, Rgb24, SharedImage};
 pub use crate::keys::*;
-pub use crate::music::{Music, SharedMusic, SharedSoundNums};
+pub use crate::music::{Music, SharedChain, SharedMusic};
 pub use crate::oscillator::{Effect, Tone};
 pub use crate::pyxel::{init, Pyxel};
 pub use crate::settings::*;
