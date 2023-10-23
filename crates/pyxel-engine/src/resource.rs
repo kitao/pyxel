@@ -9,7 +9,7 @@ use platform_dirs::UserDirs;
 use zip::write::FileOptions;
 use zip::{ZipArchive, ZipWriter};
 
-use crate::image::{Image, Rgb8};
+use crate::image::{Image, Rgb24};
 use crate::music::Music;
 use crate::pyxel::Pyxel;
 use crate::screencast::Screencast;
@@ -103,12 +103,12 @@ impl Pyxel {
         if let Ok(mut file) = File::open(Path::new(&filename)) {
             let mut contents = String::new();
             file.read_to_string(&mut contents).unwrap();
-            let colors: Vec<Rgb8> = contents
+            let colors: Vec<Rgb24> = contents
                 .replace("\r\n", "\n")
                 .replace('\r', "\n")
                 .split('\n')
                 .filter(|s| !s.is_empty())
-                .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb8)
+                .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
                 .collect();
             self.colors.lock().clear();
             self.colors.lock().extend(colors.iter());
