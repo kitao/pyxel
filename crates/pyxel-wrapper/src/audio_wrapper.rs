@@ -1,23 +1,29 @@
 use pyo3::prelude::*;
 
-use crate::channel_wrapper::{wrap_pyxel_channel, Channel};
-use crate::music_wrapper::{wrap_pyxel_music, Music};
+use crate::channel_wrapper::Channel;
+use crate::music_wrapper::Music;
 use crate::pyxel_singleton::pyxel;
-use crate::sound_wrapper::{wrap_pyxel_sound, Sound};
+use crate::sound_wrapper::Sound;
 
 #[pyfunction]
 fn channel(ch: u32) -> Channel {
-    wrap_pyxel_channel(pyxel().channels[ch as usize].clone())
+    Channel {
+        inner: pyxel().channels[ch as usize].clone(),
+    }
 }
 
 #[pyfunction]
 fn sound(snd: u32) -> Sound {
-    wrap_pyxel_sound(pyxel().sounds[snd as usize].clone())
+    Sound {
+        inner: pyxel().sounds[snd as usize].clone(),
+    }
 }
 
 #[pyfunction]
 fn music(msc: u32) -> Music {
-    wrap_pyxel_music(pyxel().musics[msc as usize].clone())
+    Music {
+        inner: pyxel().musics[msc as usize].clone(),
+    }
 }
 
 #[pyfunction]
@@ -32,10 +38,10 @@ fn play(ch: u32, snd: &PyAny, tick: Option<u32>, r#loop: Option<bool>) -> PyResu
             pyxel().play(ch, &snd, tick, r#loop.unwrap_or(false));
         },
         Sound, {
-            pyxel().channels[ch as usize].lock().play1(snd.pyxel_sound, tick, r#loop.unwrap_or(false));
+            pyxel().channels[ch as usize].lock().play1(snd.inner, tick, r#loop.unwrap_or(false));
         },
         Vec<Sound>, {
-            let sounds = snd.iter().map(|sound| sound.pyxel_sound.clone()).collect();
+            let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
             pyxel().channels[ch as usize].lock().play(sounds, tick, r#loop.unwrap_or(false));
         }
     }

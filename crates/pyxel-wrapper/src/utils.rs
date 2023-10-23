@@ -40,46 +40,80 @@ macro_rules! type_switch {
     };
 }
 
-macro_rules! impl_len_method_for_list {
-    ($self: ident) => {
-        Ok($self.list().len())
-    };
-}
-
-macro_rules! impl_getitem_method_for_list {
-    ($self: ident, $index: ident) => {
-        if $index < $self.list().len() as isize {
-            Ok($self.list()[$index as usize].clone())
-        } else {
-            Err(pyo3::exceptions::PyIndexError::new_err(
-                "list index out of range",
-            ))
+macro_rules! wrap_as_python_list {
+    ($wrapper_name:ident, $value_type:ty, $inner_type:ty, $len:expr, $get:expr, $set:expr, $insert:expr, $remove:expr) => {
+        #[pyclass]
+        #[derive(Clone)]
+        pub struct $wrapper_name {
+            inner: $inner_type,
         }
-    };
-}
 
-macro_rules! impl_setitem_method_for_list {
-    ($self: ident, $index: ident, $value: expr) => {
-        if $index < $self.list_mut().len() as isize {
-            $self.list_mut()[$index as usize] = $value;
-            Ok(())
-        } else {
-            Err(pyo3::exceptions::PyIndexError::new_err(
-                "list assignment index out of range",
-            ))
+        impl $wrapper_name {
+            fn len(&self) -> usize {
+                $len(&self.inner)
+            }
+
+            fn get(&self, index: usize) -> $value_type {
+                $get(&self.inner, index)
+            }
+
+            fn set(&mut self, index: usize, value: $value_type) {
+                $set(&self.inner, index, value);
+            }
+
+            fn insert(&mut self, index: usize, value: $value_type) {
+                $insert(&self.inner, index, value);
+            }
+
+            fn remove(&mut self, index: usize) {
+                $remove(&self.inner, index);
+            }
         }
-    };
-}
 
-macro_rules! impl_from_list_method_for_list {
-    ($self: ident, $list: ident) => {{
-        *$self.list_mut() = $list;
-        Ok(())
-    }};
-}
+        #[pymethods]
+        impl $wrapper_name {
+            fn __len__(&self) -> PyResult<usize> {
+                Ok(self.len())
+            }
 
-macro_rules! impl_to_list_method_for_list {
-    ($self: ident) => {
-        Ok($self.list().to_vec())
+            fn __getitem__(&self, idx: isize) -> PyResult<$value_type> {
+                if idx < self.len() as isize {
+                    Ok(self.get(idx as usize))
+                } else {
+                    Err(pyo3::exceptions::PyIndexError::new_err(
+                        "list index out of range",
+                    ))
+                }
+            }
+
+            fn __setitem__(&mut self, idx: isize, value: $value_type) -> PyResult<()> {
+                if idx < self.len() as isize {
+                    self.set(idx as usize, value);
+                    Ok(())
+                } else {
+                    Err(pyo3::exceptions::PyIndexError::new_err(
+                        "list assignment index out of range",
+                    ))
+                }
+            }
+
+            pub fn from_list(&mut self, lst: Vec<$value_type>) -> PyResult<()> {
+                while self.len() > 0 {
+                    self.remove(0);
+                }
+                for value in lst {
+                    self.insert(self.len(), value.clone());
+                }
+                Ok(())
+            }
+
+            pub fn to_list(&self) -> PyResult<Vec<$value_type>> {
+                let mut vec = Vec::with_capacity(self.len());
+                for i in 0..self.len() {
+                    vec.push(self.get(i));
+                }
+                Ok(vec)
+            }
+        }
     };
 }
