@@ -145,7 +145,7 @@ impl Tilemap {
         &mut self,
         x: f64,
         y: f64,
-        tilemap: shared_type!(Self),
+        tilemap: SharedTilemap,
         tilemap_x: f64,
         tilemap_y: f64,
         width: f64,

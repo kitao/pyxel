@@ -3,8 +3,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 use crate::audio::Audio;
 use crate::channel::{Channel, SharedChannel};
-use crate::graphics::{Graphics, COLORS, CURSOR_IMAGE, FONT_IMAGE};
-use crate::image::{Image, Rgb8, SharedImage};
+use crate::graphics::{Graphics, SharedColors, COLORS, CURSOR_IMAGE, FONT_IMAGE};
+use crate::image::{Image, SharedImage};
 use crate::input::Input;
 use crate::keys::Key;
 use crate::math::Math;
@@ -41,7 +41,7 @@ pub struct Pyxel {
 
     // Graphics
     pub(crate) graphics: Graphics,
-    pub colors: shared_type!(Vec<Rgb8>),
+    pub colors: SharedColors,
     pub images: Vec<SharedImage>,
     pub tilemaps: Vec<SharedTilemap>,
     pub screen: SharedImage,
