@@ -79,7 +79,7 @@ impl Pyxel {
     pub fn playm(&self, music_no: u32, start_tick: Option<u32>, should_loop: bool) {
         let music = self.musics[music_no as usize].lock();
         for i in 0..NUM_CHANNELS {
-            self.play(i, &music.sounds_list[i as usize], start_tick, should_loop);
+            self.play(i, &music.chains[i as usize].lock(), start_tick, should_loop);
         }
     }
 
