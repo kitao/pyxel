@@ -1,48 +1,27 @@
 use pyo3::prelude::*;
 
-wrap_as_python_list!(
-    Notes,
-    pyxel::Note,
-    pyxel::SharedSound,
-    (|inner: &pyxel::SharedSound| inner.lock().notes.len()),
-    (|inner: &pyxel::SharedSound, index| inner.lock().notes[index]),
-    (|inner: &pyxel::SharedSound, index, value| inner.lock().notes[index] = value),
-    (|inner: &pyxel::SharedSound, index, value| inner.lock().notes.insert(index, value)),
-    (|inner: &pyxel::SharedSound, index| inner.lock().notes.remove(index))
-);
+macro_rules! wrap_sound_as_python_list {
+    ($wrapper_name:ident, $value_type:ty, $field_name:ident) => {
+        wrap_as_python_list!(
+            $wrapper_name,
+            $value_type,
+            pyxel::SharedSound,
+            (|inner: &pyxel::SharedSound| inner.lock().$field_name.len()),
+            (|inner: &pyxel::SharedSound, index| inner.lock().$field_name[index]),
+            (|inner: &pyxel::SharedSound, index, value| inner.lock().$field_name[index] = value),
+            (|inner: &pyxel::SharedSound, index, value| inner
+                .lock()
+                .$field_name
+                .insert(index, value)),
+            (|inner: &pyxel::SharedSound, index| inner.lock().$field_name.remove(index))
+        );
+    };
+}
 
-wrap_as_python_list!(
-    Tones,
-    pyxel::Tone,
-    pyxel::SharedSound,
-    (|inner: &pyxel::SharedSound| inner.lock().tones.len()),
-    (|inner: &pyxel::SharedSound, index| inner.lock().tones[index]),
-    (|inner: &pyxel::SharedSound, index, value| inner.lock().tones[index] = value),
-    (|inner: &pyxel::SharedSound, index, value| inner.lock().tones.insert(index, value)),
-    (|inner: &pyxel::SharedSound, index| inner.lock().tones.remove(index))
-);
-
-wrap_as_python_list!(
-    Volumes,
-    pyxel::Volume,
-    pyxel::SharedSound,
-    (|inner: &pyxel::SharedSound| inner.lock().volumes.len()),
-    (|inner: &pyxel::SharedSound, index| inner.lock().volumes[index]),
-    (|inner: &pyxel::SharedSound, index, value| inner.lock().volumes[index] = value),
-    (|inner: &pyxel::SharedSound, index, value| inner.lock().volumes.insert(index, value)),
-    (|inner: &pyxel::SharedSound, index| inner.lock().volumes.remove(index))
-);
-
-wrap_as_python_list!(
-    Effects,
-    pyxel::Effect,
-    pyxel::SharedSound,
-    (|inner: &pyxel::SharedSound| inner.lock().effects.len()),
-    (|inner: &pyxel::SharedSound, index| inner.lock().effects[index]),
-    (|inner: &pyxel::SharedSound, index, value| inner.lock().effects[index] = value),
-    (|inner: &pyxel::SharedSound, index, value| inner.lock().effects.insert(index, value)),
-    (|inner: &pyxel::SharedSound, index| inner.lock().effects.remove(index))
-);
+wrap_sound_as_python_list!(Notes, pyxel::Note, notes);
+wrap_sound_as_python_list!(Tones, pyxel::Tone, tones);
+wrap_sound_as_python_list!(Volumes, pyxel::Volume, volumes);
+wrap_sound_as_python_list!(Effects, pyxel::Effect, effects);
 
 #[pyclass]
 #[derive(Clone)]
