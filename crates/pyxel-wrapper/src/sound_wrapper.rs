@@ -1,220 +1,126 @@
 use pyo3::prelude::*;
 
-macro_rules! define_private_methods_for_list {
-    ($type: ty, $elems: ident) => {
-        fn new(pyxel_sound: pyxel::SharedSound) -> Self {
-            Self { pyxel_sound }
-        }
+wrap_as_python_list!(
+    Notes,
+    pyxel::Note,
+    pyxel::SharedSound,
+    (|inner: &pyxel::SharedSound| inner.lock().notes.len()),
+    (|inner: &pyxel::SharedSound, index| inner.lock().notes[index]),
+    (|inner: &pyxel::SharedSound, index, value| inner.lock().notes[index] = value),
+    (|inner: &pyxel::SharedSound, index, value| inner.lock().notes.insert(index, value)),
+    (|inner: &pyxel::SharedSound, index| inner.lock().notes.remove(index))
+);
 
-        fn list(&self) -> &[$type] {
-            unsafe { &*(&self.pyxel_sound.lock().$elems as *const Vec<$type>) }
-        }
+wrap_as_python_list!(
+    Tones,
+    pyxel::Tone,
+    pyxel::SharedSound,
+    (|inner: &pyxel::SharedSound| inner.lock().tones.len()),
+    (|inner: &pyxel::SharedSound, index| inner.lock().tones[index]),
+    (|inner: &pyxel::SharedSound, index, value| inner.lock().tones[index] = value),
+    (|inner: &pyxel::SharedSound, index, value| inner.lock().tones.insert(index, value)),
+    (|inner: &pyxel::SharedSound, index| inner.lock().tones.remove(index))
+);
 
-        fn list_mut(&mut self) -> &mut Vec<$type> {
-            unsafe { &mut *(&mut self.pyxel_sound.lock().$elems as *mut Vec<$type>) }
-        }
-    };
-}
+wrap_as_python_list!(
+    Volumes,
+    pyxel::Volume,
+    pyxel::SharedSound,
+    (|inner: &pyxel::SharedSound| inner.lock().volumes.len()),
+    (|inner: &pyxel::SharedSound, index| inner.lock().volumes[index]),
+    (|inner: &pyxel::SharedSound, index, value| inner.lock().volumes[index] = value),
+    (|inner: &pyxel::SharedSound, index, value| inner.lock().volumes.insert(index, value)),
+    (|inner: &pyxel::SharedSound, index| inner.lock().volumes.remove(index))
+);
 
-#[pyclass]
-#[derive(Clone)]
-pub struct Notes {
-    pyxel_sound: pyxel::SharedSound,
-}
-
-impl Notes {
-    define_private_methods_for_list!(pyxel::Note, notes);
-}
-
-#[pymethods]
-impl Notes {
-    fn __len__(&self) -> PyResult<usize> {
-        impl_len_method_for_list!(self)
-    }
-
-    fn __getitem__(&self, index: isize) -> PyResult<pyxel::Note> {
-        impl_getitem_method_for_list!(self, index)
-    }
-
-    fn __setitem__(&mut self, index: isize, value: pyxel::Note) -> PyResult<()> {
-        impl_setitem_method_for_list!(self, index, value)
-    }
-
-    pub fn from_list(&mut self, lst: Vec<pyxel::Note>) -> PyResult<()> {
-        impl_from_list_method_for_list!(self, lst)
-    }
-
-    pub fn to_list(&self) -> PyResult<Vec<pyxel::Note>> {
-        impl_to_list_method_for_list!(self)
-    }
-}
-
-#[pyclass]
-#[derive(Clone)]
-pub struct Tones {
-    pyxel_sound: pyxel::SharedSound,
-}
-
-impl Tones {
-    define_private_methods_for_list!(pyxel::Tone, tones);
-}
-
-#[pymethods]
-impl Tones {
-    fn __len__(&self) -> PyResult<usize> {
-        impl_len_method_for_list!(self)
-    }
-
-    fn __getitem__(&self, index: isize) -> PyResult<pyxel::Tone> {
-        impl_getitem_method_for_list!(self, index)
-    }
-
-    fn __setitem__(&mut self, index: isize, value: pyxel::Tone) -> PyResult<()> {
-        impl_setitem_method_for_list!(self, index, value)
-    }
-
-    pub fn from_list(&mut self, lst: Vec<pyxel::Tone>) -> PyResult<()> {
-        impl_from_list_method_for_list!(self, lst)
-    }
-
-    pub fn to_list(&self) -> PyResult<Vec<pyxel::Tone>> {
-        impl_to_list_method_for_list!(self)
-    }
-}
-
-#[pyclass]
-#[derive(Clone)]
-pub struct Volumes {
-    pyxel_sound: pyxel::SharedSound,
-}
-
-impl Volumes {
-    define_private_methods_for_list!(pyxel::Volume, volumes);
-}
-
-#[pymethods]
-impl Volumes {
-    fn __len__(&self) -> PyResult<usize> {
-        impl_len_method_for_list!(self)
-    }
-
-    fn __getitem__(&self, index: isize) -> PyResult<pyxel::Volume> {
-        impl_getitem_method_for_list!(self, index)
-    }
-
-    fn __setitem__(&mut self, index: isize, value: pyxel::Volume) -> PyResult<()> {
-        impl_setitem_method_for_list!(self, index, value)
-    }
-
-    pub fn from_list(&mut self, lst: Vec<pyxel::Volume>) -> PyResult<()> {
-        impl_from_list_method_for_list!(self, lst)
-    }
-
-    pub fn to_list(&self) -> PyResult<Vec<pyxel::Volume>> {
-        impl_to_list_method_for_list!(self)
-    }
-}
-
-#[pyclass]
-#[derive(Clone)]
-pub struct Effects {
-    pyxel_sound: pyxel::SharedSound,
-}
-
-impl Effects {
-    define_private_methods_for_list!(pyxel::Effect, effects);
-}
-
-#[pymethods]
-impl Effects {
-    fn __len__(&self) -> PyResult<usize> {
-        impl_len_method_for_list!(self)
-    }
-
-    fn __getitem__(&self, index: isize) -> PyResult<pyxel::Effect> {
-        impl_getitem_method_for_list!(self, index)
-    }
-
-    fn __setitem__(&mut self, index: isize, value: pyxel::Effect) -> PyResult<()> {
-        impl_setitem_method_for_list!(self, index, value)
-    }
-
-    pub fn from_list(&mut self, lst: Vec<pyxel::Effect>) -> PyResult<()> {
-        impl_from_list_method_for_list!(self, lst)
-    }
-
-    pub fn to_list(&self) -> PyResult<Vec<pyxel::Effect>> {
-        impl_to_list_method_for_list!(self)
-    }
-}
+wrap_as_python_list!(
+    Effects,
+    pyxel::Effect,
+    pyxel::SharedSound,
+    (|inner: &pyxel::SharedSound| inner.lock().effects.len()),
+    (|inner: &pyxel::SharedSound, index| inner.lock().effects[index]),
+    (|inner: &pyxel::SharedSound, index, value| inner.lock().effects[index] = value),
+    (|inner: &pyxel::SharedSound, index, value| inner.lock().effects.insert(index, value)),
+    (|inner: &pyxel::SharedSound, index| inner.lock().effects.remove(index))
+);
 
 #[pyclass]
 #[derive(Clone)]
 pub struct Sound {
-    pub pyxel_sound: pyxel::SharedSound,
+    pub(crate) inner: pyxel::SharedSound,
 }
 
-pub const fn wrap_pyxel_sound(pyxel_sound: pyxel::SharedSound) -> Sound {
-    Sound { pyxel_sound }
+impl Sound {
+    pub fn from(inner: pyxel::SharedSound) -> Self {
+        Self { inner }
+    }
 }
 
 #[pymethods]
 impl Sound {
     #[new]
     pub fn new() -> Self {
-        wrap_pyxel_sound(pyxel::Sound::new())
+        Self {
+            inner: pyxel::Sound::new(),
+        }
     }
 
     #[getter]
     pub fn notes(&self) -> Notes {
-        Notes::new(self.pyxel_sound.clone())
+        Notes {
+            inner: self.inner.clone(),
+        }
     }
 
     #[getter]
     pub fn tones(&self) -> Tones {
-        Tones::new(self.pyxel_sound.clone())
+        Tones {
+            inner: self.inner.clone(),
+        }
     }
 
     #[getter]
     pub fn volumes(&self) -> Volumes {
-        Volumes::new(self.pyxel_sound.clone())
+        Volumes {
+            inner: self.inner.clone(),
+        }
     }
 
     #[getter]
     pub fn effects(&self) -> Effects {
-        Effects::new(self.pyxel_sound.clone())
+        Effects {
+            inner: self.inner.clone(),
+        }
     }
 
     #[getter]
     pub fn get_speed(&self) -> pyxel::Speed {
-        self.pyxel_sound.lock().speed
+        self.inner.lock().speed
     }
 
     #[setter]
     pub fn set_speed(&self, speed: pyxel::Speed) {
-        self.pyxel_sound.lock().speed = speed;
+        self.inner.lock().speed = speed;
     }
 
     pub fn set(&self, notes: &str, tones: &str, volumes: &str, effects: &str, speed: pyxel::Speed) {
-        self.pyxel_sound
-            .lock()
-            .set(notes, tones, volumes, effects, speed);
+        self.inner.lock().set(notes, tones, volumes, effects, speed);
     }
 
     pub fn set_notes(&self, notes: &str) {
-        self.pyxel_sound.lock().set_notes(notes);
+        self.inner.lock().set_notes(notes);
     }
 
     pub fn set_tones(&self, tones: &str) {
-        self.pyxel_sound.lock().set_tones(tones);
+        self.inner.lock().set_tones(tones);
     }
 
     pub fn set_volumes(&self, volumes: &str) {
-        self.pyxel_sound.lock().set_volumes(volumes);
+        self.inner.lock().set_volumes(volumes);
     }
 
     pub fn set_effects(&self, effects: &str) {
-        self.pyxel_sound.lock().set_effects(effects);
+        self.inner.lock().set_effects(effects);
     }
 }
 
