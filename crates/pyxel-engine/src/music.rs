@@ -6,11 +6,11 @@ use crate::settings::NUM_CHANNELS;
 use crate::settings::RESOURCE_ARCHIVE_DIRNAME;
 use crate::utils::parse_hex_string;
 
-pub type SharedSoundNums = shared_type!(Vec<u32>);
+pub type SharedChain = shared_type!(Vec<u32>);
 
 #[derive(Clone)]
 pub struct Music {
-    pub sound_nums_list: Vec<SharedSoundNums>,
+    pub chains: Vec<SharedChain>,
 }
 
 pub type SharedMusic = shared_type!(Music);
@@ -18,17 +18,17 @@ pub type SharedMusic = shared_type!(Music);
 impl Music {
     pub fn new() -> SharedMusic {
         new_shared_type!(Self {
-            sound_nums_list: (0..NUM_CHANNELS)
-                .map(|_| new_shared_type!(vec![]))
+            chains: (0..NUM_CHANNELS)
+                .map(|_| new_shared_type!(Vec::new()))
                 .collect()
         })
     }
 
     pub fn set(&mut self, sounds0: &[u32], sounds1: &[u32], sounds2: &[u32], sounds3: &[u32]) {
-        self.sound_nums_list[0] = new_shared_type!(sounds0.to_vec());
-        self.sound_nums_list[1] = new_shared_type!(sounds1.to_vec());
-        self.sound_nums_list[2] = new_shared_type!(sounds2.to_vec());
-        self.sound_nums_list[3] = new_shared_type!(sounds3.to_vec());
+        self.chains[0] = new_shared_type!(sounds0.to_vec());
+        self.chains[1] = new_shared_type!(sounds1.to_vec());
+        self.chains[2] = new_shared_type!(sounds2.to_vec());
+        self.chains[3] = new_shared_type!(sounds3.to_vec());
     }
 }
 
@@ -38,18 +38,20 @@ impl ResourceItem for Music {
     }
 
     fn is_modified(&self) -> bool {
-        self.sound_nums_list
+        self.chains
             .iter()
             .any(|sound_nums| !sound_nums.lock().is_empty())
     }
 
     fn clear(&mut self) {
-        self.sound_nums_list = Default::default();
+        self.chains = (0..NUM_CHANNELS)
+            .map(|_| new_shared_type!(Vec::new()))
+            .collect();
     }
 
     fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
-        for sound_nums in &self.sound_nums_list {
+        for sound_nums in &self.chains {
             if sound_nums.lock().is_empty() {
                 output += "none";
             } else {
@@ -69,7 +71,7 @@ impl ResourceItem for Music {
                 continue;
             }
             string_loop!(j, value, line, 2, {
-                self.sound_nums_list[i]
+                self.chains[i]
                     .lock()
                     .push(parse_hex_string(&value).unwrap());
             });
@@ -85,7 +87,7 @@ mod tests {
     fn new() {
         let music = Music::new();
         for i in 0..NUM_CHANNELS {
-            assert_eq!(music.lock().sound_nums_list[i as usize].lock().len(), 0);
+            assert_eq!(music.lock().chains[i as usize].lock().len(), 0);
         }
     }
 
@@ -97,7 +99,7 @@ mod tests {
             .set(&[0, 1, 2], &[1, 2, 3], &[2, 3, 4], &[3, 4, 5]);
         for i in 0..NUM_CHANNELS {
             assert_eq!(
-                &*music.lock().sound_nums_list[i as usize].lock(),
+                &*music.lock().chains[i as usize].lock(),
                 &vec![i, i + 1, i + 2]
             );
         }
