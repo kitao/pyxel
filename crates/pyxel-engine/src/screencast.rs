@@ -5,25 +5,25 @@ use std::fs::File;
 use gif::{DisposalMethod, Encoder, Frame, Repeat};
 use indexmap::IndexMap;
 
-use crate::image::{Color, Rgb8};
+use crate::image::{Color, Rgb24};
 use crate::rect_area::RectArea;
 use crate::utils::add_file_extension;
 
-const TRANSPARENT: Rgb8 = 0xffffffff;
+const TRANSPARENT: Rgb24 = 0xffffffff;
 
 struct Screen {
     width: u32,
     height: u32,
     image: Vec<Color>,
-    colors: Vec<Rgb8>,
+    colors: Vec<Rgb24>,
     frame_count: u32,
 }
 
 impl Screen {
-    fn to_rgb_image(&self) -> Vec<Vec<Rgb8>> {
-        let mut rgb_image: Vec<Vec<Rgb8>> = Vec::new();
+    fn to_rgb_image(&self) -> Vec<Vec<Rgb24>> {
+        let mut rgb_image: Vec<Vec<Rgb24>> = Vec::new();
         for y in 0..self.height {
-            let mut rgb_line: Vec<Rgb8> = Vec::new();
+            let mut rgb_line: Vec<Rgb24> = Vec::new();
             for x in 0..self.width {
                 let rgb = self.colors[self.image[(self.width * y + x) as usize] as usize];
                 rgb_line.push(rgb);
@@ -73,7 +73,7 @@ impl Screencast {
         width: u32,
         height: u32,
         image: &[Color],
-        colors: &[Rgb8],
+        colors: &[Rgb24],
         frame_count: u32,
     ) {
         if self.screens.is_empty() {
@@ -175,10 +175,10 @@ impl Screencast {
 
     fn make_gif_buffer(
         rect: RectArea,
-        image: &[Vec<Rgb8>],
+        image: &[Vec<Rgb24>],
         scale: u32,
     ) -> (RectArea, Vec<u8>, Vec<u8>) {
-        let mut color_table = IndexMap::<Rgb8, u8>::new();
+        let mut color_table = IndexMap::<Rgb24, u8>::new();
         color_table.insert(TRANSPARENT, 0);
         let mut num_colors = 1;
         let mut buffer = Vec::new();
@@ -234,18 +234,18 @@ impl Screencast {
     }
 
     fn make_diff_image(
-        base_image: &mut [Vec<Rgb8>],
-        new_image: &[Vec<Rgb8>],
-    ) -> (RectArea, Vec<Vec<Rgb8>>) {
+        base_image: &mut [Vec<Rgb24>],
+        new_image: &[Vec<Rgb24>],
+    ) -> (RectArea, Vec<Vec<Rgb24>>) {
         let mut min_x = i16::MAX;
         let mut min_y = i16::MAX;
         let mut max_x = i16::MIN;
         let mut max_y = i16::MIN;
         let width = base_image[0].len();
         let height = base_image.len();
-        let mut diff_image: Vec<Vec<Rgb8>> = Vec::new();
+        let mut diff_image: Vec<Vec<Rgb24>> = Vec::new();
         for y in 0..height {
-            let mut diff_line: Vec<Rgb8> = Vec::new();
+            let mut diff_line: Vec<Rgb24> = Vec::new();
             for x in 0..width {
                 let rgb = new_image[y][x];
                 if rgb == base_image[y][x] {

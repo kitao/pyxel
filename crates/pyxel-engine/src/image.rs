@@ -3,8 +3,7 @@ use std::collections::HashMap;
 use std::fmt::Write as _;
 use std::path::Path;
 
-use image::imageops::{self, FilterType};
-use image::{Rgb, RgbImage};
+use image::{self, imageops};
 
 use crate::canvas::{Canvas, CopyArea, ToIndex};
 use crate::graphics::{COLORS, FONT_IMAGE};
@@ -18,7 +17,7 @@ use crate::settings::{
 use crate::tilemap::SharedTilemap;
 use crate::utils;
 
-pub type Rgb8 = u32;
+pub type Rgb24 = u32;
 pub type Color = u8;
 
 impl ToIndex for Color {
@@ -44,7 +43,7 @@ impl Image {
 
     pub fn from_image(filename: &str) -> SharedImage {
         let colors = COLORS.lock();
-        let image_file = ::image::open(Path::new(&filename))
+        let image_file = image::open(Path::new(&filename))
             .unwrap_or_else(|_| panic!("Unable to open file '{filename}'"))
             .to_rgb8();
         let (width, height) = image_file.dimensions();
@@ -145,17 +144,22 @@ impl Image {
         let colors = COLORS.lock();
         let width = self.width();
         let height = self.height();
-        let mut image = RgbImage::new(width, height);
+        let mut image = image::RgbImage::new(width, height);
         for y in 0..height {
             for x in 0..width {
                 let rgb = colors[self.canvas.read_data(x as usize, y as usize) as usize];
                 let r = ((rgb >> 16) & 0xff) as u8;
                 let g = ((rgb >> 8) & 0xff) as u8;
                 let b = (rgb & 0xff) as u8;
-                image.put_pixel(x, y, Rgb([r, g, b]));
+                image.put_pixel(x, y, image::Rgb([r, g, b]));
             }
         }
-        let image = imageops::resize(&image, width * scale, height * scale, FilterType::Nearest);
+        let image = imageops::resize(
+            &image,
+            width * scale,
+            height * scale,
+            imageops::FilterType::Nearest,
+        );
         let filename = utils::add_file_extension(filename, ".png");
         image
             .save(&filename)
@@ -256,7 +260,7 @@ impl Image {
         &mut self,
         x: f64,
         y: f64,
-        image: shared_type!(Self),
+        image: SharedImage,
         image_x: f64,
         image_y: f64,
         width: f64,

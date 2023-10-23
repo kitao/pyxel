@@ -5,7 +5,7 @@ use cfg_if::cfg_if;
 use glow::HasContext;
 use once_cell::sync::Lazy;
 
-use crate::image::{Color, Image, Rgb8, SharedImage};
+use crate::image::{Color, Image, Rgb24, SharedImage};
 use crate::pyxel::Pyxel;
 use crate::settings::{
     BACKGROUND_COLOR, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, DEFAULT_COLORS, FONT_DATA,
@@ -27,7 +27,9 @@ const SCREEN_FRAGS: [&str; NUM_SCREEN_TYPES as usize] = [
     include_str!("shaders/retro.frag"),
 ];
 
-pub(crate) static COLORS: Lazy<shared_type!(Vec<Rgb8>)> =
+pub type SharedColors = shared_type!(Vec<Rgb24>);
+
+pub(crate) static COLORS: Lazy<SharedColors> =
     Lazy::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));
 
 pub(crate) static CURSOR_IMAGE: Lazy<SharedImage> = Lazy::new(|| {

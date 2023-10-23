@@ -47,14 +47,15 @@ mod settings;
 mod sound;
 mod system;
 mod tilemap;
-mod window_watcher;
+mod watch_info;
 
 use pyxel_platform::keys;
 
 pub use crate::channel::{Channel, Note, SharedChannel, Speed, Volume};
-pub use crate::image::{Color, Image, Rgb8, SharedImage};
+pub use crate::graphics::SharedColors;
+pub use crate::image::{Color, Image, Rgb24, SharedImage};
 pub use crate::keys::*;
-pub use crate::music::{Music, SharedMusic};
+pub use crate::music::{Music, SharedMusic, SharedSoundNums};
 pub use crate::oscillator::{Effect, Tone};
 pub use crate::pyxel::{init, Pyxel};
 pub use crate::settings::*;

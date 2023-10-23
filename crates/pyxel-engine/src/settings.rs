@@ -1,5 +1,5 @@
 use crate::channel::{Note, Speed, Volume};
-use crate::image::{Color, Rgb8};
+use crate::image::{Color, Rgb24};
 use crate::keys::{Key, KEY_ESCAPE};
 use crate::oscillator::{Effect, Tone};
 
@@ -13,7 +13,7 @@ pub const DEFAULT_QUIT_KEY: Key = KEY_ESCAPE;
 pub const DEFAULT_CAPTURE_SCALE: u32 = 2;
 pub const DEFAULT_CAPTURE_SEC: u32 = 10;
 pub const DISPLAY_RATIO: f64 = 0.75;
-pub const BACKGROUND_COLOR: Rgb8 = 0x202224;
+pub const BACKGROUND_COLOR: Rgb24 = 0x202224;
 pub const MAX_ELAPSED_MS: u32 = 200;
 pub const NUM_MEASURE_FRAMES: u32 = 10;
 pub const ICON_SIZE: u32 = 16;
@@ -52,7 +52,7 @@ pub const IMAGE_SIZE: u32 = 256;
 pub const NUM_TILEMAPS: u32 = 8;
 pub const TILEMAP_SIZE: u32 = 256;
 pub const TILE_SIZE: u32 = 8;
-pub const DEFAULT_COLORS: [Rgb8; NUM_COLORS as usize] = [
+pub const DEFAULT_COLORS: [Rgb24; NUM_COLORS as usize] = [
     0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, 0xd4186c,
     0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0,
 ];
