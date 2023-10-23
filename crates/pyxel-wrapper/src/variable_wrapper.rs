@@ -1,48 +1,19 @@
-use std::cmp::min;
-use std::ptr;
-
 use pyo3::exceptions::PyAttributeError;
 use pyo3::prelude::*;
 
 use crate::image_wrapper::wrap_pyxel_image;
 use crate::pyxel_singleton::pyxel;
 
-#[pyclass]
-struct Colors;
-
-impl Colors {
-    fn list(&self) -> &[pyxel::Rgb8] {
-        unsafe { &*ptr::addr_of!(*pyxel().colors.lock()) }
-    }
-
-    fn list_mut(&mut self) -> &mut [pyxel::Rgb8] {
-        unsafe { &mut *ptr::addr_of_mut!(*pyxel().colors.lock()) }
-    }
-}
-
-#[pymethods]
-impl Colors {
-    fn __len__(&self) -> PyResult<usize> {
-        impl_len_method_for_list!(self)
-    }
-
-    fn __getitem__(&self, index: isize) -> PyResult<pyxel::Rgb8> {
-        impl_getitem_method_for_list!(self, index)
-    }
-
-    fn __setitem__(&mut self, index: isize, value: pyxel::Rgb8) -> PyResult<()> {
-        impl_setitem_method_for_list!(self, index, value)
-    }
-
-    pub fn from_list(&mut self, lst: Vec<pyxel::Rgb8>) {
-        let copy_size = min(self.list().len(), lst.len());
-        self.list_mut()[..copy_size].clone_from_slice(&lst[..copy_size]);
-    }
-
-    pub fn to_list(&self) -> PyResult<Vec<pyxel::Rgb8>> {
-        impl_to_list_method_for_list!(self)
-    }
-}
+wrap_as_python_list!(
+    Colors,
+    pyxel::Rgb24,
+    u32,
+    (|_| pyxel().colors.lock().len()),
+    (|_, index| pyxel().colors.lock()[index]),
+    (|_, index, value| pyxel().colors.lock()[index] = value),
+    (|_, index, value| pyxel().colors.lock().insert(index, value)),
+    (|_, index| pyxel().colors.lock().remove(index))
+);
 
 #[pyclass]
 struct Images;
@@ -66,7 +37,7 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "dropped_files" => pyxel().dropped_files.to_object(py),
 
         // Graphics
-        "colors" => Py::new(py, Colors)?.into_py(py),
+        "colors" => Py::new(py, Colors { inner: 0 })?.into_py(py),
         "images" => Py::new(py, Images)?.into_py(py),
         "tilemaps" => Py::new(py, Tilemaps)?.into_py(py),
         "screen" => wrap_pyxel_image(pyxel().screen.clone()).into_py(py),
