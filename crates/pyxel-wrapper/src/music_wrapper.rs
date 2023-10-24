@@ -1,30 +1,15 @@
 use pyo3::prelude::*;
+use pyo3::types::{PyList, PyTuple};
 
 wrap_as_python_list!(
-    Chain,
-    u32,
-    pyxel::SharedChain,
-    (|inner: &pyxel::SharedChain| inner.lock().len()),
-    (|inner: &pyxel::SharedChain, index| inner.lock()[index]),
-    (|inner: &pyxel::SharedChain, index, value| inner.lock()[index] = value),
-    (|inner: &pyxel::SharedChain, index, value| inner.lock().insert(index, value)),
-    (|inner: &pyxel::SharedChain, index| inner.lock().remove(index))
-);
-
-wrap_as_python_list!(
-    Chains,
-    Chain,
+    Seqs,
+    Vec<u32>,
     pyxel::SharedMusic,
-    (|inner: &pyxel::SharedMusic| inner.lock().chains.len()),
-    (|inner: &pyxel::SharedMusic, index: usize| Chain {
-        inner: inner.lock().chains[index].clone()
-    }),
-    (|inner: &pyxel::SharedMusic, index, value: Chain| inner.lock().chains[index] = value.inner),
-    (|inner: &pyxel::SharedMusic, index, value: Chain| inner
-        .lock()
-        .chains
-        .insert(index, value.inner)),
-    (|inner: &pyxel::SharedMusic, index| inner.lock().chains.remove(index))
+    (|inner: &pyxel::SharedMusic| inner.lock().seqs.len()),
+    (|inner: &pyxel::SharedMusic, index: usize| inner.lock().seqs[index].clone()),
+    (|inner: &pyxel::SharedMusic, index, value| inner.lock().seqs[index] = value),
+    (|inner: &pyxel::SharedMusic, index, value| inner.lock().seqs.insert(index, value)),
+    (|inner: &pyxel::SharedMusic, index| inner.lock().seqs.remove(index))
 );
 
 #[pyclass]
@@ -42,28 +27,27 @@ impl Music {
         }
     }
 
-    pub fn set(&self, chain0: Vec<u32>, chain1: Vec<u32>, chain2: Vec<u32>, chain3: Vec<u32>) {
-        self.inner.lock().set(&chain0, &chain1, &chain2, &chain3);
-    }
-
     #[getter]
-    pub fn chains(&self) -> Chains {
-        Chains {
+    pub fn seqs(&self) -> Seqs {
+        Seqs {
             inner: self.inner.clone(),
         }
     }
 
-    #[getter]
-    pub fn snds_list(&self) -> Chains {
-        Chains {
-            inner: self.inner.clone(),
+    #[pyo3(signature = (*seqs))]
+    pub fn set(&self, seqs: &PyTuple) {
+        let mut rust_seqs: Vec<Vec<u32>> = Vec::new();
+        for i in 0..seqs.len() {
+            let seq = seqs.get_item(i).unwrap().downcast::<PyList>().unwrap();
+            let rust_seq = seq.extract::<Vec<u32>>().unwrap();
+            rust_seqs.push(rust_seq);
         }
+        self.inner.lock().set(&rust_seqs);
     }
 }
 
 pub fn add_music_class(m: &PyModule) -> PyResult<()> {
-    m.add_class::<Chain>()?;
-    m.add_class::<Chains>()?;
+    m.add_class::<Seqs>()?;
     m.add_class::<Music>()?;
     Ok(())
 }
