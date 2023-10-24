@@ -32,28 +32,11 @@ pub fn init_window(title: &str, width: u32, height: u32) -> (*mut SDL_Window, *m
     (window, gl)
 
     /*
-    let watch_info_file = Self::watch_info_file();
-    let sdl_window = Self::load_watch_info(&watch_info_file).map_or_else(
-        || {
-            sdl_video
-                .position_centered()
-                .resizable()
-        },
-        |window_state| {
-            sdl_video
-                .window(title, window_state.width, window_state.height)
-                .position(window_state.x, window_state.y)
-                .resizable()
-                .build()
-                .unwrap()
-        },
-    );
     sdl_hint::set("SDL_MOUSE_FOCUS_CLICKTHROUGH", "1");
     Self::set_instance(Self {
         #[cfg(target_os = "emscripten")]
         virtual_gamepad_states: [false; 8],
     });
-    Self::instance().save_watch_info();
     */
 }
 
