@@ -62,15 +62,14 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
     let (title, width, height) = window_params(display_mode.w as u32, display_mode.h as u32);
     let (window, glow_context) = init_window(title, width, height);
     let controllers = Vec::new();
-    let audio_device_id = init_audio(0, 0, 0);
     unsafe {
         PLATFORM = transmute(Box::new(Platform {
             window,
             glow_context,
             controllers,
-            audio_device_id,
-            mouse_x: i32::MAX,
-            mouse_y: i32::MAX,
+            audio_device_id: 0,
+            mouse_x: i32::MIN,
+            mouse_y: i32::MIN,
         }));
     }
 }
