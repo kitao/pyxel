@@ -163,15 +163,15 @@ class App(Widget):
         self.help_message_var = "SAVE:CTRL+S"
 
     def __on_update(self):
-        if pyxel.drop_files:
-            drop_file = pyxel.drop_files[-1]
-            file_ext = os.path.splitext(drop_file)[1]
+        if pyxel.dropped_files:
+            dropped_file = pyxel.dropped_files[-1]
+            file_ext = os.path.splitext(dropped_file)[1]
             if file_ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
                 if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
                     self._editor.reset_history()
                     pyxel.load(
-                        pyxel._drop_file,
+                        dropped_file,
                         image=(self.editor_no_var == 0),
                         tilemap=(self.editor_no_var == 1),
                         sound=(self.editor_no_var == 2),
@@ -180,10 +180,10 @@ class App(Widget):
                 else:
                     for editor in self._editors:
                         editor.reset_history()
-                    pyxel.load(drop_file)
-                    self._set_title(drop_file)
+                    pyxel.load(dropped_file)
+                    self._set_title(dropped_file)
             else:
-                self._editor.trigger_event("drop", drop_file)
+                self._editor.trigger_event("drop", dropped_file)
 
         if pyxel.btn(pyxel.KEY_ALT):
             # Alt+Left: Switch editor
