@@ -31,15 +31,13 @@ class TestPyxel(unittest.TestCase):
         ]
         self.assertEqual(pyxel.colors.to_list(), default_colors)
 
-        modified_colors = default_colors[:]
-        modified_colors[0:4] = [0x111111, 0x222222, 0x333333, 0x444444]
-        pyxel.colors.from_list([0x111111, 0x222222, 0x333333, 0x444444])
-        self.assertEqual(pyxel.colors.to_list(), modified_colors)
+        reduced_colors = [0x111111, 0x222222, 0x333333, 0x444444]
+        pyxel.colors.from_list(reduced_colors)
+        self.assertEqual(pyxel.colors.to_list(), reduced_colors)
 
-        extended_colors = default_colors[:] + [0xFFFFFF]
-        pyxel.colors.from_list(extended_colors)
-        extended_colors.pop()
-        self.assertEqual(pyxel.colors.to_list(), extended_colors)
+        expanded_colors = default_colors[:] + [0xAAAAAA, 0xBBBBBB, 0xCCCCCC]
+        pyxel.colors.from_list(expanded_colors)
+        self.assertEqual(pyxel.colors.to_list(), expanded_colors)
 
         self.assertEqual(pyxel.colors[0], 0x000000)
         pyxel.colors[0] = 0x112233
