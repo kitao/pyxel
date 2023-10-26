@@ -4,15 +4,12 @@ use pyo3::types::{PyList, PyTuple};
 wrap_as_python_list!(
     Seq,
     u32,
-    (pyxel::SharedMusic, usize),
-    (|inner: &(pyxel::SharedMusic, usize)| inner.0.lock().seqs[inner.1].len()),
-    (|inner: &(pyxel::SharedMusic, usize), index: usize| inner.0.lock().seqs[inner.1][index]
-        .clone()),
-    (|inner: &(pyxel::SharedMusic, usize), index, value| inner.0.lock().seqs[inner.1][index] =
-        value),
-    (|inner: &(pyxel::SharedMusic, usize), index, value| inner.0.lock().seqs[inner.1]
-        .insert(index, value)),
-    (|inner: &(pyxel::SharedMusic, usize), index| inner.0.lock().seqs[inner.1].remove(index))
+    pyxel::SharedSeq,
+    (|inner: &pyxel::SharedSeq| inner.lock().len()),
+    (|inner: &pyxel::SharedSeq, index| inner.lock()[index]),
+    (|inner: &pyxel::SharedSeq, index, value| inner.lock()[index] = value),
+    (|inner: &pyxel::SharedSeq, index, value| inner.lock().insert(index, value)),
+    (|inner: &pyxel::SharedSeq, index| inner.lock().remove(index))
 );
 
 wrap_as_python_list!(
@@ -21,16 +18,10 @@ wrap_as_python_list!(
     pyxel::SharedMusic,
     (|inner: &pyxel::SharedMusic| inner.lock().seqs.len()),
     (|inner: &pyxel::SharedMusic, index: usize| Seq {
-        inner: (inner.clone(), index)
+        inner: inner.lock().seqs[index].clone()
     }),
-    (|inner: &pyxel::SharedMusic, index, value: Seq| {
-        let value = &value.inner.0.lock().seqs[value.inner.1];
-        inner.lock().seqs[index] = value.clone();
-    }),
-    (|inner: &pyxel::SharedMusic, index, value: Seq| {
-        let value = &value.inner.0.lock().seqs[value.inner.1];
-        inner.lock().seqs.insert(index, value.clone());
-    }),
+    (|inner: &pyxel::SharedMusic, index, value: Seq| inner.lock().seqs[index] = value.inner),
+    (|inner: &pyxel::SharedMusic, index, value: Seq| inner.lock().seqs.insert(index, value.inner)),
     (|inner: &pyxel::SharedMusic, index| inner.lock().seqs.remove(index))
 );
 
