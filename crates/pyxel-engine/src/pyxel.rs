@@ -24,7 +24,7 @@ use crate::tilemap::{SharedTilemap, Tilemap};
 
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
-pub(crate) static COLORS: Lazy<shared_type!(Vec<Rgb24>)> =
+pub static COLORS: Lazy<shared_type!(Vec<Rgb24>)> =
     Lazy::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));
 
 static IMAGES: Lazy<shared_type!(Vec<SharedImage>)> = Lazy::new(|| {
@@ -45,7 +45,7 @@ static CURSOR_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
     image
 });
 
-pub(crate) static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
+pub static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
     let width = FONT_WIDTH * NUM_FONT_ROWS;
     let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + NUM_FONT_ROWS - 1) / NUM_FONT_ROWS);
     let image = Image::new(width, height);
@@ -69,7 +69,7 @@ pub(crate) static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
     image
 });
 
-pub(crate) static CHANNELS: Lazy<shared_type!(Vec<SharedChannel>)> =
+pub static CHANNELS: Lazy<shared_type!(Vec<SharedChannel>)> =
     Lazy::new(|| new_shared_type!((0..NUM_CHANNELS).map(|_| Channel::new()).collect()));
 
 static SOUNDS: Lazy<shared_type!(Vec<SharedSound>)> =
@@ -125,9 +125,10 @@ pub fn init(
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,
 ) -> Pyxel {
-    if IS_INITIALIZED.swap(true, Ordering::Relaxed) {
-        panic!("Pyxel already initialized");
-    }
+    assert!(
+        !IS_INITIALIZED.swap(true, Ordering::Relaxed),
+        "Pyxel already initialized"
+    );
 
     // Default parameters
     let title = title.unwrap_or(DEFAULT_TITLE);
@@ -137,14 +138,15 @@ pub fn init(
     // Platform
     pyxel_platform::init(|display_width, display_height| {
         let display_scale = max(
-            if let Some(display_scale) = display_scale {
-                display_scale
-            } else {
-                (f64::min(
-                    display_width as f64 / width as f64,
-                    display_height as f64 / height as f64,
-                ) * DISPLAY_RATIO) as u32
-            },
+            display_scale.map_or_else(
+                || {
+                    (f64::min(
+                        display_width as f64 / width as f64,
+                        display_height as f64 / height as f64,
+                    ) * DISPLAY_RATIO) as u32
+                },
+                |display_scale| display_scale,
+            ),
             1,
         );
         (title, width * display_scale, height * display_scale)
