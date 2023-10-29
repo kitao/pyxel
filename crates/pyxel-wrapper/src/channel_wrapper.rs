@@ -9,6 +9,12 @@ pub struct Channel {
     pub(crate) inner: pyxel::SharedChannel,
 }
 
+impl Channel {
+    pub fn wrap(inner: pyxel::SharedChannel) -> Self {
+        Self { inner }
+    }
+}
+
 #[pymethods]
 impl Channel {
     #[getter]
@@ -27,11 +33,11 @@ impl Channel {
         type_switch! {
             snd,
             u32, {
-                let sound = pyxel().sounds[snd as usize].clone();
+                let sound = pyxel().sounds.lock()[snd as usize].clone();
                 self.inner.lock().play1(sound, tick, loop_);
             },
             Vec<u32>, {
-                let sounds = snd.iter().map(|snd| pyxel().sounds[*snd as usize].clone()).collect();
+                let sounds = snd.iter().map(|snd| pyxel().sounds.lock()[*snd as usize].clone()).collect();
                 self.inner.lock().play(sounds, tick, loop_);
             },
             Sound, {
