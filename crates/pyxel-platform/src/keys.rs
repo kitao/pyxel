@@ -268,7 +268,7 @@ pub const KEY_CALL: Key = SDLK_CALL;
 pub const KEY_ENDCALL: Key = SDLK_ENDCALL;
 
 pub const SPECIAL_KEY_START_INDEX: Key = 10000;
-pub const KEY_NONE: Key = SPECIAL_KEY_START_INDEX + 0;
+pub const KEY_NONE: Key = SPECIAL_KEY_START_INDEX;
 pub const KEY_SHIFT: Key = SPECIAL_KEY_START_INDEX + 1;
 pub const KEY_CTRL: Key = SPECIAL_KEY_START_INDEX + 2;
 pub const KEY_ALT: Key = SPECIAL_KEY_START_INDEX + 3;
@@ -276,7 +276,7 @@ pub const KEY_GUI: Key = SPECIAL_KEY_START_INDEX + 4;
 
 // Mouse
 pub const MOUSE_KEY_START_INDEX: Key = 11000;
-pub const MOUSE_POS_X: Key = MOUSE_KEY_START_INDEX + 0;
+pub const MOUSE_POS_X: Key = MOUSE_KEY_START_INDEX;
 pub const MOUSE_POS_Y: Key = MOUSE_KEY_START_INDEX + 1;
 pub const MOUSE_WHEEL_X: Key = MOUSE_KEY_START_INDEX + 2;
 pub const MOUSE_WHEEL_Y: Key = MOUSE_KEY_START_INDEX + 3;
@@ -324,13 +324,10 @@ macro_rules! define_gamepad_keys {
     };
 }
 
-define_gamepad_keys!(
-    GAMEPAD1,
-    GAMEPAD_KEY_START_INDEX + GAMEPAD_KEY_INDEX_INTERVAL * 0
-);
+define_gamepad_keys!(GAMEPAD1, GAMEPAD_KEY_START_INDEX);
 define_gamepad_keys!(
     GAMEPAD2,
-    GAMEPAD_KEY_START_INDEX + GAMEPAD_KEY_INDEX_INTERVAL * 1
+    GAMEPAD_KEY_START_INDEX + GAMEPAD_KEY_INDEX_INTERVAL
 );
 define_gamepad_keys!(
     GAMEPAD3,
