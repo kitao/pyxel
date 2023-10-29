@@ -39,9 +39,9 @@ fn download_sdl2(sdl2_dir: &str, out_dir: &str) {
     let tar_gz = File::open(&sdl2_archive_path).unwrap();
     let tar = flate2::read::GzDecoder::new(tar_gz);
     let mut archive = Archive::new(tar);
-    if let Err(_err) = archive.unpack(&out_dir) {
+    if let Err(_err) = archive.unpack(out_dir) {
         if Path::new(&sdl2_dir).exists() {
-            std::fs::remove_dir_all(&sdl2_dir).expect("Failed to remove SDL2 directory");
+            std::fs::remove_dir_all(sdl2_dir).expect("Failed to remove SDL2 directory");
         }
         panic!("Failed to extract SDL2 source code");
     }
