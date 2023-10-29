@@ -9,7 +9,7 @@ use crate::platform::platform;
 use crate::sdl2_sys::*;
 
 pub trait AudioCallback {
-    fn update(&mut self, stream: &mut [i16]);
+    fn update(&mut self, out: &mut [i16]);
 }
 
 extern "C" fn c_audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
@@ -19,19 +19,19 @@ extern "C" fn c_audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_in
     audio_callback.lock().update(stream);
 }
 
-pub fn init_audio(
-    freqency: u32,
-    channels: u8,
-    samples: u16,
+pub fn start_audio(
+    sample_rate: u32,
+    num_channels: u8,
+    num_samples: u16,
     audio_callback: Arc<Mutex<dyn AudioCallback>>,
-) -> SDL_AudioDeviceID {
+) {
     let userdata = Box::into_raw(Box::new(audio_callback)) as *mut _;
     let desired = SDL_AudioSpec {
-        freq: freqency as i32,
+        freq: sample_rate as i32,
         format: AUDIO_S16 as u16,
-        channels: channels,
+        channels: num_channels,
         silence: 0,
-        samples: samples,
+        samples: num_samples,
         padding: 0,
         size: 0,
         callback: Some(c_audio_callback),
@@ -48,7 +48,9 @@ pub fn init_audio(
         callback: None,
         userdata: null_mut(),
     };
-    unsafe { SDL_OpenAudioDevice(null_mut(), 0, &desired, &mut obtained, 0) }
+    platform().audio_device_id =
+        unsafe { SDL_OpenAudioDevice(null_mut(), 0, &desired, &mut obtained, 0) };
+    set_audio_enabled(true);
 }
 
 pub fn set_audio_enabled(enabled: bool) {

@@ -8,7 +8,7 @@ use crate::sound_wrapper::Sound;
 #[pyfunction]
 fn channel(ch: u32) -> Channel {
     Channel {
-        inner: pyxel().channels[ch as usize].clone(),
+        inner: pyxel().channels.lock()[ch as usize].clone(),
     }
 }
 
@@ -38,11 +38,11 @@ fn play(ch: u32, snd: &PyAny, tick: Option<u32>, r#loop: Option<bool>) -> PyResu
             pyxel().play(ch, &snd, tick, r#loop.unwrap_or(false));
         },
         Sound, {
-            pyxel().channels[ch as usize].lock().play1(snd.inner, tick, r#loop.unwrap_or(false));
+            pyxel().channels.lock()[ch as usize].lock().play1(snd.inner, tick, r#loop.unwrap_or(false));
         },
         Vec<Sound>, {
             let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
-            pyxel().channels[ch as usize].lock().play(sounds, tick, r#loop.unwrap_or(false));
+            pyxel().channels.lock()[ch as usize].lock().play(sounds, tick, r#loop.unwrap_or(false));
         }
     }
     Ok(())
