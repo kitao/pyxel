@@ -40,6 +40,7 @@ pub fn init_window(title: &str, width: u32, height: u32) -> (*mut SDL_Window, *m
     */
 }
 
+#[allow(clippy::missing_safety_doc)]
 pub unsafe fn glow_context() -> &'static mut GlowContext {
     &mut *platform().glow_context
 }

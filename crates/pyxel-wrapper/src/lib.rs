@@ -9,6 +9,7 @@
     clippy::must_use_candidate,
     clippy::needless_pass_by_value,
     clippy::new_without_default,
+    clippy::redundant_closure_call,
     clippy::redundant_pub_crate,
     clippy::too_many_arguments,
     clippy::too_many_lines,

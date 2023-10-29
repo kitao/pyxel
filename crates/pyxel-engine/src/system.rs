@@ -33,7 +33,7 @@ pub struct System {
 }
 
 impl System {
-    pub fn new(fps: u32, quit_key: Key) -> System {
+    pub fn new(fps: u32, quit_key: Key) -> Self {
         Self {
             one_frame_ms: 1000.0 / fps as f64,
             next_update_ms: 0.0,
@@ -150,7 +150,7 @@ impl Pyxel {
     }
 
     pub fn fullscreen(&self, full: bool) {
-        pyxel_platform::set_fullscreen(full)
+        pyxel_platform::set_fullscreen(full);
     }
 
     pub fn screen_mode(&mut self, screen_mode: u32) {

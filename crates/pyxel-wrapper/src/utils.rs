@@ -49,7 +49,7 @@ macro_rules! wrap_as_python_list {
         }
 
         impl $wrapper_name {
-            pub fn wrap(inner: $inner_type) -> Self {
+            pub const fn wrap(inner: $inner_type) -> Self {
                 Self { inner }
             }
 

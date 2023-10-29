@@ -21,7 +21,6 @@ pub struct Tilemap {
 }
 
 pub type SharedTilemap = shared_type!(Tilemap);
-pub type SharedTilemaps = shared_type!(Vec<SharedTilemap>);
 
 impl Tilemap {
     pub fn new(width: u32, height: u32, image: SharedImage) -> SharedTilemap {
