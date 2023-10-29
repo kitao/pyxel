@@ -6,8 +6,7 @@ use std::path::Path;
 use image::{self, imageops};
 
 use crate::canvas::{Canvas, CopyArea, ToIndex};
-use crate::graphics::{COLORS, FONT_IMAGE};
-use crate::pyxel::Pyxel;
+use crate::pyxel::{Pyxel, COLORS, FONT_IMAGE};
 use crate::rect_area::RectArea;
 use crate::resource::ResourceItem;
 use crate::settings::{
