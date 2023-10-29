@@ -103,7 +103,7 @@ fn fullscreen(full: bool) {
 
 #[pyfunction]
 fn screen_mode(scr: u32) {
-    pyxel().screen_mode(scr)
+    pyxel().screen_mode(scr);
 }
 
 #[cfg(not(target_os = "emscripten"))]

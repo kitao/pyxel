@@ -55,31 +55,37 @@ impl Graphics {
         for &screen_frag in &SCREEN_FRAGS {
             // Vertex shader
             let vertex_shader = gl.create_shader(glow::VERTEX_SHADER).unwrap();
-            gl.shader_source(vertex_shader, &format!("{}{}", GLSL_VERSION, COMMON_VERT));
+            gl.shader_source(vertex_shader, &format!("{GLSL_VERSION}{COMMON_VERT}"));
             gl.compile_shader(vertex_shader);
-            if !gl.get_shader_compile_status(vertex_shader) {
-                panic!("{}", gl.get_shader_info_log(vertex_shader));
-            }
+            assert!(
+                gl.get_shader_compile_status(vertex_shader),
+                "{}",
+                gl.get_shader_info_log(vertex_shader)
+            );
 
             // Fragment shader
             let fragment_shader = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
             gl.shader_source(
                 fragment_shader,
-                &format!("{}{}{}", GLSL_VERSION, COMMON_FRAG, screen_frag),
+                &format!("{GLSL_VERSION}{COMMON_FRAG}{screen_frag}"),
             );
             gl.compile_shader(fragment_shader);
-            if !gl.get_shader_compile_status(fragment_shader) {
-                panic!("{}", gl.get_shader_info_log(fragment_shader));
-            }
+            assert!(
+                gl.get_shader_compile_status(fragment_shader),
+                "{}",
+                gl.get_shader_info_log(fragment_shader)
+            );
 
             // Shader program
             let shader_program = gl.create_program().unwrap();
             gl.attach_shader(shader_program, vertex_shader);
             gl.attach_shader(shader_program, fragment_shader);
             gl.link_program(shader_program);
-            if !gl.get_program_link_status(shader_program) {
-                panic!("{}", gl.get_program_info_log(shader_program));
-            }
+            assert!(
+                gl.get_program_link_status(shader_program),
+                "{}",
+                gl.get_program_info_log(shader_program)
+            );
             gl.detach_shader(shader_program, vertex_shader);
             gl.delete_shader(vertex_shader);
             gl.detach_shader(shader_program, fragment_shader);
@@ -109,7 +115,7 @@ impl Graphics {
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(vertex_buffer));
             gl.buffer_data_u8_slice(
                 glow::ARRAY_BUFFER,
-                &vertices.align_to::<u8>().1,
+                vertices.align_to::<u8>().1,
                 glow::STATIC_DRAW,
             );
             let position = gl.get_attrib_location(shader_program, "position").unwrap();
@@ -352,7 +358,7 @@ impl Pyxel {
         if let Some(location) = uniform_locations.get("u_screenPos") {
             let (_, window_height) = pyxel_platform::window_size();
             gl.uniform_2_f32(
-                Some(&location),
+                Some(location),
                 self.system.screen_x as f32,
                 (window_height as i32
                     - self.system.screen_y
@@ -361,27 +367,27 @@ impl Pyxel {
         }
         if let Some(location) = uniform_locations.get("u_screenSize") {
             gl.uniform_2_f32(
-                Some(&location),
+                Some(location),
                 (self.width * self.system.screen_scale) as f32,
                 (self.height * self.system.screen_scale) as f32,
             );
         }
         if let Some(location) = uniform_locations.get("u_screenScale") {
-            gl.uniform_1_f32(Some(&location), self.system.screen_scale as f32);
+            gl.uniform_1_f32(Some(location), self.system.screen_scale as f32);
         }
         if let Some(location) = uniform_locations.get("u_backgroundColor") {
             gl.uniform_3_f32(
-                Some(&location),
+                Some(location),
                 ((BACKGROUND_COLOR >> 16) & 0xff) as f32 / 255.0,
                 ((BACKGROUND_COLOR >> 8) & 0xff) as f32 / 255.0,
                 (BACKGROUND_COLOR & 0xff) as f32 / 255.0,
             );
         }
         if let Some(location) = uniform_locations.get("u_screenTexture") {
-            gl.uniform_1_i32(Some(&location), 0);
+            gl.uniform_1_i32(Some(location), 0);
         }
         if let Some(location) = uniform_locations.get("u_colorsTexture") {
-            gl.uniform_1_i32(Some(&location), 1);
+            gl.uniform_1_i32(Some(location), 1);
         }
         gl.bind_vertex_array(Some(shader.vertex_array));
     }
@@ -408,7 +414,7 @@ impl Pyxel {
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.colors_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
         let colors = self.colors.lock();
-        let pixels = std::slice::from_raw_parts(colors.as_ptr() as *const u8, colors.len() * 4);
+        let pixels = std::slice::from_raw_parts(colors.as_ptr().cast::<u8>(), colors.len() * 4);
         gl.tex_image_2d(
             glow::TEXTURE_2D,
             0,
