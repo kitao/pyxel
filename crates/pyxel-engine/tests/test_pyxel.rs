@@ -20,7 +20,7 @@ impl App {
         pyxel.mouse(true);
         pyxel.warp_mouse(10.0, 10.0);
 
-        pyxel.images[0].lock().set(
+        pyxel.images.lock()[0].lock().set(
             0,
             0,
             &[
@@ -29,35 +29,35 @@ impl App {
             ],
         );
 
-        pyxel.sounds[0].lock().set(
+        pyxel.sounds.lock()[0].lock().set(
             "e2e2c2g1 g1g1c2e2 d2d2d2g2 g2g2rr c2c2a1e1 e1e1a1c2 b1b1b1e2 e2e2rr",
             "p",
             "6",
             "vffn fnff vffs vfnn",
             25,
         );
-        pyxel.sounds[1].lock().set(
+        pyxel.sounds.lock()[1].lock().set(
             "r a1b1c2 b1b1c2d2 g2g2g2g2 c2c2d2e2 f2f2f2e2 f2e2d2c2 d2d2d2d2 g2g2r r ",
             "s",
             "6",
             "nnff vfff vvvv vfff svff vfff vvvv svnn",
             25,
         );
-        pyxel.sounds[2].lock().set(
+        pyxel.sounds.lock()[2].lock().set(
             "c1g1c1g1 c1g1c1g1 b0g1b0g1 b0g1b0g1 a0e1a0e1 a0e1a0e1 g0d1g0d1 g0d1g0d1",
             "t",
             "7",
             "n",
             25,
         );
-        pyxel.sounds[3].lock().set(
+        pyxel.sounds.lock()[3].lock().set(
             "f0c1f0c1 g0d1g0d1 c1g1c1g1 a0e1a0e1 f0c1f0c1 f0c1f0c1 g0d1g0d1 g0d1g0d1",
             "t",
             "7",
             "n",
             25,
         );
-        pyxel.sounds[4].lock().set(
+        pyxel.sounds.lock()[4].lock().set(
             "f0ra4r f0ra4r f0ra4r f0f0a4r",
             "n",
             "6622 6622 6622 6422",
