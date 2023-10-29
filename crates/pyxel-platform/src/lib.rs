@@ -6,7 +6,7 @@ mod platform;
 mod sdl2_sys;
 mod window;
 
-pub use crate::audio::set_audio_enabled;
+pub use crate::audio::{set_audio_enabled, start_audio, AudioCallback};
 pub use crate::event::{poll_events, Event};
 pub use crate::platform::{elapsed_time, init, quit, run, sleep};
 pub use crate::window::{

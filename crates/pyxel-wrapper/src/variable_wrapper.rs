@@ -44,6 +44,8 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "cursor" => wrap_pyxel_image(pyxel().cursor.clone()).into_py(py),
         "font" => wrap_pyxel_image(pyxel().font.clone()).into_py(py),
 
+        // Audio
+
         // Others
         _ => {
             return Err(PyAttributeError::new_err(format!(

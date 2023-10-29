@@ -1,8 +1,8 @@
 use std::cmp::max;
 use std::sync::atomic::{AtomicBool, Ordering};
 
-use crate::audio::Audio;
-use crate::channel::{Channel, SharedChannel};
+use crate::audio::{Audio, CHANNELS};
+use crate::channel::{Channel, SharedChannels};
 use crate::graphics::{Graphics, SharedColors, COLORS, CURSOR_IMAGE, FONT_IMAGE};
 use crate::image::{Image, SharedImage};
 use crate::input::Input;
@@ -50,7 +50,7 @@ pub struct Pyxel {
 
     // Audio
     pub(crate) audio: Audio,
-    pub channels: Vec<SharedChannel>,
+    pub channels: SharedChannels,
     pub sounds: Vec<SharedSound>,
     pub musics: Vec<SharedMusic>,
 
@@ -123,7 +123,7 @@ pub fn init(
 
     // Audio
     let audio = Audio::new();
-    let channels: Vec<_> = (0..NUM_CHANNELS).map(|_| Channel::new()).collect();
+    let channels = CHANNELS.clone();
     let sounds: Vec<_> = (0..NUM_SOUNDS).map(|_| Sound::new()).collect();
     let musics: Vec<_> = (0..NUM_MUSICS).map(|_| Music::new()).collect();
 

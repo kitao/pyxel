@@ -5,7 +5,6 @@ use std::ptr::null_mut;
 use cfg_if::cfg_if;
 use glow::Context as GlowContext;
 
-use crate::audio::init_audio;
 use crate::sdl2_sys::*;
 use crate::window::init_window;
 
