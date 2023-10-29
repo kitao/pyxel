@@ -30,7 +30,7 @@ pub struct Sound {
 }
 
 impl Sound {
-    pub fn from(inner: pyxel::SharedSound) -> Self {
+    pub fn wrap(inner: pyxel::SharedSound) -> Self {
         Self { inner }
     }
 }
@@ -39,37 +39,27 @@ impl Sound {
 impl Sound {
     #[new]
     pub fn new() -> Self {
-        Self {
-            inner: pyxel::Sound::new(),
-        }
+        Self::wrap(pyxel::Sound::new())
     }
 
     #[getter]
     pub fn notes(&self) -> Notes {
-        Notes {
-            inner: self.inner.clone(),
-        }
+        Notes::wrap(self.inner.clone())
     }
 
     #[getter]
     pub fn tones(&self) -> Tones {
-        Tones {
-            inner: self.inner.clone(),
-        }
+        Tones::wrap(self.inner.clone())
     }
 
     #[getter]
     pub fn volumes(&self) -> Volumes {
-        Volumes {
-            inner: self.inner.clone(),
-        }
+        Volumes::wrap(self.inner.clone())
     }
 
     #[getter]
     pub fn effects(&self) -> Effects {
-        Effects {
-            inner: self.inner.clone(),
-        }
+        Effects::wrap(self.inner.clone())
     }
 
     #[getter]

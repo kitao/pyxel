@@ -1,8 +1,8 @@
 use pyo3::prelude::*;
 
-use crate::image_wrapper::{wrap_pyxel_image, Image};
+use crate::image_wrapper::Image;
 use crate::pyxel_singleton::pyxel;
-use crate::tilemap_wrapper::{wrap_pyxel_tilemap, Tilemap};
+use crate::tilemap_wrapper::Tilemap;
 
 #[pyfunction]
 fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyResult<()> {
@@ -127,7 +127,7 @@ fn blt(
             pyxel().blt(x, y, img, u, v, w, h, colkey);
         },
         Image, {
-            pyxel().screen.lock().blt(x, y, img.pyxel_image, u, v, w, h, colkey);
+            pyxel().screen.lock().blt(x, y, img.inner, u, v, w, h, colkey);
         }
     }
     Ok(())
@@ -150,7 +150,7 @@ fn bltm(
             pyxel().bltm(x, y, tm, u, v, w, h, colkey);
         },
         Tilemap, {
-            pyxel().screen.lock().bltm(x, y, tm.pyxel_tilemap, u, v, w, h, colkey);
+            pyxel().screen.lock().bltm(x, y, tm.inner, u, v, w, h, colkey);
         }
     }
     Ok(())
@@ -163,12 +163,14 @@ fn text(x: f64, y: f64, s: &str, col: pyxel::Color) {
 
 #[pyfunction]
 fn image(img: u32) -> Image {
-    wrap_pyxel_image(pyxel().images[img as usize].clone())
+    Image {
+        inner: pyxel().images.lock()[img as usize].clone(),
+    }
 }
 
 #[pyfunction]
 fn tilemap(tm: u32) -> Tilemap {
-    wrap_pyxel_tilemap(pyxel().tilemaps[tm as usize].clone())
+    Tilemap::wrap(pyxel().tilemaps.lock()[tm as usize].clone())
 }
 
 pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
@@ -193,7 +195,7 @@ pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(bltm, m)?)?;
     m.add_function(wrap_pyfunction!(text, m)?)?;
 
-    // Duplicated functions
+    // Deprecated functions
     m.add_function(wrap_pyfunction!(image, m)?)?;
     m.add_function(wrap_pyfunction!(tilemap, m)?)?;
 
