@@ -71,11 +71,11 @@ impl Pyxel {
                     if let Ok(mut file) = archive.by_name(&<$type>::resource_name(i)) {
                         let mut input = String::new();
                         file.read_to_string(&mut input).unwrap();
-                        self.$list[i as usize]
+                        self.$list.lock()[i as usize]
                             .lock()
                             .deserialize(self, version, &input);
                     } else {
-                        self.$list[i as usize].lock().clear();
+                        self.$list.lock()[i as usize].lock().clear();
                     }
                 }
             };
@@ -130,11 +130,16 @@ impl Pyxel {
         macro_rules! serialize {
             ($type: ty, $list: ident, $count: expr) => {
                 for i in 0..$count {
-                    if self.$list[i as usize].lock().is_modified() {
+                    if self.$list.lock()[i as usize].lock().is_modified() {
                         zip.start_file(<$type>::resource_name(i), FileOptions::default())
                             .unwrap();
-                        zip.write_all(self.$list[i as usize].lock().serialize(self).as_bytes())
-                            .unwrap();
+                        zip.write_all(
+                            self.$list.lock()[i as usize]
+                                .lock()
+                                .serialize(self)
+                                .as_bytes(),
+                        )
+                        .unwrap();
                     }
                 }
             };

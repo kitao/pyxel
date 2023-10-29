@@ -1,16 +1,11 @@
-use once_cell::sync::Lazy;
-
 use crate::blip_buf::BlipBuf;
-use crate::channel::{Channel, SharedChannels};
-use crate::pyxel::Pyxel;
+use crate::pyxel::{Pyxel, CHANNELS};
 use crate::settings::{CLOCK_RATE, NUM_CHANNELS, NUM_CLOCKS_PER_TICK, NUM_SAMPLES, SAMPLE_RATE};
-
-pub(crate) static CHANNELS: Lazy<SharedChannels> =
-    Lazy::new(|| new_shared_type!((0..NUM_CHANNELS).map(|_| Channel::new()).collect()));
+use crate::SharedChannel;
 
 struct AudioCore {
     blip_buf: BlipBuf,
-    channels: SharedChannels,
+    channels: shared_type!(Vec<SharedChannel>),
 }
 
 impl pyxel_platform::AudioCallback for AudioCore {
@@ -29,13 +24,13 @@ impl pyxel_platform::AudioCallback for AudioCore {
 pub struct Audio {}
 
 impl Audio {
-    pub fn new() -> Self {
+    pub fn new(sample_rate: u32, num_samples: u32) -> Self {
         let mut blip_buf = BlipBuf::new(NUM_SAMPLES as usize);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
         pyxel_platform::start_audio(
-            SAMPLE_RATE,
+            sample_rate,
             1,
-            NUM_SAMPLES as u16,
+            num_samples as u16,
             new_shared_type!(AudioCore {
                 blip_buf,
                 channels: CHANNELS.clone()
@@ -58,7 +53,7 @@ impl Pyxel {
         }
         let sounds = sequence
             .iter()
-            .map(|sound_no| self.sounds[*sound_no as usize].clone())
+            .map(|sound_no| self.sounds.lock()[*sound_no as usize].clone())
             .collect();
         self.channels.lock()[channel_no as usize]
             .lock()
@@ -73,14 +68,15 @@ impl Pyxel {
         should_loop: bool,
     ) {
         self.channels.lock()[channel_no as usize].lock().play1(
-            self.sounds[sound_no as usize].clone(),
+            self.sounds.lock()[sound_no as usize].clone(),
             start_tick,
             should_loop,
         );
     }
 
     pub fn playm(&self, music_no: u32, start_tick: Option<u32>, should_loop: bool) {
-        let music = self.musics[music_no as usize].lock();
+        let musics = self.musics.lock();
+        let music = musics[music_no as usize].lock();
         for i in 0..NUM_CHANNELS {
             self.play(i, &music.seqs[i as usize].lock(), start_tick, should_loop);
         }
