@@ -7,23 +7,17 @@ use crate::sound_wrapper::Sound;
 
 #[pyfunction]
 fn channel(ch: u32) -> Channel {
-    Channel {
-        inner: pyxel().channels.lock()[ch as usize].clone(),
-    }
+    Channel::wrap(pyxel().channels.lock()[ch as usize].clone())
 }
 
 #[pyfunction]
 fn sound(snd: u32) -> Sound {
-    Sound {
-        inner: pyxel().sounds[snd as usize].clone(),
-    }
+    Sound::wrap(pyxel().sounds.lock()[snd as usize].clone())
 }
 
 #[pyfunction]
 fn music(msc: u32) -> Music {
-    Music {
-        inner: pyxel().musics[msc as usize].clone(),
-    }
+    Music::wrap(pyxel().musics.lock()[msc as usize].clone())
 }
 
 #[pyfunction]

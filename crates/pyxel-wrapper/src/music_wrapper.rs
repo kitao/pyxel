@@ -17,9 +17,7 @@ wrap_as_python_list!(
     Seq,
     pyxel::SharedMusic,
     (|inner: &pyxel::SharedMusic| inner.lock().seqs.len()),
-    (|inner: &pyxel::SharedMusic, index: usize| Seq {
-        inner: inner.lock().seqs[index].clone()
-    }),
+    (|inner: &pyxel::SharedMusic, index: usize| Seq::wrap(inner.lock().seqs[index].clone())),
     (|inner: &pyxel::SharedMusic, index, value: Seq| inner.lock().seqs[index] = value.inner),
     (|inner: &pyxel::SharedMusic, index, value: Seq| inner.lock().seqs.insert(index, value.inner)),
     (|inner: &pyxel::SharedMusic, index| inner.lock().seqs.remove(index))
@@ -31,20 +29,22 @@ pub struct Music {
     pub(crate) inner: pyxel::SharedMusic,
 }
 
+impl Music {
+    pub fn wrap(inner: pyxel::SharedMusic) -> Self {
+        Self { inner }
+    }
+}
+
 #[pymethods]
 impl Music {
     #[new]
     pub fn new() -> Self {
-        Self {
-            inner: pyxel::Music::new(),
-        }
+        Self::wrap(pyxel::Music::new())
     }
 
     #[getter]
     pub fn seqs(&self) -> Seqs {
-        Seqs {
-            inner: self.inner.clone(),
-        }
+        Seqs::wrap(self.inner.clone())
     }
 
     #[pyo3(signature = (*seqs))]

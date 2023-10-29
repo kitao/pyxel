@@ -49,6 +49,10 @@ macro_rules! wrap_as_python_list {
         }
 
         impl $wrapper_name {
+            pub fn wrap(inner: $inner_type) -> Self {
+                Self { inner }
+            }
+
             fn len(&self) -> usize {
                 $len(&self.inner)
             }

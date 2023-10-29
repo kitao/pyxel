@@ -1,8 +1,12 @@
 use pyo3::exceptions::PyAttributeError;
 use pyo3::prelude::*;
 
-use crate::image_wrapper::wrap_pyxel_image;
+use crate::channel_wrapper::Channel;
+use crate::image_wrapper::Image;
+use crate::music_wrapper::Music;
 use crate::pyxel_singleton::pyxel;
+use crate::sound_wrapper::Sound;
+use crate::tilemap_wrapper::Tilemap;
 
 wrap_as_python_list!(
     Colors,
@@ -15,11 +19,26 @@ wrap_as_python_list!(
     (|_, index| pyxel().colors.lock().remove(index))
 );
 
-#[pyclass]
-struct Images;
+macro_rules! wrap_shared_vec_as_python_list {
+    ($wrapper_name:ident, $value_type:ident, $field_name:ident) => {
+        wrap_as_python_list!(
+            $wrapper_name,
+            $value_type,
+            u32,
+            (|_| pyxel().$field_name.lock().len()),
+            (|_, index: usize| $value_type::wrap(pyxel().$field_name.lock()[index].clone())),
+            (|_, index, value: $value_type| pyxel().$field_name.lock()[index] = value.inner),
+            (|_, index, value: $value_type| pyxel().$field_name.lock().insert(index, value.inner)),
+            (|_, index| pyxel().$field_name.lock().remove(index))
+        );
+    };
+}
 
-#[pyclass]
-struct Tilemaps;
+wrap_shared_vec_as_python_list!(Images, Image, images);
+wrap_shared_vec_as_python_list!(Tilemaps, Tilemap, tilemaps);
+wrap_shared_vec_as_python_list!(Channels, Channel, channels);
+wrap_shared_vec_as_python_list!(Sounds, Sound, sounds);
+wrap_shared_vec_as_python_list!(Musics, Music, musics);
 
 #[pyfunction]
 fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
@@ -37,14 +56,17 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "dropped_files" => pyxel().dropped_files.to_object(py),
 
         // Graphics
-        "colors" => Py::new(py, Colors { inner: 0 })?.into_py(py),
-        "images" => Py::new(py, Images)?.into_py(py),
-        "tilemaps" => Py::new(py, Tilemaps)?.into_py(py),
-        "screen" => wrap_pyxel_image(pyxel().screen.clone()).into_py(py),
-        "cursor" => wrap_pyxel_image(pyxel().cursor.clone()).into_py(py),
-        "font" => wrap_pyxel_image(pyxel().font.clone()).into_py(py),
+        "colors" => Py::new(py, Colors::wrap(0))?.into_py(py),
+        "images" => Py::new(py, Images::wrap(0))?.into_py(py),
+        "tilemaps" => Py::new(py, Tilemaps::wrap(0))?.into_py(py),
+        "screen" => Image::wrap(pyxel().screen.clone()).into_py(py),
+        "cursor" => Image::wrap(pyxel().cursor.clone()).into_py(py),
+        "font" => Image::wrap(pyxel().font.clone()).into_py(py),
 
         // Audio
+        "channels" => Py::new(py, Channels::wrap(0))?.into_py(py),
+        "sounds" => Py::new(py, Sounds::wrap(0))?.into_py(py),
+        "musics" => Py::new(py, Musics::wrap(0))?.into_py(py),
 
         // Others
         _ => {
