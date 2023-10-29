@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use crate::keys::{Key, KeyValue, MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y};
 use crate::pyxel::Pyxel;
-use crate::system::System;
 use crate::utils::f64_to_i32;
 
 #[derive(PartialEq)]

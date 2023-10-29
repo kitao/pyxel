@@ -52,7 +52,6 @@ mod watch_info;
 use pyxel_platform::keys;
 
 pub use crate::channel::{Channel, Note, SharedChannel, Speed, Volume};
-pub use crate::graphics::SharedColors;
 pub use crate::image::{Color, Image, Rgb24, SharedImage};
 pub use crate::keys::*;
 pub use crate::music::{Music, SharedMusic, SharedSeq};
