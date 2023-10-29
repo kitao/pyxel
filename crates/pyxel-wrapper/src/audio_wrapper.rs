@@ -50,11 +50,14 @@ fn playm(msc: u32, tick: Option<u32>, r#loop: Option<bool>) {
 
 #[pyfunction]
 fn stop(ch: Option<u32>) {
-    if let Some(ch) = ch {
-        pyxel().stop(ch);
-    } else {
-        pyxel().stop0();
-    }
+    ch.map_or_else(
+        || {
+            pyxel().stop0();
+        },
+        |ch| {
+            pyxel().stop(ch);
+        },
+    );
 }
 
 #[pyfunction]
