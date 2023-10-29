@@ -1,25 +1,82 @@
 use std::cmp::max;
 use std::sync::atomic::{AtomicBool, Ordering};
 
-use crate::audio::{Audio, CHANNELS};
-use crate::channel::{Channel, SharedChannels};
-use crate::graphics::{Graphics, SharedColors, COLORS, CURSOR_IMAGE, FONT_IMAGE};
-use crate::image::{Image, SharedImage};
+use once_cell::sync::Lazy;
+
+use crate::audio::Audio;
+use crate::channel::{Channel, SharedChannel};
+use crate::graphics::Graphics;
+use crate::image::{Image, Rgb24, SharedImage};
 use crate::input::Input;
 use crate::keys::Key;
 use crate::math::Math;
 use crate::music::{Music, SharedMusic};
 use crate::resource::Resource;
 use crate::settings::{
-    DEFAULT_FPS, DEFAULT_QUIT_KEY, DEFAULT_TITLE, DISPLAY_RATIO, ICON_DATA, ICON_SCALE, IMAGE_SIZE,
-    NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS, TILEMAP_SIZE,
+    CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, DEFAULT_COLORS, DEFAULT_FPS, DEFAULT_QUIT_KEY,
+    DEFAULT_TITLE, DISPLAY_RATIO, FONT_DATA, FONT_HEIGHT, FONT_WIDTH, ICON_COLKEY, ICON_DATA,
+    ICON_SCALE, IMAGE_SIZE, NUM_CHANNELS, NUM_FONT_ROWS, NUM_IMAGES, NUM_MUSICS, NUM_SAMPLES,
+    NUM_SOUNDS, NUM_TILEMAPS, SAMPLE_RATE, TILEMAP_SIZE,
 };
 use crate::sound::{SharedSound, Sound};
 use crate::system::System;
 use crate::tilemap::{SharedTilemap, Tilemap};
-use crate::ICON_COLKEY;
 
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
+
+pub(crate) static COLORS: Lazy<shared_type!(Vec<Rgb24>)> =
+    Lazy::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));
+
+static IMAGES: Lazy<shared_type!(Vec<SharedImage>)> = Lazy::new(|| {
+    new_shared_type!((0..NUM_IMAGES)
+        .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
+        .collect())
+});
+
+static TILEMAPS: Lazy<shared_type!(Vec<SharedTilemap>)> = Lazy::new(|| {
+    new_shared_type!((0..NUM_TILEMAPS)
+        .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, IMAGES.lock()[0].clone()))
+        .collect())
+});
+
+static CURSOR_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
+    let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
+    image.lock().set(0, 0, &CURSOR_DATA);
+    image
+});
+
+pub(crate) static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
+    let width = FONT_WIDTH * NUM_FONT_ROWS;
+    let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + NUM_FONT_ROWS - 1) / NUM_FONT_ROWS);
+    let image = Image::new(width, height);
+    {
+        let mut image = image.lock();
+        for (fi, data) in FONT_DATA.iter().enumerate() {
+            let row = fi as u32 / NUM_FONT_ROWS;
+            let col = fi as u32 % NUM_FONT_ROWS;
+            let mut data = *data;
+            for yi in 0..FONT_HEIGHT {
+                for xi in 0..FONT_WIDTH {
+                    let x = FONT_WIDTH * col + xi;
+                    let y = FONT_HEIGHT * row + yi;
+                    let color = u8::from((data & 0x800000) != 0);
+                    image.canvas.write_data(x as usize, y as usize, color);
+                    data <<= 1;
+                }
+            }
+        }
+    }
+    image
+});
+
+pub(crate) static CHANNELS: Lazy<shared_type!(Vec<SharedChannel>)> =
+    Lazy::new(|| new_shared_type!((0..NUM_CHANNELS).map(|_| Channel::new()).collect()));
+
+static SOUNDS: Lazy<shared_type!(Vec<SharedSound>)> =
+    Lazy::new(|| new_shared_type!((0..NUM_SOUNDS).map(|_| Sound::new()).collect()));
+
+static MUSICS: Lazy<shared_type!(Vec<SharedMusic>)> =
+    Lazy::new(|| new_shared_type!((0..NUM_MUSICS).map(|_| Music::new()).collect()));
 
 pub struct Pyxel {
     // System
@@ -41,18 +98,18 @@ pub struct Pyxel {
 
     // Graphics
     pub(crate) graphics: Graphics,
-    pub colors: SharedColors,
-    pub images: Vec<SharedImage>,
-    pub tilemaps: Vec<SharedTilemap>,
+    pub colors: shared_type!(Vec<Rgb24>),
+    pub images: shared_type!(Vec<SharedImage>),
+    pub tilemaps: shared_type!(Vec<SharedTilemap>),
     pub screen: SharedImage,
     pub cursor: SharedImage,
     pub font: SharedImage,
 
     // Audio
-    pub(crate) audio: Audio,
-    pub channels: SharedChannels,
-    pub sounds: Vec<SharedSound>,
-    pub musics: Vec<SharedMusic>,
+    //pub(crate) audio: Audio,
+    pub channels: shared_type!(Vec<SharedChannel>),
+    pub sounds: shared_type!(Vec<SharedSound>),
+    pub musics: shared_type!(Vec<SharedMusic>),
 
     // Math
     pub(crate) math: Math,
@@ -111,21 +168,17 @@ pub fn init(
     // Graphics
     let graphics = Graphics::new();
     let colors = COLORS.clone();
-    let images: Vec<_> = (0..NUM_IMAGES)
-        .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
-        .collect();
-    let tilemaps: Vec<_> = (0..NUM_TILEMAPS)
-        .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, images[0].clone()))
-        .collect();
+    let images = IMAGES.clone();
+    let tilemaps = TILEMAPS.clone();
     let screen = Image::new(width, height);
     let cursor = CURSOR_IMAGE.clone();
     let font = FONT_IMAGE.clone();
 
     // Audio
-    let audio = Audio::new();
+    let _ = Audio::new(SAMPLE_RATE, NUM_SAMPLES);
     let channels = CHANNELS.clone();
-    let sounds: Vec<_> = (0..NUM_SOUNDS).map(|_| Sound::new()).collect();
-    let musics: Vec<_> = (0..NUM_MUSICS).map(|_| Music::new()).collect();
+    let sounds = SOUNDS.clone();
+    let musics = MUSICS.clone();
 
     // Math
     let math = Math::new();
@@ -149,7 +202,7 @@ pub fn init(
         screen,
         cursor,
         font,
-        audio,
+        //audio,
         channels,
         sounds,
         musics,

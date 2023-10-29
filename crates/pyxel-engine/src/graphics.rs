@@ -3,14 +3,10 @@ use std::mem::size_of;
 
 use cfg_if::cfg_if;
 use glow::HasContext;
-use once_cell::sync::Lazy;
 
-use crate::image::{Color, Image, Rgb24, SharedImage};
+use crate::image::{Color, SharedImage};
 use crate::pyxel::Pyxel;
-use crate::settings::{
-    BACKGROUND_COLOR, CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, DEFAULT_COLORS, FONT_DATA,
-    FONT_HEIGHT, FONT_WIDTH, NUM_FONT_ROWS, NUM_SCREEN_TYPES,
-};
+use crate::settings::{BACKGROUND_COLOR, NUM_SCREEN_TYPES};
 
 cfg_if! {
     if #[cfg(target_os = "emscripten")] {
@@ -26,41 +22,6 @@ const SCREEN_FRAGS: [&str; NUM_SCREEN_TYPES as usize] = [
     include_str!("shaders/smooth.frag"),
     include_str!("shaders/retro.frag"),
 ];
-
-pub type SharedColors = shared_type!(Vec<Rgb24>);
-
-pub(crate) static COLORS: Lazy<SharedColors> =
-    Lazy::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));
-
-pub(crate) static CURSOR_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
-    let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
-    image.lock().set(0, 0, &CURSOR_DATA);
-    image
-});
-
-pub(crate) static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
-    let width = FONT_WIDTH * NUM_FONT_ROWS;
-    let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + NUM_FONT_ROWS - 1) / NUM_FONT_ROWS);
-    let image = Image::new(width, height);
-    {
-        let mut image = image.lock();
-        for (fi, data) in FONT_DATA.iter().enumerate() {
-            let row = fi as u32 / NUM_FONT_ROWS;
-            let col = fi as u32 % NUM_FONT_ROWS;
-            let mut data = *data;
-            for yi in 0..FONT_HEIGHT {
-                for xi in 0..FONT_WIDTH {
-                    let x = FONT_WIDTH * col + xi;
-                    let y = FONT_HEIGHT * row + yi;
-                    let color = u8::from((data & 0x800000) != 0);
-                    image.canvas.write_data(x as usize, y as usize, color);
-                    data <<= 1;
-                }
-            }
-        }
-    }
-    image
-});
 
 pub struct ScreenShader {
     shader_program: glow::Program,
@@ -229,7 +190,7 @@ impl Graphics {
 
 impl Pyxel {
     pub fn image_no(&self, image: SharedImage) -> Option<u32> {
-        for (i, builtin_image) in self.images.iter().enumerate() {
+        for (i, builtin_image) in self.images.lock().iter().enumerate() {
             if builtin_image.data_ptr() == image.data_ptr() {
                 return Some(i as u32);
             }
@@ -331,7 +292,7 @@ impl Pyxel {
         self.screen.lock().blt(
             x,
             y,
-            self.images[image_no as usize].clone(),
+            self.images.lock()[image_no as usize].clone(),
             image_x,
             image_y,
             width,
@@ -354,7 +315,7 @@ impl Pyxel {
         self.screen.lock().bltm(
             x,
             y,
-            self.tilemaps[tilemap_no as usize].clone(),
+            self.tilemaps.lock()[tilemap_no as usize].clone(),
             tilemap_x,
             tilemap_y,
             width,
