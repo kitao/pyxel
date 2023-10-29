@@ -23,6 +23,7 @@ pub struct Channel {
 }
 
 pub type SharedChannel = shared_type!(Channel);
+pub type SharedChannels = shared_type!(Vec<SharedChannel>);
 
 impl Channel {
     pub fn new() -> SharedChannel {
