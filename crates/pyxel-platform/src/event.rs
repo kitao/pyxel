@@ -209,8 +209,10 @@ pub fn poll_events() -> Vec<Event> {
                 */
             }
             SDL_TEXTINPUT => {
-                let text = {
-                    str_from_utf8(unsafe { &*(&sdl_event.text.text as *const [i8] as *const [u8]) })
+                let text = unsafe {
+                    let ptr = (addr_of!(sdl_event.text.text) as *const [i8]).cast::<u8>();
+                    let slice = std::slice::from_raw_parts(ptr, sdl_event.text.text.len());
+                    str_from_utf8(slice)
                 };
                 if let Ok(text) = text {
                     let text = text.to_string();
