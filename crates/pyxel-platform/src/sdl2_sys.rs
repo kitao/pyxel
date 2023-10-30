@@ -2,9 +2,7 @@
     dead_code,
     non_camel_case_types,
     non_snake_case,
-    non_upper_case_globals
-)]
-#![allow(
+    non_upper_case_globals,
     clippy::approx_constant,
     clippy::default_trait_access,
     clippy::semicolon_if_nothing_returned,
