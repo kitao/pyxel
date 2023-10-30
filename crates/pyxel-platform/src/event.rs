@@ -1,5 +1,6 @@
 use std::ffi::CStr;
 use std::mem::zeroed;
+use std::ptr::{addr_of, addr_of_mut};
 use std::str::from_utf8 as str_from_utf8;
 
 #[cfg(target_os = "emscripten")]
@@ -23,7 +24,7 @@ pub enum Event {
 pub fn poll_events() -> Vec<Event> {
     let mut pyxel_events = Vec::new();
     let mut sdl_event: SDL_Event = unsafe { zeroed() };
-    while unsafe { SDL_PollEvent(&mut sdl_event as *mut _) } != 0 {
+    while unsafe { SDL_PollEvent(addr_of_mut!(sdl_event)) } != 0 {
         match unsafe { sdl_event.type_ } {
             SDL_WINDOWEVENT => match unsafe { sdl_event.window.event } as u32 {
                 SDL_WINDOWEVENT_SHOWN | SDL_WINDOWEVENT_MAXIMIZED | SDL_WINDOWEVENT_RESTORED => {
@@ -224,7 +225,7 @@ pub fn poll_events() -> Vec<Event> {
                 let filename = filename.to_string_lossy().into_owned();
                 pyxel_events.push(Event::FileDropped { filename });
                 unsafe {
-                    SDL_free(sdl_event.drop.file as *mut _);
+                    SDL_free(sdl_event.drop.file.cast());
                 }
             }
             SDL_QUIT => {

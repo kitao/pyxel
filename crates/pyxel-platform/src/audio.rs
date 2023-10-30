@@ -13,9 +13,9 @@ pub trait AudioCallback {
 }
 
 extern "C" fn c_audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_int) {
-    let audio_callback = unsafe { &*(userdata as *mut Arc<Mutex<dyn AudioCallback>>) };
+    let audio_callback = unsafe { &*userdata.cast::<Arc<Mutex<dyn AudioCallback>>>() };
     let stream: &mut [i16] =
-        unsafe { slice::from_raw_parts_mut(stream as *mut i16, len as usize / 2) };
+        unsafe { slice::from_raw_parts_mut(stream.cast::<i16>(), len as usize / 2) };
     audio_callback.lock().update(stream);
 }
 
@@ -25,7 +25,7 @@ pub fn start_audio(
     num_samples: u16,
     audio_callback: Arc<Mutex<dyn AudioCallback>>,
 ) {
-    let userdata = Box::into_raw(Box::new(audio_callback)) as *mut _;
+    let userdata = Box::into_raw(Box::new(audio_callback)).cast();
     let desired = SDL_AudioSpec {
         freq: sample_rate as i32,
         format: AUDIO_S16 as u16,
@@ -54,7 +54,7 @@ pub fn start_audio(
 }
 
 pub fn set_audio_enabled(enabled: bool) {
-    let pause_on = if enabled { 0 } else { 1 };
+    let pause_on = i32::from(!enabled);
     let audio_device_id = platform().audio_device_id;
     if audio_device_id != 0 {
         unsafe {
