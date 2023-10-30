@@ -104,7 +104,7 @@ impl Image {
                 let src_data = utils::simplify_string(data_str[y as usize]);
                 for x in 0..width {
                     let color =
-                        utils::parse_hex_string(&src_data[x as usize..x as usize + 1]).unwrap();
+                        utils::parse_hex_string(&src_data[x as usize..=x as usize]).unwrap();
                     image
                         .canvas
                         .write_data(x as usize, y as usize, color as Color);
