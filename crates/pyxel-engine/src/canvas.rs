@@ -230,14 +230,14 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let width = f64_to_u32(width);
         let height = f64_to_u32(height);
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
-        for xi in x..(x + width as i32 / 2) + 1 {
+        for xi in x..=(x + width as i32 / 2) {
             let (x1, y1, x2, y2) = Self::ellipse_area(cx, cy, ra, rb, xi);
             for yi in y1..=y2 {
                 self.write_data_with_clipping(x1, yi, value);
                 self.write_data_with_clipping(x2, yi, value);
             }
         }
-        for yi in y..(y + height as i32 / 2) + 1 {
+        for yi in y..=(y + height as i32 / 2) {
             let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
             for xi in x1..=x2 {
                 self.write_data_with_clipping(xi, y1, value);
@@ -252,14 +252,14 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let width = f64_to_u32(width);
         let height = f64_to_u32(height);
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
-        for xi in x..(x + width as i32 / 2) + 1 {
+        for xi in x..=(x + width as i32 / 2) {
             let (x1, y1, x2, y2) = Self::ellipse_area(cx, cy, ra, rb, xi);
             self.write_data_with_clipping(x1, y1, value);
             self.write_data_with_clipping(x2, y1, value);
             self.write_data_with_clipping(x1, y2, value);
             self.write_data_with_clipping(x2, y2, value);
         }
-        for yi in y..(y + height as i32 / 2) + 1 {
+        for yi in y..=(y + height as i32 / 2) {
             let (y1, x1, y2, x2) = Self::ellipse_area(cy, cx, rb, ra, yi);
             self.write_data_with_clipping(x1, y1, value);
             self.write_data_with_clipping(x2, y1, value);
