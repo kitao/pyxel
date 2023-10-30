@@ -1,5 +1,6 @@
 use std::ffi::CString;
 use std::mem::transmute;
+use std::ptr::addr_of_mut;
 
 use glow::Context as GlowContext;
 
@@ -19,14 +20,13 @@ pub fn init_window(title: &str, width: u32, height: u32) -> (*mut SDL_Window, *m
             height as i32,
             SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE,
         );
-        if window.is_null() {
-            panic!("Failed to create window");
-        }
-        if SDL_GL_CreateContext(window).is_null() {
-            panic!("Failed to create OpenGL context");
-        }
+        assert!(!window.is_null(), "Failed to create window");
+        assert!(
+            !SDL_GL_CreateContext(window).is_null(),
+            "Failed to create OpenGL context"
+        );
         gl = transmute(Box::new(GlowContext::from_loader_function(|s| {
-            SDL_GL_GetProcAddress(s.as_ptr() as *const _) as *const _
+            SDL_GL_GetProcAddress(s.as_ptr().cast()) as *const _
         })));
     }
     (window, gl)
@@ -67,7 +67,7 @@ pub fn set_window_icon(width: u32, height: u32, rgba_data: &[u8]) {
             32,
             SDL_PIXELFORMAT_RGBA32,
         );
-        let pixels = (*surface).pixels as *mut u8;
+        let pixels = (*surface).pixels.cast::<u8>();
         let pitch = (*surface).pitch as u32;
         for y in 0..height {
             let src_offset = (width * y * 4) as usize;
@@ -85,7 +85,7 @@ pub fn window_pos() -> (i32, i32) {
     let mut x: i32 = 0;
     let mut y: i32 = 0;
     unsafe {
-        SDL_GetWindowPosition(platform().window, &mut x as *mut i32, &mut y as *mut i32);
+        SDL_GetWindowPosition(platform().window, addr_of_mut!(x), addr_of_mut!(y));
     }
     (x, y)
 }
@@ -100,11 +100,7 @@ pub fn window_size() -> (u32, u32) {
     let mut width: i32 = 0;
     let mut height: i32 = 0;
     unsafe {
-        SDL_GetWindowSize(
-            platform().window,
-            &mut width as *mut i32,
-            &mut height as *mut i32,
-        );
+        SDL_GetWindowSize(platform().window, addr_of_mut!(width), addr_of_mut!(height));
     }
     (width as u32, height as u32)
 }
