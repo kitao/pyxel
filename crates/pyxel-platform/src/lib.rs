@@ -3,6 +3,7 @@
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
     clippy::cast_possible_wrap,
+    clippy::cast_ptr_alignment,
     clippy::cast_sign_loss,
     clippy::missing_panics_doc,
     clippy::module_name_repetitions,
