@@ -13,8 +13,7 @@ pub struct WatchInfo {
 
 impl WatchInfo {
     pub fn new() -> Self {
-        let watch_info_file =
-            var(WATCH_INFO_FILE_ENVVAR).map_or(None, |watch_info_file| Some(watch_info_file));
+        let watch_info_file = var(WATCH_INFO_FILE_ENVVAR).ok();
         if let Some(ref watch_info_file) = watch_info_file {
             let watch_info = read_to_string(watch_info_file).unwrap();
             let watch_info: Vec<&str> = watch_info.split(' ').collect();
