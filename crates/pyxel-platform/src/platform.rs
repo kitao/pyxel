@@ -1,6 +1,6 @@
 use std::mem::transmute;
 use std::process::exit;
-use std::ptr::null_mut;
+use std::ptr::{addr_of_mut, null_mut};
 
 use cfg_if::cfg_if;
 use glow::Context as GlowContext;
@@ -24,9 +24,10 @@ pub fn platform() -> &'static mut Platform {
 }
 
 pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
-    if unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) } < 0 {
-        panic!("Failed to initialize SDL2");
-    }
+    assert!(
+        unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) } >= 0,
+        "Failed to initialize SDL2"
+    );
     cfg_if! {
         if #[cfg(target_os = "emscripten")] {
             unsafe {
@@ -55,9 +56,10 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
         refresh_rate: 0,
         driverdata: null_mut(),
     };
-    if unsafe { SDL_GetCurrentDisplayMode(0, &mut display_mode as *mut SDL_DisplayMode) } != 0 {
-        panic!("Failed to get display size");
-    }
+    assert!(
+        unsafe { SDL_GetCurrentDisplayMode(0, addr_of_mut!(display_mode)) } == 0,
+        "Failed to get display size"
+    );
     let (title, width, height) = window_params(display_mode.w as u32, display_mode.h as u32);
     let (window, glow_context) = init_window(title, width, height);
     let controllers = Vec::new();

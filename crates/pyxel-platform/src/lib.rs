@@ -1,3 +1,17 @@
+#![warn(clippy::pedantic, clippy::cargo)]
+#![allow(
+    clippy::cast_lossless,
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss,
+    clippy::missing_panics_doc,
+    clippy::module_name_repetitions,
+    clippy::must_use_candidate,
+    clippy::too_many_lines,
+    clippy::unreadable_literal,
+    clippy::wildcard_imports
+)]
+
 mod audio;
 mod controller;
 mod event;
