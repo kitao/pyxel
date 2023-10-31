@@ -4,7 +4,7 @@ use std::mem::size_of;
 use cfg_if::cfg_if;
 use glow::HasContext;
 
-use crate::image::{Color, SharedImage};
+use crate::image::Color;
 use crate::pyxel::Pyxel;
 use crate::settings::{BACKGROUND_COLOR, NUM_SCREEN_TYPES};
 
@@ -279,7 +279,7 @@ impl Pyxel {
         &self,
         x: f64,
         y: f64,
-        image_no: u32,
+        image_index: u32,
         image_x: f64,
         image_y: f64,
         width: f64,
@@ -289,7 +289,7 @@ impl Pyxel {
         self.screen.lock().blt(
             x,
             y,
-            self.images.lock()[image_no as usize].clone(),
+            self.images.lock()[image_index as usize].clone(),
             image_x,
             image_y,
             width,
@@ -302,7 +302,7 @@ impl Pyxel {
         &self,
         x: f64,
         y: f64,
-        tilemap_no: u32,
+        tilemap_index: u32,
         tilemap_x: f64,
         tilemap_y: f64,
         width: f64,
@@ -312,7 +312,7 @@ impl Pyxel {
         self.screen.lock().bltm(
             x,
             y,
-            self.tilemaps.lock()[tilemap_no as usize].clone(),
+            self.tilemaps.lock()[tilemap_index as usize].clone(),
             tilemap_x,
             tilemap_y,
             width,
