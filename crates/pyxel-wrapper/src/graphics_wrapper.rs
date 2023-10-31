@@ -1,3 +1,5 @@
+use std::sync::Once;
+
 use pyo3::prelude::*;
 
 use crate::image_wrapper::Image;
@@ -161,8 +163,14 @@ fn text(x: f64, y: f64, s: &str, col: pyxel::Color) {
     pyxel().text(x, y, s, col);
 }
 
+static IMAGE_ONCE: Once = Once::new();
+static TILEMAP_ONCE: Once = Once::new();
+
 #[pyfunction]
 fn image(img: u32) -> Image {
+    IMAGE_ONCE.call_once(|| {
+        println!("WARNING: pyxel.image(img) is deprecated. Please use pyxel.images[img] instead.");
+    });
     Image {
         inner: pyxel().images.lock()[img as usize].clone(),
     }
@@ -170,6 +178,11 @@ fn image(img: u32) -> Image {
 
 #[pyfunction]
 fn tilemap(tm: u32) -> Tilemap {
+    TILEMAP_ONCE.call_once(|| {
+        println!(
+            "WARNING: pyxel.tilemap(tm) is deprecated. Please use pyxel.tilemaps[tm] instead."
+        );
+    });
     Tilemap::wrap(pyxel().tilemaps.lock()[tm as usize].clone())
 }
 
