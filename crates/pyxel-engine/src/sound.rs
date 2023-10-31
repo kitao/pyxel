@@ -2,7 +2,6 @@ use std::fmt::Write as _;
 
 use crate::channel::{Note, Speed, Volume};
 use crate::oscillator::{Effect, Tone};
-use crate::pyxel::Pyxel;
 use crate::resource::ResourceItem;
 use crate::settings::{
     EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED,
@@ -127,8 +126,8 @@ impl Sound {
 }
 
 impl ResourceItem for Sound {
-    fn resource_name(item_no: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{item_no:02}")
+    fn resource_name(item_index: u32) -> String {
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{item_index:02}")
     }
 
     fn is_modified(&self) -> bool {
@@ -146,7 +145,7 @@ impl ResourceItem for Sound {
         self.speed = INITIAL_SPEED;
     }
 
-    fn serialize(&self, _pyxel: &Pyxel) -> String {
+    fn serialize(&self) -> String {
         let mut output = String::new();
         if self.notes.is_empty() {
             output += "none\n";
@@ -181,7 +180,7 @@ impl ResourceItem for Sound {
         output
     }
 
-    fn deserialize(&mut self, _pyxel: &Pyxel, _version: u32, input: &str) {
+    fn deserialize(&mut self, _version: u32, input: &str) {
         self.clear();
         for (i, line) in input.lines().enumerate() {
             if line == "none" {

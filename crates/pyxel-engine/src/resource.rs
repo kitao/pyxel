@@ -22,11 +22,11 @@ use crate::tilemap::Tilemap;
 use crate::utils::parse_version_string;
 
 pub trait ResourceItem {
-    fn resource_name(item_no: u32) -> String;
+    fn resource_name(item_index: u32) -> String;
     fn is_modified(&self) -> bool;
     fn clear(&mut self);
-    fn serialize(&self, pyxel: &Pyxel) -> String;
-    fn deserialize(&mut self, pyxel: &Pyxel, version: u32, input: &str);
+    fn serialize(&self) -> String;
+    fn deserialize(&mut self, version: u32, input: &str);
 }
 
 pub struct Resource {
@@ -73,7 +73,7 @@ impl Pyxel {
                         file.read_to_string(&mut input).unwrap();
                         self.$list.lock()[i as usize]
                             .lock()
-                            .deserialize(self, version, &input);
+                            .deserialize(version, &input);
                     } else {
                         self.$list.lock()[i as usize].lock().clear();
                     }
@@ -133,13 +133,8 @@ impl Pyxel {
                     if self.$list.lock()[i as usize].lock().is_modified() {
                         zip.start_file(<$type>::resource_name(i), FileOptions::default())
                             .unwrap();
-                        zip.write_all(
-                            self.$list.lock()[i as usize]
-                                .lock()
-                                .serialize(self)
-                                .as_bytes(),
-                        )
-                        .unwrap();
+                        zip.write_all(self.$list.lock()[i as usize].lock().serialize().as_bytes())
+                            .unwrap();
                     }
                 }
             };

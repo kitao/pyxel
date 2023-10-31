@@ -1,6 +1,5 @@
 use std::fmt::Write as _;
 
-use crate::pyxel::Pyxel;
 use crate::resource::ResourceItem;
 use crate::settings::NUM_CHANNELS;
 use crate::settings::RESOURCE_ARCHIVE_DIRNAME;
@@ -33,8 +32,8 @@ impl Music {
 }
 
 impl ResourceItem for Music {
-    fn resource_name(item_no: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "music" + &item_no.to_string()
+    fn resource_name(item_index: u32) -> String {
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "music" + &item_index.to_string()
     }
 
     fn is_modified(&self) -> bool {
@@ -47,7 +46,7 @@ impl ResourceItem for Music {
             .collect();
     }
 
-    fn serialize(&self, _pyxel: &Pyxel) -> String {
+    fn serialize(&self) -> String {
         let mut output = String::new();
         for seq in &self.seqs {
             if seq.lock().is_empty() {
@@ -62,7 +61,7 @@ impl ResourceItem for Music {
         output
     }
 
-    fn deserialize(&mut self, _pyxel: &Pyxel, _version: u32, input: &str) {
+    fn deserialize(&mut self, _version: u32, input: &str) {
         self.clear();
         for (i, line) in input.lines().enumerate() {
             if line == "none" {
