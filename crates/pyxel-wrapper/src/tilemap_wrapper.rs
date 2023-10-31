@@ -42,16 +42,16 @@ impl Tilemap {
     }
 
     #[getter]
-    pub fn image(&self, py: Python) -> PyObject {
+    pub fn imgsrc(&self, py: Python) -> PyObject {
         let tilemap = self.inner.lock();
-        match &tilemap.image {
+        match &tilemap.imgsrc {
             pyxel::ImageSource::Index(index) => index.into_py(py),
             pyxel::ImageSource::Image(image) => Image::wrap(image.clone()).into_py(py),
         }
     }
 
     #[setter]
-    pub fn set_image(&self, img: &PyAny) -> PyResult<()> {
+    pub fn set_imgsrc(&self, img: &PyAny) -> PyResult<()> {
         let img = type_switch! {
             img,
             u32, {
@@ -61,7 +61,7 @@ impl Tilemap {
                 pyxel::ImageSource::Image(img.inner)
             }
         };
-        self.inner.lock().image = img;
+        self.inner.lock().imgsrc = img;
         Ok(())
     }
 

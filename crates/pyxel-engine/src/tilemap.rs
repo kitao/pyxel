@@ -31,16 +31,16 @@ impl fmt::Display for ImageSource {
 
 pub struct Tilemap {
     pub(crate) canvas: Canvas<Tile>,
-    pub image: ImageSource,
+    pub imgsrc: ImageSource,
 }
 
 pub type SharedTilemap = shared_type!(Tilemap);
 
 impl Tilemap {
-    pub fn new(width: u32, height: u32, image: ImageSource) -> SharedTilemap {
+    pub fn new(width: u32, height: u32, imgsrc: ImageSource) -> SharedTilemap {
         new_shared_type!(Self {
             canvas: Canvas::new(width, height),
-            image,
+            imgsrc,
         })
     }
 
@@ -59,7 +59,7 @@ impl Tilemap {
     pub fn set(&mut self, x: i32, y: i32, data_str: &[&str]) {
         let width = simplify_string(data_str[0]).len() as u32 / 4;
         let height = data_str.len() as u32;
-        let tilemap = Self::new(width, height, self.image.clone());
+        let tilemap = Self::new(width, height, self.imgsrc.clone());
         {
             let mut tilemap = tilemap.lock();
             for y in 0..height {
@@ -228,7 +228,7 @@ impl ResourceItem for Tilemap {
             }
             output += "\n";
         }
-        let _guard = write!(output, "{}", self.image);
+        let _guard = write!(output, "{}", self.imgsrc);
         output
     }
 
@@ -249,7 +249,7 @@ impl ResourceItem for Tilemap {
                     });
                 }
             } else {
-                self.image = ImageSource::Index(line.parse::<usize>().unwrap() as u32);
+                self.imgsrc = ImageSource::Index(line.parse::<usize>().unwrap() as u32);
             }
         }
     }
