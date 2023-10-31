@@ -32,7 +32,7 @@ impl fmt::Display for ImageSource {
 
 pub struct Tilemap {
     pub(crate) canvas: Canvas<Tile>,
-    pub refimg: ImageSource,
+    pub image: ImageSource,
 }
 
 pub type SharedTilemap = shared_type!(Tilemap);
