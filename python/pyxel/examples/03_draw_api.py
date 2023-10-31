@@ -5,9 +5,9 @@ class App:
     def __init__(self):
         pyxel.init(200, 150, title="Pyxel Draw API")
         pyxel.mouse(True)
-        pyxel.image(0).load(0, 0, "assets/cat_16x16.png")
-        pyxel.image(1).load(0, 0, "assets/tileset_24x32.png")
-        pyxel.tilemap(0).set(
+        pyxel.images[0].load(0, 0, "assets/cat_16x16.png")
+        pyxel.images[1].load(0, 0, "assets/tileset_24x32.png")
+        pyxel.tilemaps[0].set(
             0,
             0,
             [
@@ -15,7 +15,7 @@ class App:
                 "0202 0300 0001 0101 0201 0300 0000 0100 0200 0300 0003",
             ],
         )
-        pyxel.tilemap(0).imgsrc = 1
+        pyxel.tilemaps[0].imgsrc = 1
         self.pal_test_is_enabled = False
         self.clip_test_is_enabled = False
         pyxel.run(self.update, self.draw)

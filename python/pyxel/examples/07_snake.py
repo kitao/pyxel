@@ -220,10 +220,10 @@ def define_sound_and_music():
     """Define sound and music."""
 
     # Sound effects
-    pyxel.sound(0).set(
+    pyxel.sounds[0].set(
         notes="c3e3g3c4c4", tones="s", volumes="4", effects=("n" * 4 + "f"), speed=7
     )
-    pyxel.sound(1).set(
+    pyxel.sounds[1].set(
         notes="f3 b2 f2 b1  f1 f1 f1 f1",
         tones="p",
         volumes=("4" * 4 + "4321"),
@@ -254,7 +254,7 @@ def define_sound_and_music():
     )
 
     # Music
-    pyxel.sound(2).set(
+    pyxel.sounds[2].set(
         notes=melody1 * 2 + melody2 * 2,
         tones="s",
         volumes=("3"),
@@ -271,10 +271,10 @@ def define_sound_and_music():
         ("f1" * 8 + "g1" * 8 + "a1" * 8 + ("c2" * 7 + "d2")) * 3 + "f1" * 16 + "g1" * 16
     )
 
-    pyxel.sound(3).set(
+    pyxel.sounds[3].set(
         notes=harmony1 * 2 + harmony2 * 2, tones="t", volumes="5", effects="f", speed=20
     )
-    pyxel.sound(4).set(
+    pyxel.sounds[4].set(
         notes=("f0 r a4 r  f0 f0 a4 r" "f0 r a4 r   f0 f0 a4 f0"),
         tones="n",
         volumes="6622 6622 6622 6426",
@@ -282,7 +282,7 @@ def define_sound_and_music():
         speed=20,
     )
 
-    pyxel.music(0).set([], [2], [3], [4])
+    pyxel.musics[0].set([], [2], [3], [4])
 
 
 Snake()
