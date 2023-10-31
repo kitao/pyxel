@@ -1,24 +1,11 @@
+use std::sync::Once;
+
 use pyo3::prelude::*;
 
 use crate::channel_wrapper::Channel;
 use crate::music_wrapper::Music;
 use crate::pyxel_singleton::pyxel;
 use crate::sound_wrapper::Sound;
-
-#[pyfunction]
-fn channel(ch: u32) -> Channel {
-    Channel::wrap(pyxel().channels.lock()[ch as usize].clone())
-}
-
-#[pyfunction]
-fn sound(snd: u32) -> Sound {
-    Sound::wrap(pyxel().sounds.lock()[snd as usize].clone())
-}
-
-#[pyfunction]
-fn music(msc: u32) -> Music {
-    Music::wrap(pyxel().musics.lock()[msc as usize].clone())
-}
 
 #[pyfunction]
 #[pyo3(text_signature = "(ch, snd, *, tick, loop)")]
@@ -65,13 +52,46 @@ fn play_pos(ch: u32) -> Option<(u32, u32)> {
     pyxel().play_pos(ch)
 }
 
+static CHANNEL_ONCE: Once = Once::new();
+static SOUND_ONCE: Once = Once::new();
+static MUSIC_ONCE: Once = Once::new();
+
+#[pyfunction]
+fn channel(ch: u32) -> Channel {
+    CHANNEL_ONCE.call_once(|| {
+        println!(
+            "WARNING: pyxel.channel(ch) is deprecated. Please use pyxel.channels[ch] instead."
+        );
+    });
+    Channel::wrap(pyxel().channels.lock()[ch as usize].clone())
+}
+
+#[pyfunction]
+fn sound(snd: u32) -> Sound {
+    SOUND_ONCE.call_once(|| {
+        println!("WARNING: pyxel.sound(snd) is deprecated. Please use pyxel.sounds[snd] instead.");
+    });
+    Sound::wrap(pyxel().sounds.lock()[snd as usize].clone())
+}
+
+#[pyfunction]
+fn music(msc: u32) -> Music {
+    MUSIC_ONCE.call_once(|| {
+        println!("WARNING: pyxel.music(msc) is deprecated. Please use pyxel.musics[msc] instead.");
+    });
+    Music::wrap(pyxel().musics.lock()[msc as usize].clone())
+}
+
 pub fn add_audio_functions(m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(channel, m)?)?;
-    m.add_function(wrap_pyfunction!(sound, m)?)?;
-    m.add_function(wrap_pyfunction!(music, m)?)?;
     m.add_function(wrap_pyfunction!(play, m)?)?;
     m.add_function(wrap_pyfunction!(playm, m)?)?;
     m.add_function(wrap_pyfunction!(stop, m)?)?;
     m.add_function(wrap_pyfunction!(play_pos, m)?)?;
+
+    // Deprecated functions
+    m.add_function(wrap_pyfunction!(channel, m)?)?;
+    m.add_function(wrap_pyfunction!(sound, m)?)?;
+    m.add_function(wrap_pyfunction!(music, m)?)?;
+
     Ok(())
 }
