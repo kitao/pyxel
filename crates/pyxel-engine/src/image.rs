@@ -6,14 +6,14 @@ use std::path::Path;
 use image::{self, imageops};
 
 use crate::canvas::{Canvas, CopyArea, ToIndex};
-use crate::pyxel::{Pyxel, COLORS, FONT_IMAGE};
+use crate::pyxel::{Pyxel, COLORS, FONT_IMAGE, IMAGES};
 use crate::rect_area::RectArea;
 use crate::resource::ResourceItem;
 use crate::settings::{
     FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_COLORS, NUM_FONT_ROWS,
     RESOURCE_ARCHIVE_DIRNAME, TILE_SIZE,
 };
-use crate::tilemap::SharedTilemap;
+use crate::tilemap::{ImageSource, SharedTilemap};
 use crate::utils;
 
 pub type Rgb24 = u32;
@@ -358,7 +358,11 @@ impl Image {
             return;
         }
 
-        let image = tilemap.image.lock();
+        let images = IMAGES.lock();
+        let image = match &tilemap.image {
+            ImageSource::Index(index) => images[*index as usize].lock(),
+            ImageSource::Image(image) => image.lock(),
+        };
         for yi in 0..height {
             for xi in 0..width {
                 let tilemap_x = src_x + sign_x * xi + offset_x;

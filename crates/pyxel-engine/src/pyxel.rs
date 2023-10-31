@@ -20,14 +20,14 @@ use crate::settings::{
 };
 use crate::sound::{SharedSound, Sound};
 use crate::system::System;
-use crate::tilemap::{SharedTilemap, Tilemap};
+use crate::tilemap::{ImageSource, SharedTilemap, Tilemap};
 
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 pub static COLORS: Lazy<shared_type!(Vec<Rgb24>)> =
     Lazy::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));
 
-static IMAGES: Lazy<shared_type!(Vec<SharedImage>)> = Lazy::new(|| {
+pub static IMAGES: Lazy<shared_type!(Vec<SharedImage>)> = Lazy::new(|| {
     new_shared_type!((0..NUM_IMAGES)
         .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
         .collect())
@@ -35,7 +35,7 @@ static IMAGES: Lazy<shared_type!(Vec<SharedImage>)> = Lazy::new(|| {
 
 static TILEMAPS: Lazy<shared_type!(Vec<SharedTilemap>)> = Lazy::new(|| {
     new_shared_type!((0..NUM_TILEMAPS)
-        .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, IMAGES.lock()[0].clone()))
+        .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, ImageSource::Index(0)))
         .collect())
 });
 

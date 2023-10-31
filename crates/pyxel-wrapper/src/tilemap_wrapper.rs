@@ -22,10 +22,10 @@ impl Tilemap {
         let img = type_switch! {
             img,
             u32, {
-                pyxel().images.lock()[img as usize].clone()
+                pyxel::ImageSource::Index(img)
             },
             Image, {
-                img.inner
+                pyxel::ImageSource::Image(img.inner)
             }
         };
         Ok(Tilemap::wrap(pyxel::Tilemap::new(width, height, img)))
@@ -42,23 +42,27 @@ impl Tilemap {
     }
 
     #[getter]
-    pub fn image(&self) -> Image {
-        Image::wrap(self.inner.lock().image.clone())
+    pub fn image(&self, py: Python) -> PyObject {
+        let tilemap = self.inner.lock();
+        match &tilemap.image {
+            pyxel::ImageSource::Index(index) => index.into_py(py),
+            pyxel::ImageSource::Image(image) => Image::wrap(image.clone()).into_py(py),
+        }
     }
 
     #[setter]
-    pub fn set_image(&self, image: Image) {
-        self.inner.lock().image = image.inner;
-    }
-
-    #[getter]
-    pub fn refimg(&self) -> Option<u32> {
-        pyxel().image_no(self.inner.lock().image.clone())
-    }
-
-    #[setter]
-    pub fn set_refimg(&self, img: u32) {
-        self.inner.lock().image = pyxel().images.lock()[img as usize].clone();
+    pub fn set_image(&self, img: &PyAny) -> PyResult<()> {
+        let img = type_switch! {
+            img,
+            u32, {
+                pyxel::ImageSource::Index(img)
+            },
+            Image, {
+                pyxel::ImageSource::Image(img.inner)
+            }
+        };
+        self.inner.lock().image = img;
+        Ok(())
     }
 
     pub fn data_ptr(&self, py: Python) -> PyObject {

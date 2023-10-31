@@ -1,4 +1,4 @@
-use std::fmt::Write as _;
+use std::fmt::{self, Write as _};
 
 use crate::canvas::{Canvas, ToIndex};
 use crate::image::SharedImage;
@@ -15,15 +15,30 @@ impl ToIndex for Tile {
     }
 }
 
+#[derive(Clone)]
+pub enum ImageSource {
+    Index(u32),
+    Image(SharedImage),
+}
+
+impl fmt::Display for ImageSource {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ImageSource::Index(index) => write!(f, "{index}"),
+            ImageSource::Image(_) => write!(f, "0"),
+        }
+    }
+}
+
 pub struct Tilemap {
     pub(crate) canvas: Canvas<Tile>,
-    pub image: SharedImage,
+    pub refimg: ImageSource,
 }
 
 pub type SharedTilemap = shared_type!(Tilemap);
 
 impl Tilemap {
-    pub fn new(width: u32, height: u32, image: SharedImage) -> SharedTilemap {
+    pub fn new(width: u32, height: u32, image: ImageSource) -> SharedTilemap {
         new_shared_type!(Self {
             canvas: Canvas::new(width, height),
             image,
@@ -205,7 +220,7 @@ impl ResourceItem for Tilemap {
         self.cls((0, 0));
     }
 
-    fn serialize(&self, pyxel: &Pyxel) -> String {
+    fn serialize(&self, _pyxel: &Pyxel) -> String {
         let mut output = String::new();
         for y in 0..self.height() {
             for x in 0..self.width() {
@@ -214,15 +229,11 @@ impl ResourceItem for Tilemap {
             }
             output += "\n";
         }
-        let _guard = write!(
-            output,
-            "{}",
-            pyxel.image_no(self.image.clone()).unwrap_or(0)
-        );
+        let _guard = write!(output, "{}", self.image);
         output
     }
 
-    fn deserialize(&mut self, pyxel: &Pyxel, version: u32, input: &str) {
+    fn deserialize(&mut self, _pyxel: &Pyxel, version: u32, input: &str) {
         for (y, line) in input.lines().enumerate() {
             if y < TILEMAP_SIZE as usize {
                 if version < 10500 {
@@ -239,7 +250,7 @@ impl ResourceItem for Tilemap {
                     });
                 }
             } else {
-                self.image = pyxel.images.lock()[line.parse::<usize>().unwrap()].clone();
+                self.image = ImageSource::Index(line.parse::<usize>().unwrap() as u32);
             }
         }
     }
