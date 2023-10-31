@@ -195,15 +195,6 @@ impl Graphics {
 }
 
 impl Pyxel {
-    pub fn image_no(&self, image: SharedImage) -> Option<u32> {
-        for (i, builtin_image) in self.images.lock().iter().enumerate() {
-            if builtin_image.data_ptr() == image.data_ptr() {
-                return Some(i as u32);
-            }
-        }
-        None
-    }
-
     pub fn clip(&self, x: f64, y: f64, width: f64, height: f64) {
         self.screen.lock().clip(x, y, width, height);
     }
