@@ -2,7 +2,6 @@ use std::fmt::{self, Write as _};
 
 use crate::canvas::{Canvas, ToIndex};
 use crate::image::SharedImage;
-use crate::pyxel::Pyxel;
 use crate::resource::ResourceItem;
 use crate::settings::{RESOURCE_ARCHIVE_DIRNAME, TILEMAP_SIZE};
 use crate::utils::{f64_to_u32, parse_hex_string, simplify_string};
@@ -201,8 +200,8 @@ impl Tilemap {
 }
 
 impl ResourceItem for Tilemap {
-    fn resource_name(item_no: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "tilemap" + &item_no.to_string()
+    fn resource_name(item_index: u32) -> String {
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "tilemap" + &item_index.to_string()
     }
 
     fn is_modified(&self) -> bool {
@@ -220,7 +219,7 @@ impl ResourceItem for Tilemap {
         self.cls((0, 0));
     }
 
-    fn serialize(&self, _pyxel: &Pyxel) -> String {
+    fn serialize(&self) -> String {
         let mut output = String::new();
         for y in 0..self.height() {
             for x in 0..self.width() {
@@ -233,7 +232,7 @@ impl ResourceItem for Tilemap {
         output
     }
 
-    fn deserialize(&mut self, _pyxel: &Pyxel, version: u32, input: &str) {
+    fn deserialize(&mut self, version: u32, input: &str) {
         for (y, line) in input.lines().enumerate() {
             if y < TILEMAP_SIZE as usize {
                 if version < 10500 {

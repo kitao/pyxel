@@ -6,7 +6,7 @@ use std::path::Path;
 use image::{self, imageops};
 
 use crate::canvas::{Canvas, CopyArea, ToIndex};
-use crate::pyxel::{Pyxel, COLORS, FONT_IMAGE, IMAGES};
+use crate::pyxel::{COLORS, FONT_IMAGE, IMAGES};
 use crate::rect_area::RectArea;
 use crate::resource::ResourceItem;
 use crate::settings::{
@@ -433,8 +433,8 @@ impl Image {
 }
 
 impl ResourceItem for Image {
-    fn resource_name(item_no: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "image" + &item_no.to_string()
+    fn resource_name(item_index: u32) -> String {
+        RESOURCE_ARCHIVE_DIRNAME.to_string() + "image" + &item_index.to_string()
     }
 
     fn is_modified(&self) -> bool {
@@ -452,7 +452,7 @@ impl ResourceItem for Image {
         self.cls(0);
     }
 
-    fn serialize(&self, _pyxel: &Pyxel) -> String {
+    fn serialize(&self) -> String {
         let mut output = String::new();
         for y in 0..self.height() {
             for x in 0..self.width() {
@@ -467,7 +467,7 @@ impl ResourceItem for Image {
         output
     }
 
-    fn deserialize(&mut self, _pyxel: &Pyxel, _version: u32, input: &str) {
+    fn deserialize(&mut self, _version: u32, input: &str) {
         for (i, line) in input.lines().enumerate() {
             string_loop!(j, color, line, 1, {
                 self.canvas
