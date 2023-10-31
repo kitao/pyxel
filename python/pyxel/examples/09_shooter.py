@@ -59,10 +59,10 @@ def load_bgm(msc, filename, snd1, snd2, snd3):
 
     with open(filename, "rt") as file:
         bgm = json.loads(file.read())
-        pyxel.sound(snd1).set(*bgm[0])
-        pyxel.sound(snd2).set(*bgm[1])
-        pyxel.sound(snd3).set(*bgm[2])
-        pyxel.music(msc).set([snd1], [snd2], [snd3], [])
+        pyxel.sounds[snd1].set(*bgm[0])
+        pyxel.sounds[snd2].set(*bgm[1])
+        pyxel.sounds[snd3].set(*bgm[2])
+        pyxel.musics[msc].set([snd1], [snd2], [snd3], [])
 
 
 class Background:
@@ -186,7 +186,7 @@ class Blast:
 class App:
     def __init__(self):
         pyxel.init(120, 160, title="Pyxel Shooter")
-        pyxel.image(0).set(
+        pyxel.images[0].set(
             0,
             0,
             [
@@ -200,7 +200,7 @@ class App:
                 "0c0880c0",
             ],
         )
-        pyxel.image(0).set(
+        pyxel.images[0].set(
             8,
             0,
             [
@@ -214,8 +214,8 @@ class App:
                 "80008000",
             ],
         )
-        pyxel.sound(0).set("a3a2c1a1", "p", "7", "s", 5)
-        pyxel.sound(1).set("a3a2c2c2", "n", "7742", "s", 10)
+        pyxel.sounds[0].set("a3a2c1a1", "p", "7", "s", 5)
+        pyxel.sounds[1].set("a3a2c2c2", "n", "7742", "s", 10)
         load_bgm(0, "assets/bgm_title.json", 2, 3, 4)
         load_bgm(1, "assets/bgm_play.json", 5, 6, 7)
         self.scene = SCENE_TITLE

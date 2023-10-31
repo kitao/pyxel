@@ -14,7 +14,7 @@ enemies = []
 
 
 def get_tile(tile_x, tile_y):
-    return pyxel.tilemap(0).pget(tile_x, tile_y)
+    return pyxel.tilemaps[0].pget(tile_x, tile_y)
 
 
 def detect_collision(x, y, dy):
@@ -232,7 +232,7 @@ class App:
         pyxel.load("assets/platformer.pyxres")
 
         # Change enemy spawn tiles invisible
-        pyxel.image(0).rect(0, 8, 24, 8, TRANSPARENT_COLOR)
+        pyxel.images[0].rect(0, 8, 24, 8, TRANSPARENT_COLOR)
 
         global player
         player = Player(0, 0)
