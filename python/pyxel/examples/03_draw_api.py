@@ -15,7 +15,7 @@ class App:
                 "0202 0300 0001 0101 0201 0300 0000 0100 0200 0300 0003",
             ],
         )
-        pyxel.tilemap(0).image = pyxel.image(1)
+        pyxel.tilemap(0).imgsrc = 1
         self.pal_test_is_enabled = False
         self.clip_test_is_enabled = False
         pyxel.run(self.update, self.draw)

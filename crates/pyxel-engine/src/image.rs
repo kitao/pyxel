@@ -359,7 +359,7 @@ impl Image {
         }
 
         let images = IMAGES.lock();
-        let image = match &tilemap.image {
+        let image = match &tilemap.imgsrc {
             ImageSource::Index(index) => images[*index as usize].lock(),
             ImageSource::Image(image) => image.lock(),
         };
