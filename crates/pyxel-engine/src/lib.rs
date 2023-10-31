@@ -49,4 +49,4 @@ pub use crate::pyxel::{init, Pyxel};
 pub use crate::settings::*;
 pub use crate::sound::{SharedSound, Sound};
 pub use crate::system::PyxelCallback;
-pub use crate::tilemap::{SharedTilemap, Tile, Tilemap};
+pub use crate::tilemap::{ImageSource, SharedTilemap, Tile, Tilemap};
