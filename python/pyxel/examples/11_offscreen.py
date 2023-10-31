@@ -101,7 +101,7 @@ def make_bltm_figure():
     x = 116
     col = 7
     bcol = 0
-    text_with_border(figure, x + 1, y - 7, "Image Bank", col, bcol)
+    text_with_border(figure, x + 1, y - 7, "Image Bank (imgsrc)", col, bcol)
     figure.blt(x, y, image2, 0, 0, image2.width, image2.height)
 
     return figure

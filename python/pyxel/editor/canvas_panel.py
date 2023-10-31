@@ -139,7 +139,7 @@ class CanvasPanel(Widget):
             16,
         )
         if self._is_tilemap_mode:
-            self._edit_canvas.image = self.canvas_var.image
+            self._edit_canvas.imgsrc = self.canvas_var.imgsrc
 
     def _finish_edit_canvas(self):
         if not self._is_tilemap_mode:

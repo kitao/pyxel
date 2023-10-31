@@ -58,7 +58,7 @@ class TilemapViewer(Widget):
 
     def __on_update(self):
         tilemap = pyxel.tilemap(self.tilemap_no_var)
-        image = tilemap.image
+        image = pyxel.images[tilemap.imgsrc]
         start_y = pyxel.frame_count % 8 * 8
         for y in range(start_y, start_y + 8):
             for x in range(64):
