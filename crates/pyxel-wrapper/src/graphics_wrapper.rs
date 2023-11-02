@@ -5,6 +5,7 @@ use pyo3::prelude::*;
 use crate::image_wrapper::Image;
 use crate::pyxel_singleton::pyxel;
 use crate::tilemap_wrapper::Tilemap;
+use crate::utils::pyxel_warn;
 
 #[pyfunction]
 fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyResult<()> {
@@ -169,7 +170,7 @@ static TILEMAP_ONCE: Once = Once::new();
 #[pyfunction]
 fn image(img: u32) -> Image {
     IMAGE_ONCE.call_once(|| {
-        println!("WARNING: pyxel.image(img) is deprecated. Please use pyxel.images[img] instead.");
+        pyxel_warn("pyxel.image(img) is deprecated, use pyxel.images[img] instead.");
     });
     Image {
         inner: pyxel().images.lock()[img as usize].clone(),
@@ -179,9 +180,7 @@ fn image(img: u32) -> Image {
 #[pyfunction]
 fn tilemap(tm: u32) -> Tilemap {
     TILEMAP_ONCE.call_once(|| {
-        println!(
-            "WARNING: pyxel.tilemap(tm) is deprecated. Please use pyxel.tilemaps[tm] instead."
-        );
+        pyxel_warn("pyxel.tilemap(tm) is deprecated, use pyxel.tilemaps[tm] instead.");
     });
     Tilemap::wrap(pyxel().tilemaps.lock()[tm as usize].clone())
 }
