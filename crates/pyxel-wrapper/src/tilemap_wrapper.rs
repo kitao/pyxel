@@ -1,7 +1,15 @@
+use std::sync::Once;
+
 use pyo3::prelude::*;
 
 use crate::image_wrapper::Image;
 use crate::pyxel_singleton::pyxel;
+use crate::utils::pyxel_warn;
+
+static IMAGE_ONCE: Once = Once::new();
+static SET_IMAGE_ONCE: Once = Once::new();
+static REFIMG_ONCE: Once = Once::new();
+static SET_REFIMG_ONCE: Once = Once::new();
 
 #[pyclass]
 #[derive(Clone)]
@@ -19,7 +27,7 @@ impl Tilemap {
 impl Tilemap {
     #[new]
     pub fn new(width: u32, height: u32, img: &PyAny) -> PyResult<Self> {
-        let img = type_switch! {
+        let imgsrc = type_switch! {
             img,
             u32, {
                 pyxel::ImageSource::Index(img)
@@ -28,7 +36,7 @@ impl Tilemap {
                 pyxel::ImageSource::Image(img.inner)
             }
         };
-        Ok(Tilemap::wrap(pyxel::Tilemap::new(width, height, img)))
+        Ok(Tilemap::wrap(pyxel::Tilemap::new(width, height, imgsrc)))
     }
 
     #[getter]
@@ -52,7 +60,7 @@ impl Tilemap {
 
     #[setter]
     pub fn set_imgsrc(&self, img: &PyAny) -> PyResult<()> {
-        let img = type_switch! {
+        let imgsrc = type_switch! {
             img,
             u32, {
                 pyxel::ImageSource::Index(img)
@@ -61,7 +69,7 @@ impl Tilemap {
                 pyxel::ImageSource::Image(img.inner)
             }
         };
-        self.inner.lock().imgsrc = img;
+        self.inner.lock().imgsrc = imgsrc;
         Ok(())
     }
 
@@ -183,6 +191,49 @@ impl Tilemap {
             }
         }
         Ok(())
+    }
+
+    #[getter]
+    pub fn image(&self) -> Image {
+        IMAGE_ONCE.call_once(|| {
+            pyxel_warn("Tilemap.image is deprecated, use Tilemap.imgsrc instead.");
+        });
+        let tilemap = self.inner.lock();
+        match &tilemap.imgsrc {
+            pyxel::ImageSource::Index(index) => {
+                let images = pyxel().images.lock();
+                Image::wrap(images[*index as usize].clone())
+            }
+            pyxel::ImageSource::Image(image) => Image::wrap(image.clone()),
+        }
+    }
+
+    #[setter]
+    pub fn set_image(&self, image: Image) {
+        SET_IMAGE_ONCE.call_once(|| {
+            pyxel_warn("Tilemap.image is deprecated, use Tilemap.imgsrc instead.");
+        });
+        self.inner.lock().imgsrc = pyxel::ImageSource::Image(image.inner);
+    }
+
+    #[getter]
+    pub fn refimg(&self) -> Option<u32> {
+        REFIMG_ONCE.call_once(|| {
+            pyxel_warn("Tilemap.refimg is deprecated, use Tilemap.imgsrc instead.");
+        });
+        let tilemap = self.inner.lock();
+        match &tilemap.imgsrc {
+            pyxel::ImageSource::Index(index) => Some(*index),
+            pyxel::ImageSource::Image(_image) => None,
+        }
+    }
+
+    #[setter]
+    pub fn set_refimg(&self, img: u32) {
+        SET_REFIMG_ONCE.call_once(|| {
+            pyxel_warn("Tilemap.refimg is deprecated, use Tilemap.imgsrc instead.");
+        });
+        self.inner.lock().imgsrc = pyxel::ImageSource::Index(img);
     }
 }
 
