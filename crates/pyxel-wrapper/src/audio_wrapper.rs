@@ -8,6 +8,10 @@ use crate::pyxel_singleton::pyxel;
 use crate::sound_wrapper::Sound;
 use crate::utils::pyxel_warn;
 
+static CHANNEL_ONCE: Once = Once::new();
+static SOUND_ONCE: Once = Once::new();
+static MUSIC_ONCE: Once = Once::new();
+
 #[pyfunction]
 #[pyo3(text_signature = "(ch, snd, *, tick, loop)")]
 fn play(ch: u32, snd: &PyAny, tick: Option<u32>, r#loop: Option<bool>) -> PyResult<()> {
@@ -52,10 +56,6 @@ fn stop(ch: Option<u32>) {
 fn play_pos(ch: u32) -> Option<(u32, u32)> {
     pyxel().play_pos(ch)
 }
-
-static CHANNEL_ONCE: Once = Once::new();
-static SOUND_ONCE: Once = Once::new();
-static MUSIC_ONCE: Once = Once::new();
 
 #[pyfunction]
 fn channel(ch: u32) -> Channel {
