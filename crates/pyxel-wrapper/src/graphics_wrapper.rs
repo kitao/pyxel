@@ -7,6 +7,9 @@ use crate::pyxel_singleton::pyxel;
 use crate::tilemap_wrapper::Tilemap;
 use crate::utils::pyxel_warn;
 
+static IMAGE_ONCE: Once = Once::new();
+static TILEMAP_ONCE: Once = Once::new();
+
 #[pyfunction]
 fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyResult<()> {
     if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
@@ -163,9 +166,6 @@ fn bltm(
 fn text(x: f64, y: f64, s: &str, col: pyxel::Color) {
     pyxel().text(x, y, s, col);
 }
-
-static IMAGE_ONCE: Once = Once::new();
-static TILEMAP_ONCE: Once = Once::new();
 
 #[pyfunction]
 fn image(img: u32) -> Image {
