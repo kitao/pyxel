@@ -19,8 +19,10 @@
 - Removed the is_fullscreen variable
 - Removed the input_keys variable
 - Removed the set_btn and set_btnv functions
-- Renamed snds_list of Music to seqs
 - Integrated the image and refimg of Tilemap into imgsrc
+- Marked the image and refimg of Tilemap as deprecated fields
+- Renamed snds_list of Music to seqs
+- Marked the snds_list of Music as a deprecated field
 
 ## 1.9.18
 
