@@ -129,9 +129,9 @@ impl Pyxel {
                 for x in 0..width {
                     let color = image_data[(width * y + x) as usize];
                     let rgb = colors[color as usize];
-                    let r = ((rgb >> 16) & 0xff) as u8;
-                    let g = ((rgb >> 8) & 0xff) as u8;
-                    let b = (rgb & 0xff) as u8;
+                    let r = (rgb >> 16) as u8;
+                    let g = (rgb >> 8) as u8;
+                    let b = rgb as u8;
                     let a = if Some(color) == transparent {
                         0x00
                     } else {
