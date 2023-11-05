@@ -1,20 +1,12 @@
 use std::collections::HashMap;
 use std::mem::size_of;
 
-use cfg_if::cfg_if;
 use glow::HasContext;
 
 use crate::image::Color;
 use crate::pyxel::Pyxel;
 use crate::settings::{BACKGROUND_COLOR, NUM_SCREEN_TYPES};
 
-cfg_if! {
-    if #[cfg(target_os = "emscripten")] {
-        const GLSL_VERSION: &str = include_str!("shaders/gles_version.glsl");
-    } else {
-        const GLSL_VERSION: &str = include_str!("shaders/gl_version.glsl");
-    }
-}
 const COMMON_VERT: &str = include_str!("shaders/common.vert");
 const COMMON_FRAG: &str = include_str!("shaders/common.frag");
 const SCREEN_FRAGS: [&str; NUM_SCREEN_TYPES as usize] = [
@@ -55,7 +47,7 @@ impl Graphics {
         for &screen_frag in &SCREEN_FRAGS {
             // Vertex shader
             let vertex_shader = gl.create_shader(glow::VERTEX_SHADER).unwrap();
-            gl.shader_source(vertex_shader, &format!("{GLSL_VERSION}{COMMON_VERT}"));
+            gl.shader_source(vertex_shader, &format!("{COMMON_VERT}"));
             gl.compile_shader(vertex_shader);
             assert!(
                 gl.get_shader_compile_status(vertex_shader),
@@ -65,10 +57,7 @@ impl Graphics {
 
             // Fragment shader
             let fragment_shader = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
-            gl.shader_source(
-                fragment_shader,
-                &format!("{GLSL_VERSION}{COMMON_FRAG}{screen_frag}"),
-            );
+            gl.shader_source(fragment_shader, &format!("{COMMON_FRAG}{screen_frag}"));
             gl.compile_shader(fragment_shader);
             assert!(
                 gl.get_shader_compile_status(fragment_shader),
@@ -97,6 +86,7 @@ impl Graphics {
                 "u_screenPos",
                 "u_screenSize",
                 "u_screenScale",
+                "u_numColors",
                 "u_backgroundColor",
                 "u_screenTexture",
                 "u_colorsTexture",
@@ -366,6 +356,9 @@ impl Pyxel {
         if let Some(location) = uniform_locations.get("u_screenScale") {
             gl.uniform_1_f32(Some(location), self.system.screen_scale as f32);
         }
+        if let Some(location) = uniform_locations.get("u_numColors") {
+            gl.uniform_1_i32(Some(location), self.colors.lock().len() as i32);
+        }
         if let Some(location) = uniform_locations.get("u_backgroundColor") {
             gl.uniform_3_f32(
                 Some(location),
@@ -405,17 +398,22 @@ impl Pyxel {
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.colors_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
         let colors = self.colors.lock();
-        let pixels = std::slice::from_raw_parts(colors.as_ptr().cast::<u8>(), colors.len() * 4);
+        let mut pixels: Vec<u8> = Vec::with_capacity(colors.len() * 3);
+        for color in &*colors {
+            pixels.push((color >> 16) as u8);
+            pixels.push((color >> 8) as u8);
+            pixels.push(*color as u8);
+        }
         gl.tex_image_2d(
             glow::TEXTURE_2D,
             0,
-            glow::R32UI as i32,
+            glow::RGB as i32,
             colors.len() as i32,
             1,
             0,
-            glow::RED_INTEGER,
-            glow::UNSIGNED_INT,
-            Some(pixels),
+            glow::RGB,
+            glow::UNSIGNED_BYTE,
+            Some(&pixels),
         );
     }
 }
