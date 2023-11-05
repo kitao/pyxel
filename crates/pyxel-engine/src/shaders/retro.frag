@@ -43,8 +43,8 @@ void main() {
         vec3 color = getBleedingColor(screenTexCoord);
         color *= getVignettFactor(screenTexCoord);
         color *= getScanlineFactor(screenFragCoord, screenTexCoord);
-        fragColor = vec4(color, 1.0);
+        gl_FragColor = vec4(color, 1.0);
     } else {
-        fragColor = vec4(u_backgroundColor, 1.0);
+        gl_FragColor = vec4(u_backgroundColor, 1.0);
     }
 }
