@@ -15,6 +15,8 @@
 
 mod audio;
 mod controller;
+#[cfg(target_os = "emscripten")]
+pub mod emscripten;
 mod event;
 pub mod keys;
 mod platform;
