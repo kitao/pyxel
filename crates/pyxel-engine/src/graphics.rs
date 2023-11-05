@@ -362,9 +362,9 @@ impl Pyxel {
         if let Some(location) = uniform_locations.get("u_backgroundColor") {
             gl.uniform_3_f32(
                 Some(location),
-                ((BACKGROUND_COLOR >> 16) & 0xff) as f32 / 255.0,
-                ((BACKGROUND_COLOR >> 8) & 0xff) as f32 / 255.0,
-                (BACKGROUND_COLOR & 0xff) as f32 / 255.0,
+                ((BACKGROUND_COLOR >> 16) as u8) as f32 / 255.0,
+                ((BACKGROUND_COLOR >> 8) as u8) as f32 / 255.0,
+                (BACKGROUND_COLOR as u8) as f32 / 255.0,
             );
         }
         if let Some(location) = uniform_locations.get("u_screenTexture") {
@@ -383,11 +383,11 @@ impl Pyxel {
         gl.tex_image_2d(
             glow::TEXTURE_2D,
             0,
-            glow::R8 as i32,
+            glow::LUMINANCE as i32,
             self.width as i32,
             self.height as i32,
             0,
-            glow::RED,
+            glow::LUMINANCE,
             glow::UNSIGNED_BYTE,
             Some(&self.screen.lock().canvas.data),
         );
