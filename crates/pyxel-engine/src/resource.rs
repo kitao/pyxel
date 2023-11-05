@@ -4,7 +4,6 @@ use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
 use cfg_if::cfg_if;
-use chrono::Local;
 use platform_dirs::UserDirs;
 use zip::write::FileOptions;
 use zip::{ZipArchive, ZipWriter};
@@ -154,7 +153,7 @@ impl Pyxel {
         }
         zip.finish().unwrap();
         #[cfg(target_os = "emscripten")]
-        Platform::save_file_on_web_browser(filename);
+        pyxel_platform::emscripten::save_file(&filename);
     }
 
     pub fn screenshot(&self, scale: Option<u32>) {
@@ -162,7 +161,7 @@ impl Pyxel {
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.screen.lock().save(&filename, scale);
         #[cfg(target_os = "emscripten")]
-        Platform::save_file_on_web_browser(&(filename + ".png"));
+        pyxel_platform::emscripten::save_file(&(filename + ".png"));
     }
 
     pub fn screencast(&mut self, scale: Option<u32>) {
@@ -170,7 +169,7 @@ impl Pyxel {
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.resource.screencast.save(&filename, scale);
         #[cfg(target_os = "emscripten")]
-        Platform::save_file_on_web_browser(&(filename + ".gif"));
+        pyxel_platform::emscripten::save_file(&(filename + ".gif"));
     }
 
     pub fn reset_screencast(&mut self) {
@@ -200,19 +199,9 @@ impl Pyxel {
     fn local_time_string() -> String {
         cfg_if! {
             if #[cfg(target_os = "emscripten")] {
-                let script = "
-                    let now = new Date();
-                    let year = now.getFullYear();
-                    let month = now.getMonth() + 1;
-                    let date = now.getDate();
-                    let hour = now.getHours();
-                    let min = now.getMinutes();
-                    let sec = now.getSeconds();
-                    `${year}${month}${date}-${hour}${min}${sec}`
-                ";
-                emscripten::run_script_string(script)
+                pyxel_platform::emscripten::timestamp_string()
             } else {
-                Local::now().format("%Y%m%d-%H%M%S").to_string()
+                chrono::Local::now().format("%Y%m%d-%H%M%S").to_string()
             }
         }
     }
