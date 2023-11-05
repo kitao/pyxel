@@ -47,7 +47,7 @@ impl Graphics {
         for &screen_frag in &SCREEN_FRAGS {
             // Vertex shader
             let vertex_shader = gl.create_shader(glow::VERTEX_SHADER).unwrap();
-            gl.shader_source(vertex_shader, &format!("{COMMON_VERT}"));
+            gl.shader_source(vertex_shader, COMMON_VERT);
             gl.compile_shader(vertex_shader);
             assert!(
                 gl.get_shader_compile_status(vertex_shader),

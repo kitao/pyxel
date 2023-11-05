@@ -153,7 +153,7 @@ impl Pyxel {
         }
         zip.finish().unwrap();
         #[cfg(target_os = "emscripten")]
-        pyxel_platform::emscripten::save_file(&filename);
+        pyxel_platform::emscripten::save_file(filename);
     }
 
     pub fn screenshot(&self, scale: Option<u32>) {
