@@ -1,5 +1,4 @@
 use std::mem::transmute;
-use std::process::exit;
 use std::ptr::{addr_of_mut, null_mut};
 
 use cfg_if::cfg_if;
@@ -35,7 +34,7 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
                     SDL_GL_CONTEXT_PROFILE_MASK,
                     SDL_GL_CONTEXT_PROFILE_ES as i32,
                 );
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
                 SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
             }
         } else {
@@ -44,8 +43,8 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
                     SDL_GL_CONTEXT_PROFILE_MASK,
                     SDL_GL_CONTEXT_PROFILE_CORE as i32,
                 );
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
             }
         }
     }
@@ -75,10 +74,11 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
     }
 }
 
+#[allow(unused_mut)]
 pub fn run<F: FnMut()>(mut main_loop: F) {
     cfg_if! {
         if #[cfg(target_os = "emscripten")] {
-            emscripten::set_main_loop(main_loop);
+            crate::emscripten::run(main_loop);
         } else {
             loop {
                 let start_ms = elapsed_time() as f64;
@@ -100,9 +100,9 @@ pub fn quit() {
 
     cfg_if! {
         if #[cfg(target_os = "emscripten")] {
-            emscripten::force_exit(0);
+            crate::emscripten::exit(0);
         } else {
-            exit(0);
+            std::process::exit(0);
         }
     }
 }
@@ -118,8 +118,6 @@ pub fn sleep(ms: u32) {
 }
 
 /*
-#[cfg(not(target_os = "emscripten"))]
-use chrono::Local;
 use sdl2::controller::{
     Axis as SdlAxis, Button as SdlButton, GameController as SdlGameControllerState,
 };
@@ -132,11 +130,6 @@ pub struct Platform {
 }
 
 impl Platform {
-    #[cfg(target_os = "emscripten")]
-    pub fn save_file_on_web_browser(filename: &str) {
-        emscripten::run_script(&format!("_savePyxelFile('{filename}');"));
-    }
-
     fn gamepad_index(&self, game_controller_id: u32) -> u32 {
         self.sdl_game_controller_states
             .iter()
@@ -145,68 +138,3 @@ impl Platform {
     }
 }
 */
-
-#[cfg(target_os = "emscripten")]
-mod emscripten {
-    use std::ffi::{CStr, CString};
-    use std::os::raw::{c_char, c_int, c_void};
-
-    #[allow(non_camel_case_types)]
-    type em_arg_callback_func = unsafe extern "C" fn(*mut c_void);
-
-    extern "C" {
-        pub fn emscripten_set_main_loop_arg(
-            func: em_arg_callback_func,
-            arg: *mut c_void,
-            fps: c_int,
-            simulate_infinite_loop: c_int,
-        );
-        pub fn emscripten_force_exit(status: c_int);
-        pub fn emscripten_run_script(script: *const c_char);
-        pub fn emscripten_run_script_int(script: *const c_char) -> c_int;
-        pub fn emscripten_run_script_string(script: *const c_char) -> *const c_char;
-    }
-
-    unsafe extern "C" fn callback_wrapper<F: FnMut()>(arg: *mut c_void) {
-        (*arg.cast::<F>())();
-    }
-
-    pub fn set_main_loop<F: FnMut()>(callback: F) {
-        unsafe {
-            emscripten_set_main_loop_arg(
-                callback_wrapper::<F>,
-                Box::into_raw(Box::new(callback)).cast::<std::ffi::c_void>(),
-                0,
-                1,
-            );
-        }
-    }
-
-    pub fn force_exit(status: i32) {
-        unsafe {
-            emscripten_force_exit(status);
-        }
-    }
-
-    pub fn run_script(script: &str) {
-        let script = CString::new(script).unwrap();
-        unsafe {
-            emscripten_run_script(script.as_ptr());
-        }
-    }
-
-    pub fn run_script_int(script: &str) -> i32 {
-        let script = CString::new(script).unwrap();
-        unsafe { emscripten_run_script_int(script.as_ptr()) }
-    }
-
-    pub fn run_script_string(script: &str) -> String {
-        let script = CString::new(script).unwrap();
-        unsafe {
-            CStr::from_ptr(emscripten_run_script_string(script.as_ptr()))
-                .to_str()
-                .unwrap()
-                .to_string()
-        }
-    }
-}
