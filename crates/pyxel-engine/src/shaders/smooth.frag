@@ -24,7 +24,7 @@
 */
 
 // Modified for Pyxel
-#define FragColor fragColor
+#define FragColor gl_FragColor
 #define OutputSize u_screenSize
 #define TextureSize (u_screenSize / u_screenScale)
 #define vTexCoord screenTexCoord
@@ -79,7 +79,7 @@ void main() {
     vec2 screenFragCoord, screenTexCoord;
     getScreenParams(screenFragCoord, screenTexCoord);
     if (!isInScreen(screenTexCoord)) {
-        fragColor = vec4(u_backgroundColor, 1.0);
+        FragColor = vec4(u_backgroundColor, 1.0);
         return;
     }
 
