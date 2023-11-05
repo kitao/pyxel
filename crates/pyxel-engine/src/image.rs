@@ -61,9 +61,9 @@ impl Image {
                         let mut closest_dist: f64 = f64::MAX;
                         for (i, pal_color) in colors.iter().enumerate() {
                             let pal_rgb = (
-                                ((pal_color >> 16) & 0xff) as u8,
-                                ((pal_color >> 8) & 0xff) as u8,
-                                (pal_color & 0xff) as u8,
+                                (pal_color >> 16) as u8,
+                                (pal_color >> 8) as u8,
+                                *pal_color as u8,
                             );
                             let dist = Self::color_dist(src_rgb, pal_rgb);
                             if dist < closest_dist {
@@ -147,9 +147,9 @@ impl Image {
         for y in 0..height {
             for x in 0..width {
                 let rgb = colors[self.canvas.read_data(x as usize, y as usize) as usize];
-                let r = ((rgb >> 16) & 0xff) as u8;
-                let g = ((rgb >> 8) & 0xff) as u8;
-                let b = (rgb & 0xff) as u8;
+                let r = (rgb >> 16) as u8;
+                let g = (rgb >> 8) as u8;
+                let b = rgb as u8;
                 image.put_pixel(x, y, image::Rgb([r, g, b]));
             }
         }

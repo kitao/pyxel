@@ -225,9 +225,9 @@ impl Screencast {
                 palette.push(0);
                 palette.push(0);
             } else {
-                palette.push(((rgb >> 16) & 0xff) as u8);
-                palette.push(((rgb >> 8) & 0xff) as u8);
-                palette.push((rgb & 0xff) as u8);
+                palette.push((rgb >> 16) as u8);
+                palette.push((rgb >> 8) as u8);
+                palette.push(rgb as u8);
             }
         }
         (rect, palette, buffer)
