@@ -3,7 +3,12 @@
     https://github.com/abusch/blippers
 */
 
-#![allow(dead_code, clippy::unnecessary_cast)]
+#![allow(
+    dead_code,
+    clippy::float_cmp,
+    clippy::items_after_statements,
+    clippy::unnecessary_cast
+)]
 
 pub const BLIP_MAX_FRAME: i32 = 4000;
 pub const BLIP_MAX_RATIO: i32 = 1 << 20;
