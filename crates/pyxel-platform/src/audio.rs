@@ -1,3 +1,4 @@
+use std::mem::MaybeUninit;
 use std::os::raw::{c_int, c_void};
 use std::ptr::null_mut;
 use std::slice;
@@ -37,19 +38,12 @@ pub fn start_audio(
         callback: Some(c_audio_callback),
         userdata,
     };
-    let mut obtained = SDL_AudioSpec {
-        freq: 0,
-        format: 0,
-        channels: 0,
-        silence: 0,
-        samples: 0,
-        padding: 0,
-        size: 0,
-        callback: None,
-        userdata: null_mut(),
-    };
+    let mut obtained = MaybeUninit::uninit();
     platform().audio_device_id =
-        unsafe { SDL_OpenAudioDevice(null_mut(), 0, &desired, &mut obtained, 0) };
+        unsafe { SDL_OpenAudioDevice(null_mut(), 0, &desired, obtained.as_mut_ptr(), 0) };
+    if platform().audio_device_id == 0 {
+        println!("PyxelWarning: Failed to initialize audio device");
+    }
     set_audio_enabled(true);
 }
 
