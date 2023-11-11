@@ -24,7 +24,7 @@
 - Renamed snds_list of Music to seqs
 - Marked the snds_list of Music as a deprecated field
 - Updated Pyodide to 0.24.1
-- Updated Emscripten to 3.1.46
+- Updated Emscripten to 3.1.48
 - Updated SDL2 to 2.24.2
 
 ## 1.9.18
