@@ -3,8 +3,8 @@ use std::mem::zeroed;
 use std::ptr::{addr_of, addr_of_mut};
 use std::str::from_utf8 as str_from_utf8;
 
-#[cfg(target_os = "emscripten")]
-use crate::controller::{add_controller, remove_controller};
+use cfg_if::cfg_if;
+
 use crate::keys::*;
 use crate::platform::platform;
 use crate::sdl2_sys::*;
@@ -166,11 +166,11 @@ pub fn poll_events() -> Vec<Event> {
             }
             #[cfg(target_os = "emscripten")]
             SDL_JOYDEVICEADDED => {
-                add_controller(unsafe { sdl_event.jdevice.which } as i32);
+                //add_controller(unsafe { sdl_event.jdevice.which } as i32);
             }
             #[cfg(target_os = "emscripten")]
             SDL_JOYDEVICEREMOVED => {
-                remove_controller(unsafe { sdl_event.jdevice.which } as i32);
+                //remove_controller(unsafe { sdl_event.jdevice.which } as i32);
             }
             #[cfg(target_os = "emscripten")]
             SDL_JOYBUTTONDOWN => {
@@ -242,7 +242,13 @@ pub fn poll_events() -> Vec<Event> {
     let mut mouse_y = 0;
     unsafe { SDL_GetGlobalMouseState(&mut mouse_x, &mut mouse_y) };
     if mouse_x != platform().mouse_x || mouse_y != platform().mouse_y {
-        let (window_x, window_y) = crate::window_pos();
+        cfg_if! {
+            if #[cfg(target_os = "emscripten")] {
+                let (window_x, window_y) = (0, 0);
+            } else {
+                let (window_x, window_y) = crate::window_pos();
+            }
+        }
         pyxel_events.push(Event::KeyValueChanged {
             key: MOUSE_POS_X,
             value: mouse_x - window_x,
