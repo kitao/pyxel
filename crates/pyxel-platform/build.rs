@@ -7,7 +7,7 @@ use std::str;
 
 use tar::Archive;
 
-const SDL2_VERSION: &str = "2.28.2";
+const SDL2_VERSION: &str = "2.24.2";
 
 struct SDL2BindingsBuilder {
     target: String,
@@ -18,9 +18,9 @@ struct SDL2BindingsBuilder {
 
 impl SDL2BindingsBuilder {
     fn new() -> Self {
-        let target = var("TARGET").unwrap().to_string();
+        let target = var("TARGET").unwrap();
         let target_os = target.splitn(3, '-').nth(2).unwrap().to_string();
-        let out_dir = var("OUT_DIR").unwrap().to_string();
+        let out_dir = var("OUT_DIR").unwrap();
         let sdl2_dir = format!("{}/SDL2-{}", out_dir, SDL2_VERSION);
         Self {
             target,
@@ -129,7 +129,7 @@ impl SDL2BindingsBuilder {
             include_paths.push(format!("{}/include", self.sdl2_dir));
         } else if self.target_os == "emscripten" {
             let output = Command::new("emcc")
-                .args(&["--cflags", "-s", "USE_SDL=2"])
+                .args(["--cflags", "-s", "USE_SDL=2"])
                 .output()
                 .unwrap();
             let cflags_str = str::from_utf8(&output.stdout).unwrap();

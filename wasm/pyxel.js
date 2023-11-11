@@ -1,7 +1,7 @@
 const NO_SLEEP_URL =
   "https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js";
-const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.23.3/full/pyodide.js";
-const PYXEL_WHEEL_PATH = "pyxel-1.9.18-cp37-abi3-emscripten_3_1_42_wasm32.whl";
+const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js";
+const PYXEL_WHEEL_PATH = "pyxel-2.0.0-cp37-abi3-emscripten_3_1_46_wasm32.whl";
 const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_114x14.png";
 const CLICK_TO_START_PATH = "../docs/images/click_to_start_114x14.png";
