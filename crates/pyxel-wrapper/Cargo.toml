@@ -15,7 +15,7 @@ name = "pyxel_wrapper"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.19", features = ["abi3-py37", "extension-module"] }
+pyo3 = { version = "0.20", features = ["abi3-py37", "extension-module"] }
 pyxel-engine = { path = "../pyxel-engine", version = "2.0.0" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
