@@ -126,7 +126,7 @@ impl SDL2BindingsBuilder {
     fn get_include_paths(&self) -> Vec<String> {
         let mut include_paths = Vec::new();
         if self.should_bundle_sdl2() {
-            include_paths.push(format!("{}/include", self.sdl2_dir));
+            include_paths.push(format!("-I{}/include", self.sdl2_dir));
         } else if self.target_os == "emscripten" {
             let output = Command::new("emcc")
                 .args(["--cflags", "-s", "USE_SDL=2"])
@@ -142,24 +142,24 @@ impl SDL2BindingsBuilder {
                 .find(|&&path| path.contains("SDL2"))
                 .map(|&path| path[2..].to_string())
                 .unwrap();
-            include_paths.push(sdl2_include_path.clone());
-            include_paths.push(sdl2_include_path + "/..");
+            include_paths.push(format!("-I{}", sdl2_include_path));
+            include_paths.push(format!("-I{}/..", sdl2_include_path));
         } else {
-            include_paths.push(var("SDL2_INCLUDE_PATH").unwrap());
+            include_paths.push(format!("-I{}", var("SDL2_INCLUDE_PATH").unwrap()));
         }
         include_paths
     }
 
     fn generate_bindings(&self) {
         let mut builder = bindgen::Builder::default()
-            .use_core()
+            .header("wrapper.h")
             .clang_arg(format!("--target={}", self.target.clone()))
-            .header("sdl2_proxy.h")
+            .clang_args(self.get_include_paths())
+            .use_core()
+            .derive_debug(false)
+            .generate_comments(false)
             .prepend_enum_name(false)
-            .derive_debug(false);
-        for include_path in self.get_include_paths() {
-            builder = builder.clang_arg(format!("-I{include_path}"));
-        }
+            .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()));
         if self.target_os == "windows-msvc" {
             builder = builder
                 .clang_arg("-IC:/Program Files (x86)/Windows Kits/8.1/Include/shared")
