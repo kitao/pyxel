@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::mem::size_of;
 
+use cfg_if::cfg_if;
 use glow::HasContext;
 
 use crate::image::Color;
@@ -380,14 +381,21 @@ impl Pyxel {
         gl.active_texture(glow::TEXTURE0);
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.screen_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 1);
+        cfg_if! {
+            if #[cfg(target_os = "emscripten")] {
+                let texture_format = glow::LUMINANCE;
+            } else {
+                let texture_format = glow::RED;
+            }
+        }
         gl.tex_image_2d(
             glow::TEXTURE_2D,
             0,
-            glow::LUMINANCE as i32,
+            texture_format as i32,
             self.width as i32,
             self.height as i32,
             0,
-            glow::LUMINANCE,
+            texture_format,
             glow::UNSIGNED_BYTE,
             Some(&self.screen.lock().canvas.data),
         );
