@@ -61,7 +61,7 @@ ENSURE_TARGET = rustup target add $(TARGET)
 BUILD_OPTS = --release --target $(TARGET)
 endif
 
-.PHONY: all clean distclean lint format build test clean-wasm build-wasm test-wasm
+.PHONY: all clean distclean lint update format build test clean-wasm build-wasm test-wasm
 
 all: build
 
@@ -84,6 +84,14 @@ lint:
 	@cd $(CRATES_DIR)/pyxel-wrapper; cargo clippy $(CLIPPY_OPTS)
 	@cd $(CRATES_DIR)/pyxel-wrapper; $(WASM_ENV) cargo clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
 	@flake8 $(SCRIPTS_DIR) $(PYXEL_DIR)
+
+update:
+	@cd $(CRATES_DIR)/pyxel-platform; cargo update
+	@cd $(CRATES_DIR)/pyxel-platform; cargo outdated --root-deps-only
+	@cd $(CRATES_DIR)/pyxel-engine; cargo update
+	@cd $(CRATES_DIR)/pyxel-engine; cargo outdated --root-deps-only
+	@cd $(CRATES_DIR)/pyxel-wrapper; cargo update
+	@cd $(CRATES_DIR)/pyxel-wrapper; cargo outdated --root-deps-only
 
 format:
 	@cd $(CRATES_DIR)/pyxel-platform; cargo +nightly fmt -- --emit=files
