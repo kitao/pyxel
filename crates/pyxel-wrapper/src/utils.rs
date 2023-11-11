@@ -135,7 +135,7 @@ pub fn pyxel_warn(message: &str) {
         )
         .unwrap();
         let stack_info = locals.get_item("stack_info").unwrap();
-        if let Ok((file, line)) = stack_info.extract::<(String, i64)>() {
+        if let Ok((file, line)) = stack_info.unwrap().extract::<(String, i64)>() {
             print!("{file}:{line}: ");
         }
         println!("PyxelWarning: {message}");
