@@ -153,13 +153,10 @@ impl SDL2BindingsBuilder {
     fn generate_bindings(&self) {
         let mut builder = bindgen::Builder::default()
             .header("wrapper.h")
+            .prepend_enum_name(false)
             .clang_arg(format!("--target={}", self.target.clone()))
             .clang_args(self.get_include_paths())
-            .use_core()
-            .derive_debug(false)
-            .generate_comments(false)
-            .prepend_enum_name(false)
-            .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()));
+            .use_core();
         if self.target_os == "windows-msvc" {
             builder = builder
                 .clang_arg("-IC:/Program Files (x86)/Windows Kits/8.1/Include/shared")
@@ -191,7 +188,5 @@ impl SDL2BindingsBuilder {
 }
 
 fn main() {
-    std::env::set_var("RUST_LOG", "bindgen=debug");
-    std::env::set_var("BINDGEN_EXTRA_CLANG_ARGS", "-v");
     SDL2BindingsBuilder::new().build();
 }
