@@ -5,6 +5,14 @@ use std::str::from_utf8 as str_from_utf8;
 
 use cfg_if::cfg_if;
 
+#[cfg(target_os = "emscripten")]
+use crate::emscripten::run_script_int;
+#[cfg(target_os = "emscripten")]
+use crate::gamepad::joystick_button_to_key;
+use crate::gamepad::{
+    add_gamepad, controller_axis_to_key, controller_button_to_key, gamepad_key_offset,
+    remove_gamepad,
+};
 use crate::keys::*;
 use crate::platform::platform;
 use crate::sdl2_sys::*;
@@ -89,124 +97,69 @@ pub fn poll_events() -> Vec<Event> {
                     value: unsafe { sdl_event.wheel.y },
                 });
             }
+            SDL_CONTROLLERDEVICEADDED => {
+                add_gamepad(unsafe { sdl_event.cdevice.which });
+            }
+            SDL_CONTROLLERDEVICEREMOVED => {
+                remove_gamepad(unsafe { sdl_event.cdevice.which });
+            }
             SDL_CONTROLLERAXISMOTION => {
-                /*
-                SdlEvent::ControllerAxisMotion {
-                which, axis, value, ..
-                } => Event::ControllerAxisMotion {
-                which: self.gamepad_index(which),
-                axis: match axis {
-                SdlAxis::LeftX => ControllerAxis::LeftX,
-                SdlAxis::LeftY => ControllerAxis::LeftY,
-                SdlAxis::RightX => ControllerAxis::RightX,
-                SdlAxis::RightY => ControllerAxis::RightY,
-                SdlAxis::TriggerLeft => ControllerAxis::TriggerLeft,
-                SdlAxis::TriggerRight => ControllerAxis::TriggerRight,
-                },
-                value: value as i32,
-                },
-                */
+                if let Some(key_offset) = gamepad_key_offset(unsafe { sdl_event.caxis.which }) {
+                    let axis = unsafe { sdl_event.caxis.axis } as i32;
+                    let key = controller_axis_to_key(axis);
+                    if key != KEY_UNKNOWN {
+                        pyxel_events.push(Event::KeyValueChanged {
+                            key: key + key_offset,
+                            value: unsafe { sdl_event.caxis.value } as i32,
+                        });
+                    }
+                }
             }
             SDL_CONTROLLERBUTTONDOWN => {
-                /*
-                SdlEvent::ControllerButtonDown { which, button, .. } => Event::ControllerButtonDown {
-                which: self.gamepad_index(which),
-                button: match button {
-                SdlButton::A => ControllerButton::A,
-                SdlButton::B => ControllerButton::B,
-                SdlButton::X => ControllerButton::X,
-                SdlButton::Y => ControllerButton::Y,
-                SdlButton::Back => ControllerButton::Back,
-                SdlButton::Guide => ControllerButton::Guide,
-                SdlButton::Start => ControllerButton::Start,
-                SdlButton::LeftStick => ControllerButton::LeftStick,
-                SdlButton::RightStick => ControllerButton::RightStick,
-                SdlButton::LeftShoulder => ControllerButton::LeftShoulder,
-                SdlButton::RightShoulder => ControllerButton::RightShoulder,
-                SdlButton::DPadUp => ControllerButton::DPadUp,
-                SdlButton::DPadDown => ControllerButton::DPadDown,
-                SdlButton::DPadLeft => ControllerButton::DPadLeft,
-                SdlButton::DPadRight => ControllerButton::DPadRight,
-                SdlButton::Misc1 => ControllerButton::Misc1,
-                SdlButton::Paddle1 => ControllerButton::Paddle1,
-                SdlButton::Paddle2 => ControllerButton::Paddle2,
-                SdlButton::Paddle3 => ControllerButton::Paddle3,
-                SdlButton::Paddle4 => ControllerButton::Paddle4,
-                SdlButton::Touchpad => ControllerButton::Touchpad,
-                */
+                if let Some(key_offset) = gamepad_key_offset(unsafe { sdl_event.cbutton.which }) {
+                    let button = unsafe { sdl_event.cbutton.button } as i32;
+                    let key = controller_button_to_key(button);
+                    if key != KEY_UNKNOWN {
+                        pyxel_events.push(Event::KeyPressed {
+                            key: key + key_offset,
+                        });
+                    }
+                }
             }
             SDL_CONTROLLERBUTTONUP => {
-                /*
-                SdlEvent::ControllerButtonUp { which, button, .. } => Event::ControllerButtonUp {
-                which: self.gamepad_index(which),
-                button: match button {
-                SdlButton::A => ControllerButton::A,
-                SdlButton::B => ControllerButton::B,
-                SdlButton::X => ControllerButton::X,
-                SdlButton::Y => ControllerButton::Y,
-                SdlButton::Back => ControllerButton::Back,
-                SdlButton::Guide => ControllerButton::Guide,
-                SdlButton::Start => ControllerButton::Start,
-                SdlButton::LeftStick => ControllerButton::LeftStick,
-                SdlButton::RightStick => ControllerButton::RightStick,
-                SdlButton::LeftShoulder => ControllerButton::LeftShoulder,
-                SdlButton::RightShoulder => ControllerButton::RightShoulder,
-                SdlButton::DPadUp => ControllerButton::DPadUp,
-                SdlButton::DPadDown => ControllerButton::DPadDown,
-                SdlButton::DPadLeft => ControllerButton::DPadLeft,
-                SdlButton::DPadRight => ControllerButton::DPadRight,
-                SdlButton::Misc1 => ControllerButton::Misc1,
-                SdlButton::Paddle1 => ControllerButton::Paddle1,
-                SdlButton::Paddle2 => ControllerButton::Paddle2,
-                SdlButton::Paddle3 => ControllerButton::Paddle3,
-                SdlButton::Paddle4 => ControllerButton::Paddle4,
-                SdlButton::Touchpad => ControllerButton::Touchpad,
-                },
-                */
-            }
-            #[cfg(target_os = "emscripten")]
-            SDL_JOYDEVICEADDED => {
-                //add_controller(unsafe { sdl_event.jdevice.which } as i32);
-            }
-            #[cfg(target_os = "emscripten")]
-            SDL_JOYDEVICEREMOVED => {
-                //remove_controller(unsafe { sdl_event.jdevice.which } as i32);
+                if let Some(key_offset) = gamepad_key_offset(unsafe { sdl_event.cbutton.which }) {
+                    let button = unsafe { sdl_event.cbutton.button } as i32;
+                    let key = controller_button_to_key(button);
+                    if key != KEY_UNKNOWN {
+                        pyxel_events.push(Event::KeyReleased {
+                            key: key + key_offset,
+                        });
+                    }
+                }
             }
             #[cfg(target_os = "emscripten")]
             SDL_JOYBUTTONDOWN => {
-                /*
-                SdlEvent::JoyButtonDown {
-                timestamp: _,
-                which,
-                button_idx,
-                } => Event::ControllerButtonDown {
-                which: self.gamepad_index(which),
-                button: match button_idx {
-                12 => ControllerButton::DPadUp,
-                13 => ControllerButton::DPadDown,
-                14 => ControllerButton::DPadLeft,
-                15 => ControllerButton::DPadRight,
-                _ => continue,
-                */
+                if let Some(key_offset) = gamepad_key_offset(unsafe { sdl_event.jbutton.which }) {
+                    let button = unsafe { sdl_event.jbutton.button } as i32;
+                    let key = joystick_button_to_key(button);
+                    if key != KEY_UNKNOWN {
+                        pyxel_events.push(Event::KeyPressed {
+                            key: key + key_offset,
+                        });
+                    }
+                }
             }
             #[cfg(target_os = "emscripten")]
             SDL_JOYBUTTONUP => {
-                /*
-                SdlEvent::JoyButtonUp {
-                timestamp: _,
-                which,
-                button_idx,
-                } => Event::ControllerButtonUp {
-                which: self.gamepad_index(which),
-                button: match button_idx {
-                12 => ControllerButton::DPadUp,
-                13 => ControllerButton::DPadDown,
-                14 => ControllerButton::DPadLeft,
-                15 => ControllerButton::DPadRight,
-                _ => {
-                continue;
+                if let Some(key_offset) = gamepad_key_offset(unsafe { sdl_event.jbutton.which }) {
+                    let button = unsafe { sdl_event.jbutton.button } as i32;
+                    let key = joystick_button_to_key(button);
+                    if key != KEY_UNKNOWN {
+                        pyxel_events.push(Event::KeyReleased {
+                            key: key + key_offset,
+                        });
+                    }
                 }
-                */
             }
             SDL_TEXTINPUT => {
                 let text = unsafe {
@@ -257,6 +210,32 @@ pub fn poll_events() -> Vec<Event> {
             key: MOUSE_POS_Y,
             value: mouse_y - window_y,
         });
+    }
+
+    // Virtual gamepad
+    #[cfg(target_os = "emscripten")]
+    {
+        const INDEX_TO_BUTTON: [Key; 8] = [
+            GAMEPAD1_BUTTON_DPAD_UP,
+            GAMEPAD1_BUTTON_DPAD_DOWN,
+            GAMEPAD1_BUTTON_DPAD_LEFT,
+            GAMEPAD1_BUTTON_DPAD_RIGHT,
+            GAMEPAD1_BUTTON_A,
+            GAMEPAD1_BUTTON_B,
+            GAMEPAD1_BUTTON_X,
+            GAMEPAD1_BUTTON_Y,
+        ];
+        for (i, button) in INDEX_TO_BUTTON.iter().enumerate() {
+            let button_state = run_script_int(&format!("_virtualGamepadStates[{i}];")) != 0;
+            if button_state != platform().virtual_gamepad_states[i] {
+                platform().virtual_gamepad_states[i] = button_state;
+                if button_state {
+                    pyxel_events.push(Event::KeyPressed { key: *button });
+                } else {
+                    pyxel_events.push(Event::KeyReleased { key: *button });
+                };
+            }
+        }
     }
 
     pyxel_events
