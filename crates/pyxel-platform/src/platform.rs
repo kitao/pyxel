@@ -4,16 +4,19 @@ use std::ptr::{addr_of_mut, null_mut};
 use cfg_if::cfg_if;
 use glow::Context as GlowContext;
 
+use crate::gamepad::{init_gamepads, Gamepad};
 use crate::sdl2_sys::*;
 use crate::window::init_window;
 
 pub struct Platform {
     pub window: *mut SDL_Window,
     pub glow_context: *mut GlowContext,
-    pub controllers: Vec<*mut SDL_GameController>,
     pub audio_device_id: SDL_AudioDeviceID,
     pub mouse_x: i32,
     pub mouse_y: i32,
+    pub gamepads: Vec<Gamepad>,
+    #[cfg(target_os = "emscripten")]
+    pub virtual_gamepad_states: [bool; 8],
 }
 
 static mut PLATFORM: *mut Platform = null_mut();
@@ -24,7 +27,7 @@ pub fn platform() -> &'static mut Platform {
 
 pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
     assert!(
-        unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) } >= 0,
+        unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) } >= 0,
         "Failed to initialize SDL2"
     );
     cfg_if! {
@@ -61,15 +64,17 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
     );
     let (title, width, height) = window_params(display_mode.w as u32, display_mode.h as u32);
     let (window, glow_context) = init_window(title, width, height);
-    let controllers = Vec::new();
+    let gamepads = init_gamepads();
     unsafe {
         PLATFORM = transmute(Box::new(Platform {
             window,
             glow_context,
-            controllers,
             audio_device_id: 0,
             mouse_x: i32::MIN,
             mouse_y: i32::MIN,
+            gamepads,
+            #[cfg(target_os = "emscripten")]
+            virtual_gamepad_states: [false; 8],
         }));
     }
 }
@@ -123,8 +128,6 @@ use sdl2::controller::{
 };
 
 pub struct Platform {
-    sdl_game_controller: Option<SdlGameController>,
-    sdl_game_controller_states: Vec<SdlGameControllerState>,
     #[cfg(target_os = "emscripten")]
     virtual_gamepad_states: [bool; 8],
 }
