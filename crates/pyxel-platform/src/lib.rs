@@ -14,10 +14,10 @@
 )]
 
 mod audio;
-mod controller;
 #[cfg(target_os = "emscripten")]
 pub mod emscripten;
 mod event;
+mod gamepad;
 pub mod keys;
 mod platform;
 mod sdl2_sys;
