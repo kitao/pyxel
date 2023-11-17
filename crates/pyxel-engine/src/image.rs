@@ -10,8 +10,8 @@ use crate::pyxel::{COLORS, FONT_IMAGE, IMAGES};
 use crate::rect_area::RectArea;
 use crate::resource::ResourceItem;
 use crate::settings::{
-    FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_COLORS, NUM_FONT_ROWS,
-    RESOURCE_ARCHIVE_DIRNAME, TILE_SIZE,
+    FONT_HEIGHT, FONT_WIDTH, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_ROWS, RESOURCE_ARCHIVE_DIRNAME,
+    TILE_SIZE,
 };
 use crate::tilemap::{ImageSource, SharedTilemap};
 use crate::utils;
@@ -27,7 +27,7 @@ impl ToIndex for Color {
 
 pub struct Image {
     pub(crate) canvas: Canvas<Color>,
-    pub(crate) palette: [Color; NUM_COLORS as usize],
+    pub(crate) palette: [Color; Color::MAX as usize + 1],
 }
 
 pub type SharedImage = shared_type!(Image);
@@ -186,7 +186,7 @@ impl Image {
     }
 
     pub fn pal0(&mut self) {
-        for i in 0..NUM_COLORS {
+        for i in 0..=Color::MAX {
             self.palette[i as usize] = i as Color;
         }
     }
