@@ -13,7 +13,7 @@ pub enum Gamepad {
 pub fn init_gamepads() -> Vec<Gamepad> {
     let mut gamepads = Vec::new();
     let num_joysticks = unsafe { SDL_NumJoysticks() };
-    gamepads.extend((0..num_joysticks).filter_map(|i| open_gamepad(i)));
+    gamepads.extend((0..num_joysticks).filter_map(open_gamepad));
     gamepads
 }
 
@@ -164,11 +164,11 @@ pub fn handle_virtual_gamepad() -> Vec<Event> {
 
 fn open_gamepad(device_index: i32) -> Option<Gamepad> {
     let instance_id = unsafe { SDL_JoystickGetDeviceInstanceID(device_index) };
-    if unsafe { SDL_IsGameController(device_index) } != 0 {
+    if unsafe { SDL_IsGameController(device_index) } == 0 {
+        None
+    } else {
         let controller = unsafe { SDL_GameControllerOpen(device_index) };
         Some(Gamepad::Controller(instance_id, controller))
-    } else {
-        None
     }
 }
 
