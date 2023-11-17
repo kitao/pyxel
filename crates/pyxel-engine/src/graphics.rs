@@ -6,7 +6,7 @@ use glow::HasContext;
 
 use crate::image::Color;
 use crate::pyxel::Pyxel;
-use crate::settings::{BACKGROUND_COLOR, NUM_SCREEN_TYPES};
+use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_TYPES};
 
 const COMMON_VERT: &str = include_str!("shaders/common.vert");
 const COMMON_FRAG: &str = include_str!("shaders/common.frag");
@@ -398,6 +398,11 @@ impl Pyxel {
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.colors_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
         let colors = self.colors.lock();
+        assert!(
+            colors.len() <= MAX_COLORS as usize,
+            "Number of colors exceeds {}",
+            MAX_COLORS
+        );
         let mut pixels: Vec<u8> = Vec::with_capacity(colors.len() * 3);
         for color in &*colors {
             pixels.push((color >> 16) as u8);
