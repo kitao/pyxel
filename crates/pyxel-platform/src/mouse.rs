@@ -1,11 +1,14 @@
 use cfg_if::cfg_if;
 
 use crate::event::Event;
-use crate::keys::*;
+use crate::keys::{
+    KEY_UNKNOWN, MOUSE_BUTTON_LEFT, MOUSE_BUTTON_MIDDLE, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_X1,
+    MOUSE_BUTTON_X2, MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
+};
 use crate::platform::platform;
 use crate::sdl2_sys::*;
 
-pub fn mouse_button_down(sdl_event: SDL_Event) -> Vec<Event> {
+pub fn handle_mouse_button_down(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     let key = match unsafe { sdl_event.button.button } as u32 {
         SDL_BUTTON_LEFT => MOUSE_BUTTON_LEFT,
@@ -21,7 +24,7 @@ pub fn mouse_button_down(sdl_event: SDL_Event) -> Vec<Event> {
     events
 }
 
-pub fn mouse_button_up(sdl_event: SDL_Event) -> Vec<Event> {
+pub fn handle_mouse_button_up(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     let key = match unsafe { sdl_event.button.button } as u32 {
         SDL_BUTTON_LEFT => MOUSE_BUTTON_LEFT,
@@ -37,7 +40,7 @@ pub fn mouse_button_up(sdl_event: SDL_Event) -> Vec<Event> {
     events
 }
 
-pub fn mouse_wheel(sdl_event: SDL_Event) -> Vec<Event> {
+pub fn handle_mouse_wheel(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     events.push(Event::KeyValueChanged {
         key: MOUSE_WHEEL_X,

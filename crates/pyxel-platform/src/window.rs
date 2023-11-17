@@ -1,9 +1,10 @@
-use std::ffi::CString;
+use std::ffi::{CStr, CString};
 use std::mem::transmute;
 use std::ptr::addr_of_mut;
 
 use glow::Context as GlowContext;
 
+use crate::event::Event;
 use crate::platform::platform;
 use crate::sdl2_sys::*;
 
@@ -138,4 +139,36 @@ pub fn set_mouse_pos(x: i32, y: i32) {
     unsafe {
         SDL_WarpMouseGlobal(window_x + x, window_y + y);
     }
+}
+
+pub fn handle_window_event(sdl_event: SDL_Event) -> Vec<Event> {
+    let mut events = Vec::new();
+    match unsafe { sdl_event.window.event } as u32 {
+        SDL_WINDOWEVENT_SHOWN | SDL_WINDOWEVENT_MAXIMIZED | SDL_WINDOWEVENT_RESTORED => {
+            events.push(Event::WindowShown);
+        }
+        SDL_WINDOWEVENT_HIDDEN | SDL_WINDOWEVENT_MINIMIZED => {
+            events.push(Event::WindowHidden);
+        }
+        _ => {}
+    }
+    events
+}
+
+pub fn handle_drop_file(sdl_event: SDL_Event) -> Vec<Event> {
+    let mut events = Vec::new();
+    unsafe {
+        SDL_RaiseWindow(platform().window);
+    }
+    let filename = unsafe { CStr::from_ptr(sdl_event.drop.file) };
+    let filename = filename.to_string_lossy().into_owned();
+    events.push(Event::FileDropped { filename });
+    unsafe {
+        SDL_free(sdl_event.drop.file.cast());
+    }
+    events
+}
+
+pub fn handle_quit() -> Vec<Event> {
+    vec![Event::Quit]
 }
