@@ -2,10 +2,13 @@ use std::ptr::addr_of;
 use std::str::from_utf8 as str_from_utf8;
 
 use crate::event::Event;
-use crate::keys::*;
+use crate::keys::{
+    Key, KEY_ALT, KEY_CTRL, KEY_GUI, KEY_LALT, KEY_LCTRL, KEY_LGUI, KEY_LSHIFT, KEY_RALT,
+    KEY_RCTRL, KEY_RGUI, KEY_RSHIFT, KEY_SHIFT,
+};
 use crate::sdl2_sys::*;
 
-pub fn key_down(sdl_event: SDL_Event) -> Vec<Event> {
+pub fn handle_key_down(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     if unsafe { sdl_event.key.repeat } == 0 {
         let key = unsafe { sdl_event.key.keysym.sym } as Key;
@@ -17,7 +20,7 @@ pub fn key_down(sdl_event: SDL_Event) -> Vec<Event> {
     events
 }
 
-pub fn key_up(sdl_event: SDL_Event) -> Vec<Event> {
+pub fn handle_key_up(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     if unsafe { sdl_event.key.repeat } == 0 {
         let key = unsafe { sdl_event.key.keysym.sym } as Key;
@@ -29,7 +32,7 @@ pub fn key_up(sdl_event: SDL_Event) -> Vec<Event> {
     events
 }
 
-pub fn text_input(sdl_event: SDL_Event) -> Vec<Event> {
+pub fn handle_text_input(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     let text = unsafe {
         let ptr = (addr_of!(sdl_event.text.text) as *const [i8]).cast::<u8>();

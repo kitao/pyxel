@@ -17,7 +17,7 @@ pub fn init_gamepads() -> Vec<Gamepad> {
     gamepads
 }
 
-pub fn controller_device_added(sdl_event: SDL_Event) {
+pub fn handle_controller_device_added(sdl_event: SDL_Event) {
     let device_index = unsafe { sdl_event.cdevice.which };
     if let Some(gamepad) = open_gamepad(device_index) {
         let unused_gamepad = platform()
@@ -35,7 +35,7 @@ pub fn controller_device_added(sdl_event: SDL_Event) {
     }
 }
 
-pub fn controller_device_removed(sdl_event: SDL_Event) {
+pub fn handle_controller_device_removed(sdl_event: SDL_Event) {
     let instance_id = unsafe { sdl_event.cdevice.which };
     if let Some(gamepad) = platform()
         .gamepads
@@ -51,18 +51,7 @@ pub fn controller_device_removed(sdl_event: SDL_Event) {
     }
 }
 
-pub fn gamepad_key_offset(instance_id: i32) -> Option<u32> {
-    platform()
-        .gamepads
-        .iter()
-        .enumerate()
-        .find_map(|(index, slot)| match slot {
-            Gamepad::Controller(id, _) if *id == instance_id => Some(index as u32),
-            _ => None,
-        })
-}
-
-pub fn controller_axis_motion(sdl_event: SDL_Event) -> Vec<Event> {
+pub fn handle_controller_axis_motion(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     if let Some(key_offset) = gamepad_key_offset(unsafe { sdl_event.caxis.which }) {
         let axis = unsafe { sdl_event.caxis.axis } as i32;
@@ -77,7 +66,7 @@ pub fn controller_axis_motion(sdl_event: SDL_Event) -> Vec<Event> {
     events
 }
 
-pub fn controller_button_down(sdl_event: SDL_Event) -> Vec<Event> {
+pub fn handle_controller_button_down(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     if let Some(key_offset) = gamepad_key_offset(unsafe { sdl_event.cbutton.which }) {
         let button = unsafe { sdl_event.cbutton.button } as i32;
@@ -91,7 +80,7 @@ pub fn controller_button_down(sdl_event: SDL_Event) -> Vec<Event> {
     events
 }
 
-pub fn controller_button_up(sdl_event: SDL_Event) -> Vec<Event> {
+pub fn handle_controller_button_up(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     if let Some(key_offset) = gamepad_key_offset(unsafe { sdl_event.cbutton.which }) {
         let button = unsafe { sdl_event.cbutton.button } as i32;
@@ -106,7 +95,7 @@ pub fn controller_button_up(sdl_event: SDL_Event) -> Vec<Event> {
 }
 
 #[cfg(target_os = "emscripten")]
-pub fn joy_button_down(sdl_event: SDL_Event) -> Vec<Event> {
+pub fn handle_joy_button_down(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     if let Some(key_offset) = gamepad_key_offset(unsafe { sdl_event.jbutton.which }) {
         let button = unsafe { sdl_event.jbutton.button } as i32;
@@ -121,7 +110,7 @@ pub fn joy_button_down(sdl_event: SDL_Event) -> Vec<Event> {
 }
 
 #[cfg(target_os = "emscripten")]
-pub fn joy_button_up(sdl_event: SDL_Event) -> Vec<Event> {
+pub fn handle_joy_button_up(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     if let Some(key_offset) = gamepad_key_offset(unsafe { sdl_event.jbutton.which }) {
         let button = unsafe { sdl_event.jbutton.button } as i32;
@@ -136,7 +125,7 @@ pub fn joy_button_up(sdl_event: SDL_Event) -> Vec<Event> {
 }
 
 #[cfg(target_os = "emscripten")]
-pub fn handle_virtual_gamepad() -> Vec<Event> {
+pub fn handle_virtual_gamepad_inputs() -> Vec<Event> {
     const INDEX_TO_BUTTON: [Key; 8] = [
         GAMEPAD1_BUTTON_DPAD_UP,
         GAMEPAD1_BUTTON_DPAD_DOWN,
@@ -170,6 +159,17 @@ fn open_gamepad(device_index: i32) -> Option<Gamepad> {
         let controller = unsafe { SDL_GameControllerOpen(device_index) };
         Some(Gamepad::Controller(instance_id, controller))
     }
+}
+
+fn gamepad_key_offset(instance_id: i32) -> Option<u32> {
+    platform()
+        .gamepads
+        .iter()
+        .enumerate()
+        .find_map(|(index, slot)| match slot {
+            Gamepad::Controller(id, _) if *id == instance_id => Some(index as u32),
+            _ => None,
+        })
 }
 
 fn controller_axis_to_key(axis: i32) -> Key {
