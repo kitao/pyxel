@@ -47,6 +47,7 @@ pub const PALETTE_FILE_EXTENSION: &str = ".pyxpal";
 
 // Graphics
 pub const NUM_COLORS: u32 = 16;
+pub const MAX_COLORS: u32 = 256;
 pub const NUM_IMAGES: u32 = 3;
 pub const IMAGE_SIZE: u32 = 256;
 pub const NUM_TILEMAPS: u32 = 8;
