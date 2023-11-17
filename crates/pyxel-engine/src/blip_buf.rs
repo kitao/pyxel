@@ -7,6 +7,7 @@
     dead_code,
     clippy::float_cmp,
     clippy::items_after_statements,
+    clippy::should_panic_without_expect,
     clippy::unnecessary_cast
 )]
 
