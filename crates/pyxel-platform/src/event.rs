@@ -1,9 +1,6 @@
 use std::ffi::CStr;
 use std::mem::zeroed;
-use std::ptr::{addr_of, addr_of_mut};
-use std::str::from_utf8 as str_from_utf8;
-
-use cfg_if::cfg_if;
+use std::ptr::addr_of_mut;
 
 use crate::gamepad::{
     controller_axis_motion, controller_button_down, controller_button_up, controller_device_added,
@@ -11,7 +8,9 @@ use crate::gamepad::{
 };
 #[cfg(target_os = "emscripten")]
 use crate::gamepad::{handle_virtual_gamepad, joy_button_down, joy_button_up};
+use crate::keyboard::{key_down, key_up, text_input};
 use crate::keys::*;
+use crate::mouse::{handle_mouse_motion, mouse_button_down, mouse_button_up, mouse_wheel};
 use crate::platform::platform;
 use crate::sdl2_sys::*;
 
@@ -42,58 +41,19 @@ pub fn poll_events() -> Vec<Event> {
                 _ => {}
             },
             SDL_KEYDOWN => {
-                if unsafe { sdl_event.key.repeat } == 0 {
-                    let key = unsafe { sdl_event.key.keysym.sym } as Key;
-                    pyxel_events.push(Event::KeyPressed { key });
-                    if let Some(unified_key) = to_unified_key(key) {
-                        pyxel_events.push(Event::KeyPressed { key: unified_key });
-                    }
-                }
+                pyxel_events.extend(key_down(sdl_event));
             }
             SDL_KEYUP => {
-                if unsafe { sdl_event.key.repeat } == 0 {
-                    let key = unsafe { sdl_event.key.keysym.sym } as Key;
-                    pyxel_events.push(Event::KeyReleased { key });
-                    if let Some(unified_key) = to_unified_key(key) {
-                        pyxel_events.push(Event::KeyReleased { key: unified_key });
-                    }
-                }
+                pyxel_events.extend(key_up(sdl_event));
             }
             SDL_MOUSEBUTTONDOWN => {
-                let key = match unsafe { sdl_event.button.button } as u32 {
-                    SDL_BUTTON_LEFT => MOUSE_BUTTON_LEFT,
-                    SDL_BUTTON_MIDDLE => MOUSE_BUTTON_MIDDLE,
-                    SDL_BUTTON_RIGHT => MOUSE_BUTTON_RIGHT,
-                    SDL_BUTTON_X1 => MOUSE_BUTTON_X1,
-                    SDL_BUTTON_X2 => MOUSE_BUTTON_X2,
-                    _ => KEY_UNKNOWN,
-                };
-                if key != KEY_UNKNOWN {
-                    pyxel_events.push(Event::KeyPressed { key });
-                }
+                pyxel_events.extend(mouse_button_down(sdl_event));
             }
             SDL_MOUSEBUTTONUP => {
-                let key = match unsafe { sdl_event.button.button } as u32 {
-                    SDL_BUTTON_LEFT => MOUSE_BUTTON_LEFT,
-                    SDL_BUTTON_MIDDLE => MOUSE_BUTTON_MIDDLE,
-                    SDL_BUTTON_RIGHT => MOUSE_BUTTON_RIGHT,
-                    SDL_BUTTON_X1 => MOUSE_BUTTON_X1,
-                    SDL_BUTTON_X2 => MOUSE_BUTTON_X2,
-                    _ => KEY_UNKNOWN,
-                };
-                if key != KEY_UNKNOWN {
-                    pyxel_events.push(Event::KeyReleased { key });
-                }
+                pyxel_events.extend(mouse_button_up(sdl_event));
             }
             SDL_MOUSEWHEEL => {
-                pyxel_events.push(Event::KeyValueChanged {
-                    key: MOUSE_WHEEL_X,
-                    value: unsafe { sdl_event.wheel.x },
-                });
-                pyxel_events.push(Event::KeyValueChanged {
-                    key: MOUSE_WHEEL_Y,
-                    value: unsafe { sdl_event.wheel.y },
-                });
+                pyxel_events.extend(mouse_wheel(sdl_event));
             }
             SDL_CONTROLLERDEVICEADDED => {
                 controller_device_added(sdl_event);
@@ -119,15 +79,7 @@ pub fn poll_events() -> Vec<Event> {
                 pyxel_events.extend(joy_button_up(sdl_event));
             }
             SDL_TEXTINPUT => {
-                let text = unsafe {
-                    let ptr = (addr_of!(sdl_event.text.text) as *const [i8]).cast::<u8>();
-                    let slice = std::slice::from_raw_parts(ptr, sdl_event.text.text.len());
-                    str_from_utf8(slice)
-                };
-                if let Ok(text) = text {
-                    let text = text.to_string();
-                    pyxel_events.push(Event::TextInput { text });
-                }
+                pyxel_events.extend(text_input(sdl_event));
             }
             SDL_DROPFILE => {
                 unsafe {
@@ -146,42 +98,9 @@ pub fn poll_events() -> Vec<Event> {
             _ => {}
         }
     }
-
-    // Mouse cursor movement
-    let mut mouse_x = 0;
-    let mut mouse_y = 0;
-    unsafe { SDL_GetGlobalMouseState(&mut mouse_x, &mut mouse_y) };
-    if mouse_x != platform().mouse_x || mouse_y != platform().mouse_y {
-        cfg_if! {
-            if #[cfg(target_os = "emscripten")] {
-                let (window_x, window_y) = (0, 0);
-            } else {
-                let (window_x, window_y) = crate::window_pos();
-            }
-        }
-        pyxel_events.push(Event::KeyValueChanged {
-            key: MOUSE_POS_X,
-            value: mouse_x - window_x,
-        });
-        pyxel_events.push(Event::KeyValueChanged {
-            key: MOUSE_POS_Y,
-            value: mouse_y - window_y,
-        });
-    }
-
-    // Virtual gamepad
+    pyxel_events.extend(handle_mouse_motion());
     #[cfg(target_os = "emscripten")]
     pyxel_events.extend(handle_virtual_gamepad());
 
     pyxel_events
-}
-
-fn to_unified_key(key: Key) -> Option<Key> {
-    match key {
-        KEY_LSHIFT | KEY_RSHIFT => Some(KEY_SHIFT),
-        KEY_LCTRL | KEY_RCTRL => Some(KEY_CTRL),
-        KEY_LALT | KEY_RALT => Some(KEY_ALT),
-        KEY_LGUI | KEY_RGUI => Some(KEY_GUI),
-        _ => None,
-    }
 }
