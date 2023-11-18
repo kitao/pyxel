@@ -125,7 +125,7 @@ macro_rules! wrap_as_python_list {
     };
 }
 
-pub fn pyxel_warn(message: &str) {
+pub fn python_warn(message: &str) {
     Python::with_gil(|py| {
         let locals = PyDict::new(py);
         py.run(
@@ -138,6 +138,6 @@ pub fn pyxel_warn(message: &str) {
         if let Ok((file, line)) = stack_info.unwrap().extract::<(String, i64)>() {
             print!("{file}:{line}: ");
         }
-        println!("PyxelWarning: {message}");
+        println!("{message}");
     });
 }

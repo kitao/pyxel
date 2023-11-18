@@ -3,7 +3,7 @@ use std::sync::Once;
 use pyo3::prelude::*;
 use pyo3::types::{PyList, PyTuple};
 
-use crate::utils::pyxel_warn;
+use crate::utils::python_warn;
 
 static SNDS_LIST_ONCE: Once = Once::new();
 
@@ -67,7 +67,7 @@ impl Music {
     #[getter]
     pub fn snds_list(&self) -> Seqs {
         SNDS_LIST_ONCE.call_once(|| {
-            pyxel_warn("Music.snds_list[ch] is deprecated, use Music.seqs[ch] instead.");
+            python_warn("Music.snds_list[ch] is deprecated, use Music.seqs[ch] instead.");
         });
         Seqs::wrap(self.inner.clone())
     }

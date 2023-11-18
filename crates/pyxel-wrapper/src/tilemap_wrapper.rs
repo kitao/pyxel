@@ -4,7 +4,7 @@ use pyo3::prelude::*;
 
 use crate::image_wrapper::Image;
 use crate::pyxel_singleton::pyxel;
-use crate::utils::pyxel_warn;
+use crate::utils::python_warn;
 
 static IMAGE_ONCE: Once = Once::new();
 static SET_IMAGE_ONCE: Once = Once::new();
@@ -196,7 +196,7 @@ impl Tilemap {
     #[getter]
     pub fn image(&self) -> Image {
         IMAGE_ONCE.call_once(|| {
-            pyxel_warn("Tilemap.image is deprecated, use Tilemap.imgsrc instead.");
+            python_warn("Tilemap.image is deprecated, use Tilemap.imgsrc instead.");
         });
         let tilemap = self.inner.lock();
         match &tilemap.imgsrc {
@@ -211,7 +211,7 @@ impl Tilemap {
     #[setter]
     pub fn set_image(&self, image: Image) {
         SET_IMAGE_ONCE.call_once(|| {
-            pyxel_warn("Tilemap.image is deprecated, use Tilemap.imgsrc instead.");
+            python_warn("Tilemap.image is deprecated, use Tilemap.imgsrc instead.");
         });
         self.inner.lock().imgsrc = pyxel::ImageSource::Image(image.inner);
     }
@@ -219,7 +219,7 @@ impl Tilemap {
     #[getter]
     pub fn refimg(&self) -> Option<u32> {
         REFIMG_ONCE.call_once(|| {
-            pyxel_warn("Tilemap.refimg is deprecated, use Tilemap.imgsrc instead.");
+            python_warn("Tilemap.refimg is deprecated, use Tilemap.imgsrc instead.");
         });
         let tilemap = self.inner.lock();
         match &tilemap.imgsrc {
@@ -231,7 +231,7 @@ impl Tilemap {
     #[setter]
     pub fn set_refimg(&self, img: u32) {
         SET_REFIMG_ONCE.call_once(|| {
-            pyxel_warn("Tilemap.refimg is deprecated, use Tilemap.imgsrc instead.");
+            python_warn("Tilemap.refimg is deprecated, use Tilemap.imgsrc instead.");
         });
         self.inner.lock().imgsrc = pyxel::ImageSource::Index(img);
     }
