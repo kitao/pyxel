@@ -393,14 +393,15 @@ impl Pyxel {
         );
     }
 
+    #[allow(clippy::uninlined_format_args)]
     unsafe fn bind_colors_texture(&self, gl: &mut glow::Context) {
         gl.active_texture(glow::TEXTURE1);
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.colors_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
         let colors = self.colors.lock();
         assert!(
-            colors.len() <= MAX_COLORS as usize,
-            "Number of colors exceeds {}",
+            colors.len() >= 1 && colors.len() <= MAX_COLORS as usize,
+            "Number of colors must be between 1 to {}",
             MAX_COLORS
         );
         let mut pixels: Vec<u8> = Vec::with_capacity(colors.len() * 3);
