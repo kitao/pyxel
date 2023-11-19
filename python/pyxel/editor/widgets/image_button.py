@@ -23,7 +23,7 @@ class ImageButton(Button):
         self.add_event_listener("draw", self.__on_draw)
 
     def __on_draw(self):
-        pyxel.pal2(BUTTON_ENABLED_COLOR, self.button_color)
+        pyxel.pal(BUTTON_ENABLED_COLOR, self.button_color)
         pyxel.blt(
             self.x,
             self.y,
@@ -34,4 +34,4 @@ class ImageButton(Button):
             self.height,
             0,
         )
-        pyxel.pal2()
+        pyxel.pal()

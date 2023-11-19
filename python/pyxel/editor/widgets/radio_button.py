@@ -62,7 +62,7 @@ class RadioButton(Widget):
             self.width,
             self.height,
         )
-        pyxel.pal2(BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR)
+        pyxel.pal(BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR)
         pyxel.blt(
             self.x + self.value_var * 9,
             self.y,
@@ -72,4 +72,4 @@ class RadioButton(Widget):
             7,
             7,
         )
-        pyxel.pal2()
+        pyxel.pal()

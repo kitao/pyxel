@@ -18,6 +18,7 @@ class ColorPicker(Widget):
 
         # Initialize value_var
         self.new_var("value_var", value)
+        self.add_var_event_listener("value_var", "set", self.__on_value_set)
         self.add_var_event_listener("value_var", "change", self.__on_value_change)
 
         # Set event listeners
@@ -54,11 +55,11 @@ class ColorPicker(Widget):
         )
 
         # Draw colors
-        pyxel.pal()
+        pyxel.user_pal()
         for yi in range(2):
             for xi in range(8):
                 pyxel.rect(self.x + xi * 8 + 1, self.y + yi * 8 + 1, 7, 7, yi * 8 + xi)
-        pyxel.pal2()
+        pyxel.pal()
 
         # Draw cursor
         col = self.value_var
@@ -70,6 +71,9 @@ class ColorPicker(Widget):
             "+",
             7 if brightness < 0x70 * 3 else 0,
         )
+
+    def __on_value_set(self, value):
+        return value if value < len(pyxel.colors) - pyxel.NUM_COLORS else 0
 
     def __on_value_change(self, value):
         self.trigger_event("change", value)
