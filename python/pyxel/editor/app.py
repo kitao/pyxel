@@ -40,10 +40,12 @@ class App(Widget):
         # Initialize Pyxel
         pyxel.init(APP_WIDTH, APP_HEIGHT, quit_key=pyxel.KEY_NONE)
         pyxel.mouse(True)
-        pyxel.pal2()
+        colors = pyxel.colors.to_list()
         self._set_title(original_resource_file)
         if os.path.exists(resource_file):
             pyxel.load(resource_file)
+        colors += pyxel.colors.to_list()
+        pyxel.colors.from_list(colors)
 
         # Start initializing application
         super().__init__(None, 0, 0, pyxel.width, pyxel.height)
