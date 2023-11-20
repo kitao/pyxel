@@ -1,6 +1,5 @@
 use std::array;
 use std::collections::HashMap;
-use std::fmt::Write as _;
 use std::path::Path;
 
 use image::{self, imageops};
@@ -8,10 +7,8 @@ use image::{self, imageops};
 use crate::canvas::{Canvas, CopyArea, ToIndex};
 use crate::pyxel::{COLORS, FONT_IMAGE, IMAGES};
 use crate::rect_area::RectArea;
-use crate::resource::ResourceItem;
 use crate::settings::{
-    FONT_HEIGHT, FONT_WIDTH, MAX_COLORS, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_ROWS,
-    RESOURCE_ARCHIVE_DIRNAME, TILE_SIZE,
+    FONT_HEIGHT, FONT_WIDTH, MAX_COLORS, MAX_FONT_CODE, MIN_FONT_CODE, NUM_FONT_ROWS, TILE_SIZE,
 };
 use crate::tilemap::{ImageSource, SharedTilemap};
 use crate::utils;
@@ -429,50 +426,5 @@ impl Image {
         let dy = (g1 as f64 - g2 as f64) * 0.59;
         let dz = (b1 as f64 - b2 as f64) * 0.11;
         dx * dx + dy * dy + dz * dz
-    }
-}
-
-impl ResourceItem for Image {
-    fn resource_name(item_index: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "image" + &item_index.to_string()
-    }
-
-    fn is_modified(&self) -> bool {
-        for y in 0..self.height() {
-            for x in 0..self.width() {
-                if self.canvas.read_data(x as usize, y as usize) != 0 {
-                    return true;
-                }
-            }
-        }
-        false
-    }
-
-    fn clear(&mut self) {
-        self.cls(0);
-    }
-
-    fn serialize(&self) -> String {
-        let mut output = String::new();
-        for y in 0..self.height() {
-            for x in 0..self.width() {
-                let _guard = write!(
-                    output,
-                    "{:1x}",
-                    self.canvas.read_data(x as usize, y as usize)
-                );
-            }
-            output += "\n";
-        }
-        output
-    }
-
-    fn deserialize(&mut self, _version: u32, input: &str) {
-        for (i, line) in input.lines().enumerate() {
-            string_loop!(j, color, line, 1, {
-                self.canvas
-                    .write_data(j, i, utils::parse_hex_string(&color).unwrap() as Color);
-            });
-        }
     }
 }
