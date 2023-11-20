@@ -5,7 +5,7 @@ use pyo3::prelude::*;
 use crate::image_wrapper::Image;
 use crate::pyxel_singleton::pyxel;
 use crate::tilemap_wrapper::Tilemap;
-use crate::utils::python_warn;
+use crate::utils::warn_with_python_caller;
 
 static IMAGE_ONCE: Once = Once::new();
 static TILEMAP_ONCE: Once = Once::new();
@@ -17,7 +17,7 @@ fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyRes
     } else if (x, y, w, h) == (None, None, None, None) {
         pyxel().clip0();
     } else {
-        type_error!("clip() takes 0 or 4 arguments");
+        python_type_error!("clip() takes 0 or 4 arguments");
     }
     Ok(())
 }
@@ -29,7 +29,7 @@ fn camera(x: Option<f64>, y: Option<f64>) -> PyResult<()> {
     } else if (x, y) == (None, None) {
         pyxel().camera0();
     } else {
-        type_error!("camera() takes 0 or 2 arguments");
+        python_type_error!("camera() takes 0 or 2 arguments");
     }
     Ok(())
 }
@@ -41,7 +41,7 @@ fn pal(col1: Option<pyxel::Color>, col2: Option<pyxel::Color>) -> PyResult<()> {
     } else if (col1, col2) == (None, None) {
         pyxel().pal0();
     } else {
-        type_error!("pal() takes 0 or 2 arguments");
+        python_type_error!("pal() takes 0 or 2 arguments");
     }
     Ok(())
 }
@@ -127,7 +127,7 @@ fn blt(
     h: f64,
     colkey: Option<pyxel::Color>,
 ) -> PyResult<()> {
-    type_switch! {
+    pyany_type_match! {
         img,
         u32, {
             pyxel().blt(x, y, img, u, v, w, h, colkey);
@@ -150,7 +150,7 @@ fn bltm(
     h: f64,
     colkey: Option<pyxel::Color>,
 ) -> PyResult<()> {
-    type_switch! {
+    pyany_type_match! {
         tm,
         u32, {
             pyxel().bltm(x, y, tm, u, v, w, h, colkey);
@@ -170,7 +170,7 @@ fn text(x: f64, y: f64, s: &str, col: pyxel::Color) {
 #[pyfunction]
 fn image(img: u32) -> Image {
     IMAGE_ONCE.call_once(|| {
-        python_warn("pyxel.image(img) is deprecated, use pyxel.images[img] instead.");
+        warn_with_python_caller("pyxel.image(img) is deprecated, use pyxel.images[img] instead.");
     });
     Image {
         inner: pyxel().images.lock()[img as usize].clone(),
@@ -180,7 +180,7 @@ fn image(img: u32) -> Image {
 #[pyfunction]
 fn tilemap(tm: u32) -> Tilemap {
     TILEMAP_ONCE.call_once(|| {
-        python_warn("pyxel.tilemap(tm) is deprecated, use pyxel.tilemaps[tm] instead.");
+        warn_with_python_caller("pyxel.tilemap(tm) is deprecated, use pyxel.tilemaps[tm] instead.");
     });
     Tilemap::wrap(pyxel().tilemaps.lock()[tm as usize].clone())
 }

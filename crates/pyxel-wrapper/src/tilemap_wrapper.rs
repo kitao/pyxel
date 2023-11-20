@@ -4,7 +4,7 @@ use pyo3::prelude::*;
 
 use crate::image_wrapper::Image;
 use crate::pyxel_singleton::pyxel;
-use crate::utils::python_warn;
+use crate::utils::warn_with_python_caller;
 
 static IMAGE_ONCE: Once = Once::new();
 static SET_IMAGE_ONCE: Once = Once::new();
@@ -27,7 +27,7 @@ impl Tilemap {
 impl Tilemap {
     #[new]
     pub fn new(width: u32, height: u32, img: &PyAny) -> PyResult<Self> {
-        let imgsrc = type_switch! {
+        let imgsrc = pyany_type_match! {
             img,
             u32, {
                 pyxel::ImageSource::Index(img)
@@ -60,7 +60,7 @@ impl Tilemap {
 
     #[setter]
     pub fn set_imgsrc(&self, img: &PyAny) -> PyResult<()> {
-        let imgsrc = type_switch! {
+        let imgsrc = pyany_type_match! {
             img,
             u32, {
                 pyxel::ImageSource::Index(img)
@@ -101,7 +101,7 @@ impl Tilemap {
         } else if (x, y, w, h) == (None, None, None, None) {
             self.inner.lock().clip0();
         } else {
-            type_error!("clip() takes 0 or 4 arguments");
+            python_type_error!("clip() takes 0 or 4 arguments");
         }
         Ok(())
     }
@@ -112,7 +112,7 @@ impl Tilemap {
         } else if (x, y) == (None, None) {
             self.inner.lock().camera0();
         } else {
-            type_error!("camera() takes 0 or 2 arguments");
+            python_type_error!("camera() takes 0 or 2 arguments");
         }
         Ok(())
     }
@@ -180,7 +180,7 @@ impl Tilemap {
         h: f64,
         tilekey: Option<pyxel::Tile>,
     ) -> PyResult<()> {
-        type_switch! {
+        pyany_type_match! {
             tm,
             u32, {
                 let tilemap = pyxel().tilemaps.lock()[tm as usize].clone();
@@ -196,7 +196,7 @@ impl Tilemap {
     #[getter]
     pub fn image(&self) -> Image {
         IMAGE_ONCE.call_once(|| {
-            python_warn("Tilemap.image is deprecated, use Tilemap.imgsrc instead.");
+            warn_with_python_caller("Tilemap.image is deprecated, use Tilemap.imgsrc instead.");
         });
         let tilemap = self.inner.lock();
         match &tilemap.imgsrc {
@@ -211,7 +211,7 @@ impl Tilemap {
     #[setter]
     pub fn set_image(&self, image: Image) {
         SET_IMAGE_ONCE.call_once(|| {
-            python_warn("Tilemap.image is deprecated, use Tilemap.imgsrc instead.");
+            warn_with_python_caller("Tilemap.image is deprecated, use Tilemap.imgsrc instead.");
         });
         self.inner.lock().imgsrc = pyxel::ImageSource::Image(image.inner);
     }
@@ -219,7 +219,7 @@ impl Tilemap {
     #[getter]
     pub fn refimg(&self) -> Option<u32> {
         REFIMG_ONCE.call_once(|| {
-            python_warn("Tilemap.refimg is deprecated, use Tilemap.imgsrc instead.");
+            warn_with_python_caller("Tilemap.refimg is deprecated, use Tilemap.imgsrc instead.");
         });
         let tilemap = self.inner.lock();
         match &tilemap.imgsrc {
@@ -231,7 +231,7 @@ impl Tilemap {
     #[setter]
     pub fn set_refimg(&self, img: u32) {
         SET_REFIMG_ONCE.call_once(|| {
-            python_warn("Tilemap.refimg is deprecated, use Tilemap.imgsrc instead.");
+            warn_with_python_caller("Tilemap.refimg is deprecated, use Tilemap.imgsrc instead.");
         });
         self.inner.lock().imgsrc = pyxel::ImageSource::Index(img);
     }
