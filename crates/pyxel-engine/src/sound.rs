@@ -1,13 +1,10 @@
-use std::fmt::Write as _;
-
 use crate::channel::{Note, Speed, Volume};
 use crate::oscillator::{Effect, Tone};
-use crate::resource::ResourceItem;
 use crate::settings::{
-    EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED,
-    RESOURCE_ARCHIVE_DIRNAME, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
+    EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED, TONE_NOISE,
+    TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
 };
-use crate::utils::{parse_hex_string, simplify_string};
+use crate::utils::simplify_string;
 
 #[derive(Clone)]
 pub struct Sound {
@@ -121,89 +118,6 @@ impl Sound {
                 _ => panic!("Invalid sound effect '{c}'"),
             };
             self.effects.push(effect);
-        }
-    }
-}
-
-impl ResourceItem for Sound {
-    fn resource_name(item_index: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{item_index:02}")
-    }
-
-    fn is_modified(&self) -> bool {
-        !self.notes.is_empty()
-            || !self.tones.is_empty()
-            || !self.volumes.is_empty()
-            || !self.effects.is_empty()
-    }
-
-    fn clear(&mut self) {
-        self.notes.clear();
-        self.tones.clear();
-        self.volumes.clear();
-        self.effects.clear();
-        self.speed = INITIAL_SPEED;
-    }
-
-    fn serialize(&self) -> String {
-        let mut output = String::new();
-        if self.notes.is_empty() {
-            output += "none\n";
-        } else {
-            for note in &self.notes {
-                if *note < 0 {
-                    output += "ff";
-                } else {
-                    let _guard = write!(output, "{:02x}", *note);
-                }
-            }
-            output += "\n";
-        }
-
-        macro_rules! stringify_data {
-            ($name: ident) => {
-                if self.$name.is_empty() {
-                    output += "none\n";
-                } else {
-                    for value in &self.$name {
-                        let _guard = write!(output, "{:1x}", *value);
-                    }
-                    output += "\n";
-                }
-            };
-        }
-
-        stringify_data!(tones);
-        stringify_data!(volumes);
-        stringify_data!(effects);
-        let _guard = write!(output, "{}", self.speed);
-        output
-    }
-
-    fn deserialize(&mut self, _version: u32, input: &str) {
-        self.clear();
-        for (i, line) in input.lines().enumerate() {
-            if line == "none" {
-                continue;
-            }
-            if i == 0 {
-                string_loop!(j, value, line, 2, {
-                    self.notes.push(parse_hex_string(&value).unwrap() as i8);
-                });
-                continue;
-            } else if i == 4 {
-                self.speed = line.parse().unwrap();
-                continue;
-            }
-            let data = match i {
-                1 => &mut self.tones,
-                2 => &mut self.volumes,
-                3 => &mut self.effects,
-                _ => panic!(),
-            };
-            string_loop!(j, value, line, 1, {
-                data.push(parse_hex_string(&value).unwrap() as u8);
-            });
         }
     }
 }

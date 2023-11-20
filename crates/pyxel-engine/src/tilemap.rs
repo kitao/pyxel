@@ -1,9 +1,5 @@
-use std::fmt::{self, Write as _};
-
 use crate::canvas::{Canvas, ToIndex};
 use crate::image::SharedImage;
-use crate::resource::ResourceItem;
-use crate::settings::{RESOURCE_ARCHIVE_DIRNAME, TILEMAP_SIZE};
 use crate::utils::{f64_to_u32, parse_hex_string, simplify_string};
 
 pub type Tile = (u8, u8);
@@ -18,15 +14,6 @@ impl ToIndex for Tile {
 pub enum ImageSource {
     Index(u32),
     Image(SharedImage),
-}
-
-impl fmt::Display for ImageSource {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ImageSource::Index(index) => write!(f, "{index}"),
-            ImageSource::Image(_) => write!(f, "0"),
-        }
-    }
 }
 
 pub struct Tilemap {
@@ -195,62 +182,6 @@ impl Tilemap {
             );
             self.canvas
                 .blt(x, y, &canvas, 0.0, 0.0, width, height, transparent, None);
-        }
-    }
-}
-
-impl ResourceItem for Tilemap {
-    fn resource_name(item_index: u32) -> String {
-        RESOURCE_ARCHIVE_DIRNAME.to_string() + "tilemap" + &item_index.to_string()
-    }
-
-    fn is_modified(&self) -> bool {
-        for y in 0..self.height() {
-            for x in 0..self.width() {
-                if self.canvas.read_data(x as usize, y as usize) != (0, 0) {
-                    return true;
-                }
-            }
-        }
-        false
-    }
-
-    fn clear(&mut self) {
-        self.cls((0, 0));
-    }
-
-    fn serialize(&self) -> String {
-        let mut output = String::new();
-        for y in 0..self.height() {
-            for x in 0..self.width() {
-                let tile = self.canvas.read_data(x as usize, y as usize);
-                let _guard = write!(output, "{:02x}{:02x}", tile.0, tile.1);
-            }
-            output += "\n";
-        }
-        let _guard = write!(output, "{}", self.imgsrc);
-        output
-    }
-
-    fn deserialize(&mut self, version: u32, input: &str) {
-        for (y, line) in input.lines().enumerate() {
-            if y < TILEMAP_SIZE as usize {
-                if version < 10500 {
-                    string_loop!(x, tile, line, 3, {
-                        let tile = parse_hex_string(&tile).unwrap();
-                        self.canvas
-                            .write_data(x, y, ((tile % 32) as u8, (tile / 32) as u8));
-                    });
-                } else {
-                    string_loop!(x, tile, line, 4, {
-                        let tile_x = parse_hex_string(&tile[0..2]).unwrap();
-                        let tile_y = parse_hex_string(&tile[2..4]).unwrap();
-                        self.canvas.write_data(x, y, (tile_x as u8, tile_y as u8));
-                    });
-                }
-            } else {
-                self.imgsrc = ImageSource::Index(line.parse::<usize>().unwrap() as u32);
-            }
         }
     }
 }
