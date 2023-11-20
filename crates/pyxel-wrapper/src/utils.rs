@@ -1,20 +1,37 @@
 use pyo3::types::PyDict;
 use pyo3::Python;
 
-macro_rules! type_error {
+pub fn warn_with_python_caller(message: &str) {
+    Python::with_gil(|py| {
+        let locals = PyDict::new(py);
+        py.run(
+            "import traceback; stack_info = traceback.extract_stack()[-2][:2]",
+            None,
+            Some(locals),
+        )
+        .unwrap();
+        let stack_info = locals.get_item("stack_info").unwrap();
+        if let Ok((file, line)) = stack_info.unwrap().extract::<(String, i64)>() {
+            print!("{file}:{line}: ");
+        }
+        println!("{message}");
+    });
+}
+
+macro_rules! python_type_error {
     ($msg: expr) => {
         return Err(pyo3::exceptions::PyTypeError::new_err($msg))
     };
 }
 
-macro_rules! type_switch {
-    ($var: ident, $type1: ty, $block1: block, $type2: ty, $block2: block) => {
-        if let Ok($var) = <$type1>::extract($var) {
+macro_rules! pyany_type_match {
+    ($pyany: ident, $type1: ty, $block1: block, $type2: ty, $block2: block) => {
+        if let Ok($pyany) = <$type1>::extract($pyany) {
             $block1
-        } else if let Ok($var) = <$type2>::extract($var) {
+        } else if let Ok($pyany) = <$type2>::extract($pyany) {
             $block2
         } else {
-            type_error!(format!(
+            python_type_error!(format!(
                 "must be {} or {}",
                 stringify!($type1),
                 stringify!($type2)
@@ -22,17 +39,17 @@ macro_rules! type_switch {
         }
     };
 
-    ($var: ident, $type1: ty, $block1: block, $type2: ty, $block2: block, $type3: ty, $block3: block, $type4: ty, $block4: block) => {
-        if let Ok($var) = <$type1>::extract($var) {
+    ($pyany: ident, $type1: ty, $block1: block, $type2: ty, $block2: block, $type3: ty, $block3: block, $type4: ty, $block4: block) => {
+        if let Ok($pyany) = <$type1>::extract($pyany) {
             $block1
-        } else if let Ok($var) = <$type2>::extract($var) {
+        } else if let Ok($pyany) = <$type2>::extract($pyany) {
             $block2
-        } else if let Ok($var) = <$type3>::extract($var) {
+        } else if let Ok($pyany) = <$type3>::extract($pyany) {
             $block3
-        } else if let Ok($var) = <$type4>::extract($var) {
+        } else if let Ok($pyany) = <$type4>::extract($pyany) {
             $block4
         } else {
-            type_error!(format!(
+            python_type_error!(format!(
                 "must be {}, {}, {}, or {}",
                 stringify!($type1),
                 stringify!($type2),
@@ -123,21 +140,4 @@ macro_rules! wrap_as_python_list {
             }
         }
     };
-}
-
-pub fn python_warn(message: &str) {
-    Python::with_gil(|py| {
-        let locals = PyDict::new(py);
-        py.run(
-            "import traceback; stack_info = traceback.extract_stack()[-2][:2]",
-            None,
-            Some(locals),
-        )
-        .unwrap();
-        let stack_info = locals.get_item("stack_info").unwrap();
-        if let Ok((file, line)) = stack_info.unwrap().extract::<(String, i64)>() {
-            print!("{file}:{line}: ");
-        }
-        println!("{message}");
-    });
 }

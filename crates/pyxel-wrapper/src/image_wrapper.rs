@@ -73,7 +73,7 @@ impl Image {
         } else if (x, y, w, h) == (None, None, None, None) {
             self.inner.lock().clip0();
         } else {
-            type_error!("clip() takes 0 or 4 arguments");
+            python_type_error!("clip() takes 0 or 4 arguments");
         }
         Ok(())
     }
@@ -84,7 +84,7 @@ impl Image {
         } else if (x, y) == (None, None) {
             self.inner.lock().camera0();
         } else {
-            type_error!("camera() takes 0 or 2 arguments");
+            python_type_error!("camera() takes 0 or 2 arguments");
         }
         Ok(())
     }
@@ -95,7 +95,7 @@ impl Image {
         } else if (col1, col2) == (None, None) {
             self.inner.lock().pal0();
         } else {
-            type_error!("pal() takes 0 or 2 arguments");
+            python_type_error!("pal() takes 0 or 2 arguments");
         }
         Ok(())
     }
@@ -167,7 +167,7 @@ impl Image {
         h: f64,
         colkey: Option<pyxel::Color>,
     ) -> PyResult<()> {
-        type_switch! {
+        pyany_type_match! {
             img,
             u32, {
                 let image = pyxel().images.lock()[img as usize].clone();
@@ -191,7 +191,7 @@ impl Image {
         h: f64,
         colkey: Option<pyxel::Color>,
     ) -> PyResult<()> {
-        type_switch! {
+        pyany_type_match! {
             tm,
             u32, {
                 let tilemap = pyxel().tilemaps.lock()[tm as usize].clone();
