@@ -1,6 +1,6 @@
 use std::cmp::max;
 use std::fs::File;
-use std::io::{Read, Write};
+use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use cfg_if::cfg_if;
@@ -8,17 +8,16 @@ use platform_dirs::UserDirs;
 use zip::write::FileOptions;
 use zip::{ZipArchive, ZipWriter};
 
-use crate::image::{Image, Rgb24};
+use crate::image::Image;
 use crate::music::Music;
 use crate::pyxel::Pyxel;
 use crate::screencast::Screencast;
 use crate::settings::{
     DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
-    PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_DIRNAME, VERSION,
+    RESOURCE_ARCHIVE_DIRNAME, VERSION,
 };
 use crate::sound::Sound;
 use crate::tilemap::Tilemap;
-use crate::utils::parse_version_string;
 
 pub trait ResourceItem {
     fn resource_name(item_index: u32) -> String;
@@ -51,67 +50,7 @@ impl Pyxel {
                 .unwrap_or_else(|_| panic!("Unable to open file '{filename}'")),
         )
         .unwrap_or_else(|_| panic!("Unable to parse zip archive '{filename}'"));
-        let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
-        let contents = {
-            let mut file = archive.by_name(&version_name).unwrap();
-            let mut contents = String::new();
-            file.read_to_string(&mut contents).unwrap();
-            contents
-        };
-        let version = parse_version_string(&contents).unwrap();
-        assert!(
-            version <= parse_version_string(VERSION).unwrap(),
-            "Unsupported resource file version '{contents}'"
-        );
-
-        macro_rules! deserialize {
-            ($type: ty, $list: ident, $count: expr) => {
-                for i in 0..$count {
-                    if let Ok(mut file) = archive.by_name(&<$type>::resource_name(i)) {
-                        let mut input = String::new();
-                        file.read_to_string(&mut input).unwrap();
-                        self.$list.lock()[i as usize]
-                            .lock()
-                            .deserialize(version, &input);
-                    } else {
-                        self.$list.lock()[i as usize].lock().clear();
-                    }
-                }
-            };
-        }
-
-        if image {
-            deserialize!(Image, images, NUM_IMAGES);
-        }
-        if tilemap {
-            deserialize!(Tilemap, tilemaps, NUM_TILEMAPS);
-        }
-        if sound {
-            deserialize!(Sound, sounds, NUM_SOUNDS);
-        }
-        if music {
-            deserialize!(Music, musics, NUM_MUSICS);
-        }
-
-        // Try to load Pyxel palette file
-        let filename = filename
-            .rfind('.')
-            .map_or(filename, |i| &filename[..i])
-            .to_string()
-            + PALETTE_FILE_EXTENSION;
-        if let Ok(mut file) = File::open(Path::new(&filename)) {
-            let mut contents = String::new();
-            file.read_to_string(&mut contents).unwrap();
-            let colors: Vec<Rgb24> = contents
-                .replace("\r\n", "\n")
-                .replace('\r', "\n")
-                .split('\n')
-                .filter(|s| !s.is_empty())
-                .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
-                .collect();
-            self.colors.lock().clear();
-            self.colors.lock().extend(colors.iter());
-        }
+        self.load_old_resource(&mut archive, &filename, image, tilemap, sound, music);
     }
 
     pub fn save(&self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
