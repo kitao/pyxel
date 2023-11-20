@@ -30,7 +30,7 @@ impl Channel {
     #[pyo3(text_signature = "($self, snd, *, tick, loop)")]
     pub fn play(&self, snd: &PyAny, tick: Option<u32>, r#loop: Option<bool>) -> PyResult<()> {
         let loop_ = r#loop.unwrap_or(false);
-        type_switch! {
+        pyany_type_match! {
             snd,
             u32, {
                 let sound = pyxel().sounds.lock()[snd as usize].clone();
