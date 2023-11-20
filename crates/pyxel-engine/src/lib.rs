@@ -26,6 +26,7 @@ mod image;
 mod input;
 mod math;
 mod music;
+mod old_resource;
 mod oscillator;
 mod profiler;
 mod pyxel;
