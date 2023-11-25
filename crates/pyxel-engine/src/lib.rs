@@ -53,4 +53,4 @@ pub use crate::settings::*;
 pub use crate::sound::{SharedSound, Sound};
 pub use crate::system::PyxelCallback;
 pub use crate::tilemap::{ImageSource, SharedTilemap, Tile, Tilemap};
-pub use crate::waveform::{Amp4, Noise, Waveform, WaveformTable};
+pub use crate::waveform::{Amp4, Noise, SharedWaveform, Waveform, WaveformTable};
