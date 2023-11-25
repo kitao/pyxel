@@ -1,7 +1,7 @@
 use crate::channel::{Note, Speed, Volume};
 use crate::oscillator::{Effect, Tone};
 use crate::settings::{
-    EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SPEED, TONE_NOISE,
+    EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SOUND_SPEED, TONE_NOISE,
     TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
 };
 use crate::utils::simplify_string;
@@ -24,7 +24,7 @@ impl Sound {
             tones: Vec::new(),
             volumes: Vec::new(),
             effects: Vec::new(),
-            speed: INITIAL_SPEED,
+            speed: INITIAL_SOUND_SPEED,
         })
     }
 
@@ -133,7 +133,7 @@ mod tests {
         assert_eq!(sound.lock().tones.len(), 0);
         assert_eq!(sound.lock().volumes.len(), 0);
         assert_eq!(sound.lock().effects.len(), 0);
-        assert_eq!(sound.lock().speed, INITIAL_SPEED);
+        assert_eq!(sound.lock().speed, INITIAL_SOUND_SPEED);
     }
 
     #[test]
