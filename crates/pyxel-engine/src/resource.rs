@@ -52,7 +52,7 @@ impl Pyxel {
         if archive.by_name("pyxel_resource/version").is_ok() {
             self.load_old_resource(
                 &mut archive,
-                &filename,
+                filename,
                 include_images.unwrap_or(true),
                 include_tilemaps.unwrap_or(true),
                 include_sounds.unwrap_or(true),
