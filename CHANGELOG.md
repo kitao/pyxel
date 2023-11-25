@@ -26,6 +26,10 @@
 - Updated Pyodide to 0.24.1
 - Updated Emscripten to 3.1.45
 - Updated SDL2 to 2.24.2
+- Changed to a new resource format based on TOML
+- Added Waveform class for waveform editing
+- Added waveforms as a system list
+- Added arguments to the load and save functions
 
 ## 1.9.18
 
