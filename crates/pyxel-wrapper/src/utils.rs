@@ -104,7 +104,9 @@ macro_rules! wrap_as_python_list {
                 if idx < self.len() as isize {
                     Ok(self.get(idx as usize))
                 } else {
-                    Err(pyo3::exceptions::PyIndexError::new_err("list index out of range"))
+                    Err(pyo3::exceptions::PyIndexError::new_err(
+                        "list index out of range",
+                    ))
                 }
             }
 
@@ -174,7 +176,9 @@ macro_rules! wrap_as_python_list {
                 if idx < self.len() as isize {
                     Ok(self.get(idx as usize))
                 } else {
-                    Err(pyo3::exceptions::PyIndexError::new_err("list index out of range"))
+                    Err(pyo3::exceptions::PyIndexError::new_err(
+                        "list index out of range",
+                    ))
                 }
             }
 
