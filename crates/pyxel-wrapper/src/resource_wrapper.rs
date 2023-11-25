@@ -3,35 +3,41 @@ use pyo3::prelude::*;
 use crate::pyxel_singleton::pyxel;
 
 #[pyfunction]
-#[pyo3(text_signature = "(filename, *, image, tilemap, sound, music)")]
+#[pyo3(
+    text_signature = "(filename, *, colors, images, tilemaps, channels, sounds, musics, waveforms)"
+)]
 fn load(
     filename: &str,
-    image: Option<bool>,
-    tilemap: Option<bool>,
-    sound: Option<bool>,
-    music: Option<bool>,
+    colors: Option<bool>,
+    images: Option<bool>,
+    tilemaps: Option<bool>,
+    channels: Option<bool>,
+    sounds: Option<bool>,
+    musics: Option<bool>,
+    waveforms: Option<bool>,
 ) {
-    let image = image.unwrap_or(true);
-    let tilemap = tilemap.unwrap_or(true);
-    let sound = sound.unwrap_or(true);
-    let music = music.unwrap_or(true);
-    pyxel().load(filename, image, tilemap, sound, music);
+    pyxel().load(
+        filename, colors, images, tilemaps, channels, sounds, musics, waveforms,
+    );
 }
 
 #[pyfunction]
-#[pyo3(text_signature = "(filename, *, image, tilemap, sound, music)")]
+#[pyo3(
+    text_signature = "(filename, *, colors, images, tilemaps, channels, sounds, musics, waveforms)"
+)]
 fn save(
     filename: &str,
-    image: Option<bool>,
-    tilemap: Option<bool>,
-    sound: Option<bool>,
-    music: Option<bool>,
+    colors: Option<bool>,
+    images: Option<bool>,
+    tilemaps: Option<bool>,
+    channels: Option<bool>,
+    sounds: Option<bool>,
+    musics: Option<bool>,
+    waveforms: Option<bool>,
 ) {
-    let image = image.unwrap_or(true);
-    let tilemap = tilemap.unwrap_or(true);
-    let sound = sound.unwrap_or(true);
-    let music = music.unwrap_or(true);
-    pyxel().save(filename, image, tilemap, sound, music);
+    pyxel().save(
+        filename, colors, images, tilemaps, channels, sounds, musics, waveforms,
+    );
 }
 
 #[pyfunction]
