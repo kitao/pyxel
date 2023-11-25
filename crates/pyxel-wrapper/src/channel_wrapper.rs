@@ -18,12 +18,12 @@ impl Channel {
 #[pymethods]
 impl Channel {
     #[getter]
-    pub fn get_gain(&self) -> pyxel::Volume {
+    pub fn get_gain(&self) -> pyxel::Gain {
         self.inner.lock().gain
     }
 
     #[setter]
-    pub fn set_gain(&self, gain: u8) {
+    pub fn set_gain(&self, gain: pyxel::Gain) {
         self.inner.lock().gain = gain;
     }
 
