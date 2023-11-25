@@ -8,10 +8,9 @@ use zip::ZipArchive;
 use crate::image::{Color, Image, Rgb24};
 use crate::music::Music;
 use crate::pyxel::Pyxel;
-use crate::settings::TILEMAP_SIZE;
 use crate::settings::{
     INITIAL_SOUND_SPEED, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
-    PALETTE_FILE_EXTENSION, VERSION,
+    PALETTE_FILE_EXTENSION, TILEMAP_SIZE, VERSION,
 };
 use crate::sound::Sound;
 use crate::tilemap::{ImageSource, Tilemap};
