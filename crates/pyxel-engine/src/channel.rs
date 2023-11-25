@@ -124,7 +124,7 @@ impl Channel {
                 self.oscillator.play(
                     note as f64,
                     tone,
-                    (self.gain as f64 * volume as f64) / (MAX_VOLUME as f64),
+                    self.gain * volume as f64 / MAX_VOLUME as f64,
                     effect,
                     speed,
                 );
