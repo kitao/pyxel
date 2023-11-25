@@ -27,7 +27,7 @@ impl ImageData {
             .canvas
             .data
             .chunks(width as usize)
-            .map(|chunk| chunk.to_vec())
+            .map(<[u8]>::to_vec)
             .collect();
         Self {
             width,
@@ -71,7 +71,7 @@ impl TilemapData {
             .collect();
         let data: Vec<Vec<_>> = data
             .chunks((width * 2) as usize)
-            .map(|chunk| chunk.to_vec())
+            .map(<[u8]>::to_vec)
             .collect();
         Self {
             width,
@@ -86,10 +86,7 @@ impl TilemapData {
         {
             let mut tilemap = tilemap.lock();
             let data: Vec<_> = self.data.clone().into_iter().flatten().collect();
-            tilemap.canvas.data = data
-                .chunks(2)
-                .filter_map(|chunk| Some((chunk[0], chunk[1])))
-                .collect();
+            tilemap.canvas.data = data.chunks(2).map(|chunk| (chunk[0], chunk[1])).collect();
         }
         tilemap
     }
@@ -172,7 +169,7 @@ impl SoundData {
             sound.tones = self.tones.clone();
             sound.volumes = self.volumes.clone();
             sound.effects = self.effects.clone();
-            sound.speed = self.speed.clone();
+            sound.speed = self.speed;
         }
         sound
     }
@@ -217,13 +214,13 @@ pub struct ResourceData {
     waveforms: Vec<WaveformData>,
 }
 
-fn to_hex_values<S>(values: &Vec<u32>, serializer: S) -> Result<S::Ok, S::Error>
+fn to_hex_values<S>(values: &[u32], serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {
     let hex_values_str = values
         .iter()
-        .map(|&v| format!("{:6X}", v))
+        .map(|&v| format!("{v:6X}"))
         .collect::<Vec<_>>()
         .join(", ");
     serializer.serialize_str(&hex_values_str)
@@ -295,42 +292,42 @@ impl ResourceData {
         if !include_images {
             let mut images = Vec::new();
             for image_data in &self.images {
-                images.push(image_data.to_image())
+                images.push(image_data.to_image());
             }
             *pyxel.images.lock() = images;
         }
         if !include_tilemaps {
             let mut tilemaps = Vec::new();
             for tilemap_data in &self.tilemaps {
-                tilemaps.push(tilemap_data.to_tilemap())
+                tilemaps.push(tilemap_data.to_tilemap());
             }
             *pyxel.tilemaps.lock() = tilemaps;
         }
         if !include_channels {
             let mut channels = Vec::new();
             for channel_data in &self.channels {
-                channels.push(channel_data.to_channel())
+                channels.push(channel_data.to_channel());
             }
             *pyxel.channels.lock() = channels;
         }
         if !include_sounds {
             let mut sounds = Vec::new();
             for sound_data in &self.sounds {
-                sounds.push(sound_data.to_sound())
+                sounds.push(sound_data.to_sound());
             }
             *pyxel.sounds.lock() = sounds;
         }
         if !include_musics {
             let mut musics = Vec::new();
             for music_data in &self.musics {
-                musics.push(music_data.to_music())
+                musics.push(music_data.to_music());
             }
             *pyxel.musics.lock() = musics;
         }
         if !include_waveforms {
             let mut waveforms = Vec::new();
             for waveform_data in &self.waveforms {
-                waveforms.push(waveform_data.to_waveform())
+                waveforms.push(waveform_data.to_waveform());
             }
             *pyxel.waveforms.lock() = waveforms;
         }
