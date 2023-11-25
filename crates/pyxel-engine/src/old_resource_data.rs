@@ -1,4 +1,4 @@
-use std::fmt::{self, Write as _};
+use std::fmt;
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -8,15 +8,23 @@ use zip::ZipArchive;
 use crate::image::{Color, Image, Rgb24};
 use crate::music::Music;
 use crate::pyxel::Pyxel;
-use crate::resource::ResourceItem;
 use crate::settings::TILEMAP_SIZE;
 use crate::settings::{
-    INITIAL_SPEED, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
-    PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_DIRNAME, VERSION,
+    INITIAL_SOUND_SPEED, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
+    PALETTE_FILE_EXTENSION, VERSION,
 };
 use crate::sound::Sound;
 use crate::tilemap::{ImageSource, Tilemap};
-use crate::utils::{parse_hex_string, parse_version_string};
+use crate::utils::{parse_hex_string, simplify_string};
+
+pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
+
+trait ResourceItem {
+    fn resource_name(item_index: u32) -> String;
+    fn is_modified(&self) -> bool;
+    fn clear(&mut self);
+    fn deserialize(&mut self, version: u32, input: &str);
+}
 
 impl ResourceItem for Image {
     fn resource_name(item_index: u32) -> String {
@@ -36,21 +44,6 @@ impl ResourceItem for Image {
 
     fn clear(&mut self) {
         self.cls(0);
-    }
-
-    fn serialize(&self) -> String {
-        let mut output = String::new();
-        for y in 0..self.height() {
-            for x in 0..self.width() {
-                let _guard = write!(
-                    output,
-                    "{:1x}",
-                    self.canvas.read_data(x as usize, y as usize)
-                );
-            }
-            output += "\n";
-        }
-        output
     }
 
     fn deserialize(&mut self, _version: u32, input: &str) {
@@ -90,19 +83,6 @@ impl ResourceItem for Tilemap {
 
     fn clear(&mut self) {
         self.cls((0, 0));
-    }
-
-    fn serialize(&self) -> String {
-        let mut output = String::new();
-        for y in 0..self.height() {
-            for x in 0..self.width() {
-                let tile = self.canvas.read_data(x as usize, y as usize);
-                let _guard = write!(output, "{:02x}{:02x}", tile.0, tile.1);
-            }
-            output += "\n";
-        }
-        let _guard = write!(output, "{}", self.imgsrc);
-        output
     }
 
     fn deserialize(&mut self, version: u32, input: &str) {
@@ -145,42 +125,7 @@ impl ResourceItem for Sound {
         self.tones.clear();
         self.volumes.clear();
         self.effects.clear();
-        self.speed = INITIAL_SPEED;
-    }
-
-    fn serialize(&self) -> String {
-        let mut output = String::new();
-        if self.notes.is_empty() {
-            output += "none\n";
-        } else {
-            for note in &self.notes {
-                if *note < 0 {
-                    output += "ff";
-                } else {
-                    let _guard = write!(output, "{:02x}", *note);
-                }
-            }
-            output += "\n";
-        }
-
-        macro_rules! stringify_data {
-            ($name: ident) => {
-                if self.$name.is_empty() {
-                    output += "none\n";
-                } else {
-                    for value in &self.$name {
-                        let _guard = write!(output, "{:1x}", *value);
-                    }
-                    output += "\n";
-                }
-            };
-        }
-
-        stringify_data!(tones);
-        stringify_data!(volumes);
-        stringify_data!(effects);
-        let _guard = write!(output, "{}", self.speed);
-        output
+        self.speed = INITIAL_SOUND_SPEED;
     }
 
     fn deserialize(&mut self, _version: u32, input: &str) {
@@ -226,21 +171,6 @@ impl ResourceItem for Music {
             .collect();
     }
 
-    fn serialize(&self) -> String {
-        let mut output = String::new();
-        for seq in &self.seqs {
-            if seq.lock().is_empty() {
-                output += "none";
-            } else {
-                for sound_index in &*seq.lock() {
-                    let _guard = write!(output, "{sound_index:02x}");
-                }
-            }
-            output += "\n";
-        }
-        output
-    }
-
     fn deserialize(&mut self, _version: u32, input: &str) {
         self.clear();
         for (i, line) in input.lines().enumerate() {
@@ -259,10 +189,10 @@ impl Pyxel {
         &mut self,
         archive: &mut ZipArchive<File>,
         filename: &str,
-        image: bool,
-        tilemap: bool,
-        sound: bool,
-        music: bool,
+        include_images: bool,
+        include_tilemaps: bool,
+        include_sounds: bool,
+        include_musics: bool,
     ) {
         let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
         let contents = {
@@ -293,16 +223,16 @@ impl Pyxel {
             };
         }
 
-        if image {
+        if include_images {
             deserialize!(Image, images, NUM_IMAGES);
         }
-        if tilemap {
+        if include_tilemaps {
             deserialize!(Tilemap, tilemaps, NUM_TILEMAPS);
         }
-        if sound {
+        if include_sounds {
             deserialize!(Sound, sounds, NUM_SOUNDS);
         }
-        if music {
+        if include_musics {
             deserialize!(Music, musics, NUM_MUSICS);
         }
 
@@ -325,5 +255,46 @@ impl Pyxel {
             self.colors.lock().clear();
             self.colors.lock().extend(colors.iter());
         }
+    }
+}
+
+fn parse_version_string(string: &str) -> Result<u32, &str> {
+    let mut version = 0;
+    for (i, number) in simplify_string(string).split('.').enumerate() {
+        let digit = number.len();
+        let number = if i > 0 && digit == 1 {
+            "0".to_string() + number
+        } else if i == 0 || digit == 2 {
+            number.to_string()
+        } else {
+            return Err("invalid version string");
+        };
+        if let Ok(number) = number.parse::<u32>() {
+            version = version * 100 + number;
+        } else {
+            return Err("invalid version string");
+        }
+    }
+    Ok(version)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_version_string_() {
+        assert_eq!(parse_version_string("1.2.3"), Ok(10203));
+        assert_eq!(parse_version_string("12.34.5"), Ok(123405));
+        assert_eq!(parse_version_string("12.3.04"), Ok(120304));
+        assert_eq!(
+            parse_version_string("12.345.0"),
+            Err("invalid version string")
+        );
+        assert_eq!(
+            parse_version_string("12.0.345"),
+            Err("invalid version string")
+        );
+        assert_eq!(parse_version_string(" "), Err("invalid version string"));
     }
 }

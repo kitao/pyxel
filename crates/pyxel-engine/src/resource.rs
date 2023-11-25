@@ -1,6 +1,6 @@
 use std::cmp::max;
 use std::fs::File;
-use std::io::Write;
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 
 use cfg_if::cfg_if;
@@ -8,24 +8,11 @@ use platform_dirs::UserDirs;
 use zip::write::FileOptions;
 use zip::{ZipArchive, ZipWriter};
 
-use crate::image::Image;
-use crate::music::Music;
 use crate::pyxel::Pyxel;
+use crate::resource_data::ResourceData;
 use crate::screencast::Screencast;
-use crate::settings::{
-    DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
-    RESOURCE_ARCHIVE_DIRNAME, VERSION,
-};
-use crate::sound::Sound;
-use crate::tilemap::Tilemap;
-
-pub trait ResourceItem {
-    fn resource_name(item_index: u32) -> String;
-    fn is_modified(&self) -> bool;
-    fn clear(&mut self);
-    fn serialize(&self) -> String;
-    fn deserialize(&mut self, version: u32, input: &str);
-}
+use crate::settings::{DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC};
+use crate::{RESOURCE_ARCHIVE_NAME, RESOURCE_FORMAT_VERSION};
 
 pub struct Resource {
     capture_scale: u32,
@@ -44,52 +31,85 @@ impl Resource {
 }
 
 impl Pyxel {
-    pub fn load(&mut self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
+    pub fn load(
+        &mut self,
+        filename: &str,
+        include_colors: Option<bool>,
+        include_images: Option<bool>,
+        include_tilemaps: Option<bool>,
+        include_channels: Option<bool>,
+        include_sounds: Option<bool>,
+        include_musics: Option<bool>,
+        include_waveforms: Option<bool>,
+    ) {
         let mut archive = ZipArchive::new(
             File::open(Path::new(&filename))
                 .unwrap_or_else(|_| panic!("Unable to open file '{filename}'")),
         )
         .unwrap_or_else(|_| panic!("Unable to parse zip archive '{filename}'"));
-        self.load_old_resource(&mut archive, &filename, image, tilemap, sound, music);
+
+        // Old resource file
+        if archive.by_name("pyxel_resource/version").is_ok() {
+            self.load_old_resource(
+                &mut archive,
+                &filename,
+                include_images.unwrap_or(true),
+                include_tilemaps.unwrap_or(true),
+                include_sounds.unwrap_or(true),
+                include_musics.unwrap_or(true),
+            );
+            return;
+        }
+
+        // New resource file
+        let mut file = archive.by_name(RESOURCE_ARCHIVE_NAME).unwrap();
+        let mut toml_text = String::new();
+        file.read_to_string(&mut toml_text).unwrap();
+        let resource_data = ResourceData::from_toml(&toml_text);
+        // version check
+        assert!(
+            resource_data.format_version > RESOURCE_FORMAT_VERSION,
+            "Resource file version is too new"
+        );
+        resource_data.to_runtime(
+            self,
+            include_colors.unwrap_or(false),
+            include_images.unwrap_or(true),
+            include_tilemaps.unwrap_or(true),
+            include_channels.unwrap_or(false),
+            include_sounds.unwrap_or(true),
+            include_musics.unwrap_or(true),
+            include_waveforms.unwrap_or(false),
+        );
     }
 
-    pub fn save(&self, filename: &str, image: bool, tilemap: bool, sound: bool, music: bool) {
+    pub fn save(
+        &self,
+        filename: &str,
+        include_colors: Option<bool>,
+        include_images: Option<bool>,
+        include_tilemaps: Option<bool>,
+        include_channels: Option<bool>,
+        include_sounds: Option<bool>,
+        include_musics: Option<bool>,
+        include_waveforms: Option<bool>,
+    ) {
+        let toml_text = ResourceData::from_runtime(self).to_toml(
+            include_colors.unwrap_or(false),
+            include_images.unwrap_or(true),
+            include_tilemaps.unwrap_or(true),
+            include_channels.unwrap_or(false),
+            include_sounds.unwrap_or(true),
+            include_musics.unwrap_or(true),
+            include_waveforms.unwrap_or(false),
+        );
         let path = std::path::Path::new(&filename);
         let file = std::fs::File::create(path)
             .unwrap_or_else(|_| panic!("Unable to open file '{filename}'"));
         let mut zip = ZipWriter::new(file);
-        zip.add_directory(RESOURCE_ARCHIVE_DIRNAME, FileOptions::default())
+        zip.start_file(RESOURCE_ARCHIVE_NAME, FileOptions::default())
             .unwrap();
-        let version_name = RESOURCE_ARCHIVE_DIRNAME.to_string() + "version";
-        zip.start_file(version_name, FileOptions::default())
-            .unwrap();
-        zip.write_all(VERSION.as_bytes()).unwrap();
-
-        macro_rules! serialize {
-            ($type: ty, $list: ident, $count: expr) => {
-                for i in 0..$count {
-                    if self.$list.lock()[i as usize].lock().is_modified() {
-                        zip.start_file(<$type>::resource_name(i), FileOptions::default())
-                            .unwrap();
-                        zip.write_all(self.$list.lock()[i as usize].lock().serialize().as_bytes())
-                            .unwrap();
-                    }
-                }
-            };
-        }
-
-        if image {
-            serialize!(Image, images, NUM_IMAGES);
-        }
-        if tilemap {
-            serialize!(Tilemap, tilemaps, NUM_TILEMAPS);
-        }
-        if sound {
-            serialize!(Sound, sounds, NUM_SOUNDS);
-        }
-        if music {
-            serialize!(Music, musics, NUM_MUSICS);
-        }
+        zip.write_all(toml_text.as_bytes()).unwrap();
         zip.finish().unwrap();
         #[cfg(target_os = "emscripten")]
         pyxel_platform::emscripten::save_file(filename);
