@@ -43,14 +43,14 @@ mod waveform;
 
 use pyxel_platform::keys;
 
-pub use crate::channel::{Channel, Gain, Note, SharedChannel, Speed, Volume};
+pub use crate::channel::{Channel, Note, SharedChannel, Speed, Volume};
 pub use crate::image::{Color, Image, Rgb24, SharedImage};
 pub use crate::keys::*;
 pub use crate::music::{Music, SharedMusic, SharedSeq};
-pub use crate::oscillator::{Effect, Tone};
+pub use crate::oscillator::{Effect, Gain, Tone};
 pub use crate::pyxel::{init, Pyxel};
 pub use crate::settings::*;
 pub use crate::sound::{SharedSound, Sound};
 pub use crate::system::PyxelCallback;
 pub use crate::tilemap::{ImageSource, SharedTilemap, Tile, Tilemap};
-pub use crate::waveform::{Amp4, Waveform, WaveformTable};
+pub use crate::waveform::{Amp4, Noise, Waveform, WaveformTable};
