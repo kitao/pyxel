@@ -1,7 +1,8 @@
-use crate::channel::{Note, Speed, Volume};
+use crate::channel::{Gain, Note, Speed, Volume};
 use crate::image::{Color, Rgb24};
 use crate::keys::{Key, KEY_ESCAPE};
 use crate::oscillator::{Effect, Tone};
+use crate::waveform::{Noise, WaveformTable};
 
 // System
 pub const VERSION: &str = "2.0.0";
@@ -42,7 +43,8 @@ pub const ICON_DATA: [&str; ICON_SIZE as usize] = [
 pub const APP_FILE_EXTENSION: &str = ".pyxapp";
 pub const APP_STARTUP_SCRIPT_FILE: &str = ".pyxapp_startup_script";
 pub const RESOURCE_FILE_EXTENSION: &str = ".pyxres";
-pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
+pub const RESOURCE_ARCHIVE_NAME: &str = "pyxel_resource.toml";
+pub const RESOURCE_FORMAT_VERSION: u32 = 1;
 pub const PALETTE_FILE_EXTENSION: &str = ".pyxpal";
 
 // Graphics
@@ -109,10 +111,11 @@ pub const VIBRATO_FREQUENCY: f64 = 6.0;
 pub const NUM_CHANNELS: u32 = 4;
 pub const NUM_SOUNDS: u32 = 64;
 pub const NUM_MUSICS: u32 = 8;
-pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0;
-pub const SQUARE_VOLUME_FACTOR: f64 = 0.3;
-pub const PULSE_VOLUME_FACTOR: f64 = 0.3;
-pub const NOISE_VOLUME_FACTOR: f64 = 0.6;
+pub const NUM_WAVEFORMS: u32 = 4;
+pub const NUM_WAVEFORM_STEPS: u32 = 32;
+pub const INITIAL_CHANNEL_GAIN: Gain = 1.0 / 8.0;
+pub const INITIAL_SOUND_SPEED: Speed = 30;
+
 pub const TONE_TRIANGLE: Tone = 0;
 pub const TONE_SQUARE: Tone = 1;
 pub const TONE_PULSE: Tone = 2;
@@ -122,8 +125,46 @@ pub const EFFECT_SLIDE: Effect = 1;
 pub const EFFECT_VIBRATO: Effect = 2;
 pub const EFFECT_FADEOUT: Effect = 3;
 pub const MAX_TONE: Tone = 3;
-pub const MAX_NOTE: Note = 59; // 5 octaves
+pub const MAX_NOTE: Note = 12 * 5 - 1; // 5 octaves
 pub const MAX_VOLUME: Volume = 7;
 pub const MAX_EFFECT: Effect = 3;
-pub const INITIAL_SPEED: Speed = 30;
-pub const INITIAL_GAIN: u8 = 32;
+
+pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0;
+pub const SQUARE_VOLUME_FACTOR: f64 = 0.3;
+pub const PULSE_VOLUME_FACTOR: f64 = 0.3;
+pub const NOISE_VOLUME_FACTOR: f64 = 0.6;
+
+pub const DEFAULT_WAVEFORMS: [(Gain, Noise, WaveformTable); NUM_WAVEFORMS as usize] = [
+    (
+        1.0,
+        Noise::None,
+        [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ],
+    ),
+    (
+        0.3,
+        Noise::None,
+        [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ],
+    ),
+    (
+        0.3,
+        Noise::None,
+        [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ],
+    ),
+    (
+        0.6,
+        Noise::Periodic,
+        [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ],
+    ),
+];
