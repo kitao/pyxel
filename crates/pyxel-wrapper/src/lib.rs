@@ -25,6 +25,7 @@ mod sound_wrapper;
 mod system_wrapper;
 mod tilemap_wrapper;
 mod variable_wrapper;
+mod waveform_wrapper;
 
 use pyo3::prelude::*;
 
@@ -35,6 +36,7 @@ fn pyxel_wrapper(_py: Python, m: &PyModule) -> PyResult<()> {
     crate::channel_wrapper::add_channel_class(m)?;
     crate::sound_wrapper::add_sound_class(m)?;
     crate::music_wrapper::add_music_class(m)?;
+    crate::waveform_wrapper::add_waveform_class(m)?;
 
     crate::constant_wrapper::add_module_constants(m)?;
     crate::variable_wrapper::add_module_variables(m)?;
