@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize, Serializer};
 
-use crate::channel::{Channel, Gain, Note, Speed, Volume};
+use crate::channel::{Channel, Note, Speed, Volume};
 use crate::image::{Image, SharedImage};
 use crate::music::{Music, SharedMusic};
-use crate::oscillator::{Effect, Tone};
+use crate::oscillator::{Effect, Gain, Tone};
 use crate::pyxel::Pyxel;
 use crate::settings::RESOURCE_FORMAT_VERSION;
 use crate::sound::{SharedSound, Sound};

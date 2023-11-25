@@ -1,7 +1,7 @@
-use crate::channel::{Gain, Note, Speed, Volume};
+use crate::channel::{Note, Speed, Volume};
 use crate::image::{Color, Rgb24};
 use crate::keys::{Key, KEY_ESCAPE};
-use crate::oscillator::{Effect, Tone};
+use crate::oscillator::{Effect, Gain, Tone};
 use crate::waveform::{Noise, WaveformTable};
 
 // System
@@ -56,8 +56,8 @@ pub const NUM_TILEMAPS: u32 = 8;
 pub const TILEMAP_SIZE: u32 = 256;
 pub const TILE_SIZE: u32 = 8;
 pub const DEFAULT_COLORS: [Rgb24; NUM_COLORS as usize] = [
-    0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, 0xd4186c,
-    0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0,
+    0x000000, 0x2b335f, 0x7e2072, 0x19959c, 0x8b4852, 0x395c98, 0xa9c1ff, 0xeeeeee, //
+    0xd4186c, 0xd38441, 0xe9c35b, 0x70c6a9, 0x7696de, 0xa3a3a3, 0xFF9798, 0xedc7b0,
 ];
 pub const COLOR_BLACK: Color = 0;
 pub const COLOR_NAVY: Color = 1;
@@ -115,7 +115,7 @@ pub const NUM_WAVEFORMS: u32 = 4;
 pub const NUM_WAVEFORM_STEPS: u32 = 32;
 pub const INITIAL_CHANNEL_GAIN: Gain = 1.0 / 8.0;
 pub const INITIAL_SOUND_SPEED: Speed = 30;
-
+pub const INITIAL_NOISE_REG: u16 = 1;
 pub const TONE_TRIANGLE: Tone = 0;
 pub const TONE_SQUARE: Tone = 1;
 pub const TONE_PULSE: Tone = 2;
@@ -124,47 +124,38 @@ pub const EFFECT_NONE: Effect = 0;
 pub const EFFECT_SLIDE: Effect = 1;
 pub const EFFECT_VIBRATO: Effect = 2;
 pub const EFFECT_FADEOUT: Effect = 3;
-pub const MAX_TONE: Tone = 3;
+pub const MAX_TONE: Tone = 9;
 pub const MAX_NOTE: Note = 12 * 5 - 1; // 5 octaves
 pub const MAX_VOLUME: Volume = 7;
 pub const MAX_EFFECT: Effect = 3;
-
-pub const TRIANGLE_VOLUME_FACTOR: f64 = 1.0;
-pub const SQUARE_VOLUME_FACTOR: f64 = 0.3;
-pub const PULSE_VOLUME_FACTOR: f64 = 0.3;
-pub const NOISE_VOLUME_FACTOR: f64 = 0.6;
-
 pub const DEFAULT_WAVEFORMS: [(Gain, Noise, WaveformTable); NUM_WAVEFORMS as usize] = [
+    // Triangle
     (
         1.0,
-        Noise::None,
+        Noise::Off,
         [
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0,
+            8, 9, 10, 11, 12, 13, 14, 15, 15, 14, 13, 12, 11, 10, 9, 8, //
+            7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7,
         ],
     ),
+    // Square
     (
         0.3,
-        Noise::None,
+        Noise::Off,
         [
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0,
+            15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, //
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         ],
     ),
+    // Pulse
     (
         0.3,
-        Noise::None,
+        Noise::Off,
         [
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0,
+            15, 15, 15, 15, 15, 15, 15, 15, 0, 0, 0, 0, 0, 0, 0, 0, //
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         ],
     ),
-    (
-        0.6,
-        Noise::Periodic,
-        [
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0,
-        ],
-    ),
+    // Noise
+    (0.6, Noise::LongPeriod, [0; 32]),
 ];
