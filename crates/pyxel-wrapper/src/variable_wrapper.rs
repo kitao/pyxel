@@ -7,6 +7,7 @@ use crate::music_wrapper::Music;
 use crate::pyxel_singleton::pyxel;
 use crate::sound_wrapper::Sound;
 use crate::tilemap_wrapper::Tilemap;
+use crate::waveform_wrapper::Waveform;
 
 wrap_as_python_list!(
     Colors,
@@ -39,6 +40,7 @@ wrap_shared_vec_as_python_list!(Tilemaps, Tilemap, tilemaps);
 wrap_shared_vec_as_python_list!(Channels, Channel, channels);
 wrap_shared_vec_as_python_list!(Sounds, Sound, sounds);
 wrap_shared_vec_as_python_list!(Musics, Music, musics);
+wrap_shared_vec_as_python_list!(Waveforms, Waveform, waveforms);
 
 #[pyfunction]
 fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
@@ -67,6 +69,7 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "channels" => Py::new(py, Channels::wrap(0))?.into_py(py),
         "sounds" => Py::new(py, Sounds::wrap(0))?.into_py(py),
         "musics" => Py::new(py, Musics::wrap(0))?.into_py(py),
+        "waveforms" => Py::new(py, Waveforms::wrap(0))?.into_py(py),
 
         // Others
         _ => {
