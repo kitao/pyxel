@@ -1,5 +1,14 @@
 use pyo3::prelude::*;
 
+wrap_as_python_list!(
+    Table,
+    pyxel::Amp4,
+    pyxel::SharedWaveform,
+    (|inner: &pyxel::SharedWaveform| inner.lock().table.len()),
+    (|inner: &pyxel::SharedWaveform, index| inner.lock().table[index]),
+    (|inner: &pyxel::SharedWaveform, index, value| inner.lock().table[index] = value)
+);
+
 #[pyclass]
 #[derive(Clone)]
 pub struct Waveform {
@@ -40,13 +49,8 @@ impl Waveform {
     }
 
     #[getter]
-    pub fn table(&self) -> pyxel::WaveformTable {
-        self.inner.lock().table
-    }
-
-    #[setter]
-    pub fn set_table(&self, table: pyxel::WaveformTable) {
-        self.inner.lock().table = table;
+    pub fn table(&self) -> Table {
+        Table::wrap(self.inner.clone())
     }
 }
 
