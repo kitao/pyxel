@@ -14,13 +14,14 @@ use crate::music::{Music, SharedMusic};
 use crate::resource::Resource;
 use crate::settings::{
     CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, DEFAULT_COLORS, DEFAULT_FPS, DEFAULT_QUIT_KEY,
-    DEFAULT_TITLE, DISPLAY_RATIO, FONT_DATA, FONT_HEIGHT, FONT_WIDTH, ICON_COLKEY, ICON_DATA,
-    ICON_SCALE, IMAGE_SIZE, NUM_CHANNELS, NUM_FONT_ROWS, NUM_IMAGES, NUM_MUSICS, NUM_SAMPLES,
-    NUM_SOUNDS, NUM_TILEMAPS, SAMPLE_RATE, TILEMAP_SIZE,
+    DEFAULT_TITLE, DEFAULT_WAVEFORMS, DISPLAY_RATIO, FONT_DATA, FONT_HEIGHT, FONT_WIDTH,
+    ICON_COLKEY, ICON_DATA, ICON_SCALE, IMAGE_SIZE, NUM_CHANNELS, NUM_FONT_ROWS, NUM_IMAGES,
+    NUM_MUSICS, NUM_SAMPLES, NUM_SOUNDS, NUM_TILEMAPS, NUM_WAVEFORMS, SAMPLE_RATE, TILEMAP_SIZE,
 };
 use crate::sound::{SharedSound, Sound};
 use crate::system::System;
 use crate::tilemap::{ImageSource, SharedTilemap, Tilemap};
+use crate::waveform::{SharedWaveform, Waveform};
 
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
@@ -78,6 +79,21 @@ static SOUNDS: Lazy<shared_type!(Vec<SharedSound>)> =
 static MUSICS: Lazy<shared_type!(Vec<SharedMusic>)> =
     Lazy::new(|| new_shared_type!((0..NUM_MUSICS).map(|_| Music::new()).collect()));
 
+pub static WAVEFORMS: Lazy<shared_type!(Vec<SharedWaveform>)> = Lazy::new(|| {
+    new_shared_type!((0..NUM_WAVEFORMS)
+        .map(|index| {
+            let waveform = Waveform::new();
+            {
+                let mut waveform = waveform.lock();
+                waveform.gain = DEFAULT_WAVEFORMS[index as usize].0;
+                waveform.noise = DEFAULT_WAVEFORMS[index as usize].1;
+                waveform.table = DEFAULT_WAVEFORMS[index as usize].2;
+            }
+            waveform
+        })
+        .collect())
+});
+
 pub struct Pyxel {
     // System
     pub(crate) system: System,
@@ -110,6 +126,7 @@ pub struct Pyxel {
     pub channels: shared_type!(Vec<SharedChannel>),
     pub sounds: shared_type!(Vec<SharedSound>),
     pub musics: shared_type!(Vec<SharedMusic>),
+    pub waveforms: shared_type!(Vec<SharedWaveform>),
 
     // Math
     pub(crate) math: Math,
@@ -181,6 +198,7 @@ pub fn init(
     let channels = CHANNELS.clone();
     let sounds = SOUNDS.clone();
     let musics = MUSICS.clone();
+    let waveforms = WAVEFORMS.clone();
 
     // Math
     let math = Math::new();
@@ -204,10 +222,10 @@ pub fn init(
         screen,
         cursor,
         font,
-        //audio,
         channels,
         sounds,
         musics,
+        waveforms,
         math,
     };
     pyxel.icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
