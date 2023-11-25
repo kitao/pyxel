@@ -3,13 +3,14 @@ use std::cmp::max;
 use crate::blip_buf::BlipBuf;
 use crate::oscillator::{Effect, Oscillator, Tone};
 use crate::settings::{
-    EFFECT_NONE, INITIAL_GAIN, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE,
+    EFFECT_NONE, INITIAL_CHANNEL_GAIN, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE,
 };
 use crate::sound::{SharedSound, Sound};
 
 pub type Note = i8;
 pub type Volume = u8;
 pub type Speed = u32;
+pub type Gain = f32;
 
 pub struct Channel {
     oscillator: Oscillator,
@@ -19,7 +20,7 @@ pub struct Channel {
     sound_index: u32,
     note_index: u32,
     tick_count: u32,
-    pub gain: u8,
+    pub gain: Gain,
 }
 
 pub type SharedChannel = shared_type!(Channel);
@@ -34,7 +35,7 @@ impl Channel {
             sound_index: 0,
             note_index: 0,
             tick_count: 0,
-            gain: INITIAL_GAIN,
+            gain: INITIAL_CHANNEL_GAIN,
         })
     }
 
@@ -124,7 +125,7 @@ impl Channel {
                 self.oscillator.play(
                     note as f64,
                     tone,
-                    (self.gain as f64 * volume as f64) / (u8::MAX as f64 * MAX_VOLUME as f64),
+                    (self.gain as f64 * volume as f64) / (MAX_VOLUME as f64),
                     effect,
                     speed,
                 );
