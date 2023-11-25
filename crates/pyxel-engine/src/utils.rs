@@ -52,26 +52,6 @@ pub fn parse_hex_string(string: &str) -> Result<u32, &str> {
     Ok(result)
 }
 
-pub fn parse_version_string(string: &str) -> Result<u32, &str> {
-    let mut version = 0;
-    for (i, number) in simplify_string(string).split('.').enumerate() {
-        let digit = number.len();
-        let number = if i > 0 && digit == 1 {
-            "0".to_string() + number
-        } else if i == 0 || digit == 2 {
-            number.to_string()
-        } else {
-            return Err("invalid version string");
-        };
-        if let Ok(number) = number.parse::<u32>() {
-            version = version * 100 + number;
-        } else {
-            return Err("invalid version string");
-        }
-    }
-    Ok(version)
-}
-
 pub fn add_file_extension(filename: &str, ext: &str) -> String {
     if filename.to_lowercase().ends_with(ext) {
         filename.to_string()
@@ -149,21 +129,5 @@ mod tests {
         assert_eq!(parse_hex_string("a2"), Ok(162));
         assert_eq!(parse_hex_string("BC"), Ok(188));
         assert_eq!(parse_hex_string(" "), Err("invalid hex string"));
-    }
-
-    #[test]
-    fn parse_version_string_() {
-        assert_eq!(parse_version_string("1.2.3"), Ok(10203));
-        assert_eq!(parse_version_string("12.34.5"), Ok(123405));
-        assert_eq!(parse_version_string("12.3.04"), Ok(120304));
-        assert_eq!(
-            parse_version_string("12.345.0"),
-            Err("invalid version string")
-        );
-        assert_eq!(
-            parse_version_string("12.0.345"),
-            Err("invalid version string")
-        );
-        assert_eq!(parse_version_string(" "), Err("invalid version string"));
     }
 }
