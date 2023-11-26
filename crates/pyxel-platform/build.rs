@@ -157,6 +157,7 @@ impl SDL2BindingsBuilder {
             .allowlist_type("SDL_.*")
             .allowlist_var("SDL_.*")
             .allowlist_var("AUDIO_.*")
+            .blocklist_type("_IMAGE_TLS_DIRECTORY64")
             .use_core()
             .prepend_enum_name(false)
             .clang_arg(format!("--target={}", self.target.clone()))
