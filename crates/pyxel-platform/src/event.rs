@@ -31,7 +31,7 @@ pub fn poll_events() -> Vec<Event> {
     let mut pyxel_events = Vec::new();
     let mut sdl_event: SDL_Event = unsafe { zeroed() };
     while unsafe { SDL_PollEvent(addr_of_mut!(sdl_event)) } != 0 {
-        match unsafe { sdl_event.type_ } {
+        match unsafe { sdl_event.type_ as SDL_EventType } {
             // Window
             SDL_WINDOWEVENT => {
                 pyxel_events.extend(handle_window_event(sdl_event));
