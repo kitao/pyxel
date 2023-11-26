@@ -73,9 +73,9 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
 
         // Others
         _ => {
-            return Err(PyAttributeError::new_err(format!(
-                "module 'pyxel' has no attribute '{name}'"
-            )))
+            return Err(
+                PyAttributeError::new_err(format!("module 'pyxel' has no attribute '{name}'"))
+            )
         }
     };
     Ok(value)
