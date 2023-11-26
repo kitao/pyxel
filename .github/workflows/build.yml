@@ -101,7 +101,7 @@ jobs:
 
       - name: Build and install SDL2
         run: |
-          export SDL2_VERSION=2.24.0
+          export SDL2_VERSION=2.24.2
           export CC=$TARGET_CC
           export AR=$TARGET_AR
           export RANLIB=$TARGET_RANLIB
