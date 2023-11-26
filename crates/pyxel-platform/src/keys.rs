@@ -2,7 +2,7 @@ use paste::paste;
 
 use crate::sdl2_sys::*;
 
-pub type Key = u32;
+pub type Key = SDL_KeyCode;
 pub type KeyValue = i32;
 
 // Unknown
