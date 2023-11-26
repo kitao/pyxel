@@ -102,7 +102,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Install pkg-config
-        run: sudo apt-get install -y pkg-config
+        run: sudo apt-get install -y pkg-config libssl-dev
 
       - name: Build and install SDL2
         run: |
