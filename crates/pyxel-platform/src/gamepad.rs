@@ -126,17 +126,16 @@ pub fn handle_joy_button_up(sdl_event: SDL_Event) -> Vec<Event> {
 
 #[cfg(target_os = "emscripten")]
 pub fn handle_virtual_gamepad_inputs() -> Vec<Event> {
-    const INDEX_TO_BUTTON: [Key; 8] =
-        [
-            GAMEPAD1_BUTTON_DPAD_UP,
-            GAMEPAD1_BUTTON_DPAD_DOWN,
-            GAMEPAD1_BUTTON_DPAD_LEFT,
-            GAMEPAD1_BUTTON_DPAD_RIGHT,
-            GAMEPAD1_BUTTON_A,
-            GAMEPAD1_BUTTON_B,
-            GAMEPAD1_BUTTON_X,
-            GAMEPAD1_BUTTON_Y,
-        ];
+    const INDEX_TO_BUTTON: [Key; 8] = [
+        GAMEPAD1_BUTTON_DPAD_UP,
+        GAMEPAD1_BUTTON_DPAD_DOWN,
+        GAMEPAD1_BUTTON_DPAD_LEFT,
+        GAMEPAD1_BUTTON_DPAD_RIGHT,
+        GAMEPAD1_BUTTON_A,
+        GAMEPAD1_BUTTON_B,
+        GAMEPAD1_BUTTON_X,
+        GAMEPAD1_BUTTON_Y,
+    ];
     let mut events = Vec::new();
     for (i, button) in INDEX_TO_BUTTON.iter().enumerate() {
         let button_state = run_script_int(&format!("_virtualGamepadStates[{i}];")) != 0;
