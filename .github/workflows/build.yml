@@ -101,6 +101,9 @@ jobs:
       - name: Install Python packages
         run: pip install -r requirements.txt
 
+      - name: Install pkg-config
+        run: sudo apt-get install -y pkg-config
+
       - name: Build and install SDL2
         run: |
           export SDL2_VERSION=2.24.2
