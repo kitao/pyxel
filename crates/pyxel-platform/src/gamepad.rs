@@ -161,13 +161,13 @@ fn open_gamepad(device_index: i32) -> Option<Gamepad> {
     }
 }
 
-fn gamepad_key_offset(instance_id: i32) -> Option<u32> {
+fn gamepad_key_offset(instance_id: i32) -> Option<Key> {
     platform()
         .gamepads
         .iter()
         .enumerate()
         .find_map(|(index, slot)| match slot {
-            Gamepad::Controller(id, _) if *id == instance_id => Some(index as u32),
+            Gamepad::Controller(id, _) if *id == instance_id => Some(index as Key),
             _ => None,
         })
 }
