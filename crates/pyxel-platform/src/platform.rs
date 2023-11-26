@@ -51,13 +51,14 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
             }
         }
     }
-    let mut display_mode = SDL_DisplayMode {
-        format: 0,
-        w: 0,
-        h: 0,
-        refresh_rate: 0,
-        driverdata: null_mut(),
-    };
+    let mut display_mode =
+        SDL_DisplayMode {
+            format: 0,
+            w: 0,
+            h: 0,
+            refresh_rate: 0,
+            driverdata: null_mut(),
+        };
     assert!(
         unsafe { SDL_GetCurrentDisplayMode(0, addr_of_mut!(display_mode)) } == 0,
         "Failed to get display size"

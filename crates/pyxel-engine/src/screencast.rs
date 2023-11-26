@@ -45,15 +45,16 @@ pub struct Screencast {
 impl Screencast {
     pub fn new(fps: u32, capture_sec: u32) -> Self {
         let max_screens = fps * capture_sec;
-        let screens = (0..max_screens)
-            .map(|_| Screen {
-                width: 0,
-                height: 0,
-                image: Vec::new(),
-                colors: Vec::new(),
-                frame_count: 0,
-            })
-            .collect();
+        let screens =
+            (0..max_screens)
+                .map(|_| Screen {
+                    width: 0,
+                    height: 0,
+                    image: Vec::new(),
+                    colors: Vec::new(),
+                    frame_count: 0,
+                })
+                .collect();
         Self {
             fps,
             max_screens,
@@ -101,13 +102,14 @@ impl Screencast {
         let mut file =
             File::create(&filename).unwrap_or_else(|_| panic!("Unable to open file '{filename}'"));
         let screen = self.screen(0);
-        let mut encoder = Encoder::new(
-            &mut file,
-            (screen.width * scale) as u16,
-            (screen.height * scale) as u16,
-            &[],
-        )
-        .unwrap();
+        let mut encoder =
+            Encoder::new(
+                &mut file,
+                (screen.width * scale) as u16,
+                (screen.height * scale) as u16,
+                &[],
+            )
+            .unwrap();
         encoder.set_repeat(Repeat::Infinite).unwrap();
 
         // Write first frame
@@ -165,11 +167,12 @@ impl Screencast {
     fn screen_delay(&self, index: u32) -> u16 {
         let frame_count = self.screen(index).frame_count;
         let next_frame_count = self.screen(index + 1).frame_count;
-        let num_elapsed_frames = if frame_count > next_frame_count {
-            1
-        } else {
-            next_frame_count - frame_count
-        };
+        let num_elapsed_frames =
+            if frame_count > next_frame_count {
+                1
+            } else {
+                next_frame_count - frame_count
+            };
         (100.0 / self.fps as f64 * num_elapsed_frames as f64 + 0.5) as u16
     }
 
@@ -194,29 +197,30 @@ impl Screencast {
             }
         }
 
-        let rect = if buffer.is_empty() {
-            buffer = vec![0];
-            RectArea::new(0, 0, 1, 1)
-        } else {
-            let width = rect.width();
-            let height = rect.height();
-            let scaled_width = width * scale;
-            let scaled_height = height * scale;
-            let mut scaled_buffer: Vec<u8> = Vec::new();
-            for y in 0..scaled_height {
-                for x in 0..scaled_width {
-                    let index = (y / scale) * width + x / scale;
-                    scaled_buffer.push(buffer[index as usize]);
+        let rect =
+            if buffer.is_empty() {
+                buffer = vec![0];
+                RectArea::new(0, 0, 1, 1)
+            } else {
+                let width = rect.width();
+                let height = rect.height();
+                let scaled_width = width * scale;
+                let scaled_height = height * scale;
+                let mut scaled_buffer: Vec<u8> = Vec::new();
+                for y in 0..scaled_height {
+                    for x in 0..scaled_width {
+                        let index = (y / scale) * width + x / scale;
+                        scaled_buffer.push(buffer[index as usize]);
+                    }
                 }
-            }
-            buffer = scaled_buffer;
-            RectArea::new(
-                rect.left() * scale as i32,
-                rect.top() * scale as i32,
-                scaled_width,
-                scaled_height,
-            )
-        };
+                buffer = scaled_buffer;
+                RectArea::new(
+                    rect.left() * scale as i32,
+                    rect.top() * scale as i32,
+                    scaled_width,
+                    scaled_height,
+                )
+            };
 
         let mut palette: Vec<u8> = Vec::new();
         for (rgb, _) in color_table {

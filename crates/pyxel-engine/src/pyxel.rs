@@ -40,11 +40,12 @@ static TILEMAPS: Lazy<shared_type!(Vec<SharedTilemap>)> = Lazy::new(|| {
         .collect())
 });
 
-static CURSOR_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
-    let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
-    image.lock().set(0, 0, &CURSOR_DATA);
-    image
-});
+static CURSOR_IMAGE: Lazy<SharedImage> =
+    Lazy::new(|| {
+        let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
+        image.lock().set(0, 0, &CURSOR_DATA);
+        image
+    });
 
 pub static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
     let width = FONT_WIDTH * NUM_FONT_ROWS;
@@ -154,18 +155,19 @@ pub fn init(
 
     // Platform
     pyxel_platform::init(|display_width, display_height| {
-        let display_scale = max(
-            display_scale.map_or_else(
-                || {
-                    (f64::min(
-                        display_width as f64 / width as f64,
-                        display_height as f64 / height as f64,
-                    ) * DISPLAY_RATIO) as u32
-                },
-                |display_scale| display_scale,
-            ),
-            1,
-        );
+        let display_scale =
+            max(
+                display_scale.map_or_else(
+                    || {
+                        (f64::min(
+                            display_width as f64 / width as f64,
+                            display_height as f64 / height as f64,
+                        ) * DISPLAY_RATIO) as u32
+                    },
+                    |display_scale| display_scale,
+                ),
+                1,
+            );
         (title, width * display_scale, height * display_scale)
     });
 

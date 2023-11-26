@@ -116,11 +116,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if x1 == x2 && y1 == y2 {
             self.write_data_with_clipping(x1, y1, value);
         } else if (x1 - x2).abs() > (y1 - y2).abs() {
-            let (start_x, start_y, end_x, end_y) = if x1 < x2 {
-                (x1, y1, x2, y2)
-            } else {
-                (x2, y2, x1, y1)
-            };
+            let (start_x, start_y, end_x, end_y) =
+                if x1 < x2 {
+                    (x1, y1, x2, y2)
+                } else {
+                    (x2, y2, x1, y1)
+                };
             let length = end_x - start_x + 1;
             let alpha = (end_y - start_y) as f64 / (end_x - start_x) as f64;
             for xi in 0..length {
@@ -131,11 +132,12 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 );
             }
         } else {
-            let (start_x, start_y, end_x, end_y) = if y1 < y2 {
-                (x1, y1, x2, y2)
-            } else {
-                (x2, y2, x1, y1)
-            };
+            let (start_x, start_y, end_x, end_y) =
+                if y1 < y2 {
+                    (x1, y1, x2, y2)
+                } else {
+                    (x2, y2, x1, y1)
+                };
             let length = end_y - start_y + 1;
             let alpha = (end_x - start_x) as f64 / (end_y - start_y) as f64;
             for yi in 0..length {
@@ -306,33 +308,35 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let x_inter = f64_to_i32(x1 as f64 + alpha13 * (y2 - y1) as f64);
 
         for y in y1..=y2 {
-            let (x_slider, x_end) = if x_inter < x2 {
-                (
-                    f64_to_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
-                    f64_to_i32(x2 as f64 + alpha12 * (y - y2) as f64),
-                )
-            } else {
-                (
-                    f64_to_i32(x2 as f64 + alpha12 * (y - y2) as f64),
-                    f64_to_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
-                )
-            };
+            let (x_slider, x_end) =
+                if x_inter < x2 {
+                    (
+                        f64_to_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
+                        f64_to_i32(x2 as f64 + alpha12 * (y - y2) as f64),
+                    )
+                } else {
+                    (
+                        f64_to_i32(x2 as f64 + alpha12 * (y - y2) as f64),
+                        f64_to_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
+                    )
+                };
             for x in x_slider..=x_end {
                 self.write_data_with_clipping(x, y, value);
             }
         }
         for y in (y2 + 1)..=y3 {
-            let (x_slider, x_end) = if x_inter < x2 {
-                (
-                    f64_to_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
-                    f64_to_i32(x2 as f64 + alpha23 * (y - y2) as f64),
-                )
-            } else {
-                (
-                    f64_to_i32(x2 as f64 + alpha23 * (y - y2) as f64),
-                    f64_to_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
-                )
-            };
+            let (x_slider, x_end) =
+                if x_inter < x2 {
+                    (
+                        f64_to_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
+                        f64_to_i32(x2 as f64 + alpha23 * (y - y2) as f64),
+                    )
+                } else {
+                    (
+                        f64_to_i32(x2 as f64 + alpha23 * (y - y2) as f64),
+                        f64_to_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
+                    )
+                };
             for x in x_slider..=x_end {
                 self.write_data_with_clipping(x, y, value);
             }
@@ -542,20 +546,22 @@ impl CopyArea {
 
         let left_cut = max(max(src_rect.left() - src_x, dst_rect.left() - dst_x), 0);
         let top_cut = max(max(src_rect.top() - src_y, dst_rect.top() - dst_y), 0);
-        let right_cut = max(
+        let right_cut =
             max(
-                src_x + width - 1 - src_rect.right(),
-                dst_x + width - 1 - dst_rect.right(),
-            ),
-            0,
-        );
-        let bottom_cut = max(
+                max(
+                    src_x + width - 1 - src_rect.right(),
+                    dst_x + width - 1 - dst_rect.right(),
+                ),
+                0,
+            );
+        let bottom_cut =
             max(
-                src_y + height - 1 - src_rect.bottom(),
-                dst_y + height - 1 - dst_rect.bottom(),
-            ),
-            0,
-        );
+                max(
+                    src_y + height - 1 - src_rect.bottom(),
+                    dst_y + height - 1 - dst_rect.bottom(),
+                ),
+                0,
+            );
 
         let width = max(width - left_cut - right_cut, 0);
         let height = max(height - top_cut - bottom_cut, 0);
