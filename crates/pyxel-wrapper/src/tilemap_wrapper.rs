@@ -75,12 +75,11 @@ impl Tilemap {
 
     pub fn data_ptr(&self, py: Python) -> PyObject {
         let mut inner = self.inner.lock();
-        let python_code =
-            format!(
-                "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
-                inner.width() * inner.height(),
-                inner.data_ptr()
-            );
+        let python_code = format!(
+            "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
+            inner.width() * inner.height(),
+            inner.data_ptr()
+        );
         let locals = pyo3::types::PyDict::new(py);
         py.run(&python_code, None, Some(locals)).unwrap();
         locals.get_item("c_uint8_array").unwrap().to_object(py)

@@ -59,11 +59,10 @@ impl TilemapData {
         let tilemap = tilemap.lock();
         let width = tilemap.width();
         let height = tilemap.height();
-        let imgsrc =
-            match tilemap.imgsrc {
-                ImageSource::Index(value) => value,
-                ImageSource::Image(_) => 0,
-            };
+        let imgsrc = match tilemap.imgsrc {
+            ImageSource::Index(value) => value,
+            ImageSource::Image(_) => 0,
+        };
         let data: Vec<_> = tilemap
             .canvas
             .data

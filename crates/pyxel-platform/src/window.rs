@@ -26,9 +26,9 @@ pub fn init_window(title: &str, width: u32, height: u32) -> (*mut SDL_Window, *m
             !SDL_GL_CreateContext(window).is_null(),
             "Failed to create OpenGL context"
         );
-        gl = transmute(Box::new(GlowContext::from_loader_function(
-            |s| SDL_GL_GetProcAddress(s.as_ptr().cast()).cast_const()
-        )));
+        gl = transmute(Box::new(GlowContext::from_loader_function(|s| {
+            SDL_GL_GetProcAddress(s.as_ptr().cast()).cast_const()
+        })));
     }
     (window, gl)
 

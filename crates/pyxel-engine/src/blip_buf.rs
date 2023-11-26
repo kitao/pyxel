@@ -147,12 +147,11 @@ impl BlipBuf {
     }
 
     pub fn read_samples(&mut self, buf: &mut [i16], stereo: bool) -> usize {
-        let count =
-            if buf.len() > self.avail as usize {
-                self.avail as usize
-            } else {
-                buf.len()
-            };
+        let count = if buf.len() > self.avail as usize {
+            self.avail as usize
+        } else {
+            buf.len()
+        };
 
         let step = if stereo { 2 } else { 1 };
         // let in = self.buf;
@@ -392,12 +391,11 @@ mod tests {
 
         let mut remain = clock_rate * secs;
         loop {
-            let n =
-                if remain < clock_size as f64 {
-                    remain as i32
-                } else {
-                    clock_size
-                };
+            let n = if remain < clock_size as f64 {
+                remain as i32
+            } else {
+                clock_size
+            };
             if n == 0 {
                 break;
             }

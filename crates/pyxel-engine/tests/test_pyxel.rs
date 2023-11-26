@@ -7,17 +7,16 @@ pub struct App {
 
 impl App {
     fn init() {
-        let mut pyxel =
-            pyxel::init(
-                200,
-                150,
-                Some("Hello, Pyxel in Rust!"),
-                None,
-                None,
-                None,
-                None,
-                None,
-            );
+        let mut pyxel = pyxel::init(
+            200,
+            150,
+            Some("Hello, Pyxel in Rust!"),
+            None,
+            None,
+            None,
+            None,
+            None,
+        );
         pyxel.mouse(true);
         pyxel.warp_mouse(10.0, 10.0);
 
