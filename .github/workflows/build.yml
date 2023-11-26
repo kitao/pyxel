@@ -5,6 +5,7 @@ on: [workflow_call, workflow_dispatch]
 jobs:
   build-winmac:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - target: x86_64-pc-windows-msvc
@@ -59,6 +60,7 @@ jobs:
 
   build-linux:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - target: x86_64-unknown-linux-gnu
