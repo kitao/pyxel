@@ -128,10 +128,11 @@ impl SDL2BindingsBuilder {
         if self.should_bundle_sdl2() {
             include_paths.push(format!("-I{}/include", self.sdl2_dir));
         } else if self.target_os == "emscripten" {
-            let output = Command::new("emcc")
-                .args(["--cflags", "-s", "USE_SDL=2"])
-                .output()
-                .unwrap();
+            let output =
+                Command::new("emcc")
+                    .args(["--cflags", "-s", "USE_SDL=2"])
+                    .output()
+                    .unwrap();
             let cflags_str = str::from_utf8(&output.stdout).unwrap();
             let sdl2_include_paths = cflags_str
                 .split_whitespace()
