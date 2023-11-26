@@ -153,10 +153,14 @@ impl SDL2BindingsBuilder {
     fn generate_bindings(&self) {
         let mut builder = bindgen::Builder::default()
             .header("wrapper.h")
+            .allowlist_function("SDL_.*")
+            .allowlist_type("SDL_.*")
+            .allowlist_var("SDL_.*")
+            .allowlist_var("AUDIO_.*")
+            .use_core()
             .prepend_enum_name(false)
             .clang_arg(format!("--target={}", self.target.clone()))
-            .clang_args(self.get_include_paths())
-            .use_core();
+            .clang_args(self.get_include_paths());
         if self.target_os == "windows-msvc" {
             builder = builder
                 .clang_arg("-IC:/Program Files (x86)/Windows Kits/8.1/Include/shared")
