@@ -19,7 +19,7 @@ pub fn init_window(title: &str, width: u32, height: u32) -> (*mut SDL_Window, *m
             SDL_WINDOWPOS_UNDEFINED_MASK as i32,
             width as i32,
             height as i32,
-            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE,
+            (SDL_WINDOW_OPENGL as Uint32) | (SDL_WINDOW_RESIZABLE as Uint32),
         );
         assert!(!window.is_null(), "Failed to create window");
         assert!(
@@ -66,7 +66,7 @@ pub fn set_window_icon(width: u32, height: u32, rgba_data: &[u8]) {
             width as i32,
             height as i32,
             32,
-            SDL_PIXELFORMAT_RGBA32,
+            SDL_PIXELFORMAT_RGBA32 as Uint32,
         );
         let pixels = (*surface).pixels.cast::<u8>();
         let pitch = (*surface).pitch as u32;
@@ -113,12 +113,12 @@ pub fn set_window_size(width: u32, height: u32) {
 }
 
 pub fn is_fullscreen() -> bool {
-    (unsafe { SDL_GetWindowFlags(platform().window) } & SDL_WINDOW_FULLSCREEN) != 0
+    (unsafe { SDL_GetWindowFlags(platform().window) }) & (SDL_WINDOW_FULLSCREEN as Uint32) != 0
 }
 
 pub fn set_fullscreen(full: bool) {
     let full = if full {
-        SDL_WINDOW_FULLSCREEN_DESKTOP
+        SDL_WINDOW_FULLSCREEN_DESKTOP as Uint32
     } else {
         0
     };
@@ -128,9 +128,13 @@ pub fn set_fullscreen(full: bool) {
 }
 
 pub fn set_mouse_visible(visible: bool) {
-    let visible = if visible { SDL_ENABLE } else { SDL_DISABLE };
+    let visible = if visible {
+        SDL_ENABLE as i32
+    } else {
+        SDL_DISABLE as i32
+    };
     unsafe {
-        SDL_ShowCursor(visible as i32);
+        SDL_ShowCursor(visible);
     }
 }
 
@@ -143,7 +147,7 @@ pub fn set_mouse_pos(x: i32, y: i32) {
 
 pub fn handle_window_event(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
-    match unsafe { sdl_event.window.event } as u32 {
+    match unsafe { sdl_event.window.event } as SDL_WindowEventID {
         SDL_WINDOWEVENT_SHOWN | SDL_WINDOWEVENT_MAXIMIZED | SDL_WINDOWEVENT_RESTORED => {
             events.push(Event::WindowShown);
         }
