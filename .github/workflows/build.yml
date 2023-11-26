@@ -101,8 +101,21 @@ jobs:
       - name: Install Python packages
         run: pip install -r requirements.txt
 
-      - name: Install pkg-config
-        run: sudo apt-get install -y pkg-config libssl-dev
+      - name: Build and install OpenSSL
+        run: |
+          export OPENSSL_VERSION=3.2.0
+          curl -sqLO https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz
+          tar xzf openssl-${OPENSSL_VERSION}.tar.gz
+          cd openssl-${OPENSSL_VERSION}
+          ./Configure ${OPENSSL_CONFIG_OPTIONS} --prefix=$(pwd)/openssl-build
+          make -j4
+          make install
+          echo "OPENSSL_DIR=$(pwd)/openssl-build" >> $GITHUB_ENV
+        env:
+          OPENSSL_CONFIG_OPTIONS: >-
+            ${{ matrix.target == 'x86_64-unknown-linux-gnu' && 'linux-x86_64' ||
+                matrix.target == 'aarch64-unknown-linux-gnu' && 'linux-aarch64' ||
+                matrix.target == 'armv7-unknown-linux-gnueabihf' && 'linux-armv4' }}
 
       - name: Build and install SDL2
         run: |
@@ -116,9 +129,9 @@ jobs:
           CFLAGS="-O3 -fPIC" ./configure \
             --build=x86_64-unknown-linux-gnu \
             --host=${{ matrix.target }} \
-            --prefix=/usr/${{ matrix.target }}/
+            --prefix=$(pwd)/SDL2-build
           make -j4
-          make -j4 install
+          make install
           cd ..
           rm -rf SDL2-${SDL2_VERSION}
 
