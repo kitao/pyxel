@@ -101,48 +101,16 @@ jobs:
       - name: Install Python packages
         run: pip install -r requirements.txt
 
-      - name: Install OpenSSL for x86_64
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
+      - name: Build OpenSSL
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libssl-dev
-          OPENSSL_LIB_DIR=$(dpkg -L libssl-dev | grep -m 1 '/lib' | xargs dirname)
-          OPENSSL_INCLUDE_DIR=$(dpkg -L libssl-dev | grep -m 1 '/include' | xargs dirname)
-          echo "OPENSSL_LIB_DIR=$OPENSSL_LIB_DIR" >> $GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=$OPENSSL_INCLUDE_DIR" >> $GITHUB_ENV
-
-      - name: Install OpenSSL for i686
-        if: matrix.target == 'i686-unknown-linux-gnu'
-        run: |
-          sudo dpkg --add-architecture i386
-          sudo apt-get update
-          sudo apt-get install -y libssl-dev:i386
-          OPENSSL_LIB_DIR=$(dpkg -L libssl-dev:i386 | grep -m 1 '/lib' | xargs dirname)
-          OPENSSL_INCLUDE_DIR=$(dpkg -L libssl-dev:i386 | grep -m 1 '/include' | xargs dirname)
-          echo "I686_UNKNOWN_LINUX_GNU_OPENSSL_OPENSSL_LIB_DIR=$OPENSSL_LIB_DIR" >> $GITHUB_ENV
-          echo "I686_UNKNOWN_LINUX_GNU_OPENSSL_OPENSSL_INCLUDE_DIR=$OPENSSL_INCLUDE_DIR" >> $GITHUB_ENV
-
-      - name: Install OpenSSL for aarch64
-        if: matrix.target == 'aarch64-unknown-linux-gnu'
-        run: |
-          sudo dpkg --add-architecture arm64
-          sudo apt-get update
-          sudo apt-get install -y libssl-dev:arm64
-          OPENSSL_LIB_DIR=$(dpkg -L libssl-dev:arm64 | grep -m 1 '/lib' | xargs dirname)
-          OPENSSL_INCLUDE_DIR=$(dpkg -L libssl-dev:arm64 | grep -m 1 '/include' | xargs dirname)
-          echo "AARCH64_UNKNOWN_LINUX_GNU_OPENSSL_LIB_DIR=$OPENSSL_LIB_DIR" >> $GITHUB_ENV
-          echo "AARCH64_UNKNOWN_LINUX_GNU_OPENSSL_INCLUDE_DIR=$OPENSSL_INCLUDE_DIR" >> $GITHUB_ENV
-
-      - name: Install OpenSSL for armv7
-        if: matrix.target == 'armv7-unknown-linux-gnueabihf'
-        run: |
-          sudo dpkg --add-architecture armhf
-          sudo apt-get update
-          sudo apt-get install -y libssl-dev:armhf
-          OPENSSL_LIB_DIR=$(dpkg -L libssl-dev:armhf | grep -m 1 '/lib' | xargs dirname)
-          OPENSSL_INCLUDE_DIR=$(dpkg -L libssl-dev:armhf | grep -m 1 '/include' | xargs dirname)
-          echo "ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_LIB_DIR=$OPENSSL_LIB_DIR" >> $GITHUB_ENV
-          echo "ARMV7_UNKNOWN_LINUX_GNUEABIHF_OPENSSL_INCLUDE_DIR=$OPENSSL_INCLUDE_DIR" >> $GITHUB_ENV
+          OPENSSL_VERSION=3.2.0
+          curl -sqLO https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz
+          tar xzf openssl-${OPENSSL_VERSION}.tar.gz
+          cd openssl-${OPENSSL_VERSION}
+          ./Configure linux-generic32 --prefix=$(pwd)/openssl-build
+          make -j4
+          TARGET_UPPER=$(echo "${{ matrix.target }}" | tr '[:lower:]-' '[:upper:]_')
+          echo "${TARGET_UPPER}_OPENSSL_DIR=$(pwd)/openssl-build" >> $GITHUB_ENV
 
       - name: Build and install SDL2
         run: |
