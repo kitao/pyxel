@@ -101,26 +101,9 @@ jobs:
       - name: Install Python packages
         run: pip install -r requirements.txt
 
-      - name: Install pkg-config
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pkg-config
-
-      - name: Install OpenSSL for i686
-        if: matrix.target == 'i686-unknown-linux-gnu'
-        run: |
-          OPENSSL_VERSION=3.2.0
-          curl -sqLO https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz
-          tar xzf openssl-${OPENSSL_VERSION}.tar.gz
-          cd openssl-${OPENSSL_VERSION}
-          ./Configure linux-generic32 --prefix=$(pwd)/openssl-build
-          make -j4
-          TARGET_UPPER=$(echo "${{ matrix.target }}" | tr '[:lower:]-' '[:upper:]_')
-          echo "${TARGET_UPPER}_OPENSSL_DIR=$(pwd)/openssl-build" >> $GITHUB_ENV
-
       - name: Build and install SDL2
         run: |
-          export SDL2_VERSION=2.24.2
+          SDL2_VERSION=2.0.10
           export CC=$TARGET_CC
           export AR=$TARGET_AR
           export RANLIB=$TARGET_RANLIB
