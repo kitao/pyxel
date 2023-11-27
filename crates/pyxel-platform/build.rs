@@ -146,7 +146,8 @@ impl SDL2BindingsBuilder {
             include_paths.push(format!("-I{}", sdl2_include_path));
             include_paths.push(format!("-I{}/..", sdl2_include_path));
         } else {
-            include_paths.push(format!("-I{}", var("SDL2_INCLUDE_PATH").unwrap()));
+            include_paths.push("-I/usr/include/SDL2".to_string());
+            include_paths.push("-I/usr/local/include/SDL2".to_string());
         }
         include_paths
     }
