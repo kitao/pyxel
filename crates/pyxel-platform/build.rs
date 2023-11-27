@@ -132,22 +132,31 @@ impl SDL2BindingsBuilder {
             let output = Command::new("emcc")
                 .args(["--cflags", "-s", "USE_SDL=2"])
                 .output()
-                .unwrap();
-            let cflags_str = str::from_utf8(&output.stdout).unwrap();
-            let sdl2_include_paths = cflags_str
+                .expect("Failed to execute emcc");
+            let cflags = str::from_utf8(&output.stdout).unwrap();
+            let emcc_include_paths = cflags
                 .split_whitespace()
-                .filter(|flag| flag.starts_with("-I"))
+                .filter(|cflag| cflag.starts_with("-I"))
                 .collect::<Vec<&str>>();
-            let sdl2_include_path = sdl2_include_paths
+            let sdl2_include_path = emcc_include_paths
                 .iter()
-                .find(|&&path| path.contains("SDL2"))
-                .map(|&path| path[2..].to_string())
+                .find(|&&cflag| cflag.contains("SDL2"))
+                .map(|&cflag| cflag[2..].to_string())
                 .unwrap();
             include_paths.push(format!("-I{}", sdl2_include_path));
             include_paths.push(format!("-I{}/..", sdl2_include_path));
         } else {
-            include_paths.push("-I/usr/include/SDL2".to_string());
-            include_paths.push("-I/usr/local/include/SDL2".to_string());
+            let output = Command::new("sdl2-config")
+                .arg("--cflags")
+                .output()
+                .expect("Failed to execute sdl2-config");
+            let cflags = str::from_utf8(&output.stdout).unwrap();
+            let sdl2_include_paths = cflags
+                .split_whitespace()
+                .filter(|cflag| cflag.starts_with("-I"))
+                .map(|cflag| cflag[2..].to_string())
+                .collect::<Vec<String>>();
+            include_paths.extend(sdl2_include_paths);
         }
         include_paths
     }
