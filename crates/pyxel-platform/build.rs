@@ -1,6 +1,5 @@
 use std::env::var;
 use std::fs::File;
-use std::io::{copy, BufWriter};
 use std::path::Path;
 use std::process::Command;
 use std::str;
@@ -45,11 +44,13 @@ impl SDL2BindingsBuilder {
         let sdl2_archive_path = format!("{}/SDL2-{}.tar.gz", self.out_dir, SDL2_VERSION);
 
         // Download SDL2
-        let mut resp =
-            reqwest::blocking::get(sdl2_archive_url).expect("Failed to download SDL2 source code");
-        let file = File::create(&sdl2_archive_path).unwrap();
-        let mut writer = BufWriter::new(file);
-        copy(&mut resp, &mut writer).expect("Failed to write SDL2 source code to file");
+        let status = Command::new("curl")
+            .arg("-Lo")
+            .arg(&sdl2_archive_path)
+            .arg(&sdl2_archive_url)
+            .status()
+            .expect("Failed to execute curl command");
+        assert!(status.success(), "Failed to download SDL2 source code");
 
         // Extract SDL2
         let tar_gz = File::open(&sdl2_archive_path).unwrap();
