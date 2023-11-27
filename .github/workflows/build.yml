@@ -101,7 +101,13 @@ jobs:
       - name: Install Python packages
         run: pip install -r requirements.txt
 
-      - name: Build OpenSSL
+      - name: Install pkg-config
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config
+
+      - name: Install OpenSSL for i686
+        if: matrix.target == 'i686-unknown-linux-gnu'
         run: |
           OPENSSL_VERSION=3.2.0
           curl -sqLO https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz
