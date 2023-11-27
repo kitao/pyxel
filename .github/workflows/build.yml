@@ -101,22 +101,32 @@ jobs:
       - name: Install Python packages
         run: pip install -r requirements.txt
 
-      - name: Build OpenSSL
+      - name: Install OpenSSL for x86_64
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
         run: |
-          export OPENSSL_VERSION=3.2.0
-          curl -sqLO https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz
-          tar xzf openssl-${OPENSSL_VERSION}.tar.gz
-          cd openssl-${OPENSSL_VERSION}
-          ./Configure ${OPENSSL_CONFIG_OPTIONS} --prefix=$(pwd)/openssl-build
-          make -j4
-          TARGET_UPPER=$(echo "${{ matrix.target }}" | tr '[:lower:]-' '[:upper:]_')
-          echo "${TARGET_UPPER}_OPENSSL_DIR=$(pwd)/openssl-build" >> $GITHUB_ENV
-        env:
-          OPENSSL_CONFIG_OPTIONS: >-
-            ${{ matrix.target == 'x86_64-unknown-linux-gnu' && 'linux-x86_64' ||
-                matrix.target == 'i686-unknown-linux-gnu' && 'linux-elf' ||
-                matrix.target == 'aarch64-unknown-linux-gnu' && 'linux-aarch64' ||
-                matrix.target == 'armv7-unknown-linux-gnueabihf' && 'linux-armv4' }}
+          sudo apt-get update
+          sudo apt-get install libssl-dev
+
+      - name: Install OpenSSL for i686
+        if: matrix.target == 'i686-unknown-linux-gnu'
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install libssl-dev:i386
+
+      - name: Install OpenSSL for aarch64
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo dpkg --add-architecture arm64
+          sudo apt-get update
+          sudo apt-get install libssl-dev:arm64
+
+      - name: Install OpenSSL for armv7
+        if: matrix.target == 'armv7-unknown-linux-gnueabihf'
+        run: |
+          sudo dpkg --add-architecture armhf
+          sudo apt-get update
+          sudo apt-get install libssl-dev:armhf
 
       - name: Build and install SDL2
         run: |
