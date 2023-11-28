@@ -112,7 +112,7 @@ jobs:
           cd SDL2-${SDL2_VERSION}
           CFLAGS="-O3 -fPIC" ./configure \
             --build=x86_64-unknown-linux-gnu \
-            --host=${{ matrix.target }} \
+            --host=${{ matrix.target }}
           make -j4
           make install
           cd ..
