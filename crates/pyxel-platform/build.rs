@@ -134,7 +134,7 @@ impl SDL2BindingsBuilder {
                 .output()
                 .expect("Failed to execute emcc");
             let cflags = str::from_utf8(&output.stdout).unwrap();
-            let sdl2_include_paths = cflags
+            let sdl2_include_path = cflags
                 .split_whitespace()
                 .find(|cflag| cflag.starts_with("-I") && cflag.contains("SDL2"))
                 .unwrap();
