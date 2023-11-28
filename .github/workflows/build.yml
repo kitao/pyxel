@@ -118,12 +118,10 @@ jobs:
           make install
           cd ..
           rm -rf SDL2-${SDL2_VERSION}
-          SDL2_CONFIG_PATH=$(dirname $(find / -name sdl2-config 2>/dev/null))
-          echo "PATH=$PATH:$SDL2_CONFIG_PATH" >> $GITHUB_ENV
 
       - name: Build wheels
         run: |
-          export RUSTFLAGS="-L/usr/${{ matrix.target }}/lib"
+          export RUSTFLAGS="-I/usr/${{ matrix.target }}/include -L/usr/${{ matrix.target }}/lib"
           make TARGET=${{ matrix.target }}
 
       - name: Upload wheels
