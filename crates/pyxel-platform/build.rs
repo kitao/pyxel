@@ -134,7 +134,7 @@ impl SDL2BindingsBuilder {
                 .output()
                 .expect("Failed to execute emcc");
             let cflags = str::from_utf8(&output.stdout).unwrap();
-            let sdl2_include_path = cflags
+            let sdl2_include_paths = cflags
                 .split_whitespace()
                 .find(|cflag| cflag.starts_with("-I") && cflag.contains("SDL2"))
                 .unwrap();
@@ -151,8 +151,9 @@ impl SDL2BindingsBuilder {
                 .filter(|cflag| cflag.starts_with("-I"))
                 .map(|cflag| cflag.to_string())
                 .collect::<Vec<String>>();
-            println!("*********************** {}", sdl2_include_paths[0]);
             include_paths.extend(sdl2_include_paths);
+            include_paths.push("-I/usr/local/include".to_string());
+            include_paths.push("-I/usr/include".to_string());
         }
         include_paths
     }
