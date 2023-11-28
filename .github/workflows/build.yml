@@ -118,6 +118,9 @@ jobs:
           make install
           cd ..
           rm -rf SDL2-${SDL2_VERSION}
+          find / -name sdl2-config
+          which sdl2-config
+          sdl2-config
 
       - name: Build wheels
         run: |
