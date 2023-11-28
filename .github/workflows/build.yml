@@ -118,9 +118,8 @@ jobs:
           make install
           cd ..
           rm -rf SDL2-${SDL2_VERSION}
-          find / -name sdl2-config
-          which sdl2-config
-          sdl2-config
+          SDL2_CONFIG_PATH=$(dirname $(find / -name sdl2-config 2>/dev/null))
+          echo "PATH=$PATH:$SDL2_CONFIG_PATH" >> $GITHUB_ENV
 
       - name: Build wheels
         run: |
