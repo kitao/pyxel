@@ -113,7 +113,6 @@ jobs:
           CFLAGS="-O3 -fPIC" ./configure \
             --build=x86_64-unknown-linux-gnu \
             --host=${{ matrix.target }} \
-            --prefix=$(pwd)/SDL2-build
           make -j4
           make install
           cd ..
@@ -121,7 +120,7 @@ jobs:
 
       - name: Build wheels
         run: |
-          export RUSTFLAGS="-I/usr/${{ matrix.target }}/include -L/usr/${{ matrix.target }}/lib"
+          export RUSTFLAGS="-L/usr/${{ matrix.target }}/lib"
           make TARGET=${{ matrix.target }}
 
       - name: Upload wheels
