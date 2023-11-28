@@ -145,6 +145,18 @@ impl SDL2BindingsBuilder {
                 .unwrap();
             include_paths.push(format!("-I{}", sdl2_include_path));
             include_paths.push(format!("-I{}/..", sdl2_include_path));
+        } else {
+            let output = Command::new("sdl2-config")
+                .arg("--cflags")
+                .output()
+                .expect("Failed to execute sdl2-config");
+            let cflags = str::from_utf8(&output.stdout).unwrap();
+            let sdl2_include_paths = cflags
+                .split_whitespace()
+                .filter(|cflag| cflag.starts_with("-I"))
+                .map(|cflag| cflag[2..].to_string())
+                .collect::<Vec<String>>();
+            include_paths.extend(sdl2_include_paths);
         }
         include_paths
     }
