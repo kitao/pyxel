@@ -156,6 +156,7 @@ impl SDL2BindingsBuilder {
                 .filter(|cflag| cflag.starts_with("-I"))
                 .map(|cflag| cflag[2..].to_string())
                 .collect::<Vec<String>>();
+            println!("*********************** {}", sdl2_include_paths[0]);
             include_paths.extend(sdl2_include_paths);
         }
         include_paths
