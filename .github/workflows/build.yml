@@ -118,6 +118,8 @@ jobs:
           make install
           cd ..
           rm -rf SDL2-${SDL2_VERSION}
+          find / -path '*/sys/types.h' 2>/dev/null
+          find / -path '*/SDL.h' 2>/dev/null
 
       - name: Build wheels
         run: |
