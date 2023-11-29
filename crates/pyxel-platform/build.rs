@@ -124,29 +124,38 @@ impl SDL2BindingsBuilder {
         }
     }
 
-    fn get_include_paths(&self) -> Vec<String> {
-        let mut include_paths = Vec::new();
+    fn get_bindgen_flags(&self) -> Vec<String> {
+        if let Ok(bindgen_flags) = var("BINDGENFLAGS") {
+            bindgen_flags
+                .split_whitespace()
+                .map(|s| s.to_string())
+                .collect()
+        } else {
+            Vec::new()
+        }
+    }
+
+    fn get_include_flags(&self) -> Vec<String> {
+        let mut include_flags = Vec::new();
         if self.should_bundle_sdl2() {
-            include_paths.push(format!("-I{}/include", self.sdl2_dir));
+            include_flags.push(format!("-I{}/include", self.sdl2_dir));
         } else if self.target_os == "emscripten" {
             let output = Command::new("emcc")
                 .args(["--cflags", "-s", "USE_SDL=2"])
                 .output()
                 .expect("Failed to execute emcc");
             let cflags = str::from_utf8(&output.stdout).unwrap();
-            let sdl2_include_path = cflags
+            let sdl2_include_flag = cflags
                 .split_whitespace()
                 .find(|cflag| cflag.starts_with("-I") && cflag.contains("SDL2"))
                 .unwrap();
-            include_paths.push(sdl2_include_path.to_string());
-            include_paths.push(sdl2_include_path.to_string() + "/..");
+            include_flags.push(sdl2_include_flag.to_string());
+            include_flags.push(sdl2_include_flag.to_string() + "/..");
         } else {
-            include_paths.push(format!("-I/usr/{}/include/SDL2", self.target));
-            include_paths.push(format!("-I/usr/{}/include", self.target));
-            include_paths.push("-I/usr/local/include".to_string());
-            include_paths.push("-I/usr/include".to_string());
+            include_flags.push("-I/usr/local/include".to_string());
+            include_flags.push("-I/usr/include".to_string());
         }
-        include_paths
+        include_flags
     }
 
     fn generate_bindings(&self) {
@@ -160,7 +169,8 @@ impl SDL2BindingsBuilder {
             .use_core()
             .prepend_enum_name(false)
             .clang_arg(format!("--target={}", self.target.clone()))
-            .clang_args(self.get_include_paths());
+            .clang_args(self.get_bindgen_flags())
+            .clang_args(self.get_include_flags());
         if self.target_os == "windows-msvc" {
             builder = builder
                 .clang_arg("-IC:/Program Files (x86)/Windows Kits/8.1/Include/shared")
