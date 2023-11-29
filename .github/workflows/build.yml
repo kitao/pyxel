@@ -118,11 +118,10 @@ jobs:
           make install
           cd ..
           rm -rf SDL2-${SDL2_VERSION}
-          find / -path '*/sys/types.h' 2>/dev/null
-          find / -path '*/SDL.h' 2>/dev/null
 
       - name: Build wheels
         run: |
+          export BINDGENFLAGS="-I/usr/${{ matrix.target }}/include/SDL2 -I/usr/${{ matrix.target }}/${{ matrix.target }}/sysroot/usr/include"
           export RUSTFLAGS="-L/usr/${{ matrix.target }}/lib"
           make TARGET=${{ matrix.target }}
 
