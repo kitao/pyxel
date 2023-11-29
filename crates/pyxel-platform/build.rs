@@ -141,17 +141,8 @@ impl SDL2BindingsBuilder {
             include_paths.push(sdl2_include_path.to_string());
             include_paths.push(sdl2_include_path.to_string() + "/..");
         } else {
-            let output = Command::new("sdl2-config")
-                .arg("--cflags")
-                .output()
-                .expect("Failed to execute sdl2-config");
-            let cflags = str::from_utf8(&output.stdout).unwrap();
-            let sdl2_include_paths = cflags
-                .split_whitespace()
-                .filter(|cflag| cflag.starts_with("-I"))
-                .map(|cflag| cflag.to_string())
-                .collect::<Vec<String>>();
-            include_paths.extend(sdl2_include_paths);
+            include_paths.push(format!("-I/usr/{}/include/SDL2", self.target));
+            include_paths.push(format!("-I/usr/{}/include", self.target));
             include_paths.push("-I/usr/local/include".to_string());
             include_paths.push("-I/usr/include".to_string());
         }
