@@ -54,7 +54,7 @@ class SoundEditor(EditorBase):
 
         # Initialize speed picker
         self._speed_picker = NumberPicker(
-            self, 105, 17, min_value=1, max_value=99, value=pyxel.sound(0).speed
+            self, 105, 17, min_value=1, max_value=99, value=pyxel.sounds[0].speed
         )
         self._speed_picker.add_event_listener("change", self.__on_speed_picker_change)
         self.add_number_picker_help(self._speed_picker)
@@ -113,7 +113,7 @@ class SoundEditor(EditorBase):
         return self._piano_keyboard.note
 
     def get_field(self, index):
-        sound = pyxel.sound(self.sound_no_var)
+        sound = pyxel.sounds[self.sound_no_var]
         if index == 0:
             return sound.notes
         elif index == 1:
@@ -172,11 +172,11 @@ class SoundEditor(EditorBase):
         return pyxel.play_pos(0) is not None
 
     def __on_sound_picker_change(self, value):
-        sound = pyxel.sound(value)
+        sound = pyxel.sounds[value]
         self._speed_picker.value = sound.speed
 
     def __on_speed_picker_change(self, value):
-        sound = pyxel.sound(self.sound_no_var)
+        sound = pyxel.sounds[self.sound_no_var]
         sound.speed = value
 
     def __on_play_button_press(self):
@@ -210,7 +210,7 @@ class SoundEditor(EditorBase):
         self._stop()
 
     def __on_update(self):
-        sound = pyxel.sound(self.sound_no_var)
+        sound = pyxel.sounds[self.sound_no_var]
         if self.speed_var != sound.speed:
             self.speed_var = sound.speed
         if pyxel.btnp(pyxel.KEY_SPACE):

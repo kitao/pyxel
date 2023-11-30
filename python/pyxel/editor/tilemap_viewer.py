@@ -57,7 +57,7 @@ class TilemapViewer(Widget):
         self.help_message_var = f"TARGET:CURSOR ({x * 8},{y * 8})"
 
     def __on_update(self):
-        tilemap = pyxel.tilemap(self.tilemap_no_var)
+        tilemap = pyxel.tilemaps[self.tilemap_no_var]
         image = pyxel.images[tilemap.imgsrc]
         start_y = pyxel.frame_count % 8 * 8
         for y in range(start_y, start_y + 8):

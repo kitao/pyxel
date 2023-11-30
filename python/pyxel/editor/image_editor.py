@@ -87,7 +87,7 @@ class ImageEditor(EditorBase):
         self.add_event_listener("draw", self.__on_draw)
 
     def __on_canvas_get(self, value):
-        return pyxel.image(self.image_no_var)
+        return pyxel.images[self.image_no_var]
 
     def __on_color_picker_mouse_hover(self, x, y):
         self.help_message_var = "COLOR:1-8/SHIFT+1-8"
@@ -107,7 +107,7 @@ class ImageEditor(EditorBase):
         )
 
     def __on_drop(self, filename):
-        pyxel.image(self.image_no_var).load(0, 0, filename)
+        pyxel.images[self.image_no_var].load(0, 0, filename)
 
     def __on_update(self):
         self.check_tool_button_shortcuts()
