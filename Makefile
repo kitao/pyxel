@@ -87,10 +87,10 @@ lint:
 
 update:
 	@cd $(CRATES_DIR)/pyxel-platform; cargo update
-	@cd $(CRATES_DIR)/pyxel-platform; cargo outdated --root-deps-only
 	@cd $(CRATES_DIR)/pyxel-engine; cargo update
-	@cd $(CRATES_DIR)/pyxel-engine; cargo outdated --root-deps-only
 	@cd $(CRATES_DIR)/pyxel-wrapper; cargo update
+	@cd $(CRATES_DIR)/pyxel-platform; cargo outdated --root-deps-only
+	@cd $(CRATES_DIR)/pyxel-engine; cargo outdated --root-deps-only
 	@cd $(CRATES_DIR)/pyxel-wrapper; cargo outdated --root-deps-only
 
 format:
