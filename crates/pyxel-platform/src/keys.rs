@@ -5,10 +5,8 @@ use crate::sdl2_sys::*;
 pub type Key = u32;
 pub type KeyValue = i32;
 
-// Unknown
+// Keyboard (based on SDL_keycode.h in SDL 2.0.10)
 pub const KEY_UNKNOWN: Key = SDLK_UNKNOWN as Key;
-
-// Keyboard
 pub const KEY_RETURN: Key = SDLK_RETURN as Key;
 pub const KEY_ESCAPE: Key = SDLK_ESCAPE as Key;
 pub const KEY_BACKSPACE: Key = SDLK_BACKSPACE as Key;
@@ -46,7 +44,6 @@ pub const KEY_EQUALS: Key = SDLK_EQUALS as Key;
 pub const KEY_GREATER: Key = SDLK_GREATER as Key;
 pub const KEY_QUESTION: Key = SDLK_QUESTION as Key;
 pub const KEY_AT: Key = SDLK_AT as Key;
-
 pub const KEY_LEFTBRACKET: Key = SDLK_LEFTBRACKET as Key;
 pub const KEY_BACKSLASH: Key = SDLK_BACKSLASH as Key;
 pub const KEY_RIGHTBRACKET: Key = SDLK_RIGHTBRACKET as Key;
@@ -79,9 +76,7 @@ pub const KEY_W: Key = SDLK_w as Key;
 pub const KEY_X: Key = SDLK_x as Key;
 pub const KEY_Y: Key = SDLK_y as Key;
 pub const KEY_Z: Key = SDLK_z as Key;
-
 pub const KEY_CAPSLOCK: Key = SDLK_CAPSLOCK as Key;
-
 pub const KEY_F1: Key = SDLK_F1 as Key;
 pub const KEY_F2: Key = SDLK_F2 as Key;
 pub const KEY_F3: Key = SDLK_F3 as Key;
@@ -94,7 +89,6 @@ pub const KEY_F9: Key = SDLK_F9 as Key;
 pub const KEY_F10: Key = SDLK_F10 as Key;
 pub const KEY_F11: Key = SDLK_F11 as Key;
 pub const KEY_F12: Key = SDLK_F12 as Key;
-
 pub const KEY_PRINTSCREEN: Key = SDLK_PRINTSCREEN as Key;
 pub const KEY_SCROLLLOCK: Key = SDLK_SCROLLLOCK as Key;
 pub const KEY_PAUSE: Key = SDLK_PAUSE as Key;
@@ -108,7 +102,6 @@ pub const KEY_RIGHT: Key = SDLK_RIGHT as Key;
 pub const KEY_LEFT: Key = SDLK_LEFT as Key;
 pub const KEY_DOWN: Key = SDLK_DOWN as Key;
 pub const KEY_UP: Key = SDLK_UP as Key;
-
 pub const KEY_NUMLOCKCLEAR: Key = SDLK_NUMLOCKCLEAR as Key;
 pub const KEY_KP_DIVIDE: Key = SDLK_KP_DIVIDE as Key;
 pub const KEY_KP_MULTIPLY: Key = SDLK_KP_MULTIPLY as Key;
@@ -126,7 +119,6 @@ pub const KEY_KP_8: Key = SDLK_KP_8 as Key;
 pub const KEY_KP_9: Key = SDLK_KP_9 as Key;
 pub const KEY_KP_0: Key = SDLK_KP_0 as Key;
 pub const KEY_KP_PERIOD: Key = SDLK_KP_PERIOD as Key;
-
 pub const KEY_APPLICATION: Key = SDLK_APPLICATION as Key;
 pub const KEY_POWER: Key = SDLK_POWER as Key;
 pub const KEY_KP_EQUALS: Key = SDLK_KP_EQUALS as Key;
@@ -158,7 +150,6 @@ pub const KEY_VOLUMEUP: Key = SDLK_VOLUMEUP as Key;
 pub const KEY_VOLUMEDOWN: Key = SDLK_VOLUMEDOWN as Key;
 pub const KEY_KP_COMMA: Key = SDLK_KP_COMMA as Key;
 pub const KEY_KP_EQUALSAS400: Key = SDLK_KP_EQUALSAS400 as Key;
-
 pub const KEY_ALTERASE: Key = SDLK_ALTERASE as Key;
 pub const KEY_SYSREQ: Key = SDLK_SYSREQ as Key;
 pub const KEY_CANCEL: Key = SDLK_CANCEL as Key;
@@ -171,7 +162,6 @@ pub const KEY_OPER: Key = SDLK_OPER as Key;
 pub const KEY_CLEARAGAIN: Key = SDLK_CLEARAGAIN as Key;
 pub const KEY_CRSEL: Key = SDLK_CRSEL as Key;
 pub const KEY_EXSEL: Key = SDLK_EXSEL as Key;
-
 pub const KEY_KP_00: Key = SDLK_KP_00 as Key;
 pub const KEY_KP_000: Key = SDLK_KP_000 as Key;
 pub const KEY_THOUSANDSSEPARATOR: Key = SDLK_THOUSANDSSEPARATOR as Key;
@@ -218,7 +208,6 @@ pub const KEY_KP_BINARY: Key = SDLK_KP_BINARY as Key;
 pub const KEY_KP_OCTAL: Key = SDLK_KP_OCTAL as Key;
 pub const KEY_KP_DECIMAL: Key = SDLK_KP_DECIMAL as Key;
 pub const KEY_KP_HEXADECIMAL: Key = SDLK_KP_HEXADECIMAL as Key;
-
 pub const KEY_LCTRL: Key = SDLK_LCTRL as Key;
 pub const KEY_LSHIFT: Key = SDLK_LSHIFT as Key;
 pub const KEY_LALT: Key = SDLK_LALT as Key;
@@ -227,9 +216,7 @@ pub const KEY_RCTRL: Key = SDLK_RCTRL as Key;
 pub const KEY_RSHIFT: Key = SDLK_RSHIFT as Key;
 pub const KEY_RALT: Key = SDLK_RALT as Key;
 pub const KEY_RGUI: Key = SDLK_RGUI as Key;
-
 pub const KEY_MODE: Key = SDLK_MODE as Key;
-
 pub const KEY_AUDIONEXT: Key = SDLK_AUDIONEXT as Key;
 pub const KEY_AUDIOPREV: Key = SDLK_AUDIOPREV as Key;
 pub const KEY_AUDIOSTOP: Key = SDLK_AUDIOSTOP as Key;
@@ -247,7 +234,6 @@ pub const KEY_AC_FORWARD: Key = SDLK_AC_FORWARD as Key;
 pub const KEY_AC_STOP: Key = SDLK_AC_STOP as Key;
 pub const KEY_AC_REFRESH: Key = SDLK_AC_REFRESH as Key;
 pub const KEY_AC_BOOKMARKS: Key = SDLK_AC_BOOKMARKS as Key;
-
 pub const KEY_BRIGHTNESSDOWN: Key = SDLK_BRIGHTNESSDOWN as Key;
 pub const KEY_BRIGHTNESSUP: Key = SDLK_BRIGHTNESSUP as Key;
 pub const KEY_DISPLAYSWITCH: Key = SDLK_DISPLAYSWITCH as Key;
@@ -258,14 +244,8 @@ pub const KEY_EJECT: Key = SDLK_EJECT as Key;
 pub const KEY_SLEEP: Key = SDLK_SLEEP as Key;
 pub const KEY_APP1: Key = SDLK_APP1 as Key;
 pub const KEY_APP2: Key = SDLK_APP2 as Key;
-
 pub const KEY_AUDIOREWIND: Key = SDLK_AUDIOREWIND as Key;
 pub const KEY_AUDIOFASTFORWARD: Key = SDLK_AUDIOFASTFORWARD as Key;
-
-pub const KEY_SOFTLEFT: Key = SDLK_SOFTLEFT as Key;
-pub const KEY_SOFTRIGHT: Key = SDLK_SOFTRIGHT as Key;
-pub const KEY_CALL: Key = SDLK_CALL as Key;
-pub const KEY_ENDCALL: Key = SDLK_ENDCALL as Key;
 
 pub const SPECIAL_KEY_START_INDEX: Key = 10000;
 pub const KEY_NONE: Key = SPECIAL_KEY_START_INDEX;
@@ -314,12 +294,6 @@ macro_rules! define_gamepad_keys {
             pub const [<$gamepad_name _BUTTON_DPAD_DOWN>]: Key  = $start_index + 18;
             pub const [<$gamepad_name _BUTTON_DPAD_LEFT>]: Key  = $start_index + 19;
             pub const [<$gamepad_name _BUTTON_DPAD_RIGHT>]: Key  = $start_index + 20;
-            pub const [<$gamepad_name _BUTTON_MISC1>]: Key  = $start_index + 21;
-            pub const [<$gamepad_name _BUTTON_PADDLE1>]: Key  = $start_index + 22;
-            pub const [<$gamepad_name _BUTTON_PADDLE2>]: Key  = $start_index + 23;
-            pub const [<$gamepad_name _BUTTON_PADDLE3>]: Key  = $start_index + 24;
-            pub const [<$gamepad_name _BUTTON_PADDLE4>]: Key  = $start_index + 25;
-            pub const [<$gamepad_name _BUTTON_TOUCHPAD>]: Key  = $start_index + 26;
         }
     };
 }
