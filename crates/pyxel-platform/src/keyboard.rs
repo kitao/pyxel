@@ -1,4 +1,3 @@
-use std::ptr::addr_of;
 use std::str::from_utf8 as str_from_utf8;
 
 use crate::event::Event;
@@ -35,7 +34,7 @@ pub fn handle_key_up(sdl_event: SDL_Event) -> Vec<Event> {
 pub fn handle_text_input(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     let text = unsafe {
-        let ptr = (addr_of!(sdl_event.text.text) as *const [i8]).cast::<u8>();
+        let ptr = sdl_event.text.text.as_ptr().cast::<u8>();
         let slice = std::slice::from_raw_parts(ptr, sdl_event.text.text.len());
         str_from_utf8(slice)
     };
