@@ -92,7 +92,7 @@ class MusicEditor(EditorBase):
     def get_field(self, index):
         if index >= pyxel.NUM_CHANNELS:
             return
-        music = pyxel.music(self.music_no_var)
+        music = pyxel.musics[self.music_no_var]
         return music.seqs[index]
 
     def add_pre_history(self, x, y):
@@ -118,7 +118,7 @@ class MusicEditor(EditorBase):
         if is_partial:
             for i in range(self.field_cursor.x):
                 music = pyxel.music(self.music_no_var)
-                sound = pyxel.sound(music.seqs[self.field_cursor.y][i])
+                sound = pyxel.sounds[music.seqs[self.field_cursor.y][i]]
                 tick += len(sound.notes) * sound.speed
         pyxel.playm(self.music_no_var, tick=tick, loop=self.should_loop_var)
 
