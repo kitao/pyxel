@@ -164,6 +164,7 @@ impl SDL2BindingsBuilder {
             .allowlist_function("SDL_.*")
             .allowlist_type("SDL_.*")
             .allowlist_var("SDL_.*")
+            .allowlist_var("SDLK_.*")
             .allowlist_var("AUDIO_.*")
             .blocklist_type("_IMAGE_TLS_DIRECTORY64")
             .use_core()
