@@ -55,16 +55,17 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(EFFECT_FADEOUT)?;
 
     // Key
-    add_constant!(KEY_BACKSPACE)?;
-    add_constant!(KEY_TAB)?;
+    add_constant!(KEY_UNKNOWN)?;
     add_constant!(KEY_RETURN)?;
     add_constant!(KEY_ESCAPE)?;
+    add_constant!(KEY_BACKSPACE)?;
+    add_constant!(KEY_TAB)?;
     add_constant!(KEY_SPACE)?;
     add_constant!(KEY_EXCLAIM)?;
     add_constant!(KEY_QUOTEDBL)?;
     add_constant!(KEY_HASH)?;
-    add_constant!(KEY_DOLLAR)?;
     add_constant!(KEY_PERCENT)?;
+    add_constant!(KEY_DOLLAR)?;
     add_constant!(KEY_AMPERSAND)?;
     add_constant!(KEY_QUOTE)?;
     add_constant!(KEY_LEFTPAREN)?;
@@ -124,7 +125,6 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(KEY_X)?;
     add_constant!(KEY_Y)?;
     add_constant!(KEY_Z)?;
-    add_constant!(KEY_DELETE)?;
     add_constant!(KEY_CAPSLOCK)?;
     add_constant!(KEY_F1)?;
     add_constant!(KEY_F2)?;
@@ -144,6 +144,7 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(KEY_INSERT)?;
     add_constant!(KEY_HOME)?;
     add_constant!(KEY_PAGEUP)?;
+    add_constant!(KEY_DELETE)?;
     add_constant!(KEY_END)?;
     add_constant!(KEY_PAGEDOWN)?;
     add_constant!(KEY_RIGHT)?;
@@ -290,6 +291,10 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(KEY_KBDILLUMUP)?;
     add_constant!(KEY_EJECT)?;
     add_constant!(KEY_SLEEP)?;
+    add_constant!(KEY_APP1)?;
+    add_constant!(KEY_APP2)?;
+    add_constant!(KEY_AUDIOREWIND)?;
+    add_constant!(KEY_AUDIOFASTFORWARD)?;
     add_constant!(KEY_NONE)?;
     add_constant!(KEY_SHIFT)?;
     add_constant!(KEY_CTRL)?;
