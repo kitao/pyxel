@@ -14,7 +14,7 @@
 #	[Linux]
 #	- python3-pip
 #	- python3-venv
-#	- libsdl2-dev
+#	- libsdl2-dev 2.0.10+
 #
 #	[WASM]
 #	- Emscripten 3.1.45
