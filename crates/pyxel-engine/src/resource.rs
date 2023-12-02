@@ -91,14 +91,13 @@ impl Pyxel {
         if let Ok(mut file) = File::open(Path::new(&filename)) {
             let mut contents = String::new();
             file.read_to_string(&mut contents).unwrap();
-            let colors: Vec<Rgb24> = contents
+            *self.colors.lock() = contents
                 .replace("\r\n", "\n")
                 .replace('\r', "\n")
                 .split('\n')
                 .filter(|s| !s.is_empty())
                 .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
                 .collect();
-            *self.colors.lock() = colors;
         }
     }
 
