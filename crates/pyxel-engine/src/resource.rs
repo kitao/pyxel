@@ -8,11 +8,12 @@ use platform_dirs::UserDirs;
 use zip::write::FileOptions;
 use zip::{ZipArchive, ZipWriter};
 
+use crate::image::Rgb24;
 use crate::pyxel::Pyxel;
 use crate::resource_data::ResourceData;
 use crate::screencast::Screencast;
 use crate::settings::{DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC};
-use crate::{RESOURCE_ARCHIVE_NAME, RESOURCE_FORMAT_VERSION};
+use crate::{PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_NAME, RESOURCE_FORMAT_VERSION};
 
 pub struct Resource {
     capture_scale: u32,
@@ -66,7 +67,6 @@ impl Pyxel {
         let mut toml_text = String::new();
         file.read_to_string(&mut toml_text).unwrap();
         let resource_data = ResourceData::from_toml(&toml_text);
-        // version check
         assert!(
             resource_data.format_version > RESOURCE_FORMAT_VERSION,
             "Resource file version is too new"
@@ -81,6 +81,25 @@ impl Pyxel {
             include_musics.unwrap_or(true),
             include_waveforms.unwrap_or(false),
         );
+
+        // Pyxel palette file
+        let filename = filename
+            .rfind('.')
+            .map_or(filename, |i| &filename[..i])
+            .to_string()
+            + PALETTE_FILE_EXTENSION;
+        if let Ok(mut file) = File::open(Path::new(&filename)) {
+            let mut contents = String::new();
+            file.read_to_string(&mut contents).unwrap();
+            let colors: Vec<Rgb24> = contents
+                .replace("\r\n", "\n")
+                .replace('\r', "\n")
+                .split('\n')
+                .filter(|s| !s.is_empty())
+                .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
+                .collect();
+            *self.colors.lock() = colors;
+        }
     }
 
     pub fn save(
