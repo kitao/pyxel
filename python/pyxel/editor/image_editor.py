@@ -44,7 +44,7 @@ class ImageEditor(EditorBase):
         self.add_var_event_listener("canvas_var", "get", self.__on_canvas_get)
 
         # Initialize color picker
-        self._color_picker = ColorPicker(self, 11, 156, 7, with_shadow=False)
+        self._color_picker = ColorPicker(self, 11, 156, 0, with_shadow=False)
         self._color_picker.add_event_listener(
             "mouse_hover", self.__on_color_picker_mouse_hover
         )
