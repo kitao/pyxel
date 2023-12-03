@@ -167,15 +167,13 @@ impl Image {
         h: f64,
         colkey: Option<pyxel::Color>,
     ) -> PyResult<()> {
-        pyany_type_match! {
+        cast_pyany! {
             img,
-            u32, {
+            (u32, {
                 let image = pyxel().images.lock()[img as usize].clone();
                 self.inner.lock().blt(x, y, image, u, v, w, h, colkey);
-            },
-            Image, {
-                self.inner.lock().blt(x, y, img.inner, u, v, w, h, colkey);
-            }
+            }),
+            (Image, { self.inner.lock().blt(x, y, img.inner, u, v, w, h, colkey); })
         }
         Ok(())
     }
@@ -191,15 +189,13 @@ impl Image {
         h: f64,
         colkey: Option<pyxel::Color>,
     ) -> PyResult<()> {
-        pyany_type_match! {
+        cast_pyany! {
             tm,
-            u32, {
+            (u32, {
                 let tilemap = pyxel().tilemaps.lock()[tm as usize].clone();
                 self.inner.lock().bltm(x, y, tilemap, u, v, w, h, colkey);
-            },
-            Tilemap, {
-                self.inner.lock().bltm(x, y, tm.inner, u, v, w, h, colkey);
-            }
+            }),
+            (Tilemap, { self.inner.lock().bltm(x, y, tm.inner, u, v, w, h, colkey); })
         }
         Ok(())
     }

@@ -24,8 +24,8 @@ macro_rules! python_type_error {
     };
 }
 
-macro_rules! pyany_type_match {
-    ($pyany: ident, $type1: ty, $block1: block, $type2: ty, $block2: block) => {
+macro_rules! cast_pyany {
+    ($pyany: ident, ($type1: ty, $block1: block), ($type2: ty, $block2: block)) => {
         if let Ok($pyany) = <$type1>::extract($pyany) {
             $block1
         } else if let Ok($pyany) = <$type2>::extract($pyany) {
@@ -39,7 +39,7 @@ macro_rules! pyany_type_match {
         }
     };
 
-    ($pyany: ident, $type1: ty, $block1: block, $type2: ty, $block2: block, $type3: ty, $block3: block, $type4: ty, $block4: block) => {
+    ($pyany: ident, ($type1: ty, $block1: block), ($type2: ty, $block2: block), ($type3: ty, $block3: block), ($type4: ty, $block4: block)) => {
         if let Ok($pyany) = <$type1>::extract($pyany) {
             $block1
         } else if let Ok($pyany) = <$type2>::extract($pyany) {

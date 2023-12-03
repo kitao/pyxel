@@ -15,21 +15,15 @@ static MUSIC_ONCE: Once = Once::new();
 #[pyfunction]
 #[pyo3(text_signature = "(ch, snd, *, tick, loop)")]
 fn play(ch: u32, snd: &PyAny, tick: Option<u32>, r#loop: Option<bool>) -> PyResult<()> {
-    pyany_type_match! {
+    cast_pyany! {
         snd,
-        u32, {
-            pyxel().play1(ch, snd, tick, r#loop.unwrap_or(false));
-        },
-        Vec<u32>, {
-            pyxel().play(ch, &snd, tick, r#loop.unwrap_or(false));
-        },
-        Sound, {
-            pyxel().channels.lock()[ch as usize].lock().play1(snd.inner, tick, r#loop.unwrap_or(false));
-        },
-        Vec<Sound>, {
+        (u32, { pyxel().play1(ch, snd, tick, r#loop.unwrap_or(false)); }),
+        (Vec<u32>, { pyxel().play(ch, &snd, tick, r#loop.unwrap_or(false)); }),
+        (Sound, { pyxel().channels.lock()[ch as usize].lock().play1(snd.inner, tick, r#loop.unwrap_or(false)); }),
+        (Vec<Sound>, {
             let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
             pyxel().channels.lock()[ch as usize].lock().play(sounds, tick, r#loop.unwrap_or(false));
-        }
+        })
     }
     Ok(())
 }
