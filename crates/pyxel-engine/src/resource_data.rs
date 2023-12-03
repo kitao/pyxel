@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize, Serializer};
+use serde::{Deserialize, Serialize};
 
 use crate::channel::{Channel, Note, Speed, Volume};
 use crate::image::{Image, SharedImage};
@@ -204,25 +204,13 @@ impl MusicData {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct ResourceData {
     pub format_version: u32,
-    #[serde(serialize_with = "serialize_as_hex")]
-    colors: Vec<Rgb24>,
+    colors: Vec<String>,
     images: Vec<ImageData>,
     tilemaps: Vec<TilemapData>,
     channels: Vec<ChannelData>,
     sounds: Vec<SoundData>,
     musics: Vec<MusicData>,
     waveforms: Vec<WaveformData>,
-}
-
-fn serialize_as_hex<S>(values: &[u32], serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    let hex_values = values
-        .iter()
-        .map(|&v| format!("{v:6X}"))
-        .collect::<Vec<_>>();
-    serializer.collect_seq(hex_values)
 }
 
 impl ResourceData {
@@ -233,7 +221,7 @@ impl ResourceData {
     pub fn from_runtime(pyxel: &Pyxel) -> Self {
         let mut resource_data = ResourceData {
             format_version: RESOURCE_FORMAT_VERSION,
-            colors: pyxel.colors.lock().clone(),
+            colors: Vec::new(),
             images: Vec::new(),
             tilemaps: Vec::new(),
             channels: Vec::new(),
@@ -241,6 +229,12 @@ impl ResourceData {
             musics: Vec::new(),
             waveforms: Vec::new(),
         };
+        resource_data.colors = pyxel
+            .colors
+            .lock()
+            .iter()
+            .map(|color| format!("{:06X}", *color))
+            .collect();
         for image in &*pyxel.images.lock() {
             resource_data
                 .images
@@ -285,45 +279,49 @@ impl ResourceData {
         include_musics: bool,
         include_waveforms: bool,
     ) {
-        if !include_colors && !self.colors.is_empty() {
-            *pyxel.colors.lock() = self.colors.clone();
+        if include_colors && !self.colors.is_empty() {
+            *pyxel.colors.lock() = self
+                .colors
+                .iter()
+                .map(|hex| u32::from_str_radix(hex, 16).unwrap() as Rgb24)
+                .collect();
         }
-        if !include_images && !self.images.is_empty() {
+        if include_images && !self.images.is_empty() {
             let mut images = Vec::new();
             for image_data in &self.images {
                 images.push(image_data.to_image());
             }
             *pyxel.images.lock() = images;
         }
-        if !include_tilemaps && !self.tilemaps.is_empty() {
+        if include_tilemaps && !self.tilemaps.is_empty() {
             let mut tilemaps = Vec::new();
             for tilemap_data in &self.tilemaps {
                 tilemaps.push(tilemap_data.to_tilemap());
             }
             *pyxel.tilemaps.lock() = tilemaps;
         }
-        if !include_channels && !self.channels.is_empty() {
+        if include_channels && !self.channels.is_empty() {
             let mut channels = Vec::new();
             for channel_data in &self.channels {
                 channels.push(channel_data.to_channel());
             }
             *pyxel.channels.lock() = channels;
         }
-        if !include_sounds && !self.sounds.is_empty() {
+        if include_sounds && !self.sounds.is_empty() {
             let mut sounds = Vec::new();
             for sound_data in &self.sounds {
                 sounds.push(sound_data.to_sound());
             }
             *pyxel.sounds.lock() = sounds;
         }
-        if !include_musics && !self.musics.is_empty() {
+        if include_musics && !self.musics.is_empty() {
             let mut musics = Vec::new();
             for music_data in &self.musics {
                 musics.push(music_data.to_music());
             }
             *pyxel.musics.lock() = musics;
         }
-        if !include_waveforms && !self.waveforms.is_empty() {
+        if include_waveforms && !self.waveforms.is_empty() {
             let mut waveforms = Vec::new();
             for waveform_data in &self.waveforms {
                 waveforms.push(waveform_data.to_waveform());
