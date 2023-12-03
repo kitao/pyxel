@@ -63,7 +63,11 @@ class ColorPicker(Widget):
 
         # Draw cursor
         col = self.value_var
-        rgb = pyxel.colors[col]
+        rgb = (
+            pyxel.colors[col + pyxel.NUM_COLORS]
+            if col + pyxel.NUM_COLORS < len(pyxel.colors)
+            else 0
+        )
         brightness = ((rgb & 0xFF0000) >> 16) + ((rgb & 0x00FF00) >> 8) + (rgb & 0xFF)
         pyxel.text(
             self.x + (col % 8) * 8 + 3,
