@@ -20,13 +20,13 @@ class CanvasPanel(Widget):
     Variables:
         color_var
         tool_var
-        image_no_var
+        image_index_var
         canvas_var
         focus_x_var
         focus_y_var
         help_message_var
 
-        tilemap_no_var
+        tilemap_index_var
         tile_x_var
         tile_y_var
         tile_w_var
@@ -35,9 +35,9 @@ class CanvasPanel(Widget):
 
     def __init__(self, parent):
         super().__init__(parent, 11, 16, 130, 130)
-        if hasattr(parent, "tilemap_no_var"):
+        if hasattr(parent, "tilemap_index_var"):
             self._is_tilemap_mode = True
-            self.copy_var("tilemap_no_var", parent)
+            self.copy_var("tilemap_index_var", parent)
             self.copy_var("tile_x_var", parent)
             self.copy_var("tile_y_var", parent)
             self.copy_var("tile_w_var", parent)
@@ -64,7 +64,7 @@ class CanvasPanel(Widget):
         self.add_history = parent.add_history
         self.copy_var("color_var", parent)
         self.copy_var("tool_var", parent)
-        self.copy_var("image_no_var", parent)
+        self.copy_var("image_index_var", parent)
         self.copy_var("canvas_var", parent)
         self.copy_var("focus_x_var", parent)
         self.copy_var("focus_y_var", parent)
@@ -112,9 +112,9 @@ class CanvasPanel(Widget):
     def _add_pre_history(self):
         self._history_data = data = {}
         if self._is_tilemap_mode:
-            data["tilemap_no"] = self.tilemap_no_var
+            data["tilemap_index"] = self.tilemap_index_var
         else:
-            data["image_no"] = self.image_no_var
+            data["image_index"] = self.image_index_var
         data["focus_pos"] = (self.focus_x_var, self.focus_y_var)
         data["old_canvas"] = self.canvas_var.get_slice(
             self.focus_x_var * 8, self.focus_y_var * 8, 16, 16

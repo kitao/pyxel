@@ -13,7 +13,7 @@ from .widgets import ImageButton, ImageToggleButton, NumberPicker
 class SoundEditor(EditorBase):
     """
     Variables:
-        sound_no_var
+        music_index_var
         speed_var
         octave_var
         note_var
@@ -50,7 +50,7 @@ class SoundEditor(EditorBase):
         )
         self._sound_picker.add_event_listener("change", self.__on_sound_picker_change)
         self.add_number_picker_help(self._sound_picker)
-        self.copy_var("sound_no_var", self._sound_picker, "value_var")
+        self.copy_var("music_index_var", self._sound_picker, "value_var")
 
         # Initialize speed picker
         self._speed_picker = NumberPicker(
@@ -113,7 +113,7 @@ class SoundEditor(EditorBase):
         return self._piano_keyboard.note
 
     def get_field(self, index):
-        sound = pyxel.sounds[self.sound_no_var]
+        sound = pyxel.sounds[self.music_index_var]
         if index == 0:
             return sound.notes
         elif index == 1:
@@ -127,7 +127,7 @@ class SoundEditor(EditorBase):
 
     def add_pre_history(self, x, y):
         self._history_data = data = {}
-        data["sound_no"] = self.sound_no_var
+        data["sound_index"] = self.music_index_var
         data["old_cursor_pos"] = (x, y)
         data["old_field"] = self.field_cursor.field.to_list()
 
@@ -158,7 +158,7 @@ class SoundEditor(EditorBase):
         self._stop_button.is_enabled_var = True
         self._loop_button.is_enabled_var = False
         tick = self.field_cursor.x * self.speed_var if is_partial else None
-        pyxel.play(0, self.sound_no_var, tick, loop=self.should_loop_var)
+        pyxel.play(0, self.music_index_var, tick, loop=self.should_loop_var)
 
     def _stop(self):
         self._sound_picker.is_enabled_var = True
@@ -176,7 +176,7 @@ class SoundEditor(EditorBase):
         self._speed_picker.value = sound.speed
 
     def __on_speed_picker_change(self, value):
-        sound = pyxel.sounds[self.sound_no_var]
+        sound = pyxel.sounds[self.music_index_var]
         sound.speed = value
 
     def __on_play_button_press(self):
@@ -196,13 +196,13 @@ class SoundEditor(EditorBase):
 
     def __on_undo(self, data):
         self._stop()
-        self.sound_no_var = data["sound_no"]
+        self.music_index_var = data["sound_index"]
         self.field_cursor.move_to(*data["old_cursor_pos"], False)
         self.field_cursor.field.from_list(data["old_field"])
 
     def __on_redo(self, data):
         self._stop()
-        self.sound_no_var = data["sound_no"]
+        self.music_index_var = data["sound_index"]
         self.field_cursor.move_to(*data["new_cursor_pos"], False)
         self.field_cursor.field.from_list(data["new_field"])
 
@@ -210,7 +210,7 @@ class SoundEditor(EditorBase):
         self._stop()
 
     def __on_update(self):
-        sound = pyxel.sounds[self.sound_no_var]
+        sound = pyxel.sounds[self.music_index_var]
         if self.speed_var != sound.speed:
             self.speed_var = sound.speed
         if pyxel.btnp(pyxel.KEY_SPACE):
