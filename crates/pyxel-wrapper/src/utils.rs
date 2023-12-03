@@ -25,37 +25,21 @@ macro_rules! python_type_error {
 }
 
 macro_rules! cast_pyany {
-    ($pyany: ident, ($type1: ty, $block1: block), ($type2: ty, $block2: block)) => {
-        if let Ok($pyany) = <$type1>::extract($pyany) {
-            $block1
-        } else if let Ok($pyany) = <$type2>::extract($pyany) {
-            $block2
-        } else {
-            python_type_error!(format!(
-                "must be {} or {}",
-                stringify!($type1),
-                stringify!($type2)
-            ));
-        }
-    };
-
-    ($pyany: ident, ($type1: ty, $block1: block), ($type2: ty, $block2: block), ($type3: ty, $block3: block), ($type4: ty, $block4: block)) => {
-        if let Ok($pyany) = <$type1>::extract($pyany) {
-            $block1
-        } else if let Ok($pyany) = <$type2>::extract($pyany) {
-            $block2
-        } else if let Ok($pyany) = <$type3>::extract($pyany) {
-            $block3
-        } else if let Ok($pyany) = <$type4>::extract($pyany) {
-            $block4
-        } else {
-            python_type_error!(format!(
-                "must be {}, {}, {}, or {}",
-                stringify!($type1),
-                stringify!($type2),
-                stringify!($type3),
-                stringify!($type4)
-            ));
+    ($pyany: ident, $(($type: ty, $block: block)),*) => {
+        {
+            let mut types = String::new();
+            loop {
+                $(
+                    if !types.is_empty() {
+                        types += ", "
+                    }
+                    if let Ok($pyany) = <$type>::extract($pyany) {
+                        break $block;
+                    }
+                    types += stringify!($type);
+                )*
+                python_type_error!(format!("must be {}", types));
+            }
         }
     };
 }
