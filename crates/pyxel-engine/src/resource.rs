@@ -51,6 +51,10 @@ impl Pyxel {
 
         // Old resource file
         if archive.by_name("pyxel_resource/version").is_ok() {
+            println!(
+                "An old Pyxel resource file '{}' is loaded. Please re-save it with the latest Pyxel.",
+                Path::new(filename).file_name().unwrap().to_str().unwrap()
+            );
             self.load_old_resource(
                 &mut archive,
                 filename,
