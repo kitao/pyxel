@@ -68,7 +68,7 @@ impl Pyxel {
         file.read_to_string(&mut toml_text).unwrap();
         let resource_data = ResourceData::from_toml(&toml_text);
         assert!(
-            resource_data.format_version > RESOURCE_FORMAT_VERSION,
+            resource_data.format_version >= RESOURCE_FORMAT_VERSION,
             "Resource file version is too new"
         );
         resource_data.to_runtime(
