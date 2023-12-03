@@ -127,14 +127,10 @@ fn blt(
     h: f64,
     colkey: Option<pyxel::Color>,
 ) -> PyResult<()> {
-    pyany_type_match! {
+    cast_pyany! {
         img,
-        u32, {
-            pyxel().blt(x, y, img, u, v, w, h, colkey);
-        },
-        Image, {
-            pyxel().screen.lock().blt(x, y, img.inner, u, v, w, h, colkey);
-        }
+        (u32, { pyxel().blt(x, y, img, u, v, w, h, colkey); }),
+        (Image, { pyxel().screen.lock().blt(x, y, img.inner, u, v, w, h, colkey); })
     }
     Ok(())
 }
@@ -150,14 +146,10 @@ fn bltm(
     h: f64,
     colkey: Option<pyxel::Color>,
 ) -> PyResult<()> {
-    pyany_type_match! {
+    cast_pyany! {
         tm,
-        u32, {
-            pyxel().bltm(x, y, tm, u, v, w, h, colkey);
-        },
-        Tilemap, {
-            pyxel().screen.lock().bltm(x, y, tm.inner, u, v, w, h, colkey);
-        }
+        (u32, { pyxel().bltm(x, y, tm, u, v, w, h, colkey); }),
+        (Tilemap, { pyxel().screen.lock().bltm(x, y, tm.inner, u, v, w, h, colkey); })
     }
     Ok(())
 }

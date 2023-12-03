@@ -30,23 +30,21 @@ impl Channel {
     #[pyo3(text_signature = "($self, snd, *, tick, loop)")]
     pub fn play(&self, snd: &PyAny, tick: Option<u32>, r#loop: Option<bool>) -> PyResult<()> {
         let loop_ = r#loop.unwrap_or(false);
-        pyany_type_match! {
+        cast_pyany! {
             snd,
-            u32, {
+            (u32, {
                 let sound = pyxel().sounds.lock()[snd as usize].clone();
                 self.inner.lock().play1(sound, tick, loop_);
-            },
-            Vec<u32>, {
+            }),
+            (Vec<u32>, {
                 let sounds = snd.iter().map(|snd| pyxel().sounds.lock()[*snd as usize].clone()).collect();
                 self.inner.lock().play(sounds, tick, loop_);
-            },
-            Sound, {
-                self.inner.lock().play1(snd.inner, tick, loop_);
-            },
-            Vec<Sound>, {
+            }),
+            (Sound, { self.inner.lock().play1(snd.inner, tick, loop_); }),
+            (Vec<Sound>, {
                 let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
                 self.inner.lock().play(sounds, tick, loop_);
-            }
+            })
         }
         Ok(())
     }

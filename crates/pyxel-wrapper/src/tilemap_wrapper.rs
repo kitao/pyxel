@@ -27,14 +27,10 @@ impl Tilemap {
 impl Tilemap {
     #[new]
     pub fn new(width: u32, height: u32, img: &PyAny) -> PyResult<Self> {
-        let imgsrc = pyany_type_match! {
+        let imgsrc = cast_pyany! {
             img,
-            u32, {
-                pyxel::ImageSource::Index(img)
-            },
-            Image, {
-                pyxel::ImageSource::Image(img.inner)
-            }
+            (u32, { pyxel::ImageSource::Index(img) }),
+            (Image, { pyxel::ImageSource::Image(img.inner) })
         };
         Ok(Tilemap::wrap(pyxel::Tilemap::new(width, height, imgsrc)))
     }
@@ -60,14 +56,10 @@ impl Tilemap {
 
     #[setter]
     pub fn set_imgsrc(&self, img: &PyAny) -> PyResult<()> {
-        let imgsrc = pyany_type_match! {
+        let imgsrc = cast_pyany! {
             img,
-            u32, {
-                pyxel::ImageSource::Index(img)
-            },
-            Image, {
-                pyxel::ImageSource::Image(img.inner)
-            }
+            (u32, { pyxel::ImageSource::Index(img) }),
+            (Image, { pyxel::ImageSource::Image(img.inner) })
         };
         self.inner.lock().imgsrc = imgsrc;
         Ok(())
@@ -180,15 +172,15 @@ impl Tilemap {
         h: f64,
         tilekey: Option<pyxel::Tile>,
     ) -> PyResult<()> {
-        pyany_type_match! {
+        cast_pyany! {
             tm,
-            u32, {
+            (u32, {
                 let tilemap = pyxel().tilemaps.lock()[tm as usize].clone();
                 self.inner.lock().blt(x, y, tilemap, u, v, w, h, tilekey);
-            },
-            Tilemap, {
+            }),
+            (Tilemap, {
                 self.inner.lock().blt(x, y, tm.inner, u, v, w, h, tilekey);
-            }
+            })
         }
         Ok(())
     }
