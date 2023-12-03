@@ -11,7 +11,7 @@ from .widgets import ImageButton, ImageToggleButton, NumberPicker
 class MusicEditor(EditorBase):
     """
     Variables:
-        music_no_var
+        music_index_var
         should_loop_var
         is_playing_var
         help_message_var
@@ -39,7 +39,7 @@ class MusicEditor(EditorBase):
             self, 45, 17, min_value=0, max_value=pyxel.NUM_MUSICS - 1, value=0
         )
         self.add_number_picker_help(self._music_picker)
-        self.copy_var("music_no_var", self._music_picker, "value_var")
+        self.copy_var("music_index_var", self._music_picker, "value_var")
 
         # Initialize play button
         self._play_button = ImageButton(
@@ -92,12 +92,12 @@ class MusicEditor(EditorBase):
     def get_field(self, index):
         if index >= pyxel.NUM_CHANNELS:
             return
-        music = pyxel.musics[self.music_no_var]
+        music = pyxel.musics[self.music_index_var]
         return music.seqs[index]
 
     def add_pre_history(self, x, y):
         self._history_data = data = {}
-        data["music_no"] = self.music_no_var
+        data["music_index"] = self.music_index_var
         data["old_cursor_pos"] = (x, y)
         data["old_field"] = self.field_cursor.field.to_list()
 
@@ -117,10 +117,10 @@ class MusicEditor(EditorBase):
         tick = 0
         if is_partial:
             for i in range(self.field_cursor.x):
-                music = pyxel.music(self.music_no_var)
+                music = pyxel.music(self.music_index_var)
                 sound = pyxel.sounds[music.seqs[self.field_cursor.y][i]]
                 tick += len(sound.notes) * sound.speed
-        pyxel.playm(self.music_no_var, tick=tick, loop=self.should_loop_var)
+        pyxel.playm(self.music_index_var, tick=tick, loop=self.should_loop_var)
 
     def _stop(self):
         self.is_playing_var = False
@@ -132,13 +132,13 @@ class MusicEditor(EditorBase):
 
     def __on_undo(self, data):
         self._stop()
-        self.music_no_var = data["music_no"]
+        self.music_index_var = data["music_index"]
         self.field_cursor.move_to(*data["old_cursor_pos"], False)
         self.field_cursor.field.from_list(data["old_field"])
 
     def __on_redo(self, data):
         self._stop()
-        self.music_no_var = data["music_no"]
+        self.music_index_var = data["music_index"]
         self.field_cursor.move_to(*data["new_cursor_pos"], False)
         self.field_cursor.field.from_list(data["new_field"])
 
