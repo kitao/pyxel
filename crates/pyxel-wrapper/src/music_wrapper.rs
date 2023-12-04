@@ -9,25 +9,31 @@ static SNDS_LIST_ONCE: Once = Once::new();
 
 wrap_as_python_list!(
     Seq,
-    u32,
     pyxel::SharedSeq,
     (|inner: &pyxel::SharedSeq| inner.lock().len()),
+    u32,
     (|inner: &pyxel::SharedSeq, index| inner.lock()[index]),
     (|inner: &pyxel::SharedSeq, index, value| inner.lock()[index] = value),
-    (|inner: &pyxel::SharedSeq, index, value| inner.lock().insert(index, value)),
-    (|inner: &pyxel::SharedSeq, index| inner.lock().remove(index))
+    Vec<u32>,
+    (|inner: &pyxel::SharedSeq, list| *inner.lock() = list),
+    (|inner: &pyxel::SharedSeq| inner.lock().clone())
 );
 
 wrap_as_python_list!(
     Seqs,
-    Seq,
-    u32,
     pyxel::SharedMusic,
     (|inner: &pyxel::SharedMusic| inner.lock().seqs.len()),
+    Seq,
     (|inner: &pyxel::SharedMusic, index: usize| Seq::wrap(inner.lock().seqs[index].clone())),
     (|inner: &pyxel::SharedMusic, index, value: Seq| inner.lock().seqs[index] = value.inner),
-    (|inner: &pyxel::SharedMusic, index, value: Seq| inner.lock().seqs.insert(index, value.inner)),
-    (|inner: &pyxel::SharedMusic, index| inner.lock().seqs.remove(index))
+    Vec<Vec<u32>>,
+    (|inner: &pyxel::SharedMusic, list: Vec<Vec<u32>>| inner.lock().set(&list)),
+    (|inner: &pyxel::SharedMusic| inner
+        .lock()
+        .seqs
+        .iter()
+        .map(|seq| seq.lock().clone())
+        .collect())
 );
 
 #[pyclass]

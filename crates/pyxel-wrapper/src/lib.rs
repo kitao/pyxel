@@ -11,8 +11,6 @@
 
 #[macro_use]
 mod utils;
-#[macro_use]
-mod list_wrapper;
 mod audio_wrapper;
 mod channel_wrapper;
 mod constant_wrapper;

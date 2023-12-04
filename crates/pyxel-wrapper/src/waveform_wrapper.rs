@@ -1,12 +1,16 @@
 use pyo3::prelude::*;
+use pyxel::WaveformTable;
 
 wrap_as_python_list!(
     Table,
-    pyxel::Amp4,
     pyxel::SharedWaveform,
     (|inner: &pyxel::SharedWaveform| inner.lock().table.len()),
+    pyxel::Amp4,
     (|inner: &pyxel::SharedWaveform, index| inner.lock().table[index]),
-    (|inner: &pyxel::SharedWaveform, index, value| inner.lock().table[index] = value)
+    (|inner: &pyxel::SharedWaveform, index, value| inner.lock().table[index] = value),
+    pyxel::WaveformTable,
+    (|inner: &pyxel::SharedWaveform, list| inner.lock().table = list),
+    (|inner: &pyxel::SharedWaveform| inner.lock().table.clone())
 );
 
 #[pyclass]

@@ -11,26 +11,34 @@ use crate::waveform_wrapper::Waveform;
 
 wrap_as_python_list!(
     Colors,
-    pyxel::Rgb24,
-    u32,
+    u32, // Dummy
     (|_| pyxel().colors.lock().len()),
+    pyxel::Rgb24,
     (|_, index| pyxel().colors.lock()[index]),
     (|_, index, value| pyxel().colors.lock()[index] = value),
-    (|_, index, value| pyxel().colors.lock().insert(index, value)),
-    (|_, index| pyxel().colors.lock().remove(index))
+    Vec<pyxel::Rgb24>,
+    (|_, list| *pyxel().colors.lock() = list),
+    (|_| pyxel().colors.lock().clone())
 );
 
 macro_rules! wrap_shared_vec_as_python_list {
     ($wrapper_name:ident, $value_type:ident, $field_name:ident) => {
         wrap_as_python_list!(
             $wrapper_name,
-            $value_type,
-            u32,
+            u32, // Dummy
             (|_| pyxel().$field_name.lock().len()),
+            $value_type,
             (|_, index: usize| $value_type::wrap(pyxel().$field_name.lock()[index].clone())),
             (|_, index, value: $value_type| pyxel().$field_name.lock()[index] = value.inner),
-            (|_, index, value: $value_type| pyxel().$field_name.lock().insert(index, value.inner)),
-            (|_, index| pyxel().$field_name.lock().remove(index))
+            Vec<$value_type>,
+            (|_, list: Vec<$value_type>| *pyxel().$field_name.lock() =
+                list.iter().map(|value| value.inner.clone()).collect()),
+            (|_| pyxel()
+                .$field_name
+                .lock()
+                .iter()
+                .map(|value| $value_type::wrap(value.clone()))
+                .collect())
         );
     };
 }
