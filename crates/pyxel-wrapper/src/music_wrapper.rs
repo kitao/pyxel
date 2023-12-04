@@ -13,6 +13,7 @@ wrap_as_python_list!(
     (|inner: &pyxel::SharedSeq| inner.lock().len()),
     u32,
     (|inner: &pyxel::SharedSeq, index| inner.lock()[index]),
+    u32,
     (|inner: &pyxel::SharedSeq, index, value| inner.lock()[index] = value),
     Vec<u32>,
     (|inner: &pyxel::SharedSeq, list| *inner.lock() = list),
@@ -25,7 +26,9 @@ wrap_as_python_list!(
     (|inner: &pyxel::SharedMusic| inner.lock().seqs.len()),
     Seq,
     (|inner: &pyxel::SharedMusic, index: usize| Seq::wrap(inner.lock().seqs[index].clone())),
-    (|inner: &pyxel::SharedMusic, index, value: Seq| inner.lock().seqs[index] = value.inner),
+    Vec<u32>,
+    (|inner: &pyxel::SharedMusic, index: usize, value: Vec<u32>| *inner.lock().seqs[index]
+        .lock() = value),
     Vec<Vec<u32>>,
     (|inner: &pyxel::SharedMusic, list: Vec<Vec<u32>>| inner.lock().set(&list)),
     (|inner: &pyxel::SharedMusic| inner
