@@ -6,6 +6,7 @@ wrap_as_python_list!(
     (|inner: &pyxel::SharedWaveform| inner.lock().table.len()),
     pyxel::Amp4,
     (|inner: &pyxel::SharedWaveform, index| inner.lock().table[index]),
+    pyxel::Amp4,
     (|inner: &pyxel::SharedWaveform, index, value| inner.lock().table[index] = value),
     pyxel::WaveformTable,
     (|inner: &pyxel::SharedWaveform, list| inner.lock().table = list),
