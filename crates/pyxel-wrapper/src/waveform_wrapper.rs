@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-use pyxel::WaveformTable;
 
 wrap_as_python_list!(
     Table,
@@ -10,7 +9,7 @@ wrap_as_python_list!(
     (|inner: &pyxel::SharedWaveform, index, value| inner.lock().table[index] = value),
     pyxel::WaveformTable,
     (|inner: &pyxel::SharedWaveform, list| inner.lock().table = list),
-    (|inner: &pyxel::SharedWaveform| inner.lock().table.clone())
+    (|inner: &pyxel::SharedWaveform| inner.lock().table)
 );
 
 #[pyclass]
