@@ -8,6 +8,7 @@ macro_rules! wrap_sound_as_python_list {
             (|inner: &pyxel::SharedSound| inner.lock().$field_name.len()),
             $value_type,
             (|inner: &pyxel::SharedSound, index| inner.lock().$field_name[index]),
+            $value_type,
             (|inner: &pyxel::SharedSound, index, value| inner.lock().$field_name[index] = value),
             Vec<$value_type>,
             (|inner: &pyxel::SharedSound, list| inner.lock().$field_name = list),

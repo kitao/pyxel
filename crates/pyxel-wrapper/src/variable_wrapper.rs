@@ -15,6 +15,7 @@ wrap_as_python_list!(
     (|_| pyxel().colors.lock().len()),
     pyxel::Rgb24,
     (|_, index| pyxel().colors.lock()[index]),
+    pyxel::Rgb24,
     (|_, index, value| pyxel().colors.lock()[index] = value),
     Vec<pyxel::Rgb24>,
     (|_, list| *pyxel().colors.lock() = list),
@@ -29,6 +30,7 @@ macro_rules! wrap_shared_vec_as_python_list {
             (|_| pyxel().$field_name.lock().len()),
             $value_type,
             (|_, index: usize| $value_type::wrap(pyxel().$field_name.lock()[index].clone())),
+            $value_type,
             (|_, index, value: $value_type| pyxel().$field_name.lock()[index] = value.inner),
             Vec<$value_type>,
             (|_, list: Vec<$value_type>| *pyxel().$field_name.lock() =
