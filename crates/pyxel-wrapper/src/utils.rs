@@ -45,7 +45,7 @@ macro_rules! cast_pyany {
 }
 
 macro_rules! wrap_as_python_list {
-    ($wrapper_name:ident, $inner_type:ty, $len:expr, $value_type:ty, $get:expr, $set:expr, $list_type:ty, $from_list:expr, $to_list:expr) => {
+    ($wrapper_name:ident, $inner_type:ty, $len:expr, $get_type:ty, $get:expr, $set_type:ty, $set:expr, $list_type:ty, $from_list:expr, $to_list:expr) => {
         #[pyclass]
         #[derive(Clone)]
         pub struct $wrapper_name {
@@ -64,7 +64,7 @@ macro_rules! wrap_as_python_list {
                 Ok($len(&self.inner))
             }
 
-            fn __getitem__(&self, idx: isize) -> PyResult<$value_type> {
+            fn __getitem__(&self, idx: isize) -> PyResult<$get_type> {
                 if idx < $len(&self.inner) as isize {
                     Ok($get(&self.inner, idx as usize))
                 } else {
@@ -74,7 +74,7 @@ macro_rules! wrap_as_python_list {
                 }
             }
 
-            fn __setitem__(&mut self, idx: isize, value: $value_type) -> PyResult<()> {
+            fn __setitem__(&mut self, idx: isize, value: $set_type) -> PyResult<()> {
                 if idx < $len(&self.inner) as isize {
                     $set(&self.inner, idx as usize, value);
                     Ok(())
