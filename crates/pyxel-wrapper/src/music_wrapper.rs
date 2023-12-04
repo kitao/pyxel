@@ -21,6 +21,7 @@ wrap_as_python_list!(
 wrap_as_python_list!(
     Seqs,
     Seq,
+    u32,
     pyxel::SharedMusic,
     (|inner: &pyxel::SharedMusic| inner.lock().seqs.len()),
     (|inner: &pyxel::SharedMusic, index: usize| Seq::wrap(inner.lock().seqs[index].clone())),
