@@ -121,23 +121,3 @@ pub fn sleep(ms: u32) {
         SDL_Delay(ms);
     }
 }
-
-/*
-use sdl2::controller::{
-    Axis as SdlAxis, Button as SdlButton, GameController as SdlGameControllerState,
-};
-
-pub struct Platform {
-    #[cfg(target_os = "emscripten")]
-    virtual_gamepad_states: [bool; 8],
-}
-
-impl Platform {
-    fn gamepad_index(&self, game_controller_id: u32) -> u32 {
-        self.sdl_game_controller_states
-            .iter()
-            .position(|gc| gc.instance_id() == game_controller_id)
-            .unwrap() as u32
-    }
-}
-*/
