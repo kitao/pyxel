@@ -35,12 +35,12 @@ impl Pyxel {
     pub fn load(
         &mut self,
         filename: &str,
+        exclude_images: Option<bool>,
+        exclude_tilemaps: Option<bool>,
+        exclude_sounds: Option<bool>,
+        exclude_musics: Option<bool>,
         include_colors: Option<bool>,
-        include_images: Option<bool>,
-        include_tilemaps: Option<bool>,
         include_channels: Option<bool>,
-        include_sounds: Option<bool>,
-        include_musics: Option<bool>,
         include_waveforms: Option<bool>,
     ) {
         let mut archive = ZipArchive::new(
@@ -58,10 +58,10 @@ impl Pyxel {
             self.load_old_resource(
                 &mut archive,
                 filename,
-                include_images.unwrap_or(true),
-                include_tilemaps.unwrap_or(true),
-                include_sounds.unwrap_or(true),
-                include_musics.unwrap_or(true),
+                !exclude_images.unwrap_or(false),
+                !exclude_tilemaps.unwrap_or(false),
+                !exclude_sounds.unwrap_or(false),
+                !exclude_musics.unwrap_or(false),
             );
             return;
         }
@@ -77,12 +77,12 @@ impl Pyxel {
         );
         resource_data.to_runtime(
             self,
+            exclude_images.unwrap_or(false),
+            exclude_tilemaps.unwrap_or(false),
+            exclude_sounds.unwrap_or(false),
+            exclude_musics.unwrap_or(false),
             include_colors.unwrap_or(false),
-            include_images.unwrap_or(true),
-            include_tilemaps.unwrap_or(true),
             include_channels.unwrap_or(false),
-            include_sounds.unwrap_or(true),
-            include_musics.unwrap_or(true),
             include_waveforms.unwrap_or(false),
         );
 
@@ -108,21 +108,21 @@ impl Pyxel {
     pub fn save(
         &mut self,
         filename: &str,
+        exclude_images: Option<bool>,
+        exclude_tilemaps: Option<bool>,
+        exclude_sounds: Option<bool>,
+        exclude_musics: Option<bool>,
         include_colors: Option<bool>,
-        include_images: Option<bool>,
-        include_tilemaps: Option<bool>,
         include_channels: Option<bool>,
-        include_sounds: Option<bool>,
-        include_musics: Option<bool>,
         include_waveforms: Option<bool>,
     ) {
         let toml_text = ResourceData::from_runtime(self).to_toml(
+            exclude_images.unwrap_or(false),
+            exclude_tilemaps.unwrap_or(false),
+            exclude_sounds.unwrap_or(false),
+            exclude_musics.unwrap_or(false),
             include_colors.unwrap_or(false),
-            include_images.unwrap_or(true),
-            include_tilemaps.unwrap_or(true),
             include_channels.unwrap_or(false),
-            include_sounds.unwrap_or(true),
-            include_musics.unwrap_or(true),
             include_waveforms.unwrap_or(false),
         );
         let path = std::path::Path::new(&filename);
