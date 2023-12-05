@@ -6,7 +6,6 @@ use crate::channel_wrapper::Channel;
 use crate::music_wrapper::Music;
 use crate::pyxel_singleton::pyxel;
 use crate::sound_wrapper::Sound;
-use crate::utils::warn_with_python_caller;
 
 static CHANNEL_ONCE: Once = Once::new();
 static SOUND_ONCE: Once = Once::new();
@@ -54,7 +53,7 @@ fn play_pos(ch: u32) -> Option<(u32, u32)> {
 #[pyfunction]
 fn channel(ch: u32) -> Channel {
     CHANNEL_ONCE.call_once(|| {
-        warn_with_python_caller("pyxel.channel(ch) is deprecated, use pyxel.channels[ch] instead.");
+        println!("pyxel.channel(ch) is deprecated, use pyxel.channels[ch] instead.");
     });
     Channel::wrap(pyxel().channels.lock()[ch as usize].clone())
 }
@@ -62,7 +61,7 @@ fn channel(ch: u32) -> Channel {
 #[pyfunction]
 fn sound(snd: u32) -> Sound {
     SOUND_ONCE.call_once(|| {
-        warn_with_python_caller("pyxel.sound(snd) is deprecated, use pyxel.sounds[snd] instead.");
+        println!("pyxel.sound(snd) is deprecated, use pyxel.sounds[snd] instead.");
     });
     Sound::wrap(pyxel().sounds.lock()[snd as usize].clone())
 }
@@ -70,7 +69,7 @@ fn sound(snd: u32) -> Sound {
 #[pyfunction]
 fn music(msc: u32) -> Music {
     MUSIC_ONCE.call_once(|| {
-        warn_with_python_caller("pyxel.music(msc) is deprecated, use pyxel.musics[msc] instead.");
+        println!("pyxel.music(msc) is deprecated, use pyxel.musics[msc] instead.");
     });
     Music::wrap(pyxel().musics.lock()[msc as usize].clone())
 }
