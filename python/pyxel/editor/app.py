@@ -174,10 +174,10 @@ class App(Widget):
                     self._editor.reset_history()
                     pyxel.load(
                         dropped_file,
-                        image=(self.editor_type_var == 0),
-                        tilemap=(self.editor_type_var == 1),
-                        sound=(self.editor_type_var == 2),
-                        music=(self.editor_type_var == 3),
+                        excl_images=(self.editor_type_var != 0),
+                        excl_tilemaps=(self.editor_type_var != 1),
+                        excl_sounds=(self.editor_type_var != 2),
+                        excl_musics=(self.editor_type_var != 3),
                     )
                 else:
                     for editor in self._editors:
