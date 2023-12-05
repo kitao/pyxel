@@ -6,7 +6,7 @@ use glow::Context as GlowContext;
 
 use crate::gamepad::{init_gamepads, Gamepad};
 use crate::sdl2_sys::*;
-use crate::window::init_window;
+use crate::window::{init_glow, init_window};
 
 pub struct Platform {
     pub window: *mut SDL_Window,
@@ -30,27 +30,6 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
         unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) } >= 0,
         "Failed to initialize SDL2"
     );
-    cfg_if! {
-        if #[cfg(target_os = "emscripten")] {
-            unsafe {
-                SDL_GL_SetAttribute(
-                    SDL_GL_CONTEXT_PROFILE_MASK,
-                    SDL_GL_CONTEXT_PROFILE_ES as i32,
-                );
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-            }
-        } else {
-            unsafe {
-                SDL_GL_SetAttribute(
-                    SDL_GL_CONTEXT_PROFILE_MASK,
-                    SDL_GL_CONTEXT_PROFILE_CORE as i32,
-                );
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-            }
-        }
-    }
     let mut display_mode = SDL_DisplayMode {
         format: 0,
         w: 0,
@@ -63,7 +42,8 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
         "Failed to get display size"
     );
     let (title, width, height) = window_params(display_mode.w as u32, display_mode.h as u32);
-    let (window, glow_context) = init_window(title, width, height);
+    let window = init_window(title, width, height);
+    let glow_context = init_glow(window);
     let gamepads = init_gamepads();
     unsafe {
         PLATFORM = transmute(Box::new(Platform {
