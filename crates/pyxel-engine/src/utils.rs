@@ -60,6 +60,51 @@ pub fn add_file_extension(filename: &str, ext: &str) -> String {
     }
 }
 
+pub fn compress_vec<T: PartialEq + Clone>(vec: &[T]) -> Vec<T> {
+    assert!(!vec.is_empty());
+    let mut new_vec = vec.to_vec();
+    let mut new_len = new_vec.len();
+    for i in (1..new_vec.len()).rev() {
+        if new_vec[i] == new_vec[i - 1] {
+            new_len = i;
+        } else {
+            break;
+        }
+    }
+    new_vec.truncate(new_len);
+    new_vec
+}
+
+pub fn compress_vec2<T: PartialEq + Clone>(vec: &[Vec<T>]) -> Vec<Vec<T>> {
+    assert!(!vec.is_empty());
+    compress_vec(&vec)
+        .iter()
+        .map(|inner_vec| compress_vec(inner_vec))
+        .collect::<Vec<_>>()
+}
+
+pub fn expand_vec<T: Clone + Default>(vec: &[T], new_len: usize) -> Vec<T> {
+    assert!(!vec.is_empty());
+    let mut new_vec = vec.to_vec();
+    if let Some(last) = new_vec.last().cloned() {
+        new_vec.resize_with(new_len, move || last.clone());
+    }
+    new_vec
+}
+
+pub fn expand_vec2<T: Clone + Default>(
+    vec: &[Vec<T>],
+    new_outer_len: usize,
+    new_inner_len: usize,
+) -> Vec<Vec<T>> {
+    assert!(!vec.is_empty());
+    let new_vec = vec
+        .iter()
+        .map(|inner_vec| expand_vec(inner_vec, new_inner_len))
+        .collect::<Vec<_>>();
+    expand_vec(&new_vec, new_outer_len)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -129,5 +174,72 @@ mod tests {
         assert_eq!(parse_hex_string("a2"), Ok(162));
         assert_eq!(parse_hex_string("BC"), Ok(188));
         assert_eq!(parse_hex_string(" "), Err("invalid hex string"));
+    }
+
+    #[test]
+    fn compress_vec_() {
+        let vec = vec![1, 2, 2, 3, 3, 3];
+        let result = compress_vec(&vec);
+        assert_eq!(result, vec![1, 2, 2, 3]);
+
+        let vec = vec![4, 4, 4, 4, 4];
+        let result = compress_vec(&vec);
+        assert_eq!(result, vec![4]);
+
+        let vec: Vec<i32> = vec![2];
+        let result = compress_vec(&vec);
+        assert_eq!(result, vec![2]);
+    }
+
+    #[test]
+    fn compress_vec2_() {
+        let vec = vec![vec![1, 1, 2], vec![2, 2, 2], vec![3, 3, 3], vec![3, 3, 3]];
+        let result = compress_vec2(&vec);
+        assert_eq!(result, vec![vec![1, 1, 2], vec![2], vec![3]]);
+
+        let vec = vec![vec![4, 4, 4], vec![4, 4, 4], vec![5, 5, 5]];
+        let result = compress_vec2(&vec);
+        assert_eq!(result, vec![vec![4], vec![4], vec![5]]);
+
+        let vec: Vec<Vec<i32>> = vec![vec![2]];
+        let result = compress_vec2(&vec);
+        assert_eq!(result, vec![vec![2]]);
+    }
+
+    #[test]
+    fn expand_vec_() {
+        let vec = vec![1, 2, 3];
+        let result = expand_vec(&vec, 5);
+        assert_eq!(result, vec![1, 2, 3, 3, 3]);
+
+        let vec = vec![4];
+        let result = expand_vec(&vec, 3);
+        assert_eq!(result, vec![4, 4, 4]);
+
+        let vec: Vec<i32> = vec![1, 2, 3];
+        let result = expand_vec(&vec, 2);
+        assert_eq!(result, vec![1, 2]);
+    }
+
+    fn expand_vec2_() {
+        let vec = vec![vec![1, 2], vec![3]];
+        let result = expand_vec2(&vec, 4, 3);
+        assert_eq!(
+            result,
+            vec![vec![1, 2, 2], vec![3, 3, 3], vec![3, 3, 3], vec![3, 3, 3]]
+        );
+
+        let vec = vec![vec![4]];
+        let result = expand_vec2(&vec, 3, 2);
+        assert_eq!(result, vec![vec![4, 4], vec![4, 4], vec![4, 4]]);
+
+        let vec = vec![
+            vec![1, 2, 4],
+            vec![4, 5, 6],
+            vec![7, 8, 9],
+            vec![10, 11, 12],
+        ];
+        let result = expand_vec2(&vec, 3, 2);
+        assert_eq!(result, vec![vec![1, 2], vec![4, 5], vec![7, 8]]);
     }
 }
