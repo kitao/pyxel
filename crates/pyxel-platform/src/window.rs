@@ -51,11 +51,9 @@ pub fn init_glow(window: *mut SDL_Window) -> *mut GlowContext {
             !SDL_GL_CreateContext(window).is_null(),
             "Failed to create OpenGL context"
         );
-        let glow_context = transmute(Box::new(GlowContext::from_loader_function(|s| {
+        transmute(Box::new(GlowContext::from_loader_function(|s| {
             SDL_GL_GetProcAddress(s.as_ptr().cast()).cast_const()
-        })));
-        SDL_GL_SetSwapInterval(1);
-        glow_context
+        })))
     }
 }
 
