@@ -30,7 +30,6 @@ pub struct System {
     pub screen_y: i32,
     pub screen_scale: u32,
     pub screen_mode: u32,
-    pub ensure_next_render: bool,
 }
 
 impl System {
@@ -49,7 +48,6 @@ impl System {
             screen_y: 0,
             screen_scale: 0,
             screen_mode: 0,
-            ensure_next_render: false,
         }
     }
 }
@@ -355,8 +353,7 @@ impl Pyxel {
             self.system.fps_profiler.end(tick_count);
             self.system.fps_profiler.start(tick_count);
             let update_count: u32;
-            if self.system.ensure_next_render || elapsed_ms > MAX_ELAPSED_MS as f64 {
-                self.system.ensure_next_render = false;
+            if elapsed_ms > MAX_ELAPSED_MS as f64 {
                 update_count = 1;
                 self.system.next_update_ms =
                     pyxel_platform::elapsed_time() as f64 + self.system.one_frame_ms;
@@ -397,8 +394,7 @@ impl Pyxel {
         }
         self.system.fps_profiler.end(tick_count);
         self.system.fps_profiler.start(tick_count);
-        if self.system.ensure_next_render || elapsed_ms > MAX_ELAPSED_MS as f64 {
-            self.system.ensure_next_render = false;
+        if elapsed_ms > MAX_ELAPSED_MS as f64 {
             self.system.next_update_ms =
                 pyxel_platform::elapsed_time() as f64 + self.system.one_frame_ms;
         } else {
