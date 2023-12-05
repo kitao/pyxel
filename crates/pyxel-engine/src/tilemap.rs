@@ -2,7 +2,8 @@ use crate::canvas::{Canvas, ToIndex};
 use crate::image::SharedImage;
 use crate::utils::{f64_to_u32, parse_hex_string, simplify_string};
 
-pub type Tile = (u8, u8);
+pub type TileCoord = u16;
+pub type Tile = (TileCoord, TileCoord);
 
 impl ToIndex for Tile {
     fn to_index(&self) -> usize {
@@ -57,7 +58,10 @@ impl Tilemap {
                     tilemap.canvas.write_data(
                         x as usize,
                         y as usize,
-                        (((tile >> 8) & 0xff) as u8, (tile & 0xff) as u8),
+                        (
+                            ((tile >> 8) & 0xff) as TileCoord,
+                            (tile & 0xff) as TileCoord,
+                        ),
                     );
                 }
             }
