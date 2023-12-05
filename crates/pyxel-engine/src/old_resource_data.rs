@@ -13,7 +13,7 @@ use crate::settings::{
     PALETTE_FILE_EXTENSION, TILEMAP_SIZE, VERSION,
 };
 use crate::sound::Sound;
-use crate::tilemap::{ImageSource, Tilemap};
+use crate::tilemap::{ImageSource, TileCoord, Tilemap};
 use crate::utils::{parse_hex_string, simplify_string};
 
 pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
@@ -90,14 +90,18 @@ impl ResourceItem for Tilemap {
                 if version < 10500 {
                     string_loop!(x, tile, line, 3, {
                         let tile = parse_hex_string(&tile).unwrap();
-                        self.canvas
-                            .write_data(x, y, ((tile % 32) as u8, (tile / 32) as u8));
+                        self.canvas.write_data(
+                            x,
+                            y,
+                            ((tile % 32) as TileCoord, (tile / 32) as TileCoord),
+                        );
                     });
                 } else {
                     string_loop!(x, tile, line, 4, {
                         let tile_x = parse_hex_string(&tile[0..2]).unwrap();
                         let tile_y = parse_hex_string(&tile[2..4]).unwrap();
-                        self.canvas.write_data(x, y, (tile_x as u8, tile_y as u8));
+                        self.canvas
+                            .write_data(x, y, (tile_x as TileCoord, tile_y as TileCoord));
                     });
                 }
             } else {
