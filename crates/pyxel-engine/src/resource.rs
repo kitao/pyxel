@@ -43,7 +43,6 @@ impl Pyxel {
         include_musics: Option<bool>,
         include_waveforms: Option<bool>,
     ) {
-        self.system.ensure_next_render = true;
         let mut archive = ZipArchive::new(
             File::open(Path::new(&filename))
                 .unwrap_or_else(|_| panic!("Unable to open file '{filename}'")),
@@ -117,7 +116,6 @@ impl Pyxel {
         include_musics: Option<bool>,
         include_waveforms: Option<bool>,
     ) {
-        self.system.ensure_next_render = true;
         let toml_text = ResourceData::from_runtime(self).to_toml(
             include_colors.unwrap_or(false),
             include_images.unwrap_or(true),
@@ -140,7 +138,6 @@ impl Pyxel {
     }
 
     pub fn screenshot(&mut self, scale: Option<u32>) {
-        self.system.ensure_next_render = true;
         let filename = Self::export_path();
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.screen.lock().save(&filename, scale);
@@ -149,7 +146,6 @@ impl Pyxel {
     }
 
     pub fn screencast(&mut self, scale: Option<u32>) {
-        self.system.ensure_next_render = true;
         let filename = Self::export_path();
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.resource.screencast.save(&filename, scale);
