@@ -29,7 +29,7 @@
 - Changed to a new resource format based on TOML
 - Added Waveform class for waveform editing
 - Added waveforms as a system list
-- Added arguments to the load and save functions
+- Changed arguments to the load and save functions
 
 ## 1.9.18
 

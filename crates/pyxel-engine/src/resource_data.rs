@@ -276,12 +276,12 @@ impl ResourceData {
     pub fn to_runtime(
         &self,
         pyxel: &Pyxel,
+        exclude_images: bool,
+        exclude_tilemaps: bool,
+        exclude_sounds: bool,
+        exclude_musics: bool,
         include_colors: bool,
-        include_images: bool,
-        include_tilemaps: bool,
         include_channels: bool,
-        include_sounds: bool,
-        include_musics: bool,
         include_waveforms: bool,
     ) {
         if include_colors && !self.colors.is_empty() {
@@ -291,14 +291,14 @@ impl ResourceData {
                 .map(|hex| u32::from_str_radix(hex, 16).unwrap() as Rgb24)
                 .collect();
         }
-        if include_images && !self.images.is_empty() {
+        if !exclude_images && !self.images.is_empty() {
             let mut images = Vec::new();
             for image_data in &self.images {
                 images.push(image_data.to_image());
             }
             *pyxel.images.lock() = images;
         }
-        if include_tilemaps && !self.tilemaps.is_empty() {
+        if !exclude_tilemaps && !self.tilemaps.is_empty() {
             let mut tilemaps = Vec::new();
             for tilemap_data in &self.tilemaps {
                 tilemaps.push(tilemap_data.to_tilemap());
@@ -312,14 +312,14 @@ impl ResourceData {
             }
             *pyxel.channels.lock() = channels;
         }
-        if include_sounds && !self.sounds.is_empty() {
+        if !exclude_sounds && !self.sounds.is_empty() {
             let mut sounds = Vec::new();
             for sound_data in &self.sounds {
                 sounds.push(sound_data.to_sound());
             }
             *pyxel.sounds.lock() = sounds;
         }
-        if include_musics && !self.musics.is_empty() {
+        if !exclude_musics && !self.musics.is_empty() {
             let mut musics = Vec::new();
             for music_data in &self.musics {
                 musics.push(music_data.to_music());
@@ -337,31 +337,31 @@ impl ResourceData {
 
     pub fn to_toml(
         &self,
+        exclude_images: bool,
+        exclude_tilemaps: bool,
+        exclude_sounds: bool,
+        exclude_musics: bool,
         include_colors: bool,
-        include_images: bool,
-        include_tilemaps: bool,
         include_channels: bool,
-        include_sounds: bool,
-        include_musics: bool,
         include_waveforms: bool,
     ) -> String {
         let mut resource_data = (*self).clone();
         if !include_colors {
             resource_data.colors.clear();
         }
-        if !include_images {
+        if exclude_images {
             resource_data.images.clear();
         }
-        if !include_tilemaps {
+        if exclude_tilemaps {
             resource_data.tilemaps.clear();
         }
         if !include_channels {
             resource_data.channels.clear();
         }
-        if !include_sounds {
+        if exclude_sounds {
             resource_data.sounds.clear();
         }
-        if !include_musics {
+        if exclude_musics {
             resource_data.musics.clear();
         }
         if !include_waveforms {

@@ -4,39 +4,53 @@ use crate::pyxel_singleton::pyxel;
 
 #[pyfunction]
 #[pyo3(
-    text_signature = "(filename, *, colors, images, tilemaps, channels, sounds, musics, waveforms)"
+    text_signature = "(filename, *, excl_images, excl_tilemaps, excl_sounds, excl_musics, incl_colors, incl_channels, incl_waveforms)"
 )]
 fn load(
     filename: &str,
-    colors: Option<bool>,
-    images: Option<bool>,
-    tilemaps: Option<bool>,
-    channels: Option<bool>,
-    sounds: Option<bool>,
-    musics: Option<bool>,
-    waveforms: Option<bool>,
+    excl_images: Option<bool>,
+    excl_tilemaps: Option<bool>,
+    excl_sounds: Option<bool>,
+    excl_musics: Option<bool>,
+    incl_colors: Option<bool>,
+    incl_channels: Option<bool>,
+    incl_waveforms: Option<bool>,
 ) {
     pyxel().load(
-        filename, colors, images, tilemaps, channels, sounds, musics, waveforms,
+        filename,
+        excl_images,
+        excl_tilemaps,
+        excl_sounds,
+        excl_musics,
+        incl_colors,
+        incl_channels,
+        incl_waveforms,
     );
 }
 
 #[pyfunction]
 #[pyo3(
-    text_signature = "(filename, *, colors, images, tilemaps, channels, sounds, musics, waveforms)"
+    text_signature = "(filename, *, excl_images, excl_tilemaps, excl_sounds, excl_musics, incl_colors, incl_channels, incl_waveforms)"
 )]
 fn save(
     filename: &str,
-    colors: Option<bool>,
-    images: Option<bool>,
-    tilemaps: Option<bool>,
-    channels: Option<bool>,
-    sounds: Option<bool>,
-    musics: Option<bool>,
-    waveforms: Option<bool>,
+    excl_images: Option<bool>,
+    excl_tilemaps: Option<bool>,
+    excl_sounds: Option<bool>,
+    excl_musics: Option<bool>,
+    incl_colors: Option<bool>,
+    incl_channels: Option<bool>,
+    incl_waveforms: Option<bool>,
 ) {
     pyxel().save(
-        filename, colors, images, tilemaps, channels, sounds, musics, waveforms,
+        filename,
+        excl_images,
+        excl_tilemaps,
+        excl_sounds,
+        excl_musics,
+        incl_colors,
+        incl_channels,
+        incl_waveforms,
     );
 }
 
