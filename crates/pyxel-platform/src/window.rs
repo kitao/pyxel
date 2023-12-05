@@ -2,18 +2,17 @@ use std::ffi::{CStr, CString};
 use std::mem::transmute;
 use std::ptr::addr_of_mut;
 
+use cfg_if::cfg_if;
 use glow::Context as GlowContext;
 
 use crate::event::Event;
 use crate::platform::platform;
 use crate::sdl2_sys::*;
 
-pub fn init_window(title: &str, width: u32, height: u32) -> (*mut SDL_Window, *mut GlowContext) {
-    let window;
-    let gl;
+pub fn init_window(title: &str, width: u32, height: u32) -> *mut SDL_Window {
     unsafe {
         let title = CString::new(title).unwrap();
-        window = SDL_CreateWindow(
+        let window = SDL_CreateWindow(
             title.as_ptr(),
             SDL_WINDOWPOS_UNDEFINED_MASK as i32,
             SDL_WINDOWPOS_UNDEFINED_MASK as i32,
@@ -22,23 +21,42 @@ pub fn init_window(title: &str, width: u32, height: u32) -> (*mut SDL_Window, *m
             (SDL_WINDOW_OPENGL as Uint32) | (SDL_WINDOW_RESIZABLE as Uint32),
         );
         assert!(!window.is_null(), "Failed to create window");
+        let name = CString::new("SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH").unwrap();
+        let value = CString::new("1").unwrap();
+        SDL_SetHint(name.as_ptr(), value.as_ptr());
+        window
+    }
+}
+
+pub fn init_glow(window: *mut SDL_Window) -> *mut GlowContext {
+    unsafe {
+        cfg_if! {
+            if #[cfg(target_os = "emscripten")] {
+                SDL_GL_SetAttribute(
+                    SDL_GL_CONTEXT_PROFILE_MASK,
+                    SDL_GL_CONTEXT_PROFILE_ES as i32,
+                );
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+            } else {
+                SDL_GL_SetAttribute(
+                    SDL_GL_CONTEXT_PROFILE_MASK,
+                    SDL_GL_CONTEXT_PROFILE_CORE as i32,
+                );
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+            }
+        }
         assert!(
             !SDL_GL_CreateContext(window).is_null(),
             "Failed to create OpenGL context"
         );
-        gl = transmute(Box::new(GlowContext::from_loader_function(|s| {
+        let glow_context = transmute(Box::new(GlowContext::from_loader_function(|s| {
             SDL_GL_GetProcAddress(s.as_ptr().cast()).cast_const()
         })));
+        SDL_GL_SetSwapInterval(1);
+        glow_context
     }
-    (window, gl)
-
-    /*
-    sdl_hint::set("SDL_MOUSE_FOCUS_CLICKTHROUGH", "1");
-    Self::set_instance(Self {
-        #[cfg(target_os = "emscripten")]
-        virtual_gamepad_states: [false; 8],
-    });
-    */
 }
 
 #[allow(clippy::missing_safety_doc)]
