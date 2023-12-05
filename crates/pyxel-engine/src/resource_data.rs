@@ -1,13 +1,14 @@
 use serde::{Deserialize, Serialize};
 
 use crate::channel::{Channel, Note, Speed, Volume};
-use crate::image::{Image, SharedImage};
+use crate::image::{Color, Image, SharedImage};
 use crate::music::{Music, SharedMusic};
 use crate::oscillator::{Effect, Gain, Tone};
 use crate::pyxel::Pyxel;
 use crate::settings::RESOURCE_FORMAT_VERSION;
 use crate::sound::{SharedSound, Sound};
-use crate::tilemap::{ImageSource, SharedTilemap, Tilemap};
+use crate::tilemap::{ImageSource, SharedTilemap, TileCoord, Tilemap};
+use crate::utils::{compress_vec2, expand_vec2};
 use crate::waveform::{Noise, SharedWaveform, Waveform, WaveformTable};
 use crate::{Rgb24, SharedChannel};
 
@@ -15,7 +16,7 @@ use crate::{Rgb24, SharedChannel};
 struct ImageData {
     width: u32,
     height: u32,
-    data: Vec<Vec<u8>>,
+    data: Vec<Vec<Color>>,
 }
 
 impl ImageData {
@@ -29,6 +30,7 @@ impl ImageData {
             .chunks(width as usize)
             .map(<[u8]>::to_vec)
             .collect();
+        let data = compress_vec2(&data);
         Self {
             width,
             height,
@@ -37,10 +39,11 @@ impl ImageData {
     }
 
     fn to_image(&self) -> SharedImage {
+        let data = expand_vec2(&self.data, self.height as usize, self.width as usize);
         let image = Image::new(self.width, self.height);
         {
             let mut image = image.lock();
-            image.canvas.data = self.data.clone().into_iter().flatten().collect();
+            image.canvas.data = data.into_iter().flatten().collect();
         }
         image
     }
@@ -51,7 +54,7 @@ struct TilemapData {
     width: u32,
     height: u32,
     imgsrc: u32,
-    data: Vec<Vec<u8>>,
+    data: Vec<Vec<u16>>,
 }
 
 impl TilemapData {
@@ -71,8 +74,9 @@ impl TilemapData {
             .collect();
         let data: Vec<Vec<_>> = data
             .chunks((width * 2) as usize)
-            .map(<[u8]>::to_vec)
+            .map(<[TileCoord]>::to_vec)
             .collect();
+        let data = compress_vec2(&data);
         Self {
             width,
             height,
@@ -82,10 +86,11 @@ impl TilemapData {
     }
 
     fn to_tilemap(&self) -> SharedTilemap {
+        let data = expand_vec2(&self.data, self.height as usize, (self.width * 2) as usize);
         let tilemap = Tilemap::new(self.width, self.height, ImageSource::Index(self.imgsrc));
         {
             let mut tilemap = tilemap.lock();
-            let data: Vec<_> = self.data.clone().into_iter().flatten().collect();
+            let data: Vec<_> = data.clone().into_iter().flatten().collect();
             tilemap.canvas.data = data.chunks(2).map(|chunk| (chunk[0], chunk[1])).collect();
         }
         tilemap
