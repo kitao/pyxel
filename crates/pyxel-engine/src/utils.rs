@@ -77,7 +77,7 @@ pub fn compress_vec<T: PartialEq + Clone>(vec: &[T]) -> Vec<T> {
 
 pub fn compress_vec2<T: PartialEq + Clone>(vec: &[Vec<T>]) -> Vec<Vec<T>> {
     assert!(!vec.is_empty());
-    compress_vec(&vec)
+    compress_vec(vec)
         .iter()
         .map(|inner_vec| compress_vec(inner_vec))
         .collect::<Vec<_>>()
@@ -221,6 +221,7 @@ mod tests {
         assert_eq!(result, vec![1, 2]);
     }
 
+    #[test]
     fn expand_vec2_() {
         let vec = vec![vec![1, 2], vec![3]];
         let result = expand_vec2(&vec, 4, 3);
