@@ -77,7 +77,7 @@ class ColorPicker(Widget):
         )
 
     def __on_value_set(self, value):
-        return value if value < len(pyxel.colors) - pyxel.NUM_COLORS else 0
+        return min(value, len(pyxel.colors) - pyxel.NUM_COLORS - 1)
 
     def __on_value_change(self, value):
         self.trigger_event("change", value)
