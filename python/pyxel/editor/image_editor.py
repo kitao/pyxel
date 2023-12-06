@@ -113,7 +113,11 @@ class ImageEditor(EditorBase):
         )
 
     def __on_drop(self, filename):
+        colors = pyxel.colors.to_list()
+        user_colors = colors[pyxel.NUM_COLORS :]
+        pyxel.colors.from_list(user_colors)
         pyxel.images[self.image_index_var].load(0, 0, filename)
+        pyxel.colors.from_list(colors)
 
     def __on_update(self):
         self.check_tool_button_shortcuts()
