@@ -10,6 +10,7 @@ use crate::sound::{SharedSound, Sound};
 pub type Note = i8;
 pub type Volume = u8;
 pub type Speed = u32;
+pub type Detune = i32;
 
 pub struct Channel {
     oscillator: Oscillator,
@@ -20,6 +21,7 @@ pub struct Channel {
     note_index: u32,
     tick_count: u32,
     pub gain: Gain,
+    pub detune: Detune,
 }
 
 pub type SharedChannel = shared_type!(Channel);
@@ -35,6 +37,7 @@ impl Channel {
             note_index: 0,
             tick_count: 0,
             gain: INITIAL_CHANNEL_GAIN,
+            detune: 0,
         })
     }
 
@@ -122,7 +125,7 @@ impl Channel {
 
             if note >= 0 && volume > 0 {
                 self.oscillator.play(
-                    note as f64,
+                    note as f64 + self.detune as f64 / 200.0,
                     tone,
                     self.gain * volume as f64 / MAX_VOLUME as f64,
                     effect,

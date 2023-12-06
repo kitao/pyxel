@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::channel::{Channel, Note, Speed, Volume};
+use crate::channel::{Channel, Detune, Note, Speed, Volume};
 use crate::image::{Color, Image, SharedImage};
 use crate::music::{Music, SharedMusic};
 use crate::oscillator::{Effect, Gain, Tone};
@@ -129,18 +129,25 @@ impl WaveformData {
 #[derive(Clone, Serialize, Deserialize)]
 struct ChannelData {
     gain: Gain,
+    detune: Detune,
 }
 
 impl ChannelData {
     fn from_channel(channel: SharedChannel) -> Self {
+        let channel = channel.lock();
         Self {
-            gain: channel.lock().gain,
+            gain: channel.gain,
+            detune: channel.detune,
         }
     }
 
     fn to_channel(&self) -> SharedChannel {
         let channel = Channel::new();
-        channel.lock().gain = self.gain;
+        {
+            let mut channel = channel.lock();
+            channel.gain = self.gain;
+            channel.detune = self.detune;
+        }
         channel
     }
 }
