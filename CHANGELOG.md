@@ -27,9 +27,10 @@
 - Renamed snds_list of Music to seqs
 - Marked the snds_list of Music as a deprecated field
 - Changed to a new resource format based on TOML
+- Changed arguments to the load and save functions
 - Added Waveform class for waveform editing
 - Added waveforms as a system list
-- Changed arguments to the load and save functions
+- Added a detune field to Channel
 
 ## 1.9.18
 
