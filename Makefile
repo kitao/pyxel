@@ -61,7 +61,7 @@ ENSURE_TARGET = rustup target add $(TARGET)
 BUILD_OPTS = --release --target $(TARGET)
 endif
 
-.PHONY: all clean distclean lint update format build test clean-wasm build-wasm test-wasm
+.PHONY: all clean distclean lint update format build install test clean-wasm build-wasm test-wasm
 
 all: build
 
@@ -105,9 +105,11 @@ build: format
 	@$(SCRIPTS_DIR)/make_abspath_readme
 	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --skip-auditwheel
 
+install: build
+	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
+
 test: build
 	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
-	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
 	@python3 -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
 	@pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
 	@pyxel run $(EXAMPLES_DIR)/02_jump_game.py
