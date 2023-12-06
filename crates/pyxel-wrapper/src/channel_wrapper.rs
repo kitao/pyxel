@@ -27,6 +27,16 @@ impl Channel {
         self.inner.lock().gain = gain;
     }
 
+    #[getter]
+    pub fn get_detune(&self) -> pyxel::Detune {
+        self.inner.lock().detune
+    }
+
+    #[setter]
+    pub fn set_detune(&self, detune: pyxel::Detune) {
+        self.inner.lock().detune = detune;
+    }
+
     #[pyo3(text_signature = "($self, snd, *, tick, loop)")]
     pub fn play(&self, snd: &PyAny, tick: Option<u32>, r#loop: Option<bool>) -> PyResult<()> {
         let loop_ = r#loop.unwrap_or(false);
