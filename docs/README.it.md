@@ -329,7 +329,7 @@ Il file risorsa creato può essere caricato con la funzione `load`.
 
 L'editor Pyxel ha le seguenti modalità di modifica.
 
-**Editor Immagini:**
+**Editor Immagini**
 
 La modalità per modificare banche d'immagini.
 
@@ -339,7 +339,7 @@ La modalità per modificare banche d'immagini.
 
 Trascinando e rilasciando un file immagine (png/gif/jpeg) sullo schermo dell'Editor Immagine, l'immagine può essere caricata all'interno del banco d'immagine attualmente selezionato.
 
-**Editor Tilemap:**
+**Editor Tilemap**
 
 La modalità per modificare tilemap immagini delle banche immagini sono posizionate in un modo a piastrelle.
 
@@ -347,7 +347,7 @@ La modalità per modificare tilemap immagini delle banche immagini sono posizion
 <img src="images/tilemap_editor.gif">
 </a>
 
-**Editor Suoni:**
+**Editor Suoni**
 
 Modalità per modificare suoni.
 
@@ -355,7 +355,7 @@ Modalità per modificare suoni.
 <img src="images/sound_editor.gif">
 </a>
 
-**Editor Musica:**
+**Editor Musica**
 
 La modalità per modificare musica in cui i suoni sono posizionati in ordine per poi essere risuonati.
 
@@ -439,7 +439,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Ritorna `True` se `key` è premuto, altrimenti ritorna `False`. ([lista definizione tasti](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
-  Ritorna `True` se `key` è premuto quel frame, altrimenti ritorna `False`. Quando `hold` e `repeat` sono specificati, `True` sarà ritornato all'intervallo frame `repeat` quando `key` è premuto per più di `hold` frame
+  Ritorna `True` se `key` è premuto quel frame, altrimenti ritorna `False`. Quando `hold` e `repeat` sono specificati, `True` sarà ritornato all'intervallo frame `repeat` quando `key` è premuto per più di `hold` frame.
 
 - `btnr(key)`<br>
   Ritorna `True` se `key` è rilasciato quel frame, altrimenti ritorna `False`
@@ -467,7 +467,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Cambia le coordinate dell'angolo superiore sinistro dello schermo in (`x`, `y`). Resetta le coordinate dell'angolo superiore sinistro a (`0`, `0`) con `camera()`.
 
 - `pal(col1, col2)`<br>
-  Rimpiazza colore `col1` con `col2` al momento di disegno. `pal()` per tornare alla palette iniziale
+  Rimpiazza colore `col1` con `col2` al momento di disegno. `pal()` per tornare alla palette iniziale.
 
 - `dither(alpha)`<br>
   Applica il dithering (pseudo-trasparenza) al disegno. Impostare `alpha` nell'intervallo 0,0-1,0, dove 0,0 è trasparente e 1,0 è opaco.
@@ -476,25 +476,25 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Riempie lo schermo con `col`
 
 - `pget(x, y)`<br>
-  Ritorna il colore del pixel su (`x`, `y`)
+  Ritorna il colore del pixel su (`x`, `y`).
 
 - `pset(x, y, col)`<br>
-  Disegna un pixel di colore `col` su (`x`, `y`)
+  Disegna un pixel di colore `col` su (`x`, `y`).
 
 - `line(x1, y1, x2, y2, col)`<br>
-  Disegna una linea di colore `col` da (`x1`, `y1`) a (`x2`, `y2`)
+  Disegna una linea di colore `col` da (`x1`, `y1`) a (`x2`, `y2`).
 
 - `rect(x, y, w, h, col)`<br>
-  Disegna un rettangolo con lunghezza `w`, altezza `h` e colore `col` da (`x`, `y`)
+  Disegna un rettangolo con lunghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
 
 - `rectb(x, y, w, h, col)`<br>
-  Disegna il contorno di un rettangolo di lunghezza `w`, altezza `h` e colore `col` da (`x`, `y`)
+  Disegna il contorno di un rettangolo di lunghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
 
 - `circ(x, y, r, col)`<br>
-  Disegna un cerchio di raggio `r` e colore `col` su (`x`, `y`)
+  Disegna un cerchio di raggio `r` e colore `col` su (`x`, `y`).
 
 - `circb(x, y, r, col)`<br>
-  Disegna il contorno di un cerchio di raggio `r` e colore `col` su (`x`, `y`)
+  Disegna il contorno di un cerchio di raggio `r` e colore `col` su (`x`, `y`).
 
 - `elli(x, y, w, h, col)`<br>
   Disegna un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
@@ -512,7 +512,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Disegna un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Copia la regione di grandezza (`w`, `h`) da (`u`, `v`) della banca immagini `img`(0-2) a (`x`, `y`). Se un valore negativo è impostato per `w` e/o `h`, sarà invertito orizzontalmente o verticalmente. Se `colkey` è specificato, verrà trattato come colore trasparente
+  Copia la regione di grandezza (`w`, `h`) da (`u`, `v`) della banca immagini `img`(0-2) a (`x`, `y`). Se un valore negativo è impostato per `w` e/o `h`, sarà invertito orizzontalmente o verticalmente. Se `colkey` è specificato, verrà trattato come colore trasparente.
 
 <img src="images/blt_figure.png">
 
@@ -522,7 +522,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 <img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
-  Disegna una stringa `s` di colore `col` su (`x`, `y`)
+  Disegna una stringa `s` di colore `col` su (`x`, `y`).
 
 ### Audio
 
@@ -568,7 +568,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 - `atan2(y, x)`<br>
   Restituisce l'arcotangente di `y`/`x` in gradi.
 
-- `rseed(seed: int)`<br>
+- `rseed(seed)`<br>
   Imposta il seme del generatore di numeri casuali.
 
 - `rndi(a, b)`<br>
@@ -587,9 +587,6 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 
 - `width`, `height`<br>
   La lunghezza e l'altezza dell'immagine
-
-- `data`<br>
-  I dati dell'immagine (lista bidimensionale da 256x256)
 
 - `get(x, y)`<br>
   Trova i dati dell'immagine su (`x`, `y`)
@@ -658,7 +655,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 ### Music Class
 
 - `seqs`<br>
-  Lista bidimensionale di suoni (0-63) con il numero di canali.
+  Lista bidimensionale di suoni (0-63) con il numero di canali
 
 - `set(seq0, seq1, seq2, seq3)`<br>
   Imposta l'elenco di suoni (0-63) di tutti i canali. Se è indicata una lista vuota, quel canale non viene utilizzato per la riproduzione.<br>

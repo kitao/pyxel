@@ -329,7 +329,7 @@ La ressource créée peut être chargée avec la fonction `load`.
 
 L’éditeur Pyxel a les modes suivants.
 
-**Éditeur d’images :**
+**Éditeur d’images **
 
 Mode pour éditer les banques d’images.
 
@@ -339,7 +339,7 @@ Mode pour éditer les banques d’images.
 
 En glissant-déposant un fichier image (png / gif / jpeg) dans l’éditeur d’image, l’image peut être chargée dans la banque d’images actuellement sélectionnée.
 
-**Éditeur de tilemap :**
+**Éditeur de tilemap **
 
 Mode pour éditer les tilemaps, dans lesquelles les images des banques d’images sont ordonnées en motifs de tuiles.
 
@@ -349,7 +349,7 @@ Mode pour éditer les tilemaps, dans lesquelles les images des banques d’image
 <img src="images/tilemap_editor.gif">
 </a>
 
-**Éditeur de sons :**
+**Éditeur de sons **
 
 Mode pour éditer les sons.
 
@@ -357,7 +357,7 @@ Mode pour éditer les sons.
 <img src="images/sound_editor.gif">
 </a>
 
-**Éditeur de musiques :**
+**Éditeur de musiques **
 
 Mode pour éditer les musiques dans lesquelles les sons sont ordonnés par ordre de lecture.
 
@@ -441,7 +441,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
   Renvoie `True` si la touche `key` est appuyée, sinon renvoie `False`. ([liste des touches](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
-  Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`. Quand `hold` et `repeat` sont spécifiés, `True` sera renvoyé à l’intervalle de frame `repeat` quand la touche `key` est appuyée pendant plus de `hold` frames
+  Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`. Quand `hold` et `repeat` sont spécifiés, `True` sera renvoyé à l’intervalle de frame `repeat` quand la touche `key` est appuyée pendant plus de `hold` frames.
 
 - `btnr(key)`<br>
   Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`
@@ -469,7 +469,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
   Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
 
 - `pal(col1, col2)`<br>
-  Remplace la couleur `col1` avec `col2` au dessin. `pal()` pour réinitialiser la palette de couleurs
+  Remplace la couleur `col1` avec `col2` au dessin. `pal()` pour réinitialiser la palette de couleurs.
 
 - `dither(alpha)`<br>
   Applique le tramage (pseudo-transparence) au dessin. Fixe `alpha` dans l'intervalle 0.0-1.0, où 0.0 est transparent et 1.0 est opaque.
@@ -478,25 +478,25 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
   Efface l’écran avec la couleur `col`
 
 - `pget(x, y)`<br>
-  Renvoie la couleur au pixel (`x`, `y`)
+  Renvoie la couleur au pixel (`x`, `y`).
 
 - `pset(x, y, col)`<br>
-  Dessine un pixel de couleur `col` à (`x`, `y`)
+  Dessine un pixel de couleur `col` à (`x`, `y`).
 
 - `line(x1, y1, x2, y2, col)`<br>
-  Dessine une ligne de couleur `col` de (`x1`, `y1`) à (`x2`, `y2`)
+  Dessine une ligne de couleur `col` de (`x1`, `y1`) à (`x2`, `y2`).
 
 - `rect(x, y, w, h, col)`<br>
-  Dessine un rectangle de largeur `w`, de hauteur `h` et de couleur `col` à partir de (`x`, `y`)
+  Dessine un rectangle de largeur `w`, de hauteur `h` et de couleur `col` à partir de (`x`, `y`).
 
 - `rectb(x, y, w, h, col)`<br>
-  Dessine les contours d’un rectangle de largeur `w`, de hauteur `h` et de couleur `col` à partir de (`x`, `y`)
+  Dessine les contours d’un rectangle de largeur `w`, de hauteur `h` et de couleur `col` à partir de (`x`, `y`).
 
 - `circ(x, y, r, col)`<br>
-  Dessine un cercle de rayon `r` et de couleur `col` à (`x`, `y`)
+  Dessine un cercle de rayon `r` et de couleur `col` à (`x`, `y`).
 
 - `circb(x, y, r, col)`<br>
-  Dessine le contour d’un cercle de rayon `r` et de couleur `col` à (`x`, `y`)
+  Dessine le contour d’un cercle de rayon `r` et de couleur `col` à (`x`, `y`).
 
 - `elli(x, y, w, h, col)`<br>
   Dessinez une ellipse de largeur `w`, de hauteur `h` et de couleur `col` à partir de (`x`, `y`).
@@ -524,7 +524,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
 <img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
-  Dessine une chaîne de caractères `s` de couleur `col` à (`x`, `y`)
+  Dessine une chaîne de caractères `s` de couleur `col` à (`x`, `y`).
 
 ### Audio
 
@@ -570,7 +570,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
 - `atan2(y, x)`<br>
   Retourne l'arctangente de `y`/`x` en degrés.
 
-- `rseed(seed: int)`<br>
+- `rseed(seed)`<br>
   Définit la graine du générateur de nombres aléatoires.
 
 - `rndi(a, b)`<br>
@@ -590,11 +590,8 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
 - `width`, `height`<br>
   La largeur et la hauteur d’une image
 
-- `data`<br>
-  Les données de l’image (liste bi-dimentionelle de 256x256)
-
 - `get(x, y)`<br>
-  Renvoie les données de l’image à (`x`, `y`)
+  Renvoie les données de l’image à (`x`, `y`).
 
 - `set(x, y, data)`<br>
   Met la valeur de l’image à (`x`, `y`) suivant une liste de chaînes.<br>
@@ -660,7 +657,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
 ### Classe Music
 
 - `seqs`<br>
-  Liste bidimensionnelle de sons (0-63) avec le nombre de canaux.
+  Liste bidimensionnelle de sons (0-63) avec le nombre de canaux
 
 - `set(seq0, seq1, seq2, seq3)`<br>
   Met les listes de sons (0-63) de tous les canaux. Si une liste vide est passée, ce canal n’est pas utilisé.<br>
