@@ -304,7 +304,7 @@ Die folgenden Shortcuts können eingegeben werden, während eine Pyxel-Anwendung
 - `Alt(Option)+3`<br>
   Speichert die Bildschirmaufzeichnung zum Desktop (bis zu 10 Sekunden)
 - `Alt(Option)+9`<br>
-  Wechseln Sie zwischen den Bildschirmmodi (Crisp, Smooth, Retro)
+  Wechseln Sie zwischen den Bildschirmmodi (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
   Umschalten des Leistungsmonitors (fps, Updatezeit und Framezeit)
 - `Alt(Option)+Enter`<br>

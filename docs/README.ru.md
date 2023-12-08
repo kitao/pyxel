@@ -304,7 +304,7 @@ python3 PYTHON_SCRIPT_FILE
 - `Alt(Option)+3`<br>
   Сохранить видео, полученное захватом экрана на рабочий стол (до 10 секунд)
 - `Alt(Option)+9`<br>
-  Переключение между режимами экрана (Crisp, Smooth, Retro)
+  Переключение между режимами экрана (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
   Включить/выключить мониториг производительности (fps, время на update, время на draw)
 - `Alt(Option)+Enter`<br>
