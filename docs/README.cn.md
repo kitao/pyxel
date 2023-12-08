@@ -470,6 +470,9 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 - `pal(col1, col2)`<br>
   绘制时用`col1`颜色代替`col2`颜色。`pal()`可以重置为初始色调。
 
+- `dither(alpha)`<br>
+  在绘制时应用抖动 (伪透明)。在 0.0-1.0 的范围内设置 `alpha`，其中 0.0 表示透明，1.0 表示不透明。
+
 - `cls(col)`<br>
   用`col`颜色清空画面。
 
