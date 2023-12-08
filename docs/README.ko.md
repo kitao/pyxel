@@ -291,8 +291,6 @@ pyxel run PYTHON_SCRIPT_FILE
 python3 PYTHON_SCRIPT_FILE
 ```
 
-(Windows 환경에서는 `python3` 대신 `python`을 입력해야 합니다)
-
 ### 특수 조작
 
 Pyxel 애플리케이션 실행 중에, 아래의 특수 조작을 사용할 수 있습니다.
@@ -305,6 +303,8 @@ Pyxel 애플리케이션 실행 중에, 아래의 특수 조작을 사용할 수
   화면 캡처의 녹화 시작 시간 초기화
 - `Alt(Option)+3`<br>
   화면 캡처 파일을 바탕 화면에 저장 (최대 10초)
+- `Alt(Option)+9`<br>
+  화면 모드 (Crisp, Smooth, Retro) 전환하기
 - `Alt(Option)+0`<br>
   성능 모니터 (fps, update time, draw time)의 표시/표시 해제
 - `Alt(Option)+Enter`<br>
@@ -424,8 +424,8 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 ### 리소스
 
-- `load(filename, [image], [tilemap], [sound], [music])`<br>
-  리소스 파일 (.pyxres)을 불러옵니다. 리소스 타입 (`image/tilemap/sound/music`)에 `False`를 지정하면, 해당 리소스는 불러오지 않습니다. 동일한 이름의 팔레트 파일(.pyxpal)이 리소스 파일과 동일한 위치에 존재하는 경우 팔레트 표시 색상도 변경됩니다. 팔레트 파일은 줄 바꿈으로 구분된 디스플레이 색상의 16진수 항목입니다. 팔레트 파일은 Pyxel Editor에 표시되는 색상을 변경하는 데에도 사용할 수 있습니다.
+- `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
+  리소스 파일 (.pyxres)을 불러옵니다. 옵션이 `True`이면 리소스가 로드되지 않습니다. 리소스 파일과 같은 위치에 같은 이름의 팔레트 파일(.pyxpal)이 있는 경우 팔레트 표시 색상도 변경됩니다. 색상표 파일은 표시 색상의 16진수 항목(예: `1100FF`)을 개행으로 구분한 것입니다. 팔레트 파일은 파이셀 편집기에서 표시되는 색상을 변경하는 데에도 사용할 수 있습니다.
 
 ### 입력
 
@@ -453,12 +453,12 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   팔레트의 표시 색상 리스트입니다. 표시 색상은 24-bit 숫자 값으로 지정합니다. `colors.from_list` 및 `colors.to_list`를 사용해 Python 리스트의 형태로 직접 색상을 지정하고 적용할 수 있습니다.<br>
   예시: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
-- `image(img)`<br>
-  이미지 뱅크 `img` (0-2)를 조작합니다. (이미지 클래스 참조)<br>
-  예시: `pyxel.image(0).load(0, 0, "title.png")`
+- `images`<br>
+  이미지 뱅크 목록 (0-2). (이미지 클래스 참조)<br>
+  예시: `pyxel.images[0].load(0, 0, "title.png")`
 
-- `tilemap(tm)`<br>
-  타일 맵 `tm` (0-7)을 조작합니다. (타일 맵 클래스 참조)
+- `tilemaps`<br>
+  타일맵 목록 (0-7). (타일 맵 클래스 참조)
 
 - `clip(x, y, w, h)`<br>
   화면의 드로잉 영역을 (`x`, `y`)로 설정하고, 너비를 `w`, 높이를 `h`로 설정합니다. `clip()`과 같이 사용하면 드로잉 영역을 초기 상태(전체 화면)으로 돌립니다.
@@ -523,12 +523,12 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 ### 오디오
 
-- `sound(snd)`<br>
-  사운드 `snd`(0-63) 를 조작합니다. (사운드 클래스 참조)<br>
-  예시: `pyxel.sound(0).speed = 60`
+- `sounds`<br>
+  소리 목록 (0-63). (사운드 클래스 참조)<br>
+  예시: `pyxel.sounds[0].speed = 60`
 
-- `music(msc)`<br>
-  음악 `msc`(0-7) 를 조작합니다. (음악 클래스 참조)
+- `musics`<br>
+  음악 목록 (0-7). (음악 클래스 참조)
 
 - `play(ch, snd, [tick], [loop])`<br>
   채널 `ch` (0-3)에서 사운드 `snd` (0-63)를 재생합니다. `snd`가 리스트일 경우, 순서대로 재생됩니다. 재생 시작 위치는 `tick` (1 tick = 1/120초)으로 지정할 수 있습니다. `loop`에 `True`를 지정하면 계속 반복합니다.
@@ -587,7 +587,7 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 - `set(x, y, data)`<br>
   (`x`, `y`)에 문자열 리스트를 사용해 이미지를 설정합니다.<br>
-  예시: `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  예시: `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
   (`x`, `y`)에 이미지 파일(png/gif/jpeg)을 불러옵니다.
@@ -603,7 +603,7 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 - `width`, `height`<br>
   타일 맵의 가로/세로 크기
 
-- `refimg`<br>
+- `imgsrc`<br>
   타일 맵이 참조하는 이미지 뱅크 (0-2)
 
 - `set(x, y, data)`<br>
@@ -638,28 +638,28 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 - `set_notes(notes)`<br>
   'CDEFGAB'+'#-'+'01234' 또는 'R' 문자열로 음정을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
-  예시: `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
+  예시: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
   'TSPN' 문자열로 음색을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
-  예시: `pyxel.sound(0).set_tones("TTSS PPPN")`
+  예시: `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
   '01234567' 문자열로 음량을 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
-  예시: `pyxel.sound(0).set_volumes("7777 7531")`
+  예시: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
   'NSVF' 문자열로 효과를 설정합니다. 대소문자를 구분하지 않으며 빈칸은 무시됩니다.<br>
-  예시: `pyxel.sound(0).set_effects("NFNF NVVS")`
+  예시: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### 음악 클래스
 
-- `snds_list`<br>
+- `seqs`<br>
   채널 수가 포함된 2차원 사운드 목록(0-63).
 
-- `set(snds0, snds1, snds2, snds3)`<br>
+- `set(seq0, seq1, seq2, seq3)`<br>
   모든 채널의 사운드 (0-63) 리스트를 지정합니다. 빈 리스트가 지정되면 해당 채널은 재생에 사용되지 않습니다.<br>
-  예시: `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+  예시: `pyxel.musics[0].set([0, 1], [2, 3], [4], [])`
 
 ### 고급 사용자용 API
 

@@ -291,8 +291,6 @@ Também pode ser executado como um guião Python normal:
 python3 PYTHON_SCRIPT_FILE
 ```
 
-(No Windows, use `python` ao invés de `python3`)
-
 ### Controles Especiais
 
 Os seguintes controles especiais podem ser executados quando uma aplicação Pyxel estiver sendo executada:
@@ -305,6 +303,8 @@ Os seguintes controles especiais podem ser executados quando uma aplicação Pyx
   Reinicia o momento inicial do vídeo de captura de tela.
 - `Alt(Option)+3`<br>
   Salva um vídeo de captura de tela na área de trabalho (até 10 segundos)
+- `Alt(Option)+9`<br>
+  Alternar entre os modos de ecrã (Crisp, Smooth, Retro)
 - `Alt(Option)+0`<br>
   Ativa/desativa o monitor de performance (fps, tempo de update e tempo de draw)
 - `Alt(Option)+Enter`<br>
@@ -424,8 +424,8 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
 
 ### Recurso
 
-- `load(filename, [image], [tilemap], [sound], [music])`<br>
-  Carrega o arquivo de recursos (.pyxres). Se `False` for especificado para o tipo de recurso (`image/tilemap/sound/music`), o recurso não será carregado. Se existir um ficheiro de palete (.pyxpal) com o mesmo nome no mesmo local que o ficheiro de recurso, a cor de apresentação da palete também será alterada. O ficheiro de palete é uma entrada hexadecimal das cores do visor, separada por novas linhas. O ficheiro de palete também pode ser utilizado para alterar as cores exibidas no Pyxel Editor.
+- `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
+  Carrega o arquivo de recursos (.pyxres). Se uma opção for `True`, o recurso não será carregado. Se um arquivo de paleta (.pyxpal) com o mesmo nome existir no mesmo local que o arquivo de recurso, a cor de exibição da paleta também será alterada. O arquivo de paleta é uma entrada hexadecimal das cores de exibição (por exemplo, `1100FF`), separada por novas linhas. O arquivo de paleta também pode ser usado para alterar as cores exibidas no Pyxel Editor.
 
 ### Entrada
 
@@ -453,12 +453,12 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Lista da paleta de cores da tela. A cor da tela é especificada por um valor numérico de 24 bits. Use `colors.from_list` e `colors.to_list` para atribuir e pegar listas do Python.<br>
   Ex. `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
-- `image(img)`<br>
-  Opera o banco de imagens `img` (0-2). (veja a classe de Imagem)<br>
-  Ex. `pyxel.image(0).load(0, 0, "title.png")`
+- `images`<br>
+  Lista dos bancos de imagens (0-2). (veja a classe de Imagem)<br>
+  Ex. `pyxel.images[0].load(0, 0, "title.png")`
 
-- `tilemap(tm)`<br>
-  Opera o tilemap `tm`(0-7) (ver a classe de Tilemap)
+- `tilemaps`<br>
+  Lista dos mapas de azulejos (0-7). (ver a classe de Tilemap)
 
 - `clip(x, y, w, h)`<br>
   Define a área de desenho da tela de (`x`, `y`) para a largura `w` e altura `h`. Redefina a área de desenho para tela cheia com `clip()`
@@ -523,12 +523,12 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
 
 ### Áudio
 
-- `sound(snd)`<br>
-  Opera o som `snd`(0-63). (ver a classe de Som)<br>
-  Ex. `pyxel.sound(0).speed = 60`
+- `sounds`<br>
+  Lista dos sons (0-63). (ver a classe de Som)<br>
+  Ex. `pyxel.sounds[0].speed = 60`
 
-- `music(msc)`<br>
-  Opera a música `msc` (0-7) (ver a classe de Musica)
+- `musics`<br>
+  Lista das músicas (0-7). (ver a classe de Musica)
 
 - `play(ch, snd, [tick], [loop])`<br>
   Reproduz o som `snd` (0-63) no canal `ch` (0-3). Se `snd` é uma lista, os sons serão reproduzidos em ordem. A posição inicial da reprodução pode ser especificada por `tick` (1 tick = 1/120 segundos). Se `True` for especificado para `loop`, a reprodução será feita em laço.
@@ -587,7 +587,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
 
 - `set(x, y, data)`<br>
   Define a imagem em (`x`, `y`) por uma lista de strings.<br>
-  Ex. `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  Ex. `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
   Carrega um arquivo de imagem (png/gif/jpeg) em (`x`, `y`).
@@ -603,7 +603,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
 - `width`, `height`<br>
   A largura e a altura do tilemap
 
-- `refimg`<br>
+- `imgsrc`<br>
   O banco de imagem (0-2) referenciado pelo tilemap
 
 - `set(x, y, data)`<br>
@@ -638,28 +638,28 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
 
 - `set_notes(notes)`<br>
   Define as notas com uma string 'CDEFGAB'+'#-'+'01234' ou 'R'. É insensível à maiúsculas ou minúsculas e espaços em branco são ignorados.<br>
-  Ex. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
+  Ex. `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
   Define os tons com uma string composta por 'TSPN'. É insensível à maiúsculas ou minúsculas e espaços em branco são ignorados.<br>
-  Ex. `pyxel.sound(0).set_tones("TTSS PPPN")`
+  Ex. `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
   Define os volumes com uma string composta por '01234567'. É insensível à maiúsculas ou minúsculas e espaços em branco são ignorados.<br>
-  Ex. `pyxel.sound(0).set_volumes("7777 7531")`
+  Ex. `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
   Define os efeitos com uma string composta por 'NSVF'. É insensível à maiúsculas ou minúsculas e espaços em branco são ignorados.<br>
-  Ex. `pyxel.sound(0).set_effects("NFNF NVVS")`
+  Ex. `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Classe de Musica
 
-- `snds_list`<br>
+- `seqs`<br>
   Lista bi-dimensional de sons (0-63) com o número de canais.
 
-- `set(snds0, snds1, snds2, snds3)`<br>
+- `set(seq0, seq1, seq2, seq3)`<br>
   Define as listas de sons (0-63) para todos os canais. Se uma lista vazia for especificada, aquele canal não será utilizado para reprodução de sons.<br>
-  Ex. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+  Ex. `pyxel.musics[0].set([0, 1], [2, 3], [4], [])`
 
 ### APIs Avançadas
 
