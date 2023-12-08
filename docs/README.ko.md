@@ -304,7 +304,7 @@ Pyxel 애플리케이션 실행 중에, 아래의 특수 조작을 사용할 수
 - `Alt(Option)+3`<br>
   화면 캡처 파일을 바탕 화면에 저장 (최대 10초)
 - `Alt(Option)+9`<br>
-  화면 모드 (Crisp, Smooth, Retro) 전환하기
+  화면 모드 (Crisp/Smooth/Retro) 전환하기
 - `Alt(Option)+0`<br>
   성능 모니터 (fps, update time, draw time) 의 표시/표시 해제
 - `Alt(Option)+Enter`<br>

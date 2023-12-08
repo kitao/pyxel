@@ -304,7 +304,7 @@ The following special controls can be performed while a Pyxel application is run
 - `Alt(Option)+3`<br>
   Save the screen capture video to the desktop (up to 10 seconds)
 - `Alt(Option)+9`<br>
-  Switch between screen modes (Crisp, Smooth, Retro)
+  Switch between screen modes (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
   Toggle the performance monitor (fps, update time, and draw time)
 - `Alt(Option)+Enter`<br>
