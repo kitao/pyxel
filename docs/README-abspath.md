@@ -291,8 +291,6 @@ It can also be executed like a normal Python script:
 python3 PYTHON_SCRIPT_FILE
 ```
 
-(For Windows, type `python` instead of `python3`)
-
 ### Special Controls
 
 The following special controls can be performed while a Pyxel application is running:
@@ -305,6 +303,8 @@ The following special controls can be performed while a Pyxel application is run
   Reset the recording start time of the screen capture video
 - `Alt(Option)+3`<br>
   Save the screen capture video to the desktop (up to 10 seconds)
+- `Alt(Option)+9`<br>
+  Switch between screen modes (Crisp, Smooth, Retro)
 - `Alt(Option)+0`<br>
   Toggle the performance monitor (fps, update time, and draw time)
 - `Alt(Option)+Enter`<br>
@@ -424,8 +424,8 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 
 ### Resource
 
-- `load(filename, [image], [tilemap], [sound], [music])`<br>
-  Load the resource file (.pyxres). If `False` is specified for the resource type (`image/tilemap/sound/music`), the resource will not be loaded. If a palette file (.pyxpal) of the same name exists in the same location as the resource file, the palette display color will also be changed. The palette file is a hexadecimal entry of the display colors, separated by newlines. The palette file can also be used to change the colors displayed in Pyxel Editor.
+- `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
+  Load the resource file (.pyxres). If an option is `True`, the resource will not be loaded. If a palette file (.pyxpal) of the same name exists in the same location as the resource file, the palette display color will also be changed. The palette file is a hexadecimal entry of the display colors (e.g. `1100FF`), separated by newlines. The palette file can also be used to change the colors displayed in Pyxel Editor.
 
 ### Input
 
@@ -453,12 +453,12 @@ Pyxel application file also can be converted to an executable or an HTML file wi
   List of the palette display colors. The display color is specified by a 24-bit numerical value. Use `colors.from_list` and `colors.to_list` to directly assign and retrieve Python lists.<br>
   e.g. `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
-- `image(img)`<br>
-  Operate the image bank `img` (0-2). (See the Image class)<br>
-  e.g. `pyxel.image(0).load(0, 0, "title.png")`
+- `images`<br>
+  List of the image banks (0-2). (See the Image class)<br>
+  e.g. `pyxel.images[0].load(0, 0, "title.png")`
 
-- `tilemap(tm)`<br>
-  Operate the tilemap `tm` (0-7). (See the Tilemap class)
+- `tilemaps`<br>
+  List of the tilemaps (0-7). (See the Tilemap class)
 
 - `clip(x, y, w, h)`<br>
   Set the drawing area of the screen from (`x`, `y`) to width `w` and height `h`. Reset the drawing area to full screen with `clip()`.
@@ -523,12 +523,12 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 
 ### Audio
 
-- `sound(snd)`<br>
-  Operate the sound `snd` (0-63). (See the Sound class)<br>
-  e.g. `pyxel.sound(0).speed = 60`
+- `sounds`<br>
+  List of the sounds (0-63). (See the Sound class)<br>
+  e.g. `pyxel.sounds[0].speed = 60`
 
-- `music(msc)`<br>
-  Operate the music `msc` (0-7). (See the Music class)
+- `musics`<br>
+  List of the musics (0-7). (See the Music class)
 
 - `play(ch, snd, [tick], [loop])`<br>
   Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. The playback start position can be specified by `tick` (1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
@@ -587,7 +587,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 
 - `set(x, y, data)`<br>
   Set the image at (`x`, `y`) by a list of strings.<br>
-  e.g. `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  e.g. `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
   Load the image file (png/gif/jpeg) at (`x`, `y`).
@@ -603,7 +603,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 - `width`, `height`<br>
   The width and height of the tilemap
 
-- `refimg`<br>
+- `imgsrc`<br>
   The image bank (0-2) referenced by the tilemap
 
 - `set(x, y, data)`<br>
@@ -638,28 +638,28 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 
 - `set_notes(notes)`<br>
   Set the notes with a string made of 'CDEFGAB'+'#-'+'01234' or 'R'. Case-insensitive and whitespace is ignored.<br>
-  e.g. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
+  e.g. `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
   Set the tones with a string made of 'TSPN'. Case-insensitive and whitespace is ignored.<br>
-  e.g. `pyxel.sound(0).set_tones("TTSS PPPN")`
+  e.g. `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
   Set the volumes with a string made of '01234567'. Case-insensitive and whitespace is ignored.<br>
-  e.g. `pyxel.sound(0).set_volumes("7777 7531")`
+  e.g. `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
   Set the effects with a string made of 'NSVF'. Case-insensitive and whitespace is ignored.<br>
-  e.g. `pyxel.sound(0).set_effects("NFNF NVVS")`
+  e.g. `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Music Class
 
-- `snds_list`<br>
+- `seqs`<br>
   Two-dimensional list of sounds (0-63) with the number of channels
 
-- `set(snds0, snds1, snds2, snds3)`<br>
+- `set(seq0, seq1, seq2, seq3)`<br>
   Set the lists of sound (0-63) of all channels. If an empty list is specified, that channel is not used for playback.<br>
-  e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+  e.g. `pyxel.musics[0].set([0, 1], [2, 3], [4], [])`
 
 ### Advanced APIs
 

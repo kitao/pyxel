@@ -291,8 +291,6 @@ pyxel run PYTHON_SCRIPT_FILE
 python3 PYTHON_SCRIPT_FILE
 ```
 
-（在 Windows 中，使用`python`命令来替代`python3`）
-
 ### 快捷键
 
 以下快捷键可以在 Pyxel 运行时使用：
@@ -305,6 +303,8 @@ python3 PYTHON_SCRIPT_FILE
   重置屏幕录制的开始时间
 - `Alt(Option)+3`<br>
   保存屏幕录制动图到桌面（最多 10 秒）
+- `Alt(Option)+9`<br>
+  切换屏幕模式 (Crisp, Smooth, Retro)
 - `Alt(Option)+0`<br>
   切换性能监控（fps，更新时间，画面绘制时间）
 - `Alt(Option)+Enter`<br>
@@ -425,8 +425,8 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 
 ### 源文件
 
-- `load(filename, [image], [tilemap], [sound], [music])`<br>
-  加载源文件(.pyxres)。如果某文件类型(`image/tilemap/sound/music`)被指定为`False`，则源文件中对应类型不会加载。如果在与资源文件相同的位置存在一个同名的调色板文件（.pyxpal），调色板的显示颜色也将被改变。调色板文件是一个显示颜色的十六进制条目，用换行符分隔。调色板文件也可以用来改变 Pyxel Editor 中显示的颜色。
+- `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
+  加载源文件(.pyxres)。如果选项为`True`，则不会加载资源。如果在资源文件的同一位置存在同名的调色板文件(.pyxpal)，调色板的显示颜色也将改变。调色板文件是显示颜色的十六进制条目 (如 `1100FF`)，以换行分隔。调色板文件也可用于更改 Pyxel 编辑器中显示的颜色。
 
 ### 输入
 
@@ -454,12 +454,12 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   展示调色板可以显示的颜色列表。颜色以 24 位数值格式进行展示。使用`colors.from_list`和`colors.to_list`直接指定货检索 Python 列表。<br>
   示例：`old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
-- `image(img)`<br>
-  直接操作图像库`img` (0-2)。（参考前文 Image 类）<br>
-  示例：`pyxel.image(0).load(0, 0, "title.png")`
+- `images`<br>
+  图像库列表 (0-2)。（参考前文 Image 类）<br>
+  示例：`pyxel.images[0].load(0, 0, "title.png")`
 
-- `tilemap(tm)`<br>
-  操作瓦片地图`tm`(0-7)（参考前文 Tilemap 类）
+- `tilemaps`<br>
+  瓦片贴图列表 (0-7)。（参考前文 Tilemap 类）
 
 - `clip(x, y, w, h)`<br>
   设置画面绘制区域为从(`x`, `y`)开始的宽度`w`、高度为`h`的区域。`clip()`可以将绘制区域重置为全屏。
@@ -524,12 +524,12 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 
 ### 声音
 
-- `sound(snd)`<br>
-  操作音频`snd`(0-63)。（参考 Sound 类）<br>
-  示例：`pyxel.sound(0).speed = 60`
+- `sounds`<br>
+  声音列表 (0-63)。（参考 Sound 类）<br>
+  示例：`pyxel.sounds[0].speed = 60`
 
-- `music(msc)`<br>
-  操作音乐`msc`(0-7)（参考 Music 类）
+- `musics`<br>
+  音乐列表 (0-7)。（参考 Music 类）
 
 - `play(ch, snd, [tick], [loop])`<br>
   播放通道`ch` (0-3)中的声音`snd` (0-63)。如果声音`snd`是一个列表，则按顺序播放。播放开始位置可以通过 `tick` (1 tick = 1/120 秒)指定。如果`loop`被指定为`True`则循环播放。
@@ -594,7 +594,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 
 - `set(x, y, data)`<br>
   使用字符串列表设置坐标(`x`, `y`)处的图像。<br>
-  示例：`pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  示例：`pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
   在(`x`, `y`)处加载图像文件(png/gif/jpeg)。
@@ -604,7 +604,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 - `width`, `height`<br>
   瓦片地图(tilemap)的宽和高。
 
-- `refimg`<br>
+- `imgsrc`<br>
   被瓦片地图 tilemap 引用的图像库(0-2)。
 
 - `set(x, y, data)`<br>
@@ -639,28 +639,28 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 
 - `set_notes(notes)`<br>
   使用由'CDEFGAB'+'#-'+'01234'或'R'组成的字符串设置音符。大小写不敏感，且空格会被忽略。<br>
-  示例：`pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
+  示例：`pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
   使用由'TSPN'组成的字符串设置音色。大小写不敏感，且空格会被忽略。<br>
-  示例：`pyxel.sound(0).set_tones("TTSS PPPN")`
+  示例：`pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
   使用由'01234567'组成的字符串设置音量。大小写不敏感，且空格会被忽略。<br>
-  示例：`pyxel.sound(0).set_volumes("7777 7531")`
+  示例：`pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
   使用由'NSVF'组成的字符串设置音效。大小写不敏感，且空格会被忽略。<br>
-  示例：`pyxel.sound(0).set_effects("NFNF NVVS")`
+  示例：`pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Music 类
 
-- `snds_list`<br>
+- `seqs`<br>
   二维的声音列表(0-63)，带有通道的数量。
 
-- `set(snds0, snds1, snds2, snds3)`<br>
+- `set(seq0, seq1, seq2, seq3)`<br>
   设置所有通道的声音(0-63)列表。如果指定了空列表，则对应通道不会用来播放。<br>
-  示例：`pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+  示例：`pyxel.musics[0].set([0, 1], [2, 3], [4], [])`
 
 ### 高级 APIs
 
