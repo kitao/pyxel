@@ -304,7 +304,7 @@ I controlli seguenti speciali possono essere eseguite mentre viene eseguita un'a
 - `Alt(Option)+3`<br>
   Salva la registrazione schermo sul desktop (fino a 10 secondi)
 - `Alt(Option)+9`<br>
-  Passare da una modalità all'altra (Crisp, Smooth, Retro)
+  Passare da una modalità all'altra (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
   Alterna il monitor di performance (fps, tempo d'aggiornamento, e tempo di disegno)
 - `Alt(Option)+Enter`<br>

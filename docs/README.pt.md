@@ -304,7 +304,7 @@ Os seguintes controles especiais podem ser executados quando uma aplicação Pyx
 - `Alt(Option)+3`<br>
   Salva um vídeo de captura de tela na área de trabalho (até 10 segundos)
 - `Alt(Option)+9`<br>
-  Alternar entre os modos de ecrã (Crisp, Smooth, Retro)
+  Alternar entre os modos de ecrã (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
   Ativa/desativa o monitor de performance (fps, tempo de update e tempo de draw)
 - `Alt(Option)+Enter`<br>
