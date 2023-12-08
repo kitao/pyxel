@@ -326,9 +326,9 @@ Nach dem Start des Pyxel-Editors kann die Datei durch Drag-and-Drop einer andere
 
 Die erstellte Ressourcendatei kann mit der Funktion `load` geladen werden.
 
-Der Pyxel Editor hat die folgenden Bearbeitungsmodi
+Der Pyxel Editor hat die folgenden Bearbeitungsmodi.
 
-**Bildeditor:**
+**Bildeditor**
 
 Der Modus zum Editieren von Image Banks.
 
@@ -338,7 +338,7 @@ Der Modus zum Editieren von Image Banks.
 
 Per Drag-and-Drop einer Bild-Datei (png/gif/jpeg) auf das Bildeditor-Fenster kann das Bild in die aktuell ausgewählte Image-Bank geladen werden.
 
-**Tilemap-Editor:**
+**Tilemap-Editor**
 
 Der Modus zum editieren von Tilemaps in welcher Bilder aus der Image Bank in einem Tile-Pattern arrangiert sind.
 
@@ -346,7 +346,7 @@ Der Modus zum editieren von Tilemaps in welcher Bilder aus der Image Bank in ein
 <img src="images/tilemap_editor.gif">
 </a>
 
-**Sound-Editor:**
+**Sound-Editor**
 
 Der Modus um Sounds zu editieren.
 
@@ -354,7 +354,7 @@ Der Modus um Sounds zu editieren.
 <img src="images/sound_editor.gif">
 </a>
 
-**Musik-Editor:**
+**Musik-Editor**
 
 Der Modus um Sounds in Wiedergabereihenfolge zu Musik zusammenzufügen.
 
@@ -438,13 +438,13 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Return `True` falls `key` gedrückt ist, sonst return `False`. ([Liste der Schlüsseldefinitionen](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
-  Return `True` falls `key` gedrückt ist, sonst return `False`. Wenn `hold` und `repeat` angegeben sind, wird `True` am `repeat` Bildintervall returned, falls `key` für mehr als `hold` Frames gedrückt ist
+  Return `True` falls `key` gedrückt ist, sonst return `False`. Wenn `hold` und `repeat` angegeben sind, wird `True` am `repeat` Bildintervall returned, falls `key` für mehr als `hold` Frames gedrückt ist.
 
 - `btnr(key)`<br>
   Return `True` falls `key` in dem Frame losgelassen wird, sonst return `False`
 
 - `mouse(visible)`<br>
-  Falls `visible` `True` ist, zeige den Mauscursor. Falls `False`, verstecke ihn. Obwohl man den Cursor dann nicht sehen kann, wird seine Position geupdated
+  Falls `visible` `True` ist, zeige den Mauscursor. Falls `False`, verstecke ihn. Obwohl man den Cursor dann nicht sehen kann, wird seine Position geupdated.
 
 ### Grafiken
 
@@ -466,34 +466,34 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
 
 - `pal(col1, col2)`<br>
-  Ersetze Farbe `col1` mit `col2` beim zeichnen. Mit `pal()` lässt sich die Pallete auf die initiale zurücksetzen
+  Ersetze Farbe `col1` mit `col2` beim zeichnen. Mit `pal()` lässt sich die Pallete auf die initiale zurücksetzen.
 
 - `dither(alpha)`<br>
   Wendet Dithering (Pseudo-Transparenz) beim Zeichnen an. Setzen Sie `alpha` in den Bereich 0.0-1.0, wobei 0.0 transparent und 1.0 undurchsichtig ist.
 
 - `cls(col)`<br>
-  Das Fenster mit der Farbe `col` füllen
+  Das Fenster mit der Farbe `col` füllen.
 
 - `pget(x, y)`<br>
   Erhalte den Pixel an der Position (`x`, `y`).
 
 - `pset(x, y, col)`<br>
-  Zeichne einen Pixel der Farbe `col` an der Position (`x`, `y`)
+  Zeichne einen Pixel der Farbe `col` an der Position (`x`, `y`).
 
 - `line(x1, y1, x2, y2, col)`<br>
-  Zeichne eine Linie der Farbe `col` von (`x1`, `y1`) bis (`x2`, `y2`)
+  Zeichne eine Linie der Farbe `col` von (`x1`, `y1`) bis (`x2`, `y2`).
 
 - `rect(x, y, w, h, col)`<br>
-  Zeichne ein Rechteck der Breite `w`, Höhe `h` und Farbe `col` ausgehend von (`x`, `y`)
+  Zeichne ein Rechteck der Breite `w`, Höhe `h` und Farbe `col` ausgehend von (`x`, `y`).
 
 - `rectb(x, y, w, h, col)`<br>
-  Zeichne die Umrisse eines Rechtecks der Breite `w`, Höhe `h` und Farbe `col` ausgehend von (`x`, `y`)
+  Zeichne die Umrisse eines Rechtecks der Breite `w`, Höhe `h` und Farbe `col` ausgehend von (`x`, `y`).
 
 - `circ(x, y, r, col)`<br>
-  Zeichne einen Kreis mit dem Radius `r` und Farbe `col` an der Stelle (`x`, `y`)
+  Zeichne einen Kreis mit dem Radius `r` und Farbe `col` an der Stelle (`x`, `y`).
 
 - `circb(x, y, r, col)`<br>
-  Zeichne die Umrisse eines Kreises mit dem Radius `r` und Farbe `col` an der Stelle (`x`, `y`)
+  Zeichne die Umrisse eines Kreises mit dem Radius `r` und Farbe `col` an der Stelle (`x`, `y`).
 
 - `elli(x, y, w, h, col)`<br>
   Zeichne eine Ellipse mit der Breite `w`, der Höhe `h` und der Farbe `col` von (`x`, `y`).
@@ -511,7 +511,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Zeichne eine Ellipse mit der Breite `w`, der Höhe `h` und der Farbe `col` von (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Kopiere eine Region der Größe (`w`, `h`) von (`u`, `v`) des Image Banks `img`(0-2) zur Position (`x`, `y`). Falls `w` und/oder `h` negativ ist, wird der Ausschnitt horizontal und/oder vertical gespiegelt. Falls `colkey` angegeben ist, wird der Auschnitt als transparentes Farbe behandelt
+  Kopiere eine Region der Größe (`w`, `h`) von (`u`, `v`) des Image Banks `img`(0-2) zur Position (`x`, `y`). Falls `w` und/oder `h` negativ ist, wird der Ausschnitt horizontal und/oder vertical gespiegelt. Falls `colkey` angegeben ist, wird der Auschnitt als transparentes Farbe behandelt.
 
 <img src="images/blt_figure.png">
 
@@ -521,7 +521,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 <img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
-  Zeichne einen String `s` der Farbe `col` bei (`x`, `y`)
+  Zeichne einen String `s` der Farbe `col` bei (`x`, `y`).
 
 ### Audio
 
@@ -567,7 +567,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `atan2(y, x)`<br>
   Gibt den Arkustangens von `y`/`x` in Grad zurück.
 
-- `rseed(seed: int)`<br>
+- `rseed(seed)`<br>
   Setzt den Seed des Zufallszahlengenerators.
 
 - `rndi(a, b)`<br>
@@ -587,11 +587,8 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `width`, `height`<br>
   Die Breite und Höhe des Bildes
 
-- `data`<br>
-  Die Daten des Bildes (256x256 zweidimensionale list)
-
 - `get(x, y)`<br>
-  Erhalte die Daten des Bildes an der Position (`x`, `y`)
+  Erhalte die Daten des Bildes an der Position (`x`, `y`).
 
 - `set(x, y, data)`<br>
   Setzen des Bildes an (`x`, `y`) durch eine Liste von strings.<br>
@@ -657,7 +654,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 ### Musik Klasse
 
 - `seqs`<br>
-  Zweidimensionale Liste von Klängen (0-63) mit der Anzahl der Kanäle.
+  Zweidimensionale Liste von Klängen (0-63) mit der Anzahl der Kanäle
 
 - `set(seq0, seq1, seq2, seq3)`<br>
   Setzt die Tonlisten (0-63) für alle Kanäle fest. Wenn eine leere Liste angegeben wird, wird dieser Kanal nicht für die Wiedergabe verwendet.<br>

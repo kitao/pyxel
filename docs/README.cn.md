@@ -11,7 +11,7 @@
 
 **Pyxel**是一个 python 的经典像素风游戏制作引擎。
 
-由于像素风游戏的机制非常简单（如：最多只能显示 16 种颜色、播放 4 种声音等），现在你也可以轻松地享受这种游戏的制作过程。
+由于像素风游戏的机制非常简单 (如：最多只能显示 16 种颜色、播放 4 种声音等)，现在你也可以轻松地享受这种游戏的制作过程。
 
 <img src="images/pyxel_message.png" width="480">
 
@@ -64,7 +64,7 @@ Pyxel 是开源的，大家可以免费使用。现在就让我们一起用 Pyxe
 
 ### Windows
 
-在安装[Python3](https://www.python.org/)（3.7 或更高版本）之后，执行以下命令：
+在安装[Python3](https://www.python.org/) (3.7 或更高版本) 之后，执行以下命令：
 
 ```sh
 pip install -U pyxel
@@ -74,7 +74,7 @@ pip install -U pyxel
 
 ### Mac
 
-在安装[Python3](https://www.python.org/)（3.7 或更高版本）之后，执行以下命令：
+在安装[Python3](https://www.python.org/) (3.7 或更高版本) 之后，执行以下命令：
 
 ```sh
 python3 -m pip install -U pyxel
@@ -84,7 +84,7 @@ python3 -m pip install -U pyxel
 
 ### Linux
 
-安装 SDL2（Ubuntu 下包名为：`libsdl2-dev`），[Python3](https://www.python.org/)（3.7 或更高版本），以及`python3-pip`这三个包之后，执行以下命令：
+安装 SDL2 (Ubuntu 下包名为：`libsdl2-dev`)，[Python3](https://www.python.org/) (3.7 或更高版本)，以及`python3-pip`这三个包之后，执行以下命令：
 
 ```sh
 sudo pip3 install -U pyxel
@@ -189,7 +189,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>具有 flip 功能的动画（仅在非网络平台上）</td>
+<td>具有 flip 功能的动画 (仅在非网络平台上)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
 </tr>
@@ -302,11 +302,11 @@ python3 PYTHON_SCRIPT_FILE
 - `Alt(Option)+2`<br>
   重置屏幕录制的开始时间
 - `Alt(Option)+3`<br>
-  保存屏幕录制动图到桌面（最多 10 秒）
+  保存屏幕录制动图到桌面 (最多 10 秒)
 - `Alt(Option)+9`<br>
   切换屏幕模式 (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
-  切换性能监控（fps，更新时间，画面绘制时间）
+  切换性能监控 (fps，更新时间，画面绘制时间)
 - `Alt(Option)+Enter`<br>
   切换全屏
 
@@ -320,17 +320,17 @@ Pyxel 编辑器使用以下命令启动：
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-若指定 Pyxel 源文件（.pyxres）存在，则加载文件，若不存在，则以指定文件名新建文件。
+若指定 Pyxel 源文件 (.pyxres) 存在，则加载文件，若不存在，则以指定文件名新建文件。
 
 若未指定源文件，则命名为`my_resource.pyxres`。
 
-Pyxel 编辑器启动后，可以拖放其他源文件进行切换。如果源文件被拖拽并在按下`Ctrl(Cmd)`键时释放，则只有当前正在编译的类型（图像、瓦片地图、音效、音乐）会被加载。这个操作允许将多种类型的源文件合并入一个源文件中。
+Pyxel 编辑器启动后，可以拖放其他源文件进行切换。如果源文件被拖拽并在按下`Ctrl(Cmd)`键时释放，则只有当前正在编译的类型 (图像、瓦片地图、音效、音乐) 会被加载。这个操作允许将多种类型的源文件合并入一个源文件中。
 
 创建的源文件可以使用`load`函数加载。
 
 Pyxel 编辑器有以下编辑模式。
 
-**图像编辑器：**
+**图像编辑器**
 
 此模式用来编辑图像库。
 
@@ -340,7 +340,7 @@ Pyxel 编辑器有以下编辑模式。
 
 通过将图像文件拖放进图像编辑器，图像可以加载进当前的图像库中。
 
-**瓦片地图编辑器：**
+**瓦片地图编辑器**
 
 此模式用来编辑瓦片地图，其中图像库的图像以瓦片的样式排列。
 
@@ -348,7 +348,7 @@ Pyxel 编辑器有以下编辑模式。
 <img src="images/tilemap_editor.gif">
 </a>
 
-**音频编辑器：**
+**音频编辑器**
 
 此模式用来编辑音频。
 
@@ -356,7 +356,7 @@ Pyxel 编辑器有以下编辑模式。
 <img src="images/sound_editor.gif">
 </a>
 
-**音乐编辑器：**
+**音乐编辑器**
 
 此模式用来编辑将录音有序编排形成的音乐。
 
@@ -379,9 +379,9 @@ Pyxel 声音也可以通过以下方法创建：
 
 ### 如何发布应用
 
-Pyxel 支持跨平台的应用文件格式（Pyxel 应用文件）。
+Pyxel 支持跨平台的应用文件格式 (Pyxel 应用文件)。
 
-使用以下命令创建 Pyxel 应用文件（.pyxapp）：
+使用以下命令创建 Pyxel 应用文件 (.pyxapp)：
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -408,7 +408,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   目前为止，经过的总帧数
 
 - `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
-  使用屏幕尺寸（`width`，`height`）初始化 Pyxel 应用。以下属性为可选配置项：窗口标题`title`，帧率`fps`，应用退出按键`quit_key`，用 "display_scale "来决定显示的比例，用 "capture_scale "来决定屏幕捕捉的比例，以及屏幕捕获的最长记录时间`capture_sec`。<br>
+  使用屏幕尺寸 (`width`，`height`) 初始化 Pyxel 应用。以下属性为可选配置项：窗口标题`title`，帧率`fps`，应用退出按键`quit_key`，用 "display_scale "来决定显示的比例，用 "capture_scale "来决定屏幕捕捉的比例，以及屏幕捕获的最长记录时间`capture_sec`。<br>
   示例：`pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
@@ -455,11 +455,11 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   示例：`old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  图像库列表 (0-2)。（参考前文 Image 类）<br>
+  图像库列表 (0-2)。 (参考前文 Image 类)<br>
   示例：`pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  瓦片贴图列表 (0-7)。（参考前文 Tilemap 类）
+  瓦片贴图列表 (0-7)。 (参考前文 Tilemap 类)
 
 - `clip(x, y, w, h)`<br>
   设置画面绘制区域为从 (`x`, `y`) 开始的宽度`w`、高度为`h`的区域。`clip()`可以将绘制区域重置为全屏。
@@ -518,7 +518,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-  从瓦片图`tm`（0-7）的（`u`，`v`）复制大小为（`w`，`h`）的区域到（`x`，`y`）。如果为`w`和/或`h`设置了负值，它将在水平和/或垂直方向上反转。如果指定了 `colkey`，将被视为透明色。瓦片的大小是 8x8 像素，以`(tile_x, tile_y)`的元组形式存储在瓦片图中。
+  从瓦片图`tm` (0-7) 的 (`u`，`v`) 复制大小为 (`w`，`h`) 的区域到 (`x`，`y`)。如果为`w`和/或`h`设置了负值，它将在水平和/或垂直方向上反转。如果指定了 `colkey`，将被视为透明色。瓦片的大小是 8x8 像素，以`(tile_x, tile_y)`的元组形式存储在瓦片图中。
 
 <img src="images/bltm_figure.png">
 
@@ -528,11 +528,11 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 ### 声音
 
 - `sounds`<br>
-  声音列表 (0-63)。（参考 Sound 类）<br>
+  声音列表 (0-63)。 (参考 Sound 类)<br>
   示例：`pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  音乐列表 (0-7)。（参考 Music 类）
+  音乐列表 (0-7)。 (参考 Music 类)
 
 - `play(ch, snd, [tick], [loop])`<br>
   播放通道`ch`(0-3) 中的声音`snd`(0-63)。如果声音`snd`是一个列表，则按顺序播放。播放开始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果`loop`被指定为`True`则循环播放。
@@ -569,7 +569,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 - `atan2(y, x)`<br>
   返回`y`/`x`的正切，单位是度。
 
-- `rseed(seed: int)`<br>
+- `rseed(seed)`<br>
   设置随机数发生器的种子。
 
 - `rndi(a, b)`<br>
@@ -587,10 +587,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 ### Image 类
 
 - `width`，`height`<br>
-  图像的宽和高。
-
-- `data`<br>
-  图像中的数据（256x256 的二维列表）。
+  图像的宽和高
 
 - `get(x, y)`<br>
   获取图像中 (`x`, `y`) 位置的值。
@@ -605,10 +602,10 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 ### Tilemap 类
 
 - `width`，`height`<br>
-  瓦片地图的宽和高。
+  瓦片地图的宽和高
 
 - `imgsrc`<br>
-  被瓦片地图 tilemap 引用的图像库(0-2)。
+  被瓦片地图 tilemap 引用的图像库 (0-2)
 
 - `set(x, y, data)`<br>
   使用字符串列表在坐标 (`x`, `y`) 处设置瓦片地图。<br>
@@ -623,7 +620,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 ### Sound 类
 
 - `notes`<br>
-  音符列表 (0-127)，数字越高，音调越高。数字达到 33 时，音调就达到'A2'(440Hz)。其余为-1.
+  音符列表 (0-127)，数字越高，音调越高。数字达到 33 时，音调就达到'A2'(440Hz)。其余为-1。
 
 - `tones`<br>
   音色列表 (0:三角波 / 1:方波 / 2:脉冲 / 3:噪声)
@@ -659,7 +656,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 ### Music 类
 
 - `seqs`<br>
-  二维的声音列表 (0-63)，带有通道的数量。
+  二维的声音列表 (0-63)，带有通道的数量
 
 - `set(seq0, seq1, seq2, seq3)`<br>
   设置所有通道的声音 (0-63) 列表。如果指定了空列表，则对应通道不会用来播放。<br>
