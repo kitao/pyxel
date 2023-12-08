@@ -304,7 +304,7 @@ python3 PYTHON_SCRIPT_FILE
 - `Alt(Option)+3`<br>
   保存屏幕录制动图到桌面（最多 10 秒）
 - `Alt(Option)+9`<br>
-  切换屏幕模式 (Crisp, Smooth, Retro)
+  切换屏幕模式 (Crisp，Smooth，Retro)
 - `Alt(Option)+0`<br>
   切换性能监控（fps，更新时间，画面绘制时间）
 - `Alt(Option)+Enter`<br>
@@ -340,7 +340,7 @@ Pyxel 编辑器有以下编辑模式。
 
 通过将图像文件拖放进图像编辑器，图像可以加载进当前的图像库中。
 
-**瓦片地图(Tilemap)编辑器：**
+**瓦片地图编辑器：**
 
 此模式用来编辑瓦片地图，其中图像库的图像以瓦片的样式排列。
 
@@ -401,14 +401,14 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 
 ### 系统
 
-- `width`, `height`<br>
+- `width`，`height`<br>
   画面的宽和高
 
 - `frame_count`<br>
   目前为止，经过的总帧数
 
 - `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
-  使用屏幕尺寸（`width`，`height`）初始化 Pyxel 应用。以下属性为可选配置项：窗口标题`title`，帧率`fps`，应用退出按键`quit_key`, 用 "display_scale "来决定显示的比例, 用 "capture_scale "来决定屏幕捕捉的比例，以及屏幕捕获的最长记录时间`capture_sec`。<br>
+  使用屏幕尺寸（`width`，`height`）初始化 Pyxel 应用。以下属性为可选配置项：窗口标题`title`，帧率`fps`，应用退出按键`quit_key`，用 "display_scale "来决定显示的比例，用 "capture_scale "来决定屏幕捕捉的比例，以及屏幕捕获的最长记录时间`capture_sec`。<br>
   示例：`pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
@@ -426,18 +426,18 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 ### 源文件
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
-  加载源文件(.pyxres)。如果选项为`True`，则不会加载资源。如果在资源文件的同一位置存在同名的调色板文件(.pyxpal)，调色板的显示颜色也将改变。调色板文件是显示颜色的十六进制条目 (如 `1100FF`)，以换行分隔。调色板文件也可用于更改 Pyxel 编辑器中显示的颜色。
+  加载源文件 (.pyxres)。如果选项为`True`，则不会加载资源。如果在资源文件的同一位置存在同名的调色板文件 (.pyxpal)，调色板的显示颜色也将改变。调色板文件是显示颜色的十六进制条目 (如 `1100FF`)，以换行分隔。调色板文件也可用于更改 Pyxel 编辑器中显示的颜色。
 
 ### 输入
 
-- `mouse_x`, `mouse_y`<br>
+- `mouse_x`，`mouse_y`<br>
   当前鼠标指针的位置。
 
 - `mouse_wheel`<br>
   当前鼠标滚轮的值。
 
 - `btn(key)`<br>
-  如果`key`被按下则返回`True`，否则返回`False`([按键定义列表](../python/pyxel/__init__.pyi))。
+  如果`key`被按下则返回`True`，否则返回`False`。([按键定义列表](../python/pyxel/__init__.pyi))。
 
 - `btnp(key, [hold], [repeat])`<br>
   如果`key`被按下则返回`True`。若设置了`hold`和`repeat`参数，则当`key`被按下持续`hold`帧时，在`repeat`帧间隙返回`True`。
@@ -462,7 +462,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   瓦片贴图列表 (0-7)。（参考前文 Tilemap 类）
 
 - `clip(x, y, w, h)`<br>
-  设置画面绘制区域为从(`x`, `y`)开始的宽度`w`、高度为`h`的区域。`clip()`可以将绘制区域重置为全屏。
+  设置画面绘制区域为从 (`x`, `y`) 开始的宽度`w`、高度为`h`的区域。`clip()`可以将绘制区域重置为全屏。
 
 - `camera(x, y)`<br>
   Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
@@ -477,43 +477,43 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   用`col`颜色清空画面。
 
 - `pget(x, y)`<br>
-  获取(`x`, `y`)处的像素颜色。
+  获取 (`x`, `y`) 处的像素颜色。
 
 - `pset(x, y, col)`<br>
-  用`col`颜色在(`x`, `y`)处绘制一个像素点。
+  用`col`颜色在 (`x`, `y`) 处绘制一个像素点。
 
 - `line(x1, y1, x2, y2, col)`<br>
-  用`col`颜色画一条从(`x1`, `y1`)到(`x2`, `y2`)的直线。
+  用`col`颜色画一条从 (`x1`, `y1`) 到 (`x2`, `y2`) 的直线。
 
 - `rect(x, y, w, h, col)`<br>
-  用`col`颜色绘制一个从(`x`, `y`)开始的宽为`w`、高为`h`的矩形。
+  用`col`颜色绘制一个从 (`x`, `y`) 开始的宽为`w`、高为`h`的矩形。
 
 - `rectb(x, y, w, h, col)`<br>
-  用`col`颜色绘制从(`x`, `y`)开始的宽为`w`、高为`h`的矩形边框。
+  用`col`颜色绘制从 (`x`, `y`) 开始的宽为`w`、高为`h`的矩形边框。
 
 - `circ(x, y, r, col)`<br>
-  用`col`颜色绘制圆心为(`x`, `y`)，半径为`r`的圆形。
+  用`col`颜色绘制圆心为 (`x`, `y`)，半径为`r`的圆形。
 
 - `circb(x, y, r, col)`<br>
-  用`col`颜色绘制圆心为(`x`, `y`)，半径为`r`的圆形边框。
+  用`col`颜色绘制圆心为 (`x`, `y`)，半径为`r`的圆形边框。
 
 - `elli(x, y, w, h, col)`<br>
-  从(`x`, `y`)画一个宽度`w`, 高度`h`, 颜色`col`的椭圆。
+  从 (`x`, `y`) 画一个宽度`w`，高度`h`，颜色`col`的椭圆。
 
 - `ellib(x, y, w, h, col)`<br>
-  从(`x`, `y`)画出一个宽`w`, 高`h`, 颜色`col`的椭圆轮廓。
+  从 (`x`, `y`) 画出一个宽`w`，高`h`，颜色`col`的椭圆轮廓。
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
-  用`col`颜色绘制顶点分别为(`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`)的三角形。
+  用`col`颜色绘制顶点分别为 (`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`) 的三角形。
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
-  用`col`颜色绘制顶点分别为(`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`)的三角形边框。
+  用`col`颜色绘制顶点分别为 (`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`) 的三角形边框。
 
 - `fill(x, y, col)`<br>
-  从(`x`, `y`)画一个宽度`w`, 高度`h`, 颜色`col`的椭圆。
+  从 (`x`, `y`) 画一个宽度`w`，高度`h`，颜色`col`的椭圆。
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  将尺寸为(`w`, `h`)的区域从图像库的(`u`, `v`)复制到(`x`, `y`)。若`w`或`h`为负值，则在水平或垂直方向上翻转。若指定了`colkey`的值，则视作透明颜色。
+  将尺寸为 (`w`, `h`) 的区域从图像库的 (`u`, `v`) 复制到 (`x`, `y`)。若`w`或`h`为负值，则在水平或垂直方向上翻转。若指定了`colkey`的值，则视作透明颜色。
 
 <img src="images/blt_figure.png">
 
@@ -523,7 +523,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 <img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
-  用`col`颜色在(`x`, `y`)绘制字符串`s`。
+  用`col`颜色在 (`x`, `y`) 绘制字符串`s`。
 
 ### 声音
 
@@ -535,16 +535,16 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   音乐列表 (0-7)。（参考 Music 类）
 
 - `play(ch, snd, [tick], [loop])`<br>
-  播放通道`ch` (0-3)中的声音`snd` (0-63)。如果声音`snd`是一个列表，则按顺序播放。播放开始位置可以通过 `tick` (1 tick = 1/120 秒)指定。如果`loop`被指定为`True`则循环播放。
+  播放通道`ch`(0-3) 中的声音`snd`(0-63)。如果声音`snd`是一个列表，则按顺序播放。播放开始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果`loop`被指定为`True`则循环播放。
 
 - `playm(msc, [tick], [loop])`<br>
-  播放音乐`msc` (0-7)。播放开始位置可以通过 `tick` (1 tick = 1/120 秒)指定。如果`loop`被指定为`True`则循环播放。
+  播放音乐`msc`(0-7)。播放开始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果`loop`被指定为`True`则循环播放。
 
 - `stop([ch])`<br>
-  停止指定通道`ch` (0-3)的重播。`stop()`可以停止所有通道的播放。
+  停止指定通道`ch`(0-3) 的重播。`stop()`可以停止所有通道的播放。
 
 - `play_pos(ch)`<br>
-  获取通道`ch` (0-3)中音频重播位置`(sound no, note no)`。若重播被停止则返回`None`。
+  获取通道`ch`(0-3) 中音频重播位置`(sound no, note no)`。若重播被停止则返回`None`。
 
 ### 数学
 
@@ -586,53 +586,53 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 
 ### Image 类
 
-- `width`, `height`<br>
+- `width`，`height`<br>
   图像的宽和高。
 
 - `data`<br>
   图像中的数据（256x256 的二维列表）。
 
 - `get(x, y)`<br>
-  获取图像中(`x`, `y`)位置的值。
+  获取图像中 (`x`, `y`) 位置的值。
 
 - `set(x, y, data)`<br>
-  使用字符串列表设置坐标(`x`, `y`)处的图像。<br>
+  使用字符串列表设置坐标 (`x`, `y`) 处的图像。<br>
   示例：`pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-  在(`x`, `y`)处加载图像文件(png/gif/jpeg)。
+  在 (`x`, `y`) 处加载图像文件 (png/gif/jpeg)。
 
 ### Tilemap 类
 
-- `width`, `height`<br>
-  瓦片地图(tilemap)的宽和高。
+- `width`，`height`<br>
+  瓦片地图的宽和高。
 
 - `imgsrc`<br>
   被瓦片地图 tilemap 引用的图像库(0-2)。
 
 - `set(x, y, data)`<br>
-  使用字符串列表在坐标(`x`, `y`)处设置瓦片地图。<br>
+  使用字符串列表在坐标 (`x`, `y`) 处设置瓦片地图。<br>
   示例：`pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `pget(x, y)`<br>
-  得到(`x`, `y`)处的瓦片。瓦片数据为元组`(tile_x, tile_y)`。
+  得到 (`x`, `y`) 处的瓦片。瓦片数据为元组`(tile_x, tile_y)`。
 
 - `pset(x, y, tile)`<br>
-  在(`x`, `y`)处画出瓦片`tile`。瓦片数据为元组`(tile_x, tile_y)`。
+  在 (`x`, `y`) 处画出瓦片`tile`。瓦片数据为元组`(tile_x, tile_y)`。
 
 ### Sound 类
 
 - `notes`<br>
-  音符列表(0-127)，数字越高，音调越高。数字达到 33 时，音调就达到'A2'(440Hz)。其余为-1.
+  音符列表 (0-127)，数字越高，音调越高。数字达到 33 时，音调就达到'A2'(440Hz)。其余为-1.
 
 - `tones`<br>
-  音色列表(0:三角波 / 1:方波 / 2:脉冲 / 3:噪声)
+  音色列表 (0:三角波 / 1:方波 / 2:脉冲 / 3:噪声)
 
 - `volumes`<br>
-  音量列表(0-7)
+  音量列表 (0-7)
 
 - `effects`<br>
-  音效列表(0:无 / 1:滑动 / 2:颤音 / 3:淡出)
+  音效列表 (0:无 / 1:滑动 / 2:颤音 / 3:淡出)
 
 - `speed`<br>
   播放速度。1 为最快，数字越大，速度越慢。数字 120 时，每个音符长度为 1 秒。
@@ -659,10 +659,10 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 ### Music 类
 
 - `seqs`<br>
-  二维的声音列表(0-63)，带有通道的数量。
+  二维的声音列表 (0-63)，带有通道的数量。
 
 - `set(seq0, seq1, seq2, seq3)`<br>
-  设置所有通道的声音(0-63)列表。如果指定了空列表，则对应通道不会用来播放。<br>
+  设置所有通道的声音 (0-63) 列表。如果指定了空列表，则对应通道不会用来播放。<br>
   示例：`pyxel.musics[0].set([0, 1], [2, 3], [4], [])`
 
 ### 高级 APIs
@@ -683,7 +683,7 @@ Pyxel 还有一些“高级 API”，出于“可能令用户感到迷惑”、�
 
 ### Submitting Pull Request
 
-可以通过 pull requests(PRs)形式来提交补丁或修复。请确认你的 pull request 对应的 issue 地址在 issue tracker 中依然是 open 状态。
+可以通过 pull requests (PRs) 形式来提交补丁或修复。请确认你的 pull request 对应的 issue 地址在 issue tracker 中依然是 open 状态。
 
 一旦提交 pull request，则默认同意在[MIT License](../LICENSE)的许可下发布。
 

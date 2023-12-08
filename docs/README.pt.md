@@ -436,7 +436,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   O valor atual da roda de rolagem do mouse
 
 - `btn(key)`<br>
-  Retorna `True` se `key` é pressionada, caso contrário retorna `False` ([lista de definições de teclas](../python/pyxel/__init__.pyi))
+  Retorna `True` se `key` é pressionada, caso contrário retorna `False`. ([lista de definições de teclas](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
   Retorna `True` se `key` for pressionada naquele quadro, caso contrário retorna `False`. Quando `hold` e `repeat` são especificados, `True` será retornado durante o intervalo de quadros `repeat`, no qual `key` estiver pressionada por mais que `hold` quadros
@@ -512,12 +512,12 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Desenhar uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img` (0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente
+  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img`(0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente
 
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do tilemap `tm` (0-7) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente. O tamanho de um tile é de 8x8 pixels e é armazenado em um tilemap como uma tupla de `(tile_x, tile_y)`.
+  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do tilemap `tm`(0-7) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente. O tamanho de um tile é de 8x8 pixels e é armazenado em um tilemap como uma tupla de `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 
@@ -534,16 +534,16 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Lista das músicas (0-7). (ver a classe de Musica)
 
 - `play(ch, snd, [tick], [loop])`<br>
-  Reproduz o som `snd` (0-63) no canal `ch` (0-3). Se `snd` é uma lista, os sons serão reproduzidos em ordem. A posição inicial da reprodução pode ser especificada por `tick` (1 tick = 1/120 segundos). Se `True` for especificado para `loop`, a reprodução será feita em laço.
+  Reproduz o som `snd`(0-63) no canal `ch`(0-3). Se `snd` é uma lista, os sons serão reproduzidos em ordem. A posição inicial da reprodução pode ser especificada por `tick`(1 tick = 1/120 segundos). Se `True` for especificado para `loop`, a reprodução será feita em laço.
 
 - `playm(msc, [tick], [loop])`<br>
-  Reproduz a música `msc` (0-7). A posição inicial da reprodução pode ser especificada por `tick` (1 tick = 1/120 segundos). Se `True` for especificado para `loop`, a reprodução será feita em laço.
+  Reproduz a música `msc`(0-7). A posição inicial da reprodução pode ser especificada por `tick`(1 tick = 1/120 segundos). Se `True` for especificado para `loop`, a reprodução será feita em laço.
 
 - `stop([ch])`<br>
-  Para a reprodução do canal `ch` (0-3). `stop()` para parar a reprodução de todos os canais.
+  Para a reprodução do canal `ch`(0-3). `stop()` para parar a reprodução de todos os canais.
 
 - `play_pos(ch)`<br>
-  Obtém a posição do canal `ch` (0-3) da reprodução de som como uma tupla de `(sound no, note no)`. Retorna `None` quando a reprodução para.
+  Obtém a posição do canal `ch`(0-3) da reprodução de som como uma tupla de `(sound no, note no)`. Retorna `None` quando a reprodução para.
 
 ### Matemática
 
