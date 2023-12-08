@@ -329,7 +329,7 @@ Dicho archivo de recursos podrá see cargado con la función `load`.
 
 EL Editor de Pyxel tiene los siguientes modos de edición:
 
-**Editor de imágenes:**
+**Editor de imágenes**
 
 El modo para editar el banco de imágenes.
 
@@ -339,15 +339,15 @@ El modo para editar el banco de imágenes.
 
 Arrastrando y soltando un archivo de imagen (png/jpg/gif) en el editor de imágenes, la imagen será cargada en el banco de imágenes seleccionado.
 
-**Editor de mapa / losas:**
+**Editor de mapa / losas**
 
-El modo para editar el mapa de losas o mapa en el que las imágenes en el banco de imágenes están organizados en un patrón de azulejos o baldosas
+El modo para editar el mapa de losas o mapa en el que las imágenes en el banco de imágenes están organizados en un patrón de azulejos o baldosas.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-**Editor de sonido:**
+**Editor de sonido**
 
 El modo para editar el sonido.
 
@@ -355,7 +355,7 @@ El modo para editar el sonido.
 <img src="images/sound_editor.gif">
 </a>
 
-**Editor de música:**
+**Editor de música**
 
 El modo para editar música en el que organiza los sonidos del editor de sonidos para poder reproducirlos.
 
@@ -539,7 +539,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Reproduce la música `msc`(0-7). La posición de inicio de la reproducción se puede especificar mediante un `tick`(1 tick = 1/120 segundos). Si `True` se especifica para `loop`, la reproducción en bucle tendrá lugar.
 
 - `stop([ch])`<br>
-  Para la reproducción del canal `ch`(0-3). `stop()` para detener todos los canales
+  Para la reproducción del canal `ch`(0-3). `stop()` para detener todos los canales.
 
 - `play_pos(ch)`<br>
   Obtenga la posición de la reproducción de la música de un canal `ch`(0-3) como la tupla `(sound no, note no)`, no quiere decir número. Devuelve `None` cuando la música cesa.
@@ -567,7 +567,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 - `atan2(y, x)`<br>
   Devuelve la arctangente de `y`/`x` en grados.
 
-- `rseed(seed: int)`<br>
+- `rseed(seed)`<br>
   Establece la semilla del generador de números aleatorios.
 
 - `rndi(a, b)`<br>
@@ -592,7 +592,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Ejemplo: `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-  Carga el archivo con la imagen (png/gif/jpeg) en (`x`, `y`)
+  Carga el archivo con la imagen (png/gif/jpeg) en (`x`, `y`).
 
 - `pget(x, y)`<br>
   Obtén el color del pyxel en la posición (`x`, `y`).
@@ -621,7 +621,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 ### Clase Sound
 
 - `notes`<br>
-  Lista de notas (0-127). Cuanto mayor sea el número, mayor será el pitch (más agudo) y a 33, se convierte en la nota 'A2' (440 Hz). El resto es -1
+  Lista de notas (0-127). Cuanto mayor sea el número, mayor será el pitch (más agudo) y a 33, se convierte en la nota 'A2' (440 Hz). El resto es -1.
 
 - `tones`<br>
   Lista de tonos (0:Triangular / 1:Cuadrada / 2:Pulsada / 3:Ruido)
@@ -657,7 +657,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 ### Clase Music
 
 - `seqs`<br>
-  Lista bidimensional de sonidos (0-63) con el número de canales.
+  Lista bidimensional de sonidos (0-63) con el número de canales
 
 - `set(seq0, seq1, seq2, seq3)`<br>
   Fija la lista de sonidos (0-63) de todos los canales. Si se referencia una lista vacía, ese canal no se utilizará para reproducir el sonido.<br>
@@ -681,7 +681,7 @@ Cualquier persona que compruebe y prueba manualmente el código y reporte errore
 
 ### Envio de Pull Request
 
-Parches o errores son aceptables en forma de pull request (PRs). Asegurate de que el tema de la pull request esté abierta en el Issue Tracker
+Parches o errores son aceptables en forma de pull request (PRs). Asegurate de que el tema de la pull request esté abierta en el Issue Tracker.
 
 Los pull request enviados se consideran acordados para poder publicarse bajo la [Licencia MIT](../LICENSE).
 
