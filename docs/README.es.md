@@ -511,12 +511,12 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Dibuja una elipsis de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Copia la región de tamaño (`w`, `h`) desde la posición (`u`, `v`) del banco de imágenes `img` (0-2) a (`x`, `y`). Si es negativo el valor para la `w` y/o la `h`, se representará invirtiendo horizontalmente o verticalmente. Si `colkey` se especifica, se tratará ese color como transparente.
+  Copia la región de tamaño (`w`, `h`) desde la posición (`u`, `v`) del banco de imágenes `img`(0-2) a (`x`, `y`). Si es negativo el valor para la `w` y/o la `h`, se representará invirtiendo horizontalmente o verticalmente. Si `colkey` se especifica, se tratará ese color como transparente.
 
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-  Copie la región de tamaño (`w`,` h`) de (`u`,` v`) del mapa de mosaicos `tm` (0-7) a (` x`, `y`). Si se establece un valor negativo para `w` y / o` h`, se invertirá horizontal y / o verticalmente. Si se especifica "colkey", se trata como un color transparente. El tamaño de un mosaico es de 8x8 píxeles y se almacena en un mapa de mosaicos como una tupla de `(tile_x, tile_y)`.
+  Copie la región de tamaño (`w`,` h`) de (`u`,` v`) del mapa de mosaicos `tm`(0-7) a (` x`, `y`). Si se establece un valor negativo para `w` y / o` h`, se invertirá horizontal y / o verticalmente. Si se especifica "colkey", se trata como un color transparente. El tamaño de un mosaico es de 8x8 píxeles y se almacena en un mapa de mosaicos como una tupla de `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 
@@ -533,16 +533,16 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Lista de las músicas (0-7). (Vea la clase Music)
 
 - `play(ch, snd, [tick], [loop])`<br>
-  Reproduce el sonido `snd` (0-63) en el canal `ch` (0-3). Si el `snd` está en una lista, será reproducido en orden. La posición de inicio de la reproducción se puede especificar mediante un `tick` (1 tick = 1/120 segundos). Si `True` se especifica para `loop`, la reproducción se realizará en bucle.
+  Reproduce el sonido `snd`(0-63) en el canal `ch`(0-3). Si el `snd` está en una lista, será reproducido en orden. La posición de inicio de la reproducción se puede especificar mediante un `tick`(1 tick = 1/120 segundos). Si `True` se especifica para `loop`, la reproducción se realizará en bucle.
 
 - `playm(msc, [tick], [loop])`<br>
-  Reproduce la música `msc` (0-7). La posición de inicio de la reproducción se puede especificar mediante un `tick` (1 tick = 1/120 segundos). Si `True` se especifica para `loop`, la reproducción en bucle tendrá lugar.
+  Reproduce la música `msc`(0-7). La posición de inicio de la reproducción se puede especificar mediante un `tick`(1 tick = 1/120 segundos). Si `True` se especifica para `loop`, la reproducción en bucle tendrá lugar.
 
 - `stop([ch])`<br>
-  Para la reproducción del canal `ch` (0-3). `stop()` para detener todos los canales
+  Para la reproducción del canal `ch`(0-3). `stop()` para detener todos los canales
 
 - `play_pos(ch)`<br>
-  Obtenga la posición de la reproducción de la música de un canal `ch` (0-3) como la tupla `(sound no, note no)`, no quiere decir número. Devuelve `None` cuando la música cesa.
+  Obtenga la posición de la reproducción de la música de un canal `ch`(0-3) como la tupla `(sound no, note no)`, no quiere decir número. Devuelve `None` cuando la música cesa.
 
 ### Matemáticas
 
@@ -624,7 +624,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Lista de notas (0-127). Cuanto mayor sea el número, mayor será el pitch (más agudo) y a 33, se convierte en la nota 'A2' (440 Hz). El resto es -1
 
 - `tones`<br>
-  Lista de tonos(0:Triangular / 1:Cuadrada / 2:Pulsada / 3:Ruido)
+  Lista de tonos (0:Triangular / 1:Cuadrada / 2:Pulsada / 3:Ruido)
 
 - `volumes`<br>
 - Lista de volúmenes (0-7)
