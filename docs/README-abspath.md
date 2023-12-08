@@ -329,7 +329,7 @@ The created resource file can be loaded with `load` function.
 
 Pyxel Editor has the following edit modes.
 
-**Image Editor:**
+**Image Editor**
 
 The mode to edit the image banks.
 
@@ -339,7 +339,7 @@ The mode to edit the image banks.
 
 By dragging and dropping an image file (png/gif/jpeg) onto the Image Editor screen, the image can be loaded into the currently selected image bank.
 
-**Tilemap Editor:**
+**Tilemap Editor**
 
 The mode to edit tilemaps in which images of the image banks are arranged in a tile pattern.
 
@@ -347,7 +347,7 @@ The mode to edit tilemaps in which images of the image banks are arranged in a t
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/tilemap_editor.gif">
 </a>
 
-**Sound Editor:**
+**Sound Editor**
 
 The mode to edit sounds.
 
@@ -355,7 +355,7 @@ The mode to edit sounds.
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/sound_editor.gif">
 </a>
 
-**Music Editor:**
+**Music Editor**
 
 The mode to edit musics in which the sounds are arranged in order of playback.
 
@@ -568,7 +568,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 - `atan2(y, x)`<br>
   Returns the arctangent of `y`/`x` in degrees.
 
-- `rseed(seed: int)`<br>
+- `rseed(seed)`<br>
   Sets the seed of the random number generator.
 
 - `rndi(a, b)`<br>

@@ -329,7 +329,7 @@ O arquivo recursos criado pode ser carregado através da função `load`.
 
 O Editor Pyxel possuí os seguintes modos de edição.
 
-**Editor de Imagem:**
+**Editor de Imagem**
 
 O modo para editar bancos de imagem.
 
@@ -339,7 +339,7 @@ O modo para editar bancos de imagem.
 
 Arrastando e soltando um arquivo de imagem (png/gif/jpeg) dentro da tela do Editor de Imagens faz com que a imagem possa ser carregada no banco de imagens selecionado no momento.
 
-**Editor de Tilemap:**
+**Editor de Tilemap**
 
 O modo para editar tilemaps em que imagens dos bancos de imagens são organizados em um padrão de tiles.
 
@@ -347,7 +347,7 @@ O modo para editar tilemaps em que imagens dos bancos de imagens são organizado
 <img src="images/tilemap_editor.gif">
 </a>
 
-**Editor de Som:**
+**Editor de Som**
 
 O modo para editar sons.
 
@@ -355,7 +355,7 @@ O modo para editar sons.
 <img src="images/sound_editor.gif">
 </a>
 
-**Editor de Música:**
+**Editor de Música**
 
 O modo para editar músicas nas quais os sons são organizados na ordem de execução.
 
@@ -439,7 +439,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Retorna `True` se `key` é pressionada, caso contrário retorna `False`. ([lista de definições de teclas](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
-  Retorna `True` se `key` for pressionada naquele quadro, caso contrário retorna `False`. Quando `hold` e `repeat` são especificados, `True` será retornado durante o intervalo de quadros `repeat`, no qual `key` estiver pressionada por mais que `hold` quadros
+  Retorna `True` se `key` for pressionada naquele quadro, caso contrário retorna `False`. Quando `hold` e `repeat` são especificados, `True` será retornado durante o intervalo de quadros `repeat`, no qual `key` estiver pressionada por mais que `hold` quadros.
 
 - `btnr(key)`<br>
   Retorna `True` se `key` for solta naquele quadro, caso contrário retorna `False`
@@ -467,7 +467,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Altera as coordenadas do canto superior esquerdo da tela para (`x`, `y`). Redefina as coordenadas do canto superior esquerdo para (`0`, `0`) com `camera()`.
 
 - `pal(col1, col2)`<br>
-  Substitui a cor `col1` com `col2` ao desenhar. Use `pal()` para voltar para a paleta inicial
+  Substitui a cor `col1` com `col2` ao desenhar. Use `pal()` para voltar para a paleta inicial.
 
 - `dither(alpha)`<br>
   Aplica dithering (pseudo-transparência) no desenho. Define `alpha` no intervalo 0.0-1.0, onde 0.0 é transparente e 1.0 é opaco.
@@ -476,25 +476,25 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Limpar a tela com a cor `col`
 
 - `pget(x, y)`<br>
-  Captura a cor de um pixel em (`x`, `y`)
+  Captura a cor de um pixel em (`x`, `y`).
 
 - `pset(x, y, col)`<br>
-  Desenha um pixel de cor `col` em (`x`, `y`)
+  Desenha um pixel de cor `col` em (`x`, `y`).
 
 - `line(x1, y1, x2, y2, col)`<br>
-  Desenha uma linha da cor `col` de (`x1`, `y1`) até (`x2`, `y2`)
+  Desenha uma linha da cor `col` de (`x1`, `y1`) até (`x2`, `y2`).
 
 - `rect(x, y, w, h, col)`<br>
-  Desenha um retângulo de largura `w`, altura `h` e cor `col` a partir de (`x`, `y`)
+  Desenha um retângulo de largura `w`, altura `h` e cor `col` a partir de (`x`, `y`).
 
 - `rectb(x, y, w, h, col)`<br>
-  Desenha o contorno de um retângulo de largura `w`, altura `h` e cor `col` a partir de (`x`, `y`)
+  Desenha o contorno de um retângulo de largura `w`, altura `h` e cor `col` a partir de (`x`, `y`).
 
 - `circ(x, y, r, col)`<br>
-  Desenha um círculo de raio `r` e cor `col` em (`x`, `y`)
+  Desenha um círculo de raio `r` e cor `col` em (`x`, `y`).
 
 - `circb(x, y, r, col)`<br>
-  Desenha o contorno de um círculo de raio `r` e cor `col` em (`x`, `y`)
+  Desenha o contorno de um círculo de raio `r` e cor `col` em (`x`, `y`).
 
 - `elli(x, y, w, h, col)`<br>
   Desenhar uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
@@ -512,7 +512,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Desenhar uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img`(0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente
+  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img`(0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente.
 
 <img src="images/blt_figure.png">
 
@@ -522,7 +522,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
 <img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
-  Desenha uma string `s` de cor `col` em (`x`, `y`)
+  Desenha uma string `s` de cor `col` em (`x`, `y`).
 
 ### Áudio
 
@@ -568,7 +568,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
 - `atan2(y, x)`<br>
   Devolve o arctangente de `y`/`x` em graus.
 
-- `rseed(seed: int)`<br>
+- `rseed(seed)`<br>
   Define a semente do gerador do número aleatório.
 
 - `rndi(a, b)`<br>
@@ -658,7 +658,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
 ### Classe de Musica
 
 - `seqs`<br>
-  Lista bi-dimensional de sons (0-63) com o número de canais.
+  Lista bi-dimensional de sons (0-63) com o número de canais
 
 - `set(seq0, seq1, seq2, seq3)`<br>
   Define as listas de sons (0-63) para todos os canais. Se uma lista vazia for especificada, aquele canal não será utilizado para reprodução de sons.<br>
