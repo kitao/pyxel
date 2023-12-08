@@ -291,8 +291,6 @@ pyxel run Pythonスクリプトファイル
 python3 Pythonスクリプトファイル
 ```
 
-(Windows の場合は`python3`の代わりに`python`と入力してください)
-
 ### 特殊操作
 
 Pyxel アプリケーション実行中に、以下の特殊操作を行うことができます。
@@ -305,6 +303,8 @@ Pyxel アプリケーション実行中に、以下の特殊操作を行うこ�
   画面キャプチャ動画の録画開始時刻をリセットする
 - `Alt(Option)+3`<br>
   画面キャプチャ動画をデスクトップに保存する (最大 10 秒)
+- `Alt(Option)+9`<br>
+  画面モード (Crisp、Smooth、Retro) を切り替える
 - `Alt(Option)+0`<br>
   パフォーマンスモニタ (fps、update 時間、draw 時間) の表示を切り替える
 - `Alt(Option)+Enter`<br>
@@ -395,7 +395,7 @@ pyxel package アプリケーションのディレクトリ 起動スクリプ�
 pyxel play Pyxelアプリケーションファイル
 ```
 
-Pyxel アプリケーションファイルは、'pyxel app2exe'コマンドや'pyxel app2html'コマンドで、実行可能ファイルや HTML ファイルに変換することもできます。
+Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`pyxel app2html`コマンドで、実行可能ファイルや HTML ファイルに変換することもできます。
 
 ## API リファレンス
 
@@ -425,8 +425,8 @@ Pyxel アプリケーションファイルは、'pyxel app2exe'コマンドや'p
 
 ### リソース
 
-- `load(filename, [image], [tilemap], [sound], [music])`<br>
-  リソースファイル (.pyxres) を読み込みます。リソースタイプ (`image/tilemap/sound/music`) に`False`を指定すると、そのリソースは読み込まれません。また、同名のパレットファイル (.pyxpal) がリソースファイルと同じ場所に存在する場合は、パレットの表示色も変更されます。パレットファイルは表示色を改行区切りの 16 進数で入力します。パレットファイルを使うことで Pyxel Editor の表示色も変更可能です。
+- `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
+  リソースファイル (.pyxres) を読み込みます。オプションに`True`を指定すると、そのリソースは読み込まれません。また、同名のパレットファイル (.pyxpal) がリソースファイルと同じ場所に存在する場合は、パレットの表示色も変更されます。パレットファイルは表示色を改行区切りの 16 進数 (例：`1100FF`) で入力します。パレットファイルを使うことで Pyxel Editor の表示色も変更可能です。
 
 ### 入力
 
@@ -454,12 +454,12 @@ Pyxel アプリケーションファイルは、'pyxel app2exe'コマンドや'p
   パレットの表示色リスト。表示色は 24 ビット数値で指定します。Python リストを直接代入、取得する場合は`colors.from_list`と`colors.to_list`を使用してください。<br>
   例：`old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
-- `image(img)`<br>
-  イメージバンク`img` (0-2) を操作します。(イメージクラスを参照のこと)<br>
-  例：`pyxel.image(0).load(0, 0, "title.png")`
+- `images`<br>
+  イメージバンク (0-2) のリスト。(イメージクラスを参照のこと)<br>
+  例：`pyxel.images[0].load(0, 0, "title.png")`
 
-- `tilemap(tm)`<br>
-  タイルマップ`tm` (0-7) を操作します。(タイルマップクラスを参照のこと)
+- `tilemaps`<br>
+  タイルマップ (0-7) のリスト。(タイルマップクラスを参照のこと)
 
 - `clip(x, y, w, h)`<br>
   画面の描画領域を (`x`, `y`) から幅`w`、高さ`h`に設定します。`clip()`で描画領域を全画面にリセットします。
@@ -469,6 +469,9 @@ Pyxel アプリケーションファイルは、'pyxel app2exe'コマンドや'p
 
 - `pal(col1, col2)`<br>
   描画時に色`col1`を`col2`に置き換えます。`pal()`で初期状態にリセットします。
+
+- `dither(alpha)`<br>
+  描画時にディザリング (擬似半透明) を適用します。`alpha`は 0.0-1.0 の範囲で設定し、0.0 が透明、1.0 が不透明になります。
 
 - `cls(col)`<br>
   画面を色`col`でクリアします。
@@ -524,12 +527,12 @@ Pyxel アプリケーションファイルは、'pyxel app2exe'コマンドや'p
 
 ### オーディオ
 
-- `sound(snd)`<br>
-  サウンド`snd` (0-63) を操作します。(サウンドクラスを参照のこと)<br>
-  例：`pyxel.sound(0).speed = 60`
+- `sounds`<br>
+  サウンド (0-63) のリスト。(サウンドクラスを参照のこと)<br>
+  例：`pyxel.sounds[0].speed = 60`
 
-- `music(msc)`<br>
-  ミュージック`msc` (0-7) を操作します。(ミュージッククラスを参照のこと)
+- `musics`<br>
+  ミュージック (0-7) のリスト。(ミュージッククラスを参照のこと)
 
 - `play(ch, snd, [tick], [loop])`<br>
   チャンネル`ch` (0-3) でサウンド`snd` (0-63) を再生します。`snd`がリストの場合順に再生されます。再生開始位置は`tick` (1 tick = 1/120 秒) で指定できます。`loop`に`True`を指定するとループ再生します。
@@ -588,7 +591,7 @@ Pyxel アプリケーションファイルは、'pyxel app2exe'コマンドや'p
 
 - `set(x, y, data)`<br>
   (`x`, `y`) に文字列のリストでイメージを設定します。<br>
-  例：`pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  例：`pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
   (`x`, `y`) に画像ファイル (png/gif/jpeg) を読み込みます。
@@ -604,7 +607,7 @@ Pyxel アプリケーションファイルは、'pyxel app2exe'コマンドや'p
 - `width`, `height`<br>
   タイルマップの幅と高さ
 
-- `refimg`<br>
+- `imgsrc`<br>
   タイルマップが参照するイメージバンク (0-2)
 
 - `set(x, y, data)`<br>
@@ -639,28 +642,28 @@ Pyxel アプリケーションファイルは、'pyxel app2exe'コマンドや'p
 
 - `set_notes(notes)`<br>
   'CDEFGAB'+'#-'+'01234'または'R'の文字列で音程を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
-  例：`pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
+  例：`pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
   'TSPN'の文字列で音色を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
-  例：`pyxel.sound(0).set_tones("TTSS PPPN")`
+  例：`pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
   '01234567'の文字列で音量を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
-  例：`pyxel.sound(0).set_volumes("7777 7531")`
+  例：`pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
   'NSVF'の文字列でエフェクトを設定します。大文字と小文字は区別されず、空白は無視されます。<br>
-  例：`pyxel.sound(0).set_effects("NFNF NVVS")`
+  例：`pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### ミュージッククラス
 
-- `snds_list`<br>
+- `seqs`<br>
   サウンド (0-63) のリストをチャンネル数分連ねた 2 次元リスト
 
-- `set(snds0, snds1, snds2, snds3)`<br>
+- `set(seq0, seq1, seq2, seq3)`<br>
   全チャンネルのサウンド (0-63) のリストを設定します。空リストを指定するとそのチャンネルは再生に使用しません。<br>
-  例：`pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+  例：`pyxel.musics[0].set([0, 1], [2, 3], [4], [])`
 
 ### 上級者向け API
 

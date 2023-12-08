@@ -291,8 +291,6 @@ También se puede ejecutar como un script normal de Python:
 python3 PYTHON_SCRIPT_FILE
 ```
 
-(Para Windows, escriba `python` en vez de `python3`)
-
 ### Controles Especiales
 
 Los siguientes controles especiales se pueden utilizar en cualquier aplicación que esté corriendo:
@@ -305,6 +303,8 @@ Los siguientes controles especiales se pueden utilizar en cualquier aplicación 
   Restablecer el momento de inicio de la grabación del vídeo de captura de pantalla
 - `Alt(Option)+3`<br>
   Guarda la captura de video en el escritorio (hasta 10 segundos)
+- `Alt(Option)+9`<br>
+  Cambia entre los modos de pantalla (Crisp, Smooth, Retro)
 - `Alt(Option)+0`<br>
   Activa el monitor de monitorización (fps, el tiempo que tarda en actualizar la pantalla y el tiempo que tarda en dibujar)
 - `Alt(Option)+Enter`<br>
@@ -424,8 +424,8 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 
 ### Recursos
 
-- `load(filename, [image], [tilemap], [sound], [music])`<br>
-  Carga el archivo de recursos (.pyxres). Si `False` es especificado para los recursos (`image/tilemap/sound/music`), los recursos no serán cargados. Si existe un archivo de paleta (.pyxpal) con el mismo nombre en la misma ubicación que el archivo de recursos, también se cambiará el color de visualización de la paleta. El archivo de paleta es una entrada hexadecimal de los colores de visualización, separados por nuevas líneas. El archivo de paleta también se puede utilizar para cambiar los colores mostrados en Pyxel Editor.
+- `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
+  Carga el archivo de recursos (.pyxres). Si una opción es `True`, el recurso no se cargará. Si existe un archivo de paleta (.pyxpal) con el mismo nombre en la misma ubicación que el archivo de recursos, también se cambiará el color de visualización de la paleta. El archivo de paleta es una entrada hexadecimal de los colores de visualización (por ejemplo, `1100FF`), separados por nuevas líneas. El archivo de paleta también se puede utilizar para cambiar los colores mostrados en Pyxel Editor.
 
 ### Entrada
 
@@ -452,12 +452,12 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Lista de la paleta de colores que se pueden representar. El color del display se especifica con un valor numérico de 24 bits. Utiliza `colors.from_list` y `colors.to_list` para directamente asignar y leer una lista de Python.
   Ejemplo: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
-- `image(img)`<br>
-  Opera la imagen del banco de imágenes `img`(0-2). (Vea la clase Image)<br>
-  Ejemplo: `pyxel.image(0).load(0, 0, "title.png")`
+- `images`<br>
+  Lista de los bancos de imágenes (0-2). (Vea la clase Image)<br>
+  Ejemplo: `pyxel.images[0].load(0, 0, "title.png")`
 
-- `tilemap(tm)`<br>
-  Opera el mapa `tm` (0-7). (Vea la clase Tilemap)
+- `tilemaps`<br>
+  Lista de los tilemaps (0-7). (Vea la clase Tilemap)
 
 - `clip(x, y, w, h)`<br>
   Establezca el área de dibujo de la pantalla de (`x`, `y`) a una anchura `w` y a una altura `h`. Reinicia el área de dibujo a todo el área de la pantalla con `clip()`.
@@ -522,12 +522,12 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 
 ### Audio
 
-- `sound(snd)`<br>
-  Opera el sonido `snd` (0-63). (Vea la clase Sound)<br>
-  Ejemplo: `pyxel.sound(0).speed = 60`
+- `sounds`<br>
+  Lista de los sonidos (0-63). (Vea la clase Sound)<br>
+  Ejemplo: `pyxel.sounds[0].speed = 60`
 
-- `music(msc)`<br>
-  Reproduce la música `msc` (0-7). (Vea la clase Music)
+- `musics`<br>
+  Lista de las músicas (0-7). (Vea la clase Music)
 
 - `play(ch, snd, [tick], [loop])`<br>
   Reproduce el sonido `snd` (0-63) en el canal `ch` (0-3). Si el `snd` está en una lista, será reproducido en orden. La posición de inicio de la reproducción se puede especificar mediante un `tick` (1 tick = 1/120 segundos). Si `True` se especifica para `loop`, la reproducción se realizará en bucle.
@@ -586,7 +586,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 
 - `set(x, y, data)`<br>
   Define la imagen en (`x`, `y`) por una lista de strings. <br>
-  Ejemplo: `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  Ejemplo: `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
   Carga el archivo con la imagen (png/gif/jpeg) en (`x`, `y`)
@@ -602,7 +602,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 - `width`, `height`<br>
   La anchura y la altura del mapa
 
-- `refimg`<br>
+- `imgsrc`<br>
   El banco de imágenes (0-2) que referencia el mapa
 
 - `set(x, y, data)`<br>
@@ -637,28 +637,28 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 
 - `set_notes(notes)`<br>
   Fija las notas con un string hecho por 'CDEFGAB'+'#-'+'01234' o 'R'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
-  Ejemplo: `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
+  Ejemplo: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
   Fija las notas con un string hecho con 'TSPN'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
-  Ejemplo: `pyxel.sound(0).set_tones("TTSS PPPN")`
+  Ejemplo: `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
   Fija el volumen con una string hecha de '01234567'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
-  Ejemplo: `pyxel.sound(0).set_volumes("7777 7531")`
+  Ejemplo: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
   Fija los efectos con una string hecha con 'NSVF'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
-  Ejemplo: `pyxel.sound(0).set_effects("NFNF NVVS")`
+  Ejemplo: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Clase Music
 
-- `snds_list`<br>
+- `seqs`<br>
   Lista bidimensional de sonidos (0-63) con el número de canales.
 
-- `set(snds0, snds1, snds2, snds3)`<br>
+- `set(seq0, seq1, seq2, seq3)`<br>
   Fija la lista de sonidos (0-63) de todos los canales. Si se referencia una lista vacía, ese canal no se utilizará para reproducir el sonido.<br>
-  Ejemplo: `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+  Ejemplo: `pyxel.musics[0].set([0, 1], [2, 3], [4], [])`
 
 ### APIs avanzadas
 

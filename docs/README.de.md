@@ -291,8 +291,6 @@ Es kann auch wie ein normales Python-Skript ausgeführt werden:
 python3 PYTHON_SCRIPT_FILE
 ```
 
-(Für Windows, gib `python` anstatt `python3` ein)
-
 ### Shortcuts
 
 Die folgenden Shortcuts können eingegeben werden, während eine Pyxel-Anwendung läuft:
@@ -305,6 +303,8 @@ Die folgenden Shortcuts können eingegeben werden, während eine Pyxel-Anwendung
   Setzt die Startzeit für die Aufnahme des Bildschirmaufzeichnung zurück
 - `Alt(Option)+3`<br>
   Speichert die Bildschirmaufzeichnung zum Desktop (bis zu 10 Sekunden)
+- `Alt(Option)+9`<br>
+  Wechseln Sie zwischen den Bildschirmmodi (Crisp, Smooth, Retro)
 - `Alt(Option)+0`<br>
   Umschalten des Leistungsmonitors (fps, Updatezeit und Framezeit)
 - `Alt(Option)+Enter`<br>
@@ -423,8 +423,8 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 ### Ressourcen
 
-- `load(filename, [image], [tilemap], [sound], [music])`<br>
-  Lade die Ressourcen-Datei (.pyxres). Falls `False` für den Ressourcentyp angegeben ist (`image/tilemap/sound/music`), wird die Ressource nicht geladen. Wenn eine gleichnamige Palettendatei (.pyxpal) am gleichen Ort wie die Ressourcendatei vorhanden ist, wird die Farbe der Palettenanzeige ebenfalls geändert. Die Palettendatei ist ein hexadezimaler Eintrag der Anzeigefarben, getrennt durch Zeilenumbrüche. Die Palettendatei kann auch verwendet werden, um die im Pyxel Editor angezeigten Farben zu ändern.
+- `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
+  Lade die Ressourcen-Datei (.pyxres). Wenn eine Option `True` ist, wird die Ressource nicht geladen. Wenn eine Palettendatei (.pyxpal) mit demselben Namen am selben Ort wie die Ressourcendatei existiert, wird die Farbe der Palettenanzeige ebenfalls geändert. Die Palettendatei ist ein hexadezimaler Eintrag der Anzeigefarben (z.B. `1100FF`), getrennt durch Zeilenumbrüche. Die Palettendatei kann auch verwendet werden, um die im Pyxel Editor angezeigten Farben zu ändern.
 
 ### Eingabe
 
@@ -452,12 +452,12 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Liste der Anzeigefarben der Palette. Die Anzeigefarbe wird durch einen numerischen 24-Bit-Wert angegeben. Verwende `colors.from_list` und `colors.to_list`, um Python-Listen direkt zuzuweisen und abzurufen.<br>
   z.B. `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
-- `image(img)`<br>
-  Bediene die Image-Bank `img` (0-2). (Siehe die Klasse Image)<br>
-  z.B. `pyxel.image(0).load(0, 0, "title.png")`
+- `images`<br>
+  Liste der Bildbanken (0-2). (Siehe die Klasse Image)<br>
+  z.B. `pyxel.images[0].load(0, 0, "title.png")`
 
-- `tilemap(tm)`<br>
-  Bediene die Tilemap `tm`(0-7) (siehe die Tilemap class)
+- `tilemaps`<br>
+  Liste der Kachelkarten (0-7). (siehe die Tilemap class)
 
 - `clip(x, y, w, h)`<br>
   Setze den Bildausschnitt von (`x`, `y`) zu Breite `w` und Höhe `h`. Setze den Bildausschnitt zurück zum Follbild mit `clip()`
@@ -522,12 +522,12 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 ### Audio
 
-- `sound(snd)`<br>
-  Bediene den Ton `snd`(0-63). (siehe die Sound class).<br>
-  z.B. `pyxel.sound(0).speed = 60`
+- `sounds`<br>
+  Liste der Töne (0-63). (siehe die Sound class)<br>
+  z.B. `pyxel.sounds[0].speed = 60`
 
-- `music(msc)`<br>
-  Bediene die Musik `msc`(0-7) (siehe die Music class)
+- `musics`<br>
+  Liste der Musikstücke (0-7). (siehe die Music class)
 
 - `play(ch, snd, [tick], [loop])`<br>
   Spielt den Ton `snd` (0-63) auf Kanal `ch` (0-3). Die Startposition der Wiedergabe kann durch `tick` (1 tick = 1/120 Sekunden) angegeben werden. Falls `snd` eine Liste ist, wird es in der Reihenfolge abgespielt. Falls `True` für `loop` angeben ist, wird eine Schleifenwiedergabe durchgeführt.
@@ -592,7 +592,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 - `set(x, y, data)`<br>
   Setzen des Bildes an (`x`, `y`) durch eine Liste von strings.<br>
-  z.B. `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  z.B. `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
   Lade die Bild-Datei (png/gif/jpeg) at (`x`, `y`).
@@ -602,7 +602,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `width`, `height`<br>
   Die Breite und Höhe der Tilemap
 
-- `refimg`<br>
+- `imgsrc`<br>
   Die von der Tilemap referenzierte Image-Bank (0-2)
 
 - `set(x, y, data)`<br>
@@ -637,28 +637,28 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 - `set_notes(notes)`<br>
   Setzt die Noten mit einem string aus 'CDEFGAB'+'#-'+'01234' oder 'R'. Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
-  z.B. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
+  z.B. `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
   Setzt die Töne mit einem string aus 'TSPN'. Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
-  z.B. `pyxel.sound(0).set_tones("TTSS PPPN")`
+  z.B. `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
   Setzt die Lautstärke mit einer Zeichenkette aus '01234567'. Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
-  z.B. `pyxel.sound(0).set_volumes("7777 7531")`
+  z.B. `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
   Setzt die Effekte mit einer Zeichenkette aus 'NSVF'. Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
-  z.B. `pyxel.sound(0).set_effects("NFNF NVVS")`
+  z.B. `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Musik Klasse
 
-- `snds_list`<br>
+- `seqs`<br>
   Zweidimensionale Liste von Klängen (0-63) mit der Anzahl der Kanäle.
 
-- `set(snds0, snds1, snds2, snds3)`<br>
+- `set(seq0, seq1, seq2, seq3)`<br>
   Setzt die Tonlisten (0-63) für alle Kanäle fest. Wenn eine leere Liste angegeben wird, wird dieser Kanal nicht für die Wiedergabe verwendet.<br>
-  z.B. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+  z.B. `pyxel.musics[0].set([0, 1], [2, 3], [4], [])`
 
 ### Advanced APIs
 
