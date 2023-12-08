@@ -31,6 +31,7 @@
 - Added Waveform class for waveform editing
 - Added waveforms as a system list
 - Added a detune field to Channel
+- Updated 8bit BGM generator to the latest version
 
 ## 1.9.18
 
