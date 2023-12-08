@@ -417,7 +417,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Mostra lo schermo e attende fino a quando il pulsante `Esc` non viene premuto.
 
 - `flip()`<br>
-  Riavvolge lo schermo di un fotogramma. L'applicazione esce quando viene premuto il tasto `Esc`. Questa funzione funziona solo su piattaforme non web.
+  Riavvolge lo schermo di un fotogramma. L'applicazione esce quando viene premuto il tasto `Esc`. Questa funzione non funziona nella versione web.
 
 - `quit()`<br>
   Esci dall'applicazione Pyxel.

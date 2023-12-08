@@ -189,7 +189,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>flip 関数によるアニメーション (非Web環境のみ)</td>
+<td>flip 関数によるアニメーション (非 Web 環境のみ)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
 </tr>
@@ -418,7 +418,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   画面を表示して`Esc`キーが押されるまで待機します。
 
 - `flip()`<br>
-  画面を 1 フレーム更新します。`ESC`を押すとアプリケーションは終了します。この関数は Web 以外のプラットフォームでのみ動作します。
+  画面を 1 フレーム更新します。`ESC`を押すとアプリケーションは終了します。この関数は Web 版では動作しません。
 
 - `quit()`<br>
   Pyxel アプリケーションを終了します。
