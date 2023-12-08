@@ -304,7 +304,7 @@ Pyxel アプリケーション実行中に、以下の特殊操作を行うこ�
 - `Alt(Option)+3`<br>
   画面キャプチャ動画をデスクトップに保存する (最大 10 秒)
 - `Alt(Option)+9`<br>
-  画面モード (Crisp、Smooth、Retro) を切り替える
+  画面モード (Crisp/Smooth/Retro) を切り替える
 - `Alt(Option)+0`<br>
   パフォーマンスモニタ (fps、update 時間、draw 時間) の表示を切り替える
 - `Alt(Option)+Enter`<br>

@@ -304,7 +304,7 @@ python3 PYTHON_SCRIPT_FILE
 - `Alt(Option)+3`<br>
   保存屏幕录制动图到桌面（最多 10 秒）
 - `Alt(Option)+9`<br>
-  切换屏幕模式 (Crisp，Smooth，Retro)
+  切换屏幕模式 (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
   切换性能监控（fps，更新时间，画面绘制时间）
 - `Alt(Option)+Enter`<br>

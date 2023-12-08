@@ -304,7 +304,7 @@ Los siguientes controles especiales se pueden utilizar en cualquier aplicación 
 - `Alt(Option)+3`<br>
   Guarda la captura de video en el escritorio (hasta 10 segundos)
 - `Alt(Option)+9`<br>
-  Cambia entre los modos de pantalla (Crisp, Smooth, Retro)
+  Cambia entre los modos de pantalla (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
   Activa el monitor de monitorización (fps, el tiempo que tarda en actualizar la pantalla y el tiempo que tarda en dibujar)
 - `Alt(Option)+Enter`<br>
