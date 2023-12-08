@@ -417,7 +417,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Mostra a tela e espera até a tecla `Esc` ser pressionada.
 
 - `flip()`<br>
-  Refrear o ecrã por uma moldura. A aplicação sai quando a tecla `Esc` é premida. Esta função só funciona em plataformas não-web.
+  Refrear o ecrã por uma moldura. A aplicação sai quando a tecla `Esc` é premida. Esta função não funciona na versão Web.
 
 - `quit()`<br>
   Feche a aplicação Pyxel.

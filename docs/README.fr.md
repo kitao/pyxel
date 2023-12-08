@@ -419,7 +419,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
   Affiche l’écran jusqu’à ce que la touche `Esc` soit appuyée.
 
 - `flip()`<br>
-  Rafraîchit l'écran d'une image. L'application se termine lorsque la touche `Esc` est pressée. Cette fonction ne fonctionne que sur les plateformes non-web.
+  Rafraîchit l'écran d'une image. L'application se termine lorsque la touche `Esc` est pressée. Cette fonction ne fonctionne pas dans la version web.
 
 - `quit()`<br>
   Quitte l’application Pyxel.
