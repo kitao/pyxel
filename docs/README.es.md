@@ -468,6 +468,9 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 - `pal(col1, col2)`<br>
   Reemplaza el color `col1` con `col2` para dibujarlo. Utiliza `pal()` para resetear la paleta de colores y volver a la paleta que viene por defecto por defecto con Pyxel.
 
+- `dither(alpha)`<br>
+  Aplica dithering (pseudo-transparencia) al dibujar. Establece `alpha` en el rango 0.0-1.0, donde 0.0 es transparente y 1.0 es opaco.
+
 - `cls(col)`<br>
   Borra la pantalla con el color `col`.
 

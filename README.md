@@ -469,6 +469,9 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 - `pal(col1, col2)`<br>
   Replace color `col1` with `col2` at drawing. `pal()` to reset to the initial palette.
 
+- `dither(alpha)`<br>
+  Applies dithering (pseudo-transparency) at drawing. Set `alpha` in the range 0.0-1.0, where 0.0 is transparent and 1.0 is opaque.
+
 - `cls(col)`<br>
   Clear screen with color `col`.
 
