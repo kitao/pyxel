@@ -512,12 +512,12 @@ Pyxel application file also can be converted to an executable or an HTML file wi
   Fill the area connected with the same color as (`x`, `y`) with color `col`.
 
 - `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img` (0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color.
 
 <img src="docs/images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm` (0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
 
 <img src="docs/images/bltm_figure.png">
 
@@ -534,16 +534,16 @@ Pyxel application file also can be converted to an executable or an HTML file wi
   List of the musics (0-7). (See the Music class)
 
 - `play(ch, snd, [tick], [loop])`<br>
-  Play the sound `snd` (0-63) on channel `ch` (0-3). If `snd` is a list, it will be played in order. The playback start position can be specified by `tick` (1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
+  Play the sound `snd`(0-63) on channel `ch`(0-3). If `snd` is a list, it will be played in order. The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
 
 - `playm(msc, [tick], [loop])`<br>
-  Play the music `msc` (0-7). The playback start position can be specified by `tick` (1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
+  Play the music `msc`(0-7). The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
 
 - `stop([ch])`<br>
-  Stops playback of the specified channel `ch` (0-3). `stop()` to stop playing all channels.
+  Stops playback of the specified channel `ch`(0-3). `stop()` to stop playing all channels.
 
 - `play_pos(ch)`<br>
-  Get the sound playback position of channel `ch` (0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
+  Get the sound playback position of channel `ch`(0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
 
 ### Math
 
