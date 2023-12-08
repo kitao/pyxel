@@ -416,7 +416,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Zeige das Fenster und warte bis die `Esc` Taste gedrückt wird.
 
 - `flip()`<br>
-  Verschiebt den Bildschirm um ein Bild. Die Anwendung wird beendet, wenn die Taste `Esc` gedrückt wird. Diese Funktion funktioniert nur auf Nicht-Web-Plattformen.
+  Verschiebt den Bildschirm um ein Bild. Die Anwendung wird beendet, wenn die Taste `Esc` gedrückt wird. Diese Funktion funktioniert nicht in der Web-Version.
 
 - `quit()`<br>
   Beende das Pyxel-Programm.
