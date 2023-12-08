@@ -54,7 +54,7 @@ def cleanup_list(list):
 def load_bgm(msc, filename, snd1, snd2, snd3):
     # Loads a json file for 8bit BGM generator by frenchbread.
     # Each track is stored in snd1, snd2 and snd3 of the sound
-    # respectively and registered in msd of the music.
+    # respectively and registered in msc of the music.
     import json
 
     with open(filename, "rt") as file:
