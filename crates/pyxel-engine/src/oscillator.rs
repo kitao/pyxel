@@ -79,11 +79,7 @@ impl Oscillator {
 
     pub fn update(&mut self, blip_buf: &mut BlipBuf) {
         if self.duration == 0 {
-            if self.amplitude != 0 {
-                blip_buf.add_delta(0, -(self.amplitude as i32));
-            }
             self.time = 0;
-            self.amplitude = 0;
             return;
         }
         let pitch = self.pitch
