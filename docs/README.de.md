@@ -468,6 +468,9 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `pal(col1, col2)`<br>
   Ersetze Farbe `col1` mit `col2` beim zeichnen. Mit `pal()` lässt sich die Pallete auf die initiale zurücksetzen
 
+- `dither(alpha)`<br>
+  Wendet Dithering (Pseudo-Transparenz) beim Zeichnen an. Setzen Sie `alpha` in den Bereich 0.0-1.0, wobei 0.0 transparent und 1.0 undurchsichtig ist.
+
 - `cls(col)`<br>
   Das Fenster mit der Farbe `col` füllen
 

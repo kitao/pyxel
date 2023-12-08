@@ -471,6 +471,9 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
 - `pal(col1, col2)`<br>
   Remplace la couleur `col1` avec `col2` au dessin. `pal()` pour réinitialiser la palette de couleurs
 
+- `dither(alpha)`<br>
+  Applique le tramage (pseudo-transparence) au dessin. Fixe `alpha` dans l'intervalle 0.0-1.0, où 0.0 est transparent et 1.0 est opaque.
+
 - `cls(col)`<br>
   Efface l’écran avec la couleur `col`
 

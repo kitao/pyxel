@@ -469,6 +469,9 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 - `pal(col1, col2)`<br>
   Rimpiazza colore `col1` con `col2` al momento di disegno. `pal()` per tornare alla palette iniziale
 
+- `dither(alpha)`<br>
+  Applica il dithering (pseudo-trasparenza) al disegno. Impostare `alpha` nell'intervallo 0,0-1,0, dove 0,0 è trasparente e 1,0 è opaco.
+
 - `cls(col)`<br>
   Riempie lo schermo con `col`
 
