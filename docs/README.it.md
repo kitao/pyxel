@@ -291,8 +291,6 @@ Può anche essere eseguito come un normale script Python:
 python3 PYTHON_SCRIPT_FILE
 ```
 
-(Per Windows, digita `python` anzichè `python3`)
-
 ### Controlli speciali
 
 I controlli seguenti speciali possono essere eseguite mentre viene eseguita un'applicazione Pyxel:
@@ -305,6 +303,8 @@ I controlli seguenti speciali possono essere eseguite mentre viene eseguita un'a
   Resetta il tempo d'inizio della registrazione schermo
 - `Alt(Option)+3`<br>
   Salva la registrazione schermo sul desktop (fino a 10 secondi)
+- `Alt(Option)+9`<br>
+  Passare da una modalità all'altra (Crisp, Smooth, Retro)
 - `Alt(Option)+0`<br>
   Alterna il monitor di performance (fps, tempo d'aggiornamento, e tempo di disegno)
 - `Alt(Option)+Enter`<br>
@@ -424,8 +424,8 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 
 ### Risorse
 
-- `load(filename, [image], [tilemap], [sound], [music])`<br>
-  Carica il file risorsa (.pyxres). Se `False` è specificato per il tipo di risorsa (`image/tilemap/sound/music`), la risorsa non sarà caricata. Se nella stessa posizione del file di risorse esiste un file di tavolozza (.pyxpal) con lo stesso nome, anche il colore di visualizzazione della tavolozza verrà modificato. Il file della tavolozza è una voce esadecimale dei colori di visualizzazione, separata da linee nuove. Il file della tavolozza può essere utilizzato anche per modificare i colori visualizzati nell'Editor Pyxel.
+- `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
+  Carica il file risorsa (.pyxres). Se un'opzione è `True`, la risorsa non verrà caricata. Se esiste un file di tavolozza (.pyxpal) con lo stesso nome nella stessa posizione del file di risorsa, anche il colore di visualizzazione della tavolozza verrà modificato. Il file della tavolozza è una voce esadecimale dei colori di visualizzazione (ad esempio, `1100FF`), separata da newline. Il file della tavolozza può essere usato anche per cambiare i colori visualizzati nell'Editor Pyxel.
 
 ### Input
 
@@ -453,12 +453,12 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Lista della palette colori del display. Il colore del display è specificato tramite un valore numerico a 24-bit. Usare `colors.from_list` e `colors.to_list` per assegnare direttamente e recuperare le liste Python.<br>
   e.g. `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
-- `image(img)`<br>
-  Opera il banco immagine `img` (0-2). (Vedere la classe Image)<br>
-  e.g. `pyxel.image(0).load(0, 0, "title.png")`
+- `images`<br>
+  Elenco dei banchi immagine (0-2). (Vedere la classe Image)<br>
+  e.g. `pyxel.images[0].load(0, 0, "title.png")`
 
-- `tilemap(tm)`<br>
-  Opera la tilemap `tm`(0-7) (Vedere la classe Tilemap)
+- `tilemaps`<br>
+  Elenco delle tilemaps (0-7). (Vedere la classe Tilemap)
 
 - `clip(x, y, w, h)`<br>
   Imposta l'area di disegno dello schermo da (`x`, `y`) a lunghezza `w` e altezza `h`. Resettare l'area di disegno a schermo intero con `clip()`
@@ -523,12 +523,12 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 
 ### Audio
 
-- `sound(snd)`<br>
-  Opera il suono `snd`(0-63). (Vedere classe Sound).<br>
-  per esempio: `pyxel.sound(0).speed = 60`
+- `sounds`<br>
+  Elenco dei suoni (0-63). (Vedere classe Sound)<br>
+  per esempio: `pyxel.sounds[0].speed = 60`
 
-- `music(msc)`<br>
-  Opera la musica `msc`(0-7) (Vedere la classe Music)
+- `musics`<br>
+  Elenco delle musiche (0-7). (Vedere la classe Music)
 
 - `play(ch, snd, [tick], [loop])`<br>
   Riproduce il suono `snd` (0-63) sul canale `ch` (0-3). Se `snd` è una lista, verrà riprodotta in ordine. La posizione di inizio della riproduzione può essere specificata da `tick` (1 tick = 1/120 secondi). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
@@ -593,7 +593,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 
 - `set(x, y, data)`<br>
   Imposta l'immagine a (`x`, `y`) tramite una lista di stringhe.<br>
-  e.g. `pyxel.image(0).set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  e.g. `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
   Carica il file immagine (png/gif/jpeg) in (`x`, `y`).
@@ -603,7 +603,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 - `width`, `height`<br>
   Lunghezza e altezza della tilemap
 
-- `refimg`<br>
+- `imgsrc`<br>
   Il banco immagine (0-2) referenziato dalla tilemap
 
 - `set(x, y, data)`<br>
@@ -638,28 +638,28 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 
 - `set_notes(notes)`<br>
   Imposta le note con una stringa composta da 'CDEFGAB'+'#-'+'01234' o 'R'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
-  e.g. `pyxel.sound(0).set_notes("G2B-2D3R RF3F3F3")`
+  e.g. `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
   Imposta le tonalità con una stringa formata da 'TSPN'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
-  e.g. `pyxel.sound(0).set_tones("TTSS PPPN")`
+  e.g. `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
   Imposta i volumi con una stringa formata da '01234567'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
-  e.g. `pyxel.sound(0).set_volumes("7777 7531")`
+  e.g. `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
   Imposta gli effetti con una stringa formata da 'NSVF'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
-  e.g. `pyxel.sound(0).set_effects("NFNF NVVS")`
+  e.g. `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Music Class
 
-- `snds_list`<br>
+- `seqs`<br>
   Lista bidimensionale di suoni (0-63) con il numero di canali.
 
-- `set(snds0, snds1, snds2, snds3)`<br>
+- `set(seq0, seq1, seq2, seq3)`<br>
   Imposta l'elenco di suoni (0-63) di tutti i canali. Se è indicata una lista vuota, quel canale non viene utilizzato per la riproduzione.<br>
-  e.g. `pyxel.music(0).set([0, 1], [2, 3], [4], [])`
+  e.g. `pyxel.musics[0].set([0, 1], [2, 3], [4], [])`
 
 ### Advanced APIs
 
