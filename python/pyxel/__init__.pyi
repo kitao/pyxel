@@ -1,6 +1,6 @@
 # flake8: noqa
 from ctypes import POINTER, c_uint8
-from typing import Callable, List, Optional, Tuple, Union
+from typing import Callable, Generic, List, Optional, Tuple, TypeVar, Union
 
 # Constants
 VERSION: str
@@ -10,7 +10,7 @@ WATCH_INFO_FILE_ENVVAR: str
 APP_FILE_EXTENSION: str
 APP_STARTUP_SCRIPT_FILE: str
 RESOURCE_FILE_EXTENSION: str
-RESOURCE_ARCHIVE_DIRNAME: str
+PALETTE_FILE_EXTENSION: str
 
 NUM_COLORS: int
 NUM_IMAGES: int
@@ -54,16 +54,17 @@ EFFECT_VIBRATO: int
 EFFECT_FADEOUT: int
 
 # Keys
-KEY_BACKSPACE: int
-KEY_TAB: int
+KEY_UNKNOWN: int
 KEY_RETURN: int
 KEY_ESCAPE: int
+KEY_BACKSPACE: int
+KEY_TAB: int
 KEY_SPACE: int
 KEY_EXCLAIM: int
 KEY_QUOTEDBL: int
 KEY_HASH: int
-KEY_DOLLAR: int
 KEY_PERCENT: int
+KEY_DOLLAR: int
 KEY_AMPERSAND: int
 KEY_QUOTE: int
 KEY_LEFTPAREN: int
@@ -123,7 +124,6 @@ KEY_W: int
 KEY_X: int
 KEY_Y: int
 KEY_Z: int
-KEY_DELETE: int
 KEY_CAPSLOCK: int
 KEY_F1: int
 KEY_F2: int
@@ -143,6 +143,7 @@ KEY_PAUSE: int
 KEY_INSERT: int
 KEY_HOME: int
 KEY_PAGEUP: int
+KEY_DELETE: int
 KEY_END: int
 KEY_PAGEDOWN: int
 KEY_RIGHT: int
@@ -289,6 +290,10 @@ KEY_KBDILLUMDOWN: int
 KEY_KBDILLUMUP: int
 KEY_EJECT: int
 KEY_SLEEP: int
+KEY_APP1: int
+KEY_APP2: int
+KEY_AUDIOREWIND: int
+KEY_AUDIOFASTFORWARD: int
 KEY_NONE: int
 KEY_SHIFT: int
 KEY_CTRL: int
@@ -350,11 +355,64 @@ GAMEPAD2_BUTTON_DPAD_DOWN: int
 GAMEPAD2_BUTTON_DPAD_LEFT: int
 GAMEPAD2_BUTTON_DPAD_RIGHT: int
 
+GAMEPAD3_AXIS_LEFTX: int
+GAMEPAD3_AXIS_LEFTY: int
+GAMEPAD3_AXIS_RIGHTX: int
+GAMEPAD3_AXIS_RIGHTY: int
+GAMEPAD3_AXIS_TRIGGERLEFT: int
+GAMEPAD3_AXIS_TRIGGERRIGHT: int
+GAMEPAD3_BUTTON_A: int
+GAMEPAD3_BUTTON_B: int
+GAMEPAD3_BUTTON_X: int
+GAMEPAD3_BUTTON_Y: int
+GAMEPAD3_BUTTON_BACK: int
+GAMEPAD3_BUTTON_GUIDE: int
+GAMEPAD3_BUTTON_START: int
+GAMEPAD3_BUTTON_LEFTSTICK: int
+GAMEPAD3_BUTTON_RIGHTSTICK: int
+GAMEPAD3_BUTTON_LEFTSHOULDER: int
+GAMEPAD3_BUTTON_RIGHTSHOULDER: int
+GAMEPAD3_BUTTON_DPAD_UP: int
+GAMEPAD3_BUTTON_DPAD_DOWN: int
+GAMEPAD3_BUTTON_DPAD_LEFT: int
+GAMEPAD3_BUTTON_DPAD_RIGHT: int
+
+GAMEPAD4_AXIS_LEFTX: int
+GAMEPAD4_AXIS_LEFTY: int
+GAMEPAD4_AXIS_RIGHTX: int
+GAMEPAD4_AXIS_RIGHTY: int
+GAMEPAD4_AXIS_TRIGGERLEFT: int
+GAMEPAD4_AXIS_TRIGGERRIGHT: int
+GAMEPAD4_BUTTON_A: int
+GAMEPAD4_BUTTON_B: int
+GAMEPAD4_BUTTON_X: int
+GAMEPAD4_BUTTON_Y: int
+GAMEPAD4_BUTTON_BACK: int
+GAMEPAD4_BUTTON_GUIDE: int
+GAMEPAD4_BUTTON_START: int
+GAMEPAD4_BUTTON_LEFTSTICK: int
+GAMEPAD4_BUTTON_RIGHTSTICK: int
+GAMEPAD4_BUTTON_LEFTSHOULDER: int
+GAMEPAD4_BUTTON_RIGHTSHOULDER: int
+GAMEPAD4_BUTTON_DPAD_UP: int
+GAMEPAD4_BUTTON_DPAD_DOWN: int
+GAMEPAD4_BUTTON_DPAD_LEFT: int
+GAMEPAD4_BUTTON_DPAD_RIGHT: int
+
+# Sequence
+T = TypeVar("T")
+
+class Seq(Generic[T]):
+    def __len__(self) -> None: ...
+    def __getitem__(self, idx: int) -> T: ...
+    def __setitem__(self, idx: int, value: T) -> T: ...
+    def from_list(self, lst: List[T]) -> None: ...
+    def to_list(self) -> List[T]: ...
+
 # System
 width: int
 height: int
 frame_count: int
-is_fullscreen: bool
 
 def init(
     width: int,
@@ -367,43 +425,49 @@ def init(
     capture_scale: Optional[int] = None,
     capture_sec: Optional[int] = None,
 ) -> None: ...
-def title(title: str) -> None: ...
-def icon(data: List[str], scale: int) -> None: ...
-def fullscreen(full: bool) -> None: ...
 def run(update: Callable[[], None], draw: Callable[[], None]) -> None: ...
 def show() -> None: ...
 def flip() -> None: ...
 def quit() -> None: ...
+def title(title: str) -> None: ...
+def icon(data: List[str], scale: int, colkey: Optional[int]) -> None: ...
+def fullscreen(full: bool) -> None: ...
+def screen_mode(scr: int) -> None: ...
 def process_exists(pid: int) -> bool: ...
 
 # Resource
 def load(
     filename: str,
     *,
-    image: Optional[bool] = None,
-    tilemap: Optional[bool] = None,
-    sound: Optional[bool] = None,
-    music: Optional[bool] = None,
+    excl_images: Optional[bool] = None,
+    excl_tilemaps: Optional[bool] = None,
+    excl_sounds: Optional[bool] = None,
+    excl_musics: Optional[bool] = None,
+    incl_colors: Optional[bool] = None,
+    incl_channels: Optional[bool] = None,
+    incl_waveforms: Optional[bool] = None,
 ) -> None: ...
 def save(
     filename: str,
     *,
-    image: Optional[bool] = None,
-    tilemap: Optional[bool] = None,
-    sound: Optional[bool] = None,
-    music: Optional[bool] = None,
+    excl_images: Optional[bool] = None,
+    excl_tilemaps: Optional[bool] = None,
+    excl_sounds: Optional[bool] = None,
+    excl_musics: Optional[bool] = None,
+    incl_colors: Optional[bool] = None,
+    incl_channels: Optional[bool] = None,
+    incl_waveforms: Optional[bool] = None,
 ) -> None: ...
 def screenshot(scale: Optional[int] = None) -> None: ...
-def reset_capture() -> None: ...
 def screencast(scale: Optional[int] = None) -> None: ...
+def reset_screencast() -> None: ...
 
 # Input
 mouse_x: int
 mouse_y: int
 mouse_wheel: int
-input_keys: List[int]
 input_text: str
-drop_files: List[str]
+dropped_files: List[str]
 
 def btn(key: int) -> bool: ...
 def btnp(
@@ -412,21 +476,19 @@ def btnp(
 def btnr(key: int) -> bool: ...
 def btnv(key: int) -> int: ...
 def mouse(visible: bool) -> None: ...
-def set_btn(key: int, state: bool) -> None: ...
-def set_btnv(key: int, val: float) -> None: ...
-def set_mouse_pos(x: float, y: float) -> None: ...
+def warp_mouse(x: float, y: float) -> None: ...
 
 # Graphics
 class Image: ...
 class Tilemap: ...
 
-colors: List[int]
+colors: Seq[int]
+images: Seq[Image]
+tilemaps: Seq[Tilemap]
 screen: Image
 cursor: Image
 font: Image
 
-def image(img: int) -> Image: ...
-def tilemap(tm: int) -> Tilemap: ...
 def clip(
     x: Optional[float] = None,
     y: Optional[float] = None,
@@ -438,6 +500,7 @@ def camera(
     y: Optional[float] = None,
 ) -> None: ...
 def pal(col1: Optional[int] = None, col2: Optional[int] = None) -> None: ...
+def dither(alpha: float) -> None: ...
 def cls(col: int) -> None: ...
 def pget(x: float, y: float) -> int: ...
 def pset(x: float, y: float, col: int) -> None: ...
@@ -493,14 +556,16 @@ def text(x: float, y: float, s: str, col: int) -> None: ...
 class Channel: ...
 class Sound: ...
 class Music: ...
+class Waveform: ...
 
-def channel(ch: int) -> Channel: ...
-def sound(snd: int) -> Sound: ...
-def music(msc: int) -> Music: ...
-def play_pos(ch: int) -> Optional[Tuple[int, int]]: ...
+channels: Seq[Channel]
+sounds: Seq[Sound]
+musics: Seq[Music]
+waveforms: Seq[Waveform]
+
 def play(
     ch: int,
-    snd: Union[int, List[int], Sound, List[Sound]],
+    snd: Union[int, Seq[int], Sound, Seq[Sound]],
     *,
     tick: Optional[int] = None,
     loop: Optional[bool] = None,
@@ -509,6 +574,7 @@ def playm(
     msc: int, *, tick: Optional[int] = None, loop: Optional[bool] = None
 ) -> None: ...
 def stop(ch: Optional[int] = None) -> None: ...
+def play_pos(ch: int) -> Optional[Tuple[int, int]]: ...
 
 # Math
 def ceil(x: float) -> int: ...
@@ -528,6 +594,7 @@ def noise(x: float, y: Optional[float] = None, z: Optional[float] = None) -> flo
 class Image:
     width: int
     height: int
+
     def __init__(self, width: int, height: int) -> None: ...
     @staticmethod
     def from_image(filename: str) -> Image: ...
@@ -548,6 +615,7 @@ class Image:
         y: Optional[float] = None,
     ) -> None: ...
     def pal(self, col1: Optional[int] = None, col2: Optional[int] = None) -> None: ...
+    def dither(self, alpha: float) -> None: ...
     def cls(self, col: int) -> None: ...
     def pget(self, x: float, y: float) -> int: ...
     def pset(self, x: float, y: float, col: int) -> None: ...
@@ -593,8 +661,8 @@ class Image:
 class Tilemap:
     width: int
     height: int
-    image: Image
-    refimg: Optional[int]
+    imgsrc: Union[int, Image]
+
     def __init__(self, width: int, height: int, img: Union[int, Image]) -> None: ...
     def data_ptr(self) -> POINTER(c_uint8): ...
     def set(self, x: int, y: int, data: List[str]) -> None: ...
@@ -663,26 +731,33 @@ class Tilemap:
         tilekey: Optional[Tuple[int, int]] = None,
     ) -> None: ...
 
+    # Deprecated field
+    image: Image
+    refimg: Optional[int]
+
 # Channel class
 class Channel:
-    gain: int
-    def play_pos(self) -> Optional[Tuple[int, int]]: ...
+    gain: float
+    detune: int
+
     def play(
         self,
-        snd: Union[int, List[int], Sound, List[Sound]],
+        snd: Union[int, Seq[int], Sound, Seq[Sound]],
         *,
         tick: Optional[int] = None,
         loop: Optional[bool] = None,
     ) -> None: ...
     def stop(self) -> None: ...
+    def play_pos(self) -> Optional[Tuple[int, int]]: ...
 
 # Sound class
 class Sound:
-    notes: List[int]
-    tones: List[int]
-    volumes: List[int]
-    effects: List[int]
+    notes: Seq[int]
+    tones: Seq[int]
+    volumes: Seq[int]
+    effects: Seq[int]
     speed: int
+
     def __init__(self) -> None: ...
     def set(
         self,
@@ -699,12 +774,26 @@ class Sound:
 
 # Music class
 class Music:
-    snds_list: List[List[int]]
+    seqs: Seq[Seq[int]]
+
     def __init__(self) -> None: ...
     def set(
         self,
-        snds0: List[int],
-        snds1: List[int],
-        snds2: List[int],
-        snds3: List[int],
+        *seqs: List[int],
     ) -> None: ...
+
+    # Deprecated field
+    snds_list: Seq[Seq[int]]
+
+# Waveform class
+class Waveform:
+    gain: float
+    noise: int
+    table: Seq[int]
+
+# Deprecated functions
+def image(img: int) -> Image: ...
+def tilemap(tm: int) -> Tilemap: ...
+def channel(ch: int) -> Channel: ...
+def sound(snd: int) -> Sound: ...
+def music(msc: int) -> Music: ...
