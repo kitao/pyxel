@@ -34,26 +34,6 @@ jobs:
           tag_name: ${{ github.ref }}
           files: dist/*
 
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          default: true
-
-      - name: Publish crates
-        continue-on-error: true
-        run: |
-          cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
-          cd crates/pyxel-platform
-          cargo publish
-          sleep 60
-          cd crates/pyxel-engine
-          cargo publish
-          sleep 60
-          cd ../pyxel-wrapper
-          cargo publish
-
       - name: Install Python
         uses: actions/setup-python@v4
         with:

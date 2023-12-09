@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.1
+
+- Removed the crate publish from the release script
+
 ## 2.0.0
 
 - Changed to use the C version of SDL2
