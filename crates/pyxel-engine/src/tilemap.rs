@@ -2,7 +2,7 @@ use crate::canvas::{Canvas, ToIndex};
 use crate::image::SharedImage;
 use crate::utils::{f64_to_u32, parse_hex_string, simplify_string};
 
-pub type TileCoord = u16;
+pub type TileCoord = u8;
 pub type Tile = (TileCoord, TileCoord);
 
 impl ToIndex for Tile {

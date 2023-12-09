@@ -54,7 +54,7 @@ struct TilemapData {
     width: u32,
     height: u32,
     imgsrc: u32,
-    data: Vec<Vec<u16>>,
+    data: Vec<Vec<TileCoord>>,
 }
 
 impl TilemapData {
