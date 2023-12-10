@@ -103,7 +103,8 @@ format:
 build: format
 	@$(ENSURE_TARGET)
 	@$(SCRIPTS_DIR)/make_abspath_readme
-	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --skip-auditwheel
+	@RUSTFLAGS="$(RUSTFLAGS) --remap-path-prefix $(CURDIR)=pyxel" \
+	maturin build -o $(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --skip-auditwheel
 
 install: build
 	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
