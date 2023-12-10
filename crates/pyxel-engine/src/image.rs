@@ -184,7 +184,7 @@ impl Image {
 
     pub fn pal0(&mut self) {
         for i in 0..self.palette.len() {
-            self.palette[i as usize] = i as Color;
+            self.palette[i] = i as Color;
         }
     }
 
