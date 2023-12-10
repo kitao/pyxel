@@ -17,6 +17,11 @@ impl Channel {
 
 #[pymethods]
 impl Channel {
+    #[new]
+    pub fn new() -> Self {
+        Self::wrap(pyxel::Channel::new())
+    }
+
     #[getter]
     pub fn get_gain(&self) -> pyxel::Gain {
         self.inner.lock().gain
