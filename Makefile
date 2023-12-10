@@ -78,11 +78,11 @@ distclean:
 
 lint:
 	@cd $(CRATES_DIR)/pyxel-platform; cargo +nightly clippy $(CLIPPY_OPTS)
-	@cd $(CRATES_DIR)/pyxel-platform; $(WASM_ENV) cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
+	@cd $(CRATES_DIR)/pyxel-platform; cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
 	@cd $(CRATES_DIR)/pyxel-engine; cargo +nightly clippy $(CLIPPY_OPTS)
-	@cd $(CRATES_DIR)/pyxel-engine; $(WASM_ENV) cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
+	@cd $(CRATES_DIR)/pyxel-engine; cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
 	@cd $(CRATES_DIR)/pyxel-wrapper; cargo +nightly clippy $(CLIPPY_OPTS)
-	@cd $(CRATES_DIR)/pyxel-wrapper; $(WASM_ENV) cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
+	@cd $(CRATES_DIR)/pyxel-wrapper; cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
 	@flake8 $(SCRIPTS_DIR) $(PYXEL_DIR)
 
 update:
