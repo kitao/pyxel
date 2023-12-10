@@ -183,7 +183,7 @@ impl Image {
     }
 
     pub fn pal0(&mut self) {
-        for i in 0..=Color::MAX {
+        for i in 0..MAX_COLORS {
             self.palette[i as usize] = i as Color;
         }
     }
