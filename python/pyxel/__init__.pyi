@@ -740,6 +740,7 @@ class Channel:
     gain: float
     detune: int
 
+    def __init__(self) -> None: ...
     def play(
         self,
         snd: Union[int, Seq[int], Sound, Seq[Sound]],
