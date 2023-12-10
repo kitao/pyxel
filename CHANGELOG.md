@@ -3,6 +3,8 @@
 ## 2.0.1
 
 - Removed the crate publish from the release script
+- Changed the type of tile coordinates from u16 back to u8
+- Removed source code path from the binary
 
 ## 2.0.0
 
