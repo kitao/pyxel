@@ -2,7 +2,7 @@ use crate::oscillator::Gain;
 use crate::settings::NUM_WAVEFORM_STEPS;
 
 pub type Amp4 = u8;
-pub type WaveformTable = [Amp4; NUM_WAVEFORM_STEPS as usize];
+pub type Waveform = [Amp4; NUM_WAVEFORM_STEPS as usize];
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum Noise {
@@ -29,26 +29,26 @@ impl Noise {
     }
 }
 
-pub struct Waveform {
+pub struct Tone {
     pub gain: Gain,
     pub noise: Noise,
-    pub table: WaveformTable,
+    pub waveform: Waveform,
 }
 
-pub type SharedWaveform = shared_type!(Waveform);
+pub type SharedTone = shared_type!(Tone);
 
-impl Waveform {
-    pub fn new() -> SharedWaveform {
+impl Tone {
+    pub fn new() -> SharedTone {
         new_shared_type!(Self {
             gain: 1.0,
             noise: Noise::Off,
-            table: [0; NUM_WAVEFORM_STEPS as usize],
+            waveform: [0; NUM_WAVEFORM_STEPS as usize],
         })
     }
 
     pub fn amplitude(&self, phase: u32, noise_reg: &mut u16) -> f64 {
         (match self.noise {
-            Noise::Off => self.table[phase as usize] as f64 / 7.5 - 1.0,
+            Noise::Off => self.waveform[phase as usize] as f64 / 7.5 - 1.0,
             Noise::ShortPeriod | Noise::LongPeriod => {
                 if phase % 8 == 0 {
                     let bit = if self.noise == Noise::LongPeriod {

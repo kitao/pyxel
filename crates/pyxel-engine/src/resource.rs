@@ -10,7 +10,7 @@ use zip::{ZipArchive, ZipWriter};
 
 use crate::image::Rgb24;
 use crate::pyxel::Pyxel;
-use crate::resource_data::ResourceData;
+use crate::resource_data::{ResourceData1, ResourceData2};
 use crate::screencast::Screencast;
 use crate::settings::{DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC};
 use crate::{PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_NAME, RESOURCE_FORMAT_VERSION};
@@ -41,7 +41,7 @@ impl Pyxel {
         exclude_musics: Option<bool>,
         include_colors: Option<bool>,
         include_channels: Option<bool>,
-        include_waveforms: Option<bool>,
+        include_tones: Option<bool>,
     ) {
         let mut archive = ZipArchive::new(
             File::open(Path::new(&filename))
@@ -51,10 +51,7 @@ impl Pyxel {
 
         // Old resource file
         if archive.by_name("pyxel_resource/version").is_ok() {
-            println!(
-                "An old Pyxel resource file '{}' is loaded. Please re-save it with the latest Pyxel.",
-                Path::new(filename).file_name().unwrap().to_str().unwrap()
-            );
+            Self::warn_format_version(filename);
             self.load_old_resource(
                 &mut archive,
                 filename,
@@ -70,21 +67,38 @@ impl Pyxel {
         let mut file = archive.by_name(RESOURCE_ARCHIVE_NAME).unwrap();
         let mut toml_text = String::new();
         file.read_to_string(&mut toml_text).unwrap();
-        let resource_data = ResourceData::from_toml(&toml_text);
-        assert!(
-            resource_data.format_version >= RESOURCE_FORMAT_VERSION,
-            "Resource file version is too new"
-        );
-        resource_data.to_runtime(
-            self,
-            exclude_images.unwrap_or(false),
-            exclude_tilemaps.unwrap_or(false),
-            exclude_sounds.unwrap_or(false),
-            exclude_musics.unwrap_or(false),
-            include_colors.unwrap_or(false),
-            include_channels.unwrap_or(false),
-            include_waveforms.unwrap_or(false),
-        );
+        let format_version = Self::parse_format_version(&toml_text);
+        if format_version == 2 {
+            let resource_data = ResourceData2::from_toml(&toml_text);
+            resource_data.to_runtime(
+                self,
+                exclude_images.unwrap_or(false),
+                exclude_tilemaps.unwrap_or(false),
+                exclude_sounds.unwrap_or(false),
+                exclude_musics.unwrap_or(false),
+                include_colors.unwrap_or(false),
+                include_channels.unwrap_or(false),
+                include_tones.unwrap_or(false),
+            );
+        } else if format_version == 1 {
+            Self::warn_format_version(filename);
+            let resource_data = ResourceData1::from_toml(&toml_text);
+            resource_data.to_runtime(
+                self,
+                exclude_images.unwrap_or(false),
+                exclude_tilemaps.unwrap_or(false),
+                exclude_sounds.unwrap_or(false),
+                exclude_musics.unwrap_or(false),
+                include_colors.unwrap_or(false),
+                include_channels.unwrap_or(false),
+                include_tones.unwrap_or(false),
+            );
+        } else {
+            assert!(
+                format_version <= RESOURCE_FORMAT_VERSION,
+                "Unknown resource file version"
+            );
+        }
 
         // Pyxel palette file
         let filename = filename
@@ -114,16 +128,16 @@ impl Pyxel {
         exclude_musics: Option<bool>,
         include_colors: Option<bool>,
         include_channels: Option<bool>,
-        include_waveforms: Option<bool>,
+        include_tones: Option<bool>,
     ) {
-        let toml_text = ResourceData::from_runtime(self).to_toml(
+        let toml_text = ResourceData2::from_runtime(self).to_toml(
             exclude_images.unwrap_or(false),
             exclude_tilemaps.unwrap_or(false),
             exclude_sounds.unwrap_or(false),
             exclude_musics.unwrap_or(false),
             include_colors.unwrap_or(false),
             include_channels.unwrap_or(false),
-            include_waveforms.unwrap_or(false),
+            include_tones.unwrap_or(false),
         );
         let path = std::path::Path::new(&filename);
         let file = std::fs::File::create(path)
@@ -185,5 +199,25 @@ impl Pyxel {
                 chrono::Local::now().format("%Y%m%d-%H%M%S").to_string()
             }
         }
+    }
+
+    fn parse_format_version(toml_text: &str) -> u32 {
+        toml_text
+            .split('\n')
+            .next()
+            .unwrap()
+            .split_once('=')
+            .unwrap()
+            .1
+            .trim()
+            .parse::<u32>()
+            .unwrap()
+    }
+
+    fn warn_format_version(filename: &str) {
+        println!(
+            "An old Pyxel resource file '{}' is loaded. Please re-save it with the latest Pyxel.",
+            Path::new(filename).file_name().unwrap().to_str().unwrap()
+        );
     }
 }

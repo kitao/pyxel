@@ -445,7 +445,7 @@ def load(
     excl_musics: Optional[bool] = None,
     incl_colors: Optional[bool] = None,
     incl_channels: Optional[bool] = None,
-    incl_waveforms: Optional[bool] = None,
+    incl_tones: Optional[bool] = None,
 ) -> None: ...
 def save(
     filename: str,
@@ -456,7 +456,7 @@ def save(
     excl_musics: Optional[bool] = None,
     incl_colors: Optional[bool] = None,
     incl_channels: Optional[bool] = None,
-    incl_waveforms: Optional[bool] = None,
+    incl_tones: Optional[bool] = None,
 ) -> None: ...
 def screenshot(scale: Optional[int] = None) -> None: ...
 def screencast(scale: Optional[int] = None) -> None: ...
@@ -554,14 +554,14 @@ def text(x: float, y: float, s: str, col: int) -> None: ...
 
 # Audio
 class Channel: ...
+class Tone: ...
 class Sound: ...
 class Music: ...
-class Waveform: ...
 
 channels: Seq[Channel]
+tones: Seq[Tone]
 sounds: Seq[Sound]
 musics: Seq[Music]
-waveforms: Seq[Waveform]
 
 def play(
     ch: int,
@@ -751,6 +751,14 @@ class Channel:
     def stop(self) -> None: ...
     def play_pos(self) -> Optional[Tuple[int, int]]: ...
 
+# Tone class
+class Tone:
+    gain: float
+    noise: int
+    waveform: Seq[int]
+
+    def __init__(self) -> None: ...
+
 # Sound class
 class Sound:
     notes: Seq[int]
@@ -785,12 +793,6 @@ class Music:
 
     # Deprecated field
     snds_list: Seq[Seq[int]]
-
-# Waveform class
-class Waveform:
-    gain: float
-    noise: int
-    table: Seq[int]
 
 # Deprecated functions
 def image(img: int) -> Image: ...
