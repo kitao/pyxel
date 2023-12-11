@@ -5,6 +5,9 @@
 - Removed the crate publish from the release script
 - Changed the type of tile coordinates from u16 back to u8
 - Removed source code path from the binary
+- Renamed Waveform and waveforms to Tone and tones
+- Updated the resource file format for the tones
+- Added the example 14
 
 ## 2.0.0
 
