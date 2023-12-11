@@ -14,14 +14,14 @@ use crate::music::{Music, SharedMusic};
 use crate::resource::Resource;
 use crate::settings::{
     CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, DEFAULT_COLORS, DEFAULT_FPS, DEFAULT_QUIT_KEY,
-    DEFAULT_TITLE, DEFAULT_WAVEFORMS, DISPLAY_RATIO, FONT_DATA, FONT_HEIGHT, FONT_WIDTH,
-    ICON_COLKEY, ICON_DATA, ICON_SCALE, IMAGE_SIZE, NUM_CHANNELS, NUM_FONT_ROWS, NUM_IMAGES,
-    NUM_MUSICS, NUM_SAMPLES, NUM_SOUNDS, NUM_TILEMAPS, NUM_WAVEFORMS, SAMPLE_RATE, TILEMAP_SIZE,
+    DEFAULT_TITLE, DEFAULT_TONES, DISPLAY_RATIO, FONT_DATA, FONT_HEIGHT, FONT_WIDTH, ICON_COLKEY,
+    ICON_DATA, ICON_SCALE, IMAGE_SIZE, NUM_CHANNELS, NUM_FONT_ROWS, NUM_IMAGES, NUM_MUSICS,
+    NUM_SAMPLES, NUM_SOUNDS, NUM_TILEMAPS, NUM_TONES, SAMPLE_RATE, TILEMAP_SIZE,
 };
 use crate::sound::{SharedSound, Sound};
 use crate::system::System;
 use crate::tilemap::{ImageSource, SharedTilemap, Tilemap};
-use crate::waveform::{SharedWaveform, Waveform};
+use crate::tone::{SharedTone, Tone};
 
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
@@ -73,26 +73,26 @@ pub static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
 pub static CHANNELS: Lazy<shared_type!(Vec<SharedChannel>)> =
     Lazy::new(|| new_shared_type!((0..NUM_CHANNELS).map(|_| Channel::new()).collect()));
 
+pub static TONES: Lazy<shared_type!(Vec<SharedTone>)> = Lazy::new(|| {
+    new_shared_type!((0..NUM_TONES)
+        .map(|index| {
+            let tone = Tone::new();
+            {
+                let mut tone = tone.lock();
+                tone.gain = DEFAULT_TONES[index as usize].0;
+                tone.noise = DEFAULT_TONES[index as usize].1;
+                tone.waveform = DEFAULT_TONES[index as usize].2;
+            }
+            tone
+        })
+        .collect())
+});
+
 static SOUNDS: Lazy<shared_type!(Vec<SharedSound>)> =
     Lazy::new(|| new_shared_type!((0..NUM_SOUNDS).map(|_| Sound::new()).collect()));
 
 static MUSICS: Lazy<shared_type!(Vec<SharedMusic>)> =
     Lazy::new(|| new_shared_type!((0..NUM_MUSICS).map(|_| Music::new()).collect()));
-
-pub static WAVEFORMS: Lazy<shared_type!(Vec<SharedWaveform>)> = Lazy::new(|| {
-    new_shared_type!((0..NUM_WAVEFORMS)
-        .map(|index| {
-            let waveform = Waveform::new();
-            {
-                let mut waveform = waveform.lock();
-                waveform.gain = DEFAULT_WAVEFORMS[index as usize].0;
-                waveform.noise = DEFAULT_WAVEFORMS[index as usize].1;
-                waveform.table = DEFAULT_WAVEFORMS[index as usize].2;
-            }
-            waveform
-        })
-        .collect())
-});
 
 pub struct Pyxel {
     // System
@@ -122,11 +122,10 @@ pub struct Pyxel {
     pub font: SharedImage,
 
     // Audio
-    //pub(crate) audio: Audio,
     pub channels: shared_type!(Vec<SharedChannel>),
+    pub tones: shared_type!(Vec<SharedTone>),
     pub sounds: shared_type!(Vec<SharedSound>),
     pub musics: shared_type!(Vec<SharedMusic>),
-    pub waveforms: shared_type!(Vec<SharedWaveform>),
 
     // Math
     pub(crate) math: Math,
@@ -196,9 +195,9 @@ pub fn init(
     // Audio
     let _ = Audio::new(SAMPLE_RATE, NUM_SAMPLES);
     let channels = CHANNELS.clone();
+    let tones = TONES.clone();
     let sounds = SOUNDS.clone();
     let musics = MUSICS.clone();
-    let waveforms = WAVEFORMS.clone();
 
     // Math
     let math = Math::new();
@@ -223,9 +222,9 @@ pub fn init(
         cursor,
         font,
         channels,
+        tones,
         sounds,
         musics,
-        waveforms,
         math,
     };
     pyxel.icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);

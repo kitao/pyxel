@@ -39,8 +39,8 @@ mod settings;
 mod sound;
 mod system;
 mod tilemap;
+mod tone;
 mod watch_info;
-mod waveform;
 
 use pyxel_platform::keys;
 
@@ -48,10 +48,10 @@ pub use crate::channel::{Channel, Detune, Note, SharedChannel, Speed, Volume};
 pub use crate::image::{Color, Image, Rgb24, SharedImage};
 pub use crate::keys::*;
 pub use crate::music::{Music, SharedMusic, SharedSeq};
-pub use crate::oscillator::{Effect, Gain, Tone};
+pub use crate::oscillator::{Effect, Gain};
 pub use crate::pyxel::{init, Pyxel};
 pub use crate::settings::*;
 pub use crate::sound::{SharedSound, Sound};
 pub use crate::system::PyxelCallback;
 pub use crate::tilemap::{ImageSource, SharedTilemap, Tile, TileCoord, Tilemap};
-pub use crate::waveform::{Amp4, Noise, SharedWaveform, Waveform, WaveformTable};
+pub use crate::tone::{Amp4, Noise, SharedTone, Tone, Waveform};
