@@ -188,14 +188,11 @@ impl Pyxel {
 
     fn parse_format_version(toml_text: &str) -> u32 {
         toml_text
-            .split('\n')
-            .next()
+            .lines()
+            .find(|line| line.trim().starts_with("format_version"))
+            .and_then(|line| line.split_once('='))
+            .map(|(_, value)| value.trim().parse::<u32>())
             .unwrap()
-            .split_once('=')
-            .unwrap()
-            .1
-            .trim()
-            .parse::<u32>()
             .unwrap()
     }
 
