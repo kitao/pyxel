@@ -4,7 +4,7 @@ use crate::pyxel_singleton::pyxel;
 
 #[pyfunction]
 #[pyo3(
-    text_signature = "(filename, *, excl_images, excl_tilemaps, excl_sounds, excl_musics, incl_colors, incl_channels, incl_waveforms)"
+    text_signature = "(filename, *, excl_images, excl_tilemaps, excl_sounds, excl_musics, incl_colors, incl_channels, incl_tones)"
 )]
 fn load(
     filename: &str,
@@ -14,7 +14,7 @@ fn load(
     excl_musics: Option<bool>,
     incl_colors: Option<bool>,
     incl_channels: Option<bool>,
-    incl_waveforms: Option<bool>,
+    incl_tones: Option<bool>,
 ) {
     pyxel().load(
         filename,
@@ -24,13 +24,13 @@ fn load(
         excl_musics,
         incl_colors,
         incl_channels,
-        incl_waveforms,
+        incl_tones,
     );
 }
 
 #[pyfunction]
 #[pyo3(
-    text_signature = "(filename, *, excl_images, excl_tilemaps, excl_sounds, excl_musics, incl_colors, incl_channels, incl_waveforms)"
+    text_signature = "(filename, *, excl_images, excl_tilemaps, excl_sounds, excl_musics, incl_colors, incl_channels, incl_tones)"
 )]
 fn save(
     filename: &str,
@@ -40,7 +40,7 @@ fn save(
     excl_musics: Option<bool>,
     incl_colors: Option<bool>,
     incl_channels: Option<bool>,
-    incl_waveforms: Option<bool>,
+    incl_tones: Option<bool>,
 ) {
     pyxel().save(
         filename,
@@ -50,7 +50,7 @@ fn save(
         excl_musics,
         incl_colors,
         incl_channels,
-        incl_waveforms,
+        incl_tones,
     );
 }
 
