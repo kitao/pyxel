@@ -1,11 +1,10 @@
 use crate::blip_buf::BlipBuf;
-use crate::pyxel::WAVEFORMS;
+use crate::pyxel::TONES;
 use crate::settings::{
     CLOCK_RATE, EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_NOISE_REG,
     NUM_CLOCKS_PER_TICK, OSCILLATOR_RESOLUTION, TONE_TRIANGLE, VIBRATO_DEPTH, VIBRATO_FREQUENCY,
 };
 
-pub type Tone = u8;
 pub type Gain = f64;
 pub type Effect = u8;
 
@@ -27,7 +26,7 @@ struct FadeOut {
 
 pub struct Oscillator {
     pitch: f64,
-    tone: Tone,
+    tone: u32,
     gain: Gain,
     effect: Effect,
     duration: u32,
@@ -58,7 +57,7 @@ impl Oscillator {
         }
     }
 
-    pub fn play(&mut self, note: f64, tone: Tone, gain: Gain, effect: Effect, duration: u32) {
+    pub fn play(&mut self, note: f64, tone: u32, gain: Gain, effect: Effect, duration: u32) {
         let last_pitch = self.pitch;
         self.pitch = Self::note_to_pitch(note);
         self.tone = tone;
@@ -95,12 +94,12 @@ impl Oscillator {
                 0.0
             };
         let period = (CLOCK_RATE as f64 / pitch / OSCILLATOR_RESOLUTION as f64) as u32;
-        let waveforms = WAVEFORMS.lock();
-        let waveform = waveforms[self.tone as usize].lock();
+        let tones = TONES.lock();
+        let tone = tones[self.tone as usize].lock();
         while self.time < NUM_CLOCKS_PER_TICK {
             let last_amplitude = self.amplitude;
             self.phase = (self.phase + 1) % OSCILLATOR_RESOLUTION;
-            self.amplitude = (waveform.amplitude(self.phase, &mut self.noise_reg)
+            self.amplitude = (tone.amplitude(self.phase, &mut self.noise_reg)
                 * self.gain
                 * i16::MAX as f64) as i16;
             blip_buf.add_delta(

@@ -23,7 +23,7 @@ macro_rules! wrap_sound_as_python_list {
 }
 
 wrap_sound_as_python_list!(Notes, pyxel::Note, notes);
-wrap_sound_as_python_list!(Tones, pyxel::Tone, tones);
+wrap_sound_as_python_list!(Tones, u32, tones);
 wrap_sound_as_python_list!(Volumes, pyxel::Volume, volumes);
 wrap_sound_as_python_list!(Effects, pyxel::Effect, effects);
 
