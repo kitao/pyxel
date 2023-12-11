@@ -142,19 +142,22 @@ impl ResourceItem for Sound {
                     self.notes.push(parse_hex_string(&value).unwrap() as i8);
                 });
                 continue;
+            } else if i == 1 {
+                string_loop!(j, value, line, 1, {
+                    self.tones.push(parse_hex_string(&value).unwrap() as u32);
+                });
+            } else if i == 2 {
+                string_loop!(j, value, line, 1, {
+                    self.volumes.push(parse_hex_string(&value).unwrap() as u8);
+                });
+            } else if i == 3 {
+                string_loop!(j, value, line, 1, {
+                    self.effects.push(parse_hex_string(&value).unwrap() as u8);
+                });
             } else if i == 4 {
                 self.speed = line.parse().unwrap();
                 continue;
             }
-            let data = match i {
-                1 => &mut self.tones,
-                2 => &mut self.volumes,
-                3 => &mut self.effects,
-                _ => panic!(),
-            };
-            string_loop!(j, value, line, 1, {
-                data.push(parse_hex_string(&value).unwrap() as u8);
-            });
         }
     }
 }

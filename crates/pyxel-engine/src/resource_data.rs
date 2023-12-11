@@ -3,13 +3,13 @@ use serde::{Deserialize, Serialize};
 use crate::channel::{Channel, Detune, Note, Speed, Volume};
 use crate::image::{Color, Image, SharedImage};
 use crate::music::{Music, SharedMusic};
-use crate::oscillator::{Effect, Gain, Tone};
+use crate::oscillator::{Effect, Gain};
 use crate::pyxel::Pyxel;
 use crate::settings::RESOURCE_FORMAT_VERSION;
 use crate::sound::{SharedSound, Sound};
 use crate::tilemap::{ImageSource, SharedTilemap, TileCoord, Tilemap};
+use crate::tone::{Noise, SharedTone, Tone, Waveform};
 use crate::utils::{compress_vec2, expand_vec2};
-use crate::waveform::{Noise, SharedWaveform, Waveform, WaveformTable};
 use crate::{Rgb24, SharedChannel};
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -98,31 +98,31 @@ impl TilemapData {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-struct WaveformData {
+struct ToneData {
     gain: Gain,
     noise: u32,
-    table: WaveformTable,
+    waveform: Waveform,
 }
 
-impl WaveformData {
-    fn from_waveform(waveform: SharedWaveform) -> Self {
-        let waveform = waveform.lock();
+impl ToneData {
+    fn from_tone(tone: SharedTone) -> Self {
+        let tone = tone.lock();
         Self {
-            gain: waveform.gain,
-            noise: waveform.noise.to_index(),
-            table: waveform.table,
+            gain: tone.gain,
+            noise: tone.noise.to_index(),
+            waveform: tone.waveform,
         }
     }
 
-    fn to_waveform(&self) -> SharedWaveform {
-        let waveform = Waveform::new();
+    fn to_tone(&self) -> SharedTone {
+        let tone = Tone::new();
         {
-            let mut waveform = waveform.lock();
-            waveform.gain = self.gain;
-            waveform.noise = Noise::from_index(self.noise);
-            waveform.table = self.table;
+            let mut tone = tone.lock();
+            tone.gain = self.gain;
+            tone.noise = Noise::from_index(self.noise);
+            tone.waveform = self.waveform;
         }
-        waveform
+        tone
     }
 }
 
@@ -155,7 +155,7 @@ impl ChannelData {
 #[derive(Clone, Serialize, Deserialize)]
 struct SoundData {
     notes: Vec<Note>,
-    tones: Vec<Tone>,
+    tones: Vec<u32>,
     volumes: Vec<Volume>,
     effects: Vec<Effect>,
     speed: Speed,
@@ -214,32 +214,39 @@ impl MusicData {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct ResourceData {
+pub struct ResourceData2 {
     pub format_version: u32,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     colors: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     images: Vec<ImageData>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     tilemaps: Vec<TilemapData>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     channels: Vec<ChannelData>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    tones: Vec<ToneData>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     sounds: Vec<SoundData>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     musics: Vec<MusicData>,
-    waveforms: Vec<WaveformData>,
 }
 
-impl ResourceData {
+impl ResourceData2 {
     pub fn from_toml(toml_text: &str) -> Self {
         toml::from_str(toml_text).unwrap()
     }
 
     pub fn from_runtime(pyxel: &Pyxel) -> Self {
-        let mut resource_data = ResourceData {
+        let mut resource_data = ResourceData2 {
             format_version: RESOURCE_FORMAT_VERSION,
             colors: Vec::new(),
             images: Vec::new(),
             tilemaps: Vec::new(),
             channels: Vec::new(),
+            tones: Vec::new(),
             sounds: Vec::new(),
             musics: Vec::new(),
-            waveforms: Vec::new(),
         };
         resource_data.colors = pyxel
             .colors
@@ -262,6 +269,9 @@ impl ResourceData {
                 .channels
                 .push(ChannelData::from_channel(channel.clone()));
         }
+        for tone in &*pyxel.tones.lock() {
+            resource_data.tones.push(ToneData::from_tone(tone.clone()));
+        }
         for sound in &*pyxel.sounds.lock() {
             resource_data
                 .sounds
@@ -271,11 +281,6 @@ impl ResourceData {
             resource_data
                 .musics
                 .push(MusicData::from_music(music.clone()));
-        }
-        for waveform in &*pyxel.waveforms.lock() {
-            resource_data
-                .waveforms
-                .push(WaveformData::from_waveform(waveform.clone()));
         }
         resource_data
     }
@@ -289,7 +294,7 @@ impl ResourceData {
         exclude_musics: bool,
         include_colors: bool,
         include_channels: bool,
-        include_waveforms: bool,
+        include_tones: bool,
     ) {
         if include_colors && !self.colors.is_empty() {
             *pyxel.colors.lock() = self
@@ -333,12 +338,12 @@ impl ResourceData {
             }
             *pyxel.musics.lock() = musics;
         }
-        if include_waveforms && !self.waveforms.is_empty() {
-            let mut waveforms = Vec::new();
-            for waveform_data in &self.waveforms {
-                waveforms.push(waveform_data.to_waveform());
+        if include_tones && !self.tones.is_empty() {
+            let mut tones = Vec::new();
+            for tone_data in &self.tones {
+                tones.push(tone_data.to_tone());
             }
-            *pyxel.waveforms.lock() = waveforms;
+            *pyxel.tones.lock() = tones;
         }
     }
 
@@ -350,7 +355,7 @@ impl ResourceData {
         exclude_musics: bool,
         include_colors: bool,
         include_channels: bool,
-        include_waveforms: bool,
+        include_tones: bool,
     ) -> String {
         let mut resource_data = (*self).clone();
         if !include_colors {
@@ -371,9 +376,89 @@ impl ResourceData {
         if exclude_musics {
             resource_data.musics.clear();
         }
-        if !include_waveforms {
-            resource_data.waveforms.clear();
+        if !include_tones {
+            resource_data.tones.clear();
         }
         toml::to_string(&resource_data).unwrap()
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct ResourceData1 {
+    pub format_version: u32,
+    colors: Vec<String>,
+    images: Vec<ImageData>,
+    tilemaps: Vec<TilemapData>,
+    channels: Vec<ChannelData>,
+    sounds: Vec<SoundData>,
+    musics: Vec<MusicData>,
+    waveforms: Vec<ToneData>,
+}
+
+impl ResourceData1 {
+    pub fn from_toml(toml_text: &str) -> Self {
+        toml::from_str(toml_text).unwrap()
+    }
+
+    pub fn to_runtime(
+        &self,
+        pyxel: &Pyxel,
+        exclude_images: bool,
+        exclude_tilemaps: bool,
+        exclude_sounds: bool,
+        exclude_musics: bool,
+        include_colors: bool,
+        include_channels: bool,
+        include_tones: bool,
+    ) {
+        if include_colors && !self.colors.is_empty() {
+            *pyxel.colors.lock() = self
+                .colors
+                .iter()
+                .map(|hex| u32::from_str_radix(hex, 16).unwrap() as Rgb24)
+                .collect();
+        }
+        if !exclude_images && !self.images.is_empty() {
+            let mut images = Vec::new();
+            for image_data in &self.images {
+                images.push(image_data.to_image());
+            }
+            *pyxel.images.lock() = images;
+        }
+        if !exclude_tilemaps && !self.tilemaps.is_empty() {
+            let mut tilemaps = Vec::new();
+            for tilemap_data in &self.tilemaps {
+                tilemaps.push(tilemap_data.to_tilemap());
+            }
+            *pyxel.tilemaps.lock() = tilemaps;
+        }
+        if include_channels && !self.channels.is_empty() {
+            let mut channels = Vec::new();
+            for channel_data in &self.channels {
+                channels.push(channel_data.to_channel());
+            }
+            *pyxel.channels.lock() = channels;
+        }
+        if !exclude_sounds && !self.sounds.is_empty() {
+            let mut sounds = Vec::new();
+            for sound_data in &self.sounds {
+                sounds.push(sound_data.to_sound());
+            }
+            *pyxel.sounds.lock() = sounds;
+        }
+        if !exclude_musics && !self.musics.is_empty() {
+            let mut musics = Vec::new();
+            for music_data in &self.musics {
+                musics.push(music_data.to_music());
+            }
+            *pyxel.musics.lock() = musics;
+        }
+        if include_tones && !self.waveforms.is_empty() {
+            let mut tones = Vec::new();
+            for tone_data in &self.waveforms {
+                tones.push(tone_data.to_tone());
+            }
+            *pyxel.tones.lock() = tones;
+        }
     }
 }
