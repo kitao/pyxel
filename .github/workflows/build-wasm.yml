@@ -1,0 +1,44 @@
+name: Build WASM
+
+on: [workflow_call, workflow_dispatch]
+
+jobs:
+  build-wasm:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Install Emscripten
+        uses: mymindstorm/setup-emsdk@v13
+        with:
+          version: 3.1.45
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Install Nightly Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly
+          components: rustfmt
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          architecture: ${{ matrix.arch }}
+
+      - name: Install Python packages
+        run: pip install -r requirements.txt
+
+      - name: Build WASM wheel
+        run: make build-wasm
+
+      - name: Upload WASM wheel
+        uses: actions/upload-artifact@v3
+        with:
+          name: pyxel-wasm-wheel
+          path: dist/*
