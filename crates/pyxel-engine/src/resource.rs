@@ -60,6 +60,7 @@ impl Pyxel {
                 !exclude_sounds.unwrap_or(false),
                 !exclude_musics.unwrap_or(false),
             );
+            self.load_pyxel_palette_file(filename);
             return;
         }
 
@@ -80,6 +81,7 @@ impl Pyxel {
                 include_channels.unwrap_or(false),
                 include_tones.unwrap_or(false),
             );
+            self.load_pyxel_palette_file(filename);
         } else if format_version == 1 {
             Self::warn_format_version(filename);
             let resource_data = ResourceData1::from_toml(&toml_text);
@@ -93,29 +95,12 @@ impl Pyxel {
                 include_channels.unwrap_or(false),
                 include_tones.unwrap_or(false),
             );
+            self.load_pyxel_palette_file(filename);
         } else {
             assert!(
                 format_version <= RESOURCE_FORMAT_VERSION,
                 "Unknown resource file version"
             );
-        }
-
-        // Pyxel palette file
-        let filename = filename
-            .rfind('.')
-            .map_or(filename, |i| &filename[..i])
-            .to_string()
-            + PALETTE_FILE_EXTENSION;
-        if let Ok(mut file) = File::open(Path::new(&filename)) {
-            let mut contents = String::new();
-            file.read_to_string(&mut contents).unwrap();
-            *self.colors.lock() = contents
-                .replace("\r\n", "\n")
-                .replace('\r', "\n")
-                .split('\n')
-                .filter(|s| !s.is_empty())
-                .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
-                .collect();
         }
     }
 
@@ -219,5 +204,24 @@ impl Pyxel {
             "An old Pyxel resource file '{}' is loaded. Please re-save it with the latest Pyxel.",
             Path::new(filename).file_name().unwrap().to_str().unwrap()
         );
+    }
+
+    fn load_pyxel_palette_file(&mut self, filename: &str) {
+        let filename = filename
+            .rfind('.')
+            .map_or(filename, |i| &filename[..i])
+            .to_string()
+            + PALETTE_FILE_EXTENSION;
+        if let Ok(mut file) = File::open(Path::new(&filename)) {
+            let mut contents = String::new();
+            file.read_to_string(&mut contents).unwrap();
+            *self.colors.lock() = contents
+                .replace("\r\n", "\n")
+                .replace('\r', "\n")
+                .split('\n')
+                .filter(|s| !s.is_empty())
+                .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
+                .collect();
+        }
     }
 }
