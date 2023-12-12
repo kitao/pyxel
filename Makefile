@@ -61,7 +61,7 @@ ENSURE_TARGET = rustup target add $(TARGET)
 BUILD_OPTS = --release --target $(TARGET)
 endif
 
-.PHONY: all clean distclean lint update format build install test clean-wasm build-wasm test-wasm
+.PHONY: all clean distclean lint update format build install test clean-wasm build-wasm start-server test-wasm copy-wasm
 
 all: build
 
@@ -148,9 +148,17 @@ build-wasm:
 	@$(WASM_ENV) make build TARGET=$(WASM_TARGET)
 	@$(SCRIPTS_DIR)/update_wasm_wheel
 
-test-wasm: build-wasm
+start-server:
 	$(SCRIPTS_DIR)/switch_html_scripts local
 	@bash -c " \
 		trap '$(SCRIPTS_DIR)/switch_html_scripts cdn' INT TERM; \
 		$(SCRIPTS_DIR)/start_test_server \
 	"
+
+test-wasm: build-wasm start-server
+
+copy-wasm:
+	@rm -f $(DIST_DIR)/*-emscripten_*.whl
+	@unzip ~/Downloads/pyxel-wasm-wheel.zip -d $(DIST_DIR)
+	@$(SCRIPTS_DIR)/update_wasm_wheel
+	@make start-server
