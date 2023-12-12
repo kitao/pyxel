@@ -1,4 +1,4 @@
-name: release-wheels
+name: Release
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    uses: kitao/pyxel/.github/workflows/build-wheels.yml@main
+    uses: kitao/pyxel/.github/workflows/build.yml@main
 
   release:
     runs-on: macos-12
