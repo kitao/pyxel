@@ -7,6 +7,7 @@
 - Removed source code path from the binary
 - Renamed Waveform and waveforms to Tone and tones
 - Updated the resource file format for the tones
+- Changed CDN links to use the latest Pyxel explicitly
 - Added the example 14
 
 ## 2.0.0
