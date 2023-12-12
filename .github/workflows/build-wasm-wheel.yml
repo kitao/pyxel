@@ -1,4 +1,4 @@
-name: Build WASM
+name: build-wasm-wheel
 
 on: [workflow_call, workflow_dispatch]
 
