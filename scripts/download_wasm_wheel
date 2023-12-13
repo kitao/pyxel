@@ -1,0 +1,67 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import zipfile
+
+import requests
+
+ROOT_DIR = ".."
+DIST_DIR = "dist"
+USER_REPO = "kitao/pyxel"
+WORKFLOW_NAME = "build-wasm"
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
+
+
+def build_wasm_wheel():
+    os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ROOT_DIR))
+
+    # Get workflow ID
+    url = f"https://api.github.com/repos/{USER_REPO}/actions/workflows"
+    headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+    response = requests.get(url, headers=headers)
+    workflows = response.json()
+    workflow_id = None
+    for workflow in workflows.get("workflows", []):
+        if workflow["name"] == WORKFLOW_NAME:
+            workflow_id = workflow["id"]
+            break
+    if not workflow_id:
+        print("workflow not found")
+        sys.exit(1)
+
+    # Get latest run ID
+    url = (
+        f"https://api.github.com/repos/{USER_REPO}/actions/workflows/{workflow_id}/runs"
+    )
+    response = requests.get(url, headers=headers)
+    runs = response.json()
+    if not runs.get("workflow_runs"):
+        print("workflow runs not found")
+        sys.exit(1)
+    latest_run_id = runs["workflow_runs"][0]["id"]
+
+    # Get artifacts
+    url = f"https://api.github.com/repos/{USER_REPO}/actions/runs/{latest_run_id}/artifacts"
+    response = requests.get(url, headers=headers)
+    artifacts = response.json()
+    if not artifacts.get("artifacts"):
+        print("artifacts not found")
+        sys.exit(1)
+
+    # Download artifact
+    artifact_info = artifacts["artifacts"][0]
+    artifact_name = artifact_info["name"]
+    artifact_url = artifact_info["archive_download_url"]
+    download_response = requests.get(artifact_url, headers=headers)
+    zip_file_path = os.path.join(DIST_DIR, f"{artifact_name}.zip")
+    os.makedirs(DIST_DIR, exist_ok=True)
+    with open(zip_file_path, "wb") as file:
+        file.write(download_response.content)
+    with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
+        zip_ref.extractall(DIST_DIR)
+    os.remove(zip_file_path)
+
+
+if __name__ == "__main__":
+    build_wasm_wheel()
