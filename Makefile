@@ -39,7 +39,7 @@
 #	make clean-wasm build-wasm
 #
 # Test the package for WASM in localhost:8000/wasm/
-#	make clean-wasm test-local-wasm
+#	make clean-wasm test-wasm
 #
 
 ROOT_DIR = .
@@ -63,7 +63,7 @@ endif
 
 .PHONY: \
 	all clean distclean lint update format build install test \
-	clean-wasm build-wasm fetch-wasm start-test-server test-local-wasm test-remote-wasm
+	clean-wasm build-wasm fetch-remote-wasm start-test-server test-wasm test-remote-wasm
 
 all: build
 
@@ -150,7 +150,7 @@ build-wasm:
 	@$(WASM_ENV) make build TARGET=$(WASM_TARGET)
 	@$(SCRIPTS_DIR)/install_wasm_wheel
 
-fetch-wasm:
+fetch-remote-wasm:
 	@rm -f $(DIST_DIR)/*-emscripten_*.whl
 	@$(SCRIPTS_DIR)/download_wasm_wheel
 	@$(SCRIPTS_DIR)/install_wasm_wheel
@@ -162,6 +162,6 @@ start-test-server:
 		$(SCRIPTS_DIR)/start_test_server \
 	"
 
-test-local-wasm: build-wasm start-test-server
+test-wasm: build-wasm start-test-server
 
-test-remote-wasm: fetch-wasm start-test-server
+test-remote-wasm: fetch-remote-wasm start-test-server
