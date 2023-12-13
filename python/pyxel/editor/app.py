@@ -1,4 +1,5 @@
 import os
+import sys
 
 import pyxel
 
@@ -32,10 +33,10 @@ class App(Widget):
         # Check if resource file can be saved
         if os.path.isdir(resource_file):
             print(f"A directory named '{original_resource_file}' exists")
-            exit(1)
+            sys.exit(1)
         if not os.path.isdir(os.path.dirname(resource_file)):
             print(f"Directory for '{original_resource_file}' does not exist")
-            exit(1)
+            sys.exit(1)
 
         # Initialize Pyxel
         pyxel.init(APP_WIDTH, APP_HEIGHT, quit_key=pyxel.KEY_NONE)
