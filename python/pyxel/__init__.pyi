@@ -40,6 +40,7 @@ FONT_WIDTH: int
 FONT_HEIGHT: int
 
 NUM_CHANNELS: int
+NUM_TONES: int
 NUM_SOUNDS: int
 NUM_MUSICS: int
 
