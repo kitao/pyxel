@@ -90,6 +90,7 @@ impl Sound {
                 's' => TONE_SQUARE,
                 'p' => TONE_PULSE,
                 'n' => TONE_NOISE,
+                '0'..='9' => c.to_digit(10).unwrap(),
                 _ => panic!("Invalid sound tone '{c}'"),
             };
             self.tones.push(tone);
