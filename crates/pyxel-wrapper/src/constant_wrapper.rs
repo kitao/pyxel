@@ -43,6 +43,7 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(FONT_HEIGHT)?;
 
     add_constant!(NUM_CHANNELS)?;
+    add_constant!(NUM_TONES)?;
     add_constant!(NUM_SOUNDS)?;
     add_constant!(NUM_MUSICS)?;
     add_constant!(TONE_TRIANGLE)?;
