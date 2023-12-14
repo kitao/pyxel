@@ -1,6 +1,6 @@
 use crate::blip_buf::BlipBuf;
 use crate::pyxel::{Pyxel, CHANNELS};
-use crate::settings::{CLOCK_RATE, NUM_CHANNELS, NUM_CLOCKS_PER_TICK, NUM_SAMPLES, SAMPLE_RATE};
+use crate::settings::{CLOCK_RATE, NUM_CLOCKS_PER_TICK, NUM_SAMPLES, SAMPLE_RATE};
 use crate::SharedChannel;
 
 struct AudioCore {
@@ -77,8 +77,8 @@ impl Pyxel {
     pub fn playm(&self, music_index: u32, start_tick: Option<u32>, should_loop: bool) {
         let musics = self.musics.lock();
         let music = musics[music_index as usize].lock();
-        for i in 0..NUM_CHANNELS {
-            self.play(i, &music.seqs[i as usize].lock(), start_tick, should_loop);
+        for i in 0..music.seqs.len() {
+            self.play(i as u32, &music.seqs[i].lock(), start_tick, should_loop);
         }
     }
 
@@ -87,8 +87,8 @@ impl Pyxel {
     }
 
     pub fn stop0(&self) {
-        for i in 0..NUM_CHANNELS {
-            self.stop(i);
+        for i in 0..self.musics.lock().len() {
+            self.stop(i as u32);
         }
     }
 
