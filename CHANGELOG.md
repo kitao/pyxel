@@ -8,7 +8,8 @@
 - Renamed Waveform and waveforms to Tone and tones
 - Updated the resource file format for the tones
 - Changed CDN links to use the latest Pyxel explicitly
-- Added the example 14
+- Changed Sound.set_tones to accept digits
+- Added the example 14 (still under development)
 
 ## 2.0.0
 
