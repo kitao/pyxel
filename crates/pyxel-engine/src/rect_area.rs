@@ -77,7 +77,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn new() {
+    fn test_rect_new() {
         let rect1 = RectArea::new(1, 2, 3, 4);
         assert_eq!(rect1.left(), 1);
         assert_eq!(rect1.top(), 2);
@@ -104,7 +104,7 @@ mod tests {
     }
 
     #[test]
-    fn is_empty() {
+    fn test_rect_is_empty() {
         let rect1 = RectArea::new(1, 2, 3, 4);
         assert!(!rect1.is_empty());
 
@@ -116,7 +116,7 @@ mod tests {
     }
 
     #[test]
-    fn contains() {
+    fn test_rect_contains() {
         let rect1 = RectArea::new(1, 2, 3, 3);
         assert!(rect1.contains(1, 2));
         assert!(rect1.contains(3, 4));
@@ -135,7 +135,7 @@ mod tests {
     }
 
     #[test]
-    fn intersects() {
+    fn test_rect_intersects() {
         let rect1 = RectArea::new(10, 20, 30, 40);
         let rect2 = RectArea::new(11, 22, 300, 400);
         let rect3 = RectArea::new(5, 6, 10, 20);

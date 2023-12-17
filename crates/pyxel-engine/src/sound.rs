@@ -128,7 +128,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn new() {
+    fn test_sound_new() {
         let sound = Sound::new();
         assert_eq!(sound.lock().notes.len(), 0);
         assert_eq!(sound.lock().tones.len(), 0);
@@ -138,7 +138,7 @@ mod tests {
     }
 
     #[test]
-    fn set() {
+    fn test_sound_set() {
         let sound = Sound::new();
         sound.lock().set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
         assert_eq!(&sound.lock().notes, &vec![0, 1, 2, 3]);
@@ -155,7 +155,7 @@ mod tests {
     }
 
     #[test]
-    fn set_note() {
+    fn test_sound_set_note() {
         let sound = Sound::new();
         sound
             .lock()
@@ -164,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn set_tone() {
+    fn test_sound_set_tone() {
         let sound = Sound::new();
         sound.lock().set_tones(" t s p n ");
         assert_eq!(
@@ -174,14 +174,14 @@ mod tests {
     }
 
     #[test]
-    fn set_volume() {
+    fn test_sound_set_volume() {
         let sound = Sound::new();
         sound.lock().set_volumes(" 0 1 2 3 4 5 6 7 ");
         assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3, 4, 5, 6, 7]);
     }
 
     #[test]
-    fn set_effect() {
+    fn test_sound_set_effect() {
         let sound = Sound::new();
         sound.lock().set_effects(" n s v f ");
         assert_eq!(
