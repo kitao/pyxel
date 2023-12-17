@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.0.2
+
+- Changed the order of declarations in .pyi file
+- Changed Music.set to not require specifying all channels
+
 ## 2.0.1
 
 - Removed the crate publish from the release script
@@ -104,7 +109,7 @@
 
 ## 1.9.9
 
-- Changed not to use array macro
+- Changed to not use array macro
 - Suppressed clippy warnings
 - Updated Emscripten to 3.1.29
 - Updated Pyodide version to 0.22.0
@@ -184,7 +189,7 @@
 
 ## 1.8.20
 
-- Changed not to set the position style for the screen div
+- Changed to not set the position style for the screen div
 - Added a packages attribute to the script_test example
 
 ## 1.8.19
@@ -266,7 +271,7 @@
 
 ## 1.8.6
 
-- Changed not to the sdist wheel
+- Changed to not the sdist wheel
 - Refined the show API
 - Changed to use emscripten_force_exit for quit
 - Surppressed an exception error message on the web
@@ -320,7 +325,7 @@
 - Changed to include the blip-buf module
 - Renamed inner SDL2 module to PlatformSdl2
 - Added fall death to the example 10
-- Fixed the example 12 not to capture the screen
+- Fixed the example 12 to not capture the screen
 - Consolidated tool settings into pyproject.toml
 - Fixed to work without audio
 - Changed to build wheels for each platform
@@ -551,7 +556,7 @@
 ## 1.4.1
 
 - Changed to use gcc compiler on Mac
-- Fixed the icon not to get affected by palette changes
+- Fixed the icon to not get affected by palette changes
 
 ## 1.4.0
 
@@ -745,7 +750,7 @@
 - Fixed the way to decide the automatic screen size
 - Fixed the API description in the READMEs
 - Changed the way to handle runtime errors
-- Changed save and load APIs not to return bool
+- Changed save and load APIs to no return bool
 - Specified the version of Python in the READMEs
 - Added the play_pos API to the example 4
 - Added the description of the included libraries to the READMEs
@@ -856,7 +861,7 @@
 - Fixed the bug where Pyxel Editor cursor malfunctions
 - Added new API descriptions to the example 3
 - Updated the screenshot of the example 3
-- Change not to add unnecessary undo history of the editors
+- Change to not add unnecessary undo history of the editors
 - Added the setting files for Pipenv
 - Modified the cursor design of Image/Tilemap Editor
 - Enabled to change the focus size of Tilemap Editor
@@ -1024,7 +1029,7 @@
 
 ## 0.7.2
 
-- Changed not to include the screenshots in the PyPI package
+- Changed to not include the screenshots in the PyPI package
 - Removed unnecessary semicolons in the shader to avoid compile errors
 - Changed the project description for PyPI
 - Added the description of installation on Linux to the READMEs

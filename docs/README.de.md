@@ -656,9 +656,9 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `seqs`<br>
   Zweidimensionale Liste von Klängen (0-63) mit der Anzahl der Kanäle
 
-- `set(seq0, seq1, seq2, seq3)`<br>
-  Setzt die Tonlisten (0-63) für alle Kanäle fest. Wenn eine leere Liste angegeben wird, wird dieser Kanal nicht für die Wiedergabe verwendet.<br>
-  z.B. `pyxel.musics[0].set([0, 1], [2, 3], [4], [])`
+- `set(seq0, seq1, ...)`<br>
+  Stellen Sie die Tonlisten (0-63) der Kanäle ein. Wenn eine leere Liste angegeben wird, wird dieser Kanal nicht für die Wiedergabe verwendet.<br>
+  z.B. `pyxel.musics[0].set([0, 1], [], [3])`
 
 ### Advanced APIs
 
