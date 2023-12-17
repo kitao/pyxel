@@ -195,7 +195,13 @@ struct MusicData {
 impl MusicData {
     fn from_music(music: SharedMusic) -> Self {
         let music = music.lock();
-        let seqs = music.seqs.iter().map(|seq| seq.lock().clone()).collect();
+        let mut seqs: Vec<_> = music.seqs.iter().map(|seq| seq.lock().clone()).collect();
+        let new_seq_len = seqs
+            .iter()
+            .rev()
+            .position(|seq| !seq.is_empty())
+            .map_or(0, |i| seqs.len() - i);
+        seqs.truncate(new_seq_len);
         Self { seqs }
     }
 

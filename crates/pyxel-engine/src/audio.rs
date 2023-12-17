@@ -1,3 +1,5 @@
+use std::cmp::min;
+
 use crate::blip_buf::BlipBuf;
 use crate::pyxel::{Pyxel, CHANNELS};
 use crate::settings::{CLOCK_RATE, NUM_CLOCKS_PER_TICK, NUM_SAMPLES, SAMPLE_RATE};
@@ -78,7 +80,7 @@ impl Pyxel {
         let num_channels = self.channels.lock().len();
         let musics = self.musics.lock();
         let music = musics[music_index as usize].lock();
-        for i in 0..num_channels {
+        for i in 0..min(num_channels, music.seqs.len()) {
             self.play(i as u32, &music.seqs[i].lock(), start_tick, should_loop);
         }
     }
