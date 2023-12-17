@@ -105,6 +105,17 @@ pub fn expand_vec2<T: Clone + Default>(
     expand_vec(&new_vec, new_outer_len)
 }
 
+pub fn trim_empty_vecs<T: Clone>(vecs: &Vec<Vec<T>>) -> Vec<Vec<T>> {
+    let mut vecs = vecs.clone();
+    let new_len = vecs
+        .iter()
+        .rev()
+        .position(|vec| !vec.is_empty())
+        .map_or(0, |i| vecs.len() - i);
+    vecs.truncate(new_len);
+    vecs
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -242,5 +253,26 @@ mod tests {
         ];
         let result = expand_vec2(&vec, 3, 2);
         assert_eq!(result, vec![vec![1, 2], vec![4, 5], vec![7, 8]]);
+    }
+
+    #[test]
+    fn test_trim_empty_vecs() {
+        let vecs = vec![vec![1, 2], vec![], vec![], vec![3, 4], vec![], vec![]];
+        assert_eq!(
+            trim_empty_vecs(&vecs),
+            vec![vec![1, 2], vec![], vec![], vec![3, 4]]
+        );
+
+        let vecs: Vec<Vec<i32>> = vec![vec![], vec![]];
+        assert_eq!(trim_empty_vecs(&vecs), Vec::<Vec<i32>>::new());
+
+        let vecs = vec![vec![1], vec![2]];
+        assert_eq!(trim_empty_vecs(&vecs), vec![vec![1], vec![2]]);
+
+        let vecs: Vec<Vec<i32>> = vec![vec![]];
+        assert_eq!(trim_empty_vecs(&vecs), Vec::<Vec<i32>>::new());
+
+        let vecs = vec![vec![1, 2]];
+        assert_eq!(trim_empty_vecs(&vecs), vec![vec![1, 2]]);
     }
 }
