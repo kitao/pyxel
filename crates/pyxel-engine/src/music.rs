@@ -31,13 +31,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn new() {
+    fn test_music_new() {
         let music = Music::new();
         assert_eq!(music.lock().seqs.len(), 0);
     }
 
     #[test]
-    fn set() {
+    fn test_music_set() {
         let music = Music::new();
         music
             .lock()
