@@ -289,7 +289,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn parse_version_string_() {
+    fn test_parse_version_string() {
         assert_eq!(parse_version_string("1.2.3"), Ok(10203));
         assert_eq!(parse_version_string("12.34.5"), Ok(123405));
         assert_eq!(parse_version_string("12.3.04"), Ok(120304));

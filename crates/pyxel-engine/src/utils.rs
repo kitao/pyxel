@@ -121,7 +121,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn string_loop_() {
+    fn test_string_loop() {
         let test_string = "TEST_STRING";
         string_loop!(i, value, test_string, 1, {
             match i {
@@ -148,7 +148,7 @@ mod tests {
     }
 
     #[test]
-    fn f64_to_i32_() {
+    fn test_f64_to_i32() {
         assert_eq!(f64_to_i32(0.1), 0);
         assert_eq!(f64_to_i32(0.49), 0);
         assert_eq!(f64_to_i32(0.5), 1);
@@ -160,7 +160,7 @@ mod tests {
     }
 
     #[test]
-    fn f64_to_u32_() {
+    fn test_f64_to_u32_() {
         assert_eq!(f64_to_u32(0.1), 0);
         assert_eq!(f64_to_u32(0.49), 0);
         assert_eq!(f64_to_u32(0.5), 1);
@@ -170,17 +170,17 @@ mod tests {
     }
 
     #[test]
-    fn remove_whitespace_() {
+    fn test_remove_whitespace() {
         assert_eq!(remove_whitespace(" a\n b\r c\t d "), "abcd");
     }
 
     #[test]
-    fn simplify_string_() {
+    fn test_simplify_string() {
         assert_eq!(simplify_string(" 0\n 1\r 2\t 3 A\n b\r c\t d "), "0123abcd");
     }
 
     #[test]
-    fn parse_hex_string_() {
+    fn test_parse_hex_string() {
         assert_eq!(parse_hex_string("100"), Ok(256));
         assert_eq!(parse_hex_string("a2"), Ok(162));
         assert_eq!(parse_hex_string("BC"), Ok(188));
@@ -188,7 +188,7 @@ mod tests {
     }
 
     #[test]
-    fn compress_vec_() {
+    fn test_compress_vec() {
         let vec = vec![1, 2, 2, 3, 3, 3];
         let result = compress_vec(&vec);
         assert_eq!(result, vec![1, 2, 2, 3]);
@@ -203,7 +203,7 @@ mod tests {
     }
 
     #[test]
-    fn compress_vec2_() {
+    fn test_compress_vec2() {
         let vec = vec![vec![1, 1, 2], vec![2, 2, 2], vec![3, 3, 3], vec![3, 3, 3]];
         let result = compress_vec2(&vec);
         assert_eq!(result, vec![vec![1, 1, 2], vec![2], vec![3]]);
@@ -218,7 +218,7 @@ mod tests {
     }
 
     #[test]
-    fn expand_vec_() {
+    fn test_expand_vec() {
         let vec = vec![1, 2, 3];
         let result = expand_vec(&vec, 5);
         assert_eq!(result, vec![1, 2, 3, 3, 3]);
@@ -233,7 +233,7 @@ mod tests {
     }
 
     #[test]
-    fn expand_vec2_() {
+    fn test_expand_vec2() {
         let vec = vec![vec![1, 2], vec![3]];
         let result = expand_vec2(&vec, 4, 3);
         assert_eq!(
