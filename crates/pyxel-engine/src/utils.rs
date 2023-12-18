@@ -105,8 +105,8 @@ pub fn expand_vec2<T: Clone + Default>(
     expand_vec(&new_vec, new_outer_len)
 }
 
-pub fn trim_empty_vecs<T: Clone>(vecs: &Vec<Vec<T>>) -> Vec<Vec<T>> {
-    let mut vecs = vecs.clone();
+pub fn trim_empty_vecs<T: Clone>(vecs: &[Vec<T>]) -> Vec<Vec<T>> {
+    let mut vecs = vecs.to_vec();
     let new_len = vecs
         .iter()
         .rev()
