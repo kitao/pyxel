@@ -9,7 +9,7 @@ use crate::settings::RESOURCE_FORMAT_VERSION;
 use crate::sound::{SharedSound, Sound};
 use crate::tilemap::{ImageSource, SharedTilemap, TileCoord, Tilemap};
 use crate::tone::{Noise, SharedTone, Tone, Waveform};
-use crate::utils::{compress_vec2, expand_vec2};
+use crate::utils::{compress_vec2, expand_vec2, trim_empty_vecs};
 use crate::{Rgb24, SharedChannel};
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -195,22 +195,17 @@ struct MusicData {
 impl MusicData {
     fn from_music(music: SharedMusic) -> Self {
         let music = music.lock();
-        let mut seqs: Vec<_> = music.seqs.iter().map(|seq| seq.lock().clone()).collect();
-        let new_seq_len = seqs
-            .iter()
-            .rev()
-            .position(|seq| !seq.is_empty())
-            .map_or(0, |i| seqs.len() - i);
-        seqs.truncate(new_seq_len);
+        let seqs: Vec<_> = music.seqs.iter().map(|seq| seq.lock().clone()).collect();
+        let seqs = trim_empty_vecs(&seqs);
         Self { seqs }
     }
 
     fn to_music(&self) -> SharedMusic {
+        let seqs = trim_empty_vecs(&self.seqs);
         let music = Music::new();
         {
             let mut music = music.lock();
-            music.seqs = self
-                .seqs
+            music.seqs = seqs
                 .iter()
                 .map(|seq| new_shared_type!(seq.clone()))
                 .collect();
@@ -220,7 +215,7 @@ impl MusicData {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct ResourceData2 {
+pub struct ResourceData3 {
     pub format_version: u32,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     colors: Vec<String>,
@@ -238,13 +233,13 @@ pub struct ResourceData2 {
     musics: Vec<MusicData>,
 }
 
-impl ResourceData2 {
+impl ResourceData3 {
     pub fn from_toml(toml_text: &str) -> Self {
         toml::from_str(toml_text).unwrap()
     }
 
     pub fn from_runtime(pyxel: &Pyxel) -> Self {
-        let mut resource_data = ResourceData2 {
+        let mut resource_data = ResourceData3 {
             format_version: RESOURCE_FORMAT_VERSION,
             colors: Vec::new(),
             images: Vec::new(),
