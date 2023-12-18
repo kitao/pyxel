@@ -62,7 +62,7 @@ def load_bgm(msc, filename, snd1, snd2, snd3):
         pyxel.sounds[snd1].set(*bgm[0])
         pyxel.sounds[snd2].set(*bgm[1])
         pyxel.sounds[snd3].set(*bgm[2])
-        pyxel.musics[msc].set([snd1], [snd2], [snd3], [])
+        pyxel.musics[msc].set([snd1], [snd2], [snd3])
 
 
 class Background:
