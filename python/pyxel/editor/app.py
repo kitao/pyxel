@@ -44,7 +44,7 @@ class App(Widget):
         colors = pyxel.colors.to_list()
         self._set_title(original_resource_file)
         if os.path.exists(resource_file):
-            pyxel.load(resource_file)
+            pyxel.load_pad(resource_file)
         colors += pyxel.colors.to_list()
         pyxel.colors.from_list(colors)
 
@@ -173,7 +173,7 @@ class App(Widget):
                 pyxel.stop()
                 if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
                     self._editor.reset_history()
-                    pyxel.load(
+                    pyxel.load_pad(
                         dropped_file,
                         excl_images=(self.editor_type_var != 0),
                         excl_tilemaps=(self.editor_type_var != 1),
@@ -183,7 +183,7 @@ class App(Widget):
                 else:
                     for editor in self._editors:
                         editor.reset_history()
-                    pyxel.load(dropped_file)
+                    pyxel.load_pad(dropped_file)
                     self._set_title(dropped_file)
             else:
                 self._editor.trigger_event("drop", dropped_file)
