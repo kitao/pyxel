@@ -660,7 +660,7 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 - `seqs`<br>
   채널 수가 포함된 2차원 사운드 목록 (0-63)
 
-- `set(seq0, seq1, ...)`<br>
+- `set(seq0, seq1, seq2, ...)`<br>
   채널의 사운드 목록 (0-63) 을 설정합니다. 빈 리스트가 지정되면 해당 채널은 재생에 사용되지 않습니다.<br>
   예시: `pyxel.musics[0].set([0, 1], [], [3])`
 

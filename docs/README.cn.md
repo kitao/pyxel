@@ -658,7 +658,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 - `seqs`<br>
   二维的声音列表 (0-63)，带有通道的数量
 
-- `set(seq0, seq1, ...)`<br>
+- `set(seq0, seq1, seq2, ...)`<br>
   设置通道的声音列表 (0-63)。如果指定了空列表，则对应通道不会用来播放。<br>
   示例：`pyxel.musics[0].set([0, 1], [], [3])`
 

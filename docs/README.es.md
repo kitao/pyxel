@@ -659,7 +659,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 - `seqs`<br>
   Lista bidimensional de sonidos (0-63) con el número de canales
 
-- `set(seq0, seq1, ...)`<br>
+- `set(seq0, seq1, seq2, ...)`<br>
   Configura las listas de sonido (0-63) de los canales. Si se referencia una lista vacía, ese canal no se utilizará para reproducir el sonido.<br>
   Ejemplo: `pyxel.musics[0].set([0, 1], [], [3])`
 
