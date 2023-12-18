@@ -659,7 +659,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
 - `seqs`<br>
   Liste bidimensionnelle de sons (0-63) avec le nombre de canaux
 
-- `set(seq0, seq1, ...)`<br>
+- `set(seq0, seq1, seq2, ...)`<br>
   Régler les listes de sons (0-63) des canaux. Si une liste vide est passée, ce canal n’est pas utilisé.<br>
   Par exemple `pyxel.musics[0].set([0, 1], [], [3])`
 

@@ -660,7 +660,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 - `seqs`<br>
   Two-dimensional list of sounds (0-63) with the number of channels
 
-- `set(seq0, seq1, ...)`<br>
+- `set(seq0, seq1, seq2, ...)`<br>
   Set the lists of sound (0-63) of channels. If an empty list is specified, that channel is not used for playback.<br>
   e.g. `pyxel.musics[0].set([0, 1], [], [3])`
 
