@@ -90,7 +90,7 @@ class App:
         pyxel.text(16, 25, "tone  :[T]riangle [S]quare [P]ulse [N]oise", 9)
         pyxel.text(16, 33, "volume:[0-7]", 9)
         pyxel.text(16, 41, "effect:[N]one [S]lide [V]ibrato [F]adeOut", 9)
-        pyxel.text(6, 53, "musics[msc].set(ch0,ch1,ch2,ch3)", 7)
+        pyxel.text(6, 53, "musics[msc].set(seq0,seq1,seq2,...)", 7)
 
         pyxel.text(6, 62, "play(ch,snd,loop=False)", 7)
         pyxel.text(6, 71, "playm(msc,loop=False)", 7)
