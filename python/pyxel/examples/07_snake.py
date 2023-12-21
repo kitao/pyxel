@@ -264,7 +264,8 @@ def define_sound_and_music():
 
     harmony1 = (
         "a1 a1 a1 b1  f1 f1 c2 c2"
-        "c2 c2 c2 c2  g1 g1 b1 b1" * 3
+        "c2 c2 c2 c2  g1 g1 b1 b1"
+        * 3
         + "f1 f1 f1 f1 f1 f1 f1 f1 g1 g1 g1 g1 g1 g1 g1 g1"
     )
     harmony2 = (
