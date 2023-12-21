@@ -37,6 +37,3 @@ macos-deployment-target = "10.12"
 
 [tool.maturin.target."aarch64-apple-darwin"]
 macos-deployment-target = "11.0"
-
-[tool.isort]
-profile = "black"
