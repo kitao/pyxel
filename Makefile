@@ -99,8 +99,7 @@ format:
 	@cd $(CRATES_DIR)/pyxel-platform; cargo +nightly fmt -- --emit=files
 	@cd $(CRATES_DIR)/pyxel-engine; cargo +nightly fmt -- --emit=files
 	@cd $(CRATES_DIR)/pyxel-wrapper; cargo +nightly fmt -- --emit=files
-	@isort $(ROOT_DIR)
-	@black $(ROOT_DIR)
+	@ruff format $(ROOT_DIR)
 
 build: format
 	@$(ENSURE_TARGET)
