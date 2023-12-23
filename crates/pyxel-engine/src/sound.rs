@@ -116,7 +116,6 @@ impl Sound {
                 's' => EFFECT_SLIDE,
                 'v' => EFFECT_VIBRATO,
                 'f' => EFFECT_FADEOUT,
-                '0'..='3' => c.to_digit(10).unwrap() as Effect,
                 _ => panic!("Invalid sound effect '{c}'"),
             };
             self.effects.push(effect);
