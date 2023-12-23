@@ -85,7 +85,7 @@ lint:
 	@cd $(CRATES_DIR)/pyxel-engine; cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
 	@cd $(CRATES_DIR)/pyxel-wrapper; cargo +nightly clippy $(CLIPPY_OPTS)
 	@cd $(CRATES_DIR)/pyxel-wrapper; cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
-	@flake8 $(SCRIPTS_DIR) $(PYXEL_DIR)
+	@ruff check $(ROOT_DIR)
 
 update:
 	@cd $(CRATES_DIR)/pyxel-platform; cargo update
