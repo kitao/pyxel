@@ -69,7 +69,7 @@ impl Sound {
                     c = chars.next().unwrap_or(0 as char);
                 }
                 if ('0'..='4').contains(&c) {
-                    note += (c as Note - '0' as Note) * 12;
+                    note += (c.to_digit(10).unwrap() as Note) * 12;
                 } else {
                     panic!("Invalid sound note '{c}'");
                 }
@@ -101,7 +101,7 @@ impl Sound {
         self.volumes.clear();
         for c in simplify_string(volume_str).chars() {
             if ('0'..='7').contains(&c) {
-                self.volumes.push((c as u32 - '0' as u32) as Volume);
+                self.volumes.push(c.to_digit(10).unwrap() as Volume);
             } else {
                 panic!("Invalid sound volume '{c}'");
             }
@@ -116,6 +116,7 @@ impl Sound {
                 's' => EFFECT_SLIDE,
                 'v' => EFFECT_VIBRATO,
                 'f' => EFFECT_FADEOUT,
+                '0'..='3' => c.to_digit(10).unwrap() as Effect,
                 _ => panic!("Invalid sound effect '{c}'"),
             };
             self.effects.push(effect);
