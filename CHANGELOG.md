@@ -5,6 +5,7 @@
 - Changed the order of declarations in .pyi file
 - Changed Music.set to not require specifying all channels
 - Changed to use Ruff for lint and format of Python code
+- Changed to set the phase of sounds randomly
 
 ## 2.0.1
 
