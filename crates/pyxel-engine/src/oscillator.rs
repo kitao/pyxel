@@ -69,7 +69,7 @@ impl Oscillator {
         self.gain = gain;
         self.effect = effect;
         self.duration = duration;
-        if self.time == 0 {
+        if self.time == 0 || (self.pitch - last_pitch).abs() > f64::EPSILON {
             let mut rng_state = RNG_STATE.lock();
             *rng_state = rng_state.wrapping_mul(214013).wrapping_add(2531011);
             self.phase = (*rng_state >> 16) & 31;
