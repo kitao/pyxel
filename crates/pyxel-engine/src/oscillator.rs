@@ -1,3 +1,6 @@
+use once_cell::sync::Lazy;
+use parking_lot::Mutex;
+
 use crate::blip_buf::BlipBuf;
 use crate::pyxel::TONES;
 use crate::settings::{
@@ -10,6 +13,8 @@ pub type Effect = u8;
 
 const VIBRATO_PERIOD: u32 =
     (CLOCK_RATE as f64 / VIBRATO_FREQUENCY / OSCILLATOR_RESOLUTION as f64) as u32;
+
+static RNG_STATE: Lazy<Mutex<u32>> = Lazy::new(|| Mutex::new(0));
 
 struct Slide {
     pitch: f64,
@@ -64,6 +69,11 @@ impl Oscillator {
         self.gain = gain;
         self.effect = effect;
         self.duration = duration;
+        if self.time == 0 {
+            let mut rng_state = RNG_STATE.lock();
+            *rng_state = rng_state.wrapping_mul(214013).wrapping_add(2531011);
+            self.phase = (*rng_state >> 16) & 31;
+        }
         if effect == EFFECT_SLIDE {
             self.slide.pitch = (self.pitch - last_pitch) / self.duration as f64;
             self.pitch = last_pitch;
