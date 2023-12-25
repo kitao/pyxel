@@ -171,6 +171,9 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
+        if pyxel.btnp(pyxel.KEY_Q):
+            pyxel.quit()
+
         for waveform_editor in self.waveform_editors:
             waveform_editor.update()
 
