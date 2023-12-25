@@ -188,6 +188,12 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Code</a></td>
 </tr>
 <tr>
+<td>14_synthesizer.py</td>
+<td>오디오 익스팬션 기능을 활용한 신디사이저</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Code</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>flip 기능이 있는 애니메이션 (웹 플랫폼이 아닌 경우에만 해당)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
