@@ -188,6 +188,12 @@ Los ejemplos serán copiados de la siguiente manera:
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Code</a></td>
 </tr>
 <tr>
+<td>14_synthesizer.py</td>
+<td>Sintetizador con funciones de expansión de audio</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Code</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>Animación con función flip (sólo plataformas no web)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
