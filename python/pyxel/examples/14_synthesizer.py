@@ -1,14 +1,14 @@
 import pyxel
 
 EXTENDED_CHANNELS = [
-    (0.15 / 2.0, 0),  # Lead Melody
-    (0.15 / 2.0, -20),  # Detuned Lead Melody
-    (0.15, 0),  # Sub Melody
-    (0.15 / 3.0, 0),  # Chord Backing 1
-    (0.15 / 3.0, 0),  # Chord Backing 2
-    (0.15 / 3.0, 0),  # Chord Backing 3
-    (0.15, 0),  # Bass Line
-    (0.15, 0),  # Drums
+    (0.1 / 2.0, 0),  # Lead Melody
+    (0.1 / 2.0, -20),  # Detuned Lead Melody
+    (0.1, 0),  # Sub Melody
+    (0.1 / 3.0, 0),  # Chord Backing 1
+    (0.1 / 3.0, 0),  # Chord Backing 2
+    (0.1 / 3.0, 0),  # Chord Backing 3
+    (0.1, 0),  # Bass Line
+    (0.1, 0),  # Drums
 ]
 # [(gain, detune), (gain, detune), ...]
 # 'gain' ranges from 0.0 to 1.0.
