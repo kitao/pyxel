@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.3
+
+- Increased the audio clock rate to 120MHz
+
 ## 2.0.2
 
 - Changed the order of declarations in .pyi file
