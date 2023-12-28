@@ -471,7 +471,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   设置画面绘制区域为从 (`x`, `y`) 开始的宽度`w`、高度为`h`的区域。`clip()`可以将绘制区域重置为全屏。
 
 - `camera(x, y)`<br>
-  更改视角等起始位置，使位置(`x`, `y`)成为屏幕左上角的起始位置，这将有助于切换视角。 若想恢复起始位置，使用`camera()`或 `camera(0, 0)` 即可完成重置。
+  更改视角等起始位置，使位置 (`x`, `y`) 成为屏幕左上角的起始位置，这将有助于切换视角。若想恢复起始位置，使用`camera()`或 `camera(0, 0)` 即可完成重置。
 
 - `pal(col1, col2)`<br>
   绘制时用`col1`颜色代替`col2`颜色。`pal()`可以重置为初始色调。
@@ -676,7 +676,7 @@ Pyxel 还有一些“高级 API”，出于“可能令用户感到迷惑”、�
 
 ## 如何参与
 
-### 向我们报告问题（Issue）
+### 向我们报告问题
 
 使用[Issue Tracker](https://github.com/kitao/pyxel/issues)来提交 bug 报告或功能需求。在创建新 issue 之前，请确定没有类似的打开的 issue。
 
@@ -684,7 +684,7 @@ Pyxel 还有一些“高级 API”，出于“可能令用户感到迷惑”、�
 
 欢迎任何人在[Issue Tracker](https://github.com/kitao/pyxel/issues)中手动测试代码、上报 bug、提交优化建议等！
 
-### 贡献代码（Pull Requests）
+### 贡献代码
 
 可以通过 pull requests (PRs) 形式来提交补丁或修复。请确认你的 pull request 对应的 issue 地址在 issue tracker 中依然是 open 状态。
 
