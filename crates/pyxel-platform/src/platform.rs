@@ -50,8 +50,8 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
             window,
             glow_context,
             audio_device_id: 0,
-            mouse_x: i32::MIN,
-            mouse_y: i32::MIN,
+            mouse_x: i32::MAX,
+            mouse_y: i32::MAX,
             gamepads,
             #[cfg(target_os = "emscripten")]
             virtual_gamepad_states: [false; 8],
