@@ -3,6 +3,7 @@
 ## 2.0.3
 
 - Increased the audio clock rate to 120MHz
+- Changed the mouse cursor position when focus is lost
 
 ## 2.0.2
 
