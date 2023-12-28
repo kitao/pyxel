@@ -55,9 +55,13 @@ pub fn handle_mouse_wheel(sdl_event: SDL_Event) -> Vec<Event> {
 
 pub fn handle_mouse_motion() -> Vec<Event> {
     let mut events = Vec::new();
-    let mut mouse_x = 0;
-    let mut mouse_y = 0;
-    unsafe { SDL_GetGlobalMouseState(&mut mouse_x, &mut mouse_y) };
+    let mut mouse_x = i32::MIN;
+    let mut mouse_y = i32::MIN;
+    if unsafe { SDL_GetWindowFlags(platform().window) } & SDL_WINDOW_INPUT_FOCUS != 0 {
+        unsafe {
+            SDL_GetGlobalMouseState(&mut mouse_x, &mut mouse_y);
+        }
+    }
     if mouse_x != platform().mouse_x || mouse_y != platform().mouse_y {
         cfg_if! {
             if #[cfg(target_os = "emscripten")] {
