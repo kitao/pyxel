@@ -57,8 +57,7 @@ pub fn handle_mouse_motion() -> Vec<Event> {
     let mut events = Vec::new();
     let mut mouse_x = i32::MIN;
     let mut mouse_y = i32::MIN;
-    #[allow(clippy::unnecessary_cast)]
-    if unsafe { SDL_GetWindowFlags(platform().window) } & SDL_WINDOW_INPUT_FOCUS as u32 != 0 {
+    if unsafe { SDL_GetWindowFlags(platform().window) } & SDL_WINDOW_INPUT_FOCUS as Uint32 != 0 {
         unsafe {
             SDL_GetGlobalMouseState(&mut mouse_x, &mut mouse_y);
         }

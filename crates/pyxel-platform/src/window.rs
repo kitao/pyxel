@@ -129,7 +129,7 @@ pub fn set_window_size(width: u32, height: u32) {
 }
 
 pub fn is_fullscreen() -> bool {
-    (unsafe { SDL_GetWindowFlags(platform().window) }) & (SDL_WINDOW_FULLSCREEN as Uint32) != 0
+    (unsafe { SDL_GetWindowFlags(platform().window) }) & SDL_WINDOW_FULLSCREEN as Uint32 != 0
 }
 
 pub fn set_fullscreen(full: bool) {
