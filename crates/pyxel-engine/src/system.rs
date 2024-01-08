@@ -4,7 +4,7 @@ use cfg_if::cfg_if;
 use pyxel_platform::Event;
 
 use crate::image::{Color, Image, SharedImage};
-use crate::keys::{Key, KEY_0, KEY_1, KEY_2, KEY_3, KEY_9, KEY_ALT, KEY_RETURN};
+use crate::keys::{Key, KEY_0, KEY_1, KEY_2, KEY_3, KEY_9, KEY_ALT, KEY_RETURN, KEY_SHIFT};
 use crate::profiler::Profiler;
 use crate::pyxel::Pyxel;
 use crate::settings::{MAX_ELAPSED_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
@@ -193,28 +193,29 @@ impl Pyxel {
     }
 
     fn check_special_input(&mut self) {
-        if self.btn(KEY_ALT) {
-            if self.btnp(KEY_RETURN, None, None) {
-                self.fullscreen(!pyxel_platform::is_fullscreen());
-            }
-            if self.btnp(KEY_0, None, None) {
-                self.system.perf_monitor_enabled = !self.system.perf_monitor_enabled;
-            }
-            if self.btnp(KEY_1, None, None) {
-                self.screenshot(None);
-            }
-            if self.btnp(KEY_2, None, None) {
-                self.reset_screencast();
-            }
-            if self.btnp(KEY_3, None, None) {
-                self.screencast(None);
-            }
-            if self.btnp(KEY_9, None, None) {
-                self.system.screen_mode = (self.system.screen_mode + 1) % NUM_SCREEN_TYPES;
-            }
-        }
         if self.btnp(self.system.quit_key, None, None) {
             self.quit();
+        } else if self.btn(KEY_ALT) {
+            if self.btn(KEY_SHIFT) {
+                for i in 0..=9 {
+                    let key = if i == 9 { KEY_0 } else { KEY_1 + i };
+                    if self.btnp(key, None, None) {
+                        self.dump_image_bank(i);
+                    }
+                }
+            } else if self.btnp(KEY_0, None, None) {
+                self.system.perf_monitor_enabled = !self.system.perf_monitor_enabled;
+            } else if self.btnp(KEY_1, None, None) {
+                self.screenshot(None);
+            } else if self.btnp(KEY_2, None, None) {
+                self.reset_screencast();
+            } else if self.btnp(KEY_3, None, None) {
+                self.screencast(None);
+            } else if self.btnp(KEY_9, None, None) {
+                self.system.screen_mode = (self.system.screen_mode + 1) % NUM_SCREEN_TYPES;
+            } else if self.btnp(KEY_RETURN, None, None) {
+                self.fullscreen(!pyxel_platform::is_fullscreen());
+            }
         }
     }
 
