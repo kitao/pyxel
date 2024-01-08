@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.4
+
+- Fixed a mouse wheel bug
+
 ## 2.0.3
 
 - Increased the audio clock rate to 120MHz
