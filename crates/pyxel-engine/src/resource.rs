@@ -168,6 +168,15 @@ impl Pyxel {
         );
     }
 
+    pub(crate) fn dump_image_bank(&self, image_index: u32) {
+        let filename = format!("{}-{}", Self::export_path(), image_index);
+        if let Some(image) = self.images.lock().get(image_index as usize) {
+            image.lock().save(&filename, 1);
+            #[cfg(target_os = "emscripten")]
+            pyxel_platform::emscripten::save_file(&(filename + ".png"));
+        }
+    }
+
     fn export_path() -> String {
         let desktop_dir = if let Some(user_dirs) = UserDirs::new() {
             user_dirs.desktop_dir
