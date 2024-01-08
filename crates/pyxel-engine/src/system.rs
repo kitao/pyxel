@@ -97,7 +97,7 @@ impl Pyxel {
     pub fn flip(&mut self) {
         cfg_if! {
             if #[cfg(target_os = "emscripten")] {
-                panic!("flip is not supported on Web");
+                panic!("flip is not supported for Web");
             } else {
                 self.process_frame_for_flip();
             }
