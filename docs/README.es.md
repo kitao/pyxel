@@ -315,6 +315,8 @@ Los siguientes controles especiales se pueden utilizar en cualquier aplicación 
   Activa el monitor de monitorización (fps, el tiempo que tarda en actualizar la pantalla y el tiempo que tarda en dibujar)
 - `Alt(Option)+Enter`<br>
   Activar el modo de pantalla completa
+- `Shift+Alt(Option)+1/2/3`<br>
+  Guardar el banco de imágenes correspondiente en el escritorio
 
 ### Como crear los recursos
 
