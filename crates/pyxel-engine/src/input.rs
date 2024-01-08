@@ -98,24 +98,10 @@ impl Pyxel {
         pyxel_platform::set_mouse_pos(x, y);
     }
 
-    /*pub fn mouse_x(&self) -> i32 {
-        let input = self.input();
-        *input.key_values.get(&MOUSE_POS_X).unwrap_or(&0)
-    }*/
-
-    /*pub fn mouse_y(&self) -> i32 {
-        let input = self.input();
-        *input.key_values.get(&MOUSE_POS_Y).unwrap_or(&0)
-    }*/
-
-    /*pub fn mouse_wheel(&self) -> i32 {
-        let input = self.input();
-        *input.key_values.get(&MOUSE_WHEEL_Y).unwrap_or(&0)
-    }*/
-
     pub(crate) fn reset_input_states(&mut self) {
         self.input.key_values.insert(MOUSE_WHEEL_X, 0);
         self.input.key_values.insert(MOUSE_WHEEL_Y, 0);
+        self.mouse_wheel = 0;
         self.input_text = String::new();
         self.dropped_files.clear();
     }
