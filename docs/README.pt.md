@@ -315,6 +315,8 @@ Os seguintes controles especiais podem ser executados quando uma aplicação Pyx
   Ativa/desativa o monitor de performance (fps, tempo de update e tempo de draw)
 - `Alt(Option)+Enter`<br>
   Ativa/desativa tela cheia
+- `Shift+Alt(Option)+1/2/3`<br>
+  Guardar o banco de imagens correspondente no ambiente de trabalho
 
 ### Como criar um Recurso
 

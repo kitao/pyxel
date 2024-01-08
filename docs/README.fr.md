@@ -315,6 +315,8 @@ Les contrôles spéciaux suivants peuvent être lancés pendant qu’une applica
   Bascule vers le moniteur de performance (fps, temps de mise à jour et temps de dessin)
 - `Alt(Option)+Enter`<br>
   Met en plein écran
+- `Shift+Alt(Option)+1/2/3`<br>
+  Enregistrer la banque d'images correspondante sur le bureau
 
 ### Comment créer une ressource
 
