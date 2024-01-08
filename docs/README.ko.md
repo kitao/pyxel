@@ -315,6 +315,8 @@ Pyxel 애플리케이션 실행 중에, 아래의 특수 조작을 사용할 수
   성능 모니터 (fps, update time, draw time) 의 표시/표시 해제
 - `Alt(Option)+Enter`<br>
   전체 화면 전환
+- `Shift+Alt(Option)+1/2/3`<br>
+  해당 이미지 뱅크를 데스크톱에 저장합니다
 
 ### 리소스의 작성 방법
 

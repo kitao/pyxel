@@ -315,6 +315,8 @@ Die folgenden Shortcuts können eingegeben werden, während eine Pyxel-Anwendung
   Umschalten des Leistungsmonitors (fps, Updatezeit und Framezeit)
 - `Alt(Option)+Enter`<br>
   Fullscreen umschalten
+- `Shift+Alt(Option)+1/2/3`<br>
+  Speichern Sie die entsprechende Bilddatenbank auf dem Desktop
 
 ### Wie man eine Ressource erstellt
 

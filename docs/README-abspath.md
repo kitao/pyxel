@@ -315,6 +315,8 @@ The following special controls can be performed while a Pyxel application is run
   Toggle the performance monitor (fps, update time, and draw time)
 - `Alt(Option)+Enter`<br>
   Toggle full screen
+- `Shift+Alt(Option)+1/2/3`<br>
+  Save the corresponding image bank to the desktop
 
 ### How to Create Resources
 

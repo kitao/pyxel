@@ -315,6 +315,8 @@ I controlli seguenti speciali possono essere eseguite mentre viene eseguita un'a
   Alterna il monitor di performance (fps, tempo d'aggiornamento, e tempo di disegno)
 - `Alt(Option)+Enter`<br>
   Alterna schermo intero
+- `Shift+Alt(Option)+1/2/3`<br>
+  Salvare il banco di immagini corrispondente sul desktop
 
 ### Come creare una risorsa
 
