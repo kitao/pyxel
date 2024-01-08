@@ -315,6 +315,8 @@ python3 PYTHON_SCRIPT_FILE
   切换性能监控 (fps，更新时间，画面绘制时间)
 - `Alt(Option)+Enter`<br>
   切换全屏
+- `Shift+Alt(Option)+1/2/3`<br>
+  将相应的图像库保存到桌面
 
 ### 如何创建源文件
 
