@@ -3,6 +3,7 @@
 ## 2.0.4
 
 - Fixed a mouse wheel bug
+- Added a shortcut to output an image bank
 
 ## 2.0.3
 
