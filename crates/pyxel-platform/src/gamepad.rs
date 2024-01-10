@@ -152,11 +152,11 @@ pub fn handle_virtual_gamepad_inputs() -> Vec<Event> {
 }
 
 fn open_gamepad(device_index: i32) -> Option<Gamepad> {
-    let instance_id = unsafe { SDL_JoystickGetDeviceInstanceID(device_index) };
-    if unsafe { SDL_IsGameController(device_index) } == 0 {
+    let controller = unsafe { SDL_GameControllerOpen(device_index) };
+    if controller.is_null() {
         None
     } else {
-        let controller = unsafe { SDL_GameControllerOpen(device_index) };
+        let instance_id = unsafe { SDL_JoystickGetDeviceInstanceID(device_index) };
         Some(Gamepad::Controller(instance_id, controller))
     }
 }
