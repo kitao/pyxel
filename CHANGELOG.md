@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.5
+
+- Fixed a gamepad bug on Web
+
 ## 2.0.4
 
 - Fixed a mouse wheel bug
