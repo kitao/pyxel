@@ -3,7 +3,6 @@
 ## 2.0.5
 
 - Restored the publish of the crate to the release script
-- Fixed a gamepad bug on Web
 
 ## 2.0.4
 

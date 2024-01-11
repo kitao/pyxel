@@ -66,10 +66,10 @@ pub fn poll_events() -> Vec<Event> {
             }
 
             // Gamepad
-            SDL_JOYDEVICEADDED => {
+            SDL_CONTROLLERDEVICEADDED => {
                 handle_controller_device_added(sdl_event);
             }
-            SDL_JOYDEVICEREMOVED => {
+            SDL_CONTROLLERDEVICEREMOVED => {
                 handle_controller_device_removed(sdl_event);
             }
             SDL_CONTROLLERAXISMOTION => {
