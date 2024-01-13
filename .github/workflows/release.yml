@@ -56,7 +56,7 @@ jobs:
           cd crates/pyxel-platform
           cargo publish
           sleep 60
-          cd crates/pyxel-engine
+          cd ../pyxel-engine
           cargo publish
           sleep 60
           cd ../pyxel-wrapper
