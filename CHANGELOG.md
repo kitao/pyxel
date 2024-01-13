@@ -3,6 +3,7 @@
 ## 2.0.5
 
 - Restored the publish of the crate to the release script
+- Fixed a bug in Pyxel Editor when creating new resource files
 
 ## 2.0.4
 

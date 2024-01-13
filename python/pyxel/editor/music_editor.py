@@ -93,6 +93,15 @@ class MusicEditor(EditorBase):
         if index >= pyxel.NUM_CHANNELS:
             return
         music = pyxel.musics[self.music_index_var]
+        seqs_len = len(music.seqs)
+        if seqs_len < pyxel.NUM_CHANNELS:
+            seqs = music.seqs.to_list()
+            seqs.extend([[] for _ in range(pyxel.NUM_CHANNELS - seqs_len)])
+            music.seqs.from_list(seqs)
+        elif seqs_len > pyxel.NUM_CHANNELS:
+            seqs = music.seqs.to_list()
+            del seqs[pyxel.NUM_CHANNELS :]
+            music.seqs.from_list(seqs)
         return music.seqs[index]
 
     def add_pre_history(self, x, y):
