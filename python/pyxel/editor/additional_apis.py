@@ -10,20 +10,6 @@ def _user_pal():
             pyxel.pal(i, 0)
 
 
-def _load_pad(*args, **kwargs):
-    pyxel.load(*args, **kwargs)
-    musics = pyxel.musics.to_list()
-    for music in musics:
-        seqs = music.seqs.to_list()
-        seqs_len = len(seqs)
-        if seqs_len < pyxel.NUM_CHANNELS:
-            seqs.extend([[] for _ in range(pyxel.NUM_CHANNELS - seqs_len)])
-        elif seqs_len > pyxel.NUM_CHANNELS:
-            del seqs[pyxel.NUM_CHANNELS :]
-        music.seqs.from_list(seqs)
-    pyxel.musics.from_list(musics)
-
-
 def _rect2(self, x1, y1, x2, y2, val):
     x1, x2 = (x1, x2) if x1 < x2 else (x2, x1)
     y1, y2 = (y1, y2) if y1 < y2 else (y2, y1)
@@ -65,7 +51,6 @@ def _set_slice(self, x, y, slice):
 
 
 pyxel.user_pal = _user_pal
-pyxel.load_pad = _load_pad
 pyxel.Image.rect2 = pyxel.Tilemap.rect2 = _rect2
 pyxel.Image.rectb2 = pyxel.Tilemap.rectb2 = _rectb2
 pyxel.Image.elli2 = pyxel.Tilemap.elli2 = _elli2
