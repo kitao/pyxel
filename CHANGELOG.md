@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.7
+
+- Turned off the high DPI mode for performance perspective
+
 ## 2.0.6
 
 - Added support for high DPI mode
