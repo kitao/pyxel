@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.0.6
+
+- Added support for high DPI mode
+- Added detection to enable either OpenGL or OpenGL ES
+
 ## 2.0.5
 
 - Restored the publish of the crate to the release script
