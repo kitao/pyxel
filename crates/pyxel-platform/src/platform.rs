@@ -27,14 +27,7 @@ pub fn platform() -> &'static mut Platform {
 
 pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
     assert!(
-        unsafe {
-            SDL_Init(
-                SDL_WINDOW_ALLOW_HIGHDPI as Uint32
-                    | SDL_INIT_VIDEO
-                    | SDL_INIT_AUDIO
-                    | SDL_INIT_GAMECONTROLLER,
-            )
-        } >= 0,
+        unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER,) } >= 0,
         "Failed to initialize SDL2"
     );
     let mut display_mode = SDL_DisplayMode {
