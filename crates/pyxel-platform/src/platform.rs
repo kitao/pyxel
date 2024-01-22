@@ -11,7 +11,6 @@ use crate::window::{init_glow, init_window};
 pub struct Platform {
     pub window: *mut SDL_Window,
     pub glow_context: *mut GlowContext,
-    pub gles_enabled: bool,
     pub audio_device_id: SDL_AudioDeviceID,
     pub mouse_x: i32,
     pub mouse_y: i32,
@@ -51,13 +50,12 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
     );
     let (title, width, height) = window_params(display_mode.w as u32, display_mode.h as u32);
     let window = init_window(title, width, height);
-    let (glow_context, gles_enabled) = init_glow(window);
+    let glow_context = init_glow(window);
     let gamepads = init_gamepads();
     unsafe {
         PLATFORM = transmute(Box::new(Platform {
             window,
             glow_context,
-            gles_enabled,
             audio_device_id: 0,
             mouse_x: i32::MIN,
             mouse_y: i32::MIN,
