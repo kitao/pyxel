@@ -2,7 +2,6 @@ use std::ffi::{CStr, CString};
 use std::mem::transmute;
 use std::ptr::addr_of_mut;
 
-use cfg_if::cfg_if;
 use glow::Context as GlowContext;
 
 use crate::event::Event;
@@ -28,38 +27,44 @@ pub fn init_window(title: &str, width: u32, height: u32) -> *mut SDL_Window {
     }
 }
 
-pub fn init_glow(window: *mut SDL_Window) -> *mut GlowContext {
+pub fn init_glow(window: *mut SDL_Window) -> (*mut GlowContext, bool) {
     unsafe {
-        cfg_if! {
-            if #[cfg(target_os = "emscripten")] {
-                SDL_GL_SetAttribute(
-                    SDL_GL_CONTEXT_PROFILE_MASK,
-                    SDL_GL_CONTEXT_PROFILE_ES as i32,
-                );
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-            } else {
-                SDL_GL_SetAttribute(
-                    SDL_GL_CONTEXT_PROFILE_MASK,
-                    SDL_GL_CONTEXT_PROFILE_CORE as i32,
-                );
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-            }
-        }
-        assert!(
-            !SDL_GL_CreateContext(window).is_null(),
-            "Failed to create OpenGL context"
+        // Try to initialize OpenGL 2.1
+        let mut gles_enabled = false;
+        SDL_GL_SetAttribute(
+            SDL_GL_CONTEXT_PROFILE_MASK,
+            SDL_GL_CONTEXT_PROFILE_CORE as i32,
         );
-        transmute(Box::new(GlowContext::from_loader_function(|s| {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+        if SDL_GL_CreateContext(window).is_null() {
+            // Try to initialize OpenGL ES 2.0
+            SDL_GL_SetAttribute(
+                SDL_GL_CONTEXT_PROFILE_MASK,
+                SDL_GL_CONTEXT_PROFILE_ES as i32,
+            );
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+            assert!(
+                !SDL_GL_CreateContext(window).is_null(),
+                "Failed to create OpenGL context"
+            );
+            gles_enabled = true;
+        }
+        let glow_context = transmute(Box::new(GlowContext::from_loader_function(|s| {
             SDL_GL_GetProcAddress(s.as_ptr().cast()).cast_const()
-        })))
+        })));
+        (glow_context, gles_enabled)
     }
 }
 
 #[allow(clippy::missing_safety_doc)]
 pub unsafe fn glow_context() -> &'static mut GlowContext {
     &mut *platform().glow_context
+}
+
+pub fn is_gles_enabled() -> bool {
+    platform().gles_enabled
 }
 
 pub fn swap_window() {
