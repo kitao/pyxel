@@ -1,13 +1,20 @@
 use std::collections::HashMap;
 use std::mem::size_of;
 
+use cfg_if::cfg_if;
 use glow::HasContext;
 
 use crate::image::Color;
 use crate::pyxel::Pyxel;
 use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_TYPES};
 
-const GL_VERSION: &str = include_str!("shaders/gl_version.glsl");
+cfg_if! {
+    if #[cfg(target_os = "macos")] {
+        const GL_VERSION: &str = include_str!("shaders/gles_version.glsl");
+    } else {
+        const GL_VERSION: &str = include_str!("shaders/gl_version.glsl");
+    }
+}
 const GLES_VERSION: &str = include_str!("shaders/gles_version.glsl");
 const COMMON_VERT: &str = include_str!("shaders/common.vert");
 const COMMON_FRAG: &str = include_str!("shaders/common.frag");
@@ -45,45 +52,35 @@ impl Graphics {
     }
 
     unsafe fn create_screen_shaders(gl: &mut glow::Context) -> Vec<ScreenShader> {
+        let glsl_version = if pyxel_platform::is_gles_enabled() {
+            GLES_VERSION
+        } else {
+            GL_VERSION
+        };
         let mut screen_shaders = Vec::new();
         for &screen_frag in &SCREEN_FRAGS {
             // Vertex shader
             let vertex_shader = gl.create_shader(glow::VERTEX_SHADER).unwrap();
-            gl.shader_source(vertex_shader, &format!("{GLES_VERSION}{COMMON_VERT}"));
+            gl.shader_source(vertex_shader, &format!("{glsl_version}{COMMON_VERT}"));
             gl.compile_shader(vertex_shader);
-            if !gl.get_shader_compile_status(vertex_shader) {
-                let gles_info_log = gl.get_shader_info_log(vertex_shader);
-                gl.shader_source(vertex_shader, &format!("{GL_VERSION}{COMMON_VERT}"));
-                gl.compile_shader(vertex_shader);
-                assert!(
-                    gl.get_shader_compile_status(vertex_shader),
-                    "\n[GLES vertex shader]\n{}\n[GL vertex shader]\n{}",
-                    gles_info_log,
-                    gl.get_shader_info_log(vertex_shader)
-                );
-            }
+            assert!(
+                gl.get_shader_compile_status(vertex_shader),
+                "\n[vertex shader]\n{}",
+                gl.get_shader_info_log(vertex_shader)
+            );
 
             // Fragment shader
             let fragment_shader = gl.create_shader(glow::FRAGMENT_SHADER).unwrap();
             gl.shader_source(
                 fragment_shader,
-                &format!("{GLES_VERSION}{COMMON_FRAG}{screen_frag}"),
+                &format!("{glsl_version}{COMMON_FRAG}{screen_frag}"),
             );
             gl.compile_shader(fragment_shader);
-            if !gl.get_shader_compile_status(fragment_shader) {
-                let gles_info_log = gl.get_shader_info_log(fragment_shader);
-                gl.shader_source(
-                    fragment_shader,
-                    &format!("{GL_VERSION}{COMMON_FRAG}{screen_frag}"),
-                );
-                gl.compile_shader(fragment_shader);
-                assert!(
-                    gl.get_shader_compile_status(fragment_shader),
-                    "\n[GLES fragment shader]\n{}\n[GL fragment shader]\n{}",
-                    gles_info_log,
-                    gl.get_shader_info_log(fragment_shader)
-                );
-            }
+            assert!(
+                gl.get_shader_compile_status(fragment_shader),
+                "\n[fragment shader]\n{}",
+                gl.get_shader_info_log(fragment_shader)
+            );
 
             // Shader program
             let shader_program = gl.create_program().unwrap();
