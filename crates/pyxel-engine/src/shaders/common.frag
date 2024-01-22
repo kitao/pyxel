@@ -1,8 +1,3 @@
-#version 100
-#ifdef GL_ES
-precision mediump float;
-#endif
-
 uniform vec2 u_screenPos;
 uniform vec2 u_screenSize;
 uniform float u_screenScale;
