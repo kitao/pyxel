@@ -317,6 +317,8 @@ python3 PYTHON_SCRIPT_FILE
   切换全屏
 - `Shift+Alt(Option)+1/2/3`<br>
   将相应的图像库保存到桌面
+- `Shift+Alt(Option)+0`<br>
+  将当前调色板保存到桌面
 
 ### 如何创建源文件
 

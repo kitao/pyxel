@@ -317,6 +317,8 @@ I controlli seguenti speciali possono essere eseguite mentre viene eseguita un'a
   Alterna schermo intero
 - `Shift+Alt(Option)+1/2/3`<br>
   Salvare il banco di immagini corrispondente sul desktop
+- `Shift+Alt(Option)+0`<br>
+  Salva la tavolozza dei colori corrente sul desktop
 
 ### Come creare una risorsa
 
