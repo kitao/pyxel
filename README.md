@@ -317,6 +317,8 @@ The following special controls can be performed while a Pyxel application is run
   Toggle full screen
 - `Shift+Alt(Option)+1/2/3`<br>
   Save the corresponding image bank to the desktop
+- `Shift+Alt(Option)+0`<br>
+  Save the current color palette to the desktop
 
 ### How to Create Resources
 

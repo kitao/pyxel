@@ -64,7 +64,7 @@ pub fn save_file(filename: &str) {
     run_script(&format!("_savePyxelFile('{filename}');"));
 }
 
-pub fn timestamp_string() -> String {
+pub fn datetime_string() -> String {
     let script = "
         let now = new Date();
         let year = now.getFullYear();

@@ -317,6 +317,8 @@ Os seguintes controles especiais podem ser executados quando uma aplicação Pyx
   Ativa/desativa tela cheia
 - `Shift+Alt(Option)+1/2/3`<br>
   Guardar o banco de imagens correspondente no ambiente de trabalho
+- `Shift+Alt(Option)+0`<br>
+  Guardar a paleta de cores atual no ambiente de trabalho
 
 ### Como criar um Recurso
 

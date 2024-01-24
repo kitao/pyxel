@@ -317,6 +317,8 @@ Les contrôles spéciaux suivants peuvent être lancés pendant qu’une applica
   Met en plein écran
 - `Shift+Alt(Option)+1/2/3`<br>
   Enregistrer la banque d'images correspondante sur le bureau
+- `Shift+Alt(Option)+0`<br>
+  Enregistrer la palette de couleurs actuelle sur le bureau
 
 ### Comment créer une ressource
 
