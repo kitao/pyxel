@@ -8,7 +8,7 @@ use platform_dirs::UserDirs;
 use zip::write::FileOptions;
 use zip::{ZipArchive, ZipWriter};
 
-use crate::image::Rgb24;
+use crate::image::{Color, Image, Rgb24};
 use crate::pyxel::Pyxel;
 use crate::resource_data::{ResourceData1, ResourceData3};
 use crate::screencast::Screencast;
@@ -139,7 +139,7 @@ impl Pyxel {
     }
 
     pub fn screenshot(&mut self, scale: Option<u32>) {
-        let filename = Self::export_path();
+        let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.screen.lock().save(&filename, scale);
         #[cfg(target_os = "emscripten")]
@@ -147,7 +147,7 @@ impl Pyxel {
     }
 
     pub fn screencast(&mut self, scale: Option<u32>) {
-        let filename = Self::export_path();
+        let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.resource.screencast.save(&filename, scale);
         #[cfg(target_os = "emscripten")]
@@ -169,7 +169,7 @@ impl Pyxel {
     }
 
     pub(crate) fn dump_image_bank(&self, image_index: u32) {
-        let filename = format!("{}-{}", Self::export_path(), image_index);
+        let filename = Self::prepend_desktop_path(&format!("pyxel-image{image_index}"));
         if let Some(image) = self.images.lock().get(image_index as usize) {
             image.lock().save(&filename, 1);
             #[cfg(target_os = "emscripten")]
@@ -177,24 +177,38 @@ impl Pyxel {
         }
     }
 
-    fn export_path() -> String {
+    pub(crate) fn dump_palette(&self) {
+        let filename = Self::prepend_desktop_path("pyxel-palette");
+        let num_colors = self.colors.lock().len();
+        let image = Image::new(num_colors as u32, 1);
+        {
+            let mut image = image.lock();
+            for i in 0..num_colors {
+                image.pset(i as f64, 0.0, i as Color);
+            }
+            image.save(&filename, 16);
+            #[cfg(target_os = "emscripten")]
+            pyxel_platform::emscripten::save_file(&(filename + ".png"));
+        }
+    }
+
+    fn datetime_string() -> String {
+        cfg_if! {
+            if #[cfg(target_os = "emscripten")] {
+                pyxel_platform::emscripten::datetime_string()
+            } else {
+                chrono::Local::now().format("%Y%m%d-%H%M%S").to_string()
+            }
+        }
+    }
+
+    fn prepend_desktop_path(basename: &str) -> String {
         let desktop_dir = if let Some(user_dirs) = UserDirs::new() {
             user_dirs.desktop_dir
         } else {
             PathBuf::new()
         };
-        let basename = "pyxel-".to_string() + &Self::local_time_string();
         desktop_dir.join(basename).to_str().unwrap().to_string()
-    }
-
-    fn local_time_string() -> String {
-        cfg_if! {
-            if #[cfg(target_os = "emscripten")] {
-                pyxel_platform::emscripten::timestamp_string()
-            } else {
-                chrono::Local::now().format("%Y%m%d-%H%M%S").to_string()
-            }
-        }
     }
 
     fn parse_format_version(toml_text: &str) -> u32 {

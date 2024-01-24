@@ -317,6 +317,8 @@ Los siguientes controles especiales se pueden utilizar en cualquier aplicación 
   Activar el modo de pantalla completa
 - `Shift+Alt(Option)+1/2/3`<br>
   Guardar el banco de imágenes correspondiente en el escritorio
+- `Shift+Alt(Option)+0`<br>
+  Guardar la paleta de colores actual en el escritorio
 
 ### Como crear los recursos
 
