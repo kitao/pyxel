@@ -197,10 +197,13 @@ impl Pyxel {
             self.quit();
         } else if self.btn(KEY_ALT) {
             if self.btn(KEY_SHIFT) {
-                for i in 0..=9 {
-                    let key = if i == 9 { KEY_0 } else { KEY_1 + i };
-                    if self.btnp(key, None, None) {
-                        self.dump_image_bank(i);
+                if self.btnp(KEY_0, None, None) {
+                    self.dump_palette();
+                } else {
+                    for i in 0..=8 {
+                        if self.btnp(KEY_1 + i, None, None) {
+                            self.dump_image_bank(i);
+                        }
                     }
                 }
             } else if self.btnp(KEY_0, None, None) {

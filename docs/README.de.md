@@ -317,6 +317,8 @@ Die folgenden Shortcuts können eingegeben werden, während eine Pyxel-Anwendung
   Fullscreen umschalten
 - `Shift+Alt(Option)+1/2/3`<br>
   Speichern Sie die entsprechende Bilddatenbank auf dem Desktop
+- `Shift+Alt(Option)+0`<br>
+  Speichern der aktuellen Farbpalette auf dem Desktop
 
 ### Wie man eine Ressource erstellt
 

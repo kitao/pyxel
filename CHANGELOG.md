@@ -3,6 +3,7 @@
 ## 2.0.7
 
 - Turned off the high DPI mode for performance perspective
+- Added a shortcut to output the current color palette
 
 ## 2.0.6
 
