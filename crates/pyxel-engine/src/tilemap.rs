@@ -78,6 +78,22 @@ impl Tilemap {
         );
     }
 
+    pub fn load(&mut self, x: i32, y: i32, filename: &str, layer_index: u32) {
+        let tilemap = Self::from_tmx(filename, layer_index);
+        let tilemap_width = tilemap.lock().width();
+        let tilemap_height = tilemap.lock().height();
+        self.blt(
+            x as f64,
+            y as f64,
+            tilemap,
+            0.0,
+            0.0,
+            tilemap_width as f64,
+            tilemap_height as f64,
+            None,
+        );
+    }
+
     pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
         self.canvas.clip(x, y, width, height);
     }
