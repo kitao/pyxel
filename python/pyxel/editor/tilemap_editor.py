@@ -123,14 +123,8 @@ class TilemapEditor(EditorBase):
         )
 
     def __on_drop(self, filename):
-        layer = 0
-        for i in range(9):
-            if pyxel.btn(pyxel.KEY_1 + i):
-                layer = i + 1
-        if pyxel.btn(pyxel.KEY_0):
-            layer = 9
-        pyxel.tilemaps[self.image_index_var].load(
-            self.focus_x_var * 8, self.focus_y_var * 8, filename, layer
+        pyxel.tilemaps[self.tilemap_index_var].load(
+            self.focus_x_var * 8, self.focus_y_var * 8, filename, self.tilemap_index_var
         )
 
     def __on_update(self):
