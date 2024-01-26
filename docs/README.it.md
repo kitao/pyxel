@@ -357,7 +357,7 @@ La modalità per modificare tilemap immagini delle banche immagini sono posizion
 <img src="images/tilemap_editor.gif">
 </a>
 
-Trascinando e rilasciando un file TMX (Tiled Map File) nella schermata Tilemap Editor tenendo premuto un tasto numerico, il layer con il numero di indice specificato può essere caricato nella mappa a mattonelle attualmente selezionata.
+Trascinando e rilasciando un file TMX (Tiled Map File) sulla schermata Tilemap Editor tenendo premuto un tasto numerico, il layer corrispondente può essere caricato nella mappa a mattonelle attualmente selezionata.
 
 **Editor Suoni**
 
