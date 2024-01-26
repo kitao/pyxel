@@ -346,7 +346,7 @@ Der Modus zum Editieren von Image Banks.
 <img src="images/image_editor.gif">
 </a>
 
-Per Drag-and-Drop einer Bild-Datei (png/gif/jpeg) auf das Bildeditor-Fenster kann das Bild in die aktuell ausgewählte Image-Bank geladen werden.
+Ziehen Sie eine Bilddatei (PNG/GIF/JPEG) auf den Bildeditor, um das Bild in die aktuell ausgewählte Bildbank zu laden.
 
 **Tilemap-Editor**
 
@@ -356,7 +356,7 @@ Der Modus zum editieren von Tilemaps in welcher Bilder aus der Image Bank in ein
 <img src="images/tilemap_editor.gif">
 </a>
 
-Durch Ziehen und Ablegen einer TMX-Datei (Tiled Map File) auf den Bildschirm des Tilemap-Editors wird die Ebene, die der aktuell ausgewählten Tilemap-Nummer entspricht, ausgewählt.
+Ziehen Sie eine TMX-Datei (Tiled Map File) auf den Tilemap-Editor, um ihre Ebene in der Zeichenreihenfolge zu laden, die der aktuell ausgewählten Tilemap-Nummer entspricht.
 
 **Sound-Editor**
 
@@ -379,7 +379,7 @@ Der Modus um Sounds in Wiedergabereihenfolge zu Musik zusammenzufügen.
 Pyxel-Bilder und Tilemaps können auch mit den folgenden Methoden erstellt werden:
 
 - Erstelle ein Bild aus einer Liste strings mit der `Image.set` Funktion oder der `Tilemap.set` Funktion.
-- Lade eine Bild-Datei (png/gif/jpeg) in die Pyxel-Palette mit der `Image.load` Funktion.
+- Lade eine Bild-Datei (PNG/GIF/JPEG) in die Pyxel-Palette mit der `Image.load` Funktion.
 
 Pyxel-Sounds können auch mit der folgenden Methode erstellt werden:
 
@@ -607,7 +607,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   z.B. `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-  Lade die Bild-Datei (png/gif/jpeg) at (`x`, `y`).
+  Lade die Bild-Datei (PNG/GIF/JPEG) at (`x`, `y`).
 
 ### Tilemap Klasse
 
@@ -622,7 +622,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   z.B. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  Laden des Layers mit der angegebenen Indexnummer aus der TMX-Datei (Tiled Map File) bei (`x`, `y`).
+  Laden Sie den Layer in der Zeichnungsreihenfolge `layer`(0-) aus der TMX-Datei (Tiled Map File) an (`x`, `y`).
 
 - `pget(x, y)`<br>
   Gibt die Tile bei (`x`, `y`). Ein Tile ist eine Tuple von `(tile_x, tile_y)`.

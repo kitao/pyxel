@@ -347,7 +347,7 @@ El modo para editar el banco de imágenes.
 <img src="images/image_editor.gif">
 </a>
 
-Arrastrando y soltando un archivo de imagen (png/jpg/gif) en el editor de imágenes, la imagen será cargada en el banco de imágenes seleccionado.
+Arrastre y suelte un archivo de imagen (PNG/GIF/JPEG) en el Editor de imágenes para cargar la imagen en el banco de imágenes actualmente seleccionado.
 
 **Editor de mapa / losas**
 
@@ -357,7 +357,7 @@ El modo para editar el mapa de losas o mapa en el que las imágenes en el banco 
 <img src="images/tilemap_editor.gif">
 </a>
 
-Arrastrando y soltando un archivo TMX (Tiled Map File) en la pantalla del Editor de Tilemaps, la capa correspondiente al número de tilemap actualmente seleccionado.
+Arrastre y suelte un archivo TMX (Tiled Map File) en el Editor de mapas en mosaico para cargar su capa en el orden de dibujo que corresponde al número de mapa en mosaico seleccionado actualmente.
 
 **Editor de sonido**
 
@@ -380,7 +380,7 @@ El modo para editar música en el que organiza los sonidos del editor de sonidos
 Las imágenes de Pyxel y el mapa también se pueden crear de las siguientes maneras:
 
 - Crea una imagen de una lista de strings con la función `Image.set` o la función `Tilemap.set`
-- Carga un archivo de imagen (png/gif/jpeg) en la paleta de Pyxel con la función `Image.load`
+- Carga un archivo de imagen (PNG/GIF/JPEG) en la paleta de Pyxel con la función `Image.load`
 
 Los sonidos de Pyxel también se pueden crear ude la siguiente manera:
 
@@ -604,7 +604,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Ejemplo: `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-  Carga el archivo con la imagen (png/gif/jpeg) en (`x`, `y`).
+  Carga el archivo con la imagen (PNG/GIF/JPEG) en (`x`, `y`).
 
 - `pget(x, y)`<br>
   Obtén el color del pyxel en la posición (`x`, `y`).
@@ -625,7 +625,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Ejemplo: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  Carga la capa con el número de índice especificado desde el archivo TMX (Tiled Map File) en (`x`, `y`).
+  Cargue la capa en el orden de dibujo `layer`(0-) desde el archivo TMX (Tiled Map File) en (`x`, `y`).
 
 - `pget(x, y)`<br>
   Obtén la celda del mapa de la posición (`x`, `y`). Una celda es una tupla formada por `(tile_x, tile_y)`

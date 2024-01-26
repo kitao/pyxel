@@ -347,7 +347,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 <img src="images/image_editor.gif">
 </a>
 
-이미지 편집기 화면에 이미지 파일 (png/gif/jpeg) 을 드래그 앤 드롭하면, 이미지를 현재 선택된 이미지 뱅크로 불러올 수 있습니다.
+이미지 파일 (PNG/GIF/JPEG) 을 이미지 편집기로 끌어다 놓아 현재 선택한 이미지 뱅크에 이미지를 로드합니다.
 
 **타일 맵 편집기**
 
@@ -357,7 +357,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 <img src="images/tilemap_editor.gif">
 </a>
 
-TMX 파일 (Tiled Map File) 을 타일맵 편집기 화면으로 끌어다 놓으면 현재 선택된 타일맵 번호에 해당하는 레이어가 표시됩니다.
+TMX 파일 (Tiled Map File) 을 타일맵 편집기로 끌어다 놓으면 현재 선택한 타일맵 번호에 해당하는 도면 순서대로 해당 레이어를 로드할 수 있습니다.
 
 **사운드 편집기**
 
@@ -380,7 +380,7 @@ TMX 파일 (Tiled Map File) 을 타일맵 편집기 화면으로 끌어다 놓�
 Pyxel의 이미지와 타일 맵은 다음과 같은 방법으로 만들 수도 있습니다.
 
 - `Image.set` 또는 `Tilemap.set` 함수를 사용하여 문자열 리스트에서 이미지 생성
-- `Image.load` 함수를 사용하여 Pyxel 팔레트 이미지 파일 (png/gif/jpeg) 불러오기
+- `Image.load` 함수를 사용하여 Pyxel 팔레트 이미지 파일 (PNG/GIF/JPEG) 불러오기
 
 Pyxel의 사운드와 음악도 다음과 같은 방법으로 만들 수 있습니다.
 
@@ -605,7 +605,7 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   예시: `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-  (`x`, `y`) 에 이미지 파일 (png/gif/jpeg) 을 불러옵니다.
+  (`x`, `y`) 에 이미지 파일 (PNG/GIF/JPEG) 을 불러옵니다.
 
 - `pget(x, y)`<br>
   (`x`, `y`) 에서 픽셀 색상을 가져옵니다.
@@ -626,7 +626,7 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   예시: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  TMX 파일 (Tiled Map File) 에서 (`x`, `y`) 의 지정된 인덱스 번호로 레이어를 로드합니다.
+  TMX 파일 (Tiled Map File) 에서 (`x`, `y`) 의 도면 순서 `layer`(0-) 로 레이어를 로드합니다.
 
 - `pget(x, y)`<br>
   (`x`, `y`) 에서 타일을 가져옵니다. 타일은 `(tile_x, tile_y)`의 튜플 형태입니다.

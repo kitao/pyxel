@@ -348,7 +348,7 @@ Pyxel 编辑器有以下编辑模式。
 <img src="images/image_editor.gif">
 </a>
 
-通过将图像文件拖放进图像编辑器，图像可以加载进当前的图像库中。
+将图像文件 (PNG/GIF/JPEG) 拖放到图像编辑器上，即可将图像加载到当前选定的图像库中。
 
 **瓦片地图编辑器**
 
@@ -358,7 +358,7 @@ Pyxel 编辑器有以下编辑模式。
 <img src="images/tilemap_editor.gif">
 </a>
 
-将 TMX 文件 (Tiled Map File) 拖放到平铺地图编辑器屏幕上，当前所选平铺地图编号对应的图层就会出现。
+将 TMX 文件 (Tiled Map File) 拖放到平铺贴图编辑器上，即可按照与当前所选平铺贴图编号相对应的绘图顺序加载其图层。
 
 **音频编辑器**
 
@@ -381,7 +381,7 @@ Pyxel 编辑器有以下编辑模式。
 Pyxel 图像和瓦片地图也可以通过以下方法创建：
 
 - 使用`Image.set`或`Tilemap.set`函数，从字符串列表创建图片
-- 使用`Image.load`函数从加载图像文件至 pyxel 调色板中
+- 使用 `Image.load` 函数在 Pyxel 调色板中加载图像文件 (PNG/GIF/JPEG)
 
 Pyxel 声音也可以通过以下方法创建：
 
@@ -609,7 +609,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   示例：`pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-  在 (`x`, `y`) 处加载图像文件 (png/gif/jpeg)。
+  在 (`x`, `y`) 处加载图像文件 (PNG/GIF/JPEG)。
 
 ### Tilemap 类
 
@@ -624,7 +624,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   示例：`pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  在 (`x`, `y`) 处从 TMX 文件 (Tiled Map File) 加载具有指定索引号的图层。
+  从位于 (`x`, `y`) 处的 TMX 文件 (Tiled Map File) 中以绘图顺序 `layer`(0-) 加载图层。
 
 - `pget(x, y)`<br>
   得到 (`x`, `y`) 处的瓦片。瓦片数据为元组`(tile_x, tile_y)`。
