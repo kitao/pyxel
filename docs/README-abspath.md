@@ -357,7 +357,7 @@ The mode to edit tilemaps in which images of the image banks are arranged in a t
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/tilemap_editor.gif">
 </a>
 
-By dragging and dropping a TMX file (Tiled Map File) onto the Tilemap Editor screen while holding down a number key, the corresponding layer can be loaded into the currently selected tilemap.
+By dragging and dropping a TMX file (Tiled Map File) onto the Tilemap Editor screen, the layer corresponding to the currently selected tilemap number.
 
 **Sound Editor**
 
