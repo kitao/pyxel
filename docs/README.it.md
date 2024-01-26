@@ -620,6 +620,9 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Imposta la tilemap a (`x`, `y`) mediante una lista di stringhe.<br>
   e.g. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
+- `load(x, y, filename, layer)`<br>
+  Carica il layer con il numero di indice specificato dal file TMX (Tiled Map File) a (`x`, `y`).
+
 - `pget(x, y)`<br>
   Prende la tile in (`x`, `y`). Una tile è una tupla di `(tile_x, tile_y)`.
 

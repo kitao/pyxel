@@ -623,6 +623,9 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Define o tilemap em (`x`, `y`) por uma lista de strings.<br>
   Ex. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
+- `load(x, y, filename, layer)`<br>
+  Carrega a camada com o número de índice especificado a partir do ficheiro TMX (Tiled Map File) em (`x`, `y`).
+
 - `pget(x, y)`<br>
   Pega o tile em (`x`, `y`). Um tile é uma tupla de `(tile_x, tile_y)`.
 

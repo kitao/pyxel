@@ -619,6 +619,9 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Setzen der Tilemap an (`x`, `y`) durch eine Liste von strings.<br>
   z.B. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
+- `load(x, y, filename, layer)`<br>
+  Laden des Layers mit der angegebenen Indexnummer aus der TMX-Datei (Tiled Map File) bei (`x`, `y`).
+
 - `pget(x, y)`<br>
   Gibt die Tile bei (`x`, `y`). Ein Tile ist eine Tuple von `(tile_x, tile_y)`.
 
