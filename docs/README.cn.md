@@ -621,6 +621,9 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   使用字符串列表在坐标 (`x`, `y`) 处设置瓦片地图。<br>
   示例：`pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
+- `load(x, y, filename, layer)`<br>
+  在 (`x`, `y`) 处从 TMX 文件 (Tiled Map File) 加载具有指定索引号的图层。
+
 - `pget(x, y)`<br>
   得到 (`x`, `y`) 处的瓦片。瓦片数据为元组`(tile_x, tile_y)`。
 

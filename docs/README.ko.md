@@ -623,6 +623,9 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   (`x`, `y`) 에 문자열 리스트를 사용해 타일 맵을 설정합니다.<br>
   예시: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
+- `load(x, y, filename, layer)`<br>
+  TMX 파일 (Tiled Map File) 에서 (`x`, `y`) 의 지정된 인덱스 번호로 레이어를 로드합니다.
+
 - `pget(x, y)`<br>
   (`x`, `y`) 에서 타일을 가져옵니다. 타일은 `(tile_x, tile_y)`의 튜플 형태입니다.
 
