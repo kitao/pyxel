@@ -348,7 +348,7 @@ Pyxel Editor には以下の編集モードがあります。
 <img src="images/image_editor.gif">
 </a>
 
-イメージエディタ画面に画像ファイル (png/gif/jpeg) をドラッグ＆ドロップすると、画像を選択中のイメージバンクに読み込むことができます。
+イメージエディタに画像ファイル (PNG/GIF/JPEG) をドラッグ＆ドロップすると、選択中のイメージバンクに画像を読み込むことができます。
 
 **タイルマップエディタ**
 
@@ -358,7 +358,7 @@ Pyxel Editor には以下の編集モードがあります。
 <img src="images/tilemap_editor.gif">
 </a>
 
-タイルマップエディタ画面に TMX ファイル (Tiled Map File) をドラッグ＆ドロップすると、選択中のタイルマップ番号に対応したレイヤーを読み込むことができます。
+タイルマップエディタに TMX ファイル (Tiled Map File) をドラッグ＆ドロップすると、選択中のタイルマップ番号に対応した描画順のレイヤーを読み込むことができます。
 
 **サウンドエディタ**
 
@@ -381,7 +381,7 @@ Pyxel Editor には以下の編集モードがあります。
 Pyxel 用の画像やタイルマップは以下の方法で作成することもできます。
 
 - `Image.set`や`Tilemap.set`関数で文字列のリストから作成する
-- `Image.load`関数で Pyxel 向け配色の画像ファイル (png/gif/jpeg) を読み込む
+- `Image.load`関数で Pyxel 向け配色の画像ファイル (PNG/GIF/JPEG) を読み込む
 
 Pyxel 用のサウンドやミュージックは以下の方法で作成することもできます。
 
@@ -606,7 +606,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   例：`pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-  (`x`, `y`) に画像ファイル (png/gif/jpeg) を読み込みます。
+  (`x`, `y`) に画像ファイル (PNG/GIF/JPEG) を読み込みます。
 
 - `pget(x, y)`<br>
   (`x`, `y`) のピクセルの色を取得します。
@@ -627,7 +627,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   例：`pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  (`x`, `y`) に TMX ファイル (Tiled Map File) から指定されたインデックス番号のレイヤーを読み込みます。
+  (`x`, `y`) に TMX ファイル (Tiled Map File) から描画順が`layer`(0-) のレイヤーを読み込みます。
 
 - `pget(x, y)`<br>
   (`x`, `y`) のタイルを取得します。タイルは`(tile_x, tile_y)`のタプルです。

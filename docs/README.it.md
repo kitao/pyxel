@@ -347,7 +347,7 @@ La modalità per modificare banche d'immagini.
 <img src="images/image_editor.gif">
 </a>
 
-Trascinando e rilasciando un file immagine (png/gif/jpeg) sullo schermo dell'Editor Immagine, l'immagine può essere caricata all'interno del banco d'immagine attualmente selezionato.
+Trascinare e rilasciare un file immagine (PNG/GIF/JPEG) nell'Editor immagini per caricare l'immagine nel banco immagini attualmente selezionato.
 
 **Editor Tilemap**
 
@@ -357,7 +357,7 @@ La modalità per modificare tilemap immagini delle banche immagini sono posizion
 <img src="images/tilemap_editor.gif">
 </a>
 
-Trascinando e rilasciando un file TMX (Tiled Map File) nella schermata Tilemap Editor, il layer corrispondente al numero di tilemap attualmente selezionato.
+Trascinare e rilasciare un file TMX (Tiled Map File) nel Tilemap Editor per caricare il suo layer nell'ordine di disegno corrispondente al numero di tilemap attualmente selezionato.
 
 **Editor Suoni**
 
@@ -380,7 +380,7 @@ La modalità per modificare musica in cui i suoni sono posizionati in ordine per
 Le immagini e le tilemap Pyxel possono essere create mediante i seguenti metodi:
 
 - Creare un'immagine da una lista di stringhe con la funzione `Image.set` o la funzione `Tilemap.set`
-- Caricare un file immagine (png/gif/jpeg) nella palette di Pyxel con la funzione `Image.load`
+- Caricare un file immagine (PNG/GIF/JPEG) nella palette di Pyxel con la funzione `Image.load`
 
 I suoni Pyxel possono anche essere creati nel modo seguente:
 
@@ -608,7 +608,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   e.g. `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-  Carica il file immagine (png/gif/jpeg) in (`x`, `y`).
+  Carica il file immagine (PNG/GIF/JPEG) in (`x`, `y`).
 
 ### Classe Tilemap
 
@@ -623,7 +623,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   e.g. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  Carica il layer con il numero di indice specificato dal file TMX (Tiled Map File) a (`x`, `y`).
+  Caricare il layer nell'ordine di disegno `layer`(0-) dal file TMX (Tiled Map File) a (`x`, `y`).
 
 - `pget(x, y)`<br>
   Prende la tile in (`x`, `y`). Una tile è una tupla di `(tile_x, tile_y)`.
