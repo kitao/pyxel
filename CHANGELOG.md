@@ -4,6 +4,7 @@
 
 - Turned off the high DPI mode for performance perspective
 - Added a shortcut to output the current color palette
+- Added load_tmx and load method to the Tilemap class
 
 ## 2.0.6
 

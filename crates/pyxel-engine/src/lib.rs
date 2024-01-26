@@ -38,6 +38,7 @@ mod screencast;
 mod settings;
 mod sound;
 mod system;
+mod tiled_map_file;
 mod tilemap;
 mod tone;
 mod watch_info;
