@@ -357,7 +357,7 @@ El modo para editar el mapa de losas o mapa en el que las imágenes en el banco 
 <img src="images/tilemap_editor.gif">
 </a>
 
-Arrastrando y soltando un archivo TMX (Filed Map File) en la pantalla del Editor de mapas en mosaico mientras se mantiene pulsada una tecla numérica, se puede cargar la capa correspondiente en el mapa en mosaico seleccionado en ese momento.
+Arrastrando y soltando un archivo TMX (Tiled Map File) en la pantalla del Editor de Tilemaps, la capa correspondiente al número de tilemap actualmente seleccionado.
 
 **Editor de sonido**
 
