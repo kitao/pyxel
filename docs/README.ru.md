@@ -357,6 +357,8 @@ pyxel edit PYXEL_RESOURCE_FILE
 <img src="images/tilemap_editor.gif">
 </a>
 
+Если перетащить файл TMX (Tiled Map File) на экран Tilemap Editor, удерживая при этом цифровую клавишу, слой с указанным номером индекса может быть загружен в текущий выбранный tilemap.
+
 **Редактор звука**
 
 Режим для редактирования звуковых файлов.
