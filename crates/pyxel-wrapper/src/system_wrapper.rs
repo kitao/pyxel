@@ -4,7 +4,7 @@ use pyo3::prelude::*;
 use pyo3::types::{PyAny, PyDict};
 use pyxel::{Pyxel, PyxelCallback};
 #[cfg(not(target_os = "emscripten"))]
-use sysinfo::{Pid, PidExt, System, SystemExt};
+use sysinfo::{Pid, System};
 
 use crate::pyxel_singleton::{pyxel, set_pyxel_instance};
 
