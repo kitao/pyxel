@@ -34,6 +34,11 @@ impl Tilemap {
         Ok(Tilemap::wrap(pyxel::Tilemap::new(width, height, imgsrc)))
     }
 
+    #[staticmethod]
+    pub fn from_tmx(filename: &str, layer: u32) -> Self {
+        Self::wrap(pyxel::Tilemap::from_tmx(filename, layer))
+    }
+
     #[getter]
     pub fn width(&self) -> u32 {
         self.inner.lock().width()
@@ -78,6 +83,10 @@ impl Tilemap {
 
     pub fn set(&mut self, x: i32, y: i32, data: Vec<&str>) {
         self.inner.lock().set(x, y, &data);
+    }
+
+    pub fn load(&self, x: i32, y: i32, filename: &str, layer: u32) {
+        self.inner.lock().load(x, y, filename, layer);
     }
 
     pub fn clip(
