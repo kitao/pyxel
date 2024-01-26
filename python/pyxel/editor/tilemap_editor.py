@@ -95,6 +95,7 @@ class TilemapEditor(EditorBase):
         # Set event listeners
         self.add_event_listener("undo", self.__on_undo)
         self.add_event_listener("redo", self.__on_redo)
+        self.add_event_listener("drop", self.__on_drop)
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
@@ -119,6 +120,15 @@ class TilemapEditor(EditorBase):
         self.focus_x_var, self.focus_y_var = data["focus_pos"]
         self.canvas_var.set_slice(
             self.focus_x_var * 8, self.focus_y_var * 8, data["new_canvas"]
+        )
+
+    def __on_drop(self, filename):
+        layer = 0
+        for i in range(10):
+            if pyxel.btn(pyxel.KEY_0 + i):
+                layer = i
+        pyxel.tilemaps[self.image_index_var].load(
+            self.focus_x_var * 8, self.focus_y_var * 8, filename, layer
         )
 
     def __on_update(self):

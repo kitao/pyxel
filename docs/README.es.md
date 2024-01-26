@@ -357,6 +357,8 @@ El modo para editar el mapa de losas o mapa en el que las imágenes en el banco 
 <img src="images/tilemap_editor.gif">
 </a>
 
+Arrastrando y soltando un archivo TMX (Tiled Map File) en la pantalla del Editor de mapas en mosaico mientras se mantiene pulsada una tecla numérica, la capa con el número de índice especificado puede cargarse en el mapa en mosaico actualmente seleccionado.
+
 **Editor de sonido**
 
 El modo para editar el sonido.
