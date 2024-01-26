@@ -357,7 +357,7 @@ O modo para editar tilemaps em que imagens dos bancos de imagens são organizado
 <img src="images/tilemap_editor.gif">
 </a>
 
-Ao arrastar e largar um ficheiro TMX (Tiled Map File) no ecrã do Tilemap Editor, mantendo premida uma tecla numérica, a camada com o número de índice especificado pode ser carregada no tilemap atualmente selecionado.
+Ao arrastar e largar um ficheiro TMX (Tiled Map File) para o ecrã do Tilemap Editor, mantendo premida uma tecla numérica, a camada correspondente pode ser carregada para o tilemap atualmente selecionado.
 
 **Editor de Som**
 

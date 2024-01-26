@@ -356,7 +356,7 @@ Der Modus zum editieren von Tilemaps in welcher Bilder aus der Image Bank in ein
 <img src="images/tilemap_editor.gif">
 </a>
 
-Durch Ziehen und Ablegen einer TMX-Datei (Tiled Map File) auf dem Bildschirm des Tilemap-Editors bei gedrückter Zifferntaste kann der Layer mit der angegebenen Indexnummer in die aktuell ausgewählte Tilemap geladen werden.
+Durch Ziehen und Ablegen einer TMX-Datei (Tiled Map File) auf den Bildschirm des Tilemap-Editors bei gedrückter Zifferntaste kann der entsprechende Layer in die aktuell ausgewählte Tilemap geladen werden.
 
 **Sound-Editor**
 
