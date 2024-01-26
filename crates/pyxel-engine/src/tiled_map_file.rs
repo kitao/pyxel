@@ -51,11 +51,14 @@ impl Tilemap {
         let tileset = &tmx.tilesets[0];
         assert!(
             tileset.tilewidth == TILE_SIZE && tileset.tileheight == TILE_SIZE,
-            "Tile size of TMX file must be {}x{}",
-            TILE_SIZE,
-            TILE_SIZE
+            "Tile size of TMX file must be {TILE_SIZE}x{TILE_SIZE}"
         );
         let image_width = tileset.image.width / TILE_SIZE;
+        let layer_index = if layer_index < tmx.layers.len() as u32 {
+            layer_index
+        } else {
+            0
+        };
         let layer = &tmx.layers[layer_index as usize];
         assert!(
             layer.data.encoding == "csv",
@@ -64,7 +67,7 @@ impl Tilemap {
         let layer_data: Vec<u32> = layer
             .data
             .tiles
-            .split(",")
+            .split(',')
             .map(|s| s.parse::<u32>().unwrap())
             .collect();
         let tilemap = Tilemap::new(layer.width, layer.height, ImageSource::Index(0));
