@@ -39,17 +39,20 @@ impl Image {
 
     pub fn from_image(filename: &str) -> SharedImage {
         let colors = COLORS.lock();
-        let image_file = image::open(Path::new(&filename))
-            .unwrap_or_else(|_| panic!("Unable to open file '{filename}'"))
-            .to_rgb8();
-        let (width, height) = image_file.dimensions();
+        let file = image::open(Path::new(&filename));
+        if file.is_err() {
+            println!("Failed to decode '{filename}'");
+            return Self::new(1, 1);
+        }
+        let file_image = file.unwrap().to_rgb8();
+        let (width, height) = file_image.dimensions();
         let image = Self::new(width, height);
         {
             let mut image = image.lock();
             let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
             for y in 0..height {
                 for x in 0..width {
-                    let p = image_file.get_pixel(x, y);
+                    let p = file_image.get_pixel(x, y);
                     let src_rgb = (p[0], p[1], p[2]);
                     if let Some(color) = color_table.get(&src_rgb) {
                         image.canvas.write_data(x as usize, y as usize, *color);
@@ -159,7 +162,7 @@ impl Image {
         let filename = utils::add_file_extension(filename, ".png");
         image
             .save(&filename)
-            .unwrap_or_else(|_| panic!("Unable to open file '{filename}'"));
+            .unwrap_or_else(|_| panic!("Failed to save '{filename}'"));
     }
 
     pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
