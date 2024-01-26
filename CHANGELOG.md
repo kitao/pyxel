@@ -5,6 +5,7 @@
 - Turned off the high DPI mode for performance perspective
 - Added a shortcut to output the current color palette
 - Added load_tmx and load method to the Tilemap class
+- Enabled importing a TMX file via drag and drop in Tilemap Editor
 
 ## 2.0.6
 
@@ -803,8 +804,8 @@
 - Changed arguments of the rect and rectb APIs
 - Modified the examples according to the API changes
 - Renamed the resource file extension to .pyxres
-- Added the \_drop_file property
-- Added the \_caption API
+- Added the drop_file property
+- Added the caption API
 - Changed the way to detect the caller script
 
 ## 1.0.1

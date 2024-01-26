@@ -353,11 +353,11 @@ En glissant-déposant un fichier image (png / gif / jpeg) dans l’éditeur d’
 
 Mode pour éditer les tilemaps, dans lesquelles les images des banques d’images sont ordonnées en motifs de tuiles.
 
-<!-- TODO expliquer mieux -->
-
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
+
+En faisant glisser et en déposant un fichier TMX (Tiled Map File) sur l'écran de l'éditeur de mosaïque tout en maintenant une touche numérique enfoncée, la couche ayant le numéro d'index spécifié peut être chargée dans la mosaïque actuellement sélectionnée.
 
 **Éditeur de sons **
 

@@ -116,7 +116,9 @@ class ImageEditor(EditorBase):
         colors = pyxel.colors.to_list()
         user_colors = colors[pyxel.NUM_COLORS :]
         pyxel.colors.from_list(user_colors)
-        pyxel.images[self.image_index_var].load(0, 0, filename)
+        pyxel.images[self.image_index_var].load(
+            self.focus_x_var * 8, self.focus_y_var * 8, filename
+        )
         pyxel.colors.from_list(colors)
 
     def __on_update(self):

@@ -358,6 +358,8 @@ Pyxel 编辑器有以下编辑模式。
 <img src="images/tilemap_editor.gif">
 </a>
 
+按住数字键的同时将 TMX 文件 (Tiled Map File) 拖放到平铺贴图编辑器屏幕上，即可将指定索引号的图层加载到当前选定的平铺贴图中。
+
 **音频编辑器**
 
 此模式用来编辑音频。
