@@ -45,9 +45,9 @@ impl Pyxel {
     ) {
         let mut archive = ZipArchive::new(
             File::open(Path::new(&filename))
-                .unwrap_or_else(|_| panic!("Unable to open file '{filename}'")),
+                .unwrap_or_else(|_| panic!("Failed to open '{filename}'")),
         )
-        .unwrap_or_else(|_| panic!("Unable to parse zip archive '{filename}'"));
+        .unwrap();
 
         // Old resource file
         if archive.by_name("pyxel_resource/version").is_ok() {
@@ -127,8 +127,8 @@ impl Pyxel {
             include_tones.unwrap_or(false),
         );
         let path = std::path::Path::new(&filename);
-        let file = std::fs::File::create(path)
-            .unwrap_or_else(|_| panic!("Unable to open file '{filename}'"));
+        let file =
+            std::fs::File::create(path).unwrap_or_else(|_| panic!("Failed to open '{filename}'"));
         let mut zip = ZipWriter::new(file);
         zip.start_file(RESOURCE_ARCHIVE_NAME, FileOptions::default())
             .unwrap();
