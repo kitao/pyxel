@@ -6,6 +6,7 @@
 - Added a shortcut to output the current color palette
 - Added load_tmx and load method to the Tilemap class
 - Enabled importing a TMX file via drag and drop in Tilemap Editor
+- Changed destination for image drag-and-drop in Image Editor
 
 ## 2.0.6
 
