@@ -41,7 +41,7 @@ impl Image {
         let colors = COLORS.lock();
         let file = image::open(Path::new(&filename));
         if file.is_err() {
-            println!("Failed to open image file '{filename}'");
+            println!("Failed to open file '{filename}'");
             return Self::new(1, 1);
         }
         let file_image = file.unwrap().to_rgb8();
@@ -162,7 +162,7 @@ impl Image {
         let filename = utils::add_file_extension(filename, ".png");
         image
             .save(&filename)
-            .unwrap_or_else(|_| panic!("Failed to save image file '{filename}'"));
+            .unwrap_or_else(|_| panic!("Failed to open file '{filename}'"));
     }
 
     pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
