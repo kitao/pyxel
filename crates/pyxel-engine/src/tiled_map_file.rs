@@ -52,38 +52,35 @@ impl Tilemap {
         #[allow(clippy::never_loop)]
         loop {
             let file = File::open(filename);
-            check_or_break!(file.is_err(), "Failed to open TMX file '{filename}'");
+            check_or_break!(file.is_err(), "Failed to open file '{filename}'");
             let mut file = file.unwrap();
             let mut tmx_text = String::new();
             check_or_break!(
                 file.read_to_string(&mut tmx_text).is_err(),
-                "Failed to read TMX file '{filename}'"
+                "Failed to read TMX file"
             );
             let tmx = serde_xml_rs::from_str(&tmx_text);
-            check_or_break!(tmx.is_err(), "Failed to parse TMX file '{filename}'");
+            check_or_break!(tmx.is_err(), "Failed to parse TMX file");
             let tmx: TiledMapFile = tmx.unwrap();
             check_or_break!(
                 tmx.tilewidth != TILE_SIZE || tmx.tileheight != TILE_SIZE,
                 "TMX file's tile size is not {TILE_SIZE}x{TILE_SIZE}"
             );
-            check_or_break!(
-                tmx.tilesets.is_empty(),
-                "Tileset not found in TMX file '{filename}'"
-            );
+            check_or_break!(tmx.tilesets.is_empty(), "Tileset not found in TMX file");
             let tileset = &tmx.tilesets[0];
             check_or_break!(
                 tileset.columns.is_none(),
-                "Tileset is not embedded in TMX file '{filename}'"
+                "Tileset is not embedded in TMX file"
             );
             let tileset_columns = tileset.columns.unwrap();
             check_or_break!(
                 layer_index >= tmx.layers.len() as u32,
-                "Layer {layer_index} not found in TMX file '{filename}'"
+                "Layer {layer_index} not found in TMX file"
             );
             let layer = &tmx.layers[layer_index as usize];
             check_or_break!(
                 layer.data.encoding != "csv",
-                "TMX file '{filename}''s encoding is not CSV"
+                "TMX file's encoding is not CSV"
             );
             let layer_data: Vec<u32> = remove_whitespace(&layer.data.tiles)
                 .split(',')
