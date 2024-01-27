@@ -347,7 +347,7 @@ The mode to edit the image banks.
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/image_editor.gif">
 </a>
 
-By dragging and dropping an image file (png/gif/jpeg) onto the Image Editor screen, the image can be loaded into the currently selected image bank.
+Drag and drop an image file (PNG/GIF/JPEG) onto the Image Editor to load the image into the currently selected image bank.
 
 **Tilemap Editor**
 
@@ -357,7 +357,7 @@ The mode to edit tilemaps in which images of the image banks are arranged in a t
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/tilemap_editor.gif">
 </a>
 
-By dragging and dropping a TMX file (Tiled Map File) onto the Tilemap Editor screen, the layer corresponding to the currently selected tilemap number.
+Drag and drop a TMX file (Tiled Map File) onto the Tilemap Editor to load its layer in the drawing order that corresponds to the currently selected tilemap number.
 
 **Sound Editor**
 
@@ -380,7 +380,7 @@ The mode to edit musics in which the sounds are arranged in order of playback.
 Pyxel images and tilemaps can also be created by the following methods:
 
 - Create an image from a list of strings with `Image.set` function or `Tilemap.set` function
-- Load an image file (png/gif/jpeg) in Pyxel palette with `Image.load` function
+- Load an image file (PNG/GIF/JPEG) in Pyxel palette with `Image.load` function
 
 Pyxel sounds can also be created in the following method:
 
@@ -605,7 +605,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
   e.g. `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-  Load the image file (png/gif/jpeg) at (`x`, `y`).
+  Load the image file (PNG/GIF/JPEG) at (`x`, `y`).
 
 - `pget(x, y)`<br>
   Get the pixel color at (`x`, `y`).
@@ -626,7 +626,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
   e.g. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  Load the layer with the specified index number from the TMX file (Tiled Map File) at (`x`, `y`).
+  Load the layer in the drawing order `layer`(0-) from the TMX file (Tiled Map File) at (`x`, `y`).
 
 - `pget(x, y)`<br>
   Get the tile at (`x`, `y`). A tile is a tuple of `(tile_x, tile_y)`.
