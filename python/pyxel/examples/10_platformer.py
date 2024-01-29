@@ -80,14 +80,10 @@ def spawn_enemy(left_x, right_x):
                 enemies.append(Enemy3(x * 8, y * 8))
 
 
-def cleanup_list(list):
-    i = 0
-    while i < len(list):
-        elem = list[i]
-        if elem.is_alive:
-            i += 1
-        else:
-            list.pop(i)
+def cleanup_entities(entities):
+    for i in range(len(entities) - 1, -1, -1):
+        if not entities[i].is_alive:
+            del entities[i]
 
 
 class Player:
@@ -252,7 +248,7 @@ class App:
             enemy.update()
             if enemy.x < scroll_x - 8 or enemy.x > scroll_x + 160 or enemy.y > 160:
                 enemy.is_alive = False
-        cleanup_list(enemies)
+        cleanup_entities(enemies)
 
     def draw(self):
         pyxel.cls(0)
