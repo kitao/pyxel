@@ -31,24 +31,20 @@ bullets = []
 blasts = []
 
 
-def update_list(list):
-    for elem in list:
-        elem.update()
+def update_entities(entities):
+    for entity in entities:
+        entity.update()
 
 
-def draw_list(list):
-    for elem in list:
-        elem.draw()
+def draw_entities(entities):
+    for entity in entities:
+        entity.draw()
 
 
-def cleanup_list(list):
-    i = 0
-    while i < len(list):
-        elem = list[i]
-        if not elem.is_alive:
-            list.pop(i)
-        else:
-            i += 1
+def cleanup_entities(entities):
+    for i in range(len(entities) - 1, -1, -1):
+        if not entities[i].is_alive:
+            del entities[i]
 
 
 def load_bgm(msc, filename, snd1, snd2, snd3):
@@ -281,20 +277,20 @@ class App:
                 pyxel.playm(0, loop=True)
 
         self.player.update()
-        update_list(bullets)
-        update_list(enemies)
-        update_list(blasts)
-        cleanup_list(enemies)
-        cleanup_list(bullets)
-        cleanup_list(blasts)
+        update_entities(bullets)
+        update_entities(enemies)
+        update_entities(blasts)
+        cleanup_entities(enemies)
+        cleanup_entities(bullets)
+        cleanup_entities(blasts)
 
     def update_gameover_scene(self):
-        update_list(bullets)
-        update_list(enemies)
-        update_list(blasts)
-        cleanup_list(enemies)
-        cleanup_list(bullets)
-        cleanup_list(blasts)
+        update_entities(bullets)
+        update_entities(enemies)
+        update_entities(blasts)
+        cleanup_entities(enemies)
+        cleanup_entities(bullets)
+        cleanup_entities(blasts)
 
         if pyxel.btnp(pyxel.KEY_RETURN) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_X):
             self.scene = SCENE_PLAY
@@ -323,14 +319,14 @@ class App:
 
     def draw_play_scene(self):
         self.player.draw()
-        draw_list(bullets)
-        draw_list(enemies)
-        draw_list(blasts)
+        draw_entities(bullets)
+        draw_entities(enemies)
+        draw_entities(blasts)
 
     def draw_gameover_scene(self):
-        draw_list(bullets)
-        draw_list(enemies)
-        draw_list(blasts)
+        draw_entities(bullets)
+        draw_entities(enemies)
+        draw_entities(blasts)
         pyxel.text(43, 66, "GAME OVER", 8)
         pyxel.text(31, 126, "- PRESS ENTER -", 13)
 
