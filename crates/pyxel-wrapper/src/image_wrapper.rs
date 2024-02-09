@@ -23,8 +23,9 @@ impl Image {
     }
 
     #[staticmethod]
-    pub fn from_image(filename: &str) -> Self {
-        Self::wrap(pyxel::Image::from_image(filename))
+    #[pyo3(text_signature = "(filename, *, incl_colors)")]
+    pub fn from_image(filename: &str, incl_colors: Option<bool>) -> Self {
+        Self::wrap(pyxel::Image::from_image(filename, incl_colors))
     }
 
     #[getter]
@@ -53,8 +54,9 @@ impl Image {
         self.inner.lock().set(x, y, &data);
     }
 
-    pub fn load(&self, x: i32, y: i32, filename: &str) {
-        self.inner.lock().load(x, y, filename);
+    #[pyo3(text_signature = "($self, x, y, filename, *, incl_colors)")]
+    pub fn load(&self, x: i32, y: i32, filename: &str, incl_colors: Option<bool>) {
+        self.inner.lock().load(x, y, filename, incl_colors);
     }
 
     pub fn save(&self, filename: &str, scale: u32) {
