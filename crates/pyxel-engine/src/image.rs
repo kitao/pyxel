@@ -37,8 +37,12 @@ impl Image {
         })
     }
 
-    pub fn from_image(filename: &str) -> SharedImage {
-        let colors = COLORS.lock();
+    pub fn from_image(filename: &str, include_colors: Option<bool>) -> SharedImage {
+        let include_colors = include_colors.unwrap_or(false);
+        let mut colors = COLORS.lock();
+        if include_colors {
+            colors.clear();
+        }
         let file = image::open(Path::new(&filename));
         if file.is_err() {
             println!("Failed to open file '{filename}'");
@@ -58,17 +62,26 @@ impl Image {
                         image.canvas.write_data(x as usize, y as usize, *color);
                     } else {
                         let mut closest_color: Color = 0;
-                        let mut closest_dist: f64 = f64::MAX;
-                        for (i, pal_color) in colors.iter().enumerate() {
-                            let pal_rgb = (
-                                (pal_color >> 16) as u8,
-                                (pal_color >> 8) as u8,
-                                *pal_color as u8,
+                        if include_colors {
+                            colors.push(
+                                (src_rgb.0 as u32) << 16
+                                    | (src_rgb.1 as u32) << 8
+                                    | src_rgb.2 as u32,
                             );
-                            let dist = Self::color_dist(src_rgb, pal_rgb);
-                            if dist < closest_dist {
-                                closest_color = i as Color;
-                                closest_dist = dist;
+                            closest_color = colors.len() as Color - 1;
+                        } else {
+                            let mut closest_dist: f64 = f64::MAX;
+                            for (i, pal_color) in colors.iter().enumerate() {
+                                let pal_rgb = (
+                                    (pal_color >> 16) as u8,
+                                    (pal_color >> 8) as u8,
+                                    *pal_color as u8,
+                                );
+                                let dist = Self::color_dist(src_rgb, pal_rgb);
+                                if dist < closest_dist {
+                                    closest_color = i as Color;
+                                    closest_dist = dist;
+                                }
                             }
                         }
                         color_table.insert(src_rgb, closest_color);
@@ -123,8 +136,8 @@ impl Image {
         );
     }
 
-    pub fn load(&mut self, x: i32, y: i32, filename: &str) {
-        let image = Self::from_image(filename);
+    pub fn load(&mut self, x: i32, y: i32, filename: &str, include_colors: Option<bool>) {
+        let image = Self::from_image(filename, include_colors);
         let width = image.lock().width();
         let height = image.lock().height();
         self.blt(
