@@ -20,8 +20,8 @@ def get_tile(tile_x, tile_y):
 def detect_collision(x, y, dy):
     x1 = x // 8
     y1 = y // 8
-    x2 = (x + 8 - 1) // 8
-    y2 = (y + 8 - 1) // 8
+    x2 = (x + 7) // 8
+    y2 = (y + 7) // 8
     for yi in range(y1, y2 + 1):
         for xi in range(x1, x2 + 1):
             if get_tile(xi, yi)[0] >= WALL_TILE_X:
