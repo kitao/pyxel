@@ -194,6 +194,12 @@ Die zu kopierenden Beispiele lauten wie folgt:
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Code</a></td>
 </tr>
 <tr>
+<td>15_tiled_map_file.py</td>
+<td>Laden und Zeichnen einer Kachelkartendatei (.tmx)</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Code</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>Animation mit flip-Funktion (nur für Nicht-Web-Plattformen)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
