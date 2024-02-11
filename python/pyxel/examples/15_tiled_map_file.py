@@ -44,7 +44,7 @@ class App:
         )
         for i in range(3):
             pyxel.tilemaps[i] = pyxel.Tilemap.from_tmx("assets/urban_rpg.tmx", i)
-        self.player = (0, 0, 0, 1)  # (x, y, u, v)
+        self.player = (0, 0, 1, 0)  # (x, y, u, v)
         self.cars = [  # (x, y, dx, image)
             (128, 104, -2, 0),
             (288, 104, -2, 1),
@@ -80,9 +80,9 @@ class App:
         for i, car in enumerate(self.cars):
             x, y, dx, image = car
             x += dx
-            if x < -32:
-                x += pyxel.tilemaps[0].width * 8
-            elif x > pyxel.tilemaps[0].width * 8:
+            if x <= -32:
+                x = pyxel.tilemaps[0].width * 8
+            elif x >= pyxel.tilemaps[0].width * 8:
                 x = -32
             self.cars[i] = (x, y, dx, image)
 
