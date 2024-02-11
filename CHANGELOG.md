@@ -8,6 +8,9 @@
 - Enabled importing a TMX file via drag and drop in Tilemap Editor
 - Changed destination for image drag-and-drop in Image Editor
 - Refined the code for Example 9 and Example 10
+- Added a incl_colors option to the from_image method of the Image class
+- Added a incl_colors option to the load method of the Image class
+- Added Example 15
 
 ## 2.0.6
 
