@@ -10,11 +10,11 @@ CAR_IMAGES = [
 ]
 
 
-def detect_collision(x, y):
-    x1 = x // 8
-    y1 = y // 8
-    x2 = (x + 15) // 8
-    y2 = (y + 15) // 8
+def is_colliding(x, y):
+    x1 = int(x // 8)
+    y1 = int(y // 8)
+    x2 = int((x + 15) // 8)
+    y2 = int((y + 15) // 8)
     for yi in range(y1, y2 + 1):
         for xi in range(x1, x2 + 1):
             if pyxel.tilemaps[2].pget(xi, yi) == (2, 0):
@@ -23,17 +23,19 @@ def detect_collision(x, y):
 
 
 def push_back(x, y, dx, dy):
-    sign = 1 if dx > 0 else -1
-    for _ in range(abs(dx)):
-        if detect_collision(x + sign, y):
+    for _ in range(pyxel.ceil(abs(dx))):
+        step = max(-1, min(1, dx))
+        if is_colliding(x + step, y):
             break
-        x += sign
-    sign = 1 if dy > 0 else -1
-    for _ in range(abs(dy)):
-        if detect_collision(x, y + sign):
+        x += step
+        dx -= step
+    for _ in range(pyxel.ceil(abs(dy))):
+        step = max(-1, min(1, dy))
+        if is_colliding(x, y + step):
             break
-        y += sign
-    return x, y, dx, dy
+        y += step
+        dy -= step
+    return x, y
 
 
 class App:
@@ -56,6 +58,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
+        # Update player
         x, y, u, v = self.player
         dx, dy = 0, 0
         if pyxel.btn(pyxel.KEY_UP):
@@ -72,11 +75,12 @@ class App:
             u, v = 3, 1
         if v == 1:
             v += [-1, 0, -1, 1][pyxel.frame_count // 5 % 4]
-        x, y, dx, dy = push_back(x, y, dx, dy)
+        x, y = push_back(x, y, dx, dy)
         x = min(max(x, 0), pyxel.width - 16)
         y = min(max(y, 0), pyxel.height - 16)
         self.player = (x, y, u, v)
 
+        # Update cars
         for i, car in enumerate(self.cars):
             x, y, dx, image = car
             x += dx
@@ -90,6 +94,7 @@ class App:
         pyxel.cls(1)
         pyxel.bltm(0, 0, 0, 0, 0, pyxel.width, pyxel.height, 0)
 
+        # Draw player
         x, y, u, v = self.player
         pyxel.blt(
             x,
@@ -102,6 +107,7 @@ class App:
             0,
         )
 
+        # Draw cars
         for car in self.cars:
             x, y, _, image = car
             u, v, w, h = CAR_IMAGES[image]
