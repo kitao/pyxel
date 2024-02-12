@@ -11,6 +11,8 @@
 - Added a incl_colors option to the from_image method of the Image class
 - Added a incl_colors option to the load method of the Image class
 - Added Example 15
+- Refined Example 10
+- Fixed a color count change bug on OpenGL ES
 
 ## 2.0.6
 
