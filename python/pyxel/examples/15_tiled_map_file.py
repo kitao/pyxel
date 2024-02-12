@@ -41,11 +41,22 @@ def push_back(x, y, dx, dy):
 class App:
     def __init__(self):
         pyxel.init(464, 256, title="Tiled Map File")
+
         pyxel.images[0] = pyxel.Image.from_image(
             "assets/urban_rpg.png", incl_colors=True
         )
+        # This example loads a PNG file as the tileset image, but you can also use
+        # Pyxel's image bank as the tileset image in the usual way. Images from the
+        # image bank can be saved to the desktop with the shortcut
+        # Shift+Alt(Option)+1/2/3, and loading those images into Tiled allows them to
+        # be used as a tileset image.
+
         for i in range(3):
             pyxel.tilemaps[i] = pyxel.Tilemap.from_tmx("assets/urban_rpg.tmx", i)
+        # Tiled Map Files (.tmx) can be created with Tiled, a 2D level editor. In Tiled,
+        # the tile layout format must be in CSV format, and the tileset image needs to
+        # be of the `Embed in map` type, and the tile size must be 8x8.
+
         self.player = (160, 80, 1, 0)  # (x, y, u, v)
         self.cars = [  # (x, y, dx, image)
             (128, 104, -2, 0),
