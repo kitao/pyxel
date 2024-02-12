@@ -46,7 +46,7 @@ class App:
         )
         for i in range(3):
             pyxel.tilemaps[i] = pyxel.Tilemap.from_tmx("assets/urban_rpg.tmx", i)
-        self.player = (0, 0, 1, 0)  # (x, y, u, v)
+        self.player = (160, 80, 1, 0)  # (x, y, u, v)
         self.cars = [  # (x, y, dx, image)
             (128, 104, -2, 0),
             (288, 104, -2, 1),
@@ -58,6 +58,9 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
+        if pyxel.btnp(pyxel.KEY_Q):
+            pyxel.quit()
+
         # Update player
         x, y, u, v = self.player
         dx, dy = 0, 0
