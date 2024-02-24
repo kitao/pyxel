@@ -102,7 +102,7 @@
         }
         const paths = startupFile.split("/");
         const branch = paths[6];
-        const repositoryPaths = [paths[3], `${paths[4]}@${branch}`];
+        const repositoryPaths = [paths[3], `${paths[4]}${branch == 'master' || branch == 'main' ? '' : `@${branch}`}`];
         const dottedPath = repositoryPaths.concat(paths.slice(7)).join(".");
         const filePath = dottedPath.split(".").slice(0, -1).join(".");
         const fileExt = dottedPath.split(".").slice(-1)[0];
