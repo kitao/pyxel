@@ -101,7 +101,9 @@
           return;
         }
         const paths = startupFile.split("/");
-        const dottedPath = paths.slice(3, 5).concat(paths.slice(7)).join(".");
+        const branch = paths[6];
+        const repositoryPaths = [paths[3], `${paths[4]}@${branch}`];
+        const dottedPath = repositoryPaths.concat(paths.slice(7)).join(".");
         const filePath = dottedPath.split(".").slice(0, -1).join(".");
         const fileExt = dottedPath.split(".").slice(-1)[0];
         var launchUrl = "https://kitao.github.io/pyxel/wasm/launcher/?";
