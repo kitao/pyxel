@@ -37,8 +37,8 @@ TEXT_DEATH = ["GAME OVER", "(Q)UIT", "(R)ESTART"]
 COL_TEXT_DEATH = 0
 HEIGHT_DEATH = 5
 
-WIDTH = 40
-HEIGHT = 50
+WIDTH = 80
+HEIGHT = 100
 
 HEIGHT_SCORE = pyxel.FONT_HEIGHT
 COL_SCORE = 6
@@ -64,7 +64,7 @@ class Snake:
         """Initiate pyxel, set up initial game variables, and run."""
 
         pyxel.init(
-            WIDTH, HEIGHT, title="Snake!", fps=10, display_scale=12, capture_scale=6
+            WIDTH, HEIGHT, title="Snake!", fps=10, display_scale=10, capture_scale=6
         )
         define_sound_and_music()
         self.reset()
