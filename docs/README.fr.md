@@ -460,7 +460,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
   Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`. Quand `hold` et `repeat` sont spécifiés, `True` sera renvoyé à l’intervalle de frame `repeat` quand la touche `key` est appuyée pendant plus de `hold` frames.
 
 - `btnr(key)`<br>
-  Renvoie `True` si la touche `key` est appuyée à cette frame, sinon renvoie `False`
+  Renvoie `True` si la touche `key` est relâchée à cette frame, sinon renvoie `False`
 
 - `mouse(visible)`<br>
   Si `visible` est `True`, affiche le curseur de la souris. Si `False`, le curseur est caché. Même si le curseur n’est pas affiché, sa position est actualisée.
