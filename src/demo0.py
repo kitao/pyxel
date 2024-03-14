@@ -3,14 +3,17 @@ Copyright (c) Cookie Yang. All right reserved.
 """
 import pyxel
 
-pyxel.init(160, 120)
+class App:
+    def __init__(self):
+        pyxel.init(160, 120)
+        self.x = 0
+        pyxel.run(self.update, self.draw)
 
-def update():
-    if pyxel.btnp(pyxel.KEY_R):
-        pyxel.quit()
+    def update(self):
+        self.x = (self.x + 1) % pyxel.width
 
-def draw():
-    pyxel.cls(0)
-    pyxel.rect(10, 10, 20, 20, 12)
+    def draw(self):
+        pyxel.cls(2)
+        pyxel.rect(self.x, 0, 8, 8, 9)
 
-pyxel.run(update, draw)
+App()
