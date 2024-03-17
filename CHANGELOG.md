@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.0.8
+
+- Changed the directory structure of the project
+- Organized project metadata for Rust and Python
+
 ## 2.0.7
 
 - Turned off the high DPI mode for performance perspective
