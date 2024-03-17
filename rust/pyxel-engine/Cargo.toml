@@ -12,7 +12,6 @@ keywords = ["game", "gamedev", "python"]
 
 [lib]
 name = "pyxel"
-path = "src/lib.rs"
 
 [[test]]
 name = "tests"
