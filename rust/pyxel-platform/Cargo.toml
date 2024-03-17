@@ -10,10 +10,6 @@ readme = "README.md"
 categories = ["game-engines", "graphics", "multimedia"]
 keywords = ["game", "gamedev", "python"]
 
-[lib]
-name = "pyxel_platform"
-path = "src/lib.rs"
-
 [dependencies]
 cfg-if = "1.0"
 glow = "0.13"
