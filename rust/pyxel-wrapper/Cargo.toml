@@ -11,7 +11,6 @@ categories = ["game-engines", "graphics", "multimedia"]
 keywords = ["game", "gamedev", "python"]
 
 [lib]
-name = "pyxel_wrapper"
 crate-type = ["cdylib"]
 
 [dependencies]
