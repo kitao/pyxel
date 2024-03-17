@@ -33,7 +33,7 @@ Changelog = "https://github.com/kitao/pyxel/blob/main/CHANGELOG.md"
 pyxel = "pyxel.cli:cli"
 
 [tool.maturin]
-manifest-path = "crates/pyxel-wrapper/Cargo.toml"
+manifest-path = "rust/pyxel-wrapper/Cargo.toml"
 module-name = "pyxel.pyxel_wrapper"
 python-source = "python"
 

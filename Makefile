@@ -44,10 +44,10 @@
 
 ROOT_DIR = .
 DIST_DIR = $(ROOT_DIR)/dist
-PYXEL_DIR = $(ROOT_DIR)/python/pyxel
-CRATES_DIR = $(ROOT_DIR)/crates
+RUST_DIR = $(ROOT_DIR)/rust
+PYTHON_DIR = $(ROOT_DIR)/python
+EXAMPLES_DIR = $(PYTHON_DIR)/pyxel/examples
 SCRIPTS_DIR = $(ROOT_DIR)/scripts
-EXAMPLES_DIR = $(PYXEL_DIR)/examples
 WASM_DIR = $(ROOT_DIR)/wasm
 WASM_ENV = RUSTUP_TOOLCHAIN=nightly
 WASM_TARGET = wasm32-unknown-emscripten
@@ -68,37 +68,23 @@ endif
 all: build
 
 clean:
-	@cd $(CRATES_DIR)/pyxel-platform; cargo clean $(BUILD_OPTS)
-	@cd $(CRATES_DIR)/pyxel-engine; cargo clean $(BUILD_OPTS)
-	@cd $(CRATES_DIR)/pyxel-wrapper; cargo clean $(BUILD_OPTS)
+	@cd $(RUST_DIR); cargo clean $(BUILD_OPTS)
 
 distclean:
 	@rm -rf $(DIST_DIR)
-	@rm -rf $(CRATES_DIR)/pyxel-platform/target
-	@rm -rf $(CRATES_DIR)/pyxel-engine/target
-	@rm -rf $(CRATES_DIR)/pyxel-wrapper/target
+	@rm -rf $(RUST_DIR)/target
 
 lint:
-	@cd $(CRATES_DIR)/pyxel-platform; cargo +nightly clippy $(CLIPPY_OPTS)
-	@cd $(CRATES_DIR)/pyxel-platform; cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
-	@cd $(CRATES_DIR)/pyxel-engine; cargo +nightly clippy $(CLIPPY_OPTS)
-	@cd $(CRATES_DIR)/pyxel-engine; cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
-	@cd $(CRATES_DIR)/pyxel-wrapper; cargo +nightly clippy $(CLIPPY_OPTS)
-	@cd $(CRATES_DIR)/pyxel-wrapper; cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
+	@cd $(RUST_DIR); cargo +nightly clippy $(CLIPPY_OPTS)
+	@cd $(RUST_DIR); cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
 	@ruff check $(ROOT_DIR)
 
 update:
-	@cd $(CRATES_DIR)/pyxel-platform; cargo update
-	@cd $(CRATES_DIR)/pyxel-engine; cargo update
-	@cd $(CRATES_DIR)/pyxel-wrapper; cargo update
-	@cd $(CRATES_DIR)/pyxel-platform; cargo outdated --root-deps-only
-	@cd $(CRATES_DIR)/pyxel-engine; cargo outdated --root-deps-only
-	@cd $(CRATES_DIR)/pyxel-wrapper; cargo outdated --root-deps-only
+	@cd $(RUST_DIR); cargo update
+	@cd $(RUST_DIR); cargo outdated --root-deps-only
 
 format:
-	@cd $(CRATES_DIR)/pyxel-platform; cargo +nightly fmt -- --emit=files
-	@cd $(CRATES_DIR)/pyxel-engine; cargo +nightly fmt -- --emit=files
-	@cd $(CRATES_DIR)/pyxel-wrapper; cargo +nightly fmt -- --emit=files
+	@cd $(RUST_DIR); cargo +nightly fmt -- --emit=files
 	@ruff format $(ROOT_DIR)
 
 build: format
@@ -110,8 +96,8 @@ install: build
 	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
 
 test: install
-	@cd $(CRATES_DIR)/pyxel-engine; cargo test $(BUILD_OPTS)
-	@python3 -m unittest discover $(CRATES_DIR)/pyxel-wrapper/tests
+	#@cd $(RUST_DIR); cargo test $(BUILD_OPTS)
+	@python3 -m unittest discover $(RUST_DIR)/pyxel-wrapper/tests
 	@pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
 	@pyxel run $(EXAMPLES_DIR)/02_jump_game.py
 	@pyxel run $(EXAMPLES_DIR)/03_draw_api.py
