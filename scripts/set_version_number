@@ -22,23 +22,19 @@ def set_version_numbers():
     os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ROOT_DIR))
     version = sys.argv[1]
     replace_file(
-        "crates/pyxel-engine/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
+        "rust/pyxel-engine/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
     )
     replace_file("pyproject.toml", '(version.*)".*"', f'\\1"{version}"')
+    replace_file("rust/pyxel-platform/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
+    replace_file("rust/pyxel-engine/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file(
-        "crates/pyxel-platform/Cargo.toml", '(version.*)".*"', f'\\1"{version}"'
-    )
-    replace_file("crates/pyxel-engine/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
-    replace_file(
-        "crates/pyxel-engine/Cargo.toml",
+        "rust/pyxel-engine/Cargo.toml",
         '(pyxel-platform", version.*)".*"',
         f'\\1"{version}"',
     )
+    replace_file("rust/pyxel-wrapper/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file(
-        "crates/pyxel-wrapper/Cargo.toml", '(version.*)".*"', f'\\1"{version}"'
-    )
-    replace_file(
-        "crates/pyxel-wrapper/Cargo.toml",
+        "rust/pyxel-wrapper/Cargo.toml",
         '(pyxel-engine", version.*)".*"',
         f'\\1"{version}"',
     )
