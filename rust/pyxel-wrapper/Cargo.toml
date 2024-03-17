@@ -6,8 +6,8 @@ edition = "2021"
 description = "Python extension module for Pyxel, a retro game engine for Python"
 repository = "https://github.com/kitao/pyxel"
 license = "MIT"
-categories = ["game-engines", "graphics", "multimedia"]
 keywords = ["game", "gamedev", "python"]
+categories = ["game-engines", "graphics", "multimedia"]
 
 [lib]
 crate-type = ["cdylib"]
