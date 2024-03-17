@@ -1,0 +1,3 @@
+[workspace]
+members =  ["pyxel-platform", "pyxel-engine", "pyxel-wrapper"]
+resolver = "2"
