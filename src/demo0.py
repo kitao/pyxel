@@ -68,6 +68,7 @@ class Snake:
         )
         define_sound_and_music()
         self.reset()
+        pyxel.load("my_resource.pyxres")  # 载入像素风
         pyxel.run(self.update, self.draw)
 
     def reset(self):
@@ -184,9 +185,10 @@ class Snake:
         for i, point in enumerate(self.snake):
             if i == 0:
                 colour = COL_HEAD
+                pyxel.blt(point.x, point.y, 0, 0, 0, 16, 16, 0)
             else:
                 colour = COL_BODY
-            pyxel.pset(point.x, point.y, col=colour)
+                pyxel.pset(point.x, point.y, col=colour)
 
     def draw_score(self):
         """Draw the score at the top."""
