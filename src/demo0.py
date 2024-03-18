@@ -129,7 +129,7 @@ class Snake:
 
     def check_apple(self):
         """Check whether the snake is on an apple."""
-
+        # print(f"snake[0] {self.snake[0]}  | {self.apple}")
         if self.snake[0] == self.apple:
             self.score += 1
             self.snake.append(self.popped_point)
@@ -185,7 +185,7 @@ class Snake:
         for i, point in enumerate(self.snake):
             if i == 0:
                 colour = COL_HEAD
-                pyxel.blt(point.x, point.y, 0, 0, 0, 16, 16, 0)
+                pyxel.blt(point.x - 8, point.y - 13, 0, 0, 0, 16, 16, 0)
             else:
                 colour = COL_BODY
                 pyxel.pset(point.x, point.y, col=colour)
