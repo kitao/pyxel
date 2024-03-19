@@ -20,7 +20,6 @@ pub const RESOURCE_ARCHIVE_DIRNAME: &str = "pyxel_resource/";
 
 trait ResourceItem {
     fn resource_name(item_index: u32) -> String;
-    fn is_modified(&self) -> bool;
     fn clear(&mut self);
     fn deserialize(&mut self, version: u32, input: &str);
 }
@@ -28,17 +27,6 @@ trait ResourceItem {
 impl ResourceItem for Image {
     fn resource_name(item_index: u32) -> String {
         RESOURCE_ARCHIVE_DIRNAME.to_string() + "image" + &item_index.to_string()
-    }
-
-    fn is_modified(&self) -> bool {
-        for y in 0..self.height() {
-            for x in 0..self.width() {
-                if self.canvas.read_data(x as usize, y as usize) != 0 {
-                    return true;
-                }
-            }
-        }
-        false
     }
 
     fn clear(&mut self) {
@@ -67,17 +55,6 @@ impl fmt::Display for ImageSource {
 impl ResourceItem for Tilemap {
     fn resource_name(item_index: u32) -> String {
         RESOURCE_ARCHIVE_DIRNAME.to_string() + "tilemap" + &item_index.to_string()
-    }
-
-    fn is_modified(&self) -> bool {
-        for y in 0..self.height() {
-            for x in 0..self.width() {
-                if self.canvas.read_data(x as usize, y as usize) != (0, 0) {
-                    return true;
-                }
-            }
-        }
-        false
     }
 
     fn clear(&mut self) {
@@ -114,13 +91,6 @@ impl ResourceItem for Tilemap {
 impl ResourceItem for Sound {
     fn resource_name(item_index: u32) -> String {
         RESOURCE_ARCHIVE_DIRNAME.to_string() + "sound" + &format!("{item_index:02}")
-    }
-
-    fn is_modified(&self) -> bool {
-        !self.notes.is_empty()
-            || !self.tones.is_empty()
-            || !self.volumes.is_empty()
-            || !self.effects.is_empty()
     }
 
     fn clear(&mut self) {
@@ -165,10 +135,6 @@ impl ResourceItem for Sound {
 impl ResourceItem for Music {
     fn resource_name(item_index: u32) -> String {
         RESOURCE_ARCHIVE_DIRNAME.to_string() + "music" + &item_index.to_string()
-    }
-
-    fn is_modified(&self) -> bool {
-        self.seqs.iter().any(|seq| !seq.lock().is_empty())
     }
 
     fn clear(&mut self) {

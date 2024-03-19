@@ -1,7 +1,7 @@
 use std::process::exit;
 
 use pyo3::prelude::*;
-use pyo3::types::{PyAny, PyDict};
+use pyo3::types::PyDict;
 use pyxel::{Pyxel, PyxelCallback};
 #[cfg(not(target_os = "emscripten"))]
 use sysinfo::{Pid, System};
