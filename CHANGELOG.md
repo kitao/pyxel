@@ -4,7 +4,6 @@
 
 - Changed the directory structure of the project
 - Organized project metadata for Rust and Python
-- Updated crate versions
 - Disabled the slide effect on the first note of a sound
 - Fixed clippy warnings
 
