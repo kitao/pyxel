@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.10
+
+- Change the file position of pyproject.toml
+
 ## 2.0.9
 
 - Fixed the timing to disable the slide effect
