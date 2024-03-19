@@ -8,8 +8,8 @@ version = "2.0.9"
 requires-python = ">=3.7"
 authors = [{ name = "Takashi Kitao", email = "takashi.kitao@gmail.com" }]
 description = "A retro game engine for Python"
-readme = "docs/README-abspath.md"
-license = { file = "LICENSE" }
+readme = "../docs/README-abspath.md"
+license = { file = "../LICENSE" }
 keywords = ["game", "gamedev"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -33,9 +33,9 @@ Changelog = "https://github.com/kitao/pyxel/blob/main/CHANGELOG.md"
 pyxel = "pyxel.cli:cli"
 
 [tool.maturin]
-manifest-path = "rust/pyxel-wrapper/Cargo.toml"
+manifest-path = "../rust/pyxel-wrapper/Cargo.toml"
 module-name = "pyxel.pyxel_wrapper"
-python-source = "python"
+python-source = "../python"
 
 [tool.maturin.target."x86_64-apple-darwin"]
 macos-deployment-target = "10.12"
