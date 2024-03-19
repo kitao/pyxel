@@ -177,10 +177,10 @@ impl SoundData {
         let sound = Sound::new();
         {
             let mut sound = sound.lock();
-            sound.notes = self.notes.clone();
-            sound.tones = self.tones.clone();
-            sound.volumes = self.volumes.clone();
-            sound.effects = self.effects.clone();
+            sound.notes.clone_from(&self.notes);
+            sound.tones.clone_from(&self.tones);
+            sound.volumes.clone_from(&self.volumes);
+            sound.effects.clone_from(&self.effects);
             sound.speed = self.speed;
         }
         sound
