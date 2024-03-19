@@ -24,7 +24,7 @@
 #	git clone --depth=1 https://github.com/kitao/pyxel
 #	cd pyxel
 #	(Create and activate a venv if you prefer)
-#	pip3 install -r requirements.txt
+#	pip3 install -r python/requirements.txt
 #
 # Build the package in the dist directory
 #	make clean build
