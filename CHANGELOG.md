@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.0.9
+
+- Fixed the timing to disable the slide effect
+- Fixed the release script
+
 ## 2.0.8
 
 - Changed the directory structure of the project
