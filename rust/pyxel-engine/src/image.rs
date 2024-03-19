@@ -2,7 +2,7 @@ use std::array;
 use std::collections::HashMap;
 use std::path::Path;
 
-use image::{self, imageops};
+use image::imageops;
 
 use crate::canvas::{Canvas, CopyArea, ToIndex};
 use crate::pyxel::{COLORS, FONT_IMAGE, IMAGES};

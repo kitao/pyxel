@@ -1,6 +1,7 @@
 #![warn(clippy::pedantic, clippy::cargo)]
 #![allow(
     clippy::many_single_char_names,
+    clippy::multiple_crate_versions,
     clippy::needless_pass_by_value,
     clippy::new_without_default,
     clippy::redundant_closure_call,
