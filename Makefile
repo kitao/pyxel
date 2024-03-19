@@ -51,7 +51,6 @@ SCRIPTS_DIR = $(ROOT_DIR)/scripts
 WASM_DIR = $(ROOT_DIR)/wasm
 WASM_ENV = RUSTUP_TOOLCHAIN=nightly
 WASM_TARGET = wasm32-unknown-emscripten
-CLIPPY_OPTS = -q --all-targets --all-features -- --no-deps
 
 ifeq ($(TARGET),)
 ENSURE_TARGET =
@@ -75,8 +74,8 @@ distclean:
 	@rm -rf $(RUST_DIR)/target
 
 lint:
-	@cd $(RUST_DIR); cargo +nightly clippy $(CLIPPY_OPTS)
-	@cd $(RUST_DIR); cargo +nightly clippy --target $(WASM_TARGET) $(CLIPPY_OPTS)
+	@cd $(RUST_DIR); cargo +nightly clippy -q --all-targets --all-features -- --no-deps
+	@cd $(RUST_DIR); cargo +nightly clippy --target $(WASM_TARGET) -q --all-targets --all-features -- --no-deps
 	@ruff check $(ROOT_DIR)
 
 update:
@@ -90,7 +89,7 @@ format:
 build: format
 	@$(ENSURE_TARGET)
 	@$(SCRIPTS_DIR)/make_abspath_readme
-	@maturin build -o $(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --skip-auditwheel
+	@cd $(PYTHON_DIR); maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --skip-auditwheel
 
 install: build
 	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
@@ -143,10 +142,7 @@ fetch-remote-wasm:
 
 start-test-server:
 	$(SCRIPTS_DIR)/switch_html_scripts local
-	@bash -c " \
-		trap '$(SCRIPTS_DIR)/switch_html_scripts cdn' INT TERM; \
-		$(SCRIPTS_DIR)/start_test_server \
-	"
+	@bash -c "trap '$(SCRIPTS_DIR)/switch_html_scripts cdn' INT TERM; $(SCRIPTS_DIR)/start_test_server"
 
 test-wasm: build-wasm start-test-server
 
