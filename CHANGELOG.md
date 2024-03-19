@@ -2,7 +2,7 @@
 
 ## 2.0.10
 
-- Change the file position of pyproject.toml
+- Changed the location of pyproject.toml and requirements.txt
 
 ## 2.0.9
 
