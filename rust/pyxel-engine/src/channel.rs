@@ -104,11 +104,11 @@ impl Channel {
                 self.note_index += 1;
             }
             while self.note_index >= sound.notes.len() as u32 {
+                self.is_first_note = false;
                 self.sound_index += 1;
                 self.note_index = 0;
                 if self.sound_index >= self.sounds.len() as u32 {
                     if self.should_loop {
-                        self.is_first_note = true;
                         self.sound_index = 0;
                     } else {
                         self.stop();
