@@ -53,7 +53,7 @@ jobs:
       - name: Publish crates
         run: |
           cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
-          cd crates/pyxel-platform
+          cd rust/pyxel-platform
           cargo publish
           sleep 60
           cd ../pyxel-engine
