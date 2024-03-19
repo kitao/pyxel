@@ -3,7 +3,8 @@ use std::cmp::max;
 use crate::blip_buf::BlipBuf;
 use crate::oscillator::{Effect, Gain, Oscillator};
 use crate::settings::{
-    EFFECT_NONE, INITIAL_CHANNEL_GAIN, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME, TONE_TRIANGLE,
+    EFFECT_NONE, EFFECT_SLIDE, INITIAL_CHANNEL_GAIN, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME,
+    TONE_TRIANGLE,
 };
 use crate::sound::{SharedSound, Sound};
 
@@ -15,6 +16,7 @@ pub type Detune = i32;
 pub struct Channel {
     oscillator: Oscillator,
     sounds: Vec<Sound>,
+    is_first_note: bool,
     is_playing: bool,
     should_loop: bool,
     sound_index: u32,
@@ -31,6 +33,7 @@ impl Channel {
         new_shared_type!(Self {
             oscillator: Oscillator::new(),
             sounds: Vec::new(),
+            is_first_note: true,
             is_playing: false,
             should_loop: false,
             sound_index: 0,
@@ -69,6 +72,7 @@ impl Channel {
                 }
             }
         }
+        self.is_first_note = true;
         self.is_playing = true;
     }
 
@@ -104,6 +108,7 @@ impl Channel {
                 self.note_index = 0;
                 if self.sound_index >= self.sounds.len() as u32 {
                     if self.should_loop {
+                        self.is_first_note = true;
                         self.sound_index = 0;
                     } else {
                         self.stop();
@@ -119,11 +124,17 @@ impl Channel {
             assert!(volume <= MAX_VOLUME, "invalid sound volume {volume}");
             let tone = Self::circular_tone(&sound.tones, self.note_index);
             assert!(tone <= MAX_TONE, "invalid sound tone {tone}");
-            let effect = Self::circular_effect(&sound.effects, self.note_index);
+            let mut effect = Self::circular_effect(&sound.effects, self.note_index);
             assert!(effect <= MAX_EFFECT, "invalid sound effect {effect}");
             let speed = max(sound.speed, 1);
 
             if note >= 0 && volume > 0 {
+                if self.is_first_note {
+                    self.is_first_note = false;
+                    if effect == EFFECT_SLIDE {
+                        effect = EFFECT_NONE;
+                    }
+                }
                 self.oscillator.play(
                     note as f64 + self.detune as f64 / 200.0,
                     tone,
