@@ -4,6 +4,9 @@
 
 - Changed the directory structure of the project
 - Organized project metadata for Rust and Python
+- Updated crate versions
+- Disabled the slide effect on the first note of a sound
+- Fixed clippy warnings
 
 ## 2.0.7
 
@@ -101,7 +104,7 @@
 - Added support for Raspberry Pi (ARMv7)
 - Updated Emscripten to 3.1.42
 - Updated Pyodide to 0.23.3
-- Updated the version of crates
+- Updated crate versions
 
 ## 1.9.16
 
@@ -138,7 +141,7 @@
 ## 1.9.11
 
 - Changed Makefile to lint Emscripten code
-- Suppressed clippy warnings
+- Fixed clippy warnings
 - Modified the instruction for Pyxel.colors list
 - Added error messages for Pyxel command
 - Fixed the default filename of Pyxel Editor for web
@@ -151,7 +154,7 @@
 ## 1.9.9
 
 - Changed to not use array macro
-- Suppressed clippy warnings
+- Fixed clippy warnings
 - Updated Emscripten to 3.1.29
 - Updated Pyodide version to 0.22.0
 - Fixed gamepad input bug
@@ -385,7 +388,7 @@
 - Fixed the link to Example 12 in the READMEs
 - Fixed the examples layout in the READMEs
 - Updated links for Discord Servers in the READMEs
-- Changed the way to set the crate versions
+- Changed the way to set crate versions
 - Added a display_scale option to the init function
 - Changed the default window size slightly smaller
 
@@ -459,7 +462,7 @@
 ## 1.5.8
 
 - Fixed a pyxapp to be included in Python wheel
-- Resolved the clippy warnings
+- Fixed clippy warnings
 
 ## 1.5.7
 
