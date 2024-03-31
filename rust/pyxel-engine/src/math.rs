@@ -40,11 +40,7 @@ impl Pyxel {
     }
 
     pub fn sqrt(&self, x: f64) -> f64 {
-        if x == 0.0 {
-            f64::MAX
-        } else {
-            f64::sqrt(x)
-        }
+        f64::sqrt(x)
     }
 
     pub fn sin(&self, deg: f64) -> f64 {
