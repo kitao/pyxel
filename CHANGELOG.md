@@ -3,6 +3,7 @@
 ## 2.0.10
 
 - Changed the location of pyproject.toml and requirements.txt
+- Fixed the sqrt function
 
 ## 2.0.9
 
