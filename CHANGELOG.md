@@ -5,6 +5,7 @@
 - Changed the location of pyproject.toml and requirements.txt
 - Fixed the sqrt function
 - Fixed a non pixel perfect bug for OpenGL ES
+- Added support for encodings other than UTF-8 in the app2exe command
 
 ## 2.0.9
 
