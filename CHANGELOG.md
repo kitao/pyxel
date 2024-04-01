@@ -4,6 +4,7 @@
 
 - Changed the location of pyproject.toml and requirements.txt
 - Fixed the sqrt function
+- Fixed a non pixel perfect bug for OpenGL ES
 
 ## 2.0.9
 
