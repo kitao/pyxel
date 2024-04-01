@@ -24,7 +24,7 @@ def set_version_numbers():
     replace_file(
         "rust/pyxel-engine/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
     )
-    replace_file("pyproject.toml", '(version.*)".*"', f'\\1"{version}"')
+    replace_file("python/pyproject.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file("rust/pyxel-platform/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file("rust/pyxel-engine/Cargo.toml", '(version.*)".*"', f'\\1"{version}"')
     replace_file(
