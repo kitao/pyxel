@@ -18,7 +18,7 @@ def _list_imported_modules(imports, filename, checked_files):
         return
     checked_files.add(filename)
     dir_path = os.path.dirname(filename)
-    with open(filename) as file:
+    with open(filename,encoding="utf8") as file:
         root = ast.parse(file.read())
     for node in ast.walk(root):
         if isinstance(node, ast.Import):
@@ -26,7 +26,7 @@ def _list_imported_modules(imports, filename, checked_files):
                 module_path = os.path.join(dir_path, alias.name.replace(".", os.sep))
                 module_filename = _to_module_filename(module_path)
                 if module_filename:
-                    imports["local"].add(os.path.relpath(module_filename))
+                    imports["local"].add(os.path.abspath(module_filename))
                     _list_imported_modules(imports, module_filename, checked_files)
                 else:
                     imports["system"].add(alias.name)
@@ -39,7 +39,7 @@ def _list_imported_modules(imports, filename, checked_files):
                 )
                 module_filename = _to_module_filename(module_path)
                 if module_filename:
-                    imports["local"].add(os.path.relpath(module_filename))
+                    imports["local"].add(os.path.abspath(module_filename))
                     _list_imported_modules(imports, module_filename, checked_files)
                 elif node.level == 0:
                     imports["system"].add(node.module)
