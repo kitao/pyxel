@@ -26,10 +26,7 @@ def _list_imported_modules(imports, filename, checked_files):
                 module_path = os.path.join(dir_path, alias.name.replace(".", os.sep))
                 module_filename = _to_module_filename(module_path)
                 if module_filename:
-                    try:
-                        imports["local"].add(os.path.relpath(module_filename))
-                    except ValueError:
-                        imports["local"].add(os.path.abspath(module_filename))
+                    imports["local"].add(os.path.abspath(module_filename))
                     _list_imported_modules(imports, module_filename, checked_files)
                 else:
                     imports["system"].add(alias.name)
@@ -42,7 +39,7 @@ def _list_imported_modules(imports, filename, checked_files):
                 )
                 module_filename = _to_module_filename(module_path)
                 if module_filename:
-                    imports["local"].add(os.path.relpath(module_filename))
+                    imports["local"].add(os.path.abspath(module_filename))
                     _list_imported_modules(imports, module_filename, checked_files)
                 elif node.level == 0:
                     imports["system"].add(node.module)
