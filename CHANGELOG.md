@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.11
+
+- Added error messages for the pyxel command
+
 ## 2.0.10
 
 - Changed the location of pyproject.toml and requirements.txt
