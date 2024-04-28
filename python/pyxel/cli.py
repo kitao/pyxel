@@ -84,12 +84,23 @@ def _check_newer_version():
         print(f"A new version, Pyxel {latest_version}, is available.")
 
 
+def _correct_command(filename, command):
+    file_ext = os.path.splitext(filename)[1].lower()
+    if (command == "play" or command == "edit") and file_ext == ".py":
+        print(f"use 'run' instead of '{command}' to execute .py files")
+        sys.exit(1)
+    elif command != "play" and file_ext == ".pyxapp":
+        print(f"use 'play' instead of '{command}' to execute .pyxapp files")
+        sys.exit(1)
+    elif command != "edit" and file_ext == ".pyxres":
+        print(f"use 'edit' instead of '{command}' to edit .pyxapp files")
+        sys.exit(1)
+
+
 def _complete_extension(filename, ext_with_dot):
-    file_ext = os.path.splitext(filename)[1]
-    if file_ext == ext_with_dot:
-        return filename
-    else:
-        return filename + ext_with_dot
+    if not os.path.splitext(filename)[1]:
+        filename += ext_with_dot
+    return filename
 
 
 def _files_in_dir(dirname):
@@ -161,9 +172,7 @@ def _run_python_script_in_separate_process(python_script_file):
 
 
 def run_python_script(python_script_file):
-    if python_script_file.lower().endswith(".pyxapp"):
-        print("use 'play' instead of 'run' to execute .pyxapp files")
-        sys.exit(1)
+    _correct_command(python_script_file, "run")
     python_script_file = _complete_extension(python_script_file, ".py")
     _check_file_exists(python_script_file)
     sys.path.append(os.path.dirname(python_script_file))
@@ -171,6 +180,7 @@ def run_python_script(python_script_file):
 
 
 def watch_and_run_python_script(watch_dir, python_script_file):
+    _correct_command(python_script_file, "watch")
     _check_dir_exists(watch_dir)
     python_script_file = _complete_extension(python_script_file, ".py")
     _check_file_exists(python_script_file)
@@ -212,9 +222,7 @@ def _extract_pyxel_app(pyxel_app_file):
 
 
 def play_pyxel_app(pyxel_app_file):
-    if pyxel_app_file.lower().endswith(".py"):
-        print("use 'run' instead of 'play' to execute .py files")
-        sys.exit(1)
+    _correct_command(pyxel_app_file, "play")
     startup_script_file = _extract_pyxel_app(pyxel_app_file)
     if startup_script_file:
         sys.path.append(os.path.dirname(startup_script_file))
@@ -227,7 +235,10 @@ def play_pyxel_app(pyxel_app_file):
 def edit_pyxel_resource(pyxel_resource_file=None, starting_editor="image"):
     import pyxel.editor
 
-    pyxel_resource_file = pyxel_resource_file or "my_resource"
+    if pyxel_resource_file:
+        _correct_command(pyxel_resource_file, "edit")
+    else:
+        pyxel_resource_file = "my_resource"
     pyxel_resource_file = _complete_extension(
         pyxel_resource_file, pyxel.RESOURCE_FILE_EXTENSION
     )
