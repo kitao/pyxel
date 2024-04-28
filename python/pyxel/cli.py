@@ -161,6 +161,9 @@ def _run_python_script_in_separate_process(python_script_file):
 
 
 def run_python_script(python_script_file):
+    if python_script_file.lower().endswith(".pyxapp"):
+        print("use 'play' instead of 'run' to execute .pyxapp files")
+        sys.exit(1)
     python_script_file = _complete_extension(python_script_file, ".py")
     _check_file_exists(python_script_file)
     sys.path.append(os.path.dirname(python_script_file))
@@ -209,6 +212,9 @@ def _extract_pyxel_app(pyxel_app_file):
 
 
 def play_pyxel_app(pyxel_app_file):
+    if pyxel_app_file.lower().endswith(".py"):
+        print("use 'run' instead of 'play' to execute .py files")
+        sys.exit(1)
     startup_script_file = _extract_pyxel_app(pyxel_app_file)
     if startup_script_file:
         sys.path.append(os.path.dirname(startup_script_file))
