@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 
 use cfg_if::cfg_if;
 use platform_dirs::UserDirs;
-use zip::write::FileOptions;
+use zip::write::SimpleFileOptions;
 use zip::{ZipArchive, ZipWriter};
 
 use crate::image::{Color, Image, Rgb24};
@@ -130,7 +130,7 @@ impl Pyxel {
         let file = std::fs::File::create(path)
             .unwrap_or_else(|_| panic!("Failed to open file '{filename}'"));
         let mut zip = ZipWriter::new(file);
-        zip.start_file(RESOURCE_ARCHIVE_NAME, FileOptions::default())
+        zip.start_file(RESOURCE_ARCHIVE_NAME, SimpleFileOptions::default())
             .unwrap();
         zip.write_all(toml_text.as_bytes()).unwrap();
         zip.finish().unwrap();
