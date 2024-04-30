@@ -1,6 +1,6 @@
 use std::f64::consts::PI;
 
-use noise::{NoiseFn, Perlin, Seedable};
+use noise::{NoiseFn, Perlin};
 use rand::{Rng, SeedableRng};
 use rand_xoshiro::Xoshiro256StarStar;
 
@@ -15,7 +15,7 @@ impl Math {
     pub fn new() -> Self {
         let seed = pyxel_platform::elapsed_time();
         let rng = Xoshiro256StarStar::seed_from_u64(seed as u64);
-        let perlin = Perlin::new().set_seed(seed);
+        let perlin = Perlin::new(seed);
         Self { rng, perlin }
     }
 }
@@ -70,7 +70,7 @@ impl Pyxel {
     }
 
     pub fn nseed(&mut self, seed: u32) {
-        self.math.perlin = Perlin::new().set_seed(seed);
+        self.math.perlin = Perlin::new(seed);
     }
 
     pub fn noise(&mut self, x: f64, y: f64, z: f64) -> f64 {
