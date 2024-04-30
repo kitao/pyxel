@@ -24,11 +24,20 @@ def cli():
             ["watch", "WATCH_DIR", "PYTHON_SCRIPT_FILE(.py)"],
             watch_and_run_python_script,
         ),
-        (["play", "PYXEL_APP_FILE(.pyxapp)"], play_pyxel_app),
-        (["edit", "[PYXEL_RESOURCE_FILE(.pyxres)]"], edit_pyxel_resource),
+        (["play", f"PYXEL_APP_FILE({pyxel.APP_FILE_EXTENSION})"], play_pyxel_app),
+        (
+            ["edit", f"[PYXEL_RESOURCE_FILE({pyxel.RESOURCE_FILE_EXTENSION})]"],
+            edit_pyxel_resource,
+        ),
         (["package", "APP_DIR", "STARTUP_SCRIPT_FILE(.py)"], package_pyxel_app),
-        (["app2exe", "PYXEL_APP_FILE(.pyxapp)"], create_executable_from_pyxel_app),
-        (["app2html", "PYXEL_APP_FILE(.pyxapp)"], create_html_from_pyxel_app),
+        (
+            ["app2exe", f"PYXEL_APP_FILE({pyxel.APP_FILE_EXTENSION})"],
+            create_executable_from_pyxel_app,
+        ),
+        (
+            ["app2html", f"PYXEL_APP_FILE({pyxel.APP_FILE_EXTENSION})"],
+            create_html_from_pyxel_app,
+        ),
         (["copy_examples"], copy_pyxel_examples),
     ]
 
@@ -210,7 +219,9 @@ def _extract_pyxel_app(pyxel_app_file):
 
 
 def play_pyxel_app(pyxel_app_file):
-    pyxel_app_file = _complete_extension(pyxel_app_file, "play", ".pyxapp")
+    pyxel_app_file = _complete_extension(
+        pyxel_app_file, "play", pyxel.APP_FILE_EXTENSION
+    )
     startup_script_file = _extract_pyxel_app(pyxel_app_file)
     if startup_script_file:
         sys.path.append(os.path.dirname(startup_script_file))
@@ -258,7 +269,9 @@ def package_pyxel_app(app_dir, startup_script_file):
 
 
 def create_executable_from_pyxel_app(pyxel_app_file):
-    pyxel_app_file = _complete_extension(pyxel_app_file, "app2exe", ".pyxapp")
+    pyxel_app_file = _complete_extension(
+        pyxel_app_file, "app2exe", pyxel.APP_FILE_EXTENSION
+    )
     _check_file_exists(pyxel_app_file)
     app2exe_dir = os.path.join(tempfile.gettempdir(), pyxel.WORKING_DIR, "app2exe")
     if os.path.isdir(app2exe_dir):
@@ -269,7 +282,7 @@ def create_executable_from_pyxel_app(pyxel_app_file):
     with open(startup_script_file, "w") as f:
         f.write(
             "import os, pyxel.cli; pyxel.cli.play_pyxel_app("
-            f"os.path.join(os.path.dirname(__file__), '{pyxel_app_name}.pyxapp'))"
+            f"os.path.join(os.path.dirname(__file__), '{pyxel_app_name}.{pyxel.APP_FILE_EXTENSION}'))"
         )
     cp = subprocess.run("pyinstaller -h", capture_output=True, shell=True)
     if cp.returncode != 0:
@@ -292,7 +305,9 @@ def create_executable_from_pyxel_app(pyxel_app_file):
 
 
 def create_html_from_pyxel_app(pyxel_app_file):
-    pyxel_app_file = _complete_extension(pyxel_app_file, "app2html", ".pyxapp")
+    pyxel_app_file = _complete_extension(
+        pyxel_app_file, "app2html", pyxel.APP_FILE_EXTENSION
+    )
     _check_file_exists(pyxel_app_file)
     base64_string = ""
     with open(pyxel_app_file, "rb") as f:
@@ -304,7 +319,7 @@ def create_html_from_pyxel_app(pyxel_app_file):
             '<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js">'
             "</script>\n"
             "<script>\n"
-            f'launchPyxel({{ command: "play", name: "{pyxel_app_name}.pyxapp", '
+            f'launchPyxel({{ command: "play", name: "{pyxel_app_name}.{pyxel.APP_FILE_EXTENSION}", '
             f'gamepad: "enabled", base64: "{base64_string}" }});\n'
             "</script>\n"
         )
