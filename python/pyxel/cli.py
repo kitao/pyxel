@@ -84,22 +84,13 @@ def _check_newer_version():
         print(f"A new version, Pyxel {latest_version}, is available.")
 
 
-def _correct_command(filename, command):
+def _complete_extension(filename, command, valid_ext):
     file_ext = os.path.splitext(filename)[1].lower()
-    if (command == "play" or command == "edit") and file_ext == ".py":
-        print(f"use 'run' instead of '{command}' to execute .py files")
+    if not file_ext:
+        filename += valid_ext
+    elif file_ext != valid_ext:
+        print(f"'{command}' command only accepts {valid_ext} files")
         sys.exit(1)
-    elif command != "play" and file_ext == ".pyxapp":
-        print(f"use 'play' instead of '{command}' to execute .pyxapp files")
-        sys.exit(1)
-    elif command != "edit" and file_ext == ".pyxres":
-        print(f"use 'edit' instead of '{command}' to edit .pyxapp files")
-        sys.exit(1)
-
-
-def _complete_extension(filename, ext_with_dot):
-    if not os.path.splitext(filename)[1]:
-        filename += ext_with_dot
     return filename
 
 
@@ -172,17 +163,15 @@ def _run_python_script_in_separate_process(python_script_file):
 
 
 def run_python_script(python_script_file):
-    _correct_command(python_script_file, "run")
-    python_script_file = _complete_extension(python_script_file, ".py")
+    python_script_file = _complete_extension(python_script_file, "run", ".py")
     _check_file_exists(python_script_file)
     sys.path.append(os.path.dirname(python_script_file))
     runpy.run_path(python_script_file, run_name="__main__")
 
 
 def watch_and_run_python_script(watch_dir, python_script_file):
-    _correct_command(python_script_file, "watch")
+    python_script_file = _complete_extension(python_script_file, "watch", ".py")
     _check_dir_exists(watch_dir)
-    python_script_file = _complete_extension(python_script_file, ".py")
     _check_file_exists(python_script_file)
     _check_file_under_dir(python_script_file, watch_dir)
     os.environ[pyxel.WATCH_INFO_FILE_ENVVAR] = _create_watch_info_file()
@@ -209,7 +198,6 @@ def watch_and_run_python_script(watch_dir, python_script_file):
 
 
 def _extract_pyxel_app(pyxel_app_file):
-    pyxel_app_file = _complete_extension(pyxel_app_file, pyxel.APP_FILE_EXTENSION)
     _check_file_exists(pyxel_app_file)
     app_dir = _create_app_dir()
     zf = zipfile.ZipFile(pyxel_app_file)
@@ -222,7 +210,7 @@ def _extract_pyxel_app(pyxel_app_file):
 
 
 def play_pyxel_app(pyxel_app_file):
-    _correct_command(pyxel_app_file, "play")
+    pyxel_app_file = _complete_extension(pyxel_app_file, "play", ".pyxapp")
     startup_script_file = _extract_pyxel_app(pyxel_app_file)
     if startup_script_file:
         sys.path.append(os.path.dirname(startup_script_file))
@@ -235,19 +223,17 @@ def play_pyxel_app(pyxel_app_file):
 def edit_pyxel_resource(pyxel_resource_file=None, starting_editor="image"):
     import pyxel.editor
 
-    if pyxel_resource_file:
-        _correct_command(pyxel_resource_file, "edit")
-    else:
+    if not pyxel_resource_file:
         pyxel_resource_file = "my_resource"
     pyxel_resource_file = _complete_extension(
-        pyxel_resource_file, pyxel.RESOURCE_FILE_EXTENSION
+        pyxel_resource_file, "edit", pyxel.RESOURCE_FILE_EXTENSION
     )
     pyxel.editor.App(pyxel_resource_file, starting_editor)
 
 
 def package_pyxel_app(app_dir, startup_script_file):
+    startup_script_file = _complete_extension(startup_script_file, "package", ".py")
     _check_dir_exists(app_dir)
-    startup_script_file = _complete_extension(startup_script_file, ".py")
     _check_file_exists(startup_script_file)
     _check_file_under_dir(startup_script_file, app_dir)
     app_dir = os.path.abspath(app_dir)
@@ -272,7 +258,7 @@ def package_pyxel_app(app_dir, startup_script_file):
 
 
 def create_executable_from_pyxel_app(pyxel_app_file):
-    pyxel_app_file = _complete_extension(pyxel_app_file, pyxel.APP_FILE_EXTENSION)
+    pyxel_app_file = _complete_extension(pyxel_app_file, "app2exe", ".pyxapp")
     _check_file_exists(pyxel_app_file)
     app2exe_dir = os.path.join(tempfile.gettempdir(), pyxel.WORKING_DIR, "app2exe")
     if os.path.isdir(app2exe_dir):
@@ -306,7 +292,7 @@ def create_executable_from_pyxel_app(pyxel_app_file):
 
 
 def create_html_from_pyxel_app(pyxel_app_file):
-    pyxel_app_file = _complete_extension(pyxel_app_file, pyxel.APP_FILE_EXTENSION)
+    pyxel_app_file = _complete_extension(pyxel_app_file, "app2html", ".pyxapp")
     _check_file_exists(pyxel_app_file)
     base64_string = ""
     with open(pyxel_app_file, "rb") as f:
