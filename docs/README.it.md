@@ -74,13 +74,15 @@ Se si installa Python utilizzando il programma di installazione ufficiale, selez
 
 ### Mac
 
-Dopo aver installato [Python3](https://www.python.org/) (versione 3.7 o superiore), eseguire il seguente comando:
+Dopo aver installato [Homebrew](https://brew.sh/), eseguire il seguente comando:
 
 ```sh
-python3 -m pip install -U pyxel
+brew install pipx
+pipx ensurepath
+pipx install pyxel
 ```
 
-Se si utilizza Python3, che è installato di default su Mac, aggiungere `sudo` all'inizio del comando precedente per abilitare il comando `pyxel`.
+Per aggiornare la versione dopo l'installazione di Pyxel, eseguire `pipx upgrade pyxel`.
 
 ### Linux
 

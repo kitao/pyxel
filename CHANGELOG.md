@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.12
+
+- Updated installation instructions for Mac
+
 ## 2.0.11
 
 - Added error messages for the pyxel command

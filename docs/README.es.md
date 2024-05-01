@@ -74,13 +74,15 @@ Si instalas Python con el instalador oficial, marca la casilla `Add Python 3.x t
 
 ### Mac
 
-Después de instalar [Python3](https://www.python.org/) (versión 3.7 o superior), ejecute el siguiente comando:
+Después de instalar [Homebrew](https://brew.sh/), ejecuta el siguiente comando:
 
 ```sh
-python3 -m pip install -U pyxel
+brew install pipx
+pipx ensurepath
+pipx install pyxel
 ```
 
-Si utiliza Python3, que se instala por defecto en Mac, añada `sudo` al principio del comando anterior para activar el comando `pyxel`.
+Para actualizar la versión después de instalar Pyxel, ejecute `pipx upgrade pyxel`.
 
 ### Linux
 
