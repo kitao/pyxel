@@ -74,7 +74,7 @@ Si instalas Python con el instalador oficial, marca la casilla `Add Python 3.x t
 
 ### Mac
 
-Después de instalar [Homebrew](https://brew.sh/), ejecuta el siguiente comando:
+Después de instalar [Homebrew](https://brew.sh/), ejecute los siguientes comandos:
 
 ```sh
 brew install pipx

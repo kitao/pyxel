@@ -74,7 +74,7 @@ Wenn Sie Python mit dem offiziellen Installationsprogramm installieren, aktivier
 
 ### Mac
 
-Nach der Installation von [Homebrew](https://brew.sh/) führen Sie den folgenden Befehl aus:
+Nach der Installation von [Homebrew](https://brew.sh/) führen Sie die folgenden Befehle aus:
 
 ```sh
 brew install pipx
