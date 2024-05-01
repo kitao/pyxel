@@ -163,6 +163,7 @@ impl SDL2BindingsBuilder {
                 .args(["--cflags", "-s", "USE_SDL=2"])
                 .output()
                 .expect("Failed to execute emcc");
+            // for Emscripten 3.1.45
             let cflags = str::from_utf8(&output.stdout).unwrap();
             let sdl2_include_flag = cflags
                 .split_whitespace()
@@ -170,6 +171,16 @@ impl SDL2BindingsBuilder {
                 .unwrap();
             include_flags.push(sdl2_include_flag.to_string());
             include_flags.push(sdl2_include_flag.to_string() + "/..");
+            /*
+            // for Emscripten 3.1.46+
+            let sdl2_include_flag = cflags
+                .split_whitespace()
+                .skip_while(|&flag| !flag.starts_with("-isystem"))
+                .nth(1)
+                .unwrap();
+            include_flags.push("-I".to_string() + sdl2_include_flag);
+            include_flags.push("-I".to_string() + sdl2_include_flag + "/..");
+            */
         } else {
             include_flags.push("-I/usr/local/include".to_string());
             include_flags.push("-I/usr/include".to_string());
