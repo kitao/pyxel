@@ -74,7 +74,7 @@ Se instalar Python utilizando o instalador oficial, verifique a caixa de verific
 
 ### Mac
 
-Após instalar o [Homebrew](https://brew.sh/), execute o seguinte comando:
+Depois de instalar o [Homebrew](https://brew.sh/), execute os seguintes comandos:
 
 ```sh
 brew install pipx
