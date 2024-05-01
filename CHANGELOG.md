@@ -3,6 +3,7 @@
 ## 2.0.11
 
 - Added error messages for the pyxel command
+- Updated crate versions
 
 ## 2.0.10
 
