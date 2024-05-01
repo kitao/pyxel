@@ -62,11 +62,12 @@ impl Music {
     }
 
     #[pyo3(signature = (*seqs))]
-    pub fn set(&self, seqs: &PyTuple) {
+    pub fn set(&self, seqs: &Bound<'_, PyTuple>) {
         let mut rust_seqs: Vec<Vec<u32>> = Vec::new();
         for i in 0..seqs.len() {
-            let seq = seqs.get_item(i).unwrap().downcast::<PyList>().unwrap();
-            let rust_seq = seq.extract::<Vec<u32>>().unwrap();
+            let seq_any = seqs.get_item(i).unwrap();
+            let seq_list = seq_any.downcast::<PyList>().unwrap();
+            let rust_seq = seq_list.extract::<Vec<u32>>().unwrap();
             rust_seqs.push(rust_seq);
         }
         self.inner.lock().set(&rust_seqs);
@@ -81,7 +82,7 @@ impl Music {
     }
 }
 
-pub fn add_music_class(m: &PyModule) -> PyResult<()> {
+pub fn add_music_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Seqs>()?;
     m.add_class::<Music>()?;
     Ok(())

@@ -69,7 +69,7 @@ fn reset_screencast() {
     pyxel().reset_screencast();
 }
 
-pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
+pub fn add_resource_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(load, m)?)?;
     m.add_function(wrap_pyfunction!(save, m)?)?;
     m.add_function(wrap_pyfunction!(screenshot, m)?)?;
