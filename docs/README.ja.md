@@ -74,13 +74,15 @@ pip install -U pyxel
 
 ### Mac
 
-[Python3](https://www.python.org/) (バージョン 3.7 以上) をインストールした後に、次のコマンドを実行します。
+[Homebrew](https://brew.sh/) をインストールした後に、次のコマンドを実行します。
 
 ```sh
-python3 -m pip install -U pyxel
+brew install pipx
+pipx ensurepath
+pipx install pyxel
 ```
 
-Mac に標準でインストールされている Python3 を使用する場合は、`pyxel` コマンドを有効にするために、上記コマンドの先頭に`sudo`を追加してください。
+Pyxel インストール後にバージョンを更新する場合は、`pipx upgrade pyxel`を実行してください。
 
 ### Linux
 
