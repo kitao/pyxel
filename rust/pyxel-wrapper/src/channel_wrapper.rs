@@ -43,7 +43,12 @@ impl Channel {
     }
 
     #[pyo3(text_signature = "($self, snd, *, tick, loop)")]
-    pub fn play(&self, snd: &PyAny, tick: Option<u32>, r#loop: Option<bool>) -> PyResult<()> {
+    pub fn play(
+        &self,
+        snd: &Bound<'_, PyAny>,
+        tick: Option<u32>,
+        r#loop: Option<bool>,
+    ) -> PyResult<()> {
         let loop_ = r#loop.unwrap_or(false);
         cast_pyany! {
             snd,
@@ -73,7 +78,7 @@ impl Channel {
     }
 }
 
-pub fn add_channel_class(m: &PyModule) -> PyResult<()> {
+pub fn add_channel_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Channel>()?;
     Ok(())
 }
