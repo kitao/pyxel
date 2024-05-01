@@ -58,7 +58,7 @@ impl Tone {
     }
 }
 
-pub fn add_tone_class(m: &PyModule) -> PyResult<()> {
+pub fn add_tone_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Tone>()?;
     Ok(())
 }
