@@ -74,7 +74,7 @@ Se si installa Python utilizzando il programma di installazione ufficiale, selez
 
 ### Mac
 
-Dopo aver installato [Homebrew](https://brew.sh/), eseguire il seguente comando:
+Dopo aver installato [Homebrew](https://brew.sh/), eseguire i comandi seguenti:
 
 ```sh
 brew install pipx

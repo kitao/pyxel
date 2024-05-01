@@ -74,7 +74,7 @@ If you install Python using the official installer, please check the `Add Python
 
 ### Mac
 
-After installing [Homebrew](https://brew.sh/), run the following command:
+After installing [Homebrew](https://brew.sh/), run the following commands:
 
 ```sh
 brew install pipx
