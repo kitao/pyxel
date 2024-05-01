@@ -46,7 +46,7 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
     let glow_context = init_glow(window);
     let gamepads = init_gamepads();
     unsafe {
-        PLATFORM = transmute(Box::new(Platform {
+        PLATFORM = transmute::<Box<Platform>, *mut Platform>(Box::new(Platform {
             window,
             glow_context,
             audio_device_id: 0,

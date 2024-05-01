@@ -1,5 +1,7 @@
 #![warn(clippy::pedantic, clippy::cargo)]
 #![allow(
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss,
     clippy::many_single_char_names,
     clippy::multiple_crate_versions,
     clippy::needless_pass_by_value,

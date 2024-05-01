@@ -17,6 +17,6 @@ pub fn pyxel() -> &'static mut Pyxel {
 
 pub fn set_pyxel_instance(pyxel: Pyxel) {
     unsafe {
-        PYXEL = transmute(Box::new(pyxel));
+        PYXEL = transmute::<Box<Pyxel>, *mut Pyxel>(Box::new(pyxel));
     }
 }
