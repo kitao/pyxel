@@ -1,7 +1,6 @@
 use std::process::exit;
 
 use pyo3::prelude::*;
-use pyo3::pybacked::PyBackedStr;
 use pyo3::types::PyDict;
 use pyxel::{Pyxel, PyxelCallback};
 #[cfg(not(target_os = "emscripten"))]
@@ -24,13 +23,13 @@ fn init(
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,
 ) -> PyResult<()> {
-    let locals = PyDict::new_bound(py);
-    locals.set_item("os", py.import_bound("os")?)?;
-    locals.set_item("inspect", py.import_bound("inspect")?)?;
-    py.run_bound(
+    let locals = PyDict::new(py);
+    locals.set_item("os", py.import("os")?)?;
+    locals.set_item("inspect", py.import("inspect")?)?;
+    py.run(
         "os.chdir(os.path.dirname(inspect.stack()[1].filename) or '.')",
         None,
-        Some(&locals),
+        Some(locals),
     )?;
     set_pyxel_instance(pyxel::init(
         width,
@@ -46,11 +45,11 @@ fn init(
 }
 
 #[pyfunction]
-fn run<'py>(py: Python, update: &Bound<'_, PyAny>, draw: &Bound<'_, PyAny>) {
+fn run(py: Python, update: &PyAny, draw: &PyAny) {
     struct PythonCallback<'a> {
         py: Python<'a>,
-        update: &'a Bound<'a, PyAny>,
-        draw: &'a Bound<'a, PyAny>,
+        update: &'a PyAny,
+        draw: &'a PyAny,
     }
 
     impl<'a> PyxelCallback for PythonCallback<'a> {
@@ -93,8 +92,7 @@ fn title(title: &str) {
 }
 
 #[pyfunction]
-fn icon(data: Vec<PyBackedStr>, scale: u32, colkey: Option<pyxel::Color>) {
-    let data: Vec<&str> = data.iter().map(PyBackedStr::as_ref).collect();
+fn icon(data: Vec<&str>, scale: u32, colkey: Option<pyxel::Color>) {
     pyxel().icon(&data, scale, colkey);
 }
 
@@ -115,7 +113,7 @@ fn process_exists(pid: u32) -> bool {
     system.process(Pid::from_u32(pid)).is_some()
 }
 
-pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
+pub fn add_system_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(init, m)?)?;
     m.add_function(wrap_pyfunction!(run, m)?)?;
     m.add_function(wrap_pyfunction!(show, m)?)?;

@@ -119,7 +119,7 @@ fn fill(x: f64, y: f64, col: pyxel::Color) {
 fn blt(
     x: f64,
     y: f64,
-    img: &Bound<'_, PyAny>,
+    img: &PyAny,
     u: f64,
     v: f64,
     w: f64,
@@ -138,7 +138,7 @@ fn blt(
 fn bltm(
     x: f64,
     y: f64,
-    tm: &Bound<'_, PyAny>,
+    tm: &PyAny,
     u: f64,
     v: f64,
     w: f64,
@@ -176,7 +176,7 @@ fn tilemap(tm: u32) -> Tilemap {
     Tilemap::wrap(pyxel().tilemaps.lock()[tm as usize].clone())
 }
 
-pub fn add_graphics_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
+pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(clip, m)?)?;
     m.add_function(wrap_pyfunction!(camera, m)?)?;
     m.add_function(wrap_pyfunction!(pal, m)?)?;
