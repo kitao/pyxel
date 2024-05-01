@@ -1,7 +1,6 @@
 use std::sync::Once;
 
 use pyo3::prelude::*;
-use pyo3::pybacked::PyBackedStr;
 
 use crate::image_wrapper::Image;
 use crate::pyxel_singleton::pyxel;
@@ -26,7 +25,7 @@ impl Tilemap {
 #[pymethods]
 impl Tilemap {
     #[new]
-    pub fn new(width: u32, height: u32, img: &Bound<'_, PyAny>) -> PyResult<Self> {
+    pub fn new(width: u32, height: u32, img: &PyAny) -> PyResult<Self> {
         let imgsrc = cast_pyany! {
             img,
             (u32, { pyxel::ImageSource::Index(img) }),
@@ -60,7 +59,7 @@ impl Tilemap {
     }
 
     #[setter]
-    pub fn set_imgsrc(&self, img: &Bound<'_, PyAny>) -> PyResult<()> {
+    pub fn set_imgsrc(&self, img: &PyAny) -> PyResult<()> {
         let imgsrc = cast_pyany! {
             img,
             (u32, { pyxel::ImageSource::Index(img) }),
@@ -77,13 +76,12 @@ impl Tilemap {
             inner.width() * inner.height(),
             inner.data_ptr()
         );
-        let locals = pyo3::types::PyDict::new_bound(py);
-        py.run_bound(&python_code, None, Some(&locals)).unwrap();
+        let locals = pyo3::types::PyDict::new(py);
+        py.run(&python_code, None, Some(locals)).unwrap();
         locals.get_item("c_uint8_array").unwrap().to_object(py)
     }
 
-    pub fn set(&mut self, x: i32, y: i32, data: Vec<PyBackedStr>) {
-        let data: Vec<&str> = data.iter().map(PyBackedStr::as_ref).collect();
+    pub fn set(&mut self, x: i32, y: i32, data: Vec<&str>) {
         self.inner.lock().set(x, y, &data);
     }
 
@@ -175,7 +173,7 @@ impl Tilemap {
         &self,
         x: f64,
         y: f64,
-        tm: &Bound<'_, PyAny>,
+        tm: &PyAny,
         u: f64,
         v: f64,
         w: f64,
@@ -239,7 +237,7 @@ impl Tilemap {
     }
 }
 
-pub fn add_tilemap_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
+pub fn add_tilemap_class(m: &PyModule) -> PyResult<()> {
     m.add_class::<Tilemap>()?;
     Ok(())
 }

@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-use pyo3::pybacked::PyBackedStr;
 
 use crate::pyxel_singleton::pyxel;
 use crate::tilemap_wrapper::Tilemap;
@@ -46,13 +45,12 @@ impl Image {
             inner.width() * inner.height(),
             inner.data_ptr()
         );
-        let locals = pyo3::types::PyDict::new_bound(py);
-        py.run_bound(&python_code, None, Some(&locals)).unwrap();
+        let locals = pyo3::types::PyDict::new(py);
+        py.run(&python_code, None, Some(locals)).unwrap();
         locals.get_item("c_uint8_array").unwrap().to_object(py)
     }
 
-    pub fn set(&self, x: i32, y: i32, data: Vec<PyBackedStr>) {
-        let data: Vec<&str> = data.iter().map(PyBackedStr::as_ref).collect();
+    pub fn set(&self, x: i32, y: i32, data: Vec<&str>) {
         self.inner.lock().set(x, y, &data);
     }
 
@@ -164,7 +162,7 @@ impl Image {
         &self,
         x: f64,
         y: f64,
-        img: &Bound<'_, PyAny>,
+        img: &PyAny,
         u: f64,
         v: f64,
         w: f64,
@@ -186,7 +184,7 @@ impl Image {
         &self,
         x: f64,
         y: f64,
-        tm: &Bound<'_, PyAny>,
+        tm: &PyAny,
         u: f64,
         v: f64,
         w: f64,
@@ -209,7 +207,7 @@ impl Image {
     }
 }
 
-pub fn add_image_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
+pub fn add_image_class(m: &PyModule) -> PyResult<()> {
     m.add_class::<Image>()?;
     Ok(())
 }
