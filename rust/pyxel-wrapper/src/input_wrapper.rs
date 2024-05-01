@@ -33,7 +33,7 @@ pub fn warp_mouse(x: f64, y: f64) {
     pyxel().warp_mouse(x, y);
 }
 
-pub fn add_input_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
+pub fn add_input_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(btn, m)?)?;
     m.add_function(wrap_pyfunction!(btnp, m)?)?;
     m.add_function(wrap_pyfunction!(btnr, m)?)?;

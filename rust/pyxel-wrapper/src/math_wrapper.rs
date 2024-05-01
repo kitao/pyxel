@@ -64,7 +64,7 @@ fn noise(x: f64, y: Option<f64>, z: Option<f64>) -> f64 {
     pyxel().noise(x, y, z)
 }
 
-pub fn add_math_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
+pub fn add_math_functions(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(ceil, m)?)?;
     m.add_function(wrap_pyfunction!(floor, m)?)?;
     m.add_function(wrap_pyfunction!(sgn, m)?)?;
