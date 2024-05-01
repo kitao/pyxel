@@ -74,7 +74,7 @@ pip install -U pyxel
 
 ### Mac
 
-После установки [Homebrew](https://brew.sh/) выполните следующую команду:
+После установки [Homebrew](https://brew.sh/) выполните следующие команды:
 
 ```sh
 brew install pipx
