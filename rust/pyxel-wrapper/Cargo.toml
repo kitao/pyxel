@@ -13,7 +13,7 @@ categories = ["game-engines", "graphics", "multimedia"]
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.20", features = ["abi3-py37", "extension-module"] }
+pyo3 = { version = "0.21", features = ["abi3-py37", "extension-module", "gil-refs"] }
 pyxel-engine = { path = "../pyxel-engine", version = "2.0.11" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
