@@ -97,7 +97,7 @@ impl Sound {
     }
 }
 
-pub fn add_sound_class(m: &PyModule) -> PyResult<()> {
+pub fn add_sound_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Notes>()?;
     m.add_class::<Tones>()?;
     m.add_class::<Volumes>()?;

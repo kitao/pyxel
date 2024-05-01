@@ -13,7 +13,7 @@ macro_rules! cast_pyany {
                     if !types.is_empty() {
                         types += ", "
                     }
-                    if let Ok($pyany) = <$type>::extract($pyany) {
+                    if let Ok($pyany) = <$type>::extract_bound($pyany) {
                         break $block;
                     }
                     types += stringify!($type);
