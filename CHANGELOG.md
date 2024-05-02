@@ -2,7 +2,8 @@
 
 ## 2.0.12
 
-- Updated installation instructions for Mac
+- Fixed installation instructions for Mac in the READMEs
+- Modified build instructions in Makefile
 
 ## 2.0.11
 

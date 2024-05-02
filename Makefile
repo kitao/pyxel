@@ -1,7 +1,7 @@
 #
 # [How to build]
 #
-# Required tools:
+# Required Tools:
 #	- git
 #	- make
 #	- cmake
@@ -16,30 +16,38 @@
 #	- python3-venv
 #	- libsdl2-dev 2.0.10+
 #
-#	[WASM]
+#	[Web]
 #	- Emscripten 3.1.45 (does not work with 3.1.46+)
 #
-# Advance preparation:
+# Advance Preparation:
 #	rustup install nightly
 #	git clone --depth=1 https://github.com/kitao/pyxel
 #	cd pyxel
 #	(Create and activate a venv if you prefer)
 #	pip3 install -r python/requirements.txt
 #
-# Build the package in the dist directory
+# Build for Current Environment:
 #	make clean build
+#	(Generates Python wheel in dist/ directory)
 #
-# Build the package for the specified target:
+# Build for Specified Target:
 #	make clean build TARGET=target_triple
 #
-# Build, install, and test the package in the current Python
+# Build for Specified Target:
+#	make clean build TARGET=target_triple
+#
+# Build and Install in Current Python:
+#	make clean install
+#
+# Build, Install, and Test in Current Python:
 #	make clean test
 #
-# Build the package for WASM in the dist directory
+# Build for Web:
 #	make clean-wasm build-wasm
 #
-# Test the package for WASM in localhost:8000/wasm/
+# Test for Web:
 #	make clean-wasm test-wasm
+#	(Open localhost:8000/wasm/ in a web browser)
 #
 
 ROOT_DIR = .
