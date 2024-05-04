@@ -62,25 +62,6 @@ impl SDL2BindingsBuilder {
             }
             panic!("Failed to extract SDL2 source code");
         }
-
-        // Patch SDL2 for macOS Sonoma
-        if self.target_os == "darwin" {
-            let patch_target_path = format!(
-                "{}/SDL2-{}/src/video/cocoa/SDL_cocoaevents.m",
-                self.out_dir, SDL2_VERSION
-            );
-            let patch_code =
-            "- (BOOL)applicationSupportsSecureRestorableState:(NSApplication *)app { return YES; }";
-            let status = Command::new("sh")
-                .arg("-c")
-                .arg(&format!(
-                    "sed -i '' '310i\\\n{}' {}",
-                    patch_code, patch_target_path
-                ))
-                .status()
-                .expect("Failed to execute sed command");
-            assert!(status.success(), "Failed to patch SDL2");
-        }
     }
 
     fn build_sdl2(&self) {
@@ -164,23 +145,13 @@ impl SDL2BindingsBuilder {
                 .output()
                 .expect("Failed to execute emcc");
             let cflags = str::from_utf8(&output.stdout).unwrap();
-
-            // for Emscripten 3.1.45
             let sdl2_include_flag = cflags
                 .split_whitespace()
-                .find(|cflag| cflag.starts_with("-I") && cflag.contains("SDL2"))
+                .skip_while(|&flag| !flag.starts_with("-isystem"))
+                .nth(1)
                 .unwrap();
-            include_flags.push(sdl2_include_flag.to_string());
-            include_flags.push(sdl2_include_flag.to_string() + "/..");
-
-            // for Emscripten 3.1.46+
-            //let sdl2_include_flag = cflags
-            //    .split_whitespace()
-            //    .skip_while(|&flag| !flag.starts_with("-isystem"))
-            //    .nth(1)
-            //    .unwrap();
-            //include_flags.push("-I".to_string() + sdl2_include_flag);
-            //include_flags.push("-I".to_string() + sdl2_include_flag + "/..");
+            include_flags.push("-I".to_string() + sdl2_include_flag);
+            include_flags.push("-I".to_string() + sdl2_include_flag + "/..");
         } else {
             include_flags.push("-I/usr/local/include".to_string());
             include_flags.push("-I/usr/include".to_string());
