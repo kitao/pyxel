@@ -14,10 +14,10 @@
 #	[Linux]
 #	- python3-pip
 #	- python3-venv
-#	- libsdl2-dev 2.0.10+
+#	- libsdl2-dev 2.24.2
 #
 #	[Web]
-#	- Emscripten 3.1.45 (does not work with 3.1.46+)
+#	- Emscripten 3.1.53 (does not work with 3.1.54+)
 #
 # Advance Preparation:
 #	rustup install nightly
