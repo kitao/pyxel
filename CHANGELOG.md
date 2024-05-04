@@ -4,6 +4,8 @@
 
 - Fixed installation instructions for Mac in the READMEs
 - Modified build instructions in Makefile
+- Updated Pyodide to version 0.25.1
+- Updated Emscripten to version 3.1.53
 
 ## 2.0.11
 
