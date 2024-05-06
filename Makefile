@@ -87,8 +87,10 @@ lint:
 	@ruff check $(ROOT_DIR)
 
 update:
-	@cd $(RUST_DIR); cargo update
-	@cd $(RUST_DIR); cargo outdated --root-deps-only
+	@rustup -q update
+	@cd $(RUST_DIR); cargo -q update
+	@cd $(RUST_DIR); cargo -q outdated --root-deps-only
+	@pip3 -q install -U -r $(PYTHON_DIR)/requirements.txt
 
 format:
 	@cd $(RUST_DIR); cargo +nightly fmt -- --emit=files
