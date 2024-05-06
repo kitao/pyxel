@@ -7,6 +7,7 @@ use std::str;
 use tar::Archive;
 
 const SDL2_VERSION: &str = "2.24.2";
+//const SDL2_VERSION: &str = "2.28.4";
 
 struct SDL2BindingsBuilder {
     target: String,
@@ -142,6 +143,7 @@ impl SDL2BindingsBuilder {
         } else if self.target_os == "emscripten" {
             let output = Command::new("emcc")
                 .args(["--cflags", "-s", "USE_SDL=2"])
+                //.args(["--cflags", "--use-port=sdl2"])
                 .output()
                 .expect("Failed to execute emcc");
             let cflags = str::from_utf8(&output.stdout).unwrap();
