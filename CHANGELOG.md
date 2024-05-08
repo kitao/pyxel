@@ -2,6 +2,7 @@
 
 ## 2.0.13
 
+- Updated the make update command
 - Fixed the app2exe and app2html commands
 
 ## 2.0.12
