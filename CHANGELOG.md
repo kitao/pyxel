@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.13
+
+- Fixed the app2exe and app2html commands
+
 ## 2.0.12
 
 - Fixed installation instructions for Mac in the READMEs
