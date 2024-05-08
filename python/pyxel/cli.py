@@ -282,7 +282,7 @@ def create_executable_from_pyxel_app(pyxel_app_file):
     with open(startup_script_file, "w") as f:
         f.write(
             "import os, pyxel.cli; pyxel.cli.play_pyxel_app("
-            f"os.path.join(os.path.dirname(__file__), '{pyxel_app_name}.{pyxel.APP_FILE_EXTENSION}'))"
+            f"os.path.join(os.path.dirname(__file__), '{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}'))"
         )
     cp = subprocess.run("pyinstaller -h", capture_output=True, shell=True)
     if cp.returncode != 0:
@@ -319,7 +319,7 @@ def create_html_from_pyxel_app(pyxel_app_file):
             '<script src="https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js">'
             "</script>\n"
             "<script>\n"
-            f'launchPyxel({{ command: "play", name: "{pyxel_app_name}.{pyxel.APP_FILE_EXTENSION}", '
+            f'launchPyxel({{ command: "play", name: "{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}", '
             f'gamepad: "enabled", base64: "{base64_string}" }});\n'
             "</script>\n"
         )
