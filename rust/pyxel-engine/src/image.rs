@@ -386,7 +386,13 @@ impl Image {
                 let tile = tilemap.canvas.read_data(tile_x as usize, tile_y as usize);
 
                 let value_x = tile.0 as i32 * TILE_SIZE as i32 + tilemap_x % TILE_SIZE as i32;
+                if value_x < 0 || value_x >= image.width() as i32 {
+                    continue;
+                }
                 let value_y = tile.1 as i32 * TILE_SIZE as i32 + tilemap_y % TILE_SIZE as i32;
+                if value_y < 0 || value_y >= image.height() as i32 {
+                    continue;
+                }
                 let value = image.canvas.read_data(value_x as usize, value_y as usize);
 
                 if let Some(transparent) = transparent {
