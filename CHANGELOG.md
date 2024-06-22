@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.1.0
+
+- Fixed a help message in Pyxel Editor
+
 ## 2.0.14
 
 - Fixed the bltm referencing out of range
