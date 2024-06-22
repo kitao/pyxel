@@ -142,13 +142,10 @@ class ImageViewer(Widget):
 
     def __on_mouse_hover(self, x, y):
         x, y = self._screen_to_focus(x, y)
-        s = (
-            "TILE:SHIFT+CURSOR"
-            if self._is_tilemap_mode
-            else "TARGET:CURSOR IMPORT:DROP"
-        )
         self.help_message_var = (
-            s + " " + f"({x},{y})" if self._is_tilemap_mode else f"({x * 8},{y * 8})"
+            f"TILE:SHIFT+CURSOR ({x},{y})"
+            if self._is_tilemap_mode
+            else f"TARGET:CURSOR ({x * 8},{y * 8})"
         )
 
     def __on_draw(self):
