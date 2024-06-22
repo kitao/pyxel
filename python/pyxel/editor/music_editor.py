@@ -139,6 +139,21 @@ class MusicEditor(EditorBase):
         self._loop_button.is_enabled_var = True
         pyxel.stop()
 
+    def __on_play_button_press(self):
+        self._play(pyxel.btn(pyxel.KEY_SHIFT))
+
+    def __on_stop_button_press(self):
+        self._stop()
+
+    def __on_play_button_mouse_hover(self, x, y):
+        self.help_message_var = "PLAY:SPACE PART-PLAY:SHIFT+SPACE"
+
+    def __on_stop_button_mouse_hover(self, x, y):
+        self.help_message_var = "STOP:SPACE"
+
+    def __on_loop_button_mouse_hover(self, x, y):
+        self.help_message_var = "LOOP:L"
+
     def __on_undo(self, data):
         self._stop()
         self.music_index_var = data["music_index"]
@@ -177,18 +192,3 @@ class MusicEditor(EditorBase):
     def __on_draw(self):
         self.draw_panel(11, 16, 218, 9)
         pyxel.text(23, 18, "MUSIC", TEXT_LABEL_COLOR)
-
-    def __on_play_button_press(self):
-        self._play(pyxel.btn(pyxel.KEY_SHIFT))
-
-    def __on_stop_button_press(self):
-        self._stop()
-
-    def __on_play_button_mouse_hover(self, x, y):
-        self.help_message_var = "PLAY:SPACE PART-PLAY:SHIFT+SPACE"
-
-    def __on_stop_button_mouse_hover(self, x, y):
-        self.help_message_var = "STOP:SPACE"
-
-    def __on_loop_button_mouse_hover(self, x, y):
-        self.help_message_var = "LOOP:L"
