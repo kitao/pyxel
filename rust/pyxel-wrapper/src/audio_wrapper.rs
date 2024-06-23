@@ -12,25 +12,31 @@ static SOUND_ONCE: Once = Once::new();
 static MUSIC_ONCE: Once = Once::new();
 
 #[pyfunction]
-#[pyo3(text_signature = "(ch, snd, *, tick, loop)")]
-fn play(ch: u32, snd: &PyAny, tick: Option<u32>, r#loop: Option<bool>) -> PyResult<()> {
+#[pyo3(text_signature = "(ch, snd, *, tick, loop, resume)")]
+fn play(
+    ch: u32,
+    snd: &PyAny,
+    tick: Option<u32>,
+    r#loop: Option<bool>,
+    resume: Option<bool>,
+) -> PyResult<()> {
     cast_pyany! {
         snd,
-        (u32, { pyxel().play1(ch, snd, tick, r#loop.unwrap_or(false)); }),
-        (Vec<u32>, { pyxel().play(ch, &snd, tick, r#loop.unwrap_or(false)); }),
-        (Sound, { pyxel().channels.lock()[ch as usize].lock().play1(snd.inner, tick, r#loop.unwrap_or(false)); }),
+        (u32, { pyxel().play1(ch, snd, tick, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
+        (Vec<u32>, { pyxel().play(ch, &snd, tick, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
+        (Sound, { pyxel().channels.lock()[ch as usize].lock().play1(snd.inner, tick, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
         (Vec<Sound>, {
             let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
-            pyxel().channels.lock()[ch as usize].lock().play(sounds, tick, r#loop.unwrap_or(false));
+            pyxel().channels.lock()[ch as usize].lock().play(sounds, tick, r#loop.unwrap_or(false), resume.unwrap_or(false));
         })
     }
     Ok(())
 }
 
 #[pyfunction]
-#[pyo3(text_signature = "(msc, *, tick, loop)")]
-fn playm(msc: u32, tick: Option<u32>, r#loop: Option<bool>) {
-    pyxel().playm(msc, tick, r#loop.unwrap_or(false));
+#[pyo3(text_signature = "(msc, *, tick, loop, resume)")]
+fn playm(msc: u32, tick: Option<u32>, r#loop: Option<bool>, resume: Option<bool>) {
+    pyxel().playm(msc, tick, r#loop.unwrap_or(false), resume.unwrap_or(false));
 }
 
 #[pyfunction]
