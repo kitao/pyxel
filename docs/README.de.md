@@ -552,8 +552,8 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `musics`<br>
   Liste der Musikstücke (0-7). (siehe die Music class)
 
-- `play(ch, snd, [tick], [loop])`<br>
-  Spielt den Ton `snd`(0-63) auf Kanal `ch`(0-3). Die Startposition der Wiedergabe kann durch `tick`(1 tick = 1/120 Sekunden) angegeben werden. Falls `snd` eine Liste ist, wird es in der Reihenfolge abgespielt. Falls `True` für `loop` angeben ist, wird eine Schleifenwiedergabe durchgeführt.
+- `play(ch, snd, [tick], [loop], [resume])`<br>
+  Spielt den Ton `snd`(0-63) auf Kanal `ch`(0-3). Die Startposition der Wiedergabe kann durch `tick`(1 tick = 1/120 Sekunden) angegeben werden. Falls `snd` eine Liste ist, wird es in der Reihenfolge abgespielt. Falls `True` für `loop` angeben ist, wird eine Schleifenwiedergabe durchgeführt. Um den vorherigen Ton nach dem Ende der Wiedergabe fortzusetzen, setzen Sie `resume` auf `True`.
 
 - `playm(msc, [tick], [loop])`<br>
   Spielt die Musik `msc`(0-7). Die Startposition der Wiedergabe kann durch `tick`(1 tick = 1/120 Sekunden) angegeben werden. Falls `True` für `loop` angegeben ist, wird eine Schleifenwiedergabe durchgeführt.

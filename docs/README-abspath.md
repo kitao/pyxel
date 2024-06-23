@@ -553,8 +553,8 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 - `musics`<br>
   List of the musics (0-7). (See the Music class)
 
-- `play(ch, snd, [tick], [loop])`<br>
-  Play the sound `snd`(0-63) on channel `ch`(0-3). If `snd` is a list, it will be played in order. The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
+- `play(ch, snd, [tick], [loop], [resume])`<br>
+  Play the sound `snd`(0-63) on channel `ch`(0-3). If `snd` is a list, it will be played in order. The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed. To resume the previous sound after playback ends, set `resume` to `True`.
 
 - `playm(msc, [tick], [loop])`<br>
   Play the music `msc`(0-7). The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.

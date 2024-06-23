@@ -553,8 +553,8 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
 - `musics`<br>
   Liste des musiques (0-7). (voir la classe Music)
 
-- `play(ch, snd, [tick], [loop])`<br>
-  Joue le son `snd`(0-63) sur le canal `ch`(0-3). Si `snd` est une liste, les sons seront joués dans l’ordre. La position de début de lecture peut être spécifiée par `tick`(1 tick = 1/120 secondes). Si `loop` est à `True`, le son est joué en boucle.
+- `play(ch, snd, [tick], [loop], [resume])`<br>
+  Joue le son `snd`(0-63) sur le canal `ch`(0-3). Si `snd` est une liste, les sons seront joués dans l’ordre. La position de début de lecture peut être spécifiée par `tick`(1 tick = 1/120 secondes). Si `loop` est à `True`, le son est joué en boucle. Pour reprendre le son précédent après la fin de la lecture, définissez `resume` sur `True`.
 
 - `playm(msc, [tick], [loop])`<br>
   Joue la musique `msc`(0-7). La position de début de lecture peut être spécifiée par `tick`(1 tick = 1/120 secondes). Si `loop` est mis à `True`, la musique est joué en boucle.
