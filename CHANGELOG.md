@@ -3,8 +3,10 @@
 ## 2.1.0
 
 - Fixed a help message in Pyxel Editor
-- Added a resume option to the play and playm functions
-- Changed Example 9 to use a resume option for SFX
+- Added a resume option to the play function
+- Changed the API notation in Example 4
+- Changed Example 9 to use the resume option for SFX playback
+- Added the descriptions of the resume option to the READMEs
 
 ## 2.0.14
 
