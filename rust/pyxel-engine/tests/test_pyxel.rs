@@ -65,9 +65,9 @@ impl App {
             25,
         );
 
-        pyxel.play(0, &[0, 1], None, true);
-        pyxel.play(1, &[2, 3], None, true);
-        pyxel.play(2, &[4], None, true);
+        pyxel.play(0, &[0, 1], None, true, false);
+        pyxel.play(1, &[2, 3], None, true, false);
+        pyxel.play(2, &[4], None, true, false);
 
         let app = App { x: 0.0, y: 0.0 };
         pyxel.run(app);

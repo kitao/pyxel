@@ -571,6 +571,7 @@ class Channel:
         *,
         tick: Optional[int] = None,
         loop: Optional[bool] = None,
+        resume: Optional[bool] = None,
     ) -> None: ...
     def stop(self) -> None: ...
     def play_pos(self) -> Optional[Tuple[int, int]]: ...
@@ -778,9 +779,14 @@ def play(
     *,
     tick: Optional[int] = None,
     loop: Optional[bool] = None,
+    resume: Optional[bool] = None,
 ) -> None: ...
 def playm(
-    msc: int, *, tick: Optional[int] = None, loop: Optional[bool] = None
+    msc: int,
+    *,
+    tick: Optional[int] = None,
+    loop: Optional[bool] = None,
+    resume: Optional[bool] = None,
 ) -> None: ...
 def stop(ch: Optional[int] = None) -> None: ...
 def play_pos(ch: int) -> Optional[Tuple[int, int]]: ...
