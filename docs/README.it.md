@@ -553,8 +553,8 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 - `musics`<br>
   Elenco delle musiche (0-7). (Vedere la classe Music)
 
-- `play(ch, snd, [tick], [loop])`<br>
-  Riproduce il suono `snd`(0-63) sul canale `ch`(0-3). Se `snd` è una lista, verrà riprodotta in ordine. La posizione di inizio della riproduzione può essere specificata da `tick`(1 tick = 1/120 secondi). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
+- `play(ch, snd, [tick], [loop], [resume])`<br>
+  Riproduce il suono `snd`(0-63) sul canale `ch`(0-3). Se `snd` è una lista, verrà riprodotta in ordine. La posizione di inizio della riproduzione può essere specificata da `tick`(1 tick = 1/120 secondi). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop. Per riprendere il suono precedente dopo la fine della riproduzione, impostare `resume` su `True`.
 
 - `playm(msc, [tick], [loop])`<br>
   Riproduce la musica `msc`(0-7). La posizione di inizio della riproduzione può essere specificata da `tick`(1 tick = 1/120 secondi). Se `True` è specificato per `loop`, viene eseguita la riproduzione in loop.
