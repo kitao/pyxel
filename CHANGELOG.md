@@ -7,6 +7,7 @@
 - Changed the API notation in Example 4
 - Changed Example 9 to use the resume option for SFX playback
 - Added the descriptions of the resume option to the READMEs
+- Updated Pyodide to version 0.26.1
 
 ## 2.0.14
 
