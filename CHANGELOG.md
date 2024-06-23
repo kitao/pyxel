@@ -3,6 +3,7 @@
 ## 2.1.0
 
 - Fixed a help message in Pyxel Editor
+- Added a resume option to the play and playm functions
 
 ## 2.0.14
 

@@ -19,9 +19,13 @@ pub struct Channel {
     is_first_note: bool,
     is_playing: bool,
     should_loop: bool,
+    should_resume: bool,
     sound_index: u32,
     note_index: u32,
     tick_count: u32,
+    resume_sounds: Vec<Sound>,
+    resume_start_tick: u32,
+    resume_should_loop: bool,
     pub gain: Gain,
     pub detune: Detune,
 }
@@ -36,21 +40,37 @@ impl Channel {
             is_first_note: true,
             is_playing: false,
             should_loop: false,
+            should_resume: false,
             sound_index: 0,
             note_index: 0,
             tick_count: 0,
+            resume_sounds: Vec::new(),
+            resume_start_tick: 0,
+            resume_should_loop: false,
             gain: INITIAL_CHANNEL_GAIN,
             detune: 0,
         })
     }
 
-    pub fn play(&mut self, sounds: Vec<SharedSound>, start_tick: Option<u32>, should_loop: bool) {
+    pub fn play(
+        &mut self,
+        sounds: Vec<SharedSound>,
+        start_tick: Option<u32>,
+        should_loop: bool,
+        should_resume: bool,
+    ) {
         let sounds: Vec<Sound> = sounds.iter().map(|sound| sound.lock().clone()).collect();
         if sounds.is_empty() || sounds.iter().all(|sound| sound.notes.is_empty()) {
             return;
         }
+        if !should_resume {
+            self.resume_sounds = sounds.clone();
+            self.resume_should_loop = should_loop;
+            self.resume_start_tick = start_tick.unwrap_or(0);
+        }
         self.sounds = sounds;
         self.should_loop = should_loop;
+        self.should_resume = self.is_playing && should_resume;
         self.sound_index = 0;
         self.note_index = 0;
         self.tick_count = start_tick.unwrap_or(0);
@@ -76,8 +96,14 @@ impl Channel {
         self.is_playing = true;
     }
 
-    pub fn play1(&mut self, sound: SharedSound, start_tick: Option<u32>, should_loop: bool) {
-        self.play(vec![sound], start_tick, should_loop);
+    pub fn play1(
+        &mut self,
+        sound: SharedSound,
+        start_tick: Option<u32>,
+        should_loop: bool,
+        should_resume: bool,
+    ) {
+        self.play(vec![sound], start_tick, should_loop, should_resume);
     }
 
     pub fn stop(&mut self) {
@@ -92,7 +118,6 @@ impl Channel {
             None
         }
     }
-
     pub(crate) fn update(&mut self, blip_buf: &mut BlipBuf) {
         if !self.is_playing {
             return;
@@ -110,6 +135,19 @@ impl Channel {
                 if self.sound_index >= self.sounds.len() as u32 {
                     if self.should_loop {
                         self.sound_index = 0;
+                    } else if self.should_resume {
+                        let sounds = self
+                            .resume_sounds
+                            .iter()
+                            .map(|sound| new_shared_type!(sound.clone()))
+                            .collect();
+                        self.play(
+                            sounds,
+                            Some(self.resume_start_tick + 1),
+                            self.resume_should_loop,
+                            false,
+                        );
+                        return;
                     } else {
                         self.stop();
                         return;
@@ -146,6 +184,7 @@ impl Channel {
         }
         self.oscillator.update(blip_buf);
         self.tick_count += 1;
+        self.resume_start_tick += 1;
     }
 
     const fn circular_note(notes: &[Note], index: u32) -> Note {

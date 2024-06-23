@@ -49,6 +49,7 @@ impl Pyxel {
         sequence: &[u32],
         start_tick: Option<u32>,
         should_loop: bool,
+        should_resume: bool,
     ) {
         if sequence.is_empty() {
             return;
@@ -57,9 +58,12 @@ impl Pyxel {
             .iter()
             .map(|sound_index| self.sounds.lock()[*sound_index as usize].clone())
             .collect();
-        self.channels.lock()[channel_index as usize]
-            .lock()
-            .play(sounds, start_tick, should_loop);
+        self.channels.lock()[channel_index as usize].lock().play(
+            sounds,
+            start_tick,
+            should_loop,
+            should_resume,
+        );
     }
 
     pub fn play1(
@@ -68,20 +72,34 @@ impl Pyxel {
         sound_index: u32,
         start_tick: Option<u32>,
         should_loop: bool,
+        should_resume: bool,
     ) {
         self.channels.lock()[channel_index as usize].lock().play1(
             self.sounds.lock()[sound_index as usize].clone(),
             start_tick,
             should_loop,
+            should_resume,
         );
     }
 
-    pub fn playm(&self, music_index: u32, start_tick: Option<u32>, should_loop: bool) {
+    pub fn playm(
+        &self,
+        music_index: u32,
+        start_tick: Option<u32>,
+        should_loop: bool,
+        should_resume: bool,
+    ) {
         let num_channels = self.channels.lock().len();
         let musics = self.musics.lock();
         let music = musics[music_index as usize].lock();
         for i in 0..min(num_channels, music.seqs.len()) {
-            self.play(i as u32, &music.seqs[i].lock(), start_tick, should_loop);
+            self.play(
+                i as u32,
+                &music.seqs[i].lock(),
+                start_tick,
+                should_loop,
+                should_resume,
+            );
         }
     }
 
