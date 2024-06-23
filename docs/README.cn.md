@@ -554,8 +554,8 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 - `musics`<br>
   音乐列表 (0-7)。 (参考 Music 类)
 
-- `play(ch, snd, [tick], [loop])`<br>
-  播放通道`ch`(0-3) 中的声音`snd`(0-63)。如果声音`snd`是一个列表，则按顺序播放。播放开始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果`loop`被指定为`True`则循环播放。
+- `play(ch, snd, [tick], [loop], [resume])`<br>
+  播放通道`ch`(0-3) 中的声音`snd`(0-63)。如果声音`snd`是一个列表，则按顺序播放。播放开始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果`loop`被指定为`True`则循环播放。播放结束后要恢复之前的声音，请将 `resume` 设置为 `True`。
 
 - `playm(msc, [tick], [loop])`<br>
   播放音乐`msc`(0-7)。播放开始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果`loop`被指定为`True`则循环播放。

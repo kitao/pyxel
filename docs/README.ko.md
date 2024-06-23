@@ -553,8 +553,8 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 - `musics`<br>
   음악 목록 (0-7). (음악 클래스 참조)
 
-- `play(ch, snd, [tick], [loop])`<br>
-  채널 `ch`(0-3) 에서 사운드 `snd`(0-63) 를 재생합니다. `snd`가 리스트일 경우, 순서대로 재생됩니다. 재생 시작 위치는 `tick`(1 tick = 1/120초) 으로 지정할 수 있습니다. `loop`에 `True`를 지정하면 계속 반복합니다.
+- `play(ch, snd, [tick], [loop], [resume])`<br>
+  채널 `ch`(0-3) 에서 사운드 `snd`(0-63) 를 재생합니다. `snd`가 리스트일 경우, 순서대로 재생됩니다. 재생 시작 위치는 `tick`(1 tick = 1/120초) 으로 지정할 수 있습니다. `loop`에 `True`를 지정하면 계속 반복합니다. 재생이 끝난 후 이전 소리를 다시 재생하려면 `resume`을 `True`로 설정하세요.
 
 - `playm(msc, [tick], [loop])`<br>
   음악 `msc`(0-7) 을 재생합니다. 재생 시작 위치는 `tick`(1 tick = 1/120초) 으로 지정할 수 있습니다. `loop`에 `True`를 지정하면 계속 반복합니다.
