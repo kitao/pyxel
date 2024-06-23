@@ -255,7 +255,7 @@ class App:
                     blasts.append(
                         Blast(enemy.x + ENEMY_WIDTH / 2, enemy.y + ENEMY_HEIGHT / 2)
                     )
-                    pyxel.play(3, 1)
+                    pyxel.play(2, 1, resume=True)
                     self.score += 10
 
         for enemy in enemies:
@@ -272,9 +272,9 @@ class App:
                         self.player.y + PLAYER_HEIGHT / 2,
                     )
                 )
+                pyxel.stop()
                 pyxel.play(3, 1)
                 self.scene = SCENE_GAMEOVER
-                pyxel.playm(0, loop=True)
 
         self.player.update()
         update_entities(bullets)
