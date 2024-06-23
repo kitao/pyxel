@@ -4,6 +4,7 @@
 
 - Fixed a help message in Pyxel Editor
 - Added a resume option to the play and playm functions
+- Changed Example 9 to use a resume option for SFX
 
 ## 2.0.14
 
