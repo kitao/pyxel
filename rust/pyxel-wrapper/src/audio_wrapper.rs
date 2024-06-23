@@ -34,9 +34,9 @@ fn play(
 }
 
 #[pyfunction]
-#[pyo3(text_signature = "(msc, *, tick, loop, resume)")]
-fn playm(msc: u32, tick: Option<u32>, r#loop: Option<bool>, resume: Option<bool>) {
-    pyxel().playm(msc, tick, r#loop.unwrap_or(false), resume.unwrap_or(false));
+#[pyo3(text_signature = "(msc, *, tick, loop)")]
+fn playm(msc: u32, tick: Option<u32>, r#loop: Option<bool>) {
+    pyxel().playm(msc, tick, r#loop.unwrap_or(false));
 }
 
 #[pyfunction]
