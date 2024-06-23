@@ -82,13 +82,7 @@ impl Pyxel {
         );
     }
 
-    pub fn playm(
-        &self,
-        music_index: u32,
-        start_tick: Option<u32>,
-        should_loop: bool,
-        should_resume: bool,
-    ) {
+    pub fn playm(&self, music_index: u32, start_tick: Option<u32>, should_loop: bool) {
         let num_channels = self.channels.lock().len();
         let musics = self.musics.lock();
         let music = musics[music_index as usize].lock();
@@ -98,7 +92,7 @@ impl Pyxel {
                 &music.seqs[i].lock(),
                 start_tick,
                 should_loop,
-                should_resume,
+                false,
             );
         }
     }
