@@ -64,7 +64,7 @@ impl Channel {
             return;
         }
         if !should_resume {
-            self.resume_sounds = sounds.clone();
+            self.resume_sounds.clone_from(&sounds);
             self.resume_should_loop = should_loop;
             self.resume_start_tick = start_tick.unwrap_or(0);
         }
