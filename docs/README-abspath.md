@@ -341,7 +341,7 @@ pyxel edit PYXEL_RESOURCE_FILE
 If the specified Pyxel resource file (.pyxres) exists, the file is loaded, and if it does not exist, a new file is created with the specified name.
 If the resource file is omitted, the name is `my_resource.pyxres`.
 
-After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file. If the resource file is dragged and dropped while holding down `Ctrl(Cmd)` key, only the resource type (Image/Tilemap/Sound/Music) that is currently being edited will be loaded. This operation enables to combine multiple resource files into one.
+After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file.
 
 The created resource file can be loaded with `load` function.
 
