@@ -341,7 +341,7 @@ pyxel edit PYXEL_RESOURCE_FILE
 Si el archivo de recursos de Pyxel existe, el archivo se carga y si no existe, se crea con el nombre especificado.
 Si el archivo de recursos es omitido, el nombre de este será `my_resource.pyxres`.
 
-Tras iniciar el Editor de Pyxel, el archivo puede ser cambiado arrastrando y soltando otro archivo de recursos. Si el archivo se arrastra y se tiene pulsada la tecla `Ctrl(Cmd)`, solo el recurso concreto se cargará (Imagen/Mapa/Sonido/Música) que se está editando actualmente. Esta operación permite combinar multiples archivos de recursos en uno solo.
+Tras iniciar el Editor de Pyxel, el archivo puede ser cambiado arrastrando y soltando otro archivo de recursos.
 
 Dicho archivo de recursos podrá see cargado con la función `load`.
 
