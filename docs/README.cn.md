@@ -338,9 +338,7 @@ Pyxel 编辑器使用以下命令启动：
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-若指定 Pyxel 源文件 (.pyxres) 存在，则加载文件，若不存在，则以指定文件名新建文件。
-
-若未指定源文件，则命名为`my_resource.pyxres`。
+若指定 Pyxel 源文件 (.pyxres) 存在，则加载文件，若不存在，则以指定文件名新建文件。若未指定源文件，则命名为`my_resource.pyxres`。
 
 Pyxel 编辑器启动后，可以拖放其他源文件进行切换。
 

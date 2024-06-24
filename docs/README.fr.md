@@ -338,8 +338,7 @@ Il se lance avec la commande suivante :
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-Si le fichier de ressource Pyxel (.pyxres) existe déjà, le fichier est chargé, sinon, un nouveau fichier avec le nom indiqué est créé.
-Si le fichier de ressource n’est pas spécifié, le nom est `my_resource.pyxres`.
+Si le fichier de ressource Pyxel (.pyxres) existe déjà, le fichier est chargé, sinon, un nouveau fichier avec le nom indiqué est créé. Si le fichier de ressource n’est pas spécifié, le nom est `my_resource.pyxres`.
 
 Après avoir lancé l’éditeur Pyxel, le fichier peut être changé en glissant-dépossant un autre fichier de ressource.
 
