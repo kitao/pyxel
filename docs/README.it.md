@@ -341,7 +341,7 @@ pyxel edit PYXEL_RESOURCE_FILE
 Se il file di risorsa Pyxel (.pyxres) specificato esiste, allora il file viene caricato, e se non esiste, un nuovo file con quel nome viene creato.
 Se il file risorsa viene omesso, il nome è `my_resource.pyxres`.
 
-Dopo aver avviato l'Editor Pyxel, il file può essere scambiato trascinando e rilasciando un altro file risorsa. Se il file risorsa è trascinato e rilasciato tenendo premuto il pulsante `Ctrl(Cmd)`, sarà caricato solo il tipo di risorsa (Immagine/Tilemap/Suono/Musica) che si sta attualmente modificando. Questa operazione consente di combinare più file risorsa in uno.
+Dopo aver avviato l'Editor Pyxel, il file può essere scambiato trascinando e rilasciando un altro file risorsa.
 
 Il file risorsa creato può essere caricato con la funzione `load`.
 
