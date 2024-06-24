@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.1.1
+
+- Fixed the resume option of the play function
+- Removed the non-functional CTRL+Drop feature from the Pyxel Editor
+
 ## 2.1.0
 
 - Fixed a help message in Pyxel Editor

@@ -135,21 +135,21 @@ impl Channel {
                 if self.sound_index >= self.sounds.len() as u32 {
                     if self.should_loop {
                         self.sound_index = 0;
-                    } else if self.should_resume {
-                        let sounds = self
-                            .resume_sounds
-                            .iter()
-                            .map(|sound| new_shared_type!(sound.clone()))
-                            .collect();
-                        self.play(
-                            sounds,
-                            Some(self.resume_start_tick + 1),
-                            self.resume_should_loop,
-                            false,
-                        );
-                        return;
                     } else {
                         self.stop();
+                        if self.should_resume {
+                            let sounds = self
+                                .resume_sounds
+                                .iter()
+                                .map(|sound| new_shared_type!(sound.clone()))
+                                .collect();
+                            self.play(
+                                sounds,
+                                Some(self.resume_start_tick + 1),
+                                self.resume_should_loop,
+                                false,
+                            );
+                        }
                         return;
                     }
                 }
