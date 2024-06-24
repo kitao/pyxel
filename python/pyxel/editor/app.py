@@ -171,20 +171,10 @@ class App(Widget):
             file_ext = os.path.splitext(dropped_file)[1]
             if file_ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
-                if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
-                    self._editor.reset_history()
-                    pyxel.load(
-                        dropped_file,
-                        excl_images=(self.editor_type_var != 0),
-                        excl_tilemaps=(self.editor_type_var != 1),
-                        excl_sounds=(self.editor_type_var != 2),
-                        excl_musics=(self.editor_type_var != 3),
-                    )
-                else:
-                    for editor in self._editors:
-                        editor.reset_history()
-                    pyxel.load(dropped_file)
-                    self._set_title(dropped_file)
+                for editor in self._editors:
+                    editor.reset_history()
+                pyxel.load(dropped_file)
+                self._set_title(dropped_file)
             else:
                 self._editor.trigger_event("drop", dropped_file)
 
