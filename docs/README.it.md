@@ -338,8 +338,7 @@ Si avvia con il seguente comando:
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-Se il file di risorsa Pyxel (.pyxres) specificato esiste, allora il file viene caricato, e se non esiste, un nuovo file con quel nome viene creato.
-Se il file risorsa viene omesso, il nome è `my_resource.pyxres`.
+Se il file di risorsa Pyxel (.pyxres) specificato esiste, allora il file viene caricato, e se non esiste, un nuovo file con quel nome viene creato. Se il file risorsa viene omesso, il nome è `my_resource.pyxres`.
 
 Dopo aver avviato l'Editor Pyxel, il file può essere scambiato trascinando e rilasciando un altro file risorsa.
 
