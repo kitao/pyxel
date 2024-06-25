@@ -4,6 +4,7 @@
 
 - Fixed the resume option of the play function
 - Removed the non-functional CTRL+Drop feature from the Pyxel Editor
+- Updated the zip crate version
 
 ## 2.1.0
 
