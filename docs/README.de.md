@@ -607,9 +607,6 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `width`, `height`<br>
   Die Breite und Höhe des Bildes
 
-- `get(x, y)`<br>
-  Erhalte die Daten des Bildes an der Position (`x`, `y`).
-
 - `set(x, y, data)`<br>
   Setzen des Bildes an (`x`, `y`) durch eine Liste von strings.<br>
   z.B. `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
@@ -617,6 +614,12 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `load(x, y, filename)`<br>
   Lade die Bild-Datei (PNG/GIF/JPEG) at (`x`, `y`).
 
+- `pget(x, y)`<br>
+  Erhalte den Pixel an der Position (`x`, `y`).
+
+- `pset(x, y, col)`<br>
+  Zeichne einen Pixel der Farbe `col` an der Position (`x`, `y`).
+  
 ### Tilemap Klasse
 
 - `width`, `height`<br>
