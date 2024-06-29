@@ -652,7 +652,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 - Lista de volúmenes (0-7)
 
 - `effects`<br>
-  Lista de efectos de sonido (0:Nada / 1:Slide / 2:Vibrato / 3:FadeOut)
+  Lista de efectos de sonido (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
 
 - `speed`<br>
   La velocidad de reproducción, 1 es la más rápida y al incrementar este número, la velocidad de reproducción disminuye. Cuando vale 120, la longitud de una nota es de 1 segundo.
