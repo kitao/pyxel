@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.1.2
+
+- Updated the descriptions of the pget and pget functions
+- Added the Half-FadeOut and Quarter-FadeOut effects to the Sound class
+
 ## 2.1.1
 
 - Fixed the resume option of the play function

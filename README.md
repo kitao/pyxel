@@ -653,7 +653,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
   List of volumes (0-7)
 
 - `effects`<br>
-  List of effects (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
+  List of effects (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
 
 - `speed`<br>
   Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, the length of one note becomes 1 second.

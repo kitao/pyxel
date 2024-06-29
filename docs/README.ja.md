@@ -653,7 +653,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   音量 (0-7) のリスト
 
 - `effects`<br>
-  エフェクト (0:None / 1:Slide / 2:Vibrato / 3:FadeOut) のリスト
+  エフェクト (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut) のリスト
 
 - `speed`<br>
   再生速度。1 が一番速く、数値が大きいほど再生速度は遅くなります。120 で 1 音の長さが 1 秒になります。

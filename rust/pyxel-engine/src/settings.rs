@@ -124,10 +124,12 @@ pub const EFFECT_NONE: Effect = 0;
 pub const EFFECT_SLIDE: Effect = 1;
 pub const EFFECT_VIBRATO: Effect = 2;
 pub const EFFECT_FADEOUT: Effect = 3;
+pub const EFFECT_HALF_FADEOUT: Effect = 4;
+pub const EFFECT_QUARTER_FADEOUT: Effect = 5;
 pub const MAX_TONE: u32 = 9;
 pub const MAX_NOTE: Note = 12 * 5 - 1; // 5 octaves
 pub const MAX_VOLUME: Volume = 7;
-pub const MAX_EFFECT: Effect = 3;
+pub const MAX_EFFECT: Effect = 5;
 pub const DEFAULT_TONES: [(Gain, Noise, Waveform); NUM_TONES as usize] = [
     // Triangle
     (

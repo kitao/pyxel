@@ -653,7 +653,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Lista de volumes (0-7)
 
 - `effects`<br>
-  Lista de efeitos (0:Nenhum / 1:Slide / 2:Vibrato / 3:FadeOut)
+  Lista de efeitos (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
 
 - `speed`<br>
   Velocidade de reprodução. 1 é a velocidade maior, e quanto maior o número, mais lenta ela é. No valor 120, o tempo de uma nota se torna 1 segundo.
