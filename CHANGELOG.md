@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.1.3
+
+- Incremented the resource format version
+
 ## 2.1.2
 
 - Updated the descriptions of the pget and pget functions
