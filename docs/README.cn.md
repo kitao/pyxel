@@ -607,15 +607,18 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 - `width`，`height`<br>
   图像的宽和高
 
-- `get(x, y)`<br>
-  获取图像中 (`x`, `y`) 位置的值。
-
 - `set(x, y, data)`<br>
   使用字符串列表设置坐标 (`x`, `y`) 处的图像。<br>
   示例：`pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
   在 (`x`, `y`) 处加载图像文件 (PNG/GIF/JPEG)。
+
+- `pget(x, y)`<br>
+  获取 (`x`, `y`) 处的像素颜色。
+
+- `pset(x, y, col)`<br>
+  用`col`颜色在 (`x`, `y`) 处绘制一个像素点。
 
 ### Tilemap 类
 

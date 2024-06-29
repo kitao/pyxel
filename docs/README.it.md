@@ -607,9 +607,6 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 - `width`, `height`<br>
   La lunghezza e l'altezza dell'immagine
 
-- `get(x, y)`<br>
-  Trova i dati dell'immagine su (`x`, `y`)
-
 - `set(x, y, data)`<br>
   Imposta l'immagine a (`x`, `y`) tramite una lista di stringhe.<br>
   e.g. `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
@@ -617,6 +614,12 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 - `load(x, y, filename)`<br>
   Carica il file immagine (PNG/GIF/JPEG) in (`x`, `y`).
 
+- `pget(x, y)`<br>
+  Ritorna il colore del pixel su (`x`, `y`).
+
+- `pset(x, y, col)`<br>
+  Disegna un pixel di colore `col` su (`x`, `y`).
+  
 ### Classe Tilemap
 
 - `width`, `height`<br>
