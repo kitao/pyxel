@@ -1,8 +1,9 @@
 use crate::blip_buf::BlipBuf;
 use crate::pyxel::TONES;
 use crate::settings::{
-    CLOCK_RATE, EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_NOISE_REG,
-    NUM_CLOCKS_PER_TICK, OSCILLATOR_RESOLUTION, TONE_TRIANGLE, VIBRATO_DEPTH, VIBRATO_FREQUENCY,
+    CLOCK_RATE, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT,
+    EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_NOISE_REG, NUM_CLOCKS_PER_TICK, OSCILLATOR_RESOLUTION,
+    TONE_TRIANGLE, VIBRATO_DEPTH, VIBRATO_FREQUENCY,
 };
 
 pub type Gain = f64;
@@ -21,6 +22,7 @@ struct Vibrato {
 }
 
 struct FadeOut {
+    start: u32,
     gain: Gain,
 }
 
@@ -53,7 +55,10 @@ impl Oscillator {
             noise_reg: INITIAL_NOISE_REG,
             slide: Slide { pitch: 0.0 },
             vibrato: Vibrato { time: 0, phase: 0 },
-            fadeout: FadeOut { gain: 0.0 },
+            fadeout: FadeOut {
+                start: 0,
+                gain: 0.0,
+            },
         }
     }
 
@@ -68,7 +73,14 @@ impl Oscillator {
             self.slide.pitch = (self.pitch - last_pitch) / self.duration as f64;
             self.pitch = last_pitch;
         } else if effect == EFFECT_FADEOUT {
+            self.fadeout.start = duration;
             self.fadeout.gain = -self.gain / self.duration as f64;
+        } else if effect == EFFECT_HALF_FADEOUT {
+            self.fadeout.start = self.duration / 2;
+            self.fadeout.gain = -self.gain / self.fadeout.start as f64;
+        } else if effect == EFFECT_QUARTER_FADEOUT {
+            self.fadeout.start = self.duration / 4;
+            self.fadeout.gain = -self.gain / self.fadeout.start as f64;
         }
     }
 
@@ -119,8 +131,10 @@ impl Oscillator {
                     % OSCILLATOR_RESOLUTION;
                 self.vibrato.time %= VIBRATO_PERIOD;
             }
-            EFFECT_FADEOUT => {
-                self.gain += self.fadeout.gain;
+            EFFECT_FADEOUT | EFFECT_HALF_FADEOUT | EFFECT_QUARTER_FADEOUT => {
+                if self.duration <= self.fadeout.start {
+                    self.gain += self.fadeout.gain;
+                }
             }
             _ => panic!("Invalid effect '{}'", self.effect),
         }

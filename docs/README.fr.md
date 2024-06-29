@@ -619,7 +619,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
 
 - `pset(x, y, col)`<br>
   Dessine un pixel de couleur `col` à (`x`, `y`).
-  
+
 ### Classe Tilemap
 
 - `width`, `height`<br>
@@ -653,7 +653,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
   Liste les volumes (0-7)
 
 - `effects`<br>
-  Liste les effets (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
+  Liste les effets (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
 
 - `speed`<br>
   Vitesse de lecture. 1 est le plus rapide, et plus le nombre est grand, plus la vitesse est lente. à 120, la longueur d’une note est de 1 second.

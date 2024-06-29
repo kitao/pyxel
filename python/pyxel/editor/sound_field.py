@@ -13,7 +13,14 @@ from .widgets import Widget
 from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 
 TONE_KEY_TABLE = [pyxel.KEY_T, pyxel.KEY_S, pyxel.KEY_P, pyxel.KEY_N]
-EFFECT_KEY_TABLE = [pyxel.KEY_N, pyxel.KEY_S, pyxel.KEY_V, pyxel.KEY_F]
+EFFECT_KEY_TABLE = [
+    pyxel.KEY_N,
+    pyxel.KEY_S,
+    pyxel.KEY_V,
+    pyxel.KEY_F,
+    pyxel.KEY_H,
+    pyxel.KEY_Q,
+]
 
 
 class SoundField(Widget):
@@ -77,7 +84,7 @@ class SoundField(Widget):
                     value = i
                     break
         elif cursor_y == 3:
-            for i in range(4):
+            for i in range(6):
                 if pyxel.btnp(
                     EFFECT_KEY_TABLE[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
                 ):
@@ -106,7 +113,7 @@ class SoundField(Widget):
         data_str = []
         data_str.append("".join(["TSPN"[v] for v in self.get_field(1)]))
         data_str.append("".join([str(v) for v in self.get_field(2)]))
-        data_str.append("".join(["NSVF"[v] for v in self.get_field(3)]))
+        data_str.append("".join(["NSVFHQ"[v] for v in self.get_field(3)]))
         for i in range(3):
             pyxel.text(31, 150 + i * 8, data_str[i], SOUND_FIELD_DATA_NORMAL_COLOR)
 
