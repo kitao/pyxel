@@ -95,7 +95,10 @@ impl Pyxel {
         let y = f64_to_i32(y);
         self.input.key_values.insert(MOUSE_POS_X, x);
         self.input.key_values.insert(MOUSE_POS_Y, y);
-        pyxel_platform::set_mouse_pos(x, y);
+        pyxel_platform::set_mouse_pos(
+            x * self.system.screen_scale as i32 + self.system.screen_x,
+            y * self.system.screen_scale as i32 + self.system.screen_y,
+        );
     }
 
     pub(crate) fn reset_input_states(&mut self) {
