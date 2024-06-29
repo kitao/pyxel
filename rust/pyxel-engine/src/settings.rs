@@ -5,7 +5,7 @@ use crate::oscillator::{Effect, Gain};
 use crate::tone::{Noise, Waveform};
 
 // System
-pub const VERSION: &str = "2.1.2";
+pub const VERSION: &str = "2.1.3";
 pub const WORKING_DIR: &str = ".pyxel";
 pub const WATCH_INFO_FILE_ENVVAR: &str = "PYXEL_WATCH_INFO_FILE";
 pub const DEFAULT_TITLE: &str = "Pyxel";
@@ -44,7 +44,7 @@ pub const APP_FILE_EXTENSION: &str = ".pyxapp";
 pub const APP_STARTUP_SCRIPT_FILE: &str = ".pyxapp_startup_script";
 pub const RESOURCE_FILE_EXTENSION: &str = ".pyxres";
 pub const RESOURCE_ARCHIVE_NAME: &str = "pyxel_resource.toml";
-pub const RESOURCE_FORMAT_VERSION: u32 = 3;
+pub const RESOURCE_FORMAT_VERSION: u32 = 4;
 pub const PALETTE_FILE_EXTENSION: &str = ".pyxpal";
 
 // Graphics
