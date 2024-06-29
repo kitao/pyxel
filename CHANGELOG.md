@@ -4,6 +4,7 @@
 
 - Updated the descriptions of the pget and pget functions
 - Added the Half-FadeOut and Quarter-FadeOut effects to the Sound class
+- Fixed the warp_mouse function
 
 ## 2.1.1
 
