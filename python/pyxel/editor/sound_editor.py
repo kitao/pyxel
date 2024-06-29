@@ -147,7 +147,7 @@ class SoundEditor(EditorBase):
         elif cursor_y == 2:
             return "VOLUME:0-7/BS/DEL"
         elif cursor_y == 3:
-            return "EFFECT:N/S/V/F/BS/DEL"
+            return "EFFECT:N/S/V/F/H/Q/BS/DEL"
         else:
             return ""
 

@@ -653,7 +653,7 @@ Pyxel 응용 프로그램 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   음량 리스트 (0-7)
 
 - `effects`<br>
-  효과 리스트 (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
+  효과 리스트 (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
 
 - `speed`<br>
   재생 속도. 1이 가장 빠르며 숫자가 커질수록 재생 속도가 느려집니다. 120에서는 한 음의 길이가 1초가 됩니다.

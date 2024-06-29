@@ -619,7 +619,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 - `pset(x, y, col)`<br>
   Zeichne einen Pixel der Farbe `col` an der Position (`x`, `y`).
-  
+
 ### Tilemap Klasse
 
 - `width`, `height`<br>
@@ -653,7 +653,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Liste von Lautstärken (0-7)
 
 - `effects`<br>
-  Liste von Effekten (0:None / 1:Slide / 2:Vibrato / 3:FadeOut)
+  Liste von Effekten (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
 
 - `speed`<br>
   Abspielgeschwindigkeit. 1 ist die schnellste, und je größer die Zahl, desto langsamer die Wiedergabegeschwindigkeit. Bei 120 entspricht die Länge einer Note 1 Sekunde.

@@ -1,8 +1,8 @@
 use crate::channel::{Note, Speed, Volume};
 use crate::oscillator::Effect;
 use crate::settings::{
-    EFFECT_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SOUND_SPEED, TONE_NOISE,
-    TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
+    EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE,
+    EFFECT_VIBRATO, INITIAL_SOUND_SPEED, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
 };
 use crate::utils::simplify_string;
 
@@ -116,6 +116,8 @@ impl Sound {
                 's' => EFFECT_SLIDE,
                 'v' => EFFECT_VIBRATO,
                 'f' => EFFECT_FADEOUT,
+                'h' => EFFECT_HALF_FADEOUT,
+                'q' => EFFECT_QUARTER_FADEOUT,
                 _ => panic!("Invalid sound effect '{c}'"),
             };
             self.effects.push(effect);
@@ -146,10 +148,17 @@ mod tests {
             &sound.lock().tones,
             &vec![TONE_TRIANGLE, TONE_SQUARE, TONE_PULSE, TONE_NOISE]
         );
-        assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3]);
+        assert_eq!(&sound.lock().volumes, &vec![0, 1, 2, 3, 4, 5]);
         assert_eq!(
             &sound.lock().effects,
-            &vec![EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, EFFECT_FADEOUT]
+            &vec![
+                EFFECT_NONE,
+                EFFECT_SLIDE,
+                EFFECT_VIBRATO,
+                EFFECT_FADEOUT,
+                EFFECT_HALF_FADEOUT,
+                EFFECT_QUARTER_FADEOUT
+            ]
         );
         assert_eq!(sound.lock().speed, 123);
     }
@@ -183,10 +192,17 @@ mod tests {
     #[test]
     fn test_sound_set_effect() {
         let sound = Sound::new();
-        sound.lock().set_effects(" n s v f ");
+        sound.lock().set_effects(" n s v f h q");
         assert_eq!(
             &sound.lock().effects,
-            &vec![EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO, EFFECT_FADEOUT]
+            &vec![
+                EFFECT_NONE,
+                EFFECT_SLIDE,
+                EFFECT_VIBRATO,
+                EFFECT_FADEOUT,
+                EFFECT_HALF_FADEOUT,
+                EFFECT_QUARTER_FADEOUT
+            ]
         );
     }
 }
