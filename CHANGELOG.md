@@ -3,6 +3,7 @@
 ## 2.1.3
 
 - Incremented the resource format version
+- Added a bank copy feature to the Pyxel Editor
 
 ## 2.1.2
 
