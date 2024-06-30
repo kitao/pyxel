@@ -150,6 +150,8 @@ class SoundEditor(EditorBase):
                 self.add_history(self._history_data)
 
     def get_field_help_message(self):
+        if self.field_cursor.is_selecting:
+            return "COPY_FIELD:CTRL+A/C/X/V"
         cursor_y = self.field_cursor.y
         if cursor_y == 0:
             return "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
