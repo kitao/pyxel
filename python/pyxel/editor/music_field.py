@@ -49,7 +49,11 @@ class MusicField(Widget):
         )
 
     def __on_mouse_hover(self, x, y):
-        self.help_message_var = "SOUND:SOUND_BUTTON/BS/DEL"
+        self.help_message_var = (
+            "COPY_FIELD:CTRL+A/C/X/V"
+            if self.field_cursor.is_selecting
+            else "SOUND:SOUND_BUTTON/BS/DEL"
+        )
 
     def __on_draw(self):
         # Draw frame
