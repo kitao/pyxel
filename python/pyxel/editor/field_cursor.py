@@ -12,7 +12,7 @@ class FieldCursor:
         get_field,
         add_pre_history,
         add_post_history,
-        cross_filed_copying,
+        cross_field_copying,
     ):
         self._max_field_length = max_field_length
         self._field_wrap_length = (
@@ -23,11 +23,12 @@ class FieldCursor:
         self._get_field = get_field
         self._add_pre_history = add_pre_history
         self._add_post_history = add_post_history
-        self._cross_field_copying = cross_filed_copying
+        self._cross_field_copying = cross_field_copying
         self._cursor_x = 0
         self._cursor_y = 0
         self._select_x = None
-        self._copy_field = None
+        self._field_buffer = None
+        self._bank_buffer = None
 
     @property
     def x(self):
@@ -203,7 +204,7 @@ class FieldCursor:
         if not self.is_selecting:
             return
         lst = self.field.to_list()
-        self._copy_field = (self.y, lst[self.x : self.x + self.width])
+        self._field_buffer = (self.y, lst[self.x : self.x + self.width])
 
     def cut(self):
         if not self.is_selecting:
@@ -212,9 +213,9 @@ class FieldCursor:
         self.delete()
 
     def paste(self):
-        if self._copy_field is None:
+        if self._field_buffer is None:
             return
-        (y, field) = self._copy_field
+        (y, field) = self._field_buffer
         if not self._cross_field_copying and self.y != y:
             return
         self.insert(field)
@@ -222,7 +223,36 @@ class FieldCursor:
     def process_input(self):
         if pyxel.btn(pyxel.KEY_ALT):
             return
-        if pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI):
+
+        # Copy/cut/paste bank
+        if pyxel.btn(pyxel.KEY_SHIFT) and (
+            pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
+        ):
+            # Ctrl+Shift+C/Ctrl+Shift+X: Copy bank
+            if pyxel.btnp(pyxel.KEY_C) or pyxel.btnp(pyxel.KEY_X):
+                self._bank_buffer = data = {}
+                for i in range(self._max_y + 1):
+                    data[i] = self._get_field(i).to_list()
+
+            # Ctrl+Shift+X: Cut bank
+            if pyxel.btnp(pyxel.KEY_X):
+                self._add_pre_history(bank_copy=True)
+                for i in range(self._max_y + 1):
+                    self._get_field(i).from_list([])
+                self._add_post_history(bank_copy=True)
+
+            # Ctrl+Shift+V: Paste bank
+            if pyxel.btnp(pyxel.KEY_V) and self._bank_buffer is not None:
+                self._add_pre_history(bank_copy=True)
+                for i in range(self._max_y + 1):
+                    self._get_field(i).from_list(self._bank_buffer[i])
+                self._add_post_history(bank_copy=True)
+            return
+
+        # Copy/cut/paste field
+        if not pyxel.btn(pyxel.KEY_SHIFT) and (
+            pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
+        ):
             # Ctrl+A: Select all
             if pyxel.btnp(pyxel.KEY_A):
                 self.select_all()
@@ -239,6 +269,7 @@ class FieldCursor:
             if pyxel.btnp(pyxel.KEY_V):
                 self.paste()
             return
+
         with_select_key = pyxel.btn(pyxel.KEY_SHIFT)
         if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
             self.move_left(with_select_key)

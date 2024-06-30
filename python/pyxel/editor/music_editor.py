@@ -31,12 +31,15 @@ class MusicEditor(EditorBase):
             get_field=self.get_field,
             add_pre_history=self.add_pre_history,
             add_post_history=self.add_post_history,
-            cross_filed_copying=True,
+            cross_field_copying=True,
         )
 
         # Initialize music picker
         self._music_picker = NumberPicker(
             self, 45, 17, min_value=0, max_value=pyxel.NUM_MUSICS - 1, value=0
+        )
+        self._music_picker.add_event_listener(
+            "mouse_hover", self.__on_music_picker_mouse_hover
         )
         self.add_number_picker_help(self._music_picker)
         self.copy_var("music_index_var", self._music_picker, "value_var")
@@ -104,18 +107,26 @@ class MusicEditor(EditorBase):
             music.seqs.from_list(seqs)
         return music.seqs[index]
 
-    def add_pre_history(self, x, y):
+    def add_pre_history(self, x=None, y=None, *, bank_copy=False):
         self._history_data = data = {}
         data["music_index"] = self.music_index_var
-        data["old_cursor_pos"] = (x, y)
-        data["old_field"] = self.field_cursor.field.to_list()
+        if bank_copy:
+            data["old_data"] = [self.get_field(i).to_list() for i in range(4)]
+        else:
+            data["old_cursor_pos"] = (x, y)
+            data["old_field"] = self.field_cursor.field.to_list()
 
-    def add_post_history(self, x, y):
+    def add_post_history(self, x=None, y=None, *, bank_copy=False):
         data = self._history_data
-        data["new_cursor_pos"] = (x, y)
-        data["new_field"] = self.field_cursor.field.to_list()
-        if data["old_field"] != data["new_field"]:
-            self.add_history(self._history_data)
+        if bank_copy:
+            data["new_data"] = [self.get_field(i).to_list() for i in range(4)]
+            if data["new_data"] != data["old_data"]:
+                self.add_history(self._history_data)
+        else:
+            data["new_cursor_pos"] = (x, y)
+            data["new_field"] = self.field_cursor.field.to_list()
+            if data["old_field"] != data["new_field"]:
+                self.add_history(self._history_data)
 
     def _play(self, is_partial):
         self.is_playing_var = True
@@ -139,6 +150,9 @@ class MusicEditor(EditorBase):
         self._loop_button.is_enabled_var = True
         pyxel.stop()
 
+    def __on_music_picker_mouse_hover(self, x, y):
+        self.help_message_var = "COPY_BANK:CTRL+SHIFT+C/X/V"
+
     def __on_play_button_press(self):
         self._play(pyxel.btn(pyxel.KEY_SHIFT))
 
@@ -157,14 +171,22 @@ class MusicEditor(EditorBase):
     def __on_undo(self, data):
         self._stop()
         self.music_index_var = data["music_index"]
-        self.field_cursor.move_to(*data["old_cursor_pos"], False)
-        self.field_cursor.field.from_list(data["old_field"])
+        if "old_data" in data:
+            for i in range(4):
+                self.get_field(i).from_list(data["old_data"][i])
+        else:
+            self.field_cursor.move_to(*data["old_cursor_pos"], False)
+            self.field_cursor.field.from_list(data["old_field"])
 
     def __on_redo(self, data):
         self._stop()
         self.music_index_var = data["music_index"]
-        self.field_cursor.move_to(*data["new_cursor_pos"], False)
-        self.field_cursor.field.from_list(data["new_field"])
+        if "new_data" in data:
+            for i in range(4):
+                self.get_field(i).from_list(data["new_data"][i])
+        else:
+            self.field_cursor.move_to(*data["new_cursor_pos"], False)
+            self.field_cursor.field.from_list(data["new_field"])
 
     def __on_hide(self):
         self._stop()
