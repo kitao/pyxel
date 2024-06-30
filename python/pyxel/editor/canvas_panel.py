@@ -55,7 +55,8 @@ class CanvasPanel(Widget):
         self._select_y1 = 0
         self._select_x2 = 0
         self._select_y2 = 0
-        self._copy_buffer = None
+        self._canvas_buffer = None
+        self._bank_buffer = None
         self._is_dragged = False
         self._is_assist_mode = False
         self._edit_canvas = (
@@ -109,24 +110,42 @@ class CanvasPanel(Widget):
         y = min(max((y - self.y - 1) // 8, 0), 15)
         return x, y
 
-    def _add_pre_history(self):
+    def _add_pre_history(self, *, bank_copy=False):
         self._history_data = data = {}
-        if self._is_tilemap_mode:
-            data["tilemap_index"] = self.tilemap_index_var
+        if bank_copy:
+            if self._is_tilemap_mode:
+                data["tilemap_index"] = self.tilemap_index_var
+                data["old_imgsrc"] = self.canvas_var.imgsrc
+            else:
+                data["image_index"] = self.image_index_var
+            data["old_data"] = self.canvas_var.get_slice(0, 0, 256, 256)
         else:
-            data["image_index"] = self.image_index_var
-        data["focus_pos"] = (self.focus_x_var, self.focus_y_var)
-        data["old_canvas"] = self.canvas_var.get_slice(
-            self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
-        )
+            if self._is_tilemap_mode:
+                data["tilemap_index"] = self.tilemap_index_var
+            else:
+                data["image_index"] = self.image_index_var
+            data["focus_pos"] = (self.focus_x_var, self.focus_y_var)
+            data["old_canvas"] = self.canvas_var.get_slice(
+                self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
+            )
 
-    def _add_post_history(self):
+    def _add_post_history(self, *, bank_copy=False):
         data = self._history_data
-        data["new_canvas"] = self.canvas_var.get_slice(
-            self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
-        )
-        if data["old_canvas"] != data["new_canvas"]:
-            self.add_history(data)
+        if bank_copy:
+            data["new_data"] = self.canvas_var.get_slice(0, 0, 256, 256)
+            if self._is_tilemap_mode:
+                data["new_imgsrc"] = self.canvas_var.imgsrc
+            if (
+                data["new_data"] != data["old_data"]
+                or data["new_imgsrc"] != data["old_imgsrc"]
+            ):
+                self.add_history(data)
+        else:
+            data["new_canvas"] = self.canvas_var.get_slice(
+                self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
+            )
+            if data["new_canvas"] != data["old_canvas"]:
+                self.add_history(data)
 
     def _reset_edit_canvas(self):
         self._edit_canvas.blt(
@@ -321,8 +340,50 @@ class CanvasPanel(Widget):
                 pyxel.MOUSE_BUTTON_LEFT, pyxel.mouse_x, pyxel.mouse_y, 0, 0
             )
 
-        if self.tool_var == TOOL_SELECT and (
+        # Copy/cut/paste bank
+        if pyxel.btn(pyxel.KEY_SHIFT) and (
             pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
+        ):
+            # Ctrl+Shift+C/Ctrl+Shift+X: Copy bank
+            if pyxel.btnp(pyxel.KEY_C) or pyxel.btnp(pyxel.KEY_X):
+                self._bank_buffer = bank = {}
+                if self._is_tilemap_mode:
+                    tilemap = pyxel.tilemaps[self.tilemap_index_var]
+                    bank["data"] = tilemap.get_slice(0, 0, 256, 256)
+                    bank["imgsrc"] = tilemap.imgsrc
+                else:
+                    bank["data"] = pyxel.images[self.image_index_var].get_slice(
+                        0, 0, 256, 256
+                    )
+
+            # Ctrl+Shift+X: Cut bank
+            if pyxel.btnp(pyxel.KEY_X):
+                self._add_pre_history(bank_copy=True)
+                if self._is_tilemap_mode:
+                    pyxel.tilemaps[self.tilemap_index_var].rect(0, 0, 256, 256, 0)
+                else:
+                    pyxel.images[self.image_index_var].rect(0, 0, 256, 256, 0)
+                self._add_post_history(bank_copy=True)
+
+            # Ctrl+Shift+V: Paste bank
+            if pyxel.btnp(pyxel.KEY_V) and self._bank_buffer is not None:
+                self._add_pre_history(bank_copy=True)
+                if self._is_tilemap_mode:
+                    pyxel.tilemaps[self.tilemap_index_var].set_slice(
+                        0, 0, self._bank_buffer["data"]
+                    )
+                    self.image_index_var = self._bank_buffer["imgsrc"]
+                else:
+                    pyxel.images[self.image_index_var].set_slice(
+                        0, 0, self._bank_buffer["data"]
+                    )
+                self._add_post_history(bank_copy=True)
+
+        # Copy/cut/paste canvas
+        if (
+            self.tool_var == TOOL_SELECT
+            and not pyxel.btn(pyxel.KEY_SHIFT)
+            and (pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI))
         ):
             # Ctrl+A: Select all
             if pyxel.btnp(pyxel.KEY_A):
@@ -331,7 +392,7 @@ class CanvasPanel(Widget):
 
             # Ctrl+C: Copy
             if pyxel.btnp(pyxel.KEY_C):
-                self._copy_buffer = self.canvas_var.get_slice(
+                self._canvas_buffer = self.canvas_var.get_slice(
                     self.focus_x_var * 8 + self._select_x1,
                     self.focus_y_var * 8 + self._select_y1,
                     self._select_x2 - self._select_x1 + 1,
@@ -344,22 +405,22 @@ class CanvasPanel(Widget):
                 y = self.focus_y_var * 8 + self._select_y1
                 w = self._select_x2 - self._select_x1 + 1
                 h = self._select_y2 - self._select_y1 + 1
-                self._copy_buffer = self.canvas_var.get_slice(x, y, w, h)
+                self._canvas_buffer = self.canvas_var.get_slice(x, y, w, h)
                 self._add_pre_history()
                 self.canvas_var.rect(x, y, w, h, (0, 0) if self._is_tilemap_mode else 0)
                 self._add_post_history()
 
             # Ctrl+V: Paste
-            if self._copy_buffer is not None and pyxel.btnp(pyxel.KEY_V):
+            if self._canvas_buffer is not None and pyxel.btnp(pyxel.KEY_V):
                 self._add_pre_history()
-                width = len(self._copy_buffer[0])
-                height = len(self._copy_buffer)
+                width = len(self._canvas_buffer[0])
+                height = len(self._canvas_buffer)
                 width -= max(self._select_x1 + width - 16, 0)
                 height -= max(self._select_y1 + height - 16, 0)
                 self.canvas_var.set_slice(
                     self.focus_x_var * 8 + self._select_x1,
                     self.focus_y_var * 8 + self._select_y1,
-                    self._copy_buffer,
+                    self._canvas_buffer,
                 )
                 self._add_post_history()
 

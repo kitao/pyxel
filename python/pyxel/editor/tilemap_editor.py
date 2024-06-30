@@ -61,6 +61,9 @@ class TilemapEditor(EditorBase):
         self._tilemap_picker.add_event_listener(
             "change", self.__on_tilemap_picker_change
         )
+        self._tilemap_picker.add_event_listener(
+            "mouse_hover", self.__on_tilemap_picker_mouse_hover
+        )
         self.add_number_picker_help(self._tilemap_picker)
         self.copy_var("tilemap_index_var", self._tilemap_picker, "value_var")
 
@@ -105,22 +108,33 @@ class TilemapEditor(EditorBase):
     def __on_tilemap_picker_change(self, value):
         self.image_index_var = pyxel.tilemaps[value].imgsrc
 
+    def __on_tilemap_picker_mouse_hover(self, x, y):
+        self.help_message_var = "COPY_BANK:CTRL+SHIFT+C/X/V"
+
     def __on_image_picker_change(self, value):
         pyxel.tilemaps[self.tilemap_index_var].imgsrc = value
 
     def __on_undo(self, data):
         self.tilemap_index_var = data["tilemap_index"]
-        self.focus_x_var, self.focus_y_var = data["focus_pos"]
-        self.canvas_var.set_slice(
-            self.focus_x_var * 8, self.focus_y_var * 8, data["old_canvas"]
-        )
+        if "old_data" in data:
+            pyxel.tilemaps[self.tilemap_index_var].set_slice(0, 0, data["old_data"])
+            self.image_index_var = data["old_imgsrc"]
+        else:
+            self.focus_x_var, self.focus_y_var = data["focus_pos"]
+            self.canvas_var.set_slice(
+                self.focus_x_var * 8, self.focus_y_var * 8, data["old_canvas"]
+            )
 
     def __on_redo(self, data):
         self.tilemap_index_var = data["tilemap_index"]
-        self.focus_x_var, self.focus_y_var = data["focus_pos"]
-        self.canvas_var.set_slice(
-            self.focus_x_var * 8, self.focus_y_var * 8, data["new_canvas"]
-        )
+        if "new_data" in data:
+            pyxel.tilemaps[self.tilemap_index_var].set_slice(0, 0, data["new_data"])
+            self.image_index_var = data["new_imgsrc"]
+        else:
+            self.focus_x_var, self.focus_y_var = data["focus_pos"]
+            self.canvas_var.set_slice(
+                self.focus_x_var * 8, self.focus_y_var * 8, data["new_canvas"]
+            )
 
     def __on_drop(self, filename):
         pyxel.tilemaps[self.tilemap_index_var].load(
