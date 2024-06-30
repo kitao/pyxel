@@ -72,7 +72,7 @@ impl Pyxel {
         if format_version < RESOURCE_FORMAT_VERSION {
             Self::warn_format_version(filename);
         }
-        if format_version == 3 || format_version == 2 {
+        if format_version >= 2 {
             let resource_data = ResourceData3::from_toml(&toml_text);
             resource_data.to_runtime(
                 self,
