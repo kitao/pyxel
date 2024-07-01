@@ -126,7 +126,7 @@ class MusicEditor(EditorBase):
         else:
             data["new_cursor_pos"] = (x, y)
             data["new_field"] = self.field_cursor.field.to_list()
-            if data["old_field"] != data["new_field"]:
+            if data["new_field"] != data["old_field"]:
                 self.add_history(self._history_data)
 
     def _play(self, is_partial):
