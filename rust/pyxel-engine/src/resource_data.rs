@@ -215,7 +215,7 @@ impl MusicData {
 }
 
 #[derive(Clone, Serialize, Deserialize)]
-pub struct ResourceData3 {
+pub struct ResourceData2 {
     pub format_version: u32,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     colors: Vec<String>,
@@ -233,13 +233,13 @@ pub struct ResourceData3 {
     musics: Vec<MusicData>,
 }
 
-impl ResourceData3 {
+impl ResourceData2 {
     pub fn from_toml(toml_text: &str) -> Self {
         toml::from_str(toml_text).unwrap()
     }
 
     pub fn from_runtime(pyxel: &Pyxel) -> Self {
-        let mut resource_data = ResourceData3 {
+        let mut resource_data = ResourceData2 {
             format_version: RESOURCE_FORMAT_VERSION,
             colors: Vec::new(),
             images: Vec::new(),
