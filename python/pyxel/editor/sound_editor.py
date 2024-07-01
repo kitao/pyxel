@@ -27,6 +27,7 @@ class SoundEditor(EditorBase):
 
         # Initialize field cursor
         self.field_cursor = FieldCursor(
+            self,
             max_field_length=MAX_SOUND_LENGTH,
             field_wrap_length=MAX_SOUND_LENGTH,
             get_field=self.get_field,
@@ -132,6 +133,7 @@ class SoundEditor(EditorBase):
         self._history_data = data = {}
         data["sound_index"] = self.sound_index_var
         if bank_copy:
+            data["old_speed"] = self.speed_var
             data["old_data"] = [self.get_field(i).to_list() for i in range(4)]
         else:
             data["old_cursor_pos"] = (x, y)
@@ -140,8 +142,12 @@ class SoundEditor(EditorBase):
     def add_post_history(self, x=None, y=None, *, bank_copy=False):
         data = self._history_data
         if bank_copy:
+            data["new_speed"] = self.speed_var
             data["new_data"] = [self.get_field(i).to_list() for i in range(4)]
-            if data["new_data"] != data["old_data"]:
+            if (
+                data["new_speed"] != data["old_speed"]
+                or data["new_data"] != data["old_data"]
+            ):
                 self.add_history(self._history_data)
         else:
             data["new_cursor_pos"] = (x, y)
@@ -213,6 +219,7 @@ class SoundEditor(EditorBase):
     def __on_undo(self, data):
         self._stop()
         self.sound_index_var = data["sound_index"]
+        self.speed_var = data["old_speed"]
         if "old_data" in data:
             for i in range(4):
                 self.get_field(i).from_list(data["old_data"][i])
@@ -223,6 +230,7 @@ class SoundEditor(EditorBase):
     def __on_redo(self, data):
         self._stop()
         self.sound_index_var = data["sound_index"]
+        self.speed_var = data["new_speed"]
         if "new_data" in data:
             for i in range(4):
                 self.get_field(i).from_list(data["new_data"][i])
