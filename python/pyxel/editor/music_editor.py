@@ -122,12 +122,12 @@ class MusicEditor(EditorBase):
         if bank_copy:
             data["new_data"] = [self.get_field(i).to_list() for i in range(4)]
             if data["new_data"] != data["old_data"]:
-                self.add_history(self._history_data)
+                self.add_history(data)
         else:
             data["new_cursor_pos"] = (x, y)
             data["new_field"] = self.field_cursor.field.to_list()
             if data["new_field"] != data["old_field"]:
-                self.add_history(self._history_data)
+                self.add_history(data)
 
     def _play(self, is_partial):
         self.is_playing_var = True
