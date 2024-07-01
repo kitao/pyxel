@@ -346,15 +346,15 @@ class CanvasPanel(Widget):
         ):
             # Ctrl+Shift+C/Ctrl+Shift+X: Copy bank
             if pyxel.btnp(pyxel.KEY_C) or pyxel.btnp(pyxel.KEY_X):
-                self._bank_buffer = bank = {}
+                self._bank_buffer = {}
                 if self._is_tilemap_mode:
                     tilemap = pyxel.tilemaps[self.tilemap_index_var]
-                    bank["data"] = tilemap.get_slice(0, 0, 256, 256)
-                    bank["imgsrc"] = tilemap.imgsrc
+                    self._bank_buffer["data"] = tilemap.get_slice(0, 0, 256, 256)
+                    self._bank_buffer["imgsrc"] = tilemap.imgsrc
                 else:
-                    bank["data"] = pyxel.images[self.image_index_var].get_slice(
-                        0, 0, 256, 256
-                    )
+                    self._bank_buffer["data"] = pyxel.images[
+                        self.image_index_var
+                    ].get_slice(0, 0, 256, 256)
 
             # Ctrl+Shift+X: Cut bank
             if pyxel.btnp(pyxel.KEY_X):
