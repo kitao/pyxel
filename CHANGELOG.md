@@ -1,10 +1,13 @@
 # Change Log
 
+## 2.1.4
+
+- Added a bank copy feature to the Pyxel Editor
+- Fixed the version check for the resource file
+
 ## 2.1.3
 
 - Incremented the resource format version
-- Added a bank copy feature to the Pyxel Editor
-- Fixed the version check of the resource file
 
 ## 2.1.2
 
