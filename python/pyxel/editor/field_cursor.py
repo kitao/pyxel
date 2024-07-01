@@ -6,6 +6,7 @@ from .widgets.settings import WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
 class FieldCursor:
     def __init__(
         self,
+        parent,
         *,
         max_field_length,
         field_wrap_length,
@@ -14,6 +15,7 @@ class FieldCursor:
         add_post_history,
         cross_field_copying,
     ):
+        self.parent = parent
         self._max_field_length = max_field_length
         self._field_wrap_length = (
             field_wrap_length
@@ -230,9 +232,11 @@ class FieldCursor:
         ):
             # Ctrl+Shift+C/Ctrl+Shift+X: Copy bank
             if pyxel.btnp(pyxel.KEY_C) or pyxel.btnp(pyxel.KEY_X):
-                self._bank_buffer = data = {}
+                self._bank_buffer = {}
+                if hasattr(self.parent, "speed_var"):
+                    self._bank_buffer["speed"] = self.parent.speed_var
                 for i in range(self._max_y + 1):
-                    data[i] = self._get_field(i).to_list()
+                    self._bank_buffer[i] = self._get_field(i).to_list()
 
             # Ctrl+Shift+X: Cut bank
             if pyxel.btnp(pyxel.KEY_X):
@@ -244,6 +248,8 @@ class FieldCursor:
             # Ctrl+Shift+V: Paste bank
             if pyxel.btnp(pyxel.KEY_V) and self._bank_buffer is not None:
                 self._add_pre_history(bank_copy=True)
+                if hasattr(self.parent, "speed_var"):
+                    self.parent.speed_var = self._bank_buffer["speed"]
                 for i in range(self._max_y + 1):
                     self._get_field(i).from_list(self._bank_buffer[i])
                 self._add_post_history(bank_copy=True)
