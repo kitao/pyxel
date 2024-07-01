@@ -10,7 +10,7 @@ use zip::{ZipArchive, ZipWriter};
 
 use crate::image::{Color, Image, Rgb24};
 use crate::pyxel::Pyxel;
-use crate::resource_data::{ResourceData1, ResourceData3};
+use crate::resource_data::{ResourceData1, ResourceData2};
 use crate::screencast::Screencast;
 use crate::settings::{DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC};
 use crate::{PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_NAME, RESOURCE_FORMAT_VERSION};
@@ -69,24 +69,15 @@ impl Pyxel {
         let mut toml_text = String::new();
         file.read_to_string(&mut toml_text).unwrap();
         let format_version = Self::parse_format_version(&toml_text);
+        assert!(
+            format_version <= RESOURCE_FORMAT_VERSION,
+            "Unknown resource file version"
+        );
         if format_version < RESOURCE_FORMAT_VERSION {
             Self::warn_format_version(filename);
         }
         if format_version >= 2 {
-            let resource_data = ResourceData3::from_toml(&toml_text);
-            resource_data.to_runtime(
-                self,
-                exclude_images.unwrap_or(false),
-                exclude_tilemaps.unwrap_or(false),
-                exclude_sounds.unwrap_or(false),
-                exclude_musics.unwrap_or(false),
-                include_colors.unwrap_or(false),
-                include_channels.unwrap_or(false),
-                include_tones.unwrap_or(false),
-            );
-            self.load_pyxel_palette_file(filename);
-        } else if format_version == 1 {
-            let resource_data = ResourceData1::from_toml(&toml_text);
+            let resource_data = ResourceData2::from_toml(&toml_text);
             resource_data.to_runtime(
                 self,
                 exclude_images.unwrap_or(false),
@@ -99,10 +90,18 @@ impl Pyxel {
             );
             self.load_pyxel_palette_file(filename);
         } else {
-            assert!(
-                format_version <= RESOURCE_FORMAT_VERSION,
-                "Unknown resource file version"
+            let resource_data = ResourceData1::from_toml(&toml_text);
+            resource_data.to_runtime(
+                self,
+                exclude_images.unwrap_or(false),
+                exclude_tilemaps.unwrap_or(false),
+                exclude_sounds.unwrap_or(false),
+                exclude_musics.unwrap_or(false),
+                include_colors.unwrap_or(false),
+                include_channels.unwrap_or(false),
+                include_tones.unwrap_or(false),
             );
+            self.load_pyxel_palette_file(filename);
         }
     }
 
@@ -117,7 +116,7 @@ impl Pyxel {
         include_channels: Option<bool>,
         include_tones: Option<bool>,
     ) {
-        let toml_text = ResourceData3::from_runtime(self).to_toml(
+        let toml_text = ResourceData2::from_runtime(self).to_toml(
             exclude_images.unwrap_or(false),
             exclude_tilemaps.unwrap_or(false),
             exclude_sounds.unwrap_or(false),
