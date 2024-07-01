@@ -148,12 +148,12 @@ class SoundEditor(EditorBase):
                 data["new_speed"] != data["old_speed"]
                 or data["new_data"] != data["old_data"]
             ):
-                self.add_history(self._history_data)
+                self.add_history(data)
         else:
             data["new_cursor_pos"] = (x, y)
             data["new_field"] = self.field_cursor.field.to_list()
             if data["new_field"] != data["old_field"]:
-                self.add_history(self._history_data)
+                self.add_history(data)
 
     def get_field_help_message(self):
         if self.field_cursor.is_selecting:
@@ -219,8 +219,8 @@ class SoundEditor(EditorBase):
     def __on_undo(self, data):
         self._stop()
         self.sound_index_var = data["sound_index"]
-        self.speed_var = data["old_speed"]
         if "old_data" in data:
+            pyxel.sounds[self.sound_index_var].speed = data["old_speed"]
             for i in range(4):
                 self.get_field(i).from_list(data["old_data"][i])
         else:
@@ -230,8 +230,8 @@ class SoundEditor(EditorBase):
     def __on_redo(self, data):
         self._stop()
         self.sound_index_var = data["sound_index"]
-        self.speed_var = data["new_speed"]
         if "new_data" in data:
+            pyxel.sounds[self.sound_index_var].speed = data["new_speed"]
             for i in range(4):
                 self.get_field(i).from_list(data["new_data"][i])
         else:
