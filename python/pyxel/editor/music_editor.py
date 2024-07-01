@@ -26,6 +26,7 @@ class MusicEditor(EditorBase):
 
         # Initialize field cursor
         self.field_cursor = FieldCursor(
+            self,
             max_field_length=MAX_MUSIC_LENGTH,
             field_wrap_length=16,
             get_field=self.get_field,
