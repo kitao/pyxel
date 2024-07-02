@@ -673,7 +673,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Ejemplo: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  Fija los efectos con una string hecha con 'NSVF'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
+  Fija los efectos con una string hecha con 'NSVFHQ'. Sensible a las mayúsculas y minúsculas y los espacios en blanco serán ignorados.<br>
   Ejemplo: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Clase Music

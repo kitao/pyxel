@@ -674,7 +674,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Ex. `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  Define os efeitos com uma string composta por 'NSVF'. É insensível à maiúsculas ou minúsculas e espaços em branco são ignorados.<br>
+  Define os efeitos com uma string composta por 'NSVFHQ'. É insensível à maiúsculas ou minúsculas e espaços em branco são ignorados.<br>
   Ex. `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Classe de Musica
