@@ -674,7 +674,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   例：`pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  'NSVF'の文字列でエフェクトを設定します。大文字と小文字は区別されず、空白は無視されます。<br>
+  'NSVFHQ'の文字列でエフェクトを設定します。大文字と小文字は区別されず、空白は無視されます。<br>
   例：`pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### ミュージッククラス

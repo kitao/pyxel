@@ -674,7 +674,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
   e.g. `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  Set the effects with a string made of 'NSVF'. Case-insensitive and whitespace is ignored.<br>
+  Set the effects with a string made of 'NSVFHQ'. Case-insensitive and whitespace is ignored.<br>
   e.g. `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Music Class
