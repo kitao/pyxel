@@ -674,7 +674,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   z.B. `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  Setzt die Effekte mit einer Zeichenkette aus 'NSVF'. Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
+  Setzt die Effekte mit einer Zeichenkette aus 'NSVFHQ'. Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
   z.B. `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Musik Klasse
