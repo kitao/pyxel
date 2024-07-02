@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.1.5
+
+- Updated the description of the set_effects method in the READMEs
+
 ## 2.1.4
 
 - Added a bank copy feature to the Pyxel Editor
