@@ -674,7 +674,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   示例：`pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  使用由'NSVF'组成的字符串设置音效。大小写不敏感，且空格会被忽略。<br>
+  使用由'NSVFHQ'组成的字符串设置音效。大小写不敏感，且空格会被忽略。<br>
   示例：`pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Music 类

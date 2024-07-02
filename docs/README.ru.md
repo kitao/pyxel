@@ -674,7 +674,7 @@ pyxel play PYXEL_APP_FILE
   Пример: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  Установить эффекты с помощью строки, составленной из 'NSVF'. Регистр и пробелы игнорируются.<br>
+  Установить эффекты с помощью строки, составленной из 'NSVFHQ'. Регистр и пробелы игнорируются.<br>
   Пример: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Класс Music
