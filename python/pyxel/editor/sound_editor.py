@@ -30,10 +30,11 @@ class SoundEditor(EditorBase):
             self,
             max_field_length=MAX_SOUND_LENGTH,
             field_wrap_length=MAX_SOUND_LENGTH,
+            max_field_values=[59, 3, 7, 5],
             get_field=self.get_field,
             add_pre_history=self.add_pre_history,
             add_post_history=self.add_post_history,
-            cross_field_copying=False,
+            enable_cross_field_copy=False,
         )
 
         # Initialize octave_var
@@ -157,7 +158,7 @@ class SoundEditor(EditorBase):
 
     def get_field_help_message(self):
         if self.field_cursor.is_selecting:
-            return "COPY_FIELD:CTRL+A/C/X/V"
+            return "COPY:CTRL+A/C/X/V SHIFT:CTRL+U/D"
         cursor_y = self.field_cursor.y
         if cursor_y == 0:
             return "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
@@ -195,7 +196,7 @@ class SoundEditor(EditorBase):
         self._speed_picker.value = sound.speed
 
     def __on_sound_picker_mouse_hover(self, x, y):
-        self.help_message_var = "COPY_BANK:CTRL+SHIFT+C/X/V"
+        self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_speed_picker_change(self, value):
         sound = pyxel.sounds[self.sound_index_var]
