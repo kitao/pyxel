@@ -3,6 +3,7 @@
 ## 2.1.5
 
 - Updated the description of the set_effects method in the READMEs
+- Added a value change shortcut to the Sound and Music Editors
 
 ## 2.1.4
 

@@ -29,10 +29,11 @@ class MusicEditor(EditorBase):
             self,
             max_field_length=MAX_MUSIC_LENGTH,
             field_wrap_length=16,
+            max_field_values=[pyxel.NUM_SOUNDS - 1] * 4,
             get_field=self.get_field,
             add_pre_history=self.add_pre_history,
             add_post_history=self.add_post_history,
-            cross_field_copying=True,
+            enable_cross_field_copy=True,
         )
 
         # Initialize music picker
@@ -152,7 +153,7 @@ class MusicEditor(EditorBase):
         pyxel.stop()
 
     def __on_music_picker_mouse_hover(self, x, y):
-        self.help_message_var = "COPY_BANK:CTRL+SHIFT+C/X/V"
+        self.help_message_var = "COPY_MUSIC:CTRL+SHIFT+C/X/V"
 
     def __on_play_button_press(self):
         self._play(pyxel.btn(pyxel.KEY_SHIFT))

@@ -102,7 +102,7 @@ class ImageEditor(EditorBase):
         self.help_message_var = "COLOR:1-8/SHIFT+1-8"
 
     def __on_image_picker_mouse_hover(self, x, y):
-        self.help_message_var = "COPY_BANK:CTRL+SHIFT+C/X/V"
+        self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_undo(self, data):
         self.image_index_var = data["image_index"]

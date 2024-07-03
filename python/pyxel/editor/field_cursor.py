@@ -10,10 +10,11 @@ class FieldCursor:
         *,
         max_field_length,
         field_wrap_length,
+        max_field_values,
         get_field,
         add_pre_history,
         add_post_history,
-        cross_field_copying,
+        enable_cross_field_copy,
     ):
         self.parent = parent
         self._max_field_length = max_field_length
@@ -22,10 +23,11 @@ class FieldCursor:
             if field_wrap_length < max_field_length
             else max_field_length + 1
         )
+        self._max_field_values = max_field_values
         self._get_field = get_field
         self._add_pre_history = add_pre_history
         self._add_post_history = add_post_history
-        self._cross_field_copying = cross_field_copying
+        self._enable_cross_field_copy = enable_cross_field_copy
         self._cursor_x = 0
         self._cursor_y = 0
         self._select_x = None
@@ -203,14 +205,10 @@ class FieldCursor:
         self._select_x = len(self.field) - 1
 
     def copy(self):
-        if not self.is_selecting:
-            return
         lst = self.field.to_list()
         self._field_buffer = (self.y, lst[self.x : self.x + self.width])
 
     def cut(self):
-        if not self.is_selecting:
-            return
         self.copy()
         self.delete()
 
@@ -218,9 +216,22 @@ class FieldCursor:
         if self._field_buffer is None:
             return
         (y, field) = self._field_buffer
-        if not self._cross_field_copying and self.y != y:
+        if not self._enable_cross_field_copy and self.y != y:
             return
         self.insert(field)
+
+    def shift(self, offset):
+        self._add_pre_history(self.x, self.y)
+        lst = self.field.to_list()
+        for i in range(self.x, self.x + self.width):
+            if i < len(lst):
+                value = lst[i]
+                if value >= 0:
+                    lst[i] = min(max(value + offset, 0), self._max_field_values[self.y])
+            else:
+                lst.append(0)
+        self.field.from_list(lst)
+        self._add_post_history(self.x, self.y)
 
     def process_input(self):
         if pyxel.btn(pyxel.KEY_ALT):
@@ -255,7 +266,7 @@ class FieldCursor:
                 self._add_post_history(bank_copy=True)
             return
 
-        # Copy/cut/paste field
+        # Copy/cut/paste/shift field
         if not pyxel.btn(pyxel.KEY_SHIFT) and (
             pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
         ):
@@ -274,6 +285,14 @@ class FieldCursor:
             # Ctrl+V: Paste
             if pyxel.btnp(pyxel.KEY_V):
                 self.paste()
+
+            # Ctrl+U: Shift up
+            if pyxel.btnp(pyxel.KEY_U, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+                self.shift(1)
+
+            # Ctrl+D: Shift down
+            if pyxel.btnp(pyxel.KEY_D, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+                self.shift(-1)
             return
 
         with_select_key = pyxel.btn(pyxel.KEY_SHIFT)
