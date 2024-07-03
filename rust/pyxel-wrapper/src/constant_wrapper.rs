@@ -54,6 +54,8 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
     add_constant!(EFFECT_SLIDE)?;
     add_constant!(EFFECT_VIBRATO)?;
     add_constant!(EFFECT_FADEOUT)?;
+    add_constant!(EFFECT_HALF_FADEOUT)?;
+    add_constant!(EFFECT_QUARTER_FADEOUT)?;
 
     // Key
     add_constant!(KEY_UNKNOWN)?;
