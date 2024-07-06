@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.1.6
+
+- Changed the initial value for the noise sound register
+
 ## 2.1.5
 
 - Updated the description of the set_effects method in the READMEs
