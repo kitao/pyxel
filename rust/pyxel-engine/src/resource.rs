@@ -51,7 +51,7 @@ impl Pyxel {
 
         // Old resource file
         if archive.by_name("pyxel_resource/version").is_ok() {
-            Self::warn_format_version(filename);
+            println!("An old Pyxel resource file '{filename}' is loaded. Please re-save it with the latest Pyxel.");
             self.load_old_resource(
                 &mut archive,
                 filename,
@@ -73,9 +73,6 @@ impl Pyxel {
             format_version <= RESOURCE_FORMAT_VERSION,
             "Unknown resource file version"
         );
-        if format_version < RESOURCE_FORMAT_VERSION {
-            Self::warn_format_version(filename);
-        }
         if format_version >= 2 {
             let resource_data = ResourceData2::from_toml(&toml_text);
             resource_data.to_runtime(
@@ -218,13 +215,6 @@ impl Pyxel {
             .map(|(_, value)| value.trim().parse::<u32>())
             .unwrap()
             .unwrap()
-    }
-
-    fn warn_format_version(filename: &str) {
-        println!(
-            "An old Pyxel resource file '{}' is loaded. Please re-save it with the latest Pyxel.",
-            Path::new(filename).file_name().unwrap().to_str().unwrap()
-        );
     }
 
     fn load_pyxel_palette_file(&mut self, filename: &str) {
