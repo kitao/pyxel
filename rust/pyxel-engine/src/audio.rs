@@ -12,10 +12,12 @@ struct AudioCore {
 
 impl pyxel_platform::AudioCallback for AudioCore {
     fn update(&mut self, out: &mut [i16]) {
+        let channels_ = self.channels.lock();
+        let mut channels: Vec<_> = channels_.iter().map(|channel| channel.lock()).collect();
         let mut samples = self.blip_buf.read_samples(out, false);
         while samples < out.len() {
-            for channel in &*self.channels.lock() {
-                channel.lock().update(&mut self.blip_buf);
+            for channel in &mut *channels {
+                channel.update(&mut self.blip_buf);
             }
             self.blip_buf.end_frame(NUM_CLOCKS_PER_TICK as u64);
             samples += self.blip_buf.read_samples(&mut out[samples..], false);
