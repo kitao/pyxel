@@ -1,13 +1,12 @@
 # Change Log
 
-## 2.1.6
-
-- Changed the initial value for the noise sound register
-
 ## 2.1.5
 
 - Updated the description of the set_effects method in the READMEs
 - Added a value change shortcut to the Sound and Music Editors
+- Changed the initial value for the noise sound register
+- Suppressed the outdated resource file version warning
+- Changed the mutex control for sound playback
 
 ## 2.1.4
 
