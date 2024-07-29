@@ -3,6 +3,7 @@
 ## 2.1.6
 
 - Updated the message image for the READMEs
+- Added Turkish and Ukrainian READMEs
 
 ## 2.1.5
 
