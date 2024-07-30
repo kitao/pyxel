@@ -4,6 +4,7 @@
 
 - Updated the message image for the READMEs
 - Added Turkish and Ukrainian READMEs
+- Suppressed a warning on macOS Sonoma
 
 ## 2.1.5
 
