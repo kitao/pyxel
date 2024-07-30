@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.1.7
+
+- Fixed a help message in the Music Editor
+
 ## 2.1.6
 
 - Updated the message image for the READMEs
