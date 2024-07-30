@@ -2,7 +2,7 @@
 
 ## 2.1.7
 
-- Fixed a help message in the Music Editor
+- Modified a help messages in the Pyxel Editor
 
 ## 2.1.6
 
