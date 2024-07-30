@@ -5,7 +5,8 @@
 - Updated the message image for the READMEs
 - Added Turkish and Ukrainian READMEs
 - Fixed a warning on macOS Sonoma
-- Updated Pyodide to version 0.26.2
+- Updated the Pyodide to version 0.26.2
+- Updated the glow crate to version 0.14
 
 ## 2.1.5
 
@@ -43,7 +44,7 @@
 - Changed the API notation in Example 4
 - Changed Example 9 to use the resume option for SFX playback
 - Added the descriptions of the resume option to the READMEs
-- Updated Pyodide to version 0.26.1
+- Updated the Pyodide to version 0.26.1
 
 ## 2.0.14
 
@@ -58,8 +59,8 @@
 
 - Fixed installation instructions for Mac in the READMEs
 - Modified build instructions in Makefile
-- Updated Pyodide to version 0.25.1
-- Updated Emscripten to version 3.1.53
+- Updated the Pyodide to version 0.25.1
+- Updated the Emscripten to version 3.1.53
 
 ## 2.0.11
 
@@ -142,8 +143,8 @@
 - Changed to use the C version of SDL2
 - Changed to allow resizing of the colors list
 - Changed to use GLSL for rendering the screen
-- Updated Pyodide to 0.24.1
-- Updated Emscripten to 3.1.45
+- Updated the Pyodide to version 0.24.1
+- Updated the Emscripten to version 3.1.45
 - Updated SDL2 to 2.24.2
 - Added the screen_mode function to change screen rendring type
 - Added a shortcut to change the screen mode with Alt(Option)+9
@@ -179,8 +180,8 @@
 - Replaced an image in the READMEs
 - Fixed the app2exe command to include modules correctly
 - Added support for Raspberry Pi (ARMv7)
-- Updated Emscripten to 3.1.42
-- Updated Pyodide to 0.23.3
+- Updated the Emscripten to version 3.1.42
+- Updated the Pyodide to version 0.23.3
 - Updated crate versions
 
 ## 1.9.16
@@ -194,7 +195,7 @@
 
 - Changed the platform specification method in Rust for FreeBSD
 - Changed to use the official Pyodide instead of the customized version
-- Updated Emscripten to 3.1.36
+- Updated the Emscripten to version 3.1.36
 - Expanded the supported macOS 10.12+ (Intel), 11.0+ (Apple Silicon)
 
 ## 1.9.14
@@ -206,14 +207,14 @@
 
 - Added URL generator to Pyxel Web Launcher
 - Added a data_ptr method to the Image and Tilemap class
-- Updated Emscripten to 3.1.34
+- Updated the Emscripten to version 3.1.34
 - Added Example 13
 
 ## 1.9.12
 
 - Added support for environments without game controllers
 - Adjusted the initial gain of the sound
-- Updated Emscripten to 3.1.31
+- Updated the Emscripten to version 3.1.31
 
 ## 1.9.11
 
@@ -232,8 +233,8 @@
 
 - Changed to not use array macro
 - Fixed clippy warnings
-- Updated Emscripten to 3.1.29
-- Updated Pyodide version to 0.22.0
+- Updated the Emscripten to version 3.1.29
+- Updated the Pyodide to version 0.22.0
 - Fixed gamepad input bug
 - Enabled dynamic addition of gamepads
 - Changed a help message for Tilemap Editor
@@ -243,7 +244,7 @@
 - Modified description for Example 13
 - Added system palette colors besides normal palette colors
 - Changed to keep the default palette color in Pyxel Editor
-- Updated Emscripten version to 3.1.28
+- Updated the Emscripten to version 3.1.28
 - Updated the source of Pyodide-SDL2
 
 ## 1.9.7
@@ -296,7 +297,7 @@
 
 - Added a video and a message to users to the READMEs
 - Updated Pyodide
-- Updated Emscripten version to 3.1.24
+- Updated the Emscripten to version 3.1.24
 
 ## 1.8.22
 

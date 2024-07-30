@@ -20,7 +20,7 @@ harness = false
 [dependencies]
 cfg-if = "1.0"
 gif = "0.13"
-glow = "0.13"
+glow = "0.14"
 image = "0.24"
 indexmap = "2.1"
 noise = "0.9"
