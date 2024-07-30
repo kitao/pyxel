@@ -6,8 +6,7 @@ use std::str;
 
 use tar::Archive;
 
-const SDL2_VERSION: &str = "2.24.2";
-//const SDL2_VERSION: &str = "2.28.4";
+const SDL2_VERSION: &str = "2.24.2"; // Emscripten 3.1.53 uses SDL 2.24.2
 
 struct SDL2BindingsBuilder {
     target: String,
