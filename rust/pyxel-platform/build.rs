@@ -70,17 +70,30 @@ impl SDL2BindingsBuilder {
                 "{}/SDL2-{}/src/video/cocoa/SDL_cocoaevents.m",
                 self.out_dir, SDL2_VERSION
             );
-            let patch_code =
-            "- (BOOL)applicationSupportsSecureRestorableState:(NSApplication *)app { return YES; }";
-            let status = Command::new("sh")
+            let function_name = "applicationSupportsSecureRestorableState";
+            let function_exists = Command::new("sh")
                 .arg("-c")
                 .arg(&format!(
-                    "sed -i '' '310i\\\n{}' {}",
-                    patch_code, patch_target_path
+                    "grep -q '{}' {}",
+                    function_name, patch_target_path
                 ))
                 .status()
-                .expect("Failed to execute sed command");
-            assert!(status.success(), "Failed to patch SDL2");
+                .expect("Failed to execute grep command");
+            if !function_exists.success() {
+                let patch_code = format!(
+                    "- (BOOL){}:(NSApplication *)app {{ return YES; }}",
+                    function_name
+                );
+                let status = Command::new("sh")
+                    .arg("-c")
+                    .arg(&format!(
+                        "sed -i '' '310i\\\n{}' {}",
+                        patch_code, patch_target_path
+                    ))
+                    .status()
+                    .expect("Failed to execute sed command");
+                assert!(status.success(), "Failed to patch SDL2");
+            }
         }
     }
 
