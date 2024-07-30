@@ -153,7 +153,7 @@ class MusicEditor(EditorBase):
         pyxel.stop()
 
     def __on_music_picker_mouse_hover(self, x, y):
-        self.help_message_var = "COPY_MUSIC:CTRL+SHIFT+C/X/V"
+        self.help_message_var = "COPY_ALL:CTRL+SHIFT+C/X/V"
 
     def __on_play_button_press(self):
         self._play(pyxel.btn(pyxel.KEY_SHIFT))
