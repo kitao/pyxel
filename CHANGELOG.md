@@ -5,6 +5,7 @@
 - Updated the message image for the READMEs
 - Added Turkish and Ukrainian READMEs
 - Fixed a warning on macOS Sonoma
+- Updated Pyodide to version 0.26.2
 
 ## 2.1.5
 
