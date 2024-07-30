@@ -72,10 +72,7 @@ impl SDL2BindingsBuilder {
             let function_name = "applicationSupportsSecureRestorableState";
             let function_exists = Command::new("sh")
                 .arg("-c")
-                .arg(&format!(
-                    "grep -q '{}' {}",
-                    function_name, patch_target_path
-                ))
+                .arg(format!("grep -q '{}' {}", function_name, patch_target_path))
                 .status()
                 .expect("Failed to execute grep command");
             if !function_exists.success() {
@@ -85,7 +82,7 @@ impl SDL2BindingsBuilder {
                 );
                 let status = Command::new("sh")
                     .arg("-c")
-                    .arg(&format!(
+                    .arg(format!(
                         "sed -i '' '310i\\\n{}' {}",
                         patch_code, patch_target_path
                     ))
