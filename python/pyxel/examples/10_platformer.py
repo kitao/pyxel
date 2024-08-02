@@ -18,10 +18,10 @@ def get_tile(tile_x, tile_y):
 
 
 def is_colliding(x, y, is_falling):
-    x1 = int(x // 8)
-    y1 = int(y // 8)
-    x2 = int((x + 7) // 8)
-    y2 = int((y + 7) // 8)
+    x1 = pyxel.floor(x) // 8
+    y1 = pyxel.floor(y) // 8
+    x2 = (pyxel.ceil(x) + 7) // 8
+    y2 = (pyxel.ceil(y) + 7) // 8
     for yi in range(y1, y2 + 1):
         for xi in range(x1, x2 + 1):
             if get_tile(xi, yi)[0] >= WALL_TILE_X:
@@ -34,34 +34,18 @@ def is_colliding(x, y, is_falling):
 
 
 def push_back(x, y, dx, dy):
-    abs_dx = abs(dx)
-    abs_dy = abs(dy)
-    if abs_dx > abs_dy:
-        for _ in range(pyxel.ceil(abs_dx)):
-            step = max(-1, min(1, dx))
-            if is_colliding(x + step, y, dy > 0):
-                break
-            x += step
-            dx -= step
-        for _ in range(pyxel.ceil(abs_dy)):
-            step = max(-1, min(1, dy))
-            if is_colliding(x, y + step, dy > 0):
-                break
-            y += step
-            dy -= step
-    else:
-        for _ in range(pyxel.ceil(abs_dy)):
-            step = max(-1, min(1, dy))
-            if is_colliding(x, y + step, dy > 0):
-                break
-            y += step
-            dy -= step
-        for _ in range(pyxel.ceil(abs_dx)):
-            step = max(-1, min(1, dx))
-            if is_colliding(x + step, y, dy > 0):
-                break
-            x += step
-            dx -= step
+    for _ in range(pyxel.ceil(abs(dy))):
+        step = max(-1, min(1, dy))
+        if is_colliding(x, y + step, dy > 0):
+            break
+        y += step
+        dy -= step
+    for _ in range(pyxel.ceil(abs(dx))):
+        step = max(-1, min(1, dx))
+        if is_colliding(x + step, y, dy > 0):
+            break
+        x += step
+        dx -= step
     return x, y
 
 
