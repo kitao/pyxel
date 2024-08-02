@@ -11,10 +11,10 @@ CAR_IMAGES = [
 
 
 def is_colliding(x, y):
-    x1 = int(x // 8)
-    y1 = int(y // 8)
-    x2 = int((x + 15) // 8)
-    y2 = int((y + 15) // 8)
+    x1 = pyxel.floor(x) // 8
+    y1 = pyxel.floor(y) // 8
+    x2 = (pyxel.ceil(x) + 15) // 8
+    y2 = (pyxel.ceil(y) + 15) // 8
     for yi in range(y1, y2 + 1):
         for xi in range(x1, x2 + 1):
             if pyxel.tilemaps[2].pget(xi, yi) == (2, 0):
