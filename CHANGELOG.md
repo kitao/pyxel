@@ -3,6 +3,7 @@
 ## 2.1.7
 
 - Modified a help messages in the Pyxel Editor
+- Changed the return value type of the sgn function to integer
 
 ## 2.1.6
 

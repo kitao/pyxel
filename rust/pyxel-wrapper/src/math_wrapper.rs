@@ -13,7 +13,7 @@ fn floor(x: f64) -> i32 {
 }
 
 #[pyfunction]
-fn sgn(x: f64) -> f64 {
+fn sgn(x: f64) -> i32 {
     pyxel().sgn(x)
 }
 
