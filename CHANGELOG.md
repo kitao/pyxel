@@ -4,6 +4,7 @@
 
 - Modified a help messages in the Pyxel Editor
 - Changed the return value type of the sgn function to integer
+- Fixed the push back process in Example 10 and 15
 
 ## 2.1.6
 
