@@ -260,7 +260,8 @@ class SoundEditor(EditorBase):
             self.octave_var = min(self.octave_var + 1, 3)
         if pyxel.btnp(pyxel.KEY_PAGEDOWN):
             self.octave_var = max(self.octave_var - 1, 0)
-        self.field_cursor.process_input()
+        if not self.is_playing_var:
+            self.field_cursor.process_input()
 
     def __on_draw(self):
         self.draw_panel(11, 16, 218, 157)
