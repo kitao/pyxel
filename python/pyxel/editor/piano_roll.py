@@ -112,8 +112,9 @@ class PianoRoll(Widget):
     def __on_draw(self):
         # Draw frame
         pyxel.rect(self.x, self.y, self.width, self.height, 7)
-        if self.is_playing_var:
-            x = pyxel.play_pos(0)[1] * 4 + 31
+        play_pos = pyxel.play_pos(0)
+        if play_pos is not None:
+            x = play_pos[1] * 4 + 31
             pyxel.rect(x, 25, 3, 123, PIANO_ROLL_CURSOR_PLAY_COLOR)
         elif self.field_cursor.y == 0:
             x = self.field_cursor.x * 4 + 31
