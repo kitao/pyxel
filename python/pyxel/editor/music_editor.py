@@ -91,9 +91,6 @@ class MusicEditor(EditorBase):
         self.add_event_listener("update", self.__on_update)
         self.add_event_listener("draw", self.__on_draw)
 
-    def play_pos(self, ch):
-        return self._play_pos[ch]
-
     def get_field(self, index):
         if index >= pyxel.NUM_CHANNELS:
             return
