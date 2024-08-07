@@ -7,6 +7,7 @@
 - Fixed the push back process in Example 10 and 15
 - Fixed being able to edit during playback in the Pyxel Editor
 - Fixed incorrect array references during playback in the Pyxel Editor
+- Updated the sysinfo crate to version 0.31
 
 ## 2.1.6
 
