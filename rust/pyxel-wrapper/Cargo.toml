@@ -17,4 +17,4 @@ pyo3 = { version = "0.21", features = ["abi3-py37", "extension-module", "gil-ref
 pyxel-engine = { path = "../pyxel-engine", version = "2.1.7" }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
-sysinfo = "0.30"
+sysinfo = "0.31"
