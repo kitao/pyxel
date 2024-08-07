@@ -6,6 +6,7 @@
 - Changed the return value type of the sgn function to integer
 - Fixed the push back process in Example 10 and 15
 - Fixed being able to edit during playback in the Pyxel Editor
+- Fixed incorrect array references during playback in the Pyxel Editor
 
 ## 2.1.6
 
