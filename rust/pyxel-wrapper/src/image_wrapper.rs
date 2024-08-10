@@ -1,4 +1,5 @@
 use pyo3::prelude::*;
+use pyo3::types::PyDict;
 
 use crate::pyxel_singleton::pyxel;
 use crate::tilemap_wrapper::Tilemap;
@@ -23,7 +24,7 @@ impl Image {
     }
 
     #[staticmethod]
-    #[pyo3(text_signature = "(filename, *, incl_colors)")]
+    #[pyo3(signature = (filename, *, incl_colors=None))]
     pub fn from_image(filename: &str, incl_colors: Option<bool>) -> Self {
         Self::wrap(pyxel::Image::from_image(filename, incl_colors))
     }
@@ -45,8 +46,8 @@ impl Image {
             inner.width() * inner.height(),
             inner.data_ptr()
         );
-        let locals = pyo3::types::PyDict::new(py);
-        py.run(&python_code, None, Some(locals)).unwrap();
+        let locals = PyDict::new_bound(py);
+        py.run_bound(&python_code, None, Some(&locals)).unwrap();
         locals.get_item("c_uint8_array").unwrap().to_object(py)
     }
 
@@ -54,7 +55,7 @@ impl Image {
         self.inner.lock().set(x, y, &data);
     }
 
-    #[pyo3(text_signature = "($self, x, y, filename, *, incl_colors)")]
+    #[pyo3(signature = (x, y, filename, *, incl_colors=None))]
     pub fn load(&self, x: i32, y: i32, filename: &str, incl_colors: Option<bool>) {
         self.inner.lock().load(x, y, filename, incl_colors);
     }
@@ -63,6 +64,7 @@ impl Image {
         self.inner.lock().save(filename, scale);
     }
 
+    #[pyo3(signature = (x=None, y=None, w=None, h=None))]
     pub fn clip(
         &self,
         x: Option<f64>,
@@ -80,6 +82,7 @@ impl Image {
         Ok(())
     }
 
+    #[pyo3(signature = (x=None, y=None))]
     pub fn camera(&self, x: Option<f64>, y: Option<f64>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
             self.inner.lock().camera(x, y);
@@ -91,6 +94,7 @@ impl Image {
         Ok(())
     }
 
+    #[pyo3(signature = (col1=None, col2=None))]
     fn pal(&self, col1: Option<pyxel::Color>, col2: Option<pyxel::Color>) -> PyResult<()> {
         if let (Some(col1), Some(col2)) = (col1, col2) {
             self.inner.lock().pal(col1, col2);
@@ -158,11 +162,12 @@ impl Image {
         self.inner.lock().fill(x, y, col);
     }
 
-    pub fn blt(
+    #[pyo3(signature = (x, y, img, u, v, w, h, colkey=None))]
+    pub fn blt<'py>(
         &self,
         x: f64,
         y: f64,
-        img: &PyAny,
+        img: Bound<'py, PyAny>,
         u: f64,
         v: f64,
         w: f64,
@@ -180,11 +185,12 @@ impl Image {
         Ok(())
     }
 
-    pub fn bltm(
+    #[pyo3(signature = (x, y, tm, u, v, w, h, colkey=None))]
+    pub fn bltm<'py>(
         &self,
         x: f64,
         y: f64,
-        tm: &PyAny,
+        tm: Bound<'py, PyAny>,
         u: f64,
         v: f64,
         w: f64,
@@ -207,7 +213,7 @@ impl Image {
     }
 }
 
-pub fn add_image_class(m: &PyModule) -> PyResult<()> {
+pub fn add_image_class<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
     m.add_class::<Image>()?;
     Ok(())
 }

@@ -3,9 +3,7 @@ use pyo3::prelude::*;
 use crate::pyxel_singleton::pyxel;
 
 #[pyfunction]
-#[pyo3(
-    text_signature = "(filename, *, excl_images, excl_tilemaps, excl_sounds, excl_musics, incl_colors, incl_channels, incl_tones)"
-)]
+#[pyo3(signature = (filename, *, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None, incl_colors=None, incl_channels=None, incl_tones=None))]
 fn load(
     filename: &str,
     excl_images: Option<bool>,
@@ -29,9 +27,7 @@ fn load(
 }
 
 #[pyfunction]
-#[pyo3(
-    text_signature = "(filename, *, excl_images, excl_tilemaps, excl_sounds, excl_musics, incl_colors, incl_channels, incl_tones)"
-)]
+#[pyo3(signature = (filename, *, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None, incl_colors=None, incl_channels=None, incl_tones=None))]
 fn save(
     filename: &str,
     excl_images: Option<bool>,
@@ -55,11 +51,13 @@ fn save(
 }
 
 #[pyfunction]
+#[pyo3(signature = (scale=None))]
 fn screenshot(scale: Option<u32>) {
     pyxel().screenshot(scale);
 }
 
 #[pyfunction]
+#[pyo3(signature = (scale=None))]
 fn screencast(scale: Option<u32>) {
     pyxel().screencast(scale);
 }
@@ -69,7 +67,7 @@ fn reset_screencast() {
     pyxel().reset_screencast();
 }
 
-pub fn add_resource_functions(m: &PyModule) -> PyResult<()> {
+pub fn add_resource_functions<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(load, m)?)?;
     m.add_function(wrap_pyfunction!(save, m)?)?;
     m.add_function(wrap_pyfunction!(screenshot, m)?)?;

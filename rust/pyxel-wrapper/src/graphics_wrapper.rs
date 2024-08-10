@@ -10,6 +10,7 @@ static IMAGE_ONCE: Once = Once::new();
 static TILEMAP_ONCE: Once = Once::new();
 
 #[pyfunction]
+#[pyo3(signature = (x=None, y=None, w=None, h=None))]
 fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyResult<()> {
     if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
         pyxel().clip(x, y, w, h);
@@ -22,6 +23,7 @@ fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyRes
 }
 
 #[pyfunction]
+#[pyo3(signature = (x=None, y=None))]
 fn camera(x: Option<f64>, y: Option<f64>) -> PyResult<()> {
     if let (Some(x), Some(y)) = (x, y) {
         pyxel().camera(x, y);
@@ -34,6 +36,7 @@ fn camera(x: Option<f64>, y: Option<f64>) -> PyResult<()> {
 }
 
 #[pyfunction]
+#[pyo3(signature = (col1=None, col2=None))]
 fn pal(col1: Option<pyxel::Color>, col2: Option<pyxel::Color>) -> PyResult<()> {
     if let (Some(col1), Some(col2)) = (col1, col2) {
         pyxel().pal(col1, col2);
@@ -116,10 +119,11 @@ fn fill(x: f64, y: f64, col: pyxel::Color) {
 }
 
 #[pyfunction]
-fn blt(
+#[pyo3(signature = (x, y ,img, u, v, w, h, colkey=None))]
+fn blt<'py>(
     x: f64,
     y: f64,
-    img: &PyAny,
+    img: Bound<'py, PyAny>,
     u: f64,
     v: f64,
     w: f64,
@@ -135,10 +139,11 @@ fn blt(
 }
 
 #[pyfunction]
-fn bltm(
+#[pyo3(signature = (x, y, tm, u, v, w, h, colkey=None))]
+fn bltm<'py>(
     x: f64,
     y: f64,
-    tm: &PyAny,
+    tm: Bound<'py, PyAny>,
     u: f64,
     v: f64,
     w: f64,
@@ -176,7 +181,7 @@ fn tilemap(tm: u32) -> Tilemap {
     Tilemap::wrap(pyxel().tilemaps.lock()[tm as usize].clone())
 }
 
-pub fn add_graphics_functions(m: &PyModule) -> PyResult<()> {
+pub fn add_graphics_functions<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(clip, m)?)?;
     m.add_function(wrap_pyfunction!(camera, m)?)?;
     m.add_function(wrap_pyfunction!(pal, m)?)?;

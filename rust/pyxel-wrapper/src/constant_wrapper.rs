@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
+pub fn add_module_constants<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
     macro_rules! add_constant {
         ($name: ident) => {
             m.add(stringify!($name), pyxel::$name)
