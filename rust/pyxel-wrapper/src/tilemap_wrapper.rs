@@ -25,7 +25,7 @@ impl Tilemap {
 #[pymethods]
 impl Tilemap {
     #[new]
-    pub fn new<'py>(width: u32, height: u32, img: Bound<'py, PyAny>) -> PyResult<Self> {
+    pub fn new(width: u32, height: u32, img: Bound<'_, PyAny>) -> PyResult<Self> {
         let imgsrc = cast_pyany! {
             img,
             (u32, { pyxel::ImageSource::Index(img) }),
@@ -59,7 +59,7 @@ impl Tilemap {
     }
 
     #[setter]
-    pub fn set_imgsrc<'py>(&self, img: Bound<'py, PyAny>) -> PyResult<()> {
+    pub fn set_imgsrc(&self, img: Bound<'_, PyAny>) -> PyResult<()> {
         let imgsrc = cast_pyany! {
             img,
             (u32, { pyxel::ImageSource::Index(img) }),
@@ -172,11 +172,11 @@ impl Tilemap {
     }
 
     #[pyo3(signature = (x, y, tm, u, v, w, h, tilekey=None))]
-    pub fn blt<'py>(
+    pub fn blt(
         &self,
         x: f64,
         y: f64,
-        tm: Bound<'py, PyAny>,
+        tm: Bound<'_, PyAny>,
         u: f64,
         v: f64,
         w: f64,
@@ -240,7 +240,7 @@ impl Tilemap {
     }
 }
 
-pub fn add_tilemap_class<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
+pub fn add_tilemap_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Tilemap>()?;
     Ok(())
 }
