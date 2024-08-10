@@ -5,7 +5,7 @@ import pyxel
 
 class TestPyxel(unittest.TestCase):
     def setUpClass():
-        pyxel.init(300, 300, "hoge")
+        pyxel.init(300, 300, title="hoge")
 
     def test_title(self):
         pyxel.title("hoge")
