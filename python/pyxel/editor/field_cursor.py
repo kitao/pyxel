@@ -287,24 +287,34 @@ class FieldCursor:
                 self.paste()
 
             # Ctrl+U: Shift up
-            if pyxel.btnp(pyxel.KEY_U, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            if pyxel.btnp(
+                pyxel.KEY_U, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+            ):
                 self.shift(1)
 
             # Ctrl+D: Shift down
-            if pyxel.btnp(pyxel.KEY_D, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            if pyxel.btnp(
+                pyxel.KEY_D, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+            ):
                 self.shift(-1)
             return
 
         with_select_key = pyxel.btn(pyxel.KEY_SHIFT)
-        if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+        if pyxel.btnp(pyxel.KEY_LEFT, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME):
             self.move_left(with_select_key)
-        if pyxel.btnp(pyxel.KEY_RIGHT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+        if pyxel.btnp(
+            pyxel.KEY_RIGHT, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+        ):
             self.move_right(with_select_key)
-        if pyxel.btnp(pyxel.KEY_UP, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+        if pyxel.btnp(pyxel.KEY_UP, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME):
             self.move_up(with_select_key)
-        if pyxel.btnp(pyxel.KEY_DOWN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+        if pyxel.btnp(pyxel.KEY_DOWN, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME):
             self.move_down(with_select_key)
-        if pyxel.btnp(pyxel.KEY_BACKSPACE, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+        if pyxel.btnp(
+            pyxel.KEY_BACKSPACE, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+        ):
             self.backspace()
-        if pyxel.btnp(pyxel.KEY_DELETE, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+        if pyxel.btnp(
+            pyxel.KEY_DELETE, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+        ):
             self.delete()
