@@ -43,9 +43,9 @@ impl Channel {
     }
 
     #[pyo3(signature = (snd, *, tick=None, r#loop=None, resume=None))]
-    pub fn play<'py>(
+    pub fn play(
         &self,
-        snd: Bound<'py, PyAny>,
+        snd: Bound<'_, PyAny>,
         tick: Option<u32>,
         r#loop: Option<bool>,
         resume: Option<bool>,
@@ -79,7 +79,7 @@ impl Channel {
     }
 }
 
-pub fn add_channel_class<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
+pub fn add_channel_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Channel>()?;
     Ok(())
 }
