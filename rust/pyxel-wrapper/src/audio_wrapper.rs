@@ -13,9 +13,9 @@ static MUSIC_ONCE: Once = Once::new();
 
 #[pyfunction]
 #[pyo3(signature = (ch, snd, *, tick=None, r#loop=None, resume=None))]
-fn play<'py>(
+fn play(
     ch: u32,
-    snd: Bound<'py, PyAny>,
+    snd: Bound<'_, PyAny>,
     tick: Option<u32>,
     r#loop: Option<bool>,
     resume: Option<bool>,
@@ -81,7 +81,7 @@ fn music(msc: u32) -> Music {
     Music::wrap(pyxel().musics.lock()[msc as usize].clone())
 }
 
-pub fn add_audio_functions<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
+pub fn add_audio_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(play, m)?)?;
     m.add_function(wrap_pyfunction!(playm, m)?)?;
     m.add_function(wrap_pyfunction!(stop, m)?)?;

@@ -163,11 +163,11 @@ impl Image {
     }
 
     #[pyo3(signature = (x, y, img, u, v, w, h, colkey=None))]
-    pub fn blt<'py>(
+    pub fn blt(
         &self,
         x: f64,
         y: f64,
-        img: Bound<'py, PyAny>,
+        img: Bound<'_, PyAny>,
         u: f64,
         v: f64,
         w: f64,
@@ -186,11 +186,11 @@ impl Image {
     }
 
     #[pyo3(signature = (x, y, tm, u, v, w, h, colkey=None))]
-    pub fn bltm<'py>(
+    pub fn bltm(
         &self,
         x: f64,
         y: f64,
-        tm: Bound<'py, PyAny>,
+        tm: Bound<'_, PyAny>,
         u: f64,
         v: f64,
         w: f64,
@@ -213,7 +213,7 @@ impl Image {
     }
 }
 
-pub fn add_image_class<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
+pub fn add_image_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Image>()?;
     Ok(())
 }

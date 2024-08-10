@@ -34,7 +34,7 @@ mod variable_wrapper;
 use pyo3::prelude::*;
 
 #[pymodule]
-fn pyxel_wrapper<'py>(_py: Python, m: Bound<'py, PyModule>) -> PyResult<()> {
+fn pyxel_wrapper(_py: Python, m: Bound<'_, PyModule>) -> PyResult<()> {
     crate::image_wrapper::add_image_class(&m)?;
     crate::tilemap_wrapper::add_tilemap_class(&m)?;
     crate::channel_wrapper::add_channel_class(&m)?;
