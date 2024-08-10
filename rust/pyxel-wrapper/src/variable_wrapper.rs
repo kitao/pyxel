@@ -91,7 +91,7 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
     Ok(value)
 }
 
-pub fn add_module_variables<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
+pub fn add_module_variables(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Colors>()?;
     m.add_function(wrap_pyfunction!(__getattr__, m)?)?;
     Ok(())
