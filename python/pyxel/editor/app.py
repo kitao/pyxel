@@ -197,13 +197,13 @@ class App(Widget):
 
             # Ctrl+Z: Undo
             if self._editor.can_undo and pyxel.btnp(
-                pyxel.KEY_Z, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+                pyxel.KEY_Z, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
             ):
                 self._undo_button.is_pressed_var = True
 
             # Ctrl+Y: Redo
             elif self._editor.can_redo and pyxel.btnp(
-                pyxel.KEY_Y, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+                pyxel.KEY_Y, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
             ):
                 self._redo_button.is_pressed_var = True
 

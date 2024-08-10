@@ -72,21 +72,25 @@ class SoundField(Widget):
         value = None
         if cursor_y == 1:
             for i in range(4):
-                if pyxel.btnp(TONE_KEY_TABLE[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+                if pyxel.btnp(
+                    TONE_KEY_TABLE[i], hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+                ):
                     value = i
                     break
         elif cursor_y == 2:
             for i in range(8):
                 key = pyxel.KEY_0 if i == 0 else pyxel.KEY_1 + i - 1
-                if pyxel.btnp(key, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME) or pyxel.btnp(
-                    key, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
-                ):
+                if pyxel.btnp(
+                    key, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+                ) or pyxel.btnp(key, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME):
                     value = i
                     break
         elif cursor_y == 3:
             for i in range(6):
                 if pyxel.btnp(
-                    EFFECT_KEY_TABLE[i], WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME
+                    EFFECT_KEY_TABLE[i],
+                    hold=WIDGET_HOLD_TIME,
+                    repeat=WIDGET_REPEAT_TIME,
                 ):
                     value = i
                     break

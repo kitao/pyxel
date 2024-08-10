@@ -104,8 +104,12 @@ class PianoRoll(Widget):
         if self.field_cursor.y > 0 or self.is_playing_var:
             return
         if (
-            pyxel.btnp(pyxel.KEY_RETURN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME)
-            or pyxel.btnp(pyxel.KEY_KP_ENTER, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME)
+            pyxel.btnp(
+                pyxel.KEY_RETURN, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+            )
+            or pyxel.btnp(
+                pyxel.KEY_KP_ENTER, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+            )
         ) and self.note_var is not None:
             self.field_cursor.insert(self.note_var)
 
