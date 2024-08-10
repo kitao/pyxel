@@ -6,7 +6,7 @@ use std::str;
 
 use tar::Archive;
 
-const SDL2_VERSION: &str = "2.24.2"; // Emscripten 3.1.53 uses SDL 2.24.2
+const SDL2_VERSION: &str = "2.28.4"; // Emscripten 3.1.61 uses SDL 2.28.4
 
 struct SDL2BindingsBuilder {
     target: String,
@@ -61,35 +61,6 @@ impl SDL2BindingsBuilder {
                 std::fs::remove_dir_all(&self.sdl2_dir).expect("Failed to remove SDL2 directory");
             }
             panic!("Failed to extract SDL2 source code");
-        }
-
-        // Patch SDL2 for macOS Sonoma
-        if self.target_os == "darwin" {
-            let patch_target_path = format!(
-                "{}/SDL2-{}/src/video/cocoa/SDL_cocoaevents.m",
-                self.out_dir, SDL2_VERSION
-            );
-            let function_name = "applicationSupportsSecureRestorableState";
-            let function_exists = Command::new("sh")
-                .arg("-c")
-                .arg(format!("grep -q '{}' {}", function_name, patch_target_path))
-                .status()
-                .expect("Failed to execute grep command");
-            if !function_exists.success() {
-                let patch_code = format!(
-                    "- (BOOL){}:(NSApplication *)app {{ return YES; }}",
-                    function_name
-                );
-                let status = Command::new("sh")
-                    .arg("-c")
-                    .arg(format!(
-                        "sed -i '' '310i\\\n{}' {}",
-                        patch_code, patch_target_path
-                    ))
-                    .status()
-                    .expect("Failed to execute sed command");
-                assert!(status.success(), "Failed to patch SDL2");
-            }
         }
     }
 
@@ -170,8 +141,7 @@ impl SDL2BindingsBuilder {
             include_flags.push(format!("-I{}/include", self.sdl2_dir));
         } else if self.target_os == "emscripten" {
             let output = Command::new("emcc")
-                .args(["--cflags", "-s", "USE_SDL=2"])
-                //.args(["--cflags", "--use-port=sdl2"])
+                .args(["--cflags", "--use-port=sdl2"])
                 .output()
                 .expect("Failed to execute emcc");
             let cflags = str::from_utf8(&output.stdout).unwrap();

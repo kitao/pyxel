@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.1.8
+
+- Updated the Emscripten to version 3.1.61
+- Updated the SDL2 to version 2.28.4
+
 ## 2.1.7
 
 - Modified a help messages in the Pyxel Editor
