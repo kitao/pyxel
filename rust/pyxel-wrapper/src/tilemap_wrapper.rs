@@ -25,7 +25,7 @@ impl Tilemap {
 #[pymethods]
 impl Tilemap {
     #[new]
-    pub fn new(width: u32, height: u32, img: &PyAny) -> PyResult<Self> {
+    pub fn new<'py>(width: u32, height: u32, img: Bound<'py, PyAny>) -> PyResult<Self> {
         let imgsrc = cast_pyany! {
             img,
             (u32, { pyxel::ImageSource::Index(img) }),
@@ -59,7 +59,7 @@ impl Tilemap {
     }
 
     #[setter]
-    pub fn set_imgsrc(&self, img: &PyAny) -> PyResult<()> {
+    pub fn set_imgsrc<'py>(&self, img: Bound<'py, PyAny>) -> PyResult<()> {
         let imgsrc = cast_pyany! {
             img,
             (u32, { pyxel::ImageSource::Index(img) }),
@@ -76,8 +76,8 @@ impl Tilemap {
             inner.width() * inner.height(),
             inner.data_ptr()
         );
-        let locals = pyo3::types::PyDict::new(py);
-        py.run(&python_code, None, Some(locals)).unwrap();
+        let locals = pyo3::types::PyDict::new_bound(py);
+        py.run_bound(&python_code, None, Some(&locals)).unwrap();
         locals.get_item("c_uint8_array").unwrap().to_object(py)
     }
 
@@ -89,6 +89,7 @@ impl Tilemap {
         self.inner.lock().load(x, y, filename, layer);
     }
 
+    #[pyo3(signature = (x=None, y=None, w=None, h=None))]
     pub fn clip(
         &self,
         x: Option<f64>,
@@ -106,6 +107,7 @@ impl Tilemap {
         Ok(())
     }
 
+    #[pyo3(signature = (x=None, y=None))]
     pub fn camera(&self, x: Option<f64>, y: Option<f64>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
             self.inner.lock().camera(x, y);
@@ -169,11 +171,12 @@ impl Tilemap {
         self.inner.lock().fill(x, y, tile);
     }
 
-    pub fn blt(
+    #[pyo3(signature = (x, y, tm, u, v, w, h, tilekey=None))]
+    pub fn blt<'py>(
         &self,
         x: f64,
         y: f64,
-        tm: &PyAny,
+        tm: Bound<'py, PyAny>,
         u: f64,
         v: f64,
         w: f64,
@@ -237,7 +240,7 @@ impl Tilemap {
     }
 }
 
-pub fn add_tilemap_class(m: &PyModule) -> PyResult<()> {
+pub fn add_tilemap_class<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
     m.add_class::<Tilemap>()?;
     Ok(())
 }

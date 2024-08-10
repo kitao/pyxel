@@ -42,10 +42,10 @@ impl Channel {
         self.inner.lock().detune = detune;
     }
 
-    #[pyo3(text_signature = "($self, snd, *, tick, loop, resume)")]
-    pub fn play(
+    #[pyo3(signature = (snd, *, tick=None, r#loop=None, resume=None))]
+    pub fn play<'py>(
         &self,
-        snd: &PyAny,
+        snd: Bound<'py, PyAny>,
         tick: Option<u32>,
         r#loop: Option<bool>,
         resume: Option<bool>,
@@ -79,7 +79,7 @@ impl Channel {
     }
 }
 
-pub fn add_channel_class(m: &PyModule) -> PyResult<()> {
+pub fn add_channel_class<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
     m.add_class::<Channel>()?;
     Ok(())
 }

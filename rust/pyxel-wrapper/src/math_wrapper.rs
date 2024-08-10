@@ -58,13 +58,14 @@ fn nseed(seed: u32) {
 }
 
 #[pyfunction]
+#[pyo3(signature = (x, y=None, z=None))]
 fn noise(x: f64, y: Option<f64>, z: Option<f64>) -> f64 {
     let y = y.unwrap_or(0.0);
     let z = z.unwrap_or(0.0);
     pyxel().noise(x, y, z)
 }
 
-pub fn add_math_functions(m: &PyModule) -> PyResult<()> {
+pub fn add_math_functions<'py>(m: &Bound<PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(ceil, m)?)?;
     m.add_function(wrap_pyfunction!(floor, m)?)?;
     m.add_function(wrap_pyfunction!(sgn, m)?)?;
