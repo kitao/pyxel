@@ -114,7 +114,7 @@ fn process_exists(pid: u32) -> bool {
     system.process(Pid::from_u32(pid)).is_some()
 }
 
-pub fn add_system_functions<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
+pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(init, m)?)?;
     m.add_function(wrap_pyfunction!(run, m)?)?;
     m.add_function(wrap_pyfunction!(show, m)?)?;

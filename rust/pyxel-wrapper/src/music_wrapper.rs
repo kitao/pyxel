@@ -81,7 +81,7 @@ impl Music {
     }
 }
 
-pub fn add_music_class<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
+pub fn add_music_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Seqs>()?;
     m.add_class::<Music>()?;
     Ok(())
