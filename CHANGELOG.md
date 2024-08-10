@@ -5,6 +5,7 @@
 - Updated the Emscripten to version 3.1.61
 - Updated the SDL2 to version 2.28.4
 - Updated the PyO3 to version 0.22
+- Fixed keyword-only arguments functionality
 
 ## 2.1.7
 
