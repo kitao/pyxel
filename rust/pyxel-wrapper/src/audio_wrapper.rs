@@ -12,10 +12,10 @@ static SOUND_ONCE: Once = Once::new();
 static MUSIC_ONCE: Once = Once::new();
 
 #[pyfunction]
-#[pyo3(text_signature = "(ch, snd, *, tick, loop, resume)")]
-fn play(
+#[pyo3(signature = (ch, snd, *, tick=None, r#loop=None, resume=None))]
+fn play<'py>(
     ch: u32,
-    snd: &PyAny,
+    snd: Bound<'py, PyAny>,
     tick: Option<u32>,
     r#loop: Option<bool>,
     resume: Option<bool>,
@@ -34,12 +34,13 @@ fn play(
 }
 
 #[pyfunction]
-#[pyo3(text_signature = "(msc, *, tick, loop)")]
+#[pyo3(signature = (msc, *, tick=None, r#loop=None))]
 fn playm(msc: u32, tick: Option<u32>, r#loop: Option<bool>) {
     pyxel().playm(msc, tick, r#loop.unwrap_or(false));
 }
 
 #[pyfunction]
+#[pyo3(signature = (ch=None))]
 fn stop(ch: Option<u32>) {
     ch.map_or_else(
         || {
@@ -80,7 +81,7 @@ fn music(msc: u32) -> Music {
     Music::wrap(pyxel().musics.lock()[msc as usize].clone())
 }
 
-pub fn add_audio_functions(m: &PyModule) -> PyResult<()> {
+pub fn add_audio_functions<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(play, m)?)?;
     m.add_function(wrap_pyfunction!(playm, m)?)?;
     m.add_function(wrap_pyfunction!(stop, m)?)?;
