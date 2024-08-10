@@ -178,7 +178,9 @@ class Widget:
         if self.is_hit(x, y):
             self.trigger_event("mouse_hover", x, y)
 
-        if pyxel.btnp(capture_info.key, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+        if pyxel.btnp(
+            capture_info.key, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+        ):
             self.trigger_event("mouse_repeat", capture_info.key, x, y)
 
         if pyxel.btnr(capture_info.key):

@@ -449,13 +449,21 @@ class CanvasPanel(Widget):
 
         # Move tile focus
         if self._is_tilemap_mode and pyxel.btn(pyxel.KEY_SHIFT):
-            if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            if pyxel.btnp(
+                pyxel.KEY_LEFT, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+            ):
                 self.tile_x_var -= 1
-            if pyxel.btnp(pyxel.KEY_RIGHT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            if pyxel.btnp(
+                pyxel.KEY_RIGHT, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+            ):
                 self.tile_x_var += 1
-            if pyxel.btnp(pyxel.KEY_UP, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            if pyxel.btnp(
+                pyxel.KEY_UP, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+            ):
                 self.tile_y_var -= 1
-            if pyxel.btnp(pyxel.KEY_DOWN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            if pyxel.btnp(
+                pyxel.KEY_DOWN, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+            ):
                 self.tile_y_var += 1
 
         # Move target focus
@@ -465,13 +473,21 @@ class CanvasPanel(Widget):
             or pyxel.btn(pyxel.KEY_ALT)
             or pyxel.btn(pyxel.KEY_GUI)
         ):
-            if pyxel.btnp(pyxel.KEY_LEFT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            if pyxel.btnp(
+                pyxel.KEY_LEFT, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+            ):
                 self.focus_x_var -= 1
-            if pyxel.btnp(pyxel.KEY_RIGHT, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            if pyxel.btnp(
+                pyxel.KEY_RIGHT, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+            ):
                 self.focus_x_var += 1
-            if pyxel.btnp(pyxel.KEY_UP, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            if pyxel.btnp(
+                pyxel.KEY_UP, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+            ):
                 self.focus_y_var -= 1
-            if pyxel.btnp(pyxel.KEY_DOWN, WIDGET_HOLD_TIME, WIDGET_REPEAT_TIME):
+            if pyxel.btnp(
+                pyxel.KEY_DOWN, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME
+            ):
                 self.focus_y_var += 1
 
     def __on_draw(self):
