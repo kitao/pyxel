@@ -101,12 +101,16 @@ impl Pyxel {
         );
     }
 
-    pub(crate) fn reset_input_states(&mut self) {
+    pub(crate) fn start_input_frame(&mut self) {
         self.input.key_values.insert(MOUSE_WHEEL_X, 0);
         self.input.key_values.insert(MOUSE_WHEEL_Y, 0);
         self.mouse_wheel = 0;
         self.input_text = String::new();
         self.dropped_files.clear();
+    }
+
+    pub(crate) fn reset_key(&mut self, key: Key) {
+        self.input.key_states.remove(&key);
     }
 
     pub(crate) fn press_key(&mut self, key: Key) {

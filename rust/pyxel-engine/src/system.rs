@@ -158,7 +158,7 @@ impl Pyxel {
     }
 
     fn process_events(&mut self) {
-        self.reset_input_states();
+        self.start_input_frame();
         let events = pyxel_platform::poll_events();
         for event in events {
             match event {
@@ -194,29 +194,38 @@ impl Pyxel {
 
     fn check_special_input(&mut self) {
         if self.btnp(self.system.quit_key, None, None) {
+            self.reset_key(self.system.quit_key);
             self.quit();
         } else if self.btn(KEY_ALT) {
             if self.btn(KEY_SHIFT) {
                 if self.btnp(KEY_0, None, None) {
+                    self.reset_key(KEY_0);
                     self.dump_palette();
                 } else {
                     for i in 0..=8 {
                         if self.btnp(KEY_1 + i, None, None) {
+                            self.reset_key(KEY_1 + i);
                             self.dump_image_bank(i);
                         }
                     }
                 }
             } else if self.btnp(KEY_0, None, None) {
+                self.reset_key(KEY_0);
                 self.system.perf_monitor_enabled = !self.system.perf_monitor_enabled;
             } else if self.btnp(KEY_1, None, None) {
+                self.reset_key(KEY_1);
                 self.screenshot(None);
             } else if self.btnp(KEY_2, None, None) {
+                self.reset_key(KEY_2);
                 self.reset_screencast();
             } else if self.btnp(KEY_3, None, None) {
+                self.reset_key(KEY_3);
                 self.screencast(None);
             } else if self.btnp(KEY_9, None, None) {
+                self.reset_key(KEY_9);
                 self.system.screen_mode = (self.system.screen_mode + 1) % NUM_SCREEN_TYPES;
             } else if self.btnp(KEY_RETURN, None, None) {
+                self.reset_key(KEY_RETURN);
                 self.fullscreen(!pyxel_platform::is_fullscreen());
             }
         }
