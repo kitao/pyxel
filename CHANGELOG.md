@@ -4,6 +4,7 @@
 
 - Updated the required Python version to 3.8 or higher
 - Changed to avoid using the gil-refs feature in the PyO3 crate
+- Changed to prevent key state changes during special inputs
 
 ## 2.1.8
 
