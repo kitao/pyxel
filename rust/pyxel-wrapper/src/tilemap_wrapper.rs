@@ -81,8 +81,9 @@ impl Tilemap {
         locals.get_item("c_uint8_array").unwrap().to_object(py)
     }
 
-    pub fn set(&mut self, x: i32, y: i32, data: Vec<&str>) {
-        self.inner.lock().set(x, y, &data);
+    pub fn set(&mut self, x: i32, y: i32, data: Vec<String>) {
+        let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
+        self.inner.lock().set(x, y, &data_refs);
     }
 
     pub fn load(&self, x: i32, y: i32, filename: &str, layer: u32) {
