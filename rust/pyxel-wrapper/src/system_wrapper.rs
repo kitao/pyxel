@@ -93,8 +93,9 @@ fn title(title: &str) {
 
 #[pyfunction]
 #[pyo3(signature = (data, scale, colkey=None))]
-fn icon(data: Vec<&str>, scale: u32, colkey: Option<pyxel::Color>) {
-    pyxel().icon(&data, scale, colkey);
+fn icon(data: Vec<String>, scale: u32, colkey: Option<pyxel::Color>) {
+    let data_refs: Vec<_> = data.iter().map(String::as_str).collect();
+    pyxel().icon(&data_refs, scale, colkey);
 }
 
 #[pyfunction]
