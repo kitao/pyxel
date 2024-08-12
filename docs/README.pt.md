@@ -64,7 +64,7 @@ Pyxel é open source e livre para utilização. Vamos começar fazendo um jogo r
 
 ### Windows
 
-Após instalar o [Python3](https://www.python.org/) (versão 3.7 ou superior), execute o seguinte comando:
+Após instalar o [Python3](https://www.python.org/) (versão 3.8 ou superior), execute o seguinte comando:
 
 ```sh
 pip install -U pyxel
@@ -86,7 +86,7 @@ Para atualizar a versão após a instalação do Pyxel, execute `pipx upgrade py
 
 ### Linux
 
-Após instalar o pacote SDL2 (`libsdl2-dev` no Ubuntu), [Python3](https://www.python.org/) (versão 3.7 ou superior), e `python3-pip`, execute o seguinte comando:
+Após instalar o pacote SDL2 (`libsdl2-dev` no Ubuntu), [Python3](https://www.python.org/) (versão 3.8 ou superior), e `python3-pip`, execute o seguinte comando:
 
 ```sh
 sudo pip3 install -U pyxel

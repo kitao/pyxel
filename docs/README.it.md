@@ -64,7 +64,7 @@ Pyxel è open source e libero da usare. Cominciamo a fare giochi rétro con Pyxe
 
 ### Windows
 
-Dopo aver installato [Python3](https://www.python.org/) (versione 3.7 o superiore), eseguire il seguente comando:
+Dopo aver installato [Python3](https://www.python.org/) (versione 3.8 o superiore), eseguire il seguente comando:
 
 ```sh
 pip install -U pyxel
@@ -86,7 +86,7 @@ Per aggiornare la versione dopo l'installazione di Pyxel, eseguire `pipx upgrade
 
 ### Linux
 
-Dopo aver installato il pacchetto SDL2 (`libsdl2-dev` per Ubuntu), [Python3](https://www.python.org/) (versione 3.7 o superiore), e `python3-pip`, eseguire il seguente comando:
+Dopo aver installato il pacchetto SDL2 (`libsdl2-dev` per Ubuntu), [Python3](https://www.python.org/) (versione 3.8 o superiore), e `python3-pip`, eseguire il seguente comando:
 
 ```sh
 sudo pip3 install -U pyxel

@@ -64,7 +64,7 @@ Pyxel 是开源的，大家可以免费使用。现在就让我们一起用 Pyxe
 
 ### Windows
 
-在安装[Python3](https://www.python.org/) (3.7 或更高版本) 之后，执行以下命令：
+在安装[Python3](https://www.python.org/) (3.8 或更高版本) 之后，执行以下命令：
 
 ```sh
 pip install -U pyxel
@@ -86,7 +86,7 @@ pipx install pyxel
 
 ### Linux
 
-安装 SDL2 (Ubuntu 下包名为：`libsdl2-dev`)，[Python3](https://www.python.org/) (3.7 或更高版本)，以及`python3-pip`这三个包之后，执行以下命令：
+安装 SDL2 (Ubuntu 下包名为：`libsdl2-dev`)，[Python3](https://www.python.org/) (3.8 或更高版本)，以及`python3-pip`这三个包之后，执行以下命令：
 
 ```sh
 sudo pip3 install -U pyxel
