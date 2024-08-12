@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.1.9
+
+- Updated the required Python version to 3.8 or higher
+
 ## 2.1.8
 
 - Updated the Emscripten to version 3.1.61
@@ -1009,7 +1013,7 @@
 
 ## 0.8.9
 
-- Fixed the tilemap to allow the tiles of #256 or higher
+- Fixed the tilemap to allow the tiles of 256 or higher
 - Updated the screenshots of Pyxel Editor
 - Fixed the cursor movement of Sound/Music Editor
 - Changed the caption of Example 2

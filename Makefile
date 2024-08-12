@@ -6,7 +6,7 @@
 #	- make
 #	- cmake
 #	- rustup
-#	- python 3.7+
+#	- python 3.8+
 #
 #	[Windows]
 #	- Git Bash
