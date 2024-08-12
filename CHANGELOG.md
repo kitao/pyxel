@@ -3,6 +3,7 @@
 ## 2.1.9
 
 - Updated the required Python version to 3.8 or higher
+- Changed to avoid using the gil-refs feature in the PyO3 crate
 
 ## 2.1.8
 
