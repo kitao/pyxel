@@ -64,7 +64,7 @@ Pyxel은 오픈 소스로, 무료로 자유롭게 사용할 수 있습니다. Py
 
 ### Windows
 
-[Python3](https://www.python.org/) (버전 3.7 이상) 을 설치한 후, 다음 명령어를 실행합니다.
+[Python3](https://www.python.org/) (버전 3.8 이상) 을 설치한 후, 다음 명령어를 실행합니다.
 
 ```sh
 pip install -U pyxel
@@ -86,7 +86,7 @@ pipx install pyxel
 
 ### Linux
 
-SDL2 패키지 (Ubuntu의 경우 `libsdl2-dev`), [Python3](https://www.python.org/) (버전 3.7 이상), `python3-pip`를 설치한 후, 다음 명령어를 실행합니다.
+SDL2 패키지 (Ubuntu의 경우 `libsdl2-dev`), [Python3](https://www.python.org/) (버전 3.8 이상), `python3-pip`를 설치한 후, 다음 명령어를 실행합니다.
 
 ```sh
 sudo pip3 install -U pyxel

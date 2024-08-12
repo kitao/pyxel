@@ -64,7 +64,7 @@ Pyxel ist quelloffen und kostenlos zu verwenden. Fang an, ein Retro-Spiel mit Py
 
 ### Windows
 
-Nach der Installation von [Python3](https://www.python.org/) (Version 3.7 oder höher), führe folgenden Befehl aus:
+Nach der Installation von [Python3](https://www.python.org/) (Version 3.8 oder höher), führe folgenden Befehl aus:
 
 ```sh
 pip install -U pyxel
@@ -86,7 +86,7 @@ Um die Version nach der Installation von Pyxel zu aktualisieren, führen Sie `pi
 
 ### Linux
 
-Nach der Installation des SDL2-Packages (`libsdl2-dev` für Ubuntu), [Python3](https://www.python.org/) (version 3.7 oder höher) und `python3-pip`, führe folgenden Befehl aus:
+Nach der Installation des SDL2-Packages (`libsdl2-dev` für Ubuntu), [Python3](https://www.python.org/) (version 3.8 oder höher) und `python3-pip`, führe folgenden Befehl aus:
 
 ```sh
 sudo pip3 install -U pyxel

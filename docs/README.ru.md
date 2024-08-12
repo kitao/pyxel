@@ -64,7 +64,7 @@ Pyxel -- программа с открытым кодом и бесплатна
 
 ### Windows
 
-После установки [Python3](https://www.python.org/) (версии 3.7 или выше) необходимо выполнить следующую команду:
+После установки [Python3](https://www.python.org/) (версии 3.8 или выше) необходимо выполнить следующую команду:
 
 ```sh
 pip install -U pyxel
@@ -86,7 +86,7 @@ pipx install pyxel
 
 ### Linux
 
-После установки пакета SDL2 (`libsdl2-dev` для Ubuntu), [Python3](https://www.python.org/) (версии 3.7 или выше) и `python3-pip` выполните следующую команду:
+После установки пакета SDL2 (`libsdl2-dev` для Ubuntu), [Python3](https://www.python.org/) (версии 3.8 или выше) и `python3-pip` выполните следующую команду:
 
 ```sh
 sudo pip3 install -U pyxel
