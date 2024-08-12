@@ -64,7 +64,7 @@ Pyxel はオープンソースで、無料で自由に使えます。Pyxel で�
 
 ### Windows
 
-[Python3](https://www.python.org/) (バージョン 3.7 以上) をインストールした後に、次のコマンドを実行します。
+[Python3](https://www.python.org/) (バージョン 3.8 以上) をインストールした後に、次のコマンドを実行します。
 
 ```sh
 pip install -U pyxel
@@ -86,7 +86,7 @@ Pyxel インストール後にバージョンを更新する場合は、`pipx up
 
 ### Linux
 
-SDL2 パッケージ (Ubuntu の場合は`libsdl2-dev`)、[Python3](https://www.python.org/) (バージョン 3.7 以上)、`python3-pip`をインストールした後に、次のコマンドを実行します。
+SDL2 パッケージ (Ubuntu の場合は`libsdl2-dev`)、[Python3](https://www.python.org/) (バージョン 3.8 以上)、`python3-pip`をインストールした後に、次のコマンドを実行します。
 
 ```sh
 sudo pip3 install -U pyxel

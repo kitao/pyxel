@@ -38,7 +38,7 @@ Pyxel'in geliştirilmesinin motivasyonu kullanıcıların geri bildirimleridir. 
 </a>
 </p>
 
-Pyxel, [PICO-8](https://www.lexaloffle.com/pico-8.php) ve [TIC-80](https://tic80.com/) gibi retro oyun motorlarından esinlenerek tasarlanmıştır. 
+Pyxel, [PICO-8](https://www.lexaloffle.com/pico-8.php) ve [TIC-80](https://tic80.com/) gibi retro oyun motorlarından esinlenerek tasarlanmıştır.
 
 Pyxel tamamen ücretsiz ve açık kaynaklıdır. Haydi, Pyxel ile birlikte retro bir oyun yapalım!
 
@@ -64,7 +64,7 @@ Pyxel tamamen ücretsiz ve açık kaynaklıdır. Haydi, Pyxel ile birlikte retro
 
 ### Windows
 
-[Python3](https://www.python.org/) (sürüm 3.7 veya daha üstü) kurduktan sonra, aşağıdaki komutu çalıştırın:
+[Python3](https://www.python.org/) (sürüm 3.8 veya daha üstü) kurduktan sonra, aşağıdaki komutu çalıştırın:
 
 ```sh
 pip install -U pyxel
@@ -86,7 +86,7 @@ Pyxel'i kurduktan sonra sürümü güncellemek için pipx upgrade pyxel komutunu
 
 ### Linux
 
-SDL2 paketini (`libsdl2-dev` Ubuntu için), [Python3](https://www.python.org/) (sürüm 3.7 veya daha üstü) ve `python3-pip` kurduktan sonra, aşağıdaki komutu çalıştırın:
+SDL2 paketini (`libsdl2-dev` Ubuntu için), [Python3](https://www.python.org/) (sürüm 3.8 veya daha üstü) ve `python3-pip` kurduktan sonra, aşağıdaki komutu çalıştırın:
 
 ```sh
 sudo pip3 install -U pyxel
@@ -337,6 +337,7 @@ Editörü başlatmak için şu komut kullanılır:
 ```sh
 pyxel edit PYXEL_RESOURCE_FILE
 ```
+
 Belirtilen Pyxel kaynak dosyası (.pyxres) mevcutsa, dosya yüklenir; mevcut değilse belirtilen isimle yeni bir dosya oluşturulur (`my_resource.pyxres` adıyla).
 
 Editör başlatıldıktan sonra, başka bir kaynak dosyasını sürükleyip bırakarak dosya değiştirilebilir.
@@ -411,8 +412,8 @@ Oluşturulan uygulama dosyası aşağıdaki komut ile çalıştırılabilir:
 ```sh
 pyxel play PYXEL_APP_FILE
 ```
-Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları ile bir yürütülebilir dosyaya veya HTML dosyasına dönüştürülebilir.
 
+Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları ile bir yürütülebilir dosyaya veya HTML dosyasına dönüştürülebilir.
 
 ## API Referansı
 
@@ -426,7 +427,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 
 - `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
   Pyxel uygulamasını ekran boyutu (`width`, `height`) ile başlatır. İsteğe bağlı olarak aşağıdaki seçenekler belirtilebilir: pencere başlığı `title`, kare hızı `fps`, uygulamadan çıkış için kullanılacak tuş `quit_key`, ekran görüntüsü ölçeği `display_scale`, yakalama ölçeği `capture_scale`, ve ekran videosu maksimum kayıt süresi `capture_sec`.<br>
-    Örnek: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
+  Örnek: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
   Pyxel uygulamasını başlatır ve her kare için `update` fonksiyonunu, ekrana çizim için `draw` fonksiyonunu çağırır.
@@ -454,17 +455,16 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Fare tekerleğinin mevcut değeri
 
 - `btn(key)`<br>
-   `key` tuşu basılıysa `True` döndürür, aksi takdirde `False`. ([Tuş tanımı listesi](https://github.com/kitao/pyxel/blob/main//python/pyxel/__init__.pyi))
+  `key` tuşu basılıysa `True` döndürür, aksi takdirde `False`. ([Tuş tanımı listesi](https://github.com/kitao/pyxel/blob/main//python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
   `key` tuşu o karede basılıysa `True` döndürür. `hold` ve `repeat` belirtilmişse, `key` tuşu `hold` kare süresinden uzun süre basılı tutulduğunda `repeat` kare aralığında `True` döner.
 
 - `btnr(key)`<br>
-   `key` tuşu o karede bırakıldıysa `True` döndürür.
+  `key` tuşu o karede bırakıldıysa `True` döndürür.
 
 - `mouse(visible)`<br>
   Eğer `visible` `True` ise fare imleci gösterilir. `False` ise gizlenir. Fare imleci gösterilmiyor olsa bile konumu güncellenir.
-
 
 ### Grafikler
 
@@ -607,75 +607,74 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 - `width`, `height` <br>
   Resmin genişliği ve yüksekliği
 
-- `set(x, y, data)`<br>  
-  (`x`, `y`) konumundaki resmi bir dizi string ile ayarlar.  
+- `set(x, y, data)`<br>
+  (`x`, `y`) konumundaki resmi bir dizi string ile ayarlar.
   Örneğin: `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
-- `load(x, y, filename)`<br>  
-Resim dosyasını (PNG/GIF/JPEG) (`x`, `y`) konumuna yükler.
+- `load(x, y, filename)`<br>
+  Resim dosyasını (PNG/GIF/JPEG) (`x`, `y`) konumuna yükler.
 
-- `pget(x, y)`<br>  
+- `pget(x, y)`<br>
   (`x`, `y`) konumundaki piksel rengini alır.
 
-- `pset(x, y, col)`<br>  
+- `pset(x, y, col)`<br>
   (`x`, `y`) konumuna `col` renkli bir piksel çizer.
 
 ### Tilemap Sınıfı
 
-- `width`, `height`<br>  
+- `width`, `height`<br>
   Tilemap'in genişliği ve yüksekliği
 
-- `imgsrc`<br>  
+- `imgsrc`<br>
   Tilemap tarafından referans alınan resim seti (0-2)
 
-- `set(x, y, data)`<br>  
-  (`x`, `y`) konumundaki tilemap'i bir dizi string ile ayarlar.  
+- `set(x, y, data)`<br>
+  (`x`, `y`) konumundaki tilemap'i bir dizi string ile ayarlar.
   Örneğin: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
-- `load(x, y, filename, layer)`<br>  
+- `load(x, y, filename, layer)`<br>
   `layer`(0-) sırasında çizim sırasındaki katmanı belirterek (`x`, `y`) konumundaki TMX dosyasından (Tiled Harita Dosyası) katmanı yükler.
 
-- `pget(x, y)`<br>  
+- `pget(x, y)`<br>
   (`x`, `y`) konumundaki tile'ı alır. Bir tile, `(tile_x, tile_y)` tuple'ıdır.
 
-- `pset(x, y, tile)`<br>  
+- `pset(x, y, tile)`<br>
   (`x`, `y`) konumuna bir `tile` çizer. Bir tile, `(tile_x, tile_y)` tuple'ıdır.
-
 
 ### Ses Sınıfı
 
-- `notes`<br>  
+- `notes`<br>
   Notaların listesi (0-127). Numara ne kadar yüksekse, sesin tonu o kadar yüksek olur ve 33'te 'A2' (440Hz) olur. Geri kalanı -1'dir.
 
-- `tones`<br>  
+- `tones`<br>
   Tonların listesi (0:Dreieck / 1:Quadrat / 2:Puls / 3:Rauschen)
 
-- `volumes`<br>  
+- `volumes`<br>
   Ses düzeylerinin listesi (0-7)
 
-- `effects`<br>  
+- `effects`<br>
   Efektlerin listesi (0:Yok / 1:Kaydırma / 2:Titreme / 3:Sönme / 4:Yarı Sönme / 5:Dörtte Bir Sönme)
 
-- `speed`<br>  
+- `speed`<br>
   Çalma hızı. 1 en hızlısıdır, sayı ne kadar büyükse çalma hızı o kadar yavaş olur. 120'de bir nota uzunluğu 1 saniyeye eşittir.
 
-- `set(notes, tones, volumes, effects, speed)`<br> 
+- `set(notes, tones, volumes, effects, speed)`<br>
   Notaları, tonları, ses düzeylerini ve efektleri bir dize ile ayarlar. Eğer tonlar, ses düzeyleri ve efektler notalardan daha kısa ise, baştan tekrarlanır.
 
-- `set_notes(notes)`<br>  
-  'CDEFGAB'+'#-'+'01234' veya 'R' karakterlerinden oluşan bir dize ile notaları ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.  
+- `set_notes(notes)`<br>
+  'CDEFGAB'+'#-'+'01234' veya 'R' karakterlerinden oluşan bir dize ile notaları ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.
   Örneğin: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
-- `set_tones(tones)`<br>  
-  'TSPN' karakterlerinden oluşan bir dize ile tonları ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.  
+- `set_tones(tones)`<br>
+  'TSPN' karakterlerinden oluşan bir dize ile tonları ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.
   Örneğin: `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
-- `set_volumes(volumes)`<br>  
-  '01234567' karakterlerinden oluşan bir dize ile ses düzeylerini ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.  
+- `set_volumes(volumes)`<br>
+  '01234567' karakterlerinden oluşan bir dize ile ses düzeylerini ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.
   Örneğin: `pyxel.sounds[0].set_volumes("7777 7531")`
 
-- `set_effects(effects)`<br> 
-  'NSVFHQ' karakterlerinden oluşan bir dize ile efektleri ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.  
+- `set_effects(effects)`<br>
+  'NSVFHQ' karakterlerinden oluşan bir dize ile efektleri ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.
   Örneğin: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Müzik Sınıfı
@@ -722,4 +721,3 @@ Pyxel, [MIT Lisansı](https://github.com/kitao/pyxel/blob/main//LICENSE) altınd
 ## Sponsorlar Arıyoruz
 
 Pyxel, GitHub Sponsorlarında sponsor arıyor. Pyxel'in sürekli bakımı ve özellik eklemeleri için sponsorluk düşünün. Sponsorlar, Pyxel hakkında danışmanlık hizmeti gibi avantajlardan yararlanabilirler. Detaylar için [buraya](https://github.com/sponsors/kitao) bakınız.
-

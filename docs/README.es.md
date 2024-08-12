@@ -64,7 +64,7 @@ Pyxel es de código abierto y gratuito. ¡Empecemos haciendo un juego retro con 
 
 ### Windows
 
-Después de instalar [Python3](https://www.python.org/) (versión 3.7 o superior), ejecute el siguiente comando:
+Después de instalar [Python3](https://www.python.org/) (versión 3.8 o superior), ejecute el siguiente comando:
 
 ```sh
 pip install -U pyxel
@@ -86,7 +86,7 @@ Para actualizar la versión después de instalar Pyxel, ejecute `pipx upgrade py
 
 ### Linux
 
-Después de instalar los paquetes SDL2 (`libsdl2-dev` para Ubuntu), [Python3](https://www.python.org/) (versión 3.7 or superior), y `python3-pip`, ejecute el siguiente comando:
+Después de instalar los paquetes SDL2 (`libsdl2-dev` para Ubuntu), [Python3](https://www.python.org/) (versión 3.8 or superior), y `python3-pip`, ejecute el siguiente comando:
 
 ```sh
 sudo pip3 install -U pyxel
