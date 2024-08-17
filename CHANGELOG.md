@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.1.10
+
+- Changed the process for initializing OpenGL/GLES
+
 ## 2.1.9
 
 - Updated the required Python version to 3.8 or higher
