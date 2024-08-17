@@ -209,19 +209,19 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
-<td>第 1 回 Pyxel Jam 優勝ゲーム (<a href="https://twitter.com/helpcomputer0">Adam</a>制作)</td>
+<td>第 1 回 Pyxel Jam 優勝ゲーム (<a href="https://x.com/helpcomputer0">Adam</a>制作)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
 <td><a href="https://github.com/kitao/30SecondsOfDaylight">Code</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
-<td>アーケードボール物理ゲーム (<a href="https://twitter.com/helpcomputer0">Adam</a>制作)</td>
+<td>アーケードボール物理ゲーム (<a href="https://x.com/helpcomputer0">Adam</a>制作)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
 <td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>
-<td>BGM自動作成ツール (<a href="https://twitter.com/frenchbread1222">frenchbread</a>制作)</td>
+<td>BGM自動作成ツール (<a href="https://x.com/frenchbread1222">frenchbread</a>制作)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Demo</a></td>
 <td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Code</a></td>
 </tr>
@@ -712,7 +712,7 @@ Pyxel には「ユーザーを混乱させる可能性がある」「使うた�
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Developer's Twitter account](https://twitter.com/kitao)
+- [Developer's Twitter account](https://x.com/kitao)
 
 ## ライセンス
 

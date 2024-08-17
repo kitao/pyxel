@@ -209,19 +209,19 @@ Kopyalanacak örnekler aşağıdaki gibidir:
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
-<td>1. Pyxel Jam kazanan oyunu <a href="https://twitter.com/helpcomputer0">Adam</a></td>
+<td>1. Pyxel Jam kazanan oyunu <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
 <td><a href="https://github.com/kitao/30SecondsOfDaylight">Code</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
-<td>Arcade top fiziği oyunu <a href="https://twitter.com/helpcomputer0">Adam</a></td>
+<td>Arcade top fiziği oyunu <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
 <td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>
-<td>Arka plan müzik jeneratörü <a href="https://twitter.com/frenchbread1222">frenchbread</a></td>
+<td>Arka plan müzik jeneratörü <a href="https://x.com/frenchbread1222">frenchbread</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Demo</a></td>
 <td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Code</a></td>
 </tr>
@@ -712,7 +712,7 @@ Gönderilen pull request, [MIT Lisansı](https://github.com/kitao/pyxel/blob/mai
 
 - [SSS](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [Kullanıcı Örnekleri](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Geliştiricinin Twitter Hesabı](https://twitter.com/kitao)
+- [Geliştiricinin Twitter Hesabı](https://x.com/kitao)
 
 ## Lisans
 
