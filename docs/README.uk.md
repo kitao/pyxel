@@ -209,19 +209,19 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
-<td>Гра-переможець 1-го Pyxel Jam від <a href="https://twitter.com/helpcomputer0">Adam</a></td>
+<td>Гра-переможець 1-го Pyxel Jam від <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Демо</a></td>
 <td><a href="https://github.com/kitao/30SecondsOfDaylight">Код</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
-<td>Аркадна гра з фізикою м'яча від <a href="https://twitter.com/helpcomputer0">Adam</a></td>
+<td>Аркадна гра з фізикою м'яча від <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Демо</a></td>
 <td><a href="https://github.com/helpcomputer/megaball">Код</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>
-<td>Генератор фонової музики від <a href="https://twitter.com/frenchbread1222">frenchbread</a></td>
+<td>Генератор фонової музики від <a href="https://x.com/frenchbread1222">frenchbread</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Демо</a></td>
 <td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Код</a></td>
 </tr>
@@ -712,7 +712,7 @@ Pyxel має "розширені API", які не згадуються в ць�
 
 - [Питання та відповіді](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [Приклади користувачів](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Twitter-акаунт розробника](https://twitter.com/kitao)
+- [Twitter-акаунт розробника](https://x.com/kitao)
 
 ## Ліцензія
 

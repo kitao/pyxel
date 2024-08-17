@@ -209,19 +209,19 @@ Los ejemplos serán copiados de la siguiente manera:
 </tr>
 <tr>
 <td>30SecondsOfDaylight.pyxapp</td>
-<td>El primer ganador del Jam de Pyxel, por <a href="https://twitter.com/helpcomputer0">Adam</a></td>
+<td>El primer ganador del Jam de Pyxel, por <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
 <td><a href="https://github.com/kitao/30SecondsOfDaylight">Code</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
-<td>Juego arcade de física de bolas, por <a href="https://twitter.com/helpcomputer0">Adam</a></td>
+<td>Juego arcade de física de bolas, por <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
 <td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>
-<td>Generador de música de fondo hecho por <a href="https://twitter.com/frenchbread1222">frenchbread</a></td>
+<td>Generador de música de fondo hecho por <a href="https://x.com/frenchbread1222">frenchbread</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Demo</a></td>
 <td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Code</a></td>
 </tr>
@@ -711,7 +711,7 @@ Los pull request enviados se consideran acordados para poder publicarse bajo la 
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Developer's Twitter account](https://twitter.com/kitao)
+- [Developer's Twitter account](https://x.com/kitao)
 
 ## Licencia
 
