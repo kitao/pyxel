@@ -2,7 +2,8 @@
 
 ## 2.1.10
 
-- Changed the process for initializing OpenGL/GLES
+- Fixed a color rendering issue on Windows
+- Replaced links to Twitter with X in the READMEs
 
 ## 2.1.9
 
