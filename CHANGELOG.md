@@ -4,7 +4,6 @@
 
 - Fixed a color rendering issue on Windows
 - Replaced links to Twitter with X in the READMEs
-- Updated the bindgen crate version to 0.70
 
 ## 2.1.9
 
