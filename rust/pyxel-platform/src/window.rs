@@ -29,21 +29,21 @@ pub fn init_window(title: &str, width: u32, height: u32) -> *mut SDL_Window {
 
 pub fn init_glow(window: *mut SDL_Window) -> *mut GlowContext {
     unsafe {
-        // Try to initialize OpenGL ES 2.0
+        // Try to initialize OpenGL 2.1
         SDL_GL_SetAttribute(
             SDL_GL_CONTEXT_PROFILE_MASK,
-            SDL_GL_CONTEXT_PROFILE_ES as i32,
+            SDL_GL_CONTEXT_PROFILE_CORE as i32,
         );
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         if SDL_GL_CreateContext(window).is_null() {
-            // Try to initialize OpenGL 2.1
+            // Try to initialize OpenGL ES 2.0
             SDL_GL_SetAttribute(
                 SDL_GL_CONTEXT_PROFILE_MASK,
-                SDL_GL_CONTEXT_PROFILE_CORE as i32,
+                SDL_GL_CONTEXT_PROFILE_ES as i32,
             );
             SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
             assert!(
                 !SDL_GL_CreateContext(window).is_null(),
                 "Failed to create OpenGL context"
