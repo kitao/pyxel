@@ -530,13 +530,13 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `fill(x, y, col)`<br>
   Zeichne eine Ellipse mit der Breite `w`, der Höhe `h` und der Farbe `col` von (`x`, `y`).
 
-- `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Kopiere eine Region der Größe (`w`, `h`) von (`u`, `v`) des Image Banks `img`(0-2) zur Position (`x`, `y`). Falls `w` und/oder `h` negativ ist, wird der Ausschnitt horizontal und/oder vertical gespiegelt. Falls `colkey` angegeben ist, wird der Auschnitt als transparentes Farbe behandelt.
+- `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  Kopiere eine Region der Größe (`w`, `h`) von (`u`, `v`) des Image Banks `img`(0-2) zur Position (`x`, `y`). Falls `w` und/oder `h` negativ ist, wird der Ausschnitt horizontal und/oder vertical gespiegelt. Falls `colkey` angegeben ist, wird der Auschnitt als transparentes Farbe behandelt. Wenn `rotate`(in Grad), `scale`(1.0=100%) oder beides angegeben ist, wird die entsprechende Transformation angewendet.
 
 <img src="images/blt_figure.png">
 
-- `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-  Kopiert den Bereich der Größe (`w`, `h`) von (`u`, `v`) der Tilemap `tm`(0-7) nach (`x`, `y`). Wenn ein negativer Wert für `w` und/oder `h` angegeben wird, wird es horizontal und/oder vertikal umgekehrt. Wenn `colkey` angegeben ist, wird es als transparente Farbe behandelt. Die Größe einer Kachel ist 8x8 Pixel und wird in einer Tilemap als Tupel von `(tile_x, tile_y)` gespeichert.
+- `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  Kopiert den Bereich der Größe (`w`, `h`) von (`u`, `v`) der Tilemap `tm`(0-7) nach (`x`, `y`). Wenn ein negativer Wert für `w` und/oder `h` angegeben wird, wird es horizontal und/oder vertikal umgekehrt. Wenn `colkey` angegeben ist, wird es als transparente Farbe behandelt. Wenn `rotate`(in Grad), `scale`(1.0=100%) oder beides angegeben ist, wird die entsprechende Transformation angewendet. Die Größe einer Kachel ist 8x8 Pixel und wird in einer Tilemap als Tupel von `(tile_x, tile_y)` gespeichert.
 
 <img src="images/bltm_figure.png">
 
