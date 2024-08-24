@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/pyxel_logo_152x64.png">
+# <img src="images/pyxel_logo_152x64.png">
 
 [![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
@@ -13,28 +13,28 @@
 
 Retro oyun konsollarından esinlenerek basitleştirilmiş özelliklere sahip olması sayesinde, aynı anda yalnızca 16 renk görüntülenebildiği ve yalnızca 4 ses çalınabildiği için, pixel art tarzı oyunlar yapmanın keyfini doyasıya çıkarabilirsiniz.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/pyxel_message.png" width="480">
+<img src="images/pyxel_message.png" width="480">
 
 Pyxel'in geliştirilmesinin motivasyonu kullanıcıların geri bildirimleridir. Lütfen Pyxel'e GitHub'da bir yıldız verin!
 
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/01_hello_pyxel.gif" width="320">
+<img src="images/01_hello_pyxel.gif" width="320">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/02_jump_game.gif" width="320">
+<img src="images/02_jump_game.gif" width="320">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/03_draw_api.gif" width="320">
+<img src="images/03_draw_api.gif" width="320">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/04_sound_api.gif" width="320">
+<img src="images/04_sound_api.gif" width="320">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/image_tilemap_editor.gif" width="320">
+<img src="images/image_tilemap_editor.gif" width="320">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/sound_music_editor.gif" width="320">
+<img src="images/sound_music_editor.gif" width="320">
 </a>
 </p>
 
@@ -56,9 +56,9 @@ Pyxel tamamen ücretsiz ve açık kaynaklıdır. Haydi, Pyxel ile birlikte retro
 
 ### Renk Paleti
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/05_color_palette.png">
+<img src="images/05_color_palette.png">
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/pyxel_palette.png">
+<img src="images/pyxel_palette.png">
 
 ## Nasıl Kurulur
 
@@ -351,7 +351,7 @@ Pyxel Editör'ün aşağıdaki düzenleme modları bulunmaktadır.
 Görüntü setlerini düzenleme modu.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/image_editor.gif">
+<img src="images/image_editor.gif">
 </a>
 
 Görüntüyü mevcut olarak seçilmiş görüntü setine yüklemek için Görüntü Düzenleyici'ye bir görüntü dosyasını (PNG/GIF/JPEG) sürükleyip bırakın.
@@ -361,7 +361,7 @@ Görüntüyü mevcut olarak seçilmiş görüntü setine yüklemek için Görün
 Görüntü setlerindeki görüntülerin bir tile deseninde düzenlendiği tilemap'leri düzenleme modu.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/tilemap_editor.gif">
+<img src="images/tilemap_editor.gif">
 </a>
 
 Bir TMX dosyasını (Tiled Map Dosyası) Tilemap Editöre sürükleyip bırakın. Bu, seçili döşeme harita numarasına karşılık gelen çizim sırasındaki katmanını yükler.
@@ -371,7 +371,7 @@ Bir TMX dosyasını (Tiled Map Dosyası) Tilemap Editöre sürükleyip bırakın
 Sesleri düzenleme modu.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/sound_editor.gif">
+<img src="images/sound_editor.gif">
 </a>
 
 **Music Editor**
@@ -379,7 +379,7 @@ Sesleri düzenleme modu.
 Seslerin çalma sırasına göre düzenlendiği müzikleri düzenleme modu.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/music_editor.gif">
+<img src="images/music_editor.gif">
 </a>
 
 ### Diğer Kaynak Oluşturma Yöntemleri
@@ -530,15 +530,15 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 - `fill(x, y, col)`<br>
   (`x`, `y`) noktasından başlayarak aynı renk ile bağlantılı alanı `col` renkle doldurur.
 
-- `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  `img` (0-2) resim setinden (`u`, `v`) konumundan başlayarak boyutu (`w`, `h`) olan bölümü (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer ayarlanırsa, yatay ve/veya dikey olarak ters çevrilir. `colkey` belirtilmişse, saydam renk olarak işlenir.
+- `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  `img` (0-2) resim setinden (`u`, `v`) konumundan başlayarak boyutu (`w`, `h`) olan bölümü (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer ayarlanırsa, yatay ve/veya dikey olarak ters çevrilir. `colkey` belirtilmişse, saydam renk olarak işlenir. Eğer `rotate`(derece cinsinden), `scale`(1.0=%100) veya her ikisi de belirtilirse, ilgili dönüşüm uygulanacaktır.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/blt_figure.png">
+<img src="images/blt_figure.png">
 
-- `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-  `tm` (0-7) tile haritasından (`u`, `v`) konumundan başlayarak boyutu (`w`, `h`) olan bölümü (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer ayarlanırsa, yatay ve/veya dikey olarak ters çevrilir. `colkey` belirtilmişse, saydam renk olarak işlenir. Bir tile'ın boyutu 8x8 pikseldir ve tile haritasında `(tile_x, tile_y)` olarak saklanır.
+- `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  `tm` (0-7) tile haritasından (`u`, `v`) konumundan başlayarak boyutu (`w`, `h`) olan bölümü (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer ayarlanırsa, yatay ve/veya dikey olarak ters çevrilir. `colkey` belirtilmişse, saydam renk olarak işlenir. Eğer `rotate`(derece cinsinden), `scale`(1.0=%100) veya her ikisi de belirtilirse, ilgili dönüşüm uygulanacaktır. Bir tile'ın boyutu 8x8 pikseldir ve tile haritasında `(tile_x, tile_y)` olarak saklanır.
 
-<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/bltm_figure.png">
+<img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
   (`x`, `y`) noktasından başlayarak `s` metnini `col` renk ile çizer.
