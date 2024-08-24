@@ -529,13 +529,13 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 - `fill(x, y, col)`<br>
   Dibuja una elipsis de anchura `w`, altura `h` y color `col` desde (`x`, `y`).
 
-- `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Copia la región de tamaño (`w`, `h`) desde la posición (`u`, `v`) del banco de imágenes `img`(0-2) a (`x`, `y`). Si es negativo el valor para la `w` y/o la `h`, se representará invirtiendo horizontalmente o verticalmente. Si `colkey` se especifica, se tratará ese color como transparente.
+- `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  Copia la región de tamaño (`w`, `h`) desde la posición (`u`, `v`) del banco de imágenes `img`(0-2) a (`x`, `y`). Si es negativo el valor para la `w` y/o la `h`, se representará invirtiendo horizontalmente o verticalmente. Si `colkey` se especifica, se tratará ese color como transparente. Si se especifica `rotate`(en grados), `scale`(1.0=100%), o ambos, se aplicará la transformación correspondiente.
 
 <img src="images/blt_figure.png">
 
-- `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-  Copie la región de tamaño (`w`,` h`) de (`u`,` v`) del mapa de mosaicos `tm`(0-7) a (` x`, `y`). Si se establece un valor negativo para `w` y / o` h`, se invertirá horizontal y / o verticalmente. Si se especifica "colkey", se trata como un color transparente. El tamaño de un mosaico es de 8x8 píxeles y se almacena en un mapa de mosaicos como una tupla de `(tile_x, tile_y)`.
+- `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  Copie la región de tamaño (`w`,` h`) de (`u`,` v`) del mapa de mosaicos `tm`(0-7) a (` x`, `y`). Si se establece un valor negativo para `w` y / o` h`, se invertirá horizontal y / o verticalmente. Si se especifica "colkey", se trata como un color transparente. Si se especifica `rotate`(en grados), `scale`(1.0=100%), o ambos, se aplicará la transformación correspondiente. El tamaño de un mosaico es de 8x8 píxeles y se almacena en un mapa de mosaicos como una tupla de `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 

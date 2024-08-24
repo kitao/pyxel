@@ -530,13 +530,13 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
 - `fill(x, y, col)`<br>
   Dessine une ellipse de largeur `w`, de hauteur `h` et de couleur `col` à partir de (`x`, `y`).
 
-- `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Copie la région de taille (`w`, `h`) de (`u`, `v`) de la banque d’image `img`(0-2) à (`x`, `y`). Si une valeur négative est mise pour `w`(ou `h`), la copie sera inversée horizontalement (ou verticalement). Si `colkey` est spécifiée, elle sera traitée comme une couleur transparente.
+- `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  Copie la région de taille (`w`, `h`) de (`u`, `v`) de la banque d’image `img`(0-2) à (`x`, `y`). Si une valeur négative est mise pour `w`(ou `h`), la copie sera inversée horizontalement (ou verticalement). Si `colkey` est spécifiée, elle sera traitée comme une couleur transparente. Si `rotate`(en degrés), `scale`(1.0=100%), ou les deux sont spécifiés, la transformation correspondante sera appliquée.
 
 <img src="images/blt_figure.png">
 
-- `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-  Copie la région de taille (`w`, `h`) de (`u`, `v`) de la tilemap `tm`(0-7) à (`x`, `y`). Si une valeur négative est mise pour `w`(ou `h`), la copie sera inversée horizontalement (ou verticalement). Si `colkey` est spécifiée, elle sera traitée comme une couleur transparente. La taille d’une tuile est 8x8 pixels et elle est storée dans une tilemap en tant que paire `(tile_x, tile_y)`.
+- `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  Copie la région de taille (`w`, `h`) de (`u`, `v`) de la tilemap `tm`(0-7) à (`x`, `y`). Si une valeur négative est mise pour `w`(ou `h`), la copie sera inversée horizontalement (ou verticalement). Si `colkey` est spécifiée, elle sera traitée comme une couleur transparente. Si `rotate`(en degrés), `scale`(1.0=100%), ou les deux sont spécifiés, la transformation correspondante sera appliquée. La taille d’une tuile est 8x8 pixels et elle est storée dans une tilemap en tant que paire `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 

@@ -530,13 +530,13 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
 - `fill(x, y, col)`<br>
   Desenhar uma elipse de largura `w`, altura `h` e cor `col` de (`x`, `y`).
 
-- `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img`(0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente.
+- `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do banco de imagens `img`(0-2) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente. Se `rotate`(em graus), `scale`(1.0=100%), ou ambos forem especificados, a transformação correspondente será aplicada.
 
 <img src="images/blt_figure.png">
 
-- `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do tilemap `tm`(0-7) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente. O tamanho de um tile é de 8x8 pixels e é armazenado em um tilemap como uma tupla de `(tile_x, tile_y)`.
+- `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do tilemap `tm`(0-7) para (`x`, `y`). Se um valor negativo for definido para `w` e/ou `h`, será invertido horizontalmente e/ou verticalmente. Se `colkey` for especificada, será tratado como cor transparente. Se `rotate`(em graus), `scale`(1.0=100%), ou ambos forem especificados, a transformação correspondente será aplicada. O tamanho de um tile é de 8x8 pixels e é armazenado em um tilemap como uma tupla de `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 

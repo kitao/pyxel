@@ -530,13 +530,13 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 - `fill(x, y, col)`<br>
   Disegna un'ellisse di larghezza `w`, altezza `h` e colore `col` da (`x`, `y`).
 
-- `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Copia la regione di grandezza (`w`, `h`) da (`u`, `v`) della banca immagini `img`(0-2) a (`x`, `y`). Se un valore negativo è impostato per `w` e/o `h`, sarà invertito orizzontalmente o verticalmente. Se `colkey` è specificato, verrà trattato come colore trasparente.
+- `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  Copia la regione di grandezza (`w`, `h`) da (`u`, `v`) della banca immagini `img`(0-2) a (`x`, `y`). Se un valore negativo è impostato per `w` e/o `h`, sarà invertito orizzontalmente o verticalmente. Se `colkey` è specificato, verrà trattato come colore trasparente. Se viene specificato `rotate`(in gradi), `scale`(1.0=100%) o entrambi, verrà applicata la trasformazione corrispondente.
 
 <img src="images/blt_figure.png">
 
-- `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-  Copia la regione di dimensione (`w`, `h`) da (`u`, `v`) della tilemap `tm`(0-7) a (`x`, `y`). Se un valore negativo è stato impostato per `w` e/o `h`, sarà rovesciata orizzontalmente e/o verticalmente. Se `colkey` è specificato, viene trattato come colore trasparente. La dimensione di una tile tile è di 8x8 pixel ed è memorizzata in una tilemap come una tupla di `(tile_x, tile_y)`.
+- `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  Copia la regione di dimensione (`w`, `h`) da (`u`, `v`) della tilemap `tm`(0-7) a (`x`, `y`). Se un valore negativo è stato impostato per `w` e/o `h`, sarà rovesciata orizzontalmente e/o verticalmente. Se `colkey` è specificato, viene trattato come colore trasparente. Se viene specificato `rotate`(in gradi), `scale`(1.0=100%) o entrambi, verrà applicata la trasformazione corrispondente. La dimensione di una tile tile è di 8x8 pixel ed è memorizzata in una tilemap come una tupla di `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 
