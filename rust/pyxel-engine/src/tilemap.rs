@@ -181,7 +181,7 @@ impl Tilemap {
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
-        if rotate != 0.0 && scale != 1.0 {
+        if rotate != 0.0 || scale != 1.0 {
             self.blt_transform(
                 x,
                 y,
