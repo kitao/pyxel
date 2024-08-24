@@ -530,13 +530,13 @@ Pyxel application file also can be converted to an executable or an HTML file wi
 - `fill(x, y, col)`<br>
   Fill the area connected with the same color as (`x`, `y`) with color `col`.
 
-- `blt(x, y, img, u, v, w, h, [colkey])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color.
+- `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformation will be applied.
 
 <img src="docs/images/blt_figure.png">
 
-- `bltm(x, y, tm, u, v, w, h, [colkey])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
+- `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformation will be applied. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
 
 <img src="docs/images/bltm_figure.png">
 
