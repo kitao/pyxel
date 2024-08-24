@@ -42,7 +42,7 @@ impl Channel {
         self.inner.lock().detune = detune;
     }
 
-    #[pyo3(signature = (snd, *, tick=None, r#loop=None, resume=None))]
+    #[pyo3(signature = (snd, tick=None, r#loop=None, resume=None))]
     pub fn play(
         &self,
         snd: Bound<'_, PyAny>,

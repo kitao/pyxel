@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.0
+
+- Removed the keyword-only arguments
+
 ## 2.1.10
 
 - Fixed a color rendering issue on Windows
