@@ -119,7 +119,7 @@ fn fill(x: f64, y: f64, col: pyxel::Color) {
 }
 
 #[pyfunction]
-#[pyo3(signature = (x, y ,img, u, v, w, h, colkey=None))]
+#[pyo3(signature = (x, y ,img, u, v, w, h, colkey=None, rotate=None, scale=None))]
 fn blt(
     x: f64,
     y: f64,
@@ -129,17 +129,19 @@ fn blt(
     w: f64,
     h: f64,
     colkey: Option<pyxel::Color>,
+    rotate: Option<f64>,
+    scale: Option<f64>,
 ) -> PyResult<()> {
     cast_pyany! {
         img,
-        (u32, { pyxel().blt(x, y, img, u, v, w, h, colkey); }),
-        (Image, { pyxel().screen.lock().blt(x, y, img.inner, u, v, w, h, colkey); })
+        (u32, { pyxel().blt(x, y, img, u, v, w, h, colkey, rotate, scale); }),
+        (Image, { pyxel().screen.lock().blt(x, y, img.inner, u, v, w, h, colkey, rotate, scale); })
     }
     Ok(())
 }
 
 #[pyfunction]
-#[pyo3(signature = (x, y, tm, u, v, w, h, colkey=None))]
+#[pyo3(signature = (x, y, tm, u, v, w, h, colkey=None, rotate=None, scale=None))]
 fn bltm(
     x: f64,
     y: f64,
@@ -149,11 +151,13 @@ fn bltm(
     w: f64,
     h: f64,
     colkey: Option<pyxel::Color>,
+    rotate: Option<f64>,
+    scale: Option<f64>,
 ) -> PyResult<()> {
     cast_pyany! {
         tm,
-        (u32, { pyxel().bltm(x, y, tm, u, v, w, h, colkey); }),
-        (Tilemap, { pyxel().screen.lock().bltm(x, y, tm.inner, u, v, w, h, colkey); })
+        (u32, { pyxel().bltm(x, y, tm, u, v, w, h, colkey, rotate, scale); }),
+        (Tilemap, { pyxel().screen.lock().bltm(x, y, tm.inner, u, v, w, h, colkey, rotate, scale); })
     }
     Ok(())
 }

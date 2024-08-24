@@ -292,6 +292,8 @@ impl Pyxel {
         width: f64,
         height: f64,
         color_key: Option<Color>,
+        rotate: Option<f64>,
+        scale: Option<f64>,
     ) {
         self.screen.lock().blt(
             x,
@@ -302,6 +304,8 @@ impl Pyxel {
             width,
             height,
             color_key,
+            rotate,
+            scale,
         );
     }
 
@@ -315,6 +319,8 @@ impl Pyxel {
         width: f64,
         height: f64,
         color_key: Option<Color>,
+        rotate: Option<f64>,
+        scale: Option<f64>,
     ) {
         self.screen.lock().bltm(
             x,
@@ -325,6 +331,8 @@ impl Pyxel {
             width,
             height,
             color_key,
+            rotate,
+            scale,
         );
     }
 

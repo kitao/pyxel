@@ -172,7 +172,7 @@ impl Tilemap {
         self.inner.lock().fill(x, y, tile);
     }
 
-    #[pyo3(signature = (x, y, tm, u, v, w, h, tilekey=None))]
+    #[pyo3(signature = (x, y, tm, u, v, w, h, tilekey=None, rotate=None, scale=None))]
     pub fn blt(
         &self,
         x: f64,
@@ -183,15 +183,17 @@ impl Tilemap {
         w: f64,
         h: f64,
         tilekey: Option<pyxel::Tile>,
+        rotate: Option<f64>,
+        scale: Option<f64>,
     ) -> PyResult<()> {
         cast_pyany! {
             tm,
             (u32, {
                 let tilemap = pyxel().tilemaps.lock()[tm as usize].clone();
-                self.inner.lock().blt(x, y, tilemap, u, v, w, h, tilekey);
+                self.inner.lock().blt(x, y, tilemap, u, v, w, h, tilekey, rotate, scale);
             }),
             (Tilemap, {
-                self.inner.lock().blt(x, y, tm.inner, u, v, w, h, tilekey);
+                self.inner.lock().blt(x, y, tm.inner, u, v, w, h, tilekey, rotate, scale);
             })
         }
         Ok(())

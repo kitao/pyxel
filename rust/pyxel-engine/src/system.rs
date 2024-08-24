@@ -76,6 +76,8 @@ impl Pyxel {
                     pyxel.width as f64,
                     pyxel.height as f64,
                     None,
+                    None,
+                    None,
                 );
             }
         }
@@ -89,6 +91,8 @@ impl Pyxel {
             0.0,
             self.width as f64,
             self.height as f64,
+            None,
+            None,
             None,
         );
         self.run(App { image });
@@ -327,6 +331,8 @@ impl Pyxel {
             width as f64,
             height as f64,
             Some(0),
+            None,
+            None,
         );
         screen.canvas.clip_rect = clip_rect;
         screen.canvas.camera_x = camera_x;
