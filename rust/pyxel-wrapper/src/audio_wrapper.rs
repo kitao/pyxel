@@ -12,7 +12,7 @@ static SOUND_ONCE: Once = Once::new();
 static MUSIC_ONCE: Once = Once::new();
 
 #[pyfunction]
-#[pyo3(signature = (ch, snd, *, tick=None, r#loop=None, resume=None))]
+#[pyo3(signature = (ch, snd, tick=None, r#loop=None, resume=None))]
 fn play(
     ch: u32,
     snd: Bound<'_, PyAny>,
@@ -34,7 +34,7 @@ fn play(
 }
 
 #[pyfunction]
-#[pyo3(signature = (msc, *, tick=None, r#loop=None))]
+#[pyo3(signature = (msc, tick=None, r#loop=None))]
 fn playm(msc: u32, tick: Option<u32>, r#loop: Option<bool>) {
     pyxel().playm(msc, tick, r#loop.unwrap_or(false));
 }
