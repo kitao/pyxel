@@ -5,6 +5,8 @@
 - Removed the keyword-only arguments
 - Added the rotate and scale options to the blt and bltm functions
 - specified the Maturin version as 1.7.0 to prevent linking errors
+- Modified the API notation in Example 4
+- Added Example 16 for rotation and scaling
 
 ## 2.1.10
 
