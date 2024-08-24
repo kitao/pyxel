@@ -10,7 +10,7 @@ use crate::pyxel_singleton::{pyxel, set_pyxel_instance};
 
 #[pyfunction]
 #[pyo3(
-    signature = (width, height, *, title=None, fps=None, quit_key=None, display_scale=None, capture_scale=None, capture_sec=None)
+    signature = (width, height, title=None, fps=None, quit_key=None, display_scale=None, capture_scale=None, capture_sec=None)
 )]
 fn init(
     py: Python,

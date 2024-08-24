@@ -3,7 +3,7 @@ use pyo3::prelude::*;
 use crate::pyxel_singleton::pyxel;
 
 #[pyfunction]
-#[pyo3(signature = (filename, *, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None, incl_colors=None, incl_channels=None, incl_tones=None))]
+#[pyo3(signature = (filename, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None, incl_colors=None, incl_channels=None, incl_tones=None))]
 fn load(
     filename: &str,
     excl_images: Option<bool>,
@@ -27,7 +27,7 @@ fn load(
 }
 
 #[pyfunction]
-#[pyo3(signature = (filename, *, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None, incl_colors=None, incl_channels=None, incl_tones=None))]
+#[pyo3(signature = (filename, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None, incl_colors=None, incl_channels=None, incl_tones=None))]
 fn save(
     filename: &str,
     excl_images: Option<bool>,

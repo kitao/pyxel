@@ -8,7 +8,7 @@ fn btn(key: pyxel::Key) -> bool {
 }
 
 #[pyfunction]
-#[pyo3(signature = (key, *, hold=None, repeat=None))]
+#[pyo3(signature = (key, hold=None, repeat=None))]
 fn btnp(key: pyxel::Key, hold: Option<u32>, repeat: Option<u32>) -> bool {
     pyxel().btnp(key, hold, repeat)
 }
