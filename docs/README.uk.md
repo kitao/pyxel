@@ -203,7 +203,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>16_transform.py</td>
-<td>Image rotation and scaling</td>
+<td>Обертання та масштабування зображення</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Code</a></td>
 </tr>
