@@ -133,6 +133,8 @@ impl Image {
             width as f64,
             height as f64,
             None,
+            None,
+            None,
         );
     }
 
@@ -148,6 +150,8 @@ impl Image {
             0.0,
             width as f64,
             height as f64,
+            None,
+            None,
             None,
         );
     }
@@ -278,7 +282,27 @@ impl Image {
         width: f64,
         height: f64,
         transparent: Option<Color>,
+        rotate: Option<f64>,
+        scale: Option<f64>,
     ) {
+        let rotate = rotate.unwrap_or(0.0);
+        let scale = scale.unwrap_or(1.0);
+        if rotate != 0.0 && scale != 1.0 {
+            self.blt_transform(
+                x,
+                y,
+                image,
+                image_x,
+                image_y,
+                width,
+                height,
+                transparent,
+                rotate,
+                scale,
+            );
+            return;
+        }
+
         if let Some(image) = image.try_lock() {
             self.canvas.blt(
                 x,
@@ -320,6 +344,66 @@ impl Image {
         }
     }
 
+    fn blt_transform(
+        &mut self,
+        x: f64,
+        y: f64,
+        image: SharedImage,
+        image_x: f64,
+        image_y: f64,
+        width: f64,
+        height: f64,
+        transparent: Option<Color>,
+        rotate: f64,
+        scale: f64,
+    ) {
+        if let Some(image) = image.try_lock() {
+            self.canvas.blt_transform(
+                x,
+                y,
+                &image.canvas,
+                image_x,
+                image_y,
+                width,
+                height,
+                transparent,
+                Some(&self.palette),
+                rotate,
+                scale,
+                false,
+            );
+        } else {
+            let copy_width = utils::f64_to_u32(width.abs());
+            let copy_height = utils::f64_to_u32(height.abs());
+            let mut canvas = Canvas::new(copy_width, copy_height);
+            canvas.blt(
+                0.0,
+                0.0,
+                &self.canvas,
+                image_x,
+                image_y,
+                copy_width as f64,
+                copy_height as f64,
+                None,
+                None,
+            );
+            self.canvas.blt_transform(
+                x,
+                y,
+                &canvas,
+                0.0,
+                0.0,
+                width,
+                height,
+                transparent,
+                Some(&self.palette),
+                rotate,
+                scale,
+                false,
+            );
+        }
+    }
+
     pub fn bltm(
         &mut self,
         x: f64,
@@ -330,7 +414,27 @@ impl Image {
         width: f64,
         height: f64,
         transparent: Option<Color>,
+        rotate: Option<f64>,
+        scale: Option<f64>,
     ) {
+        let rotate = rotate.unwrap_or(0.0);
+        let scale = scale.unwrap_or(1.0);
+        if rotate != 0.0 || scale != 1.0 {
+            self.bltm_transform(
+                x,
+                y,
+                tilemap,
+                tilemap_x,
+                tilemap_y,
+                width,
+                height,
+                transparent,
+                rotate,
+                scale,
+            );
+            return;
+        }
+
         let x = utils::f64_to_i32(x) - self.canvas.camera_x;
         let y = utils::f64_to_i32(y) - self.canvas.camera_y;
         let tilemap_x = utils::f64_to_i32(tilemap_x);
@@ -407,6 +511,61 @@ impl Image {
         }
     }
 
+    fn bltm_transform(
+        &mut self,
+        x: f64,
+        y: f64,
+        tilemap: SharedTilemap,
+        tilemap_x: f64,
+        tilemap_y: f64,
+        width: f64,
+        height: f64,
+        transparent: Option<Color>,
+        rotate: f64,
+        scale: f64,
+    ) {
+        let copy_width = utils::f64_to_u32(width.abs());
+        let copy_height = utils::f64_to_u32(height.abs());
+        let tilemap_width = tilemap.lock().width() as f64;
+        let tilemap_height = tilemap.lock().height() as f64;
+        let image = Self::new(copy_width, copy_height);
+        {
+            let mut image = image.lock();
+            image.bltm(
+                0.0,
+                0.0,
+                tilemap,
+                tilemap_x,
+                tilemap_y,
+                width.abs(),
+                height.abs(),
+                None,
+                None,
+                None,
+            );
+            image.clip(
+                -tilemap_x,
+                -tilemap_y,
+                tilemap_width * TILE_SIZE as f64,
+                tilemap_height * TILE_SIZE as f64,
+            );
+            self.canvas.blt_transform(
+                x,
+                y,
+                &image.canvas,
+                0.0,
+                0.0,
+                width,
+                height,
+                transparent,
+                Some(&self.palette),
+                rotate,
+                scale,
+                true,
+            );
+        }
+    }
+
     pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color) {
         let mut x = utils::f64_to_i32(x); // No need to reflect camera_x
         let mut y = utils::f64_to_i32(y); // No need to reflect camera_y
@@ -435,6 +594,8 @@ impl Image {
                 FONT_WIDTH as f64,
                 FONT_HEIGHT as f64,
                 Some(0),
+                Some(0.0),
+                Some(1.0),
             );
             x += FONT_WIDTH as i32;
         }

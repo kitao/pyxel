@@ -466,6 +466,8 @@ class Image:
         w: float,
         h: float,
         colkey: Optional[int] = None,
+        rotate: Optional[float] = None,
+        scale: Optional[float] = None,
     ) -> None: ...
     def bltm(
         self,
@@ -477,6 +479,8 @@ class Image:
         w: float,
         h: float,
         colkey: Optional[int] = None,
+        rotate: Optional[float] = None,
+        scale: Optional[float] = None,
     ) -> None: ...
     def text(self, x: float, y: float, s: str, col: int) -> None: ...
 
@@ -554,6 +558,8 @@ class Tilemap:
         w: float,
         h: float,
         tilekey: Optional[Tuple[int, int]] = None,
+        rotate: Optional[float] = None,
+        scale: Optional[float] = None,
     ) -> None: ...
 
     # Deprecated field
@@ -750,6 +756,8 @@ def blt(
     w: float,
     h: float,
     colkey: Optional[int] = None,
+    rotate: Optional[float] = None,
+    scale: Optional[float] = None,
 ) -> None: ...
 def bltm(
     x: float,
@@ -760,6 +768,8 @@ def bltm(
     w: float,
     h: float,
     colkey: Optional[int] = None,
+    rotate: Optional[float] = None,
+    scale: Optional[float] = None,
 ) -> None: ...
 def text(x: float, y: float, s: str, col: int) -> None: ...
 

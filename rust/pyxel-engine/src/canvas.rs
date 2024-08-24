@@ -1,4 +1,5 @@
 use std::cmp::max;
+use std::f64::consts::PI;
 use std::mem::swap;
 
 use crate::rect_area::RectArea;
@@ -413,6 +414,82 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 }
                 let value = palette.map_or(value, |palette| palette[value.to_index()]);
                 self.write_data((dst_x + xi) as usize, (dst_y + yi) as usize, value);
+            }
+        }
+    }
+
+    pub fn blt_transform(
+        &mut self,
+        x: f64,
+        y: f64,
+        canvas: &Self,
+        canvas_x: f64,
+        canvas_y: f64,
+        width: f64,
+        height: f64,
+        transparent: Option<T>,
+        palette: Option<&[T]>,
+        rotate: f64,
+        scale: f64,
+        use_canvas_clip: bool,
+    ) {
+        if scale < f64::EPSILON {
+            return;
+        }
+
+        let x = f64_to_i32(x) - self.camera_x;
+        let y = f64_to_i32(y) - self.camera_y;
+        let canvas_x = f64_to_i32(canvas_x);
+        let canvas_y = f64_to_i32(canvas_y);
+        let sign_x = if width < 0.0 { -1.0 } else { 1.0 };
+        let sign_y = if height < 0.0 { -1.0 } else { 1.0 };
+        let width = f64_to_i32(width).abs();
+        let height = f64_to_i32(height).abs();
+
+        let canvas_area = RectArea::new(canvas_x, canvas_y, width as u32, height as u32)
+            .intersects(if use_canvas_clip {
+                canvas.clip_rect
+            } else {
+                canvas.self_rect
+            });
+        if canvas_area.is_empty() {
+            return;
+        }
+
+        let half_width = (width - 1) as f64 / 2.0;
+        let half_height = (height - 1) as f64 / 2.0;
+        let src_cx = canvas_x as f64 + half_width;
+        let src_cy = canvas_y as f64 + half_height;
+        let dst_cx = x as f64 + half_width;
+        let dst_cy = y as f64 + half_height;
+
+        let rotate = rotate * PI / 180.0;
+        let sin = f64::sin(rotate);
+        let cos = f64::cos(rotate);
+        let offset_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
+        let offset_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
+        let x1 = f64_to_i32(dst_cx - offset_x).max(self.clip_rect.left());
+        let x2 = f64_to_i32(dst_cx + offset_x).min(self.clip_rect.right());
+        let y1 = f64_to_i32(dst_cy - offset_y).max(self.clip_rect.top());
+        let y2 = f64_to_i32(dst_cy + offset_y).min(self.clip_rect.bottom());
+
+        for yi in y1..=y2 {
+            for xi in x1..=x2 {
+                let offset_x = (xi as f64 - dst_cx) * sign_x;
+                let offset_y = (yi as f64 - dst_cy) * sign_y;
+                let value_x = f64_to_i32(src_cx + (offset_x * cos - offset_y * sin) / scale);
+                let value_y = f64_to_i32(src_cy + (offset_x * sin + offset_y * cos) / scale);
+                if !canvas_area.contains(value_x, value_y) {
+                    continue;
+                }
+                let value = canvas.read_data(value_x as usize, value_y as usize);
+                if let Some(transparent) = transparent {
+                    if value == transparent {
+                        continue;
+                    }
+                }
+                let value = palette.map_or(value, |palette| palette[value.to_index()]);
+                self.write_data(xi as usize, yi as usize, value);
             }
         }
     }
