@@ -16,14 +16,14 @@ class App:
 
         x, y, w, h = 67, 27, 128, 128
         rotate = pyxel.frame_count
-        scale = (pyxel.sin(pyxel.frame_count) + 1) * 0.3 + 0.5
-        pyxel.rect(x, y, w, h, 0)
+        scale = pyxel.sin(pyxel.frame_count) * 0.3 + 0.8
+        pyxel.rectb(x, y, w, h, 2)
         pyxel.bltm(x, y, 0, 0, 0, w, h, 0, rotate=rotate, scale=scale)
 
         x, y, w, h = 30, 79, 8, 24
         rotate = pyxel.frame_count * -3
-        scale = (pyxel.sin(pyxel.frame_count + 180) + 1) * 3
-        pyxel.rect(x, y, w, h, 0)
+        scale = pyxel.sin(pyxel.frame_count + 180) * 3 + 4
+        pyxel.rectb(x, y, w, h, 2)
         pyxel.blt(x, y, 0, 8, 0, w, h, 0, rotate=rotate, scale=scale)
 
         pyxel.dither(0.5)
