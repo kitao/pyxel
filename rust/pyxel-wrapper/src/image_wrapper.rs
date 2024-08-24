@@ -24,7 +24,7 @@ impl Image {
     }
 
     #[staticmethod]
-    #[pyo3(signature = (filename, *, incl_colors=None))]
+    #[pyo3(signature = (filename, incl_colors=None))]
     pub fn from_image(filename: &str, incl_colors: Option<bool>) -> Self {
         Self::wrap(pyxel::Image::from_image(filename, incl_colors))
     }
@@ -56,7 +56,7 @@ impl Image {
         self.inner.lock().set(x, y, &data_refs);
     }
 
-    #[pyo3(signature = (x, y, filename, *, incl_colors=None))]
+    #[pyo3(signature = (x, y, filename, incl_colors=None))]
     pub fn load(&self, x: i32, y: i32, filename: &str, incl_colors: Option<bool>) {
         self.inner.lock().load(x, y, filename, incl_colors);
     }
@@ -163,7 +163,7 @@ impl Image {
         self.inner.lock().fill(x, y, col);
     }
 
-    #[pyo3(signature = (x, y, img, u, v, w, h, colkey=None))]
+    #[pyo3(signature = (x, y, img, u, v, w, h, colkey=None, rotate=None, scale=None))]
     pub fn blt(
         &self,
         x: f64,
@@ -174,19 +174,21 @@ impl Image {
         w: f64,
         h: f64,
         colkey: Option<pyxel::Color>,
+        rotate: Option<f64>,
+        scale: Option<f64>,
     ) -> PyResult<()> {
         cast_pyany! {
             img,
             (u32, {
                 let image = pyxel().images.lock()[img as usize].clone();
-                self.inner.lock().blt(x, y, image, u, v, w, h, colkey);
+                self.inner.lock().blt(x, y, image, u, v, w, h, colkey, rotate, scale);
             }),
-            (Image, { self.inner.lock().blt(x, y, img.inner, u, v, w, h, colkey); })
+            (Image, { self.inner.lock().blt(x, y, img.inner, u, v, w, h, colkey, rotate, scale); })
         }
         Ok(())
     }
 
-    #[pyo3(signature = (x, y, tm, u, v, w, h, colkey=None))]
+    #[pyo3(signature = (x, y, tm, u, v, w, h, colkey=None, rotate=None, scale=None))]
     pub fn bltm(
         &self,
         x: f64,
@@ -197,14 +199,16 @@ impl Image {
         w: f64,
         h: f64,
         colkey: Option<pyxel::Color>,
+        rotate: Option<f64>,
+        scale: Option<f64>,
     ) -> PyResult<()> {
         cast_pyany! {
             tm,
             (u32, {
                 let tilemap = pyxel().tilemaps.lock()[tm as usize].clone();
-                self.inner.lock().bltm(x, y, tilemap, u, v, w, h, colkey);
+                self.inner.lock().bltm(x, y, tilemap, u, v, w, h, colkey, rotate, scale);
             }),
-            (Tilemap, { self.inner.lock().bltm(x, y, tm.inner, u, v, w, h, colkey); })
+            (Tilemap, { self.inner.lock().bltm(x, y, tm.inner, u, v, w, h, colkey, rotate, scale); })
         }
         Ok(())
     }

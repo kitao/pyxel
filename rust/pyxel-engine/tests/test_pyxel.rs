@@ -92,7 +92,7 @@ impl PyxelCallback for App {
         pyxel.rect(self.x + 10.0, 25.0, 15.0, 10.0, 8);
         pyxel.rectb(self.x + 15.0, 45.0, 15.0, 10.0, pyxel::COLOR_WHITE);
 
-        pyxel.blt(0.0, 0.0, 0, 0.0, 0.0, 8.0, 8.0, None);
+        pyxel.blt(0.0, 0.0, 0, 0.0, 0.0, 8.0, 8.0, None, Some(30.0), Some(1.5));
 
         pyxel.screen.lock().blt(
             50.0,
@@ -103,6 +103,8 @@ impl PyxelCallback for App {
             100.0,
             100.0,
             None,
+            Some(30.0),
+            Some(1.5),
         );
     }
 }

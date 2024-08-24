@@ -3,6 +3,7 @@
 ## 2.2.0
 
 - Removed the keyword-only arguments
+- Added the rotate and scale options to the blt and bltm functions
 
 ## 2.1.10
 

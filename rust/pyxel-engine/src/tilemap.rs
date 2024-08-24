@@ -75,6 +75,8 @@ impl Tilemap {
             width as f64,
             height as f64,
             None,
+            None,
+            None,
         );
     }
 
@@ -90,6 +92,8 @@ impl Tilemap {
             0.0,
             tilemap_width as f64,
             tilemap_height as f64,
+            None,
+            None,
             None,
         );
     }
@@ -172,7 +176,27 @@ impl Tilemap {
         width: f64,
         height: f64,
         transparent: Option<Tile>,
+        rotate: Option<f64>,
+        scale: Option<f64>,
     ) {
+        let rotate = rotate.unwrap_or(0.0);
+        let scale = scale.unwrap_or(1.0);
+        if rotate != 0.0 && scale != 1.0 {
+            self.blt_transform(
+                x,
+                y,
+                tilemap,
+                tilemap_x,
+                tilemap_y,
+                width,
+                height,
+                transparent,
+                rotate,
+                scale,
+            );
+            return;
+        }
+
         if let Some(tilemap) = tilemap.try_lock() {
             self.canvas.blt(
                 x,
@@ -202,6 +226,66 @@ impl Tilemap {
             );
             self.canvas
                 .blt(x, y, &canvas, 0.0, 0.0, width, height, transparent, None);
+        }
+    }
+
+    fn blt_transform(
+        &mut self,
+        x: f64,
+        y: f64,
+        tilemap: SharedTilemap,
+        tilemap_x: f64,
+        tilemap_y: f64,
+        width: f64,
+        height: f64,
+        transparent: Option<Tile>,
+        rotate: f64,
+        scale: f64,
+    ) {
+        if let Some(tilemap) = tilemap.try_lock() {
+            self.canvas.blt_transform(
+                x,
+                y,
+                &tilemap.canvas,
+                tilemap_x,
+                tilemap_y,
+                width,
+                height,
+                transparent,
+                None,
+                rotate,
+                scale,
+                false,
+            );
+        } else {
+            let copy_width = f64_to_u32(width.abs());
+            let copy_height = f64_to_u32(height.abs());
+            let mut canvas = Canvas::new(copy_width, copy_height);
+            canvas.blt(
+                0.0,
+                0.0,
+                &self.canvas,
+                tilemap_x,
+                tilemap_y,
+                copy_width as f64,
+                copy_height as f64,
+                None,
+                None,
+            );
+            self.canvas.blt_transform(
+                x,
+                y,
+                &canvas,
+                0.0,
+                0.0,
+                width,
+                height,
+                transparent,
+                None,
+                rotate,
+                scale,
+                false,
+            );
         }
     }
 }
