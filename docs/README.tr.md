@@ -202,6 +202,12 @@ Kopyalanacak örnekler aşağıdaki gibidir:
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Code</a></td>
 </tr>
 <tr>
+<td>16_transform.py</td>
+<td>Image rotation and scaling</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">Demo</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Code</a></td>
+</tr>
+<tr>
 <td>99_flip_animation.py</td>
 <td>Flip fonksiyonu ile animasyon (sadece web dışı platformlar)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
