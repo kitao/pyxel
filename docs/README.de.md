@@ -716,9 +716,9 @@ Bei einem eingereichten Pull-Request wird davon ausgegangen, dass der Veröffent
 
 ## Weitere Informationen
 
-- [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
-- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Developer's Twitter account](https://x.com/kitao)
+- [FRAGEN UND ANTWORTEN](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
+- [Beispiele für Benutzer](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Entwickler X-Konto](https://x.com/kitao)
 
 ## Lizenz
 
