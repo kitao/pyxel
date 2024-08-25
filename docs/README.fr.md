@@ -716,9 +716,9 @@ En proposant une pull request, vous acceptez qu’elle soit publiée sous la [li
 
 ## Autres informations
 
-- [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
-- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Developer's Twitter account](https://x.com/kitao)
+- [QUESTIONS ET RÉPONSES](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
+- [Exemples d'utilisateurs](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Compte du développeur X](https://x.com/kitao)
 
 ## License
 

@@ -716,9 +716,9 @@ Gönderilen pull request, [MIT Lisansı](https://github.com/kitao/pyxel/blob/mai
 
 ## Diğer Bilgiler
 
-- [SSS](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
+- [SORU-CEVAP](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [Kullanıcı Örnekleri](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Geliştiricinin Twitter Hesabı](https://x.com/kitao)
+- [Geliştirici X hesabı](https://x.com/kitao)
 
 ## Lisans
 
