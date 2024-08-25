@@ -717,8 +717,8 @@ Pyxel에는 "사용자를 혼란스럽게 할 수 있거나", "사용하는 데 
 ## 기타 정보
 
 - [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
-- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Developer's Twitter account](https://x.com/kitao)
+- [사용자 예시](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [개발자 X 계정](https://x.com/kitao)
 
 ## 라이선스 정보
 

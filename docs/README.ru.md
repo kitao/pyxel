@@ -716,9 +716,9 @@ Pyxel имеет «расширенные API», не упомянутые в э
 
 ## Прочая информация
 
-- [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
-- [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Developer's Twitter account](https://x.com/kitao)
+- [ВОПРОСЫ И ОТВЕТЫ](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
+- [Примеры пользователей](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Учетная запись разработчика X](https://x.com/kitao)
 
 ## Лицензия
 
