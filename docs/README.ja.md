@@ -299,16 +299,16 @@ pyxel.show()
 
 ### アプリケーションの実行方法
 
-作成した Python スクリプトは次のコマンドで実行できます。
+作成した Python スクリプトは`python`コマンドで実行できます。
+
+```sh
+python Pythonスクリプトファイル
+```
+
+`pyxel run`コマンドで実行することも可能です。
 
 ```sh
 pyxel run Pythonスクリプトファイル
-```
-
-通常の Python スクリプトと同様に実行することもできます。
-
-```sh
-python3 Pythonスクリプトファイル
 ```
 
 また、`pyxel watch`コマンドで、指定したディレクトリ内の変更を監視して、変化があったら自動的にプログラムを再実行することができます。
@@ -317,7 +317,7 @@ python3 Pythonスクリプトファイル
 pyxel watch WATCH_DIR Pythonスクリプトファイル
 ```
 
-`pyxel watch`コマンドは`Ctrl(Command)+C`で終了します。
+ディレクトリの監視は`Ctrl(Command)+C`で終了します。
 
 ### 特殊操作
 

@@ -299,25 +299,25 @@ pyxel.show()
 
 ### Pyxel Uygulamasını Çalıştırma
 
-Oluşturulan Python betiği aşağıdaki komut ile çalıştırılabilir:
+Oluşturulan bir Python betiği `python` komutu kullanılarak çalıştırılabilir:
+
+```sh
+python PYTHON_SCRIPT_FILE
+```
+
+Ayrıca `pyxel run` komutu ile de çalıştırılabilir:
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-Ayrıca normal bir Python betiği gibi çalıştırılabilir:
-
-```sh
-python3 PYTHON_SCRIPT_FILE
-```
-
-Ayrıca, `pyxel watch` komutu belirtilen bir dizindeki değişiklikleri izler ve herhangi bir değişiklik tespit edilirse programı otomatik olarak yeniden çalıştırır.
+Ek olarak, `pyxel watch` komutu, belirtilen bir dizindeki değişikliklerin izlenmesini sağlar ve değişiklikler tespit edildiğinde programı otomatik olarak yeniden çalıştırır:
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-Bu komut `Ctrl(Command)+C` tuşlarına basılarak durdurulabilir.
+Dizin izleme `Ctrl(Command)+C` tuşlarına basılarak durdurulabilir.
 
 ### Özel Komutlar
 
