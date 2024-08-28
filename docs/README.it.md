@@ -299,25 +299,25 @@ pyxel.show()
 
 ### Eseguire applicazioni Pyxel
 
-Lo script Python creato può essere eseguito con il seguente comando:
+Uno script Python creato può essere eseguito con il comando `python`:
+
+```sh
+python PYTHON_SCRIPT_FILE
+```
+
+Può anche essere eseguito con il comando `pyxel run`:
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-Può anche essere eseguito come un normale script Python:
-
-```sh
-python3 PYTHON_SCRIPT_FILE
-```
-
-Inoltre, il comando `pyxel watch` monitora i cambiamenti in una directory specificata e riesegue automaticamente il programma se vengono rilevati cambiamenti.
+Inoltre, il comando `pyxel watch` consente di monitorare i cambiamenti in una directory specificata, eseguendo automaticamente il programma quando vengono rilevati cambiamenti:
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-Questo comando può essere interrotto premendo `Ctrl(Command)+C`.
+Il monitoraggio della directory può essere interrotto premendo `Ctrl(Command)+C`.
 
 ### Controlli speciali
 
