@@ -413,7 +413,7 @@ Pyxel 声音也可以通过以下方法创建：
 
 Pyxel 支持跨平台的应用文件格式 (Pyxel 应用文件)。
 
-使用以下命令创建 Pyxel 应用文件 (.pyxapp)：
+使用 `pyxel package` 命令创建 Pyxel 应用程序文件 (.pyxapp)：
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -421,7 +421,7 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 
 如果应用程序应包括资源或其他模块，请将它们放在应用程序目录中。
 
-创建好的应用文件使用以下命令执行：
+使用 `pyxel play` 命令执行创建的应用程序文件：
 
 ```sh
 pyxel play PYXEL_APP_FILE

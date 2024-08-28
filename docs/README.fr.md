@@ -413,7 +413,7 @@ Référez vous à la documentation de l’API pour l’utilisation de ces foncti
 
 Pyxels a un format de fichier spécifique (fichier d’application Pyxel) qui fonctionne sur les différentes plateformes.
 
-Créez le fichier d’application Pyxel (.pyxapp) avec la commande suivante :
+Créez le fichier d'application Pyxel (.pyxapp) avec la commande `pyxel package` :
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -421,7 +421,7 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 
 Si l'application doit inclure des ressources ou des modules supplémentaires, placez-les dans le répertoire de l'application.
 
-L’application créée peut être exécutée avec la commande suivante :
+Le fichier d'application créé peut être exécuté avec la commande `pyxel play` :
 
 ```sh
 pyxel play PYXEL_APP_FILE
