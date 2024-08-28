@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.1
+
+- Added the pyxel watch command description to the READMEs
+
 ## 2.2.0
 
 - Removed the keyword-only arguments

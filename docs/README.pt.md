@@ -311,6 +311,14 @@ Também pode ser executado como um guião Python normal:
 python3 PYTHON_SCRIPT_FILE
 ```
 
+Adicionalmente, o comando `pyxel watch` monitora mudanças em um diretório especificado e automaticamente executa novamente o programa se alguma mudança for detectada.
+
+```sh
+pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
+```
+
+Este comando pode ser interrompido pressionando `Ctrl(Command)+C`.
+
 ### Controles Especiais
 
 Os seguintes controles especiais podem ser executados quando uma aplicação Pyxel estiver sendo executada:
