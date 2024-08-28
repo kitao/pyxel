@@ -311,6 +311,14 @@ pyxel run PYTHON_SCRIPT_FILE
 python3 PYTHON_SCRIPT_FILE
 ```
 
+또한 `pyxel watch` 명령은 지정된 디렉터리의 변경 사항을 모니터링하고 변경 사항이 감지되면 자동으로 프로그램을 다시 실행합니다.
+
+```sh
+pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
+```
+
+이 명령은 `Ctrl(Command)+C`를 눌러 중지할 수 있습니다.
+
 ### 특수 조작
 
 Pyxel 애플리케이션 실행 중에, 아래의 특수 조작을 사용할 수 있습니다.

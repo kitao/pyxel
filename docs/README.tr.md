@@ -311,6 +311,14 @@ Ayrıca normal bir Python betiği gibi çalıştırılabilir:
 python3 PYTHON_SCRIPT_FILE
 ```
 
+Ayrıca, `pyxel watch` komutu belirtilen bir dizindeki değişiklikleri izler ve herhangi bir değişiklik tespit edilirse programı otomatik olarak yeniden çalıştırır.
+
+```sh
+pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
+```
+
+Bu komut `Ctrl(Command)+C` tuşlarına basılarak durdurulabilir.
+
 ### Özel Komutlar
 
 Pyxel uygulaması çalışırken aşağıdaki özel komutlar kullanılabilir:
