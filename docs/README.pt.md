@@ -413,7 +413,7 @@ Favor consultar a referência da API para o uso dessas funções.
 
 O Pyxel suporta um formato de arquivo de distribuição dedicado (arquivo de aplicação Pyxel) que é multiplataforma.
 
-Crie um arquivo de aplicação Pyxel (.pyxapp) com o seguinte comando:
+Criar o ficheiro de aplicação Pyxel (.pyxapp) com o comando `pyxel package`:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -421,7 +421,7 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 
 Se a candidatura deve incluir recursos ou módulos adicionais, coloque-os no directório da candidatura.
 
-O arquivo de aplicação pode ser executado com o seguinte comando:
+O arquivo de aplicação criado pode ser executado com o comando `pyxel play`:
 
 ```sh
 pyxel play PYXEL_APP_FILE

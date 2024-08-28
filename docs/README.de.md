@@ -413,7 +413,7 @@ Bitte lesen Sie die API-Referenz für die Verwendung dieser Funktionen.
 
 Pyxel unterstützt ein spezielles Dateiformat für das Teilen von Pyxel-Anwendungen (Pyxel application file), das plattformübergreifend funktioniert.
 
-Erstelle die Pyxel-Anwendungsdatei (.pyxapp) mit folgendem Befehl:
+Erstellen Sie die Pyxel-Anwendungsdatei (.pyxapp) mit dem Befehl `pyxel package`:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -421,7 +421,7 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 
 Wenn die Anwendung Ressourcen oder zusätzliche Module enthalten soll, legen Sie diese in das Anwendungsverzeichnis.
 
-Die erstellte Anwendungsdatei kann mit dem folgenden Befehl ausgeführt werden:
+Die erstellte Anwendungsdatei kann mit dem Befehl `pyxel play` ausgeführt werden:
 
 ```sh
 pyxel play PYXEL_APP_FILE

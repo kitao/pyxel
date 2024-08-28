@@ -413,7 +413,7 @@ Bu fonksiyonların kullanımı için API referansına başvurun.
 
 Pyxel, platformlar arası çalışan özel bir uygulama dağıtım dosya formatını (Pyxel uygulama dosyası) destekler.
 
-Aşağıdaki komut ile Pyxel uygulama dosyası (.pyxapp) oluşturabilirsiniz:
+Pyxel uygulama dosyasını (.pyxapp) `pyxel package` komutu ile oluşturun:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -421,7 +421,7 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 
 Uygulamanın kaynak veya ek modülleri içermesi gerekiyorsa, bunları uygulama dizinine yerleştirin.
 
-Oluşturulan uygulama dosyası aşağıdaki komut ile çalıştırılabilir:
+Oluşturulan uygulama dosyası `pyxel play` komutu ile çalıştırılabilir:
 
 ```sh
 pyxel play PYXEL_APP_FILE
