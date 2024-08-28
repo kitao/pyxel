@@ -311,6 +311,14 @@ Es kann auch wie ein normales Python-Skript ausgeführt werden:
 python3 PYTHON_SCRIPT_FILE
 ```
 
+Außerdem überwacht der Befehl `Pyxel Watch` Änderungen in einem bestimmten Verzeichnis und führt das Programm automatisch erneut aus, wenn Änderungen festgestellt werden.
+
+```sh
+pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
+```
+
+Dieser Befehl kann durch Drücken der Tastenkombination `Ctrl(Command)+C` beendet werden.
+
 ### Shortcuts
 
 Die folgenden Shortcuts können eingegeben werden, während eine Pyxel-Anwendung läuft:
