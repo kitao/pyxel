@@ -413,7 +413,7 @@ Pyxel의 사운드와 음악도 다음과 같은 방법으로 만들 수 있습�
 
 Pyxel은 여러 플랫폼에서 작동하는 전용 애플리케이션 배포 파일 형식 (Pyxel 애플리케이션 파일) 을 지원합니다.
 
-Pyxel 애플리케이션 파일 (.pyxapp) 은 다음 명령어를 사용해 생성할 수 있습니다.
+`pyxel package` 명령으로 Pyxel 애플리케이션 파일(.pyxapp)을 생성합니다:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
@@ -421,7 +421,7 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 
 응용 프로그램에 리소스 또는 추가 모듈이 포함되어야 하는 경우 응용 프로그램 디렉터리에 배치합니다.
 
-생성된 애플리케이션 파일은 다음 명령어를 사용하여 실행할 수 있습니다.
+생성된 애플리케이션 파일은 `pyxel play` 명령어로 실행할 수 있습니다:
 
 ```sh
 pyxel play PYXEL_APP_FILE
