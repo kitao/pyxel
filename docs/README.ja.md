@@ -305,11 +305,19 @@ pyxel.show()
 pyxel run Pythonスクリプトファイル
 ```
 
-また、通常の Python スクリプトと同様に実行することもできます。
+通常の Python スクリプトと同様に実行することもできます。
 
 ```sh
 python3 Pythonスクリプトファイル
 ```
+
+また、`pyxel watch`コマンドで、指定したディレクトリ内の変更を監視して、変化があったら自動的にプログラムを再実行することができます。
+
+```sh
+pyxel watch WATCH_DIR Pythonスクリプトファイル
+```
+
+`pyxel watch`コマンドは`Ctrl(Command)+C`で終了します。
 
 ### 特殊操作
 

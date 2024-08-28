@@ -311,6 +311,14 @@ pyxel run PYTHON_SCRIPT_FILE
 python3 PYTHON_SCRIPT_FILE
 ```
 
+此外，`pyxel watch`命令还能监控指定目录中的变化，并在检测到任何变化时自动重新运行程序。
+
+```sh
+pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
+```
+
+按`Ctrl(Command)+C`键可停止该命令。
+
 ### 快捷键
 
 以下快捷键可以在 Pyxel 运行时使用：
