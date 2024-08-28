@@ -299,25 +299,25 @@ pyxel.show()
 
 ### Pyxel 애플리케이션 실행 방법
 
-생성된 Python 스크립트는 다음 명령어를 사용해 실행할 수 있습니다.
+생성된 파이썬 스크립트는 `python` 명령을 사용하여 실행할 수 있습니다:
+
+```sh
+python PYTHON_SCRIPT_FILE
+```
+
+pyxel run` 명령으로 실행할 수도 있습니다:
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-일반 Python 스크립트처럼 실행할 수도 있습니다.
-
-```sh
-python3 PYTHON_SCRIPT_FILE
-```
-
-또한 `pyxel watch` 명령은 지정된 디렉터리의 변경 사항을 모니터링하고 변경 사항이 감지되면 자동으로 프로그램을 다시 실행합니다.
+또한 `pyxel watch` 명령을 사용하면 지정된 디렉토리의 변경 사항을 모니터링하여 변경 사항이 감지되면 자동으로 프로그램을 다시 실행할 수 있습니다:
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-이 명령은 `Ctrl(Command)+C`를 눌러 중지할 수 있습니다.
+디렉터리 모니터링은 `Ctrl(Command)+C`를 눌러 중지할 수 있습니다.
 
 ### 특수 조작
 

@@ -299,25 +299,25 @@ pyxel.show()
 
 ### 运行 Pyxel 应用
 
-创建的 Python 脚本可以使用以下命令执行：
+创建的 Python 脚本可使用`python`命令执行：
+
+```sh
+python PYTHON_SCRIPT_FILE
+```
+
+也可以使用`pyxel run`命令运行：
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-它也可以像普通的 Python 脚本一样被执行：
-
-```sh
-python3 PYTHON_SCRIPT_FILE
-```
-
-此外，`pyxel watch`命令还能监控指定目录中的变化，并在检测到任何变化时自动重新运行程序。
+此外，`pyxel watch`命令可以监控指定目录中的变化，并在检测到变化时自动重新运行程序：
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-按`Ctrl(Command)+C`键可停止该命令。
+按`Ctrl(Command)+C`键可停止目录监控。
 
 ### 快捷键
 

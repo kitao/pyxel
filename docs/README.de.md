@@ -299,25 +299,25 @@ pyxel.show()
 
 ### Pyxel-Anwendung ausführen
 
-Das erstellte Python-Skript kann mit dem folgenden Befehl ausgeführt werden:
+Ein erstelltes Python-Skript kann mit dem Befehl `python` ausgeführt werden:
+
+```sh
+python PYTHON_SCRIPT_FILE
+```
+
+Es kann auch mit dem Befehl `pyxel run` ausgeführt werden:
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-Es kann auch wie ein normales Python-Skript ausgeführt werden:
-
-```sh
-python3 PYTHON_SCRIPT_FILE
-```
-
-Außerdem überwacht der Befehl `Pyxel Watch` Änderungen in einem bestimmten Verzeichnis und führt das Programm automatisch erneut aus, wenn Änderungen festgestellt werden.
+Darüber hinaus ermöglicht der Befehl `pyxel watch` die Überwachung von Änderungen in einem bestimmten Verzeichnis und führt das Programm automatisch erneut aus, wenn Änderungen festgestellt werden:
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-Dieser Befehl kann durch Drücken der Tastenkombination `Ctrl(Command)+C` beendet werden.
+Die Verzeichnisüberwachung kann durch Drücken der Tastenkombination `Ctrl(Command)+C` beendet werden.
 
 ### Shortcuts
 
