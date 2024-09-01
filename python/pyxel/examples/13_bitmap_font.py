@@ -10,9 +10,9 @@ def draw_text_with_border(x, y, s, col, bcol, font):
                     y + dy,
                     s,
                     bcol,
-                    font=font,
+                    font,
                 )
-    pyxel.text(x, y, s, col, font=font)
+    pyxel.text(x, y, s, col, font)
 
 
 pyxel.init(128, 128, title="Bitmap Font")
@@ -26,7 +26,7 @@ pyxel.blt(0, 0, 1, 0, 0, 128, 128)
 s = "▲Pyxel︎▲"
 w = umplus10.text_width(s)
 pyxel.rect(21, 18, w, 1, 15)
-pyxel.text(21, 8, s, 8, font=umplus10)
+pyxel.text(21, 8, s, 8, umplus10)
 draw_text_with_border(4, 98, "気軽に楽しく", 7, 5, umplus12)
 draw_text_with_border(4, 113, "プログラミング！", 7, 5, umplus12)
 pyxel.show()
