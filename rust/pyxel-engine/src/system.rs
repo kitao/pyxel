@@ -282,16 +282,16 @@ impl Pyxel {
         screen.dither(1.0);
 
         let fps = format!("{:.*}", 2, self.system.fps_profiler.average_fps());
-        screen.text(1.0, 0.0, &fps, 1);
-        screen.text(0.0, 0.0, &fps, 2);
+        screen.text(1.0, 0.0, &fps, 1, None);
+        screen.text(0.0, 0.0, &fps, 2, None);
 
         let update_time = format!("{:.*}", 2, self.system.update_profiler.average_time());
-        screen.text(1.0, 6.0, &update_time, 1);
-        screen.text(0.0, 6.0, &update_time, 2);
+        screen.text(1.0, 6.0, &update_time, 1, None);
+        screen.text(0.0, 6.0, &update_time, 2, None);
 
         let draw_time = format!("{:.*}", 2, self.system.draw_profiler.average_time());
-        screen.text(1.0, 12.0, &draw_time, 1);
-        screen.text(0.0, 12.0, &draw_time, 2);
+        screen.text(1.0, 12.0, &draw_time, 1, None);
+        screen.text(0.0, 12.0, &draw_time, 2, None);
 
         screen.canvas.clip_rect = clip_rect;
         screen.canvas.camera_x = camera_x;
