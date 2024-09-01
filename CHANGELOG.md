@@ -3,6 +3,10 @@
 ## 2.2.1
 
 - Added the pyxel watch command description to the READMEs
+- Removed an unnecessary line in Example 14
+- Added the Font class
+- Added a font option to the text function
+- Changed Example 14 to use the native font rendering
 
 ## 2.2.0
 
