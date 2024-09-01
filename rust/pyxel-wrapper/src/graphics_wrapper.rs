@@ -2,6 +2,7 @@ use std::sync::Once;
 
 use pyo3::prelude::*;
 
+use crate::font_wrapper::Font;
 use crate::image_wrapper::Image;
 use crate::pyxel_singleton::pyxel;
 use crate::tilemap_wrapper::Tilemap;
@@ -163,8 +164,14 @@ fn bltm(
 }
 
 #[pyfunction]
-fn text(x: f64, y: f64, s: &str, col: pyxel::Color) {
-    pyxel().text(x, y, s, col);
+#[pyo3(signature = (x, y, s, col, font=None))]
+fn text(x: f64, y: f64, s: &str, col: pyxel::Color, font: Option<Font>) {
+    let font = if let Some(font) = font {
+        Some(font.inner.clone())
+    } else {
+        None
+    };
+    pyxel().text(x, y, s, col, font);
 }
 
 #[pyfunction]
