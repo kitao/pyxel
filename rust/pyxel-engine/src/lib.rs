@@ -25,6 +25,7 @@ mod audio;
 mod blip_buf;
 mod canvas;
 mod channel;
+mod font;
 mod graphics;
 mod image;
 mod input;
@@ -49,6 +50,7 @@ mod watch_info;
 use pyxel_platform::keys;
 
 pub use crate::channel::{Channel, Detune, Note, SharedChannel, Speed, Volume};
+pub use crate::font::{Font, SharedFont};
 pub use crate::image::{Color, Image, Rgb24, SharedImage};
 pub use crate::keys::*;
 pub use crate::music::{Music, SharedMusic, SharedSeq};
