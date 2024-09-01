@@ -5,6 +5,7 @@ use std::path::Path;
 use image::imageops;
 
 use crate::canvas::{Canvas, CopyArea, ToIndex};
+use crate::font::SharedFont;
 use crate::pyxel::{COLORS, FONT_IMAGE, IMAGES};
 use crate::rect_area::RectArea;
 use crate::settings::{
@@ -566,10 +567,14 @@ impl Image {
         }
     }
 
-    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color) {
+    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color, font: Option<SharedFont>) {
         let mut x = utils::f64_to_i32(x); // No need to reflect camera_x
         let mut y = utils::f64_to_i32(y); // No need to reflect camera_y
         let color = self.palette[color as usize];
+        if let Some(font) = font {
+            font.lock().draw(&mut self.canvas, x, y, string, color);
+            return;
+        }
         let palette1 = self.palette[1];
         self.pal(1, color);
         let start_x = x;

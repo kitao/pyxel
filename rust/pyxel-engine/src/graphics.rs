@@ -4,6 +4,7 @@ use std::mem::size_of;
 use cfg_if::cfg_if;
 use glow::HasContext;
 
+use crate::font::SharedFont;
 use crate::image::Color;
 use crate::pyxel::Pyxel;
 use crate::settings::{BACKGROUND_COLOR, MAX_COLORS, NUM_SCREEN_TYPES};
@@ -336,8 +337,8 @@ impl Pyxel {
         );
     }
 
-    pub fn text(&self, x: f64, y: f64, string: &str, color: Color) {
-        self.screen.lock().text(x, y, string, color);
+    pub fn text(&self, x: f64, y: f64, string: &str, color: Color, font: Option<SharedFont>) {
+        self.screen.lock().text(x, y, string, color, font);
     }
 
     pub(crate) fn render_screen(&mut self) {
