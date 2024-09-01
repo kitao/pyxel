@@ -17,6 +17,7 @@ mod utils;
 mod audio_wrapper;
 mod channel_wrapper;
 mod constant_wrapper;
+mod font_wrapper;
 mod graphics_wrapper;
 mod image_wrapper;
 mod input_wrapper;
@@ -34,12 +35,13 @@ use pyo3::prelude::*;
 
 #[pymodule]
 fn pyxel_wrapper(_py: Python, m: Bound<'_, PyModule>) -> PyResult<()> {
+    crate::font_wrapper::add_font_class(&m)?;
     crate::image_wrapper::add_image_class(&m)?;
     crate::tilemap_wrapper::add_tilemap_class(&m)?;
     crate::channel_wrapper::add_channel_class(&m)?;
+    crate::tone_wrapper::add_tone_class(&m)?;
     crate::sound_wrapper::add_sound_class(&m)?;
     crate::music_wrapper::add_music_class(&m)?;
-    crate::tone_wrapper::add_tone_class(&m)?;
 
     crate::constant_wrapper::add_module_constants(&m)?;
     crate::variable_wrapper::add_module_variables(&m)?;
