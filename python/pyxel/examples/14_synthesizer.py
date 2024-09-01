@@ -166,7 +166,6 @@ class App:
             WaveformEditor(*param) for param in WAVEFORM_EDITOR_PARAMS
         ]
         pyxel.mouse(True)
-        pyxel.images[0].blt(0, 0, pyxel.cursor, 0, 0, 16, 16)
         pyxel.playm(0, loop=True)
         pyxel.run(self.update, self.draw)
 
