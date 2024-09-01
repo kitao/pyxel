@@ -110,8 +110,8 @@ impl Font {
         })
     }
 
-    pub fn draw_width(&self, text: &str) -> i32 {
-        text.chars()
+    pub fn text_width(&self, s: &str) -> i32 {
+        s.chars()
             .map(|c| self.glyphs.get(&(c as i32)).map_or(0, |glyph| glyph.dwidth))
             .sum()
     }
