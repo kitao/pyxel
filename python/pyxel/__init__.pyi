@@ -411,6 +411,11 @@ class Seq(Generic[T]):
     def from_list(self, lst: List[T]) -> None: ...
     def to_list(self) -> List[T]: ...
 
+# Font class
+class Font:
+    def __init__(filename: str) -> None: ...
+    def text_width(s: str) -> None: ...
+
 # Image class
 class Image:
     width: int
@@ -466,6 +471,7 @@ class Image:
         w: float,
         h: float,
         colkey: Optional[int] = None,
+        *,
         rotate: Optional[float] = None,
         scale: Optional[float] = None,
     ) -> None: ...
@@ -479,10 +485,13 @@ class Image:
         w: float,
         h: float,
         colkey: Optional[int] = None,
+        *,
         rotate: Optional[float] = None,
         scale: Optional[float] = None,
     ) -> None: ...
-    def text(self, x: float, y: float, s: str, col: int) -> None: ...
+    def text(
+        self, x: float, y: float, s: str, col: int, font: Optional[Font]
+    ) -> None: ...
 
 # Tilemap class
 class Tilemap:
@@ -558,6 +567,7 @@ class Tilemap:
         w: float,
         h: float,
         tilekey: Optional[Tuple[int, int]] = None,
+        *,
         rotate: Optional[float] = None,
         scale: Optional[float] = None,
     ) -> None: ...
@@ -756,6 +766,7 @@ def blt(
     w: float,
     h: float,
     colkey: Optional[int] = None,
+    *,
     rotate: Optional[float] = None,
     scale: Optional[float] = None,
 ) -> None: ...
@@ -768,10 +779,11 @@ def bltm(
     w: float,
     h: float,
     colkey: Optional[int] = None,
+    *,
     rotate: Optional[float] = None,
     scale: Optional[float] = None,
 ) -> None: ...
-def text(x: float, y: float, s: str, col: int) -> None: ...
+def text(x: float, y: float, s: str, col: int, font: Optional[Font]) -> None: ...
 
 # Audio
 class Channel: ...
