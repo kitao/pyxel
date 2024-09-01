@@ -19,8 +19,8 @@ impl Font {
         Self::wrap(pyxel::Font::new(filename))
     }
 
-    pub fn draw_width(&self, s: &str) -> i32 {
-        self.inner.lock().draw_width(s)
+    pub fn text_width(&self, s: &str) -> i32 {
+        self.inner.lock().text_width(s)
     }
 }
 

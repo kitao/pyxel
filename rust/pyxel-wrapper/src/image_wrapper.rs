@@ -1,6 +1,7 @@
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
 
+use crate::font_wrapper::Font;
 use crate::pyxel_singleton::pyxel;
 use crate::tilemap_wrapper::Tilemap;
 
@@ -213,8 +214,14 @@ impl Image {
         Ok(())
     }
 
-    pub fn text(&self, x: f64, y: f64, s: &str, col: pyxel::Color) {
-        self.inner.lock().text(x, y, s, col);
+    #[pyo3(signature = (x, y, s, col, font=None))]
+    pub fn text(&self, x: f64, y: f64, s: &str, col: pyxel::Color, font: Option<Font>) {
+        let font = if let Some(font) = font {
+            Some(font.inner.clone())
+        } else {
+            None
+        };
+        self.inner.lock().text(x, y, s, col, font);
     }
 }
 
