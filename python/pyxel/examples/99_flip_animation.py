@@ -1,6 +1,6 @@
 import pyxel
 
-phase = 0
+phase = 0.0
 pyxel.init(128, 128, title="Flip Animation")
 
 while True:
