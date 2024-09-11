@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.2
+
+- Fixed the mypy errors
+
 ## 2.2.1
 
 - Added the pyxel watch command description to the READMEs
