@@ -50,10 +50,10 @@ def _set_slice(self, x, y, slice):
             self.pset(x + xi, y + yi, slice[yi][xi])
 
 
-pyxel.user_pal = _user_pal
-pyxel.Image.rect2 = pyxel.Tilemap.rect2 = _rect2
-pyxel.Image.rectb2 = pyxel.Tilemap.rectb2 = _rectb2
-pyxel.Image.elli2 = pyxel.Tilemap.elli2 = _elli2
-pyxel.Image.ellib2 = pyxel.Tilemap.ellib2 = _ellib2
-pyxel.Image.get_slice = pyxel.Tilemap.get_slice = _get_slice
-pyxel.Image.set_slice = pyxel.Tilemap.set_slice = _set_slice
+pyxel.user_pal = _user_pal  # type: ignore
+pyxel.Image.rect2 = pyxel.Tilemap.rect2 = _rect2  # type: ignore
+pyxel.Image.rectb2 = pyxel.Tilemap.rectb2 = _rectb2  # type: ignore
+pyxel.Image.elli2 = pyxel.Tilemap.elli2 = _elli2  # type: ignore
+pyxel.Image.ellib2 = pyxel.Tilemap.ellib2 = _ellib2  # type: ignore
+pyxel.Image.get_slice = pyxel.Tilemap.get_slice = _get_slice  # type: ignore
+pyxel.Image.set_slice = pyxel.Tilemap.set_slice = _set_slice  # type: ignore
