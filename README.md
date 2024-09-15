@@ -18,38 +18,25 @@ Thanks to its simple specifications inspired by retro gaming consoles, such as o
 The motivation for the development of Pyxel is the feedback from users. Please give Pyxel a star on GitHub!
 
 <p>
-<div style="display: inline-block; width: 320px; height: 240px; text-align: center; line-height: 320px; vertical-align: middle;">
 <a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">
-<img src="docs/images/10_platformer.gif" style="max-height: 100%; vertical-align: middle;">
+<img src="docs/images/10_platformer.gif" width="320" style="padding-left: 30px; padding-right: 30px; box-sizing: border-box;">
 </a>
-</div>
-<div style="display: inline-block; width: 320px; height: 240px; text-align: center; line-height: 320px; vertical-align: middle;">
 <a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">
-<img src="docs/images/30SecondsOfDaylight.gif" style="max-height: 90%; vertical-align: middle;">
+<img src="docs/images/30SecondsOfDaylight.gif" width="320" style="padding-left: 5px; padding-right: 5px; box-sizing: border-box;">
 </a>
-</div>
-<div style="display: inline-block; width: 320px; height: 240px; text-align: center; line-height: 320px; vertical-align: middle;">
 <a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">
-<img src="docs/images/07_snake.gif" style="max-height: 95%; vertical-align: middle;">
+<img src="docs/images/07_snake.gif" width="320" style="padding-left: 55px; padding-right: 55px; box-sizing: border-box;">
 </a>
-</div>
-<div style="display: inline-block; width: 320px; height: 240px; text-align: center; line-height: 320px; vertical-align: middle;">
 <a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
-<img src="docs/images/megaball.gif" style="max-height: 90%; vertical-align: middle;">
+<img src="docs/images/megaball.gif" width="320" style="padding-left: 10px; padding-right: 10px; box-sizing: border-box;">
 </a>
-</div>
-<div style="display: inline-block; width: 320px; height: 240px; text-align: center; line-height: 320px; vertical-align: middle;">
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
-<img src="docs/images/image_tilemap_editor.gif" style="max-height: 90%; vertical-align: middle;">
+<img src="docs/images/image_tilemap_editor.gif" width="320" style="padding-left: 5px; padding-right: 5px; box-sizing: border-box;">
 </a>
-</div>
-<div style="display: inline-block; width: 320px; height: 240px; text-align: center; line-height: 320px; vertical-align: middle;">
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
-<img src="docs/images/sound_music_editor.gif" style="max-height: 90%; vertical-align: middle;">
+<img src="docs/images/sound_music_editor.gif" width="320" style="padding-left: 5px; padding-right: 5px; box-sizing: border-box;">
 </a>
-</div>
 </p>
-<br>
 
 Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
 
