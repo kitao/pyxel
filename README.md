@@ -19,22 +19,22 @@ The motivation for the development of Pyxel is the feedback from users. Please g
 
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">
-<img src="docs/images/10_platformer.gif" width="320" style="padding-left: 30px; padding-right: 30px; box-sizing: border-box;">
+<img src="docs/images/10_platformer.gif" width="290">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">
-<img src="docs/images/30SecondsOfDaylight.gif" width="320" style="padding-left: 5px; padding-right: 5px; box-sizing: border-box;">
+<img src="docs/images/30SecondsOfDaylight.gif" width="350">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">
-<img src="docs/images/07_snake.gif" width="320" style="padding-left: 55px; padding-right: 55px; box-sizing: border-box;">
+<a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">
+<img src="docs/images/02_jump_game.gif" width="330">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
-<img src="docs/images/megaball.gif" width="320" style="padding-left: 10px; padding-right: 10px; box-sizing: border-box;">
+<img src="docs/images/megaball.gif" width="310">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
-<img src="docs/images/image_tilemap_editor.gif" width="320" style="padding-left: 5px; padding-right: 5px; box-sizing: border-box;">
+<img src="docs/images/image_tilemap_editor.gif" width="320">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
-<img src="docs/images/sound_music_editor.gif" width="320" style="padding-left: 5px; padding-right: 5px; box-sizing: border-box;">
+<img src="docs/images/sound_music_editor.gif" width="320">
 </a>
 </p>
 
