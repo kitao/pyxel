@@ -18,17 +18,17 @@ Grazie alle sue specifiche limitate ispirate dalle console di videogiochi rétro
 La motivazione dello sviluppo di Pyxel è il feedback degli utenti. Date a Pyxel una stella su GitHub!
 
 <p>
-<a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">
-<img src="images/01_hello_pyxel.gif" width="320">
+<a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">
+<img src="images/10_platformer.gif" width="290">
+</a>
+<a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">
+<img src="images/30SecondsOfDaylight.gif" width="350">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">
-<img src="images/02_jump_game.gif" width="320">
+<img src="images/02_jump_game.gif" width="330">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">
-<img src="images/03_draw_api.gif" width="320">
-</a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">
-<img src="images/04_sound_api.gif" width="320">
+<a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">
+<img src="images/megaball.gif" width="310">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_tilemap_editor.gif" width="320">

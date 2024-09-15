@@ -3,6 +3,7 @@
 ## 2.2.2
 
 - Fixed the mypy errors
+- Changed an image layout in the READMEs
 
 ## 2.2.1
 
