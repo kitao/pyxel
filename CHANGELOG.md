@@ -4,6 +4,7 @@
 
 - Fixed the mypy errors
 - Changed an image layout in the READMEs
+- Updated the Python version in GitHub Actions to 3.12
 
 ## 2.2.1
 
