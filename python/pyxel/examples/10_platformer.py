@@ -1,3 +1,10 @@
+# title: Pyxel Platformer
+# author: Takashi Kitao
+# desc: A Pyxel platformer example
+# site: https://github.com/kitao/pyxel
+# license: MIT
+# version: 1.0
+
 import pyxel
 
 TRANSPARENT_COLOR = 2
