@@ -174,15 +174,15 @@ def _run_python_script_in_separate_process(python_script_file):
 def _get_metadata_comment(startup_script_file):
     METADATA_FIELDS = ["title", "author", "desc", "site", "license", "version"]
     metadata = {}
-    metadata_pattern = re.compile(r"#\s*(\w+)\s*:\s*(.+)\s*$")
+    metadata_pattern = re.compile(r"#\s*(.+)\s*:\s*(.+)")
     with open(startup_script_file, "r") as f:
         for line in f:
             match = metadata_pattern.match(line)
             if match:
                 key, value = match.groups()
-                key = key.lower()
+                key = key.strip().lower()
                 if key in METADATA_FIELDS:
-                    metadata[key] = value
+                    metadata[key] = value.strip()
     metadata_comment = ""
     max_key_len = max(len(key) for key in metadata)
     max_value_len = max(len(value) for _, value in metadata.items())
