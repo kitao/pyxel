@@ -124,7 +124,7 @@ test: install
 	@pyxel run $(EXAMPLES_DIR)/15_tiled_map_file.py
 	@pyxel run $(EXAMPLES_DIR)/16_transform.py
 	@pyxel run $(EXAMPLES_DIR)/99_flip_animation.py
-	@pyxel play $(EXAMPLES_DIR)/30SecondsOfDaylight.pyxapp
+	@pyxel play $(EXAMPLES_DIR)/30sec_of_daylight.pyxapp
 	@pyxel play $(EXAMPLES_DIR)/megaball.pyxapp
 	@pyxel play $(EXAMPLES_DIR)/8bit-bgm-gen.pyxapp
 	@pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
