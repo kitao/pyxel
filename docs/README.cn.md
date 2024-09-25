@@ -421,6 +421,17 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 
 如果应用程序应包括资源或其他模块，请将它们放在应用程序目录中。
 
+通过在启动脚本中以下列格式指定元数据，可在运行时显示元数据。除 `title` 和 `author` 以外的字段可以省略。
+
+```python
+# title: Pyxel Platformer
+# author: Takashi Kitao
+# desc: A Pyxel platformer example
+# site: https://github.com/kitao/pyxel
+# license: MIT
+# version: 1.0
+```
+
 使用 `pyxel play` 命令执行创建的应用程序文件：
 
 ```sh
