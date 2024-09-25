@@ -421,6 +421,17 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 
 Uygulamanın kaynak veya ek modülleri içermesi gerekiyorsa, bunları uygulama dizinine yerleştirin.
 
+Meta veriler, başlangıç komut dosyası içinde aşağıdaki biçimde belirtilerek çalışma zamanında görüntülenebilir. `title` ve `author` dışındaki alanlar atlanabilir.
+
+```python
+# title: Pyxel Platformer
+# author: Takashi Kitao
+# desc: A Pyxel platformer example
+# site: https://github.com/kitao/pyxel
+# license: MIT
+# version: 1.0
+```
+
 Oluşturulan uygulama dosyası `pyxel play` komutu ile çalıştırılabilir:
 
 ```sh

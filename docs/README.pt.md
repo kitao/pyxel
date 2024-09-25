@@ -421,6 +421,17 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 
 Se a candidatura deve incluir recursos ou módulos adicionais, coloque-os no directório da candidatura.
 
+Os metadados podem ser exibidos em tempo de execução, especificando-os no seguinte formato dentro do script de inicialização. Outros campos além de `title` e `author` podem ser omitidos.
+
+```python
+# title: Pyxel Platformer
+# author: Takashi Kitao
+# desc: A Pyxel platformer example
+# site: https://github.com/kitao/pyxel
+# license: MIT
+# version: 1.0
+```
+
 O arquivo de aplicação criado pode ser executado com o comando `pyxel play`:
 
 ```sh
