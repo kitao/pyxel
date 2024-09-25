@@ -21,8 +21,8 @@ Pyxel 개발의 동기는 사용자의 피드백입니다. GitHub에서 Pyxel에
 <a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">
 <img src="images/10_platformer.gif" width="290">
 </a>
-<a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">
-<img src="images/30SecondsOfDaylight.gif" width="350">
+<a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">
+<img src="images/30sec_of_daylight.gif" width="350">
 </a>
 <a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">
 <img src="images/02_jump_game.gif" width="330">
@@ -214,10 +214,10 @@ pyxel copy_examples
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
 </tr>
 <tr>
-<td>30SecondsOfDaylight.pyxapp</td>
+<td>30sec_of_daylight.pyxapp</td>
 <td>제 1회 Pyxel Jam 우승 작품 (<a href="https://x.com/helpcomputer0">Adam</a> 제작)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/30SecondsOfDaylight.html">Demo</a></td>
-<td><a href="https://github.com/kitao/30SecondsOfDaylight">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Demo</a></td>
+<td><a href="https://github.com/kitao/30sec_of_daylight">Code</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
@@ -238,7 +238,7 @@ pyxel copy_examples
 ```sh
 cd pyxel_examples
 pyxel run 01_hello_pyxel.py
-pyxel play 30SecondsOfDaylight.pyxapp
+pyxel play 30sec_of_daylight.pyxapp
 ```
 
 ## 사용 방법
