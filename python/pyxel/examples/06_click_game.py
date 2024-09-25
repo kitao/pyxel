@@ -1,3 +1,10 @@
+# title: Pyxel Bubbles
+# author: ttrkaya
+# desc: A Pyxel mouse click game example
+# site: https://github.com/kitao/pyxel
+# license: MIT
+# version: 1.0
+
 import pyxel
 
 SCREEN_WIDTH = 256
