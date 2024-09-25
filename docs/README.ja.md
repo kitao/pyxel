@@ -421,6 +421,17 @@ pyxel package アプリケーションのディレクトリ 起動スクリプ�
 
 リソースや追加モジュールを同梱する場合は、アプリケーションのディレクトリ内に配置してください。
 
+起動スクリプトに次の形式でメタデータを記載すると実行時に表示させることができます。`title`、`author`以外のフィールドは省略可能です。
+
+```python
+# title: Pyxel Platformer
+# author: Takashi Kitao
+# desc: A Pyxel platformer example
+# site: https://github.com/kitao/pyxel
+# license: MIT
+# version: 1.0
+```
+
 作成したアプリケーションファイルは`pyxel play`コマンドで実行します。
 
 ```sh
