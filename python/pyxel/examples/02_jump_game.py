@@ -1,3 +1,10 @@
+# title: Pyxel Jump
+# author: Takashi Kitao
+# desc: A Pyxel simple game example
+# site: https://github.com/kitao/pyxel
+# license: MIT
+# version: 1.0
+
 import pyxel
 
 
