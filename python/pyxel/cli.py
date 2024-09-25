@@ -183,6 +183,8 @@ def _get_metadata_comment(startup_script_file):
                 key = key.strip().lower()
                 if key in METADATA_FIELDS:
                     metadata[key] = value.strip()
+    if not metadata:
+        return ""
     metadata_comment = ""
     max_key_len = max(len(key) for key in metadata)
     max_value_len = max(len(value) for _, value in metadata.items())
@@ -281,7 +283,8 @@ def package_pyxel_app(app_dir, startup_script_file):
     _check_file_exists(startup_script_file)
     _check_file_under_dir(startup_script_file, app_dir)
     metadata_comment = _get_metadata_comment(startup_script_file)
-    print(metadata_comment)
+    if metadata_comment:
+        print(metadata_comment)
     app_dir = os.path.abspath(app_dir)
     setting_file = os.path.join(app_dir, pyxel.APP_STARTUP_SCRIPT_FILE)
     with open(setting_file, "w") as f:
