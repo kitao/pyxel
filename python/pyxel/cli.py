@@ -171,6 +171,37 @@ def _run_python_script_in_separate_process(python_script_file):
     return worker
 
 
+def _get_metadata_comment(startup_script_file):
+    METADATA_FIELDS = ["title", "author", "desc", "site", "license", "version"]
+    metadata = {}
+    metadata_pattern = re.compile(r"#\s*(\w+)\s*:\s*(.+)\s*$")
+    with open(startup_script_file, "r") as f:
+        for line in f:
+            match = metadata_pattern.match(line)
+            if match:
+                key, value = match.groups()
+                key = key.lower()
+                if key in METADATA_FIELDS:
+                    metadata[key] = value
+    metadata_comment = ""
+    max_key_len = max(len(key) for key in metadata)
+    max_value_len = max(len(value) for _, value in metadata.items())
+    border = "-" * min((max_key_len + max_value_len + 3), 80)
+    metadata_comment = border + "\n"
+    for key in METADATA_FIELDS:
+        if key in metadata:
+            value = metadata[key]
+            metadata_comment += f"{key.ljust(max_key_len)} : {value}\n"
+    metadata_comment += border
+    return metadata_comment
+
+
+def _print_zip_comment(pyxel_app_file):
+    zf = zipfile.ZipFile(pyxel_app_file)
+    if zf.comment:
+        print(zf.comment.decode(encoding="utf-8"))
+
+
 def run_python_script(python_script_file):
     python_script_file = _complete_extension(python_script_file, "run", ".py")
     _check_file_exists(python_script_file)
@@ -222,6 +253,8 @@ def play_pyxel_app(pyxel_app_file):
     pyxel_app_file = _complete_extension(
         pyxel_app_file, "play", pyxel.APP_FILE_EXTENSION
     )
+    _check_file_exists(pyxel_app_file)
+    _print_zip_comment(pyxel_app_file)
     startup_script_file = _extract_pyxel_app(pyxel_app_file)
     if startup_script_file:
         sys.path.append(os.path.dirname(startup_script_file))
@@ -247,6 +280,8 @@ def package_pyxel_app(app_dir, startup_script_file):
     _check_dir_exists(app_dir)
     _check_file_exists(startup_script_file)
     _check_file_under_dir(startup_script_file, app_dir)
+    metadata_comment = _get_metadata_comment(startup_script_file)
+    print(metadata_comment)
     app_dir = os.path.abspath(app_dir)
     setting_file = os.path.join(app_dir, pyxel.APP_STARTUP_SCRIPT_FILE)
     with open(setting_file, "w") as f:
@@ -258,6 +293,7 @@ def package_pyxel_app(app_dir, startup_script_file):
         "w",
         compression=zipfile.ZIP_DEFLATED,
     ) as zf:
+        zf.comment = metadata_comment.encode(encoding="utf-8")
         files = [setting_file] + _files_in_dir(app_dir)
         for file in files:
             if os.path.basename(file) == pyxel_app_file or "/__pycache__/" in file:
