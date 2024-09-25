@@ -1,3 +1,10 @@
+# title: Pyxel Shooter
+# author: Takashi Kitao
+# desc: A Pyxel shoot'em up game example
+# site: https://github.com/kitao/pyxel
+# license: MIT
+# version: 1.0
+
 import pyxel
 
 SCENE_TITLE = 0
