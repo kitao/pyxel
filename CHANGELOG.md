@@ -6,6 +6,7 @@
 - Changed an image layout in the READMEs
 - Updated the Python version in GitHub Actions to 3.12
 - Enabled adding metadata to a Pyxel application file
+- Added metadata to the bundled Pyxel application files
 
 ## 2.2.1
 
@@ -327,7 +328,7 @@
 
 - Limited depth to be checked to 3 for the watch command
 - Fixed the package command to accept various file specifications
-- Removed extra files from sample Pyxel apps
+- Removed extra files from sample Pyxel application files
 - Added running message to the watch command
 
 ## 1.9.2
@@ -427,7 +428,7 @@
 - Added virtual gamepad surppot for the web
 - Added gamepad support to examples
 - Added the gamepad attribute to HTML custom elements
-- Modified key assigns for Pyxel applications
+- Modified key assigns for Pyxel application files
 
 ## 1.8.8
 
