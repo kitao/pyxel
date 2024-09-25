@@ -421,6 +421,17 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 
 응용 프로그램에 리소스 또는 추가 모듈이 포함되어야 하는 경우 응용 프로그램 디렉터리에 배치합니다.
 
+메타데이터는 시작 스크립트 내에서 다음 형식으로 지정하여 런타임에 표시할 수 있습니다. `title`와 `author` 이외의 필드는 생략할 수 있습니다.
+
+```python
+# title: Pyxel Platformer
+# author: Takashi Kitao
+# desc: A Pyxel platformer example
+# site: https://github.com/kitao/pyxel
+# license: MIT
+# version: 1.0
+```
+
 생성된 애플리케이션 파일은 `pyxel play` 명령어로 실행할 수 있습니다:
 
 ```sh
