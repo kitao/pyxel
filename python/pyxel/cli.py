@@ -174,7 +174,7 @@ def _run_python_script_in_separate_process(python_script_file):
 def _get_metadata_comment(startup_script_file):
     METADATA_FIELDS = ["title", "author", "desc", "site", "license", "version"]
     metadata = {}
-    metadata_pattern = re.compile(r"#\s*(.+)\s*:\s*(.+)")
+    metadata_pattern = re.compile(r"#\s*(.+?)\s*:\s*(.+)")
     with open(startup_script_file, "r") as f:
         for line in f:
             match = metadata_pattern.match(line)
