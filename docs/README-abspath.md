@@ -45,14 +45,15 @@ Pyxel is open source and free to use. Let's start making a retro game with Pyxel
 ## Specifications
 
 - Runs on Windows, Mac, Linux, and Web
-- Programming with Python
-- 16 color palette
-- 256x256 sized 3 image banks
-- 256x256 sized 8 tilemaps
+- Programming in Python
+- 16-color palette
+- 256x256-sized 3 image banks
+- 256x256-sized 8 tilemaps
 - 4 channels with 64 definable sounds
-- 8 musics which can combine arbitrary sounds
+- 8 music tracks that can combine any sounds
 - Keyboard, mouse, and gamepad inputs
 - Image and sound editor
+- User expansion of colors, channels, and banks
 
 ### Color Palette
 
