@@ -3,6 +3,7 @@
 ## 2.2.3
 
 - Updated the description of Pyxel's features in the READMEs
+- Ensured that the metadata is in UTF-8 format
 
 ## 2.2.2
 
