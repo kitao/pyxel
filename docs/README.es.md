@@ -45,14 +45,15 @@ Pyxel es de código abierto y gratuito. ¡Empecemos haciendo un juego retro con 
 ## Características
 
 - Funciona en Windows, Mac, Linux y Web
-- Programación con Python
+- Programación en Python
 - Paleta de 16 colores
-- 3 bancos de imágenes de 256x256
-- 8 mapas de 256x256
-- 4 canales con 64 posibles definiciones de sonido
-- 8 músicas que pueden combinar sonidos arbitrarios
-- Entrada de teclado, ratón y gamepad.
-- Editor de imágenes y sonido
+- 3 bancos de imágenes de 256x256 píxeles
+- 8 mapas de baldosas de 256x256 píxeles
+- 4 canales con 64 sonidos definibles
+- 8 pistas de música que pueden combinar cualquier sonido
+- Entradas de teclado, ratón y gamepad
+- Editor de imágenes y sonidos
+- Expansión de colores, canales y bancos por el usuario
 
 ### Paleta de colores
 

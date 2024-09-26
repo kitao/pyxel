@@ -44,15 +44,16 @@ Pyxel ist quelloffen und kostenlos zu verwenden. Fang an, ein Retro-Spiel mit Py
 
 ## Spezifikationen
 
-- Läuft unter Windows, Mac, Linux und Web
-- Programming with Python
-- 16 color palette
-- 3 Image-Banks in der Größe 256x256
-- 256x256 große 8 Tilemaps
-- 4 Kanäle mit 64 definierbaren Tönen
-- 8 Musikspuren, die beliebige Klänge kombinieren können
+- Läuft auf Windows, Mac, Linux und Web
+- Programmierung in Python
+- 16-Farben-Palette
+- 3 Bildbanken in der Größe 256x256
+- 8 Kachelkarten in der Größe 256x256
+- 4 Kanäle mit 64 definierbaren Sounds
+- 8 Musikstücke, die beliebige Sounds kombinieren können
 - Tastatur-, Maus- und Gamepad-Eingaben
-- Bild- und Toneditor
+- Bild- und Sound-Editor
+- Benutzererweiterung für Farben, Kanäle und Banken
 
 ### Farbpalette
 
