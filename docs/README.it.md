@@ -45,14 +45,15 @@ Pyxel è open source e libero da usare. Cominciamo a fare giochi rétro con Pyxe
 ## Specifiche
 
 - Funziona su Windows, Mac, Linux e Web
-- Programmazione con Python
-- Palette a 16 colori
-- 3 banche di immagini di dimensioni 256x256
-- 8 tilemap di dimensioni 256x256
+- Programmazione in Python
+- Tavolozza di 16 colori
+- 3 banchi di immagini di dimensioni 256x256
+- 8 mappe di tile di dimensioni 256x256
 - 4 canali con 64 suoni definibili
-- 8 musiche che possono combinare suoni arbitrari
-- Input di tastiera, mouse, e controller
-- Editor suoni e immagini
+- 8 tracce musicali che possono combinare qualsiasi suono
+- Input da tastiera, mouse e gamepad
+- Editor di immagini e suoni
+- Espansione di colori, canali e banchi da parte dell'utente
 
 ### Palette colori
 

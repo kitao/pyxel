@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.3
+
+- Updated the description of Pyxel's features in the READMEs
+
 ## 2.2.2
 
 - Fixed the mypy errors
