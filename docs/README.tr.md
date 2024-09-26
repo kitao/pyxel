@@ -44,15 +44,16 @@ Pyxel tamamen ücretsiz ve açık kaynaklıdır. Haydi, Pyxel ile birlikte retro
 
 ## Özellikler
 
-- Windows, Mac, Linux ve Web üzerinde çalışır
-- Python ile programlandı
+- Windows, Mac, Linux ve Web'de çalışır
+- Python ile programlama
 - 16 renk paleti
-- 256x256 boyutlarında 3 resim seti
-- 256x256 boyutlarında 8 tileset
-- 64 adet tanımlanabilir ses ile 4 kanal
-- Dilediğiniz sesleri birleştirebilen 8 müzik
-- Klavye, fare ve gamepad girişi
-- Resim ve ses düzenleyici
+- 256x256 boyutunda 3 resim bankası
+- 256x256 boyutunda 8 karo haritası
+- 64 tanımlanabilir sesli 4 kanal
+- Herhangi bir sesi birleştirebilen 8 müzik parçası
+- Klavye, fare ve oyun kumandası girişleri
+- Görüntü ve ses düzenleyici
+- Renkler, kanallar ve bankalar için kullanıcı genişletme seçeneği
 
 ### Renk Paleti
 
