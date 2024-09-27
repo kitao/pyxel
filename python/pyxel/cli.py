@@ -171,7 +171,19 @@ def _run_python_script_in_separate_process(python_script_file):
     return worker
 
 
-def _get_metadata_comment(startup_script_file):
+def _extract_pyxel_app(pyxel_app_file):
+    _check_file_exists(pyxel_app_file)
+    app_dir = _create_app_dir()
+    zf = zipfile.ZipFile(pyxel_app_file)
+    zf.extractall(app_dir)
+    pattern = os.path.join(app_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
+    for setting_file in glob.glob(pattern):
+        with open(setting_file, "r") as f:
+            return os.path.join(os.path.dirname(setting_file), f.read())
+    return None
+
+
+def _make_metadata_comment(startup_script_file):
     METADATA_FIELDS = ["title", "author", "desc", "site", "license", "version"]
     metadata = {}
     metadata_pattern = re.compile(r"#\s*(.+?)\s*:\s*(.+)")
@@ -196,12 +208,6 @@ def _get_metadata_comment(startup_script_file):
             metadata_comment += f"{key.ljust(max_key_len)} : {value}\n"
     metadata_comment += border
     return metadata_comment
-
-
-def _print_zip_comment(pyxel_app_file):
-    zf = zipfile.ZipFile(pyxel_app_file)
-    if zf.comment:
-        print(zf.comment.decode(encoding="utf-8"))
 
 
 def run_python_script(python_script_file):
@@ -239,16 +245,28 @@ def watch_and_run_python_script(watch_dir, python_script_file):
         print("stopped watching")
 
 
-def _extract_pyxel_app(pyxel_app_file):
+def get_pyxel_app_metadata(pyxel_app_file):
     _check_file_exists(pyxel_app_file)
-    app_dir = _create_app_dir()
+    metadata = {}
     zf = zipfile.ZipFile(pyxel_app_file)
-    zf.extractall(app_dir)
-    pattern = os.path.join(app_dir, "*", pyxel.APP_STARTUP_SCRIPT_FILE)
-    for setting_file in glob.glob(pattern):
-        with open(setting_file, "r") as f:
-            return os.path.join(os.path.dirname(setting_file), f.read())
-    return None
+    if zf.comment:
+        comment = zf.comment.decode(encoding="utf-8")
+    else:
+        return metadata
+    for line in comment.splitlines():
+        if line.startswith("-"):
+            continue
+        if ":" in line:
+            key, value = line.split(":", 1)
+            metadata[key.strip()] = value.strip()
+    return metadata
+
+
+def print_pyxel_app_metadata(pyxel_app_file):
+    _check_file_exists(pyxel_app_file)
+    zf = zipfile.ZipFile(pyxel_app_file)
+    if zf.comment:
+        print(zf.comment.decode(encoding="utf-8"))
 
 
 def play_pyxel_app(pyxel_app_file):
@@ -256,7 +274,7 @@ def play_pyxel_app(pyxel_app_file):
         pyxel_app_file, "play", pyxel.APP_FILE_EXTENSION
     )
     _check_file_exists(pyxel_app_file)
-    _print_zip_comment(pyxel_app_file)
+    print_pyxel_app_metadata(pyxel_app_file)
     startup_script_file = _extract_pyxel_app(pyxel_app_file)
     if startup_script_file:
         sys.path.append(os.path.dirname(startup_script_file))
@@ -282,7 +300,7 @@ def package_pyxel_app(app_dir, startup_script_file):
     _check_dir_exists(app_dir)
     _check_file_exists(startup_script_file)
     _check_file_under_dir(startup_script_file, app_dir)
-    metadata_comment = _get_metadata_comment(startup_script_file)
+    metadata_comment = _make_metadata_comment(startup_script_file)
     if metadata_comment:
         print(metadata_comment)
     app_dir = os.path.abspath(app_dir)
