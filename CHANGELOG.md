@@ -4,6 +4,8 @@
 
 - Updated the description of Pyxel's features in the READMEs
 - Ensured that the metadata is in UTF-8 format
+- Added the pyxel.cli.get_pyxel_app_metadata function
+- Added the pyxel.cli.print_pyxel_app_metadata function
 
 ## 2.2.2
 
