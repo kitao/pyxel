@@ -77,13 +77,13 @@ impl SDL2BindingsBuilder {
                 .expect("Failed to execute grep command");
             if !function_exists.success() {
                 let patch_code = format!(
-                    "- (BOOL){}:(NSApplication *)app {{ return YES; }}\\n",
+                    "- (BOOL){}:(NSApplication *)app {{ return YES; }}\n",
                     function_name
                 );
                 let status = Command::new("sh")
                     .arg("-c")
                     .arg(format!(
-                        "sed -i '' '/handleURLEvent/i\\\n{}' {}",
+                        "sed -i '' '/(void)handleURLEvent/i\\\n{}' {}",
                         patch_code, patch_target_path
                     ))
                     .status()
