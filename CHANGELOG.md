@@ -6,6 +6,7 @@
 - Ensured that the metadata is in UTF-8 format
 - Added the pyxel.cli.get_pyxel_app_metadata function
 - Added the pyxel.cli.print_pyxel_app_metadata function
+- Fixed a warning on macOS Sonoma
 
 ## 2.2.2
 
