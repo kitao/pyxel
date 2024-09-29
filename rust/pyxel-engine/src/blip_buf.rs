@@ -138,7 +138,7 @@ impl BlipBuf {
         if needed < self.offset as u64 {
             0
         } else {
-            ((needed - self.offset + self.factor - 1) / self.factor) as i32
+            (needed - self.offset).div_ceil(self.factor) as i32
         }
     }
 

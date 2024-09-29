@@ -48,7 +48,7 @@ static CURSOR_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
 
 pub static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
     let width = FONT_WIDTH * NUM_FONT_ROWS;
-    let height = FONT_HEIGHT * ((FONT_DATA.len() as u32 + NUM_FONT_ROWS - 1) / NUM_FONT_ROWS);
+    let height = FONT_HEIGHT * (FONT_DATA.len() as u32).div_ceil(NUM_FONT_ROWS);
     let image = Image::new(width, height);
     {
         let mut image = image.lock();
