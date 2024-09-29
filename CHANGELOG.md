@@ -7,6 +7,7 @@
 - Added the pyxel.cli.get_pyxel_app_metadata function
 - Added the pyxel.cli.print_pyxel_app_metadata function
 - Fixed a warning on macOS Sonoma
+- Fixed new clippy warnings
 
 ## 2.2.2
 
