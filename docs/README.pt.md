@@ -40,7 +40,7 @@ A motivação para o desenvolvimento do Pyxel é o feedback dos utilizadores. Po
 
 As especificações e APIs de Pyxel são inspiradas por [PICO-8](https://www.lexaloffle.com/pico-8.php) e [TIC-80](https://tic80.com/).
 
-Pyxel é open source e livre para utilização. Vamos começar fazendo um jogo retrô com Pyxel!
+O Pyxel é de código aberto sob a [licença MIT](../LICENSE) e de utilização gratuita. Vamos começar fazendo um jogo retrô com Pyxel!
 
 ## Especificações
 
@@ -732,7 +732,7 @@ Qualquer um testando o código manualmente e relatando bugs ou sugestões de mel
 
 Patches/correções serão aceitas na forma de pull requests (PRs). Tenha certeza de que o que o pull request tenta resolver esteja em aberto no issue tracker.
 
-Será considerado que todo pull request tenha concordado a ser publicado sob a [licença MIT](../LICENSE).
+A solicitação de pull enviada é considerada como um acordo para publicação sob a [Licença MIT](../LICENSE).
 
 ## Outras informações
 
@@ -742,7 +742,7 @@ Será considerado que todo pull request tenha concordado a ser publicado sob a [
 
 ## Licença
 
-Pyxel está sob a [licença MIT](../LICENSE). Ele pode ser reutilizado em software proprietário, contanto que todas as cópias do software ou sua porções substanciais incluam uma cópia dos termos da licença MIT e um aviso de direitos autorais.
+Pyxel está sob a [Licença MIT](../LICENSE). Ele pode ser reutilizado dentro de software proprietário, desde que todas as cópias do software ou de partes substanciais incluam uma cópia dos termos da Licença MIT e também um aviso de direitos autorais.
 
 ## Recrutando Patrocinadores
 

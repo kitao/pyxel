@@ -40,7 +40,7 @@ The motivation for the development of Pyxel is the feedback from users. Please g
 
 Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
 
-Pyxel is open source and free to use. Let's start making a retro game with Pyxel!
+Pyxel is open source under the [MIT license](LICENSE) and free to use. Let's start making a retro game with Pyxel!
 
 ## Specifications
 

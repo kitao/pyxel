@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.4
+
+- Updated the license description in the READMEs
+
 ## 2.2.3
 
 - Updated the description of Pyxel's features in the READMEs
