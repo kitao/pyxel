@@ -40,7 +40,7 @@ Pyxel 開発のモチベーションはユーザーの皆さんからのフィ�
 
 Pyxel の仕様や API は、[PICO-8](https://www.lexaloffle.com/pico-8.php)や[TIC-80](https://tic80.com/)を参考にしています。
 
-Pyxel はオープンソースで、無料で自由に使えます。Pyxel でレトロゲームづくりを始めましょう！
+Pyxel は[MIT ライセンス](../LICENSE)のオープンソースで、無料で自由に使えます。Pyxel でレトロゲームづくりを始めましょう！
 
 ## 仕様
 
