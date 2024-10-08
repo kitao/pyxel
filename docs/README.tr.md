@@ -40,7 +40,7 @@ Pyxel'in geliştirilmesinin motivasyonu kullanıcıların geri bildirimleridir. 
 
 Pyxel, [PICO-8](https://www.lexaloffle.com/pico-8.php) ve [TIC-80](https://tic80.com/) gibi retro oyun motorlarından esinlenerek tasarlanmıştır.
 
-Pyxel tamamen ücretsiz ve açık kaynaklıdır. Haydi, Pyxel ile birlikte retro bir oyun yapalım!
+Pyxel [MIT lisansı](../LICENSE) altında açık kaynak kodludur ve kullanımı ücretsizdir. Haydi, Pyxel ile birlikte retro bir oyun yapalım!
 
 ## Özellikler
 
@@ -732,7 +732,7 @@ Kodları manuel olarak test eden ve [Sorun İzleyici](https://github.com/kitao/p
 
 Yama/düzeltmeler, pull request (PR) olarak kabul edilir. Pull request'inizle ilgili sorunun Sorun İzleyici'de açık olduğundan emin olun.
 
-Gönderilen pull request, [MIT Lisansı](https://github.com/kitao/pyxel/blob/main//LICENSE) altında yayımlamayı kabul etmiş sayılır.
+Gönderilen pull isteği, [MIT Lisansı](../LICENSE) kapsamında yayınlanmayı kabul etmiş sayılır.
 
 ## Diğer Bilgiler
 
@@ -742,7 +742,7 @@ Gönderilen pull request, [MIT Lisansı](https://github.com/kitao/pyxel/blob/mai
 
 ## Lisans
 
-Pyxel, [MIT Lisansı](https://github.com/kitao/pyxel/blob/main//LICENSE) altındadır. Tüm kopyalarında veya önemli bölümlerinde, MIT Lisansı'nın şartlarının bir kopyası ve ayrıca bir telif hakkı bildirimi bulunması koşuluyla, bu yazılım özel yazılımlar içinde yeniden kullanılabilir.
+Pyxel, [MIT Lisansı](../LICENSE) altındadır. Yazılımın tüm kopyaları veya önemli bölümlerinde MIT Lisansı'nın koşullarının bir kopyası ve telif hakkı bildirimi yer aldığı sürece, özel yazılımlarda yeniden kullanılabilir.
 
 ## Sponsorlar Arıyoruz
 

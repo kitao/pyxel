@@ -40,7 +40,7 @@ Pyxel 开发的动力来自于用户的反馈。请在 GitHub 上给 Pyxel 一�
 
 Pyxel 的规范和 API 受到[PICO-8](https://www.lexaloffle.com/pico-8.php)和[TIC-80](https://tic80.com/)的启发。
 
-Pyxel 是开源的，大家可以免费使用。现在就让我们一起用 Pyxel 制作自己的游戏吧！
+Pyxel 在[MIT 许可](../LICENSE)下开源，可免费使用。现在就让我们一起用 Pyxel 制作自己的游戏吧！
 
 ## 说明
 
@@ -732,7 +732,7 @@ Pyxel 还有一些“高级 API”，出于“可能令用户感到迷惑”、�
 
 可以通过 pull requests (PRs) 形式来提交补丁或修复。请确认你的 pull request 对应的 issue 地址在 issue tracker 中依然是 open 状态。
 
-一旦提交 pull request，则默认同意在[MIT License](../LICENSE)的许可下发布。
+提交的拉取请求将被视为已同意根据 [MIT 许可](../LICENSE) 发布。
 
 ## 其他信息
 
@@ -742,7 +742,7 @@ Pyxel 还有一些“高级 API”，出于“可能令用户感到迷惑”、�
 
 ## 许可证
 
-Pyxel 遵循[MIT License](../LICENSE)。您可以在专利软件中重复使用，前提是该软件的所有副本或重要部分均包含 MIT 许可条款的副本和版权声明。
+Pyxel 在 [MIT 许可](../LICENSE) 下发布。它可以在专有软件中重复使用，前提是所有软件的副本或其重要部分都包含 MIT 许可条款的副本以及版权声明。
 
 ## 招募赞助商
 
