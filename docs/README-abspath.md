@@ -99,7 +99,7 @@ If the above doesn't work, try self-building according to the instructions in [M
 
 The web version of Pyxel does not require Python or Pyxel installation and runs on PCs as well as smartphones and tablets with supported web browsers.
 
-For specific instructions, please refer to [this page](https://github.com/kitao/pyxel/wiki/How-To-Use-Pyxel-Web).
+For specific instructions, please refer to [this page](https://github.com/kitao/pyxel/blob/main//docs/pyxel-web-en.md).
 
 ### Try Pyxel Examples
 
@@ -736,7 +736,6 @@ Submitted pull request is deemed to have agreed to publish under [MIT License](h
 
 ## Other Information
 
-- [Q&A](https://github.com/kitao/pyxel/wiki/Pyxel-Q&A)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Developer X account](https://x.com/kitao)
 
