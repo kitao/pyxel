@@ -735,6 +735,7 @@ La solicitud de extracción enviada se considera como un acuerdo para publicar b
 
 ## Otra Información
 
+- [FAQ](faq-en)
 - [Ejemplos de usuarios](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Cuenta X de desarrollador](https://x.com/kitao)
 

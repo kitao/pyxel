@@ -736,6 +736,7 @@ Der eingereichte Pull-Request gilt als Zustimmung zur Veröffentlichung unter de
 
 ## Weitere Informationen
 
+- [FAQ](faq-en)
 - [Beispiele für Benutzer](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Entwickler X-Konto](https://x.com/kitao)
 

@@ -736,6 +736,7 @@ A solicitação de pull enviada é considerada como um acordo para publicação 
 
 ## Outras informações
 
+- [FAQ](faq-en)
 - [de utilizaExemplos dores](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Conta de programador X](https://x.com/kitao)
 

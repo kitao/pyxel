@@ -736,6 +736,7 @@ Pyxel には「ユーザーを混乱させる可能性がある」「使うた�
 
 ## その他の情報
 
+- [よくある質問](faq-jp)
 - [ユーザー作品集](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [開発者 X アカウント](https://x.com/kitao)
 
