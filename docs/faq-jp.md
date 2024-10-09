@@ -15,6 +15,7 @@
 - `Image` クラスおよび `Tilemap` クラスの `get` と `set` をそれぞれ `pget` と `pset` に変更する
 - `bltm` の `u`, `v`, `w`, `h` パラメータを 8 倍に変更する (`bltm` はピクセル単位で動作するようになりました)
 - `Sound` および `Music` クラスのメンバーとメソッドを新しい名前に更新する
+
 </details>
 
 <details>
@@ -51,6 +52,13 @@ Pyxel のサンプルコードを 01、05、03、04、02 の順に試すのが�
 
 ## Pyxel ツールの使い方
 
+<details>
+<summary>Pyxel Editorでパレットの色を変更できますか？</summary>
+
+Pyxel リソースファイル（.pyxres）と同じディレクトリに、Pyxel パレットファイル（.pyxpal）を配置することで、Pyxel Editor で使用するパレットの色をリソースファイルに合わせることができます。Pyxel パレットファイルの作成方法については、README をご参照ください。
+
+</details>
+
 ## 今後の開発計画
 
 <details>
@@ -62,6 +70,7 @@ Pyxel のサンプルコードを 01、05、03、04、02 の順に試すのが�
 - サウンド機能の刷新と MML 対応
 - Pyxel Editor の操作性向上
 - 子供向け Pyxel チュートリアルの追加
+
 </details>
 
 ## ライセンスとスポンサーシップ
