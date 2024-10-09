@@ -60,11 +60,11 @@
 
 ## 2.1.7
 
-- Modified a help messages in the Pyxel Editor
+- Modified a help messages in Pyxel Editor
 - Changed the return value type of the sgn function to integer
 - Fixed the push back process in Example 10 and 15
-- Fixed being able to edit during playback in the Pyxel Editor
-- Fixed incorrect array references during playback in the Pyxel Editor
+- Fixed being able to edit during playback in Pyxel Editor
+- Fixed incorrect array references during playback in Pyxel Editor
 - Updated the sysinfo crate to version 0.31
 
 ## 2.1.6
@@ -85,7 +85,7 @@
 
 ## 2.1.4
 
-- Added a bank copy feature to the Pyxel Editor
+- Added a bank copy feature to Pyxel Editor
 - Fixed the version check for the resource file
 
 ## 2.1.3
@@ -101,7 +101,7 @@
 ## 2.1.1
 
 - Fixed the resume option of the play function
-- Removed the non-functional CTRL+Drop feature from the Pyxel Editor
+- Removed the non-functional CTRL+Drop feature from Pyxel Editor
 - Updated the zip crate version
 
 ## 2.1.0
