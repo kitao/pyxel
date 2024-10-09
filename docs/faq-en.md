@@ -52,6 +52,13 @@ The `update` function is called every frame, but the `draw` function may be skip
 
 ## Using Pyxel Tools
 
+<details>
+<summary>Can I change the palette colors in Pyxel Editor?</summary>
+
+By placing a Pyxel palette file (.pyxpal) in the same directory as the Pyxel resource file (.pyxres), you can match the palette colors used in Pyxel Editor to those in the resource file. For instructions on creating a Pyxel palette file, please refer to the README.
+
+</details>
+
 ## Future Development Plans
 
 <details>
@@ -61,8 +68,9 @@ The following features and improvements are planned:
 
 - Add a Pyxel app launcher
 - Overhaul of sound functions and MML support
-- Improve usability of the Pyxel Editor
+- Improve usability of Pyxel Editor
 - Add Pyxel tutorials for children
+
 </details>
 
 ## Licensing and Sponsorship
