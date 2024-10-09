@@ -18,7 +18,7 @@ To make your code compatible with version 1.5, follow these steps:
 </details>
 
 <details>
-<summary>Why can’t I use the `pyxeleditor` command in version 1.5+?</summary>
+<summary>Why can’t I use the <code>pyxeleditor</code> command in version 1.5+?</summary>
 
 Starting from version 1.5, Pyxel's tools have been integrated into the `pyxel` command. To access the resource editor, use the following command: `pyxel edit [PYXEL_RESOURCE_FILE]`.
 
@@ -43,7 +43,7 @@ There are currently two books available in Japanese, though neither is authored 
 ## API Specification and Usage
 
 <details>
-<summary>What is the difference between the `update` and `draw` functions?</summary>
+<summary>What is the difference between the <code>update</code> and <code>draw</code> functions?</summary>
 
 The `update` function is called every frame, whereas the `draw` function may be skipped if the frame processing time exceeds the allowed limit. This design allows Pyxel to maintain smooth animations regardless of rendering load or interrupt handling.
 

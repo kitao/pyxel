@@ -18,7 +18,7 @@
 </details>
 
 <details>
-<summary>バージョン1.5以降で`pyxeleditor`コマンドが使えないのはなぜですか？</summary>
+<summary>バージョン1.5以降で<code>pyxeleditor</code>コマンドが使えないのはなぜですか？</summary>
 
 バージョン 1.5 以降、Pyxel のツールは`pyxel`コマンドに統合されました。リソースエディタにアクセスするには、次のコマンドを使用してください： `pyxel edit [PYXEL_RESOURCE_FILE]`
 
@@ -43,7 +43,7 @@ Pyxel のサンプルコードを試してみることをお勧めします。�
 ## API 仕様と使い方
 
 <details>
-<summary>`update`関数と`draw`関数の違いは何ですか？</summary>
+<summary><code>update</code>関数と<code>draw</code>関数の違いは何ですか？</summary>
 
 `update`関数は毎フレーム呼び出されますが、`draw`関数は処理時間が許容限界を超えた場合にスキップされることがあります。この設計により、レンダリング負荷や割り込み処理にかかわらず、Pyxel は滑らかなアニメーションを維持します。
 
