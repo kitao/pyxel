@@ -3,8 +3,8 @@
 ## 2.2.4
 
 - Updated the license description in the READMEs
-- Removed the outdated Q&A link from the READMEs
-- Updated the Web version of Pyxel instructions in the READMEs
+- Updated the instructions for using the Web version of Pyxel
+- Updated the Q&A
 
 ## 2.2.3
 
