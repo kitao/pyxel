@@ -736,6 +736,7 @@ La pull request inviata è considerata accettata per la pubblicazione sotto la [
 
 ## Altre informazioni
 
+- [FAQ](faq-en)
 - [Esempi di utenti](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Account dello sviluppatore X](https://x.com/kitao)
 

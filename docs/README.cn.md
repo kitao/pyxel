@@ -736,6 +736,7 @@ Pyxel 还有一些“高级 API”，出于“可能令用户感到迷惑”、�
 
 ## 其他信息
 
+- [常见问题](faq-en)
 - [用户示例](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [开发人员 X 账户](https://x.com/kitao)
 
