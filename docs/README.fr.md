@@ -736,6 +736,7 @@ La demande de tirage soumise est réputée acceptée pour publication sous la [L
 
 ## Autres informations
 
+- [FAQ](faq-en)
 - [Exemples d'utilisateurs](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Compte du développeur X](https://x.com/kitao)
 

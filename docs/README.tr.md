@@ -736,6 +736,7 @@ Gönderilen pull isteği, [MIT Lisansı](../LICENSE) kapsamında yayınlanmayı 
 
 ## Diğer Bilgiler
 
+- [FAQ](faq-en)
 - [Kullanıcı Örnekleri](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Geliştirici X hesabı](https://x.com/kitao)
 
