@@ -29,7 +29,7 @@ Three commands can be specified.
 
 - `run`: Execute a Python script
 - `play`: Run a Pyxel app
-- `edit`: Launch the Pyxel Editor
+- `edit`: Launch Pyxel Editor
 
 For example, if the username is taro, the repository is named my_repo, the file directory is src/scenes, and the Python script is title.py, the URL would be:
 
