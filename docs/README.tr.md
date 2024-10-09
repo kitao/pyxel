@@ -99,7 +99,7 @@ Yukarıdaki komut çalışmazsa, [Makefile](https://github.com/kitao/pyxel/blob/
 
 Pyxel'in web versiyonu Python veya Pyxel kurulumu gerektirmez ve desteklenen web tarayıcıları ile hem PC'lerde hem de akıllı telefon ve tabletlerde çalışır.
 
-Özel talimatlar için lütfen [bu sayfaya](pyxel-web-en). başvurun.
+Özel talimatlar için lütfen [bu sayfaya](pyxel-web-en.md). başvurun.
 
 ### Pyxel Örneklerini Deneyin
 
@@ -736,7 +736,7 @@ Gönderilen pull isteği, [MIT Lisansı](../LICENSE) kapsamında yayınlanmayı 
 
 ## Diğer Bilgiler
 
-- [FAQ](faq-en)
+- [FAQ](faq-en.md)
 - [Kullanıcı Örnekleri](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Geliştirici X hesabı](https://x.com/kitao)
 
