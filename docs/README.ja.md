@@ -99,7 +99,7 @@ sudo pip3 install -U pyxel
 
 Web 版の Pyxel は、Python や Pyxel のインストールを必要とせず、PC だけではなく、対応する Web ブラウザーを持つスマートフォンやタブレット端末でも動作します。
 
-具体的な使い方については、[こちらのページ](pyxel-web-ja)を参照してください。
+具体的な使い方については、[こちらのページ](pyxel-web-ja.md)を参照してください。
 
 ### サンプルを実行する
 
@@ -736,7 +736,7 @@ Pyxel には「ユーザーを混乱させる可能性がある」「使うた�
 
 ## その他の情報
 
-- [よくある質問](faq-jp)
+- [よくある質問](faq-jp.md)
 - [ユーザー作品集](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [開発者 X アカウント](https://x.com/kitao)
 

@@ -99,7 +99,7 @@ sudo pip3 install -U pyxel
 
 网络版 Pyxel 不需要安装 Python 或 Pyxel，可以在 PC 以及支持网络浏览器的智能手机和平板电脑上运行。
 
-具体说明请参考[本页面](pyxel-web-en)。
+具体说明请参考[本页面](pyxel-web-en.md)。
 
 ### 尝试 Pyxel 例程
 
@@ -736,7 +736,7 @@ Pyxel 还有一些“高级 API”，出于“可能令用户感到迷惑”、�
 
 ## 其他信息
 
-- [常见问题](faq-en)
+- [常见问题](faq-en.md)
 - [用户示例](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [开发人员 X 账户](https://x.com/kitao)
 

@@ -736,7 +736,7 @@ Submitted pull request is deemed to have agreed to publish under [MIT License](L
 
 ## Other Information
 
-- [FAQ](docs/faq-en)
+- [FAQ](docs/faq-en.md)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Developer X account](https://x.com/kitao)
 
