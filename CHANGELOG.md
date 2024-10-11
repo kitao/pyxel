@@ -2,6 +2,7 @@
 
 ## 2.2.4
 
+- Fixed a bug when playing a pyxapp with the same process ID
 - Updated the license description in the READMEs
 - Updated the instructions for using the Web version of Pyxel
 - Updated the Q&A
