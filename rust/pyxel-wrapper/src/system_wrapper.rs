@@ -52,7 +52,7 @@ fn run<'py>(py: Python, update: Bound<'py, PyAny>, draw: Bound<'py, PyAny>) {
         draw: Bound<'a, PyAny>,
     }
 
-    impl<'a> PyxelCallback for PythonCallback<'a> {
+    impl PyxelCallback for PythonCallback<'_> {
         fn update(&mut self, _pyxel: &mut Pyxel) {
             if let Err(err) = self.update.call0() {
                 err.print(self.py);
