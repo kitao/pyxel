@@ -134,6 +134,8 @@ def _create_app_dir():
         if not pyxel.process_exists(pid):
             shutil.rmtree(path)
     app_dir = os.path.join(play_dir, str(os.getpid()))
+    if os.path.exists(app_dir):
+        shutil.rmtree(app_dir)
     os.mkdir(app_dir)
     return app_dir
 
