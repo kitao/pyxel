@@ -25,9 +25,9 @@ The URL format for Pyxel Web Launcher is as follows:
 https://kitao.github.io/pyxel/wasm/launcher/?<Command>=<GitHub username>.<Repository Name>.<App Directories>.<File Name Without Extension>
 ```
 
-Three commands can be specified.
+There are three available commands.
 
-- `run`: Execute a Python script
+- `run`: Execute a Python script (importing other files or directories is not possible)
 - `play`: Run a Pyxel app
 - `edit`: Launch Pyxel Editor
 
@@ -37,7 +37,9 @@ For example, if the username is taro, the repository is named my_repo, the file 
 https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title
 ```
 
-Similarly, if you want to run a shooter.pyxapp located in dist/games, the URL would be:
+Please note that due to Web security restrictions, the `run` command cannot import local files or directories.
+
+If you want to run a shooter.pyxapp located in the dist/games directory, the URL would be:
 
 ```
 https://kitao.github.io/pyxel/wasm/launcher/?play=taro.my_repo.dist.games.shooter
