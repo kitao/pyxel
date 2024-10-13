@@ -31,7 +31,7 @@ There are three available commands.
 - `play`: Run a Pyxel app
 - `edit`: Launch Pyxel Editor
 
-For example, if the username is taro, the repository is named my_repo, the file directory is src/scenes, and the Python script is title.py, the URL would be:
+For example, if the username is `taro`, the repository is named `my_repo`, the file directory is `src/scenes`, and the Python script is `title.py`, the URL would be:
 
 ```
 https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title
@@ -39,7 +39,7 @@ https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title
 
 Please note that due to Web security restrictions, the `run` command cannot import local files or directories.
 
-If you want to run a shooter.pyxapp located in the dist/games directory, the URL would be:
+If you want to run a `shooter.pyxapp` located in the `dist/games` directory, the URL would be:
 
 ```
 https://kitao.github.io/pyxel/wasm/launcher/?play=taro.my_repo.dist.games.shooter
@@ -57,7 +57,7 @@ Note that the packages that can be added are limited to those supported by [Pack
 
 When using the `edit` command, you can specify the Pyxel Editor's startup screen using the `editor` attribute.
 
-For example, to open the shooter.pyxres file located in the assets directory with the Tilemap Editor screen, use the following URL:
+For example, to open the `shooter.pyxres` file located in the `assets` directory with the Tilemap Editor screen, use the following URL:
 
 ```html
 https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.assets.shooter&editor=tilemap
@@ -103,7 +103,7 @@ To run external Python files, specify the `root` and `name` attributes in the `p
 
 `root` is the directory where the search begins, and `name` is the file path.
 
-For example, if you save the above code as test.py in the same directory as the HTML file, write the following:
+For example, if you save the above code as `test.py` in the same directory as the HTML file, write the following:
 
 ```html
 <pyxel-run root="." name="test.py"></pyxel-run>
@@ -145,7 +145,7 @@ The available packages are limited to those supported by [Packages built in Pyod
 
 You can also launch Pyxel Editor using the `pyxel-edit` tag.
 
-For example, to edit the shooter.pyxres file in the assets directory with the Image Editor screen, write the following:
+For example, to edit the `shooter.pyxres` file in the `assets` directory with the Image Editor screen, write the following:
 
 ```html
 <pyxel-edit root="assets" name="sample.pyxres" editor="image"></pyxel-edit>
