@@ -31,7 +31,7 @@ https://kitao.github.io/pyxel/wasm/launcher/?<コマンド>=<githubのユーザ�
 - `play`: Pyxel アプリを実行する
 - `edit`: Pyxel Editor を起動する
 
-例えば、ユーザー名が taro、リポジトリ名が my_repo、ファイルのディレクトリが src/scenes、Python スクリプトが title.py の場合は、URL は以下のようになります。
+例えば、ユーザー名が`taro`、リポジトリ名が`my_repo`、ファイルのディレクトリが`src/scenes`、Python スクリプトが`title.py`の場合は、URL は以下のようになります。
 
 ```
 https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title
@@ -39,7 +39,7 @@ https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title
 
 `run`コマンドでは、Web のセキュリティ上の制約により、ローカルの別ファイルやディレクトリをインポートすることができないのでご注意ください。
 
-dist/games にある shooter.pyxapp を実行する場合の URL は次の通りです。
+`dist/games`にある`shooter.pyxapp`を実行する場合の URL は次の通りです。
 
 ```
 https://kitao.github.io/pyxel/wasm/launcher/?play=taro.my_repo.dist.games.shooter
@@ -57,7 +57,7 @@ https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title&g
 
 `edit`コマンドを使用する場合、`editor`属性で Pyxel Editor の起動画面を指定できます。
 
-例えば、assets ディレクトリにある shooter.pyxres ファイルをタイルマップエディタ画面で起動するには、以下の URL を使用します。
+例えば、`assets`ディレクトリにある`shooter.pyxres`ファイルをタイルマップエディタ画面で起動するには、以下の URL を使用します。
 
 ```html
 https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.assets.shooter&editor=tilemap
@@ -103,7 +103,7 @@ pyxel.show()
 
 `root`は検索の起点となるディレクトリ、`name`はファイルパスです。
 
-例えば先ほどのコードを test.py というファイルに保存し、HTML ファイルと同じディレクトリに配置した場合、次のように記述します。
+例えば先ほどのコードを`test.py`というファイルに保存し、HTML ファイルと同じディレクトリに配置した場合、次のように記述します。
 
 ```html
 <pyxel-run root="." name="test.py"></pyxel-run>
@@ -143,9 +143,9 @@ python -m http.server
 
 使用できるパッケージは[Pyodide 対応パッケージ](https://pyodide.org/en/stable/usage/packages-in-pyodide.html)に限られます。
 
-また、pyxel-edit タグを使って Pyxel Editor を起動できます。
+また、`pyxel-edit`タグを使って Pyxel Editor を起動できます。
 
-例えば、assets ディレクトリにある shooter.pyxres ファイルをイメージエディタ画面で起動するには、次のように記述します。
+例えば、`assets`ディレクトリにある`shooter.pyxres`ファイルをイメージエディタ画面で起動するには、次のように記述します。
 
 ```html
 <pyxel-edit root="assets" name="sample.pyxres" editor="image"></pyxel-edit>
