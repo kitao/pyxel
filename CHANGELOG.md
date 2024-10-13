@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.5
+
+- Fixed the displayed color issue caused by the sRGB setting
+
 ## 2.2.4
 
 - Fixed a bug when playing a pyxapp with the same process ID

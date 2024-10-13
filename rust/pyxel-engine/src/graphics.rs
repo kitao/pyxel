@@ -41,6 +41,8 @@ impl Graphics {
     pub fn new() -> Self {
         unsafe {
             let gl = pyxel_platform::glow_context();
+            gl.disable(glow::FRAMEBUFFER_SRGB);
+            gl.disable(glow::BLEND);
             let screen_shaders = Self::create_screen_shaders(gl);
             let screen_texture = Self::create_screen_texture(gl);
             let colors_texture = Self::create_colors_texture(gl);
