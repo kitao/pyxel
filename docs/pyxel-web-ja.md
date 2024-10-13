@@ -27,7 +27,7 @@ https://kitao.github.io/pyxel/wasm/launcher/?<コマンド>=<githubのユーザ�
 
 コマンドには次の３つが指定できます。
 
-- `run`: Python スクリプトを実行する
+- `run`: Python スクリプトを実行する (別ファイルやディレクトリのインポートは不可)
 - `play`: Pyxel アプリを実行する
 - `edit`: Pyxel Editor を起動する
 
@@ -37,7 +37,9 @@ https://kitao.github.io/pyxel/wasm/launcher/?<コマンド>=<githubのユーザ�
 https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title
 ```
 
-同様に、dist/games にある shooter.pyxapp を実行する場合の URL は次の通りです。
+`run`コマンドでは、Web のセキュリティ上の制約により、ローカルの別ファイルやディレクトリをインポートすることができないのでご注意ください。
+
+dist/games にある shooter.pyxapp を実行する場合の URL は次の通りです。
 
 ```
 https://kitao.github.io/pyxel/wasm/launcher/?play=taro.my_repo.dist.games.shooter

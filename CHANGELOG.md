@@ -3,6 +3,7 @@
 ## 2.2.5
 
 - Fixed the displayed color issue caused by the sRGB setting
+- Added a note regarding the usage of the run command on the web
 
 ## 2.2.4
 
