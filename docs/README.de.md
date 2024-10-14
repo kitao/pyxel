@@ -670,7 +670,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 ### Sound Klasse
 
 - `notes`<br>
-  Liste der Noten (0-127). Je höher die Zahl, desto höher die Tonhöhe, und bei 33 wird sie zu "A2" (440Hz). Der Rest ist -1.
+  Liste der Noten (0-127). Je höher die Zahl, desto höher die Tonhöhe, und bei `33` wird sie zu "A2" (440Hz). Der Rest ist `-1`.
 
 - `tones`<br>
   Liste der Töne (0:Triangle/ 1:Square / 2:Pulse / 3: Noise)
