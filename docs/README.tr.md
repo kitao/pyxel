@@ -599,7 +599,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   `x` değerinden küçük veya eşit olan en büyük tamsayıyı döndürür.
 
 - `sgn(x)`<br>
-  `x` pozitif ise 1, sıfır ise 0, negatif ise -1 döndürür.
+  `x` pozitif olduğunda `1`, `0` olduğunda `0`, negatif olduğunda `-1` değerini döndürür.
 
 - `sqrt(x)`<br>
   `x`'in karekökünü döndürür.

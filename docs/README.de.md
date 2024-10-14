@@ -599,7 +599,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Gibt die größte ganze Zahl kleiner oder gleich `x` zurück.
 
 - `sgn(x)`<br>
-  Gibt 1 zurück, wenn `x` positiv ist, 0, wenn es Null ist, und -1, wenn es negativ ist.
+  Gibt `1` zurück, wenn `x` positiv ist, `0`, wenn es `0` ist, und `-1`, wenn es negativ ist.
 
 - `sqrt(x)`<br>
   Gibt die Quadratwurzel von `x` zurück.
