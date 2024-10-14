@@ -669,7 +669,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 ### Clase Sound
 
 - `notes`<br>
-  Lista de notas (0-127). Cuanto mayor sea el número, mayor será el pitch (más agudo) y a 33, se convierte en la nota 'A2' (440 Hz). El resto es -1.
+  Lista de notas (0-127). Cuanto mayor sea el número, mayor será el pitch (más agudo) y a `33`, se convierte en la nota 'A2' (440 Hz). El resto es `-1`.
 
 - `tones`<br>
   Lista de tonos (0:Triangular / 1:Cuadrada / 2:Pulsada / 3:Ruido)
