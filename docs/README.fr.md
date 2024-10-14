@@ -515,7 +515,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
   Remplace la couleur `col1` avec `col2` au dessin. `pal()` pour réinitialiser la palette de couleurs.
 
 - `dither(alpha)`<br>
-  Applique le tramage (pseudo-transparence) au dessin. Fixe `alpha` dans l'intervalle 0.0-1.0, où 0.0 est transparent et 1.0 est opaque.
+  Applique le tramage (pseudo-transparence) au dessin. Fixe `alpha` dans l'intervalle `0.0`-`1.0`, où `0.0` est transparent et `1.0` est opaque.
 
 - `cls(col)`<br>
   Efface l’écran avec la couleur `col`
@@ -588,7 +588,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
   Arrête le son du canal spécifié `ch`(0-3). `stop()` arrête tous les canaux.
 
 - `play_pos(ch)`<br>
-  Récupère la position du son du canal `ch`(0-3) comme un tuple `(sound no, note no)`. Renvoie `None` quand le son est arrêté.
+  Récupère la position du son du canal `ch`(0-3) comme un tuple `(sound_no, note_no)`. Renvoie `None` quand le son est arrêté.
 
 ### Mathématiques
 
