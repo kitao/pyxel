@@ -599,7 +599,7 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
   Renvoie le plus grand nombre entier inférieur ou égal à `x`.
 
 - `sgn(x)`<br>
-  Renvoie 1 lorsque `x` est positif, 0 lorsqu'il est nul, et -1 lorsqu'il est négatif.
+  Renvoie `1` lorsque `x` est positif, `0` lorsqu'il est `0` et `-1` lorsqu'il est négatif.
 
 - `sqrt(x)`<br>
   Renvoie la racine carrée de `x`.

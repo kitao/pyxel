@@ -598,7 +598,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Devuelve el mayor entero menor o igual a `x`.
 
 - `sgn(x)`<br>
-  Devuelve 1 cuando `x` es positivo, 0 cuando es cero y -1 cuando es negativo.
+  Devuelve `1` cuando `x` es positivo, `0` cuando es `0` y `-1` cuando es negativo.
 
 - `sqrt(x)`<br>
   Devuelve la raíz cuadrada de `x`.

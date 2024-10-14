@@ -11,7 +11,7 @@
 
 **Pyxel** is a retro game engine for Python.
 
-Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
+With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and playing back only 4 sounds simultaneously, you can feel free to enjoy making pixel-art-style games.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/pyxel_message.png" width="480">
 
@@ -93,7 +93,7 @@ After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://
 sudo pip3 install -U pyxel
 ```
 
-If the above doesn't work, try self-building according to the instructions in [Makefile](https://github.com/kitao/pyxel/blob/main//Makefile).
+If the above doesn't work, try building it from source according to the instructions in [Makefile](https://github.com/kitao/pyxel/blob/main//Makefile).
 
 ### Web
 
@@ -266,7 +266,7 @@ pyxel.run(update, draw)
 
 The arguments of `run` function are `update` function to update each frame and `draw` function to draw screen when necessary.
 
-In an actual application, it is recommended to wrap pyxel code in a class as below:
+In an actual application, it is recommended to wrap pyxel code in a class as shown below:
 
 ```python
 import pyxel
@@ -439,7 +439,7 @@ The created application file can be executed with the `pyxel play` command:
 pyxel play PYXEL_APP_FILE
 ```
 
-Pyxel application file also can be converted to an executable or an HTML file with the `pyxel app2exe` or `pyxel app2html` commands.
+Pyxel application file can also be converted to an executable or an HTML file with the `pyxel app2exe` or `pyxel app2html` commands.
 
 ## API Reference
 
@@ -557,12 +557,12 @@ Pyxel application file also can be converted to an executable or an HTML file wi
   Fill the area connected with the same color as (`x`, `y`) with color `col`.
 
 - `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformation will be applied.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, treated as transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformation will be applied.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`). If negative value is set for `w` and/or `h`, it will reverse horizontally and/or vertically. If `colkey` is specified, treated as transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformation will be applied. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`). If negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, treated as transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformation will be applied. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/bltm_figure.png">
 
@@ -599,7 +599,7 @@ Pyxel application file also can be converted to an executable or an HTML file wi
   Returns the largest integer less than or equal to `x`.
 
 - `sgn(x)`<br>
-  Returns 1 when `x` is positive, 0 when it is zero, and -1 when it is negative.
+  Returns `1` when `x` is positive, `0` when it is `0`, and `-1` when it is negative.
 
 - `sqrt(x)`<br>
   Returns the square root of `x`.

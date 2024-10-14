@@ -599,7 +599,7 @@ Pyxel application file can also be converted to an executable or an HTML file wi
   Returns the largest integer less than or equal to `x`.
 
 - `sgn(x)`<br>
-  Returns 1 when `x` is positive, 0 when it is zero, and -1 when it is negative.
+  Returns `1` when `x` is positive, `0` when it is `0`, and `-1` when it is negative.
 
 - `sqrt(x)`<br>
   Returns the square root of `x`.

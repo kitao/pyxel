@@ -599,7 +599,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Devolve o maior inteiro menor ou igual a `x`.
 
 - `sgn(x)`<br>
-  Retorna 1 quando o `x` é positivo, 0 quando é zero, e -1 quando é negativo.
+  Devolve `1` quando `x` é positivo, `0` quando é `0` e `-1` quando é negativo.
 
 - `sqrt(x)`<br>
   Devolve a raiz quadrada de `x`.
