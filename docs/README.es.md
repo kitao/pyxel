@@ -514,7 +514,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Reemplaza el color `col1` con `col2` para dibujarlo. Utiliza `pal()` para resetear la paleta de colores y volver a la paleta que viene por defecto por defecto con Pyxel.
 
 - `dither(alpha)`<br>
-  Aplica dithering (pseudo-transparencia) al dibujar. Establece `alpha` en el rango 0.0-1.0, donde 0.0 es transparente y 1.0 es opaco.
+  Aplica dithering (pseudo-transparencia) al dibujar. Establece `alpha` en el rango `0.0`-`1.0`, donde `0.0` es transparente y `1.0` es opaco.
 
 - `cls(col)`<br>
   Borra la pantalla con el color `col`.
@@ -587,7 +587,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Para la reproducción del canal `ch`(0-3). `stop()` para detener todos los canales.
 
 - `play_pos(ch)`<br>
-  Obtenga la posición de la reproducción de la música de un canal `ch`(0-3) como la tupla `(sound no, note no)`, no quiere decir número. Devuelve `None` cuando la música cesa.
+  Obtenga la posición de la reproducción de la música de un canal `ch`(0-3) como la tupla `(sound_no, note_no)`, no quiere decir número. Devuelve `None` cuando la música cesa.
 
 ### Matemáticas
 

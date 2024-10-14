@@ -515,7 +515,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Çizim sırasında `col1` rengini `col2` ile değiştirir. Başlangıç paletine dönmek için `pal()` kullanılır.
 
 - `dither(alpha)`<br>
-  Çizim sırasında saydamlık uygular. 0,0 ile 1,0 arasında `alpha` değeri ayarlanır, 0,0 saydam ve 1,0 opak anlamına gelir.
+  Çizim sırasında saydamlık uygular. `0.0` ile `1.0` arasında `alpha` değeri ayarlanır, `0.0` saydam ve `1.0` opak anlamına gelir.
 
 - `cls(col)`<br>
   Ekranı `col` renk ile temizler.
@@ -588,7 +588,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Belirtilen kanalda `ch`(0-3) müziğin çalmasını durdurur. Tüm kanalları durdurmak için `stop()` kullanılır.
 
 - `play_pos(ch)`<br>
-  `ch`(0-3) kanalının ses çalma pozisyonunu `(ses no, nota no)` olarak alır. Çalma durduğunda `None` döner.
+  `ch`(0-3) kanalının ses çalma pozisyonunu `(sound_no, note_no)` olarak alır. Çalma durduğunda `None` döner.
 
 ### Matematik
 
