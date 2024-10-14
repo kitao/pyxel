@@ -515,7 +515,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Ersetze Farbe `col1` mit `col2` beim zeichnen. Mit `pal()` lässt sich die Pallete auf die initiale zurücksetzen.
 
 - `dither(alpha)`<br>
-  Wendet Dithering (Pseudo-Transparenz) beim Zeichnen an. Setzen Sie `alpha` in den Bereich 0.0-1.0, wobei 0.0 transparent und 1.0 undurchsichtig ist.
+  Wendet Dithering (Pseudo-Transparenz) beim Zeichnen an. Setzen Sie `alpha` in den Bereich `0.0`-`1.0`, wobei `0.0` transparent und `1.0` undurchsichtig ist.
 
 - `cls(col)`<br>
   Das Fenster mit der Farbe `col` füllen.
@@ -588,7 +588,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Stoppt die Wiedergabe des angegebenen Kanals `ch`(0-3). `stop()`, um die Wiedergabe aller Kanäle zu stoppen.
 
 - `play_pos(ch)`<br>
-  Ermittelt die Tonwiedergabeposition des Kanals `ch`(0-3) als Tupel von `(Ton-Nr., Noten-Nr.)`. Gibt `None` zurück, wenn die Wiedergabe gestoppt ist.
+  Ermittelt die Tonwiedergabeposition des Kanals `ch`(0-3) als Tupel von `(sound_no, note_no)`. Gibt `None` zurück, wenn die Wiedergabe gestoppt ist.
 
 ### Mathematik
 

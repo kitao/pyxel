@@ -515,7 +515,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Substitui a cor `col1` com `col2` ao desenhar. Use `pal()` para voltar para a paleta inicial.
 
 - `dither(alpha)`<br>
-  Aplica dithering (pseudo-transparência) no desenho. Define `alpha` no intervalo 0.0-1.0, onde 0.0 é transparente e 1.0 é opaco.
+  Aplica dithering (pseudo-transparência) no desenho. Define `alpha` no intervalo `0.0`-`1.0`, onde `0.0` é transparente e `1.0` é opaco.
 
 - `cls(col)`<br>
   Limpar a tela com a cor `col`
@@ -588,7 +588,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
   Para a reprodução do canal `ch`(0-3). `stop()` para parar a reprodução de todos os canais.
 
 - `play_pos(ch)`<br>
-  Obtém a posição do canal `ch`(0-3) da reprodução de som como uma tupla de `(sound no, note no)`. Retorna `None` quando a reprodução para.
+  Obtém a posição do canal `ch`(0-3) da reprodução de som como uma tupla de `(sound_no, note_no)`. Retorna `None` quando a reprodução para.
 
 ### Matemática
 

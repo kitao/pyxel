@@ -515,7 +515,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Rimpiazza colore `col1` con `col2` al momento di disegno. `pal()` per tornare alla palette iniziale.
 
 - `dither(alpha)`<br>
-  Applica il dithering (pseudo-trasparenza) al disegno. Impostare `alpha` nell'intervallo 0,0-1,0, dove 0,0 è trasparente e 1,0 è opaco.
+  Applica il dithering (pseudo-trasparenza) al disegno. Impostare `alpha` nell'intervallo `0,0`-`1,0`, dove `0,0` è trasparente e `1,0` è opaco.
 
 - `cls(col)`<br>
   Riempie lo schermo con `col`
@@ -588,7 +588,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Interrompe la riproduzione del canale `ch`(0-3) specificato. `stop()` per interrompere tutti i canali.
 
 - `play_pos(ch)`<br>
-  Ottiene la posizione del suono in riproduzione del canale `ch`(0-3) come una tupla di `(sound no, note no)`. Ritorna `None` quando la riproduzione è interrotta.
+  Ottiene la posizione del suono in riproduzione del canale `ch`(0-3) come una tupla di `(sound_no, note_no)`. Ritorna `None` quando la riproduzione è interrotta.
 
 ### Matematica
 
