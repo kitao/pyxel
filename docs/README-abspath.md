@@ -453,7 +453,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 - `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
   Initialize the Pyxel application with the screen size (`width`, `height`). The following options can be specified: the window title with `title`, the frame rate with `fps`, the key to quit the application with `quit_key`, the display scale with `display_scale`, the screen capture scale with `capture_scale`, and the maximum recording time of the screen capture video with `capture_sec`.<br>
-  e.g. `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
+  Example: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
   Start the Pyxel application and call the `update` function for frame update and the `draw` function for drawing.
@@ -496,11 +496,11 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 - `colors`<br>
   List of the palette display colors. The display color is specified by a 24-bit numerical value. Use `colors.from_list` and `colors.to_list` to directly assign and retrieve Python lists.<br>
-  e.g. `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
+  Example: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
   List of the image banks (0-2). (See the Image class)<br>
-  e.g. `pyxel.images[0].load(0, 0, "title.png")`
+  Example: `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
   List of the tilemaps (0-7). (See the Tilemap class)
@@ -573,7 +573,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 - `sounds`<br>
   List of the sounds (0-63). (See the Sound class)<br>
-  e.g. `pyxel.sounds[0].speed = 60`
+  Example: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
   List of the musics (0-7). (See the Music class)
@@ -635,7 +635,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 - `set(x, y, data)`<br>
   Set the image at (`x`, `y`) using a list of strings.<br>
-  e.g. `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  Example: `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
   Load an image file (PNG/GIF/JPEG) at (`x`, `y`).
@@ -656,7 +656,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 - `set(x, y, data)`<br>
   Set the tilemap at (`x`, `y`) using a list of strings.<br>
-  e.g. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  Example: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   Load the layer in the drawing order `layer`(0-) from the TMX file (Tiled Map File) at (`x`, `y`).
@@ -689,19 +689,19 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 - `set_notes(notes)`<br>
   Set the notes using a string made of 'CDEFGAB'+'#-'+'01234' or 'R'. It is case-insensitive, and whitespace is ignored.<br>
-  e.g. `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
+  Example: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
   Set the tones with a string made of 'TSPN'. Case-insensitive and whitespace is ignored.<br>
-  e.g. `pyxel.sounds[0].set_tones("TTSS PPPN")`
+  Example: `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
   Set the volumes with a string made of '01234567'. Case-insensitive and whitespace is ignored.<br>
-  e.g. `pyxel.sounds[0].set_volumes("7777 7531")`
+  Example: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
   Set the effects with a string made of 'NSVFHQ'. Case-insensitive and whitespace is ignored.<br>
-  e.g. `pyxel.sounds[0].set_effects("NFNF NVVS")`
+  Example: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Music Class
 
@@ -710,7 +710,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 - `set(seq0, seq1, seq2, ...)`<br>
   Set the lists of sound (0-63) for each channel. If an empty list is specified, that channel is not used for playback.<br>
-  e.g. `pyxel.musics[0].set([0, 1], [], [3])`
+  Example: `pyxel.musics[0].set([0, 1], [], [3])`
 
 ### Advanced APIs
 
