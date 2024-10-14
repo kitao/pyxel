@@ -71,7 +71,7 @@ Pyxel は[MIT ライセンス](../LICENSE)のオープンソースで、無料�
 pip install -U pyxel
 ```
 
-公式インストーラーで Python をインストールする場合は、`pyxel`コマンドを有効にするために、`Add Python 3.x to PATH`にチェックを入れて Python のインストールを行なってください。
+公式インストーラーで Python をインストールする場合は、`pyxel`コマンドを有効にするために、`Add Python 3.x to PATH`にチェックを入れて Python のインストールを行ってください。
 
 ### Mac
 
@@ -93,7 +93,7 @@ SDL2 パッケージ (Ubuntu の場合は`libsdl2-dev`)、[Python3](https://www.
 sudo pip3 install -U pyxel
 ```
 
-上記で動作しない場合は、[Makefile](../Makefile)に記載されている手順に従ってセルフビルドを試してみてください。
+上記で動作しない場合は、[Makefile](../Makefile)に記載されている手順に従ってビルドを試してみてください。
 
 ### Web
 
@@ -109,7 +109,7 @@ Pyxel をインストールした後、次のコマンドでカレントディ�
 pyxel copy_examples
 ```
 
-コピーされるサンプルは以下のとおりです。
+コピーされるサンプルは以下の通りです。
 
 <table>
 <tr>
@@ -234,7 +234,7 @@ pyxel copy_examples
 </tr>
 </table>
 
-サンプルは、以下のコマンドで実行できます。
+サンプルは以下のコマンドで実行できます。
 
 ```sh
 cd pyxel_examples
@@ -312,7 +312,7 @@ python Pythonスクリプトファイル
 pyxel run Pythonスクリプトファイル
 ```
 
-また、`pyxel watch`コマンドを使うと、指定したディレクトリ内の変更を監視し、変化があった際に自動的にプログラムを再実行することができます。
+また、`pyxel watch`コマンドを使うと、指定したディレクトリ内の変更を監視し、変化があった際に自動でプログラムを再実行します。
 
 ```sh
 pyxel watch WATCH_DIR Pythonスクリプトファイル
