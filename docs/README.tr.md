@@ -61,7 +61,7 @@ Pyxel [MIT lisansı](../LICENSE) altında açık kaynak kodludur ve kullanımı 
 
 <img src="images/pyxel_palette.png">
 
-## Kullanım
+## Kurulum
 
 ### Windows
 
@@ -667,7 +667,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 - `pset(x, y, tile)`<br>
   (`x`, `y`) konumuna bir `tile` çizer. Bir tile, `(tile_x, tile_y)` tuple'ıdır.
 
-### Ses Sınıfı
+### Sound Sınıfı
 
 - `notes`<br>
   Notaların listesi (0-127). Numara ne kadar yüksekse, sesin tonu o kadar yüksek olur. Nota `33`, 'A2' (440Hz) ile eşleşir. Dinlenme notaları `-1` ile gösterilir.
@@ -712,9 +712,9 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Her kanal için seslerin (0-63) listelerini ayarlar. Eğer boş bir liste belirtilirse, o kanal çalma için kullanılmaz.<br>
   Örneğin: `pyxel.musics[0].set([0, 1], [], [3])`
 
-### İleri Düzey API'lar
+### İleri Düzey API
 
-Pyxel, kullanıcıları karıştırabilecek veya kullanmak için özelleşmiş bilgi gerektirebilecek "ileri düzey API'ları" içerir. Bu API'lar bu referansta belirtilmemiştir.
+Pyxel, kullanıcıları şaşırtabileceği veya kullanımı için özel bilgi gerektirebileceği için bu belgede belirtilmeyen bir "İleri Düzey API" içerir.
 
 Eğer becerilerinize güveniyorsanız, [bu bağlantıya](https://github.com/kitao/pyxel/blob/main/python/pyxel/__init__.pyi) bakarak muhteşem çalışmalar oluşturabilirsiniz!
 
@@ -728,7 +728,7 @@ Hata raporları ve özellik/geliştirme isteklerini göndermek için [Sorun İzl
 
 Kodları manuel olarak test eden ve [Sorun İzleyici](https://github.com/kitao/pyxel/issues) üzerinden hataları raporlayan veya geliştirme önerileri sunan herkes çok memnuniyetle karşılanır!
 
-### Pull Request Gönderme
+### Pull Request Oluşturma
 
 Yama/düzeltmeler, pull request (PR) olarak kabul edilir. Pull request'inizle ilgili sorunun Sorun İzleyici'de açık olduğundan emin olun.
 
