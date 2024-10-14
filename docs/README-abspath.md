@@ -593,25 +593,25 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 ### Math
 
 - `ceil(x)`<br>
-  Returns the smallest integer greater than or equal to `x`.
+  Return the smallest integer greater than or equal to `x`.
 
 - `floor(x)`<br>
-  Returns the largest integer less than or equal to `x`.
+  Return the largest integer less than or equal to `x`.
 
 - `sgn(x)`<br>
-  Returns `1` when `x` is positive, `0` when it is `0`, and `-1` when it is negative.
+  Return `1` when `x` is positive, `0` when it is `0`, and `-1` when it is negative.
 
 - `sqrt(x)`<br>
-  Returns the square root of `x`.
+  Return the square root of `x`.
 
 - `sin(deg)`<br>
-  Returns the sine of `deg` degrees.
+  Return the sine of `deg` degrees.
 
 - `cos(deg)`<br>
-  Returns the cosine of `deg` degrees.
+  Return the cosine of `deg` degrees.
 
 - `atan2(y, x)`<br>
-  Returns the arctangent of `y`/`x` in degrees.
+  Return the arctangent of `y`/`x` in degrees.
 
 - `rseed(seed)`<br>
   Sets the seed of the random number generator.

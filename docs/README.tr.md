@@ -670,7 +670,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 ### Ses Sınıfı
 
 - `notes`<br>
-  Notaların listesi (0-127). Numara ne kadar yüksekse, sesin tonu o kadar yüksek olur ve 33'te 'A2' (440Hz) olur. Geri kalanı -1'dir.
+  Notaların listesi (0-127). Numara ne kadar yüksekse, sesin tonu o kadar yüksek olur ve `33`'te 'A2' (440Hz) olur. Geri kalanı `-1`'dir.
 
 - `tones`<br>
   Tonların listesi (0:Dreieck / 1:Quadrat / 2:Puls / 3:Rauschen)

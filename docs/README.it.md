@@ -670,7 +670,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 ### Classe Sound
 
 - `notes`<br>
-  Lista di note (0-127). Più alto il numero, più alto il tono, e a 33 diventa 'A2'(440Hz). Il resto è -1.
+  Lista di note (0-127). Più alto il numero, più alto il tono, e a `33` diventa 'A2'(440Hz). Il resto è -1.
 
 - `tones`<br>
   Lista di tonalità (0:Triangolo / 1:Quadrato / 2:Ritmo / 3:Rumore)
