@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.6
+
+- Refined descriptions in the READMEs
+
 ## 2.2.5
 
 - Fixed the displayed color issue caused by the sRGB setting
