@@ -11,11 +11,11 @@
 
 **Pyxel** is a retro game engine for Python.
 
-With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and playing back only 4 sounds simultaneously, you can feel free to enjoy making pixel-art-style games.
+With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and playing back only 4 sounds simultaneously, you can enjoy making pixel-art-style games with ease.
 
 <img src="docs/images/pyxel_message.png" width="480">
 
-The motivation for the development of Pyxel is the feedback from users. Please give Pyxel a star on GitHub!
+The development of Pyxel is driven by user feedback. Please give Pyxel a star on GitHub!
 
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">
@@ -71,7 +71,7 @@ After installing [Python3](https://www.python.org/) (version 3.8 or higher), run
 pip install -U pyxel
 ```
 
-If you install Python using the official installer, please check the `Add Python 3.x to PATH` checkbox to enable `pyxel` command.
+If you install Python using the official installer, make sure to check the `Add Python 3.x to PATH` checkbox to enable the `pyxel` command.
 
 ### Mac
 
@@ -83,7 +83,7 @@ pipx ensurepath
 pipx install pyxel
 ```
 
-To update the version after installing Pyxel, run `pipx upgrade pyxel`.
+To update Pyxel after installation, run `pipx upgrade pyxel`.
 
 ### Linux
 
@@ -93,23 +93,23 @@ After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://
 sudo pip3 install -U pyxel
 ```
 
-If the above doesn't work, try building it from source according to the instructions in [Makefile](Makefile).
+If the above command doesn't work, try building Pyxel from source by following the instructions in the [Makefile](Makefile).
 
 ### Web
 
-The web version of Pyxel does not require Python or Pyxel installation and runs on PCs as well as smartphones and tablets with supported web browsers.
+The web version of Pyxel does not require Python or Pyxel installation and runs on PCs, smartphones, and tablets with supported web browsers.
 
 For specific instructions, please refer to [this page](docs/pyxel-web-en.md).
 
 ### Try Pyxel Examples
 
-After installing Pyxel, the examples of Pyxel will be copied to the current directory with the following command:
+After installing Pyxel, you can copy the examples to the current directory with the following command:
 
 ```sh
 pyxel copy_examples
 ```
 
-The examples to be copied are as follows:
+The following examples will be copied:
 
 <table>
 <tr>
@@ -234,7 +234,7 @@ The examples to be copied are as follows:
 </tr>
 </table>
 
-An examples can be executed with the following commands:
+The examples can be executed with the following commands:
 
 ```sh
 cd pyxel_examples
@@ -246,7 +246,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ### Create Pyxel Application
 
-After importing the Pyxel module in your python script, specify the window size with `init` function first, then starts the Pyxel application with `run` function.
+After importing the Pyxel module in your Python script, specify the window size with the `init` function first, then start the Pyxel application with the `run` function.
 
 ```python
 import pyxel
@@ -266,7 +266,7 @@ pyxel.run(update, draw)
 
 The arguments of `run` function are `update` function to update each frame and `draw` function to draw screen when necessary.
 
-In an actual application, it is recommended to wrap pyxel code in a class as shown below:
+In an actual application, it is recommended to wrap Pyxel code in a class, as shown below:
 
 ```python
 import pyxel
@@ -287,7 +287,7 @@ class App:
 App()
 ```
 
-When creating simple graphics without animation, `show` function can be used to make the code more concise.
+When creating simple graphics without animation, the `show` function can be used to make the code more concise.
 
 ```python
 import pyxel
@@ -300,7 +300,7 @@ pyxel.show()
 
 ### Run Pyxel Application
 
-A created Python script can be executed using the `python` command:
+A created script can be executed using the `python` command:
 
 ```sh
 python PYTHON_SCRIPT_FILE
@@ -312,7 +312,7 @@ It can also be run with the `pyxel run` command:
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-Additionally, the `pyxel watch` command enables monitoring of changes in a specified directory, automatically re-running the program when changes are detected:
+Additionally, the `pyxel watch` command allows monitoring changes in a specified directory and automatically re-runs the program when changes are detected:
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
@@ -322,7 +322,7 @@ Directory monitoring can be stopped by pressing `Ctrl(Command)+C`.
 
 ### Special Controls
 
-The following special controls can be performed while a Pyxel application is running:
+The following special controls are available while a Pyxel application is running:
 
 - `Esc`<br>
   Quit the application
@@ -353,13 +353,13 @@ It starts with the following command:
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-If the specified Pyxel resource file (.pyxres) exists, the file is loaded, and if it does not exist, a new file is created with the specified name. If the resource file is omitted, the name is `my_resource.pyxres`.
+If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, a new file will be created with the specified name. If the resource file is omitted, the name is `my_resource.pyxres`.
 
-After starting Pyxel Editor, the file can be switched by dragging and dropping another resource file.
+After starting Pyxel Editor, you can switch the file by dragging and dropping another resource file.
 
-The created resource file can be loaded with `load` function.
+The created resource file can be loaded with the `load` function.
 
-Pyxel Editor has the following edit modes.
+Pyxel Editor has the following editing modes.
 
 **Image Editor**
 
@@ -399,30 +399,30 @@ The mode to edit musics in which the sounds are arranged in order of playback.
 
 ### Other Resource Creation Methods
 
-Pyxel images and tilemaps can also be created by the following methods:
+Pyxel images and tilemaps can also be created using the following methods:
 
-- Create an image from a list of strings with `Image.set` function or `Tilemap.set` function
+- Create an image from a list of strings using the `Image.set` function or the `Tilemap.set` function
 - Load an image file (PNG/GIF/JPEG) in Pyxel palette with `Image.load` function
 
-Pyxel sounds can also be created in the following method:
+Pyxel sounds can also be created using the following method:
 
 - Create a sound from strings with `Sound.set` function or `Music.set` function
 
-Please refer to the API reference for usage of these functions.
+Refer to the API reference for usage of these functions.
 
 ### How to Distribute Applications
 
-Pyxel supports a dedicated application distribution file format (Pyxel application file) that works across platforms.
+Pyxel supports a dedicated application distribution file format (Pyxel application file) that is cross-platform.
 
-Create the Pyxel application file (.pyxapp) with the `pyxel package` command:
+Create a Pyxel application file (.pyxapp) using the `pyxel package` command:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
-If the application should include resources or additional modules, place them in the application directory.
+If the application includes resources or additional modules, place them in the application directory.
 
-Metadata can be displayed at runtime by specifying it in the following format within the startup script. Fields other than `title` and `author` can be omitted.
+Metadata can be displayed at runtime by specifying it in the following format within the startup script. Fields other than `title` and `author` are optional.
 
 ```python
 # title: Pyxel Platformer
@@ -433,13 +433,13 @@ Metadata can be displayed at runtime by specifying it in the following format wi
 # version: 1.0
 ```
 
-The created application file can be executed with the `pyxel play` command:
+The created application file can be run using the `pyxel play` command:
 
 ```sh
 pyxel play PYXEL_APP_FILE
 ```
 
-Pyxel application file can also be converted to an executable or an HTML file with the `pyxel app2exe` or `pyxel app2html` commands.
+A Pyxel application file can also be converted to an executable or an HTML file using the `pyxel app2exe` or `pyxel app2html` commands.
 
 ## API Reference
 
@@ -452,17 +452,17 @@ Pyxel application file can also be converted to an executable or an HTML file wi
   The number of the elapsed frames
 
 - `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
-  Initialize the Pyxel application with screen size (`width`, `height`). The following can be specified as options: the window title with `title`, the frame rate with `fps`, the key to quit the application with `quit_key`, the scale of the display with `display_scale`, the scale of the screen capture with `capture_scale`, and the maximum recording time of the screen capture video with `capture_sec`.<br>
+  Initialize the Pyxel application with the screen size (`width`, `height`). The following options can be specified: the window title with `title`, the frame rate with `fps`, the key to quit the application with `quit_key`, the display scale with `display_scale`, the screen capture scale with `capture_scale`, and the maximum recording time of the screen capture video with `capture_sec`.<br>
   e.g. `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
-  Start the Pyxel application and call `update` function for frame update and `draw` function for drawing.
+  Start the Pyxel application and call the `update` function for frame update and the `draw` function for drawing.
 
 - `show()`<br>
   Show the screen and wait until the `Esc` key is pressed.
 
 - `flip()`<br>
-  Refresh the screen by one frame. The application exits when the `Esc` key is pressed. This function does not work in the web version.
+  Refresh the screen by one frame. The application exits when the `Esc` key is pressed. This function is not available in the web version.
 
 - `quit()`<br>
   Quit the Pyxel application.
@@ -470,7 +470,7 @@ Pyxel application file can also be converted to an executable or an HTML file wi
 ### Resource
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
-  Load the resource file (.pyxres). If an option is `True`, the resource will not be loaded. If a palette file (.pyxpal) of the same name exists in the same location as the resource file, the palette display color will also be changed. The palette file is a hexadecimal entry of the display colors (e.g. `1100FF`), separated by newlines. The palette file can also be used to change the colors displayed in Pyxel Editor.
+  Load the resource file (.pyxres). If an option is set to `True`, the corresponding resource will not be loaded. If a palette file (.pyxpal) with the same name exists in the same location as the resource file, the palette display colors will also be updated. The palette file contains hexadecimal entries for the display colors (e.g. `1100FF`), separated by newlines. The palette file can also be used to change the colors displayed in Pyxel Editor.
 
 ### Input
 
@@ -481,16 +481,16 @@ Pyxel application file can also be converted to an executable or an HTML file wi
   The current value of the mouse wheel
 
 - `btn(key)`<br>
-  Return `True` if `key` is pressed, otherwise return `False`. ([Key definition list](python/pyxel/__init__.pyi))
+  Return `True` if the `key` is pressed, otherwise return `False`. ([Key definition list](python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
-  Return `True` if `key` is pressed at that frame, otherwise return `False`. When `hold` and `repeat` are specified, `True` will be returned at the `repeat` frame interval when the `key` is held down for more than `hold` frames.
+  Return `True` if the `key` is pressed in that frame, otherwise return `False`. When `hold` and `repeat` are specified, `True` is returned at the `repeat` frame interval when the `key` is held down for more than `hold` frames.
 
 - `btnr(key)`<br>
-  Return `True` if `key` is released at that frame, otherwise return `False`.
+  Return `True` if the `key` is released in that frame, otherwise return `False`.
 
 - `mouse(visible)`<br>
-  If `visible` is `True`, show the mouse cursor. If `False`, hide it. Even if the mouse cursor is not displayed, its position is updated.
+  If `visible` is `True`, show the mouse cursor. If `False`, hide it. Even if the mouse cursor is not displayed, its position is still updated.
 
 ### Graphics
 
@@ -506,16 +506,16 @@ Pyxel application file can also be converted to an executable or an HTML file wi
   List of the tilemaps (0-7). (See the Tilemap class)
 
 - `clip(x, y, w, h)`<br>
-  Set the drawing area of the screen from (`x`, `y`) to width `w` and height `h`. Reset the drawing area to full screen with `clip()`.
+  Set the drawing area of the screen from (`x`, `y`) with a width of `w` and a height of `h`. Reset the drawing area to full screen by calling `clip()`.
 
 - `camera(x, y)`<br>
-  Change the upper left corner coordinates of the screen to (`x`, `y`). Reset the upper left corner coordinates to (`0`, `0`) with `camera()`.
+  Change the upper-left corner coordinates of the screen to (`x`, `y`). Reset the upper-left corner coordinates to (`0`, `0`) by calling `camera()`.
 
 - `pal(col1, col2)`<br>
-  Replace color `col1` with `col2` at drawing. `pal()` to reset to the initial palette.
+  Replace color `col1` with `col2` when drawing. Call `pal()` to reset to the initial palette.
 
 - `dither(alpha)`<br>
-  Applies dithering (pseudo-transparency) at drawing. Set `alpha` in the range 0.0-1.0, where 0.0 is transparent and 1.0 is opaque.
+  Applie dithering (pseudo-transparency) when drawing. Set `alpha` in the range `0.0`-`1.0`, where `0.0` is transparent and `1.0` is opaque.
 
 - `cls(col)`<br>
   Clear screen with color `col`.
@@ -557,12 +557,12 @@ Pyxel application file can also be converted to an executable or an HTML file wi
   Fill the area connected with the same color as (`x`, `y`) with color `col`.
 
 - `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, treated as transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformation will be applied.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If a negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, treated as transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformation will be applied.
 
 <img src="docs/images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`). If negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, treated as transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformation will be applied. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`). If a negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, treated as transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformation will be applied. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
 
 <img src="docs/images/bltm_figure.png">
 
@@ -579,16 +579,16 @@ Pyxel application file can also be converted to an executable or an HTML file wi
   List of the musics (0-7). (See the Music class)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
-  Play the sound `snd`(0-63) on channel `ch`(0-3). If `snd` is a list, it will be played in order. The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed. To resume the previous sound after playback ends, set `resume` to `True`.
+  Play the sound `snd`(0-63) on channel `ch`(0-3). If `snd` is a list, the sounds will be played in order. The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `loop` is set to `True`, loop playback is performed. To resume the previous sound after playback ends, set `resume` to `True`.
 
 - `playm(msc, [tick], [loop])`<br>
-  Play the music `msc`(0-7). The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `True` is specified for `loop`, loop playback is performed.
+  Play the music `msc`(0-7). The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `loop` is set to `True`, loop playback is performed.
 
 - `stop([ch])`<br>
-  Stops playback of the specified channel `ch`(0-3). `stop()` to stop playing all channels.
+  Stop playback of the specified channel `ch`(0-3). Call `stop()` to stop all channels.
 
 - `play_pos(ch)`<br>
-  Get the sound playback position of channel `ch`(0-3) as a tuple of `(sound no, note no)`. Returns `None` when playback is stopped.
+  Get the sound playback position of channel `ch`(0-3) as a tuple of `(sound_no, note_no)`. Return `None` when playback is stopped.
 
 ### Math
 
@@ -617,16 +617,16 @@ Pyxel application file can also be converted to an executable or an HTML file wi
   Sets the seed of the random number generator.
 
 - `rndi(a, b)`<br>
-  Returns an random integer greater than or equal to `a` and less than or equal to `b`.
+  Return a random integer greater than or equal to `a` and less than or equal to `b`.
 
 - `rndf(a, b)`<br>
-  Returns a random decimal greater than or equal to `a` and less than or equal to `b`.
+  Return a random floating-point number greater than or equal to `a` and less than or equal to `b`.
 
 - `nseed(seed)`<br>
   Sets the seed of Perlin noise.
 
 - `noise(x, [y], [z])`<br>
-  Returns the Perlin noise value for the specified coordinates.
+  Return the Perlin noise value for the specified coordinates.
 
 ### Image Class
 
@@ -634,17 +634,17 @@ Pyxel application file can also be converted to an executable or an HTML file wi
   The width and height of the image
 
 - `set(x, y, data)`<br>
-  Set the image at (`x`, `y`) by a list of strings.<br>
+  Set the image at (`x`, `y`) using a list of strings.<br>
   e.g. `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
-  Load the image file (PNG/GIF/JPEG) at (`x`, `y`).
+  Load an image file (PNG/GIF/JPEG) at (`x`, `y`).
 
 - `pget(x, y)`<br>
-  Get the pixel color at (`x`, `y`).
+  Get the color of the pixel color at (`x`, `y`).
 
 - `pset(x, y, col)`<br>
-  Draw a pixel of color `col` at (`x`, `y`).
+  Draw a pixel with the color `col` at (`x`, `y`).
 
 ### Tilemap Class
 
@@ -655,22 +655,22 @@ Pyxel application file can also be converted to an executable or an HTML file wi
   The image bank (0-2) referenced by the tilemap
 
 - `set(x, y, data)`<br>
-  Set the tilemap at (`x`, `y`) by a list of strings.<br>
+  Set the tilemap at (`x`, `y`) using a list of strings.<br>
   e.g. `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
   Load the layer in the drawing order `layer`(0-) from the TMX file (Tiled Map File) at (`x`, `y`).
 
 - `pget(x, y)`<br>
-  Get the tile at (`x`, `y`). A tile is a tuple of `(tile_x, tile_y)`.
+  Get the tile at (`x`, `y`). A tile is represented as a tuple of `(tile_x, tile_y)`.
 
 - `pset(x, y, tile)`<br>
-  Draw a `tile` at (`x`, `y`). A tile is a tuple of `(tile_x, tile_y)`.
+  Draw a `tile` at (`x`, `y`). A tile is represented as a tuple of `(tile_x, tile_y)`.
 
 ### Sound Class
 
 - `notes`<br>
-  List of notes (0-127). The higher the number, the higher the pitch, and at 33 it becomes 'A2'(440Hz). The rest is -1.
+  List of notes (0-127). The higher the number, the higher the pitch. Note `33` corresponds to 'A2'(440Hz). Rest notes are represented by `-1`.
 
 - `tones`<br>
   List of tones (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
@@ -685,10 +685,10 @@ Pyxel application file can also be converted to an executable or an HTML file wi
   Playback speed. 1 is the fastest, and the larger the number, the slower the playback speed. At 120, the length of one note becomes 1 second.
 
 - `set(notes, tones, volumes, effects, speed)`<br>
-  Set notes, tones, volumes, and effects with a string. If the tones, volumes, and effects length are shorter than the notes, it is repeated from the beginning.
+  Set notes, tones, volumes, and effects using a string. If the length of tones, volumes, or effects are shorter than the notes, they will be repeated from the beginning.
 
 - `set_notes(notes)`<br>
-  Set the notes with a string made of 'CDEFGAB'+'#-'+'01234' or 'R'. Case-insensitive and whitespace is ignored.<br>
+  Set the notes using a string made of 'CDEFGAB'+'#-'+'01234' or 'R'. It is case-insensitive, and whitespace is ignored.<br>
   e.g. `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
@@ -706,33 +706,33 @@ Pyxel application file can also be converted to an executable or an HTML file wi
 ### Music Class
 
 - `seqs`<br>
-  Two-dimensional list of sounds (0-63) with the number of channels
+  A two-dimensional list of sounds (0-63) across multiple channels
 
 - `set(seq0, seq1, seq2, ...)`<br>
-  Set the lists of sound (0-63) of channels. If an empty list is specified, that channel is not used for playback.<br>
+  Set the lists of sound (0-63) for each channel. If an empty list is specified, that channel is not used for playback.<br>
   e.g. `pyxel.musics[0].set([0, 1], [], [3])`
 
 ### Advanced APIs
 
-Pyxel has "advanced APIs" that are not mentioned in this reference because they "may confuse users" or "need specialized knowledge to use".
+Pyxel includes "advanced APIs" that are not mentioned in this reference because they "may confuse users" or "require specialized knowledge to use".
 
-If you are familiar with your skills, try to create amazing works with [this](python/pyxel/__init__.pyi) as a clue!
+If you are confident in your skills, try creating amazing works using [this](python/pyxel/__init__.pyi) as a guide!
 
 ## How to Contribute
 
 ### Submitting Issues
 
-Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature/enhancement requests. Before submitting a new issue, ensure that there is no similar open issue.
+Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature or enhancement requests. Before submitting a new issue, make sure there are no similar open issue.
 
 ### Manual Testing
 
-Anyone manually testing the code and reporting bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) are very welcome!
+Anyone who manually tests the code and reports bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) is very welcome!
 
 ### Submitting Pull Requests
 
-Patches/fixes are accepted in form of pull requests (PRs). Make sure the issue the pull request addresses is open in the Issue Tracker.
+Patches and fixes are accepted in form of pull requests (PRs). Make sure the issue that the pull request addresses is open in the Issue Tracker.
 
-Submitted pull request is deemed to have agreed to publish under [MIT License](LICENSE).
+By submitting a pull request, you agree to publish your contribution under the [MIT License](LICENSE).
 
 ## Other Information
 
@@ -742,8 +742,8 @@ Submitted pull request is deemed to have agreed to publish under [MIT License](L
 
 ## License
 
-Pyxel is under [MIT License](LICENSE). It can be reused within proprietary software, provided that all copies of the software or its substantial portions include a copy of the terms of the MIT License and also a copyright notice.
+Pyxel is licensed under the [MIT License](LICENSE). It can be reused in proprietary software, provided that all copies of the software or its substantial portions include a copy of the MIT License terms and a copyright notice.
 
 ## Recruiting Sponsors
 
-Pyxel is looking for sponsors on GitHub Sponsors. Consider sponsoring Pyxel for continued maintenance and feature additions. Sponsors can consult about Pyxel as a benefit. Please see [here](https://github.com/sponsors/kitao) for details.
+Pyxel is looking for sponsors on GitHub Sponsors. Please consider sponsoring Pyxel to support its continued maintenance and feature development. As a benefit, sponsors can consult with the Pyxel developer. For more details, please visit [this page](https://github.com/sponsors/kitao).
