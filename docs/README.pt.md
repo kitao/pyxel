@@ -670,7 +670,7 @@ O ficheiro de aplicação Pyxel também pode ser convertido num ficheiro execut�
 ### Classe de Som
 
 - `notes`<br>
-  Lista de notas (0-127). Quanto maior o número, mais agudo, e ao chegar em 33 ele se torna 'A2'(440Hz). O resto é -1.
+  Lista de notas (0-127). Quanto maior o número, mais agudo, e ao chegar em `33` ele se torna 'A2'(440Hz). O resto é `-1`.
 
 - `tones`<br>
   Lista de tons (0:Triangular / 1:Quadrada / 2:Pulso / 3:Ruído)
