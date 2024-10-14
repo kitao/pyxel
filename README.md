@@ -11,7 +11,7 @@
 
 **Pyxel** is a retro game engine for Python.
 
-Thanks to its simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel art style games.
+With simple specifications inspired by retro gaming consoles, such as only 16 colors can be displayed and only 4 sounds can be played back at the same time, you can feel free to enjoy making pixel-art-style games.
 
 <img src="docs/images/pyxel_message.png" width="480">
 
@@ -93,7 +93,7 @@ After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://
 sudo pip3 install -U pyxel
 ```
 
-If the above doesn't work, try self-building according to the instructions in [Makefile](Makefile).
+If the above doesn't work, try building it from source according to the instructions in [Makefile](Makefile).
 
 ### Web
 
@@ -266,7 +266,7 @@ pyxel.run(update, draw)
 
 The arguments of `run` function are `update` function to update each frame and `draw` function to draw screen when necessary.
 
-In an actual application, it is recommended to wrap pyxel code in a class as below:
+In an actual application, it is recommended to wrap pyxel code in a class as shown below:
 
 ```python
 import pyxel
@@ -439,7 +439,7 @@ The created application file can be executed with the `pyxel play` command:
 pyxel play PYXEL_APP_FILE
 ```
 
-Pyxel application file also can be converted to an executable or an HTML file with the `pyxel app2exe` or `pyxel app2html` commands.
+Pyxel application file can also be converted to an executable or an HTML file with the `pyxel app2exe` or `pyxel app2html` commands.
 
 ## API Reference
 
