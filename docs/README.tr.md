@@ -7,7 +7,7 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H27VDKD)
 
-[ [English](https://github.com/kitao/pyxel/blob/main/README.md) | [中文](https://github.com/kitao/pyxel/blob/main//docs/README.cn.md) | [Deutsch](https://github.com/kitao/pyxel/blob/main//docs/README.de.md) | [Español](https://github.com/kitao/pyxel/blob/main//docs/README.es.md) | [Français](https://github.com/kitao/pyxel/blob/main//docs/README.fr.md) | [Italiano](https://github.com/kitao/pyxel/blob/main//docs/README.it.md) | [日本語](https://github.com/kitao/pyxel/blob/main//docs/README.ja.md) | [한국어](https://github.com/kitao/pyxel/blob/main//docs/README.ko.md) | [Português](https://github.com/kitao/pyxel/blob/main//docs/README.pt.md) | [Русский](https://github.com/kitao/pyxel/blob/main//docs/README.ru.md) | [Türkçe](https://github.com/kitao/pyxel/blob/main//docs/README.tr.md) | [Українська](https://github.com/kitao/pyxel/blob/main//docs/README.uk.md) ]
+[ [English](https://github.com/kitao/pyxel/blob/main/README.md) | [中文](https://github.com/kitao/pyxel/blob/main/docs/README.cn.md) | [Deutsch](https://github.com/kitao/pyxel/blob/main/docs/README.de.md) | [Español](https://github.com/kitao/pyxel/blob/main/docs/README.es.md) | [Français](https://github.com/kitao/pyxel/blob/main/docs/README.fr.md) | [Italiano](https://github.com/kitao/pyxel/blob/main/docs/README.it.md) | [日本語](https://github.com/kitao/pyxel/blob/main/docs/README.ja.md) | [한국어](https://github.com/kitao/pyxel/blob/main/docs/README.ko.md) | [Português](https://github.com/kitao/pyxel/blob/main/docs/README.pt.md) | [Русский](https://github.com/kitao/pyxel/blob/main/docs/README.ru.md) | [Türkçe](https://github.com/kitao/pyxel/blob/main/docs/README.tr.md) | [Українська](https://github.com/kitao/pyxel/blob/main/docs/README.uk.md) ]
 
 **Pyxel** Python için bir retro oyun motorudur.
 
@@ -481,7 +481,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Fare tekerleğinin mevcut değeri
 
 - `btn(key)`<br>
-  `key` tuşuna basılıysa `True` döndürür, aksi takdirde `False`. ([Tuş tanımı listesi](https://github.com/kitao/pyxel/blob/main//python/pyxel/__init__.pyi))
+  `key` tuşuna basılıysa `True` döndürür, aksi takdirde `False`. ([Tuş tanımı listesi](https://github.com/kitao/pyxel/blob/main/python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
   `key` tuşuna o karede basılıysa `True` döndürür. `hold` ve `repeat` belirtilmişse, `key` tuşuna `hold` kare süresinden uzun süre basılı tutulduğunda `repeat` kare aralığında `True` döner.
@@ -716,7 +716,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 
 Pyxel, kullanıcıları karıştırabilecek veya kullanmak için özelleşmiş bilgi gerektirebilecek "ileri düzey API'ları" içerir. Bu API'lar bu referansta belirtilmemiştir.
 
-Eğer becerilerinize güveniyorsanız, [bu bağlantıya](https://github.com/kitao/pyxel/blob/main//python/pyxel/__init__.pyi) bakarak muhteşem çalışmalar oluşturabilirsiniz!
+Eğer becerilerinize güveniyorsanız, [bu bağlantıya](https://github.com/kitao/pyxel/blob/main/python/pyxel/__init__.pyi) bakarak muhteşem çalışmalar oluşturabilirsiniz!
 
 ## Katkıda Bulunma Yöntemleri
 
