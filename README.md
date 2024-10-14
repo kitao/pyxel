@@ -515,7 +515,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Replace color `col1` with `col2` when drawing. Call `pal()` to reset to the initial palette.
 
 - `dither(alpha)`<br>
-  Applie dithering (pseudo-transparency) when drawing. Set `alpha` in the range `0.0`-`1.0`, where `0.0` is transparent and `1.0` is opaque.
+  Apply dithering (pseudo-transparency) when drawing. Set `alpha` in the range `0.0`-`1.0`, where `0.0` is transparent and `1.0` is opaque.
 
 - `cls(col)`<br>
   Clear screen with color `col`.
@@ -623,7 +623,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Return a random floating-point number greater than or equal to `a` and less than or equal to `b`.
 
 - `nseed(seed)`<br>
-  Sets the seed of Perlin noise.
+  Set the seed of Perlin noise.
 
 - `noise(x, [y], [z])`<br>
   Return the Perlin noise value for the specified coordinates.
