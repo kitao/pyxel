@@ -40,7 +40,7 @@ The development of Pyxel is driven by user feedback. Please give Pyxel a star on
 
 Pyxel's specifications and APIs are inspired by [PICO-8](https://www.lexaloffle.com/pico-8.php) and [TIC-80](https://tic80.com/).
 
-Pyxel is open source under the [MIT license](https://github.com/kitao/pyxel/blob/main//LICENSE) and free to use. Let's start making a retro game with Pyxel!
+Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob/main//LICENSE) and free to use. Let's start making a retro game with Pyxel!
 
 ## Specifications
 
@@ -50,9 +50,9 @@ Pyxel is open source under the [MIT license](https://github.com/kitao/pyxel/blob
 - 256x256-sized 3 image banks
 - 256x256-sized 8 tilemaps
 - 4 channels with 64 definable sounds
-- 8 music tracks that can combine any of sounds
+- 8 music tracks that can combine any sounds
 - Keyboard, mouse, and gamepad inputs
-- Image and sound editor
+- Image and sound editing tools
 - User expansion of colors, channels, and banks
 
 ### Color Palette
@@ -71,7 +71,7 @@ After installing [Python3](https://www.python.org/) (version 3.8 or higher), run
 pip install -U pyxel
 ```
 
-If you install Python using the official installer, make sure to check the `Add Python 3.x to PATH` checkbox to enable the `pyxel` command.
+If you install Python using the official installer, make sure to check the `Add Python 3.x to PATH` option to enable the `pyxel` command.
 
 ### Mac
 
@@ -246,7 +246,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ### Create Pyxel Application
 
-After importing the Pyxel module in your Python script, specify the window size with the `init` function first, then start the Pyxel application with the `run` function.
+In your Python script, import the Pyxel module, specify the window size with the `init` function, and then start the Pyxel application with the `run` function.
 
 ```python
 import pyxel
@@ -264,7 +264,7 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-The arguments of the `run` function are the `update` function, which updates each frame, and the `draw` function, which draws the screen when necessary.
+The arguments of the `run` function are the `update` function, which processes frame updates, and the `draw` function, which handles screen drawing.
 
 In an actual application, it is recommended to wrap Pyxel code in a class, as shown below:
 
@@ -287,7 +287,7 @@ class App:
 App()
 ```
 
-When creating simple graphics without animation, the `show` function can be used to make the code more concise.
+To create simple graphics without animation, use the `show` function to make the code more concise.
 
 ```python
 import pyxel
@@ -355,7 +355,7 @@ pyxel edit PYXEL_RESOURCE_FILE
 
 If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, a new file will be created with the specified name. If the resource file is omitted, the name is `my_resource.pyxres`.
 
-After starting Pyxel Editor, you can switch the file by dragging and dropping another resource file.
+After starting Pyxel Editor, you can switch between resource files by dragging and dropping another resource file.
 
 The created resource file can be loaded with the `load` function.
 
@@ -414,13 +414,13 @@ Refer to the API reference for usage of these functions.
 
 Pyxel supports a dedicated application distribution file format (Pyxel application file) that is cross-platform.
 
-Create a Pyxel application file (.pyxapp) using the `pyxel package` command:
+A Pyxel application file (.pyxapp) is created using the `pyxel package` command:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
-If the application includes resources or additional modules, place them in the application directory.
+If you need to includes resources or additional modules, place them in the application directory.
 
 Metadata can be displayed at runtime by specifying it in the following format within the startup script. Fields other than `title` and `author` are optional.
 
