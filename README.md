@@ -712,9 +712,9 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Set the lists of sound (0-63) for each channel. If an empty list is specified, that channel is not used for playback.<br>
   Example: `pyxel.musics[0].set([0, 1], [], [3])`
 
-### Advanced APIs
+### Advanced API
 
-Pyxel includes "advanced APIs" that are not mentioned in this reference because they "may confuse users" or "require specialized knowledge to use".
+Pyxel includes an "Advanced API" that is not mentioned in this reference, as it may confuse users or require specialized knowledge to use.
 
 If you are confident in your skills, try creating amazing works using [this](python/pyxel/__init__.pyi) as a guide!
 
