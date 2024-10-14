@@ -562,7 +562,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  从瓦片图`tm` (0-7) 的 (`u`，`v`) 复制大小为 (`w`，`h`) 的区域到 (`x`，`y`)。如果为`w`和/或`h`设置了负值，它将在水平和/或垂直方向上反转。如果指定了 `colkey`，将被视为透明色。如果指定了 `rotate`(度)、`scale`(1.0=100%) 或两者，则将应用相应的变换。瓦片的大小是 8x8 像素，以`(tile_x, tile_y)`的元组形式存储在瓦片图中。
+  从瓦片图`tm`(0-7) 的 (`u`，`v`) 复制大小为 (`w`，`h`) 的区域到 (`x`，`y`)。如果为`w`和/或`h`设置了负值，它将在水平和/或垂直方向上反转。如果指定了 `colkey`，将被视为透明色。如果指定了 `rotate`(度)、`scale`(1.0=100%) 或两者，则将应用相应的变换。瓦片的大小是 8x8 像素，以`(tile_x, tile_y)`的元组形式存储在瓦片图中。
 
 <img src="images/bltm_figure.png">
 
