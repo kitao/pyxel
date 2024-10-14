@@ -50,7 +50,7 @@ Pyxel is open source under the [MIT license](LICENSE) and free to use. Let's sta
 - 256x256-sized 3 image banks
 - 256x256-sized 8 tilemaps
 - 4 channels with 64 definable sounds
-- 8 music tracks that can combine any sounds
+- 8 music tracks that can combine any of sounds
 - Keyboard, mouse, and gamepad inputs
 - Image and sound editor
 - User expansion of colors, channels, and banks
@@ -109,7 +109,7 @@ After installing Pyxel, you can copy the examples to the current directory with 
 pyxel copy_examples
 ```
 
-The following examples will be copied:
+The following examples will be copied to your current directory:
 
 <table>
 <tr>
@@ -264,7 +264,7 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-The arguments of `run` function are `update` function to update each frame and `draw` function to draw screen when necessary.
+The arguments of the `run` function are the `update` function, which updates each frame, and the `draw` function, which draws the screen when necessary.
 
 In an actual application, it is recommended to wrap Pyxel code in a class, as shown below:
 
@@ -312,7 +312,7 @@ It can also be run with the `pyxel run` command:
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-Additionally, the `pyxel watch` command allows monitoring changes in a specified directory and automatically re-runs the program when changes are detected:
+Additionally, the `pyxel watch` command monitors changes in a specified directory and automatically re-runs the program when changes are detected:
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
@@ -331,7 +331,7 @@ The following special controls are available while a Pyxel application is runnin
 - `Alt(Option)+2`<br>
   Reset the recording start time of the screen capture video
 - `Alt(Option)+3`<br>
-  Save the screen capture video to the desktop (up to 10 seconds)
+  Save a screen capture video to the desktop (up to 10 seconds)
 - `Alt(Option)+9`<br>
   Switch between screen modes (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
@@ -557,12 +557,12 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Fill the area connected with the same color as (`x`, `y`) with color `col`.
 
 - `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If a negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, treated as transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformation will be applied.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the image bank `img`(0-2) to (`x`, `y`). If a negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, it will be treated as a transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformations will be applied.
 
 <img src="docs/images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`). If a negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, treated as transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformation will be applied. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`). If a negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, it will be treated as a transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformations will be applied. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tile_x, tile_y)`.
 
 <img src="docs/images/bltm_figure.png">
 
@@ -730,7 +730,7 @@ Anyone who manually tests the code and reports bugs or suggestions for enhanceme
 
 ### Submitting Pull Requests
 
-Patches and fixes are accepted in form of pull requests (PRs). Make sure the issue that the pull request addresses is open in the Issue Tracker.
+Patches and fixes are accepted in the form of pull requests (PRs). Make sure that the issue the pull request addresses is open in the Issue Tracker.
 
 By submitting a pull request, you agree to publish your contribution under the [MIT License](LICENSE).
 
@@ -746,4 +746,4 @@ Pyxel is licensed under the [MIT License](LICENSE). It can be reused in propriet
 
 ## Recruiting Sponsors
 
-Pyxel is looking for sponsors on GitHub Sponsors. Please consider sponsoring Pyxel to support its continued maintenance and feature development. As a benefit, sponsors can consult with the Pyxel developer. For more details, please visit [this page](https://github.com/sponsors/kitao).
+Pyxel is looking for sponsors on GitHub Sponsors. Please consider sponsoring Pyxel to support its continued maintenance and feature development. As a benefit, sponsors can consult directly with the Pyxel developer. For more details, please visit [this page](https://github.com/sponsors/kitao).
