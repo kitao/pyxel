@@ -599,7 +599,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Restituisce il più grande intero minore o uguale a `x`.
 
 - `sgn(x)`<br>
-  Restituisce 1 quando `x` è positivo, 0 quando è zero e -1 quando è negativo.
+  Restituisce `1` quando `x` è positivo, `0` quando è `0` e `-1` quando è negativo.
 
 - `sqrt(x)`<br>
   Restituisce la radice quadrata di `x`.
