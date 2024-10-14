@@ -7,15 +7,15 @@
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H27VDKD)
 
-[ [English](https://github.com/kitao/pyxel/blob/main//README.md) | [中文](https://github.com/kitao/pyxel/blob/main//docs/README.cn.md) | [Deutsch](https://github.com/kitao/pyxel/blob/main//docs/README.de.md) | [Español](https://github.com/kitao/pyxel/blob/main//docs/README.es.md) | [Français](https://github.com/kitao/pyxel/blob/main//docs/README.fr.md) | [Italiano](https://github.com/kitao/pyxel/blob/main//docs/README.it.md) | [日本語](https://github.com/kitao/pyxel/blob/main//docs/README.ja.md) | [한국어](https://github.com/kitao/pyxel/blob/main//docs/README.ko.md) | [Português](https://github.com/kitao/pyxel/blob/main//docs/README.pt.md) | [Русский](https://github.com/kitao/pyxel/blob/main//docs/README.ru.md) | [Türkçe](https://github.com/kitao/pyxel/blob/main//docs/README.tr.md) | [Українська](https://github.com/kitao/pyxel/blob/main//docs/README.uk.md) ]
+[ [English](https://github.com/kitao/pyxel/blob/main/README.md) | [中文](https://github.com/kitao/pyxel/blob/main//docs/README.cn.md) | [Deutsch](https://github.com/kitao/pyxel/blob/main//docs/README.de.md) | [Español](https://github.com/kitao/pyxel/blob/main//docs/README.es.md) | [Français](https://github.com/kitao/pyxel/blob/main//docs/README.fr.md) | [Italiano](https://github.com/kitao/pyxel/blob/main//docs/README.it.md) | [日本語](https://github.com/kitao/pyxel/blob/main//docs/README.ja.md) | [한국어](https://github.com/kitao/pyxel/blob/main//docs/README.ko.md) | [Português](https://github.com/kitao/pyxel/blob/main//docs/README.pt.md) | [Русский](https://github.com/kitao/pyxel/blob/main//docs/README.ru.md) | [Türkçe](https://github.com/kitao/pyxel/blob/main//docs/README.tr.md) | [Українська](https://github.com/kitao/pyxel/blob/main//docs/README.uk.md) ]
 
 **Pyxel** Python için bir retro oyun motorudur.
 
-Retro oyun konsollarından esinlenerek basitleştirilmiş özelliklere sahip olması sayesinde, aynı anda yalnızca 16 renk görüntülenebildiği ve yalnızca 4 ses çalınabildiği için, pixel art tarzı oyunlar yapmanın keyfini doyasıya çıkarabilirsiniz.
+Retro oyun konsollarından esinlenerek basitleştirilmiş özelliklere sahip olması sayesinde, aynı anda yalnızca 16 renk görüntülenebildiği ve yalnızca 4 ses çalınabildiği için, pixel-art tarzı oyunlar yapmanın keyfini çıkarabilirsiniz.
 
 <img src="images/pyxel_message.png" width="480">
 
-Pyxel'in geliştirilmesinin motivasyonu kullanıcıların geri bildirimleridir. Lütfen Pyxel'e GitHub'da bir yıldız verin!
+Pyxel'in geliştirilmesi kullanıcı geri bildirimleriyle yönlendirilmektedir. Lütfen Pyxel'e GitHub'da bir yıldız verin!
 
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">
@@ -38,7 +38,7 @@ Pyxel'in geliştirilmesinin motivasyonu kullanıcıların geri bildirimleridir. 
 </a>
 </p>
 
-Pyxel, [PICO-8](https://www.lexaloffle.com/pico-8.php) ve [TIC-80](https://tic80.com/) gibi retro oyun motorlarından esinlenerek tasarlanmıştır.
+Pyxel'in özellikleri ve API'leri, [PICO-8](https://www.lexaloffle.com/pico-8.php) ve [TIC-80](https://tic80.com/) gibi retro oyun motorlarından esinlenmiştir.
 
 Pyxel [MIT lisansı](../LICENSE) altında açık kaynak kodludur ve kullanımı ücretsizdir. Haydi, Pyxel ile birlikte retro bir oyun yapalım!
 
@@ -48,12 +48,12 @@ Pyxel [MIT lisansı](../LICENSE) altında açık kaynak kodludur ve kullanımı 
 - Python ile programlama
 - 16 renk paleti
 - 256x256 boyutunda 3 resim bankası
-- 256x256 boyutunda 8 karo haritası
+- 256x256 boyutunda 8 tilemap
 - 64 tanımlanabilir sesli 4 kanal
 - Herhangi bir sesi birleştirebilen 8 müzik parçası
 - Klavye, fare ve oyun kumandası girişleri
-- Görüntü ve ses düzenleyici
-- Renkler, kanallar ve bankalar için kullanıcı genişletme seçeneği
+- Görüntü ve ses düzenleme araçları
+- Renkler, kanallar ve bankalar için kullanıcı genişletme
 
 ### Renk Paleti
 
@@ -61,7 +61,7 @@ Pyxel [MIT lisansı](../LICENSE) altında açık kaynak kodludur ve kullanımı 
 
 <img src="images/pyxel_palette.png">
 
-## Nasıl Kurulur
+## Kullanım
 
 ### Windows
 
@@ -71,7 +71,7 @@ Pyxel [MIT lisansı](../LICENSE) altında açık kaynak kodludur ve kullanımı 
 pip install -U pyxel
 ```
 
-Python'u resmi yükleyici ile kurarsanız, `pyxel` komutunu etkinleştirmek için `Add Python 3.x to PATH` seçeneğini işaretleyin.
+Python'u resmi yükleyici ile kurarsanız, `pyxel` komutunu etkinleştirmek için `Add Python 3.x to PATH` seçeneğini işaretlemeyi unutmayın.
 
 ### Mac
 
@@ -83,7 +83,7 @@ pipx ensurepath
 pipx install pyxel
 ```
 
-Pyxel'i kurduktan sonra sürümü güncellemek için pipx upgrade pyxel komutunu çalıştırın.
+Pyxel'i kurduktan sonra sürümü güncellemek için `pipx upgrade pyxel` komutunu çalıştırın.
 
 ### Linux
 
@@ -93,17 +93,17 @@ SDL2 paketini (`libsdl2-dev` Ubuntu için), [Python3](https://www.python.org/) (
 sudo pip3 install -U pyxel
 ```
 
-Yukarıdaki komut çalışmazsa, [Makefile](https://github.com/kitao/pyxel/blob/main//Makefile) talimatlarına göre kendiniz derlemeyi deneyin.
+Yukarıdaki komut çalışmazsa, [Makefile](Makefile) talimatlarına göre kendiniz derlemeyi deneyin.
 
 ### Web
 
 Pyxel'in web versiyonu Python veya Pyxel kurulumu gerektirmez ve desteklenen web tarayıcıları ile hem PC'lerde hem de akıllı telefon ve tabletlerde çalışır.
 
-Özel talimatlar için lütfen [bu sayfaya](pyxel-web-en.md). başvurun.
+Özel talimatlar için lütfen [bu sayfaya](docs/pyxel-web-en.md) başvurun.
 
 ### Pyxel Örneklerini Deneyin
 
-Pyxel'i kurduktan sonra, aşağıdaki komutla Pyxel örnekleri mevcut dizine kopyalanacaktır:
+Pyxel'i kurduktan sonra, aşağıdaki komutla Pyxel örneklerini mevcut dizine kopyalayabilirsiniz:
 
 ```sh
 pyxel copy_examples
@@ -234,7 +234,7 @@ Kopyalanacak örnekler aşağıdaki gibidir:
 </tr>
 </table>
 
-Bir örnek aşağıdaki komutlarla çalıştırılabilir:
+Örnekler aşağıdaki komutlarla çalıştırılabilir:
 
 ```sh
 cd pyxel_examples
@@ -242,11 +242,11 @@ pyxel run 01_hello_pyxel.py
 pyxel play 30sec_of_daylight.pyxapp
 ```
 
-## Nasıl Kullanılır
+## Kullanım
 
 ### Pyxel Uygulaması Oluşturma
 
-Python betiğinizde Pyxel modülünü içe aktardıktan sonra, ilk olarak `init` fonksiyonu ile pencere boyutunu belirtin ve ardından `run` fonksiyonu ile Pyxel uygulamasını başlatın.
+Python betiğinizde Pyxel modülünü içe aktardıktan sonra, `init` fonksiyonu ile pencere boyutunu belirtin ve ardından `run` fonksiyonu ile Pyxel uygulamasını başlatın.
 
 ```python
 import pyxel
@@ -264,7 +264,7 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-`run` fonksiyonunun argümanları, her kareyi güncellemek için `update` fonksiyonu ve gerektiğinde ekranı çizmek için `draw` fonksiyonudur.
+`run` fonksiyonunun argümanları, her kareyi güncellemek için `update` fonksiyonu ve ekranı çizmek için `draw` fonksiyonudur.
 
 Gerçek bir uygulamada, pyxel kodlarını aşağıdaki gibi bir sınıfa sarmanız önerilir:
 
@@ -287,7 +287,7 @@ class App:
 App()
 ```
 
-Basit grafikler oluştururken, animasyon olmadan kodu daha kısa yapmak için `show` fonksiyonu kullanılabilir.
+Animasyonsuz basit grafikler oluştururken kodu daha kısa yapmak için `show` fonksiyonu kullanılabilir.
 
 ```python
 import pyxel
@@ -312,7 +312,7 @@ Ayrıca `pyxel run` komutu ile de çalıştırılabilir:
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-Ek olarak, `pyxel watch` komutu, belirtilen bir dizindeki değişikliklerin izlenmesini sağlar ve değişiklikler tespit edildiğinde programı otomatik olarak yeniden çalıştırır:
+Ek olarak, `pyxel watch` komutu, belirtilen bir dizindeki değişiklikleri izler ve değişiklikler tespit edildiğinde programı otomatik olarak yeniden çalıştırır:
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
@@ -329,7 +329,7 @@ Pyxel uygulaması çalışırken aşağıdaki özel komutlar kullanılabilir:
 - `Alt(Option)+1`<br>
   Ekran görüntüsünü masaüstüne kaydeder
 - `Alt(Option)+2`<br>
-  Ekran videosu kaydının başlangıç zamanını sıfırlar
+  Ekran kaydının başlangıç zamanını sıfırlar
 - `Alt(Option)+3`<br>
   Ekran videosunu masaüstüne kaydeder (en fazla 10 saniye)
 - `Alt(Option)+9`<br>
@@ -343,7 +343,7 @@ Pyxel uygulaması çalışırken aşağıdaki özel komutlar kullanılabilir:
 - `Shift+Alt(Option)+0`<br>
   Mevcut renk paletini masaüstüne kaydeder
 
-### Kaynaklar Nasıl Oluşturulur
+### Kaynak Oluşturma
 
 Pyxel Editör, Pyxel uygulamasında kullanılan görüntü ve sesleri oluşturabilir.
 
@@ -355,11 +355,11 @@ pyxel edit PYXEL_RESOURCE_FILE
 
 Belirtilen Pyxel kaynak dosyası (.pyxres) mevcutsa, dosya yüklenir; mevcut değilse belirtilen isimle yeni bir dosya oluşturulur (`my_resource.pyxres` adıyla).
 
-Editör başlatıldıktan sonra, başka bir kaynak dosyasını sürükleyip bırakarak dosya değiştirilebilir.
+Editör başlatıldıktan sonra, başka bir kaynak dosyasını sürükleyip bırakarak değiştirebilirsiniz.
 
 Oluşturulan kaynak dosyası `load` fonksiyonu ile yüklenebilir.
 
-Pyxel Editör'ün aşağıdaki düzenleme modları bulunmaktadır.
+Pyxel Editör'ün aşağıdaki düzenleme modları vardır.
 
 **Image Editor**
 
@@ -379,7 +379,7 @@ Görüntü setlerindeki görüntülerin bir tile deseninde düzenlendiği tilema
 <img src="images/tilemap_editor.gif">
 </a>
 
-Bir TMX dosyasını (Tiled Map Dosyası) Tilemap Editöre sürükleyip bırakın. Bu, seçili döşeme harita numarasına karşılık gelen çizim sırasındaki katmanını yükler.
+Bir TMX dosyasını (Tiled Map Dosyası) Tilemap Editöre sürükleyip bırakın. Bu, seçili tilemap numarasına karşılık gelen çizim sırasındaki katmanı yükler.
 
 **Sound Editor**
 
@@ -399,7 +399,7 @@ Seslerin çalma sırasına göre düzenlendiği müzikleri düzenleme modu.
 
 ### Diğer Kaynak Oluşturma Yöntemleri
 
-Pyxel görüntüleri ve tilemap'leri aşağıdaki yöntemlerle de oluşturulabilir:
+Pyxel görüntüleri ve tilemap'ler aşağıdaki yöntemlerle de oluşturulabilir:
 
 - `Image.set` veya `Tilemap.set` fonksiyonu ile bir dizi string'den bir görüntü oluşturulabilir
 - `Image.load` fonksiyonu ile bir görüntü dosyası (PNG/GIF/JPEG) Pyxel paletine yüklenebilir
@@ -410,9 +410,9 @@ Pyxel sesleri aşağıdaki yöntemle de oluşturulabilir:
 
 Bu fonksiyonların kullanımı için API referansına başvurun.
 
-### Uygulamaları Nasıl Dağıtılır
+### Uygulamaları Dağıtma
 
-Pyxel, platformlar arası çalışan özel bir uygulama dağıtım dosya formatını (Pyxel uygulama dosyası) destekler.
+Pyxel, platformlar arası çalışan özel bir uygulama dağıtım dosya formatı (Pyxel uygulama dosyası) destekler.
 
 Pyxel uygulama dosyasını (.pyxapp) `pyxel package` komutu ile oluşturun:
 
@@ -422,7 +422,7 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 
 Uygulamanın kaynak veya ek modülleri içermesi gerekiyorsa, bunları uygulama dizinine yerleştirin.
 
-Meta veriler, başlangıç komut dosyası içinde aşağıdaki biçimde belirtilerek çalışma zamanında görüntülenebilir. `title` ve `author` dışındaki alanlar atlanabilir.
+Meta veriler, başlangıç komut dosyasında aşağıdaki biçimde belirtilerek çalışma zamanında görüntülenebilir. `title` ve `author` dışındaki alanlar isteğe bağlıdır.
 
 ```python
 # title: Pyxel Platformer
@@ -452,7 +452,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Geçen kare sayısı
 
 - `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
-  Pyxel uygulamasını ekran boyutu (`width`, `height`) ile başlatır. İsteğe bağlı olarak aşağıdaki seçenekler belirtilebilir: pencere başlığı `title`, kare hızı `fps`, uygulamadan çıkış için kullanılacak tuş `quit_key`, ekran görüntüsü ölçeği `display_scale`, yakalama ölçeği `capture_scale`, ve ekran videosu maksimum kayıt süresi `capture_sec`.<br>
+  Pyxel uygulamasını ekran boyutu (`width`, `height`) ile başlatır. İsteğe bağlı olarak aşağıdaki seçenekler belirtilebilir: pencere başlığı `title`, kare hızı `fps`, uygulamadan çıkış için kullanılacak tuş `quit_key`, ekran ölçeği `display_scale`, ekran görüntüsü ölçeği `capture_scale`, ve ekran videosunun maksimum kayıt süresi `capture_sec`.<br>
   Örnek: `pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
@@ -462,7 +462,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Ekranı gösterir ve `Esc` tuşuna basılana kadar bekler.
 
 - `flip()`<br>
-  Ekranı bir kare yeniler. Uygulama, `Esc` tuşuna basıldığında çıkar. Bu fonksiyon web sürümünde çalışmaz.
+  Ekranı bir kare yeniler. Uygulama, `Esc` tuşuna basıldığında kapanır. Bu fonksiyon web sürümünde kullanılamaz.
 
 - `quit()`<br>
   Pyxel uygulamasını kapatır.
@@ -470,7 +470,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 ### Kaynaklar
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
-  Kaynak dosyasını (.pyxres) yükle. Bir seçenek `True` ise, kaynak yüklenmeyecek. Aynı konumda kaynak dosyası ile aynı ada sahip bir palet dosyası (.pyxpal) varsa, palet ekran renkleri değiştirilecek. Palet dosyası, görüntü renklerinin onaltılık girişleridir (örneğin, `1100FF`), yeni satırlarla ayrılmıştır. Palet dosyası ayrıca, Pyxel Editor'de görüntülenen renkleri değiştirmek için kullanılabilir.
+  Kaynak dosyasını (.pyxres) yükle. Bir seçenek `True` ise, ilgili kaynak yüklenmeyecek. Aynı konumda kaynak dosyası ile aynı ada sahip bir palet dosyası (.pyxpal) varsa, palet ekran renkleri de güncellenecek. Palet dosyası, ekran renklerinin onaltılık girişlerini içerir (örneğin, `1100FF`), yeni satırlarla ayrılmıştır. Palet dosyası ayrıca, Pyxel Editör'de görüntülenen renkleri değiştirmek için kullanılabilir.
 
 ### Giriş İşlemleri
 
@@ -481,21 +481,21 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Fare tekerleğinin mevcut değeri
 
 - `btn(key)`<br>
-  `key` tuşu basılıysa `True` döndürür, aksi takdirde `False`. ([Tuş tanımı listesi](https://github.com/kitao/pyxel/blob/main//python/pyxel/__init__.pyi))
+  `key` tuşuna basılıysa `True` döndürür, aksi takdirde `False`. ([Tuş tanımı listesi](https://github.com/kitao/pyxel/blob/main//python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
-  `key` tuşu o karede basılıysa `True` döndürür. `hold` ve `repeat` belirtilmişse, `key` tuşu `hold` kare süresinden uzun süre basılı tutulduğunda `repeat` kare aralığında `True` döner.
+  `key` tuşuna o karede basılıysa `True` döndürür. `hold` ve `repeat` belirtilmişse, `key` tuşuna `hold` kare süresinden uzun süre basılı tutulduğunda `repeat` kare aralığında `True` döner.
 
 - `btnr(key)`<br>
-  `key` tuşu o karede bırakıldıysa `True` döndürür.
+  `key` tuşu o karede bırakıldıysa `True` döndürür, aksi takdirde `False`.
 
 - `mouse(visible)`<br>
-  Eğer `visible` `True` ise fare imleci gösterilir. `False` ise gizlenir. Fare imleci gösterilmiyor olsa bile konumu güncellenir.
+  Eğer `visible` `True` ise fare imleci gösterilir. `False` ise gizlenir. Fare imleci gösterilmese bile konumu güncellenir.
 
 ### Grafikler
 
 - `colors`<br>
-  Palet gösterim renklerinin listesi. Gösterim rengi 24-bit sayısal bir değerle belirtilir. Python listelerini doğrudan atamak ve almak için `colors.from_list` ve `colors.to_list` kullanın.<br>
+  Palet ekran renklerinin listesi. Ekran rengi 24-bit sayısal bir değerle belirtilir. Python listelerini doğrudan atamak ve almak için `colors.from_list` ve `colors.to_list` kullanın.<br>
   Örneğin: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
@@ -557,17 +557,17 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   (`x`, `y`) noktasından başlayarak aynı renk ile bağlantılı alanı `col` renkle doldurur.
 
 - `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  `img` (0-2) resim setinden (`u`, `v`) konumundan başlayarak boyutu (`w`, `h`) olan bölümü (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer ayarlanırsa, yatay ve/veya dikey olarak ters çevrilir. `colkey` belirtilmişse, saydam renk olarak işlenir. Eğer `rotate`(derece cinsinden), `scale`(1.0=%100) veya her ikisi de belirtilirse, ilgili dönüşüm uygulanacaktır.
+  `img`(0-2) resim bankasından (`u`, `v`) konumundan başlayarak boyutu (`w`, `h`) olan bölümü (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer ayarlanırsa, yatay ve/veya dikey olarak ters çevrilir. `colkey` belirtilmişse, saydam renk olarak işlenir. Eğer `rotate`(derece cinsinden), `scale`(1.0=%100) veya her ikisi de belirtilirse, ilgili dönüşüm uygulanacaktır.
 
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  `tm` (0-7) tile haritasından (`u`, `v`) konumundan başlayarak boyutu (`w`, `h`) olan bölümü (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer ayarlanırsa, yatay ve/veya dikey olarak ters çevrilir. `colkey` belirtilmişse, saydam renk olarak işlenir. Eğer `rotate`(derece cinsinden), `scale`(1.0=%100) veya her ikisi de belirtilirse, ilgili dönüşüm uygulanacaktır. Bir tile'ın boyutu 8x8 pikseldir ve tile haritasında `(tile_x, tile_y)` olarak saklanır.
+  `tm`(0-7) tilemap'inden (`u`, `v`) konumundan başlayarak boyutu (`w`, `h`) olan bölümü (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer ayarlanırsa, yatay ve/veya dikey olarak ters çevrilir. `colkey` belirtilmişse, saydam renk olarak işlenir. Eğer `rotate`(derece cinsinden), `scale`(1.0=%100) veya her ikisi de belirtilirse, ilgili dönüşüm uygulanacaktır. Bir tile'ın boyutu 8x8 pikseldir ve tilemap'te `(tile_x, tile_y)` olarak saklanır.
 
 <img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
-  (`x`, `y`) noktasından başlayarak `s` metnini `col` renk ile çizer.
+  (`x`, `y`) konumunda `s` metnini `col` rengiyle çizer.
 
   ### Ses
 
@@ -579,13 +579,13 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Müziklerin (0-7) listesi. (Music sınıfına bakınız)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
-  `snd`(0-63) sesini `ch`(0-3) kanalında çalar. Eğer `snd` bir liste ise, sırayla çalınır. Çalma başlangıç pozisyonu `tick` ile belirtilebilir (1 tick = 1/120 saniye). Eğer `loop` için `True` belirtilmişse, müzik döngü şeklinde çalar. Çalma bitiminde önceki sesi devam ettirmek için `resume` için `True` belirtin.
+  `snd`(0-63) sesini `ch`(0-3) kanalında çalar. Eğer `snd` bir liste ise, sesler sırayla çalınır. Çalma başlangıç pozisyonu `tick` ile belirtilebilir (1 tick = 1/120 saniye). Eğer `loop` `True` olarak ayarlanırsa, döngü şeklinde çalma gerçekleştirilir. Çalma sona erdikten sonra önceki sesi sürdürmek için `resume` `True` olarak ayarlanmalıdır.
 
 - `playm(msc, [tick], [loop])`<br>
-  `msc`(0-7) müziğini çalar. Çalma başlangıç pozisyonu `tick` ile belirtilebilir (1 tick = 1/120 saniye). Eğer `loop` için `True` belirtilmişse, müzik döngü şeklinde çalar.
+  `msc`(0-7) müziğini çalar. Çalma başlangıç pozisyonu `tick` ile belirtilebilir (1 tick = 1/120 saniye). Eğer `loop` `True` olarak ayarlanırsa, döngü şeklinde çalma gerçekleştirilir.
 
 - `stop([ch])`<br>
-  Belirtilen kanalda `ch`(0-3) müziğin çalmasını durdurur. Tüm kanalları durdurmak için `stop()` kullanılır.
+  Belirtilen kanalda `ch`(0-3) sesin çalmasını durdurur. Tüm kanalları durdurmak için `stop()` kullanılır.
 
 - `play_pos(ch)`<br>
   `ch`(0-3) kanalının ses çalma pozisyonunu `(sound_no, note_no)` olarak alır. Çalma durduğunda `None` döner.
@@ -593,22 +593,22 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 ### Matematik
 
 - `ceil(x)`<br>
-  `x` değerinden büyük veya eşit olan en küçük tamsayıyı döndürür.
+  `x` değerinden büyük veya eşit olan en küçük tam sayıyı döndürür.
 
 - `floor(x)`<br>
-  `x` değerinden küçük veya eşit olan en büyük tamsayıyı döndürür.
+  `x` değerinden küçük veya eşit olan en büyük tam sayıyı döndürür.
 
 - `sgn(x)`<br>
-  `x` pozitif olduğunda `1`, `0` olduğunda `0`, negatif olduğunda `-1` değerini döndürür.
+  `x` pozitif olduğunda `1`, `0` olduğunda `0`, negatif olduğunda `-1` döndürür.
 
 - `sqrt(x)`<br>
   `x`'in karekökünü döndürür.
 
 - `sin(deg)`<br>
-  `deg` derecesinin sinüsünü döndürür.
+  `deg` derece sinüsünü döndürür.
 
 - `cos(deg)`<br>
-  `deg` derecesinin kosinüsünü döndürür.
+  `deg` derece kosinüsünü döndürür.
 
 - `atan2(y, x)`<br>
   `y`/`x` için arktanjantı derece cinsinden döndürür.
@@ -634,7 +634,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Resmin genişliği ve yüksekliği
 
 - `set(x, y, data)`<br>
-  (`x`, `y`) konumundaki resmi bir dizi string ile ayarlar.
+  (`x`, `y`) konumundaki resmi bir dizi dize ile ayarlar.<br>
   Örneğin: `pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
@@ -655,11 +655,11 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Tilemap tarafından referans alınan resim seti (0-2)
 
 - `set(x, y, data)`<br>
-  (`x`, `y`) konumundaki tilemap'i bir dizi string ile ayarlar.
+  (`x`, `y`) konumundaki tilemap'i bir dizi dize ile ayarlar.<br>
   Örneğin: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  `layer`(0-) sırasında çizim sırasındaki katmanı belirterek (`x`, `y`) konumundaki TMX dosyasından (Tiled Harita Dosyası) katmanı yükler.
+  `layer`(0-) sırasındaki çizim sırasındaki katmanı belirterek (`x`, `y`) konumundaki TMX dosyasından (Tiled Map Dosyası) katmanı yükler.
 
 - `pget(x, y)`<br>
   (`x`, `y`) konumundaki tile'ı alır. Bir tile, `(tile_x, tile_y)` tuple'ıdır.
@@ -670,46 +670,46 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 ### Ses Sınıfı
 
 - `notes`<br>
-  Notaların listesi (0-127). Numara ne kadar yüksekse, sesin tonu o kadar yüksek olur ve `33`'te 'A2' (440Hz) olur. Geri kalanı `-1`'dir.
+  Notaların listesi (0-127). Numara ne kadar yüksekse, sesin tonu o kadar yüksek olur. Nota `33`, 'A2' (440Hz) ile eşleşir. Dinlenme notaları `-1` ile gösterilir.
 
 - `tones`<br>
-  Tonların listesi (0:Dreieck / 1:Quadrat / 2:Puls / 3:Rauschen)
+  Tonların listesi (0:Üçgen / 1:Kare / 2:Puls / 3:Beyaz gürültü)
 
 - `volumes`<br>
   Ses düzeylerinin listesi (0-7)
 
 - `effects`<br>
-  Efektlerin listesi (0:Yok / 1:Kaydırma / 2:Titreme / 3:Sönme / 4:Yarı Sönme / 5:Dörtte Bir Sönme)
+  Efektlerin listesi (0:Yok / 1:Kaydırma / 2:Titreşim / 3:FadeOut / 4:Yarı FadeOut / 5:Dörtte Bir FadeOut)
 
 - `speed`<br>
-  Çalma hızı. 1 en hızlısıdır, sayı ne kadar büyükse çalma hızı o kadar yavaş olur. 120'de bir nota uzunluğu 1 saniyeye eşittir.
+  Çalma hızı. 1 en hızlısıdır, sayı ne kadar büyükse çalma hızı o kadar yavaş olur. 120'de bir nota uzunluğu 1 saniye olur.
 
 - `set(notes, tones, volumes, effects, speed)`<br>
-  Notaları, tonları, ses düzeylerini ve efektleri bir dize ile ayarlar. Eğer tonlar, ses düzeyleri ve efektler notalardan daha kısa ise, baştan tekrarlanır.
+  Notaları, tonları, ses düzeylerini ve efektleri bir dize ile ayarlar. Eğer tonların, ses düzeylerinin veya efektlerin uzunluğu notalardan daha kısa ise, baştan tekrarlanır.
 
 - `set_notes(notes)`<br>
-  'CDEFGAB'+'#-'+'01234' veya 'R' karakterlerinden oluşan bir dize ile notaları ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.
+  'CDEFGAB'+'#-'+'01234' veya 'R' karakterlerinden oluşan bir dize ile notaları ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.<br>
   Örneğin: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-  'TSPN' karakterlerinden oluşan bir dize ile tonları ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.
+  'TSPN' karakterlerinden oluşan bir dize ile tonları ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.<br>
   Örneğin: `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-  '01234567' karakterlerinden oluşan bir dize ile ses düzeylerini ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.
+  '01234567' karakterlerinden oluşan bir dize ile ses düzeylerini ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.<br>
   Örneğin: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  'NSVFHQ' karakterlerinden oluşan bir dize ile efektleri ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.
+  'NSVFHQ' karakterlerinden oluşan bir dize ile efektleri ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.<br>
   Örneğin: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Müzik Sınıfı
 
 - `seqs`<br>
-  Kanal sayısıyla birlikte seslerin (0-63) iki boyutlu listesi
+  Birden fazla kanalda bulunan seslerin (0-63) iki boyutlu listesi
 
 - `set(seq0, seq1, seq2, ...)`<br>
-  Kanalların ses listelerini ayarlar. Eğer boş bir liste belirtilirse, o kanal çalma için kullanılmaz.<br>
+  Her kanal için seslerin (0-63) listelerini ayarlar. Eğer boş bir liste belirtilirse, o kanal çalma için kullanılmaz.<br>
   Örneğin: `pyxel.musics[0].set([0, 1], [], [3])`
 
 ### İleri Düzey API'lar
@@ -718,7 +718,7 @@ Pyxel, kullanıcıları karıştırabilecek veya kullanmak için özelleşmiş b
 
 Eğer becerilerinize güveniyorsanız, [bu bağlantıya](https://github.com/kitao/pyxel/blob/main//python/pyxel/__init__.pyi) bakarak muhteşem çalışmalar oluşturabilirsiniz!
 
-## Nasıl Katkıda Bulunulur
+## Katkıda Bulunma Yöntemleri
 
 ### Sorun Bildirme
 
@@ -734,7 +734,7 @@ Yama/düzeltmeler, pull request (PR) olarak kabul edilir. Pull request'inizle il
 
 Gönderilen pull isteği, [MIT Lisansı](../LICENSE) kapsamında yayınlanmayı kabul etmiş sayılır.
 
-## Diğer Bilgiler
+## Ek Bilgiler
 
 - [FAQ](faq-en.md)
 - [Kullanıcı Örnekleri](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
@@ -744,6 +744,6 @@ Gönderilen pull isteği, [MIT Lisansı](../LICENSE) kapsamında yayınlanmayı 
 
 Pyxel, [MIT Lisansı](../LICENSE) altındadır. Yazılımın tüm kopyaları veya önemli bölümlerinde MIT Lisansı'nın koşullarının bir kopyası ve telif hakkı bildirimi yer aldığı sürece, özel yazılımlarda yeniden kullanılabilir.
 
-## Sponsorlar Arıyoruz
+## Sponsor Arayışı
 
-Pyxel, GitHub Sponsorlarında sponsor arıyor. Pyxel'in sürekli bakımı ve özellik eklemeleri için sponsorluk düşünün. Sponsorlar, Pyxel hakkında danışmanlık hizmeti gibi avantajlardan yararlanabilirler. Detaylar için [buraya](https://github.com/sponsors/kitao) bakınız.
+Pyxel, GitHub Sponsorlarında sponsor arıyor. Pyxel'in sürekli bakımı ve özellik eklemeleri için sponsorluk düşünün. Sponsorlar, Pyxel geliştiricisi ile doğrudan danışmanlık yapma fırsatına sahip olabilirler. Detaylar için [buraya](https://github.com/sponsors/kitao) bakınız.
