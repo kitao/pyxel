@@ -681,7 +681,7 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Lista de efectos de sonido (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
 
 - `speed`<br>
-  La velocidad de reproducción, 1 es la más rápida y al incrementar este número, la velocidad de reproducción disminuye. Cuando vale 120, la longitud de una nota es de 1 segundo.
+  La velocidad de reproducción, `1` es la más rápida y al incrementar este número, la velocidad de reproducción disminuye. Cuando vale `120`, la longitud de una nota es de 1 segundo.
 
 - `set(notes, tones, volumes, effects, speed)`<br>
   Fija las notas, los tonos, el volumen y los efectos con una string. Si los tonos, el volumen, la longitud de los efectos son más cortos que la nota, se repetirá desde el principio.
