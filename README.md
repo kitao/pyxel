@@ -101,7 +101,7 @@ The web version of Pyxel does not require Python or Pyxel installation and runs 
 
 For detailed instructions, please refer to [this page](docs/pyxel-web-en.md).
 
-### Try Pyxel Examples
+### Try Examples
 
 After installing Pyxel, you can copy the examples to the current directory with the following command:
 
@@ -244,7 +244,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ## How to Use
 
-### Create Pyxel Application
+### Create Application
 
 In your Python script, import the Pyxel module, specify the window size with the `init` function, and then start the Pyxel application with the `run` function.
 
@@ -298,7 +298,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### Run Pyxel Application
+### Run Application
 
 A created script can be executed using the `python` command:
 
@@ -724,7 +724,7 @@ If you are confident in your skills, try creating amazing works using [this](pyt
 
 Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature or enhancement requests. Before submitting a new issue, make sure there are no similar open issue.
 
-### Manual Testing
+### Functional Testing
 
 Anyone who manually tests the code and reports bugs or suggestions for enhancements in the [Issue Tracker](https://github.com/kitao/pyxel/issues) is very welcome!
 

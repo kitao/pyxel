@@ -101,7 +101,7 @@ Die Webversion von Pyxel erfordert keine Python oder Pyxel-Installation und läu
 
 Eine genaue Anleitung finden Sie auf [dieser Seite](pyxel-web-en.md).
 
-### Try Pyxel Examples
+### Beispiele ausprobieren
 
 Nach der Installation von Pyxel kannst du die Beispiele von Pyxel mit dem folgenden Befehl in das aktuelle Verzeichnis kopieren:
 
@@ -244,7 +244,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ## Verwendung
 
-### Eine Pyxel-Anwendung erstellen
+### Eine Anwendung erstellen
 
 Nachdem du das Pyxel-Modul in Ihr Python-Skript importiert hast, gib zunächst die Fenstergröße mit der Funktion `init` an und starten dann die Pyxel-Anwendung mit der Funktion `run`.
 
@@ -298,7 +298,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### Pyxel-Anwendung ausführen
+### Anwendung ausführen
 
 Ein erstelltes Python-Skript kann mit dem Befehl `python` ausgeführt werden:
 
@@ -320,7 +320,7 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 Die Verzeichnisüberwachung kann durch Drücken der Tastenkombination `Ctrl(Command)+C` beendet werden.
 
-### Shortcuts
+### Spezielle Steuerungen
 
 Die folgenden Shortcuts können eingegeben werden, während eine Pyxel-Anwendung läuft:
 
@@ -410,7 +410,7 @@ Pyxel-Sounds können auch mit der folgenden Methode erstellt werden:
 
 Bitte lesen Sie die API-Referenz für die Verwendung dieser Funktionen.
 
-### Wie man seine Pyxel-Applikation teilen kann
+### Wie man seine Anwendung verteilen kann
 
 Pyxel unterstützt ein spezielles Dateiformat für das Teilen von Pyxel-Anwendungen (Pyxel application file), das plattformübergreifend funktioniert.
 
@@ -712,7 +712,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Stellen Sie die Tonlisten (0-63) der Kanäle ein. Wenn eine leere Liste angegeben wird, wird dieser Kanal nicht für die Wiedergabe verwendet.<br>
   z.B. `pyxel.musics[0].set([0, 1], [], [3])`
 
-### Advanced APIs
+### Fortgeschrittene API
 
 Pyxel verfügt über "fortgeschrittene APIs", die in dieser Referenz nicht erwähnt werden, weil sie "Benutzer verwirren können" oder "spezielles Wissen zur Nutzung erfordern".
 
@@ -720,11 +720,11 @@ Wenn du mit deinen Fähigkeiten vertraut bist, versuche [hiermit](../python/pyxe
 
 ## Wie du beitragen kannst
 
-### Ein Issue einreichen
+### Ein Issue melden
 
 Verwende den [Issue Tracker] (https://github.com/kitao/pyxel/issues), um Fehlerberichte und Funktions-/Erweiterungswünsche einzureichen. Vergewissere dich vor dem Einreichen eines neuen Problems, dass es kein ähnliches offenes Problem gibt.
 
-### Manuelles Testen
+### Funktionales Testen
 
 Jeder, der den Code manuell testet und Fehler oder Verbesserungsvorschläge im [Issue Tracker](https://github.com/kitao/pyxel/issues) meldet, ist herzlich willkommen!
 
@@ -744,6 +744,6 @@ Der eingereichte Pull-Request gilt als Zustimmung zur Veröffentlichung unter de
 
 Pyxel steht unter der [MIT-Lizenz](../LICENSE). Es kann in proprietärer Software wiederverwendet werden, vorausgesetzt, dass alle Kopien der Software oder wesentliche Teile davon eine Kopie der Bedingungen der MIT-Lizenz sowie einen Copyright-Hinweis enthalten.
 
-## Sponsoren Werben
+## Sponsoren rekrutieren
 
 Pyxel sucht Sponsoren auf GitHub Sponsors. Ziehen Sie in Erwägung, Pyxel für die fortlaufende Wartung und Funktionserweiterungen zu sponsern. Sponsoren können sich über Pyxel als Vorteil beraten. Weitere Informationen finden Sie [hier](https://github.com/sponsors/kitao).
