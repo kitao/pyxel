@@ -499,11 +499,11 @@ O arquivo de aplicação Pyxel também pode ser convertido em um arquivo execut�
   Exemplo: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  Lista dos bancos de imagens (0-2). (Veja a classe Imagem)<br>
+  Lista dos bancos de imagens (0-2)<br>
   Exemplo: `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  Lista dos mapas de azulejos (0-7). (ver a classe de Tilemap)
+  Lista dos mapas de azulejos (0-7)
 
 - `clip(x, y, w, h)`<br>
   Define a área de desenho da tela de (`x`, `y`) para a largura `w` e altura `h`. Redefina a área de desenho para tela cheia com `clip()`
@@ -572,11 +572,11 @@ O arquivo de aplicação Pyxel também pode ser convertido em um arquivo execut�
 ### Áudio
 
 - `sounds`<br>
-  Lista dos sons (0-63). (Veja a classe Som)<br>
+  Lista dos sons (0-63)<br>
   Exemplo: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  Lista das músicas (0-7). (Veja a classe Música)
+  Lista das músicas (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
   Reproduz o som `snd`(0-63) no canal `ch`(0-3). Se `snd` é uma lista, os sons serão reproduzidos em ordem. A posição inicial da reprodução pode ser especificada por `tick`(1 tick = 1/120 segundos). Se `True` for especificado para `loop`, a reprodução será feita em laço. Para retomar o som anterior após o término da reprodução, defina `resume` como `True`.
