@@ -628,7 +628,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
 - `noise(x, [y], [z])`<br>
   Restituisce il valore del rumore di Perlin per le coordinate specificate.
 
-### Image Class
+### Classe Image
 
 - `width`, `height`<br>
   La lunghezza e l'altezza dell'immagine
@@ -703,7 +703,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Imposta gli effetti con una stringa formata da 'NSVFHQ'. Case-insensitive e gli spazi bianchi sono ignorati.<br>
   e.g. `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
-### Music Class
+### Classe Music
 
 - `seqs`<br>
   Lista bidimensionale di suoni (0-63) con il numero di canali

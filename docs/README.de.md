@@ -703,7 +703,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Setzt die Effekte mit einer Zeichenkette aus 'NSVFHQ'. Groß- und Kleinschreibung sowie Leerzeichen werden ignoriert.<br>
   z.B. `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
-### Musik Klasse
+### Music Klasse
 
 - `seqs`<br>
   Zweidimensionale Liste von Klängen (0-63) mit der Anzahl der Kanäle
