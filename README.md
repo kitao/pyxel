@@ -11,7 +11,7 @@
 
 **Pyxel** is a retro game engine for Python.
 
-With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and playing back only 4 sounds simultaneously, you can enjoy making pixel-art-style games with ease.
+With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and playing back only 4 sounds simultaneously, you can easily enjoy making pixel-art-style games.
 
 <img src="docs/images/pyxel_message.png" width="480">
 
@@ -53,7 +53,7 @@ Pyxel is open source under the [MIT License](LICENSE) and free to use. Let's sta
 - 8 music tracks that can combine any sounds
 - Keyboard, mouse, and gamepad inputs
 - Image and sound editing tools
-- User expansion of colors, channels, and banks
+- User-extensible colors, channels, and banks
 
 ### Color Palette
 
@@ -71,7 +71,7 @@ After installing [Python3](https://www.python.org/) (version 3.8 or higher), run
 pip install -U pyxel
 ```
 
-If you install Python using the official installer, make sure to check the `Add Python 3.x to PATH` option to enable the `pyxel` command.
+When installing Python using the official installer, make sure to check the `Add Python 3.x to PATH` option to enable the `pyxel` command.
 
 ### Mac
 
@@ -83,7 +83,7 @@ pipx ensurepath
 pipx install pyxel
 ```
 
-To update Pyxel after installation, run `pipx upgrade pyxel`.
+To upgrade Pyxel after installation, run `pipx upgrade pyxel`.
 
 ### Linux
 
@@ -93,13 +93,13 @@ After installing the SDL2 package (`libsdl2-dev` for Ubuntu), [Python3](https://
 sudo pip3 install -U pyxel
 ```
 
-If the above command doesn't work, try building Pyxel from source by following the instructions in the [Makefile](Makefile).
+If the previous command fails, consider building Pyxel from source by following the instructions in the [Makefile](Makefile).
 
 ### Web
 
 The web version of Pyxel does not require Python or Pyxel installation and runs on PCs, smartphones, and tablets with supported web browsers.
 
-For specific instructions, please refer to [this page](docs/pyxel-web-en.md).
+For detailed instructions, please refer to [this page](docs/pyxel-web-en.md).
 
 ### Try Pyxel Examples
 
@@ -287,7 +287,7 @@ class App:
 App()
 ```
 
-To create simple graphics without animation, use the `show` function to make the code more concise.
+For creating simple graphics without animation, you can use the `show` function to simplify your code.
 
 ```python
 import pyxel
@@ -353,7 +353,7 @@ It starts with the following command:
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, a new file will be created with the specified name. If the resource file is omitted, the name is `my_resource.pyxres`.
+If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, a new file will be created with the specified name. If the resource file is omitted, a new file named `my_resource.pyxres` will be created.
 
 After starting Pyxel Editor, you can switch between resource files by dragging and dropping another resource file.
 
@@ -369,7 +369,7 @@ The mode to edit the image banks.
 <img src="docs/images/image_editor.gif">
 </a>
 
-Drag and drop an image file (PNG/GIF/JPEG) onto the Image Editor to load the image into the currently selected image bank.
+You can drag and drop an image file (PNG/GIF/JPEG) into the Image Editor to load the image into the currently selected image bank.
 
 **Tilemap Editor**
 
@@ -420,7 +420,7 @@ A Pyxel application file (.pyxapp) is created using the `pyxel package` command:
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
-If you need to includes resources or additional modules, place them in the application directory.
+If you need to include resources or additional modules, place them in the application directory.
 
 Metadata can be displayed at runtime by specifying it in the following format within the startup script. Fields other than `title` and `author` are optional.
 
@@ -470,7 +470,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 ### Resource
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
-  Load the resource file (.pyxres). If an option is set to `True`, the corresponding resource will not be loaded. If a palette file (.pyxpal) with the same name exists in the same location as the resource file, the palette display colors will also be updated. The palette file contains hexadecimal entries for the display colors (e.g. `1100FF`), separated by newlines. The palette file can also be used to change the colors displayed in Pyxel Editor.
+  Load the resource file (.pyxres). If an option is set to `True`, the corresponding resource will be excluded from loading. If a palette file (.pyxpal) with the same name exists in the same location as the resource file, the palette display colors will also be updated. The palette file contains hexadecimal entries for the display colors (e.g. `1100FF`), separated by newlines. The palette file can also be used to change the colors displayed in Pyxel Editor.
 
 ### Input
 
@@ -506,10 +506,10 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   List of the tilemaps (0-7). (See the Tilemap class)
 
 - `clip(x, y, w, h)`<br>
-  Set the drawing area of the screen from (`x`, `y`) with a width of `w` and a height of `h`. Reset the drawing area to full screen by calling `clip()`.
+  Set the drawing area of the screen from (`x`, `y`) with a width of `w` and a height of `h`. Call `clip()` to reset the drawing area to full screen.
 
 - `camera(x, y)`<br>
-  Change the upper-left corner coordinates of the screen to (`x`, `y`). Reset the upper-left corner coordinates to (`0`, `0`) by calling `camera()`.
+  Change the upper-left corner coordinates of the screen to (`x`, `y`). Call `camera()` to reset the upper-left corner coordinates to (`0`, `0`).
 
 - `pal(col1, col2)`<br>
   Replace color `col1` with `col2` when drawing. Call `pal()` to reset to the initial palette.
@@ -567,7 +567,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 <img src="docs/images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
-  Draw a string `s` of color `col` at (`x`, `y`).
+  Draw a string `s` in color `col` at (`x`, `y`).
 
 ### Audio
 
@@ -579,7 +579,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   List of the musics (0-7). (See the Music class)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
-  Play the sound `snd`(0-63) on channel `ch`(0-3). If `snd` is a list, the sounds will be played in order. The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `loop` is set to `True`, loop playback is performed. To resume the previous sound after playback ends, set `resume` to `True`.
+  Play the sound `snd`(0-63) on channel `ch`(0-3). If `snd` is a list, the sounds will be played in sequence. The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `loop` is set to `True`, loop playback is performed. To resume the previous sound after playback ends, set `resume` to `True`.
 
 - `playm(msc, [tick], [loop])`<br>
   Play the music `msc`(0-7). The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `loop` is set to `True`, loop playback is performed.
@@ -588,15 +588,15 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Stop playback of the specified channel `ch`(0-3). Call `stop()` to stop all channels.
 
 - `play_pos(ch)`<br>
-  Get the sound playback position of channel `ch`(0-3) as a tuple of `(sound_no, note_no)`. Return `None` when playback is stopped.
+  Get the sound playback position of channel `ch`(0-3) as a tuple of `(sound_no, note_no)`. Return `None` when playback has stopped.
 
 ### Math
 
 - `ceil(x)`<br>
-  Return the smallest integer greater than or equal to `x`.
+  Return the smallest integer that is greater than or equal to `x`.
 
 - `floor(x)`<br>
-  Return the largest integer less than or equal to `x`.
+  Return the largest integer that is less than or equal to `x`.
 
 - `sgn(x)`<br>
   Return `1` when `x` is positive, `0` when it is `0`, and `-1` when it is negative.
@@ -641,7 +641,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Load an image file (PNG/GIF/JPEG) at (`x`, `y`).
 
 - `pget(x, y)`<br>
-  Get the color of the pixel color at (`x`, `y`).
+  Get the color of the pixel at (`x`, `y`).
 
 - `pset(x, y, col)`<br>
   Draw a pixel with the color `col` at (`x`, `y`).
@@ -709,7 +709,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   A two-dimensional list of sounds (0-63) across multiple channels
 
 - `set(seq0, seq1, seq2, ...)`<br>
-  Set the lists of sound (0-63) for each channel. If an empty list is specified, that channel is not used for playback.<br>
+  Set the lists of sound (0-63) for each channel. If an empty list is specified, that channel will not be used for playback.<br>
   Example: `pyxel.musics[0].set([0, 1], [], [3])`
 
 ### Advanced API
@@ -732,7 +732,7 @@ Anyone who manually tests the code and reports bugs or suggestions for enhanceme
 
 Patches and fixes are accepted in the form of pull requests (PRs). Make sure that the issue the pull request addresses is open in the Issue Tracker.
 
-By submitting a pull request, you agree to publish your contribution under the [MIT License](LICENSE).
+Submitting a pull request implies that you agree to license your contribution under the [MIT License](LICENSE).
 
 ## Other Information
 
