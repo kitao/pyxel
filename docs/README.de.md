@@ -682,7 +682,7 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Liste von Effekten (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
 
 - `speed`<br>
-  Abspielgeschwindigkeit. 1 ist die schnellste, und je größer die Zahl, desto langsamer die Wiedergabegeschwindigkeit. Bei 120 entspricht die Länge einer Note 1 Sekunde.
+  Abspielgeschwindigkeit. `1` ist die schnellste, und je größer die Zahl, desto langsamer die Wiedergabegeschwindigkeit. Bei `120` entspricht die Länge einer Note 1 Sekunde.
 
 - `set(notes, tones, volumes, effects, speed)`<br>
   Legt Noten, Töne, Lautstärken und Effekte mit einer Zeichenfolge fest. Wenn die Länge der Töne, Lautstärken und Effekte kürzer ist als die der Noten, wird sie von Anfang an wiederholt.
