@@ -499,11 +499,11 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
   z.B. `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  Liste der Bildbanken (0-2). (Siehe die Klasse Image)<br>
+  Liste der Bildbanken (0-2) (Siehe die Klasse Image)<br>
   z.B. `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  Liste der Kachelkarten (0-7). (siehe die Tilemap class)
+  Liste der Kachelkarten (0-7) (Siehe die Tilemap class)
 
 - `clip(x, y, w, h)`<br>
   Setze den Bildausschnitt von (`x`, `y`) zu Breite `w` und Höhe `h`. Setze den Bildausschnitt zurück zum Follbild mit `clip()`
@@ -572,11 +572,11 @@ Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxe
 ### Audio
 
 - `sounds`<br>
-  Liste der Töne (0-63). (siehe die Sound class)<br>
+  Liste der Töne (0-63) (Siehe die Sound class)<br>
   z.B. `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  Liste der Musikstücke (0-7). (siehe die Music class)
+  Liste der Musikstücke (0-7) (Siehe die Music class)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
   Spielt den Ton `snd`(0-63) auf Kanal `ch`(0-3). Die Startposition der Wiedergabe kann durch `tick`(1 tick = 1/120 Sekunden) angegeben werden. Falls `snd` eine Liste ist, wird es in der Reihenfolge abgespielt. Falls `True` für `loop` angeben ist, wird eine Schleifenwiedergabe durchgeführt. Um den vorherigen Ton nach dem Ende der Wiedergabe fortzusetzen, setzen Sie `resume` auf `True`.
