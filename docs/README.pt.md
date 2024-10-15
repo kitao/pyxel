@@ -101,7 +101,7 @@ A versão web do Pyxel não requer a instalação do Python ou do Pyxel e funcio
 
 Para instruções específicas, por favor consulte [esta página](pyxel-web-en.md).
 
-### Testando os exemplos Pyxel
+### Testando os exemplos
 
 Após instalar o Pyxel, você pode copiar os exemplos para o diretório atual com o seguinte comando:
 
@@ -244,7 +244,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ## Como usar
 
-### Criando uma aplicação Pyxel
+### Criando uma aplicação
 
 No seu script Python, importe o módulo Pyxel, especifique o tamanho da janela com a função `init` e inicie a aplicação Pyxel com a função `run`.
 
@@ -298,7 +298,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### Executando uma aplicação Pyxel
+### Executando uma aplicação
 
 Um script criado pode ser executado utilizando o comando `python`:
 
@@ -320,7 +320,7 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 A monitorização do diretório pode ser interrompida premindo `Ctrl(Command)+C`.
 
-### Controles Especiais
+### Controles especiais
 
 Os seguintes controles especiais podem ser executados quando uma aplicação Pyxel estiver sendo executada:
 
@@ -343,7 +343,7 @@ Os seguintes controles especiais podem ser executados quando uma aplicação Pyx
 - `Shift+Alt(Option)+0`<br>
   Guardar a paleta de cores atual no ambiente de trabalho
 
-### Como criar Recursos
+### Como criar recursos
 
 O Editor Pyxel pode criar imagens e sons usados em uma aplicação Pyxel.
 
@@ -712,23 +712,23 @@ O arquivo de aplicação Pyxel também pode ser convertido em um arquivo execut�
   Define as listas de sons (0-63) para cada canal. Se uma lista vazia for especificada, esse canal não será utilizado para reprodução.<br>
   Exemplo: `pyxel.musics[0].set([0, 1], [], [3])`
 
-### API Avançada
+### API avançada
 
 Pyxel inclui uma "API Avançada" que não é mencionada nesta referência, pois pode confundir os usuários ou exigir conhecimentos especializados para usar.
 
 Se você está familiarizado com suas habilidades, tente criar projetos incríveis utilizando [isto](../python/pyxel/__init__.pyi) como pista!
 
-## Como Contribuir
+## Como contribuir
 
-### Relatando Problemas
+### Relatando problemas
 
 Utilize o [Issue Tracker](https://github.com/kitao/pyxel/issues) para relatar bugs e solicitar funcionalidades ou melhorias. Antes de relatar uma issue, verifique se não há uma issue similar aberta.
 
-### Teste Manual
+### Teste funcional
 
 Qualquer um que testar o código manualmente e relatar bugs ou sugestões de melhorias no [Issue Tracker](https://github.com/kitao/pyxel/issues) é muito bem-vindo!
 
-### Submetendo uma Pull Request
+### Submetendo pull requests
 
 Patches e correções serão aceitas na forma de pull requests (PRs). Verifique se a issue que o pull request tenta resolver está aberta no Issue Tracker.
 
@@ -744,6 +744,6 @@ A solicitação de pull enviada é considerada como um acordo para publicação 
 
 Pyxel está sob a [Licença MIT](../LICENSE). Ele pode ser reutilizado em software proprietário, desde que todas as cópias do software ou de partes substanciais incluam uma cópia dos termos da Licença MIT e um aviso de direitos autorais.
 
-## Recrutando Patrocinadores
+## Recrutando patrocinadores
 
 Pyxel está procurando patrocinadores nos patrocinadores do GitHub. Considere patrocinar o Pyxel para manutenção contínua e acréscimos de recursos. Os patrocinadores podem consultar sobre o Pyxel como um benefício. Por favor, veja [aqui](https://github.com/sponsors/kitao) para detalhes.

@@ -101,7 +101,7 @@ La versione web di Pyxel non richiede l'installazione di Python o Pyxel e funzio
 
 Per istruzioni specifiche, consultare [questa pagina](pyxel-web-en.md).
 
-### Provare gli esempi di Pyxel
+### Provare gli esempi
 
 Dopo aver installato Pyxel, gli esempi di Pyxel saranno copiati nella corrente cartella con il comando seguente:
 
@@ -244,7 +244,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ## Come usare
 
-### Creare una applicazione Pyxel
+### Creare un'applicazione
 
 Dopo aver importato il modulo Pyxel nel tuo script Python, prima specifica la dimensione della finestra con la funzione `init`, dopodichè lancia l'applicazione Pyxel con la funzione `run`.
 
@@ -298,7 +298,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### Eseguire applicazioni Pyxel
+### Eseguire un'applicazione
 
 Uno script Python creato può essere eseguito con il comando `python`:
 
@@ -410,7 +410,7 @@ I suoni Pyxel possono anche essere creati nel modo seguente:
 
 Riferirsi al manuale dell'API per l'uso di queste funzioni.
 
-### Come distribuire l'applicazione
+### Come distribuire le applicazioni
 
 Pyxel supporta un formato file dedicato per la distribuzione dell'applicazione (Pyxel application file) che funziona su tutte le piattaforme.
 
@@ -441,7 +441,7 @@ pyxel play PYXEL_APP_FILE
 
 Il file di applicazione Pyxel può anche essere convertito in un file eseguibile o in un file HTML con i comandi `pyxel app2exe` o `pyxel app2html`.
 
-## Manuale API
+## Riferimento API
 
 ### Sistema
 
@@ -712,7 +712,7 @@ Il file di applicazione Pyxel può anche essere convertito in un file eseguibile
   Impostare gli elenchi di suoni (0-63) dei canali. Se è indicata una lista vuota, quel canale non viene utilizzato per la riproduzione.<br>
   e.g. `pyxel.musics[0].set([0, 1], [], [3])`
 
-### Advanced APIs
+### API avanzata
 
 Pyxel ha "API avanzate" che non sono menzionate in questa documentazione perchè "potrebbero confondere gli utenti" oppure "necessitano di conoscenze specifiche per poter essere utilizzate".
 
@@ -720,15 +720,15 @@ Se ti senti confidente sulle tue competenze, prova a creare lavori incredibili c
 
 ## Come contribuire
 
-### Inviare Issue
+### Segnalare problemi
 
 Usa l'[Issue Tracker](https://github.com/kitao/pyxel/issues) per inviare segnalazioni su bug e richieste di funzionalità/migliorie. Prima di inviare una nuova issue, assicurati che non ci sia una issue simile aperta.
 
-### Manual Testing
+### Test funzionale
 
 Chiunque è il benvenuto per testare manualmente il codice e riportare bug o suggerimenti per miglioramenti nell'[Issue Tracker](https://github.com/kitao/pyxel/issues)!
 
-### Submitting Pull Request
+### Inviare Pull Requests
 
 Patch/fix sono accettati in forma di pull request (PR). Assicurarsi che il problema per cui si emetta una pull request sia aperto nel tracciante di problemi.
 
@@ -744,6 +744,6 @@ La pull request inviata è considerata accettata per la pubblicazione sotto la [
 
 Pyxel è sotto [Licenza MIT](../LICENSE). Può essere riutilizzato all'interno di software proprietari, a condizione che tutte le copie del software o delle sue parti sostanziali includano una copia dei termini della Licenza MIT e anche un avviso di copyright.
 
-## Reclutare Sponsor
+## Reclutare sponsor
 
 Pyxel è alla ricerca di sponsor su GitHub Sponsor. Prendi in considerazione la sponsorizzazione di Pyxel per la manutenzione continua e l'aggiunta di funzionalità. Gli sponsor possono consultare Pyxel come vantaggio. Si prega di vedere [qui](https://github.com/sponsors/kitao) per i dettagli.
