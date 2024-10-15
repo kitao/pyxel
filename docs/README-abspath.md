@@ -320,9 +320,9 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 Directory monitoring can be stopped by pressing `Ctrl(Command)+C`.
 
-### Special Controls
+### Special Key Controls
 
-The following special controls are available while a Pyxel application is running:
+The following special key actions are available while a Pyxel application is running:
 
 - `Esc`<br>
   Quit the application
