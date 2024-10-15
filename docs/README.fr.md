@@ -499,11 +499,11 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
   Par exemple `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  Liste des banques d'images (0-2). (Voir la classe Image)<br>
+  Liste des banques d'images (0-2)<br>
   Par exemple `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  Liste des cartes de tuiles (0-7). (voir la classe Tilemap)
+  Liste des cartes de tuiles (0-7)
 
 - `clip(x, y, w, h)`<br>
   Défini la zone de dessin (`x`, `y`) avec une largeur `w` et une hauteur `h`. Réinitialiser la zone de dessin au plein écran avec `clip()`
@@ -572,11 +572,11 @@ Le fichier d'application Pyxel peut aussi être converti en un exécutable ou un
 ### Audio
 
 - `sounds`<br>
-  Liste des sons (0-63). (voir la classe Sound)<br>
+  Liste des sons (0-63)<br>
   par exemple : `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  Liste des musiques (0-7). (voir la classe Music)
+  Liste des musiques (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
   Joue le son `snd`(0-63) sur le canal `ch`(0-3). Si `snd` est une liste, les sons seront joués dans l’ordre. La position de début de lecture peut être spécifiée par `tick`(1 tick = 1/120 secondes). Si `loop` est à `True`, le son est joué en boucle. Pour reprendre le son précédent après la fin de la lecture, définissez `resume` sur `True`.
