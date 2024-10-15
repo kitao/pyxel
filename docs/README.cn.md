@@ -682,7 +682,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   音效列表 (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
 
 - `speed`<br>
-  播放速度。1 为最快，数字越大，速度越慢。数字 120 时，每个音符长度为 1 秒。
+  播放速度。`1` 为最快，数字越大，速度越慢。数字 `120` 时，每个音符长度为 1 秒。
 
 - `set(notes, tones, volumes, effects, speed)`<br>
   使用字符串设置音符、音色、音量及音效。如果音色、音量及音效的字符串比音符字符串短，则从开头重复。
