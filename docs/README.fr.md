@@ -101,7 +101,7 @@ La version web de Pyxel ne nécessite pas d'installation de Python ou de Pyxel e
 
 Pour des instructions spécifiques, veuillez vous référer à [cette page](pyxel-web-en.md).
 
-### Lancer les exemples de Pyxel
+### Lancer les exemples
 
 Après l’installation de Pyxel, les exemples de Pyxel seront copiés dans le répertoire courant avec la commande suivante :
 
@@ -244,7 +244,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ## Comment utiliser
 
-### Créer une application Pyxel
+### Créer une application
 
 Après avoir importé le module Pyxel dans votre script Python, spécifiez d’abord la taille de la fenêtre avec la fonction `init`, puis lancez l’application Pyxel avec la fonction `run`.
 
@@ -298,7 +298,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### Lancer une application Pyxel
+### Lancer une application
 
 Un script Python créé peut être exécuté à l'aide de la commande `python` :
 
@@ -410,7 +410,7 @@ Les sons Pyxel peuvent aussi être créés avec la méthode suivante :
 
 Référez vous à la documentation de l’API pour l’utilisation de ces fonctions.
 
-### Comment partager une application
+### Comment distribuer une application
 
 Pyxels a un format de fichier spécifique (fichier d’application Pyxel) qui fonctionne sur les différentes plateformes.
 
@@ -720,15 +720,15 @@ Si vous savez ce que vous faîtes, essayez de créer des applications incroyable
 
 ## Comment contribuer
 
-### En ouvrant des tickets
+### Soumettre des tickets
 
 Utilisez [l’outil de suivi de tickets](https://github.com/kitao/pyxel/issues) pour signaler des bugs et demander des nouvelles fonctionnalités ou des améliorations. Avant d’ouvrir un nouveau ticket, regardez si un similaire n’a pas déjà été ouvert.
 
-### Tester manuellement
+### Tester les fonctionnalités
 
 Toutes les personnes testant le code et rapportant des bugs ou des suggestions d’améliorations dans [l’outil de suivi de tickets](https://github.com/kitao/pyxel/issues) sont les bienvenues!
 
-### En ouvrant des pull requests
+### Soumettre des pull requests
 
 Les correctifs sont acceptés sous forme de pull requests (PRs). Faites attention à ce que le ticket que la pull request corrige soit toujours ouvert.
 
@@ -740,10 +740,10 @@ La demande de tirage soumise est réputée acceptée pour publication sous la [L
 - [Exemples d'utilisateurs](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Compte du développeur X](https://x.com/kitao)
 
-## License
+## Licence
 
 Pyxel est sous [Licence MIT](../LICENSE). Il peut être réutilisé dans un logiciel propriétaire, à condition que toutes les copies du logiciel ou de ses parties substantielles incluent une copie des termes de la licence MIT ainsi qu'un avis de droit d'auteur.
 
-## Recrutement de Sponsors
+## Recrutement de sponsors
 
 Pyxel recherche des sponsors sur GitHub Sponsors. Envisagez de parrainer Pyxel pour une maintenance continue et des ajouts de fonctionnalités. Les sponsors peuvent consulter sur Pyxel comme un avantage. Veuillez voir [ici](https://github.com/sponsors/kitao) pour plus de détails.

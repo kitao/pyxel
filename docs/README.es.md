@@ -61,7 +61,7 @@ Pyxel es de código abierto bajo la [licencia MIT](../LICENSE) y de uso gratuito
 
 <img src="images/pyxel_palette.png">
 
-## Como instalarlo
+## Cómo instalarlo
 
 ### Windows
 
@@ -101,7 +101,7 @@ La versión web de Pyxel no requiere la instalación de Python ni de Pyxel y fun
 
 Para obtener instrucciones específicas, consulte [esta página](pyxel-web-en.md).
 
-### Prueba los ejemplos de Pyxel
+### Prueba los ejemplos
 
 Después de instalar Pyxel, los ejemplos de Pyxel se copiarán a la carpeta actual con el siguiente comando:
 
@@ -242,9 +242,9 @@ pyxel run 01_hello_pyxel.py
 pyxel play 30sec_of_daylight.pyxapp
 ```
 
-## Como utilizarlo
+## Cómo utilizarlo
 
-### Crear una aplicación Pyxel
+### Crear una aplicación
 
 Tras importar el módulo Pyxel en el código de Python, especifique la dimensión de la ventana con la función `init`, luego, inicie la aplicación con la función `run`.
 
@@ -298,7 +298,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### Corre aplicaciones Pyxel
+### Correr aplicaciones
 
 Un script Python creado puede ejecutarse utilizando el comando `python`:
 
@@ -320,7 +320,7 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 La monitorización de directorios puede detenerse pulsando `Ctrl(Command)+C`.
 
-### Controles Especiales
+### Controles especiales
 
 Los siguientes controles especiales se pueden utilizar en cualquier aplicación que esté corriendo:
 
@@ -343,7 +343,7 @@ Los siguientes controles especiales se pueden utilizar en cualquier aplicación 
 - `Shift+Alt(Option)+0`<br>
   Guardar la paleta de colores actual en el escritorio
 
-### Como crear los recursos
+### Cómo crear recursos
 
 El Editor de Pyxel crea imágenes y sonidos que se utilizan en la aplicación de Pyxel.
 
@@ -397,7 +397,7 @@ El modo para editar música en el que organiza los sonidos del editor de sonidos
 <img src="images/music_editor.gif">
 </a>
 
-### Otros recursos en la creación de métodos
+### Otros métodos para crear recursos
 
 Las imágenes de Pyxel y el mapa también se pueden crear de las siguientes maneras:
 
@@ -410,7 +410,7 @@ Los sonidos de Pyxel también se pueden crear ude la siguiente manera:
 
 Por favor, consulte la API para el uso de estas funciones.
 
-### Como distribuir tu aplicación
+### Cómo distribuir tu aplicación
 
 Pyxel soporta un archivo dedicado para distribuir el código (formato de aplicación de Pyxel) que funciona en todas las plataformas.
 
@@ -711,29 +711,29 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Configura las listas de sonido (0-63) de los canales. Si se referencia una lista vacía, ese canal no se utilizará para reproducir el sonido.<br>
   Ejemplo: `pyxel.musics[0].set([0, 1], [], [3])`
 
-### APIs avanzadas
+### API avanzada
 
 Pyxel tiene "API avanzadas" que no se mencionan en esta referencia porque "puede confundir a los usuarios" o "necesita unos conocimientos especializados para poder utilizarlas".
 
 Si estás familiarizado con tus habilidades. ¡Intenta crear proyectos alucinantes con [esto](../python/pyxel/__init__.pyi) como pista!
 
-## Como contribuir
+## Cómo contribuir
 
 ### Presentar un problema
 
 Usa el [Rastreador de problemas](https://github.com/kitao/pyxel/issues) para enviar errores y solicitudes de mejora. Antes de presentar un nuevo tema, asegúrese de que no existe uno ya abierto similar.
 
-### Pruebas Manuales
+### Pruebas funcionales
 
 Cualquier persona que compruebe y prueba manualmente el código y reporte errores o sugerencias para mejorar el código en el [Issue Tracker](https://github.com/kitao/pyxel/issues) es bienvenida! <br>
 
-### Envio de Pull Request
+### Enviar Pull Request
 
 Parches o errores son aceptables en forma de pull request (PRs). Asegurate de que el tema de la pull request esté abierta en el Issue Tracker.
 
 La solicitud de extracción enviada se considera como un acuerdo para publicar bajo la [Licencia MIT](../LICENSE).
 
-## Otra Información
+## Otra información
 
 - [FAQ](faq-en.md)
 - [Ejemplos de usuarios](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
