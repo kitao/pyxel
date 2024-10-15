@@ -498,11 +498,11 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
   Ejemplo: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  Lista de los bancos de imágenes (0-2). (Vea la clase Image)<br>
+  Lista de los bancos de imágenes (0-2) (Vea la clase Image)<br>
   Ejemplo: `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  Lista de los tilemaps (0-7). (Vea la clase Tilemap)
+  Lista de los tilemaps (0-7) (Vea la clase Tilemap)
 
 - `clip(x, y, w, h)`<br>
   Establezca el área de dibujo de la pantalla de (`x`, `y`) a una anchura `w` y a una altura `h`. Reinicia el área de dibujo a todo el área de la pantalla con `clip()`.
@@ -571,11 +571,11 @@ El archivo de aplicación de Pyxel también se puede convertir en un ejecutable 
 ### Audio
 
 - `sounds`<br>
-  Lista de los sonidos (0-63). (Vea la clase Sound)<br>
+  Lista de los sonidos (0-63) (Vea la clase Sound)<br>
   Ejemplo: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  Lista de las músicas (0-7). (Vea la clase Music)
+  Lista de las músicas (0-7) (Vea la clase Music)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
   Reproduce el sonido `snd`(0-63) en el canal `ch`(0-3). Si el `snd` está en una lista, será reproducido en orden. La posición de inicio de la reproducción se puede especificar mediante un `tick`(1 tick = 1/120 segundos). Si `True` se especifica para `loop`, la reproducción se realizará en bucle. Para reanudar el sonido anterior después de finalizar la reproducción, configure `resume` en `True`.
