@@ -320,9 +320,9 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 Il monitoraggio della directory può essere interrotto premendo `Ctrl(Command)+C`.
 
-### Controlli speciali
+### Operazioni delle chiavi speciali
 
-I controlli seguenti speciali possono essere eseguite mentre viene eseguita un'applicazione Pyxel:
+Durante l'esecuzione di un'applicazione Pyxel, possono essere eseguite le seguenti operazioni delle chiavi speciali:
 
 - `Esc`<br>
   Esci dall'applicazione
