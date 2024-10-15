@@ -320,9 +320,9 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 디렉터리 모니터링은 `Ctrl(Command)+C`를 눌러 중지할 수 있습니다.
 
-### 특수 제어
+### 특수 키 조작
 
-Pyxel 애플리케이션 실행 중에, 아래의 특수 조작을 사용할 수 있습니다.
+Pyxel 애플리케이션이 실행 중일 때, 다음의 특수 키 조작을 수행할 수 있습니다:
 
 - `Esc`<br>
   애플리케이션 종료
