@@ -682,7 +682,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Efektlerin listesi (0:Yok / 1:Kaydırma / 2:Titreşim / 3:FadeOut / 4:Yarı FadeOut / 5:Dörtte Bir FadeOut)
 
 - `speed`<br>
-  Çalma hızı. 1 en hızlısıdır, sayı ne kadar büyükse çalma hızı o kadar yavaş olur. 120'de bir nota uzunluğu 1 saniye olur.
+  Çalma hızı. `1` en hızlısıdır, sayı ne kadar büyükse çalma hızı o kadar yavaş olur. `120`'de bir nota uzunluğu 1 saniye olur.
 
 - `set(notes, tones, volumes, effects, speed)`<br>
   Notaları, tonları, ses düzeylerini ve efektleri bir dize ile ayarlar. Eğer tonların, ses düzeylerinin veya efektlerin uzunluğu notalardan daha kısa ise, baştan tekrarlanır.
@@ -703,7 +703,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   'NSVFHQ' karakterlerinden oluşan bir dize ile efektleri ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.<br>
   Örneğin: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
-### Müzik Sınıfı
+### Music Sınıfı
 
 - `seqs`<br>
   Birden fazla kanalda bulunan seslerin (0-63) iki boyutlu listesi
