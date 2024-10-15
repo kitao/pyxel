@@ -369,7 +369,7 @@ The mode to edit the image banks.
 <img src="docs/images/image_editor.gif">
 </a>
 
-You can drag and drop an image file (PNG/GIF/JPEG) into the Image Editor to load the image into the currently selected image bank.
+You can drag and drop an image file (PNG/GIF/JPEG) into the image editor to load the image into the currently selected image bank.
 
 **Tilemap Editor**
 
@@ -379,7 +379,7 @@ The mode to edit tilemaps in which images of the image banks are arranged in a t
 <img src="docs/images/tilemap_editor.gif">
 </a>
 
-Drag and drop a TMX file (Tiled Map File) onto the Tilemap Editor to load its layer in the drawing order that corresponds to the currently selected tilemap number.
+Drag and drop a TMX file (Tiled Map File) onto the tilemap editor to load its layer in the drawing order that corresponds to the currently selected tilemap number.
 
 **Sound Editor**
 
