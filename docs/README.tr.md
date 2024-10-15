@@ -320,9 +320,9 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 Dizin izleme `Ctrl(Command)+C` tuşlarına basılarak durdurulabilir.
 
-### Özel komutlar
+### Özel Tuş Operasyonları
 
-Pyxel uygulaması çalışırken aşağıdaki özel komutlar kullanılabilir:
+Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçekleştirilebilir:
 
 - `Esc`<br>
   Uygulamadan çıkış yapar

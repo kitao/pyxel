@@ -320,9 +320,9 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 按`Ctrl(Command)+C`键可停止目录监控。
 
-### 特殊控制
+### 特殊键操作
 
-以下快捷键可以在 Pyxel 运行时使用：
+在运行 Pyxel 应用程序时，可以执行以下特殊键操作：
 
 - `Esc`<br>
   退出应用

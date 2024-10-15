@@ -320,9 +320,9 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 La surveillance des répertoires peut être arrêtée en appuyant sur `Ctrl(Command)+C`.
 
-### Contrôles spéciaux
+### Opérations de touches spéciales
 
-Les contrôles spéciaux suivants peuvent être lancés pendant qu’une application Pyxel tourne :
+Pendant l'exécution d'une application Pyxel, les opérations de touches spéciales suivantes peuvent être effectuées :
 
 - `Esc`<br>
   Quitte l’application

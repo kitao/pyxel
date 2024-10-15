@@ -320,9 +320,9 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 Die Verzeichnisüberwachung kann durch Drücken der Tastenkombination `Ctrl(Command)+C` beendet werden.
 
-### Spezielle Steuerungen
+### Sondertastenoperationen
 
-Die folgenden Shortcuts können eingegeben werden, während eine Pyxel-Anwendung läuft:
+Während eine Pyxel-Anwendung läuft, können die folgenden speziellen Tastenaktionen ausgeführt werden:
 
 - `Esc`<br>
   Schließt die Anwendung
