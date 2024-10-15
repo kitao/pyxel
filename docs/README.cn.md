@@ -475,10 +475,10 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 ### 输入
 
 - `mouse_x`，`mouse_y`<br>
-  当前鼠标指针的位置。
+  当前鼠标指针的位置
 
 - `mouse_wheel`<br>
-  当前鼠标滚轮的值。
+  当前鼠标滚轮的值
 
 - `btn(key)`<br>
   如果`key`被按下则返回`True`，否则返回`False`。([按键定义列表](../python/pyxel/__init__.pyi))。
