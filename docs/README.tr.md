@@ -55,7 +55,7 @@ Pyxel [MIT lisansı](../LICENSE) altında açık kaynak kodludur ve kullanımı 
 - Görüntü ve ses düzenleme araçları
 - Renkler, kanallar ve bankalar için kullanıcı genişletme
 
-### Renk Paleti
+### Renk paleti
 
 <img src="images/05_color_palette.png">
 
@@ -101,7 +101,7 @@ Pyxel'in web versiyonu Python veya Pyxel kurulumu gerektirmez ve desteklenen web
 
 Özel talimatlar için lütfen [bu sayfaya](docs/pyxel-web-en.md) başvurun.
 
-### Pyxel Örneklerini Deneyin
+### Örnekleri deneyin
 
 Pyxel'i kurduktan sonra, aşağıdaki komutla Pyxel örneklerini mevcut dizine kopyalayabilirsiniz:
 
@@ -244,7 +244,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ## Kullanım
 
-### Pyxel Uygulaması Oluşturma
+### Uygulama oluşturma
 
 Python betiğinizde Pyxel modülünü içe aktardıktan sonra, `init` fonksiyonu ile pencere boyutunu belirtin ve ardından `run` fonksiyonu ile Pyxel uygulamasını başlatın.
 
@@ -298,7 +298,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### Pyxel Uygulamasını Çalıştırma
+### Uygulamayı çalıştırma
 
 Oluşturulan bir Python betiği `python` komutu kullanılarak çalıştırılabilir:
 
@@ -320,7 +320,7 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 Dizin izleme `Ctrl(Command)+C` tuşlarına basılarak durdurulabilir.
 
-### Özel Komutlar
+### Özel komutlar
 
 Pyxel uygulaması çalışırken aşağıdaki özel komutlar kullanılabilir:
 
@@ -343,7 +343,7 @@ Pyxel uygulaması çalışırken aşağıdaki özel komutlar kullanılabilir:
 - `Shift+Alt(Option)+0`<br>
   Mevcut renk paletini masaüstüne kaydeder
 
-### Kaynak Oluşturma
+### Kaynak oluşturma
 
 Pyxel Editör, Pyxel uygulamasında kullanılan görüntü ve sesleri oluşturabilir.
 
@@ -397,7 +397,7 @@ Seslerin çalma sırasına göre düzenlendiği müzikleri düzenleme modu.
 <img src="images/music_editor.gif">
 </a>
 
-### Diğer Kaynak Oluşturma Yöntemleri
+### Diğer kaynak oluşturma yöntemleri
 
 Pyxel görüntüleri ve tilemap'ler aşağıdaki yöntemlerle de oluşturulabilir:
 
@@ -410,7 +410,7 @@ Pyxel sesleri aşağıdaki yöntemle de oluşturulabilir:
 
 Bu fonksiyonların kullanımı için API referansına başvurun.
 
-### Uygulamaları Dağıtma
+### Uygulamaları nasıl dağıtabilirsiniz
 
 Pyxel, platformlar arası çalışan özel bir uygulama dağıtım dosya formatı (Pyxel uygulama dosyası) destekler.
 
@@ -441,7 +441,7 @@ pyxel play PYXEL_APP_FILE
 
 Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları ile bir yürütülebilir dosyaya veya HTML dosyasına dönüştürülebilir.
 
-## API Referansı
+## API referansı
 
 ### Sistem
 
@@ -472,7 +472,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
   Kaynak dosyasını (.pyxres) yükle. Bir seçenek `True` ise, ilgili kaynak yüklenmeyecek. Aynı konumda kaynak dosyası ile aynı ada sahip bir palet dosyası (.pyxpal) varsa, palet ekran renkleri de güncellenecek. Palet dosyası, ekran renklerinin onaltılık girişlerini içerir (örneğin, `1100FF`), yeni satırlarla ayrılmıştır. Palet dosyası ayrıca, Pyxel Editör'de görüntülenen renkleri değiştirmek için kullanılabilir.
 
-### Giriş İşlemleri
+### Giriş işlemleri
 
 - `mouse_x`, `mouse_y`<br>
   Fare imlecinin mevcut konumu
@@ -628,7 +628,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 - `noise(x, [y], [z])`<br>
   Belirtilen koordinatlar için Perlin gürültüsü değerini döndürür.
 
-### Image Sınıfı
+### Image sınıfı
 
 - `width`, `height` <br>
   Resmin genişliği ve yüksekliği
@@ -646,7 +646,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 - `pset(x, y, col)`<br>
   (`x`, `y`) konumuna `col` renkli bir piksel çizer.
 
-### Tilemap Sınıfı
+### Tilemap sınıfı
 
 - `width`, `height`<br>
   Tilemap'in genişliği ve yüksekliği
@@ -667,7 +667,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
 - `pset(x, y, tile)`<br>
   (`x`, `y`) konumuna bir `tile` çizer. Bir tile, `(tile_x, tile_y)` tuple'ıdır.
 
-### Sound Sınıfı
+### Sound sınıfı
 
 - `notes`<br>
   Notaların listesi (0-127). Numara ne kadar yüksekse, sesin tonu o kadar yüksek olur. Nota `33`, 'A2' (440Hz) ile eşleşir. Dinlenme notaları `-1` ile gösterilir.
@@ -703,7 +703,7 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   'NSVFHQ' karakterlerinden oluşan bir dize ile efektleri ayarlar. Büyük-küçük harf duyarsızdır ve boşluklar yok sayılır.<br>
   Örneğin: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
-### Music Sınıfı
+### Music sınıfı
 
 - `seqs`<br>
   Birden fazla kanalda bulunan seslerin (0-63) iki boyutlu listesi
@@ -712,29 +712,29 @@ Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları
   Her kanal için seslerin (0-63) listelerini ayarlar. Eğer boş bir liste belirtilirse, o kanal çalma için kullanılmaz.<br>
   Örneğin: `pyxel.musics[0].set([0, 1], [], [3])`
 
-### İleri Düzey API
+### Gelişmiş API
 
-Pyxel, kullanıcıları şaşırtabileceği veya kullanımı için özel bilgi gerektirebileceği için bu belgede belirtilmeyen bir "İleri Düzey API" içerir.
+Pyxel, kullanıcıları şaşırtabileceği veya kullanımı için özel bilgi gerektirebileceği için bu belgede belirtilmeyen bir "Gelişmiş API" içerir.
 
 Eğer becerilerinize güveniyorsanız, [bu bağlantıya](https://github.com/kitao/pyxel/blob/main/python/pyxel/__init__.pyi) bakarak muhteşem çalışmalar oluşturabilirsiniz!
 
-## Katkıda Bulunma Yöntemleri
+## Katkıda bulunma yöntemleri
 
-### Sorun Bildirme
+### Sorun bildirme
 
 Hata raporları ve özellik/geliştirme isteklerini göndermek için [Sorun İzleyici](https://github.com/kitao/pyxel/issues) kullanın. Yeni bir sorun bildirmeden önce, benzer bir açık sorun olmadığından emin olun.
 
-### Manuel Test
+### Fonksiyonel test
 
 Kodları manuel olarak test eden ve [Sorun İzleyici](https://github.com/kitao/pyxel/issues) üzerinden hataları raporlayan veya geliştirme önerileri sunan herkes çok memnuniyetle karşılanır!
 
-### Pull Request Oluşturma
+### Pull request oluşturma
 
 Yama/düzeltmeler, pull request (PR) olarak kabul edilir. Pull request'inizle ilgili sorunun Sorun İzleyici'de açık olduğundan emin olun.
 
 Gönderilen pull isteği, [MIT Lisansı](../LICENSE) kapsamında yayınlanmayı kabul etmiş sayılır.
 
-## Ek Bilgiler
+## Ek bilgiler
 
 - [FAQ](faq-en.md)
 - [Kullanıcı Örnekleri](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
@@ -744,6 +744,6 @@ Gönderilen pull isteği, [MIT Lisansı](../LICENSE) kapsamında yayınlanmayı 
 
 Pyxel, [MIT Lisansı](../LICENSE) altındadır. Yazılımın tüm kopyaları veya önemli bölümlerinde MIT Lisansı'nın koşullarının bir kopyası ve telif hakkı bildirimi yer aldığı sürece, özel yazılımlarda yeniden kullanılabilir.
 
-## Sponsor Arayışı
+## Sponsor arayışı
 
 Pyxel, GitHub Sponsorlarında sponsor arıyor. Pyxel'in sürekli bakımı ve özellik eklemeleri için sponsorluk düşünün. Sponsorlar, Pyxel geliştiricisi ile doğrudan danışmanlık yapma fırsatına sahip olabilirler. Detaylar için [buraya](https://github.com/sponsors/kitao) bakınız.

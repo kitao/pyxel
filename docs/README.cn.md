@@ -101,7 +101,7 @@ sudo pip3 install -U pyxel
 
 具体说明请参考[本页面](pyxel-web-en.md)。
 
-### 尝试 Pyxel 例程
+### 尝试例程
 
 以 Python 包版本为例，安装 Pyxel 后，用以下命令将 Pyxe 例程复制到当前文件夹：
 
@@ -244,7 +244,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ## 使用教程
 
-### 创建 Pyxel 应用
+### 创建应用
 
 在 python 文件中导入 Pyxel 包后，首先使用`init`函数指定窗口大小，然后使用`run`函数启动 Pyxel 应用。
 
@@ -298,7 +298,7 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### 运行 Pyxel 应用
+### 运行应用
 
 创建的 Python 脚本可使用`python`命令执行：
 
@@ -320,7 +320,7 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 按`Ctrl(Command)+C`键可停止目录监控。
 
-### 快捷键
+### 特殊控制
 
 以下快捷键可以在 Pyxel 运行时使用：
 
@@ -343,7 +343,7 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 - `Shift+Alt(Option)+0`<br>
   将当前调色板保存到桌面
 
-### 如何创建源文件
+### 如何创建资源
 
 在 Pyxel 应用中使用的图像和音效，可以使用 Pyxel 编辑器进行制作。
 
@@ -397,7 +397,7 @@ Pyxel 编辑器有以下编辑模式。
 <img src="images/music_editor.gif">
 </a>
 
-### 其他创建源文件的方法
+### 其他创建资源的方法
 
 Pyxel 图像和瓦片地图也可以通过以下方法创建：
 
@@ -467,7 +467,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
 - `quit()`<br>
   退出 Pyxel 应用。
 
-### 源文件
+### 资源
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
   加载源文件 (.pyxres)。如果选项为`True`，则不会加载资源。如果在资源文件的同一位置存在同名的调色板文件 (.pyxpal)，调色板的显示颜色也将改变。调色板文件是显示颜色的十六进制条目 (如 `1100FF`)，以换行分隔。调色板文件也可用于更改 Pyxel 编辑器中显示的颜色。
@@ -712,7 +712,7 @@ Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令�
   设置通道的声音列表 (0-63)。如果指定了空列表，则对应通道不会用来播放。<br>
   示例：`pyxel.musics[0].set([0, 1], [], [3])`
 
-### 高级 APIs
+### 高级 API
 
 Pyxel 还有一些“高级 API”，出于“可能令用户感到迷惑”、“需要专业知识”等一些原因，在本文尚未提及。
 
@@ -724,11 +724,11 @@ Pyxel 还有一些“高级 API”，出于“可能令用户感到迷惑”、�
 
 使用[Issue Tracker](https://github.com/kitao/pyxel/issues)来提交 bug 报告或功能需求。在创建新 issue 之前，请确定没有类似的打开的 issue。
 
-### 参与测试
+### 功能测试
 
 欢迎任何人在[Issue Tracker](https://github.com/kitao/pyxel/issues)中手动测试代码、上报 bug、提交优化建议等！
 
-### 贡献代码
+### 提交 Pull Requests
 
 可以通过 pull requests (PRs) 形式来提交补丁或修复。请确认你的 pull request 对应的 issue 地址在 issue tracker 中依然是 open 状态。
 
