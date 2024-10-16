@@ -9,13 +9,13 @@
 
 [ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md) ]
 
-**Pyxel** es un motor de videojuegos para Python.
+**Pyxel** es un motor de juegos retro para Python.
 
-Gracias a sus características simples inspiradas en las consolas de juegos retro, como el solo mostrar 16 colores y el reproducir 4 sonidos al mismo tiempo, puedes sentirte libre de disfrutar creando juegos en estilo pixel art.
+Las especificaciones están inspiradas en las consolas de juegos retro, como el soporte para solo 16 colores y 4 canales de sonido, lo que te permite disfrutar fácilmente de la creación de juegos con estilo de arte en píxeles.
 
 <img src="images/pyxel_message.png" width="480">
 
-La motivación para el desarrollo de Pyxel es el feedback de los usuarios. Por favor, ¡dale una estrella a Pyxel en GitHub!
+El desarrollo de Pyxel se basa en los comentarios de los usuarios. ¡Por favor, dale una estrella a Pyxel en GitHub!
 
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">
