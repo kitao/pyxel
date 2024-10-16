@@ -114,13 +114,13 @@ Die zu kopierenden Beispiele lauten wie folgt:
 <table>
 <tr>
 <td>01_hello_pyxel.py</td>
-<td>Einfaches Fenster</td>
+<td>Die einfachste Anwendung</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Code</a></td>
 </tr>
 <tr>
 <td>02_jump_game.py</td>
-<td>Spring Spiel mit Pyxel-Ressource-Datei</td>
+<td>Sprungspiel mit Pyxel-Ressourcendatei</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Code</a></td>
 </tr>
@@ -132,55 +132,55 @@ Die zu kopierenden Beispiele lauten wie folgt:
 </tr>
 <tr>
 <td>04_sound_api.py</td>
-<td>Demonstration of Sound-APIs</td>
+<td>Demonstration der Audio-APIs</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Code</a></td>
 </tr>
 <tr>
 <td>05_color_palette.py</td>
-<td>Farbpalleten Liste</td>
+<td>Farbenpalettenliste</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Code</a></td>
 </tr>
 <tr>
 <td>06_click_game.py</td>
-<td>Maus-Klick-Spiel</td>
+<td>Mausklickspiel</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Code</a></td>
 </tr>
 <tr>
 <td>07_snake.py</td>
-<td>Snake mit BGM</td>
+<td>Schlangenspiel mit BGM</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Code</a></td>
 </tr>
 <tr>
 <td>08_triangle_api.py</td>
-<td>Demonstration of triangle drawing APIs</td>
+<td>Demonstration der Dreiecks-Zeichen-APIs</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Code</a></td>
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>Shoot'em up mit Displayübergängen</td>
+<td>Shoot 'em up Spiel mit Bildschirmübergängen</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Code</a></td>
 </tr>
 <tr>
 <td>10_platformer.py</td>
-<td>Side-Scroller Platform Spiel mit Karte</td>
+<td>Seiten-scrollendes Plattformspiel mit Karte</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Code</a></td>
 </tr>
 <tr>
 <td>11_offscreen.py</td>
-<td>Offscreen-Rendering mit der Klasse Image</td>
+<td>Offscreen-Rendering mit der Image-Klasse</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Code</a></td>
 </tr>
 <tr>
 <td>12_perlin_noise.py</td>
-<td>Perlin-Lärm-Animation</td>
+<td>Perlin-Rausch-Animation</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
 </tr>
@@ -192,37 +192,37 @@ Die zu kopierenden Beispiele lauten wie folgt:
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
-<td>Synthesizer mit Audioerweiterungsfunktionen</td>
+<td>Synthesizer unter Verwendung von Audioerweiterungsfunktionen</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Code</a></td>
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
-<td>Laden und Zeichnen einer Kachelkartendatei (.tmx)</td>
+<td>Laden und Zeichnen einer Tiled Map File (.tmx)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Code</a></td>
 </tr>
 <tr>
 <td>16_transform.py</td>
-<td>Bilddrehung und -skalierung</td>
+<td>Bildrotation und -skalierung</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Code</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>Animation mit flip-Funktion (nur für Nicht-Web-Plattformen)</td>
+<td>Animation mit der Flip-Funktion (nur für Nicht-Web-Plattformen)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
 </tr>
 <tr>
 <td>30sec_of_daylight.pyxapp</td>
-<td>1. Pyxel Jam Gewinnspiel von <a href="https://x.com/helpcomputer0">Adam</a></td>
+<td>Gewinner des 1. Pyxel Jam von <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Demo</a></td>
 <td><a href="https://github.com/kitao/30sec_of_daylight">Code</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
-<td>Arcade Ball Physik Spiel von <a href="https://x.com/helpcomputer0">Adam</a></td>
+<td>Arcade Ball-Physikspiel von <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
 <td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
 </tr>

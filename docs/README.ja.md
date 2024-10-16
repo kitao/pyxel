@@ -115,122 +115,122 @@ pyxel copy_examples
 <tr>
 <td>01_hello_pyxel.py</td>
 <td>シンプルなアプリケーション</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">コード</a></td>
 </tr>
 <tr>
 <td>02_jump_game.py</td>
 <td>Pyxel リソースファイルを使ったジャンプゲーム</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">コード</a></td>
 </tr>
 <tr>
 <td>03_draw_api.py</td>
 <td>描画 API のデモ</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">コード</a></td>
 </tr>
 <tr>
 <td>04_sound_api.py</td>
 <td>サウンド API のデモ</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">コード</a></td>
 </tr>
 <tr>
 <td>05_color_palette.py</td>
 <td>カラーパレット一覧</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">コード</a></td>
 </tr>
 <tr>
 <td>06_click_game.py</td>
 <td>マウスクリックゲーム</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">コード</a></td>
 </tr>
 <tr>
 <td>07_snake.py</td>
 <td>BGM 付きスネークゲーム</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">コード</a></td>
 </tr>
 <tr>
 <td>08_triangle_api.py</td>
 <td>三角形描画 API のデモ</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">コード</a></td>
 </tr>
 <tr>
 <td>09_shooter.py</td>
 <td>画面遷移のあるシューティングゲーム</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">コード</a></td>
 </tr>
 <tr>
 <td>10_platformer.py</td>
 <td>マップのある横スクロールアクションゲーム</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">コード</a></td>
 </tr>
 <tr>
 <td>11_offscreen.py</td>
 <td>Image クラスによるオフスクリーン描画</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">コード</a></td>
 </tr>
 <tr>
 <td>12_perlin_noise.py</td>
 <td>パーリンノイズアニメーション</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">コード</a></td>
 </tr>
 <tr>
 <td>13_bitmap_font.py</td>
 <td>ビットマップフォント描画</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/13_bitmap_font.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/13_bitmap_font.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">コード</a></td>
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
 <td>オーディオ拡張機によるシンセサイザー</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">コード</a></td>
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
 <td>タイルマップファイル (.tmx) の読み込みと描画</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">コード</a></td>
 </tr>
 <tr>
 <td>16_transform.py</td>
 <td>画像の回転と拡大縮小</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">コード</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
 <td>flip 関数によるアニメーション (非 Web 環境のみ)</td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">デモ</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">コード</a></td>
 </tr>
 <tr>
 <td>30sec_of_daylight.pyxapp</td>
 <td>第 1 回 Pyxel Jam 優勝ゲーム (<a href="https://x.com/helpcomputer0">Adam</a>制作)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Demo</a></td>
-<td><a href="https://github.com/kitao/30sec_of_daylight">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">デモ</a></td>
+<td><a href="https://github.com/kitao/30sec_of_daylight">コード</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
 <td>アーケードボール物理ゲーム (<a href="https://x.com/helpcomputer0">Adam</a>制作)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
-<td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">デモ</a></td>
+<td><a href="https://github.com/helpcomputer/megaball">コード</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>
 <td>BGM自動作成ツール (<a href="https://x.com/frenchbread1222">frenchbread</a>制作)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Demo</a></td>
-<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">デモ</a></td>
+<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">コード</a></td>
 </tr>
 </table>
 
