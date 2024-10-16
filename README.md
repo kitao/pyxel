@@ -484,13 +484,13 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Return `True` if the `key` is pressed, otherwise return `False`. ([Key definition list](python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
-  Return `True` if the `key` is pressed in that frame, otherwise return `False`. When `hold` and `repeat` are specified, `True` is returned at the `repeat` frame interval when the `key` is held down for more than `hold` frames.
+  Return `True` if the `key` is pressed in that frame, otherwise return `False`. If `hold` and `repeat` are specified, after the `key` has been held down for `hold` frames or more, `True` is returned every `repeat` frames.
 
 - `btnr(key)`<br>
   Return `True` if the `key` is released in that frame, otherwise return `False`.
 
 - `mouse(visible)`<br>
-  If `visible` is `True`, show the mouse cursor. If `False`, hide it. Even if the mouse cursor is not displayed, its position is still updated.
+  Show the mouse cursor if `visible` is `True`, and hide it if `visible` is `False`. The cursor's position continues to update even when it is hidden.
 
 ### Graphics
 
