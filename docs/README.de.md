@@ -343,86 +343,86 @@ Während eine Pyxel-Anwendung läuft, können die folgenden speziellen Tastenakt
 - `Shift+Alt(Option)+0`<br>
   Die aktuelle Farbpalette auf dem Desktop speichern
 
-### Wie man eine Ressource erstellt
+### So erstellen Sie Ressourcen
 
-Der Pyxel Editor kann Bilder und Töne erstellen, die in einer Pyxel-Anwendung verwendet werden.
+Pyxel Editor kann Bilder und Klänge erstellen, die in einer Pyxel-Anwendung verwendet werden.
 
-Starte den Editor mit folgendem Befehl:
+Sie können Pyxel Editor mit dem folgenden Befehl starten:
 
 ```sh
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-Wenn die angegebene Pyxel-Datei (.pyxres) existiert, wird die Datei geladen, wenn nicht, wird eine neue Datei mit dem angegebenen Namen erstellt. Wenn die Datei nicht angegeben wird, lautet der Name `my_resource.pyxres`.
+Wenn die angegebene Pyxel-Ressourcendatei (.pyxres) vorhanden ist, wird sie geladen. Andernfalls wird eine neue Datei mit dem angegebenen Namen erstellt. Wenn die Ressourcendatei weggelassen wird, wird eine neue Datei mit dem Namen `my_resource.pyxres` erstellt.
 
-Nach dem Start des Pyxel-Editors kann die Datei durch Drag-and-Drop einer anderen Ressourcendatei gewechselt werden.
+Nachdem Sie Pyxel Editor gestartet haben, können Sie zu einer anderen Ressourcendatei wechseln, indem Sie diese auf Pyxel Editor ziehen und ablegen.
 
-Die erstellte Ressourcendatei kann mit der Funktion `load` geladen werden.
+Die erstellte Ressourcendatei kann mit der `load`-Funktion geladen werden.
 
-Der Pyxel Editor hat die folgenden Bearbeitungsmodi.
+Pyxel Editor hat die folgenden Bearbeitungsmodi.
 
 **Bildeditor**
 
-Der Modus zum Editieren von Image Banks.
+Der Modus zum Bearbeiten der Bilderbanken.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
 </a>
 
-Ziehen Sie eine Bilddatei (PNG/GIF/JPEG) auf den Bildeditor, um das Bild in die aktuell ausgewählte Bildbank zu laden.
+Sie können eine Bilddatei (PNG/GIF/JPEG) in den Bildeditor ziehen und ablegen, um das Bild in die aktuell ausgewählte Bilderbank zu laden.
 
 **Tilemap-Editor**
 
-Der Modus zum editieren von Tilemaps in welcher Bilder aus der Image Bank in einem Tile-Pattern arrangiert sind.
+Der Modus zum Bearbeiten von Tilemaps, in denen Bilder aus den Bilderbanken in einem Kachelmuster angeordnet sind.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-Ziehen Sie eine TMX-Datei (Tiled Map File) auf den Tilemap-Editor, um ihre Ebene in der Zeichenreihenfolge zu laden, die der aktuell ausgewählten Tilemap-Nummer entspricht.
+Ziehen Sie eine TMX-Datei (Tiled Map File) in den Tilemap-Editor, um deren Schicht in der Zeichnungsreihenfolge zu laden, die der aktuell ausgewählten Tilemap-Nummer entspricht.
 
-**Sound-Editor**
+**Soundeditor**
 
-Der Modus um Sounds zu editieren.
+Der Modus zum Bearbeiten von Klängen.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
 </a>
 
-**Musik-Editor**
+**Musikeditor**
 
-Der Modus um Sounds in Wiedergabereihenfolge zu Musik zusammenzufügen.
+Der Modus zum Bearbeiten von Musiken, in denen die Klänge in der Reihenfolge der Wiedergabe angeordnet sind.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
 </a>
 
-### Andere Methoden der Ressourcenerstellung
+### Weitere Methoden zur Erstellung von Ressourcen
 
-Pyxel-Bilder und Tilemaps können auch mit den folgenden Methoden erstellt werden:
+Pyxel-Bilder und Tilemaps können auch mit folgenden Methoden erstellt werden:
 
-- Erstelle ein Bild aus einer Liste strings mit der `Image.set` Funktion oder der `Tilemap.set` Funktion.
-- Lade eine Bild-Datei (PNG/GIF/JPEG) in die Pyxel-Palette mit der `Image.load` Funktion.
+- Erstellen Sie ein Bild aus einer Liste von Zeichenfolgen mit der `Image.set`-Funktion oder der `Tilemap.set`-Funktion
+- Laden Sie eine Bilddatei (PNG/GIF/JPEG) mit der `Image.load`-Funktion in die Pyxel-Palette
 
-Pyxel-Sounds können auch mit der folgenden Methode erstellt werden:
+Pyxel-Sounds können ebenfalls mit der folgenden Methode erstellt werden:
 
-- Erstelle einen Sound aus einem String mit der `Sound.set` Funktion oder der `Music.set` Funktion.
+- Erstellen Sie einen Klang aus Zeichenfolgen mit der `Sound.set`-Funktion oder der `Music.set`-Funktion
 
-Bitte lesen Sie die API-Referenz für die Verwendung dieser Funktionen.
+Bitte beachten Sie die API-Referenz für die Verwendung dieser Funktionen.
 
-### Wie man seine Anwendung verteilen kann
+### So verteilen Sie Anwendungen
 
-Pyxel unterstützt ein spezielles Dateiformat für das Teilen von Pyxel-Anwendungen (Pyxel application file), das plattformübergreifend funktioniert.
+Pyxel unterstützt ein dediziertes Dateiformat für die Verteilung von Anwendungen (Pyxel-Anwendungsdatei), das plattformübergreifend ist.
 
-Erstellen Sie die Pyxel-Anwendungsdatei (.pyxapp) mit dem Befehl `pyxel package`:
+Eine Pyxel-Anwendungsdatei (.pyxapp) wird mit dem Befehl `pyxel package` erstellt:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
-Wenn die Anwendung Ressourcen oder zusätzliche Module enthalten soll, legen Sie diese in das Anwendungsverzeichnis.
+Wenn Sie Ressourcen oder zusätzliche Module einfügen möchten, legen Sie diese im Anwendungsverzeichnis ab.
 
-Metadaten können zur Laufzeit angezeigt werden, indem sie im Startskript in folgendem Format angegeben werden. Andere Felder als `title` und `author` können weggelassen werden.
+Metadaten können zur Laufzeit angezeigt werden, indem Sie sie im folgenden Format im Startskript angeben. Felder außer `title` und `author` sind optional.
 
 ```python
 # title: Pyxel Platformer
@@ -439,7 +439,7 @@ Die erstellte Anwendungsdatei kann mit dem Befehl `pyxel play` ausgeführt werde
 pyxel play PYXEL_APP_FILE
 ```
 
-Pyxel-Anwendungsdateien können auch mit den Befehlen `pyxel app2exe` oder `pyxel app2html` in eine ausführbare Datei oder eine HTML-Datei umgewandelt werden.
+Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxel app2html` in eine ausführbare Datei oder eine HTML-Datei umgewandelt werden.
 
 ## API-Referenz
 

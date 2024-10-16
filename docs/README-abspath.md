@@ -347,23 +347,23 @@ The following special key actions are available while a Pyxel application is run
 
 Pyxel Editor can create images and sounds used in a Pyxel application.
 
-It starts with the following command:
+You can start Pyxel Editor with the following command:
 
 ```sh
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, a new file will be created with the specified name. If the resource file is omitted, a new file named `my_resource.pyxres` will be created.
+If the specified Pyxel resource file (.pyxres) exists, it will be loaded. If it does not exist, a new file with the specified name will be created. If the resource file is omitted, a new file named `my_resource.pyxres` will be created.
 
-After starting Pyxel Editor, you can switch between resource files by dragging and dropping another resource file.
+After starting Pyxel Editor, you can switch to another resource file by dragging and dropping it onto Pyxel Editor.
 
-The created resource file can be loaded with the `load` function.
+The created resource file can be loaded using the `load` function.
 
 Pyxel Editor has the following editing modes.
 
 **Image Editor**
 
-The mode to edit the image banks.
+The mode for editing the image banks.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/image_editor.gif">
@@ -373,7 +373,7 @@ You can drag and drop an image file (PNG/GIF/JPEG) into the image editor to load
 
 **Tilemap Editor**
 
-The mode to edit tilemaps in which images of the image banks are arranged in a tile pattern.
+The mode for editing tilemaps that arrange images from the image banks in a tile pattern.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/tilemap_editor.gif">
@@ -383,7 +383,7 @@ Drag and drop a TMX file (Tiled Map File) onto the tilemap editor to load its la
 
 **Sound Editor**
 
-The mode to edit sounds.
+The mode for editing sounds.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/sound_editor.gif">
@@ -391,7 +391,7 @@ The mode to edit sounds.
 
 **Music Editor**
 
-The mode to edit musics in which the sounds are arranged in order of playback.
+The mode for editing musics in which the sounds are arranged in order of playback.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/music_editor.gif">
@@ -408,7 +408,7 @@ Pyxel sounds can also be created using the following method:
 
 - Create a sound from strings with `Sound.set` function or `Music.set` function
 
-Refer to the API reference for usage of these functions.
+Refer to the API reference for the usage of these functions.
 
 ### How to Distribute Applications
 
