@@ -9,13 +9,13 @@
 
 [ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md) ]
 
-**Pyxel**은 Python을 위한 레트로 게임 엔진입니다.
+**Pyxel**은 Python을 위한 복고풍 게임 엔진입니다.
 
-레트로 게임 콘솔에서 영감을 받은 간단한 사양으로, 16가지 색상만 표시하고 동시에 4가지 소리만 재생하는 등의 기능을 통해 Python에서 픽셀 아트 스타일의 게임을 쉽게 만들 수 있습니다.
+사양은 복고풍 게임 콘솔에서 영감을 받아 16색만 지원하고 4개의 사운드 채널을 사용할 수 있어 픽셀 아트 스타일의 게임 제작을 쉽게 즐길 수 있습니다.
 
 <img src="images/pyxel_message.png" width="480">
 
-Pyxel의 개발은 사용자의 피드백에 의해 이루어집니다. GitHub에서 Pyxel에 별점을 주세요!
+Pyxel 개발은 사용자 피드백에 의해 이루어집니다. GitHub에서 Pyxel에 별을 주세요!
 
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">

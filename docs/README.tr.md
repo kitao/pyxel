@@ -9,13 +9,13 @@
 
 [ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md) ]
 
-**Pyxel** Python için bir retro oyun motorudur.
+**Pyxel**, Python için bir retro oyun motorudur.
 
-Retro oyun konsollarından esinlenerek basitleştirilmiş özelliklere sahip olması sayesinde, aynı anda yalnızca 16 renk görüntülenebildiği ve yalnızca 4 ses çalınabildiği için, pixel-art tarzı oyunlar yapmanın keyfini çıkarabilirsiniz.
+Özellikler, yalnızca 16 renk desteği ve 4 ses kanalıyla retro oyun konsollarından ilham alınarak tasarlanmıştır, böylece piksel sanat tarzı oyunlar yapmayı kolayca keyifle yaşayabilirsiniz.
 
 <img src="images/pyxel_message.png" width="480">
 
-Pyxel'in geliştirilmesi kullanıcı geri bildirimleriyle yönlendirilmektedir. Lütfen Pyxel'e GitHub'da bir yıldız verin!
+Pyxel'in geliştirilmesi, kullanıcı geri bildirimleriyle yönlendirilmektedir. Lütfen GitHub'da Pyxel'e bir yıldız verin!
 
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">
