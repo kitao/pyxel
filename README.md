@@ -162,7 +162,7 @@ The following examples will be copied to your current directory:
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>Shoot'em up game with screen transition</td>
+<td>Shoot'em up game with screen transitions</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Code</a></td>
 </tr>
@@ -192,7 +192,7 @@ The following examples will be copied to your current directory:
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
-<td>Synthesizer utilizing audio expantion features</td>
+<td>Synthesizer using audio expansion features</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Code</a></td>
 </tr>
