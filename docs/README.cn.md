@@ -9,13 +9,13 @@
 
 [ [English](../README.md) | [中文](README.cn.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | [Русский](README.ru.md) | [Türkçe](README.tr.md) | [Українська](README.uk.md) ]
 
-**Pyxel**是一个 python 的经典像素风游戏制作引擎。
+**Pyxel** 是一个针对 Python 的复古游戏引擎。
 
-由于像素风游戏的机制非常简单 (如：最多只能显示 16 种颜色、播放 4 种声音等)，现在你也可以轻松地享受这种游戏的制作过程。
+其规格受到复古游戏机的启发，例如仅支持 16 种颜色和 4 个音轨，同时可以轻松享受制作像素艺术风格游戏的乐趣。
 
 <img src="images/pyxel_message.png" width="480">
 
-Pyxel 开发的动力来自于用户的反馈。请在 GitHub 上给 Pyxel 一颗星吧！
+Pyxel 的开发得益于用户的反馈。请在 GitHub 上给 Pyxel 评分！
 
 <p>
 <a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">
