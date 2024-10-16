@@ -242,11 +242,11 @@ pyxel run 01_hello_pyxel.py
 pyxel play 30sec_of_daylight.pyxapp
 ```
 
-## Kullanım
+## Nasıl Kullanılır
 
-### Uygulama oluşturma
+### Uygulama Oluşturma
 
-Python betiğinizde Pyxel modülünü içe aktardıktan sonra, `init` fonksiyonu ile pencere boyutunu belirtin ve ardından `run` fonksiyonu ile Pyxel uygulamasını başlatın.
+Python betiğinizde Pyxel modülünü içe aktarın, `init` fonksiyonu ile pencere boyutunu belirtin ve ardından `run` fonksiyonu ile Pyxel uygulamasını başlatın.
 
 ```python
 import pyxel
@@ -264,9 +264,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-`run` fonksiyonunun argümanları, her kareyi güncellemek için `update` fonksiyonu ve ekranı çizmek için `draw` fonksiyonudur.
+`run` fonksiyonunun argümanları, kare güncellemelerini işleyen `update` fonksiyonu ve ekran çizimini gerçekleştiren `draw` fonksiyonudur.
 
-Gerçek bir uygulamada, pyxel kodlarını aşağıdaki gibi bir sınıfa sarmanız önerilir:
+Gerçek bir uygulamada, Pyxel kodunu bir sınıf içine sarmak önerilir, aşağıdaki gibi:
 
 ```python
 import pyxel
@@ -287,7 +287,7 @@ class App:
 App()
 ```
 
-Animasyonsuz basit grafikler oluştururken kodu daha kısa yapmak için `show` fonksiyonu kullanılabilir.
+Animasyon olmadan basit grafikler oluşturmak için, kodunuzu basitleştirmek için `show` fonksiyonunu kullanabilirsiniz.
 
 ```python
 import pyxel
@@ -298,9 +298,9 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### Uygulamayı çalıştırma
+### Uygulamayı Çalıştırma
 
-Oluşturulan bir Python betiği `python` komutu kullanılarak çalıştırılabilir:
+Oluşturulan bir betik `python` komutu ile çalıştırılabilir:
 
 ```sh
 python PYTHON_SCRIPT_FILE
@@ -312,13 +312,13 @@ Ayrıca `pyxel run` komutu ile de çalıştırılabilir:
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-Ek olarak, `pyxel watch` komutu, belirtilen bir dizindeki değişiklikleri izler ve değişiklikler tespit edildiğinde programı otomatik olarak yeniden çalıştırır:
+Ek olarak, `pyxel watch` komutu belirtilen bir dizindeki değişiklikleri izler ve değişiklik algılandığında programı otomatik olarak yeniden çalıştırır:
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-Dizin izleme `Ctrl(Command)+C` tuşlarına basılarak durdurulabilir.
+Dizin izlemeyi `Ctrl(Command)+C` tuşlarına basarak durdurabilirsiniz.
 
 ### Özel Tuş Operasyonları
 
