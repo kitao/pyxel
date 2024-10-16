@@ -38,22 +38,22 @@ Pyxel 开发的动力来自于用户的反馈。请在 GitHub 上给 Pyxel 一�
 </a>
 </p>
 
-Pyxel 的规范和 API 受到[PICO-8](https://www.lexaloffle.com/pico-8.php)和[TIC-80](https://tic80.com/)的启发。
+Pyxel 的规格和 API 参考了 [PICO-8](https://www.lexaloffle.com/pico-8.php) 和 [TIC-80](https://tic80.com/)。
 
-Pyxel 在[MIT 许可](../LICENSE)下开源，可免费使用。现在就让我们一起用 Pyxel 制作自己的游戏吧！
+Pyxel 在 [MIT 许可证](../LICENSE) 下开源并免费使用。让我们开始使用 Pyxel 制作复古游戏吧！
 
-## 说明
+## 规格
 
-- 适用于 Windows、Mac、Linux 和 Web
+- 支持 Windows、Mac、Linux 和 Web
 - 使用 Python 编程
 - 16 色调色板
-- 256x256 大小的 3 个图像库
-- 256x256 大小的 8 个瓷砖地图
-- 4 个频道，64 个可定义声音
-- 8 首可组合任意声音的音乐曲目
-- 键盘、鼠标和游戏手柄输入
-- 图像和声音编辑器
-- 用户可扩展颜色、频道和库
+- 3 个 256x256 尺寸的图像库
+- 8 个 256x256 尺寸的瓦片地图
+- 4 个通道，支持 64 种可定义声音
+- 8 种音乐可以组合任何声音
+- 支持键盘、鼠标和游戏手柄输入
+- 图像和声音编辑工具
+- 用户可扩展的颜色、通道和库
 
 ### 调色板
 
