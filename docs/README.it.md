@@ -65,17 +65,17 @@ Pyxel è open source sotto la [Licenza MIT](../LICENSE) ed è gratuito da usare.
 
 ### Windows
 
-Dopo aver installato [Python3](https://www.python.org/) (versione 3.8 o superiore), eseguire il seguente comando:
+Dopo aver installato [Python3](https://www.python.org/) (versione 3.8 o superiore), esegui il seguente comando:
 
 ```sh
 pip install -U pyxel
 ```
 
-Se si installa Python utilizzando il programma di installazione ufficiale, selezionare la casella di controllo `Add Python 3.x to PATH` per abilitare il comando `pyxel`.
+Quando installi Python usando l'installatore ufficiale, assicurati di selezionare l'opzione `Add Python 3.x to PATH` per abilitare il comando `pyxel`.
 
 ### Mac
 
-Dopo aver installato [Homebrew](https://brew.sh/), eseguire i comandi seguenti:
+Dopo aver installato [Homebrew](https://brew.sh/), esegui i seguenti comandi:
 
 ```sh
 brew install pipx
@@ -83,33 +83,33 @@ pipx ensurepath
 pipx install pyxel
 ```
 
-Per aggiornare la versione dopo l'installazione di Pyxel, eseguire `pipx upgrade pyxel`.
+Per aggiornare Pyxel dopo l'installazione, esegui `pipx upgrade pyxel`.
 
 ### Linux
 
-Dopo aver installato il pacchetto SDL2 (`libsdl2-dev` per Ubuntu), [Python3](https://www.python.org/) (versione 3.8 o superiore), e `python3-pip`, eseguire il seguente comando:
+Dopo aver installato il pacchetto SDL2 (`libsdl2-dev` per Ubuntu), [Python3](https://www.python.org/) (versione 3.8 o superiore) e `python3-pip`, esegui il seguente comando:
 
 ```sh
 sudo pip3 install -U pyxel
 ```
 
-Se quanto sopra non funziona, provare ad autocostruirsi secondo le istruzioni di [Makefile](../Makefile).
+Se il comando precedente non funziona, considera di costruire Pyxel da sorgente seguendo le istruzioni nel [Makefile](../Makefile).
 
 ### Web
 
-La versione web di Pyxel non richiede l'installazione di Python o Pyxel e funziona su PC, smartphone e tablet con browser web supportati.
+La versione Web di Pyxel non richiede l'installazione di Python o Pyxel e funziona su PC, smartphone e tablet con browser web supportati.
 
-Per istruzioni specifiche, consultare [questa pagina](pyxel-web-en.md).
+Per istruzioni dettagliate, fai riferimento a [questa pagina](pyxel-web-en.md).
 
-### Provare gli esempi
+### Eseguire esempi
 
-Dopo aver installato Pyxel, gli esempi di Pyxel saranno copiati nella corrente cartella con il comando seguente:
+Dopo aver installato Pyxel, puoi copiare gli esempi nella directory corrente con il seguente comando:
 
 ```sh
 pyxel copy_examples
 ```
 
-Gli esempi da copiare sono i seguenti:
+I seguenti esempi saranno copiati nella tua directory corrente:
 
 <table>
 <tr>
