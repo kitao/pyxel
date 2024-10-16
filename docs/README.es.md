@@ -711,38 +711,38 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
   Configura las listas de sonido (0-63) de los canales. Si se referencia una lista vacía, ese canal no se utilizará para reproducir el sonido.<br>
   Ejemplo: `pyxel.musics[0].set([0, 1], [], [3])`
 
-### API avanzada
+### API Avanzada
 
-Pyxel tiene "API avanzadas" que no se mencionan en esta referencia porque "puede confundir a los usuarios" o "necesita unos conocimientos especializados para poder utilizarlas".
+Pyxel incluye una "API Avanzada" que no se menciona en esta referencia, ya que puede confundir a los usuarios o requerir conocimientos especializados para su uso.
 
-Si estás familiarizado con tus habilidades. ¡Intenta crear proyectos alucinantes con [esto](../python/pyxel/__init__.pyi) como pista!
+Si confías en tus habilidades, ¡intenta crear obras increíbles usando [esto](../python/pyxel/__init__.pyi) como guía!
 
-## Cómo contribuir
+## Cómo Contribuir
 
-### Presentar un problema
+### Informar Problemas
 
-Usa el [Rastreador de problemas](https://github.com/kitao/pyxel/issues) para enviar errores y solicitudes de mejora. Antes de presentar un nuevo tema, asegúrese de que no existe uno ya abierto similar.
+Utiliza el [Issue Tracker](https://github.com/kitao/pyxel/issues) para enviar informes de errores y solicitudes de funciones o mejoras. Antes de enviar un nuevo problema, asegúrate de que no haya problemas abiertos similares.
 
-### Pruebas funcionales
+### Pruebas Funcionales
 
-Cualquier persona que compruebe y prueba manualmente el código y reporte errores o sugerencias para mejorar el código en el [Issue Tracker](https://github.com/kitao/pyxel/issues) es bienvenida! <br>
+¡Cualquier persona que pruebe manualmente el código y reporte errores o sugerencias de mejoras en el [Issue Tracker](https://github.com/kitao/pyxel/issues) es muy bienvenida!
 
-### Enviar Pull Request
+### Enviar Solicitudes de Extracción
 
-Parches o errores son aceptables en forma de pull request (PRs). Asegurate de que el tema de la pull request esté abierta en el Issue Tracker.
+Los parches y correcciones se aceptan en forma de solicitudes de extracción (PRs). Asegúrate de que el problema que aborda la solicitud de extracción esté abierto en el Issue Tracker.
 
-La solicitud de extracción enviada se considera como un acuerdo para publicar bajo la [Licencia MIT](../LICENSE).
+Enviar una solicitud de extracción implica que aceptas licenciar tu contribución bajo la [Licencia MIT](../LICENSE).
 
-## Otra información
+## Otra Información
 
 - [FAQ](faq-en.md)
-- [Ejemplos de usuarios](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Cuenta X de desarrollador](https://x.com/kitao)
+- [Ejemplos de Usuarios](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Cuenta de Desarrollador X](https://x.com/kitao)
 
 ## Licencia
 
-Pyxel está bajo la [Licencia MIT](../LICENSE). Se puede reutilizar dentro de software propietario, siempre que todas las copias del software o de partes sustanciales incluyan una copia de los términos de la Licencia MIT y también un aviso de derechos de autor.
+Pyxel está licenciado bajo la [Licencia MIT](../LICENSE). Se puede reutilizar en software propietario, siempre que todas las copias del software o sus partes sustanciales incluyan una copia de los términos de la Licencia MIT y un aviso de copyright.
 
-## Reclutamiento de patrocinadores
+## Búsqueda de Patrocinadores
 
-Pyxel está buscando patrocinadores en GitHub Sponsors. Considere patrocinar Pyxel para un mantenimiento continuo y adiciones de funciones. Los patrocinadores pueden consultar sobre Pyxel como un beneficio. Consulte [aquí](https://github.com/sponsors/kitao) para obtener más detalles.
+Pyxel está buscando patrocinadores en GitHub Sponsors. Por favor, considera patrocinar a Pyxel para apoyar su mantenimiento continuo y desarrollo de funciones. Como beneficio, los patrocinadores pueden consultar directamente con el desarrollador de Pyxel. Para más detalles, visita [esta página](https://github.com/sponsors/kitao).

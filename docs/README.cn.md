@@ -714,36 +714,36 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 
 ### 高级 API
 
-Pyxel 还有一些“高级 API”，出于“可能令用户感到迷惑”、“需要专业知识”等一些原因，在本文尚未提及。
+Pyxel 包含一个“高级 API”，该 API 在本参考中未提及，因为它可能会让用户感到困惑或需要专业知识才能使用。
 
-如果你对自己的技术很熟悉，可以参阅[this](../python/pyxel/__init__.pyi)，尝试挑战自己并创造一些神奇的作品！
+如果您对自己的技能充满信心，可以尝试使用[这个](../python/pyxel/__init__.pyi)作为指南，创造惊人的作品！
 
-## 如何参与
+## 如何贡献
 
-### 向我们报告问题
+### 提交问题
 
-使用[Issue Tracker](https://github.com/kitao/pyxel/issues)来提交 bug 报告或功能需求。在创建新 issue 之前，请确定没有类似的打开的 issue。
+使用 [问题跟踪器](https://github.com/kitao/pyxel/issues) 提交 bug 报告和功能或增强请求。在提交新问题之前，请确保没有类似的开放问题。
 
 ### 功能测试
 
-欢迎任何人在[Issue Tracker](https://github.com/kitao/pyxel/issues)中手动测试代码、上报 bug、提交优化建议等！
+任何手动测试代码并在 [问题跟踪器](https://github.com/kitao/pyxel/issues) 中报告 bug 或增强建议的人都非常欢迎！
 
-### 提交 Pull Requests
+### 提交拉取请求
 
-可以通过 pull requests (PRs) 形式来提交补丁或修复。请确认你的 pull request 对应的 issue 地址在 issue tracker 中依然是 open 状态。
+补丁和修复以拉取请求 (PR) 的形式接受。请确保拉取请求所针对的问题在问题跟踪器中是开放的。
 
-提交的拉取请求将被视为已同意根据 [MIT 许可](../LICENSE) 发布。
+提交拉取请求意味着您同意根据 [MIT 许可证](../LICENSE) 授权您的贡献。
 
 ## 其他信息
 
 - [常见问题](faq-en.md)
 - [用户示例](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [开发人员 X 账户](https://x.com/kitao)
+- [开发者 X 账户](https://x.com/kitao)
 
 ## 许可证
 
-Pyxel 在 [MIT 许可](../LICENSE) 下发布。它可以在专有软件中重复使用，前提是所有软件的副本或其重要部分都包含 MIT 许可条款的副本以及版权声明。
+Pyxel 采用 [MIT 许可证](../LICENSE)。它可以在专有软件中重复使用，前提是所有软件或其重要部分的副本都包含 MIT 许可证条款和版权声明的副本。
 
-## 招募赞助商
+## 征募赞助者
 
-Pyxel 正在 GitHub 赞助商上寻找赞助商。 考虑赞助 Pyxel 以进行持续维护和功能添加。 赞助商可以咨询 Pyxel 作为一个好处。 详情请参阅[此处](https://github.com/sponsors/kitao)。
+Pyxel 在 GitHub Sponsors 上寻找赞助者。请考虑赞助 Pyxel，以支持其持续维护和功能开发。作为一种福利，赞助者可以直接咨询 Pyxel 开发者。有关更多详细信息，请访问 [此页面](https://github.com/sponsors/kitao)。
