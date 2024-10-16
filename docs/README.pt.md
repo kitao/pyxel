@@ -343,43 +343,43 @@ Durante a execução de uma aplicação Pyxel, as seguintes operações de tecla
 - `Shift+Alt(Option)+0`<br>
   Salvar a paleta de cores atual na área de trabalho
 
-### Como criar recursos
+### Como Criar Recursos
 
-O Editor Pyxel pode criar imagens e sons usados em uma aplicação Pyxel.
+O Pyxel Editor pode criar imagens e sons usados em uma aplicação Pyxel.
 
-Ele é inicializado com o seguinte comando:
+Você pode iniciar o Pyxel Editor com o seguinte comando:
 
 ```sh
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-Se o arquivo de recursos Pyxel (.pyxres) existir, ele será carregado. Se não existir, um novo arquivo com o nome especificado será criado. Se o arquivo de recursos for omitido, o nome será `my_resource.pyxres`.
+Se o arquivo de recurso Pyxel especificado (.pyxres) existir, ele será carregado. Se não existir, um novo arquivo com o nome especificado será criado. Se o arquivo de recurso for omitido, um novo arquivo chamado `my_resource.pyxres` será criado.
 
-Após iniciar o Editor Pyxel, o arquivo pode ser trocado arrastando e soltando outro arquivo de recursos.
+Após iniciar o Pyxel Editor, você pode alternar para outro arquivo de recurso arrastando e soltando-o no Pyxel Editor.
 
-O arquivo de recursos criado pode ser carregado com a função `load`.
+O arquivo de recurso criado pode ser carregado usando a função `load`.
 
-O Editor Pyxel possuí os seguintes modos de edição.
+O Pyxel Editor tem os seguintes modos de edição.
 
 **Editor de Imagem**
 
-O modo para editar bancos de imagem.
+O modo para editar os bancos de imagens.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
 </a>
 
-Arrastar e largar um ficheiro de imagem (PNG/GIF/JPEG) no Editor de imagens para carregar a imagem no banco de imagens atualmente selecionado.
+Você pode arrastar e soltar um arquivo de imagem (PNG/GIF/JPEG) no editor de imagem para carregar a imagem no banco de imagens atualmente selecionado.
 
 **Editor de Tilemap**
 
-O modo para editar tilemaps em que imagens dos bancos de imagens são organizados em um padrão de tiles.
+O modo para editar tilemaps que organizam imagens dos bancos de imagens em um padrão de ladrilhos.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-Arraste e largue um ficheiro TMX (Tiled Map File) no Tilemap Editor para carregar a sua camada na ordem de desenho que corresponde ao número de tilemap atualmente selecionado.
+Arraste e solte um arquivo TMX (Tiled Map File) no editor de tilemap para carregar sua camada na ordem de desenho que corresponde ao número do tilemap atualmente selecionado.
 
 **Editor de Som**
 
@@ -391,38 +391,38 @@ O modo para editar sons.
 
 **Editor de Música**
 
-O modo para editar músicas nas quais os sons são organizados na ordem de execução.
+O modo para editar musics em que os sons são organizados em ordem de reprodução.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
 </a>
 
-### Outros métodos de criação de recursos
+### Outros Métodos de Criação de Recursos
 
-Imagens e tilemaps do Pyxel também podem ser criados pelos seguintes métodos:
+Imagens e tilemaps do Pyxel também podem ser criados usando os seguintes métodos:
 
-- Criar uma imagem de uma lista de strings com a função `Image.set` ou com a função `Tilemap.set`
-- Carregar um arquivo de imagem (PNG/GIF/JPEG) na paleta Pyxel com a função `Image.load`
+- Crie uma imagem a partir de uma lista de strings usando a função `Image.set` ou a função `Tilemap.set`
+- Carregue um arquivo de imagem (PNG/GIF/JPEG) na paleta do Pyxel com a função `Image.load`
 
-Sons Pyxel também podem ser criados com o seguinte método:
+Os sons do Pyxel também podem ser criados usando o seguinte método:
 
-- Criar um som de uma strings com a função `Sound.set` ou com a função `Music.set`
+- Crie um som a partir de strings com a função `Sound.set` ou a função `Music.set`
 
 Consulte a referência da API para o uso dessas funções.
 
-### Como distribuir uma aplicação
+### Como Distribuir Aplicações
 
-O Pyxel suporta um formato de arquivo de distribuição dedicado (arquivo de aplicação Pyxel) que é multiplataforma.
+O Pyxel suporta um formato de arquivo de distribuição de aplicativo dedicado (arquivo de aplicativo Pyxel) que é multiplataforma.
 
-Criar o ficheiro de aplicação Pyxel (.pyxapp) com o comando `pyxel package`:
+Um arquivo de aplicativo Pyxel (.pyxapp) é criado usando o comando `pyxel package`:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
-Se a aplicação deve incluir recursos ou módulos adicionais, coloque-os no diretório da aplicação.
+Se você precisar incluir recursos ou módulos adicionais, coloque-os no diretório do aplicativo.
 
-Os metadados podem ser exibidos em tempo de execução, especificando-os no seguinte formato dentro do script de inicialização. Outros campos além de `title` e `author` podem ser omitidos.
+Os metadados podem ser exibidos em tempo de execução, especificando-os no seguinte formato dentro do script de inicialização. Os campos além de `title` e `author` são opcionais.
 
 ```python
 # title: Pyxel Platformer
@@ -433,13 +433,13 @@ Os metadados podem ser exibidos em tempo de execução, especificando-os no segu
 # version: 1.0
 ```
 
-O arquivo de aplicação criado pode ser executado com o comando `pyxel play`:
+O arquivo de aplicativo criado pode ser executado usando o comando `pyxel play`:
 
 ```sh
 pyxel play PYXEL_APP_FILE
 ```
 
-O arquivo de aplicação Pyxel também pode ser convertido em um arquivo executável ou HTML com os comandos `pyxel app2exe` ou `pyxel app2html`.
+Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou um arquivo HTML usando os comandos `pyxel app2exe` ou `pyxel app2html`.
 
 ## Referência da API
 
