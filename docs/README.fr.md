@@ -38,22 +38,22 @@ La motivation pour le développement de Pyxel est le feedback des utilisateurs. 
 </a>
 </p>
 
-Les spécifications et les API de Pyxel sont inspirées de [PICO-8](https://www.lexaloffle.com/pico-8.php) et [TIC-80](https://tic80.com/).
+Les spécifications et les API de Pyxel s'inspirent de [PICO-8](https://www.lexaloffle.com/pico-8.php) et de [TIC-80](https://tic80.com/).
 
-Pyxel est un logiciel libre sous la [licence MIT](../LICENSE) et son utilisation est gratuite. Commençons à faire un jeu vidéo rétro avec Pyxel !
+Pyxel est open source sous la [Licence MIT](../LICENSE) et est gratuit à utiliser. Commençons à créer des jeux rétro avec Pyxel !
 
 ## Spécifications
 
 - Fonctionne sur Windows, Mac, Linux et Web
 - Programmation en Python
 - Palette de 16 couleurs
-- 3 banques d'images de taille 256x256
-- 8 cartes de tuiles de taille 256x256
+- 3 banques d'images de 256x256
+- 8 cartes de tuiles de 256x256
 - 4 canaux avec 64 sons définissables
-- 8 pistes musicales pouvant combiner n'importe quels sons
-- Entrées par clavier, souris et manette de jeu
-- Éditeur d'images et de sons
-- Extension des couleurs, canaux et banques par l'utilisateur
+- 8 musiques qui peuvent combiner n'importe quel son
+- Entrées de clavier, de souris et de manette
+- Outils d'édition d'images et de sons
+- Couleurs, canaux et banques extensibles par l'utilisateur
 
 ### Palette de couleurs
 

@@ -40,20 +40,20 @@ Die Motivation für die Entwicklung von Pyxel ist das Feedback der Nutzer. Bitte
 
 Die Spezifikationen und APIs von Pyxel sind inspiriert von [PICO-8](https://www.lexaloffle.com/pico-8.php) und [TIC-80](https://tic80.com/).
 
-Pyxel ist quelloffen unter der [MIT-Lizenz](../LICENSE) und frei zu verwenden. Fang an, ein Retro-Spiel mit Pyxel zu entwickeln!
+Pyxel ist unter der [MIT-Lizenz](../LICENSE) Open Source und kostenlos zu verwenden. Lass uns beginnen, Retro-Spiele mit Pyxel zu erstellen!
 
 ## Spezifikationen
 
 - Läuft auf Windows, Mac, Linux und Web
 - Programmierung in Python
 - 16-Farben-Palette
-- 3 Bildbanken in der Größe 256x256
-- 8 Kachelkarten in der Größe 256x256
+- 3 256x256 große Bilddatenbanken
+- 8 256x256 große Tilemaps
 - 4 Kanäle mit 64 definierbaren Sounds
 - 8 Musikstücke, die beliebige Sounds kombinieren können
-- Tastatur-, Maus- und Gamepad-Eingaben
-- Bild- und Sound-Editor
-- Benutzererweiterung für Farben, Kanäle und Banken
+- Eingaben über Tastatur, Maus und Gamepad
+- Werkzeuge zum Bearbeiten von Bildern und Sounds
+- Benutzererweiterbare Farben, Kanäle und Datenbanken
 
 ### Farbpalette
 
