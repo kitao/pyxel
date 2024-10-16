@@ -722,7 +722,7 @@ If you are confident in your skills, try creating amazing works using [this](htt
 
 ### Submitting Issues
 
-Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature or enhancement requests. Before submitting a new issue, make sure there are no similar open issue.
+Use the [Issue Tracker](https://github.com/kitao/pyxel/issues) to submit bug reports and feature or enhancement requests. Before submitting a new issue, make sure there are no similar open issues.
 
 ### Functional Testing
 

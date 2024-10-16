@@ -714,36 +714,36 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 
 ### Gelişmiş API
 
-Pyxel, kullanıcıları şaşırtabileceği veya kullanımı için özel bilgi gerektirebileceği için bu belgede belirtilmeyen bir "Gelişmiş API" içerir.
+Pyxel, kullanıcıları yanıltma veya kullanmak için özel bilgi gerektirme potansiyeli nedeniyle, bu referansta yer almayan "Gelişmiş API" içerir.
 
-Eğer becerilerinize güveniyorsanız, [bu bağlantıya](https://github.com/kitao/pyxel/blob/main/python/pyxel/__init__.pyi) bakarak muhteşem çalışmalar oluşturabilirsiniz!
+Eğer yeteneklerinize güveniyorsanız, [bu](../python/pyxel/__init__.pyi) rehber olarak kullanarak harika eserler yaratmayı deneyin!
 
-## Katkıda bulunma yöntemleri
+## Katkıda Bulunma
 
-### Sorun bildirme
+### Sorun Bildirme
 
-Hata raporları ve özellik/geliştirme isteklerini göndermek için [Sorun İzleyici](https://github.com/kitao/pyxel/issues) kullanın. Yeni bir sorun bildirmeden önce, benzer bir açık sorun olmadığından emin olun.
+Hata raporları ve özellik veya iyileştirme talepleri göndermek için [Sorun Takip Sistemi](https://github.com/kitao/pyxel/issues) kullanın. Yeni bir sorun göndermeden önce, benzer açık sorunlar olmadığından emin olun.
 
-### Fonksiyonel test
+### Fonksiyonel Test
 
-Kodları manuel olarak test eden ve [Sorun İzleyici](https://github.com/kitao/pyxel/issues) üzerinden hataları raporlayan veya geliştirme önerileri sunan herkes çok memnuniyetle karşılanır!
+Kodu manuel olarak test eden ve [Sorun Takip Sistemi](https://github.com/kitao/pyxel/issues) üzerinden hata veya iyileştirme önerileri bildiren herkes çok memnun karşılanır!
 
-### Pull request oluşturma
+### Pull İsteği Gönderme
 
-Yama/düzeltmeler, pull request (PR) olarak kabul edilir. Pull request'inizle ilgili sorunun Sorun İzleyici'de açık olduğundan emin olun.
+Yamanlar ve düzeltmeler, pull isteği (PR) şeklinde kabul edilmektedir. Pull isteğinin ele aldığı sorunun Sorun Takip Sistemi'nde açık olduğundan emin olun.
 
-Gönderilen pull isteği, [MIT Lisansı](../LICENSE) kapsamında yayınlanmayı kabul etmiş sayılır.
+Pull isteği göndermek, katkınızı [MIT Lisansı](../LICENSE) altında lisanslamayı kabul ettiğiniz anlamına gelir.
 
-## Ek bilgiler
+## Diğer Bilgiler
 
-- [FAQ](faq-en.md)
+- [Sıkça Sorulan Sorular](faq-en.md)
 - [Kullanıcı Örnekleri](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Geliştirici X hesabı](https://x.com/kitao)
+- [Geliştirici X Hesabı](https://x.com/kitao)
 
 ## Lisans
 
-Pyxel, [MIT Lisansı](../LICENSE) altındadır. Yazılımın tüm kopyaları veya önemli bölümlerinde MIT Lisansı'nın koşullarının bir kopyası ve telif hakkı bildirimi yer aldığı sürece, özel yazılımlarda yeniden kullanılabilir.
+Pyxel, [MIT Lisansı](../LICENSE) ile lisanslanmıştır. Tüm kopyalarındaki yazılım veya onun önemli bölümleri, MIT Lisansı koşullarını ve telif hakkı bildirimini içermesi koşuluyla özel yazılımda kullanılabilir.
 
-## Sponsor arayışı
+## Sponsor Arayışı
 
-Pyxel, GitHub Sponsorlarında sponsor arıyor. Pyxel'in sürekli bakımı ve özellik eklemeleri için sponsorluk düşünün. Sponsorlar, Pyxel geliştiricisi ile doğrudan danışmanlık yapma fırsatına sahip olabilirler. Detaylar için [buraya](https://github.com/sponsors/kitao) bakınız.
+Pyxel, GitHub Sponsors üzerinde sponsorlar arıyor. Pyxel'in sürdürülebilir bakımı ve özellik geliştirmesi için sponsor olmayı düşünün. Bir avantaj olarak, sponsorlar Pyxel geliştiricisiyle doğrudan danışma imkânına sahip olabilirler. Daha fazla bilgi için [bu sayfayı](https://github.com/sponsors/kitao) ziyaret edin.

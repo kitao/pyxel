@@ -714,36 +714,36 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 ### Fortgeschrittene API
 
-Pyxel verfügt über "fortgeschrittene APIs", die in dieser Referenz nicht erwähnt werden, weil sie "Benutzer verwirren können" oder "spezielles Wissen zur Nutzung erfordern".
+Pyxel enthält eine "Fortgeschrittene API", die in diesem Dokument nicht erwähnt wird, da sie Benutzer verwirren oder spezielles Wissen erfordern könnte.
 
-Wenn du mit deinen Fähigkeiten vertraut bist, versuche [hiermit](../python/pyxel/__init__.pyi) als Anhaltspunkt erstaunliche Werke zu schaffen!
+Wenn Sie von Ihren Fähigkeiten überzeugt sind, versuchen Sie, mit [diesem](../python/pyxel/__init__.pyi) als Leitfaden erstaunliche Werke zu schaffen!
 
-## Wie du beitragen kannst
+## Wie man beiträgt
 
-### Ein Issue melden
+### Probleme melden
 
-Verwende den [Issue Tracker] (https://github.com/kitao/pyxel/issues), um Fehlerberichte und Funktions-/Erweiterungswünsche einzureichen. Vergewissere dich vor dem Einreichen eines neuen Problems, dass es kein ähnliches offenes Problem gibt.
+Verwenden Sie den [Issue Tracker](https://github.com/kitao/pyxel/issues), um Fehlerberichte und Funktions- oder Verbesserungsanfragen einzureichen. Stellen Sie sicher, dass es vor der Einreichung eines neuen Problems keine ähnlichen offenen Probleme gibt.
 
-### Funktionales Testen
+### Funktionstest
 
-Jeder, der den Code manuell testet und Fehler oder Verbesserungsvorschläge im [Issue Tracker](https://github.com/kitao/pyxel/issues) meldet, ist herzlich willkommen!
+Jeder, der den Code manuell testet und Fehler oder Verbesserungsvorschläge im [Issue Tracker](https://github.com/kitao/pyxel/issues) meldet, ist sehr willkommen!
 
-### Pull Request einreichen
+### Pull-Requests einreichen
 
-Patches/Fixes werden in Form von Pull Requests (PRs) akzeptiert. Stellen Sie sicher, dass das Problem, auf das sich der Pull Request bezieht, im Issue Tracker offen ist.
+Patches und Fixes werden in Form von Pull-Requests (PRs) akzeptiert. Stellen Sie sicher, dass das Problem, das der Pull-Request behandelt, im Issue Tracker offen ist.
 
-Der eingereichte Pull-Request gilt als Zustimmung zur Veröffentlichung unter der [MIT-Lizenz](../LICENSE).
+Die Einreichung eines Pull-Requests impliziert, dass Sie zustimmen, Ihren Beitrag unter der [MIT-Lizenz](../LICENSE) zu lizenzieren.
 
 ## Weitere Informationen
 
 - [FAQ](faq-en.md)
-- [Beispiele für Benutzer](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Benutzersamples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Entwickler X-Konto](https://x.com/kitao)
 
 ## Lizenz
 
-Pyxel steht unter der [MIT-Lizenz](../LICENSE). Es kann in proprietärer Software wiederverwendet werden, vorausgesetzt, dass alle Kopien der Software oder wesentliche Teile davon eine Kopie der Bedingungen der MIT-Lizenz sowie einen Copyright-Hinweis enthalten.
+Pyxel ist lizenziert unter der [MIT-Lizenz](../LICENSE). Es kann in proprietärer Software wiederverwendet werden, vorausgesetzt, dass alle Kopien der Software oder wesentliche Teile davon eine Kopie der MIT-Lizenzbedingungen und einen Copyright-Hinweis enthalten.
 
-## Sponsoren rekrutieren
+## Sponsoren suchen
 
-Pyxel sucht Sponsoren auf GitHub Sponsors. Ziehen Sie in Erwägung, Pyxel für die fortlaufende Wartung und Funktionserweiterungen zu sponsern. Sponsoren können sich über Pyxel als Vorteil beraten. Weitere Informationen finden Sie [hier](https://github.com/sponsors/kitao).
+Pyxel sucht Sponsoren auf GitHub Sponsors. Bitte ziehen Sie in Betracht, Pyxel zu sponsern, um dessen fortlaufende Wartung und Funktionsentwicklung zu unterstützen. Als Vorteil können Sponsoren direkt mit dem Pyxel-Entwickler beraten. Für weitere Details besuchen Sie bitte [diese Seite](https://github.com/sponsors/kitao).

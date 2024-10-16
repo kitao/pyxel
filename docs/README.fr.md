@@ -712,38 +712,38 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
   Régler les listes de sons (0-63) des canaux. Si une liste vide est passée, ce canal n’est pas utilisé.<br>
   Par exemple `pyxel.musics[0].set([0, 1], [], [3])`
 
-### API avancée
+### API Avancée
 
-Pyxel a une "API avancée" qui n’est pas présentée ici car elle peut porter à confusion ou qu’elle nécessite des connaissances spécifiques pour être utilisée.
+Pyxel inclut une "API Avancée" qui n'est pas mentionnée dans cette référence, car elle peut confondre les utilisateurs ou nécessiter des connaissances spécialisées pour son utilisation.
 
-Si vous savez ce que vous faîtes, essayez de créer des applications incroyables avec [ceci](../python/pyxel/__init__.pyi) comme indice !
+Si vous êtes confiant dans vos compétences, essayez de créer des œuvres étonnantes en utilisant [cela](../python/pyxel/__init__.pyi) comme guide !
 
-## Comment contribuer
+## Comment Contribuer
 
-### Soumettre des tickets
+### Soumettre des Problèmes
 
-Utilisez [l’outil de suivi de tickets](https://github.com/kitao/pyxel/issues) pour signaler des bugs et demander des nouvelles fonctionnalités ou des améliorations. Avant d’ouvrir un nouveau ticket, regardez si un similaire n’a pas déjà été ouvert.
+Utilisez le [Issue Tracker](https://github.com/kitao/pyxel/issues) pour soumettre des rapports de bugs et des demandes de fonctionnalités ou d'améliorations. Avant de soumettre un nouveau problème, assurez-vous qu'il n'y a pas de problèmes ouverts similaires.
 
-### Tester les fonctionnalités
+### Tests Fonctionnels
 
-Toutes les personnes testant le code et rapportant des bugs ou des suggestions d’améliorations dans [l’outil de suivi de tickets](https://github.com/kitao/pyxel/issues) sont les bienvenues!
+Toute personne qui teste manuellement le code et signale des bugs ou des suggestions d'améliorations dans le [Issue Tracker](https://github.com/kitao/pyxel/issues) est la bienvenue !
 
-### Soumettre des pull requests
+### Soumettre des Demandes de Tirage
 
-Les correctifs sont acceptés sous forme de pull requests (PRs). Faites attention à ce que le ticket que la pull request corrige soit toujours ouvert.
+Les correctifs et modifications sont acceptés sous forme de demandes de tirage (PRs). Assurez-vous que le problème que la demande de tirage aborde est ouvert dans le Issue Tracker.
 
-La demande de tirage soumise est réputée acceptée pour publication sous la [Licence MIT](../LICENSE).
+Soumettre une demande de tirage implique que vous acceptez de licencier votre contribution sous la [Licence MIT](../LICENSE).
 
-## Autres informations
+## Autres Informations
 
 - [FAQ](faq-en.md)
-- [Exemples d'utilisateurs](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Compte du développeur X](https://x.com/kitao)
+- [Exemples d'Utilisateurs](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
+- [Compte Développeur X](https://x.com/kitao)
 
 ## Licence
 
-Pyxel est sous [Licence MIT](../LICENSE). Il peut être réutilisé dans un logiciel propriétaire, à condition que toutes les copies du logiciel ou de ses parties substantielles incluent une copie des termes de la licence MIT ainsi qu'un avis de droit d'auteur.
+Pyxel est sous la [Licence MIT](../LICENSE). Il peut être réutilisé dans des logiciels propriétaires, à condition que toutes les copies du logiciel ou de ses parties substantielles incluent une copie des termes de la Licence MIT et un avis de droit d'auteur.
 
-## Recrutement de sponsors
+## Recherche de Sponsors
 
-Pyxel recherche des sponsors sur GitHub Sponsors. Envisagez de parrainer Pyxel pour une maintenance continue et des ajouts de fonctionnalités. Les sponsors peuvent consulter sur Pyxel comme un avantage. Veuillez voir [ici](https://github.com/sponsors/kitao) pour plus de détails.
+Pyxel recherche des sponsors sur GitHub Sponsors. Veuillez envisager de soutenir Pyxel pour soutenir sa maintenance continue et le développement de fonctionnalités. En tant qu'avantage, les sponsors peuvent consulter directement le développeur de Pyxel. Pour plus de détails, veuillez visiter [cette page](https://github.com/sponsors/kitao).
