@@ -325,19 +325,19 @@ La surveillance des répertoires peut être arrêtée en appuyant sur `Ctrl(Comm
 Pendant l'exécution d'une application Pyxel, les opérations de touches spéciales suivantes peuvent être effectuées :
 
 - `Esc`<br>
-  Quitte l’application
+  Quitter l'application
 - `Alt(Option)+1`<br>
-  Sauvegarde la capture d’écran sur le bureau
+  Enregistrer la capture d'écran sur le bureau
 - `Alt(Option)+2`<br>
-  Réinitialise le temps de départ de la capture vidéo
+  Réinitialiser le temps de début de l'enregistrement de la vidéo de capture d'écran
 - `Alt(Option)+3`<br>
-  Sauvegarde la capture d’écran sur le bureau (jusqu’à 10 secondes)
+  Enregistrer une vidéo de capture d'écran sur le bureau (jusqu'à 10 secondes)
 - `Alt(Option)+9`<br>
-  Passer d'un mode d'écran à l'autre (Crisp, Smooth, Retro)
+  Passer d'un mode d'écran à l'autre (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
-  Bascule vers le moniteur de performance (fps, temps de mise à jour et temps de dessin)
+  Basculer le moniteur de performance (FPS/`update` temps/`draw` temps)
 - `Alt(Option)+Enter`<br>
-  Met en plein écran
+  Basculer en plein écran
 - `Shift+Alt(Option)+1/2/3`<br>
   Enregistrer la banque d'images correspondante sur le bureau
 - `Shift+Alt(Option)+0`<br>
