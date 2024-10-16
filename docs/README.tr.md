@@ -343,86 +343,86 @@ Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçek
 - `Shift+Alt(Option)+0`<br>
   Зберегти поточну кольорову палітру на робочий стіл
 
-### Kaynak oluşturma
+### Kaynakları Nasıl Oluşturulur
 
-Pyxel Editör, Pyxel uygulamasında kullanılan görüntü ve sesleri oluşturabilir.
+Pyxel Editor, bir Pyxel uygulamasında kullanılan resim ve sesleri oluşturabilir.
 
-Editörü başlatmak için şu komut kullanılır:
+Pyxel Editor'ü aşağıdaki komut ile başlatabilirsiniz:
 
 ```sh
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-Belirtilen Pyxel kaynak dosyası (.pyxres) mevcutsa, dosya yüklenir; mevcut değilse belirtilen isimle yeni bir dosya oluşturulur (`my_resource.pyxres` adıyla).
+Belirtilen Pyxel kaynak dosyası (.pyxres) mevcutsa, yüklenecektir. Eğer mevcut değilse, belirtilen isimle yeni bir dosya oluşturulacaktır. Kaynak dosyası belirtilmezse, `my_resource.pyxres` adıyla yeni bir dosya oluşturulacaktır.
 
-Editör başlatıldıktan sonra, başka bir kaynak dosyasını sürükleyip bırakarak değiştirebilirsiniz.
+Pyxel Editor başlatıldıktan sonra, başka bir kaynak dosyasına geçmek için dosyayı Pyxel Editor'ün üzerine sürükleyip bırakabilirsiniz.
 
-Oluşturulan kaynak dosyası `load` fonksiyonu ile yüklenebilir.
+Oluşturulan kaynak dosyası, `load` fonksiyonu ile yüklenebilir.
 
-Pyxel Editör'ün aşağıdaki düzenleme modları vardır.
+Pyxel Editor aşağıdaki düzenleme modlarına sahiptir.
 
-**Image Editor**
+**Resim Editörü**
 
-Görüntü setlerini düzenleme modu.
+Resim bankalarını düzenlemek için kullanılan mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
 </a>
 
-Görüntüyü mevcut olarak seçilmiş görüntü setine yüklemek için Görüntü Düzenleyici'ye bir görüntü dosyasını (PNG/GIF/JPEG) sürükleyip bırakın.
+Resim editörüne bir resim dosyası (PNG/GIF/JPEG) sürükleyip bırakarak, resmi şu anda seçili olan resim bankasına yükleyebilirsiniz.
 
-**Tilemap Editor**
+**Tilemap Editörü**
 
-Görüntü setlerindeki görüntülerin bir tile deseninde düzenlendiği tilemap'leri düzenleme modu.
+Resim bankalarının resimlerini bir döşeme düzeninde düzenlemek için kullanılan mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-Bir TMX dosyasını (Tiled Map Dosyası) Tilemap Editöre sürükleyip bırakın. Bu, seçili tilemap numarasına karşılık gelen çizim sırasındaki katmanı yükler.
+Bir TMX dosyasını (Tiled Map File) tilemap editörüne sürükleyip bırakarak, şu anda seçili olan tilemap numarasına karşılık gelen çizim sırasındaki katmanını yükleyebilirsiniz.
 
-**Sound Editor**
+**Ses Editörü**
 
-Sesleri düzenleme modu.
+Sesleri düzenlemek için kullanılan mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
 </a>
 
-**Music Editor**
+**Müzik Editörü**
 
-Seslerin çalma sırasına göre düzenlendiği müzikleri düzenleme modu.
+Seslerin çalma sırasına göre dizildiği müzikleri düzenlemek için kullanılan mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
 </a>
 
-### Diğer kaynak oluşturma yöntemleri
+### Diğer Kaynak Oluşturma Yöntemleri
 
-Pyxel görüntüleri ve tilemap'ler aşağıdaki yöntemlerle de oluşturulabilir:
+Pyxel resimleri ve tilemap'leri aşağıdaki yöntemlerle de oluşturulabilir:
 
-- `Image.set` veya `Tilemap.set` fonksiyonu ile bir dizi string'den bir görüntü oluşturulabilir
-- `Image.load` fonksiyonu ile bir görüntü dosyası (PNG/GIF/JPEG) Pyxel paletine yüklenebilir
+- `Image.set` fonksiyonu veya `Tilemap.set` fonksiyonu kullanarak bir dize listesinden resim oluşturun
+- `Image.load` fonksiyonu ile Pyxel paletindeki bir resim dosyasını (PNG/GIF/JPEG) yükleyin
 
-Pyxel sesleri aşağıdaki yöntemle de oluşturulabilir:
+Pyxel sesleri de aşağıdaki yöntemle oluşturulabilir:
 
-- `Sound.set` veya `Music.set` fonksiyonu ile string'lerden bir ses oluşturulabilir
+- `Sound.set` fonksiyonu veya `Music.set` fonksiyonu ile dizelerden ses oluşturun
 
-Bu fonksiyonların kullanımı için API referansına başvurun.
+Bu fonksiyonların kullanımı için API referansına bakın.
 
-### Uygulamaları nasıl dağıtabilirsiniz
+### Uygulamaları Nasıl Dağıtılır
 
-Pyxel, platformlar arası çalışan özel bir uygulama dağıtım dosya formatı (Pyxel uygulama dosyası) destekler.
+Pyxel, platformlar arası çalışan özel bir uygulama dağıtım dosyası formatını (Pyxel uygulama dosyası) destekler.
 
-Pyxel uygulama dosyasını (.pyxapp) `pyxel package` komutu ile oluşturun:
+Bir Pyxel uygulama dosyası (.pyxapp) `pyxel package` komutu kullanılarak oluşturulur:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
-Uygulamanın kaynak veya ek modülleri içermesi gerekiyorsa, bunları uygulama dizinine yerleştirin.
+Kaynakları veya ek modülleri dahil etmeniz gerekiyorsa, bunları uygulama dizinine yerleştirin.
 
-Meta veriler, başlangıç komut dosyasında aşağıdaki biçimde belirtilerek çalışma zamanında görüntülenebilir. `title` ve `author` dışındaki alanlar isteğe bağlıdır.
+Başlatma betiği içinde aşağıdaki formatla belirtilen meta veriler çalışma zamanında görüntülenebilir. `title` ve `author` dışında diğer alanlar isteğe bağlıdır.
 
 ```python
 # title: Pyxel Platformer
@@ -433,13 +433,13 @@ Meta veriler, başlangıç komut dosyasında aşağıdaki biçimde belirtilerek 
 # version: 1.0
 ```
 
-Oluşturulan uygulama dosyası `pyxel play` komutu ile çalıştırılabilir:
+Oluşturulan uygulama dosyası `pyxel play` komutu kullanılarak çalıştırılabilir:
 
 ```sh
 pyxel play PYXEL_APP_FILE
 ```
 
-Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları ile bir yürütülebilir dosyaya veya HTML dosyasına dönüştürülebilir.
+Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutları kullanılarak çalıştırılabilir bir dosya veya HTML dosyasına dönüştürülebilir.
 
 ## API referansı
 

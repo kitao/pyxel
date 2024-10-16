@@ -345,45 +345,45 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 
 ### 如何创建资源
 
-在 Pyxel 应用中使用的图像和音效，可以使用 Pyxel 编辑器进行制作。
+Pyxel Editor 可以创建用于 Pyxel 应用程序的图像和声音。
 
-Pyxel 编辑器使用以下命令启动：
+您可以使用以下命令启动 Pyxel Editor：
 
 ```sh
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-若指定 Pyxel 源文件 (.pyxres) 存在，则加载文件，若不存在，则以指定文件名新建文件。若未指定源文件，则命名为`my_resource.pyxres`。
+如果指定的 Pyxel 资源文件 (.pyxres) 存在，则会加载它。如果不存在，则会使用指定的名称创建一个新文件。如果省略资源文件，则会创建一个名为 `my_resource.pyxres` 的新文件。
 
-Pyxel 编辑器启动后，可以拖放其他源文件进行切换。
+启动 Pyxel Editor 后，您可以通过将另一个资源文件拖放到 Pyxel Editor 上来切换到该资源文件。
 
-创建的源文件可以使用`load`函数加载。
+创建的资源文件可以使用 `load` 函数加载。
 
-Pyxel 编辑器有以下编辑模式。
+Pyxel Editor 有以下编辑模式。
 
 **图像编辑器**
 
-此模式用来编辑图像库。
+用于编辑图像库的模式。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
 </a>
 
-将图像文件 (PNG/GIF/JPEG) 拖放到图像编辑器上，即可将图像加载到当前选定的图像库中。
+您可以将图像文件 (PNG/GIF/JPEG) 拖放到图像编辑器中，以将图像加载到当前选择的图像库中。
 
 **瓦片地图编辑器**
 
-此模式用来编辑瓦片地图，其中图像库的图像以瓦片的样式排列。
+用于编辑将图像库中的图像按瓦片模式排列的瓦片地图的模式。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-将 TMX 文件 (Tiled Map File) 拖放到平铺贴图编辑器上，即可按照与当前所选平铺贴图编号相对应的绘图顺序加载其图层。
+将 TMX 文件（Tiled Map File）拖放到瓦片地图编辑器上，以加载其层次结构，绘制顺序与当前选择的瓦片地图编号相对应。
 
-**音频编辑器**
+**声音编辑器**
 
-此模式用来编辑音频。
+用于编辑声音的模式。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
@@ -391,28 +391,28 @@ Pyxel 编辑器有以下编辑模式。
 
 **音乐编辑器**
 
-此模式用来编辑将录音有序编排形成的音乐。
+用于编辑将声音按播放顺序排列的音乐的模式。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
 </a>
 
-### 其他创建资源的方法
+### 其他资源创建方法
 
-Pyxel 图像和瓦片地图也可以通过以下方法创建：
+Pyxel 图像和瓦片地图还可以通过以下方法创建：
 
-- 使用`Image.set`或`Tilemap.set`函数，从字符串列表创建图片
-- 使用 `Image.load` 函数在 Pyxel 调色板中加载图像文件 (PNG/GIF/JPEG)
+- 使用 `Image.set` 函数或 `Tilemap.set` 函数从字符串列表创建图像
+- 使用 `Image.load` 函数加载带有 Pyxel 调色板的图像文件 (PNG/GIF/JPEG)
 
 Pyxel 声音也可以通过以下方法创建：
 
-- 使用`Sound.set`或`Music.set`函数，从字符串列表中创建声音
+- 使用 `Sound.set` 函数或 `Music.set` 函数从字符串创建声音
 
-这些函数的具体用法请查阅 API 参考手册。
+有关这些函数的用法，请参阅 API 参考。
 
-### 如何发布应用
+### 如何分发应用程序
 
-Pyxel 支持跨平台的应用文件格式 (Pyxel 应用文件)。
+Pyxel 支持一种专用的跨平台应用程序分发文件格式（Pyxel 应用程序文件）。
 
 使用 `pyxel package` 命令创建 Pyxel 应用程序文件 (.pyxapp)：
 
@@ -420,9 +420,9 @@ Pyxel 支持跨平台的应用文件格式 (Pyxel 应用文件)。
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
-如果应用程序应包括资源或其他模块，请将它们放在应用程序目录中。
+如果您需要包括资源或其他模块，请将它们放在应用程序目录中。
 
-通过在启动脚本中以下列格式指定元数据，可在运行时显示元数据。除 `title` 和 `author` 以外的字段可以省略。
+通过在启动脚本中指定以下格式，可以在运行时显示元数据。除 `title` 和 `author` 外的字段都是可选的。
 
 ```python
 # title: Pyxel Platformer
@@ -433,13 +433,13 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 # version: 1.0
 ```
 
-使用 `pyxel play` 命令执行创建的应用程序文件：
+创建的应用程序文件可以使用 `pyxel play` 命令运行：
 
 ```sh
 pyxel play PYXEL_APP_FILE
 ```
 
-Pyxel 应用程序文件也可以通过`pyxel app2exe`或`pyxel app2html`命令转换为可执行文件或 HTML 文件。
+Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命令转换为可执行文件或 HTML 文件。
 
 ## API 参考手册
 
