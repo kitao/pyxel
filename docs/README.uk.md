@@ -114,123 +114,123 @@ pyxel copy_examples
 <table>
 <tr>
 <td>01_hello_pyxel.py</td>
-<td>Найпростіша програма</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">Демо</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Code</a></td>
+<td>Найпростіший додаток</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Код</a></td>
 </tr>
 <tr>
 <td>02_jump_game.py</td>
-<td>Гра в стрибки з файлом ресурсів Pyxel</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">Демо</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Code</a></td>
+<td>Гра зі стрибками з використанням файлу ресурсів Pyxel</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Код</a></td>
 </tr>
 <tr>
 <td>03_draw_api.py</td>
 <td>Демонстрація API для малювання</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">Код</a></td>
 </tr>
 <tr>
 <td>04_sound_api.py</td>
-<td>Демонстрація API для роботи зі звуками</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Code</a></td>
+<td>Демонстрація API для звуку</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Код</a></td>
 </tr>
 <tr>
 <td>05_color_palette.py</td>
-<td>Палітра кольорів</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Code</a></td>
+<td>Список кольорових паліт</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Код</a></td>
 </tr>
 <tr>
 <td>06_click_game.py</td>
-<td>Гра клацання мишкою</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Code</a></td>
+<td>Гра на клік миші</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Код</a></td>
 </tr>
 <tr>
 <td>07_snake.py</td>
-<td>Гра «Змійка» з фоновою музикою</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Code</a></td>
+<td>Гра «Змійка» з BGM</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Код</a></td>
 </tr>
 <tr>
 <td>08_triangle_api.py</td>
-<td>Демонстрація API по малюванню трикутників</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Code</a></td>
+<td>Демонстрація API для малювання трикутників</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Код</a></td>
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>Гра в жарні «Shoot 'em up» з переходом між екранами</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Code</a></td>
+<td>Shoot 'em up з переходами між екранами</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Код</a></td>
 </tr>
 <tr>
 <td>10_platformer.py</td>
-<td>Гра-платформер із бічною прокруткою та картою</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Code</a></td>
+<td>Горизонтальна платформна гра з картою</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Код</a></td>
 </tr>
 <tr>
 <td>11_offscreen.py</td>
-<td>Позакадровий рендеринг за допомогою класу Image</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Code</a></td>
+<td>Відображення поза екраном з класом Image</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Код</a></td>
 </tr>
 <tr>
 <td>12_perlin_noise.py</td>
-<td>Анімація шуму Перліна</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
+<td>Анімація Перлін-шуму</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Код</a></td>
 </tr>
 <tr>
 <td>13_bitmap_font.py</td>
-<td>Малювання растрового шрифту</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/13_bitmap_font.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Code</a></td>
+<td>Малювання бітмап-шрифта</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/13_bitmap_font.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Код</a></td>
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
-<td>Синтезатор, який використовує функції розширення аудіо</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Code</a></td>
+<td>Синтезатор з використанням функцій розширення звуку</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Код</a></td>
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
-<td>Завантаження та малювання файлу карти тайлів (.tmx)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Code</a></td>
+<td>Завантаження та малювання Tiled Map File (.tmx)</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Код</a></td>
 </tr>
 <tr>
 <td>16_transform.py</td>
-<td>Обертання та масштабування зображення</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Code</a></td>
+<td>Обертання та масштабування зображень</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Код</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>Анімація з функцією flip (не для web-платформ)</td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
+<td>Анімація за допомогою функції flip (тільки для платформ, що не є веб)</td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Код</a></td>
 </tr>
 <tr>
 <td>30sec_of_daylight.pyxapp</td>
-<td>Гра-переможець 1-го Pyxel Jam від <a href="https://x.com/helpcomputer0">Adam</a></td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Demo</a></td>
-<td><a href="https://github.com/kitao/30sec_of_daylight">Code</a></td>
+<td>Ігра-переможець 1-го Pyxel Jam від <a href="https://x.com/helpcomputer0">Adam</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Демонстрація</a></td>
+<td><a href="https://github.com/kitao/30sec_of_daylight">Код</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
-<td>Аркадна гра з фізикою м'яча від <a href="https://x.com/helpcomputer0">Adam</a></td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
-<td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
+<td>Аркадна гра з фізикою м'ячів від <a href="https://x.com/helpcomputer0">Adam</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Демонстрація</a></td>
+<td><a href="https://github.com/helpcomputer/megaball">Код</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>
 <td>Генератор фонової музики від <a href="https://x.com/frenchbread1222">frenchbread</a></td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Demo</a></td>
-<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Демонстрація</a></td>
+<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Код</a></td>
 </tr>
 </table>
 

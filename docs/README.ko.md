@@ -115,122 +115,122 @@ pyxel copy_examples
 <tr>
 <td>01_hello_pyxel.py</td>
 <td>가장 간단한 애플리케이션</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">코드</a></td>
 </tr>
 <tr>
 <td>02_jump_game.py</td>
-<td>Pyxel 리소스 파일을 사용한 점프 게임</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Code</a></td>
+<td>Pyxel 리소스 파일을 이용한 점프 게임</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">코드</a></td>
 </tr>
 <tr>
 <td>03_draw_api.py</td>
-<td>그리기 API 데모</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">Code</a></td>
+<td>그리기 API의 시연</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">코드</a></td>
 </tr>
 <tr>
 <td>04_sound_api.py</td>
-<td>사운드 API 데모</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Code</a></td>
+<td>사운드 API의 시연</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">코드</a></td>
 </tr>
 <tr>
 <td>05_color_palette.py</td>
 <td>색상 팔레트 목록</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">코드</a></td>
 </tr>
 <tr>
 <td>06_click_game.py</td>
 <td>마우스 클릭 게임</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">코드</a></td>
 </tr>
 <tr>
 <td>07_snake.py</td>
-<td>BGM이 포함된 뱀 게임</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Code</a></td>
+<td>BGM이 있는 스네이크 게임</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">코드</a></td>
 </tr>
 <tr>
 <td>08_triangle_api.py</td>
-<td>삼각형 그리기 API 데모</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Code</a></td>
+<td>삼각형 그리기 API의 시연</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">코드</a></td>
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>화면 전환이 있는 슈팅 게임</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Code</a></td>
+<td>Shoot 'em up 게임과 화면 전환</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">코드</a></td>
 </tr>
 <tr>
 <td>10_platformer.py</td>
-<td>맵이 있는 횡 스크롤 플랫폼 게임</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Code</a></td>
+<td>맵이 있는 횡스크롤 플랫폼 게임</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">코드</a></td>
 </tr>
 <tr>
 <td>11_offscreen.py</td>
-<td>Image 클래스를 사용한 오프스크린 렌더링</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Code</a></td>
+<td>Image 클래스를 이용한 오프스크린 렌더링</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">코드</a></td>
 </tr>
 <tr>
 <td>12_perlin_noise.py</td>
-<td>펄린 노이즈 애니메이션</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
+<td>퍼린 노이즈 애니메이션</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">코드</a></td>
 </tr>
 <tr>
 <td>13_bitmap_font.py</td>
-<td>비트맵 글꼴 그리기</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/13_bitmap_font.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Code</a></td>
+<td>비트맵 폰트 그리기</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/13_bitmap_font.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">코드</a></td>
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
-<td>오디오 확장 기능을 활용한 신디사이저</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Code</a></td>
+<td>오디오 확장 기능을 활용한 신시사이저</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">코드</a></td>
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
-<td>타일 맵 파일 (.tmx) 로드 및 그리기</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Code</a></td>
+<td>Tiled Map File (.tmx) 로드 및 그리기</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">코드</a></td>
 </tr>
 <tr>
 <td>16_transform.py</td>
 <td>이미지 회전 및 크기 조정</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">코드</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>flip 기능이 있는 애니메이션 (웹 플랫폼이 아닌 경우에만 해당)</td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
+<td>flip 함수로 애니메이션 (비 웹 플랫폼 전용)</td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">데모</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">코드</a></td>
 </tr>
 <tr>
 <td>30sec_of_daylight.pyxapp</td>
-<td>제 1회 Pyxel Jam 우승 작품 (<a href="https://x.com/helpcomputer0">Adam</a> 제작)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Demo</a></td>
-<td><a href="https://github.com/kitao/30sec_of_daylight">Code</a></td>
+<td>1회 Pyxel Jam 우승 게임 (<a href="https://x.com/helpcomputer0">Adam</a> 제작)</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">데모</a></td>
+<td><a href="https://github.com/kitao/30sec_of_daylight">코드</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
 <td>아케이드 볼 물리 게임 (<a href="https://x.com/helpcomputer0">Adam</a> 제작)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
-<td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">데모</a></td>
+<td><a href="https://github.com/helpcomputer/megaball">코드</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>
-<td>8비트 배경 음악 생성기 (<a href="https://x.com/frenchbread1222">frenchbread</a> 제작)</td>
-<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Demo</a></td>
-<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Code</a></td>
+<td>BGM 자동 생성 도구 (<a href="https://x.com/frenchbread1222">frenchbread</a> 제작)</td>
+<td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">데모</a></td>
+<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">코드</a></td>
 </tr>
 </table>
 
