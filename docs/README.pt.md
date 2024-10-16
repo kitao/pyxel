@@ -71,11 +71,11 @@ Após instalar o [Python3](https://www.python.org/) (versão 3.8 ou superior), e
 pip install -U pyxel
 ```
 
-Se instalar o Python utilizando o instalador oficial, certifique-se de marcar a opção `Add Python 3.x to PATH` para ativar o comando `pyxel`.
+Ao instalar o Python usando o instalador oficial, certifique-se de marcar a opção `Add Python 3.x to PATH` para habilitar o comando `pyxel`.
 
 ### Mac
 
-Depois de instalar o [Homebrew](https://brew.sh/), execute os seguintes comandos:
+Após instalar o [Homebrew](https://brew.sh/), execute os seguintes comandos:
 
 ```sh
 brew install pipx
@@ -83,25 +83,25 @@ pipx ensurepath
 pipx install pyxel
 ```
 
-Para atualizar a versão após a instalação do Pyxel, execute `pipx upgrade pyxel`.
+Para atualizar o Pyxel após a instalação, execute `pipx upgrade pyxel`.
 
 ### Linux
 
-Após instalar o pacote SDL2 (`libsdl2-dev` no Ubuntu), [Python 3](https://www.python.org/) (versão 3.8 ou superior), e `python3-pip`, execute o seguinte comando:
+Após instalar o pacote SDL2 (`libsdl2-dev` para Ubuntu), [Python3](https://www.python.org/) (versão 3.8 ou superior) e `python3-pip`, execute o seguinte comando:
 
 ```sh
 sudo pip3 install -U pyxel
 ```
 
-Se o comando acima não funcionar, tente compilar o Pyxel a partir do código-fonte, seguindo as instruções no [Makefile](../Makefile).
+Se o comando anterior falhar, considere construir o Pyxel a partir do código-fonte seguindo as instruções no [Makefile](../Makefile).
 
 ### Web
 
-A versão web do Pyxel não requer a instalação do Python ou do Pyxel e funciona em PCs, smartphones e tablets com navegadores web suportados.
+A versão web do Pyxel não requer a instalação do Python ou do Pyxel e funciona em PCs, smartphones e tablets com navegadores web compatíveis.
 
-Para instruções específicas, por favor consulte [esta página](pyxel-web-en.md).
+Para instruções detalhadas, consulte [esta página](pyxel-web-en.md).
 
-### Testando os exemplos
+### Executar exemplos
 
 Após instalar o Pyxel, você pode copiar os exemplos para o diretório atual com o seguinte comando:
 
@@ -109,7 +109,7 @@ Após instalar o Pyxel, você pode copiar os exemplos para o diretório atual co
 pyxel copy_examples
 ```
 
-Os exemplos copiados são os seguintes:
+Os seguintes exemplos serão copiados para o seu diretório atual:
 
 <table>
 <tr>

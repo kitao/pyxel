@@ -55,23 +55,23 @@ Pyxel, [MIT Lisansı](../LICENSE) altında açık kaynaklıdır ve ücretsiz ola
 - Görüntü ve ses düzenleme araçları
 - Kullanıcı tarafından genişletilebilir renkler, kanallar ve bankalar
 
-### Renk paleti
+### Renk Paleti
 
 <img src="images/05_color_palette.png">
 
 <img src="images/pyxel_palette.png">
 
-## Kurulum
+## Nasıl Kurulur
 
 ### Windows
 
-[Python3](https://www.python.org/) (sürüm 3.8 veya daha üstü) kurduktan sonra, aşağıdaki komutu çalıştırın:
+[Python3](https://www.python.org/) (3.8 veya daha yüksek sürüm) kurduktan sonra, aşağıdaki komutu çalıştırın:
 
 ```sh
 pip install -U pyxel
 ```
 
-Python'u resmi yükleyici ile kurarsanız, `pyxel` komutunu etkinleştirmek için `Add Python 3.x to PATH` seçeneğini işaretlemeyi unutmayın.
+Python'u resmi yükleyici ile kurarken, `Add Python 3.x to PATH` seçeneğini işaretlemeyi unutmayın, böylece `pyxel` komutunu etkinleştirmiş olursunuz.
 
 ### Mac
 
@@ -83,33 +83,33 @@ pipx ensurepath
 pipx install pyxel
 ```
 
-Pyxel'i kurduktan sonra sürümü güncellemek için `pipx upgrade pyxel` komutunu çalıştırın.
+Kurulumdan sonra Pyxel'i güncellemek için `pipx upgrade pyxel` komutunu çalıştırın.
 
 ### Linux
 
-SDL2 paketini (`libsdl2-dev` Ubuntu için), [Python3](https://www.python.org/) (sürüm 3.8 veya daha üstü) ve `python3-pip` kurduktan sonra, aşağıdaki komutu çalıştırın:
+SDL2 paketini (`libsdl2-dev` Ubuntu için), [Python3](https://www.python.org/) (3.8 veya daha yüksek sürüm) ve `python3-pip` kurduktan sonra, aşağıdaki komutu çalıştırın:
 
 ```sh
 sudo pip3 install -U pyxel
 ```
 
-Yukarıdaki komut çalışmazsa, [Makefile](Makefile) talimatlarına göre kendiniz derlemeyi deneyin.
+Yukarıdaki komut çalışmazsa, Pyxel'i kaynak kodundan inşa etmeyi düşünün ve [Makefile](../Makefile) içindeki talimatları izleyin.
 
 ### Web
 
-Pyxel'in web versiyonu Python veya Pyxel kurulumu gerektirmez ve desteklenen web tarayıcıları ile hem PC'lerde hem de akıllı telefon ve tabletlerde çalışır.
+Pyxel'in web sürümü Python veya Pyxel kurulumu gerektirmeden çalışır ve desteklenen web tarayıcılarına sahip PC'ler, akıllı telefonlar ve tabletlerde çalışır.
 
-Özel talimatlar için lütfen [bu sayfaya](docs/pyxel-web-en.md) başvurun.
+Detaylı talimatlar için [bu sayfaya](pyxel-web-en.md) başvurun.
 
-### Örnekleri deneyin
+### Örnekleri Çalıştır
 
-Pyxel'i kurduktan sonra, aşağıdaki komutla Pyxel örneklerini mevcut dizine kopyalayabilirsiniz:
+Pyxel'i kurduktan sonra, aşağıdaki komutla örnekleri geçerli dizine kopyalayabilirsiniz:
 
 ```sh
 pyxel copy_examples
 ```
 
-Kopyalanacak örnekler aşağıdaki gibidir:
+Aşağıdaki örnekler geçerli dizininize kopyalanacaktır:
 
 <table>
 <tr>

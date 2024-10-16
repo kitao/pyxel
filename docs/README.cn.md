@@ -55,7 +55,7 @@ Pyxel 在 [MIT 许可证](../LICENSE) 下开源并免费使用。让我们开始
 - 图像和声音编辑工具
 - 用户可扩展的颜色、通道和库
 
-### 调色板
+### 色彩调色板
 
 <img src="images/05_color_palette.png">
 
@@ -65,17 +65,17 @@ Pyxel 在 [MIT 许可证](../LICENSE) 下开源并免费使用。让我们开始
 
 ### Windows
 
-在安装[Python3](https://www.python.org/) (3.8 或更高版本) 之后，执行以下命令：
+在安装 [Python3](https://www.python.org/)（版本 3.8 或更高）后，运行以下命令：
 
 ```sh
 pip install -U pyxel
 ```
 
-如果你使用官方安装程序安装 Python，请勾选`Add Python 3.x to PATH`复选框以启用`pyxel`命令。
+在使用官方安装程序安装 Python 时，请确保勾选 `Add Python 3.x to PATH` 选项，以启用 `pyxel` 命令。
 
 ### Mac
 
-安装 [Homebrew](https://brew.sh/) 后，运行以下命令：
+在安装 [Homebrew](https://brew.sh/) 后，运行以下命令：
 
 ```sh
 brew install pipx
@@ -83,33 +83,33 @@ pipx ensurepath
 pipx install pyxel
 ```
 
-要在安装 Pyxel 后更新版本，请运行 `pipx upgrade pyxel`。
+安装 Pyxel 后，要升级 Pyxel，请运行 `pipx upgrade pyxel`。
 
 ### Linux
 
-安装 SDL2 (Ubuntu 下包名为：`libsdl2-dev`)，[Python3](https://www.python.org/) (3.8 或更高版本)，以及`python3-pip`这三个包之后，执行以下命令：
+在安装 SDL2 包（对于 Ubuntu 为 `libsdl2-dev`）、[Python3](https://www.python.org/)（版本 3.8 或更高）和 `python3-pip` 后，运行以下命令：
 
 ```sh
 sudo pip3 install -U pyxel
 ```
 
-如果上述方法不奏效，请根据[Makefile](../Makefile)中的说明尝试自我构建。
+如果之前的命令失败，请按照 [Makefile](../Makefile) 中的说明考虑从源代码构建 Pyxel。
 
 ### Web
 
-网络版 Pyxel 不需要安装 Python 或 Pyxel，可以在 PC 以及支持网络浏览器的智能手机和平板电脑上运行。
+Pyxel 的 Web 版本不需要安装 Python 或 Pyxel，可以在支持的 Web 浏览器上运行于 PC、智能手机和平板电脑上。
 
-具体说明请参考[本页面](pyxel-web-en.md)。
+有关详细说明，请参阅 [此页面](pyxel-web-en.md)。
 
-### 尝试例程
+### 运行示例
 
-以 Python 包版本为例，安装 Pyxel 后，用以下命令将 Pyxe 例程复制到当前文件夹：
+在安装 Pyxel 后，您可以使用以下命令将示例复制到当前目录：
 
 ```sh
 pyxel copy_examples
 ```
 
-例程包含：
+以下示例将被复制到您的当前目录：
 
 <table>
 <tr>
