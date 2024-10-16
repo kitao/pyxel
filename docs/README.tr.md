@@ -38,22 +38,22 @@ Pyxel'in geliştirilmesi kullanıcı geri bildirimleriyle yönlendirilmektedir. 
 </a>
 </p>
 
-Pyxel'in özellikleri ve API'leri, [PICO-8](https://www.lexaloffle.com/pico-8.php) ve [TIC-80](https://tic80.com/) gibi retro oyun motorlarından esinlenmiştir.
+Pyxel'in spesifikasyonları ve API'leri, [PICO-8](https://www.lexaloffle.com/pico-8.php) ve [TIC-80](https://tic80.com/) tarafından ilham alınarak hazırlanmıştır.
 
-Pyxel [MIT lisansı](../LICENSE) altında açık kaynak kodludur ve kullanımı ücretsizdir. Haydi, Pyxel ile birlikte retro bir oyun yapalım!
+Pyxel, [MIT Lisansı](../LICENSE) altında açık kaynaklıdır ve ücretsiz olarak kullanılabilir. Haydi, Pyxel ile retro oyun yapmaya başlayalım!
 
-## Özellikler
+## Spesifikasyonlar
 
-- Windows, Mac, Linux ve Web'de çalışır
+- Windows, Mac, Linux ve Web üzerinde çalışır
 - Python ile programlama
 - 16 renk paleti
-- 256x256 boyutunda 3 resim bankası
-- 256x256 boyutunda 8 tilemap
-- 64 tanımlanabilir sesli 4 kanal
-- Herhangi bir sesi birleştirebilen 8 müzik parçası
-- Klavye, fare ve oyun kumandası girişleri
+- 3 adet 256x256 boyutunda görüntü bankası
+- 8 adet 256x256 boyutunda karo haritası
+- 64 tanımlanabilir ses ile 4 kanal
+- Herhangi bir sesi birleştirebilen 8 müzik
+- Klavye, fare ve gamepad girişi
 - Görüntü ve ses düzenleme araçları
-- Renkler, kanallar ve bankalar için kullanıcı genişletme
+- Kullanıcı tarafından genişletilebilir renkler, kanallar ve bankalar
 
 ### Renk paleti
 
