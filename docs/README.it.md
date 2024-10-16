@@ -116,121 +116,121 @@ Gli esempi da copiare sono i seguenti:
 <td>01_hello_pyxel.py</td>
 <td>Applicazione più semplice</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Codice</a></td>
 </tr>
 <tr>
 <td>02_jump_game.py</td>
-<td>Un gioco di salto con file Pyxel di risorsa</td>
+<td>Gioco di salti con file di risorse Pyxel</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Codice</a></td>
 </tr>
 <tr>
 <td>03_draw_api.py</td>
 <td>Dimostrazione delle API di disegno</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">Codice</a></td>
 </tr>
 <tr>
 <td>04_sound_api.py</td>
-<td>Dimostrazione delle API del suono</td>
+<td>Dimostrazione delle API audio</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Codice</a></td>
 </tr>
 <tr>
 <td>05_color_palette.py</td>
-<td>Lista di colori nella palette</td>
+<td>Elenco delle palette di colori</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Codice</a></td>
 </tr>
 <tr>
 <td>06_click_game.py</td>
-<td>Gioco punta e clicca</td>
+<td>Gioco di clic del mouse</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Codice</a></td>
 </tr>
 <tr>
 <td>07_snake.py</td>
-<td>Gioco snake con colonna sonora</td>
+<td>Gioco della serpente con BGM</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Codice</a></td>
 </tr>
 <tr>
 <td>08_triangle_api.py</td>
-<td>Dimostrazione delle API per il disegno di un triangolo</td>
+<td>Dimostrazione delle API di disegno di triangoli</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Codice</a></td>
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>Gioco shoot'em up con transizioni schermo</td>
+<td>Shoot 'em up con transizioni di schermo</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Codice</a></td>
 </tr>
 <tr>
 <td>10_platformer.py</td>
-<td>Gioco a piattaforme a scorrimento orizzontale con mappa</td>
+<td>Gioco di piattaforma a scorrimento laterale con mappa</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Codice</a></td>
 </tr>
 <tr>
 <td>11_offscreen.py</td>
-<td>Renderizzazione fuori campo con la classe Image</td>
+<td>Rendering offscreen con la classe Image</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Codice</a></td>
 </tr>
 <tr>
 <td>12_perlin_noise.py</td>
-<td>Animazione del rumore di Perlin</td>
+<td>Animazione di rumore di Perlin</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Codice</a></td>
 </tr>
 <tr>
 <td>13_bitmap_font.py</td>
-<td>Disegno di un font bitmap</td>
+<td>Disegnare un font bitmap</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/13_bitmap_font.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Codice</a></td>
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
-<td>Sintetizzatore che utilizza funzioni di espansione audio</td>
+<td>Sintetizzatore che utilizza funzionalità di espansione audio</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Codice</a></td>
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
-<td>Caricamento e disegno di un file di mappa di piastrelle (.tmx)</td>
+<td>Caricamento e disegno di un Tiled Map File (.tmx)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Codice</a></td>
 </tr>
 <tr>
 <td>16_transform.py</td>
-<td>Rotazione e scalatura dell'immagine</td>
+<td>Rotazione e ridimensionamento delle immagini</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Codice</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>Animazione con funzione flip (solo per piattaforme non web)</td>
+<td>Animazione con la funzione flip (solo per piattaforme non web)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Codice</a></td>
 </tr>
 <tr>
 <td>30sec_of_daylight.pyxapp</td>
-<td>Gioco vincitore del primo Pyxel Jam sviluppato da <a href="https://x.com/helpcomputer0">Adam</a></td>
+<td>Gioco vincitore del 1° Pyxel Jam di <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Demo</a></td>
-<td><a href="https://github.com/kitao/30sec_of_daylight">Code</a></td>
+<td><a href="https://github.com/kitao/30sec_of_daylight">Codice</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
-<td>Gioco arcade di palla basato sulla fisica sviluppato da <a href="https://x.com/helpcomputer0">Adam</a></td>
+<td>Gioco arcade di fisica della palla di <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
-<td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
+<td><a href="https://github.com/helpcomputer/megaball">Codice</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>
-<td>Generatore di musica di sottofondo realizzato da <a href="https://x.com/frenchbread1222">frenchbread</a></td>
+<td>Generatore di musica di sottofondo di <a href="https://x.com/frenchbread1222">frenchbread</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Demo</a></td>
-<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Code</a></td>
+<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Codice</a></td>
 </tr>
 </table>
 

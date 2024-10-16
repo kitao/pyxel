@@ -116,121 +116,121 @@ Kopyalanacak örnekler aşağıdaki gibidir:
 <td>01_hello_pyxel.py</td>
 <td>En basit uygulama</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/01_hello_pyxel.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/01_hello_pyxel.py">Kod</a></td>
 </tr>
 <tr>
 <td>02_jump_game.py</td>
-<td>Pyxel kaynak dosyası ile zıplama oyunu</td>
+<td>Pyxel kaynak dosyasıyla zıplama oyunu</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">Kod</a></td>
 </tr>
 <tr>
 <td>03_draw_api.py</td>
 <td>Çizim API'lerinin gösterimi</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">Kod</a></td>
 </tr>
 <tr>
 <td>04_sound_api.py</td>
 <td>Ses API'lerinin gösterimi</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Kod</a></td>
 </tr>
 <tr>
 <td>05_color_palette.py</td>
-<td>Renk paleti listesi</td>
+<td>Renk paletleri listesi</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/05_color_palette.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/05_color_palette.py">Kod</a></td>
 </tr>
 <tr>
 <td>06_click_game.py</td>
 <td>Fare tıklama oyunu</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/06_click_game.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/06_click_game.py">Kod</a></td>
 </tr>
 <tr>
 <td>07_snake.py</td>
-<td>BGM ile yılan oyunu</td>
+<td>BGM'li yılan oyunu</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/07_snake.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/07_snake.py">Kod</a></td>
 </tr>
 <tr>
 <td>08_triangle_api.py</td>
 <td>Üçgen çizim API'lerinin gösterimi</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/08_triangle_api.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/08_triangle_api.py">Kod</a></td>
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>Ekran geçişli bir shoot'em up oyunu</td>
+<td>Shoot 'em up oyunu ile ekran geçişleri</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Kod</a></td>
 </tr>
 <tr>
 <td>10_platformer.py</td>
-<td>Harita ile yan kaydırmalı platform oyunu</td>
+<td>Haritalı yan kaydırmalı platform oyunu</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">Kod</a></td>
 </tr>
 <tr>
 <td>11_offscreen.py</td>
-<td>Image sınıfı ile ekran dışı renderlama</td>
+<td>Image sınıfıyla ekran dışı renderleme</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">Kod</a></td>
 </tr>
 <tr>
 <td>12_perlin_noise.py</td>
-<td>Perlin gürültü animasyonu</td>
+<td>Perlin gürültüsü animasyonu</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/12_perlin_noise.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/12_perlin_noise.py">Kod</a></td>
 </tr>
 <tr>
 <td>13_bitmap_font.py</td>
 <td>Bitmap font çizimi</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/13_bitmap_font.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/13_bitmap_font.py">Kod</a></td>
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
-<td>Ses genişletme özelliklerini kullanan synthesizer</td>
+<td>Ses genişletme özelliklerini kullanan sentezleyici</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">Kod</a></td>
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
-<td>Tile Map Dosyası (.tmx) yükleme ve çizme</td>
+<td>Tiled Map File (.tmx) yükleme ve çizme</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">Kod</a></td>
 </tr>
 <tr>
 <td>16_transform.py</td>
-<td>Görüntü döndürme ve ölçekleme</td>
+<td>Görüntü döndürme ve ölçeklendirme</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/16_transform.html">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/16_transform.py">Kod</a></td>
 </tr>
 <tr>
 <td>99_flip_animation.py</td>
-<td>Flip fonksiyonu ile animasyon (sadece web dışı platformlar)</td>
+<td>flip fonksiyonu ile animasyon (sadece web dışı platformlar için)</td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/docs/images/99_flip_animation.gif">Demo</a></td>
-<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Code</a></td>
+<td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/99_flip_animation.py">Kod</a></td>
 </tr>
 <tr>
 <td>30sec_of_daylight.pyxapp</td>
-<td>1. Pyxel Jam kazanan oyunu <a href="https://x.com/helpcomputer0">Adam</a></td>
+<td>1. Pyxel Jam kazanan oyunu (<a href="https://x.com/helpcomputer0">Adam</a> tarafından)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Demo</a></td>
-<td><a href="https://github.com/kitao/30sec_of_daylight">Code</a></td>
+<td><a href="https://github.com/kitao/30sec_of_daylight">Kod</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
-<td>Arcade top fiziği oyunu <a href="https://x.com/helpcomputer0">Adam</a></td>
+<td>Arcade top fizik oyunu (<a href="https://x.com/helpcomputer0">Adam</a> tarafından)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
-<td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
+<td><a href="https://github.com/helpcomputer/megaball">Kod</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>
-<td>Arka plan müzik jeneratörü <a href="https://x.com/frenchbread1222">frenchbread</a></td>
+<td>Arka plan müziği oluşturucu (<a href="https://x.com/frenchbread1222">frenchbread</a> tarafından)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/8bit-bgm-gen.html">Demo</a></td>
-<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Code</a></td>
+<td><a href="https://github.com/shiromofufactory/8bit-bgm-generator">Kod</a></td>
 </tr>
 </table>
 
