@@ -234,7 +234,7 @@ pyxel copy_examples
 </tr>
 </table>
 
-运行例程，可以使用以下命令：
+这些示例可以通过以下命令执行：
 
 ```sh
 cd pyxel_examples
@@ -242,11 +242,11 @@ pyxel run 01_hello_pyxel.py
 pyxel play 30sec_of_daylight.pyxapp
 ```
 
-## 使用教程
+## 使用方法
 
-### 创建应用
+### 创建应用程序
 
-在 python 文件中导入 Pyxel 包后，首先使用`init`函数指定窗口大小，然后使用`run`函数启动 Pyxel 应用。
+在您的 Python 脚本中，导入 Pyxel 模块，通过 `init` 函数指定窗口大小，然后使用 `run` 函数启动 Pyxel 应用程序。
 
 ```python
 import pyxel
@@ -264,9 +264,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-`run`函数的两个参数`update`函数和`draw`函数分别用来在需要时更新帧和绘制画面。
+`run` 函数的参数是处理帧更新的 `update` 函数和处理屏幕绘制的 `draw` 函数。
 
-实际应用中，建议将 pyxel 代码封装成如下类：
+在实际应用中，建议将 Pyxel 代码封装在类中，如下所示：
 
 ```python
 import pyxel
@@ -287,7 +287,7 @@ class App:
 App()
 ```
 
-当创建没有动画的简单图形时，可以使用`show`函数来使代码更加简洁。
+要创建没有动画的简单图形，您可以使用 `show` 函数来简化代码。
 
 ```python
 import pyxel
@@ -298,27 +298,27 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### 运行应用
+### 运行应用程序
 
-创建的 Python 脚本可使用`python`命令执行：
+创建的脚本可以使用 `python` 命令执行：
 
 ```sh
 python PYTHON_SCRIPT_FILE
 ```
 
-也可以使用`pyxel run`命令运行：
+它也可以使用 `pyxel run` 命令运行：
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-此外，`pyxel watch`命令可以监控指定目录中的变化，并在检测到变化时自动重新运行程序：
+此外，`pyxel watch` 命令监视指定目录中的更改，并在检测到更改时自动重新运行程序：
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-按`Ctrl(Command)+C`键可停止目录监控。
+可以通过按 `Ctrl(Command)+C` 停止目录监视。
 
 ### 特殊键操作
 
