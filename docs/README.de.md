@@ -325,23 +325,23 @@ Die Verzeichnisüberwachung kann durch Drücken der Tastenkombination `Ctrl(Comm
 Während eine Pyxel-Anwendung läuft, können die folgenden speziellen Tastenaktionen ausgeführt werden:
 
 - `Esc`<br>
-  Schließt die Anwendung
+  Die Anwendung beenden
 - `Alt(Option)+1`<br>
-  Speichert einen Screenshot zum Desktop
+  Den Screenshot auf dem Desktop speichern
 - `Alt(Option)+2`<br>
-  Setzt die Startzeit für die Aufnahme des Bildschirmaufzeichnung zurück
+  Den Startzeitpunkt der Bildschirmaufnahme zurücksetzen
 - `Alt(Option)+3`<br>
-  Speichert die Bildschirmaufzeichnung zum Desktop (bis zu 10 Sekunden)
+  Ein Bildschirmaufnahmevideo auf dem Desktop speichern (bis zu 10 Sekunden)
 - `Alt(Option)+9`<br>
-  Wechseln Sie zwischen den Bildschirmmodi (Crisp/Smooth/Retro)
+  Zwischen Bildschirmmodi (Crisp/Smooth/Retro) wechseln
 - `Alt(Option)+0`<br>
-  Umschalten des Leistungsmonitors (fps, Updatezeit und Framezeit)
+  Den Leistungsmonitor (FPS/`update` Zeit/`draw` Zeit) umschalten
 - `Alt(Option)+Enter`<br>
-  Fullscreen umschalten
+  Vollbildmodus umschalten
 - `Shift+Alt(Option)+1/2/3`<br>
-  Speichern Sie die entsprechende Bilddatenbank auf dem Desktop
+  Die entsprechende Bildbank auf dem Desktop speichern
 - `Shift+Alt(Option)+0`<br>
-  Speichern der aktuellen Farbpalette auf dem Desktop
+  Die aktuelle Farbpalette auf dem Desktop speichern
 
 ### Wie man eine Ressource erstellt
 

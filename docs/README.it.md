@@ -325,23 +325,23 @@ Il monitoraggio della directory può essere interrotto premendo `Ctrl(Command)+C
 Durante l'esecuzione di un'applicazione Pyxel, possono essere eseguite le seguenti operazioni delle chiavi speciali:
 
 - `Esc`<br>
-  Esci dall'applicazione
+  Uscire dall'applicazione
 - `Alt(Option)+1`<br>
-  Salva uno screenshot sul desktop
+  Salvare lo screenshot sul desktop
 - `Alt(Option)+2`<br>
-  Resetta il tempo d'inizio della registrazione schermo
+  Ripristinare il tempo di inizio della registrazione del video di cattura dello schermo
 - `Alt(Option)+3`<br>
-  Salva la registrazione schermo sul desktop (fino a 10 secondi)
+  Salvare un video di cattura dello schermo sul desktop (fino a 10 secondi)
 - `Alt(Option)+9`<br>
-  Passare da una modalità all'altra (Crisp/Smooth/Retro)
+  Passare tra le modalità dello schermo (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
-  Alterna il monitor di performance (fps, tempo d'aggiornamento, e tempo di disegno)
+  Attivare il monitor delle prestazioni (FPS/`update` tempo/`draw` tempo)
 - `Alt(Option)+Enter`<br>
-  Alterna schermo intero
+  Attivare la modalità a schermo intero
 - `Shift+Alt(Option)+1/2/3`<br>
-  Salvare il banco di immagini corrispondente sul desktop
+  Salvare la corrispondente banca delle immagini sul desktop
 - `Shift+Alt(Option)+0`<br>
-  Salva la tavolozza dei colori corrente sul desktop
+  Salvare la palette di colori corrente sul desktop
 
 ### Come creare una risorsa
 
