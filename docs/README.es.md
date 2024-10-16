@@ -327,19 +327,19 @@ Durante la ejecución de una aplicación Pyxel, se pueden realizar las siguiente
 - `Esc`<br>
   Salir de la aplicación
 - `Alt(Option)+1`<br>
-  Guardar la captura de pantalla al escritorio
+  Guardar la captura de pantalla en el escritorio
 - `Alt(Option)+2`<br>
-  Restablecer el momento de inicio de la grabación del vídeo de captura de pantalla
+  Reiniciar el tiempo de inicio de la grabación del video de captura de pantalla
 - `Alt(Option)+3`<br>
-  Guarda la captura de video en el escritorio (hasta 10 segundos)
+  Guardar un video de captura de pantalla en el escritorio (hasta 10 segundos)
 - `Alt(Option)+9`<br>
-  Cambia entre los modos de pantalla (Crisp/Smooth/Retro)
+  Cambiar entre los modos de pantalla (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
-  Activa el monitor de monitorización (fps, el tiempo que tarda en actualizar la pantalla y el tiempo que tarda en dibujar)
+  Alternar el monitor de rendimiento (FPS/`update` tiempo/`draw` tiempo)
 - `Alt(Option)+Enter`<br>
-  Activar el modo de pantalla completa
+  Alternar pantalla completa
 - `Shift+Alt(Option)+1/2/3`<br>
-  Guardar el banco de imágenes correspondiente en el escritorio
+  Guardar la correspondiente imagen en el escritorio
 - `Shift+Alt(Option)+0`<br>
   Guardar la paleta de colores actual en el escritorio
 

@@ -325,23 +325,23 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 在运行 Pyxel 应用程序时，可以执行以下特殊键操作：
 
 - `Esc`<br>
-  退出应用
+  退出应用程序
 - `Alt(Option)+1`<br>
-  截屏并保存在桌面
+  将屏幕截图保存到桌面
 - `Alt(Option)+2`<br>
-  重置屏幕录制的开始时间
+  重置屏幕录像视频的录制开始时间
 - `Alt(Option)+3`<br>
-  保存屏幕录制动图到桌面 (最多 10 秒)
+  将屏幕录像视频保存到桌面（最多 10 秒）
 - `Alt(Option)+9`<br>
-  切换屏幕模式 (Crisp/Smooth/Retro)
+  在屏幕模式 (Crisp/Smooth/Retro) 之间切换
 - `Alt(Option)+0`<br>
-  切换性能监控 (fps，更新时间，画面绘制时间)
+  切换性能监视器 (FPS/`update` 时间/`draw` 时间)
 - `Alt(Option)+Enter`<br>
   切换全屏
 - `Shift+Alt(Option)+1/2/3`<br>
-  将相应的图像库保存到桌面
+  将对应的图像库保存到桌面
 - `Shift+Alt(Option)+0`<br>
-  将当前调色板保存到桌面
+  将当前的调色板保存到桌面
 
 ### 如何创建资源
 
