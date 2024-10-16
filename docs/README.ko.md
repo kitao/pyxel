@@ -343,21 +343,21 @@ Pyxel 애플리케이션이 실행 중일 때, 다음의 특수 키 조작을 �
 - `Shift+Alt(Option)+0`<br>
   현재 색상 팔레트를 데스크탑에 저장
 
-### 리소스의 작성 방법
+### 리소스 생성 방법
 
-Pyxel Editor는 Pyxel 애플리케이션에서 사용되는 이미지와 사운드를 생성할 수 있습니다.
+Pyxel Editor를 사용하여 Pyxel 애플리케이션에서 사용할 이미지와 사운드를 생성할 수 있습니다.
 
-다음 명령어를 사용해 시작할 수 있습니다.
+다음 명령으로 Pyxel Editor를 시작할 수 있습니다:
 
 ```sh
 pyxel edit PYXEL_RESOURCE_FILE
 ```
 
-지정한 Pyxel 리소스 파일 (.pyxres) 이 존재하는 경우에는 해당 파일을 불러오고, 존재하지 않는 경우 지정한 이름으로 새 리소스 파일을 생성합니다. 파일 이름을 생략했을 경우, 기본 파일 이름은 `my_resource.pyxres`입니다.
+지정된 Pyxel 리소스 파일(.pyxres)이 존재하면 해당 파일이 로드됩니다. 존재하지 않는 경우 지정된 이름으로 새 파일이 생성됩니다. 리소스 파일이 생략된 경우 `my_resource.pyxres`라는 새 파일이 생성됩니다.
 
-Pyxel Editor 실행 중 다른 리소스 파일을 드래그 앤 드롭하는 것으로 작업 중인 리소스 파일을 변경할 수 있습니다.
+Pyxel Editor를 시작한 후 다른 리소스 파일로 전환하려면 해당 파일을 Pyxel Editor로 드래그 앤 드롭하면 됩니다.
 
-만들어진 리소스 파일은 `load` 함수를 통해 불러올 수 있습니다.
+생성된 리소스 파일은 `load` 함수를 사용하여 로드할 수 있습니다.
 
 Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
@@ -369,17 +369,17 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 <img src="images/image_editor.gif">
 </a>
 
-이미지 파일 (PNG/GIF/JPEG) 을 이미지 편집기로 끌어다 놓아 현재 선택한 이미지 뱅크에 이미지를 로드합니다.
+이미지 편집기로 PNG/GIF/JPEG 파일을 드래그 앤 드롭하면 현재 선택된 이미지 뱅크에 이미지를 로드합니다.
 
-**타일 맵 편집기**
+**타일맵 편집기**
 
-이미지 뱅크의 이미지를 타일 형태로 배치한 타일맵을 편집하는 모드입니다.
+이미지 뱅크의 이미지를 타일 패턴으로 배열하여 타일맵을 편집하는 모드입니다.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-TMX 파일 (Tiled Map File) 을 타일맵 편집기로 끌어다 놓으면 현재 선택한 타일맵 번호에 해당하는 도면 순서대로 해당 레이어를 로드할 수 있습니다.
+타일맵 편집기로 TMX 파일(Tiled Map File)을 드래그 앤 드롭하면 현재 선택된 타일맵 번호에 해당하는 그리기 순서의 레이어를 로드할 수 있습니다.
 
 **사운드 편집기**
 
@@ -389,40 +389,40 @@ TMX 파일 (Tiled Map File) 을 타일맵 편집기로 끌어다 놓으면 현�
 <img src="images/sound_editor.gif">
 </a>
 
-**음악 편집기**
+**뮤직 편집기**
 
-사운드를 플레이 순서대로 늘어놓은 음악을 편집하는 화면입니다.
+재생 순서에 따라 사운드를 배열하여 음악을 편집하는 모드입니다.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
 </a>
 
-### 기타 리소스 작성 방법
+### 기타 리소스 생성 방법
 
-Pyxel의 이미지와 타일맵은 다음과 같은 방법으로 만들 수도 있습니다.
+Pyxel 이미지와 타일맵은 다음 방법을 사용하여 생성할 수도 있습니다:
 
-- `Image.set` 또는 `Tilemap.set` 함수를 사용하여 문자열 리스트에서 이미지 생성
-- `Image.load` 함수를 사용하여 Pyxel 팔레트 이미지 파일 (PNG/GIF/JPEG) 불러오기
+- `Image.set` 함수 또는 `Tilemap.set` 함수를 사용하여 문자열 목록에서 이미지를 생성합니다.
+- `Image.load` 함수를 사용하여 Pyxel 팔레트의 이미지 파일(PNG/GIF/JPEG)을 로드합니다.
 
-Pyxel의 사운드와 음악도 다음과 같은 방법으로 만들 수 있습니다.
+Pyxel 사운드는 다음 방법을 사용하여 생성할 수도 있습니다:
 
-- `Sound.set` 또는 `Music.set` 함수를 사용하여 문자열에서 사운드 생성
+- `Sound.set` 함수 또는 `Music.set` 함수를 사용하여 문자열에서 사운드를 생성합니다.
 
-각 함수의 사용법은 API 레퍼런스를 참조해주세요.
+이 함수의 사용법은 API 참조를 참조하십시오.
 
 ### 애플리케이션 배포 방법
 
-Pyxel은 다양한 플랫폼에서 작동하는 전용 애플리케이션 배포 파일 형식 (Pyxel 애플리케이션 파일) 을 지원합니다.
+Pyxel은 플랫폼에 관계없이 작동하는 전용 애플리케이션 배포 파일 형식(Pyxel 애플리케이션 파일)을 지원합니다.
 
-Pyxel 애플리케이션 파일(.pyxapp)은 `pyxel package` 명령어로 생성됩니다:
+Pyxel 애플리케이션 파일(.pyxapp)은 `pyxel package` 명령을 사용하여 생성됩니다:
 
 ```sh
 pyxel package APP_DIR STARTUP_SCRIPT_FILE
 ```
 
-응용 프로그램에 리소스 또는 추가 모듈이 포함되어야 하는 경우 응용 프로그램 디렉터리에 배치합니다.
+리소스나 추가 모듈을 포함해야 하는 경우, 애플리케이션 디렉토리에 배치하십시오.
 
-메타데이터는 시작 스크립트 내에서 다음 형식으로 지정하여 런타임에 표시할 수 있습니다. `title`와 `author` 이외의 필드는 선택 사항입니다.
+메타데이터는 다음 형식으로 시작 스크립트 내에 지정하여 실행 중에 표시될 수 있습니다. `title`과 `author`를 제외한 필드는 선택 사항입니다.
 
 ```python
 # title: Pyxel Platformer
@@ -433,13 +433,13 @@ pyxel package APP_DIR STARTUP_SCRIPT_FILE
 # version: 1.0
 ```
 
-생성된 애플리케이션 파일은 `pyxel play` 명령어로 실행할 수 있습니다:
+생성된 애플리케이션 파일은 `pyxel play` 명령을 사용하여 실행할 수 있습니다:
 
 ```sh
 pyxel play PYXEL_APP_FILE
 ```
 
-Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명령을 사용하여 실행 파일 또는 HTML 파일로 변환할 수 있습니다.
+Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명령을 사용하여 실행 파일이나 HTML 파일로 변환할 수도 있습니다.
 
 ## API 레퍼런스
 
