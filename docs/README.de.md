@@ -55,27 +55,27 @@ Pyxel ist unter der [MIT-Lizenz](../LICENSE) Open Source und kostenlos zu verwen
 - Werkzeuge zum Bearbeiten von Bildern und Sounds
 - Benutzererweiterbare Farben, Kanäle und Datenbanken
 
-### Farbpalette
+### Farbpallette
 
 <img src="images/05_color_palette.png">
 
 <img src="images/pyxel_palette.png">
 
-## Installationsanleitung
+## Installation
 
 ### Windows
 
-Nach der Installation von [Python3](https://www.python.org/) (Version 3.8 oder höher), führe folgenden Befehl aus:
+Nachdem Sie [Python3](https://www.python.org/) (Version 3.8 oder höher) installiert haben, führen Sie den folgenden Befehl aus:
 
 ```sh
 pip install -U pyxel
 ```
 
-Wenn Sie Python mit dem offiziellen Installationsprogramm installieren, aktivieren Sie bitte das Kontrollkästchen `Add Python 3.x to PATH`, um den Befehl `pyxel` zu aktivieren.
+Wenn Sie Python mit dem offiziellen Installer installieren, stellen Sie sicher, dass Sie die Option `Add Python 3.x to PATH` aktivieren, um den `pyxel` Befehl zu ermöglichen.
 
 ### Mac
 
-Nach der Installation von [Homebrew](https://brew.sh/) führen Sie die folgenden Befehle aus:
+Nachdem Sie [Homebrew](https://brew.sh/) installiert haben, führen Sie die folgenden Befehle aus:
 
 ```sh
 brew install pipx
@@ -83,33 +83,33 @@ pipx ensurepath
 pipx install pyxel
 ```
 
-Um die Version nach der Installation von Pyxel zu aktualisieren, führen Sie `pipx upgrade pyxel` aus.
+Um Pyxel nach der Installation zu aktualisieren, führen Sie `pipx upgrade pyxel` aus.
 
 ### Linux
 
-Nach der Installation des SDL2-Packages (`libsdl2-dev` für Ubuntu), [Python3](https://www.python.org/) (version 3.8 oder höher) und `python3-pip`, führe folgenden Befehl aus:
+Nachdem Sie das SDL2-Paket (`libsdl2-dev` für Ubuntu), [Python3](https://www.python.org/) (Version 3.8 oder höher) und `python3-pip` installiert haben, führen Sie den folgenden Befehl aus:
 
 ```sh
 sudo pip3 install -U pyxel
 ```
 
-Wenn das oben genannte nicht funktioniert, versuchen Sie, sich selbst gemäß den Anweisungen in [Makefile](../Makefile) zu erstellen.
+Wenn der vorherige Befehl fehlschlägt, ziehen Sie in Betracht, Pyxel aus dem Quellcode zu bauen, indem Sie die Anweisungen im [Makefile](../Makefile) befolgen.
 
 ### Web
 
-Die Webversion von Pyxel erfordert keine Python oder Pyxel-Installation und läuft sowohl auf PCs als auch auf Smartphones und Tablets mit unterstützten Webbrowsern.
+Die Web-Version von Pyxel benötigt keine Installation von Python oder Pyxel und läuft auf PCs, Smartphones und Tablets mit unterstützten Webbrowsern.
 
-Eine genaue Anleitung finden Sie auf [dieser Seite](pyxel-web-en.md).
+Für detaillierte Anweisungen konsultieren Sie bitte [diese Seite](pyxel-web-en.md).
 
-### Beispiele ausprobieren
+### Beispiele ausführen
 
-Nach der Installation von Pyxel kannst du die Beispiele von Pyxel mit dem folgenden Befehl in das aktuelle Verzeichnis kopieren:
+Nachdem Sie Pyxel installiert haben, können Sie die Beispiele mit dem folgenden Befehl in das aktuelle Verzeichnis kopieren:
 
 ```sh
 pyxel copy_examples
 ```
 
-Die zu kopierenden Beispiele lauten wie folgt:
+Die folgenden Beispiele werden in Ihr aktuelles Verzeichnis kopiert:
 
 <table>
 <tr>

@@ -65,17 +65,17 @@ Pyxel은 [MIT 라이센스](../LICENSE) 하에 오픈 소스이며 무료로 사
 
 ### Windows
 
-[Python3](https://www.python.org/) (버전 3.8 이상) 을 설치한 후, 다음 명령어를 실행합니다.
+[Python3](https://www.python.org/) (버전 3.8 이상)을 설치한 후, 다음 명령어를 실행하세요:
 
 ```sh
 pip install -U pyxel
 ```
 
-공식 설치 프로그램을 사용하여 Python을 설치하는 경우 `pyxel` 명령을 활성화하려면 `Add Python 3.x to PATH` 확인란을 선택하십시오.
+공식 설치 프로그램을 사용하여 Python을 설치할 때 `Add Python 3.x to PATH` 옵션을 체크하여 `pyxel` 명령을 활성화하세요.
 
 ### Mac
 
-[Homebrew](https://brew.sh/)를 설치한 후 다음 명령을 실행합니다:
+[Homebrew](https://brew.sh/)를 설치한 후, 다음 명령어를 실행하세요:
 
 ```sh
 brew install pipx
@@ -83,33 +83,33 @@ pipx ensurepath
 pipx install pyxel
 ```
 
-파이셀을 설치한 후 버전을 업데이트하려면 `pipx upgrade pyxel`을 실행합니다.
+설치 후 Pyxel을 업그레이드하려면 `pipx upgrade pyxel`을 실행하세요.
 
 ### Linux
 
-SDL2 패키지 (Ubuntu의 경우 `libsdl2-dev`), [Python3](https://www.python.org/) (버전 3.8 이상), `python3-pip`를 설치한 후, 다음 명령어를 실행합니다.
+SDL2 패키지(`libsdl2-dev`는 Ubuntu의 경우), [Python3](https://www.python.org/) (버전 3.8 이상), `python3-pip`를 설치한 후, 다음 명령어를 실행하세요:
 
 ```sh
 sudo pip3 install -U pyxel
 ```
 
-위의 방법이 작동하지 않으면 [Makefile](../Makefile) 의 지침에 따라 자체 빌드를 시도하십시오.
+이전 명령이 작동하지 않으면 [Makefile](../Makefile)에 있는 지침에 따라 소스에서 Pyxel을 빌드하는 것을 고려하세요.
 
 ### Web
 
-Pyxel의 웹 버전은 Python 또는 Pyxel 설치가 필요하지 않으며 지원되는 웹 브라우저가 있는 PC뿐만 아니라 스마트폰 및 태블릿에서 실행됩니다.
+Pyxel의 웹 버전은 Python이나 Pyxel 설치가 필요 없으며, 지원되는 웹 브라우저를 사용하는 PC, 스마트폰 및 태블릿에서 실행됩니다.
 
-구체적인 지침은 [이 페이지](pyxel-web-en.md) 를 참조하십시오.
+자세한 지침은 [이 페이지](pyxel-web-en.md)를 참조하세요.
 
 ### 예제 실행하기
 
-Pyxel 설치 후, 다음 명령어를 사용해 현재 폴더에 Pyxel 예제 파일을 복사할 수 있습니다.
+Pyxel을 설치한 후, 다음 명령어로 예제를 현재 디렉토리로 복사할 수 있습니다:
 
 ```sh
 pyxel copy_examples
 ```
 
-현재 폴더에 복사되는 예제 파일은 다음과 같습니다:
+다음 예제가 현재 디렉토리에 복사됩니다:
 
 <table>
 <tr>
