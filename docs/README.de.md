@@ -234,7 +234,7 @@ Die folgenden Beispiele werden in Ihr aktuelles Verzeichnis kopiert:
 </tr>
 </table>
 
-Führe eines der Beispiele mit folgendem Befehl aus:
+Die Beispiele können mit den folgenden Befehlen ausgeführt werden:
 
 ```sh
 cd pyxel_examples
@@ -244,9 +244,9 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ## Verwendung
 
-### Eine Anwendung erstellen
+### Anwendung erstellen
 
-Nachdem du das Pyxel-Modul in Ihr Python-Skript importiert hast, gib zunächst die Fenstergröße mit der Funktion `init` an und starten dann die Pyxel-Anwendung mit der Funktion `run`.
+Importieren Sie das Pyxel-Modul in Ihr Python-Skript, geben Sie die Fenstergröße mit der `init`-Funktion an und starten Sie die Pyxel-Anwendung mit der `run`-Funktion.
 
 ```python
 import pyxel
@@ -264,9 +264,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-Die Argumente der Funktion `run` sind die `update` Funktion, um jedes Bild zu aktualisieren, und die Funktion `draw`, um den Bildschirm bei Bedarf zu zeichnen.
+Die Argumente der `run`-Funktion sind die `update`-Funktion, die die Frame-Aktualisierungen verarbeitet, und die `draw`-Funktion, die das Zeichnen auf dem Bildschirm übernimmt.
 
-In einer tatsächlichen Anwendung ist es empfehlenswert, den Pyxel-Code in eine Klasse zu verpacken, wie unten dargestellt:
+In einer tatsächlichen Anwendung wird empfohlen, den Pyxel-Code in einer Klasse zu kapseln, wie im Folgenden gezeigt:
 
 ```python
 import pyxel
@@ -287,7 +287,7 @@ class App:
 App()
 ```
 
-Bei der Erstellung einfacher Grafiken ohne Animation kann die Funktion `show` verwendet werden, um den Code übersichtlicher zu gestalten.
+Um einfache Grafiken ohne Animation zu erstellen, können Sie die `show`-Funktion verwenden, um Ihren Code zu vereinfachen.
 
 ```python
 import pyxel
@@ -300,25 +300,25 @@ pyxel.show()
 
 ### Anwendung ausführen
 
-Ein erstelltes Python-Skript kann mit dem Befehl `python` ausgeführt werden:
+Ein erstelltes Skript kann mit dem `python`-Befehl ausgeführt werden:
 
 ```sh
 python PYTHON_SCRIPT_FILE
 ```
 
-Es kann auch mit dem Befehl `pyxel run` ausgeführt werden:
+Es kann auch mit dem `pyxel run`-Befehl ausgeführt werden:
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-Darüber hinaus ermöglicht der Befehl `pyxel watch` die Überwachung von Änderungen in einem bestimmten Verzeichnis und führt das Programm automatisch erneut aus, wenn Änderungen festgestellt werden:
+Darüber hinaus überwacht der Befehl `pyxel watch` Änderungen in einem angegebenen Verzeichnis und führt das Programm automatisch erneut aus, wenn Änderungen erkannt werden:
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-Die Verzeichnisüberwachung kann durch Drücken der Tastenkombination `Ctrl(Command)+C` beendet werden.
+Die Überwachung des Verzeichnisses kann durch Drücken von `Ctrl(Command)+C` gestoppt werden.
 
 ### Sondertastenoperationen
 

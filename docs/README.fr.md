@@ -234,7 +234,7 @@ Les exemples suivants seront copiés dans votre répertoire actuel :
 </tr>
 </table>
 
-Les exemples peuvent être lancés avec les commandes suivantes :
+Les exemples peuvent être exécutés avec les commandes suivantes :
 
 ```sh
 cd pyxel_examples
@@ -246,7 +246,7 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ### Créer une application
 
-Après avoir importé le module Pyxel dans votre script Python, spécifiez d’abord la taille de la fenêtre avec la fonction `init`, puis lancez l’application Pyxel avec la fonction `run`.
+Dans votre script Python, importez le module Pyxel, spécifiez la taille de la fenêtre avec la fonction `init`, puis démarrez l'application Pyxel avec la fonction `run`.
 
 ```python
 import pyxel
@@ -264,9 +264,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-Les arguments de la fonction `run` sont la fonction `update` pour mettre à jour chaque frame et la fonction `draw` pour dessiner sur l’écran quand c’est nécessaire.
+Les arguments de la fonction `run` sont la fonction `update`, qui traite les mises à jour de trames, et la fonction `draw`, qui gère le dessin à l'écran.
 
-Dans une vraie application, il est recommandé de mettre le code Pyxel dans une classe comme ci-dessous :
+Dans une application réelle, il est recommandé d'encapsuler le code Pyxel dans une classe, comme montré ci-dessous :
 
 ```python
 import pyxel
@@ -287,7 +287,7 @@ class App:
 App()
 ```
 
-Lors de la création de graphiques simples sans animation, la fonction `show` peut être utilisée pour rendre le code plus concis.
+Pour créer des graphiques simples sans animation, vous pouvez utiliser la fonction `show` pour simplifier votre code.
 
 ```python
 import pyxel
@@ -298,9 +298,9 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### Lancer une application
+### Exécuter l'application
 
-Un script Python créé peut être exécuté à l'aide de la commande `python` :
+Un script créé peut être exécuté en utilisant la commande `python` :
 
 ```sh
 python PYTHON_SCRIPT_FILE
@@ -312,13 +312,13 @@ Il peut également être exécuté avec la commande `pyxel run` :
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-De plus, la commande `pyxel watch` permet de surveiller les changements dans un répertoire spécifié, et de relancer automatiquement le programme lorsque des changements sont détectés :
+De plus, la commande `pyxel watch` surveille les modifications dans un répertoire spécifié et relance automatiquement le programme lorsque des changements sont détectés :
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 ```
 
-La surveillance des répertoires peut être arrêtée en appuyant sur `Ctrl(Command)+C`.
+La surveillance du répertoire peut être arrêtée en appuyant sur `Ctrl(Command)+C`.
 
 ### Opérations de touches spéciales
 

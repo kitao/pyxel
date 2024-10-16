@@ -234,7 +234,7 @@ pyxel copy_examples
 </tr>
 </table>
 
-다음 명령어를 사용하여 예제 파일을 실행할 수 있습니다.
+예제는 다음 명령어로 실행할 수 있습니다:
 
 ```sh
 cd pyxel_examples
@@ -244,9 +244,9 @@ pyxel play 30sec_of_daylight.pyxapp
 
 ## 사용 방법
 
-### 애플리케이션 작성 방법
+### 애플리케이션 만들기
 
-Python 스크립트에서 Pyxel 모듈을 가져온 뒤 `init` 함수로 화면 크기를 지정한 후, `run` 함수로 Pyxel 애플리케이션을 시작합니다.
+Python 스크립트에서 Pyxel 모듈을 가져오고, `init` 함수로 창 크기를 지정한 후, `run` 함수로 Pyxel 애플리케이션을 시작합니다.
 
 ```python
 import pyxel
@@ -264,9 +264,9 @@ def draw():
 pyxel.run(update, draw)
 ```
 
-`run` 함수의 인자로는 프레임 갱신을 처리하는 `update` 함수와 필요할 때 화면을 그리는 `draw` 함수가 사용됩니다.
+`run` 함수의 인자는 프레임 업데이트를 처리하는 `update` 함수와 화면 그리기를 처리하는 `draw` 함수입니다.
 
-실제 애플리케이션에서는 아래와 같이 클래스에서 Pyxel 코드를 감싸는 것이 좋습니다.
+실제 애플리케이션에서는 Pyxel 코드를 클래스에 감싸는 것이 좋습니다. 아래와 같이 작성할 수 있습니다:
 
 ```python
 import pyxel
@@ -287,7 +287,7 @@ class App:
 App()
 ```
 
-애니메이션 없이 간단한 그래픽을 만들 때 `show` 기능을 사용하면 코드를 더 간결하게 만들 수 있습니다.
+애니메이션 없는 간단한 그래픽을 만들고 싶다면 `show` 함수를 사용하여 코드를 간단하게 작성할 수 있습니다.
 
 ```python
 import pyxel
@@ -298,21 +298,21 @@ pyxel.circb(60, 60, 40, 7)
 pyxel.show()
 ```
 
-### 애플리케이션 실행 방법
+### 애플리케이션 실행하기
 
-생성된 파이썬 스크립트는 `python` 명령을 사용하여 실행할 수 있습니다:
+작성한 스크립트는 `python` 명령어로 실행할 수 있습니다:
 
 ```sh
 python PYTHON_SCRIPT_FILE
 ```
 
-또한 `pyxel run` 명령으로 실행할 수도 있습니다:
+`pyxel run` 명령어로도 실행할 수 있습니다:
 
 ```sh
 pyxel run PYTHON_SCRIPT_FILE
 ```
 
-또한 `pyxel watch` 명령을 사용하면 지정된 디렉토리의 변경 사항을 모니터링하여 변경 사항이 감지되면 자동으로 프로그램을 다시 실행할 수 있습니다:
+또한, `pyxel watch` 명령어를 사용하면 지정한 디렉터리의 변경 사항을 모니터링하고, 변경 사항이 감지되면 프로그램을 자동으로 재실행합니다:
 
 ```sh
 pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
