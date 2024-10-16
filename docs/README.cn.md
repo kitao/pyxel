@@ -441,276 +441,276 @@ pyxel play PYXEL_APP_FILE
 
 Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命令转换为可执行文件或 HTML 文件。
 
-## API 参考手册
+## API 参考
 
 ### 系统
 
-- `width`，`height`<br>
-  画面的宽和高
+- `width`, `height`<br>
+  屏幕的宽度和高度
 
 - `frame_count`<br>
-  目前为止，经过的总帧数
+  已经过的帧数
 
 - `init(width, height, [title], [fps], [quit_key], [display_scale], [capture_scale], [capture_sec])`<br>
-  使用屏幕尺寸 (`width`，`height`) 初始化 Pyxel 应用。以下属性为可选配置项：窗口标题`title`，帧率`fps`，应用退出按键`quit_key`，用 "display_scale "来决定显示的比例，用 "capture_scale "来决定屏幕捕捉的比例，以及屏幕捕获的最长记录时间`capture_sec`。<br>
-  示例：`pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
+  使用屏幕尺寸 (`width`, `height`) 初始化 Pyxel 应用程序。以下选项可以指定：通过 `title` 设置窗口标题，`fps` 设置帧率，`quit_key` 设置退出应用程序的按键，`display_scale` 设置显示比例，`capture_scale` 设置屏幕捕捉比例，`capture_sec` 设置屏幕捕捉视频的最大录制时间。<br>
+  例子：`pyxel.init(160, 120, title="My Pyxel App", fps=60, quit_key=pyxel.KEY_NONE, capture_scale=3, capture_sec=0)`
 
 - `run(update, draw)`<br>
-  启动 Pyxel 应用，并调用`update`函数刷新画面帧，并使用`draw`函数渲染画面。
+  启动 Pyxel 应用程序，并调用 `update` 函数进行帧更新，调用 `draw` 函数进行绘制。
 
 - `show()`<br>
-  显示屏幕直到`Esc`键被按下。
+  显示屏幕并等待按下 `Esc` 键。
 
 - `flip()`<br>
-  将屏幕重新调整一帧。当按下`Esc`键时，应用程序退出。该功能在网络版中不起作用。
+  刷新屏幕一帧。当按下 `Esc` 键时，应用程序退出。此功能在 Web 版中不可用。
 
 - `quit()`<br>
-  退出 Pyxel 应用。
+  退出 Pyxel 应用程序。
 
 ### 资源
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
-  加载源文件 (.pyxres)。如果选项为`True`，则不会加载资源。如果在资源文件的同一位置存在同名的调色板文件 (.pyxpal)，调色板的显示颜色也将改变。调色板文件是显示颜色的十六进制条目 (如 `1100FF`)，以换行分隔。调色板文件也可用于更改 Pyxel 编辑器中显示的颜色。
+  加载资源文件 (.pyxres)。如果某个选项设置为 `True`，相应的资源将被排除加载。如果资源文件所在位置存在同名的调色板文件 (.pyxpal)，调色板显示颜色也将更新。调色板文件包含 16 进制的显示颜色条目（例如 `1100FF`），每行一个。调色板文件也可以用于更改 Pyxel Editor 中的显示颜色。
 
 ### 输入
 
-- `mouse_x`，`mouse_y`<br>
-  当前鼠标指针的位置
+- `mouse_x`, `mouse_y`<br>
+  当前鼠标光标的位置
 
 - `mouse_wheel`<br>
   当前鼠标滚轮的值
 
 - `btn(key)`<br>
-  如果`key`被按下则返回`True`，否则返回`False`。([按键定义列表](../python/pyxel/__init__.pyi))。
+  如果按下了 `key` 返回 `True`，否则返回 `False`。([按键定义列表](../python/pyxel/__init__.pyi))
 
 - `btnp(key, [hold], [repeat])`<br>
-  如果`key`被按下则返回`True`。若设置了`hold`和`repeat`参数，则当`key`被按下持续`hold`帧时，在`repeat`帧间隙返回`True`。
+  如果在该帧按下了 `key` 返回 `True`，否则返回 `False`。如果指定了 `hold` 和 `repeat`，当按下 `key` 的时间达到 `hold` 帧或更多时，每隔 `repeat` 帧返回一次 `True`。
 
 - `btnr(key)`<br>
-  如果`key`被松开，则在此帧返回`True`，否则返回`False`。
+  如果在该帧释放了 `key` 返回 `True`，否则返回 `False`。
 
 - `mouse(visible)`<br>
-  如果`visible`为`True`则显示鼠标指针，为`False`则不显示。即使鼠标指针不显示，其位置同样会被更新。
+  如果 `visible` 为 `True`，显示鼠标光标。如果 `visible` 为 `False`，隐藏光标。即使光标被隐藏，它的位置仍然会更新。
 
-### 显示
+### 图形
 
 - `colors`<br>
-  展示调色板可以显示的颜色列表。颜色以 24 位数值格式进行展示。使用`colors.from_list`和`colors.to_list`直接指定货检索 Python 列表。<br>
-  示例：`old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
+  调色板显示颜色的列表。显示颜色由 24 位数值指定。使用 `colors.from_list` 和 `colors.to_list` 直接分配和获取 Python 列表。<br>
+  例子：`old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  图像库列表 (0-2)<br>
-  示例：`pyxel.images[0].load(0, 0, "title.png")`
+  图像库的列表 (0-2)<br>
+  例子：`pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  瓦片贴图列表 (0-7)
+  瓦片地图的列表 (0-7)
 
 - `clip(x, y, w, h)`<br>
-  设置画面绘制区域为从 (`x`, `y`) 开始的宽度`w`、高度为`h`的区域。`clip()`可以将绘制区域重置为全屏。
+  设置从 (`x`, `y`) 开始，宽度为 `w`，高度为 `h` 的绘制区域。调用 `clip()` 重置绘制区域为全屏。
 
 - `camera(x, y)`<br>
-  更改视角等起始位置，使位置 (`x`, `y`) 成为屏幕左上角的起始位置，这将有助于切换视角。若想恢复起始位置，使用`camera()`或 `camera(0, 0)` 即可完成重置。
+  将屏幕左上角的坐标更改为 (`x`, `y`)。调用 `camera()` 将左上角坐标重置为 (`0`, `0`)。
 
 - `pal(col1, col2)`<br>
-  绘制时用`col1`颜色代替`col2`颜色。`pal()`可以重置为初始色调。
+  绘制时将颜色 `col1` 替换为 `col2`。调用 `pal()` 重置为初始调色板。
 
 - `dither(alpha)`<br>
-  在绘制时应用抖动 (伪透明)。在 `0.0`-`1.0` 的范围内设置 `alpha`，其中 `0.0` 表示透明，`1.0` 表示不透明。
+  绘制时应用抖动（伪透明）。设置 `alpha` 范围为 `0.0`-`1.0`，其中 `0.0` 表示透明，`1.0` 表示不透明。
 
 - `cls(col)`<br>
-  用`col`颜色清空画面。
+  使用颜色 `col` 清除屏幕。
 
 - `pget(x, y)`<br>
-  获取 (`x`, `y`) 处的像素颜色。
+  获取 (`x`, `y`) 处像素的颜色。
 
 - `pset(x, y, col)`<br>
-  用`col`颜色在 (`x`, `y`) 处绘制一个像素点。
+  在 (`x`, `y`) 处绘制颜色为 `col` 的像素。
 
 - `line(x1, y1, x2, y2, col)`<br>
-  用`col`颜色画一条从 (`x1`, `y1`) 到 (`x2`, `y2`) 的直线。
+  从 (`x1`, `y1`) 到 (`x2`, `y2`) 绘制颜色为 `col` 的线条。
 
 - `rect(x, y, w, h, col)`<br>
-  用`col`颜色绘制一个从 (`x`, `y`) 开始的宽为`w`、高为`h`的矩形。
+  从 (`x`, `y`) 开始绘制宽度为 `w`，高度为 `h` 的颜色为 `col` 的矩形。
 
 - `rectb(x, y, w, h, col)`<br>
-  用`col`颜色绘制从 (`x`, `y`) 开始的宽为`w`、高为`h`的矩形边框。
+  从 (`x`, `y`) 开始绘制宽度为 `w`，高度为 `h` 的颜色为 `col` 的矩形轮廓。
 
 - `circ(x, y, r, col)`<br>
-  用`col`颜色绘制圆心为 (`x`, `y`)，半径为`r`的圆形。
+  在 (`x`, `y`) 处绘制半径为 `r`，颜色为 `col` 的圆。
 
 - `circb(x, y, r, col)`<br>
-  用`col`颜色绘制圆心为 (`x`, `y`)，半径为`r`的圆形边框。
+  在 (`x`, `y`) 处绘制半径为 `r`，颜色为 `col` 的圆轮廓。
 
 - `elli(x, y, w, h, col)`<br>
-  从 (`x`, `y`) 画一个宽度`w`，高度`h`，颜色`col`的椭圆。
+  从 (`x`, `y`) 开始绘制宽度为 `w`，高度为 `h` 的颜色为 `col` 的椭圆。
 
 - `ellib(x, y, w, h, col)`<br>
-  从 (`x`, `y`) 画出一个宽`w`，高`h`，颜色`col`的椭圆轮廓。
+  从 (`x`, `y`) 开始绘制宽度为 `w`，高度为 `h` 的颜色为 `col` 的椭圆轮廓。
 
 - `tri(x1, y1, x2, y2, x3, y3, col)`<br>
-  用`col`颜色绘制顶点分别为 (`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`) 的三角形。
+  绘制顶点为 (`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`)，颜色为 `col` 的三角形。
 
 - `trib(x1, y1, x2, y2, x3, y3, col)`<br>
-  用`col`颜色绘制顶点分别为 (`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`) 的三角形边框。
+  绘制顶点为 (`x1`, `y1`)，(`x2`, `y2`)，(`x3`, `y3`)，颜色为 `col` 的三角形轮廓。
 
 - `fill(x, y, col)`<br>
-  从 (`x`, `y`) 画一个宽度`w`，高度`h`，颜色`col`的椭圆。
+  使用颜色 `col` 填充与 (`x`, `y`) 颜色相同的区域。
 
 - `blt(x, y, img, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  将尺寸为 (`w`, `h`) 的区域从图像库的 (`u`, `v`) 复制到 (`x`, `y`)。若`w`或`h`为负值，则在水平或垂直方向上翻转。若指定了`colkey`的值，则视作透明颜色。如果指定了 `rotate`(度)、`scale`(1.0=100%) 或两者，则将应用相应的变换。
+  将图像库 `img`(0-2) 中从 (`u`, `v`) 开始的大小为 (`w`, `h`) 的区域复制到 (`x`, `y`)。如果 `w` 和/或 `h` 设置为负值，该区域将水平和/或垂直翻转。如果指定了 `colkey`，则该颜色将被视为透明色。如果指定了 `rotate`（以度为单位），`scale`（1.0 = 100%），或两者，应用相应的转换。
 
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  从瓦片图`tm`(0-7) 的 (`u`，`v`) 复制大小为 (`w`，`h`) 的区域到 (`x`，`y`)。如果为`w`和/或`h`设置了负值，它将在水平和/或垂直方向上反转。如果指定了 `colkey`，将被视为透明色。如果指定了 `rotate`(度)、`scale`(1.0=100%) 或两者，则将应用相应的变换。瓦片的大小是 8x8 像素，以`(tile_x, tile_y)`的元组形式存储在瓦片图中。
+  将瓦片地图 `tm`(0-7) 中从 (`u`, `v`) 开始的大小为 (`w`, `h`) 的区域复制到 (`x`, `y`)。如果 `w` 和/或 `h` 设置为负值，该区域将水平和/或垂直翻转。如果指定了 `colkey`，则该颜色将被视为透明色。如果指定了 `rotate`（以度为单位），`scale`（1.0 = 100%），或两者，应用相应的转换。瓦片的大小为 8x8 像素，并以 `(tile_x, tile_y)` 元组存储在瓦片地图中。
 
 <img src="images/bltm_figure.png">
 
 - `text(x, y, s, col)`<br>
-  用`col`颜色在 (`x`, `y`) 绘制字符串`s`。
+  在 (`x`, `y`) 处以颜色 `col` 绘制字符串 `s`。
 
-### 声音
+### 音频
 
 - `sounds`<br>
-  声音列表 (0-63)<br>
-  示例：`pyxel.sounds[0].speed = 60`
+  sounds 列表 (0-63)<br>
+  例子：`pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  音乐列表 (0-7)
+  musics 列表 (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
-  播放通道`ch`(0-3) 中的声音`snd`(0-63)。如果声音`snd`是一个列表，则按顺序播放。播放开始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果`loop`被指定为`True`则循环播放。播放结束后要恢复之前的声音，请将 `resume` 设置为 `True`。
+  在通道 `ch`(0-3) 上播放 sound `snd`(0-63)。如果 `snd` 是一个列表，sounds 将依次播放。播放的起始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果 `loop` 设置为 `True`，则执行循环播放。要在播放结束后恢复到之前的声音，设置 `resume` 为 `True`。
 
 - `playm(msc, [tick], [loop])`<br>
-  播放音乐`msc`(0-7)。播放开始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果`loop`被指定为`True`则循环播放。
+  播放 music `msc`(0-7)。播放的起始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果 `loop` 设置为 `True`，则执行循环播放。
 
 - `stop([ch])`<br>
-  停止指定通道`ch`(0-3) 的重播。`stop()`可以停止所有通道的播放。
+  停止指定通道 `ch`(0-3) 的播放。调用 `stop()` 停止所有通道。
 
 - `play_pos(ch)`<br>
-  获取通道`ch`(0-3) 中音频重播位置`(sound_no, note_no)`。若重播被停止则返回`None`。
+  获取通道 `ch`(0-3) 的 sound 播放位置，作为 `(sound_no, note_no)` 的元组返回。当播放停止时，返回 `None`。
 
 ### 数学
 
 - `ceil(x)`<br>
-  返回大于或等于`x`的最小的整数。
+  返回大于或等于 `x` 的最小整数。
 
 - `floor(x)`<br>
-  返回小于或等于`x`的最大整数。
+  返回小于或等于 `x` 的最大整数。
 
 - `sgn(x)`<br>
-  当`x`是正数时返回 `1`，当它是零时返回 `0`，当它是负数时返回 `1`。
+  当 `x` 为正数时返回 `1`，当 `x` 为 `0` 时返回 `0`，当 `x` 为负数时返回 `-1`。
 
 - `sqrt(x)`<br>
-  返回`x`的平方根。
+  返回 `x` 的平方根。
 
 - `sin(deg)`<br>
-  返回`deg`度的正弦。
+  返回 `deg` 度的正弦值。
 
 - `cos(deg)`<br>
-  返回`deg`度的余弦。
+  返回 `deg` 度的余弦值。
 
 - `atan2(y, x)`<br>
-  返回`y`/`x`的正切，单位是度。
+  返回 `y`/`x` 的反正切值，单位为度。
 
 - `rseed(seed)`<br>
-  设置随机数发生器的种子。
+  设置随机数生成器的种子。
 
 - `rndi(a, b)`<br>
-  返回一个大于或等于`a`且小于或等于`b`的随机整数。
+  返回大于或等于 `a` 且小于或等于 `b` 的随机整数。
 
 - `rndf(a, b)`<br>
-  返回一个大于或等于`a`且小于或等于`b`的随机小数。
+  返回大于或等于 `a` 且小于或等于 `b` 的随机浮点数。
 
 - `nseed(seed)`<br>
-  设置佩林噪声的种子。
+  设置 Perlin 噪声的种子。
 
 - `noise(x, [y], [z])`<br>
-  返回指定坐标的佩林噪声值。
+  返回指定坐标的 Perlin 噪声值。
 
 ### Image 类
 
-- `width`，`height`<br>
-  图像的宽和高
+- `width`, `height`<br>
+  图像的宽度和高度
 
 - `set(x, y, data)`<br>
-  使用字符串列表设置坐标 (`x`, `y`) 处的图像。<br>
-  示例：`pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
+  使用字符串列表在 (`x`, `y`) 处设置图像。<br>
+  例子：`pyxel.images[0].set(10, 10, ["0123", "4567", "89ab", "cdef"])`
 
 - `load(x, y, filename)`<br>
   在 (`x`, `y`) 处加载图像文件 (PNG/GIF/JPEG)。
 
 - `pget(x, y)`<br>
-  获取 (`x`, `y`) 处的像素颜色。
+  获取 (`x`, `y`) 处像素的颜色。
 
 - `pset(x, y, col)`<br>
-  用`col`颜色在 (`x`, `y`) 处绘制一个像素点。
+  在 (`x`, `y`) 处绘制颜色为 `col` 的像素。
 
 ### Tilemap 类
 
-- `width`，`height`<br>
-  瓦片地图的宽和高
+- `width`, `height`<br>
+  瓦片地图的宽度和高度
 
 - `imgsrc`<br>
-  被瓦片地图 tilemap 引用的图像库 (0-2)
+  瓦片地图引用的图像库 (0-2)
 
 - `set(x, y, data)`<br>
-  使用字符串列表在坐标 (`x`, `y`) 处设置瓦片地图。<br>
-  示例：`pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
+  使用字符串列表在 (`x`, `y`) 处设置瓦片地图。<br>
+  例子：`pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  从位于 (`x`, `y`) 处的 TMX 文件 (Tiled Map File) 中以绘图顺序 `layer`(0-) 加载图层。
+  在 (`x`, `y`) 处从 TMX 文件 (Tiled Map File) 加载绘制顺序为 `layer`(0-) 的图层。
 
 - `pget(x, y)`<br>
-  得到 (`x`, `y`) 处的瓦片。瓦片数据为元组`(tile_x, tile_y)`。
+  获取 (`x`, `y`) 处的瓦片。瓦片表示为 `(tile_x, tile_y)` 的元组。
 
 - `pset(x, y, tile)`<br>
-  在 (`x`, `y`) 处画出瓦片`tile`。瓦片数据为元组`(tile_x, tile_y)`。
+  在 (`x`, `y`) 处绘制一个瓦片。瓦片表示为 `(tile_x, tile_y)` 的元组。
 
 ### Sound 类
 
 - `notes`<br>
-  音符列表 (0-127)，数字越高，音调越高。数字达到 `33` 时，音调就达到'A2'(440Hz)。其余为`-1`。
+  音符 (0-127) 的列表。数值越大，音高越高。音符 `33` 对应 'A2'(440Hz)。休止符表示为 `-1`。
 
 - `tones`<br>
-  音色列表 (0:三角波 / 1:方波 / 2:脉冲 / 3:噪声)
+  音色的列表 (0:Triangle / 1:Square / 2:Pulse / 3:Noise)
 
 - `volumes`<br>
-  音量列表 (0-7)
+  音量的列表 (0-7)
 
 - `effects`<br>
-  音效列表 (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
+  效果的列表 (0:None / 1:Slide / 2:Vibrato / 3:FadeOut / 4:Half-FadeOut / 5:Quarter-FadeOut)
 
 - `speed`<br>
-  播放速度。`1` 为最快，数字越大，速度越慢。数字 `120` 时，每个音符长度为 1 秒。
+  播放速度。`1` 是最快的，数值越大，播放速度越慢。当 `120` 时，一个音符的长度为 1 秒。
 
 - `set(notes, tones, volumes, effects, speed)`<br>
-  使用字符串设置音符、音色、音量及音效。如果音色、音量及音效的字符串比音符字符串短，则从开头重复。
+  使用字符串设置音符、音色、音量和效果。如果音色、音量或效果的长度比音符短，它们将从头开始重复。
 
 - `set_notes(notes)`<br>
-  使用由'CDEFGAB'+'#-'+'01234'或'R'组成的字符串设置音符。大小写不敏感，且空格会被忽略。<br>
-  示例：`pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
+  使用由 'CDEFGAB'+'#-'+'01234' 或 'R' 组成的字符串设置音符。它不区分大小写，并忽略空白。<br>
+  例子：`pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-  使用由'TSPN'组成的字符串设置音色。大小写不敏感，且空格会被忽略。<br>
-  示例：`pyxel.sounds[0].set_tones("TTSS PPPN")`
+  使用由 'TSPN' 组成的字符串设置音色。不区分大小写，并忽略空白。<br>
+  例子：`pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-  使用由'01234567'组成的字符串设置音量。大小写不敏感，且空格会被忽略。<br>
-  示例：`pyxel.sounds[0].set_volumes("7777 7531")`
+  使用由 '01234567' 组成的字符串设置音量。不区分大小写，并忽略空白。<br>
+  例子：`pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  使用由'NSVFHQ'组成的字符串设置音效。大小写不敏感，且空格会被忽略。<br>
-  示例：`pyxel.sounds[0].set_effects("NFNF NVVS")`
+  使用由 'NSVFHQ' 组成的字符串设置效果。不区分大小写，并忽略空白。<br>
+  例子：`pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 ### Music 类
 
 - `seqs`<br>
-  二维的声音列表 (0-63)，带有通道的数量
+  一个二维列表，包含多个通道的 sounds (0-63)
 
 - `set(seq0, seq1, seq2, ...)`<br>
-  设置通道的声音列表 (0-63)。如果指定了空列表，则对应通道不会用来播放。<br>
-  示例：`pyxel.musics[0].set([0, 1], [], [3])`
+  设置每个通道的 sound (0-63) 列表。如果指定了空列表，则该通道不会用于播放。<br>
+  例子：`pyxel.musics[0].set([0, 1], [], [3])`
 
 ### 高级 API
 
