@@ -325,23 +325,23 @@ Dizin izleme `Ctrl(Command)+C` tuşlarına basılarak durdurulabilir.
 Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçekleştirilebilir:
 
 - `Esc`<br>
-  Uygulamadan çıkış yapar
+  Вийти з програми
 - `Alt(Option)+1`<br>
-  Ekran görüntüsünü masaüstüne kaydeder
+  Зберегти знімок екрану на робочий стіл
 - `Alt(Option)+2`<br>
-  Ekran kaydının başlangıç zamanını sıfırlar
+  Скинути час початку запису відео з екрану
 - `Alt(Option)+3`<br>
-  Ekran videosunu masaüstüne kaydeder (en fazla 10 saniye)
+  Зберегти відео захоплення екрану на робочий стіл (до 10 секунд)
 - `Alt(Option)+9`<br>
-  Ekran modları arasında geçiş yapar (Crisp/Smooth/Retro)
+  Перемикати між режимами екрану (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
-  Performans monitörünü açıp kapatır (fps, güncelleme süresi ve çizim süresi)
+  Перемикати монітор продуктивності (FPS/`update` час/`draw` час)
 - `Alt(Option)+Enter`<br>
-  Tam ekran modunu açıp kapatır
+  Перемикати повноекранний режим
 - `Shift+Alt(Option)+1/2/3`<br>
-  İlgili görüntü setini masaüstüne kaydeder
+  Зберегти відповідний банк зображень на робочий стіл
 - `Shift+Alt(Option)+0`<br>
-  Mevcut renk paletini masaüstüne kaydeder
+  Зберегти поточну кольорову палітру на робочий стіл
 
 ### Kaynak oluşturma
 

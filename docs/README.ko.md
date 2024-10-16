@@ -327,21 +327,21 @@ Pyxel 애플리케이션이 실행 중일 때, 다음의 특수 키 조작을 �
 - `Esc`<br>
   애플리케이션 종료
 - `Alt(Option)+1`<br>
-  바탕 화면에 스크린샷 저장
+  화면 캡처를 데스크탑에 저장
 - `Alt(Option)+2`<br>
-  화면 캡처의 녹화 시작 시간 초기화
+  화면 캡처 비디오의 시작 시간을 재설정
 - `Alt(Option)+3`<br>
-  화면 캡처 파일을 바탕 화면에 저장 (최대 10초)
+  화면 캡처 비디오를 데스크탑에 저장 (최대 10초)
 - `Alt(Option)+9`<br>
-  화면 모드 (Crisp/Smooth/Retro) 전환하기
+  화면 모드 (Crisp/Smooth/Retro) 전환
 - `Alt(Option)+0`<br>
-  성능 모니터 (fps, update time, draw time) 표시/숨기기
+  성능 모니터 (FPS/`update` 시간/`draw` 시간) 전환
 - `Alt(Option)+Enter`<br>
   전체 화면 전환
 - `Shift+Alt(Option)+1/2/3`<br>
-  해당 이미지 뱅크를 바탕 화면에 저장합니다
+  해당 이미지 뱅크를 데스크탑에 저장
 - `Shift+Alt(Option)+0`<br>
-  현재 색상표를 바탕화면에 저장
+  현재 색상 팔레트를 데스크탑에 저장
 
 ### 리소스의 작성 방법
 

@@ -325,23 +325,23 @@ A monitorização do diretório pode ser interrompida premindo `Ctrl(Command)+C`
 Durante a execução de uma aplicação Pyxel, as seguintes operações de teclas especiais podem ser realizadas:
 
 - `Esc`<br>
-  Encerra a aplicação
+  Sair do aplicativo
 - `Alt(Option)+1`<br>
-  Salva a captura de tela na área de trabalho
+  Salvar a captura de tela na área de trabalho
 - `Alt(Option)+2`<br>
-  Reinicia o tempo de início da gravação do vídeo de captura de tela.
+  Reiniciar o tempo de início da gravação do vídeo de captura de tela
 - `Alt(Option)+3`<br>
-  Salva o vídeo de captura de tela na área de trabalho (até 10 segundos)
+  Salvar um vídeo de captura de tela na área de trabalho (até 10 segundos)
 - `Alt(Option)+9`<br>
-  Alternar entre os modos de ecrã (Crisp/Smooth/Retro)
+  Alternar entre os modos de tela (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
-  Ativa/desativa o monitor de performance (fps, tempo de update e tempo de draw)
+  Alternar o monitor de desempenho (FPS/`update` tempo/`draw` tempo)
 - `Alt(Option)+Enter`<br>
-  Ativa/desativa tela cheia
+  Alternar para tela cheia
 - `Shift+Alt(Option)+1/2/3`<br>
-  Guardar o banco de imagens correspondente no ambiente de trabalho
+  Salvar a respectiva imagem na área de trabalho
 - `Shift+Alt(Option)+0`<br>
-  Guardar a paleta de cores atual no ambiente de trabalho
+  Salvar a paleta de cores atual na área de trabalho
 
 ### Como criar recursos
 

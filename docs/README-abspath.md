@@ -335,9 +335,9 @@ The following special key actions are available while a Pyxel application is run
 - `Alt(Option)+9`<br>
   Switch between screen modes (Crisp/Smooth/Retro)
 - `Alt(Option)+0`<br>
-  Toggle the performance monitor (fps, update time, and draw time)
+  Toggle the performance monitor (fps/`update` time/`draw` time)
 - `Alt(Option)+Enter`<br>
-  Toggle full screen
+  Toggle fullscreen
 - `Shift+Alt(Option)+1/2/3`<br>
   Save the corresponding image bank to the desktop
 - `Shift+Alt(Option)+0`<br>
