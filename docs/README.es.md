@@ -363,7 +363,7 @@ Pyxel Editor tiene los siguientes modos de edición.
 
 **Editor de imágenes**
 
-El modo para editar las imágenes de las bancas de imágenes.
+El modo para editar la imagen en cada banco de imágenes.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
