@@ -2,7 +2,7 @@
 
 ## 2.2.6
 
-- Refined descriptions in the READMEs
+- Fully revised the translations of all README files
 
 ## 2.2.5
 
