@@ -50,7 +50,7 @@ Pyxel, [MIT Lisansı](../LICENSE) altında açık kaynaklıdır ve ücretsiz ola
 - 3 adet 256x256 boyutunda görüntü bankası
 - 8 adet 256x256 boyutunda karo haritası
 - 64 tanımlanabilir ses ile 4 kanal
-- Herhangi bir sesi birleştirebilen 8 müzik
+- Herhangi bir sesi birleştirebilen 8 müzik parçası
 - Klavye, fare ve gamepad girişi
 - Görüntü ve ses düzenleme araçları
 - Kullanıcı tarafından genişletilebilir renkler, kanallar ve bankalar
