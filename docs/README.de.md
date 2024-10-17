@@ -50,7 +50,7 @@ Pyxel ist unter der [MIT-Lizenz](../LICENSE) Open Source und kostenlos zu verwen
 - 3 256x256 große Bilddatenbanken
 - 8 256x256 große Tilemaps
 - 4 Kanäle mit 64 definierbaren Sounds
-- 8 Musikstücke, die beliebige Sounds kombinieren können
+- 8 Musiktracks, die beliebige Sounds kombinieren können
 - Eingaben über Tastatur, Maus und Gamepad
 - Werkzeuge zum Bearbeiten von Bildern und Sounds
 - Benutzererweiterbare Farben, Kanäle und Datenbanken
