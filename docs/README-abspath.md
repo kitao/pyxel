@@ -50,7 +50,7 @@ Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob
 - 3 256x256-sized image banks
 - 8 256x256-sized tilemaps
 - 4 channels with 64 definable sounds
-- 8 musics that can combine any sounds
+- 8 music tracks combining any sounds
 - Keyboard, mouse, and gamepad inputs
 - Image and sound editing tools
 - User-extensible colors, channels, and banks

@@ -47,12 +47,12 @@ O Pyxel é de código aberto sob a [Licença MIT](../LICENSE) e é gratuito para
 - Funciona no Windows, Mac, Linux e Web
 - Programação em Python
 - Paleta de 16 cores
-- 3 bancos de imagem de 256x256
-- 8 mapas de tiles de 256x256
+- 3 bancos de imagens de 256x256
+- 8 mapas de blocos de 256x256
 - 4 canais com 64 sons definíveis
-- 8 músicas que podem combinar qualquer som
+- 8 faixas de música que podem combinar quaisquer sons
 - Entradas de teclado, mouse e gamepad
-- Ferramentas de edição de imagem e som
+- Ferramentas de edição de imagens e sons
 - Cores, canais e bancos extensíveis pelo usuário
 
 ### Paleta de cores
