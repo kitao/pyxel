@@ -363,7 +363,7 @@ Pyxel Editor aşağıdaki düzenleme modlarına sahiptir.
 
 **Resim Editörü**
 
-Resim bankalarını düzenlemek için kullanılan mod.
+Her resim bankasındaki resmi düzenlemek için kullanılan mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">

@@ -363,7 +363,7 @@ Pyxel Editor 有以下编辑模式。
 
 **图像编辑器**
 
-用于编辑图像库的模式。
+用于编辑每个图像库中图像的模式。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">

@@ -363,7 +363,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 **이미지 편집기**
 
-이미지 뱅크를 편집하는 모드입니다.
+각 이미지 뱅크의 이미지를 편집하는 모드입니다.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
