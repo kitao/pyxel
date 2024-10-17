@@ -363,7 +363,7 @@ Pyxel Editor має такі режими редагування.
 
 **Редактор зображень**
 
-Режим для редагування банків зображень.
+Режим для редагування зображення в кожному банку зображень.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
