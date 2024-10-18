@@ -383,7 +383,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 **サウンドエディタ**
 
-サウンドを編集する画面です。
+メロディーや効果音に使用するサウンドを編集する画面です。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">

@@ -383,7 +383,7 @@ Faites glisser et déposez un fichier TMX (Tiled Map File) sur l'éditeur de til
 
 **Éditeur de sons**
 
-Le mode pour éditer des sons.
+Le mode pour éditer les sons utilisés pour les mélodies et les effets sonores.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
