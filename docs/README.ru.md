@@ -363,7 +363,7 @@ Pyxel Editor имеет следующие режимы редактирован
 
 **Редактор изображений**
 
-Режим для редактирования банков изображений.
+Режим для редактирования изображения в каждом банке изображений.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
@@ -383,7 +383,7 @@ Pyxel Editor имеет следующие режимы редактирован
 
 **Редактор звуков**
 
-Режим для редактирования звуков.
+Режим редактирования звуков, используемых для мелодий и звуковых эффектов.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">

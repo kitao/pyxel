@@ -383,7 +383,7 @@ Pyxel Editor має такі режими редагування.
 
 **Редактор звуку**
 
-Режим для редагування звуків.
+Режим для редагування звуків, що використовуються для мелодій і звукових ефектів。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
