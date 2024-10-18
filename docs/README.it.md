@@ -383,7 +383,7 @@ Trascina e rilascia un file TMX (Tiled Map File) sull'editor di tilemap per cari
 
 **Editor di Suoni**
 
-Il modo per modificare i suoni.
+Il modo per modificare i suoni utilizzati per le melodie e gli effetti sonori.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">

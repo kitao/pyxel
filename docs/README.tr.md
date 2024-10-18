@@ -383,7 +383,7 @@ Bir TMX dosyasını (Tiled Map File) tilemap editörüne sürükleyip bırakarak
 
 **Ses Editörü**
 
-Sesleri düzenlemek için kullanılan mod.
+Melodi ve ses efektlerinde kullanılan sesleri düzenlemek için mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">

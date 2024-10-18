@@ -383,7 +383,7 @@ Pyxel Editor 有以下编辑模式。
 
 **声音编辑器**
 
-用于编辑声音的模式。
+用于编辑用于旋律和音效的声音的模式。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
