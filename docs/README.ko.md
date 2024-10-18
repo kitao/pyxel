@@ -383,7 +383,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 **사운드 편집기**
 
-사운드를 편집하는 모드입니다.
+멜로디와 사운드 효과에 사용되는 사운드를 편집하는 모드입니다.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">

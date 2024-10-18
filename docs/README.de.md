@@ -371,7 +371,7 @@ Der Modus zum Bearbeiten des Bildes in jeder Bilderbank.
 
 Sie können eine Bilddatei (PNG/GIF/JPEG) in den Bildeditor ziehen und ablegen, um das Bild in die aktuell ausgewählte Bilderbank zu laden.
 
-**Tilemap-Editor**
+**Tilemapeditor**
 
 Der Modus zum Bearbeiten von Tilemaps, in denen Bilder aus den Bilderbanken in einem Kachelmuster angeordnet sind.
 
@@ -383,7 +383,7 @@ Ziehen Sie eine TMX-Datei (Tiled Map File) in den Tilemap-Editor, um deren Schic
 
 **Soundeditor**
 
-Der Modus zum Bearbeiten von Klängen.
+Der Modus zum Bearbeiten von Klängen, die für Melodien und Effekte verwendet werden.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
