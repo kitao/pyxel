@@ -363,7 +363,7 @@ Pyxel Editor aşağıdaki düzenleme modlarına sahiptir.
 
 **Resim Editörü**
 
-Her resim bankasındaki resmi düzenlemek için kullanılan mod.
+Her **resim bankasındaki** resmi düzenlemek için kullanılan mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
@@ -371,19 +371,19 @@ Her resim bankasındaki resmi düzenlemek için kullanılan mod.
 
 Resim editörüne bir resim dosyası (PNG/GIF/JPEG) sürükleyip bırakarak, resmi şu anda seçili olan resim bankasına yükleyebilirsiniz.
 
-**Tilemap Editörü**
+**Karo Haritası Editörü**
 
-Resim bankalarının resimlerini bir döşeme düzeninde düzenlemek için kullanılan mod.
+Resim bankalarındaki görüntüleri bir **karo haritası** içinde düzenlemek için kullanılan mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-Bir TMX dosyasını (Tiled Map File) tilemap editörüne sürükleyip bırakarak, şu anda seçili olan tilemap numarasına karşılık gelen çizim sırasındaki katmanını yükleyebilirsiniz.
+Bir TMX dosyasını (Tiled Map File) karo haritası editörüne sürükleyip bırakarak, şu anda seçili olan karo haritası numarasına karşılık gelen çizim sırasındaki katmanını yükleyebilirsiniz.
 
 **Ses Editörü**
 
-Melodi ve ses efektlerinde kullanılan sesleri düzenlemek için mod.
+Melodi ve **ses** efektlerinde kullanılan sesleri düzenlemek için mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
@@ -391,7 +391,7 @@ Melodi ve ses efektlerinde kullanılan sesleri düzenlemek için mod.
 
 **Müzik Editörü**
 
-Seslerin çalma sırasına göre dizildiği müzikleri düzenlemek için kullanılan mod.
+Seslerin çalma sırasına göre dizildiği **müzikleri** düzenlemek için kullanılan mod.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
@@ -399,7 +399,7 @@ Seslerin çalma sırasına göre dizildiği müzikleri düzenlemek için kullan�
 
 ### Diğer Kaynak Oluşturma Yöntemleri
 
-Pyxel resimleri ve tilemap'leri aşağıdaki yöntemlerle de oluşturulabilir:
+Pyxel resimleri ve karo haritaları aşağıdaki yöntemlerle de oluşturulabilir:
 
 - `Image.set` fonksiyonu veya `Tilemap.set` fonksiyonu kullanarak bir dize listesinden resim oluşturun
 - `Image.load` fonksiyonu ile Pyxel paletindeki bir resim dosyasını (PNG/GIF/JPEG) yükleyin
@@ -562,7 +562,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Tilemap `tm` (0-7) içindeki (`u`, `v`) konumundan başlayarak (`w`, `h`) boyutundaki bölgeyi (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer atanırsa, bölge yatay ve/veya dikey olarak çevrilir. Eğer `colkey` belirtilirse, şeffaf renk olarak kabul edilir. Eğer `rotate` (derece cinsinden), `scale` (1.0 = %100) veya her ikisi belirtilirse, uygun dönüşümler uygulanır. Bir döşemenin boyutu 8x8 pikseldir ve döşeme haritasında `(tile_x, tile_y)` şeklinde bir ikili olarak saklanır.
+  Karo Haritası `tm` (0-7) içindeki (`u`, `v`) konumundan başlayarak (`w`, `h`) boyutundaki bölgeyi (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer atanırsa, bölge yatay ve/veya dikey olarak çevrilir. Eğer `colkey` belirtilirse, şeffaf renk olarak kabul edilir. Eğer `rotate` (derece cinsinden), `scale` (1.0 = %100) veya her ikisi belirtilirse, uygun dönüşümler uygulanır. Bir döşemenin boyutu 8x8 pikseldir ve döşeme haritasında `(tile_x, tile_y)` şeklinde bir ikili olarak saklanır.
 
 <img src="images/bltm_figure.png">
 
