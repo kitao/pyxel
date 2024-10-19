@@ -1,10 +1,11 @@
 use std::cmp::max;
+use std::fs;
 use std::fs::File;
 use std::io::{Read, Write};
-use std::path::{Path, PathBuf};
+use std::path::{Path, PathBuf, MAIN_SEPARATOR};
 
 use cfg_if::cfg_if;
-use platform_dirs::UserDirs;
+use directories::UserDirs;
 use zip::write::SimpleFileOptions;
 use zip::{ZipArchive, ZipWriter};
 
@@ -12,8 +13,10 @@ use crate::image::{Color, Image, Rgb24};
 use crate::pyxel::Pyxel;
 use crate::resource_data::{ResourceData1, ResourceData2};
 use crate::screencast::Screencast;
-use crate::settings::{DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC};
-use crate::{PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_NAME, RESOURCE_FORMAT_VERSION};
+use crate::settings::{
+    DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_NAME,
+    RESOURCE_FORMAT_VERSION, WORKING_DIR,
+};
 
 pub struct Resource {
     capture_scale: u32,
@@ -134,6 +137,25 @@ impl Pyxel {
         pyxel_platform::emscripten::save_file(filename);
     }
 
+    pub fn app_data_dir(&self, vender_name: &str, app_name: &str) -> String {
+        let home_dir = UserDirs::new()
+            .map(|user_dirs| user_dirs.home_dir().to_path_buf())
+            .unwrap_or_else(PathBuf::new);
+        let app_data_dir = home_dir
+            .join(WORKING_DIR)
+            .join(vender_name.to_lowercase())
+            .join(app_name.to_lowercase());
+        if !app_data_dir.exists() {
+            fs::create_dir_all(&app_data_dir).unwrap();
+            println!("created directory: '{}'", app_data_dir.to_string_lossy());
+        }
+        let mut app_data_dir = app_data_dir.to_string_lossy().to_string();
+        if !app_data_dir.ends_with(MAIN_SEPARATOR) {
+            app_data_dir.push(MAIN_SEPARATOR);
+        }
+        app_data_dir
+    }
+
     pub fn screenshot(&mut self, scale: Option<u32>) {
         let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
@@ -199,12 +221,10 @@ impl Pyxel {
     }
 
     fn prepend_desktop_path(basename: &str) -> String {
-        let desktop_dir = if let Some(user_dirs) = UserDirs::new() {
-            user_dirs.desktop_dir
-        } else {
-            PathBuf::new()
-        };
-        desktop_dir.join(basename).to_str().unwrap().to_string()
+        let desktop_dir = UserDirs::new()
+            .and_then(|user_dirs| user_dirs.desktop_dir().map(Path::to_path_buf))
+            .unwrap_or_else(PathBuf::new);
+        desktop_dir.join(basename).to_string_lossy().to_string()
     }
 
     fn parse_format_version(toml_text: &str) -> u32 {
