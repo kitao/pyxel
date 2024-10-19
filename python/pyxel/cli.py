@@ -127,7 +127,7 @@ def _check_file_under_dir(filename, dirname):
 
 
 def _create_app_dir():
-    play_dir = os.path.join(tempfile.gettempdir(), pyxel.WORKING_DIR, "play")
+    play_dir = os.path.join(tempfile.gettempdir(), pyxel.PYXEL_DIR, "play")
     pathlib.Path(play_dir).mkdir(parents=True, exist_ok=True)
     for path in glob.glob(os.path.join(play_dir, "*")):
         pid = int(os.path.basename(path))
@@ -141,7 +141,7 @@ def _create_app_dir():
 
 
 def _create_watch_info_file():
-    watch_dir = os.path.join(tempfile.gettempdir(), pyxel.WORKING_DIR, "watch")
+    watch_dir = os.path.join(tempfile.gettempdir(), pyxel.PYXEL_DIR, "watch")
     pathlib.Path(watch_dir).mkdir(parents=True, exist_ok=True)
     for path in glob.glob(os.path.join(watch_dir, "*")):
         pid = int(os.path.basename(path))
@@ -332,7 +332,7 @@ def create_executable_from_pyxel_app(pyxel_app_file):
         pyxel_app_file, "app2exe", pyxel.APP_FILE_EXTENSION
     )
     _check_file_exists(pyxel_app_file)
-    app2exe_dir = os.path.join(tempfile.gettempdir(), pyxel.WORKING_DIR, "app2exe")
+    app2exe_dir = os.path.join(tempfile.gettempdir(), pyxel.PYXEL_DIR, "app2exe")
     if os.path.isdir(app2exe_dir):
         shutil.rmtree(app2exe_dir)
     pathlib.Path(app2exe_dir).mkdir(parents=True, exist_ok=True)
