@@ -363,7 +363,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 **イメージエディタ**
 
-イメージバンクの画像を編集する画面です。
+**イメージバンク**の画像を編集する画面です。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
@@ -373,7 +373,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 **タイルマップエディタ**
 
-イメージバンクの画像をタイル状に並べたタイルマップを編集する画面です。
+イメージバンクの画像をタイル状に並べた**タイルマップ**を編集する画面です。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
@@ -383,7 +383,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 **サウンドエディタ**
 
-メロディーや効果音に使用するサウンドを編集する画面です。
+メロディーや効果音に使用する**サウンド**を編集する画面です。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
@@ -391,7 +391,7 @@ Pyxel Editor には、以下の編集モードがあります。
 
 **ミュージックエディタ**
 
-サウンドを再生順に並べたミュージックを編集する画面です。
+サウンドを再生順に並べた**ミュージック**を編集する画面です。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
