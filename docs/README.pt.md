@@ -47,7 +47,7 @@ O Pyxel é de código aberto sob a [Licença MIT](../LICENSE) e é gratuito para
 - Funciona no Windows, Mac, Linux e Web
 - Programação em Python
 - Paleta de 16 cores
-- 3 bancos de imagens de 256x256
+- 3 bancos de imagem de 256x256
 - 8 mapas de blocos de 256x256
 - 4 canais com 64 sons definíveis
 - 8 faixas de música que podem combinar quaisquer sons
@@ -504,7 +504,6 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
 
 - `tilemaps`<br>
   Lista dos mapas de ladrilhos (instâncias da classe Tilemap) (0-7)
-  Lista dos mapas de ladrilhos (0-7)
 
 - `clip(x, y, w, h)`<br>
   Define a área de desenho da tela de (`x`, `y`) com uma largura de `w` e uma altura de `h`. Chame `clip()` para redefinir a área de desenho para a tela inteira.
