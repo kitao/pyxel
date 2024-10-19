@@ -499,10 +499,11 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
   Exemplo: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  Lista dos bancos de imagem (0-2)<br>
+  Lista dos bancos de imagens (instâncias da classe Image) (0-2)<br>
   Exemplo: `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
+  Lista dos mapas de ladrilhos (instâncias da classe Tilemap) (0-7)
   Lista dos mapas de ladrilhos (0-7)
 
 - `clip(x, y, w, h)`<br>
@@ -572,11 +573,11 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
 ### Áudio
 
 - `sounds`<br>
-  Lista dos sons (0-63)<br>
+  Lista dos sons (instâncias da classe Sound) (0-63)<br>
   Exemplo: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  Lista das músicas (0-7)
+  Lista das músicas (instâncias da classe Music) (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
   Reproduz o som `snd`(0-63) no canal `ch`(0-3). Se `snd` for uma lista, os sons serão reproduzidos em sequência. A posição inicial da reprodução pode ser especificada por `tick`(1 tick = 1/120 segundos). Se `loop` for definido como `True`, a reprodução em loop será realizada. Para retomar o som anterior após o término da reprodução, defina `resume` como `True`.

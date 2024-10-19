@@ -499,11 +499,11 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Beispiel: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  Liste der Bildbanken (0-2)<br>
+  Liste der Bildbanken (Instanzen der Image-Klasse) (0-2)<br>
   Beispiel: `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  Liste der Tilemaps (0-7)
+  Liste der Tilemaps (Instanzen der Tilemap-Klasse) (0-7)
 
 - `clip(x, y, w, h)`<br>
   Setzt den Zeichenbereich des Bildschirms von (`x`, `y`) mit einer Breite von `w` und einer Höhe von `h`. Rufe `clip()` auf, um den Zeichenbereich auf den gesamten Bildschirm zurückzusetzen.
@@ -572,11 +572,11 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 ### Audio
 
 - `sounds`<br>
-  Liste der sounds (0-63)<br>
+  Liste der Sounds (Instanzen der Sound-Klasse) (0-63)<br>
   Beispiel: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  Liste der musics (0-7)
+  Liste der Musiken (Instanzen der Music-Klasse) (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
   Spielt den sound `snd`(0-63) auf dem Kanal `ch`(0-3). Wenn `snd` eine Liste ist, werden die sounds nacheinander abgespielt. Die Startposition kann durch `tick` (1 Tick = 1/120 Sekunden) angegeben werden. Wenn `loop` auf `True` gesetzt ist, wird die Wiedergabe wiederholt. Um nach dem Ende der Wiedergabe zum vorherigen Sound zurückzukehren, setze `resume` auf `True`.
