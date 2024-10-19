@@ -132,7 +132,7 @@ Os seguintes exemplos serão copiados para o seu diretório atual:
 </tr>
 <tr>
 <td>04_sound_api.py</td>
-<td>Demonstration of sound APIs</td>
+<td>Demonstração das APIs de som</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">Demonstração</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">Código</a></td>
 </tr>
@@ -363,7 +363,7 @@ O Pyxel Editor tem os seguintes modos de edição.
 
 **Editor de Imagem**
 
-O modo para editar a imagem em cada banco de imagens.
+O modo para editar a imagem em cada **banco de imagens**.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
@@ -371,19 +371,19 @@ O modo para editar a imagem em cada banco de imagens.
 
 Você pode arrastar e soltar um arquivo de imagem (PNG/GIF/JPEG) no editor de imagem para carregar a imagem no banco de imagens atualmente selecionado.
 
-**Editor de Tilemap**
+**Editor de Mapas de Ladrilhos**
 
-O modo para editar tilemaps que organizam imagens dos bancos de imagens em um padrão de ladrilhos.
+O modo para editar os **mapas de ladrilhos** que organizam imagens dos bancos de imagens em um padrão de ladrilhos.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-Arraste e solte um arquivo TMX (Tiled Map File) no editor de tilemap para carregar sua camada na ordem de desenho que corresponde ao número do tilemap atualmente selecionado.
+Arraste e solte um arquivo TMX (Tiled Map File) no editor de **mapas de ladrilhos** para carregar sua camada na ordem de desenho que corresponde ao número do mapa de ladrilhos atualmente selecionado.
 
 **Editor de Som**
 
-O modo para editar os sons utilizados para melodias e efeitos sonoros.
+O modo para editar os **sons** utilizados para melodias e efeitos sonoros.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
@@ -391,7 +391,7 @@ O modo para editar os sons utilizados para melodias e efeitos sonoros.
 
 **Editor de Música**
 
-O modo para editar musics em que os sons são organizados em ordem de reprodução.
+O modo para editar **músicas** em que os sons são organizados em ordem de reprodução.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
@@ -399,7 +399,7 @@ O modo para editar musics em que os sons são organizados em ordem de reproduç�
 
 ### Outros Métodos de Criação de Recursos
 
-Imagens e tilemaps do Pyxel também podem ser criados usando os seguintes métodos:
+Imagens e mapas de ladrilhos do Pyxel também podem ser criados usando os seguintes métodos:
 
 - Crie uma imagem a partir de uma lista de strings usando a função `Image.set` ou a função `Tilemap.set`
 - Carregue um arquivo de imagem (PNG/GIF/JPEG) na paleta do Pyxel com a função `Image.load`
