@@ -499,11 +499,11 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   例子：`old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  图像库的列表 (0-2)<br>
+  图像库的列表（Image 类的实例）(0-2)<br>
   例子：`pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  瓦片地图的列表 (0-7)
+  瓦片地图的列表（Tilemap 类的实例）(0-7)
 
 - `clip(x, y, w, h)`<br>
   设置从 (`x`, `y`) 开始，宽度为 `w`，高度为 `h` 的绘制区域。调用 `clip()` 重置绘制区域为全屏。
@@ -572,11 +572,11 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 ### 音频
 
 - `sounds`<br>
-  sounds 列表 (0-63)<br>
+  声音的列表（Sound 类的实例）(0-63)<br>
   例子：`pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  musics 列表 (0-7)
+  音乐的列表（Music 类的实例）(0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
   在通道 `ch`(0-3) 上播放 sound `snd`(0-63)。如果 `snd` 是一个列表，sounds 将依次播放。播放的起始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果 `loop` 设置为 `True`，则执行循环播放。要在播放结束后恢复到之前的声音，设置 `resume` 为 `True`。
