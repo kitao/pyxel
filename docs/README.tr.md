@@ -499,11 +499,11 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   Örnek: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  Görüntü bankalarının listesi (0-2)<br>
+  Görüntü bankalarının listesi (Image sınıfı örnekleri) (0-2)<br>
   Örnek: `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  Döşeme haritalarının listesi (0-7)
+  Döşeme haritalarının listesi (Tilemap sınıfı örnekleri) (0-7)
 
 - `clip(x, y, w, h)`<br>
   Ekranın çizim alanını (`x`, `y`) koordinatlarından genişlik `w` ve yükseklik `h` olarak ayarlar. Çizim alanını tam ekran olarak sıfırlamak için `clip()` çağrılır.
@@ -572,11 +572,11 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 ### Ses
 
 - `sounds`<br>
-  Seslerin listesi (0-63)<br>
+  Seslerin listesi (Sound sınıfı örnekleri) (0-63)<br>
   Örnek: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  Müziğin listesi (0-7)
+  Müziklerin listesi (Music sınıfı örnekleri) (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
   Kanal `ch`(0-3) üzerinde `snd`(0-63) sesini çalar. Eğer `snd` bir listeyse, sesler sırayla çalınır. Çalma başlangıç konumu `tick` (1 tick = 1/120 saniye) ile belirtilebilir. Eğer `loop` `True` olarak ayarlanmışsa, döngüsel çalma gerçekleştirilir. Çalma bittikten sonra önceki sese devam etmek için `resume` `True` olarak ayarlanır.

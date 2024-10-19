@@ -499,11 +499,11 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Example: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  List of the image banks (0-2)<br>
+  List of the image banks (instances of the Image class) (0-2)<br>
   Example: `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  List of the tilemaps (0-7)
+  List of the tilemaps (instances of the Tilemap class) (0-7)
 
 - `clip(x, y, w, h)`<br>
   Set the drawing area of the screen from (`x`, `y`) with a width of `w` and a height of `h`. Call `clip()` to reset the drawing area to full screen.
@@ -572,11 +572,11 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 ### Audio
 
 - `sounds`<br>
-  List of the sounds (0-63)<br>
+  List of the sounds (instances of the Sound class) (0-63)<br>
   Example: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  List of the musics (0-7)
+  List of the musics (instances of the Music class) (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
   Play the sound `snd`(0-63) on channel `ch`(0-3). If `snd` is a list, the sounds will be played in sequence. The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `loop` is set to `True`, loop playback is performed. To resume the previous sound after playback ends, set `resume` to `True`.

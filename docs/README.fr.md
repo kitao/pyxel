@@ -499,10 +499,11 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
   Exemple : `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  Liste des banques d'images (0-2)<br>
+  Liste des banques d'images (instances de la classe Image) (0-2)<br>
   Exemple : `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
+  Liste des cartes de tuiles (instances de la classe Tilemap) (0-7)
   Liste des cartes de tuiles (0-7)
 
 - `clip(x, y, w, h)`<br>
@@ -572,11 +573,11 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
 ### Audio
 
 - `sounds`<br>
-  Liste des sounds (0-63)<br>
+  Liste des sons (instances de la classe Sound) (0-63)<br>
   Exemple : `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  Liste des musics (0-7)
+  Liste des musiques (instances de la classe Music) (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
   Joue le sound `snd`(0-63) sur le canal `ch`(0-3). Si `snd` est une liste, les sounds seront joués en séquence. La position de départ peut être spécifiée par `tick` (1 tick = 1/120 secondes). Si `loop` est défini sur `True`, la lecture en boucle est activée. Pour reprendre le sound précédent après la fin de la lecture, définissez `resume` sur `True`.
