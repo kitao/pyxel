@@ -14,8 +14,8 @@ use crate::pyxel::Pyxel;
 use crate::resource_data::{ResourceData1, ResourceData2};
 use crate::screencast::Screencast;
 use crate::settings::{
-    DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, PALETTE_FILE_EXTENSION, RESOURCE_ARCHIVE_NAME,
-    RESOURCE_FORMAT_VERSION, WORKING_DIR,
+    BASE_DIR, DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, PALETTE_FILE_EXTENSION,
+    RESOURCE_ARCHIVE_NAME, RESOURCE_FORMAT_VERSION,
 };
 
 pub struct Resource {
@@ -142,7 +142,7 @@ impl Pyxel {
             .map(|user_dirs| user_dirs.home_dir().to_path_buf())
             .unwrap_or_else(PathBuf::new);
         let app_data_dir = home_dir
-            .join(WORKING_DIR)
+            .join(BASE_DIR)
             .join(vender_name.to_lowercase())
             .join(app_name.to_lowercase());
         if !app_data_dir.exists() {
