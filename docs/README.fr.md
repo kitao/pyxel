@@ -363,7 +363,7 @@ Pyxel Editor a les modes d'édition suivants.
 
 **Éditeur d'images**
 
-Le mode pour éditer l'image dans chaque banque d'images.
+Le mode pour éditer l'image dans chaque **banque d'images**.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
@@ -371,19 +371,19 @@ Le mode pour éditer l'image dans chaque banque d'images.
 
 Vous pouvez faire glisser et déposer un fichier d'image (PNG/GIF/JPEG) dans l'éditeur d'images pour charger l'image dans la banque d'images actuellement sélectionnée.
 
-**Éditeur de tilemaps**
+**Éditeur de cartes de tuiles**
 
-Le mode pour éditer les tilemaps qui organisent des images des banques d'images en un motif de tuiles.
+Le mode pour éditer les **cartes de tuiles** qui organisent des images des banques d'images en un motif de tuiles.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-Faites glisser et déposez un fichier TMX (Tiled Map File) sur l'éditeur de tilemaps pour charger sa couche dans l'ordre de dessin correspondant au numéro de tilemap actuellement sélectionné.
+Faites glisser et déposez un fichier TMX (Tiled Map File) sur l'éditeur de **cartes de tuiles** pour charger sa couche dans l'ordre de dessin correspondant au numéro de carte de tuiles actuellement sélectionné.
 
 **Éditeur de sons**
 
-Le mode pour éditer les sons utilisés pour les mélodies et les effets sonores.
+Le mode pour éditer les **sons** utilisés pour les mélodies et les effets sonores.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
@@ -391,7 +391,7 @@ Le mode pour éditer les sons utilisés pour les mélodies et les effets sonores
 
 **Éditeur de musique**
 
-Le mode pour éditer des musics dans lequel les sons sont organisés dans l'ordre de lecture.
+Le mode pour éditer des **musiques** dans lequel les sons sont organisés dans l'ordre de lecture.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
@@ -399,7 +399,7 @@ Le mode pour éditer des musics dans lequel les sons sont organisés dans l'ordr
 
 ### Autres méthodes de création de ressources
 
-Les images et les tilemaps Pyxel peuvent également être créés en utilisant les méthodes suivantes :
+Les images et les cartes de tuiles Pyxel peuvent également être créées en utilisant les méthodes suivantes :
 
 - Créer une image à partir d'une liste de chaînes en utilisant la fonction `Image.set` ou la fonction `Tilemap.set`
 - Charger un fichier d'image (PNG/GIF/JPEG) avec la palette Pyxel en utilisant la fonction `Image.load`
