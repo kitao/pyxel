@@ -363,7 +363,7 @@ Pyxel Editor tiene los siguientes modos de edición.
 
 **Editor de imágenes**
 
-El modo para editar la imagen en cada banco de imágenes.
+El modo para editar la imagen en cada **banco de imágenes**.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
@@ -371,19 +371,19 @@ El modo para editar la imagen en cada banco de imágenes.
 
 Puedes arrastrar y soltar un archivo de imagen (PNG/GIF/JPEG) en el editor de imágenes para cargar la imagen en la banca de imágenes actualmente seleccionada.
 
-**Editor de tilemaps**
+**Editor de mapas de teselas**
 
-El modo para editar tilemaps que organizan imágenes de las bancas de imágenes en un patrón de mosaico.
+El modo para editar los **mapas de teselas** que organizan imágenes de los bancos de imágenes en un patrón de teselas.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-Arrastra y suelta un archivo TMX (Tiled Map File) en el editor de tilemaps para cargar su capa en el orden de dibujo que corresponde al número de tilemap seleccionado actualmente.
+Arrastra y suelta un archivo TMX (Tiled Map File) en el editor de mapas de teselas para cargar su capa en el orden de dibujo que corresponde al número de mapa de teselas seleccionado actualmente.
 
 **Editor de sonidos**
 
-El modo para editar los sonidos utilizados para melodías y efectos de sonido.
+El modo para editar los **sonidos** utilizados para melodías y efectos de sonido.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
@@ -391,7 +391,7 @@ El modo para editar los sonidos utilizados para melodías y efectos de sonido.
 
 **Editor de música**
 
-El modo para editar musics en el que los sonidos están organizados en orden de reproducción.
+El modo para editar **músicas** en el que los sonidos están organizados en orden de reproducción.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
@@ -399,7 +399,7 @@ El modo para editar musics en el que los sonidos están organizados en orden de 
 
 ### Otras formas de crear recursos
 
-Las imágenes y tilemaps de Pyxel también se pueden crear utilizando los siguientes métodos:
+Las imágenes y los mapas de teselas de Pyxel también se pueden crear utilizando los siguientes métodos:
 
 - Crear una imagen a partir de una lista de cadenas utilizando la función `Image.set` o la función `Tilemap.set`
 - Cargar un archivo de imagen (PNG/GIF/JPEG) en la paleta de Pyxel con la función `Image.load`
