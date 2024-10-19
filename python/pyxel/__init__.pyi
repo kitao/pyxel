@@ -3,7 +3,7 @@ from typing import Any, Callable, Generic, List, Optional, Tuple, TypeVar, Union
 
 # Constants
 VERSION: str
-WORKING_DIR: str
+BASE_DIR: str
 WATCH_INFO_FILE_ENVVAR: str
 
 APP_FILE_EXTENSION: str
@@ -686,6 +686,7 @@ def save(
     incl_channels: Optional[bool] = None,
     incl_tones: Optional[bool] = None,
 ) -> None: ...
+def app_data_dir() -> str: ...
 def screenshot(scale: Optional[int] = None) -> None: ...
 def screencast(scale: Optional[int] = None) -> None: ...
 def reset_screencast() -> None: ...
