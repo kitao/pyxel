@@ -11,7 +11,7 @@
 
 **Pyxel** ist eine Retro-Spiel-Engine für Python.
 
-Die Spezifikationen sind von Retro-Spielkonsolen inspiriert, wie z. B. der Unterstützung von nur 16 Farben und 4 Soundkanälen, sodass Sie ganz einfach pixelartige Spiele erstellen können.
+Die Spezifikationen sind von Retro-Spielkonsolen inspiriert, wie z. B. der Unterstützung von nur 16 Farben und 4 Klangkanälen, sodass Sie ganz einfach pixelartige Spiele erstellen können.
 
 <img src="images/pyxel_message.png" width="480">
 
@@ -49,10 +49,10 @@ Pyxel ist unter der [MIT-Lizenz](../LICENSE) Open Source und kostenlos zu verwen
 - 16-Farben-Palette
 - 3 256x256 große Bilddatenbanken
 - 8 256x256 große Kachelkarten
-- 4 Kanäle mit 64 definierbaren Sounds
-- 8 Musiktracks, die beliebige Sounds kombinieren können
+- 4 Kanäle mit 64 definierbaren Klängen
+- 8 Musiktracks, die beliebige Klänge kombinieren können
 - Eingaben über Tastatur, Maus und Gamepad
-- Werkzeuge zum Bearbeiten von Bildern und Sounds
+- Werkzeuge zum Bearbeiten von Bildern und Klängen
 - Benutzererweiterbare Farben, Kanäle und Datenbanken
 
 ### Farbpallette
@@ -404,7 +404,7 @@ Pyxel-Bilder und Kachelkarten können auch mit folgenden Methoden erstellt werde
 - Erstellen Sie ein Bild aus einer Liste von Zeichenfolgen mit der `Image.set`-Funktion oder der `Tilemap.set`-Funktion
 - Laden Sie eine Bilddatei (PNG/GIF/JPEG) mit der `Image.load`-Funktion in die Pyxel-Palette
 
-Pyxel-Sounds können ebenfalls mit der folgenden Methode erstellt werden:
+Pyxel-Klänge können ebenfalls mit der folgenden Methode erstellt werden:
 
 - Erstellen Sie einen Klang aus Zeichenfolgen mit der `Sound.set`-Funktion oder der `Music.set`-Funktion
 
@@ -572,23 +572,23 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 ### Audio
 
 - `sounds`<br>
-  Liste der Sounds (Instanzen der Sound-Klasse) (0-63)<br>
+  Liste der Klänge (Instanzen der Sound-Klasse) (0-63)<br>
   Beispiel: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
   Liste der Musiken (Instanzen der Music-Klasse) (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
-  Spielt den sound `snd`(0-63) auf dem Kanal `ch`(0-3). Wenn `snd` eine Liste ist, werden die sounds nacheinander abgespielt. Die Startposition kann durch `tick` (1 Tick = 1/120 Sekunden) angegeben werden. Wenn `loop` auf `True` gesetzt ist, wird die Wiedergabe wiederholt. Um nach dem Ende der Wiedergabe zum vorherigen Sound zurückzukehren, setze `resume` auf `True`.
+  Spielt den Klang `snd`(0-63) auf dem Kanal `ch`(0-3). Wenn `snd` eine Liste ist, werden die Klänge nacheinander abgespielt. Die Startposition kann durch `tick` (1 Tick = 1/120 Sekunden) angegeben werden. Wenn `loop` auf `True` gesetzt ist, wird die Wiedergabe wiederholt. Um nach dem Ende der Wiedergabe zum vorherigen Klang zurückzukehren, setze `resume` auf `True`.
 
 - `playm(msc, [tick], [loop])`<br>
-  Spielt die music `msc`(0-7). Die Startposition kann durch `tick` (1 Tick = 1/120 Sekunden) angegeben werden. Wenn `loop` auf `True` gesetzt ist, wird die Wiedergabe wiederholt.
+  Spielt die Musik `msc`(0-7). Die Startposition kann durch `tick` (1 Tick = 1/120 Sekunden) angegeben werden. Wenn `loop` auf `True` gesetzt ist, wird die Wiedergabe wiederholt.
 
 - `stop([ch])`<br>
   Stoppt die Wiedergabe des angegebenen Kanals `ch`(0-3). Rufe `stop()` auf, um alle Kanäle zu stoppen.
 
 - `play_pos(ch)`<br>
-  Gibt die Wiedergabeposition des Sounds auf Kanal `ch`(0-3) als Tupel `(sound_no, note_no)` zurück. Gibt `None` zurück, wenn die Wiedergabe gestoppt wurde.
+  Gibt die Wiedergabeposition des Klangs auf Kanal `ch`(0-3) als Tupel `(sound_no, note_no)` zurück. Gibt `None` zurück, wenn die Wiedergabe gestoppt wurde.
 
 ### Mathematik
 
@@ -706,10 +706,10 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 ### Music-Klasse
 
 - `seqs`<br>
-  Eine zweidimensionale Liste der sounds (0-63) über mehrere Kanäle
+  Eine zweidimensionale Liste der Klänge (0-63) über mehrere Kanäle
 
 - `set(seq0, seq1, seq2, ...)`<br>
-  Setzt die Listen von sounds (0-63) für jeden Kanal. Wenn eine leere Liste angegeben wird, wird dieser Kanal nicht für die Wiedergabe verwendet.<br>
+  Setzt die Listen von Klängen (0-63) für jeden Kanal. Wenn eine leere Liste angegeben wird, wird dieser Kanal nicht für die Wiedergabe verwendet.<br>
   Beispiel: `pyxel.musics[0].set([0, 1], [], [3])`
 
 ### Fortgeschrittene API

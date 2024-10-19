@@ -120,19 +120,19 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>02_jump_game.py</td>
-<td>使用Pyxel资源文件的跳跃游戏</td>
+<td>使用 Pyxel 资源文件的跳跃游戏</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/02_jump_game.html">演示</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/02_jump_game.py">代码</a></td>
 </tr>
 <tr>
 <td>03_draw_api.py</td>
-<td>绘图API的演示</td>
+<td>绘图 API 的演示</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/03_draw_api.html">演示</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/03_draw_api.py">代码</a></td>
 </tr>
 <tr>
 <td>04_sound_api.py</td>
-<td>音频API的演示</td>
+<td>音频 API 的演示</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/04_sound_api.html">演示</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/04_sound_api.py">代码</a></td>
 </tr>
@@ -174,7 +174,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>11_offscreen.py</td>
-<td>使用Image类进行离屏渲染</td>
+<td>使用 Image 类进行离屏渲染</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/11_offscreen.html">演示</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/11_offscreen.py">代码</a></td>
 </tr>
@@ -198,7 +198,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>15_tiled_map_file.py</td>
-<td>加载和绘制Tiled Map File (.tmx)</td>
+<td>加载和绘制 Tiled Map File (.tmx)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/15_tiled_map_file.html">演示</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/15_tiled_map_file.py">代码</a></td>
 </tr>
@@ -216,7 +216,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>30sec_of_daylight.pyxapp</td>
-<td>第1届Pyxel Jam获胜游戏由 <a href="https://x.com/helpcomputer0">Adam</a> 制作</td>
+<td>第 1 届 Pyxel Jam 获胜游戏由 <a href="https://x.com/helpcomputer0">Adam</a> 制作</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">演示</a></td>
 <td><a href="https://github.com/kitao/30sec_of_daylight">代码</a></td>
 </tr>
