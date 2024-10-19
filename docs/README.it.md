@@ -48,7 +48,7 @@ Pyxel è open source sotto la [Licenza MIT](../LICENSE) ed è gratuito da usare.
 - Programmazione in Python
 - Palette di 16 colori
 - 3 banche immagini di 256x256
-- 8 tilemap di 256x256
+- 8 mappe a tessere di 256x256
 - 4 canali con 64 suoni definibili
 - 8 tracce musicali che possono combinare qualsiasi suono
 - Input da tastiera, mouse e gamepad
@@ -371,15 +371,15 @@ Il modo per modificare l'immagine in ciascuna **banca di immagini**.
 
 Puoi trascinare e rilasciare un file immagine (PNG/GIF/JPEG) nell'editor di immagini per caricare l'immagine nella banca di immagini attualmente selezionata.
 
-**Editor di Tilemap**
+**Editor di Mappe a Tessere**
 
-Il modo per modificare le **tilemap** in cui le immagini delle banche di immagini sono disposte in un modello di piastrelle.
+Il modo per modificare le **mappe a tessere** in cui le immagini delle banche di immagini sono disposte in un modello di piastrelle.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-Trascina e rilascia un file TMX (Tiled Map File) sull'editor di tilemap per caricare il suo strato nell'ordine di disegno corrispondente al numero di tilemap attualmente selezionato.
+Trascina e rilascia un file TMX (Tiled Map File) sull'editor di mappe a tessere per caricare il suo strato nell'ordine di disegno corrispondente al numero di mappa a tessere attualmente selezionato.
 
 **Editor di Suoni**
 
@@ -399,7 +399,7 @@ Il modo per modificare le **musiche** in cui i suoni sono disposti in ordine di 
 
 ### Altri metodi di creazione delle risorse
 
-Le immagini e le tilemap di Pyxel possono anche essere create utilizzando i seguenti metodi:
+Le immagini e le mappe a tessere di Pyxel possono anche essere create utilizzando i seguenti metodi:
 
 - Crea un'immagine da un elenco di stringhe utilizzando la funzione `Image.set` o la funzione `Tilemap.set`
 - Carica un file immagine (PNG/GIF/JPEG) nella palette Pyxel con la funzione `Image.load`
@@ -503,7 +503,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Esempio: `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  Elenco delle mappe di tile (istanze della classe Tilemap) (0-7)
+  Elenco delle mappe a tessere (istanze della classe Tilemap) (0-7)
 
 - `clip(x, y, w, h)`<br>
   Imposta l'area di disegno dello schermo da (`x`, `y`) con una larghezza di `w` e un'altezza di `h`. Chiama `clip()` per reimpostare l'area di disegno a tutto schermo.
@@ -562,7 +562,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copia la regione di dimensioni (`w`, `h`) da (`u`, `v`) della tilemap `tm`(0-7) a (`x`, `y`). Se viene assegnato un valore negativo a `w` e/o `h`, la regione verrà capovolta orizzontalmente e/o verticalmente. Se `colkey` è specificato, verrà trattato come un colore trasparente. Se vengono specificati `rotate` (in gradi), `scale` (1.0 = 100%) o entrambi, verranno applicate le trasformazioni corrispondenti. La dimensione di una tessera è 8x8 pixel ed è memorizzata in una tilemap come una tupla `(tile_x, tile_y)`.
+  Copia la regione di dimensioni (`w`, `h`) da (`u`, `v`) della mappa a tessere `tm`(0-7) a (`x`, `y`). Se viene assegnato un valore negativo a `w` e/o `h`, la regione verrà capovolta orizzontalmente e/o verticalmente. Se `colkey` è specificato, verrà trattato come un colore trasparente. Se vengono specificati `rotate` (in gradi), `scale` (1.0 = 100%) o entrambi, verranno applicate le trasformazioni corrispondenti. La dimensione di una tessera è 8x8 pixel ed è memorizzata in una mappa a tessere come una tupla `(tile_x, tile_y)`.
 
 <img src="images/bltm_figure.png">
 
@@ -649,13 +649,13 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 ### Classe Tilemap
 
 - `width`, `height`<br>
-  La larghezza e l'altezza della tilemap
+  La larghezza e l'altezza della mappa a tessere
 
 - `imgsrc`<br>
-  La banca immagini (0-2) a cui fa riferimento la tilemap
+  La banca immagini (0-2) a cui fa riferimento la mappa a tessere
 
 - `set(x, y, data)`<br>
-  Imposta la tilemap a (`x`, `y`) utilizzando un elenco di stringhe.<br>
+  Imposta la mappa a tessere a (`x`, `y`) utilizzando un elenco di stringhe.<br>
   Esempio: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
