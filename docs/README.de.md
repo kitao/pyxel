@@ -48,7 +48,7 @@ Pyxel ist unter der [MIT-Lizenz](../LICENSE) Open Source und kostenlos zu verwen
 - Programmierung in Python
 - 16-Farben-Palette
 - 3 256x256 große Bilddatenbanken
-- 8 256x256 große Tilemaps
+- 8 256x256 große Kachelkarten
 - 4 Kanäle mit 64 definierbaren Sounds
 - 8 Musiktracks, die beliebige Sounds kombinieren können
 - Eingaben über Tastatur, Maus und Gamepad
@@ -363,7 +363,7 @@ Pyxel Editor hat die folgenden Bearbeitungsmodi.
 
 **Bildeditor**
 
-Der Modus zum Bearbeiten des Bildes in jeder Bilderbank.
+Der Modus zum Bearbeiten des Bildes in jeder **Bilderbank**.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
@@ -371,19 +371,19 @@ Der Modus zum Bearbeiten des Bildes in jeder Bilderbank.
 
 Sie können eine Bilddatei (PNG/GIF/JPEG) in den Bildeditor ziehen und ablegen, um das Bild in die aktuell ausgewählte Bilderbank zu laden.
 
-**Tilemapeditor**
+**Kachelkarteeditor**
 
-Der Modus zum Bearbeiten von Tilemaps, in denen Bilder aus den Bilderbanken in einem Kachelmuster angeordnet sind.
+Der Modus zum Bearbeiten von **Kachelkarten**, in denen Bilder aus den Bilderbanken in einem Kachelmuster angeordnet sind.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
 </a>
 
-Ziehen Sie eine TMX-Datei (Tiled Map File) in den Tilemap-Editor, um deren Schicht in der Zeichnungsreihenfolge zu laden, die der aktuell ausgewählten Tilemap-Nummer entspricht.
+Ziehen Sie eine TMX-Datei (Tiled Map File) in den Kachelkarteeditor, um deren Schicht in der Zeichnungsreihenfolge zu laden, die der aktuell ausgewählten Kachelkarte-Nummer entspricht.
 
-**Soundeditor**
+**Klangeditor**
 
-Der Modus zum Bearbeiten von Klängen, die für Melodien und Effekte verwendet werden.
+Der Modus zum Bearbeiten von **Klängen**, die für Melodien und Effekte verwendet werden.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
@@ -391,7 +391,7 @@ Der Modus zum Bearbeiten von Klängen, die für Melodien und Effekte verwendet w
 
 **Musikeditor**
 
-Der Modus zum Bearbeiten von Musiken, in denen die Klänge in der Reihenfolge der Wiedergabe angeordnet sind.
+Der Modus zum Bearbeiten von **Musiken**, in denen die Klänge in der Reihenfolge der Wiedergabe angeordnet sind.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
@@ -399,7 +399,7 @@ Der Modus zum Bearbeiten von Musiken, in denen die Klänge in der Reihenfolge de
 
 ### Weitere Methoden zur Erstellung von Ressourcen
 
-Pyxel-Bilder und Tilemaps können auch mit folgenden Methoden erstellt werden:
+Pyxel-Bilder und Kachelkarten können auch mit folgenden Methoden erstellt werden:
 
 - Erstellen Sie ein Bild aus einer Liste von Zeichenfolgen mit der `Image.set`-Funktion oder der `Tilemap.set`-Funktion
 - Laden Sie eine Bilddatei (PNG/GIF/JPEG) mit der `Image.load`-Funktion in die Pyxel-Palette
@@ -503,7 +503,7 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Beispiel: `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  Liste der Tilemaps (Instanzen der Tilemap-Klasse) (0-7)
+  Liste der Kachelkarten (Instanzen der Tilemap-Klasse) (0-7)
 
 - `clip(x, y, w, h)`<br>
   Setzt den Zeichenbereich des Bildschirms von (`x`, `y`) mit einer Breite von `w` und einer Höhe von `h`. Rufe `clip()` auf, um den Zeichenbereich auf den gesamten Bildschirm zurückzusetzen.
@@ -562,7 +562,7 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Kopiert den Bereich der Größe (`w`, `h`) von (`u`, `v`) der Tilemap `tm`(0-7) nach (`x`, `y`). Wenn `w` und/oder `h` einen negativen Wert haben, wird der Bereich horizontal und/oder vertikal gespiegelt. Wenn `colkey` angegeben ist, wird diese Farbe als transparent behandelt. Wenn `rotate` (in Grad), `scale` (1.0 = 100%) oder beides angegeben sind, werden die entsprechenden Transformationen angewendet. Die Größe einer Kachel beträgt 8x8 Pixel und wird als Tupel `(tile_x, tile_y)` in der Tilemap gespeichert.
+  Kopiert den Bereich der Größe (`w`, `h`) von (`u`, `v`) der Kachelkarte `tm` (0-7) nach (`x`, `y`). Wenn `w` und/oder `h` einen negativen Wert haben, wird der Bereich horizontal und/oder vertikal gespiegelt. Wenn `colkey` angegeben ist, wird diese Farbe als transparent behandelt. Wenn `rotate` (in Grad), `scale` (1.0 = 100%) oder beides angegeben sind, werden die entsprechenden Transformationen angewendet. Die Größe einer Kachel beträgt 8x8 Pixel und wird als Tupel `(tile_x, tile_y)` in der Kachelkarte gespeichert.
 
 <img src="images/bltm_figure.png">
 
@@ -649,13 +649,13 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 ### Tilemap-Klasse
 
 - `width`, `height`<br>
-  Die Breite und Höhe der Tilemap
+  Die Breite und Höhe der Kachelkarte
 
 - `imgsrc`<br>
-  Das Bildbank (0-2), das von der Tilemap referenziert wird
+  Das Bildbank (0-2), das von der Kachelkarte referenziert wird
 
 - `set(x, y, data)`<br>
-  Setzt die Tilemap bei (`x`, `y`) mithilfe einer Liste von Strings.<br>
+  Setzt die Kachelkarte bei (`x`, `y`) mithilfe einer Liste von Strings.<br>
   Beispiel: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
