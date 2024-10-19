@@ -363,7 +363,7 @@ Pyxel Editor ha i seguenti modi di editing.
 
 **Editor di Immagini**
 
-Il modo per modificare l'immagine in ciascuna banca di immagini.
+Il modo per modificare l'immagine in ciascuna **banca di immagini**.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
@@ -373,7 +373,7 @@ Puoi trascinare e rilasciare un file immagine (PNG/GIF/JPEG) nell'editor di imma
 
 **Editor di Tilemap**
 
-Il modo per modificare i tilemap in cui le immagini delle banche di immagini sono disposte in un modello di piastrelle.
+Il modo per modificare le **tilemap** in cui le immagini delle banche di immagini sono disposte in un modello di piastrelle.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
@@ -383,7 +383,7 @@ Trascina e rilascia un file TMX (Tiled Map File) sull'editor di tilemap per cari
 
 **Editor di Suoni**
 
-Il modo per modificare i suoni utilizzati per le melodie e gli effetti sonori.
+Il modo per modificare i **suoni** utilizzati per le melodie e gli effetti sonori.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
@@ -391,7 +391,7 @@ Il modo per modificare i suoni utilizzati per le melodie e gli effetti sonori.
 
 **Editor di Musica**
 
-Il modo per modificare le musics in cui i suoni sono disposti in ordine di riproduzione.
+Il modo per modificare le **musiche** in cui i suoni sono disposti in ordine di riproduzione.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
@@ -399,7 +399,7 @@ Il modo per modificare le musics in cui i suoni sono disposti in ordine di ripro
 
 ### Altri metodi di creazione delle risorse
 
-Le immagini e i tilemap Pyxel possono anche essere creati utilizzando i seguenti metodi:
+Le immagini e le tilemap di Pyxel possono anche essere create utilizzando i seguenti metodi:
 
 - Crea un'immagine da un elenco di stringhe utilizzando la funzione `Image.set` o la funzione `Tilemap.set`
 - Carica un file immagine (PNG/GIF/JPEG) nella palette Pyxel con la funzione `Image.load`
@@ -579,16 +579,16 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Elenco delle musiche (istanze della classe Music) (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
-  Riproduce il sound `snd`(0-63) sul canale `ch`(0-3). Se `snd` è un elenco, i sounds verranno riprodotti in sequenza. La posizione di partenza può essere specificata da `tick` (1 tick = 1/120 secondi). Se `loop` è impostato su `True`, la riproduzione verrà eseguita in loop. Per riprendere il sound precedente dopo la fine della riproduzione, impostare `resume` su `True`.
+  Riproduce il suono `snd`(0-63) sul canale `ch`(0-3). Se `snd` è un elenco, i suoni verranno riprodotti in sequenza. La posizione di partenza può essere specificata da `tick` (1 tick = 1/120 secondi). Se `loop` è impostato su `True`, la riproduzione verrà eseguita in loop. Per riprendere il suono precedente dopo la fine della riproduzione, impostare `resume` su `True`.
 
 - `playm(msc, [tick], [loop])`<br>
-  Riproduce la music `msc`(0-7). La posizione di partenza può essere specificata da `tick` (1 tick = 1/120 secondi). Se `loop` è impostato su `True`, la riproduzione verrà eseguita in loop.
+  Riproduce la musica `msc`(0-7). La posizione di partenza può essere specificata da `tick` (1 tick = 1/120 secondi). Se `loop` è impostato su `True`, la riproduzione verrà eseguita in loop.
 
 - `stop([ch])`<br>
   Interrompe la riproduzione del canale specificato `ch`(0-3). Chiama `stop()` per interrompere tutti i canali.
 
 - `play_pos(ch)`<br>
-  Ottiene la posizione di riproduzione del sound sul canale `ch`(0-3) sotto forma di tupla `(sound_no, note_no)`. Restituisce `None` quando la riproduzione è terminata.
+  Ottiene la posizione di riproduzione del suono sul canale `ch`(0-3) sotto forma di tupla `(sound_no, note_no)`. Restituisce `None` quando la riproduzione è terminata.
 
 ### Matematica
 
@@ -706,10 +706,10 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 ### Classe Music
 
 - `seqs`<br>
-  Un elenco bidimensionale di sounds (0-63) su più canali
+  Un elenco bidimensionale di suoni (0-63) su più canali
 
 - `set(seq0, seq1, seq2, ...)`<br>
-  Imposta gli elenchi di sounds (0-63) per ciascun canale. Se viene specificato un elenco vuoto, quel canale non verrà utilizzato per la riproduzione.<br>
+  Imposta gli elenchi di suoni (0-63) per ciascun canale. Se viene specificato un elenco vuoto, quel canale non verrà utilizzato per la riproduzione.<br>
   Esempio: `pyxel.musics[0].set([0, 1], [], [3])`
 
 ### API Avanzata
