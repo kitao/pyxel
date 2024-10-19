@@ -2,6 +2,7 @@
 
 ## 2.2.6
 
+- Update the glow crate version to 0.15
 - Fully revised the translations of all README files
 
 ## 2.2.5
