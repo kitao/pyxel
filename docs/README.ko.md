@@ -363,7 +363,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 **이미지 편집기**
 
-각 이미지 뱅크의 이미지를 편집하는 모드입니다.
+각 **이미지 뱅크**의 이미지를 편집하는 모드입니다.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
@@ -373,7 +373,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 **타일맵 편집기**
 
-이미지 뱅크의 이미지를 타일 패턴으로 배열하여 타일맵을 편집하는 모드입니다.
+이미지 뱅크의 이미지를 타일 패턴으로 배열하여 **타일맵**을 편집하는 모드입니다.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
@@ -383,7 +383,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 **사운드 편집기**
 
-멜로디와 사운드 효과에 사용되는 사운드를 편집하는 모드입니다.
+멜로디와 **사운드** 효과에 사용되는 사운드를 편집하는 모드입니다.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
@@ -391,7 +391,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 
 **뮤직 편집기**
 
-재생 순서에 따라 사운드를 배열하여 음악을 편집하는 모드입니다.
+재생 순서에 따라 사운드를 배열한 **뮤직**을 편집하는 모드입니다.
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
