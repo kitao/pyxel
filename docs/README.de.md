@@ -47,7 +47,7 @@ Pyxel ist unter der [MIT-Lizenz](../LICENSE) Open Source und kostenlos zu verwen
 - Läuft auf Windows, Mac, Linux und Web
 - Programmierung in Python
 - 16-Farben-Palette
-- 3 256x256 große Bilddatenbanken
+- 3 256x256 große Bildbanken
 - 8 256x256 große Kachelkarten
 - 4 Kanäle mit 64 definierbaren Klängen
 - 8 Musiktracks, die beliebige Klänge kombinieren können
