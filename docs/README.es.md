@@ -579,16 +579,16 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
   Lista de las músicas (instancias de la clase Music) (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
-  Reproduce el sound `snd`(0-63) en el canal `ch`(0-3). Si `snd` es una lista, los sounds se reproducirán en secuencia. La posición de inicio de reproducción puede especificarse mediante `tick` (1 tick = 1/120 segundos). Si `loop` se establece en `True`, la reproducción se repetirá. Para reanudar el sound anterior después de que termine la reproducción, establece `resume` en `True`.
+  Reproduce el sonido `snd`(0-63) en el canal `ch`(0-3). Si `snd` es una lista, los sonidos se reproducirán en secuencia. La posición de inicio de reproducción puede especificarse mediante `tick` (1 tick = 1/120 segundos). Si `loop` se establece en `True`, la reproducción se repetirá. Para reanudar el sonido anterior después de que termine la reproducción, establece `resume` en `True`.
 
 - `playm(msc, [tick], [loop])`<br>
-  Reproduce la music `msc`(0-7). La posición de inicio de reproducción puede especificarse mediante `tick` (1 tick = 1/120 segundos). Si `loop` se establece en `True`, la reproducción se repetirá.
+  Reproduce la música `msc`(0-7). La posición de inicio de reproducción puede especificarse mediante `tick` (1 tick = 1/120 segundos). Si `loop` se establece en `True`, la reproducción se repetirá.
 
 - `stop([ch])`<br>
   Detiene la reproducción del canal especificado `ch`(0-3). Llama a `stop()` para detener todos los canales.
 
 - `play_pos(ch)`<br>
-  Obtiene la posición de reproducción del sound en el canal `ch`(0-3) como una tupla de `(sound_no, note_no)`. Devuelve `None` cuando se ha detenido la reproducción.
+  Obtiene la posición de reproducción del sonido en el canal `ch`(0-3) como una tupla de `(sound_no, note_no)`. Devuelve `None` cuando se ha detenido la reproducción.
 
 ### Matemáticas
 
@@ -706,10 +706,10 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
 ### Clase Music
 
 - `seqs`<br>
-  Una lista bidimensional de sounds (0-63) a través de múltiples canales
+  Una lista bidimensional de sonidos (0-63) a través de múltiples canales
 
 - `set(seq0, seq1, seq2, ...)`<br>
-  Establece las listas de sounds (0-63) para cada canal. Si se especifica una lista vacía, ese canal no se utilizará para la reproducción.<br>
+  Establece las listas de sonidos (0-63) para cada canal. Si se especifica una lista vacía, ese canal no se utilizará para la reproducción.<br>
   Ejemplo: `pyxel.musics[0].set([0, 1], [], [3])`
 
 ### API Avanzada

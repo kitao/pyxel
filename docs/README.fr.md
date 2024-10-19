@@ -580,16 +580,16 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
   Liste des musiques (instances de la classe Music) (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
-  Joue le sound `snd`(0-63) sur le canal `ch`(0-3). Si `snd` est une liste, les sounds seront joués en séquence. La position de départ peut être spécifiée par `tick` (1 tick = 1/120 secondes). Si `loop` est défini sur `True`, la lecture en boucle est activée. Pour reprendre le sound précédent après la fin de la lecture, définissez `resume` sur `True`.
+  Joue le son `snd`(0-63) sur le canal `ch`(0-3). Si `snd` est une liste, les sons seront joués en séquence. La position de départ peut être spécifiée par `tick` (1 tick = 1/120 secondes). Si `loop` est défini sur `True`, la lecture en boucle est activée. Pour reprendre le son précédent après la fin de la lecture, définissez `resume` sur `True`.
 
 - `playm(msc, [tick], [loop])`<br>
-  Joue la music `msc`(0-7). La position de départ peut être spécifiée par `tick` (1 tick = 1/120 secondes). Si `loop` est défini sur `True`, la lecture en boucle est activée.
+  Joue la musique `msc`(0-7). La position de départ peut être spécifiée par `tick` (1 tick = 1/120 secondes). Si `loop` est défini sur `True`, la lecture en boucle est activée.
 
 - `stop([ch])`<br>
   Arrête la lecture du canal spécifié `ch`(0-3). Appelez `stop()` pour arrêter tous les canaux.
 
 - `play_pos(ch)`<br>
-  Obtient la position de lecture du sound sur le canal `ch`(0-3) sous forme de tuple `(sound_no, note_no)`. Renvoie `None` lorsque la lecture est arrêtée.
+  Obtient la position de lecture du son sur le canal `ch`(0-3) sous forme de tuple `(sound_no, note_no)`. Renvoie `None` lorsque la lecture est arrêtée.
 
 ### Mathématiques
 
@@ -707,10 +707,10 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
 ### Classe Music
 
 - `seqs`<br>
-  Une liste bidimensionnelle de sounds (0-63) sur plusieurs canaux
+  Une liste bidimensionnelle de sons (0-63) sur plusieurs canaux
 
 - `set(seq0, seq1, seq2, ...)`<br>
-  Définit les listes de sounds (0-63) pour chaque canal. Si une liste vide est spécifiée, ce canal ne sera pas utilisé pour la lecture.<br>
+  Définit les listes de sons (0-63) pour chaque canal. Si une liste vide est spécifiée, ce canal ne sera pas utilisé pour la lecture.<br>
   Exemple : `pyxel.musics[0].set([0, 1], [], [3])`
 
 ### API Avancée
