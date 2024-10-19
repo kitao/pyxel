@@ -51,6 +51,11 @@ fn save(
 }
 
 #[pyfunction]
+fn app_data_dir(vender_name: &str, app_name: &str) -> String {
+    pyxel().app_data_dir(vender_name, app_name)
+}
+
+#[pyfunction]
 #[pyo3(signature = (scale=None))]
 fn screenshot(scale: Option<u32>) {
     pyxel().screenshot(scale);
@@ -70,6 +75,7 @@ fn reset_screencast() {
 pub fn add_resource_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(load, m)?)?;
     m.add_function(wrap_pyfunction!(save, m)?)?;
+    m.add_function(wrap_pyfunction!(app_data_dir, m)?)?;
     m.add_function(wrap_pyfunction!(screenshot, m)?)?;
     m.add_function(wrap_pyfunction!(screencast, m)?)?;
     m.add_function(wrap_pyfunction!(reset_screencast, m)?)?;
