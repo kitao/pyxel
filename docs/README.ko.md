@@ -499,11 +499,11 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   예시: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  이미지 뱅크 목록 (0-2)<br>
+  이미지 뱅크 (Image 클래스의 인스턴스) 목록 (0-2)<br>
   예시: `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  타일맵 목록 (0-7)
+  타일맵 (Tilemap 클래스의 인스턴스) 목록 (0-7)
 
 - `clip(x, y, w, h)`<br>
   (`x`, `y`)부터 너비 `w`, 높이 `h`로 화면의 그리기 영역을 설정합니다. `clip()`을 호출하면 그리기 영역이 전체 화면으로 재설정됩니다.
@@ -572,11 +572,11 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 ### Audio
 
 - `sounds`<br>
-  사운드 목록 (0-63)<br>
+  사운드 (Sound 클래스의 인스턴스) 목록 (0-63)<br>
   예시: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  뮤직 목록 (0-7)
+  뮤직 (Music 클래스의 인스턴스) 목록 (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
   채널 `ch`(0-3)에서 사운드 `snd`(0-63)를 재생합니다. `snd`가 리스트인 경우, 사운드가 순차적으로 재생됩니다. 재생 시작 위치는 `tick`(1 tick = 1/120 초)로 지정할 수 있습니다. `loop`를 `True`로 설정하면 루프 재생이 수행됩니다. 재생이 끝난 후 이전 사운드로 돌아가려면 `resume`을 `True`로 설정합니다.

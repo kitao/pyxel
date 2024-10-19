@@ -499,11 +499,11 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Esempio: `old_colors = pyxel.colors.to_list(); pyxel.colors.from_list([0x111111, 0x222222, 0x333333]); pyxel.colors[15] = 0x112233`
 
 - `images`<br>
-  Elenco delle banche di immagini (0-2)<br>
+  Elenco delle banche di immagini (istanze della classe Image) (0-2)<br>
   Esempio: `pyxel.images[0].load(0, 0, "title.png")`
 
 - `tilemaps`<br>
-  Elenco delle tilemaps (0-7)
+  Elenco delle mappe di tile (istanze della classe Tilemap) (0-7)
 
 - `clip(x, y, w, h)`<br>
   Imposta l'area di disegno dello schermo da (`x`, `y`) con una larghezza di `w` e un'altezza di `h`. Chiama `clip()` per reimpostare l'area di disegno a tutto schermo.
@@ -572,11 +572,11 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 ### Audio
 
 - `sounds`<br>
-  Elenco dei sounds (0-63)<br>
+  Elenco dei suoni (istanze della classe Sound) (0-63)<br>
   Esempio: `pyxel.sounds[0].speed = 60`
 
 - `musics`<br>
-  Elenco dei musics (0-7)
+  Elenco delle musiche (istanze della classe Music) (0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
   Riproduce il sound `snd`(0-63) sul canale `ch`(0-3). Se `snd` è un elenco, i sounds verranno riprodotti in sequenza. La posizione di partenza può essere specificata da `tick` (1 tick = 1/120 secondi). Se `loop` è impostato su `True`, la riproduzione verrà eseguita in loop. Per riprendere il sound precedente dopo la fine della riproduzione, impostare `resume` su `True`.
