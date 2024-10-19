@@ -363,7 +363,7 @@ Pyxel Editor 有以下编辑模式。
 
 **图像编辑器**
 
-用于编辑每个图像库中图像的模式。
+用于编辑每个**图像库**中图像的模式。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/image_editor.html">
 <img src="images/image_editor.gif">
@@ -373,7 +373,7 @@ Pyxel Editor 有以下编辑模式。
 
 **瓦片地图编辑器**
 
-用于编辑将图像库中的图像按瓦片模式排列的瓦片地图的模式。
+用于编辑将图像库中的图像按瓦片模式排列的**瓦片地图**的模式。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/tilemap_editor.html">
 <img src="images/tilemap_editor.gif">
@@ -383,7 +383,7 @@ Pyxel Editor 有以下编辑模式。
 
 **声音编辑器**
 
-用于编辑用于旋律和音效的声音的模式。
+用于编辑用于旋律和音效的**声音**的模式。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/sound_editor.html">
 <img src="images/sound_editor.gif">
@@ -391,7 +391,7 @@ Pyxel Editor 有以下编辑模式。
 
 **音乐编辑器**
 
-用于编辑将声音按播放顺序排列的音乐的模式。
+用于编辑将声音按播放顺序排列的**音乐**的模式。
 
 <a href="https://kitao.github.io/pyxel/wasm/examples/music_editor.html">
 <img src="images/music_editor.gif">
@@ -579,16 +579,16 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   音乐的列表（Music 类的实例）(0-7)
 
 - `play(ch, snd, [tick], [loop], [resume])`<br>
-  在通道 `ch`(0-3) 上播放 sound `snd`(0-63)。如果 `snd` 是一个列表，sounds 将依次播放。播放的起始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果 `loop` 设置为 `True`，则执行循环播放。要在播放结束后恢复到之前的声音，设置 `resume` 为 `True`。
+  在通道 `ch`(0-3) 上播放声音 `snd`(0-63)。如果 `snd` 是一个列表，声音将依次播放。播放的起始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果 `loop` 设置为 `True`，则执行循环播放。要在播放结束后恢复到之前的声音，设置 `resume` 为 `True`。
 
 - `playm(msc, [tick], [loop])`<br>
-  播放 music `msc`(0-7)。播放的起始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果 `loop` 设置为 `True`，则执行循环播放。
+  播放音乐 `msc`(0-7)。播放的起始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果 `loop` 设置为 `True`，则执行循环播放。
 
 - `stop([ch])`<br>
   停止指定通道 `ch`(0-3) 的播放。调用 `stop()` 停止所有通道。
 
 - `play_pos(ch)`<br>
-  获取通道 `ch`(0-3) 的 sound 播放位置，作为 `(sound_no, note_no)` 的元组返回。当播放停止时，返回 `None`。
+  获取通道 `ch`(0-3) 的声音播放位置，作为 `(sound_no, note_no)` 的元组返回。当播放停止时，返回 `None`。
 
 ### 数学
 
@@ -706,10 +706,10 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 ### Music 类
 
 - `seqs`<br>
-  一个二维列表，包含多个通道的 sounds (0-63)
+  一个二维列表，包含多个通道的声音 (0-63)
 
 - `set(seq0, seq1, seq2, ...)`<br>
-  设置每个通道的 sound (0-63) 列表。如果指定了空列表，则该通道不会用于播放。<br>
+  设置每个通道的声音 (0-63) 列表。如果指定了空列表，则该通道不会用于播放。<br>
   例子：`pyxel.musics[0].set([0, 1], [], [3])`
 
 ### 高级 API
