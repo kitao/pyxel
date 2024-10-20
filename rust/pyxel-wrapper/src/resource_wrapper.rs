@@ -68,8 +68,8 @@ fn reset_screencast() {
 }
 
 #[pyfunction]
-fn user_data_dir(vender_name: &str, app_name: &str) -> String {
-    pyxel().user_data_dir(vender_name, app_name)
+fn user_data_dir(vendor_name: &str, app_name: &str) -> String {
+    pyxel().user_data_dir(vendor_name, app_name)
 }
 
 pub fn add_resource_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {

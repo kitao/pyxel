@@ -157,12 +157,12 @@ impl Pyxel {
         self.resource.screencast.reset();
     }
 
-    pub fn user_data_dir(&self, vender_name: &str, app_name: &str) -> String {
+    pub fn user_data_dir(&self, vendor_name: &str, app_name: &str) -> String {
         let home_dir = UserDirs::new()
             .map_or_else(PathBuf::new, |user_dirs| user_dirs.home_dir().to_path_buf());
         let app_data_dir = home_dir
             .join(BASE_DIR)
-            .join(Self::make_dir_name(vender_name))
+            .join(Self::make_dir_name(vendor_name))
             .join(Self::make_dir_name(app_name));
         if !app_data_dir.exists() {
             fs::create_dir_all(&app_data_dir).unwrap();
