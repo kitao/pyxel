@@ -137,25 +137,6 @@ impl Pyxel {
         pyxel_platform::emscripten::save_file(filename);
     }
 
-    pub fn app_data_dir(&self, vender_name: &str, app_name: &str) -> String {
-        let home_dir = UserDirs::new()
-            .map(|user_dirs| user_dirs.home_dir().to_path_buf())
-            .unwrap_or_else(PathBuf::new);
-        let app_data_dir = home_dir
-            .join(BASE_DIR)
-            .join(vender_name.to_lowercase())
-            .join(app_name.to_lowercase());
-        if !app_data_dir.exists() {
-            fs::create_dir_all(&app_data_dir).unwrap();
-            println!("created directory: '{}'", app_data_dir.to_string_lossy());
-        }
-        let mut app_data_dir = app_data_dir.to_string_lossy().to_string();
-        if !app_data_dir.ends_with(MAIN_SEPARATOR) {
-            app_data_dir.push(MAIN_SEPARATOR);
-        }
-        app_data_dir
-    }
-
     pub fn screenshot(&mut self, scale: Option<u32>) {
         let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
@@ -174,6 +155,24 @@ impl Pyxel {
 
     pub fn reset_screencast(&mut self) {
         self.resource.screencast.reset();
+    }
+
+    pub fn user_data_dir(&self, vender_name: &str, app_name: &str) -> String {
+        let home_dir = UserDirs::new()
+            .map_or_else(PathBuf::new, |user_dirs| user_dirs.home_dir().to_path_buf());
+        let app_data_dir = home_dir
+            .join(BASE_DIR)
+            .join(Self::make_dir_name(vender_name))
+            .join(Self::make_dir_name(app_name));
+        if !app_data_dir.exists() {
+            fs::create_dir_all(&app_data_dir).unwrap();
+            println!("created directory: '{}'", app_data_dir.to_string_lossy());
+        }
+        let mut app_data_dir = app_data_dir.to_string_lossy().to_string();
+        if !app_data_dir.ends_with(MAIN_SEPARATOR) {
+            app_data_dir.push(MAIN_SEPARATOR);
+        }
+        app_data_dir
     }
 
     pub(crate) fn capture_screen(&mut self) {
@@ -223,7 +222,7 @@ impl Pyxel {
     fn prepend_desktop_path(basename: &str) -> String {
         let desktop_dir = UserDirs::new()
             .and_then(|user_dirs| user_dirs.desktop_dir().map(Path::to_path_buf))
-            .unwrap_or_else(PathBuf::new);
+            .unwrap_or_default();
         desktop_dir.join(basename).to_string_lossy().to_string()
     }
 
@@ -254,5 +253,13 @@ impl Pyxel {
                 .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
                 .collect();
         }
+    }
+
+    fn make_dir_name(name: &str) -> String {
+        name.to_lowercase()
+            .replace(' ', "_")
+            .chars()
+            .filter(|c| c.is_alphanumeric() || *c == '_' || *c == '-')
+            .collect()
     }
 }
