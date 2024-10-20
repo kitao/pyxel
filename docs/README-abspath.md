@@ -472,6 +472,10 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
   Load the resource file (.pyxres). If an option is set to `True`, the corresponding resource will be excluded from loading. If a palette file (.pyxpal) with the same name exists in the same location as the resource file, the palette display colors will also be updated. The palette file contains hexadecimal entries for the display colors (e.g. `1100FF`), separated by newlines. The palette file can also be used to change the colors displayed in Pyxel Editor.
 
+- `user_data_dir(vendor_name, app_name)`<br>
+  Returns the user data directory created based on `vendor_name` and `app_name`. If the directory does not exist, it will be created automatically. It is used to store high scores, game progress, and similar data.<br>
+  Example: `print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
+
 ### Input
 
 - `mouse_x`, `mouse_y`<br>
