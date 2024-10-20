@@ -3,7 +3,7 @@
 ## 2.2.6
 
 - Renamed WORKING_DIR to BASE_DIR
-- Added the app_data_dir function
+- Added the user_data_dir function
 - Switched from the platform-dir crate to the directories crate
 - Update the glow crate version to 0.15
 - Fully revised the translations of all README files
