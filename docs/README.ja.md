@@ -472,6 +472,10 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
   リソースファイル (.pyxres) を読み込みます。オプションに`True`を指定すると、そのリソースは読み込まれません。また、同名のパレットファイル (.pyxpal) がリソースファイルと同じ場所に存在する場合は、パレットの表示色も変更されます。パレットファイルは、表示色を改行区切りの 16 進数 (例：`1100FF`) で入力します。パレットファイルを使うことで Pyxel Editor の表示色も変更可能です。
 
+- `user_data_dir(vendor_name, app_name)`<br>
+  `vendor_name`と`app_name`から生成されたユーザーデータ保存用ディレクトリを返します。該当ディレクトリが存在しない場合は自動で作成されます。ハイスコアやゲームの進行状況の保存先として使用します。<br>
+  例：`print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
+
 ### 入力
 
 - `mouse_x`, `mouse_y`<br>
