@@ -166,7 +166,7 @@ impl Pyxel {
             .join(Self::make_dir_name(app_name));
         if !app_data_dir.exists() {
             fs::create_dir_all(&app_data_dir).unwrap();
-            println!("created directory: '{}'", app_data_dir.to_string_lossy());
+            println!("created '{}'", app_data_dir.to_string_lossy());
         }
         let mut app_data_dir = app_data_dir.to_string_lossy().to_string();
         if !app_data_dir.ends_with(MAIN_SEPARATOR) {
