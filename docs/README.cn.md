@@ -472,6 +472,10 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
   加载资源文件 (.pyxres)。如果某个选项设置为 `True`，相应的资源将被排除加载。如果资源文件所在位置存在同名的调色板文件 (.pyxpal)，调色板显示颜色也将更新。调色板文件包含 16 进制的显示颜色条目（例如 `1100FF`），每行一个。调色板文件也可以用于更改 Pyxel Editor 中的显示颜色。
 
+- `user_data_dir(vendor_name, app_name)`<br>
+  返回基于 `vendor_name` 和 `app_name` 创建的用户数据目录。如果目录不存在，它将自动创建。用于存储高分、游戏进度等数据。<br>
+  例子：`print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
+
 ### 输入
 
 - `mouse_x`, `mouse_y`<br>

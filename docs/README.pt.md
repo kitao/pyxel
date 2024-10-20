@@ -472,6 +472,10 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
   Carrega o arquivo de recursos (.pyxres). Se uma opção for definida como `True`, o recurso correspondente será excluído do carregamento. Se um arquivo de paleta (.pyxpal) com o mesmo nome existir no mesmo local do arquivo de recursos, as cores da paleta de exibição também serão atualizadas. O arquivo de paleta contém entradas hexadecimais para as cores de exibição (por exemplo, `1100FF`), separadas por novas linhas. O arquivo de paleta também pode ser usado para alterar as cores exibidas no Pyxel Editor.
 
+- `user_data_dir(vendor_name, app_name)`<br>
+  Retorna o diretório de dados do usuário criado com base em `vendor_name` e `app_name`. Se o diretório não existir, ele será criado automaticamente. Ele é usado para armazenar pontuações altas, progresso do jogo e dados semelhantes.<br>
+  Exemplo: `print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
+
 ### Entrada
 
 - `mouse_x`, `mouse_y`<br>

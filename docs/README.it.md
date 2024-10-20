@@ -47,7 +47,7 @@ Pyxel è open source sotto la [Licenza MIT](../LICENSE) ed è gratuito da usare.
 - Funziona su Windows, Mac, Linux e Web
 - Programmazione in Python
 - Palette di 16 colori
-- 3 banche immagini di 256x256
+- 3 banche di immagini di 256x256
 - 8 mappe a tessere di 256x256
 - 4 canali con 64 suoni definibili
 - 8 tracce musicali che possono combinare qualsiasi suono
@@ -471,6 +471,10 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
   Carica il file di risorse (.pyxres). Se un'opzione è impostata su `True`, la risorsa corrispondente sarà esclusa dal caricamento. Se esiste un file di palette (.pyxpal) con lo stesso nome nella stessa posizione del file di risorse, anche i colori della palette verranno aggiornati. Il file di palette contiene voci esadecimali per i colori di visualizzazione (ad esempio `1100FF`), separate da ritorni a capo. Il file di palette può essere utilizzato anche per modificare i colori visualizzati nell'editor Pyxel.
+
+- `user_data_dir(vendor_name, app_name)`<br>
+  Restituisce la directory dei dati utente creata in base a `vendor_name` e `app_name`. Se la directory non esiste, verrà creata automaticamente. Viene utilizzata per memorizzare punteggi alti, progressi del gioco e dati simili.<br>
+  Esempio: `print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
 
 ### Input
 
