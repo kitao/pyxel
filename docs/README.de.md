@@ -472,6 +472,10 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
   Lädt die Ressourcen-Datei (.pyxres). Wenn eine Option auf `True` gesetzt wird, wird die entsprechende Ressource vom Laden ausgeschlossen. Wenn im gleichen Verzeichnis wie die Ressourcen-Datei eine Palettendatei (.pyxpal) mit demselben Namen existiert, werden auch die Anzeigefarben der Palette aktualisiert. Die Palettendatei enthält hexadezimale Einträge für die Anzeigefarben (z.B. `1100FF`), getrennt durch Zeilenumbrüche. Die Palettendatei kann auch verwendet werden, um die in Pyxel Editor angezeigten Farben zu ändern.
 
+- `user_data_dir(vendor_name, app_name)`<br>
+  Gibt das basierend auf `vendor_name` und `app_name` erstellte Benutzerverzeichnis zurück. Wenn das Verzeichnis nicht existiert, wird es automatisch erstellt. Es wird verwendet, um Highscores, Spielfortschritte und ähnliche Daten zu speichern.<br>
+  Beispiel: `print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
+
 ### Eingabe
 
 - `mouse_x`, `mouse_y`<br>

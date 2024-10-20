@@ -472,6 +472,10 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
   리소스 파일 (.pyxres)을 로드합니다. 옵션이 `True`로 설정되면 해당 리소스는 로드에서 제외됩니다. 동일한 이름의 팔레트 파일 (.pyxpal)이 리소스 파일과 동일한 위치에 존재하는 경우, 팔레트 표시 색상도 업데이트됩니다. 팔레트 파일은 각 색상을 16진수로 나타낸 값을 줄바꿈으로 구분하여 입력합니다 (예: `1100FF`). 팔레트 파일을 사용하면 Pyxel Editor에서 표시되는 색상도 변경할 수 있습니다.
 
+- `user_data_dir(vendor_name, app_name)`<br>
+  `vendor_name`와 `app_name`을 기반으로 생성된 사용자 데이터 디렉토리를 반환합니다. 디렉토리가 존재하지 않으면 자동으로 생성됩니다. 이 디렉토리는 하이스코어, 게임 진행 상황 등의 데이터를 저장하는 데 사용됩니다.<br>
+  예시: `print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
+
 ### Input
 
 - `mouse_x`, `mouse_y`<br>

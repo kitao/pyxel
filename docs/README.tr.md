@@ -472,6 +472,10 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
   Kaynak dosyasını (.pyxres) yükler. Bir seçenek `True` olarak ayarlandığında, ilgili kaynak yüklemeden hariç tutulur. Eğer aynı konumda aynı ada sahip bir palet dosyası (.pyxpal) varsa, palet görüntü renkleri de güncellenir. Palet dosyası, görüntü renklerini 16'lık sayılar (örn. `1100FF`) ile satır satır içerir. Bu palet dosyası, Pyxel Editor'deki renkleri değiştirmek için de kullanılabilir.
 
+- `user_data_dir(vendor_name, app_name)`<br>
+  `vendor_name` ve `app_name` temel alınarak oluşturulan kullanıcı veri dizinini döndürür. Dizin mevcut değilse, otomatik olarak oluşturulur. Yüksek skorları, oyun ilerlemesini ve benzeri verileri saklamak için kullanılır.<br>
+  Örnek: `print(pyxel.user_data_dir("Takashi Kitao", "Pyxel Shooter"))`
+
 ### Girdi
 
 - `mouse_x`, `mouse_y`<br>
