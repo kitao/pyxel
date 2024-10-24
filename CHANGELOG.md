@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.7
+
+- Updated the Pyodide version to 0.26.3
+
 ## 2.2.6
 
 - Renamed WORKING_DIR to BASE_DIR
