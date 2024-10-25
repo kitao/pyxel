@@ -332,11 +332,13 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
   重置屏幕录像视频的录制开始时间
 - `Alt(Option)+3`<br>
   将屏幕录像视频保存到桌面（最多 10 秒）
-- `Alt(Option)+9`<br>
+- `Alt(Option)+8` 或者在游戏手柄上按 `A+B+X+Y+DL`<br>
+  在最大和整数倍缩放之间切换屏幕缩放
+- `Alt(Option)+9` 或者在游戏手柄上按 `A+B+X+Y+DR`<br>
   在屏幕模式 (Crisp/Smooth/Retro) 之间切换
-- `Alt(Option)+0`<br>
+- `Alt(Option)+0` 或者在游戏手柄上按 `A+B+X+Y+DU`<br>
   切换性能监视器 (FPS/`update` 时间/`draw` 时间)
-- `Alt(Option)+Enter`<br>
+- `Alt(Option)+Enter` 或者在游戏手柄上按 `A+B+X+Y+DD`<br>
   切换全屏
 - `Shift+Alt(Option)+1/2/3`<br>
   将对应的图像库保存到桌面

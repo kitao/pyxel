@@ -332,11 +332,13 @@ Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçek
   Скинути час початку запису відео з екрану
 - `Alt(Option)+3`<br>
   Зберегти відео захоплення екрану на робочий стіл (до 10 секунд)
-- `Alt(Option)+9`<br>
+- `Alt(Option)+8` veya gamepad'de `A+B+X+Y+DL`<br>
+  Переключает масштаб экрана между максимальным и целочисленным
+- `Alt(Option)+9` veya gamepad'de `A+B+X+Y+DR`<br>
   Перемикати між режимами екрану (Crisp/Smooth/Retro)
-- `Alt(Option)+0`<br>
+- `Alt(Option)+0` veya gamepad'de `A+B+X+Y+DU`<br>
   Перемикати монітор продуктивності (FPS/`update` час/`draw` час)
-- `Alt(Option)+Enter`<br>
+- `Alt(Option)+Enter` veya gamepad'de `A+B+X+Y+DD`<br>
   Перемикати повноекранний режим
 - `Shift+Alt(Option)+1/2/3`<br>
   Зберегти відповідний банк зображень на робочий стіл
