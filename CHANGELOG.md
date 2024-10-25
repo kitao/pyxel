@@ -3,6 +3,12 @@
 ## 2.2.7
 
 - Updated the Pyodide version to 0.26.3
+- Added the perf_monitor function
+- Added the integer_scale function
+- Renamed the argument of the fullscreen function
+- Added the integer-scale toggle feature with Alt(Option)+8
+- Added the gamepad shortcuts using A+B+X+Y+DL/DR/DU/DD
+- Changed the default scaling from integer to maximum
 
 ## 2.2.6
 

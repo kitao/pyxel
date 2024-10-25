@@ -99,13 +99,23 @@ fn icon(data: Vec<String>, scale: u32, colkey: Option<pyxel::Color>) {
 }
 
 #[pyfunction]
-fn fullscreen(full: bool) {
-    pyxel().fullscreen(full);
+fn perf_monitor(enabled: bool) {
+    pyxel().perf_monitor(enabled);
+}
+
+#[pyfunction]
+fn integer_scale(enabled: bool) {
+    pyxel().integer_scale(enabled);
 }
 
 #[pyfunction]
 fn screen_mode(scr: u32) {
     pyxel().screen_mode(scr);
+}
+
+#[pyfunction]
+fn fullscreen(enabled: bool) {
+    pyxel().fullscreen(enabled);
 }
 
 #[cfg(not(target_os = "emscripten"))]
@@ -123,8 +133,10 @@ pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(quit, m)?)?;
     m.add_function(wrap_pyfunction!(title, m)?)?;
     m.add_function(wrap_pyfunction!(icon, m)?)?;
-    m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
+    m.add_function(wrap_pyfunction!(perf_monitor, m)?)?;
+    m.add_function(wrap_pyfunction!(integer_scale, m)?)?;
     m.add_function(wrap_pyfunction!(screen_mode, m)?)?;
+    m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
     #[cfg(not(target_os = "emscripten"))]
     m.add_function(wrap_pyfunction!(process_exists, m)?)?;
     Ok(())
