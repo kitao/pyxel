@@ -1,10 +1,13 @@
-use std::cmp::{max, min};
-
 use cfg_if::cfg_if;
 use pyxel_platform::Event;
 
 use crate::image::{Color, Image, SharedImage};
-use crate::keys::{Key, KEY_0, KEY_1, KEY_2, KEY_3, KEY_9, KEY_ALT, KEY_RETURN, KEY_SHIFT};
+use crate::keys::{
+    Key, GAMEPAD1_BUTTON_A, GAMEPAD1_BUTTON_B, GAMEPAD1_BUTTON_DPAD_DOWN,
+    GAMEPAD1_BUTTON_DPAD_LEFT, GAMEPAD1_BUTTON_DPAD_RIGHT, GAMEPAD1_BUTTON_DPAD_UP,
+    GAMEPAD1_BUTTON_X, GAMEPAD1_BUTTON_Y, KEY_0, KEY_1, KEY_2, KEY_3, KEY_8, KEY_9, KEY_ALT,
+    KEY_RETURN, KEY_SHIFT,
+};
 use crate::profiler::Profiler;
 use crate::pyxel::Pyxel;
 use crate::settings::{MAX_ELAPSED_MS, NUM_MEASURE_FRAMES, NUM_SCREEN_TYPES};
@@ -25,10 +28,11 @@ pub struct System {
     update_profiler: Profiler,
     draw_profiler: Profiler,
     perf_monitor_enabled: bool,
+    integer_scale_enabled: bool,
     watch_info: WatchInfo,
     pub screen_x: i32,
     pub screen_y: i32,
-    pub screen_scale: u32,
+    pub screen_scale: f64,
     pub screen_mode: u32,
 }
 
@@ -43,10 +47,11 @@ impl System {
             update_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             draw_profiler: Profiler::new(NUM_MEASURE_FRAMES),
             perf_monitor_enabled: false,
+            integer_scale_enabled: false,
             watch_info: WatchInfo::new(),
             screen_x: 0,
             screen_y: 0,
-            screen_scale: 0,
+            screen_scale: 0.0,
             screen_mode: 0,
         }
     }
@@ -153,12 +158,20 @@ impl Pyxel {
         pyxel_platform::set_window_icon(scaled_width, scaled_height, &rgba_data);
     }
 
-    pub fn fullscreen(&self, full: bool) {
-        pyxel_platform::set_fullscreen(full);
+    pub fn perf_monitor(&mut self, enabled: bool) {
+        self.system.perf_monitor_enabled = enabled;
+    }
+
+    pub fn integer_scale(&mut self, enabled: bool) {
+        self.system.integer_scale_enabled = enabled;
     }
 
     pub fn screen_mode(&mut self, screen_mode: u32) {
         self.system.screen_mode = screen_mode;
+    }
+
+    pub fn fullscreen(&self, enabled: bool) {
+        pyxel_platform::set_fullscreen(enabled);
     }
 
     fn process_events(&mut self) {
@@ -213,9 +226,6 @@ impl Pyxel {
                         }
                     }
                 }
-            } else if self.btnp(KEY_0, None, None) {
-                self.reset_key(KEY_0);
-                self.system.perf_monitor_enabled = !self.system.perf_monitor_enabled;
             } else if self.btnp(KEY_1, None, None) {
                 self.reset_key(KEY_1);
                 self.screenshot(None);
@@ -225,11 +235,35 @@ impl Pyxel {
             } else if self.btnp(KEY_3, None, None) {
                 self.reset_key(KEY_3);
                 self.screencast(None);
+            } else if self.btnp(KEY_8, None, None) {
+                self.reset_key(KEY_8);
+                self.integer_scale(!self.system.integer_scale_enabled);
             } else if self.btnp(KEY_9, None, None) {
                 self.reset_key(KEY_9);
-                self.system.screen_mode = (self.system.screen_mode + 1) % NUM_SCREEN_TYPES;
+                self.screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_TYPES);
+            } else if self.btnp(KEY_0, None, None) {
+                self.reset_key(KEY_0);
+                self.perf_monitor(!self.system.perf_monitor_enabled);
             } else if self.btnp(KEY_RETURN, None, None) {
                 self.reset_key(KEY_RETURN);
+                self.fullscreen(!pyxel_platform::is_fullscreen());
+            }
+        } else if self.btn(GAMEPAD1_BUTTON_A)
+            && self.btn(GAMEPAD1_BUTTON_B)
+            && self.btn(GAMEPAD1_BUTTON_X)
+            && self.btn(GAMEPAD1_BUTTON_Y)
+        {
+            if self.btnp(GAMEPAD1_BUTTON_DPAD_LEFT, None, None) {
+                self.reset_key(GAMEPAD1_BUTTON_DPAD_UP);
+                self.integer_scale(!self.system.integer_scale_enabled);
+            } else if self.btnp(GAMEPAD1_BUTTON_DPAD_RIGHT, None, None) {
+                self.reset_key(GAMEPAD1_BUTTON_DPAD_DOWN);
+                self.screen_mode((self.system.screen_mode + 1) % NUM_SCREEN_TYPES);
+            } else if self.btnp(GAMEPAD1_BUTTON_DPAD_UP, None, None) {
+                self.reset_key(GAMEPAD1_BUTTON_DPAD_LEFT);
+                self.perf_monitor(!self.system.perf_monitor_enabled);
+            } else if self.btnp(GAMEPAD1_BUTTON_DPAD_DOWN, None, None) {
+                self.reset_key(GAMEPAD1_BUTTON_DPAD_RIGHT);
                 self.fullscreen(!pyxel_platform::is_fullscreen());
             }
         }
@@ -237,14 +271,27 @@ impl Pyxel {
 
     fn update_screen_params(&mut self) {
         let (window_width, window_height) = pyxel_platform::window_size();
-        self.system.screen_scale = max(
-            min(window_width / self.width, window_height / self.height),
-            1,
-        );
+        if self.system.integer_scale_enabled {
+            self.system.screen_scale = f64::max(
+                f64::min(
+                    (window_width as f64 / self.width as f64) as i32 as f64,
+                    (window_height as f64 / self.height as f64) as i32 as f64,
+                ),
+                1.0,
+            );
+        } else {
+            self.system.screen_scale = f64::max(
+                f64::min(
+                    window_width as f64 / self.width as f64,
+                    window_height as f64 / self.height as f64,
+                ),
+                1.0,
+            );
+        }
         self.system.screen_x =
-            (window_width as i32 - (self.width * self.system.screen_scale) as i32) / 2;
+            (window_width as i32 - (self.width as f64 * self.system.screen_scale) as i32) / 2;
         self.system.screen_y =
-            (window_height as i32 - (self.height * self.system.screen_scale) as i32) / 2;
+            (window_height as i32 - (self.height as f64 * self.system.screen_scale) as i32) / 2;
     }
 
     fn update_frame(&mut self, callback: Option<&mut dyn PyxelCallback>) {
