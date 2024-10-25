@@ -332,11 +332,13 @@ Während eine Pyxel-Anwendung läuft, können die folgenden speziellen Tastenakt
   Den Startzeitpunkt der Bildschirmaufnahme zurücksetzen
 - `Alt(Option)+3`<br>
   Ein Bildschirmaufnahmevideo auf dem Desktop speichern (bis zu 10 Sekunden)
-- `Alt(Option)+9`<br>
+- `Alt(Option)+8` oder `A+B+X+Y+DL` auf dem Gamepad<br>
+  Umschalten der Bildschirmskalierung zwischen maximal und ganzzahlig
+- `Alt(Option)+9` oder `A+B+X+Y+DR` auf dem Gamepad<br>
   Zwischen Bildschirmmodi (Crisp/Smooth/Retro) wechseln
-- `Alt(Option)+0`<br>
+- `Alt(Option)+0` oder `A+B+X+Y+DU` auf dem Gamepad<br>
   Den Leistungsmonitor (FPS/`update` Zeit/`draw` Zeit) umschalten
-- `Alt(Option)+Enter`<br>
+- `Alt(Option)+Enter` oder `A+B+X+Y+DD` auf dem Gamepad<br>
   Vollbildmodus umschalten
 - `Shift+Alt(Option)+1/2/3`<br>
   Die entsprechende Bildbank auf dem Desktop speichern

@@ -332,11 +332,13 @@ Durante l'esecuzione di un'applicazione Pyxel, possono essere eseguite le seguen
   Ripristinare il tempo di inizio della registrazione del video di cattura dello schermo
 - `Alt(Option)+3`<br>
   Salvare un video di cattura dello schermo sul desktop (fino a 10 secondi)
-- `Alt(Option)+9`<br>
+- `Alt(Option)+8` oppure `A+B+X+Y+DL` sul gamepad<br>
+  Alterna la modalità di scala dello schermo tra massima e intera
+- `Alt(Option)+9` oppure `A+B+X+Y+DR` sul gamepad<br>
   Passare tra le modalità dello schermo (Crisp/Smooth/Retro)
-- `Alt(Option)+0`<br>
+- `Alt(Option)+0` oppure `A+B+X+Y+DU` sul gamepad<br>
   Attivare il monitor delle prestazioni (FPS/`update` tempo/`draw` tempo)
-- `Alt(Option)+Enter`<br>
+- `Alt(Option)+Enter` oppure `A+B+X+Y+DD` sul gamepad<br>
   Attivare la modalità a schermo intero
 - `Shift+Alt(Option)+1/2/3`<br>
   Salvare la corrispondente banca delle immagini sul desktop

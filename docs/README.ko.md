@@ -332,11 +332,13 @@ Pyxel 애플리케이션이 실행 중일 때, 다음의 특수 키 조작을 �
   화면 캡처 비디오의 시작 시간을 재설정
 - `Alt(Option)+3`<br>
   화면 캡처 비디오를 데스크탑에 저장 (최대 10초)
-- `Alt(Option)+9`<br>
+- `Alt(Option)+8` 또는 게임패드에서 `A+B+X+Y+DL`<br>
+  화면 확대 방법을 최대 및 정수 배율로 전환
+- `Alt(Option)+9` 또는 게임패드에서 `A+B+X+Y+DR`<br>
   화면 모드 (Crisp/Smooth/Retro) 전환
-- `Alt(Option)+0`<br>
+- `Alt(Option)+0` 또는 게임패드에서 `A+B+X+Y+DU`<br>
   성능 모니터 (FPS/`update` 시간/`draw` 시간) 전환
-- `Alt(Option)+Enter`<br>
+- `Alt(Option)+Enter` 또는 게임패드에서 `A+B+X+Y+DD`<br>
   전체 화면 전환
 - `Shift+Alt(Option)+1/2/3`<br>
   해당 이미지 뱅크를 데스크탑에 저장

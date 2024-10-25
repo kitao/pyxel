@@ -332,11 +332,13 @@ Durante a execução de uma aplicação Pyxel, as seguintes operações de tecla
   Reiniciar o tempo de início da gravação do vídeo de captura de tela
 - `Alt(Option)+3`<br>
   Salvar um vídeo de captura de tela na área de trabalho (até 10 segundos)
-- `Alt(Option)+9`<br>
+- `Alt(Option)+8` ou `A+B+X+Y+DL` no gamepad<br>
+  Alterna o modo de escala da tela entre máximo e inteiro
+- `Alt(Option)+9` ou `A+B+X+Y+DR` no gamepad<br>
   Alternar entre os modos de tela (Crisp/Smooth/Retro)
-- `Alt(Option)+0`<br>
+- `Alt(Option)+0` ou `A+B+X+Y+DU` no gamepad<br>
   Alternar o monitor de desempenho (FPS/`update` tempo/`draw` tempo)
-- `Alt(Option)+Enter`<br>
+- `Alt(Option)+Enter` ou `A+B+X+Y+DD` no gamepad<br>
   Alternar para tela cheia
 - `Shift+Alt(Option)+1/2/3`<br>
   Salvar a respectiva imagem na área de trabalho
