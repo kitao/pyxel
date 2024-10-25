@@ -371,14 +371,15 @@ impl Pyxel {
                 self.system.screen_x as f32,
                 (window_height as i32
                     - self.system.screen_y
-                    - (self.height * self.system.screen_scale) as i32) as f32,
+                    - (self.height as f64 * self.system.screen_scale) as i32)
+                    as f32,
             );
         }
         if let Some(location) = uniform_locations.get("u_screenSize") {
             gl.uniform_2_f32(
                 Some(location),
-                (self.width * self.system.screen_scale) as f32,
-                (self.height * self.system.screen_scale) as f32,
+                (self.width as f64 * self.system.screen_scale) as f32,
+                (self.height as f64 * self.system.screen_scale) as f32,
             );
         }
         if let Some(location) = uniform_locations.get("u_screenScale") {
