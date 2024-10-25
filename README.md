@@ -332,11 +332,13 @@ The following special key actions are available while a Pyxel application is run
   Reset the recording start time of the screen capture video
 - `Alt(Option)+3`<br>
   Save a screen capture video to the desktop (up to 10 seconds)
-- `Alt(Option)+9`<br>
+- `Alt(Option)+8` or `A+B+X+Y+DL` on gamepad<br>
+  Toggles screen scaling between maximum and integer
+- `Alt(Option)+9` or `A+B+X+Y+DR` on gamepad<br>
   Switch between screen modes (Crisp/Smooth/Retro)
-- `Alt(Option)+0`<br>
+- `Alt(Option)+0` or `A+B+X+Y+DU` on gamepad<br>
   Toggle the performance monitor (fps/`update` time/`draw` time)
-- `Alt(Option)+Enter`<br>
+- `Alt(Option)+Enter` or `A+B+X+Y+DD` on gamepad<br>
   Toggle fullscreen
 - `Shift+Alt(Option)+1/2/3`<br>
   Save the corresponding image bank to the desktop

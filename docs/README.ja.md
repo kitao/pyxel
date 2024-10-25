@@ -332,11 +332,13 @@ Pyxel アプリケーションの実行中に、以下の特殊キー操作を�
   画面キャプチャ動画の録画開始時刻をリセットする
 - `Alt(Option)+3`<br>
   画面キャプチャ動画をデスクトップに保存する (最大 10 秒)
-- `Alt(Option)+9`<br>
+- `Alt(Option)+8`またはゲームパッドで`A+B+X+Y+DL`<br>
+  画面の拡大方法を最大と整数倍で切り替える
+- `Alt(Option)+9`またはゲームパッドで`A+B+X+Y+DR`<br>
   画面モード (Crisp/Smooth/Retro) を切り替える
-- `Alt(Option)+0`<br>
+- `Alt(Option)+0`またはゲームパッドで`A+B+X+Y+DU`<br>
   パフォーマンスモニタ (FPS/`update`時間/`draw`時間) の表示を切り替える
-- `Alt(Option)+Enter`<br>
+- `Alt(Option)+Enter`またはゲームパッドで`A+B+X+Y+DD`<br>
   フルスクリーン表示を切り替える
 - `Shift+Alt(Option)+1/2/3`<br>
   対応するイメージバンクをデスクトップに保存する
