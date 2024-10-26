@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.8
+
+- Modified a shortcut description in the READMEs
+
 ## 2.2.7
 
 - Updated the Pyodide version to 0.26.3

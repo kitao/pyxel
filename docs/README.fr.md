@@ -341,7 +341,7 @@ Pendant l'exécution d'une application Pyxel, les opérations de touches spécia
 - `Alt(Option)+Enter` ou `A+B+X+Y+DD` sur la manette<br>
   Basculer en plein écran
 - `Shift+Alt(Option)+1/2/3`<br>
-  Enregistrer la banque d'images correspondante sur le bureau
+  Enregistrer la banque d'images 0, 1 ou 2 sur le bureau
 - `Shift+Alt(Option)+0`<br>
   Enregistrer la palette de couleurs actuelle sur le bureau
 

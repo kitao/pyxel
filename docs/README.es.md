@@ -341,7 +341,7 @@ Durante la ejecución de una aplicación Pyxel, se pueden realizar las siguiente
 - `Alt(Option)+Enter` o `A+B+X+Y+DD` en el gamepad<br>
   Alternar pantalla completa
 - `Shift+Alt(Option)+1/2/3`<br>
-  Guardar la correspondiente imagen en el escritorio
+  Guarda el banco de imágenes 0, 1 o 2 en el escritorio
 - `Shift+Alt(Option)+0`<br>
   Guardar la paleta de colores actual en el escritorio
 
