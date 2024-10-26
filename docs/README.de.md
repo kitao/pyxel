@@ -333,15 +333,15 @@ Während eine Pyxel-Anwendung läuft, können die folgenden speziellen Tastenakt
 - `Alt(Option)+3`<br>
   Ein Bildschirmaufnahmevideo auf dem Desktop speichern (bis zu 10 Sekunden)
 - `Alt(Option)+8` oder `A+B+X+Y+DL` auf dem Gamepad<br>
-  Umschalten der Bildschirmskalierung zwischen maximal und ganzzahlig
+  Die Bildschirmskalierung zwischen maximal und ganzzahlig umschalten
 - `Alt(Option)+9` oder `A+B+X+Y+DR` auf dem Gamepad<br>
   Zwischen Bildschirmmodi (Crisp/Smooth/Retro) wechseln
 - `Alt(Option)+0` oder `A+B+X+Y+DU` auf dem Gamepad<br>
   Den Leistungsmonitor (FPS/`update` Zeit/`draw` Zeit) umschalten
 - `Alt(Option)+Enter` oder `A+B+X+Y+DD` auf dem Gamepad<br>
-  Vollbildmodus umschalten
+  Den Vollbildmodus umschalten
 - `Shift+Alt(Option)+1/2/3`<br>
-  Die entsprechende Bildbank auf dem Desktop speichern
+  Bildbank 0, 1 oder 2 auf dem Desktop speichern
 - `Shift+Alt(Option)+0`<br>
   Die aktuelle Farbpalette auf dem Desktop speichern
 

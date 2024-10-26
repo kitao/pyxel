@@ -341,7 +341,7 @@ The following special key actions are available while a Pyxel application is run
 - `Alt(Option)+Enter` or `A+B+X+Y+DD` on gamepad<br>
   Toggle fullscreen
 - `Shift+Alt(Option)+1/2/3`<br>
-  Save the corresponding image bank to the desktop
+  Save image bank 0, 1, or 2 to the desktop
 - `Shift+Alt(Option)+0`<br>
   Save the current color palette to the desktop
 
