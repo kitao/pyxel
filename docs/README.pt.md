@@ -341,7 +341,7 @@ Durante a execução de uma aplicação Pyxel, as seguintes operações de tecla
 - `Alt(Option)+Enter` ou `A+B+X+Y+DD` no gamepad<br>
   Alternar para tela cheia
 - `Shift+Alt(Option)+1/2/3`<br>
-  Salvar a respectiva imagem na área de trabalho
+  Salvar o banco de imagens 0, 1 ou 2 na área de trabalho
 - `Shift+Alt(Option)+0`<br>
   Salvar a paleta de cores atual na área de trabalho
 
