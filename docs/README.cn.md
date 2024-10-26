@@ -341,7 +341,7 @@ pyxel watch WATCH_DIR PYTHON_SCRIPT_FILE
 - `Alt(Option)+Enter` 或者在游戏手柄上按 `A+B+X+Y+DD`<br>
   切换全屏
 - `Shift+Alt(Option)+1/2/3`<br>
-  将对应的图像库保存到桌面
+  将图像库 0、1 或 2 保存到桌面
 - `Shift+Alt(Option)+0`<br>
   将当前的调色板保存到桌面
 

@@ -325,25 +325,25 @@ Dizin izlemeyi `Ctrl(Command)+C` tuşlarına basarak durdurabilirsiniz.
 Bir Pyxel uygulaması çalışırken, aşağıdaki özel tuş işlemleri gerçekleştirilebilir:
 
 - `Esc`<br>
-  Вийти з програми
+  Uygulamadan çık
 - `Alt(Option)+1`<br>
-  Зберегти знімок екрану на робочий стіл
+  Ekran görüntüsünü masaüstüne kaydet
 - `Alt(Option)+2`<br>
-  Скинути час початку запису відео з екрану
+  Ekran kaydı videosunun başlangıç zamanını sıfırla
 - `Alt(Option)+3`<br>
-  Зберегти відео захоплення екрану на робочий стіл (до 10 секунд)
+  Ekran kaydı videosunu masaüstüne kaydet (maksimum 10 saniye)
 - `Alt(Option)+8` veya gamepad'de `A+B+X+Y+DL`<br>
-  Переключает масштаб экрана между максимальным и целочисленным
+  Ekran ölçeğini maksimum ve tam sayı arasında değiştir
 - `Alt(Option)+9` veya gamepad'de `A+B+X+Y+DR`<br>
-  Перемикати між режимами екрану (Crisp/Smooth/Retro)
+  Ekran modları arasında geçiş yap (Crisp/Smooth/Retro)
 - `Alt(Option)+0` veya gamepad'de `A+B+X+Y+DU`<br>
-  Перемикати монітор продуктивності (FPS/`update` час/`draw` час)
+  Performans monitörünü değiştir (FPS/`update` süresi/`draw` süresi)
 - `Alt(Option)+Enter` veya gamepad'de `A+B+X+Y+DD`<br>
-  Перемикати повноекранний режим
+  Tam ekran modunu değiştir
 - `Shift+Alt(Option)+1/2/3`<br>
-  Зберегти відповідний банк зображень на робочий стіл
+  Görüntü bankası 0, 1 veya 2'yi masaüstüne kaydet
 - `Shift+Alt(Option)+0`<br>
-  Зберегти поточну кольорову палітру на робочий стіл
+  Geçerli renk paletini masaüstüne kaydet
 
 ### Kaynakları Nasıl Oluşturulur
 
