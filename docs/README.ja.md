@@ -192,7 +192,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>14_synthesizer.py</td>
-<td>オーディオ拡張機によるシンセサイザー</td>
+<td>オーディオ拡張機能によるシンセサイザー</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/14_synthesizer.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/14_synthesizer.py">コード</a></td>
 </tr>
