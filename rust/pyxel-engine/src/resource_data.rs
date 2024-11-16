@@ -7,7 +7,7 @@ use crate::oscillator::{Effect, Gain};
 use crate::pyxel::Pyxel;
 use crate::settings::RESOURCE_FORMAT_VERSION;
 use crate::sound::{SharedSound, Sound};
-use crate::tilemap::{ImageSource, SharedTilemap, TileCoord, Tilemap};
+use crate::tilemap::{ImageSource, ImageTileCoord, SharedTilemap, Tilemap};
 use crate::tone::{Noise, SharedTone, Tone, Waveform};
 use crate::utils::{compress_vec2, expand_vec2, trim_empty_vecs};
 use crate::{Rgb24, SharedChannel};
@@ -54,7 +54,7 @@ struct TilemapData {
     width: u32,
     height: u32,
     imgsrc: u32,
-    data: Vec<Vec<TileCoord>>,
+    data: Vec<Vec<ImageTileCoord>>,
 }
 
 impl TilemapData {
@@ -74,7 +74,7 @@ impl TilemapData {
             .collect();
         let data: Vec<Vec<_>> = data
             .chunks((width * 2) as usize)
-            .map(<[TileCoord]>::to_vec)
+            .map(<[ImageTileCoord]>::to_vec)
             .collect();
         let data = compress_vec2(&data);
         Self {
