@@ -568,7 +568,7 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Kopiert den Bereich der Größe (`w`, `h`) von (`u`, `v`) der Kachelkarte `tm` (0-7) nach (`x`, `y`). Wenn `w` und/oder `h` einen negativen Wert haben, wird der Bereich horizontal und/oder vertikal gespiegelt. Wenn `colkey` angegeben ist, wird diese Farbe als transparent behandelt. Wenn `rotate` (in Grad), `scale` (1.0 = 100%) oder beides angegeben sind, werden die entsprechenden Transformationen angewendet. Die Größe einer Kachel beträgt 8x8 Pixel und wird als Tupel `(tile_x, tile_y)` in der Kachelkarte gespeichert.
+  Kopiert den Bereich der Größe (`w`, `h`) von (`u`, `v`) der Kachelkarte `tm` (0-7) nach (`x`, `y`). Wenn `w` und/oder `h` einen negativen Wert haben, wird der Bereich horizontal und/oder vertikal gespiegelt. Wenn `colkey` angegeben ist, wird diese Farbe als transparent behandelt. Wenn `rotate` (in Grad), `scale` (1.0 = 100%) oder beides angegeben sind, werden die entsprechenden Transformationen angewendet. Die Größe einer Kachel beträgt 8x8 Pixel und wird als Tupel `(tileset_x, tileset_y)` in der Kachelkarte gespeichert.
 
 <img src="images/bltm_figure.png">
 
@@ -668,10 +668,10 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Lädt die Ebene im Zeichenreihenfolge `layer`(0-) aus der TMX-Datei (Tiled Map File) bei (`x`, `y`).
 
 - `pget(x, y)`<br>
-  Gibt die Kachel bei (`x`, `y`) zurück. Eine Kachel wird als Tupel `(tile_x, tile_y)` dargestellt.
+  Gibt die Kachel bei (`x`, `y`) zurück. Eine Kachel wird als Tupel `(tileset_x, tileset_y)` dargestellt.
 
 - `pset(x, y, tile)`<br>
-  Zeichnet eine Kachel bei (`x`, `y`). Eine Kachel wird als Tupel `(tile_x, tile_y)` dargestellt.
+  Zeichnet eine Kachel bei (`x`, `y`). Eine Kachel wird als Tupel `(tileset_x, tileset_y)` dargestellt.
 
 ### Sound-Klasse
 
