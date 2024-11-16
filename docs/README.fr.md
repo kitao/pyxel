@@ -569,7 +569,7 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copie la région de taille (`w`, `h`) de (`u`, `v`) de la carte de tuiles `tm`(0-7) vers (`x`, `y`). Si une valeur négative est assignée à `w` et/ou `h`, la région sera retournée horizontalement et/ou verticalement. Si `colkey` est spécifié, il sera traité comme une couleur transparente. Si `rotate` (en degrés), `scale` (1.0 = 100%) ou les deux sont spécifiés, les transformations correspondantes seront appliquées. La taille d'une tuile est de 8x8 pixels et est stockée dans une carte de tuiles sous forme de tuple `(tileset_x, tileset_y)`.
+  Copie la région de taille (`w`, `h`) de (`u`, `v`) de la carte de tuiles `tm`(0-7) vers (`x`, `y`). Si une valeur négative est assignée à `w` et/ou `h`, la région sera retournée horizontalement et/ou verticalement. Si `colkey` est spécifié, il sera traité comme une couleur transparente. Si `rotate` (en degrés), `scale` (1.0 = 100%) ou les deux sont spécifiés, les transformations correspondantes seront appliquées. La taille d'une tuile est de 8x8 pixels et est stockée dans une carte de tuiles sous forme de tuple `(image_tx, image_ty)`.
 
 <img src="images/bltm_figure.png">
 
@@ -669,10 +669,10 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
   Charge la couche dans l'ordre de dessin `layer`(0-) à partir du fichier TMX (Tiled Map File) à (`x`, `y`).
 
 - `pget(x, y)`<br>
-  Obtient la tuile à (`x`, `y`). Une tuile est représentée sous forme de tuple `(tileset_x, tileset_y)`.
+  Obtient la tuile à (`x`, `y`). Une tuile est représentée sous forme de tuple `(image_tx, image_ty)`.
 
 - `pset(x, y, tile)`<br>
-  Dessine une `tuile` à (`x`, `y`). Une tuile est représentée sous forme de tuple `(tileset_x, tileset_y)`.
+  Dessine une `tuile` à (`x`, `y`). Une tuile est représentée sous forme de tuple `(image_tx, image_ty)`.
 
 ### Classe Sound
 

@@ -568,7 +568,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copia la regione di dimensioni (`w`, `h`) da (`u`, `v`) della mappa a tessere `tm`(0-7) a (`x`, `y`). Se viene assegnato un valore negativo a `w` e/o `h`, la regione verrà capovolta orizzontalmente e/o verticalmente. Se `colkey` è specificato, verrà trattato come un colore trasparente. Se vengono specificati `rotate` (in gradi), `scale` (1.0 = 100%) o entrambi, verranno applicate le trasformazioni corrispondenti. La dimensione di una tessera è 8x8 pixel ed è memorizzata in una mappa a tessere come una tupla `(tileset_x, tileset_y)`.
+  Copia la regione di dimensioni (`w`, `h`) da (`u`, `v`) della mappa a tessere `tm`(0-7) a (`x`, `y`). Se viene assegnato un valore negativo a `w` e/o `h`, la regione verrà capovolta orizzontalmente e/o verticalmente. Se `colkey` è specificato, verrà trattato come un colore trasparente. Se vengono specificati `rotate` (in gradi), `scale` (1.0 = 100%) o entrambi, verranno applicate le trasformazioni corrispondenti. La dimensione di una tessera è 8x8 pixel ed è memorizzata in una mappa a tessere come una tupla `(image_tx, image_ty)`.
 
 <img src="images/bltm_figure.png">
 
@@ -668,10 +668,10 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Carica il layer nell'ordine di disegno `layer`(0-) dal file TMX (Tiled Map File) a (`x`, `y`).
 
 - `pget(x, y)`<br>
-  Ottiene la tessera a (`x`, `y`). Una tessera è rappresentata come una tupla `(tileset_x, tileset_y)`.
+  Ottiene la tessera a (`x`, `y`). Una tessera è rappresentata come una tupla `(image_tx, image_ty)`.
 
 - `pset(x, y, tile)`<br>
-  Disegna una `tessera` a (`x`, `y`). Una tessera è rappresentata come una tupla `(tileset_x, tileset_y)`.
+  Disegna una `tessera` a (`x`, `y`). Una tessera è rappresentata come una tupla `(image_tx, image_ty)`.
 
 ### Classe Sound
 
