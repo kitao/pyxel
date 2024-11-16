@@ -568,7 +568,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Karo Haritası `tm` (0-7) içindeki (`u`, `v`) konumundan başlayarak (`w`, `h`) boyutundaki bölgeyi (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer atanırsa, bölge yatay ve/veya dikey olarak çevrilir. Eğer `colkey` belirtilirse, şeffaf renk olarak kabul edilir. Eğer `rotate` (derece cinsinden), `scale` (1.0 = %100) veya her ikisi belirtilirse, uygun dönüşümler uygulanır. Bir döşemenin boyutu 8x8 pikseldir ve döşeme haritasında `(tileset_x, tileset_y)` şeklinde bir ikili olarak saklanır.
+  Karo Haritası `tm` (0-7) içindeki (`u`, `v`) konumundan başlayarak (`w`, `h`) boyutundaki bölgeyi (`x`, `y`) konumuna kopyalar. `w` ve/veya `h` için negatif bir değer atanırsa, bölge yatay ve/veya dikey olarak çevrilir. Eğer `colkey` belirtilirse, şeffaf renk olarak kabul edilir. Eğer `rotate` (derece cinsinden), `scale` (1.0 = %100) veya her ikisi belirtilirse, uygun dönüşümler uygulanır. Bir döşemenin boyutu 8x8 pikseldir ve döşeme haritasında `(image_tx, image_ty)` şeklinde bir ikili olarak saklanır.
 
 <img src="images/bltm_figure.png">
 
@@ -668,10 +668,10 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   TMX dosyasından (`layer`(0-)) sırasıyla belirtilen katmanı (`x`, `y`) konumuna yükler.
 
 - `pget(x, y)`<br>
-  (`x`, `y`) konumundaki döşemeyi alır. Döşeme, `(tileset_x, tileset_y)` ikilisi olarak temsil edilir.
+  (`x`, `y`) konumundaki döşemeyi alır. Döşeme, `(image_tx, image_ty)` ikilisi olarak temsil edilir.
 
 - `pset(x, y, tile)`<br>
-  (`x`, `y`) konumuna bir `tile` çizer. Döşeme, `(tileset_x, tileset_y)` ikilisi olarak temsil edilir.
+  (`x`, `y`) konumuna bir `tile` çizer. Döşeme, `(image_tx, image_ty)` ikilisi olarak temsil edilir.
 
 ### Sound Sınıfı
 

@@ -568,7 +568,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  将瓦片地图 `tm`(0-7) 中从 (`u`, `v`) 开始的大小为 (`w`, `h`) 的区域复制到 (`x`, `y`)。如果 `w` 和/或 `h` 设置为负值，该区域将水平和/或垂直翻转。如果指定了 `colkey`，则该颜色将被视为透明色。如果指定了 `rotate`（以度为单位），`scale`（1.0 = 100%），或两者，应用相应的转换。瓦片的大小为 8x8 像素，并以 `(tileset_x, tileset_y)` 元组存储在瓦片地图中。
+  将瓦片地图 `tm`(0-7) 中从 (`u`, `v`) 开始的大小为 (`w`, `h`) 的区域复制到 (`x`, `y`)。如果 `w` 和/或 `h` 设置为负值，该区域将水平和/或垂直翻转。如果指定了 `colkey`，则该颜色将被视为透明色。如果指定了 `rotate`（以度为单位），`scale`（1.0 = 100%），或两者，应用相应的转换。瓦片的大小为 8x8 像素，并以 `(image_tx, image_ty)` 元组存储在瓦片地图中。
 
 <img src="images/bltm_figure.png">
 
@@ -668,10 +668,10 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   在 (`x`, `y`) 处从 TMX 文件 (Tiled Map File) 加载绘制顺序为 `layer`(0-) 的图层。
 
 - `pget(x, y)`<br>
-  获取 (`x`, `y`) 处的瓦片。瓦片表示为 `(tileset_x, tileset_y)` 的元组。
+  获取 (`x`, `y`) 处的瓦片。瓦片表示为 `(image_tx, image_ty)` 的元组。
 
 - `pset(x, y, tile)`<br>
-  在 (`x`, `y`) 处绘制一个瓦片。瓦片表示为 `(tileset_x, tileset_y)` 的元组。
+  在 (`x`, `y`) 处绘制一个瓦片。瓦片表示为 `(image_tx, image_ty)` 的元组。
 
 ### Sound 类
 
