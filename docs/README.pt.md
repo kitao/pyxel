@@ -568,7 +568,7 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do mapa de ladrilhos `tm`(0-7) para (`x`, `y`). Se um valor negativo for atribuído a `w` e/ou `h`, a região será invertida horizontalmente e/ou verticalmente. Se `colkey` for especificado, ele será tratado como uma cor transparente. Se `rotate`(em graus), `scale`(1.0 = 100%) ou ambos forem especificados, as transformações correspondentes serão aplicadas. O tamanho de um ladrilho é 8x8 pixels e é armazenado em um mapa de ladrilhos como uma tupla de `(tile_x, tile_y)`.
+  Copia a região de tamanho (`w`, `h`) de (`u`, `v`) do mapa de ladrilhos `tm`(0-7) para (`x`, `y`). Se um valor negativo for atribuído a `w` e/ou `h`, a região será invertida horizontalmente e/ou verticalmente. Se `colkey` for especificado, ele será tratado como uma cor transparente. Se `rotate`(em graus), `scale`(1.0 = 100%) ou ambos forem especificados, as transformações correspondentes serão aplicadas. O tamanho de um ladrilho é 8x8 pixels e é armazenado em um mapa de ladrilhos como uma tupla de `(tileset_x, tileset_y)`.
 
 <img src="images/bltm_figure.png">
 
@@ -668,10 +668,10 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
   Carrega a camada na ordem de desenho `layer`(0-) do arquivo TMX (Tiled Map File) em (`x`, `y`).
 
 - `pget(x, y)`<br>
-  Obtém o ladrilho em (`x`, `y`). Um ladrilho é representado como uma tupla de `(tile_x, tile_y)`.
+  Obtém o ladrilho em (`x`, `y`). Um ladrilho é representado como uma tupla de `(tileset_x, tileset_y)`.
 
 - `pset(x, y, tile)`<br>
-  Desenha um `ladrilho` em (`x`, `y`). Um ladrilho é representado como uma tupla de `(tile_x, tile_y)`.
+  Desenha um `ladrilho` em (`x`, `y`). Um ladrilho é representado como uma tupla de `(tileset_x, tileset_y)`.
 
 ### Classe Sound
 
