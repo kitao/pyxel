@@ -568,7 +568,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  タイルマップ`tm`(0-7) の (`u`, `v`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーします。`w`、`h`それぞれに負の値を設定すると水平、垂直方向に反転します。`colkey`に色を指定すると透明色として扱われます。`rotate`(度:Degree)、`scale`(1.0=100%)、またはその両方を指定すると対応する変換が適用されます。1 タイルのサイズは 8x8 ピクセルで、`(tile_x, tile_y)`のタプルとしてタイルマップに格納されています。
+  タイルマップ`tm`(0-7) の (`u`, `v`) からサイズ (`w`, `h`) の領域を (`x`, `y`) にコピーします。`w`、`h`それぞれに負の値を設定すると水平、垂直方向に反転します。`colkey`に色を指定すると透明色として扱われます。`rotate`(度:Degree)、`scale`(1.0=100%)、またはその両方を指定すると対応する変換が適用されます。1 タイルのサイズは 8x8 ピクセルで、`(tileset_x, tileset_y)`のタプルとしてタイルマップに格納されています。
 
 <img src="images/bltm_figure.png">
 
@@ -668,10 +668,10 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   (`x`, `y`) に TMX ファイル (Tiled Map File) から描画順が`layer`(0-) のレイヤーを読み込みます。
 
 - `pget(x, y)`<br>
-  (`x`, `y`) のタイルを取得します。タイルは`(tile_x, tile_y)`のタプルです。
+  (`x`, `y`) のタイルを取得します。タイルは`(tileset_x, tileset_y)`のタプルです。
 
 - `pset(x, y, tile)`<br>
-  (`x`, `y`) にタイルを設定します。タイルは`(tile_x, tile_y)`のタプルです。
+  (`x`, `y`) にタイルを設定します。タイルは`(tileset_x, tileset_y)`のタプルです。
 
 ### Sound クラス
 
