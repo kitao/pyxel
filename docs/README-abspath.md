@@ -568,7 +568,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`). If a negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, it will be treated as a transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformations will be applied. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(tileset_x, tileset_y)`.
+  Copy the region of size (`w`, `h`) from (`u`, `v`) of the tilemap `tm`(0-7) to (`x`, `y`). If a negative value is assigned to `w` and/or `h`, the region will be flipped horizontally and/or vertically. If `colkey` is specified, it will be treated as a transparent color. If `rotate`(in degrees), `scale`(1.0 = 100%), or both are specified, the corresponding transformations will be applied. The size of a tile is 8x8 pixels and is stored in a tilemap as a tuple of `(image_tx, image_ty)`.
 
 <img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/bltm_figure.png">
 
@@ -668,10 +668,10 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Load the layer in the drawing order `layer`(0-) from the TMX file (Tiled Map File) at (`x`, `y`).
 
 - `pget(x, y)`<br>
-  Get the tile at (`x`, `y`). A tile is represented as a tuple of `(tileset_x, tileset_y)`.
+  Get the tile at (`x`, `y`). A tile is represented as a tuple of `(image_tx, image_ty)`.
 
 - `pset(x, y, tile)`<br>
-  Draw a `tile` at (`x`, `y`). A tile is represented as a tuple of `(tileset_x, tileset_y)`.
+  Draw a `tile` at (`x`, `y`). A tile is represented as a tuple of `(image_tx, image_ty)`.
 
 ### Sound Class
 

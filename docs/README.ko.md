@@ -568,7 +568,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  타일맵 `tm`(0-7)의 (`u`, `v`)에서 크기 (`w`, `h`)의 영역을 (`x`, `y`)로 복사합니다. `w`와/또는 `h`에 음수를 지정하면 수평 및/또는 수직으로 영역이 뒤집힙니다. `colkey`가 지정되면 이를 투명색으로 처리합니다. `rotate`(도 단위), `scale`(1.0 = 100%) 또는 둘 다 지정하면 해당 변환이 적용됩니다. 타일의 크기는 8x8 픽셀이며, 타일맵에 `(tileset_x, tileset_y)`의 튜플로 저장됩니다.
+  타일맵 `tm`(0-7)의 (`u`, `v`)에서 크기 (`w`, `h`)의 영역을 (`x`, `y`)로 복사합니다. `w`와/또는 `h`에 음수를 지정하면 수평 및/또는 수직으로 영역이 뒤집힙니다. `colkey`가 지정되면 이를 투명색으로 처리합니다. `rotate`(도 단위), `scale`(1.0 = 100%) 또는 둘 다 지정하면 해당 변환이 적용됩니다. 타일의 크기는 8x8 픽셀이며, 타일맵에 `(image_tx, image_ty)`의 튜플로 저장됩니다.
 
 <img src="images/bltm_figure.png">
 
@@ -668,10 +668,10 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   (`x`, `y`)에 TMX 파일 (Tiled Map File)로부터 그리기 순서가 `layer`(0-)인 레이어를 로드합니다.
 
 - `pget(x, y)`<br>
-  (`x`, `y`)의 타일을 가져옵니다. 타일은 `(tileset_x, tileset_y)`의 튜플로 표현됩니다.
+  (`x`, `y`)의 타일을 가져옵니다. 타일은 `(image_tx, image_ty)`의 튜플로 표현됩니다.
 
 - `pset(x, y, tile)`<br>
-  (`x`, `y`)에 타일을 설정합니다. 타일은 `(tileset_x, tileset_y)`의 튜플로 표현됩니다.
+  (`x`, `y`)에 타일을 설정합니다. 타일은 `(image_tx, image_ty)`의 튜플로 표현됩니다.
 
 ### Sound 클래스
 
