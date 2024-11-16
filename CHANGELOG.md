@@ -3,6 +3,7 @@
 ## 2.2.8
 
 - Modified a shortcut description in the READMEs
+- Renamed (tile_x, tile_y) to (tileset_x, tileset_y) in the READMEs
 
 ## 2.2.7
 
@@ -737,7 +738,7 @@
 - Optimized GIF animation compression
 - Enabled to add the image banks and tilemap banks dynamically
 - Added drawing methods to the Image and Tilemap class
-- Changed the tile format of tilemap to tuple of (tile_x, tile_y)
+- Changed the tile format of tilemap to tuple of (tileset_x, tileset_y)
 - Renamed the properties of the Sound and Music class
 - Changed the play_pos function to return a tuple of sound and note
 - Supported dynamic palette change with the colors list
