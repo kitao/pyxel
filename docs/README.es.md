@@ -568,7 +568,7 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
 <img src="images/blt_figure.png">
 
 - `bltm(x, y, tm, u, v, w, h, [colkey], [rotate], [scale])`<br>
-  Copia la región de tamaño (`w`, `h`) desde (`u`, `v`) del mapa de teselas `tm`(0-7) a (`x`, `y`). Si se asigna un valor negativo a `w` y/o `h`, la región se volteará horizontal y/o verticalmente. Si se especifica `colkey`, será tratado como un color transparente. Si se especifican `rotate` (en grados), `scale` (1.0 = 100%) o ambos, se aplicarán las transformaciones correspondientes. El tamaño de una tesela es de 8x8 píxeles y se almacena en un mapa de teselas como una tupla de `(tile_x, tile_y)`.
+  Copia la región de tamaño (`w`, `h`) desde (`u`, `v`) del mapa de teselas `tm`(0-7) a (`x`, `y`). Si se asigna un valor negativo a `w` y/o `h`, la región se volteará horizontal y/o verticalmente. Si se especifica `colkey`, será tratado como un color transparente. Si se especifican `rotate` (en grados), `scale` (1.0 = 100%) o ambos, se aplicarán las transformaciones correspondientes. El tamaño de una tesela es de 8x8 píxeles y se almacena en un mapa de teselas como una tupla de `(tileset_x, tileset_y)`.
 
 <img src="images/bltm_figure.png">
 
@@ -668,10 +668,10 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
   Carga la capa en el orden de dibujo `layer`(0-) desde el archivo TMX (Tiled Map File) en (`x`, `y`).
 
 - `pget(x, y)`<br>
-  Obtiene la tesela en (`x`, `y`). Una tesela se representa como una tupla de `(tile_x, tile_y)`.
+  Obtiene la tesela en (`x`, `y`). Una tesela se representa como una tupla de `(tileset_x, tileset_y)`.
 
 - `pset(x, y, tile)`<br>
-  Dibuja una `tesela` en (`x`, `y`). Una tesela se representa como una tupla de `(tile_x, tile_y)`.
+  Dibuja una `tesela` en (`x`, `y`). Una tesela se representa como una tupla de `(tileset_x, tileset_y)`.
 
 ### Clase Sound
 
