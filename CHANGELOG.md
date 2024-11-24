@@ -4,6 +4,7 @@
 
 - Modified a shortcut description in the READMEs
 - Renamed (tile_x, tile_y) to (image_tx, image_ty) in the READMEs
+- Replaced the usage of a deprecated API
 
 ## 2.2.7
 
