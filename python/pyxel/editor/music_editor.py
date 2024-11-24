@@ -136,7 +136,7 @@ class MusicEditor(EditorBase):
         tick = 0
         if is_partial:
             for i in range(self.field_cursor.x):
-                music = pyxel.music(self.music_index_var)
+                music = pyxel.musics[self.music_index_var]
                 sound = pyxel.sounds[music.seqs[self.field_cursor.y][i]]
                 tick += len(sound.notes) * sound.speed
         pyxel.playm(self.music_index_var, tick=tick, loop=self.should_loop_var)
