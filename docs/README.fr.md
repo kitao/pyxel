@@ -666,7 +666,7 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
   Exemple : `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  Charge la couche dans l'ordre de dessin `layer`(0-) à partir du fichier TMX (Tiled Map File) à (`x`, `y`).
+  Charge la `layer`(0-) à partir du fichier TMX (Tiled Map File) à (`x`, `y`).
 
 - `pget(x, y)`<br>
   Obtient la tuile à (`x`, `y`). Une tuile est représentée sous forme de tuple `(image_tx, image_ty)`.

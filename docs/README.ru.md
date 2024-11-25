@@ -665,7 +665,7 @@ pyxel play PYXEL_APP_FILE
   Пример: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  Загружает слой в порядке отрисовки `layer`(0-) из файла TMX (Tiled Map File) в координаты (`x`, `y`).
+  Загружает `layer`(0-) из файла TMX (Tiled Map File) в координаты (`x`, `y`).
 
 - `pget(x, y)`<br>
   Получает тайл в координатах (`x`, `y`). Тайлы представлены в виде кортежа `(image_tx, image_ty)`.

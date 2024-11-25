@@ -665,7 +665,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Esempio: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  Carica il layer nell'ordine di disegno `layer`(0-) dal file TMX (Tiled Map File) a (`x`, `y`).
+  Carica il `layer`(0-) dal file TMX (Tiled Map File) a (`x`, `y`).
 
 - `pget(x, y)`<br>
   Ottiene la tessera a (`x`, `y`). Una tessera è rappresentata come una tupla `(image_tx, image_ty)`.

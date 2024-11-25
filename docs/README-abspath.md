@@ -665,7 +665,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Example: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  Load the layer in the drawing order `layer`(0-) from the TMX file (Tiled Map File) at (`x`, `y`).
+  Load the `layer` (0-) from the TMX file (Tiled Map File) at (`x`, `y`).
 
 - `pget(x, y)`<br>
   Get the tile at (`x`, `y`). A tile is represented as a tuple of `(image_tx, image_ty)`.
