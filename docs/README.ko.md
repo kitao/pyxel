@@ -381,7 +381,7 @@ Pyxel Editor에는 다음과 같은 편집 모드가 있습니다.
 <img src="images/tilemap_editor.gif">
 </a>
 
-타일맵 편집기로 TMX 파일(Tiled Map File)을 드래그 앤 드롭하면 현재 선택된 타일맵 번호에 해당하는 그리기 순서의 레이어를 로드할 수 있습니다.
+TMX 파일(Tiled Map File)을 타일맵 편집기로 드래그 앤 드롭하면 현재 선택된 타일맵에 레이어 0이 로드됩니다.
 
 **사운드 편집기**
 

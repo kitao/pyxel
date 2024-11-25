@@ -381,7 +381,7 @@ O modo para editar os **mapas de ladrilhos** que organizam imagens dos bancos de
 <img src="images/tilemap_editor.gif">
 </a>
 
-Arraste e solte um arquivo TMX (Tiled Map File) no editor de **mapas de ladrilhos** para carregar sua camada na ordem de desenho que corresponde ao número do mapa de ladrilhos atualmente selecionado.
+Arraste e solte um arquivo TMX (Tiled Map File) no editor de mapas de ladrilhos para carregar sua camada 0 no mapa de ladrilhos atualmente selecionado.
 
 **Editor de Som**
 
