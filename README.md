@@ -381,7 +381,7 @@ The mode for editing **tilemaps** that arrange images from the image banks in a 
 <img src="docs/images/tilemap_editor.gif">
 </a>
 
-Drag and drop a TMX file (Tiled Map File) onto the tilemap editor to load its layer in the drawing order that corresponds to the currently selected tilemap number.
+Drag and drop a TMX file (Tiled Map File) onto the tilemap editor to load its Layer 0 into the currently selected tilemap.
 
 **Sound Editor**
 
