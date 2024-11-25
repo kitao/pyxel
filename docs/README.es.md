@@ -665,7 +665,7 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
   Ejemplo: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  Carga la capa en el orden de dibujo `layer`(0-) desde el archivo TMX (Tiled Map File) en (`x`, `y`).
+  Carga la `layer`(0-) desde el archivo TMX (Tiled Map File) en (`x`, `y`).
 
 - `pget(x, y)`<br>
   Obtiene la tesela en (`x`, `y`). Una tesela se representa como una tupla de `(image_tx, image_ty)`.
