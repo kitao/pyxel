@@ -665,7 +665,7 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
   Exemplo: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  Carrega a camada na ordem de desenho `layer`(0-) do arquivo TMX (Tiled Map File) em (`x`, `y`).
+  Carrega a `layer`(0-) do arquivo TMX (Tiled Map File) em (`x`, `y`).
 
 - `pget(x, y)`<br>
   Obtém o ladrilho em (`x`, `y`). Um ladrilho é representado como uma tupla de `(image_tx, image_ty)`.

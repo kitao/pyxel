@@ -665,7 +665,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   Örnek: `pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  TMX dosyasından (`layer`(0-)) sırasıyla belirtilen katmanı (`x`, `y`) konumuna yükler.
+  TMX dosyasından `layer`(0-) katmanını (`x`, `y`) konumuna yükler.
 
 - `pget(x, y)`<br>
   (`x`, `y`) konumundaki döşemeyi alır. Döşeme, `(image_tx, image_ty)` ikilisi olarak temsil edilir.

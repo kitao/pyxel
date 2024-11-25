@@ -665,7 +665,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   例子：`pyxel.tilemap(0).set(0, 0, ["0000 0100 a0b0", "0001 0101 a1b1"])`
 
 - `load(x, y, filename, layer)`<br>
-  在 (`x`, `y`) 处从 TMX 文件 (Tiled Map File) 加载绘制顺序为 `layer`(0-) 的图层。
+  在 (`x`, `y`) 处从 TMX 文件 (Tiled Map File) 加载 `layer`(0-) 的图层。
 
 - `pget(x, y)`<br>
   获取 (`x`, `y`) 处的瓦片。瓦片表示为 `(image_tx, image_ty)` 的元组。
