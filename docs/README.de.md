@@ -381,7 +381,7 @@ Der Modus zum Bearbeiten von **Kachelkarten**, in denen Bilder aus den Bilderban
 <img src="images/tilemap_editor.gif">
 </a>
 
-Ziehen Sie eine TMX-Datei (Tiled Map File) in den Kachelkarteneditor, um deren Ebene 0 in die aktuell ausgewählte Kachelkarte zu laden.
+Ziehen Sie eine TMX-Datei (Tiled Map File) in den Kachelkarteneditor, um deren ebene 0 in die aktuell ausgewählte Kachelkarte zu laden.
 
 **Klangeditor**
 
