@@ -381,7 +381,7 @@ Resim bankalarındaki görüntüleri bir **karo haritası** içinde düzenlemek 
 <img src="images/tilemap_editor.gif">
 </a>
 
-Bir TMX dosyasını (Tiled Map File) karo haritası editörüne sürükleyip bırakarak, şu anda seçili olan karo haritası numarasına karşılık gelen çizim sırasındaki katmanını yükleyebilirsiniz.
+Bir TMX dosyasını (Tiled Map File) karo haritası editörüne sürükleyip bırakarak, şu anda seçili olan karo haritasına katman 0'ı yükleyebilirsiniz.
 
 **Ses Editörü**
 

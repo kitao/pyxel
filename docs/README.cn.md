@@ -381,7 +381,7 @@ Pyxel Editor 有以下编辑模式。
 <img src="images/tilemap_editor.gif">
 </a>
 
-将 TMX 文件（Tiled Map File）拖放到瓦片地图编辑器上，以加载其层次结构，绘制顺序与当前选择的瓦片地图编号相对应。
+将 TMX 文件（Tiled Map File）拖放到瓦片地图编辑器上，以将其第 0 层加载到当前选择的瓦片地图中。
 
 **声音编辑器**
 

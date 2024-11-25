@@ -381,7 +381,7 @@ El modo para editar los **mapas de teselas** que organizan imágenes de los banc
 <img src="images/tilemap_editor.gif">
 </a>
 
-Arrastra y suelta un archivo TMX (Tiled Map File) en el editor de mapas de teselas para cargar su capa en el orden de dibujo que corresponde al número de mapa de teselas seleccionado actualmente.
+Arrastra y suelta un archivo TMX (Tiled Map File) en el editor de mapas de teselas para cargar su capa 0 en el mapa de teselas actualmente seleccionado.
 
 **Editor de sonidos**
 

@@ -381,7 +381,7 @@ Le mode pour éditer les **cartes de tuiles** qui organisent des images des banq
 <img src="images/tilemap_editor.gif">
 </a>
 
-Faites glisser et déposez un fichier TMX (Tiled Map File) sur l'éditeur de **cartes de tuiles** pour charger sa couche dans l'ordre de dessin correspondant au numéro de carte de tuiles actuellement sélectionné.
+Faites glisser et déposer un fichier TMX (Tiled Map File) dans l'éditeur de cartes de tuiles pour charger sa couche 0 dans la carte de tuiles actuellement sélectionnée.
 
 **Éditeur de sons**
 

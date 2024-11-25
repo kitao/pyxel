@@ -138,7 +138,7 @@ class TilemapEditor(EditorBase):
 
     def __on_drop(self, filename):
         pyxel.tilemaps[self.tilemap_index_var].load(
-            self.focus_x_var * 8, self.focus_y_var * 8, filename, self.tilemap_index_var
+            self.focus_x_var * 8, self.focus_y_var * 8, filename, 0
         )
 
     def __on_update(self):

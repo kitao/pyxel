@@ -381,7 +381,7 @@ Il modo per modificare le **mappe a tessere** in cui le immagini delle banche di
 <img src="images/tilemap_editor.gif">
 </a>
 
-Trascina e rilascia un file TMX (Tiled Map File) sull'editor di mappe a tessere per caricare il suo strato nell'ordine di disegno corrispondente al numero di mappa a tessere attualmente selezionato.
+Trascina e rilascia un file TMX (Tiled Map File) nell'editor di mappe a tessere per caricare il suo strato 0 nella mappa a tessere attualmente selezionata.
 
 **Editor di Suoni**
 
