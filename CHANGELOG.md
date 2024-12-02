@@ -7,6 +7,7 @@
 - Replaced the usage of a deprecated API
 - Changed the tilemap editor to load Layer 0 when a TMX file is dropped onto it
 - Updated Maturin to the latest version
+- Updated Pyodide to version 0.26.4
 
 ## 2.2.7
 
