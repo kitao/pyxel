@@ -1,4 +1,4 @@
-maturin==1.7.0
+maturin
 mypy
 pyinstaller
 requests
