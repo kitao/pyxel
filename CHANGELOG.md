@@ -6,10 +6,11 @@
 - Renamed (tile_x, tile_y) to (image_tx, image_ty) in the READMEs
 - Replaced the usage of a deprecated API
 - Changed the tilemap editor to load Layer 0 when a TMX file is dropped onto it
+- Updated Maturin to the latest version
 
 ## 2.2.7
 
-- Updated the Pyodide version to 0.26.3
+- Updated Pyodide to version 0.26.3
 - Added the perf_monitor function
 - Added the integer_scale function
 - Renamed the argument of the fullscreen function
@@ -22,7 +23,7 @@
 - Renamed WORKING_DIR to BASE_DIR
 - Added the user_data_dir function
 - Switched from the platform-dir crate to the directories crate
-- Update the glow crate version to 0.15
+- Update the glow crate to version 0.15
 - Fully revised the translations of all README files
 
 ## 2.2.5
@@ -33,7 +34,7 @@
 ## 2.2.4
 
 - Fixed a bug when playing a pyxapp with the same process ID
-- Updated the sysinfo crate version to 0.25
+- Updated the sysinfo crate to version 0.25
 - Updated the license description in the READMEs
 - Updated the instructions for using the Web version of Pyxel
 - Updated the Q&A
@@ -51,7 +52,7 @@
 
 - Fixed the mypy errors
 - Changed an image layout in the READMEs
-- Updated the Python version in GitHub Actions to 3.12
+- Updated Python in GitHub Actions to version 3.12
 - Enabled adding metadata to a Pyxel application file
 - Added metadata to the bundled Pyxel application files
 
@@ -67,7 +68,7 @@
 
 - Removed the keyword-only arguments
 - Added the rotate and scale options to the blt and bltm functions
-- specified the Maturin version as 1.7.0 to prevent linking errors
+- specified Maturin to version 1.7.0 to prevent linking errors
 - Modified the API notation in Example 4
 - Added Example 16 for rotation and scaling
 
@@ -75,19 +76,19 @@
 
 - Fixed a color rendering issue on Windows
 - Replaced links to Twitter with X in the READMEs
-- Updated the bindgen crate version to 0.70
+- Updated the bindgen crate to version 0.70
 
 ## 2.1.9
 
-- Updated the required Python version to 3.8 or higher
+- Updated the required Python to version 3.8 or higher
 - Changed to avoid using the gil-refs feature in the PyO3 crate
 - Changed to prevent key state changes during special inputs
 
 ## 2.1.8
 
-- Updated the Emscripten to version 3.1.61
-- Updated the SDL2 to version 2.28.4
-- Updated the PyO3 to version 0.22
+- Updated Emscripten to version 3.1.61
+- Updated SDL2 to version 2.28.4
+- Updated PyO3 to version 0.22
 - Fixed keyword-only arguments functionality
 
 ## 2.1.7
@@ -104,7 +105,7 @@
 - Updated the message image for the READMEs
 - Added Turkish and Ukrainian READMEs
 - Fixed a warning on macOS Sonoma
-- Updated the Pyodide to version 0.26.2
+- Updated Pyodide to version 0.26.2
 - Updated the glow crate to version 0.14
 
 ## 2.1.5
@@ -143,7 +144,7 @@
 - Changed the API notation in Example 4
 - Changed Example 9 to use the resume option for SFX playback
 - Added the descriptions of the resume option to the READMEs
-- Updated the Pyodide to version 0.26.1
+- Updated Pyodide to version 0.26.1
 
 ## 2.0.14
 
@@ -158,8 +159,8 @@
 
 - Fixed installation instructions for Mac in the READMEs
 - Modified build instructions in Makefile
-- Updated the Pyodide to version 0.25.1
-- Updated the Emscripten to version 3.1.53
+- Updated Pyodide to version 0.25.1
+- Updated Emscripten to version 3.1.53
 
 ## 2.0.11
 
@@ -242,8 +243,8 @@
 - Changed to use the C version of SDL2
 - Changed to allow resizing of the colors list
 - Changed to use GLSL for rendering the screen
-- Updated the Pyodide to version 0.24.1
-- Updated the Emscripten to version 3.1.45
+- Updated Pyodide to version 0.24.1
+- Updated Emscripten to version 3.1.45
 - Updated SDL2 to 2.24.2
 - Added the screen_mode function to change screen rendering type
 - Added a shortcut to change the screen mode with Alt(Option)+9
@@ -279,8 +280,8 @@
 - Replaced an image in the READMEs
 - Fixed the app2exe command to include modules correctly
 - Added support for Raspberry Pi (ARMv7)
-- Updated the Emscripten to version 3.1.42
-- Updated the Pyodide to version 0.23.3
+- Updated Emscripten to version 3.1.42
+- Updated Pyodide to version 0.23.3
 - Updated crate versions
 
 ## 1.9.16
@@ -294,7 +295,7 @@
 
 - Changed the platform specification method in Rust for FreeBSD
 - Changed to use the official Pyodide instead of the customized version
-- Updated the Emscripten to version 3.1.36
+- Updated Emscripten to version 3.1.36
 - Expanded the supported macOS 10.12+ (Intel), 11.0+ (Apple Silicon)
 
 ## 1.9.14
@@ -306,14 +307,14 @@
 
 - Added URL generator to Pyxel Web Launcher
 - Added a data_ptr method to the Image and Tilemap class
-- Updated the Emscripten to version 3.1.34
+- Updated Emscripten to version 3.1.34
 - Added Example 13
 
 ## 1.9.12
 
 - Added support for environments without game controllers
 - Adjusted the initial gain of the sound
-- Updated the Emscripten to version 3.1.31
+- Updated Emscripten to version 3.1.31
 
 ## 1.9.11
 
@@ -332,8 +333,8 @@
 
 - Changed to not use array macro
 - Fixed clippy warnings
-- Updated the Emscripten to version 3.1.29
-- Updated the Pyodide to version 0.22.0
+- Updated Emscripten to version 3.1.29
+- Updated Pyodide to version 0.22.0
 - Fixed gamepad input bug
 - Enabled dynamic addition of gamepads
 - Changed a help message for the tilemap editor
@@ -343,7 +344,7 @@
 - Modified description for Example 13
 - Added system palette colors besides normal palette colors
 - Changed to keep the default palette color in Pyxel Editor
-- Updated the Emscripten to version 3.1.28
+- Updated Emscripten to version 3.1.28
 - Updated the source of Pyodide-SDL2
 
 ## 1.9.7
@@ -396,7 +397,7 @@
 
 - Added a video and a message to users to the READMEs
 - Updated Pyodide
-- Updated the Emscripten to version 3.1.24
+- Updated Emscripten to version 3.1.24
 
 ## 1.8.22
 
