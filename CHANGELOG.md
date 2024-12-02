@@ -245,7 +245,7 @@
 - Updated the Pyodide to version 0.24.1
 - Updated the Emscripten to version 3.1.45
 - Updated SDL2 to 2.24.2
-- Added the screen_mode function to change screen rendring type
+- Added the screen_mode function to change screen rendering type
 - Added a shortcut to change the screen mode with Alt(Option)+9
 - Added support for the third and fourth gamepads
 - Added the dither function to set dithering type
@@ -472,7 +472,7 @@
 ## 1.8.9
 
 - Changed the color scheme for the web
-- Added virtual gamepad surppot for the web
+- Added virtual gamepad support for the web
 - Added gamepad support to examples
 - Added the gamepad attribute to HTML custom elements
 - Modified key assigns for Pyxel application files
@@ -518,10 +518,10 @@
 
 - Added a script to build and copy Pyodide
 - Changed the audio buffer size for WASM
-- Added a utilify module for WASM
+- Added a utility module for WASM
 - Removed the module_search_path option from CLI
 - Changed functions for CLI to public
-- Fiexd to stop playing music on quit on WASM
+- Fixed to stop playing music on quit on WASM
 - Removed the flip function for WASM support
 - Fixed the mouse coordinates in WASM
 - Changed to release the sdist wheel as well
