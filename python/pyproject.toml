@@ -35,7 +35,6 @@ pyxel = "pyxel.cli:cli"
 [tool.maturin]
 manifest-path = "../rust/pyxel-wrapper/Cargo.toml"
 module-name = "pyxel.pyxel_wrapper"
-python-source = "../python"
 
 [tool.maturin.target."x86_64-apple-darwin"]
 macos-deployment-target = "10.12"
