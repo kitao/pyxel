@@ -12,6 +12,7 @@
 - Updated the once_cell crate to version 1.20
 - Updated the zip crate to version 2.2
 - Updated the sysinfo crate to version 0.33
+- Updated the glow crate to version 0.16
 
 ## 2.2.7
 
