@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::mem::size_of;
 
 use cfg_if::cfg_if;
-use glow::HasContext;
+use glow::{HasContext, PixelUnpackData};
 
 use crate::font::SharedFont;
 use crate::image::Color;
@@ -423,7 +423,7 @@ impl Pyxel {
             0,
             texture_format,
             glow::UNSIGNED_BYTE,
-            Some(&self.screen.lock().canvas.data),
+            PixelUnpackData::Slice(Some(&self.screen.lock().canvas.data)),
         );
     }
 
@@ -453,7 +453,7 @@ impl Pyxel {
             0,
             glow::RGB,
             glow::UNSIGNED_BYTE,
-            Some(&pixels),
+            PixelUnpackData::Slice(Some(&pixels)),
         );
     }
 }
