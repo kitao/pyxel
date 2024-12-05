@@ -8,6 +8,10 @@
 - Changed the tilemap editor to load Layer 0 when a TMX file is dropped onto it
 - Updated Maturin to the latest version
 - Updated Pyodide to version 0.26.4
+- Updated the indexmap crate to version 2.7
+- Updated the once_cell crate to version 1.20
+- Updated the zip crate to version 2.2
+- Updated the sysinfo crate to version 0.33
 
 ## 2.2.7
 
@@ -82,14 +86,14 @@
 ## 2.1.9
 
 - Updated the required Python to version 3.8 or higher
-- Changed to avoid using the gil-refs feature in the PyO3 crate
+- Changed to avoid using the gil-refs feature in the pyo3 crate
 - Changed to prevent key state changes during special inputs
 
 ## 2.1.8
 
 - Updated Emscripten to version 3.1.61
 - Updated SDL2 to version 2.28.4
-- Updated PyO3 to version 0.22
+- Updated the pyo3 crate to version 0.22
 - Fixed keyword-only arguments functionality
 
 ## 2.1.7
