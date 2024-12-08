@@ -15,6 +15,7 @@
 - Updated the glow crate to version 0.16
 - Updated the bindgen crate to version 0.71
 - Raised the minimum supported macOS to version 13
+- Fixed a bug in the mouse cursor position
 
 ## 2.2.7
 
