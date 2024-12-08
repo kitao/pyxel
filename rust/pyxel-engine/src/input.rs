@@ -141,11 +141,11 @@ impl Pyxel {
         let mut value = value;
         match key {
             MOUSE_POS_X => {
-                value = (value - self.system.screen_x) / self.system.screen_scale as i32;
+                value = ((value - self.system.screen_x) as f64 / self.system.screen_scale) as i32;
                 self.mouse_x = value;
             }
             MOUSE_POS_Y => {
-                value = (value - self.system.screen_y) / self.system.screen_scale as i32;
+                value = ((value - self.system.screen_y) as f64 / self.system.screen_scale) as i32;
                 self.mouse_y = value;
             }
             MOUSE_WHEEL_Y => {
