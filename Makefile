@@ -88,6 +88,7 @@ lint:
 
 update:
 	@rustup -q update
+	@cargo -q install cargo-outdated
 	@cd $(RUST_DIR); cargo -q update
 	@cd $(RUST_DIR); cargo -q outdated --root-deps-only
 	@pip3 -q install -U -r $(PYTHON_DIR)/requirements.txt
