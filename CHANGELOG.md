@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.9
+
+- Fixed to include the LICENSE file in the Python package
+
 ## 2.2.8
 
 - Modified a shortcut description in the READMEs
