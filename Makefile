@@ -100,6 +100,7 @@ format:
 build: format
 	@$(ENSURE_TARGET)
 	@$(SCRIPTS_DIR)/make_abspath_readme
+	@cp LICENSE $(PYTHON_DIR)/pyxel
 	@cd $(PYTHON_DIR); maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) --manylinux 2014 --auditwheel skip
 
 install: build
