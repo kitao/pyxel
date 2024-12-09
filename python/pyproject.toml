@@ -9,7 +9,7 @@ requires-python = ">=3.8"
 authors = [{ name = "Takashi Kitao", email = "takashi.kitao@gmail.com" }]
 description = "A retro game engine for Python"
 readme = "../docs/README-abspath.md"
-license = { file = "LICENSE" }
+license = { file = "pyxel/LICENSE" }
 keywords = ["game", "gamedev"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
