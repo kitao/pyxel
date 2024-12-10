@@ -389,6 +389,8 @@ def copy_pyxel_examples():
     dst_dir = "pyxel_examples"
     shutil.rmtree(dst_dir, ignore_errors=True)
     for src_file in _files_in_dir(src_dir):
+        if "__pycache__" in src_file:
+            continue
         dst_file = os.path.join(dst_dir, os.path.relpath(src_file, src_dir))
         os.makedirs(os.path.dirname(dst_file), exist_ok=True)
         shutil.copyfile(src_file, dst_file)
