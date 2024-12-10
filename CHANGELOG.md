@@ -3,6 +3,7 @@
 ## 2.2.9
 
 - Fixed to include the LICENSE file in the Python package
+- Excluded the pycache directory from the copy_examples command
 
 ## 2.2.8
 
