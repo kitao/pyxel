@@ -123,7 +123,7 @@ impl BlipBuf {
         let fixed = ((time * self.factor + self.offset) >> PRE_SHIFT) as u64;
         let out = &mut self.buf[(self.avail as usize + (fixed >> FRAC_BITS) as usize)..];
 
-        let interp = (fixed >> (FRAC_BITS - DELTA_BITS) & (DELTA_UNIT - 1) as u64) as i32;
+        let interp = ((fixed >> (FRAC_BITS - DELTA_BITS)) & (DELTA_UNIT - 1) as u64) as i32;
         let delta2 = delta * interp;
 
         out[7] += delta * DELTA_UNIT - delta2;
