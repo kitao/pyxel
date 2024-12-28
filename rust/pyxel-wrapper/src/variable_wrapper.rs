@@ -56,16 +56,21 @@ wrap_shared_vec_as_python_list!(Musics, Music, musics);
 fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
     let value = match name {
         // System
-        "width" => pyxel().width.to_object(py),
-        "height" => pyxel().height.to_object(py),
-        "frame_count" => pyxel().frame_count.to_object(py),
+        "width" => pyxel().width.into_pyobject(py).unwrap().into(),
+        "height" => pyxel().height.into_pyobject(py).unwrap().into(),
+        "frame_count" => pyxel().frame_count.into_pyobject(py).unwrap().into(),
 
         // Input
-        "mouse_x" => pyxel().mouse_x.to_object(py),
-        "mouse_y" => pyxel().mouse_y.to_object(py),
-        "mouse_wheel" => pyxel().mouse_wheel.to_object(py),
-        "input_text" => pyxel().input_text.to_object(py),
-        "dropped_files" => pyxel().dropped_files.to_object(py),
+        "mouse_x" => pyxel().mouse_x.into_pyobject(py).unwrap().into(),
+        "mouse_y" => pyxel().mouse_y.into_pyobject(py).unwrap().into(),
+        "mouse_wheel" => pyxel().mouse_wheel.into_pyobject(py).unwrap().into(),
+        "input_text" => pyxel().input_text.clone().into_pyobject(py).unwrap().into(),
+        "dropped_files" => pyxel()
+            .dropped_files
+            .clone()
+            .into_pyobject(py)
+            .unwrap()
+            .into(),
 
         // Graphics
         "colors" => Py::new(py, Colors::wrap(0))?.into_py(py),
