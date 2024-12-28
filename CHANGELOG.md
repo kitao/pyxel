@@ -4,7 +4,7 @@
 
 - Fixed to include the LICENSE file in the Python package
 - Excluded the pycache directory from the copy_examples command
-- Updated the pyo3 crate to version 0.23, though some warnings remain
+- Updated the pyo3 crate to version 0.23
 
 ## 2.2.8
 
