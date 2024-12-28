@@ -54,7 +54,7 @@ impl Tilemap {
     pub fn imgsrc(&self, py: Python) -> PyObject {
         let tilemap = self.inner.lock();
         match &tilemap.imgsrc {
-            pyxel::ImageSource::Index(index) => index.into_py(py),
+            pyxel::ImageSource::Index(index) => index.into_pyobject(py).unwrap().into(),
             pyxel::ImageSource::Image(image) => Image::wrap(image.clone()).into_py(py),
         }
     }
@@ -80,7 +80,12 @@ impl Tilemap {
         .unwrap();
         let locals = pyo3::types::PyDict::new(py);
         py.run(python_code.as_c_str(), None, Some(&locals)).unwrap();
-        locals.get_item("c_uint8_array").unwrap().to_object(py)
+        locals
+            .get_item("c_uint8_array")
+            .unwrap()
+            .into_pyobject(py)
+            .unwrap()
+            .into()
     }
 
     pub fn set(&mut self, x: i32, y: i32, data: Vec<String>) {
