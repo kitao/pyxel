@@ -1,5 +1,3 @@
-use std::ffi::CString;
-
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
 
@@ -44,14 +42,13 @@ impl Image {
 
     pub fn data_ptr(&self, py: Python) -> PyObject {
         let mut inner = self.inner.lock();
-        let python_code = CString::new(format!(
+        let python_code = format!(
             "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
             inner.width() * inner.height(),
             inner.data_ptr()
-        ))
-        .unwrap();
-        let locals = PyDict::new(py);
-        py.run(python_code.as_c_str(), None, Some(&locals)).unwrap();
+        );
+        let locals = PyDict::new_bound(py);
+        py.run_bound(&python_code, None, Some(&locals)).unwrap();
         locals.get_item("c_uint8_array").unwrap().to_object(py)
     }
 
