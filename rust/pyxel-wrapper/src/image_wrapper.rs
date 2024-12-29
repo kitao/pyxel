@@ -52,7 +52,7 @@ impl Image {
         .unwrap();
         let locals = PyDict::new(py);
         py.run(python_code.as_c_str(), None, Some(&locals)).unwrap();
-        val_to_pyobj!(py, locals.get_item("c_uint8_array").unwrap())
+        value_to_pyobj!(py, locals.get_item("c_uint8_array").unwrap())
     }
 
     pub fn set(&self, x: i32, y: i32, data: Vec<String>) {
