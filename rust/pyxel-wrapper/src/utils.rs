@@ -77,16 +77,18 @@ macro_rules! wrap_as_python_list {
     };
 }
 
-macro_rules! val_to_pyobj {
+macro_rules! value_to_pyobj {
     ($py:expr, $value:expr) => {
         $value.into_pyobject($py).unwrap().into()
     };
 }
 
-macro_rules! ins_to_pyobj {
-    ($py:expr, $instance:expr) => {
+macro_rules! class_to_pyobj {
+    ($py:expr, $instance:expr) => {{
+        #[allow(deprecated)]
         $instance.into_py($py)
+
         //Py::new($py, $instance).unwrap().into()
         //unsafe { PyObject::from_owned_ptr($py, Py::new($py, $instance).unwrap().as_ptr()) }
-    };
+    }};
 }
