@@ -56,35 +56,30 @@ wrap_shared_vec_as_python_list!(Musics, Music, musics);
 fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
     let value = match name {
         // System
-        "width" => pyxel().width.into_pyobject(py)?.into(),
-        "height" => pyxel().height.into_pyobject(py)?.into(),
-        "frame_count" => pyxel().frame_count.into_pyobject(py)?.into(),
+        "width" => val_to_pyobj!(py, pyxel().width),
+        "height" => val_to_pyobj!(py, pyxel().height),
+        "frame_count" => val_to_pyobj!(py, pyxel().frame_count),
 
         // Input
-        "mouse_x" => pyxel().mouse_x.into_pyobject(py)?.into(),
-        "mouse_y" => pyxel().mouse_y.into_pyobject(py)?.into(),
-        "mouse_wheel" => pyxel().mouse_wheel.into_pyobject(py)?.into(),
-        "input_text" => pyxel().input_text.clone().into_pyobject(py)?.into(),
-        "dropped_files" => pyxel()
-            .dropped_files
-            .clone()
-            .into_pyobject(py)
-            .unwrap()
-            .into(),
+        "mouse_x" => val_to_pyobj!(py, pyxel().mouse_x),
+        "mouse_y" => val_to_pyobj!(py, pyxel().mouse_y),
+        "mouse_wheel" => val_to_pyobj!(py, pyxel().mouse_wheel),
+        "input_text" => val_to_pyobj!(py, pyxel().input_text.clone()),
+        "dropped_files" => val_to_pyobj!(py, pyxel().dropped_files.clone()),
 
         // Graphics
-        "colors" => Colors::wrap(0).into_py(py),
-        "images" => Images::wrap(0).into_py(py),
-        "tilemaps" => Tilemaps::wrap(0).into_py(py),
-        "screen" => Image::wrap(pyxel().screen.clone()).into_py(py),
-        "cursor" => Image::wrap(pyxel().cursor.clone()).into_py(py),
-        "font" => Image::wrap(pyxel().font.clone()).into_py(py),
+        "colors" => ins_to_pyobj!(py, Colors::wrap(0)),
+        "images" => ins_to_pyobj!(py, Images::wrap(0)),
+        "tilemaps" => ins_to_pyobj!(py, Tilemaps::wrap(0)),
+        "screen" => ins_to_pyobj!(py, Image::wrap(pyxel().screen.clone())),
+        "cursor" => ins_to_pyobj!(py, Image::wrap(pyxel().cursor.clone())),
+        "font" => ins_to_pyobj!(py, Image::wrap(pyxel().font.clone())),
 
         // Audio
-        "channels" => Channels::wrap(0).into_py(py),
-        "tones" => Tones::wrap(0).into_py(py),
-        "sounds" => Sounds::wrap(0).into_py(py),
-        "musics" => Musics::wrap(0).into_py(py),
+        "channels" => ins_to_pyobj!(py, Channels::wrap(0)),
+        "tones" => ins_to_pyobj!(py, Tones::wrap(0)),
+        "sounds" => ins_to_pyobj!(py, Sounds::wrap(0)),
+        "musics" => ins_to_pyobj!(py, Musics::wrap(0)),
 
         // Others
         _ => {
