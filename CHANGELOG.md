@@ -3,7 +3,7 @@
 ## 2.2.10
 
 - Updated the pyo3 crate to version 2.3
-- Reduced the sound clock rate from 120MHz to 1.79MHz
+- Reduced the sound clock rate from 120MHz to 2.048MHz
 
 ## 2.2.9
 
