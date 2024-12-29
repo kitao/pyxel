@@ -101,7 +101,7 @@ pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] 
 pub const NUM_SCREEN_TYPES: u32 = 3;
 
 // Audio
-pub const CLOCK_RATE: u32 = 120_000_000; // 120MHz clock rate
+pub const CLOCK_RATE: u32 = 1_789_773; // 1,789,772.727Hz clock rate
 pub const SAMPLE_RATE: u32 = 44100; // 44.1kHz sample rate
 pub const NUM_SAMPLES: u32 = 1024; // 2^n ~ SAMPLE_RATE / DEFAULT_FPS;
 pub const NUM_CLOCKS_PER_TICK: u32 = CLOCK_RATE / 120;
