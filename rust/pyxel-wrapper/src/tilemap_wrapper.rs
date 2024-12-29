@@ -1,3 +1,4 @@
+use std::ffi::CString;
 use std::sync::Once;
 
 use pyo3::prelude::*;
@@ -53,7 +54,7 @@ impl Tilemap {
     pub fn imgsrc(&self, py: Python) -> PyObject {
         let tilemap = self.inner.lock();
         match &tilemap.imgsrc {
-            pyxel::ImageSource::Index(index) => index.into_py(py),
+            pyxel::ImageSource::Index(index) => index.into_pyobject(py).unwrap().into(),
             pyxel::ImageSource::Image(image) => Image::wrap(image.clone()).into_py(py),
         }
     }
@@ -71,13 +72,14 @@ impl Tilemap {
 
     pub fn data_ptr(&self, py: Python) -> PyObject {
         let mut inner = self.inner.lock();
-        let python_code = format!(
+        let python_code = CString::new(format!(
             "import ctypes; c_uint8_array = (ctypes.c_uint8 * {}).from_address({:p})",
             inner.width() * inner.height(),
             inner.data_ptr()
-        );
-        let locals = pyo3::types::PyDict::new_bound(py);
-        py.run_bound(&python_code, None, Some(&locals)).unwrap();
+        ))
+        .unwrap();
+        let locals = pyo3::types::PyDict::new(py);
+        py.run(python_code.as_c_str(), None, Some(&locals)).unwrap();
         locals.get_item("c_uint8_array").unwrap().to_object(py)
     }
 
