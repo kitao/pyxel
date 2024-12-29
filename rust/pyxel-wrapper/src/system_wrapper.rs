@@ -1,3 +1,4 @@
+use std::ffi::CString;
 use std::process::exit;
 
 use pyo3::prelude::*;
@@ -23,14 +24,12 @@ fn init(
     capture_scale: Option<u32>,
     capture_sec: Option<u32>,
 ) -> PyResult<()> {
-    let locals = PyDict::new_bound(py);
-    locals.set_item("os", py.import_bound("os")?)?;
-    locals.set_item("inspect", py.import_bound("inspect")?)?;
-    py.run_bound(
-        "os.chdir(os.path.dirname(inspect.stack()[1].filename) or '.')",
-        None,
-        Some(&locals),
-    )?;
+    let python_code =
+        CString::new("os.chdir(os.path.dirname(inspect.stack()[1].filename) or '.')").unwrap();
+    let locals = PyDict::new(py);
+    locals.set_item("os", py.import("os")?)?;
+    locals.set_item("inspect", py.import("inspect")?)?;
+    py.run(python_code.as_c_str(), None, Some(&locals))?;
     set_pyxel_instance(pyxel::init(
         width,
         height,

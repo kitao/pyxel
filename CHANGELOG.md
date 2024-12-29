@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.10
+
+- Updated the pyo3 crate to version 2.3
+
 ## 2.2.9
 
 - Fixed to include the LICENSE file in the Python package

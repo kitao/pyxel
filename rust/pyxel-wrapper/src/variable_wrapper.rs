@@ -56,30 +56,35 @@ wrap_shared_vec_as_python_list!(Musics, Music, musics);
 fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
     let value = match name {
         // System
-        "width" => pyxel().width.to_object(py),
-        "height" => pyxel().height.to_object(py),
-        "frame_count" => pyxel().frame_count.to_object(py),
+        "width" => pyxel().width.into_pyobject(py)?.into(),
+        "height" => pyxel().height.into_pyobject(py)?.into(),
+        "frame_count" => pyxel().frame_count.into_pyobject(py)?.into(),
 
         // Input
-        "mouse_x" => pyxel().mouse_x.to_object(py),
-        "mouse_y" => pyxel().mouse_y.to_object(py),
-        "mouse_wheel" => pyxel().mouse_wheel.to_object(py),
-        "input_text" => pyxel().input_text.to_object(py),
-        "dropped_files" => pyxel().dropped_files.to_object(py),
+        "mouse_x" => pyxel().mouse_x.into_pyobject(py)?.into(),
+        "mouse_y" => pyxel().mouse_y.into_pyobject(py)?.into(),
+        "mouse_wheel" => pyxel().mouse_wheel.into_pyobject(py)?.into(),
+        "input_text" => pyxel().input_text.clone().into_pyobject(py)?.into(),
+        "dropped_files" => pyxel()
+            .dropped_files
+            .clone()
+            .into_pyobject(py)
+            .unwrap()
+            .into(),
 
         // Graphics
-        "colors" => Py::new(py, Colors::wrap(0))?.into_py(py),
-        "images" => Py::new(py, Images::wrap(0))?.into_py(py),
-        "tilemaps" => Py::new(py, Tilemaps::wrap(0))?.into_py(py),
+        "colors" => Colors::wrap(0).into_py(py),
+        "images" => Images::wrap(0).into_py(py),
+        "tilemaps" => Tilemaps::wrap(0).into_py(py),
         "screen" => Image::wrap(pyxel().screen.clone()).into_py(py),
         "cursor" => Image::wrap(pyxel().cursor.clone()).into_py(py),
         "font" => Image::wrap(pyxel().font.clone()).into_py(py),
 
         // Audio
-        "channels" => Py::new(py, Channels::wrap(0))?.into_py(py),
-        "tones" => Py::new(py, Tones::wrap(0))?.into_py(py),
-        "sounds" => Py::new(py, Sounds::wrap(0))?.into_py(py),
-        "musics" => Py::new(py, Musics::wrap(0))?.into_py(py),
+        "channels" => Channels::wrap(0).into_py(py),
+        "tones" => Tones::wrap(0).into_py(py),
+        "sounds" => Sounds::wrap(0).into_py(py),
+        "musics" => Musics::wrap(0).into_py(py),
 
         // Others
         _ => {
