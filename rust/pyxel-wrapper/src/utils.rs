@@ -85,10 +85,6 @@ macro_rules! value_to_pyobj {
 
 macro_rules! class_to_pyobj {
     ($py:expr, $instance:expr) => {{
-        #[allow(deprecated)]
-        $instance.into_py($py)
-
-        //Py::new($py, $instance).unwrap().into()
-        //unsafe { PyObject::from_owned_ptr($py, Py::new($py, $instance).unwrap().as_ptr()) }
+        $instance.into_pyobject($py).unwrap().into_any().unbind()
     }};
 }
