@@ -13,7 +13,7 @@
 
 Le specifiche sono ispirate alle console di gioco retro, come il supporto di solo 16 colori e 4 canali audio, permettendoti di divertirti facilmente a creare giochi in stile pixel art.
 
-<img src="images/pyxel_message.png" width="480">
+<img src="images/pyxel_message.png" width="480"> &nbsp;&nbsp; [<img src="images/pyxel_book.png" width="190">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 Lo sviluppo di Pyxel è guidato dai feedback degli utenti. Ti preghiamo di dare una stella a Pyxel su GitHub!
 
