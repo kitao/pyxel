@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.0
+
+- Updated to upload-artifact@v4 with unique artifact names
+
 ## 2.2.10
 
 - Updated the pyo3 crate to version 2.3
