@@ -3,6 +3,7 @@
 ## 2.3.0
 
 - Updated to upload-artifact@v4 with unique artifact names
+- Fixed types in the pyi file
 
 ## 2.2.10
 
@@ -247,7 +248,7 @@
 
 ## 2.0.2
 
-- Changed the order of declarations in .pyi file
+- Changed the order of declarations in the pyi file
 - Changed Music.set to not require specifying all channels
 - Changed to use Ruff for lint and format of Python code
 - Added Example 14
