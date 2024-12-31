@@ -218,7 +218,7 @@ The following examples will be copied to your current directory:
 <td>30sec_of_daylight.pyxapp</td>
 <td>1st Pyxel Jam winning game by <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Demo</a></td>
-<td><a href="https://github.com/kitao/30sec_of_daylight">Code</a></td>
+<td><a href="https://github.com/kitao/30SecondsOfDaylight">Code</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
