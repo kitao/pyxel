@@ -218,7 +218,7 @@ pyxel copy_examples
 <td>30sec_of_daylight.pyxapp</td>
 <td>1회 Pyxel Jam 우승 게임 (<a href="https://x.com/helpcomputer0">Adam</a> 제작)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">데모</a></td>
-<td><a href="https://github.com/kitao/30sec_of_daylight">코드</a></td>
+<td><a href="https://github.com/kitao/30SecondsOfDaylight">코드</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
