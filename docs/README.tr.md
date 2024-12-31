@@ -218,7 +218,7 @@ Aşağıdaki örnekler geçerli dizininize kopyalanacaktır:
 <td>30sec_of_daylight.pyxapp</td>
 <td>1. Pyxel Jam kazanan oyunu (<a href="https://x.com/helpcomputer0">Adam</a> tarafından)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">Demo</a></td>
-<td><a href="https://github.com/kitao/30sec_of_daylight">Kod</a></td>
+<td><a href="https://github.com/kitao/30SecondsOfDaylight">Kod</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>

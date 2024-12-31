@@ -218,7 +218,7 @@ pyxel copy_examples
 <td>30sec_of_daylight.pyxapp</td>
 <td>第 1 届 Pyxel Jam 获胜游戏由 <a href="https://x.com/helpcomputer0">Adam</a> 制作</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/30sec_of_daylight.html">演示</a></td>
-<td><a href="https://github.com/kitao/30sec_of_daylight">代码</a></td>
+<td><a href="https://github.com/kitao/30SecondsOfDaylight">代码</a></td>
 </tr>
 <tr>
 <td>megaball.pyxapp</td>
