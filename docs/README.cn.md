@@ -224,7 +224,7 @@ pyxel copy_examples
 <td>megaball.pyxapp</td>
 <td>由 <a href="https://x.com/helpcomputer0">Adam</a> 制作的街机球物理游戏</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">演示</a></td>
-<td><a href="https://github.com/helpcomputer/megaball">代码</a></td>
+<td><a href="https://github.com/kitao/megaball">代码</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>
