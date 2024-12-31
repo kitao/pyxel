@@ -224,7 +224,7 @@ pyxel copy_examples
 <td>megaball.pyxapp</td>
 <td>아케이드 볼 물리 게임 (<a href="https://x.com/helpcomputer0">Adam</a> 제작)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">데모</a></td>
-<td><a href="https://github.com/helpcomputer/megaball">코드</a></td>
+<td><a href="https://github.com/kitao/megaball">코드</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>

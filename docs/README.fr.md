@@ -224,7 +224,7 @@ Les exemples suivants seront copiés dans votre répertoire actuel :
 <td>megaball.pyxapp</td>
 <td>Jeu de physique de balle d'arcade par <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Démonstration</a></td>
-<td><a href="https://github.com/helpcomputer/megaball">Code</a></td>
+<td><a href="https://github.com/kitao/megaball">Code</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>

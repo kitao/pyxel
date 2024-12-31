@@ -224,7 +224,7 @@ Aşağıdaki örnekler geçerli dizininize kopyalanacaktır:
 <td>megaball.pyxapp</td>
 <td>Arcade top fizik oyunu (<a href="https://x.com/helpcomputer0">Adam</a> tarafından)</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Demo</a></td>
-<td><a href="https://github.com/helpcomputer/megaball">Kod</a></td>
+<td><a href="https://github.com/kitao/megaball">Kod</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>

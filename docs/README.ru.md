@@ -224,7 +224,7 @@ pyxel copy_examples
 <td>megaball.pyxapp</td>
 <td>Аркадная игра с физикой мячей от <a href="https://x.com/helpcomputer0">Adam</a></td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/megaball.html">Демонстрация</a></td>
-<td><a href="https://github.com/helpcomputer/megaball">Код</a></td>
+<td><a href="https://github.com/kitao/megaball">Код</a></td>
 </tr>
 <tr>
 <td>8bit-bgm-gen.pyxapp</td>
