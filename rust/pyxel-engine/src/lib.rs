@@ -30,6 +30,7 @@ mod graphics;
 mod image;
 mod input;
 mod math;
+mod mml_parser;
 mod music;
 mod old_resource_data;
 mod oscillator;
@@ -42,8 +43,8 @@ mod screencast;
 mod settings;
 mod sound;
 mod system;
-mod tiled_map_file;
 mod tilemap;
+mod tmx_parser;
 mod tone;
 mod watch_info;
 
