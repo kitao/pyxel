@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.3.0
+
+- Added the ToneIndex type
+- Adjusted the size of sound-related types
+
 ## 2.2.11
 
 - Fixed types in the pyi file

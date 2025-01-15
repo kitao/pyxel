@@ -7,7 +7,8 @@ use crate::settings::{
 };
 
 pub type Gain = f64;
-pub type Effect = u32;
+pub type ToneIndex = u16;
+pub type Effect = u16;
 
 const VIBRATO_PERIOD: u32 =
     (CLOCK_RATE as f64 / VIBRATO_FREQUENCY / OSCILLATOR_RESOLUTION as f64) as u32;
@@ -28,7 +29,7 @@ struct FadeOut {
 
 pub struct Oscillator {
     pitch: f64,
-    tone: u32,
+    tone: ToneIndex,
     gain: Gain,
     effect: Effect,
     duration: u32,
@@ -62,7 +63,7 @@ impl Oscillator {
         }
     }
 
-    pub fn play(&mut self, note: f64, tone: u32, gain: Gain, effect: Effect, duration: u32) {
+    pub fn play(&mut self, note: f64, tone: ToneIndex, gain: Gain, effect: Effect, duration: u32) {
         let last_pitch = self.pitch;
         self.pitch = Self::note_to_pitch(note);
         self.tone = tone;
@@ -142,11 +143,7 @@ impl Oscillator {
         self.time -= NUM_CLOCKS_PER_TICK;
     }
 
-    pub fn note_to_pitch(note: f64) -> f64 {
+    fn note_to_pitch(note: f64) -> f64 {
         440.0 * ((note - 33.0) / 12.0).exp2()
-    }
-
-    pub fn pitch_to_note(pitch: f64) -> f64 {
-        (pitch / 440.0).log2() * 12.0 + 33.0
     }
 }

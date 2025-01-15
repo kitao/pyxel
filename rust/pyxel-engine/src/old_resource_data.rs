@@ -5,8 +5,10 @@ use std::path::Path;
 
 use zip::ZipArchive;
 
+use crate::channel::{Note, Volume};
 use crate::image::{Color, Image, Rgb24};
 use crate::music::Music;
+use crate::oscillator::{Effect, ToneIndex};
 use crate::pyxel::Pyxel;
 use crate::settings::{
     INITIAL_SOUND_SPEED, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
@@ -112,19 +114,22 @@ impl ResourceItem for Sound {
             }
             if i == 0 {
                 string_loop!(j, value, line, 2, {
-                    self.notes.push(parse_hex_string(&value).unwrap() as i32);
+                    self.notes.push(parse_hex_string(&value).unwrap() as Note);
                 });
             } else if i == 1 {
                 string_loop!(j, value, line, 1, {
-                    self.tones.push(parse_hex_string(&value).unwrap() as u32);
+                    self.tones
+                        .push(parse_hex_string(&value).unwrap() as ToneIndex);
                 });
             } else if i == 2 {
                 string_loop!(j, value, line, 1, {
-                    self.volumes.push(parse_hex_string(&value).unwrap() as u32);
+                    self.volumes
+                        .push(parse_hex_string(&value).unwrap() as Volume);
                 });
             } else if i == 3 {
                 string_loop!(j, value, line, 1, {
-                    self.effects.push(parse_hex_string(&value).unwrap() as u32);
+                    self.effects
+                        .push(parse_hex_string(&value).unwrap() as Effect);
                 });
             } else if i == 4 {
                 self.speed = line.parse().unwrap();

@@ -1,7 +1,7 @@
 use std::iter::{repeat, Peekable};
 
 use crate::channel::{Note, Volume};
-use crate::oscillator::Oscillator;
+use crate::oscillator::ToneIndex;
 use crate::settings::{
     EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO,
 };
@@ -12,10 +12,9 @@ use crate::EFFECT_QUARTER_FADEOUT;
 struct NoteInfo {
     length: u32,
     quantize: u32,
-    tone: u32,
+    tone: ToneIndex,
     volume: Volume,
     vibrato: bool,
-    slide: Note,
     note: Note,
 }
 
@@ -28,14 +27,12 @@ impl Sound {
         let mut tone = 0;
         let mut volume = 7;
         let mut vibrato = false;
-        let mut slide = false;
         let mut note_info = NoteInfo {
             length: 0,
             quantize: 0,
             tone: 0,
             volume: 0,
             vibrato: false,
-            slide: -1,
             note: 0,
         };
         self.speed = 9; // T=100
@@ -74,7 +71,7 @@ impl Sound {
                 }
             } else if let Some(value) = Self::parse_command(&mut chars, '@') {
                 if value <= 3 {
-                    tone = value;
+                    tone = value as ToneIndex;
                 } else {
                     panic!("Invalid tone value '{value}' in MML");
                 }
@@ -94,9 +91,6 @@ impl Sound {
                 }
             } else if Self::parse_char(&mut chars, '&') {
                 note_info.quantize = 8;
-            } else if Self::parse_char(&mut chars, '_') {
-                note_info.quantize = 8;
-                slide = true;
             } else if let Some((note, length)) = Self::parse_note(&mut chars, length) {
                 self.add_note_info(note_info);
                 note_info = NoteInfo {
@@ -105,10 +99,8 @@ impl Sound {
                     tone,
                     volume,
                     vibrato,
-                    slide: if slide { note_info.note } else { -1 },
                     note: note + octave * 12,
                 };
-                slide = false;
             } else if let Some(length) = Self::parse_rest(&mut chars, length) {
                 self.add_note_info(note_info);
                 note_info = NoteInfo {
@@ -117,7 +109,6 @@ impl Sound {
                     tone,
                     volume,
                     vibrato,
-                    slide: -1,
                     note: -1,
                 };
             } else {
@@ -254,40 +245,17 @@ impl Sound {
         }
 
         let mut duration = note_info.length * note_info.quantize;
-        let slide_steps = if note_info.slide >= 0 {
-            duration / 8
-        } else {
-            0
-        };
-        let src_pitch = if slide_steps > 0 {
-            Oscillator::note_to_pitch(note_info.slide as f64)
-        } else {
-            0.0
-        };
-        let dst_pitch = if slide_steps > 0 {
-            Oscillator::note_to_pitch(note_info.note as f64)
-        } else {
-            0.0
-        };
-
         for i in 0..note_info.length {
             if duration == 0 {
                 self.notes.push(-1);
                 self.effects.push(EFFECT_NONE);
             } else if duration >= 8 {
-                if slide_steps > 0 {
-                    self.effects.push(EFFECT_SLIDE);
-                    let pitch = src_pitch + (dst_pitch - src_pitch) * i as f64 / slide_steps as f64;
-                    let note = Oscillator::pitch_to_note(pitch).round() as Note;
-                    self.notes.push(note);
+                self.notes.push(note_info.note);
+                self.effects.push(if note_info.vibrato {
+                    EFFECT_VIBRATO
                 } else {
-                    self.notes.push(note_info.note);
-                    self.effects.push(if note_info.vibrato {
-                        EFFECT_VIBRATO
-                    } else {
-                        EFFECT_NONE
-                    });
-                }
+                    EFFECT_NONE
+                });
                 duration -= 8;
             } else if duration >= 7 {
                 self.notes.push(note_info.note);

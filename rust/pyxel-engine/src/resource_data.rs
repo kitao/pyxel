@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::channel::{Channel, Detune, Note, Speed, Volume};
 use crate::image::{Color, Image, SharedImage};
 use crate::music::{Music, SharedMusic};
-use crate::oscillator::{Effect, Gain};
+use crate::oscillator::{Effect, Gain, ToneIndex};
 use crate::pyxel::Pyxel;
 use crate::settings::RESOURCE_FORMAT_VERSION;
 use crate::sound::{SharedSound, Sound};
@@ -155,7 +155,7 @@ impl ChannelData {
 #[derive(Clone, Serialize, Deserialize)]
 struct SoundData {
     notes: Vec<Note>,
-    tones: Vec<u32>,
+    tones: Vec<ToneIndex>,
     volumes: Vec<Volume>,
     effects: Vec<Effect>,
     speed: Speed,
