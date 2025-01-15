@@ -1,15 +1,15 @@
 use std::cmp::max;
 
 use crate::blip_buf::BlipBuf;
-use crate::oscillator::{Effect, Gain, Oscillator};
+use crate::oscillator::{Effect, Gain, Oscillator, ToneIndex};
 use crate::settings::{
     EFFECT_NONE, EFFECT_SLIDE, INITIAL_CHANNEL_GAIN, MAX_EFFECT, MAX_NOTE, MAX_TONE, MAX_VOLUME,
     TONE_TRIANGLE,
 };
 use crate::sound::{SharedSound, Sound};
 
-pub type Note = i32;
-pub type Volume = u32;
+pub type Note = i16;
+pub type Volume = u16;
 pub type Speed = u32;
 pub type Detune = i32;
 
@@ -196,7 +196,7 @@ impl Channel {
         }
     }
 
-    const fn circular_tone(tones: &[u32], index: u32) -> u32 {
+    const fn circular_tone(tones: &[ToneIndex], index: u32) -> ToneIndex {
         let len = tones.len();
         if len > 0 {
             tones[index as usize % len]
