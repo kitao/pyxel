@@ -15,6 +15,7 @@
     clippy::struct_excessive_bools,
     clippy::struct_field_names,
     clippy::too_many_arguments,
+    clippy::too_many_lines,
     clippy::unreadable_literal,
     clippy::unused_self
 )]
