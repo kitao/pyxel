@@ -95,6 +95,10 @@ impl Sound {
     pub fn set_effects(&self, effects: &str) {
         self.inner.lock().set_effects(effects);
     }
+
+    pub fn mml(&self, mml_str: &str) {
+        self.inner.lock().mml(mml_str);
+    }
 }
 
 pub fn add_sound_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
