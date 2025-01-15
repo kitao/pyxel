@@ -434,7 +434,7 @@ impl Pyxel {
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
         let colors = self.colors.lock();
         assert!(
-            colors.len() >= 1 && colors.len() <= MAX_COLORS as usize,
+            !colors.is_empty() && colors.len() <= MAX_COLORS as usize,
             "Number of colors must be between 1 to {}",
             MAX_COLORS
         );

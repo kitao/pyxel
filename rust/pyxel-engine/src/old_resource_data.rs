@@ -114,7 +114,6 @@ impl ResourceItem for Sound {
                 string_loop!(j, value, line, 2, {
                     self.notes.push(parse_hex_string(&value).unwrap() as i32);
                 });
-                continue;
             } else if i == 1 {
                 string_loop!(j, value, line, 1, {
                     self.tones.push(parse_hex_string(&value).unwrap() as u32);
@@ -129,7 +128,6 @@ impl ResourceItem for Sound {
                 });
             } else if i == 4 {
                 self.speed = line.parse().unwrap();
-                continue;
             }
         }
     }
