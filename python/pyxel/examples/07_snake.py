@@ -255,9 +255,7 @@ def define_sound_and_music():
     )
 
     harmony1 = (
-        "a1 a1 a1 b1  f1 f1 c2 c2"
-        "c2 c2 c2 c2  g1 g1 b1 b1"
-        * 3
+        "a1 a1 a1 b1  f1 f1 c2 c2  c2 c2 c2 c2  g1 g1 b1 b1" * 3
         + "f1 f1 f1 f1 f1 f1 f1 f1 g1 g1 g1 g1 g1 g1 g1 g1"
     )
     harmony2 = (
@@ -268,7 +266,7 @@ def define_sound_and_music():
         notes=harmony1 * 2 + harmony2 * 2, tones="t", volumes="5", effects="f", speed=20
     )
     pyxel.sounds[4].set(
-        notes=("f0 r a4 r  f0 f0 a4 r" "f0 r a4 r   f0 f0 a4 f0"),
+        notes=("f0 r a4 r  f0 f0 a4 r  f0 r a4 r  f0 f0 a4 f0"),
         tones="n",
         volumes="6622 6622 6622 6426",
         effects="f",
