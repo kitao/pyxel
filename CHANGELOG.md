@@ -2,7 +2,6 @@
 
 ## 2.2.11
 
-- Updated to upload-artifact@v4 with unique artifact names
 - Fixed types in the pyi file
 - Fixed an input issue in the sound editor
 - Formatted sound strings in examples

@@ -53,9 +53,9 @@ jobs:
         run: make TARGET=${{ matrix.target }}
 
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: pyxel-wheels-${{ github.run_id }}
+          name: pyxel-wheels
           path: dist/*
 
   build-linux:
@@ -126,7 +126,7 @@ jobs:
           make TARGET=${{ matrix.target }}
 
       - name: Upload wheels
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: pyxel-wheels-${{ github.run_id }}
+          name: pyxel-wheels
           path: dist/*
