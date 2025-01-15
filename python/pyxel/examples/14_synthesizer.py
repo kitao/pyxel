@@ -98,7 +98,7 @@ def setup_music():
     pyxel.sounds[2].set("a-2a-2ra-2 a-2a-2ra-2 g2g2rg2 g2g2rg2", "2", "5", "f", 32)
     pyxel.sounds[3].set("c3c3rc3 b-2b-2rb-2 b-2b-2rb-2 c3c3rc3", "2", "5", "f", 32)
     pyxel.sounds[4].set(
-        "e-3e-3re-3 d3d3rd3 d3d3rd3 e3e3re3" "e-3e-3re-3 d3d3rd3 d3d3rd3 e-3e-3re-3",
+        "e-3e-3re-3 d3d3rd3 d3d3rd3 e3e3re3 e-3e-3re-3 d3d3rd3 d3d3rd3 e-3e-3re-3",
         "2",
         "5",
         "f",
