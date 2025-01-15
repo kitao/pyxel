@@ -1,5 +1,5 @@
 use crate::channel::{Note, Speed, Volume};
-use crate::oscillator::Effect;
+use crate::oscillator::{Effect, ToneIndex};
 use crate::settings::{
     EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE,
     EFFECT_VIBRATO, INITIAL_SOUND_SPEED, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
@@ -9,7 +9,7 @@ use crate::utils::simplify_string;
 #[derive(Clone)]
 pub struct Sound {
     pub notes: Vec<Note>,
-    pub tones: Vec<u32>,
+    pub tones: Vec<ToneIndex>,
     pub volumes: Vec<Volume>,
     pub effects: Vec<Effect>,
     pub speed: Speed,
@@ -90,7 +90,7 @@ impl Sound {
                 's' => TONE_SQUARE,
                 'p' => TONE_PULSE,
                 'n' => TONE_NOISE,
-                '0'..='9' => c.to_digit(10).unwrap(),
+                '0'..='9' => c.to_digit(10).unwrap() as ToneIndex,
                 _ => panic!("Invalid sound tone '{c}'"),
             };
             self.tones.push(tone);

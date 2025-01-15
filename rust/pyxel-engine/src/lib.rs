@@ -56,7 +56,7 @@ pub use crate::font::{Font, SharedFont};
 pub use crate::image::{Color, Image, Rgb24, SharedImage};
 pub use crate::keys::*;
 pub use crate::music::{Music, SharedMusic, SharedSeq};
-pub use crate::oscillator::{Effect, Gain};
+pub use crate::oscillator::{Effect, Gain, ToneIndex};
 pub use crate::pyxel::{init, Pyxel};
 pub use crate::settings::*;
 pub use crate::sound::{SharedSound, Sound};
