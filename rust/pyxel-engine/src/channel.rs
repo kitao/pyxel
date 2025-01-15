@@ -8,8 +8,8 @@ use crate::settings::{
 };
 use crate::sound::{SharedSound, Sound};
 
-pub type Note = i8;
-pub type Volume = u8;
+pub type Note = i32;
+pub type Volume = u32;
 pub type Speed = u32;
 pub type Detune = i32;
 

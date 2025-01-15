@@ -112,7 +112,7 @@ impl ResourceItem for Sound {
             }
             if i == 0 {
                 string_loop!(j, value, line, 2, {
-                    self.notes.push(parse_hex_string(&value).unwrap() as i8);
+                    self.notes.push(parse_hex_string(&value).unwrap() as i32);
                 });
                 continue;
             } else if i == 1 {
@@ -121,11 +121,11 @@ impl ResourceItem for Sound {
                 });
             } else if i == 2 {
                 string_loop!(j, value, line, 1, {
-                    self.volumes.push(parse_hex_string(&value).unwrap() as u8);
+                    self.volumes.push(parse_hex_string(&value).unwrap() as u32);
                 });
             } else if i == 3 {
                 string_loop!(j, value, line, 1, {
-                    self.effects.push(parse_hex_string(&value).unwrap() as u8);
+                    self.effects.push(parse_hex_string(&value).unwrap() as u32);
                 });
             } else if i == 4 {
                 self.speed = line.parse().unwrap();
