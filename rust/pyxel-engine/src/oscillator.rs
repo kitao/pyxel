@@ -7,7 +7,7 @@ use crate::settings::{
 };
 
 pub type Gain = f64;
-pub type Effect = u8;
+pub type Effect = u32;
 
 const VIBRATO_PERIOD: u32 =
     (CLOCK_RATE as f64 / VIBRATO_FREQUENCY / OSCILLATOR_RESOLUTION as f64) as u32;
@@ -142,7 +142,11 @@ impl Oscillator {
         self.time -= NUM_CLOCKS_PER_TICK;
     }
 
-    fn note_to_pitch(note: f64) -> f64 {
+    pub fn note_to_pitch(note: f64) -> f64 {
         440.0 * ((note - 33.0) / 12.0).exp2()
+    }
+
+    pub fn pitch_to_note(pitch: f64) -> f64 {
+        (pitch / 440.0).log2() * 12.0 + 33.0
     }
 }
