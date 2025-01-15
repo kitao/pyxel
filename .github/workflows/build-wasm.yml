@@ -38,7 +38,7 @@ jobs:
         run: make build-wasm
 
       - name: Upload WASM wheel
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: pyxel-wasm-wheel-${{ github.run_id }}
+          name: pyxel-wasm-wheel
           path: dist/*
