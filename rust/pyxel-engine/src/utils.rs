@@ -20,6 +20,12 @@ macro_rules! string_loop {
     };
 }
 
+macro_rules! repeat_extend {
+    ($container:expr, $value:expr, $count:expr) => {
+        $container.extend(std::iter::repeat($value).take($count as usize));
+    };
+}
+
 pub fn f64_to_i32(x: f64) -> i32 {
     x.round() as i32
 }

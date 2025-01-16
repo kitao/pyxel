@@ -1,12 +1,9 @@
-use std::iter::{repeat, Peekable};
+use std::iter::Peekable;
 
 use crate::channel::{Note, Volume};
 use crate::oscillator::ToneIndex;
-use crate::settings::{
-    EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_SLIDE, EFFECT_VIBRATO,
-};
+use crate::settings::{EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_VIBRATO};
 use crate::sound::Sound;
-use crate::EFFECT_QUARTER_FADEOUT;
 
 #[derive(Copy, Clone)]
 struct NoteInfo {
@@ -26,7 +23,6 @@ impl Sound {
         let mut octave = 2;
         let mut tone = 0;
         let mut volume = 7;
-        let mut vibrato = false;
         let mut note_info = NoteInfo {
             length: 0,
             quantize: 0,
@@ -81,42 +77,36 @@ impl Sound {
                 } else {
                     panic!("Invalid volume value '{value}' in MML");
                 }
-            } else if let Some(value) = Self::parse_command(&mut chars, 'w') {
-                if value == 0 {
-                    vibrato = false;
-                } else if value == 1 {
-                    vibrato = true;
-                } else {
-                    panic!("Invalid vibrato value '{value}' in MML");
-                }
-            } else if Self::parse_char(&mut chars, '&') {
-                note_info.quantize = 8;
             } else if let Some((note, length)) = Self::parse_note(&mut chars, length) {
-                self.add_note_info(note_info);
+                self.add_note(note_info);
                 note_info = NoteInfo {
                     length,
                     quantize,
                     tone,
                     volume,
-                    vibrato,
+                    vibrato: false,
                     note: note + octave * 12,
                 };
             } else if let Some(length) = Self::parse_rest(&mut chars, length) {
-                self.add_note_info(note_info);
+                self.add_note(note_info);
                 note_info = NoteInfo {
                     length,
                     quantize,
                     tone,
                     volume,
-                    vibrato,
+                    vibrato: false,
                     note: -1,
                 };
+            } else if Self::parse_char(&mut chars, '!') {
+                note_info.vibrato = true;
+            } else if Self::parse_char(&mut chars, '&') {
+                note_info.quantize = 4;
             } else {
                 let c = chars.peek().unwrap();
                 panic!("Invalid command '{c}' in MML");
             }
         }
-        self.add_note_info(note_info);
+        self.add_note(note_info);
     }
 
     fn skip_whitespace<T: Iterator<Item = char>>(chars: &mut Peekable<T>) {
@@ -188,7 +178,7 @@ impl Sound {
         };
         chars.next();
 
-        // Parse modifiers
+        // Parse modifier
         if Self::parse_char(chars, '#') || Self::parse_char(chars, '+') {
             note += 1;
         } else if Self::parse_char(chars, '-') {
@@ -239,45 +229,47 @@ impl Sound {
         Some(length)
     }
 
-    fn add_note_info(&mut self, note_info: NoteInfo) {
+    fn add_note(&mut self, note_info: NoteInfo) {
+        // Hnadle empty note
         if note_info.length == 0 {
             return;
         }
 
-        let mut duration = note_info.length * note_info.quantize;
-        for i in 0..note_info.length {
-            if duration == 0 {
-                self.notes.push(-1);
-                self.effects.push(EFFECT_NONE);
-            } else if duration >= 8 {
-                self.notes.push(note_info.note);
-                self.effects.push(if note_info.vibrato {
-                    EFFECT_VIBRATO
-                } else {
-                    EFFECT_NONE
-                });
-                duration -= 8;
-            } else if duration >= 7 {
-                self.notes.push(note_info.note);
-                self.effects.push(EFFECT_QUARTER_FADEOUT);
-                duration = 0;
-            } else if duration >= 5 {
-                self.notes.push(note_info.note);
-                self.effects.push(EFFECT_HALF_FADEOUT);
-                duration = 0;
-            } else if duration >= 3 || note_info.length == 1 {
-                self.notes.push(note_info.note);
-                self.effects.push(EFFECT_FADEOUT);
-                duration = 0;
-            } else {
-                self.notes.push(-1);
-                self.effects.push(EFFECT_NONE);
-                duration = 0;
-            }
+        // Add tones and volumes
+        repeat_extend!(&mut self.tones, note_info.tone, note_info.length);
+        repeat_extend!(&mut self.volumes, note_info.volume, note_info.length);
+
+        // Handle rest note
+        if note_info.note == -1 {
+            repeat_extend!(&mut self.notes, -1, note_info.length);
+            repeat_extend!(&mut self.effects, EFFECT_NONE, note_info.length);
+            return;
         }
-        self.tones
-            .extend(repeat(note_info.tone).take(note_info.length as usize));
-        self.volumes
-            .extend(repeat(note_info.volume).take(note_info.length as usize));
+
+        // Add full-length notes
+        let num_notes = if note_info.quantize == 8 {
+            note_info.length
+        } else {
+            (note_info.length * note_info.quantize / 8).saturating_sub(1)
+        };
+        let note_effect = if note_info.vibrato {
+            EFFECT_VIBRATO
+        } else {
+            EFFECT_NONE
+        };
+        repeat_extend!(&mut self.notes, note_info.note, num_notes);
+        repeat_extend!(&mut self.effects, note_effect, num_notes);
+        if num_notes == note_info.length {
+            return;
+        }
+
+        // Add fade-out note
+        self.notes.push(note_info.note);
+        self.effects.push(EFFECT_HALF_FADEOUT);
+
+        // Add rests
+        let num_rests = note_info.length - num_notes - 1;
+        repeat_extend!(&mut self.notes, -1, num_rests);
+        repeat_extend!(&mut self.effects, EFFECT_NONE, num_rests);
     }
 }
