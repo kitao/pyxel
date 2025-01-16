@@ -4,6 +4,7 @@
 
 - Added the ToneIndex type
 - Adjusted the size of sound-related types
+- Added the mml method to the Sound class
 
 ## 2.2.11
 
