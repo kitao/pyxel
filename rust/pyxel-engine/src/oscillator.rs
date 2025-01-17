@@ -70,18 +70,22 @@ impl Oscillator {
         self.gain = gain;
         self.effect = effect;
         self.duration = duration;
-        if effect == EFFECT_SLIDE {
-            self.slide.pitch = (self.pitch - last_pitch) / self.duration as f64;
-            self.pitch = last_pitch;
-        } else if effect == EFFECT_FADEOUT {
-            self.fadeout.start = duration;
-            self.fadeout.gain = -self.gain / self.duration as f64;
-        } else if effect == EFFECT_HALF_FADEOUT {
-            self.fadeout.start = self.duration / 2;
-            self.fadeout.gain = -self.gain / self.fadeout.start as f64;
-        } else if effect == EFFECT_QUARTER_FADEOUT {
-            self.fadeout.start = self.duration / 4;
-            self.fadeout.gain = -self.gain / self.fadeout.start as f64;
+        match effect {
+            EFFECT_NONE | EFFECT_VIBRATO => {}
+            EFFECT_SLIDE => {
+                self.slide.pitch = (self.pitch - last_pitch) / self.duration as f64;
+                self.pitch = last_pitch;
+            }
+            EFFECT_FADEOUT | EFFECT_HALF_FADEOUT | EFFECT_QUARTER_FADEOUT => {
+                self.fadeout.start = duration;
+                if effect == EFFECT_HALF_FADEOUT {
+                    self.fadeout.start /= 2;
+                } else if effect == EFFECT_QUARTER_FADEOUT {
+                    self.fadeout.start /= 4;
+                }
+                self.fadeout.gain = -self.gain / self.fadeout.start as f64;
+            }
+            _ => panic!("Invalid effect '{}'", self.effect),
         }
     }
 
@@ -90,10 +94,31 @@ impl Oscillator {
     }
 
     pub fn update(&mut self, blip_buf: &mut BlipBuf) {
+        // Stop sound
         if self.duration == 0 {
             self.time = 0;
             return;
         }
+
+        // Apply effect
+        match self.effect {
+            EFFECT_SLIDE => {
+                self.pitch += self.slide.pitch;
+            }
+            EFFECT_VIBRATO => {
+                self.vibrato.phase = (self.vibrato.phase + self.vibrato.time / VIBRATO_PERIOD)
+                    % OSCILLATOR_RESOLUTION;
+                self.vibrato.time = (self.vibrato.time + NUM_CLOCKS_PER_TICK) % VIBRATO_PERIOD;
+            }
+            EFFECT_FADEOUT | EFFECT_HALF_FADEOUT | EFFECT_QUARTER_FADEOUT => {
+                if self.duration <= self.fadeout.start {
+                    self.gain += self.fadeout.gain;
+                }
+            }
+            _ => {}
+        }
+
+        // Generate waveform
         let pitch = self.pitch
             + if self.effect == EFFECT_VIBRATO {
                 self.pitch
@@ -120,24 +145,6 @@ impl Oscillator {
                 self.amplitude as i32 - last_amplitude as i32,
             );
             self.time += period;
-        }
-        match self.effect {
-            EFFECT_NONE => {}
-            EFFECT_SLIDE => {
-                self.pitch += self.slide.pitch;
-            }
-            EFFECT_VIBRATO => {
-                self.vibrato.time += NUM_CLOCKS_PER_TICK;
-                self.vibrato.phase = (self.vibrato.phase + self.vibrato.time / VIBRATO_PERIOD)
-                    % OSCILLATOR_RESOLUTION;
-                self.vibrato.time %= VIBRATO_PERIOD;
-            }
-            EFFECT_FADEOUT | EFFECT_HALF_FADEOUT | EFFECT_QUARTER_FADEOUT => {
-                if self.duration <= self.fadeout.start {
-                    self.gain += self.fadeout.gain;
-                }
-            }
-            _ => panic!("Invalid effect '{}'", self.effect),
         }
         self.duration -= 1;
         self.time -= NUM_CLOCKS_PER_TICK;
