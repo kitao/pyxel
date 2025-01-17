@@ -106,9 +106,10 @@ impl Oscillator {
                 self.pitch += self.slide.pitch;
             }
             EFFECT_VIBRATO => {
+                self.vibrato.time += NUM_CLOCKS_PER_TICK;
                 self.vibrato.phase = (self.vibrato.phase + self.vibrato.time / VIBRATO_PERIOD)
                     % OSCILLATOR_RESOLUTION;
-                self.vibrato.time = (self.vibrato.time + NUM_CLOCKS_PER_TICK) % VIBRATO_PERIOD;
+                self.vibrato.time %= VIBRATO_PERIOD;
             }
             EFFECT_FADEOUT | EFFECT_HALF_FADEOUT | EFFECT_QUARTER_FADEOUT => {
                 if self.duration <= self.fadeout.start {
