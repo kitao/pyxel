@@ -108,6 +108,8 @@ impl Oscillator {
             }
             self.clock = 0;
             self.phase = 0;
+            self.vibrato.clock = 0;
+            self.vibrato.phase = 0;
             return;
         }
 
@@ -164,6 +166,8 @@ impl Oscillator {
         if self.duration == 0 && self.effect >= EFFECT_FADEOUT {
             self.clock = 0;
             self.phase = 0;
+            self.vibrato.clock = 0;
+            self.vibrato.phase = 0;
         } else {
             self.clock -= NUM_CLOCKS_PER_TICK;
         }
