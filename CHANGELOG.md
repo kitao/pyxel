@@ -7,6 +7,7 @@
 - Added the mml method to the Sound class
 - Updated the directories crate to version 6.0
 - Changed the sample rate to 22.05kHz
+- Reduced click noise
 
 ## 2.2.11
 
