@@ -18,13 +18,13 @@ struct Slide {
 }
 
 struct Vibrato {
-    time: u32,
+    clock: u32,
     phase: u32,
 }
 
 struct FadeOut {
-    start: u32,
-    gain: Gain,
+    duration: u32,
+    delta: Gain,
 }
 
 pub struct Oscillator {
@@ -33,7 +33,7 @@ pub struct Oscillator {
     gain: Gain,
     effect: Effect,
     duration: u32,
-    time: u32,
+    clock: u32,
     phase: u32,
     amplitude: i16,
     noise_reg: u16,
@@ -50,15 +50,15 @@ impl Oscillator {
             gain: 0.0,
             effect: EFFECT_NONE,
             duration: 0,
-            time: 0,
+            clock: 0,
             phase: 0,
             amplitude: 0,
             noise_reg: INITIAL_NOISE_REG,
             slide: Slide { pitch: 0.0 },
-            vibrato: Vibrato { time: 0, phase: 0 },
+            vibrato: Vibrato { clock: 0, phase: 0 },
             fadeout: FadeOut {
-                start: 0,
-                gain: 0.0,
+                duration: 0,
+                delta: 0.0,
             },
         }
     }
@@ -77,13 +77,13 @@ impl Oscillator {
                 self.pitch = last_pitch;
             }
             EFFECT_FADEOUT | EFFECT_HALF_FADEOUT | EFFECT_QUARTER_FADEOUT => {
-                self.fadeout.start = duration;
+                self.fadeout.duration = duration;
                 if effect == EFFECT_HALF_FADEOUT {
-                    self.fadeout.start /= 2;
+                    self.fadeout.duration /= 2;
                 } else if effect == EFFECT_QUARTER_FADEOUT {
-                    self.fadeout.start /= 4;
+                    self.fadeout.duration /= 4;
                 }
-                self.fadeout.gain = -self.gain / self.fadeout.start as f64;
+                self.fadeout.delta = -self.gain / self.fadeout.duration as f64;
             }
             _ => panic!("Invalid effect '{}'", self.effect),
         }
@@ -94,9 +94,20 @@ impl Oscillator {
     }
 
     pub fn update(&mut self, blip_buf: &mut BlipBuf) {
-        // Stop sound
+        // Mute sound
         if self.duration == 0 {
-            self.time = 0;
+            if self.amplitude != 0 {
+                let delta = if self.amplitude > 0 { -1 } else { 1 };
+                for i in 0..NUM_CLOCKS_PER_TICK {
+                    self.amplitude += delta;
+                    blip_buf.add_delta(i as u64, delta as i32);
+                    if self.amplitude == 0 {
+                        break;
+                    }
+                }
+            }
+            self.clock = 0;
+            self.phase = 0;
             return;
         }
 
@@ -106,20 +117,15 @@ impl Oscillator {
                 self.pitch += self.slide.pitch;
             }
             EFFECT_VIBRATO => {
-                self.vibrato.time += NUM_CLOCKS_PER_TICK;
-                self.vibrato.phase = (self.vibrato.phase + self.vibrato.time / VIBRATO_PERIOD)
+                self.vibrato.clock += NUM_CLOCKS_PER_TICK;
+                self.vibrato.phase = (self.vibrato.phase + self.vibrato.clock / VIBRATO_PERIOD)
                     % OSCILLATOR_RESOLUTION;
-                self.vibrato.time %= VIBRATO_PERIOD;
-            }
-            EFFECT_FADEOUT | EFFECT_HALF_FADEOUT | EFFECT_QUARTER_FADEOUT => {
-                if self.duration <= self.fadeout.start {
-                    self.gain += self.fadeout.gain;
-                }
+                self.vibrato.clock %= VIBRATO_PERIOD;
             }
             _ => {}
         }
 
-        // Generate waveform
+        // Play sound
         let pitch = self.pitch
             + if self.effect == EFFECT_VIBRATO {
                 self.pitch
@@ -135,20 +141,32 @@ impl Oscillator {
         let period = (CLOCK_RATE as f64 / pitch / OSCILLATOR_RESOLUTION as f64) as u32;
         let tones = TONES.lock();
         let tone = tones[self.tone as usize].lock();
-        while self.time < NUM_CLOCKS_PER_TICK {
+        let fade_delta = if self.effect >= EFFECT_FADEOUT && self.duration <= self.fadeout.duration
+        {
+            self.fadeout.delta / ((NUM_CLOCKS_PER_TICK - self.clock) / period) as f64
+        } else {
+            0.0
+        };
+        while self.clock < NUM_CLOCKS_PER_TICK {
             let last_amplitude = self.amplitude;
             self.phase = (self.phase + 1) % OSCILLATOR_RESOLUTION;
             self.amplitude = (tone.amplitude(self.phase, &mut self.noise_reg)
                 * self.gain
                 * i16::MAX as f64) as i16;
             blip_buf.add_delta(
-                self.time as u64,
+                self.clock as u64,
                 self.amplitude as i32 - last_amplitude as i32,
             );
-            self.time += period;
+            self.clock += period;
+            self.gain += fade_delta;
         }
         self.duration -= 1;
-        self.time -= NUM_CLOCKS_PER_TICK;
+        if self.duration == 0 && self.effect >= EFFECT_FADEOUT {
+            self.clock = 0;
+            self.phase = 0;
+        } else {
+            self.clock -= NUM_CLOCKS_PER_TICK;
+        }
     }
 
     fn note_to_pitch(note: f64) -> f64 {
