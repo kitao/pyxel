@@ -101,9 +101,9 @@ pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] 
 pub const NUM_SCREEN_TYPES: u32 = 3;
 
 // Audio
-pub const CLOCK_RATE: u32 = 2_048_000; // 2.048MHz clock rate
-pub const SAMPLE_RATE: u32 = 44100; // 44.1kHz sample rate
-pub const NUM_SAMPLES: u32 = 1024; // 2^n ~ SAMPLE_RATE / DEFAULT_FPS;
+pub const CLOCK_RATE: u32 = 2_048_000; // 2.048MHz
+pub const SAMPLE_RATE: u32 = 22050; // 22.05kHz
+pub const NUM_SAMPLES: u32 = 512; // 512 / 22050 = 23.2ms
 pub const NUM_CLOCKS_PER_TICK: u32 = CLOCK_RATE / 120;
 pub const OSCILLATOR_RESOLUTION: u32 = 32;
 pub const VIBRATO_DEPTH: f64 = 0.015;
