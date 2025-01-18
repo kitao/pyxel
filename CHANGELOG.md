@@ -6,6 +6,7 @@
 - Adjusted the size of sound-related types
 - Added the mml method to the Sound class
 - Updated the directories crate to version 6.0
+- Changed the sample rate to 22.05kHz
 
 ## 2.2.11
 
