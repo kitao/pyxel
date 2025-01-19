@@ -2,7 +2,9 @@ use std::iter::Peekable;
 
 use crate::channel::{Note, Volume};
 use crate::oscillator::ToneIndex;
-use crate::settings::{EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_VIBRATO};
+use crate::settings::{
+    EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_VIBRATO,
+};
 use crate::sound::Sound;
 
 #[derive(Copy, Clone)]
@@ -100,7 +102,7 @@ impl Sound {
             } else if Self::parse_char(&mut chars, '!') {
                 note_info.vibrato = true;
             } else if Self::parse_char(&mut chars, '&') {
-                note_info.quantize = 4;
+                note_info.quantize = 8;
             } else {
                 let c = chars.peek().unwrap();
                 panic!("Invalid command '{c}' in MML");
@@ -247,11 +249,8 @@ impl Sound {
         }
 
         // Add full-length notes
-        let num_notes = if note_info.quantize == 8 {
-            note_info.length
-        } else {
-            (note_info.length * note_info.quantize / 8).saturating_sub(1)
-        };
+        let duration = note_info.length * note_info.quantize;
+        let num_notes = duration / 8;
         let note_effect = if note_info.vibrato {
             EFFECT_VIBRATO
         } else {
@@ -265,7 +264,15 @@ impl Sound {
 
         // Add fade-out note
         self.notes.push(note_info.note);
-        self.effects.push(EFFECT_HALF_FADEOUT);
+        if num_notes > 0 {
+            self.effects.push(EFFECT_FADEOUT);
+        } else if duration >= 6 {
+            self.effects.push(EFFECT_QUARTER_FADEOUT);
+        } else if duration >= 4 {
+            self.effects.push(EFFECT_HALF_FADEOUT);
+        } else {
+            self.effects.push(EFFECT_FADEOUT);
+        }
 
         // Add rests
         let num_rests = note_info.length - num_notes - 1;
