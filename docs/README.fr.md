@@ -695,20 +695,24 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
   Définit les notes, les tons, les volumes et les effets à l'aide d'une chaîne. Si la longueur des tons, volumes ou effets est inférieure à celle des notes, ils seront répétés à partir du début.
 
 - `set_notes(notes)`<br>
-  Définit les notes à l'aide d'une chaîne composée de 'CDEFGAB'+'#-'+'01234' ou 'R'. Insensible à la casse, et les espaces sont ignorés.<br>
+  Définit les notes à l'aide d'une chaîne composée de `CDEFGAB`+`#-`+`01234` ou `R`. Insensible à la casse, et les espaces sont ignorés.<br>
   Exemple : `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-  Définit les tons avec une chaîne composée de 'TSPN'. Insensible à la casse, et les espaces sont ignorés.<br>
+  Définit les tons avec une chaîne composée de `TSPN`. Insensible à la casse, et les espaces sont ignorés.<br>
   Exemple : `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-  Définit les volumes avec une chaîne composée de '01234567'. Insensible à la casse, et les espaces sont ignorés.<br>
+  Définit les volumes avec une chaîne composée de `01234567`. Insensible à la casse, et les espaces sont ignorés.<br>
   Exemple : `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  Définit les effets avec une chaîne composée de 'NSVFHQ'. Insensible à la casse, et les espaces sont ignorés.<br>
+  Définit les effets avec une chaîne composée de `NSVFHQ`. Insensible à la casse, et les espaces sont ignorés.<br>
   Exemple : `pyxel.sounds[0].set_effects("NFNF NVVS")`
+
+- `mml(mml_str)`<br>
+  Définit les paramètres associés en utilisant [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). Les commandes disponibles sont `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7) et `CDEFGABR`+`#+-`+`.!&`. `T` ne peut pas être modifié en cours de route, et la dernière valeur spécifiée est appliquée globalement.<br>
+  Exemple : `pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
 
 ### Classe Music
 

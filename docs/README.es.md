@@ -694,20 +694,24 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
   Establece notas, tonos, volúmenes y efectos utilizando una cadena de texto. Si la longitud de los tonos, volúmenes o efectos es menor que la de las notas, se repetirán desde el principio.
 
 - `set_notes(notes)`<br>
-  Establece las notas utilizando una cadena de texto compuesta por 'CDEFGAB'+'#-'+'01234' o 'R'. No se distingue entre mayúsculas y minúsculas, y los espacios en blanco se ignoran.<br>
+  Establece las notas utilizando una cadena de texto compuesta por `CDEFGAB`+`#-`+`01234` o `R`. No se distingue entre mayúsculas y minúsculas, y los espacios en blanco se ignoran.<br>
   Ejemplo: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-  Establece los tonos con una cadena de texto compuesta por 'TSPN'. No se distingue entre mayúsculas y minúsculas, y los espacios en blanco se ignoran.<br>
+  Establece los tonos con una cadena de texto compuesta por `TSPN`. No se distingue entre mayúsculas y minúsculas, y los espacios en blanco se ignoran.<br>
   Ejemplo: `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-  Establece los volúmenes con una cadena de texto compuesta por '01234567'. No se distingue entre mayúsculas y minúsculas, y los espacios en blanco se ignoran.<br>
+  Establece los volúmenes con una cadena de texto compuesta por `01234567`. No se distingue entre mayúsculas y minúsculas, y los espacios en blanco se ignoran.<br>
   Ejemplo: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  Establece los efectos con una cadena de texto compuesta por 'NSVFHQ'. No se distingue entre mayúsculas y minúsculas, y los espacios en blanco se ignoran.<br>
+  Establece los efectos con una cadena de texto compuesta por `NSVFHQ`. No se distingue entre mayúsculas y minúsculas, y los espacios en blanco se ignoran.<br>
   Ejemplo: `pyxel.sounds[0].set_effects("NFNF NVVS")`
+
+- `mml(mml_str)`<br>
+  Establece los parámetros relacionados utilizando [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). Los comandos disponibles son `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7) y `CDEFGABR`+`#+-`+`.!&`. `T` no se puede cambiar a mitad del proceso, y el último valor especificado se aplica globalmente.<br>
+  Ejemplo: `pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
 
 ### Clase Music
 
