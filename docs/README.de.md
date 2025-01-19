@@ -694,20 +694,24 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Setzt Noten, Töne, Lautstärken und Effekte mithilfe eines Strings. Wenn die Länge der Töne, Lautstärken oder Effekte kürzer als die Noten ist, werden sie von Anfang an wiederholt.
 
 - `set_notes(notes)`<br>
-  Setzt die Noten mithilfe eines Strings aus 'CDEFGAB'+'#-'+'01234' oder 'R'. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
+  Setzt die Noten mithilfe eines Strings aus `CDEFGAB`+`#-`+`01234` oder `R`. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
   Beispiel: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-  Setzt die Töne mithilfe eines Strings aus 'TSPN'. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
+  Setzt die Töne mithilfe eines Strings aus `TSPN`. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
   Beispiel: `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-  Setzt die Lautstärken mithilfe eines Strings aus '01234567'. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
+  Setzt die Lautstärken mithilfe eines Strings aus `01234567`. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
   Beispiel: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  Setzt die Effekte mithilfe eines Strings aus 'NSVFHQ'. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
+  Setzt die Effekte mithilfe eines Strings aus `NSVFHQ`. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
   Beispiel: `pyxel.sounds[0].set_effects("NFNF NVVS")`
+
+- `mml(mml_str)`<br>
+  Legt die zugehörigen Parameter mithilfe von [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) fest. Verfügbare Befehle sind `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7) und `CDEFGABR`+`#+-`+`.!&`. `T` kann während der Laufzeit nicht geändert werden, und der zuletzt angegebene Wert wird global angewendet.<br>
+  Beispiel: `pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
 
 ### Music-Klasse
 

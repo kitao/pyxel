@@ -694,20 +694,24 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Set notes, tones, volumes, and effects using a string. If the length of tones, volumes, or effects are shorter than the notes, they will be repeated from the beginning.
 
 - `set_notes(notes)`<br>
-  Set the notes using a string made of 'CDEFGAB'+'#-'+'01234' or 'R'. It is case-insensitive, and whitespace is ignored.<br>
+  Set the notes using a string made of `CDEFGAB`+`#-`+`01234` or `R`. It is case-insensitive, and whitespace is ignored.<br>
   Example: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-  Set the tones with a string made of 'TSPN'. Case-insensitive and whitespace is ignored.<br>
+  Set the tones with a string made of `TSPN`. Case-insensitive and whitespace is ignored.<br>
   Example: `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-  Set the volumes with a string made of '01234567'. Case-insensitive and whitespace is ignored.<br>
+  Set the volumes with a string made of `01234567`. Case-insensitive and whitespace is ignored.<br>
   Example: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  Set the effects with a string made of 'NSVFHQ'. Case-insensitive and whitespace is ignored.<br>
+  Set the effects with a string made of `NSVFHQ`. Case-insensitive and whitespace is ignored.<br>
   Example: `pyxel.sounds[0].set_effects("NFNF NVVS")`
+
+- `mml(mml_str)`<br>
+  Sets the related parameters using [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). The available commands are `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7), and `CDEFGABR`+`#+-`+`.!&`. `T` cannot be changed midway, and the last specified value is applied globally.<br>
+  Example: `pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
 
 ### Music Class
 

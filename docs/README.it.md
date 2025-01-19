@@ -694,20 +694,24 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Imposta note, toni, volumi ed effetti utilizzando una stringa. Se la lunghezza di toni, volumi o effetti è inferiore alle note, verranno ripetuti dall'inizio.
 
 - `set_notes(notes)`<br>
-  Imposta le note utilizzando una stringa composta da 'CDEFGAB'+'#-'+'01234' o 'R'. Non fa distinzione tra maiuscole e minuscole, e gli spazi bianchi vengono ignorati.<br>
+  Imposta le note utilizzando una stringa composta da `CDEFGAB`+`#-`+`01234` o `R`. Non fa distinzione tra maiuscole e minuscole, e gli spazi bianchi vengono ignorati.<br>
   Esempio: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-  Imposta i toni con una stringa composta da 'TSPN'. Non fa distinzione tra maiuscole e minuscole, e gli spazi bianchi vengono ignorati.<br>
+  Imposta i toni con una stringa composta da `TSPN`. Non fa distinzione tra maiuscole e minuscole, e gli spazi bianchi vengono ignorati.<br>
   Esempio: `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-  Imposta i volumi con una stringa composta da '01234567'. Non fa distinzione tra maiuscole e minuscole, e gli spazi bianchi vengono ignorati.<br>
+  Imposta i volumi con una stringa composta da `01234567`. Non fa distinzione tra maiuscole e minuscole, e gli spazi bianchi vengono ignorati.<br>
   Esempio: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  Imposta gli effetti con una stringa composta da 'NSVFHQ'. Non fa distinzione tra maiuscole e minuscole, e gli spazi bianchi vengono ignorati.<br>
+  Imposta gli effetti con una stringa composta da `NSVFHQ`. Non fa distinzione tra maiuscole e minuscole, e gli spazi bianchi vengono ignorati.<br>
   Esempio: `pyxel.sounds[0].set_effects("NFNF NVVS")`
+
+- `mml(mml_str)`<br>
+  Imposta i parametri correlati utilizzando [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). I comandi disponibili sono `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7) e `CDEFGABR`+`#+-`+`.!&`. `T` non può essere modificato durante l'esecuzione e l'ultimo valore specificato viene applicato globalmente.<br>
+  Esempio: `pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
 
 ### Classe Music
 

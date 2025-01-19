@@ -694,20 +694,24 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   使用字符串设置音符、音色、音量和效果。如果音色、音量或效果的长度比音符短，它们将从头开始重复。
 
 - `set_notes(notes)`<br>
-  使用由 'CDEFGAB'+'#-'+'01234' 或 'R' 组成的字符串设置音符。它不区分大小写，并忽略空白。<br>
+  使用由 `CDEFGAB`+`#-`+`01234` 或 `R` 组成的字符串设置音符。它不区分大小写，并忽略空白。<br>
   例子：`pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-  使用由 'TSPN' 组成的字符串设置音色。不区分大小写，并忽略空白。<br>
+  使用由 `TSPN` 组成的字符串设置音色。不区分大小写，并忽略空白。<br>
   例子：`pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-  使用由 '01234567' 组成的字符串设置音量。不区分大小写，并忽略空白。<br>
+  使用由 `01234567` 组成的字符串设置音量。不区分大小写，并忽略空白。<br>
   例子：`pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  使用由 'NSVFHQ' 组成的字符串设置效果。不区分大小写，并忽略空白。<br>
+  使用由 `NSVFHQ` 组成的字符串设置效果。不区分大小写，并忽略空白。<br>
   例子：`pyxel.sounds[0].set_effects("NFNF NVVS")`
+
+- `mml(mml_str)`<br>
+  使用 [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) 设置相关参数。可用的命令有 `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7), 和 `CDEFGABR`+`#+-`+`.!&`。`T` 无法在过程中更改，最后指定的值将全局适用。<br>
+  例子：`pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
 
 ### Music 类
 

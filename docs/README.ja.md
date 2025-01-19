@@ -694,20 +694,24 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   文字列で音程、音色、音量、エフェクトを設定します。音色、音量、エフェクトの長さが音程より短い場合は、先頭から繰り返されます。
 
 - `set_notes(notes)`<br>
-  'CDEFGAB'+'#-'+'01234'または'R'の文字列で音程を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
+  `CDEFGAB`+`#-`+`01234`または`R`の文字列で音程を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
   例：`pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-  'TSPN'の文字列で音色を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
+  `TSPN`の文字列で音色を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
   例：`pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-  '01234567'の文字列で音量を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
+  `01234567`の文字列で音量を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
   例：`pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  'NSVFHQ'の文字列でエフェクトを設定します。大文字と小文字は区別されず、空白は無視されます。<br>
+  `NSVFHQ`の文字列でエフェクトを設定します。大文字と小文字は区別されず、空白は無視されます。<br>
   例：`pyxel.sounds[0].set_effects("NFNF NVVS")`
+
+- `mml(mml_str)`<br>
+  [Music Macro Language (MML)](https://ja.wikipedia.org/wiki/Music_Macro_Language)を使って関連パラメータを設定します。使えるコマンドは、`T`(1-900)、`L`(1/2/4/8/16/32)、`Q`(1-8)、`O`(0-4)、`>`、`<`、`@`(0-3)、`V`(0-7)、`CDEFGABR`+`#+-`+`.!&`です。`T`は途中で変更できず、最後に指定された値が全体に適用されます。<br>
+  例：`pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
 
 ### Music クラス
 
