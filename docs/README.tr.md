@@ -694,20 +694,24 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   Bir dize kullanarak notaları, tonları, ses seviyelerini ve efektleri ayarlar. Eğer tonların, ses seviyelerinin veya efektlerin uzunluğu notalardan kısaysa, baştan itibaren tekrarlanır.
 
 - `set_notes(notes)`<br>
-  'CDEFGAB'+'#-'+'01234' veya 'R' ile notaları ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
+  `CDEFGAB`+`#-`+`01234` veya `R` ile notaları ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
   Örnek: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-  'TSPN' dizesiyle tonları ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
+  `TSPN` dizesiyle tonları ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
   Örnek: `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-  '01234567' dizesiyle ses seviyelerini ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
+  `01234567` dizesiyle ses seviyelerini ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
   Örnek: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  'NSVFHQ' dizesiyle efektleri ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
+  `NSVFHQ` dizesiyle efektleri ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
   Örnek: `pyxel.sounds[0].set_effects("NFNF NVVS")`
+
+- `mml(mml_str)`<br>
+  [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) kullanarak ilgili parametreleri ayarlar. Kullanılabilir komutlar `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7) ve `CDEFGABR`+`#+-`+`.!&`. `T` işlemin ortasında değiştirilemez ve en son belirtilen değer global olarak uygulanır.<br>
+  Örnek: `pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
 
 ### Music Sınıfı
 

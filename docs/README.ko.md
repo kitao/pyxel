@@ -694,20 +694,24 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   문자열을 사용하여 음정, 음색, 볼륨, 효과를 설정합니다. 음색, 볼륨 또는 효과의 길이가 음정보다 짧으면 처음부터 반복됩니다.
 
 - `set_notes(notes)`<br>
-  'CDEFGAB'+'#-'+'01234' 또는 'R'로 이루어진 문자열로 음정을 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
+  `CDEFGAB`+`#-`+`01234` 또는 `R`로 이루어진 문자열로 음정을 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
   예시: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-  'TSPN'으로 이루어진 문자열로 음색을 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
+  `TSPN`으로 이루어진 문자열로 음색을 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
   예시: `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-  '01234567'로 이루어진 문자열로 볼륨을 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
+  `01234567`로 이루어진 문자열로 볼륨을 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
   예시: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  'NSVFHQ'로 이루어진 문자열로 효과를 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
+  `NSVFHQ`로 이루어진 문자열로 효과를 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
   예시: `pyxel.sounds[0].set_effects("NFNF NVVS")`
+
+- `mml(mml_str)`<br>
+  [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language)를 사용하여 관련 매개변수를 설정합니다. 사용할 수 있는 명령어는 `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7), 그리고 `CDEFGABR`+`#+-`+`.!&`입니다. `T`는 중간에 변경할 수 없으며, 마지막으로 지정된 값이 전역적으로 적용됩니다.<br>
+  예시: `pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
 
 ### Music 클래스
 

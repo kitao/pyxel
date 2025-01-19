@@ -694,20 +694,24 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
   Define notas, tons, volumes e efeitos usando uma string. Se o comprimento de tons, volumes ou efeitos for menor que o de notas, eles serão repetidos desde o início.
 
 - `set_notes(notes)`<br>
-  Define as notas usando uma string composta por 'CDEFGAB'+'#-'+'01234' ou 'R'. Não diferencia maiúsculas de minúsculas e ignora espaços em branco.<br>
+  Define as notas usando uma string composta por `CDEFGAB`+`#-`+`01234` ou `R`. Não diferencia maiúsculas de minúsculas e ignora espaços em branco.<br>
   Exemplo: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
 
 - `set_tones(tones)`<br>
-  Define os tons com uma string composta por 'TSPN'. Não diferencia maiúsculas de minúsculas e ignora espaços em branco.<br>
+  Define os tons com uma string composta por `TSPN`. Não diferencia maiúsculas de minúsculas e ignora espaços em branco.<br>
   Exemplo: `pyxel.sounds[0].set_tones("TTSS PPPN")`
 
 - `set_volumes(volumes)`<br>
-  Define os volumes com uma string composta por '01234567'. Não diferencia maiúsculas de minúsculas e ignora espaços em branco.<br>
+  Define os volumes com uma string composta por `01234567`. Não diferencia maiúsculas de minúsculas e ignora espaços em branco.<br>
   Exemplo: `pyxel.sounds[0].set_volumes("7777 7531")`
 
 - `set_effects(effects)`<br>
-  Define os efeitos com uma string composta por 'NSVFHQ'. Não diferencia maiúsculas de minúsculas e ignora espaços em branco.<br>
+  Define os efeitos com uma string composta por `NSVFHQ`. Não diferencia maiúsculas de minúsculas e ignora espaços em branco.<br>
   Exemplo: `pyxel.sounds[0].set_effects("NFNF NVVS")`
+
+- `mml(mml_str)`<br>
+  Define os parâmetros relacionados usando [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). Os comandos disponíveis são `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7) e `CDEFGABR`+`#+-`+`.!&`. `T` não pode ser alterado no meio do processo, e o último valor especificado é aplicado globalmente.<br>
+  Exemplo: `pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
 
 ### Classe Music
 
