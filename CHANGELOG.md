@@ -8,6 +8,8 @@
 - Updated the directories crate to version 6.0
 - Changed the sample rate to 22.05kHz
 - Reduced click noise
+- Updated Pyodide to version 0.27.1
+- Updated the year in the LICENSE files
 
 ## 2.2.11
 
