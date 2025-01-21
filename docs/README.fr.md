@@ -711,8 +711,8 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
   Exemple : `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 - `mml(mml_str)`<br>
-  Définit les paramètres associés en utilisant [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). Les commandes disponibles sont `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7) et `CDEFGABR`+`#+-`+`.!&`. `T` ne peut pas être modifié en cours de route, et la dernière valeur spécifiée est appliquée globalement.<br>
-  Exemple : `pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
+  Définit les paramètres associés en utilisant [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). Les commandes disponibles sont `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7), `M`(0-7) et `CDEFGABR`+`#+-`+`.!&`.<br>
+  Exemple : `pyxel.sounds[0].mml("T120 S1 O3 Q6 L8 M0:12345 C4&C<G16R16> C.<G16 V4 >C.&D16 M0 E2~C2~")`
 
 ### Classe Music
 

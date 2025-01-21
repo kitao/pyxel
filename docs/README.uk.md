@@ -711,8 +711,8 @@ pyxel play PYXEL_APP_FILE
   Приклад: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 - `mml(mml_str)`<br>
-  Встановлює відповідні параметри за допомогою [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). Доступні команди `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7) та `CDEFGABR`+`#+-`+`.!&`. Команду `T` не можна змінювати посеред виконання, і останнє вказане значення застосовується глобально.<br>
-  Приклад: `pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
+  Встановлює відповідні параметри за допомогою [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). Доступні команди `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7), `M`(0-7) та `CDEFGABR`+`#+-`+`.!&`.<br>
+  Приклад: `pyxel.sounds[0].mml("T120 S1 O3 Q6 L8 M0:12345 C4&C<G16R16> C.<G16 V4 >C.&D16 M0 E2~C2~")`
 
 ### Клас Music
 

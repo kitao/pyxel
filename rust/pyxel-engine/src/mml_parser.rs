@@ -1,3 +1,5 @@
+use core::panic;
+use std::array;
 use std::iter::Peekable;
 
 use crate::channel::{Note, Volume};
@@ -7,14 +9,22 @@ use crate::settings::{
 };
 use crate::sound::Sound;
 
-#[derive(Copy, Clone)]
+type Envelope = u32;
+
+enum ExtendeVolume {
+    Constant(Volume),
+    Envelope(Envelope),
+}
+
 struct NoteInfo {
     length: u32,
     quantize: u32,
     tone: ToneIndex,
-    volume: Volume,
+    volumes: Vec<Volume>,
+    vol_index: u32,
     vibrato: bool,
     note: Note,
+    is_tied: bool,
 }
 
 impl Sound {
@@ -24,24 +34,25 @@ impl Sound {
         let mut quantize = 7;
         let mut octave = 2;
         let mut tone = 0;
-        let mut volume = 7;
+        let mut volenv = ExtendeVolume::Constant(7);
+        let mut vol_data: [Vec<Volume>; 8] = array::from_fn(|_| vec![7]);
         let mut note_info = NoteInfo {
             length: 0,
             quantize: 0,
             tone: 0,
-            volume: 0,
+            volumes: vol_data[0].clone(),
+            vol_index: 0,
             vibrato: false,
             note: 0,
+            is_tied: false,
         };
         self.speed = 9; // T=100
         while chars.peek().is_some() {
             if let Some(value) = Self::parse_command(&mut chars, 't') {
                 self.speed = (900 / value).max(1);
-            } else if let Some(value) = Self::parse_command(&mut chars, 'l') {
-                if value <= 32 && 32 % value == 0 {
-                    length = 32 / value;
-                } else {
-                    panic!("Invalid note length '{value}' in MML");
+            } else if Self::parse_char(&mut chars, 'l') {
+                if let Some(local_length) = Self::parse_note_length(&mut chars) {
+                    length = local_length;
                 }
             } else if let Some(value) = Self::parse_command(&mut chars, 'q') {
                 if (1..=8).contains(&value) {
@@ -67,7 +78,7 @@ impl Sound {
                 } else {
                     panic!("Octave exceeded minimum in MML");
                 }
-            } else if let Some(value) = Self::parse_command(&mut chars, '@') {
+            } else if let Some(value) = Self::parse_command(&mut chars, 's') {
                 if value <= 3 {
                     tone = value as ToneIndex;
                 } else {
@@ -75,40 +86,60 @@ impl Sound {
                 }
             } else if let Some(value) = Self::parse_command(&mut chars, 'v') {
                 if value <= 7 {
-                    volume = value as Volume;
+                    volenv = ExtendeVolume::Constant(value as Volume);
                 } else {
                     panic!("Invalid volume value '{value}' in MML");
                 }
+            } else if let Some((envelope, volumes)) = Self::parse_envelope(&mut chars) {
+                volenv = ExtendeVolume::Envelope(envelope);
+                if !volumes.is_empty() {
+                    vol_data[envelope as usize] = volumes;
+                }
             } else if let Some((note, length)) = Self::parse_note(&mut chars, length) {
-                self.add_note(note_info);
+                self.add_note(&note_info);
+                let note = note + octave * 12;
+                let volumes = match volenv {
+                    ExtendeVolume::Constant(volume) => vec![volume],
+                    ExtendeVolume::Envelope(envelope) => vol_data[envelope as usize].clone(),
+                };
+                let vol_index = if note_info.is_tied && note_info.note == note {
+                    note_info.length + note_info.vol_index
+                } else {
+                    0
+                };
                 note_info = NoteInfo {
                     length,
                     quantize,
                     tone,
-                    volume,
+                    volumes,
+                    vol_index,
                     vibrato: false,
-                    note: note + octave * 12,
+                    note,
+                    is_tied: false,
                 };
             } else if let Some(length) = Self::parse_rest(&mut chars, length) {
-                self.add_note(note_info);
+                self.add_note(&note_info);
                 note_info = NoteInfo {
                     length,
                     quantize,
                     tone,
-                    volume,
+                    volumes: vec![0],
+                    vol_index: 0,
                     vibrato: false,
                     note: -1,
+                    is_tied: false,
                 };
-            } else if Self::parse_char(&mut chars, '!') {
+            } else if Self::parse_char(&mut chars, '~') {
                 note_info.vibrato = true;
             } else if Self::parse_char(&mut chars, '&') {
                 note_info.quantize = 8;
+                note_info.is_tied = true;
             } else {
                 let c = chars.peek().unwrap();
                 panic!("Invalid command '{c}' in MML");
             }
         }
-        self.add_note(note_info);
+        self.add_note(&note_info);
     }
 
     fn skip_whitespace<T: Iterator<Item = char>>(chars: &mut Peekable<T>) {
@@ -162,6 +193,35 @@ impl Sound {
         None
     }
 
+    fn parse_envelope<T: Iterator<Item = char>>(
+        chars: &mut Peekable<T>,
+    ) -> Option<(Envelope, Vec<Volume>)> {
+        let envelope = Self::parse_command(chars, 'm');
+        envelope?;
+        let envelope = envelope.unwrap();
+        assert!(envelope <= 7, "Invalid envelope value '{envelope}' in MML");
+        let mut volumes = Vec::new();
+        if !Self::parse_char(chars, ':') {
+            return Some((envelope, volumes));
+        }
+        Self::skip_whitespace(chars);
+        while let Some(&c) = chars.peek() {
+            if c.is_ascii_digit() {
+                let volume = chars.next().unwrap().to_string().parse().unwrap();
+                if volume <= 7 {
+                    volumes.push(volume);
+                } else {
+                    panic!("Invalid envlope volume '{volume}' in MML");
+                }
+            } else {
+                break;
+            }
+            Self::skip_whitespace(chars);
+        }
+        assert!(!volumes.is_empty(), "Missing envelope volumes in MML");
+        Some((envelope, volumes))
+    }
+
     fn parse_note<T: Iterator<Item = char>>(
         chars: &mut Peekable<T>,
         length: u32,
@@ -188,8 +248,8 @@ impl Sound {
         }
 
         // Parse length
-        let mut length = if let Some(note_division) = Self::parse_number(chars) {
-            32 / note_division
+        let mut length = if let Some(local_length) = Self::parse_note_length(chars) {
+            local_length
         } else {
             length
         };
@@ -204,6 +264,18 @@ impl Sound {
         }
 
         Some((note, length))
+    }
+
+    fn parse_note_length<T: Iterator<Item = char>>(chars: &mut Peekable<T>) -> Option<u32> {
+        if let Some(length) = Self::parse_number(chars) {
+            if length <= 32 && 32 % length == 0 {
+                Some(32 / length)
+            } else {
+                panic!("Invalid note length '{length}' in MML");
+            }
+        } else {
+            None
+        }
     }
 
     fn parse_rest<T: Iterator<Item = char>>(chars: &mut Peekable<T>, length: u32) -> Option<u32> {
@@ -231,7 +303,7 @@ impl Sound {
         Some(length)
     }
 
-    fn add_note(&mut self, note_info: NoteInfo) {
+    fn add_note(&mut self, note_info: &NoteInfo) {
         // Hnadle empty note
         if note_info.length == 0 {
             return;
@@ -239,7 +311,10 @@ impl Sound {
 
         // Add tones and volumes
         repeat_extend!(&mut self.tones, note_info.tone, note_info.length);
-        repeat_extend!(&mut self.volumes, note_info.volume, note_info.length);
+        for i in 0..note_info.length {
+            let vol_index = ((note_info.vol_index + i) as usize).min(note_info.volumes.len() - 1);
+            self.volumes.push(note_info.volumes[vol_index]);
+        }
 
         // Handle rest note
         if note_info.note == -1 {
