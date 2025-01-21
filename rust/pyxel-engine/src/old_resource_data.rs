@@ -114,7 +114,8 @@ impl ResourceItem for Sound {
             }
             if i == 0 {
                 string_loop!(j, value, line, 2, {
-                    self.notes.push(parse_hex_string(&value).unwrap() as Note);
+                    self.notes
+                        .push(parse_hex_string(&value).unwrap() as i8 as Note);
                 });
             } else if i == 1 {
                 string_loop!(j, value, line, 1, {
