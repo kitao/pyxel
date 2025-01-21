@@ -285,8 +285,8 @@ impl Sound {
         }
 
         // Parse length
-        let mut length = if let Some(note_division) = Self::parse_number(chars) {
-            32 / note_division
+        let mut length = if let Some(local_length) = Self::parse_note_length(chars) {
+            local_length
         } else {
             length
         };
