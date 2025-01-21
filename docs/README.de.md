@@ -710,8 +710,8 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Beispiel: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 - `mml(mml_str)`<br>
-  Legt die zugehörigen Parameter mithilfe von [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) fest. Verfügbare Befehle sind `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7) und `CDEFGABR`+`#+-`+`.!&`. `T` kann während der Laufzeit nicht geändert werden, und der zuletzt angegebene Wert wird global angewendet.<br>
-  Beispiel: `pyxel.sounds[0].mml("T120@1O3Q6V6L8 C4&C<G16R16>C.<G16>C.&D16 E2!C2!")`
+  Legt die zugehörigen Parameter mithilfe von [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) fest. Verfügbare Befehle sind `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7), `M`(0-7) und `CDEFGABR`+`#+-`+`.!&`.<br>
+  Beispiel: `pyxel.sounds[0].mml("T120 S1 O3 Q6 L8 M0:12345 C4&C<G16R16> C.<G16 V4 >C.&D16 M0 E2~C2~")`
 
 ### Music-Klasse
 
