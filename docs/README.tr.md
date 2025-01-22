@@ -710,8 +710,8 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   Örnek: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 - `mml(mml_str)`<br>
-  [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) kullanarak ilgili parametreleri ayarlar. Kullanılabilir komutlar `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7), `M`(0-7) ve `CDEFGABR`+`#+-`+`.!&`.<br>
-  Örnek: `pyxel.sounds[0].mml("T120 S1 O3 Q6 L8 M0:12345 C4&C<G16R16> C.<G16 V4 >C.&D16 M0 E2~C2~")`
+  [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) kullanarak ilgili parametreleri ayarlar. Kullanılabilir komutlar `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32) ve `CDEFGABR`+`#+-`+`.~&`. Komutlar hakkında daha fazla bilgi için [bu sayfayı](faq-en.md) inceleyin.<br>
+  Örnek: `pyxel.sounds[0].mml("T120 @1 O3 Q6 L8 X0:12345 C4&C<G16R16> C.<G16 V4 >C.&D16 X0 E2~C2~")`
 
 ### Music Sınıfı
 
