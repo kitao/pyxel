@@ -698,6 +698,7 @@ def user_data_dir(vendor_name: str, app_name: str) -> str: ...
 mouse_x: int
 mouse_y: int
 mouse_wheel: int
+input_keys: List[int]
 input_text: str
 dropped_files: List[str]
 

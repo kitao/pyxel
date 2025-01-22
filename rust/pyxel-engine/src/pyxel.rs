@@ -109,6 +109,7 @@ pub struct Pyxel {
     pub mouse_x: i32,
     pub mouse_y: i32,
     pub mouse_wheel: i32,
+    pub input_keys: Vec<Key>,
     pub input_text: String,
     pub dropped_files: Vec<String>,
 
@@ -180,6 +181,7 @@ pub fn init(
     let mouse_x = 0;
     let mouse_y = 0;
     let mouse_wheel = 0;
+    let input_keys = Vec::new();
     let input_text = String::new();
     let dropped_files = Vec::new();
 
@@ -212,6 +214,7 @@ pub fn init(
         mouse_x,
         mouse_y,
         mouse_wheel,
+        input_keys,
         input_text,
         dropped_files,
         graphics,
