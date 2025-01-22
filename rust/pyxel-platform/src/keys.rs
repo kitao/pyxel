@@ -247,7 +247,7 @@ pub const KEY_APP2: Key = SDLK_APP2 as Key;
 pub const KEY_AUDIOREWIND: Key = SDLK_AUDIOREWIND as Key;
 pub const KEY_AUDIOFASTFORWARD: Key = SDLK_AUDIOFASTFORWARD as Key;
 
-pub const SPECIAL_KEY_START_INDEX: Key = 10000;
+pub const SPECIAL_KEY_START_INDEX: Key = 0x5000_0000;
 pub const KEY_NONE: Key = SPECIAL_KEY_START_INDEX;
 pub const KEY_SHIFT: Key = SPECIAL_KEY_START_INDEX + 1;
 pub const KEY_CTRL: Key = SPECIAL_KEY_START_INDEX + 2;
@@ -255,7 +255,7 @@ pub const KEY_ALT: Key = SPECIAL_KEY_START_INDEX + 3;
 pub const KEY_GUI: Key = SPECIAL_KEY_START_INDEX + 4;
 
 // Mouse
-pub const MOUSE_KEY_START_INDEX: Key = 11000;
+pub const MOUSE_KEY_START_INDEX: Key = 0x5000_0100;
 pub const MOUSE_POS_X: Key = MOUSE_KEY_START_INDEX;
 pub const MOUSE_POS_Y: Key = MOUSE_KEY_START_INDEX + 1;
 pub const MOUSE_WHEEL_X: Key = MOUSE_KEY_START_INDEX + 2;
@@ -267,8 +267,8 @@ pub const MOUSE_BUTTON_X1: Key = MOUSE_KEY_START_INDEX + 7;
 pub const MOUSE_BUTTON_X2: Key = MOUSE_KEY_START_INDEX + 8;
 
 // Gamepad
-pub const GAMEPAD_KEY_START_INDEX: Key = 12000;
-pub const GAMEPAD_KEY_INDEX_INTERVAL: Key = 1000;
+pub const GAMEPAD_KEY_START_INDEX: Key = 0x5000_0200;
+pub const GAMEPAD_KEY_INDEX_INTERVAL: Key = 0x100;
 
 macro_rules! define_gamepad_keys {
     ($gamepad_name:ident, $start_index:expr) => {
