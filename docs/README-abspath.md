@@ -710,8 +710,8 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Example: `pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 - `mml(mml_str)`<br>
-  Sets the related parameters using [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). The available commands are `T`(1-900), `L`(1/2/4/8/16/32), `Q`(1-8), `O`(0-4), `>`, `<`, `@`(0-3), `V`(0-7), `M`(0-7), and `CDEFGABR`+`#+-`+`.!&`.<br>
-  Example: `pyxel.sounds[0].mml("T120 S1 O3 Q6 L8 M0:12345 C4&C<G16R16> C.<G16 V4 >C.&D16 M0 E2~C2~")`
+  Sets the related parameters using [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). The available commands are `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32), and `CDEFGABR`+`#+-`+`.~&`. For details on the commands, refer to [this page](https://github.com/kitao/pyxel/blob/main//docs/faq-en.md).<br>
+  Example: `pyxel.sounds[0].mml("T120 @1 O3 Q6 L8 X0:12345 C4&C<G16R16> C.<G16 V4 >C.&D16 X0 E2~C2~")`
 
 ### Music Class
 
