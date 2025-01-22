@@ -710,8 +710,8 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   例：`pyxel.sounds[0].set_effects("NFNF NVVS")`
 
 - `mml(mml_str)`<br>
-  [Music Macro Language (MML)](https://ja.wikipedia.org/wiki/Music_Macro_Language)を使って関連パラメータを設定します。使えるコマンドは、`T`(1-900)、`L`(1/2/4/8/16/32)、`Q`(1-8)、`O`(0-4)、`>`、`<`、`@`(0-3)、`V`(0-7)、`M`(0-7)、`CDEFGABR`+`#+-`+`.!&`です。<br>
-  例：`pyxel.sounds[0].mml("T120 S1 O3 Q6 L8 M0:12345 C4&C<G16R16> C.<G16 V4 >C.&D16 M0 E2~C2~")`
+  [Music Macro Language (MML)](https://ja.wikipedia.org/wiki/Music_Macro_Language)を使って関連パラメータを設定します。使えるコマンドは、`T`(1-900)、`@`(0-3)、`O`(0-4)、`>`、`<`、`Q`(1-8)、`V`(0-7)、`X`(0-7)、`L`(1/2/4/8/16/32)、`CDEFGABR`+`#+-`+`.~&`です。コマンドの詳細は、[こちらのページ](faq-jp.md)を参照してください。<br>
+  例：`pyxel.sounds[0].mml("T120 @1 O3 Q6 L8 X0:12345 C4&C<G16R16> C.<G16 V4 >C.&D16 X0 E2~C2~")`
 
 ### Music クラス
 

@@ -2,10 +2,10 @@
 
 ## 2.3.1
 
-- Added the `M` command to MML
-- Renamed the `@` command in MML to `S`
-- Renamed the `!` command in MML to `~`
 - Fixed a bug in loading old resource files
+- Added the `X` command to MML
+- Renamed the `!` command in MML to `~`
+- Restored the input_keys variable
 
 ## 2.3.0
 
