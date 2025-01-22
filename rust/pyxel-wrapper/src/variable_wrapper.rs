@@ -64,6 +64,7 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "mouse_x" => value_to_pyobj!(py, pyxel().mouse_x),
         "mouse_y" => value_to_pyobj!(py, pyxel().mouse_y),
         "mouse_wheel" => value_to_pyobj!(py, pyxel().mouse_wheel),
+        "input_keys" => value_to_pyobj!(py, pyxel().input_keys.clone()),
         "input_text" => value_to_pyobj!(py, pyxel().input_text.clone()),
         "dropped_files" => value_to_pyobj!(py, pyxel().dropped_files.clone()),
 

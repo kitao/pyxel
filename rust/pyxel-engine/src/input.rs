@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use crate::keys::{Key, KeyValue, MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y};
+use crate::keys::{
+    Key, KeyValue, MOUSE_KEY_START_INDEX, MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
+};
 use crate::pyxel::Pyxel;
 use crate::utils::f64_to_i32;
 
@@ -105,7 +107,8 @@ impl Pyxel {
         self.input.key_values.insert(MOUSE_WHEEL_X, 0);
         self.input.key_values.insert(MOUSE_WHEEL_Y, 0);
         self.mouse_wheel = 0;
-        self.input_text = String::new();
+        self.input_keys.clear();
+        self.input_text.clear();
         self.dropped_files.clear();
     }
 
@@ -123,6 +126,9 @@ impl Pyxel {
         self.input
             .key_states
             .insert(key, (self.frame_count, key_state));
+        if key < MOUSE_KEY_START_INDEX {
+            self.input_keys.push(key);
+        }
     }
 
     pub(crate) fn release_key(&mut self, key: Key) {
