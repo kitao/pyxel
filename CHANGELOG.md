@@ -5,6 +5,7 @@
 - Fixed a bug in loading old resource files
 - Added the `X` command to MML
 - Renamed the `!` command in MML to `~`
+- Enabled to add multiple dots to a note in MML
 - Restored the input_keys variable
 
 ## 2.3.0
