@@ -44,9 +44,7 @@ impl Sound {
             if let Some(value) = Self::parse_command(&mut chars, 't') {
                 self.speed = (900 / value).max(1);
             } else if Self::parse_char(&mut chars, 'l') {
-                if let Some(local_length) = Self::parse_note_length(&mut chars) {
-                    length = local_length;
-                }
+                length = Self::parse_note_length(&mut chars, length);
             } else if let Some(value) = Self::parse_command(&mut chars, '@') {
                 if value <= 3 {
                     tone = value as ToneIndex;
@@ -219,7 +217,6 @@ impl Sound {
         chars: &mut Peekable<T>,
         length: u32,
     ) -> Option<(Note, u32)> {
-        // Parse note
         Self::skip_whitespace(chars);
         let mut note = match chars.peek()?.to_ascii_lowercase() {
             'c' => 0,
@@ -232,68 +229,46 @@ impl Sound {
             _ => return None,
         };
         chars.next();
-
-        // Parse modifier
         if Self::parse_char(chars, '#') || Self::parse_char(chars, '+') {
             note += 1;
         } else if Self::parse_char(chars, '-') {
             note -= 1;
         }
+        Some((note, Self::parse_note_length(chars, length)))
+    }
 
-        // Parse length
-        let mut length = if let Some(local_length) = Self::parse_note_length(chars) {
-            local_length
-        } else {
-            length
-        };
-
-        // Parse dot
-        if Self::parse_char(chars, '.') {
-            if length >= 2 {
-                length += length / 2;
+    fn parse_note_length<T: Iterator<Item = char>>(
+        chars: &mut Peekable<T>,
+        cur_length: u32,
+    ) -> u32 {
+        let mut length = cur_length;
+        if let Some(temp_length) = Self::parse_number(chars) {
+            if temp_length <= 32 && 32 % temp_length == 0 {
+                length = 32 / temp_length;
+            } else {
+                panic!("Invalid note length '{temp_length}' in MML");
+            }
+        }
+        let mut target_length = length;
+        while Self::parse_char(chars, '.') {
+            if target_length >= 2 {
+                target_length /= 2;
+                length += target_length;
             } else {
                 panic!("Length added by dot is too short in MML");
             }
         }
-
-        Some((note, length))
+        length
     }
 
-    fn parse_note_length<T: Iterator<Item = char>>(chars: &mut Peekable<T>) -> Option<u32> {
-        if let Some(length) = Self::parse_number(chars) {
-            if length <= 32 && 32 % length == 0 {
-                Some(32 / length)
-            } else {
-                panic!("Invalid note length '{length}' in MML");
-            }
-        } else {
-            None
-        }
-    }
-
-    fn parse_rest<T: Iterator<Item = char>>(chars: &mut Peekable<T>, length: u32) -> Option<u32> {
-        // Prase rest
+    fn parse_rest<T: Iterator<Item = char>>(
+        chars: &mut Peekable<T>,
+        cur_length: u32,
+    ) -> Option<u32> {
         if !Self::parse_char(chars, 'r') {
             return None;
         }
-
-        // Parse length
-        let mut length = if let Some(local_length) = Self::parse_note_length(chars) {
-            local_length
-        } else {
-            length
-        };
-
-        // Parse dot
-        if Self::parse_char(chars, '.') {
-            if length >= 2 {
-                length += length / 2;
-            } else {
-                panic!("Length added by dot is too short in MML");
-            }
-        }
-
-        Some(length)
+        Some(Self::parse_note_length(chars, cur_length))
     }
 
     fn add_note(&mut self, note_info: &NoteInfo) {
