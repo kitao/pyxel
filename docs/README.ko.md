@@ -711,7 +711,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 - `mml(mml_str)`<br>
   [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language)를 사용하여 관련 매개변수를 설정합니다. 사용할 수 있는 명령어는 `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32), 그리고 `CDEFGABR`+`#+-`+`.~&`입니다. 명령어에 대한 자세한 내용은 [이 페이지](faq-en.md)를 참조하세요.<br>
-  예시: `pyxel.sounds[0].mml("T120 @1 O3 Q6 L8 X0:12345 C4&C<G16R16> C.<G16 V4 >C.&D16 X0 E2~C2~")`
+  예시: `pyxel.sounds[0].mml("T120 @1 O3 Q6 L8 X0:12345 C4&C<G16R16>C.<G16 V4 >C.&D16 X0 E2~C2~")`
 
 ### Music 클래스
 
