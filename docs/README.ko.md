@@ -472,7 +472,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 ### Resource
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
-  리소스 파일 (.pyxres)을 로드합니다. 옵션이 `True`로 설정되면 해당 리소스는 로드에서 제외됩니다. 동일한 이름의 팔레트 파일 (.pyxpal)이 리소스 파일과 동일한 위치에 존재하는 경우, 팔레트 표시 색상도 업데이트됩니다. 팔레트 파일은 각 색상을 16진수로 나타낸 값을 줄바꿈으로 구분하여 입력합니다 (예: `1100FF`). 팔레트 파일을 사용하면 Pyxel Editor에서 표시되는 색상도 변경할 수 있습니다.
+  리소스 파일 (.pyxres)을 로드합니다. 옵션이 `True`로 설정되면 해당 리소스는 로드에서 제외됩니다. 동일한 이름의 팔레트 파일 (.pyxpal)이 리소스 파일과 동일한 위치에 존재하는 경우, 팔레트 표시 색상도 업데이트됩니다. 팔레트 파일은 각 색상을 16진수로 나타낸 값을 줄바꿈으로 구분하여 입력합니다 (예: `1100ff`). 팔레트 파일을 사용하면 Pyxel Editor에서 표시되는 색상도 변경할 수 있습니다.
 
 - `user_data_dir(vendor_name, app_name)`<br>
   `vendor_name`와 `app_name`을 기반으로 생성된 사용자 데이터 디렉토리를 반환합니다. 디렉토리가 존재하지 않으면 자동으로 생성됩니다. 이 디렉토리는 하이스코어, 게임 진행 상황 등의 데이터를 저장하는 데 사용됩니다.<br>
@@ -695,11 +695,11 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 - `set_notes(notes)`<br>
   `CDEFGAB`+`#-`+`01234` 또는 `R`로 이루어진 문자열로 음정을 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
-  예시: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
+  예시: `pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")`
 
 - `set_tones(tones)`<br>
   `TSPN`으로 이루어진 문자열로 음색을 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
-  예시: `pyxel.sounds[0].set_tones("TTSS PPPN")`
+  예시: `pyxel.sounds[0].set_tones("ttss pppn")`
 
 - `set_volumes(volumes)`<br>
   `01234567`로 이루어진 문자열로 볼륨을 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
@@ -707,11 +707,11 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 
 - `set_effects(effects)`<br>
   `NSVFHQ`로 이루어진 문자열로 효과를 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
-  예시: `pyxel.sounds[0].set_effects("NFNF NVVS")`
+  예시: `pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(mml_str)`<br>
   [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language)를 사용하여 관련 매개변수를 설정합니다. 사용할 수 있는 명령어는 `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32), 그리고 `CDEFGABR`+`#+-`+`.~&`입니다. 명령어에 대한 자세한 내용은 [이 페이지](faq-en.md)를 참조하세요.<br>
-  예시: `pyxel.sounds[0].mml("T120 @1 O3 Q6 L8 X0:12345 C4&C<G16R16>C.<G16 V4 >C.&D16 X0 E2~C2~")`
+  예시: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
 ### Music 클래스
 

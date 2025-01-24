@@ -472,7 +472,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
 ### リソース
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
-  リソースファイル (.pyxres) を読み込みます。オプションに`True`を指定すると、そのリソースは読み込まれません。また、同名のパレットファイル (.pyxpal) がリソースファイルと同じ場所に存在する場合は、パレットの表示色も変更されます。パレットファイルは、表示色を改行区切りの 16 進数 (例：`1100FF`) で入力します。パレットファイルを使うことで Pyxel Editor の表示色も変更可能です。
+  リソースファイル (.pyxres) を読み込みます。オプションに`True`を指定すると、そのリソースは読み込まれません。また、同名のパレットファイル (.pyxpal) がリソースファイルと同じ場所に存在する場合は、パレットの表示色も変更されます。パレットファイルは、表示色を改行区切りの 16 進数 (例：`1100ff`) で入力します。パレットファイルを使うことで Pyxel Editor の表示色も変更可能です。
 
 - `user_data_dir(vendor_name, app_name)`<br>
   `vendor_name`と`app_name`から生成されたユーザーデータ保存用ディレクトリを返します。該当ディレクトリが存在しない場合は自動で作成されます。ハイスコアやゲームの進行状況の保存先として使用します。<br>
@@ -695,11 +695,11 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
 
 - `set_notes(notes)`<br>
   `CDEFGAB`+`#-`+`01234`または`R`の文字列で音程を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
-  例：`pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
+  例：`pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")`
 
 - `set_tones(tones)`<br>
   `TSPN`の文字列で音色を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
-  例：`pyxel.sounds[0].set_tones("TTSS PPPN")`
+  例：`pyxel.sounds[0].set_tones("ttss pppn")`
 
 - `set_volumes(volumes)`<br>
   `01234567`の文字列で音量を設定します。大文字と小文字は区別されず、空白は無視されます。<br>
@@ -707,11 +707,11 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
 
 - `set_effects(effects)`<br>
   `NSVFHQ`の文字列でエフェクトを設定します。大文字と小文字は区別されず、空白は無視されます。<br>
-  例：`pyxel.sounds[0].set_effects("NFNF NVVS")`
+  例：`pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(mml_str)`<br>
   [Music Macro Language (MML)](https://ja.wikipedia.org/wiki/Music_Macro_Language)を使って関連パラメータを設定します。使えるコマンドは、`T`(1-900)、`@`(0-3)、`O`(0-4)、`>`、`<`、`Q`(1-8)、`V`(0-7)、`X`(0-7)、`L`(1/2/4/8/16/32)、`CDEFGABR`+`#+-`+`.~&`です。コマンドの詳細は、[こちらのページ](faq-jp.md)を参照してください。<br>
-  例：`pyxel.sounds[0].mml("T120 @1 O3 Q6 L8 X0:12345 C4&C<G16R16>C.<G16 V4 >C.&D16 X0 E2~C2~")`
+  例：`pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
 ### Music クラス
 
