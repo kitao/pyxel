@@ -162,7 +162,7 @@ Aşağıdaki örnekler geçerli dizininize kopyalanacaktır:
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>Shoot 'em up oyunu ile ekran geçişleri</td>
+<td>Shoot'em up oyunu ile ekran geçişleri ve MML</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Demo</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Kod</a></td>
 </tr>

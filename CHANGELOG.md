@@ -7,6 +7,8 @@
 - Renamed the `!` command in MML to `~`
 - Enabled to add multiple dots to a note in MML
 - Restored the input_keys variable
+- Updated Example 9 to use MML for music setup
+- Updated 8bit BGM Generator to version 1.22
 
 ## 2.3.0
 
