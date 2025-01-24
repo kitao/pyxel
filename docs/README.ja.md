@@ -162,13 +162,13 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>画面遷移のあるシューティングゲーム</td>
+<td>画面遷移とMMLを使用したシューティングゲーム</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">コード</a></td>
 </tr>
 <tr>
 <td>10_platformer.py</td>
-<td>マップのある横スクロールアクションゲーム</td>
+<td>マップを使用した横スクロールアクションゲーム</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/10_platformer.html">デモ</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/10_platformer.py">コード</a></td>
 </tr>

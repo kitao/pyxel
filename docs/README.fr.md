@@ -162,7 +162,7 @@ Les exemples suivants seront copiés dans votre répertoire actuel :
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>Shoot 'em up avec transitions d'écran</td>
+<td>Shoot'em up avec transitions d'écran et MML</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Démonstration</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Code</a></td>
 </tr>

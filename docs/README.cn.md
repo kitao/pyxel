@@ -162,7 +162,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>射击游戏与屏幕切换</td>
+<td>射击游戏与屏幕切换及MML</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">演示</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">代码</a></td>
 </tr>

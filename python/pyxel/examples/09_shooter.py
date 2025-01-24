@@ -189,6 +189,17 @@ class Blast:
 class App:
     def __init__(self):
         pyxel.init(120, 160, title="Pyxel Shooter")
+        self.init_image()
+        self.init_sound()
+        self.scene = SCENE_TITLE
+        self.score = 0
+        self.background = Background()
+        self.player = Player(pyxel.width / 2, pyxel.height - 20)
+        pyxel.playm(0, loop=True)
+        pyxel.run(self.update, self.draw)
+
+    def init_image(self):
+        # Set player image
         pyxel.images[0].set(
             0,
             0,
@@ -203,6 +214,8 @@ class App:
                 "0c0880c0",
             ],
         )
+
+        # Set enemy image
         pyxel.images[0].set(
             8,
             0,
@@ -217,16 +230,55 @@ class App:
                 "80008000",
             ],
         )
+
+    def init_sound(self):
+        # Set sound effects
         pyxel.sounds[0].set("a3a2c1a1", "p", "7", "s", 5)
         pyxel.sounds[1].set("a3a2c2c2", "n", "7742", "s", 10)
-        load_bgm(0, "assets/bgm_title.json", 2, 3, 4)
-        load_bgm(1, "assets/bgm_play.json", 5, 6, 7)
-        self.scene = SCENE_TITLE
-        self.score = 0
-        self.background = Background()
-        self.player = Player(pyxel.width / 2, pyxel.height - 20)
-        pyxel.playm(0, loop=True)
-        pyxel.run(self.update, self.draw)
+
+        # Set title music
+        m0_head = "t128 @2 o3 q8 l8 x0:765 "
+        m0_body1 = "edcr<ab>cr d2<g4>g<b& ba&a2r4 "
+        m0_body2 = ">dc4<b2r> "
+        m0_body3 = ">d4<b.r16>dg+dg+ "
+
+        m1_head = "t128 @0 o1 v7 l16 "
+        m1_body1 = "q5aar4aar4<q8a4> q5ggr4ggr4<q8g4> q5ffr4ffr4<q8f4> "
+        m1_body2 = "q5ggr4ggr4<q8g4> "
+        m1_body3 = "q5ggr4ggr4g+g+<g+8 "
+
+        m2_head = "t128 @3 l8 x0:21 "
+        m2_body1 = "q1o2v4crrcrr>>q2x0a#16a#16a#<< "
+        m2_body2 = "q1o2v4crrcrr>>q2x0a#16a#16<<q1o2v4c "
+
+        pyxel.sounds[2].mml(m0_head + m0_body1 + m0_body2 + m0_body1 + m0_body3)
+        pyxel.sounds[3].mml(m1_head + m1_body1 + m1_body2 + m1_body1 + m1_body3)
+        pyxel.sounds[4].mml(m2_head + m2_body1 * 3 + m2_body2)
+        pyxel.musics[0].set([2], [3], [4])
+
+        # Set play music
+        m0_head = "t150 @2 o2 q8 l16 x0:765 "
+        m0_body1 = "e8>e<e4r>c8<e4&er ag+abaf+8r r8a4>d8 "
+        m0_body2 = "ed8c8<b8a8.g+f+q6e8q8e8 f+8.r>f+4<a4b>cd<f+ "
+        m0_body3 = "c4&cr<ag+a.r.>c<ba>ce rd<a8.>f+8.<b.r32>e8dc<bq6e "
+
+        m1_head = "t150 @0 o1 v7 l16 q7 "
+        m1_body1 = "<ar>ea<ar>ea<ar>ea<ar>ea "
+        m1_body2 = "dra>d<dra>d<dra>d<dra>d< "
+        m1_body3 = "dra>d<dra>d<er>eeeeer "
+
+        m2_head = "t150 @3 l16 x0:21 x1:52 "
+        m2_body1 = "q2x0o3 a#ra#a# a#ra#a# a#ra#a# a#ra#a# "
+        m2_body2 = "q2x0o3 a#ra#a# a#ra#a# a#ra#a# o2x1 a#a# q1o2v5cr "
+
+        pyxel.sounds[5].mml(m0_head + m0_body1 + m0_body2 + m0_body1 + m0_body3)
+        pyxel.sounds[6].mml(m1_head + (m1_body1 + m1_body2) * 3 + m1_body1 + m1_body3)
+        pyxel.sounds[7].mml(m2_head + m2_body1 * 3 + m2_body2)
+        pyxel.musics[1].set([5], [6], [7])
+
+        # You can also use 8bit BGM generator to set up the music:
+        #   load_bgm(0, "assets/bgm_title.json", 2, 3, 4)
+        #   load_bgm(1, "assets/bgm_play.json", 5, 6, 7)
 
     def update(self):
         if pyxel.btn(pyxel.KEY_Q):

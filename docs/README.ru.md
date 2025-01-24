@@ -162,7 +162,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>Shoot 'em up с переходами между экранами</td>
+<td>Shoot'em up с переходами между экранами и MML</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">Демонстрация</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">Код</a></td>
 </tr>
