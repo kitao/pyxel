@@ -162,7 +162,7 @@ pyxel copy_examples
 </tr>
 <tr>
 <td>09_shooter.py</td>
-<td>Shoot 'em up 게임과 화면 전환</td>
+<td>Shoot'em up 게임과 화면 전환 및 MML</td>
 <td><a href="https://kitao.github.io/pyxel/wasm/examples/09_shooter.html">데모</a></td>
 <td><a href="https://github.com/kitao/pyxel/blob/main/python/pyxel/examples/09_shooter.py">코드</a></td>
 </tr>
