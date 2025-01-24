@@ -472,7 +472,7 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
 ### Recursos
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
-  Carga el archivo de recursos (.pyxres). Si se establece una opción como `True`, se excluirá el recurso correspondiente de la carga. Si existe un archivo de paleta (.pyxpal) con el mismo nombre en la misma ubicación que el archivo de recursos, los colores de la paleta también se actualizarán. El archivo de paleta contiene entradas hexadecimales para los colores de visualización (ej. `1100FF`), separadas por saltos de línea. El archivo de paleta también puede utilizarse para cambiar los colores mostrados en Pyxel Editor.
+  Carga el archivo de recursos (.pyxres). Si se establece una opción como `True`, se excluirá el recurso correspondiente de la carga. Si existe un archivo de paleta (.pyxpal) con el mismo nombre en la misma ubicación que el archivo de recursos, los colores de la paleta también se actualizarán. El archivo de paleta contiene entradas hexadecimales para los colores de visualización (ej. `1100ff`), separadas por saltos de línea. El archivo de paleta también puede utilizarse para cambiar los colores mostrados en Pyxel Editor.
 
 - `user_data_dir(vendor_name, app_name)`<br>
   Devuelve el directorio de datos de usuario creado en función de `vendor_name` y `app_name`. Si el directorio no existe, se creará automáticamente. Se utiliza para almacenar puntuaciones altas, el progreso del juego y datos similares.<br>
@@ -695,11 +695,11 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
 
 - `set_notes(notes)`<br>
   Establece las notas utilizando una cadena de texto compuesta por `CDEFGAB`+`#-`+`01234` o `R`. No se distingue entre mayúsculas y minúsculas, y los espacios en blanco se ignoran.<br>
-  Ejemplo: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
+  Ejemplo: `pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")`
 
 - `set_tones(tones)`<br>
   Establece los tonos con una cadena de texto compuesta por `TSPN`. No se distingue entre mayúsculas y minúsculas, y los espacios en blanco se ignoran.<br>
-  Ejemplo: `pyxel.sounds[0].set_tones("TTSS PPPN")`
+  Ejemplo: `pyxel.sounds[0].set_tones("ttss pppn")`
 
 - `set_volumes(volumes)`<br>
   Establece los volúmenes con una cadena de texto compuesta por `01234567`. No se distingue entre mayúsculas y minúsculas, y los espacios en blanco se ignoran.<br>
@@ -707,11 +707,11 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
 
 - `set_effects(effects)`<br>
   Establece los efectos con una cadena de texto compuesta por `NSVFHQ`. No se distingue entre mayúsculas y minúsculas, y los espacios en blanco se ignoran.<br>
-  Ejemplo: `pyxel.sounds[0].set_effects("NFNF NVVS")`
+  Ejemplo: `pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(mml_str)`<br>
   Establece los parámetros relacionados utilizando [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). Los comandos disponibles son `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32) y `CDEFGABR`+`#+-`+`.~&`. Para más detalles sobre los comandos, consulta [esta página](faq-en.md).<br>
-  Ejemplo: `pyxel.sounds[0].mml("T120 @1 O3 Q6 L8 X0:12345 C4&C<G16R16>C.<G16 V4 >C.&D16 X0 E2~C2~")`
+  Ejemplo: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
 ### Clase Music
 

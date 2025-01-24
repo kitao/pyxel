@@ -472,7 +472,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 ### 资源
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
-  加载资源文件 (.pyxres)。如果某个选项设置为 `True`，相应的资源将被排除加载。如果资源文件所在位置存在同名的调色板文件 (.pyxpal)，调色板显示颜色也将更新。调色板文件包含 16 进制的显示颜色条目（例如 `1100FF`），每行一个。调色板文件也可以用于更改 Pyxel Editor 中的显示颜色。
+  加载资源文件 (.pyxres)。如果某个选项设置为 `True`，相应的资源将被排除加载。如果资源文件所在位置存在同名的调色板文件 (.pyxpal)，调色板显示颜色也将更新。调色板文件包含 16 进制的显示颜色条目（例如 `1100ff`），每行一个。调色板文件也可以用于更改 Pyxel Editor 中的显示颜色。
 
 - `user_data_dir(vendor_name, app_name)`<br>
   返回基于 `vendor_name` 和 `app_name` 创建的用户数据目录。如果目录不存在，它将自动创建。用于存储高分、游戏进度等数据。<br>
@@ -695,11 +695,11 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 
 - `set_notes(notes)`<br>
   使用由 `CDEFGAB`+`#-`+`01234` 或 `R` 组成的字符串设置音符。它不区分大小写，并忽略空白。<br>
-  例子：`pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
+  例子：`pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")`
 
 - `set_tones(tones)`<br>
   使用由 `TSPN` 组成的字符串设置音色。不区分大小写，并忽略空白。<br>
-  例子：`pyxel.sounds[0].set_tones("TTSS PPPN")`
+  例子：`pyxel.sounds[0].set_tones("ttss pppn")`
 
 - `set_volumes(volumes)`<br>
   使用由 `01234567` 组成的字符串设置音量。不区分大小写，并忽略空白。<br>
@@ -707,11 +707,11 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 
 - `set_effects(effects)`<br>
   使用由 `NSVFHQ` 组成的字符串设置效果。不区分大小写，并忽略空白。<br>
-  例子：`pyxel.sounds[0].set_effects("NFNF NVVS")`
+  例子：`pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(mml_str)`<br>
   使用 [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) 设置相关参数。可用的命令有 `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32), 和 `CDEFGABR`+`#+-`+`.~&`。有关指令的详细信息，请参阅[此页面](faq-en.md)。<br>
-  例子：`pyxel.sounds[0].mml("T120 @1 O3 Q6 L8 X0:12345 C4&C<G16R16>C.<G16 V4 >C.&D16 X0 E2~C2~")`
+  例子：`pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
 ### Music 类
 
