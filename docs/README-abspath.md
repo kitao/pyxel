@@ -472,7 +472,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 ### Resource
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
-  Load the resource file (.pyxres). If an option is set to `True`, the corresponding resource will be excluded from loading. If a palette file (.pyxpal) with the same name exists in the same location as the resource file, the palette display colors will also be updated. The palette file contains hexadecimal entries for the display colors (e.g. `1100FF`), separated by newlines. The palette file can also be used to change the colors displayed in Pyxel Editor.
+  Load the resource file (.pyxres). If an option is set to `True`, the corresponding resource will be excluded from loading. If a palette file (.pyxpal) with the same name exists in the same location as the resource file, the palette display colors will also be updated. The palette file contains hexadecimal entries for the display colors (e.g. `1100ff`), separated by newlines. The palette file can also be used to change the colors displayed in Pyxel Editor.
 
 - `user_data_dir(vendor_name, app_name)`<br>
   Returns the user data directory created based on `vendor_name` and `app_name`. If the directory does not exist, it will be created automatically. It is used to store high scores, game progress, and similar data.<br>
@@ -695,11 +695,11 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 - `set_notes(notes)`<br>
   Set the notes using a string made of `CDEFGAB`+`#-`+`01234` or `R`. It is case-insensitive, and whitespace is ignored.<br>
-  Example: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
+  Example: `pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")`
 
 - `set_tones(tones)`<br>
   Set the tones with a string made of `TSPN`. Case-insensitive and whitespace is ignored.<br>
-  Example: `pyxel.sounds[0].set_tones("TTSS PPPN")`
+  Example: `pyxel.sounds[0].set_tones("ttss pppn")`
 
 - `set_volumes(volumes)`<br>
   Set the volumes with a string made of `01234567`. Case-insensitive and whitespace is ignored.<br>
@@ -707,11 +707,11 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 
 - `set_effects(effects)`<br>
   Set the effects with a string made of `NSVFHQ`. Case-insensitive and whitespace is ignored.<br>
-  Example: `pyxel.sounds[0].set_effects("NFNF NVVS")`
+  Example: `pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(mml_str)`<br>
   Sets the related parameters using [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). The available commands are `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32), and `CDEFGABR`+`#+-`+`.~&`. For details on the commands, refer to [this page](https://github.com/kitao/pyxel/blob/main//docs/faq-en.md).<br>
-  Example: `pyxel.sounds[0].mml("T120 @1 O3 Q6 L8 X0:12345 C4&C<G16R16>C.<G16 V4 >C.&D16 X0 E2~C2~")`
+  Example: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
 ### Music Class
 

@@ -472,7 +472,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 ### Kaynaklar
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
-  Kaynak dosyasını (.pyxres) yükler. Bir seçenek `True` olarak ayarlandığında, ilgili kaynak yüklemeden hariç tutulur. Eğer aynı konumda aynı ada sahip bir palet dosyası (.pyxpal) varsa, palet görüntü renkleri de güncellenir. Palet dosyası, görüntü renklerini 16'lık sayılar (örn. `1100FF`) ile satır satır içerir. Bu palet dosyası, Pyxel Editor'deki renkleri değiştirmek için de kullanılabilir.
+  Kaynak dosyasını (.pyxres) yükler. Bir seçenek `True` olarak ayarlandığında, ilgili kaynak yüklemeden hariç tutulur. Eğer aynı konumda aynı ada sahip bir palet dosyası (.pyxpal) varsa, palet görüntü renkleri de güncellenir. Palet dosyası, görüntü renklerini 16'lık sayılar (örn. `1100ff`) ile satır satır içerir. Bu palet dosyası, Pyxel Editor'deki renkleri değiştirmek için de kullanılabilir.
 
 - `user_data_dir(vendor_name, app_name)`<br>
   `vendor_name` ve `app_name` temel alınarak oluşturulan kullanıcı veri dizinini döndürür. Dizin mevcut değilse, otomatik olarak oluşturulur. Yüksek skorları, oyun ilerlemesini ve benzeri verileri saklamak için kullanılır.<br>
@@ -695,11 +695,11 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 
 - `set_notes(notes)`<br>
   `CDEFGAB`+`#-`+`01234` veya `R` ile notaları ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
-  Örnek: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
+  Örnek: `pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")`
 
 - `set_tones(tones)`<br>
   `TSPN` dizesiyle tonları ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
-  Örnek: `pyxel.sounds[0].set_tones("TTSS PPPN")`
+  Örnek: `pyxel.sounds[0].set_tones("ttss pppn")`
 
 - `set_volumes(volumes)`<br>
   `01234567` dizesiyle ses seviyelerini ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
@@ -707,11 +707,11 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 
 - `set_effects(effects)`<br>
   `NSVFHQ` dizesiyle efektleri ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
-  Örnek: `pyxel.sounds[0].set_effects("NFNF NVVS")`
+  Örnek: `pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(mml_str)`<br>
   [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) kullanarak ilgili parametreleri ayarlar. Kullanılabilir komutlar `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32) ve `CDEFGABR`+`#+-`+`.~&`. Komutlar hakkında daha fazla bilgi için [bu sayfayı](faq-en.md) inceleyin.<br>
-  Örnek: `pyxel.sounds[0].mml("T120 @1 O3 Q6 L8 X0:12345 C4&C<G16R16>C.<G16 V4 >C.&D16 X0 E2~C2~")`
+  Örnek: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
 ### Music Sınıfı
 

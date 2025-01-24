@@ -472,7 +472,7 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 ### Ressourcen
 
 - `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
-  Lädt die Ressourcen-Datei (.pyxres). Wenn eine Option auf `True` gesetzt wird, wird die entsprechende Ressource vom Laden ausgeschlossen. Wenn im gleichen Verzeichnis wie die Ressourcen-Datei eine Palettendatei (.pyxpal) mit demselben Namen existiert, werden auch die Anzeigefarben der Palette aktualisiert. Die Palettendatei enthält hexadezimale Einträge für die Anzeigefarben (z.B. `1100FF`), getrennt durch Zeilenumbrüche. Die Palettendatei kann auch verwendet werden, um die in Pyxel Editor angezeigten Farben zu ändern.
+  Lädt die Ressourcen-Datei (.pyxres). Wenn eine Option auf `True` gesetzt wird, wird die entsprechende Ressource vom Laden ausgeschlossen. Wenn im gleichen Verzeichnis wie die Ressourcen-Datei eine Palettendatei (.pyxpal) mit demselben Namen existiert, werden auch die Anzeigefarben der Palette aktualisiert. Die Palettendatei enthält hexadezimale Einträge für die Anzeigefarben (z.B. `1100ff`), getrennt durch Zeilenumbrüche. Die Palettendatei kann auch verwendet werden, um die in Pyxel Editor angezeigten Farben zu ändern.
 
 - `user_data_dir(vendor_name, app_name)`<br>
   Gibt das basierend auf `vendor_name` und `app_name` erstellte Benutzerverzeichnis zurück. Wenn das Verzeichnis nicht existiert, wird es automatisch erstellt. Es wird verwendet, um Highscores, Spielfortschritte und ähnliche Daten zu speichern.<br>
@@ -695,11 +695,11 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 - `set_notes(notes)`<br>
   Setzt die Noten mithilfe eines Strings aus `CDEFGAB`+`#-`+`01234` oder `R`. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
-  Beispiel: `pyxel.sounds[0].set_notes("G2B-2D3R RF3F3F3")`
+  Beispiel: `pyxel.sounds[0].set_notes("g2b-2d3r rf3f3f3")`
 
 - `set_tones(tones)`<br>
   Setzt die Töne mithilfe eines Strings aus `TSPN`. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
-  Beispiel: `pyxel.sounds[0].set_tones("TTSS PPPN")`
+  Beispiel: `pyxel.sounds[0].set_tones("ttss pppn")`
 
 - `set_volumes(volumes)`<br>
   Setzt die Lautstärken mithilfe eines Strings aus `01234567`. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
@@ -707,11 +707,11 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 - `set_effects(effects)`<br>
   Setzt die Effekte mithilfe eines Strings aus `NSVFHQ`. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
-  Beispiel: `pyxel.sounds[0].set_effects("NFNF NVVS")`
+  Beispiel: `pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(mml_str)`<br>
   Legt die zugehörigen Parameter mithilfe von [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) fest. Verfügbare Befehle sind `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32) und `CDEFGABR`+`#+-`+`.~&`. Weitere Informationen zu den Befehlen finden Sie auf [dieser Seite](faq-en.md).<br>
-  Beispiel: `pyxel.sounds[0].mml("T120 @1 O3 Q6 L8 X0:12345 C4&C<G16R16>C.<G16 V4 >C.&D16 X0 E2~C2~")`
+  Beispiel: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
 ### Music-Klasse
 
