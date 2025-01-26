@@ -2,6 +2,7 @@
 
 ## 2.3.2
 
+- Added the hound crate
 - Added the save method to the Sound and Music classes
 
 ## 2.3.1
