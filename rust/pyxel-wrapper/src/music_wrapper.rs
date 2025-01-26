@@ -77,6 +77,11 @@ impl Music {
         self.inner.lock().set(&rust_seqs);
     }
 
+    #[pyo3(signature = (filename, count, ffmpeg=None))]
+    pub fn save(&self, filename: &str, count: u32, ffmpeg: Option<bool>) {
+        self.inner.lock().save(filename, count, ffmpeg);
+    }
+
     #[getter]
     pub fn snds_list(&self) -> Seqs {
         SNDS_LIST_ONCE.call_once(|| {

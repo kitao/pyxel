@@ -1,8 +1,12 @@
+use crate::audio::Audio;
+use crate::blip_buf::BlipBuf;
 use crate::channel::{Note, Speed, Volume};
 use crate::oscillator::{Effect, ToneIndex};
+use crate::pyxel::CHANNELS;
 use crate::settings::{
-    EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE,
-    EFFECT_VIBRATO, INITIAL_SOUND_SPEED, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
+    CLOCK_RATE, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT,
+    EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SOUND_SPEED, SAMPLE_RATE, TICKS_PER_SECOND, TONE_NOISE,
+    TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
 };
 use crate::utils::simplify_string;
 
@@ -122,6 +126,26 @@ impl Sound {
             };
             self.effects.push(effect);
         }
+    }
+
+    pub fn save(&self, filename: &str, count: u32, ffmpeg: Option<bool>) {
+        assert!(count > 0);
+        let ticks_per_sound = self.speed * self.notes.len() as u32;
+        let samples_per_sound = ticks_per_sound * SAMPLE_RATE / TICKS_PER_SECOND;
+        let num_samples = samples_per_sound * count;
+        let mut samples = vec![0; num_samples as usize];
+        let mut blip_buf = BlipBuf::new(num_samples as usize);
+        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
+        let channels = CHANNELS.lock();
+        channels.iter().for_each(|channel| channel.lock().stop());
+        {
+            let mut channels: Vec<_> = channels.iter().map(|channel| channel.lock()).collect();
+            let sounds = vec![new_shared_type!(self.clone())];
+            channels[0].play(sounds, None, true, false);
+        }
+        Audio::render_samples(&channels, &mut blip_buf, &mut samples);
+        Audio::save_samples(filename, &samples, ffmpeg.unwrap_or(false));
+        channels.iter().for_each(|channel| channel.lock().stop());
     }
 }
 
