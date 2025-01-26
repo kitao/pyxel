@@ -1,27 +1,25 @@
 use std::cmp::min;
+use std::env::temp_dir;
+use std::fs::{remove_file, write};
+use std::process::Command;
+
+use hound::{SampleFormat, WavSpec, WavWriter};
+use parking_lot::MutexGuard;
 
 use crate::blip_buf::BlipBuf;
+use crate::channel::SharedChannel;
 use crate::pyxel::{Pyxel, CHANNELS};
-use crate::settings::{CLOCK_RATE, NUM_CLOCKS_PER_TICK, NUM_SAMPLES, SAMPLE_RATE};
-use crate::SharedChannel;
+use crate::settings::{CLOCKS_PER_TICK, CLOCK_RATE, NUM_SAMPLES, SAMPLE_RATE};
+use crate::utils;
 
 struct AudioCore {
     blip_buf: BlipBuf,
-    channels: shared_type!(Vec<SharedChannel>),
 }
 
 impl pyxel_platform::AudioCallback for AudioCore {
     fn update(&mut self, out: &mut [i16]) {
-        let channels_ = self.channels.lock();
-        let mut channels: Vec<_> = channels_.iter().map(|channel| channel.lock()).collect();
-        let mut samples = self.blip_buf.read_samples(out, false);
-        while samples < out.len() {
-            for channel in &mut *channels {
-                channel.update(&mut self.blip_buf);
-            }
-            self.blip_buf.end_frame(NUM_CLOCKS_PER_TICK as u64);
-            samples += self.blip_buf.read_samples(&mut out[samples..], false);
-        }
+        let channels = CHANNELS.lock();
+        Audio::render_samples(&channels, &mut self.blip_buf, out);
     }
 }
 
@@ -35,12 +33,78 @@ impl Audio {
             sample_rate,
             1,
             num_samples as u16,
-            new_shared_type!(AudioCore {
-                blip_buf,
-                channels: CHANNELS.clone()
-            }),
+            new_shared_type!(AudioCore { blip_buf }),
         );
         Self {}
+    }
+
+    pub fn render_samples(
+        channels_: &MutexGuard<'_, Vec<SharedChannel>>,
+        blip_buf: &mut BlipBuf,
+        samples: &mut [i16],
+    ) {
+        let mut channels: Vec<_> = channels_.iter().map(|channel| channel.lock()).collect();
+        let mut num_samples = blip_buf.read_samples(samples, false);
+        while num_samples < samples.len() {
+            for channel in &mut *channels {
+                channel.update(blip_buf);
+            }
+            blip_buf.end_frame(CLOCKS_PER_TICK as u64);
+            num_samples += blip_buf.read_samples(&mut samples[num_samples..], false);
+        }
+    }
+
+    pub fn save_samples(filename: &str, samples: &[i16], ffmpeg: bool) {
+        // Save WAV file
+        let spec = WavSpec {
+            channels: 1,
+            sample_rate: SAMPLE_RATE,
+            bits_per_sample: 16,
+            sample_format: SampleFormat::Int,
+        };
+        let filename = utils::add_file_extension(filename, ".wav");
+        let mut writer = WavWriter::create(&filename, spec)
+            .unwrap_or_else(|_| panic!("Failed to open file '{filename}'"));
+        for sample in samples {
+            writer.write_sample(*sample).unwrap();
+        }
+        writer.finalize().unwrap();
+
+        // Save MP4 file
+        if !ffmpeg {
+            return;
+        }
+        let image_data = include_bytes!("../../../docs/images/pyxel_logo_152x64.png");
+        let image_path = temp_dir().join("pyxel_mp4_image.png");
+        let png_file = image_path.to_str().unwrap();
+        let wav_file = &filename;
+        let mp4_file = filename.replace(".wav", ".mp4");
+        write(&image_path, image_data).unwrap();
+        Command::new("ffmpeg")
+            .arg("-loop")
+            .arg("1")
+            .arg("-i")
+            .arg(png_file)
+            .arg("-f")
+            .arg("lavfi")
+            .arg("-i")
+            .arg("color=c=black:s=480x360")
+            .arg("-i")
+            .arg(wav_file)
+            .arg("-filter_complex")
+            .arg("[1][0]overlay=(W-w)/2:(H-h)/2")
+            .arg("-c:v")
+            .arg("libx264")
+            .arg("-c:a")
+            .arg("aac")
+            .arg("-b:a")
+            .arg("192k")
+            .arg("-shortest")
+            .arg(mp4_file)
+            .arg("-y")
+            .output()
+            .unwrap();
+        remove_file(png_file).unwrap();
     }
 }
 
