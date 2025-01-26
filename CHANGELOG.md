@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.2
+
+- Added the save method to the Sound and Music classes
+
 ## 2.3.1
 
 - Fixed a bug in loading old resource files

@@ -15,7 +15,6 @@ pub type Detune = i32;
 
 pub struct Channel {
     oscillator: Oscillator,
-    sounds: Vec<Sound>,
     is_first_note: bool,
     is_playing: bool,
     should_loop: bool,
@@ -26,6 +25,7 @@ pub struct Channel {
     resume_sounds: Vec<Sound>,
     resume_start_tick: u32,
     resume_should_loop: bool,
+    pub sounds: Vec<Sound>,
     pub gain: Gain,
     pub detune: Detune,
 }
@@ -36,7 +36,6 @@ impl Channel {
     pub fn new() -> SharedChannel {
         new_shared_type!(Self {
             oscillator: Oscillator::new(),
-            sounds: Vec::new(),
             is_first_note: true,
             is_playing: false,
             should_loop: false,
@@ -47,6 +46,7 @@ impl Channel {
             resume_sounds: Vec::new(),
             resume_start_tick: 0,
             resume_should_loop: false,
+            sounds: Vec::new(),
             gain: INITIAL_CHANNEL_GAIN,
             detune: 0,
         })
