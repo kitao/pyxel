@@ -131,6 +131,9 @@ impl Sound {
     pub fn save(&self, filename: &str, count: u32, ffmpeg: Option<bool>) {
         assert!(count > 0);
         let ticks_per_sound = self.speed * self.notes.len() as u32;
+        if ticks_per_sound == 0 {
+            return;
+        }
         let samples_per_sound = ticks_per_sound * SAMPLE_RATE / TICKS_PER_SECOND;
         let num_samples = samples_per_sound * count;
         let mut samples = vec![0; num_samples as usize];
