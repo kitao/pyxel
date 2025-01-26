@@ -59,11 +59,11 @@ impl Music {
             })
             .max()
             .unwrap();
-        if ticks_per_music == 0 {
-            return;
-        }
         let samples_per_music = ticks_per_music * SAMPLE_RATE / TICKS_PER_SECOND;
         let num_samples = samples_per_music * count;
+        if num_samples == 0 {
+            return;
+        }
         let mut samples = vec![0; num_samples as usize];
         let mut blip_buf = BlipBuf::new(num_samples as usize);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
