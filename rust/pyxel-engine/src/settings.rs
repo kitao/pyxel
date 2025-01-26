@@ -104,7 +104,8 @@ pub const NUM_SCREEN_TYPES: u32 = 3;
 pub const CLOCK_RATE: u32 = 2_048_000; // 2.048MHz
 pub const SAMPLE_RATE: u32 = 22050; // 22.05kHz
 pub const NUM_SAMPLES: u32 = 512; // 512 / 22050 = 23.2ms
-pub const NUM_CLOCKS_PER_TICK: u32 = CLOCK_RATE / 120;
+pub const TICKS_PER_SECOND: u32 = 120;
+pub const CLOCKS_PER_TICK: u32 = CLOCK_RATE / TICKS_PER_SECOND;
 pub const OSCILLATOR_RESOLUTION: u32 = 32;
 pub const VIBRATO_DEPTH: f64 = 0.015;
 pub const VIBRATO_FREQUENCY: f64 = 6.0;
