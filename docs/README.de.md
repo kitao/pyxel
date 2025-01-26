@@ -713,6 +713,9 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Legt die zugehörigen Parameter mithilfe von [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) fest. Verfügbare Befehle sind `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32) und `CDEFGABR`+`#+-`+`.~&`. Weitere Informationen zu den Befehlen finden Sie auf [dieser Seite](faq-en.md).<br>
   Beispiel: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
+- `save(filename, count, [ffmpeg])`<br>
+  Erstellt eine WAV-Datei, die den Sound `count`-mal wiederholt. Wenn FFmpeg installiert ist und `ffmpeg` auf `True` gesetzt wird, wird auch eine MP4-Datei erstellt.
+
 ### Music-Klasse
 
 - `seqs`<br>
@@ -721,6 +724,9 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `set(seq0, seq1, seq2, ...)`<br>
   Setzt die Listen von Klängen (0-63) für jeden Kanal. Wenn eine leere Liste angegeben wird, wird dieser Kanal nicht für die Wiedergabe verwendet.<br>
   Beispiel: `pyxel.musics[0].set([0, 1], [], [3])`
+
+- `save(filename, count, [ffmpeg])`<br>
+  Erstellt eine WAV-Datei, die die Musik `count`-mal wiederholt. Wenn FFmpeg installiert ist und `ffmpeg` auf `True` gesetzt wird, wird auch eine MP4-Datei erstellt.
 
 ### Fortgeschrittene API
 

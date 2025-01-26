@@ -713,6 +713,9 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Imposta i parametri correlati utilizzando [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). I comandi disponibili sono `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32) e `CDEFGABR`+`#+-`+`.~&`. Per maggiori dettagli sui comandi, consulta [questa pagina](faq-en.md).<br>
   Esempio: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
+- `save(filename, count, [ffmpeg])`<br>
+  Crea un file WAV contenente il suono ripetuto `count` volte. Se FFmpeg è installato e `ffmpeg` è impostato su `True`, viene creato anche un file MP4.
+
 ### Classe Music
 
 - `seqs`<br>
@@ -721,6 +724,9 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 - `set(seq0, seq1, seq2, ...)`<br>
   Imposta gli elenchi di suoni (0-63) per ciascun canale. Se viene specificato un elenco vuoto, quel canale non verrà utilizzato per la riproduzione.<br>
   Esempio: `pyxel.musics[0].set([0, 1], [], [3])`
+
+- `save(filename, count, [ffmpeg])`<br>
+  Crea un file WAV contenente la musica ripetuta `count` volte. Se FFmpeg è installato e `ffmpeg` è impostato su `True`, viene creato anche un file MP4.
 
 ### API Avanzata
 

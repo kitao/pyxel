@@ -713,6 +713,9 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) kullanarak ilgili parametreleri ayarlar. Kullanılabilir komutlar `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32) ve `CDEFGABR`+`#+-`+`.~&`. Komutlar hakkında daha fazla bilgi için [bu sayfayı](faq-en.md) inceleyin.<br>
   Örnek: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
+- `save(filename, count, [ffmpeg])`<br>
+  Sesi `count` kez tekrarlayan bir WAV dosyası oluşturur. FFmpeg yüklüyse ve `ffmpeg` `True` olarak ayarlandıysa, bir MP4 dosyası da oluşturulur.
+
 ### Music Sınıfı
 
 - `seqs`<br>
@@ -721,6 +724,9 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 - `set(seq0, seq1, seq2, ...)`<br>
   Her kanal için ses listelerini (0-63) ayarlar. Boş bir liste belirtilirse, o kanal çalma için kullanılmaz.<br>
   Örnek: `pyxel.musics[0].set([0, 1], [], [3])`
+
+- `save(filename, count, [ffmpeg])`<br>
+  Müziği `count` kez tekrarlayan bir WAV dosyası oluşturur. FFmpeg yüklüyse ve `ffmpeg` `True` olarak ayarlandıysa, bir MP4 dosyası da oluşturulur.
 
 ### Gelişmiş API
 

@@ -713,6 +713,9 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language)를 사용하여 관련 매개변수를 설정합니다. 사용할 수 있는 명령어는 `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32), 그리고 `CDEFGABR`+`#+-`+`.~&`입니다. 명령어에 대한 자세한 내용은 [이 페이지](faq-en.md)를 참조하세요.<br>
   예시: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
+- `save(filename, count, [ffmpeg])`<br>
+  사운드를 `count`번 반복한 WAV 파일을 생성합니다. FFmpeg가 설치되어 있고 `ffmpeg`가 `True`로 설정된 경우, MP4 파일도 생성됩니다.
+
 ### Music 클래스
 
 - `seqs`<br>
@@ -721,6 +724,9 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
 - `set(seq0, seq1, seq2, ...)`<br>
   각 채널에 대한 사운드 (0-63) 리스트를 설정합니다. 빈 리스트가 지정되면 해당 채널은 재생에 사용되지 않습니다.<br>
   예시: `pyxel.musics[0].set([0, 1], [], [3])`
+
+- `save(filename, count, [ffmpeg])`<br>
+  음악을 `count`번 반복한 WAV 파일을 생성합니다. FFmpeg가 설치되어 있고 `ffmpeg`가 `True`로 설정된 경우, MP4 파일도 생성됩니다.
 
 ### 고급 API
 

@@ -713,6 +713,9 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   使用 [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) 设置相关参数。可用的命令有 `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32), 和 `CDEFGABR`+`#+-`+`.~&`。有关指令的详细信息，请参阅[此页面](faq-en.md)。<br>
   例子：`pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
+- `save(filename, count, [ffmpeg])`<br>
+  创建一个包含重复 `count` 次声音的 WAV 文件。如果已安装 FFmpeg 并将 `ffmpeg` 设置为 `True`，还会创建一个 MP4 文件。
+
 ### Music 类
 
 - `seqs`<br>
@@ -721,6 +724,9 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 - `set(seq0, seq1, seq2, ...)`<br>
   设置每个通道的声音 (0-63) 列表。如果指定了空列表，则该通道不会用于播放。<br>
   例子：`pyxel.musics[0].set([0, 1], [], [3])`
+
+- `save(filename, count, [ffmpeg])`<br>
+  创建一个包含重复 `count` 次音乐的 WAV 文件。如果已安装 FFmpeg 并将 `ffmpeg` 设置为 `True`，还会创建一个 MP4 文件。
 
 ### 高级 API
 
