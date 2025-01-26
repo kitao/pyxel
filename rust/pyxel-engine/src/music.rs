@@ -35,11 +35,15 @@ impl Music {
         let seqs: Vec<_> = (0..num_channels)
             .map(|i| {
                 let pyxel_sounds = SOUNDS.lock();
-                self.seqs[i]
-                    .lock()
-                    .iter()
-                    .map(|&sound_index| pyxel_sounds[sound_index as usize].clone())
-                    .collect::<Vec<_>>()
+                if self.seqs.is_empty() {
+                    Vec::new()
+                } else {
+                    self.seqs[i]
+                        .lock()
+                        .iter()
+                        .map(|&sound_index| pyxel_sounds[sound_index as usize].clone())
+                        .collect::<Vec<_>>()
+                }
             })
             .collect();
         let ticks_per_music = seqs
@@ -55,6 +59,9 @@ impl Music {
             })
             .max()
             .unwrap();
+        if ticks_per_music == 0 {
+            return;
+        }
         let samples_per_music = ticks_per_music * SAMPLE_RATE / TICKS_PER_SECOND;
         let num_samples = samples_per_music * count;
         let mut samples = vec![0; num_samples as usize];
