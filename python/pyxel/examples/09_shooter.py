@@ -234,43 +234,43 @@ class App:
         pyxel.sounds[1].set("a3a2c2c2", "n", "7742", "s", 10)
 
         # Set title music
-        t1_1 = "t128 @2 o3 q8 l8 x0:765"
-        t1_2 = "edcr<ab>cr d2<g4>g<b& ba&a2r4"
-        t1_3 = ">dc4<b2r>"
-        t1_4 = ">d4<b.r16>dg+dg+"
+        a1 = "t128 @2 o3 q8 l8 x0:765"
+        a2 = "edcr<ab>cr d2<g4>g<b& ba&a2r4"
+        a3 = ">dc4<b2r>"
+        a4 = ">d4<b.r16>dg+dg+"
 
-        t2_1 = "t128 @0 o1 v7 l16"
-        t2_2 = "q5aar4aar4<q8a4> q5ggr4ggr4<q8g4> q5ffr4ffr4<q8f4>"
-        t2_3 = "q5ggr4ggr4<q8g4>"
-        t2_4 = "q5ggr4ggr4g+g+<g+8"
+        b1 = "t128 @0 o1 v7 l16"
+        b2 = "q5aar4aar4<q8a4> q5ggr4ggr4<q8g4> q5ffr4ffr4<q8f4>"
+        b3 = "q5ggr4ggr4<q8g4>"
+        b4 = "q5ggr4ggr4g+g+<g+8"
 
-        t3_1 = "t128 @3 l8 x0:21"
-        t3_2 = "q1o2v4crrcrr>>q2x0a#16a#16a#<<"
-        t3_3 = "q1o2v4crrcrr>>q2x0a#16a#16<<q1o2v4c"
+        c1 = "t128 @3 l8 x0:21"
+        c2 = "q1o2v4crrcrr>>q2x0a#16a#16a#<<"
+        c3 = "q1o2v4crrcrr>>q2x0a#16a#16<<q1o2v4c"
 
-        pyxel.sounds[2].mml(t1_1 + t1_2 + t1_3 + t1_2 + t1_4)
-        pyxel.sounds[3].mml(t2_1 + t2_2 + t2_3 + t2_2 + t2_4)
-        pyxel.sounds[4].mml(t3_1 + t3_2 * 3 + t3_3)
+        pyxel.sounds[2].mml(a1 + a2 + a3 + a2 + a4)
+        pyxel.sounds[3].mml(b1 + b2 + b3 + b2 + b4)
+        pyxel.sounds[4].mml(c1 + c2 * 3 + c3)
         pyxel.musics[0].set([2], [3], [4])
 
         # Set play music
-        t1_1 = "t150 @2 o2 q8 l16 x0:765"
-        t1_2 = "e8>e<e4r>c8<e4&er ag+abaf+8r r8a4>d8"
-        t1_3 = "ed8c8<b8a8.g+f+q6e8q8e8 f+8.r>f+4<a4b>cd<f+"
-        t1_4 = "c4&cr<ag+a.r.>c<ba>ce rd<a8.>f+8.<b.r32>e8dc<bq6e"
+        a1 = "t150 @2 o2 q8 l16 x0:765"
+        a2 = "e8>e<e4r>c8<e4&er ag+abaf+8r r8a4>d8"
+        a3 = "ed8c8<b8a8.g+f+q6e8q8e8 f+8.r>f+4<a4b>cd<f+"
+        a4 = "c4&cr<ag+a.r.>c<ba>ce rd<a8.>f+8.<b.r32>e8dc<bq6e"
 
-        t2_1 = "t150 @0 o1 v7 l16 q7"
-        t2_2 = "<ar>ea<ar>ea<ar>ea<ar>ea"
-        t2_3 = "dra>d<dra>d<dra>d<dra>d<"
-        t2_4 = "dra>d<dra>d<er>eeeeer"
+        b1 = "t150 @0 o1 v7 l16 q7"
+        b2 = "<ar>ea<ar>ea<ar>ea<ar>ea"
+        b3 = "dra>d<dra>d<dra>d<dra>d<"
+        b4 = "dra>d<dra>d<er>eeeeer"
 
-        t3_1 = "t150 @3 l16 x0:21 x1:52"
-        t3_2 = "q2x0o3 a#ra#a# a#ra#a# a#ra#a# a#ra#a#"
-        t3_3 = "q2x0o3 a#ra#a# a#ra#a# a#ra#a# o2x1 a#a# q1o2v5cr"
+        c1 = "t150 @3 l16 x0:21 x1:52"
+        c2 = "q2x0o3 a#ra#a# a#ra#a# a#ra#a# a#ra#a#"
+        c3 = "q2x0o3 a#ra#a# a#ra#a# a#ra#a# o2x1 a#a# q1o2v5cr"
 
-        pyxel.sounds[5].mml(t1_1 + t1_2 + t1_3 + t1_2 + t1_4)
-        pyxel.sounds[6].mml(t2_1 + (t2_2 + t2_3) * 3 + t2_2 + t2_4)
-        pyxel.sounds[7].mml(t3_1 + t3_2 * 3 + t3_3)
+        pyxel.sounds[5].mml(a1 + a2 + a3 + a2 + a4)
+        pyxel.sounds[6].mml(b1 + (b2 + b3) * 3 + b2 + b4)
+        pyxel.sounds[7].mml(c1 + c2 * 3 + c3)
         pyxel.musics[1].set([5], [6], [7])
 
         # You can also use 8bit BGM generator for music:
