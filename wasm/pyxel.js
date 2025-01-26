@@ -1,5 +1,3 @@
-const NO_SLEEP_URL =
-  "https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js";
 const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.27.1/full/pyodide.js";
 const PYXEL_WHEEL_PATH = "pyxel-2.3.2-cp38-abi3-emscripten_3_1_61_wasm32.whl";
 const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_76x32.png";
@@ -141,9 +139,6 @@ async function _loadScript(scriptSrc) {
 }
 
 async function _loadPyodideAndPyxel(canvas) {
-  await _loadScript(NO_SLEEP_URL);
-  let noSleep = new NoSleep();
-  noSleep.enable();
   await _loadScript(PYODIDE_URL);
   let pyodide = await loadPyodide();
   pyodide._api._skip_unwind_fatal_error = true;
