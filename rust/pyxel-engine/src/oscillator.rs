@@ -1,8 +1,8 @@
 use crate::blip_buf::BlipBuf;
 use crate::pyxel::TONES;
 use crate::settings::{
-    CLOCK_RATE, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT,
-    EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_NOISE_REG, NUM_CLOCKS_PER_TICK, OSCILLATOR_RESOLUTION,
+    CLOCKS_PER_TICK, CLOCK_RATE, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE,
+    EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_NOISE_REG, OSCILLATOR_RESOLUTION,
     TONE_TRIANGLE, VIBRATO_DEPTH, VIBRATO_FREQUENCY,
 };
 
@@ -98,7 +98,7 @@ impl Oscillator {
         if self.duration == 0 {
             if self.amplitude != 0 {
                 let delta = if self.amplitude > 0 { -1 } else { 1 };
-                for i in 0..NUM_CLOCKS_PER_TICK {
+                for i in 0..CLOCKS_PER_TICK {
                     self.amplitude += delta;
                     blip_buf.add_delta(i as u64, delta as i32);
                     if self.amplitude == 0 {
@@ -119,7 +119,7 @@ impl Oscillator {
                 self.pitch += self.slide.pitch;
             }
             EFFECT_VIBRATO => {
-                self.vibrato.clock += NUM_CLOCKS_PER_TICK;
+                self.vibrato.clock += CLOCKS_PER_TICK;
                 self.vibrato.phase = (self.vibrato.phase + self.vibrato.clock / VIBRATO_PERIOD)
                     % OSCILLATOR_RESOLUTION;
                 self.vibrato.clock %= VIBRATO_PERIOD;
@@ -145,11 +145,11 @@ impl Oscillator {
         let tone = tones[self.tone as usize].lock();
         let fade_delta = if self.effect >= EFFECT_FADEOUT && self.duration <= self.fadeout.duration
         {
-            self.fadeout.delta / ((NUM_CLOCKS_PER_TICK - self.clock) / period) as f64
+            self.fadeout.delta / ((CLOCKS_PER_TICK - self.clock) / period) as f64
         } else {
             0.0
         };
-        while self.clock < NUM_CLOCKS_PER_TICK {
+        while self.clock < CLOCKS_PER_TICK {
             let last_amplitude = self.amplitude;
             self.phase = (self.phase + 1) % OSCILLATOR_RESOLUTION;
             self.amplitude = (tone.amplitude(self.phase, &mut self.noise_reg)
@@ -169,7 +169,7 @@ impl Oscillator {
             self.vibrato.clock = 0;
             self.vibrato.phase = 0;
         } else {
-            self.clock -= NUM_CLOCKS_PER_TICK;
+            self.clock -= CLOCKS_PER_TICK;
         }
     }
 

@@ -88,7 +88,7 @@ pub static TONES: Lazy<shared_type!(Vec<SharedTone>)> = Lazy::new(|| {
         .collect())
 });
 
-static SOUNDS: Lazy<shared_type!(Vec<SharedSound>)> =
+pub static SOUNDS: Lazy<shared_type!(Vec<SharedSound>)> =
     Lazy::new(|| new_shared_type!((0..NUM_SOUNDS).map(|_| Sound::new()).collect()));
 
 static MUSICS: Lazy<shared_type!(Vec<SharedMusic>)> =

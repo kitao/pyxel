@@ -99,6 +99,11 @@ impl Sound {
     pub fn mml(&self, mml_str: &str) {
         self.inner.lock().mml(mml_str);
     }
+
+    #[pyo3(signature = (filename, count, ffmpeg=None))]
+    pub fn save(&self, filename: &str, count: u32, ffmpeg: Option<bool>) {
+        self.inner.lock().save(filename, count, ffmpeg);
+    }
 }
 
 pub fn add_sound_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
