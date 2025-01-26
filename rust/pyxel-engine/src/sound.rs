@@ -131,11 +131,11 @@ impl Sound {
     pub fn save(&self, filename: &str, count: u32, ffmpeg: Option<bool>) {
         assert!(count > 0);
         let ticks_per_sound = self.speed * self.notes.len() as u32;
-        if ticks_per_sound == 0 {
-            return;
-        }
         let samples_per_sound = ticks_per_sound * SAMPLE_RATE / TICKS_PER_SECOND;
         let num_samples = samples_per_sound * count;
+        if num_samples == 0 {
+            return;
+        }
         let mut samples = vec![0; num_samples as usize];
         let mut blip_buf = BlipBuf::new(num_samples as usize);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
