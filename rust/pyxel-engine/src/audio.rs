@@ -103,7 +103,7 @@ impl Audio {
             .arg(mp4_file)
             .arg("-y")
             .output()
-            .unwrap();
+            .unwrap_or_else(|e| panic!("Failed to execute FFmpeg: {e}"));
         remove_file(png_file).unwrap();
     }
 }
