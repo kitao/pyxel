@@ -754,7 +754,7 @@ Enviar una solicitud de extracción implica que aceptas licenciar tu contribuci�
 
 - [FAQ](faq-en.md)
 - [Ejemplos de Usuarios](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Cuenta de Desarrollador X](https://x.com/kitao)
+- [Cuenta X del Desarrollador](https://x.com/kitao)
 - [Servidor de Discord (Inglés)](https://discord.gg/Z87eYHN)
 - [Servidor de Discord (Japonés)](https://discord.gg/qHA5BCS)
 

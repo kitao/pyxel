@@ -754,7 +754,7 @@ Pyxel включает в себя "Расширенный API", который 
 
 - [Часто задаваемые вопросы](faq-en.md)
 - [Примеры пользователей](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Аккаунт разработчика X](https://x.com/kitao)
+- [X-аккаунт разработчика](https://x.com/kitao)
 - [Сервер Discord (Английский)](https://discord.gg/Z87eYHN)
 - [Сервер Discord (Японский)](https://discord.gg/qHA5BCS)
 
