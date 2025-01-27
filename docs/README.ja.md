@@ -755,6 +755,8 @@ Pyxel には、ユーザーを混乱させる可能性や、使用に専門知�
 - [よくある質問](faq-jp.md)
 - [ユーザー作品集](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [開発者 X アカウント](https://x.com/kitao)
+- [Discord サーバー（英語）](https://discord.gg/Z87eYHN)
+- [Discord サーバー（日本語）](https://discord.gg/qHA5BCS)
 - [書籍『ゲームで学ぶ Python！ Pyxel ではじめるレトロゲームプログラミング』](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 ## ライセンス
