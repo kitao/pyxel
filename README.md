@@ -755,6 +755,8 @@ Submitting a pull request implies that you agree to license your contribution un
 - [FAQ](docs/faq-en.md)
 - [User Examples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Developer X account](https://x.com/kitao)
+- [Discord Server (English)](https://discord.gg/Z87eYHN)
+- [Discord Server (Japanese)](https://discord.gg/qHA5BCS)
 
 ## License
 

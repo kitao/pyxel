@@ -755,6 +755,8 @@ Enviar um pull request implica que você concorda em licenciar sua contribuiçã
 - [FAQ](faq-en.md)
 - [Exemplos de Usuários](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Conta do Desenvolvedor X](https://x.com/kitao)
+- [Servidor do Discord (Inglês)](https://discord.gg/Z87eYHN)
+- [Servidor do Discord (Japonês)](https://discord.gg/qHA5BCS)
 
 ## Licença
 

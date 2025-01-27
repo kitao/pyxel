@@ -756,6 +756,8 @@ Soumettre une demande de tirage implique que vous acceptez de licencier votre co
 - [FAQ](faq-en.md)
 - [Exemples d'Utilisateurs](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Compte Développeur X](https://x.com/kitao)
+- [Serveur Discord (Anglais)](https://discord.gg/Z87eYHN)
+- [Serveur Discord (Japonais)](https://discord.gg/qHA5BCS)
 
 ## Licence
 

@@ -756,6 +756,8 @@ Pyxel включає "Розширене API", яке не згадується 
 - [Часті запитання](faq-en.md)
 - [Приклади користувачів](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Обліковий запис розробника X](https://x.com/kitao)
+- [Сервер Discord (Англійська)](https://discord.gg/Z87eYHN)
+- [Сервер Discord (Японська)](https://discord.gg/qHA5BCS)
 
 ## Ліцензія
 
