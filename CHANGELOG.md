@@ -4,6 +4,7 @@
 
 - Removed NoSleep.js from the web version of Pyxel
 - Fixed a bug in the save method of the Music class
+- Changed the location of the image used for MP4 creation
 
 ## 2.3.2
 
