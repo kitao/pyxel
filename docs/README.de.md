@@ -754,7 +754,7 @@ Die Einreichung eines Pull-Requests impliziert, dass Sie zustimmen, Ihren Beitra
 
 - [FAQ](faq-en.md)
 - [Benutzersamples](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Entwickler X-Konto](https://x.com/kitao)
+- [Entwicklers X-Konto](https://x.com/kitao)
 - [Discord-Server (Englisch)](https://discord.gg/Z87eYHN)
 - [Discord-Server (Japanisch)](https://discord.gg/qHA5BCS)
 
