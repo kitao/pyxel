@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.3.3
+
+- Removed NoSleep.js from the web version of Pyxel
+- Fixed a bug in the save method of the Music class
+
 ## 2.3.2
 
 - Added the hound crate
@@ -89,7 +94,7 @@
 - Fixed a bug when playing a pyxapp with the same process ID
 - Updated the sysinfo crate to version 0.25
 - Updated the license description in the READMEs
-- Updated the instructions for using the Web version of Pyxel
+- Updated the instructions for using the web version of Pyxel
 - Updated the Q&A
 
 ## 2.2.3
