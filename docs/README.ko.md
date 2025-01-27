@@ -754,7 +754,7 @@ Pyxel에는 사용자에게 혼란을 줄 수 있거나 사용에 전문 지식�
 
 - [자주 묻는 질문](faq-en.md)
 - [사용자 예제](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [개발자 X 계정](https://x.com/kitao)
+- [개발자의 X 계정](https://x.com/kitao)
 - [디스코드 서버 (영어)](https://discord.gg/Z87eYHN)
 - [디스코드 서버 (일본어)](https://discord.gg/qHA5BCS)
 

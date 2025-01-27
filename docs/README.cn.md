@@ -754,7 +754,7 @@ Pyxel 包含一个“高级 API”，该 API 在本参考中未提及，因为�
 
 - [常见问题](faq-en.md)
 - [用户示例](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [开发者 X 账户](https://x.com/kitao)
+- [开发者的 X 帐号](https://x.com/kitao)
 - [Discord 服务器（英文）](https://discord.gg/Z87eYHN)
 - [Discord 服务器（日文）](https://discord.gg/qHA5BCS)
 

@@ -754,7 +754,7 @@ Inviare una richiesta di pull implica che accetti di concedere in licenza il tuo
 
 - [FAQ](faq-en.md)
 - [Esempi degli Utenti](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
-- [Account Sviluppatore X](https://x.com/kitao)
+- [Account X dello Sviluppatore](https://x.com/kitao)
 - [Server Discord (Inglese)](https://discord.gg/Z87eYHN)
 - [Server Discord (Giapponese)](https://discord.gg/qHA5BCS)
 
