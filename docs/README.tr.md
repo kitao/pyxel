@@ -755,6 +755,8 @@ Pull isteği göndermek, katkınızı [MIT Lisansı](../LICENSE) altında lisans
 - [Sıkça Sorulan Sorular](faq-en.md)
 - [Kullanıcı Örnekleri](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples)
 - [Geliştirici X Hesabı](https://x.com/kitao)
+- [Discord Sunucusu (İngilizce)](https://discord.gg/Z87eYHN)
+- [Discord Sunucusu (Japonca)](https://discord.gg/qHA5BCS)
 
 ## Lisans
 
