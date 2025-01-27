@@ -74,7 +74,7 @@ impl Audio {
         if !ffmpeg {
             return;
         }
-        let image_data = include_bytes!("../../../docs/images/pyxel_logo_152x64.png");
+        let image_data = include_bytes!("assets/pyxel_logo_152x64.png");
         let image_path = temp_dir().join("pyxel_mp4_image.png");
         let png_file = image_path.to_str().unwrap();
         let wav_file = &filename;
