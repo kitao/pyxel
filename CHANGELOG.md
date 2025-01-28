@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.4
+
+- Downgraded Pyodide to version 0.27.0
+
 ## 2.3.3
 
 - Removed NoSleep.js from the web version of Pyxel
