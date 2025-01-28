@@ -61,12 +61,12 @@ impl Pyxel {
 
     pub fn rndi(&mut self, a: i32, b: i32) -> i32 {
         let (a, b) = if a < b { (a, b) } else { (b, a) };
-        self.math.rng.gen_range(a..=b)
+        self.math.rng.random_range(a..=b)
     }
 
     pub fn rndf(&mut self, a: f64, b: f64) -> f64 {
         let (a, b) = if a < b { (a, b) } else { (b, a) };
-        self.math.rng.gen_range(a..=b)
+        self.math.rng.random_range(a..=b)
     }
 
     pub fn nseed(&mut self, seed: u32) {
