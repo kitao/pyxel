@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.3.5
+
+- Updated the GitHub Action scripts
+- Updated the rand wheel to version 0.9
+- Updated the rand_xoshiro to version 0.7
+- Updated 8bit BGM Generator to version 1.30
+
 ## 2.3.4
 
 - Downgraded Pyodide to version 0.27.0
