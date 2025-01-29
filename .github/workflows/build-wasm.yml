@@ -29,7 +29,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
-          architecture: ${{ matrix.arch }}
 
       - name: Install Python packages
         run: pip install -r python/requirements.txt
@@ -40,5 +39,5 @@ jobs:
       - name: Upload wheel
         uses: actions/upload-artifact@v4
         with:
-          name: pyxel-${{ matrix.target }}
+          name: pyxel-wasm
           path: dist/*
