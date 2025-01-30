@@ -10,15 +10,19 @@ jobs:
         include:
           - target: x86_64-pc-windows-msvc
             os: windows-2022
+            arch: x64
 
           - target: i686-pc-windows-msvc
             os: windows-2022
+            arch: x86
 
           - target: x86_64-apple-darwin
             os: macos-13
+            arch: x64
 
           - target: aarch64-apple-darwin
             os: macos-13
+            arch: x64
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -40,6 +44,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
+          architecture: ${{ matrix.arch }}
 
       - name: Install Python packages
         run: pip install -r python/requirements.txt
