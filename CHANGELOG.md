@@ -6,6 +6,8 @@
 - Updated the rand wheel to version 0.9
 - Updated the rand_xoshiro to version 0.7
 - Updated 8bit BGM Generator to version 1.30
+- Fixed multi-gamepad support
+- Fixed text function ignoring camera when font set
 
 ## 2.3.4
 
