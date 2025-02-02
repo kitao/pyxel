@@ -167,7 +167,9 @@ fn gamepad_key_offset(instance_id: i32) -> Option<Key> {
         .iter()
         .enumerate()
         .find_map(|(index, slot)| match slot {
-            Gamepad::Controller(id, _) if *id == instance_id => Some(index as Key),
+            Gamepad::Controller(id, _) if *id == instance_id => {
+                Some(GAMEPAD_KEY_INDEX_INTERVAL * index as Key)
+            }
             _ => None,
         })
 }
