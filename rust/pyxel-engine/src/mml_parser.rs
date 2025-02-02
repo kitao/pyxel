@@ -1,4 +1,3 @@
-use core::panic;
 use std::array;
 use std::iter::Peekable;
 
