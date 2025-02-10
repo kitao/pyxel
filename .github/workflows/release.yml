@@ -21,6 +21,11 @@ jobs:
         with:
           path: dist
 
+      - name: Flatten wheels
+        run: |
+          find dist -type f -name "*.whl" -exec mv {} dist/ \;
+          find dist -type d -empty -delete
+
       - name: Get Pyxel version
         run: |
           PYXEL_VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
