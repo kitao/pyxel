@@ -9,6 +9,7 @@
 - Fixed multi-gamepad support
 - Fixed text function ignoring camera when font set
 - Aligned the Emscripten version with Pyodide
+- Fixed the input_text variable
 
 ## 2.3.4
 

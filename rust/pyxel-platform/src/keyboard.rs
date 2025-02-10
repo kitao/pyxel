@@ -1,4 +1,5 @@
-use std::str::from_utf8 as str_from_utf8;
+use std::ffi::CStr;
+use std::os::raw::c_char;
 
 use crate::event::Event;
 use crate::keys::{
@@ -33,14 +34,12 @@ pub fn handle_key_up(sdl_event: SDL_Event) -> Vec<Event> {
 
 pub fn handle_text_input(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
-    let text = unsafe {
-        let ptr = sdl_event.text.text.as_ptr().cast::<u8>();
-        let slice = std::slice::from_raw_parts(ptr, sdl_event.text.text.len());
-        str_from_utf8(slice)
-    };
-    if let Ok(text) = text {
-        let text = text.to_string();
-        events.push(Event::TextInput { text });
+    unsafe {
+        let c_str = CStr::from_ptr(sdl_event.text.text.as_ptr() as *const c_char);
+        if let Ok(text) = c_str.to_str() {
+            let text = text.to_string();
+            events.push(Event::TextInput { text });
+        }
     }
     events
 }
