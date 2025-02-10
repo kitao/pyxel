@@ -145,7 +145,7 @@ pub fn handle_virtual_gamepad_inputs() -> Vec<Event> {
                 events.push(Event::KeyPressed { key: *button });
             } else {
                 events.push(Event::KeyReleased { key: *button });
-            };
+            }
         }
     }
     events
