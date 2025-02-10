@@ -35,7 +35,7 @@ pub fn handle_key_up(sdl_event: SDL_Event) -> Vec<Event> {
 pub fn handle_text_input(sdl_event: SDL_Event) -> Vec<Event> {
     let mut events = Vec::new();
     unsafe {
-        let c_str = CStr::from_ptr(sdl_event.text.text.as_ptr() as *const c_char);
+        let c_str = CStr::from_ptr(sdl_event.text.text.as_ptr().cast::<c_char>());
         if let Ok(text) = c_str.to_str() {
             let text = text.to_string();
             events.push(Event::TextInput { text });
