@@ -17,7 +17,7 @@
 #	- libsdl2-dev 2.28.4
 #
 #	[Web]
-#	- Emscripten 3.1.61 (does not work with 3.1.62+)
+#	- Emscripten 3.1.58 (the same version used Pyodide)
 #
 # Advance Preparation:
 #	rustup install nightly

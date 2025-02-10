@@ -8,6 +8,7 @@
 - Updated 8bit BGM Generator to version 1.30
 - Fixed multi-gamepad support
 - Fixed text function ignoring camera when font set
+- Aligned the Emscripten version with Pyodide
 
 ## 2.3.4
 
