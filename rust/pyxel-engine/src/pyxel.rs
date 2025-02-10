@@ -1,7 +1,6 @@
 use std::cmp::max;
 use std::sync::atomic::{AtomicBool, Ordering};
-
-use once_cell::sync::Lazy;
+use std::sync::LazyLock;
 
 use crate::audio::Audio;
 use crate::channel::{Channel, SharedChannel};
@@ -25,28 +24,28 @@ use crate::tone::{SharedTone, Tone};
 
 static IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
-pub static COLORS: Lazy<shared_type!(Vec<Rgb24>)> =
-    Lazy::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));
+pub static COLORS: LazyLock<shared_type!(Vec<Rgb24>)> =
+    LazyLock::new(|| new_shared_type!(DEFAULT_COLORS.to_vec()));
 
-pub static IMAGES: Lazy<shared_type!(Vec<SharedImage>)> = Lazy::new(|| {
+pub static IMAGES: LazyLock<shared_type!(Vec<SharedImage>)> = LazyLock::new(|| {
     new_shared_type!((0..NUM_IMAGES)
         .map(|_| Image::new(IMAGE_SIZE, IMAGE_SIZE))
         .collect())
 });
 
-static TILEMAPS: Lazy<shared_type!(Vec<SharedTilemap>)> = Lazy::new(|| {
+static TILEMAPS: LazyLock<shared_type!(Vec<SharedTilemap>)> = LazyLock::new(|| {
     new_shared_type!((0..NUM_TILEMAPS)
         .map(|_| Tilemap::new(TILEMAP_SIZE, TILEMAP_SIZE, ImageSource::Index(0)))
         .collect())
 });
 
-static CURSOR_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
+static CURSOR_IMAGE: LazyLock<SharedImage> = LazyLock::new(|| {
     let image = Image::new(CURSOR_WIDTH, CURSOR_HEIGHT);
     image.lock().set(0, 0, &CURSOR_DATA);
     image
 });
 
-pub static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
+pub static FONT_IMAGE: LazyLock<SharedImage> = LazyLock::new(|| {
     let width = FONT_WIDTH * NUM_FONT_ROWS;
     let height = FONT_HEIGHT * (FONT_DATA.len() as u32).div_ceil(NUM_FONT_ROWS);
     let image = Image::new(width, height);
@@ -70,10 +69,10 @@ pub static FONT_IMAGE: Lazy<SharedImage> = Lazy::new(|| {
     image
 });
 
-pub static CHANNELS: Lazy<shared_type!(Vec<SharedChannel>)> =
-    Lazy::new(|| new_shared_type!((0..NUM_CHANNELS).map(|_| Channel::new()).collect()));
+pub static CHANNELS: LazyLock<shared_type!(Vec<SharedChannel>)> =
+    LazyLock::new(|| new_shared_type!((0..NUM_CHANNELS).map(|_| Channel::new()).collect()));
 
-pub static TONES: Lazy<shared_type!(Vec<SharedTone>)> = Lazy::new(|| {
+pub static TONES: LazyLock<shared_type!(Vec<SharedTone>)> = LazyLock::new(|| {
     new_shared_type!((0..NUM_TONES)
         .map(|index| {
             let tone = Tone::new();
@@ -88,11 +87,11 @@ pub static TONES: Lazy<shared_type!(Vec<SharedTone>)> = Lazy::new(|| {
         .collect())
 });
 
-pub static SOUNDS: Lazy<shared_type!(Vec<SharedSound>)> =
-    Lazy::new(|| new_shared_type!((0..NUM_SOUNDS).map(|_| Sound::new()).collect()));
+pub static SOUNDS: LazyLock<shared_type!(Vec<SharedSound>)> =
+    LazyLock::new(|| new_shared_type!((0..NUM_SOUNDS).map(|_| Sound::new()).collect()));
 
-static MUSICS: Lazy<shared_type!(Vec<SharedMusic>)> =
-    Lazy::new(|| new_shared_type!((0..NUM_MUSICS).map(|_| Music::new()).collect()));
+static MUSICS: LazyLock<shared_type!(Vec<SharedMusic>)> =
+    LazyLock::new(|| new_shared_type!((0..NUM_MUSICS).map(|_| Music::new()).collect()));
 
 pub struct Pyxel {
     // System
