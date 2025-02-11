@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.6
+
+- Changed rotation in blt and bltm to clockwise
+
 ## 2.3.5
 
 - Updated the GitHub Action scripts
