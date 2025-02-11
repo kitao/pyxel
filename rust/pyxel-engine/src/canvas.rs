@@ -464,7 +464,7 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let dst_cy = y as f64 + half_height;
 
         let rotate = rotate * PI / 180.0;
-        let sin = f64::sin(rotate);
+        let sin = -f64::sin(rotate); // Clockwise
         let cos = f64::cos(rotate);
         let offset_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
         let offset_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
