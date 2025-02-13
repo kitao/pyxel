@@ -1,5 +1,7 @@
 # Change Log
 
+## 2.3.7
+
 ## 2.3.6
 
 - Changed rotation in blt and bltm to clockwise
