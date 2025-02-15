@@ -2,6 +2,8 @@
 
 ## 2.3.7
 
+- Added a script for Pyxel User Examples pages
+
 ## 2.3.6
 
 - Changed rotation in blt and bltm to clockwise
