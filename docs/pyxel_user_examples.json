@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 132,
+      "title": "AutoRace",
+      "site": "https://github.com/jay-kumogata/RetroGames/tree/main/pyxel/autorace",
+      "author": "Jay Kumogata",
+      "contact": "https://twitter.com/jay_kumogata",
+      "desc": "Early car racing game",
+      "image": "https://github.com/user-attachments/assets/91485717-9d09-4307-805b-de8ebe4d61b0"
+    },
+    {
       "id": 131,
       "title": "HadeGame",
       "site": "https://github.com/hnsol/pyxel-hadegame/",
