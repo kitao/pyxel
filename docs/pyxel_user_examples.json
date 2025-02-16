@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 133,
+      "title": "Tapping Freecell",
+      "site": "https://tiquer17.github.io/pyxel/freecell/",
+      "author": "tiquer17",
+      "contact": "https://github.com/tiquer17",
+      "desc": "FreeCell with touch controls",
+      "image": "https://github.com/user-attachments/assets/f1d1d4b9-2652-46fc-9ee8-3632a1d1b144"
+    },
+    {
       "id": 132,
       "title": "AutoRace",
       "site": "https://github.com/jay-kumogata/RetroGames/tree/main/pyxel/autorace",
@@ -70,7 +79,7 @@
       "author": "naoto",
       "contact": "https://github.com/naoto714714",
       "desc": "Simple action game",
-      "image": "https://github.com/user-attachments/assets/d8d7afb4-a06b-44d9-ad4c-241d4f0280f6"
+      "image": "https://github.com/user-attachments/assets/772560f0-e813-4c9c-9144-2924ed3b4bfe"
     },
     {
       "id": 124,
@@ -400,7 +409,7 @@
       "author": "GANAH",
       "contact": "https://github.com/sichaozhang1112/PEANUX",
       "desc": "Draw a closed-loop sketch of dream",
-      "image": "https://github.com/kitao/pyxel/assets/678802/89eb3802-0425-4aa4-9ff8-ab2f9b3bc1cd"
+      "image": "https://github.com/user-attachments/assets/baab685e-227c-41e5-916b-67637e52bf31"
     },
     {
       "id": 86,
@@ -758,7 +767,7 @@
       "author": "kra53n",
       "contact": "https://github.com/kra53n",
       "desc": "Hyper-casual game",
-      "image": "https://github.com/user-attachments/assets/2b4eb4e5-fd8b-4f1e-ae12-777dab7c9820"
+      "image": "https://github.com/user-attachments/assets/7b863ea9-f14b-4a0f-b3ea-2b569b1f20a2"
     },
     {
       "id": 46,
