@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 134,
+      "title": "EntroPipes",
+      "site": "https://codeberg.org/son_link/EntroPipes",
+      "author": "Son Link",
+      "contact": "https://x.com/sonlink",
+      "desc": "A puzzle of rotating and connecting all pipes",
+      "image": "https://github.com/user-attachments/assets/f932b8f8-deaf-4453-b480-c329dd2d918e"
+    },
+    {
       "id": 133,
       "title": "Tapping Freecell",
       "site": "https://tiquer17.github.io/pyxel/freecell/",
