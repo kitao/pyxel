@@ -14,7 +14,7 @@ MARKDOWN_HEADER = """\
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H27VDKD)
 
-[Pyxel](https://github.com/kitao/pyxel), a retro game engine for Python, is collecting user examples. If you have created a project with Pyxel, please post it [here](https://github.com/kitao/pyxel/issues/592).
+[Pyxel](https://github.com/kitao/pyxel), a retro game engine for Python, is collecting user examples. If you have created a project with Pyxel, please post it [here](https://github.com/kitao/pyxel/issues/609).
 """
 NUM_ENTRIES_PER_PAGE = 20
 
@@ -22,17 +22,17 @@ NUM_ENTRIES_PER_PAGE = 20
 def generate_navigation_links(page_ranges, cur_start_id, cur_end_id):
     latest_start_id, _ = page_ranges[-1]
     links = []
-    for start, end in reversed(page_ranges):
-        if start == latest_start_id:
-            if start == cur_start_id:
-                links.append(f"{start}-")
+    for start_id, end_id in reversed(page_ranges):
+        if start_id == latest_start_id:
+            if start_id == cur_start_id:
+                links.append(f"-{start_id}")
             else:
-                links.append(f"[{start}-](Pyxel-User-Examples)")
-        elif start == cur_start_id and end == cur_end_id:
-            links.append(f"{str(start).zfill(3)}-{str(end).zfill(3)}")
+                links.append(f"[-{start_id}](Pyxel-User-Examples)")
+        elif start_id == cur_start_id and end_id == cur_end_id:
+            links.append(f"{str(end_id).zfill(3)}-{str(start_id).zfill(3)}")
         else:
             links.append(
-                f"[{str(start).zfill(3)}-{str(end).zfill(3)}](Pyxel-User-Examples-({str(start).zfill(3)}%E2%80%90{str(end).zfill(3)}))"
+                f"[{str(end_id).zfill(3)}-{str(start_id).zfill(3)}](Pyxel-User-Examples-({str(end_id).zfill(3)}%E2%80%90{str(start_id).zfill(3)}))"
             )
     return "&emsp;".join(links)
 
@@ -73,7 +73,7 @@ def generate_pyxel_user_examples():
             continue
         subset.sort(key=lambda x: x["id"], reverse=True)
         filename = (
-            f"pyxel_user_examples_{str(start_id).zfill(3)}_{str(end_id).zfill(3)}.md"
+            f"pyxel_user_examples_{str(end_id).zfill(3)}_{str(start_id).zfill(3)}.md"
         )
         navigation_links = generate_navigation_links(page_ranges, start_id, end_id)
         markdown_content = f"{MARKDOWN_HEADER}\n\n{navigation_links}\n\n{generate_markdown_table(subset)}\n\n{navigation_links}\n"
