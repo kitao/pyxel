@@ -40,6 +40,7 @@ def generate_navigation_links(page_ranges, cur_start_id, cur_end_id):
 def generate_markdown_table(entries):
     markdown_lines = ["| Description | Screen Image |", "| --- | --- |"]
     for entry in entries:
+        id = entry["id"]
         title = (
             f"[{entry['title']}]({entry['site']})"
             if "site" in entry
@@ -52,7 +53,7 @@ def generate_markdown_table(entries):
         )
         desc = entry["desc"]
         image = f'<img src="{entry["image"]}" width="320">'
-        markdown_lines.append(f"| {title} by {author}<br>{desc} | {image} |")
+        markdown_lines.append(f"| #{id}<br>{title} by {author}<br>{desc} | {image} |")
     return "\n".join(markdown_lines)
 
 
