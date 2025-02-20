@@ -1,6 +1,24 @@
 {
   "entries": [
     {
+      "id": 137,
+      "title": "Typing Practice",
+      "site": "https://github.com/samurai-apps/pyxel-games/blob/main/src/91_typing_practice.py",
+      "author": "SamuraiApps",
+      "contact": "https://x.com/samuraiapps",
+      "desc": "Typing practice using words from Python and Pyxel",
+      "image": "https://github.com/user-attachments/assets/4d1bc96b-96bf-41ae-989f-aec8b6a4e31d"
+    },
+    {
+      "id": 136,
+      "title": "Laser Jetman",
+      "site": "https://github.com/helpcomputer/laser-jetman",
+      "author": "Adam",
+      "contact": "https://x.com/badcomputer0",
+      "desc": "Arcade shoot-em-up",
+      "image": "https://github.com/user-attachments/assets/a8ac96e9-a5ab-4b0d-981c-94f8cf8a7b7a"
+    },
+    {
       "id": 135,
       "title": "Rocket Flight",
       "site": "https://github.com/nadi726/Rocket-Flight",
