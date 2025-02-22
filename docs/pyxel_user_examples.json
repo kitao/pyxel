@@ -1,6 +1,24 @@
 {
   "entries": [
     {
+      "id": 139,
+      "title": "Asteroids",
+      "site": "https://github.com/jay-kumogata/RetroGames/tree/main/pyxel/asteroids",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "A multidirectional shooter video game",
+      "image": "https://github.com/user-attachments/assets/03fcc7af-e634-4d15-b2b3-d03d4bd2eae0"
+    },
+    {
+      "id": 138,
+      "title": "Seagull's Fishing",
+      "site": "https://stone-dot.itch.io/seagulls-fishing",
+      "author": "こいし",
+      "contact": "https://x.com/koishi_dot",
+      "desc": "Easy 60 seconds score attack",
+      "image": "https://github.com/user-attachments/assets/944be73a-8f9d-46f9-ba19-d6bb95fa9e1e"
+    },
+    {
       "id": 137,
       "title": "Typing Practice",
       "site": "https://github.com/samurai-apps/pyxel-games/blob/main/src/91_typing_practice.py",
