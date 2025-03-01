@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 140,
+      "title": "Mahjong Solitaire",
+      "site": "https://github.com/BouKiCHi/mahjong",
+      "author": "BouKiCHi",
+      "contact": "https://x.com/boukichi_numloc",
+      "desc": "Simple Mahjong solitaire",
+      "image": "https://github.com/user-attachments/assets/02c9c3df-c970-4fad-9395-b92176f0dd94"
+    },
+    {
       "id": 139,
       "title": "Asteroids",
       "site": "https://github.com/jay-kumogata/RetroGames/tree/main/pyxel/asteroids",
