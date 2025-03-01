@@ -3,6 +3,7 @@
 ## 2.3.7
 
 - Added a script for Pyxel User Examples pages
+- Enabled importing local modules in the web version
 
 ## 2.3.6
 
