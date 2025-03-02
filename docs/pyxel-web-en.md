@@ -37,8 +37,6 @@ For example, if the username is `taro`, the repository is named `my_repo`, the f
 https://kitao.github.io/pyxel/wasm/launcher/?run=taro.my_repo.src.scenes.title
 ```
 
-Please note that due to Web limitations, the `run` command cannot import local files or directories.
-
 If you want to run a `shooter.pyxapp` located in the `dist/games` directory, the URL would be:
 
 ```

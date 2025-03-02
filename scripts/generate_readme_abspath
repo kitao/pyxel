@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import pathlib
 import re
 
 ROOT_DIR = ".."
@@ -8,8 +9,8 @@ RELPATH_README = "README.md"
 ABSPATH_README = "docs/README-abspath.md"
 
 
-def make_abspath_readme():
-    os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ROOT_DIR))
+def generate_readme_abspath():
+    os.chdir(pathlib.Path(__file__).parent / ROOT_DIR)
     relpath_dir = os.path.dirname(RELPATH_README) + "/"
     with open(RELPATH_README, "r", encoding="utf-8") as fh:
         text = fh.read()
@@ -28,4 +29,4 @@ def make_abspath_readme():
 
 
 if __name__ == "__main__":
-    make_abspath_readme()
+    generate_readme_abspath()

@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.3.7
+
+- Added a script for Pyxel User Examples pages
+- Enabled importing local modules in the web version
+- Updated Rust to version nightly-2025-02-01
+
 ## 2.3.6
 
 - Changed rotation in blt and bltm to clockwise
@@ -12,7 +18,7 @@
 - Updated 8bit BGM Generator to version 1.30
 - Fixed multi-gamepad support
 - Fixed text function ignoring camera when font set
-- Aligned the Emscripten version with Pyodide
+- Aligned Emscripten version with Pyodide
 - Fixed the input_text variable
 - Stopped using the once_cell crate
 

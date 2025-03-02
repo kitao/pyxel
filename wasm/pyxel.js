@@ -7,6 +7,7 @@ const GAMEPAD_CROSS_PATH = "../docs/images/gamepad_cross_98x98.png";
 const GAMEPAD_BUTTON_PATH = "../docs/images/gamepad_button_98x98.png";
 const PYXEL_WORKING_DIRECTORY = "/pyxel_working_directory";
 const PYXEL_WATCH_INFO_FILE = ".pyxel_watch_info";
+const IMPORT_HOOK_PATH = "import_hook.py";
 
 function _initialize() {
   _setIcon();
@@ -147,6 +148,9 @@ async function _loadPyodideAndPyxel(canvas) {
   let FS = pyodide.FS;
   FS.mkdir(PYXEL_WORKING_DIRECTORY);
   FS.chdir(PYXEL_WORKING_DIRECTORY);
+  let response = await fetch(_scriptDir() + IMPORT_HOOK_PATH);
+  let code = await response.text();
+  pyodide.runPython(code);
   return pyodide;
 }
 
