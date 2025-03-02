@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 141,
+      "title": "Stalker Bar",
+      "site": "https://sitf.itch.io/stalkerbar",
+      "author": "s1tf",
+      "contact": "https://github.com/s1tf",
+      "desc": "An adventure game",
+      "image": "https://github.com/user-attachments/assets/4271b6b7-8f3b-4126-8e1d-61087375e9b8"
+    },
+    {
       "id": 140,
       "title": "Mahjong Solitaire",
       "site": "https://github.com/BouKiCHi/mahjong",
