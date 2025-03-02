@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import pathlib
 import re
 import sys
 
@@ -19,7 +20,7 @@ def set_version_numbers():
     if len(sys.argv) < 2:
         print("set_version_numbers version")
         sys.exit(1)
-    os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ROOT_DIR))
+    os.chdir(pathlib.Path(__file__).parent / ROOT_DIR)
     version = sys.argv[1]
     replace_file(
         "rust/pyxel-engine/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
