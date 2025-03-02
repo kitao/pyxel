@@ -44,7 +44,7 @@ class ImportHook:
 
         # Trigger file download for missing modules in the caller's directory
         caller_dir = os.path.dirname(os.path.abspath(caller_file))
-        module_name = fullname.rsplit(".", 1)[-1]
+        module_name = fullname.replace(".", os.sep)
         module_path = os.path.join(caller_dir, f"{module_name}.py")
         package_path = os.path.join(caller_dir, module_name, "__init__.py")
         is_found = os.path.exists(module_path) or os.path.exists(package_path)
