@@ -158,20 +158,17 @@ function _hookFileOperations(pyodide, root) {
   let fs = pyodide.FS;
 
   // define function to create directories
-  let createDirs = (path, isFile) => {
-    if (!path) {
-      return;
+  let createDirs = (absPath, isFile) => {
+    let dirs = absPath.split("/");
+    dirs.shift();
+    if (isFile) {
+      dirs.pop();
     }
-    let dirs = path.split("/");
-    let dirPath = path.startsWith("/") ? "/" : dirs[0];
-    let numDirs = isFile ? dirs.length - 1 : dirs.length;
-    for (let i = 1; i < numDirs; i++) {
-      if (!dirs[i]) {
-        continue;
-      }
-      dirPath += "/" + dirs[i];
-      if (!fs.analyzePath(dirPath).exists) {
-        fs.mkdir(dirPath, 0o777);
+    let path = "";
+    for (const dir of dirs) {
+      path += "/" + dir;
+      if (!fs.analyzePath(path).exists) {
+        fs.mkdir(path, 0o777);
       }
     }
   };
