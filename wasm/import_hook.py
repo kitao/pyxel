@@ -47,7 +47,11 @@ class ImportHook:
         module_name = fullname.replace(".", os.sep)
         module_path = os.path.join(caller_dir, f"{module_name}.py")
         package_path = os.path.join(caller_dir, module_name, "__init__.py")
-        is_found = os.path.exists(module_path) or os.path.exists(package_path)
+        is_found = (
+            os.path.exists(module_name)
+            or os.path.exists(module_path)
+            or os.path.exists(package_path)
+        )
         if is_found and self.main_dir is None:
             self.main_dir = caller_dir
 
