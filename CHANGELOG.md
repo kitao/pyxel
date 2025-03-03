@@ -1,9 +1,13 @@
 # Change Log
 
+## 2.3.8
+
+- Fixed local module imports in the web version
+
 ## 2.3.7
 
 - Added a script for Pyxel User Examples pages
-- Enabled importing local modules in the web version
+- Enabled local module imports in the web version
 - Updated Rust to version nightly-2025-02-01
 
 ## 2.3.6
