@@ -27,7 +27,7 @@ https://kitao.github.io/pyxel/wasm/launcher/?<Command>=<GitHub username>.<Reposi
 
 There are three available commands.
 
-- `run`: Execute a Python script (importing other files or directories is not possible)
+- `run`: Execute a Python script
 - `play`: Run a Pyxel app
 - `edit`: Launch Pyxel Editor
 
@@ -42,6 +42,8 @@ If you want to run a `shooter.pyxapp` located in the `dist/games` directory, the
 ```
 https://kitao.github.io/pyxel/wasm/launcher/?play=taro.my_repo.dist.games.shooter
 ```
+
+If an app is split into multiple files, running it with the `run` command may take longer to load. In that case, it is recommended to convert it into a Pyxel application file (.pyxapp) and run it with the `play` command.
 
 The `run` and `play` commands can have additional attributes such as `gamepad` to enable a virtual gamepad and `packages` to specify additional packages.
 
