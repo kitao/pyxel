@@ -155,70 +155,85 @@ async function _loadPyodideAndPyxel(canvas) {
 }
 
 function _hookFileOperations(pyodide, root) {
-  // Define function to copy file
   let fs = pyodide.FS;
-  let copyFile = (filename) => {
-    // Check file
-    if (filename.startsWith("<")) {
+
+  // define function to create directories
+  let createDirs = (path, isFile) => {
+    if (!path) {
       return;
     }
-    if (!filename.startsWith("/")) {
-      filename = fs.cwd() + "/" + filename;
+    let dirs = path.split("/");
+    let dirPath = path.startsWith("/") ? "/" : dirs[0];
+    let numDirs = isFile ? dirs.length - 1 : dirs.length;
+    for (let i = 1; i < numDirs; i++) {
+      if (!dirs[i]) {
+        continue;
+      }
+      dirPath += "/" + dirs[i];
+      if (!fs.analyzePath(dirPath).exists) {
+        fs.mkdir(dirPath, 0o777);
+      }
     }
-    if (!filename.startsWith(PYXEL_WORKING_DIRECTORY)) {
+  };
+
+  // Define function to copy path
+  let copyPath = (path) => {
+    // Check path
+    if (path.startsWith("<")) {
       return;
     }
-    if (filename.endsWith(PYXEL_WATCH_INFO_FILE)) {
+    if (!path.startsWith("/")) {
+      path = fs.cwd() + "/" + path;
+    }
+    if (!path.startsWith(PYXEL_WORKING_DIRECTORY)) {
       return;
     }
-    filename = filename.slice(PYXEL_WORKING_DIRECTORY.length + 1);
-    let srcFile = `${root}/${filename}`;
-    let dstFile = `${PYXEL_WORKING_DIRECTORY}/${filename}`;
-    if (fs.analyzePath(dstFile).exists) {
+    if (path.endsWith(PYXEL_WATCH_INFO_FILE)) {
+      return;
+    }
+    path = path.slice(PYXEL_WORKING_DIRECTORY.length + 1);
+    let srcPath = `${root}/${path}`;
+    let dstPath = `${PYXEL_WORKING_DIRECTORY}/${path}`;
+    if (fs.analyzePath(dstPath).exists) {
       return;
     }
 
-    // Download file
+    // Download path
     let request = new XMLHttpRequest();
     request.overrideMimeType("text/plain; charset=x-user-defined");
-    request.open("GET", srcFile, false);
+    request.open("GET", srcPath, false);
     request.send();
     if (request.status !== 200) {
-      console.log(`Failed to copy '${srcFile}' to '${dstFile}'`);
+      console.log(`Path '${srcPath}' not found`);
       return;
     }
     let fileBinary = Uint8Array.from(request.response, (c) => c.charCodeAt(0));
 
-    // Secure directories
-    let dirs = filename.split("/");
-    dirs.pop();
-    let path = "";
-    for (let dir of dirs) {
-      path += dir;
-      if (!fs.analyzePath(path).exists) {
-        fs.mkdir(path);
-      }
-      path += "/";
+    // Write path
+    let contentType = request.getResponseHeader("Content-Type") || "";
+    if (contentType.includes("text/html") && !path.includes(".")) {
+      console.log(`Created directory '${dstPath}'`);
+      createDirs(dstPath, false);
+    } else {
+      createDirs(dstPath, true);
+      fs.writeFile(dstPath, fileBinary, {
+        encoding: "binary",
+      });
+      console.log(`Copied '${srcPath}' to '${dstPath}'`);
     }
-
-    // Write file to Emscripten file system
-    fs.writeFile(dstFile, fileBinary, {
-      encoding: "binary",
-    });
-    console.log(`Copied '${srcFile}' to '${dstFile}'`);
   };
 
   // Hook file operations
   let open = fs.open;
   fs.open = (path, flags, mode) => {
     if (flags === 557056) {
-      copyFile(path);
+      copyPath(path);
     }
     return open(path, flags, mode);
   };
   let stat = fs.stat;
   fs.stat = (path) => {
-    copyFile(path);
+    copyPath(path);
     return stat(path);
   };
 
