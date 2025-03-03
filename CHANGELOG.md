@@ -3,6 +3,7 @@
 ## 2.3.8
 
 - Fixed local module imports in the web version
+- Updated the usage instructions for the web version
 
 ## 2.3.7
 
