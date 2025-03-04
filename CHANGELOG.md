@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.3.9
+
+- Enabled loading of upper-level files in the web version
+- Adjusted click message removal timing in the web version
+
 ## 2.3.8
 
 - Fixed local module imports in the web version
