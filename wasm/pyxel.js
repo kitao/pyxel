@@ -275,6 +275,7 @@ async function _waitForInput() {
   _updateScreenElementsSize();
   await _waitForEvent(document.body, "click");
   promptImage.remove();
+  await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 async function _installBuiltinPackages(pyodide, packages) {
