@@ -136,9 +136,9 @@
       }
       if (command) {
         launchPyxel({
-          root: "https://cdn.jsdelivr.net/gh/" + paths.slice(0, -1).join("/"),
+          root: "https://cdn.jsdelivr.net/gh/" + paths.slice(0, 2).join("/"),
           command: command,
-          name: paths[paths.length - 1] + ext,
+          name: paths.slice(2).join("/") + ext,
           packages: queries.get("packages"),
           gamepad: queries.get("gamepad"),
           editor: queries.get("editor"),
