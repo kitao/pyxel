@@ -169,7 +169,9 @@ mod tests {
     #[test]
     fn test_sound_set() {
         let sound = Sound::new();
-        sound.lock().set("c0d-0d0d#0", "tspn", "0123", "nsvf", 123);
+        sound
+            .lock()
+            .set("c0d-0d0d#0", "tspn", "012345", "nsvfhq", 123);
         assert_eq!(&sound.lock().notes, &vec![0, 1, 2, 3]);
         assert_eq!(
             &sound.lock().tones,
