@@ -6,6 +6,7 @@
 - Adjusted click message removal timing in the web version
 - Updated Pyodide to version 0.27.3
 - Changed to stop downloading unnecessary files in the web version
+- Fixed a warning in a utility script
 
 ## 2.3.8
 
