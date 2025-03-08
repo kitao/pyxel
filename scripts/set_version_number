@@ -11,7 +11,7 @@ ROOT_DIR = ".."
 def replace_file(file, pattern, repl):
     with open(file, "r") as f:
         code = f.read()
-    code = re.sub(pattern, repl, code, 1)
+    code = re.sub(pattern, repl, code, count=1)
     with open(file, "w") as f:
         f.write(code)
 
