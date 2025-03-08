@@ -4,6 +4,8 @@
 
 - Enabled loading of upper-level files in the web version
 - Adjusted click message removal timing in the web version
+- Updated Pyodide to version 0.27.3
+- Changed to stop downloading unnecessary files in the web version
 
 ## 2.3.8
 

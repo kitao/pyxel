@@ -1,4 +1,4 @@
-const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.js";
+const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.27.3/full/pyodide.js";
 const PYXEL_WHEEL_PATH = "pyxel-2.3.8-cp38-abi3-emscripten_3_1_58_wasm32.whl";
 const PYXEL_LOGO_PATH = "../docs/images/pyxel_logo_76x32.png";
 const TOUCH_TO_START_PATH = "../docs/images/touch_to_start_114x14.png";
@@ -176,16 +176,17 @@ function _hookFileOperations(pyodide, root) {
   // Define function to copy path
   let copyPath = (path) => {
     // Check path
-    if (path.startsWith("<")) {
+    if (
+      path.startsWith("<") ||
+      path === "frozen" ||
+      path.endsWith(PYXEL_WATCH_INFO_FILE)
+    ) {
       return;
     }
     if (!path.startsWith("/")) {
       path = fs.cwd() + "/" + path;
     }
     if (!path.startsWith(PYXEL_WORKING_DIRECTORY)) {
-      return;
-    }
-    if (path.endsWith(PYXEL_WATCH_INFO_FILE)) {
       return;
     }
     path = path.slice(PYXEL_WORKING_DIRECTORY.length + 1);
