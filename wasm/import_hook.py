@@ -6,7 +6,7 @@ import sys
 
 class ImportHook:
     def __init__(self):
-        self.imported_modules = set()
+        self.imported_modules = {"_hashlib", "ssl"}
         self.main_dir = None
 
     def find_spec(self, fullname, path, target=None):
