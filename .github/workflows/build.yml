@@ -1,5 +1,7 @@
 name: build
+
 on: [workflow_call, workflow_dispatch]
+
 jobs:
   build-winmac:
     strategy:
@@ -42,23 +44,28 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
+
       - name: Install Nightly Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: nightly
           components: rustfmt
+  
       - name: Install Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           python-implementation: ${{ matrix.python-impl }}
           architecture: ${{ matrix.arch }}
+
       - name: Install Python packages
         run: pip install -r python/requirements.txt
+
       - name: Build wheel
         run: make TARGET=${{ matrix.target }} PYTHON_IMPL=${{ matrix.python-impl }}
       - name: Upload wheel
@@ -66,6 +73,7 @@ jobs:
         with:
           name: pyxel-${{ matrix.python-impl }}-${{ matrix.target }}
           path: dist/*
+
   build-linux:
     strategy:
       fail-fast: false
@@ -76,42 +84,57 @@ jobs:
             image: messense/manylinux2014-cross:x86_64
             python-impl: cpython
             python-version: "3.12"
+
           - target: i686-unknown-linux-gnu
             image: messense/manylinux2014-cross:i686
             python-impl: cpython
             python-version: "3.12"
+
           - target: aarch64-unknown-linux-gnu
             image: messense/manylinux2014-cross:aarch64
             python-impl: cpython
             python-version: "3.12"
+
           - target: armv7-unknown-linux-gnueabihf
             image: messense/manylinux2014-cross:armv7l
             python-impl: cpython
             python-version: "3.12"
-          # PyPy builds (x86_64 only as PyPy doesn't support all architectures)
+
+          # PyPy builds
           - target: x86_64-unknown-linux-gnu
             image: messense/manylinux2014-cross:x86_64
             python-impl: pypy
             python-version: "3.10"
+          
+          - target: armv7-unknown-linux-gnueabihf
+            image: messense/manylinux2014-cross:armv7l
+            python-impl: pypy
+            python-version: "3.10"
+
     runs-on: ubuntu-22.04
     container: ${{ matrix.image }}
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
+
       - name: Install Nightly Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: nightly
           components: rustfmt
+
       - name: Install Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           python-implementation: ${{ matrix.python-impl }}
+
       - name: Install Python packages
         run: pip install -r python/requirements.txt
       - name: Build and install SDL2
@@ -131,11 +154,13 @@ jobs:
           make install
           cd ..
           rm -rf SDL2-${SDL2_VERSION}
+
       - name: Build wheel
         run: |
           export BINDGENFLAGS="-I/usr/${{ matrix.target }}/include/SDL2 -I/usr/${{ matrix.target }}/${{ matrix.target }}/sysroot/usr/include"
           export RUSTFLAGS="-L/usr/${{ matrix.target }}/lib"
           make TARGET=${{ matrix.target }} PYTHON_IMPL=${{ matrix.python-impl }}
+
       - name: Upload wheel
         uses: actions/upload-artifact@v4
         with:
