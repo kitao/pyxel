@@ -220,4 +220,3 @@ start-test-server:
 test-wasm: build-wasm start-test-server
 
 test-remote-wasm: fetch-remote-wasm start-test-server
-
