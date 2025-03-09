@@ -117,15 +117,6 @@ build: format
 	@$(SCRIPTS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
 	@cd $(PYTHON_DIR); RUSTUP_TOOLCHAIN=$(RUSTUP_TOOLCHAIN) PYTHON_IMPL=$(PYTHON_IMPL) maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS)
-	@# Rename the wheels to include the Python implementation for clarity
-	@if [ -n "$(TARGET)" ] && [ "$(PYTHON_IMPL)" = "pypy" ]; then \
-		for wheel in $(DIST_DIR)/*$(TARGET)*.whl; do \
-			if [ -f "$$wheel" ]; then \
-				new_name=$$(echo $$wheel | sed -E "s/([^\/]+)-([0-9]+\.[0-9]+\.[0-9]+.*)/\1-$(WHEEL_PREFIX)-\2/"); \
-				mv "$$wheel" "$$new_name"; \
-			fi; \
-		done; \
-	fi
 
 install: build
 ifeq ($(PYTHON_IMPL),pypy)
