@@ -1,48 +1,39 @@
 name: release
-
 on:
   push:
     tags:
       - "v*.*.*"
-
 jobs:
   build:
     uses: kitao/pyxel/.github/workflows/build.yml@main
-
   release:
     runs-on: macos-13
     needs: build
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-
       - name: Download wheels
         uses: actions/download-artifact@v4
         with:
           path: dist
-
       - name: Flatten wheels
         run: |
           find dist -type f -name "*.whl" -exec mv {} dist/ \;
           find dist -type d -empty -delete
-
       - name: Get Pyxel version
         run: |
           PYXEL_VERSION=$(echo $GITHUB_REF | sed 's/refs\/tags\/v//')
           echo "PYXEL_VERSION=${PYXEL_VERSION}" >> $GITHUB_ENV
-
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
           name: Pyxel ${{ env.PYXEL_VERSION }}
           tag_name: ${{ github.ref }}
           files: dist/*
-
       - name: Install Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
-
       - name: Publish wheels
         run: |
           pip install twine
@@ -50,10 +41,8 @@ jobs:
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
-
       - name: Publish crates
         run: |
           cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
