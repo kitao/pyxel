@@ -539,33 +539,40 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if self.read_data(x as usize, y as usize) != dst_value {
             return;
         }
-        let mut xi = x;
-        while xi >= self.clip_rect.left() {
-            if self.read_data(xi as usize, y as usize) != dst_value {
-                break;
+
+        let mut visit_stack =
+            Vec::with_capacity((self.clip_rect.width() * self.clip_rect.height()) as usize);
+        visit_stack.push((x, y));
+
+        while let Some((x, y)) = visit_stack.pop() {
+            let mut xi = x;
+            while xi >= self.clip_rect.left() {
+                if self.read_data(xi as usize, y as usize) != dst_value {
+                    break;
+                }
+                self.write_data(xi as usize, y as usize, value);
+                if y > self.clip_rect.top() {
+                    visit_stack.push((xi, y - 1));
+                }
+                if y < self.clip_rect.bottom() {
+                    visit_stack.push((xi, y + 1));
+                }
+                xi -= 1;
             }
-            self.write_data(xi as usize, y as usize, value);
-            if y > self.clip_rect.top() {
-                self.fill_rec(xi, y - 1, value, dst_value);
+            let mut xi = x + 1;
+            while xi <= self.clip_rect.right() {
+                if self.read_data(xi as usize, y as usize) != dst_value {
+                    break;
+                }
+                self.write_data(xi as usize, y as usize, value);
+                if y > self.clip_rect.top() {
+                    visit_stack.push((xi, y - 1));
+                }
+                if y < self.clip_rect.bottom() {
+                    visit_stack.push((xi, y + 1));
+                }
+                xi += 1;
             }
-            if y < self.clip_rect.bottom() {
-                self.fill_rec(xi, y + 1, value, dst_value);
-            }
-            xi -= 1;
-        }
-        let mut xi = x + 1;
-        while xi <= self.clip_rect.right() {
-            if self.read_data(xi as usize, y as usize) != dst_value {
-                break;
-            }
-            self.write_data(xi as usize, y as usize, value);
-            if y > self.clip_rect.top() {
-                self.fill_rec(xi, y - 1, value, dst_value);
-            }
-            if y < self.clip_rect.bottom() {
-                self.fill_rec(xi, y + 1, value, dst_value);
-            }
-            xi += 1;
         }
     }
 
@@ -651,5 +658,18 @@ impl CopyArea {
             width,
             height,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Canvas;
+
+    #[test]
+    fn fill_doesnt_overflow_stack() {
+        let mut canvas = Canvas::<u8>::new(256, 256);
+        canvas.fill(0.0, 0.0, 8);
+        // this assertion won't even be reached if the above line overflows the stack
+        assert_eq!(canvas.read_data(128, 128), 8);
     }
 }
