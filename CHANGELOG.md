@@ -3,6 +3,7 @@
 ## 2.3.10
 
 - Fixed stack overflow issue in the fill function
+- Handled XMLHttpRequest exceptions in the web version
 
 ## 2.3.9
 
