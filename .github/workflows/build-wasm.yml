@@ -13,17 +13,18 @@ jobs:
         uses: mymindstorm/setup-emsdk@v13
         with:
           version: 3.1.58
-  
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
-  
+
       - name: Install Nightly Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: nightly
           components: rustfmt
+
       - name: Install Python
         uses: actions/setup-python@v4
         with:
