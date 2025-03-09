@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.11
+
+- Removed the google analytics links from the web pages
+
 ## 2.3.10
 
 - Fixed stack overflow issue in the fill function
