@@ -356,37 +356,44 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         if value == dst_value {
             return;
         }
-        let mut visit_stack =
-            Vec::with_capacity((self.clip_rect.width() * self.clip_rect.height()) as usize);
+        let mut visit_stack = Vec::new();
         visit_stack.push((x, y));
         while let Some((x, y)) = visit_stack.pop() {
-            let mut xi = x;
-            while xi >= self.clip_rect.left() {
-                if self.read_data(xi as usize, y as usize) != dst_value {
-                    break;
-                }
-                self.write_data(xi as usize, y as usize, value);
-                if y > self.clip_rect.top() {
-                    visit_stack.push((xi, y - 1));
-                }
-                if y < self.clip_rect.bottom() {
-                    visit_stack.push((xi, y + 1));
-                }
-                xi -= 1;
+            if !self.clip_rect.contains(x, y) || self.read_data(x as usize, y as usize) != dst_value
+            {
+                continue;
             }
-            let mut xi = x + 1;
-            while xi <= self.clip_rect.right() {
-                if self.read_data(xi as usize, y as usize) != dst_value {
-                    break;
-                }
+            let mut left = x;
+            let mut right = x;
+            while left > self.clip_rect.left()
+                && self.read_data((left - 1) as usize, y as usize) == dst_value
+            {
+                left -= 1;
+            }
+            while right < self.clip_rect.right()
+                && self.read_data((right + 1) as usize, y as usize) == dst_value
+            {
+                right += 1;
+            }
+            for xi in left..=right {
                 self.write_data(xi as usize, y as usize, value);
-                if y > self.clip_rect.top() {
-                    visit_stack.push((xi, y - 1));
+            }
+            for scan_y in [y - 1, y + 1] {
+                if scan_y >= self.clip_rect.top() && scan_y <= self.clip_rect.bottom() {
+                    let mut scan_x = left;
+                    let mut in_segment = false;
+                    while scan_x <= right {
+                        let is_target =
+                            self.read_data(scan_x as usize, scan_y as usize) == dst_value;
+                        if is_target && !in_segment {
+                            visit_stack.push((scan_x, scan_y));
+                            in_segment = true;
+                        } else if !is_target {
+                            in_segment = false;
+                        }
+                        scan_x += 1;
+                    }
                 }
-                if y < self.clip_rect.bottom() {
-                    visit_stack.push((xi, y + 1));
-                }
-                xi += 1;
             }
         }
     }
