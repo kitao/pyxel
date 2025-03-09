@@ -200,9 +200,14 @@ function _hookFileOperations(pyodide, root) {
     let request = new XMLHttpRequest();
     request.overrideMimeType("text/plain; charset=x-user-defined");
     request.open("GET", srcPath, false);
-    request.send();
+    try {
+      request.send();
+    } catch (error) {
+      console.log(`Failed to fetch '${srcPath}' (${error.name})`);
+      return;
+    }
     if (request.status !== 200) {
-      console.log(`Path '${srcPath}' not found`);
+      console.log(`Failed to download '${srcPath}'`);
       return;
     }
     let fileBinary = Uint8Array.from(request.response, (c) => c.charCodeAt(0));
