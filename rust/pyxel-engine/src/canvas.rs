@@ -353,8 +353,41 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
         let dst_value = self.read_data(x as usize, y as usize);
-        if value != dst_value {
-            self.fill_rec(x, y, value, dst_value);
+        if value == dst_value {
+            return;
+        }
+        let mut visit_stack =
+            Vec::with_capacity((self.clip_rect.width() * self.clip_rect.height()) as usize);
+        visit_stack.push((x, y));
+        while let Some((x, y)) = visit_stack.pop() {
+            let mut xi = x;
+            while xi >= self.clip_rect.left() {
+                if self.read_data(xi as usize, y as usize) != dst_value {
+                    break;
+                }
+                self.write_data(xi as usize, y as usize, value);
+                if y > self.clip_rect.top() {
+                    visit_stack.push((xi, y - 1));
+                }
+                if y < self.clip_rect.bottom() {
+                    visit_stack.push((xi, y + 1));
+                }
+                xi -= 1;
+            }
+            let mut xi = x + 1;
+            while xi <= self.clip_rect.right() {
+                if self.read_data(xi as usize, y as usize) != dst_value {
+                    break;
+                }
+                self.write_data(xi as usize, y as usize, value);
+                if y > self.clip_rect.top() {
+                    visit_stack.push((xi, y - 1));
+                }
+                if y < self.clip_rect.bottom() {
+                    visit_stack.push((xi, y + 1));
+                }
+                xi += 1;
+            }
         }
     }
 
@@ -533,47 +566,6 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let x2 = f64_to_i32(cx + dx + 0.01);
         let y2 = f64_to_i32(cy + dy + 0.01);
         (x1, y1, x2, y2)
-    }
-
-    fn fill_rec(&mut self, x: i32, y: i32, value: T, dst_value: T) {
-        if self.read_data(x as usize, y as usize) != dst_value {
-            return;
-        }
-
-        let mut visit_stack =
-            Vec::with_capacity((self.clip_rect.width() * self.clip_rect.height()) as usize);
-        visit_stack.push((x, y));
-
-        while let Some((x, y)) = visit_stack.pop() {
-            let mut xi = x;
-            while xi >= self.clip_rect.left() {
-                if self.read_data(xi as usize, y as usize) != dst_value {
-                    break;
-                }
-                self.write_data(xi as usize, y as usize, value);
-                if y > self.clip_rect.top() {
-                    visit_stack.push((xi, y - 1));
-                }
-                if y < self.clip_rect.bottom() {
-                    visit_stack.push((xi, y + 1));
-                }
-                xi -= 1;
-            }
-            let mut xi = x + 1;
-            while xi <= self.clip_rect.right() {
-                if self.read_data(xi as usize, y as usize) != dst_value {
-                    break;
-                }
-                self.write_data(xi as usize, y as usize, value);
-                if y > self.clip_rect.top() {
-                    visit_stack.push((xi, y - 1));
-                }
-                if y < self.clip_rect.bottom() {
-                    visit_stack.push((xi, y + 1));
-                }
-                xi += 1;
-            }
-        }
     }
 
     fn should_write_always(&self, _x: i32, _y: i32) -> bool {

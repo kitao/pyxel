@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.10
+
+- Fixed stack overflow issue in the fill function
+
 ## 2.3.9
 
 - Enabled loading of upper-level files in the web version
@@ -30,7 +34,7 @@
 - Updated the rand_xoshiro to version 0.7
 - Updated 8bit BGM Generator to version 1.30
 - Fixed multi-gamepad support
-- Fixed text function ignoring camera when font set
+- Fixed the text function ignoring camera when font set
 - Aligned Emscripten version with Pyodide
 - Fixed the input_text variable
 - Stopped using the once_cell crate
