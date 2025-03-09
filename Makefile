@@ -62,12 +62,24 @@ RUSTUP_TOOLCHAIN=nightly-2025-02-01
 CLIPPY_OPTS = -q --all-targets --all-features -- --no-deps
 MATURIN_OPTS = --manylinux 2014 --auditwheel skip
 
-ifeq ($(TARGET),)
-ENSURE_TARGET =
-BUILD_OPTS = --release
+# Set Python implementation (cpython or pypy)
+PYTHON_IMPL ?= cpython
+
+# Add Python implementation to wheel filename for easier identification
+ifeq ($(PYTHON_IMPL),pypy)
+  MATURIN_OPTS += --interpreter pypy3
+  WHEEL_PREFIX = pypy
 else
-ENSURE_TARGET = rustup target add $(TARGET) --toolchain $(RUSTUP_TOOLCHAIN)
-BUILD_OPTS = --release --target $(TARGET)
+  WHEEL_PREFIX = cpython
+endif
+
+
+ifeq ($(TARGET),)
+	ENSURE_TARGET =
+	BUILD_OPTS = --release
+else
+	ENSURE_TARGET = rustup target add $(TARGET) --toolchain $(RUSTUP_TOOLCHAIN)
+	BUILD_OPTS = --release --target $(TARGET)
 endif
 
 .PHONY: \
@@ -103,13 +115,58 @@ build: format
 	@$(ENSURE_TARGET)
 	@$(SCRIPTS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
-	@cd $(PYTHON_DIR); RUSTUP_TOOLCHAIN=$(RUSTUP_TOOLCHAIN) maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS)
+	@cd $(PYTHON_DIR); RUSTUP_TOOLCHAIN=$(RUSTUP_TOOLCHAIN) PYTHON_IMPL=$(PYTHON_IMPL) maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS)
+	@# Rename the wheels to include the Python implementation for clarity
+	@if [ -n "$(TARGET)" ] && [ "$(PYTHON_IMPL)" = "pypy" ]; then \
+		for wheel in $(DIST_DIR)/*$(TARGET)*.whl; do \
+			if [ -f "$$wheel" ]; then \
+				new_name=$$(echo $$wheel | sed -E "s/([^\/]+)-([0-9]+\.[0-9]+\.[0-9]+.*)/\1-$(WHEEL_PREFIX)-\2/"); \
+				mv "$$wheel" "$$new_name"; \
+			fi; \
+		done; \
+	fi
 
 install: build
+ifeq ($(PYTHON_IMPL),pypy)
+	@pypy3 -m pip install --force-reinstall `ls -rt $(DIST_DIR)/*-$(WHEEL_PREFIX)-*.whl | tail -n 1 || ls -rt $(DIST_DIR)/*.whl | tail -n 1`
+else
 	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
+endif
 
 test: install
 	#@cd $(RUST_DIR); cargo test $(BUILD_OPTS)
+ifeq ($(PYTHON_IMPL),pypy)
+	@pypy3 -m unittest discover $(RUST_DIR)/pyxel-wrapper/tests
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/02_jump_game.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/03_draw_api.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/04_sound_api.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/05_color_palette.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/06_click_game.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/07_snake.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/08_triangle_api.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/09_shooter.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/10_platformer.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/11_offscreen.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/12_perlin_noise.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/13_bitmap_font.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/14_synthesizer.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/15_tiled_map_file.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/16_transform.py
+	@pypy3 -m pyxel run $(EXAMPLES_DIR)/99_flip_animation.py
+	@pypy3 -m pyxel play $(EXAMPLES_DIR)/30sec_of_daylight.pyxapp
+	@pypy3 -m pyxel play $(EXAMPLES_DIR)/megaball.pyxapp
+	@pypy3 -m pyxel play $(EXAMPLES_DIR)/8bit-bgm-gen.pyxapp
+	@pypy3 -m pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
+	@rm -rf testapp testapp.pyxapp
+	@mkdir -p testapp/assets
+	@cp $(EXAMPLES_DIR)/10_platformer.py testapp
+	@cp $(EXAMPLES_DIR)/assets/platformer.pyxres testapp/assets
+	@pypy3 -m pyxel package testapp testapp/10_platformer.py
+	@pypy3 -m pyxel play testapp.pyxapp
+	@rm -rf testapp testapp.pyxapp
+	@pypy3 -m pyxel watch $(EXAMPLES_DIR) $(EXAMPLES_DIR)/01_hello_pyxel.py
+else
 	@python3 -m unittest discover $(RUST_DIR)/pyxel-wrapper/tests
 	@pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
 	@pyxel run $(EXAMPLES_DIR)/02_jump_game.py
@@ -140,6 +197,7 @@ test: install
 	@pyxel play testapp.pyxapp
 	@rm -rf testapp testapp.pyxapp
 	@pyxel watch $(EXAMPLES_DIR) $(EXAMPLES_DIR)/01_hello_pyxel.py
+endif
 
 clean-wasm:
 	@make clean TARGET=$(WASM_TARGET)
@@ -162,3 +220,4 @@ start-test-server:
 test-wasm: build-wasm start-test-server
 
 test-remote-wasm: fetch-remote-wasm start-test-server
+

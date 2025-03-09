@@ -34,12 +34,12 @@ jobs:
             os: windows-2022
             arch: x64
             python-impl: pypy
-            python-version: "3.10"
+            python-version: "pypy3.10"
           - target: x86_64-apple-darwin
             os: macos-13
             arch: x64
             python-impl: pypy
-            python-version: "3.10"
+            python-version: "pypy3.10"
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
@@ -57,10 +57,9 @@ jobs:
           components: rustfmt
   
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          python-implementation: ${{ matrix.python-impl }}
           architecture: ${{ matrix.arch }}
 
       - name: Install Python packages
@@ -104,12 +103,12 @@ jobs:
           - target: x86_64-unknown-linux-gnu
             image: messense/manylinux2014-cross:x86_64
             python-impl: pypy
-            python-version: "3.10"
+            python-version: "pypy3.10"
           
           - target: armv7-unknown-linux-gnueabihf
             image: messense/manylinux2014-cross:armv7l
             python-impl: pypy
-            python-version: "3.10"
+            python-version: "pypy3.10"
 
     runs-on: ubuntu-22.04
     container: ${{ matrix.image }}
@@ -130,10 +129,9 @@ jobs:
           components: rustfmt
 
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          python-implementation: ${{ matrix.python-impl }}
 
       - name: Install Python packages
         run: pip install -r python/requirements.txt
