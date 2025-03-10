@@ -3,6 +3,7 @@
 ## 2.3.11
 
 - Removed the google analytics links from the web pages
+- Updated the file download check in the web version
 
 ## 2.3.10
 
