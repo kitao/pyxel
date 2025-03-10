@@ -8,22 +8,38 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # CPython builds
           - target: x86_64-pc-windows-msvc
             os: windows-2022
             arch: x64
-
+            python-impl: cpython
+            python-version: "3.12"
           - target: i686-pc-windows-msvc
             os: windows-2022
             arch: x86
-
+            python-impl: cpython
+            python-version: "3.12"
           - target: x86_64-apple-darwin
             os: macos-13
             arch: x64
-
+            python-impl: cpython
+            python-version: "3.12"
           - target: aarch64-apple-darwin
             os: macos-13
             arch: x64
-
+            python-impl: cpython
+            python-version: "3.12"
+          # PyPy builds
+          - target: x86_64-pc-windows-msvc
+            os: windows-2022
+            arch: x64
+            python-impl: pypy
+            python-version: "pypy3.10"
+          - target: x86_64-apple-darwin
+            os: macos-13
+            arch: x64
+            python-impl: pypy
+            python-version: "pypy3.10"
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out repository
@@ -39,23 +55,22 @@ jobs:
         with:
           toolchain: nightly
           components: rustfmt
-
+  
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
           architecture: ${{ matrix.arch }}
 
       - name: Install Python packages
         run: pip install -r python/requirements.txt
 
       - name: Build wheel
-        run: make TARGET=${{ matrix.target }}
-
+        run: make TARGET=${{ matrix.target }} PYTHON_IMPL=${{ matrix.python-impl }}
       - name: Upload wheel
         uses: actions/upload-artifact@v4
         with:
-          name: pyxel-${{ matrix.target }}
+          name: pyxel-${{ matrix.python-impl }}-${{ matrix.target }}
           path: dist/*
 
   build-linux:
@@ -63,17 +78,37 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # CPython builds
           - target: x86_64-unknown-linux-gnu
             image: messense/manylinux2014-cross:x86_64
+            python-impl: cpython
+            python-version: "3.12"
 
           - target: i686-unknown-linux-gnu
             image: messense/manylinux2014-cross:i686
+            python-impl: cpython
+            python-version: "3.12"
 
           - target: aarch64-unknown-linux-gnu
             image: messense/manylinux2014-cross:aarch64
+            python-impl: cpython
+            python-version: "3.12"
 
           - target: armv7-unknown-linux-gnueabihf
             image: messense/manylinux2014-cross:armv7l
+            python-impl: cpython
+            python-version: "3.12"
+
+          # PyPy builds
+          - target: x86_64-unknown-linux-gnu
+            image: messense/manylinux2014-cross:x86_64
+            python-impl: pypy
+            python-version: "pypy3.10"
+          
+          - target: armv7-unknown-linux-gnueabihf
+            image: messense/manylinux2014-cross:armv7l
+            python-impl: pypy
+            python-version: "pypy3.10"
 
     runs-on: ubuntu-22.04
     container: ${{ matrix.image }}
@@ -94,13 +129,12 @@ jobs:
           components: rustfmt
 
       - name: Install Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install Python packages
         run: pip install -r python/requirements.txt
-
       - name: Build and install SDL2
         run: |
           SDL2_VERSION=2.0.10
@@ -123,10 +157,10 @@ jobs:
         run: |
           export BINDGENFLAGS="-I/usr/${{ matrix.target }}/include/SDL2 -I/usr/${{ matrix.target }}/${{ matrix.target }}/sysroot/usr/include"
           export RUSTFLAGS="-L/usr/${{ matrix.target }}/lib"
-          make TARGET=${{ matrix.target }}
+          make TARGET=${{ matrix.target }} PYTHON_IMPL=${{ matrix.python-impl }}
 
       - name: Upload wheel
         uses: actions/upload-artifact@v4
         with:
-          name: pyxel-${{ matrix.target }}
+          name: pyxel-${{ matrix.python-impl }}-${{ matrix.target }}
           path: dist/*

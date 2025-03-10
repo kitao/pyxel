@@ -61,13 +61,26 @@ WASM_TARGET = wasm32-unknown-emscripten
 RUSTUP_TOOLCHAIN=nightly-2025-02-01
 CLIPPY_OPTS = -q --all-targets --all-features -- --no-deps
 MATURIN_OPTS = --manylinux 2014 --auditwheel skip
+PYTHON_BIN = $(if $(filter pypy,$(PYTHON_IMPL)),pypy3,python3)
+
+# Set Python implementation (cpython or pypy)
+PYTHON_IMPL ?= cpython
+
+# Add Python implementation to wheel filename for easier identification
+ifeq ($(PYTHON_IMPL),pypy)
+  MATURIN_OPTS += --interpreter pypy3
+  WHEEL_PREFIX = pypy
+else
+  WHEEL_PREFIX = cpython
+endif
+
 
 ifeq ($(TARGET),)
-ENSURE_TARGET =
-BUILD_OPTS = --release
+	ENSURE_TARGET =
+	BUILD_OPTS = --release
 else
-ENSURE_TARGET = rustup target add $(TARGET) --toolchain $(RUSTUP_TOOLCHAIN)
-BUILD_OPTS = --release --target $(TARGET)
+	ENSURE_TARGET = rustup target add $(TARGET) --toolchain $(RUSTUP_TOOLCHAIN)
+	BUILD_OPTS = --release --target $(TARGET)
 endif
 
 .PHONY: \
@@ -103,43 +116,48 @@ build: format
 	@$(ENSURE_TARGET)
 	@$(SCRIPTS_DIR)/generate_readme_abspath
 	@cp LICENSE $(PYTHON_DIR)/pyxel
-	@cd $(PYTHON_DIR); RUSTUP_TOOLCHAIN=$(RUSTUP_TOOLCHAIN) maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS)
+	@cd $(PYTHON_DIR); RUSTUP_TOOLCHAIN=$(RUSTUP_TOOLCHAIN) PYTHON_IMPL=$(PYTHON_IMPL) maturin build -o ../$(DIST_DIR) $(BUILD_OPTS) $(MATURIN_OPTS)
 
 install: build
+ifeq ($(PYTHON_IMPL),pypy)
+	@pypy3 -m pip install --force-reinstall `ls -rt $(DIST_DIR)/*-$(WHEEL_PREFIX)-*.whl | tail -n 1 || ls -rt $(DIST_DIR)/*.whl | tail -n 1`
+else
 	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
+endif
 
 test: install
 	#@cd $(RUST_DIR); cargo test $(BUILD_OPTS)
-	@python3 -m unittest discover $(RUST_DIR)/pyxel-wrapper/tests
-	@pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
-	@pyxel run $(EXAMPLES_DIR)/02_jump_game.py
-	@pyxel run $(EXAMPLES_DIR)/03_draw_api.py
-	@pyxel run $(EXAMPLES_DIR)/04_sound_api.py
-	@pyxel run $(EXAMPLES_DIR)/05_color_palette.py
-	@pyxel run $(EXAMPLES_DIR)/06_click_game.py
-	@pyxel run $(EXAMPLES_DIR)/07_snake.py
-	@pyxel run $(EXAMPLES_DIR)/08_triangle_api.py
-	@pyxel run $(EXAMPLES_DIR)/09_shooter.py
-	@pyxel run $(EXAMPLES_DIR)/10_platformer.py
-	@pyxel run $(EXAMPLES_DIR)/11_offscreen.py
-	@pyxel run $(EXAMPLES_DIR)/12_perlin_noise.py
-	@pyxel run $(EXAMPLES_DIR)/13_bitmap_font.py
-	@pyxel run $(EXAMPLES_DIR)/14_synthesizer.py
-	@pyxel run $(EXAMPLES_DIR)/15_tiled_map_file.py
-	@pyxel run $(EXAMPLES_DIR)/16_transform.py
-	@pyxel run $(EXAMPLES_DIR)/99_flip_animation.py
-	@pyxel play $(EXAMPLES_DIR)/30sec_of_daylight.pyxapp
-	@pyxel play $(EXAMPLES_DIR)/megaball.pyxapp
-	@pyxel play $(EXAMPLES_DIR)/8bit-bgm-gen.pyxapp
-	@pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
+	@$(PYTHON_BIN) -m unittest discover $(RUST_DIR)/pyxel-wrapper/tests
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/02_jump_game.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/03_draw_api.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/04_sound_api.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/05_color_palette.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/06_click_game.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/07_snake.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/08_triangle_api.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/09_shooter.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/10_platformer.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/11_offscreen.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/12_perlin_noise.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/13_bitmap_font.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/14_synthesizer.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/15_tiled_map_file.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/16_transform.py
+	@$(PYTHON_BIN) -m pyxel run $(EXAMPLES_DIR)/99_flip_animation.py
+	@$(PYTHON_BIN) -m pyxel play $(EXAMPLES_DIR)/30sec_of_daylight.pyxapp
+	@$(PYTHON_BIN) -m pyxel play $(EXAMPLES_DIR)/megaball.pyxapp
+	@$(PYTHON_BIN) -m pyxel play $(EXAMPLES_DIR)/8bit-bgm-gen.pyxapp
+	@$(PYTHON_BIN) -m pyxel edit $(EXAMPLES_DIR)/assets/sample.pyxres
 	@rm -rf testapp testapp.pyxapp
 	@mkdir -p testapp/assets
 	@cp $(EXAMPLES_DIR)/10_platformer.py testapp
 	@cp $(EXAMPLES_DIR)/assets/platformer.pyxres testapp/assets
-	@pyxel package testapp testapp/10_platformer.py
-	@pyxel play testapp.pyxapp
+	@$(PYTHON_BIN) -m pyxel package testapp testapp/10_platformer.py
+	@$(PYTHON_BIN) -m pyxel play testapp.pyxapp
 	@rm -rf testapp testapp.pyxapp
-	@pyxel watch $(EXAMPLES_DIR) $(EXAMPLES_DIR)/01_hello_pyxel.py
+	@$(PYTHON_BIN) -m pyxel watch $(EXAMPLES_DIR) $(EXAMPLES_DIR)/01_hello_pyxel.py
+
 
 clean-wasm:
 	@make clean TARGET=$(WASM_TARGET)
