@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 142,
+      "title": "L'Épopée Pixellisée",
+      "site": "https://www.pyxelstudio.net/cf2apb4z",
+      "author": "Lamorkitu93",
+      "contact": "https://github.com/Lamorkitu93",
+      "desc": "Platformer game",
+      "image": "https://github.com/user-attachments/assets/9cc84780-1e72-4484-b71b-ee8669cb8904"
+    },
+    {
       "id": 141,
       "title": "Stalker Bar",
       "site": "https://sitf.itch.io/stalkerbar",
