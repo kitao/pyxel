@@ -176,11 +176,7 @@ function _hookFileOperations(pyodide, root) {
   // Define function to copy path
   let copyPath = (path) => {
     // Check path
-    if (
-      path.startsWith("<") ||
-      path === "frozen" ||
-      path.endsWith(PYXEL_WATCH_INFO_FILE)
-    ) {
+    if (path.startsWith("<") || path.endsWith(PYXEL_WATCH_INFO_FILE)) {
       return;
     }
     if (!path.startsWith("/")) {
@@ -197,17 +193,16 @@ function _hookFileOperations(pyodide, root) {
     }
 
     // Download path
+    console.log(`Attempting to fetch '${path}'`);
     let request = new XMLHttpRequest();
     request.overrideMimeType("text/plain; charset=x-user-defined");
     request.open("GET", srcPath, false);
     try {
       request.send();
     } catch (error) {
-      console.log(`Failed to fetch '${srcPath}' (${error.name})`);
       return;
     }
     if (request.status !== 200) {
-      console.log(`Path '${srcPath}' not found`);
       return;
     }
     let fileBinary = Uint8Array.from(request.response, (c) => c.charCodeAt(0));

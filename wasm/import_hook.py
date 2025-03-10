@@ -6,7 +6,7 @@ import sys
 
 class ImportHook:
     def __init__(self):
-        self.imported_modules = {"_hashlib", "ssl"}
+        self.imported_modules = set()
         self.main_dir = None
 
     def find_spec(self, fullname, path, target=None):
@@ -43,6 +43,7 @@ class ImportHook:
             return None
 
         # Trigger file download for missing modules in the caller's directory
+        print(f"Attempting to import '{fullname}'")
         caller_dir = os.path.dirname(os.path.abspath(caller_file))
         module_name = fullname.replace(".", os.sep)
         module_path = os.path.join(caller_dir, f"{module_name}.py")
