@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.12
+
+- Added a Q&A about file loading to the FAQ
+
 ## 2.3.11
 
 - Removed the google analytics links from the web pages
