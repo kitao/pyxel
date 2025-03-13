@@ -1,6 +1,6 @@
 [package]
 name = "pyxel-engine"
-version = "2.3.11"
+version = "2.3.12"
 authors = ["Takashi Kitao <takashi.kitao@gmail.com>"]
 edition = "2021"
 description = "Core engine for Pyxel, a retro game engine for Python"
@@ -27,7 +27,7 @@ image = "0.24"
 indexmap = "2.7"
 noise = "0.9"
 parking_lot = "0.12"
-pyxel-platform = { path = "../pyxel-platform", version = "2.3.11" }
+pyxel-platform = { path = "../pyxel-platform", version = "2.3.12" }
 rand = "0.9"
 rand_xoshiro = "0.7"
 semver = "1.0"
