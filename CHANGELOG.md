@@ -4,6 +4,7 @@
 
 - Added a Q&A about file loading to the FAQ
 - Enabled screen position and size override in the web version
+- Updated the pyo3 crate to version 2.4
 
 ## 2.3.11
 
