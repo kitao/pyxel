@@ -42,15 +42,12 @@
 }
 
 div#pyxel-screen {
-  background-color: var(--pyxel-background-color);
-}
-
-.default-pyxel-screen {
   position: absolute;
   left: 0%;
   top: 0%;
   width: 100%;
   height: 100%;
+  background-color: var(--pyxel-background-color);
 }
 
 canvas#canvas {
