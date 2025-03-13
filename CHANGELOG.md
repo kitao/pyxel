@@ -3,6 +3,7 @@
 ## 2.3.12
 
 - Added a Q&A about file loading to the FAQ
+- Enabled screen position and size override in the web version
 
 ## 2.3.11
 

@@ -103,7 +103,6 @@ async function _createScreenElements() {
   if (!pyxelScreen) {
     pyxelScreen = document.createElement("div");
     pyxelScreen.id = "pyxel-screen";
-    pyxelScreen.classList.add("default-pyxel-screen");
     if (!document.body) {
       document.body = document.createElement("body");
     }
