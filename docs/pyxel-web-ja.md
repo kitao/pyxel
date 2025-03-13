@@ -150,3 +150,5 @@ python -m http.server
 ```html
 <pyxel-edit root="assets" name="sample.pyxres" editor="image"></pyxel-edit>
 ```
+
+Pyxel を実行する HTML ファイルに`id="pyxel-screen"`の`<div>`タグを追加すると、その要素を Pyxel の画面として使用します。この`<div>`タグの位置やサイズを調整することで、Pyxel の画面の配置や大きさを変更できます。

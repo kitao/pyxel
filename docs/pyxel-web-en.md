@@ -150,3 +150,5 @@ For example, to edit the `shooter.pyxres` file in the `assets` directory with th
 ```html
 <pyxel-edit root="assets" name="sample.pyxres" editor="image"></pyxel-edit>
 ```
+
+If you add a `<div>` tag with `id="pyxel-screen"` to an HTML file running Pyxel, that element will be used as the Pyxel screen. By adjusting the position and size of this `<div>` tag, you can change the placement and dimensions of the Pyxel screen.
