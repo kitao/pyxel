@@ -179,8 +179,8 @@ impl SDL2BindingsBuilder {
                 .skip_while(|&flag| !flag.starts_with("-isystem"))
                 .nth(1)
                 .unwrap();
-            include_flags.push("-I".to_string() + sdl2_include_flag);
             include_flags.push("-I".to_string() + sdl2_include_flag + "/..");
+            include_flags.push("-I".to_string() + sdl2_include_flag);
         } else {
             include_flags.push("-I/usr/local/include".to_string());
             include_flags.push("-I/usr/include".to_string());
