@@ -103,6 +103,9 @@ async function _createScreenElements() {
   if (!pyxelScreen) {
     pyxelScreen = document.createElement("div");
     pyxelScreen.id = "pyxel-screen";
+    if (!document.body) {
+      document.body = document.createElement("body");
+    }
     document.body.appendChild(pyxelScreen);
   }
   pyxelScreen.oncontextmenu = (event) => event.preventDefault();

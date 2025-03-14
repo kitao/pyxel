@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.3.13
+
+- Modifed the inclusion order of SDL.h
+- Fixed a bug in the app2html command
+
 ## 2.3.12
 
 - Added a Q&A about file loading to the FAQ
