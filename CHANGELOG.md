@@ -3,7 +3,7 @@
 ## 2.3.13
 
 - Modifed the inclusion order of SDL.h
-- Fixed a bug in the app2html command
+- Fixed a bug that broke the app2html command
 
 ## 2.3.12
 
