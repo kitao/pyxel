@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.14
+
+- Added warnings for invalid keys in btn-related functions
+
 ## 2.3.13
 
 - Modifed the inclusion order of SDL.h
