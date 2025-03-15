@@ -40,7 +40,7 @@ impl Input {
 impl Pyxel {
     pub fn btn(&mut self, key: Key) -> bool {
         if self.is_analog_key(key) {
-            BTN_ONCE.call_once(|| println!("btn is called with an analog key 0x{:X}", key));
+            BTN_ONCE.call_once(|| println!("btn is called with an analog key 0x{key:X}"));
         }
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Pressed
@@ -60,7 +60,7 @@ impl Pyxel {
         repeat_frame_count: Option<u32>,
     ) -> bool {
         if self.is_analog_key(key) {
-            BTNP_ONCE.call_once(|| println!("btnp is called with an analog key 0x{:X}", key));
+            BTNP_ONCE.call_once(|| println!("btnp is called with an analog key 0x{key:X}"));
         }
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Released {
@@ -87,7 +87,7 @@ impl Pyxel {
 
     pub fn btnr(&mut self, key: Key) -> bool {
         if self.is_analog_key(key) {
-            BTNR_ONCE.call_once(|| println!("btnr is called with an analog key 0x{:X}", key));
+            BTNR_ONCE.call_once(|| println!("btnr is called with an analog key 0x{key:X}"));
         }
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Pressed {
@@ -102,7 +102,7 @@ impl Pyxel {
 
     pub fn btnv(&mut self, key: Key) -> KeyValue {
         if !self.is_analog_key(key) {
-            BTNV_ONCE.call_once(|| println!("btnv is called with a non-analog key 0x{:X}", key));
+            BTNV_ONCE.call_once(|| println!("btnv is called with a non-analog key 0x{key:X}"));
         }
         self.input.key_values.get(&key).copied().unwrap_or(0)
     }
