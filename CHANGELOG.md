@@ -4,6 +4,7 @@
 
 - Added warnings for invalid keys in btn-related functions
 - Added version number output on startup in the web version
+- Updated the image crate to version 0.25
 
 ## 2.3.13
 
