@@ -3,6 +3,7 @@
 ## 2.3.14
 
 - Added warnings for invalid keys in btn-related functions
+- Added version number output on startup in the web version
 
 ## 2.3.13
 
