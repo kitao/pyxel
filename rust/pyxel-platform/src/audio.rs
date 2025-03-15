@@ -42,7 +42,7 @@ pub fn start_audio(
     platform().audio_device_id =
         unsafe { SDL_OpenAudioDevice(null_mut(), 0, &desired, obtained.as_mut_ptr(), 0) };
     if platform().audio_device_id == 0 {
-        println!("PyxelWarning: Failed to initialize audio device");
+        println!("Failed to initialize audio device");
     }
     set_audio_enabled(true);
 }
