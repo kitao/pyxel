@@ -40,7 +40,9 @@ function _setStyleSheet() {
 }
 
 async function launchPyxel(params) {
-  console.log("Launch Pyxel");
+  const pyxel_version = PYXEL_WHEEL_PATH.match(/pyxel-([\d.]+)-/)[1];
+  const pyodide_version = PYODIDE_URL.match(/v([\d.]+)\//)[1];
+  console.log(`Launch Pyxel ${pyxel_version} with Pyodide ${pyodide_version}`);
   console.log(params);
   _allowGamepadConnection();
   _suppressPinchOperations();
