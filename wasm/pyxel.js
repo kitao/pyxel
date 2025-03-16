@@ -49,6 +49,7 @@ async function launchPyxel(params) {
   let canvas = await _createScreenElements();
   let pyodide = await _loadPyodideAndPyxel(canvas);
   _hookFileOperations(pyodide, params.root || ".");
+  _resumeAudioOnInput();
   await _waitForInput();
   await _executePyxelCommand(pyodide, params);
 }
@@ -253,6 +254,18 @@ function _hookFileOperations(pyodide, root) {
       URL.revokeObjectURL(a.href);
     }, 2000);
   };
+}
+
+function _resumeAudioOnInput() {
+  let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  let resumeAudio = () => {
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+  };
+  ["keydown", "click", "touchstart"].forEach((event) =>
+    document.addEventListener(event, resumeAudio)
+  );
 }
 
 function _isTouchDevice() {
