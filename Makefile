@@ -20,7 +20,6 @@
 #	- Emscripten 3.1.58 (the same version used Pyodide)
 #
 # Advance Preparation:
-#	rustup install nightly
 #	git clone --depth=1 https://github.com/kitao/pyxel
 #	cd pyxel
 #	(Create and activate a venv if you prefer)
