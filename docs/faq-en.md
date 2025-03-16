@@ -51,14 +51,6 @@ The `update` function is called every frame, but the `draw` function may be skip
 </details>
 
 <details>
-<summary>File cannot be loaded. It may fail when the environment changes.</summary>
-
-Make sure that the current directory is set as intended when loading files.<br>
-When Pyxel's `init` function is called, the current directory is changed to the same location as the script file. After that, files can be specified using relative paths. However, loading may fail if you try to open a file before calling `init` or if the current directory is changed after calling `init`.
-
-</details>
-
-<details>
 <summary>What are the types and usage of Pyxel's MML commands?</summary>
 
 The following are the types of commands available for use with the `mml` method of the Sound class:
@@ -101,6 +93,16 @@ The following are the types of commands available for use with the `mml` method 
   Written after a note, plays it with vibrato.
 - `&`<br>
   Ties the next note if it has the same pitch, or slurs it if the pitch is different.
+
+</details>
+
+## File Operations and Data Management
+
+<details>
+<summary>File cannot be loaded. It may fail when the environment changes.</summary>
+
+Make sure that the current directory is set as intended when loading files.<br>
+When Pyxel's `init` function is called, the current directory is changed to the same location as the script file. After that, files can be specified using relative paths. However, loading may fail if you try to open a file before calling `init` or if the current directory is changed after calling `init`.
 
 </details>
 
