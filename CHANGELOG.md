@@ -3,6 +3,7 @@
 ## 2.3.15
 
 - Organized the FAQ section
+- Fixed audio resuming in the web version
 
 ## 2.3.14
 
