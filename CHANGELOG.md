@@ -8,7 +8,7 @@
 
 ## 2.3.13
 
-- Modifed the inclusion order of SDL.h
+- Modified the inclusion order of SDL.h
 - Fixed a bug that broke the app2html command
 
 ## 2.3.12
@@ -19,7 +19,7 @@
 
 ## 2.3.11
 
-- Removed the google analytics links from the web pages
+- Removed the Google Analytics links from the web pages
 - Updated the file download check in the web version
 
 ## 2.3.10
