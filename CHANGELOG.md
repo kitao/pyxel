@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.15
+
+- Organized the FAQ section
+
 ## 2.3.14
 
 - Added warnings for invalid keys in btn-related functions
