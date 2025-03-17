@@ -5,7 +5,7 @@ use crate::oscillator::{Effect, Gain, ToneIndex};
 use crate::tone::{Noise, Waveform};
 
 // System
-pub const VERSION: &str = "2.3.15";
+pub const VERSION: &str = "2.3.16";
 pub const BASE_DIR: &str = ".pyxel";
 pub const WATCH_INFO_FILE_ENVVAR: &str = "PYXEL_WATCH_INFO_FILE";
 pub const DEFAULT_TITLE: &str = "Pyxel";
