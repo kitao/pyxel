@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.16
+
+- Modifed the audio resume processing for the web version
+
 ## 2.3.15
 
 - Organized the FAQ section
