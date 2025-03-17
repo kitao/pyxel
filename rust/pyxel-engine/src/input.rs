@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::sync::Once;
 
 use crate::keys::{
     Key, KeyValue, GAMEPAD_KEY_INDEX_INTERVAL, GAMEPAD_KEY_START_INDEX, MOUSE_KEY_START_INDEX,
@@ -15,11 +14,6 @@ enum KeyState {
     PressedAndReleased,
     ReleasedAndPressed,
 }
-
-static BTN_ONCE: Once = Once::new();
-static BTNP_ONCE: Once = Once::new();
-static BTNR_ONCE: Once = Once::new();
-static BTNV_ONCE: Once = Once::new();
 
 pub struct Input {
     mouse_visible: bool,
@@ -39,9 +33,10 @@ impl Input {
 
 impl Pyxel {
     pub fn btn(&mut self, key: Key) -> bool {
-        if self.is_analog_key(key) {
-            BTN_ONCE.call_once(|| println!("btn is called with an analog key 0x{key:X}"));
-        }
+        assert!(
+            !self.is_analog_key(key),
+            "btn is called with an analog key 0x{key:X}"
+        );
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Pressed
                 || *key_state == KeyState::ReleasedAndPressed
@@ -59,9 +54,10 @@ impl Pyxel {
         hold_frame_count: Option<u32>,
         repeat_frame_count: Option<u32>,
     ) -> bool {
-        if self.is_analog_key(key) {
-            BTNP_ONCE.call_once(|| println!("btnp is called with an analog key 0x{key:X}"));
-        }
+        assert!(
+            !self.is_analog_key(key),
+            "btnp is called with an analog key 0x{key:X}"
+        );
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Released {
                 return false;
@@ -86,9 +82,10 @@ impl Pyxel {
     }
 
     pub fn btnr(&mut self, key: Key) -> bool {
-        if self.is_analog_key(key) {
-            BTNR_ONCE.call_once(|| println!("btnr is called with an analog key 0x{key:X}"));
-        }
+        assert!(
+            !self.is_analog_key(key),
+            "btnr is called with an analog key 0x{key:X}"
+        );
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Pressed {
                 return false;
@@ -101,9 +98,10 @@ impl Pyxel {
     }
 
     pub fn btnv(&mut self, key: Key) -> KeyValue {
-        if !self.is_analog_key(key) {
-            BTNV_ONCE.call_once(|| println!("btnv is called with a non-analog key 0x{key:X}"));
-        }
+        assert!(
+            self.is_analog_key(key),
+            "btnv is called with a non-analog key 0x{key:X}"
+        );
         self.input.key_values.get(&key).copied().unwrap_or(0)
     }
 
