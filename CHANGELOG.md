@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.17
+
+- Changed btn-related functions to use assert
+
 ## 2.3.16
 
 - Modified the audio resume processing for the web version
