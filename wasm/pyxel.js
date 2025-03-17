@@ -260,13 +260,15 @@ function _resumeAudioOnInput() {
   let audioContext = new (window.AudioContext || window.webkitAudioContext)();
   let resumeAudio = () => {
     if (audioContext.state === "suspended") {
-      let oscillator = audioContext.createOscillator();
-      let gainNode = audioContext.createGain();
-      gainNode.gain.setValueAtTime(0.0001, audioContext.currentTime);
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      oscillator.start();
-      oscillator.stop(audioContext.currentTime + 0.01);
+      audioContext.resume().then(() => {
+        let oscillator = audioContext.createOscillator();
+        let gainNode = audioContext.createGain();
+        gainNode.gain.setValueAtTime(0.0001, audioContext.currentTime);
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.01);
+      });
     }
   };
   ["keydown", "click", "touchstart"].forEach((event) =>

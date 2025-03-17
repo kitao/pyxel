@@ -2,7 +2,7 @@
 
 ## 2.3.16
 
-- Modifed the audio resume processing for the web version
+- Modified the audio resume processing for the web version
 
 ## 2.3.15
 
