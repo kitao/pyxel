@@ -3,6 +3,7 @@
 ## 2.3.17
 
 - Changed btn-related functions to use assert
+- Removed autoplay code from the web version
 
 ## 2.3.16
 
