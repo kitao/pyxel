@@ -4,6 +4,7 @@
 
 - Added SDL2 include paths for Linux
 - Fixed relative path handling in the watch command
+- Updated the message image
 
 ## 2.3.17
 
