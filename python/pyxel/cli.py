@@ -165,6 +165,7 @@ def _timestamps_in_dir(dirname):
 
 
 def _run_python_script_in_separate_process(python_script_file):
+    python_script_file = os.path.abspath(python_script_file)
     worker = multiprocessing.Process(
         target=run_python_script, args=(python_script_file,)
     )
