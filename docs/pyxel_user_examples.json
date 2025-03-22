@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 144,
+      "title": "Number Link",
+      "site": "https://github.com/ku-ron/pyxel_minigames/blob/main/main/numberlink/readme.md",
+      "author": "ku-ron",
+      "contact": "https://github.com/ku-ron",
+      "desc": "Puzzle game, connecting matching numbers with a line",
+      "image": "https://github.com/user-attachments/assets/5b6ab5f0-7bb7-4a9e-b791-5344486c8a15"
+    },
+    {
       "id": 143,
       "title": "Gem'X Pyxel Clone",
       "site": "https://sanbunnoichi1962.web.fc2.com/pyxel_contents.html#gemx",
