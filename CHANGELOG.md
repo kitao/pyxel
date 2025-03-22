@@ -3,6 +3,7 @@
 ## 2.3.18
 
 - Added SDL2 include paths for Linux
+- Fixed relative path handling in the watch command
 
 ## 2.3.17
 
@@ -202,7 +203,7 @@
 
 ## 2.2.1
 
-- Added the pyxel watch command description to the READMEs
+- Added the watch command description to the READMEs
 - Removed an unnecessary line in Example 14
 - Added the Font class
 - Added a font option to the text function
