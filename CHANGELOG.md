@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.18
+
+- Added SDL2 include paths for Linux
+
 ## 2.3.17
 
 - Changed btn-related functions to use assert

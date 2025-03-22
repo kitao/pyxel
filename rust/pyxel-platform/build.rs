@@ -182,8 +182,14 @@ impl SDL2BindingsBuilder {
             include_flags.push("-I".to_string() + sdl2_include_flag + "/..");
             include_flags.push("-I".to_string() + sdl2_include_flag);
         } else {
-            include_flags.push("-I/usr/local/include".to_string());
-            include_flags.push("-I/usr/include".to_string());
+            for path in [
+                "/usr/local/include/SDL2",
+                "/usr/include/SDL2",
+                "/usr/local/include",
+                "/usr/include",
+            ] {
+                include_flags.push(format!("-I{}", path));
+            }
         }
         include_flags
     }
