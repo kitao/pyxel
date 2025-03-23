@@ -13,7 +13,7 @@
 
 사양은 복고풍 게임 콘솔에서 영감을 받아 16색만 지원하고 4개의 사운드 채널을 사용할 수 있어 픽셀 아트 스타일의 게임 제작을 쉽게 즐길 수 있습니다.
 
-[<img src="images/pyxel_message.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
+[<img src="images/pyxel_thanks.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 Pyxel 개발은 사용자 피드백에 의해 이루어집니다. GitHub에서 Pyxel에 별을 주세요!
 
