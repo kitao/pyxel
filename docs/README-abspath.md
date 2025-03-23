@@ -13,7 +13,7 @@
 
 With simple specifications inspired by retro gaming consoles, such as displaying only 16 colors and supporting 4 sound channels, you can easily enjoy making pixel-art-style games.
 
-[<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/pyxel_message.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
+[<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/pyxel_thanks.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="https://raw.githubusercontent.com/kitao/pyxel/main//docs/images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 The development of Pyxel is driven by user feedback. Please give Pyxel a star on GitHub!
 

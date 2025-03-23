@@ -13,7 +13,7 @@
 
 其规格受到复古游戏机的启发，例如仅支持 16 种颜色和 4 个音轨，同时可以轻松享受制作像素艺术风格游戏的乐趣。
 
-[<img src="images/pyxel_message.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
+[<img src="images/pyxel_thanks.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 Pyxel 的开发得益于用户的反馈。请在 GitHub 上给 Pyxel 评分！
 

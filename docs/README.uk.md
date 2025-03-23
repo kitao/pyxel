@@ -13,7 +13,7 @@
 
 Специфікації натхнені ретро-ігровими консолями, такими як підтримка лише 16 кольорів та 4 звукових канали, що дозволяє легко насолоджуватися створенням ігор у стилі піксельної графіки.
 
-[<img src="images/pyxel_message.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
+[<img src="images/pyxel_thanks.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 Розробка Pyxel здійснюється на основі відгуків користувачів. Будь ласка, поставте Pyxel зірку на GitHub!
 
