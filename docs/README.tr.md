@@ -46,6 +46,7 @@ Pyxel, [MIT Lisansı](../LICENSE) altında açık kaynaklıdır ve ücretsiz ola
 
 - Windows, Mac, Linux ve Web üzerinde çalışır
 - Python ile programlama
+- Özelleştirilebilir ekran boyutu
 - 16 renk paleti
 - 3 adet 256x256 boyutunda görüntü bankası
 - 8 adet 256x256 boyutunda karo haritası
