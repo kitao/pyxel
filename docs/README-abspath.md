@@ -46,6 +46,7 @@ Pyxel is open source under the [MIT License](https://github.com/kitao/pyxel/blob
 
 - Runs on Windows, Mac, Linux, and Web
 - Programming in Python
+- Customizable screen size
 - 16-color palette
 - 3 256x256-sized image banks
 - 8 256x256-sized tilemaps

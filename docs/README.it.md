@@ -46,6 +46,7 @@ Pyxel è open source sotto la [Licenza MIT](../LICENSE) ed è gratuito da usare.
 
 - Funziona su Windows, Mac, Linux e Web
 - Programmazione in Python
+- Dimensione dello schermo personalizzabile
 - Palette di 16 colori
 - 3 banche di immagini di 256x256
 - 8 mappe a tessere di 256x256
