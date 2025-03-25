@@ -13,7 +13,7 @@
 
 Özellikler, yalnızca 16 renk desteği ve 4 ses kanalıyla retro oyun konsollarından ilham alınarak tasarlanmıştır, böylece piksel sanat tarzı oyunlar yapmayı kolayca keyifle yaşayabilirsiniz.
 
-[<img src="images/pyxel_message.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
+[<img src="images/pyxel_thanks.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 Pyxel'in geliştirilmesi, kullanıcı geri bildirimleriyle yönlendirilmektedir. Lütfen GitHub'da Pyxel'e bir yıldız verin!
 
@@ -46,6 +46,7 @@ Pyxel, [MIT Lisansı](../LICENSE) altında açık kaynaklıdır ve ücretsiz ola
 
 - Windows, Mac, Linux ve Web üzerinde çalışır
 - Python ile programlama
+- Özelleştirilebilir ekran boyutu
 - 16 renk paleti
 - 3 adet 256x256 boyutunda görüntü bankası
 - 8 adet 256x256 boyutunda karo haritası

@@ -13,7 +13,7 @@
 
 As especificações são inspiradas em consoles de jogos retro, como o suporte para apenas 16 cores e 4 canais de som, permitindo que você desfrute facilmente da criação de jogos com estilo de arte em pixel.
 
-[<img src="images/pyxel_message.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
+[<img src="images/pyxel_thanks.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 O desenvolvimento do Pyxel é impulsionado pelo feedback dos usuários. Por favor, dê uma estrela ao Pyxel no GitHub!
 
@@ -46,6 +46,7 @@ O Pyxel é de código aberto sob a [Licença MIT](../LICENSE) e é gratuito para
 
 - Funciona no Windows, Mac, Linux e Web
 - Programação em Python
+- Tamanho de tela personalizável
 - Paleta de 16 cores
 - 3 bancos de imagem de 256x256
 - 8 mapas de blocos de 256x256

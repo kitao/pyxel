@@ -13,7 +13,7 @@
 
 使える色は 16 色のみ、同時に再生できる音は 4 音までなど、レトロゲーム機を意識したシンプルな仕様で、Python を使ってドット絵スタイルのゲームづくりが気軽に楽しめます。
 
-[<img src="images/pyxel_message.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
+[<img src="images/pyxel_thanks.png" width="460">](https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples) [<img src="images/pyxel_book.png" width="180">](https://gihyo.jp/book/2025/978-4-297-14657-3)
 
 Pyxel 開発のモチベーションは、ユーザーの皆さんからのフィードバックです。GitHub で Pyxel へのスター登録をぜひお願いします！
 
@@ -46,6 +46,7 @@ Pyxel は[MIT ライセンス](../LICENSE)のオープンソースで、無料�
 
 - Windows、Mac、Linux、Web で動作
 - Python によるプログラミング
+- 任意の画面サイズ
 - 16 色パレット
 - 256x256 サイズ、3 イメージバンク
 - 256x256 サイズ、8 タイルマップ

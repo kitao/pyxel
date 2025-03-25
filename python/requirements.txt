@@ -1,5 +1,6 @@
 maturin
 mypy
+pillow
 pyinstaller
 requests
 ruff

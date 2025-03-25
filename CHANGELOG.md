@@ -5,6 +5,7 @@
 - Added SDL2 include paths for Linux
 - Fixed relative path handling in the watch command
 - Updated the message image
+- Added a screen size specification to the READMEs
 
 ## 2.3.17
 
