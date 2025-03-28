@@ -57,7 +57,7 @@ def generate_markdown_table(entries):
     return "\n".join(markdown_lines)
 
 
-def generate_pyxel_user_examples():
+def generate_user_examples():
     os.chdir(pathlib.Path(__file__).parent / ROOT_DIR)
     with open(PYXEL_USER_EXAMPLES_JSON, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -83,4 +83,4 @@ def generate_pyxel_user_examples():
 
 
 if __name__ == "__main__":
-    generate_pyxel_user_examples()
+    generate_user_examples()
