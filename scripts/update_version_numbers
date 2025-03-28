@@ -16,9 +16,9 @@ def replace_file(file, pattern, repl):
         f.write(code)
 
 
-def set_version_numbers():
+def update_version_numbers():
     if len(sys.argv) < 2:
-        print("set_version_numbers version")
+        print("update_version_numbers version")
         sys.exit(1)
     os.chdir(pathlib.Path(__file__).parent / ROOT_DIR)
     version = sys.argv[1]
@@ -42,4 +42,4 @@ def set_version_numbers():
 
 
 if __name__ == "__main__":
-    set_version_numbers()
+    update_version_numbers()
