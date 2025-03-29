@@ -20,6 +20,7 @@ fn macos_link_search_path() -> Option<String> {
         .arg("--print-search-dirs")
         .output()
         .ok()?;
+
     if !output.status.success() {
         println!(
             "failed to run 'clang --print-search-dirs', continuing without a link search path"

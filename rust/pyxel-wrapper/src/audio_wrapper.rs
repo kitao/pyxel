@@ -30,6 +30,7 @@ fn play(
             pyxel().channels.lock()[ch as usize].lock().play(sounds, tick, r#loop.unwrap_or(false), resume.unwrap_or(false));
         })
     }
+
     Ok(())
 }
 
@@ -62,6 +63,7 @@ fn channel(ch: u32) -> Channel {
     CHANNEL_ONCE.call_once(|| {
         println!("pyxel.channel(ch) is deprecated, use pyxel.channels[ch] instead.");
     });
+
     Channel::wrap(pyxel().channels.lock()[ch as usize].clone())
 }
 
@@ -70,6 +72,7 @@ fn sound(snd: u32) -> Sound {
     SOUND_ONCE.call_once(|| {
         println!("pyxel.sound(snd) is deprecated, use pyxel.sounds[snd] instead.");
     });
+
     Sound::wrap(pyxel().sounds.lock()[snd as usize].clone())
 }
 
@@ -78,6 +81,7 @@ fn music(msc: u32) -> Music {
     MUSIC_ONCE.call_once(|| {
         println!("pyxel.music(msc) is deprecated, use pyxel.musics[msc] instead.");
     });
+
     Music::wrap(pyxel().musics.lock()[msc as usize].clone())
 }
 
