@@ -17,6 +17,7 @@ impl App {
             None,
             None,
         );
+
         pyxel.mouse(true);
         pyxel.warp_mouse(10.0, 10.0);
 
@@ -36,6 +37,7 @@ impl App {
             "vffn fnff vffs vfnn",
             25,
         );
+
         pyxel.sounds.lock()[1].lock().set(
             "r a1b1c2 b1b1c2d2 g2g2g2g2 c2c2d2e2 f2f2f2e2 f2e2d2c2 d2d2d2d2 g2g2r r ",
             "s",
@@ -43,6 +45,7 @@ impl App {
             "nnff vfff vvvv vfff svff vfff vvvv svnn",
             25,
         );
+
         pyxel.sounds.lock()[2].lock().set(
             "c1g1c1g1 c1g1c1g1 b0g1b0g1 b0g1b0g1 a0e1a0e1 a0e1a0e1 g0d1g0d1 g0d1g0d1",
             "t",
@@ -50,6 +53,7 @@ impl App {
             "n",
             25,
         );
+
         pyxel.sounds.lock()[3].lock().set(
             "f0c1f0c1 g0d1g0d1 c1g1c1g1 a0e1a0e1 f0c1f0c1 f0c1f0c1 g0d1g0d1 g0d1g0d1",
             "t",
@@ -57,6 +61,7 @@ impl App {
             "n",
             25,
         );
+
         pyxel.sounds.lock()[4].lock().set(
             "f0ra4r f0ra4r f0ra4r f0f0a4r",
             "n",
@@ -88,6 +93,7 @@ impl PyxelCallback for App {
 
     fn draw(&mut self, pyxel: &mut Pyxel) {
         pyxel.cls(3);
+
         pyxel.pset(self.x, 20.0, 7);
         pyxel.rect(self.x + 10.0, 25.0, 15.0, 10.0, 8);
         pyxel.rectb(self.x + 15.0, 45.0, 15.0, 10.0, pyxel::COLOR_WHITE);
