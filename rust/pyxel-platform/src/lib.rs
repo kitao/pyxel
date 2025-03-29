@@ -14,16 +14,18 @@
 )]
 
 mod audio;
-#[cfg(target_os = "emscripten")]
-pub mod emscripten;
 mod event;
 mod gamepad;
 mod keyboard;
-pub mod keys;
 mod mouse;
 mod platform;
 mod sdl2_sys;
 mod window;
+
+pub mod keys;
+
+#[cfg(target_os = "emscripten")]
+pub mod emscripten;
 
 pub use crate::audio::{set_audio_enabled, start_audio, AudioCallback};
 pub use crate::event::{poll_events, Event};

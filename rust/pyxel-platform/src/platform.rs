@@ -30,6 +30,7 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
         unsafe { SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER,) } >= 0,
         "Failed to initialize SDL2"
     );
+
     let mut display_mode = SDL_DisplayMode {
         format: 0,
         w: 0,
@@ -41,10 +42,13 @@ pub fn init<'a, F: FnOnce(u32, u32) -> (&'a str, u32, u32)>(window_params: F) {
         unsafe { SDL_GetCurrentDisplayMode(0, addr_of_mut!(display_mode)) } == 0,
         "Failed to get display size"
     );
+
     let (title, width, height) = window_params(display_mode.w as u32, display_mode.h as u32);
+
     let window = init_window(title, width, height);
     let glow_context = init_glow(window);
     let gamepads = init_gamepads();
+
     unsafe {
         PLATFORM = transmute::<Box<Platform>, *mut Platform>(Box::new(Platform {
             window,
