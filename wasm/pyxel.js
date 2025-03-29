@@ -44,10 +44,13 @@ async function launchPyxel(params) {
   const pyodide_version = PYODIDE_URL.match(/v([\d.]+)\//)[1];
   console.log(`Launch Pyxel ${pyxel_version} with Pyodide ${pyodide_version}`);
   console.log(params);
+
   _allowGamepadConnection();
   _suppressPinchOperations();
+
   let canvas = await _createScreenElements();
   let pyodide = await _loadPyodideAndPyxel(canvas);
+
   _hookFileOperations(pyodide, params.root || ".");
   await _waitForInput();
   await _executePyxelCommand(pyodide, params);
@@ -65,6 +68,7 @@ function _suppressPinchOperations() {
       event.preventDefault();
     }
   };
+
   document.addEventListener("touchstart", touchHandler, { passive: false });
   document.addEventListener("touchmove", touchHandler, { passive: false });
 }
@@ -74,6 +78,7 @@ function _setMinWidthFromRatio(selector, screenSize) {
   if (!elem) {
     return;
   }
+
   let minWidthRatio = parseFloat(
     getComputedStyle(elem).getPropertyValue("--min-width-ratio")
   );
@@ -84,6 +89,7 @@ function _updateScreenElementsSize() {
   let pyxelScreen = document.querySelector("div#pyxel-screen");
   let { width, height } = pyxelScreen.getBoundingClientRect();
   let screenSize = Math.max(width, height);
+
   _setMinWidthFromRatio("img#pyxel-logo", screenSize);
   _setMinWidthFromRatio("img#pyxel-prompt", screenSize);
   _setMinWidthFromRatio("img#pyxel-gamepad-cross", screenSize);
@@ -110,6 +116,7 @@ async function _createScreenElements() {
     }
     document.body.appendChild(pyxelScreen);
   }
+
   pyxelScreen.oncontextmenu = (event) => event.preventDefault();
   window.addEventListener("resize", _updateScreenElementsSize);
 
@@ -146,12 +153,15 @@ async function _loadPyodideAndPyxel(canvas) {
   pyodide._api._skip_unwind_fatal_error = true;
   pyodide.canvas.setCanvas2D(canvas);
   await pyodide.loadPackage(_scriptDir() + PYXEL_WHEEL_PATH);
+
   let FS = pyodide.FS;
   FS.mkdir(PYXEL_WORKING_DIRECTORY);
   FS.chdir(PYXEL_WORKING_DIRECTORY);
+
   let response = await fetch(_scriptDir() + IMPORT_HOOK_PATH);
   let code = await response.text();
   pyodide.runPython(code);
+
   return pyodide;
 }
 
@@ -267,6 +277,7 @@ async function _waitForInput() {
   let pyxelScreen = document.querySelector("div#pyxel-screen");
   let logoImage = document.querySelector("img#pyxel-logo");
   logoImage.remove();
+
   let promptImage = document.createElement("img");
   promptImage.id = "pyxel-prompt";
   promptImage.src =
@@ -275,6 +286,7 @@ async function _waitForInput() {
   await _waitForEvent(promptImage, "load");
   pyxelScreen.appendChild(promptImage);
   _updateScreenElementsSize();
+
   await _waitForEvent(document.body, "click");
   promptImage.remove();
   await new Promise((resolve) => setTimeout(resolve, 0));
@@ -284,6 +296,7 @@ async function _installBuiltinPackages(pyodide, packages) {
   if (!packages) {
     return;
   }
+
   await pyodide.loadPackage(packages.split(","));
 }
 
@@ -374,6 +387,7 @@ function _addVirtualGamepad(mode) {
     }
     event.preventDefault();
   };
+
   document.addEventListener("touchstart", touchHandler, { passive: false });
   document.addEventListener("touchmove", touchHandler, { passive: false });
   document.addEventListener("touchend", touchHandler, { passive: false });
@@ -383,6 +397,7 @@ function _copyFileFromBase64(pyodide, name, base64) {
   if (!name || !base64) {
     return;
   }
+
   let filename = `${PYXEL_WORKING_DIRECTORY}/${name}`;
   let binary = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
   pyodide.FS.writeFile(filename, binary, { encoding: "binary" });
@@ -392,10 +407,13 @@ async function _executePyxelCommand(pyodide, params) {
   if (params.command === "run" || params.command === "play") {
     await _installBuiltinPackages(pyodide, params.packages);
   }
+
   if (params.command === "run" || params.command === "play") {
     _addVirtualGamepad(params.gamepad);
   }
+
   _copyFileFromBase64(pyodide, params.name, params.base64);
+
   let pythonCode = "";
   switch (params.command) {
     case "run":
@@ -408,12 +426,14 @@ async function _executePyxelCommand(pyodide, params) {
         pythonCode = params.script;
       }
       break;
+
     case "play":
       pythonCode = `
         import pyxel.cli
         pyxel.cli.play_pyxel_app("${params.name}")
       `;
       break;
+
     case "edit":
       document.addEventListener("keydown", (event) => {
         if ((event.ctrlKey || event.metaKey) && event.key === "s") {

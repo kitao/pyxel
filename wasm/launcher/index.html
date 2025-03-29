@@ -90,6 +90,7 @@
         ).value;
         const launchUrlHref = document.getElementById("launch-url");
         launchUrlHref.textContent = launchUrlHref.href = "";
+
         if (
           !startupFile.startsWith("https://github.com/") ||
           !(startupFile.endsWith(".py") || startupFile.endsWith(".pyxapp")) ||
@@ -97,6 +98,7 @@
         ) {
           return;
         }
+
         const paths = startupFile.split("/");
         const dottedPath = paths.slice(3, 5).concat(paths.slice(7)).join(".");
         const filePath = dottedPath.split(".").slice(0, -1).join(".");
@@ -104,17 +106,21 @@
         var launchUrl = "https://kitao.github.io/pyxel/wasm/launcher/?";
         launchUrl += fileExt == "py" ? "run" : "play";
         launchUrl += "=" + filePath;
+
         if (virtualGamepad) {
           launchUrl += "&gamepad=enabled";
         }
+
         if (additionalPackages != "") {
           launchUrl += "&packages=" + additionalPackages;
         }
+
         launchUrlHref.textContent = launchUrlHref.href = launchUrl;
       }
 
       let queries = new URL(document.location).searchParams;
       let command, paths, ext;
+
       if (queries.get("run")) {
         command = "run";
         paths = queries.get("run").split(".");
@@ -130,6 +136,7 @@
       } else {
         printUsage();
       }
+
       if (command) {
         launchPyxel({
           root: "https://cdn.jsdelivr.net/gh/" + paths.slice(0, 2).join("/"),
