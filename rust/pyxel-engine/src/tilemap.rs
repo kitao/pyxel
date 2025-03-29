@@ -48,6 +48,7 @@ impl Tilemap {
         let width = simplify_string(data_str[0]).len() as u32 / 4;
         let height = data_str.len() as u32;
         let tilemap = Self::new(width, height, self.imgsrc.clone());
+
         {
             let mut tilemap = tilemap.lock();
             for y in 0..height {
@@ -66,6 +67,7 @@ impl Tilemap {
                 }
             }
         }
+
         self.blt(
             x as f64,
             y as f64,
@@ -84,6 +86,7 @@ impl Tilemap {
         let tilemap = Self::from_tmx(filename, layer_index);
         let tilemap_width = tilemap.lock().width();
         let tilemap_height = tilemap.lock().height();
+
         self.blt(
             x as f64,
             y as f64,
@@ -181,6 +184,7 @@ impl Tilemap {
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
+
         if rotate != 0.0 || scale != 1.0 {
             self.blt_transform(
                 x,
@@ -213,6 +217,7 @@ impl Tilemap {
             let copy_width = f64_to_u32(width.abs());
             let copy_height = f64_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
+
             canvas.blt(
                 0.0,
                 0.0,
@@ -224,6 +229,7 @@ impl Tilemap {
                 None,
                 None,
             );
+
             self.canvas
                 .blt(x, y, &canvas, 0.0, 0.0, width, height, transparent, None);
         }
@@ -261,6 +267,7 @@ impl Tilemap {
             let copy_width = f64_to_u32(width.abs());
             let copy_height = f64_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
+
             canvas.blt(
                 0.0,
                 0.0,
@@ -272,6 +279,7 @@ impl Tilemap {
                 None,
                 None,
             );
+
             self.canvas.blt_transform(
                 x,
                 y,

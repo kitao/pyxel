@@ -204,11 +204,16 @@ pub fn init(
     let math = Math::new();
 
     let pyxel = Pyxel {
+        // System
         system,
         width,
         height,
         frame_count,
+
+        // Resource
         resource,
+
+        // Input
         input,
         mouse_x,
         mouse_y,
@@ -216,6 +221,8 @@ pub fn init(
         input_keys,
         input_text,
         dropped_files,
+
+        // Graphics
         graphics,
         colors,
         images,
@@ -223,12 +230,17 @@ pub fn init(
         screen,
         cursor,
         font,
+
+        // Audio
         channels,
         tones,
         sounds,
         musics,
+
+        // Math
         math,
     };
+
     pyxel.icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
     pyxel
 }

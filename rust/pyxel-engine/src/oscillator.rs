@@ -70,6 +70,7 @@ impl Oscillator {
         self.gain = gain;
         self.effect = effect;
         self.duration = duration;
+
         match effect {
             EFFECT_NONE | EFFECT_VIBRATO => {}
             EFFECT_SLIDE => {
@@ -106,6 +107,7 @@ impl Oscillator {
                     }
                 }
             }
+
             self.clock = 0;
             self.phase = 0;
             self.vibrato.clock = 0;
@@ -140,15 +142,19 @@ impl Oscillator {
             } else {
                 0.0
             };
+
         let period = (CLOCK_RATE as f64 / pitch / OSCILLATOR_RESOLUTION as f64) as u32;
+
         let tones = TONES.lock();
         let tone = tones[self.tone as usize].lock();
+
         let fade_delta = if self.effect >= EFFECT_FADEOUT && self.duration <= self.fadeout.duration
         {
             self.fadeout.delta / ((CLOCKS_PER_TICK - self.clock) / period) as f64
         } else {
             0.0
         };
+
         while self.clock < CLOCKS_PER_TICK {
             let last_amplitude = self.amplitude;
             self.phase = (self.phase + 1) % OSCILLATOR_RESOLUTION;
@@ -162,6 +168,7 @@ impl Oscillator {
             self.clock += period;
             self.gain += fade_delta;
         }
+
         self.duration -= 1;
         if self.duration == 0 && self.effect >= EFFECT_FADEOUT {
             self.clock = 0;

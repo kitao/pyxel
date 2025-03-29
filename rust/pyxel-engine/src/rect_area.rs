@@ -120,6 +120,7 @@ mod tests {
         let rect1 = RectArea::new(1, 2, 3, 3);
         assert!(rect1.contains(1, 2));
         assert!(rect1.contains(3, 4));
+
         assert!(!rect1.contains(0, 2));
         assert!(!rect1.contains(1, 1));
         assert!(!rect1.contains(4, 4));
@@ -141,6 +142,7 @@ mod tests {
         let rect3 = RectArea::new(5, 6, 10, 20);
         let rect4 = RectArea::new(1, 2, 3, 4);
         let rect5 = RectArea::new(0, 0, 0, 0);
+
         assert_eq!(rect1.intersects(rect2), RectArea::new(11, 22, 29, 38));
         assert_eq!(rect1.intersects(rect3), RectArea::new(10, 20, 5, 6));
         assert!(rect1.intersects(rect4).is_empty());

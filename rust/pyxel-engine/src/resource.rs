@@ -27,6 +27,7 @@ impl Resource {
     pub fn new(capture_scale: Option<u32>, capture_sec: Option<u32>, fps: u32) -> Self {
         let capture_scale = capture_scale.unwrap_or(DEFAULT_CAPTURE_SCALE);
         let capture_sec = capture_sec.unwrap_or(DEFAULT_CAPTURE_SEC);
+
         Self {
             capture_scale: max(capture_scale, 1),
             screencast: Screencast::new(fps, capture_sec),
@@ -76,6 +77,7 @@ impl Pyxel {
             format_version <= RESOURCE_FORMAT_VERSION,
             "Unknown resource file version"
         );
+
         if format_version >= 2 {
             let resource_data = ResourceData2::from_toml(&toml_text);
             resource_data.to_runtime(
@@ -125,6 +127,7 @@ impl Pyxel {
             include_channels.unwrap_or(false),
             include_tones.unwrap_or(false),
         );
+
         let path = std::path::Path::new(&filename);
         let file = std::fs::File::create(path)
             .unwrap_or_else(|_| panic!("Failed to open file '{filename}'"));
@@ -133,6 +136,7 @@ impl Pyxel {
             .unwrap();
         zip.write_all(toml_text.as_bytes()).unwrap();
         zip.finish().unwrap();
+
         #[cfg(target_os = "emscripten")]
         pyxel_platform::emscripten::save_file(filename);
     }
@@ -141,6 +145,7 @@ impl Pyxel {
         let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.screen.lock().save(&filename, scale);
+
         #[cfg(target_os = "emscripten")]
         pyxel_platform::emscripten::save_file(&(filename + ".png"));
     }
@@ -149,6 +154,7 @@ impl Pyxel {
         let filename = Self::prepend_desktop_path(&format!("pyxel-{}", Self::datetime_string()));
         let scale = max(scale.unwrap_or(self.resource.capture_scale), 1);
         self.resource.screencast.save(&filename, scale);
+
         #[cfg(target_os = "emscripten")]
         pyxel_platform::emscripten::save_file(&(filename + ".gif"));
     }
@@ -164,14 +170,17 @@ impl Pyxel {
             .join(BASE_DIR)
             .join(Self::make_dir_name(vendor_name))
             .join(Self::make_dir_name(app_name));
+
         if !app_data_dir.exists() {
             fs::create_dir_all(&app_data_dir).unwrap();
             println!("created '{}'", app_data_dir.to_string_lossy());
         }
+
         let mut app_data_dir = app_data_dir.to_string_lossy().to_string();
         if !app_data_dir.ends_with(MAIN_SEPARATOR) {
             app_data_dir.push(MAIN_SEPARATOR);
         }
+
         app_data_dir
     }
 
@@ -187,8 +196,10 @@ impl Pyxel {
 
     pub(crate) fn dump_image_bank(&self, image_index: u32) {
         let filename = Self::prepend_desktop_path(&format!("pyxel-image{image_index}"));
+
         if let Some(image) = self.images.lock().get(image_index as usize) {
             image.lock().save(&filename, 1);
+
             #[cfg(target_os = "emscripten")]
             pyxel_platform::emscripten::save_file(&(filename + ".png"));
         }
@@ -198,12 +209,15 @@ impl Pyxel {
         let filename = Self::prepend_desktop_path("pyxel-palette");
         let num_colors = self.colors.lock().len();
         let image = Image::new(num_colors as u32, 1);
+
         {
             let mut image = image.lock();
             for i in 0..num_colors {
                 image.pset(i as f64, 0.0, i as Color);
             }
+
             image.save(&filename, 16);
+
             #[cfg(target_os = "emscripten")]
             pyxel_platform::emscripten::save_file(&(filename + ".png"));
         }
@@ -223,6 +237,7 @@ impl Pyxel {
         let desktop_dir = UserDirs::new()
             .and_then(|user_dirs| user_dirs.desktop_dir().map(Path::to_path_buf))
             .unwrap_or_default();
+
         desktop_dir.join(basename).to_string_lossy().to_string()
     }
 
@@ -242,9 +257,11 @@ impl Pyxel {
             .map_or(filename, |i| &filename[..i])
             .to_string()
             + PALETTE_FILE_EXTENSION;
+
         if let Ok(mut file) = File::open(Path::new(&filename)) {
             let mut contents = String::new();
             file.read_to_string(&mut contents).unwrap();
+
             *self.colors.lock() = contents
                 .replace("\r\n", "\n")
                 .replace('\r', "\n")

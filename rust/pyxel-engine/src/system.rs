@@ -100,6 +100,7 @@ impl Pyxel {
             None,
             None,
         );
+
         self.run(App { image });
     }
 
@@ -133,6 +134,7 @@ impl Pyxel {
         let scaled_height = height * scale;
         let mut rgba_data: Vec<u8> =
             Vec::with_capacity((scaled_width * scaled_height * 4) as usize);
+
         for y in 0..height {
             for _sy in 0..scale {
                 for x in 0..width {
@@ -155,6 +157,7 @@ impl Pyxel {
                 }
             }
         }
+
         pyxel_platform::set_window_icon(scaled_width, scaled_height, &rgba_data);
     }
 
@@ -177,6 +180,7 @@ impl Pyxel {
     fn process_events(&mut self) {
         self.start_input_frame();
         let events = pyxel_platform::poll_events();
+
         for event in events {
             match event {
                 Event::WindowShown => {
@@ -271,6 +275,7 @@ impl Pyxel {
 
     fn update_screen_params(&mut self) {
         let (window_width, window_height) = pyxel_platform::window_size();
+
         if self.system.integer_scale_enabled {
             self.system.screen_scale = f64::max(
                 f64::min(
@@ -288,6 +293,7 @@ impl Pyxel {
                 1.0,
             );
         }
+
         self.system.screen_x =
             (window_width as i32 - (self.width as f64 * self.system.screen_scale) as i32) / 2;
         self.system.screen_y =
@@ -298,11 +304,15 @@ impl Pyxel {
         self.system
             .update_profiler
             .start(pyxel_platform::elapsed_time());
+
         self.process_events();
+
         if self.system.paused {
             return;
         }
+
         self.check_special_input();
+
         if let Some(callback) = callback {
             callback.update(self);
             self.system
@@ -315,6 +325,7 @@ impl Pyxel {
         if !self.system.perf_monitor_enabled {
             return;
         }
+
         let mut screen = self.screen.lock();
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
@@ -322,6 +333,7 @@ impl Pyxel {
         let palette1 = screen.palette[1];
         let palette2 = screen.palette[2];
         let alpha = screen.canvas.alpha;
+
         screen.clip0();
         screen.camera0();
         screen.pal(1, 1);
@@ -351,22 +363,28 @@ impl Pyxel {
     fn draw_cursor(&self) {
         let x = self.mouse_x;
         let y = self.mouse_y;
+
         pyxel_platform::set_mouse_visible(
             x < 0 || x >= self.width as i32 || y < 0 || y >= self.height as i32,
         );
+
         if !self.is_mouse_visible() {
             return;
         }
+
         let width = self.cursor.lock().width() as i32;
         let height = self.cursor.lock().height() as i32;
+
         if x <= -width || x >= self.width as i32 || y <= -height || y >= self.height as i32 {
             return;
         }
+
         let mut screen = self.screen.lock();
         let clip_rect = screen.canvas.clip_rect;
         let camera_x = screen.canvas.camera_x;
         let camera_y = screen.canvas.camera_y;
         let palette = screen.palette;
+
         screen.clip0();
         screen.camera0();
         screen.blt(
@@ -381,6 +399,7 @@ impl Pyxel {
             None,
             None,
         );
+
         screen.canvas.clip_rect = clip_rect;
         screen.canvas.camera_x = camera_x;
         screen.canvas.camera_y = camera_y;
@@ -391,17 +410,21 @@ impl Pyxel {
         if self.system.paused {
             return;
         }
+
         self.system
             .draw_profiler
             .start(pyxel_platform::elapsed_time());
+
         if let Some(callback) = callback {
             callback.draw(self);
         }
+
         self.system.watch_info.update();
         self.draw_perf_monitor();
         self.draw_cursor();
         self.render_screen();
         self.capture_screen();
+
         self.system
             .draw_profiler
             .end(pyxel_platform::elapsed_time());
@@ -410,15 +433,19 @@ impl Pyxel {
     fn process_frame(&mut self, callback: &mut dyn PyxelCallback) {
         let tick_count = pyxel_platform::elapsed_time();
         let elapsed_ms = tick_count as f64 - self.system.next_update_ms;
+
         if elapsed_ms < 0.0 {
             return;
         }
+
         if self.frame_count == 0 {
             self.system.next_update_ms = tick_count as f64 + self.system.one_frame_ms;
         } else {
             self.system.fps_profiler.end(tick_count);
             self.system.fps_profiler.start(tick_count);
+
             let update_count: u32;
+
             if elapsed_ms > MAX_ELAPSED_MS as f64 {
                 update_count = 1;
                 self.system.next_update_ms =
@@ -427,11 +454,13 @@ impl Pyxel {
                 update_count = (elapsed_ms / self.system.one_frame_ms) as u32 + 1;
                 self.system.next_update_ms += self.system.one_frame_ms * update_count as f64;
             }
+
             for _ in 1..update_count {
                 self.update_frame(Some(callback));
                 self.frame_count += 1;
             }
         }
+
         self.update_screen_params();
         self.update_frame(Some(callback));
         self.draw_frame(Some(callback));
@@ -443,29 +472,37 @@ impl Pyxel {
         self.system
             .update_profiler
             .end(pyxel_platform::elapsed_time());
+
         self.update_screen_params();
         self.draw_frame(None);
         self.frame_count += 1;
+
         let mut tick_count;
         let mut elapsed_ms;
+
         loop {
             tick_count = pyxel_platform::elapsed_time();
             elapsed_ms = tick_count as f64 - self.system.next_update_ms;
+
             let wait_ms = self.system.next_update_ms - pyxel_platform::elapsed_time() as f64;
+
             if wait_ms > 0.0 {
                 pyxel_platform::sleep((wait_ms / 2.0) as u32);
             } else {
                 break;
             }
         }
+
         self.system.fps_profiler.end(tick_count);
         self.system.fps_profiler.start(tick_count);
+
         if elapsed_ms > MAX_ELAPSED_MS as f64 {
             self.system.next_update_ms =
                 pyxel_platform::elapsed_time() as f64 + self.system.one_frame_ms;
         } else {
             self.system.next_update_ms += self.system.one_frame_ms;
         }
+
         self.update_frame(None);
     }
 }

@@ -24,6 +24,7 @@ impl Music {
             .iter()
             .map(|seq| new_shared_type!(seq.clone()))
             .collect();
+
         let num_channels = CHANNELS.lock().len();
         while self.seqs.len() < num_channels {
             self.seqs.push(new_shared_type!(Vec::new()));
@@ -32,6 +33,7 @@ impl Music {
 
     pub fn save(&self, filename: &str, count: u32, ffmpeg: Option<bool>) {
         assert!(count > 0);
+
         let seqs: Vec<_> = (0..self.seqs.len())
             .map(|i| {
                 let pyxel_sounds = SOUNDS.lock();
@@ -42,6 +44,7 @@ impl Music {
                     .collect::<Vec<_>>()
             })
             .collect();
+
         let ticks_per_music = seqs
             .iter()
             .map(|sounds| {
@@ -55,22 +58,28 @@ impl Music {
             })
             .max()
             .unwrap_or(0);
+
         let samples_per_music = ticks_per_music * SAMPLE_RATE / TICKS_PER_SECOND;
         let num_samples = samples_per_music * count;
+
         if num_samples == 0 {
             return;
         }
+
         let mut samples = vec![0; num_samples as usize];
         let mut blip_buf = BlipBuf::new(num_samples as usize);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
+
         let channels = CHANNELS.lock();
         channels.iter().for_each(|channel| channel.lock().stop());
+
         {
             let mut channels: Vec<_> = channels.iter().map(|channel| channel.lock()).collect();
             for i in 0..min(channels.len(), seqs.len()) {
                 channels[i].play(seqs[i].clone(), None, true, false);
             }
         }
+
         Audio::render_samples(&channels, &mut blip_buf, &mut samples);
         Audio::save_samples(filename, &samples, ffmpeg.unwrap_or(false));
         channels.iter().for_each(|channel| channel.lock().stop());
@@ -93,6 +102,7 @@ mod tests {
         music
             .lock()
             .set(&[vec![0, 1, 2], vec![1, 2, 3], vec![2, 3, 4]]);
+
         for i in 0..3 {
             assert_eq!(
                 &*music.lock().seqs[i as usize].lock(),

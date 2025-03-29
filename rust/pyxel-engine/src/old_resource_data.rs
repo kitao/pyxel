@@ -108,10 +108,12 @@ impl ResourceItem for Sound {
 
     fn deserialize(&mut self, _version: u32, input: &str) {
         self.clear();
+
         for (i, line) in input.lines().enumerate() {
             if line == "none" {
                 continue;
             }
+
             if i == 0 {
                 string_loop!(j, value, line, 2, {
                     self.notes
@@ -152,6 +154,7 @@ impl ResourceItem for Music {
 
     fn deserialize(&mut self, _version: u32, input: &str) {
         self.clear();
+
         for (i, line) in input.lines().enumerate() {
             if line == "none" {
                 continue;
@@ -221,9 +224,11 @@ impl Pyxel {
             .map_or(filename, |i| &filename[..i])
             .to_string()
             + PALETTE_FILE_EXTENSION;
+
         if let Ok(mut file) = File::open(Path::new(&filename)) {
             let mut contents = String::new();
             file.read_to_string(&mut contents).unwrap();
+
             let colors: Vec<Rgb24> = contents
                 .replace("\r\n", "\n")
                 .replace('\r', "\n")
@@ -231,6 +236,7 @@ impl Pyxel {
                 .filter(|s| !s.is_empty())
                 .map(|s| u32::from_str_radix(s.trim(), 16).unwrap() as Rgb24)
                 .collect();
+
             self.colors.lock().clear();
             self.colors.lock().extend(colors.iter());
         }
@@ -239,6 +245,7 @@ impl Pyxel {
 
 fn parse_version_string(string: &str) -> Result<u32, &str> {
     let mut version = 0;
+
     for (i, number) in simplify_string(string).split('.').enumerate() {
         let digit = number.len();
         let number = if i > 0 && digit == 1 {
@@ -248,12 +255,14 @@ fn parse_version_string(string: &str) -> Result<u32, &str> {
         } else {
             return Err("invalid version string");
         };
+
         if let Ok(number) = number.parse::<u32>() {
             version = version * 100 + number;
         } else {
             return Err("invalid version string");
         }
     }
+
     Ok(version)
 }
 

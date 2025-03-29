@@ -16,6 +16,7 @@ cfg_if! {
         const GL_VERSION: &str = include_str!("shaders/gl_version.glsl");
     }
 }
+
 const GLES_VERSION: &str = include_str!("shaders/gles_version.glsl");
 const COMMON_VERT: &str = include_str!("shaders/common.vert");
 const COMMON_FRAG: &str = include_str!("shaders/common.frag");
@@ -43,9 +44,11 @@ impl Graphics {
             let gl = pyxel_platform::glow_context();
             gl.disable(glow::FRAMEBUFFER_SRGB);
             gl.disable(glow::BLEND);
+
             let screen_shaders = Self::create_screen_shaders(gl);
             let screen_texture = Self::create_screen_texture(gl);
             let colors_texture = Self::create_colors_texture(gl);
+
             Self {
                 screen_shaders,
                 screen_texture,
@@ -60,6 +63,7 @@ impl Graphics {
         } else {
             GL_VERSION
         };
+
         let mut screen_shaders = Vec::new();
         for &screen_frag in &SCREEN_FRAGS {
             // Vertex shader
@@ -111,6 +115,7 @@ impl Graphics {
                 "u_screenTexture",
                 "u_colorsTexture",
             ];
+
             for &uniform_name in &uniform_names {
                 if let Some(location) = gl.get_uniform_location(shader_program, uniform_name) {
                     uniform_locations.insert(uniform_name.to_string(), location);
@@ -121,6 +126,7 @@ impl Graphics {
             let vertices: [f32; 8] = [-1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0];
             let vertex_array = gl.create_vertex_array().unwrap();
             let vertex_buffer = gl.create_buffer().unwrap();
+
             gl.bind_vertex_array(Some(vertex_array));
             gl.bind_buffer(glow::ARRAY_BUFFER, Some(vertex_buffer));
             gl.buffer_data_u8_slice(
@@ -128,6 +134,7 @@ impl Graphics {
                 vertices.align_to::<u8>().1,
                 glow::STATIC_DRAW,
             );
+
             let position = gl.get_attrib_location(shader_program, "position").unwrap();
             gl.vertex_attrib_pointer_f32(
                 position,
@@ -146,6 +153,7 @@ impl Graphics {
                 vertex_array,
             });
         }
+
         screen_shaders
     }
 
@@ -153,6 +161,7 @@ impl Graphics {
         let screen_texture = gl.create_texture().unwrap();
         gl.active_texture(glow::TEXTURE0);
         gl.bind_texture(glow::TEXTURE_2D, Some(screen_texture));
+
         gl.tex_parameter_i32(
             glow::TEXTURE_2D,
             glow::TEXTURE_MIN_FILTER,
@@ -173,6 +182,7 @@ impl Graphics {
             glow::TEXTURE_WRAP_T,
             glow::CLAMP_TO_EDGE as i32,
         );
+
         screen_texture
     }
 
@@ -180,6 +190,7 @@ impl Graphics {
         let colors_texture = gl.create_texture().unwrap();
         gl.active_texture(glow::TEXTURE1);
         gl.bind_texture(glow::TEXTURE_2D, Some(colors_texture));
+
         gl.tex_parameter_i32(
             glow::TEXTURE_2D,
             glow::TEXTURE_MIN_FILTER,
@@ -200,6 +211,7 @@ impl Graphics {
             glow::TEXTURE_WRAP_T,
             glow::CLAMP_TO_EDGE as i32,
         );
+
         colors_texture
     }
 }
@@ -364,6 +376,7 @@ impl Pyxel {
         let shader = &self.graphics.screen_shaders[self.system.screen_mode as usize];
         gl.use_program(Some(shader.shader_program));
         let uniform_locations = &shader.uniform_locations;
+
         if let Some(location) = uniform_locations.get("u_screenPos") {
             let (_, window_height) = pyxel_platform::window_size();
             gl.uniform_2_f32(
@@ -375,6 +388,7 @@ impl Pyxel {
                     as f32,
             );
         }
+
         if let Some(location) = uniform_locations.get("u_screenSize") {
             gl.uniform_2_f32(
                 Some(location),
@@ -382,12 +396,15 @@ impl Pyxel {
                 (self.height as f64 * self.system.screen_scale) as f32,
             );
         }
+
         if let Some(location) = uniform_locations.get("u_screenScale") {
             gl.uniform_1_f32(Some(location), self.system.screen_scale as f32);
         }
+
         if let Some(location) = uniform_locations.get("u_numColors") {
             gl.uniform_1_i32(Some(location), self.colors.lock().len() as i32);
         }
+
         if let Some(location) = uniform_locations.get("u_backgroundColor") {
             gl.uniform_3_f32(
                 Some(location),
@@ -396,12 +413,15 @@ impl Pyxel {
                 (BACKGROUND_COLOR as u8) as f32 / 255.0,
             );
         }
+
         if let Some(location) = uniform_locations.get("u_screenTexture") {
             gl.uniform_1_i32(Some(location), 0);
         }
+
         if let Some(location) = uniform_locations.get("u_colorsTexture") {
             gl.uniform_1_i32(Some(location), 1);
         }
+
         gl.bind_vertex_array(Some(shader.vertex_array));
     }
 
@@ -409,11 +429,13 @@ impl Pyxel {
         gl.active_texture(glow::TEXTURE0);
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.screen_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 1);
+
         let texture_format = if pyxel_platform::is_gles_enabled() {
             glow::LUMINANCE
         } else {
             glow::RED
         };
+
         gl.tex_image_2d(
             glow::TEXTURE_2D,
             0,
@@ -432,18 +454,21 @@ impl Pyxel {
         gl.active_texture(glow::TEXTURE1);
         gl.bind_texture(glow::TEXTURE_2D, Some(self.graphics.colors_texture));
         gl.pixel_store_i32(glow::UNPACK_ALIGNMENT, 4);
+
         let colors = self.colors.lock();
         assert!(
             !colors.is_empty() && colors.len() <= MAX_COLORS as usize,
             "Number of colors must be between 1 to {}",
             MAX_COLORS
         );
+
         let mut pixels: Vec<u8> = Vec::with_capacity(colors.len() * 3);
         for color in &*colors {
             pixels.push((color >> 16) as u8);
             pixels.push((color >> 8) as u8);
             pixels.push(*color as u8);
         }
+
         gl.tex_image_2d(
             glow::TEXTURE_2D,
             0,

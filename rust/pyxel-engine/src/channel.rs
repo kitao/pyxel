@@ -63,17 +63,20 @@ impl Channel {
         if sounds.is_empty() || sounds.iter().all(|sound| sound.notes.is_empty()) {
             return;
         }
+
         if !should_resume {
             self.resume_sounds.clone_from(&sounds);
             self.resume_should_loop = should_loop;
             self.resume_start_tick = start_tick.unwrap_or(0);
         }
+
         self.sounds = sounds;
         self.should_loop = should_loop;
         self.should_resume = self.is_playing && should_resume;
         self.sound_index = 0;
         self.note_index = 0;
         self.tick_count = start_tick.unwrap_or(0);
+
         loop {
             let sound = &self.sounds[self.sound_index as usize];
             let sound_ticks = sound.notes.len() as u32 * sound.speed;
@@ -92,6 +95,7 @@ impl Channel {
                 }
             }
         }
+
         self.is_first_note = true;
         self.is_playing = true;
     }
@@ -118,20 +122,25 @@ impl Channel {
             None
         }
     }
+
     pub(crate) fn update(&mut self, blip_buf: &mut BlipBuf) {
         if !self.is_playing {
             return;
         }
+
         let mut sound = &self.sounds[self.sound_index as usize];
         let speed = max(sound.speed, 1);
+
         if self.tick_count % speed == 0 {
             if self.tick_count > 0 {
                 self.note_index += 1;
             }
+
             while self.note_index >= sound.notes.len() as u32 {
                 self.is_first_note = true;
                 self.sound_index += 1;
                 self.note_index = 0;
+
                 if self.sound_index >= self.sounds.len() as u32 {
                     if self.should_loop {
                         self.sound_index = 0;
@@ -153,6 +162,7 @@ impl Channel {
                         return;
                     }
                 }
+
                 sound = &self.sounds[self.sound_index as usize];
             }
 
@@ -182,6 +192,7 @@ impl Channel {
                 );
             }
         }
+
         self.oscillator.update(blip_buf);
         self.tick_count += 1;
         self.resume_start_tick += 1;

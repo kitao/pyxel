@@ -44,25 +44,31 @@ impl Image {
         if include_colors {
             colors.clear();
         }
+
         let file = image::open(Path::new(&filename));
         if file.is_err() {
             println!("Failed to open file '{filename}'");
             return Self::new(1, 1);
         }
+
         let file_image = file.unwrap().to_rgb8();
         let (width, height) = file_image.dimensions();
         let image = Self::new(width, height);
+
         {
             let mut image = image.lock();
             let mut color_table = HashMap::<(u8, u8, u8), Color>::new();
+
             for y in 0..height {
                 for x in 0..width {
                     let p = file_image.get_pixel(x, y);
                     let src_rgb = (p[0], p[1], p[2]);
+
                     if let Some(color) = color_table.get(&src_rgb) {
                         image.canvas.write_data(x as usize, y as usize, *color);
                     } else {
                         let mut closest_color: Color = 0;
+
                         if include_colors {
                             colors.push(
                                 ((src_rgb.0 as u32) << 16)
@@ -85,6 +91,7 @@ impl Image {
                                 }
                             }
                         }
+
                         color_table.insert(src_rgb, closest_color);
                         image
                             .canvas
@@ -93,6 +100,7 @@ impl Image {
                 }
             }
         }
+
         image
     }
 
@@ -112,6 +120,7 @@ impl Image {
         let width = utils::simplify_string(data_str[0]).len() as u32;
         let height = data_str.len() as u32;
         let image = Self::new(width, height);
+
         {
             let mut image = image.lock();
             for y in 0..height {
@@ -125,6 +134,7 @@ impl Image {
                 }
             }
         }
+
         self.blt(
             x as f64,
             y as f64,
@@ -143,6 +153,7 @@ impl Image {
         let image = Self::from_image(filename, include_colors);
         let width = image.lock().width();
         let height = image.lock().height();
+
         self.blt(
             x as f64,
             y as f64,
@@ -162,6 +173,7 @@ impl Image {
         let width = self.width();
         let height = self.height();
         let mut image = image::RgbImage::new(width, height);
+
         for y in 0..height {
             for x in 0..width {
                 let rgb = colors[self.canvas.read_data(x as usize, y as usize) as usize];
@@ -171,6 +183,7 @@ impl Image {
                 image.put_pixel(x, y, image::Rgb([r, g, b]));
             }
         }
+
         let image = imageops::resize(
             &image,
             width * scale,
@@ -320,6 +333,7 @@ impl Image {
             let copy_width = utils::f64_to_u32(width.abs());
             let copy_height = utils::f64_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
+
             canvas.blt(
                 0.0,
                 0.0,
@@ -331,6 +345,7 @@ impl Image {
                 None,
                 None,
             );
+
             self.canvas.blt(
                 x,
                 y,
@@ -377,6 +392,7 @@ impl Image {
             let copy_width = utils::f64_to_u32(width.abs());
             let copy_height = utils::f64_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
+
             canvas.blt(
                 0.0,
                 0.0,
@@ -388,6 +404,7 @@ impl Image {
                 None,
                 None,
             );
+
             self.canvas.blt_transform(
                 x,
                 y,
@@ -481,6 +498,7 @@ impl Image {
             ImageSource::Index(index) => images[*index as usize].lock(),
             ImageSource::Image(image) => image.lock(),
         };
+
         for yi in 0..height {
             for xi in 0..width {
                 let tilemap_x = src_x + sign_x * xi + offset_x;
@@ -530,6 +548,7 @@ impl Image {
         let tilemap_width = tilemap.lock().width() as f64;
         let tilemap_height = tilemap.lock().height() as f64;
         let image = Self::new(copy_width, copy_height);
+
         {
             let mut image = image.lock();
             image.bltm(
@@ -575,11 +594,13 @@ impl Image {
             font.lock().draw(&mut self.canvas, x, y, string, color);
             return;
         }
+
         let mut x = utils::f64_to_i32(x); // No need to reflect camera_x
         let mut y = utils::f64_to_i32(y); // No need to reflect camera_y
         let color = self.palette[color as usize];
         let palette1 = self.palette[1];
         self.pal(1, color);
+
         let start_x = x;
         for c in string.chars() {
             if c == '\n' {
@@ -590,9 +611,11 @@ impl Image {
             if c < MIN_FONT_CODE || c > MAX_FONT_CODE {
                 continue;
             }
+
             let code = c as i32 - MIN_FONT_CODE as i32;
             let src_x = (code % NUM_FONT_ROWS as i32) * FONT_WIDTH as i32;
             let src_y = (code / NUM_FONT_ROWS as i32) * FONT_HEIGHT as i32;
+
             self.blt(
                 x as f64,
                 y as f64,
@@ -616,6 +639,7 @@ impl Image {
         let dx = (r1 as f64 - r2 as f64) * 0.30;
         let dy = (g1 as f64 - g2 as f64) * 0.59;
         let dz = (b1 as f64 - b2 as f64) * 0.11;
+
         dx * dx + dy * dy + dz * dz
     }
 }

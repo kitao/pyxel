@@ -56,10 +56,12 @@ impl Tone {
                     } else {
                         6
                     };
+
                     let feedback = (*noise_reg ^ (*noise_reg >> bit)) & 1;
                     *noise_reg >>= 1;
                     *noise_reg |= feedback << 14;
                 }
+
                 (*noise_reg & 1) as f64 * 2.0 - 1.0
             }
         }) * self.gain
