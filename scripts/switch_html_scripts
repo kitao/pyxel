@@ -11,10 +11,13 @@ CDN_SRC="src=\\\"https://cdn.jsdelivr.net/gh/kitao/pyxel/wasm/pyxel.js\\\""
 
 if [ "$1" == "local" ]; then
     find {$LAUNCHER_DIR,$EXAMPLES_DIR}/*.html | xargs sed -i -e "s#$SRC_REGEX#$LOCAL_SRC#"
+
 elif [ "$1" == "cdn" ]; then
     find {$LAUNCHER_DIR,$EXAMPLES_DIR}/*.html | xargs sed -i -e "s#$SRC_REGEX#$CDN_SRC#"
+
 else
     echo "switch_html_scripts local_or_cdn"
     exit 0
 fi
+
 rm -f {$LAUNCHER_DIR,$EXAMPLES_DIR}/*.html-e
