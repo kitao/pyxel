@@ -40,12 +40,14 @@ class EditorBase(Widget):
     def undo(self):
         if not self.can_undo:
             return
+
         self._history_index -= 1
         self.trigger_event("undo", self._history_list[self._history_index])
 
     def redo(self):
         if not self.can_redo:
             return
+
         self.trigger_event("redo", self._history_list[self._history_index])
         self._history_index += 1
 
@@ -79,6 +81,7 @@ class EditorBase(Widget):
             or pyxel.btn(pyxel.KEY_GUI)
         ):
             return
+
         if pyxel.btnp(pyxel.KEY_S):
             self.tool_var = TOOL_SELECT
         elif pyxel.btnp(pyxel.KEY_P):
@@ -95,6 +98,7 @@ class EditorBase(Widget):
 
     def __on_tool_button_mouse_hover(self, x, y):
         value = self._tool_button.check_value(x, y)
+
         if value == TOOL_SELECT:
             s = "SELECT:S"
         elif value == TOOL_PENCIL:
@@ -111,4 +115,5 @@ class EditorBase(Widget):
             s = "BUCKET:B"
         else:
             s = ""
+
         self.help_message_var = s

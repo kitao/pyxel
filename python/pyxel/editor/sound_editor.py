@@ -159,6 +159,7 @@ class SoundEditor(EditorBase):
     def get_field_help_message(self):
         if self.field_cursor.is_selecting:
             return "COPY:CTRL+A/C/X/V SHIFT:CTRL+U/D"
+
         cursor_y = self.field_cursor.y
         if cursor_y == 0:
             return "NOTE:CLICK/PIANO_KEY+ENTER/BS/DEL"
@@ -177,6 +178,7 @@ class SoundEditor(EditorBase):
         self._play_button.is_enabled_var = False
         self._stop_button.is_enabled_var = True
         self._loop_button.is_enabled_var = False
+
         tick = self.field_cursor.x * self.speed_var if is_partial else None
         pyxel.play(0, self.sound_index_var, tick=tick, loop=self.should_loop_var)
 
@@ -186,6 +188,7 @@ class SoundEditor(EditorBase):
         self._play_button.is_enabled_var = True
         self._stop_button.is_enabled_var = False
         self._loop_button.is_enabled_var = True
+
         pyxel.stop(0)
 
     def __on_is_playing_var_get(self, value):
@@ -220,6 +223,7 @@ class SoundEditor(EditorBase):
     def __on_undo(self, data):
         self._stop()
         self.sound_index_var = data["sound_index"]
+
         if "old_data" in data:
             pyxel.sounds[self.sound_index_var].speed = data["old_speed"]
             for i in range(4):
@@ -231,6 +235,7 @@ class SoundEditor(EditorBase):
     def __on_redo(self, data):
         self._stop()
         self.sound_index_var = data["sound_index"]
+
         if "new_data" in data:
             pyxel.sounds[self.sound_index_var].speed = data["new_speed"]
             for i in range(4):
@@ -246,20 +251,25 @@ class SoundEditor(EditorBase):
         sound = pyxel.sounds[self.sound_index_var]
         if self.speed_var != sound.speed:
             self.speed_var = sound.speed
+
         if pyxel.btnp(pyxel.KEY_SPACE):
             if self.is_playing_var:
                 self._stop_button.is_pressed_var = True
                 return
             else:
                 self._play_button.is_pressed_var = True
+
         if not self._play_button.is_enabled_var and not self.is_playing_var:
             self._stop()
+
         if self._loop_button.is_enabled_var and pyxel.btnp(pyxel.KEY_L):
             self.should_loop_var = not self.should_loop_var
+
         if pyxel.btnp(pyxel.KEY_PAGEUP):
             self.octave_var = min(self.octave_var + 1, 3)
         if pyxel.btnp(pyxel.KEY_PAGEDOWN):
             self.octave_var = max(self.octave_var - 1, 0)
+
         if not self.is_playing_var:
             self.field_cursor.process_input()
 

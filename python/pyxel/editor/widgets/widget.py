@@ -47,6 +47,7 @@ class Widget:
     ):
         if parent:
             parent._children.append(self)
+
         self._parent = parent
         self._children = []
         self._x = x
@@ -117,14 +118,17 @@ class Widget:
             capture_widget._process_capture()
         else:
             self._process_input()
+
         self._update()
 
     def _process_input(self):
         if not self.is_visible_var or not self.is_enabled_var:
             return False
+
         for widget in reversed(self._children):
             if widget._process_input():
                 return True
+
         x = pyxel.mouse_x
         y = pyxel.mouse_y
         if self.is_hit(x, y):
@@ -136,11 +140,14 @@ class Widget:
                 key = pyxel.MOUSE_BUTTON_MIDDLE
             else:
                 key = None
+
             if key is not None:
                 self._start_capture(key)
                 self.trigger_event("mouse_down", key, x, y)
+
             self.trigger_event("mouse_hover", x, y)
             return True
+
         return False
 
     def _start_capture(self, key):
@@ -192,11 +199,13 @@ class Widget:
                 and abs(y - press_y) <= WIDGET_CLICK_DIST
             ):
                 self.trigger_event("mouse_click", capture_info.key, x, y)
+
             self._end_capture()
 
     def _update(self):
         if not self.is_visible_var:
             return
+
         self.trigger_event("update")
         for child in self._children:
             child._update()
@@ -204,6 +213,7 @@ class Widget:
     def draw_all(self):
         if not self.is_visible_var:
             return
+
         self.trigger_event("draw")
         for child in self._children:
             child.draw_all()

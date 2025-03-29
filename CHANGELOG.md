@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.3.19
+
+- Added blank lines to format code
+
 ## 2.3.18
 
 - Added SDL2 include paths for Linux
