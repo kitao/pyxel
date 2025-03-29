@@ -3,6 +3,7 @@
 ## 2.3.19
 
 - Added blank lines to format code
+- Updated the sysinfo crate to version 0.34
 
 ## 2.3.18
 
