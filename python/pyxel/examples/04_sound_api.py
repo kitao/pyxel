@@ -4,6 +4,7 @@ import pyxel
 class App:
     def __init__(self):
         pyxel.init(200, 150, title="Pyxel Sound API")
+
         pyxel.images[0].set(
             0,
             0,
@@ -18,6 +19,7 @@ class App:
                 "01100000",
             ],
         )
+
         pyxel.sounds[0].set(
             "e2e2c2g1 g1g1c2e2 d2d2d2g2 g2g2rr c2c2a1e1 e1e1a1c2 b1b1b1e2 e2e2rr",
             "p",
@@ -49,6 +51,7 @@ class App:
         pyxel.sounds[4].set(
             "f0ra4r f0ra4r f0ra4r f0f0a4r", "n", "6622 6622 6622 6422", "f", 25
         )
+
         self.play_music(True, True, True)
         pyxel.run(self.update, self.draw)
 
@@ -57,10 +60,12 @@ class App:
             pyxel.play(0, [0, 1], loop=True)
         else:
             pyxel.stop(0)
+
         if ch1:
             pyxel.play(1, [2, 3], loop=True)
         else:
             pyxel.stop(1)
+
         if ch2:
             pyxel.play(2, 4, loop=True)
         else:
@@ -90,8 +95,8 @@ class App:
         pyxel.text(16, 25, "tone  :[T]riangle [S]quare [P]ulse [N]oise", 9)
         pyxel.text(16, 33, "volume:[0-7]", 9)
         pyxel.text(16, 41, "effect:[N]one [S]lide [V]ibrato [F]adeOut", 9)
-        pyxel.text(6, 53, "musics[msc].set(seq0,seq1,seq2,...)", 7)
 
+        pyxel.text(6, 53, "musics[msc].set(seq0,seq1,seq2,...)", 7)
         pyxel.text(6, 62, "play(ch,snd,[loop],[resume])", 7)
         pyxel.text(6, 71, "playm(msc,[loop])", 7)
         pyxel.text(6, 80, "stop([ch])", 7)
