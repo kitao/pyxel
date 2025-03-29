@@ -12,6 +12,7 @@ ABSPATH_README = "docs/README-abspath.md"
 def generate_readme_abspath():
     os.chdir(pathlib.Path(__file__).parent / ROOT_DIR)
     relpath_dir = os.path.dirname(RELPATH_README) + "/"
+
     with open(RELPATH_README, "r", encoding="utf-8") as fh:
         text = fh.read()
         text = re.sub(
@@ -24,6 +25,7 @@ def generate_readme_abspath():
             r"\1https://raw.githubusercontent.com/kitao/pyxel/main/" + relpath_dir,
             text,
         )
+
     with open(ABSPATH_README, "w", encoding="utf-8") as fh:
         fh.write(text)
 

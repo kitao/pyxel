@@ -20,8 +20,10 @@ def update_version_numbers():
     if len(sys.argv) < 2:
         print("update_version_numbers version")
         sys.exit(1)
+
     os.chdir(pathlib.Path(__file__).parent / ROOT_DIR)
     version = sys.argv[1]
+
     replace_file(
         "rust/pyxel-engine/src/settings.rs", '(VERSION.*)".*"', f'\\1"{version}"'
     )
