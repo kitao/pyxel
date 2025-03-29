@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+
+import io
+import json
+import os
+import pathlib
+
+import PIL
+import requests
+
+ROOT_DIR = ".."
+USER_EXAMPLES_JSON = "docs/pyxel_user_examples.json"
+RELPATH_README = "README.md"
+ABSPATH_README = "docs/README-abspath.md"
+GIF_IMAGES = [
+    (1, 23),
+    (3, 220),
+    (10, 793),
+    (15, 83),
+    (17, 2048),
+    (22, 140),
+    (24, 67),
+    (25, 430),
+    (43, 18),
+    (46, 233),
+    (50, 236),
+    (52, 75),
+    (53, 395),
+    (54, 63),
+    (62, 79),
+    (63, 456),
+    (67, 1),
+    (68, 175),
+    (72, 1),
+    (73, 171),
+    (77, 1),
+    (78, 107),
+    (79, 163),
+    (81, 248),
+    (83, 1),
+    (86, 64),
+    (88, 417),
+    (89, 53),
+    (91, 275),
+    (92, 387),
+    (95, 1),
+    (101, 168),
+    (102, 166),
+    (104, 23),
+    (110, 458),
+    (111, 209),
+    (112, 305),
+    (113, 94),
+    (114, 26),
+    (116, 1),
+    (120, 224),
+    (121, 205),
+    (123, 134),
+    (127, 298),
+    (134, 459),
+    (136, 693),
+    (140, 233),
+    (141, 90),
+]
+
+
+def download_gif_frame(url, frame):
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise Exception(f"HTTP error: {response.status_code}")
+
+    gif = PIL.Image.open(io.BytesIO(response.content))
+    gif.seek(frame)
+    return gif.copy()
+
+
+def generate_thanks_image():
+    os.chdir(pathlib.Path(__file__).parent / ROOT_DIR)
+
+    images = [{"id": id, "frame": frame} for id, frame in GIF_IMAGES]
+
+    with open(USER_EXAMPLES_JSON, "r", encoding="utf-8") as f:
+        user_examples = json.load(f)
+
+    for image in images:
+        user_example = user_examples[image["id"]]
+        url = user_example["image"]
+        frame = image["frame"]
+        image["image"] = download_gif_frame(url, frame)
+
+
+if __name__ == "__main__":
+    generate_thanks_image()
