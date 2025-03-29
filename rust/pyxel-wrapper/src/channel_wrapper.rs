@@ -51,6 +51,7 @@ impl Channel {
         resume: Option<bool>,
     ) -> PyResult<()> {
         let loop_ = r#loop.unwrap_or(false);
+
         cast_pyany! {
             snd,
             (u32, {
@@ -67,6 +68,7 @@ impl Channel {
                 self.inner.lock().play(sounds, tick, loop_, resume.unwrap_or(false));
             })
         }
+
         Ok(())
     }
 

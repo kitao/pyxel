@@ -136,7 +136,9 @@ pub fn add_system_functions(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(integer_scale, m)?)?;
     m.add_function(wrap_pyfunction!(screen_mode, m)?)?;
     m.add_function(wrap_pyfunction!(fullscreen, m)?)?;
+
     #[cfg(not(target_os = "emscripten"))]
     m.add_function(wrap_pyfunction!(process_exists, m)?)?;
+
     Ok(())
 }
