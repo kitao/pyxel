@@ -21,6 +21,7 @@ impl SDL2BindingsBuilder {
         let target_os = target.splitn(3, '-').nth(2).unwrap().to_string();
         let out_dir = var("OUT_DIR").unwrap();
         let sdl2_dir = format!("{}/SDL2-{}", out_dir, SDL2_VERSION);
+
         Self {
             target,
             target_os,
@@ -37,6 +38,7 @@ impl SDL2BindingsBuilder {
         if Path::new(&self.sdl2_dir).exists() {
             return;
         }
+
         let sdl2_archive_url = format!(
             "https://www.libsdl.org/release/SDL2-{}.tar.gz",
             SDL2_VERSION
@@ -75,6 +77,7 @@ impl SDL2BindingsBuilder {
                 .arg(format!("grep -q '{}' {}", function_name, patch_target_path))
                 .status()
                 .expect("Failed to execute grep command");
+
             if !function_exists.success() {
                 let patch_code = format!(
                     "- (BOOL){}:(NSApplication *)app {{ return YES; }}\n",
@@ -100,9 +103,11 @@ impl SDL2BindingsBuilder {
             .define("SDL_SHARED", "OFF")
             .define("SDL_STATIC", "ON")
             .define("SDL_MAIN_HANDLED", "ON");
+
         if self.target_os == "windows-gnu" {
             cfg.define("VIDEO_OPENGLES", "OFF");
         }
+
         let cmake_out_dir = cfg.build();
         println!(
             "cargo:rustc-link-search={}",
@@ -122,6 +127,7 @@ impl SDL2BindingsBuilder {
             } else {
                 println!("cargo:rustc-link-lib=static=SDL2");
             }
+
             if self.target_os.contains("windows") {
                 println!("cargo:rustc-link-lib=shell32");
                 println!("cargo:rustc-link-lib=user32");
@@ -166,6 +172,7 @@ impl SDL2BindingsBuilder {
 
     fn get_include_flags(&self) -> Vec<String> {
         let mut include_flags = Vec::new();
+
         if self.should_bundle_sdl2() {
             include_flags.push(format!("-I{}/include", self.sdl2_dir));
         } else if self.target_os == "emscripten" {
@@ -179,6 +186,7 @@ impl SDL2BindingsBuilder {
                 .skip_while(|&flag| !flag.starts_with("-isystem"))
                 .nth(1)
                 .unwrap();
+
             include_flags.push("-I".to_string() + sdl2_include_flag + "/..");
             include_flags.push("-I".to_string() + sdl2_include_flag);
         } else {
@@ -191,6 +199,7 @@ impl SDL2BindingsBuilder {
                 include_flags.push(format!("-I{}", path));
             }
         }
+
         include_flags
     }
 
@@ -208,6 +217,7 @@ impl SDL2BindingsBuilder {
             .clang_arg(format!("--target={}", self.target.clone()))
             .clang_args(self.get_bindgen_flags())
             .clang_args(self.get_include_flags());
+
         if self.target_os == "windows-msvc" {
             builder = builder
                 .clang_arg("-IC:/Program Files (x86)/Windows Kits/8.1/Include/shared")
@@ -216,11 +226,13 @@ impl SDL2BindingsBuilder {
                 .clang_arg("-IC:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/include")
                 .clang_arg("-IC:/Program Files (x86)/Windows Kits/8.1/Include/um");
         }
+
         if self.target_os == "linux-gnu" {
             builder = builder
                 .clang_arg("-DSDL_VIDEO_DRIVER_X11")
                 .clang_arg("-DSDL_VIDEO_DRIVER_WAYLAND");
         }
+
         builder
             .generate()
             .expect("Failed to generate bindings")
@@ -233,6 +245,7 @@ impl SDL2BindingsBuilder {
             self.download_sdl2();
             self.build_sdl2();
         }
+
         self.link_sdl2();
         self.generate_bindings()
     }

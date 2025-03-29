@@ -24,6 +24,7 @@ pub fn handle_controller_device_added(sdl_event: SDL_Event) {
             .gamepads
             .iter_mut()
             .find(|gamepad| matches!(gamepad, Gamepad::Unused));
+
         match unused_gamepad {
             Some(unused_gamepad) => {
                 *unused_gamepad = gamepad;
@@ -136,7 +137,9 @@ pub fn handle_virtual_gamepad_inputs() -> Vec<Event> {
         GAMEPAD1_BUTTON_X,
         GAMEPAD1_BUTTON_Y,
     ];
+
     let mut events = Vec::new();
+
     for (i, button) in INDEX_TO_BUTTON.iter().enumerate() {
         let button_state = run_script_int(&format!("_virtualGamepadStates[{i}];")) != 0;
         if button_state != platform().virtual_gamepad_states[i] {
@@ -148,6 +151,7 @@ pub fn handle_virtual_gamepad_inputs() -> Vec<Event> {
             }
         }
     }
+
     events
 }
 

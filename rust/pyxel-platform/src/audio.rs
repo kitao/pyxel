@@ -27,6 +27,7 @@ pub fn start_audio(
     audio_callback: Arc<Mutex<dyn AudioCallback>>,
 ) {
     let userdata = Box::into_raw(Box::new(audio_callback)).cast();
+
     let desired = SDL_AudioSpec {
         freq: sample_rate as i32,
         format: AUDIO_S16 as u16,
@@ -38,18 +39,22 @@ pub fn start_audio(
         callback: Some(c_audio_callback),
         userdata,
     };
+
     let mut obtained = MaybeUninit::uninit();
     platform().audio_device_id =
         unsafe { SDL_OpenAudioDevice(null_mut(), 0, &desired, obtained.as_mut_ptr(), 0) };
+
     if platform().audio_device_id == 0 {
         println!("Failed to initialize audio device");
     }
+
     set_audio_enabled(true);
 }
 
 pub fn set_audio_enabled(enabled: bool) {
     let pause_on = i32::from(!enabled);
     let audio_device_id = platform().audio_device_id;
+
     if audio_device_id != 0 {
         unsafe {
             SDL_PauseAudioDevice(audio_device_id, pause_on);

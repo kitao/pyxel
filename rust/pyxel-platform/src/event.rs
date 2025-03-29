@@ -30,6 +30,7 @@ pub enum Event {
 pub fn poll_events() -> Vec<Event> {
     let mut pyxel_events = Vec::new();
     let mut sdl_event: SDL_Event = unsafe { zeroed() };
+
     while unsafe { SDL_PollEvent(addr_of_mut!(sdl_event)) } != 0 {
         match unsafe { sdl_event.type_ as SDL_EventType } {
             // Window
@@ -92,6 +93,7 @@ pub fn poll_events() -> Vec<Event> {
             _ => {}
         }
     }
+
     pyxel_events.extend(handle_mouse_motion());
     #[cfg(target_os = "emscripten")]
     pyxel_events.extend(handle_virtual_gamepad_inputs());
