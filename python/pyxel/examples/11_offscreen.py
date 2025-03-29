@@ -32,19 +32,23 @@ def scale_image(image, scale):
     scaled_width = image.width * scale
     scaled_height = image.height * scale
     scaled_image = pyxel.Image(scaled_width, scaled_height)
+
     for y in range(scaled_height):
         for x in range(scaled_width):
             color = image.pget(x // scale, y // scale)
             scaled_image.pset(x, y, color)
+
     return scaled_image
 
 
 def make_blt_figure():
     figure = pyxel.Image(pyxel.width, pyxel.height)
     figure.cls(BG_COLOR)
+
     image1 = pyxel.Image(32, 24)
     image1.blt(0, 0, 0, 0, 0, 32, 24)
     image1 = scale_image(image1, 3)
+
     image2 = pyxel.Image(32, 24)
     image2.blt(0, 0, 0, 0, 32, 32, 24)
     image2 = scale_image(image2, 3)
@@ -78,9 +82,11 @@ def make_blt_figure():
 def make_bltm_figure():
     figure = pyxel.Image(pyxel.width, pyxel.height)
     figure.cls(BG_COLOR)
+
     image1 = pyxel.Image(32, 24)
     image1.blt(0, 0, 0, 0, 64, 32, 24)
     image1 = scale_image(image1, 3)
+
     image2 = pyxel.Image(32, 24)
     image2.blt(0, 0, 0, 0, 96, 32, 24)
     image2 = scale_image(image2, 3)

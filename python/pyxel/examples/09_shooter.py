@@ -106,6 +106,7 @@ class Player:
             self.y -= PLAYER_SPEED
         if pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN):
             self.y += PLAYER_SPEED
+
         self.x = max(self.x, 0)
         self.x = min(self.x, pyxel.width - self.w)
         self.y = max(self.y, 0)
@@ -157,6 +158,7 @@ class Enemy:
         else:
             self.x -= ENEMY_SPEED
             self.dir = -1
+
         self.y += ENEMY_SPEED
         if self.y > pyxel.height - 1:
             self.is_alive = False
@@ -367,6 +369,7 @@ class App:
             self.draw_play_scene()
         elif self.scene == SCENE_GAMEOVER:
             self.draw_gameover_scene()
+
         pyxel.text(39, 4, f"SCORE {self.score:5}", 7)
 
     def draw_title_scene(self):

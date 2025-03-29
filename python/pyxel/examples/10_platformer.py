@@ -29,14 +29,17 @@ def is_colliding(x, y, is_falling):
     y1 = pyxel.floor(y) // 8
     x2 = (pyxel.ceil(x) + 7) // 8
     y2 = (pyxel.ceil(y) + 7) // 8
+
     for yi in range(y1, y2 + 1):
         for xi in range(x1, x2 + 1):
             if get_tile(xi, yi)[0] >= WALL_TILE_X:
                 return True
+
     if is_falling and y % 8 == 1:
         for xi in range(x1, x2 + 1):
             if get_tile(xi, y1 + 1) == TILE_FLOOR:
                 return True
+
     return False
 
 
@@ -47,12 +50,14 @@ def push_back(x, y, dx, dy):
             break
         y += step
         dy -= step
+
     for _ in range(pyxel.ceil(abs(dx))):
         step = max(-1, min(1, dx))
         if is_colliding(x + step, y, dy > 0):
             break
         x += step
         dx -= step
+
     return x, y
 
 
@@ -64,6 +69,7 @@ def is_wall(x, y):
 def spawn_enemy(left_x, right_x):
     left_x = pyxel.ceil(left_x / 8)
     right_x = pyxel.floor(right_x / 8)
+
     for x in range(left_x, right_x + 1):
         for y in range(16):
             tile = get_tile(x, y)
@@ -93,21 +99,27 @@ class Player:
     def update(self):
         global scroll_x
         last_y = self.y
+
         if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
             self.dx = -2
             self.direction = -1
         if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
             self.dx = 2
             self.direction = 1
+
         self.dy = min(self.dy + 1, 3)
+
         if pyxel.btnp(pyxel.KEY_SPACE) or pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A):
             self.dy = -6
             pyxel.play(3, 8)
+
         self.x, self.y = push_back(self.x, self.y, self.dx, self.dy)
+
         if self.x < scroll_x:
             self.x = scroll_x
         if self.y < 0:
             self.y = 0
+
         self.dx = int(self.dx * 0.8)
         self.is_falling = self.y > last_y
 
@@ -115,6 +127,7 @@ class Player:
             last_scroll_x = scroll_x
             scroll_x = min(self.x - SCROLL_BORDER_X, 240 * 8)
             spawn_enemy(last_scroll_x + 128, scroll_x + 127)
+
         if self.y >= pyxel.height:
             game_over()
 
@@ -136,10 +149,12 @@ class Enemy1:
     def update(self):
         self.dx = self.direction
         self.dy = min(self.dy + 1, 3)
+
         if self.direction < 0 and is_wall(self.x - 1, self.y + 4):
             self.direction = 1
         elif self.direction > 0 and is_wall(self.x + 8, self.y + 4):
             self.direction = -1
+
         self.x, self.y = push_back(self.x, self.y, self.dx, self.dy)
 
     def draw(self):
@@ -160,6 +175,7 @@ class Enemy2:
     def update(self):
         self.dx = self.direction
         self.dy = min(self.dy + 1, 3)
+
         if is_wall(self.x, self.y + 8) or is_wall(self.x + 7, self.y + 8):
             if self.direction < 0 and (
                 is_wall(self.x - 1, self.y + 4) or not is_wall(self.x - 1, self.y + 8)
@@ -169,6 +185,7 @@ class Enemy2:
                 is_wall(self.x + 8, self.y + 4) or not is_wall(self.x + 7, self.y + 8)
             ):
                 self.direction = -1
+
         self.x, self.y = push_back(self.x, self.y, self.dx, self.dy)
 
     def draw(self):
@@ -186,10 +203,12 @@ class Enemy3:
 
     def update(self):
         self.time_to_fire -= 1
+
         if self.time_to_fire <= 0:
             dx = player.x - self.x
             dy = player.y - self.y
             sq_dist = dx * dx + dy * dy
+
             if sq_dist < 60**2:
                 dist = pyxel.sqrt(sq_dist)
                 enemies.append(Enemy3Bullet(self.x, self.y, dx / dist, dy / dist))
@@ -236,6 +255,7 @@ class App:
             pyxel.quit()
 
         player.update()
+
         for enemy in enemies:
             if abs(player.x - enemy.x) < 6 and abs(player.y - enemy.y) < 6:
                 game_over()
@@ -243,6 +263,7 @@ class App:
             enemy.update()
             if enemy.x < scroll_x - 8 or enemy.x > scroll_x + 160 or enemy.y > 160:
                 enemy.is_alive = False
+
         cleanup_entities(enemies)
 
     def draw(self):

@@ -87,6 +87,7 @@ def setup_music():
         "vvvfnnnf nfnfnfvv vfnfnfvv vfvvvfvv vfnfnfvf vfnfnfnf nfnfnfvv vfnnnfnf",
         16,
     )
+
     pyxel.sounds[1].set(
         "rrc3c3e-3e-3g3g3 f3f3f3g3g3g3g3g3 rrb-3b-3a-3a-3f3f3 a-3a-3a-3g3g3g3g3g3"
         "rrc3c3e-3e-3g3g3 f3f3f3g3g3g3g3g3 rrb-3b-3a-3a-3f3f3 a-3a-3a-3g3g3g3g3g3",
@@ -95,8 +96,11 @@ def setup_music():
         "vvvvvvvv vvvvvvvf",
         32,
     )
+
     pyxel.sounds[2].set("a-2a-2ra-2 a-2a-2ra-2 g2g2rg2 g2g2rg2", "2", "5", "f", 32)
+
     pyxel.sounds[3].set("c3c3rc3 b-2b-2rb-2 b-2b-2rb-2 c3c3rc3", "2", "5", "f", 32)
+
     pyxel.sounds[4].set(
         "e-3e-3re-3 d3d3rd3 d3d3rd3 e3e3re3 e-3e-3re-3 d3d3rd3 d3d3rd3 e-3e-3re-3",
         "2",
@@ -104,10 +108,13 @@ def setup_music():
         "f",
         32,
     )
+
     pyxel.sounds[5].set("a-0rra-0 b-0rrb-0 g0rrg0 c1rrc1", "3", "5", "f", 32)
+
     pyxel.sounds[6].set(
         "g1rrrd2rrr" * 3 + "g1rd2rd2rrr", "4", "50006000" * 3 + "50506000", "f", 16
     )
+
     pyxel.musics[0].set([0], [0], [1], [2], [3], [4], [5], [6])
 
 
@@ -162,9 +169,11 @@ class App:
         pyxel.init(191, 264, title="Synthesizer")
         extend_audio()
         setup_music()
+
         self.waveform_editors = [
             WaveformEditor(*param) for param in WAVEFORM_EDITOR_PARAMS
         ]
+
         pyxel.mouse(True)
         pyxel.playm(0, loop=True)
         pyxel.run(self.update, self.draw)
@@ -178,6 +187,7 @@ class App:
 
     def draw(self):
         pyxel.cls(1)
+
         for waveform_editor in self.waveform_editors:
             waveform_editor.draw()
 

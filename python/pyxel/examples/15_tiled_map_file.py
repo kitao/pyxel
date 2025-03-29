@@ -15,6 +15,7 @@ def is_colliding(x, y):
     y1 = pyxel.floor(y) // 8
     x2 = (pyxel.ceil(x) + 15) // 8
     y2 = (pyxel.ceil(y) + 15) // 8
+
     for yi in range(y1, y2 + 1):
         for xi in range(x1, x2 + 1):
             if pyxel.tilemaps[2].pget(xi, yi) == (2, 0):
@@ -29,12 +30,14 @@ def push_back(x, y, dx, dy):
             break
         y += step
         dy -= step
+
     for _ in range(pyxel.ceil(abs(dx))):
         step = max(-1, min(1, dx))
         if is_colliding(x + step, y):
             break
         x += step
         dx -= step
+
     return x, y
 
 
@@ -66,6 +69,7 @@ class App:
             (64, 136, 2, 4),
             (96, 136, 2, 4),
         ]
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -87,8 +91,10 @@ class App:
         if pyxel.btn(pyxel.KEY_RIGHT):
             dx = 1
             u, v = 3, 1
+
         if v == 1:
             v += [-1, 0, -1, 1][pyxel.frame_count // 5 % 4]
+
         x, y = push_back(x, y, dx, dy)
         x = min(max(x, 0), pyxel.width - 16)
         y = min(max(y, 0), pyxel.height - 16)

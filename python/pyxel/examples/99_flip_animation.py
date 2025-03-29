@@ -1,6 +1,7 @@
 import pyxel
 
 phase = 0.0
+
 pyxel.init(128, 128, title="Flip Animation")
 
 while True:
@@ -15,6 +16,8 @@ while True:
             offset_y = pyxel.sin(offset_x * 25) * 2.5
             color = int((15 - dist * 0.2) % 16)
             pyxel.circ(x + offset_x, y + offset_y, 1, color)
+
     phase += 360 / 30
+
     pyxel.flip()
     # Please note that flip function only works on non-Web platforms

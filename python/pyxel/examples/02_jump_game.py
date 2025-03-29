@@ -12,17 +12,20 @@ class App:
     def __init__(self):
         pyxel.init(160, 120, title="Pyxel Jump")
         pyxel.load("assets/jump_game.pyxres")
+
         self.score = 0
         self.player_x = 72
         self.player_y = -16
         self.player_dy = 0
         self.is_alive = True
+
         self.far_cloud = [(-10, 75), (40, 65), (90, 60)]
         self.near_cloud = [(10, 25), (70, 35), (120, 15)]
         self.floor = [(i * 60, pyxel.rndi(8, 104), True) for i in range(4)]
         self.fruit = [
             (i * 60, pyxel.rndi(0, 104), pyxel.rndi(0, 2), True) for i in range(4)
         ]
+
         pyxel.playm(0, loop=True)
         pyxel.run(self.update, self.draw)
 
@@ -31,8 +34,10 @@ class App:
             pyxel.quit()
 
         self.update_player()
+
         for i, v in enumerate(self.floor):
             self.floor[i] = self.update_floor(*v)
+
         for i, v in enumerate(self.fruit):
             self.fruit[i] = self.update_fruit(*v)
 
@@ -41,6 +46,7 @@ class App:
             self.player_x = max(self.player_x - 2, 0)
         if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
             self.player_x = min(self.player_x + 2, pyxel.width - 16)
+
         self.player_y += self.player_dy
         self.player_dy = min(self.player_dy + 1, 8)
 
@@ -70,11 +76,13 @@ class App:
                 pyxel.play(3, 3)
         else:
             y += 6
+
         x -= 4
         if x < -40:
             x += 240
             y = pyxel.rndi(8, 104)
             is_alive = True
+
         return x, y, is_alive
 
     def update_fruit(self, x, y, kind, is_alive):
@@ -83,12 +91,14 @@ class App:
             self.score += (kind + 1) * 100
             self.player_dy = min(self.player_dy, -8)
             pyxel.play(3, 4)
+
         x -= 2
         if x < -40:
             x += 240
             y = pyxel.rndi(0, 104)
             kind = pyxel.rndi(0, 2)
             is_alive = True
+
         return (x, y, kind, is_alive)
 
     def draw(self):
@@ -110,6 +120,7 @@ class App:
         for i in range(2):
             for x, y in self.far_cloud:
                 pyxel.blt(x + i * 160 - offset, y, 0, 64, 32, 32, 8, 12)
+
         offset = (pyxel.frame_count // 8) % 160
         for i in range(2):
             for x, y in self.near_cloud:

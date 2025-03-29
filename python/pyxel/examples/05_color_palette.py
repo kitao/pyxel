@@ -15,6 +15,8 @@ def draw_palette(x, y, col):
 
 pyxel.init(255, 81, title="Pyxel Color Palette")
 pyxel.cls(0)
+
 for i in range(16):
     draw_palette(2 + (i % 4) * 64, 4 + (i // 4) * 20, i)
+
 pyxel.show()
