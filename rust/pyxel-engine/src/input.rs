@@ -37,6 +37,7 @@ impl Pyxel {
             !self.is_analog_key(key),
             "btn is called with an analog key 0x{key:X}"
         );
+
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Pressed
                 || *key_state == KeyState::ReleasedAndPressed
@@ -58,21 +59,26 @@ impl Pyxel {
             !self.is_analog_key(key),
             "btnp is called with an analog key 0x{key:X}"
         );
+
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Released {
                 return false;
             }
+
             if *frame_count == self.frame_count {
                 return true;
             }
+
             if *key_state == KeyState::PressedAndReleased {
                 return false;
             }
+
             let hold_frame_count = hold_frame_count.unwrap_or(0);
             let repeat_frame_count = repeat_frame_count.unwrap_or(0);
             if repeat_frame_count == 0 {
                 return false;
             }
+
             let elapsed_frames = self.frame_count as i32 - (*frame_count + hold_frame_count) as i32;
             if elapsed_frames >= 0 && elapsed_frames % repeat_frame_count as i32 == 0 {
                 return true;
@@ -86,10 +92,12 @@ impl Pyxel {
             !self.is_analog_key(key),
             "btnr is called with an analog key 0x{key:X}"
         );
+
         if let Some((frame_count, key_state)) = self.input.key_states.get(&key) {
             if *key_state == KeyState::Pressed {
                 return false;
             }
+
             if *frame_count == self.frame_count {
                 return true;
             }
@@ -102,6 +110,7 @@ impl Pyxel {
             self.is_analog_key(key),
             "btnv is called with a non-analog key 0x{key:X}"
         );
+
         self.input.key_values.get(&key).copied().unwrap_or(0)
     }
 
@@ -140,6 +149,7 @@ impl Pyxel {
                 key_state = KeyState::ReleasedAndPressed;
             }
         }
+
         self.input
             .key_states
             .insert(key, (self.frame_count, key_state));
@@ -155,6 +165,7 @@ impl Pyxel {
                 key_state = KeyState::PressedAndReleased;
             }
         }
+
         self.input
             .key_states
             .insert(key, (self.frame_count, key_state));
@@ -162,6 +173,7 @@ impl Pyxel {
 
     pub(crate) fn change_key_value(&mut self, key: Key, value: KeyValue) {
         let mut value = value;
+
         match key {
             MOUSE_POS_X => {
                 value = ((value - self.system.screen_x) as f64 / self.system.screen_scale) as i32;
@@ -176,6 +188,7 @@ impl Pyxel {
             }
             _ => {}
         }
+
         self.input.key_values.insert(key, value);
     }
 

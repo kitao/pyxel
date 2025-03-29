@@ -37,6 +37,7 @@ impl Profiler {
     pub fn end(&mut self, tick_count: u32) {
         self.total_time += tick_count - self.start_time;
         self.num_measured_frames += 1;
+
         if self.num_measured_frames >= self.num_measure_frames {
             self.average_time = self.total_time as f64 / self.num_measured_frames as f64;
             self.average_fps = 1000.0 / self.average_time;

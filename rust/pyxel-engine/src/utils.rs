@@ -140,6 +140,7 @@ mod tests {
                 _ => {}
             }
         });
+
         string_loop!(i, value, test_string, 3, {
             match i {
                 0 => {

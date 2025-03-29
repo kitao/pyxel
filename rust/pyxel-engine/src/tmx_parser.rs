@@ -49,23 +49,28 @@ impl Tilemap {
                 }
             };
         }
+
         #[allow(clippy::never_loop)]
         loop {
             let file = File::open(filename);
             assert_or_break!(file.is_ok(), "Failed to open file '{filename}'");
             let mut file = file.unwrap();
+
             let mut tmx_text = String::new();
             assert_or_break!(
                 file.read_to_string(&mut tmx_text).is_ok(),
                 "Failed to read TMX file"
             );
+
             let tmx = serde_xml_rs::from_str(&tmx_text);
             assert_or_break!(tmx.is_ok(), "Failed to parse TMX file");
             let tmx: TiledMapFile = tmx.unwrap();
+
             assert_or_break!(
                 tmx.tilewidth == TILE_SIZE && tmx.tileheight == TILE_SIZE,
                 "TMX file's tile size is not {TILE_SIZE}x{TILE_SIZE}"
             );
+
             assert_or_break!(!tmx.tilesets.is_empty(), "Tileset not found in TMX file");
             let tileset = &tmx.tilesets[0];
             assert_or_break!(
@@ -73,6 +78,7 @@ impl Tilemap {
                 "Tileset is not embedded in TMX file"
             );
             let tileset_columns = tileset.columns.unwrap();
+
             assert_or_break!(
                 layer_index < tmx.layers.len() as u32,
                 "Layer {layer_index} not found in TMX file"
@@ -82,10 +88,12 @@ impl Tilemap {
                 layer.data.encoding == "csv",
                 "TMX file's encoding is not CSV"
             );
+
             let layer_data: Vec<u32> = remove_whitespace(&layer.data.tiles)
                 .split(',')
                 .map(|s| s.parse::<u32>().unwrap())
                 .collect();
+
             let tilemap = Self::new(layer.width, layer.height, ImageSource::Index(0));
             {
                 let mut tilemap = tilemap.lock();
@@ -102,8 +110,10 @@ impl Tilemap {
                     tilemap.canvas.write_data(x, y, (tile_x, tile_y));
                 }
             }
+
             return tilemap;
         }
+
         // Return a blank tilemap due to an error
         Self::new(1, 1, ImageSource::Index(0))
     }

@@ -45,6 +45,7 @@ impl Audio {
     ) {
         let mut channels: Vec<_> = channels_.iter().map(|channel| channel.lock()).collect();
         let mut num_samples = blip_buf.read_samples(samples, false);
+
         while num_samples < samples.len() {
             for channel in &mut *channels {
                 channel.update(blip_buf);
@@ -65,6 +66,7 @@ impl Audio {
         let filename = utils::add_file_extension(filename, ".wav");
         let mut writer = WavWriter::create(&filename, spec)
             .unwrap_or_else(|_| panic!("Failed to open file '{filename}'"));
+
         for sample in samples {
             writer.write_sample(*sample).unwrap();
         }
@@ -74,11 +76,13 @@ impl Audio {
         if !ffmpeg {
             return;
         }
+
         let image_data = include_bytes!("assets/pyxel_logo_152x64.png");
         let image_path = temp_dir().join("pyxel_mp4_image.png");
         let png_file = image_path.to_str().unwrap();
         let wav_file = &filename;
         let mp4_file = filename.replace(".wav", ".mp4");
+
         write(&image_path, image_data).unwrap();
         Command::new("ffmpeg")
             .arg("-loop")
@@ -104,6 +108,7 @@ impl Audio {
             .arg("-y")
             .output()
             .unwrap_or_else(|e| panic!("Failed to execute FFmpeg: {e}"));
+
         remove_file(png_file).unwrap();
     }
 }
@@ -120,10 +125,12 @@ impl Pyxel {
         if sequence.is_empty() {
             return;
         }
+
         let sounds = sequence
             .iter()
             .map(|sound_index| self.sounds.lock()[*sound_index as usize].clone())
             .collect();
+
         self.channels.lock()[channel_index as usize].lock().play(
             sounds,
             start_tick,
@@ -152,6 +159,7 @@ impl Pyxel {
         let num_channels = self.channels.lock().len();
         let musics = self.musics.lock();
         let music = musics[music_index as usize].lock();
+
         for i in 0..min(num_channels, music.seqs.len()) {
             self.play(
                 i as u32,
@@ -169,6 +177,7 @@ impl Pyxel {
 
     pub fn stop0(&self) {
         let num_channels = self.channels.lock().len();
+
         for i in 0..num_channels {
             self.stop(i as u32);
         }

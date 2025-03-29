@@ -44,6 +44,7 @@ impl Font {
             x: 0,
             y: 0,
         };
+
         let file = File::open(filename).unwrap();
         for line in BufReader::new(file).lines().map_while(Result::ok) {
             if line.starts_with("FONTBOUNDINGBOX") {
@@ -104,6 +105,7 @@ impl Font {
                 bitmap.push(bin_string.reverse_bits() >> (32 - hex_string.len() * 4));
             }
         }
+
         new_shared_type!(Font {
             font_bounding_box,
             glyphs,
@@ -138,6 +140,7 @@ impl Font {
         let y = y + self.font_bounding_box.y + self.font_bounding_box.height
             - glyph.bbx.y
             - glyph.bbx.height;
+
         for (i, &row) in glyph.bitmap.iter().enumerate() {
             let value_y = y + i as i32;
             for j in 0..glyph.bbx.width {

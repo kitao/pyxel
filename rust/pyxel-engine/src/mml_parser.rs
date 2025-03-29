@@ -39,6 +39,7 @@ impl Sound {
         let mut envelopes: [EnvData; 8] = array::from_fn(|_| vec![7]);
         let mut note_info = NoteInfo::default();
         self.speed = 9; // T=100
+
         while chars.peek().is_some() {
             if let Some(value) = Self::parse_command(&mut chars, 't') {
                 self.speed = (900 / value).max(1);
@@ -87,6 +88,7 @@ impl Sound {
                 }
             } else if let Some((note, length)) = Self::parse_note(&mut chars, length) {
                 self.add_note(&note_info);
+
                 let note = note + octave * 12;
                 let env_data = match vol_env {
                     VolEnv::Constant(volume) => vec![volume],
@@ -97,6 +99,7 @@ impl Sound {
                 } else {
                     0
                 };
+
                 note_info = NoteInfo {
                     length,
                     quantize,
@@ -109,6 +112,7 @@ impl Sound {
                 };
             } else if let Some(length) = Self::parse_rest(&mut chars, length) {
                 self.add_note(&note_info);
+
                 note_info = NoteInfo {
                     length,
                     quantize,
@@ -129,6 +133,7 @@ impl Sound {
                 panic!("Invalid command '{c}' in MML");
             }
         }
+
         self.add_note(&note_info);
     }
 
@@ -144,6 +149,7 @@ impl Sound {
 
     fn parse_number<T: Iterator<Item = char>>(chars: &mut Peekable<T>) -> Option<u32> {
         Self::skip_whitespace(chars);
+
         let mut number_str = String::new();
         while let Some(&c) = chars.peek() {
             if c.is_ascii_digit() {
@@ -152,6 +158,7 @@ impl Sound {
                 break;
             }
         }
+
         if number_str.is_empty() {
             None
         } else {
@@ -161,12 +168,14 @@ impl Sound {
 
     fn parse_char<T: Iterator<Item = char>>(chars: &mut Peekable<T>, target: char) -> bool {
         Self::skip_whitespace(chars);
+
         if let Some(&c) = chars.peek() {
             if c.eq_ignore_ascii_case(&target) {
                 chars.next();
                 return true;
             }
         }
+
         false
     }
 
@@ -178,8 +187,10 @@ impl Sound {
             if let Some(number) = Self::parse_number(chars) {
                 return Some(number);
             }
+
             panic!("Missing value after '{target}' in MML");
         }
+
         None
     }
 
@@ -188,12 +199,15 @@ impl Sound {
     ) -> Option<(EnvIndex, EnvData)> {
         let envelope = Self::parse_command(chars, 'x');
         envelope?;
+
         let envelope = envelope.unwrap();
         assert!(envelope <= 7, "Invalid envelope value '{envelope}' in MML");
+
         let mut env_data = Vec::new();
         if !Self::parse_char(chars, ':') {
             return Some((envelope, env_data));
         }
+
         Self::skip_whitespace(chars);
         while let Some(&c) = chars.peek() {
             if c.is_ascii_digit() {
@@ -206,8 +220,10 @@ impl Sound {
             } else {
                 break;
             }
+
             Self::skip_whitespace(chars);
         }
+
         assert!(!env_data.is_empty(), "Missing envelope volumes in MML");
         Some((envelope, env_data))
     }
@@ -217,6 +233,7 @@ impl Sound {
         length: u32,
     ) -> Option<(Note, u32)> {
         Self::skip_whitespace(chars);
+
         let mut note = match chars.peek()?.to_ascii_lowercase() {
             'c' => 0,
             'd' => 2,
@@ -228,11 +245,13 @@ impl Sound {
             _ => return None,
         };
         chars.next();
+
         if Self::parse_char(chars, '#') || Self::parse_char(chars, '+') {
             note += 1;
         } else if Self::parse_char(chars, '-') {
             note -= 1;
         }
+
         Some((note, Self::parse_note_length(chars, length)))
     }
 
@@ -241,6 +260,7 @@ impl Sound {
         cur_length: u32,
     ) -> u32 {
         let mut length = cur_length;
+
         if let Some(temp_length) = Self::parse_number(chars) {
             if temp_length <= 32 && 32 % temp_length == 0 {
                 length = 32 / temp_length;
@@ -248,6 +268,7 @@ impl Sound {
                 panic!("Invalid note length '{temp_length}' in MML");
             }
         }
+
         let mut target_length = length;
         while Self::parse_char(chars, '.') {
             if target_length >= 2 {
@@ -257,6 +278,7 @@ impl Sound {
                 panic!("Length added by dot is too short in MML");
             }
         }
+
         length
     }
 
@@ -267,6 +289,7 @@ impl Sound {
         if !Self::parse_char(chars, 'r') {
             return None;
         }
+
         Some(Self::parse_note_length(chars, cur_length))
     }
 
@@ -298,6 +321,7 @@ impl Sound {
         } else {
             EFFECT_NONE
         };
+
         repeat_extend!(&mut self.notes, note_info.note, num_notes);
         repeat_extend!(&mut self.effects, note_effect, num_notes);
         if num_notes == note_info.length {

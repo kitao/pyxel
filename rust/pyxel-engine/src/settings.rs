@@ -109,28 +109,34 @@ pub const CLOCKS_PER_TICK: u32 = CLOCK_RATE / TICKS_PER_SECOND;
 pub const OSCILLATOR_RESOLUTION: u32 = 32;
 pub const VIBRATO_DEPTH: f64 = 0.015;
 pub const VIBRATO_FREQUENCY: f64 = 6.0;
+
 pub const NUM_CHANNELS: u32 = 4;
 pub const NUM_TONES: u32 = 4;
 pub const NUM_SOUNDS: u32 = 64;
 pub const NUM_MUSICS: u32 = 8;
 pub const NUM_WAVEFORM_STEPS: u32 = 32;
+
 pub const INITIAL_CHANNEL_GAIN: Gain = 0.125;
 pub const INITIAL_SOUND_SPEED: Speed = 30;
 pub const INITIAL_NOISE_REG: u16 = 1 << 14;
+
 pub const TONE_TRIANGLE: ToneIndex = 0;
 pub const TONE_SQUARE: ToneIndex = 1;
 pub const TONE_PULSE: ToneIndex = 2;
 pub const TONE_NOISE: ToneIndex = 3;
+
 pub const EFFECT_NONE: Effect = 0;
 pub const EFFECT_SLIDE: Effect = 1;
 pub const EFFECT_VIBRATO: Effect = 2;
 pub const EFFECT_FADEOUT: Effect = 3;
 pub const EFFECT_HALF_FADEOUT: Effect = 4;
 pub const EFFECT_QUARTER_FADEOUT: Effect = 5;
+
 pub const MAX_TONE: ToneIndex = 9;
 pub const MAX_NOTE: Note = 12 * 5 - 1; // 5 octaves
 pub const MAX_VOLUME: Volume = 7;
 pub const MAX_EFFECT: Effect = 5;
+
 pub const DEFAULT_TONES: [(Gain, Noise, Waveform); NUM_TONES as usize] = [
     // Triangle
     (
