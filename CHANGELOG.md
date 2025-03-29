@@ -1,16 +1,13 @@
 # Change Log
 
-## 2.3.19
-
-- Added blank lines to format code
-- Updated the sysinfo crate to version 0.34
-
 ## 2.3.18
 
 - Added SDL2 include paths for Linux
 - Fixed relative path handling in the watch command
 - Updated the message image
 - Added a screen size specification to the READMEs
+- Added blank lines to format code
+- Updated the sysinfo crate to version 0.34
 
 ## 2.3.17
 
