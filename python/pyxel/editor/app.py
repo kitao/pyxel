@@ -34,6 +34,7 @@ class App(Widget):
         if os.path.isdir(resource_file):
             print(f"A directory named '{original_resource_file}' exists")
             sys.exit(1)
+
         if not os.path.isdir(os.path.dirname(resource_file)):
             print(f"Directory for '{original_resource_file}' does not exist")
             sys.exit(1)
@@ -43,8 +44,10 @@ class App(Widget):
         pyxel.mouse(True)
         colors = pyxel.colors.to_list()
         self._set_title(original_resource_file)
+
         if os.path.exists(resource_file):
             pyxel.load(resource_file)
+
         colors += pyxel.colors.to_list()
         pyxel.colors.from_list(colors)
 
@@ -169,10 +172,13 @@ class App(Widget):
         if pyxel.dropped_files:
             dropped_file = pyxel.dropped_files[-1]
             file_ext = os.path.splitext(dropped_file)[1]
+
             if file_ext == pyxel.RESOURCE_FILE_EXTENSION:
                 pyxel.stop()
+
                 for editor in self._editors:
                     editor.reset_history()
+
                 pyxel.load(dropped_file)
                 self._set_title(dropped_file)
             else:

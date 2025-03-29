@@ -30,12 +30,14 @@ class ScrollBar(Widget):
     ):
         if width is None and height is None or width is not None and height is not None:
             raise ValueError("Either width or height should be specified")
+
         if height is not None:
             width = 7
             self._is_vertical = True
         else:
             height = 7
             self._is_vertical = False
+
         super().__init__(parent, x, y, width, height, **kwargs)
         self.scroll_amount = scroll_amount
         self.slider_amount = slider_amount
@@ -104,6 +106,7 @@ class ScrollBar(Widget):
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
+
         x -= self.x
         y -= self.y
         self._drag_offset = (y if self._is_vertical else x) - self._slider_pos
@@ -120,6 +123,7 @@ class ScrollBar(Widget):
     def __on_mouse_drag(self, key, x, y, dx, dy):
         if not self._is_dragged:
             return
+
         x -= self.x
         y -= self.y
         drag_pos = y if self._is_vertical else x
@@ -142,6 +146,7 @@ class ScrollBar(Widget):
         self.draw_panel(x, y, w, h, with_shadow=self._with_shadow)
         inc_col = 6 if self.inc_button.is_pressed_var else WIDGET_BACKGROUND_COLOR
         dec_col = 6 if self.dec_button.is_pressed_var else WIDGET_BACKGROUND_COLOR
+
         if self._is_vertical:
             # Draw border
             pyxel.rect(x + 1, y + 1, w - 2, 4, dec_col)

@@ -173,6 +173,7 @@ class FieldCursor:
     def backspace(self):
         if not self.is_selecting and self.x == 0:
             return
+
         self._add_pre_history(self.x, self.y)
         lst = self.field.to_list()
         if self.is_selecting:
@@ -189,6 +190,7 @@ class FieldCursor:
     def delete(self):
         if self.x >= len(self.field):
             return
+
         self._add_pre_history(self.x, self.y)
         lst = self.field.to_list()
         x = self.x

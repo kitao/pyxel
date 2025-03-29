@@ -36,21 +36,25 @@ def _ellib2(self, x1, y1, x2, y2, val):
 
 def _get_slice(self, x, y, width, height):
     data = [[0] * width for _ in range(height)]
+
     for yi in range(height):
         for xi in range(width):
             data[yi][xi] = self.pget(x + xi, y + yi)
+
     return data
 
 
 def _set_slice(self, x, y, slice):
     width = len(slice[0])
     height = len(slice)
+
     for yi in range(height):
         for xi in range(width):
             self.pset(x + xi, y + yi, slice[yi][xi])
 
 
 pyxel.user_pal = _user_pal  # type: ignore
+
 pyxel.Image.rect2 = pyxel.Tilemap.rect2 = _rect2  # type: ignore
 pyxel.Image.rectb2 = pyxel.Tilemap.rectb2 = _rectb2  # type: ignore
 pyxel.Image.elli2 = pyxel.Tilemap.elli2 = _elli2  # type: ignore

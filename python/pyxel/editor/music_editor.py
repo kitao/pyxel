@@ -94,8 +94,10 @@ class MusicEditor(EditorBase):
     def get_field(self, index):
         if index >= pyxel.NUM_CHANNELS:
             return
+
         music = pyxel.musics[self.music_index_var]
         seqs_len = len(music.seqs)
+
         if seqs_len < pyxel.NUM_CHANNELS:
             seqs = music.seqs.to_list()
             seqs.extend([[] for _ in range(pyxel.NUM_CHANNELS - seqs_len)])
@@ -104,11 +106,13 @@ class MusicEditor(EditorBase):
             seqs = music.seqs.to_list()
             del seqs[pyxel.NUM_CHANNELS :]
             music.seqs.from_list(seqs)
+
         return music.seqs[index]
 
     def add_pre_history(self, x=None, y=None, *, bank_copy=False):
         self._history_data = data = {}
         data["music_index"] = self.music_index_var
+
         if bank_copy:
             data["old_data"] = [self.get_field(i).to_list() for i in range(4)]
         else:
@@ -117,6 +121,7 @@ class MusicEditor(EditorBase):
 
     def add_post_history(self, x=None, y=None, *, bank_copy=False):
         data = self._history_data
+
         if bank_copy:
             data["new_data"] = [self.get_field(i).to_list() for i in range(4)]
             if data["new_data"] != data["old_data"]:
@@ -133,12 +138,14 @@ class MusicEditor(EditorBase):
         self._play_button.is_enabled_var = False
         self._stop_button.is_enabled_var = True
         self._loop_button.is_enabled_var = False
+
         tick = 0
         if is_partial:
             for i in range(self.field_cursor.x):
                 music = pyxel.musics[self.music_index_var]
                 sound = pyxel.sounds[music.seqs[self.field_cursor.y][i]]
                 tick += len(sound.notes) * sound.speed
+
         pyxel.playm(self.music_index_var, tick=tick, loop=self.should_loop_var)
 
     def _stop(self):
@@ -147,6 +154,7 @@ class MusicEditor(EditorBase):
         self._play_button.is_enabled_var = True
         self._stop_button.is_enabled_var = False
         self._loop_button.is_enabled_var = True
+
         pyxel.stop()
 
     def __on_music_picker_mouse_hover(self, x, y):
@@ -170,6 +178,7 @@ class MusicEditor(EditorBase):
     def __on_undo(self, data):
         self._stop()
         self.music_index_var = data["music_index"]
+
         if "old_data" in data:
             for i in range(4):
                 self.get_field(i).from_list(data["old_data"][i])
@@ -180,6 +189,7 @@ class MusicEditor(EditorBase):
     def __on_redo(self, data):
         self._stop()
         self.music_index_var = data["music_index"]
+
         if "new_data" in data:
             for i in range(4):
                 self.get_field(i).from_list(data["new_data"][i])
@@ -197,17 +207,22 @@ class MusicEditor(EditorBase):
                 if pyxel.play_pos(i) is not None:
                     self.is_playing_var = True
                     break
+
         if pyxel.btnp(pyxel.KEY_SPACE):
             if self.is_playing_var:
                 self._stop_button.is_pressed_var = True
             else:
                 self._play_button.is_pressed_var = True
+
         if self.is_playing_var:
             return
+
         if not self._play_button.is_enabled_var:
             self._stop()
+
         if self._loop_button.is_enabled_var and pyxel.btnp(pyxel.KEY_L):
             self.should_loop_var = not self.should_loop_var
+
         if not self.is_playing_var:
             self.field_cursor.process_input()
 

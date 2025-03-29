@@ -37,6 +37,7 @@ class RadioButton(Widget):
         y1 = 0
         x2 = x1 + 6
         y2 = y1 + 6
+
         return index if x1 <= x <= x2 and y1 <= y <= y2 else None
 
     def __on_value_change(self, value):
@@ -45,6 +46,7 @@ class RadioButton(Widget):
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
+
         value = self.check_value(x, y)
         if value is not None:
             self.value_var = value
@@ -62,6 +64,7 @@ class RadioButton(Widget):
             self.width,
             self.height,
         )
+
         pyxel.pal(BUTTON_ENABLED_COLOR, BUTTON_PRESSED_COLOR)
         pyxel.blt(
             self.x + self.value_var * 9,

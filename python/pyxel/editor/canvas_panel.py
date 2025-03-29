@@ -35,6 +35,7 @@ class CanvasPanel(Widget):
 
     def __init__(self, parent):
         super().__init__(parent, 11, 16, 130, 130)
+
         if hasattr(parent, "tilemap_index_var"):
             self._is_tilemap_mode = True
             self.copy_var("tilemap_index_var", parent)
@@ -44,6 +45,7 @@ class CanvasPanel(Widget):
             self.copy_var("tile_h_var", parent)
         else:
             self._is_tilemap_mode = False
+
         self._history_data = None
         self._press_x = 0
         self._press_y = 0
@@ -112,6 +114,7 @@ class CanvasPanel(Widget):
 
     def _add_pre_history(self, *, bank_copy=False):
         self._history_data = data = {}
+
         if bank_copy:
             if self._is_tilemap_mode:
                 data["tilemap_index"] = self.tilemap_index_var
@@ -124,6 +127,7 @@ class CanvasPanel(Widget):
                 data["tilemap_index"] = self.tilemap_index_var
             else:
                 data["image_index"] = self.image_index_var
+
             data["focus_pos"] = (self.focus_x_var, self.focus_y_var)
             data["old_canvas"] = self.canvas_var.get_slice(
                 self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
@@ -131,10 +135,12 @@ class CanvasPanel(Widget):
 
     def _add_post_history(self, *, bank_copy=False):
         data = self._history_data
+
         if bank_copy:
             data["new_data"] = self.canvas_var.get_slice(0, 0, 256, 256)
             if self._is_tilemap_mode:
                 data["new_imgsrc"] = self.canvas_var.imgsrc
+
             if (
                 data["new_data"] != data["old_data"]
                 or data["new_imgsrc"] != data["old_imgsrc"]
@@ -144,6 +150,7 @@ class CanvasPanel(Widget):
             data["new_canvas"] = self.canvas_var.get_slice(
                 self.focus_x_var * 8, self.focus_y_var * 8, 16, 16
             )
+
             if data["new_canvas"] != data["old_canvas"]:
                 self.add_history(data)
 
@@ -163,6 +170,7 @@ class CanvasPanel(Widget):
     def _finish_edit_canvas(self):
         if not self._is_tilemap_mode:
             return
+
         for y in range(16):
             for x in range(16):
                 if self._edit_canvas.pget(x, y) != (255, 255):
@@ -196,11 +204,13 @@ class CanvasPanel(Widget):
             return
         elif key != pyxel.MOUSE_BUTTON_LEFT:
             return
+
         x, y = self._screen_to_focus(x, y)
         self._press_x = self._last_x = x
         self._press_y = self._last_y = y
         self._is_dragged = True
         self._is_assist_mode = False
+
         if self.tool_var == TOOL_SELECT:
             self._reset_edit_canvas()
             self._select_x1 = self._select_x2 = x
@@ -228,6 +238,7 @@ class CanvasPanel(Widget):
     def __on_mouse_up(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT:
             return
+
         self._is_dragged = False
         if TOOL_PENCIL <= self.tool_var <= TOOL_CIRC:
             self._add_pre_history()
@@ -312,6 +323,7 @@ class CanvasPanel(Widget):
         elif key == pyxel.MOUSE_BUTTON_RIGHT:
             self._drag_offset_x -= dx
             self._drag_offset_y -= dy
+
             if abs(self._drag_offset_x) >= 16:
                 offset = self._drag_offset_x // 16
                 self.focus_x_var += offset
@@ -328,6 +340,7 @@ class CanvasPanel(Widget):
             s = "ASSIST:SHIFT"
         else:
             s = "PICK:R-CLICK VIEW:R-DRAG"
+
         x, y = self._screen_to_focus(x, y)
         x += self.focus_x_var * 8
         y += self.focus_y_var * 8
@@ -424,6 +437,7 @@ class CanvasPanel(Widget):
                 )
                 self._add_post_history()
 
+        # Selection tool operations
         if self.tool_var == TOOL_SELECT and not (
             pyxel.btn(pyxel.KEY_CTRL) or pyxel.btn(pyxel.KEY_GUI)
         ):
@@ -499,6 +513,7 @@ class CanvasPanel(Widget):
             if self._is_dragged
             else (self.canvas_var, self.focus_x_var * 8, self.focus_y_var * 8)
         )
+
         if self._is_tilemap_mode:
             pyxel.user_pal()
             pyxel.bltm(
@@ -523,6 +538,7 @@ class CanvasPanel(Widget):
                         canvas.pget(offset_x + xi, offset_y + yi),
                     )
             pyxel.pal()
+
         pyxel.line(
             self.x + 1, self.y + 64, self.x + 128, self.y + 64, WIDGET_PANEL_COLOR
         )

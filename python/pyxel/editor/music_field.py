@@ -40,10 +40,12 @@ class MusicField(Widget):
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
+
         x -= self.x + 21
         y -= self.y + 2
         if x < 0 or y < 0 or x > 188 or y > 16 or x % 12 > 8 or y % 10 > 6:
             return
+
         self.field_cursor.move_to(
             x // 12 + (y // 10) * 16, self._ch, pyxel.btn(pyxel.KEY_SHIFT)
         )
@@ -90,6 +92,7 @@ class MusicField(Widget):
                 if self.field_cursor.is_selecting
                 else MUSIC_FIELD_CURSOR_EDIT_COLOR
             )
+
         if cursor_y == self._ch:
             for i in range(len(self.data) + 1):
                 if cursor_x <= i < cursor_x + cursor_width:

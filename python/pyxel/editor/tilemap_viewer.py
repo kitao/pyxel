@@ -60,6 +60,7 @@ class TilemapViewer(Widget):
         tilemap = pyxel.tilemaps[self.tilemap_index_var]
         image = pyxel.images[tilemap.imgsrc]
         start_y = pyxel.frame_count % 8 * 8
+
         for y in range(start_y, start_y + 8):
             for x in range(64):
                 tile = tilemap.pget(x * 4 + 1, y * 4 + 1)

@@ -28,6 +28,7 @@ class ImageViewer(Widget):
             height = 130
             slider_amount = 16
             self._is_tilemap_mode = False
+
         super().__init__(parent, 157, y, 66, height)
         self._press_x = 0
         self._press_y = 0

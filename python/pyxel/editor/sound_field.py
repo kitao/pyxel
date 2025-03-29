@@ -52,6 +52,7 @@ class SoundField(Widget):
     def __on_mouse_down(self, key, x, y):
         if key != pyxel.MOUSE_BUTTON_LEFT or self.is_playing_var:
             return
+
         x, y = self._screen_to_view(x, y)
         self.field_cursor.move_to(x, y + 1, pyxel.btn(pyxel.KEY_SHIFT))
 
@@ -69,6 +70,7 @@ class SoundField(Widget):
             or pyxel.btn(pyxel.KEY_GUI)
         ):
             return
+
         value = None
         if cursor_y == 1:
             for i in range(4):
@@ -77,6 +79,7 @@ class SoundField(Widget):
                 ):
                     value = i
                     break
+
         elif cursor_y == 2:
             for i in range(8):
                 key = pyxel.KEY_0 if i == 0 else pyxel.KEY_1 + i - 1
@@ -85,6 +88,7 @@ class SoundField(Widget):
                 ) or pyxel.btnp(key, hold=WIDGET_HOLD_TIME, repeat=WIDGET_REPEAT_TIME):
                     value = i
                     break
+
         elif cursor_y == 3:
             for i in range(6):
                 if pyxel.btnp(
@@ -94,8 +98,10 @@ class SoundField(Widget):
                 ):
                     value = i
                     break
+
         if value is None:
             return
+
         self.field_cursor.insert(value)
 
     def __on_draw(self):
@@ -126,6 +132,7 @@ class SoundField(Widget):
         cursor_x = self.field_cursor.x
         if self.is_playing_var or cursor_y == 0:
             return
+
         x = cursor_x * 4 + 31
         y = cursor_y * 8 + 142
         w = self.field_cursor.width * 4
