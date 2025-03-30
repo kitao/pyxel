@@ -20,21 +20,26 @@ def is_colliding(x, y):
         for xi in range(x1, x2 + 1):
             if pyxel.tilemaps[2].pget(xi, yi) == (2, 0):
                 return True
+
     return False
 
 
 def push_back(x, y, dx, dy):
     for _ in range(pyxel.ceil(abs(dy))):
         step = max(-1, min(1, dy))
+
         if is_colliding(x, y + step):
             break
+
         y += step
         dy -= step
 
     for _ in range(pyxel.ceil(abs(dx))):
         step = max(-1, min(1, dx))
+
         if is_colliding(x + step, y):
             break
+
         x += step
         dx -= step
 
@@ -79,6 +84,7 @@ class App:
         # Update player
         x, y, u, v = self.player
         dx, dy = 0, 0
+
         if pyxel.btn(pyxel.KEY_UP):
             dy = -1
             u, v = 2, 1
@@ -104,10 +110,12 @@ class App:
         for i, car in enumerate(self.cars):
             x, y, dx, image = car
             x += dx
+
             if x <= -32:
                 x = pyxel.tilemaps[0].width * 8
             elif x >= pyxel.tilemaps[0].width * 8:
                 x = -32
+
             self.cars[i] = (x, y, dx, image)
 
     def draw(self):
