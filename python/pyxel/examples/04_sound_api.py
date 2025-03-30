@@ -119,6 +119,7 @@ class App:
             col = 15 if pyxel.play_pos(i) else 13
             pyxel.pal(1, col)
             pyxel.blt(x, y, 0, 0, 0, 8, 8, 0)
+
         pyxel.pal()
 
 
