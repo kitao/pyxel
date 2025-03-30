@@ -160,6 +160,7 @@ class Enemy:
             self.dir = -1
 
         self.y += ENEMY_SPEED
+
         if self.y > pyxel.height - 1:
             self.is_alive = False
 
@@ -188,12 +189,15 @@ class Blast:
 class App:
     def __init__(self):
         pyxel.init(120, 160, title="Pyxel Shooter")
+
         self.init_image()
         self.init_sound()
+
         self.scene = SCENE_TITLE
         self.score = 0
         self.background = Background()
         self.player = Player(pyxel.width / 2, pyxel.height - 20)
+
         pyxel.playm(0, loop=True)
         pyxel.run(self.update, self.draw)
 
@@ -284,6 +288,7 @@ class App:
             pyxel.quit()
 
         self.background.update()
+
         if self.scene == SCENE_TITLE:
             self.update_title_scene()
         elif self.scene == SCENE_PLAY:
@@ -335,9 +340,11 @@ class App:
                 self.scene = SCENE_GAMEOVER
 
         self.player.update()
+
         update_entities(bullets)
         update_entities(enemies)
         update_entities(blasts)
+
         cleanup_entities(enemies)
         cleanup_entities(bullets)
         cleanup_entities(blasts)
@@ -346,6 +353,7 @@ class App:
         update_entities(bullets)
         update_entities(enemies)
         update_entities(blasts)
+
         cleanup_entities(enemies)
         cleanup_entities(bullets)
         cleanup_entities(blasts)
@@ -355,14 +363,17 @@ class App:
             self.player.x = pyxel.width / 2
             self.player.y = pyxel.height - 20
             self.score = 0
+
             enemies.clear()
             bullets.clear()
             blasts.clear()
+
             pyxel.playm(1, loop=True)
 
     def draw(self):
         pyxel.cls(0)
         self.background.draw()
+
         if self.scene == SCENE_TITLE:
             self.draw_title_scene()
         elif self.scene == SCENE_PLAY:
@@ -378,6 +389,7 @@ class App:
 
     def draw_play_scene(self):
         self.player.draw()
+
         draw_entities(bullets)
         draw_entities(enemies)
         draw_entities(blasts)
@@ -386,6 +398,7 @@ class App:
         draw_entities(bullets)
         draw_entities(enemies)
         draw_entities(blasts)
+
         pyxel.text(43, 66, "GAME OVER", 8)
         pyxel.text(31, 126, "- PRESS ENTER -", 13)
 
