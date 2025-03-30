@@ -21,6 +21,7 @@ class App:
 
         self.far_cloud = [(-10, 75), (40, 65), (90, 60)]
         self.near_cloud = [(10, 25), (70, 35), (120, 15)]
+
         self.floor = [(i * 60, pyxel.rndi(8, 104), True) for i in range(4)]
         self.fruit = [
             (i * 60, pyxel.rndi(0, 104), pyxel.rndi(0, 2), True) for i in range(4)
@@ -44,6 +45,7 @@ class App:
     def update_player(self):
         if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
             self.player_x = max(self.player_x - 2, 0)
+
         if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
             self.player_x = min(self.player_x + 2, pyxel.width - 16)
 
@@ -54,6 +56,7 @@ class App:
             if self.is_alive:
                 self.is_alive = False
                 pyxel.play(3, 5)
+
             if self.player_y > 600:
                 self.score = 0
                 self.player_x = 72
@@ -78,6 +81,7 @@ class App:
             y += 6
 
         x -= 4
+
         if x < -40:
             x += 240
             y = pyxel.rndi(8, 104)
@@ -93,6 +97,7 @@ class App:
             pyxel.play(3, 4)
 
         x -= 2
+
         if x < -40:
             x += 240
             y = pyxel.rndi(0, 104)
