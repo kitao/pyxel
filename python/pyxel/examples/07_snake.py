@@ -51,6 +51,7 @@ class Snake:
 
     def __init__(self):
         """Initiate pyxel, set up initial game variables, and run."""
+
         pyxel.init(
             WIDTH, HEIGHT, title="Snake!", fps=20, display_scale=12, capture_scale=6
         )
@@ -60,6 +61,7 @@ class Snake:
 
     def reset(self):
         """Initiate key variables (direction, snake, apple, score, etc.)"""
+
         self.direction = RIGHT
         self.snake = deque()
         self.snake.append(START)
@@ -76,6 +78,7 @@ class Snake:
     def update(self):
         """Update logic of game.
         Updates the snake and checks for scoring/win condition."""
+
         if not self.death:
             self.update_direction()
             self.update_snake()
@@ -90,6 +93,7 @@ class Snake:
 
     def update_direction(self):
         """Watch the keys and change direction."""
+
         if pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP):
             if self.direction is not DOWN:
                 self.direction = UP
@@ -105,6 +109,7 @@ class Snake:
 
     def update_snake(self):
         """Move the snake based on the direction."""
+
         old_head = self.snake[0]
         new_head = Point(old_head.x + self.direction.x, old_head.y + self.direction.y)
         self.snake.appendleft(new_head)
@@ -112,6 +117,7 @@ class Snake:
 
     def check_apple(self):
         """Check whether the snake is on an apple."""
+
         if self.snake[0] == self.apple:
             self.score += 1
             self.snake.append(self.popped_point)
@@ -121,6 +127,7 @@ class Snake:
 
     def generate_apple(self):
         """Generate an apple randomly."""
+
         snake_pixels = set(self.snake)
 
         self.apple = self.snake[0]
@@ -131,6 +138,7 @@ class Snake:
 
     def check_death(self):
         """Check whether the snake has died (out of bounds or doubled up.)"""
+
         head = self.snake[0]
         if head.x < 0 or head.y < HEIGHT_SCORE or head.x >= WIDTH or head.y >= HEIGHT:
             self.death_event()
@@ -139,6 +147,7 @@ class Snake:
 
     def death_event(self):
         """Kill the game (bring up end screen)."""
+
         self.death = True  # Check having run into self
 
         pyxel.stop()
@@ -150,6 +159,7 @@ class Snake:
 
     def draw(self):
         """Draw the background, snake, score, and apple OR the end screen."""
+
         if not self.death:
             pyxel.cls(col=COL_BACKGROUND)
             self.draw_snake()
@@ -160,6 +170,7 @@ class Snake:
 
     def draw_snake(self):
         """Draw the snake with a distinct head by iterating through deque."""
+
         for i, point in enumerate(self.snake):
             if i == 0:
                 colour = COL_HEAD
@@ -169,12 +180,14 @@ class Snake:
 
     def draw_score(self):
         """Draw the score at the top."""
+
         score = f"{self.score:04}"
         pyxel.rect(0, 0, WIDTH, HEIGHT_SCORE, COL_SCORE_BACKGROUND)
         pyxel.text(1, 1, score, COL_SCORE)
 
     def draw_death(self):
         """Draw a blank screen with some text."""
+
         pyxel.cls(col=COL_DEATH)
         display_text = TEXT_DEATH[:]
         display_text.insert(1, f"{self.score:04}")
@@ -186,6 +199,7 @@ class Snake:
     @staticmethod
     def center_text(text, page_width, char_width=pyxel.FONT_WIDTH):
         """Helper function for calculating the start x value for centered text."""
+
         text_width = len(text) * char_width
         return (page_width - text_width) // 2
 
@@ -197,6 +211,7 @@ class Snake:
 
 def define_sound_and_music():
     """Define sound and music."""
+
     # Sound effects
     pyxel.sounds[0].set(
         notes="c3e3g3c4c4", tones="s", volumes="4", effects=("n" * 4 + "f"), speed=7
