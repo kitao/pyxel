@@ -7,6 +7,7 @@ BG_COLOR = 5
 def pset_with_border(image, x, y, col, bcol):
     for x_offset, y_offset in BORDER_OFFSETS:
         image.pset(x + x_offset, y + y_offset, bcol)
+
     image.pset(x, y, col)
 
 
@@ -19,12 +20,14 @@ def line_with_border(image, x1, y1, x2, y2, col, bcol):
             y2 + y_offset,
             bcol,
         )
+
     image.line(x1, y1, x2, y2, col)
 
 
 def text_with_border(image, x, y, s, col, bcol):
     for x_offset, y_offset in BORDER_OFFSETS:
         image.text(x + x_offset, y + y_offset, s, bcol)
+
     image.text(x, y, s, col)
 
 
@@ -117,8 +120,10 @@ class App:
     def __init__(self):
         pyxel.init(223, 92, title="Offscreen Rendering")
         pyxel.load("assets/offscreen.pyxres")
+
         self.blt_figure = make_blt_figure()
         self.bltm_figure = make_bltm_figure()
+
         pyxel.run(self.update, self.draw)
 
     def update(self):
