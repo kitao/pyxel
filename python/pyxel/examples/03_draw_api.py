@@ -62,6 +62,7 @@ class App:
 
     def test_clip(self):
         pyxel.clip()
+
         if not self.clip_test_is_enabled:
             return
 
@@ -76,14 +77,15 @@ class App:
 
     def test_pset(self, x, y):
         pyxel.text(x, y, "pset(x,y,col)", 7)
+
         x += 4
         y += 10
-
         for i in range(16):
             pyxel.pset(x + i * 2, y, i)
 
     def test_line(self, x, y):
         pyxel.text(x, y, "line(x1,y1,x2,y2,col)", 7)
+
         x += 4
         y += 9
         col = 5
@@ -102,38 +104,39 @@ class App:
 
     def test_rect(self, x, y):
         pyxel.text(x, y, "rect(x,y,w,h,col)", 7)
+
         x += 4
         y += 16
-
         for i in range(8):
             pyxel.rect(x + i * 8, y - i, i + 1, i + 1, i + 8)
 
     def test_rectb(self, x, y):
         pyxel.text(x, y, "rectb(x,y,w,h,col)", 7)
+
         x += 4
         y += 16
-
         for i in range(8):
             pyxel.rectb(x + i * 8, y - i, i + 1, i + 1, i + 8)
 
     def test_circ(self, x, y):
         pyxel.text(x, y, "circ(x,y,r,col)", 7)
+
         x += 4
         y += 15
-
         for i in range(8):
             pyxel.circ(x + i * 8, y, i, i + 8)
 
     def test_circb(self, x, y):
         pyxel.text(x, y, "circb(x,y,r,col)", 7)
+
         x += 4
         y += 15
-
         for i in range(8):
             pyxel.circb(x + i * 8, y, i, i + 8)
 
     def test_blt(self, x, y):
         pyxel.text(x, y, "blt(x,y,img,u,v,\n    w,h,[colkey])", 7)
+
         y += 15
         offset = pyxel.sin(pyxel.frame_count * 5.73) * 2
 
@@ -145,20 +148,19 @@ class App:
 
     def test_bltm(self, x, y):
         pyxel.text(x, y, "bltm(x,y,tm,u,v,\n     w,h,[colkey])", 7)
-        y += 15
 
+        y += 15
         pyxel.bltm(x, y, 0, 0, 0, 88, 16, 2)
 
     def test_text(self, x, y):
         pyxel.text(x, y, "text(x,y,s,col)", 7)
+
         x += 4
         y += 8
-
         s = (
             f"Elapsed frame count is {pyxel.frame_count}\n"
             f"Current mouse position is ({pyxel.mouse_x},{pyxel.mouse_y})"
         )
-
         pyxel.text(x + 1, y, s, 1)
         pyxel.text(x, y, s, 9)
 
