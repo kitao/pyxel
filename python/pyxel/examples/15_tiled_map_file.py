@@ -27,19 +27,15 @@ def is_colliding(x, y):
 def push_back(x, y, dx, dy):
     for _ in range(pyxel.ceil(abs(dy))):
         step = max(-1, min(1, dy))
-
         if is_colliding(x, y + step):
             break
-
         y += step
         dy -= step
 
     for _ in range(pyxel.ceil(abs(dx))):
         step = max(-1, min(1, dx))
-
         if is_colliding(x + step, y):
             break
-
         x += step
         dx -= step
 
