@@ -29,9 +29,11 @@ class App:
         pyxel.dither(0.5)
         pyxel.rect(0, 0, 200, 22, 0)
         pyxel.dither(1)
+
         pyxel.text(9, 4, "blt(x,y,img,u,v,w,h,[colkey],[rotate],[scale])", 7)
         pyxel.text(125, 4, "[rotate]", 10)
         pyxel.text(161, 4, "[scale]", 10)
+
         pyxel.text(9, 12, "bltm(x,y,tm,u,v,w,h,[colkey],[rotate],[scale])", 7)
         pyxel.text(125, 12, "[rotate]", 10)
         pyxel.text(161, 12, "[scale]", 10)
