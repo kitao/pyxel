@@ -5,7 +5,7 @@ import os
 import pathlib
 
 ROOT_DIR = ".."
-PYXEL_USER_EXAMPLES_JSON = "docs/pyxel_user_examples.json"
+USER_EXAMPLES_JSON = "docs/pyxel_user_examples.json"
 MARKDOWN_HEADER = """\
 [![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
@@ -64,7 +64,7 @@ def generate_markdown_table(entries):
 def generate_user_examples():
     os.chdir(pathlib.Path(__file__).parent / ROOT_DIR)
 
-    with open(PYXEL_USER_EXAMPLES_JSON, "r", encoding="utf-8") as f:
+    with open(USER_EXAMPLES_JSON, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     entries = {entry["id"]: entry for entry in data["entries"]}
