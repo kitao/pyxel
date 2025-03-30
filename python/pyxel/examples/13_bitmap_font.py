@@ -12,6 +12,7 @@ def draw_text_with_border(x, y, s, col, bcol, font):
                     bcol,
                     font,
                 )
+
     pyxel.text(x, y, s, col, font)
 
 
