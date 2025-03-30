@@ -20,16 +20,7 @@ class App:
                     y / 10,
                     pyxel.frame_count / 40,
                 )
-
-                if n > 0.4:
-                    col = 7
-                elif n > 0:
-                    col = 6
-                elif n > -0.4:
-                    col = 12
-                else:
-                    col = 0
-
+                col = 7 if n > 0.4 else 6 if n > 0 else 12 if n > -0.4 else 0
                 pyxel.pset(x, y, col)
 
 
