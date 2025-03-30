@@ -87,7 +87,6 @@ def setup_music():
         "vvvfnnnf nfnfnfvv vfnfnfvv vfvvvfvv vfnfnfvf vfnfnfnf nfnfnfvv vfnnnfnf",
         16,
     )
-
     pyxel.sounds[1].set(
         "rrc3c3e-3e-3g3g3 f3f3f3g3g3g3g3g3 rrb-3b-3a-3a-3f3f3 a-3a-3a-3g3g3g3g3g3"
         "rrc3c3e-3e-3g3g3 f3f3f3g3g3g3g3g3 rrb-3b-3a-3a-3f3f3 a-3a-3a-3g3g3g3g3g3",
@@ -96,11 +95,8 @@ def setup_music():
         "vvvvvvvv vvvvvvvf",
         32,
     )
-
     pyxel.sounds[2].set("a-2a-2ra-2 a-2a-2ra-2 g2g2rg2 g2g2rg2", "2", "5", "f", 32)
-
     pyxel.sounds[3].set("c3c3rc3 b-2b-2rb-2 b-2b-2rb-2 c3c3rc3", "2", "5", "f", 32)
-
     pyxel.sounds[4].set(
         "e-3e-3re-3 d3d3rd3 d3d3rd3 e3e3re3 e-3e-3re-3 d3d3rd3 d3d3rd3 e-3e-3re-3",
         "2",
@@ -108,9 +104,7 @@ def setup_music():
         "f",
         32,
     )
-
     pyxel.sounds[5].set("a-0rra-0 b-0rrb-0 g0rrg0 c1rrc1", "3", "5", "f", 32)
-
     pyxel.sounds[6].set(
         "g1rrrd2rrr" * 3 + "g1rd2rd2rrr", "4", "50006000" * 3 + "50506000", "f", 16
     )
@@ -141,10 +135,10 @@ class WaveformEditor:
 
     def draw(self):
         pyxel.text(self.x, self.y, f"TONE:{self.tone} {self.desc}", 12)
-
         self.draw_panel(self.x, self.y + 7, 162, 50)
         pyxel.line(self.x + 1, self.y + 32, self.x + 161, self.y + 32, 15)
         pyxel.line(self.x + 81, self.y + 8, self.x + 81, self.y + 56, 15)
+
         for i in range(32):
             amp = pyxel.tones[self.tone].waveform[i]
             for j in range(amp, 8) if amp < 8 else range(8, amp + 1):
