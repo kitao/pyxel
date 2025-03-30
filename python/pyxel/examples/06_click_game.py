@@ -24,17 +24,14 @@ class Vec2:
 class Bubble:
     def __init__(self):
         self.r = pyxel.rndf(3, 10)
-
         self.pos = Vec2(
             pyxel.rndf(self.r, SCREEN_WIDTH - self.r),
             pyxel.rndf(self.r, SCREEN_HEIGHT - self.r),
         )
-
         self.vel = Vec2(
             pyxel.rndf(-MAX_BUBBLE_SPEED, MAX_BUBBLE_SPEED),
             pyxel.rndf(-MAX_BUBBLE_SPEED, MAX_BUBBLE_SPEED),
         )
-
         self.color = pyxel.rndi(1, 15)
 
     def update(self):
@@ -43,13 +40,10 @@ class Bubble:
 
         if self.vel.x < 0 and self.pos.x < self.r:
             self.vel.x *= -1
-
         if self.vel.x > 0 and self.pos.x > SCREEN_WIDTH - self.r:
             self.vel.x *= -1
-
         if self.vel.y < 0 and self.pos.y < self.r:
             self.vel.y *= -1
-
         if self.vel.y > 0 and self.pos.y > SCREEN_HEIGHT - self.r:
             self.vel.y *= -1
 
