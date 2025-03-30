@@ -4,6 +4,7 @@ import pyxel
 class App:
     def __init__(self):
         pyxel.init(200, 150, title="Pyxel Triangle API")
+
         self.triangles = [(100, 24, 7, 143, 193, 143, 7)]
 
         pyxel.cls(13)
@@ -26,6 +27,7 @@ class App:
             return
 
         col = n + 7
+
         if n % 2 == 0:
             pyxel.tri(x1, y1, x2, y2, x3, y3, col)
         else:
