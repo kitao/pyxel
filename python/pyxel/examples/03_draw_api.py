@@ -80,6 +80,7 @@ class App:
 
         x += 4
         y += 10
+
         for i in range(16):
             pyxel.pset(x + i * 2, y, i)
 
@@ -107,6 +108,7 @@ class App:
 
         x += 4
         y += 16
+
         for i in range(8):
             pyxel.rect(x + i * 8, y - i, i + 1, i + 1, i + 8)
 
@@ -115,6 +117,7 @@ class App:
 
         x += 4
         y += 16
+
         for i in range(8):
             pyxel.rectb(x + i * 8, y - i, i + 1, i + 1, i + 8)
 
@@ -123,6 +126,7 @@ class App:
 
         x += 4
         y += 15
+
         for i in range(8):
             pyxel.circ(x + i * 8, y, i, i + 8)
 
@@ -131,6 +135,7 @@ class App:
 
         x += 4
         y += 15
+
         for i in range(8):
             pyxel.circb(x + i * 8, y, i, i + 8)
 

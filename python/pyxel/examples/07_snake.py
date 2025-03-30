@@ -97,12 +97,15 @@ class Snake:
         if pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_UP):
             if self.direction is not DOWN:
                 self.direction = UP
+
         elif pyxel.btn(pyxel.KEY_DOWN) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_DOWN):
             if self.direction is not UP:
                 self.direction = DOWN
+
         elif pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
             if self.direction is not RIGHT:
                 self.direction = LEFT
+
         elif pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
             if self.direction is not LEFT:
                 self.direction = RIGHT
@@ -189,8 +192,10 @@ class Snake:
         """Draw a blank screen with some text."""
 
         pyxel.cls(col=COL_DEATH)
+
         display_text = TEXT_DEATH[:]
         display_text.insert(1, f"{self.score:04}")
+
         for i, text in enumerate(display_text):
             y_offset = (pyxel.FONT_HEIGHT + 2) * i
             text_x = self.center_text(text, WIDTH)
