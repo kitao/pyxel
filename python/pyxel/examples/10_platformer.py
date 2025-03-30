@@ -247,6 +247,7 @@ class App:
         global player
         player = Player(0, 0)
         spawn_enemy(0, 127)
+
         pyxel.playm(0, loop=True)
         pyxel.run(self.update, self.draw)
 
@@ -260,7 +261,9 @@ class App:
             if abs(player.x - enemy.x) < 6 and abs(player.y - enemy.y) < 6:
                 game_over()
                 return
+
             enemy.update()
+
             if enemy.x < scroll_x - 8 or enemy.x > scroll_x + 160 or enemy.y > 160:
                 enemy.is_alive = False
 
@@ -283,13 +286,16 @@ class App:
 
 def game_over():
     global scroll_x, enemies
+
     scroll_x = 0
     player.x = 0
     player.y = 0
     player.dx = 0
     player.dy = 0
+
     enemies = []
     spawn_enemy(0, 127)
+
     pyxel.play(3, 9)
 
 
