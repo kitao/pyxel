@@ -45,7 +45,6 @@ class App:
     def update_player(self):
         if pyxel.btn(pyxel.KEY_LEFT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT):
             self.player_x = max(self.player_x - 2, 0)
-
         if pyxel.btn(pyxel.KEY_RIGHT) or pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT):
             self.player_x = min(self.player_x + 2, pyxel.width - 16)
 

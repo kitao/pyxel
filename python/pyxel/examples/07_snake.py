@@ -125,7 +125,6 @@ class Snake:
             self.score += 1
             self.snake.append(self.popped_point)
             self.generate_apple()
-
             pyxel.play(0, 0)
 
     def generate_apple(self):
@@ -152,7 +151,6 @@ class Snake:
         """Kill the game (bring up end screen)."""
 
         self.death = True  # Check having run into self
-
         pyxel.stop()
         pyxel.play(0, 1)
 
@@ -239,7 +237,6 @@ def define_sound_and_music():
         + "b2 b2 b2 f3 d3 r c3 r"
         + ("r" * 8)
     )
-
     melody2 = (
         "rrrr e3e3e3e3 d3d3c3c3 b2b2c3c3"
         + "a2a2a2a2 c3c3c3c3 d3d3d3d3 e3e3e3e3"
