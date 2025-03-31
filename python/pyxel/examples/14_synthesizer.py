@@ -135,6 +135,7 @@ class WaveformEditor:
 
     def draw(self):
         pyxel.text(self.x, self.y, f"TONE:{self.tone} {self.desc}", 12)
+
         self.draw_panel(self.x, self.y + 7, 162, 50)
         pyxel.line(self.x + 1, self.y + 32, self.x + 161, self.y + 32, 15)
         pyxel.line(self.x + 81, self.y + 8, self.x + 81, self.y + 56, 15)
