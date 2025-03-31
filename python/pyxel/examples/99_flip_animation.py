@@ -9,6 +9,7 @@ while True:
         pyxel.quit()
 
     pyxel.cls(1)
+
     for x in range(0, 128, 4):
         for y in range(0, 128, 4):
             dist = pyxel.sqrt((x - 64) ** 2 + (y - 64) ** 2)
