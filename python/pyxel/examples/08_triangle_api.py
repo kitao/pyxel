@@ -27,7 +27,6 @@ class App:
             return
 
         col = n + 7
-
         if n % 2 == 0:
             pyxel.tri(x1, y1, x2, y2, x3, y3, col)
         else:
