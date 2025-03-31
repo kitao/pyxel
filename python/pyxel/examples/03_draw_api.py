@@ -73,6 +73,7 @@ class App:
 
         pyxel.text(x, y - 8, "clip(x,y,w,h)", 14)
         pyxel.rectb(x - 1, y - 1, w + 2, h + 2, 14)
+
         pyxel.clip(x, y, w, h)
 
     def test_pset(self, x, y):
