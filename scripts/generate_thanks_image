@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 
+import hashlib
 import io
 import json
 import os
 import pathlib
 
-import PIL
+import PIL.Image
 import requests
 
 ROOT_DIR = ".."
+CACHE_DIR = "image_cache"
 USER_EXAMPLES_JSON = "docs/pyxel_user_examples.json"
-RELPATH_README = "README.md"
-ABSPATH_README = "docs/README-abspath.md"
-GIF_IMAGES = [
+EXAMPLE_IMAGES = [
     (1, 23),
     (3, 220),
     (10, 793),
@@ -64,29 +64,43 @@ GIF_IMAGES = [
 ]
 
 
-def download_gif_frame(url, frame):
+def download_gif_image(url, frame):
+    os.makedirs(CACHE_DIR, exist_ok=True)
+
+    url_hash = hashlib.md5(url.encode()).hexdigest()
+    cache_file = os.path.join(CACHE_DIR, f"{url_hash}_{frame}.png")
+
+    if os.path.exists(cache_file):
+        return PIL.Image.open(cache_file)
+
     response = requests.get(url)
     if response.status_code != 200:
         raise Exception(f"HTTP error: {response.status_code}")
 
     gif = PIL.Image.open(io.BytesIO(response.content))
-    gif.seek(frame)
-    return gif.copy()
+    gif.seek(frame - 1)
+    image = gif.copy()
+
+    image.save(cache_file)
+
+    return image
 
 
 def generate_thanks_image():
     os.chdir(pathlib.Path(__file__).parent / ROOT_DIR)
 
-    images = [{"id": id, "frame": frame} for id, frame in GIF_IMAGES]
-
     with open(USER_EXAMPLES_JSON, "r", encoding="utf-8") as f:
         user_examples = json.load(f)
 
-    for image in images:
-        user_example = user_examples[image["id"]]
+    images = []
+    for id, frame in EXAMPLE_IMAGES:
+        user_example = next(
+            (x for x in user_examples["entries"] if x["id"] == id), None
+        )
         url = user_example["image"]
-        frame = image["frame"]
-        image["image"] = download_gif_frame(url, frame)
+        image = download_gif_image(url, frame)
+        image = image.resize((320, int(320 * image.height / image.width)))
+        images.append(image)
 
 
 if __name__ == "__main__":
