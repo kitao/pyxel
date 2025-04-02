@@ -1,60 +1,59 @@
 use pyo3::prelude::*;
-
-use crate::pyxel_singleton::pyxel;
+use pyxel::Pyxel;
 
 #[pyfunction]
 fn ceil(x: f64) -> i32 {
-    pyxel().ceil(x)
+    Pyxel::ceil(x)
 }
 
 #[pyfunction]
 fn floor(x: f64) -> i32 {
-    pyxel().floor(x)
+    Pyxel::floor(x)
 }
 
 #[pyfunction]
 fn sgn(x: f64) -> i32 {
-    pyxel().sgn(x)
+    Pyxel::sgn(x)
 }
 
 #[pyfunction]
 fn sqrt(x: f64) -> f64 {
-    pyxel().sqrt(x)
+    Pyxel::sqrt(x)
 }
 
 #[pyfunction]
 fn sin(deg: f64) -> f64 {
-    pyxel().sin(deg)
+    Pyxel::sin(deg)
 }
 
 #[pyfunction]
 fn cos(deg: f64) -> f64 {
-    pyxel().cos(deg)
+    Pyxel::cos(deg)
 }
 
 #[pyfunction]
 fn atan2(y: f64, x: f64) -> f64 {
-    pyxel().atan2(y, x)
+    Pyxel::atan2(y, x)
 }
 
 #[pyfunction]
 fn rseed(seed: u32) {
-    pyxel().rseed(seed);
+    Pyxel::rseed(seed);
 }
 
 #[pyfunction]
 fn rndi(a: i32, b: i32) -> i32 {
-    pyxel().rndi(a, b)
+    Pyxel::rndi(a, b)
 }
 
 #[pyfunction]
 fn rndf(a: f64, b: f64) -> f64 {
-    pyxel().rndf(a, b)
+    Pyxel::rndf(a, b)
 }
 
 #[pyfunction]
 fn nseed(seed: u32) {
-    pyxel().nseed(seed);
+    Pyxel::nseed(seed);
 }
 
 #[pyfunction]
@@ -62,7 +61,7 @@ fn nseed(seed: u32) {
 fn noise(x: f64, y: Option<f64>, z: Option<f64>) -> f64 {
     let y = y.unwrap_or(0.0);
     let z = z.unwrap_or(0.0);
-    pyxel().noise(x, y, z)
+    Pyxel::noise(x, y, z)
 }
 
 pub fn add_math_functions(m: &Bound<PyModule>) -> PyResult<()> {
