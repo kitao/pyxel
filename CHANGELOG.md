@@ -8,6 +8,7 @@
 - Added a screen size specification to the READMEs
 - Added blank lines to format code
 - Updated the sysinfo crate to version 0.34
+- Made math functions static
 
 ## 2.3.17
 
