@@ -8,7 +8,6 @@ use crate::graphics::Graphics;
 use crate::image::{Image, Rgb24, SharedImage};
 use crate::input::Input;
 use crate::keys::Key;
-use crate::math::Math;
 use crate::music::{Music, SharedMusic};
 use crate::resource::Resource;
 use crate::settings::{
@@ -126,9 +125,6 @@ pub struct Pyxel {
     pub tones: shared_type!(Vec<SharedTone>),
     pub sounds: shared_type!(Vec<SharedSound>),
     pub musics: shared_type!(Vec<SharedMusic>),
-
-    // Math
-    pub(crate) math: Math,
 }
 
 pub fn init(
@@ -200,9 +196,6 @@ pub fn init(
     let sounds = SOUNDS.clone();
     let musics = MUSICS.clone();
 
-    // Math
-    let math = Math::new();
-
     let pyxel = Pyxel {
         // System
         system,
@@ -236,9 +229,6 @@ pub fn init(
         tones,
         sounds,
         musics,
-
-        // Math
-        math,
     };
 
     pyxel.icon(&ICON_DATA, ICON_SCALE, ICON_COLKEY);
