@@ -9,6 +9,7 @@
 - Added blank lines to format code
 - Updated the sysinfo crate to version 0.34
 - Made math functions static
+- Added the DEFAULT_COLORS constant
 
 ## 2.3.17
 
