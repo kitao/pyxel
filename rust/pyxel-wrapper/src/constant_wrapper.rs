@@ -23,6 +23,7 @@ pub fn add_module_constants(m: &Bound<'_, PyModule>) -> PyResult<()> {
     add_constant!(NUM_TILEMAPS)?;
     add_constant!(TILEMAP_SIZE)?;
     add_constant!(TILE_SIZE)?;
+    add_constant!(DEFAULT_COLORS)?;
     add_constant!(COLOR_BLACK)?;
     add_constant!(COLOR_NAVY)?;
     add_constant!(COLOR_PURPLE)?;
