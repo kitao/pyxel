@@ -12,7 +12,7 @@ import pyxel
 import requests
 
 ROOT_DIR = ".."
-CACHE_DIR = "image_cache"
+CACHE_DIR = "user_example_images"
 USER_EXAMPLES_JSON = "docs/pyxel_user_examples.json"
 
 THANKS_IMAGE_FILE = "docs/images/pyxel_thanks.png"
