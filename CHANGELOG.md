@@ -10,6 +10,7 @@
 - Updated the sysinfo crate to version 0.34
 - Made math functions static
 - Added the DEFAULT_COLORS constant
+- Updated the Pyxel thanks image
 
 ## 2.3.17
 
