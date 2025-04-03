@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import hashlib
 import io
 import json
 import os
@@ -12,7 +11,7 @@ import pyxel
 import requests
 
 ROOT_DIR = ".."
-CACHE_DIR = "user_example_images"
+CACHE_DIR = "/tmp/pyxel_user_example_images"
 USER_EXAMPLES_JSON = "docs/pyxel_user_examples.json"
 
 THANKS_IMAGE_FILE = "docs/images/pyxel_thanks.png"
@@ -107,14 +106,16 @@ MESSAGE_PAD_X2 = MESSAGE_PAD_X + MESSAGE_PAD_WIDTH - 1
 MESSAGE_PAD_Y2 = MESSAGE_PAD_Y + MESSAGE_PAD_HEIGHT - 1
 
 
-def download_example_image(url, frame):
+def download_example_image(url, id, frame):
     os.makedirs(CACHE_DIR, exist_ok=True)
 
-    url_hash = hashlib.md5(url.encode()).hexdigest()
-    cache_file = os.path.join(CACHE_DIR, f"{url_hash}_{frame}.png")
+    cache_name = f"{id}_{frame}.png"
+    cache_file = os.path.join(CACHE_DIR, cache_name)
 
     if os.path.exists(cache_file):
         return PIL.Image.open(cache_file)
+
+    print(f"download {url} ({cache_name})")
 
     response = requests.get(url)
     if response.status_code != 200:
@@ -141,7 +142,7 @@ def draw_example_images(thanks_image):
             (x for x in user_examples_json["entries"] if x["id"] == id), None
         )
         url = user_example["image"]
-        image = download_example_image(url, frame)
+        image = download_example_image(url, id, frame)
         image = image.resize(
             (EXAMPLE_WIDTH, int(EXAMPLE_WIDTH * image.height / image.width))
         )
