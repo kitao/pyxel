@@ -86,7 +86,7 @@ EXAMPLE_IMAGES = [
     (141, 90),
     (142, 383),
 ]
-EXAMPLE_RANDOM_SEED = 7
+EXAMPLE_RANDOM_SEED = 3
 
 BASE_MESSAGE_WIDTH = 124
 BASE_MESSAGE_HEIGHT = 50
@@ -155,14 +155,13 @@ def draw_example_images(thanks_image):
     # Draw exampole images
     example_x = EXAMPLE_X
     while example_x < THANKS_IMAGE_WIDTH:
-        example_y = 0
-
+        col_height = 0
         num_col_images = 0
-        while example_y < THANKS_IMAGE_HEIGHT + EXAMPLE_MARGIN:
-            example_y += example_images[num_col_images].height + EXAMPLE_MARGIN
+        while col_height < THANKS_IMAGE_HEIGHT + EXAMPLE_MARGIN:
+            col_height += example_images[num_col_images].height + EXAMPLE_MARGIN
             num_col_images += 1
 
-        example_y = (THANKS_IMAGE_HEIGHT - example_y - EXAMPLE_MARGIN) // 2
+        example_y = (THANKS_IMAGE_HEIGHT - col_height - EXAMPLE_MARGIN) // 2
         for _ in range(num_col_images):
             image = example_images.pop(0)
             thanks_image.paste(image, (example_x, example_y))
