@@ -6,7 +6,8 @@ import pathlib
 
 ROOT_DIR = ".."
 USER_EXAMPLES_JSON = "docs/pyxel_user_examples.json"
-MARKDOWN_HEADER = """\
+
+PAGE_HEADER = """\
 [![Downloads](https://static.pepy.tech/personalized-badge/pyxel?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPI%20downloads)](https://pypi.org/project/pyxel/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
 [![GitHub forks](https://img.shields.io/github/forks/kitao/pyxel?style=social)](https://github.com/kitao/pyxel)
@@ -16,7 +17,7 @@ MARKDOWN_HEADER = """\
 
 [Pyxel](https://github.com/kitao/pyxel), a retro game engine for Python, is collecting user examples. If you have created a project with Pyxel, please post it [here](https://github.com/kitao/pyxel/issues/609).
 """
-NUM_ENTRIES_PER_PAGE = 20
+NUM_EXAMPLES_PER_PAGE = 20
 
 
 def generate_navigation_links(page_ranges, cur_start_id, cur_end_id):
@@ -61,7 +62,7 @@ def generate_markdown_table(entries):
     return "\n".join(markdown_lines)
 
 
-def generate_user_examples():
+def generate_examples_markdown():
     os.chdir(pathlib.Path(__file__).parent / ROOT_DIR)
 
     with open(USER_EXAMPLES_JSON, "r", encoding="utf-8") as f:
@@ -72,8 +73,8 @@ def generate_user_examples():
     min_id = min(entries.keys())
 
     page_ranges = [
-        (i, min(i + NUM_ENTRIES_PER_PAGE - 1, max_id))
-        for i in range(min_id, max_id + 1, NUM_ENTRIES_PER_PAGE)
+        (i, min(i + NUM_EXAMPLES_PER_PAGE - 1, max_id))
+        for i in range(min_id, max_id + 1, NUM_EXAMPLES_PER_PAGE)
     ]
 
     for start_id, end_id in reversed(page_ranges):
@@ -87,11 +88,11 @@ def generate_user_examples():
         )
 
         navigation_links = generate_navigation_links(page_ranges, start_id, end_id)
-        markdown_content = f"{MARKDOWN_HEADER}\n\n{navigation_links}\n\n{generate_markdown_table(subset)}\n\n{navigation_links}\n"
+        markdown_content = f"{PAGE_HEADER}\n\n{navigation_links}\n\n{generate_markdown_table(subset)}\n\n{navigation_links}\n"
 
         with open(filename, "w", encoding="utf-8") as f:
             f.write(markdown_content)
 
 
 if __name__ == "__main__":
-    generate_user_examples()
+    generate_examples_markdown()
