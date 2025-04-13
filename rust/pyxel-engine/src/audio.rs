@@ -26,13 +26,15 @@ impl pyxel_platform::AudioCallback for AudioCore {
 pub struct Audio {}
 
 impl Audio {
-    pub fn new(sample_rate: u32, num_samples: u32) -> Self {
+    pub fn new() -> Self {
+        assert!(CLOCK_RATE % NUM_SAMPLES == 0);
+
         let mut blip_buf = BlipBuf::new(NUM_SAMPLES as usize);
         blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
         pyxel_platform::start_audio(
-            sample_rate,
+            SAMPLE_RATE as u32,
             1,
-            num_samples as u16,
+            NUM_SAMPLES as u16,
             new_shared_type!(AudioCore { blip_buf }),
         );
         Self {}

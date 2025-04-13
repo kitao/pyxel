@@ -190,7 +190,7 @@ pub fn init(
     let font = FONT_IMAGE.clone();
 
     // Audio
-    let _ = Audio::new(SAMPLE_RATE, NUM_SAMPLES);
+    let _ = Audio::new();
     let channels = CHANNELS.clone();
     let tones = TONES.clone();
     let sounds = SOUNDS.clone();
