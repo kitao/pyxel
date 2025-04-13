@@ -3,6 +3,7 @@
 ## 2.4.0
 
 - Fixed the audio module initialize arguments
+- Updated Pyodide to version 0.27.5
 
 ## 2.3.18
 
