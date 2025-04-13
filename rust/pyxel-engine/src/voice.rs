@@ -22,6 +22,7 @@ impl Waveform {
     pub fn new(table: [u8; WAVEFORM_TABLE_LENGTH]) -> Self {
         let half_max = WAVEFORM_TABLE_MAX_VALUE as f64 / 2.0;
         let table = table.map(|v| (v as f64 - half_max) / half_max);
+
         Self {
             table,
             phase: 0,
@@ -44,8 +45,8 @@ impl Waveform {
             cached_phase_duration: 0,
         }
         // The LFSR originally starts with 0x0001, but to avoid leading zeros, it is advanced first.
-        // For short-period noise, it’s shifted 15 times (half of the 32-sample period), resulting in 0x0201.
-        // For long-period noise, it’s shifted 45 times (half of the 93-sample period), resulting in 0x7001.
+        // For short-period noise, it's shifted 15 times (half of the 32-sample period), resulting in 0x0201.
+        // For long-period noise, it's shifted 45 times (half of the 93-sample period), resulting in 0x7001.
     }
 
     pub fn amplitude(&self) -> f64 {
@@ -56,12 +57,15 @@ impl Waveform {
         if note == self.cached_note {
             return self.cached_phase_duration;
         }
+
         let semitone_offset = (note - 69.0) / 12.0;
         let pitch = 440.0 * semitone_offset.exp2();
         let period = CLOCK_RATE as f64 / pitch;
         let phase_duration = (period / WAVEFORM_TABLE_LENGTH as f64).round() as u32;
+
         self.cached_note = note;
         self.cached_phase_duration = phase_duration;
+
         phase_duration
     }
 
@@ -103,6 +107,7 @@ impl Envelope {
         } else {
             0.0
         };
+
         Self {
             attack_end: attack,
             decay_end: attack + decay,
