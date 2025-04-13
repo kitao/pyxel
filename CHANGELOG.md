@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.4.0
+
+- Fixed the audio module initialize arguments
+
 ## 2.3.18
 
 - Added SDL2 include paths for Linux
