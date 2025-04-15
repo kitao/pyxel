@@ -35,7 +35,7 @@ def cli():
             create_executable_from_pyxel_app,
         ),
         (
-            ["app2html", f"PYXEL_APP_FILE({pyxel.APP_FILE_EXTENSION})"],
+            ["app2html", f"PYXEL_APP_FILE({pyxel.APP_FILE_EXTENSION})", "[PACKAGES (e.g. 'numpy,pandas')]"],
             create_html_from_pyxel_app,
         ),
         (["copy_examples"], copy_pyxel_examples),
@@ -401,7 +401,7 @@ def create_executable_from_pyxel_app(pyxel_app_file):
         os.remove(spec_file)
 
 
-def create_html_from_pyxel_app(pyxel_app_file):
+def create_html_from_pyxel_app(pyxel_app_file, packages=""):
     pyxel_app_file = _complete_extension(
         pyxel_app_file, "app2html", pyxel.APP_FILE_EXTENSION
     )
@@ -419,7 +419,7 @@ def create_html_from_pyxel_app(pyxel_app_file):
             "</script>\n"
             "<script>\n"
             f'launchPyxel({{ command: "play", name: "{pyxel_app_name}{pyxel.APP_FILE_EXTENSION}", '
-            f'gamepad: "enabled", base64: "{base64_string}" }});\n'
+            f'gamepad: "enabled", packages: "{packages}", base64: "{base64_string}" }});\n'
             "</script>\n"
         )
 
