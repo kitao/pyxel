@@ -1,6 +1,24 @@
 {
   "entries": [
     {
+      "id": 146,
+      "title": "Pyxel Mandelbrot",
+      "site": "https://github.com/gomatama5/Pyxel_Mandelbrot",
+      "author": "gomatama5",
+      "contact": "https://github.com/gomatama5",
+      "desc": "Draw the Mandelbrot set",
+      "image": "https://github.com/user-attachments/assets/46c80c6b-fb2c-4772-a5d6-c829a06f6366"
+    },
+    {
+      "id": 145,
+      "title": "Jump Jump Bouncing Ball",
+      "site": "https://github.com/gomatama5/Jump_Jump_Bouncing_Ball",
+      "author": "gomatama5",
+      "contact": "https://github.com/gomatama5",
+      "desc": "Jump action game with pysics engine",
+      "image": "https://github.com/user-attachments/assets/4fd09862-644e-4a92-88a8-2df11aa8b6c1"
+    },
+    {
       "id": 144,
       "title": "Number Link",
       "site": "https://github.com/ku-ron/pyxel_minigames/blob/main/main/numberlink/readme.md",
