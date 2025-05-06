@@ -4,6 +4,7 @@
 
 - Fixed the audio module initialize arguments
 - Updated Pyodide to version 0.27.5
+- Added a Q&A about saving application data to the FAQ
 
 ## 2.3.18
 

@@ -106,6 +106,13 @@ When Pyxel's `init` function is called, the current directory is changed to the 
 
 </details>
 
+<details>
+<summary>How can I save application-specific data like high scores or game progress?</summary>
+
+Pass the developer name (`vendor_name`) and application name (`app_name`) to the `user_data_dir(vendor_name, app_name)` function. It will return the path to a directory suitable for data storage on the current platform. Use this directory to save and load your application's files.
+
+</details>
+
 ## Using Pyxel Tools
 
 <details>
