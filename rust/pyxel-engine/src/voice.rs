@@ -247,7 +247,10 @@ impl Vibrato {
     }
 
     fn reset_clock(&mut self) {
-        self.elapsed_clocks = 0;
+        if self.delay_clocks > 0 {
+            self.elapsed_clocks = 0;
+        }
+
         self.update();
     }
 
@@ -392,36 +395,30 @@ impl Voice {
         self.rem_playback_clocks = 0;
     }
 
-    pub fn process(&mut self, blip_buf: &mut BlipBuf, clock_offset: u32, num_clocks: u32) {
-        assert!(num_clocks > 0);
+    pub fn process(&mut self, blip_buf: &mut BlipBuf, clock_offset: u32, clock_count: u32) {
+        assert!(clock_count > 0);
 
-        if self.rem_playback_clocks == 0 {
-            self.write_sample(blip_buf, clock_offset, 0);
-            return;
-        }
-
-        let mut rem_process_clocks = num_clocks;
+        let mut clock_offset = clock_offset + self.rem_sample_clocks;
+        let mut rem_process_clocks = clock_count;
 
         if self.rem_sample_clocks > 0 {
-            if rem_process_clocks > self.rem_sample_clocks {
-                rem_process_clocks -= self.rem_sample_clocks;
-            } else if self.rem_sample_clocks == rem_process_clocks {
-                self.write_sample(blip_buf, clock_offset + self.rem_sample_clocks, 0);
+            self.rem_playback_clocks = self.rem_playback_clocks.saturating_sub(rem_process_clocks);
 
-                self.rem_playback_clocks = 0;
-                self.rem_sample_clocks = 0;
-                return;
-            } else {
-                self.rem_playback_clocks =
-                    self.rem_playback_clocks.saturating_sub(rem_process_clocks);
+            if self.rem_sample_clocks >= rem_process_clocks {
                 self.rem_sample_clocks -= rem_process_clocks;
                 return;
             }
+
+            rem_process_clocks -= self.rem_sample_clocks;
+            self.rem_sample_clocks = 0;
         }
 
-        let mut clock_offset = clock_offset + self.rem_sample_clocks;
-
         loop {
+            if self.rem_playback_clocks == 0 {
+                self.write_sample(blip_buf, clock_offset, 0);
+                return;
+            }
+
             let sample =
                 (self.oscillator.sample() * self.envelope.level() * i16::MAX as f64) as i16;
             let note = self.base_note + self.vibrato.note_offset() + self.glide.note_offset();
@@ -433,12 +430,12 @@ impl Voice {
             self.rem_playback_clocks = self.rem_playback_clocks.saturating_sub(sample_clocks);
             self.update_controls(sample_clocks);
 
-            if rem_process_clocks > sample_clocks {
-                rem_process_clocks -= sample_clocks;
-            } else {
+            if sample_clocks >= rem_process_clocks {
                 self.rem_sample_clocks = sample_clocks - rem_process_clocks;
-                break;
+                return;
             }
+
+            rem_process_clocks -= sample_clocks;
         }
     }
 
