@@ -1,53 +1,54 @@
 use crate::blip_buf::BlipBuf;
-use crate::settings::{CLOCKS_PER_CONTROL, CLOCK_RATE, WAVETABLE_LENGTH, WAVETABLE_LEVELS};
 
-pub type Gain = f64;
-
-pub type WavetableValue = u8;
-pub type Wavetable = [WavetableValue; WAVETABLE_LENGTH as usize];
+const A4_MIDI_NOTE: f64 = 69.0;
+const A4_FREQUENCY: f64 = 440.0;
 
 struct Oscillator {
-    wavetable: Wavetable,
-    waveform: [f64; WAVETABLE_LENGTH as usize],
+    waveform: Vec<f64>,
+    waveform_index: usize,
+
+    noise_length: u32,
     lfsr: u16,
     tap_bit: u8,
-    gain: Gain,
 
-    use_waveform: bool,
-    waveform_index: usize,
-    sample: f64,
+    gain: f64,
+    sample_value: f64,
 }
 
 impl Oscillator {
     fn new() -> Self {
         Self {
-            wavetable: [0; WAVETABLE_LENGTH as usize],
-            waveform: [0.0; WAVETABLE_LENGTH as usize],
+            waveform: Vec::new(),
+            waveform_index: 0,
+
+            noise_length: 0,
             lfsr: 0,
             tap_bit: 0,
+
             gain: 0.0,
-
-            use_waveform: true,
-            waveform_index: 0,
-            sample: 0.0,
+            sample_value: 0.0,
         }
     }
 
-    pub fn set(&mut self, wavetable: &Wavetable, gain: f64) {
+    pub fn set(&mut self, waveform: &[f64], gain: f64) {
+        assert!(!waveform.is_empty());
+
+        self.noise_length = 0;
         self.gain = gain;
-        self.use_waveform = true;
 
-        if wavetable != &self.wavetable {
-            self.wavetable = *wavetable;
-
-            let half_max = (WAVETABLE_LEVELS - 1) as f64 / 2.0;
-            self.waveform = wavetable.map(|v| (v as f64 - half_max) / half_max);
+        if waveform != self.waveform {
+            self.waveform = waveform.to_vec();
+            self.waveform_index = 0;
         }
+
+        self.update();
     }
 
-    pub fn set_noise(&mut self, short_period: bool, gain: f64) {
+    pub fn set_noise(&mut self, short_period: bool, noise_length: u32, gain: f64) {
+        assert!(noise_length > 0);
+
         let tap_bit = if short_period { 6 } else { 1 };
-        if self.use_waveform || tap_bit != self.tap_bit {
+        if noise_length != self.noise_length || tap_bit != self.tap_bit {
             self.lfsr = if short_period { 0x0201 } else { 0x7001 };
             self.tap_bit = tap_bit;
         }
@@ -55,25 +56,41 @@ impl Oscillator {
         // For short-period noise, it's shifted 15 times (half of the 32-sample period), resulting in 0x0201.
         // For long-period noise, it's shifted 45 times (half of the 93-sample period), resulting in 0x7001.
 
+        if !self.waveform.is_empty() {
+            self.waveform.clear();
+        }
+
+        self.noise_length = noise_length;
         self.gain = gain;
-        self.use_waveform = false; // Must be after checking for waveform
+
+        self.update();
     }
 
-    fn sample(&self) -> f64 {
-        self.sample
+    fn sample_value(&self) -> f64 {
+        self.sample_value
+    }
+
+    fn cycle_length(&self) -> f64 {
+        if self.noise_length == 0 {
+            self.waveform.len() as f64
+        } else {
+            self.noise_length as f64
+        }
     }
 
     fn advance_sample(&mut self) {
-        if self.use_waveform {
-            self.waveform_index = (self.waveform_index + 1) % WAVETABLE_LENGTH as usize;
+        if self.noise_length == 0 {
+            self.waveform_index = (self.waveform_index + 1) % self.waveform.len();
         } else {
             let feedback = (self.lfsr ^ (self.lfsr >> self.tap_bit)) & 1;
             self.lfsr = ((self.lfsr >> 1) | (feedback << 14)) & 0x7FFF;
         }
+
+        self.update();
     }
 
     fn update(&mut self) {
-        self.sample = if self.use_waveform {
+        self.sample_value = if self.noise_length == 0 {
             self.waveform[self.waveform_index] * self.gain
         } else {
             if (self.lfsr & 1) == 0 {
@@ -201,11 +218,11 @@ struct Vibrato {
     delay_clocks: u32,
     period_clocks: u32,
     inv_period_clocks: f64,
-    note_amplitude: f64,
+    semitone_depth: f64,
 
     enabled: bool,
     elapsed_clocks: u32,
-    note_offset: f64,
+    pitch_multiplier: f64,
 }
 
 impl Vibrato {
@@ -214,19 +231,19 @@ impl Vibrato {
             delay_clocks: 0,
             period_clocks: 1,
             inv_period_clocks: 0.0,
-            note_amplitude: 0.0,
+            semitone_depth: 0.0,
 
             enabled: false,
             elapsed_clocks: 0,
-            note_offset: 0.0,
+            pitch_multiplier: 1.0,
         }
     }
 
-    pub fn set(&mut self, delay_clocks: u32, period_clocks: u32, note_amplitude: f64) {
+    pub fn set(&mut self, delay_clocks: u32, period_clocks: u32, semitone_depth: f64) {
         assert!(period_clocks > 0);
 
         self.delay_clocks = delay_clocks;
-        self.note_amplitude = note_amplitude;
+        self.semitone_depth = semitone_depth;
 
         if period_clocks != self.period_clocks {
             self.period_clocks = period_clocks;
@@ -242,8 +259,8 @@ impl Vibrato {
         self.enabled = false;
     }
 
-    fn note_offset(&self) -> f64 {
-        self.note_offset
+    fn pitch_multiplier(&self) -> f64 {
+        self.pitch_multiplier
     }
 
     fn reset_clock(&mut self) {
@@ -263,52 +280,49 @@ impl Vibrato {
     }
 
     fn update(&mut self) {
-        if !self.enabled {
-            self.note_offset = 0.0;
+        if !self.enabled || self.elapsed_clocks < self.delay_clocks {
+            self.pitch_multiplier = 1.0;
             return;
         }
 
-        self.note_offset = if self.elapsed_clocks < self.delay_clocks {
-            0.0
-        } else {
-            let phase = (self.elapsed_clocks - self.delay_clocks) as f64 * self.inv_period_clocks;
-            let modulation = 1.0 - 4.0 * ((phase + 0.25).fract() - 0.5).abs();
+        let phase = (self.elapsed_clocks - self.delay_clocks) as f64 * self.inv_period_clocks;
+        let modulation = 1.0 - 4.0 * ((phase + 0.25).fract() - 0.5).abs();
+        let semitone_offset = modulation * self.semitone_depth;
 
-            modulation * self.note_amplitude
-        };
+        self.pitch_multiplier = 2.0_f64.powf(semitone_offset / 12.0);
     }
 }
 
 struct Glide {
-    note_delta: f64,
-    note_slope: f64,
+    semitone_offset: f64,
+    semitone_slope: f64,
     duration_clocks: u32,
 
     enabled: bool,
     elapsed_clocks: u32,
-    note_offset: f64,
+    pitch_multiplier: f64,
 }
 
 impl Glide {
     fn new() -> Self {
         Self {
-            note_delta: 0.0,
-            note_slope: 0.0,
+            semitone_offset: 0.0,
+            semitone_slope: 0.0,
             duration_clocks: 0,
 
             enabled: false,
-            note_offset: 0.0,
             elapsed_clocks: 0,
+            pitch_multiplier: 0.0,
         }
     }
 
-    pub fn set(&mut self, note_delta: f64, duration_clocks: u32) {
+    pub fn set(&mut self, semitone_offset: f64, duration_clocks: u32) {
         assert!(duration_clocks > 0);
 
-        if note_delta != self.note_delta || duration_clocks != self.duration_clocks {
-            self.note_delta = note_delta;
+        if semitone_offset != self.semitone_offset || duration_clocks != self.duration_clocks {
+            self.semitone_offset = semitone_offset;
             self.duration_clocks = duration_clocks;
-            self.note_slope = note_delta / duration_clocks as f64;
+            self.semitone_slope = semitone_offset / duration_clocks as f64;
         }
     }
 
@@ -320,8 +334,8 @@ impl Glide {
         self.enabled = false;
     }
 
-    fn note_offset(&self) -> f64 {
-        self.note_offset
+    fn pitch_multiplier(&self) -> f64 {
+        self.pitch_multiplier
     }
 
     fn reset_clock(&mut self) {
@@ -338,16 +352,15 @@ impl Glide {
     }
 
     fn update(&mut self) {
-        if !self.enabled {
-            self.note_offset = 0.0;
+        if !self.enabled || self.elapsed_clocks >= self.duration_clocks {
+            self.pitch_multiplier = 1.0;
             return;
         }
 
-        self.note_offset = if self.elapsed_clocks < self.duration_clocks {
-            self.note_slope * (self.duration_clocks - self.elapsed_clocks) as f64
-        } else {
-            0.0
-        };
+        let semitone_offset =
+            self.semitone_slope * (self.duration_clocks - self.elapsed_clocks) as f64;
+
+        self.pitch_multiplier = 2.0_f64.powf(semitone_offset / 12.0);
     }
 }
 
@@ -357,38 +370,42 @@ pub struct Voice {
     pub vibrato: Vibrato,
     pub glide: Glide,
 
-    base_note: f64,
+    clock_rate: u32,
+    base_frequency: f64,
+    sample_clocks: u32,
     rem_playback_clocks: u32,
     rem_sample_clocks: u32,
-    control_timer: u32,
-    last_sample: i16,
-    cached_note: f64,
-    cached_sample_clocks: u32,
+    control_interval_clocks: u32,
+    control_elapsed_clocks: u32,
+    last_sample_value: i16,
 }
 
 impl Voice {
-    pub fn new() -> Self {
+    pub fn new(clock_rate: u32, control_rate: u32) -> Self {
+        assert!(clock_rate > 0 && control_rate > 0);
+
         Self {
             oscillator: Oscillator::new(),
             envelope: Envelope::new(),
             vibrato: Vibrato::new(),
             glide: Glide::new(),
 
-            base_note: 0.0,
+            clock_rate,
+            base_frequency: 0.0,
+            sample_clocks: 0,
             rem_playback_clocks: 0,
             rem_sample_clocks: 0,
-            control_timer: 0,
-            last_sample: 0,
-            cached_note: 0.0,
-            cached_sample_clocks: 0,
+            control_interval_clocks: clock_rate / control_rate,
+            control_elapsed_clocks: 0,
+            last_sample_value: 0,
         }
     }
 
-    pub fn play(&mut self, note: f64, duration_clocks: u32) {
-        self.base_note = note;
+    pub fn play(&mut self, midi_note: f64, duration_clocks: u32) {
+        self.base_frequency = A4_FREQUENCY * ((midi_note - A4_MIDI_NOTE) / 12.0).exp2();
         self.rem_playback_clocks = duration_clocks;
 
-        self.reset_controls();
+        self.reset_control_clock();
     }
 
     pub fn stop(&mut self) {
@@ -419,65 +436,63 @@ impl Voice {
                 return;
             }
 
-            let sample =
-                (self.oscillator.sample() * self.envelope.level() * i16::MAX as f64) as i16;
-            let note = self.base_note + self.vibrato.note_offset() + self.glide.note_offset();
-            let sample_clocks = self.note_to_sample_clocks(note);
+            let sample_value =
+                (self.oscillator.sample_value() * self.envelope.level() * i16::MAX as f64) as i16;
+            self.write_sample(blip_buf, clock_offset, sample_value);
 
-            self.write_sample(blip_buf, clock_offset, sample);
+            clock_offset += self.sample_clocks;
+            self.rem_playback_clocks = self.rem_playback_clocks.saturating_sub(self.sample_clocks);
+            self.oscillator.advance_sample();
 
-            clock_offset += sample_clocks;
-            self.rem_playback_clocks = self.rem_playback_clocks.saturating_sub(sample_clocks);
-            self.update_controls(sample_clocks);
-
-            if sample_clocks >= rem_process_clocks {
-                self.rem_sample_clocks = sample_clocks - rem_process_clocks;
+            if self.sample_clocks >= rem_process_clocks {
+                self.rem_sample_clocks = self.sample_clocks - rem_process_clocks;
                 return;
             }
 
-            rem_process_clocks -= sample_clocks;
+            rem_process_clocks -= self.sample_clocks;
+
+            self.advance_control_clock(self.sample_clocks);
         }
     }
 
-    fn reset_controls(&mut self) {
-        self.control_timer = 0;
+    fn reset_control_clock(&mut self) {
+        self.control_elapsed_clocks = 0;
 
         self.envelope.reset_clock();
         self.vibrato.reset_clock();
         self.glide.reset_clock();
+
+        self.update_sample_clocks();
     }
 
-    fn update_controls(&mut self, delta_clocks: u32) {
-        self.control_timer += delta_clocks;
+    fn advance_control_clock(&mut self, clocks: u32) {
+        self.control_elapsed_clocks += clocks;
 
-        if self.control_timer >= CLOCKS_PER_CONTROL {
-            self.control_timer -= CLOCKS_PER_CONTROL;
+        if self.control_elapsed_clocks >= self.control_interval_clocks {
+            self.control_elapsed_clocks -= self.control_interval_clocks;
 
-            self.envelope.advance_clock(self.control_timer);
-            self.vibrato.advance_clock(self.control_timer);
-            self.glide.advance_clock(self.control_timer);
+            self.envelope.advance_clock(self.control_interval_clocks);
+            self.vibrato.advance_clock(self.control_interval_clocks);
+            self.glide.advance_clock(self.control_interval_clocks);
+
+            self.update_sample_clocks();
         }
     }
 
-    fn write_sample(&mut self, blip_buf: &mut BlipBuf, clock_offset: u32, sample: i16) {
-        if sample != self.last_sample {
-            blip_buf.add_delta(clock_offset as u64, (sample - self.last_sample) as i32);
-            self.last_sample = sample;
-        }
+    fn update_sample_clocks(&mut self) {
+        let frequency =
+            self.base_frequency * self.vibrato.pitch_multiplier() * self.glide.pitch_multiplier();
+        self.sample_clocks =
+            (self.clock_rate as f64 / frequency / self.oscillator.cycle_length()).round() as u32;
     }
 
-    fn note_to_sample_clocks(&mut self, note: f64) -> u32 {
-        if note == self.cached_note {
-            return self.cached_sample_clocks;
+    fn write_sample(&mut self, blip_buf: &mut BlipBuf, clock_offset: u32, sample_value: i16) {
+        if sample_value != self.last_sample_value {
+            blip_buf.add_delta(
+                clock_offset as u64,
+                (sample_value - self.last_sample_value) as i32,
+            );
+            self.last_sample_value = sample_value;
         }
-
-        let semitone_offset = (note - 69.0) / 12.0;
-        let pitch = 440.0 * semitone_offset.exp2();
-        let sample_clocks = (CLOCK_RATE as f64 / pitch / WAVETABLE_LENGTH as f64).round() as u32;
-
-        self.cached_note = note;
-        self.cached_sample_clocks = sample_clocks;
-
-        sample_clocks
     }
 }
