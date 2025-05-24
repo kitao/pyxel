@@ -1,8 +1,8 @@
-use crate::oscillator::Gain;
-use crate::settings::NUM_WAVEFORM_STEPS;
+use crate::settings::WAVETABLE_LENGTH;
 
-pub type Amp4 = u8;
-pub type Waveform = [Amp4; NUM_WAVEFORM_STEPS as usize];
+pub type Gain = f64;
+pub type WavetableValue = u8;
+pub type Wavetable = [WavetableValue; WAVETABLE_LENGTH as usize];
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum Noise {
@@ -32,7 +32,7 @@ impl Noise {
 pub struct Tone {
     pub gain: Gain,
     pub noise: Noise,
-    pub waveform: Waveform,
+    pub wavetable: Wavetable,
 }
 
 pub type SharedTone = shared_type!(Tone);
@@ -42,13 +42,13 @@ impl Tone {
         new_shared_type!(Self {
             gain: 1.0,
             noise: Noise::Off,
-            waveform: [0; NUM_WAVEFORM_STEPS as usize],
+            wavetable: [0; WAVETABLE_LENGTH as usize],
         })
     }
 
     pub fn amplitude(&self, phase: u32, noise_reg: &mut u16) -> f64 {
         (match self.noise {
-            Noise::Off => self.waveform[phase as usize] as f64 / 7.5 - 1.0,
+            Noise::Off => self.wavetable[phase as usize] as f64 / 7.5 - 1.0,
             Noise::ShortPeriod | Noise::LongPeriod => {
                 if phase % 8 == 0 {
                     let bit = if self.noise == Noise::LongPeriod {

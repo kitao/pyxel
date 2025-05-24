@@ -110,7 +110,6 @@ struct EnvelopeSegment {
 }
 
 struct Envelope {
-    points: Vec<(u32, f64)>,
     segments: Vec<EnvelopeSegment>,
 
     enabled: bool,
@@ -121,56 +120,46 @@ struct Envelope {
 impl Envelope {
     fn new() -> Self {
         Self {
-            points: Vec::new(),
             segments: Vec::new(),
-
             enabled: false,
             elapsed_clocks: 0,
             level: 0.0,
         }
     }
 
-    pub fn set(&mut self, points: &[(u32, f64)]) {
-        assert!(!points.is_empty());
+    pub fn set(&mut self, initial_level: f64, segments: &[(u32, f64)]) {
+        self.segments.clear();
 
-        if points != self.points {
-            let (clock, level) = points[0];
-            assert!(clock == 0);
+        let mut start_clock = 0;
+        let mut start_level = initial_level;
 
-            self.points = points.to_vec();
-            self.segments.clear();
+        for &(duration, target_level) in segments {
+            assert!(duration > 0);
 
-            let mut prev_clock = clock;
-            let mut prev_level = level;
-
-            for &(clock, level) in points.iter().skip(1) {
-                assert!(clock >= prev_clock);
-
-                if clock > prev_clock {
-                    let slope = (level - prev_level) / (clock - prev_clock) as f64;
-                    self.segments.push(EnvelopeSegment {
-                        start_clock: prev_clock,
-                        end_clock: clock,
-                        start_level: prev_level,
-                        slope,
-                    });
-                }
-
-                prev_clock = clock;
-                prev_level = level;
-            }
+            let end_clock = start_clock + duration;
+            let slope = (target_level - start_level) / duration as f64;
 
             self.segments.push(EnvelopeSegment {
-                start_clock: prev_clock,
-                end_clock: u32::MAX,
-                start_level: prev_level,
-                slope: 0.0,
+                start_clock,
+                end_clock,
+                start_level,
+                slope,
             });
+
+            start_clock = end_clock;
+            start_level = target_level;
         }
+
+        self.segments.push(EnvelopeSegment {
+            start_clock,
+            end_clock: u32::MAX,
+            start_level,
+            slope: 0.0,
+        });
     }
 
     pub fn set_value(&mut self, level: f64) {
-        Self::set(self, &[(0, level)]);
+        self.set(level, &[]);
     }
 
     pub fn enable(&mut self) {
@@ -370,6 +359,7 @@ pub struct Voice {
     pub vibrato: Vibrato,
     pub glide: Glide,
 
+    max_sample_value: f64,
     clock_rate: u32,
     base_frequency: f64,
     sample_clocks: u32,
@@ -381,8 +371,12 @@ pub struct Voice {
 }
 
 impl Voice {
-    pub fn new(clock_rate: u32, control_rate: u32) -> Self {
+    pub fn new(bit_depth: u32, clock_rate: u32, control_rate: u32) -> Self {
+        assert!(bit_depth > 0);
         assert!(clock_rate > 0 && control_rate > 0);
+
+        let max_sample_value = ((1_u32 << (bit_depth - 1)) - 1) as f64;
+        let control_interval_clocks = clock_rate / control_rate;
 
         Self {
             oscillator: Oscillator::new(),
@@ -390,12 +384,13 @@ impl Voice {
             vibrato: Vibrato::new(),
             glide: Glide::new(),
 
+            max_sample_value,
             clock_rate,
             base_frequency: 0.0,
             sample_clocks: 0,
             rem_playback_clocks: 0,
             rem_sample_clocks: 0,
-            control_interval_clocks: clock_rate / control_rate,
+            control_interval_clocks,
             control_elapsed_clocks: 0,
             last_sample_value: 0,
         }
@@ -436,8 +431,9 @@ impl Voice {
                 return;
             }
 
-            let sample_value =
-                (self.oscillator.sample_value() * self.envelope.level() * i16::MAX as f64) as i16;
+            let sample_value = (self.oscillator.sample_value()
+                * self.envelope.level()
+                * self.max_sample_value) as i16;
             self.write_sample(blip_buf, clock_offset, sample_value);
 
             clock_offset += self.sample_clocks;
