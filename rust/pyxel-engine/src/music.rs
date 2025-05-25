@@ -3,7 +3,7 @@ use std::cmp::min;
 use crate::audio::Audio;
 use crate::blip_buf::BlipBuf;
 use crate::pyxel::{CHANNELS, SOUNDS};
-use crate::settings::{CLOCK_RATE, SAMPLE_RATE, TICKS_PER_SECOND};
+use crate::settings::{AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE};
 
 pub type SharedSeq = shared_type!(Vec<u32>);
 
@@ -45,22 +45,21 @@ impl Music {
             })
             .collect();
 
-        let ticks_per_music = seqs
+        let music_clocks = seqs
             .iter()
             .map(|sounds| {
                 sounds
                     .iter()
                     .map(|sound| {
                         let sound = sound.lock();
-                        sound.speed * sound.notes.len() as u32
+                        sound.total_clocks()
                     })
                     .sum::<u32>()
             })
             .max()
             .unwrap_or(0);
 
-        let samples_per_music = ticks_per_music * SAMPLE_RATE / TICKS_PER_SECOND;
-        let num_samples = samples_per_music * count;
+        let num_samples = music_clocks * AUDIO_SAMPLE_RATE / AUDIO_CLOCK_RATE * count;
 
         if num_samples == 0 {
             return;
@@ -68,7 +67,7 @@ impl Music {
 
         let mut samples = vec![0; num_samples as usize];
         let mut blip_buf = BlipBuf::new(num_samples as usize);
-        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
+        blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
         let channels = CHANNELS.lock();
         channels.iter().for_each(|channel| channel.lock().stop());

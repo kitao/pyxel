@@ -5,10 +5,9 @@ use std::path::Path;
 
 use zip::ZipArchive;
 
-use crate::channel::{Note, Volume};
+use crate::channel::{Effect, Note, ToneIndex, Volume};
 use crate::image::{Color, Image, Rgb24};
 use crate::music::Music;
-use crate::oscillator::{Effect, ToneIndex};
 use crate::pyxel::Pyxel;
 use crate::settings::{
     INITIAL_SOUND_SPEED, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,

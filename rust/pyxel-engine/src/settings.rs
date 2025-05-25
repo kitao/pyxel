@@ -1,8 +1,7 @@
-use crate::channel::{Note, Speed, Volume};
+use crate::channel::{Effect, Note, Speed, ToneIndex, Volume};
 use crate::image::{Color, Rgb24};
 use crate::keys::{Key, KEY_ESCAPE};
-use crate::oscillator::{Effect, Gain, ToneIndex};
-use crate::tone::{Noise, Waveform};
+use crate::tone::{Gain, Noise, Wavetable};
 
 // System
 pub const VERSION: &str = "2.3.18";
@@ -101,12 +100,17 @@ pub const FONT_DATA: [u32; MAX_FONT_CODE as usize - MIN_FONT_CODE as usize + 1] 
 pub const NUM_SCREEN_TYPES: u32 = 3;
 
 // Audio
-pub const CLOCK_RATE: u32 = 2_048_000; // 2.048MHz
-pub const SAMPLE_RATE: u32 = 22050; // 22.05kHz
-pub const NUM_SAMPLES: u32 = 512; // 512 / 22050 = 23.2ms
-pub const TICKS_PER_SECOND: u32 = 120;
-pub const CLOCKS_PER_TICK: u32 = CLOCK_RATE / TICKS_PER_SECOND;
-pub const OSCILLATOR_RESOLUTION: u32 = 32;
+pub const AUDIO_BIT_DEPTH: u32 = 16; // 16-bit audio
+pub const AUDIO_CLOCK_RATE: u32 = 1_789_773; // NTSC NES APU clock rate
+pub const AUDIO_SAMPLE_RATE: u32 = 22_050; // 22.05kHz
+pub const AUDIO_BUFFER_SIZE: u32 = 512; // 512 / 22050 = 23.2ms
+pub const AUDIO_CONTROL_RATE: u32 = 60;
+pub const CLOCKS_PER_SAMPLE: u32 = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
+pub const CLOCKS_PER_SPEED: u32 = AUDIO_CLOCK_RATE / 120;
+
+pub const WAVETABLE_LENGTH: u32 = 32;
+pub const WAVETABLE_LEVELS: u32 = 16;
+
 pub const VIBRATO_DEPTH: f64 = 0.015;
 pub const VIBRATO_FREQUENCY: f64 = 6.0;
 
@@ -114,11 +118,9 @@ pub const NUM_CHANNELS: u32 = 4;
 pub const NUM_TONES: u32 = 4;
 pub const NUM_SOUNDS: u32 = 64;
 pub const NUM_MUSICS: u32 = 8;
-pub const NUM_WAVEFORM_STEPS: u32 = 32;
 
 pub const INITIAL_CHANNEL_GAIN: Gain = 0.125;
-pub const INITIAL_SOUND_SPEED: Speed = 30;
-pub const INITIAL_NOISE_REG: u16 = 1 << 14;
+pub const INITIAL_SOUND_SPEED: Speed = 30.0;
 
 pub const TONE_TRIANGLE: ToneIndex = 0;
 pub const TONE_SQUARE: ToneIndex = 1;
@@ -137,7 +139,7 @@ pub const MAX_NOTE: Note = 12 * 5 - 1; // 5 octaves
 pub const MAX_VOLUME: Volume = 7;
 pub const MAX_EFFECT: Effect = 5;
 
-pub const DEFAULT_TONES: [(Gain, Noise, Waveform); NUM_TONES as usize] = [
+pub const DEFAULT_TONES: [(Gain, Noise, Wavetable); NUM_TONES as usize] = [
     // Triangle
     (
         1.0,

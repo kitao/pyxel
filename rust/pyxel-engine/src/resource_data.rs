@@ -1,14 +1,13 @@
 use serde::{Deserialize, Serialize};
 
-use crate::channel::{Channel, Detune, Note, Speed, Volume};
+use crate::channel::{Channel, Detune, Effect, Note, Speed, ToneIndex, Volume};
 use crate::image::{Color, Image, SharedImage};
 use crate::music::{Music, SharedMusic};
-use crate::oscillator::{Effect, Gain, ToneIndex};
 use crate::pyxel::Pyxel;
 use crate::settings::RESOURCE_FORMAT_VERSION;
 use crate::sound::{SharedSound, Sound};
 use crate::tilemap::{ImageSource, ImageTileCoord, SharedTilemap, Tilemap};
-use crate::tone::{Noise, SharedTone, Tone, Waveform};
+use crate::tone::{Gain, Noise, SharedTone, Tone, Wavetable};
 use crate::utils::{compress_vec2, expand_vec2, trim_empty_vecs};
 use crate::{Rgb24, SharedChannel};
 
@@ -109,7 +108,7 @@ impl TilemapData {
 struct ToneData {
     gain: Gain,
     noise: u32,
-    waveform: Waveform,
+    wavetable: Wavetable,
 }
 
 impl ToneData {
@@ -118,7 +117,7 @@ impl ToneData {
         Self {
             gain: tone.gain,
             noise: tone.noise.to_index(),
-            waveform: tone.waveform,
+            wavetable: tone.wavetable,
         }
     }
 
@@ -129,7 +128,7 @@ impl ToneData {
             let mut tone = tone.lock();
             tone.gain = self.gain;
             tone.noise = Noise::from_index(self.noise);
-            tone.waveform = self.waveform;
+            tone.wavetable = self.wavetable;
         }
 
         tone

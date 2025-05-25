@@ -1,12 +1,11 @@
 use crate::audio::Audio;
 use crate::blip_buf::BlipBuf;
-use crate::channel::{Note, Speed, Volume};
-use crate::oscillator::{Effect, ToneIndex};
+use crate::channel::{Effect, Note, Speed, ToneIndex, Volume};
 use crate::pyxel::CHANNELS;
 use crate::settings::{
-    CLOCK_RATE, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT,
-    EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SOUND_SPEED, SAMPLE_RATE, TICKS_PER_SECOND, TONE_NOISE,
-    TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
+    AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, CLOCKS_PER_SPEED, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT,
+    EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_SOUND_SPEED,
+    TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
 };
 use crate::utils::simplify_string;
 
@@ -133,9 +132,8 @@ impl Sound {
 
     pub fn save(&self, filename: &str, count: u32, ffmpeg: Option<bool>) {
         assert!(count > 0);
-        let ticks_per_sound = self.speed * self.notes.len() as u32;
-        let samples_per_sound = ticks_per_sound * SAMPLE_RATE / TICKS_PER_SECOND;
-        let num_samples = samples_per_sound * count;
+
+        let num_samples = self.total_clocks() * AUDIO_SAMPLE_RATE / AUDIO_CLOCK_RATE * count;
 
         if num_samples == 0 {
             return;
@@ -143,7 +141,7 @@ impl Sound {
 
         let mut samples = vec![0; num_samples as usize];
         let mut blip_buf = BlipBuf::new(num_samples as usize);
-        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
+        blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
         let channels = CHANNELS.lock();
         channels.iter().for_each(|channel| channel.lock().stop());
@@ -157,6 +155,14 @@ impl Sound {
         Audio::render_samples(&channels, &mut blip_buf, &mut samples);
         Audio::save_samples(filename, &samples, ffmpeg.unwrap_or(false));
         channels.iter().for_each(|channel| channel.lock().stop());
+    }
+
+    pub(crate) fn note_clocks(&self) -> u32 {
+        (self.speed * CLOCKS_PER_SPEED as f64) as u32
+    }
+
+    pub(crate) fn total_clocks(&self) -> u32 {
+        self.note_clocks() * self.notes.len() as u32
     }
 }
 
@@ -179,7 +185,7 @@ mod tests {
         let sound = Sound::new();
         sound
             .lock()
-            .set("c0d-0d0d#0", "tspn", "012345", "nsvfhq", 123);
+            .set("c0d-0d0d#0", "tspn", "012345", "nsvfhq", 123.4);
         assert_eq!(&sound.lock().notes, &vec![0, 1, 2, 3]);
         assert_eq!(
             &sound.lock().tones,
@@ -197,7 +203,7 @@ mod tests {
                 EFFECT_QUARTER_FADEOUT
             ]
         );
-        assert_eq!(sound.lock().speed, 123);
+        assert_eq!(sound.lock().speed, 123.4);
     }
 
     #[test]

@@ -79,7 +79,7 @@ pub static TONES: LazyLock<shared_type!(Vec<SharedTone>)> = LazyLock::new(|| {
                 let mut tone = tone.lock();
                 tone.gain = DEFAULT_TONES[index as usize].0;
                 tone.noise = DEFAULT_TONES[index as usize].1;
-                tone.waveform = DEFAULT_TONES[index as usize].2;
+                tone.wavetable = DEFAULT_TONES[index as usize].2;
             }
             tone
         })
