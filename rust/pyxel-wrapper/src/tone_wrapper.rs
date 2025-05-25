@@ -1,16 +1,20 @@
+use std::sync::Once;
+
 use pyo3::prelude::*;
 
+static WAVEFORM_ONCE: Once = Once::new();
+
 wrap_as_python_list!(
-    Waveform,
+    Wavetable,
     pyxel::SharedTone,
-    (|inner: &pyxel::SharedTone| inner.lock().waveform.len()),
-    pyxel::Amp4,
-    (|inner: &pyxel::SharedTone, index| inner.lock().waveform[index]),
-    pyxel::Amp4,
-    (|inner: &pyxel::SharedTone, index, value| inner.lock().waveform[index] = value),
-    pyxel::Waveform,
-    (|inner: &pyxel::SharedTone, list| inner.lock().waveform = list),
-    (|inner: &pyxel::SharedTone| inner.lock().waveform)
+    (|inner: &pyxel::SharedTone| inner.lock().wavetable.len()),
+    pyxel::WavetableValue,
+    (|inner: &pyxel::SharedTone, index| inner.lock().wavetable[index]),
+    pyxel::WavetableValue,
+    (|inner: &pyxel::SharedTone, index, value| inner.lock().wavetable[index] = value),
+    pyxel::Wavetable,
+    (|inner: &pyxel::SharedTone, list| inner.lock().wavetable = list),
+    (|inner: &pyxel::SharedTone| inner.lock().wavetable)
 );
 
 #[pyclass]
@@ -53,8 +57,16 @@ impl Tone {
     }
 
     #[getter]
-    pub fn waveform(&self) -> Waveform {
-        Waveform::wrap(self.inner.clone())
+    pub fn wavetable(&self) -> Wavetable {
+        Wavetable::wrap(self.inner.clone())
+    }
+
+    #[getter]
+    pub fn waveform(&self) -> Wavetable {
+        WAVEFORM_ONCE.call_once(|| {
+            println!("Tone.waveform is deprecated, use pyxel.wavetable instead.");
+        });
+        Wavetable::wrap(self.inner.clone())
     }
 }
 

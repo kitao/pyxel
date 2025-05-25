@@ -3,7 +3,7 @@ use crate::blip_buf::BlipBuf;
 const A4_MIDI_NOTE: f64 = 69.0;
 const A4_FREQUENCY: f64 = 440.0;
 
-struct Oscillator {
+pub struct Oscillator {
     waveform: Vec<f64>,
     waveform_index: usize,
 
@@ -11,7 +11,7 @@ struct Oscillator {
     lfsr: u16,
     tap_bit: u8,
 
-    gain: f64,
+    scale: f64,
     sample_value: f64,
 }
 
@@ -25,16 +25,16 @@ impl Oscillator {
             lfsr: 0,
             tap_bit: 0,
 
-            gain: 0.0,
+            scale: 0.0,
             sample_value: 0.0,
         }
     }
 
-    pub fn set(&mut self, waveform: &[f64], gain: f64) {
+    pub fn set(&mut self, waveform: &[f64], scale: f64) {
         assert!(!waveform.is_empty());
 
         self.noise_length = 0;
-        self.gain = gain;
+        self.scale = scale;
 
         if waveform != self.waveform {
             self.waveform = waveform.to_vec();
@@ -44,7 +44,7 @@ impl Oscillator {
         self.update();
     }
 
-    pub fn set_noise(&mut self, short_period: bool, noise_length: u32, gain: f64) {
+    pub fn set_noise(&mut self, short_period: bool, noise_length: u32, scale: f64) {
         assert!(noise_length > 0);
 
         let tap_bit = if short_period { 6 } else { 1 };
@@ -61,7 +61,7 @@ impl Oscillator {
         }
 
         self.noise_length = noise_length;
-        self.gain = gain;
+        self.scale = scale;
 
         self.update();
     }
@@ -91,12 +91,12 @@ impl Oscillator {
 
     fn update(&mut self) {
         self.sample_value = if self.noise_length == 0 {
-            self.waveform[self.waveform_index] * self.gain
+            self.waveform[self.waveform_index] * self.scale
         } else {
             if (self.lfsr & 1) == 0 {
-                self.gain
+                self.scale
             } else {
-                -self.gain
+                -self.scale
             }
         };
     }
@@ -109,7 +109,7 @@ struct EnvelopeSegment {
     slope: f64,
 }
 
-struct Envelope {
+pub struct Envelope {
     segments: Vec<EnvelopeSegment>,
 
     enabled: bool,
@@ -203,7 +203,7 @@ impl Envelope {
     }
 }
 
-struct Vibrato {
+pub struct Vibrato {
     delay_clocks: u32,
     period_clocks: u32,
     inv_period_clocks: f64,
@@ -282,7 +282,7 @@ impl Vibrato {
     }
 }
 
-struct Glide {
+pub struct Glide {
     semitone_offset: f64,
     semitone_slope: f64,
     duration_clocks: u32,
@@ -367,7 +367,7 @@ pub struct Voice {
     rem_sample_clocks: u32,
     control_interval_clocks: u32,
     control_elapsed_clocks: u32,
-    last_sample_value: i16,
+    last_sample_value: i32,
 }
 
 impl Voice {
@@ -431,9 +431,9 @@ impl Voice {
                 return;
             }
 
-            let sample_value = (self.oscillator.sample_value()
-                * self.envelope.level()
-                * self.max_sample_value) as i16;
+            let sample_value =
+                (self.oscillator.sample_value() * self.envelope.level() * self.max_sample_value)
+                    .round() as i32;
             self.write_sample(blip_buf, clock_offset, sample_value);
 
             clock_offset += self.sample_clocks;
@@ -482,12 +482,9 @@ impl Voice {
             (self.clock_rate as f64 / frequency / self.oscillator.cycle_length()).round() as u32;
     }
 
-    fn write_sample(&mut self, blip_buf: &mut BlipBuf, clock_offset: u32, sample_value: i16) {
+    fn write_sample(&mut self, blip_buf: &mut BlipBuf, clock_offset: u32, sample_value: i32) {
         if sample_value != self.last_sample_value {
-            blip_buf.add_delta(
-                clock_offset as u64,
-                (sample_value - self.last_sample_value) as i32,
-            );
+            blip_buf.add_delta(clock_offset as u64, sample_value - self.last_sample_value);
             self.last_sample_value = sample_value;
         }
     }

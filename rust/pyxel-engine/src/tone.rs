@@ -45,25 +45,4 @@ impl Tone {
             wavetable: [0; WAVETABLE_LENGTH as usize],
         })
     }
-
-    pub fn amplitude(&self, phase: u32, noise_reg: &mut u16) -> f64 {
-        (match self.noise {
-            Noise::Off => self.wavetable[phase as usize] as f64 / 7.5 - 1.0,
-            Noise::ShortPeriod | Noise::LongPeriod => {
-                if phase % 8 == 0 {
-                    let bit = if self.noise == Noise::LongPeriod {
-                        1
-                    } else {
-                        6
-                    };
-
-                    let feedback = (*noise_reg ^ (*noise_reg >> bit)) & 1;
-                    *noise_reg >>= 1;
-                    *noise_reg |= feedback << 14;
-                }
-
-                (*noise_reg & 1) as f64 * 2.0 - 1.0
-            }
-        }) * self.gain
-    }
 }

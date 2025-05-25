@@ -9,7 +9,7 @@ use parking_lot::MutexGuard;
 use crate::blip_buf::BlipBuf;
 use crate::channel::SharedChannel;
 use crate::pyxel::{Pyxel, CHANNELS};
-use crate::settings::{CLOCKS_PER_TICK, CLOCK_RATE, NUM_SAMPLES, SAMPLE_RATE};
+use crate::settings::{AUDIO_BUFFER_SIZE, AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, CLOCKS_PER_SAMPLE};
 use crate::utils;
 
 struct AudioCore {
@@ -27,14 +27,12 @@ pub struct Audio {}
 
 impl Audio {
     pub fn new() -> Self {
-        assert!(CLOCK_RATE % NUM_SAMPLES == 0);
-
-        let mut blip_buf = BlipBuf::new(NUM_SAMPLES as usize);
-        blip_buf.set_rates(CLOCK_RATE as f64, SAMPLE_RATE as f64);
+        let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SIZE as usize);
+        blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
         pyxel_platform::start_audio(
-            SAMPLE_RATE as u32,
+            AUDIO_SAMPLE_RATE as u32,
             1,
-            NUM_SAMPLES as u16,
+            AUDIO_BUFFER_SIZE as u16,
             new_shared_type!(AudioCore { blip_buf }),
         );
         Self {}
@@ -50,9 +48,9 @@ impl Audio {
 
         while num_samples < samples.len() {
             for channel in &mut *channels {
-                channel.update(blip_buf);
+                channel.process(blip_buf, CLOCKS_PER_SAMPLE);
             }
-            blip_buf.end_frame(CLOCKS_PER_TICK as u64);
+            blip_buf.end_frame(CLOCKS_PER_SAMPLE as u64);
             num_samples += blip_buf.read_samples(&mut samples[num_samples..], false);
         }
     }
@@ -61,7 +59,7 @@ impl Audio {
         // Save WAV file
         let spec = WavSpec {
             channels: 1,
-            sample_rate: SAMPLE_RATE,
+            sample_rate: AUDIO_SAMPLE_RATE,
             bits_per_sample: 16,
             sample_format: SampleFormat::Int,
         };
@@ -120,7 +118,7 @@ impl Pyxel {
         &self,
         channel_index: u32,
         sequence: &[u32],
-        start_tick: Option<u32>,
+        start_tick: Option<f64>,
         should_loop: bool,
         should_resume: bool,
     ) {
@@ -145,7 +143,7 @@ impl Pyxel {
         &self,
         channel_index: u32,
         sound_index: u32,
-        start_tick: Option<u32>,
+        start_tick: Option<f64>,
         should_loop: bool,
         should_resume: bool,
     ) {
@@ -157,7 +155,7 @@ impl Pyxel {
         );
     }
 
-    pub fn playm(&self, music_index: u32, start_tick: Option<u32>, should_loop: bool) {
+    pub fn playm(&self, music_index: u32, start_tick: Option<f64>, should_loop: bool) {
         let num_channels = self.channels.lock().len();
         let musics = self.musics.lock();
         let music = musics[music_index as usize].lock();
