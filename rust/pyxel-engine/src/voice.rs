@@ -12,7 +12,7 @@ pub struct Oscillator {
     tap_bit: u8,
 
     scale: f64,
-    sample_value: f64,
+    sample: f64,
 }
 
 impl Oscillator {
@@ -26,7 +26,7 @@ impl Oscillator {
             tap_bit: 0,
 
             scale: 0.0,
-            sample_value: 0.0,
+            sample: 0.0,
         }
     }
 
@@ -66,8 +66,8 @@ impl Oscillator {
         self.update();
     }
 
-    fn sample_value(&self) -> f64 {
-        self.sample_value
+    fn sample(&self) -> f64 {
+        self.sample
     }
 
     fn cycle_length(&self) -> f64 {
@@ -90,7 +90,7 @@ impl Oscillator {
     }
 
     fn update(&mut self) {
-        self.sample_value = if self.noise_length == 0 {
+        self.sample = if self.noise_length == 0 {
             self.waveform[self.waveform_index] * self.scale
         } else {
             if (self.lfsr & 1) == 0 {
@@ -156,10 +156,6 @@ impl Envelope {
             start_level,
             slope: 0.0,
         });
-    }
-
-    pub fn set_value(&mut self, level: f64) {
-        self.set(level, &[]);
     }
 
     pub fn enable(&mut self) {
@@ -359,23 +355,23 @@ pub struct Voice {
     pub vibrato: Vibrato,
     pub glide: Glide,
 
-    max_sample_value: f64,
+    max_amplitude: f64,
     clock_rate: u32,
     base_frequency: f64,
+    velocity: f64,
     sample_clocks: u32,
     rem_playback_clocks: u32,
     rem_sample_clocks: u32,
     control_interval_clocks: u32,
     control_elapsed_clocks: u32,
-    last_sample_value: i32,
+    last_amplitude: i32,
 }
 
 impl Voice {
     pub fn new(bit_depth: u32, clock_rate: u32, control_rate: u32) -> Self {
-        assert!(bit_depth > 0);
-        assert!(clock_rate > 0 && control_rate > 0);
+        assert!(bit_depth > 0 && clock_rate > 0 && control_rate > 0);
 
-        let max_sample_value = ((1_u32 << (bit_depth - 1)) - 1) as f64;
+        let max_amplitude = ((1_u32 << (bit_depth - 1)) - 1) as f64;
         let control_interval_clocks = clock_rate / control_rate;
 
         Self {
@@ -384,26 +380,28 @@ impl Voice {
             vibrato: Vibrato::new(),
             glide: Glide::new(),
 
-            max_sample_value,
+            max_amplitude,
             clock_rate,
             base_frequency: 0.0,
+            velocity: 0.0,
             sample_clocks: 0,
             rem_playback_clocks: 0,
             rem_sample_clocks: 0,
             control_interval_clocks,
             control_elapsed_clocks: 0,
-            last_sample_value: 0,
+            last_amplitude: 0,
         }
     }
 
-    pub fn play(&mut self, midi_note: f64, duration_clocks: u32) {
+    pub fn play_note(&mut self, midi_note: f64, velocity: f64, duration_clocks: u32) {
         self.base_frequency = A4_FREQUENCY * ((midi_note - A4_MIDI_NOTE) / 12.0).exp2();
+        self.velocity = velocity;
         self.rem_playback_clocks = duration_clocks;
 
         self.reset_control_clock();
     }
 
-    pub fn stop(&mut self) {
+    pub fn cancel_note(&mut self) {
         self.rem_playback_clocks = 0;
     }
 
@@ -431,10 +429,12 @@ impl Voice {
                 return;
             }
 
-            let sample_value =
-                (self.oscillator.sample_value() * self.envelope.level() * self.max_sample_value)
-                    .round() as i32;
-            self.write_sample(blip_buf, clock_offset, sample_value);
+            let amplitude = (self.oscillator.sample()
+                * self.envelope.level()
+                * self.velocity
+                * self.max_amplitude)
+                .round() as i32;
+            self.write_sample(blip_buf, clock_offset, amplitude);
 
             clock_offset += self.sample_clocks;
             self.rem_playback_clocks = self.rem_playback_clocks.saturating_sub(self.sample_clocks);
@@ -482,10 +482,10 @@ impl Voice {
             (self.clock_rate as f64 / frequency / self.oscillator.cycle_length()).round() as u32;
     }
 
-    fn write_sample(&mut self, blip_buf: &mut BlipBuf, clock_offset: u32, sample_value: i32) {
-        if sample_value != self.last_sample_value {
-            blip_buf.add_delta(clock_offset as u64, sample_value - self.last_sample_value);
-            self.last_sample_value = sample_value;
+    fn write_sample(&mut self, blip_buf: &mut BlipBuf, clock_offset: u32, amplitude: i32) {
+        if amplitude != self.last_amplitude {
+            blip_buf.add_delta(clock_offset as u64, amplitude - self.last_amplitude);
+            self.last_amplitude = amplitude;
         }
     }
 }
