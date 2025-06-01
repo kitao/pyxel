@@ -11,7 +11,6 @@ pub struct Oscillator {
     lfsr: u16,
     tap_bit: u8,
 
-    scale: f64,
     sample: f64,
 }
 
@@ -25,16 +24,14 @@ impl Oscillator {
             lfsr: 0,
             tap_bit: 0,
 
-            scale: 0.0,
             sample: 0.0,
         }
     }
 
-    pub fn set(&mut self, waveform: &[f64], scale: f64) {
+    pub fn set(&mut self, waveform: &[f64]) {
         assert!(!waveform.is_empty());
 
         self.noise_length = 0;
-        self.scale = scale;
 
         if waveform != self.waveform {
             self.waveform = waveform.to_vec();
@@ -44,7 +41,7 @@ impl Oscillator {
         self.update();
     }
 
-    pub fn set_noise(&mut self, short_period: bool, noise_length: u32, scale: f64) {
+    pub fn set_noise(&mut self, short_period: bool, noise_length: u32) {
         assert!(noise_length > 0);
 
         let tap_bit = if short_period { 6 } else { 1 };
@@ -61,7 +58,6 @@ impl Oscillator {
         }
 
         self.noise_length = noise_length;
-        self.scale = scale;
 
         self.update();
     }
@@ -91,12 +87,12 @@ impl Oscillator {
 
     fn update(&mut self) {
         self.sample = if self.noise_length == 0 {
-            self.waveform[self.waveform_index] * self.scale
+            self.waveform[self.waveform_index]
         } else {
             if (self.lfsr & 1) == 0 {
-                self.scale
+                1.0
             } else {
-                -self.scale
+                -1.0
             }
         };
     }
@@ -359,9 +355,9 @@ pub struct Voice {
     clock_rate: u32,
     base_frequency: f64,
     velocity: f64,
+    duration_clocks: u32,
     sample_clocks: u32,
-    rem_playback_clocks: u32,
-    rem_sample_clocks: u32,
+    carryover_sample_clocks: u32,
     control_interval_clocks: u32,
     control_elapsed_clocks: u32,
     last_amplitude: i32,
@@ -384,9 +380,9 @@ impl Voice {
             clock_rate,
             base_frequency: 0.0,
             velocity: 0.0,
+            duration_clocks: 0,
             sample_clocks: 0,
-            rem_playback_clocks: 0,
-            rem_sample_clocks: 0,
+            carryover_sample_clocks: 0,
             control_interval_clocks,
             control_elapsed_clocks: 0,
             last_amplitude: 0,
@@ -396,35 +392,34 @@ impl Voice {
     pub fn play_note(&mut self, midi_note: f64, velocity: f64, duration_clocks: u32) {
         self.base_frequency = A4_FREQUENCY * ((midi_note - A4_MIDI_NOTE) / 12.0).exp2();
         self.velocity = velocity;
-        self.rem_playback_clocks = duration_clocks;
+        self.duration_clocks = duration_clocks;
 
         self.reset_control_clock();
     }
 
     pub fn cancel_note(&mut self) {
-        self.rem_playback_clocks = 0;
+        self.duration_clocks = 0;
     }
 
     pub fn process(&mut self, blip_buf: &mut BlipBuf, clock_offset: u32, clock_count: u32) {
         assert!(clock_count > 0);
 
-        let mut clock_offset = clock_offset + self.rem_sample_clocks;
-        let mut rem_process_clocks = clock_count;
+        let mut clock_offset = clock_offset + self.carryover_sample_clocks;
+        let mut clock_count = clock_count;
 
-        if self.rem_sample_clocks > 0 {
-            self.rem_playback_clocks = self.rem_playback_clocks.saturating_sub(rem_process_clocks);
+        if self.carryover_sample_clocks > 0 {
+            let process_clocks = self.carryover_sample_clocks.min(clock_count);
+            self.duration_clocks = self.duration_clocks.saturating_sub(clock_count);
+            self.carryover_sample_clocks -= process_clocks;
+            clock_count -= process_clocks;
 
-            if self.rem_sample_clocks >= rem_process_clocks {
-                self.rem_sample_clocks -= rem_process_clocks;
+            if self.carryover_sample_clocks > 0 {
                 return;
             }
-
-            rem_process_clocks -= self.rem_sample_clocks;
-            self.rem_sample_clocks = 0;
         }
 
         loop {
-            if self.rem_playback_clocks == 0 {
+            if self.duration_clocks == 0 {
                 self.write_sample(blip_buf, clock_offset, 0);
                 return;
             }
@@ -437,15 +432,15 @@ impl Voice {
             self.write_sample(blip_buf, clock_offset, amplitude);
 
             clock_offset += self.sample_clocks;
-            self.rem_playback_clocks = self.rem_playback_clocks.saturating_sub(self.sample_clocks);
+            self.duration_clocks = self.duration_clocks.saturating_sub(self.sample_clocks);
             self.oscillator.advance_sample();
 
-            if self.sample_clocks >= rem_process_clocks {
-                self.rem_sample_clocks = self.sample_clocks - rem_process_clocks;
+            if self.sample_clocks >= clock_count {
+                self.carryover_sample_clocks = self.sample_clocks - clock_count;
                 return;
             }
 
-            rem_process_clocks -= self.sample_clocks;
+            clock_count -= self.sample_clocks;
 
             self.advance_control_clock(self.sample_clocks);
         }
