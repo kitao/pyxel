@@ -158,7 +158,7 @@ impl Sound {
     }
 
     pub(crate) fn note_clocks(&self) -> u32 {
-        (self.speed * CLOCKS_PER_SPEED as f64) as u32
+        self.speed * CLOCKS_PER_SPEED
     }
 
     pub(crate) fn total_clocks(&self) -> u32 {
@@ -185,7 +185,7 @@ mod tests {
         let sound = Sound::new();
         sound
             .lock()
-            .set("c0d-0d0d#0", "tspn", "012345", "nsvfhq", 123.4);
+            .set("c0d-0d0d#0", "tspn", "012345", "nsvfhq", 123);
         assert_eq!(&sound.lock().notes, &vec![0, 1, 2, 3]);
         assert_eq!(
             &sound.lock().tones,
@@ -203,7 +203,7 @@ mod tests {
                 EFFECT_QUARTER_FADEOUT
             ]
         );
-        assert_eq!(sound.lock().speed, 123.4);
+        assert_eq!(sound.lock().speed, 123);
     }
 
     #[test]
