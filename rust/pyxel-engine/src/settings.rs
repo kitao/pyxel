@@ -120,7 +120,7 @@ pub const NUM_SOUNDS: u32 = 64;
 pub const NUM_MUSICS: u32 = 8;
 
 pub const INITIAL_CHANNEL_GAIN: Gain = 0.125;
-pub const INITIAL_SOUND_SPEED: Speed = 30.0;
+pub const INITIAL_SOUND_SPEED: Speed = 30;
 
 pub const TONE_TRIANGLE: ToneIndex = 0;
 pub const TONE_SQUARE: ToneIndex = 1;

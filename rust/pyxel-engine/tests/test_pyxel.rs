@@ -35,7 +35,7 @@ impl App {
             "p",
             "6",
             "vffn fnff vffs vfnn",
-            25.0,
+            25,
         );
 
         pyxel.sounds.lock()[1].lock().set(
@@ -43,7 +43,7 @@ impl App {
             "s",
             "6",
             "nnff vfff vvvv vfff svff vfff vvvv svnn",
-            25.0,
+            25,
         );
 
         pyxel.sounds.lock()[2].lock().set(
@@ -51,7 +51,7 @@ impl App {
             "t",
             "7",
             "n",
-            25.0,
+            25,
         );
 
         pyxel.sounds.lock()[3].lock().set(
@@ -59,7 +59,7 @@ impl App {
             "t",
             "7",
             "n",
-            25.0,
+            25,
         );
 
         pyxel.sounds.lock()[4].lock().set(
@@ -67,7 +67,7 @@ impl App {
             "n",
             "6622 6622 6622 6422",
             "f",
-            25.0,
+            25,
         );
 
         pyxel.play(0, &[0, 1], None, true, false);
