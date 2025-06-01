@@ -1,4 +1,4 @@
-use crate::settings::WAVETABLE_LENGTH;
+use crate::settings::{WAVETABLE_LENGTH, WAVETABLE_LEVELS};
 
 pub type Gain = f64;
 pub type WavetableValue = u8;
@@ -33,6 +33,8 @@ pub struct Tone {
     pub gain: Gain,
     pub noise: Noise,
     pub wavetable: Wavetable,
+    pub last_wavetable: Wavetable,
+    pub waveform: Vec<f64>,
 }
 
 pub type SharedTone = shared_type!(Tone);
@@ -43,6 +45,24 @@ impl Tone {
             gain: 1.0,
             noise: Noise::Off,
             wavetable: [0; WAVETABLE_LENGTH as usize],
+            last_wavetable: [0; WAVETABLE_LENGTH as usize],
+            waveform: Vec::new(),
         })
+    }
+
+    pub(crate) fn waveform(&mut self) -> &Vec<f64> {
+        if self.wavetable != self.last_wavetable {
+            self.last_wavetable = self.wavetable;
+
+            self.waveform.clear();
+            self.waveform.reserve(WAVETABLE_LENGTH as usize);
+            for &value in &self.wavetable {
+                assert!(value < WAVETABLE_LEVELS as u8);
+                self.waveform
+                    .push((value as f64 / (WAVETABLE_LEVELS - 1) as f64) * 2.0 - 1.0);
+            }
+        }
+
+        &self.waveform
     }
 }
