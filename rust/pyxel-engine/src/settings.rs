@@ -111,8 +111,8 @@ pub const CLOCKS_PER_SPEED: u32 = AUDIO_CLOCK_RATE / 120;
 pub const WAVETABLE_LENGTH: u32 = 32;
 pub const WAVETABLE_LEVELS: u32 = 16;
 
-pub const VIBRATO_DEPTH: f64 = 0.015;
-pub const VIBRATO_FREQUENCY: f64 = 6.0;
+pub const VIBRATO_PERIOD_CLOCKS: u32 = AUDIO_CLOCK_RATE / 6;
+pub const VIBRATO_SEMITONE_DEPTH: f64 = 0.25;
 
 pub const NUM_CHANNELS: u32 = 4;
 pub const NUM_TONES: u32 = 4;
