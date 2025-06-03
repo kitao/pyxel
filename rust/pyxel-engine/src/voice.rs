@@ -92,7 +92,6 @@ impl Oscillator {
 
 struct EnvelopeSegment {
     start_clock: u32,
-    end_clock: u32,
     start_level: f64,
     slope: f64,
 }
@@ -124,26 +123,29 @@ impl Envelope {
         for &(duration, target_level) in segments {
             assert!(duration > 0);
 
-            let end_clock = start_clock + duration;
             let slope = (target_level - start_level) / duration as f64;
 
-            self.segments.push(EnvelopeSegment {
-                start_clock,
-                end_clock,
-                start_level,
-                slope,
-            });
+            self.segments.insert(
+                0,
+                EnvelopeSegment {
+                    start_clock,
+                    start_level,
+                    slope,
+                },
+            );
 
-            start_clock = end_clock;
+            start_clock += duration;
             start_level = target_level;
         }
 
-        self.segments.push(EnvelopeSegment {
-            start_clock,
-            end_clock: u32::MAX,
-            start_level,
-            slope: 0.0,
-        });
+        self.segments.insert(
+            0,
+            EnvelopeSegment {
+                start_clock,
+                start_level,
+                slope: 0.0,
+            },
+        );
     }
 
     pub fn enable(&mut self) {
@@ -178,9 +180,13 @@ impl Envelope {
         }
 
         for segment in &self.segments {
-            if self.elapsed_clocks < segment.end_clock {
-                self.level = segment.start_level
-                    + segment.slope * (self.elapsed_clocks - segment.start_clock) as f64;
+            if self.elapsed_clocks >= segment.start_clock {
+                self.level = if segment.slope == 0.0 {
+                    segment.start_level
+                } else {
+                    segment.start_level
+                        + segment.slope * (self.elapsed_clocks - segment.start_clock) as f64
+                };
                 break;
             }
         }
@@ -268,8 +274,8 @@ impl Vibrato {
 
 pub struct Glide {
     semitone_offset: f64,
-    semitone_slope: f64,
     duration_clocks: u32,
+    semitone_slope: f64,
 
     enabled: bool,
     elapsed_clocks: u32,
@@ -280,12 +286,12 @@ impl Glide {
     fn new() -> Self {
         Self {
             semitone_offset: 0.0,
-            semitone_slope: 0.0,
             duration_clocks: 0,
+            semitone_slope: 0.0,
 
             enabled: false,
             elapsed_clocks: 0,
-            pitch_multiplier: 0.0,
+            pitch_multiplier: 1.0,
         }
     }
 
@@ -295,7 +301,7 @@ impl Glide {
         if semitone_offset != self.semitone_offset || duration_clocks != self.duration_clocks {
             self.semitone_offset = semitone_offset;
             self.duration_clocks = duration_clocks;
-            self.semitone_slope = semitone_offset / duration_clocks as f64;
+            self.semitone_slope = -semitone_offset / duration_clocks as f64;
         }
     }
 
@@ -331,8 +337,7 @@ impl Glide {
         }
 
         let semitone_offset =
-            self.semitone_slope * (self.duration_clocks - self.elapsed_clocks) as f64;
-
+            self.semitone_offset + self.semitone_slope * self.elapsed_clocks as f64;
         self.pitch_multiplier = 2.0_f64.powf(semitone_offset / 12.0);
     }
 }
