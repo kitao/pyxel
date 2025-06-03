@@ -37,11 +37,11 @@ impl Sound {
         let mut vol_env = VolEnv::Constant(7);
         let mut envelopes: [EnvData; 8] = array::from_fn(|_| vec![7]);
         let mut note_info = NoteInfo::default();
-        self.speed = 10.0; // T=120
+        self.speed = 9; // T=120
 
         while chars.peek().is_some() {
             if let Some(value) = Self::parse_command(&mut chars, 't') {
-                self.speed = value as f64 / 100 as f64; // TBD
+                self.speed = (900 / value).max(1);
             } else if Self::parse_char(&mut chars, 'l') {
                 length = Self::parse_note_length(&mut chars, length);
             } else if let Some(value) = Self::parse_command(&mut chars, '@') {
