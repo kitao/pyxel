@@ -34,6 +34,8 @@ impl Oscillator {
             self.waveform_index = 0;
         }
 
+        self.tap_bit = 0;
+
         self.update();
     }
 
