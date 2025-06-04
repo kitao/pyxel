@@ -82,12 +82,10 @@ impl Oscillator {
     fn update(&mut self) {
         self.sample = if self.tap_bit == 0 {
             self.waveform[self.waveform_index]
+        } else if (self.lfsr & 1) == 0 {
+            1.0
         } else {
-            if (self.lfsr & 1) == 0 {
-                1.0
-            } else {
-                -1.0
-            }
+            -1.0
         };
     }
 }
