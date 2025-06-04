@@ -1,9 +1,9 @@
 use crate::blip_buf::BlipBuf;
 use crate::pyxel::TONES;
 use crate::settings::{
-    AUDIO_BIT_DEPTH, AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT,
-    EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_CHANNEL_GAIN,
-    MAX_VOLUME, TONE_TRIANGLE, VIBRATO_PERIOD_CLOCKS, VIBRATO_SEMITONE_DEPTH,
+    AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE,
+    EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO, INITIAL_CHANNEL_GAIN, MAX_VOLUME,
+    TONE_TRIANGLE, VIBRATO_PERIOD_CLOCKS, VIBRATO_SEMITONE_DEPTH,
 };
 use crate::sound::{SharedSound, Sound};
 use crate::tone::{Gain, Noise};
@@ -43,7 +43,7 @@ pub type SharedChannel = shared_type!(Channel);
 impl Channel {
     pub fn new() -> SharedChannel {
         new_shared_type!(Self {
-            voice: Voice::new(AUDIO_BIT_DEPTH, AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE),
+            voice: Voice::new(AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE),
             is_playing: false,
             should_loop: false,
             should_resume: false,
@@ -175,6 +175,7 @@ impl Channel {
                             self.sound_index = 0;
                         } else {
                             self.stop();
+
                             if self.should_resume {
                                 let sounds = self
                                     .resume_sounds
@@ -187,10 +188,14 @@ impl Channel {
                                     self.resume_should_loop,
                                     false,
                                 );
-                                continue;
-                            } else {
-                                return;
+
+                                if self.is_playing {
+                                    continue;
+                                }
                             }
+
+                            self.voice.process(blip_buf, 0, clock_count);
+                            return;
                         }
                     }
                 }
