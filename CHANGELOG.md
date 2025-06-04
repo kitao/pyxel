@@ -5,6 +5,9 @@
 - Fixed the audio module initialize arguments
 - Updated Pyodide to version 0.27.5
 - Added a Q&A about saving application data to the FAQ
+- Updated the zip crate to version 4.0
+- Updated the pyo3 crate to version 0.25
+- Updated the sysinfo crate to version 0.35
 
 ## 2.3.18
 
