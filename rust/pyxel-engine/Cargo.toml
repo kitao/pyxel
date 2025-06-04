@@ -34,7 +34,7 @@ semver = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde-xml-rs = "0.6"
 toml = "0.8"
-zip = { version = "2.2", default-features = false, features = ["deflate"] }
+zip = { version = "4.0", default-features = false, features = ["deflate"] }
 
 [target.'cfg(not(target_os = "emscripten"))'.dependencies]
 chrono = "0.4"
