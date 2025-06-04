@@ -348,7 +348,6 @@ pub struct Voice {
     pub vibrato: Vibrato,
     pub glide: Glide,
 
-    max_amplitude: f64,
     clock_rate: u32,
     base_frequency: f64,
     velocity: f64,
@@ -361,10 +360,9 @@ pub struct Voice {
 }
 
 impl Voice {
-    pub fn new(bit_depth: u32, clock_rate: u32, control_rate: u32) -> Self {
-        assert!(bit_depth > 0 && clock_rate > 0 && control_rate > 0);
+    pub fn new(clock_rate: u32, control_rate: u32) -> Self {
+        assert!(clock_rate > 0 && control_rate > 0);
 
-        let max_amplitude = ((1_u32 << (bit_depth - 1)) - 1) as f64;
         let control_interval_clocks = clock_rate / control_rate;
 
         Self {
@@ -373,7 +371,6 @@ impl Voice {
             vibrato: Vibrato::new(),
             glide: Glide::new(),
 
-            max_amplitude,
             clock_rate,
             base_frequency: 0.0,
             velocity: 0.0,
@@ -422,7 +419,7 @@ impl Voice {
             let amplitude = (self.oscillator.sample()
                 * self.envelope.level()
                 * self.velocity
-                * self.max_amplitude)
+                * i16::MAX as f64)
                 .round() as i32;
             self.write_sample(blip_buf, clock_offset, amplitude);
 

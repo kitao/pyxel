@@ -22,18 +22,16 @@ extern "C" fn c_audio_callback(userdata: *mut c_void, stream: *mut u8, len: c_in
 
 pub fn start_audio(
     sample_rate: u32,
-    num_channels: u8,
-    num_samples: u16,
+    buffer_size: u32,
     audio_callback: Arc<Mutex<dyn AudioCallback>>,
 ) {
     let userdata = Box::into_raw(Box::new(audio_callback)).cast();
-
     let desired = SDL_AudioSpec {
         freq: sample_rate as i32,
         format: AUDIO_S16 as u16,
-        channels: num_channels,
+        channels: 1,
         silence: 0,
-        samples: num_samples,
+        samples: buffer_size as u16,
         padding: 0,
         size: 0,
         callback: Some(c_audio_callback),
