@@ -1,6 +1,15 @@
 {
   "entries": [
     {
+      "id": 147,
+      "title": "popstar",
+      "site": "https://github.com/c-hui/popstar",
+      "author": "shichunhui",
+      "contact": "matilto:mrshich@foxmail.com",
+      "desc": "A same game",
+      "image": "https://github.com/user-attachments/assets/adaa621d-c78a-4691-aad9-b02180a8b9f4"
+    },
+    {
       "id": 146,
       "title": "Pyxel Mandelbrot",
       "site": "https://github.com/gomatama5/Pyxel_Mandelbrot",
