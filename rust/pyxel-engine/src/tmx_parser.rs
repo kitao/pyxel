@@ -10,28 +10,35 @@ use crate::SharedTilemap;
 
 #[derive(Debug, Deserialize)]
 struct Tileset {
+    #[serde(rename = "@firstgid")]
     firstgid: u32,
+    #[serde(rename = "@columns")]
     columns: Option<u32>,
 }
 
 #[derive(Debug, Deserialize)]
 struct LayerData {
-    #[serde(rename = "encoding")]
+    #[serde(rename = "@encoding")]
     encoding: String,
-    #[serde(rename = "$value")]
+    #[serde(rename = "#text")]
     tiles: String,
 }
 
 #[derive(Debug, Deserialize)]
 struct Layer {
+    #[serde(rename = "@width")]
     width: u32,
+    #[serde(rename = "@height")]
     height: u32,
     data: LayerData,
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(rename = "map")]
 struct TiledMapFile {
+    #[serde(rename = "@tilewidth")]
     tilewidth: u32,
+    #[serde(rename = "@tileheight")]
     tileheight: u32,
     #[serde(rename = "tileset", default)]
     tilesets: Vec<Tileset>,
