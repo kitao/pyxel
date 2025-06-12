@@ -1,6 +1,24 @@
 {
   "entries": [
     {
+      "id": 149,
+      "title": "Graffiti Cleanup Rush",
+      "site": "https://github.com/LeoI52/graffiti-cleanup-rush",
+      "author": "Léo Imbert",
+      "contact": "https://github.com/LeoI52",
+      "desc": "Score based arcade clicking game",
+      "image": "https://github.com/user-attachments/assets/df95722f-5ea0-4cff-9031-4b9cea090705"
+    },
+    {
+      "id": 148,
+      "title": "Mastermind",
+      "site": "https://github.com/jay-kumogata/PyxelChip8/tree/main/pyxel/mastermind",
+      "author": "Jay Kumogata",
+      "contact": "https://x.com/jay_kumogata",
+      "desc": "Guess the numbers using hints",
+      "image": "https://github.com/user-attachments/assets/ede0d22f-c5b9-4958-8591-166f96404153"
+    },
+    {
       "id": 147,
       "title": "popstar",
       "site": "https://github.com/c-hui/popstar",
