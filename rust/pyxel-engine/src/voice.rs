@@ -351,7 +351,7 @@ pub struct Voice {
     clock_rate: u32,
     base_frequency: f64,
     velocity: f64,
-    duration_clocks: u32,
+    playback_clocks: u32,
     sample_clocks: u32,
     carryover_sample_clocks: u32,
     control_interval_clocks: u32,
@@ -374,7 +374,7 @@ impl Voice {
             clock_rate,
             base_frequency: 0.0,
             velocity: 0.0,
-            duration_clocks: 0,
+            playback_clocks: 0,
             sample_clocks: 0,
             carryover_sample_clocks: 0,
             control_interval_clocks,
@@ -383,16 +383,16 @@ impl Voice {
         }
     }
 
-    pub fn play_note(&mut self, midi_note: f64, velocity: f64, duration_clocks: u32) {
+    pub fn play_note(&mut self, midi_note: f64, velocity: f64, playback_clocks: u32) {
         self.base_frequency = A4_FREQUENCY * ((midi_note - A4_MIDI_NOTE) / 12.0).exp2();
         self.velocity = velocity;
-        self.duration_clocks = duration_clocks;
+        self.playback_clocks = playback_clocks;
 
         self.reset_control_clock();
     }
 
     pub fn cancel_note(&mut self) {
-        self.duration_clocks = 0;
+        self.playback_clocks = 0;
     }
 
     pub fn process(&mut self, blip_buf: &mut BlipBuf, clock_offset: u32, clock_count: u32) {
@@ -403,7 +403,7 @@ impl Voice {
 
         if self.carryover_sample_clocks > 0 {
             let process_clocks = self.carryover_sample_clocks.min(clock_count);
-            self.duration_clocks = self.duration_clocks.saturating_sub(process_clocks);
+            self.playback_clocks = self.playback_clocks.saturating_sub(process_clocks);
             self.carryover_sample_clocks -= process_clocks;
             clock_count -= process_clocks;
 
@@ -415,7 +415,7 @@ impl Voice {
             self.advance_control_clock(self.sample_clocks);
         }
 
-        while self.duration_clocks > 0 && clock_count > 0 {
+        while self.playback_clocks > 0 && clock_count > 0 {
             let amplitude = (self.oscillator.sample()
                 * self.envelope.level()
                 * self.velocity
@@ -424,7 +424,7 @@ impl Voice {
             self.write_sample(blip_buf, clock_offset, amplitude);
 
             let process_clocks = self.sample_clocks.min(clock_count);
-            self.duration_clocks = self.duration_clocks.saturating_sub(process_clocks);
+            self.playback_clocks = self.playback_clocks.saturating_sub(process_clocks);
             clock_offset += process_clocks;
             clock_count -= process_clocks;
 
@@ -437,7 +437,7 @@ impl Voice {
             self.advance_control_clock(self.sample_clocks);
         }
 
-        if self.duration_clocks == 0 {
+        if self.playback_clocks == 0 {
             self.write_sample(blip_buf, clock_offset, 0);
         }
     }
