@@ -1,10 +1,7 @@
+use crate::settings::AUDIO_CLOCK_RATE;
+
 #[derive(Clone, Debug)]
 pub enum MmlCommand {
-    RepeatStart,
-    RepatEnd {
-        count: u8,
-    },
-
     Tempo {
         bpm: u16,
     },
@@ -61,4 +58,38 @@ pub enum MmlCommand {
     Rest {
         duration_ticks: u16,
     },
+}
+
+impl MmlCommand {
+    pub fn bpm_to_cpt(bpm: u16) -> u32 {
+        (AUDIO_CLOCK_RATE as f64 * 60.0 / bpm as f64).round() as u32
+    }
+
+    pub fn gate_to_ratio(gate: u8) -> f64 {
+        (gate as f64 / 8.0).round()
+    }
+
+    pub fn volume_to_level(volume: u8) -> f64 {
+        (volume as f64 / 15.0).round()
+    }
+
+    pub fn cents_to_semitones(cents: impl Into<f64>) -> f64 {
+        (cents.into() / 100.0).round()
+    }
+
+    pub fn ticks_to_clocks(ticks: u16, cpt: u32) -> u32 {
+        ticks as u32 * cpt
+    }
+
+    pub fn convert_segments(segments: &[(u16, u8)], cpt: u32) -> Vec<(u32, f64)> {
+        segments
+            .iter()
+            .map(|&(duration_ticks, volume)| {
+                (
+                    Self::ticks_to_clocks(duration_ticks, cpt),
+                    Self::volume_to_level(volume),
+                )
+            })
+            .collect()
+    }
 }

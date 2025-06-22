@@ -52,7 +52,7 @@ impl Music {
                     .iter()
                     .map(|sound| {
                         let sound = sound.lock();
-                        sound.total_clocks()
+                        sound.calc_total_clocks()
                     })
                     .sum::<u32>()
             })

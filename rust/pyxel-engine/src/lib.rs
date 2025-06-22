@@ -34,6 +34,7 @@ mod math;
 mod mml_command;
 mod mml_parser;
 mod music;
+mod old_mml_parser;
 mod old_resource_data;
 mod profiler;
 mod pyxel;
@@ -52,14 +53,14 @@ mod watch_info;
 
 use pyxel_platform::keys;
 
-pub use crate::channel::{Channel, Detune, Effect, Note, SharedChannel, Speed, ToneIndex, Volume};
+pub use crate::channel::{Channel, Detune, SharedChannel};
 pub use crate::font::{Font, SharedFont};
 pub use crate::image::{Color, Image, Rgb24, SharedImage};
 pub use crate::keys::*;
 pub use crate::music::{Music, SharedMusic, SharedSeq};
 pub use crate::pyxel::{init, Pyxel};
 pub use crate::settings::*;
-pub use crate::sound::{SharedSound, Sound};
+pub use crate::sound::{Effect, Note, SharedSound, Sound, Speed, ToneIndex, Volume};
 pub use crate::system::PyxelCallback;
 pub use crate::tilemap::{ImageSource, ImageTileCoord, SharedTilemap, Tile, Tilemap};
 pub use crate::tone::{Gain, Noise, SharedTone, Tone, Wavetable, WavetableValue};
