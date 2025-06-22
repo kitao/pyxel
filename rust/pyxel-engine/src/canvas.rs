@@ -16,6 +16,7 @@ pub struct Canvas<T: Copy + PartialEq + Default + ToIndex> {
     pub camera_y: i32,
     pub alpha: f32,
     pub data: Vec<T>,
+
     should_write: fn(&Canvas<T>, i32, i32) -> bool,
 }
 

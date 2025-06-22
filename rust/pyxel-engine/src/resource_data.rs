@@ -232,7 +232,7 @@ impl MusicData {
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct ResourceData2 {
-    pub format_version: u32,
+    format_version: u32,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     colors: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
