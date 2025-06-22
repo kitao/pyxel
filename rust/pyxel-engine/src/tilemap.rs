@@ -18,8 +18,9 @@ pub enum ImageSource {
 }
 
 pub struct Tilemap {
-    pub(crate) canvas: Canvas<Tile>,
     pub imgsrc: ImageSource,
+
+    pub(crate) canvas: Canvas<Tile>,
 }
 
 pub type SharedTilemap = shared_type!(Tilemap);
@@ -27,8 +28,9 @@ pub type SharedTilemap = shared_type!(Tilemap);
 impl Tilemap {
     pub fn new(width: u32, height: u32, imgsrc: ImageSource) -> SharedTilemap {
         new_shared_type!(Self {
-            canvas: Canvas::new(width, height),
             imgsrc,
+
+            canvas: Canvas::new(width, height),
         })
     }
 
