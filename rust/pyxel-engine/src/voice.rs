@@ -391,6 +391,10 @@ impl Voice {
         self.reset_control_clock();
     }
 
+    pub fn advance_note(&mut self, clocks: u32) {
+        self.advance_control_clock(clocks);
+    }
+
     pub fn cancel_note(&mut self) {
         self.playback_clocks = 0;
     }
@@ -455,12 +459,15 @@ impl Voice {
     fn advance_control_clock(&mut self, clocks: u32) {
         self.control_elapsed_clocks += clocks;
 
-        while self.control_elapsed_clocks >= self.control_interval_clocks {
-            self.control_elapsed_clocks -= self.control_interval_clocks;
+        if self.control_elapsed_clocks >= self.control_interval_clocks {
+            let cycles = self.control_elapsed_clocks / self.control_interval_clocks;
+            let clocks = self.control_interval_clocks * cycles;
 
-            self.envelope.advance_clock(self.control_interval_clocks);
-            self.vibrato.advance_clock(self.control_interval_clocks);
-            self.glide.advance_clock(self.control_interval_clocks);
+            self.control_elapsed_clocks -= clocks;
+
+            self.envelope.advance_clock(clocks);
+            self.vibrato.advance_clock(clocks);
+            self.glide.advance_clock(clocks);
 
             self.update_sample_clocks();
         }

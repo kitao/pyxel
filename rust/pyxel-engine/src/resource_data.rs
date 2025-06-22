@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use crate::channel::{Channel, Detune, Effect, Note, Speed, ToneIndex, Volume};
+use crate::channel::{Channel, Detune};
 use crate::image::{Color, Image, SharedImage};
 use crate::music::{Music, SharedMusic};
 use crate::pyxel::Pyxel;
 use crate::settings::RESOURCE_FORMAT_VERSION;
-use crate::sound::{SharedSound, Sound};
+use crate::sound::{Effect, Note, SharedSound, Sound, Speed, ToneIndex, Volume};
 use crate::tilemap::{ImageSource, ImageTileCoord, SharedTilemap, Tilemap};
 use crate::tone::{Gain, Noise, SharedTone, Tone, Wavetable};
 use crate::utils::{compress_vec2, expand_vec2, trim_empty_vecs};

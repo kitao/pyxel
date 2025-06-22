@@ -5,15 +5,14 @@ use std::path::Path;
 
 use zip::ZipArchive;
 
-use crate::channel::{Effect, Note, ToneIndex, Volume};
 use crate::image::{Color, Image, Rgb24};
 use crate::music::Music;
 use crate::pyxel::Pyxel;
 use crate::settings::{
-    INITIAL_SOUND_SPEED, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
+    DEFAULT_SOUND_SPEED, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
     PALETTE_FILE_EXTENSION, TILEMAP_SIZE, VERSION,
 };
-use crate::sound::Sound;
+use crate::sound::{Effect, Note, Sound, ToneIndex, Volume};
 use crate::tilemap::{ImageSource, ImageTileCoord, Tilemap};
 use crate::utils::{parse_hex_string, simplify_string};
 
@@ -102,7 +101,7 @@ impl ResourceItem for Sound {
         self.tones.clear();
         self.volumes.clear();
         self.effects.clear();
-        self.speed = INITIAL_SOUND_SPEED;
+        self.speed = DEFAULT_SOUND_SPEED;
     }
 
     fn deserialize(&mut self, _version: u32, input: &str) {

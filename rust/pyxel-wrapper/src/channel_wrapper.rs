@@ -46,7 +46,7 @@ impl Channel {
     pub fn play(
         &self,
         snd: Bound<'_, PyAny>,
-        tick: Option<f64>,
+        tick: Option<u32>,
         r#loop: Option<bool>,
         resume: Option<bool>,
     ) -> PyResult<()> {
