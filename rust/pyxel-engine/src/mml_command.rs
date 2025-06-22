@@ -77,16 +77,16 @@ impl MmlCommand {
         (cents.into() / 100.0).round()
     }
 
-    pub fn ticks_to_clocks(ticks: u16, cpt: u32) -> u32 {
-        ticks as u32 * cpt
+    pub fn ticks_to_clocks(ticks: u16, clocks_per_tick: u32) -> u32 {
+        ticks as u32 * clocks_per_tick
     }
 
-    pub fn convert_segments(segments: &[(u16, u8)], cpt: u32) -> Vec<(u32, f64)> {
+    pub fn convert_segments(segments: &[(u16, u8)], clocks_per_tick: u32) -> Vec<(u32, f64)> {
         segments
             .iter()
             .map(|&(duration_ticks, volume)| {
                 (
-                    Self::ticks_to_clocks(duration_ticks, cpt),
+                    Self::ticks_to_clocks(duration_ticks, clocks_per_tick),
                     Self::volume_to_level(volume),
                 )
             })

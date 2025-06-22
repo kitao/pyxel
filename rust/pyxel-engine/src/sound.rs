@@ -3,10 +3,10 @@ use crate::blip_buf::BlipBuf;
 use crate::mml_command::MmlCommand;
 use crate::pyxel::{CHANNELS, TONES};
 use crate::settings::{
-    AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, CLOCKS_PER_SPEED, DEFAULT_MML_CPT, DEFAULT_SOUND_SPEED,
-    EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE,
-    EFFECT_VIBRATO, MAX_VOLUME, SPEED_UNITS_PER_SECOND, TICKS_PER_QUARTER_NOTE, TONE_NOISE,
-    TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, VIBRATO_DEPTH_CENTS, VIBRATO_FREQUNCY_CHZ,
+    AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, CLOCKS_PER_SPEED, DEFAULT_CLOCKS_PER_TICK,
+    DEFAULT_SOUND_SPEED, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT,
+    EFFECT_SLIDE, EFFECT_VIBRATO, MAX_VOLUME, SOUND_TICKS_PER_SECOND, TONE_NOISE, TONE_PULSE,
+    TONE_SQUARE, TONE_TRIANGLE, VIBRATO_DEPTH_CENTS, VIBRATO_FREQUNCY_CHZ,
 };
 use crate::tone::Noise;
 use crate::utils::simplify_string;
@@ -175,15 +175,15 @@ impl Sound {
         }
 
         let mut total_clocks = 0;
-        let mut cpt = DEFAULT_MML_CPT;
+        let mut clocks_per_tick = DEFAULT_CLOCKS_PER_TICK;
 
         for command in &self.commands {
             match command {
                 MmlCommand::Tempo { bpm } => {
-                    cpt = (AUDIO_CLOCK_RATE as f64 * 60.0 / *bpm as f64).round() as u32;
+                    clocks_per_tick = (AUDIO_CLOCK_RATE as f64 * 60.0 / *bpm as f64).round() as u32;
                 }
                 MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
-                    total_clocks += *duration_ticks as u32 * cpt;
+                    total_clocks += *duration_ticks as u32 * clocks_per_tick;
                 }
                 _ => {}
             }
@@ -206,18 +206,18 @@ impl Sound {
 
         let mut remaining_clocks = clock;
         let mut consumed_ticks = 0;
-        let mut cpt = DEFAULT_MML_CPT;
+        let mut clocks_per_tick = DEFAULT_CLOCKS_PER_TICK;
 
         for command in &self.commands {
             match command {
                 MmlCommand::Tempo { bpm } => {
-                    cpt = (AUDIO_CLOCK_RATE as f64 * 60.0 / *bpm as f64).round() as u32;
+                    clocks_per_tick = (AUDIO_CLOCK_RATE as f64 * 60.0 / *bpm as f64).round() as u32;
                 }
                 MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
-                    let duration_clocks = *duration_ticks as u32 * cpt;
+                    let duration_clocks = *duration_ticks as u32 * clocks_per_tick;
 
                     if remaining_clocks < duration_clocks {
-                        return (consumed_ticks + remaining_clocks / cpt, None);
+                        return (consumed_ticks + remaining_clocks / clocks_per_tick, None);
                     }
 
                     consumed_ticks += *duration_ticks as u32;
@@ -243,19 +243,19 @@ impl Sound {
 
         let mut remaining_ticks = tick;
         let mut consumed_clocks = 0;
-        let mut cpt = DEFAULT_MML_CPT;
+        let mut clocks_per_tick = DEFAULT_CLOCKS_PER_TICK;
 
         for command in &self.commands {
             match command {
                 MmlCommand::Tempo { bpm } => {
-                    cpt = (AUDIO_CLOCK_RATE as f64 * 60.0 / *bpm as f64).round() as u32;
+                    clocks_per_tick = (AUDIO_CLOCK_RATE as f64 * 60.0 / *bpm as f64).round() as u32;
                 }
                 MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
                     if remaining_ticks < *duration_ticks as u32 {
-                        return (consumed_clocks + remaining_ticks * cpt, None);
+                        return (consumed_clocks + remaining_ticks * clocks_per_tick, None);
                     }
 
-                    consumed_clocks += *duration_ticks as u32 * cpt;
+                    consumed_clocks += *duration_ticks as u32 * clocks_per_tick;
                     remaining_ticks -= *duration_ticks as u32;
                 }
                 _ => {}
@@ -271,7 +271,7 @@ impl Sound {
         let tones = TONES.lock();
 
         commands.push(MmlCommand::Tempo {
-            bpm: (SPEED_UNITS_PER_SECOND * 60) as u16,
+            bpm: (SOUND_TICKS_PER_SECOND * 60) as u16,
         });
         commands.push(MmlCommand::Quantize { gate_1_8: 8 });
         commands.push(MmlCommand::Transpose { key_offset: 0 });
@@ -360,7 +360,7 @@ impl Sound {
                 commands.push(MmlCommand::GlideSet {
                     slot: 1,
                     offset_cents: (prev_note - *note) as i16,
-                    duration_ticks: TICKS_PER_QUARTER_NOTE as u16,
+                    duration_ticks: self.speed as u16,
                 });
             } else {
                 commands.push(MmlCommand::Glide { slot: 0 });
@@ -371,14 +371,13 @@ impl Sound {
             let midi_note = *note + if tone.noise == Noise::Off { 36 } else { 60 };
             commands.push(MmlCommand::Note {
                 midi_note: midi_note as u8,
-                duration_ticks: TICKS_PER_QUARTER_NOTE as u16,
+                duration_ticks: self.speed as u16,
             });
 
             prev_note = *note;
         }
 
-        println!("----");
-        println!("{:?}", commands);
+        println!("commmands: {:?}", commands);
         commands
     }
 }

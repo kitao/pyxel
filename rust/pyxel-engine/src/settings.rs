@@ -105,10 +105,10 @@ pub const AUDIO_SAMPLE_RATE: u32 = 22_050; // 22.05kHz
 pub const AUDIO_BUFFER_SIZE: u32 = 512; // 512 / 22050 = 23.2ms
 pub const AUDIO_CONTROL_RATE: u32 = 60;
 pub const TICKS_PER_QUARTER_NOTE: u32 = 48;
-pub const SPEED_UNITS_PER_SECOND: u32 = 120;
+pub const SOUND_TICKS_PER_SECOND: u32 = 120;
 
 pub const CLOCKS_PER_SAMPLE: u32 = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
-pub const CLOCKS_PER_SPEED: u32 = AUDIO_CLOCK_RATE / SPEED_UNITS_PER_SECOND;
+pub const CLOCKS_PER_SPEED: u32 = AUDIO_CLOCK_RATE / SOUND_TICKS_PER_SECOND;
 
 pub const WAVETABLE_LENGTH: u32 = 32;
 pub const WAVETABLE_LEVELS: u32 = 16;
@@ -123,9 +123,9 @@ pub const NUM_MUSICS: u32 = 8;
 
 pub const DEFAULT_CHANNEL_GAIN: Gain = 0.125;
 pub const DEFAULT_SOUND_SPEED: Speed = 30;
-pub const DEFAULT_MML_TEMPO: u32 = 120;
-pub const DEFAULT_MML_CPT: u32 =
-    (AUDIO_CLOCK_RATE as f64 * 60.0 / DEFAULT_MML_TEMPO as f64 + 0.5) as u32;
+pub const DEFAULT_TEMPO: u32 = 120;
+pub const DEFAULT_CLOCKS_PER_TICK: u32 =
+    (AUDIO_CLOCK_RATE as f64 * 60.0 / DEFAULT_TEMPO as f64 + 0.5) as u32;
 
 pub const TONE_TRIANGLE: ToneIndex = 0;
 pub const TONE_SQUARE: ToneIndex = 1;
