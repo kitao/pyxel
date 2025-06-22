@@ -9,6 +9,7 @@
 - Updated the serde-xml-rs to version 0.8
 - Updated the pyo3 crate to version 0.25
 - Updated the sysinfo crate to version 0.35
+- Updated the bindgen crate to version 0.72
 
 ## 2.3.18
 
