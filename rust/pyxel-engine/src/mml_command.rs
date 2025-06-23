@@ -83,7 +83,7 @@ impl MmlCommand {
 
     pub fn freq_to_clocks(frequency_chz: u16) -> u32 {
         assert!(frequency_chz > 0);
-        AUDIO_CLOCK_RATE as u32 * 100 / frequency_chz as u32
+        AUDIO_CLOCK_RATE * 100 / frequency_chz as u32
     }
 
     pub fn convert_segments(segments: &[(u16, u8)], clocks_per_tick: u32) -> Vec<(u32, f64)> {

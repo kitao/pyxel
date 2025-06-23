@@ -302,7 +302,7 @@ impl Channel {
                         volume_0_15,
                         segments,
                         ..
-                    }) = self.envelope_slots.get(&slot)
+                    }) = self.envelope_slots.get(slot)
                     {
                         self.voice.envelope.set(
                             MmlCommand::volume_to_level(*volume_0_15),
@@ -323,7 +323,7 @@ impl Channel {
                     self.envelope_slots.insert(*slot, command.clone());
                     self.voice.envelope.set(
                         MmlCommand::volume_to_level(*volume_0_15),
-                        &MmlCommand::convert_segments(&segments, self.clocks_per_tick),
+                        &MmlCommand::convert_segments(segments, self.clocks_per_tick),
                     );
                     self.voice.envelope.enable();
                 }
@@ -334,7 +334,7 @@ impl Channel {
                         frequency_chz,
                         depth_cents,
                         ..
-                    }) = self.vibrato_slots.get(&slot)
+                    }) = self.vibrato_slots.get(slot)
                     {
                         self.voice.vibrato.set(
                             MmlCommand::ticks_to_clocks(*delay_ticks, self.clocks_per_tick),
@@ -368,7 +368,7 @@ impl Channel {
                         offset_cents,
                         duration_ticks,
                         ..
-                    }) = self.glide_slots.get(&slot)
+                    }) = self.glide_slots.get(slot)
                     {
                         self.voice.glide.set(
                             MmlCommand::cents_to_semitones(*offset_cents),
