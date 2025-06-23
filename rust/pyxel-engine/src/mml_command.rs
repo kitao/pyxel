@@ -66,19 +66,24 @@ impl MmlCommand {
     }
 
     pub fn gate_to_ratio(gate: u8) -> f64 {
-        (gate as f64 / 8.0).round()
+        gate as f64 / 8.0
     }
 
     pub fn volume_to_level(volume: u8) -> f64 {
-        (volume as f64 / 15.0).round()
+        volume as f64 / 15.0
     }
 
     pub fn cents_to_semitones(cents: impl Into<f64>) -> f64 {
-        (cents.into() / 100.0).round()
+        cents.into() / 100.0
     }
 
     pub fn ticks_to_clocks(ticks: u16, clocks_per_tick: u32) -> u32 {
         ticks as u32 * clocks_per_tick
+    }
+
+    pub fn freq_to_clocks(frequency_chz: u16) -> u32 {
+        assert!(frequency_chz > 0);
+        AUDIO_CLOCK_RATE as u32 * 100 / frequency_chz as u32
     }
 
     pub fn convert_segments(segments: &[(u16, u8)], clocks_per_tick: u32) -> Vec<(u32, f64)> {

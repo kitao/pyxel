@@ -309,7 +309,7 @@ impl Sound {
 
             // Volume
             commands.push(MmlCommand::Volume {
-                volume_0_15: (volume as f64 * 15.0 / MAX_VOLUME as f64).round() as u8,
+                volume_0_15: (volume as f64 / MAX_VOLUME as f64 * 15.0).round() as u8,
             });
 
             // Tone
@@ -324,21 +324,25 @@ impl Sound {
                     volume_0_15: 15,
                     segments: vec![(self.speed as u16, 0)],
                 });
+                commands.push(MmlCommand::Envelope { slot: 1 });
             } else if effect == EFFECT_HALF_FADEOUT {
-                let ticks = (self.speed as f64 / 2.0).round().max(1.0) as u16;
+                let ticks2 = (self.speed as f64 / 2.0).round() as u16;
+                let ticks1 = self.speed as u16 - ticks2;
                 commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
                     volume_0_15: 15,
-                    segments: vec![(ticks, 127), (ticks, 0)],
+                    segments: vec![(ticks1, 15), (ticks2, 0)],
                 });
+                commands.push(MmlCommand::Envelope { slot: 1 });
             } else if effect == EFFECT_QUARTER_FADEOUT {
-                let ticks1 = (self.speed as f64 * 3.0 / 4.0).round().max(1.0) as u16;
-                let ticks2 = (self.speed as f64 / 4.0).round().max(1.0) as u16;
+                let ticks2 = (self.speed as f64 / 4.0).round() as u16;
+                let ticks1 = self.speed as u16 - ticks2;
                 commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
                     volume_0_15: 15,
-                    segments: vec![(ticks1, 127), (ticks2, 0)],
+                    segments: vec![(ticks1, 15), (ticks2, 0)],
                 });
+                commands.push(MmlCommand::Envelope { slot: 1 });
             } else {
                 commands.push(MmlCommand::Envelope { slot: 0 });
             }
@@ -351,6 +355,7 @@ impl Sound {
                     frequency_chz: VIBRATO_FREQUNCY_CHZ as u16,
                     depth_cents: VIBRATO_DEPTH_CENTS as u16,
                 });
+                commands.push(MmlCommand::Vibrato { slot: 1 });
             } else {
                 commands.push(MmlCommand::Vibrato { slot: 0 });
             }
@@ -359,9 +364,10 @@ impl Sound {
             if effect == EFFECT_SLIDE {
                 commands.push(MmlCommand::GlideSet {
                     slot: 1,
-                    offset_cents: (prev_note - *note) as i16,
+                    offset_cents: (prev_note - *note) as i16 * 100,
                     duration_ticks: self.speed as u16,
                 });
+                commands.push(MmlCommand::Glide { slot: 1 });
             } else {
                 commands.push(MmlCommand::Glide { slot: 0 });
             }
@@ -377,7 +383,6 @@ impl Sound {
             prev_note = *note;
         }
 
-        println!("commmands: {:?}", commands);
         commands
     }
 }

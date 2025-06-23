@@ -2,9 +2,9 @@ use std::collections::HashMap;
 
 use crate::blip_buf::BlipBuf;
 use crate::mml_command::MmlCommand;
-use crate::pyxel::{SOUNDS, TONES};
+use crate::pyxel::TONES;
 use crate::settings::{
-    AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, DEFAULT_CHANNEL_GAIN, DEFAULT_MML_CPT, TONE_TRIANGLE,
+    AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, DEFAULT_CHANNEL_GAIN, DEFAULT_CLOCKS_PER_TICK,
 };
 use crate::sound::SharedSound;
 use crate::tone::{Gain, Noise};
@@ -13,34 +13,35 @@ use crate::voice::Voice;
 pub type Detune = i32;
 
 pub struct Channel {
+    pub sounds: Vec<SharedSound>,
+    pub gain: Gain,
+    pub detune: Detune,
+
     voice: Voice,
     is_playing: bool,
     should_loop: bool,
     should_resume: bool,
     sound_index: u32,
-    resume_sounds: Vec<SharedSound>,
-    resume_start_clock: u32,
-    resume_should_loop: bool,
-
-    pub sounds: Vec<SharedSound>,
-    pub gain: Gain,
-    pub detune: Detune,
-
     skip_clocks: u32,
-    elapsed_clocks: u32,
+    note_duration_clocks: u32,
+    sound_elapsed_clocks: u32,
+    total_elapsed_clocks: u32,
 
     commands: Vec<MmlCommand>,
     command_index: u32,
-    cpt: u32,
+    clocks_per_tick: u32,
+    gate_ratio: f64,
+    tone_gain: f64,
+    volume_level: f64,
+    transpose_semitones: f64,
+    detune_semitones: f64,
     envelope_slots: HashMap<u8, MmlCommand>,
     vibrato_slots: HashMap<u8, MmlCommand>,
     glide_slots: HashMap<u8, MmlCommand>,
-    transpose_semitones: f64,
-    detune_semitones: f64,
-    volume_level: f64,
-    gate_ratio: f64,
-    is_sound_head: bool,
-    duration_clocks: u32,
+
+    resume_sounds: Vec<SharedSound>,
+    resume_start_clock: u32,
+    resume_should_loop: bool,
 }
 
 pub type SharedChannel = shared_type!(Channel);
@@ -48,35 +49,35 @@ pub type SharedChannel = shared_type!(Channel);
 impl Channel {
     pub fn new() -> SharedChannel {
         new_shared_type!(Self {
+            sounds: Vec::new(),
+            gain: DEFAULT_CHANNEL_GAIN,
+            detune: 0,
+
             voice: Voice::new(AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE),
             is_playing: false,
             should_loop: false,
             should_resume: false,
             sound_index: 0,
+            skip_clocks: 0,
+            note_duration_clocks: 0,
+            sound_elapsed_clocks: 0,
+            total_elapsed_clocks: 0,
+
+            commands: Vec::new(),
+            command_index: 0,
+            clocks_per_tick: 0,
+            gate_ratio: 1.0,
+            tone_gain: 1.0,
+            volume_level: 1.0,
+            transpose_semitones: 0.0,
+            detune_semitones: 0.0,
+            envelope_slots: HashMap::new(),
+            vibrato_slots: HashMap::new(),
+            glide_slots: HashMap::new(),
 
             resume_sounds: Vec::new(),
             resume_start_clock: 0,
             resume_should_loop: false,
-
-            sounds: Vec::new(),
-            gain: DEFAULT_CHANNEL_GAIN,
-            detune: 0,
-
-            skip_clocks: 0,
-            elapsed_clocks: 0,
-
-            commands: Vec::new(),
-            command_index: 0,
-            cpt: 0,
-            envelope_slots: HashMap::new(),
-            vibrato_slots: HashMap::new(),
-            glide_slots: HashMap::new(),
-            transpose_semitones: 0.0,
-            detune_semitones: 0.0,
-            volume_level: 1.0,
-            gate_ratio: 1.0,
-            is_sound_head: false,
-            duration_clocks: 0,
         })
     }
 
@@ -145,18 +146,20 @@ impl Channel {
 
         if !should_resume {
             self.resume_sounds = self.sounds.clone();
-            self.resume_should_loop = should_loop;
-            self.resume_start_clock = self.elapsed_clocks;
+            self.resume_start_clock = self.total_elapsed_clocks;
+            self.resume_should_loop = self.should_loop;
         }
 
-        // TODO
         self.sounds = sounds;
+        self.is_playing = true;
         self.should_loop = should_loop;
+        self.should_resume = should_resume;
         self.sound_index = 0;
         self.skip_clocks = start_clock;
-        self.elapsed_clocks = 0;
-        self.is_sound_head = true;
-        self.is_playing = true;
+        self.note_duration_clocks = 0;
+        self.sound_elapsed_clocks = 0;
+        self.total_elapsed_clocks = 0;
+        self.command_index = 0;
     }
 
     pub fn stop(&mut self) {
@@ -167,8 +170,7 @@ impl Channel {
     pub fn play_pos(&mut self) -> Option<(u32, u32)> {
         if self.is_playing {
             let sound = self.sounds[self.sound_index as usize].lock();
-            let (tick, _) = sound.calc_tick_at_clock(self.elapsed_clocks);
-
+            let (tick, _) = sound.calc_tick_at_clock(self.sound_elapsed_clocks);
             Some((self.sound_index, tick))
         } else {
             None
@@ -176,23 +178,24 @@ impl Channel {
     }
 
     pub(crate) fn process(&mut self, blip_buf: &mut BlipBuf, clock_count: u32) {
-        if !self.is_playing {
-            self.voice.process(blip_buf, 0, clock_count);
-            return;
-        }
-
         let mut clock_offset = 0;
         let mut clock_count = clock_count;
 
-        while self.skip_clocks > 0 || clock_count > 0 {
-            if self.is_sound_head {
-                self.is_sound_head = false;
-                self.duration_clocks = 0;
-                self.command_index = 0;
-                self.cpt = DEFAULT_MML_CPT;
+        while clock_count > 0 {
+            // Playback has ended
+            if !self.is_playing {
+                self.skip_clocks = 0;
+                self.voice.process(blip_buf, 0, clock_count);
+                return;
+            }
 
-                let sounds = SOUNDS.lock();
-                let sound = &sounds[self.sound_index as usize].lock();
+            // Sound head
+            if self.sound_elapsed_clocks == 0 {
+                self.note_duration_clocks = 0;
+                self.command_index = 0;
+                self.clocks_per_tick = DEFAULT_CLOCKS_PER_TICK;
+
+                let sound = &self.sounds[self.sound_index as usize].lock();
 
                 if sound.commands.is_empty() {
                     self.commands = sound.to_commands();
@@ -201,63 +204,59 @@ impl Channel {
                 }
             }
 
-            if self.duration_clocks == 0 {
+            // Next note
+            if self.note_duration_clocks == 0 {
                 self.advance_command();
-                if self.duration_clocks > self.skip_clocks {
+
+                if self.note_duration_clocks > self.skip_clocks {
                     self.voice.advance_note(self.skip_clocks);
                 }
+            }
 
-                if self.command_index >= self.commands.len() as u32 {
-                    self.is_sound_head = true;
-                    self.sound_index += 1;
+            // End of sound
+            if self.note_duration_clocks == 0 {
+                self.sound_index += 1;
+                self.sound_elapsed_clocks = 0;
 
-                    if self.sound_index >= self.sounds.len() as u32 {
-                        if self.should_loop {
-                            self.sound_index = 0;
-                        } else {
-                            self.stop();
-
-                            if self.should_resume {
-                                self.play_from_clock(
-                                    self.sounds.clone(),
-                                    self.resume_start_clock + self.elapsed_clocks,
-                                    self.resume_should_loop,
-                                    false,
-                                );
-
-                                if self.is_playing {
-                                    continue;
-                                }
-                            }
-
-                            if self.skip_clocks == 0 {
-                                self.voice.process(blip_buf, 0, clock_count);
-                            }
-                            return;
-                        }
+                if self.sound_index >= self.sounds.len() as u32 {
+                    if self.should_loop {
+                        self.sound_index = 0;
+                    } else if self.should_resume {
+                        self.play_from_clock(
+                            self.resume_sounds.clone(),
+                            self.resume_start_clock + self.total_elapsed_clocks,
+                            self.resume_should_loop,
+                            false,
+                        );
+                    } else {
+                        self.is_playing = false;
                     }
                 }
+
+                continue;
             }
 
+            // Skip clocks
             if self.skip_clocks > 0 {
-                let process_clocks = self.skip_clocks.min(self.duration_clocks);
+                let process_clocks = self.skip_clocks.min(self.note_duration_clocks);
 
-                clock_offset += process_clocks;
                 self.skip_clocks -= process_clocks;
-
-                self.duration_clocks -= process_clocks;
-                self.elapsed_clocks += process_clocks;
+                self.note_duration_clocks -= process_clocks;
+                self.sound_elapsed_clocks += process_clocks;
+                self.total_elapsed_clocks += process_clocks;
             }
 
-            if self.skip_clocks == 0 {
-                let process_clocks = clock_count.min(self.duration_clocks);
+            // Process clocks
+            if self.skip_clocks == 0 && self.note_duration_clocks > 0 {
+                let process_clocks = clock_count.min(self.note_duration_clocks);
                 self.voice.process(blip_buf, clock_offset, process_clocks);
 
                 clock_offset += process_clocks;
                 clock_count -= process_clocks;
 
-                self.duration_clocks -= process_clocks;
-                self.elapsed_clocks += process_clocks;
+                self.note_duration_clocks -= process_clocks;
+                self.sound_elapsed_clocks += process_clocks;
+                self.total_elapsed_clocks += process_clocks;
             }
         }
     }
@@ -265,10 +264,13 @@ impl Channel {
     fn advance_command(&mut self) {
         let tones = TONES.lock();
 
-        for i in self.command_index as usize..self.commands.len() {
-            match &self.commands[i] {
+        while self.command_index < self.commands.len() as u32 {
+            let command = &self.commands[self.command_index as usize];
+            self.command_index += 1;
+
+            match command {
                 MmlCommand::Tempo { bpm } => {
-                    self.cpt = MmlCommand::bpm_to_cpt(*bpm);
+                    self.clocks_per_tick = MmlCommand::bpm_to_cpt(*bpm);
                 }
                 MmlCommand::Quantize { gate_1_8 } => {
                     self.gate_ratio = MmlCommand::gate_to_ratio(*gate_1_8);
@@ -281,6 +283,8 @@ impl Channel {
                         Noise::LongPeriod => self.voice.oscillator.set_noise(false),
                         Noise::Off => self.voice.oscillator.set(tone.waveform()),
                     }
+
+                    self.tone_gain = tone.gain;
                 }
                 MmlCommand::Volume { volume_0_15 } => {
                     self.volume_level = MmlCommand::volume_to_level(*volume_0_15);
@@ -302,7 +306,7 @@ impl Channel {
                     {
                         self.voice.envelope.set(
                             MmlCommand::volume_to_level(*volume_0_15),
-                            &MmlCommand::convert_segments(segments, self.cpt),
+                            &MmlCommand::convert_segments(segments, self.clocks_per_tick),
                         );
                         self.voice.envelope.enable();
                     } else {
@@ -319,7 +323,7 @@ impl Channel {
                     self.envelope_slots.insert(*slot, command.clone());
                     self.voice.envelope.set(
                         MmlCommand::volume_to_level(*volume_0_15),
-                        &MmlCommand::convert_segments(&segments, self.cpt),
+                        &MmlCommand::convert_segments(&segments, self.clocks_per_tick),
                     );
                     self.voice.envelope.enable();
                 }
@@ -333,8 +337,8 @@ impl Channel {
                     }) = self.vibrato_slots.get(&slot)
                     {
                         self.voice.vibrato.set(
-                            MmlCommand::ticks_to_clocks(*delay_ticks, self.cpt),
-                            *frequency_chz as u32,
+                            MmlCommand::ticks_to_clocks(*delay_ticks, self.clocks_per_tick),
+                            MmlCommand::freq_to_clocks(*frequency_chz),
                             MmlCommand::cents_to_semitones(*depth_cents),
                         );
                         self.voice.vibrato.enable();
@@ -352,7 +356,7 @@ impl Channel {
 
                     self.vibrato_slots.insert(*slot, command.clone());
                     self.voice.vibrato.set(
-                        MmlCommand::ticks_to_clocks(*delay_ticks, self.cpt),
+                        MmlCommand::ticks_to_clocks(*delay_ticks, self.clocks_per_tick),
                         *frequency_chz as u32,
                         MmlCommand::cents_to_semitones(*depth_cents),
                     );
@@ -368,7 +372,7 @@ impl Channel {
                     {
                         self.voice.glide.set(
                             MmlCommand::cents_to_semitones(*offset_cents),
-                            MmlCommand::ticks_to_clocks(*duration_ticks, self.cpt),
+                            MmlCommand::ticks_to_clocks(*duration_ticks, self.clocks_per_tick),
                         );
                         self.voice.glide.enable();
                     } else {
@@ -385,7 +389,7 @@ impl Channel {
                     self.glide_slots.insert(*slot, command.clone());
                     self.voice.glide.set(
                         MmlCommand::cents_to_semitones(*offset_cents),
-                        MmlCommand::ticks_to_clocks(*duration_ticks, self.cpt),
+                        MmlCommand::ticks_to_clocks(*duration_ticks, self.clocks_per_tick),
                     );
                     self.voice.glide.enable();
                 }
@@ -399,19 +403,19 @@ impl Channel {
                         + self.detune_semitones
                         + MmlCommand::cents_to_semitones(self.detune);
 
-                    let tone = tones[TONE_TRIANGLE as usize].lock();
-                    let velocity = tone.gain * self.gain * self.volume_level;
+                    let velocity = self.tone_gain * self.gain * self.volume_level;
 
-                    self.duration_clocks = MmlCommand::ticks_to_clocks(*duration_ticks, self.cpt);
-
+                    self.note_duration_clocks =
+                        MmlCommand::ticks_to_clocks(*duration_ticks, self.clocks_per_tick);
                     let playback_clocks =
-                        (self.duration_clocks as f64 * self.gate_ratio).round() as u32;
-                    self.voice.play_note(midi_note, velocity, playback_clocks);
+                        (self.note_duration_clocks as f64 * self.gate_ratio).round() as u32;
 
+                    self.voice.play_note(midi_note, velocity, playback_clocks);
                     return;
                 }
                 MmlCommand::Rest { duration_ticks } => {
-                    self.duration_clocks = MmlCommand::ticks_to_clocks(*duration_ticks, self.cpt);
+                    self.note_duration_clocks =
+                        MmlCommand::ticks_to_clocks(*duration_ticks, self.clocks_per_tick);
                     return;
                 }
             }
