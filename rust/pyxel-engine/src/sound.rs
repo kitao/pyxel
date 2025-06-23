@@ -199,9 +199,9 @@ impl Sound {
 
             if clock < total_clocks {
                 return (clock / CLOCKS_PER_SPEED, None);
-            } else {
-                return (total_ticks, Some(clock - total_clocks));
             }
+
+            return (total_ticks, Some(clock - total_clocks));
         }
 
         let mut remaining_clocks = clock;
@@ -236,9 +236,9 @@ impl Sound {
 
             if tick < total_ticks {
                 return (tick * CLOCKS_PER_SPEED, None);
-            } else {
-                return (total_ticks * CLOCKS_PER_SPEED, Some(tick - total_ticks));
             }
+
+            return (total_ticks * CLOCKS_PER_SPEED, Some(tick - total_ticks));
         }
 
         let mut remaining_ticks = tick;
@@ -364,7 +364,7 @@ impl Sound {
             if effect == EFFECT_SLIDE {
                 commands.push(MmlCommand::GlideSet {
                     slot: 1,
-                    offset_cents: (prev_note - *note) as i16 * 100,
+                    offset_cents: (prev_note - *note) * 100,
                     duration_ticks: self.speed as u16,
                 });
                 commands.push(MmlCommand::Glide { slot: 1 });
