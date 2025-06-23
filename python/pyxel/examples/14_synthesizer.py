@@ -2,7 +2,7 @@ import pyxel
 
 EXTENDED_CHANNELS = [
     (0.1 / 2.0, 0),  # Lead Melody
-    (0.1 / 2.0, 20),  # Detuned Lead Melody
+    (0.1 / 2.0, 10),  # Detuned Lead Melody
     (0.1, 0),  # Sub Melody
     (0.1 / 3.0, 0),  # Chord Backing 1
     (0.1 / 3.0, 0),  # Chord Backing 2
