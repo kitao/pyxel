@@ -48,6 +48,7 @@ class PianoKeyboard(Widget):
         self._mouse_note = None
         self.field_cursor = parent.field_cursor
         self.get_field = parent.get_field
+        self.copy_var("speed_var", parent)
         self.copy_var("octave_var", parent)
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
@@ -160,7 +161,7 @@ class PianoKeyboard(Widget):
         notes = self.get_field(0)
 
         if play_pos is not None and not notes:
-            note = notes[play_pos[1]]
+            note = notes[play_pos[1] // self.speed_var]
         elif play_pos is None and self.note_var is not None:
             note = self.note_var
         else:

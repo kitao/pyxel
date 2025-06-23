@@ -33,6 +33,7 @@ class PianoRoll(Widget):
         self.add_post_history = parent.add_post_history
         self.get_field_help_message = parent.get_field_help_message
 
+        self.copy_var("speed_var", parent)
         self.copy_var("note_var", parent)
         self.copy_var("is_playing_var", parent)
         self.copy_var("help_message_var", parent)
@@ -129,7 +130,7 @@ class PianoRoll(Widget):
 
         play_pos = pyxel.play_pos(0)
         if play_pos is not None:
-            x = play_pos[1] * 4 + 31
+            x = play_pos[1] // self.speed_var * 4 + 31
             pyxel.rect(x, 25, 3, 123, PIANO_ROLL_CURSOR_PLAY_COLOR)
         elif self.field_cursor.y == 0:
             x = self.field_cursor.x * 4 + 31
