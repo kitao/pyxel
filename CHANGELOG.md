@@ -10,7 +10,7 @@
 - Updated the pyo3 crate to version 0.25
 - Updated the sysinfo crate to version 0.35
 - Updated the bindgen crate to version 0.72
-- Changed play_pos to return tick instead of note_no
+- Changed the play_pos function to return tick instead of note_no
 
 ## 2.3.18
 
