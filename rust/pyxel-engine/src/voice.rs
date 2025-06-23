@@ -90,6 +90,7 @@ impl Oscillator {
     }
 }
 
+#[derive(Debug)]
 struct EnvelopeSegment {
     start_clock: u32,
     start_level: f64,
@@ -121,9 +122,11 @@ impl Envelope {
         let mut start_level = initial_level;
 
         for &(duration, target_level) in segments {
-            assert!(duration > 0);
-
-            let slope = (target_level - start_level) / duration as f64;
+            let slope = if duration > 0 {
+                (target_level - start_level) / duration as f64
+            } else {
+                0.0
+            };
 
             self.segments.insert(
                 0,
