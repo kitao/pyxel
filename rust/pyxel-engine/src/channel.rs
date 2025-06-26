@@ -40,7 +40,6 @@ pub struct Channel {
     glide_slots: HashMap<u8, MmlCommand>,
 
     resume_sounds: Vec<SharedSound>,
-    resume_start_clock: u32,
     resume_should_loop: bool,
 }
 
@@ -76,7 +75,6 @@ impl Channel {
             glide_slots: HashMap::new(),
 
             resume_sounds: Vec::new(),
-            resume_start_clock: 0,
             resume_should_loop: false,
         })
     }
@@ -145,8 +143,9 @@ impl Channel {
         }
 
         if !should_resume {
+            self.total_elapsed_clocks = 0;
+        } else if !self.should_resume {
             self.resume_sounds = self.sounds.clone();
-            self.resume_start_clock = self.total_elapsed_clocks;
             self.resume_should_loop = self.should_loop;
         }
 
@@ -158,7 +157,6 @@ impl Channel {
         self.skip_clocks = start_clock;
         self.note_duration_clocks = 0;
         self.sound_elapsed_clocks = 0;
-        self.total_elapsed_clocks = 0;
         self.command_index = 0;
     }
 
@@ -224,7 +222,7 @@ impl Channel {
                     } else if self.should_resume {
                         self.play_from_clock(
                             self.resume_sounds.clone(),
-                            self.resume_start_clock + self.total_elapsed_clocks,
+                            self.total_elapsed_clocks,
                             self.resume_should_loop,
                             false,
                         );
@@ -269,11 +267,11 @@ impl Channel {
             self.command_index += 1;
 
             match command {
-                MmlCommand::Tempo { bpm } => {
-                    self.clocks_per_tick = MmlCommand::bpm_to_cpt(*bpm);
+                MmlCommand::Tempo { clocks_per_tick } => {
+                    self.clocks_per_tick = *clocks_per_tick;
                 }
-                MmlCommand::Quantize { gate_1_8 } => {
-                    self.gate_ratio = MmlCommand::gate_to_ratio(*gate_1_8);
+                MmlCommand::Quantize { gate_ratio } => {
+                    self.gate_ratio = *gate_ratio;
                 }
 
                 MmlCommand::Tone { tone_index } => {
@@ -286,26 +284,24 @@ impl Channel {
 
                     self.tone_gain = tone.gain;
                 }
-                MmlCommand::Volume { volume_0_15 } => {
-                    self.volume_level = MmlCommand::volume_to_level(*volume_0_15);
+                MmlCommand::Volume { level } => {
+                    self.volume_level = *level;
                 }
 
-                MmlCommand::Transpose { key_offset } => {
-                    self.transpose_semitones += *key_offset as f64;
+                MmlCommand::Transpose { semitone_offset } => {
+                    self.transpose_semitones += *semitone_offset;
                 }
-                MmlCommand::Detune { offset_cents } => {
-                    self.detune_semitones += MmlCommand::cents_to_semitones(*offset_cents);
+                MmlCommand::Detune { semitone_offset } => {
+                    self.detune_semitones += *semitone_offset;
                 }
 
                 MmlCommand::Envelope { slot } => {
                     if let Some(MmlCommand::EnvelopeSet {
-                        volume_0_15,
-                        segments,
-                        ..
+                        level, segments, ..
                     }) = self.envelope_slots.get(slot)
                     {
                         self.voice.envelope.set(
-                            MmlCommand::volume_to_level(*volume_0_15),
+                            *level,
                             &MmlCommand::convert_segments(segments, self.clocks_per_tick),
                         );
                         self.voice.envelope.enable();
@@ -315,14 +311,14 @@ impl Channel {
                 }
                 command @ MmlCommand::EnvelopeSet {
                     slot,
-                    volume_0_15,
+                    level,
                     segments,
                 } => {
                     assert!(*slot > 0, "Envelope slot 0 is reserved for disable");
 
                     self.envelope_slots.insert(*slot, command.clone());
                     self.voice.envelope.set(
-                        MmlCommand::volume_to_level(*volume_0_15),
+                        *level,
                         &MmlCommand::convert_segments(segments, self.clocks_per_tick),
                     );
                     self.voice.envelope.enable();
@@ -331,15 +327,15 @@ impl Channel {
                 MmlCommand::Vibrato { slot } => {
                     if let Some(MmlCommand::VibratoSet {
                         delay_ticks,
-                        frequency_chz,
-                        depth_cents,
+                        period_clocks,
+                        semitone_depth,
                         ..
                     }) = self.vibrato_slots.get(slot)
                     {
                         self.voice.vibrato.set(
                             MmlCommand::ticks_to_clocks(*delay_ticks, self.clocks_per_tick),
-                            MmlCommand::freq_to_clocks(*frequency_chz),
-                            MmlCommand::cents_to_semitones(*depth_cents),
+                            *period_clocks,
+                            *semitone_depth,
                         );
                         self.voice.vibrato.enable();
                     } else {
@@ -349,29 +345,29 @@ impl Channel {
                 command @ MmlCommand::VibratoSet {
                     slot,
                     delay_ticks,
-                    frequency_chz,
-                    depth_cents,
+                    period_clocks,
+                    semitone_depth,
                 } => {
                     assert!(*slot > 0, "Vibrato slot 0 is reserved for disable");
 
                     self.vibrato_slots.insert(*slot, command.clone());
                     self.voice.vibrato.set(
                         MmlCommand::ticks_to_clocks(*delay_ticks, self.clocks_per_tick),
-                        *frequency_chz as u32,
-                        MmlCommand::cents_to_semitones(*depth_cents),
+                        *period_clocks,
+                        *semitone_depth,
                     );
                     self.voice.vibrato.enable();
                 }
 
                 MmlCommand::Glide { slot } => {
                     if let Some(MmlCommand::GlideSet {
-                        offset_cents,
+                        semitone_offset,
                         duration_ticks,
                         ..
                     }) = self.glide_slots.get(slot)
                     {
                         self.voice.glide.set(
-                            MmlCommand::cents_to_semitones(*offset_cents),
+                            *semitone_offset,
                             MmlCommand::ticks_to_clocks(*duration_ticks, self.clocks_per_tick),
                         );
                         self.voice.glide.enable();
@@ -381,14 +377,14 @@ impl Channel {
                 }
                 command @ MmlCommand::GlideSet {
                     slot,
-                    offset_cents,
+                    semitone_offset,
                     duration_ticks,
                 } => {
                     assert!(*slot > 0, "Glide slot 0 is reserved for disable");
 
                     self.glide_slots.insert(*slot, command.clone());
                     self.voice.glide.set(
-                        MmlCommand::cents_to_semitones(*offset_cents),
+                        *semitone_offset,
                         MmlCommand::ticks_to_clocks(*duration_ticks, self.clocks_per_tick),
                     );
                     self.voice.glide.enable();

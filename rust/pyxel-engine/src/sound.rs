@@ -5,8 +5,8 @@ use crate::pyxel::{CHANNELS, TONES};
 use crate::settings::{
     AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, CLOCKS_PER_SPEED, DEFAULT_CLOCKS_PER_TICK,
     DEFAULT_SOUND_SPEED, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT,
-    EFFECT_SLIDE, EFFECT_VIBRATO, MAX_VOLUME, SOUND_TICKS_PER_SECOND, TONE_NOISE, TONE_PULSE,
-    TONE_SQUARE, TONE_TRIANGLE, VIBRATO_DEPTH_CENTS, VIBRATO_FREQUNCY_CHZ,
+    EFFECT_SLIDE, EFFECT_VIBRATO, MAX_VOLUME, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE,
+    VIBRATO_DEPTH_CENTS, VIBRATO_FREQUNCY_CHZ,
 };
 use crate::tone::Noise;
 use crate::utils::simplify_string;
@@ -179,11 +179,13 @@ impl Sound {
 
         for command in &self.commands {
             match command {
-                MmlCommand::Tempo { bpm } => {
-                    clocks_per_tick = (AUDIO_CLOCK_RATE as f64 * 60.0 / *bpm as f64).round() as u32;
+                MmlCommand::Tempo {
+                    clocks_per_tick: cpt,
+                } => {
+                    clocks_per_tick = *cpt;
                 }
                 MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
-                    total_clocks += *duration_ticks as u32 * clocks_per_tick;
+                    total_clocks += MmlCommand::ticks_to_clocks(*duration_ticks, clocks_per_tick);
                 }
                 _ => {}
             }
@@ -210,11 +212,14 @@ impl Sound {
 
         for command in &self.commands {
             match command {
-                MmlCommand::Tempo { bpm } => {
-                    clocks_per_tick = (AUDIO_CLOCK_RATE as f64 * 60.0 / *bpm as f64).round() as u32;
+                MmlCommand::Tempo {
+                    clocks_per_tick: cpt,
+                } => {
+                    clocks_per_tick = *cpt;
                 }
                 MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
-                    let duration_clocks = *duration_ticks as u32 * clocks_per_tick;
+                    let duration_clocks =
+                        MmlCommand::ticks_to_clocks(*duration_ticks, clocks_per_tick);
 
                     if remaining_clocks < duration_clocks {
                         return (consumed_ticks + remaining_clocks / clocks_per_tick, None);
@@ -247,15 +252,21 @@ impl Sound {
 
         for command in &self.commands {
             match command {
-                MmlCommand::Tempo { bpm } => {
-                    clocks_per_tick = (AUDIO_CLOCK_RATE as f64 * 60.0 / *bpm as f64).round() as u32;
+                MmlCommand::Tempo {
+                    clocks_per_tick: cpt,
+                } => {
+                    clocks_per_tick = *cpt;
                 }
                 MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
                     if remaining_ticks < *duration_ticks as u32 {
-                        return (consumed_clocks + remaining_ticks * clocks_per_tick, None);
+                        return (
+                            consumed_clocks
+                                + MmlCommand::ticks_to_clocks(remaining_ticks, clocks_per_tick),
+                            None,
+                        );
                     }
 
-                    consumed_clocks += *duration_ticks as u32 * clocks_per_tick;
+                    consumed_clocks += clocks_per_tick * *duration_ticks as u32;
                     remaining_ticks -= *duration_ticks as u32;
                 }
                 _ => {}
@@ -271,11 +282,15 @@ impl Sound {
         let tones = TONES.lock();
 
         commands.push(MmlCommand::Tempo {
-            bpm: (SOUND_TICKS_PER_SECOND * 60) as u16,
+            clocks_per_tick: CLOCKS_PER_SPEED,
         });
-        commands.push(MmlCommand::Quantize { gate_1_8: 8 });
-        commands.push(MmlCommand::Transpose { key_offset: 0 });
-        commands.push(MmlCommand::Detune { offset_cents: 0 });
+        commands.push(MmlCommand::Quantize { gate_ratio: 1.0 });
+        commands.push(MmlCommand::Transpose {
+            semitone_offset: 0.0,
+        });
+        commands.push(MmlCommand::Detune {
+            semitone_offset: 0.0,
+        });
         commands.push(MmlCommand::Envelope { slot: 0 });
         commands.push(MmlCommand::Vibrato { slot: 0 });
         commands.push(MmlCommand::Glide { slot: 0 });
@@ -309,7 +324,7 @@ impl Sound {
 
             // Volume
             commands.push(MmlCommand::Volume {
-                volume_0_15: (volume as f64 / MAX_VOLUME as f64 * 15.0).round() as u8,
+                level: volume as f64 / MAX_VOLUME as f64,
             });
 
             // Tone
@@ -321,28 +336,25 @@ impl Sound {
             if effect == EFFECT_FADEOUT {
                 commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
-                    volume_0_15: 15,
-                    segments: vec![(self.speed as u16, 0)],
+                    level: 1.0,
+                    segments: vec![(self.speed as u16, 0.0)],
                 });
-                commands.push(MmlCommand::Envelope { slot: 1 });
             } else if effect == EFFECT_HALF_FADEOUT {
                 let ticks2 = (self.speed as f64 / 2.0).round() as u16;
                 let ticks1 = self.speed as u16 - ticks2;
                 commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
-                    volume_0_15: 15,
-                    segments: vec![(ticks1, 15), (ticks2, 0)],
+                    level: 1.0,
+                    segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
                 });
-                commands.push(MmlCommand::Envelope { slot: 1 });
             } else if effect == EFFECT_QUARTER_FADEOUT {
                 let ticks2 = (self.speed as f64 / 4.0).round() as u16;
                 let ticks1 = self.speed as u16 - ticks2;
                 commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
-                    volume_0_15: 15,
-                    segments: vec![(ticks1, 15), (ticks2, 0)],
+                    level: 1.0,
+                    segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
                 });
-                commands.push(MmlCommand::Envelope { slot: 1 });
             } else {
                 commands.push(MmlCommand::Envelope { slot: 0 });
             }
@@ -352,10 +364,9 @@ impl Sound {
                 commands.push(MmlCommand::VibratoSet {
                     slot: 1,
                     delay_ticks: 0,
-                    frequency_chz: VIBRATO_FREQUNCY_CHZ as u16,
-                    depth_cents: VIBRATO_DEPTH_CENTS as u16,
+                    period_clocks: MmlCommand::freq_to_clocks(VIBRATO_FREQUNCY_CHZ),
+                    semitone_depth: MmlCommand::cents_to_semitones(VIBRATO_DEPTH_CENTS),
                 });
-                commands.push(MmlCommand::Vibrato { slot: 1 });
             } else {
                 commands.push(MmlCommand::Vibrato { slot: 0 });
             }
@@ -364,10 +375,9 @@ impl Sound {
             if effect == EFFECT_SLIDE {
                 commands.push(MmlCommand::GlideSet {
                     slot: 1,
-                    offset_cents: (prev_note - *note) * 100,
+                    semitone_offset: MmlCommand::cents_to_semitones((prev_note - *note) * 100),
                     duration_ticks: self.speed as u16,
                 });
-                commands.push(MmlCommand::Glide { slot: 1 });
             } else {
                 commands.push(MmlCommand::Glide { slot: 0 });
             }

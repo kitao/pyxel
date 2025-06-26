@@ -3,98 +3,98 @@ use crate::settings::AUDIO_CLOCK_RATE;
 #[derive(Clone, Debug)]
 pub enum MmlCommand {
     Tempo {
-        bpm: u16,
+        // T[bpm]
+        clocks_per_tick: u32,
     },
     Quantize {
-        gate_1_8: u8,
+        // Q[gate 1-8]
+        gate_ratio: f64,
     },
 
     Tone {
+        // @[tone_index]
         tone_index: u8,
     },
     Volume {
-        volume_0_15: u8,
+        // V[volume 0-15]
+        level: f64, // V[0-15]
     },
 
     Transpose {
-        key_offset: i8,
+        // K[key_offset]
+        semitone_offset: f64,
     },
     Detune {
-        offset_cents: i8,
+        // Y[offset_cents]
+        semitone_offset: f64,
     },
 
     Envelope {
+        // @ENV[slot]
         slot: u8,
     },
     EnvelopeSet {
+        // @ENV[slot] { initial_volume, duration_ticks1, target_volume1, ... }
         slot: u8,
-        volume_0_15: u8,
-        segments: Vec<(u16, u8)>, // (duration_ticks, volume_0_15)
+        level: f64,
+        segments: Vec<(u16, f64)>, // (duration_ticks, level)
     },
 
     Vibrato {
+        // @VIB[slot]
         slot: u8,
     },
     VibratoSet {
+        // @VIB[slot] { delay_ticks, frequency_chz, depth_cents }
         slot: u8,
         delay_ticks: u16,
-        frequency_chz: u16,
-        depth_cents: u16,
+        period_clocks: u32,
+        semitone_depth: f64,
     },
 
     Glide {
+        // @GLI[slot]
         slot: u8,
     },
     GlideSet {
+        // @GLI[slot] { offset_cents, duration_ticks }
         slot: u8,
-        offset_cents: i16,
+        semitone_offset: f64,
         duration_ticks: u16,
     },
 
     Note {
+        // CDEFGAB
         midi_note: u8,
         duration_ticks: u16,
     },
     Rest {
+        // R
         duration_ticks: u16,
     },
 }
 
 impl MmlCommand {
-    pub fn bpm_to_cpt(bpm: u16) -> u32 {
+    /*pub fn bpm_to_cpt(bpm: u32) -> u32 {
         (AUDIO_CLOCK_RATE as f64 * 60.0 / bpm as f64).round() as u32
-    }
-
-    pub fn gate_to_ratio(gate: u8) -> f64 {
-        gate as f64 / 8.0
-    }
-
-    pub fn volume_to_level(volume: u8) -> f64 {
-        volume as f64 / 15.0
-    }
+    }*/
 
     pub fn cents_to_semitones(cents: impl Into<f64>) -> f64 {
         cents.into() / 100.0
     }
 
-    pub fn ticks_to_clocks(ticks: u16, clocks_per_tick: u32) -> u32 {
-        ticks as u32 * clocks_per_tick
+    pub fn ticks_to_clocks(ticks: impl Into<u32>, clocks_per_tick: u32) -> u32 {
+        clocks_per_tick * ticks.into()
     }
 
-    pub fn freq_to_clocks(frequency_chz: u16) -> u32 {
-        assert!(frequency_chz > 0);
-        AUDIO_CLOCK_RATE * 100 / frequency_chz as u32
+    pub fn freq_to_clocks(frequency_chz: impl Into<u32>) -> u32 {
+        AUDIO_CLOCK_RATE * 100 / frequency_chz.into()
     }
 
-    pub fn convert_segments(segments: &[(u16, u8)], clocks_per_tick: u32) -> Vec<(u32, f64)> {
+    pub fn convert_segments(segments: &[(u16, f64)], clocks_per_tick: u32) -> Vec<(u32, f64)> {
         segments
             .iter()
-            .map(|&(duration_ticks, volume)| {
-                (
-                    Self::ticks_to_clocks(duration_ticks, clocks_per_tick),
-                    Self::volume_to_level(volume),
-                )
-            })
+            .map(|&(duration_ticks, level)| (clocks_per_tick * duration_ticks as u32, level))
             .collect()
     }
 }
