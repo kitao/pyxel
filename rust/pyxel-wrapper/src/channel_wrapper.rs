@@ -66,7 +66,8 @@ impl Channel {
             (Vec<Sound>, {
                 let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
                 self.inner.lock().play(sounds, tick, loop_, resume.unwrap_or(false));
-            })
+            }),
+            (String, { self.inner.lock().play_mml(&snd, tick, r#loop.unwrap_or(false), resume.unwrap_or(false)); })
         }
 
         Ok(())

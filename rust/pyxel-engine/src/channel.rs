@@ -6,7 +6,7 @@ use crate::pyxel::TONES;
 use crate::settings::{
     AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, DEFAULT_CHANNEL_GAIN, DEFAULT_CLOCKS_PER_TICK,
 };
-use crate::sound::SharedSound;
+use crate::sound::{SharedSound, Sound};
 use crate::tone::{Gain, Noise};
 use crate::voice::Voice;
 
@@ -22,13 +22,12 @@ pub struct Channel {
     should_loop: bool,
     should_resume: bool,
     sound_index: u32,
-    skip_clocks: u32,
     note_duration_clocks: u32,
     sound_elapsed_clocks: u32,
     total_elapsed_clocks: u32,
 
-    commands: Vec<MmlCommand>,
-    command_index: u32,
+    mml_commands: Vec<MmlCommand>,
+    mml_command_index: u32,
     clocks_per_tick: u32,
     gate_ratio: f64,
     tone_gain: f64,
@@ -57,13 +56,12 @@ impl Channel {
             should_loop: false,
             should_resume: false,
             sound_index: 0,
-            skip_clocks: 0,
             note_duration_clocks: 0,
             sound_elapsed_clocks: 0,
             total_elapsed_clocks: 0,
 
-            commands: Vec::new(),
-            command_index: 0,
+            mml_commands: Vec::new(),
+            mml_command_index: 0,
             clocks_per_tick: 0,
             gate_ratio: 1.0,
             tone_gain: 1.0,
@@ -104,6 +102,21 @@ impl Channel {
         );
     }
 
+    pub fn play_mml(
+        &mut self,
+        mml: &str,
+        start_tick: Option<u32>,
+        should_loop: bool,
+        should_resume: bool,
+    ) {
+        let sound = Sound::new();
+        {
+            let mut sound = sound.lock();
+            sound.set_mml(mml);
+        }
+        self.play1(sound, start_tick, should_loop, should_resume);
+    }
+
     fn play_from_tick(
         &mut self,
         sounds: Vec<SharedSound>,
@@ -111,22 +124,27 @@ impl Channel {
         should_loop: bool,
         should_resume: bool,
     ) {
-        let mut start_tick = start_tick;
-        let mut start_clock = 0;
+        let start_clock = if start_tick == 0 {
+            0
+        } else {
+            let mut start_tick = start_tick;
+            let mut start_clock = 0;
 
-        for sound in &sounds {
-            let sound = sound.lock();
-            let (clock, remaining_ticks) = sound.calc_clock_at_tick(start_tick);
+            for sound in &sounds {
+                let sound = sound.lock();
+                let (clock, remaining_ticks) = sound.calc_clock_at_tick(start_tick);
 
-            start_clock += clock;
+                start_clock += clock;
 
-            if let Some(remaining_ticks) = remaining_ticks {
-                start_tick = remaining_ticks;
-            } else {
-                start_clock = clock;
-                break;
+                if let Some(remaining_ticks) = remaining_ticks {
+                    start_tick = remaining_ticks;
+                } else {
+                    break;
+                }
             }
-        }
+
+            start_clock
+        };
 
         self.play_from_clock(sounds, start_clock, should_loop, should_resume);
     }
@@ -138,7 +156,7 @@ impl Channel {
         should_loop: bool,
         should_resume: bool,
     ) {
-        if sounds.is_empty() || sounds.iter().all(|sound| sound.lock().notes.is_empty()) {
+        if sounds.is_empty() {
             return;
         }
 
@@ -154,10 +172,13 @@ impl Channel {
         self.should_loop = should_loop;
         self.should_resume = should_resume;
         self.sound_index = 0;
-        self.skip_clocks = start_clock;
         self.note_duration_clocks = 0;
         self.sound_elapsed_clocks = 0;
-        self.command_index = 0;
+        self.mml_command_index = 0;
+
+        if start_clock > 0 {
+            self.process(None, start_clock);
+        }
     }
 
     pub fn stop(&mut self) {
@@ -175,40 +196,51 @@ impl Channel {
         }
     }
 
-    pub(crate) fn process(&mut self, blip_buf: &mut BlipBuf, clock_count: u32) {
+    pub(crate) fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_count: u32) {
+        let mut blip_buf = blip_buf;
         let mut clock_offset = 0;
         let mut clock_count = clock_count;
 
         while clock_count > 0 {
             // Playback has ended
             if !self.is_playing {
-                self.skip_clocks = 0;
-                self.voice.process(blip_buf, 0, clock_count);
+                self.voice.process(blip_buf.as_deref_mut(), 0, clock_count);
                 return;
             }
 
             // Sound head
             if self.sound_elapsed_clocks == 0 {
                 self.note_duration_clocks = 0;
-                self.command_index = 0;
+                self.mml_command_index = 0;
                 self.clocks_per_tick = DEFAULT_CLOCKS_PER_TICK;
 
-                let sound = &self.sounds[self.sound_index as usize].lock();
-
-                if sound.commands.is_empty() {
-                    self.commands = sound.to_commands();
-                } else {
-                    self.commands = sound.commands.clone();
+                {
+                    let sound = self.sounds[self.sound_index as usize].lock();
+                    self.mml_commands = if sound.mml_commands.is_empty() {
+                        sound.generate_mml_commands()
+                    } else {
+                        sound.mml_commands.clone()
+                    };
                 }
+
+                self.advance_command();
             }
 
-            // Next note
+            // Process clocks
+            let process_clocks = clock_count.min(self.note_duration_clocks);
+            self.voice
+                .process(blip_buf.as_deref_mut(), clock_offset, process_clocks);
+
+            clock_offset += process_clocks;
+            clock_count -= process_clocks;
+
+            self.note_duration_clocks -= process_clocks;
+            self.sound_elapsed_clocks += process_clocks;
+            self.total_elapsed_clocks += process_clocks;
+
+            // End of note
             if self.note_duration_clocks == 0 {
                 self.advance_command();
-
-                if self.note_duration_clocks > self.skip_clocks {
-                    self.voice.advance_note(self.skip_clocks);
-                }
             }
 
             // End of sound
@@ -216,6 +248,7 @@ impl Channel {
                 self.sound_index += 1;
                 self.sound_elapsed_clocks = 0;
 
+                // End of sound list
                 if self.sound_index >= self.sounds.len() as u32 {
                     if self.should_loop {
                         self.sound_index = 0;
@@ -230,31 +263,6 @@ impl Channel {
                         self.is_playing = false;
                     }
                 }
-
-                continue;
-            }
-
-            // Skip clocks
-            if self.skip_clocks > 0 {
-                let process_clocks = self.skip_clocks.min(self.note_duration_clocks);
-
-                self.skip_clocks -= process_clocks;
-                self.note_duration_clocks -= process_clocks;
-                self.sound_elapsed_clocks += process_clocks;
-                self.total_elapsed_clocks += process_clocks;
-            }
-
-            // Process clocks
-            if self.skip_clocks == 0 && self.note_duration_clocks > 0 {
-                let process_clocks = clock_count.min(self.note_duration_clocks);
-                self.voice.process(blip_buf, clock_offset, process_clocks);
-
-                clock_offset += process_clocks;
-                clock_count -= process_clocks;
-
-                self.note_duration_clocks -= process_clocks;
-                self.sound_elapsed_clocks += process_clocks;
-                self.total_elapsed_clocks += process_clocks;
             }
         }
     }
@@ -262,11 +270,11 @@ impl Channel {
     fn advance_command(&mut self) {
         let tones = TONES.lock();
 
-        while self.command_index < self.commands.len() as u32 {
-            let command = &self.commands[self.command_index as usize];
-            self.command_index += 1;
+        while self.mml_command_index < self.mml_commands.len() as u32 {
+            let mml_command = &self.mml_commands[self.mml_command_index as usize];
+            self.mml_command_index += 1;
 
-            match command {
+            match mml_command {
                 MmlCommand::Tempo { clocks_per_tick } => {
                     self.clocks_per_tick = *clocks_per_tick;
                 }
@@ -309,14 +317,14 @@ impl Channel {
                         self.voice.envelope.disable();
                     }
                 }
-                command @ MmlCommand::EnvelopeSet {
+                mml_command @ MmlCommand::EnvelopeSet {
                     slot,
                     level,
                     segments,
                 } => {
                     assert!(*slot > 0, "Envelope slot 0 is reserved for disable");
 
-                    self.envelope_slots.insert(*slot, command.clone());
+                    self.envelope_slots.insert(*slot, mml_command.clone());
                     self.voice.envelope.set(
                         *level,
                         &MmlCommand::convert_segments(segments, self.clocks_per_tick),
@@ -342,7 +350,7 @@ impl Channel {
                         self.voice.vibrato.disable();
                     }
                 }
-                command @ MmlCommand::VibratoSet {
+                mml_command @ MmlCommand::VibratoSet {
                     slot,
                     delay_ticks,
                     period_clocks,
@@ -350,7 +358,7 @@ impl Channel {
                 } => {
                     assert!(*slot > 0, "Vibrato slot 0 is reserved for disable");
 
-                    self.vibrato_slots.insert(*slot, command.clone());
+                    self.vibrato_slots.insert(*slot, mml_command.clone());
                     self.voice.vibrato.set(
                         MmlCommand::ticks_to_clocks(*delay_ticks, self.clocks_per_tick),
                         *period_clocks,
@@ -375,14 +383,14 @@ impl Channel {
                         self.voice.glide.disable();
                     }
                 }
-                command @ MmlCommand::GlideSet {
+                mml_command @ MmlCommand::GlideSet {
                     slot,
                     semitone_offset,
                     duration_ticks,
                 } => {
                     assert!(*slot > 0, "Glide slot 0 is reserved for disable");
 
-                    self.glide_slots.insert(*slot, command.clone());
+                    self.glide_slots.insert(*slot, mml_command.clone());
                     self.voice.glide.set(
                         *semitone_offset,
                         MmlCommand::ticks_to_clocks(*duration_ticks, self.clocks_per_tick),

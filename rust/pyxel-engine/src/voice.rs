@@ -1,4 +1,4 @@
-use crate::blip_buf::BlipBuf;
+use crate::blip_buf::{self, BlipBuf};
 
 const A4_MIDI_NOTE: f64 = 69.0;
 const A4_FREQUENCY: f64 = 440.0;
@@ -394,17 +394,16 @@ impl Voice {
         self.reset_control_clock();
     }
 
-    pub fn advance_note(&mut self, clocks: u32) {
-        self.advance_control_clock(clocks);
-    }
-
     pub fn cancel_note(&mut self) {
         self.playback_clocks = 0;
     }
 
-    pub fn process(&mut self, blip_buf: &mut BlipBuf, clock_offset: u32, clock_count: u32) {
-        assert!(clock_count > 0);
+    pub fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_offset: u32, clock_count: u32) {
+        if clock_count == 0 {
+            return;
+        }
 
+        let mut blip_buf = blip_buf;
         let mut clock_offset = clock_offset + self.carryover_sample_clocks;
         let mut clock_count = clock_count;
 
@@ -428,7 +427,7 @@ impl Voice {
                 * self.velocity
                 * i16::MAX as f64)
                 .round() as i32;
-            self.write_sample(blip_buf, clock_offset, amplitude);
+            self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
 
             let process_clocks = self.sample_clocks.min(clock_count);
             self.playback_clocks = self.playback_clocks.saturating_sub(process_clocks);
@@ -445,7 +444,7 @@ impl Voice {
         }
 
         if self.playback_clocks == 0 {
-            self.write_sample(blip_buf, clock_offset, 0);
+            self.write_sample(blip_buf.as_deref_mut(), clock_offset, 0);
         }
     }
 
@@ -485,10 +484,12 @@ impl Voice {
             .round() as u32;
     }
 
-    fn write_sample(&mut self, blip_buf: &mut BlipBuf, clock_offset: u32, amplitude: i32) {
-        if amplitude != self.last_amplitude {
-            blip_buf.add_delta(clock_offset as u64, amplitude - self.last_amplitude);
-            self.last_amplitude = amplitude;
+    fn write_sample(&mut self, blip_buf: Option<&mut BlipBuf>, clock_offset: u32, amplitude: i32) {
+        if let Some(blip_buf) = blip_buf {
+            if amplitude != self.last_amplitude {
+                blip_buf.add_delta(clock_offset as u64, amplitude - self.last_amplitude);
+                self.last_amplitude = amplitude;
+            }
         }
     }
 }

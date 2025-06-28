@@ -28,7 +28,8 @@ fn play(
         (Vec<Sound>, {
             let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
             pyxel().channels.lock()[ch as usize].lock().play(sounds, tick, r#loop.unwrap_or(false), resume.unwrap_or(false));
-        })
+        }),
+        (String, { pyxel().play_mml(ch, &snd, tick, r#loop.unwrap_or(false), resume.unwrap_or(false)); })
     }
 
     Ok(())

@@ -1,6 +1,8 @@
 use crate::audio::Audio;
 use crate::blip_buf::BlipBuf;
 use crate::mml_command::MmlCommand;
+use crate::mml_parser::parse_mml;
+use crate::old_mml_parser::parse_old_mml;
 use crate::pyxel::{CHANNELS, TONES};
 use crate::settings::{
     AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, CLOCKS_PER_SPEED, DEFAULT_CLOCKS_PER_TICK,
@@ -25,7 +27,8 @@ pub struct Sound {
     pub effects: Vec<Effect>,
     pub speed: Speed,
 
-    pub(crate) commands: Vec<MmlCommand>,
+    mml: String,
+    pub(crate) mml_commands: Vec<MmlCommand>,
 }
 
 pub type SharedSound = shared_type!(Sound);
@@ -39,7 +42,8 @@ impl Sound {
             effects: Vec::new(),
             speed: DEFAULT_SOUND_SPEED,
 
-            commands: Vec::new(),
+            mml: String::new(),
+            mml_commands: Vec::new(),
         })
     }
 
@@ -142,6 +146,20 @@ impl Sound {
         }
     }
 
+    pub fn get_mml(&self) -> &str {
+        &self.mml
+    }
+
+    pub fn set_mml(&mut self, mml: &str) {
+        self.mml = mml.to_string();
+        self.mml_commands = parse_mml(mml);
+    }
+
+    pub fn old_mml(&mut self, mml: &str) {
+        self.mml = mml.to_string();
+        self.mml_commands = parse_old_mml(mml);
+    }
+
     pub fn save(&self, filename: &str, count: u32, ffmpeg: Option<bool>) {
         assert!(count > 0);
 
@@ -170,15 +188,15 @@ impl Sound {
     }
 
     pub(crate) fn calc_total_clocks(&self) -> u32 {
-        if self.commands.is_empty() {
+        if self.mml_commands.is_empty() {
             return self.speed * CLOCKS_PER_SPEED * self.notes.len() as u32;
         }
 
         let mut total_clocks = 0;
         let mut clocks_per_tick = DEFAULT_CLOCKS_PER_TICK;
 
-        for command in &self.commands {
-            match command {
+        for mml_command in &self.mml_commands {
+            match mml_command {
                 MmlCommand::Tempo {
                     clocks_per_tick: cpt,
                 } => {
@@ -195,7 +213,7 @@ impl Sound {
     }
 
     pub(crate) fn calc_tick_at_clock(&self, clock: u32) -> (u32, Option<u32>) {
-        if self.commands.is_empty() {
+        if self.mml_commands.is_empty() {
             let total_ticks = self.speed * self.notes.len() as u32;
             let total_clocks = total_ticks * CLOCKS_PER_SPEED;
 
@@ -210,8 +228,8 @@ impl Sound {
         let mut consumed_ticks = 0;
         let mut clocks_per_tick = DEFAULT_CLOCKS_PER_TICK;
 
-        for command in &self.commands {
-            match command {
+        for mml_command in &self.mml_commands {
+            match mml_command {
                 MmlCommand::Tempo {
                     clocks_per_tick: cpt,
                 } => {
@@ -236,7 +254,7 @@ impl Sound {
     }
 
     pub(crate) fn calc_clock_at_tick(&self, tick: u32) -> (u32, Option<u32>) {
-        if self.commands.is_empty() {
+        if self.mml_commands.is_empty() {
             let total_ticks = self.speed * self.notes.len() as u32;
 
             if tick < total_ticks {
@@ -250,8 +268,8 @@ impl Sound {
         let mut consumed_clocks = 0;
         let mut clocks_per_tick = DEFAULT_CLOCKS_PER_TICK;
 
-        for command in &self.commands {
-            match command {
+        for mml_command in &self.mml_commands {
+            match mml_command {
                 MmlCommand::Tempo {
                     clocks_per_tick: cpt,
                 } => {
@@ -276,29 +294,29 @@ impl Sound {
         (consumed_clocks, Some(remaining_ticks))
     }
 
-    pub(crate) fn to_commands(&self) -> Vec<MmlCommand> {
-        let mut commands = Vec::new();
+    pub(crate) fn generate_mml_commands(&self) -> Vec<MmlCommand> {
+        let mut mml_commands = Vec::new();
         let mut prev_note = 0;
         let tones = TONES.lock();
 
-        commands.push(MmlCommand::Tempo {
+        mml_commands.push(MmlCommand::Tempo {
             clocks_per_tick: CLOCKS_PER_SPEED,
         });
-        commands.push(MmlCommand::Quantize { gate_ratio: 1.0 });
-        commands.push(MmlCommand::Transpose {
+        mml_commands.push(MmlCommand::Quantize { gate_ratio: 1.0 });
+        mml_commands.push(MmlCommand::Transpose {
             semitone_offset: 0.0,
         });
-        commands.push(MmlCommand::Detune {
+        mml_commands.push(MmlCommand::Detune {
             semitone_offset: 0.0,
         });
-        commands.push(MmlCommand::Envelope { slot: 0 });
-        commands.push(MmlCommand::Vibrato { slot: 0 });
-        commands.push(MmlCommand::Glide { slot: 0 });
+        mml_commands.push(MmlCommand::Envelope { slot: 0 });
+        mml_commands.push(MmlCommand::Vibrato { slot: 0 });
+        mml_commands.push(MmlCommand::Glide { slot: 0 });
 
         for (i, note) in self.notes.iter().enumerate() {
             // Rest
             if *note < 0 {
-                commands.push(MmlCommand::Rest {
+                mml_commands.push(MmlCommand::Rest {
                     duration_ticks: self.speed as u16,
                 });
                 continue;
@@ -323,18 +341,18 @@ impl Sound {
             };
 
             // Volume
-            commands.push(MmlCommand::Volume {
+            mml_commands.push(MmlCommand::Volume {
                 level: volume as f64 / MAX_VOLUME as f64,
             });
 
             // Tone
-            commands.push(MmlCommand::Tone {
+            mml_commands.push(MmlCommand::Tone {
                 tone_index: tone_index as u8,
             });
 
             // Fade out
             if effect == EFFECT_FADEOUT {
-                commands.push(MmlCommand::EnvelopeSet {
+                mml_commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
                     level: 1.0,
                     segments: vec![(self.speed as u16, 0.0)],
@@ -342,7 +360,7 @@ impl Sound {
             } else if effect == EFFECT_HALF_FADEOUT {
                 let ticks2 = (self.speed as f64 / 2.0).round() as u16;
                 let ticks1 = self.speed as u16 - ticks2;
-                commands.push(MmlCommand::EnvelopeSet {
+                mml_commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
                     level: 1.0,
                     segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
@@ -350,42 +368,42 @@ impl Sound {
             } else if effect == EFFECT_QUARTER_FADEOUT {
                 let ticks2 = (self.speed as f64 / 4.0).round() as u16;
                 let ticks1 = self.speed as u16 - ticks2;
-                commands.push(MmlCommand::EnvelopeSet {
+                mml_commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
                     level: 1.0,
                     segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
                 });
             } else {
-                commands.push(MmlCommand::Envelope { slot: 0 });
+                mml_commands.push(MmlCommand::Envelope { slot: 0 });
             }
 
             // Vibrato
             if effect == EFFECT_VIBRATO {
-                commands.push(MmlCommand::VibratoSet {
+                mml_commands.push(MmlCommand::VibratoSet {
                     slot: 1,
                     delay_ticks: 0,
                     period_clocks: MmlCommand::freq_to_clocks(VIBRATO_FREQUNCY_CHZ),
                     semitone_depth: MmlCommand::cents_to_semitones(VIBRATO_DEPTH_CENTS),
                 });
             } else {
-                commands.push(MmlCommand::Vibrato { slot: 0 });
+                mml_commands.push(MmlCommand::Vibrato { slot: 0 });
             }
 
             // Slide
             if effect == EFFECT_SLIDE {
-                commands.push(MmlCommand::GlideSet {
+                mml_commands.push(MmlCommand::GlideSet {
                     slot: 1,
                     semitone_offset: MmlCommand::cents_to_semitones((prev_note - *note) * 100),
                     duration_ticks: self.speed as u16,
                 });
             } else {
-                commands.push(MmlCommand::Glide { slot: 0 });
+                mml_commands.push(MmlCommand::Glide { slot: 0 });
             }
 
             // Note
             let tone = tones[tone_index as usize].lock();
             let midi_note = *note + if tone.noise == Noise::Off { 36 } else { 60 };
-            commands.push(MmlCommand::Note {
+            mml_commands.push(MmlCommand::Note {
                 midi_note: midi_note as u8,
                 duration_ticks: self.speed as u16,
             });
@@ -393,7 +411,7 @@ impl Sound {
             prev_note = *note;
         }
 
-        commands
+        mml_commands
     }
 }
 
