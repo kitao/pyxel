@@ -47,7 +47,7 @@ impl Audio {
 
         while num_samples < samples.len() {
             for channel in &mut *channels {
-                channel.process(blip_buf, CLOCKS_PER_SAMPLE);
+                channel.process(Some(blip_buf), CLOCKS_PER_SAMPLE);
             }
             blip_buf.end_frame(CLOCKS_PER_SAMPLE as u64);
             num_samples += blip_buf.read_samples(&mut samples[num_samples..], false);
@@ -152,6 +152,19 @@ impl Pyxel {
             should_loop,
             should_resume,
         );
+    }
+
+    pub fn play_mml(
+        &mut self,
+        channel_index: u32,
+        mml: &str,
+        start_tick: Option<u32>,
+        should_loop: bool,
+        should_resume: bool,
+    ) {
+        self.channels.lock()[channel_index as usize]
+            .lock()
+            .play_mml(mml, start_tick, should_loop, should_resume);
     }
 
     pub fn playm(&self, music_index: u32, start_tick: Option<u32>, should_loop: bool) {

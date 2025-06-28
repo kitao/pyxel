@@ -7,7 +7,7 @@ pub enum MmlCommand {
         clocks_per_tick: u32,
     },
     Quantize {
-        // Q[gate 1-8]
+        // Q[gate:1-8]
         gate_ratio: f64,
     },
 
@@ -16,8 +16,8 @@ pub enum MmlCommand {
         tone_index: u8,
     },
     Volume {
-        // V[volume 0-15]
-        level: f64, // V[0-15]
+        // V[volume:0-15]
+        level: f64,
     },
 
     Transpose {
@@ -75,9 +75,9 @@ pub enum MmlCommand {
 }
 
 impl MmlCommand {
-    /*pub fn bpm_to_cpt(bpm: u32) -> u32 {
-        (AUDIO_CLOCK_RATE as f64 * 60.0 / bpm as f64).round() as u32
-    }*/
+    pub fn bpm_to_cpt(bpm: impl Into<f64>) -> u32 {
+        (AUDIO_CLOCK_RATE as f64 * 60.0 / bpm.into()).round() as u32
+    }
 
     pub fn cents_to_semitones(cents: impl Into<f64>) -> f64 {
         cents.into() / 100.0

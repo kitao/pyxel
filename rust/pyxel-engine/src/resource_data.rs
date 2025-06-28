@@ -170,17 +170,26 @@ struct SoundData {
     volumes: Vec<Volume>,
     effects: Vec<Effect>,
     speed: Speed,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    mml: Option<String>,
 }
 
 impl SoundData {
     fn from_sound(sound: SharedSound) -> Self {
         let sound = sound.lock();
+        let mml = if sound.get_mml().is_empty() {
+            None
+        } else {
+            Some(sound.get_mml().to_string())
+        };
+
         Self {
             notes: sound.notes.clone(),
             tones: sound.tones.clone(),
             volumes: sound.volumes.clone(),
             effects: sound.effects.clone(),
             speed: sound.speed,
+            mml,
         }
     }
 
@@ -194,6 +203,10 @@ impl SoundData {
             sound.volumes.clone_from(&self.volumes);
             sound.effects.clone_from(&self.effects);
             sound.speed = self.speed;
+
+            if let Some(mml) = &self.mml {
+                sound.set_mml(mml);
+            }
         }
 
         sound

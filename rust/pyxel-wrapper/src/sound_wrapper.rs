@@ -96,8 +96,19 @@ impl Sound {
         self.inner.lock().set_effects(effects);
     }
 
-    pub fn mml(&self, mml_str: &str) {
-        self.inner.lock().mml(mml_str);
+    #[getter]
+    pub fn mml(&self) -> String {
+        self.inner.lock().get_mml().to_string()
+    }
+
+    #[setter]
+    pub fn set_mml(&self, mml: &str) {
+        self.inner.lock().set_mml(mml);
+    }
+
+    // Deprecated method
+    pub fn old_mml(&self, mml: &str) {
+        self.inner.lock().old_mml(mml);
     }
 
     #[pyo3(signature = (filename, count, ffmpeg=None))]
