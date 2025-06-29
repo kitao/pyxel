@@ -11,7 +11,7 @@ use zip::{ZipArchive, ZipWriter};
 
 use crate::image::{Color, Image, Rgb24};
 use crate::pyxel::Pyxel;
-use crate::resource_data::{ResourceData1, ResourceData2};
+use crate::resource_data::{ResourceData1, ResourceData2, ResourceData5};
 use crate::screencast::Screencast;
 use crate::settings::{
     BASE_DIR, DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, PALETTE_FILE_EXTENSION,
@@ -78,7 +78,20 @@ impl Pyxel {
             "Unknown resource file version"
         );
 
-        if format_version >= 2 {
+        if format_version >= 5 {
+            let resource_data = ResourceData5::from_toml(&toml_text);
+            resource_data.to_runtime(
+                self,
+                exclude_images.unwrap_or(false),
+                exclude_tilemaps.unwrap_or(false),
+                exclude_sounds.unwrap_or(false),
+                exclude_musics.unwrap_or(false),
+                include_colors.unwrap_or(false),
+                include_channels.unwrap_or(false),
+                include_tones.unwrap_or(false),
+            );
+            self.load_pyxel_palette_file(filename);
+        } else if format_version >= 2 {
             let resource_data = ResourceData2::from_toml(&toml_text);
             resource_data.to_runtime(
                 self,
@@ -118,7 +131,7 @@ impl Pyxel {
         include_channels: Option<bool>,
         include_tones: Option<bool>,
     ) {
-        let toml_text = ResourceData2::from_runtime(self).to_toml(
+        let toml_text = ResourceData5::from_runtime(self).to_toml(
             exclude_images.unwrap_or(false),
             exclude_tilemaps.unwrap_or(false),
             exclude_sounds.unwrap_or(false),
