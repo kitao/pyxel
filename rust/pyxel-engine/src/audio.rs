@@ -157,14 +157,14 @@ impl Pyxel {
     pub fn play_mml(
         &mut self,
         channel_index: u32,
-        mml: &str,
+        code: &str,
         start_sec: Option<f64>,
         should_loop: bool,
         should_resume: bool,
     ) {
         self.channels.lock()[channel_index as usize]
             .lock()
-            .play_mml(mml, start_sec, should_loop, should_resume);
+            .play_mml(code, start_sec, should_loop, should_resume);
     }
 
     pub fn playm(&self, music_index: u32, start_sec: Option<f64>, should_loop: bool) {

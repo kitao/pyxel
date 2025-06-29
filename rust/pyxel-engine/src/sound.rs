@@ -27,7 +27,6 @@ pub struct Sound {
     pub effects: Vec<Effect>,
     pub speed: Speed,
 
-    mml: String,
     pub(crate) mml_commands: Vec<MmlCommand>,
 }
 
@@ -42,7 +41,6 @@ impl Sound {
             effects: Vec::new(),
             speed: DEFAULT_SOUND_SPEED,
 
-            mml: String::new(),
             mml_commands: Vec::new(),
         })
     }
@@ -146,18 +144,19 @@ impl Sound {
         }
     }
 
-    pub fn get_mml(&self) -> &str {
-        &self.mml
+    pub fn mml(&mut self, code: &str, old_syntax: Option<bool>) {
+        if let Some(old_syntax) = old_syntax {
+            if old_syntax {
+                self.mml_commands = parse_old_mml(code);
+                return;
+            }
+        }
+
+        self.mml_commands = parse_mml(code);
     }
 
-    pub fn set_mml(&mut self, mml: &str) {
-        self.mml = mml.to_string();
-        self.mml_commands = parse_mml(mml);
-    }
-
-    pub fn old_mml(&mut self, mml: &str) {
-        self.mml = mml.to_string();
-        self.mml_commands = parse_old_mml(mml);
+    pub fn mml0(&mut self) {
+        self.mml_commands.clear();
     }
 
     pub fn save(&self, filename: &str, duration_sec: f64, use_ffmpeg: Option<bool>) {

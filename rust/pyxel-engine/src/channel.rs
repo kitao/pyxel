@@ -115,7 +115,7 @@ impl Channel {
 
     pub fn play_mml(
         &mut self,
-        mml: &str,
+        code: &str,
         start_sec: Option<f64>,
         should_loop: bool,
         should_resume: bool,
@@ -123,7 +123,7 @@ impl Channel {
         let sound = Sound::new();
         {
             let mut sound = sound.lock();
-            sound.set_mml(mml);
+            sound.mml(code, None);
         }
         self.play_from_clock(
             vec![sound],
