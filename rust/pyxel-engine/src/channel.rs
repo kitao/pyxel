@@ -28,6 +28,7 @@ pub struct Channel {
 
     mml_commands: Vec<MmlCommand>,
     mml_command_index: u32,
+    repeat_points: Vec<(u32, u32)>,
     clocks_per_tick: u32,
     gate_ratio: f64,
     tone_gain: f64,
@@ -62,6 +63,7 @@ impl Channel {
 
             mml_commands: Vec::new(),
             mml_command_index: 0,
+            repeat_points: Vec::new(),
             clocks_per_tick: 0,
             gate_ratio: 1.0,
             tone_gain: 1.0,
@@ -157,6 +159,7 @@ impl Channel {
         should_resume: bool,
     ) {
         if sounds.is_empty() {
+            self.is_playing = false;
             return;
         }
 
@@ -213,6 +216,7 @@ impl Channel {
             if self.sound_elapsed_clocks == 0 {
                 self.note_duration_clocks = 0;
                 self.mml_command_index = 0;
+                self.repeat_points.clear();
                 self.clocks_per_tick = DEFAULT_CLOCKS_PER_TICK;
 
                 {
@@ -276,6 +280,18 @@ impl Channel {
             self.mml_command_index += 1;
 
             match mml_command {
+                MmlCommand::RepeatStart => {
+                    self.repeat_points.push((self.mml_command_index + 1, 0));
+                }
+                MmlCommand::RepeatEnd { count } => {
+                    if let Some((repeat_index, repeat_count)) = self.repeat_points.pop() {
+                        if *count == 0 || repeat_count < *count {
+                            self.repeat_points.push((repeat_index, repeat_count + 1));
+                            self.mml_command_index = repeat_index;
+                        }
+                    }
+                }
+
                 MmlCommand::Tempo { clocks_per_tick } => {
                     self.clocks_per_tick = *clocks_per_tick;
                 }
