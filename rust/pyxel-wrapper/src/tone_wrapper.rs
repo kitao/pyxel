@@ -64,8 +64,9 @@ impl Tone {
     #[getter]
     pub fn waveform(&self) -> Wavetable {
         WAVEFORM_ONCE.call_once(|| {
-            println!("Tone.waveform is deprecated, use pyxel.wavetable instead.");
+            println!("Tone.waveform is deprecated. Use Tone.wavetable instead.");
         });
+
         Wavetable::wrap(self.inner.clone())
     }
 }

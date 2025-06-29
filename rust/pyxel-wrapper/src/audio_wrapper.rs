@@ -62,7 +62,7 @@ fn play_pos(ch: u32) -> Option<(u32, f64)> {
 #[pyfunction]
 fn channel(ch: u32) -> Channel {
     CHANNEL_ONCE.call_once(|| {
-        println!("pyxel.channel(ch) is deprecated, use pyxel.channels[ch] instead.");
+        println!("pyxel.channel(ch) is deprecated. Use pyxel.channels[ch] instead.");
     });
 
     Channel::wrap(pyxel().channels.lock()[ch as usize].clone())
@@ -71,7 +71,7 @@ fn channel(ch: u32) -> Channel {
 #[pyfunction]
 fn sound(snd: u32) -> Sound {
     SOUND_ONCE.call_once(|| {
-        println!("pyxel.sound(snd) is deprecated, use pyxel.sounds[snd] instead.");
+        println!("pyxel.sound(snd) is deprecated. Use pyxel.sounds[snd] instead.");
     });
 
     Sound::wrap(pyxel().sounds.lock()[snd as usize].clone())
@@ -80,7 +80,7 @@ fn sound(snd: u32) -> Sound {
 #[pyfunction]
 fn music(msc: u32) -> Music {
     MUSIC_ONCE.call_once(|| {
-        println!("pyxel.music(msc) is deprecated, use pyxel.musics[msc] instead.");
+        println!("pyxel.music(msc) is deprecated. Use pyxel.musics[msc] instead.");
     });
 
     Music::wrap(pyxel().musics.lock()[msc as usize].clone())
