@@ -204,8 +204,9 @@ impl Tilemap {
     #[getter]
     pub fn image(&self) -> Image {
         IMAGE_ONCE.call_once(|| {
-            println!("Tilemap.image is deprecated, use Tilemap.imgsrc instead.");
+            println!("Tilemap.image is deprecated. Use Tilemap.imgsrc instead.");
         });
+
         let tilemap = self.inner.lock();
         match &tilemap.imgsrc {
             pyxel::ImageSource::Index(index) => {
@@ -219,16 +220,18 @@ impl Tilemap {
     #[setter]
     pub fn set_image(&self, image: Image) {
         SET_IMAGE_ONCE.call_once(|| {
-            println!("Tilemap.image is deprecated, use Tilemap.imgsrc instead.");
+            println!("Tilemap.image is deprecated. Use Tilemap.imgsrc instead.");
         });
+
         self.inner.lock().imgsrc = pyxel::ImageSource::Image(image.inner);
     }
 
     #[getter]
     pub fn refimg(&self) -> Option<u32> {
         REFIMG_ONCE.call_once(|| {
-            println!("Tilemap.refimg is deprecated, use Tilemap.imgsrc instead.");
+            println!("Tilemap.refimg is deprecated. Use Tilemap.imgsrc instead.");
         });
+
         let tilemap = self.inner.lock();
         match &tilemap.imgsrc {
             pyxel::ImageSource::Index(index) => Some(*index),
@@ -239,8 +242,9 @@ impl Tilemap {
     #[setter]
     pub fn set_refimg(&self, img: u32) {
         SET_REFIMG_ONCE.call_once(|| {
-            println!("Tilemap.refimg is deprecated, use Tilemap.imgsrc instead.");
+            println!("Tilemap.refimg is deprecated. Use Tilemap.imgsrc instead.");
         });
+
         self.inner.lock().imgsrc = pyxel::ImageSource::Index(img);
     }
 }

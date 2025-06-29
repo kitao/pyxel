@@ -177,8 +177,9 @@ fn text(x: f64, y: f64, s: &str, col: pyxel::Color, font: Option<Font>) {
 #[pyfunction]
 fn image(img: u32) -> Image {
     IMAGE_ONCE.call_once(|| {
-        println!("pyxel.image(img) is deprecated, use pyxel.images[img] instead.");
+        println!("pyxel.image(img) is deprecated. Use pyxel.images[img] instead.");
     });
+
     Image {
         inner: pyxel().images.lock()[img as usize].clone(),
     }
@@ -187,8 +188,9 @@ fn image(img: u32) -> Image {
 #[pyfunction]
 fn tilemap(tm: u32) -> Tilemap {
     TILEMAP_ONCE.call_once(|| {
-        println!("pyxel.tilemap(tm) is deprecated, use pyxel.tilemaps[tm] instead.");
+        println!("pyxel.tilemap(tm) is deprecated. Use pyxel.tilemaps[tm] instead.");
     });
+
     Tilemap::wrap(pyxel().tilemaps.lock()[tm as usize].clone())
 }
 
