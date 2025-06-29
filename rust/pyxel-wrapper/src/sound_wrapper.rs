@@ -1,4 +1,8 @@
+use std::sync::Once;
+
 use pyo3::prelude::*;
+
+static OLD_MML_ONCE: Once = Once::new();
 
 macro_rules! wrap_sound_as_python_list {
     ($wrapper_name:ident, $value_type:ty, $field_name:ident) => {
@@ -108,6 +112,9 @@ impl Sound {
 
     // Deprecated method
     pub fn old_mml(&self, mml: &str) {
+        OLD_MML_ONCE.call_once(|| {
+            println!("Sound.old_mml(mml) is deprecated, use Sound.mml instead.");
+        });
         self.inner.lock().old_mml(mml);
     }
 
