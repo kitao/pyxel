@@ -71,20 +71,19 @@ impl Pyxel {
         file.read_to_string(&mut toml_text).unwrap();
 
         let format_version = Self::parse_format_version(&toml_text);
-        assert!(
-            format_version <= RESOURCE_FORMAT_VERSION,
-            "Unknown resource file version"
-        );
-
-        let resource_data = ResourceData::from_toml(&toml_text);
-        resource_data.to_runtime(
-            self,
-            ignore_images.unwrap_or(false),
-            ignore_tilemaps.unwrap_or(false),
-            ignore_sounds.unwrap_or(false),
-            ignore_musics.unwrap_or(false),
-        );
-        self.load_pyxel_palette_file(filename);
+        if format_version > RESOURCE_FORMAT_VERSION {
+            panic!("Unknown resource file version '{format_version}'");
+        } else {
+            let resource_data = ResourceData::from_toml(&toml_text);
+            resource_data.to_runtime(
+                self,
+                ignore_images.unwrap_or(false),
+                ignore_tilemaps.unwrap_or(false),
+                ignore_sounds.unwrap_or(false),
+                ignore_musics.unwrap_or(false),
+            );
+            self.load_pyxel_palette_file(filename);
+        }
     }
 
     pub fn save(
