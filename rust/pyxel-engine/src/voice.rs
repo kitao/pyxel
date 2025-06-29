@@ -1,4 +1,4 @@
-use crate::blip_buf::{self, BlipBuf};
+use crate::blip_buf::BlipBuf;
 
 const A4_MIDI_NOTE: f64 = 69.0;
 const A4_FREQUENCY: f64 = 440.0;
@@ -444,7 +444,7 @@ impl Voice {
         }
 
         if self.playback_clocks == 0 {
-            self.write_sample(blip_buf.as_deref_mut(), clock_offset, 0);
+            self.write_sample(blip_buf, clock_offset, 0);
         }
     }
 
