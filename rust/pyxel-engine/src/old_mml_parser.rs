@@ -27,13 +27,7 @@ struct NoteInfo {
     is_tied: bool,
 }
 
-pub(crate) fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
-    let mml = mml
-        .chars()
-        .filter(|c| !c.is_whitespace())
-        .collect::<String>()
-        .to_ascii_uppercase();
-
+pub fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
     let shared_sound = Sound::new();
     let mut sound = shared_sound.lock();
     let mut chars = mml.chars().peekable();
@@ -44,12 +38,12 @@ pub(crate) fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
     let mut vol_env = VolEnv::Constant(7);
     let mut envelopes: [EnvData; 8] = array::from_fn(|_| vec![7]);
     let mut note_info = NoteInfo::default();
-    sound.speed = 9; // T=120
+    sound.speed = 9; // T=100
 
     while chars.peek().is_some() {
-        if let Some(value) = parse_command(&mut chars, 'T') {
+        if let Some(value) = parse_command(&mut chars, 't') {
             sound.speed = (900 / value).max(1);
-        } else if parse_char(&mut chars, 'L') {
+        } else if parse_char(&mut chars, 'l') {
             length = parse_note_length(&mut chars, length);
         } else if let Some(value) = parse_command(&mut chars, '@') {
             if value <= 3 {
@@ -57,7 +51,7 @@ pub(crate) fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
             } else {
                 panic!("Invalid tone value '{value}' in MML");
             }
-        } else if let Some(value) = parse_command(&mut chars, 'O') {
+        } else if let Some(value) = parse_command(&mut chars, 'o') {
             if value <= 4 {
                 octave = value as Note;
             } else {
@@ -75,13 +69,13 @@ pub(crate) fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
             } else {
                 panic!("Octave exceeded minimum in MML");
             }
-        } else if let Some(value) = parse_command(&mut chars, 'Q') {
+        } else if let Some(value) = parse_command(&mut chars, 'q') {
             if (1..=8).contains(&value) {
                 quantize = value;
             } else {
                 panic!("Invalid quantize value '{value}' in MML");
             }
-        } else if let Some(value) = parse_command(&mut chars, 'V') {
+        } else if let Some(value) = parse_command(&mut chars, 'v') {
             if value <= 7 {
                 vol_env = VolEnv::Constant(value as Volume);
             } else {
@@ -145,60 +139,19 @@ pub(crate) fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
     sound.generate_mml_commands()
 }
 
-fn add_note(sound: &mut Sound, note_info: &NoteInfo) {
-    // Hnadle empty note
-    if note_info.length == 0 {
-        return;
+fn skip_whitespace<T: Iterator<Item = char>>(chars: &mut Peekable<T>) {
+    while let Some(&c) = chars.peek() {
+        if c.is_whitespace() {
+            chars.next();
+        } else {
+            break;
+        }
     }
-
-    // Add tones and volumes
-    repeat_extend!(sound.tones, note_info.tone, note_info.length);
-    for i in 0..note_info.length {
-        let env_start = ((note_info.env_start + i) as usize).min(note_info.env_data.len() - 1);
-        sound.volumes.push(note_info.env_data[env_start]);
-    }
-
-    // Handle rest note
-    if note_info.note == -1 {
-        repeat_extend!(sound.notes, -1, note_info.length);
-        repeat_extend!(sound.effects, EFFECT_NONE, note_info.length);
-        return;
-    }
-
-    // Add full-length notes
-    let duration = note_info.length * note_info.quantize;
-    let num_notes = duration / 8;
-    let note_effect = if note_info.vibrato {
-        EFFECT_VIBRATO
-    } else {
-        EFFECT_NONE
-    };
-
-    repeat_extend!(sound.notes, note_info.note, num_notes);
-    repeat_extend!(sound.effects, note_effect, num_notes);
-    if num_notes == note_info.length {
-        return;
-    }
-
-    // Add fade-out note
-    sound.notes.push(note_info.note);
-    if num_notes > 0 {
-        sound.effects.push(EFFECT_FADEOUT);
-    } else if duration >= 6 {
-        sound.effects.push(EFFECT_QUARTER_FADEOUT);
-    } else if duration >= 4 {
-        sound.effects.push(EFFECT_HALF_FADEOUT);
-    } else {
-        sound.effects.push(EFFECT_FADEOUT);
-    }
-
-    // Add rests
-    let num_rests = note_info.length - num_notes - 1;
-    repeat_extend!(sound.notes, -1, num_rests);
-    repeat_extend!(sound.effects, EFFECT_NONE, num_rests);
 }
 
 fn parse_number<T: Iterator<Item = char>>(chars: &mut Peekable<T>) -> Option<u32> {
+    skip_whitespace(chars);
+
     let mut number_str = String::new();
     while let Some(&c) = chars.peek() {
         if c.is_ascii_digit() {
@@ -216,6 +169,8 @@ fn parse_number<T: Iterator<Item = char>>(chars: &mut Peekable<T>) -> Option<u32
 }
 
 fn parse_char<T: Iterator<Item = char>>(chars: &mut Peekable<T>, target: char) -> bool {
+    skip_whitespace(chars);
+
     if let Some(&c) = chars.peek() {
         if c.eq_ignore_ascii_case(&target) {
             chars.next();
@@ -252,6 +207,7 @@ fn parse_envelope<T: Iterator<Item = char>>(
         return Some((envelope, env_data));
     }
 
+    skip_whitespace(chars);
     while let Some(&c) = chars.peek() {
         if c.is_ascii_digit() {
             let volume = chars.next().unwrap().to_string().parse().unwrap();
@@ -263,6 +219,8 @@ fn parse_envelope<T: Iterator<Item = char>>(
         } else {
             break;
         }
+
+        skip_whitespace(chars);
     }
 
     assert!(!env_data.is_empty(), "Missing envelope volumes in MML");
@@ -273,14 +231,16 @@ fn parse_note<T: Iterator<Item = char>>(
     chars: &mut Peekable<T>,
     length: u32,
 ) -> Option<(Note, u32)> {
-    let mut note = match chars.peek()? {
-        'C' => 0,
-        'D' => 2,
-        'E' => 4,
-        'F' => 5,
-        'G' => 7,
-        'A' => 9,
-        'B' => 11,
+    skip_whitespace(chars);
+
+    let mut note = match chars.peek()?.to_ascii_lowercase() {
+        'c' => 0,
+        'd' => 2,
+        'e' => 4,
+        'f' => 5,
+        'g' => 7,
+        'a' => 9,
+        'b' => 11,
         _ => return None,
     };
     chars.next();
@@ -319,9 +279,62 @@ fn parse_note_length<T: Iterator<Item = char>>(chars: &mut Peekable<T>, cur_leng
 }
 
 fn parse_rest<T: Iterator<Item = char>>(chars: &mut Peekable<T>, cur_length: u32) -> Option<u32> {
-    if !parse_char(chars, 'R') {
+    if !parse_char(chars, 'r') {
         return None;
     }
 
     Some(parse_note_length(chars, cur_length))
+}
+
+fn add_note(sound: &mut Sound, note_info: &NoteInfo) {
+    // Hnadle empty note
+    if note_info.length == 0 {
+        return;
+    }
+
+    // Add tones and volumes
+    repeat_extend!(&mut sound.tones, note_info.tone, note_info.length);
+    for i in 0..note_info.length {
+        let env_start = ((note_info.env_start + i) as usize).min(note_info.env_data.len() - 1);
+        sound.volumes.push(note_info.env_data[env_start]);
+    }
+
+    // Handle rest note
+    if note_info.note == -1 {
+        repeat_extend!(&mut sound.notes, -1, note_info.length);
+        repeat_extend!(&mut sound.effects, EFFECT_NONE, note_info.length);
+        return;
+    }
+
+    // Add full-length notes
+    let duration = note_info.length * note_info.quantize;
+    let num_notes = duration / 8;
+    let note_effect = if note_info.vibrato {
+        EFFECT_VIBRATO
+    } else {
+        EFFECT_NONE
+    };
+
+    repeat_extend!(&mut sound.notes, note_info.note, num_notes);
+    repeat_extend!(&mut sound.effects, note_effect, num_notes);
+    if num_notes == note_info.length {
+        return;
+    }
+
+    // Add fade-out note
+    sound.notes.push(note_info.note);
+    if num_notes > 0 {
+        sound.effects.push(EFFECT_FADEOUT);
+    } else if duration >= 6 {
+        sound.effects.push(EFFECT_QUARTER_FADEOUT);
+    } else if duration >= 4 {
+        sound.effects.push(EFFECT_HALF_FADEOUT);
+    } else {
+        sound.effects.push(EFFECT_FADEOUT);
+    }
+
+    // Add rests
+    let num_rests = note_info.length - num_notes - 1;
+    repeat_extend!(&mut sound.notes, -1, num_rests);
+    repeat_extend!(&mut sound.effects, EFFECT_NONE, num_rests);
 }
