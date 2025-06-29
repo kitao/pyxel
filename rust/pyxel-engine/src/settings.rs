@@ -43,7 +43,7 @@ pub const APP_FILE_EXTENSION: &str = ".pyxapp";
 pub const APP_STARTUP_SCRIPT_FILE: &str = ".pyxapp_startup_script";
 pub const RESOURCE_FILE_EXTENSION: &str = ".pyxres";
 pub const RESOURCE_ARCHIVE_NAME: &str = "pyxel_resource.toml";
-pub const RESOURCE_FORMAT_VERSION: u32 = 5;
+pub const RESOURCE_FORMAT_VERSION: u32 = 4;
 pub const PALETTE_FILE_EXTENSION: &str = ".pyxpal";
 
 // Graphics
