@@ -54,7 +54,7 @@ impl Audio {
         }
     }
 
-    pub fn save_samples(filename: &str, samples: &[i16], ffmpeg: bool) {
+    pub fn save_samples(filename: &str, samples: &[i16], use_ffmpeg: bool) {
         // Save WAV file
         let spec = WavSpec {
             channels: 1,
@@ -72,7 +72,7 @@ impl Audio {
         writer.finalize().unwrap();
 
         // Save MP4 file
-        if !ffmpeg {
+        if !use_ffmpeg {
             return;
         }
 

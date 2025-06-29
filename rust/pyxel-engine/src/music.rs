@@ -31,8 +31,13 @@ impl Music {
         }
     }
 
-    pub fn save(&self, filename: &str, count: u32, ffmpeg: Option<bool>) {
-        assert!(count > 0);
+    pub fn save(&self, filename: &str, duration_sec: f64, use_ffmpeg: Option<bool>) {
+        assert!(duration_sec > 0.0);
+
+        let num_samples = (duration_sec * AUDIO_SAMPLE_RATE as f64).round() as u32;
+        if num_samples == 0 {
+            return;
+        }
 
         let seqs: Vec<_> = (0..self.seqs.len())
             .map(|i| {
@@ -44,26 +49,6 @@ impl Music {
                     .collect::<Vec<_>>()
             })
             .collect();
-
-        let music_clocks = seqs
-            .iter()
-            .map(|sounds| {
-                sounds
-                    .iter()
-                    .map(|sound| {
-                        let sound = sound.lock();
-                        sound.calc_total_clocks()
-                    })
-                    .sum::<u32>()
-            })
-            .max()
-            .unwrap_or(0);
-
-        let num_samples = music_clocks * AUDIO_SAMPLE_RATE / AUDIO_CLOCK_RATE * count;
-
-        if num_samples == 0 {
-            return;
-        }
 
         let mut samples = vec![0; num_samples as usize];
         let mut blip_buf = BlipBuf::new(num_samples as usize);
@@ -80,7 +65,7 @@ impl Music {
         }
 
         Audio::render_samples(&channels, &mut blip_buf, &mut samples);
-        Audio::save_samples(filename, &samples, ffmpeg.unwrap_or(false));
+        Audio::save_samples(filename, &samples, use_ffmpeg.unwrap_or(false));
         channels.iter().for_each(|channel| channel.lock().stop());
     }
 }

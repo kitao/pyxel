@@ -79,9 +79,9 @@ impl Music {
         self.inner.lock().set(&rust_seqs);
     }
 
-    #[pyo3(signature = (filename, count, ffmpeg=None))]
-    pub fn save(&self, filename: &str, count: u32, ffmpeg: Option<bool>) {
-        self.inner.lock().save(filename, count, ffmpeg);
+    #[pyo3(signature = (filename, sec, ffmpeg=None))]
+    pub fn save(&self, filename: &str, sec: f64, ffmpeg: Option<bool>) {
+        self.inner.lock().save(filename, sec, ffmpeg);
     }
 
     #[getter]
