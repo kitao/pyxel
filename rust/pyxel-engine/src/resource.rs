@@ -11,7 +11,7 @@ use zip::{ZipArchive, ZipWriter};
 
 use crate::image::{Color, Image, Rgb24};
 use crate::pyxel::Pyxel;
-use crate::resource_data::{ResourceData1, ResourceData2};
+use crate::resource_data::ResourceData;
 use crate::screencast::Screencast;
 use crate::settings::{
     BASE_DIR, DEFAULT_CAPTURE_SCALE, DEFAULT_CAPTURE_SEC, PALETTE_FILE_EXTENSION,
@@ -39,13 +39,10 @@ impl Pyxel {
     pub fn load(
         &mut self,
         filename: &str,
-        exclude_images: Option<bool>,
-        exclude_tilemaps: Option<bool>,
-        exclude_sounds: Option<bool>,
-        exclude_musics: Option<bool>,
-        include_colors: Option<bool>,
-        include_channels: Option<bool>,
-        include_tones: Option<bool>,
+        ignore_images: Option<bool>,
+        ignore_tilemaps: Option<bool>,
+        ignore_sounds: Option<bool>,
+        ignore_musics: Option<bool>,
     ) {
         let mut archive = ZipArchive::new(
             File::open(Path::new(&filename))
@@ -59,10 +56,10 @@ impl Pyxel {
             self.load_old_resource(
                 &mut archive,
                 filename,
-                !exclude_images.unwrap_or(false),
-                !exclude_tilemaps.unwrap_or(false),
-                !exclude_sounds.unwrap_or(false),
-                !exclude_musics.unwrap_or(false),
+                !ignore_images.unwrap_or(false),
+                !ignore_tilemaps.unwrap_or(false),
+                !ignore_sounds.unwrap_or(false),
+                !ignore_musics.unwrap_or(false),
             );
             self.load_pyxel_palette_file(filename);
             return;
@@ -72,65 +69,43 @@ impl Pyxel {
         let mut file = archive.by_name(RESOURCE_ARCHIVE_NAME).unwrap();
         let mut toml_text = String::new();
         file.read_to_string(&mut toml_text).unwrap();
+
         let format_version = Self::parse_format_version(&toml_text);
         assert!(
             format_version <= RESOURCE_FORMAT_VERSION,
             "Unknown resource file version"
         );
 
-        if format_version >= 2 {
-            let resource_data = ResourceData2::from_toml(&toml_text);
-            resource_data.to_runtime(
-                self,
-                exclude_images.unwrap_or(false),
-                exclude_tilemaps.unwrap_or(false),
-                exclude_sounds.unwrap_or(false),
-                exclude_musics.unwrap_or(false),
-                include_colors.unwrap_or(false),
-                include_channels.unwrap_or(false),
-                include_tones.unwrap_or(false),
-            );
-            self.load_pyxel_palette_file(filename);
-        } else {
-            let resource_data = ResourceData1::from_toml(&toml_text);
-            resource_data.to_runtime(
-                self,
-                exclude_images.unwrap_or(false),
-                exclude_tilemaps.unwrap_or(false),
-                exclude_sounds.unwrap_or(false),
-                exclude_musics.unwrap_or(false),
-                include_colors.unwrap_or(false),
-                include_channels.unwrap_or(false),
-                include_tones.unwrap_or(false),
-            );
-            self.load_pyxel_palette_file(filename);
-        }
+        let resource_data = ResourceData::from_toml(&toml_text);
+        resource_data.to_runtime(
+            self,
+            ignore_images.unwrap_or(false),
+            ignore_tilemaps.unwrap_or(false),
+            ignore_sounds.unwrap_or(false),
+            ignore_musics.unwrap_or(false),
+        );
+        self.load_pyxel_palette_file(filename);
     }
 
     pub fn save(
         &mut self,
         filename: &str,
-        exclude_images: Option<bool>,
-        exclude_tilemaps: Option<bool>,
-        exclude_sounds: Option<bool>,
-        exclude_musics: Option<bool>,
-        include_colors: Option<bool>,
-        include_channels: Option<bool>,
-        include_tones: Option<bool>,
+        ignore_images: Option<bool>,
+        ignore_tilemaps: Option<bool>,
+        ignore_sounds: Option<bool>,
+        ignore_musics: Option<bool>,
     ) {
-        let toml_text = ResourceData2::from_runtime(self).to_toml(
-            exclude_images.unwrap_or(false),
-            exclude_tilemaps.unwrap_or(false),
-            exclude_sounds.unwrap_or(false),
-            exclude_musics.unwrap_or(false),
-            include_colors.unwrap_or(false),
-            include_channels.unwrap_or(false),
-            include_tones.unwrap_or(false),
+        let toml_text = ResourceData::from_runtime(self).to_toml(
+            ignore_images.unwrap_or(false),
+            ignore_tilemaps.unwrap_or(false),
+            ignore_sounds.unwrap_or(false),
+            ignore_musics.unwrap_or(false),
         );
 
         let path = std::path::Path::new(&filename);
         let file = std::fs::File::create(path)
             .unwrap_or_else(|_| panic!("Failed to open file '{filename}'"));
+
         let mut zip = ZipWriter::new(file);
         zip.start_file(RESOURCE_ARCHIVE_NAME, SimpleFileOptions::default())
             .unwrap();
