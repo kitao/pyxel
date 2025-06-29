@@ -2,7 +2,7 @@ use std::sync::Once;
 
 use pyo3::prelude::*;
 
-static OLD_MML_ONCE: Once = Once::new();
+static OLD_SYNTAX_ONCE: Once = Once::new();
 
 macro_rules! wrap_sound_as_python_list {
     ($wrapper_name:ident, $value_type:ty, $field_name:ident) => {
@@ -100,22 +100,21 @@ impl Sound {
         self.inner.lock().set_effects(effects);
     }
 
-    #[getter]
-    pub fn mml(&self) -> String {
-        self.inner.lock().get_mml().to_string()
-    }
+    #[pyo3(signature = (code=None, old_syntax=None))]
+    pub fn mml(&self, code: Option<&str>, old_syntax: Option<bool>) {
+        if let Some(old_syntax) = old_syntax {
+            if old_syntax {
+                OLD_SYNTAX_ONCE.call_once(|| {
+                    println!("The old MML syntax is deprecated. Use the new syntax instead.");
+                });
+            }
+        }
 
-    #[setter]
-    pub fn set_mml(&self, mml: &str) {
-        self.inner.lock().set_mml(mml);
-    }
-
-    // Deprecated method
-    pub fn old_mml(&self, mml: &str) {
-        OLD_MML_ONCE.call_once(|| {
-            println!("Sound.old_mml(mml) is deprecated, use Sound.mml instead.");
-        });
-        self.inner.lock().old_mml(mml);
+        if let Some(code) = code {
+            self.inner.lock().mml(code, old_syntax);
+        } else {
+            self.inner.lock().mml0();
+        }
     }
 
     #[pyo3(signature = (filename, sec, ffmpeg=None))]
