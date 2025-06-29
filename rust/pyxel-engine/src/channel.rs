@@ -198,8 +198,9 @@ impl Channel {
 
     pub(crate) fn process(&mut self, blip_buf: Option<&mut BlipBuf>, clock_count: u32) {
         let mut blip_buf = blip_buf;
-        let mut clock_offset = 0;
+        let start_clock_count = clock_count;
         let mut clock_count = clock_count;
+        let mut clock_offset = 0;
 
         while clock_count > 0 {
             // Playback has ended
@@ -250,7 +251,7 @@ impl Channel {
 
                 // End of sound list
                 if self.sound_index >= self.sounds.len() as u32 {
-                    if self.should_loop {
+                    if self.should_loop && clock_count < start_clock_count {
                         self.sound_index = 0;
                     } else if self.should_resume {
                         self.play_from_clock(
