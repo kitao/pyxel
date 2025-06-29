@@ -12,33 +12,33 @@ static SOUND_ONCE: Once = Once::new();
 static MUSIC_ONCE: Once = Once::new();
 
 #[pyfunction]
-#[pyo3(signature = (ch, snd, tick=None, r#loop=None, resume=None))]
+#[pyo3(signature = (ch, snd, sec=None, r#loop=None, resume=None))]
 fn play(
     ch: u32,
     snd: Bound<'_, PyAny>,
-    tick: Option<u32>,
+    sec: Option<f64>,
     r#loop: Option<bool>,
     resume: Option<bool>,
 ) -> PyResult<()> {
     cast_pyany! {
         snd,
-        (u32, { pyxel().play1(ch, snd, tick, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
-        (Vec<u32>, { pyxel().play(ch, &snd, tick, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
-        (Sound, { pyxel().channels.lock()[ch as usize].lock().play1(snd.inner, tick, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
+        (u32, { pyxel().play1(ch, snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
+        (Vec<u32>, { pyxel().play(ch, &snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
+        (Sound, { pyxel().channels.lock()[ch as usize].lock().play1(snd.inner, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); }),
         (Vec<Sound>, {
             let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
-            pyxel().channels.lock()[ch as usize].lock().play(sounds, tick, r#loop.unwrap_or(false), resume.unwrap_or(false));
+            pyxel().channels.lock()[ch as usize].lock().play(sounds, sec, r#loop.unwrap_or(false), resume.unwrap_or(false));
         }),
-        (String, { pyxel().play_mml(ch, &snd, tick, r#loop.unwrap_or(false), resume.unwrap_or(false)); })
+        (String, { pyxel().play_mml(ch, &snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); })
     }
 
     Ok(())
 }
 
 #[pyfunction]
-#[pyo3(signature = (msc, tick=None, r#loop=None))]
-fn playm(msc: u32, tick: Option<u32>, r#loop: Option<bool>) {
-    pyxel().playm(msc, tick, r#loop.unwrap_or(false));
+#[pyo3(signature = (msc, sec=None, r#loop=None))]
+fn playm(msc: u32, sec: Option<f64>, r#loop: Option<bool>) {
+    pyxel().playm(msc, sec, r#loop.unwrap_or(false));
 }
 
 #[pyfunction]
@@ -55,7 +55,7 @@ fn stop(ch: Option<u32>) {
 }
 
 #[pyfunction]
-fn play_pos(ch: u32) -> Option<(u32, u32)> {
+fn play_pos(ch: u32) -> Option<(u32, f64)> {
     pyxel().play_pos(ch)
 }
 

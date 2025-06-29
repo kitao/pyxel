@@ -161,7 +161,7 @@ class PianoKeyboard(Widget):
         notes = self.get_field(0)
 
         if play_pos is not None and not notes:
-            note = notes[play_pos[1] // self.speed_var]
+            note = notes[round(play_pos[1] * 120 / self.speed_var)]
         elif play_pos is None and self.note_var is not None:
             note = self.note_var
         else:

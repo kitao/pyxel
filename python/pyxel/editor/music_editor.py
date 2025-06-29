@@ -146,7 +146,7 @@ class MusicEditor(EditorBase):
                 sound = pyxel.sounds[music.seqs[self.field_cursor.y][i]]
                 tick += len(sound.notes) * sound.speed
 
-        pyxel.playm(self.music_index_var, tick=tick, loop=self.should_loop_var)
+        pyxel.playm(self.music_index_var, sec=tick / 120, loop=self.should_loop_var)
 
     def _stop(self):
         self.is_playing_var = False
