@@ -2,6 +2,12 @@ use crate::settings::AUDIO_CLOCK_RATE;
 
 #[derive(Clone, Debug)]
 pub enum MmlCommand {
+    RepeatStart, // [
+    RepeatEnd {
+        // ][repat_count:0 is infinite]
+        count: u32,
+    },
+
     Tempo {
         // T[bpm]
         clocks_per_tick: u32,
