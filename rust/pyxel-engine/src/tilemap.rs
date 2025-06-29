@@ -1,5 +1,6 @@
 use crate::canvas::{Canvas, ToIndex};
 use crate::image::SharedImage;
+use crate::tmx_parser::parse_tmx;
 use crate::utils::{f64_to_u32, parse_hex_string, simplify_string};
 
 pub type ImageTileCoord = u8;
@@ -32,6 +33,10 @@ impl Tilemap {
 
             canvas: Canvas::new(width, height),
         })
+    }
+
+    pub fn from_tmx(filename: &str, layer_index: u32) -> SharedTilemap {
+        parse_tmx(filename, layer_index)
     }
 
     pub const fn width(&self) -> u32 {
