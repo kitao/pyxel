@@ -3,50 +3,38 @@ use pyo3::prelude::*;
 use crate::pyxel_singleton::pyxel;
 
 #[pyfunction]
-#[pyo3(signature = (filename, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None, incl_colors=None, incl_channels=None, incl_tones=None))]
+#[pyo3(signature = (filename, ignore_images=None, ignore_tilemaps=None, ignore_sounds=None, ignore_musics=None))]
 fn load(
     filename: &str,
-    excl_images: Option<bool>,
-    excl_tilemaps: Option<bool>,
-    excl_sounds: Option<bool>,
-    excl_musics: Option<bool>,
-    incl_colors: Option<bool>,
-    incl_channels: Option<bool>,
-    incl_tones: Option<bool>,
+    ignore_images: Option<bool>,
+    ignore_tilemaps: Option<bool>,
+    ignore_sounds: Option<bool>,
+    ignore_musics: Option<bool>,
 ) {
     pyxel().load(
         filename,
-        excl_images,
-        excl_tilemaps,
-        excl_sounds,
-        excl_musics,
-        incl_colors,
-        incl_channels,
-        incl_tones,
+        ignore_images,
+        ignore_tilemaps,
+        ignore_sounds,
+        ignore_musics,
     );
 }
 
 #[pyfunction]
-#[pyo3(signature = (filename, excl_images=None, excl_tilemaps=None, excl_sounds=None, excl_musics=None, incl_colors=None, incl_channels=None, incl_tones=None))]
+#[pyo3(signature = (filename, ignore_images=None, ignore_tilemaps=None, ignore_sounds=None, ignore_musics=None))]
 fn save(
     filename: &str,
-    excl_images: Option<bool>,
-    excl_tilemaps: Option<bool>,
-    excl_sounds: Option<bool>,
-    excl_musics: Option<bool>,
-    incl_colors: Option<bool>,
-    incl_channels: Option<bool>,
-    incl_tones: Option<bool>,
+    ignore_images: Option<bool>,
+    ignore_tilemaps: Option<bool>,
+    ignore_sounds: Option<bool>,
+    ignore_musics: Option<bool>,
 ) {
     pyxel().save(
         filename,
-        excl_images,
-        excl_tilemaps,
-        excl_sounds,
-        excl_musics,
-        incl_colors,
-        incl_channels,
-        incl_tones,
+        ignore_images,
+        ignore_tilemaps,
+        ignore_sounds,
+        ignore_musics,
     );
 }
 
