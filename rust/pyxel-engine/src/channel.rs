@@ -79,6 +79,10 @@ impl Channel {
         })
     }
 
+    fn sec_to_clock(sec: Option<f64>) -> u32 {
+        (sec.unwrap_or(0.0) * AUDIO_CLOCK_RATE as f64).round() as u32
+    }
+
     pub fn play(
         &mut self,
         sounds: Vec<SharedSound>,
@@ -86,7 +90,12 @@ impl Channel {
         should_loop: bool,
         should_resume: bool,
     ) {
-        self.play_from_sec(sounds, start_sec, should_loop, should_resume);
+        self.play_from_clock(
+            sounds,
+            Self::sec_to_clock(start_sec),
+            should_loop,
+            should_resume,
+        );
     }
 
     pub fn play1(
@@ -96,7 +105,12 @@ impl Channel {
         should_loop: bool,
         should_resume: bool,
     ) {
-        self.play_from_sec(vec![sound], start_sec, should_loop, should_resume);
+        self.play_from_clock(
+            vec![sound],
+            Self::sec_to_clock(start_sec),
+            should_loop,
+            should_resume,
+        );
     }
 
     pub fn play_mml(
@@ -111,18 +125,12 @@ impl Channel {
             let mut sound = sound.lock();
             sound.set_mml(mml);
         }
-        self.play(vec![sound], start_sec, should_loop, should_resume);
-    }
-
-    fn play_from_sec(
-        &mut self,
-        sounds: Vec<SharedSound>,
-        start_sec: Option<f64>,
-        should_loop: bool,
-        should_resume: bool,
-    ) {
-        let start_clock = (start_sec.unwrap_or(0.0) * AUDIO_CLOCK_RATE as f64).round() as u32;
-        self.play_from_clock(sounds, start_clock, should_loop, should_resume);
+        self.play_from_clock(
+            vec![sound],
+            Self::sec_to_clock(start_sec),
+            should_loop,
+            should_resume,
+        );
     }
 
     fn play_from_clock(
