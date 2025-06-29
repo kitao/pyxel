@@ -46,12 +46,12 @@ EXTENDED_TONES = [
         [0] * 32,
     ),
 ]
-# [(gain, noise, waveform), (gain, noise, waveform), ...]
+# [(gain, noise, wavetable), (gain, noise, wavetable), ...]
 # 'noise' corresponds to:
-#  0 for noise disabled (use waveform), 1 for short-period noise, 2 for long-period noise.
-# 'waveform' is composed of 32 values ranging from 0 to 15.
+#  0 for noise disabled (use wavetable), 1 for short-period noise, 2 for long-period noise.
+# 'wavetable' is composed of 32 values ranging from 0 to 15.
 
-WAVEFORM_EDITOR_PARAMS = [
+WAVETABLE_EDITOR_PARAMS = [
     (8, 8, 0, "Lead Melody"),
     (8, 71, 1, "Sub Melody"),
     (8, 134, 2, "Chord Backing"),
@@ -69,11 +69,11 @@ def extend_audio():
     pyxel.channels.from_list(channels)
 
     tones = []
-    for gain, noise, waveform in EXTENDED_TONES:
+    for gain, noise, wavetable in EXTENDED_TONES:
         tone = pyxel.Tone()
         tone.gain = gain
         tone.noise = noise
-        tone.waveform.from_list(waveform)
+        tone.wavetable.from_list(wavetable)
         tones.append(tone)
     pyxel.tones.from_list(tones)
 
@@ -112,7 +112,7 @@ def setup_music():
     pyxel.musics[0].set([0], [0], [1], [2], [3], [4], [5], [6])
 
 
-class WaveformEditor:
+class WavetableEditor:
     def __init__(self, x, y, tone, desc):
         self.x = x
         self.y = y
@@ -126,7 +126,7 @@ class WaveformEditor:
         wx = (pyxel.mouse_x - self.x - 1) // 5
         wy = 15 - (pyxel.mouse_y - self.y - 8) // 3
         if 0 <= wx <= 31 and 0 <= wy <= 15:
-            pyxel.tones[self.tone].waveform[wx] = wy
+            pyxel.tones[self.tone].wavetable[wx] = wy
 
         gx = (pyxel.mouse_x - self.x - 168) // 5
         gy = 16 - (pyxel.mouse_y - self.y - 8) // 3
@@ -141,7 +141,7 @@ class WaveformEditor:
         pyxel.line(self.x + 81, self.y + 8, self.x + 81, self.y + 56, 15)
 
         for i in range(32):
-            amp = pyxel.tones[self.tone].waveform[i]
+            amp = pyxel.tones[self.tone].wavetable[i]
             for j in range(amp, 8) if amp < 8 else range(8, amp + 1):
                 self.draw_rect(self.x + i * 5 + 2, self.y + 54 - j * 3)
 
@@ -165,8 +165,8 @@ class App:
         extend_audio()
         setup_music()
 
-        self.waveform_editors = [
-            WaveformEditor(*param) for param in WAVEFORM_EDITOR_PARAMS
+        self.wavetable_editors = [
+            WavetableEditor(*param) for param in WAVETABLE_EDITOR_PARAMS
         ]
 
         pyxel.mouse(True)
@@ -177,14 +177,14 @@ class App:
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
-        for waveform_editor in self.waveform_editors:
-            waveform_editor.update()
+        for wavetable_editor in self.wavetable_editors:
+            wavetable_editor.update()
 
     def draw(self):
         pyxel.cls(1)
 
-        for waveform_editor in self.waveform_editors:
-            waveform_editor.draw()
+        for wavetable_editor in self.wavetable_editors:
+            wavetable_editor.draw()
 
 
 App()
