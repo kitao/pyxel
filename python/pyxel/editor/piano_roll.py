@@ -130,7 +130,7 @@ class PianoRoll(Widget):
 
         play_pos = pyxel.play_pos(0)
         if play_pos is not None:
-            x = play_pos[1] // self.speed_var * 4 + 31
+            x = round(play_pos[1] * 120 / self.speed_var) * 4 + 31
             pyxel.rect(x, 25, 3, 123, PIANO_ROLL_CURSOR_PLAY_COLOR)
         elif self.field_cursor.y == 0:
             x = self.field_cursor.x * 4 + 31

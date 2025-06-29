@@ -82,32 +82,27 @@ impl Channel {
     pub fn play(
         &mut self,
         sounds: Vec<SharedSound>,
-        start_tick: Option<u32>,
+        start_sec: Option<f64>,
         should_loop: bool,
         should_resume: bool,
     ) {
-        self.play_from_tick(sounds, start_tick.unwrap_or(0), should_loop, should_resume);
+        self.play_from_sec(sounds, start_sec, should_loop, should_resume);
     }
 
     pub fn play1(
         &mut self,
         sound: SharedSound,
-        start_tick: Option<u32>,
+        start_sec: Option<f64>,
         should_loop: bool,
         should_resume: bool,
     ) {
-        self.play_from_tick(
-            vec![sound],
-            start_tick.unwrap_or(0),
-            should_loop,
-            should_resume,
-        );
+        self.play_from_sec(vec![sound], start_sec, should_loop, should_resume);
     }
 
     pub fn play_mml(
         &mut self,
         mml: &str,
-        start_tick: Option<u32>,
+        start_sec: Option<f64>,
         should_loop: bool,
         should_resume: bool,
     ) {
@@ -116,38 +111,17 @@ impl Channel {
             let mut sound = sound.lock();
             sound.set_mml(mml);
         }
-        self.play1(sound, start_tick, should_loop, should_resume);
+        self.play(vec![sound], start_sec, should_loop, should_resume);
     }
 
-    fn play_from_tick(
+    fn play_from_sec(
         &mut self,
         sounds: Vec<SharedSound>,
-        start_tick: u32,
+        start_sec: Option<f64>,
         should_loop: bool,
         should_resume: bool,
     ) {
-        let start_clock = if start_tick == 0 {
-            0
-        } else {
-            let mut start_tick = start_tick;
-            let mut start_clock = 0;
-
-            for sound in &sounds {
-                let sound = sound.lock();
-                let (clock, remaining_ticks) = sound.calc_clock_at_tick(start_tick);
-
-                start_clock += clock;
-
-                if let Some(remaining_ticks) = remaining_ticks {
-                    start_tick = remaining_ticks;
-                } else {
-                    break;
-                }
-            }
-
-            start_clock
-        };
-
+        let start_clock = (start_sec.unwrap_or(0.0) * AUDIO_CLOCK_RATE as f64).round() as u32;
         self.play_from_clock(sounds, start_clock, should_loop, should_resume);
     }
 
@@ -189,11 +163,10 @@ impl Channel {
         self.voice.cancel_note();
     }
 
-    pub fn play_pos(&mut self) -> Option<(u32, u32)> {
+    pub fn play_pos(&mut self) -> Option<(u32, f64)> {
         if self.is_playing {
-            let sound = self.sounds[self.sound_index as usize].lock();
-            let (tick, _) = sound.calc_tick_at_clock(self.sound_elapsed_clocks);
-            Some((self.sound_index, tick))
+            let elapsed_sec = self.sound_elapsed_clocks as f64 / AUDIO_CLOCK_RATE as f64;
+            Some((self.sound_index, elapsed_sec))
         } else {
             None
         }

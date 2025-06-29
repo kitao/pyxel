@@ -179,8 +179,13 @@ class SoundEditor(EditorBase):
         self._stop_button.is_enabled_var = True
         self._loop_button.is_enabled_var = False
 
-        tick = self.field_cursor.x * self.speed_var if is_partial else None
-        pyxel.play(0, self.sound_index_var, tick=tick, loop=self.should_loop_var)
+        tick = self.field_cursor.x * self.speed_var if is_partial else 0
+        pyxel.play(
+            0,
+            self.sound_index_var,
+            sec=tick / 120,
+            loop=self.should_loop_var,
+        )
 
     def _stop(self):
         self._sound_picker.is_enabled_var = True

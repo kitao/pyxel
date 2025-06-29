@@ -117,7 +117,7 @@ impl Pyxel {
         &self,
         channel_index: u32,
         sequence: &[u32],
-        start_tick: Option<u32>,
+        start_sec: Option<f64>,
         should_loop: bool,
         should_resume: bool,
     ) {
@@ -132,7 +132,7 @@ impl Pyxel {
 
         self.channels.lock()[channel_index as usize].lock().play(
             sounds,
-            start_tick,
+            start_sec,
             should_loop,
             should_resume,
         );
@@ -142,13 +142,13 @@ impl Pyxel {
         &self,
         channel_index: u32,
         sound_index: u32,
-        start_tick: Option<u32>,
+        start_sec: Option<f64>,
         should_loop: bool,
         should_resume: bool,
     ) {
         self.channels.lock()[channel_index as usize].lock().play1(
             self.sounds.lock()[sound_index as usize].clone(),
-            start_tick,
+            start_sec,
             should_loop,
             should_resume,
         );
@@ -158,16 +158,16 @@ impl Pyxel {
         &mut self,
         channel_index: u32,
         mml: &str,
-        start_tick: Option<u32>,
+        start_sec: Option<f64>,
         should_loop: bool,
         should_resume: bool,
     ) {
         self.channels.lock()[channel_index as usize]
             .lock()
-            .play_mml(mml, start_tick, should_loop, should_resume);
+            .play_mml(mml, start_sec, should_loop, should_resume);
     }
 
-    pub fn playm(&self, music_index: u32, start_tick: Option<u32>, should_loop: bool) {
+    pub fn playm(&self, music_index: u32, start_sec: Option<f64>, should_loop: bool) {
         let num_channels = self.channels.lock().len();
         let musics = self.musics.lock();
         let music = musics[music_index as usize].lock();
@@ -176,7 +176,7 @@ impl Pyxel {
             self.play(
                 i as u32,
                 &music.seqs[i].lock(),
-                start_tick,
+                start_sec,
                 should_loop,
                 false,
             );
@@ -195,7 +195,7 @@ impl Pyxel {
         }
     }
 
-    pub fn play_pos(&self, channel_index: u32) -> Option<(u32, u32)> {
+    pub fn play_pos(&self, channel_index: u32) -> Option<(u32, f64)> {
         self.channels.lock()[channel_index as usize]
             .lock()
             .play_pos()

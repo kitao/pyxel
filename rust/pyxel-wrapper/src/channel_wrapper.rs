@@ -42,11 +42,11 @@ impl Channel {
         self.inner.lock().detune = detune;
     }
 
-    #[pyo3(signature = (snd, tick=None, r#loop=None, resume=None))]
+    #[pyo3(signature = (snd, sec=None, r#loop=None, resume=None))]
     pub fn play(
         &self,
         snd: Bound<'_, PyAny>,
-        tick: Option<u32>,
+        sec: Option<f64>,
         r#loop: Option<bool>,
         resume: Option<bool>,
     ) -> PyResult<()> {
@@ -56,18 +56,18 @@ impl Channel {
             snd,
             (u32, {
                 let sound = pyxel().sounds.lock()[snd as usize].clone();
-                self.inner.lock().play1(sound, tick, loop_, resume.unwrap_or(false));
+                self.inner.lock().play1(sound, sec, loop_, resume.unwrap_or(false));
             }),
             (Vec<u32>, {
                 let sounds = snd.iter().map(|snd| pyxel().sounds.lock()[*snd as usize].clone()).collect();
-                self.inner.lock().play(sounds, tick, loop_, resume.unwrap_or(false));
+                self.inner.lock().play(sounds, sec, loop_, resume.unwrap_or(false));
             }),
-            (Sound, { self.inner.lock().play1(snd.inner, tick, loop_, resume.unwrap_or(false)); }),
+            (Sound, { self.inner.lock().play1(snd.inner, sec, loop_, resume.unwrap_or(false)); }),
             (Vec<Sound>, {
                 let sounds = snd.iter().map(|sound| sound.inner.clone()).collect();
-                self.inner.lock().play(sounds, tick, loop_, resume.unwrap_or(false));
+                self.inner.lock().play(sounds, sec, loop_, resume.unwrap_or(false));
             }),
-            (String, { self.inner.lock().play_mml(&snd, tick, r#loop.unwrap_or(false), resume.unwrap_or(false)); })
+            (String, { self.inner.lock().play_mml(&snd, sec, r#loop.unwrap_or(false), resume.unwrap_or(false)); })
         }
 
         Ok(())
@@ -77,7 +77,7 @@ impl Channel {
         self.inner.lock().stop();
     }
 
-    pub fn play_pos(&self) -> Option<(u32, u32)> {
+    pub fn play_pos(&self) -> Option<(u32, f64)> {
         self.inner.lock().play_pos()
     }
 }
