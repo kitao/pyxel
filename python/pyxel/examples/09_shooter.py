@@ -254,9 +254,9 @@ class App:
         c2 = "q1o2v4crrcrr>>q2x0a#16a#16a#<<"
         c3 = "q1o2v4crrcrr>>q2x0a#16a#16<<q1o2v4c"
 
-        pyxel.sounds[2].mml(a1 + a2 + a3 + a2 + a4)
-        pyxel.sounds[3].mml(b1 + b2 + b3 + b2 + b4)
-        pyxel.sounds[4].mml(c1 + c2 * 3 + c3)
+        pyxel.sounds[2].mml(a1 + a2 + a3 + a2 + a4, old_syntax=True)
+        pyxel.sounds[3].mml(b1 + b2 + b3 + b2 + b4, old_syntax=True)
+        pyxel.sounds[4].mml(c1 + c2 * 3 + c3, old_syntax=True)
         pyxel.musics[0].set([2], [3], [4])
 
         # Set play music
@@ -274,9 +274,9 @@ class App:
         c2 = "q2x0o3 a#ra#a# a#ra#a# a#ra#a# a#ra#a#"
         c3 = "q2x0o3 a#ra#a# a#ra#a# a#ra#a# o2x1 a#a# q1o2v5cr"
 
-        pyxel.sounds[5].mml(a1 + a2 + a3 + a2 + a4)
-        pyxel.sounds[6].mml(b1 + (b2 + b3) * 3 + b2 + b4)
-        pyxel.sounds[7].mml(c1 + c2 * 3 + c3)
+        pyxel.sounds[5].mml(a1 + a2 + a3 + a2 + a4, old_syntax=True)
+        pyxel.sounds[6].mml(b1 + (b2 + b3) * 3 + b2 + b4, old_syntax=True)
+        pyxel.sounds[7].mml(c1 + c2 * 3 + c3, old_syntax=True)
         pyxel.musics[1].set([5], [6], [7])
 
         # You can also use 8bit BGM generator for music:
