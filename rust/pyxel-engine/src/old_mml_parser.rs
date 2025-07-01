@@ -136,7 +136,7 @@ pub fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
 
     add_note(&mut sound, &note_info);
 
-    sound.generate_mml_commands()
+    sound.to_commands()
 }
 
 fn skip_whitespace<T: Iterator<Item = char>>(chars: &mut Peekable<T>) {
