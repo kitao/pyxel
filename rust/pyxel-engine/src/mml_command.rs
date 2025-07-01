@@ -6,7 +6,7 @@ pub enum MmlCommand {
     },
 
     Tempo {
-        bpm: u32,
+        clocks_per_tick: u32,
     },
     Quantize {
         gate_ratio: f64,
