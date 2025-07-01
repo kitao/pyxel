@@ -252,7 +252,7 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
         }
     }
 
-    println!("{commands:?}"); // TODO: delete
+    //println!("{commands:?}");
     commands
 }
 
@@ -365,11 +365,13 @@ fn parse_command<T: TryFrom<i32>>(
 }
 
 fn parse_length_as_ticks(stream: &mut CharStream, note_ticks: u32) -> u32 {
+    const WHOLE_NOTE_TICKS: u32 = TICKS_PER_QUARTER_NOTE * 4;
+
     let mut note_ticks = note_ticks;
 
-    if let Some(len) = parse_number(stream, "Note length", RANGE_GE_1) {
-        if let Some(ticks) = length_to_ticks(len) {
-            note_ticks = ticks;
+    if let Some(len) = parse_number::<u32>(stream, "Note length", RANGE_GE_1) {
+        if WHOLE_NOTE_TICKS % len == 0 {
+            note_ticks = WHOLE_NOTE_TICKS / len;
         } else {
             parse_error!(stream, "Invalid note length '{len}'");
         }
@@ -508,14 +510,4 @@ fn parse_glide(stream: &mut CharStream) -> Option<MmlCommand> {
         semitone_offset: offset_cents / 100.0,
         duration_ticks: dur_ticks,
     })
-}
-
-fn length_to_ticks(length: u32) -> Option<u32> {
-    let whole_note_ticks = TICKS_PER_QUARTER_NOTE * 4;
-
-    if whole_note_ticks % length == 0 {
-        Some(whole_note_ticks / length)
-    } else {
-        None
-    }
 }

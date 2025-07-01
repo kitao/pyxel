@@ -12,8 +12,6 @@ use crate::pyxel::{Pyxel, CHANNELS};
 use crate::settings::{AUDIO_BUFFER_SIZE, AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE};
 use crate::utils;
 
-const CLOCKS_PER_SAMPLE: u32 = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
-
 struct AudioCore {
     blip_buf: BlipBuf,
 }
@@ -44,6 +42,8 @@ impl Audio {
         blip_buf: &mut BlipBuf,
         samples: &mut [i16],
     ) {
+        const CLOCKS_PER_SAMPLE: u32 = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
+
         let mut channels: Vec<_> = channels_.iter().map(|channel| channel.lock()).collect();
         let mut num_samples = blip_buf.read_samples(samples, false);
 
