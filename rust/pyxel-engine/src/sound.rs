@@ -191,7 +191,7 @@ impl Sound {
         let tones = TONES.lock();
 
         commands.push(MmlCommand::Tempo {
-            bpm: SOUND_TICKS_PER_SECOND * 60,
+            clocks_per_tick: AUDIO_CLOCK_RATE / SOUND_TICKS_PER_SECOND,
         });
         commands.push(MmlCommand::Quantize { gate_ratio: 1.0 });
         commands.push(MmlCommand::Transpose {

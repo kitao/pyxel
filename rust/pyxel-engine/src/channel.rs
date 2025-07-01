@@ -3,9 +3,7 @@ use std::collections::HashMap;
 use crate::blip_buf::BlipBuf;
 use crate::mml_command::MmlCommand;
 use crate::pyxel::TONES;
-use crate::settings::{
-    AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, DEFAULT_CHANNEL_GAIN, TICKS_PER_QUARTER_NOTE,
-};
+use crate::settings::{AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, DEFAULT_CHANNEL_GAIN};
 use crate::sound::{SharedSound, Sound};
 use crate::tone::{Gain, Noise};
 use crate::voice::Voice;
@@ -275,11 +273,9 @@ impl Channel {
                     }
                 }
 
-                MmlCommand::Tempo { bpm } => {
-                    self.clocks_per_tick = (AUDIO_CLOCK_RATE as f64 * 60.0
-                        / (*bpm as f64 * TICKS_PER_QUARTER_NOTE as f64))
-                        .round() as u32;
-                    self.voice.set_clocks_per_tick(self.clocks_per_tick);
+                MmlCommand::Tempo { clocks_per_tick } => {
+                    self.clocks_per_tick = *clocks_per_tick;
+                    self.voice.set_clocks_per_tick(*clocks_per_tick);
                 }
                 MmlCommand::Quantize { gate_ratio } => {
                     self.gate_ratio = *gate_ratio;

@@ -1,5 +1,5 @@
 use crate::mml_command::MmlCommand;
-use crate::settings::TICKS_PER_QUARTER_NOTE;
+use crate::settings::{AUDIO_CLOCK_RATE, TICKS_PER_QUARTER_NOTE};
 
 const RANGE_ALL: (i32, i32) = (i32::MIN, i32::MAX);
 const RANGE_GE_0: (i32, i32) = (0, i32::MAX);
@@ -70,7 +70,9 @@ impl ShouldInit {
     fn ensure(&mut self, commands: &mut Vec<MmlCommand>) {
         if self.tempo {
             self.tempo = false;
-            commands.push(MmlCommand::Tempo { bpm: 120 });
+            commands.push(MmlCommand::Tempo {
+                clocks_per_tick: bpm_to_cpt(120),
+            });
         }
 
         if self.quantize {
@@ -149,7 +151,9 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             // T<bpm> - Set tempo (bpm >= 1)
             //
             should_init.tempo = false;
-            commands.push(MmlCommand::Tempo { bpm });
+            commands.push(MmlCommand::Tempo {
+                clocks_per_tick: bpm_to_cpt(bpm),
+            });
         } else if let Some(gate_time) = parse_command::<f64>(&mut stream, "Q", (1, 8)) {
             //
             // Q<gate_time> - Set quantize gate time (1 <= gate_time <= 8)
@@ -252,7 +256,6 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
         }
     }
 
-    //println!("{commands:?}");
     commands
 }
 
@@ -510,4 +513,8 @@ fn parse_glide(stream: &mut CharStream) -> Option<MmlCommand> {
         semitone_offset: offset_cents / 100.0,
         duration_ticks: dur_ticks,
     })
+}
+
+fn bpm_to_cpt(bpm: u32) -> u32 {
+    (AUDIO_CLOCK_RATE as f64 * 60.0 / (bpm as f64 * TICKS_PER_QUARTER_NOTE as f64)).round() as u32
 }
