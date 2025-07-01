@@ -92,7 +92,7 @@ impl Oscillator {
 
 #[derive(Debug)]
 struct EnvelopeSegment {
-    start_clock: u32,
+    start_tick: u32,
     start_level: f64,
     slope: f64,
 }
@@ -101,7 +101,7 @@ pub struct Envelope {
     segments: Vec<EnvelopeSegment>,
 
     enabled: bool,
-    elapsed_clocks: u32,
+    elapsed_ticks: u32,
     level: f64,
 }
 
@@ -110,7 +110,7 @@ impl Envelope {
         Self {
             segments: Vec::new(),
             enabled: false,
-            elapsed_clocks: 0,
+            elapsed_ticks: 0,
             level: 0.0,
         }
     }
@@ -118,7 +118,7 @@ impl Envelope {
     pub fn set(&mut self, initial_level: f64, segments: &[(u32, f64)]) {
         self.segments.clear();
 
-        let mut start_clock = 0;
+        let mut start_tick = 0;
         let mut start_level = initial_level;
 
         for &(duration, target_level) in segments {
@@ -131,20 +131,20 @@ impl Envelope {
             self.segments.insert(
                 0,
                 EnvelopeSegment {
-                    start_clock,
+                    start_tick,
                     start_level,
                     slope,
                 },
             );
 
-            start_clock += duration;
+            start_tick += duration;
             start_level = target_level;
         }
 
         self.segments.insert(
             0,
             EnvelopeSegment {
-                start_clock,
+                start_tick,
                 start_level,
                 slope: 0.0,
             },
@@ -163,14 +163,14 @@ impl Envelope {
         self.level
     }
 
-    pub fn reset_clock(&mut self) {
-        self.elapsed_clocks = 0;
+    pub fn reset_tick(&mut self) {
+        self.elapsed_ticks = 0;
         self.update();
     }
 
-    fn advance_clock(&mut self, clocks: u32) {
+    fn advance_tick(&mut self, ticks: u32) {
         if self.enabled {
-            self.elapsed_clocks += clocks;
+            self.elapsed_ticks += ticks;
         }
 
         self.update();
@@ -183,12 +183,12 @@ impl Envelope {
         }
 
         for segment in &self.segments {
-            if self.elapsed_clocks >= segment.start_clock {
+            if self.elapsed_ticks >= segment.start_tick {
                 self.level = if segment.slope == 0.0 {
                     segment.start_level
                 } else {
                     segment.start_level
-                        + segment.slope * (self.elapsed_clocks - segment.start_clock) as f64
+                        + segment.slope * (self.elapsed_ticks - segment.start_tick) as f64
                 };
                 break;
             }
@@ -197,39 +197,39 @@ impl Envelope {
 }
 
 pub struct Vibrato {
-    delay_clocks: u32,
-    period_clocks: u32,
-    inv_period_clocks: f64,
+    delay_ticks: u32,
+    period_ticks: u32,
+    inv_period_ticks: f64,
     semitone_depth: f64,
 
     enabled: bool,
-    elapsed_clocks: u32,
+    elapsed_ticks: u32,
     pitch_multiplier: f64,
 }
 
 impl Vibrato {
     fn new() -> Self {
         Self {
-            delay_clocks: 0,
-            period_clocks: 1,
-            inv_period_clocks: 0.0,
+            delay_ticks: 0,
+            period_ticks: 1,
+            inv_period_ticks: 0.0,
             semitone_depth: 0.0,
 
             enabled: false,
-            elapsed_clocks: 0,
+            elapsed_ticks: 0,
             pitch_multiplier: 1.0,
         }
     }
 
-    pub fn set(&mut self, delay_clocks: u32, period_clocks: u32, semitone_depth: f64) {
-        assert!(period_clocks > 0);
+    pub fn set(&mut self, delay_ticks: u32, period_ticks: u32, semitone_depth: f64) {
+        assert!(period_ticks > 0);
 
-        self.delay_clocks = delay_clocks;
+        self.delay_ticks = delay_ticks;
         self.semitone_depth = semitone_depth;
 
-        if period_clocks != self.period_clocks {
-            self.period_clocks = period_clocks;
-            self.inv_period_clocks = 1.0 / period_clocks as f64;
+        if period_ticks != self.period_ticks {
+            self.period_ticks = period_ticks;
+            self.inv_period_ticks = 1.0 / period_ticks as f64;
         }
     }
 
@@ -245,29 +245,29 @@ impl Vibrato {
         self.pitch_multiplier
     }
 
-    fn reset_clock(&mut self) {
-        if self.delay_clocks > 0 {
-            self.elapsed_clocks = 0;
+    fn reset_tick(&mut self) {
+        if self.delay_ticks > 0 {
+            self.elapsed_ticks = 0;
         }
 
         self.update();
     }
 
-    fn advance_clock(&mut self, clocks: u32) {
+    fn advance_tick(&mut self, ticks: u32) {
         if self.enabled {
-            self.elapsed_clocks += clocks;
+            self.elapsed_ticks += ticks;
         }
 
         self.update();
     }
 
     fn update(&mut self) {
-        if !self.enabled || self.elapsed_clocks < self.delay_clocks {
+        if !self.enabled || self.elapsed_ticks < self.delay_ticks {
             self.pitch_multiplier = 1.0;
             return;
         }
 
-        let phase = (self.elapsed_clocks - self.delay_clocks) as f64 * self.inv_period_clocks;
+        let phase = (self.elapsed_ticks - self.delay_ticks) as f64 * self.inv_period_ticks;
         let modulation = 1.0 - 4.0 * ((phase + 0.25).fract() - 0.5).abs();
         let semitone_offset = modulation * self.semitone_depth;
 
@@ -277,11 +277,11 @@ impl Vibrato {
 
 pub struct Glide {
     semitone_offset: f64,
-    duration_clocks: u32,
+    duration_ticks: u32,
     semitone_slope: f64,
 
     enabled: bool,
-    elapsed_clocks: u32,
+    elapsed_ticks: u32,
     pitch_multiplier: f64,
 }
 
@@ -289,22 +289,22 @@ impl Glide {
     fn new() -> Self {
         Self {
             semitone_offset: 0.0,
-            duration_clocks: 0,
+            duration_ticks: 0,
             semitone_slope: 0.0,
 
             enabled: false,
-            elapsed_clocks: 0,
+            elapsed_ticks: 0,
             pitch_multiplier: 1.0,
         }
     }
 
-    pub fn set(&mut self, semitone_offset: f64, duration_clocks: u32) {
-        assert!(duration_clocks > 0);
+    pub fn set(&mut self, semitone_offset: f64, duration_ticks: u32) {
+        assert!(duration_ticks > 0);
 
-        if semitone_offset != self.semitone_offset || duration_clocks != self.duration_clocks {
+        if semitone_offset != self.semitone_offset || duration_ticks != self.duration_ticks {
             self.semitone_offset = semitone_offset;
-            self.duration_clocks = duration_clocks;
-            self.semitone_slope = -semitone_offset / duration_clocks as f64;
+            self.duration_ticks = duration_ticks;
+            self.semitone_slope = -semitone_offset / duration_ticks as f64;
         }
     }
 
@@ -320,27 +320,27 @@ impl Glide {
         self.pitch_multiplier
     }
 
-    fn reset_clock(&mut self) {
-        self.elapsed_clocks = 0;
+    fn reset_tick(&mut self) {
+        self.elapsed_ticks = 0;
         self.update();
     }
 
-    fn advance_clock(&mut self, clocks: u32) {
+    fn advance_tick(&mut self, ticks: u32) {
         if self.enabled {
-            self.elapsed_clocks += clocks;
+            self.elapsed_ticks += ticks;
         }
 
         self.update();
     }
 
     fn update(&mut self) {
-        if !self.enabled || self.elapsed_clocks >= self.duration_clocks {
+        if !self.enabled || self.elapsed_ticks >= self.duration_ticks {
             self.pitch_multiplier = 1.0;
             return;
         }
 
         let semitone_offset =
-            self.semitone_offset + self.semitone_slope * self.elapsed_clocks as f64;
+            self.semitone_offset + self.semitone_slope * self.elapsed_ticks as f64;
         self.pitch_multiplier = 2.0_f64.powf(semitone_offset / 12.0);
     }
 }
@@ -352,6 +352,7 @@ pub struct Voice {
     pub glide: Glide,
 
     clock_rate: u32,
+    clocks_per_tick: u32,
     base_frequency: f64,
     velocity: f64,
     playback_clocks: u32,
@@ -375,6 +376,7 @@ impl Voice {
             glide: Glide::new(),
 
             clock_rate,
+            clocks_per_tick: 1,
             base_frequency: 0.0,
             velocity: 0.0,
             playback_clocks: 0,
@@ -384,6 +386,11 @@ impl Voice {
             control_elapsed_clocks: 0,
             last_amplitude: 0,
         }
+    }
+
+    pub fn set_clocks_per_tick(&mut self, clocks_per_tick: u32) {
+        assert!(clocks_per_tick > 0);
+        self.clocks_per_tick = clocks_per_tick;
     }
 
     pub fn play_note(&mut self, midi_note: f64, velocity: f64, playback_clocks: u32) {
@@ -451,9 +458,9 @@ impl Voice {
     fn reset_control_clock(&mut self) {
         self.control_elapsed_clocks = 0;
 
-        self.envelope.reset_clock();
-        self.vibrato.reset_clock();
-        self.glide.reset_clock();
+        self.envelope.reset_tick();
+        self.vibrato.reset_tick();
+        self.glide.reset_tick();
 
         self.update_sample_clocks();
     }
@@ -462,14 +469,15 @@ impl Voice {
         self.control_elapsed_clocks += clocks;
 
         if self.control_elapsed_clocks >= self.control_interval_clocks {
-            let cycles = self.control_elapsed_clocks / self.control_interval_clocks;
-            let clocks = self.control_interval_clocks * cycles;
+            let ticks = self.control_elapsed_clocks / self.clocks_per_tick;
 
-            self.control_elapsed_clocks -= clocks;
+            if ticks > 0 {
+                self.control_elapsed_clocks -= self.clocks_per_tick * ticks;
 
-            self.envelope.advance_clock(clocks);
-            self.vibrato.advance_clock(clocks);
-            self.glide.advance_clock(clocks);
+                self.envelope.advance_tick(ticks);
+                self.vibrato.advance_tick(ticks);
+                self.glide.advance_tick(ticks);
+            }
 
             self.update_sample_clocks();
         }
