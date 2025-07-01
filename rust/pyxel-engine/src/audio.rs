@@ -9,8 +9,10 @@ use parking_lot::MutexGuard;
 use crate::blip_buf::BlipBuf;
 use crate::channel::SharedChannel;
 use crate::pyxel::{Pyxel, CHANNELS};
-use crate::settings::{AUDIO_BUFFER_SIZE, AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, CLOCKS_PER_SAMPLE};
+use crate::settings::{AUDIO_BUFFER_SIZE, AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE};
 use crate::utils;
+
+const CLOCKS_PER_SAMPLE: u32 = AUDIO_CLOCK_RATE / AUDIO_SAMPLE_RATE;
 
 struct AudioCore {
     blip_buf: BlipBuf,

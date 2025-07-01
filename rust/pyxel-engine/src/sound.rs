@@ -5,13 +5,13 @@ use crate::mml_parser::parse_mml;
 use crate::old_mml_parser::parse_old_mml;
 use crate::pyxel::{CHANNELS, TONES};
 use crate::settings::{
-    AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, CLOCKS_PER_SPEED, DEFAULT_SOUND_SPEED, EFFECT_FADEOUT,
-    EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO,
-    MAX_VOLUME, TONE_NOISE, TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, VIBRATO_DEPTH_CENTS,
-    VIBRATO_FREQUNCY_CHZ,
+    AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE, DEFAULT_SOUND_SPEED, EFFECT_FADEOUT, EFFECT_HALF_FADEOUT,
+    EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO, MAX_VOLUME, TONE_NOISE,
+    TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, VIBRATO_DEPTH_CENTS, VIBRATO_PERIOD_TICKS,
 };
 use crate::tone::Noise;
 use crate::utils::simplify_string;
+use crate::SOUND_TICKS_PER_SECOND;
 
 pub type Note = i16;
 pub type ToneIndex = u16;
@@ -27,7 +27,7 @@ pub struct Sound {
     pub effects: Vec<Effect>,
     pub speed: Speed,
 
-    pub(crate) mml_commands: Vec<MmlCommand>,
+    pub(crate) commands: Vec<MmlCommand>,
 }
 
 pub type SharedSound = shared_type!(Sound);
@@ -41,7 +41,7 @@ impl Sound {
             effects: Vec::new(),
             speed: DEFAULT_SOUND_SPEED,
 
-            mml_commands: Vec::new(),
+            commands: Vec::new(),
         })
     }
 
@@ -147,16 +147,16 @@ impl Sound {
     pub fn mml(&mut self, code: &str, old_syntax: Option<bool>) {
         if let Some(old_syntax) = old_syntax {
             if old_syntax {
-                self.mml_commands = parse_old_mml(code);
+                self.commands = parse_old_mml(code);
                 return;
             }
         }
 
-        self.mml_commands = parse_mml(code);
+        self.commands = parse_mml(code);
     }
 
     pub fn mml0(&mut self) {
-        self.mml_commands.clear();
+        self.commands.clear();
     }
 
     pub fn save(&self, filename: &str, duration_sec: f64, use_ffmpeg: Option<bool>) {
@@ -185,30 +185,30 @@ impl Sound {
         channels.iter().for_each(|channel| channel.lock().stop());
     }
 
-    pub(crate) fn generate_mml_commands(&self) -> Vec<MmlCommand> {
-        let mut mml_commands = Vec::new();
+    pub(crate) fn to_commands(&self) -> Vec<MmlCommand> {
+        let mut commands = Vec::new();
         let mut prev_note = 0;
         let tones = TONES.lock();
 
-        mml_commands.push(MmlCommand::Tempo {
-            clocks_per_tick: CLOCKS_PER_SPEED,
+        commands.push(MmlCommand::Tempo {
+            bpm: SOUND_TICKS_PER_SECOND * 60,
         });
-        mml_commands.push(MmlCommand::Quantize { gate_ratio: 1.0 });
-        mml_commands.push(MmlCommand::Transpose {
+        commands.push(MmlCommand::Quantize { gate_ratio: 1.0 });
+        commands.push(MmlCommand::Transpose {
             semitone_offset: 0.0,
         });
-        mml_commands.push(MmlCommand::Detune {
+        commands.push(MmlCommand::Detune {
             semitone_offset: 0.0,
         });
-        mml_commands.push(MmlCommand::Envelope { slot: 0 });
-        mml_commands.push(MmlCommand::Vibrato { slot: 0 });
-        mml_commands.push(MmlCommand::Glide { slot: 0 });
+        commands.push(MmlCommand::Envelope { slot: 0 });
+        commands.push(MmlCommand::Vibrato { slot: 0 });
+        commands.push(MmlCommand::Glide { slot: 0 });
 
         for (i, note) in self.notes.iter().enumerate() {
             // Rest
             if *note < 0 {
-                mml_commands.push(MmlCommand::Rest {
-                    duration_ticks: self.speed as u16,
+                commands.push(MmlCommand::Rest {
+                    duration_ticks: self.speed,
                 });
                 continue;
             }
@@ -232,77 +232,77 @@ impl Sound {
             };
 
             // Volume
-            mml_commands.push(MmlCommand::Volume {
+            commands.push(MmlCommand::Volume {
                 level: volume as f64 / MAX_VOLUME as f64,
             });
 
             // Tone
-            mml_commands.push(MmlCommand::Tone {
-                tone_index: tone_index as u8,
+            commands.push(MmlCommand::Tone {
+                tone_index: tone_index as u32,
             });
 
             // Fade out
             if effect == EFFECT_FADEOUT {
-                mml_commands.push(MmlCommand::EnvelopeSet {
+                commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
-                    level: 1.0,
-                    segments: vec![(self.speed as u16, 0.0)],
+                    initial_level: 1.0,
+                    segments: vec![(self.speed, 0.0)],
                 });
             } else if effect == EFFECT_HALF_FADEOUT {
-                let ticks2 = (self.speed as f64 / 2.0).round() as u16;
-                let ticks1 = self.speed as u16 - ticks2;
-                mml_commands.push(MmlCommand::EnvelopeSet {
+                let ticks2 = (self.speed as f64 / 2.0).round() as u32;
+                let ticks1 = self.speed - ticks2;
+                commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
-                    level: 1.0,
+                    initial_level: 1.0,
                     segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
                 });
             } else if effect == EFFECT_QUARTER_FADEOUT {
-                let ticks2 = (self.speed as f64 / 4.0).round() as u16;
-                let ticks1 = self.speed as u16 - ticks2;
-                mml_commands.push(MmlCommand::EnvelopeSet {
+                let ticks2 = (self.speed as f64 / 4.0).round() as u32;
+                let ticks1 = self.speed - ticks2;
+                commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
-                    level: 1.0,
+                    initial_level: 1.0,
                     segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
                 });
             } else {
-                mml_commands.push(MmlCommand::Envelope { slot: 0 });
+                commands.push(MmlCommand::Envelope { slot: 0 });
             }
 
             // Vibrato
             if effect == EFFECT_VIBRATO {
-                mml_commands.push(MmlCommand::VibratoSet {
+                commands.push(MmlCommand::VibratoSet {
                     slot: 1,
                     delay_ticks: 0,
-                    period_clocks: MmlCommand::freq_to_clocks(VIBRATO_FREQUNCY_CHZ),
-                    semitone_depth: MmlCommand::cents_to_semitones(VIBRATO_DEPTH_CENTS),
+                    period_ticks: VIBRATO_PERIOD_TICKS,
+                    semitone_depth: VIBRATO_DEPTH_CENTS as f64 / 100.0,
                 });
             } else {
-                mml_commands.push(MmlCommand::Vibrato { slot: 0 });
+                commands.push(MmlCommand::Vibrato { slot: 0 });
             }
 
             // Slide
             if effect == EFFECT_SLIDE {
-                mml_commands.push(MmlCommand::GlideSet {
+                commands.push(MmlCommand::GlideSet {
                     slot: 1,
-                    semitone_offset: MmlCommand::cents_to_semitones((prev_note - *note) * 100),
-                    duration_ticks: self.speed as u16,
+                    semitone_offset: (prev_note - *note) as f64,
+                    duration_ticks: self.speed,
                 });
             } else {
-                mml_commands.push(MmlCommand::Glide { slot: 0 });
+                commands.push(MmlCommand::Glide { slot: 0 });
             }
 
             // Note
             let tone = tones[tone_index as usize].lock();
             let midi_note = *note + if tone.noise == Noise::Off { 36 } else { 60 };
-            mml_commands.push(MmlCommand::Note {
-                midi_note: midi_note as u8,
-                duration_ticks: self.speed as u16,
+            commands.push(MmlCommand::Note {
+                midi_note: midi_note as u32,
+                duration_ticks: self.speed,
             });
 
             prev_note = *note;
         }
 
-        mml_commands
+        commands
     }
 }
 
