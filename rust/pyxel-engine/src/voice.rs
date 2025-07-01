@@ -450,9 +450,9 @@ impl Voice {
             self.advance_control_clock(self.sample_clocks);
         }
 
-        if self.playback_clocks == 0 {
+        /*if self.playback_clocks == 0 && clock_count > 0 {
             self.write_sample(blip_buf, clock_offset, 0);
-        }
+        }*/
     }
 
     fn reset_control_clock(&mut self) {
