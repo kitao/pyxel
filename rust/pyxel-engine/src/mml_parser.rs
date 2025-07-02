@@ -396,6 +396,8 @@ fn parse_length_as_ticks(stream: &mut CharStream, note_ticks: u32) -> u32 {
 }
 
 fn parse_note(stream: &mut CharStream, octave: i32, note_ticks: u32) -> Option<MmlCommand> {
+    skip_whitespace(stream);
+
     let mut midi_note = ((octave + 1) * 12
         + match stream.peek()?.to_ascii_uppercase() {
             'C' => 0,
@@ -425,10 +427,11 @@ fn parse_note(stream: &mut CharStream, octave: i32, note_ticks: u32) -> Option<M
         {
             if next_note == midi_note {
                 duration_ticks += next_ticks;
+                continue;
             }
-        } else {
-            parse_error!(stream, "Expected same pitch note after '&'");
         }
+
+        parse_error!(stream, "Expected same pitch note after '&'");
     }
 
     Some(MmlCommand::Note {
