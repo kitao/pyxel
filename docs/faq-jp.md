@@ -11,7 +11,8 @@ Pyxel 2.4 ではサウンドエンジンと MML 文法が刷新されていま�
 - Tone クラスの `waveform` フィールドを `wavetable` にリネームする
 - `play` 関数、`playm` 関数の `tick` 引数を `sec`（小数形式の秒数）に変更する
 - `play_pos` 関数の戻り値が `(sound_no, sec)` に変わったことに対応する
-- Sound クラスと Music クラスの `save` 関数の `count` 引数を `sec` に変更する
+- Sound クラス、Music クラスの `save` 関数の `count` 引数を `sec` に変更する
+- サウンドの再生秒数が必要な場合は、Sound クラスの `total_sec` 関数を利用する
 - Sound クラスの `mml` 関数には新 MML 文法に沿ったコードを指定する
 - 旧 MML 文法 を使用する場合は、Sound クラスの `old_mml` 関数を使用する
 - `save`、`load` 関数の `exclude_xxx` オプションを `ignore_xxx` に変更する
