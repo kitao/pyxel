@@ -256,7 +256,6 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
         }
     }
 
-    println!("{commands:?}");
     commands
 }
 
