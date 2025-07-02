@@ -10,7 +10,17 @@
 - Updated the pyo3 crate to version 0.25
 - Updated the sysinfo crate to version 0.35
 - Updated the bindgen crate to version 0.72
-- Changed the play_pos function to return tick instead of note_no
+- Renewed the sound engine and MML syntax
+- Renamed the waveform field of the Tone class to wavetable
+- Changed the play and playm functions to use sec instead of tick
+- Changed the play_pos function to return sec instead of note_no
+- Changed Sound and Music save methods to use sec instead of count
+- Changed the mml method of the Sound class to use the new MML syntax
+- Added the old_mml method to the Sound class for the old MML syntax
+- Added MML string support to the play function
+- Added MML string support to the play method of the Channel class
+- Removed the colors, tones, and channels from the resource format
+- Removed the include arguments from the load and save functions
 
 ## 2.3.18
 
