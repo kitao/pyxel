@@ -574,7 +574,7 @@ class Tilemap:
         scale: Optional[float] = None,
     ) -> None: ...
 
-    # Deprecated field
+    # Deprecated fields
     image: Image
     refimg: Optional[int]
 
@@ -586,14 +586,14 @@ class Channel:
     def __init__(self) -> None: ...
     def play(
         self,
-        snd: Union[int, Seq[int], Sound, Seq[Sound]],
+        snd: Union[int, Seq[int], Sound, Seq[Sound], str],
         *,
-        tick: Optional[int] = None,
+        sec: Optional[float] = None,
         loop: Optional[bool] = None,
         resume: Optional[bool] = None,
     ) -> None: ...
     def stop(self) -> None: ...
-    def play_pos(self) -> Optional[Tuple[int, int]]: ...
+    def play_pos(self) -> Optional[Tuple[int, float]]: ...
 
 # Tone class
 class Tone:
@@ -624,8 +624,13 @@ class Sound:
     def set_tones(self, tones: str) -> None: ...
     def set_volumes(self, volumes: str) -> None: ...
     def set_effects(self, effects: str) -> None: ...
-    def mml(self, mml_str: str) -> None: ...
-    def save(filename: str, count: int, ffmpeg: Optional[bool] = None) -> None: ...
+    def mml(
+        self, code: Optional[str] = None, old_syntax: Optional[bool] = None
+    ) -> None: ...
+    def save(filename: str, sec: float, ffmpeg: Optional[bool] = None) -> None: ...
+
+    # Deprecated method
+    def old_mml(self, code: Optional[str] = None) -> None: ...
 
 # Music class
 class Music:
@@ -636,7 +641,7 @@ class Music:
         self,
         *seqs: List[int],
     ) -> None: ...
-    def save(filename: str, count: int, ffmpeg: Optional[bool] = None) -> None: ...
+    def save(filename: str, sec: float, ffmpeg: Optional[bool] = None) -> None: ...
 
     # Deprecated field
     snds_list: Seq[Seq[int]]
@@ -673,24 +678,18 @@ def process_exists(pid: int) -> bool: ...
 def load(
     filename: str,
     *,
-    excl_images: Optional[bool] = None,
-    excl_tilemaps: Optional[bool] = None,
-    excl_sounds: Optional[bool] = None,
-    excl_musics: Optional[bool] = None,
-    incl_colors: Optional[bool] = None,
-    incl_channels: Optional[bool] = None,
-    incl_tones: Optional[bool] = None,
+    ignore_images: Optional[bool] = None,
+    ignore_tilemaps: Optional[bool] = None,
+    ignore_sounds: Optional[bool] = None,
+    ignore_musics: Optional[bool] = None,
 ) -> None: ...
 def save(
     filename: str,
     *,
-    excl_images: Optional[bool] = None,
-    excl_tilemaps: Optional[bool] = None,
-    excl_sounds: Optional[bool] = None,
-    excl_musics: Optional[bool] = None,
-    incl_colors: Optional[bool] = None,
-    incl_channels: Optional[bool] = None,
-    incl_tones: Optional[bool] = None,
+    ignore_images: Optional[bool] = None,
+    ignore_tilemaps: Optional[bool] = None,
+    ignore_sounds: Optional[bool] = None,
+    ignore_musics: Optional[bool] = None,
 ) -> None: ...
 def screenshot(scale: Optional[int] = None) -> None: ...
 def screencast(scale: Optional[int] = None) -> None: ...
@@ -799,20 +798,20 @@ musics: Seq[Music]
 
 def play(
     ch: int,
-    snd: Union[int, Seq[int], Sound, Seq[Sound]],
+    snd: Union[int, Seq[int], Sound, Seq[Sound], str],
     *,
-    tick: Optional[int] = None,
+    sec: Optional[float] = None,
     loop: Optional[bool] = None,
     resume: Optional[bool] = None,
 ) -> None: ...
 def playm(
     msc: int,
     *,
-    tick: Optional[int] = None,
+    sec: Optional[float] = None,
     loop: Optional[bool] = None,
 ) -> None: ...
 def stop(ch: Optional[int] = None) -> None: ...
-def play_pos(ch: int) -> Optional[Tuple[int, int]]: ...
+def play_pos(ch: int) -> Optional[Tuple[int, float]]: ...
 
 # Math
 def ceil(x: float) -> int: ...
