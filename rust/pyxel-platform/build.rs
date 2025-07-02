@@ -20,7 +20,7 @@ impl SDL2BindingsBuilder {
         let target = var("TARGET").unwrap();
         let target_os = target.splitn(3, '-').nth(2).unwrap().to_string();
         let out_dir = var("OUT_DIR").unwrap();
-        let sdl2_dir = format!("{}/SDL2-{}", out_dir, SDL2_VERSION);
+        let sdl2_dir = format!("{out_dir}/SDL2-{SDL2_VERSION}");
 
         Self {
             target,
@@ -39,10 +39,7 @@ impl SDL2BindingsBuilder {
             return;
         }
 
-        let sdl2_archive_url = format!(
-            "https://www.libsdl.org/release/SDL2-{}.tar.gz",
-            SDL2_VERSION
-        );
+        let sdl2_archive_url = format!("https://www.libsdl.org/release/SDL2-{SDL2_VERSION}.tar.gz");
         let sdl2_archive_path = format!("{}/SDL2-{}.tar.gz", self.out_dir, SDL2_VERSION);
 
         // Download SDL2
@@ -74,20 +71,17 @@ impl SDL2BindingsBuilder {
             let function_name = "applicationSupportsSecureRestorableState";
             let function_exists = Command::new("sh")
                 .arg("-c")
-                .arg(format!("grep -q '{}' {}", function_name, patch_target_path))
+                .arg(format!("grep -q '{function_name}' {patch_target_path}"))
                 .status()
                 .expect("Failed to execute grep command");
 
             if !function_exists.success() {
-                let patch_code = format!(
-                    "- (BOOL){}:(NSApplication *)app {{ return YES; }}\n",
-                    function_name
-                );
+                let patch_code =
+                    format!("- (BOOL){function_name}:(NSApplication *)app {{ return YES; }}\n",);
                 let status = Command::new("sh")
                     .arg("-c")
                     .arg(format!(
-                        "sed -i '' '/(void)handleURLEvent/i\\\n{}' {}",
-                        patch_code, patch_target_path
+                        "sed -i '' '/(void)handleURLEvent/i\\\n{patch_code}' {patch_target_path}"
                     ))
                     .status()
                     .expect("Failed to execute sed command");
@@ -196,7 +190,7 @@ impl SDL2BindingsBuilder {
                 "/usr/local/include",
                 "/usr/include",
             ] {
-                include_flags.push(format!("-I{}", path));
+                include_flags.push(format!("-I{path}"));
             }
         }
 

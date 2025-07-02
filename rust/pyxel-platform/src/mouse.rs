@@ -68,7 +68,7 @@ pub fn handle_mouse_motion() -> Vec<Event> {
 
     if unsafe { SDL_GetWindowFlags(platform().window) } & SDL_WINDOW_INPUT_FOCUS as Uint32 != 0 {
         unsafe {
-            SDL_GetGlobalMouseState(&mut mouse_x, &mut mouse_y);
+            SDL_GetGlobalMouseState(&raw mut mouse_x, &raw mut mouse_y);
         }
     }
 
