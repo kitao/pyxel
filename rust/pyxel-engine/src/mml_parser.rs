@@ -443,14 +443,14 @@ fn parse_envelope(stream: &mut CharStream) -> Option<MmlCommand> {
         parse_error!(stream, "Envelope slot 0 is reserved for disable");
     }
 
-    let init_vol = expect_number::<f64>(stream, "@ENV{}", (0, 15));
+    let init_vol = expect_number::<f64>(stream, "init_vol", (0, 15));
     let mut segments = Vec::new();
 
     while parse_string(stream, "}").is_err() {
         expect_string(stream, ",");
-        let dur_ticks = expect_number(stream, "@ENV{}", RANGE_GE_0);
+        let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE_0);
         expect_string(stream, ",");
-        let vol = expect_number::<f64>(stream, "@ENV{}", (0, 15));
+        let vol = expect_number::<f64>(stream, "vol", (0, 15));
         segments.push((dur_ticks, vol / 15.0));
     }
 
@@ -472,11 +472,11 @@ fn parse_vibrato(stream: &mut CharStream) -> Option<MmlCommand> {
         parse_error!(stream, "Vibrato slot 0 is reserved for disable");
     }
 
-    let delay_ticks = expect_number(stream, "@VIB{}", RANGE_GE_0);
+    let delay_ticks = expect_number(stream, "delay_ticks", RANGE_GE_0);
     expect_string(stream, ",");
-    let period_ticks = expect_number(stream, "@VIB{}", RANGE_GE_1);
+    let period_ticks = expect_number(stream, "period_ticks", RANGE_GE_1);
     expect_string(stream, ",");
-    let depth_cents = expect_number::<f64>(stream, "@VIB{}", RANGE_GE_0);
+    let depth_cents = expect_number::<f64>(stream, "depth_cents", RANGE_GE_0);
     expect_string(stream, "}");
 
     Some(MmlCommand::VibratoSet {
@@ -498,9 +498,9 @@ fn parse_glide(stream: &mut CharStream) -> Option<MmlCommand> {
         parse_error!(stream, "Glide slot 0 is reserved for disable");
     }
 
-    let offset_cents = expect_number::<f64>(stream, "@GLI{}", RANGE_ALL);
+    let offset_cents = expect_number::<f64>(stream, "offset_cents", RANGE_ALL);
     expect_string(stream, ",");
-    let dur_ticks = expect_number(stream, "@GLI{}", RANGE_GE_1);
+    let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE_1);
     expect_string(stream, "}");
 
     Some(MmlCommand::GlideSet {
