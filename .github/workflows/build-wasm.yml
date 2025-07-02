@@ -22,7 +22,7 @@ jobs:
       - name: Install Nightly Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: nightly
+          toolchain: nightly-2025-02-01
           components: rustfmt
 
       - name: Install Python
