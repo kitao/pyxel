@@ -132,12 +132,12 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
 
     // Parse MML commands
     while stream.peek().is_some() {
-        if parse_string(&mut stream, "[") {
+        if parse_string(&mut stream, "[").is_ok() {
             //
             // [ - Loop start marker
             //
             commands.push(MmlCommand::RepeatStart);
-        } else if parse_string(&mut stream, "]") {
+        } else if parse_string(&mut stream, "]").is_ok() {
             //
             // ] - Loop end (infinite repetition)
             // ]<count> - Loop end (repeat <count> times, count >= 1)
@@ -216,25 +216,25 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             // O<oct> - Set octave (-1 <= oct <= 9)
             //
             octave = oct;
-        } else if parse_string(&mut stream, ">") {
+        } else if parse_string(&mut stream, ">").is_ok() {
             //
             // > - Octave up
             //
             if octave < 9 {
                 octave += 1;
             } else {
-                parse_error!(stream, "Octave exceeds maximum '{octave}'");
+                parse_error!(stream, "Octave exceeds maximum {octave}");
             }
-        } else if parse_string(&mut stream, "<") {
+        } else if parse_string(&mut stream, "<").is_ok() {
             //
             // < - Octave down
             //
             if octave > -1 {
                 octave -= 1;
             } else {
-                parse_error!(stream, "Octave is below minimum '{octave}'");
+                parse_error!(stream, "Octave is below minimum {octave}");
             }
-        } else if parse_string(&mut stream, "L") {
+        } else if parse_string(&mut stream, "L").is_ok() {
             //
             // L<len> - Set default note length
             //
@@ -256,6 +256,7 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
         }
     }
 
+    println!("{commands:?}");
     commands
 }
 
@@ -273,81 +274,89 @@ fn parse_number<T: TryFrom<i32>>(
     stream: &mut CharStream,
     name: &str,
     range: (i32, i32),
-) -> Option<T> {
+) -> Result<T, String> {
     skip_whitespace(stream);
 
     let pos = stream.pos;
-    let mut number_str = String::new();
+    let mut parsed_str = String::new();
 
     if let Some(&c) = stream.peek() {
         if c == '-' {
-            number_str.push(stream.next().unwrap());
+            parsed_str.push(stream.next().unwrap());
         }
     }
 
     while let Some(&c) = stream.peek() {
         if c.is_ascii_digit() {
-            number_str.push(stream.next().unwrap());
+            parsed_str.push(stream.next().unwrap());
         } else {
             break;
         }
     }
 
-    if number_str.is_empty() {
+    if parsed_str.is_empty() {
+        if let Some(&c) = stream.peek() {
+            parsed_str.push(c);
+        }
         stream.pos = pos;
-        return None;
+        return Err(parsed_str);
     }
 
-    let Ok(value) = number_str.parse::<i32>() else {
+    let Ok(value) = parsed_str.parse::<i32>() else {
         stream.pos = pos;
-        return None;
+        return Err(parsed_str);
     };
 
     if value < range.0 {
-        parse_error!(stream, "{name} is below minimum '{}'", range.0);
+        parse_error!(stream, "'{name}' is below minimum {}", range.0);
     }
     if value > range.1 {
-        parse_error!(stream, "{name} exceeds maximum '{}'", range.1);
+        parse_error!(stream, "'{name}' exceeds maximum {}", range.1);
     }
 
     if let Ok(value) = T::try_from(value) {
-        Some(value)
+        Ok(value)
     } else {
         panic!();
     }
 }
 
 fn expect_number<T: TryFrom<i32>>(stream: &mut CharStream, name: &str, range: (i32, i32)) -> T {
-    if let Some(value) = parse_number(stream, name, range) {
-        value
-    } else {
-        parse_error!(stream, "Expected value for {name}");
+    match parse_number(stream, name, range) {
+        Ok(value) => value,
+        Err(actual) => parse_error!(stream, "Expected value for '{name}' but found '{actual}'"),
     }
 }
 
-fn parse_string(stream: &mut CharStream, literal: &str) -> bool {
+fn parse_string(stream: &mut CharStream, literal: &str) -> Result<String, String> {
     skip_whitespace(stream);
 
     let pos = stream.pos;
+    let mut parsed_str = String::new();
 
     for expected in literal.chars() {
         match stream.peek() {
             Some(&c) if c.eq_ignore_ascii_case(&expected) => {
-                stream.next();
+                parsed_str.push(stream.next().unwrap());
             }
-            _ => {
+            Some(&c) => {
+                parsed_str.push(c);
                 stream.pos = pos;
-                return false;
+                return Err(parsed_str);
+            }
+            None => {
+                stream.pos = pos;
+                return Err(parsed_str);
             }
         }
     }
 
-    true
+    Ok(parsed_str)
 }
 
 fn expect_string(stream: &mut CharStream, literal: &str) {
-    if !parse_string(stream, literal) {
-        parse_error!(stream, "Expected '{literal}'");
+    if let Err(actual) = parse_string(stream, literal) {
+        parse_error!(stream, "Expected '{literal}' but found '{actual}'");
     }
 }
 
@@ -356,12 +365,8 @@ fn parse_command<T: TryFrom<i32>>(
     name: &str,
     range: (i32, i32),
 ) -> Option<T> {
-    if parse_string(stream, name) {
-        if let Some(number) = parse_number(stream, name, range) {
-            return Some(number);
-        }
-
-        parse_error!(stream, "Expected value after '{name}'");
+    if parse_string(stream, name).is_ok() {
+        return Some(expect_number(stream, name, range));
     }
 
     None
@@ -372,7 +377,7 @@ fn parse_length_as_ticks(stream: &mut CharStream, note_ticks: u32) -> u32 {
 
     let mut note_ticks = note_ticks;
 
-    if let Some(len) = parse_number::<u32>(stream, "Note length", RANGE_GE_1) {
+    if let Ok(len) = parse_number::<u32>(stream, "Note length", RANGE_GE_1) {
         if WHOLE_NOTE_TICKS % len == 0 {
             note_ticks = WHOLE_NOTE_TICKS / len;
         } else {
@@ -380,7 +385,7 @@ fn parse_length_as_ticks(stream: &mut CharStream, note_ticks: u32) -> u32 {
         }
     }
 
-    while parse_string(stream, ".") {
+    while parse_string(stream, ".").is_ok() {
         if note_ticks % 2 == 0 {
             note_ticks += note_ticks / 2;
         } else {
@@ -405,9 +410,9 @@ fn parse_note(stream: &mut CharStream, octave: i32, note_ticks: u32) -> Option<M
         };
     stream.next();
 
-    if parse_string(stream, "#") || parse_string(stream, "+") {
+    if parse_string(stream, "#").is_ok() || parse_string(stream, "+").is_ok() {
         midi_note += 1;
-    } else if parse_string(stream, "-") {
+    } else if parse_string(stream, "-").is_ok() {
         midi_note -= 1;
     }
 
@@ -418,7 +423,7 @@ fn parse_note(stream: &mut CharStream, octave: i32, note_ticks: u32) -> Option<M
 }
 
 fn parse_rest(stream: &mut CharStream, note_ticks: u32) -> Option<MmlCommand> {
-    if !parse_string(stream, "R") {
+    if !parse_string(stream, "R").is_ok() {
         return None;
     }
 
@@ -430,7 +435,7 @@ fn parse_rest(stream: &mut CharStream, note_ticks: u32) -> Option<MmlCommand> {
 fn parse_envelope(stream: &mut CharStream) -> Option<MmlCommand> {
     let slot = parse_command(stream, "@ENV", RANGE_GE_0)?;
 
-    if !parse_string(stream, "{") {
+    if !parse_string(stream, "{").is_ok() {
         return Some(MmlCommand::Envelope { slot });
     }
 
@@ -438,25 +443,15 @@ fn parse_envelope(stream: &mut CharStream) -> Option<MmlCommand> {
         parse_error!(stream, "Envelope slot 0 is reserved for disable");
     }
 
-    let init_vol = expect_number::<f64>(stream, "init_vol", (0, 15));
-    expect_string(stream, ",");
-
+    let init_vol = expect_number::<f64>(stream, "@ENV{}", (0, 15));
     let mut segments = Vec::new();
 
-    loop {
-        if let Some(dur_ticks) = parse_number(stream, "dur_ticks", RANGE_GE_0) {
-            expect_string(stream, ",");
-            let vol = expect_number::<f64>(stream, "vol", (0, 15));
-            segments.push((dur_ticks, vol / 15.0));
-            continue;
-        }
-        if parse_string(stream, "}") {
-            break;
-        }
-    }
-
-    if segments.is_empty() {
-        parse_error!(stream, "Envelope must have at least one segment");
+    while parse_string(stream, "}").is_err() {
+        expect_string(stream, ",");
+        let dur_ticks = expect_number(stream, "@ENV{}", RANGE_GE_0);
+        expect_string(stream, ",");
+        let vol = expect_number::<f64>(stream, "@ENV{}", (0, 15));
+        segments.push((dur_ticks, vol / 15.0));
     }
 
     Some(MmlCommand::EnvelopeSet {
@@ -469,7 +464,7 @@ fn parse_envelope(stream: &mut CharStream) -> Option<MmlCommand> {
 fn parse_vibrato(stream: &mut CharStream) -> Option<MmlCommand> {
     let slot = parse_command(stream, "@VIB", RANGE_GE_0)?;
 
-    if !parse_string(stream, "{") {
+    if parse_string(stream, "{").is_err() {
         return Some(MmlCommand::Vibrato { slot });
     }
 
@@ -477,11 +472,11 @@ fn parse_vibrato(stream: &mut CharStream) -> Option<MmlCommand> {
         parse_error!(stream, "Vibrato slot 0 is reserved for disable");
     }
 
-    let delay_ticks = expect_number(stream, "delay_ticks", RANGE_GE_0);
+    let delay_ticks = expect_number(stream, "@VIB{}", RANGE_GE_0);
     expect_string(stream, ",");
-    let period_ticks = expect_number(stream, "period_ticks", RANGE_GE_1);
+    let period_ticks = expect_number(stream, "@VIB{}", RANGE_GE_1);
     expect_string(stream, ",");
-    let depth_cents = expect_number::<f64>(stream, "depth_cents", RANGE_GE_0);
+    let depth_cents = expect_number::<f64>(stream, "@VIB{}", RANGE_GE_0);
     expect_string(stream, "}");
 
     Some(MmlCommand::VibratoSet {
@@ -495,7 +490,7 @@ fn parse_vibrato(stream: &mut CharStream) -> Option<MmlCommand> {
 fn parse_glide(stream: &mut CharStream) -> Option<MmlCommand> {
     let slot = parse_command(stream, "@GLI", RANGE_GE_0)?;
 
-    if !parse_string(stream, "{") {
+    if parse_string(stream, "{").is_err() {
         return Some(MmlCommand::Glide { slot });
     }
 
@@ -503,9 +498,9 @@ fn parse_glide(stream: &mut CharStream) -> Option<MmlCommand> {
         parse_error!(stream, "Glide slot 0 is reserved for disable");
     }
 
-    let offset_cents = expect_number::<f64>(stream, "offset_cents", RANGE_ALL);
+    let offset_cents = expect_number::<f64>(stream, "@GLI{}", RANGE_ALL);
     expect_string(stream, ",");
-    let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE_1);
+    let dur_ticks = expect_number(stream, "@GLI{}", RANGE_GE_1);
     expect_string(stream, "}");
 
     Some(MmlCommand::GlideSet {
