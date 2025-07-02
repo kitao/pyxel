@@ -126,6 +126,10 @@ impl Sound {
     pub fn save(&self, filename: &str, sec: f64, ffmpeg: Option<bool>) {
         self.inner.lock().save(filename, sec, ffmpeg);
     }
+
+    pub fn total_sec(&self) -> Option<f64> {
+        self.inner.lock().total_sec()
+    }
 }
 
 pub fn add_sound_class(m: &Bound<'_, PyModule>) -> PyResult<()> {
