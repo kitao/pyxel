@@ -134,15 +134,15 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
     while stream.peek().is_some() {
         if parse_string(&mut stream, "[").is_ok() {
             //
-            // [ - Loop start marker
+            // [ - Repeat start marker
             //
             commands.push(MmlCommand::RepeatStart);
         } else if parse_string(&mut stream, "]").is_ok() {
             //
-            // ] - Loop end (infinite repetition)
-            // ]<count> - Loop end (repeat <count> times, count >= 1)
+            // ] - Repeat end (infinite repetition)
+            // ]<count> - Repeat end (repeat <count> times, count >= 1)
             //
-            let count = parse_number(&mut stream, "Repeat count", RANGE_GE_1).unwrap_or(0);
+            let count = parse_number(&mut stream, "count", RANGE_GE_1).unwrap_or(0);
             commands.push(MmlCommand::RepeatEnd {
                 repeat_count: count,
             });
