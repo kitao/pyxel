@@ -260,15 +260,13 @@ impl Channel {
 
             match command {
                 MmlCommand::RepeatStart => {
-                    self.repeat_points.push((self.command_index + 1, 0));
+                    self.repeat_points.push((self.command_index, 0)); // Index after RepeatStart
                 }
-                MmlCommand::RepeatEnd {
-                    repeat_count: count,
-                } => {
-                    if let Some((repeat_index, repeat_count)) = self.repeat_points.pop() {
-                        if *count == 0 || repeat_count < *count {
-                            self.repeat_points.push((repeat_index, repeat_count + 1));
-                            self.command_index = repeat_index;
+                MmlCommand::RepeatEnd { repeat_count } => {
+                    if let Some((index, count)) = self.repeat_points.pop() {
+                        if *repeat_count == 0 || count + 1 < *repeat_count {
+                            self.repeat_points.push((index, count + 1));
+                            self.command_index = index;
                         }
                     }
                 }
