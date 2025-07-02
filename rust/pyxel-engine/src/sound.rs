@@ -144,19 +144,16 @@ impl Sound {
         }
     }
 
-    pub fn mml(&mut self, code: &str, old_syntax: Option<bool>) {
-        if let Some(old_syntax) = old_syntax {
-            if old_syntax {
-                self.commands = parse_old_mml(code);
-                return;
-            }
-        }
-
+    pub fn mml(&mut self, code: &str) {
         self.commands = parse_mml(code);
     }
 
     pub fn mml0(&mut self) {
         self.commands.clear();
+    }
+
+    pub fn old_mml(&mut self, code: &str) {
+        self.commands = parse_old_mml(code);
     }
 
     pub fn save(&self, filename: &str, duration_sec: f64, use_ffmpeg: Option<bool>) {
