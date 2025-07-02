@@ -423,7 +423,7 @@ fn parse_note(stream: &mut CharStream, octave: i32, note_ticks: u32) -> Option<M
 }
 
 fn parse_rest(stream: &mut CharStream, note_ticks: u32) -> Option<MmlCommand> {
-    if !parse_string(stream, "R").is_ok() {
+    if parse_string(stream, "R").is_err() {
         return None;
     }
 
@@ -435,7 +435,7 @@ fn parse_rest(stream: &mut CharStream, note_ticks: u32) -> Option<MmlCommand> {
 fn parse_envelope(stream: &mut CharStream) -> Option<MmlCommand> {
     let slot = parse_command(stream, "@ENV", RANGE_GE_0)?;
 
-    if !parse_string(stream, "{").is_ok() {
+    if parse_string(stream, "{").is_err() {
         return Some(MmlCommand::Envelope { slot });
     }
 
