@@ -15,6 +15,7 @@
 - Changed the play and playm functions to use sec instead of tick
 - Changed the play_pos function to return sec instead of note_no
 - Changed Sound and Music save methods to use sec instead of count
+- Added the total_sec method to the Sound class
 - Changed the mml method of the Sound class to use the new MML syntax
 - Added the old_mml method to the Sound class for the old MML syntax
 - Added MML string support to the play function

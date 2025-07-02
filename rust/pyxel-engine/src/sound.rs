@@ -182,6 +182,53 @@ impl Sound {
         channels.iter().for_each(|channel| channel.lock().stop());
     }
 
+    pub fn total_sec(&self) -> Option<f64> {
+        if self.commands.is_empty() {
+            return Some(
+                self.notes.len() as f64 * self.speed as f64 / SOUND_TICKS_PER_SECOND as f64,
+            );
+        }
+
+        let mut total_clocks = 0;
+        let mut command_index: u32 = 0;
+        let mut repeat_points: Vec<(u32, u32)> = Vec::new();
+        let mut clocks_per_tick = 0;
+
+        while command_index < self.commands.len() as u32 {
+            let command = &self.commands[command_index as usize];
+            command_index += 1;
+
+            match command {
+                MmlCommand::RepeatStart => {
+                    repeat_points.push((command_index, 0)); // Index after RepeatStart
+                }
+                MmlCommand::RepeatEnd { repeat_count } => {
+                    if *repeat_count == 0 {
+                        return None;
+                    }
+
+                    if let Some((index, count)) = repeat_points.pop() {
+                        if count + 1 < *repeat_count {
+                            repeat_points.push((index, count + 1));
+                            command_index = index;
+                        }
+                    }
+                }
+                MmlCommand::Tempo {
+                    clocks_per_tick: cpt,
+                } => {
+                    clocks_per_tick = *cpt;
+                }
+                MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
+                    total_clocks += clocks_per_tick * *duration_ticks;
+                }
+                _ => {}
+            }
+        }
+
+        Some(total_clocks as f64 / AUDIO_CLOCK_RATE as f64)
+    }
+
     pub(crate) fn to_commands(&self) -> Vec<MmlCommand> {
         let mut commands = Vec::new();
         let mut prev_note = 0;
