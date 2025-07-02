@@ -121,7 +121,7 @@ impl Channel {
         let sound = Sound::new();
         {
             let mut sound = sound.lock();
-            sound.mml(code, None);
+            sound.mml(code);
         }
 
         self.play_from_clock(

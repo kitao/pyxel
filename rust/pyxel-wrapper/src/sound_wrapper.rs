@@ -2,7 +2,7 @@ use std::sync::Once;
 
 use pyo3::prelude::*;
 
-static OLD_SYNTAX_ONCE: Once = Once::new();
+static OLD_MML_ONCE: Once = Once::new();
 
 macro_rules! wrap_sound_as_python_list {
     ($wrapper_name:ident, $value_type:ty, $field_name:ident) => {
@@ -100,18 +100,23 @@ impl Sound {
         self.inner.lock().set_effects(effects);
     }
 
-    #[pyo3(signature = (code=None, old_syntax=None))]
-    pub fn mml(&self, code: Option<&str>, old_syntax: Option<bool>) {
-        if let Some(old_syntax) = old_syntax {
-            if old_syntax {
-                OLD_SYNTAX_ONCE.call_once(|| {
-                    println!("The old MML syntax is deprecated. Use the new syntax instead.");
-                });
-            }
+    #[pyo3(signature = (code=None))]
+    pub fn mml(&self, code: Option<&str>) {
+        if let Some(code) = code {
+            self.inner.lock().mml(code);
+        } else {
+            self.inner.lock().mml0();
         }
+    }
+
+    #[pyo3(signature = (code=None))]
+    pub fn old_mml(&self, code: Option<&str>) {
+        OLD_MML_ONCE.call_once(|| {
+            println!("Sound.old_mml(code) is is deprecated. Use Sound.mml(code) instead.");
+        });
 
         if let Some(code) = code {
-            self.inner.lock().mml(code, old_syntax);
+            self.inner.lock().old_mml(code);
         } else {
             self.inner.lock().mml0();
         }
