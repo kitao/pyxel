@@ -390,6 +390,7 @@ impl Voice {
 
     pub fn set_clocks_per_tick(&mut self, clocks_per_tick: u32) {
         assert!(clocks_per_tick > 0);
+
         self.clocks_per_tick = clocks_per_tick;
     }
 
