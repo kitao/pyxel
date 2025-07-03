@@ -222,14 +222,16 @@ impl Vibrato {
     }
 
     pub fn set(&mut self, delay_ticks: u32, period_ticks: u32, semitone_depth: f64) {
-        assert!(period_ticks > 0);
-
         self.delay_ticks = delay_ticks;
         self.semitone_depth = semitone_depth;
 
         if period_ticks != self.period_ticks {
             self.period_ticks = period_ticks;
-            self.inv_period_ticks = 1.0 / period_ticks as f64;
+            self.inv_period_ticks = if period_ticks > 0 {
+                1.0 / period_ticks as f64
+            } else {
+                0.0
+            };
         }
     }
 
@@ -299,12 +301,14 @@ impl Glide {
     }
 
     pub fn set(&mut self, semitone_offset: f64, duration_ticks: u32) {
-        assert!(duration_ticks > 0);
-
         if semitone_offset != self.semitone_offset || duration_ticks != self.duration_ticks {
             self.semitone_offset = semitone_offset;
             self.duration_ticks = duration_ticks;
-            self.semitone_slope = -semitone_offset / duration_ticks as f64;
+            self.semitone_slope = if duration_ticks > 0 {
+                -semitone_offset / duration_ticks as f64
+            } else {
+                0.0
+            };
         }
     }
 
