@@ -232,7 +232,7 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             commands.push(MmlCommand::Transpose {
                 semitone_offset: key_offset,
             });
-        } else if let Some(offset_cents) = parse_command::<u32>(&mut stream, "Y", RANGE_ALL) {
+        } else if let Some(offset_cents) = parse_command(&mut stream, "Y", RANGE_ALL) {
             //
             // Y<offset_cents> - Set detune in cents
             //
@@ -548,9 +548,9 @@ fn parse_vibrato(stream: &mut CharStream) -> Option<MmlCommand> {
 
     let delay_ticks = expect_number(stream, "delay_ticks", RANGE_GE0);
     expect_string(stream, ",");
-    let period_ticks = expect_number(stream, "period_ticks", RANGE_GE1);
+    let period_ticks = expect_number(stream, "period_ticks", RANGE_GE0);
     expect_string(stream, ",");
-    let depth_cents = expect_number(stream, "depth_cents", RANGE_GE0);
+    let depth_cents = expect_number(stream, "depth_cents", RANGE_ALL);
     expect_string(stream, "}");
 
     Some(MmlCommand::VibratoSet {
@@ -574,7 +574,7 @@ fn parse_glide(stream: &mut CharStream) -> Option<MmlCommand> {
 
     let offset_cents = expect_number(stream, "offset_cents", RANGE_ALL);
     expect_string(stream, ",");
-    let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE1);
+    let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE0);
     expect_string(stream, "}");
 
     Some(MmlCommand::GlideSet {
@@ -596,6 +596,6 @@ fn volume_to_level(volume: u32) -> f64 {
     volume as f64 / RANGE_VOLUME.1 as f64
 }
 
-fn cents_to_semitones(cents: u32) -> f64 {
+fn cents_to_semitones(cents: i32) -> f64 {
     cents as f64 / 100.0
 }
