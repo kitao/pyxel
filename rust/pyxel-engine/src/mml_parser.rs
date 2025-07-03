@@ -2,8 +2,19 @@ use crate::mml_command::MmlCommand;
 use crate::settings::{AUDIO_CLOCK_RATE, TICKS_PER_QUARTER_NOTE};
 
 const RANGE_ALL: (i32, i32) = (i32::MIN, i32::MAX);
-const RANGE_GE_0: (i32, i32) = (0, i32::MAX);
-const RANGE_GE_1: (i32, i32) = (1, i32::MAX);
+const RANGE_GE0: (i32, i32) = (0, i32::MAX);
+const RANGE_GE1: (i32, i32) = (1, i32::MAX);
+
+const RANGE_QUANTIZE: (i32, i32) = (0, 32);
+const RANGE_VOLUME: (i32, i32) = (0, 127);
+const RANGE_OCTAVE: (i32, i32) = (-1, 9);
+const RANGE_LENGTH: (i32, i32) = (1, 192);
+
+const DEFAULT_TEMPO: u32 = 120;
+const DEFAULT_QUANTIZE: u32 = 28;
+const DEFAULT_VOLUME: u32 = 100;
+const DEFAULT_OCTAVE: i32 = 4;
+const DEFAULT_LENGTH: u32 = 4;
 
 struct CharStream<'a> {
     chars: &'a [char],
@@ -71,14 +82,14 @@ impl ShouldInit {
         if self.tempo {
             self.tempo = false;
             commands.push(MmlCommand::Tempo {
-                clocks_per_tick: bpm_to_cpt(120),
+                clocks_per_tick: bpm_to_cpt(DEFAULT_TEMPO),
             });
         }
 
         if self.quantize {
             self.quantize = false;
             commands.push(MmlCommand::Quantize {
-                gate_ratio: 7.0 / 8.0,
+                gate_ratio: gate_time_to_gate_ratio(DEFAULT_QUANTIZE),
             });
         }
 
@@ -89,7 +100,9 @@ impl ShouldInit {
 
         if self.volume {
             self.volume = false;
-            commands.push(MmlCommand::Volume { level: 1.0 });
+            commands.push(MmlCommand::Volume {
+                level: volume_to_level(DEFAULT_VOLUME),
+            });
         }
 
         if self.transpose {
@@ -123,11 +136,52 @@ impl ShouldInit {
     }
 }
 
+pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f64> {
+    let mut total_clocks = 0;
+    let mut command_index: u32 = 0;
+    let mut repeat_points: Vec<(u32, u32)> = Vec::new();
+    let mut clocks_per_tick = bpm_to_cpt(DEFAULT_TEMPO);
+
+    while command_index < commands.len() as u32 {
+        let command = &commands[command_index as usize];
+        command_index += 1;
+
+        match command {
+            MmlCommand::RepeatStart => {
+                repeat_points.push((command_index, 0)); // Index after RepeatStart
+            }
+            MmlCommand::RepeatEnd { repeat_count } => {
+                if *repeat_count == 0 {
+                    return None;
+                }
+
+                if let Some((index, count)) = repeat_points.pop() {
+                    if count + 1 < *repeat_count {
+                        repeat_points.push((index, count + 1));
+                        command_index = index;
+                    }
+                }
+            }
+            MmlCommand::Tempo {
+                clocks_per_tick: cpt,
+            } => {
+                clocks_per_tick = *cpt;
+            }
+            MmlCommand::Note { duration_ticks, .. } | MmlCommand::Rest { duration_ticks } => {
+                total_clocks += clocks_per_tick * *duration_ticks;
+            }
+            _ => {}
+        }
+    }
+
+    Some(total_clocks as f64 / AUDIO_CLOCK_RATE as f64)
+}
+
 pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
     let mut stream = CharStream::new(mml);
     let mut commands = Vec::new();
-    let mut octave: i32 = 4;
-    let mut note_ticks: u32 = TICKS_PER_QUARTER_NOTE;
+    let mut octave: i32 = DEFAULT_OCTAVE;
+    let mut note_ticks: u32 = TICKS_PER_QUARTER_NOTE * 4 / DEFAULT_LENGTH;
     let mut should_init = ShouldInit::new();
 
     // Parse MML commands
@@ -142,11 +196,11 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             // ] - Repeat end (infinite repetition)
             // ]<count> - Repeat end (repeat <count> times, count >= 1)
             //
-            let count = parse_number(&mut stream, "count", RANGE_GE_1).unwrap_or(0);
+            let count = parse_number(&mut stream, "count", RANGE_GE1).unwrap_or(0);
             commands.push(MmlCommand::RepeatEnd {
                 repeat_count: count,
             });
-        } else if let Some(bpm) = parse_command(&mut stream, "T", RANGE_GE_1) {
+        } else if let Some(bpm) = parse_command(&mut stream, "T", RANGE_GE1) {
             //
             // T<bpm> - Set tempo (bpm >= 1)
             //
@@ -154,20 +208,22 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             commands.push(MmlCommand::Tempo {
                 clocks_per_tick: bpm_to_cpt(bpm),
             });
-        } else if let Some(gate_time) = parse_command::<f64>(&mut stream, "Q", (1, 8)) {
+        } else if let Some(gate_time) = parse_command(&mut stream, "Q", RANGE_QUANTIZE) {
             //
-            // Q<gate_time> - Set quantize gate time (1 <= gate_time <= 8)
+            // Q<gate_time> - Set quantize gate time (0 <= gate_time <= 32)
             //
             should_init.quantize = false;
             commands.push(MmlCommand::Quantize {
-                gate_ratio: gate_time / 8.0,
+                gate_ratio: gate_time_to_gate_ratio(gate_time),
             });
-        } else if let Some(vol) = parse_command::<f64>(&mut stream, "V", (0, 15)) {
+        } else if let Some(vol) = parse_command(&mut stream, "V", RANGE_VOLUME) {
             //
-            // V<vol> - Set volume level (0 <= vol <= 15)
+            // V<vol> - Set volume level (0 <= vol <= 127)
             //
             should_init.volume = false;
-            commands.push(MmlCommand::Volume { level: vol / 15.0 });
+            commands.push(MmlCommand::Volume {
+                level: volume_to_level(vol),
+            });
         } else if let Some(key_offset) = parse_command(&mut stream, "K", RANGE_ALL) {
             //
             // K<key_offset> - Transpose key in semitones
@@ -176,13 +232,13 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             commands.push(MmlCommand::Transpose {
                 semitone_offset: key_offset,
             });
-        } else if let Some(offset_cents) = parse_command::<f64>(&mut stream, "Y", RANGE_ALL) {
+        } else if let Some(offset_cents) = parse_command::<u32>(&mut stream, "Y", RANGE_ALL) {
             //
             // Y<offset_cents> - Set detune in cents
             //
             should_init.detune = false;
             commands.push(MmlCommand::Detune {
-                semitone_offset: offset_cents / 100.0,
+                semitone_offset: cents_to_semitones(offset_cents),
             });
         } else if let Some(command) = parse_envelope(&mut stream) {
             //
@@ -205,13 +261,13 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             //
             should_init.glide = false;
             commands.push(command);
-        } else if let Some(tone_index) = parse_command(&mut stream, "@", RANGE_GE_0) {
+        } else if let Some(tone_index) = parse_command(&mut stream, "@", RANGE_GE0) {
             //
             // @<tone_index> - Set tone (tone_index >= 0)
             //
             should_init.tone = false;
             commands.push(MmlCommand::Tone { tone_index });
-        } else if let Some(oct) = parse_command(&mut stream, "O", (-1, 9)) {
+        } else if let Some(oct) = parse_command(&mut stream, "O", RANGE_OCTAVE) {
             //
             // O<oct> - Set octave (-1 <= oct <= 9)
             //
@@ -220,7 +276,7 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             //
             // > - Octave up
             //
-            if octave < 9 {
+            if octave < RANGE_OCTAVE.1 {
                 octave += 1;
             } else {
                 parse_error!(stream, "Octave exceeds maximum {octave}");
@@ -229,7 +285,7 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             //
             // < - Octave down
             //
-            if octave > -1 {
+            if octave > RANGE_OCTAVE.0 {
                 octave -= 1;
             } else {
                 parse_error!(stream, "Octave is below minimum {octave}");
@@ -376,7 +432,7 @@ fn parse_length_as_ticks(stream: &mut CharStream, note_ticks: u32) -> u32 {
 
     let mut note_ticks = note_ticks;
 
-    if let Ok(len) = parse_number::<u32>(stream, "Note length", RANGE_GE_1) {
+    if let Ok(len) = parse_number::<u32>(stream, "Note length", RANGE_LENGTH) {
         if WHOLE_NOTE_TICKS % len == 0 {
             note_ticks = WHOLE_NOTE_TICKS / len;
         } else {
@@ -451,7 +507,7 @@ fn parse_rest(stream: &mut CharStream, note_ticks: u32) -> Option<MmlCommand> {
 }
 
 fn parse_envelope(stream: &mut CharStream) -> Option<MmlCommand> {
-    let slot = parse_command(stream, "@ENV", RANGE_GE_0)?;
+    let slot = parse_command(stream, "@ENV", RANGE_GE0)?;
 
     if parse_string(stream, "{").is_err() {
         return Some(MmlCommand::Envelope { slot });
@@ -461,26 +517,26 @@ fn parse_envelope(stream: &mut CharStream) -> Option<MmlCommand> {
         parse_error!(stream, "Envelope slot 0 is reserved for disable");
     }
 
-    let init_vol = expect_number::<f64>(stream, "init_vol", (0, 15));
+    let init_vol = expect_number(stream, "init_vol", RANGE_VOLUME);
     let mut segments = Vec::new();
 
     while parse_string(stream, "}").is_err() {
         expect_string(stream, ",");
-        let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE_0);
+        let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE0);
         expect_string(stream, ",");
-        let vol = expect_number::<f64>(stream, "vol", (0, 15));
-        segments.push((dur_ticks, vol / 15.0));
+        let vol = expect_number(stream, "vol", RANGE_VOLUME);
+        segments.push((dur_ticks, volume_to_level(vol)));
     }
 
     Some(MmlCommand::EnvelopeSet {
         slot,
-        initial_level: init_vol / 15.0,
+        initial_level: volume_to_level(init_vol),
         segments,
     })
 }
 
 fn parse_vibrato(stream: &mut CharStream) -> Option<MmlCommand> {
-    let slot = parse_command(stream, "@VIB", RANGE_GE_0)?;
+    let slot = parse_command(stream, "@VIB", RANGE_GE0)?;
 
     if parse_string(stream, "{").is_err() {
         return Some(MmlCommand::Vibrato { slot });
@@ -490,23 +546,23 @@ fn parse_vibrato(stream: &mut CharStream) -> Option<MmlCommand> {
         parse_error!(stream, "Vibrato slot 0 is reserved for disable");
     }
 
-    let delay_ticks = expect_number(stream, "delay_ticks", RANGE_GE_0);
+    let delay_ticks = expect_number(stream, "delay_ticks", RANGE_GE0);
     expect_string(stream, ",");
-    let period_ticks = expect_number(stream, "period_ticks", RANGE_GE_1);
+    let period_ticks = expect_number(stream, "period_ticks", RANGE_GE1);
     expect_string(stream, ",");
-    let depth_cents = expect_number::<f64>(stream, "depth_cents", RANGE_GE_0);
+    let depth_cents = expect_number(stream, "depth_cents", RANGE_GE0);
     expect_string(stream, "}");
 
     Some(MmlCommand::VibratoSet {
         slot,
         delay_ticks,
         period_ticks,
-        semitone_depth: depth_cents / 100.0,
+        semitone_depth: cents_to_semitones(depth_cents),
     })
 }
 
 fn parse_glide(stream: &mut CharStream) -> Option<MmlCommand> {
-    let slot = parse_command(stream, "@GLI", RANGE_GE_0)?;
+    let slot = parse_command(stream, "@GLI", RANGE_GE0)?;
 
     if parse_string(stream, "{").is_err() {
         return Some(MmlCommand::Glide { slot });
@@ -516,18 +572,30 @@ fn parse_glide(stream: &mut CharStream) -> Option<MmlCommand> {
         parse_error!(stream, "Glide slot 0 is reserved for disable");
     }
 
-    let offset_cents = expect_number::<f64>(stream, "offset_cents", RANGE_ALL);
+    let offset_cents = expect_number(stream, "offset_cents", RANGE_ALL);
     expect_string(stream, ",");
-    let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE_1);
+    let dur_ticks = expect_number(stream, "dur_ticks", RANGE_GE1);
     expect_string(stream, "}");
 
     Some(MmlCommand::GlideSet {
         slot,
-        semitone_offset: offset_cents / 100.0,
+        semitone_offset: cents_to_semitones(offset_cents),
         duration_ticks: dur_ticks,
     })
 }
 
 fn bpm_to_cpt(bpm: u32) -> u32 {
     (AUDIO_CLOCK_RATE as f64 * 60.0 / (bpm as f64 * TICKS_PER_QUARTER_NOTE as f64)).round() as u32
+}
+
+fn gate_time_to_gate_ratio(gate_time: u32) -> f64 {
+    gate_time as f64 / RANGE_QUANTIZE.1 as f64
+}
+
+fn volume_to_level(volume: u32) -> f64 {
+    volume as f64 / RANGE_VOLUME.1 as f64
+}
+
+fn cents_to_semitones(cents: u32) -> f64 {
+    cents as f64 / 100.0
 }
