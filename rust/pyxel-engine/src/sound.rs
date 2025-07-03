@@ -195,6 +195,8 @@ impl Sound {
         let mut prev_note = 0;
         let tones = TONES.lock();
 
+        // TODO: Remove redundant commands
+
         commands.push(MmlCommand::Tempo {
             clocks_per_tick: AUDIO_CLOCK_RATE / SOUND_TICKS_PER_SECOND,
         });
