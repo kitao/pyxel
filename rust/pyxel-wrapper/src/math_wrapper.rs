@@ -2,37 +2,37 @@ use pyo3::prelude::*;
 use pyxel::Pyxel;
 
 #[pyfunction]
-fn ceil(x: f64) -> i32 {
+fn ceil(x: f32) -> i32 {
     Pyxel::ceil(x)
 }
 
 #[pyfunction]
-fn floor(x: f64) -> i32 {
+fn floor(x: f32) -> i32 {
     Pyxel::floor(x)
 }
 
 #[pyfunction]
-fn sgn(x: f64) -> i32 {
+fn sgn(x: f32) -> i32 {
     Pyxel::sgn(x)
 }
 
 #[pyfunction]
-fn sqrt(x: f64) -> f64 {
+fn sqrt(x: f32) -> f32 {
     Pyxel::sqrt(x)
 }
 
 #[pyfunction]
-fn sin(deg: f64) -> f64 {
+fn sin(deg: f32) -> f32 {
     Pyxel::sin(deg)
 }
 
 #[pyfunction]
-fn cos(deg: f64) -> f64 {
+fn cos(deg: f32) -> f32 {
     Pyxel::cos(deg)
 }
 
 #[pyfunction]
-fn atan2(y: f64, x: f64) -> f64 {
+fn atan2(y: f32, x: f32) -> f32 {
     Pyxel::atan2(y, x)
 }
 
@@ -47,7 +47,7 @@ fn rndi(a: i32, b: i32) -> i32 {
 }
 
 #[pyfunction]
-fn rndf(a: f64, b: f64) -> f64 {
+fn rndf(a: f32, b: f32) -> f32 {
     Pyxel::rndf(a, b)
 }
 
@@ -58,7 +58,7 @@ fn nseed(seed: u32) {
 
 #[pyfunction]
 #[pyo3(signature = (x, y=None, z=None))]
-fn noise(x: f64, y: Option<f64>, z: Option<f64>) -> f64 {
+fn noise(x: f32, y: Option<f32>, z: Option<f32>) -> f32 {
     let y = y.unwrap_or(0.0);
     let z = z.unwrap_or(0.0);
     Pyxel::noise(x, y, z)

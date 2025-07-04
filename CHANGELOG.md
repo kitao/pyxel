@@ -25,6 +25,7 @@
 - Renamed the excl arguments to exclude in the load and save functions
 - Removed the incl arguments from the load and save functions
 - Updated Example 9 to use new MML syntax
+- Changed the default floating-point type from f64 to f32
 
 ## 2.3.18
 

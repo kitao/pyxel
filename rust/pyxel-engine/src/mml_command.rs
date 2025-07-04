@@ -9,21 +9,21 @@ pub enum MmlCommand {
         clocks_per_tick: u32,
     },
     Quantize {
-        gate_ratio: f64,
+        gate_ratio: f32,
     },
 
     Tone {
         tone_index: u32,
     },
     Volume {
-        level: f64,
+        level: f32,
     },
 
     Transpose {
-        semitone_offset: f64,
+        semitone_offset: f32,
     },
     Detune {
-        semitone_offset: f64,
+        semitone_offset: f32,
     },
 
     Envelope {
@@ -31,8 +31,8 @@ pub enum MmlCommand {
     },
     EnvelopeSet {
         slot: u32,
-        initial_level: f64,
-        segments: Vec<(u32, f64)>, // (duration_ticks, level)
+        initial_level: f32,
+        segments: Vec<(u32, f32)>, // (duration_ticks, level)
     },
 
     Vibrato {
@@ -42,7 +42,7 @@ pub enum MmlCommand {
         slot: u32,
         delay_ticks: u32,
         period_ticks: u32,
-        semitone_depth: f64,
+        semitone_depth: f32,
     },
 
     Glide {
@@ -50,7 +50,7 @@ pub enum MmlCommand {
     },
     GlideSet {
         slot: u32,
-        semitone_offset: f64,
+        semitone_offset: f32,
         duration_ticks: u32,
     },
 

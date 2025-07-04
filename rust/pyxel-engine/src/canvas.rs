@@ -1,9 +1,9 @@
 use std::cmp::max;
-use std::f64::consts::PI;
+use std::f32::consts::PI;
 use std::mem::swap;
 
 use crate::rect_area::RectArea;
-use crate::utils::{f64_to_i32, f64_to_u32};
+use crate::utils::{f32_to_i32, f32_to_u32};
 
 pub trait ToIndex {
     fn to_index(&self) -> usize;
@@ -45,11 +45,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.data.as_mut_ptr()
     }
 
-    pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        let x = f64_to_i32(x);
-        let y = f64_to_i32(y);
-        let width = f64_to_u32(width);
-        let height = f64_to_u32(height);
+    pub fn clip(&mut self, x: f32, y: f32, width: f32, height: f32) {
+        let x = f32_to_i32(x);
+        let y = f32_to_i32(y);
+        let width = f32_to_u32(width);
+        let height = f32_to_u32(height);
         self.clip_rect = self
             .self_rect
             .intersects(RectArea::new(x, y, width, height));
@@ -59,9 +59,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.clip_rect = self.self_rect;
     }
 
-    pub fn camera(&mut self, x: f64, y: f64) {
-        self.camera_x = f64_to_i32(x);
-        self.camera_y = f64_to_i32(y);
+    pub fn camera(&mut self, x: f32, y: f32) {
+        self.camera_x = f32_to_i32(x);
+        self.camera_y = f32_to_i32(y);
     }
 
     pub fn camera0(&mut self) {
@@ -93,9 +93,9 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         self.dither(alpha);
     }
 
-    pub fn pget(&mut self, x: f64, y: f64) -> T {
-        let x = f64_to_i32(x);
-        let y = f64_to_i32(y);
+    pub fn pget(&mut self, x: f32, y: f32) -> T {
+        let x = f32_to_i32(x);
+        let y = f32_to_i32(y);
         if self.clip_rect.contains(x, y) {
             self.read_data(x as usize, y as usize)
         } else {
@@ -103,17 +103,17 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    pub fn pset(&mut self, x: f64, y: f64, value: T) {
-        let x = f64_to_i32(x) - self.camera_x;
-        let y = f64_to_i32(y) - self.camera_y;
+    pub fn pset(&mut self, x: f32, y: f32, value: T) {
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         self.write_data_with_clipping(x, y, value);
     }
 
-    pub fn line(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, value: T) {
-        let x1 = f64_to_i32(x1) - self.camera_x;
-        let y1 = f64_to_i32(y1) - self.camera_y;
-        let x2 = f64_to_i32(x2) - self.camera_x;
-        let y2 = f64_to_i32(y2) - self.camera_y;
+    pub fn line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, value: T) {
+        let x1 = f32_to_i32(x1) - self.camera_x;
+        let y1 = f32_to_i32(y1) - self.camera_y;
+        let x2 = f32_to_i32(x2) - self.camera_x;
+        let y2 = f32_to_i32(y2) - self.camera_y;
 
         if x1 == x2 && y1 == y2 {
             self.write_data_with_clipping(x1, y1, value);
@@ -124,11 +124,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 (x2, y2, x1, y1)
             };
             let length = end_x - start_x + 1;
-            let alpha = (end_y - start_y) as f64 / (end_x - start_x) as f64;
+            let alpha = (end_y - start_y) as f32 / (end_x - start_x) as f32;
             for xi in 0..length {
                 self.write_data_with_clipping(
                     start_x + xi,
-                    start_y + f64_to_i32(alpha * xi as f64),
+                    start_y + f32_to_i32(alpha * xi as f32),
                     value,
                 );
             }
@@ -139,10 +139,10 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
                 (x2, y2, x1, y1)
             };
             let length = end_y - start_y + 1;
-            let alpha = (end_x - start_x) as f64 / (end_y - start_y) as f64;
+            let alpha = (end_x - start_x) as f32 / (end_y - start_y) as f32;
             for yi in 0..length {
                 self.write_data_with_clipping(
-                    start_x + f64_to_i32(alpha * yi as f64),
+                    start_x + f32_to_i32(alpha * yi as f32),
                     start_y + yi,
                     value,
                 );
@@ -150,11 +150,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
-        let x = f64_to_i32(x) - self.camera_x;
-        let y = f64_to_i32(y) - self.camera_y;
-        let width = f64_to_u32(width);
-        let height = f64_to_u32(height);
+    pub fn rect(&mut self, x: f32, y: f32, width: f32, height: f32, value: T) {
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
+        let width = f32_to_u32(width);
+        let height = f32_to_u32(height);
         let rect = RectArea::new(x, y, width, height).intersects(self.clip_rect);
         if rect.is_empty() {
             return;
@@ -171,11 +171,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    pub fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
-        let x = f64_to_i32(x) - self.camera_x;
-        let y = f64_to_i32(y) - self.camera_y;
-        let width = f64_to_u32(width);
-        let height = f64_to_u32(height);
+    pub fn rectb(&mut self, x: f32, y: f32, width: f32, height: f32, value: T) {
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
+        let width = f32_to_u32(width);
+        let height = f32_to_u32(height);
         let rect = RectArea::new(x, y, width, height);
         if rect.intersects(self.clip_rect).is_empty() {
             return;
@@ -195,13 +195,13 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    pub fn circ(&mut self, x: f64, y: f64, radius: f64, value: T) {
-        let x = f64_to_i32(x) - self.camera_x;
-        let y = f64_to_i32(y) - self.camera_y;
-        let radius = f64_to_u32(radius);
+    pub fn circ(&mut self, x: f32, y: f32, radius: f32, value: T) {
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
+        let radius = f32_to_u32(radius);
 
         for xi in 0..=radius as i32 {
-            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f64, radius as f64, xi);
+            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f32, radius as f32, xi);
             for yi in y1..=y2 {
                 self.write_data_with_clipping(x + x1, y + yi, value);
                 self.write_data_with_clipping(x + x2, y + yi, value);
@@ -211,13 +211,13 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    pub fn circb(&mut self, x: f64, y: f64, radius: f64, value: T) {
-        let x = f64_to_i32(x) - self.camera_x;
-        let y = f64_to_i32(y) - self.camera_y;
-        let radius = f64_to_u32(radius);
+    pub fn circb(&mut self, x: f32, y: f32, radius: f32, value: T) {
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
+        let radius = f32_to_u32(radius);
 
         for xi in 0..=radius as i32 {
-            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f64, radius as f64, xi);
+            let (x1, y1, x2, y2) = Self::ellipse_area(0.0, 0.0, radius as f32, radius as f32, xi);
             self.write_data_with_clipping(x + x1, y + y1, value);
             self.write_data_with_clipping(x + x2, y + y1, value);
             self.write_data_with_clipping(x + x1, y + y2, value);
@@ -230,11 +230,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    pub fn elli(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
-        let x = f64_to_i32(x) - self.camera_x;
-        let y = f64_to_i32(y) - self.camera_y;
-        let width = f64_to_u32(width);
-        let height = f64_to_u32(height);
+    pub fn elli(&mut self, x: f32, y: f32, width: f32, height: f32, value: T) {
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
+        let width = f32_to_u32(width);
+        let height = f32_to_u32(height);
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
 
         for xi in x..=(x + width as i32 / 2) {
@@ -254,11 +254,11 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    pub fn ellib(&mut self, x: f64, y: f64, width: f64, height: f64, value: T) {
-        let x = f64_to_i32(x) - self.camera_x;
-        let y = f64_to_i32(y) - self.camera_y;
-        let width = f64_to_u32(width);
-        let height = f64_to_u32(height);
+    pub fn ellib(&mut self, x: f32, y: f32, width: f32, height: f32, value: T) {
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
+        let width = f32_to_u32(width);
+        let height = f32_to_u32(height);
         let (ra, rb, cx, cy) = Self::ellipse_params(x, y, width, height);
 
         for xi in x..=(x + width as i32 / 2) {
@@ -278,13 +278,13 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, value: T) {
-        let mut x1 = f64_to_i32(x1) - self.camera_x;
-        let mut y1 = f64_to_i32(y1) - self.camera_y;
-        let mut x2 = f64_to_i32(x2) - self.camera_x;
-        let mut y2 = f64_to_i32(y2) - self.camera_y;
-        let mut x3 = f64_to_i32(x3) - self.camera_x;
-        let mut y3 = f64_to_i32(y3) - self.camera_y;
+    pub fn tri(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, value: T) {
+        let mut x1 = f32_to_i32(x1) - self.camera_x;
+        let mut y1 = f32_to_i32(y1) - self.camera_y;
+        let mut x2 = f32_to_i32(x2) - self.camera_x;
+        let mut y2 = f32_to_i32(y2) - self.camera_y;
+        let mut x3 = f32_to_i32(x3) - self.camera_x;
+        let mut y3 = f32_to_i32(y3) - self.camera_y;
 
         if y1 > y2 {
             swap(&mut y1, &mut y2);
@@ -302,30 +302,30 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         let alpha12 = if y2 == y1 {
             0.0
         } else {
-            (x2 - x1) as f64 / (y2 - y1) as f64
+            (x2 - x1) as f32 / (y2 - y1) as f32
         };
         let alpha13 = if y3 == y1 {
             0.0
         } else {
-            (x3 - x1) as f64 / (y3 - y1) as f64
+            (x3 - x1) as f32 / (y3 - y1) as f32
         };
         let alpha23 = if y3 == y2 {
             0.0
         } else {
-            (x3 - x2) as f64 / (y3 - y2) as f64
+            (x3 - x2) as f32 / (y3 - y2) as f32
         };
-        let x_inter = f64_to_i32(x1 as f64 + alpha13 * (y2 - y1) as f64);
+        let x_inter = f32_to_i32(x1 as f32 + alpha13 * (y2 - y1) as f32);
 
         for y in y1..=y2 {
             let (x_slider, x_end) = if x_inter < x2 {
                 (
-                    f64_to_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
-                    f64_to_i32(x2 as f64 + alpha12 * (y - y2) as f64),
+                    f32_to_i32(x_inter as f32 + alpha13 * (y - y2) as f32),
+                    f32_to_i32(x2 as f32 + alpha12 * (y - y2) as f32),
                 )
             } else {
                 (
-                    f64_to_i32(x2 as f64 + alpha12 * (y - y2) as f64),
-                    f64_to_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
+                    f32_to_i32(x2 as f32 + alpha12 * (y - y2) as f32),
+                    f32_to_i32(x_inter as f32 + alpha13 * (y - y2) as f32),
                 )
             };
             for x in x_slider..=x_end {
@@ -336,13 +336,13 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         for y in (y2 + 1)..=y3 {
             let (x_slider, x_end) = if x_inter < x2 {
                 (
-                    f64_to_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
-                    f64_to_i32(x2 as f64 + alpha23 * (y - y2) as f64),
+                    f32_to_i32(x_inter as f32 + alpha13 * (y - y2) as f32),
+                    f32_to_i32(x2 as f32 + alpha23 * (y - y2) as f32),
                 )
             } else {
                 (
-                    f64_to_i32(x2 as f64 + alpha23 * (y - y2) as f64),
-                    f64_to_i32(x_inter as f64 + alpha13 * (y - y2) as f64),
+                    f32_to_i32(x2 as f32 + alpha23 * (y - y2) as f32),
+                    f32_to_i32(x_inter as f32 + alpha13 * (y - y2) as f32),
                 )
             };
             for x in x_slider..=x_end {
@@ -351,15 +351,15 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    pub fn trib(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, value: T) {
+    pub fn trib(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, value: T) {
         self.line(x1, y1, x2, y2, value);
         self.line(x1, y1, x3, y3, value);
         self.line(x2, y2, x3, y3, value);
     }
 
-    pub fn fill(&mut self, x: f64, y: f64, value: T) {
-        let x = f64_to_i32(x) - self.camera_x;
-        let y = f64_to_i32(y) - self.camera_y;
+    pub fn fill(&mut self, x: f32, y: f32, value: T) {
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
         if !self.clip_rect.contains(x, y) {
             return;
         }
@@ -416,22 +416,22 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
     pub fn blt(
         &mut self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         canvas: &Self,
-        canvas_x: f64,
-        canvas_y: f64,
-        width: f64,
-        height: f64,
+        canvas_x: f32,
+        canvas_y: f32,
+        width: f32,
+        height: f32,
         transparent: Option<T>,
         palette: Option<&[T]>,
     ) {
-        let x = f64_to_i32(x) - self.camera_x;
-        let y = f64_to_i32(y) - self.camera_y;
-        let canvas_x = f64_to_i32(canvas_x);
-        let canvas_y = f64_to_i32(canvas_y);
-        let width = f64_to_i32(width);
-        let height = f64_to_i32(height);
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
+        let canvas_x = f32_to_i32(canvas_x);
+        let canvas_y = f32_to_i32(canvas_y);
+        let width = f32_to_i32(width);
+        let height = f32_to_i32(height);
 
         let CopyArea {
             dst_x,
@@ -476,31 +476,31 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
 
     pub fn blt_transform(
         &mut self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         canvas: &Self,
-        canvas_x: f64,
-        canvas_y: f64,
-        width: f64,
-        height: f64,
+        canvas_x: f32,
+        canvas_y: f32,
+        width: f32,
+        height: f32,
         transparent: Option<T>,
         palette: Option<&[T]>,
-        rotate: f64,
-        scale: f64,
+        rotate: f32,
+        scale: f32,
         use_canvas_clip: bool,
     ) {
-        if scale < f64::EPSILON {
+        if scale < f32::EPSILON {
             return;
         }
 
-        let x = f64_to_i32(x) - self.camera_x;
-        let y = f64_to_i32(y) - self.camera_y;
-        let canvas_x = f64_to_i32(canvas_x);
-        let canvas_y = f64_to_i32(canvas_y);
+        let x = f32_to_i32(x) - self.camera_x;
+        let y = f32_to_i32(y) - self.camera_y;
+        let canvas_x = f32_to_i32(canvas_x);
+        let canvas_y = f32_to_i32(canvas_y);
         let sign_x = if width < 0.0 { -1.0 } else { 1.0 };
         let sign_y = if height < 0.0 { -1.0 } else { 1.0 };
-        let width = f64_to_i32(width).abs();
-        let height = f64_to_i32(height).abs();
+        let width = f32_to_i32(width).abs();
+        let height = f32_to_i32(height).abs();
 
         let canvas_area = RectArea::new(canvas_x, canvas_y, width as u32, height as u32)
             .intersects(if use_canvas_clip {
@@ -512,29 +512,29 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
             return;
         }
 
-        let half_width = (width - 1) as f64 / 2.0;
-        let half_height = (height - 1) as f64 / 2.0;
-        let src_cx = canvas_x as f64 + half_width;
-        let src_cy = canvas_y as f64 + half_height;
-        let dst_cx = x as f64 + half_width;
-        let dst_cy = y as f64 + half_height;
+        let half_width = (width - 1) as f32 / 2.0;
+        let half_height = (height - 1) as f32 / 2.0;
+        let src_cx = canvas_x as f32 + half_width;
+        let src_cy = canvas_y as f32 + half_height;
+        let dst_cx = x as f32 + half_width;
+        let dst_cy = y as f32 + half_height;
 
         let rotate = rotate * PI / 180.0;
-        let sin = -f64::sin(rotate); // Clockwise
-        let cos = f64::cos(rotate);
+        let sin = -f32::sin(rotate); // Clockwise
+        let cos = f32::cos(rotate);
         let offset_x = (half_width * cos.abs() + half_height * sin.abs() + 1.0) * scale;
         let offset_y = (half_width * sin.abs() + half_height * cos.abs() + 1.0) * scale;
-        let x1 = f64_to_i32(dst_cx - offset_x).max(self.clip_rect.left());
-        let x2 = f64_to_i32(dst_cx + offset_x).min(self.clip_rect.right());
-        let y1 = f64_to_i32(dst_cy - offset_y).max(self.clip_rect.top());
-        let y2 = f64_to_i32(dst_cy + offset_y).min(self.clip_rect.bottom());
+        let x1 = f32_to_i32(dst_cx - offset_x).max(self.clip_rect.left());
+        let x2 = f32_to_i32(dst_cx + offset_x).min(self.clip_rect.right());
+        let y1 = f32_to_i32(dst_cy - offset_y).max(self.clip_rect.top());
+        let y2 = f32_to_i32(dst_cy + offset_y).min(self.clip_rect.bottom());
 
         for yi in y1..=y2 {
             for xi in x1..=x2 {
-                let offset_x = (xi as f64 - dst_cx) * sign_x;
-                let offset_y = (yi as f64 - dst_cy) * sign_y;
-                let value_x = f64_to_i32(src_cx + (offset_x * cos - offset_y * sin) / scale);
-                let value_y = f64_to_i32(src_cy + (offset_x * sin + offset_y * cos) / scale);
+                let offset_x = (xi as f32 - dst_cx) * sign_x;
+                let offset_y = (yi as f32 - dst_cy) * sign_y;
+                let value_x = f32_to_i32(src_cx + (offset_x * cos - offset_y * sin) / scale);
+                let value_y = f32_to_i32(src_cy + (offset_x * sin + offset_y * cos) / scale);
                 if !canvas_area.contains(value_x, value_y) {
                     continue;
                 }
@@ -569,26 +569,26 @@ impl<T: Copy + PartialEq + Default + ToIndex> Canvas<T> {
         }
     }
 
-    fn ellipse_params(x: i32, y: i32, width: u32, height: u32) -> (f64, f64, f64, f64) {
-        let ra = (width - 1) as f64 / 2.0;
-        let rb = (height - 1) as f64 / 2.0;
-        let cx = x as f64 + ra;
-        let cy = y as f64 + rb;
+    fn ellipse_params(x: i32, y: i32, width: u32, height: u32) -> (f32, f32, f32, f32) {
+        let ra = (width - 1) as f32 / 2.0;
+        let rb = (height - 1) as f32 / 2.0;
+        let cx = x as f32 + ra;
+        let cy = y as f32 + rb;
         (ra, rb, cx, cy)
     }
 
-    fn ellipse_area(cx: f64, cy: f64, ra: f64, rb: f64, x: i32) -> (i32, i32, i32, i32) {
-        let dx = x as f64 - cx;
+    fn ellipse_area(cx: f32, cy: f32, ra: f32, rb: f32, x: i32) -> (i32, i32, i32, i32) {
+        let dx = x as f32 - cx;
         let dy = if ra > 0.0 {
             rb * (1.0 - dx * dx / (ra * ra)).sqrt()
         } else {
             rb
         };
 
-        let x1 = f64_to_i32(cx - dx - 0.01);
-        let y1 = f64_to_i32(cy - dy - 0.01);
-        let x2 = f64_to_i32(cx + dx + 0.01);
-        let y2 = f64_to_i32(cy + dy + 0.01);
+        let x1 = f32_to_i32(cx - dx - 0.01);
+        let y1 = f32_to_i32(cy - dy - 0.01);
+        let x2 = f32_to_i32(cx + dx + 0.01);
+        let y2 = f32_to_i32(cy + dy + 0.01);
 
         (x1, y1, x2, y2)
     }

@@ -3,8 +3,8 @@ pub struct Profiler {
     num_measured_frames: u32,
     start_time: u32,
     total_time: u32,
-    average_time: f64,
-    average_fps: f64,
+    average_time: f32,
+    average_fps: f32,
 }
 
 impl Profiler {
@@ -21,12 +21,12 @@ impl Profiler {
     }
 
     #[allow(dead_code)]
-    pub const fn average_time(&self) -> f64 {
+    pub const fn average_time(&self) -> f32 {
         self.average_time
     }
 
     #[allow(dead_code)]
-    pub const fn average_fps(&self) -> f64 {
+    pub const fn average_fps(&self) -> f32 {
         self.average_fps
     }
 
@@ -39,7 +39,7 @@ impl Profiler {
         self.num_measured_frames += 1;
 
         if self.num_measured_frames >= self.num_measure_frames {
-            self.average_time = self.total_time as f64 / self.num_measured_frames as f64;
+            self.average_time = self.total_time as f32 / self.num_measured_frames as f32;
             self.average_fps = 1000.0 / self.average_time;
             self.num_measured_frames = 0;
             self.total_time = 0;

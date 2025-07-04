@@ -77,7 +77,7 @@ impl Image {
                             );
                             closest_color = colors.len() as Color - 1;
                         } else {
-                            let mut closest_dist: f64 = f64::MAX;
+                            let mut closest_dist: f32 = f32::MAX;
                             for (i, pal_color) in colors.iter().enumerate() {
                                 let pal_rgb = (
                                     (pal_color >> 16) as u8,
@@ -136,13 +136,13 @@ impl Image {
         }
 
         self.blt(
-            x as f64,
-            y as f64,
+            x as f32,
+            y as f32,
             image,
             0.0,
             0.0,
-            width as f64,
-            height as f64,
+            width as f32,
+            height as f32,
             None,
             None,
             None,
@@ -155,13 +155,13 @@ impl Image {
         let height = image.lock().height();
 
         self.blt(
-            x as f64,
-            y as f64,
+            x as f32,
+            y as f32,
             image,
             0.0,
             0.0,
-            width as f64,
-            height as f64,
+            width as f32,
+            height as f32,
             None,
             None,
             None,
@@ -196,7 +196,7 @@ impl Image {
             .unwrap_or_else(|_| panic!("Failed to open file '{filename}'"));
     }
 
-    pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
+    pub fn clip(&mut self, x: f32, y: f32, width: f32, height: f32) {
         self.canvas.clip(x, y, width, height);
     }
 
@@ -204,7 +204,7 @@ impl Image {
         self.canvas.clip0();
     }
 
-    pub fn camera(&mut self, x: f64, y: f64) {
+    pub fn camera(&mut self, x: f32, y: f32) {
         self.canvas.camera(x, y);
     }
 
@@ -230,74 +230,74 @@ impl Image {
         self.canvas.cls(self.palette[color as usize]);
     }
 
-    pub fn pget(&mut self, x: f64, y: f64) -> Color {
+    pub fn pget(&mut self, x: f32, y: f32) -> Color {
         self.canvas.pget(x, y)
     }
 
-    pub fn pset(&mut self, x: f64, y: f64, color: Color) {
+    pub fn pset(&mut self, x: f32, y: f32, color: Color) {
         self.canvas.pset(x, y, self.palette[color as usize]);
     }
 
-    pub fn line(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
+    pub fn line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, color: Color) {
         self.canvas
             .line(x1, y1, x2, y2, self.palette[color as usize]);
     }
 
-    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
+    pub fn rect(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color) {
         self.canvas
             .rect(x, y, width, height, self.palette[color as usize]);
     }
 
-    pub fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
+    pub fn rectb(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color) {
         self.canvas
             .rectb(x, y, width, height, self.palette[color as usize]);
     }
 
-    pub fn circ(&mut self, x: f64, y: f64, radius: f64, color: Color) {
+    pub fn circ(&mut self, x: f32, y: f32, radius: f32, color: Color) {
         self.canvas.circ(x, y, radius, self.palette[color as usize]);
     }
 
-    pub fn circb(&mut self, x: f64, y: f64, radius: f64, color: Color) {
+    pub fn circb(&mut self, x: f32, y: f32, radius: f32, color: Color) {
         self.canvas
             .circb(x, y, radius, self.palette[color as usize]);
     }
 
-    pub fn elli(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
+    pub fn elli(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color) {
         self.canvas
             .elli(x, y, width, height, self.palette[color as usize]);
     }
 
-    pub fn ellib(&mut self, x: f64, y: f64, width: f64, height: f64, color: Color) {
+    pub fn ellib(&mut self, x: f32, y: f32, width: f32, height: f32, color: Color) {
         self.canvas
             .ellib(x, y, width, height, self.palette[color as usize]);
     }
 
-    pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
+    pub fn tri(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, color: Color) {
         self.canvas
             .tri(x1, y1, x2, y2, x3, y3, self.palette[color as usize]);
     }
 
-    pub fn trib(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
+    pub fn trib(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, color: Color) {
         self.canvas
             .trib(x1, y1, x2, y2, x3, y3, self.palette[color as usize]);
     }
 
-    pub fn fill(&mut self, x: f64, y: f64, color: Color) {
+    pub fn fill(&mut self, x: f32, y: f32, color: Color) {
         self.canvas.fill(x, y, self.palette[color as usize]);
     }
 
     pub fn blt(
         &mut self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         image: SharedImage,
-        image_x: f64,
-        image_y: f64,
-        width: f64,
-        height: f64,
+        image_x: f32,
+        image_y: f32,
+        width: f32,
+        height: f32,
         transparent: Option<Color>,
-        rotate: Option<f64>,
-        scale: Option<f64>,
+        rotate: Option<f32>,
+        scale: Option<f32>,
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
@@ -330,8 +330,8 @@ impl Image {
                 Some(&self.palette),
             );
         } else {
-            let copy_width = utils::f64_to_u32(width.abs());
-            let copy_height = utils::f64_to_u32(height.abs());
+            let copy_width = utils::f32_to_u32(width.abs());
+            let copy_height = utils::f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
 
             canvas.blt(
@@ -340,8 +340,8 @@ impl Image {
                 &self.canvas,
                 image_x,
                 image_y,
-                copy_width as f64,
-                copy_height as f64,
+                copy_width as f32,
+                copy_height as f32,
                 None,
                 None,
             );
@@ -362,16 +362,16 @@ impl Image {
 
     fn blt_transform(
         &mut self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         image: SharedImage,
-        image_x: f64,
-        image_y: f64,
-        width: f64,
-        height: f64,
+        image_x: f32,
+        image_y: f32,
+        width: f32,
+        height: f32,
         transparent: Option<Color>,
-        rotate: f64,
-        scale: f64,
+        rotate: f32,
+        scale: f32,
     ) {
         if let Some(image) = image.try_lock() {
             self.canvas.blt_transform(
@@ -389,8 +389,8 @@ impl Image {
                 false,
             );
         } else {
-            let copy_width = utils::f64_to_u32(width.abs());
-            let copy_height = utils::f64_to_u32(height.abs());
+            let copy_width = utils::f32_to_u32(width.abs());
+            let copy_height = utils::f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
 
             canvas.blt(
@@ -399,8 +399,8 @@ impl Image {
                 &self.canvas,
                 image_x,
                 image_y,
-                copy_width as f64,
-                copy_height as f64,
+                copy_width as f32,
+                copy_height as f32,
                 None,
                 None,
             );
@@ -424,16 +424,16 @@ impl Image {
 
     pub fn bltm(
         &mut self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         tilemap: SharedTilemap,
-        tilemap_x: f64,
-        tilemap_y: f64,
-        width: f64,
-        height: f64,
+        tilemap_x: f32,
+        tilemap_y: f32,
+        width: f32,
+        height: f32,
         transparent: Option<Color>,
-        rotate: Option<f64>,
-        scale: Option<f64>,
+        rotate: Option<f32>,
+        scale: Option<f32>,
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
@@ -453,12 +453,12 @@ impl Image {
             return;
         }
 
-        let x = utils::f64_to_i32(x) - self.canvas.camera_x;
-        let y = utils::f64_to_i32(y) - self.canvas.camera_y;
-        let tilemap_x = utils::f64_to_i32(tilemap_x);
-        let tilemap_y = utils::f64_to_i32(tilemap_y);
-        let width = utils::f64_to_i32(width);
-        let height = utils::f64_to_i32(height);
+        let x = utils::f32_to_i32(x) - self.canvas.camera_x;
+        let y = utils::f32_to_i32(y) - self.canvas.camera_y;
+        let tilemap_x = utils::f32_to_i32(tilemap_x);
+        let tilemap_y = utils::f32_to_i32(tilemap_y);
+        let width = utils::f32_to_i32(width);
+        let height = utils::f32_to_i32(height);
 
         let tilemap = tilemap.lock();
         let tilemap_rect = RectArea::new(
@@ -532,21 +532,21 @@ impl Image {
 
     fn bltm_transform(
         &mut self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         tilemap: SharedTilemap,
-        tilemap_x: f64,
-        tilemap_y: f64,
-        width: f64,
-        height: f64,
+        tilemap_x: f32,
+        tilemap_y: f32,
+        width: f32,
+        height: f32,
         transparent: Option<Color>,
-        rotate: f64,
-        scale: f64,
+        rotate: f32,
+        scale: f32,
     ) {
-        let copy_width = utils::f64_to_u32(width.abs());
-        let copy_height = utils::f64_to_u32(height.abs());
-        let tilemap_width = tilemap.lock().width() as f64;
-        let tilemap_height = tilemap.lock().height() as f64;
+        let copy_width = utils::f32_to_u32(width.abs());
+        let copy_height = utils::f32_to_u32(height.abs());
+        let tilemap_width = tilemap.lock().width() as f32;
+        let tilemap_height = tilemap.lock().height() as f32;
         let image = Self::new(copy_width, copy_height);
 
         {
@@ -566,8 +566,8 @@ impl Image {
             image.clip(
                 -tilemap_x,
                 -tilemap_y,
-                tilemap_width * TILE_SIZE as f64,
-                tilemap_height * TILE_SIZE as f64,
+                tilemap_width * TILE_SIZE as f32,
+                tilemap_height * TILE_SIZE as f32,
             );
             self.canvas.blt_transform(
                 x,
@@ -586,17 +586,17 @@ impl Image {
         }
     }
 
-    pub fn text(&mut self, x: f64, y: f64, string: &str, color: Color, font: Option<SharedFont>) {
+    pub fn text(&mut self, x: f32, y: f32, string: &str, color: Color, font: Option<SharedFont>) {
         if let Some(font) = font {
-            let x = utils::f64_to_i32(x) - self.canvas.camera_x;
-            let y = utils::f64_to_i32(y) - self.canvas.camera_y;
+            let x = utils::f32_to_i32(x) - self.canvas.camera_x;
+            let y = utils::f32_to_i32(y) - self.canvas.camera_y;
             let color = self.palette[color as usize];
             font.lock().draw(&mut self.canvas, x, y, string, color);
             return;
         }
 
-        let mut x = utils::f64_to_i32(x); // No need to reflect camera_x
-        let mut y = utils::f64_to_i32(y); // No need to reflect camera_y
+        let mut x = utils::f32_to_i32(x); // No need to reflect camera_x
+        let mut y = utils::f32_to_i32(y); // No need to reflect camera_y
         let color = self.palette[color as usize];
         let palette1 = self.palette[1];
         self.pal(1, color);
@@ -617,13 +617,13 @@ impl Image {
             let src_y = (code / NUM_FONT_ROWS as i32) * FONT_HEIGHT as i32;
 
             self.blt(
-                x as f64,
-                y as f64,
+                x as f32,
+                y as f32,
                 FONT_IMAGE.clone(),
-                src_x as f64,
-                src_y as f64,
-                FONT_WIDTH as f64,
-                FONT_HEIGHT as f64,
+                src_x as f32,
+                src_y as f32,
+                FONT_WIDTH as f32,
+                FONT_HEIGHT as f32,
                 Some(0),
                 Some(0.0),
                 Some(1.0),
@@ -633,12 +633,12 @@ impl Image {
         self.pal(1, palette1);
     }
 
-    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f64 {
+    fn color_dist(rgb1: (u8, u8, u8), rgb2: (u8, u8, u8)) -> f32 {
         let (r1, g1, b1) = rgb1;
         let (r2, g2, b2) = rgb2;
-        let dx = (r1 as f64 - r2 as f64) * 0.30;
-        let dy = (g1 as f64 - g2 as f64) * 0.59;
-        let dz = (b1 as f64 - b2 as f64) * 0.11;
+        let dx = (r1 as f32 - r2 as f32) * 0.30;
+        let dy = (g1 as f32 - g2 as f32) * 0.59;
+        let dz = (b1 as f32 - b2 as f32) * 0.11;
 
         dx * dx + dy * dy + dz * dz
     }

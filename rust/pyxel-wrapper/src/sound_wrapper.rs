@@ -123,11 +123,11 @@ impl Sound {
     }
 
     #[pyo3(signature = (filename, sec, ffmpeg=None))]
-    pub fn save(&self, filename: &str, sec: f64, ffmpeg: Option<bool>) {
+    pub fn save(&self, filename: &str, sec: f32, ffmpeg: Option<bool>) {
         self.inner.lock().save(filename, sec, ffmpeg);
     }
 
-    pub fn total_sec(&self) -> Option<f64> {
+    pub fn total_sec(&self) -> Option<f32> {
         self.inner.lock().total_sec()
     }
 }

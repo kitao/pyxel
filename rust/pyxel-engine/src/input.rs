@@ -5,7 +5,7 @@ use crate::keys::{
     MOUSE_POS_X, MOUSE_POS_Y, MOUSE_WHEEL_X, MOUSE_WHEEL_Y,
 };
 use crate::pyxel::Pyxel;
-use crate::utils::f64_to_i32;
+use crate::utils::f32_to_i32;
 
 #[derive(PartialEq)]
 enum KeyState {
@@ -118,9 +118,9 @@ impl Pyxel {
         self.input.mouse_visible = visible;
     }
 
-    pub fn warp_mouse(&mut self, x: f64, y: f64) {
-        let x = f64_to_i32(x);
-        let y = f64_to_i32(y);
+    pub fn warp_mouse(&mut self, x: f32, y: f32) {
+        let x = f32_to_i32(x);
+        let y = f32_to_i32(y);
         self.input.key_values.insert(MOUSE_POS_X, x);
         self.input.key_values.insert(MOUSE_POS_Y, y);
         pyxel_platform::set_mouse_pos(
@@ -176,11 +176,11 @@ impl Pyxel {
 
         match key {
             MOUSE_POS_X => {
-                value = ((value - self.system.screen_x) as f64 / self.system.screen_scale) as i32;
+                value = ((value - self.system.screen_x) as f32 / self.system.screen_scale) as i32;
                 self.mouse_x = value;
             }
             MOUSE_POS_Y => {
-                value = ((value - self.system.screen_y) as f64 / self.system.screen_scale) as i32;
+                value = ((value - self.system.screen_y) as f32 / self.system.screen_scale) as i32;
                 self.mouse_y = value;
             }
             MOUSE_WHEEL_Y => {

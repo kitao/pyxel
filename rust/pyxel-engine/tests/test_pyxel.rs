@@ -1,8 +1,8 @@
 use pyxel::{Pyxel, PyxelCallback};
 
 pub struct App {
-    x: f64,
-    y: f64,
+    x: f32,
+    y: f32,
 }
 
 impl App {
@@ -82,7 +82,7 @@ impl App {
 impl PyxelCallback for App {
     fn update(&mut self, pyxel: &mut Pyxel) {
         if pyxel.frame_count < 60 {
-            self.x += (pyxel.frame_count % 2) as f64;
+            self.x += (pyxel.frame_count % 2) as f32;
             self.y -= 1.0;
         }
 

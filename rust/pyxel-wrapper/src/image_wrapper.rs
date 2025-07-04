@@ -72,10 +72,10 @@ impl Image {
     #[pyo3(signature = (x=None, y=None, w=None, h=None))]
     pub fn clip(
         &self,
-        x: Option<f64>,
-        y: Option<f64>,
-        w: Option<f64>,
-        h: Option<f64>,
+        x: Option<f32>,
+        y: Option<f32>,
+        w: Option<f32>,
+        h: Option<f32>,
     ) -> PyResult<()> {
         if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
             self.inner.lock().clip(x, y, w, h);
@@ -88,7 +88,7 @@ impl Image {
     }
 
     #[pyo3(signature = (x=None, y=None))]
-    pub fn camera(&self, x: Option<f64>, y: Option<f64>) -> PyResult<()> {
+    pub fn camera(&self, x: Option<f32>, y: Option<f32>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
             self.inner.lock().camera(x, y);
         } else if (x, y) == (None, None) {
@@ -119,67 +119,67 @@ impl Image {
         self.inner.lock().cls(col);
     }
 
-    pub fn pget(&self, x: f64, y: f64) -> pyxel::Color {
+    pub fn pget(&self, x: f32, y: f32) -> pyxel::Color {
         self.inner.lock().pget(x, y)
     }
 
-    pub fn pset(&self, x: f64, y: f64, col: pyxel::Color) {
+    pub fn pset(&self, x: f32, y: f32, col: pyxel::Color) {
         self.inner.lock().pset(x, y, col);
     }
 
-    pub fn line(&self, x1: f64, y1: f64, x2: f64, y2: f64, col: pyxel::Color) {
+    pub fn line(&self, x1: f32, y1: f32, x2: f32, y2: f32, col: pyxel::Color) {
         self.inner.lock().line(x1, y1, x2, y2, col);
     }
 
-    pub fn rect(&self, x: f64, y: f64, w: f64, h: f64, col: pyxel::Color) {
+    pub fn rect(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
         self.inner.lock().rect(x, y, w, h, col);
     }
 
-    pub fn rectb(&self, x: f64, y: f64, w: f64, h: f64, col: pyxel::Color) {
+    pub fn rectb(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
         self.inner.lock().rectb(x, y, w, h, col);
     }
 
-    pub fn circ(&self, x: f64, y: f64, r: f64, col: pyxel::Color) {
+    pub fn circ(&self, x: f32, y: f32, r: f32, col: pyxel::Color) {
         self.inner.lock().circ(x, y, r, col);
     }
 
-    pub fn circb(&self, x: f64, y: f64, r: f64, col: pyxel::Color) {
+    pub fn circb(&self, x: f32, y: f32, r: f32, col: pyxel::Color) {
         self.inner.lock().circb(x, y, r, col);
     }
 
-    pub fn elli(&self, x: f64, y: f64, w: f64, h: f64, col: pyxel::Color) {
+    pub fn elli(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
         self.inner.lock().elli(x, y, w, h, col);
     }
 
-    pub fn ellib(&self, x: f64, y: f64, w: f64, h: f64, col: pyxel::Color) {
+    pub fn ellib(&self, x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
         self.inner.lock().ellib(x, y, w, h, col);
     }
 
-    pub fn tri(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: pyxel::Color) {
+    pub fn tri(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, col: pyxel::Color) {
         self.inner.lock().tri(x1, y1, x2, y2, x3, y3, col);
     }
 
-    pub fn trib(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: pyxel::Color) {
+    pub fn trib(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, col: pyxel::Color) {
         self.inner.lock().trib(x1, y1, x2, y2, x3, y3, col);
     }
 
-    pub fn fill(&self, x: f64, y: f64, col: pyxel::Color) {
+    pub fn fill(&self, x: f32, y: f32, col: pyxel::Color) {
         self.inner.lock().fill(x, y, col);
     }
 
     #[pyo3(signature = (x, y, img, u, v, w, h, colkey=None, rotate=None, scale=None))]
     pub fn blt(
         &self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         img: Bound<'_, PyAny>,
-        u: f64,
-        v: f64,
-        w: f64,
-        h: f64,
+        u: f32,
+        v: f32,
+        w: f32,
+        h: f32,
         colkey: Option<pyxel::Color>,
-        rotate: Option<f64>,
-        scale: Option<f64>,
+        rotate: Option<f32>,
+        scale: Option<f32>,
     ) -> PyResult<()> {
         cast_pyany! {
             img,
@@ -195,16 +195,16 @@ impl Image {
     #[pyo3(signature = (x, y, tm, u, v, w, h, colkey=None, rotate=None, scale=None))]
     pub fn bltm(
         &self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         tm: Bound<'_, PyAny>,
-        u: f64,
-        v: f64,
-        w: f64,
-        h: f64,
+        u: f32,
+        v: f32,
+        w: f32,
+        h: f32,
         colkey: Option<pyxel::Color>,
-        rotate: Option<f64>,
-        scale: Option<f64>,
+        rotate: Option<f32>,
+        scale: Option<f32>,
     ) -> PyResult<()> {
         cast_pyany! {
             tm,
@@ -218,7 +218,7 @@ impl Image {
     }
 
     #[pyo3(signature = (x, y, s, col, font=None))]
-    pub fn text(&self, x: f64, y: f64, s: &str, col: pyxel::Color, font: Option<Font>) {
+    pub fn text(&self, x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
         let font = if let Some(font) = font {
             Some(font.inner.clone())
         } else {

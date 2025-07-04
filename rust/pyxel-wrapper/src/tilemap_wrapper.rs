@@ -95,10 +95,10 @@ impl Tilemap {
     #[pyo3(signature = (x=None, y=None, w=None, h=None))]
     pub fn clip(
         &self,
-        x: Option<f64>,
-        y: Option<f64>,
-        w: Option<f64>,
-        h: Option<f64>,
+        x: Option<f32>,
+        y: Option<f32>,
+        w: Option<f32>,
+        h: Option<f32>,
     ) -> PyResult<()> {
         if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
             self.inner.lock().clip(x, y, w, h);
@@ -111,7 +111,7 @@ impl Tilemap {
     }
 
     #[pyo3(signature = (x=None, y=None))]
-    pub fn camera(&self, x: Option<f64>, y: Option<f64>) -> PyResult<()> {
+    pub fn camera(&self, x: Option<f32>, y: Option<f32>) -> PyResult<()> {
         if let (Some(x), Some(y)) = (x, y) {
             self.inner.lock().camera(x, y);
         } else if (x, y) == (None, None) {
@@ -126,67 +126,67 @@ impl Tilemap {
         self.inner.lock().cls(tile);
     }
 
-    pub fn pget(&self, x: f64, y: f64) -> pyxel::Tile {
+    pub fn pget(&self, x: f32, y: f32) -> pyxel::Tile {
         self.inner.lock().pget(x, y)
     }
 
-    pub fn pset(&self, x: f64, y: f64, tile: pyxel::Tile) {
+    pub fn pset(&self, x: f32, y: f32, tile: pyxel::Tile) {
         self.inner.lock().pset(x, y, tile);
     }
 
-    pub fn line(&self, x1: f64, y1: f64, x2: f64, y2: f64, tile: pyxel::Tile) {
+    pub fn line(&self, x1: f32, y1: f32, x2: f32, y2: f32, tile: pyxel::Tile) {
         self.inner.lock().line(x1, y1, x2, y2, tile);
     }
 
-    pub fn rect(&self, x: f64, y: f64, w: f64, h: f64, tile: pyxel::Tile) {
+    pub fn rect(&self, x: f32, y: f32, w: f32, h: f32, tile: pyxel::Tile) {
         self.inner.lock().rect(x, y, w, h, tile);
     }
 
-    pub fn rectb(&self, x: f64, y: f64, w: f64, h: f64, tile: pyxel::Tile) {
+    pub fn rectb(&self, x: f32, y: f32, w: f32, h: f32, tile: pyxel::Tile) {
         self.inner.lock().rectb(x, y, w, h, tile);
     }
 
-    pub fn circ(&self, x: f64, y: f64, r: f64, tile: pyxel::Tile) {
+    pub fn circ(&self, x: f32, y: f32, r: f32, tile: pyxel::Tile) {
         self.inner.lock().circ(x, y, r, tile);
     }
 
-    pub fn circb(&self, x: f64, y: f64, r: f64, tile: pyxel::Tile) {
+    pub fn circb(&self, x: f32, y: f32, r: f32, tile: pyxel::Tile) {
         self.inner.lock().circb(x, y, r, tile);
     }
 
-    pub fn elli(&self, x: f64, y: f64, w: f64, h: f64, tile: pyxel::Tile) {
+    pub fn elli(&self, x: f32, y: f32, w: f32, h: f32, tile: pyxel::Tile) {
         self.inner.lock().elli(x, y, w, h, tile);
     }
 
-    pub fn ellib(&self, x: f64, y: f64, w: f64, h: f64, tile: pyxel::Tile) {
+    pub fn ellib(&self, x: f32, y: f32, w: f32, h: f32, tile: pyxel::Tile) {
         self.inner.lock().ellib(x, y, w, h, tile);
     }
 
-    pub fn tri(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: pyxel::Tile) {
+    pub fn tri(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, tile: pyxel::Tile) {
         self.inner.lock().tri(x1, y1, x2, y2, x3, y3, tile);
     }
 
-    pub fn trib(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: pyxel::Tile) {
+    pub fn trib(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, tile: pyxel::Tile) {
         self.inner.lock().trib(x1, y1, x2, y2, x3, y3, tile);
     }
 
-    pub fn fill(&self, x: f64, y: f64, tile: pyxel::Tile) {
+    pub fn fill(&self, x: f32, y: f32, tile: pyxel::Tile) {
         self.inner.lock().fill(x, y, tile);
     }
 
     #[pyo3(signature = (x, y, tm, u, v, w, h, tilekey=None, rotate=None, scale=None))]
     pub fn blt(
         &self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         tm: Bound<'_, PyAny>,
-        u: f64,
-        v: f64,
-        w: f64,
-        h: f64,
+        u: f32,
+        v: f32,
+        w: f32,
+        h: f32,
         tilekey: Option<pyxel::Tile>,
-        rotate: Option<f64>,
-        scale: Option<f64>,
+        rotate: Option<f32>,
+        scale: Option<f32>,
     ) -> PyResult<()> {
         cast_pyany! {
             tm,

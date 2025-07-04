@@ -187,7 +187,7 @@ impl Pyxel {
         {
             let mut image = image.lock();
             for i in 0..num_colors {
-                image.pset(i as f64, 0.0, i as Color);
+                image.pset(i as f32, 0.0, i as Color);
             }
 
             image.save(&filename, 16);

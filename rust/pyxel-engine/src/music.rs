@@ -31,10 +31,10 @@ impl Music {
         }
     }
 
-    pub fn save(&self, filename: &str, duration_sec: f64, use_ffmpeg: Option<bool>) {
+    pub fn save(&self, filename: &str, duration_sec: f32, use_ffmpeg: Option<bool>) {
         assert!(duration_sec > 0.0);
 
-        let num_samples = (duration_sec * AUDIO_SAMPLE_RATE as f64).round() as u32;
+        let num_samples = (duration_sec * AUDIO_SAMPLE_RATE as f32).round() as u32;
         if num_samples == 0 {
             return;
         }

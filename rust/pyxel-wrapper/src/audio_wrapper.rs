@@ -16,7 +16,7 @@ static MUSIC_ONCE: Once = Once::new();
 fn play(
     ch: u32,
     snd: Bound<'_, PyAny>,
-    sec: Option<f64>,
+    sec: Option<f32>,
     r#loop: Option<bool>,
     resume: Option<bool>,
 ) -> PyResult<()> {
@@ -37,7 +37,7 @@ fn play(
 
 #[pyfunction]
 #[pyo3(signature = (msc, sec=None, r#loop=None))]
-fn playm(msc: u32, sec: Option<f64>, r#loop: Option<bool>) {
+fn playm(msc: u32, sec: Option<f32>, r#loop: Option<bool>) {
     pyxel().playm(msc, sec, r#loop.unwrap_or(false));
 }
 
@@ -55,7 +55,7 @@ fn stop(ch: Option<u32>) {
 }
 
 #[pyfunction]
-fn play_pos(ch: u32) -> Option<(u32, f64)> {
+fn play_pos(ch: u32) -> Option<(u32, f32)> {
     pyxel().play_pos(ch)
 }
 

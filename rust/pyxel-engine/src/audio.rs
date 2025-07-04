@@ -119,7 +119,7 @@ impl Pyxel {
         &self,
         channel_index: u32,
         sequence: &[u32],
-        start_sec: Option<f64>,
+        start_sec: Option<f32>,
         should_loop: bool,
         should_resume: bool,
     ) {
@@ -144,7 +144,7 @@ impl Pyxel {
         &self,
         channel_index: u32,
         sound_index: u32,
-        start_sec: Option<f64>,
+        start_sec: Option<f32>,
         should_loop: bool,
         should_resume: bool,
     ) {
@@ -160,7 +160,7 @@ impl Pyxel {
         &mut self,
         channel_index: u32,
         code: &str,
-        start_sec: Option<f64>,
+        start_sec: Option<f32>,
         should_loop: bool,
         should_resume: bool,
     ) {
@@ -169,7 +169,7 @@ impl Pyxel {
             .play_mml(code, start_sec, should_loop, should_resume);
     }
 
-    pub fn playm(&self, music_index: u32, start_sec: Option<f64>, should_loop: bool) {
+    pub fn playm(&self, music_index: u32, start_sec: Option<f32>, should_loop: bool) {
         let num_channels = self.channels.lock().len();
         let musics = self.musics.lock();
         let music = musics[music_index as usize].lock();
@@ -197,7 +197,7 @@ impl Pyxel {
         }
     }
 
-    pub fn play_pos(&self, channel_index: u32) -> Option<(u32, f64)> {
+    pub fn play_pos(&self, channel_index: u32) -> Option<(u32, f32)> {
         self.channels.lock()[channel_index as usize]
             .lock()
             .play_pos()
