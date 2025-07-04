@@ -472,7 +472,7 @@ pyxel play PYXEL_APP_FILE
 
 ### Ресурсы
 
-- `load(filename, [ignore_images], [ignore_tilemaps], [ignore_sounds], [ignore_musics])`<br>
+- `load(filename, [skip_images], [skip_tilemaps], [skip_sounds], [skip_musics])`<br>
   Загрузка файла ресурсов (.pyxres). Если опция установлена в `True`, соответствующий ресурс будет исключен из загрузки. Если файл палитры (.pyxpal) с таким же именем существует в той же директории, что и файл ресурсов, цвета палитры также будут обновлены. Файл палитры содержит шестнадцатеричные значения для цветов отображения (например, `1100ff`), разделенные новыми строками. Файл палитры также можно использовать для изменения цветов, отображаемых в Pyxel Editor.
 
 - `user_data_dir(vendor_name, app_name)`<br>

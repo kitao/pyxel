@@ -15,7 +15,7 @@ To make your code compatible with version 2.4, please make the following changes
 - If you need the playback duration of a sound, use the `total_sec` function of the Sound class
 - For the Sound class's `mml` function, use code that follows the new MML syntax
 - To use the old MML syntax, use the Sound class's `old_mml` function
-- Change the `exclude_xxx` option in the `save` and `load` functions to `ignore_xxx`
+- Change the `exclude_xxx` option in the `save` and `load` functions to `skip_xxx`
 - Remove the `include_xxx` option from the `save` and `load` functions
 
 For details on the new MML syntax, see "How to use Pyxel's MML" below.
