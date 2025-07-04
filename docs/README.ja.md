@@ -710,7 +710,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   `NSVFHQ`の文字列でエフェクトを設定します。大文字と小文字は区別されず、空白は無視されます。<br>
   例：`pyxel.sounds[0].set_effects("nfnf nvvs")`
 
-- `mml(mml_str)`<br>
+- `mml(code)`<br>
   [Music Macro Language (MML)](https://ja.wikipedia.org/wiki/Music_Macro_Language)を使って関連パラメータを設定します。使えるコマンドは、`T`(1-900)、`@`(0-3)、`O`(0-4)、`>`、`<`、`Q`(1-8)、`V`(0-7)、`X`(0-7)、`L`(1/2/4/8/16/32)、`CDEFGABR`+`#+-`+`.~&`です。コマンドの詳細は、[こちらのページ](faq-jp.md)を参照してください。<br>
   例：`pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
@@ -718,7 +718,7 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   サウンドを指定した秒数分再生した WAV ファイルを作成します。FFmpeg がインストールされている環境で、`ffmepg`に`True`を指定すると、MP4 ファイルも作成します。
 
 - `total_sec()`<br>
-  サウンドの再生時間を秒で返します。MML で無限ループが指定されている場合は None を返します。
+  サウンドの再生時間を秒で返します。MML で無限ループが使用されている場合は None を返します。
 
 ### Music クラス
 

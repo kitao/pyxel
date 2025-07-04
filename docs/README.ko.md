@@ -710,12 +710,15 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   `NSVFHQ`로 이루어진 문자열로 효과를 설정합니다. 대소문자를 구분하지 않으며, 공백은 무시됩니다.<br>
   예시: `pyxel.sounds[0].set_effects("nfnf nvvs")`
 
-- `mml(mml_str)`<br>
+- `mml(code)`<br>
   [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language)를 사용하여 관련 매개변수를 설정합니다. 사용할 수 있는 명령어는 `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32), 그리고 `CDEFGABR`+`#+-`+`.~&`입니다. 명령어에 대한 자세한 내용은 [이 페이지](faq-en.md)를 참조하세요.<br>
   예시: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
 - `save(filename, count, [ffmpeg])`<br>
   사운드를 `count`번 반복한 WAV 파일을 생성합니다. FFmpeg가 설치되어 있고 `ffmpeg`가 `True`로 설정된 경우, MP4 파일도 생성됩니다.
+
+- `total_sec()`<br>
+  사운드의 재생 시간을 초 단위로 반환합니다. MML에서 무한 루프가 사용된 경우 `None`을 반환합니다.
 
 ### Music 클래스
 
