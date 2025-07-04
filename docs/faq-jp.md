@@ -15,8 +15,8 @@ Pyxel 2.4 ではサウンドエンジンと MML 文法が刷新されていま�
 - サウンドの再生秒数が必要な場合は、Sound クラスの `total_sec` 関数を利用する
 - Sound クラスの `mml` 関数には新 MML 文法に沿ったコードを指定する
 - 旧 MML 文法 を使用する場合は、Sound クラスの `old_mml` 関数を使用する
-- `save`、`load` 関数の `exclude_xxx` オプションを `skip_xxx` に変更する
-- `save`、`load` 関数の `include_xxx` オプションの指定を削除する
+- `save`、`load` 関数の `excl_*` オプションを `exclude_*` に変更する
+- `save`、`load` 関数の `include_*` オプションの指定を削除する
 
 新しい MML 文法は後述の「Pyxel の MML の使い方」を参照してください。
 

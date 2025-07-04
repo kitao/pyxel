@@ -678,18 +678,18 @@ def process_exists(pid: int) -> bool: ...
 def load(
     filename: str,
     *,
-    skip_images: Optional[bool] = None,
-    skip_tilemaps: Optional[bool] = None,
-    skip_sounds: Optional[bool] = None,
-    skip_musics: Optional[bool] = None,
+    exclude_images: Optional[bool] = None,
+    exclude_tilemaps: Optional[bool] = None,
+    exclude_sounds: Optional[bool] = None,
+    exclude_musics: Optional[bool] = None,
 ) -> None: ...
 def save(
     filename: str,
     *,
-    skip_images: Optional[bool] = None,
-    skip_tilemaps: Optional[bool] = None,
-    skip_sounds: Optional[bool] = None,
-    skip_musics: Optional[bool] = None,
+    exclude_images: Optional[bool] = None,
+    exclude_tilemaps: Optional[bool] = None,
+    exclude_sounds: Optional[bool] = None,
+    exclude_musics: Optional[bool] = None,
 ) -> None: ...
 def screenshot(scale: Optional[int] = None) -> None: ...
 def screencast(scale: Optional[int] = None) -> None: ...
