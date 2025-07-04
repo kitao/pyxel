@@ -3,6 +3,26 @@
 ## Migrating to a New Version
 
 <details>
+<summary>How to migrate code to version 2.4</summary>
+
+In Pyxel 2.4, the sound engine and MML syntax have been revamped.<br>
+To make your code compatible with version 2.4, please make the following changes:
+
+- Rename the `waveform` field of the Tone class to `wavetable`
+- Change the `tick` argument of the `play` and `playm` functions to `sec` (a float value in seconds)
+- Update code to handle the return value of the `play_pos` function, which is now `(sound_no, sec)`
+- Change the `count` argument of the `save` function in the Sound and Music classes to `sec`
+- If you need the playback duration of a sound, use the `total_sec` function of the Sound class
+- For the Sound class's `mml` function, use code that follows the new MML syntax
+- To use the old MML syntax, use the Sound class's `old_mml` function
+- Change the `exclude_xxx` option in the `save` and `load` functions to `ignore_xxx`
+- Remove the `include_xxx` option from the `save` and `load` functions
+
+For details on the new MML syntax, see "How to use Pyxel's MML" below.
+
+</details>
+
+<details>
 <summary>How to migrate code to version 1.5</summary>
 
 To make your code compatible with version 1.5, follow these steps:
@@ -51,50 +71,93 @@ The `update` function is called every frame, but the `draw` function may be skip
 </details>
 
 <details>
-<summary>What are the types and usage of Pyxel's MML commands?</summary>
+<summary>How do I use Pyxel's MML?</summary>
 
-The following are the types of commands available for use with the `mml` method of the Sound class:
+You can use MML (Music Macro Language) in Pyxel by passing an MML string to the `mml` function of the Sound class. This switches the sound to MML mode, and the sound will be played according to the MML string.
 
-- `T`(1-900)<br>
-  Specifies the tempo. The default is 100.<br>
-  Note that there may be discrepancies in the specified tempo because it is converted using the formula `Sound.speed = 900/T`.<br>
-  The tempo applies to the entire sound, and if specified multiple times, the last value will be used.
-- `@`(0-3)<br>
-  Specifies the tone. The default is 0.
-- `O`(0-4)<br>
-  Specifies the octave. The default is 2.
+In MML mode, normal parameters like `notes` and `speed` are ignored, and the sound is played according to the MML string. Calling `mml()` again resets the MML mode.
+
+You can also play an MML string directly by passing it to the `play` function instead of a sound number.<br>
+Example: `pyxel.play(0, "CDEFG")`
+
+The following commands are available in Pyxel's MML:
+
+- `T <bpm>` (1-)<br>
+  Sets the tempo (BPM). Default is 120.<br>
+
+- `Q <gate_percent>` (0-100)<br>
+  Sets the note length as a percentage. 100 means no gap between notes, 1 is the shortest. Default is 80.
+
+- `@ <tone_index>` (0-)<br>
+  Sets the tone index (by default: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Default is 0.
+
+- `V <vol>` (0-127)<br>
+  Sets the volume. Default is 100.
+
+- `K <key_offset>` (integer)<br>
+  Sets the transpose amount in semitones. 12 raises the pitch by one octave. Default is 0.
+
+- `Y <offset_cents>` (integer)<br>
+  Sets detune in cents. 100 raises by a semitone, -100 lowers by a semitone. Default is 0.
+
+- `@ENV <slot>` (0-)<br>
+  Switches the envelope (volume curve) slot. 0 turns it off.
+
+- `@ENV <slot> { init_vol, dur_ticks1, vol1, dur_ticks2, vol2, ... }`<br>
+  Sets and switches to the specified envelope slot. Slot 0 cannot be specified.<br>
+  Inside `{ }`, specify "initial volume (once)", then repeat "duration (tick), volume (vol)". 1 tick is 1/48 of a quarter note.<br>
+  Example: `@ENV 1 { 30, 20, 100, 50, 0 }` (volume changes from 30 to 100 over 20 ticks, then to 0 over 50 ticks)
+
+- `@VIB <slot>` (0-)<br>
+  Switches the vibrato (pitch modulation) slot. 0 turns it off.
+
+- `@VIB <slot> { delay_ticks, period_ticks, depth_cents }`<br>
+  Sets and switches to the specified vibrato slot. Slot 0 cannot be specified.<br>
+  Inside `{ }`, specify "delay (tick), period (tick), depth (cent)". 1 tick is 1/48 of a quarter note.<br>
+  Example: `@VIB 1 {24, 12, 100}` (after 24 ticks, vibrato with a 12-tick period and ±100 cents depth)
+
+- `@GLI <slot>` (0-)<br>
+  Switches the glide (pitch slide) slot. 0 turns it off.
+
+- `@GLI <slot> { offset_cents, dur_ticks }`<br>
+  Inside `{ }`, specify "initial pitch offset (cent), time to return to 0 (tick)". 1 tick is 1/48 of a quarter note.<br>
+  Example: `@GLI 1 { -100, 24 }` (starts 1 semitone down, returns to normal over 24 ticks)
+
+- `O <oct>` (-1 - 9)<br>
+  Sets the octave. `O4`'s A is 440 Hz. Default is 4.
+
 - `>`<br>
-  Increases the octave by 1.
-- `<`<br>
-  Decreases the octave by 1.
-- `Q`(1-8)<br>
-  Specifies the quantization (length of the sound). At 8, there is no gap between notes; at 4, it is halved. The default is 7.
-- `V`(0-7)<br>
-  Specifies the volume. The default is 7.
-- `X`(0-7)<br>
-  Defines and specifies the volume envelope. This is an advanced command used instead of `V`.<br>
-  For example, specifying `X2:345` switches to envelope 2 and changes the volume of each note to something like 34555... The unit of volume change is a sixteenth of a quarter note.<br>
-  Specifying `X2` switches to envelope 2 and uses the volume envelope set for that number.
-- `L`(1/2/4/8/16/32)<br>
-  Specifies the length of notes and rests. `L8` is an eighth note. The default is 4.
-- `CDEFGAB`<br>
-  Plays the note for the specified pitch.<br>
-  You can specify a length (1/2/4/8/16/32) after the note, like `F16`, to temporarily change the note's length.
-- `R`<br>
-  Plays a rest.<br>
-  You can specify a length (1/2/4/8/16/32) after the rest, like `R8`, to temporarily change the rest's length.
-- `#` or `+`<br>
-  Written after a note, raises the pitch by a semitone.
-- `-`<br>
-  Written after a note, lowers the pitch by a semitone.
-- `.`<br>
-  Dotted note. Written after a note, extends its length by half.
-- `~`<br>
-  Written after a note, plays it with vibrato.
-- `&`<br>
-  Ties the next note if it has the same pitch, or slurs it if the pitch is different.
+  Raises the octave by 1 (max 9).
 
-</details>
+- `<`<br>
+  Lowers the octave by 1 (min -1).
+
+- `L <len>` (1-192)<br>
+  Sets the default note/rest length. L4 is a quarter note. Default is 4.
+
+- `C/D/E/F/G/A/B`<br>
+  Plays the specified note. You can specify the length after the note, e.g., `F16`.
+
+- `R`<br>
+  Rest. You can specify the length after the rest, e.g., `R8`.
+
+- `#` or `+`<br>
+  Raises the note by a semitone.
+
+- `-`<br>
+  Lowers the note by a semitone.
+
+- `.`<br>
+  Dotted note/rest. Extends the length by half. Can be repeated for multiple dots.
+
+- `&`<br>
+  Tie. Connects two notes of the same pitch into one. Using it between different pitches causes an error.
+
+- `[`<br>
+  Start of repeat section.
+
+- `] <count>` (1-)<br>
+  End of repeat section. Repeats the section between `[` and `]` the specified number of times. If omitted, repeats infinitely. Nested repeats
 
 ## File Operations and Data Management
 
