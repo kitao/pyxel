@@ -3,38 +3,38 @@ use pyo3::prelude::*;
 use crate::pyxel_singleton::pyxel;
 
 #[pyfunction]
-#[pyo3(signature = (filename, skip_images=None, skip_tilemaps=None, skip_sounds=None, skip_musics=None))]
+#[pyo3(signature = (filename, exclude_images=None, exclude_tilemaps=None, exclude_sounds=None, exclude_musics=None))]
 fn load(
     filename: &str,
-    skip_images: Option<bool>,
-    skip_tilemaps: Option<bool>,
-    skip_sounds: Option<bool>,
-    skip_musics: Option<bool>,
+    exclude_images: Option<bool>,
+    exclude_tilemaps: Option<bool>,
+    exclude_sounds: Option<bool>,
+    exclude_musics: Option<bool>,
 ) {
     pyxel().load(
         filename,
-        skip_images,
-        skip_tilemaps,
-        skip_sounds,
-        skip_musics,
+        exclude_images,
+        exclude_tilemaps,
+        exclude_sounds,
+        exclude_musics,
     );
 }
 
 #[pyfunction]
-#[pyo3(signature = (filename, skip_images=None, skip_tilemaps=None, skip_sounds=None, skip_musics=None))]
+#[pyo3(signature = (filename, exclude_images=None, exclude_tilemaps=None, exclude_sounds=None, exclude_musics=None))]
 fn save(
     filename: &str,
-    skip_images: Option<bool>,
-    skip_tilemaps: Option<bool>,
-    skip_sounds: Option<bool>,
-    skip_musics: Option<bool>,
+    exclude_images: Option<bool>,
+    exclude_tilemaps: Option<bool>,
+    exclude_sounds: Option<bool>,
+    exclude_musics: Option<bool>,
 ) {
     pyxel().save(
         filename,
-        skip_images,
-        skip_tilemaps,
-        skip_sounds,
-        skip_musics,
+        exclude_images,
+        exclude_tilemaps,
+        exclude_sounds,
+        exclude_musics,
     );
 }
 
