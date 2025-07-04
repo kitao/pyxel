@@ -595,7 +595,7 @@ Un archivo de aplicación Pyxel también se puede convertir en un archivo ejecut
   Detiene la reproducción del canal especificado `ch`(0-3). Llama a `stop()` para detener todos los canales.
 
 - `play_pos(ch)`<br>
-  Obtiene la posición de reproducción del sonido en el canal `ch`(0-3) como una tupla de `(sound_no, note_no)`. Devuelve `None` cuando se ha detenido la reproducción.
+  Obtiene la posición de reproducción del sonido en el canal `ch`(0-3) como una tupla de `(sound_no, sec)`. Devuelve `None` cuando se ha detenido la reproducción.
 
 ### Matemáticas
 

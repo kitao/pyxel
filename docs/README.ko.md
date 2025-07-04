@@ -595,7 +595,7 @@ Pyxel 애플리케이션 파일은 `pyxel app2exe` 또는 `pyxel app2html` 명�
   지정한 채널 `ch`(0-3)의 재생을 중지합니다. `stop()`을 호출하면 모든 채널의 재생이 중지됩니다.
 
 - `play_pos(ch)`<br>
-  채널 `ch`(0-3)의 사운드 재생 위치를 `(sound_no, note_no)`의 튜플로 가져옵니다. 재생이 중지되면 `None`을 반환합니다.
+  채널 `ch`(0-3)의 사운드 재생 위치를 `(sound_no, sec)`의 튜플로 가져옵니다. 재생이 중지되면 `None`을 반환합니다.
 
 ### Math
 

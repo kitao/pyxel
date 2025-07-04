@@ -595,7 +595,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   停止指定通道 `ch`(0-3) 的播放。调用 `stop()` 停止所有通道。
 
 - `play_pos(ch)`<br>
-  获取通道 `ch`(0-3) 的声音播放位置，作为 `(sound_no, note_no)` 的元组返回。当播放停止时，返回 `None`。
+  获取通道 `ch`(0-3) 的声音播放位置，作为 `(sound_no, sec)` 的元组返回。当播放停止时，返回 `None`。
 
 ### 数学
 

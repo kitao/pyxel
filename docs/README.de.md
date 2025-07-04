@@ -595,7 +595,7 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Stoppt die Wiedergabe des angegebenen Kanals `ch`(0-3). Rufe `stop()` auf, um alle Kanäle zu stoppen.
 
 - `play_pos(ch)`<br>
-  Gibt die Wiedergabeposition des Klangs auf Kanal `ch`(0-3) als Tupel `(sound_no, note_no)` zurück. Gibt `None` zurück, wenn die Wiedergabe gestoppt wurde.
+  Gibt die Wiedergabeposition des Klangs auf Kanal `ch`(0-3) als Tupel `(sound_no, sec)` zurück. Gibt `None` zurück, wenn die Wiedergabe gestoppt wurde.
 
 ### Mathematik
 

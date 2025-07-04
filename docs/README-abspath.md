@@ -595,7 +595,7 @@ A Pyxel application file can also be converted to an executable or an HTML file 
   Stop playback of the specified channel `ch`(0-3). Call `stop()` to stop all channels.
 
 - `play_pos(ch)`<br>
-  Get the sound playback position of channel `ch`(0-3) as a tuple of `(sound_no, note_no)`. Return `None` when playback has stopped.
+  Get the sound playback position of channel `ch`(0-3) as a tuple of `(sound_no, sec)`. Return `None` when playback has stopped.
 
 ### Math
 

@@ -595,7 +595,7 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
   Interrompe la riproduzione del canale specificato `ch`(0-3). Chiama `stop()` per interrompere tutti i canali.
 
 - `play_pos(ch)`<br>
-  Ottiene la posizione di riproduzione del suono sul canale `ch`(0-3) sotto forma di tupla `(sound_no, note_no)`. Restituisce `None` quando la riproduzione è terminata.
+  Ottiene la posizione di riproduzione del suono sul canale `ch`(0-3) sotto forma di tupla `(sound_no, sec)`. Restituisce `None` quando la riproduzione è terminata.
 
 ### Matematica
 
