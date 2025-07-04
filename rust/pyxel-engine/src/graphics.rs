@@ -217,7 +217,7 @@ impl Graphics {
 }
 
 impl Pyxel {
-    pub fn clip(&self, x: f64, y: f64, width: f64, height: f64) {
+    pub fn clip(&self, x: f32, y: f32, width: f32, height: f32) {
         self.screen.lock().clip(x, y, width, height);
     }
 
@@ -225,7 +225,7 @@ impl Pyxel {
         self.screen.lock().clip0();
     }
 
-    pub fn camera(&self, x: f64, y: f64) {
+    pub fn camera(&self, x: f32, y: f32) {
         self.screen.lock().camera(x, y);
     }
 
@@ -249,66 +249,66 @@ impl Pyxel {
         self.screen.lock().cls(color);
     }
 
-    pub fn pget(&self, x: f64, y: f64) -> Color {
+    pub fn pget(&self, x: f32, y: f32) -> Color {
         self.screen.lock().pget(x, y)
     }
 
-    pub fn pset(&self, x: f64, y: f64, color: Color) {
+    pub fn pset(&self, x: f32, y: f32, color: Color) {
         self.screen.lock().pset(x, y, color);
     }
 
-    pub fn line(&self, x1: f64, y1: f64, x2: f64, y2: f64, color: Color) {
+    pub fn line(&self, x1: f32, y1: f32, x2: f32, y2: f32, color: Color) {
         self.screen.lock().line(x1, y1, x2, y2, color);
     }
 
-    pub fn rect(&self, x: f64, y: f64, width: f64, height: f64, color: Color) {
+    pub fn rect(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
         self.screen.lock().rect(x, y, width, height, color);
     }
 
-    pub fn rectb(&self, x: f64, y: f64, width: f64, height: f64, color: Color) {
+    pub fn rectb(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
         self.screen.lock().rectb(x, y, width, height, color);
     }
 
-    pub fn circ(&self, x: f64, y: f64, radius: f64, color: Color) {
+    pub fn circ(&self, x: f32, y: f32, radius: f32, color: Color) {
         self.screen.lock().circ(x, y, radius, color);
     }
 
-    pub fn circb(&self, x: f64, y: f64, radius: f64, color: Color) {
+    pub fn circb(&self, x: f32, y: f32, radius: f32, color: Color) {
         self.screen.lock().circb(x, y, radius, color);
     }
 
-    pub fn elli(&self, x: f64, y: f64, width: f64, height: f64, color: Color) {
+    pub fn elli(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
         self.screen.lock().elli(x, y, width, height, color);
     }
 
-    pub fn ellib(&self, x: f64, y: f64, width: f64, height: f64, color: Color) {
+    pub fn ellib(&self, x: f32, y: f32, width: f32, height: f32, color: Color) {
         self.screen.lock().ellib(x, y, width, height, color);
     }
 
-    pub fn tri(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
+    pub fn tri(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, color: Color) {
         self.screen.lock().tri(x1, y1, x2, y2, x3, y3, color);
     }
 
-    pub fn trib(&self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, color: Color) {
+    pub fn trib(&self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, color: Color) {
         self.screen.lock().trib(x1, y1, x2, y2, x3, y3, color);
     }
 
-    pub fn fill(&self, x: f64, y: f64, color: Color) {
+    pub fn fill(&self, x: f32, y: f32, color: Color) {
         self.screen.lock().fill(x, y, color);
     }
 
     pub fn blt(
         &self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         image_index: u32,
-        image_x: f64,
-        image_y: f64,
-        width: f64,
-        height: f64,
+        image_x: f32,
+        image_y: f32,
+        width: f32,
+        height: f32,
         color_key: Option<Color>,
-        rotate: Option<f64>,
-        scale: Option<f64>,
+        rotate: Option<f32>,
+        scale: Option<f32>,
     ) {
         self.screen.lock().blt(
             x,
@@ -326,16 +326,16 @@ impl Pyxel {
 
     pub fn bltm(
         &self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         tilemap_index: u32,
-        tilemap_x: f64,
-        tilemap_y: f64,
-        width: f64,
-        height: f64,
+        tilemap_x: f32,
+        tilemap_y: f32,
+        width: f32,
+        height: f32,
         color_key: Option<Color>,
-        rotate: Option<f64>,
-        scale: Option<f64>,
+        rotate: Option<f32>,
+        scale: Option<f32>,
     ) {
         self.screen.lock().bltm(
             x,
@@ -351,7 +351,7 @@ impl Pyxel {
         );
     }
 
-    pub fn text(&self, x: f64, y: f64, string: &str, color: Color, font: Option<SharedFont>) {
+    pub fn text(&self, x: f32, y: f32, string: &str, color: Color, font: Option<SharedFont>) {
         self.screen.lock().text(x, y, string, color, font);
     }
 
@@ -384,7 +384,7 @@ impl Pyxel {
                 self.system.screen_x as f32,
                 (window_height as i32
                     - self.system.screen_y
-                    - (self.height as f64 * self.system.screen_scale) as i32)
+                    - (self.height as f32 * self.system.screen_scale) as i32)
                     as f32,
             );
         }
@@ -392,13 +392,13 @@ impl Pyxel {
         if let Some(location) = uniform_locations.get("u_screenSize") {
             gl.uniform_2_f32(
                 Some(location),
-                (self.width as f64 * self.system.screen_scale) as f32,
-                (self.height as f64 * self.system.screen_scale) as f32,
+                self.width as f32 * self.system.screen_scale,
+                self.height as f32 * self.system.screen_scale,
             );
         }
 
         if let Some(location) = uniform_locations.get("u_screenScale") {
-            gl.uniform_1_f32(Some(location), self.system.screen_scale as f32);
+            gl.uniform_1_f32(Some(location), self.system.screen_scale);
         }
 
         if let Some(location) = uniform_locations.get("u_numColors") {

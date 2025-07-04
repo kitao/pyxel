@@ -186,7 +186,7 @@ impl Screencast {
             next_frame_count - frame_count
         };
 
-        (100.0 / self.fps as f64 * num_elapsed_frames as f64 + 0.5) as u16
+        (100.0 / self.fps as f32 * num_elapsed_frames as f32 + 0.5) as u16
     }
 
     fn make_gif_buffer(

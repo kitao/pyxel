@@ -156,10 +156,10 @@ impl Sound {
         self.commands = parse_old_mml(code);
     }
 
-    pub fn save(&self, filename: &str, duration_sec: f64, use_ffmpeg: Option<bool>) {
+    pub fn save(&self, filename: &str, duration_sec: f32, use_ffmpeg: Option<bool>) {
         assert!(duration_sec > 0.0);
 
-        let num_samples = (duration_sec * AUDIO_SAMPLE_RATE as f64).round() as u32;
+        let num_samples = (duration_sec * AUDIO_SAMPLE_RATE as f32).round() as u32;
         if num_samples == 0 {
             return;
         }
@@ -182,9 +182,9 @@ impl Sound {
         channels.iter().for_each(|channel| channel.lock().stop());
     }
 
-    pub fn total_sec(&self) -> Option<f64> {
+    pub fn total_sec(&self) -> Option<f32> {
         if self.commands.is_empty() {
-            Some(self.notes.len() as f64 * self.speed as f64 / SOUND_TICKS_PER_SECOND as f64)
+            Some(self.notes.len() as f32 * self.speed as f32 / SOUND_TICKS_PER_SECOND as f32)
         } else {
             calc_commands_sec(&self.commands)
         }
@@ -240,7 +240,7 @@ impl Sound {
 
             // Volume
             commands.push(MmlCommand::Volume {
-                level: volume as f64 / MAX_VOLUME as f64,
+                level: volume as f32 / MAX_VOLUME as f32,
             });
 
             // Tone
@@ -256,7 +256,7 @@ impl Sound {
                     segments: vec![(self.speed, 0.0)],
                 });
             } else if effect == EFFECT_HALF_FADEOUT {
-                let ticks2 = (self.speed as f64 / 2.0).round() as u32;
+                let ticks2 = (self.speed as f32 / 2.0).round() as u32;
                 let ticks1 = self.speed - ticks2;
                 commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
@@ -264,7 +264,7 @@ impl Sound {
                     segments: vec![(ticks1, 1.0), (ticks2, 0.0)],
                 });
             } else if effect == EFFECT_QUARTER_FADEOUT {
-                let ticks2 = (self.speed as f64 / 4.0).round() as u32;
+                let ticks2 = (self.speed as f32 / 4.0).round() as u32;
                 let ticks1 = self.speed - ticks2;
                 commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
@@ -281,7 +281,7 @@ impl Sound {
                     slot: 1,
                     delay_ticks: 0,
                     period_ticks: VIBRATO_PERIOD_TICKS,
-                    semitone_depth: VIBRATO_DEPTH_CENTS as f64 / 100.0,
+                    semitone_depth: VIBRATO_DEPTH_CENTS as f32 / 100.0,
                 });
             } else {
                 commands.push(MmlCommand::Vibrato { slot: 0 });
@@ -291,7 +291,7 @@ impl Sound {
             if effect == EFFECT_SLIDE {
                 commands.push(MmlCommand::GlideSet {
                     slot: 1,
-                    semitone_offset: (prev_note - *note) as f64,
+                    semitone_offset: (prev_note - *note) as f32,
                     duration_ticks: self.speed,
                 });
             } else {

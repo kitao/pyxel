@@ -1,7 +1,7 @@
 use crate::canvas::{Canvas, ToIndex};
 use crate::image::SharedImage;
 use crate::tmx_parser::parse_tmx;
-use crate::utils::{f64_to_u32, parse_hex_string, simplify_string};
+use crate::utils::{f32_to_u32, parse_hex_string, simplify_string};
 
 pub type ImageTileCoord = u8;
 pub type Tile = (ImageTileCoord, ImageTileCoord);
@@ -76,13 +76,13 @@ impl Tilemap {
         }
 
         self.blt(
-            x as f64,
-            y as f64,
+            x as f32,
+            y as f32,
             tilemap,
             0.0,
             0.0,
-            width as f64,
-            height as f64,
+            width as f32,
+            height as f32,
             None,
             None,
             None,
@@ -95,20 +95,20 @@ impl Tilemap {
         let tilemap_height = tilemap.lock().height();
 
         self.blt(
-            x as f64,
-            y as f64,
+            x as f32,
+            y as f32,
             tilemap,
             0.0,
             0.0,
-            tilemap_width as f64,
-            tilemap_height as f64,
+            tilemap_width as f32,
+            tilemap_height as f32,
             None,
             None,
             None,
         );
     }
 
-    pub fn clip(&mut self, x: f64, y: f64, width: f64, height: f64) {
+    pub fn clip(&mut self, x: f32, y: f32, width: f32, height: f32) {
         self.canvas.clip(x, y, width, height);
     }
 
@@ -116,7 +116,7 @@ impl Tilemap {
         self.canvas.clip0();
     }
 
-    pub fn camera(&mut self, x: f64, y: f64) {
+    pub fn camera(&mut self, x: f32, y: f32) {
         self.canvas.camera(x, y);
     }
 
@@ -128,66 +128,66 @@ impl Tilemap {
         self.canvas.cls(tile);
     }
 
-    pub fn pget(&mut self, x: f64, y: f64) -> Tile {
+    pub fn pget(&mut self, x: f32, y: f32) -> Tile {
         self.canvas.pget(x, y)
     }
 
-    pub fn pset(&mut self, x: f64, y: f64, tile: Tile) {
+    pub fn pset(&mut self, x: f32, y: f32, tile: Tile) {
         self.canvas.pset(x, y, tile);
     }
 
-    pub fn line(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, tile: Tile) {
+    pub fn line(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, tile: Tile) {
         self.canvas.line(x1, y1, x2, y2, tile);
     }
 
-    pub fn rect(&mut self, x: f64, y: f64, width: f64, height: f64, tile: Tile) {
+    pub fn rect(&mut self, x: f32, y: f32, width: f32, height: f32, tile: Tile) {
         self.canvas.rect(x, y, width, height, tile);
     }
 
-    pub fn rectb(&mut self, x: f64, y: f64, width: f64, height: f64, tile: Tile) {
+    pub fn rectb(&mut self, x: f32, y: f32, width: f32, height: f32, tile: Tile) {
         self.canvas.rectb(x, y, width, height, tile);
     }
 
-    pub fn circ(&mut self, x: f64, y: f64, radius: f64, tile: Tile) {
+    pub fn circ(&mut self, x: f32, y: f32, radius: f32, tile: Tile) {
         self.canvas.circ(x, y, radius, tile);
     }
 
-    pub fn circb(&mut self, x: f64, y: f64, radius: f64, tile: Tile) {
+    pub fn circb(&mut self, x: f32, y: f32, radius: f32, tile: Tile) {
         self.canvas.circb(x, y, radius, tile);
     }
 
-    pub fn elli(&mut self, x: f64, y: f64, width: f64, height: f64, tile: Tile) {
+    pub fn elli(&mut self, x: f32, y: f32, width: f32, height: f32, tile: Tile) {
         self.canvas.elli(x, y, width, height, tile);
     }
 
-    pub fn ellib(&mut self, x: f64, y: f64, width: f64, height: f64, tile: Tile) {
+    pub fn ellib(&mut self, x: f32, y: f32, width: f32, height: f32, tile: Tile) {
         self.canvas.ellib(x, y, width, height, tile);
     }
 
-    pub fn tri(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: Tile) {
+    pub fn tri(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, tile: Tile) {
         self.canvas.tri(x1, y1, x2, y2, x3, y3, tile);
     }
 
-    pub fn trib(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, tile: Tile) {
+    pub fn trib(&mut self, x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, tile: Tile) {
         self.canvas.trib(x1, y1, x2, y2, x3, y3, tile);
     }
 
-    pub fn fill(&mut self, x: f64, y: f64, tile: Tile) {
+    pub fn fill(&mut self, x: f32, y: f32, tile: Tile) {
         self.canvas.fill(x, y, tile);
     }
 
     pub fn blt(
         &mut self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         tilemap: SharedTilemap,
-        tilemap_x: f64,
-        tilemap_y: f64,
-        width: f64,
-        height: f64,
+        tilemap_x: f32,
+        tilemap_y: f32,
+        width: f32,
+        height: f32,
         transparent: Option<Tile>,
-        rotate: Option<f64>,
-        scale: Option<f64>,
+        rotate: Option<f32>,
+        scale: Option<f32>,
     ) {
         let rotate = rotate.unwrap_or(0.0);
         let scale = scale.unwrap_or(1.0);
@@ -221,8 +221,8 @@ impl Tilemap {
                 None,
             );
         } else {
-            let copy_width = f64_to_u32(width.abs());
-            let copy_height = f64_to_u32(height.abs());
+            let copy_width = f32_to_u32(width.abs());
+            let copy_height = f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
 
             canvas.blt(
@@ -231,8 +231,8 @@ impl Tilemap {
                 &self.canvas,
                 tilemap_x,
                 tilemap_y,
-                copy_width as f64,
-                copy_height as f64,
+                copy_width as f32,
+                copy_height as f32,
                 None,
                 None,
             );
@@ -244,16 +244,16 @@ impl Tilemap {
 
     fn blt_transform(
         &mut self,
-        x: f64,
-        y: f64,
+        x: f32,
+        y: f32,
         tilemap: SharedTilemap,
-        tilemap_x: f64,
-        tilemap_y: f64,
-        width: f64,
-        height: f64,
+        tilemap_x: f32,
+        tilemap_y: f32,
+        width: f32,
+        height: f32,
         transparent: Option<Tile>,
-        rotate: f64,
-        scale: f64,
+        rotate: f32,
+        scale: f32,
     ) {
         if let Some(tilemap) = tilemap.try_lock() {
             self.canvas.blt_transform(
@@ -271,8 +271,8 @@ impl Tilemap {
                 false,
             );
         } else {
-            let copy_width = f64_to_u32(width.abs());
-            let copy_height = f64_to_u32(height.abs());
+            let copy_width = f32_to_u32(width.abs());
+            let copy_height = f32_to_u32(height.abs());
             let mut canvas = Canvas::new(copy_width, copy_height);
 
             canvas.blt(
@@ -281,8 +281,8 @@ impl Tilemap {
                 &self.canvas,
                 tilemap_x,
                 tilemap_y,
-                copy_width as f64,
-                copy_height as f64,
+                copy_width as f32,
+                copy_height as f32,
                 None,
                 None,
             );

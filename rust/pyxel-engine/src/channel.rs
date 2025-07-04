@@ -28,11 +28,11 @@ pub struct Channel {
     command_index: u32,
     repeat_points: Vec<(u32, u32)>,
     clocks_per_tick: u32,
-    gate_ratio: f64,
-    tone_gain: f64,
-    volume_level: f64,
-    transpose_semitones: f64,
-    detune_semitones: f64,
+    gate_ratio: f32,
+    tone_gain: f32,
+    volume_level: f32,
+    transpose_semitones: f32,
+    detune_semitones: f32,
     envelope_slots: HashMap<u32, MmlCommand>,
     vibrato_slots: HashMap<u32, MmlCommand>,
     glide_slots: HashMap<u32, MmlCommand>,
@@ -77,14 +77,14 @@ impl Channel {
         })
     }
 
-    fn sec_to_clock(sec: Option<f64>) -> u32 {
-        (sec.unwrap_or(0.0) * AUDIO_CLOCK_RATE as f64).round() as u32
+    fn sec_to_clock(sec: Option<f32>) -> u32 {
+        (sec.unwrap_or(0.0) * AUDIO_CLOCK_RATE as f32).round() as u32
     }
 
     pub fn play(
         &mut self,
         sounds: Vec<SharedSound>,
-        start_sec: Option<f64>,
+        start_sec: Option<f32>,
         should_loop: bool,
         should_resume: bool,
     ) {
@@ -99,7 +99,7 @@ impl Channel {
     pub fn play1(
         &mut self,
         sound: SharedSound,
-        start_sec: Option<f64>,
+        start_sec: Option<f32>,
         should_loop: bool,
         should_resume: bool,
     ) {
@@ -114,7 +114,7 @@ impl Channel {
     pub fn play_mml(
         &mut self,
         code: &str,
-        start_sec: Option<f64>,
+        start_sec: Option<f32>,
         should_loop: bool,
         should_resume: bool,
     ) {
@@ -170,9 +170,9 @@ impl Channel {
         self.voice.cancel_note();
     }
 
-    pub fn play_pos(&mut self) -> Option<(u32, f64)> {
+    pub fn play_pos(&mut self) -> Option<(u32, f32)> {
         if self.is_playing {
-            let elapsed_sec = self.sound_elapsed_clocks as f64 / AUDIO_CLOCK_RATE as f64;
+            let elapsed_sec = self.sound_elapsed_clocks as f32 / AUDIO_CLOCK_RATE as f32;
             Some((self.sound_index, elapsed_sec))
         } else {
             None
@@ -385,16 +385,16 @@ impl Channel {
                     midi_note,
                     duration_ticks,
                 } => {
-                    let midi_note = *midi_note as f64
+                    let midi_note = *midi_note as f32
                         + self.transpose_semitones
                         + self.detune_semitones
-                        + self.detune as f64 / 100.0;
+                        + self.detune as f32 / 100.0;
 
                     let velocity = self.tone_gain * self.gain * self.volume_level;
 
                     self.note_duration_clocks = self.clocks_per_tick * *duration_ticks;
                     let playback_clocks =
-                        (self.note_duration_clocks as f64 * self.gate_ratio).round() as u32;
+                        (self.note_duration_clocks as f32 * self.gate_ratio).round() as u32;
 
                     self.voice.play_note(midi_note, velocity, playback_clocks);
                     return;

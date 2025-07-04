@@ -12,7 +12,7 @@ static TILEMAP_ONCE: Once = Once::new();
 
 #[pyfunction]
 #[pyo3(signature = (x=None, y=None, w=None, h=None))]
-fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyResult<()> {
+fn clip(x: Option<f32>, y: Option<f32>, w: Option<f32>, h: Option<f32>) -> PyResult<()> {
     if let (Some(x), Some(y), Some(w), Some(h)) = (x, y, w, h) {
         pyxel().clip(x, y, w, h);
     } else if (x, y, w, h) == (None, None, None, None) {
@@ -25,7 +25,7 @@ fn clip(x: Option<f64>, y: Option<f64>, w: Option<f64>, h: Option<f64>) -> PyRes
 
 #[pyfunction]
 #[pyo3(signature = (x=None, y=None))]
-fn camera(x: Option<f64>, y: Option<f64>) -> PyResult<()> {
+fn camera(x: Option<f32>, y: Option<f32>) -> PyResult<()> {
     if let (Some(x), Some(y)) = (x, y) {
         pyxel().camera(x, y);
     } else if (x, y) == (None, None) {
@@ -60,78 +60,78 @@ fn cls(col: pyxel::Color) {
 }
 
 #[pyfunction]
-fn pget(x: f64, y: f64) -> pyxel::Color {
+fn pget(x: f32, y: f32) -> pyxel::Color {
     pyxel().pget(x, y)
 }
 
 #[pyfunction]
-fn pset(x: f64, y: f64, col: pyxel::Color) {
+fn pset(x: f32, y: f32, col: pyxel::Color) {
     pyxel().pset(x, y, col);
 }
 
 #[pyfunction]
-fn line(x1: f64, y1: f64, x2: f64, y2: f64, col: pyxel::Color) {
+fn line(x1: f32, y1: f32, x2: f32, y2: f32, col: pyxel::Color) {
     pyxel().line(x1, y1, x2, y2, col);
 }
 
 #[pyfunction]
-fn rect(x: f64, y: f64, w: f64, h: f64, col: pyxel::Color) {
+fn rect(x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
     pyxel().rect(x, y, w, h, col);
 }
 
 #[pyfunction]
-fn rectb(x: f64, y: f64, w: f64, h: f64, col: pyxel::Color) {
+fn rectb(x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
     pyxel().rectb(x, y, w, h, col);
 }
 
 #[pyfunction]
-fn circ(x: f64, y: f64, r: f64, col: pyxel::Color) {
+fn circ(x: f32, y: f32, r: f32, col: pyxel::Color) {
     pyxel().circ(x, y, r, col);
 }
 
 #[pyfunction]
-fn circb(x: f64, y: f64, r: f64, col: pyxel::Color) {
+fn circb(x: f32, y: f32, r: f32, col: pyxel::Color) {
     pyxel().circb(x, y, r, col);
 }
 
 #[pyfunction]
-fn elli(x: f64, y: f64, w: f64, h: f64, col: pyxel::Color) {
+fn elli(x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
     pyxel().elli(x, y, w, h, col);
 }
 
 #[pyfunction]
-fn ellib(x: f64, y: f64, w: f64, h: f64, col: pyxel::Color) {
+fn ellib(x: f32, y: f32, w: f32, h: f32, col: pyxel::Color) {
     pyxel().ellib(x, y, w, h, col);
 }
 
 #[pyfunction]
-fn tri(x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: pyxel::Color) {
+fn tri(x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, col: pyxel::Color) {
     pyxel().tri(x1, y1, x2, y2, x3, y3, col);
 }
 
 #[pyfunction]
-fn trib(x1: f64, y1: f64, x2: f64, y2: f64, x3: f64, y3: f64, col: pyxel::Color) {
+fn trib(x1: f32, y1: f32, x2: f32, y2: f32, x3: f32, y3: f32, col: pyxel::Color) {
     pyxel().trib(x1, y1, x2, y2, x3, y3, col);
 }
 
 #[pyfunction]
-fn fill(x: f64, y: f64, col: pyxel::Color) {
+fn fill(x: f32, y: f32, col: pyxel::Color) {
     pyxel().fill(x, y, col);
 }
 
 #[pyfunction]
 #[pyo3(signature = (x, y ,img, u, v, w, h, colkey=None, rotate=None, scale=None))]
 fn blt(
-    x: f64,
-    y: f64,
+    x: f32,
+    y: f32,
     img: Bound<'_, PyAny>,
-    u: f64,
-    v: f64,
-    w: f64,
-    h: f64,
+    u: f32,
+    v: f32,
+    w: f32,
+    h: f32,
     colkey: Option<pyxel::Color>,
-    rotate: Option<f64>,
-    scale: Option<f64>,
+    rotate: Option<f32>,
+    scale: Option<f32>,
 ) -> PyResult<()> {
     cast_pyany! {
         img,
@@ -144,16 +144,16 @@ fn blt(
 #[pyfunction]
 #[pyo3(signature = (x, y, tm, u, v, w, h, colkey=None, rotate=None, scale=None))]
 fn bltm(
-    x: f64,
-    y: f64,
+    x: f32,
+    y: f32,
     tm: Bound<'_, PyAny>,
-    u: f64,
-    v: f64,
-    w: f64,
-    h: f64,
+    u: f32,
+    v: f32,
+    w: f32,
+    h: f32,
     colkey: Option<pyxel::Color>,
-    rotate: Option<f64>,
-    scale: Option<f64>,
+    rotate: Option<f32>,
+    scale: Option<f32>,
 ) -> PyResult<()> {
     cast_pyany! {
         tm,
@@ -165,7 +165,7 @@ fn bltm(
 
 #[pyfunction]
 #[pyo3(signature = (x, y, s, col, font=None))]
-fn text(x: f64, y: f64, s: &str, col: pyxel::Color, font: Option<Font>) {
+fn text(x: f32, y: f32, s: &str, col: pyxel::Color, font: Option<Font>) {
     let font = if let Some(font) = font {
         Some(font.inner.clone())
     } else {

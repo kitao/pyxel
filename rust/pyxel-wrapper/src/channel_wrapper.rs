@@ -46,7 +46,7 @@ impl Channel {
     pub fn play(
         &self,
         snd: Bound<'_, PyAny>,
-        sec: Option<f64>,
+        sec: Option<f32>,
         r#loop: Option<bool>,
         resume: Option<bool>,
     ) -> PyResult<()> {
@@ -77,7 +77,7 @@ impl Channel {
         self.inner.lock().stop();
     }
 
-    pub fn play_pos(&self) -> Option<(u32, f64)> {
+    pub fn play_pos(&self) -> Option<(u32, f32)> {
         self.inner.lock().play_pos()
     }
 }

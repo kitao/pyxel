@@ -136,7 +136,7 @@ impl ShouldInit {
     }
 }
 
-pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f64> {
+pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f32> {
     let mut total_clocks = 0;
     let mut command_index: u32 = 0;
     let mut repeat_points: Vec<(u32, u32)> = Vec::new();
@@ -174,7 +174,7 @@ pub fn calc_commands_sec(commands: &[MmlCommand]) -> Option<f64> {
         }
     }
 
-    Some(total_clocks as f64 / AUDIO_CLOCK_RATE as f64)
+    Some(total_clocks as f32 / AUDIO_CLOCK_RATE as f32)
 }
 
 pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
@@ -224,13 +224,13 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             commands.push(MmlCommand::Volume {
                 level: volume_to_level(vol),
             });
-        } else if let Some(key_offset) = parse_command(&mut stream, "K", RANGE_ALL) {
+        } else if let Some(key_offset) = parse_command::<i32>(&mut stream, "K", RANGE_ALL) {
             //
             // K<key_offset> - Transpose key in semitones
             //
             should_init.transpose = false;
             commands.push(MmlCommand::Transpose {
-                semitone_offset: key_offset,
+                semitone_offset: key_offset as f32,
             });
         } else if let Some(offset_cents) = parse_command(&mut stream, "Y", RANGE_ALL) {
             //
@@ -585,17 +585,17 @@ fn parse_glide(stream: &mut CharStream) -> Option<MmlCommand> {
 }
 
 fn bpm_to_cpt(bpm: u32) -> u32 {
-    (AUDIO_CLOCK_RATE as f64 * 60.0 / (bpm as f64 * TICKS_PER_QUARTER_NOTE as f64)).round() as u32
+    (AUDIO_CLOCK_RATE as f32 * 60.0 / (bpm as f32 * TICKS_PER_QUARTER_NOTE as f32)).round() as u32
 }
 
-fn gate_time_to_gate_ratio(gate_time: u32) -> f64 {
-    gate_time as f64 / RANGE_QUANTIZE.1 as f64
+fn gate_time_to_gate_ratio(gate_time: u32) -> f32 {
+    gate_time as f32 / RANGE_QUANTIZE.1 as f32
 }
 
-fn volume_to_level(volume: u32) -> f64 {
-    volume as f64 / RANGE_VOLUME.1 as f64
+fn volume_to_level(volume: u32) -> f32 {
+    volume as f32 / RANGE_VOLUME.1 as f32
 }
 
-fn cents_to_semitones(cents: i32) -> f64 {
-    cents as f64 / 100.0
+fn cents_to_semitones(cents: i32) -> f32 {
+    cents as f32 / 100.0
 }

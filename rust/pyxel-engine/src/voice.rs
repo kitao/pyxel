@@ -1,16 +1,16 @@
 use crate::blip_buf::BlipBuf;
 
-const A4_MIDI_NOTE: f64 = 69.0;
-const A4_FREQUENCY: f64 = 440.0;
+const A4_MIDI_NOTE: f32 = 69.0;
+const A4_FREQUENCY: f32 = 440.0;
 
 pub struct Oscillator {
-    waveform: Vec<f64>,
+    waveform: Vec<f32>,
     waveform_index: usize,
 
     lfsr: u16,
     tap_bit: u8,
 
-    sample: f64,
+    sample: f32,
 }
 
 impl Oscillator {
@@ -26,7 +26,7 @@ impl Oscillator {
         }
     }
 
-    pub fn set(&mut self, waveform: &[f64]) {
+    pub fn set(&mut self, waveform: &[f32]) {
         assert!(!waveform.is_empty());
 
         if waveform != self.waveform {
@@ -56,7 +56,7 @@ impl Oscillator {
         self.update();
     }
 
-    fn sample(&self) -> f64 {
+    fn sample(&self) -> f32 {
         self.sample
     }
 
@@ -93,8 +93,8 @@ impl Oscillator {
 #[derive(Debug)]
 struct EnvelopeSegment {
     start_tick: u32,
-    start_level: f64,
-    slope: f64,
+    start_level: f32,
+    slope: f32,
 }
 
 pub struct Envelope {
@@ -102,7 +102,7 @@ pub struct Envelope {
 
     enabled: bool,
     elapsed_ticks: u32,
-    level: f64,
+    level: f32,
 }
 
 impl Envelope {
@@ -115,7 +115,7 @@ impl Envelope {
         }
     }
 
-    pub fn set(&mut self, initial_level: f64, segments: &[(u32, f64)]) {
+    pub fn set(&mut self, initial_level: f32, segments: &[(u32, f32)]) {
         self.segments.clear();
 
         let mut start_tick = 0;
@@ -123,7 +123,7 @@ impl Envelope {
 
         for &(duration, target_level) in segments {
             let slope = if duration > 0 {
-                (target_level - start_level) / duration as f64
+                (target_level - start_level) / duration as f32
             } else {
                 0.0
             };
@@ -159,7 +159,7 @@ impl Envelope {
         self.enabled = false;
     }
 
-    fn level(&self) -> f64 {
+    fn level(&self) -> f32 {
         self.level
     }
 
@@ -188,7 +188,7 @@ impl Envelope {
                     segment.start_level
                 } else {
                     segment.start_level
-                        + segment.slope * (self.elapsed_ticks - segment.start_tick) as f64
+                        + segment.slope * (self.elapsed_ticks - segment.start_tick) as f32
                 };
                 break;
             }
@@ -199,12 +199,12 @@ impl Envelope {
 pub struct Vibrato {
     delay_ticks: u32,
     period_ticks: u32,
-    inv_period_ticks: f64,
-    semitone_depth: f64,
+    inv_period_ticks: f32,
+    semitone_depth: f32,
 
     enabled: bool,
     elapsed_ticks: u32,
-    pitch_multiplier: f64,
+    pitch_multiplier: f32,
 }
 
 impl Vibrato {
@@ -221,14 +221,14 @@ impl Vibrato {
         }
     }
 
-    pub fn set(&mut self, delay_ticks: u32, period_ticks: u32, semitone_depth: f64) {
+    pub fn set(&mut self, delay_ticks: u32, period_ticks: u32, semitone_depth: f32) {
         self.delay_ticks = delay_ticks;
         self.semitone_depth = semitone_depth;
 
         if period_ticks != self.period_ticks {
             self.period_ticks = period_ticks;
             self.inv_period_ticks = if period_ticks > 0 {
-                1.0 / period_ticks as f64
+                1.0 / period_ticks as f32
             } else {
                 0.0
             };
@@ -243,7 +243,7 @@ impl Vibrato {
         self.enabled = false;
     }
 
-    fn pitch_multiplier(&self) -> f64 {
+    fn pitch_multiplier(&self) -> f32 {
         self.pitch_multiplier
     }
 
@@ -269,22 +269,22 @@ impl Vibrato {
             return;
         }
 
-        let phase = (self.elapsed_ticks - self.delay_ticks) as f64 * self.inv_period_ticks;
+        let phase = (self.elapsed_ticks - self.delay_ticks) as f32 * self.inv_period_ticks;
         let modulation = 1.0 - 4.0 * ((phase + 0.25).fract() - 0.5).abs();
         let semitone_offset = modulation * self.semitone_depth;
 
-        self.pitch_multiplier = 2.0_f64.powf(semitone_offset / 12.0);
+        self.pitch_multiplier = 2.0_f32.powf(semitone_offset / 12.0);
     }
 }
 
 pub struct Glide {
-    semitone_offset: f64,
+    semitone_offset: f32,
     duration_ticks: u32,
-    semitone_slope: f64,
+    semitone_slope: f32,
 
     enabled: bool,
     elapsed_ticks: u32,
-    pitch_multiplier: f64,
+    pitch_multiplier: f32,
 }
 
 impl Glide {
@@ -300,12 +300,12 @@ impl Glide {
         }
     }
 
-    pub fn set(&mut self, semitone_offset: f64, duration_ticks: u32) {
+    pub fn set(&mut self, semitone_offset: f32, duration_ticks: u32) {
         if semitone_offset != self.semitone_offset || duration_ticks != self.duration_ticks {
             self.semitone_offset = semitone_offset;
             self.duration_ticks = duration_ticks;
             self.semitone_slope = if duration_ticks > 0 {
-                -semitone_offset / duration_ticks as f64
+                -semitone_offset / duration_ticks as f32
             } else {
                 0.0
             };
@@ -320,7 +320,7 @@ impl Glide {
         self.enabled = false;
     }
 
-    fn pitch_multiplier(&self) -> f64 {
+    fn pitch_multiplier(&self) -> f32 {
         self.pitch_multiplier
     }
 
@@ -344,8 +344,8 @@ impl Glide {
         }
 
         let semitone_offset =
-            self.semitone_offset + self.semitone_slope * self.elapsed_ticks as f64;
-        self.pitch_multiplier = 2.0_f64.powf(semitone_offset / 12.0);
+            self.semitone_offset + self.semitone_slope * self.elapsed_ticks as f32;
+        self.pitch_multiplier = 2.0_f32.powf(semitone_offset / 12.0);
     }
 }
 
@@ -357,8 +357,8 @@ pub struct Voice {
 
     clock_rate: u32,
     clocks_per_tick: u32,
-    base_frequency: f64,
-    velocity: f64,
+    base_frequency: f32,
+    velocity: f32,
     playback_clocks: u32,
     sample_clocks: u32,
     carryover_sample_clocks: u32,
@@ -398,7 +398,7 @@ impl Voice {
         self.clocks_per_tick = clocks_per_tick;
     }
 
-    pub fn play_note(&mut self, midi_note: f64, velocity: f64, playback_clocks: u32) {
+    pub fn play_note(&mut self, midi_note: f32, velocity: f32, playback_clocks: u32) {
         self.base_frequency = A4_FREQUENCY * ((midi_note - A4_MIDI_NOTE) / 12.0).exp2();
         self.velocity = velocity;
         self.playback_clocks = playback_clocks;
@@ -437,7 +437,7 @@ impl Voice {
             let amplitude = (self.oscillator.sample()
                 * self.envelope.level()
                 * self.velocity
-                * i16::MAX as f64)
+                * i16::MAX as f32)
                 .round() as i32;
             self.write_sample(blip_buf.as_deref_mut(), clock_offset, amplitude);
 
@@ -491,9 +491,9 @@ impl Voice {
     fn update_sample_clocks(&mut self) {
         let frequency =
             self.base_frequency * self.vibrato.pitch_multiplier() * self.glide.pitch_multiplier();
-        self.sample_clocks = (self.clock_rate as f64
+        self.sample_clocks = (self.clock_rate as f32
             / frequency
-            / self.oscillator.cycle_resolution() as f64)
+            / self.oscillator.cycle_resolution() as f32)
             .round() as u32;
     }
 

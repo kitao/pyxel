@@ -26,11 +26,11 @@ macro_rules! repeat_extend {
     };
 }
 
-pub fn f64_to_i32(x: f64) -> i32 {
+pub fn f32_to_i32(x: f32) -> i32 {
     x.round() as i32
 }
 
-pub fn f64_to_u32(x: f64) -> u32 {
+pub fn f32_to_u32(x: f32) -> u32 {
     x.round() as u32
 }
 
@@ -155,25 +155,25 @@ mod tests {
     }
 
     #[test]
-    fn test_f64_to_i32() {
-        assert_eq!(f64_to_i32(0.1), 0);
-        assert_eq!(f64_to_i32(0.49), 0);
-        assert_eq!(f64_to_i32(0.5), 1);
-        assert_eq!(f64_to_i32(1.49), 1);
-        assert_eq!(f64_to_i32(-0.1), 0);
-        assert_eq!(f64_to_i32(-0.49), 0);
-        assert_eq!(f64_to_i32(-0.50), -1);
-        assert_eq!(f64_to_i32(-1.49), -1);
+    fn test_f32_to_i32() {
+        assert_eq!(f32_to_i32(0.1), 0);
+        assert_eq!(f32_to_i32(0.49), 0);
+        assert_eq!(f32_to_i32(0.5), 1);
+        assert_eq!(f32_to_i32(1.49), 1);
+        assert_eq!(f32_to_i32(-0.1), 0);
+        assert_eq!(f32_to_i32(-0.49), 0);
+        assert_eq!(f32_to_i32(-0.50), -1);
+        assert_eq!(f32_to_i32(-1.49), -1);
     }
 
     #[test]
-    fn test_f64_to_u32_() {
-        assert_eq!(f64_to_u32(0.1), 0);
-        assert_eq!(f64_to_u32(0.49), 0);
-        assert_eq!(f64_to_u32(0.5), 1);
-        assert_eq!(f64_to_u32(1.49), 1);
-        assert_eq!(f64_to_u32(-0.1), 0);
-        assert_eq!(f64_to_u32(-3.0), 0);
+    fn test_f32_to_u32_() {
+        assert_eq!(f32_to_u32(0.1), 0);
+        assert_eq!(f32_to_u32(0.49), 0);
+        assert_eq!(f32_to_u32(0.5), 1);
+        assert_eq!(f32_to_u32(1.49), 1);
+        assert_eq!(f32_to_u32(-0.1), 0);
+        assert_eq!(f32_to_u32(-3.0), 0);
     }
 
     #[test]

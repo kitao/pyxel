@@ -29,7 +29,7 @@ fn mouse(visible: bool) {
 }
 
 #[pyfunction]
-pub fn warp_mouse(x: f64, y: f64) {
+pub fn warp_mouse(x: f32, y: f32) {
     pyxel().warp_mouse(x, y);
 }
 

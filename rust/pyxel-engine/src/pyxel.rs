@@ -152,9 +152,9 @@ pub fn init(
         let display_scale = max(
             display_scale.map_or_else(
                 || {
-                    (f64::min(
-                        display_width as f64 / width as f64,
-                        display_height as f64 / height as f64,
+                    (f32::min(
+                        display_width as f32 / width as f32,
+                        display_height as f32 / height as f32,
                     ) * DISPLAY_RATIO) as u32
                 },
                 |display_scale| display_scale,
