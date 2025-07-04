@@ -10,6 +10,7 @@
 - Updated the pyo3 crate to version 0.25
 - Updated the sysinfo crate to version 0.35
 - Updated the bindgen crate to version 0.72
+- Fixed GitHub Actions to use Rust nightly-2025-02-01
 - Renewed the sound engine and MML syntax
 - Renamed the waveform field of the Tone class to wavetable
 - Changed the play and playm functions to use sec instead of tick
@@ -23,7 +24,7 @@
 - Removed the colors, tones, and channels from the resource format
 - Renamed the excl arguments to exclude in the load and save functions
 - Removed the incl arguments from the load and save functions
-- Fixed GitHub Actions to use Rust nightly-2025-02-01
+- Updated Example 9 to use new MML syntax
 
 ## 2.3.18
 
