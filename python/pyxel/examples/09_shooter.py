@@ -240,43 +240,40 @@ class App:
         pyxel.sounds[1].set("a3a2c2c2", "n", "7742", "s", 10)
 
         # Set title music
-        a1 = "t128 @2 o3 q8 l8 x0:765"
-        a2 = "edcr<ab>cr d2<g4>g<b& ba&a2r4"
-        a3 = ">dc4<b2r>"
-        a4 = ">d4<b.r16>dg+dg+"
+        a1 = "T128 Q96 @2 @ENV1{127,6,96} O4 L16 @VIB1{36,18,25} K-2"
+        a2 = "D8.C8.D4G8AB->CD C8.<F2R FFGA B-8.A8.B-4.GGAB-"
+        a3 = "RR>CC<B->C8 D8.D8CD8.<"
 
-        b1 = "t128 @0 o1 v7 l16"
-        b2 = "q5aar4aar4<q8a4> q5ggr4ggr4<q8g4> q5ffr4ffr4<q8f4>"
-        b3 = "q5ggr4ggr4<q8g4>"
-        b4 = "q5ggr4ggr4g+g+<g+8"
+        b1 = "T128 Q90 @0 V96 O3 L16"
+        b2 = "FFR4 FFR4 <F4> E-E-R4 E-E-R4 <E-4> D-D-R4 D-D-R4 <D-4> E-E-R4 E-E-R4 EEE8"
 
-        c1 = "t128 @3 l8 x0:21"
-        c2 = "q1o2v4crrcrr>>q2x0a#16a#16a#<<"
-        c3 = "q1o2v4crrcrr>>q2x0a#16a#16<<q1o2v4c"
+        c1 = "T128 Q50 @3 L16 @ENV1{48,8,0} @ENV2{127,6,0}"
+        c2 = "[@ENV1 O7 FFR4 FFR4 @ENV2 O3 G4]3 @ENV1 O7 FFR4 FFR4 FF @ENV2 O3 G8"
 
-        pyxel.sounds[2].old_mml(a1 + a2 + a3 + a2 + a4)
-        pyxel.sounds[3].old_mml(b1 + b2 + b3 + b2 + b4)
-        pyxel.sounds[4].old_mml(c1 + c2 * 3 + c3)
+        pyxel.sounds[2].mml(a1 + a2 + a3)
+        pyxel.sounds[3].mml(b1 + b2)
+        pyxel.sounds[4].mml(c1 + c2)
         pyxel.musics[0].set([2], [3], [4])
 
         # Set play music
-        a1 = "t150 @2 o2 q8 l16 x0:765"
-        a2 = "e8>e<e4r>c8<e4&er ag+abaf+8r r8a4>d8"
-        a3 = "ed8c8<b8a8.g+f+q6e8q8e8 f+8.r>f+4<a4b>cd<f+"
-        a4 = "c4&cr<ag+a.r.>c<ba>ce rd<a8.>f+8.<b.r32>e8dc<bq6e"
+        a1 = "T150 Q96 @1 @ENV1{127,12,64} O4 L16"
+        a2 = "D8.C8.D4G8AB->CD C8.<F2R FFGA B-8.A8.B-4.GGAB-"
+        a3 = "RR>CC<B->C8 D8.D8CD8.<"
+        a4 = "RR>CC<B->C8 D8.D8C<A8G&G1"
 
-        b1 = "t150 @0 o1 v7 l16 q7"
-        b2 = "<ar>ea<ar>ea<ar>ea<ar>ea"
-        b3 = "dra>d<dra>d<dra>d<dra>d<"
-        b4 = "dra>d<dra>d<er>eeeeer"
+        b1 = "T150 Q96 @1 @ENV1{112,12,56} @ENV2{64,8,0} O4 L16 @ENV1 "
+        b2 = "<B-8.A8.B-4>D8DDGB- A8.<A2R AA>CF G8.F8.G4.E-E-FG"
+        b3 = "RRAAGA8 A8.A8GA8. "
+        b4 = "RRAAGA8 A8.A8GD8 Q100C&C4.<B4. @3O7 @ENV2 FFFF"
 
-        c1 = "t150 @3 l16 x0:21 x1:52"
-        c2 = "q2x0o3 a#ra#a# a#ra#a# a#ra#a# a#ra#a#"
-        c3 = "q2x0o3 a#ra#a# a#ra#a# a#ra#a# o2x1 a#a# q1o2v5cr"
+        c1 = "T150 Q100 @0 V96 O3 L16 @GLI1{400,4} @GLI0 "
+        c2 = "[<G.R32>DG]4 [<F.R32>CF]4 [<E-.R32B->E-]4"
+        c3 = "Q80 <F8FF>F<F8 F+8RF+8>F+<F+8.>"
+        c4 = "Q80 @GLI0 <F8FF>F<F8F+8RF+8>F+<F+8Q100G8R>DG<[G.R32>DG<]2 @GLI1 Q50>>CC<F8>"
 
-        pyxel.sounds[5].old_mml(a1 + a2 + a3 + a2 + a4)
-        pyxel.sounds[6].old_mml(b1 + (b2 + b3) * 3 + b2 + b4)
-        pyxel.sounds[7].old_mml(c1 + c2 * 3 + c3)
+        pyxel.sounds[5].mml(a1 + a2 + a3 + a2 + a4)
+        pyxel.sounds[6].mml(b1 + b2 + b3 + b2 + b4)
+        pyxel.sounds[7].mml(c1 + c2 + c3 + c2 + c4)
         pyxel.musics[1].set([5], [6], [7])
 
         # You can also use 8bit BGM generator for music:
