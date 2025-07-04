@@ -263,13 +263,13 @@ class App:
 
         b1 = "T150 Q96 @1 @ENV1{112,12,56} @ENV2{64,8,0} O4 L16 @ENV1 "
         b2 = "<B-8.A8.B-4>D8DDGB- A8.<A2R AA>CF G8.F8.G4.E-E-FG"
-        b3 = "RRAAGA8 A8.A8GA8. "
-        b4 = "RRAAGA8 A8.A8GD8 Q100C&C4.<B4. @3O7 @ENV2 FFFF"
+        b3 = "RRAAGA8 A8.A8GA8."
+        b4 = "RRAAGA8 A8.A8GD8 Q100 C&C4.<B4. @3 O7 @ENV2 FFFF"
 
         c1 = "T150 Q100 @0 V96 O3 L16 @GLI1{400,4} @GLI0 "
         c2 = "[<G.R32>DG]4 [<F.R32>CF]4 [<E-.R32B->E-]4"
         c3 = "Q80 <F8FF>F<F8 F+8RF+8>F+<F+8.>"
-        c4 = "Q80 @GLI0 <F8FF>F<F8F+8RF+8>F+<F+8Q100G8R>DG<[G.R32>DG<]2 @GLI1 Q50>>CC<F8>"
+        c4 = "Q80 @GLI0 <F8FF>F<F8F+8RF+8>F+<F+8 Q100 G8R>DG<[G.R32>DG<]2 @GLI1 Q50 >>CC<F8>"
 
         pyxel.sounds[5].mml(a1 + a2 + a3 + a2 + a4)
         pyxel.sounds[6].mml(b1 + b2 + b3 + b2 + b4)
