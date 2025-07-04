@@ -294,10 +294,10 @@ impl Channel {
                 }
 
                 MmlCommand::Transpose { semitone_offset } => {
-                    self.transpose_semitones += *semitone_offset;
+                    self.transpose_semitones = *semitone_offset;
                 }
                 MmlCommand::Detune { semitone_offset } => {
-                    self.detune_semitones += *semitone_offset;
+                    self.detune_semitones = *semitone_offset;
                 }
 
                 MmlCommand::Envelope { slot } => {
