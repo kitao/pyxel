@@ -711,8 +711,8 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   Örnek: `pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(code)`<br>
-  [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) kullanarak ilgili parametreleri ayarlar. Kullanılabilir komutlar `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32) ve `CDEFGABR`+`#+-`+`.~&`. Komutlar hakkında daha fazla bilgi için [bu sayfayı](faq-en.md) inceleyin.<br>
-  Örnek: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
+  Bir [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language) dizesi geçirildiğinde MML moduna geçilir ve içeriğine göre ses çalınır. Bu modda `notes` ve `speed` gibi normal parametreler yok sayılır. MML modundan çıkmak için `mml()` fonksiyonunu argümansız olarak çağırın. MML hakkında daha fazla bilgi için [bu sayfaya](faq-en.md) bakın.<br>
+  Örnek: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `save(filename, count, [ffmpeg])`<br>
   Sesi `count` kez tekrarlayan bir WAV dosyası oluşturur. FFmpeg yüklüyse ve `ffmpeg` `True` olarak ayarlandıysa, bir MP4 dosyası da oluşturulur.
