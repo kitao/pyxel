@@ -585,11 +585,11 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 - `musics`<br>
   Müziklerin listesi (Music sınıfı örnekleri) (0-7)
 
-- `play(ch, snd, [tick], [loop], [resume])`<br>
-  Kanal `ch`(0-3) üzerinde `snd`(0-63) sesini çalar. Eğer `snd` bir listeyse, sesler sırayla çalınır. Çalma başlangıç konumu `tick` (1 tick = 1/120 saniye) ile belirtilebilir. Eğer `loop` `True` olarak ayarlanmışsa, döngüsel çalma gerçekleştirilir. Çalma bittikten sonra önceki sese devam etmek için `resume` `True` olarak ayarlanır.
+- `play(ch, snd, [sec], [loop], [resume])`<br>
+  Kanal `ch`(0-3) üzerinde ses `snd`(0-63) çalınır. `snd` bir ses numarası, bir ses numaraları listesi veya bir MML dizesi olabilir. Çalma başlangıç konumu saniye cinsinden `sec` ile belirtilebilir. Eğer `loop` `True` olarak ayarlanırsa, ses döngüye alınır. Çalma bittikten sonra önceki sese devam etmek için `resume` `True` olarak ayarlanır.
 
-- `playm(msc, [tick], [loop])`<br>
-  Müziği `msc`(0-7) çalar. Çalma başlangıç konumu `tick` (1 tick = 1/120 saniye) ile belirtilebilir. Eğer `loop` `True` olarak ayarlanmışsa, döngüsel çalma gerçekleştirilir.
+- `playm(msc, [sec], [loop])`<br>
+  Müzik `msc`(0-7) çalınır. Çalma başlangıç konumu saniye cinsinden `sec` ile belirtilebilir. Eğer `loop` `True` olarak ayarlanırsa, müzik döngüye alınır.
 
 - `stop([ch])`<br>
   Belirtilen `ch`(0-3) kanalındaki çalmayı durdurur. Tüm kanalların çalmasını durdurmak için `stop()` çağrılır.

@@ -585,11 +585,11 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 - `musics`<br>
   Liste der Musiken (Instanzen der Music-Klasse) (0-7)
 
-- `play(ch, snd, [tick], [loop], [resume])`<br>
-  Spielt den Klang `snd`(0-63) auf dem Kanal `ch`(0-3). Wenn `snd` eine Liste ist, werden die Klänge nacheinander abgespielt. Die Startposition kann durch `tick` (1 Tick = 1/120 Sekunden) angegeben werden. Wenn `loop` auf `True` gesetzt ist, wird die Wiedergabe wiederholt. Um nach dem Ende der Wiedergabe zum vorherigen Klang zurückzukehren, setze `resume` auf `True`.
+- `play(ch, snd, [sec], [loop], [resume])`<br>
+  Spielt den Klang `snd`(0-63) auf dem Kanal `ch`(0-3). `snd` kann eine Klangnummer, eine Liste von Klangnummern oder ein MML-String sein. Die Startposition der Wiedergabe kann in Sekunden mit `sec` angegeben werden. Wenn `loop` auf `True` gesetzt ist, wird die Wiedergabe wiederholt. Um nach dem Ende der Wiedergabe zum vorherigen Klang zurückzukehren, setze `resume` auf `True`.
 
-- `playm(msc, [tick], [loop])`<br>
-  Spielt die Musik `msc`(0-7). Die Startposition kann durch `tick` (1 Tick = 1/120 Sekunden) angegeben werden. Wenn `loop` auf `True` gesetzt ist, wird die Wiedergabe wiederholt.
+- `playm(msc, [sec], [loop])`<br>
+  Spielt die Musik `msc`(0-7). Die Startposition der Wiedergabe kann in Sekunden mit `sec` angegeben werden. Wenn `loop` auf `True` gesetzt ist, wird die Musik wiederholt.
 
 - `stop([ch])`<br>
   Stoppt die Wiedergabe des angegebenen Kanals `ch`(0-3). Rufe `stop()` auf, um alle Kanäle zu stoppen.

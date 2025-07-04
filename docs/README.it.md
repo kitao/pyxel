@@ -585,11 +585,11 @@ Un file dell'applicazione Pyxel può anche essere convertito in un eseguibile o 
 - `musics`<br>
   Elenco delle musiche (istanze della classe Music) (0-7)
 
-- `play(ch, snd, [tick], [loop], [resume])`<br>
-  Riproduce il suono `snd`(0-63) sul canale `ch`(0-3). Se `snd` è un elenco, i suoni verranno riprodotti in sequenza. La posizione di partenza può essere specificata da `tick` (1 tick = 1/120 secondi). Se `loop` è impostato su `True`, la riproduzione verrà eseguita in loop. Per riprendere il suono precedente dopo la fine della riproduzione, impostare `resume` su `True`.
+- `play(ch, snd, [sec], [loop], [resume])`<br>
+  Riproduce il suono `snd`(0-63) sul canale `ch`(0-3). `snd` può essere un numero di suono, un elenco di numeri di suono o una stringa MML. La posizione di partenza della riproduzione può essere specificata in secondi con `sec`. Se `loop` è impostato su `True`, la riproduzione verrà eseguita in loop. Per riprendere il suono precedente dopo la fine della riproduzione, impostare `resume` su `True`.
 
-- `playm(msc, [tick], [loop])`<br>
-  Riproduce la musica `msc`(0-7). La posizione di partenza può essere specificata da `tick` (1 tick = 1/120 secondi). Se `loop` è impostato su `True`, la riproduzione verrà eseguita in loop.
+- `playm(msc, [sec], [loop])`<br>
+  Riproduce la musica `msc`(0-7). La posizione di partenza della riproduzione può essere specificata in secondi con `sec`. Se `loop` è impostato su `True`, la riproduzione verrà eseguita in loop.
 
 - `stop([ch])`<br>
   Interrompe la riproduzione del canale specificato `ch`(0-3). Chiama `stop()` per interrompere tutti i canali.
