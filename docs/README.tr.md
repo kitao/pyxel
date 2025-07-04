@@ -595,7 +595,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   Belirtilen `ch`(0-3) kanalındaki çalmayı durdurur. Tüm kanalların çalmasını durdurmak için `stop()` çağrılır.
 
 - `play_pos(ch)`<br>
-  Kanal `ch`(0-3) çalma pozisyonunu `(sound_no, note_no)` ikilisi olarak döndürür. Çalma durduğunda `None` döner.
+  Kanal `ch`(0-3) çalma pozisyonunu `(sound_no, sec)` ikilisi olarak döndürür. Çalma durduğunda `None` döner.
 
 ### Matematik
 

@@ -596,7 +596,7 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
   Arrête la lecture du canal spécifié `ch`(0-3). Appelez `stop()` pour arrêter tous les canaux.
 
 - `play_pos(ch)`<br>
-  Obtient la position de lecture du son sur le canal `ch`(0-3) sous forme de tuple `(sound_no, note_no)`. Renvoie `None` lorsque la lecture est arrêtée.
+  Obtient la position de lecture du son sur le canal `ch`(0-3) sous forme de tuple `(sound_no, sec)`. Renvoie `None` lorsque la lecture est arrêtée.
 
 ### Mathématiques
 
