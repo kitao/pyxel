@@ -472,7 +472,7 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 
 ### 资源
 
-- `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
+- `load(filename, [ignore_images], [ignore_tilemaps], [ignore_sounds], [ignore_musics])`<br>
   加载资源文件 (.pyxres)。如果某个选项设置为 `True`，相应的资源将被排除加载。如果资源文件所在位置存在同名的调色板文件 (.pyxpal)，调色板显示颜色也将更新。调色板文件包含 16 进制的显示颜色条目（例如 `1100ff`），每行一个。调色板文件也可以用于更改 Pyxel Editor 中的显示颜色。
 
 - `user_data_dir(vendor_name, app_name)`<br>

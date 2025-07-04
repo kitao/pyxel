@@ -472,7 +472,7 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
 
 ### Ressourcen
 
-- `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
+- `load(filename, [ignore_images], [ignore_tilemaps], [ignore_sounds], [ignore_musics])`<br>
   Lädt die Ressourcen-Datei (.pyxres). Wenn eine Option auf `True` gesetzt wird, wird die entsprechende Ressource vom Laden ausgeschlossen. Wenn im gleichen Verzeichnis wie die Ressourcen-Datei eine Palettendatei (.pyxpal) mit demselben Namen existiert, werden auch die Anzeigefarben der Palette aktualisiert. Die Palettendatei enthält hexadezimale Einträge für die Anzeigefarben (z.B. `1100ff`), getrennt durch Zeilenumbrüche. Die Palettendatei kann auch verwendet werden, um die in Pyxel Editor angezeigten Farben zu ändern.
 
 - `user_data_dir(vendor_name, app_name)`<br>

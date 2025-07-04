@@ -472,7 +472,7 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
 
 ### Recurso
 
-- `load(filename, [excl_images], [excl_tilemaps], [excl_sounds], [excl_musics])`<br>
+- `load(filename, [ignore_images], [ignore_tilemaps], [ignore_sounds], [ignore_musics])`<br>
   Carrega o arquivo de recursos (.pyxres). Se uma opção for definida como `True`, o recurso correspondente será excluído do carregamento. Se um arquivo de paleta (.pyxpal) com o mesmo nome existir no mesmo local do arquivo de recursos, as cores da paleta de exibição também serão atualizadas. O arquivo de paleta contém entradas hexadecimais para as cores de exibição (por exemplo, `1100ff`), separadas por novas linhas. O arquivo de paleta também pode ser usado para alterar as cores exibidas no Pyxel Editor.
 
 - `user_data_dir(vendor_name, app_name)`<br>
