@@ -5,13 +5,13 @@ const RANGE_ALL: (i32, i32) = (i32::MIN, i32::MAX);
 const RANGE_GE0: (i32, i32) = (0, i32::MAX);
 const RANGE_GE1: (i32, i32) = (1, i32::MAX);
 
-const RANGE_QUANTIZE: (i32, i32) = (0, 32);
+const RANGE_QUANTIZE: (i32, i32) = (0, 100);
 const RANGE_VOLUME: (i32, i32) = (0, 127);
 const RANGE_OCTAVE: (i32, i32) = (-1, 9);
 const RANGE_LENGTH: (i32, i32) = (1, 192);
 
 const DEFAULT_TEMPO: u32 = 120;
-const DEFAULT_QUANTIZE: u32 = 28;
+const DEFAULT_QUANTIZE: u32 = 80;
 const DEFAULT_VOLUME: u32 = 100;
 const DEFAULT_OCTAVE: i32 = 4;
 const DEFAULT_LENGTH: u32 = 4;
@@ -210,7 +210,7 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             });
         } else if let Some(gate_time) = parse_command(&mut stream, "Q", RANGE_QUANTIZE) {
             //
-            // Q<gate_time> - Set quantize gate time (0 <= gate_time <= 32)
+            // Q<gate_percent> - Set quantize gate time (0 <= gate_percent <= 100)
             //
             should_init.quantize = false;
             commands.push(MmlCommand::Quantize {
@@ -292,18 +292,18 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             }
         } else if parse_string(&mut stream, "L").is_ok() {
             //
-            // L<len> - Set default note length
+            // L<len> - Set default note length (1 <= len <= 192)
             //
             note_ticks = parse_length_as_ticks(&mut stream, note_ticks);
         } else if let Some(command) = parse_note(&mut stream, octave, note_ticks) {
             //
-            // C/D/E/F/G/A/B[#+-][<len>][.] - Play note
+            // C/D/E/F/G/A/B[#+-][<len>][.] - Play note (1 <= len <= 192)
             //
             should_init.ensure(&mut commands);
             commands.push(command);
         } else if let Some(command) = parse_rest(&mut stream, note_ticks) {
             //
-            // R[<len>][.] - Rest
+            // R[<len>][.] - Rest (1 <= len <= 192)
             //
             commands.push(command);
         } else {
