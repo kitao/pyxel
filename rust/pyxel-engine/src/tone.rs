@@ -33,8 +33,9 @@ pub struct Tone {
     pub gain: Gain,
     pub noise: Noise,
     pub wavetable: Wavetable,
-    pub last_wavetable: Wavetable,
-    pub waveform: Vec<f64>,
+
+    last_wavetable: Wavetable,
+    waveform: Vec<f64>,
 }
 
 pub type SharedTone = shared_type!(Tone);
