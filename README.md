@@ -585,11 +585,11 @@ A Pyxel application file can also be converted to an executable or an HTML file 
 - `musics`<br>
   List of the musics (instances of the Music class) (0-7)
 
-- `play(ch, snd, [tick], [loop], [resume])`<br>
-  Play the sound `snd`(0-63) on channel `ch`(0-3). If `snd` is a list, the sounds will be played in sequence. The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `loop` is set to `True`, loop playback is performed. To resume the previous sound after playback ends, set `resume` to `True`.
+- `play(ch, snd, [sec], [loop], [resume])`<br>
+  Play the sound `snd`(0-63) on channel `ch`(0-3). `snd` can be a sound number, a list of sound numbers, or an MML string. The playback start position can be specified in seconds with `sec`. If `loop` is set to `True`, the sound will loop. To resume the previous sound after playback ends, set `resume` to `True`.
 
-- `playm(msc, [tick], [loop])`<br>
-  Play the music `msc`(0-7). The playback start position can be specified by `tick`(1 tick = 1/120 seconds). If `loop` is set to `True`, loop playback is performed.
+- `playm(msc, [sec], [loop])`<br>
+  Play the music `msc`(0-7). The playback start position can be specified in seconds with `sec`. If `loop` is set to `True`, the music will loop.
 
 - `stop([ch])`<br>
   Stop playback of the specified channel `ch`(0-3). Call `stop()` to stop all channels.

@@ -585,11 +585,11 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
 - `musics`<br>
   音乐的列表（Music 类的实例）(0-7)
 
-- `play(ch, snd, [tick], [loop], [resume])`<br>
-  在通道 `ch`(0-3) 上播放声音 `snd`(0-63)。如果 `snd` 是一个列表，声音将依次播放。播放的起始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果 `loop` 设置为 `True`，则执行循环播放。要在播放结束后恢复到之前的声音，设置 `resume` 为 `True`。
+- `play(ch, snd, [sec], [loop], [resume])`<br>
+  在通道 `ch`(0-3) 上播放声音 `snd`(0-63)。`snd` 可以是声音编号、声音编号的列表，或 MML 字符串。播放的起始位置可以通过 `sec`（秒）指定。如果 `loop` 设置为 `True`，则执行循环播放。要在播放结束后恢复到之前的声音，设置 `resume` 为 `True`。
 
-- `playm(msc, [tick], [loop])`<br>
-  播放音乐 `msc`(0-7)。播放的起始位置可以通过 `tick`(1 tick = 1/120 秒) 指定。如果 `loop` 设置为 `True`，则执行循环播放。
+- `playm(msc, [sec], [loop])`<br>
+  播放音乐 `msc`(0-7)。播放的起始位置可以通过 `sec`（秒）指定。如果 `loop` 设置为 `True`，则执行循环播放。
 
 - `stop([ch])`<br>
   停止指定通道 `ch`(0-3) 的播放。调用 `stop()` 停止所有通道。

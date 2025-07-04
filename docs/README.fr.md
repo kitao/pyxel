@@ -586,11 +586,11 @@ Un fichier d'application Pyxel peut également être converti en un exécutable 
 - `musics`<br>
   Liste des musiques (instances de la classe Music) (0-7)
 
-- `play(ch, snd, [tick], [loop], [resume])`<br>
-  Joue le son `snd`(0-63) sur le canal `ch`(0-3). Si `snd` est une liste, les sons seront joués en séquence. La position de départ peut être spécifiée par `tick` (1 tick = 1/120 secondes). Si `loop` est défini sur `True`, la lecture en boucle est activée. Pour reprendre le son précédent après la fin de la lecture, définissez `resume` sur `True`.
+- `play(ch, snd, [sec], [loop], [resume])`<br>
+  Joue le son `snd`(0-63) sur le canal `ch`(0-3). `snd` peut être un numéro de son, une liste de numéros de son ou une chaîne MML. La position de départ de la lecture peut être spécifiée en secondes avec `sec`. Si `loop` est défini sur `True`, le son sera lu en boucle. Pour reprendre le son précédent après la fin de la lecture, définissez `resume` sur `True`.
 
-- `playm(msc, [tick], [loop])`<br>
-  Joue la musique `msc`(0-7). La position de départ peut être spécifiée par `tick` (1 tick = 1/120 secondes). Si `loop` est défini sur `True`, la lecture en boucle est activée.
+- `playm(msc, [sec], [loop])`<br>
+  Joue la musique `msc`(0-7). La position de départ de la lecture peut être spécifiée en secondes avec `sec`. Si `loop` est défini sur `True`, la musique sera lue en boucle.
 
 - `stop([ch])`<br>
   Arrête la lecture du canal spécifié `ch`(0-3). Appelez `stop()` pour arrêter tous les canaux.
