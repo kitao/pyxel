@@ -711,8 +711,8 @@ Pyxel アプリケーションファイルは、`pyxel app2exe`コマンドや`p
   例：`pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(code)`<br>
-  [Music Macro Language (MML)](https://ja.wikipedia.org/wiki/Music_Macro_Language)を使って関連パラメータを設定します。使えるコマンドは、`T`(1-900)、`@`(0-3)、`O`(0-4)、`>`、`<`、`Q`(1-8)、`V`(0-7)、`X`(0-7)、`L`(1/2/4/8/16/32)、`CDEFGABR`+`#+-`+`.~&`です。コマンドの詳細は、[こちらのページ](faq-jp.md)を参照してください。<br>
-  例：`pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
+  [MML (Music Macro Language)](https://ja.wikipedia.org/wiki/Music_Macro_Language)の文字列を渡すと MML モードに移行し、その内容に沿ってサウンドが再生されます。MML モードでは`notes`や`speed`などの通常のパラメータは無視され、`mml()`で解除できます。MML の詳細は、[こちらのページ](faq-jp.md)を参照してください。<br>
+  例：`pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `save(filename, sec, [ffmpeg])`<br>
   サウンドを指定した秒数分再生した WAV ファイルを作成します。FFmpeg がインストールされている環境で、`ffmepg`に`True`を指定すると、MP4 ファイルも作成します。

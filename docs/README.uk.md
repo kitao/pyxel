@@ -712,8 +712,8 @@ pyxel play PYXEL_APP_FILE
   Приклад: `pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(code)`<br>
-  Встановлює відповідні параметри за допомогою [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). Доступні команди `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32) та `CDEFGABR`+`#+-`+`.~&`. Докладніше про команди читайте на [цій сторінці](faq-en.md).<br>
-  Приклад: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
+  Передача рядка [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language) перемикає в режим MML і відтворює звук відповідно до його вмісту. У цьому режимі звичайні параметри, такі як `notes` і `speed`, ігноруються. Щоб вийти з режиму MML, викличте `mml()` без аргументів. Для отримання додаткової інформації про MML дивіться [цю сторінку](faq-en.md).<br>
+  Приклад: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `save(filename, count, [ffmpeg])`<br>
   Створює WAV-файл, що містить звук, повторений `count` разів. Якщо FFmpeg встановлено та `ffmpeg` встановлено в значення `True`, також створюється MP4-файл.

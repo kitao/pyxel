@@ -711,8 +711,8 @@ Um arquivo de aplicativo Pyxel também pode ser convertido em um executável ou 
   Exemplo: `pyxel.sounds[0].set_effects("nfnf nvvs")`
 
 - `mml(code)`<br>
-  Define os parâmetros relacionados usando [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language). Os comandos disponíveis são `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32) e `CDEFGABR`+`#+-`+`.~&`. Para mais detalhes sobre os comandos, consulte [esta página](faq-en.md).<br>
-  Exemplo: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
+  Ao passar uma string [MML (Music Macro Language)](https://en.wikipedia.org/wiki/Music_Macro_Language), o modo MML é ativado e o som é reproduzido conforme seu conteúdo. Nesse modo, parâmetros normais como `notes` e `speed` são ignorados. Para sair do modo MML, chame `mml()` sem argumentos. Para mais detalhes sobre MML, consulte [esta página](faq-en.md).<br>
+  Exemplo: `pyxel.sounds[0].mml("T120 Q90 @1 V100 O5 L8 C4&C<G16R16>C.<G16 >C.D16 @VIB1{10,20,20} E2C2")`
 
 - `save(filename, count, [ffmpeg])`<br>
   Cria um arquivo WAV contendo o som repetido `count` vezes. Se o FFmpeg estiver instalado e `ffmpeg` for definido como `True`, um arquivo MP4 também será criado.
