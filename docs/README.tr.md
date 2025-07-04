@@ -710,12 +710,15 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
   `NSVFHQ` dizesiyle efektleri ayarlar. Büyük/küçük harf duyarsızdır ve boşluklar göz ardı edilir.<br>
   Örnek: `pyxel.sounds[0].set_effects("nfnf nvvs")`
 
-- `mml(mml_str)`<br>
+- `mml(code)`<br>
   [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) kullanarak ilgili parametreleri ayarlar. Kullanılabilir komutlar `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32) ve `CDEFGABR`+`#+-`+`.~&`. Komutlar hakkında daha fazla bilgi için [bu sayfayı](faq-en.md) inceleyin.<br>
   Örnek: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
 - `save(filename, count, [ffmpeg])`<br>
   Sesi `count` kez tekrarlayan bir WAV dosyası oluşturur. FFmpeg yüklüyse ve `ffmpeg` `True` olarak ayarlandıysa, bir MP4 dosyası da oluşturulur.
+
+- `total_sec()`<br>
+  Sesi saniye cinsinden çalma süresini döndürür. MML'de sonsuz döngü kullanılmışsa `None` döndürür.
 
 ### Music Sınıfı
 

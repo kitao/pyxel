@@ -710,12 +710,15 @@ Pyxel 应用程序文件还可以使用 `pyxel app2exe` 或 `pyxel app2html` 命
   使用由 `NSVFHQ` 组成的字符串设置效果。不区分大小写，并忽略空白。<br>
   例子：`pyxel.sounds[0].set_effects("nfnf nvvs")`
 
-- `mml(mml_str)`<br>
+- `mml(code)`<br>
   使用 [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) 设置相关参数。可用的命令有 `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32), 和 `CDEFGABR`+`#+-`+`.~&`。有关指令的详细信息，请参阅[此页面](faq-en.md)。<br>
   例子：`pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
 - `save(filename, count, [ffmpeg])`<br>
   创建一个包含重复 `count` 次声音的 WAV 文件。如果已安装 FFmpeg 并将 `ffmpeg` 设置为 `True`，还会创建一个 MP4 文件。
+
+- `total_sec()`<br>
+  返回声音的播放时间（秒）。如果 MML 使用了无限循环，则返回 `None`。
 
 ### Music 类
 

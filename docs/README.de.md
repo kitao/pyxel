@@ -710,12 +710,15 @@ Eine Pyxel-Anwendungsdatei kann auch mit den Befehlen `pyxel app2exe` oder `pyxe
   Setzt die Effekte mithilfe eines Strings aus `NSVFHQ`. Es wird nicht zwischen Groß- und Kleinschreibung unterschieden, und Leerzeichen werden ignoriert.<br>
   Beispiel: `pyxel.sounds[0].set_effects("nfnf nvvs")`
 
-- `mml(mml_str)`<br>
+- `mml(code)`<br>
   Legt die zugehörigen Parameter mithilfe von [Music Macro Language (MML)](https://en.wikipedia.org/wiki/Music_Macro_Language) fest. Verfügbare Befehle sind `T`(1-900), `@`(0-3), `O`(0-4), `>`, `<`, `Q`(1-8), `V`(0-7), `X`(0-7), `L`(1/2/4/8/16/32) und `CDEFGABR`+`#+-`+`.~&`. Weitere Informationen zu den Befehlen finden Sie auf [dieser Seite](faq-en.md).<br>
   Beispiel: `pyxel.sounds[0].mml("t120 @1 o3 q6 l8 x0:12345 c4&c<g16r16>c.<g16 v4 >c.&d16 x0 e2~c2~")`
 
 - `save(filename, count, [ffmpeg])`<br>
   Erstellt eine WAV-Datei, die den Sound `count`-mal wiederholt. Wenn FFmpeg installiert ist und `ffmpeg` auf `True` gesetzt wird, wird auch eine MP4-Datei erstellt.
+
+- `total_sec()`<br>
+  Gibt die Wiedergabedauer des Sounds in Sekunden zurück. Gibt `None` zurück, wenn in MML eine Endlosschleife verwendet wird.
 
 ### Music-Klasse
 
