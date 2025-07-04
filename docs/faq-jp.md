@@ -71,9 +71,16 @@ Pyxel のサンプルコードを 01、05、03、04、02 の順に試すのが�
 </details>
 
 <details>
-<summary>PyxelのMMLのコマンドの種類と使い方を教えてください</summary>
+<summary>PyxelのMMLの使い方を教えてください</summary>
 
-Sound クラスの `mml` 関数で使えるコマンドの種類は以下のとおりです。
+Sound クラスの`mml`関数に MML (Music Macro Language) 文字列を渡すと、MML モードに移行し、その内容に沿ってサウンドが再生されるようになります。
+
+MML モードでは、`notes`や`speed`などの通常のパラメータは無視され、指定した文字列の内容に沿ってサウンドが再生されます。`mml()`を呼ぶと MML モードをリセットできます。
+
+`play`関数にサウンド番号の代わりに直接 MML 文字列を渡して再生することもできます。<br>
+例：`pyxel.play(0, "CDEFG")`
+
+Pyxel の MML で利用できるコマンドは以下のとおりです。
 
 - `T <bpm>`(1-)<br>
   テンポ (BPM) を指定する。デフォルトは 120。<br>
