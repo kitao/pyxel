@@ -22,6 +22,7 @@
 - Added MML string support to the play method of the Channel class
 - Removed the colors, tones, and channels from the resource format
 - Removed the include arguments from the load and save functions
+- Renamed the exclude arguments to skip in the load and save functions
 - Fixed GitHub Actions to use Rust nightly-2025-02-01
 
 ## 2.3.18

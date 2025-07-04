@@ -220,12 +220,12 @@ impl ResourceData {
     pub fn to_runtime(
         &self,
         pyxel: &Pyxel,
-        ignore_images: bool,
-        ignore_tilemaps: bool,
-        ignore_sounds: bool,
-        ignore_musics: bool,
+        skip_images: bool,
+        skip_tilemaps: bool,
+        skip_sounds: bool,
+        skip_musics: bool,
     ) {
-        if !ignore_images && !self.images.is_empty() {
+        if !skip_images && !self.images.is_empty() {
             let mut images = Vec::new();
             for image_data in &self.images {
                 images.push(image_data.to_image());
@@ -233,7 +233,7 @@ impl ResourceData {
             *pyxel.images.lock() = images;
         }
 
-        if !ignore_tilemaps && !self.tilemaps.is_empty() {
+        if !skip_tilemaps && !self.tilemaps.is_empty() {
             let mut tilemaps = Vec::new();
             for tilemap_data in &self.tilemaps {
                 tilemaps.push(tilemap_data.to_tilemap());
@@ -241,7 +241,7 @@ impl ResourceData {
             *pyxel.tilemaps.lock() = tilemaps;
         }
 
-        if !ignore_sounds && !self.sounds.is_empty() {
+        if !skip_sounds && !self.sounds.is_empty() {
             let mut sounds = Vec::new();
             for sound_data in &self.sounds {
                 sounds.push(sound_data.to_sound());
@@ -249,7 +249,7 @@ impl ResourceData {
             *pyxel.sounds.lock() = sounds;
         }
 
-        if !ignore_musics && !self.musics.is_empty() {
+        if !skip_musics && !self.musics.is_empty() {
             let mut musics = Vec::new();
             for music_data in &self.musics {
                 musics.push(music_data.to_music());
@@ -260,26 +260,26 @@ impl ResourceData {
 
     pub fn to_toml(
         &self,
-        ignore_images: bool,
-        ignore_tilemaps: bool,
-        ignore_sounds: bool,
-        ignore_musics: bool,
+        skip_images: bool,
+        skip_tilemaps: bool,
+        skip_sounds: bool,
+        skip_musics: bool,
     ) -> String {
         let mut resource_data = (*self).clone();
 
-        if ignore_images {
+        if skip_images {
             resource_data.images.clear();
         }
 
-        if ignore_tilemaps {
+        if skip_tilemaps {
             resource_data.tilemaps.clear();
         }
 
-        if ignore_sounds {
+        if skip_sounds {
             resource_data.sounds.clear();
         }
 
-        if ignore_musics {
+        if skip_musics {
             resource_data.musics.clear();
         }
 

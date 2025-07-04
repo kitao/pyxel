@@ -39,10 +39,10 @@ impl Pyxel {
     pub fn load(
         &mut self,
         filename: &str,
-        ignore_images: Option<bool>,
-        ignore_tilemaps: Option<bool>,
-        ignore_sounds: Option<bool>,
-        ignore_musics: Option<bool>,
+        skip_images: Option<bool>,
+        skip_tilemaps: Option<bool>,
+        skip_sounds: Option<bool>,
+        skip_musics: Option<bool>,
     ) {
         let mut archive = ZipArchive::new(
             File::open(Path::new(&filename))
@@ -56,10 +56,10 @@ impl Pyxel {
             self.load_old_resource(
                 &mut archive,
                 filename,
-                !ignore_images.unwrap_or(false),
-                !ignore_tilemaps.unwrap_or(false),
-                !ignore_sounds.unwrap_or(false),
-                !ignore_musics.unwrap_or(false),
+                !skip_images.unwrap_or(false),
+                !skip_tilemaps.unwrap_or(false),
+                !skip_sounds.unwrap_or(false),
+                !skip_musics.unwrap_or(false),
             );
             self.load_pyxel_palette_file(filename);
             return;
@@ -77,10 +77,10 @@ impl Pyxel {
             let resource_data = ResourceData::from_toml(&toml_text);
             resource_data.to_runtime(
                 self,
-                ignore_images.unwrap_or(false),
-                ignore_tilemaps.unwrap_or(false),
-                ignore_sounds.unwrap_or(false),
-                ignore_musics.unwrap_or(false),
+                skip_images.unwrap_or(false),
+                skip_tilemaps.unwrap_or(false),
+                skip_sounds.unwrap_or(false),
+                skip_musics.unwrap_or(false),
             );
             self.load_pyxel_palette_file(filename);
         }
@@ -89,16 +89,16 @@ impl Pyxel {
     pub fn save(
         &mut self,
         filename: &str,
-        ignore_images: Option<bool>,
-        ignore_tilemaps: Option<bool>,
-        ignore_sounds: Option<bool>,
-        ignore_musics: Option<bool>,
+        skip_images: Option<bool>,
+        skip_tilemaps: Option<bool>,
+        skip_sounds: Option<bool>,
+        skip_musics: Option<bool>,
     ) {
         let toml_text = ResourceData::from_runtime(self).to_toml(
-            ignore_images.unwrap_or(false),
-            ignore_tilemaps.unwrap_or(false),
-            ignore_sounds.unwrap_or(false),
-            ignore_musics.unwrap_or(false),
+            skip_images.unwrap_or(false),
+            skip_tilemaps.unwrap_or(false),
+            skip_sounds.unwrap_or(false),
+            skip_musics.unwrap_or(false),
         );
 
         let path = std::path::Path::new(&filename);

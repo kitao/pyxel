@@ -3,38 +3,38 @@ use pyo3::prelude::*;
 use crate::pyxel_singleton::pyxel;
 
 #[pyfunction]
-#[pyo3(signature = (filename, ignore_images=None, ignore_tilemaps=None, ignore_sounds=None, ignore_musics=None))]
+#[pyo3(signature = (filename, skip_images=None, skip_tilemaps=None, skip_sounds=None, skip_musics=None))]
 fn load(
     filename: &str,
-    ignore_images: Option<bool>,
-    ignore_tilemaps: Option<bool>,
-    ignore_sounds: Option<bool>,
-    ignore_musics: Option<bool>,
+    skip_images: Option<bool>,
+    skip_tilemaps: Option<bool>,
+    skip_sounds: Option<bool>,
+    skip_musics: Option<bool>,
 ) {
     pyxel().load(
         filename,
-        ignore_images,
-        ignore_tilemaps,
-        ignore_sounds,
-        ignore_musics,
+        skip_images,
+        skip_tilemaps,
+        skip_sounds,
+        skip_musics,
     );
 }
 
 #[pyfunction]
-#[pyo3(signature = (filename, ignore_images=None, ignore_tilemaps=None, ignore_sounds=None, ignore_musics=None))]
+#[pyo3(signature = (filename, skip_images=None, skip_tilemaps=None, skip_sounds=None, skip_musics=None))]
 fn save(
     filename: &str,
-    ignore_images: Option<bool>,
-    ignore_tilemaps: Option<bool>,
-    ignore_sounds: Option<bool>,
-    ignore_musics: Option<bool>,
+    skip_images: Option<bool>,
+    skip_tilemaps: Option<bool>,
+    skip_sounds: Option<bool>,
+    skip_musics: Option<bool>,
 ) {
     pyxel().save(
         filename,
-        ignore_images,
-        ignore_tilemaps,
-        ignore_sounds,
-        ignore_musics,
+        skip_images,
+        skip_tilemaps,
+        skip_sounds,
+        skip_musics,
     );
 }
 

@@ -472,7 +472,7 @@ Bir Pyxel uygulama dosyası ayrıca `pyxel app2exe` veya `pyxel app2html` komutl
 
 ### Kaynaklar
 
-- `load(filename, [ignore_images], [ignore_tilemaps], [ignore_sounds], [ignore_musics])`<br>
+- `load(filename, [skip_images], [skip_tilemaps], [skip_sounds], [skip_musics])`<br>
   Kaynak dosyasını (.pyxres) yükler. Bir seçenek `True` olarak ayarlandığında, ilgili kaynak yüklemeden hariç tutulur. Eğer aynı konumda aynı ada sahip bir palet dosyası (.pyxpal) varsa, palet görüntü renkleri de güncellenir. Palet dosyası, görüntü renklerini 16'lık sayılar (örn. `1100ff`) ile satır satır içerir. Bu palet dosyası, Pyxel Editor'deki renkleri değiştirmek için de kullanılabilir.
 
 - `user_data_dir(vendor_name, app_name)`<br>
