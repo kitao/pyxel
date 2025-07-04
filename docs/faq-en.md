@@ -86,7 +86,7 @@ The following commands are available in Pyxel's MML:
   Sets the tempo (BPM). Default is 120.<br>
 
 - `Q <gate_percent>` (0-100)<br>
-  Sets the note length as a percentage. 100 means no gap between notes, 1 is the shortest. Default is 80.
+  Sets the gate time as a percentage. 100 means the note is played with no gap, 0 means it is not played at all. Default is 80.
 
 - `@ <tone_index>` (0-)<br>
   Sets the tone index (by default: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Default is 0.
