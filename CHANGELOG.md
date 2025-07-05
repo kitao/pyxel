@@ -5,6 +5,7 @@
 - Renamed the noise field of the Tone class to mode
 - Added the sample_bits field to the Tone class
 - Made the wavetable field of the Tone class support arbitrary length
+- Renamed the tone_index parameter of the Tone command in MML to tone
 
 ## 2.4.0
 
