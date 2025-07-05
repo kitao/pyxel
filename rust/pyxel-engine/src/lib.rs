@@ -22,7 +22,6 @@
 #[macro_use]
 mod utils;
 mod audio;
-mod blippers;
 mod canvas;
 mod channel;
 mod font;
