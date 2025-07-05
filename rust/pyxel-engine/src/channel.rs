@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::blip_buf::BlipBuf;
+use crate::blippers::BlipBuf;
 use crate::mml_command::MmlCommand;
 use crate::pyxel::TONES;
 use crate::settings::{AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, DEFAULT_CHANNEL_GAIN};

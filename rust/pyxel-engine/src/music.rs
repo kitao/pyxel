@@ -1,7 +1,7 @@
 use std::cmp::min;
 
 use crate::audio::Audio;
-use crate::blip_buf::BlipBuf;
+use crate::blippers::BlipBuf;
 use crate::pyxel::{CHANNELS, SOUNDS};
 use crate::settings::{AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE};
 

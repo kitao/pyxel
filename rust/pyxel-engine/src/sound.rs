@@ -1,5 +1,5 @@
 use crate::audio::Audio;
-use crate::blip_buf::BlipBuf;
+use crate::blippers::BlipBuf;
 use crate::mml_command::MmlCommand;
 use crate::mml_parser::{calc_commands_sec, parse_mml};
 use crate::old_mml_parser::parse_old_mml;
