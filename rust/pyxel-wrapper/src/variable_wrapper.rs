@@ -40,7 +40,7 @@ macro_rules! wrap_shared_vec_as_python_list {
                 .lock()
                 .iter()
                 .map(|value| $value_type::wrap(value.clone()))
-                .collect())
+                .collect::<Vec<$value_type>>())
         );
     };
 }

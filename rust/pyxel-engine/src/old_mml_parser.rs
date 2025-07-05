@@ -5,7 +5,7 @@ use crate::mml_command::MmlCommand;
 use crate::settings::{
     EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_VIBRATO,
 };
-use crate::sound::{Sound, SoundNote, SoundTone, SoundVolume};
+use crate::sound::{Sound, SoundNote, SoundSpeed, SoundTone, SoundVolume};
 
 type EnvIndex = u32;
 type EnvData = Vec<SoundVolume>;
@@ -42,7 +42,7 @@ pub fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
 
     while chars.peek().is_some() {
         if let Some(value) = parse_command(&mut chars, 't') {
-            sound.speed = (900 / value).max(1);
+            sound.speed = (900 / value).max(1) as SoundSpeed;
         } else if parse_char(&mut chars, 'l') {
             length = parse_note_length(&mut chars, length);
         } else if let Some(value) = parse_command(&mut chars, '@') {

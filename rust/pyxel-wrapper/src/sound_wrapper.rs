@@ -21,7 +21,7 @@ macro_rules! wrap_sound_as_python_list {
                 .$field_name
                 .iter()
                 .map(|value| *value)
-                .collect())
+                .collect::<Vec<$value_type>>())
         );
     };
 }
