@@ -108,7 +108,7 @@ install: build
 	@pip3 install --force-reinstall `ls -rt $(DIST_DIR)/*.whl | tail -n 1`
 
 test: install
-	#@cd $(RUST_DIR); cargo test $(BUILD_OPTS)
+	@cd $(RUST_DIR); cargo test $(BUILD_OPTS)
 	@python3 -m unittest discover $(RUST_DIR)/pyxel-wrapper/tests
 	@pyxel run $(EXAMPLES_DIR)/01_hello_pyxel.py
 	@pyxel run $(EXAMPLES_DIR)/02_jump_game.py
