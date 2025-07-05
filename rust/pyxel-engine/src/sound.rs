@@ -9,23 +9,23 @@ use crate::settings::{
     EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_SLIDE, EFFECT_VIBRATO, MAX_VOLUME, TONE_NOISE,
     TONE_PULSE, TONE_SQUARE, TONE_TRIANGLE, VIBRATO_DEPTH_CENTS, VIBRATO_PERIOD_TICKS,
 };
-use crate::tone::Noise;
+use crate::tone::ToneMode;
 use crate::utils::simplify_string;
 use crate::SOUND_TICKS_PER_SECOND;
 
-pub type Note = i16;
-pub type ToneIndex = u16;
-pub type Volume = u16;
-pub type Effect = u16;
-pub type Speed = u32;
+pub type SoundNote = i16;
+pub type SoundTone = u16;
+pub type SoundVolume = u16;
+pub type SoundEffect = u16;
+pub type SoundSpeed = u32;
 
 #[derive(Clone)]
 pub struct Sound {
-    pub notes: Vec<Note>,
-    pub tones: Vec<ToneIndex>,
-    pub volumes: Vec<Volume>,
-    pub effects: Vec<Effect>,
-    pub speed: Speed,
+    pub notes: Vec<SoundNote>,
+    pub tones: Vec<SoundTone>,
+    pub volumes: Vec<SoundVolume>,
+    pub effects: Vec<SoundEffect>,
+    pub speed: SoundSpeed,
 
     pub(crate) commands: Vec<MmlCommand>,
 }
@@ -51,7 +51,7 @@ impl Sound {
         tone_str: &str,
         volume_str: &str,
         effect_str: &str,
-        speed: Speed,
+        speed: SoundSpeed,
     ) {
         self.set_notes(note_str);
         self.set_tones(tone_str);
@@ -66,7 +66,7 @@ impl Sound {
         self.notes.clear();
 
         while let Some(c) = chars.next() {
-            let mut note: Note;
+            let mut note: SoundNote;
             if ('a'..='g').contains(&c) {
                 note = match c {
                     'c' => 0,
@@ -89,7 +89,7 @@ impl Sound {
                 }
 
                 if ('0'..='4').contains(&c) {
-                    note += (c.to_digit(10).unwrap() as Note) * 12;
+                    note += (c.to_digit(10).unwrap() as SoundNote) * 12;
                 } else {
                     panic!("Invalid sound note '{c}'");
                 }
@@ -110,7 +110,7 @@ impl Sound {
                 's' => TONE_SQUARE,
                 'p' => TONE_PULSE,
                 'n' => TONE_NOISE,
-                '0'..='9' => c.to_digit(10).unwrap() as ToneIndex,
+                '0'..='9' => c.to_digit(10).unwrap() as SoundTone,
                 _ => panic!("Invalid sound tone '{c}'"),
             };
             self.tones.push(tone);
@@ -121,7 +121,7 @@ impl Sound {
         self.volumes.clear();
         for c in simplify_string(volume_str).chars() {
             if ('0'..='7').contains(&c) {
-                self.volumes.push(c.to_digit(10).unwrap() as Volume);
+                self.volumes.push(c.to_digit(10).unwrap() as SoundVolume);
             } else {
                 panic!("Invalid sound volume '{c}'");
             }
@@ -300,7 +300,12 @@ impl Sound {
 
             // Note
             let tone = tones[tone_index as usize].lock();
-            let midi_note = *note + if tone.noise == Noise::Off { 36 } else { 60 };
+            let midi_note = *note
+                + if tone.mode == ToneMode::Wavetable {
+                    36
+                } else {
+                    60
+                };
             commands.push(MmlCommand::Note {
                 midi_note: midi_note as u32,
                 duration_ticks: self.speed,

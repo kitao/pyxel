@@ -574,10 +574,6 @@ class Tilemap:
         scale: Optional[float] = None,
     ) -> None: ...
 
-    # Deprecated fields
-    image: Image
-    refimg: Optional[int]
-
 # Channel class
 class Channel:
     gain: float
@@ -597,9 +593,10 @@ class Channel:
 
 # Tone class
 class Tone:
-    gain: float
-    noise: int
+    mode: int
+    sample_bits: int
     waveform: Seq[int]
+    gain: float
 
     def __init__(self) -> None: ...
 
@@ -629,9 +626,6 @@ class Sound:
     ) -> None: ...
     def save(filename: str, sec: float, ffmpeg: Optional[bool] = None) -> None: ...
 
-    # Deprecated method
-    def old_mml(self, code: Optional[str] = None) -> None: ...
-
 # Music class
 class Music:
     seqs: Seq[Seq[int]]
@@ -642,9 +636,6 @@ class Music:
         *seqs: List[int],
     ) -> None: ...
     def save(filename: str, sec: float, ffmpeg: Optional[bool] = None) -> None: ...
-
-    # Deprecated field
-    snds_list: Seq[Seq[int]]
 
 # System
 width: int
@@ -826,10 +817,3 @@ def rndi(a: int, b: int) -> int: ...
 def rndf(a: float, b: float) -> float: ...
 def nseed(seed: int) -> None: ...
 def noise(x: float, y: Optional[float] = None, z: Optional[float] = None) -> float: ...
-
-# Deprecated functions
-def image(img: int) -> Image: ...
-def tilemap(tm: int) -> Tilemap: ...
-def channel(ch: int) -> Channel: ...
-def sound(snd: int) -> Sound: ...
-def music(msc: int) -> Music: ...

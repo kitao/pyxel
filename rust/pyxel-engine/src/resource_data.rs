@@ -3,7 +3,9 @@ use serde::{Deserialize, Serialize};
 use crate::image::{Color, Image, SharedImage};
 use crate::music::{Music, SharedMusic};
 use crate::pyxel::Pyxel;
-use crate::sound::{Effect, Note, SharedSound, Sound, Speed, ToneIndex, Volume};
+use crate::sound::{
+    SharedSound, Sound, SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume,
+};
 use crate::tilemap::{ImageSource, ImageTileCoord, SharedTilemap, Tilemap};
 use crate::utils::{compress_vec2, expand_vec2, trim_empty_vecs};
 
@@ -102,11 +104,11 @@ impl TilemapData {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct SoundData {
-    notes: Vec<Note>,
-    tones: Vec<ToneIndex>,
-    volumes: Vec<Volume>,
-    effects: Vec<Effect>,
-    speed: Speed,
+    notes: Vec<SoundNote>,
+    tones: Vec<SoundTone>,
+    volumes: Vec<SoundVolume>,
+    effects: Vec<SoundEffect>,
+    speed: SoundSpeed,
 }
 
 impl SoundData {

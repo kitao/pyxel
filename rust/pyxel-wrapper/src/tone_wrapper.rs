@@ -2,19 +2,20 @@ use std::sync::Once;
 
 use pyo3::prelude::*;
 
+static NOISE_ONCE: Once = Once::new();
 static WAVEFORM_ONCE: Once = Once::new();
 
 wrap_as_python_list!(
     Wavetable,
     pyxel::SharedTone,
     (|inner: &pyxel::SharedTone| inner.lock().wavetable.len()),
-    pyxel::WavetableValue,
+    pyxel::ToneSample,
     (|inner: &pyxel::SharedTone, index| inner.lock().wavetable[index]),
-    pyxel::WavetableValue,
+    pyxel::ToneSample,
     (|inner: &pyxel::SharedTone, index, value| inner.lock().wavetable[index] = value),
-    pyxel::Wavetable,
+    Vec<pyxel::ToneSample>,
     (|inner: &pyxel::SharedTone, list| inner.lock().wavetable = list),
-    (|inner: &pyxel::SharedTone| inner.lock().wavetable)
+    (|inner: &pyxel::SharedTone| inner.lock().wavetable.clone())
 );
 
 #[pyclass]
@@ -37,23 +38,41 @@ impl Tone {
     }
 
     #[getter]
-    pub fn gain(&self) -> pyxel::Gain {
-        self.inner.lock().gain
+    pub fn mode(&self) -> u32 {
+        self.inner.lock().mode.into()
     }
 
     #[setter]
-    pub fn set_gain(&self, gain: pyxel::Gain) {
-        self.inner.lock().gain = gain;
+    pub fn set_mode(&self, mode: u32) {
+        self.inner.lock().mode = pyxel::ToneMode::from(mode);
     }
 
     #[getter]
     pub fn noise(&self) -> u32 {
-        self.inner.lock().noise.to_index()
+        NOISE_ONCE.call_once(|| {
+            println!("Tone.noise is deprecated. Use Tone.mode instead.");
+        });
+
+        self.inner.lock().mode.into()
     }
 
     #[setter]
-    pub fn set_noise(&self, noise: u32) {
-        self.inner.lock().noise = pyxel::Noise::from_index(noise);
+    pub fn set_noise(&self, mode: u32) {
+        NOISE_ONCE.call_once(|| {
+            println!("Tone.noise is deprecated. Use Tone.mode instead.");
+        });
+
+        self.inner.lock().mode = pyxel::ToneMode::from(mode);
+    }
+
+    #[getter]
+    pub fn sample_bits(&self) -> pyxel::ToneSample {
+        self.inner.lock().sample_bits
+    }
+
+    #[setter]
+    pub fn set_sample_bits(&self, sample_bits: pyxel::ToneSample) {
+        self.inner.lock().sample_bits = sample_bits;
     }
 
     #[getter]
@@ -68,6 +87,16 @@ impl Tone {
         });
 
         Wavetable::wrap(self.inner.clone())
+    }
+
+    #[getter]
+    pub fn gain(&self) -> pyxel::ToneGain {
+        self.inner.lock().gain
+    }
+
+    #[setter]
+    pub fn set_gain(&self, gain: pyxel::ToneGain) {
+        self.inner.lock().gain = gain;
     }
 }
 

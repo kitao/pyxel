@@ -5,15 +5,16 @@ use crate::mml_command::MmlCommand;
 use crate::pyxel::TONES;
 use crate::settings::{AUDIO_CLOCK_RATE, AUDIO_CONTROL_RATE, DEFAULT_CHANNEL_GAIN};
 use crate::sound::{SharedSound, Sound};
-use crate::tone::{Gain, Noise};
+use crate::tone::ToneMode;
 use crate::voice::Voice;
 
-pub type Detune = i32;
+pub type ChannelGain = f32;
+pub type ChannelDetune = i32;
 
 pub struct Channel {
     pub sounds: Vec<SharedSound>,
-    pub gain: Gain,
-    pub detune: Detune,
+    pub gain: ChannelGain,
+    pub detune: ChannelDetune,
 
     voice: Voice,
     is_playing: bool,
@@ -281,10 +282,10 @@ impl Channel {
 
                 MmlCommand::Tone { tone_index } => {
                     let mut tone = tones[*tone_index as usize].lock();
-                    match tone.noise {
-                        Noise::ShortPeriod => self.voice.oscillator.set_noise(true),
-                        Noise::LongPeriod => self.voice.oscillator.set_noise(false),
-                        Noise::Off => self.voice.oscillator.set(tone.waveform()),
+                    match tone.mode {
+                        ToneMode::Wavetable => self.voice.oscillator.set(tone.waveform()),
+                        ToneMode::ShortPeriodNoise => self.voice.oscillator.set_noise(true),
+                        ToneMode::LongPeriodNoise => self.voice.oscillator.set_noise(false),
                     }
 
                     self.tone_gain = tone.gain;

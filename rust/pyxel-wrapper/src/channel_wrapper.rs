@@ -23,22 +23,22 @@ impl Channel {
     }
 
     #[getter]
-    pub fn get_gain(&self) -> pyxel::Gain {
+    pub fn get_gain(&self) -> pyxel::ChannelGain {
         self.inner.lock().gain
     }
 
     #[setter]
-    pub fn set_gain(&self, gain: pyxel::Gain) {
+    pub fn set_gain(&self, gain: pyxel::ChannelGain) {
         self.inner.lock().gain = gain;
     }
 
     #[getter]
-    pub fn get_detune(&self) -> pyxel::Detune {
+    pub fn get_detune(&self) -> pyxel::ChannelDetune {
         self.inner.lock().detune
     }
 
     #[setter]
-    pub fn set_detune(&self, detune: pyxel::Detune) {
+    pub fn set_detune(&self, detune: pyxel::ChannelDetune) {
         self.inner.lock().detune = detune;
     }
 

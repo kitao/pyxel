@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.4.1
+
+- Renamed the noise field of the Tone class to mode
+- Added the sample_bits field to the Tone class
+- Made the wavetable field of the Tone class support arbitrary length
+
 ## 2.4.0
 
 - Fixed the audio module initialize arguments

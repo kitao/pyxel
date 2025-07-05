@@ -12,9 +12,10 @@ use crate::music::{Music, SharedMusic};
 use crate::resource::Resource;
 use crate::settings::{
     CURSOR_DATA, CURSOR_HEIGHT, CURSOR_WIDTH, DEFAULT_COLORS, DEFAULT_FPS, DEFAULT_QUIT_KEY,
-    DEFAULT_TITLE, DEFAULT_TONES, DISPLAY_RATIO, FONT_DATA, FONT_HEIGHT, FONT_WIDTH, ICON_COLKEY,
-    ICON_DATA, ICON_SCALE, IMAGE_SIZE, NUM_CHANNELS, NUM_FONT_ROWS, NUM_IMAGES, NUM_MUSICS,
-    NUM_SOUNDS, NUM_TILEMAPS, NUM_TONES, TILEMAP_SIZE,
+    DEFAULT_TITLE, DEFAULT_TONE_0, DEFAULT_TONE_1, DEFAULT_TONE_2, DEFAULT_TONE_3, DISPLAY_RATIO,
+    FONT_DATA, FONT_HEIGHT, FONT_WIDTH, ICON_COLKEY, ICON_DATA, ICON_SCALE, IMAGE_SIZE,
+    NUM_CHANNELS, NUM_FONT_ROWS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS, NUM_TONES,
+    TILEMAP_SIZE,
 };
 use crate::sound::{SharedSound, Sound};
 use crate::system::System;
@@ -71,15 +72,30 @@ pub static FONT_IMAGE: LazyLock<SharedImage> = LazyLock::new(|| {
 pub static CHANNELS: LazyLock<shared_type!(Vec<SharedChannel>)> =
     LazyLock::new(|| new_shared_type!((0..NUM_CHANNELS).map(|_| Channel::new()).collect()));
 
+macro_rules! set_default_tone {
+    ($tone:ident, $default_tone:ident) => {{
+        $tone.mode = $default_tone.0;
+        $tone.sample_bits = $default_tone.1;
+        $tone.wavetable = $default_tone.2.to_vec();
+        $tone.gain = $default_tone.3;
+    }};
+}
+
 pub static TONES: LazyLock<shared_type!(Vec<SharedTone>)> = LazyLock::new(|| {
     new_shared_type!((0..NUM_TONES)
         .map(|index| {
             let tone = Tone::new();
             {
                 let mut tone = tone.lock();
-                tone.gain = DEFAULT_TONES[index as usize].0;
-                tone.noise = DEFAULT_TONES[index as usize].1;
-                tone.wavetable = DEFAULT_TONES[index as usize].2;
+                {
+                    match index {
+                        0 => set_default_tone!(tone, DEFAULT_TONE_0),
+                        1 => set_default_tone!(tone, DEFAULT_TONE_1),
+                        2 => set_default_tone!(tone, DEFAULT_TONE_2),
+                        3 => set_default_tone!(tone, DEFAULT_TONE_3),
+                        _ => {}
+                    }
+                }
             }
             tone
         })

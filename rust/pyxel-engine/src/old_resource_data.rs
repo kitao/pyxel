@@ -12,7 +12,7 @@ use crate::settings::{
     DEFAULT_SOUND_SPEED, NUM_CHANNELS, NUM_IMAGES, NUM_MUSICS, NUM_SOUNDS, NUM_TILEMAPS,
     PALETTE_FILE_EXTENSION, TILEMAP_SIZE, VERSION,
 };
-use crate::sound::{Effect, Note, Sound, ToneIndex, Volume};
+use crate::sound::{Sound, SoundEffect, SoundNote, SoundTone, SoundVolume};
 use crate::tilemap::{ImageSource, ImageTileCoord, Tilemap};
 use crate::utils::{parse_hex_string, simplify_string};
 
@@ -115,22 +115,22 @@ impl ResourceItem for Sound {
             if i == 0 {
                 string_loop!(j, value, line, 2, {
                     self.notes
-                        .push(parse_hex_string(&value).unwrap() as i8 as Note);
+                        .push(parse_hex_string(&value).unwrap() as i8 as SoundNote);
                 });
             } else if i == 1 {
                 string_loop!(j, value, line, 1, {
                     self.tones
-                        .push(parse_hex_string(&value).unwrap() as ToneIndex);
+                        .push(parse_hex_string(&value).unwrap() as SoundTone);
                 });
             } else if i == 2 {
                 string_loop!(j, value, line, 1, {
                     self.volumes
-                        .push(parse_hex_string(&value).unwrap() as Volume);
+                        .push(parse_hex_string(&value).unwrap() as SoundVolume);
                 });
             } else if i == 3 {
                 string_loop!(j, value, line, 1, {
                     self.effects
-                        .push(parse_hex_string(&value).unwrap() as Effect);
+                        .push(parse_hex_string(&value).unwrap() as SoundEffect);
                 });
             } else if i == 4 {
                 self.speed = line.parse().unwrap();
