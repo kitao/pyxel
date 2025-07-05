@@ -26,7 +26,7 @@ impl ImageData {
             .canvas
             .data
             .chunks(width as usize)
-            .map(<[u8]>::to_vec)
+            .map(<[Color]>::to_vec)
             .collect();
         let data = compress_vec2(&data);
 
