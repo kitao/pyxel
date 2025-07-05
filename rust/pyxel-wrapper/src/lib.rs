@@ -6,10 +6,8 @@
     clippy::multiple_crate_versions,
     clippy::needless_pass_by_value,
     clippy::new_without_default,
-    clippy::redundant_closure_call,
     clippy::too_many_arguments,
     clippy::too_many_lines,
-    clippy::useless_conversion,
     clippy::wrong_self_convention
 )]
 
