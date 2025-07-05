@@ -18,38 +18,44 @@ EXTENDED_CHANNELS = [
 
 EXTENDED_TONES = [
     (  # Sine Wave
-        0.8,
         0,
+        4,
         [15, 15, 15, 15, 15, 15, 15, 15, 15, 14, 13, 12, 11, 10, 9, 8]
         + [7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        0.8,
     ),
     (  # Sine Wave
-        0.4,
         0,
+        4,
         [8, 9, 10, 12, 13, 14, 14, 15, 15, 15, 14, 14, 13, 12, 10, 9]
         + [8, 6, 5, 3, 2, 1, 1, 0, 0, 0, 1, 1, 2, 3, 5, 6],
+        0.4,
     ),
     (  # Narrow (1:7) Pulse Wave
-        0.7,
         0,
+        4,
         [15] * 4 + [0] * 28,
+        0.7,
     ),
     (  # Saw Wave
-        1.0,
         0,
+        4,
         [15, 15, 14, 14, 13, 13, 12, 12, 11, 11, 10, 10, 9, 9, 8, 8]
         + [7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0],
+        1.0,
     ),
     (  # Short Period Noise
-        0.8,
         1,
+        4,
         [0] * 32,
+        0.8,
     ),
 ]
-# [(gain, noise, wavetable), (gain, noise, wavetable), ...]
-# 'noise' corresponds to:
-#  0 for noise disabled (use wavetable), 1 for short-period noise, 2 for long-period noise.
-# 'wavetable' is composed of 32 values ranging from 0 to 15.
+# [(mode, sample_bits, wavetable, gain), (mode, sample_bits, wavetable, gain), ...]
+# 'mode' corresponds to:
+#  0 for wavetable, 1 for short-period noise, 2 for long-period noise.
+# 'wavetable' can be any length, but all are 32 elements in this example.
+# 'wavetable' value range depends on 'sample_bits'. For 4 bits, the range is 0-15.
 
 WAVETABLE_EDITOR_PARAMS = [
     (8, 8, 0, "Lead Melody"),
@@ -69,11 +75,12 @@ def extend_audio():
     pyxel.channels.from_list(channels)
 
     tones = []
-    for gain, noise, wavetable in EXTENDED_TONES:
+    for mode, sample_bits, wavetable, gain in EXTENDED_TONES:
         tone = pyxel.Tone()
-        tone.gain = gain
-        tone.noise = noise
+        tone.mode = mode
+        tone.sample_bits = sample_bits
         tone.wavetable.from_list(wavetable)
+        tone.gain = gain
         tones.append(tone)
     pyxel.tones.from_list(tones)
 

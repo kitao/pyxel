@@ -1,40 +1,42 @@
-use crate::settings::{WAVETABLE_LENGTH, WAVETABLE_LEVELS};
+use crate::settings::DEFAULT_TONE_SAMPLE_BITS;
 
-pub type Gain = f32;
-pub type WavetableValue = u8;
-pub type Wavetable = [WavetableValue; WAVETABLE_LENGTH as usize];
+pub type ToneSample = u32;
+pub type ToneGain = f32;
 
 #[derive(PartialEq, Copy, Clone)]
-pub enum Noise {
-    Off,
-    ShortPeriod,
-    LongPeriod,
+pub enum ToneMode {
+    Wavetable,
+    ShortPeriodNoise,
+    LongPeriodNoise,
 }
 
-impl Noise {
-    pub fn from_index(index: u32) -> Self {
+impl From<u32> for ToneMode {
+    fn from(index: u32) -> Self {
         match index {
-            1 => Self::ShortPeriod,
-            2 => Self::LongPeriod,
-            _ => Self::Off,
+            1 => Self::ShortPeriodNoise,
+            2 => Self::LongPeriodNoise,
+            _ => Self::Wavetable,
         }
     }
+}
 
-    pub fn to_index(&self) -> u32 {
-        match self {
-            Self::Off => 0,
-            Self::ShortPeriod => 1,
-            Self::LongPeriod => 2,
+impl From<ToneMode> for u32 {
+    fn from(mode: ToneMode) -> Self {
+        match mode {
+            ToneMode::Wavetable => 0,
+            ToneMode::ShortPeriodNoise => 1,
+            ToneMode::LongPeriodNoise => 2,
         }
     }
 }
 
 pub struct Tone {
-    pub gain: Gain,
-    pub noise: Noise,
-    pub wavetable: Wavetable,
+    pub mode: ToneMode,
+    pub sample_bits: u32,
+    pub wavetable: Vec<ToneSample>,
+    pub gain: ToneGain,
 
-    last_wavetable: Wavetable,
+    cached_wavetable: Vec<ToneSample>,
     waveform: Vec<f32>,
 }
 
@@ -43,24 +45,28 @@ pub type SharedTone = shared_type!(Tone);
 impl Tone {
     pub fn new() -> SharedTone {
         new_shared_type!(Self {
-            gain: 1.0,
-            noise: Noise::Off,
-            wavetable: [0; WAVETABLE_LENGTH as usize],
-            last_wavetable: [0; WAVETABLE_LENGTH as usize],
+            mode: ToneMode::Wavetable,
+            sample_bits: DEFAULT_TONE_SAMPLE_BITS,
+            wavetable: Vec::new(),
+            cached_wavetable: Vec::new(),
             waveform: Vec::new(),
+            gain: 1.0,
         })
     }
 
     pub(crate) fn waveform(&mut self) -> &Vec<f32> {
-        if self.wavetable != self.last_wavetable {
-            self.last_wavetable = self.wavetable;
+        if self.wavetable != self.cached_wavetable {
+            self.cached_wavetable = self.wavetable.clone();
 
             self.waveform.clear();
-            self.waveform.reserve(WAVETABLE_LENGTH as usize);
-            for &value in &self.wavetable {
-                assert!(value < WAVETABLE_LEVELS as u8);
+            self.waveform.reserve(self.wavetable.len());
+
+            let max_sample = (1 << self.sample_bits) - 1;
+
+            for &sample in &self.wavetable {
+                assert!(sample <= max_sample);
                 self.waveform
-                    .push((value as f32 / (WAVETABLE_LEVELS - 1) as f32) * 2.0 - 1.0);
+                    .push((sample as f32 / max_sample as f32) * 2.0 - 1.0);
             }
         }
 

@@ -5,13 +5,13 @@ use crate::mml_command::MmlCommand;
 use crate::settings::{
     EFFECT_FADEOUT, EFFECT_HALF_FADEOUT, EFFECT_NONE, EFFECT_QUARTER_FADEOUT, EFFECT_VIBRATO,
 };
-use crate::sound::{Note, Sound, ToneIndex, Volume};
+use crate::sound::{Sound, SoundNote, SoundTone, SoundVolume};
 
 type EnvIndex = u32;
-type EnvData = Vec<Volume>;
+type EnvData = Vec<SoundVolume>;
 
 enum VolEnv {
-    Constant(Volume),
+    Constant(SoundVolume),
     Envelope(EnvIndex),
 }
 
@@ -19,11 +19,11 @@ enum VolEnv {
 struct NoteInfo {
     length: u32,
     quantize: u32,
-    tone: ToneIndex,
+    tone: SoundTone,
     env_start: u32,
     env_data: EnvData,
     vibrato: bool,
-    note: Note,
+    note: SoundNote,
     is_tied: bool,
 }
 
@@ -47,13 +47,13 @@ pub fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
             length = parse_note_length(&mut chars, length);
         } else if let Some(value) = parse_command(&mut chars, '@') {
             if value <= 3 {
-                tone = value as ToneIndex;
+                tone = value as SoundTone;
             } else {
                 panic!("Invalid tone value '{value}' in MML");
             }
         } else if let Some(value) = parse_command(&mut chars, 'o') {
             if value <= 4 {
-                octave = value as Note;
+                octave = value as SoundNote;
             } else {
                 panic!("Invalid octave value '{value}' in MML");
             }
@@ -77,7 +77,7 @@ pub fn parse_old_mml(mml: &str) -> Vec<MmlCommand> {
             }
         } else if let Some(value) = parse_command(&mut chars, 'v') {
             if value <= 7 {
-                vol_env = VolEnv::Constant(value as Volume);
+                vol_env = VolEnv::Constant(value as SoundVolume);
             } else {
                 panic!("Invalid volume value '{value}' in MML");
             }
@@ -230,7 +230,7 @@ fn parse_envelope<T: Iterator<Item = char>>(
 fn parse_note<T: Iterator<Item = char>>(
     chars: &mut Peekable<T>,
     length: u32,
-) -> Option<(Note, u32)> {
+) -> Option<(SoundNote, u32)> {
     skip_whitespace(chars);
 
     let mut note = match chars.peek()?.to_ascii_lowercase() {

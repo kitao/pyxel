@@ -1,7 +1,8 @@
+use crate::channel::ChannelGain;
 use crate::image::{Color, Rgb24};
 use crate::keys::{Key, KEY_ESCAPE};
-use crate::sound::{Effect, Note, Speed, ToneIndex, Volume};
-use crate::tone::{Gain, Noise, Wavetable};
+use crate::sound::{SoundEffect, SoundNote, SoundSpeed, SoundTone, SoundVolume};
+use crate::tone::{ToneMode, ToneSample};
 
 // System
 pub const VERSION: &str = "2.4.0";
@@ -118,54 +119,55 @@ pub const NUM_TONES: u32 = 4;
 pub const NUM_SOUNDS: u32 = 64;
 pub const NUM_MUSICS: u32 = 8;
 
-pub const DEFAULT_CHANNEL_GAIN: Gain = 0.125;
-pub const DEFAULT_SOUND_SPEED: Speed = 30;
+pub const DEFAULT_CHANNEL_GAIN: ChannelGain = 0.125;
+pub const DEFAULT_SOUND_SPEED: SoundSpeed = 30;
 
-pub const TONE_TRIANGLE: ToneIndex = 0;
-pub const TONE_SQUARE: ToneIndex = 1;
-pub const TONE_PULSE: ToneIndex = 2;
-pub const TONE_NOISE: ToneIndex = 3;
+pub const TONE_TRIANGLE: SoundTone = 0;
+pub const TONE_SQUARE: SoundTone = 1;
+pub const TONE_PULSE: SoundTone = 2;
+pub const TONE_NOISE: SoundTone = 3;
 
-pub const EFFECT_NONE: Effect = 0;
-pub const EFFECT_SLIDE: Effect = 1;
-pub const EFFECT_VIBRATO: Effect = 2;
-pub const EFFECT_FADEOUT: Effect = 3;
-pub const EFFECT_HALF_FADEOUT: Effect = 4;
-pub const EFFECT_QUARTER_FADEOUT: Effect = 5;
+pub const EFFECT_NONE: SoundEffect = 0;
+pub const EFFECT_SLIDE: SoundEffect = 1;
+pub const EFFECT_VIBRATO: SoundEffect = 2;
+pub const EFFECT_FADEOUT: SoundEffect = 3;
+pub const EFFECT_HALF_FADEOUT: SoundEffect = 4;
+pub const EFFECT_QUARTER_FADEOUT: SoundEffect = 5;
 
-pub const MAX_TONE: ToneIndex = 9;
-pub const MAX_NOTE: Note = 12 * 5 - 1; // 5 octaves
-pub const MAX_VOLUME: Volume = 7;
-pub const MAX_EFFECT: Effect = 5;
+pub const MAX_TONE: SoundTone = 9;
+pub const MAX_NOTE: SoundNote = 12 * 5 - 1; // 5 octaves
+pub const MAX_VOLUME: SoundVolume = 7;
+pub const MAX_EFFECT: SoundEffect = 5;
 
-pub const DEFAULT_TONES: [(Gain, Noise, Wavetable); NUM_TONES as usize] = [
+pub const DEFAULT_TONE_SAMPLE_BITS: u32 = 4;
+pub const DEFAULT_TONE_0: (ToneMode, u32, [ToneSample; 32], f32) = (
     // Triangle
-    (
-        1.0,
-        Noise::Off,
-        [
-            8, 9, 10, 11, 12, 13, 14, 15, 15, 14, 13, 12, 11, 10, 9, 8, //
-            7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7,
-        ],
-    ),
+    ToneMode::Wavetable,
+    4,
+    [
+        8, 9, 10, 11, 12, 13, 14, 15, 15, 14, 13, 12, 11, 10, 9, 8, //
+        7, 6, 5, 4, 3, 2, 1, 0, 0, 1, 2, 3, 4, 5, 6, 7,
+    ],
+    1.0,
+);
+pub const DEFAULT_TONE_1: (ToneMode, u32, [ToneSample; 2], ChannelGain) = (
     // Square
-    (
-        0.3,
-        Noise::Off,
-        [
-            15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, //
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        ],
-    ),
+    ToneMode::Wavetable,
+    1,
+    [1, 0],
+    0.3,
+);
+pub const DEFAULT_TONE_2: (ToneMode, u32, [ToneSample; 4], ChannelGain) = (
     // Pulse
-    (
-        0.3,
-        Noise::Off,
-        [
-            15, 15, 15, 15, 15, 15, 15, 15, 0, 0, 0, 0, 0, 0, 0, 0, //
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        ],
-    ),
+    ToneMode::Wavetable,
+    1,
+    [1, 0, 0, 0],
+    0.3,
+);
+pub const DEFAULT_TONE_3: (ToneMode, u32, [ToneSample; 0], ChannelGain) = (
     // Noise
-    (0.6, Noise::LongPeriod, [0; 32]),
-];
+    ToneMode::LongPeriodNoise,
+    0,
+    [0; 0],
+    0.6,
+);

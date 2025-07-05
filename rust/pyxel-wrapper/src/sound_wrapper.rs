@@ -26,10 +26,10 @@ macro_rules! wrap_sound_as_python_list {
     };
 }
 
-wrap_sound_as_python_list!(Notes, pyxel::Note, notes);
-wrap_sound_as_python_list!(Tones, pyxel::ToneIndex, tones);
-wrap_sound_as_python_list!(Volumes, pyxel::Volume, volumes);
-wrap_sound_as_python_list!(Effects, pyxel::Effect, effects);
+wrap_sound_as_python_list!(Notes, pyxel::SoundNote, notes);
+wrap_sound_as_python_list!(Tones, pyxel::SoundTone, tones);
+wrap_sound_as_python_list!(Volumes, pyxel::SoundVolume, volumes);
+wrap_sound_as_python_list!(Effects, pyxel::SoundEffect, effects);
 
 #[pyclass]
 #[derive(Clone)]
@@ -71,16 +71,23 @@ impl Sound {
     }
 
     #[getter]
-    pub fn get_speed(&self) -> pyxel::Speed {
+    pub fn get_speed(&self) -> pyxel::SoundSpeed {
         self.inner.lock().speed
     }
 
     #[setter]
-    pub fn set_speed(&self, speed: pyxel::Speed) {
+    pub fn set_speed(&self, speed: pyxel::SoundSpeed) {
         self.inner.lock().speed = speed;
     }
 
-    pub fn set(&self, notes: &str, tones: &str, volumes: &str, effects: &str, speed: pyxel::Speed) {
+    pub fn set(
+        &self,
+        notes: &str,
+        tones: &str,
+        volumes: &str,
+        effects: &str,
+        speed: pyxel::SoundSpeed,
+    ) {
         self.inner.lock().set(notes, tones, volumes, effects, speed);
     }
 
