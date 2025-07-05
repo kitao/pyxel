@@ -19,7 +19,7 @@ impl App {
         );
 
         pyxel.mouse(true);
-        pyxel.warp_mouse(10.0, 10.0);
+        pyxel.warp_mouse(50.0, 50.0);
 
         pyxel.images.lock()[0].lock().set(
             0,
@@ -98,19 +98,17 @@ impl PyxelCallback for App {
         pyxel.rect(self.x + 10.0, 25.0, 15.0, 10.0, 8);
         pyxel.rectb(self.x + 15.0, 45.0, 15.0, 10.0, pyxel::COLOR_WHITE);
 
-        pyxel.blt(0.0, 0.0, 0, 0.0, 0.0, 8.0, 8.0, None, Some(30.0), Some(1.5));
-
-        pyxel.screen.lock().blt(
-            50.0,
-            50.0,
-            pyxel.screen.clone(),
-            0.0,
-            0.0,
+        pyxel.blt(
             100.0,
             100.0,
+            0,
+            0.0,
+            0.0,
+            8.0,
+            8.0,
             None,
             Some(30.0),
-            Some(1.5),
+            Some(5.0),
         );
     }
 }
