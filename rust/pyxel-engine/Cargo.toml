@@ -12,11 +12,6 @@ categories = ["game-engines", "graphics", "multimedia"]
 [lib]
 name = "pyxel"
 
-[[test]]
-name = "tests"
-path = "tests/test_pyxel.rs"
-harness = false
-
 [dependencies]
 cfg-if = "1.0"
 directories = "6.0"
