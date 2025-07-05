@@ -93,7 +93,7 @@ pub static TONES: LazyLock<shared_type!(Vec<SharedTone>)> = LazyLock::new(|| {
                         1 => set_default_tone!(tone, DEFAULT_TONE_1),
                         2 => set_default_tone!(tone, DEFAULT_TONE_2),
                         3 => set_default_tone!(tone, DEFAULT_TONE_3),
-                        _ => {}
+                        _ => panic!(),
                     }
                 }
             }
