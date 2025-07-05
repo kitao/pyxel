@@ -3,10 +3,10 @@ use std::env::temp_dir;
 use std::fs::{remove_file, write};
 use std::process::Command;
 
+use blip_buf::BlipBuf;
 use hound::{SampleFormat, WavSpec, WavWriter};
 use parking_lot::MutexGuard;
 
-use crate::blippers::BlipBuf;
 use crate::channel::SharedChannel;
 use crate::pyxel::{Pyxel, CHANNELS};
 use crate::settings::{AUDIO_BUFFER_SIZE, AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE};
@@ -27,7 +27,7 @@ pub struct Audio {}
 
 impl Audio {
     pub fn new() -> Self {
-        let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SIZE as usize);
+        let mut blip_buf = BlipBuf::new(AUDIO_BUFFER_SIZE);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
         pyxel_platform::start_audio(
             AUDIO_SAMPLE_RATE,
@@ -51,7 +51,7 @@ impl Audio {
             for channel in &mut *channels {
                 channel.process(Some(blip_buf), CLOCKS_PER_SAMPLE);
             }
-            blip_buf.end_frame(CLOCKS_PER_SAMPLE as u64);
+            blip_buf.end_frame(CLOCKS_PER_SAMPLE);
             num_samples += blip_buf.read_samples(&mut samples[num_samples..], false);
         }
     }

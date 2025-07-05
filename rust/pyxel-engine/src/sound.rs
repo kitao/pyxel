@@ -1,5 +1,6 @@
+use blip_buf::BlipBuf;
+
 use crate::audio::Audio;
-use crate::blippers::BlipBuf;
 use crate::mml_command::MmlCommand;
 use crate::mml_parser::{calc_commands_sec, parse_mml};
 use crate::old_mml_parser::parse_old_mml;
@@ -165,7 +166,7 @@ impl Sound {
         }
 
         let mut samples = vec![0; num_samples as usize];
-        let mut blip_buf = BlipBuf::new(num_samples as usize);
+        let mut blip_buf = BlipBuf::new(num_samples);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
         let channels = CHANNELS.lock();

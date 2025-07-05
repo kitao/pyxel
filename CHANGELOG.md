@@ -7,6 +7,7 @@
 - Made the wavetable field of the Tone class support arbitrary length
 - Renamed the tone_index parameter of the Tone command in MML to tone
 - Changed the types of the Sound class members
+- Changed to use the blip_buf crate
 
 ## 2.4.0
 

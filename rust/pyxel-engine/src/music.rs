@@ -1,7 +1,8 @@
 use std::cmp::min;
 
+use blip_buf::BlipBuf;
+
 use crate::audio::Audio;
-use crate::blippers::BlipBuf;
 use crate::pyxel::{CHANNELS, SOUNDS};
 use crate::settings::{AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE};
 
@@ -51,7 +52,7 @@ impl Music {
             .collect();
 
         let mut samples = vec![0; num_samples as usize];
-        let mut blip_buf = BlipBuf::new(num_samples as usize);
+        let mut blip_buf = BlipBuf::new(num_samples);
         blip_buf.set_rates(AUDIO_CLOCK_RATE as f64, AUDIO_SAMPLE_RATE as f64);
 
         let channels = CHANNELS.lock();
