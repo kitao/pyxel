@@ -34,7 +34,7 @@ wrap_as_python_list!(
         .seqs
         .iter()
         .map(|seq| seq.lock().clone())
-        .collect())
+        .collect::<Vec<Vec<u32>>>())
 );
 
 #[pyclass]

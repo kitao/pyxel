@@ -13,11 +13,11 @@ use crate::tone::ToneMode;
 use crate::utils::simplify_string;
 use crate::SOUND_TICKS_PER_SECOND;
 
-pub type SoundNote = i16;
-pub type SoundTone = u16;
-pub type SoundVolume = u16;
-pub type SoundEffect = u16;
-pub type SoundSpeed = u32;
+pub type SoundNote = i8;
+pub type SoundTone = u8;
+pub type SoundVolume = u8;
+pub type SoundEffect = u8;
+pub type SoundSpeed = u16;
 
 #[derive(Clone)]
 pub struct Sound {
@@ -215,7 +215,7 @@ impl Sound {
             // Rest
             if *note < 0 {
                 commands.push(MmlCommand::Rest {
-                    duration_ticks: self.speed,
+                    duration_ticks: self.speed as u32,
                 });
                 continue;
             }
@@ -251,11 +251,11 @@ impl Sound {
                 commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
                     initial_level: 1.0,
-                    segments: vec![(self.speed, 0.0)],
+                    segments: vec![(self.speed as u32, 0.0)],
                 });
             } else if effect == EFFECT_HALF_FADEOUT {
                 let ticks2 = (self.speed as f32 / 2.0).round() as u32;
-                let ticks1 = self.speed - ticks2;
+                let ticks1 = self.speed as u32 - ticks2;
                 commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
                     initial_level: 1.0,
@@ -263,7 +263,7 @@ impl Sound {
                 });
             } else if effect == EFFECT_QUARTER_FADEOUT {
                 let ticks2 = (self.speed as f32 / 4.0).round() as u32;
-                let ticks1 = self.speed - ticks2;
+                let ticks1 = self.speed as u32 - ticks2;
                 commands.push(MmlCommand::EnvelopeSet {
                     slot: 1,
                     initial_level: 1.0,
@@ -290,7 +290,7 @@ impl Sound {
                 commands.push(MmlCommand::GlideSet {
                     slot: 1,
                     semitone_offset: (prev_note - *note) as f32,
-                    duration_ticks: self.speed,
+                    duration_ticks: self.speed as u32,
                 });
             } else {
                 commands.push(MmlCommand::Glide { slot: 0 });
@@ -306,7 +306,7 @@ impl Sound {
                 };
             commands.push(MmlCommand::Note {
                 midi_note: midi_note as u32,
-                duration_ticks: self.speed,
+                duration_ticks: self.speed as u32,
             });
 
             prev_note = *note;

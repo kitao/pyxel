@@ -6,6 +6,7 @@
 - Added the sample_bits field to the Tone class
 - Made the wavetable field of the Tone class support arbitrary length
 - Renamed the tone_index parameter of the Tone command in MML to tone
+- Changed the types of the Sound class members
 
 ## 2.4.0
 

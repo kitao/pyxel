@@ -70,8 +70,10 @@ macro_rules! wrap_as_python_list {
                 Ok(())
             }
 
-            pub fn to_list(&self) -> PyResult<$list_type> {
-                Ok($to_list(&self.inner))
+            pub fn to_list(&self, py: Python) -> PyResult<PyObject> {
+                let vec = $to_list(&self.inner);
+                let list = pyo3::types::PyList::new(py, vec)?;
+                Ok(list.unbind().into_any().into())
             }
         }
     };
