@@ -95,7 +95,7 @@ impl ShouldInit {
 
         if self.tone {
             self.tone = false;
-            commands.push(MmlCommand::Tone { tone_index: 0 });
+            commands.push(MmlCommand::Tone { tone: 0 });
         }
 
         if self.volume {
@@ -261,12 +261,12 @@ pub fn parse_mml(mml: &str) -> Vec<MmlCommand> {
             //
             should_init.glide = false;
             commands.push(command);
-        } else if let Some(tone_index) = parse_command(&mut stream, "@", RANGE_GE0) {
+        } else if let Some(tone) = parse_command(&mut stream, "@", RANGE_GE0) {
             //
-            // @<tone_index> - Set tone (tone_index >= 0)
+            // @<tone> - Set tone (tone >= 0)
             //
             should_init.tone = false;
-            commands.push(MmlCommand::Tone { tone_index });
+            commands.push(MmlCommand::Tone { tone });
         } else if let Some(oct) = parse_command(&mut stream, "O", RANGE_OCTAVE) {
             //
             // O<oct> - Set octave (-1 <= oct <= 9)
