@@ -71,9 +71,9 @@ impl Image {
 
                         if include_colors {
                             colors.push(
-                                ((src_rgb.0 as u32) << 16)
-                                    | ((src_rgb.1 as u32) << 8)
-                                    | src_rgb.2 as u32,
+                                ((src_rgb.0 as Rgb24) << 16)
+                                    | ((src_rgb.1 as Rgb24) << 8)
+                                    | src_rgb.2 as Rgb24,
                             );
                             closest_color = colors.len() as Color - 1;
                         } else {

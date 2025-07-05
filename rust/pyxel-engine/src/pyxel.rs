@@ -5,7 +5,7 @@ use std::sync::LazyLock;
 use crate::audio::Audio;
 use crate::channel::{Channel, SharedChannel};
 use crate::graphics::Graphics;
-use crate::image::{Image, Rgb24, SharedImage};
+use crate::image::{Color, Image, Rgb24, SharedImage};
 use crate::input::Input;
 use crate::keys::Key;
 use crate::music::{Music, SharedMusic};
@@ -59,7 +59,7 @@ pub static FONT_IMAGE: LazyLock<SharedImage> = LazyLock::new(|| {
                 for xi in 0..FONT_WIDTH {
                     let x = FONT_WIDTH * col + xi;
                     let y = FONT_HEIGHT * row + yi;
-                    let color = u8::from((data & 0x800000) != 0);
+                    let color = Color::from((data & 0x800000) != 0);
                     image.canvas.write_data(x as usize, y as usize, color);
                     data <<= 1;
                 }
