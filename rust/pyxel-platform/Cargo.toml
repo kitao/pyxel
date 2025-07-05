@@ -9,6 +9,9 @@ license = "MIT"
 keywords = ["game", "gamedev", "python"]
 categories = ["game-engines", "graphics", "multimedia"]
 
+[lib]
+doctest = false
+
 [dependencies]
 cfg-if = "1.0"
 glow = "0.16"
