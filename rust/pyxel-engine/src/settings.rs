@@ -112,7 +112,7 @@ pub const WAVETABLE_LENGTH: u32 = 32;
 pub const WAVETABLE_LEVELS: u32 = 16;
 
 pub const VIBRATO_PERIOD_TICKS: u32 = SOUND_TICKS_PER_SECOND / 6; // 6Hz
-pub const VIBRATO_DEPTH_CENTS: u32 = 25; // -0.25 to 0.25 cents
+pub const VIBRATO_DEPTH_CENTS: u32 = 25; // -25 to 25 cents
 
 pub const NUM_CHANNELS: u32 = 4;
 pub const NUM_TONES: u32 = 4;
