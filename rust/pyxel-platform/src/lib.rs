@@ -6,9 +6,7 @@
     clippy::cast_ptr_alignment,
     clippy::cast_sign_loss,
     clippy::missing_panics_doc,
-    clippy::module_name_repetitions,
     clippy::must_use_candidate,
-    clippy::too_many_lines,
     clippy::unreadable_literal,
     clippy::wildcard_imports
 )]
