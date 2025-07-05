@@ -6,7 +6,7 @@ use std::process::Command;
 use hound::{SampleFormat, WavSpec, WavWriter};
 use parking_lot::MutexGuard;
 
-use crate::blip_buf::BlipBuf;
+use crate::blippers::BlipBuf;
 use crate::channel::SharedChannel;
 use crate::pyxel::{Pyxel, CHANNELS};
 use crate::settings::{AUDIO_BUFFER_SIZE, AUDIO_CLOCK_RATE, AUDIO_SAMPLE_RATE};

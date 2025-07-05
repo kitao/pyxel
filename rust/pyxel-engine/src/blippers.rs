@@ -226,7 +226,7 @@ const BL_STEP: [[i16; HALF_WIDTH as usize]; PHASE_COUNT as usize + 1] = [
 
 #[cfg(test)]
 mod tests {
-    use crate::blip_buf::{BlipBuf, BLIP_MAX_FRAME, BLIP_MAX_RATIO};
+    use crate::blippers::{BlipBuf, BLIP_MAX_FRAME, BLIP_MAX_RATIO};
 
     const OVERSAMPLE: i32 = BLIP_MAX_RATIO;
     const BLIP_SIZE: i32 = BLIP_MAX_FRAME / 2;
