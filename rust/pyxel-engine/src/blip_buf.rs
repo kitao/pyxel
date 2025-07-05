@@ -5,8 +5,8 @@
 
 #![allow(
     dead_code,
-    clippy::float_cmp,
     clippy::items_after_statements,
+    clippy::manual_div_ceil,
     clippy::should_panic_without_expect,
     clippy::unnecessary_cast
 )]
@@ -123,7 +123,7 @@ impl BlipBuf {
         let fixed = ((time * self.factor + self.offset) >> PRE_SHIFT) as u64;
         let out = &mut self.buf[(self.avail as usize + (fixed >> FRAC_BITS) as usize)..];
 
-        let interp = ((fixed >> (FRAC_BITS - DELTA_BITS)) & (DELTA_UNIT - 1) as u64) as i32;
+        let interp = (fixed >> (FRAC_BITS - DELTA_BITS) & (DELTA_UNIT - 1) as u64) as i32;
         let delta2 = delta * interp;
 
         out[7] += delta * DELTA_UNIT - delta2;
@@ -138,7 +138,7 @@ impl BlipBuf {
         if needed < self.offset as u64 {
             0
         } else {
-            (needed - self.offset).div_ceil(self.factor) as i32
+            ((needed - self.offset + self.factor - 1) / self.factor) as i32
         }
     }
 
