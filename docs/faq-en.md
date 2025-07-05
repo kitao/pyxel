@@ -88,8 +88,8 @@ The following commands are available in Pyxel's MML:
 - `Q <gate_percent>` (0-100)<br>
   Sets the gate time as a percentage. 100 means the note is played with no gap, 0 means it is not played at all. Default is 80.
 
-- `@ <tone_index>` (0-)<br>
-  Sets the tone index (by default: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Default is 0.
+- `@ <tone>` (0-)<br>
+  Sets the tone (by default: 0:Triangle / 1:Square / 2:Pulse / 3:Noise). Default is 0.
 
 - `V <vol>` (0-127)<br>
   Sets the volume. Default is 100.

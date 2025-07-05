@@ -280,8 +280,8 @@ impl Channel {
                     self.gate_ratio = *gate_ratio;
                 }
 
-                MmlCommand::Tone { tone_index } => {
-                    let mut tone = tones[*tone_index as usize].lock();
+                MmlCommand::Tone { tone } => {
+                    let mut tone = tones[*tone as usize].lock();
                     match tone.mode {
                         ToneMode::Wavetable => self.voice.oscillator.set(tone.waveform()),
                         ToneMode::ShortPeriodNoise => self.voice.oscillator.set_noise(true),

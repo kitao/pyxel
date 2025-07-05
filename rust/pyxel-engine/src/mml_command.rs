@@ -1,3 +1,5 @@
+use crate::sound::SoundTone;
+
 #[derive(Clone, Debug)]
 pub enum MmlCommand {
     RepeatStart,
@@ -13,7 +15,7 @@ pub enum MmlCommand {
     },
 
     Tone {
-        tone_index: u32,
+        tone: SoundTone,
     },
     Volume {
         level: f32,

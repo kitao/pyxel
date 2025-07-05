@@ -220,7 +220,7 @@ impl Sound {
                 continue;
             }
 
-            let tone_index = if self.tones.is_empty() {
+            let tone = if self.tones.is_empty() {
                 TONE_TRIANGLE
             } else {
                 self.tones[i % self.tones.len()]
@@ -244,9 +244,7 @@ impl Sound {
             });
 
             // Tone
-            commands.push(MmlCommand::Tone {
-                tone_index: tone_index as u32,
-            });
+            commands.push(MmlCommand::Tone { tone });
 
             // Fade out
             if effect == EFFECT_FADEOUT {
@@ -299,7 +297,7 @@ impl Sound {
             }
 
             // Note
-            let tone = tones[tone_index as usize].lock();
+            let tone = tones[tone as usize].lock();
             let midi_note = *note
                 + if tone.mode == ToneMode::Wavetable {
                     36
