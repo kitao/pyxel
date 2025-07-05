@@ -1,4 +1,4 @@
-use crate::blip_buf::BlipBuf;
+use crate::blippers::BlipBuf;
 
 const A4_MIDI_NOTE: f32 = 69.0;
 const A4_FREQUENCY: f32 = 440.0;
@@ -500,7 +500,7 @@ impl Voice {
     fn write_sample(&mut self, blip_buf: Option<&mut BlipBuf>, clock_offset: u32, amplitude: i32) {
         if let Some(blip_buf) = blip_buf {
             if amplitude != self.last_amplitude {
-                blip_buf.add_delta(clock_offset as u64, amplitude - self.last_amplitude);
+                blip_buf.add_delta_fast(clock_offset as u64, amplitude - self.last_amplitude);
                 self.last_amplitude = amplitude;
             }
         }
